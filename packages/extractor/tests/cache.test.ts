@@ -6,7 +6,7 @@ const CONTENT = `<div className="bg:white fg:black m:8">hi</div>`
 
 describe('content-hash cache (Phase A optimisation)', () => {
     test('insert(source, content) returns false on identical re-call', async () => {
-        const ex = new CSSExtractor({ config: {} as any, include: [] }).init()
+        const ex = new CSSExtractor({ config: {} as any, include: [] }).init()!
         const first = await ex.insert(SOURCE, CONTENT)
         const second = await ex.insert(SOURCE, CONTENT)
         expect(first).toBe(true)
@@ -14,7 +14,7 @@ describe('content-hash cache (Phase A optimisation)', () => {
     })
 
     test('cache key is per-source — same content from a different source still inserts', async () => {
-        const ex = new CSSExtractor({ config: {} as any, include: [] }).init()
+        const ex = new CSSExtractor({ config: {} as any, include: [] }).init()!
         const a = await ex.insert('a.tsx', CONTENT)
         const b = await ex.insert('b.tsx', CONTENT)
         expect(a).toBe(true)
@@ -27,7 +27,7 @@ describe('content-hash cache (Phase A optimisation)', () => {
     })
 
     test('cache invalidates on content change', async () => {
-        const ex = new CSSExtractor({ config: {} as any, include: [] }).init()
+        const ex = new CSSExtractor({ config: {} as any, include: [] }).init()!
         const v1 = await ex.insert(SOURCE, `<div class="bg:red">a</div>`)
         const v2 = await ex.insert(SOURCE, `<div class="bg:blue">b</div>`)
         expect(v1).toBe(true)
@@ -35,7 +35,7 @@ describe('content-hash cache (Phase A optimisation)', () => {
     })
 
     test('reset() clears the content-hash cache', async () => {
-        const ex = new CSSExtractor({ config: {} as any, include: [] }).init()
+        const ex = new CSSExtractor({ config: {} as any, include: [] }).init()!
         await ex.insert(SOURCE, CONTENT)
         await ex.reset()
         // After reset, the hash for SOURCE is gone, so the same content
@@ -47,7 +47,7 @@ describe('content-hash cache (Phase A optimisation)', () => {
 
 describe('valid-rules memo (Phase A optimisation)', () => {
     test('same class across many files is processed once', async () => {
-        const ex = new CSSExtractor({ config: {} as any, include: [] }).init()
+        const ex = new CSSExtractor({ config: {} as any, include: [] }).init()!
         // First file with the class — populates validClasses + the rules cache.
         await ex.insert('a.tsx', `<div className="bg:white">a</div>`)
         expect(ex.validClasses.has('bg:white')).toBe(true)
