@@ -1,8 +1,12 @@
-import { execSync } from 'child_process'
+import { execFileSync } from 'child_process'
+import { createRequire } from 'module'
 import fs from 'fs'
 import dedent from 'ts-dedent'
-import { join } from 'path'
+import { join, resolve } from 'path'
 import { it, expect } from 'vitest'
+
+const cliFilepath = resolve(__dirname, '../../src/bin/index.ts')
+const tsxLoaderPath = createRequire(import.meta.url).resolve('tsx')
 
 it('render css text into <head>', async () => {
     const filePath = join(__dirname, './a.test.html')
@@ -18,7 +22,7 @@ it('render css text into <head>', async () => {
             </body>
         </html>
     `)
-    execSync(`tsx ../../src/bin render ${filePath}`, { cwd: __dirname })
+    execFileSync(process.execPath, ['--import', tsxLoaderPath, cliFilepath, 'render', filePath], { cwd: __dirname })
     expect(fs.readFileSync(filePath, { encoding: 'utf-8' })).toMatch(dedent`
         <html>
             <head>
@@ -47,7 +51,7 @@ it('render css text into head and create <style id="master">', async () => {
             </body>
         </html>
     `)
-    execSync(`tsx ../../src/bin render ${filePath}`, { cwd: __dirname })
+    execFileSync(process.execPath, ['--import', tsxLoaderPath, cliFilepath, 'render', filePath], { cwd: __dirname })
     expect(fs.readFileSync(filePath, { encoding: 'utf-8' })).toMatch(dedent`
         <html>
             <head>
