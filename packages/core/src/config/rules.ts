@@ -122,6 +122,24 @@ const rules = {
         type: SyntaxRuleType.NativeShorthand,
         namespaces: ['spacing']
     },
+    // margin block
+    'margin-block-start': {
+        key: 'mbs',
+        type: SyntaxRuleType.Native,
+        unit: 'rem',
+        namespaces: ['spacing']
+    },
+    'margin-block-end': {
+        key: 'mbe',
+        type: SyntaxRuleType.Native,
+        unit: 'rem',
+        namespaces: ['spacing']
+    },
+    'margin-block': {
+        unit: 'rem',
+        type: SyntaxRuleType.NativeShorthand,
+        namespaces: ['spacing']
+    },
     // padding
     'padding-left': {
         key: 'pl',
@@ -186,6 +204,24 @@ const rules = {
         type: SyntaxRuleType.NativeShorthand,
         namespaces: ['spacing']
     },
+    // padding block
+    'padding-block-start': {
+        key: 'pbs',
+        type: SyntaxRuleType.Native,
+        unit: 'rem',
+        namespaces: ['spacing']
+    },
+    'padding-block-end': {
+        key: 'pbe',
+        type: SyntaxRuleType.Native,
+        unit: 'rem',
+        namespaces: ['spacing']
+    },
+    'padding-block': {
+        unit: 'rem',
+        type: SyntaxRuleType.NativeShorthand,
+        namespaces: ['spacing']
+    },
     // flex
     'flex-basis': {
         aliasGroups: ['flex'],
@@ -227,6 +263,16 @@ const rules = {
         unit: 'rem',
         type: SyntaxRuleType.Native
     },
+    'inline-size': {
+        key: 'is',
+        unit: 'rem',
+        type: SyntaxRuleType.Native
+    },
+    'block-size': {
+        key: 'bs',
+        unit: 'rem',
+        type: SyntaxRuleType.Native
+    },
     'min-width': {
         key: 'min-w',
         unit: 'rem',
@@ -234,6 +280,16 @@ const rules = {
     },
     'min-height': {
         key: 'min-h',
+        unit: 'rem',
+        type: SyntaxRuleType.Native
+    },
+    'min-inline-size': {
+        key: 'min-is',
+        unit: 'rem',
+        type: SyntaxRuleType.Native
+    },
+    'min-block-size': {
+        key: 'min-bs',
         unit: 'rem',
         type: SyntaxRuleType.Native
     },
@@ -275,6 +331,14 @@ const rules = {
         values: ['size', 'inline-size', 'scroll-state'],
     },
     contain: {
+        type: SyntaxRuleType.Native
+    },
+    'contain-intrinsic-inline-size': {
+        unit: 'rem',
+        type: SyntaxRuleType.Native
+    },
+    'contain-intrinsic-block-size': {
+        unit: 'rem',
         type: SyntaxRuleType.Native
     },
     content: {
@@ -423,6 +487,42 @@ const rules = {
         type: SyntaxRuleType.NativeShorthand,
         namespaces: ['spacing']
     },
+    'inset-inline-start': {
+        key: 'iis',
+        unit: 'rem',
+        type: SyntaxRuleType.Native,
+        namespaces: ['spacing']
+    },
+    'inset-inline-end': {
+        key: 'iie',
+        unit: 'rem',
+        type: SyntaxRuleType.Native,
+        namespaces: ['spacing']
+    },
+    'inset-inline': {
+        key: 'ii',
+        unit: 'rem',
+        type: SyntaxRuleType.NativeShorthand,
+        namespaces: ['spacing']
+    },
+    'inset-block-start': {
+        key: 'ibs',
+        unit: 'rem',
+        type: SyntaxRuleType.Native,
+        namespaces: ['spacing']
+    },
+    'inset-block-end': {
+        key: 'ibe',
+        unit: 'rem',
+        type: SyntaxRuleType.Native,
+        namespaces: ['spacing']
+    },
+    'inset-block': {
+        key: 'ib',
+        unit: 'rem',
+        type: SyntaxRuleType.NativeShorthand,
+        namespaces: ['spacing']
+    },
     'max-height': {
         key: 'max-h',
         unit: 'rem',
@@ -430,6 +530,16 @@ const rules = {
     },
     'max-width': {
         key: 'max-w',
+        unit: 'rem',
+        type: SyntaxRuleType.Native
+    },
+    'max-inline-size': {
+        key: 'max-is',
+        unit: 'rem',
+        type: SyntaxRuleType.Native
+    },
+    'max-block-size': {
+        key: 'max-bs',
         unit: 'rem',
         type: SyntaxRuleType.Native
     },
@@ -454,6 +564,12 @@ const rules = {
     'overflow-y': {
         type: SyntaxRuleType.Native,
     },
+    'overflow-inline': {
+        type: SyntaxRuleType.Native
+    },
+    'overflow-block': {
+        type: SyntaxRuleType.Native
+    },
     overflow: {
         type: SyntaxRuleType.NativeShorthand,
     },
@@ -461,6 +577,12 @@ const rules = {
         type: SyntaxRuleType.Native
     },
     'overscroll-behavior-y': {
+        type: SyntaxRuleType.Native
+    },
+    'overscroll-behavior-inline': {
+        type: SyntaxRuleType.Native
+    },
+    'overscroll-behavior-block': {
         type: SyntaxRuleType.Native
     },
     'overscroll-behavior': {
