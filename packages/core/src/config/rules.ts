@@ -350,6 +350,9 @@ const rules = {
     'counter-reset': {
         type: SyntaxRuleType.Native,
     },
+    'counter-set': {
+        type: SyntaxRuleType.Native,
+    },
     'letter-spacing': {
         key: 'tracking',
         subkey: 'ls',

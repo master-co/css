@@ -1,0 +1,68 @@
+## Overview [sr-only]
+<Overview/>
+
+## Basic usage
+### Number sections
+Use `counter-increment` to advance a named counter on each matching element. The counter is usually created with [`counter-reset`](/reference/counter-reset) and displayed with [`content`](/reference/content).
+<Demo $py={0}>
+    <DemoPanel>
+        <article className="counter-reset:section flex flex-col gap:10x">
+            <div className="counter-increment:section content:counter(section)::before inline-flex::before w:32::before h:32::before r:full::before bg:blue-60::before fg:white::before font:14::before font-weight:600::before align-items:center::before justify-content:center::before mr:4x::before">
+                <span className="fg:strong font:18 font-weight:560">Overview</span>
+                <p className="my:4x ml:42x fg:muted font:14">Introduce the document structure and goals.</p>
+            </div>
+            <div className="counter-increment:section content:counter(section)::before inline-flex::before w:32::before h:32::before r:full::before bg:blue-60::before fg:white::before font:14::before font-weight:600::before align-items:center::before justify-content:center::before mr:4x::before">
+                <span className="fg:strong font:18 font-weight:560">Installation</span>
+                <p className="my:4x ml:42x fg:muted font:14">Add the package and wire it into the build.</p>
+            </div>
+            <div className="counter-increment:section content:counter(section)::before inline-flex::before w:32::before h:32::before r:full::before bg:blue-60::before fg:white::before font:14::before font-weight:600::before align-items:center::before justify-content:center::before mr:4x::before">
+                <span className="fg:strong font:18 font-weight:560">Configuration</span>
+                <p className="my:4x ml:42x fg:muted font:14">Customize counters, selectors, and content output.</p>
+            </div>
+        </article>
+    </DemoPanel>
+</Demo>
+```html
+<!-- @MARK counter-reset:section -->
+<article class="counter-reset:section">
+    <!-- @MARK counter-increment:section -->
+    <!-- @MARK content:counter(section)::before -->
+    <h2 class="counter-increment:section content:counter(section)::before inline-flex::before r:full::before">Overview</h2>
+    <h2 class="counter-increment:section content:counter(section)::before inline-flex::before r:full::before">Installation</h2>
+    <h2 class="counter-increment:section content:counter(section)::before inline-flex::before r:full::before">Configuration</h2>
+</article>
+```
+
+### Count backward
+Pass a negative integer to decrease a counter. Here the first generated value is `10` because the counter starts at `11` and decrements before it is displayed.
+<Demo $py={0}>
+    <DemoPanel>
+        <ol className="counter-reset:step|11 list-style:none p:0 m:0 grid gap:8x">
+            <li className="counter-increment:step|-1 content:counter(step)::before flex align-items:center p:10x r:8 bg:gray-5 bg:gray-90@dark inline-flex::before w:28::before h:28::before r:full::before bg:blue-60::before fg:white::before font:13::before font-weight:700::before align-items:center::before justify-content:center::before mr:4x::before flex-shrink:0::before">
+                <span>Prepare release notes</span>
+            </li>
+            <li className="counter-increment:step|-1 content:counter(step)::before flex align-items:center p:10x r:8 bg:gray-5 bg:gray-90@dark inline-flex::before w:28::before h:28::before r:full::before bg:blue-60::before fg:white::before font:13::before font-weight:700::before align-items:center::before justify-content:center::before mr:4x::before flex-shrink:0::before">
+                <span>Run validation</span>
+            </li>
+            <li className="counter-increment:step|-1 content:counter(step)::before flex align-items:center p:10x r:8 bg:gray-5 bg:gray-90@dark inline-flex::before w:28::before h:28::before r:full::before bg:blue-60::before fg:white::before font:13::before font-weight:700::before align-items:center::before justify-content:center::before mr:4x::before flex-shrink:0::before">
+                <span>Publish the build</span>
+            </li>
+        </ol>
+    </DemoPanel>
+</Demo>
+```html
+<!-- @MARK counter-reset:step|11 -->
+<ol class="counter-reset:step|11 list-style:none">
+    <!-- @MARK counter-increment:step|-1 -->
+    <!-- @MARK content:counter(step)::before -->
+    <li class="counter-increment:step|-1 content:counter(step)::before inline-flex::before r:full::before">Prepare release notes</li>
+    <li class="counter-increment:step|-1 content:counter(step)::before inline-flex::before r:full::before">Run validation</li>
+    <li class="counter-increment:step|-1 content:counter(step)::before inline-flex::before r:full::before">Publish the build</li>
+</ol>
+```
+
+### Apply conditionally
+Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
+```html
+<div class="counter-increment:section:hover counter-increment:section@sm counter-increment:section@dark counter-increment:section@print">…</div>
+```

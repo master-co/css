@@ -1,0 +1,75 @@
+## Overview [sr-only]
+<Overview/>
+
+## Basic usage
+### Create a section counter
+Use `counter-reset` to create a named counter and set its initial value. Regular counters default to `0`, so the first `counter-increment:section` produces `1`.
+<Demo $py={0}>
+    <DemoPanel>
+        <article className="counter-reset:section grid gap:12x">
+            <h2 className="counter-increment:section content:'Section\00a0'counter(section)'.\00a0'::before m:0 p:14x r:8 bg:blue-5 bg:blue-95@dark fg:strong font:20 font-weight:560 fg:blue-60::before font:14::before font-weight:600::before">Setup</h2>
+            <h2 className="counter-increment:section content:'Section\00a0'counter(section)'.\00a0'::before m:0 p:14x r:8 bg:blue-5 bg:blue-95@dark fg:strong font:20 font-weight:560 fg:blue-60::before font:14::before font-weight:600::before">Usage</h2>
+        </article>
+    </DemoPanel>
+</Demo>
+```html
+<!-- @MARK counter-reset:section -->
+<article class="counter-reset:section">
+    <!-- @MARK counter-increment:section -->
+    <!-- @MARK content:'Section\00a0'counter(section)'.\00a0'::before -->
+    <h2 class="counter-increment:section content:'Section\00a0'counter(section)'.\00a0'::before">Setup</h2>
+    <h2 class="counter-increment:section content:'Section\00a0'counter(section)'.\00a0'::before">Usage</h2>
+</article>
+```
+
+### Start from another number
+Add an integer after the counter name to choose its initial value.
+<Demo $py={0}>
+    <DemoPanel>
+        <article className="counter-reset:chapter|4">
+            <h2 className="counter-increment:chapter content:'Chapter\00a0'counter(chapter)':\00a0'::before m:0 p:16x r:8 border:1|solid|gray-20 border-color:gray-80@dark fg:strong font:20 font-weight:560 fg:blue-60::before font:14::before font-weight:600::before">Advanced topics</h2>
+        </article>
+    </DemoPanel>
+</Demo>
+```html
+<!-- @MARK counter-reset:chapter|4 -->
+<article class="counter-reset:chapter|4">
+    <!-- @MARK counter-increment:chapter -->
+    <!-- @MARK content:'Chapter\00a0'counter(chapter)':\00a0'::before -->
+    <h2 class="counter-increment:chapter content:'Chapter\00a0'counter(chapter)':\00a0'::before">Advanced topics</h2>
+</article>
+```
+
+### Create a reversed counter
+Use `reversed()` when a counter should count down from the number of items. Adjust the step with [`counter-increment`](/reference/counter-increment).
+<Demo $py={0}>
+    <DemoPanel>
+        <ol className="counter-reset:reversed(step) list-style:none p:0 m:0 grid-cols:3 gap:8x">
+            <li className="counter-increment:step|-1 content:counter(step)::before p:12x r:8 bg:gray-5 bg:gray-90@dark text:center block::before fg:blue-60::before font:24::before font-weight:700::before mb:2x::before">
+                <span className="font:14">Final review</span>
+            </li>
+            <li className="counter-increment:step|-1 content:counter(step)::before p:12x r:8 bg:gray-5 bg:gray-90@dark text:center block::before fg:blue-60::before font:24::before font-weight:700::before mb:2x::before">
+                <span className="font:14">Deploy</span>
+            </li>
+            <li className="counter-increment:step|-1 content:counter(step)::before p:12x r:8 bg:gray-5 bg:gray-90@dark text:center block::before fg:blue-60::before font:24::before font-weight:700::before mb:2x::before">
+                <span className="font:14">Monitor</span>
+            </li>
+        </ol>
+    </DemoPanel>
+</Demo>
+```html
+<!-- @MARK counter-reset:reversed(step) -->
+<ol class="counter-reset:reversed(step) list-style:none">
+    <!-- @MARK counter-increment:step|-1 -->
+    <!-- @MARK content:counter(step)::before -->
+    <li class="counter-increment:step|-1 content:counter(step)::before block::before">Final review</li>
+    <li class="counter-increment:step|-1 content:counter(step)::before block::before">Deploy</li>
+    <li class="counter-increment:step|-1 content:counter(step)::before block::before">Monitor</li>
+</ol>
+```
+
+### Apply conditionally
+Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
+```html
+<div class="counter-reset:section:hover counter-reset:section@sm counter-reset:section@dark counter-reset:section@print">…</div>
+```

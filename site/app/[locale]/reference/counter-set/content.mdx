@@ -1,0 +1,54 @@
+## Overview [sr-only]
+<Overview/>
+
+## Basic usage
+### Set a counter on one item
+Use `counter-set` to set an existing counter to a specific value on selected elements. MDN recommends [`counter-reset`](/reference/counter-reset) for creating counters and `counter-set` for changing a counter value in the flow.
+<Demo $py={0}>
+    <DemoPanel>
+        <ol className="counter-reset:step list-style:none p:0 m:0 grid gap:8x">
+            <li className="counter-increment:step content:counter(step)::before flex align-items:center p:10x r:8 bg:gray-5 bg:gray-90@dark inline-flex::before w:28::before h:28::before r:full::before bg:gray-20::before bg:gray-80::before@dark font:13::before font-weight:700::before align-items:center::before justify-content:center::before mr:4x::before flex-shrink:0::before">
+                <span>Install dependencies</span>
+            </li>
+            <li className="counter-increment:step counter-set:step|9 content:counter(step)::before flex align-items:center p:10x r:8 bg:blue-5 bg:blue-95@dark border:1|solid|blue-20 border-color:blue-80@dark inline-flex::before w:28::before h:28::before r:full::before bg:blue-60::before fg:white::before font:13::before font-weight:700::before align-items:center::before justify-content:center::before mr:4x::before flex-shrink:0::before">
+                <span>Jump to the deployment checklist</span>
+            </li>
+            <li className="counter-increment:step content:counter(step)::before flex align-items:center p:10x r:8 bg:gray-5 bg:gray-90@dark inline-flex::before w:28::before h:28::before r:full::before bg:gray-20::before bg:gray-80::before@dark font:13::before font-weight:700::before align-items:center::before justify-content:center::before mr:4x::before flex-shrink:0::before">
+                <span>Verify production</span>
+            </li>
+        </ol>
+    </DemoPanel>
+</Demo>
+```html
+<!-- @MARK counter-reset:step -->
+<ol class="counter-reset:step list-style:none">
+    <!-- @MARK counter-increment:step -->
+    <!-- @MARK content:counter(step)::before -->
+    <li class="counter-increment:step content:counter(step)::before inline-flex::before r:full::before">Install dependencies</li>
+    <!-- @MARK counter-set:step|9 -->
+    <li class="counter-increment:step counter-set:step|9 content:counter(step)::before inline-flex::before r:full::before">Jump to the deployment checklist</li>
+    <li class="counter-increment:step content:counter(step)::before inline-flex::before r:full::before">Verify production</li>
+</ol>
+```
+
+### Set multiple counters
+Separate counter names and values with `|` to set more than one counter in the same declaration.
+<Demo $py={0}>
+    <DemoPanel>
+        <div className="counter-set:chapter|2|section|4 p:16x r:8 bg:gray-5 bg:gray-90@dark">
+            <div className="fg:muted font:13 mb:4x">Current position</div>
+            <div className="content:'Chapter\00a0'counter(chapter)',\00a0section\00a0'counter(section)::before fg:strong font:22 font-weight:560 fg:blue-60::before font:22::before font-weight:700::before"></div>
+        </div>
+    </DemoPanel>
+</Demo>
+```html
+<!-- @MARK counter-set:chapter|2|section|4 -->
+<!-- @MARK content:'Chapter\00a0'counter(chapter)',\00a0section\00a0'counter(section)::before -->
+<h2 class="counter-set:chapter|2|section|4 content:'Chapter\00a0'counter(chapter)',\00a0section\00a0'counter(section)::before">Resume point</h2>
+```
+
+### Apply conditionally
+Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
+```html
+<div class="counter-set:section|4:hover counter-set:section|4@sm counter-set:section|4@dark counter-set:section|4@print">…</div>
+```
