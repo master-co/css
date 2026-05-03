@@ -1,0 +1,94 @@
+<StepSection>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Create a Lit project
+            If you don't have a Lit project, create one first. It's recommended to refer to [Lit documentation](https://lit.dev/docs/).
+        </StepL>
+        <StepR>
+            ```bash name=Terminal
+            npm create vite@latest my-app -- --template lit-ts
+            cd my-app
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Install Master CSS
+            Install [`@master/css-runtime`](/reference/runtime) into your project.
+        </StepL>
+        <StepR>
+            ```bash action=install
+            @master/css-runtime@rc
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Create a configuration file
+            Run the command to create a [master.css.js](/guide/configuration) file.
+        </StepL>
+        <StepR>
+            ```bash action=create
+            @master/css@rc
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Set up CSS runtime engine
+            Decorate your Lit element with `@cssRuntime()` to initialize Master CSS Runtime for the element's shadow root.
+        </StepL>
+        <StepR>
+            ```ts name=src/my-element.ts
+            import { LitElement, html } from 'lit'
+            import { customElement } from 'lit/decorators.js'
+            import { cssRuntime } from '@master/css-runtime' // [!code highlight]
+            import type { CSSRuntime } from '@master/css-runtime' // [!code highlight]
+            import config from '../master.css' // [!code highlight]
+
+            @customElement('my-element')
+            @cssRuntime(config) // [!code highlight]
+            export class MyElement extends LitElement {
+                cssRuntime?: CSSRuntime // [!code highlight]
+
+                render() {
+                    return html`
+                        <h1 class="italic m:12x fg:strong font:40 font:heavy">
+                            Hello World
+                        </h1>
+                    `
+                }
+            }
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Start dev server
+            Run the command to start the Vite dev server.
+        </StepL>
+        <StepR>
+            ```bash name=Terminal&action=run
+            dev
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Start using Master CSS
+            Now style elements inside your Lit templates using Master CSS syntax!
+        </StepL>
+        <StepR>
+            ```ts name=src/my-element.ts
+            render() {
+                return html`
+                    <button class="inline-flex items:center gap:2x px:4x py:2x r:2x bg:blue fg:white">
+                        Hello Lit
+                    </button>
+                `
+            }
+            ```
+        </StepR>
+    </Step>
+    <HelloWorld url="localhost:5173" />
+</StepSection>

@@ -2,7 +2,8 @@ import { LitElement, css, html } from 'lit'
 import { customElement, property } from 'lit/decorators.js'
 import masterLogo from './assets/master.svg'
 import litLogo from './assets/lit.svg'
-import CSSRuntime, { initCSSRuntime } from '@master/css-runtime'
+import { cssRuntime } from '@master/css-runtime'
+import type { CSSRuntime } from '@master/css-runtime'
 import config from '../master.css'
 
 /**
@@ -12,9 +13,10 @@ import config from '../master.css'
  * @csspart button - The button
  */
 @customElement('my-element')
+@cssRuntime(config)
 export class MyElement extends LitElement {
 
-    cssRuntime: CSSRuntime | undefined
+    cssRuntime?: CSSRuntime
 
     /**
      * Copy for the read the docs hint.
@@ -27,16 +29,6 @@ export class MyElement extends LitElement {
      */
     @property({ type: Number })
     count = 0
-
-    connectedCallback() {
-        super.connectedCallback()
-        this.cssRuntime = initCSSRuntime(config, this.shadowRoot!)
-    }
-
-    disconnectedCallback() {
-        super.disconnectedCallback()
-        this.cssRuntime?.destroy()
-    }
 
     render() {
         return html`
