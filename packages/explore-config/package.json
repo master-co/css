@@ -52,6 +52,7 @@
         "shared": "workspace:^"
     },
     "dependencies": {
-        "explore-config": "^3.2.5"
+        "@swc/wasm": "^1.15.33",
+        "jiti": "^2.6.1"
     }
 }

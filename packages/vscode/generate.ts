@@ -3,8 +3,12 @@ import copyOrSymlink from '~/internal/utils/copy-or-symlink'
 import settings from '../language-server/src/settings'
 import { grammars, declaration } from '../language/src'
 import { fileURLToPath } from 'node:url'
+import { createRequire } from 'node:module'
+import { copyFileSync, mkdirSync } from 'node:fs'
+import { dirname, resolve } from 'node:path'
 
 const pkg = editJsonFile(fileURLToPath(new URL('./package.json', import.meta.url)), { stringify_width: 4 })
+const require = createRequire(import.meta.url)
 
 pkg.set('contributes.languages', [declaration])
 
@@ -90,3 +94,14 @@ pkg.set('contributes.configuration', {
 pkg.save()
 
 copyOrSymlink(fileURLToPath(new URL('../language/syntaxes', import.meta.url)), fileURLToPath(new URL('./syntaxes', import.meta.url)))
+
+// The bundled SWC wasm loader reads this asset from the extension dist directory.
+const swcWasmMainPath = require.resolve('@swc/wasm', {
+    paths: [
+        fileURLToPath(new URL('../explore-config', import.meta.url))
+    ]
+})
+const swcWasmPath = resolve(dirname(swcWasmMainPath), 'wasm_bg.wasm')
+const distDir = fileURLToPath(new URL('./dist', import.meta.url))
+mkdirSync(distDir, { recursive: true })
+copyFileSync(swcWasmPath, resolve(distDir, 'wasm_bg.wasm'))

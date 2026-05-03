@@ -236,8 +236,8 @@ export default class CSSLanguageServer {
                     found: undefined
                 })
             } catch (e: any) {
-                this.console.info(`Failed to load config from ${workspace}`)
-                this.console.error(e)
+                this.console.info(`Failed to load config from ${workspace.uri}`)
+                this.console.error(e instanceof Error ? e.stack : e.toString())
             }
             if (workspaceConfig) {
                 this.console.info(`Initialized workspace ${workspaceConfig ? '(with config file)' : ''} ${workspace.uri}`)
