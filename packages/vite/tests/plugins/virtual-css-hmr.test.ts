@@ -111,7 +111,7 @@ describe('VirtualCSSHMRPlugin (C3+C4 race fixes)', () => {
         const extractor = makeExtractor()
 
         // First prepare hangs until we resolve it manually; second resolves quickly.
-        let releaseFirst: () => void
+        let releaseFirst!: () => void
         const firstPending = new Promise<void>((r) => { releaseFirst = r })
         const prepareSpy = vi.fn()
             .mockImplementationOnce(() => firstPending)
@@ -142,7 +142,7 @@ describe('VirtualCSSHMRPlugin (C3+C4 race fixes)', () => {
         // Wire updateVirtualModule observability via reloadModule. We force the
         // virtual module to "exist" so the inner branch runs.
         const server = makeServer()
-        let releaseFirstReload: () => void
+        let releaseFirstReload!: () => void
         const firstReload = new Promise<void>((r) => { releaseFirstReload = r })
         const reloadSpy = vi.fn()
             .mockImplementationOnce(() => firstReload) // returns the unresolved promise as-is
