@@ -1018,6 +1018,40 @@ const rules = {
         transformer: 'auto-fill-solid',
         namespaces: ['color', 'color.line'],
     },
+    // Logical borders (CSS Logical Properties Level 1)
+    // Long-hand color
+    'border-inline-start-color': { kind: 'color', type: SyntaxRuleType.Native, namespaces: ['color', 'color.line'] },
+    'border-inline-end-color':   { kind: 'color', type: SyntaxRuleType.Native, namespaces: ['color', 'color.line'] },
+    'border-block-start-color':  { kind: 'color', type: SyntaxRuleType.Native, namespaces: ['color', 'color.line'] },
+    'border-block-end-color':    { kind: 'color', type: SyntaxRuleType.Native, namespaces: ['color', 'color.line'] },
+    'border-inline-color':       { kind: 'color', type: SyntaxRuleType.NativeShorthand, namespaces: ['color', 'color.line'] },
+    'border-block-color':        { kind: 'color', type: SyntaxRuleType.NativeShorthand, namespaces: ['color', 'color.line'] },
+    // Long-hand style
+    'border-inline-start-style': { values: BORDER_STYLE_VALUES, type: SyntaxRuleType.Native },
+    'border-inline-end-style':   { values: BORDER_STYLE_VALUES, type: SyntaxRuleType.Native },
+    'border-block-start-style':  { values: BORDER_STYLE_VALUES, type: SyntaxRuleType.Native },
+    'border-block-end-style':    { values: BORDER_STYLE_VALUES, type: SyntaxRuleType.Native },
+    'border-inline-style':       { values: BORDER_STYLE_VALUES, type: SyntaxRuleType.NativeShorthand },
+    'border-block-style':        { values: BORDER_STYLE_VALUES, type: SyntaxRuleType.NativeShorthand },
+    // Long-hand width
+    'border-inline-start-width': { kind: 'number', unit: 'rem', type: SyntaxRuleType.Native },
+    'border-inline-end-width':   { kind: 'number', unit: 'rem', type: SyntaxRuleType.Native },
+    'border-block-start-width':  { kind: 'number', unit: 'rem', type: SyntaxRuleType.Native },
+    'border-block-end-width':    { kind: 'number', unit: 'rem', type: SyntaxRuleType.Native },
+    'border-inline-width':       { kind: 'number', unit: 'rem', type: SyntaxRuleType.NativeShorthand },
+    'border-block-width':        { kind: 'number', unit: 'rem', type: SyntaxRuleType.NativeShorthand },
+    // Shorthands (border-inline-start: 1px solid red etc.)
+    'border-inline-start': { unit: 'rem', type: SyntaxRuleType.NativeShorthand, transformer: 'auto-fill-solid', namespaces: ['color', 'color.line'] },
+    'border-inline-end':   { unit: 'rem', type: SyntaxRuleType.NativeShorthand, transformer: 'auto-fill-solid', namespaces: ['color', 'color.line'] },
+    'border-block-start':  { unit: 'rem', type: SyntaxRuleType.NativeShorthand, transformer: 'auto-fill-solid', namespaces: ['color', 'color.line'] },
+    'border-block-end':    { unit: 'rem', type: SyntaxRuleType.NativeShorthand, transformer: 'auto-fill-solid', namespaces: ['color', 'color.line'] },
+    'border-inline':       { unit: 'rem', type: SyntaxRuleType.NativeShorthand, transformer: 'auto-fill-solid', namespaces: ['color', 'color.line'] },
+    'border-block':        { unit: 'rem', type: SyntaxRuleType.NativeShorthand, transformer: 'auto-fill-solid', namespaces: ['color', 'color.line'] },
+    // Logical corner radii (CSS Borders Level 4 — start/end on each axis)
+    'border-start-start-radius': { unit: 'rem', type: SyntaxRuleType.Native, namespaces: ['border-radius'] },
+    'border-start-end-radius':   { unit: 'rem', type: SyntaxRuleType.Native, namespaces: ['border-radius'] },
+    'border-end-start-radius':   { unit: 'rem', type: SyntaxRuleType.Native, namespaces: ['border-radius'] },
+    'border-end-end-radius':     { unit: 'rem', type: SyntaxRuleType.Native, namespaces: ['border-radius'] },
     'background-attachment': {
         aliasGroups: ['bg'],
         values: ['fixed', 'local', 'scroll'],
