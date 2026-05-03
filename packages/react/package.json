@@ -65,6 +65,10 @@
         "@playwright/experimental-ct-react": "^1.59.1",
         "@playwright/test": "^1.59.1",
         "@types/node": "^25.6.0",
+        "@types/react": "^19.2.14",
+        "@types/react-dom": "^19.2.3",
+        "react": "19.2.5",
+        "react-dom": "19.2.5",
         "shared": "workspace:^"
     }
 }
