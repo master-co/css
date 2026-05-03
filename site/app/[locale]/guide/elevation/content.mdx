@@ -1,0 +1,156 @@
+import ShadowTokens from './components/ShadowTokens'
+
+## Using shadows [sr-only]
+[CSS box shadows](https://developer.mozilla.org/en-US/docs/Web/CSS/box-shadow) create visual depth by drawing one or more shadows around an element. Master CSS maps elevation to the `shadow` variable namespace, so product surfaces can use stable size tokens instead of repeating raw shadow values.
+
+The default scale runs from `xs` to `2xl`. Each step increases offset, blur, and shadow opacity while staying practical for application UI.
+
+Use elevation tokens to answer three interface questions:
+
+* How close is the surface to the page? Use `shadow:xs` or `shadow:sm` for low separation.
+* Is the surface floating above nearby content? Use `shadow:md` or `shadow:lg`.
+* Does the surface interrupt the workflow? Use `shadow:xl` or `shadow:2xl`.
+
+<Demo>
+    <div className="container w:full">
+        <div className="grid-cols:1 grid-cols:3@container(400) gap:lg w:full">
+            <div className="bg:base r:2x p:4x outline:1|lightest shadow:xs">
+                <DemoLabel>shadow:xs</DemoLabel>
+                <div className="font:medium">Subtle</div>
+                <p className="fg:text-light m:0 mt:2x text:14">Small controls</p>
+            </div>
+            <div className="bg:base r:2x p:4x outline:1|lightest shadow:sm">
+                <DemoLabel>shadow:sm</DemoLabel>
+                <div className="font:medium">Card</div>
+                <p className="fg:text-light m:0 mt:2x text:14">Compact panel</p>
+            </div>
+            <div className="bg:base r:2x p:4x outline:1|lightest shadow:md">
+                <DemoLabel>shadow:md</DemoLabel>
+                <div className="font:medium">Floating</div>
+                <p className="fg:text-light m:0 mt:2x text:14">Hover lift</p>
+            </div>
+            <div className="bg:base r:2x p:4x outline:1|lightest shadow:lg">
+                <DemoLabel>shadow:lg</DemoLabel>
+                <div className="font:medium">Popover</div>
+                <p className="fg:text-light m:0 mt:2x text:14">Dropdown, toast</p>
+            </div>
+            <div className="bg:base r:2x p:4x outline:1|lightest shadow:xl">
+                <DemoLabel>shadow:xl</DemoLabel>
+                <div className="font:medium">Dialog</div>
+                <p className="fg:text-light m:0 mt:2x text:14">Drawer panel</p>
+            </div>
+            <div className="bg:base r:2x p:4x outline:1|lightest shadow:2xl">
+                <DemoLabel>shadow:2xl</DemoLabel>
+                <div className="font:medium">Modal</div>
+                <p className="fg:text-light m:0 mt:2x text:14">Blocking overlay</p>
+            </div>
+        </div>
+    </div>
+</Demo>
+
+```html
+<!-- @MARK shadow:xs --><!-- @MARK shadow:sm --><!-- @MARK shadow:md -->
+<button class="shadow:xs">...</button>
+<article class="shadow:sm">...</article>
+<div class="shadow:md">...</div>
+
+<!-- @MARK shadow:lg --><!-- @MARK shadow:xl --><!-- @MARK shadow:2xl -->
+<div class="shadow:lg">...</div>
+<dialog class="shadow:xl">...</dialog>
+<dialog class="shadow:2xl">...</dialog>
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['shadow:xs', 'shadow:sm', 'shadow:md', 'shadow:lg', 'shadow:xl', 'shadow:2xl']}
+    </Class2CSS>
+</details>
+
+<ShadowTokens />
+
+Use the scale by surface role:
+
+* `shadow:xs` is for tiny separation, such as compact controls or subtle rows.
+* `shadow:sm` is the default card elevation.
+* `shadow:md` is for floating controls and hover lift.
+* `shadow:lg` is for dropdowns, popovers, and toast surfaces.
+* `shadow:xl` and `shadow:2xl` are for dialogs, drawers, modals, and blocking overlays.
+
+---
+
+## Namespace for elevation
+Elevation tokens are defined in `variables.shadow`. The `box-shadow` rule references this namespace, so both `shadow:<token>` and `box-shadow:<token>` resolve the same values.
+
+```js name=master.css.js
+export default {
+    variables: {
+        shadow: {
+            sm: '0 1px 2px oklch(0% 0 none / .06), 0 2px 4px oklch(0% 0 none / .06)',
+            md: '0 2px 4px -1px oklch(0% 0 none / .08), 0 6px 12px -2px oklch(0% 0 none / .08)',
+            lg: '0 4px 8px -2px oklch(0% 0 none / .08), 0 12px 24px -4px oklch(0% 0 none / .10)'
+        }
+    }
+}
+```
+
+Apply the custom tokens in markup:
+
+```html
+<!-- @MARK shadow:sm --><!-- @MARK box-shadow:lg -->
+<article class="shadow:sm">...</article>
+<div class="box-shadow:lg">...</div>
+```
+
+---
+
+## Layer surfaces consistently
+Elevation works best when it supports a clear surface hierarchy. Start with the lowest token that separates the element, then move up only when the surface overlays or interrupts surrounding content.
+
+<Demo>
+    <div className="container w:full">
+        <div className="grid-cols:1 grid-cols:3@container(400) gap:lg w:full">
+            <div className="bg:base r:2x p:4x outline:1|lightest shadow:xs">
+                <DemoLabel>shadow:xs</DemoLabel>
+                <div className="font:medium">Control</div>
+            </div>
+            <div className="bg:base r:2x p:4x outline:1|lightest shadow:md">
+                <DemoLabel>shadow:md</DemoLabel>
+                <div className="font:medium">Floating</div>
+            </div>
+            <div className="bg:base r:2x p:4x outline:1|lightest shadow:xl">
+                <DemoLabel>shadow:xl</DemoLabel>
+                <div className="font:medium">Dialog</div>
+            </div>
+        </div>
+    </div>
+</Demo>
+
+```html
+<!-- @MARK shadow:xs --><!-- @MARK shadow:md --><!-- @MARK shadow:xl -->
+<button class="shadow:xs">Control</button>
+<div class="shadow:md">Floating</div>
+<dialog class="shadow:xl">Dialog</dialog>
+```
+
+Use outlines and background tokens with shadows. An `outline:1|lightest` outline keeps low elevations visible on light surfaces, while `bg:base` or `bg:surface` keeps the elevated area distinct from the page ground.
+
+---
+
+## Customize shadow tokens
+Override `variables.shadow` when your product needs a softer, sharper, or more branded elevation scale. Keep the keys size-based so markup remains portable across components.
+
+```js name=master.css.js
+export default {
+    variables: {
+        shadow: {
+            xs: '0 1px 1px oklch(0% 0 none / .06)',
+            sm: '0 2px 4px oklch(0% 0 none / .08)',
+            md: '0 6px 16px oklch(0% 0 none / .10)',
+            lg: '0 12px 32px oklch(0% 0 none / .12)',
+            xl: '0 20px 48px oklch(0% 0 none / .14)',
+            '2xl': '0 32px 80px oklch(0% 0 none / .18)'
+        }
+    }
+}
+```
