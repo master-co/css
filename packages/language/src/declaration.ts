@@ -6,7 +6,8 @@ const declaration = {
     ],
     extensions: [
         '.mcss'
-    ]
+    ],
+    configuration: './syntaxes/language-configuration.json'
 }
 
 export default declaration
