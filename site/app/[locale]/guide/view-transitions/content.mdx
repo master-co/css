@@ -1,0 +1,251 @@
+import ViewTransitionDemo from './components/ViewTransitionDemo'
+import ArticleTransitionDemo from './components/ArticleTransitionDemo'
+
+## Overview [sr-only]
+The [View Transition API](https://developer.mozilla.org/en-US/docs/Web/API/View_Transition_API) creates animated transitions between two visual states. It can handle same-document updates in an SPA and same-origin navigation between documents in an MPA.
+
+In a same-document transition, call `document.startViewTransition()` and update the DOM inside its callback. The browser snapshots the old state, runs the update, snapshots the new state, then animates the old and new snapshots. Without custom CSS, the default transition is a smooth cross-fade.
+
+(click) Select a view to run a same-document transition.
+<ViewTransitionDemo />
+
+```js name=transition.js
+const update = () => {
+    document.querySelector('[data-current-view]').textContent = 'Product detail'
+}
+
+if (!document.startViewTransition) {
+    update()
+} else {
+    document.startViewTransition(update)
+}
+```
+
+The demo uses Master CSS classes to name the snapshots that should transition independently:
+
+```html
+<section class="vt-name:panel">
+    <h3 class="vt-name:title">Product detail</h3>
+</section>
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['vt-name:panel', 'vt-name:title']}
+    </Class2CSS>
+</details>
+
+Master CSS keeps the CSS side concise by expressing `vt-name`, `vt-class`, and `::vt-*` pseudo-element shorthands directly in class names:
+
+| Shorthand             | Full CSS                              | Use                                                              |
+| --------------------- | ------------------------------------- | ---------------------------------------------------------------- |
+| `vt-name`             | `view-transition-name`                | Names an element snapshot so it can animate apart from the root. |
+| `vt-class`            | `view-transition-class`               | Groups named snapshots for shared pseudo-element styling.        |
+| `::vt`                | `::view-transition`                   | Targets the root view-transition pseudo-element tree.            |
+| `::vt-group()`        | `::view-transition-group()`           | Styles the group box for a named snapshot.                       |
+| `::vt-image-pair()`   | `::view-transition-image-pair()`      | Styles the wrapper around the old and new snapshot images.       |
+| `::vt-old()`          | `::view-transition-old()`             | Styles the outgoing snapshot image.                              |
+| `::vt-new()`          | `::view-transition-new()`             | Styles the incoming snapshot image.                              |
+
+
+---
+
+## Article list to detail
+A common use case is moving from an article feed to an article detail page. The selected article's image, title, and date can keep the same `vt-name` in both layouts, while the surrounding card grid and detail content change normally. This demo also uses `vt-class` so the transition timing applies only to article snapshots.
+
+(click) Click Read More, then return to the article list.
+<ArticleTransitionDemo />
+
+In the list view, every article gets unique names for its shared elements:
+
+```html
+<article>
+    <img
+        alt="A mountain ridge under soft light"
+        class="vt-name:article-image vt-class:article"
+        src="/images/article-aurora.jpg"
+    />
+    <time class="vt-name:article-date vt-class:article">May 12, 2026</time>
+    <h3 class="vt-name:article-title vt-class:article">
+        Designing transitions that preserve context
+    </h3>
+    <p>...</p>
+    <button>Read More</button>
+</article>
+```
+
+In the detail view, render the same image, date, and title with the same names:
+
+```html
+<article>
+    <img
+        alt="A mountain ridge under soft light"
+        class="vt-name:article-image vt-class:article"
+        src="/images/article-aurora.jpg"
+    />
+    <time class="vt-name:article-date vt-class:article">May 12, 2026</time>
+    <h1 class="vt-name:article-title vt-class:article">
+        Designing transitions that preserve context
+    </h1>
+    <p>...</p>
+</article>
+```
+
+The state update can stay framework-free. Replace the list with the detail markup inside `startViewTransition()`:
+
+```js
+const root = document.querySelector('[data-articles]')
+const detailTemplate = document.querySelector('#article-detail')
+
+document.querySelector('[data-read-more]').addEventListener('click', () => {
+    const update = () => {
+        root.replaceChildren(detailTemplate.content.cloneNode(true))
+    }
+
+    if (!document.startViewTransition) {
+        update()
+    } else {
+        document.startViewTransition(update)
+    }
+})
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {[
+            'vt-name:article-image',
+            'vt-name:article-date',
+            'vt-name:article-title',
+            'vt-class:article',
+            'animation-duration:.52s::vt-group(.article)'
+        ]}
+    </Class2CSS>
+</details>
+
+(i) Only one rendered element can use the same `vt-name` at a time. The list uses article-specific names such as `article-aurora-image`, `article-studio-image`, and `article-coast-image` so the selected card can match the detail page without colliding with other cards.
+
+---
+
+## Naming snapshots
+By default, a view transition animates the `root` snapshot. Use `vt-name`, the [`view-transition-name`](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/view-transition-name) property, when one element needs to move, resize, or fade separately from the rest of the page.
+
+```html
+<!-- @MARK vt-name:hero -->
+<article class="vt-name:hero">
+    ...
+</article>
+```
+
+The same `vt-name` must be unique in the rendered document. If two rendered elements have the same name at the same time, the transition is skipped. For lists that need automatic per-element names in same-document transitions, native CSS also provides `match-element`.
+
+```html
+<!-- @MARK vt-name:match-element -->
+<li class="vt-name:match-element">...</li>
+```
+
+Use `vt-name:none` to keep an element out of its own separate snapshot.
+
+```html
+<!-- @MARK vt-name:none -->
+<video class="vt-name:none">...</video>
+```
+
+---
+
+## Styling transition pseudo-elements
+The browser exposes transition snapshots through pseudo-elements such as `::vt-group()`, `::vt-old()`, and `::vt-new()`. MDN recommends styling the group when the same duration or timing should apply to both the old and new snapshots.
+
+In Master CSS, write the pseudo-element after the declaration:
+
+```html
+<html class="
+    animation-duration:.42s::vt-group(hero)
+    @fade|.24s|both|reverse::vt-old(hero)
+    @fade|.24s|both::vt-new(hero)
+">
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {[
+            'animation-duration:.42s::vt-group(hero)',
+            '@fade|.24s|both|reverse::vt-old(hero)',
+            '@fade|.24s|both::vt-new(hero)'
+        ]}
+    </Class2CSS>
+</details>
+
+(i) Apply these classes to the `html` element when you style global view-transition pseudo-elements. The pseudo-element tree is generated from the document root, so a class on an ordinary descendant will generate CSS but will not match the root transition pseudo-elements.
+
+You can also group related named snapshots with `vt-class` and then target the class selector in the pseudo-element argument:
+
+```html
+<article class="vt-name:product-card vt-class:shared-card">
+    ...
+</article>
+
+<html class="animation-duration:.36s::vt-group(.shared-card)">
+```
+
+---
+
+## Cross-document transitions
+For same-origin MPA navigation, opt in with native CSS in both the current and destination documents:
+
+```css name=app.css
+@view-transition {
+    navigation: auto;
+}
+```
+
+No JavaScript is required for the navigation itself. You can still use Master CSS on elements that should become named snapshots across pages:
+
+```html
+<!-- page A and page B both render one matching hero -->
+<header class="vt-name:product-hero">
+    ...
+</header>
+```
+
+If both documents render one `product-hero` snapshot, the browser can animate that element between pages. If either page renders zero or more than one matching snapshot, the named transition will not run as intended.
+
+---
+
+## Fallbacks
+View transitions are progressive enhancement. Always keep the DOM update valid without animation:
+
+```js
+const update = () => renderNextState()
+
+if (!document.startViewTransition) {
+    update()
+} else {
+    document.startViewTransition(update)
+}
+```
+
+---
+
+## Reduced motion
+After the core transition works, add a motion preference layer. You can scope animation classes with `@motion`, which maps to `@media (prefers-reduced-motion: no-preference)`.
+
+```html
+<html class="animation-duration:.42s::vt-group(root)@motion">
+```
+
+Or skip the transition in JavaScript for motion-sensitive users:
+
+```js
+const shouldReduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
+if (!document.startViewTransition || shouldReduceMotion) {
+    update()
+} else {
+    document.startViewTransition(update)
+}
+```
+
+See MDN's [Using the View Transition API](https://developer.mozilla.org/en-US/docs/Web/API/View_Transition_API/Using) and web.dev's [View transitions for single page applications](https://web.dev/learn/css/view-transitions-spas) for deeper API behavior and browser examples.
