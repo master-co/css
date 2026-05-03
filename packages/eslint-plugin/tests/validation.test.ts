@@ -10,6 +10,9 @@ jsxTester.run('invalid', rule, {
         {
             code: `<div class={\`f:\${ fontSize }px\`}>TemplateLiteral</div>`,
         },
+        {
+            code: `<div class="{content:'';block}::after@light"></div>`,
+        },
     ],
     invalid: [
         {

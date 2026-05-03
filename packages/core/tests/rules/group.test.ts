@@ -19,6 +19,8 @@ test.concurrent('group', () => {
         .create('{content:\'\';abs;inset:0;bg:linear-gradient(90deg,G-10/.1|10%,G-20/.2|20%,G-30/.3|60%,white/.4)}::after')?.text
     )
         .toBe('.\\{content\\:\\\'\\\'\\;abs\\;inset\\:0\\;bg\\:linear-gradient\\(90deg\\,G-10\\/\\.1\\|10\\%\\,G-20\\/\\.2\\|20\\%\\,G-30\\/\\.3\\|60\\%\\,white\\/\\.4\\)\\}\\:\\:after::after{content:\'\';position:absolute;inset:0rem;background-image:linear-gradient(90deg,rgb(51 51 51/0.1) 10%,rgb(102 102 102/0.2) 20%,rgb(153 153 153/0.3) 60%,oklch(100% 0 none/0.4))}')
+    expect(createCSS().create('{content:\'\';block}::after@light')?.text)
+        .toBe('@media (prefers-color-scheme:light){.\\{content\\:\\\'\\\'\\;block\\}\\:\\:after\\@light::after{content:\'\';display:block}}')
 })
 
 it.concurrent('contains illegal syntax in group', () => {

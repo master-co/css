@@ -16,12 +16,14 @@ it('validate valid classes', () => {
     expectClassWithoutErrors('mt:$(top)')
     expectClassWithoutErrors('right:max(0px,calc(50%-45.3125rem))')
     expectClassWithoutErrors('{text-wrap:pretty}')
+    expectClassWithoutErrors('{content:\'\';block}::after@light')
     expect(validate('bg:light-dark(#333b3c,#efefec)').errors).toEqual([])
     expectClassValid('text:center')
     expectClassValid('font:12@sm')
     expectClassValid('mt:$(top)')
     expectClassValid('right:max(0px,calc(50%-45.3125rem))')
     expectClassValid('{text-wrap:pretty}')
+    expectClassValid('{content:\'\';block}::after@light')
 })
 
 it('create rules by class', () => {

@@ -1,4 +1,3 @@
-import cssEscape from 'shared/utils/css-escape'
 import { SyntaxRule } from '../syntax-rule'
 import { VALUE_DELIMITERS } from '../common'
 
@@ -16,15 +15,14 @@ export default function coreGroup(this: SyntaxRule, value: string) {
         }
     }
     const handleRule = (rule: SyntaxRule) => {
-        const addProps = (cssText: string) => {
-            const cssProperties = cssText.slice(cssEscape(rule.name).length).match(/\{(.*)\}/)?.[1].split(';')
-            if (cssProperties)
-                for (const eachCssProperty of cssProperties) {
-                    addProp(eachCssProperty)
-                }
+        const ruleDeclarations = rule.declarations as Record<string, unknown>
+        for (const propertyName in ruleDeclarations) {
+            let propertyValue = String(ruleDeclarations[propertyName])
+            if ((rule.important || rule.css.config.important) && !propertyValue.endsWith('!important')) {
+                propertyValue += '!important'
+            }
+            declarations[propertyName] = propertyValue
         }
-
-        addProps(rule.text)
 
         // animation
         if (rule.animationNames) {
