@@ -10,8 +10,6 @@ export declare type Grammar = {
     vscodeEmbeddedLanguages?: Record<string, string>
 } & LanguageRegistration
 
-const jsonImportOptions = { with: { type: 'json' } } as const
-
 const core = (await import('../syntaxes/master-css.json')).default
 const injectionClass = (await import('../syntaxes/master-css.injection-class.json')).default
 const injectionJS = (await import('../syntaxes/master-css.injection-js.json')).default
