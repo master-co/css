@@ -1,16 +1,58 @@
 import { CSSExtractor, Options } from '@master/css-extractor'
+import { loadConfig, resolveConfigPath, type ExploreConfigPath } from '@master/css-explore-config'
 import type { Compiler } from 'webpack'
 import VirtualModulesPlugin from 'webpack-virtual-modules'
 import log from '@techor/log'
+import { MASTER_CSS_CONFIG_QUERY, VIRTUAL_CONFIG_DIR, VIRTUAL_CONFIG_ID } from './common'
+import {
+    stripMasterCSSConfigQuery,
+    toConfigModule,
+    toNativeConfigModule,
+    toVirtualCSSConfigModulePath,
+    toVirtualDefaultConfigModulePath
+} from './utils/config-module'
 
 const NAME = 'MasterCSSExtractorPlugin'
+const EMPTY_CONFIG_MODULE = 'export default {};'
+
+function isVirtualConfigModulePath(modulePath: string) {
+    return modulePath.replace(/\\/g, '/').includes(`${VIRTUAL_CONFIG_DIR}/`)
+}
 
 export class MasterCSSExtractorPlugin extends CSSExtractor {
 
     initialized = false
     moduleContentByPath: any = {}
 
+    private resolveDefaultConfigPath(): ExploreConfigPath | undefined {
+        if (typeof this.options.config === 'string') {
+            return resolveConfigPath({
+                name: this.options.config,
+                cwd: this.cwd
+            })
+        }
+    }
+
+    private createDefaultConfigModule(resolvedConfig = this.resolveDefaultConfigPath()) {
+        if (typeof this.options.config === 'object') {
+            return toConfigModule(this.options.config)
+        }
+        if (!resolvedConfig) return EMPTY_CONFIG_MODULE
+        if (resolvedConfig.extension === 'css') {
+            return toConfigModule(loadConfig(resolvedConfig.path))
+        }
+        return toNativeConfigModule(resolvedConfig.path)
+    }
+
     apply(compiler: Compiler) {
+        let virtualModuleId = ''
+        let virtualConfigModuleId = ''
+        let virtualModule: VirtualModulesPlugin
+        const writeDefaultConfigModule = () => {
+            if (!virtualModule || !virtualConfigModuleId) return
+            virtualModule.writeModule(virtualConfigModuleId, this.createDefaultConfigModule())
+        }
+
         if (!this.initialized) {
             this
                 .on('init', (options: Options) => {
@@ -19,7 +61,11 @@ export class MasterCSSExtractorPlugin extends CSSExtractor {
                 .on('change', () => {
                     virtualModule.writeModule(virtualModuleId, this.css.text)
                 })
+                .on('configChange', () => {
+                    writeDefaultConfigModule()
+                })
                 .on('reset', () => {
+                    writeDefaultConfigModule()
                     for (const modulePath in this.moduleContentByPath) {
                         const moduleContent = this.moduleContentByPath[modulePath]
                         this.insert(modulePath, moduleContent)
@@ -37,13 +83,65 @@ export class MasterCSSExtractorPlugin extends CSSExtractor {
             this.initialized = true
         }
 
-        const virtualModuleId = 'node_modules/' + this.options.module?.replace('virtual:', '')
-        const virtualModule = new VirtualModulesPlugin({
+        const compilerContext = compiler.context || this.cwd || process.cwd()
+        virtualModuleId = 'node_modules/' + this.options.module?.replace('virtual:', '')
+        virtualConfigModuleId = toVirtualDefaultConfigModulePath(compilerContext)
+        virtualModule = new VirtualModulesPlugin({
             // can be fixed: `Module not found: Can't resolve 'virtual:master.css'`
-            [virtualModuleId]: ''
+            [virtualModuleId]: '',
+            [virtualConfigModuleId]: EMPTY_CONFIG_MODULE
         })
 
         virtualModule.apply(compiler)
+
+        compiler.hooks.normalModuleFactory.tap(NAME, (normalModuleFactory) => {
+            normalModuleFactory.hooks.beforeResolve.tapAsync(NAME, (resolveData, callback) => {
+                const request = resolveData.request
+                if (request === VIRTUAL_CONFIG_ID) {
+                    const resolvedConfig = this.resolveDefaultConfigPath()
+                    virtualModule.writeModule(virtualConfigModuleId, this.createDefaultConfigModule(resolvedConfig))
+                    if (resolvedConfig?.extension === 'css') {
+                        resolveData.fileDependencies.add(resolvedConfig.path)
+                    }
+                    resolveData.request = virtualConfigModuleId
+                    callback()
+                    return
+                }
+
+                if (!request.endsWith(MASTER_CSS_CONFIG_QUERY)) {
+                    callback()
+                    return
+                }
+
+                const sourceRequest = stripMasterCSSConfigQuery(request)
+                const resolver = normalModuleFactory.getResolver('normal')
+                resolver.resolve(
+                    resolveData.contextInfo,
+                    resolveData.context,
+                    sourceRequest,
+                    {},
+                    (error, resolvedPath) => {
+                        if (error) {
+                            callback(error)
+                            return
+                        }
+                        if (!resolvedPath) {
+                            callback()
+                            return
+                        }
+                        try {
+                            const virtualCSSConfigModuleId = toVirtualCSSConfigModulePath(compilerContext, resolvedPath)
+                            virtualModule.writeModule(virtualCSSConfigModuleId, toConfigModule(loadConfig(resolvedPath)))
+                            resolveData.fileDependencies.add(resolvedPath)
+                            resolveData.request = virtualCSSConfigModuleId
+                            callback()
+                        } catch (error) {
+                            callback(error as Error)
+                        }
+                    }
+                )
+            })
+        })
 
         compiler.hooks.thisCompilation.tap(NAME, (compilation) => {
             // Per-module: only synchronously record source. `succeedModule` is a
@@ -55,6 +153,7 @@ export class MasterCSSExtractorPlugin extends CSSExtractor {
                 // @ts-expect-error webpack internals
                 const modulePath = module['resourceResolveData']?.['path'] || module['resource']
                 if (!modulePath) return
+                if (isVirtualConfigModulePath(modulePath)) return
                 // @ts-expect-error webpack internals
                 const moduleContent = module['_source']?.source()
                 if (moduleContent === undefined || moduleContent === null) return

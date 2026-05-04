@@ -15,9 +15,11 @@
  * These tests demonstrate the race using real tapable hooks (rather
  * than the full webpack runtime), and assert the new ordering.
  */
-import { describe, test, expect } from 'vitest'
+import { describe, test, expect, vi } from 'vitest'
 import { SyncHook, AsyncSeriesHook } from 'tapable'
 import { MasterCSSExtractorPlugin } from '../src'
+import { VIRTUAL_CONFIG_ID, MASTER_CSS_CONFIG_QUERY } from '../src/common'
+import path from 'node:path'
 
 // Build a minimal compiler / compilation pair whose hooks behave the
 // way webpack@5 declares them. Includes the hooks VirtualModulesPlugin
@@ -37,11 +39,43 @@ function makeFakeCompiler() {
             afterEnvironment: new SyncHook<[]>([]),
             afterResolvers: new SyncHook<[unknown]>(['compiler']),
             thisCompilation: new SyncHook<[typeof compilation]>(['compilation']),
+            normalModuleFactory: new SyncHook<[unknown]>(['normalModuleFactory']),
         },
-        inputFileSystem: undefined,
+        context: process.cwd(),
+        inputFileSystem: {
+            _writeVirtualFile: vi.fn()
+        },
         resolverFactory: { hooks: { resolver: { for: () => ({ tap: () => {} }) } } },
     }
     return { compiler, compilation }
+}
+
+function makeNormalModuleFactory(resolvedPath?: string) {
+    return {
+        hooks: {
+            beforeResolve: new AsyncSeriesHook<[any]>(['resolveData']),
+        },
+        getResolver: () => ({
+            resolve: (
+                _contextInfo: unknown,
+                _context: string,
+                _request: string,
+                _resolveContext: unknown,
+                callback: (error: null | Error, result?: string | false) => void
+            ) => {
+                callback(null, resolvedPath)
+            }
+        })
+    }
+}
+
+function resolveBefore(normalModuleFactory: ReturnType<typeof makeNormalModuleFactory>, resolveData: any) {
+    return new Promise<void>((resolve, reject) => {
+        normalModuleFactory.hooks.beforeResolve.callAsync(resolveData, (error) => {
+            if (error) reject(error)
+            else resolve()
+        })
+    })
 }
 
 function makeModule(resourcePath: string, source: string) {
@@ -70,6 +104,64 @@ function makePlugin() {
 }
 
 describe('MasterCSSExtractorPlugin (C1 race fix)', () => {
+    test('resolves virtual:master-css-config to a JS virtual module', async () => {
+        const plugin = new MasterCSSExtractorPlugin({
+            config: {
+                variables: {
+                    color: {
+                        primary: '#123'
+                    }
+                }
+            } as any,
+            include: [],
+            sources: [],
+            module: 'virtual:master.css',
+        } as any)
+        const { compiler } = makeFakeCompiler()
+        ;(compiler as any).webpack = { sources: { RawSource: function NoopSource(this: object) { /* stub */ } } }
+        plugin.apply(compiler as any)
+
+        const normalModuleFactory = makeNormalModuleFactory()
+        compiler.hooks.normalModuleFactory.call(normalModuleFactory)
+        const resolveData = {
+            request: VIRTUAL_CONFIG_ID,
+            context: process.cwd(),
+            contextInfo: {},
+            fileDependencies: new Set<string>()
+        }
+
+        await resolveBefore(normalModuleFactory, resolveData)
+
+        expect(resolveData.request).toContain(path.join('node_modules', '.master-css', 'master-css-config.js'))
+        expect((compiler.inputFileSystem._writeVirtualFile as any).mock.calls.at(-1)?.[2])
+            .toContain('"primary":"#123"')
+    })
+
+    test('resolves ?master-css-config imports to per-file JS virtual modules', async () => {
+        const fixturePath = path.resolve(__dirname, 'fixtures/config-virtual-module/theme.css')
+        const plugin = makePlugin()
+        const { compiler } = makeFakeCompiler()
+        ;(compiler as any).webpack = { sources: { RawSource: function NoopSource(this: object) { /* stub */ } } }
+        plugin.apply(compiler as any)
+
+        const normalModuleFactory = makeNormalModuleFactory(fixturePath)
+        compiler.hooks.normalModuleFactory.call(normalModuleFactory)
+        const resolveData = {
+            request: './theme.css' + MASTER_CSS_CONFIG_QUERY,
+            context: path.dirname(fixturePath),
+            contextInfo: {},
+            fileDependencies: new Set<string>()
+        }
+
+        await resolveBefore(normalModuleFactory, resolveData)
+
+        expect(resolveData.request).toContain(path.join('node_modules', '.master-css'))
+        expect(resolveData.request).toContain('.js')
+        expect(resolveData.fileDependencies.has(fixturePath)).toBe(true)
+        expect((compiler.inputFileSystem._writeVirtualFile as any).mock.calls.at(-1)?.[2])
+            .toContain('"accent":"#456"')
+    })
+
     test('finishModules.tapPromise awaits all extractor.insert() calls before resolving', async () => {
         const plugin = makePlugin()
 
@@ -174,6 +266,29 @@ describe('MasterCSSExtractorPlugin (C1 race fix)', () => {
 
         compilation.hooks.succeedModule.call({} as unknown)
         compilation.hooks.succeedModule.call({ resourceResolveData: {}, _source: undefined } as unknown)
+        compilation.hooks.succeedModule.call(makeModule('/real.tsx', 'real'))
+
+        await new Promise<void>((res, rej) =>
+            compilation.hooks.finishModules.callAsync([], (e) => e ? rej(e) : res())
+        )
+
+        expect(insertedIds).toEqual(['/real.tsx'])
+    })
+
+    test('internal config virtual modules are not re-extracted', async () => {
+        const plugin = makePlugin()
+        const insertedIds: string[] = []
+        ;(plugin as any).insert = async (id: string) => {
+            insertedIds.push(id)
+            return true
+        }
+
+        const { compiler, compilation } = makeFakeCompiler()
+        ;(compiler as any).webpack = { sources: { RawSource: function NoopSource(this: object) { /* stub */ } } }
+        plugin.apply(compiler as any)
+        compiler.hooks.thisCompilation.call(compilation as any)
+
+        compilation.hooks.succeedModule.call(makeModule('node_modules/.master-css/master-css-config.js', 'export default {}'))
         compilation.hooks.succeedModule.call(makeModule('/real.tsx', 'real'))
 
         await new Promise<void>((res, rej) =>

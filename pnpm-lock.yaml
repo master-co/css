@@ -1887,6 +1887,9 @@ importers:
       '@master/css':
         specifier: workspace:^
         version: link:../core
+      '@master/css-explore-config':
+        specifier: workspace:^
+        version: link:../explore-config
       '@master/css-extractor':
         specifier: workspace:^
         version: link:../extractor
