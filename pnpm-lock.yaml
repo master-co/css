@@ -1205,6 +1205,19 @@ importers:
         specifier: workspace:^
         version: link:../../shared
 
+  packages/compiler:
+    dependencies:
+      '@master/css':
+        specifier: workspace:^
+        version: link:../core
+      lightningcss:
+        specifier: ^1.32.0
+        version: 1.32.0
+    devDependencies:
+      shared:
+        specifier: workspace:^
+        version: link:../../shared
+
   packages/core:
     dependencies:
       '@master/colors':
@@ -1328,9 +1341,9 @@ importers:
 
   packages/explore-config:
     dependencies:
-      '@master/postcss':
+      '@master/css-compiler':
         specifier: workspace:^
-        version: link:../postcss
+        version: link:../compiler
       '@swc/wasm':
         specifier: ^1.15.33
         version: 1.15.33
@@ -1621,19 +1634,6 @@ importers:
       vue:
         specifier: ^3.5.33
         version: 3.5.33(typescript@6.0.3)
-
-  packages/postcss:
-    dependencies:
-      '@master/css':
-        specifier: workspace:^
-        version: link:../core
-    devDependencies:
-      postcss:
-        specifier: ^8.5.13
-        version: 8.5.13
-      shared:
-        specifier: workspace:^
-        version: link:../../shared
 
   packages/react:
     dependencies:

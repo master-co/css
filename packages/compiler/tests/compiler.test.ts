@@ -1,16 +1,13 @@
-import postcss from 'postcss'
 import { describe, expect, it } from 'vitest'
-import masterCSS, { compileCSS } from '../src'
+import { compileCSS } from '../src'
 
-async function process(css: string) {
-    return (await postcss([masterCSS()]).process(css, { from: undefined })).css
+function process(css: string, classes?: string[]) {
+    return compileCSS(css, { classes }).css
 }
 
-describe.concurrent('@master/postcss', () => {
-    it('generates variables, utilities, components, selectors, screens, at-rules, and animations', async () => {
-        const css = (await postcss([masterCSS({
-            classes: ['block@md', 'w:10::scrollbar', '@fade-in|1s@motion-safe']
-        })]).process(`
+describe.concurrent('@master/css-compiler', () => {
+    it('generates variables, utilities, components, selectors, screens, at-rules, and animations', () => {
+        const css = process(`
             @master {
                 root-size: 16;
                 base-unit: 4;
@@ -61,7 +58,7 @@ describe.concurrent('@master/postcss', () => {
                     transform: translateY(0);
                 }
             }
-        `, { from: undefined })).css
+        `, ['block@md', 'w:10::scrollbar', '@fade-in|1s@motion-safe'])
 
         expect(css).toContain('@layer base,theme,preset,components,general;')
         expect(css).toContain('@layer components')
@@ -81,28 +78,49 @@ describe.concurrent('@master/postcss', () => {
         expect(css).toContain('@keyframes fade-in')
     })
 
-    it('binds custom variables to generated rules', async () => {
-        const css = (await postcss([masterCSS({ classes: ['bg:primary'] })]).process(`
+    it('binds custom variables to generated rules', () => {
+        const css = process(`
             @master {
                 --color-primary: oklch(62% 0.18 250);
             }
-        `, { from: undefined })).css
+        `, ['bg:primary'])
 
-        expect(css).toContain('background-color:oklch(62% 0.18 250)')
+        expect(css).toContain('background-color:oklch(62% .18 250)')
     })
 
-    it('uses the longest matching variable namespace', async () => {
-        const css = (await postcss([masterCSS({ classes: ['font-family:brand'] })]).process(`
+    it('uses the longest matching variable namespace', () => {
+        const css = process(`
             @master {
                 --font-family-brand: ui-serif, Georgia;
             }
-        `, { from: undefined })).css
+        `, ['font-family:brand'])
 
         expect(css).toContain('font-family:ui-serif, Georgia')
     })
 
-    it('supports dotted definition names', async () => {
-        const css = await process(`
+    it('preserves unparsed declarations with CSS variables', () => {
+        const result = compileCSS(`
+            @master {
+                --color-ring: #123;
+            }
+
+            @layer components {
+                .card {
+                    border: 1px solid var(--color-ring);
+                }
+            }
+        `)
+
+        expect(result.config.components?.card).toMatchObject({
+            declarations: {
+                border: '1px solid var(--color-ring)'
+            }
+        })
+        expect(result.css).toContain('.card{border:1px solid var(--color-ring)}')
+    })
+
+    it('supports class definition selectors', () => {
+        const css = process(`
             @layer utilities {
                 .content-auto {
                     content-visibility: auto;
@@ -119,18 +137,36 @@ describe.concurrent('@master/postcss', () => {
         expect(css).toContain('.btn{content-visibility:auto}')
     })
 
-    it('rejects @apply inside @utility', async () => {
-        await expect(process(`
+    it('rejects naked definition selectors', () => {
+        expect(() => process(`
+            @layer utilities {
+                content-auto {
+                    content-visibility: auto;
+                }
+            }
+        `)).toThrow('Utility definition selector must be a single class selector')
+    })
+
+    it('rejects @utility', () => {
+        expect(() => process(`
+            @utility content-auto {
+                content-visibility: auto;
+            }
+        `)).toThrow('@utility is not supported; use @layer utilities')
+    })
+
+    it('rejects @apply inside utilities', () => {
+        expect(() => process(`
             @layer utilities {
                 .content-auto {
                     @apply "block";
                 }
             }
-        `)).rejects.toThrow('Utilities only accept declarations')
+        `)).toThrow('Utilities only accept declarations')
     })
 
-    it('applies master options to the CSS instance', async () => {
-        const css = await process(`
+    it('applies master options to the CSS instance', () => {
+        const css = process(`
             @master {
                 root-size: 10;
                 base-unit: 8;

@@ -52,7 +52,7 @@
         "shared": "workspace:^"
     },
     "dependencies": {
-        "@master/postcss": "workspace:^",
+        "@master/css-compiler": "workspace:^",
         "@swc/wasm": "^1.15.33",
         "jiti": "^2.6.1"
     }

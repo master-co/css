@@ -1,13 +1,13 @@
-# AI Notes For `@master/postcss`
+# AI Notes For `@master/css-compiler`
 
 ## Responsibility
 
-`@master/postcss` parses Master CSS stylesheet directives and transforms them into generated Master CSS output through `@master/css`.
+`@master/css-compiler` parses Master CSS stylesheet directives and compiles them into generated Master CSS output through `@master/css`.
 
 ## Inputs And Outputs
 
-- Input: CSS containing `@master`, variables, `@mode`, `@at`, `@selector`, `@utility`, component rules with `@apply`, and `@keyframes`.
-- Output: CSS with `@master` removed and generated Master CSS appended.
+- Input: CSS containing `@master`, variables, `@mode`, `@at`, `@selector`, `@layer utilities`, `@layer components`, component rules with `@apply`, and `@keyframes`.
+- Output: CSS with consumed Master directives removed and generated Master CSS appended.
 
 ## Boundaries
 
@@ -15,6 +15,7 @@
 - Keep directive parsing package-local.
 - Prefer using the public `@master/css` engine for rule generation.
 - Avoid duplicating core parser, selector, priority, and layer behavior.
+- Do not reintroduce PostCSS in this package.
 
 ## Directive MVP
 
@@ -25,15 +26,16 @@
 - `@layer utilities { .content-auto { content-visibility: auto; } }`
 - `@layer components { .btn { @apply "inline-flex content-auto"; display: inline-flex; } }`
 - `@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }`
-- `.name` and `name` are both accepted for utility/component definition names.
+- Utility and component definition selectors must be single class selectors.
 - `@apply` is allowed only in component definitions.
+- `@utility` is not supported.
 
 ## Tests
 
 Use focused package tests first:
 
 ```sh
-pnpm --filter @master/postcss test
-pnpm --filter @master/postcss type-check
-pnpm --filter @master/postcss build
+pnpm --filter @master/css-compiler test
+pnpm --filter @master/css-compiler type-check
+pnpm --filter @master/css-compiler build
 ```

@@ -1,5 +1,5 @@
 {
-    "name": "@master/postcss",
+    "name": "@master/css-compiler",
     "type": "module",
     "scripts": {
         "build": "techor build \"src/**/*.ts\" --formats esm",
@@ -9,7 +9,7 @@
         "test": "vitest"
     },
     "license": "MIT",
-    "description": "Integrate Master CSS with PostCSS directives",
+    "description": "Compile Master CSS stylesheet directives",
     "author": "Aoyue Design LLC.",
     "funding": "https://rc.css.master.co/sponsor",
     "homepage": "https://css.master.co",
@@ -19,12 +19,11 @@
     "repository": {
         "type": "git",
         "url": "https://github.com/master-co/css.git",
-        "directory": "packages/postcss"
+        "directory": "packages/compiler"
     },
     "keywords": [
-        "plugin",
-        "integration",
-        "postcss",
+        "compiler",
+        "directives",
         "css",
         "mastercss"
     ],
@@ -48,14 +47,11 @@
         "access": "public",
         "provenance": true
     },
-    "peerDependencies": {
-        "postcss": ">=8"
-    },
     "dependencies": {
-        "@master/css": "workspace:^"
+        "@master/css": "workspace:^",
+        "lightningcss": "^1.32.0"
     },
     "devDependencies": {
-        "postcss": "^8.5.13",
         "shared": "workspace:^"
     }
 }

@@ -30,25 +30,25 @@
 @selector ::scrollbar ::-webkit-scrollbar;
 
 @layer utilities {
-    content-auto {
+    .content-auto {
         content-visibility: auto;
         contain-intrinsic-size: auto 28rem;
     }
 }
 
 @layer components {
-    page {
+    .page {
         @apply "grid ai:center jc:center min-h:100vh p:1.25rem bg:panel fg:ink";
         font-family: Inter, ui-sans-serif, system-ui, sans-serif;
     }
 
-    card {
+    .card {
         @apply "grid gap:1rem p:card bg:base r:card max-w:42rem content-auto @demo-fade-in|.55s@motion-safe";
         border: 1px solid var(--color-ring);
         box-shadow: 0 22px 70px rgb(17 24 39 / 12%);
     }
 
-    live-label {
+    .live-label {
         @apply "inline-flex ai:center jc:center h:24 px:.75rem bg:primary r:pill font:12 font:semibold @demo-pulse|1.4s|infinite@motion-safe";
         color: white;
         justify-self: start;
@@ -56,16 +56,16 @@
         text-transform: uppercase;
     }
 
-    title {
+    .title {
         @apply "m:0 font:40 font:56@md leading:1 fg:ink";
         max-width: 12ch;
     }
 
-    desc {
+    .desc {
         @apply "m:0 font:18 leading:1.7 fg:muted max-w:34rem";
     }
 
-    btn {
+    .btn {
         @apply "inline-flex ai:center jc:center h:44 px:1rem bg:primary r:pill font:semibold";
         border: 0;
         box-shadow: 0 14px 28px rgb(17 34 51 / 18%);
