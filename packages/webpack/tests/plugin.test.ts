@@ -25,8 +25,12 @@ import path from 'node:path'
 // way webpack@5 declares them. Includes the hooks VirtualModulesPlugin
 // needs (afterEnvironment / afterResolvers / watchRun) so its apply()
 // call inside the plugin doesn't blow up.
-function makeFakeCompiler() {
+function makeFakeCompiler(options: {
+    context?: string
+    modifiedFiles?: Set<string>
+} = {}) {
     const compilation = {
+        fileDependencies: new Set<string>(),
         hooks: {
             succeedModule: new SyncHook<[unknown]>(['module']),
             finishModules: new AsyncSeriesHook<[Iterable<unknown>]>(['modules']),
@@ -41,7 +45,8 @@ function makeFakeCompiler() {
             thisCompilation: new SyncHook<[typeof compilation]>(['compilation']),
             normalModuleFactory: new SyncHook<[unknown]>(['normalModuleFactory']),
         },
-        context: process.cwd(),
+        context: options.context || process.cwd(),
+        modifiedFiles: options.modifiedFiles,
         inputFileSystem: {
             _writeVirtualFile: vi.fn()
         },
@@ -88,13 +93,14 @@ function makeModule(resourcePath: string, source: string) {
 // Construct a plugin whose extractor side-effects are stubbed out — we
 // only want to drive the webpack hook surface. We keep the real
 // constructor + init() so `this.options` is populated correctly.
-function makePlugin() {
+function makePlugin(options: Record<string, unknown> = {}, cwd = process.cwd()) {
     const plugin = new MasterCSSExtractorPlugin({
         config: {} as any,
         include: [],
         sources: [],
         module: 'virtual:master.css',
-    } as any)
+        ...options,
+    } as any, cwd)
     // Block prepare() / startWatch() — they would try to read the cwd.
     ;(plugin as any).prepare = async () => undefined
     ;(plugin as any).startWatch = async () => undefined
@@ -160,6 +166,63 @@ describe('MasterCSSExtractorPlugin (C1 race fix)', () => {
         expect(resolveData.fileDependencies.has(fixturePath)).toBe(true)
         expect((compiler.inputFileSystem._writeVirtualFile as any).mock.calls.at(-1)?.[2])
             .toContain('"accent":"#456"')
+    })
+
+    test('adds default CSS config as a compilation dependency', () => {
+        const root = path.resolve(__dirname, 'fixtures/config-virtual-module/css-only')
+        const plugin = makePlugin({ config: 'master.css' }, root)
+        const { compiler, compilation } = makeFakeCompiler({ context: root })
+        ;(compiler as any).webpack = { sources: { RawSource: function NoopSource(this: object) { /* stub */ } } }
+
+        plugin.apply(compiler as any)
+        compiler.hooks.thisCompilation.call(compilation as any)
+
+        expect(compilation.fileDependencies.has(path.join(root, 'master.css'))).toBe(true)
+    })
+
+    test('resets extractor when the default CSS config changes in watch mode', async () => {
+        const root = path.resolve(__dirname, 'fixtures/config-virtual-module/css-only')
+        const configPath = path.join(root, 'master.css')
+        const plugin = makePlugin({ config: 'master.css' }, root)
+        const reset = vi.fn(async function (this: MasterCSSExtractorPlugin) {
+            this.emit('reset')
+            return this
+        })
+        ;(plugin as any).reset = reset
+        const { compiler } = makeFakeCompiler({
+            context: root,
+            modifiedFiles: new Set([configPath])
+        })
+        ;(compiler as any).webpack = { sources: { RawSource: function NoopSource(this: object) { /* stub */ } } }
+
+        plugin.apply(compiler as any)
+        await new Promise<void>((resolve, reject) => {
+            compiler.hooks.watchRun.callAsync(compiler, (error) => error ? reject(error) : resolve())
+        })
+
+        expect(reset).toHaveBeenCalledWith(plugin.options)
+    })
+
+    test('does not reset extractor when a non-config file changes in watch mode', async () => {
+        const root = path.resolve(__dirname, 'fixtures/config-virtual-module/css-only')
+        const plugin = makePlugin({ config: 'master.css' }, root)
+        const reset = vi.fn(async function (this: MasterCSSExtractorPlugin) {
+            this.emit('reset')
+            return this
+        })
+        ;(plugin as any).reset = reset
+        const { compiler } = makeFakeCompiler({
+            context: root,
+            modifiedFiles: new Set([path.join(root, 'entry.js')])
+        })
+        ;(compiler as any).webpack = { sources: { RawSource: function NoopSource(this: object) { /* stub */ } } }
+
+        plugin.apply(compiler as any)
+        await new Promise<void>((resolve, reject) => {
+            compiler.hooks.watchRun.callAsync(compiler, (error) => error ? reject(error) : resolve())
+        })
+
+        expect(reset).not.toHaveBeenCalled()
     })
 
     test('finishModules.tapPromise awaits all extractor.insert() calls before resolving', async () => {

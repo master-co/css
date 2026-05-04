@@ -22,8 +22,18 @@ export default {
         }, __dirname)
     ],
     devServer: {
-        static: __dirname,
+        static: {
+            directory: __dirname,
+            watch: {
+                ignored: path.join(__dirname, 'master.css')
+            }
+        },
         host: '127.0.0.1',
         port: 5175
+    },
+    module: {
+        rules: [
+            { test: /\.css$/, use: ['style-loader', 'css-loader'] }
+        ]
     }
 }

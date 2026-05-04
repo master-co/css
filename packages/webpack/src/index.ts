@@ -3,6 +3,7 @@ import { loadConfig, resolveConfigPath, type ExploreConfigPath } from '@master/c
 import type { Compiler } from 'webpack'
 import VirtualModulesPlugin from 'webpack-virtual-modules'
 import log from '@techor/log'
+import path from 'node:path'
 import { MASTER_CSS_CONFIG_QUERY, VIRTUAL_CONFIG_DIR, VIRTUAL_CONFIG_ID } from './common'
 import {
     stripMasterCSSConfigQuery,
@@ -17,6 +18,19 @@ const EMPTY_CONFIG_MODULE = 'export default {};'
 
 function isVirtualConfigModulePath(modulePath: string) {
     return modulePath.replace(/\\/g, '/').includes(`${VIRTUAL_CONFIG_DIR}/`)
+}
+
+function normalizePath(filePath: string) {
+    return path.resolve(filePath).replace(/\\/g, '/')
+}
+
+function hasModifiedFile(modifiedFiles: ReadonlySet<string> | undefined, filePath: string) {
+    if (!modifiedFiles) return false
+    const normalizedFilePath = normalizePath(filePath)
+    for (const eachModifiedFile of modifiedFiles) {
+        if (normalizePath(eachModifiedFile) === normalizedFilePath) return true
+    }
+    return false
 }
 
 export class MasterCSSExtractorPlugin extends CSSExtractor {
@@ -48,9 +62,22 @@ export class MasterCSSExtractorPlugin extends CSSExtractor {
         let virtualModuleId = ''
         let virtualConfigModuleId = ''
         let virtualModule: VirtualModulesPlugin
+        let resetReplayChain: Promise<unknown> = Promise.resolve()
+        const writeVirtualCSSModule = () => {
+            if (!virtualModule || !virtualModuleId) return
+            virtualModule.writeModule(virtualModuleId, this.css.text)
+        }
         const writeDefaultConfigModule = () => {
             if (!virtualModule || !virtualConfigModuleId) return
             virtualModule.writeModule(virtualConfigModuleId, this.createDefaultConfigModule())
+        }
+        const replayModuleContents = async () => {
+            await Promise.all(
+                Object.entries(this.moduleContentByPath)
+                    .map(([modulePath, moduleContent]) =>
+                        this.insert(modulePath, String(moduleContent))
+                    )
+            )
         }
 
         if (!this.initialized) {
@@ -59,25 +86,34 @@ export class MasterCSSExtractorPlugin extends CSSExtractor {
                     options.include = []
                 })
                 .on('change', () => {
-                    virtualModule.writeModule(virtualModuleId, this.css.text)
+                    writeVirtualCSSModule()
                 })
                 .on('configChange', () => {
                     writeDefaultConfigModule()
                 })
                 .on('reset', () => {
                     writeDefaultConfigModule()
-                    for (const modulePath in this.moduleContentByPath) {
-                        const moduleContent = this.moduleContentByPath[modulePath]
-                        this.insert(modulePath, moduleContent)
-                    }
+                    resetReplayChain = resetReplayChain
+                        .then(replayModuleContents)
+                        .then(writeVirtualCSSModule)
+                        .catch((error: unknown) => {
+                            console.error('[master-css.webpack] reset replay failed:', error)
+                        })
                 })
             this.init()
             /* update the Virtual CSS module after initialization */
             compiler.hooks.initialize.tap(NAME, async () => {
                 await this.prepare()
+                writeVirtualCSSModule()
                 log``
             })
-            compiler.hooks.watchRun.tapPromise(NAME, async () => {
+            compiler.hooks.watchRun.tapPromise(NAME, async (watchingCompiler) => {
+                const resolvedConfig = this.resolveDefaultConfigPath()
+                const modifiedFiles = (watchingCompiler as Compiler & { modifiedFiles?: ReadonlySet<string> }).modifiedFiles
+                if (resolvedConfig?.extension === 'css' && hasModifiedFile(modifiedFiles, resolvedConfig.path)) {
+                    await this.reset(this.options)
+                    await resetReplayChain
+                }
                 await this.startWatch()
             })
             this.initialized = true
@@ -144,6 +180,10 @@ export class MasterCSSExtractorPlugin extends CSSExtractor {
         })
 
         compiler.hooks.thisCompilation.tap(NAME, (compilation) => {
+            const resolvedConfig = this.resolveDefaultConfigPath()
+            if (resolvedConfig?.extension === 'css') {
+                compilation.fileDependencies.add(resolvedConfig.path)
+            }
             // Per-module: only synchronously record source. `succeedModule` is a
             // SyncHook — async handlers attached via `.tap()` would be discarded
             // by tapable, and webpack would proceed to `emit` before any
@@ -173,6 +213,7 @@ export class MasterCSSExtractorPlugin extends CSSExtractor {
                 await Promise.all(entries.map(([modulePath, content]) =>
                     this.insert(modulePath, content)
                 ))
+                writeVirtualCSSModule()
             })
         })
     }
