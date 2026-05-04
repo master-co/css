@@ -1497,9 +1497,6 @@ importers:
 
   packages/language-service:
     dependencies:
-      '@babel/parser':
-        specifier: ^7.29.3
-        version: 7.29.3
       '@master/css':
         specifier: workspace:^
         version: link:../core
