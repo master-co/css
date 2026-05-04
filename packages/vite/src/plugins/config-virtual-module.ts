@@ -61,9 +61,10 @@ export function ConfigVirtualModulePlugin(
                 return toConfigModule(loadConfig(configPath))
             }
         },
-        handleHotUpdate({ file, server }) {
+        async handleHotUpdate({ file, server }) {
             const modules = []
             if (file === context.configPath) {
+                await context.extractor?.reset(context.extractor.options)
                 const module = invalidateImportedConfigModule(
                     server.moduleGraph.getModuleById(RESOLVED_VIRTUAL_CONFIG_ID),
                     server

@@ -100,8 +100,12 @@ describe('ConfigVirtualModulePlugin', () => {
         })
     })
 
-    it('invalidates unimported CSS config modules without forcing a JS HMR update', () => {
+    it('invalidates unimported CSS config modules without forcing a JS HMR update', async () => {
         const context = { extractor: {} as any } as any
+        context.extractor = {
+            options: { include: [] },
+            reset: vi.fn(async () => undefined)
+        }
         const plugin = ConfigVirtualModulePlugin({ config: 'master.css' }, context)
         const root = path.join(FIXTURE_DIR, 'css-only')
         const viteConfig = createResolvedConfig(root)
@@ -109,7 +113,7 @@ describe('ConfigVirtualModulePlugin', () => {
         const invalidateModule = vi.fn()
 
         ;(plugin.configResolved as any).call({}, viteConfig)
-        const result = (plugin.handleHotUpdate as any)({
+        const result = await (plugin.handleHotUpdate as any)({
             file: path.join(root, 'master.css'),
             server: {
                 moduleGraph: {
@@ -119,12 +123,17 @@ describe('ConfigVirtualModulePlugin', () => {
             }
         })
 
+        expect(context.extractor.reset).toHaveBeenCalledWith(context.extractor.options)
         expect(invalidateModule).toHaveBeenCalledWith(module)
         expect(result).toBeUndefined()
     })
 
-    it('returns imported CSS config modules so Vite can reload config consumers', () => {
+    it('returns imported CSS config modules so Vite can reload config consumers', async () => {
         const context = { extractor: {} as any } as any
+        context.extractor = {
+            options: { include: [] },
+            reset: vi.fn(async () => undefined)
+        }
         const plugin = ConfigVirtualModulePlugin({ config: 'master.css' }, context)
         const root = path.join(FIXTURE_DIR, 'css-only')
         const viteConfig = createResolvedConfig(root)
@@ -133,7 +142,7 @@ describe('ConfigVirtualModulePlugin', () => {
         const invalidateModule = vi.fn()
 
         ;(plugin.configResolved as any).call({}, viteConfig)
-        const result = (plugin.handleHotUpdate as any)({
+        const result = await (plugin.handleHotUpdate as any)({
             file: path.join(root, 'master.css'),
             server: {
                 moduleGraph: {
@@ -143,6 +152,7 @@ describe('ConfigVirtualModulePlugin', () => {
             }
         })
 
+        expect(context.extractor.reset).toHaveBeenCalledWith(context.extractor.options)
         expect(invalidateModule).toHaveBeenCalledWith(module)
         expect(result).toEqual([module])
     })

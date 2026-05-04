@@ -3,6 +3,6 @@ import masterCSS from '../src'
 
 export default defineConfig({
     plugins: [
-        masterCSS()
+        masterCSS({ mode: 'extract' })
     ]
 })
