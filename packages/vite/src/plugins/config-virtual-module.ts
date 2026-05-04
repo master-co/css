@@ -1,4 +1,4 @@
-import { Plugin } from 'vite'
+import type { ModuleNode, Plugin, ViteDevServer } from 'vite'
 import { PluginContext } from '../core'
 import exploreConfig, { loadConfig } from '@master/css-explore-config'
 import { MASTER_CSS_CONFIG_QUERY, RESOLVED_VIRTUAL_CONFIG_ID, VIRTUAL_CONFIG_ID } from '../common'
@@ -9,6 +9,12 @@ import {
     toConfigModule,
     toResolvedMasterCSSConfigId
 } from '../utils/config-module'
+
+function invalidateImportedConfigModule(module: ModuleNode | undefined, server: ViteDevServer) {
+    if (!module) return
+    server.moduleGraph.invalidateModule(module)
+    if (module.importers.size) return module
+}
 
 export function ConfigVirtualModulePlugin(
     options: PluginOptions,
@@ -58,15 +64,19 @@ export function ConfigVirtualModulePlugin(
         handleHotUpdate({ file, server }) {
             const modules = []
             if (file === context.configPath) {
-                const module = server.moduleGraph.getModuleById(RESOLVED_VIRTUAL_CONFIG_ID)
+                const module = invalidateImportedConfigModule(
+                    server.moduleGraph.getModuleById(RESOLVED_VIRTUAL_CONFIG_ID),
+                    server
+                )
                 if (module) {
-                    server.moduleGraph.invalidateModule(module)
                     modules.push(module)
                 }
             }
-            const queryModule = server.moduleGraph.getModuleById(toResolvedMasterCSSConfigId(file))
+            const queryModule = invalidateImportedConfigModule(
+                server.moduleGraph.getModuleById(toResolvedMasterCSSConfigId(file)),
+                server
+            )
             if (queryModule) {
-                server.moduleGraph.invalidateModule(queryModule)
                 modules.push(queryModule)
             }
             if (modules.length) return modules

@@ -99,4 +99,51 @@ describe('ConfigVirtualModulePlugin', () => {
             }
         })
     })
+
+    it('invalidates unimported CSS config modules without forcing a JS HMR update', () => {
+        const context = { extractor: {} as any } as any
+        const plugin = ConfigVirtualModulePlugin({ config: 'master.css' }, context)
+        const root = path.join(FIXTURE_DIR, 'css-only')
+        const viteConfig = createResolvedConfig(root)
+        const module = { importers: new Set() }
+        const invalidateModule = vi.fn()
+
+        ;(plugin.configResolved as any).call({}, viteConfig)
+        const result = (plugin.handleHotUpdate as any)({
+            file: path.join(root, 'master.css'),
+            server: {
+                moduleGraph: {
+                    getModuleById: vi.fn((id) => id === RESOLVED_VIRTUAL_CONFIG_ID ? module : undefined),
+                    invalidateModule
+                }
+            }
+        })
+
+        expect(invalidateModule).toHaveBeenCalledWith(module)
+        expect(result).toBeUndefined()
+    })
+
+    it('returns imported CSS config modules so Vite can reload config consumers', () => {
+        const context = { extractor: {} as any } as any
+        const plugin = ConfigVirtualModulePlugin({ config: 'master.css' }, context)
+        const root = path.join(FIXTURE_DIR, 'css-only')
+        const viteConfig = createResolvedConfig(root)
+        const importer = {}
+        const module = { importers: new Set([importer]) }
+        const invalidateModule = vi.fn()
+
+        ;(plugin.configResolved as any).call({}, viteConfig)
+        const result = (plugin.handleHotUpdate as any)({
+            file: path.join(root, 'master.css'),
+            server: {
+                moduleGraph: {
+                    getModuleById: vi.fn((id) => id === RESOLVED_VIRTUAL_CONFIG_ID ? module : undefined),
+                    invalidateModule
+                }
+            }
+        })
+
+        expect(invalidateModule).toHaveBeenCalledWith(module)
+        expect(result).toEqual([module])
+    })
 })
