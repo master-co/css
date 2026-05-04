@@ -36,7 +36,7 @@ export default (program: Command) => program
             options.output = output
             options.verbose = verbose ? +verbose : options.verbose
         })
-        extractor.init()
+        await extractor.init()
         if (watch) {
             extractor
                 .on('watchStart', async () => {

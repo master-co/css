@@ -61,6 +61,13 @@ npm install @master/css-explore-config
 ```ts
 import exploreConfig from '@master/css-explore-config'
 
-const result = exploreConfig()
+const result = await exploreConfig()
+const config = result?.config
+```
+
+```ts
+import exploreConfigSync from '@master/css-explore-config/sync'
+
+const result = exploreConfigSync()
 const config = result?.config
 ```

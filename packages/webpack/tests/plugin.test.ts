@@ -39,6 +39,7 @@ function makeFakeCompiler(options: {
     const compiler = {
         hooks: {
             initialize: new SyncHook<[]>([]),
+            beforeRun: new AsyncSeriesHook<[unknown]>(['compiler']),
             watchRun: new AsyncSeriesHook<[unknown]>(['compiler']),
             afterEnvironment: new SyncHook<[]>([]),
             afterResolvers: new SyncHook<[unknown]>(['compiler']),

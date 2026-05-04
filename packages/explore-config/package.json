@@ -38,6 +38,11 @@
             "types": "./dist/index.d.ts",
             "import": "./dist/index.mjs",
             "default": "./dist/index.mjs"
+        },
+        "./sync": {
+            "types": "./dist/sync.d.ts",
+            "import": "./dist/sync.mjs",
+            "default": "./dist/sync.mjs"
         }
     },
     "files": [

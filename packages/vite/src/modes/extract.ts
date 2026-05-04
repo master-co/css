@@ -19,9 +19,9 @@ export default function ExtractMode(options: PluginOptions, context: PluginConte
         {
             name: 'master-css:extractor',
             enforce: 'pre',
-            configResolved(config) {
+            async configResolved(config) {
                 context.extractor = new CSSExtractor(options.extractor, config.root)
-                context.extractor.init()
+                await context.extractor.init()
                 context.extractor.options.verbose = 0
                 // Vite's `transform` hook below feeds the extractor module-by-
                 // module, so the extractor itself does NOT need to glob the

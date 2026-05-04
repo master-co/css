@@ -25,14 +25,14 @@ function parseDefaultExport(code: string) {
 }
 
 describe('ConfigVirtualModulePlugin', () => {
-    it('loads the default virtual config from master.css', () => {
+    it('loads the default virtual config from master.css', async () => {
         const context = { extractor: {} as any } as any
         const plugin = ConfigVirtualModulePlugin({ config: 'master.css' }, context)
         const root = path.join(FIXTURE_DIR, 'css-only')
         const viteConfig = createResolvedConfig(root)
 
-        ;(plugin.configResolved as any).call({}, viteConfig)
-        const code = (plugin.load as any).call({}, RESOLVED_VIRTUAL_CONFIG_ID)
+        await (plugin.configResolved as any).call({}, viteConfig)
+        const code = await (plugin.load as any).call({}, RESOLVED_VIRTUAL_CONFIG_ID)
         const config = parseDefaultExport(code)
 
         expect(context.configPath).toBe(path.join(root, 'master.css'))
@@ -57,12 +57,12 @@ describe('ConfigVirtualModulePlugin', () => {
         })
     })
 
-    it('keeps non-CSS config files as native Vite imports', () => {
+    it('keeps non-CSS config files as native Vite imports', async () => {
         const context = { extractor: {} as any } as any
         const plugin = ConfigVirtualModulePlugin({ config: 'master.css.js' }, context)
 
-        ;(plugin.configResolved as any).call({}, createResolvedConfig())
-        const code = (plugin.load as any).call({}, RESOLVED_VIRTUAL_CONFIG_ID)
+        await (plugin.configResolved as any).call({}, createResolvedConfig())
+        const code = await (plugin.load as any).call({}, RESOLVED_VIRTUAL_CONFIG_ID)
 
         expect(code).toBe(`import config from ${JSON.stringify(path.join(FIXTURE_DIR, 'master.css.js'))}; export default config;`)
     })
@@ -79,7 +79,7 @@ describe('ConfigVirtualModulePlugin', () => {
             './theme.css' + MASTER_CSS_CONFIG_QUERY,
             importer
         )
-        const code = (plugin.load as any).call({ addWatchFile }, resolvedId)
+        const code = await (plugin.load as any).call({ addWatchFile }, resolvedId)
         const config = parseDefaultExport(code)
 
         expect(resolvedId).toBe(toResolvedMasterCSSConfigId(path.join(FIXTURE_DIR, 'theme.css')))
@@ -112,7 +112,7 @@ describe('ConfigVirtualModulePlugin', () => {
         const module = { importers: new Set() }
         const invalidateModule = vi.fn()
 
-        ;(plugin.configResolved as any).call({}, viteConfig)
+        await (plugin.configResolved as any).call({}, viteConfig)
         const result = await (plugin.handleHotUpdate as any)({
             file: path.join(root, 'master.css'),
             server: {
@@ -141,7 +141,7 @@ describe('ConfigVirtualModulePlugin', () => {
         const module = { importers: new Set([importer]) }
         const invalidateModule = vi.fn()
 
-        ;(plugin.configResolved as any).call({}, viteConfig)
+        await (plugin.configResolved as any).call({}, viteConfig)
         const result = await (plugin.handleHotUpdate as any)({
             file: path.join(root, 'master.css'),
             server: {

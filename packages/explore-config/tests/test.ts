@@ -5,8 +5,8 @@ import { mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { tmpdir } from 'node:os'
 
-test('loads the default TypeScript config', () => {
-    expect(exploreConfig({ cwd: __dirname })).toMatchObject({
+test('loads the default TypeScript config', async () => {
+    expect(await exploreConfig({ cwd: __dirname })).toMatchObject({
         basename: 'master.css.ts',
         extension: 'ts',
         path: join(__dirname, 'master.css.ts'),
@@ -14,35 +14,35 @@ test('loads the default TypeScript config', () => {
     })
 })
 
-test('loads an explicit config file name', () => {
-    expect(exploreConfig({ cwd: __dirname, name: 'custom.config.ts' })?.config).toStrictEqual({
+test('loads an explicit config file name', async () => {
+    expect((await exploreConfig({ cwd: __dirname, name: 'custom.config.ts' }))?.config).toStrictEqual({
         components: {
             custom: 'inline-flex'
         }
     })
 })
 
-test('resolves named config exports before default exports', () => {
-    expect(exploreConfig({ cwd: __dirname, name: 'named.css.ts' })?.config).toStrictEqual({
+test('resolves named config exports before default exports', async () => {
+    expect((await exploreConfig({ cwd: __dirname, name: 'named.css.ts' }))?.config).toStrictEqual({
         components: {
             named: 'inline-flex'
         }
     })
 })
 
-test('loads CommonJS configs', () => {
-    expect(exploreConfig({ cwd: __dirname, name: 'legacy.css.cjs' })?.config).toStrictEqual({
+test('loads CommonJS configs', async () => {
+    expect((await exploreConfig({ cwd: __dirname, name: 'legacy.css.cjs' }))?.config).toStrictEqual({
         components: {
             legacy: 'inline-flex'
         }
     })
 })
 
-test('returns undefined when the config file does not exist', () => {
-    expect(exploreConfig({ cwd: __dirname, name: 'missing.css' })).toBeUndefined()
+test('returns undefined when the config file does not exist', async () => {
+    expect(await exploreConfig({ cwd: __dirname, name: 'missing.css' })).toBeUndefined()
 })
 
-test('loads CSS configs after script configs', () => {
+test('loads CSS configs after script configs', async () => {
     const cwd = mkdtempSync(join(tmpdir(), 'master-css-config-'))
     try {
         writeFileSync(join(cwd, 'master.css'), `
@@ -50,7 +50,7 @@ test('loads CSS configs after script configs', () => {
                 --color-primary: #123;
             }
         `)
-        expect(exploreConfig({ cwd })).toMatchObject({
+        expect(await exploreConfig({ cwd })).toMatchObject({
             basename: 'master.css',
             extension: 'css',
             config: {
@@ -61,7 +61,7 @@ test('loads CSS configs after script configs', () => {
                 }
             }
         })
-        expect(exploreConfig({ cwd })?.config).toStrictEqual({
+        expect((await exploreConfig({ cwd }))?.config).toStrictEqual({
             variables: {
                 color: {
                     primary: '#123'
@@ -70,7 +70,7 @@ test('loads CSS configs after script configs', () => {
         })
 
         writeFileSync(join(cwd, 'master.css.ts'), `export default { components: { script: 'block' } }`)
-        expect(exploreConfig({ cwd })?.config).toStrictEqual({
+        expect((await exploreConfig({ cwd }))?.config).toStrictEqual({
             components: {
                 script: 'block'
             }
@@ -80,8 +80,8 @@ test('loads CSS configs after script configs', () => {
     }
 })
 
-test('returns an explore result for downstream integrations', () => {
-    const result = exploreConfig({
+test('returns an explore result for downstream integrations', async () => {
+    const result = await exploreConfig({
         cwd: __dirname,
         name: 'custom.config.ts'
     })
@@ -98,7 +98,7 @@ test('returns an explore result for downstream integrations', () => {
     })
 })
 
-test('resolves CSS configs with the lowest default priority', () => {
+test('resolves CSS configs with the lowest default priority', async () => {
     const cwd = mkdtempSync(join(tmpdir(), 'master-css-config-'))
     try {
         writeFileSync(join(cwd, 'master.css'), '')
@@ -114,9 +114,9 @@ test('resolves CSS configs with the lowest default priority', () => {
     }
 })
 
-test('calls found with the matched basename and absolute path', () => {
+test('calls found with the matched basename and absolute path', async () => {
     const found: string[] = []
-    exploreConfig({
+    await exploreConfig({
         cwd: __dirname,
         name: 'custom.config.ts',
         found: (basename, path) => found.push(`${basename}:${path}`)
@@ -126,30 +126,30 @@ test('calls found with the matched basename and absolute path', () => {
     ])
 })
 
-test('supports custom extension order', () => {
-    expect(exploreConfig({
+test('supports custom extension order', async () => {
+    expect((await exploreConfig({
         cwd: __dirname,
         name: 'legacy.css',
         extensions: ['ts', 'cjs']
-    })?.config).toStrictEqual({
+    }))?.config).toStrictEqual({
         components: {
             legacy: 'inline-flex'
         }
     })
 })
 
-test('reloads changed config files without reusing module cache', () => {
+test('reloads changed config files without reusing module cache', async () => {
     const cwd = mkdtempSync(join(tmpdir(), 'master-css-config-'))
     const configPath = join(cwd, 'master.css.ts')
     try {
         writeFileSync(configPath, `export default { components: { one: 'block' } }`)
-        expect(exploreConfig({ cwd })?.config).toStrictEqual({
+        expect((await exploreConfig({ cwd }))?.config).toStrictEqual({
             components: {
                 one: 'block'
             }
         })
         writeFileSync(configPath, `export default { components: { two: 'inline-flex' } }`)
-        expect(exploreConfig({ cwd })?.config).toStrictEqual({
+        expect((await exploreConfig({ cwd }))?.config).toStrictEqual({
             components: {
                 two: 'inline-flex'
             }

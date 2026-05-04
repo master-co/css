@@ -1,8 +1,8 @@
 import CSSExtractor from '../../src'
 import { test, expect } from 'vitest'
 
-test('Oskar', () => {
-    const extractor = new CSSExtractor({}, __dirname).init()
+test('Oskar', async () => {
+    const extractor = await new CSSExtractor({}, __dirname).init()
     expect(
         extractor?.extract('test.tsx',
             `

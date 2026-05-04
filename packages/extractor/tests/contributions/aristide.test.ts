@@ -2,7 +2,7 @@ import { test, expect, it } from 'vitest'
 import CSSExtractor from '../../src'
 
 test('AristideBH', async () => {
-    const extractor = new CSSExtractor({ include: ['**/test.svelte'] }, __dirname).init()
+    const extractor = await new CSSExtractor({ include: ['**/test.svelte'] }, __dirname).init()
     await extractor?.insert('test.svelte',
         `
 <script lang="ts">

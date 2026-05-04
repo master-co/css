@@ -11,7 +11,7 @@ export default function PreRenderPlugin(options: PluginOptions, context: PluginC
     return {
         name: 'master-css:pre-render',
         enforce: 'pre',
-        configResolved(config) {
+        async configResolved(config) {
             const isSvelte = config.plugins.some(p => p.name?.startsWith('vite-plugin-svelte'))
             if (isSvelte) {
                 enabled = false
@@ -21,7 +21,7 @@ export default function PreRenderPlugin(options: PluginOptions, context: PluginC
                 return
             }
             if (context.configPath) {
-                cssConfig = loadConfig(context.configPath)
+                cssConfig = await loadConfig(context.configPath)
             }
         },
         transformIndexHtml(html) {

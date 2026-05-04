@@ -143,7 +143,7 @@ export default class CSSLanguageServer {
         const workspace = this.findClosestWorkspace(params.document.uri)
         if (!workspace || workspace.openedTextDocuments.includes(params.document)) return
         if (!workspace.openedTextDocuments.length) {
-            this.initWorkspaceLanguageService(workspace)
+            await this.initWorkspaceLanguageService(workspace)
         }
         workspace.openedTextDocuments.push(params.document)
     }
@@ -227,14 +227,14 @@ export default class CSSLanguageServer {
         })
     }
 
-    initWorkspaceLanguageService(workspace: Workspace) {
+    async initWorkspaceLanguageService(workspace: Workspace) {
         let workspaceConfig: Config | undefined
         if (workspace !== this.globalWorkspace) {
             try {
-                workspaceConfig = exploreConfig({
+                workspaceConfig = (await exploreConfig({
                     cwd: workspace.uri && URI.parse(workspace.uri).fsPath,
                     found: undefined
-                })?.config
+                }))?.config
             } catch (e: any) {
                 this.console.info(`Failed to load config from ${workspace.uri}`)
                 this.console.error(e instanceof Error ? e.stack : e.toString())

@@ -23,8 +23,8 @@ export function ConfigVirtualModulePlugin(
     return {
         name: 'master-css:virtual-module:config',
         enforce: 'pre',
-        configResolved(config) {
-            context.configResult = exploreConfig({ name: options.config, cwd: config.root })
+        async configResolved(config) {
+            context.configResult = await exploreConfig({ name: options.config, cwd: config.root })
             context.configPath = context.configResult?.path
             if (process.env.DEBUG) {
                 console.log(`[@master/css.vite] config: ${context.configPath || 'none'}`)
@@ -44,11 +44,11 @@ export function ConfigVirtualModulePlugin(
                 if (resolved) return toResolvedMasterCSSConfigId(resolved.id)
             }
         },
-        load(id) {
+        async load(id) {
             if (id === RESOLVED_VIRTUAL_CONFIG_ID) {
                 if (context.configPath) {
                     if (context.configResult?.extension === 'css') {
-                        return toConfigModule(loadConfig(context.configPath))
+                        return toConfigModule(await loadConfig(context.configPath))
                     }
                     return `import config from ${JSON.stringify(context.configPath)}; export default config;`
                 } else {
@@ -58,7 +58,7 @@ export function ConfigVirtualModulePlugin(
             const configPath = fromResolvedMasterCSSConfigId(id)
             if (configPath) {
                 this.addWatchFile(configPath)
-                return toConfigModule(loadConfig(configPath))
+                return toConfigModule(await loadConfig(configPath))
             }
         },
         async handleHotUpdate({ file, server }) {

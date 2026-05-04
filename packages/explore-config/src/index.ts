@@ -1,163 +1,72 @@
-import { existsSync, readFileSync } from 'node:fs'
-import { extname, parse, resolve } from 'node:path'
+import { readFileSync } from 'node:fs'
+import { extname } from 'node:path'
 import { pathToFileURL } from 'node:url'
-import type { Config } from '@master/css'
-import { compileCSS } from '@master/css-compiler'
-import { createJiti } from 'jiti'
-import type { TransformOptions, TransformResult } from 'jiti'
-import { transformSync } from '@swc/wasm'
+import {
+    DEFAULT_EXTENSIONS,
+    DEFAULT_FOUND,
+    resolveConfig,
+    resolveConfigPath,
+    swcTransform,
+    type ExploreConfigOptions,
+    type ExploreConfigPath,
+    type ExploreConfigResult
+} from './shared'
 
-export interface ExploreConfigOptions {
-    cwd?: string
-    extensions?: string[]
-    resolvedKeys?: string[]
-    found?: (basename: string, path: string) => void
+export {
+    DEFAULT_EXTENSIONS,
+    resolveConfigPath,
+    type ExploreConfigOptions,
+    type ExploreConfigPath,
+    type ExploreConfigResult
 }
 
-export interface ExploreConfigPath {
-    basename: string
-    extension: string
-    path: string
+type CreateJiti = typeof import('jiti')['createJiti']
+type TransformSync = typeof import('@swc/wasm')['transformSync']
+
+let scriptLoaderPromise: Promise<{
+    createJiti: CreateJiti
+    transformSync: TransformSync
+}> | undefined
+
+async function loadScriptLoader() {
+    scriptLoaderPromise ||= Promise.all([
+        import('jiti'),
+        import('@swc/wasm')
+    ]).then(([jiti, swc]) => ({
+        createJiti: jiti.createJiti,
+        transformSync: swc.transformSync
+    }))
+    return scriptLoaderPromise
 }
 
-export interface ExploreConfigResult extends ExploreConfigPath {
-    config: Config
+async function loadCompileCSS() {
+    return (await import('@master/css-compiler')).compileCSS
 }
 
-export const DEFAULT_EXTENSIONS = [
-    'js',
-    'mjs',
-    'ts',
-    'cjs',
-    'cts',
-    'mts',
-    'css'
-]
-
-const DEFAULT_RESOLVED_KEYS = [
-    'config',
-    'default'
-]
-
-const DEFAULT_FOUND = (basename: string) => process.env.DEBUG && console.log(`[Master CSS] Loaded ${basename}`)
-
-function normalizeExtension(extension: string) {
-    return extension.startsWith('.') ? extension.slice(1) : extension
-}
-
-function getKnownExtension(name: string, extensions: string[]) {
-    return extensions.find((extension) => name.endsWith(`.${extension}`))
-}
-
-function resolveExistingPath(cwd: string, name: string, extension: string): ExploreConfigPath | undefined {
-    const path = resolve(cwd, name)
-    if (existsSync(path)) {
-        return {
-            basename: parse(name).base,
-            extension,
-            path
-        }
-    }
-}
-
-export function resolveConfigPath(options: ExploreConfigOptions & { name?: string } = {}): ExploreConfigPath | undefined {
-    const name = options.name || 'master.css'
-    const cwd = options.cwd || ''
-    const extensions = (options.extensions || DEFAULT_EXTENSIONS).map(normalizeExtension)
-    const knownExtension = getKnownExtension(name, extensions)
-    if (knownExtension && knownExtension !== 'css') {
-        const path = resolve(cwd, name)
-        if (existsSync(path)) {
-            return {
-                basename: parse(name).base,
-                extension: knownExtension,
-                path
-            }
-        }
-        return
-    }
-    for (const extension of extensions) {
-        if (extension === 'css' && knownExtension === 'css') {
-            const resolvedPath = resolveExistingPath(cwd, name, extension)
-            if (resolvedPath) return resolvedPath
-            continue
-        }
-        const basename = `${name}.${extension}`
-        const path = resolve(cwd, basename)
-        if (existsSync(path)) {
-            return {
-                basename,
-                extension,
-                path
-            }
-        }
-    }
-}
-
-function swcTransform(options: TransformOptions): TransformResult {
-    const filename = options.filename || ''
-    const extension = extname(filename)
-    const isTypeScript = options.ts || extension === '.ts' || extension === '.tsx' || extension === '.mts' || extension === '.cts'
-    const isJSX = options.jsx || extension === '.jsx' || extension === '.tsx'
-    const output = transformSync(options.source, {
-        filename,
-        sourceMaps: false,
-        jsc: {
-            target: 'es2022',
-            parser: isTypeScript
-                ? {
-                    syntax: 'typescript',
-                    tsx: Boolean(isJSX),
-                    decorators: true,
-                    dynamicImport: true
-                }
-                : {
-                    syntax: 'ecmascript',
-                    jsx: Boolean(isJSX),
-                    decorators: true,
-                    dynamicImport: true
-                }
-        },
-        module: {
-            type: 'commonjs',
-            importInterop: 'swc'
-        }
-    })
-    return {
-        code: output.code
-    }
-}
-
-function loadConfigModule(path: string) {
+async function loadConfigModule(path: string) {
+    const { createJiti, transformSync } = await loadScriptLoader()
     const jiti = createJiti(pathToFileURL(path).href, {
         cache: false,
         debug: false,
         fsCache: false,
         moduleCache: false,
-        transform: swcTransform
+        transform: (options) => swcTransform(options, transformSync)
     })
     return jiti(path)
 }
 
-export function loadConfig(path: string, options: Pick<ExploreConfigOptions, 'resolvedKeys'> = {}) {
+export async function loadConfig(path: string, options: Pick<ExploreConfigOptions, 'resolvedKeys'> = {}) {
     if (extname(path) === '.css') {
+        const compileCSS = await loadCompileCSS()
         return compileCSS(readFileSync(path, 'utf-8'), { from: path }).config
     }
-    const resolvedKeys = options.resolvedKeys || DEFAULT_RESOLVED_KEYS
-    const configModule = loadConfigModule(path)
-    let config: unknown
-    for (const key of resolvedKeys) {
-        config = configModule[key]
-        if (config) break
-    }
-    if (!config) config = configModule
-    return config as Config
+    return resolveConfig(await loadConfigModule(path), options)
 }
 
-export function exploreConfig(options: ExploreConfigOptions & { name?: string } = {}) {
+export async function exploreConfig(options: ExploreConfigOptions & { name?: string } = {}) {
     const resolvedConfig = resolveConfigPath(options)
     if (!resolvedConfig) return
-    const config = loadConfig(resolvedConfig.path, options)
+    const config = await loadConfig(resolvedConfig.path, options)
     const found = Object.hasOwn(options, 'found') ? options.found : DEFAULT_FOUND
     found?.(resolvedConfig.basename, resolvedConfig.path)
     return {

@@ -35,7 +35,7 @@ function hasModifiedFile(modifiedFiles: ReadonlySet<string> | undefined, filePat
 
 export class MasterCSSExtractorPlugin extends CSSExtractor {
 
-    initialized = false
+    pluginInitialized = false
     moduleContentByPath: any = {}
 
     private resolveDefaultConfigPath(): ExploreConfigPath | undefined {
@@ -47,13 +47,13 @@ export class MasterCSSExtractorPlugin extends CSSExtractor {
         }
     }
 
-    private createDefaultConfigModule(resolvedConfig = this.resolveDefaultConfigPath()) {
+    private async createDefaultConfigModule(resolvedConfig = this.resolveDefaultConfigPath()) {
         if (typeof this.options.config === 'object') {
             return toConfigModule(this.options.config)
         }
         if (!resolvedConfig) return EMPTY_CONFIG_MODULE
         if (resolvedConfig.extension === 'css') {
-            return toConfigModule(loadConfig(resolvedConfig.path))
+            return toConfigModule(await loadConfig(resolvedConfig.path))
         }
         return toNativeConfigModule(resolvedConfig.path)
     }
@@ -67,9 +67,9 @@ export class MasterCSSExtractorPlugin extends CSSExtractor {
             if (!virtualModule || !virtualModuleId) return
             virtualModule.writeModule(virtualModuleId, this.css.text)
         }
-        const writeDefaultConfigModule = () => {
+        const writeDefaultConfigModule = async () => {
             if (!virtualModule || !virtualConfigModuleId) return
-            virtualModule.writeModule(virtualConfigModuleId, this.createDefaultConfigModule())
+            virtualModule.writeModule(virtualConfigModuleId, await this.createDefaultConfigModule())
         }
         const replayModuleContents = async () => {
             await Promise.all(
@@ -80,7 +80,7 @@ export class MasterCSSExtractorPlugin extends CSSExtractor {
             )
         }
 
-        if (!this.initialized) {
+        if (!this.pluginInitialized) {
             this
                 .on('init', (options: Options) => {
                     options.include = []
@@ -89,10 +89,14 @@ export class MasterCSSExtractorPlugin extends CSSExtractor {
                     writeVirtualCSSModule()
                 })
                 .on('configChange', () => {
-                    writeDefaultConfigModule()
+                    writeDefaultConfigModule().catch((error: unknown) => {
+                        console.error('[master-css.webpack] config module update failed:', error)
+                    })
                 })
                 .on('reset', () => {
-                    writeDefaultConfigModule()
+                    writeDefaultConfigModule().catch((error: unknown) => {
+                        console.error('[master-css.webpack] config module update failed:', error)
+                    })
                     resetReplayChain = resetReplayChain
                         .then(replayModuleContents)
                         .then(writeVirtualCSSModule)
@@ -100,14 +104,16 @@ export class MasterCSSExtractorPlugin extends CSSExtractor {
                             console.error('[master-css.webpack] reset replay failed:', error)
                         })
                 })
-            this.init()
+            void this.init()
             /* update the Virtual CSS module after initialization */
-            compiler.hooks.initialize.tap(NAME, async () => {
+            compiler.hooks.beforeRun.tapPromise(NAME, async () => {
+                await this.init()
                 await this.prepare()
                 writeVirtualCSSModule()
                 log``
             })
             compiler.hooks.watchRun.tapPromise(NAME, async (watchingCompiler) => {
+                await this.init()
                 const resolvedConfig = this.resolveDefaultConfigPath()
                 const modifiedFiles = (watchingCompiler as Compiler & { modifiedFiles?: ReadonlySet<string> }).modifiedFiles
                 if (resolvedConfig?.extension === 'css' && hasModifiedFile(modifiedFiles, resolvedConfig.path)) {
@@ -116,7 +122,7 @@ export class MasterCSSExtractorPlugin extends CSSExtractor {
                 }
                 await this.startWatch()
             })
-            this.initialized = true
+            this.pluginInitialized = true
         }
 
         const compilerContext = compiler.context || this.cwd || process.cwd()
@@ -135,12 +141,16 @@ export class MasterCSSExtractorPlugin extends CSSExtractor {
                 const request = resolveData.request
                 if (request === VIRTUAL_CONFIG_ID) {
                     const resolvedConfig = this.resolveDefaultConfigPath()
-                    virtualModule.writeModule(virtualConfigModuleId, this.createDefaultConfigModule(resolvedConfig))
-                    if (resolvedConfig?.extension === 'css') {
-                        resolveData.fileDependencies.add(resolvedConfig.path)
-                    }
-                    resolveData.request = virtualConfigModuleId
-                    callback()
+                    this.createDefaultConfigModule(resolvedConfig)
+                        .then((moduleContent) => {
+                            virtualModule.writeModule(virtualConfigModuleId, moduleContent)
+                            if (resolvedConfig?.extension === 'css') {
+                                resolveData.fileDependencies.add(resolvedConfig.path)
+                            }
+                            resolveData.request = virtualConfigModuleId
+                            callback()
+                        })
+                        .catch((error: Error) => callback(error))
                     return
                 }
 
@@ -156,7 +166,7 @@ export class MasterCSSExtractorPlugin extends CSSExtractor {
                     resolveData.context,
                     sourceRequest,
                     {},
-                    (error, resolvedPath) => {
+                    async (error, resolvedPath) => {
                         if (error) {
                             callback(error)
                             return
@@ -167,7 +177,7 @@ export class MasterCSSExtractorPlugin extends CSSExtractor {
                         }
                         try {
                             const virtualCSSConfigModuleId = toVirtualCSSConfigModulePath(compilerContext, resolvedPath)
-                            virtualModule.writeModule(virtualCSSConfigModuleId, toConfigModule(loadConfig(resolvedPath)))
+                            virtualModule.writeModule(virtualCSSConfigModuleId, toConfigModule(await loadConfig(resolvedPath)))
                             resolveData.fileDependencies.add(resolvedPath)
                             resolveData.request = virtualCSSConfigModuleId
                             callback()

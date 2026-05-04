@@ -26,6 +26,7 @@ export default class CSSExtractor extends EventEmitter {
     watching = false
     watchers: FSWatcher[] = []
     initialized = false
+    initializing?: Promise<this>
 
     /**
      * Per-source content-hash cache. When the same `source` arrives with the
@@ -56,7 +57,15 @@ export default class CSSExtractor extends EventEmitter {
     }
 
     init(customOptions = this.customOptions) {
-        if (this.initialized) return
+        if (this.initialized) return Promise.resolve(this)
+        if (this.initializing) return this.initializing
+        return this.initializing = this.initInternal(customOptions)
+            .finally(() => {
+                this.initializing = undefined
+            })
+    }
+
+    private async initInternal(customOptions = this.customOptions) {
         if (typeof customOptions === 'string') {
             this.options = extend(defaultOptions, exploreConfig(customOptions, {
                 found: (basename) => {
@@ -77,10 +86,10 @@ export default class CSSExtractor extends EventEmitter {
         this.css = createCSS(
             typeof this.options.config === 'object'
                 ? this.options.config
-                : exploreCSSConfig({
+                : (await exploreCSSConfig({
                     name: this.options.config as string,
                     cwd: this.cwd
-                })?.config
+                }))?.config
         )
         this.emit('init', this.options, this.config)
         this.initialized = true
@@ -98,7 +107,8 @@ export default class CSSExtractor extends EventEmitter {
         this.cachedFixedSourcePaths = undefined
         this.cachedAllowedSourcePaths = undefined
         this.initialized = false
-        this.init(customOptions)
+        this.initializing = undefined
+        await this.init(customOptions)
         await this.prepare()
         if (watching) await this.startWatch({ emit: false })
         this.emit('reset')

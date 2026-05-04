@@ -29,7 +29,7 @@ vi.mock('@master/css-extractor', () => {
                     this.options = { ...opts }
                 }
             }
-            init() { return this }
+            async init() { return this }
             async prepare() { return undefined }
             async insert(id: string, _code: string) {
                 this.insertCalls.push(id)
@@ -58,7 +58,7 @@ describe('ExtractMode (C7 + C8 fixes)', () => {
             const ctx: any = {}
             const plugins = ExtractMode({} as any, ctx)
             const ex = findPlugin(plugins, 'master-css:extractor')
-            ex.configResolved.call({}, fakeViteConfig)
+            await ex.configResolved.call({}, fakeViteConfig)
             expect(ctx.extractor.options.include).toEqual([])
         })
 
@@ -69,7 +69,7 @@ describe('ExtractMode (C7 + C8 fixes)', () => {
                 ctx,
             )
             const ex = findPlugin(plugins, 'master-css:extractor')
-            ex.configResolved.call({}, fakeViteConfig)
+            await ex.configResolved.call({}, fakeViteConfig)
             expect(ctx.extractor.options.include).toEqual([
                 'node_modules/some-lib/dist/**/*.js',
             ])
@@ -84,7 +84,7 @@ describe('ExtractMode (C7 + C8 fixes)', () => {
                 { extractor: { include: [] } } as any,
                 ctx,
             )
-            findPlugin(plugins, 'master-css:extractor').configResolved.call({}, fakeViteConfig)
+            await findPlugin(plugins, 'master-css:extractor').configResolved.call({}, fakeViteConfig)
             expect(ctx.extractor.options.include).toEqual([])
         })
 
@@ -94,7 +94,7 @@ describe('ExtractMode (C7 + C8 fixes)', () => {
             // err on the side of NOT touching include.
             const ctx: any = {}
             const plugins = ExtractMode({ extractor: 'master.css-extractor' } as any, ctx)
-            findPlugin(plugins, 'master-css:extractor').configResolved.call({}, fakeViteConfig)
+            await findPlugin(plugins, 'master-css:extractor').configResolved.call({}, fakeViteConfig)
             // The mock CSSExtractor constructor only seeds options when given
             // an object, so options.include starts undefined and the guard
             // sets it to []. The important assertion is that the wipe
@@ -107,7 +107,7 @@ describe('ExtractMode (C7 + C8 fixes)', () => {
         async function drive(ids: string[]) {
             const ctx: any = {}
             const plugins = ExtractMode({} as any, ctx)
-            findPlugin(plugins, 'master-css:extractor').configResolved.call({}, fakeViteConfig)
+            await findPlugin(plugins, 'master-css:extractor').configResolved.call({}, fakeViteConfig)
             const staticPlugin = findPlugin(plugins, 'master-css:static')
             for (const id of ids) {
                 await staticPlugin.transform.call({}, '<div class="bg:white">x</div>', id)

@@ -90,7 +90,7 @@ import('../src').then(async ({ default: CSSExtractor }) => {
 
     // Scenario 1: HMR re-fire (same content twice) — must short-circuit.
     {
-        const ex = new CSSExtractor({ config: {} as any }).init()
+        const ex = await new CSSExtractor({ config: {} as any }).init()
         const html = '<div className="bg:white fg:black m:8 p:8 r:4 h:full bg:blue@hover">x</div>'
         const t1 = timeIt(() => ex.insert('foo.tsx', html))
         // Wait for promise (insert is async)
@@ -104,7 +104,7 @@ import('../src').then(async ({ default: CSSExtractor }) => {
 
     // Scenario 2: 200 different files all using `bg:white` — validator runs once.
     {
-        const ex = new CSSExtractor({ config: {} as any }).init()
+        const ex = await new CSSExtractor({ config: {} as any }).init()
         const sharedClass = '<div className="bg:white">shared</div>'
         const t = timeIt(async () => {
             for (let i = 0; i < 200; i++) {

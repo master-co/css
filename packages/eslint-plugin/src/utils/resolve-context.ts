@@ -1,6 +1,6 @@
 import type { RuleContext } from '@typescript-eslint/utils/ts-eslint'
 import settings, { Settings } from '../settings'
-import exploreConfig from '@master/css-explore-config'
+import exploreConfigSync from '@master/css-explore-config/sync'
 import { Config, MasterCSS, createCSS } from '@master/css'
 
 declare interface CSSCache {
@@ -21,7 +21,7 @@ export default function resolveContext(context: RuleContext<any, any[]>) {
         if (typeof resolvedSettings.config === 'object') {
             config = resolvedSettings.config
         } else {
-            config = exploreConfig({
+            config = exploreConfigSync({
                 name: resolvedSettings.config,
                 cwd: context.cwd,
                 found(_, configPath) {

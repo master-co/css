@@ -4,7 +4,7 @@ import path from 'path'
 import { test, expect } from 'vitest'
 
 test('read master.css.js config in cwd', async () => {
-    const extractor = new CSSExtractor({}, __dirname).init()
+    const extractor = await new CSSExtractor({}, __dirname).init()
     expect(extractor?.css.config)
         .toBeDefined()
 })
@@ -18,7 +18,7 @@ test('master.css.js config custom classname', async () => {
             }
         }
     `, { flag: 'w' })
-    const extractor = new CSSExtractor({}, __dirname).init()
+    const extractor = await new CSSExtractor({}, __dirname).init()
     expect(
         extractor?.extract('test.tsx',
             `
