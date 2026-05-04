@@ -1,13 +1,14 @@
 import AnimationRule from '../animation-rule'
 import Layer from '../layer'
 import NonLayer from '../non-layer'
+import { Rule } from '../rule'
 import { SyntaxRule } from '../syntax-rule'
 import compareRulePriority from '../utils/compare-rule-priority'
 import VariableRule from '../variable-rule'
 
 export default function withSyntaxLayer<TBase extends new (...args: any[]) => Layer>(Base: TBase) {
     return class SyntaxLayer extends Base {
-        rules: SyntaxRule[] = []
+        rules: (SyntaxRule | Rule)[] = []
         /**
         * normal
         * normal selectors
@@ -16,14 +17,18 @@ export default function withSyntaxLayer<TBase extends new (...args: any[]) => La
         * media width
         * media width selectors
         */
-        insert(syntaxRule: SyntaxRule) {
-            if (this.rules.includes(syntaxRule) || !syntaxRule.valid) return
+        insert(syntaxRule: SyntaxRule | Rule) {
+            if (this.rules.includes(syntaxRule)) return
+            if ('valid' in syntaxRule && !syntaxRule.valid) return
             let index = this.rules.length
-            for (let i = 0; i < this.rules.length; i++) {
-                const rule = this.rules[i]
-                if (compareRulePriority(syntaxRule, rule) < 0) {
-                    index = i
-                    break
+            if (syntaxRule instanceof SyntaxRule) {
+                for (let i = 0; i < this.rules.length; i++) {
+                    const rule = this.rules[i]
+                    if (!(rule instanceof SyntaxRule)) continue
+                    if (compareRulePriority(syntaxRule, rule) < 0) {
+                        index = i
+                        break
+                    }
                 }
             }
             super.insert(syntaxRule, index)
@@ -33,7 +38,7 @@ export default function withSyntaxLayer<TBase extends new (...args: any[]) => La
         }
 
         delete(key: string) {
-            const syntaxRule = super.delete(key) as SyntaxRule | undefined
+            const syntaxRule = super.delete(key) as SyntaxRule | Rule | undefined
             if (!syntaxRule) return
             const deleteLayerToken = (layerToken: string, layer: Layer | NonLayer) => {
                 const count = layer.tokenCounts.get(layerToken) ?? 0
@@ -44,16 +49,17 @@ export default function withSyntaxLayer<TBase extends new (...args: any[]) => La
                     layer.tokenCounts.set(layerToken, count - 1)
                 }
             }
-            syntaxRule.variableNames?.forEach((eachVariableName) => {
+            if ('variableNames' in syntaxRule) syntaxRule.variableNames?.forEach((eachVariableName) => {
                 deleteLayerToken(eachVariableName, this.css.themeLayer)
             })
-            syntaxRule.animationNames?.forEach((eachAnimationName) => {
+            if ('animationNames' in syntaxRule) syntaxRule.animationNames?.forEach((eachAnimationName) => {
                 deleteLayerToken(eachAnimationName, this.css.animationsNonLayer)
             })
             return syntaxRule
         }
 
-        insertVariables(syntaxRule: SyntaxRule) {
+        insertVariables(syntaxRule: SyntaxRule | Rule) {
+            if (!('variableNames' in syntaxRule)) return
             syntaxRule.variableNames?.forEach((eachVariableName) => {
                 if (this.css.themeLayer.rules.find(({ name }) => name === eachVariableName)) {
                     const count = this.css.themeLayer.tokenCounts.get(eachVariableName) || 0
@@ -68,7 +74,8 @@ export default function withSyntaxLayer<TBase extends new (...args: any[]) => La
             })
         }
 
-        insertAnimations(syntaxRule: SyntaxRule) {
+        insertAnimations(syntaxRule: SyntaxRule | Rule) {
+            if (!('animationNames' in syntaxRule)) return
             syntaxRule.animationNames?.forEach((eachAnimationName) => {
                 if (this.css.animationsNonLayer.rules.find(({ name }) => name === eachAnimationName)) {
                     const count = this.css.animationsNonLayer.tokenCounts.get(eachAnimationName) || 0

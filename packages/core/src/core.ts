@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-declaration-merging */
 import { SyntaxRule } from './syntax-rule'
+import ComponentRule from './component-rule'
 import hexToRgb from './utils/hex-to-rgb'
 import extendConfig, { ExtendedConfig } from './utils/extend-config'
 import { type PropertiesHyphen } from 'csstype'
@@ -8,9 +9,9 @@ import SyntaxRuleType from './syntax-rule-type'
 import Layer from './layer'
 import SyntaxLayer from './syntax-layer'
 import NonLayer from './non-layer'
-import { ColorVariable, DefinedRule, Variable } from './types/syntax'
+import { ColorVariable, ComponentEntry, DefinedRule, GeneratedRule, Variable } from './types/syntax'
 import { AtRule, AtRuleValueNode } from './utils/parse-at'
-import { AnimationDefinitions, Config, SyntaxRuleDefinition } from './types/config'
+import { AnimationDefinitions, ComponentDefinition, Config, SyntaxRuleDefinition } from './types/config'
 import registerGlobal from './register-global'
 import parseAt from './utils/parse-at'
 import parseValue from './utils/parse-value'
@@ -21,14 +22,14 @@ export default class MasterCSS {
     readonly config!: ExtendedConfig
     readonly layerStatementRule = new Rule('layer-statement', '@layer base,theme,preset,components,general;')
     readonly rules: (Layer | Rule)[] = [this.layerStatementRule]
-    readonly classRules = new Map<string, SyntaxRule[]>()
+    readonly classRules = new Map<string, GeneratedRule[]>()
     readonly animationsNonLayer = new NonLayer(this)
     readonly baseLayer = new SyntaxLayer('base', this)
     readonly themeLayer = new Layer('theme', this)
     readonly presetLayer = new SyntaxLayer('preset', this)
     readonly componentsLayer = new SyntaxLayer('components', this)
     readonly generalLayer = new SyntaxLayer('general', this)
-    readonly components = new Map<string, string[]>()
+    readonly components = new Map<string, ComponentEntry>()
     readonly selectors = new Map<string, SelectorNode[]>()
     readonly variables = new Map<string, Variable>()
     readonly modes: string[] = []
@@ -273,28 +274,64 @@ export default class MasterCSS {
 
     resolveComponents() {
         const { components = {} } = this.config
-        const flatNames = Object.keys(components)
-        const resolve = (name: string, currentClasses: string[] = []) => {
-            const compClasses = this.components.get(name)
-            if (compClasses) {
-                currentClasses.push(...compClasses)
-                return
-            }
-            const className = components[name]
-            if (!className) return
-            const classes = className.replace(/(?:\n\s*)+/g, ' ').trim().split(' ')
-            for (const cls of classes) {
-                if (flatNames.includes(cls)) {
-                    resolve(cls, currentClasses)
-                } else {
-                    currentClasses.push(cls)
+        const names = Object.keys(components)
+        const normalizeClassNames = (classNames?: string | string[]) => {
+            if (!classNames) return []
+            return (Array.isArray(classNames) ? classNames.join(' ') : classNames)
+                .replace(/(?:\n\s*)+/g, ' ')
+                .trim()
+                .split(' ')
+                .filter(Boolean)
+        }
+        const normalizeComponentDefinition = (name: string): ComponentEntry | undefined => {
+            const definition = components[name]
+            if (!definition) return
+            if (typeof definition === 'string') {
+                return {
+                    classNames: normalizeClassNames(definition)
                 }
             }
-            this.components.set(name, [...currentClasses])
+            const { classNames, declarations } = definition as ComponentDefinition
+            return {
+                classNames: normalizeClassNames(classNames),
+                declarations
+            }
+        }
+        const resolve = (name: string, resolving = new Set<string>()): ComponentEntry | undefined => {
+            const component = this.components.get(name)
+            if (component) return component
+            if (resolving.has(name)) return
+            const componentDefinition = normalizeComponentDefinition(name)
+            if (!componentDefinition) return
+            resolving.add(name)
+
+            const classNames: string[] = []
+            let declarations = componentDefinition.declarations
+            for (const className of componentDefinition.classNames) {
+                if (names.includes(className)) {
+                    const resolvedComponent = resolve(className, resolving)
+                    if (resolvedComponent) {
+                        classNames.push(...resolvedComponent.classNames)
+                        declarations = {
+                            ...resolvedComponent.declarations,
+                            ...declarations
+                        }
+                    }
+                } else {
+                    classNames.push(className)
+                }
+            }
+            const resolved = {
+                classNames,
+                declarations
+            }
+            this.components.set(name, resolved)
+            resolving.delete(name)
+            return resolved
         }
 
         // First pass: expand class names recursively
-        for (const name of flatNames) {
+        for (const name of names) {
             resolve(name)
         }
     }
@@ -580,13 +617,14 @@ export default class MasterCSS {
     /**
      * Generate syntax rules from class name
      * @param className
-     * @returns SyntaxRule[]
+     * @returns GeneratedRule[]
      */
-    generate(className: string, mode?: string): SyntaxRule[] {
-        let syntaxRules: SyntaxRule[] = []
-        const compClasses = this.components.get(className)
-        if (compClasses) {
-            compClasses.forEach((cls) => {
+    generate(className: string, mode?: string): SyntaxRule[]
+    generate(className: string, mode?: string): GeneratedRule[] {
+        let syntaxRules: GeneratedRule[] = []
+        const component = this.components.get(className)
+        if (component) {
+            component.classNames.forEach((cls) => {
                 const syntaxRule = this.create(cls, className, mode)
                 if (syntaxRule && syntaxRule.valid) {
                     syntaxRules.push(syntaxRule)
@@ -594,19 +632,21 @@ export default class MasterCSS {
                     console.error(`Invalid class "${cls}" found in ${className} component.`)
                 }
             })
+            this.appendComponentRule(syntaxRules, className, component.declarations)
         } else {
             const atIndex = className.indexOf('@')
             if (atIndex !== -1) {
                 const name = className.slice(0, atIndex)
-                const compClasses = this.components.get(name)
-                if (compClasses) {
+                const component = this.components.get(name)
+                if (component) {
                     const atToken = className.slice(atIndex)
-                    compClasses.forEach((eachSyntax) => {
+                    component.classNames.forEach((eachSyntax) => {
                         const syntaxRule = this.create(eachSyntax + atToken, className, mode)
                         if (syntaxRule && syntaxRule.valid) {
                             syntaxRules.push(syntaxRule)
                         }
                     })
+                    this.appendComponentRule(syntaxRules, className, component.declarations)
                 }
             }
             const syntaxRule = this.create(className, undefined, mode)
@@ -617,13 +657,21 @@ export default class MasterCSS {
         return syntaxRules
     }
 
+    appendComponentRule(rules: GeneratedRule[], className: string, declarations?: PropertiesHyphen) {
+        if (!declarations) return
+        const componentRule = new ComponentRule(className, this, declarations)
+        if (componentRule.valid) rules.push(componentRule)
+    }
+
     /**
      * Create syntax rule from given class name
      * @param className
      * @returns SyntaxRule
      */
     create(className: string, fixedClass?: string, mode?: string): SyntaxRule | undefined {
-        const syntaxRule = this.generalLayer.rules.find(({ key }) => key === ((fixedClass ? fixedClass + ' ' : '') + className))
+        const syntaxRule = this.generalLayer.rules.find((rule): rule is SyntaxRule =>
+            rule instanceof SyntaxRule && rule.key === ((fixedClass ? fixedClass + ' ' : '') + className)
+        )
         if (syntaxRule) return syntaxRule
         const registeredRule = this.match(className)
         if (registeredRule) return new SyntaxRule(className, this, registeredRule, fixedClass, mode)

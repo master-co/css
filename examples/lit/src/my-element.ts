@@ -13,7 +13,7 @@ import config from '../master.css'
  * @csspart button - The button
  */
 @customElement('my-element')
-@cssRuntime(config)
+@cssRuntime({ config })
 export class MyElement extends LitElement {
 
     cssRuntime?: CSSRuntime

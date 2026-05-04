@@ -9,6 +9,7 @@ export { default as NonLayer } from './non-layer'
 export { default as SyntaxRuleType } from './syntax-rule-type'
 export { default as VariableRule } from './variable-rule'
 export { default as AnimationRule } from './animation-rule'
+export { default as ComponentRule } from './component-rule'
 
 export { default as createCSS } from './create'
 

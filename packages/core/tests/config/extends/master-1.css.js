@@ -24,11 +24,7 @@ const config = {
     },
     components: {
         btn: 'font:14 h:40 text:center',
-        blue: {
-            btn: {
-                '': 'btn bg:blue'
-            }
-        }
+        'blue-btn': 'btn bg:blue'
     }
 }
 

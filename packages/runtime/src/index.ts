@@ -4,5 +4,5 @@ export { default as initCSSRuntime } from './init'
 export { default as RuntimeSyntaxLayer } from './syntax-layer'
 
 export type * from './types'
-export type { CSSRuntimeDecoratorOptions } from './css-runtime'
+export type { CSSRuntimeDecoratorOptions, CSSRuntimeOptions } from './css-runtime'
 export * from './syntax-layer'

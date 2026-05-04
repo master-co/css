@@ -24,7 +24,7 @@ export default function inspectSyntax(this: CSSLanguageService, document: TextDo
             return {
                 contents: {
                     kind: documentation.kind,
-                    value: `(style) ` + componentClasses.join(' ') + '\n' + documentation.value
+                    value: `(style) ` + componentClasses.classNames.join(' ') + '\n' + documentation.value
                 }
             }
         }

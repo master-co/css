@@ -26,6 +26,7 @@ export default function sortReadableClasses(classes: string[], css = createCSS()
     // 先去重 fixedClass for componentsLayer
     const seenFixed = new Set<string>()
     const dedupedComponentRules = css.componentsLayer.rules
+        .filter((rule): rule is SyntaxRule => rule instanceof SyntaxRule)
         .filter(rule => {
             if (!rule.fixedClass) return true
             if (seenFixed.has(rule.fixedClass)) return false
@@ -37,7 +38,7 @@ export default function sortReadableClasses(classes: string[], css = createCSS()
         ...css.generalLayer.rules,
         ...css.baseLayer.rules,
         ...css.presetLayer.rules,
-    ]
+    ].filter((rule): rule is SyntaxRule => rule instanceof SyntaxRule)
 
     const baseSet = new Set(css.baseLayer.rules)
     const presetSet = new Set(css.presetLayer.rules)

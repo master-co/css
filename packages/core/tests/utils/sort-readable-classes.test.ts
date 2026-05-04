@@ -2,16 +2,12 @@ import Tester from '../tester'
 
 new Tester({
     components: {
-        btn: {
-            '': 'block fg:blue',
-            sm: 'font:12',
-            md: 'font:14'
-        },
+        btn: 'block fg:blue',
+        'btn-sm': 'font:12',
+        'btn-md': 'font:14',
         card: 'text:center p:5x p:10x@md',
         yellow: 'bg:yellow fg:yellow-contrast outline:1|yellow-ring',
-        touch: {
-            yellow: 'bg:touch-yellow:hover'
-        }
+        'touch-yellow': 'bg:touch-yellow:hover'
     },
     modes: {
         light: {

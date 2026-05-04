@@ -1,5 +1,6 @@
 import { SyntaxRule } from '../syntax-rule'
 import { VALUE_DELIMITERS } from '../common'
+import { GeneratedRule } from '../types/syntax'
 
 export default function coreGroup(this: SyntaxRule, value: string) {
     const declarations: any = {}
@@ -14,11 +15,12 @@ export default function coreGroup(this: SyntaxRule, value: string) {
             declarations[propName] = propertyName.slice(indexOfColon + 1).replace(/\|/g, ' ')
         }
     }
-    const handleRule = (rule: SyntaxRule) => {
+    const handleRule = (rule: GeneratedRule) => {
         const ruleDeclarations = rule.declarations as Record<string, unknown>
         for (const propertyName in ruleDeclarations) {
             let propertyValue = String(ruleDeclarations[propertyName])
-            if ((rule.important || rule.css.config.important) && !propertyValue.endsWith('!important')) {
+            const important = 'important' in rule && rule.important
+            if ((important || rule.css.config.important) && !propertyValue.endsWith('!important')) {
                 propertyValue += '!important'
             }
             declarations[propertyName] = propertyValue

@@ -1,4 +1,5 @@
 import { SyntaxRuleDefinition } from './config'
+import type { PropertiesHyphen } from 'csstype'
 
 export type ValueComponent = StringValueComponent | NumberValueComponent | FunctionValueComponent | VariableValueComponent | SeparatorValueComponent
 export interface StringValueComponent { text?: string, token: string, type: 'string', value: string }
@@ -20,6 +21,13 @@ export interface DefinedRule {
     order: number
     definition: SyntaxRuleDefinition
 }
+
+export interface ComponentEntry {
+    classNames: string[]
+    declarations?: PropertiesHyphen
+}
+
+export type GeneratedRule = import('../syntax-rule').SyntaxRule | import('../component-rule').default
 
 export type MediaFeatureComponent = {
     type: string

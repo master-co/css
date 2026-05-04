@@ -1,5 +1,5 @@
 import extend from 'json-safe-extend'
-import type { Config } from '../types/config'
+import type { ComponentDefinitions, Config } from '../types/config'
 import { Variable } from '../types/syntax'
 import flattenObject from './flatten-object'
 import flattenMetaObject from './flatten-meta-object'
@@ -10,7 +10,7 @@ export declare type ExtendedConfig = {
     modes?: Record<string, Record<string, Variable>>
     at?: Record<string, string>
     selectors?: Record<string, string>
-    components?: Record<string, string>
+    components?: ComponentDefinitions
 } & Omit<Config, 'variables' | 'modes'>
 
 export default function extendConfig(...configs: (Config | undefined)[]) {
@@ -74,8 +74,7 @@ export default function extendConfig(...configs: (Config | undefined)[]) {
         // components
         if (components) {
             extendedConfig.components ??= {}
-            const flattened = isExtended ? { ...components } : flattenObject(components)
-            Object.assign(extendedConfig.components, flattened)
+            Object.assign(extendedConfig.components, components)
         }
 
         // at

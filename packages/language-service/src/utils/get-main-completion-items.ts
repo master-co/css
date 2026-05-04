@@ -97,7 +97,7 @@ export default function getMainCompletionItems(css: MasterCSS = createCSS()): Co
                     generatedCSS: generateCSS([componentClass], css),
                     docs: '/guide/components'
                 }),
-                detail: componentTokens.join(' ') + ' (style)',
+                detail: componentTokens.classNames.join(' ') + ' (style)',
             })
         }
     }

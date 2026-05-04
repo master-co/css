@@ -34,7 +34,11 @@ export type AtDefinition = number | string
 export interface AtDefinitions {
     [key: string]: AtDefinition | AtDefinitions;
 }
-export interface ComponentDefinitions { [key: string]: string | ComponentDefinitions }
+export interface ComponentDefinition {
+    classNames?: string | string[]
+    declarations?: PropertiesHyphen
+}
+export type ComponentDefinitions = Record<string, string | ComponentDefinition>
 export type ScreenDefinitions = Record<string, number>
 export type SyntaxRuleDefinitions = Partial<Record<keyof typeof rules | string, SyntaxRuleDefinition>>
 export type VariableDefinitions = { [key in keyof typeof rules]?: VariableDefinition } & Record<string, VariableDefinition>

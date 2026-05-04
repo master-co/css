@@ -8,6 +8,7 @@
 | `@master/css-runtime` | `.` | Browser runtime, DOM observation, hydration |
 | `@master/css-server` | `.` | HTML render and CSS injection |
 | `@master/css-extractor` | `.`, `./options` | Static class extraction and CSS output |
+| `@master/postcss` | `.` | PostCSS directives for CSS-defined variables, utilities, and components |
 | `@master/css.vite` | `.` | Vite modes and plugin orchestration |
 | `@master/css.webpack` | `.` | Webpack extraction plugin |
 | `@master/css.astro` | `.` | Astro integration |
@@ -35,4 +36,3 @@ Do not introduce reverse dependencies from core to integrations, runtime, server
 ## Package Tests
 
 Most packages use package-local `vitest.config.ts` extending `shared/vitest.config.ts`. Runtime and component integrations use Playwright e2e tests where browser behavior matters.
-

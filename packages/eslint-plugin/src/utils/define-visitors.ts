@@ -20,6 +20,37 @@ export default function defineVisitors({ context, settings }: { context: RuleCon
         return classFunctionsRegex.test(calleeName)
     }
     const visitClassNode = withVisitClassNode(visitNode, context)
+    const getPropertyName = (prop) => {
+        if (prop.key.type === 'Identifier') return prop.key.name
+        if (prop.key.type === 'Literal') return prop.key.value
+    }
+    const visitComponentDefinition = (node) => {
+        if (!node) return
+        if (node.type !== 'ObjectExpression') {
+            visitClassNode(node)
+            return
+        }
+        for (const prop of node.properties) {
+            if (prop.type !== 'Property' || prop.shorthand) continue
+            if (getPropertyName(prop) === 'classNames') {
+                visitClassNode(prop.value)
+            }
+        }
+    }
+    const visitClassDeclarationNode = (name, node) => {
+        if (name !== 'components') {
+            visitClassNode(node)
+            return
+        }
+        if (!node || node.type !== 'ObjectExpression') {
+            visitClassNode(node)
+            return
+        }
+        for (const prop of node.properties) {
+            if (prop.type !== 'Property' || prop.shorthand) continue
+            visitComponentDefinition(prop.value)
+        }
+    }
     const CallExpression = function (node) {
         if (!allowCalleeNode(node)) return
         node.arguments.forEach((node) => {
@@ -53,14 +84,17 @@ export default function defineVisitors({ context, settings }: { context: RuleCon
         VariableDeclaration: function (node) {
             node.declarations.forEach((decl) => {
                 if (decl.id.type === 'Identifier' && classDeclarationsRegex.test(decl.id.name)) {
-                    visitClassNode(decl.init)
+                    visitClassDeclarationNode(decl.id.name, decl.init)
                 }
             })
         },
         ObjectExpression: function (node) {
             node.properties.forEach((prop) => {
-                if (prop.type === 'Property' && prop.key.type === 'Identifier' && classDeclarationsRegex.test(prop.key.name)) {
-                    visitClassNode(prop.value)
+                if (prop.type === 'Property') {
+                    const propName = getPropertyName(prop)
+                    if (typeof propName === 'string' && classDeclarationsRegex.test(propName)) {
+                        visitClassDeclarationNode(propName, prop.value)
+                    }
                 }
             })
         }

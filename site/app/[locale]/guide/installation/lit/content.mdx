@@ -47,7 +47,7 @@
             import config from '../master.css' // [!code highlight]
 
             @customElement('my-element')
-            @cssRuntime(config) // [!code highlight]
+            @cssRuntime({ config }) // [!code highlight]
             export class MyElement extends LitElement {
                 cssRuntime?: CSSRuntime // [!code highlight]
 

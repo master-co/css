@@ -1619,6 +1619,19 @@ importers:
         specifier: ^3.5.33
         version: 3.5.33(typescript@6.0.3)
 
+  packages/postcss:
+    dependencies:
+      '@master/css':
+        specifier: workspace:^
+        version: link:../core
+    devDependencies:
+      postcss:
+        specifier: ^8.5.13
+        version: 8.5.13
+      shared:
+        specifier: workspace:^
+        version: link:../../shared
+
   packages/react:
     dependencies:
       '@master/css-runtime':

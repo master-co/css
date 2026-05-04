@@ -12,7 +12,7 @@ class RuntimeElement extends HTMLElement {
 }
 
 cssRuntime()(RuntimeElement)
-cssRuntime({ variables: {} } satisfies Config)(RuntimeElement)
+cssRuntime({ config: { variables: {} } satisfies Config })(RuntimeElement)
 cssRuntime({
     config: {} satisfies Config,
     root: (host) => host.shadowRoot,
