@@ -1,7 +1,8 @@
-import { existsSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
 import { extname, parse, resolve } from 'node:path'
 import { pathToFileURL } from 'node:url'
 import type { Config } from '@master/css'
+import { compileCSS } from '@master/postcss'
 import { createJiti } from 'jiti'
 import type { TransformOptions, TransformResult } from 'jiti'
 import { transformSync } from '@swc/wasm'
@@ -13,13 +14,24 @@ export interface ExploreConfigOptions {
     found?: (basename: string, path: string) => void
 }
 
-const DEFAULT_EXTENSIONS = [
+export interface ExploreConfigPath {
+    basename: string
+    extension: string
+    path: string
+}
+
+export interface ExploreConfigResult extends ExploreConfigPath {
+    config: Config
+}
+
+export const DEFAULT_EXTENSIONS = [
     'js',
     'mjs',
     'ts',
     'cjs',
     'cts',
-    'mts'
+    'mts',
+    'css'
 ]
 
 const DEFAULT_RESOLVED_KEYS = [
@@ -33,28 +45,49 @@ function normalizeExtension(extension: string) {
     return extension.startsWith('.') ? extension.slice(1) : extension
 }
 
-function hasKnownExtension(name: string, extensions: string[]) {
-    return extensions.some((extension) => name.endsWith(`.${extension}`))
+function getKnownExtension(name: string, extensions: string[]) {
+    return extensions.find((extension) => name.endsWith(`.${extension}`))
 }
 
-function resolveConfigPath(name: string, options: ExploreConfigOptions, extensions: string[]) {
+function resolveExistingPath(cwd: string, name: string, extension: string): ExploreConfigPath | undefined {
+    const path = resolve(cwd, name)
+    if (existsSync(path)) {
+        return {
+            basename: parse(name).base,
+            extension,
+            path
+        }
+    }
+}
+
+export function resolveConfigPath(options: ExploreConfigOptions & { name?: string } = {}): ExploreConfigPath | undefined {
+    const name = options.name || 'master.css'
     const cwd = options.cwd || ''
-    if (hasKnownExtension(name, extensions)) {
+    const extensions = (options.extensions || DEFAULT_EXTENSIONS).map(normalizeExtension)
+    const knownExtension = getKnownExtension(name, extensions)
+    if (knownExtension && knownExtension !== 'css') {
         const path = resolve(cwd, name)
         if (existsSync(path)) {
             return {
                 basename: parse(name).base,
+                extension: knownExtension,
                 path
             }
         }
         return
     }
     for (const extension of extensions) {
+        if (extension === 'css' && knownExtension === 'css') {
+            const resolvedPath = resolveExistingPath(cwd, name, extension)
+            if (resolvedPath) return resolvedPath
+            continue
+        }
         const basename = `${name}.${extension}`
         const path = resolve(cwd, basename)
         if (existsSync(path)) {
             return {
                 basename,
+                extension,
                 path
             }
         }
@@ -106,20 +139,31 @@ function loadConfigModule(path: string) {
     return jiti(path)
 }
 
-export default function exploreConfig(options: ExploreConfigOptions & { name?: string } = {}) {
-    const name = options.name || 'master.css'
-    const extensions = (options.extensions || DEFAULT_EXTENSIONS).map(normalizeExtension)
+export function loadConfig(path: string, options: Pick<ExploreConfigOptions, 'resolvedKeys'> = {}) {
+    if (extname(path) === '.css') {
+        return compileCSS(readFileSync(path, 'utf-8'), { from: path }).config
+    }
     const resolvedKeys = options.resolvedKeys || DEFAULT_RESOLVED_KEYS
-    const resolvedConfig = resolveConfigPath(name, options, extensions)
-    if (!resolvedConfig) return
-    const configModule = loadConfigModule(resolvedConfig.path)
+    const configModule = loadConfigModule(path)
     let config: unknown
     for (const key of resolvedKeys) {
         config = configModule[key]
         if (config) break
     }
     if (!config) config = configModule
+    return config as Config
+}
+
+export function exploreConfig(options: ExploreConfigOptions & { name?: string } = {}) {
+    const resolvedConfig = resolveConfigPath(options)
+    if (!resolvedConfig) return
+    const config = loadConfig(resolvedConfig.path, options)
     const found = Object.hasOwn(options, 'found') ? options.found : DEFAULT_FOUND
     found?.(resolvedConfig.basename, resolvedConfig.path)
-    return config as Config | undefined
+    return {
+        ...resolvedConfig,
+        config
+    } satisfies ExploreConfigResult
 }
+
+export default exploreConfig

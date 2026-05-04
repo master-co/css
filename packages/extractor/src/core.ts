@@ -80,7 +80,7 @@ export default class CSSExtractor extends EventEmitter {
                 : exploreCSSConfig({
                     name: this.options.config as string,
                     cwd: this.cwd
-                })
+                })?.config
         )
         this.emit('init', this.options, this.config)
         this.initialized = true

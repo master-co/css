@@ -234,7 +234,7 @@ export default class CSSLanguageServer {
                 workspaceConfig = exploreConfig({
                     cwd: workspace.uri && URI.parse(workspace.uri).fsPath,
                     found: undefined
-                })
+                })?.config
             } catch (e: any) {
                 this.console.info(`Failed to load config from ${workspace.uri}`)
                 this.console.error(e instanceof Error ? e.stack : e.toString())

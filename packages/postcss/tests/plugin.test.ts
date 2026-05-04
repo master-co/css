@@ -1,6 +1,6 @@
 import postcss from 'postcss'
 import { describe, expect, it } from 'vitest'
-import masterCSS from '../src'
+import masterCSS, { compileCSS } from '../src'
 
 async function process(css: string) {
     return (await postcss([masterCSS()]).process(css, { from: undefined })).css
@@ -146,5 +146,43 @@ describe.concurrent('@master/postcss', () => {
 
         expect(css).toContain('.box{padding:0.4rem!important}')
         expect(css).toContain('.box{width:0.8rem!important}')
+    })
+
+    it('compiles CSS directives into a reusable config result', () => {
+        const result = compileCSS(`
+            @master {
+                --color-primary: #123;
+                --screen-md: 48;
+            }
+
+            @layer components {
+                .btn {
+                    @apply "bg:primary";
+                    display: inline-flex;
+                }
+            }
+        `)
+
+        expect(result.config).toMatchObject({
+            variables: {
+                color: {
+                    primary: '#123'
+                }
+            },
+            screens: {
+                md: 48
+            },
+            components: {
+                btn: {
+                    classNames: ['bg:primary'],
+                    declarations: {
+                        display: 'inline-flex'
+                    }
+                }
+            }
+        })
+        expect(result.componentNames).toEqual(['btn'])
+        expect(result.generatedCSS).toContain('@layer components')
+        expect(result.css).toContain('.btn{display:inline-flex}')
     })
 })

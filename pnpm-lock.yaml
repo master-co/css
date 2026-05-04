@@ -1328,6 +1328,9 @@ importers:
 
   packages/explore-config:
     dependencies:
+      '@master/postcss':
+        specifier: workspace:^
+        version: link:../postcss
       '@swc/wasm':
         specifier: ^1.15.33
         version: 1.15.33

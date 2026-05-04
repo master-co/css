@@ -2,7 +2,7 @@ import type { Plugin } from 'vite'
 import { PluginContext } from '../core'
 import { render } from '@master/css-server'
 import { Config } from '@master/css'
-import exploreConfig from '@master/css-explore-config'
+import { loadConfig } from '@master/css-explore-config'
 import { PluginOptions } from '../options'
 
 export default function PreRenderPlugin(options: PluginOptions, context: PluginContext): Plugin {
@@ -20,8 +20,9 @@ export default function PreRenderPlugin(options: PluginOptions, context: PluginC
                 }
                 return
             }
-            if (context.configPath)
-                cssConfig = exploreConfig({ name: context.configPath, cwd: config.root })
+            if (context.configPath) {
+                cssConfig = loadConfig(context.configPath)
+            }
         },
         transformIndexHtml(html) {
             if (!enabled) return

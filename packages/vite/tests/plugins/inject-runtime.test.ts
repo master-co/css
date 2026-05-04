@@ -36,3 +36,15 @@ it.each(cases)(
         }
     }
 )
+
+it('uses a dedicated config binding when injecting runtime code', () => {
+    const id = path.join(FIXTURE_DIR, 'basic.ts')
+    const result = (InjectRuntimePlugin({}, {
+        entryId: id,
+        extractor: {} as any,
+    }).transform as any).call({}, 'const config = { local: true }', id)
+
+    expect(result.code).toContain(`import masterCSSConfig from 'virtual:master-css-config';`)
+    expect(result.code).toContain('initCSSRuntime(masterCSSConfig);')
+    expect(result.code).toContain('const config = { local: true }')
+})

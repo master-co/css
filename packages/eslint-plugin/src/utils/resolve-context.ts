@@ -17,7 +17,7 @@ export default function resolveContext(context: RuleContext<any, any[]>) {
         cache.cwd === context.cwd)?.css
 
     if (!css) {
-        let config: Config
+        let config: Config | undefined
         if (typeof resolvedSettings.config === 'object') {
             config = resolvedSettings.config
         } else {
@@ -29,7 +29,7 @@ export default function resolveContext(context: RuleContext<any, any[]>) {
                         console.log('Found config:', configPath)
                     }
                 },
-            })
+            })?.config
         }
         css = createCSS(config)
         cssCaches.push({ cwd: context.cwd, settings: resolvedSettings, css })

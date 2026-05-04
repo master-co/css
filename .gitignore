@@ -17,7 +17,6 @@
 **/*.turbo
 **/*out
 **/*tmp
-**/*master.css
 **/*test.html
 **/*.test.html
 **/*tsconfig.tsbuildinfo

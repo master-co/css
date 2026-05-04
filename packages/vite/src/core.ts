@@ -1,4 +1,5 @@
 import CSSExtractor from '@master/css-extractor'
+import type { ExploreConfigResult } from '@master/css-explore-config'
 import type { Plugin, ResolvedConfig } from 'vite'
 import fg from 'fast-glob'
 import { ENTRY_MODULE_PATTERNS } from './common'
@@ -25,6 +26,7 @@ export interface PluginContext {
     config?: ResolvedConfig
     entryId?: string
     configPath?: string
+    configResult?: ExploreConfigResult
     extractor: CSSExtractor
 }
 

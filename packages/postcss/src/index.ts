@@ -1,5 +1,5 @@
 import { createCSS } from '@master/css'
-import type { AtRule, ChildNode, PluginCreator, Rule } from 'postcss'
+import postcss, { type AtRule, type ChildNode, type PluginCreator, type Root, type Rule } from 'postcss'
 import type { PropertiesHyphen } from 'csstype'
 import type { AnimationDefinitions, Config, VariableDefinitions, VariableDefinition, VariableValue } from '@master/css'
 import normalizeDefinitionName from './utils/normalize-definition-name'
@@ -11,10 +11,18 @@ export interface PluginOptions {
     classes?: string[]
 }
 
-interface ParsedDirectives {
+export interface CompileCSSOptions extends PluginOptions {
+    from?: string
+}
+
+export interface CompileCSSResult {
     config: Config
     componentNames: string[]
+    css: string
+    generatedCSS: string
 }
+
+type ParsedDirectives = Pick<CompileCSSResult, 'config' | 'componentNames'>
 
 function normalizeClassNames(classNames: string[]) {
     return classNames.join(' ').replace(/(?:\n\s*)+/g, ' ').trim().split(' ').filter(Boolean)
@@ -267,57 +275,84 @@ function parseLayer(atRule: AtRule, parsed: ParsedDirectives) {
     }
 }
 
+export function parseDirectives(root: Root): ParsedDirectives {
+    const parsed: ParsedDirectives = {
+        config: {},
+        componentNames: []
+    }
+
+    root.walkAtRules('master', (atRule) => {
+        parseMaster(atRule, parsed.config)
+        atRule.remove()
+    })
+    root.walkAtRules('mode', (atRule) => {
+        if (atRule.parent !== root) return
+        parseMode(atRule, parsed.config)
+        atRule.remove()
+    })
+    root.walkAtRules('at', (atRule) => {
+        if (atRule.parent !== root) return
+        parseAtDefinition(atRule, parsed.config)
+        atRule.remove()
+    })
+    root.walkAtRules('selector', (atRule) => {
+        if (atRule.parent !== root) return
+        parseSelectorDefinition(atRule, parsed.config)
+        atRule.remove()
+    })
+    root.walkAtRules('utility', (atRule) => {
+        if (atRule.parent !== root) return
+        parseUtility(atRule, parsed.config)
+        atRule.remove()
+    })
+    root.walkAtRules('keyframes', (atRule) => {
+        if (atRule.parent !== root) return
+        parseKeyframes(atRule, parsed.config)
+        atRule.remove()
+    })
+    root.walkAtRules('layer', (atRule) => {
+        if (atRule.parent !== root) return
+        parseLayer(atRule, parsed)
+    })
+
+    return parsed
+}
+
+function createDirectiveCSS(parsed: ParsedDirectives, options: PluginOptions) {
+    const css = createCSS(options.config
+        ? { extends: [options.config, parsed.config] }
+        : parsed.config
+    )
+    const classes = [...parsed.componentNames, ...(options.classes || [])]
+    for (const className of classes) {
+        css.add(className)
+    }
+    return css
+}
+
+export function compileCSS(source: string, options: CompileCSSOptions = {}): CompileCSSResult {
+    const root = postcss.parse(source, { from: options.from })
+    const parsed = parseDirectives(root)
+    const css = createDirectiveCSS(parsed, options)
+    const generatedCSS = css.text
+
+    if (generatedCSS) {
+        root.append(postcss.parse(generatedCSS, { from: options.from }))
+    }
+
+    return {
+        ...parsed,
+        css: root.toString(),
+        generatedCSS
+    }
+}
+
 const masterCSSPostCSS: PluginCreator<PluginOptions> = (options = {}) => {
     return {
         postcssPlugin: '@master/postcss',
         Once(root, { postcss }) {
-            const parsed: ParsedDirectives = {
-                config: {},
-                componentNames: []
-            }
-
-            root.walkAtRules('master', (atRule) => {
-                parseMaster(atRule, parsed.config)
-                atRule.remove()
-            })
-            root.walkAtRules('mode', (atRule) => {
-                if (atRule.parent !== root) return
-                parseMode(atRule, parsed.config)
-                atRule.remove()
-            })
-            root.walkAtRules('at', (atRule) => {
-                if (atRule.parent !== root) return
-                parseAtDefinition(atRule, parsed.config)
-                atRule.remove()
-            })
-            root.walkAtRules('selector', (atRule) => {
-                if (atRule.parent !== root) return
-                parseSelectorDefinition(atRule, parsed.config)
-                atRule.remove()
-            })
-            root.walkAtRules('utility', (atRule) => {
-                if (atRule.parent !== root) return
-                parseUtility(atRule, parsed.config)
-                atRule.remove()
-            })
-            root.walkAtRules('keyframes', (atRule) => {
-                if (atRule.parent !== root) return
-                parseKeyframes(atRule, parsed.config)
-                atRule.remove()
-            })
-            root.walkAtRules('layer', (atRule) => {
-                if (atRule.parent !== root) return
-                parseLayer(atRule, parsed)
-            })
-
-            const css = createCSS(options.config
-                ? { extends: [options.config, parsed.config] }
-                : parsed.config
-            )
-            const classes = [...parsed.componentNames, ...(options.classes || [])]
-            for (const className of classes) {
-                css.add(className)
-            }
+            const parsed = parseDirectives(root)
+            const css = createDirectiveCSS(parsed, options)
 
             if (css.text) {
                 root.append(postcss.parse(css.text, { from: root.source?.input.file || undefined }))
