@@ -1,7 +1,7 @@
-import SyntaxRuleType from '../syntax-rule-type'
+import UtilityType from '../utility-type'
 import createCSS from '../create'
 import compareRulePriority from './compare-rule-priority'
-import { SyntaxRule } from '../syntax-rule'
+import { Utility } from '../utility'
 import { __UNSORTED__ } from '../common'
 
 /**
@@ -26,7 +26,7 @@ export default function sortReadableClasses(classes: string[], css = createCSS()
     // 先去重 fixedClass for componentsLayer
     const seenFixed = new Set<string>()
     const dedupedComponentRules = css.componentsLayer.rules
-        .filter((rule): rule is SyntaxRule => rule instanceof SyntaxRule)
+        .filter((rule): rule is Utility => rule instanceof Utility)
         .filter(rule => {
             if (!rule.fixedClass) return true
             if (seenFixed.has(rule.fixedClass)) return false
@@ -38,12 +38,12 @@ export default function sortReadableClasses(classes: string[], css = createCSS()
         ...css.generalLayer.rules,
         ...css.baseLayer.rules,
         ...css.presetLayer.rules,
-    ].filter((rule): rule is SyntaxRule => rule instanceof SyntaxRule)
+    ].filter((rule): rule is Utility => rule instanceof Utility)
 
     const baseSet = new Set(css.baseLayer.rules)
     const presetSet = new Set(css.presetLayer.rules)
 
-    const getGroupIndex = (rule: SyntaxRule): number => {
+    const getGroupIndex = (rule: Utility): number => {
         if (baseSet.has(rule)) return 4
         if (presetSet.has(rule)) return 5
         if (rule.atRules) return 3
@@ -52,9 +52,9 @@ export default function sortReadableClasses(classes: string[], css = createCSS()
         return 0
     }
 
-    const getTypeScore = (rule: SyntaxRule): number => {
+    const getTypeScore = (rule: Utility): number => {
         if (rule.fixedClass) return 0
-        if (rule.type === SyntaxRuleType.Static) return 1
+        if (rule.type === UtilityType.Static) return 1
         return 2
     }
     const rulesWithSortKey = allRules.map(rule => ({

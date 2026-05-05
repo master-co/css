@@ -1,4 +1,4 @@
-import { createCSS, SyntaxRuleType } from '@master/css'
+import { createCSS, UtilityType } from '@master/css'
 import { transform } from 'lightningcss'
 import type { PropertiesHyphen } from 'csstype'
 import type {
@@ -390,10 +390,10 @@ function parseUtilityRule(rule: any, config: Config) {
             throw new Error('Utilities only accept declarations')
         }
     }
-    config.rules ??= []
-    config.rules.push({
+    config.utilities ??= []
+    config.utilities.push({
         name,
-        type: SyntaxRuleType.Static,
+        type: UtilityType.Static,
         declarations: collectStyleRuleDeclarations(rule) as PropertiesHyphen
     })
 }

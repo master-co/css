@@ -3,7 +3,7 @@ import { instancePattern } from '../utils/regex'
 import CSSLanguageService from '../core'
 import type { TextDocument } from 'vscode-languageserver-textdocument'
 import Color from 'colorjs.io'
-import { SyntaxRuleType, type ValueComponent } from '@master/css'
+import { UtilityType, type ValueComponent } from '@master/css'
 
 export default async function renderSyntaxColors(this: CSSLanguageService, document: TextDocument): Promise<ColorInformation[] | undefined> {
     const text = document.getText() ?? ''
@@ -14,7 +14,7 @@ export default async function renderSyntaxColors(this: CSSLanguageService, docum
             const instanceStartIndex = instanceMatch.index
             const syntax = instanceMatch[0]
             const rule = this.css.generate(syntax)[0]
-            if (rule && rule.type !== SyntaxRuleType.Static) {
+            if (rule && rule.type !== UtilityType.Static) {
                 const keyTokenLength = rule.keyToken?.length ?? 0
                 let currentLength = 0
                 const resolveValueComponent = (valueComponent: ValueComponent) => {

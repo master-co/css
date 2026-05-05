@@ -1,6 +1,6 @@
-import rules from '../config/rules'
-import SyntaxRuleType from '../syntax-rule-type'
+import utilities from '../config/utilities'
+import UtilityType from '../utility-type'
 
 export default function isCoreRule(id: string) {
-    return rules.some((rule) => (rule.type === SyntaxRuleType.Static ? '.' + rule.name : rule.name) === id)
+    return utilities.some((utility) => (utility.type === UtilityType.Static ? '.' + utility.name : utility.name) === id)
 }

@@ -1,5 +1,5 @@
 import { describe } from 'vitest'
-import { rules } from '../src'
+import { utilities } from '../src'
 import CSSTester from './tester'
 
 describe('mix color spaces and modes', () => {
@@ -10,7 +10,7 @@ describe('mix color spaces and modes', () => {
             { namespace: 'color', key: 'primary', value: 'hsl(0 0% 100%)', mode: 'dark' }
         ],
         modes: ['light', 'dark'],
-        rules,
+        utilities,
         modeTrigger: 'class'
     }, null)
         .layers({
@@ -37,7 +37,7 @@ describe('mix color spaces, modes, and alias', () => {
             { namespace: 'color', key: 'primary', value: '$color-black', mode: 'light' }
         ],
         modes: ['dark', 'light'],
-        rules,
+        utilities,
         modeTrigger: 'class'
     }, null)
         .layers({
@@ -56,7 +56,7 @@ describe('mix color spaces, modes, and alias', () => {
 })
 
 describe('inline color variable with alpha', () => {
-    new CSSTester({ variables: [{ namespace: 'color', key: 'black', value: '#000000' }], rules, modeTrigger: 'class' }, null)
+    new CSSTester({ variables: [{ namespace: 'color', key: 'black', value: '#000000' }], utilities, modeTrigger: 'class' }, null)
         .layers({
             'bg:black/.5': {
                 general: '.bg\\:black\\/\\.5{background-color:rgb(0 0 0/0.5)}'
@@ -65,7 +65,7 @@ describe('inline color variable with alpha', () => {
 })
 
 describe('inline color variable with alias and alpha', () => {
-    new CSSTester({ variables: [{ namespace: 'color', key: 'black', value: '#000000' }, { namespace: 'color', key: 'primary', value: '$color-black/.5' }], rules, modeTrigger: 'class' }, null)
+    new CSSTester({ variables: [{ namespace: 'color', key: 'black', value: '#000000' }, { namespace: 'color', key: 'primary', value: '$color-black/.5' }], utilities, modeTrigger: 'class' }, null)
         .layers({
             'bg:primary': {
                 general: '.bg\\:primary{background-color:rgb(0 0 0/0.5)}'
@@ -74,7 +74,7 @@ describe('inline color variable with alias and alpha', () => {
 })
 
 describe('multiply two alpha', () => {
-    new CSSTester({ variables: [{ namespace: 'color', key: 'black', value: '#000000' }, { namespace: 'color', key: 'primary', value: '$color-black/.5' }], rules, modeTrigger: 'class' }, null)
+    new CSSTester({ variables: [{ namespace: 'color', key: 'black', value: '#000000' }, { namespace: 'color', key: 'primary', value: '$color-black/.5' }], utilities, modeTrigger: 'class' }, null)
         .layers({
             'bg:primary/.5': {
                 general: '.bg\\:primary\\/\\.5{background-color:rgb(0 0 0/0.25)}'
@@ -83,7 +83,7 @@ describe('multiply two alpha', () => {
 })
 
 describe('multiply two alpha', () => {
-    new CSSTester({ variables: [{ namespace: 'color', key: 'a', value: '#000000' }, { namespace: 'color', key: 'b', value: '$color-a/.5' }, { namespace: 'color', key: 'c', value: '$color-b/.5' }], rules, modeTrigger: 'class' }, null)
+    new CSSTester({ variables: [{ namespace: 'color', key: 'a', value: '#000000' }, { namespace: 'color', key: 'b', value: '$color-a/.5' }, { namespace: 'color', key: 'c', value: '$color-b/.5' }], utilities, modeTrigger: 'class' }, null)
         .layers({
             'bg:c': {
                 general: '.bg\\:c{background-color:rgb(0 0 0/0.25)}'
@@ -100,7 +100,7 @@ describe('create an alias for a variable with modes', () => {
             { namespace: 'color', key: 'primary', value: 'hsl(0 0% 100%)', mode: 'dark' }
         ],
         modes: ['light', 'dark'],
-        rules,
+        utilities,
         modeTrigger: 'class'
     }, null)
         .layers({

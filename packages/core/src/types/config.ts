@@ -3,13 +3,13 @@ import { AT_IDENTIFIERS } from '../common'
 import { DeclarerNames } from '../declarers'
 import { TransformerNames } from '../transformers'
 import { FunctionTransformerNames } from '../function-transformers'
-import SyntaxRuleType from '../syntax-rule-type'
+import UtilityType from '../utility-type'
 
 export type CSSDeclarations = PropertiesHyphen | Record<string, string | number | undefined | (string | number | undefined)[]>
 
-export interface SyntaxRuleDefinition {
+export interface UtilityDefinition {
     name: string
-    type?: SyntaxRuleType
+    type?: UtilityType
     matcher?: RegExp | string
     sign?: string
     key?: string
@@ -49,7 +49,7 @@ export interface ComponentSelectorDefinition {
 }
 export type ComponentDefinition = string | ComponentSelectorDefinition
 export type ComponentDefinitions = Record<string, ComponentDefinition[]>
-export type SyntaxRuleDefinitions = SyntaxRuleDefinition[]
+export type UtilityDefinitions = UtilityDefinition[]
 export type VariableDefinitions = VariableDefinition[]
 export type ModeDefinitions = string[];
 export interface FunctionDefinition {
@@ -65,7 +65,7 @@ export interface Config {
     atRuleAliases?: AtRuleAliasDefinitions
     selectorAliases?: SelectorAliasDefinitions
     variables?: VariableDefinitions
-    rules?: SyntaxRuleDefinitions
+    utilities?: UtilityDefinitions
     rootSize?: number
     baseUnit?: number
     defaultMode?: 'light' | 'dark' | string | false

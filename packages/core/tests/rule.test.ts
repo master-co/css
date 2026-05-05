@@ -18,7 +18,7 @@ test.concurrent('declarations', () => {
 })
 
 test.concurrent('registered Rule', () => {
-    expect(createCSS().definedRules.find(({ id }) => id === 'content')).toMatchObject({
+    expect(createCSS().definedUtilities.find(({ id }) => id === 'content')).toMatchObject({
         definition: {
             key: 'content',
             type: -1

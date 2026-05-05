@@ -2,7 +2,7 @@ import type { Hover, HoverParams, Range } from 'vscode-languageserver-protocol'
 import type CSSLanguageService from '../core'
 import type { TextDocument } from 'vscode-languageserver-textdocument'
 import { getCSSDataDocumentation } from '../utils/get-css-data-documentation'
-import { Layer, SyntaxRuleType, generateCSS, isCoreRule } from '@master/css'
+import { Layer, UtilityType, generateCSS, isCoreRule } from '@master/css'
 import cssDataProvider from '../utils/css-data-provider'
 import getUtilityInfo from '../utils/get-utility-info'
 
@@ -29,11 +29,11 @@ export default function inspectSyntax(this: CSSLanguageService, document: TextDo
             }
         }
     } else {
-        const rules = this.css.generate(token)
-        const rule = rules[0]
-        if (rule) {
-            if (rule.type === SyntaxRuleType.Static) {
-                const { data, docs } = getUtilityInfo(rule.registeredSyntax, this.css)
+        const utilities = this.css.generate(token)
+        const utility = utilities[0]
+        if (utility) {
+            if (utility.type === UtilityType.Static) {
+                const { data, docs } = getUtilityInfo(utility.registeredUtility, this.css)
                 const documentation = getCSSDataDocumentation(data, {
                     generatedCSS: generateCSS([token], this.css),
                     docs
@@ -46,10 +46,10 @@ export default function inspectSyntax(this: CSSLanguageService, document: TextDo
                 }
             } else {
                 const nativeProperties = cssDataProvider.provideProperties()
-                const nativeCSSPropertyData = nativeProperties.find(({ name }) => name === rule.id)
+                const nativeCSSPropertyData = nativeProperties.find(({ name }) => name === utility.id)
                 const documentation = getCSSDataDocumentation(nativeCSSPropertyData, {
                     generatedCSS: generateCSS([token], this.css),
-                    docs: '/reference/' + (isCoreRule(rule.id) && rule.id)
+                    docs: '/reference/' + (isCoreRule(utility.id) && utility.id)
                 })
                 if (documentation) {
                     return {

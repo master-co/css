@@ -1,12 +1,12 @@
-import { rules, SyntaxRuleType, variables } from '@master/css'
+import { utilities, UtilityType, variables } from '@master/css'
 
 const variableNamespaces = variables
     .map(({ namespace }) => namespace)
     .filter(Boolean) as string[]
 
 const namespaces = Array.from(new Set([
-    ...rules
-        .filter(({ type }) => type !== SyntaxRuleType.Static)
+    ...utilities
+        .filter(({ type }) => type !== UtilityType.Static)
         .map(({ name }) => name),
     ...variableNamespaces,
     'screen',

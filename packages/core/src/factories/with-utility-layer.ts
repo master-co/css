@@ -2,13 +2,13 @@ import AnimationRule from '../animation-rule'
 import Layer from '../layer'
 import NonLayer from '../non-layer'
 import { Rule } from '../rule'
-import { SyntaxRule } from '../syntax-rule'
+import { Utility } from '../utility'
 import compareRulePriority from '../utils/compare-rule-priority'
 import VariableRule from '../variable-rule'
 
-export default function withSyntaxLayer<TBase extends new (...args: any[]) => Layer>(Base: TBase) {
-    return class SyntaxLayer extends Base {
-        rules: (SyntaxRule | Rule)[] = []
+export default function withUtilityLayer<TBase extends new (...args: any[]) => Layer>(Base: TBase) {
+    return class UtilityLayer extends Base {
+        rules: (Utility | Rule)[] = []
         /**
         * normal
         * normal selectors
@@ -17,29 +17,29 @@ export default function withSyntaxLayer<TBase extends new (...args: any[]) => La
         * media width
         * media width selectors
         */
-        insert(syntaxRule: SyntaxRule | Rule) {
-            if (this.rules.includes(syntaxRule)) return
-            if ('valid' in syntaxRule && !syntaxRule.valid) return
+        insert(utility: Utility | Rule) {
+            if (this.rules.includes(utility)) return
+            if ('valid' in utility && !utility.valid) return
             let index = this.rules.length
-            if (syntaxRule instanceof SyntaxRule) {
+            if (utility instanceof Utility) {
                 for (let i = 0; i < this.rules.length; i++) {
                     const rule = this.rules[i]
-                    if (!(rule instanceof SyntaxRule)) continue
-                    if (compareRulePriority(syntaxRule, rule) < 0) {
+                    if (!(rule instanceof Utility)) continue
+                    if (compareRulePriority(utility, rule) < 0) {
                         index = i
                         break
                     }
                 }
             }
-            super.insert(syntaxRule, index)
-            this.insertVariables(syntaxRule)
-            this.insertAnimations(syntaxRule)
+            super.insert(utility, index)
+            this.insertVariables(utility)
+            this.insertAnimations(utility)
             return index
         }
 
         delete(key: string) {
-            const syntaxRule = super.delete(key) as SyntaxRule | Rule | undefined
-            if (!syntaxRule) return
+            const utility = super.delete(key) as Utility | Rule | undefined
+            if (!utility) return
             const deleteLayerToken = (layerToken: string, layer: Layer | NonLayer) => {
                 const count = layer.tokenCounts.get(layerToken) ?? 0
                 if (count <= 1) {
@@ -49,18 +49,18 @@ export default function withSyntaxLayer<TBase extends new (...args: any[]) => La
                     layer.tokenCounts.set(layerToken, count - 1)
                 }
             }
-            if ('variableNames' in syntaxRule) syntaxRule.variableNames?.forEach((eachVariableName) => {
+            if ('variableNames' in utility) utility.variableNames?.forEach((eachVariableName) => {
                 deleteLayerToken(eachVariableName, this.css.themeLayer)
             })
-            if ('animationNames' in syntaxRule) syntaxRule.animationNames?.forEach((eachAnimationName) => {
+            if ('animationNames' in utility) utility.animationNames?.forEach((eachAnimationName) => {
                 deleteLayerToken(eachAnimationName, this.css.animationsNonLayer)
             })
-            return syntaxRule
+            return utility
         }
 
-        insertVariables(syntaxRule: SyntaxRule | Rule) {
-            if (!('variableNames' in syntaxRule)) return
-            syntaxRule.variableNames?.forEach((eachVariableName) => {
+        insertVariables(utility: Utility | Rule) {
+            if (!('variableNames' in utility)) return
+            utility.variableNames?.forEach((eachVariableName) => {
                 if (this.css.themeLayer.rules.find(({ name }) => name === eachVariableName)) {
                     const count = this.css.themeLayer.tokenCounts.get(eachVariableName) || 0
                     this.css.themeLayer.tokenCounts.set(eachVariableName, count + 1)
@@ -74,9 +74,9 @@ export default function withSyntaxLayer<TBase extends new (...args: any[]) => La
             })
         }
 
-        insertAnimations(syntaxRule: SyntaxRule | Rule) {
-            if (!('animationNames' in syntaxRule)) return
-            syntaxRule.animationNames?.forEach((eachAnimationName) => {
+        insertAnimations(utility: Utility | Rule) {
+            if (!('animationNames' in utility)) return
+            utility.animationNames?.forEach((eachAnimationName) => {
                 if (this.css.animationsNonLayer.rules.find(({ name }) => name === eachAnimationName)) {
                     const count = this.css.animationsNonLayer.tokenCounts.get(eachAnimationName) || 0
                     this.css.animationsNonLayer.tokenCounts.set(eachAnimationName, count + 1)

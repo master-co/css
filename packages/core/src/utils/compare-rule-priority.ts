@@ -1,4 +1,4 @@
-import { SyntaxRule } from '../syntax-rule'
+import { Utility } from '../utility'
 import { AtRuleNode } from './parse-at'
 import { SelectorNode } from './parse-selector'
 
@@ -74,7 +74,7 @@ function getAtRuleEntries(nestNodes?: AtRuleNode[]) {
 }
 
 // ✅ Calculate RulePriority from AST
-export function calcRulePriority(rule: SyntaxRule): RulePriority {
+export function calcRulePriority(rule: Utility): RulePriority {
     const features: [string, number, number][] = []
     const extractFeatures = (nodes: AtRuleNode[]) => {
         const featureMap = getAtRuleEntries(nodes)
@@ -118,8 +118,8 @@ function compareFeatureTuples(
 }
 
 // ✅ Compare function
-export default function compareRulePriority(a: SyntaxRule, b: SyntaxRule): number {
-    const getTier = (rule: SyntaxRule): number => {
+export default function compareRulePriority(a: Utility, b: Utility): number {
+    const getTier = (rule: Utility): number => {
         const hasSelector = rule.selectorNodes?.length
         const hasAtRules = !!rule.atRules
         const hasMode = !!rule.mode

@@ -13,7 +13,7 @@ test.concurrent('utilities', () => {
             general: '.\\@my-animation{animation:1s linear infinite rotate}'
         },
         '@my-animation',
-        { rules: [{ name: '@my-animation', type: -4, declarations: {
+        { utilities: [{ name: '@my-animation', type: -4, declarations: {
                     animation: '1s linear infinite rotate'
                 } }] }
     )

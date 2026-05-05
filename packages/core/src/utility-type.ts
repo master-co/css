@@ -1,4 +1,4 @@
-enum SyntaxRuleType {
+enum UtilityType {
     /**
      * static utility classes
      * @example block, inline
@@ -26,4 +26,4 @@ enum SyntaxRuleType {
     Normal = 0,
 }
 
-export default SyntaxRuleType
+export default UtilityType

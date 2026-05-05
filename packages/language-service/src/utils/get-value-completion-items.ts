@@ -1,6 +1,6 @@
 import { type CompletionItem, CompletionItemKind } from 'vscode-languageserver-protocol'
 import cssDataProvider from './css-data-provider'
-import { MasterCSS, createCSS, SyntaxRuleType, Variable, generateCSS, isCoreRule } from '@master/css'
+import { MasterCSS, createCSS, UtilityType, Variable, generateCSS, isCoreRule } from '@master/css'
 import { getCSSDataDocumentation } from './get-css-data-documentation'
 import sortCompletionItems from './sort-completion-items'
 import type { IValueData } from 'vscode-css-languageservice'
@@ -13,7 +13,7 @@ const GLOBAL_VARIABLE_PRIORITY = 'zzzz'
 export default function getValueCompletionItems(css: MasterCSS = createCSS(), ruleKey: string): CompletionItem[] {
     const nativeProperties = cssDataProvider.provideProperties()
     const completionItems: CompletionItem[] = []
-    const nativeKey = css.definedRules.find(({ keys }) => keys.includes(ruleKey))?.id
+    const nativeKey = css.definedUtilities.find(({ keys }) => keys.includes(ruleKey))?.id
     const nativePropertyData = nativeProperties.find(({ name }) => name === nativeKey)
     const generateVariableCompletionItem = (variable: Variable, { scoped } = { scoped: false }): CompletionItem | undefined => {
         const eachNativePropertyData = nativeProperties.find((x: { name: string }) => x.name === variable.group) || nativePropertyData
@@ -73,13 +73,13 @@ export default function getValueCompletionItems(css: MasterCSS = createCSS(), ru
         return completionItem
     }
 
-    for (const eachDefinedRule of css.definedRules) {
+    for (const eachDefinedUtility of css.definedUtilities) {
         /**
          * Scoped variables
          * @example box: + content -> box-sizing:content
          */
-        if (eachDefinedRule.definition.key === ruleKey || eachDefinedRule.definition.subkey === ruleKey || eachDefinedRule.definition.aliasGroups?.includes(ruleKey)) {
-            eachDefinedRule.variables?.forEach((variable, variableName) => {
+        if (eachDefinedUtility.definition.key === ruleKey || eachDefinedUtility.definition.subkey === ruleKey || eachDefinedUtility.definition.aliasGroups?.includes(ruleKey)) {
+            eachDefinedUtility.variables?.forEach((variable, variableName) => {
                 if (completionItems.find(({ label }) => label === variableName)) return
                 const completionItem = generateVariableCompletionItem(variable, { scoped: true })
                 if (completionItem) {
@@ -94,17 +94,17 @@ export default function getValueCompletionItems(css: MasterCSS = createCSS(), ru
         /**
          * @example animation:fade
          */
-        if (eachDefinedRule.keys.includes(ruleKey) && eachDefinedRule.definition.includeAnimations) {
+        if (eachDefinedUtility.keys.includes(ruleKey) && eachDefinedUtility.definition.includeAnimations) {
             css.animations.forEach((_, animationName) => {
-                const isNative = eachDefinedRule.definition.type && ([SyntaxRuleType.Native, SyntaxRuleType.NativeShorthand]).includes(eachDefinedRule.definition.type)
+                const isNative = eachDefinedUtility.definition.type && ([UtilityType.Native, UtilityType.NativeShorthand]).includes(eachDefinedUtility.definition.type)
                 completionItems.push({
                     label: animationName,
                     kind: CompletionItemKind.Value,
                     documentation: getCSSDataDocumentation(undefined, {
                         generatedCSS: generateCSS([ruleKey + ':' + animationName], css),
-                        docs: '/reference/' + isCoreRule(eachDefinedRule.id) && eachDefinedRule.id
+                        docs: '/reference/' + isCoreRule(eachDefinedUtility.id) && eachDefinedUtility.id
                     }),
-                    detail: isNative ? eachDefinedRule.id + ': ' + animationName : animationName
+                    detail: isNative ? eachDefinedUtility.id + ': ' + animationName : animationName
                 })
             })
         }
@@ -114,12 +114,12 @@ export default function getValueCompletionItems(css: MasterCSS = createCSS(), ru
          * @example text: -> center, left, right, justify
          * @example t: -> center, left, right, justify
          */
-        if (eachDefinedRule.definition.aliasGroups?.includes(ruleKey) && eachDefinedRule.definition.values?.length) {
-            const nativePropertyData = nativeProperties.find((x: { name: string }) => x.name === eachDefinedRule.id)
-            for (const value of eachDefinedRule.definition.values) {
+        if (eachDefinedUtility.definition.aliasGroups?.includes(ruleKey) && eachDefinedUtility.definition.values?.length) {
+            const nativePropertyData = nativeProperties.find((x: { name: string }) => x.name === eachDefinedUtility.id)
+            for (const value of eachDefinedUtility.definition.values) {
                 if (typeof value !== 'string') continue
                 const nativeValueData = nativePropertyData?.values?.find((x: { name: string }) => x.name === value)
-                const isNative = eachDefinedRule.definition.type && ([SyntaxRuleType.Native, SyntaxRuleType.NativeShorthand]).includes(eachDefinedRule.definition.type)
+                const isNative = eachDefinedUtility.definition.type && ([UtilityType.Native, UtilityType.NativeShorthand]).includes(eachDefinedUtility.definition.type)
                 completionItems.push({
                     label: value,
                     kind: CompletionItemKind.Value,
@@ -130,9 +130,9 @@ export default function getValueCompletionItems(css: MasterCSS = createCSS(), ru
                         references: nativePropertyData?.references
                     }, {
                         generatedCSS: generateCSS([ruleKey + ':' + value], css),
-                        docs: '/reference/' + isCoreRule(eachDefinedRule.id) && eachDefinedRule.id
+                        docs: '/reference/' + isCoreRule(eachDefinedUtility.id) && eachDefinedUtility.id
                     }),
-                    detail: isNative ? eachDefinedRule.id + ': ' + value : value
+                    detail: isNative ? eachDefinedUtility.id + ': ' + value : value
                 })
             }
         }

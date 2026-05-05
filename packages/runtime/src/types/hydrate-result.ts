@@ -1,5 +1,5 @@
-import type { SyntaxRule } from '@master/css'
+import type { Utility } from '@master/css'
 
 export interface HydrateResult {
-    allSyntaxRules: SyntaxRule[]
+    allUtilities: Utility[]
 }

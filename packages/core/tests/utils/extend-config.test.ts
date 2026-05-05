@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest'
-import { extendConfig, SyntaxRuleType } from '../../src'
+import { extendConfig, UtilityType } from '../../src'
 
 // describe('variables', () => {
 //     test.concurrent('basic', () => {
@@ -48,23 +48,23 @@ describe('modes', () => {
     })
 })
 
-describe('rules', () => {
-    test.concurrent('keeps utility and syntax rules in separate slots', () => {
+describe('utilities', () => {
+    test.concurrent('keeps static and value utilities in separate slots', () => {
         expect(extendConfig(
             {
-                rules: [
-                    { name: 'flex', type: SyntaxRuleType.Static, declarations: { display: 'flex' } },
-                    { name: 'flex', type: SyntaxRuleType.Native }
+                utilities: [
+                    { name: 'flex', type: UtilityType.Static, declarations: { display: 'flex' } },
+                    { name: 'flex', type: UtilityType.Native }
                 ]
             },
             {
-                rules: [
-                    { name: 'flex', type: SyntaxRuleType.Static, declarations: { display: 'inline-flex' } }
+                utilities: [
+                    { name: 'flex', type: UtilityType.Static, declarations: { display: 'inline-flex' } }
                 ]
             }
-        ).rules).toEqual([
-            { name: 'flex', type: SyntaxRuleType.Native },
-            { name: 'flex', type: SyntaxRuleType.Static, declarations: { display: 'inline-flex' } }
+        ).utilities).toEqual([
+            { name: 'flex', type: UtilityType.Native },
+            { name: 'flex', type: UtilityType.Static, declarations: { display: 'inline-flex' } }
         ])
     })
 })

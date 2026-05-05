@@ -37,7 +37,7 @@ The core package must remain independent from integrations and tooling packages.
 
 - Default config
 - Config extension and flattening
-- Rule matching
+- Utility matching
 - Value parsing
 - Selector parsing and generation
 - At-rule parsing and generation
@@ -49,9 +49,8 @@ The core package must remain independent from integrations and tooling packages.
 Important files:
 
 - `src/core.ts`
-- `src/syntax-rule.ts`
-- `src/factories/with-syntax-layer.ts`
-- `src/config/rules.ts`
+- `src/utility.ts`
+- `src/factories/with-utility-layer.ts`
 - `src/config/utilities.ts`
 - `src/utils/compare-rule-priority.ts`
 - `src/utils/parse-at.ts`
@@ -77,7 +76,7 @@ Framework packages wrap those lower layers for Astro, Nuxt, React, Vue, and Svel
 
 ## Tooling Packages
 
-`packages/language-service` uses core config and rules for completion, hover, and color features.
+`packages/language-service` uses core config and utilities for completion, hover, and color features.
 
 `packages/language-server` exposes the language service through LSP and manages workspace configs.
 
@@ -90,4 +89,3 @@ Framework packages wrap those lower layers for Astro, Nuxt, React, Vue, and Svel
 ## Documentation And Examples
 
 The public docs live under `site/` and depend on the `internal` submodule. The root currently has no `docs/` directory. Avoid adding one unless maintainers explicitly want human-facing docs outside the site.
-

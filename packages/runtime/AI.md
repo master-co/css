@@ -13,14 +13,14 @@
 
 - `CSSRuntime`
 - `initCSSRuntime`
-- `RuntimeSyntaxLayer`
+- `RuntimeUtilityLayer`
 - runtime types
 
 ## Core Files
 
 - `src/core.ts`
 - `src/layer.ts`
-- `src/syntax-layer.ts`
+- `src/utility-layer.ts`
 - `src/init.ts`
 - `src/register-global.ts`
 - `src/global.min.ts`
@@ -72,4 +72,3 @@ Use or extend:
 - Deleting rules by guessed indexes.
 - Rehydrating without comparing generated CSS text.
 - Removing class count tracking.
-

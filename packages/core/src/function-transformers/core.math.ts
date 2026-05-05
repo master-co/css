@@ -1,4 +1,4 @@
-import { SyntaxRule } from '../syntax-rule'
+import { Utility } from '../utility'
 import { StringValueComponent } from '../types/syntax'
 import functions from '../config/functions'
 import { BASE_UNIT_REGEX } from '../common'
@@ -63,13 +63,13 @@ function wrapCalcArguments(value: string) {
     }).join('')
 }
 
-export default function coreMath(this: SyntaxRule, value: string, bypassVariableNames: string[], data?: CoreMathData) {
+export default function coreMath(this: Utility, value: string, bypassVariableNames: string[], data?: CoreMathData) {
     const functionName = data?.name ?? 'calc'
-    const valueComponents: SyntaxRule['valueComponents'] = []
+    const valueComponents: Utility['valueComponents'] = []
     let i = 0
 
     const anaylzeDeeply = (
-        currentValueComponents: SyntaxRule['valueComponents'],
+        currentValueComponents: Utility['valueComponents'],
         bypassHandlingSeparator: boolean,
         parentBypassParsing: boolean,
         parentUnitChecking: boolean,
@@ -183,7 +183,7 @@ export default function coreMath(this: SyntaxRule, value: string, bypassVariable
                     currentValueComponents.push({ type: 'string', value: symbolResult[1], token: symbolResult[1] })
                 }
                 const functionName = symbolResult ? current.slice(1) : current
-                const newValueComponent: SyntaxRule['valueComponents'][0] = {
+                const newValueComponent: Utility['valueComponents'][0] = {
                     type: 'function', name: functionName, symbol: char, children: [], bypassTransform: functionName === 'calc', token: current
                 }
                 currentValueComponents.push(newValueComponent)

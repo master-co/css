@@ -1,5 +1,5 @@
 import { type CompletionItem, CompletionItemKind } from 'vscode-languageserver-protocol'
-import { SyntaxRuleType, MasterCSS, createCSS, generateCSS, isCoreRule } from '@master/css'
+import { UtilityType, MasterCSS, createCSS, generateCSS, isCoreRule } from '@master/css'
 import { getCSSDataDocumentation } from './get-css-data-documentation'
 import sortCompletionItems from './sort-completion-items'
 import getUtilityInfo from './get-utility-info'
@@ -8,10 +8,10 @@ import cssDataProvider from './css-data-provider'
 export default function getMainCompletionItems(css: MasterCSS = createCSS()): CompletionItem[] {
     const completionItems: CompletionItem[] = []
     const addedKeys = new Set<string>()
-    for (const eachDefinedRule of css.definedRules) {
-        if (eachDefinedRule.definition.type === SyntaxRuleType.Static) {
-            const { data, detail, docs } = getUtilityInfo(eachDefinedRule, css)
-            const utilityName = eachDefinedRule.id.slice(1)
+    for (const eachDefinedUtility of css.definedUtilities) {
+        if (eachDefinedUtility.definition.type === UtilityType.Static) {
+            const { data, detail, docs } = getUtilityInfo(eachDefinedUtility, css)
+            const utilityName = eachDefinedUtility.id.slice(1)
             completionItems.push({
                 label: utilityName,
                 kind: CompletionItemKind.Value,
@@ -23,16 +23,16 @@ export default function getMainCompletionItems(css: MasterCSS = createCSS()): Co
             })
         } else {
             const nativeProperties = cssDataProvider.provideProperties()
-            const nativeCSSPropertyData = nativeProperties.find(({ name }) => name === eachDefinedRule.id)
+            const nativeCSSPropertyData = nativeProperties.find(({ name }) => name === eachDefinedUtility.id)
             const eachCompletionItem = {
                 kind: CompletionItemKind.Property,
                 documentation: getCSSDataDocumentation(nativeCSSPropertyData, {
-                    docs: '/reference/' + isCoreRule(eachDefinedRule.id) && eachDefinedRule.id
+                    docs: '/reference/' + isCoreRule(eachDefinedUtility.id) && eachDefinedUtility.id
                 }),
                 detail: nativeCSSPropertyData?.syntax,
             }
 
-            eachDefinedRule.keys.forEach(key => {
+            eachDefinedUtility.keys.forEach(key => {
                 addedKeys.delete(key)
                 completionItems.push({
                     ...eachCompletionItem,
@@ -48,18 +48,18 @@ export default function getMainCompletionItems(css: MasterCSS = createCSS()): Co
             /**
              * @example @ animation and ~ transition
              */
-            if (eachDefinedRule.definition?.sign && eachDefinedRule.definition.includeAnimations) {
+            if (eachDefinedUtility.definition?.sign && eachDefinedUtility.definition.includeAnimations) {
                 css.animations.forEach((animation, animationName) => {
                     completionItems.push({
                         ...eachCompletionItem,
-                        label: eachDefinedRule.definition.sign + animationName + '|1s',
+                        label: eachDefinedUtility.definition.sign + animationName + '|1s',
                         kind: CompletionItemKind.Value
                     })
                 })
             }
 
-            if (eachDefinedRule.definition?.aliasGroups?.length) {
-                for (const aliasGroup of eachDefinedRule.definition.aliasGroups) {
+            if (eachDefinedUtility.definition?.aliasGroups?.length) {
+                for (const aliasGroup of eachDefinedUtility.definition.aliasGroups) {
                     if (addedKeys.has(aliasGroup)) {
                         continue
                     }

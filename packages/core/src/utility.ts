@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unsafe-declaration-merging */
 import MasterCSS from './core'
 import cssEscape from 'shared/utils/css-escape'
-import SyntaxRuleType from './syntax-rule-type'
+import UtilityType from './utility-type'
 import { type PropertiesHyphen } from 'csstype'
 import { VALUE_DELIMITERS, BASE_UNIT_REGEX, AT_IDENTIFIERS } from './common'
 import Layer from './layer'
-import type { NumberValueComponent, DefinedRule, ValueComponent, VariableValueComponent, Variable, ColorVariable } from './types/syntax'
+import type { NumberValueComponent, DefinedUtility, ValueComponent, VariableValueComponent, Variable, ColorVariable } from './types/syntax'
 import { AtRuleNode, AtRuleStringNode, AtRuleValueNode, } from './utils/parse-at'
 import parseValue from './utils/parse-value'
 import parseAt from './utils/parse-at'
@@ -18,11 +18,11 @@ import declarers from './declarers'
 import transformers from './transformers'
 import functionTransformers from './function-transformers'
 
-export class SyntaxRule {
+export class Utility {
     native?: CSSRule
     readonly atRules?: Partial<Record<AtIdentifier, AtRuleNode[]>>
     readonly priority!: RulePriority
-    readonly type: SyntaxRuleType = SyntaxRuleType.Normal
+    readonly type: UtilityType = UtilityType.Normal
     readonly declarations?: PropertiesHyphen
     readonly layer: Layer
     readonly valid: boolean = true
@@ -31,21 +31,21 @@ export class SyntaxRule {
     constructor(
         public readonly name: string,
         public css: MasterCSS,
-        public readonly registeredSyntax: DefinedRule,
+        public readonly registeredUtility: DefinedUtility,
         public fixedClass?: string,
         mode?: string
     ) {
         this.mode = mode as string
         this.layer = css.generalLayer
-        Object.assign(this, registeredSyntax)
-        const { id, definition } = registeredSyntax
+        Object.assign(this, registeredUtility)
+        const { id, definition } = registeredUtility
         const { declarer, declarerOptions, transformer, transformerOptions, type, unit, sign } = definition
         this.type = type!
 
         // 1. value / selectorToken
         let stateToken: string
 
-        if (this.type === SyntaxRuleType.Static) {
+        if (this.type === UtilityType.Static) {
             stateToken = name.slice(id.length - 1)
         } else {
             let valueToken: string | undefined
@@ -526,7 +526,7 @@ export class SyntaxRule {
     }
 }
 
-export interface SyntaxRule extends DefinedRule {
+export interface Utility extends DefinedUtility {
     token: string
     selectorNodes?: SelectorNode[]
     important: boolean

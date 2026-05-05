@@ -2,12 +2,12 @@
 
 ## Responsibility
 
-`@master/css` is the core engine. It resolves config, matches class syntax, creates `SyntaxRule` objects, resolves values/variables/functions/selectors/at-rules/modes, inserts rules into cascade layers, and emits CSS text.
+`@master/css` is the core engine. It resolves config, matches class syntax, creates `Utility` objects, resolves values/variables/functions/selectors/at-rules/modes, inserts rules into cascade layers, and emits CSS text.
 
 ## Inputs And Outputs
 
 - Input: `Config`, class names, selector text.
-- Output: `MasterCSS` state, rule objects, layer state, CSS text.
+- Output: `MasterCSS` state, utility objects, layer state, CSS text.
 
 ## Public APIs
 
@@ -17,9 +17,9 @@ Important public symbols include:
 
 - `MasterCSS`
 - `createCSS`
-- `SyntaxRule`
-- `SyntaxRuleType`
-- `Layer`, `SyntaxLayer`, `NonLayer`
+- `Utility`
+- `UtilityType`
+- `Layer`, `UtilityLayer`, `NonLayer`
 - `VariableRule`, `AnimationRule`
 - config and config sections
 - parser/generator utilities
@@ -28,9 +28,8 @@ Important public symbols include:
 ## Core Files
 
 - `src/core.ts`
-- `src/syntax-rule.ts`
-- `src/factories/with-syntax-layer.ts`
-- `src/config/rules.ts`
+- `src/utility.ts`
+- `src/factories/with-utility-layer.ts`
 - `src/config/utilities.ts`
 - `src/config/variables.ts`
 - `src/config/modes.ts`
@@ -45,8 +44,8 @@ Important public symbols include:
 ## Allowed Changes
 
 - Focused bug fixes with tests.
-- New syntax rule coverage.
-- New utilities/rules when behavior is clear and documented by tests.
+- New utility coverage.
+- New utilities when behavior is clear and documented by tests.
 - Refactors that preserve generated CSS output.
 
 ## Forbidden Without Explicit Request
@@ -59,13 +58,13 @@ Important public symbols include:
 
 ## Risk Areas
 
-- Rule matching order in `MasterCSS.match()`.
-- `SyntaxRule.parseValues()` and `resolveValue()`.
+- Utility matching order in `MasterCSS.match()`.
+- `Utility.parseValues()` and `resolveValue()`.
 - Variable alias and mode resolution.
 - Selector and at-rule parsing.
 - `compare-rule-priority.ts`.
 - Component expansion and fixed-class output.
-- `config.rules.ts`, because small matcher/type changes can affect many classes.
+- `config/utilities.ts`, because small matcher/type changes can affect many classes.
 
 ## Required Tests
 
@@ -96,7 +95,6 @@ Add or update tests in:
 ## Dangerous Changes
 
 - Reordering `AT_IDENTIFIERS`.
-- Changing `SyntaxRuleType` values.
+- Changing `UtilityType` values.
 - Changing layer names or layer statement.
 - Making extraction/runtime-specific assumptions in core.
-

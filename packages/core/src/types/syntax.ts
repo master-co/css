@@ -1,4 +1,4 @@
-import { SyntaxRuleDefinition } from './config'
+import { UtilityDefinition } from './config'
 import type { PropertiesHyphen } from 'csstype'
 
 export type ValueComponent = StringValueComponent | NumberValueComponent | FunctionValueComponent | VariableValueComponent | SeparatorValueComponent
@@ -7,7 +7,7 @@ export interface NumberValueComponent { text?: string, token: string, type: 'num
 export interface FunctionValueComponent { text?: string, token: string, type: 'function', name: string, symbol: string, children: ValueComponent[], bypassTransform?: boolean }
 export interface VariableValueComponent { text?: string, token: string, type: 'variable', name: string, alpha?: number, fallback?: string, variable?: Variable }
 export interface SeparatorValueComponent { text?: string, token: string, type: 'separator', value: string }
-export interface DefinedRule {
+export interface DefinedUtility {
     id: string
     key?: string
     keys: string[]
@@ -19,7 +19,7 @@ export interface DefinedRule {
     }
     variables?: Map<string, Variable>
     order: number
-    definition: SyntaxRuleDefinition
+    definition: UtilityDefinition
 }
 
 export interface ComponentEntry {
@@ -30,7 +30,7 @@ export interface ComponentEntry {
     }[]
 }
 
-export type GeneratedRule = import('../syntax-rule').SyntaxRule | import('../component-rule').default
+export type GeneratedUtility = import('../utility').Utility | import('../component-rule').default
 
 export type MediaFeatureComponent = {
     type: string

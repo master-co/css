@@ -50,8 +50,8 @@ Do not make core depend on integrations, runtime, server, extractor, language se
 Modify these only with focused tests and a clear reason:
 
 - `packages/core/src/core.ts`
-- `packages/core/src/syntax-rule.ts`
-- `packages/core/src/config/rules.ts`
+- `packages/core/src/utility.ts`
+- `packages/core/src/config/utilities.ts`
 - `packages/core/src/utils/compare-rule-priority.ts`
 - `packages/core/src/utils/parse-at.ts`
 - `packages/core/src/utils/parse-selector.ts`
@@ -156,4 +156,3 @@ When reviewing a PR, prioritize findings first:
 - Unrelated files
 
 If no issues are found, say so and mention any remaining test gaps or residual risk.
-

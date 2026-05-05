@@ -1,34 +1,34 @@
 /* eslint-disable @typescript-eslint/no-unsafe-declaration-merging */
-import { SyntaxRule } from './syntax-rule'
+import { Utility } from './utility'
 import ComponentRule from './component-rule'
 import hexToRgb from './utils/hex-to-rgb'
 import extendConfig, { ExtendedConfig } from './utils/extend-config'
 import { type PropertiesHyphen } from 'csstype'
 import { Rule } from './rule'
-import SyntaxRuleType from './syntax-rule-type'
+import UtilityType from './utility-type'
 import Layer from './layer'
-import SyntaxLayer from './syntax-layer'
+import UtilityLayer from './utility-layer'
 import NonLayer from './non-layer'
-import { ColorVariable, ComponentEntry, DefinedRule, GeneratedRule, Variable } from './types/syntax'
+import { ColorVariable, ComponentEntry, DefinedUtility, GeneratedUtility, Variable } from './types/syntax'
 import { AtRule, AtRuleValueNode } from './utils/parse-at'
-import { AnimationDefinitions, ComponentSelectorDefinition, Config, SyntaxRuleDefinition, VariableDefinition } from './types/config'
+import { AnimationDefinitions, ComponentSelectorDefinition, Config, UtilityDefinition, VariableDefinition } from './types/config'
 import registerGlobal from './register-global'
 import parseAt from './utils/parse-at'
 import parseValue from './utils/parse-value'
 import parseSelector, { SelectorNode } from './utils/parse-selector'
 
 export default class MasterCSS {
-    readonly definedRules: DefinedRule[] = []
+    readonly definedUtilities: DefinedUtility[] = []
     readonly config!: ExtendedConfig
     readonly layerStatementRule = new Rule('layer-statement', '@layer base,theme,preset,components,general;')
     readonly rules: (Layer | Rule)[] = [this.layerStatementRule]
-    readonly classRules = new Map<string, GeneratedRule[]>()
+    readonly classUtilities = new Map<string, GeneratedUtility[]>()
     readonly animationsNonLayer = new NonLayer(this)
-    readonly baseLayer = new SyntaxLayer('base', this)
+    readonly baseLayer = new UtilityLayer('base', this)
     readonly themeLayer = new Layer('theme', this)
-    readonly presetLayer = new SyntaxLayer('preset', this)
-    readonly componentsLayer = new SyntaxLayer('components', this)
-    readonly generalLayer = new SyntaxLayer('general', this)
+    readonly presetLayer = new UtilityLayer('preset', this)
+    readonly componentsLayer = new UtilityLayer('components', this)
+    readonly generalLayer = new UtilityLayer('general', this)
     readonly components = new Map<string, ComponentEntry>()
     readonly selectors = new Map<string, SelectorNode[]>()
     readonly variables = new Map<string, Variable>()
@@ -68,7 +68,7 @@ export default class MasterCSS {
         this.resolveAnimations()
         this.resolveSelectors()
         this.resolveAtRules()
-        this.resolveRules()
+        this.resolveUtilities()
         this.resolveComponents()
     }
 
@@ -91,21 +91,21 @@ export default class MasterCSS {
 
     }
 
-    resolveRules() {
-        const { rules } = this.config
+    resolveUtilities() {
+        const { utilities } = this.config
 
         function escapeString(str: string) {
             return str.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')
         }
 
-        if (!rules) return
+        if (!utilities) return
 
-        const rulesEntries = rules.map((definition) => [definition.name, definition] as [string, SyntaxRuleDefinition])
+        const utilitiesEntries = utilities.map((definition) => [definition.name, definition] as [string, UtilityDefinition])
 
-        const rulesEntriesLength = rulesEntries.length
+        const utilitiesEntriesLength = utilitiesEntries.length
 
         // Main loop
-        rulesEntries
+        utilitiesEntries
             .sort((a, b) => {
                 if (a[1].type !== b[1].type) {
                     return (b[1].type || 0) - (a[1].type || 0)
@@ -123,9 +123,9 @@ export default class MasterCSS {
                 return b[0].localeCompare(a[0], undefined, { numeric: true })
             })
             .forEach(([id, def], index) => {
-                const order = rulesEntriesLength - 1 - index
+                const order = utilitiesEntriesLength - 1 - index
 
-                const syntax: DefinedRule = {
+                const definedUtility: DefinedUtility = {
                     id,
                     keys: [],
                     matchers: {},
@@ -136,7 +136,7 @@ export default class MasterCSS {
                 def.unit ??= ''
                 def.separators ??= [',']
 
-                this.definedRules.push(syntax)
+                this.definedUtilities.push(definedUtility)
 
                 let {
                     matcher,
@@ -162,10 +162,10 @@ export default class MasterCSS {
                             if (variableKey.startsWith('-' + dashedNamespace) || variableKey.startsWith(dashedNamespace)) {
                                 variableKey = variableKey.slice(dashedNamespace.length + 1)
                             }
-                            if (syntax.variables) {
-                                syntax.variables.set(variableKey, v)
+                            if (definedUtility.variables) {
+                                definedUtility.variables.set(variableKey, v)
                             } else {
-                                syntax.variables = new Map([[variableKey, v]])
+                                definedUtility.variables = new Map([[variableKey, v]])
                             }
                         }
                     })
@@ -183,20 +183,20 @@ export default class MasterCSS {
                     if (!key) def.key = key = id
                     const fnName = id.slice(0, -2)
                     matcher = new RegExp(`^${fnName}\\(`)
-                } else if (type === SyntaxRuleType.NativeShorthand || type === SyntaxRuleType.Native) {
+                } else if (type === UtilityType.NativeShorthand || type === UtilityType.Native) {
                     if (!key) def.key = key = id
                     keys.push(id)
                 }
 
                 if (sign) {
-                    syntax.matchers.arbitrary = new RegExp(`^${sign}[^!*>+~:[@_]+\\|`)
-                } else if (!matcher && type !== SyntaxRuleType.Static) {
+                    definedUtility.matchers.arbitrary = new RegExp(`^${sign}[^!*>+~:[@_]+\\|`)
+                } else if (!matcher && type !== UtilityType.Static) {
                     if (!key && !subkey) {
                         keys.push(id)
                     } else {
                         if (key && !keys.includes(key)) keys.push(key)
                         if (subkey) keys.push(subkey)
-                        if (type === SyntaxRuleType.Shorthand) keys.push(id)
+                        if (type === UtilityType.Shorthand) keys.push(id)
                     }
 
                     // Ambiguous keys and values
@@ -205,7 +205,7 @@ export default class MasterCSS {
                             ? `(?:${aliasGroups.join('|')})`
                             : aliasGroups[0]
 
-                        const variableKeys = Array.from(syntax.variables?.keys() || [])
+                        const variableKeys = Array.from(definedUtility.variables?.keys() || [])
                         const valuePatterns = values
                             ? values.map((v) => `${v}(?:\\b|_)`)
                             : []
@@ -221,26 +221,26 @@ export default class MasterCSS {
                                 break
                         }
                         if (valuePatterns?.length) {
-                            syntax.matchers.value = new RegExp(
+                            definedUtility.matchers.value = new RegExp(
                                 `^${keyPattern}:(?:${valuePatterns.join('|')})[^|]*?(?:@|$)`
                             )
                         }
 
                         if (variableKeys.length) {
-                            syntax.matchers.variable = new RegExp(
+                            definedUtility.matchers.variable = new RegExp(
                                 `^${keyPattern}:(?:${variableKeys.join('|')})(?![a-zA-Z0-9-])[^|]*?(?:@|$)`
                             )
                         }
                     }
                 } else if (matcher) {
-                    syntax.matchers.arbitrary = new RegExp(matcher)
+                    definedUtility.matchers.arbitrary = new RegExp(matcher)
                 }
 
                 // Static rule matcher
-                if (type === SyntaxRuleType.Static) {
+                if (type === UtilityType.Static) {
                     const utilityName = id.startsWith('.') ? id.slice(1) : id
-                    syntax.id = '.' + utilityName
-                    syntax.matchers.arbitrary = new RegExp(
+                    definedUtility.id = '.' + utilityName
+                    definedUtility.matchers.arbitrary = new RegExp(
                         '^' + escapeString(utilityName) + '(?=!|\\*|>|\\+|~|:|\\[|@|_|\\.|$)',
                         'm'
                     )
@@ -248,8 +248,8 @@ export default class MasterCSS {
 
                 // Key matcher
                 if (keys.length) {
-                    syntax.keys = keys
-                    syntax.matchers.key = new RegExp(
+                    definedUtility.keys = keys
+                    definedUtility.matchers.key = new RegExp(
                         `^${keys.length > 1 ? `(${keys.join('|')})` : keys[0]}:.`
                     )
                 }
@@ -529,63 +529,63 @@ export default class MasterCSS {
     }
 
     /**
-     * Match check if Master CSS syntax
+     * Match check if Master CSS utility
      * @param className
      * @returns css text
      */
-    match(className: string): DefinedRule | undefined {
+    match(className: string): DefinedUtility | undefined {
         /**
          * 1. variable
          * @example fg:primary bg:blue
          */
-        for (const eachSyntax of this.definedRules) {
-            if (eachSyntax.matchers.variable?.test(className)) return eachSyntax
+        for (const eachUtility of this.definedUtilities) {
+            if (eachUtility.matchers.variable?.test(className)) return eachUtility
         }
 
         /**
          * 2. value (ambiguous.key * ambiguous.values)
          * @example bg:current box-content font:12
          */
-        for (const eachSyntax of this.definedRules) {
-            if (eachSyntax.matchers.value?.test(className)) return eachSyntax
+        for (const eachUtility of this.definedUtilities) {
+            if (eachUtility.matchers.value?.test(className)) return eachUtility
         }
 
         /**
          * 3. full key
          * @example text-align:center color:blue-40
          */
-        for (const eachSyntax of this.definedRules) {
-            if (eachSyntax.matchers.key?.test(className)) return eachSyntax
+        for (const eachUtility of this.definedUtilities) {
+            if (eachUtility.matchers.key?.test(className)) return eachUtility
         }
 
         /**
          * 4. arbitrary
          * @example custom RegExp, utility
          */
-        for (const eachSyntax of this.definedRules) {
-            if (eachSyntax.matchers.arbitrary?.test(className)) return eachSyntax
+        for (const eachUtility of this.definedUtilities) {
+            if (eachUtility.matchers.arbitrary?.test(className)) return eachUtility
         }
     }
 
     /**
-     * Generate syntax rules from class name
+     * Generate utilities from class name
      * @param className
-     * @returns GeneratedRule[]
+     * @returns GeneratedUtility[]
      */
-    generate(className: string, mode?: string): SyntaxRule[]
-    generate(className: string, mode?: string): GeneratedRule[] {
-        let syntaxRules: GeneratedRule[] = []
+    generate(className: string, mode?: string): Utility[]
+    generate(className: string, mode?: string): GeneratedUtility[] {
+        let utilities: GeneratedUtility[] = []
         const component = this.components.get(className)
         if (component) {
             component.classNames.forEach((cls) => {
-                const syntaxRule = this.create(cls, className, mode)
-                if (syntaxRule && syntaxRule.valid) {
-                    syntaxRules.push(syntaxRule)
+                const utility = this.create(cls, className, mode)
+                if (utility && utility.valid) {
+                    utilities.push(utility)
                 } else {
                     console.error(`Invalid class "${cls}" found in ${className} component.`)
                 }
             })
-            this.appendComponentRules(syntaxRules, className, component.selectorRules)
+            this.appendComponentRules(utilities, className, component.selectorRules)
         } else {
             const atIndex = className.indexOf('@')
             if (atIndex !== -1) {
@@ -593,24 +593,24 @@ export default class MasterCSS {
                 const component = this.components.get(name)
                 if (component) {
                     const atToken = className.slice(atIndex)
-                    component.classNames.forEach((eachSyntax) => {
-                        const syntaxRule = this.create(eachSyntax + atToken, className, mode)
-                        if (syntaxRule && syntaxRule.valid) {
-                            syntaxRules.push(syntaxRule)
+                    component.classNames.forEach((eachUtility) => {
+                        const utility = this.create(eachUtility + atToken, className, mode)
+                        if (utility && utility.valid) {
+                            utilities.push(utility)
                         }
                     })
-                    this.appendComponentRules(syntaxRules, className, component.selectorRules)
+                    this.appendComponentRules(utilities, className, component.selectorRules)
                 }
             }
-            const syntaxRule = this.create(className, undefined, mode)
-            if (syntaxRule && syntaxRule.valid) {
-                syntaxRules.push(syntaxRule)
+            const utility = this.create(className, undefined, mode)
+            if (utility && utility.valid) {
+                utilities.push(utility)
             }
         }
-        return syntaxRules
+        return utilities
     }
 
-    appendComponentRules(rules: GeneratedRule[], className: string, selectorRules: ComponentEntry['selectorRules']) {
+    appendComponentRules(rules: GeneratedUtility[], className: string, selectorRules: ComponentEntry['selectorRules']) {
         for (const { selector, declarations } of selectorRules) {
             const componentRule = new ComponentRule(className, this, declarations, selector)
             if (componentRule.valid) rules.push(componentRule)
@@ -618,21 +618,21 @@ export default class MasterCSS {
     }
 
     /**
-     * Create syntax rule from given class name
+     * Create utility from given class name
      * @param className
-     * @returns SyntaxRule
+     * @returns Utility
      */
-    create(className: string, fixedClass?: string, mode?: string): SyntaxRule | undefined {
-        const syntaxRule = this.generalLayer.rules.find((rule): rule is SyntaxRule =>
-            rule instanceof SyntaxRule && rule.key === ((fixedClass ? fixedClass + ' ' : '') + className)
+    create(className: string, fixedClass?: string, mode?: string): Utility | undefined {
+        const utility = this.generalLayer.rules.find((rule): rule is Utility =>
+            rule instanceof Utility && rule.key === ((fixedClass ? fixedClass + ' ' : '') + className)
         )
-        if (syntaxRule) return syntaxRule
-        const registeredRule = this.match(className)
-        if (registeredRule) return new SyntaxRule(className, this, registeredRule, fixedClass, mode)
+        if (utility) return utility
+        const registeredUtility = this.match(className)
+        if (registeredUtility) return new Utility(className, this, registeredUtility, fixedClass, mode)
     }
 
     /**
-     * Create syntax rule from given selector text
+     * Create utility from given selector text
      * @param selectorText
      */
     createFromSelectorText(selectorText: string) {
@@ -661,8 +661,8 @@ export default class MasterCSS {
                     className += char
                     l++
                 }
-                const syntaxRules = this.generate(className)
-                if (syntaxRules.length) return syntaxRules
+                const utilities = this.generate(className)
+                if (utilities.length) return utilities
             }
         }
     }
@@ -688,9 +688,9 @@ export default class MasterCSS {
         // @ts-ignore
         this.components = new Map()
         // @ts-ignore
-        this.classRules = new Map()
+        this.classUtilities = new Map()
         this.modes.length = 0
-        this.definedRules.length = 0
+        this.definedUtilities.length = 0
         this.baseLayer.reset()
         this.themeLayer.reset()
         this.presetLayer.reset()
@@ -707,12 +707,12 @@ export default class MasterCSS {
 
     add(...classNames: string[]) {
         for (const className of classNames) {
-            const rules = this.classRules.get(className)
+            const rules = this.classUtilities.get(className)
             if (rules) continue
             const newRules = this.generate(className)
             if (newRules.length) {
-                newRules.forEach((eachSyntaxRule) => eachSyntaxRule.layer.insert(eachSyntaxRule))
-                this.classRules.set(className, newRules)
+                newRules.forEach((eachUtility) => eachUtility.layer.insert(eachUtility))
+                this.classUtilities.set(className, newRules)
             }
         }
         return this
@@ -724,10 +724,10 @@ export default class MasterCSS {
          * 匹配並刪除對應的 rule
          */
         for (const className of classNames) {
-            const rules = this.classRules.get(className)
+            const rules = this.classUtilities.get(className)
             if (rules) {
                 rules.forEach((rule) => rule.layer.delete(rule.key))
-                this.classRules.delete(className)
+                this.classUtilities.delete(className)
             }
         }
     }

@@ -1,6 +1,6 @@
 import extend from 'json-safe-extend'
-import SyntaxRuleType from '../syntax-rule-type'
-import type { ComponentDefinitions, Config, SyntaxRuleDefinition, VariableDefinitions } from '../types/config'
+import UtilityType from '../utility-type'
+import type { ComponentDefinitions, Config, UtilityDefinition, VariableDefinitions } from '../types/config'
 import flattenObject from './flatten-object'
 
 export declare type ExtendedConfig = {
@@ -12,8 +12,8 @@ export declare type ExtendedConfig = {
     components?: ComponentDefinitions
 } & Omit<Config, 'variables' | 'modes' | 'atRuleAliases' | 'selectorAliases'>
 
-function ruleSlot(rule: SyntaxRuleDefinition) {
-    return `${rule.name}\0${rule.type === SyntaxRuleType.Static ? 'static' : 'syntax'}`
+function utilitySlot(utility: UtilityDefinition) {
+    return `${utility.name}\0${utility.type === UtilityType.Static ? 'static' : 'syntax'}`
 }
 
 export default function extendConfig(...configs: (Config | undefined)[]) {
@@ -46,7 +46,7 @@ export default function extendConfig(...configs: (Config | undefined)[]) {
         components,
         animations,
         atRuleAliases,
-        rules,
+        utilities,
         selectorAliases,
         functions,
         ...rest
@@ -98,16 +98,16 @@ export default function extendConfig(...configs: (Config | undefined)[]) {
             Object.assign(extendedConfig.animations, animations)
         }
 
-        // rules
-        if (rules) {
-            extendedConfig.rules ??= []
-            for (const rule of rules) {
-                const slot = ruleSlot(rule)
-                const foundIndex = extendedConfig.rules.findIndex((existing) => ruleSlot(existing) === slot)
+        // utilities
+        if (utilities) {
+            extendedConfig.utilities ??= []
+            for (const utility of utilities) {
+                const slot = utilitySlot(utility)
+                const foundIndex = extendedConfig.utilities.findIndex((existing) => utilitySlot(existing) === slot)
                 if (foundIndex !== -1) {
-                    extendedConfig.rules.splice(foundIndex, 1)
+                    extendedConfig.utilities.splice(foundIndex, 1)
                 }
-                extendedConfig.rules.push(rule)
+                extendedConfig.utilities.push(utility)
             }
         }
 

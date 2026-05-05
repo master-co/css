@@ -241,7 +241,7 @@ export default class CSSExtractor extends EventEmitter {
                 this.invalidClasses.add(eachLatentClass)
             }
         }
-        if (this.css.definedRules.length && validClasses.length) {
+        if (this.css.definedUtilities.length && validClasses.length) {
             if (this.options.verbose) {
                 time = process.hrtime(time)
                 const spent = Math.round(((time[0] * 1e9 + time[1]) / 1e6) * 10) / 10

@@ -3,17 +3,17 @@ import { type Config } from '@master/css'
 import registerGlobal from './register-global'
 import { HydrateResult } from './types'
 import RuntimeLayer from './layer'
-import RuntimeSyntaxLayer, { RuntimeSyntaxLayerInstance } from './syntax-layer'
+import RuntimeUtilityLayer, { RuntimeUtilityLayerInstance } from './utility-layer'
 
 export default class CSSRuntime extends MasterCSS {
     static instances = new WeakMap<Document | ShadowRoot, CSSRuntime>()
     readonly host: Element
     readonly container: HTMLElement | ShadowRoot
-    readonly baseLayer = new RuntimeSyntaxLayer('base', this)
+    readonly baseLayer = new RuntimeUtilityLayer('base', this)
     readonly themeLayer = new RuntimeLayer('theme', this)
-    readonly presetLayer = new RuntimeSyntaxLayer('preset', this)
-    readonly componentsLayer = new RuntimeSyntaxLayer('components', this)
-    readonly generalLayer = new RuntimeSyntaxLayer('general', this)
+    readonly presetLayer = new RuntimeUtilityLayer('preset', this)
+    readonly componentsLayer = new RuntimeUtilityLayer('components', this)
+    readonly generalLayer = new RuntimeUtilityLayer('general', this)
     readonly classCounts = new Map<string, number>()
     observer?: MutationObserver
     progressive = false
@@ -84,7 +84,7 @@ export default class CSSRuntime extends MasterCSS {
         if (this.progressive) {
             const hydrateResult = this.hydrate(this.style!.sheet!.cssRules)
             for (const cls of connectedNames) {
-                if (!hydrateResult.allSyntaxRules.find(r => (r.fixedClass || r.name) === cls)) {
+                if (!hydrateResult.allUtilities.find(r => (r.fixedClass || r.name) === cls)) {
                     this.add(cls)
                     if (process.env.NODE_ENV === 'development') {
                         console.debug(`Missing prerendered rule for class \`${cls}\``)
@@ -198,7 +198,7 @@ export default class CSSRuntime extends MasterCSS {
         const cssLayerRules: CSSLayerBlockRule[] = []
         const checkSheet = new CSSStyleSheet()
         const result: HydrateResult = {
-            allSyntaxRules: []
+            allUtilities: []
         }
         for (let i = 0; i < nativeLayerRules.length; i++) {
             const eachNativeCSSRule = nativeLayerRules[i]
@@ -255,7 +255,7 @@ export default class CSSRuntime extends MasterCSS {
             }
         }
         for (const eachCSSLayerRule of cssLayerRules) {
-            let layer: RuntimeSyntaxLayerInstance
+            let layer: RuntimeUtilityLayerInstance
             switch (eachCSSLayerRule.name) {
                 case 'base':
                     layer = this.baseLayer
@@ -287,29 +287,29 @@ export default class CSSRuntime extends MasterCSS {
                     console.error(`Cannot get the selector text from \`${eachNativeLayerRule.cssText}\`. (${layer.name}) (https://rc.css.master.co/messages/hydration-errors)`)
                     continue
                 }
-                const createdRules = this.createFromSelectorText(selectorText)
-                if (createdRules) {
-                    for (const createdRule of createdRules) {
-                        layer.rules.push(createdRule)
-                        layer.insertVariables(createdRule)
-                        layer.insertAnimations(createdRule)
-                        result.allSyntaxRules.push(createdRule)
+                const createdUtilities = this.createFromSelectorText(selectorText)
+                if (createdUtilities) {
+                    for (const createdUtility of createdUtilities) {
+                        layer.rules.push(createdUtility)
+                        layer.insertVariables(createdUtility)
+                        layer.insertAnimations(createdUtility)
+                        result.allUtilities.push(createdUtility)
                         try {
-                            const checkRuleIndex = checkSheet.insertRule(createdRule.text)
+                            const checkRuleIndex = checkSheet.insertRule(createdUtility.text)
                             const checkNodeNativeRule = checkSheet.cssRules.item(checkRuleIndex)
                             if (checkNodeNativeRule) {
                                 const checkNodeNativeRuleText = checkNodeNativeRule.cssText.trim()
                                 const match = unresolvedCSSRules.get(checkNodeNativeRuleText)
                                 if (match) {
-                                    createdRule.native = match
+                                    createdUtility.native = match
                                     unresolvedCSSRules.delete(checkNodeNativeRuleText)
                                     continue
                                 }
                             }
-                            console.error(`Cannot retrieve CSS rule for \`${createdRule.text}\`. (${layer.name}) (https://rc.css.master.co/messages/hydration-errors)`)
+                            console.error(`Cannot retrieve CSS rule for \`${createdUtility.text}\`. (${layer.name}) (https://rc.css.master.co/messages/hydration-errors)`)
                         } catch (error) {
                             if (process.env.NODE_ENV === 'development') {
-                                console.debug(`Cannot insert CSS rule for \`${createdRule.text}\`. (${layer.name}) (https://rc.css.master.co/messages/hydration-errors)`)
+                                console.debug(`Cannot insert CSS rule for \`${createdUtility.text}\`. (${layer.name}) (https://rc.css.master.co/messages/hydration-errors)`)
                             }
                         }
                     }
@@ -356,7 +356,7 @@ export default class CSSRuntime extends MasterCSS {
         }
         super.refresh(customConfig)
         /**
-         * 拿當前所有的 classNames 按照最新的 colors, config.rules 匹配並生成新的 style
+         * 拿當前所有的 classNames 按照最新的 colors, config.utilities 匹配並生成新的 style
          * 所以 refresh 過後 rules 可能會變多也可能會變少
          */
         this.classCounts.forEach((_, className) => {

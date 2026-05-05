@@ -3,7 +3,7 @@ import type { TextDocument } from 'vscode-languageserver-textdocument'
 import type { SemanticTokens } from 'vscode-languageserver-protocol'
 import { SEMANTIC_TOKEN_MODIFIERS, SEMANTIC_TOKEN_TYPES } from '../common'
 import getClassPositions from '../utils/get-class-positions'
-import { SyntaxRuleType, type ValueComponent } from '@master/css'
+import { UtilityType, type ValueComponent } from '@master/css'
 
 type SemanticTokenType = typeof SEMANTIC_TOKEN_TYPES[number]
 type SemanticTokenModifier = typeof SEMANTIC_TOKEN_MODIFIERS[number]
@@ -172,7 +172,7 @@ export default function renderSemanticTokens(this: CSSLanguageService, document:
         }
         const rule = this.css.generate(token)[0]
         if (!rule) continue
-        if (rule.type === SyntaxRuleType.Static) {
+        if (rule.type === UtilityType.Static) {
             pushToken(semanticTokens, classStart, raw.length, 'class')
             continue
         }

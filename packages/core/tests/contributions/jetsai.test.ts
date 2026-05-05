@@ -1,4 +1,4 @@
-import { Config, rules } from '../../src'
+import { Config, utilities } from '../../src'
 import { extendConfig } from '../../src'
 import CSSTester from '../tester'
 
@@ -53,7 +53,7 @@ const extendedConfig = extendConfig(colorConfig, textConfig, buttonConfig)
 
 new CSSTester({
     ...extendedConfig,
-    rules
+    utilities
 }, null).layers({
     'bg:button-primary': {
         general: '.bg\\:button-primary{background-color:rgb(34 66 163)}'

@@ -1,4 +1,4 @@
-import { rules, SyntaxRuleType } from '@master/css'
+import { utilities, UtilityType } from '@master/css'
 import ExpandContent from '~/internal/components/ExpandContent'
 import InlineCode from '~/internal/components/InlineCode'
 
@@ -16,26 +16,26 @@ const Default = () =>
                 </thead>
                 <tbody>
                     {
-                        rules
-                            .filter((rule) => rule.type !== SyntaxRuleType.Static)
+                        utilities
+                            .filter((utility) => utility.type !== UtilityType.Static)
                             .sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }))
-                            .map((rule) => {
+                            .map((utility) => {
                                 return (
-                                    <tr key={rule.name}>
-                                        <th><InlineCode className='white-space:nowrap'>{rule.name}</InlineCode></th>
+                                    <tr key={utility.name}>
+                                        <th><InlineCode className='white-space:nowrap'>{utility.name}</InlineCode></th>
                                         <td>
-                                            {rule.type
-                                                ? <code>{SyntaxRuleType[rule.type]}</code>
+                                            {utility.type
+                                                ? <code>{UtilityType[utility.type]}</code>
                                                 : <span className='fg:lightest'>-</span>}
                                         </td>
                                         <td>
-                                            {rule.unit
-                                                ? <InlineCode>{rule.unit}</InlineCode>
+                                            {utility.unit
+                                                ? <InlineCode>{utility.unit}</InlineCode>
                                                 : <span className='fg:lightest'>-</span>}
                                         </td>
                                         <td>
-                                            {rule.namespaces
-                                                ? <InlineCode>{rule.namespaces.join(', ')}</InlineCode>
+                                            {utility.namespaces
+                                                ? <InlineCode>{utility.namespaces.join(', ')}</InlineCode>
                                                 : <span className='fg:lightest'>-</span>}
                                         </td>
                                     </tr>

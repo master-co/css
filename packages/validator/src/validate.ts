@@ -19,9 +19,9 @@ export default function validate(
         const errors = []
         for (const eachRule of rules) {
             const syntaxErrors = validateCSS(eachRule.text)
-            for (const eachSyntaxError of syntaxErrors) {
-                eachSyntaxError.class = syntax
-                errors.push(eachSyntaxError)
+            for (const eachUtilityError of syntaxErrors) {
+                eachUtilityError.class = syntax
+                errors.push(eachUtilityError)
             }
         }
         return {

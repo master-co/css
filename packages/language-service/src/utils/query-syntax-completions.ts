@@ -26,7 +26,7 @@ export default function querySyntaxCompletions(q = '', css: MasterCSS = createCS
             field = field.slice(1)
         }
     }
-    const signs = css.definedRules
+    const signs = css.definedUtilities
         .filter(({ definition }) => definition.sign)
         .map(({ definition }) => definition.sign)
     const keyMatch = field.match(new RegExp(`^[^${signs}'":\\s]+:`))
@@ -37,7 +37,7 @@ export default function querySyntaxCompletions(q = '', css: MasterCSS = createCS
     const selectorInvokedRegex = new RegExp(`[${SELECTOR_SIGNS.join('')}](?=(?:[^'"]|'[^']*'|"[^"]*")*$)`)
     const key = keyMatch ? keyMatch[0].slice(0, firstColonIndex) : undefined
     const componentNames = Object.keys(css.config.components || {})
-    const utilityNames = css.definedRules
+    const utilityNames = css.definedUtilities
         .filter(({ definition }) => definition.type === -4)
         .map(({ id }) => id.startsWith('.') ? id.slice(1) : id)
     const isStyle = !!componentNames.find((eachStyleName) => new RegExp(`^${eachStyleName}(?:\\b|_)`).test(field))

@@ -1,4 +1,4 @@
-import { rules } from '@master/css'
+import { utilities } from '@master/css'
 
 const namespaces = ['duration', 'easing']
 
@@ -15,8 +15,8 @@ export default () =>
                 <tbody>
                     {
                         namespaces.map((namespace) => {
-                            const ruleNames = rules
-                                .filter((rule) => rule.namespaces?.includes(namespace))
+                            const utilityNames = utilities
+                                .filter((utility) => utility.namespaces?.includes(namespace))
                                 .map(({ name }) => name)
 
                             return (
@@ -24,10 +24,10 @@ export default () =>
                                     <th>{namespace}</th>
                                     <td>
                                         {
-                                            ruleNames.map((ruleName, index) => (
-                                                <span key={ruleName}>
-                                                    <code>{ruleName}</code>
-                                                    {index !== ruleNames.length - 1 && ', '}
+                                            utilityNames.map((utilityName, index) => (
+                                                <span key={utilityName}>
+                                                    <code>{utilityName}</code>
+                                                    {index !== utilityNames.length - 1 && ', '}
                                                 </span>
                                             ))
                                         }

@@ -1,8 +1,8 @@
-import { SyntaxRule } from '../syntax-rule'
+import { Utility } from '../utility'
 import { VALUE_DELIMITERS } from '../common'
-import { GeneratedRule } from '../types/syntax'
+import { GeneratedUtility } from '../types/syntax'
 
-export default function coreGroup(this: SyntaxRule, value: string) {
+export default function coreGroup(this: Utility, value: string) {
     const declarations: any = {}
     const addProp = (propertyName: string) => {
         const indexOfColon = propertyName.indexOf(':')
@@ -15,7 +15,7 @@ export default function coreGroup(this: SyntaxRule, value: string) {
             declarations[propName] = propertyName.slice(indexOfColon + 1).replace(/\|/g, ' ')
         }
     }
-    const handleRule = (rule: GeneratedRule) => {
+    const handleRule = (rule: GeneratedUtility) => {
         const ruleDeclarations = rule.declarations as Record<string, unknown>
         for (const propertyName in ruleDeclarations) {
             let propertyValue = String(ruleDeclarations[propertyName])

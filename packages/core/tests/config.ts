@@ -43,7 +43,7 @@ export default {
         { namespace: 'color', key: 'content', value: '$(color-white)', mode: 'dark' },
         { namespace: 'color', key: 'fade', value: '$(color-white)', mode: 'dark' }
     ],
-    rules: [
+    utilities: [
         { name: 'show', type: -4, declarations: { display: 'block' } },
         { name: 'hide-text', type: -4, declarations: { 'font-size': '0px' } },
         { name: 'zero', type: -4, declarations: { 'font-size': '0px', height: '0px' } }

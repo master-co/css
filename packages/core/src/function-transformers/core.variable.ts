@@ -1,6 +1,6 @@
-import { SyntaxRule } from '../syntax-rule'
+import { Utility } from '../utility'
 
-export default function coreVariable(this: SyntaxRule, value: string) {
+export default function coreVariable(this: Utility, value: string) {
     let name: string
     let fallback!: string
     const firstCommaIndex = value.indexOf(',')

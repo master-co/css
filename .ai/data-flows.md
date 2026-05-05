@@ -9,11 +9,11 @@ class string
   -> component expansion if class is configured in components
   -> create()
   -> match() against variable, value, key, arbitrary matchers
-  -> new SyntaxRule()
+  -> new Utility()
   -> parse values, functions, variables, selectors, modes, at-rules
   -> declarations/declarers/transformers
   -> calcRulePriority()
-  -> SyntaxLayer.insert()
+  -> UtilityLayer.insert()
   -> insert referenced variables and animations
   -> css.text
 ```
@@ -21,8 +21,8 @@ class string
 Main files:
 
 - `packages/core/src/core.ts`
-- `packages/core/src/syntax-rule.ts`
-- `packages/core/src/factories/with-syntax-layer.ts`
+- `packages/core/src/utility.ts`
+- `packages/core/src/factories/with-utility-layer.ts`
 - `packages/core/src/utils/compare-rule-priority.ts`
 - `packages/core/src/utils/parse-at.ts`
 - `packages/core/src/utils/parse-selector.ts`
@@ -41,14 +41,14 @@ Risks:
 default config + user config
   -> extendConfig()
   -> recursively collect extends
-  -> flatten variables, modes, components, at
-  -> merge rules, utilities, selectors, functions, animations
+  -> flatten variables, modes, components, atRuleAliases
+  -> merge utilities, selectorAliases, functions, animations
   -> MasterCSS.resolve()
   -> resolveVariables()
   -> resolveAnimations()
   -> resolveSelectors()
   -> resolveAtRules()
-  -> resolveRules()
+  -> resolveUtilities()
   -> resolveComponents()
 ```
 
@@ -110,7 +110,7 @@ Main files:
 
 - `packages/runtime/src/core.ts`
 - `packages/runtime/src/layer.ts`
-- `packages/runtime/src/syntax-layer.ts`
+- `packages/runtime/src/utility-layer.ts`
 - `packages/runtime/src/init.ts`
 
 Risks:
@@ -125,7 +125,7 @@ Risks:
 TextDocument + cursor
   -> CSSLanguageService.getClassPosition()
   -> suggestSyntax / inspectSyntax / renderSyntaxColors / editSyntaxColors
-  -> query core rules, variables, selectors, at-rules, generated CSS
+  -> query core utilities, variables, selectors, at-rules, generated CSS
   -> LSP response through language-server
 ```
 
@@ -137,4 +137,3 @@ Main files:
 - `packages/language-server/src/core.ts`
 
 Note: syntax diagnostics are currently handled mainly by `@master/eslint-plugin-css`, not by LSP diagnostics.
-

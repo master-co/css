@@ -1,12 +1,12 @@
 export * from './config'
 export * from './common'
 export * from './core'
-export * from './syntax-rule'
+export * from './utility'
 export * from './rule'
 export { default as Layer } from './layer'
-export { default as SyntaxLayer } from './syntax-layer'
+export { default as UtilityLayer } from './utility-layer'
 export { default as NonLayer } from './non-layer'
-export { default as SyntaxRuleType } from './syntax-rule-type'
+export { default as UtilityType } from './utility-type'
 export { default as VariableRule } from './variable-rule'
 export { default as AnimationRule } from './animation-rule'
 export { default as ComponentRule } from './component-rule'
@@ -19,7 +19,7 @@ export * from './types/syntax'
 export * from './types/common'
 
 // factories
-export { default as withSyntaxLayer } from './factories/with-syntax-layer'
+export { default as withUtilityLayer } from './factories/with-utility-layer'
 
 // utils
 export { default as extendConfig } from './utils/extend-config'

@@ -1,5 +1,5 @@
 import { AT_IDENTIFIERS } from '../common'
-import type { SyntaxRule } from '../syntax-rule'
+import type { Utility } from '../utility'
 import { AtRuleNode } from './parse-at'
 
 function areNodesEqual(a: any, b: any): boolean {
@@ -27,7 +27,7 @@ function areNodeArraysEqual(aNodes: AtRuleNode[], bNodes: AtRuleNode[]): boolean
     return true
 }
 
-export default function equalAtRules(a: SyntaxRule['atRules'], b: SyntaxRule['atRules']) {
+export default function equalAtRules(a: Utility['atRules'], b: Utility['atRules']) {
     return AT_IDENTIFIERS.every(key =>
         areNodeArraysEqual(a?.[key] ?? [], b?.[key] ?? [])
     )

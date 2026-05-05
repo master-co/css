@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { compileCSS } from '../src'
-import { SyntaxRuleType } from '@master/css'
+import { UtilityType } from '@master/css'
 
 function process(css: string, classes?: string[]) {
     return compileCSS(css, { classes }).css
@@ -231,10 +231,10 @@ describe.concurrent('@master/css-compiler', () => {
                     }
                 ]
             },
-            rules: [
+            utilities: [
                 {
                     name: 'content-auto',
-                    type: SyntaxRuleType.Static,
+                    type: UtilityType.Static,
                     declarations: {
                         'content-visibility': 'auto'
                     }
