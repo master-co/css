@@ -127,8 +127,8 @@ import ProgressiveRenderingIntro from '../../rendering-modes/components/Progress
             import { withMasterCSS } from '@master/css.next' // [!code ++]
 
             /** @type {import('next').NextConfig} */
-            const nextConfig = withMasterCSS({
-                // your Next.js config
+            const nextConfig = withMasterCSS({ // [!code ++]
+                /* your Next.js config */ // [!code ++]
             }) // [!code ++]
 
             export default nextConfig
