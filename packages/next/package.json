@@ -1,0 +1,73 @@
+{
+    "name": "@master/css.next",
+    "type": "module",
+    "scripts": {
+        "build": "techor build \"src/**/*.ts\" --formats esm",
+        "dev": "pnpm build --watch",
+        "dev:build": "pnpm --dir playground build",
+        "lint": "eslint",
+        "type-check": "tsc --noEmit",
+        "test": "vitest"
+    },
+    "license": "MIT",
+    "description": "Integrate Master CSS in Next.js way",
+    "author": "Aoyue Design LLC.",
+    "funding": "https://rc.css.master.co/sponsor",
+    "homepage": "https://css.master.co",
+    "bugs": {
+        "url": "https://github.com/master-co/css/issues"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/master-co/css.git",
+        "directory": "packages/next"
+    },
+    "keywords": [
+        "adapter",
+        "integration",
+        "next",
+        "nextjs",
+        "build tools",
+        "static",
+        "pre-render",
+        "css",
+        "mastercss"
+    ],
+    "sideEffects": false,
+    "main": "./dist/index.mjs",
+    "module": "./dist/index.mjs",
+    "jsnext:main": "./dist/index.mjs",
+    "esnext": "./dist/index.mjs",
+    "types": "./dist/index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.mjs",
+            "default": "./dist/index.mjs"
+        },
+        "./adapter": {
+            "types": "./dist/adapter.d.ts",
+            "import": "./dist/adapter.mjs",
+            "default": "./dist/adapter.mjs"
+        }
+    },
+    "files": [
+        "dist"
+    ],
+    "publishConfig": {
+        "access": "public",
+        "provenance": true
+    },
+    "peerDependencies": {
+        "next": ">=16"
+    },
+    "dependencies": {
+        "@master/css": "workspace:^",
+        "@master/css-explore-config": "workspace:^",
+        "@master/css-server": "workspace:^"
+    },
+    "devDependencies": {
+        "next": "^16.2.4",
+        "shared": "workspace:^"
+    }
+}

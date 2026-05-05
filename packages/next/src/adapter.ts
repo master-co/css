@@ -1,0 +1,140 @@
+import { readFile, writeFile, mkdir } from 'node:fs/promises'
+import { dirname, extname, join, resolve } from 'node:path'
+import type { Config } from '@master/css'
+import exploreConfig from '@master/css-explore-config'
+import { render } from '@master/css-server'
+import type { NextAdapter } from 'next'
+import { getRegisteredOptions, resolveOptions, type Options } from './options'
+
+type BuildCompleteContext = Parameters<NonNullable<NextAdapter['onBuildComplete']>>[0]
+type BuildOutputs = BuildCompleteContext['outputs']
+
+interface HTMLBuildOutput {
+    filePath: string
+    pathname: string
+    source: 'static' | 'prerender-fallback'
+}
+
+export interface RenderedOutput {
+    file: string
+    pathname: string
+    source: HTMLBuildOutput['source']
+    classes: string[]
+    cssBytes: number
+    rendered: boolean
+}
+
+export interface RenderManifest {
+    version: 1
+    nextVersion: string
+    buildId: string
+    files: RenderedOutput[]
+}
+
+function isHTMLFile(filePath: string | undefined): filePath is string {
+    if (!filePath) return false
+    return ['.html', '.htm'].includes(extname(filePath).toLowerCase())
+}
+
+function collectHTMLBuildOutputs(outputs: BuildOutputs): HTMLBuildOutput[] {
+    const htmlOutputs: HTMLBuildOutput[] = []
+    const seen = new Set<string>()
+
+    function add(output: HTMLBuildOutput) {
+        if (seen.has(output.filePath)) return
+        seen.add(output.filePath)
+        htmlOutputs.push(output)
+    }
+
+    for (const output of outputs.staticFiles) {
+        if (isHTMLFile(output.filePath)) {
+            add({
+                filePath: output.filePath,
+                pathname: output.pathname,
+                source: 'static'
+            })
+        }
+    }
+
+    for (const output of outputs.prerenders) {
+        if (isHTMLFile(output.fallback?.filePath)) {
+            add({
+                filePath: output.fallback.filePath,
+                pathname: output.pathname,
+                source: 'prerender-fallback'
+            })
+        }
+    }
+
+    return htmlOutputs
+}
+
+async function resolveMasterCSSConfig(projectDir: string, configOption: string | Config): Promise<Config | undefined> {
+    if (typeof configOption !== 'string') return configOption
+    return (await exploreConfig({ cwd: projectDir, name: configOption }))?.config
+}
+
+async function writeManifest(ctx: BuildCompleteContext, files: RenderedOutput[], manifest: boolean | string) {
+    if (!manifest) return
+    const manifestPath = typeof manifest === 'string'
+        ? resolve(ctx.distDir, manifest)
+        : join(ctx.distDir, 'master-css-manifest.json')
+    const data: RenderManifest = {
+        version: 1,
+        nextVersion: ctx.nextVersion,
+        buildId: ctx.buildId,
+        files
+    }
+    await mkdir(dirname(manifestPath), { recursive: true })
+    await writeFile(manifestPath, JSON.stringify(data, null, 2))
+}
+
+export async function renderNextBuildOutputs(ctx: BuildCompleteContext, rawOptions: Options = getRegisteredOptions() ?? {}) {
+    const options = resolveOptions(rawOptions)
+    if (options.mode === null) return []
+
+    const config = await resolveMasterCSSConfig(ctx.projectDir, options.config)
+    const htmlOutputs = collectHTMLBuildOutputs(ctx.outputs)
+    const renderedOutputs: RenderedOutput[] = []
+
+    for (const output of htmlOutputs) {
+        const sourceHTML = await readFile(output.filePath, 'utf-8')
+        const rendered = render(sourceHTML, config)
+        const hasGeneratedCSS = Boolean(rendered.css?.classUtilities.size)
+        const cssText = hasGeneratedCSS ? rendered.css?.text ?? '' : ''
+        const didRender = hasGeneratedCSS && rendered.html !== sourceHTML
+
+        if (didRender) {
+            await writeFile(output.filePath, rendered.html)
+        }
+
+        renderedOutputs.push({
+            file: output.filePath,
+            pathname: output.pathname,
+            source: output.source,
+            classes: rendered.classes,
+            cssBytes: Buffer.byteLength(cssText),
+            rendered: didRender
+        })
+    }
+
+    await writeManifest(ctx, renderedOutputs, options.manifest)
+
+    if (options.debug) {
+        const renderedCount = renderedOutputs.filter((output) => output.rendered).length
+        console.log(`[@master/css.next] rendered ${renderedCount}/${renderedOutputs.length} HTML output(s)`)
+    }
+
+    return renderedOutputs
+}
+
+export function createAdapter(options?: Options): NextAdapter {
+    return {
+        name: '@master/css.next',
+        async onBuildComplete(ctx) {
+            await renderNextBuildOutputs(ctx, options ?? getRegisteredOptions() ?? {})
+        }
+    }
+}
+
+export default createAdapter()

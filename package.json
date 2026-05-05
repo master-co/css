@@ -74,6 +74,7 @@
         "@master/css-server": "workspace:^",
         "@master/css-validator": "workspace:^",
         "@master/css.figma": "workspace:^",
+        "@master/css.next": "workspace:^",
         "@master/css.nuxt": "workspace:^",
         "@master/css.react": "workspace:^",
         "@master/css.svelte": "workspace:^",
