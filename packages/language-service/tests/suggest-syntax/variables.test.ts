@@ -20,7 +20,7 @@ import { hint } from './test'
 //             'kind': 'markdown',
 //             'value': dedent`
 //                     \`\`\`css
-//                     @layer general {
+//                     @layer utilities {
 //                       .box\\:content {
 //                         box-sizing: content-box
 //                       }

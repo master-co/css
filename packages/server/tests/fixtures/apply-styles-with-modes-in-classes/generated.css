@@ -1,1 +1,1 @@
-@layer base,theme,preset,components,general;@layer general{@media (prefers-color-scheme:dark){.bg\:black\@dark{background-color:oklch(0% 0 none)}}@media (prefers-color-scheme:light){.bg\:white\@light{background-color:oklch(100% 0 none)}}}
+@layer base,theme,preset,components,utilities;@layer utilities{@media (prefers-color-scheme:dark){.bg\:black\@dark{background-color:oklch(0% 0 none)}}@media (prefers-color-scheme:light){.bg\:white\@light{background-color:oklch(100% 0 none)}}}

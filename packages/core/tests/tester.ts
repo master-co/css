@@ -22,7 +22,7 @@ export default class CSSTester {
         return this
     }
 
-    priority(layerName: keyof Pick<MasterCSS, 'baseLayer' | 'presetLayer' | 'componentsLayer' | 'generalLayer'>, cases: Record<string, string[] | [string, string[]]>) {
+    priority(layerName: keyof Pick<MasterCSS, 'baseLayer' | 'presetLayer' | 'componentsLayer' | 'utilitiesLayer'>, cases: Record<string, string[] | [string, string[]]>) {
         test.concurrent.each(Object.entries(cases))('%s', (_, args) => {
             if (!Array.isArray(args[1])) {
                 const [cls, ...expected] = args
@@ -54,25 +54,25 @@ export default class CSSTester {
     layers(cases: Record<string, {
         theme?: string | string[]
         components?: string | string[]
-        general?: string | string[]
+        utilities?: string | string[]
         base?: string | string[]
         animations?: string | string[]
         preset?: string | string[]
     }>) {
-        test.concurrent.each(Object.entries(cases))('%s', (cls, { theme, components, preset, base, general, animations }) => {
+        test.concurrent.each(Object.entries(cases))('%s', (cls, { theme, components, preset, base, utilities, animations }) => {
             const classes = cls.split(' ')
             const css = this.css.add(...classes)
             theme = Array.isArray(theme) ? theme.join('') : theme
             components = Array.isArray(components) ? components.join('') : components
             preset = Array.isArray(preset) ? preset.join('') : preset
             base = Array.isArray(base) ? base.join('') : base
-            general = Array.isArray(general) ? general.join('') : general
+            utilities = Array.isArray(utilities) ? utilities.join('') : utilities
             animations = Array.isArray(animations) ? animations.join('') : animations
             if (theme) expect(css.themeLayer.rules.map(rules => rules.text).join('')).toContain(theme)
             if (components) expect(css.componentsLayer.rules.map(rules => rules.text).join('')).toContain(components)
             if (preset) expect(css.presetLayer.rules.map(rules => rules.text).join('')).toContain(preset)
             if (base) expect(css.baseLayer.rules.map(rules => rules.text).join('')).toContain(base)
-            if (general) expect(css.generalLayer.rules.map(rules => rules.text).join('')).toContain(general)
+            if (utilities) expect(css.utilitiesLayer.rules.map(rules => rules.text).join('')).toContain(utilities)
             if (animations) expect(css.animationsNonLayer.rules.map(rules => rules.text).join('')).toContain(animations)
             css.remove(...classes)
         })

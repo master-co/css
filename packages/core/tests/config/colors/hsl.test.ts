@@ -43,7 +43,7 @@ describe.concurrent('with themes', () => {
         expectLayers(
             {
                 theme: ':root{--primary:hsl(0deg 0% 0%)}.light{--primary:hsl(0deg 0% 58.82%)}.dark{--primary:hsl(0deg 0% 100%)}.chrisma{--primary:hsl(0deg 0% 0%/0.5)}',
-                general: '.fg\\:primary\\/\\.5{color:color-mix(in oklab,var(--primary) 50%,transparent)}'
+                utilities: '.fg\\:primary\\/\\.5{color:color-mix(in oklab,var(--primary) 50%,transparent)}'
             },
             'fg:primary/.5',
             config

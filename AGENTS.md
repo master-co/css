@@ -16,10 +16,10 @@ Master CSS is a markup-driven CSS language and framework. Class strings such as 
 The core output model is intentionally stable:
 
 ```txt
-@layer base,theme,preset,components,general;
+@layer base,theme,preset,components,utilities;
 ```
 
-Rules are emitted into `base`, `theme`, `preset`, `components`, and `general` layers. Keyframes are emitted outside layers. Any CSS output difference must be intentional, explainable, and covered by tests.
+Rules are emitted into `base`, `theme`, `preset`, `components`, and `utilities` layers. Keyframes are emitted outside layers. Any CSS output difference must be intentional, explainable, and covered by tests.
 
 ## Before Editing
 

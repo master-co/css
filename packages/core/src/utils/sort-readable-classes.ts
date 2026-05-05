@@ -35,7 +35,7 @@ export default function sortReadableClasses(classes: string[], css = createCSS()
         })
     const allRules = [
         ...dedupedComponentRules,
-        ...css.generalLayer.rules,
+        ...css.utilitiesLayer.rules,
         ...css.baseLayer.rules,
         ...css.presetLayer.rules,
     ].filter((rule): rule is Utility => rule instanceof Utility)

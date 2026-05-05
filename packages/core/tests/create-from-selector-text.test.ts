@@ -46,7 +46,7 @@ describe('group selector', () => {
     const config = { selectorTokens: {
             '::both': '::before,::after',
         }, components: { btn: ['block::both'] } }
-    test.concurrent('general', () => {
+    test.concurrent('utilities', () => {
         expect(createCSS(config).createFromSelectorText('.block\\:\\:both::before, .block\\:\\:both::after')?.[0]).toMatchObject({ name: 'block::both' })
     })
 

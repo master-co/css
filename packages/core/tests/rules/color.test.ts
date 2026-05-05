@@ -5,7 +5,7 @@ import { expectLayers } from '../test'
 test.concurrent('color', () => {
     expectLayers(
         {
-            general: '.color\\:current\\:hover:hover{color:currentColor}'
+            utilities: '.color\\:current\\:hover:hover{color:currentColor}'
         },
         'color:current:hover'
     )

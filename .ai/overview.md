@@ -66,14 +66,14 @@ base
 theme
 preset
 components
-general
+utilities
 keyframes outside layers
 ```
 
 The layer statement is:
 
 ```css
-@layer base,theme,preset,components,general;
+@layer base,theme,preset,components,utilities;
 ```
 
-General syntax should override components, theme variables support modes, preset sits above base, and keyframes are not wrapped in layers.
+Utility syntax should override components, theme variables support modes, preset sits above base, and keyframes are not wrapped in layers.

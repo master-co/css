@@ -39,7 +39,7 @@ describe.concurrent('with themes', () => {
         expectLayers(
             {
                 theme: ':root{--primary:rgb(0 0 0)}.light{--primary:rgb(150 150 150)}.dark{--primary:rgb(255 255 255)}.chrisma{--primary:oklch(0% 0 none/0.5)}',
-                general: '.fg\\:primary{color:var(--primary)}'
+                utilities: '.fg\\:primary{color:var(--primary)}'
             },
             'fg:primary',
             config
@@ -50,7 +50,7 @@ describe.concurrent('with themes', () => {
         expectLayers(
             {
                 theme: ':root{--primary:rgb(0 0 0)}.light{--primary:rgb(150 150 150)}.dark{--primary:rgb(255 255 255)}.chrisma{--primary:oklch(0% 0 none/0.5)}',
-                general: '.fg\\:primary\\/\\.5{color:color-mix(in oklab,var(--primary) 50%,transparent)}'
+                utilities: '.fg\\:primary\\/\\.5{color:color-mix(in oklab,var(--primary) 50%,transparent)}'
             },
             'fg:primary/.5',
             config

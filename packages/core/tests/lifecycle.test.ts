@@ -4,11 +4,11 @@ import { createCSS } from '../src'
 
 test.concurrent('mb:48', ({ task }) => {
     css.add(task.name)
-    expect(css.generalLayer.rules.length).toBe(1)
-    expect(css.generalLayer.text).toBe('@layer general{.mb\\:48{margin-bottom:3rem}}')
+    expect(css.utilitiesLayer.rules.length).toBe(1)
+    expect(css.utilitiesLayer.text).toBe('@layer utilities{.mb\\:48{margin-bottom:3rem}}')
     css.remove(task.name)
-    expect(css.generalLayer.rules.length).toBe(0)
-    expect(css.generalLayer.text).toBe('')
+    expect(css.utilitiesLayer.rules.length).toBe(0)
+    expect(css.utilitiesLayer.text).toBe('')
 })
 
 test.concurrent('mb:48@preset', ({ task }) => {

@@ -1,6 +1,6 @@
 import CSSTester from './tester'
 
-// new CSSTester().priority('generalLayer', {
+// new CSSTester().priority('utilitiesLayer', {
 //     states: [
 //         'block',
 //         'block:hover',

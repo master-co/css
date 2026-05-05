@@ -1,1 +1,1 @@
-@layer base,theme,preset,components,general;@layer general{.fg\:app-blue{color:rgb(69 137 255)}}
+@layer base,theme,preset,components,utilities;@layer utilities{.fg\:app-blue{color:rgb(69 137 255)}}

@@ -15,7 +15,7 @@ Here is an example that covers all layers:
 - **Theme** — rules from variables and `config.variables`.
 - **Preset** — rules from `@preset` syntax (e.g., `mcss text:16_p@preset`).
 - **Components** — rules from abstract components and `config.components`.
-- **General** — rules from common utilities (e.g., `mcss flex`, `mcss @fade|1s`).
+- **Utilities** — rules from common utilities (e.g., `mcss flex`, `mcss @fade|1s`).
 - All keyframes are placed at the top level.
 
 ---
@@ -64,7 +64,7 @@ The preset layer styles should be built on top of the base layer.
 ---
 
 ## Overriding component styles
-You can override the [components](/guide/components) by adding general syntax, without having to prioritize rules.
+You can override the [components](/guide/components) by adding utility syntax, without having to prioritize rules.
 
 For example, add `flex` to override the display declaration `inline-flex` of the button.
 ```html
@@ -74,7 +74,7 @@ For example, add `flex` to override the display declaration `inline-flex` of the
 <details>
     <summary>Generated CSS</summary>
     ```css
-    @layer base, theme, preset, components, general;
+    @layer base, theme, preset, components, utilities;
 
     @layer components {
         .btn {
@@ -83,7 +83,7 @@ For example, add `flex` to override the display declaration `inline-flex` of the
         }
     }
 
-    @layer general {
+    @layer utilities {
         .flex {
             display: flex;
         }
@@ -95,7 +95,7 @@ For example, add `flex` to override the display declaration `inline-flex` of the
 ---
 
 ## Overriding preset styles
-You can select descendants with `@preset` to preset styles, preventing component and general styles from being overwritten.
+You can select descendants with `@preset` to preset styles, preventing component and utility styles from being overwritten.
 
 For example, set the default paragraph text size to `16` and change the text size of a specific paragraph to `24`.
 <Code lang="html">{require('./tests/overriding-preset-styles/template.html?raw')}</Code>
@@ -111,7 +111,7 @@ This way, you can set preset styles for multiple targets at once while still bei
 ## Summary
 By leveraging CSS cascade layers, you can structure your styles for better maintainability and prevent unwanted overrides.
 
-If styles conflict, the order of priority: **General** > **Components** > **Theme** > **Preset** > **Base**.
+If styles conflict, the order of priority: **Utilities** > **Components** > **Theme** > **Preset** > **Base**.
 
 ### Responsibilities
 1. Use the base layer for global resets and normalization.
@@ -122,5 +122,4 @@ If styles conflict, the order of priority: **General** > **Components** > **Them
 1. Create base styles via CSS files and packages instead of defining a lot of `@base` syntax.
 1. Create preset styles based on base styles.
 1. Create component styles based on base and preset styles.
-
 

@@ -5,7 +5,7 @@ export const expectLayers = (
     layers: {
         theme?: string
         components?: string
-        general?: string
+        utilities?: string
         base?: string
         animations?: string
         preset?: string
@@ -18,7 +18,7 @@ export const expectLayers = (
     if (layers.components) expect(css.componentsLayer.text).toContain(`@layer components{${layers.components ?? ''}}`)
     if (layers.preset) expect(css.presetLayer.text).toContain(`@layer preset{${layers.preset ?? ''}}`)
     if (layers.base) expect(css.baseLayer.text).toContain(`@layer base{${layers.base ?? ''}}`)
-    if (layers.general) expect(css.generalLayer.text).toContain(`@layer general{${layers.general ?? ''}}`)
+    if (layers.utilities) expect(css.utilitiesLayer.text).toContain(`@layer utilities{${layers.utilities ?? ''}}`)
     if (layers.animations) expect(css.animationsNonLayer.text).toContain(`${layers.animations ?? ''}`)
 }
 

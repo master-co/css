@@ -7,7 +7,7 @@ new CSSTester({ modeTrigger: 'class', defaultMode: 'light', variables: [{ namesp
             '.light,:root{--color-invert:oklch(0% 0 none)}',
             '.dark{--color-invert:oklch(100% 0 none)}'
         ],
-        general: '.bg\\:invert{background-color:var(--color-invert)}'
+        utilities: '.bg\\:invert{background-color:var(--color-invert)}'
     }
 })
 

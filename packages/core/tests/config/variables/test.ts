@@ -42,14 +42,14 @@ test.concurrent('rule variables', () => {
     expect(createCSS(config).create('b:inputborder')?.text).toBe('.b\\:inputborder{border:0.125rem solid oklch(0% 0 none)}')
     expectLayers(
         {
-            general: '.content\\:delimiter{content:"123"}'
+            utilities: '.content\\:delimiter{content:"123"}'
         },
         'content:delimiter',
         { variables: [{ namespace: 'content', key: 'delimiter', value: '"123"' }] }
     )
     expectLayers(
         {
-            general: '.content\\:delimiter{content:"|"}'
+            utilities: '.content\\:delimiter{content:"|"}'
         },
         'content:delimiter',
         { variables: [{ namespace: 'content', key: 'delimiter', value: '"|"' }] }

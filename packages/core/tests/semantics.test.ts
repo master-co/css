@@ -10,7 +10,7 @@ test.concurrent('utilities', () => {
     expectLayers(
         {
             animations: '@keyframes rotate{0%{transform:rotate(-360deg)}to{transform:none}}',
-            general: '.\\@my-animation{animation:1s linear infinite rotate}'
+            utilities: '.\\@my-animation{animation:1s linear infinite rotate}'
         },
         '@my-animation',
         { utilities: [{ name: '@my-animation', type: -4, declarations: {

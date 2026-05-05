@@ -23,5 +23,5 @@ test.concurrent('using components', async () => {
 })
 
 test.concurrent('conflicts', async () => {
-    expectLayers({ general: '@layer base.preset{.block\\@base\\@preset{display:block}}' }, 'block@base@preset')
+    expectLayers({ utilities: '@layer base.preset{.block\\@base\\@preset{display:block}}' }, 'block@base@preset')
 })

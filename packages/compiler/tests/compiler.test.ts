@@ -53,7 +53,7 @@ describe.concurrent('@master/css-compiler', () => {
             }
         `, ['block@md', 'w:10::scrollbar', '@fade-in|1s@motion-safe'])
 
-        expect(css).toContain('@layer base,theme,preset,components,general;')
+        expect(css).toContain('@layer base,theme,preset,components,utilities;')
         expect(css).toContain('@layer components')
         expect(css).toContain('.btn{border-radius:0.75rem}')
         expect(css).toContain('.btn{padding-left:1rem;padding-right:1rem}')

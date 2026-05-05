@@ -13,7 +13,7 @@ test.concurrent('components', () => {
 test.concurrent('viewports', () => {
     expectLayers(
         {
-            general: '@media (width>=31.25rem){.hidden\\@xss{display:none}}'
+            utilities: '@media (width>=31.25rem){.hidden\\@xss{display:none}}'
         },
         'hidden@xss',
         { atTokens: {
@@ -25,7 +25,7 @@ test.concurrent('viewports', () => {
 test.concurrent('colors', () => {
     expectLayers(
         {
-            general: '.fg\\:newColor{color:rgb(99 105 124)}'
+            utilities: '.fg\\:newColor{color:rgb(99 105 124)}'
         },
         'fg:newColor',
         { variables: [
@@ -40,7 +40,7 @@ test.concurrent('colors', () => {
 test.concurrent('at', () => {
     expectLayers(
         {
-            general: '@media (width>=37.5rem){.f\\:12\\@min-600{font-size:0.75rem}}'
+            utilities: '@media (width>=37.5rem){.f\\:12\\@min-600{font-size:0.75rem}}'
         },
         'f:12@min-600',
         { atTokens: {
@@ -52,7 +52,7 @@ test.concurrent('at', () => {
 test.concurrent('animations', () => {
     expectLayers(
         {
-            general: '.\\@float\\|\\.5s{animation:float 0.5s}',
+            utilities: '.\\@float\\|\\.5s{animation:float 0.5s}',
             animations: '@keyframes float{0%{transform:none}50%{transform:translateY(-1.25rem)}to{transform:none}}'
         },
         '@float|.5s',

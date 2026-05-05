@@ -1,4 +1,4 @@
-@layer base, theme, preset, components, general;
+@layer base, theme, preset, components, utilities;
 
 @layer base {
     .list-style\:none_ul\@base ul {
@@ -32,7 +32,7 @@
     }
 }
 
-@layer general {
+@layer utilities {
     .flex {
         display: flex
     }

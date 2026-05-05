@@ -5,7 +5,7 @@ import { expectLayers } from '../../test'
 test.concurrent('number', () => {
     expectLayers(
         {
-            general: '.m\\:x1{margin:1rem}'
+            utilities: '.m\\:x1{margin:1rem}'
         },
         'm:x1',
         { variables: [{ namespace: 'spacing', key: 'x1', value: 16 }] }
@@ -15,7 +15,7 @@ test.concurrent('number', () => {
 test.concurrent('number with themes', () => {
     expectLayers(
         {
-            general: '.m\\:x1{margin:calc(var(--spacing-x1) / 16 * 1rem)}',
+            utilities: '.m\\:x1{margin:calc(var(--spacing-x1) / 16 * 1rem)}',
             theme: ':root{--spacing-x1:16}.light{--spacing-x1:48}.dark{--spacing-x1:32}'
         },
         'm:x1',
@@ -25,7 +25,7 @@ test.concurrent('number with themes', () => {
     // 無單位屬性不需要 calc
     expectLayers(
         {
-            general: '.line-height\\:x1{line-height:var(--line-height-x1)}',
+            utilities: '.line-height\\:x1{line-height:var(--line-height-x1)}',
             theme: ':root{--line-height-x1:16}.light{--line-height-x1:48}.dark{--line-height-x1:32}'
         },
         'line-height:x1',
@@ -36,7 +36,7 @@ test.concurrent('number with themes', () => {
 test.concurrent('number using variable function', () => {
     expectLayers(
         {
-            general: '.m\\:\\$\\(spacing-x1\\){margin:1rem}'
+            utilities: '.m\\:\\$\\(spacing-x1\\){margin:1rem}'
         },
         'm:$(spacing-x1)',
         { variables: [{ namespace: 'spacing', key: 'x1', value: 16 }] }
@@ -46,7 +46,7 @@ test.concurrent('number using variable function', () => {
 test.concurrent('number with themes using variable function', () => {
     expectLayers(
         {
-            general: '.m\\:\\$\\(spacing-x1\\){margin:calc(var(--spacing-x1) / 16 * 1rem)}',
+            utilities: '.m\\:\\$\\(spacing-x1\\){margin:calc(var(--spacing-x1) / 16 * 1rem)}',
             theme: ':root{--spacing-x1:16}.light{--spacing-x1:48}.dark{--spacing-x1:32}'
         },
         'm:$(spacing-x1)',
@@ -56,7 +56,7 @@ test.concurrent('number with themes using variable function', () => {
     // 無單位屬性不需要 calc
     expectLayers(
         {
-            general: '.line-height\\:\\$\\(spacing-x1\\){line-height:var(--spacing-x1)}',
+            utilities: '.line-height\\:\\$\\(spacing-x1\\){line-height:var(--spacing-x1)}',
             theme: ':root{--spacing-x1:16}.light{--spacing-x1:48}.dark{--spacing-x1:32}'
         },
         'line-height:$(spacing-x1)',
@@ -73,7 +73,7 @@ test.concurrent('negative variables', () => {
 
     expectLayers(
         {
-            general: '.w\\:-11x{width:-3.75rem}'
+            utilities: '.w\\:-11x{width:-3.75rem}'
         },
         'w:-11x',
         { variables: [{ namespace: 'width', key: '11x', value: 60 }] }
@@ -83,7 +83,7 @@ test.concurrent('negative variables', () => {
 test.concurrent('negative screens', () => {
     expectLayers(
         {
-            general: '.mb\\:-screen-md{margin-bottom:-64rem}'
+            utilities: '.mb\\:-screen-md{margin-bottom:-64rem}'
         },
         'mb:-screen-md'
     )

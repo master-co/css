@@ -20,7 +20,7 @@ import parseSelector, { SelectorNode } from './utils/parse-selector'
 export default class MasterCSS {
     readonly definedUtilities: DefinedUtility[] = []
     readonly config!: ExtendedConfig
-    readonly layerStatementRule = new Rule('layer-statement', '@layer base,theme,preset,components,general;')
+    readonly layerStatementRule = new Rule('layer-statement', '@layer base,theme,preset,components,utilities;')
     readonly rules: (Layer | Rule)[] = [this.layerStatementRule]
     readonly classUtilities = new Map<string, GeneratedUtility[]>()
     readonly animationsNonLayer = new NonLayer(this)
@@ -28,7 +28,7 @@ export default class MasterCSS {
     readonly themeLayer = new Layer('theme', this)
     readonly presetLayer = new UtilityLayer('preset', this)
     readonly componentsLayer = new UtilityLayer('components', this)
-    readonly generalLayer = new UtilityLayer('general', this)
+    readonly utilitiesLayer = new UtilityLayer('utilities', this)
     readonly components = new Map<string, ComponentEntry>()
     readonly selectors = new Map<string, SelectorNode[]>()
     readonly variables = new Map<string, Variable>()
@@ -46,7 +46,7 @@ export default class MasterCSS {
     get text() {
         return this.rules
             .sort((a, b) => {
-                const order = ['layer-statement', 'base', 'theme', 'preset', 'components', 'general']
+                const order = ['layer-statement', 'base', 'theme', 'preset', 'components', 'utilities']
                 const indexA = order.indexOf(a.name) === -1 ? Infinity : order.indexOf(a.name)
                 const indexB = order.indexOf(b.name) === -1 ? Infinity : order.indexOf(b.name)
                 return indexA - indexB
@@ -618,7 +618,7 @@ export default class MasterCSS {
      * @returns Utility
      */
     create(className: string, fixedClass?: string, mode?: string): Utility | undefined {
-        const utility = this.generalLayer.rules.find((rule): rule is Utility =>
+        const utility = this.utilitiesLayer.rules.find((rule): rule is Utility =>
             rule instanceof Utility && rule.key === ((fixedClass ? fixedClass + ' ' : '') + className)
         )
         if (utility) return utility
@@ -690,7 +690,7 @@ export default class MasterCSS {
         this.themeLayer.reset()
         this.presetLayer.reset()
         this.componentsLayer.reset()
-        this.generalLayer.reset()
+        this.utilitiesLayer.reset()
         this.animationsNonLayer.reset()
         return this
     }

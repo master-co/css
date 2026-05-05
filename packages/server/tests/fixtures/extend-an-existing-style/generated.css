@@ -1,1 +1,1 @@
-@layer base,theme,preset,components,general;@layer components{.b{-webkit-text-decoration:underline;text-decoration:underline}.a{color:oklch(0% 0 none)}.b{color:oklch(0% 0 none)}}
+@layer base,theme,preset,components,utilities;@layer components{.b{-webkit-text-decoration:underline;text-decoration:underline}.a{color:oklch(0% 0 none)}.b{color:oklch(0% 0 none)}}

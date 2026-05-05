@@ -36,7 +36,7 @@ export class Utility {
         mode?: string
     ) {
         this.mode = mode as string
-        this.layer = css.generalLayer
+        this.layer = css.utilitiesLayer
         Object.assign(this, registeredUtility)
         const { id, definition } = registeredUtility
         const { declarer, declarerOptions, transformer, transformerOptions, type, unit, sign } = definition

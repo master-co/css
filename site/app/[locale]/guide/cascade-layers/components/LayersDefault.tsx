@@ -33,9 +33,9 @@ export default () => {
                         <td className="white-space:nowrap"><code>{'@layer components { … }'}</code></td>
                     </tr>
                     <tr>
-                        <th>General</th>
-                        <td>Where the general styles are generated.</td>
-                        <td className="white-space:nowrap"><code>{'@layer general { … }'}</code></td>
+                        <th>Utilities</th>
+                        <td>Where the utility styles are generated.</td>
+                        <td className="white-space:nowrap"><code>{'@layer utilities { … }'}</code></td>
                     </tr>
                 </tbody>
             </table>

@@ -9,16 +9,16 @@ test('383', async ({ page }) => {
             <div class="text:center"></div>
         `
     })
-    await init(page, '@layer base, theme, preset, components, general;')
-    expect(await page.evaluate(() => globalThis.cssRuntime.generalLayer?.native?.parentStyleSheet)).toBeDefined()
+    await init(page, '@layer base, theme, preset, components, utilities;')
+    expect(await page.evaluate(() => globalThis.cssRuntime.utilitiesLayer?.native?.parentStyleSheet)).toBeDefined()
     await page.evaluate(() => {
         document.body.innerHTML = ``
     })
-    expect(await page.evaluate(() => globalThis.cssRuntime.generalLayer?.native?.parentStyleSheet)).toBeNull()
+    expect(await page.evaluate(() => globalThis.cssRuntime.utilitiesLayer?.native?.parentStyleSheet)).toBeNull()
     await page.evaluate(() => {
         document.body.innerHTML = `
             <div class="font:bold fg:red"></div>
         `
     })
-    expect(await page.evaluate(() => globalThis.cssRuntime.generalLayer?.native?.parentStyleSheet)).toBeDefined()
+    expect(await page.evaluate(() => globalThis.cssRuntime.utilitiesLayer?.native?.parentStyleSheet)).toBeDefined()
 })
