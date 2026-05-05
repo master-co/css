@@ -147,6 +147,9 @@ importers:
       '@master/css.figma':
         specifier: workspace:^
         version: link:packages/figma
+      '@master/css.next':
+        specifier: workspace:^
+        version: link:packages/next
       '@master/css.nuxt':
         specifier: workspace:^
         version: link:packages/nuxt
@@ -1562,6 +1565,25 @@ importers:
         specifier: ^9.0.1
         version: 9.0.1
 
+  packages/next:
+    dependencies:
+      '@master/css':
+        specifier: workspace:^
+        version: link:../core
+      '@master/css-explore-config':
+        specifier: workspace:^
+        version: link:../explore-config
+      '@master/css-server':
+        specifier: workspace:^
+        version: link:../server
+    devDependencies:
+      next:
+        specifier: ^16.2.4
+        version: 16.2.4(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(@playwright/test@1.59.1)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)(sass@1.99.0)
+      shared:
+        specifier: workspace:^
+        version: link:../../shared
+
   packages/nuxt:
     dependencies:
       '@master/css-server':
@@ -1948,6 +1970,9 @@ importers:
         specifier: ^10.1.1
         version: 10.1.1(react@19.2.5)
     devDependencies:
+      '@master/css.next':
+        specifier: workspace:^
+        version: link:../packages/next
       '@shikijs/monaco':
         specifier: ^4.0.2
         version: 4.0.2

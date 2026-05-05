@@ -51,11 +51,11 @@ import ProgressiveRenderingIntro from '../../rendering-modes/components/Progress
     <Step $row>
         <StepL>
             ### <StepNum />Install Master CSS
-            Install Master CSS React into your project via package managers.
+            Install Master CSS React and the Next.js adapter into your project via package managers.
         </StepL>
         <StepR>
             ```bash action=install
-            @master/css.react@rc @master/css-cli@rc
+            @master/css.react@rc @master/css.next@rc
             ```
         </StepR>
     </Step>
@@ -100,7 +100,6 @@ import ProgressiveRenderingIntro from '../../rendering-modes/components/Progress
                             import '../styles/globals.css'
                             import type { AppProps } from 'next/app'
                             import CSSRuntimeProvider from '@master/css.react' // [!code +]
-                            import dynamic from 'next/dynamic' // [!code ++]
                             import config from '../master.css' // [!code ++]
 
                             export default function App({ Component, pageProps }: AppProps) {
@@ -118,72 +117,30 @@ import ProgressiveRenderingIntro from '../../rendering-modes/components/Progress
     </Step>
     <Step $row>
         <StepL>
-            ### <StepNum />Set up Master CSS renderer
-            Statically generate CSS for each `.html` page after `next build` using the Master CSS Render CLI.
+            ### <StepNum />Set up Next.js adapter
+            Register the Master CSS Next.js adapter to pre-render CSS for build-time HTML outputs during `next build`.
 
-            (i) Next.js 13 has deprecated `getInitialProps`, and there is no alternative, so now only static output is supported.
+            (i) This adapter uses the Next.js 16 Adapter API and runs in `onBuildComplete`. It pre-renders static and pre-rendered HTML outputs, while dynamic SSR responses continue to rely on the runtime engine.
         </StepL>
         <StepR>
-            <CodeTabs>
-                {[
-                    {
-                        name: 'package.json',
-                        lang: 'js',
-                        code: `
-                            {
-                                "scripts": {
-                                    "dev": "next dev",
-                                    "build": "next build", // [!code ++]
-                                    "build": "next build && mcss render \\".next/**/*.html\\"", // [!code ++]
-                                    "start": "next start",
-                                    "lint": "next lint"
-                                }
-                            }
-                        `
-                    },
-                    {
-                        name: 'pages/_document.tsx',
-                        lang: 'tsx',
-                        code: `
-                            import NextDocument, { Html, Head, Main, NextScript, DocumentContext } from 'next/document'
-                            import { renderCSS } from '@master/css-server' // [!code ++]
-                            import config from '../master.css' // [!code ++]
+            ```js name=next.config.mjs
+            import { withMasterCSS } from '@master/css.next' // [!code ++]
 
-                            export default function Document() {
-                                return (
-                                    <Html lang="en">
-                                        <Head />
-                                        <body>
-                                            <Main />
-                                            <NextScript />
-                                        </body>
-                                    </Html>
-                                )
-                            }
+            /** @type {import('next').NextConfig} */
+            const nextConfig = withMasterCSS({
+                // your Next.js config
+            }) // [!code ++]
 
-                            Document.getInitialProps = async (ctx: DocumentContext) => {
-                                const initialProps = await NextDocument.getInitialProps(ctx)
-                                const css = renderCSS(initialProps.html, config)
-                                return {
-                                    ...initialProps,
-                                    components: (
-                                        <>
-                                            <style id="master" dangerouslySetInnerHTML={{ __html: css.text }}></style>
-                                            {initialProps.styles}
-                                        </>
-                                    )
-                                }
-                            }
-                        `
-                    }
-                ]}
-            </CodeTabs>
+            export default nextConfig
+            ```
         </StepR>
     </Step>
     <Step $row>
         <StepL>
             ### <StepNum />Launch server
-            Run `npm run dev` to start your Next.js development server
+            Run `npm run dev` to start your Next.js development server. Development uses the runtime engine directly for fast refresh.
+
+            (i) Pre-rendered `<style id="master">` is generated by `next build`, so verify progressive output with `npm run build && npm run start`.
         </StepL>
         <StepR>
             ```bash name=Terminal

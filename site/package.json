@@ -4,11 +4,11 @@
     "type": "module",
     "scripts": {
         "prepare-app": "tsx --env-file=.env ./prepare",
-        "dev": "pnpm prepare-app && next dev --turbo",
-        "build": "pnpm prepare-app && pnpm build:llms && pnpm build:repo && pnpm build:next && pnpm build:css",
+        "dev": "pnpm build:next-adapter && pnpm prepare-app && next dev --turbo",
+        "build": "pnpm prepare-app && pnpm build:llms && pnpm build:repo && pnpm build:next",
         "build:repo": "cd ../ && pnpm build && cd site",
+        "build:next-adapter": "cd ../ && pnpm --filter @master/css.next build && cd site",
         "build:next": "cross-env NODE_OPTIONS=--max-old-space-size=16384 next build --turbo",
-        "build:css": "node ../packages/cli/dist/bin/index.mjs render \".next/**/*.html\"",
         "build:llms": "tsx scripts/generate-llms-txt.ts",
         "test:llms": "tsx --test scripts/generate-llms-txt.test.ts",
         "start": "next start",
@@ -31,6 +31,7 @@
         "use-debounce": "^10.1.1"
     },
     "devDependencies": {
+        "@master/css.next": "workspace:^",
         "@shikijs/monaco": "^4.0.2",
         "eslint": "^10.2.1",
         "internal": "workspace:^",
