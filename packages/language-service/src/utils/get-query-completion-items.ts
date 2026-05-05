@@ -18,7 +18,7 @@ export default function getQueryCompletionItems(css: MasterCSS = createCSS(), tr
                         sortText: name + '()',
                         documentation: getCSSDataDocumentation(atDataList.find(({ name }) => name === '@' + name), {
                             generatedCSS: generateCSS([syntax + name + '()'], css),
-                            docs: '/guide/at'
+                            docs: '/guide/at-tokens'
                         }),
                     }
                 )
@@ -42,7 +42,7 @@ export default function getQueryCompletionItems(css: MasterCSS = createCSS(), tr
                 kind: CompletionItemKind.Keyword,
                 documentation: getCSSDataDocumentation(undefined, {
                     generatedCSS: generateCSS([syntax + token], css),
-                    docs: '/guide/at'
+                    docs: '/guide/at-tokens'
                 }),
             })
             return true
@@ -55,7 +55,7 @@ export default function getQueryCompletionItems(css: MasterCSS = createCSS(), tr
             insertText: token,
             documentation: getCSSDataDocumentation(undefined, {
                 generatedCSS: generateCSS([syntax + token], css),
-                docs: '/guide/at'
+                docs: '/guide/at-tokens'
             })
         }
         if ([AT_SIGN, ...QUERY_LOGICAL_OPERATORS].includes(triggerCharacter)) {
@@ -70,7 +70,7 @@ export default function getQueryCompletionItems(css: MasterCSS = createCSS(), tr
                     kind: CompletionItemKind.Keyword,
                     documentation: getCSSDataDocumentation(undefined, {
                         generatedCSS: generateCSS([syntax + token], css),
-                        docs: '/guide/at'
+                        docs: '/guide/at-tokens'
                     }),
                 }
             )

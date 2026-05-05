@@ -37,7 +37,7 @@ Compared with Tailwind:
 - Syntax is closer to CSS declarations, such as `font:24`, `fg:red`, `bg:blue:hover@sm`.
 - Selectors and at-rules are first-class syntax suffixes.
 - Runtime and progressive rendering are supported in addition to static extraction.
-- Config defines utilities, variables, selectors, at-rule tokens, components, functions, modes, and animations.
+- Config defines utilities, variables, selector tokens, at tokens, components, functions, modes, and animations.
 
 Compared with CSS-in-JS:
 
@@ -53,8 +53,8 @@ Compared with CSS-in-JS:
 - Variable: A config token that can be inlined or emitted as a CSS custom property.
 - Mode: A conditional variable/style context such as `light` or `dark`.
 - Component: A semantic class expanded into multiple syntax classes.
-- Selector token: A shorthand or alias for selector suffixes.
-- At-rule token: A shorthand or alias for media, container, supports, layer, starting-style, and screen conditions.
+- Selector token: A named selector suffix expression.
+- At token: A named `@` suffix expression for media, container, supports, layer, starting-style, and screen conditions.
 
 ## Output Model
 

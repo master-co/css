@@ -6,11 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script>
         window.masterCSSConfig = {
-            selectors: {
-                '::both': ['::before', '::after'],
+            selectorTokens: {
+                '::both': '::before,::after',
             },
             components: {
-                btn: 'bg:black block::both'
+                btn: ['bg:black block::both']
             }
         }
     </script>

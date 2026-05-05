@@ -1,6 +1,6 @@
-import type { AtRuleAliasDefinitions } from '../types/config'
+import type { AtTokenDefinitions } from '../types/config'
 
-const atRuleAliases = {
+const atTokens = {
     all: 'media(all)',
     print: 'media(print)',
     screen: 'media(screen)',
@@ -14,6 +14,6 @@ const atRuleAliases = {
     start: 'starting-style',
     w: 'width',
     h: 'height',
-} satisfies AtRuleAliasDefinitions
+} satisfies AtTokenDefinitions
 
-export default atRuleAliases
+export default atTokens

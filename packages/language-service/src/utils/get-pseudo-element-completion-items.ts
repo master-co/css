@@ -22,17 +22,17 @@ export default function getPseudoElementCompletionItems(css: MasterCSS = createC
                 sortText,
                 documentation: getCSSDataDocumentation(data, {
                     generatedCSS: generateCSS([syntax + name.slice(2)], css),
-                    docs: '/guide/selectors'
+                    docs: '/guide/selector-tokens'
                 }),
                 kind,
                 data
             } as CompletionItem
         })
 
-    const selectorAliases = css.config.selectorAliases || {}
-    for (const selectorName in selectorAliases) {
+    const selectorTokens = css.config.selectorTokens || {}
+    for (const selectorName in selectorTokens) {
         if (!selectorName.startsWith('::')) continue
-        const selectorValue = selectorAliases[selectorName]
+        const selectorValue = selectorTokens[selectorName]
         const name = selectorName.endsWith('(') ? selectorName + ')' : selectorName
         const value = typeof selectorValue === 'string'
             ? selectorValue.endsWith('(') ? selectorValue + ')' : selectorValue
@@ -47,7 +47,7 @@ export default function getPseudoElementCompletionItems(css: MasterCSS = createC
             label: name,
             documentation: getCSSDataDocumentation(data, {
                 generatedCSS: generateCSS([syntax + name.slice(2)], css),
-                docs: '/guide/selectors'
+                docs: '/guide/selector-tokens'
             }),
             sortText,
             kind,

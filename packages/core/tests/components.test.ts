@@ -78,7 +78,7 @@ describe('raw declarations', () => {
     })
 
     test('generates component rule declarations with at-rules', () => {
-        const css = createCSS({ atRuleAliases: {
+        const css = createCSS({ atTokens: {
                 sm: 500
             } })
         css.components.set('btn', {

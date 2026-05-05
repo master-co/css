@@ -16,7 +16,7 @@ test.concurrent('viewports', () => {
             general: '@media (width>=31.25rem){.hidden\\@xss{display:none}}'
         },
         'hidden@xss',
-        { atRuleAliases: {
+        { atTokens: {
                 'xss': 500
             } }
     )
@@ -43,7 +43,7 @@ test.concurrent('at', () => {
             general: '@media (width>=37.5rem){.f\\:12\\@min-600{font-size:0.75rem}}'
         },
         'f:12@min-600',
-        { atRuleAliases: {
+        { atTokens: {
                 'min-600': '@media(width>=600)'
             } }
     )

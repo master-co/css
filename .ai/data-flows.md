@@ -41,8 +41,8 @@ Risks:
 default config + user config
   -> extendConfig()
   -> recursively collect extends
-  -> flatten variables, modes, components, atRuleAliases
-  -> merge utilities, selectorAliases, functions, animations
+  -> flatten variables, modes, components, atTokens
+  -> merge utilities, selectorTokens, functions, animations
   -> MasterCSS.resolve()
   -> resolveVariables()
   -> resolveAnimations()

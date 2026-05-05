@@ -199,6 +199,9 @@ describe.concurrent('@master/css-compiler', () => {
                 --screen-md: 48;
             }
 
+            @at motion-safe @media (prefers-reduced-motion: no-preference);
+            @selector ::scrollbar ::-webkit-scrollbar;
+
             @layer components {
                 .btn {
                     @apply "bg:primary";
@@ -230,6 +233,12 @@ describe.concurrent('@master/css-compiler', () => {
                         }
                     }
                 ]
+            },
+            atTokens: {
+                'motion-safe': 'media(prefers-reduced-motion:no-preference)'
+            },
+            selectorTokens: {
+                '::scrollbar': '::-webkit-scrollbar'
             }
         })
         expect(result.componentNames).toEqual(['btn'])

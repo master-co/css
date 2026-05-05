@@ -296,10 +296,10 @@ export default class MasterCSS {
     }
 
     resolveSelectors() {
-        const { selectorAliases } = this.config
-        if (selectorAliases) {
-            for (const token in selectorAliases) {
-                const value = selectorAliases[token]
+        const { selectorTokens } = this.config
+        if (selectorTokens) {
+            for (const token in selectorTokens) {
+                const value = selectorTokens[token]
                 const nodes = parseSelector(value, this, false)
                 this.selectors.set(token, nodes)
             }
@@ -317,10 +317,10 @@ export default class MasterCSS {
             }
         }
 
-        const { atRuleAliases } = this.config
-        if (atRuleAliases) {
-            for (const token in atRuleAliases) {
-                const value = atRuleAliases[token]
+        const { atTokens } = this.config
+        if (atTokens) {
+            for (const token in atTokens) {
+                const value = atTokens[token]
                 if (typeof value === 'number') {
                     const node = this.parseValue(value)
                     this.atRules.set(token, {

@@ -1,5 +1,5 @@
 export default {
-    atRuleAliases: {
+    atTokens: {
         landscape: '@media(orientation:landscape)' /* [!code highlight] */
     }
 }

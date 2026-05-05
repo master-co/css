@@ -110,7 +110,7 @@ Add media queries after the main body.
 <div class="landscape:hidden"></div> <!-- [!code --] -->
 <div class="hidden@landscape"></div>
 ```
-Not just media queries but feature queries and [more](/guide/at).
+Not just media queries but feature queries and [more](/guide/at-tokens).
 
 ---
 
@@ -164,7 +164,7 @@ module.exports = {
 ```
 
 ### Add media queries
-Using [at-rules](/guide/at) to define media queries, feature queries, and even container queries.
+Using [at tokens](/guide/at-tokens) to define media queries, feature queries, and even container queries.
 ```js name=tailwind.config.js
 /** @type {import('tailwindcss').Config} */
 module.exports = {
@@ -180,7 +180,7 @@ module.exports = {
 ```js name=master.css.js
 /** @type {import('@master/css').Config} */
 export default {
-    at: {
+    atTokens: {
         tall: 'media (min-height: 800px)'
     }
 }

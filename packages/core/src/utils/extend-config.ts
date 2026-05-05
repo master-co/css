@@ -7,10 +7,10 @@ export declare type ExtendedConfig = {
     __extended?: boolean
     variables?: VariableDefinitions
     modes?: string[]
-    atRuleAliases?: Record<string, string | number>
-    selectorAliases?: Record<string, string>
+    atTokens?: Record<string, string | number>
+    selectorTokens?: Record<string, string>
     components?: ComponentDefinitions
-} & Omit<Config, 'variables' | 'modes' | 'atRuleAliases' | 'selectorAliases'>
+} & Omit<Config, 'variables' | 'modes' | 'atTokens' | 'selectorTokens'>
 
 function utilitySlot(utility: UtilityDefinition) {
     return `${utility.name}\0${utility.type === UtilityType.Static ? 'static' : 'syntax'}`
@@ -45,9 +45,9 @@ export default function extendConfig(...configs: (Config | undefined)[]) {
         modes,
         components,
         animations,
-        atRuleAliases,
+        atTokens,
         utilities,
-        selectorAliases,
+        selectorTokens,
         functions,
         ...rest
     } of allConfigs) {
@@ -86,10 +86,10 @@ export default function extendConfig(...configs: (Config | undefined)[]) {
             Object.assign(extendedConfig.components, components)
         }
 
-        // at-rule aliases
-        if (atRuleAliases) {
-            extendedConfig.atRuleAliases ??= {}
-            Object.assign(extendedConfig.atRuleAliases, flattenObject(atRuleAliases))
+        // at tokens
+        if (atTokens) {
+            extendedConfig.atTokens ??= {}
+            Object.assign(extendedConfig.atTokens, flattenObject(atTokens))
         }
 
         // animations
@@ -111,10 +111,10 @@ export default function extendConfig(...configs: (Config | undefined)[]) {
             }
         }
 
-        // selector aliases
-        if (selectorAliases) {
-            extendedConfig.selectorAliases ??= {}
-            Object.assign(extendedConfig.selectorAliases, selectorAliases)
+        // selector tokens
+        if (selectorTokens) {
+            extendedConfig.selectorTokens ??= {}
+            Object.assign(extendedConfig.selectorTokens, selectorTokens)
         }
 
         // functions

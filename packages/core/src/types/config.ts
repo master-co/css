@@ -37,11 +37,11 @@ export interface VariableDefinition {
 }
 export type CSSKeyframes = Record<'from' | 'to' | string, PropertiesHyphen>
 export type AnimationDefinitions = Record<string, CSSKeyframes>;
-export type SelectorAliasDefinitions = Record<string, string>;
+export type SelectorTokenDefinitions = Record<string, string>;
 export type AtIdentifier = typeof AT_IDENTIFIERS[number]
-export type AtRuleAliasDefinition = number | string
-export interface AtRuleAliasDefinitions {
-    [key: string]: AtRuleAliasDefinition | AtRuleAliasDefinitions;
+export type AtTokenDefinition = number | string
+export interface AtTokenDefinitions {
+    [key: string]: AtTokenDefinition | AtTokenDefinitions;
 }
 export interface ComponentSelectorDefinition {
     selector: string
@@ -62,8 +62,8 @@ export type FunctionDefinitions = Record<string, FunctionDefinition>;
 export interface Config {
     extends?: (Config | any)[]
     components?: ComponentDefinitions
-    atRuleAliases?: AtRuleAliasDefinitions
-    selectorAliases?: SelectorAliasDefinitions
+    atTokens?: AtTokenDefinitions
+    selectorTokens?: SelectorTokenDefinitions
     variables?: VariableDefinitions
     utilities?: UtilityDefinitions
     rootSize?: number

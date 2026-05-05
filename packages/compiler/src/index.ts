@@ -312,8 +312,8 @@ function parseAtDefinition(rule: any, config: Config) {
     if (!match) {
         throw new Error('@at requires a name and at-rule value')
     }
-    config.atRuleAliases ??= {}
-    config.atRuleAliases[match[1]] = normalizeAtValue(match[2])
+    config.atTokens ??= {}
+    config.atTokens[match[1]] = normalizeAtValue(match[2])
 }
 
 function parseSelectorDefinition(rule: any, config: Config) {
@@ -321,8 +321,8 @@ function parseSelectorDefinition(rule: any, config: Config) {
     if (!match) {
         throw new Error('@selector requires a name and selector value')
     }
-    config.selectorAliases ??= {}
-    config.selectorAliases[match[1]] = match[2]
+    config.selectorTokens ??= {}
+    config.selectorTokens[match[1]] = match[2]
 }
 
 function parseClassDefinitionSelector(selectors: Selector[]) {

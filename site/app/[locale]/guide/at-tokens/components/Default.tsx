@@ -1,4 +1,4 @@
-import { atRuleAliases } from '@master/css'
+import { atTokens } from '@master/css'
 import InlineCode from 'internal/components/InlineCode'
 
 export default () =>
@@ -13,15 +13,14 @@ export default () =>
             <tbody>
                 {
                     [
-                        ...Object.keys(atRuleAliases)
-                            .map((eachBreakpointName) => {
-                                // @ts-ignore
-                                const eachBreakpoint = atRuleAliases[eachBreakpointName]
+                        ...Object.keys(atTokens)
+                            .map((tokenName) => {
+                                const tokenValue = atTokens[tokenName]
                                 return (
-                                    <tr key={eachBreakpointName}>
-                                        <th><code>{eachBreakpointName}</code></th>
+                                    <tr key={tokenName}>
+                                        <th><code>{tokenName}</code></th>
                                         <td>
-                                            <InlineCode>{eachBreakpoint}</InlineCode>
+                                            <InlineCode>{tokenValue}</InlineCode>
                                         </td>
                                     </tr>
                                 )

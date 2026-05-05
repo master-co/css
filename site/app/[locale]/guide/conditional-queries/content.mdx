@@ -62,8 +62,8 @@ Or stack conditions in a single class.
 
 ---
 
-## Common at-rule tokens
-These shorthands provide a simplified syntax for commonly used CSS at-rules. They allow you to apply styles based on media types, feature support, container queries, and layer management in a more concise and readable way.
+## Common at tokens
+These tokens provide a simplified syntax for commonly used `@` suffix expressions. They allow you to apply styles based on media types, feature support, container queries, and layer management in a more concise and readable way.
 
 | Token                         | CSS                                                       |
 |-------------------------------|-----------------------------------------------------------|
@@ -111,7 +111,7 @@ By default, there are two shorthands: `@base` and `@preset`.
         {['hidden@base', 'hidden@preset']}
     </Class2CSS>
 </details>
-You can [create a token](/guide/at) to simpify the class name.
+You can [create a token](/guide/at-tokens) to simpify the class name.
 
 To learn more about the [cascade layers](/guide/responsive-design#cascade-layers).
 
@@ -179,7 +179,7 @@ Use `@media()` to apply styles based on arbitrary [CSS media queries](https://de
 <!-- @MARK @media(pointer:coarse) -->
 <div class="hidden@media(pointer:coarse)">
 ```
-You can [create a token](/guide/at) to simpify the class name.
+You can [create a token](/guide/at-tokens) to simpify the class name.
 
 ### `@supports(<feature>)`
 Use `@supports()` to apply styles based on browser support for specific CSS features.
@@ -187,7 +187,7 @@ Use `@supports()` to apply styles based on browser support for specific CSS feat
 <!-- @MARK @supports(backdrop-filter(0px)) -->
 <div class="hidden@supports(backdrop-filter(0px))">
 ```
-You can [create a token](/guide/at) to simpify the class name.
+You can [create a token](/guide/at-tokens) to simpify the class name.
 
 ### `@layer(<name>)`
 Use `@layer()` to apply styles based on the layer context.
@@ -217,7 +217,7 @@ Use `@container` to apply styles based on the container size.
         {['container', 'hidden@container(sm)']}
     </Class2CSS>
 </details>
-You can [create a token](/guide/at) to simpify the class name.
+You can [create a token](/guide/at-tokens) to simpify the class name.
 
 To learn more about the [container queries](/guide/responsive-design#based-on-container-sizes).
 
@@ -236,7 +236,7 @@ Use `@<container>(<size>)` to apply styles based on the specific target containe
         {['container:sidebar', 'hidden@container(sidebar)sm']}
     </Class2CSS>
 </details>
-Any shorthand not listed in `config.atRuleAliases` will be implicitly treated as a `@container`, falling back to the default behavior of being eligible for container queries.
+Any shorthand not listed in `config.atTokens` will be implicitly treated as a `@container`, falling back to the default behavior of being eligible for container queries.
 
 ---
 

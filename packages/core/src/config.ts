@@ -1,5 +1,5 @@
-import atRuleAliases from './config/at-rule-aliases'
-import selectorAliases from './config/selector-aliases'
+import atTokens from './config/at-tokens'
+import selectorTokens from './config/selector-tokens'
 import animations from './config/animations'
 import variables, { modes, screens } from './config/variables'
 import utilities from './config/utilities'
@@ -7,8 +7,8 @@ import functions from './config/functions'
 import type { Config } from './types/config'
 
 const config: Config = {
-    atRuleAliases,
-    selectorAliases,
+    atTokens,
+    selectorTokens,
     utilities,
     functions,
     animations,
@@ -24,8 +24,8 @@ const config: Config = {
 
 export {
     config,
-    atRuleAliases,
-    selectorAliases,
+    atTokens,
+    selectorTokens,
     utilities,
     functions,
     animations,

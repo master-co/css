@@ -63,7 +63,7 @@ export const cases = {
             ]
         }],
     ],
-    alias: [
+    featureToken: [
         ['w>=sm', '@media (width>=52.125rem)', {
             id: 'media', nodes: [
                 { raw: 'w>=sm', type: 'number', name: 'width', value: 52.125, unit: 'rem', operator: '>=' }
@@ -131,7 +131,7 @@ export const cases = {
                     }
                 ]
             },
-            { atRuleAliases: {
+            { atTokens: {
                     supports: {
                         backdrop: 'supports(backdrop-filter:blur(0px))'
                     }
@@ -151,7 +151,7 @@ export const cases = {
                     }
                 ]
             },
-            { atRuleAliases: {
+            { atTokens: {
                     custom: '>=42mm&<=80mm'
                 } }],
         ['custom', '@media (width>=37.5rem)',
@@ -168,7 +168,7 @@ export const cases = {
                     }
                 ]
             },
-            { atRuleAliases: {
+            { atTokens: {
                     custom: '@media(width>=600)'
                 } }],
 

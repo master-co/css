@@ -155,7 +155,7 @@ export const cases = {
                 ]
             },
         ],
-            { selectorAliases: {
+            { selectorTokens: {
                     ':headings': ':is(h1,h2,h3)',
                 } }
         ],
@@ -177,7 +177,7 @@ export const cases = {
                 raw: ':combo'
             },
         ],
-            { selectorAliases: {
+            { selectorTokens: {
                     ':combo': ':is(h1,h2)+div',
                 } }
         ],
@@ -194,11 +194,11 @@ export const cases = {
         //     }
         // ],
         //     {
-        //         selectors: {
+        //         selectorTokens: {
         //             '::both': '::before,::after',
         //         },
         //         components: {
-        //             'btn': 'block::both'
+        //             'btn': ['block::both']
         //         }
         //     },
         //     '.btn'

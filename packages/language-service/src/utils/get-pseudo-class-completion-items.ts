@@ -1,4 +1,4 @@
-import { MasterCSS, createCSS, SelectorAliasDefinitions, generateCSS } from '@master/css'
+import { MasterCSS, createCSS, SelectorTokenDefinitions, generateCSS } from '@master/css'
 import cssDataProvider from './css-data-provider'
 import { type CompletionItem, CompletionItemKind } from 'vscode-languageserver-protocol'
 import sortCompletionItems from './sort-completion-items'
@@ -54,7 +54,7 @@ export default function getPseudoClassCompletionItems(css: MasterCSS = createCSS
                 sortText,
                 documentation: getCSSDataDocumentation(data, {
                     generatedCSS: generateCSS([syntax + name.slice(1)], css),
-                    docs: '/guide/selectors'
+                    docs: '/guide/selector-tokens'
                 }),
                 kind,
                 data
@@ -62,9 +62,9 @@ export default function getPseudoClassCompletionItems(css: MasterCSS = createCSS
         })
 
     const selectors = {
-        ...css.config.selectorAliases,
+        ...css.config.selectorTokens,
         ':of': ':of',
-    } as SelectorAliasDefinitions
+    } as SelectorTokenDefinitions
 
     for (const name in selectors) {
         if (name.startsWith('::')) continue
@@ -79,7 +79,7 @@ export default function getPseudoClassCompletionItems(css: MasterCSS = createCSS
             label,
             documentation: getCSSDataDocumentation(data, {
                 generatedCSS: generateCSS([syntax + label.slice(1)], css),
-                docs: '/guide/selectors'
+                docs: '/guide/selector-tokens'
             }),
             sortText,
             kind,

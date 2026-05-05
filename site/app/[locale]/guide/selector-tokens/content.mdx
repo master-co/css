@@ -1,0 +1,22 @@
+## Overview [sr-only]
+<Default />
+You can predefine selector tokens to simplify your markup. This is useful for common selectors that you use frequently, such as `:first`, `:last`, or `:nth()`. By defining these tokens, you can use them in your HTML without having to write the full selector each time.
+<Overview />
+
+---
+
+## Basic usage
+### Add a selector token
+Create a selector token to reuse a selector expression in your markup.
+```js name=master.css.js
+export default {
+    selectorTokens: {
+        ':headings': ':is(h1,h2,h3,h4,h5,h6)', // [!code highlight]
+    }
+}
+```
+Use the selector token in your markup:
+```html
+<!-- @MARK :headings -->
+<div class="font:bold_:headings">…</div>
+```

@@ -43,7 +43,7 @@ test.concurrent('component and mode', () => {
 })
 
 describe('group selector', () => {
-    const config = { selectorAliases: {
+    const config = { selectorTokens: {
             '::both': '::before,::after',
         }, components: { btn: ['block::both'] } }
     test.concurrent('general', () => {

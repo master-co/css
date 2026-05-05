@@ -1,6 +1,6 @@
 ## Overview [sr-only]
 <Default />
-In native CSS, it's not possible to reuse queries through CSS variables. By tokenizing *media queries*, *feature queries*, *container queries*, and applying them with flexible syntax within the markup.
+In native CSS, it's not possible to reuse queries through CSS variables. Master CSS uses `atTokens` to name *media queries*, *feature queries*, *container queries*, and other `@` suffix expressions so they can be applied directly in markup.
 <Overview />
 
 ---
@@ -30,16 +30,16 @@ Applies translucent background only when `backdrop-filter` is supported.
     </div>
 </details>
 
-### Add a feature name alias
-Create a feature name alias to shorten the syntax of a feature query.
+### Add a feature name token
+Create a feature name token to shorten the syntax of a feature query.
 ```js name=master.css.js
 export default {
-    at: {
+    atTokens: {
         h: 'height' // [!code highlight]
     }
 }
 ```
-Use the name alias `h`:
+Use the token `h`:
 ```html
 <!-- @MARK h -->
 <div class="hidden@container(h<=200)">…</div>

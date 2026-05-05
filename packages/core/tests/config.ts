@@ -48,11 +48,11 @@ export default {
         { name: 'hide-text', type: -4, declarations: { 'font-size': '0px' } },
         { name: 'zero', type: -4, declarations: { 'font-size': '0px', height: '0px' } }
     ],
-    selectorAliases: {
+    selectorTokens: {
         custom: 'div>:first+button',
         'custom-1': 'div'
     },
-    atRuleAliases: {
+    atTokens: {
         tablet: 768,
         laptop: 1024,
         desktop: 1280,

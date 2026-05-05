@@ -1,8 +1,8 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'At-rules',
-    description: 'A guide to adding custom at-rule tokens and aliases.',
+    title: 'At Tokens',
+    description: 'A guide to adding custom at tokens.',
     category: 'Customization',
     fileURL: import.meta.url
 })

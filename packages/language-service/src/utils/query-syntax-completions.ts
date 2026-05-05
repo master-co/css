@@ -106,7 +106,7 @@ export default function querySyntaxCompletions(q = '', css: MasterCSS = createCS
                     insertText: '.',
                     documentation: getCSSDataDocumentation(undefined, {
                         generatedCSS: generateCSS([field + '.class'], css),
-                        docs: '/guide/selectors'
+                        docs: '/guide/selector-tokens'
                     }),
                     kind: CompletionItemKind.Class
                 })
