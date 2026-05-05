@@ -1,4 +1,3 @@
-import DocHeader from 'internal/components/DocHeader'
 import Footer from 'internal/components/Footer'
 import pageCategories from 'site/.categories/blog.json'
 import Image from 'next/image'
@@ -8,9 +7,8 @@ import Link from 'internal/components/Link'
 import metadata from './metadata'
 import generate from 'internal/utils/generate-metadata'
 import dictionaries from '~/site/dictionaries'
-import HeroHeader from 'internal/components/HeroHeader'
-import AuthorList from 'internal/components/AuthorList'
 import TimeAgo from 'internal/components/TimeAgo'
+import authors from 'internal/data/authors'
 
 export const dynamic = 'force-static'
 export const revalidate = false
@@ -19,15 +17,41 @@ export async function generateMetadata(props: any, parent: any) {
     return await generate(metadata, props, dictionaries, parent)
 }
 
+function AuthorAvatarStack({ children }: { children: any[] }) {
+    return (
+        <div className="flex align-items:center my:1x pl:1x">
+            {children.map((eachAuthor: any, index: number) => {
+                const author = authors.find((x: any) => x.name === eachAuthor.name)
+                if (!author) return null
+                return (
+                    <Image
+                        key={author.name}
+                        className={clsx('round object:cover outline:2|base', {
+                            'ml:-1x': index > 0
+                        })}
+                        src={author.image}
+                        width={20}
+                        height={20}
+                        alt={author.name}
+                    />
+                )
+            })}
+        </div>
+    )
+}
+
 export default async function Page(props: any) {
     const { locale } = await props.params
+    const pages = pageCategories
+        .map(({ pages }) => pages)
+        .flat()
+        .sort((a: any, b: any) => Date.parse(b.date) - Date.parse(a.date))
+
     return <>
         <main className='px:5x pt:12x pt:15x@sm'>
             <div className="mx:auto my:18x max-w:screen-md prose my:30x@sm">
                 <div className='bl:1|dotted|line-lighter bt:1|dotted|line-lighter grid-cols:1 grid-cols:2@sm grid-cols:3@md'>
-                    {pageCategories
-                        .map(({ pages }) => pages)
-                        .flat()
+                    {pages
                         .map((page: any, index: number) => {
                             const formattedDate = dayjs(page.date).format('ddd, MMMM D')
                             return (
@@ -40,7 +64,7 @@ export default async function Page(props: any) {
                                         <div className='text:pretty my:-1x font:20 leading:1.4'>{page.title}</div>
                                         {/* <Image src="/images/gold-pattern.jpg"  className="r:5 aspect:16/9 h:auto" width={480} height={270} alt={page.title} /> */}
                                         <div className='text:pretty text:12 fg:neutral'>{page.description}</div>
-                                        <AuthorList size="xs" className="my:1x">{page.authors}</AuthorList>
+                                        <AuthorAvatarStack>{page.authors}</AuthorAvatarStack>
                                     </Link>
                                 </div>
                             )
