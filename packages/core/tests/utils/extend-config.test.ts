@@ -53,18 +53,18 @@ describe('rules', () => {
         expect(extendConfig(
             {
                 rules: [
-                    { name: 'flex', type: SyntaxRuleType.Utility, declarations: { display: 'flex' } },
+                    { name: 'flex', type: SyntaxRuleType.Static, declarations: { display: 'flex' } },
                     { name: 'flex', type: SyntaxRuleType.Native }
                 ]
             },
             {
                 rules: [
-                    { name: 'flex', type: SyntaxRuleType.Utility, declarations: { display: 'inline-flex' } }
+                    { name: 'flex', type: SyntaxRuleType.Static, declarations: { display: 'inline-flex' } }
                 ]
             }
         ).rules).toEqual([
             { name: 'flex', type: SyntaxRuleType.Native },
-            { name: 'flex', type: SyntaxRuleType.Utility, declarations: { display: 'inline-flex' } }
+            { name: 'flex', type: SyntaxRuleType.Static, declarations: { display: 'inline-flex' } }
         ])
     })
 })

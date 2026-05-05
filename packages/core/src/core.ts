@@ -190,7 +190,7 @@ export default class MasterCSS {
 
                 if (sign) {
                     syntax.matchers.arbitrary = new RegExp(`^${sign}[^!*>+~:[@_]+\\|`)
-                } else if (!matcher && type !== SyntaxRuleType.Utility) {
+                } else if (!matcher && type !== SyntaxRuleType.Static) {
                     if (!key && !subkey) {
                         keys.push(id)
                     } else {
@@ -236,8 +236,8 @@ export default class MasterCSS {
                     syntax.matchers.arbitrary = new RegExp(matcher)
                 }
 
-                // Utility rule matcher
-                if (type === SyntaxRuleType.Utility) {
+                // Static rule matcher
+                if (type === SyntaxRuleType.Static) {
                     const utilityName = id.startsWith('.') ? id.slice(1) : id
                     syntax.id = '.' + utilityName
                     syntax.matchers.arbitrary = new RegExp(

@@ -14,7 +14,7 @@ export default async function renderSyntaxColors(this: CSSLanguageService, docum
             const instanceStartIndex = instanceMatch.index
             const syntax = instanceMatch[0]
             const rule = this.css.generate(syntax)[0]
-            if (rule && rule.type !== SyntaxRuleType.Utility) {
+            if (rule && rule.type !== SyntaxRuleType.Static) {
                 const keyTokenLength = rule.keyToken?.length ?? 0
                 let currentLength = 0
                 const resolveValueComponent = (valueComponent: ValueComponent) => {

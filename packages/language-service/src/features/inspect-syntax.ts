@@ -32,7 +32,7 @@ export default function inspectSyntax(this: CSSLanguageService, document: TextDo
         const rules = this.css.generate(token)
         const rule = rules[0]
         if (rule) {
-            if (rule.type === SyntaxRuleType.Utility) {
+            if (rule.type === SyntaxRuleType.Static) {
                 const { data, docs } = getUtilityInfo(rule.registeredSyntax, this.css)
                 const documentation = getCSSDataDocumentation(data, {
                     generatedCSS: generateCSS([token], this.css),

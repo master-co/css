@@ -6,7 +6,7 @@ const variableNamespaces = variables
 
 const namespaces = Array.from(new Set([
     ...rules
-        .filter(({ type }) => type !== SyntaxRuleType.Utility)
+        .filter(({ type }) => type !== SyntaxRuleType.Static)
         .map(({ name }) => name),
     ...variableNamespaces,
     'screen',

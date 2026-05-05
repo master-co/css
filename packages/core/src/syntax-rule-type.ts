@@ -1,9 +1,9 @@
 enum SyntaxRuleType {
     /**
-     * utility classes
+     * static utility classes
      * @example block, inline
      */
-    Utility = -4,
+    Static = -4,
     /**
      * native shorthand
      * @example border, padding, margin

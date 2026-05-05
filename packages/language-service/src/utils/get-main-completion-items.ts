@@ -9,7 +9,7 @@ export default function getMainCompletionItems(css: MasterCSS = createCSS()): Co
     const completionItems: CompletionItem[] = []
     const addedKeys = new Set<string>()
     for (const eachDefinedRule of css.definedRules) {
-        if (eachDefinedRule.definition.type === SyntaxRuleType.Utility) {
+        if (eachDefinedRule.definition.type === SyntaxRuleType.Static) {
             const { data, detail, docs } = getUtilityInfo(eachDefinedRule, css)
             const utilityName = eachDefinedRule.id.slice(1)
             completionItems.push({

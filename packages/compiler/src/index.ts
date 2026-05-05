@@ -393,7 +393,7 @@ function parseUtilityRule(rule: any, config: Config) {
     config.rules ??= []
     config.rules.push({
         name,
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: collectStyleRuleDeclarations(rule) as PropertiesHyphen
     })
 }

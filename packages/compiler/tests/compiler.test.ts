@@ -234,7 +234,7 @@ describe.concurrent('@master/css-compiler', () => {
             rules: [
                 {
                     name: 'content-auto',
-                    type: SyntaxRuleType.Utility,
+                    type: SyntaxRuleType.Static,
                     declarations: {
                         'content-visibility': 'auto'
                     }

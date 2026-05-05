@@ -17,7 +17,7 @@ const Default = () =>
                 <tbody>
                     {
                         rules
-                            .filter((rule) => rule.type !== SyntaxRuleType.Utility)
+                            .filter((rule) => rule.type !== SyntaxRuleType.Static)
                             .sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }))
                             .map((rule) => {
                                 return (

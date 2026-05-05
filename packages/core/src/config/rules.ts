@@ -5,702 +5,702 @@ import type { SyntaxRuleDefinitions } from '../types/config'
 const rules = [
     {
         name: 'container',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'container-type': 'inline-size' }
     },
     {
         name: 'square',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'aspect-ratio': '1/1' }
     },
     {
         name: 'video',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'aspect-ratio': '16/9' }
     },
     {
         name: 'rounded',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'border-radius': '1e9em' }
     },
     {
         name: 'round',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'border-radius': '50%', 'aspect-ratio': '1/1' }
     },
     {
         name: 'hidden',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'display': 'none' }
     },
     {
         name: 'block',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'display': 'block' }
     },
     {
         name: 'table',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'display': 'table' }
     },
     {
         name: 'flex',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'display': 'flex' }
     },
     {
         name: 'grid',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'display': 'grid' }
     },
     {
         name: 'contents',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'display': 'contents' }
     },
     {
         name: 'inline',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'display': 'inline' }
     },
     {
         name: 'inline-block',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'display': 'inline-block' }
     },
     {
         name: 'inline-flex',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'display': 'inline-flex' }
     },
     {
         name: 'inline-grid',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'display': 'inline-grid' }
     },
     {
         name: 'inline-table',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'display': 'inline-table' }
     },
     {
         name: 'table-cell',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'display': 'table-cell' }
     },
     {
         name: 'table-caption',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'display': 'table-caption' }
     },
     {
         name: 'flow-root',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'display': 'flow-root' }
     },
     {
         name: 'list-item',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'display': 'list-item' }
     },
     {
         name: 'table-row',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'display': 'table-row' }
     },
     {
         name: 'table-column',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'display': 'table-column' }
     },
     {
         name: 'table-row-group',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'display': 'table-row-group' }
     },
     {
         name: 'table-column-group',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'display': 'table-column-group' }
     },
     {
         name: 'table-header-group',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'display': 'table-header-group' }
     },
     {
         name: 'table-footer-group',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'display': 'table-footer-group' }
     },
     {
         name: 'italic',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'font-style': 'italic' }
     },
     {
         name: 'oblique',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'font-style': 'oblique' }
     },
     {
         name: 'isolate',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'isolation': 'isolate' }
     },
     {
         name: 'overflow',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'overflow': 'visible' }
     },
     {
         name: 'untouchable',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'pointer-events': 'none' }
     },
     {
         name: 'static',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'position': 'static' }
     },
     {
         name: 'fixed',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'position': 'fixed' }
     },
     {
         name: 'abs',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'position': 'absolute' }
     },
     {
         name: 'rel',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'position': 'relative' }
     },
     {
         name: 'sticky',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'position': 'sticky' }
     },
     {
         name: 'uppercase',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'text-transform': 'uppercase' }
     },
     {
         name: 'lowercase',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'text-transform': 'lowercase' }
     },
     {
         name: 'capitalize',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'text-transform': 'capitalize' }
     },
     {
         name: 'visible',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'visibility': 'visible' }
     },
     {
         name: 'invisible',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'visibility': 'hidden' }
     },
     {
         name: 'justify-normal',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'justify-content': 'normal' }
     },
     {
         name: 'justify-left',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'justify-content': 'left' }
     },
     {
         name: 'justify-center',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'justify-content': 'center' }
     },
     {
         name: 'justify-right',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'justify-content': 'right' }
     },
     {
         name: 'justify-stretch',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'justify-content': 'stretch' }
     },
     {
         name: 'justify-start',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'justify-content': 'start' }
     },
     {
         name: 'justify-end',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'justify-content': 'end' }
     },
     {
         name: 'justify-flex-start',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'justify-content': 'flex-start' }
     },
     {
         name: 'justify-flex-end',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'justify-content': 'flex-end' }
     },
     {
         name: 'justify-around',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'justify-content': 'space-around' }
     },
     {
         name: 'justify-between',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'justify-content': 'space-between' }
     },
     {
         name: 'justify-evenly',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'justify-content': 'space-evenly' }
     },
     {
         name: 'content-normal',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'align-content': 'normal' }
     },
     {
         name: 'content-baseline',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'align-content': 'baseline' }
     },
     {
         name: 'content-center',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'align-content': 'center' }
     },
     {
         name: 'content-stretch',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'align-content': 'stretch' }
     },
     {
         name: 'content-start',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'align-content': 'start' }
     },
     {
         name: 'content-end',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'align-content': 'end' }
     },
     {
         name: 'content-flex-start',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'align-content': 'flex-start' }
     },
     {
         name: 'content-flex-end',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'align-content': 'flex-end' }
     },
     {
         name: 'content-around',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'align-content': 'space-around' }
     },
     {
         name: 'content-between',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'align-content': 'space-between' }
     },
     {
         name: 'content-evenly',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'align-content': 'space-evenly' }
     },
     {
         name: 'items-normal',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'align-items': 'normal' }
     },
     {
         name: 'items-baseline',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'align-items': 'baseline' }
     },
     {
         name: 'items-center',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'align-items': 'center' }
     },
     {
         name: 'items-stretch',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'align-items': 'stretch' }
     },
     {
         name: 'items-start',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'align-items': 'start' }
     },
     {
         name: 'items-end',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'align-items': 'end' }
     },
     {
         name: 'items-flex-start',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'align-items': 'flex-start' }
     },
     {
         name: 'items-flex-end',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'align-items': 'flex-end' }
     },
     {
         name: 'items-self-start',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'align-items': 'self-start' }
     },
     {
         name: 'items-self-end',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'align-items': 'self-end' }
     },
     {
         name: 'self-auto',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'align-self': 'auto' }
     },
     {
         name: 'self-normal',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'align-self': 'normal' }
     },
     {
         name: 'self-baseline',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'align-self': 'baseline' }
     },
     {
         name: 'self-center',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'align-self': 'center' }
     },
     {
         name: 'self-stretch',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'align-self': 'stretch' }
     },
     {
         name: 'self-start',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'align-self': 'start' }
     },
     {
         name: 'self-end',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'align-self': 'end' }
     },
     {
         name: 'self-flex-start',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'align-self': 'flex-start' }
     },
     {
         name: 'self-flex-end',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'align-self': 'flex-end' }
     },
     {
         name: 'self-self-start',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'align-self': 'self-start' }
     },
     {
         name: 'self-self-end',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'align-self': 'self-end' }
     },
     {
         name: 'self-anchor-center',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'align-self': 'anchor-center' }
     },
     {
         name: 'vw',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'width': '100vw' }
     },
     {
         name: 'vh',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'height': '100vh' }
     },
     {
         name: 'box-border',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'box-sizing': 'border-box' }
     },
     {
         name: 'box-content',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'box-sizing': 'content-box' }
     },
     {
         name: 'transform-content',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'transform-box': 'content-box' }
     },
     {
         name: 'transform-border',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'transform-box': 'border-box' }
     },
     {
         name: 'transform-fill',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'transform-box': 'fill-box' }
     },
     {
         name: 'transform-stroke',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'transform-box': 'stroke-box' }
     },
     {
         name: 'transform-view',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'transform-box': 'view-box' }
     },
     {
         name: 'bg-clip-content',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'background-clip': 'content-box' }
     },
     {
         name: 'bg-clip-padding',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'background-clip': 'padding-box' }
     },
     {
         name: 'bg-clip-border',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'background-clip': 'border-box' }
     },
     {
         name: 'bg-clip-text',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'background-clip': 'text' }
     },
     {
         name: 'bg-origin-content',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'background-origin': 'content-box' }
     },
     {
         name: 'bg-origin-padding',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'background-origin': 'padding-box' }
     },
     {
         name: 'bg-origin-border',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'background-origin': 'border-box' }
     },
     {
         name: 'shape-none',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'shape-outside': 'none' }
     },
     {
         name: 'shape-margin',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'shape-outside': 'margin-box' }
     },
     {
         name: 'shape-content',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'shape-outside': 'content-box' }
     },
     {
         name: 'shape-border',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'shape-outside': 'border-box' }
     },
     {
         name: 'shape-padding',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'shape-outside': 'padding-box' }
     },
     {
         name: 'clip-none',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'clip-path': 'none' }
     },
     {
         name: 'clip-margin',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'clip-path': 'margin-box' }
     },
     {
         name: 'clip-content',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'clip-path': 'content-box' }
     },
     {
         name: 'clip-border',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'clip-path': 'border-box' }
     },
     {
         name: 'clip-padding',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'clip-path': 'padding-box' }
     },
     {
         name: 'clip-fill',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'clip-path': 'fill-box' }
     },
     {
         name: 'clip-stroke',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'clip-path': 'stroke-box' }
     },
     {
         name: 'clip-view',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'clip-path': 'view-box' }
     },
     {
         name: 'flex-row',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'flex-direction': 'row' }
     },
     {
         name: 'flex-row-reverse',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'flex-direction': 'row-reverse' }
     },
     {
         name: 'flex-col',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'flex-direction': 'column' }
     },
     {
         name: 'flex-col-reverse',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'flex-direction': 'column-reverse' }
     },
     {
         name: 'max-vw',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'max-width': '100vw' }
     },
     {
         name: 'max-vh',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'max-height': '100vh' }
     },
     {
         name: 'min-vw',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'min-width': '100vw' }
     },
     {
         name: 'min-vh',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'min-height': '100vh' }
     },
     {
         name: 'full',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'width': '100%', 'height': '100%' }
     },
     {
         name: 'top',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'top': 0 }
     },
     {
         name: 'left',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'left': 0 }
     },
     {
         name: 'right',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'right': 0 }
     },
     {
         name: 'bottom',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'bottom': 0 }
     },
     {
         name: 'center',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'left': 0, 'right': 0, 'margin-left': 'auto', 'margin-right': 'auto' }
     },
     {
         name: 'middle',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'top': 0, 'bottom': 0, 'margin-top': 'auto', 'margin-bottom': 'auto' }
     },
     {
         name: 'break-spaces',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'white-space': 'break-spaces' }
     },
     {
         name: 'break-word',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'word-break': 'break-word' }
     },
     {
         name: 'wrap-break-word',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'overflow-wrap': 'break-word' }
     },
     {
         name: 'wrap-anywhere',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'overflow-wrap': 'anywhere' }
     },
     {
         name: 'wrap-normal',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'overflow-wrap': 'normal' }
     },
     {
         name: 'gradient-text',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { '-webkit-text-fill-color': 'transparent', 'background-clip': 'text' }
     },
     {
         name: 'fit',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'width': 'fit-content', 'height': 'fit-content' }
     },
     {
         name: 'font-antialiased',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { '-webkit-font-smoothing': 'antialiased', '-moz-osx-font-smoothing': 'grayscale' }
     },
     {
         name: 'font-subpixel-antialiased',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { '-webkit-font-smoothing': 'auto', '-moz-osx-font-smoothing': 'auto' }
     },
     {
         name: 'sr-only',
-        type: SyntaxRuleType.Utility,
+        type: SyntaxRuleType.Static,
         declarations: { 'position': 'absolute', 'width': '1px', 'height': '1px', 'padding': '0', 'margin': '-1px', 'overflow': 'hidden', 'clip': 'rect(0,0,0,0)', 'white-space': 'nowrap', 'border-width': '0' }
     },
     {

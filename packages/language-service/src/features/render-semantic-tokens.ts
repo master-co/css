@@ -172,7 +172,7 @@ export default function renderSemanticTokens(this: CSSLanguageService, document:
         }
         const rule = this.css.generate(token)[0]
         if (!rule) continue
-        if (rule.type === SyntaxRuleType.Utility) {
+        if (rule.type === SyntaxRuleType.Static) {
             pushToken(semanticTokens, classStart, raw.length, 'class')
             continue
         }

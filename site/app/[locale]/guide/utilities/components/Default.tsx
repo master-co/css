@@ -4,7 +4,7 @@ import ExpandContent from '~/internal/components/ExpandContent'
 
 const utilities = Object.fromEntries(
     rules
-        .filter((definition) => definition.type === SyntaxRuleType.Utility)
+        .filter((definition) => definition.type === SyntaxRuleType.Static)
         .map((definition) => [
             definition.name,
             ('declarations' in definition ? definition.declarations : {}) as Record<string, string | number>

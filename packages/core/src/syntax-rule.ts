@@ -45,7 +45,7 @@ export class SyntaxRule {
         // 1. value / selectorToken
         let stateToken: string
 
-        if (this.type === SyntaxRuleType.Utility) {
+        if (this.type === SyntaxRuleType.Static) {
             stateToken = name.slice(id.length - 1)
         } else {
             let valueToken: string | undefined

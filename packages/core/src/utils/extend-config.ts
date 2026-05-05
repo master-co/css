@@ -13,7 +13,7 @@ export declare type ExtendedConfig = {
 } & Omit<Config, 'variables' | 'modes' | 'atRuleAliases' | 'selectorAliases'>
 
 function ruleSlot(rule: SyntaxRuleDefinition) {
-    return `${rule.name}\0${rule.type === SyntaxRuleType.Utility ? 'utility' : 'syntax'}`
+    return `${rule.name}\0${rule.type === SyntaxRuleType.Static ? 'static' : 'syntax'}`
 }
 
 export default function extendConfig(...configs: (Config | undefined)[]) {

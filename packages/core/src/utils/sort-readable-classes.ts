@@ -54,7 +54,7 @@ export default function sortReadableClasses(classes: string[], css = createCSS()
 
     const getTypeScore = (rule: SyntaxRule): number => {
         if (rule.fixedClass) return 0
-        if (rule.type === SyntaxRuleType.Utility) return 1
+        if (rule.type === SyntaxRuleType.Static) return 1
         return 2
     }
     const rulesWithSortKey = allRules.map(rule => ({
