@@ -1,17 +1,20 @@
 import extend from 'json-safe-extend'
-import type { ComponentDefinitions, Config } from '../types/config'
-import { Variable } from '../types/syntax'
+import SyntaxRuleType from '../syntax-rule-type'
+import type { ComponentDefinitions, Config, SyntaxRuleDefinition, VariableDefinitions } from '../types/config'
 import flattenObject from './flatten-object'
-import flattenMetaObject from './flatten-meta-object'
 
 export declare type ExtendedConfig = {
     __extended?: boolean
-    variables?: Record<string, Variable>
-    modes?: Record<string, Record<string, Variable>>
-    at?: Record<string, string>
-    selectors?: Record<string, string>
+    variables?: VariableDefinitions
+    modes?: string[]
+    atRuleAliases?: Record<string, string | number>
+    selectorAliases?: Record<string, string>
     components?: ComponentDefinitions
-} & Omit<Config, 'variables' | 'modes'>
+} & Omit<Config, 'variables' | 'modes' | 'atRuleAliases' | 'selectorAliases'>
+
+function ruleSlot(rule: SyntaxRuleDefinition) {
+    return `${rule.name}\0${rule.type === SyntaxRuleType.Utility ? 'utility' : 'syntax'}`
+}
 
 export default function extendConfig(...configs: (Config | undefined)[]) {
     const collectConfigs = (
@@ -42,10 +45,9 @@ export default function extendConfig(...configs: (Config | undefined)[]) {
         modes,
         components,
         animations,
-        at,
+        atRuleAliases,
         rules,
-        utilities,
-        selectors,
+        selectorAliases,
         functions,
         ...rest
     } of allConfigs) {
@@ -54,19 +56,26 @@ export default function extendConfig(...configs: (Config | undefined)[]) {
 
         // variables
         if (variables) {
-            extendedConfig.variables ??= {}
-            const flattened = isExtended ? { ...variables } : flattenMetaObject(variables, [], {})
-            Object.assign(extendedConfig.variables, flattened)
+            extendedConfig.variables ??= []
+            for (const variable of variables) {
+                const foundIndex = extendedConfig.variables.findIndex((existing) =>
+                    existing.key === variable.key
+                    && existing.namespace === variable.namespace
+                    && existing.mode === variable.mode
+                )
+                if (foundIndex !== -1) {
+                    extendedConfig.variables.splice(foundIndex, 1)
+                }
+                extendedConfig.variables.push(variable)
+            }
         }
 
         // modes
         if (modes) {
-            extendedConfig.modes ??= {}
-            for (const [modeName, modeVars] of Object.entries(modes)) {
-                const flattenedMode = isExtended ? { ...modeVars } : flattenMetaObject(modeVars, [], {})
-                extendedConfig.modes[modeName] = {
-                    ...extendedConfig.modes[modeName],
-                    ...flattenedMode
+            extendedConfig.modes ??= []
+            for (const mode of modes) {
+                if (!extendedConfig.modes.includes(mode)) {
+                    extendedConfig.modes.push(mode)
                 }
             }
         }
@@ -77,11 +86,10 @@ export default function extendConfig(...configs: (Config | undefined)[]) {
             Object.assign(extendedConfig.components, components)
         }
 
-        // at
-        if (at) {
-            extendedConfig.at ??= {}
-            const flattened = isExtended ? { ...at } : flattenObject(at)
-            Object.assign(extendedConfig.at, flattened)
+        // at-rule aliases
+        if (atRuleAliases) {
+            extendedConfig.atRuleAliases ??= {}
+            Object.assign(extendedConfig.atRuleAliases, flattenObject(atRuleAliases))
         }
 
         // animations
@@ -92,20 +100,21 @@ export default function extendConfig(...configs: (Config | undefined)[]) {
 
         // rules
         if (rules) {
-            extendedConfig.rules ??= {}
-            Object.assign(extendedConfig.rules, rules)
+            extendedConfig.rules ??= []
+            for (const rule of rules) {
+                const slot = ruleSlot(rule)
+                const foundIndex = extendedConfig.rules.findIndex((existing) => ruleSlot(existing) === slot)
+                if (foundIndex !== -1) {
+                    extendedConfig.rules.splice(foundIndex, 1)
+                }
+                extendedConfig.rules.push(rule)
+            }
         }
 
-        // utilities
-        if (utilities) {
-            extendedConfig.utilities ??= {}
-            Object.assign(extendedConfig.utilities, utilities)
-        }
-
-        // selectors
-        if (selectors) {
-            extendedConfig.selectors ??= {}
-            Object.assign(extendedConfig.selectors, selectors)
+        // selector aliases
+        if (selectorAliases) {
+            extendedConfig.selectorAliases ??= {}
+            Object.assign(extendedConfig.selectorAliases, selectorAliases)
         }
 
         // functions

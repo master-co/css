@@ -11,7 +11,7 @@ import SyntaxLayer from './syntax-layer'
 import NonLayer from './non-layer'
 import { ColorVariable, ComponentEntry, DefinedRule, GeneratedRule, Variable } from './types/syntax'
 import { AtRule, AtRuleValueNode } from './utils/parse-at'
-import { AnimationDefinitions, ComponentDefinition, Config, SyntaxRuleDefinition } from './types/config'
+import { AnimationDefinitions, ComponentSelectorDefinition, Config, SyntaxRuleDefinition, VariableDefinition } from './types/config'
 import registerGlobal from './register-global'
 import parseAt from './utils/parse-at'
 import parseValue from './utils/parse-value'
@@ -92,31 +92,15 @@ export default class MasterCSS {
     }
 
     resolveRules() {
-        const { rules, utilities } = this.config
+        const { rules } = this.config
 
         function escapeString(str: string) {
             return str.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')
         }
 
-        if (!rules && !utilities) return
+        if (!rules) return
 
-        const rulesEntries: [string, SyntaxRuleDefinition][] = []
-
-        // Collect utility rules
-        if (utilities) {
-            for (const utilityName in utilities) {
-                const declarations = utilities[utilityName] as any
-                rulesEntries.push([
-                    utilityName,
-                    { declarations, type: SyntaxRuleType.Utility },
-                ])
-            }
-        }
-
-        // Collect normal rules
-        if (rules) {
-            rulesEntries.push(...Object.entries(rules) as [string, SyntaxRuleDefinition][])
-        }
+        const rulesEntries = rules.map((definition) => [definition.name, definition] as [string, SyntaxRuleDefinition])
 
         const rulesEntriesLength = rulesEntries.length
 
@@ -173,7 +157,7 @@ export default class MasterCSS {
                 const addNamespace = (namespace: string) => {
                     const dashedNamespace = namespace.replace(/\./g, '-')
                     this.variables.forEach(v => {
-                        if (v.namespace === namespace || v.group === namespace) {
+                        if (v.namespace === namespace || v.namespace?.startsWith(namespace + '.') || v.group === namespace) {
                             let variableKey = v.name
                             if (variableKey.startsWith('-' + dashedNamespace) || variableKey.startsWith(dashedNamespace)) {
                                 variableKey = variableKey.slice(dashedNamespace.length + 1)
@@ -206,7 +190,7 @@ export default class MasterCSS {
 
                 if (sign) {
                     syntax.matchers.arbitrary = new RegExp(`^${sign}[^!*>+~:[@_]+\\|`)
-                } else if (!matcher) {
+                } else if (!matcher && type !== SyntaxRuleType.Utility) {
                     if (!key && !subkey) {
                         keys.push(id)
                     } else {
@@ -248,15 +232,16 @@ export default class MasterCSS {
                             )
                         }
                     }
-                } else {
+                } else if (matcher) {
                     syntax.matchers.arbitrary = new RegExp(matcher)
                 }
 
                 // Utility rule matcher
                 if (type === SyntaxRuleType.Utility) {
-                    syntax.id = '.' + id
+                    const utilityName = id.startsWith('.') ? id.slice(1) : id
+                    syntax.id = '.' + utilityName
                     syntax.matchers.arbitrary = new RegExp(
-                        '^' + escapeString(id) + '(?=!|\\*|>|\\+|~|:|\\[|@|_|\\.|$)',
+                        '^' + escapeString(utilityName) + '(?=!|\\*|>|\\+|~|:|\\[|@|_|\\.|$)',
                         'm'
                     )
                 }
@@ -274,7 +259,6 @@ export default class MasterCSS {
 
     resolveComponents() {
         const { components = {} } = this.config
-        const names = Object.keys(components)
         const normalizeClassNames = (classNames?: string | string[]) => {
             if (!classNames) return []
             return (Array.isArray(classNames) ? classNames.join(' ') : classNames)
@@ -283,64 +267,44 @@ export default class MasterCSS {
                 .split(' ')
                 .filter(Boolean)
         }
-        const normalizeComponentDefinition = (name: string): ComponentEntry | undefined => {
+        for (const name in components) {
             const definition = components[name]
-            if (!definition) return
-            if (typeof definition === 'string') {
-                return {
-                    classNames: normalizeClassNames(definition)
-                }
+            if (!Array.isArray(definition)) {
+                throw new Error(`Component "${name}" must be an array`)
             }
-            const { classNames, declarations } = definition as ComponentDefinition
-            return {
-                classNames: normalizeClassNames(classNames),
-                declarations
-            }
-        }
-        const resolve = (name: string, resolving = new Set<string>()): ComponentEntry | undefined => {
-            const component = this.components.get(name)
-            if (component) return component
-            if (resolving.has(name)) return
-            const componentDefinition = normalizeComponentDefinition(name)
-            if (!componentDefinition) return
-            resolving.add(name)
-
             const classNames: string[] = []
-            let declarations = componentDefinition.declarations
-            for (const className of componentDefinition.classNames) {
-                if (names.includes(className)) {
-                    const resolvedComponent = resolve(className, resolving)
-                    if (resolvedComponent) {
-                        classNames.push(...resolvedComponent.classNames)
-                        declarations = {
-                            ...resolvedComponent.declarations,
-                            ...declarations
-                        }
+            const selectorRules: ComponentEntry['selectorRules'] = []
+            for (const item of definition) {
+                if (typeof item === 'string') {
+                    const itemClassNames = normalizeClassNames(item)
+                    const atRuleClassName = itemClassNames.find((className) => className.includes('@'))
+                    if (atRuleClassName) {
+                        throw new Error(`Component "${name}" cannot include at-rule class "${atRuleClassName}"`)
                     }
-                } else {
-                    classNames.push(className)
+                    classNames.push(...itemClassNames)
+                    continue
                 }
+                const { selector, declarations } = item as ComponentSelectorDefinition
+                if (!selector.includes('&')) {
+                    throw new Error(`Component "${name}" selector must include "&"`)
+                }
+                selectorRules.push({
+                    selector,
+                    declarations: declarations as any
+                })
             }
-            const resolved = {
+            this.components.set(name, {
                 classNames,
-                declarations
-            }
-            this.components.set(name, resolved)
-            resolving.delete(name)
-            return resolved
-        }
-
-        // First pass: expand class names recursively
-        for (const name of names) {
-            resolve(name)
+                selectorRules
+            })
         }
     }
 
     resolveSelectors() {
-        const { selectors } = this.config
-        if (selectors) {
-            for (const token in selectors) {
-                const value = selectors[token]
+        const { selectorAliases } = this.config
+        if (selectorAliases) {
+            for (const token in selectorAliases) {
+                const value = selectorAliases[token]
                 const nodes = parseSelector(value, this, false)
                 this.selectors.set(token, nodes)
             }
@@ -348,22 +312,20 @@ export default class MasterCSS {
     }
 
     resolveAtRules() {
-        const { at, screens } = this.config
-
-        if (screens) {
-            for (const key in screens) {
-                const value = screens[key]
-                const node = this.parseValue(value)
-                this.atRules.set(key, {
+        for (const variable of this.variables.values()) {
+            if (variable.namespace === 'screen' && variable.type === 'number' && !variable.name.startsWith('-')) {
+                const node = this.parseValue(variable.value)
+                this.atRules.set(variable.key, {
                     id: 'media',
                     nodes: [node as unknown as AtRuleValueNode]
                 })
             }
         }
 
-        if (at) {
-            for (const token in at) {
-                const value = at[token]
+        const { atRuleAliases } = this.config
+        if (atRuleAliases) {
+            for (const token in atRuleAliases) {
+                const value = atRuleAliases[token]
                 if (typeof value === 'number') {
                     const node = this.parseValue(value)
                     this.atRules.set(token, {
@@ -379,8 +341,25 @@ export default class MasterCSS {
     }
 
     resolveVariables() {
-        const { variables, screens, modes } = this.config
+        const { variables = [], modes = [] } = this.config
+        this.modes.push(...modes)
         const aliasVariableModeResolvers = new Map<string, Record<string, () => void>>()
+        const createVariable = (definition: VariableDefinition): Variable | undefined => {
+            if (definition.namespace === 'screen' && definition.mode) {
+                throw new Error(`Screen variables cannot be mode-specific: screen-${definition.key}@${definition.mode}`)
+            }
+            if (definition.value === false) return
+            const namespace = definition.namespace
+            const name = namespace
+                ? `${namespace.replace(/\./g, '-')}${definition.key ? '-' + definition.key : ''}`
+                : definition.key
+            return {
+                name,
+                key: definition.key,
+                value: Array.isArray(definition.value) ? definition.value.join(',') : definition.value,
+                ...(namespace ? { namespace, group: namespace } : {})
+            } as Variable
+        }
         const resolveVariable = (variable: Variable, mode?: string) => {
             const addVariable = (name: string, newVariable: Variable, currentMode?: string) => {
                 if (currentMode) {
@@ -411,6 +390,10 @@ export default class MasterCSS {
                         this.variables.set(name, newRootVaraible)
                     }
                 } else {
+                    const foundVariable = this.variables.get(name)
+                    if (foundVariable?.modes && !newVariable.modes) {
+                        newVariable.modes = foundVariable.modes
+                    }
                     this.variables.set(name, newVariable)
                 }
             }
@@ -431,6 +414,9 @@ export default class MasterCSS {
                     resolver[mode as string] = () => {
                         delete resolver[mode as string]
                         if (!alias) return
+                        const currentVariable = this.variables.get(variable.name)
+                        const currentModeVariable = mode ? currentVariable?.modes?.[mode] : currentVariable
+                        if (currentModeVariable && currentModeVariable.value !== undefined && currentModeVariable.value !== variable.value) return
                         const eachAliasModeVariableResolver = aliasVariableModeResolvers.get(alias)
                         if (eachAliasModeVariableResolver) {
                             for (const mode of Object.keys(eachAliasModeVariableResolver)) {
@@ -522,21 +508,10 @@ export default class MasterCSS {
             }
         }
 
-        if (variables) {
-            for (const parnetKey in variables) {
-                const variable = variables[parnetKey]
-                resolveVariable(variable)
-            }
-        }
-
-        if (modes) {
-            for (const mode in modes) {
-                const modeVariables = modes[mode]
-                if (!modeVariables) continue
-                for (const key in modeVariables) {
-                    const variable = modeVariables[key]
-                    resolveVariable(variable, mode)
-                }
+        for (const definition of variables) {
+            const variable = createVariable(definition)
+            if (variable) {
+                resolveVariable(variable, definition.mode)
             }
         }
 
@@ -547,28 +522,6 @@ export default class MasterCSS {
             }
         })
 
-        if (screens) {
-            for (const key in screens) {
-                const value = screens[key]
-                const name = 'screen-' + key
-                this.variables.set(name, {
-                    name,
-                    key,
-                    namespace: 'screen',
-                    group: 'screen',
-                    type: 'number',
-                    value,
-                })
-                this.variables.set('-' + name, {
-                    name: '-' + name,
-                    key: '-' + key,
-                    namespace: 'screen',
-                    group: 'screen',
-                    type: 'number',
-                    value: value * -1,
-                })
-            }
-        }
     }
 
     parseValue(token: string | number, unit = 'rem') {
@@ -632,7 +585,7 @@ export default class MasterCSS {
                     console.error(`Invalid class "${cls}" found in ${className} component.`)
                 }
             })
-            this.appendComponentRule(syntaxRules, className, component.declarations)
+            this.appendComponentRules(syntaxRules, className, component.selectorRules)
         } else {
             const atIndex = className.indexOf('@')
             if (atIndex !== -1) {
@@ -646,7 +599,7 @@ export default class MasterCSS {
                             syntaxRules.push(syntaxRule)
                         }
                     })
-                    this.appendComponentRule(syntaxRules, className, component.declarations)
+                    this.appendComponentRules(syntaxRules, className, component.selectorRules)
                 }
             }
             const syntaxRule = this.create(className, undefined, mode)
@@ -657,10 +610,11 @@ export default class MasterCSS {
         return syntaxRules
     }
 
-    appendComponentRule(rules: GeneratedRule[], className: string, declarations?: PropertiesHyphen) {
-        if (!declarations) return
-        const componentRule = new ComponentRule(className, this, declarations)
-        if (componentRule.valid) rules.push(componentRule)
+    appendComponentRules(rules: GeneratedRule[], className: string, selectorRules: ComponentEntry['selectorRules']) {
+        for (const { selector, declarations } of selectorRules) {
+            const componentRule = new ComponentRule(className, this, declarations, selector)
+            if (componentRule.valid) rules.push(componentRule)
+        }
     }
 
     /**
@@ -735,6 +689,7 @@ export default class MasterCSS {
         this.components = new Map()
         // @ts-ignore
         this.classRules = new Map()
+        this.modes.length = 0
         this.definedRules.length = 0
         this.baseLayer.reset()
         this.themeLayer.reset()

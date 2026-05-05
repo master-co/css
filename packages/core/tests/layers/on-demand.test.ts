@@ -14,7 +14,7 @@ test.concurrent('utility', () => {
 })
 
 test.concurrent('manipulate', () => {
-    const css = createCSS({ components: { 'btn': 'block' } })
+    const css = createCSS({ components: { 'btn': ['block'] } })
     expect(css.text).toContain(css.layerStatementRule.text)
     css.add('text:center', 'font:bold')
     expect(css.text).toContain('@layer general{.font\\:bold{font-weight:700}.text\\:center{text-align:center}}')

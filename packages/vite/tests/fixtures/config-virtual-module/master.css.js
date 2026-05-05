@@ -1,7 +1,5 @@
 export default {
-    variables: {
-        color: {
-            primary: '#abc'
-        }
-    }
+    variables: [
+        { namespace: 'color', key: 'primary', value: '#abc' }
+    ]
 }

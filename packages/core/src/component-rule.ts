@@ -19,6 +19,7 @@ export default class ComponentRule {
         public readonly name: string,
         public css: MasterCSS,
         public declarations: PropertiesHyphen,
+        public selector?: string,
     ) {
         this.layer = css.componentsLayer
         const atIndex = name.indexOf('@')
@@ -26,7 +27,7 @@ export default class ComponentRule {
             const atTokens = name.slice(atIndex + 1).split('@')
             for (const atToken of atTokens) {
                 if (!atToken) continue
-                if (css.config.modes?.[atToken]) {
+                if (css.modes.includes(atToken)) {
                     this.mode = atToken
                     continue
                 }
@@ -117,7 +118,10 @@ export default class ComponentRule {
                 pre = modeSelector + ' ' + pre
             }
         }
-        return pre + '.' + cssEscape(this.name)
+        const base = pre + '.' + cssEscape(this.name)
+        return this.selector
+            ? this.selector.replace(/&/g, base)
+            : base
     }
 
     get key(): string {

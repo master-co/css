@@ -1,7 +1,5 @@
-import { getProperty, setProperty } from 'dot-prop'
-import { Config } from '@master/css'
+import type { Config, VariableDefinition } from '@master/css'
 import toColorValue from '../utils/to-color-value'
-import nestMetaObject from '@master/css/utils/nest-meta-object'
 // import minifyExtendedConfig from '@master/css/utils/minify-extended-config'
 
 export interface GetCollectionVariablesOptions {
@@ -20,7 +18,7 @@ export default async function getCollectionVariables(options: GetCollectionVaria
         a[b.modeId] = b.name.toLocaleLowerCase()
         return a
     }, {} as Record<string, string>)
-    const modes: Record<string, any> = {}
+    const modes: Record<string, Record<string, any>> = {}
     const defaultModeName = options.defaultVarMode ? options.defaultVarMode.name.toLocaleLowerCase() : null
     for (const varId of collection.variableIds) {
         const variable = await figma.variables.getVariableByIdAsync(varId)
@@ -35,7 +33,7 @@ export default async function getCollectionVariables(options: GetCollectionVaria
         for (const varModeId in variable.valuesByMode) {
             const value = variable.valuesByMode[varModeId] as any
             const modeName = modeNameById[varModeId].toLowerCase()
-            let modeVariables: any = getProperty(modes, modeName)
+            let modeVariables = modes[modeName]
             let newValue
             if (value.type === 'VARIABLE_ALIAS') {
                 const aliasVariable = await figma.variables.getVariableByIdAsync(value.id)
@@ -51,7 +49,7 @@ export default async function getCollectionVariables(options: GetCollectionVaria
             }
             if (modeVariables === undefined) {
                 modeVariables = {}
-                setProperty(modes, modeName, modeVariables)
+                modes[modeName] = modeVariables
             }
             modeVariables[name] = {
                 name,
@@ -68,17 +66,25 @@ export default async function getCollectionVariables(options: GetCollectionVaria
         delete modes[defaultModeName]
     }
 
-    // const minifiedExtendedConfig = minifyExtendedConfig({ variables, modes })
+    const toVariableDefinitions = (source: Record<string, any>, mode?: string): VariableDefinition[] =>
+        Object.values(source).map(({ group, key, value }) => ({
+            ...(group ? { namespace: group } : {}),
+            key,
+            value,
+            ...(mode ? { mode } : {})
+        }))
 
     let config: Config = {}
-    if (variables) {
-        config.variables = nestMetaObject(variables)
+    const modeNames = Object.keys(modes)
+    const variableDefinitions = [
+        ...(variables ? toVariableDefinitions(variables) : []),
+        ...modeNames.flatMap((modeName) => toVariableDefinitions(modes[modeName], modeName))
+    ]
+    if (variableDefinitions.length) {
+        config.variables = variableDefinitions
     }
-    if (Object.keys(modes || []).length > 0) {
-        config.modes = {}
-        for (const modeName in modes) {
-            config.modes[modeName] = nestMetaObject(modes[modeName])
-        }
+    if (modeNames.length > 0) {
+        config.modes = modeNames
     }
     return config
 }

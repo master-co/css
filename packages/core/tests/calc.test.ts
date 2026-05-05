@@ -4,8 +4,8 @@ import { createCSS } from '../src'
 it.concurrent('calc', () => {
     expect(createCSS().create('w:calc(var(--h)|/|var(--w)*100%)')?.text).toContain('width:calc(var(--h) / var(--w) * 100%)')
     expect(createCSS().create('w:calc($(h)/$(w)*100)')?.text).toContain('width:calc(var(--h) / var(--w) * 100)')
-    expect(createCSS({ variables: { w: 1, h: 1 } }).create('w:calc($(h)/$(w)*100)')?.text).toContain('width:calc(1 / 1 * 100 / 16 * 1rem)')
-    expect(createCSS({ variables: { w: 1, h: '1rem' } }).create('w:calc($(h)/$(w)*100)')?.text).toContain('width:calc(1rem / 1 * 100)')
+    expect(createCSS({ variables: [{ key: 'w', value: 1 }, { key: 'h', value: 1 }] }).create('w:calc($(h)/$(w)*100)')?.text).toContain('width:calc(1 / 1 * 100 / 16 * 1rem)')
+    expect(createCSS({ variables: [{ key: 'w', value: 1 }, { key: 'h', value: '1rem' }] }).create('w:calc($(h)/$(w)*100)')?.text).toContain('width:calc(1rem / 1 * 100)')
     expect(createCSS().create('w:calc(var(--h)/var(--w)*100%)')?.text).toContain('width:calc(var(--h) / var(--w) * 100%)')
     expect(createCSS().create('w:calc(var(--h)|/|var(--w)*100%)')?.text).toContain('width:calc(var(--h) / var(--w) * 100%)')
     expect(createCSS().create('w:calc(1*2/3*100%)')?.text).toContain('width:calc(1 * 2 / 3 * 100%)')

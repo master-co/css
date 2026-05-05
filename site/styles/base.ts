@@ -1,30 +1,17 @@
 import type { Config } from '@master/css'
 
 export default {
-    modes: {
-        light: {
-            color: {
-                'yellow-ring': '$color-black/.1',
-                'touch-yellow': '$color-yellow-30',
-                text: {
-                    'yellow-contrast': '$color-yellow-90'
-                }
-            }
-        },
-        dark: {
-            color: {
-                'yellow-ring': '$color-white/.3',
-                'touch-yellow': '$color-yellow-40',
-                text: {
-                    'yellow-contrast': '$color-yellow-95'
-                }
-            }
-        }
-    },
+    variables: [
+        { namespace: 'color', key: 'yellow-ring', value: '$color-black/.1', mode: 'light' },
+        { namespace: 'color', key: 'touch-yellow', value: '$color-yellow-30', mode: 'light' },
+        { namespace: 'color.text', key: 'yellow-contrast', value: '$color-yellow-90', mode: 'light' },
+        { namespace: 'color', key: 'yellow-ring', value: '$color-white/.3', mode: 'dark' },
+        { namespace: 'color', key: 'touch-yellow', value: '$color-yellow-40', mode: 'dark' },
+        { namespace: 'color.text', key: 'yellow-contrast', value: '$color-yellow-95', mode: 'dark' }
+    ],
+    modes: ['light', 'dark'],
     components: {
-        yellow: 'outline:1|yellow-ring bg:yellow fg:yellow-contrast',
-        touch: {
-            yellow: 'bg:touch-yellow:hover'
-        }
+        yellow: ['outline:1|yellow-ring', 'bg:yellow', 'fg:yellow-contrast'],
+        'touch-yellow': ['bg:touch-yellow:hover']
     },
 } as Config

@@ -12,9 +12,9 @@ it('basic extract', async () => {
     fs.rmSync(join(__dirname, 'master.css'), { force: true })
     fs.writeFileSync(join(__dirname, 'master.css.ts'), `
         export default {
-            variables: {
-                primary: '$(blue)'
-            }
+            variables: [
+                { key: 'primary', value: '$(blue)' }
+            ]
         }
     `, { flag: 'w' })
     execFileSync(process.execPath, ['--import', tsxLoaderURL, cliFilepath, 'extract'], { cwd: __dirname })

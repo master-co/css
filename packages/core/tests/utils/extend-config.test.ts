@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest'
-import { extendConfig } from '../../src'
+import { extendConfig, SyntaxRuleType } from '../../src'
 
 // describe('variables', () => {
 //     test.concurrent('basic', () => {
@@ -37,15 +37,35 @@ import { extendConfig } from '../../src'
 describe('modes', () => {
     test.concurrent('dark mode', () => {
         expect(extendConfig(
-            { modes: { dark: { a: '#ffffff' } } },
-            { modes: { dark: { a: '$color-black' } } }
+            { variables: [{ key: 'a', value: '#ffffff', mode: 'dark' }], modes: ['dark'] },
+            { variables: [{ key: 'a', value: '$color-black', mode: 'dark' }], modes: ['dark'] }
         )).toMatchObject({
-            modes: {
-                dark: {
-                    a: { key: 'a', name: 'a', value: '$color-black' }
-                }
-            }
+            variables: [
+                { key: 'a', value: '$color-black', mode: 'dark' }
+            ],
+            modes: ['dark']
         })
+    })
+})
+
+describe('rules', () => {
+    test.concurrent('keeps utility and syntax rules in separate slots', () => {
+        expect(extendConfig(
+            {
+                rules: [
+                    { name: 'flex', type: SyntaxRuleType.Utility, declarations: { display: 'flex' } },
+                    { name: 'flex', type: SyntaxRuleType.Native }
+                ]
+            },
+            {
+                rules: [
+                    { name: 'flex', type: SyntaxRuleType.Utility, declarations: { display: 'inline-flex' } }
+                ]
+            }
+        ).rules).toEqual([
+            { name: 'flex', type: SyntaxRuleType.Native },
+            { name: 'flex', type: SyntaxRuleType.Utility, declarations: { display: 'inline-flex' } }
+        ])
     })
 })
 

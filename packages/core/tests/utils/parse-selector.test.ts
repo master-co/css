@@ -155,11 +155,9 @@ export const cases = {
                 ]
             },
         ],
-            {
-                selectors: {
+            { selectorAliases: {
                     ':headings': ':is(h1,h2,h3)',
-                }
-            }
+                } }
         ],
         [':combo', ':is(h1,h2)+div', [
             {
@@ -179,11 +177,9 @@ export const cases = {
                 raw: ':combo'
             },
         ],
-            {
-                selectors: {
+            { selectorAliases: {
                     ':combo': ':is(h1,h2)+div',
-                }
-            }
+                } }
         ],
         // unsupported: component token + selector token
         // ['>span::both', '.btn>span::before,.btn>span::after', [

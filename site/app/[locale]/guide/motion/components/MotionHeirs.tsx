@@ -15,8 +15,9 @@ export default () =>
                 <tbody>
                     {
                         namespaces.map((namespace) => {
-                            const ruleNames = Object.keys(rules)
-                                .filter((ruleName) => (rules as any)[ruleName].namespaces?.includes(namespace))
+                            const ruleNames = rules
+                                .filter((rule) => rule.namespaces?.includes(namespace))
+                                .map(({ name }) => name)
 
                             return (
                                 <tr key={namespace}>

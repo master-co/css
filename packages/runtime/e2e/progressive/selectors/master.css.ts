@@ -1,9 +1,7 @@
 import { Config } from '@master/css'
 
 export default {
-    variables: {
-        content: {
-            external: '" ↗"'
-        }
-    }
+    variables: [
+        { namespace: 'content', key: 'external', value: '" ↗"' }
+    ]
 } satisfies Config

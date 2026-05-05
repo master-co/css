@@ -1,73 +1,57 @@
+import type { VariableDefinition } from '../types/config'
 import type { ExtendedConfig } from './extend-config'
-import type { Variable } from '@master/css/types/syntax'
+
+function variableSlot(variable: VariableDefinition) {
+    return `${variable.namespace ?? ''}\0${variable.key}`
+}
+
+function sameValue(a: VariableDefinition | undefined, b: VariableDefinition | undefined) {
+    return JSON.stringify(a?.value) === JSON.stringify(b?.value)
+}
 
 /**
- * Minifies an extended config by hoisting shared variables from all modes into `variables`.
- * Only variables with identical values across all modes are hoisted.
- *
- * @param config - The extended config with flattened variable structures
- * @returns A new config with deduplicated `variables` and minimized `modes`
+ * Minifies an extended config by hoisting variables with identical values in every mode
+ * into mode-less variables.
  */
 export default function minifyExtendedConfig(config: ExtendedConfig): ExtendedConfig {
-    const { variables: baseVariables = {}, modes = {}, ...rest } = config
+    const { variables = [], modes = [], ...rest } = config
+    if (!modes.length || !variables.length) return config
 
-    const modeNames = Object.keys(modes)
-    const variableNames = new Set<string>()
+    const baseVariables = variables.filter((variable) => !variable.mode)
+    const modeVariables = variables.filter((variable) => variable.mode)
+    const modeVariablesBySlot = new Map<string, Map<string, VariableDefinition>>()
 
-    // Collect all variable keys from all modes
-    for (const mode of modeNames) {
-        for (const key in modes[mode]) {
-            variableNames.add(key)
+    for (const variable of modeVariables) {
+        const slot = variableSlot(variable)
+        let byMode = modeVariablesBySlot.get(slot)
+        if (!byMode) {
+            byMode = new Map()
+            modeVariablesBySlot.set(slot, byMode)
         }
+        byMode.set(variable.mode!, variable)
     }
 
-    const variables: Record<string, Variable> = { ...baseVariables }
-    const newModes: Record<string, Record<string, Variable>> = {}
+    const outputVariables = [...baseVariables]
 
-    for (const key of variableNames) {
-        let first: Variable | undefined
-        let allSame = true
+    for (const [slot, byMode] of modeVariablesBySlot) {
+        const first = byMode.get(modes[0])
+        const allSame = Boolean(first) && modes.every((mode) => sameValue(byMode.get(mode), first))
+        const existingBase = baseVariables.find((variable) => variableSlot(variable) === slot)
 
-        for (let i = 0; i < modeNames.length; i++) {
-            const mode = modeNames[i]
-            const current = modes[mode]?.[key]
-
-            if (!current) {
-                allSame = false
-                break
+        if (allSame && (!existingBase || sameValue(existingBase, first))) {
+            if (!existingBase && first) {
+                const { mode, ...hoisted } = first
+                outputVariables.push(hoisted)
             }
-
-            if (i === 0) {
-                first = current
-            } else if (JSON.stringify(current.value) !== JSON.stringify(first!.value)) {
-                allSame = false
-                break
-            }
+            continue
         }
 
-        const already = baseVariables[key]
-        const valueMatches = already && JSON.stringify(already.value) === JSON.stringify(first?.value)
-
-        if (allSame && (!already || valueMatches)) {
-            if (first) {
-                variables[key] = first
-            }
-        } else {
-            for (const mode of modeNames) {
-                if (!newModes[mode]) newModes[mode] = {}
-                const value = modes[mode]?.[key]
-                if (value) {
-                    newModes[mode][key] = value
-                }
-            }
-        }
+        outputVariables.push(...byMode.values())
     }
 
-    const newConfig: ExtendedConfig = {
+    return {
         ...rest,
-        variables: Object.keys(variables).length > 0 ? variables : undefined,
-        modes: Object.keys(newModes).length > 0 ? newModes : undefined,
+        variables: outputVariables.length ? outputVariables : undefined,
+        modes
     }
-
-    return newConfig
 }

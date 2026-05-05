@@ -17,7 +17,7 @@ test('loads the default TypeScript config', async () => {
 test('loads an explicit config file name', async () => {
     expect((await exploreConfig({ cwd: __dirname, name: 'custom.config.ts' }))?.config).toStrictEqual({
         components: {
-            custom: 'inline-flex'
+            custom: ['inline-flex']
         }
     })
 })
@@ -25,7 +25,7 @@ test('loads an explicit config file name', async () => {
 test('resolves named config exports before default exports', async () => {
     expect((await exploreConfig({ cwd: __dirname, name: 'named.css.ts' }))?.config).toStrictEqual({
         components: {
-            named: 'inline-flex'
+            named: ['inline-flex']
         }
     })
 })
@@ -33,7 +33,7 @@ test('resolves named config exports before default exports', async () => {
 test('loads CommonJS configs', async () => {
     expect((await exploreConfig({ cwd: __dirname, name: 'legacy.css.cjs' }))?.config).toStrictEqual({
         components: {
-            legacy: 'inline-flex'
+            legacy: ['inline-flex']
         }
     })
 })
@@ -54,25 +54,21 @@ test('loads CSS configs after script configs', async () => {
             basename: 'master.css',
             extension: 'css',
             config: {
-                variables: {
-                    color: {
-                        primary: '#123'
-                    }
-                }
+                variables: [
+                    { namespace: 'color', key: 'primary', value: '#123' }
+                ]
             }
         })
         expect((await exploreConfig({ cwd }))?.config).toStrictEqual({
-            variables: {
-                color: {
-                    primary: '#123'
-                }
-            }
+            variables: [
+                { namespace: 'color', key: 'primary', value: '#123' }
+            ]
         })
 
-        writeFileSync(join(cwd, 'master.css.ts'), `export default { components: { script: 'block' } }`)
+        writeFileSync(join(cwd, 'master.css.ts'), `export default { components: { script: ['block'] } }`)
         expect((await exploreConfig({ cwd }))?.config).toStrictEqual({
             components: {
-                script: 'block'
+                script: ['block']
             }
         })
     } finally {
@@ -92,7 +88,7 @@ test('returns an explore result for downstream integrations', async () => {
         path: join(__dirname, 'custom.config.ts'),
         config: {
             components: {
-                custom: 'inline-flex'
+                custom: ['inline-flex']
             }
         }
     })
@@ -133,7 +129,7 @@ test('supports custom extension order', async () => {
         extensions: ['ts', 'cjs']
     }))?.config).toStrictEqual({
         components: {
-            legacy: 'inline-flex'
+            legacy: ['inline-flex']
         }
     })
 })
@@ -142,16 +138,16 @@ test('reloads changed config files without reusing module cache', async () => {
     const cwd = mkdtempSync(join(tmpdir(), 'master-css-config-'))
     const configPath = join(cwd, 'master.css.ts')
     try {
-        writeFileSync(configPath, `export default { components: { one: 'block' } }`)
+        writeFileSync(configPath, `export default { components: { one: ['block'] } }`)
         expect((await exploreConfig({ cwd }))?.config).toStrictEqual({
             components: {
-                one: 'block'
+                one: ['block']
             }
         })
-        writeFileSync(configPath, `export default { components: { two: 'inline-flex' } }`)
+        writeFileSync(configPath, `export default { components: { two: ['inline-flex'] } }`)
         expect((await exploreConfig({ cwd }))?.config).toStrictEqual({
             components: {
-                two: 'inline-flex'
+                two: ['inline-flex']
             }
         })
     } finally {

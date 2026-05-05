@@ -114,11 +114,9 @@ describe('MasterCSSExtractorPlugin (C1 race fix)', () => {
     test('resolves virtual:master-css-config to a JS virtual module', async () => {
         const plugin = new MasterCSSExtractorPlugin({
             config: {
-                variables: {
-                    color: {
-                        primary: '#123'
-                    }
-                }
+                variables: [
+                    { namespace: 'color', key: 'primary', value: '#123' }
+                ]
             } as any,
             include: [],
             sources: [],
@@ -141,7 +139,7 @@ describe('MasterCSSExtractorPlugin (C1 race fix)', () => {
 
         expect(resolveData.request).toContain(path.join('node_modules', '.master-css', 'master-css-config.js'))
         expect((compiler.inputFileSystem._writeVirtualFile as any).mock.calls.at(-1)?.[2])
-            .toContain('"primary":"#123"')
+            .toContain('"key":"primary","value":"#123"')
     })
 
     test('resolves ?master-css-config imports to per-file JS virtual modules', async () => {
@@ -166,7 +164,7 @@ describe('MasterCSSExtractorPlugin (C1 race fix)', () => {
         expect(resolveData.request).toContain('.js')
         expect(resolveData.fileDependencies.has(fixturePath)).toBe(true)
         expect((compiler.inputFileSystem._writeVirtualFile as any).mock.calls.at(-1)?.[2])
-            .toContain('"accent":"#456"')
+            .toContain('"key":"accent","value":"#456"')
     })
 
     test('adds default CSS config as a compilation dependency', () => {

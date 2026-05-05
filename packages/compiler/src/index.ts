@@ -1,11 +1,9 @@
-import { createCSS } from '@master/css'
+import { createCSS, SyntaxRuleType } from '@master/css'
 import { transform } from 'lightningcss'
 import type { PropertiesHyphen } from 'csstype'
 import type {
     AnimationDefinitions,
     Config,
-    VariableDefinition,
-    VariableDefinitions,
     VariableValue
 } from '@master/css'
 import type {
@@ -70,36 +68,23 @@ function parseVariableValue(value: string): VariableValue {
     return numberValue === undefined ? trimmed : numberValue
 }
 
-function setNestedVariable(target: VariableDefinitions, namespace: string | undefined, key: string, value: VariableDefinition) {
-    if (!namespace) {
-        target[key] = value
-        return
-    }
-    const variables = target as Record<string, any>
-    variables[namespace] ??= {}
-    variables[namespace][key] = value
-}
-
 function defineMasterVariable(config: Config, property: string, rawValue: string, mode?: string) {
     const variable = resolveVariableNamespace(property)
     const value = parseVariableValue(rawValue)
-    if (!mode && variable.namespace === 'screen') {
-        const screen = typeof value === 'number' ? value : Number(value)
-        if (!Number.isNaN(screen)) {
-            config.screens ??= {}
-            config.screens[variable.key] = screen
-        }
-        return
+    if (mode && variable.namespace === 'screen') {
+        throw new Error(`Screen variables cannot be mode-specific: screen-${variable.key}@${mode}`)
     }
-
     if (mode) {
-        config.modes ??= {}
-        config.modes[mode] ??= {}
-        setNestedVariable(config.modes[mode], variable.namespace, variable.key, value)
-    } else {
-        config.variables ??= {}
-        setNestedVariable(config.variables, variable.namespace, variable.key, value)
+        config.modes ??= []
+        if (!config.modes.includes(mode)) config.modes.push(mode)
     }
+    config.variables ??= []
+    config.variables.push({
+        ...(variable.namespace ? { namespace: variable.namespace } : {}),
+        key: variable.key,
+        value,
+        ...(mode ? { mode } : {})
+    })
 }
 
 function parseMasterOption(config: Config, property: string, value: string) {
@@ -327,8 +312,8 @@ function parseAtDefinition(rule: any, config: Config) {
     if (!match) {
         throw new Error('@at requires a name and at-rule value')
     }
-    config.at ??= {}
-    config.at[match[1]] = normalizeAtValue(match[2])
+    config.atRuleAliases ??= {}
+    config.atRuleAliases[match[1]] = normalizeAtValue(match[2])
 }
 
 function parseSelectorDefinition(rule: any, config: Config) {
@@ -336,8 +321,8 @@ function parseSelectorDefinition(rule: any, config: Config) {
     if (!match) {
         throw new Error('@selector requires a name and selector value')
     }
-    config.selectors ??= {}
-    config.selectors[match[1]] = match[2]
+    config.selectorAliases ??= {}
+    config.selectorAliases[match[1]] = match[2]
 }
 
 function parseClassDefinitionSelector(selectors: Selector[]) {
@@ -386,10 +371,12 @@ function parseComponent(rule: any, parsed: ParsedDirectives) {
     }
     const declarations = collectStyleRuleDeclarations(rule)
     parsed.config.components ??= {}
-    parsed.config.components[name] = {
-        classNames: normalizeClassNames(classNames),
-        declarations: Object.keys(declarations).length ? declarations as PropertiesHyphen : undefined
-    }
+    parsed.config.components[name] = [
+        ...normalizeClassNames(classNames),
+        ...(Object.keys(declarations).length
+            ? [{ selector: '&', declarations: declarations as PropertiesHyphen }]
+            : [])
+    ]
     parsed.componentNames.push(name)
 }
 
@@ -403,8 +390,12 @@ function parseUtilityRule(rule: any, config: Config) {
             throw new Error('Utilities only accept declarations')
         }
     }
-    config.utilities ??= {}
-    config.utilities[name] = collectStyleRuleDeclarations(rule) as PropertiesHyphen
+    config.rules ??= []
+    config.rules.push({
+        name,
+        type: SyntaxRuleType.Utility,
+        declarations: collectStyleRuleDeclarations(rule) as PropertiesHyphen
+    })
 }
 
 function parseLayerBlock(rule: any, parsed: ParsedDirectives) {

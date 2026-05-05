@@ -33,7 +33,7 @@ const functions = {
     oklab: { unit: '' },
     oklch: { unit: '' },
     'light-dark': { unit: '' },
-    clamp: { transformer: ['core.math', { name: 'clamp', wrapArguments: true }] },
+    clamp: { transformer: 'core.math', transformerOptions: { name: 'clamp', wrapArguments: true } },
     repeat: { unit: '' },
     'linear-gradient': {},
     'radial-gradient': {},

@@ -8,11 +8,7 @@ test.concurrent('number', () => {
             general: '.m\\:x1{margin:1rem}'
         },
         'm:x1',
-        {
-            variables: {
-                spacing: { x1: 16 }
-            }
-        }
+        { variables: [{ namespace: 'spacing', key: 'x1', value: 16 }] }
     )
 })
 
@@ -23,26 +19,7 @@ test.concurrent('number with themes', () => {
             theme: ':root{--spacing-x1:16}.light{--spacing-x1:48}.dark{--spacing-x1:32}'
         },
         'm:x1',
-        {
-            variables: {
-                spacing: {
-                    x1: 16
-                }
-            },
-            modes: {
-                light: {
-                    spacing: {
-                        x1: 48
-                    }
-                },
-                dark: {
-                    spacing: {
-                        x1: 32
-                    }
-                }
-            },
-            modeTrigger: 'class'
-        }
+        { variables: [{ namespace: 'spacing', key: 'x1', value: 16 }, { namespace: 'spacing', key: 'x1', value: 48, mode: 'light' }, { namespace: 'spacing', key: 'x1', value: 32, mode: 'dark' }], modes: ['light', 'dark'], modeTrigger: 'class' }
     )
 
     // 無單位屬性不需要 calc
@@ -52,26 +29,7 @@ test.concurrent('number with themes', () => {
             theme: ':root{--line-height-x1:16}.light{--line-height-x1:48}.dark{--line-height-x1:32}'
         },
         'line-height:x1',
-        {
-            variables: {
-                'line-height': {
-                    x1: 16
-                }
-            },
-            modes: {
-                light: {
-                    'line-height': {
-                        x1: 48
-                    }
-                },
-                dark: {
-                    'line-height': {
-                        x1: 32
-                    }
-                }
-            },
-            modeTrigger: 'class'
-        }
+        { variables: [{ namespace: 'line-height', key: 'x1', value: 16 }, { namespace: 'line-height', key: 'x1', value: 48, mode: 'light' }, { namespace: 'line-height', key: 'x1', value: 32, mode: 'dark' }], modes: ['light', 'dark'], modeTrigger: 'class' }
     )
 })
 
@@ -81,11 +39,7 @@ test.concurrent('number using variable function', () => {
             general: '.m\\:\\$\\(spacing-x1\\){margin:1rem}'
         },
         'm:$(spacing-x1)',
-        {
-            variables: {
-                spacing: { x1: 16 }
-            }
-        }
+        { variables: [{ namespace: 'spacing', key: 'x1', value: 16 }] }
     )
 })
 
@@ -96,26 +50,7 @@ test.concurrent('number with themes using variable function', () => {
             theme: ':root{--spacing-x1:16}.light{--spacing-x1:48}.dark{--spacing-x1:32}'
         },
         'm:$(spacing-x1)',
-        {
-            variables: {
-                spacing: {
-                    x1: 16
-                }
-            },
-            modes: {
-                light: {
-                    spacing: {
-                        x1: 48
-                    }
-                },
-                dark: {
-                    spacing: {
-                        x1: 32
-                    }
-                }
-            },
-            modeTrigger: 'class'
-        }
+        { variables: [{ namespace: 'spacing', key: 'x1', value: 16 }, { namespace: 'spacing', key: 'x1', value: 48, mode: 'light' }, { namespace: 'spacing', key: 'x1', value: 32, mode: 'dark' }], modes: ['light', 'dark'], modeTrigger: 'class' }
     )
 
     // 無單位屬性不需要 calc
@@ -125,54 +60,23 @@ test.concurrent('number with themes using variable function', () => {
             theme: ':root{--spacing-x1:16}.light{--spacing-x1:48}.dark{--spacing-x1:32}'
         },
         'line-height:$(spacing-x1)',
-        {
-            variables: {
-                spacing: {
-                    x1: 16
-                }
-            },
-            modes: {
-                light: {
-                    spacing: {
-                        x1: 48
-                    }
-                },
-                dark: {
-                    spacing: {
-                        x1: 32
-                    }
-                }
-            },
-            modeTrigger: 'class'
-        }
+        { variables: [{ namespace: 'spacing', key: 'x1', value: 16 }, { namespace: 'spacing', key: 'x1', value: 48, mode: 'light' }, { namespace: 'spacing', key: 'x1', value: 32, mode: 'dark' }], modes: ['light', 'dark'], modeTrigger: 'class' }
     )
 })
 
 test.concurrent('variables', () => {
-    expect(createCSS({
-        variables: {
-            spacing: { x1: 16, x2: 32 },
-        }
-    }).create('m:$(spacing-x1)')?.text).toBe('.m\\:\\$\\(spacing-x1\\){margin:1rem}')
+    expect(createCSS({ variables: [{ namespace: 'spacing', key: 'x1', value: 16 }, { namespace: 'spacing', key: 'x2', value: 32 }] }).create('m:$(spacing-x1)')?.text).toBe('.m\\:\\$\\(spacing-x1\\){margin:1rem}')
 })
 
 test.concurrent('negative variables', () => {
-    expect(createCSS({
-        variables: {
-            spacing: { x1: 16, x2: 32 }
-        }
-    }).create('m:$(-spacing-x1)')?.text).toBe('.m\\:\\$\\(-spacing-x1\\){margin:-1rem}')
+    expect(createCSS({ variables: [{ namespace: 'spacing', key: 'x1', value: 16 }, { namespace: 'spacing', key: 'x2', value: 32 }] }).create('m:$(-spacing-x1)')?.text).toBe('.m\\:\\$\\(-spacing-x1\\){margin:-1rem}')
 
     expectLayers(
         {
             general: '.w\\:-11x{width:-3.75rem}'
         },
         'w:-11x',
-        {
-            variables: {
-                width: { '11x': 60 }
-            }
-        }
+        { variables: [{ namespace: 'width', key: '11x', value: 60 }] }
     )
 })
 

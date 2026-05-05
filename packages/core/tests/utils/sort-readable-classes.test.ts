@@ -1,32 +1,14 @@
 import Tester from '../tester'
 
 new Tester({
-    components: {
-        btn: 'block fg:blue',
-        'btn-sm': 'font:12',
-        'btn-md': 'font:14',
-        card: 'text:center p:5x p:10x@md',
-        yellow: 'bg:yellow fg:yellow-contrast outline:1|yellow-ring',
-        'touch-yellow': 'bg:touch-yellow:hover'
-    },
-    modes: {
-        light: {
-            yellow: {
-                ring: '$(yellow-30)'
-            },
-            touch: {
-                yellow: '$(yellow-30)'
-            }
-        },
-        dark: {
-            yellow: {
-                ring: '$(yellow-40)'
-            },
-            touch: {
-                yellow: '$(yellow-40)'
-            }
-        }
-    }
+    components: { btn: ['block fg:blue'], 'btn-sm': ['font:12'], 'btn-md': ['font:14'], card: ['text:center p:5x p:10x'], yellow: ['bg:yellow fg:yellow-contrast outline:1|yellow-ring'], 'touch-yellow': ['bg:touch-yellow:hover'] },
+    variables: [
+        { namespace: 'yellow', key: 'ring', value: '$(yellow-30)', mode: 'light' },
+        { namespace: 'touch', key: 'yellow', value: '$(yellow-30)', mode: 'light' },
+        { namespace: 'yellow', key: 'ring', value: '$(yellow-40)', mode: 'dark' },
+        { namespace: 'touch', key: 'yellow', value: '$(yellow-40)', mode: 'dark' }
+    ],
+    modes: ['light', 'dark']
 }).readableClasses({
     1: 'font:12 font:24@sm font:36@lg',
     2: 'm:10 m:20 m:30:hover m:40@dark',

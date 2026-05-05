@@ -70,16 +70,10 @@ import CSSTester from './tester'
 //     ]
 // })
 
-new CSSTester({
-    components: {
-        'btn-primary': 'bg:blue bg:blue:hover bg:blue:disabled'
-    }
-}).priority('componentsLayer', {
-    components: [
+new CSSTester({ components: { 'btn-primary': ['bg:blue bg:blue:hover bg:blue:disabled'] } }).priority('componentsLayer', { components: [
         'btn-primary', [
             'bg:blue',
             'bg:blue:hover',
             'bg:blue:disabled'
         ]
-    ]
-})
+    ] })

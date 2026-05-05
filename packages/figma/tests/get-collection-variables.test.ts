@@ -8,20 +8,13 @@ describe('getCollectionVariables', () => {
     it('should return parsed color config', async () => {
         const result = await getCollectionVariables({ varCollId: 'mock-id', defaultVarMode: { name: 'Default' } })
         expect(result).toEqual({
-            variables: {
-                gray: {
-                    '10': '#fff',
-                    '20': '$gray-10'
-                }
-            },
-            modes: {
-                dark: {
-                    gray: {
-                        '10': '#000',
-                        '20': '#808080'
-                    }
-                }
-            }
+            variables: [
+                { namespace: 'gray', key: '10', value: '#fff' },
+                { namespace: 'gray', key: '20', value: '$gray-10' },
+                { namespace: 'gray', key: '10', value: '#000', mode: 'dark' },
+                { namespace: 'gray', key: '20', value: '#808080', mode: 'dark' }
+            ],
+            modes: ['dark']
         })
     })
 })

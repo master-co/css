@@ -6,9 +6,5 @@ test.concurrent('content', () => {
 })
 
 test.concurrent('variable', () => {
-    expect(createCSS({
-        variables: {
-            content: { external: '" ↗"' }
-        }
-    }).create('content:external:after')?.text).toBe('.content\\:external\\:after:after{content:" ↗"}')
+    expect(createCSS({ variables: [{ namespace: 'content', key: 'external', value: '" ↗"' }] }).create('content:external:after')?.text).toBe('.content\\:external\\:after:after{content:" ↗"}')
 })

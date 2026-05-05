@@ -2,14 +2,15 @@ import type { Config } from '@master/css'
 
 export default {
     components: {
-        box: 'flex font:1em bg:cyan'
+        box: ['flex font:1em bg:cyan']
     },
-    rules: {
-        foo: {
-            match: /^foo:/,
+    rules: [
+        {
+            name: 'foo',
+            matcher: /^foo:/,
             declarations: {
                 width: undefined
             }
         }
-    }
+    ]
 } as Config

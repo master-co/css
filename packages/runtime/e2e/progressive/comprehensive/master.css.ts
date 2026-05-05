@@ -1,15 +1,12 @@
 import { Config } from '@master/css'
 
 export default {
-    modes: {
-        light: {
-            primary: '#000000'
-        },
-        dark: {
-            primary: '#ffffff'
-        }
-    },
+    variables: [
+        { key: 'primary', value: '#000000', mode: 'light' },
+        { key: 'primary', value: '#ffffff', mode: 'dark' }
+    ],
+    modes: ['light', 'dark'],
     components: {
-        btn: 'inline-flex bg:primary'
+        btn: ['inline-flex', 'bg:primary']
     }
 } satisfies Config

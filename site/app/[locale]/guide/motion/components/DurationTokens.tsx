@@ -12,7 +12,9 @@ const durationUsage: Record<string, string> = {
 const getDurationNumber = (value: string) => Number(value.replace('ms', ''))
 
 export default () => {
-    const durationEntries = Object.entries(variables.duration)
+    const durationEntries = variables
+        .filter(({ namespace, mode }) => namespace === 'duration' && !mode)
+        .map(({ key, value }) => [key, String(value)] as const)
     const maxDuration = Math.max(...durationEntries.map(([, value]) => getDurationNumber(value)))
 
     return (

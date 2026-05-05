@@ -3,11 +3,11 @@ import { rules } from '@master/css'
 
 export default () => <>
     {
-        Object.keys(rules)
-            .filter((ruleName) => (rules as any)[ruleName].namespaces?.find((variable: string) => variable.includes('text')))
-            .map((ruleName, index, arr) =>
-                <Fragment key={ruleName}>
-                    <code>{ruleName}</code>
+        rules
+            .filter((rule) => rule.namespaces?.find((variable) => variable.includes('text')))
+            .map((rule, index, arr) =>
+                <Fragment key={rule.name}>
+                    <code>{rule.name}</code>
                     {index !== arr.length - 1 && ', '}
                 </Fragment>
             )

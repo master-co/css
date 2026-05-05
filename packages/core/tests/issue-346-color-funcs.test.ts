@@ -16,9 +16,7 @@ describe('issue #346: variables support all CSS color functions', () => {
     ]
 
     test.each(cases)('%s → variable.space = %s', (name, fn, expectedSpace) => {
-        const css = new MasterCSS({
-            variables: { color: { primary: fn } }
-        })
+        const css = new MasterCSS({ variables: [{ namespace: 'color', key: 'primary', value: fn }] })
         const v = css.variables.get('color-primary') as any
         expect(v).toBeDefined()
         expect(v.type).toBe('color')
@@ -26,14 +24,7 @@ describe('issue #346: variables support all CSS color functions', () => {
     })
 
     test('alpha alias on a color-function variable propagates', () => {
-        const css = new MasterCSS({
-            variables: {
-                color: {
-                    primary: 'oklch(0.5 0.15 240)',
-                    soft: '$(color-primary)/.3'
-                }
-            }
-        })
+        const css = new MasterCSS({ variables: [{ namespace: 'color', key: 'primary', value: 'oklch(0.5 0.15 240)' }, { namespace: 'color', key: 'soft', value: '$(color-primary)/.3' }] })
         const v = css.variables.get('color-soft') as any
         expect(v).toBeDefined()
         expect(v.alpha).toBe(0.3)
@@ -41,9 +32,7 @@ describe('issue #346: variables support all CSS color functions', () => {
     })
 
     test('color-mix is preserved as a string variable (not a color)', () => {
-        const css = new MasterCSS({
-            variables: { color: { mix: 'color-mix(in oklch, red, blue)' } }
-        })
+        const css = new MasterCSS({ variables: [{ namespace: 'color', key: 'mix', value: 'color-mix(in oklch, red, blue)' }] })
         const v = css.variables.get('color-mix') as any
         expect(v).toBeDefined()
         // color-mix is currently parsed by the same color-function regex,

@@ -38,21 +38,20 @@ describe('ConfigVirtualModulePlugin', () => {
         expect(context.configPath).toBe(path.join(root, 'master.css'))
         expect(viteConfig.server.fs.allow).toContain(context.configPath)
         expect(config).toMatchObject({
-            variables: {
-                color: {
-                    primary: '#123'
-                }
-            },
-            screens: {
-                md: 48
-            },
+            variables: [
+                { namespace: 'color', key: 'primary', value: '#123' },
+                { namespace: 'screen', key: 'md', value: 48 }
+            ],
             components: {
-                btn: {
-                    classNames: ['bg:primary'],
-                    declarations: {
-                        display: 'inline-flex'
+                btn: [
+                    'bg:primary',
+                    {
+                        selector: '&',
+                        declarations: {
+                            display: 'inline-flex'
+                        }
                     }
-                }
+                ]
             }
         })
     })
@@ -85,18 +84,11 @@ describe('ConfigVirtualModulePlugin', () => {
         expect(resolvedId).toBe(toResolvedMasterCSSConfigId(path.join(FIXTURE_DIR, 'theme.css')))
         expect(addWatchFile).toHaveBeenCalledWith(path.join(FIXTURE_DIR, 'theme.css'))
         expect(config).toMatchObject({
-            variables: {
-                color: {
-                    accent: '#456'
-                }
-            },
-            modes: {
-                dark: {
-                    color: {
-                        accent: '#789'
-                    }
-                }
-            }
+            variables: [
+                { namespace: 'color', key: 'accent', value: '#456' },
+                { namespace: 'color', key: 'accent', value: '#789', mode: 'dark' }
+            ],
+            modes: ['dark']
         })
     })
 

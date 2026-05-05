@@ -10,7 +10,9 @@ const shadowApplications: Record<string, string> = {
 }
 
 export default () => {
-    const shadowEntries = Object.entries(variables.shadow)
+    const shadowEntries = variables
+        .filter(({ namespace, mode }) => namespace === 'shadow' && !mode)
+        .map(({ key, value }) => [key, String(value)] as const)
 
     return (
         <figure>

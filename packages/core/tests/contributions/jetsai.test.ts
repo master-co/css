@@ -25,49 +25,29 @@ const textTokens = Object.freeze({
     onColor: 'text-on-color'
 })
 
-export const buttonConfig: Config = {
-    variables: {
-        color: {
-            white: 'oklch(100% 0 none)',
-            [buttonTokens.primary]: '$color-' + colorTokens.blue700,
-            [buttonTokens.primaryHover]: '$color-' + colorTokens.blue900,
-            [buttonTokens.primaryDisabled]: '$color-' + colorTokens.blue200,
-            [buttonTokens.disabled]: '$color-' + colorTokens.gray200
-        }
-    },
-    components: {
-        'btn-primary': [
+export const buttonConfig: Config = { variables: [
+        { namespace: 'color', key: 'white', value: 'oklch(100% 0 none)' },
+        { namespace: 'color', key: buttonTokens.primary, value: '$color-' + colorTokens.blue700 },
+        { namespace: 'color', key: buttonTokens.primaryHover, value: '$color-' + colorTokens.blue900 },
+        { namespace: 'color', key: buttonTokens.primaryDisabled, value: '$color-' + colorTokens.blue200 },
+        { namespace: 'color', key: buttonTokens.disabled, value: '$color-' + colorTokens.gray200 }
+    ], components: { 'btn-primary': [[
             `t:${textTokens.onColor}`,
             `t:${textTokens.disabled}:disabled`,
             `bg:${buttonTokens.primary}`,
             `bg:${buttonTokens.primaryHover}:hover`,
             `bg:${buttonTokens.primaryDisabled}:disabled`
-        ].join(' '),
-    }
-}
+        ].join(' ')] } }
 
-export const colorConfig: Config = {
-    variables: {
-        color: {
-            // blue
-            [colorTokens.blue200]: '#CDE0F7',
-            [colorTokens.blue700]: '#2242A3',
-            [colorTokens.blue900]: '#152559',
-            // gray
-            [colorTokens.gray200]: '#E9EEF8',
-            [colorTokens.gray500]: '#9297A1'
-        }
-    }
-}
+export const colorConfig: Config = { variables: [
+        { namespace: 'color', key: colorTokens.blue200, value: '#CDE0F7' },
+        { namespace: 'color', key: colorTokens.blue700, value: '#2242A3' },
+        { namespace: 'color', key: colorTokens.blue900, value: '#152559' },
+        { namespace: 'color', key: colorTokens.gray200, value: '#E9EEF8' },
+        { namespace: 'color', key: colorTokens.gray500, value: '#9297A1' }
+    ] }
 
-export const textConfig: Config = {
-    variables: {
-        color: {
-            [textTokens.disabled]: '$color-' + colorTokens.gray500,
-            [textTokens.onColor]: '$color-white'
-        }
-    }
-}
+export const textConfig: Config = { variables: [{ namespace: 'color', key: textTokens.disabled, value: '$color-' + colorTokens.gray500 }, { namespace: 'color', key: textTokens.onColor, value: '$color-white' }] }
 
 const extendedConfig = extendConfig(colorConfig, textConfig, buttonConfig)
 
@@ -111,7 +91,5 @@ new CSSTester({
     'bg:text-on-color': {
         general: '.bg\\:text-on-color{background-color:oklch(100% 0 none)}'
     },
-    'btn-primary': {
-        components: '.btn-primary{background-color:rgb(34 66 163)}.btn-primary{-webkit-text-fill-color:oklch(100% 0 none)}.btn-primary:hover{background-color:rgb(21 37 89)}.btn-primary:disabled{background-color:rgb(205 224 247)}.btn-primary:disabled{-webkit-text-fill-color:rgb(146 151 161)}'
-    },
+    'btn-primary': { components: '.btn-primary{background-color:rgb(34 66 163)}.btn-primary{-webkit-text-fill-color:oklch(100% 0 none)}.btn-primary:hover{background-color:rgb(21 37 89)}.btn-primary:disabled{background-color:rgb(205 224 247)}.btn-primary:disabled{-webkit-text-fill-color:rgb(146 151 161)}' },
 })

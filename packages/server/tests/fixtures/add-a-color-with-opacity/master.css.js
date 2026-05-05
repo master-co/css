@@ -1,5 +1,5 @@
 export default {
-    variables: {
-        primary: 'rgb(0 0 0/0.5)' /* [!code highlight] */
-    }
+    variables: [
+        { key: 'primary', value: 'rgb(0 0 0/0.5)' } /* [!code highlight] */
+    ]
 }

@@ -29,9 +29,10 @@ export default function getPseudoElementCompletionItems(css: MasterCSS = createC
             } as CompletionItem
         })
 
-    for (const selectorName in css.config.selectors) {
+    const selectorAliases = css.config.selectorAliases || {}
+    for (const selectorName in selectorAliases) {
         if (!selectorName.startsWith('::')) continue
-        const selectorValue = css.config.selectors[selectorName]
+        const selectorValue = selectorAliases[selectorName]
         const name = selectorName.endsWith('(') ? selectorName + ')' : selectorName
         const value = typeof selectorValue === 'string'
             ? selectorValue.endsWith('(') ? selectorValue + ')' : selectorValue

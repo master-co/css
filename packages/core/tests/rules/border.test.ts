@@ -66,7 +66,7 @@ test.concurrent('autofill solid', () => {
     expect(createCSS().create('border:16|black')?.text).toContain('border:1rem oklch(0% 0 none) solid')
     expect(createCSS().create('border:16|black|solid')?.text).toContain('border:1rem oklch(0% 0 none) solid')
     expect(createCSS().create('border:16|var(--style)')?.text).not.toContain('solid')
-    expect(createCSS({ variables: { line: 'solid' } }).create('border:16|black|line')?.text).toContain('border:1rem oklch(0% 0 none) solid')
+    expect(createCSS({ variables: [{ key: 'line', value: 'solid' }] }).create('border:16|black|line')?.text).toContain('border:1rem oklch(0% 0 none) solid')
 
     expectLayers(
         {
@@ -74,17 +74,7 @@ test.concurrent('autofill solid', () => {
             general: '.border\\:16\\|line{border:1rem var(--line) solid}'
         },
         'border:16|line',
-        {
-            modes: {
-                light: {
-                    line: 'solid'
-                },
-                dark: {
-                    line: 'dotted'
-                }
-            },
-            modeTrigger: 'class'
-        }
+        { variables: [{ key: 'line', value: 'solid', mode: 'light' }, { key: 'line', value: 'dotted', mode: 'dark' }], modes: ['light', 'dark'], modeTrigger: 'class' }
     )
 
     expectLayers(
@@ -93,16 +83,6 @@ test.concurrent('autofill solid', () => {
             general: '.border\\:16\\|line{border:1rem var(--line) solid}'
         },
         'border:16|line',
-        {
-            modes: {
-                light: {
-                    line: 'solid'
-                },
-                dark: {
-                    line: 'dotted'
-                }
-            },
-            modeTrigger: 'class'
-        }
+        { variables: [{ key: 'line', value: 'solid', mode: 'light' }, { key: 'line', value: 'dotted', mode: 'dark' }], modes: ['light', 'dark'], modeTrigger: 'class' }
     )
 })

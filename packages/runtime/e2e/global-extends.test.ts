@@ -4,15 +4,15 @@ import init from './init'
 test('extends', async ({ page }) => {
     await page.evaluate(() => {
         globalThis.masterCSSConfigs = [{
-            variables: {
-                primary: '#000000'
-            }
+            variables: [
+                { key: 'primary', value: '#000000' }
+            ]
         }]
         globalThis.masterCSSConfig = {
             extends: [{
-                variables: {
-                    secondary: '#ffffff'
-                }
+                variables: [
+                    { key: 'secondary', value: '#ffffff' }
+                ]
             }]
         }
     })

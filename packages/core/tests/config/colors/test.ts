@@ -1,4 +1,5 @@
 import { it, test } from 'vitest'
+
 import config from '../../config'
 import { expectLayers } from '../../test'
 
@@ -25,11 +26,7 @@ test.concurrent('colors', () => {
             general: '.bg\\:blue-100{background-color:oklch(25.46% 0.168 269.2)}'
         },
         'bg:blue-100',
-        {
-            variables: {
-                'blue-100': '#777'
-            }
-        }
+        { variables: [{ key: 'blue-100', value: '#777' }] }
     )
 
     expectLayers(
@@ -87,19 +84,7 @@ test.concurrent('colors', () => {
             general: '.bg\\:linear-gradient\\(180deg\\,primary\\,accent\\){background-image:linear-gradient(180deg,var(--primary),var(--accent))}'
         },
         'bg:linear-gradient(180deg,primary,accent)',
-        {
-            modes: {
-                light: {
-                    primary: '#000000',
-                    accent: '#111111'
-                },
-                dark: {
-                    primary: '#ffffff',
-                    accent: '#eeeeee'
-                }
-            },
-            modeTrigger: 'class'
-        }
+        { variables: [{ key: 'primary', value: '#000000', mode: 'light' }, { key: 'accent', value: '#111111', mode: 'light' }, { key: 'primary', value: '#ffffff', mode: 'dark' }, { key: 'accent', value: '#eeeeee', mode: 'dark' }], modes: ['light', 'dark'], modeTrigger: 'class' }
     )
 
     expectLayers(
@@ -108,18 +93,7 @@ test.concurrent('colors', () => {
             general: '.bg\\:linear-gradient\\(180deg\\,primary\\,accent\\){background-image:linear-gradient(180deg,var(--primary),var(--accent))}'
         },
         'bg:linear-gradient(180deg,primary,accent)',
-        {
-            modes: {
-                light: {
-                    primary: '#000000',
-                },
-                dark: {
-                    primary: '#ffffff',
-                    accent: '#eeeeee'
-                }
-            },
-            modeTrigger: 'class'
-        }
+        { variables: [{ key: 'primary', value: '#000000', mode: 'light' }, { key: 'primary', value: '#ffffff', mode: 'dark' }, { key: 'accent', value: '#eeeeee', mode: 'dark' }], modes: ['light', 'dark'], modeTrigger: 'class' }
     )
 
     expectLayers(
@@ -128,17 +102,7 @@ test.concurrent('colors', () => {
             general: '.bg\\:linear-gradient\\(180deg\\,primary\\,accent\\){background-image:linear-gradient(180deg,var(--primary),accent)}'
         },
         'bg:linear-gradient(180deg,primary,accent)',
-        {
-            modes: {
-                light: {
-                    primary: '#000000'
-                },
-                dark: {
-                    primary: '#ffffff'
-                }
-            },
-            modeTrigger: 'class'
-        }
+        { variables: [{ key: 'primary', value: '#000000', mode: 'light' }, { key: 'primary', value: '#ffffff', mode: 'dark' }], modes: ['light', 'dark'], modeTrigger: 'class' }
     )
 
     expectLayers(
@@ -147,21 +111,7 @@ test.concurrent('colors', () => {
             general: '.bg\\:linear-gradient\\(180deg\\,primary\\,accent\\){background-image:linear-gradient(180deg,var(--primary),var(--accent))}'
         },
         'bg:linear-gradient(180deg,primary,accent)',
-        {
-            variables: {
-                accent: '#ff0000'
-            },
-            modes: {
-                light: {
-                    primary: '#000000'
-                },
-                dark: {
-                    primary: '#ffffff',
-                    accent: '#aa0000'
-                }
-            },
-            modeTrigger: 'class'
-        }
+        { variables: [{ key: 'accent', value: '#ff0000' }, { key: 'primary', value: '#000000', mode: 'light' }, { key: 'primary', value: '#ffffff', mode: 'dark' }, { key: 'accent', value: '#aa0000', mode: 'dark' }], modes: ['light', 'dark'], modeTrigger: 'class' }
     )
 
     expectLayers(
@@ -170,48 +120,13 @@ test.concurrent('colors', () => {
             general: '.\\{block\\;fg\\:fade\\}_\\:where\\(p\\)_code\\:before :where(p) code:before{display:block;color:var(--fade)}'
         },
         '{block;fg:fade}_:where(p)_code:before',
-        {
-            modes: {
-                light: {
-                    fade: '#cccccc'
-                },
-                dark: {
-                    fade: '#333333'
-                }
-            },
-            modeTrigger: 'class'
-        }
+        { variables: [{ key: 'fade', value: '#cccccc', mode: 'light' }, { key: 'fade', value: '#333333', mode: 'dark' }], modes: ['light', 'dark'], modeTrigger: 'class' }
     )
 
     expectLayers(
-        {
-            theme: ':root{--color-primary-filled:oklch(0% 0 none)}.light{--color-primary-filled:oklch(100% 0 none)}.dark{--color-primary-filled:oklch(0% 0 none)}',
-            components: '.btn{background-color:var(--color-primary-filled)}'
-        },
+        { theme: ':root{--color-primary-filled:oklch(0% 0 none)}.light{--color-primary-filled:oklch(100% 0 none)}.dark{--color-primary-filled:oklch(0% 0 none)}', components: '.btn{background-color:var(--color-primary-filled)}' },
         'btn',
-        {
-            variables: {
-                color: {
-                    'primary-filled': '$color-black'
-                }
-            },
-            modes: {
-                light: {
-                    color: {
-                        'primary-filled': '$color-white'
-                    }
-                },
-                dark: {
-                    color: {
-                        'primary-filled': '$color-black'
-                    }
-                }
-            },
-            modeTrigger: 'class',
-            components: {
-                btn: 'bg:primary-filled'
-            }
-        }
+        { variables: [{ namespace: 'color', key: 'primary-filled', value: '$color-black' }, { namespace: 'color', key: 'primary-filled', value: '$color-white', mode: 'light' }, { namespace: 'color', key: 'primary-filled', value: '$color-black', mode: 'dark' }], modes: ['light', 'dark'], modeTrigger: 'class', components: { btn: ['bg:primary-filled'] } }
     )
 
     expectLayers(
@@ -220,29 +135,7 @@ test.concurrent('colors', () => {
             general: '.bg\\:primary-filled{background-color:var(--color-primary-filled)}'
         },
         'bg:primary-filled',
-        {
-            variables: {
-                color: {
-                    'primary-filled': '$color-black'
-                }
-            },
-            modes: {
-                light: {
-                    color: {
-                        'primary-filled': '$color-white'
-                    }
-                },
-                dark: {
-                    color: {
-                        'primary-filled': '$color-black'
-                    }
-                }
-            },
-            components: {
-                btn: 'bg:primary-filled'
-            },
-            modeTrigger: 'class'
-        }
+        { variables: [{ namespace: 'color', key: 'primary-filled', value: '$color-black' }, { namespace: 'color', key: 'primary-filled', value: '$color-white', mode: 'light' }, { namespace: 'color', key: 'primary-filled', value: '$color-black', mode: 'dark' }], modes: ['light', 'dark'], components: { btn: ['bg:primary-filled'] }, modeTrigger: 'class' }
     )
 
     expectLayers(
@@ -250,29 +143,7 @@ test.concurrent('colors', () => {
             general: '.dark .bg\\:primary-filled\\@dark{background-color:oklch(100% 0 none)}'
         },
         'bg:primary-filled@dark',
-        {
-            variables: {
-                color: {
-                    'primary-filled': '$color-white'
-                }
-            },
-            modes: {
-                light: {
-                    color: {
-                        'primary-filled': '$color-black'
-                    }
-                },
-                dark: {
-                    color: {
-                        'primary-filled': '$color-white'
-                    }
-                }
-            },
-            components: {
-                btn: 'bg:primary-filled'
-            },
-            modeTrigger: 'class'
-        }
+        { variables: [{ namespace: 'color', key: 'primary-filled', value: '$color-white' }, { namespace: 'color', key: 'primary-filled', value: '$color-black', mode: 'light' }, { namespace: 'color', key: 'primary-filled', value: '$color-white', mode: 'dark' }], modes: ['light', 'dark'], components: { btn: ['bg:primary-filled'] }, modeTrigger: 'class' }
     )
 
     expectLayers(
@@ -301,15 +172,6 @@ it.concurrent('checks if similar color names collide.', () => {
             general: '.fg\\:a-1{color:oklch(0 0 0)}'
         },
         'fg:a-1',
-        {
-            variables: {
-                a: {
-                    1: 'oklch(0 0 0)'
-                },
-                aa: {
-                    1: 'oklch(1 0 0)'
-                }
-            }
-        }
+        { variables: [{ namespace: 'a', key: '1', value: 'oklch(0 0 0)' }, { namespace: 'aa', key: '1', value: 'oklch(1 0 0)' }] }
     )
 })

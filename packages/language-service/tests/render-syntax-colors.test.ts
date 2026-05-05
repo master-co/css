@@ -1,4 +1,5 @@
 import { test, it, expect, describe } from 'vitest'
+
 import CSSLanguageService from '../src/core'
 import getRange from '../src/utils/get-range'
 import createDoc from '../src/utils/create-doc'
@@ -121,9 +122,7 @@ test.concurrent('custom variable', async () => {
     const doc = createDoc('tsx', content)
     const languageService = new CSSLanguageService({
         config: {
-            variables: {
-                custom: '#333333'
-            }
+            variables: [{ key: 'custom', value: '#333333' }]
         }
     })
     expect(await languageService.renderSyntaxColors(doc)).toStrictEqual([{
@@ -138,9 +137,7 @@ test.concurrent('custom variable/alpha', async () => {
     const doc = createDoc('tsx', content)
     const languageService = new CSSLanguageService({
         config: {
-            variables: {
-                custom: '#333333'
-            }
+            variables: [{ key: 'custom', value: '#333333' }]
         }
     })
     expect(await languageService.renderSyntaxColors(doc)).toStrictEqual([{

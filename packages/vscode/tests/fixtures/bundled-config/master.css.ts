@@ -6,6 +6,6 @@ export default {
         preset
     ],
     components: {
-        'bundle-button': 'inline-flex fg:white bg:blue'
+        'bundle-button': ['inline-flex fg:white bg:blue']
     }
 } as Config

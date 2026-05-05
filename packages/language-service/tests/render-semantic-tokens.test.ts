@@ -1,4 +1,5 @@
 import { expect, test } from 'vitest'
+
 import CSSLanguageService from '../src/core'
 import createDoc from '../src/utils/create-doc'
 import { SEMANTIC_TOKEN_MODIFIERS, SEMANTIC_TOKEN_TYPES } from '../src'
@@ -42,11 +43,9 @@ test.concurrent('renders semantic tokens for class attributes', () => {
         'tsx',
         {
             config: {
-                variables: {
-                    brand: '#123456'
-                },
+                variables: [{ key: 'brand', value: '#123456' }],
                 components: {
-                    btn: 'fg:brand block'
+                    btn: ['fg:brand', 'block']
                 }
             }
         }
@@ -68,9 +67,7 @@ test.concurrent('renders semantic tokens for class attributes', () => {
 test.concurrent('renders semantic tokens for master-css documents', () => {
     const { tokens } = renderTokens('fg:brand block', 'mcss', {
         config: {
-            variables: {
-                brand: '#123456'
-            }
+            variables: [{ key: 'brand', value: '#123456' }]
         }
     })
 

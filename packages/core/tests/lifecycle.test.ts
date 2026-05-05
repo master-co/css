@@ -21,11 +21,7 @@ test.concurrent('mb:48@preset', ({ task }) => {
 })
 
 test.concurrent('btn@sm', ({ task }) => {
-    const css = createCSS({
-        components: {
-            btn: 'block font:32'
-        }
-    })
+    const css = createCSS({ components: { btn: ['block font:32'] } })
     css.add(task.name)
     expect(css.componentsLayer.rules.length).toBe(2)
     expect(css.componentsLayer.text).toBe('@layer components{@media (width>=52.125rem){.btn\\@sm{display:block}}@media (width>=52.125rem){.btn\\@sm{font-size:2rem}}}')

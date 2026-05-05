@@ -1,6 +1,15 @@
-import { utilities } from '@master/css'
+import { rules, SyntaxRuleType } from '@master/css'
 import InlineCode from 'internal/components/InlineCode'
 import ExpandContent from '~/internal/components/ExpandContent'
+
+const utilities = Object.fromEntries(
+    rules
+        .filter((definition) => definition.type === SyntaxRuleType.Utility)
+        .map((definition) => [
+            definition.name,
+            ('declarations' in definition ? definition.declarations : {}) as Record<string, string | number>
+        ])
+)
 
 export default () =>
     <figure>
@@ -17,7 +26,6 @@ export default () =>
                         Object.keys(utilities)
                             .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }))
                             .map((eachUtilityName) => {
-                                // @ts-ignore
                                 const eachUtility = utilities[eachUtilityName]
                                 return (
                                     <tr key={eachUtilityName}>

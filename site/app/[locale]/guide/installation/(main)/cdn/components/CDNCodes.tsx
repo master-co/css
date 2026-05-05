@@ -15,9 +15,9 @@ export default () => <CodeTabs>{[
             <link rel="stylesheet" href="https://cdn.master.co/normal.css">
             <script>
                 window.masterCSSConfig = {
-                    variables: {
-                        primary: '#000000'
-                    }
+                    variables: [
+                        { key: 'primary', value: '#000000' }
+                    ]
                 }
             </script>
             <script src="https://cdn.master.co/css-runtime@rc"></script>
@@ -43,9 +43,9 @@ export default () => <CodeTabs>{[
             <script type="module">
                 import { initCSSRuntime } from 'https://cdn.master.co/css-runtime@rc/+esm'
                 initCSSRuntime({
-                    variables: {
-                        primary: '#000000'
-                    }
+                    variables: [
+                        { key: 'primary', value: '#000000' }
+                    ]
                 })
             </script>
         </head>
@@ -69,9 +69,9 @@ export default () => <CodeTabs>{[
             <script type="module">
                 import { initCSSRuntime } from 'https://esm.sh/@master/css-runtime@rc'
                 initCSSRuntime({
-                    variables: {
-                        primary: '#000000'
-                    }
+                    variables: [
+                        { key: 'primary', value: '#000000' }
+                    ]
                 })
             </script>
         </head>

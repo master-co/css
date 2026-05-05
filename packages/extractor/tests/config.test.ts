@@ -13,8 +13,8 @@ test('master.css.js config custom classname', async () => {
     fs.writeFileSync(path.join(__dirname, 'master.css.ts'), `
         export default {
             components: {
-                'blue-btn': 'bg:blue',
-                btn: 'bg:gray'
+                'blue-btn': ['bg:blue'],
+                btn: ['bg:gray']
             }
         }
     `, { flag: 'w' })

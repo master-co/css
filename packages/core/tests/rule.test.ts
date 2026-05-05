@@ -8,14 +8,11 @@ test.concurrent('uncomplete', () => {
 
 test.concurrent('declarations', () => {
     const css = createCSS({
-        modes: {
-            light: {
-                primary: '#fff'
-            },
-            dark: {
-                primary: '#000'
-            }
-        }
+        variables: [
+            { key: 'primary', value: '#fff', mode: 'light' },
+            { key: 'primary', value: '#000', mode: 'dark' }
+        ],
+        modes: ['light', 'dark']
     })
     expect(css.generate('fg:primary')[0].declarations).toEqual({ color: 'var(--primary)' })
 })

@@ -6,10 +6,10 @@ export default {
         card
     ],
     components: {
-        btn: `inline-flex text:center`
+        btn: ['inline-flex', 'text:center']
     },
-    variables: {
-        foo: 123,
-        global: '#ff00ff'
-    }
+    variables: [
+        { key: 'foo', value: 123 },
+        { key: 'global', value: '#ff00ff' }
+    ]
 } as Config

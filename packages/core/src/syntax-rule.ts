@@ -39,7 +39,7 @@ export class SyntaxRule {
         this.layer = css.generalLayer
         Object.assign(this, registeredSyntax)
         const { id, definition } = registeredSyntax
-        const { declarer, transformer, type, unit, sign } = definition
+        const { declarer, declarerOptions, transformer, transformerOptions, type, unit, sign } = definition
         this.type = type!
 
         // 1. value / selectorToken
@@ -86,7 +86,7 @@ export class SyntaxRule {
         // 5. atTokens
         for (let i = 1; i < stateTokens.length; i++) {
             const atToken = stateTokens[i]
-            if (css.config.modes?.[atToken]) {
+            if (css.modes.includes(atToken)) {
                 this.mode = atToken
                 continue
             }
@@ -136,14 +136,8 @@ export class SyntaxRule {
         let newValue: string
         if (this.valueComponents) {
             if (transformer) {
-                if (typeof transformer === 'string') {
-                    const transform = transformers[transformer]
-                    this.valueComponents = transform.call(this, this.valueComponents)
-                } else {
-                    const [name, data] = transformer
-                    const transform = transformers[name] as any
-                    this.valueComponents = transform.call(this, this.valueComponents, data)
-                }
+                const transform = transformers[transformer] as any
+                this.valueComponents = transform.call(this, this.valueComponents, transformerOptions)
             }
             newValue = this.resolveValue(this.valueComponents, unit, [], false)
             if (definition.declarations) {
@@ -164,14 +158,8 @@ export class SyntaxRule {
                 }
                 this.declarations = declarations
             } else if (declarer) {
-                if (typeof declarer === 'string') {
-                    const declare = declarers[declarer] as any
-                    this.declarations = declare.call(this, newValue, this.valueComponents)
-                } else {
-                    const [name, data] = declarer
-                    const declare = declarers[name] as any
-                    this.declarations = declare.call(this, newValue, this.valueComponents, data)
-                }
+                const declare = declarers[declarer] as any
+                this.declarations = declare.call(this, newValue, this.valueComponents, declarerOptions)
             } else if (id) {
                 this.declarations = {
                     [id]: newValue
@@ -254,14 +242,8 @@ export class SyntaxRule {
                     if (fnTransformer && !eachValueComponent.bypassTransform) {
                         const resolvedValue = this.resolveValue(eachValueComponent.children, functionDefinition.unit ?? unit, bypassVariableNames, bypassParsing || eachValueComponent.name === 'calc')
                         let result: any
-                        if (typeof fnTransformer === 'string') {
-                            const fnTransform = functionTransformers[fnTransformer] as any
-                            result = fnTransform.call(this, resolvedValue, bypassVariableNames)
-                        } else {
-                            const [name, data] = fnTransformer
-                            const fnTransform = functionTransformers[name] as any
-                            result = fnTransform.call(this, resolvedValue, bypassVariableNames, data)
-                        }
+                        const fnTransform = functionTransformers[fnTransformer] as any
+                        result = fnTransform.call(this, resolvedValue, bypassVariableNames, functionDefinition.transformerOptions)
                         currentValue += eachValueComponent.token = eachValueComponent.text = typeof result === 'string'
                             ? result
                             : this.resolveValue(result, functionDefinition?.unit ?? unit, bypassVariableNames, bypassParsing)

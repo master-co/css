@@ -11,37 +11,17 @@ import { expectLayers } from '../../test'
  * 3. --primary: 0deg 0% 0%/.5
  */
 test.concurrent('hsl()', () => {
-    expect(createCSS({
-        variables: { primary: 'hsl(0deg 0% 0%/0.5)' }, modeTrigger: 'class'
-    }).create('fg:primary')?.text
+    expect(createCSS({ variables: [{ key: 'primary', value: 'hsl(0deg 0% 0%/0.5)' }], modeTrigger: 'class' }).create('fg:primary')?.text
     ).toBe('.fg\\:primary{color:hsl(0deg 0% 0%/0.5)}')
 })
 
 test.concurrent('color/opacity to hsl(h s l/opacity / opacity) invalid rule', () => {
-    expect(createCSS({
-        variables: { primary: 'hsl(0deg 0% 0%/.5)' }
-    }).create('fg:primary/.5')?.text
+    expect(createCSS({ variables: [{ key: 'primary', value: 'hsl(0deg 0% 0%/.5)' }] }).create('fg:primary/.5')?.text
     ).toBe('.fg\\:primary\\/\\.5{color:hsl(0deg 0% 0%/0.25)}')
 })
 
 describe.concurrent('with themes', () => {
-    const config: Config = {
-        variables: {
-            primary: 'hsl(0deg 0% 0%)'
-        },
-        modes: {
-            light: {
-                primary: 'hsl(0deg 0% 58.82%)'
-            },
-            dark: {
-                primary: 'hsl(0deg 0% 100%)'
-            },
-            chrisma: {
-                primary: 'hsl(0deg 0% 0%/.5)'
-            }
-        },
-        modeTrigger: 'class'
-    }
+    const config: Config = { variables: [{ key: 'primary', value: 'hsl(0deg 0% 0%)' }, { key: 'primary', value: 'hsl(0deg 0% 58.82%)', mode: 'light' }, { key: 'primary', value: 'hsl(0deg 0% 100%)', mode: 'dark' }, { key: 'primary', value: 'hsl(0deg 0% 0%/.5)', mode: 'chrisma' }], modes: ['light', 'dark', 'chrisma'], modeTrigger: 'class' }
 
     it.concurrent('checks resolved colors', () => {
         const css = createCSS(config)
@@ -52,9 +32,9 @@ describe.concurrent('with themes', () => {
             space: 'hsl',
             value: '0deg 0% 0%',
             modes: {
-                'dark': { space: 'hsl', value: '0deg 0% 100%' },
-                'light': { space: 'hsl', value: '0deg 0% 58.82%' },
-                'chrisma': { space: 'hsl', value: '0deg 0% 0%', alpha: 0.5 }
+                dark: { space: 'hsl', value: '0deg 0% 100%' },
+                light: { space: 'hsl', value: '0deg 0% 58.82%' },
+                chrisma: { space: 'hsl', value: '0deg 0% 0%', alpha: 0.5 },
             }
         })
     })

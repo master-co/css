@@ -1,6 +1,10 @@
 import { variables } from '@master/css'
 
 export default () => {
+    const spacingEntries = variables
+        .filter(({ namespace, mode }) => namespace === 'spacing' && !mode)
+        .map(({ key, value }) => [key, Number(value)] as const)
+
     return (
         <figure>
             <div className='doc-table'>
@@ -15,7 +19,7 @@ export default () => {
                     </thead>
                     <tbody>
                         {
-                            Object.entries(variables.spacing)
+                            spacingEntries
                                 .map(([key, value], index) => (
                                     <tr key={index}>
                                         <th>{key}</th>

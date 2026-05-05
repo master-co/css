@@ -1,6 +1,6 @@
-import { SelectorDefinitions } from '../types/config'
+import type { SelectorAliasDefinitions } from '../types/config'
 
-const selectors = {
+const selectorAliases = {
     ':first': ':first-child',
     ':last': ':last-child',
     ':nth-last': ':nth-last-child',
@@ -25,6 +25,6 @@ const selectors = {
     '::vt-image-pair': '::view-transition-image-pair',
     '::vt-old': '::view-transition-old',
     '::vt-new': '::view-transition-new',
-} satisfies SelectorDefinitions
+} satisfies SelectorAliasDefinitions
 
-export default selectors
+export default selectorAliases

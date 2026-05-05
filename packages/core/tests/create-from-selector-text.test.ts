@@ -34,35 +34,18 @@ test.concurrent(':within and mode and scope', () => {
 })
 
 test.concurrent('component conflicts with the mode', () => {
-    expect(createCSS({
-        components: {
-            'light': 'block font:bold'
-        }
-    }).createFromSelectorText('.light .light\@light')?.[0]).toMatchObject({ name: 'block', fixedClass: 'light' })
-    expect(createCSS({
-        components: {
-            'light': 'block font:bold'
-        }
-    }).createFromSelectorText('.light .light\@light')?.[1]).toMatchObject({ name: 'font:bold', fixedClass: 'light' })
+    expect(createCSS({ components: { 'light': ['block font:bold'] } }).createFromSelectorText('.light .light\@light')?.[0]).toMatchObject({ name: 'block', fixedClass: 'light' })
+    expect(createCSS({ components: { 'light': ['block font:bold'] } }).createFromSelectorText('.light .light\@light')?.[1]).toMatchObject({ name: 'font:bold', fixedClass: 'light' })
 })
 
 test.concurrent('component and mode', () => {
-    expect(createCSS({
-        components: {
-            'btn': 'block'
-        }
-    }).createFromSelectorText('.light .btn')?.[0]).toMatchObject({ name: 'block', fixedClass: 'btn' })
+    expect(createCSS({ components: { 'btn': ['block'] } }).createFromSelectorText('.light .btn')?.[0]).toMatchObject({ name: 'block', fixedClass: 'btn' })
 })
 
 describe('group selector', () => {
-    const config = {
-        selectors: {
+    const config = { selectorAliases: {
             '::both': '::before,::after',
-        },
-        components: {
-            btn: 'block::both'
-        }
-    }
+        }, components: { btn: ['block::both'] } }
     test.concurrent('general', () => {
         expect(createCSS(config).createFromSelectorText('.block\\:\\:both::before, .block\\:\\:both::after')?.[0]).toMatchObject({ name: 'block::both' })
     })

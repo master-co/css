@@ -35,7 +35,6 @@ import HeaderContent from 'internal/components/HeaderContent'
 import createHighlighter, { themes } from 'internal/utils/create-highlighter'
 import { useApp } from 'internal/contexts/app'
 import { shikiToMonaco } from '@shikijs/monaco'
-import type { ShikiInternal } from 'shiki'
 
 if (typeof window !== 'undefined') {
     loader.config({
@@ -49,6 +48,8 @@ const ShareButton = dynamic(() => import('./components/ShareButton'))
 
 // import { Registry } from 'monaco-textmate'
 // import { wireTmGrammars } from 'monaco-editor-textmate'
+
+const monoFallbackFont = variables.find(({ namespace, key }) => namespace === 'font-family' && key === 'mono-fallback')?.value
 
 const editorOptions: editor.IStandaloneEditorConstructionOptions = {
     readOnly: false,
@@ -64,7 +65,7 @@ const editorOptions: editor.IStandaloneEditorConstructionOptions = {
     overviewRulerLanes: 0,
     lineHeight: 22,
     fontSize: 13,
-    fontFamily: variables['font-family']['mono-fallback']
+    fontFamily: typeof monoFallbackFont === 'string' ? monoFallbackFont : 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace'
 }
 
 const editorHTMLOptions: any = {
@@ -99,7 +100,7 @@ export default function Play(props: any) {
     const shareItem: PlayShare = useMemo(() => props.shareItem || template, [props.shareItem, template])
     const tab = useMemo(() => searchParams?.get('tab') || shareItem.files[0].title, [searchParams, shareItem.files])
     const getTheme = useCallback(() => themeMode.value === 'dark' ? themes.dark : themes.light, [themeMode.value])
-    const [highlighter, setHighlighter] = useState<ShikiInternal<any, any>>()
+    const [highlighter, setHighlighter] = useState<Awaited<ReturnType<typeof createHighlighter>>>()
 
     const getSearchPath = useCallback((name?: string, value?: any) => {
         const urlSearchParams = new URLSearchParams(searchParams?.toString())

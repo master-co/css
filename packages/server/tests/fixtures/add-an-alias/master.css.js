@@ -1,5 +1,5 @@
 export default {
-    variables: {
-        secondary: '$color-white' /* secondary */ /* [!code highlight] */
-    }
+    variables: [
+        { key: 'secondary', value: '$color-white' /* secondary */ } /* [!code highlight] */
+    ]
 }

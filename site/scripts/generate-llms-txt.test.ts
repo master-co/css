@@ -10,7 +10,7 @@ import {
     renderLlmsIndex,
     renderLlmsFull,
     type Page
-} from './generate-llms-txt.ts'
+} from './generate-llms-txt'
 
 const fixture: Page[] = [
     {

@@ -1,11 +1,7 @@
 import { it, test, expect } from 'vitest'
 import { createCSS } from '../../src'
 
-const config = {
-    variables: {
-        spacing: { x1: 16 }
-    }
-}
+const config = { variables: [{ namespace: 'spacing', key: 'x1', value: 16 }] }
 
 test.concurrent('spacing', () => {
     expect(createCSS(config).create('m:x1')?.text).toContain('margin:1rem')

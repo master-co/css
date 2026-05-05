@@ -6,25 +6,20 @@ const config = {
         config1,
         config2,
     ],
-    variables: {
-        fourth: '$first',
-        first: 'oklch(0.18 0 0)'
-    },
-    modes: {
-        light: {
-            first: 'oklch(0,0,0)',
-            second: 'oklch(0 0 0/.5)',
-        },
-        dark: {
-            first: '#222222',
-            second: '#999999',
-            third: '$color-white',
-            'third-2': '$color-white'
-        }
-    },
+    variables: [
+        { key: 'fourth', value: '$first' },
+        { key: 'first', value: 'oklch(0.18 0 0)' },
+        { key: 'first', value: 'oklch(0,0,0)', mode: 'light' },
+        { key: 'second', value: 'oklch(0 0 0/.5)', mode: 'light' },
+        { key: 'first', value: '#222222', mode: 'dark' },
+        { key: 'second', value: '#999999', mode: 'dark' },
+        { key: 'third', value: '$color-white', mode: 'dark' },
+        { key: 'third-2', value: '$color-white', mode: 'dark' },
+    ],
+    modes: ['light', 'dark'],
     components: {
-        btn: 'font:14 h:40 text:center',
-        'blue-btn': 'btn bg:blue'
+        btn: ['font:14 h:40 text:center'],
+        'blue-btn': ['btn bg:blue']
     }
 }
 

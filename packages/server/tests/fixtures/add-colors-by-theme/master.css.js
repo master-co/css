@@ -1,19 +1,8 @@
 export default {
-    variables: {
-        color: {
-            primary: '#ff0000'
-        }
-    },
-    modes: {
-        light: {
-            color: {
-                primary: '#000000' /* [!code highlight] */
-            }
-        },
-        dark: {
-            color: {
-                primary: '#ffffff' /* [!code highlight] */
-            }
-        }
-    }
+    variables: [
+        { namespace: 'color', key: 'primary', value: '#ff0000' },
+        { namespace: 'color', key: 'primary', value: '#000000', mode: 'light' } /* [!code highlight] */,
+        { namespace: 'color', key: 'primary', value: '#ffffff', mode: 'dark' } /* [!code highlight] */
+    ],
+    modes: ['light', 'dark']
 }

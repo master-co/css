@@ -1,93 +1,58 @@
+
+
 export default {
     components: {
-        btn: 'font:14 h:40 text:center bg:primary@light fg:white@light font:medium@light bg:white@dark fg:primary@dark font:medium@dark',
-        blue: {
-            btn: {
-                '': 'btn f:20@light'
-            }
-        }
+        btn: ['font:14 h:40 text:center bg:primary fg:white font:medium']
     },
     modeTrigger: 'class',
-    modes: {
-        light: {
-            color: {
-                primary: '$(color-black)',
-                'primary-text': '$(color-white)',
-                'primary-active': '$(color-gray)',
-                'primary-stage-1': '$(color-black)',
-                accent: '$(color-black)',
-                major: '$(color-black)',
-                content: '$(color-black)',
-                fade: '$(color-black)',
-                'fade-light': '$color-fade',
-            }
-        },
-        dark: {
-            color: {
-                primary: '$(color-white)',
-                'primary-text': '$(color-black)',
-                'primary-active': '$(color-white)',
-                'primary-code': '$(color-white)',
-                'primary-stage-1': '$(color-white)',
-                accent: '$(color-white)',
-                major: '$(color-white)',
-                content: '$(color-white)',
-                fade: '$(color-white)',
-            }
-        },
-    },
-    variables: {
-        'font-size': {
-            sm: 16,
-            md: 20
-        },
-        'letter-spacing': {
-            wide: .4
-        },
-        border: {
-            'inputborder': '2|solid|color-black'
-        },
-        'box-shadow': {
-            x2: '0 25px 50px -12px rgb(0 0 0 / 25%)'
-        },
-        inset: {
-            sm: 10,
-            md: 20
-        },
-        color: {
-            primary: {
-                '': '$(color-black)',
-                code: '$(color-black)',
-                stage: {
-                    1: '$(color-white)'
-                },
-                alpha: '$(color-white)/.1',
-                rgb1: 'rgb(0, 0, 0)',
-                rgb2: 'oklch(0% 0 none)',
-                rgb3: 'rgb(0 0 0/.5)',
-                '2': '$color-primary-rgb3/.7'
-            },
-            input: '#123456',
-            code: '$(color-accent)',
-        }
-    },
-    utilities: {
-        show: {
-            display: 'block'
-        },
-        'hide-text': {
-            'font-size': '0px'
-        },
-        zero: {
-            'font-size': '0px',
-            height: '0px'
-        }
-    },
-    selectors: {
-        'custom': 'div>:first+button',
+    modes: ['light', 'dark'],
+    variables: [
+        { namespace: 'font-size', key: 'sm', value: 16 },
+        { namespace: 'font-size', key: 'md', value: 20 },
+        { namespace: 'letter-spacing', key: 'wide', value: .4 },
+        { namespace: 'border', key: 'inputborder', value: '2|solid|color-black' },
+        { namespace: 'box-shadow', key: 'x2', value: '0 25px 50px -12px rgb(0 0 0 / 25%)' },
+        { namespace: 'inset', key: 'sm', value: 10 },
+        { namespace: 'inset', key: 'md', value: 20 },
+        { namespace: 'color', key: 'primary', value: '$(color-black)' },
+        { namespace: 'color.primary', key: 'code', value: '$(color-black)' },
+        { namespace: 'color.primary.stage', key: '1', value: '$(color-white)' },
+        { namespace: 'color.primary', key: 'alpha', value: '$(color-white)/.1' },
+        { namespace: 'color.primary', key: 'rgb1', value: 'rgb(0, 0, 0)' },
+        { namespace: 'color.primary', key: 'rgb2', value: 'oklch(0% 0 none)' },
+        { namespace: 'color.primary', key: 'rgb3', value: 'rgb(0 0 0/.5)' },
+        { namespace: 'color.primary', key: '2', value: '$color-primary-rgb3/.7' },
+        { namespace: 'color', key: 'input', value: '#123456' },
+        { namespace: 'color', key: 'code', value: '$(color-accent)' },
+        { namespace: 'color', key: 'primary', value: '$(color-black)', mode: 'light' },
+        { namespace: 'color', key: 'primary-text', value: '$(color-white)', mode: 'light' },
+        { namespace: 'color', key: 'primary-active', value: '$(color-gray)', mode: 'light' },
+        { namespace: 'color', key: 'primary-stage-1', value: '$(color-black)', mode: 'light' },
+        { namespace: 'color', key: 'accent', value: '$(color-black)', mode: 'light' },
+        { namespace: 'color', key: 'major', value: '$(color-black)', mode: 'light' },
+        { namespace: 'color', key: 'content', value: '$(color-black)', mode: 'light' },
+        { namespace: 'color', key: 'fade', value: '$(color-black)', mode: 'light' },
+        { namespace: 'color', key: 'fade-light', value: '$color-fade', mode: 'light' },
+        { namespace: 'color', key: 'primary', value: '$(color-white)', mode: 'dark' },
+        { namespace: 'color', key: 'primary-text', value: '$(color-black)', mode: 'dark' },
+        { namespace: 'color', key: 'primary-active', value: '$(color-white)', mode: 'dark' },
+        { namespace: 'color', key: 'primary-code', value: '$(color-white)', mode: 'dark' },
+        { namespace: 'color', key: 'primary-stage-1', value: '$(color-white)', mode: 'dark' },
+        { namespace: 'color', key: 'accent', value: '$(color-white)', mode: 'dark' },
+        { namespace: 'color', key: 'major', value: '$(color-white)', mode: 'dark' },
+        { namespace: 'color', key: 'content', value: '$(color-white)', mode: 'dark' },
+        { namespace: 'color', key: 'fade', value: '$(color-white)', mode: 'dark' }
+    ],
+    rules: [
+        { name: 'show', type: -4, declarations: { display: 'block' } },
+        { name: 'hide-text', type: -4, declarations: { 'font-size': '0px' } },
+        { name: 'zero', type: -4, declarations: { 'font-size': '0px', height: '0px' } }
+    ],
+    selectorAliases: {
+        custom: 'div>:first+button',
         'custom-1': 'div'
     },
-    at: {
+    atRuleAliases: {
         tablet: 768,
         laptop: 1024,
         desktop: 1280,

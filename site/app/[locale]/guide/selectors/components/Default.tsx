@@ -1,4 +1,4 @@
-import { selectors } from '@master/css'
+import { selectorAliases } from '@master/css'
 import InlineCode from 'internal/components/InlineCode'
 
 export default () =>
@@ -12,10 +12,10 @@ export default () =>
             </thead>
             <tbody>
                 {
-                    Object.keys(selectors)
+                    Object.keys(selectorAliases)
                         .map((eachSelectorName) => {
                             // @ts-ignore
-                            const eachSelector = selectors[eachSelectorName]
+                            const eachSelector = selectorAliases[eachSelectorName]
                             return (
                                 <tr key={eachSelectorName}>
                                     <th>

@@ -26,15 +26,16 @@ export default function defineVisitors({ context, settings }: { context: RuleCon
     }
     const visitComponentDefinition = (node) => {
         if (!node) return
+        if (node.type === 'ArrayExpression') {
+            node.elements.forEach((element) => {
+                if (!element || element.type === 'ObjectExpression') return
+                visitClassNode(element)
+            })
+            return
+        }
         if (node.type !== 'ObjectExpression') {
             visitClassNode(node)
             return
-        }
-        for (const prop of node.properties) {
-            if (prop.type !== 'Property' || prop.shorthand) continue
-            if (getPropertyName(prop) === 'classNames') {
-                visitClassNode(prop.value)
-            }
         }
     }
     const visitClassDeclarationNode = (name, node) => {

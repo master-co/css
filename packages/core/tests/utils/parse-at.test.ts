@@ -131,13 +131,11 @@ export const cases = {
                     }
                 ]
             },
-            {
-                at: {
+            { atRuleAliases: {
                     supports: {
                         backdrop: 'supports(backdrop-filter:blur(0px))'
                     }
-                }
-            }
+                } }
         ],
         ['custom', '@media (width>=42mm) and (width<=80mm)',
             {
@@ -153,11 +151,9 @@ export const cases = {
                     }
                 ]
             },
-            {
-                at: {
+            { atRuleAliases: {
                     custom: '>=42mm&<=80mm'
-                }
-            }],
+                } }],
         ['custom', '@media (width>=37.5rem)',
             {
                 id: 'media',
@@ -172,11 +168,9 @@ export const cases = {
                     }
                 ]
             },
-            {
-                at: {
+            { atRuleAliases: {
                     custom: '@media(width>=600)'
-                }
-            }],
+                } }],
 
         ['desktop', '@media (width>=40rem)',
             {
@@ -192,11 +186,7 @@ export const cases = {
                     }
                 ]
             },
-            {
-                screens: {
-                    desktop: 640
-                }
-            }]
+            { variables: [{ namespace: 'screen', key: 'desktop', value: 640 }] }]
     ],
     errors: [
         ['@media', '@media', {

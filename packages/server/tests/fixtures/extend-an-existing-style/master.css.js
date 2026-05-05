@@ -1,6 +1,6 @@
 export default {
     components: {
-        a: 'fg:black',
-        b: 'text:underline a' /* [!code highlight] */
+        a: ['fg:black'],
+        b: ['text:underline', 'fg:black'] /* [!code highlight] */
     }
 }

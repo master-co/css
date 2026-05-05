@@ -24,7 +24,10 @@ export interface DefinedRule {
 
 export interface ComponentEntry {
     classNames: string[]
-    declarations?: PropertiesHyphen
+    selectorRules: {
+        selector: string
+        declarations: PropertiesHyphen
+    }[]
 }
 
 export type GeneratedRule = import('../syntax-rule').SyntaxRule | import('../component-rule').default

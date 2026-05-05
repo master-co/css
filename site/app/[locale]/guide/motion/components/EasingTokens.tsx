@@ -13,7 +13,9 @@ const easingUsage: Record<string, string> = {
 }
 
 export default () => {
-    const easingEntries = Object.entries(variables.easing)
+    const easingEntries = variables
+        .filter(({ namespace, mode }) => namespace === 'easing' && !mode)
+        .map(({ key, value }) => [key, String(value)] as const)
 
     return (
         <figure>

@@ -1,42 +1,750 @@
 import SyntaxRuleType from '../syntax-rule-type'
 import { BORDER_STYLE_VALUES } from '../common'
-import { SyntaxRuleDefinition } from '../types/config'
+import type { SyntaxRuleDefinitions } from '../types/config'
 
-const rules = {
-    'font-size': {
+const rules = [
+    {
+        name: 'container',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'container-type': 'inline-size' }
+    },
+    {
+        name: 'square',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'aspect-ratio': '1/1' }
+    },
+    {
+        name: 'video',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'aspect-ratio': '16/9' }
+    },
+    {
+        name: 'rounded',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'border-radius': '1e9em' }
+    },
+    {
+        name: 'round',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'border-radius': '50%', 'aspect-ratio': '1/1' }
+    },
+    {
+        name: 'hidden',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'display': 'none' }
+    },
+    {
+        name: 'block',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'display': 'block' }
+    },
+    {
+        name: 'table',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'display': 'table' }
+    },
+    {
+        name: 'flex',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'display': 'flex' }
+    },
+    {
+        name: 'grid',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'display': 'grid' }
+    },
+    {
+        name: 'contents',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'display': 'contents' }
+    },
+    {
+        name: 'inline',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'display': 'inline' }
+    },
+    {
+        name: 'inline-block',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'display': 'inline-block' }
+    },
+    {
+        name: 'inline-flex',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'display': 'inline-flex' }
+    },
+    {
+        name: 'inline-grid',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'display': 'inline-grid' }
+    },
+    {
+        name: 'inline-table',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'display': 'inline-table' }
+    },
+    {
+        name: 'table-cell',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'display': 'table-cell' }
+    },
+    {
+        name: 'table-caption',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'display': 'table-caption' }
+    },
+    {
+        name: 'flow-root',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'display': 'flow-root' }
+    },
+    {
+        name: 'list-item',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'display': 'list-item' }
+    },
+    {
+        name: 'table-row',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'display': 'table-row' }
+    },
+    {
+        name: 'table-column',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'display': 'table-column' }
+    },
+    {
+        name: 'table-row-group',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'display': 'table-row-group' }
+    },
+    {
+        name: 'table-column-group',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'display': 'table-column-group' }
+    },
+    {
+        name: 'table-header-group',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'display': 'table-header-group' }
+    },
+    {
+        name: 'table-footer-group',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'display': 'table-footer-group' }
+    },
+    {
+        name: 'italic',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'font-style': 'italic' }
+    },
+    {
+        name: 'oblique',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'font-style': 'oblique' }
+    },
+    {
+        name: 'isolate',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'isolation': 'isolate' }
+    },
+    {
+        name: 'overflow',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'overflow': 'visible' }
+    },
+    {
+        name: 'untouchable',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'pointer-events': 'none' }
+    },
+    {
+        name: 'static',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'position': 'static' }
+    },
+    {
+        name: 'fixed',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'position': 'fixed' }
+    },
+    {
+        name: 'abs',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'position': 'absolute' }
+    },
+    {
+        name: 'rel',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'position': 'relative' }
+    },
+    {
+        name: 'sticky',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'position': 'sticky' }
+    },
+    {
+        name: 'uppercase',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'text-transform': 'uppercase' }
+    },
+    {
+        name: 'lowercase',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'text-transform': 'lowercase' }
+    },
+    {
+        name: 'capitalize',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'text-transform': 'capitalize' }
+    },
+    {
+        name: 'visible',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'visibility': 'visible' }
+    },
+    {
+        name: 'invisible',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'visibility': 'hidden' }
+    },
+    {
+        name: 'justify-normal',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'justify-content': 'normal' }
+    },
+    {
+        name: 'justify-left',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'justify-content': 'left' }
+    },
+    {
+        name: 'justify-center',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'justify-content': 'center' }
+    },
+    {
+        name: 'justify-right',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'justify-content': 'right' }
+    },
+    {
+        name: 'justify-stretch',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'justify-content': 'stretch' }
+    },
+    {
+        name: 'justify-start',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'justify-content': 'start' }
+    },
+    {
+        name: 'justify-end',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'justify-content': 'end' }
+    },
+    {
+        name: 'justify-flex-start',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'justify-content': 'flex-start' }
+    },
+    {
+        name: 'justify-flex-end',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'justify-content': 'flex-end' }
+    },
+    {
+        name: 'justify-around',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'justify-content': 'space-around' }
+    },
+    {
+        name: 'justify-between',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'justify-content': 'space-between' }
+    },
+    {
+        name: 'justify-evenly',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'justify-content': 'space-evenly' }
+    },
+    {
+        name: 'content-normal',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'align-content': 'normal' }
+    },
+    {
+        name: 'content-baseline',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'align-content': 'baseline' }
+    },
+    {
+        name: 'content-center',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'align-content': 'center' }
+    },
+    {
+        name: 'content-stretch',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'align-content': 'stretch' }
+    },
+    {
+        name: 'content-start',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'align-content': 'start' }
+    },
+    {
+        name: 'content-end',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'align-content': 'end' }
+    },
+    {
+        name: 'content-flex-start',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'align-content': 'flex-start' }
+    },
+    {
+        name: 'content-flex-end',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'align-content': 'flex-end' }
+    },
+    {
+        name: 'content-around',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'align-content': 'space-around' }
+    },
+    {
+        name: 'content-between',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'align-content': 'space-between' }
+    },
+    {
+        name: 'content-evenly',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'align-content': 'space-evenly' }
+    },
+    {
+        name: 'items-normal',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'align-items': 'normal' }
+    },
+    {
+        name: 'items-baseline',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'align-items': 'baseline' }
+    },
+    {
+        name: 'items-center',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'align-items': 'center' }
+    },
+    {
+        name: 'items-stretch',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'align-items': 'stretch' }
+    },
+    {
+        name: 'items-start',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'align-items': 'start' }
+    },
+    {
+        name: 'items-end',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'align-items': 'end' }
+    },
+    {
+        name: 'items-flex-start',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'align-items': 'flex-start' }
+    },
+    {
+        name: 'items-flex-end',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'align-items': 'flex-end' }
+    },
+    {
+        name: 'items-self-start',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'align-items': 'self-start' }
+    },
+    {
+        name: 'items-self-end',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'align-items': 'self-end' }
+    },
+    {
+        name: 'self-auto',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'align-self': 'auto' }
+    },
+    {
+        name: 'self-normal',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'align-self': 'normal' }
+    },
+    {
+        name: 'self-baseline',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'align-self': 'baseline' }
+    },
+    {
+        name: 'self-center',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'align-self': 'center' }
+    },
+    {
+        name: 'self-stretch',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'align-self': 'stretch' }
+    },
+    {
+        name: 'self-start',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'align-self': 'start' }
+    },
+    {
+        name: 'self-end',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'align-self': 'end' }
+    },
+    {
+        name: 'self-flex-start',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'align-self': 'flex-start' }
+    },
+    {
+        name: 'self-flex-end',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'align-self': 'flex-end' }
+    },
+    {
+        name: 'self-self-start',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'align-self': 'self-start' }
+    },
+    {
+        name: 'self-self-end',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'align-self': 'self-end' }
+    },
+    {
+        name: 'self-anchor-center',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'align-self': 'anchor-center' }
+    },
+    {
+        name: 'vw',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'width': '100vw' }
+    },
+    {
+        name: 'vh',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'height': '100vh' }
+    },
+    {
+        name: 'box-border',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'box-sizing': 'border-box' }
+    },
+    {
+        name: 'box-content',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'box-sizing': 'content-box' }
+    },
+    {
+        name: 'transform-content',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'transform-box': 'content-box' }
+    },
+    {
+        name: 'transform-border',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'transform-box': 'border-box' }
+    },
+    {
+        name: 'transform-fill',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'transform-box': 'fill-box' }
+    },
+    {
+        name: 'transform-stroke',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'transform-box': 'stroke-box' }
+    },
+    {
+        name: 'transform-view',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'transform-box': 'view-box' }
+    },
+    {
+        name: 'bg-clip-content',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'background-clip': 'content-box' }
+    },
+    {
+        name: 'bg-clip-padding',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'background-clip': 'padding-box' }
+    },
+    {
+        name: 'bg-clip-border',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'background-clip': 'border-box' }
+    },
+    {
+        name: 'bg-clip-text',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'background-clip': 'text' }
+    },
+    {
+        name: 'bg-origin-content',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'background-origin': 'content-box' }
+    },
+    {
+        name: 'bg-origin-padding',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'background-origin': 'padding-box' }
+    },
+    {
+        name: 'bg-origin-border',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'background-origin': 'border-box' }
+    },
+    {
+        name: 'shape-none',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'shape-outside': 'none' }
+    },
+    {
+        name: 'shape-margin',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'shape-outside': 'margin-box' }
+    },
+    {
+        name: 'shape-content',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'shape-outside': 'content-box' }
+    },
+    {
+        name: 'shape-border',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'shape-outside': 'border-box' }
+    },
+    {
+        name: 'shape-padding',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'shape-outside': 'padding-box' }
+    },
+    {
+        name: 'clip-none',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'clip-path': 'none' }
+    },
+    {
+        name: 'clip-margin',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'clip-path': 'margin-box' }
+    },
+    {
+        name: 'clip-content',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'clip-path': 'content-box' }
+    },
+    {
+        name: 'clip-border',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'clip-path': 'border-box' }
+    },
+    {
+        name: 'clip-padding',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'clip-path': 'padding-box' }
+    },
+    {
+        name: 'clip-fill',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'clip-path': 'fill-box' }
+    },
+    {
+        name: 'clip-stroke',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'clip-path': 'stroke-box' }
+    },
+    {
+        name: 'clip-view',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'clip-path': 'view-box' }
+    },
+    {
+        name: 'flex-row',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'flex-direction': 'row' }
+    },
+    {
+        name: 'flex-row-reverse',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'flex-direction': 'row-reverse' }
+    },
+    {
+        name: 'flex-col',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'flex-direction': 'column' }
+    },
+    {
+        name: 'flex-col-reverse',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'flex-direction': 'column-reverse' }
+    },
+    {
+        name: 'max-vw',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'max-width': '100vw' }
+    },
+    {
+        name: 'max-vh',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'max-height': '100vh' }
+    },
+    {
+        name: 'min-vw',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'min-width': '100vw' }
+    },
+    {
+        name: 'min-vh',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'min-height': '100vh' }
+    },
+    {
+        name: 'full',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'width': '100%', 'height': '100%' }
+    },
+    {
+        name: 'top',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'top': 0 }
+    },
+    {
+        name: 'left',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'left': 0 }
+    },
+    {
+        name: 'right',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'right': 0 }
+    },
+    {
+        name: 'bottom',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'bottom': 0 }
+    },
+    {
+        name: 'center',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'left': 0, 'right': 0, 'margin-left': 'auto', 'margin-right': 'auto' }
+    },
+    {
+        name: 'middle',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'top': 0, 'bottom': 0, 'margin-top': 'auto', 'margin-bottom': 'auto' }
+    },
+    {
+        name: 'break-spaces',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'white-space': 'break-spaces' }
+    },
+    {
+        name: 'break-word',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'word-break': 'break-word' }
+    },
+    {
+        name: 'wrap-break-word',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'overflow-wrap': 'break-word' }
+    },
+    {
+        name: 'wrap-anywhere',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'overflow-wrap': 'anywhere' }
+    },
+    {
+        name: 'wrap-normal',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'overflow-wrap': 'normal' }
+    },
+    {
+        name: 'gradient-text',
+        type: SyntaxRuleType.Utility,
+        declarations: { '-webkit-text-fill-color': 'transparent', 'background-clip': 'text' }
+    },
+    {
+        name: 'fit',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'width': 'fit-content', 'height': 'fit-content' }
+    },
+    {
+        name: 'font-antialiased',
+        type: SyntaxRuleType.Utility,
+        declarations: { '-webkit-font-smoothing': 'antialiased', '-moz-osx-font-smoothing': 'grayscale' }
+    },
+    {
+        name: 'font-subpixel-antialiased',
+        type: SyntaxRuleType.Utility,
+        declarations: { '-webkit-font-smoothing': 'auto', '-moz-osx-font-smoothing': 'auto' }
+    },
+    {
+        name: 'sr-only',
+        type: SyntaxRuleType.Utility,
+        declarations: { 'position': 'absolute', 'width': '1px', 'height': '1px', 'padding': '0', 'margin': '-1px', 'overflow': 'hidden', 'clip': 'rect(0,0,0,0)', 'white-space': 'nowrap', 'border-width': '0' }
+    },
+    {
+        name: 'font-size',
         aliasGroups: ['font', 'f'],
         kind: 'number',
         unit: 'rem',
         type: SyntaxRuleType.Native
     },
-    'font-weight': {
+    {
+        name: 'font-weight',
         aliasGroups: ['font', 'f'],
         values: ['bolder'],
         type: SyntaxRuleType.Native
     },
-    'font-family': {
+    {
+        name: 'font-family',
         aliasGroups: ['font', 'f'],
         type: SyntaxRuleType.Native
     },
-    'font-smooth': {
+    {
+        name: 'font-smooth',
         type: SyntaxRuleType.Native
     },
-    'font-style': {
+    {
+        name: 'font-style',
         aliasGroups: ['font', 'f'],
         values: ['normal', 'italic', 'oblique'],
         type: SyntaxRuleType.Native,
         unit: 'deg'
     },
-    'font-variant-numeric': {
+    {
+        name: 'font-variant-numeric',
         aliasGroups: ['font', 'f'],
         values: ['ordinal', 'slashed-zero', 'lining-nums', 'oldstyle-nums', 'proportional-nums', 'tabular-nums', 'diagonal-fractions', 'stacked-fractions'],
         type: SyntaxRuleType.Native
     },
-    'font-variant': {
+    {
+        name: 'font-variant',
         aliasGroups: ['font', 'f'],
         type: SyntaxRuleType.NativeShorthand,
     },
-    font: {
+    {
+        name: 'font',
         subkey: 'f',
         type: SyntaxRuleType.NativeShorthand,
         namespaces: [
@@ -48,41 +756,47 @@ const rules = {
             // 'line-height' is not included because it conflicts with the 'font-size'
         ]
     },
-    'font-feature-settings': {
+    {
+        name: 'font-feature-settings',
         key: 'font-feature',
         type: SyntaxRuleType.Native
     },
-    color: {
+    {
+        name: 'color',
         key: 'fg',
         type: SyntaxRuleType.Native,
         namespaces: ['color.text']
     },
-    // margin
-    'margin-left': {
+    {
+        name: 'margin-left',
         key: 'ml',
         type: SyntaxRuleType.Native,
         unit: 'rem',
         namespaces: ['spacing']
     },
-    'margin-right': {
+    {
+        name: 'margin-right',
         key: 'mr',
         type: SyntaxRuleType.Native,
         unit: 'rem',
         namespaces: ['spacing']
     },
-    'margin-top': {
+    {
+        name: 'margin-top',
         key: 'mt',
         type: SyntaxRuleType.Native,
         unit: 'rem',
         namespaces: ['spacing']
     },
-    'margin-bottom': {
+    {
+        name: 'margin-bottom',
         key: 'mb',
         type: SyntaxRuleType.Native,
         unit: 'rem',
         namespaces: ['spacing']
     },
-    'margin-x': {
+    {
+        name: 'margin-x',
         key: 'mx',
         subkey: 'margin-x',
         unit: 'rem',
@@ -90,319 +804,377 @@ const rules = {
         declarations: ['margin-left', 'margin-right'],
         namespaces: ['spacing']
     },
-    'margin-y': {
+    {
+        name: 'margin-y',
         key: 'my',
         unit: 'rem',
         type: SyntaxRuleType.Shorthand,
         declarations: ['margin-top', 'margin-bottom'],
         namespaces: ['spacing']
     },
-    margin: {
+    {
+        name: 'margin',
         key: 'm',
         unit: 'rem',
         type: SyntaxRuleType.NativeShorthand,
         namespaces: ['spacing']
     },
-    // margin inline
-    'margin-inline-start': {
+    {
+        name: 'margin-inline-start',
         key: 'mis',
         type: SyntaxRuleType.Native,
         unit: 'rem',
         namespaces: ['spacing']
     },
-    'margin-inline-end': {
+    {
+        name: 'margin-inline-end',
         key: 'mie',
         type: SyntaxRuleType.Native,
         unit: 'rem',
         namespaces: ['spacing']
     },
-    'margin-inline': {
+    {
+        name: 'margin-inline',
         key: 'mi',
         unit: 'rem',
         type: SyntaxRuleType.NativeShorthand,
         namespaces: ['spacing']
     },
-    // margin block
-    'margin-block-start': {
+    {
+        name: 'margin-block-start',
         key: 'mbs',
         type: SyntaxRuleType.Native,
         unit: 'rem',
         namespaces: ['spacing']
     },
-    'margin-block-end': {
+    {
+        name: 'margin-block-end',
         key: 'mbe',
         type: SyntaxRuleType.Native,
         unit: 'rem',
         namespaces: ['spacing']
     },
-    'margin-block': {
+    {
+        name: 'margin-block',
         unit: 'rem',
         type: SyntaxRuleType.NativeShorthand,
         namespaces: ['spacing']
     },
-    // padding
-    'padding-left': {
+    {
+        name: 'padding-left',
         key: 'pl',
         type: SyntaxRuleType.Native,
         unit: 'rem',
         namespaces: ['spacing']
     },
-    'padding-right': {
+    {
+        name: 'padding-right',
         key: 'pr',
         type: SyntaxRuleType.Native,
         unit: 'rem',
         namespaces: ['spacing']
     },
-    'padding-top': {
+    {
+        name: 'padding-top',
         key: 'pt',
         type: SyntaxRuleType.Native,
         unit: 'rem',
         namespaces: ['spacing']
     },
-    'padding-bottom': {
+    {
+        name: 'padding-bottom',
         key: 'pb',
         type: SyntaxRuleType.Native,
         unit: 'rem',
         namespaces: ['spacing']
     },
-    'padding-x': {
+    {
+        name: 'padding-x',
         key: 'px',
         unit: 'rem',
         type: SyntaxRuleType.Shorthand,
         declarations: ['padding-left', 'padding-right'],
         namespaces: ['spacing']
     },
-    'padding-y': {
+    {
+        name: 'padding-y',
         key: 'py',
         unit: 'rem',
         type: SyntaxRuleType.Shorthand,
         declarations: ['padding-top', 'padding-bottom'],
         namespaces: ['spacing']
     },
-    padding: {
+    {
+        name: 'padding',
         key: 'p',
         unit: 'rem',
         type: SyntaxRuleType.NativeShorthand,
         namespaces: ['spacing']
     },
-    // padding inline
-    'padding-inline-start': {
+    {
+        name: 'padding-inline-start',
         key: 'pis',
         type: SyntaxRuleType.Native,
         unit: 'rem',
         namespaces: ['spacing']
     },
-    'padding-inline-end': {
+    {
+        name: 'padding-inline-end',
         key: 'pie',
         type: SyntaxRuleType.Native,
         unit: 'rem',
         namespaces: ['spacing']
     },
-    'padding-inline': {
+    {
+        name: 'padding-inline',
         key: 'pi',
         unit: 'rem',
         type: SyntaxRuleType.NativeShorthand,
         namespaces: ['spacing']
     },
-    // padding block
-    'padding-block-start': {
+    {
+        name: 'padding-block-start',
         key: 'pbs',
         type: SyntaxRuleType.Native,
         unit: 'rem',
         namespaces: ['spacing']
     },
-    'padding-block-end': {
+    {
+        name: 'padding-block-end',
         key: 'pbe',
         type: SyntaxRuleType.Native,
         unit: 'rem',
         namespaces: ['spacing']
     },
-    'padding-block': {
+    {
+        name: 'padding-block',
         unit: 'rem',
         type: SyntaxRuleType.NativeShorthand,
         namespaces: ['spacing']
     },
-    // flex
-    'flex-basis': {
+    {
+        name: 'flex-basis',
         aliasGroups: ['flex'],
         unit: 'rem',
         type: SyntaxRuleType.Native,
     },
-    'flex-wrap': {
+    {
+        name: 'flex-wrap',
         aliasGroups: ['flex'],
         values: ['wrap', 'nowrap', 'wrap-reverse'],
         type: SyntaxRuleType.Native
     },
-    'flex-grow': {
+    {
+        name: 'flex-grow',
         aliasGroups: ['flex'],
         type: SyntaxRuleType.Native
     },
-    'flex-shrink': {
+    {
+        name: 'flex-shrink',
         aliasGroups: ['flex'],
         type: SyntaxRuleType.Native
     },
-    'flex-direction': {
+    {
+        name: 'flex-direction',
         aliasGroups: ['flex'],
         values: ['row', 'row-reverse', 'column', 'column-reverse'],
         type: SyntaxRuleType.Native
     },
-    flex: {
+    {
+        name: 'flex',
         type: SyntaxRuleType.NativeShorthand
     },
-    display: {
+    {
+        name: 'display',
         key: 'd',
         type: SyntaxRuleType.Native,
     },
-    width: {
+    {
+        name: 'width',
         key: 'w',
         unit: 'rem',
         type: SyntaxRuleType.Native
     },
-    height: {
+    {
+        name: 'height',
         key: 'h',
         unit: 'rem',
         type: SyntaxRuleType.Native
     },
-    'inline-size': {
+    {
+        name: 'inline-size',
         key: 'is',
         unit: 'rem',
         type: SyntaxRuleType.Native
     },
-    'block-size': {
+    {
+        name: 'block-size',
         key: 'bs',
         unit: 'rem',
         type: SyntaxRuleType.Native
     },
-    'min-width': {
+    {
+        name: 'min-width',
         key: 'min-w',
         unit: 'rem',
         type: SyntaxRuleType.Native
     },
-    'min-height': {
+    {
+        name: 'min-height',
         key: 'min-h',
         unit: 'rem',
         type: SyntaxRuleType.Native
     },
-    'min-inline-size': {
+    {
+        name: 'min-inline-size',
         key: 'min-is',
         unit: 'rem',
         type: SyntaxRuleType.Native
     },
-    'min-block-size': {
+    {
+        name: 'min-block-size',
         key: 'min-bs',
         unit: 'rem',
         type: SyntaxRuleType.Native
     },
-    size: {
+    {
+        name: 'size',
         type: SyntaxRuleType.Shorthand,
         unit: 'rem',
-        declarer: ['pair', ['width', 'height']]
+        declarer: 'pair',
+        declarerOptions: ['width', 'height']
     },
-    'min-size': {
+    {
+        name: 'min-size',
         key: 'min',
         type: SyntaxRuleType.Shorthand,
         unit: 'rem',
-        declarer: ['pair', ['min-width', 'min-height']]
+        declarer: 'pair',
+        declarerOptions: ['min-width', 'min-height']
     },
-    'max-size': {
+    {
+        name: 'max-size',
         key: 'max',
         type: SyntaxRuleType.Shorthand,
         unit: 'rem',
-        declarer: ['pair', ['max-width', 'max-height']]
+        declarer: 'pair',
+        declarerOptions: ['max-width', 'max-height']
     },
-    'box-sizing': {
+    {
+        name: 'box-sizing',
         aliasGroups: ['box'],
         type: SyntaxRuleType.Native
     },
-    'box-decoration-break': {
+    {
+        name: 'box-decoration-break',
         key: 'box-decoration',
         type: SyntaxRuleType.Native,
         declarations: ['-webkit-box-decoration-break', 'box-decoration-break']
     },
-    container: {
+    {
+        name: 'container',
         type: SyntaxRuleType.NativeShorthand
     },
-    'container-name': {
+    {
+        name: 'container-name',
         type: SyntaxRuleType.Native
     },
-    'container-type': {
+    {
+        name: 'container-type',
         type: SyntaxRuleType.Native,
         aliasGroups: ['container'],
         values: ['size', 'inline-size', 'scroll-state'],
     },
-    contain: {
+    {
+        name: 'contain',
         type: SyntaxRuleType.Native
     },
-    'contain-intrinsic-inline-size': {
+    {
+        name: 'contain-intrinsic-inline-size',
         unit: 'rem',
         type: SyntaxRuleType.Native
     },
-    'contain-intrinsic-block-size': {
+    {
+        name: 'contain-intrinsic-block-size',
         unit: 'rem',
         type: SyntaxRuleType.Native
     },
-    content: {
+    {
+        name: 'content',
         type: SyntaxRuleType.Native
     },
-    'counter-increment': {
+    {
+        name: 'counter-increment',
         type: SyntaxRuleType.Native
     },
-    'counter-reset': {
+    {
+        name: 'counter-reset',
         type: SyntaxRuleType.Native,
     },
-    'counter-set': {
+    {
+        name: 'counter-set',
         type: SyntaxRuleType.Native,
     },
-    'letter-spacing': {
+    {
+        name: 'letter-spacing',
         key: 'tracking',
         subkey: 'ls',
         type: SyntaxRuleType.Native,
         unit: 'em'
     },
-    'line-height': {
+    {
+        name: 'line-height',
         key: 'leading',
         subkey: 'line-h',
         type: SyntaxRuleType.Native
     },
-    'object-fit': {
+    {
+        name: 'object-fit',
         aliasGroups: ['object', 'obj'],
         values: ['contain', 'cover', 'fill', 'scale-down'],
         type: SyntaxRuleType.Native,
     },
-    'object-position': {
+    {
+        name: 'object-position',
         aliasGroups: ['object', 'obj'],
         values: ['top', 'bottom', 'right', 'left', 'center'],
         type: SyntaxRuleType.Native,
     },
-    'text-align': {
+    {
+        name: 'text-align',
         aliasGroups: ['text', 't'],
         values: ['justify', 'center', 'left', 'right', 'start', 'end'],
         type: SyntaxRuleType.Native,
     },
-    'text-decoration-color': {
+    {
+        name: 'text-decoration-color',
         aliasGroups: ['text-decoration'],
         kind: 'color',
         type: SyntaxRuleType.Native,
         namespaces: ['color', 'color.text']
     },
-    'text-decoration-style': {
+    {
+        name: 'text-decoration-style',
         aliasGroups: ['text-decoration'],
         values: ['solid', 'double', 'dotted', 'dashed', 'wavy'],
         type: SyntaxRuleType.Native,
     },
-    'text-decoration-thickness': {
+    {
+        name: 'text-decoration-thickness',
         aliasGroups: ['text-decoration'],
         values: ['from-font'],
         kind: 'number',
         type: SyntaxRuleType.Native,
         unit: 'em'
     },
-    'text-decoration-line': {
+    {
+        name: 'text-decoration-line',
         aliasGroups: ['text-decoration'],
         values: ['underline', 'overline', 'line-through'],
         type: SyntaxRuleType.Native,
     },
-    'text-decoration': {
+    {
+        name: 'text-decoration',
         aliasGroups: ['text', 't'],
         values: ['underline', 'overline', 'line-through'],
         unit: 'rem',
@@ -410,231 +1182,286 @@ const rules = {
         namespaces: ['color', 'color.text'],
         declarations: ['-webkit-text-decoration', 'text-decoration']
     },
-    'text-underline-offset': {
+    {
+        name: 'text-underline-offset',
         aliasGroups: ['text-underline'],
         unit: 'rem',
         type: SyntaxRuleType.Native,
         namespaces: ['spacing']
     },
-    'text-underline-position': {
+    {
+        name: 'text-underline-position',
         aliasGroups: ['text-underline'],
         values: ['front-font', 'under', 'left', 'right'],
         type: SyntaxRuleType.Native
     },
-    'text-overflow': {
+    {
+        name: 'text-overflow',
         aliasGroups: ['text', 't'],
         values: ['ellipsis', 'clip'],
         type: SyntaxRuleType.Native
     },
-    'text-orientation': {
+    {
+        name: 'text-orientation',
         aliasGroups: ['text', 't'],
         values: ['mixed', 'upright', 'sideways-right', 'sideways', 'use-glyph-orientation'],
         type: SyntaxRuleType.Native
     },
-    'text-transform': {
+    {
+        name: 'text-transform',
         aliasGroups: ['text', 't'],
         values: ['uppercase', 'lowercase', 'capitalize'],
         type: SyntaxRuleType.Native,
     },
-    'text-rendering': {
+    {
+        name: 'text-rendering',
         aliasGroups: ['text', 't'],
         values: ['optimizeSpeed', 'optimizeLegibility', 'geometricPrecision'],
         type: SyntaxRuleType.Native,
     },
-    'text-wrap': {
+    {
+        name: 'text-wrap',
         aliasGroups: ['text', 't'],
         values: ['wrap', 'nowrap', 'balance', 'pretty'],
         type: SyntaxRuleType.NativeShorthand,
     },
-    'text-indent': {
+    {
+        name: 'text-indent',
         unit: 'rem',
         type: SyntaxRuleType.Native
     },
-    'vertical-align': {
+    {
+        name: 'vertical-align',
         key: 'v',
         subkey: 'vertical',
         type: SyntaxRuleType.Native
     },
-    columns: {
+    {
+        name: 'columns',
         key: 'cols',
         type: SyntaxRuleType.NativeShorthand
     },
-    'overflow-wrap': {
+    {
+        name: 'overflow-wrap',
         type: SyntaxRuleType.Native,
     },
-    'white-space': {
+    {
+        name: 'white-space',
         type: SyntaxRuleType.Native
     },
-    top: {
+    {
+        name: 'top',
         type: SyntaxRuleType.Native,
         unit: 'rem',
         namespaces: ['spacing']
     },
-    bottom: {
+    {
+        name: 'bottom',
         type: SyntaxRuleType.Native,
         unit: 'rem',
         namespaces: ['spacing']
     },
-    left: {
+    {
+        name: 'left',
         type: SyntaxRuleType.Native,
         unit: 'rem',
         namespaces: ['spacing']
     },
-    right: {
+    {
+        name: 'right',
         type: SyntaxRuleType.Native,
         unit: 'rem',
         namespaces: ['spacing']
     },
-    inset: {
+    {
+        name: 'inset',
         unit: 'rem',
         type: SyntaxRuleType.NativeShorthand,
         namespaces: ['spacing']
     },
-    'inset-inline-start': {
+    {
+        name: 'inset-inline-start',
         key: 'iis',
         unit: 'rem',
         type: SyntaxRuleType.Native,
         namespaces: ['spacing']
     },
-    'inset-inline-end': {
+    {
+        name: 'inset-inline-end',
         key: 'iie',
         unit: 'rem',
         type: SyntaxRuleType.Native,
         namespaces: ['spacing']
     },
-    'inset-inline': {
+    {
+        name: 'inset-inline',
         key: 'ii',
         unit: 'rem',
         type: SyntaxRuleType.NativeShorthand,
         namespaces: ['spacing']
     },
-    'inset-block-start': {
+    {
+        name: 'inset-block-start',
         key: 'ibs',
         unit: 'rem',
         type: SyntaxRuleType.Native,
         namespaces: ['spacing']
     },
-    'inset-block-end': {
+    {
+        name: 'inset-block-end',
         key: 'ibe',
         unit: 'rem',
         type: SyntaxRuleType.Native,
         namespaces: ['spacing']
     },
-    'inset-block': {
+    {
+        name: 'inset-block',
         key: 'ib',
         unit: 'rem',
         type: SyntaxRuleType.NativeShorthand,
         namespaces: ['spacing']
     },
-    'max-height': {
+    {
+        name: 'max-height',
         key: 'max-h',
         unit: 'rem',
         type: SyntaxRuleType.Native
     },
-    'max-width': {
+    {
+        name: 'max-width',
         key: 'max-w',
         unit: 'rem',
         type: SyntaxRuleType.Native
     },
-    'max-inline-size': {
+    {
+        name: 'max-inline-size',
         key: 'max-is',
         unit: 'rem',
         type: SyntaxRuleType.Native
     },
-    'max-block-size': {
+    {
+        name: 'max-block-size',
         key: 'max-bs',
         unit: 'rem',
         type: SyntaxRuleType.Native
     },
-    opacity: {
+    {
+        name: 'opacity',
         type: SyntaxRuleType.Native,
     },
-    visibility: {
+    {
+        name: 'visibility',
         type: SyntaxRuleType.Native
     },
-    clear: {
+    {
+        name: 'clear',
         type: SyntaxRuleType.Native,
     },
-    float: {
+    {
+        name: 'float',
         type: SyntaxRuleType.Native
     },
-    isolation: {
+    {
+        name: 'isolation',
         type: SyntaxRuleType.Native
     },
-    'overflow-x': {
+    {
+        name: 'overflow-x',
         type: SyntaxRuleType.Native
     },
-    'overflow-y': {
+    {
+        name: 'overflow-y',
         type: SyntaxRuleType.Native,
     },
-    'overflow-inline': {
+    {
+        name: 'overflow-inline',
         type: SyntaxRuleType.Native
     },
-    'overflow-block': {
+    {
+        name: 'overflow-block',
         type: SyntaxRuleType.Native
     },
-    overflow: {
+    {
+        name: 'overflow',
         type: SyntaxRuleType.NativeShorthand,
     },
-    'overscroll-behavior-x': {
+    {
+        name: 'overscroll-behavior-x',
         type: SyntaxRuleType.Native
     },
-    'overscroll-behavior-y': {
+    {
+        name: 'overscroll-behavior-y',
         type: SyntaxRuleType.Native
     },
-    'overscroll-behavior-inline': {
+    {
+        name: 'overscroll-behavior-inline',
         type: SyntaxRuleType.Native
     },
-    'overscroll-behavior-block': {
+    {
+        name: 'overscroll-behavior-block',
         type: SyntaxRuleType.Native
     },
-    'overscroll-behavior': {
+    {
+        name: 'overscroll-behavior',
         type: SyntaxRuleType.NativeShorthand
     },
-    'z-index': {
+    {
+        name: 'z-index',
         key: 'z',
         type: SyntaxRuleType.Native
     },
-    position: {
+    {
+        name: 'position',
         type: SyntaxRuleType.Native
     },
-    cursor: {
+    {
+        name: 'cursor',
         type: SyntaxRuleType.Native
     },
-    'pointer-events': {
+    {
+        name: 'pointer-events',
         type: SyntaxRuleType.Native
     },
-    resize: {
+    {
+        name: 'resize',
         type: SyntaxRuleType.Native
     },
-    'touch-action': {
+    {
+        name: 'touch-action',
         key: 'touch',
         type: SyntaxRuleType.Native
     },
-    'word-break': {
+    {
+        name: 'word-break',
         type: SyntaxRuleType.Native
     },
-    'word-spacing': {
+    {
+        name: 'word-spacing',
         type: SyntaxRuleType.Native,
         unit: 'em'
     },
-    hyphens: {
+    {
+        name: 'hyphens',
         type: SyntaxRuleType.Native
     },
-    'user-drag': {
+    {
+        name: 'user-drag',
         type: SyntaxRuleType.Native,
         declarations: ['-webkit-user-drag', 'user-drag']
     },
-    'user-select': {
+    {
+        name: 'user-select',
         type: SyntaxRuleType.Native,
         declarations: ['-webkit-user-select', 'user-select']
     },
-    'text-shadow': {
+    {
+        name: 'text-shadow',
         unit: 'rem',
         type: SyntaxRuleType.Native,
         namespaces: ['color']
     },
-    'text-size': {
+    {
+        name: 'text-size',
         aliasGroups: ['text', 't'],
         kind: 'number',
         unit: 'rem',
@@ -646,14 +1473,16 @@ const rules = {
         type: SyntaxRuleType.Shorthand,
         namespaces: ['font-size']
     },
-    'text-fill-color': {
+    {
+        name: 'text-fill-color',
         aliasGroups: ['text', 't'],
         kind: 'color',
         type: SyntaxRuleType.Native,
         namespaces: ['color', 'color.text'],
         declarations: ['-webkit-text-fill-color']
     },
-    'text-stroke-width': {
+    {
+        name: 'text-stroke-width',
         aliasGroups: ['text-stroke'],
         values: ['thin', 'medium', 'thick'],
         kind: 'number',
@@ -661,19 +1490,22 @@ const rules = {
         type: SyntaxRuleType.Native,
         declarations: ['-webkit-text-stroke-width']
     },
-    'text-stroke-color': {
+    {
+        name: 'text-stroke-color',
         aliasGroups: ['text-stroke'],
         kind: 'color',
         type: SyntaxRuleType.Native,
         declarations: ['-webkit-text-stroke-color'],
         namespaces: ['color']
     },
-    'text-stroke': {
+    {
+        name: 'text-stroke',
         unit: 'rem',
         type: SyntaxRuleType.Native,
         declarations: ['-webkit-text-stroke']
     },
-    'text-truncate': {
+    {
+        name: 'text-truncate',
         subkey: 'lines',
         declarations: {
             display: '-webkit-box',
@@ -685,455 +1517,537 @@ const rules = {
         },
         type: SyntaxRuleType.Shorthand,
     },
-    'box-shadow': {
+    {
+        name: 'box-shadow',
         key: 'shadow',
         subkey: 's',
         unit: 'rem',
         type: SyntaxRuleType.Native,
         namespaces: ['shadow', 'color']
     },
-    'table-layout': {
+    {
+        name: 'table-layout',
         type: SyntaxRuleType.Native
     },
-    'transform-box': {
+    {
+        name: 'transform-box',
         aliasGroups: ['transform'],
         type: SyntaxRuleType.Native
     },
-    'transform-style': {
+    {
+        name: 'transform-style',
         aliasGroups: ['transform'],
         values: ['flat', 'preserve-3d'],
         type: SyntaxRuleType.Native
     },
-    'transform-origin': {
+    {
+        name: 'transform-origin',
         aliasGroups: ['transform'],
         values: ['top', 'bottom', 'right', 'left', 'center'],
         kind: 'number',
         unit: 'px',
         type: SyntaxRuleType.Native
     },
-    transform: {
+    {
+        name: 'transform',
         type: SyntaxRuleType.Native,
         namespaces: ['spacing']
     },
-    // Individual transform properties (CSS Transforms Module Level 2)
-    translate: {
+    {
+        name: 'translate',
         type: SyntaxRuleType.Native,
         unit: 'rem',
         namespaces: ['spacing']
     },
-    scale: {
+    {
+        name: 'scale',
         type: SyntaxRuleType.Native
     },
-    rotate: {
+    {
+        name: 'rotate',
         type: SyntaxRuleType.Native,
         unit: 'deg'
     },
-    'view-transition-name': {
+    {
+        name: 'view-transition-name',
         key: 'vt-name',
         type: SyntaxRuleType.Native
     },
-    'view-transition-class': {
+    {
+        name: 'view-transition-class',
         key: 'vt-class',
         type: SyntaxRuleType.Native
     },
-    'translate()': {
+    {
+        name: 'translate()',
         declarations: ['transform'],
         unit: 'rem',
         namespaces: ['spacing'],
     },
-    'translateX()': {
+    {
+        name: 'translateX()',
         declarations: ['transform'],
         unit: 'rem',
         namespaces: ['spacing'],
     },
-    'translateY()': {
+    {
+        name: 'translateY()',
         declarations: ['transform'],
         unit: 'rem',
         namespaces: ['spacing'],
     },
-    'translateZ()': {
+    {
+        name: 'translateZ()',
         declarations: ['transform'],
         unit: 'rem',
         namespaces: ['spacing'],
     },
-    'translate3d()': {
+    {
+        name: 'translate3d()',
         declarations: ['transform'],
         unit: 'rem',
         namespaces: ['spacing'],
     },
-    'scale()': {
+    {
+        name: 'scale()',
         declarations: ['transform']
     },
-    'scaleX()': {
+    {
+        name: 'scaleX()',
         declarations: ['transform']
     },
-    'scaleY()': {
+    {
+        name: 'scaleY()',
         declarations: ['transform']
     },
-    'scaleZ()': {
+    {
+        name: 'scaleZ()',
         declarations: ['transform']
     },
-    'scale3d()': {
+    {
+        name: 'scale3d()',
         declarations: ['transform']
     },
-    'rotate()': {
+    {
+        name: 'rotate()',
         declarations: ['transform']
     },
-    'rotateX()': {
+    {
+        name: 'rotateX()',
         declarations: ['transform']
     },
-    'rotateY()': {
+    {
+        name: 'rotateY()',
         declarations: ['transform']
     },
-    'rotateZ()': {
+    {
+        name: 'rotateZ()',
         declarations: ['transform']
     },
-    'rotate3d()': {
+    {
+        name: 'rotate3d()',
         declarations: ['transform']
     },
-    'skew()': {
+    {
+        name: 'skew()',
         declarations: ['transform']
     },
-    'skewX()': {
+    {
+        name: 'skewX()',
         declarations: ['transform']
     },
-    'skewY()': {
+    {
+        name: 'skewY()',
         declarations: ['transform']
     },
-    'perspective()': {
+    {
+        name: 'perspective()',
         declarations: ['transform']
     },
-    'matrix()': {
+    {
+        name: 'matrix()',
         declarations: ['transform']
     },
-    'matrix3d()': {
+    {
+        name: 'matrix3d()',
         declarations: ['transform']
     },
-    'transition-property': {
+    {
+        name: 'transition-property',
         key: '~property',
         type: SyntaxRuleType.Native
     },
-    'transition-timing-function': {
+    {
+        name: 'transition-timing-function',
         key: '~easing',
         type: SyntaxRuleType.Native,
         namespaces: ['easing']
     },
-    'transition-duration': {
+    {
+        name: 'transition-duration',
         key: '~duration',
         type: SyntaxRuleType.Native,
         unit: 'ms',
         namespaces: ['duration']
     },
-    'transition-delay': {
+    {
+        name: 'transition-delay',
         key: '~delay',
         type: SyntaxRuleType.Native,
         unit: 'ms'
     },
-    transition: {
+    {
+        name: 'transition',
         sign: '~',
         type: SyntaxRuleType.NativeShorthand,
         namespaces: ['duration', 'easing']
     },
-    'animation-delay': {
+    {
+        name: 'animation-delay',
         key: '@delay',
         type: SyntaxRuleType.Native,
         unit: 'ms'
     },
-    'animation-direction': {
+    {
+        name: 'animation-direction',
         key: '@direction',
         type: SyntaxRuleType.Native
     },
-    'animation-duration': {
+    {
+        name: 'animation-duration',
         key: '@duration',
         type: SyntaxRuleType.Native,
         unit: 'ms',
         namespaces: ['duration']
     },
-    'animation-fill-mode': {
+    {
+        name: 'animation-fill-mode',
         key: '@fill',
         type: SyntaxRuleType.Native
     },
-    'animation-iteration-count': {
+    {
+        name: 'animation-iteration-count',
         key: '@iteration',
         type: SyntaxRuleType.Native
     },
-    'animation-name': {
+    {
+        name: 'animation-name',
         key: '@name',
         type: SyntaxRuleType.Native,
         includeAnimations: true
     },
-    'animation-play-state': {
+    {
+        name: 'animation-play-state',
         key: '@play',
         type: SyntaxRuleType.Native
     },
-    'animation-timing-function': {
+    {
+        name: 'animation-timing-function',
         key: '@easing',
         type: SyntaxRuleType.Native,
         namespaces: ['easing']
     },
-    animation: {
+    {
+        name: 'animation',
         sign: '@',
         type: SyntaxRuleType.NativeShorthand,
         includeAnimations: true,
         namespaces: ['duration', 'easing']
     },
-    'border-collapse': {
+    {
+        name: 'border-collapse',
         aliasGroups: ['b', 'border'],
         values: ['collapse', 'separate'],
         type: SyntaxRuleType.Native
     },
-    'border-spacing': {
+    {
+        name: 'border-spacing',
         unit: 'rem',
         type: SyntaxRuleType.Native,
         namespaces: ['spacing']
     },
-    // border color
-    'border-top-color': {
+    {
+        name: 'border-top-color',
         aliasGroups: ['bt', 'border-top'],
         kind: 'color',
         type: SyntaxRuleType.Native,
         namespaces: ['color', 'color.line'],
     },
-    'border-bottom-color': {
+    {
+        name: 'border-bottom-color',
         aliasGroups: ['bb', 'border-bottom'],
         kind: 'color',
         type: SyntaxRuleType.Native,
         namespaces: ['color', 'color.line'],
     },
-    'border-left-color': {
+    {
+        name: 'border-left-color',
         aliasGroups: ['bl', 'border-left'],
         kind: 'color',
         type: SyntaxRuleType.Native,
         namespaces: ['color', 'color.line'],
     },
-    'border-right-color': {
+    {
+        name: 'border-right-color',
         aliasGroups: ['br', 'border-right'],
         kind: 'color',
         type: SyntaxRuleType.Native,
         namespaces: ['color', 'color.line'],
     },
-    'border-x-color': {
+    {
+        name: 'border-x-color',
         aliasGroups: ['bx', 'border-x'],
         kind: 'color',
         type: SyntaxRuleType.Shorthand,
         namespaces: ['color', 'color.line'],
         declarations: ['border-left-color', 'border-right-color']
     },
-    'border-y-color': {
+    {
+        name: 'border-y-color',
         aliasGroups: ['by', 'border-y'],
         kind: 'color',
         type: SyntaxRuleType.Shorthand,
         namespaces: ['color', 'color.line'],
         declarations: ['border-top-color', 'border-bottom-color']
     },
-    'border-color': {
+    {
+        name: 'border-color',
         aliasGroups: ['b', 'border'],
         kind: 'color',
         type: SyntaxRuleType.NativeShorthand,
         namespaces: ['color', 'color.line'],
     },
-    // border radius
-    'border-top-left-radius': {
+    {
+        name: 'border-top-left-radius',
         key: 'rtl',
         unit: 'rem',
         type: SyntaxRuleType.Native,
         namespaces: ['border-radius']
     },
-    'border-top-right-radius': {
+    {
+        name: 'border-top-right-radius',
         key: 'rtr',
         unit: 'rem',
         type: SyntaxRuleType.Native,
         namespaces: ['border-radius']
     },
-    'border-bottom-left-radius': {
+    {
+        name: 'border-bottom-left-radius',
         key: 'rbl',
         unit: 'rem',
         type: SyntaxRuleType.Native,
         namespaces: ['border-radius']
     },
-    'border-bottom-right-radius': {
+    {
+        name: 'border-bottom-right-radius',
         key: 'rbr',
         unit: 'rem',
         type: SyntaxRuleType.Native,
         namespaces: ['border-radius']
     },
-    'border-top-radius': {
+    {
+        name: 'border-top-radius',
         key: 'rt',
         unit: 'rem',
         type: SyntaxRuleType.Shorthand,
         declarations: ['border-top-left-radius', 'border-top-right-radius'],
         namespaces: ['border-radius']
     },
-    'border-bottom-radius': {
+    {
+        name: 'border-bottom-radius',
         key: 'rb',
         unit: 'rem',
         type: SyntaxRuleType.Shorthand,
         declarations: ['border-bottom-left-radius', 'border-bottom-right-radius'],
         namespaces: ['border-radius']
     },
-    'border-left-radius': {
+    {
+        name: 'border-left-radius',
         key: 'rl',
         unit: 'rem',
         type: SyntaxRuleType.Shorthand,
         declarations: ['border-top-left-radius', 'border-bottom-left-radius'],
         namespaces: ['border-radius']
     },
-    'border-right-radius': {
+    {
+        name: 'border-right-radius',
         key: 'rr',
         unit: 'rem',
         type: SyntaxRuleType.Shorthand,
         declarations: ['border-top-right-radius', 'border-bottom-right-radius'],
         namespaces: ['border-radius']
     },
-    'border-radius': {
+    {
+        name: 'border-radius',
         key: 'r',
         unit: 'rem',
         type: SyntaxRuleType.NativeShorthand
     },
-    // border style
-    'border-top-style': {
+    {
+        name: 'border-top-style',
         aliasGroups: ['bt', 'border-top'],
         values: BORDER_STYLE_VALUES,
         type: SyntaxRuleType.Native,
     },
-    'border-bottom-style': {
+    {
+        name: 'border-bottom-style',
         aliasGroups: ['bb', 'border-bottom'],
         values: BORDER_STYLE_VALUES,
         type: SyntaxRuleType.Native,
     },
-    'border-left-style': {
+    {
+        name: 'border-left-style',
         aliasGroups: ['bl', 'border-left'],
         values: BORDER_STYLE_VALUES,
         type: SyntaxRuleType.Native,
     },
-    'border-right-style': {
+    {
+        name: 'border-right-style',
         aliasGroups: ['br', 'border-right'],
         values: BORDER_STYLE_VALUES,
         type: SyntaxRuleType.Native,
     },
-    'border-x-style': {
+    {
+        name: 'border-x-style',
         aliasGroups: ['bx', 'border-x'],
         values: BORDER_STYLE_VALUES,
         type: SyntaxRuleType.Shorthand,
         declarations: ['border-left-style', 'border-right-style']
     },
-    'border-y-style': {
+    {
+        name: 'border-y-style',
         aliasGroups: ['by', 'border-y'],
         values: BORDER_STYLE_VALUES,
         type: SyntaxRuleType.Shorthand,
         declarations: ['border-top-style', 'border-bottom-style']
     },
-    'border-style': {
+    {
+        name: 'border-style',
         aliasGroups: ['b', 'border'],
         values: BORDER_STYLE_VALUES,
         type: SyntaxRuleType.NativeShorthand
     },
-    // border width
-    'border-top-width': {
+    {
+        name: 'border-top-width',
         aliasGroups: ['bt', 'border-top'],
         kind: 'number',
         unit: 'rem',
         type: SyntaxRuleType.Native,
     },
-    'border-bottom-width': {
+    {
+        name: 'border-bottom-width',
         aliasGroups: ['bb', 'border-bottom'],
         kind: 'number',
         unit: 'rem',
         type: SyntaxRuleType.Native,
     },
-    'border-left-width': {
+    {
+        name: 'border-left-width',
         aliasGroups: ['bl', 'border-left'],
         kind: 'number',
         unit: 'rem',
         type: SyntaxRuleType.Native,
     },
-    'border-right-width': {
+    {
+        name: 'border-right-width',
         aliasGroups: ['br', 'border-right'],
         kind: 'number',
         unit: 'rem',
         type: SyntaxRuleType.Native,
     },
-    'border-x-width': {
+    {
+        name: 'border-x-width',
         aliasGroups: ['bx', 'border-x'],
         kind: 'number',
         unit: 'rem',
         type: SyntaxRuleType.Shorthand,
         declarations: ['border-left-width', 'border-right-width']
     },
-    'border-y-width': {
+    {
+        name: 'border-y-width',
         aliasGroups: ['by', 'border-y'],
         kind: 'number',
         unit: 'rem',
         type: SyntaxRuleType.Shorthand,
         declarations: ['border-top-width', 'border-bottom-width']
     },
-    'border-width': {
+    {
+        name: 'border-width',
         aliasGroups: ['b', 'border'],
         kind: 'number',
         unit: 'rem',
         type: SyntaxRuleType.NativeShorthand
     },
-    // border image
-    'border-image-repeat': {
+    {
+        name: 'border-image-repeat',
         aliasGroups: ['border-image'],
         values: ['stretch', 'repeat', 'round', 'space'],
         type: SyntaxRuleType.Native
     },
-    'border-image-slice': {
+    {
+        name: 'border-image-slice',
         aliasGroups: ['border-image'],
         type: SyntaxRuleType.Native
     },
-    'border-image-source': {
+    {
+        name: 'border-image-source',
         aliasGroups: ['border-image'],
         kind: 'image',
         type: SyntaxRuleType.Native
     },
-    'border-image-width': {
+    {
+        name: 'border-image-width',
         aliasGroups: ['border-image'],
         values: ['auto'],
         kind: 'number',
         unit: 'rem',
         type: SyntaxRuleType.Native
     },
-    'border-image-outset': {
+    {
+        name: 'border-image-outset',
         aliasGroups: ['border-image'],
         kind: 'number',
         unit: 'rem',
         type: SyntaxRuleType.Native
     },
-    'border-image': {
+    {
+        name: 'border-image',
         type: SyntaxRuleType.NativeShorthand
     },
-    // border
-    'border-top': {
+    {
+        name: 'border-top',
         key: 'bt',
         type: SyntaxRuleType.NativeShorthand,
         unit: 'rem',
         transformer: 'auto-fill-solid',
         namespaces: ['color', 'color.line'],
     },
-    'border-bottom': {
+    {
+        name: 'border-bottom',
         key: 'bb',
         type: SyntaxRuleType.NativeShorthand,
         unit: 'rem',
         transformer: 'auto-fill-solid',
         namespaces: ['color', 'color.line'],
     },
-    'border-left': {
+    {
+        name: 'border-left',
         key: 'bl',
         type: SyntaxRuleType.NativeShorthand,
         unit: 'rem',
         transformer: 'auto-fill-solid',
         namespaces: ['color', 'color.line'],
     },
-    'border-right': {
+    {
+        name: 'border-right',
         key: 'br',
         type: SyntaxRuleType.NativeShorthand,
         unit: 'rem',
         transformer: 'auto-fill-solid',
         namespaces: ['color', 'color.line'],
     },
-    'border-x': {
+    {
+        name: 'border-x',
         key: 'bx',
         unit: 'rem',
         type: SyntaxRuleType.Shorthand,
@@ -1141,7 +2055,8 @@ const rules = {
         namespaces: ['color', 'color.line'],
         declarations: ['border-left', 'border-right']
     },
-    'border-y': {
+    {
+        name: 'border-y',
         key: 'by',
         unit: 'rem',
         type: SyntaxRuleType.Shorthand,
@@ -1149,212 +2064,275 @@ const rules = {
         namespaces: ['color', 'color.line'],
         declarations: ['border-top', 'border-bottom']
     },
-    border: {
+    {
+        name: 'border',
         key: 'b',
         unit: 'rem',
         type: SyntaxRuleType.NativeShorthand,
         transformer: 'auto-fill-solid',
         namespaces: ['color', 'color.line'],
     },
-    // Logical borders (CSS Logical Properties Level 1)
-    // Long-hand color
-    'border-inline-start-color': { kind: 'color', type: SyntaxRuleType.Native, namespaces: ['color', 'color.line'] },
-    'border-inline-end-color': { kind: 'color', type: SyntaxRuleType.Native, namespaces: ['color', 'color.line'] },
-    'border-block-start-color': { kind: 'color', type: SyntaxRuleType.Native, namespaces: ['color', 'color.line'] },
-    'border-block-end-color': { kind: 'color', type: SyntaxRuleType.Native, namespaces: ['color', 'color.line'] },
-    'border-inline-color': { kind: 'color', type: SyntaxRuleType.NativeShorthand, namespaces: ['color', 'color.line'] },
-    'border-block-color': { kind: 'color', type: SyntaxRuleType.NativeShorthand, namespaces: ['color', 'color.line'] },
-    // Long-hand style
-    'border-inline-start-style': { values: BORDER_STYLE_VALUES, type: SyntaxRuleType.Native },
-    'border-inline-end-style': { values: BORDER_STYLE_VALUES, type: SyntaxRuleType.Native },
-    'border-block-start-style': { values: BORDER_STYLE_VALUES, type: SyntaxRuleType.Native },
-    'border-block-end-style': { values: BORDER_STYLE_VALUES, type: SyntaxRuleType.Native },
-    'border-inline-style': { values: BORDER_STYLE_VALUES, type: SyntaxRuleType.NativeShorthand },
-    'border-block-style': { values: BORDER_STYLE_VALUES, type: SyntaxRuleType.NativeShorthand },
-    // Long-hand width
-    'border-inline-start-width': { kind: 'number', unit: 'rem', type: SyntaxRuleType.Native },
-    'border-inline-end-width': { kind: 'number', unit: 'rem', type: SyntaxRuleType.Native },
-    'border-block-start-width': { kind: 'number', unit: 'rem', type: SyntaxRuleType.Native },
-    'border-block-end-width': { kind: 'number', unit: 'rem', type: SyntaxRuleType.Native },
-    'border-inline-width': { kind: 'number', unit: 'rem', type: SyntaxRuleType.NativeShorthand },
-    'border-block-width': { kind: 'number', unit: 'rem', type: SyntaxRuleType.NativeShorthand },
-    // Shorthands (border-inline-start: 1px solid red etc.)
-    'border-inline-start': { unit: 'rem', type: SyntaxRuleType.NativeShorthand, transformer: 'auto-fill-solid', namespaces: ['color', 'color.line'] },
-    'border-inline-end': { unit: 'rem', type: SyntaxRuleType.NativeShorthand, transformer: 'auto-fill-solid', namespaces: ['color', 'color.line'] },
-    'border-block-start': { unit: 'rem', type: SyntaxRuleType.NativeShorthand, transformer: 'auto-fill-solid', namespaces: ['color', 'color.line'] },
-    'border-block-end': { unit: 'rem', type: SyntaxRuleType.NativeShorthand, transformer: 'auto-fill-solid', namespaces: ['color', 'color.line'] },
-    'border-inline': { unit: 'rem', type: SyntaxRuleType.NativeShorthand, transformer: 'auto-fill-solid', namespaces: ['color', 'color.line'] },
-    'border-block': { unit: 'rem', type: SyntaxRuleType.NativeShorthand, transformer: 'auto-fill-solid', namespaces: ['color', 'color.line'] },
-    // Logical corner radii (CSS Borders Level 4 — start/end on each axis)
-    'border-start-start-radius': { unit: 'rem', type: SyntaxRuleType.Native, namespaces: ['border-radius'] },
-    'border-start-end-radius': { unit: 'rem', type: SyntaxRuleType.Native, namespaces: ['border-radius'] },
-    'border-end-start-radius': { unit: 'rem', type: SyntaxRuleType.Native, namespaces: ['border-radius'] },
-    'border-end-end-radius': { unit: 'rem', type: SyntaxRuleType.Native, namespaces: ['border-radius'] },
-    'background-attachment': {
+    {
+        name: 'border-inline-start-color', kind: 'color', type: SyntaxRuleType.Native, namespaces: ['color', 'color.line'] },
+    {
+        name: 'border-inline-end-color', kind: 'color', type: SyntaxRuleType.Native, namespaces: ['color', 'color.line'] },
+    {
+        name: 'border-block-start-color', kind: 'color', type: SyntaxRuleType.Native, namespaces: ['color', 'color.line'] },
+    {
+        name: 'border-block-end-color', kind: 'color', type: SyntaxRuleType.Native, namespaces: ['color', 'color.line'] },
+    {
+        name: 'border-inline-color', kind: 'color', type: SyntaxRuleType.NativeShorthand, namespaces: ['color', 'color.line'] },
+    {
+        name: 'border-block-color', kind: 'color', type: SyntaxRuleType.NativeShorthand, namespaces: ['color', 'color.line'] },
+    {
+        name: 'border-inline-start-style', values: BORDER_STYLE_VALUES, type: SyntaxRuleType.Native },
+    {
+        name: 'border-inline-end-style', values: BORDER_STYLE_VALUES, type: SyntaxRuleType.Native },
+    {
+        name: 'border-block-start-style', values: BORDER_STYLE_VALUES, type: SyntaxRuleType.Native },
+    {
+        name: 'border-block-end-style', values: BORDER_STYLE_VALUES, type: SyntaxRuleType.Native },
+    {
+        name: 'border-inline-style', values: BORDER_STYLE_VALUES, type: SyntaxRuleType.NativeShorthand },
+    {
+        name: 'border-block-style', values: BORDER_STYLE_VALUES, type: SyntaxRuleType.NativeShorthand },
+    {
+        name: 'border-inline-start-width', kind: 'number', unit: 'rem', type: SyntaxRuleType.Native },
+    {
+        name: 'border-inline-end-width', kind: 'number', unit: 'rem', type: SyntaxRuleType.Native },
+    {
+        name: 'border-block-start-width', kind: 'number', unit: 'rem', type: SyntaxRuleType.Native },
+    {
+        name: 'border-block-end-width', kind: 'number', unit: 'rem', type: SyntaxRuleType.Native },
+    {
+        name: 'border-inline-width', kind: 'number', unit: 'rem', type: SyntaxRuleType.NativeShorthand },
+    {
+        name: 'border-block-width', kind: 'number', unit: 'rem', type: SyntaxRuleType.NativeShorthand },
+    {
+        name: 'border-inline-start', unit: 'rem', type: SyntaxRuleType.NativeShorthand, transformer: 'auto-fill-solid', namespaces: ['color', 'color.line'] },
+    {
+        name: 'border-inline-end', unit: 'rem', type: SyntaxRuleType.NativeShorthand, transformer: 'auto-fill-solid', namespaces: ['color', 'color.line'] },
+    {
+        name: 'border-block-start', unit: 'rem', type: SyntaxRuleType.NativeShorthand, transformer: 'auto-fill-solid', namespaces: ['color', 'color.line'] },
+    {
+        name: 'border-block-end', unit: 'rem', type: SyntaxRuleType.NativeShorthand, transformer: 'auto-fill-solid', namespaces: ['color', 'color.line'] },
+    {
+        name: 'border-inline', unit: 'rem', type: SyntaxRuleType.NativeShorthand, transformer: 'auto-fill-solid', namespaces: ['color', 'color.line'] },
+    {
+        name: 'border-block', unit: 'rem', type: SyntaxRuleType.NativeShorthand, transformer: 'auto-fill-solid', namespaces: ['color', 'color.line'] },
+    {
+        name: 'border-start-start-radius', unit: 'rem', type: SyntaxRuleType.Native, namespaces: ['border-radius'] },
+    {
+        name: 'border-start-end-radius', unit: 'rem', type: SyntaxRuleType.Native, namespaces: ['border-radius'] },
+    {
+        name: 'border-end-start-radius', unit: 'rem', type: SyntaxRuleType.Native, namespaces: ['border-radius'] },
+    {
+        name: 'border-end-end-radius', unit: 'rem', type: SyntaxRuleType.Native, namespaces: ['border-radius'] },
+    {
+        name: 'background-attachment',
         aliasGroups: ['bg'],
         values: ['fixed', 'local', 'scroll'],
         type: SyntaxRuleType.Native
     },
-    'background-blend-mode': {
+    {
+        name: 'background-blend-mode',
         key: 'bg-blend',
         type: SyntaxRuleType.Native
     },
-    'background-color': {
+    {
+        name: 'background-color',
         aliasGroups: ['bg'],
         kind: 'color',
         type: SyntaxRuleType.Native,
         namespaces: ['color']
     },
-    'background-clip': {
+    {
+        name: 'background-clip',
         key: 'bg-clip',
         type: SyntaxRuleType.Native
     },
-    'background-origin': {
+    {
+        name: 'background-origin',
         key: 'bg-origin',
         type: SyntaxRuleType.Native
     },
-    'background-position': {
+    {
+        name: 'background-position',
         aliasGroups: ['bg'],
         values: ['top', 'bottom', 'right', 'left', 'center'],
         type: SyntaxRuleType.Native,
         unit: 'px'
     },
-    'background-repeat': {
+    {
+        name: 'background-repeat',
         aliasGroups: ['bg'],
         values: ['space', 'round', 'repeat', 'no-repeat', 'repeat-x', 'repeat-y'],
         type: SyntaxRuleType.Native
     },
-    'background-size': {
+    {
+        name: 'background-size',
         aliasGroups: ['bg'],
         values: ['auto', 'cover', 'contain'],
         kind: 'number',
         unit: 'rem',
         type: SyntaxRuleType.Native
     },
-    'background-image': {
+    {
+        name: 'background-image',
         aliasGroups: ['bg'],
         kind: 'image',
         type: SyntaxRuleType.Native,
         namespaces: ['color']
     },
-    background: {
+    {
+        name: 'background',
         key: 'bg',
         type: SyntaxRuleType.NativeShorthand,
         namespaces: ['color']
     },
-    'gradient()': {
+    {
+        name: 'gradient()',
         declarations: {
             'background-image': ['linear-', undefined]
         },
         namespaces: ['color']
     },
-    'mix-blend-mode': {
+    {
+        name: 'mix-blend-mode',
         key: 'blend',
         type: SyntaxRuleType.Native
     },
-    'backdrop-filter': {
+    {
+        name: 'backdrop-filter',
         key: 'bd',
         type: SyntaxRuleType.Native,
         declarations: ['-webkit-backdrop-filter', 'backdrop-filter'],
         namespaces: ['color']
     },
-    filter: {
+    {
+        name: 'filter',
         type: SyntaxRuleType.Native,
         namespaces: ['color']
     },
-    'blur()': {
+    {
+        name: 'blur()',
         declarations: ['filter']
     },
-    'brightness()': {
+    {
+        name: 'brightness()',
         declarations: ['filter']
     },
-    'contrast()': {
+    {
+        name: 'contrast()',
         declarations: ['filter']
     },
-    'drop-shadow()': {
+    {
+        name: 'drop-shadow()',
         declarations: ['filter'],
         namespaces: ['color']
     },
-    'grayscale()': {
+    {
+        name: 'grayscale()',
         declarations: ['filter']
     },
-    'hue-rotate()': {
+    {
+        name: 'hue-rotate()',
         declarations: ['filter']
     },
-    'invert()': {
+    {
+        name: 'invert()',
         declarations: ['filter']
     },
-    'opacity()': {
+    {
+        name: 'opacity()',
         declarations: ['filter']
     },
-    'saturate()': {
+    {
+        name: 'saturate()',
         declarations: ['filter']
     },
-    'sepia()': {
+    {
+        name: 'sepia()',
         declarations: ['filter']
     },
-    fill: {
+    {
+        name: 'fill',
         type: SyntaxRuleType.Native,
         namespaces: ['color']
     },
-    'stroke-dasharray': {
+    {
+        name: 'stroke-dasharray',
         type: SyntaxRuleType.Native
     },
-    'stroke-dashoffset': {
+    {
+        name: 'stroke-dashoffset',
         type: SyntaxRuleType.Native,
         namespaces: ['spacing']
     },
-    'stroke-width': {
+    {
+        name: 'stroke-width',
         aliasGroups: ['stroke'],
         kind: 'number',
         type: SyntaxRuleType.Native
     },
-    stroke: {
+    {
+        name: 'stroke',
         type: SyntaxRuleType.Native,
         namespaces: ['color']
     },
-    x: {
+    {
+        name: 'x',
         type: SyntaxRuleType.Native,
         namespaces: ['spacing']
     },
-    y: {
+    {
+        name: 'y',
         type: SyntaxRuleType.Native,
         namespaces: ['spacing']
     },
-    cx: {
+    {
+        name: 'cx',
         type: SyntaxRuleType.Native,
         namespaces: ['spacing']
     },
-    cy: {
+    {
+        name: 'cy',
         type: SyntaxRuleType.Native,
         namespaces: ['spacing']
     },
-    rx: {
+    {
+        name: 'rx',
         type: SyntaxRuleType.Native
     },
-    ry: {
+    {
+        name: 'ry',
         type: SyntaxRuleType.Native
     },
-    'grid-column-start': {
+    {
+        name: 'grid-column-start',
         key: 'grid-col-start',
         type: SyntaxRuleType.Native
     },
-    'grid-column-end': {
+    {
+        name: 'grid-column-end',
         key: 'grid-col-end',
         type: SyntaxRuleType.Native
     },
-    'grid-column-span': {
+    {
+        name: 'grid-column-span',
         key: 'grid-col-span',
         type: SyntaxRuleType.Shorthand,
         declarations: {
             'grid-column': ['span ', undefined, '/span ', undefined]
         }
     },
-    'grid-column': {
+    {
+        name: 'grid-column',
         key: 'grid-col',
         type: SyntaxRuleType.NativeShorthand,
     },
-    'grid-columns': {
+    {
+        name: 'grid-columns',
         key: 'grid-cols',
         declarations: {
             display: 'grid',
@@ -1362,22 +2340,27 @@ const rules = {
         },
         type: SyntaxRuleType.Shorthand
     },
-    'grid-row-start': {
+    {
+        name: 'grid-row-start',
         type: SyntaxRuleType.Native
     },
-    'grid-row-end': {
+    {
+        name: 'grid-row-end',
         type: SyntaxRuleType.Native
     },
-    'grid-row-span': {
+    {
+        name: 'grid-row-span',
         type: SyntaxRuleType.Shorthand,
         declarations: {
             'grid-row': ['span ', undefined, '/span ', undefined]
         }
     },
-    'grid-row': {
+    {
+        name: 'grid-row',
         type: SyntaxRuleType.NativeShorthand
     },
-    'grid-rows': {
+    {
+        name: 'grid-rows',
         declarations: {
             display: 'grid',
             'grid-auto-flow': 'column',
@@ -1385,151 +2368,187 @@ const rules = {
         },
         type: SyntaxRuleType.Shorthand
     },
-    'grid-auto-columns': {
+    {
+        name: 'grid-auto-columns',
         key: 'grid-auto-cols',
         type: SyntaxRuleType.Native
     },
-    'grid-auto-flow': {
+    {
+        name: 'grid-auto-flow',
         key: 'grid-flow',
         type: SyntaxRuleType.Native
     },
-    'grid-auto-rows': {
+    {
+        name: 'grid-auto-rows',
         type: SyntaxRuleType.Native
     },
-    'grid-template-areas': {
+    {
+        name: 'grid-template-areas',
         type: SyntaxRuleType.Native
     },
-    'grid-template-columns': {
+    {
+        name: 'grid-template-columns',
         key: 'grid-template-cols',
         type: SyntaxRuleType.Native,
         unit: 'rem'
     },
-    'grid-template-rows': {
+    {
+        name: 'grid-template-rows',
         type: SyntaxRuleType.Native,
         unit: 'rem'
     },
-    'grid-template': {
+    {
+        name: 'grid-template',
         type: SyntaxRuleType.NativeShorthand
     },
-    'grid-area': {
+    {
+        name: 'grid-area',
         type: SyntaxRuleType.NativeShorthand
     },
-    grid: {
+    {
+        name: 'grid',
         type: SyntaxRuleType.NativeShorthand
     },
-    'column-gap': {
+    {
+        name: 'column-gap',
         key: 'gap-x',
         unit: 'rem',
         type: SyntaxRuleType.Native,
         namespaces: ['spacing']
     },
-    'row-gap': {
+    {
+        name: 'row-gap',
         key: 'gap-y',
         unit: 'rem',
         type: SyntaxRuleType.Native,
         namespaces: ['spacing']
     },
-    gap: {
+    {
+        name: 'gap',
         unit: 'rem',
         type: SyntaxRuleType.NativeShorthand,
         namespaces: ['spacing']
     },
-    order: {
+    {
+        name: 'order',
         key: 'o',
         type: SyntaxRuleType.Native
     },
-    'break-inside': {
+    {
+        name: 'break-inside',
         type: SyntaxRuleType.Native
     },
-    'break-before': {
+    {
+        name: 'break-before',
         type: SyntaxRuleType.Native
     },
-    'break-after': {
+    {
+        name: 'break-after',
         type: SyntaxRuleType.Native
     },
-    'aspect-ratio': {
+    {
+        name: 'aspect-ratio',
         key: 'aspect',
         type: SyntaxRuleType.Native
     },
-    'column-span': {
+    {
+        name: 'column-span',
         key: 'col-span',
         type: SyntaxRuleType.Native
     },
-    'align-content': {
+    {
+        name: 'align-content',
         subkey: 'ac',
         type: SyntaxRuleType.Native
     },
-    'align-items': {
+    {
+        name: 'align-items',
         subkey: 'ai',
         type: SyntaxRuleType.Native
     },
-    'align-self': {
+    {
+        name: 'align-self',
         subkey: 'as',
         type: SyntaxRuleType.Native
     },
-    'justify-content': {
+    {
+        name: 'justify-content',
         subkey: 'jc',
         type: SyntaxRuleType.Native
     },
-    'justify-items': {
+    {
+        name: 'justify-items',
         subkey: 'ji',
         type: SyntaxRuleType.Native
     },
-    'justify-self': {
+    {
+        name: 'justify-self',
         subkey: 'js',
         type: SyntaxRuleType.Native
     },
-    'place-content': {
+    {
+        name: 'place-content',
         type: SyntaxRuleType.NativeShorthand
     },
-    'place-items': {
+    {
+        name: 'place-items',
         type: SyntaxRuleType.NativeShorthand
     },
-    'place-self': {
+    {
+        name: 'place-self',
         type: SyntaxRuleType.NativeShorthand
     },
-    'list-style-position': {
+    {
+        name: 'list-style-position',
         aliasGroups: ['list-style'],
         values: ['inside', 'outside'],
         type: SyntaxRuleType.Native
     },
-    'list-style-type': {
+    {
+        name: 'list-style-type',
         aliasGroups: ['list-style'],
         values: ['disc', 'decimal'],
         type: SyntaxRuleType.Native
     },
-    'list-style-image': {
+    {
+        name: 'list-style-image',
         aliasGroups: ['list-style'],
         kind: 'image',
         type: SyntaxRuleType.Native
     },
-    'list-style': {
+    {
+        name: 'list-style',
         type: SyntaxRuleType.NativeShorthand
     },
-    'outline-color': {
+    {
+        name: 'outline-color',
         aliasGroups: ['outline'],
         kind: 'color',
         type: SyntaxRuleType.Native,
         namespaces: ['color', 'color.line'],
     },
-    'outline-offset': {
+    {
+        name: 'outline-offset',
         unit: 'rem',
         type: SyntaxRuleType.Native,
         namespaces: ['spacing']
     },
-    'outline-style': {
+    {
+        name: 'outline-style',
         aliasGroups: ['outline'],
         values: BORDER_STYLE_VALUES,
         type: SyntaxRuleType.Native
     },
-    'outline-width': {
+    {
+        name: 'outline-width',
         aliasGroups: ['outline'],
         values: ['medium', 'thick', 'thin'],
         kind: 'number',
         unit: 'rem',
         type: SyntaxRuleType.Native
     },
-    outline: {
+    {
+        name: 'outline',
         unit: 'rem',
         type: SyntaxRuleType.NativeShorthand,
         namespaces: [
@@ -1542,172 +2561,201 @@ const rules = {
         ],
         transformer: 'auto-fill-solid'
     },
-    'accent-color': {
+    {
+        name: 'accent-color',
         key: 'accent',
         type: SyntaxRuleType.Native,
         namespaces: ['color']
     },
-    appearance: {
+    {
+        name: 'appearance',
         type: SyntaxRuleType.Native
     },
-    'caret-color': {
+    {
+        name: 'caret-color',
         key: 'caret',
         type: SyntaxRuleType.Native,
         namespaces: ['color', 'color.text']
     },
-    'scroll-behavior': {
+    {
+        name: 'scroll-behavior',
         type: SyntaxRuleType.Native
     },
-    // scroll margin
-    'scroll-margin-left': {
+    {
+        name: 'scroll-margin-left',
         key: 'scroll-ml',
         type: SyntaxRuleType.Native,
         unit: 'rem',
         namespaces: ['spacing']
     },
-    'scroll-margin-right': {
+    {
+        name: 'scroll-margin-right',
         key: 'scroll-mr',
         type: SyntaxRuleType.Native,
         unit: 'rem',
         namespaces: ['spacing']
     },
-    'scroll-margin-top': {
+    {
+        name: 'scroll-margin-top',
         key: 'scroll-mt',
         type: SyntaxRuleType.Native,
         unit: 'rem',
         namespaces: ['spacing']
     },
-    'scroll-margin-bottom': {
+    {
+        name: 'scroll-margin-bottom',
         key: 'scroll-mb',
         type: SyntaxRuleType.Native,
         unit: 'rem',
         namespaces: ['spacing']
     },
-    'scroll-margin-x': {
+    {
+        name: 'scroll-margin-x',
         key: 'scroll-mx',
         unit: 'rem',
         type: SyntaxRuleType.Shorthand,
         declarations: ['scroll-margin-left', 'scroll-margin-right'],
         namespaces: ['spacing']
     },
-    'scroll-margin-y': {
+    {
+        name: 'scroll-margin-y',
         key: 'scroll-my',
         unit: 'rem',
         type: SyntaxRuleType.Shorthand,
         declarations: ['scroll-margin-top', 'scroll-margin-bottom'],
         namespaces: ['spacing']
     },
-    'scroll-margin': {
+    {
+        name: 'scroll-margin',
         key: 'scroll-m',
         unit: 'rem',
         type: SyntaxRuleType.NativeShorthand,
         namespaces: ['spacing']
     },
-    // scroll padding
-    'scroll-padding-left': {
+    {
+        name: 'scroll-padding-left',
         key: 'scroll-pl',
         type: SyntaxRuleType.Native,
         unit: 'rem',
         namespaces: ['spacing']
     },
-    'scroll-padding-right': {
+    {
+        name: 'scroll-padding-right',
         key: 'scroll-pr',
         type: SyntaxRuleType.Native,
         unit: 'rem',
         namespaces: ['spacing']
     },
-    'scroll-padding-top': {
+    {
+        name: 'scroll-padding-top',
         key: 'scroll-pt',
         type: SyntaxRuleType.Native,
         unit: 'rem',
         namespaces: ['spacing']
     },
-    'scroll-padding-bottom': {
+    {
+        name: 'scroll-padding-bottom',
         key: 'scroll-pb',
         type: SyntaxRuleType.Native,
         unit: 'rem',
         namespaces: ['spacing']
     },
-    'scroll-padding-x': {
+    {
+        name: 'scroll-padding-x',
         key: 'scroll-px',
         unit: 'rem',
         type: SyntaxRuleType.Shorthand,
         declarations: ['scroll-padding-left', 'scroll-padding-right'],
         namespaces: ['spacing']
     },
-    'scroll-padding-y': {
+    {
+        name: 'scroll-padding-y',
         key: 'scroll-py',
         unit: 'rem',
         type: SyntaxRuleType.Shorthand,
         declarations: ['scroll-padding-top', 'scroll-padding-bottom'],
         namespaces: ['spacing']
     },
-    'scroll-padding': {
+    {
+        name: 'scroll-padding',
         key: 'scroll-p',
         unit: 'rem',
         type: SyntaxRuleType.NativeShorthand,
         namespaces: ['spacing']
     },
-    // scroll snap
-    'scroll-snap-align': {
+    {
+        name: 'scroll-snap-align',
         aliasGroups: ['scroll-snap'],
         values: ['start', 'end', 'center'],
         type: SyntaxRuleType.Native
     },
-    'scroll-snap-stop': {
+    {
+        name: 'scroll-snap-stop',
         aliasGroups: ['scroll-snap'],
         values: ['normal', 'always'],
         type: SyntaxRuleType.Native
     },
-    'scroll-snap-type': {
+    {
+        name: 'scroll-snap-type',
         aliasGroups: ['scroll-snap'],
         values: ['x', 'y', 'block', 'inline', 'both'],
         type: SyntaxRuleType.Native
     },
-    'will-change': {
+    {
+        name: 'will-change',
         type: SyntaxRuleType.Native
     },
-    'writing-mode': {
+    {
+        name: 'writing-mode',
         key: 'writing',
         type: SyntaxRuleType.Native
     },
-    direction: {
+    {
+        name: 'direction',
         type: SyntaxRuleType.Native
     },
-    'shape-outside': {
+    {
+        name: 'shape-outside',
         key: 'shape',
         type: SyntaxRuleType.Native
     },
-    'shape-margin': {
+    {
+        name: 'shape-margin',
         kind: 'number',
         unit: 'rem',
         type: SyntaxRuleType.Native,
         namespaces: ['spacing']
     },
-    'shape-image-threshold': {
+    {
+        name: 'shape-image-threshold',
         type: SyntaxRuleType.Native
     },
-    'clip-path': {
+    {
+        name: 'clip-path',
         key: 'clip',
         type: SyntaxRuleType.Native
     },
-    quotes: {
+    {
+        name: 'quotes',
         type: SyntaxRuleType.Native
     },
-    'mask-image': {
+    {
+        name: 'mask-image',
         type: SyntaxRuleType.Native,
         declarations: ['-webkit-mask-image', 'mask-image']
     },
-    group: {
+    {
+        name: 'group',
         matcher: '^\\{.+?\\}',
         type: SyntaxRuleType.Shorthand,
         declarer: 'core.group'
     },
-    variable: {
+    {
+        name: 'variable',
         matcher: '^\\$[\\w-]+:', // don't use 'rem' as default, because css variable is common API
         type: SyntaxRuleType.Shorthand,
         declarer: 'core.variable'
-    },
-} satisfies Record<string, SyntaxRuleDefinition>
+    }
+] satisfies SyntaxRuleDefinitions
 
 export default rules

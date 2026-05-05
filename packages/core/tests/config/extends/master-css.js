@@ -7,16 +7,13 @@ const config = {
         config1,
         config2
     ],
-    variables:  {
-        third: '$color-black'
-    },
-    modes: {
-        dark: {
-            first: '$color-black',
-            second: '$color-black',
-            fourth: '$color-black'
-        }
-    }
+    variables: [
+        { key: 'third', value: '$color-black' },
+        { key: 'first', value: '$color-black', mode: 'dark' },
+        { key: 'second', value: '$color-black', mode: 'dark' },
+        { key: 'fourth', value: '$color-black', mode: 'dark' },
+    ],
+    modes: ['dark']
 }
 
 export default config

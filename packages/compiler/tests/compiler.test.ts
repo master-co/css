@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { compileCSS } from '../src'
+import { SyntaxRuleType } from '@master/css'
 
 function process(css: string, classes?: string[]) {
     return compileCSS(css, { classes }).css
@@ -111,11 +112,12 @@ describe.concurrent('@master/css-compiler', () => {
             }
         `)
 
-        expect(result.config.components?.card).toMatchObject({
+        expect(result.config.components?.card).toMatchObject([{
+            selector: '&',
             declarations: {
                 border: '1px solid var(--color-ring)'
             }
-        })
+        }])
         expect(result.css).toContain('.card{border:1px solid var(--color-ring)}')
     })
 
@@ -197,25 +199,47 @@ describe.concurrent('@master/css-compiler', () => {
                     display: inline-flex;
                 }
             }
+
+            @layer utilities {
+                .content-auto {
+                    content-visibility: auto;
+                }
+            }
         `)
 
         expect(result.config).toMatchObject({
-            variables: {
-                color: {
-                    primary: '#123'
+            variables: [
+                {
+                    namespace: 'color',
+                    key: 'primary',
+                    value: '#123'
+                },
+                {
+                    namespace: 'screen',
+                    key: 'md',
+                    value: 48
                 }
-            },
-            screens: {
-                md: 48
-            },
+            ],
             components: {
-                btn: {
-                    classNames: ['bg:primary'],
+                btn: [
+                    'bg:primary',
+                    {
+                        selector: '&',
+                        declarations: {
+                            display: 'inline-flex'
+                        }
+                    }
+                ]
+            },
+            rules: [
+                {
+                    name: 'content-auto',
+                    type: SyntaxRuleType.Utility,
                     declarations: {
-                        display: 'inline-flex'
+                        'content-visibility': 'auto'
                     }
                 }
-            }
+            ]
         })
         expect(result.componentNames).toEqual(['btn'])
         expect(result.generatedCSS).toContain('@layer components')

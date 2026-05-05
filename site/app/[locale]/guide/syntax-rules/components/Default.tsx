@@ -16,13 +16,13 @@ const Default = () =>
                 </thead>
                 <tbody>
                     {
-                        Object.keys(rules)
-                            .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }))
-                            .map((eachSyntaxName) => {
-                                const rule = rules[eachSyntaxName as keyof typeof rules] as unknown as any
+                        rules
+                            .filter((rule) => rule.type !== SyntaxRuleType.Utility)
+                            .sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }))
+                            .map((rule) => {
                                 return (
-                                    <tr key={eachSyntaxName}>
-                                        <th><InlineCode className='white-space:nowrap'>{eachSyntaxName}</InlineCode></th>
+                                    <tr key={rule.name}>
+                                        <th><InlineCode className='white-space:nowrap'>{rule.name}</InlineCode></th>
                                         <td>
                                             {rule.type
                                                 ? <code>{SyntaxRuleType[rule.type]}</code>

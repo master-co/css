@@ -1,104 +1,61 @@
-
-import { describe, it, expect } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import { ExtendedConfig, minifyExtendedConfig } from '../../src'
 
 describe('minifyExtendedConfig', () => {
     it('should hoist identical variables across all modes', () => {
         const config = {
-            variables: {},
-            modes: {
-                light: {
-                    white: { name: 'white', key: 'white', value: '#fff' },
-                    black: { name: 'black', key: 'black', value: '#000' },
-                },
-                dark: {
-                    white: { name: 'white', key: 'white', value: '#fff' },
-                    black: { name: 'black', key: 'black', value: '#000' },
-                },
-            },
-        } as unknown as ExtendedConfig
+            variables: [
+                { key: 'white', value: '#fff', mode: 'light' },
+                { key: 'black', value: '#000', mode: 'light' },
+                { key: 'white', value: '#fff', mode: 'dark' },
+                { key: 'black', value: '#000', mode: 'dark' },
+            ],
+            modes: ['light', 'dark']
+        } as ExtendedConfig
 
         expect(minifyExtendedConfig(config)).toEqual({
-            variables: {
-                white: { name: 'white', key: 'white', value: '#fff' },
-                black: { name: 'black', key: 'black', value: '#000' },
-            },
+            variables: [
+                { key: 'white', value: '#fff' },
+                { key: 'black', value: '#000' },
+            ],
+            modes: ['light', 'dark']
         })
     })
 
     it('should retain mode variables if values differ', () => {
         const config = {
-            variables: {},
-            modes: {
-                light: {
-                    gray: { name: 'gray', key: 'gray', value: '#888' },
-                },
-                dark: {
-                    gray: { name: 'gray', key: 'gray', value: '#444' },
-                },
-            },
-        } as unknown as ExtendedConfig
+            variables: [
+                { key: 'gray', value: '#888', mode: 'light' },
+                { key: 'gray', value: '#444', mode: 'dark' },
+            ],
+            modes: ['light', 'dark']
+        } as ExtendedConfig
 
-        expect(minifyExtendedConfig(config)).toEqual({
-            modes: {
-                light: {
-                    gray: { name: 'gray', key: 'gray', value: '#888' },
-                },
-                dark: {
-                    gray: { name: 'gray', key: 'gray', value: '#444' },
-                },
-            },
-        })
+        expect(minifyExtendedConfig(config)).toEqual(config)
     })
 
     it('should not hoist if any mode is missing the variable', () => {
         const config = {
-            modes: {
-                light: {
-                    common: { name: 'common', key: 'common', value: 'shared' },
-                },
-                dark: {},
-            },
-        } as unknown as ExtendedConfig
+            variables: [
+                { key: 'common', value: 'shared', mode: 'light' },
+            ],
+            modes: ['light', 'dark']
+        } as ExtendedConfig
 
-        expect(minifyExtendedConfig(config)).toEqual({
-            modes: {
-                light: {
-                    common: { name: 'common', key: 'common', value: 'shared' },
-                },
-                dark: {},
-            },
-        })
+        expect(minifyExtendedConfig(config)).toEqual(config)
     })
 
     it('should not overwrite conflicting existing variables', () => {
         const config = {
-            variables: {
-                red: { name: 'red', key: 'red', value: 'conflict' },
-            },
-            modes: {
-                light: {
-                    red: { name: 'red', key: 'red', value: 'real' },
-                },
-                dark: {
-                    red: { name: 'red', key: 'red', value: 'real' },
-                },
-            },
-        } as unknown as ExtendedConfig
+            variables: [
+                { key: 'red', value: 'conflict' },
+                { key: 'red', value: 'real', mode: 'light' },
+                { key: 'red', value: 'real', mode: 'dark' },
+            ],
+            modes: ['light', 'dark']
+        } as ExtendedConfig
 
-        expect(minifyExtendedConfig(config)).toEqual({
-            variables: {
-                red: { name: 'red', key: 'red', value: 'conflict' },
-            },
-            modes: {
-                light: {
-                    red: { name: 'red', key: 'red', value: 'real' },
-                },
-                dark: {
-                    red: { name: 'red', key: 'red', value: 'real' },
-                },
-            },
-        })
+        expect(minifyExtendedConfig(config)).toEqual(config)
     })
 
     it('should handle empty config gracefully', () => {

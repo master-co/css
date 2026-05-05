@@ -6,7 +6,7 @@ import { Settings } from '../../src'
 const settings: Settings = {
     config: {
         components: {
-            btn: 'inline-block'
+            btn: ['inline-block']
         }
     }
 }

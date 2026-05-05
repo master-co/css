@@ -1,5 +1,5 @@
 export default {
-    at: {
+    atRuleAliases: {
         landscape: '@media(orientation:landscape)' /* [!code highlight] */
     }
 }

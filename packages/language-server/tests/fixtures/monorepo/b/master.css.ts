@@ -1,7 +1,7 @@
 import { Config } from '@master/css'
 
 export default {
-    variables: {
-        custom: '#ffff00'
-    }
+    variables: [
+        { key: 'custom', value: '#ffff00' }
+    ]
 } as Config

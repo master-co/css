@@ -6,6 +6,6 @@ export default {
         preset
     ],
     components: {
-        'fixture-button': 'inline-flex fg:white bg:blue'
+        'fixture-button': ['inline-flex fg:white bg:blue']
     }
 } as Config

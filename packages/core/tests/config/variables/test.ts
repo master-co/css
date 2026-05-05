@@ -19,7 +19,7 @@ describe.concurrent('sigil', () => {
         expect(createCSS().create('fg:$color-white/.5')?.text).toContain('oklch(100% 0 none/0.5)')
     })
     it.concurrent('sigil in config', () => {
-        expect(createCSS({ variables: { a: '$color-white' } }).create('fg:a')?.text).toContain('oklch(100% 0 none)')
+        expect(createCSS({ variables: [{ key: 'a', value: '$color-white' }] }).create('fg:a')?.text).toContain('oklch(100% 0 none)')
     })
 })
 
@@ -45,34 +45,15 @@ test.concurrent('rule variables', () => {
             general: '.content\\:delimiter{content:"123"}'
         },
         'content:delimiter',
-        {
-            variables: {
-                content: { delimiter: '"123"' }
-            }
-        }
+        { variables: [{ namespace: 'content', key: 'delimiter', value: '"123"' }] }
     )
     expectLayers(
         {
             general: '.content\\:delimiter{content:"|"}'
         },
         'content:delimiter',
-        {
-            variables: {
-                content: { delimiter: '"|"' }
-            }
-        }
+        { variables: [{ namespace: 'content', key: 'delimiter', value: '"|"' }] }
     )
-    expect(createCSS({
-        variables: {
-            border: {
-                input: '1|solid|test-70'
-            },
-            test: { 70: '#000' }
-        }
-    }).create('b:input')?.text).toBe('.b\\:input{border:0.0625rem solid rgb(0 0 0)}')
-    expect(createCSS({
-        variables: {
-            zero: 0
-        }
-    }).create('box-shadow:0|0|$(zero)|2|black')?.text).toContain('box-shadow:0rem 0rem 0rem 0.125rem oklch(0% 0 none)')
+    expect(createCSS({ variables: [{ namespace: 'border', key: 'input', value: '1|solid|test-70' }, { namespace: 'test', key: '70', value: '#000' }] }).create('b:input')?.text).toBe('.b\\:input{border:0.0625rem solid rgb(0 0 0)}')
+    expect(createCSS({ variables: [{ key: 'zero', value: 0 }] }).create('box-shadow:0|0|$(zero)|2|black')?.text).toContain('box-shadow:0rem 0rem 0rem 0.125rem oklch(0% 0 none)')
 })

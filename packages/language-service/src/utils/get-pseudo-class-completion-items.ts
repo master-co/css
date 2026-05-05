@@ -1,4 +1,4 @@
-import { MasterCSS, createCSS, SelectorDefinitions, generateCSS } from '@master/css'
+import { MasterCSS, createCSS, SelectorAliasDefinitions, generateCSS } from '@master/css'
 import cssDataProvider from './css-data-provider'
 import { type CompletionItem, CompletionItemKind } from 'vscode-languageserver-protocol'
 import sortCompletionItems from './sort-completion-items'
@@ -62,9 +62,9 @@ export default function getPseudoClassCompletionItems(css: MasterCSS = createCSS
         })
 
     const selectors = {
-        ...css.config.selectors,
+        ...css.config.selectorAliases,
         ':of': ':of',
-    } as SelectorDefinitions
+    } as SelectorAliasDefinitions
 
     for (const name in selectors) {
         if (name.startsWith('::')) continue

@@ -77,10 +77,8 @@ it.concurrent('checks media order', () => {
         { name: 'hidden@tablet&<desktop' },
         { name: '{flex-row}@2xs&<xs' }
     ]
-    expect(createCSS({
-        at: {
+    expect(createCSS({ atRuleAliases: {
             tablet: 391,
             desktop: 1025,
-        }
-    }).add(...shuffle([...input])).generalLayer.rules).toMatchObject(output)
+        } }).add(...shuffle([...input])).generalLayer.rules).toMatchObject(output)
 })

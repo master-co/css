@@ -5,23 +5,12 @@ test('prerender', async ({ page }) => {
     const text = '@layer theme{:root{--color-foo:rgb(0 0 0)}.light{--color-foo:rgb(255 255 255)}.dark{--color-foo:rgb(100 100 100)}}'
     await init(page, text, {
         modeTrigger: 'class',
-        variables: {
-            color: {
-                foo: 'rgb(0 0 0)'
-            }
-        },
-        modes: {
-            light: {
-                color: {
-                    foo: 'rgb(255 255 255)'
-                }
-            },
-            dark: {
-                color: {
-                    foo: 'rgb(100 100 100)'
-                }
-            }
-        }
+        variables: [
+            { namespace: 'color', key: 'foo', value: 'rgb(0 0 0)' },
+            { namespace: 'color', key: 'foo', value: 'rgb(255 255 255)', mode: 'light' },
+            { namespace: 'color', key: 'foo', value: 'rgb(100 100 100)', mode: 'dark' }
+        ],
+        modes: ['light', 'dark']
     })
     expect(await page.evaluate(() => globalThis.cssRuntime.themeLayer.text)).toEqual(text)
 })

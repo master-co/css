@@ -6,6 +6,6 @@ export default {
         card
     ],
     components: {
-        btn: 'inline-flex'
+        btn: ['inline-flex']
     }
 } as Config

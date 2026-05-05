@@ -6,35 +6,24 @@ import init from './init'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 
-const variables = {
-    color: {
-        first: '#111111',
-        third: '#666666',
-        fourth: '#888888',
-    }
-}
+const variables = [
+    { namespace: 'color', key: 'first', value: '#111111' },
+    { namespace: 'color', key: 'third', value: '#666666' },
+    { namespace: 'color', key: 'fourth', value: '#888888' },
+    { namespace: 'color', key: 'first', value: '#333333', mode: 'light' },
+    { namespace: 'color', key: 'second', value: '#555555', mode: 'light' },
+    { namespace: 'color', key: 'third', value: '#777777', mode: 'light' },
+    { namespace: 'color', key: 'fourth', value: '#000000', mode: 'light' },
+    { namespace: 'color', key: 'fifth', value: '#033333', mode: 'light' },
+    { namespace: 'color', key: 'sixth', value: '#666666', mode: 'light' },
+    { namespace: 'color', key: 'first', value: '#222222', mode: 'dark' },
+    { namespace: 'color', key: 'second', value: '#444444', mode: 'dark' },
+    { namespace: 'color', key: 'third', value: '#666666', mode: 'dark' },
+    { namespace: 'color', key: 'fourth', value: '#999999', mode: 'dark' },
+    { namespace: 'color', key: 'fifth', value: '#022222', mode: 'dark' }
+]
 
-const modes = {
-    light: {
-        color: {
-            first: '#333333',
-            second: '#555555',
-            third: '#777777',
-            fourth: '#000000',
-            fifth: '#033333',
-            sixth: '#666666'
-        }
-    },
-    dark: {
-        color: {
-            first: '#222222',
-            second: '#444444',
-            third: '#666666',
-            fourth: '#999999',
-            fifth: '#022222'
-        }
-    }
-}
+const modes = ['light', 'dark']
 
 test.beforeEach(async ({ page }) => {
     await init(page, '', { modeTrigger: 'class' })

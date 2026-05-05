@@ -1,7 +1,5 @@
 export default {
-    variables: {
-        screen: {
-            desktop: 1280 /* screen-desktop */ /* [!code highlight] */
-        }
-    }
+    variables: [
+        { namespace: 'screen', key: 'desktop', value: 1280 /* screen-desktop */ } /* [!code highlight] */
+    ]
 }

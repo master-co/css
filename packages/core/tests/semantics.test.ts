@@ -13,13 +13,9 @@ test.concurrent('utilities', () => {
             general: '.\\@my-animation{animation:1s linear infinite rotate}'
         },
         '@my-animation',
-        {
-            utilities: {
-                '@my-animation': {
+        { rules: [{ name: '@my-animation', type: -4, declarations: {
                     animation: '1s linear infinite rotate'
-                }
-            }
-        }
+                } }] }
     )
 
     expect(createCSS(config).create('hide-text')?.text).toBe('.hide-text{font-size:0px}')

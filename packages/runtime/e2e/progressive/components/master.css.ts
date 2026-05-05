@@ -2,11 +2,9 @@ import { Config } from '@master/css'
 
 export default {
     components: {
-        btn: 'bg:foo'
+        btn: ['bg:foo']
     },
-    variables: {
-        color: {
-            foo: 'oklch(0% 0 none)',
-        }
-    }
+    variables: [
+        { namespace: 'color', key: 'foo', value: 'oklch(0% 0 none)' }
+    ]
 } satisfies Config

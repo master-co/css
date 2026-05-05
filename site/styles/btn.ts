@@ -2,13 +2,11 @@ import type { Config } from '@master/css'
 
 export default {
     components: {
-        btn: {
-            '': 'inline-flex items-center justify-center font:semibold outline-offset:-1',
-            'xs': 'r:4 px:2x font:12 h:6x',
-            'sm': 'r:6 px:3x font:12 h:8x',
-            'md': 'r:6 px:4x font:14 h:10x',
-            'lg': 'r:8 px:5x font:16 h:12x',
-            'xl': 'r:10 px:6x font:16 h:14x',
-        }
+        btn: ['inline-flex items-center justify-center font:semibold outline-offset:-1'],
+        'btn-xs': ['r:4 px:2x font:12 h:6x'],
+        'btn-sm': ['r:6 px:3x font:12 h:8x'],
+        'btn-md': ['r:6 px:4x font:14 h:10x'],
+        'btn-lg': ['r:8 px:5x font:16 h:12x'],
+        'btn-xl': ['r:10 px:6x font:16 h:14x']
     }
 } as Config

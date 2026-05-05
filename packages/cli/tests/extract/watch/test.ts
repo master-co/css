@@ -39,13 +39,11 @@ export default options
 const originConfigText = `import type { Config } from '@master/css'
 const config: Config = {
     components: {
-        btn: 'bg:red'
+        btn: ['bg:red']
     },
-    variables: {
-        color: {
-            primary: '$(color-blue)'
-        }
-    }
+    variables: [
+        { namespace: 'color', key: 'primary', value: '$(color-blue)' }
+    ]
 }
 
 export default config

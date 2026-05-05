@@ -1,4 +1,5 @@
-import { test } from 'vitest'
+import { expect, test } from 'vitest'
+import { createCSS } from '../../src'
 import { expectLayers } from '../test'
 
 test.concurrent('base and preset', async () => {
@@ -17,11 +18,7 @@ test.concurrent('with selectors', () => {
 })
 
 test.concurrent('using components', async () => {
-    expectLayers({ components: '@layer base{.btn{display:block}}' }, 'btn', {
-        components: {
-            'btn': 'block@base'
-        }
-    })
+    expect(() => createCSS({ components: { btn: ['block@base'] } })).toThrow('cannot include at-rule class')
 })
 
 test.concurrent('conflicts', async () => {

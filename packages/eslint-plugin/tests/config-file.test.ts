@@ -14,7 +14,7 @@ test('loads Master CSS TypeScript config files from the ESLint cwd', async () =>
 
             export default {
                 components: {
-                    'fixture-card': 'block'
+                    'fixture-card': ['block']
                 }
             } as Config
         `)
@@ -27,7 +27,7 @@ test('loads Master CSS TypeScript config files from the ESLint cwd', async () =>
                     preset
                 ],
                 components: {
-                    'fixture-button': 'inline-flex'
+                    'fixture-button': ['inline-flex']
                 }
             } as Config
         `)

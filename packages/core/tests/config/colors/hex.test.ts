@@ -9,35 +9,15 @@ import { expectLayers } from '../../test'
  * 3. --primary: 0 0 0
  */
 test.concurrent('#hex to rgb()', () => {
-    expect(createCSS({
-        variables: { primary: '#000000' }
-    }).create('fg:primary')?.text).toBe('.fg\\:primary{color:rgb(0 0 0)}')
+    expect(createCSS({ variables: [{ key: 'primary', value: '#000000' }] }).create('fg:primary')?.text).toBe('.fg\\:primary{color:rgb(0 0 0)}')
 })
 
 test.concurrent('color/opacity to rgb(r g b/opacity)', () => {
-    expect(createCSS({
-        variables: { primary: '#000000' }
-    }).create('fg:primary/.5')?.text).toBe('.fg\\:primary\\/\\.5{color:rgb(0 0 0/0.5)}')
+    expect(createCSS({ variables: [{ key: 'primary', value: '#000000' }] }).create('fg:primary/.5')?.text).toBe('.fg\\:primary\\/\\.5{color:rgb(0 0 0/0.5)}')
 })
 
 describe.concurrent('with themes', () => {
-    const config: Config = {
-        variables: {
-            primary: '#000000'
-        },
-        modes: {
-            light: {
-                primary: '#969696'
-            },
-            dark: {
-                primary: '#ffffff'
-            },
-            chrisma: {
-                primary: '$color-black/.5'
-            }
-        },
-        modeTrigger: 'class'
-    }
+    const config: Config = { variables: [{ key: 'primary', value: '#000000' }, { key: 'primary', value: '#969696', mode: 'light' }, { key: 'primary', value: '#ffffff', mode: 'dark' }, { key: 'primary', value: '$color-black/.5', mode: 'chrisma' }], modes: ['light', 'dark', 'chrisma'], modeTrigger: 'class' }
 
     it.concurrent('checks resolved colors', () => {
         const css = createCSS(config)
@@ -48,9 +28,9 @@ describe.concurrent('with themes', () => {
             space: 'rgb',
             value: '0 0 0',
             modes: {
-                'dark': { space: 'rgb', value: '255 255 255' },
-                'light': { space: 'rgb', value: '150 150 150' },
-                'chrisma': { space: 'oklch', value: '0% 0 none', alpha: .5 }
+                dark: { space: 'rgb', value: '255 255 255' },
+                light: { space: 'rgb', value: '150 150 150' },
+                chrisma: { space: 'oklch', value: '0% 0 none', alpha: .5 },
             }
         })
     })

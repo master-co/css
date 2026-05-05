@@ -1,19 +1,8 @@
 /** @type {import('@master/css').Config} */
 export default {
-    modes: {
-        light: {
-            color: {
-                text: {
-                    primary: '$color-yellow-50'
-                }
-            }
-        },
-        dark: {
-            color: {
-                text: {
-                    primary: '$color-amber-20'
-                }
-            }
-        }
-    }
+    variables: [
+        { namespace: 'color.text', key: 'primary', value: '$color-yellow-50', mode: 'light' },
+        { namespace: 'color.text', key: 'primary', value: '$color-amber-20', mode: 'dark' }
+    ],
+    modes: ['light', 'dark']
 }

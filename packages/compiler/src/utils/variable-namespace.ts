@@ -1,12 +1,14 @@
-import { rules, variables } from '@master/css'
+import { rules, SyntaxRuleType, variables } from '@master/css'
 
-const objectVariableNamespaces = Object.entries(variables)
-    .filter(([, value]) => value && typeof value === 'object' && !Array.isArray(value))
-    .map(([key]) => key)
+const variableNamespaces = variables
+    .map(({ namespace }) => namespace)
+    .filter(Boolean) as string[]
 
 const namespaces = Array.from(new Set([
-    ...Object.keys(rules),
-    ...objectVariableNamespaces,
+    ...rules
+        .filter(({ type }) => type !== SyntaxRuleType.Utility)
+        .map(({ name }) => name),
+    ...variableNamespaces,
     'screen',
     'radius'
 ])).sort((a, b) => b.length - a.length)
