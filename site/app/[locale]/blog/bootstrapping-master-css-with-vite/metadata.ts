@@ -1,8 +1,8 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Bootstrapping Master CSS with Vite in seconds',
-    description: 'The fast and easy way to start using Master CSS with Vite — zero config required.',
+    title: 'Master CSS Vite: one plugin for every rendering mode',
+    description: 'A cleaner Vite integration for runtime rendering, static extraction, pre-rendering, and progressive rendering.',
     category: 'New Feature',
     authors: [
         { name: 'Aron' }

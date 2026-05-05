@@ -1,17 +1,40 @@
-As Vite continues to grow rapidly and become the mainstream tool for development, developers are increasingly turning to Vite to build their applications. Initially, we created a Vite plugin solely to integrate the Master CSS static extraction mode, with other modes requiring manual setup. Now, with the `@master/css.vite` plugin, all rendering modes of Master CSS can be integrated with zero configuration.
+Vite is one of the best foundations for modern frontend work: fast startup, predictable module graph, first-class plugins, and a build pipeline that is easy to extend without making the application feel heavy.
+
+`@master/css.vite` brings Master CSS into that pipeline as a first-class Vite integration. Instead of choosing between several setup guides, manual runtime imports, extraction scripts, and HTML post-processing steps, you install one plugin and choose the rendering model that matches your application.
+
+The goal is simple: keep Master CSS authoring as direct as markup, while letting Vite own the integration work.
 
 <ArticleTOC data={toc}/>
 
 ---
 
-## All-in-one Vite plugin
-We've simplified the setup process, reducing the number of steps and removing the need for guides on different rendering modes, as the setup has become easier.
+## One plugin, four rendering modes
+
+The original Vite integration focused on Static Extraction. It worked well for projects that wanted a compiled stylesheet, but the rest of the Master CSS rendering story still required manual setup.
+
+The new `@master/css.vite` plugin unifies the modes behind one entry point:
+
+- `runtime`: injects the Master CSS runtime and config so styles can be generated in the browser.
+- `extract`: imports `virtual:master.css` and runs the static extraction workflow.
+- `pre-render`: renders HTML output and injects the CSS needed by those documents.
+- `progressive`: combines pre-rendered first-response CSS with the runtime engine for dynamic UI.
+
+That matters because not every Vite app has the same shape. A design system playground, a documentation site, a SPA, and a partially pre-rendered app should not be forced into the same CSS delivery strategy.
+
+Master CSS now lets the Vite project choose.
+
+---
+
+## Install it
 
 If you don't have a project yet, create one using `npm create vite@latest my-app`.
+
 ```bash action=install
 @master/css.vite@rc
 ```
-Once installed, simply add the plugin to `vite.config.js` to enable any mode:
+
+Then register the plugin:
+
 ```js name=vite.config.js
 import { defineConfig } from 'vite'
 import masterCSS from '@master/css.vite' // [!code highlight]
@@ -22,28 +45,119 @@ export default defineConfig({
     ]
 })
 ```
-By default, the `options.mode` is set to the classic `runtime` mode, and you can choose other [available modes](/guide/rendering-modes#available-modes) as needed.
 
-Now run your vite development server and start using Master CSS!
+By default, the plugin uses `runtime` mode. That is the most forgiving way to start: Master CSS reads classes in the browser, generates the required rules, and keeps working as your UI changes.
+
+Run the Vite dev server and start writing Master CSS classes:
+
 ```bash action=run
-run dev
+dev
 ```
 
 ---
 
-## Other integrations
-Thanks to Vite's thriving ecosystem, we’ve also established framework integrations for [Nuxt](/guide/installation/nuxtjs)
+## Choose the right mode
+
+### Runtime
+
+Use runtime mode when you want the simplest integration and maximum flexibility. It is a strong default for SPAs, prototypes, internal tools, and applications where classes can appear after hydration.
+
+```js name=vite.config.js
+import { defineConfig } from 'vite'
+import masterCSS from '@master/css.vite'
+
+export default defineConfig({
+    plugins: [
+        masterCSS()
+    ]
+})
+```
+
+### Static Extraction
+
+Use extract mode when your classes are visible in source and you want a compiled CSS asset before runtime. This is the closest mode to traditional utility-first build workflows.
+
+```js name=vite.config.js
+import { defineConfig } from 'vite'
+import masterCSS from '@master/css.vite'
+
+export default defineConfig({
+    plugins: [
+        masterCSS({ mode: 'extract' })
+    ]
+})
+```
+
+### Pre-rendering
+
+Use pre-render mode when Vite emits HTML that can be styled before the browser runs JavaScript. The plugin renders the matching CSS and injects it into the document.
+
+```js name=vite.config.js
+import { defineConfig } from 'vite'
+import masterCSS from '@master/css.vite'
+
+export default defineConfig({
+    plugins: [
+        masterCSS({ mode: 'pre-render' })
+    ]
+})
+```
+
+### Progressive Rendering
+
+Use progressive mode when you want the first HTML response to carry the CSS it needs, while the runtime continues to support client-only state, late-rendered components, and dynamic UI.
+
+```js name=vite.config.js
+import { defineConfig } from 'vite'
+import masterCSS from '@master/css.vite'
+
+export default defineConfig({
+    plugins: [
+        masterCSS({ mode: 'progressive' })
+    ]
+})
+```
+
+This is the mode that best represents the Master CSS rendering model: render what can be known early, keep the runtime for what becomes known later.
+
+---
+
+## What the plugin handles
+
+`@master/css.vite` is not just a wrapper around an import. It participates in the Vite pipeline:
+
+- resolves the Master CSS config as a virtual module;
+- detects common Vite entry modules;
+- injects `@master/normal.css` by default;
+- injects the runtime where runtime behavior is enabled;
+- exposes `virtual:master.css` for extraction workflows;
+- handles static extraction output;
+- pre-renders HTML when the selected mode requires it;
+- applies FOUC avoidance for runtime-first rendering.
+
+That is the difference between "Master CSS works in a Vite app" and "Master CSS feels like a Vite-native tool."
+
+---
+
+## Built for Vite-powered frameworks
+
+Vite is also the build foundation for many frameworks. `@master/css.vite` is the lower-level integration that makes the core Vite workflow work well, while framework packages can provide a more native setup when the framework has its own conventions.
+
+[Nuxt](/guide/installation/nuxtjs) uses a module:
+
 ```ts name=nuxt.config.ts
 export default defineNuxtConfig({
     modules: [
-        '@master/css.nuxt' // 'progressive' [!code highlight]
+        '@master/css.nuxt' // progressive by default [!code highlight]
         // ['@master/css.nuxt', { mode: 'extract' }]
         // ['@master/css.nuxt', { mode: 'runtime' }]
         // ['@master/css.nuxt', { mode: 'pre-render' }]
     ]
 })
 ```
-and [Astro](/guide/installation/astro).
+
+[Astro](/guide/installation/astro) uses an integration:
+
 ```ts name=astro.config.ts
 import masterCSS from '@master/css.astro'
 
@@ -57,4 +171,12 @@ export default defineConfig({
 
 ---
 
-That's it! You can now use Master CSS in your any project with ease. For full information, check out the [installation guide](/guide/installation).
+## A better default for Vite projects
+
+The value of this release is not only that setup is shorter. It is that the rendering strategy is now explicit and local to the Vite config.
+
+Start with runtime mode when you want speed and flexibility. Move to Static Extraction when your class graph is source-visible and you want compiled CSS. Use Pre-rendering when the HTML is already available at build time. Choose Progressive Rendering when you want the first page response to be styled early without giving up runtime behavior.
+
+That is the kind of choice a build tool should enable: one integration, multiple delivery strategies, and no extra application code when you change modes.
+
+For full setup details, see the [Vite installation guide](/guide/installation/vite) and the [rendering modes guide](/guide/rendering-modes).
