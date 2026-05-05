@@ -1,13 +1,12 @@
 import { describe, expect, it } from 'vitest'
 import { compileCSS } from '../src'
-import { UtilityType } from '@master/css'
 
 function process(css: string, classes?: string[]) {
     return compileCSS(css, { classes }).css
 }
 
 describe.concurrent('@master/css-compiler', () => {
-    it('generates variables, utilities, components, selectors, screens, at-rules, and animations', () => {
+    it('generates variables, components, selectors, screens, at-rules, and animations', () => {
         const css = process(`
             @master {
                 root-size: 16;
@@ -32,19 +31,12 @@ describe.concurrent('@master/css-compiler', () => {
 
             @layer components {
                 .btn {
-                    @apply "ai:center jc:center px:1rem py:.5rem bg:primary r:card content-auto";
+                    @apply "ai:center jc:center px:1rem py:.5rem bg:primary r:card";
                     display: inline-flex;
                 }
 
                 .card {
                     @apply "p:1rem bg:base r:card";
-                }
-            }
-
-            @layer utilities {
-                .content-auto {
-                    content-visibility: auto;
-                    contain-intrinsic-size: auto 500px;
                 }
             }
 
@@ -63,7 +55,6 @@ describe.concurrent('@master/css-compiler', () => {
 
         expect(css).toContain('@layer base,theme,preset,components,general;')
         expect(css).toContain('@layer components')
-        expect(css).toContain('.btn{content-visibility:auto;contain-intrinsic-size:auto 500px}')
         expect(css).toContain('.btn{border-radius:0.75rem}')
         expect(css).toContain('.btn{padding-left:1rem;padding-right:1rem}')
         expect(css).toContain('.btn{padding-top:0.5rem;padding-bottom:0.5rem}')
@@ -71,7 +62,6 @@ describe.concurrent('@master/css-compiler', () => {
         expect(css).toContain('.btn{background-color:var(--color-primary)}')
         expect(css).toContain('.btn{justify-content:center}')
         expect(css).toContain('.btn{display:inline-flex}')
-        expect(css).toContain('content-visibility:auto')
         expect(css).toContain('border-radius:0.75rem')
         expect(css).toContain('@media (width>=3rem){.block\\@md{display:block}}')
         expect(css).toContain('.w\\:10\\:\\:scrollbar::-webkit-scrollbar')
@@ -121,32 +111,43 @@ describe.concurrent('@master/css-compiler', () => {
         expect(result.css).toContain('.card{border:1px solid var(--color-ring)}')
     })
 
-    it('supports class definition selectors', () => {
+    it('supports component class definition selectors', () => {
         const css = process(`
-            @layer utilities {
-                .content-auto {
-                    content-visibility: auto;
-                }
-            }
-
             @layer components {
                 .btn {
-                    @apply "content-auto";
+                    @apply "block";
                 }
             }
         `)
 
-        expect(css).toContain('.btn{content-visibility:auto}')
+        expect(css).toContain('.btn{display:block}')
+    })
+
+    it('allows modes and selectors inside component @apply', () => {
+        const css = process(`
+            @master {
+                mode-trigger: class;
+            }
+
+            @layer components {
+                .btn {
+                    @apply "block@dark font:16:hover";
+                }
+            }
+        `)
+
+        expect(css).toContain('.dark .btn{display:block}')
+        expect(css).toContain('.btn:hover{font-size:1rem}')
     })
 
     it('rejects naked definition selectors', () => {
         expect(() => process(`
-            @layer utilities {
+            @layer components {
                 content-auto {
                     content-visibility: auto;
                 }
             }
-        `)).toThrow('Utility definition selector must be a single class selector')
+        `)).toThrow('Component definition selector must be a single class selector')
     })
 
     it('rejects @utility', () => {
@@ -154,17 +155,22 @@ describe.concurrent('@master/css-compiler', () => {
             @utility content-auto {
                 content-visibility: auto;
             }
-        `)).toThrow('@utility is not supported; use @layer utilities')
+        `)).toThrow('@utility is not supported')
     })
 
-    it('rejects @apply inside utilities', () => {
-        expect(() => process(`
+    it('leaves @layer utilities untouched for the next design', () => {
+        const result = compileCSS(`
             @layer utilities {
                 .content-auto {
-                    @apply "block";
+                    content-visibility: auto;
                 }
             }
-        `)).toThrow('Utilities only accept declarations')
+        `)
+
+        expect(result.config.utilities).toBeUndefined()
+        expect(result.css).toContain('@layer utilities')
+        expect(result.css).toContain('.content-auto')
+        expect(result.css).toContain('content-visibility: auto')
     })
 
     it('applies master options to the CSS instance', () => {
@@ -199,12 +205,6 @@ describe.concurrent('@master/css-compiler', () => {
                     display: inline-flex;
                 }
             }
-
-            @layer utilities {
-                .content-auto {
-                    content-visibility: auto;
-                }
-            }
         `)
 
         expect(result.config).toMatchObject({
@@ -230,16 +230,7 @@ describe.concurrent('@master/css-compiler', () => {
                         }
                     }
                 ]
-            },
-            utilities: [
-                {
-                    name: 'content-auto',
-                    type: UtilityType.Static,
-                    declarations: {
-                        'content-visibility': 'auto'
-                    }
-                }
-            ]
+            }
         })
         expect(result.componentNames).toEqual(['btn'])
         expect(result.generatedCSS).toContain('@layer components')

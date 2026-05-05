@@ -1,4 +1,4 @@
-import { createCSS, UtilityType } from '@master/css'
+import { createCSS } from '@master/css'
 import { transform } from 'lightningcss'
 import type { PropertiesHyphen } from 'csstype'
 import type {
@@ -380,36 +380,14 @@ function parseComponent(rule: any, parsed: ParsedDirectives) {
     parsed.componentNames.push(name)
 }
 
-function parseUtilityRule(rule: any, config: Config) {
-    const name = parseClassDefinitionSelector(rule.value.selectors)
-    if (!name) {
-        throw new Error('Utility definition selector must be a single class selector')
-    }
-    for (const child of rule.value.rules) {
-        if (child.type !== 'nested-declarations') {
-            throw new Error('Utilities only accept declarations')
-        }
-    }
-    config.utilities ??= []
-    config.utilities.push({
-        name,
-        type: UtilityType.Static,
-        declarations: collectStyleRuleDeclarations(rule) as PropertiesHyphen
-    })
-}
-
 function parseLayerBlock(rule: any, parsed: ParsedDirectives) {
     const layerName = rule.value.name?.length === 1 ? rule.value.name[0] : undefined
-    if (layerName !== 'components' && layerName !== 'utilities') return
+    if (layerName !== 'components') return
     for (const child of rule.value.rules as Rule[]) {
         if (child.type !== 'style') {
             throw new Error(`@layer ${layerName} only accepts class definition rules`)
         }
-        if (layerName === 'components') {
-            parseComponent(child, parsed)
-        } else {
-            parseUtilityRule(child, parsed.config)
-        }
+        parseComponent(child, parsed)
     }
 }
 
@@ -487,12 +465,12 @@ export function compileCSS(source: string, options: CompileCSSOptions = {}): Com
                         return []
                     },
                     utility() {
-                        throw new Error('@utility is not supported; use @layer utilities')
+                        throw new Error('@utility is not supported')
                     }
                 },
                 'layer-block'(rule) {
                     const layerName = rule.value.name?.length === 1 ? rule.value.name[0] : undefined
-                    if (layerName !== 'components' && layerName !== 'utilities') return
+                    if (layerName !== 'components') return
                     parseLayerBlock(rule, parsed)
                     return []
                 },

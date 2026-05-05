@@ -18,7 +18,8 @@ test.concurrent('with selectors', () => {
 })
 
 test.concurrent('using components', async () => {
-    expect(() => createCSS({ components: { btn: ['block@base'] } })).toThrow('cannot include at-rule class')
+    const css = createCSS({ components: { btn: ['block@base'] } }).add('btn')
+    expect(css.componentsLayer.text).toContain('@layer base{.btn{display:block}}')
 })
 
 test.concurrent('conflicts', async () => {

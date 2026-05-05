@@ -276,12 +276,7 @@ export default class MasterCSS {
             const selectorRules: ComponentEntry['selectorRules'] = []
             for (const item of definition) {
                 if (typeof item === 'string') {
-                    const itemClassNames = normalizeClassNames(item)
-                    const atRuleClassName = itemClassNames.find((className) => className.includes('@'))
-                    if (atRuleClassName) {
-                        throw new Error(`Component "${name}" cannot include at-rule class "${atRuleClassName}"`)
-                    }
-                    classNames.push(...itemClassNames)
+                    classNames.push(...normalizeClassNames(item))
                     continue
                 }
                 const { selector, declarations } = item as ComponentSelectorDefinition

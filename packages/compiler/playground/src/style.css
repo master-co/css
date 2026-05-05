@@ -30,13 +30,6 @@
 
 @at motion-safe @media (prefers-reduced-motion: no-preference);
 
-@layer utilities {
-    .content-auto {
-        content-visibility: auto;
-        contain-intrinsic-size: auto 28rem;
-    }
-}
-
 @layer components {
     .page {
         @apply "grid ai:center jc:center min-h:100vh p:1.25rem bg:panel fg:ink";
@@ -44,8 +37,10 @@
     }
 
     .card {
-        @apply "grid gap:1rem p:card bg:base r:card max-w:42rem content-auto @demo-fade-in|.55s@motion-safe";
+        @apply "grid gap:1rem p:card bg:base r:card max-w:42rem @demo-fade-in|.55s@motion-safe";
         border: 1px solid var(--color-ring);
+        content-visibility: auto;
+        contain-intrinsic-size: auto 28rem;
         box-shadow: 0 22px 70px rgb(17 24 39 / 12%);
     }
 

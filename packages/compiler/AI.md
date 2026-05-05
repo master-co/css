@@ -6,7 +6,7 @@
 
 ## Inputs And Outputs
 
-- Input: CSS containing `@master`, variables, `@mode`, `@at`, `@selector`, `@layer utilities`, `@layer components`, component rules with `@apply`, and `@keyframes`.
+- Input: CSS containing `@master`, variables, `@mode`, `@at`, `@selector`, `@layer components`, component rules with `@apply`, and `@keyframes`.
 - Output: CSS with consumed Master directives removed and generated Master CSS appended.
 
 ## Boundaries
@@ -23,10 +23,9 @@
 - `@mode dark { --color-primary: #456; }`
 - `@at motion-safe @media (prefers-reduced-motion: no-preference);`
 - `@selector ::scrollbar ::-webkit-scrollbar;`
-- `@layer utilities { .content-auto { content-visibility: auto; } }`
-- `@layer components { .btn { @apply "inline-flex content-auto"; display: inline-flex; } }`
+- `@layer components { .btn { @apply "inline-flex"; display: inline-flex; } }`
 - `@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }`
-- Utility and component definition selectors must be single class selectors.
+- Component definition selectors must be single class selectors.
 - `@apply` is allowed only in component definitions.
 - `@utility` is not supported.
 
