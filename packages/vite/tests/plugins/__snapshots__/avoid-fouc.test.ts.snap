@@ -2,9 +2,14 @@
 
 exports[`AvoidFOUCPlugin fixture: already-hidden 1`] = `"<html lang="en" hidden><head></head><body></body></html>"`;
 
+exports[`AvoidFOUCPlugin fixture: data-hidden 1`] = `
+"<html data-hidden="until-ready" hidden><head></head><body></body></html>
+"
+`;
+
 exports[`AvoidFOUCPlugin fixture: html-inside-comment 1`] = `
-"<!-- <html hidden> pretend tag -->
-<html><head></head><body></body></html>"
+"<!-- <html> pretend tag -->
+<html hidden><head></head><body></body></html>"
 `;
 
 exports[`AvoidFOUCPlugin fixture: html-multiline 1`] = `

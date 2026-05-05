@@ -4,17 +4,27 @@ import { PluginContext } from '../core'
 import { HTML_ENTRIES } from '../common'
 import { PluginOptions } from '../options'
 
+const HTML_OPEN_TAG_RE = /<html(\s[^>]*)?>/ig
+const HIDDEN_ATTR_RE = /(?:^|\s)hidden(?:[\s=]|$)/i
+
+const isInsideComment = (html: string, index: number) => {
+    return html.lastIndexOf('<!--', index) > html.lastIndexOf('-->', index)
+}
+
 const replace = (html: string) => {
-    return html.replace(
-        /<html(\s[^>]*)?>/i,
-        (match, attrs = '') => {
-            if (/hidden/.test(attrs)) return match
-            if (process.env.DEBUG) {
-                console.log(`[@master/css.vite] Avoid FOUC by adding hidden attribute to <html>`)
-            }
-            return `<html${attrs} hidden>`
-        },
-    )
+    HTML_OPEN_TAG_RE.lastIndex = 0
+    for (const match of html.matchAll(HTML_OPEN_TAG_RE)) {
+        if (match.index === undefined || isInsideComment(html, match.index)) continue
+        const attrs = match[1] || ''
+        if (HIDDEN_ATTR_RE.test(attrs)) return html
+        if (process.env.DEBUG) {
+            console.log(`[@master/css.vite] Avoid FOUC by adding hidden attribute to <html>`)
+        }
+        const start = match.index
+        const end = start + match[0].length
+        return html.slice(0, start) + `<html${attrs} hidden>` + html.slice(end)
+    }
+    return html
 }
 
 export default function AvoidFOUCPlugin(options?: PluginOptions, context?: PluginContext): Plugin {
