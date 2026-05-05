@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
     title: 'Utilities',
-    description: 'A guide to adding custom utility classes.',
+    description: 'A guide to built-in utilities, custom utilities, and utility definitions.',
     category: 'Customization',
     other: {
         subject: 'Utilities',

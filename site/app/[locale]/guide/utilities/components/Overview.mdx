@@ -1,20 +1,44 @@
-```js name=master.css.js
+```ts name=master.css.ts
+import { UtilityType } from '@master/css'
+
 export default {
-    utilities: {
-        round: { // [!code highlight]
-            'border-radius': '50%', // [!code highlight]
-            'aspect-ratio': '1/1' // [!code highlight]
-        } // [!code highlight]
-    }
+    utilities: [
+        {
+            name: 'round', // [!code highlight]
+            type: UtilityType.Static, // [!code highlight]
+            declarations: { // [!code highlight]
+                'border-radius': '50%', // [!code highlight]
+                'aspect-ratio': '1/1' // [!code highlight]
+            } // [!code highlight]
+        },
+        {
+            name: 'foo', // [!code highlight]
+            unit: 'rem', // [!code highlight]
+            declarations: { // [!code highlight]
+                width: undefined // [!code highlight]
+            } // [!code highlight]
+        }
+    ]
 }
 ```
-Apply your custom utility class:
+Apply a static utility:
 ```html
 <!-- @MARK round -->
 <div class="round">o</div>
 ```
-Use with selectors and at-rules:
+Apply a value utility:
 ```html
-<!-- @MARK :hover@sm -->
+<!-- @MARK foo:32 -->
+<div class="foo:32"></div>
+```
+Generated CSS:
+```css
+.foo\:32 {
+    width: 2rem;
+}
+```
+Use utilities with selectors and at-rules:
+```html
+<!-- @MARK round:hover@sm -->
 <div class="round:hover@sm">o</div>
 ```
