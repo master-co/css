@@ -56,14 +56,14 @@ export default async function Page(props: any) {
                             const formattedDate = dayjs(page.date).format('ddd, MMMM D')
                             return (
                                 <div key={page.pathname + index} className={clsx('bb:1|dotted|line-lighter br:1|dotted|line-lighter')}>
-                                    <Link href={page.pathname} className={clsx('~background-color|.2s gap:5x p:6x grid-cols:1 bg:surface:hover p:12x@sm')}>
+                                    <Link href={page.pathname} className={clsx('~background-color|.2s gap:5x p:6x flex flex-col h:full bg:surface:hover p:12x@sm')}>
                                         <div className="flex justify-content:space-between mb:-1x">
                                             <div className='text:12 fg:accent'>{formattedDate}</div>
                                             <div className='text:12 fg:light'> <TimeAgo timestamp={page.date} /></div>
                                         </div>
                                         <div className='text:pretty my:-1x font:20 leading:1.4'>{page.title}</div>
                                         {/* <Image src="/images/gold-pattern.jpg"  className="r:5 aspect:16/9 h:auto" width={480} height={270} alt={page.title} /> */}
-                                        <div className='text:pretty text:12 fg:neutral'>{page.description}</div>
+                                        <div className='text:pretty text:12 fg:neutral mt:auto'>{page.description}</div>
                                         <AuthorAvatarStack>{page.authors}</AuthorAvatarStack>
                                     </Link>
                                 </div>
