@@ -5,7 +5,7 @@ import type { Config } from '@master/css'
 export default function Runtime() {
     const [config, setConfig] = useState<Config>({
         components: {
-            btn: 'b:2|red'
+            btn: ['b:2|red']
         }
     })
     const [root, setRoot] = useState<ShadowRoot>()

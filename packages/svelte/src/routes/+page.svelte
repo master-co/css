@@ -1,11 +1,11 @@
 <script lang="ts">
-    import type { Config } from "@master/css";
+    import type { Config } from "@master/css/types/config";
     import CSSRuntimeProvider from "../lib/CSSRuntimeProvider.svelte";
 
     let containerRef = $state<HTMLDivElement>();
     let config = $state<Config>({
         components: {
-            btn: "b:2|red",
+            btn: ["b:2|red"],
         },
     });
     let root = $state<ShadowRoot | Document | undefined | null>();

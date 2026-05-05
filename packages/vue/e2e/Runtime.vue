@@ -5,7 +5,7 @@
 
     const config = ref<Config>({
         components: {
-            btn: 'b:2|red'
+            btn: ['b:2|red']
         }
     })
     const root = ref()

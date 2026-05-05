@@ -53,6 +53,7 @@ export default function ExtractMode(options: PluginOptions, context: PluginConte
                 await context.extractor.prepare()
             },
             async transform(code, id) {
+                if (id.startsWith('\0')) return
                 if (id === context.extractor.resolvedVirtualModuleId) return
                 // Only feed Master-CSS-bearing source extensions to the
                 // extractor. The previous version accepted every non-`.css`

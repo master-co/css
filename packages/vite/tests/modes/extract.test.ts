@@ -144,6 +144,7 @@ describe('ExtractMode (C7 + C8 fixes)', () => {
                 '/proj/src/audio.mp3',                 // binary
                 '\0virtual:master.css',                // own virtual module
                 '\0plugin-vue:export-helper',          // 3rd-party virtual
+                '\0vite/modulepreload-polyfill.js',     // Vite virtual with source extension
             ])
             expect(calls).toEqual([])
         })

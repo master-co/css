@@ -9,8 +9,8 @@ const rootDir = resolve(__dirname, './fixtures/runtime/')
 
 await setup({ rootDir })
 
-it('ensure style#master', async () => {
+it('does not pre-render style#master in runtime mode', async () => {
     const html = await $fetch('/') as string
-    const match = html.match(/<style id="master"><\/style>/)
-    expect(match?.[1] ?? '').toBe('')
+    expect(html).toContain('class="box"')
+    expect(html).not.toContain('style id="master"')
 })

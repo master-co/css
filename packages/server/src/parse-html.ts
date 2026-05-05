@@ -37,8 +37,10 @@ export default function parseHTML(html: string): {
 
         if (element.attribs.class) {
             element.attribs.class
-                .split(' ')
+                .trim()
+                .split(/\s+/)
                 .forEach((className) => {
+                    if (!className) return
                     className = decodeHTML(className)
                     if (!classes.includes(className))
                         classes.push(className)
