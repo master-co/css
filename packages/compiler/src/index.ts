@@ -720,21 +720,21 @@ function parseMasterStyleRule(rule: any, parsed: ParsedDirectives, options: Comp
     }
 
     if (parseComponentDefinitionSelector(rule.value.selectors)) {
-        parseComponent(rule, parsed)
+        warn(parsed, options, `Component definitions must be placed in @master components: ${formatSelectors(rule.value.selectors)}`)
         return
     }
 
     const mode = parseSingleTypeSelector(rule.value.selectors)
     if (mode) {
         if (HTML_TAG_NAMES.has(mode)) {
-            warn(parsed, options, `Unsupported @master block "${mode}". @master only accepts config declarations, mode variable blocks, class component rules, @at, @selector, and @keyframes. Move regular CSS selectors outside @master.`)
+            warn(parsed, options, `Unsupported @master block "${mode}". @master only accepts config declarations, mode variable blocks, @at, and @selector. Move regular CSS selectors outside @master.`)
             return
         }
         parseModeBlock(rule, mode, parsed)
         return
     }
 
-    warn(parsed, options, `Unsupported @master selector "${formatSelectors(rule.value.selectors)}". @master only accepts mode variable blocks and class component rules.`)
+    warn(parsed, options, `Unsupported @master selector "${formatSelectors(rule.value.selectors)}". @master only accepts mode variable blocks, @at, and @selector.`)
 }
 
 function parseMasterRule(rule: any, parsed: ParsedDirectives, options: CompileCSSOptions) {
@@ -762,8 +762,8 @@ function parseMasterRule(rule: any, parsed: ParsedDirectives, options: CompileCS
             continue
         }
         if (child.type === 'keyframes') {
-            if (section !== 'root' && section !== 'animations') {
-                throw new Error(`@keyframes is not allowed in @master ${section}`)
+            if (section !== 'animations') {
+                throw new Error('@keyframes is only allowed in @master animations')
             }
             parseKeyframes(child, parsed.config)
             continue

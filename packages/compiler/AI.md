@@ -6,7 +6,7 @@
 
 ## Inputs And Outputs
 
-- Input: CSS containing `@master`, variables, nested mode blocks, `@at`, `@selector`, `@master utilities`, component rules with `@compose`, and `@keyframes`.
+- Input: CSS containing `@master`, variables, nested mode blocks, `@at`, `@selector`, `@master components`, `@master utilities`, component rules with `@compose`, and `@master animations`.
 - Output: CSS with consumed Master directives removed and generated Master CSS appended only for classes passed to the compiler.
 - `@master` definitions are config definitions. Defining a component, utility, variable, token, or animation does not emit CSS by itself; the class still needs to be used or extracted.
 
@@ -24,8 +24,7 @@
 - `@master { dark { --color-primary: #456; } }`
 - `@master { @at motion-safe @media (prefers-reduced-motion: no-preference); }`
 - `@master { @selector ::scrollbar ::-webkit-scrollbar; }`
-- `@master { .btn { @compose "inline-flex"; display: inline-flex; } }`
-- `@master { @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } } }`
+- `@master components { .btn { @compose "inline-flex"; display: inline-flex; } }`
 - `@master utilities { .content-auto { content-visibility: auto; } }`
 - `@master animations { fade { from { opacity: 0; } to { opacity: 1; } } }`
 - Component definition selectors must start with one class selector.

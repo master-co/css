@@ -33,7 +33,9 @@ describe.concurrent('@master/css-compiler', () => {
                     --color-primary: #456;
                     --color-base: #000;
                 }
+            }
 
+            @master components {
                 .btn {
                     @compose "ai:center jc:center px:1rem py:.5rem bg:primary r:card";
                     display: inline-flex;
@@ -47,8 +49,10 @@ describe.concurrent('@master/css-compiler', () => {
                 .card::before {
                     @compose "{content:'';abs;inset:0}";
                 }
+            }
 
-                @keyframes fade-in {
+            @master animations {
+                fade-in {
                     from {
                         opacity: 0;
                         transform: translateY(.5rem);
@@ -105,7 +109,9 @@ describe.concurrent('@master/css-compiler', () => {
                 dark {
                     --color-primary: #456;
                 }
+            }
 
+            @master components {
                 .btn {
                     @compose "bg:primary block@dark";
                     display: inline-flex;
@@ -240,6 +246,37 @@ describe.concurrent('@master/css-compiler', () => {
         expect(warnings).toEqual(result.warnings)
         expect(result.warnings[0]).toContain('Unsupported @master block "body"')
         expect(result.warnings[1]).toContain('Unsupported @master block "html"')
+    })
+
+    it('warns when component selectors are placed in @master root', () => {
+        const result = compileCSS(`
+            @master {
+                .btn {
+                    @compose "block";
+                    display: inline-flex;
+                }
+            }
+        `)
+
+        expect(result.warnings).toHaveLength(1)
+        expect(result.warnings[0]).toContain('Component definitions must be placed in @master components')
+        expect(result.config.components).toBeUndefined()
+    })
+
+    it('rejects @keyframes in @master root', () => {
+        expect(() => process(`
+            @master {
+                @keyframes fade {
+                    from {
+                        opacity: 0;
+                    }
+
+                    to {
+                        opacity: 1;
+                    }
+                }
+            }
+        `)).toThrow('@keyframes is only allowed in @master animations')
     })
 
     it('rejects @compose outside component definitions', () => {

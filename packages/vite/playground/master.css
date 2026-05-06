@@ -19,7 +19,7 @@
     --spacing-card: 24;
     --screen-md: 768;
 
-    @token @motion-safe @media (prefers-reduced-motion: no-preference);
+    @at motion-safe @media (prefers-reduced-motion: no-preference);
 
     dark {
         --color-primary: #8fb5ff;
@@ -29,7 +29,9 @@
         --color-panel: #182233;
         --color-ring: #31415a;
     }
+}
 
+@master components {
     .page {
         @compose "grid ai:center jc:center min-h:100vh p:1.25rem bg:panel fg:ink";
         font-family: Inter, ui-sans-serif, system-ui, sans-serif;
@@ -66,18 +68,6 @@
         cursor: pointer;
         justify-self: start;
     }
-
-    @keyframes demo-fade-in {
-        from {
-            opacity: 0;
-            transform: translateY(.5rem);
-        }
-
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
 }
 
 @master utilities {
@@ -88,6 +78,18 @@
 }
 
 @master animations {
+    demo-fade-in {
+        from {
+            opacity: 0;
+            transform: translateY(.5rem);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
     demo-pulse {
         0%,
         to {
