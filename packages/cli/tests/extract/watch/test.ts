@@ -27,15 +27,6 @@ const originHTMLText = dedent`
     </html>
 `
 
-const originOptionsText = `import type { Options } from '@master/css-extractor'
-const options: Options = {
-    includeClasses: [],
-    excludeClasses: [],
-}
-
-export default options
-`
-
 const originConfigText = `import type { Config } from '@master/css'
 const config: Config = {
     components: {
@@ -51,7 +42,6 @@ export default config
 
 let workspacePath: string
 let HTMLFilepath: string
-let optionsFilepath: string
 let configFilepath: string
 let virtualCSSFilepath: string
 let subprocess: ResultPromise
@@ -82,11 +72,9 @@ beforeAll(() => {
     subprocessOutput = ''
     workspacePath = fs.mkdtempSync(path.join(os.tmpdir(), 'master-css-cli-watch-'))
     HTMLFilepath = path.join(workspacePath, 'test.html')
-    optionsFilepath = path.join(workspacePath, 'master.css-extractor.ts')
     configFilepath = path.join(workspacePath, 'master.css.ts')
     virtualCSSFilepath = path.join(workspacePath, 'master.css')
     fs.writeFileSync(HTMLFilepath, originHTMLText, { flag: 'w+' })
-    fs.writeFileSync(optionsFilepath, originOptionsText, { flag: 'w+' })
     fs.writeFileSync(configFilepath, originConfigText, { flag: 'w+' })
     subprocess = execa(process.execPath, ['--import', tsxLoaderURL, cliFilepath, 'extract', '-w'], {
         cwd: workspacePath,
@@ -116,17 +104,6 @@ it('start watch process', async () => {
     expect(fileCSSText).toContain(cssEscape('font:48'))
     expect(fileCSSText).toContain(cssEscape('bg:primary'))
     expect(fileCSSText).toContain(cssEscape('btn'))
-}, 120000)
-
-it('change options file `includeClasses` and reset process', async () => {
-    await Promise.all([
-        waitForWatchRestart(() => {
-            fs.writeFileSync(optionsFilepath, originOptionsText.replace('includeClasses: []', 'includeClasses: [\'fg:red\']'))
-        }),
-        waitForCSSContent((css) => css.includes(cssEscape('fg:red')))
-    ])
-    const fileCSSText = await waitForCSSContent((css) => css.includes(cssEscape('fg:red')))
-    expect(fileCSSText).toContain(cssEscape('fg:red'))
 }, 120000)
 
 it('change config file `components` and reset process', async () => {

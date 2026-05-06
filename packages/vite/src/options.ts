@@ -1,5 +1,4 @@
-import type { Pattern } from 'fast-glob'
-import { Options as ExtractorOptions } from '@master/css-extractor'
+import type { Options as ExtractorOptions } from '@master/css-extractor'
 
 /* The default options */
 const options: PluginOptions = {
@@ -26,12 +25,9 @@ export interface PluginOptions {
     mode?: 'runtime' | 'extract' | 'progressive' | 'pre-render' | null
 
     /**
-     * Glob pattern(s) or extractor options for the static extraction mode
-     *
-     * - Provide a glob `Pattern` to manually specify your extractor config.
-     * - Or provide `ExtractorOptions` for fine-grained extractor configuration.
+     * Extractor options for the static extraction mode.
      */
-    extractor?: ExtractorOptions | Pattern
+    extractorOptions?: ExtractorOptions
 
     /**
      * Path to the Master CSS config file.

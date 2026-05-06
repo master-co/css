@@ -6,7 +6,6 @@ import fs, { existsSync } from 'fs'
 import { minimatch } from 'minimatch'
 import log from '@techor/log'
 import extend from '@techor/extend'
-import exploreConfig from 'explore-config'
 import exploreCSSConfig from '@master/css-explore-config'
 import { generateValidRules } from '@master/css-validator'
 import chokidar, { type ChokidarOptions, type FSWatcher } from 'chokidar'
@@ -50,13 +49,13 @@ export default class CSSExtractor extends EventEmitter {
     private cachedAllowedSourcePaths?: string[]
 
     constructor(
-        public customOptions: Options | string = 'master.css-extractor',
+        public customOptions: Options = {},
         public cwd = process.cwd()
     ) {
         super()
     }
 
-    init(customOptions = this.customOptions) {
+    init(customOptions: Options = this.customOptions) {
         if (this.initialized) return Promise.resolve(this)
         if (this.initializing) return this.initializing
         return this.initializing = this.initInternal(customOptions)
@@ -65,19 +64,11 @@ export default class CSSExtractor extends EventEmitter {
             })
     }
 
-    private async initInternal(customOptions = this.customOptions) {
-        if (typeof customOptions === 'string') {
-            this.options = extend(defaultOptions, exploreConfig(customOptions, {
-                found: (basename) => {
-                    if (process.env.DEBUG) {
-                        log.i`**${basename}** found`
-                    }
-                },
-                cwd: this.cwd
-            }), customOptions)
-        } else {
-            this.options = extend(defaultOptions, customOptions)
+    private async initInternal(customOptions: Options = this.customOptions) {
+        if (typeof customOptions !== 'object' || customOptions === null || Array.isArray(customOptions)) {
+            throw new TypeError('CSSExtractor options must be an object.')
         }
+        this.options = extend(defaultOptions, customOptions)
         if (this.options.verbose && this.options.verbose > 1) {
             log.ok`**options**`
             log.tree(this.options)
@@ -96,7 +87,7 @@ export default class CSSExtractor extends EventEmitter {
         return this
     }
 
-    async reset(customOptions = this.customOptions) {
+    async reset(customOptions: Options = this.customOptions) {
         const watching = this.watching
         if (watching) await this.closeWatch({ emit: false })
         this.latentClasses.clear()
@@ -294,7 +285,6 @@ export default class CSSExtractor extends EventEmitter {
     async startWatch(options: { emit?: boolean } = { emit: true }) {
         if (this.watching) return
         const resolvedConfigPath = this.resolvedConfigPath
-        const resolvedOptionsPath = this.resolvedOptionsPath
 
         const sourcePaths = this.options.sources?.length
             ? this.fixedSourcePaths
@@ -311,17 +301,6 @@ export default class CSSExtractor extends EventEmitter {
                 }
                 await this.reset()
                 this.emit('configChange')
-            })
-        }
-
-        if (resolvedOptionsPath) {
-            await this.watch('add change unlink', resolvedOptionsPath, async () => {
-                if (this.options.verbose) {
-                    log``
-                    log`[change] **${this.customOptions}**`
-                }
-                await this.reset()
-                this.emit('optionsChange')
             })
         }
         this.watching = true
@@ -432,31 +411,6 @@ export default class CSSExtractor extends EventEmitter {
         const configPath = this.configPath
         if (configPath) {
             return path.resolve(this.cwd, configPath)
-        }
-    }
-
-    /**
-     * computed from string `customOptions`
-    */
-    get optionsPath(): string | undefined {
-        if (typeof this.customOptions === 'string') {
-            // try to find the config file with the given name and options.extensions
-            for (const eachExtension of ['js', 'mjs', 'ts', 'cjs', 'cts', 'mts']) {
-                const eachBasename = this.customOptions + '.' + eachExtension
-                if (existsSync(resolve(this.cwd || '', eachBasename))) {
-                    return eachBasename
-                }
-            }
-        }
-    }
-
-    /**
-     * computed from string `customOptions`
-    */
-    get resolvedOptionsPath(): string | undefined {
-        const optionsPath = this.optionsPath
-        if (optionsPath) {
-            return path.resolve(this.cwd, optionsPath)
         }
     }
 

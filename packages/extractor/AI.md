@@ -55,7 +55,6 @@ Use or extend:
 - `tests/extract.test.ts`
 - `tests/syntax.test.ts`
 - `tests/source`
-- `tests/read-custom-options`
 
 ## Good Changes
 
@@ -67,4 +66,3 @@ Use or extend:
 - Scanning CSS files by default.
 - Treating every quoted string as a valid class without validator filtering.
 - Removing validation before insertion.
-

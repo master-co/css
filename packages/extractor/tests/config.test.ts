@@ -9,6 +9,12 @@ test('read master.css.js config in cwd', async () => {
         .toBeDefined()
 })
 
+test('reject string extractor options', async () => {
+    await expect(new CSSExtractor('options' as any, __dirname).init())
+        .rejects
+        .toThrow('CSSExtractor options must be an object.')
+})
+
 test('master.css.js config custom classname', async () => {
     fs.writeFileSync(path.join(__dirname, 'master.css.ts'), `
         export default {

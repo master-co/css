@@ -1387,9 +1387,6 @@ importers:
       chokidar:
         specifier: ^5.0.0
         version: 5.0.0
-      explore-config:
-        specifier: ^3.2.5
-        version: 3.2.5
       minimatch:
         specifier: ^10.2.5
         version: 10.2.5

@@ -1,20 +1,10 @@
 import dedent from 'ts-dedent'
 import CodeTabs from 'internal/components/CodeTabs'
 
-export default function ({ children, cli, webpack, vite, addLines, imports, ...othersProps }: any) {
+export default function ({ children, webpack, vite, addLines, imports, ...othersProps }: any) {
     const dedentCode = dedent(children)
     return (
         <CodeTabs>{[
-            cli && {
-                ...othersProps,
-                name: 'master.css-extractor.js', lang: 'js', beautify: true,
-                code: dedent`
-                    ${imports ? `import { ${imports} } from '@master/css-extractor'` : ''}
-                    /** @type {import('@master/css-extractor').Options} */
-                    export default ${dedentCode}
-                `,
-                addLines: addLines && addLines.map((line: number) => line += 2),
-            },
             vite && {
                 ...othersProps,
                 name: 'vite.config.ts', lang: 'ts', beautify: true,

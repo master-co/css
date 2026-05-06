@@ -3,8 +3,9 @@
  *
  *  C7 — `master-css:extractor.configResolved` previously did
  *       `context.extractor.options.include = []` unconditionally,
- *       silently wiping a user-supplied `extractor: { include: [...] }`
- *       option. Now only blanked when the user did NOT pass one.
+ *       silently wiping a user-supplied
+ *       `extractorOptions: { include: [...] }` option. Now only
+ *       blanked when the user did NOT pass one.
  *
  *  C8 — `master-css:static.transform` accepted every non-`.css` module
  *       — including `.json`, `?import` / `?url` query requests, and
@@ -12,7 +13,7 @@
  *       Now restricted to a file-extension allow-list mirroring the
  *       extractor's default include glob.
  *
- * Both fixes preserve the public PluginOptions surface.
+ * Both fixes preserve the current PluginOptions surface.
  */
 import { describe, test, expect, vi, beforeEach } from 'vitest'
 import ExtractMode from '../../src/modes/extract'
@@ -53,7 +54,7 @@ describe('ExtractMode (C7 + C8 fixes)', () => {
         vi.clearAllMocks()
     })
 
-    describe('C7 — respects user-supplied extractor.include', () => {
+    describe('C7 — respects user-supplied extractorOptions.include', () => {
         test('default options: extractor.options.include is blanked', async () => {
             const ctx: any = {}
             const plugins = ExtractMode({} as any, ctx)
@@ -65,7 +66,7 @@ describe('ExtractMode (C7 + C8 fixes)', () => {
         test('user-supplied include is preserved (NOT blanked)', async () => {
             const ctx: any = {}
             const plugins = ExtractMode(
-                { extractor: { include: ['node_modules/some-lib/dist/**/*.js'] } } as any,
+                { extractorOptions: { include: ['node_modules/some-lib/dist/**/*.js'] } } as any,
                 ctx,
             )
             const ex = findPlugin(plugins, 'master-css:extractor')
@@ -81,24 +82,10 @@ describe('ExtractMode (C7 + C8 fixes)', () => {
             // on this edge case.
             const ctx: any = {}
             const plugins = ExtractMode(
-                { extractor: { include: [] } } as any,
+                { extractorOptions: { include: [] } } as any,
                 ctx,
             )
             await findPlugin(plugins, 'master-css:extractor').configResolved.call({}, fakeViteConfig)
-            expect(ctx.extractor.options.include).toEqual([])
-        })
-
-        test('extractor passed as a string config path is left unwiped', async () => {
-            // `extractor: 'master.css-extractor'` means "load this options
-            // file" — we cannot inspect its contents synchronously, so
-            // err on the side of NOT touching include.
-            const ctx: any = {}
-            const plugins = ExtractMode({ extractor: 'master.css-extractor' } as any, ctx)
-            await findPlugin(plugins, 'master-css:extractor').configResolved.call({}, fakeViteConfig)
-            // The mock CSSExtractor constructor only seeds options when given
-            // an object, so options.include starts undefined and the guard
-            // sets it to []. The important assertion is that the wipe
-            // happens iff the user did not explicitly pass an array.
             expect(ctx.extractor.options.include).toEqual([])
         })
     })

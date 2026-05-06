@@ -8,7 +8,7 @@ const options: Options = {
     module: 'virtual:master.css',
     // specify output file path
     output: 'master.css',
-    // specify options file path or set `Options`
+    // specify Master CSS config file path or inline config
     config: 'master.css',
     // forcibly specify sources for scanning, not excluded by `options.exclude`
     sources: [],
@@ -22,7 +22,6 @@ const options: Options = {
         '**/*test.{js,cjs,mjs,ts}',
         '**/*.options.*',
         '**/*master.css.*',
-        '**/*master.css-extractor.*',
         '**/*master.css-renderer.*',
         '**/*README.md',
         '**/dist/**',

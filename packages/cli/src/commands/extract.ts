@@ -9,18 +9,16 @@ export default (program: Command) => program
     .option('-o, --output <path>', 'Specify your CSS file output path', options.output)
     .option('-v, --verbose <level>', 'Verbose logging 0~N', '1')
     .option('--no-export', 'Print only CSS results.')
-    .option('--options <path>', 'Specify your extractor options sources', 'master.css-extractor')
     .action(async function (specifiedSourcePaths: any, options?: {
         watch?: boolean,
         output?: string,
         verbose?: number,
         export?: boolean,
-        cwd?: string,
-        options?: string | Options
+        cwd?: string
     }) {
         const CSSExtractor = (await import('@master/css-extractor')).default
-        const { watch, output, verbose, cwd, options: customOptions } = options || {}
-        const extractor = new CSSExtractor(customOptions, cwd)
+        const { watch, output, verbose, cwd } = options || {}
+        const extractor = new CSSExtractor({}, cwd)
         extractor.on('init', (options: Options) => {
             if (specifiedSourcePaths?.length) {
                 options.include = specifiedSourcePaths
