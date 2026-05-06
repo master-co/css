@@ -14,6 +14,7 @@ import generateAt from './utils/generate-at'
 import parseSelector, { SelectorNode } from './utils/parse-selector'
 import generateSelector from './utils/generate-selector'
 import { calcRulePriority, RulePriority } from './utils/compare-rule-priority'
+import collectVariableNames from './utils/collect-variable-names'
 import declarers from './declarers'
 import transformers from './transformers'
 import functionTransformers from './function-transformers'
@@ -172,6 +173,16 @@ export class Utility {
         if (!Object.entries(this.declarations ?? {}).length) {
             this.valid = false
         } else {
+            const variableNames = collectVariableNames(this.declarations as PropertiesHyphen, this.css.variables)
+            if (variableNames) {
+                for (const variableName of variableNames) {
+                    if (this.variableNames) {
+                        this.variableNames.add(variableName)
+                    } else {
+                        this.variableNames = new Set([variableName])
+                    }
+                }
+            }
             for (const propertyName in this.declarations) {
                 if (this.css.animations && (propertyName === 'animation' || propertyName === 'animation-name')) {
                     const propertyValue = this.declarations[propertyName as keyof PropertiesHyphen] as string

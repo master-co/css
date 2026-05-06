@@ -306,6 +306,38 @@ describe.concurrent('@master/css-compiler', () => {
         expect(result.css).toContain('.content-auto{content-visibility:auto;contain-intrinsic-size:auto 32rem;display:block}')
     })
 
+    it('generates theme variables used by raw component and utility declarations', () => {
+        const result = compileCSS(`
+            @master {
+                dark {
+                    --color-primary: #000;
+                }
+
+                light {
+                    --color-primary: #ff0;
+                }
+            }
+
+            @master components {
+                .btn {
+                    background: var(--color-primary, transparent);
+                }
+            }
+
+            @master utilities {
+                .surface {
+                    background: var(--color-primary);
+                }
+            }
+        `, { classes: ['btn', 'surface'] })
+
+        expect(result.css).toContain('@layer theme')
+        expect(result.css).toContain('@media (prefers-color-scheme:light){:root{--color-primary:rgb(255 255 0)}}')
+        expect(result.css).toContain('@media (prefers-color-scheme:dark){:root{--color-primary:rgb(0 0 0)}}')
+        expect(result.css).toContain('.btn{background:var(--color-primary, transparent)}')
+        expect(result.css).toContain('.surface{background:var(--color-primary)}')
+    })
+
     it('uses the last definition for repeated root config, variables, tokens, and animations', () => {
         const result = compileCSS(`
             @master {

@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest'
-import { createCSS } from '../src'
+import { createCSS, UtilityType } from '../src'
 
 describe('comp -> comp -> var', () => {
     const css = createCSS({
@@ -75,6 +75,51 @@ describe('raw declarations', () => {
         css.add('btn')
         expect(css.componentsLayer.text).toContain('.btn{padding-left:0.25rem;padding-right:0.25rem}')
         expect(css.componentsLayer.text).toContain('.btn{display:inline-flex}')
+    })
+
+    test('generates theme variables from raw component declarations with var fallbacks', () => {
+        const css = createCSS({
+            variables: [
+                { namespace: 'color', key: 'primary', value: '#ff0', mode: 'light' },
+                { namespace: 'color', key: 'primary', value: '#000', mode: 'dark' }
+            ],
+            components: {
+                btn: [
+                    {
+                        selector: '&',
+                        declarations: {
+                            background: 'var(--color-primary, transparent)'
+                        }
+                    }
+                ]
+            }
+        }).add('btn')
+
+        expect(css.themeLayer.text).toContain('@media (prefers-color-scheme:light){:root{--color-primary:rgb(255 255 0)}}')
+        expect(css.themeLayer.text).toContain('@media (prefers-color-scheme:dark){:root{--color-primary:rgb(0 0 0)}}')
+        expect(css.componentsLayer.text).toContain('.btn{background:var(--color-primary, transparent)}')
+    })
+
+    test('generates theme variables from static utility declarations', () => {
+        const css = createCSS({
+            variables: [
+                { namespace: 'color', key: 'primary', value: '#ff0', mode: 'light' },
+                { namespace: 'color', key: 'primary', value: '#000', mode: 'dark' }
+            ],
+            utilities: [
+                {
+                    name: 'surface',
+                    type: UtilityType.Static,
+                    declarations: {
+                        background: 'var(--color-primary)'
+                    }
+                }
+            ]
+        }).add('surface')
+
+        expect(css.themeLayer.text).toContain('@media (prefers-color-scheme:light){:root{--color-primary:rgb(255 255 0)}}')
+        expect(css.themeLayer.text).toContain('@media (prefers-color-scheme:dark){:root{--color-primary:rgb(0 0 0)}}')
+        expect(css.utilitiesLayer.text).toContain('.surface{background:var(--color-primary)}')
     })
 
     test('generates component rule declarations with at-rules', () => {

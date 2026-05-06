@@ -5,6 +5,7 @@ import MasterCSS from './core'
 import { AT_IDENTIFIERS } from './common'
 import generateAt from './utils/generate-at'
 import parseAt, { AtRuleNode, AtRuleStringNode } from './utils/parse-at'
+import collectVariableNames from './utils/collect-variable-names'
 
 export default class ComponentRule {
     native?: CSSRule
@@ -62,17 +63,12 @@ export default class ComponentRule {
         if (!Object.entries(this.declarations).length) {
             this.valid = false
         } else {
-            const variableNames = new Set<string>()
             const animationNames = new Set<string>()
+            this.variableNames = collectVariableNames(this.declarations, this.css.variables)
             for (const propertyName in this.declarations) {
                 const propertyValue = this.declarations[propertyName as keyof PropertiesHyphen]
                 if (!propertyValue) continue
                 const value = String(propertyValue)
-                for (const match of value.matchAll(/var\(--([a-zA-Z0-9-]+)\)/g)) {
-                    if (this.css.variables.has(match[1])) {
-                        variableNames.add(match[1])
-                    }
-                }
                 if (propertyName === 'animation' || propertyName === 'animation-name') {
                     for (const rawValue of value.split(' ')) {
                         if (this.css.animations.has(rawValue)) {
@@ -81,7 +77,6 @@ export default class ComponentRule {
                     }
                 }
             }
-            if (variableNames.size) this.variableNames = variableNames
             if (animationNames.size) this.animationNames = animationNames
         }
     }
