@@ -60,6 +60,7 @@ type MasterSection = 'root' | 'components' | 'utilities' | 'animations'
 
 const DEFAULT_MODE_NAMES = new Set(defaultConfig.modes || [])
 const DEFAULT_SCREEN_NAMES = new Set(Object.keys(defaultScreens))
+const IMPORTANT_FLAG_VALUE = '__master_important__'
 
 const HTML_TAG_NAMES = new Set([
     'a',
@@ -249,9 +250,10 @@ function parseMasterOption(config: Config, property: string, value: string) {
             config.modeTrigger = value
             return true
         case 'important': {
-            const important = parseBoolean(value)
-            if (important === undefined) throw new Error('important must be true or false')
-            config.important = important
+            if (value !== IMPORTANT_FLAG_VALUE) {
+                throw new Error('Use "important;" or "!important;" to enable important output')
+            }
+            config.important = true
             return true
         }
         case 'modes':
@@ -880,6 +882,86 @@ function findMatchingBrace(source: string, openIndex: number) {
     return -1
 }
 
+function convertMasterFlags(body: string) {
+    let output = ''
+    let statementStart = 0
+    let depth = 0
+    let quote = ''
+    let comment = false
+
+    const flush = (endIndex: number) => {
+        const statement = body.slice(statementStart, endIndex)
+        const match = /^(\s*)(!?important)(\s*;)(\s*)$/.exec(statement)
+        output += match
+            ? `${match[1]}important: ${IMPORTANT_FLAG_VALUE};${match[4]}`
+            : statement
+        statementStart = endIndex
+    }
+
+    for (let index = 0; index < body.length; index++) {
+        const char = body[index]
+        const next = body[index + 1]
+        if (comment) {
+            if (char === '*' && next === '/') {
+                comment = false
+                index++
+            }
+            continue
+        }
+        if (quote) {
+            if (char === '\\') {
+                index++
+            } else if (char === quote) {
+                quote = ''
+            }
+            continue
+        }
+        if (char === '/' && next === '*') {
+            comment = true
+            index++
+            continue
+        }
+        if (char === '"' || char === '\'') {
+            quote = char
+            continue
+        }
+        if (char === '{') {
+            depth++
+            continue
+        }
+        if (char === '}') {
+            depth--
+            if (depth === 0) {
+                flush(index + 1)
+            }
+            continue
+        }
+        if (char === ';' && depth === 0) {
+            flush(index + 1)
+        }
+    }
+
+    output += body.slice(statementStart)
+    return output
+}
+
+function preprocessMasterFlags(source: string) {
+    let output = ''
+    let index = 0
+    const pattern = /@master\s*\{/g
+    let match: RegExpExecArray | null
+    while ((match = pattern.exec(source))) {
+        const openIndex = match.index + match[0].length - 1
+        const closeIndex = findMatchingBrace(source, openIndex)
+        if (closeIndex === -1) break
+        const body = source.slice(openIndex + 1, closeIndex)
+        output += source.slice(index, openIndex + 1) + convertMasterFlags(body)
+        index = closeIndex
+        pattern.lastIndex = closeIndex + 1
+    }
+    return output + source.slice(index)
+}
+
 function convertBareAnimations(body: string) {
     let output = ''
     let index = 0
@@ -954,7 +1036,7 @@ export function compileCSS(source: string, options: CompileCSSOptions = {}): Com
         componentNames: [],
         warnings: []
     }
-    const preprocessedSource = preprocessMasterAnimations(source)
+    const preprocessedSource = preprocessMasterAnimations(preprocessMasterFlags(source))
     const transformed = transform({
         filename: options.from || 'master.css',
         code: Buffer.from(preprocessedSource),

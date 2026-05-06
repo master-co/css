@@ -5,7 +5,6 @@
     base-unit: 4;
     default-mode: light;
     mode-trigger: media;
-    important: false;
 
     --color-primary: #0061ff;
     --color-base: #fff;

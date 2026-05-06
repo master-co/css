@@ -14,7 +14,6 @@ describe.concurrent('@master/css-compiler', () => {
                 base-unit: 4;
                 default-mode: light;
                 mode-trigger: media;
-                important: false;
                 scope: #app;
 
                 --color-primary: #123;
@@ -199,6 +198,31 @@ describe.concurrent('@master/css-compiler', () => {
         expect(result.config.modes).toEqual(['chrisma'])
         expect(result.css).toContain('.dark .bg\\:primary\\@dark{background-color:rgb(68 85 102)}')
         expect(result.css).toContain('.chrisma .bg\\:primary\\@chrisma{background-color:rgb(255 255 0)}')
+    })
+
+    it('supports important flags in @master root', () => {
+        const importantResult = compileCSS(`
+            @master {
+                important;
+            }
+        `, { classes: ['block'] })
+
+        const bangImportantResult = compileCSS(`
+            @master {
+                !important;
+            }
+        `, { classes: ['block'] })
+
+        expect(importantResult.config.important).toBe(true)
+        expect(importantResult.css).toContain('.block{display:block!important}')
+        expect(bangImportantResult.config.important).toBe(true)
+        expect(bangImportantResult.css).toContain('.block{display:block!important}')
+
+        expect(() => process(`
+            @master {
+                important: false;
+            }
+        `)).toThrow('Use "important;" or "!important;" to enable important output')
     })
 
     it('supports @master components as an organizational section', () => {

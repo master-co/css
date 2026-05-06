@@ -21,6 +21,7 @@
 ## Directive MVP
 
 - `@master { root-size: 16; --color-primary: #123; --screen-md: 768; }`
+- `@master { important; }` and `@master { !important; }`
 - `@master { dark { --color-primary: #456; } }`
 - `light` and `dark` are core default modes; the compiler should only add custom modes such as `chrisma`.
 - `@master { @at motion-safe @media (prefers-reduced-motion: no-preference); }`
