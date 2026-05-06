@@ -6,7 +6,7 @@
 
 ## Inputs And Outputs
 
-- Input: CSS containing `@master`, variables, nested mode blocks, `@token`, `@master utilities`, component rules with `@compose`, and `@keyframes`.
+- Input: CSS containing `@master`, variables, nested mode blocks, `@at`, `@selector`, `@master utilities`, component rules with `@compose`, and `@keyframes`.
 - Output: CSS with consumed Master directives removed and generated Master CSS appended only for classes passed to the compiler.
 - `@master` definitions are config definitions. Defining a component, utility, variable, token, or animation does not emit CSS by itself; the class still needs to be used or extracted.
 
@@ -22,8 +22,8 @@
 
 - `@master { root-size: 16; --color-primary: #123; --screen-md: 768; }`
 - `@master { dark { --color-primary: #456; } }`
-- `@master { @token @motion-safe @media (prefers-reduced-motion: no-preference); }`
-- `@master { @token ::scrollbar ::-webkit-scrollbar; }`
+- `@master { @at motion-safe @media (prefers-reduced-motion: no-preference); }`
+- `@master { @selector ::scrollbar ::-webkit-scrollbar; }`
 - `@master { .btn { @compose "inline-flex"; display: inline-flex; } }`
 - `@master { @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } } }`
 - `@master utilities { .content-auto { content-visibility: auto; } }`

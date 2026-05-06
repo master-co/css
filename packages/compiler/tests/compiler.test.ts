@@ -7,7 +7,7 @@ function process(css: string, classes?: string[]) {
 }
 
 describe.concurrent('@master/css-compiler', () => {
-    it('generates variables, components, utilities, tokens, screens, modes, and animations', () => {
+    it('generates variables, components, utilities, at tokens, selector tokens, screens, modes, and animations', () => {
         const result = compileCSS(`
             @master {
                 root-size: 16;
@@ -25,9 +25,9 @@ describe.concurrent('@master/css-compiler', () => {
                 --spacing-card: 24;
                 --screen-md: 768;
 
-                @token @motion-safe @media (prefers-reduced-motion: no-preference);
-                @token @supports-backdrop @supports (backdrop-filter: blur(0));
-                @token ::scrollbar ::-webkit-scrollbar;
+                @at motion-safe @media (prefers-reduced-motion: no-preference);
+                @at supports-backdrop @supports (backdrop-filter: blur(0));
+                @selector ::scrollbar ::-webkit-scrollbar;
 
                 dark {
                     --color-primary: #456;
@@ -99,8 +99,8 @@ describe.concurrent('@master/css-compiler', () => {
                 --color-primary: #123;
                 --screen-md: 768;
 
-                @token @motion-safe @media (prefers-reduced-motion: no-preference);
-                @token ::scrollbar ::-webkit-scrollbar;
+                @at motion-safe @media (prefers-reduced-motion: no-preference);
+                @selector ::scrollbar ::-webkit-scrollbar;
 
                 dark {
                     --color-primary: #456;
@@ -250,25 +250,47 @@ describe.concurrent('@master/css-compiler', () => {
         `)).toThrow('@compose is only allowed in @master components')
     })
 
-    it('rejects invalid @token names and conflicts', () => {
+    it('rejects invalid @at and @selector names and conflicts', () => {
         expect(() => process(`
             @master {
-                @token motion-safe @media (prefers-reduced-motion: no-preference);
+                @at @motion-safe @media (prefers-reduced-motion: no-preference);
             }
-        `)).toThrow('@token name must start with "@", ":", or "::"')
+        `)).toThrow('@at names must not start with "@"')
+
+        expect(() => process(`
+            @master {
+                @at :headings :is(h1, h2, h3);
+            }
+        `)).toThrow('@at names cannot be selector tokens')
+
+        expect(() => process(`
+            @master {
+                @selector headings :is(h1, h2, h3);
+            }
+        `)).toThrow('@selector names must start with ":" or "::"')
 
         expect(() => process(`
             @master {
                 modes: light, dark;
-                @token @dark @media (prefers-color-scheme: dark);
+                @at dark @media (prefers-color-scheme: dark);
             }
-        `)).toThrow('At token "@dark" conflicts with mode "dark"')
+        `)).toThrow('@at "dark" conflicts with mode "dark"')
 
         expect(() => process(`
             @master {
                 --screen-md: 768;
-                @token @md @media (width >= 48rem);
+                @at md @media (width >= 48rem);
             }
-        `)).toThrow('At token "@md" conflicts with screen variable "--screen-md"')
+        `)).toThrow('@at "md" conflicts with screen variable "--screen-md"')
+    })
+
+    it('rejects @at and @selector outside @master', () => {
+        expect(() => process(`
+            @at motion-safe @media (prefers-reduced-motion: no-preference);
+        `)).toThrow('@at is only allowed in @master')
+
+        expect(() => process(`
+            @selector :headings :is(h1, h2, h3);
+        `)).toThrow('@selector is only allowed in @master')
     })
 })

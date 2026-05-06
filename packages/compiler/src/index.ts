@@ -42,6 +42,14 @@ const MASTER_CUSTOM_AT_RULES = {
         prelude: '*',
         body: 'style-block'
     },
+    at: {
+        prelude: '*',
+        body: null
+    },
+    selector: {
+        prelude: '*',
+        body: null
+    },
     compose: {
         prelude: '<string>',
         body: null
@@ -402,6 +410,16 @@ function formatTokenOrValues(values: TokenOrValue[]) {
     return values.map(formatTokenOrValue).join('').trim()
 }
 
+function formatPrelude(prelude: any) {
+    if (!prelude) return ''
+    if (typeof prelude === 'string') return prelude.trim()
+    if (Array.isArray(prelude)) return formatTokenOrValues(prelude)
+    if (prelude.type === 'token-list') return formatTokenOrValues(prelude.value)
+    if (Array.isArray(prelude.value)) return formatTokenOrValues(prelude.value)
+    if (typeof prelude.value === 'string') return prelude.value.trim()
+    return ''
+}
+
 function getDeclarationName(declaration: Declaration) {
     if (declaration.property === 'custom') return declaration.value.name
     if (declaration.property === 'unparsed') return formatPropertyId(declaration.value.propertyId)
@@ -447,7 +465,7 @@ function normalizeAtValue(value: string) {
 
     const [, type, body] = rawAtRule
     if (type === 'starting-style') {
-        if (body.trim()) throw new Error('@starting-style token does not accept a value')
+        if (body.trim()) throw new Error('@starting-style at token does not accept a value')
         return 'starting-style'
     }
     if (type === 'container') {
@@ -461,36 +479,43 @@ function normalizeAtValue(value: string) {
         return mediaBody.startsWith('(') ? `media${mediaBody}` : `media ${mediaBody}`
     }
     if (!body.trim().startsWith('(')) {
-        throw new Error('@supports token value must use a parenthesized condition')
+        throw new Error('@supports at token value must use a parenthesized condition')
     }
     return `${type}${body.trim()}`
 }
 
-function parseTokenDefinition(rule: any, parsed: ParsedDirectives) {
-    const match = /^(\S+)\s+(.+)$/.exec(formatTokenOrValues(rule.value.prelude).trim())
+function parseAtDefinition(rule: any, parsed: ParsedDirectives) {
+    const match = /^(\S+)\s+(.+)$/.exec(formatPrelude(rule.value.prelude))
     if (!match) {
-        throw new Error('@token requires a token name and value')
+        throw new Error('@at requires a token name and at-rule value')
     }
 
     const [, token, value] = match
     if (token.startsWith('@')) {
-        const key = token.slice(1)
-        if (!key) throw new Error('@token at-rule names cannot be empty')
-        if (!value.trim().startsWith('@')) {
-            throw new Error(`At token "${token}" must use an explicit at-rule value`)
-        }
-        parsed.config.atTokens ??= {}
-        parsed.config.atTokens[key] = normalizeAtValue(value)
-        return
+        throw new Error(`@at names must not start with "@": ${token}`)
     }
-
     if (token.startsWith(':')) {
-        parsed.config.selectorTokens ??= {}
-        parsed.config.selectorTokens[token] = value.trim()
-        return
+        throw new Error(`@at names cannot be selector tokens: ${token}`)
+    }
+    if (!value.trim().startsWith('@')) {
+        throw new Error(`@at "${token}" must use an explicit at-rule value`)
+    }
+    parsed.config.atTokens ??= {}
+    parsed.config.atTokens[token] = normalizeAtValue(value)
+}
+
+function parseSelectorDefinition(rule: any, parsed: ParsedDirectives) {
+    const match = /^(\S+)\s+(.+)$/.exec(formatPrelude(rule.value.prelude))
+    if (!match) {
+        throw new Error('@selector requires a selector token name and selector value')
     }
 
-    throw new Error(`@token name must start with "@", ":", or "::": ${token}`)
+    const [, token, value] = match
+    if (!token.startsWith(':')) {
+        throw new Error(`@selector names must start with ":" or "::": ${token}`)
+    }
+    parsed.config.selectorTokens ??= {}
+    parsed.config.selectorTokens[token] = value.trim()
 }
 
 function parseClassDefinitionSelector(selectors: Selector[]) {
@@ -663,9 +688,7 @@ function parseKeyframes(rule: any, config: Config) {
 }
 
 function getMasterSection(rule: any): MasterSection {
-    const prelude = rule.prelude?.type === 'token-list'
-        ? formatTokenOrValues(rule.prelude.value).trim()
-        : rule.prelude?.value?.trim?.() || ''
+    const prelude = formatPrelude(rule.prelude)
     if (!prelude) return 'root'
     if (prelude === 'components' || prelude === 'utilities' || prelude === 'animations') return prelude
     throw new Error(`Unsupported @master section: ${prelude}`)
@@ -704,7 +727,7 @@ function parseMasterStyleRule(rule: any, parsed: ParsedDirectives, options: Comp
     const mode = parseSingleTypeSelector(rule.value.selectors)
     if (mode) {
         if (HTML_TAG_NAMES.has(mode)) {
-            warn(parsed, options, `Unsupported @master block "${mode}". @master only accepts config declarations, mode variable blocks, class component rules, @token, and @keyframes. Move regular CSS selectors outside @master.`)
+            warn(parsed, options, `Unsupported @master block "${mode}". @master only accepts config declarations, mode variable blocks, class component rules, @at, @selector, and @keyframes. Move regular CSS selectors outside @master.`)
             return
         }
         parseModeBlock(rule, mode, parsed)
@@ -724,11 +747,18 @@ function parseMasterRule(rule: any, parsed: ParsedDirectives, options: CompileCS
             parseMasterDeclarations(child.value.declarations, parsed.config)
             continue
         }
-        if (child.type === 'unknown' && child.value.name === 'token') {
+        if ((child.type === 'unknown' || child.type === 'custom') && child.value?.name === 'at') {
             if (section !== 'root') {
-                throw new Error('@token is only allowed in @master')
+                throw new Error('@at is only allowed in @master')
             }
-            parseTokenDefinition(child, parsed)
+            parseAtDefinition(child, parsed)
+            continue
+        }
+        if ((child.type === 'unknown' || child.type === 'custom') && child.value?.name === 'selector') {
+            if (section !== 'root') {
+                throw new Error('@selector is only allowed in @master')
+            }
+            parseSelectorDefinition(child, parsed)
             continue
         }
         if (child.type === 'keyframes') {
@@ -756,10 +786,10 @@ function validateTokenConflicts(parsed: ParsedDirectives) {
     )
     for (const token of Object.keys(atTokens)) {
         if (modes.has(token)) {
-            throw new Error(`At token "@${token}" conflicts with mode "${token}"`)
+            throw new Error(`@at "${token}" conflicts with mode "${token}"`)
         }
         if (screens.has(token)) {
-            throw new Error(`At token "@${token}" conflicts with screen variable "--screen-${token}"`)
+            throw new Error(`@at "${token}" conflicts with screen variable "--screen-${token}"`)
         }
     }
 }
@@ -914,6 +944,12 @@ export function compileCSS(source: string, options: CompileCSSOptions = {}): Com
                     },
                     compose() {
                         throw new Error('@compose is only allowed in @master components')
+                    },
+                    at() {
+                        throw new Error('@at is only allowed in @master')
+                    },
+                    selector() {
+                        throw new Error('@selector is only allowed in @master')
                     }
                 }
             }
