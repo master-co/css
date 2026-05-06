@@ -1,7 +1,8 @@
 @master {
+    modes: dark;
     --color-accent: #456;
-}
 
-@mode dark {
-    --color-accent: #789;
+    dark {
+        --color-accent: #789;
+    }
 }

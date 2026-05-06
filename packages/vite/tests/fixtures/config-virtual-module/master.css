@@ -1,11 +1,9 @@
 @master {
     --color-primary: #123;
     --screen-md: 48;
-}
 
-@layer components {
     .btn {
-        @apply "bg:primary";
+        @compose "bg:primary";
         display: inline-flex;
     }
 }

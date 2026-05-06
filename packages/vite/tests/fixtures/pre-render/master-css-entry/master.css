@@ -1,0 +1,9 @@
+@master {
+    --color-brand: #123;
+    --screen-md: 768;
+
+    .card {
+        @compose "bg:brand font:18@md";
+        border-color: #456;
+    }
+}
