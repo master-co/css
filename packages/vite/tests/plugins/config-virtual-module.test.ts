@@ -87,9 +87,9 @@ describe('ConfigVirtualModulePlugin', () => {
             variables: [
                 { namespace: 'color', key: 'accent', value: '#456' },
                 { namespace: 'color', key: 'accent', value: '#789', mode: 'dark' }
-            ],
-            modes: ['dark']
+            ]
         })
+        expect(config.modes).toBeUndefined()
     })
 
     it('invalidates unimported CSS config modules without forcing a JS HMR update', async () => {

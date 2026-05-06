@@ -15,7 +15,6 @@ describe.concurrent('@master/css-compiler', () => {
                 default-mode: light;
                 mode-trigger: media;
                 important: false;
-                modes: light, dark;
                 scope: #app;
 
                 --color-primary: #123;
@@ -97,7 +96,6 @@ describe.concurrent('@master/css-compiler', () => {
             @master {
                 root-size: 10;
                 base-unit: 8;
-                modes: light, dark;
                 mode-trigger: class;
 
                 --color-primary: #123;
@@ -128,7 +126,6 @@ describe.concurrent('@master/css-compiler', () => {
         expect(result.config).toMatchObject({
             rootSize: 10,
             baseUnit: 8,
-            modes: ['light', 'dark'],
             modeTrigger: 'class',
             variables: [
                 {
@@ -177,8 +174,31 @@ describe.concurrent('@master/css-compiler', () => {
             }
         })
         expect(result.componentNames).toEqual(['btn'])
+        expect(result.config.modes).toBeUndefined()
         expect(result.generatedCSS).toBe('')
         expect(result.css).toBe('')
+    })
+
+    it('keeps light and dark as core defaults and auto-registers custom modes', () => {
+        const result = compileCSS(`
+            @master {
+                mode-trigger: class;
+
+                --color-primary: #123;
+
+                dark {
+                    --color-primary: #456;
+                }
+
+                chrisma {
+                    --color-primary: #ff0;
+                }
+            }
+        `, { classes: ['bg:primary@dark', 'bg:primary@chrisma'] })
+
+        expect(result.config.modes).toEqual(['chrisma'])
+        expect(result.css).toContain('.dark .bg\\:primary\\@dark{background-color:rgb(68 85 102)}')
+        expect(result.css).toContain('.chrisma .bg\\:primary\\@chrisma{background-color:rgb(255 255 0)}')
     })
 
     it('supports @master components as an organizational section', () => {
@@ -308,17 +328,23 @@ describe.concurrent('@master/css-compiler', () => {
 
         expect(() => process(`
             @master {
-                modes: light, dark;
                 @at dark @media (prefers-color-scheme: dark);
             }
         `)).toThrow('@at "dark" conflicts with mode "dark"')
 
         expect(() => process(`
             @master {
-                --screen-md: 768;
                 @at md @media (width >= 48rem);
             }
         `)).toThrow('@at "md" conflicts with screen variable "--screen-md"')
+
+        expect(() => process(`
+            @master {
+                md {
+                    --color-primary: #ff0;
+                }
+            }
+        `)).toThrow('Mode "md" conflicts with screen variable "--screen-md"')
     })
 
     it('rejects @at and @selector outside @master', () => {

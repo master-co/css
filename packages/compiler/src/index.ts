@@ -1,4 +1,4 @@
-import { createCSS, UtilityType } from '@master/css'
+import { config as defaultConfig, createCSS, screens as defaultScreens, UtilityType } from '@master/css'
 import { transform } from 'lightningcss'
 import type { PropertiesHyphen } from 'csstype'
 import type {
@@ -57,6 +57,9 @@ const MASTER_CUSTOM_AT_RULES = {
 } satisfies CustomAtRules
 
 type MasterSection = 'root' | 'components' | 'utilities' | 'animations'
+
+const DEFAULT_MODE_NAMES = new Set(defaultConfig.modes || [])
+const DEFAULT_SCREEN_NAMES = new Set(Object.keys(defaultScreens))
 
 const HTML_TAG_NAMES = new Set([
     'a',
@@ -198,6 +201,12 @@ function parseVariableValue(value: string): VariableValue {
     return numberValue === undefined ? trimmed : numberValue
 }
 
+function addMasterMode(config: Config, mode: string) {
+    if (DEFAULT_MODE_NAMES.has(mode)) return
+    config.modes ??= []
+    if (!config.modes.includes(mode)) config.modes.push(mode)
+}
+
 function defineMasterVariable(config: Config, property: string, rawValue: string, mode?: string) {
     const variable = resolveVariableNamespace(property)
     const value = parseVariableValue(rawValue)
@@ -205,8 +214,7 @@ function defineMasterVariable(config: Config, property: string, rawValue: string
         throw new Error(`Screen variables cannot be mode-specific: screen-${variable.key}@${mode}`)
     }
     if (mode) {
-        config.modes ??= []
-        if (!config.modes.includes(mode)) config.modes.push(mode)
+        addMasterMode(config, mode)
     }
     config.variables ??= []
     config.variables.push({
@@ -247,7 +255,9 @@ function parseMasterOption(config: Config, property: string, value: string) {
             return true
         }
         case 'modes':
-            config.modes = parseList(value)
+            for (const mode of parseList(value)) {
+                addMasterMode(config, mode)
+            }
             return true
         case 'scope':
             config.scope = value
@@ -700,6 +710,7 @@ function warn(parsed: ParsedDirectives, options: CompileCSSOptions, message: str
 }
 
 function parseModeBlock(rule: any, mode: string, parsed: ParsedDirectives) {
+    addMasterMode(parsed.config, mode)
     parseMasterDeclarations(rule.value.declarations, parsed.config, mode)
     if (rule.value.rules.length) {
         throw new Error(`Mode "${mode}" only accepts custom property declarations`)
@@ -777,13 +788,26 @@ function parseMasterRule(rule: any, parsed: ParsedDirectives, options: CompileCS
 }
 
 function validateTokenConflicts(parsed: ParsedDirectives) {
-    const atTokens = parsed.config.atTokens
-    if (!atTokens) return
-    const modes = new Set(parsed.config.modes || [])
-    const screens = new Set((parsed.config.variables || [])
+    const modes = new Set([...DEFAULT_MODE_NAMES, ...(parsed.config.modes || [])])
+    const customScreens = (parsed.config.variables || [])
         .filter((variable) => variable.namespace === 'screen')
         .map((variable) => variable.key)
-    )
+    const screens = new Set([...DEFAULT_SCREEN_NAMES, ...customScreens])
+
+    for (const mode of parsed.config.modes || []) {
+        if (screens.has(mode)) {
+            throw new Error(`Mode "${mode}" conflicts with screen variable "--screen-${mode}"`)
+        }
+    }
+
+    for (const screen of screens) {
+        if (modes.has(screen)) {
+            throw new Error(`Screen variable "--screen-${screen}" conflicts with mode "${screen}"`)
+        }
+    }
+
+    const atTokens = parsed.config.atTokens
+    if (!atTokens) return
     for (const token of Object.keys(atTokens)) {
         if (modes.has(token)) {
             throw new Error(`@at "${token}" conflicts with mode "${token}"`)

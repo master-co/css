@@ -6,7 +6,6 @@
     default-mode: light;
     mode-trigger: media;
     important: false;
-    modes: light, dark;
 
     --color-primary: #0061ff;
     --color-base: #fff;
@@ -19,8 +18,6 @@
     --spacing-card: 24;
     --screen-md: 768;
 
-    @at motion-safe @media (prefers-reduced-motion: no-preference);
-
     dark {
         --color-primary: #8fb5ff;
         --color-base: #111827;
@@ -29,6 +26,9 @@
         --color-panel: #182233;
         --color-ring: #31415a;
     }
+
+    @at motion-safe @media (prefers-reduced-motion: no-preference);
+    @selector ::scrollbar ::-webkit-scrollbar;
 }
 
 @master components {
