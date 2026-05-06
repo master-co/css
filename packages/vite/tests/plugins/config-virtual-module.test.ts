@@ -34,9 +34,12 @@ describe('ConfigVirtualModulePlugin', () => {
         await (plugin.configResolved as any).call({}, viteConfig)
         const code = await (plugin.load as any).call({}, RESOLVED_VIRTUAL_CONFIG_ID)
         const config = parseDefaultExport(code)
+        const buttonConfigPath = path.join(root, 'styles/button.css')
 
         expect(context.configPath).toBe(path.join(root, 'master.css'))
         expect(viteConfig.server.fs.allow).toContain(context.configPath)
+        expect(viteConfig.server.fs.allow).toContain(buttonConfigPath)
+        expect(context.configResult.dependencies).toEqual([context.configPath, buttonConfigPath])
         expect(config).toMatchObject({
             variables: [
                 { namespace: 'color', key: 'primary', value: '#123' },
@@ -48,6 +51,7 @@ describe('ConfigVirtualModulePlugin', () => {
                     {
                         selector: '&',
                         declarations: {
+                            'font-size': '1rem',
                             display: 'inline-flex'
                         }
                     }
@@ -80,14 +84,26 @@ describe('ConfigVirtualModulePlugin', () => {
         )
         const code = await (plugin.load as any).call({ addWatchFile }, resolvedId)
         const config = parseDefaultExport(code)
+        const themeComponentsPath = path.join(FIXTURE_DIR, 'styles/theme-components.css')
 
         expect(resolvedId).toBe(toResolvedMasterCSSConfigId(path.join(FIXTURE_DIR, 'theme.css')))
         expect(addWatchFile).toHaveBeenCalledWith(path.join(FIXTURE_DIR, 'theme.css'))
+        expect(addWatchFile).toHaveBeenCalledWith(themeComponentsPath)
         expect(config).toMatchObject({
             variables: [
                 { namespace: 'color', key: 'accent', value: '#456' },
                 { namespace: 'color', key: 'accent', value: '#789', mode: 'dark' }
-            ]
+            ],
+            components: {
+                badge: [
+                    {
+                        selector: '&',
+                        declarations: {
+                            display: 'inline-flex'
+                        }
+                    }
+                ]
+            }
         })
         expect(config.modes).toBeUndefined()
     })
@@ -101,12 +117,13 @@ describe('ConfigVirtualModulePlugin', () => {
         const plugin = ConfigVirtualModulePlugin({ config: 'master.css' }, context)
         const root = path.join(FIXTURE_DIR, 'css-only')
         const viteConfig = createResolvedConfig(root)
+        const buttonConfigPath = path.join(root, 'styles/button.css')
         const module = { importers: new Set() }
         const invalidateModule = vi.fn()
 
         await (plugin.configResolved as any).call({}, viteConfig)
         const result = await (plugin.handleHotUpdate as any)({
-            file: path.join(root, 'master.css'),
+            file: buttonConfigPath,
             server: {
                 moduleGraph: {
                     getModuleById: vi.fn((id) => id === RESOLVED_VIRTUAL_CONFIG_ID ? module : undefined),

@@ -9,6 +9,7 @@
 - Input: CSS containing `@master`, variables, nested mode blocks, `@at`, `@selector`, `@master components`, `@master utilities`, component rules with `@compose`, and `@master animations`.
 - Output: CSS with consumed Master directives removed and generated Master CSS appended only for classes passed to the compiler.
 - `@master` definitions are config definitions. Defining a component, utility, variable, token, or animation does not emit CSS by itself; the class still needs to be used or extracted.
+- `compileCSSFile()` resolves local relative CSS `@import` graphs before compiling and returns absolute dependency paths.
 
 ## Boundaries
 
@@ -33,7 +34,7 @@
 - `@compose` is allowed only in component definitions.
 - Utilities defined in CSS are static utilities only.
 - `body`, `html`, and other HTML tag rules inside `@master` should warn because regular CSS selectors must live outside Master directives.
-- The compiler package does not scan unrelated `.css` files for usage. Pair CSS configs with `@master/css.vite` extract mode or pass extracted classes through `compileCSS(..., { classes })`.
+- The compiler package does not scan unrelated `.css` files for class usage. Pair CSS configs with `@master/css.vite` extract mode or pass extracted classes through `compileCSS(..., { classes })`.
 
 ## Tests
 

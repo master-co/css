@@ -1,4 +1,3 @@
-import { readFileSync } from 'node:fs'
 import { createRequire } from 'node:module'
 import { extname } from 'node:path'
 import { pathToFileURL } from 'node:url'
@@ -8,12 +7,13 @@ import {
     resolveConfigPath,
     swcTransform,
     type ExploreConfigOptions,
-    type ExploreConfigResult
+    type ExploreConfigResult,
+    type LoadConfigResult
 } from './shared'
 
 type CreateJiti = typeof import('jiti')['createJiti']
 type TransformSync = typeof import('@swc/wasm')['transformSync']
-type CompileCSS = typeof import('@master/css-compiler')['compileCSS']
+type CompileCSSFile = typeof import('@master/css-compiler')['compileCSSFile']
 
 const require = createRequire(import.meta.url)
 
@@ -25,7 +25,7 @@ function loadScriptLoaderSync() {
 }
 
 function loadCompileCSSSync() {
-    return require('@master/css-compiler').compileCSS as CompileCSS
+    return require('@master/css-compiler').compileCSSFile as CompileCSSFile
 }
 
 function loadConfigModuleSync(path: string) {
@@ -40,23 +40,31 @@ function loadConfigModuleSync(path: string) {
     return jiti(path)
 }
 
-export function loadConfigSync(path: string, options: Pick<ExploreConfigOptions, 'resolvedKeys'> = {}) {
+export function loadConfigSync(path: string, options: Pick<ExploreConfigOptions, 'resolvedKeys'> = {}): LoadConfigResult {
     if (extname(path) === '.css') {
-        const compileCSS = loadCompileCSSSync()
-        return compileCSS(readFileSync(path, 'utf-8'), { from: path }).config
+        const compileCSSFile = loadCompileCSSSync()
+        const result = compileCSSFile(path)
+        return {
+            config: result.config,
+            dependencies: result.dependencies
+        }
     }
-    return resolveConfig(loadConfigModuleSync(path), options)
+    return {
+        config: resolveConfig(loadConfigModuleSync(path), options),
+        dependencies: [path]
+    }
 }
 
 export function exploreConfigSync(options: ExploreConfigOptions & { name?: string } = {}) {
     const resolvedConfig = resolveConfigPath(options)
     if (!resolvedConfig) return
-    const config = loadConfigSync(resolvedConfig.path, options)
+    const { config, dependencies } = loadConfigSync(resolvedConfig.path, options)
     const found = Object.hasOwn(options, 'found') ? options.found : DEFAULT_FOUND
     found?.(resolvedConfig.basename, resolvedConfig.path)
     return {
         ...resolvedConfig,
-        config
+        config,
+        dependencies
     } satisfies ExploreConfigResult
 }
 

@@ -37,6 +37,7 @@ export class MasterCSSExtractorPlugin extends CSSExtractor {
 
     pluginInitialized = false
     moduleContentByPath: any = {}
+    defaultConfigDependencies: string[] = []
 
     private resolveDefaultConfigPath(): ExploreConfigPath | undefined {
         if (typeof this.options.config === 'string') {
@@ -53,8 +54,11 @@ export class MasterCSSExtractorPlugin extends CSSExtractor {
         }
         if (!resolvedConfig) return EMPTY_CONFIG_MODULE
         if (resolvedConfig.extension === 'css') {
-            return toConfigModule(await loadConfig(resolvedConfig.path))
+            const result = await loadConfig(resolvedConfig.path)
+            this.defaultConfigDependencies = result.dependencies
+            return toConfigModule(result.config)
         }
+        this.defaultConfigDependencies = [resolvedConfig.path]
         return toNativeConfigModule(resolvedConfig.path)
     }
 
@@ -116,7 +120,10 @@ export class MasterCSSExtractorPlugin extends CSSExtractor {
                 await this.init()
                 const resolvedConfig = this.resolveDefaultConfigPath()
                 const modifiedFiles = (watchingCompiler as Compiler & { modifiedFiles?: ReadonlySet<string> }).modifiedFiles
-                if (resolvedConfig?.extension === 'css' && hasModifiedFile(modifiedFiles, resolvedConfig.path)) {
+                const defaultConfigDependencies = this.defaultConfigDependencies.length
+                    ? this.defaultConfigDependencies
+                    : resolvedConfig ? [resolvedConfig.path] : []
+                if (resolvedConfig?.extension === 'css' && defaultConfigDependencies.some((dependency) => hasModifiedFile(modifiedFiles, dependency))) {
                     await this.reset(this.options)
                     await resetReplayChain
                 }
@@ -145,7 +152,9 @@ export class MasterCSSExtractorPlugin extends CSSExtractor {
                         .then((moduleContent) => {
                             virtualModule.writeModule(virtualConfigModuleId, moduleContent)
                             if (resolvedConfig?.extension === 'css') {
-                                resolveData.fileDependencies.add(resolvedConfig.path)
+                                for (const dependency of this.defaultConfigDependencies) {
+                                    resolveData.fileDependencies.add(dependency)
+                                }
                             }
                             resolveData.request = virtualConfigModuleId
                             callback()
@@ -177,8 +186,11 @@ export class MasterCSSExtractorPlugin extends CSSExtractor {
                         }
                         try {
                             const virtualCSSConfigModuleId = toVirtualCSSConfigModulePath(compilerContext, resolvedPath)
-                            virtualModule.writeModule(virtualCSSConfigModuleId, toConfigModule(await loadConfig(resolvedPath)))
-                            resolveData.fileDependencies.add(resolvedPath)
+                            const result = await loadConfig(resolvedPath)
+                            virtualModule.writeModule(virtualCSSConfigModuleId, toConfigModule(result.config))
+                            for (const dependency of result.dependencies) {
+                                resolveData.fileDependencies.add(dependency)
+                            }
                             resolveData.request = virtualCSSConfigModuleId
                             callback()
                         } catch (error) {
@@ -192,7 +204,9 @@ export class MasterCSSExtractorPlugin extends CSSExtractor {
         compiler.hooks.thisCompilation.tap(NAME, (compilation) => {
             const resolvedConfig = this.resolveDefaultConfigPath()
             if (resolvedConfig?.extension === 'css') {
-                compilation.fileDependencies.add(resolvedConfig.path)
+                for (const dependency of this.defaultConfigDependencies.length ? this.defaultConfigDependencies : [resolvedConfig.path]) {
+                    compilation.fileDependencies.add(dependency)
+                }
             }
             // Per-module: only synchronously record source. `succeedModule` is a
             // SyncHook — async handlers attached via `.tap()` would be discarded

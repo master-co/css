@@ -16,9 +16,12 @@ export interface ExploreConfigPath {
     path: string
 }
 
-export interface ExploreConfigResult extends ExploreConfigPath {
+export interface LoadConfigResult {
     config: Config
+    dependencies: string[]
 }
+
+export type ExploreConfigResult = ExploreConfigPath & LoadConfigResult
 
 export const DEFAULT_EXTENSIONS = [
     'js',

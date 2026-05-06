@@ -1,3 +1,5 @@
+@import './styles/theme-components.css';
+
 @master {
     --color-accent: #456;
 

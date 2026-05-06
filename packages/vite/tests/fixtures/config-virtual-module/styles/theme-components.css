@@ -1,0 +1,5 @@
+@master components {
+    .badge {
+        display: inline-flex;
+    }
+}

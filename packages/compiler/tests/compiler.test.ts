@@ -1,6 +1,9 @@
 import { describe, expect, it } from 'vitest'
 import { UtilityType } from '@master/css'
-import { compileCSS } from '../src'
+import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
+import { compileCSS, compileCSSFile } from '../src'
 
 function process(css: string, classes?: string[]) {
     return compileCSS(css, { classes }).css
@@ -240,6 +243,106 @@ describe.concurrent('@master/css-compiler', () => {
 
         expect(css).toContain('.btn{display:block}')
         expect(css).toContain('.btn{background-color:rgb(17 34 51)}')
+    })
+
+    it('merges repeated component definitions by selector', () => {
+        const result = compileCSS(`
+            @master components {
+                .btn {
+                    @compose "inline-flex";
+                    display: inline-flex;
+                    color: red;
+                }
+
+                .btn {
+                    @compose "block";
+                    display: block;
+                    font-size: 1rem;
+                }
+            }
+        `, { classes: ['btn'] })
+
+        expect(result.config.components?.btn).toEqual([
+            'inline-flex',
+            'block',
+            {
+                selector: '&',
+                declarations: {
+                    display: 'block',
+                    color: 'red',
+                    'font-size': '1rem'
+                }
+            }
+        ])
+        expect(result.css).toContain('.btn{display:block;color:red;font-size:1rem}')
+    })
+
+    it('compiles CSS files with local relative imports', () => {
+        const root = mkdtempSync(join(tmpdir(), 'master-css-compiler-'))
+        try {
+            mkdirSync(join(root, 'styles'))
+            const entry = join(root, 'master.css')
+            const button = join(root, 'styles/button.css')
+            writeFileSync(button, `
+                .reset {
+                    box-sizing: border-box;
+                }
+
+                @master components {
+                    .btn {
+                        font-size: 1rem;
+                        display: inline-flex;
+                    }
+                }
+            `)
+            writeFileSync(entry, `
+                @import "@master/normal.css";
+                @import "./styles/button.css";
+
+                .page {
+                    color: red;
+                }
+
+                @master components {
+                    .btn {
+                        display: block;
+                    }
+                }
+            `)
+
+            const result = compileCSSFile(entry, { classes: ['btn'] })
+
+            expect(result.dependencies).toEqual([entry, button])
+            expect(result.config.components?.btn).toEqual([
+                {
+                    selector: '&',
+                    declarations: {
+                        'font-size': '1rem',
+                        display: 'block'
+                    }
+                }
+            ])
+            expect(result.css).toContain('@import "@master/normal.css";')
+            expect(result.css).toContain('box-sizing: border-box')
+            expect(result.css).toContain('color: red')
+            expect(result.css).toContain('.btn{font-size:1rem;display:block}')
+        } finally {
+            rmSync(root, { recursive: true, force: true })
+        }
+    })
+
+    it('rejects circular CSS file imports', () => {
+        const root = mkdtempSync(join(tmpdir(), 'master-css-compiler-'))
+        try {
+            const entry = join(root, 'master.css')
+            const theme = join(root, 'theme.css')
+            writeFileSync(entry, '@import "./theme.css";')
+            writeFileSync(theme, '@import "./master.css";')
+
+            expect(() => compileCSSFile(entry)).toThrow('Circular CSS import')
+        } finally {
+            rmSync(root, { recursive: true, force: true })
+        }
     })
 
     it('supports shorthand animation blocks in @master animations', () => {

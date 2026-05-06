@@ -21,7 +21,7 @@ export default function PreRenderPlugin(options: PluginOptions, context: PluginC
                 return
             }
             if (context.configPath) {
-                cssConfig = await loadConfig(context.configPath)
+                cssConfig = (await loadConfig(context.configPath)).config
             }
         },
         transformIndexHtml(html) {

@@ -1,4 +1,3 @@
-import { readFileSync } from 'node:fs'
 import { extname } from 'node:path'
 import { pathToFileURL } from 'node:url'
 import {
@@ -9,7 +8,8 @@ import {
     swcTransform,
     type ExploreConfigOptions,
     type ExploreConfigPath,
-    type ExploreConfigResult
+    type ExploreConfigResult,
+    type LoadConfigResult
 } from './shared'
 
 export {
@@ -17,7 +17,8 @@ export {
     resolveConfigPath,
     type ExploreConfigOptions,
     type ExploreConfigPath,
-    type ExploreConfigResult
+    type ExploreConfigResult,
+    type LoadConfigResult
 }
 
 type CreateJiti = typeof import('jiti')['createJiti']
@@ -40,7 +41,7 @@ async function loadScriptLoader() {
 }
 
 async function loadCompileCSS() {
-    return (await import('@master/css-compiler')).compileCSS
+    return (await import('@master/css-compiler')).compileCSSFile
 }
 
 async function loadConfigModule(path: string) {
@@ -55,23 +56,31 @@ async function loadConfigModule(path: string) {
     return jiti(path)
 }
 
-export async function loadConfig(path: string, options: Pick<ExploreConfigOptions, 'resolvedKeys'> = {}) {
+export async function loadConfig(path: string, options: Pick<ExploreConfigOptions, 'resolvedKeys'> = {}): Promise<LoadConfigResult> {
     if (extname(path) === '.css') {
-        const compileCSS = await loadCompileCSS()
-        return compileCSS(readFileSync(path, 'utf-8'), { from: path }).config
+        const compileCSSFile = await loadCompileCSS()
+        const result = compileCSSFile(path)
+        return {
+            config: result.config,
+            dependencies: result.dependencies
+        }
     }
-    return resolveConfig(await loadConfigModule(path), options)
+    return {
+        config: resolveConfig(await loadConfigModule(path), options),
+        dependencies: [path]
+    }
 }
 
 export async function exploreConfig(options: ExploreConfigOptions & { name?: string } = {}) {
     const resolvedConfig = resolveConfigPath(options)
     if (!resolvedConfig) return
-    const config = await loadConfig(resolvedConfig.path, options)
+    const { config, dependencies } = await loadConfig(resolvedConfig.path, options)
     const found = Object.hasOwn(options, 'found') ? options.found : DEFAULT_FOUND
     found?.(resolvedConfig.basename, resolvedConfig.path)
     return {
         ...resolvedConfig,
-        config
+        config,
+        dependencies
     } satisfies ExploreConfigResult
 }
 

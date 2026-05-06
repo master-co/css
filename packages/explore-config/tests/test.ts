@@ -1,7 +1,8 @@
 import { test, expect } from 'vitest'
-import exploreConfig, { resolveConfigPath } from '../src'
+import exploreConfig, { loadConfig, resolveConfigPath } from '../src'
+import exploreConfigSync, { loadConfigSync } from '../src/sync'
 import config from './master.css'
-import { mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { tmpdir } from 'node:os'
 
@@ -86,6 +87,28 @@ test('returns an explore result for downstream integrations', async () => {
         basename: 'custom.config.ts',
         extension: 'ts',
         path: join(__dirname, 'custom.config.ts'),
+        dependencies: [join(__dirname, 'custom.config.ts')],
+        config: {
+            components: {
+                custom: ['inline-flex']
+            }
+        }
+    })
+})
+
+test('loads config results directly', async () => {
+    const path = join(__dirname, 'custom.config.ts')
+
+    await expect(loadConfig(path)).resolves.toStrictEqual({
+        dependencies: [path],
+        config: {
+            components: {
+                custom: ['inline-flex']
+            }
+        }
+    })
+    expect(loadConfigSync(path)).toStrictEqual({
+        dependencies: [path],
         config: {
             components: {
                 custom: ['inline-flex']
@@ -104,6 +127,88 @@ test('resolves CSS configs with the lowest default priority', async () => {
             basename: 'master.css.ts',
             extension: 'ts',
             path: join(cwd, 'master.css.ts')
+        })
+    } finally {
+        rmSync(cwd, { force: true, recursive: true })
+    }
+})
+
+test('loads imported CSS config files', async () => {
+    const cwd = mkdtempSync(join(tmpdir(), 'master-css-config-'))
+    try {
+        mkdirSync(join(cwd, 'styles'))
+        const entry = join(cwd, 'master.css')
+        const button = join(cwd, 'styles/button.css')
+        writeFileSync(button, `
+            @master components {
+                .btn {
+                    font-size: 1rem;
+                    display: inline-flex;
+                }
+            }
+        `)
+        writeFileSync(entry, `
+            @import './styles/button.css';
+
+            @master components {
+                .btn {
+                    display: block;
+                }
+            }
+        `)
+
+        const result = await exploreConfig({ cwd })
+
+        expect(result?.dependencies).toEqual([entry, button])
+        expect(result?.config).toStrictEqual({
+            components: {
+                btn: [
+                    {
+                        selector: '&',
+                        declarations: {
+                            'font-size': '1rem',
+                            display: 'block'
+                        }
+                    }
+                ]
+            }
+        })
+    } finally {
+        rmSync(cwd, { force: true, recursive: true })
+    }
+})
+
+test('loads imported CSS config files synchronously', () => {
+    const cwd = mkdtempSync(join(tmpdir(), 'master-css-config-'))
+    try {
+        mkdirSync(join(cwd, 'styles'))
+        const entry = join(cwd, 'master.css')
+        const button = join(cwd, 'styles/button.css')
+        writeFileSync(button, `
+            @master components {
+                .btn {
+                    font-size: 1rem;
+                }
+            }
+        `)
+        writeFileSync(entry, `
+            @import './styles/button.css';
+        `)
+
+        const result = exploreConfigSync({ cwd })
+
+        expect(result?.dependencies).toEqual([entry, button])
+        expect(result?.config).toStrictEqual({
+            components: {
+                btn: [
+                    {
+                        selector: '&',
+                        declarations: {
+                            'font-size': '1rem'
+                        }
+                    }
+                ]
+            }
         })
     } finally {
         rmSync(cwd, { force: true, recursive: true })
