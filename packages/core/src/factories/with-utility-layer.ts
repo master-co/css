@@ -43,8 +43,9 @@ export default function withUtilityLayer<TBase extends new (...args: any[]) => L
             const deleteLayerToken = (layerToken: string, layer: Layer | NonLayer) => {
                 const count = layer.tokenCounts.get(layerToken) ?? 0
                 if (count <= 1) {
-                    layer.delete(layerToken)
+                    const deletedRule = layer.delete(layerToken)
                     layer.tokenCounts.delete(layerToken)
+                    return deletedRule
                 } else {
                     layer.tokenCounts.set(layerToken, count - 1)
                 }
@@ -53,7 +54,15 @@ export default function withUtilityLayer<TBase extends new (...args: any[]) => L
                 deleteLayerToken(eachVariableName, this.css.themeLayer)
             })
             if ('animationNames' in utility) utility.animationNames?.forEach((eachAnimationName) => {
-                deleteLayerToken(eachAnimationName, this.css.animationsNonLayer)
+                const deletedAnimationRule = deleteLayerToken(eachAnimationName, this.css.animationsNonLayer)
+                if (deletedAnimationRule) {
+                    const variableNames = 'variableNames' in deletedAnimationRule
+                        ? deletedAnimationRule.variableNames as Set<string> | undefined
+                        : undefined
+                    variableNames?.forEach((eachVariableName: string) => {
+                        deleteLayerToken(eachVariableName, this.css.themeLayer)
+                    })
+                }
             })
             return utility
         }
@@ -86,6 +95,7 @@ export default function withUtilityLayer<TBase extends new (...args: any[]) => L
                     const newRule = new AnimationRule(eachAnimationName, keyframes, this.css)
                     this.css.animationsNonLayer.insert(newRule)
                     this.css.animationsNonLayer.tokenCounts.set(eachAnimationName, 1)
+                    this.insertVariables(newRule)
                 }
             })
         }

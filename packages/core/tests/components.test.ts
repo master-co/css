@@ -122,6 +122,40 @@ describe('raw declarations', () => {
         expect(css.utilitiesLayer.text).toContain('.surface{background:var(--color-primary)}')
     })
 
+    test('generates and removes theme variables from animation keyframes', () => {
+        const css = createCSS({
+            variables: [
+                { namespace: 'color', key: 'primary', value: '#ff0', mode: 'light' },
+                { namespace: 'color', key: 'primary', value: '#000', mode: 'dark' }
+            ],
+            animations: {
+                fade: {
+                    to: {
+                        background: 'var(--color-primary)'
+                    }
+                }
+            },
+            components: {
+                btn: [
+                    {
+                        selector: '&',
+                        declarations: {
+                            animation: 'fade 1s'
+                        }
+                    }
+                ]
+            }
+        }).add('btn')
+
+        expect(css.themeLayer.text).toContain('@media (prefers-color-scheme:light){:root{--color-primary:rgb(255 255 0)}}')
+        expect(css.themeLayer.text).toContain('@media (prefers-color-scheme:dark){:root{--color-primary:rgb(0 0 0)}}')
+        expect(css.animationsNonLayer.text).toContain('@keyframes fade{to{background:var(--color-primary)}}')
+
+        css.remove('btn')
+        expect(css.themeLayer.text).toBe('')
+        expect(css.animationsNonLayer.text).toBe('')
+    })
+
     test('generates component rule declarations with at-rules', () => {
         const css = createCSS({ atTokens: {
                 sm: 500

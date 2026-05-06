@@ -311,16 +311,27 @@ describe.concurrent('@master/css-compiler', () => {
             @master {
                 dark {
                     --color-primary: #000;
+                    --color-accent: #f0f;
                 }
 
                 light {
                     --color-primary: #ff0;
+                    --color-accent: #0ff;
+                }
+            }
+
+            @master animations {
+                fade {
+                    to {
+                        background: var(--color-accent);
+                    }
                 }
             }
 
             @master components {
                 .btn {
                     background: var(--color-primary, transparent);
+                    animation: fade 1s;
                 }
             }
 
@@ -334,8 +345,11 @@ describe.concurrent('@master/css-compiler', () => {
         expect(result.css).toContain('@layer theme')
         expect(result.css).toContain('@media (prefers-color-scheme:light){:root{--color-primary:rgb(255 255 0)}}')
         expect(result.css).toContain('@media (prefers-color-scheme:dark){:root{--color-primary:rgb(0 0 0)}}')
-        expect(result.css).toContain('.btn{background:var(--color-primary, transparent)}')
+        expect(result.css).toContain('@media (prefers-color-scheme:light){:root{--color-accent:rgb(0 255 255)}}')
+        expect(result.css).toContain('@media (prefers-color-scheme:dark){:root{--color-accent:rgb(255 0 255)}}')
+        expect(result.css).toContain('.btn{background:var(--color-primary, transparent);animation:1s fade}')
         expect(result.css).toContain('.surface{background:var(--color-primary)}')
+        expect(result.css).toContain('@keyframes fade{to{background:var(--color-accent)}}')
     })
 
     it('uses the last definition for repeated root config, variables, tokens, and animations', () => {
