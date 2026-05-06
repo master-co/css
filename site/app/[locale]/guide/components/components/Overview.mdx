@@ -1,0 +1,13 @@
+```css name=master.css
+@master components {
+    .btn {
+        @compose "inline-flex ai:center jc:center px:1rem py:.625rem r:.5rem";
+        background: var(--color-primary);
+        color: white;
+    }
+}
+```
+
+```html
+<button class="btn">Save changes</button>
+```

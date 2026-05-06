@@ -1,0 +1,237 @@
+## Overview [sr-only]
+Components are named style compositions for UI patterns such as buttons, cards, fields, and layout shells. They are useful when a repeated class list becomes a design-system concept instead of one-off styling.
+
+In CSS config files, define components in `@master components`. The definitions are converted into `config.components`; they are not emitted by themselves. Master CSS generates component CSS only when the component class is used in markup or extracted from source files.
+
+---
+
+## Define a component
+Use a class selector inside `@master components`. Put Master CSS classes in `@compose`, and put native CSS declarations directly in the rule.
+
+```css name=master.css
+@master components {
+    .btn {
+        @compose "inline-flex ai:center jc:center gap:.5rem px:1rem py:.625rem r:.5rem font:14 font:medium";
+        background: var(--color-primary);
+        color: white;
+    }
+}
+```
+
+Use the component class in markup:
+
+```html
+<button class="btn">Save changes</button>
+```
+
+The generated CSS is emitted in the `components` layer:
+
+```css
+@layer base,theme,preset,components,utilities;
+
+@layer components {
+    .btn {
+        display: inline-flex;
+    }
+
+    .btn {
+        gap: 0.5rem;
+    }
+
+    .btn {
+        border-radius: 0.5rem;
+    }
+
+    .btn {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    .btn {
+        padding-top: 0.625rem;
+        padding-bottom: 0.625rem;
+    }
+
+    .btn {
+        align-items: center;
+    }
+
+    .btn {
+        font-size: 0.875rem;
+    }
+
+    .btn {
+        font-weight: 500;
+    }
+
+    .btn {
+        justify-content: center;
+    }
+
+    .btn {
+        background: var(--color-primary);
+        color: #fff;
+    }
+}
+```
+
+---
+
+## Composition
+`@compose` accepts the same class syntax you would write in markup. Keep it quoted so grouped declarations and punctuation-heavy syntax can be parsed without ambiguity.
+
+```css name=master.css
+@master components {
+    .empty-state {
+        @compose "grid ai:center jc:center min-h:16rem p:1.25rem text:center";
+    }
+
+    .empty-state::before {
+        @compose "{content:'';block;size:3rem;r:50%}";
+        background: color-mix(in oklab, currentColor 12%, transparent);
+    }
+}
+```
+
+When the selector is derived from the same component class, composed classes receive the selector suffix automatically. In the example above, `size:3rem` is generated for `.empty-state::before`, not for `.empty-state`.
+
+---
+
+## States and conditions
+Component selectors can include pseudo-classes, pseudo-elements, and conditional class syntax.
+
+```css name=master.css
+@master components {
+    .btn {
+        @compose "inline-flex ai:center jc:center px:1rem py:.625rem r:.5rem";
+        transition: background-color .15s ease, box-shadow .15s ease;
+    }
+
+    .btn:hover {
+        @compose "bg:primary/.9";
+    }
+
+    .btn:focus-visible {
+        @compose "outline:2|primary outline-offset:2";
+    }
+
+    .btn {
+        @compose "block@<sm";
+    }
+}
+```
+
+Equivalent markup stays semantic:
+
+```html
+<button class="btn">Continue</button>
+```
+
+---
+
+## Generation behavior
+Component definitions are config, not output. Defining `.btn` does not generate CSS until `btn` appears in extracted classes.
+
+```css name=master.css
+@master components {
+    .btn {
+        @compose "inline-flex px:1rem";
+    }
+
+    .card {
+        @compose "p:1rem r:.75rem";
+    }
+}
+```
+
+```html
+<!-- only btn is generated -->
+<button class="btn">Save</button>
+```
+
+This keeps unused component definitions out of the final CSS. In Vite extract mode, `master.css` and its imported CSS config files can hold the definitions while the extractor decides which classes are actually used.
+
+---
+
+## Merging definitions
+You can split a component into multiple rules. Rules with the same component name and selector are merged in config order; later declarations with the same property override earlier declarations.
+
+```css name=master.css
+@master components {
+    .btn {
+        @compose "inline-flex";
+        display: inline-flex;
+        color: black;
+    }
+
+    .btn {
+        @compose "block";
+        display: block;
+        font-size: 1rem;
+    }
+}
+```
+
+The resulting component keeps both composed classes, and the later `display` declaration wins:
+
+```js
+{
+    components: {
+        btn: [
+            'inline-flex',
+            'block',
+            {
+                selector: '&',
+                declarations: {
+                    display: 'block',
+                    color: 'black',
+                    'font-size': '1rem'
+                }
+            }
+        ]
+    }
+}
+```
+
+---
+
+## Split files
+Use native CSS `@import` from the CSS config entry to organize components.
+
+```css name=master.css
+@import './styles/button.css';
+@import './styles/card.css';
+
+@master {
+    --color-primary: #4f46e5;
+}
+```
+
+```css name=styles/button.css
+@master components {
+    .btn {
+        @compose "inline-flex ai:center jc:center px:1rem py:.625rem r:.5rem";
+        background: var(--color-primary);
+        color: white;
+    }
+}
+```
+
+Local relative `.css` imports are compiled into one config graph. Package imports and regular CSS that are not part of `@master` definitions stay as normal CSS.
+
+---
+
+## Rules and constraints
+- Put component definitions in `@master components`; component selectors directly under `@master` are invalid.
+- Component selectors must start with a single class selector such as `.btn`, `.card`, or `.field::before`.
+- `@compose` is only valid inside component definitions.
+- Component definitions accept native declarations and `@compose`; nested arbitrary rules belong in regular CSS outside `@master components`.
+- Standard HTML tag selectors such as `body` or `html` are not valid inside `@master` definitions.
+- Utilities still win over components in the default layer order: `@layer base,theme,preset,components,utilities;`.
+
+---
+
+## When to use components
+Use components when the class name describes a reusable UI pattern: `.btn`, `.card`, `.field`, `.page`, `.toolbar`. Use utilities when the class describes a reusable primitive or a one-off declaration.
+
+Good component definitions usually stay small and composable. Prefer combining semantic components with utilities in markup instead of hiding every variation behind a new component name.
