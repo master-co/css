@@ -277,6 +277,120 @@ describe.concurrent('@master/css-compiler', () => {
         expect(result.css).toContain('.btn{display:block;color:red;font-size:1rem}')
     })
 
+    it('merges repeated static utility definitions by name', () => {
+        const result = compileCSS(`
+            @master utilities {
+                .content-auto {
+                    content-visibility: auto;
+                    contain-intrinsic-size: auto 16rem;
+                }
+
+                .content-auto {
+                    contain-intrinsic-size: auto 32rem;
+                    display: block;
+                }
+            }
+        `, { classes: ['content-auto'] })
+
+        expect(result.config.utilities).toEqual([
+            {
+                name: 'content-auto',
+                type: UtilityType.Static,
+                declarations: {
+                    'content-visibility': 'auto',
+                    'contain-intrinsic-size': 'auto 32rem',
+                    display: 'block'
+                }
+            }
+        ])
+        expect(result.css).toContain('.content-auto{content-visibility:auto;contain-intrinsic-size:auto 32rem;display:block}')
+    })
+
+    it('uses the last definition for repeated root config, variables, tokens, and animations', () => {
+        const result = compileCSS(`
+            @master {
+                root-size: 16;
+                root-size: 10;
+                base-unit: 4;
+                base-unit: 8;
+                default-mode: light;
+                default-mode: dark;
+                mode-trigger: media;
+                mode-trigger: class;
+                scope: .shell;
+                scope: #app;
+
+                --color-primary: #111;
+                --color-primary: #222;
+                --screen-md: 640;
+                --screen-md: 768;
+
+                @at motion-safe @media (hover: hover);
+                @at motion-safe @media (prefers-reduced-motion: no-preference);
+                @selector :interactive :hover;
+                @selector :interactive :focus-visible;
+
+                dark {
+                    --color-primary: #333;
+                    --color-primary: #444;
+                }
+            }
+
+            @master animations {
+                fade {
+                    from {
+                        opacity: 0;
+                    }
+                }
+
+                fade {
+                    to {
+                        opacity: 1;
+                    }
+                }
+            }
+        `)
+
+        expect(result.config).toMatchObject({
+            rootSize: 10,
+            baseUnit: 8,
+            defaultMode: 'dark',
+            modeTrigger: 'class',
+            scope: '#app',
+            variables: [
+                {
+                    namespace: 'color',
+                    key: 'primary',
+                    value: '#222'
+                },
+                {
+                    namespace: 'screen',
+                    key: 'md',
+                    value: 768
+                },
+                {
+                    namespace: 'color',
+                    key: 'primary',
+                    value: '#444',
+                    mode: 'dark'
+                }
+            ],
+            atTokens: {
+                'motion-safe': 'media(prefers-reduced-motion:no-preference)'
+            },
+            selectorTokens: {
+                ':interactive': ':focus-visible'
+            },
+            animations: {
+                fade: {
+                    to: {
+                        opacity: '1'
+                    }
+                }
+            }
+        })
+    })
+
     it('compiles CSS files with local relative imports', () => {
         const root = mkdtempSync(join(tmpdir(), 'master-css-compiler-'))
         try {
@@ -430,6 +544,14 @@ describe.concurrent('@master/css-compiler', () => {
         expect(() => process(`
             .btn {
                 @compose "block";
+            }
+        `)).toThrow('@compose is only allowed in @master components')
+
+        expect(() => process(`
+            @master utilities {
+                .content-auto {
+                    @compose "block";
+                }
             }
         `)).toThrow('@compose is only allowed in @master components')
     })

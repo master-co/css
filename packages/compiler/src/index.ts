@@ -230,12 +230,21 @@ function defineMasterVariable(config: Config, property: string, rawValue: string
         addMasterMode(config, mode)
     }
     config.variables ??= []
-    config.variables.push({
+    const definition = {
         ...(variable.namespace ? { namespace: variable.namespace } : {}),
         key: variable.key,
         value,
         ...(mode ? { mode } : {})
-    })
+    }
+    const foundIndex = config.variables.findIndex((existing) =>
+        existing.key === definition.key
+        && existing.namespace === definition.namespace
+        && existing.mode === definition.mode
+    )
+    if (foundIndex !== -1) {
+        config.variables.splice(foundIndex, 1)
+    }
+    config.variables.push(definition)
 }
 
 function parseMasterOption(config: Config, property: string, value: string) {
@@ -690,6 +699,17 @@ function parseUtility(rule: any, parsed: ParsedDirectives) {
     }
     const { declarations } = collectStyleRule(rule, false)
     parsed.config.utilities ??= []
+    const existingDefinition = parsed.config.utilities.find((definition) =>
+        definition.name === name && (definition.type ?? UtilityType.Static) === UtilityType.Static
+    )
+    if (existingDefinition) {
+        existingDefinition.type = UtilityType.Static
+        existingDefinition.declarations = {
+            ...(existingDefinition.declarations as PropertiesHyphen),
+            ...(declarations as PropertiesHyphen)
+        }
+        return
+    }
     parsed.config.utilities.push({
         name,
         type: UtilityType.Static,
