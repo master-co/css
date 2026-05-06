@@ -1,9 +1,10 @@
-import { createCSS } from '@master/css'
+import { createCSS, UtilityType } from '@master/css'
 import { transform } from 'lightningcss'
 import type { PropertiesHyphen } from 'csstype'
 import type {
     AnimationDefinitions,
     Config,
+    UtilityDefinition,
     VariableValue
 } from '@master/css'
 import type {
@@ -23,6 +24,7 @@ export interface CompileCSSOptions {
     config?: Parameters<typeof createCSS>[0]
     classes?: string[]
     from?: string
+    onWarning?: (warning: string) => void
 }
 
 export interface CompileCSSResult {
@@ -30,23 +32,139 @@ export interface CompileCSSResult {
     componentNames: string[]
     css: string
     generatedCSS: string
+    warnings: string[]
 }
 
-export type ParsedDirectives = Pick<CompileCSSResult, 'config' | 'componentNames'>
+export type ParsedDirectives = Pick<CompileCSSResult, 'config' | 'componentNames' | 'warnings'>
 
 const MASTER_CUSTOM_AT_RULES = {
     master: {
-        body: 'declaration-list'
+        prelude: '*',
+        body: 'style-block'
     },
-    mode: {
-        prelude: '<custom-ident>',
-        body: 'declaration-list'
-    },
-    apply: {
+    compose: {
         prelude: '<string>',
         body: null
     }
 } satisfies CustomAtRules
+
+type MasterSection = 'root' | 'components' | 'utilities' | 'animations'
+
+const HTML_TAG_NAMES = new Set([
+    'a',
+    'abbr',
+    'address',
+    'area',
+    'article',
+    'aside',
+    'audio',
+    'b',
+    'base',
+    'bdi',
+    'bdo',
+    'blockquote',
+    'body',
+    'br',
+    'button',
+    'canvas',
+    'caption',
+    'cite',
+    'code',
+    'col',
+    'colgroup',
+    'data',
+    'datalist',
+    'dd',
+    'del',
+    'details',
+    'dfn',
+    'dialog',
+    'div',
+    'dl',
+    'dt',
+    'em',
+    'embed',
+    'fieldset',
+    'figcaption',
+    'figure',
+    'footer',
+    'form',
+    'h1',
+    'h2',
+    'h3',
+    'h4',
+    'h5',
+    'h6',
+    'head',
+    'header',
+    'hgroup',
+    'hr',
+    'html',
+    'i',
+    'iframe',
+    'img',
+    'input',
+    'ins',
+    'kbd',
+    'label',
+    'legend',
+    'li',
+    'link',
+    'main',
+    'map',
+    'mark',
+    'menu',
+    'meta',
+    'meter',
+    'nav',
+    'noscript',
+    'object',
+    'ol',
+    'optgroup',
+    'option',
+    'output',
+    'p',
+    'picture',
+    'pre',
+    'progress',
+    'q',
+    'rp',
+    'rt',
+    'ruby',
+    's',
+    'samp',
+    'script',
+    'search',
+    'section',
+    'select',
+    'slot',
+    'small',
+    'source',
+    'span',
+    'strong',
+    'style',
+    'sub',
+    'summary',
+    'sup',
+    'svg',
+    'table',
+    'tbody',
+    'td',
+    'template',
+    'textarea',
+    'tfoot',
+    'th',
+    'thead',
+    'time',
+    'title',
+    'tr',
+    'track',
+    'u',
+    'ul',
+    'var',
+    'video',
+    'wbr'
+])
 
 function normalizeClassNames(classNames: string[]) {
     return classNames.join(' ').replace(/(?:\n\s*)+/g, ' ').trim().split(' ').filter(Boolean)
@@ -60,6 +178,10 @@ function parseBoolean(value: string) {
 function parseNumber(value: string) {
     const numberValue = Number(value)
     if (!Number.isNaN(numberValue) && String(numberValue) === value) return numberValue
+}
+
+function parseList(value: string) {
+    return value.split(',').flatMap((part) => part.trim().split(/\s+/)).filter(Boolean)
 }
 
 function parseVariableValue(value: string): VariableValue {
@@ -116,6 +238,12 @@ function parseMasterOption(config: Config, property: string, value: string) {
             config.important = important
             return true
         }
+        case 'modes':
+            config.modes = parseList(value)
+            return true
+        case 'scope':
+            config.scope = value
+            return true
         default:
             return false
     }
@@ -139,6 +267,24 @@ function formatDeclaration(declaration: Declaration): string {
     const bodyEnd = output.lastIndexOf('}')
     const body = output.slice(bodyStart + 1, bodyEnd).trim()
     return body.replace(/;$/, '').trim()
+}
+
+function formatSelectors(selectors: Selector[]) {
+    const output = transform({
+        filename: 'master-css-selector.css',
+        code: Buffer.from('.x{color:red}'),
+        minify: true,
+        visitor: {
+            Rule: {
+                style(rule) {
+                    rule.value.selectors = selectors
+                    return rule
+                }
+            }
+        }
+    }).code.toString()
+
+    return output.slice(0, output.indexOf('{')).trim()
 }
 
 function formatDeclarationValue(declaration: Declaration) {
@@ -273,56 +419,78 @@ function collectDeclarations(block: DeclarationBlock<Declaration>) {
     return declarations
 }
 
-function parseMaster(rule: any, config: Config) {
-    for (const declaration of rule.body.value.declarations as Declaration[]) {
+function parseMasterDeclarations(block: DeclarationBlock<Declaration>, config: Config, mode?: string) {
+    for (const declaration of (block.declarations || []) as Declaration[]) {
         const property = getDeclarationName(declaration)
         const value = formatDeclarationValue(declaration)
         if (property.startsWith('--')) {
-            defineMasterVariable(config, property, value)
+            defineMasterVariable(config, property, value, mode)
             continue
+        }
+        if (mode) {
+            throw new Error(`Mode "${mode}" only accepts custom property declarations`)
         }
         if (!parseMasterOption(config, property, value)) {
             throw new Error(`Unsupported @master option: ${property}`)
         }
     }
-}
-
-function parseMode(rule: any, config: Config) {
-    const mode = rule.prelude?.value
-    if (!mode) {
-        throw new Error('@mode requires a mode name')
-    }
-    for (const declaration of rule.body.value.declarations as Declaration[]) {
+    for (const declaration of (block.importantDeclarations || []) as Declaration[]) {
         const property = getDeclarationName(declaration)
-        if (!property.startsWith('--')) {
-            throw new Error('@mode only accepts custom property declarations')
-        }
-        defineMasterVariable(config, property, formatDeclarationValue(declaration), mode)
+        throw new Error(`@master does not accept !important declarations: ${property}`)
     }
 }
 
 function normalizeAtValue(value: string) {
-    const rawAtRule = /^@(media|supports|container|layer)\s*(.*)$/.exec(value.trim())
-    if (!rawAtRule) return value
-    return rawAtRule[1] + rawAtRule[2].trim().replace(/\s*:\s*/g, ':')
+    const trimmed = value.trim().replace(/\s*([:<>]=?|=)\s*/g, '$1')
+    const rawAtRule = /^@(media|supports|container|layer|starting-style)\b\s*(.*)$/.exec(trimmed)
+    if (!rawAtRule) return trimmed
+
+    const [, type, body] = rawAtRule
+    if (type === 'starting-style') {
+        if (body.trim()) throw new Error('@starting-style token does not accept a value')
+        return 'starting-style'
+    }
+    if (type === 'container') {
+        return `${type}${body ? ' ' + body.trim() : ''}`.trim()
+    }
+    if (type === 'layer') {
+        return body.trim().startsWith('(') ? `layer${body.trim()}` : `layer(${body.trim()})`
+    }
+    if (type === 'media') {
+        const mediaBody = body.trim()
+        return mediaBody.startsWith('(') ? `media${mediaBody}` : `media ${mediaBody}`
+    }
+    if (!body.trim().startsWith('(')) {
+        throw new Error('@supports token value must use a parenthesized condition')
+    }
+    return `${type}${body.trim()}`
 }
 
-function parseAtDefinition(rule: any, config: Config) {
-    const match = /^(\S+)\s+(.+)$/.exec(formatTokenOrValues(rule.prelude).trim())
+function parseTokenDefinition(rule: any, parsed: ParsedDirectives) {
+    const match = /^(\S+)\s+(.+)$/.exec(formatTokenOrValues(rule.value.prelude).trim())
     if (!match) {
-        throw new Error('@at requires a name and at-rule value')
+        throw new Error('@token requires a token name and value')
     }
-    config.atTokens ??= {}
-    config.atTokens[match[1]] = normalizeAtValue(match[2])
-}
 
-function parseSelectorDefinition(rule: any, config: Config) {
-    const match = /^(\S+)\s+(.+)$/.exec(formatTokenOrValues(rule.prelude).trim())
-    if (!match) {
-        throw new Error('@selector requires a name and selector value')
+    const [, token, value] = match
+    if (token.startsWith('@')) {
+        const key = token.slice(1)
+        if (!key) throw new Error('@token at-rule names cannot be empty')
+        if (!value.trim().startsWith('@')) {
+            throw new Error(`At token "${token}" must use an explicit at-rule value`)
+        }
+        parsed.config.atTokens ??= {}
+        parsed.config.atTokens[key] = normalizeAtValue(value)
+        return
     }
-    config.selectorTokens ??= {}
-    config.selectorTokens[match[1]] = match[2]
+
+    if (token.startsWith(':')) {
+        parsed.config.selectorTokens ??= {}
+        parsed.config.selectorTokens[token] = value.trim()
+        return
+    }
+
+    throw new Error(`@token name must start with "@", ":", or "::": ${token}`)
 }
 
 function parseClassDefinitionSelector(selectors: Selector[]) {
@@ -334,61 +502,136 @@ function parseClassDefinitionSelector(selectors: Selector[]) {
     return selectorComponent.name
 }
 
-function parseApplyRule(rule: any) {
-    if (rule.type === 'custom' && rule.value.name === 'apply') {
+function parseSingleTypeSelector(selectors: Selector[]) {
+    if (selectors.length !== 1) return
+    const selector = selectors[0]
+    if (selector.length !== 1) return
+    const selectorComponent = selector[0]
+    if (selectorComponent.type !== 'type') return
+    return selectorComponent.name
+}
+
+function parseComponentDefinitionSelector(selectors: Selector[]) {
+    const names = selectors.map((selector) => selector[0]?.type === 'class' ? selector[0].name : undefined)
+    const name = names[0]
+    if (!name || names.some((eachName) => eachName !== name)) return
+    const selectorTexts = selectors.map((selector) => {
+        const selectorText = formatSelectors([selector])
+        const classPattern = new RegExp(`^\\.${name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?=$|[^a-zA-Z0-9_-])`)
+        return selectorText.replace(classPattern, '&')
+    })
+    return {
+        name,
+        selector: selectorTexts.join(',')
+    }
+}
+
+function parseComposeRule(rule: any) {
+    if (rule.type === 'custom' && rule.value.name === 'compose') {
         return unquote(rule.value.prelude.value)
     }
 }
 
-function collectStyleRuleDeclarations(rule: any) {
+function collectStyleRule(rule: any, allowCompose: boolean) {
+    const classNames: string[] = []
     const declarations = collectDeclarations(rule.value.declarations)
     for (const child of rule.value.rules) {
         if (child.type === 'nested-declarations') {
             Object.assign(declarations, collectDeclarations(child.value.declarations))
             continue
         }
-        if (parseApplyRule(child)) {
+        const compose = parseComposeRule(child)
+        if (compose && allowCompose) {
+            classNames.push(compose)
             continue
         }
-        throw new Error('Definitions only accept declarations and @apply in components')
+        if (compose) {
+            throw new Error('@compose is only allowed in @master components')
+        }
+        throw new Error(allowCompose
+            ? 'Components only accept declarations and @compose'
+            : 'Utilities only accept declarations'
+        )
     }
-    return declarations
+    return {
+        classNames,
+        declarations
+    }
+}
+
+function componentSelectorToClassSuffix(selector: string) {
+    if (selector === '&') return ''
+    if (!selector.startsWith('&')) return ''
+    return selector.slice(1).replace(/\s+/g, '_')
+}
+
+function insertSelectorSuffix(className: string, suffix: string) {
+    if (!suffix) return className
+    let depth = 0
+    let quote = ''
+    for (let index = 0; index < className.length; index++) {
+        const char = className[index]
+        if (quote) {
+            if (char === '\\') {
+                index++
+            } else if (char === quote) {
+                quote = ''
+            }
+            continue
+        }
+        if (char === '"' || char === '\'') {
+            quote = char
+            continue
+        }
+        if (char === '(' || char === '[' || char === '{') {
+            depth++
+            continue
+        }
+        if (char === ')' || char === ']' || char === '}') {
+            depth--
+            continue
+        }
+        if (char === '@' && index > 0 && depth === 0) {
+            return className.slice(0, index) + suffix + className.slice(index)
+        }
+    }
+    return className + suffix
 }
 
 function parseComponent(rule: any, parsed: ParsedDirectives) {
-    const name = parseClassDefinitionSelector(rule.value.selectors)
-    if (!name) {
-        throw new Error('Component definition selector must be a single class selector')
+    const selectorDefinition = parseComponentDefinitionSelector(rule.value.selectors)
+    if (!selectorDefinition) {
+        throw new Error('Component definition selector must start with a single class selector')
     }
-    const classNames: string[] = []
-    for (const child of rule.value.rules) {
-        const apply = parseApplyRule(child)
-        if (apply) {
-            classNames.push(apply)
-        } else if (child.type !== 'nested-declarations') {
-            throw new Error('Components only accept declarations and @apply')
-        }
-    }
-    const declarations = collectStyleRuleDeclarations(rule)
+    const { classNames, declarations } = collectStyleRule(rule, true)
+    const selectorSuffix = componentSelectorToClassSuffix(selectorDefinition.selector)
+    const normalizedClassNames = normalizeClassNames(classNames)
+        .map((className) => insertSelectorSuffix(className, selectorSuffix))
     parsed.config.components ??= {}
-    parsed.config.components[name] = [
-        ...normalizeClassNames(classNames),
+    parsed.config.components[selectorDefinition.name] ??= []
+    parsed.config.components[selectorDefinition.name].push(
+        ...normalizedClassNames,
         ...(Object.keys(declarations).length
-            ? [{ selector: '&', declarations: declarations as PropertiesHyphen }]
+            ? [{ selector: selectorDefinition.selector, declarations: declarations as PropertiesHyphen }]
             : [])
-    ]
-    parsed.componentNames.push(name)
+    )
+    if (!parsed.componentNames.includes(selectorDefinition.name)) {
+        parsed.componentNames.push(selectorDefinition.name)
+    }
 }
 
-function parseLayerBlock(rule: any, parsed: ParsedDirectives) {
-    const layerName = rule.value.name?.length === 1 ? rule.value.name[0] : undefined
-    if (layerName !== 'components') return
-    for (const child of rule.value.rules as Rule[]) {
-        if (child.type !== 'style') {
-            throw new Error(`@layer ${layerName} only accepts class definition rules`)
-        }
-        parseComponent(child, parsed)
+function parseUtility(rule: any, parsed: ParsedDirectives) {
+    const name = parseClassDefinitionSelector(rule.value.selectors)
+    if (!name) {
+        throw new Error('Utility definition selector must be a single class selector')
     }
+    const { declarations } = collectStyleRule(rule, false)
+    parsed.config.utilities ??= []
+    parsed.config.utilities.push({
+        name,
+        type: UtilityType.Static,
+        declarations: declarations as PropertiesHyphen
+    } satisfies UtilityDefinition)
 }
 
 function formatKeyframeSelector(selector: KeyframeSelector) {
@@ -419,12 +662,232 @@ function parseKeyframes(rule: any, config: Config) {
     config.animations[name] = keyframes
 }
 
+function getMasterSection(rule: any): MasterSection {
+    const prelude = rule.prelude?.type === 'token-list'
+        ? formatTokenOrValues(rule.prelude.value).trim()
+        : rule.prelude?.value?.trim?.() || ''
+    if (!prelude) return 'root'
+    if (prelude === 'components' || prelude === 'utilities' || prelude === 'animations') return prelude
+    throw new Error(`Unsupported @master section: ${prelude}`)
+}
+
+function warn(parsed: ParsedDirectives, options: CompileCSSOptions, message: string) {
+    parsed.warnings.push(message)
+    options.onWarning?.(message)
+}
+
+function parseModeBlock(rule: any, mode: string, parsed: ParsedDirectives) {
+    parseMasterDeclarations(rule.value.declarations, parsed.config, mode)
+    if (rule.value.rules.length) {
+        throw new Error(`Mode "${mode}" only accepts custom property declarations`)
+    }
+}
+
+function parseMasterStyleRule(rule: any, parsed: ParsedDirectives, options: CompileCSSOptions, section: MasterSection) {
+    if (section === 'utilities') {
+        parseUtility(rule, parsed)
+        return
+    }
+    if (section === 'components') {
+        parseComponent(rule, parsed)
+        return
+    }
+    if (section === 'animations') {
+        throw new Error('@master animations only accepts animation blocks and @keyframes')
+    }
+
+    if (parseComponentDefinitionSelector(rule.value.selectors)) {
+        parseComponent(rule, parsed)
+        return
+    }
+
+    const mode = parseSingleTypeSelector(rule.value.selectors)
+    if (mode) {
+        if (HTML_TAG_NAMES.has(mode)) {
+            warn(parsed, options, `Unsupported @master block "${mode}". @master only accepts config declarations, mode variable blocks, class component rules, @token, and @keyframes. Move regular CSS selectors outside @master.`)
+            return
+        }
+        parseModeBlock(rule, mode, parsed)
+        return
+    }
+
+    warn(parsed, options, `Unsupported @master selector "${formatSelectors(rule.value.selectors)}". @master only accepts mode variable blocks and class component rules.`)
+}
+
+function parseMasterRule(rule: any, parsed: ParsedDirectives, options: CompileCSSOptions) {
+    const section = getMasterSection(rule)
+    for (const child of rule.body.value as Rule[]) {
+        if (child.type === 'nested-declarations') {
+            if (section !== 'root') {
+                throw new Error(`@master ${section} does not accept config declarations`)
+            }
+            parseMasterDeclarations(child.value.declarations, parsed.config)
+            continue
+        }
+        if (child.type === 'unknown' && child.value.name === 'token') {
+            if (section !== 'root') {
+                throw new Error('@token is only allowed in @master')
+            }
+            parseTokenDefinition(child, parsed)
+            continue
+        }
+        if (child.type === 'keyframes') {
+            if (section !== 'root' && section !== 'animations') {
+                throw new Error(`@keyframes is not allowed in @master ${section}`)
+            }
+            parseKeyframes(child, parsed.config)
+            continue
+        }
+        if (child.type === 'style') {
+            parseMasterStyleRule(child, parsed, options, section)
+            continue
+        }
+        throw new Error(`Unsupported rule in @master${section === 'root' ? '' : ' ' + section}`)
+    }
+}
+
+function validateTokenConflicts(parsed: ParsedDirectives) {
+    const atTokens = parsed.config.atTokens
+    if (!atTokens) return
+    const modes = new Set(parsed.config.modes || [])
+    const screens = new Set((parsed.config.variables || [])
+        .filter((variable) => variable.namespace === 'screen')
+        .map((variable) => variable.key)
+    )
+    for (const token of Object.keys(atTokens)) {
+        if (modes.has(token)) {
+            throw new Error(`At token "@${token}" conflicts with mode "${token}"`)
+        }
+        if (screens.has(token)) {
+            throw new Error(`At token "@${token}" conflicts with screen variable "--screen-${token}"`)
+        }
+    }
+}
+
+function resolveComponentSelectorTokens(parsed: ParsedDirectives) {
+    const selectorTokens = parsed.config.selectorTokens
+    const components = parsed.config.components
+    if (!selectorTokens || !components) return
+    for (const name in components) {
+        components[name] = components[name].map((definition) => {
+            if (typeof definition === 'string') return definition
+            let selector = definition.selector
+            for (const token of Object.keys(selectorTokens).sort((a, b) => b.length - a.length)) {
+                selector = selector.split(token).join(selectorTokens[token])
+            }
+            return {
+                ...definition,
+                selector
+            }
+        })
+    }
+}
+
+function findMatchingBrace(source: string, openIndex: number) {
+    let depth = 0
+    let quote = ''
+    let comment = false
+    for (let index = openIndex; index < source.length; index++) {
+        const char = source[index]
+        const next = source[index + 1]
+        if (comment) {
+            if (char === '*' && next === '/') {
+                comment = false
+                index++
+            }
+            continue
+        }
+        if (quote) {
+            if (char === '\\') {
+                index++
+            } else if (char === quote) {
+                quote = ''
+            }
+            continue
+        }
+        if (char === '/' && next === '*') {
+            comment = true
+            index++
+            continue
+        }
+        if (char === '"' || char === '\'') {
+            quote = char
+            continue
+        }
+        if (char === '{') {
+            depth++
+            continue
+        }
+        if (char === '}') {
+            depth--
+            if (depth === 0) return index
+        }
+    }
+    return -1
+}
+
+function convertBareAnimations(body: string) {
+    let output = ''
+    let index = 0
+    while (index < body.length) {
+        const rest = body.slice(index)
+        const leading = /^\s+/.exec(rest)?.[0]
+        if (leading) {
+            output += leading
+            index += leading.length
+            continue
+        }
+        if (rest.startsWith('@keyframes')) {
+            const openIndex = body.indexOf('{', index)
+            if (openIndex === -1) break
+            const closeIndex = findMatchingBrace(body, openIndex)
+            if (closeIndex === -1) break
+            output += body.slice(index, closeIndex + 1)
+            index = closeIndex + 1
+            continue
+        }
+        const identifier = /^-?[_a-zA-Z][-_a-zA-Z0-9]*/.exec(rest)?.[0]
+        if (identifier) {
+            const afterIdentifier = index + identifier.length
+            const whitespace = /^\s*/.exec(body.slice(afterIdentifier))?.[0] || ''
+            const openIndex = afterIdentifier + whitespace.length
+            if (body[openIndex] === '{') {
+                const closeIndex = findMatchingBrace(body, openIndex)
+                if (closeIndex === -1) break
+                output += `@keyframes ${identifier}${whitespace}${body.slice(openIndex, closeIndex + 1)}`
+                index = closeIndex + 1
+                continue
+            }
+        }
+        output += body[index]
+        index++
+    }
+    return output + body.slice(index)
+}
+
+function preprocessMasterAnimations(source: string) {
+    let output = ''
+    let index = 0
+    const pattern = /@master\s+animations\s*\{/g
+    let match: RegExpExecArray | null
+    while ((match = pattern.exec(source))) {
+        const openIndex = match.index + match[0].length - 1
+        const closeIndex = findMatchingBrace(source, openIndex)
+        if (closeIndex === -1) break
+        const body = source.slice(openIndex + 1, closeIndex)
+        output += source.slice(index, openIndex + 1) + convertBareAnimations(body)
+        index = closeIndex
+        pattern.lastIndex = closeIndex + 1
+    }
+    return output + source.slice(index)
+}
+
 function createDirectiveCSS(parsed: ParsedDirectives, options: CompileCSSOptions) {
     const css = createCSS(options.config
         ? { extends: [options.config, parsed.config] }
         : parsed.config
     )
-    const classes = [...parsed.componentNames, ...(options.classes || [])]
+    const classes = options.classes || []
     for (const className of classes) {
         css.add(className)
     }
@@ -434,55 +897,32 @@ function createDirectiveCSS(parsed: ParsedDirectives, options: CompileCSSOptions
 export function compileCSS(source: string, options: CompileCSSOptions = {}): CompileCSSResult {
     const parsed: ParsedDirectives = {
         config: {},
-        componentNames: []
+        componentNames: [],
+        warnings: []
     }
+    const preprocessedSource = preprocessMasterAnimations(source)
     const transformed = transform({
         filename: options.from || 'master.css',
-        code: Buffer.from(source),
+        code: Buffer.from(preprocessedSource),
         customAtRules: MASTER_CUSTOM_AT_RULES,
         visitor: {
             Rule: {
                 custom: {
                     master(rule) {
-                        parseMaster(rule, parsed.config)
+                        parseMasterRule(rule, parsed, options)
                         return []
                     },
-                    mode(rule) {
-                        parseMode(rule, parsed.config)
-                        return []
-                    },
-                    apply() {
-                        throw new Error('@apply is only allowed inside @layer components')
+                    compose() {
+                        throw new Error('@compose is only allowed in @master components')
                     }
-                },
-                unknown: {
-                    at(rule) {
-                        parseAtDefinition(rule, parsed.config)
-                        return []
-                    },
-                    selector(rule) {
-                        parseSelectorDefinition(rule, parsed.config)
-                        return []
-                    },
-                    utility() {
-                        throw new Error('@utility is not supported')
-                    }
-                },
-                'layer-block'(rule) {
-                    const layerName = rule.value.name?.length === 1 ? rule.value.name[0] : undefined
-                    if (layerName !== 'components') return
-                    parseLayerBlock(rule, parsed)
-                    return []
-                },
-                keyframes(rule) {
-                    parseKeyframes(rule, parsed.config)
-                    return []
                 }
             }
         }
     })
+    validateTokenConflicts(parsed)
+    resolveComponentSelectorTokens(parsed)
     const css = createDirectiveCSS(parsed, options)
-    const generatedCSS = css.text
+    const generatedCSS = options.classes?.length ? css.text : ''
     const remainingCSS = transformed.code.toString().trim()
 
     return {
@@ -493,9 +933,10 @@ export function compileCSS(source: string, options: CompileCSSOptions = {}): Com
 }
 
 export function parseDirectives(source: string, options: CompileCSSOptions = {}) {
-    const { config, componentNames } = compileCSS(source, options)
+    const { config, componentNames, warnings } = compileCSS(source, options)
     return {
         config,
-        componentNames
+        componentNames,
+        warnings
     }
 }
