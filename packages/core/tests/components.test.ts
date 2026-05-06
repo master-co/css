@@ -169,6 +169,48 @@ describe('raw declarations', () => {
         expect(css.componentsLayer.text).toContain('@media (width>=31.25rem){.btn\\@sm{display:inline-flex}}')
     })
 
+    test('generates raw component declarations with configured at-rules', () => {
+        const css = createCSS({
+            components: {
+                btn: [
+                    {
+                        selector: '&',
+                        declarations: { display: 'block' }
+                    },
+                    {
+                        selector: '&',
+                        atRules: ['@media print'],
+                        declarations: { display: 'none' }
+                    }
+                ]
+            }
+        }).add('btn')
+
+        expect(css.componentsLayer.text).toContain('.btn{display:block}')
+        expect(css.componentsLayer.text).toContain('@media print{.btn{display:none}}')
+    })
+
+    test('generates static utility rules with configured at-rules', () => {
+        const css = createCSS({
+            utilities: [
+                {
+                    name: 'print-hidden',
+                    type: UtilityType.Static,
+                    declarations: { display: 'block' },
+                    rules: [
+                        {
+                            atRules: ['@media print'],
+                            declarations: { display: 'none' }
+                        }
+                    ]
+                }
+            ]
+        }).add('print-hidden')
+
+        expect(css.utilitiesLayer.text).toContain('.print-hidden{display:block}')
+        expect(css.utilitiesLayer.text).toContain('@media print{.print-hidden{display:none}}')
+    })
+
     test('keeps component rule declarations separate when variants differ', () => {
         const css = createCSS()
         css.components.set('btn', {

@@ -306,6 +306,142 @@ describe.concurrent('@master/css-compiler', () => {
         expect(result.css).toContain('.content-auto{content-visibility:auto;contain-intrinsic-size:auto 32rem;display:block}')
     })
 
+    it('supports nested at-rules in component and utility definitions', () => {
+        const result = compileCSS(`
+            @master components {
+                .btn {
+                    display: block;
+                }
+
+                @media print {
+                    .btn {
+                        display: none;
+                    }
+
+                    @supports (display: grid) {
+                        .btn {
+                            display: grid;
+                        }
+                    }
+                }
+
+                @container card (width >= 42rem) {
+                    .btn:hover {
+                        opacity: .5;
+                    }
+                }
+
+                @starting-style {
+                    .btn {
+                        opacity: 0;
+                    }
+                }
+
+                .btn {
+                    display: flex;
+                }
+            }
+
+            @master utilities {
+                .print-hidden {
+                    visibility: visible;
+                }
+
+                @media print {
+                    .print-hidden {
+                        visibility: hidden;
+                    }
+                }
+
+                .print-hidden {
+                    visibility: collapse;
+                }
+            }
+        `, { classes: ['btn', 'print-hidden'] })
+
+        expect(result.config.components?.btn).toEqual([
+            {
+                selector: '&',
+                declarations: {
+                    display: 'block'
+                }
+            },
+            {
+                selector: '&',
+                atRules: ['@media print'],
+                declarations: {
+                    display: 'none'
+                }
+            },
+            {
+                selector: '&',
+                atRules: ['@media print', '@supports (display:grid)'],
+                declarations: {
+                    display: 'grid'
+                }
+            },
+            {
+                selector: '&:hover',
+                atRules: ['@container card (width>=42rem)'],
+                declarations: {
+                    opacity: '.5'
+                }
+            },
+            {
+                selector: '&',
+                atRules: ['@starting-style'],
+                declarations: {
+                    opacity: '0'
+                }
+            },
+            {
+                selector: '&',
+                declarations: {
+                    display: 'flex'
+                }
+            }
+        ])
+        expect(result.config.utilities).toEqual([
+            {
+                name: 'print-hidden',
+                type: UtilityType.Static,
+                rules: [
+                    {
+                        declarations: {
+                            visibility: 'visible'
+                        }
+                    },
+                    {
+                        atRules: ['@media print'],
+                        declarations: {
+                            visibility: 'hidden'
+                        }
+                    },
+                    {
+                        declarations: {
+                            visibility: 'collapse'
+                        }
+                    }
+                ]
+            }
+        ])
+        const blockIndex = result.css.indexOf('.btn{display:block}')
+        const printIndex = result.css.indexOf('@media print{.btn{display:none}}')
+        const flexIndex = result.css.indexOf('.btn{display:flex}')
+        expect(blockIndex).toBeGreaterThan(-1)
+        expect(printIndex).toBeGreaterThan(blockIndex)
+        expect(flexIndex).toBeGreaterThan(printIndex)
+        expect(result.css).toContain('@media print{@supports (display:grid){.btn{display:grid}}}')
+        expect(result.css).toContain('@container card (width>=42rem){.btn:hover{opacity:.5}}')
+        expect(result.css).toContain('@starting-style{.btn{opacity:0}}')
+        const visibleIndex = result.css.indexOf('.print-hidden{visibility:visible}')
+        const hiddenIndex = result.css.indexOf('@media print{.print-hidden{visibility:hidden}}')
+        const collapseIndex = result.css.indexOf('.print-hidden{visibility:collapse}')
+        expect(visibleIndex).toBeGreaterThan(-1)
+        expect(hiddenIndex).toBeGreaterThan(visibleIndex)
+        expect(collapseIndex).toBeGreaterThan(hiddenIndex)
+    })
+
     it('generates theme variables used by raw component and utility declarations', () => {
         const result = compileCSS(`
             @master {
@@ -600,6 +736,16 @@ describe.concurrent('@master/css-compiler', () => {
                 }
             }
         `)).toThrow('@compose is only allowed in @master components')
+
+        expect(() => process(`
+            @master components {
+                @media print {
+                    .btn {
+                        @compose "hidden";
+                    }
+                }
+            }
+        `)).toThrow('@compose is not supported inside nested at-rules in @master components')
     })
 
     it('rejects invalid @at and @selector names and conflicts', () => {

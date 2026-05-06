@@ -27,6 +27,7 @@ export interface ComponentEntry {
     selectorRules: {
         selector: string
         declarations: PropertiesHyphen
+        atRules?: string[]
     }[]
 }
 

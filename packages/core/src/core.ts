@@ -279,13 +279,14 @@ export default class MasterCSS {
                     classNames.push(...normalizeClassNames(item))
                     continue
                 }
-                const { selector, declarations } = item as ComponentSelectorDefinition
+                const { selector, declarations, atRules } = item as ComponentSelectorDefinition
                 if (!selector.includes('&')) {
                     throw new Error(`Component "${name}" selector must include "&"`)
                 }
                 selectorRules.push({
                     selector,
-                    declarations: declarations as any
+                    declarations: declarations as any,
+                    ...(atRules?.length ? { atRules } : {})
                 })
             }
             this.components.set(name, {
@@ -606,8 +607,8 @@ export default class MasterCSS {
     }
 
     appendComponentRules(rules: GeneratedUtility[], className: string, selectorRules: ComponentEntry['selectorRules']) {
-        for (const { selector, declarations } of selectorRules) {
-            const componentRule = new ComponentRule(className, this, declarations, selector)
+        for (const { selector, declarations, atRules } of selectorRules) {
+            const componentRule = new ComponentRule(className, this, declarations, selector, atRules)
             if (componentRule.valid) rules.push(componentRule)
         }
     }

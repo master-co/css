@@ -6,6 +6,7 @@ import { AT_IDENTIFIERS } from './common'
 import generateAt from './utils/generate-at'
 import parseAt, { AtRuleNode, AtRuleStringNode } from './utils/parse-at'
 import collectVariableNames from './utils/collect-variable-names'
+import wrapAtRules from './utils/wrap-at-rules'
 
 export default class ComponentRule {
     native?: CSSRule
@@ -21,6 +22,7 @@ export default class ComponentRule {
         public css: MasterCSS,
         public declarations: PropertiesHyphen,
         public selector?: string,
+        public atRuleDefinitions?: string[]
     ) {
         this.layer = css.componentsLayer
         const atIndex = name.indexOf('@')
@@ -99,7 +101,7 @@ export default class ComponentRule {
                 text = generateAt({ id, nodes }) + '{' + text + '}'
             })
         }
-        return text
+        return wrapAtRules(text, this.atRuleDefinitions)
     }
 
     get selectorText() {
@@ -120,6 +122,12 @@ export default class ComponentRule {
     }
 
     get key(): string {
-        return this.name + ' @component'
+        return [
+            this.name,
+            this.selector || '&',
+            JSON.stringify(this.declarations),
+            ...(this.atRuleDefinitions || []),
+            '@component'
+        ].join(' ')
     }
 }

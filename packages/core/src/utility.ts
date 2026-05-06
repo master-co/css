@@ -15,6 +15,7 @@ import parseSelector, { SelectorNode } from './utils/parse-selector'
 import generateSelector from './utils/generate-selector'
 import { calcRulePriority, RulePriority } from './utils/compare-rule-priority'
 import collectVariableNames from './utils/collect-variable-names'
+import wrapAtRules from './utils/wrap-at-rules'
 import declarers from './declarers'
 import transformers from './transformers'
 import functionTransformers from './function-transformers'
@@ -25,6 +26,7 @@ export class Utility {
     readonly priority!: RulePriority
     readonly type: UtilityType = UtilityType.Normal
     readonly declarations?: PropertiesHyphen
+    readonly declarationRules?: { declarations: PropertiesHyphen, atRules?: string[] }[]
     readonly layer: Layer
     readonly valid: boolean = true
     animationNames?: Set<string>
@@ -158,44 +160,70 @@ export class Utility {
                     }
                 }
                 this.declarations = declarations
+                if (definition.atRules?.length) {
+                    this.declarationRules = [{ declarations, atRules: definition.atRules }]
+                }
             } else if (declarer) {
                 const declare = declarers[declarer] as any
-                this.declarations = declare.call(this, newValue, this.valueComponents, declarerOptions)
+                const declarations = declare.call(this, newValue, this.valueComponents, declarerOptions) as PropertiesHyphen | undefined
+                this.declarations = declarations
+                if (declarations && definition.atRules?.length) {
+                    this.declarationRules = [{ declarations, atRules: definition.atRules }]
+                }
             } else if (id) {
                 this.declarations = {
                     [id]: newValue
                 }
-            }
-        } else {
-            this.declarations = definition.declarations as any
-        }
-
-        if (!Object.entries(this.declarations ?? {}).length) {
-            this.valid = false
-        } else {
-            const variableNames = collectVariableNames(this.declarations as PropertiesHyphen, this.css.variables)
-            if (variableNames) {
-                for (const variableName of variableNames) {
-                    if (this.variableNames) {
-                        this.variableNames.add(variableName)
-                    } else {
-                        this.variableNames = new Set([variableName])
-                    }
+                if (definition.atRules?.length) {
+                    this.declarationRules = [{ declarations: this.declarations, atRules: definition.atRules }]
                 }
             }
-            for (const propertyName in this.declarations) {
-                if (this.css.animations && (propertyName === 'animation' || propertyName === 'animation-name')) {
-                    const propertyValue = this.declarations[propertyName as keyof PropertiesHyphen] as string
-                    if (!propertyValue) continue
-                    const rawValues = propertyValue.split(' ')
-                    for (const rawValue of rawValues) {
-                        if (this.css.animations.has(rawValue)) {
-                            if (!this.animationNames) {
-                                this.animationNames = new Set([rawValue])
-                            } else {
-                                this.animationNames.add(rawValue)
+        } else {
+            const declarationRules = [
+                ...(definition.declarations
+                    ? [{ declarations: definition.declarations as PropertiesHyphen, atRules: definition.atRules }]
+                    : []),
+                ...(definition.rules?.map(({ declarations, atRules }) => ({
+                    declarations: declarations as PropertiesHyphen,
+                    atRules
+                })) || [])
+            ]
+            this.declarations = declarationRules[0]?.declarations
+            if (declarationRules.length > 1 || declarationRules.some(({ atRules }) => atRules?.length)) {
+                this.declarationRules = declarationRules
+            }
+        }
+
+        const declarationRules = this.declarationRules || (this.declarations ? [{ declarations: this.declarations }] : [])
+
+        if (!declarationRules.some(({ declarations }) => Object.entries(declarations ?? {}).length)) {
+            this.valid = false
+        } else {
+            for (const { declarations } of declarationRules) {
+                const variableNames = collectVariableNames(declarations, this.css.variables)
+                if (variableNames) {
+                    for (const variableName of variableNames) {
+                        if (this.variableNames) {
+                            this.variableNames.add(variableName)
+                        } else {
+                            this.variableNames = new Set([variableName])
+                        }
+                    }
+                }
+                for (const propertyName in declarations) {
+                    if (this.css.animations && (propertyName === 'animation' || propertyName === 'animation-name')) {
+                        const propertyValue = declarations[propertyName as keyof PropertiesHyphen] as string
+                        if (!propertyValue) continue
+                        const rawValues = propertyValue.split(' ')
+                        for (const rawValue of rawValues) {
+                            if (this.css.animations.has(rawValue)) {
+                                if (!this.animationNames) {
+                                    this.animationNames = new Set([rawValue])
+                                } else {
+                                    this.animationNames.add(rawValue)
+                                }
+                                continue
                             }
-                            continue
                         }
                     }
                 }
@@ -206,9 +234,16 @@ export class Utility {
 
     get text() {
         if (!this.valid) return ''
+        if (this.declarationRules) {
+            return this.declarationRules.map(({ declarations, atRules }) => this.createRuleText(declarations, atRules)).join('')
+        }
+        return this.createRuleText(this.declarations!)
+    }
+
+    createRuleText(declarations: PropertiesHyphen, atRules?: string[]) {
         const propertiesText: string[] = []
-        for (const propertyName in this.declarations) {
-            const propertyValue = this.declarations[propertyName as keyof PropertiesHyphen]
+        for (const propertyName in declarations) {
+            const propertyValue = declarations[propertyName as keyof PropertiesHyphen]
             const propertyText = propertyName + ':' + String(propertyValue)
             propertiesText.push(
                 propertyText + (((this.important || this.css.config.important) && !propertyText.endsWith('!important')) ? '!important' : '')
@@ -221,7 +256,7 @@ export class Utility {
                 if (!nodes) return
                 text = generateAt({ id, nodes }) + '{' + text + '}'
             })
-        return text
+        return wrapAtRules(text, atRules)
     }
 
     get selectorText() {

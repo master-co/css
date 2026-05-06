@@ -21,11 +21,18 @@ export interface UtilityDefinition {
     separators?: string[]
     unit?: any
     declarations?: CSSDeclarations | (keyof PropertiesHyphen)[]
+    atRules?: string[]
+    rules?: UtilityRuleDefinition[]
     includeAnimations?: boolean
     declarer?: DeclarerNames
     declarerOptions?: unknown
     transformer?: TransformerNames
     transformerOptions?: unknown
+}
+
+export interface UtilityRuleDefinition {
+    declarations: CSSDeclarations
+    atRules?: string[]
 }
 
 export type VariableValue = number | string | false | (number | string)[]
@@ -46,6 +53,7 @@ export interface AtTokenDefinitions {
 export interface ComponentSelectorDefinition {
     selector: string
     declarations: CSSDeclarations
+    atRules?: string[]
 }
 export type ComponentDefinition = string | ComponentSelectorDefinition
 export type ComponentDefinitions = Record<string, ComponentDefinition[]>

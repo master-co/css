@@ -453,6 +453,131 @@ function formatPrelude(prelude: any) {
     return ''
 }
 
+const COMPARISON_OPERATORS: Record<string, string> = {
+    'equal': '=',
+    'greater-than': '>',
+    'greater-than-equal': '>=',
+    'less-than': '<',
+    'less-than-equal': '<='
+}
+
+function formatFeatureValue(value: any): string {
+    if (value === undefined || value === null) return ''
+    if (typeof value === 'string' || typeof value === 'number') return String(value)
+    switch (value.type) {
+        case 'ident':
+            return value.value
+        case 'number':
+            return String(value.value)
+        case 'length': {
+            let resolvedValue = value.value
+            while (
+                resolvedValue
+                && typeof resolvedValue === 'object'
+                && 'value' in resolvedValue
+                && !('unit' in resolvedValue)
+            ) {
+                resolvedValue = resolvedValue.value
+            }
+            if (typeof resolvedValue === 'number') return formatNumber(resolvedValue)
+            return `${formatNumber(resolvedValue.value)}${resolvedValue.unit || ''}`
+        }
+        case 'ratio':
+            return `${value.value.numerator}/${value.value.denominator}`
+        default:
+            return formatPrelude(value) || String(value.value ?? '')
+    }
+}
+
+function formatCondition(condition: any): string {
+    if (!condition) return ''
+    switch (condition.type) {
+        case 'feature': {
+            const feature = condition.value
+            switch (feature.type) {
+                case 'plain':
+                    return `(${feature.name}:${formatFeatureValue(feature.value)})`
+                case 'range':
+                    return `(${feature.name}${COMPARISON_OPERATORS[feature.operator] || feature.operator}${formatFeatureValue(feature.value)})`
+                case 'boolean':
+                    return `(${feature.name})`
+                case 'interval':
+                    return `(${formatFeatureValue(feature.start)}${COMPARISON_OPERATORS[feature.startOperator] || feature.startOperator}${feature.name}${COMPARISON_OPERATORS[feature.endOperator] || feature.endOperator}${formatFeatureValue(feature.end)})`
+                default:
+                    return ''
+            }
+        }
+        case 'operation':
+            return condition.conditions.map(formatCondition).filter(Boolean).join(` ${condition.operator} `)
+        case 'not':
+            return `not ${formatCondition(condition.value)}`
+        default:
+            return ''
+    }
+}
+
+function formatMediaQuery(query: any): string {
+    return query.mediaQueries
+        .map((mediaQuery: any) => {
+            const parts: string[] = []
+            if (mediaQuery.qualifier) parts.push(mediaQuery.qualifier)
+            if (mediaQuery.mediaType && mediaQuery.mediaType !== 'all') parts.push(mediaQuery.mediaType)
+            const condition = formatCondition(mediaQuery.condition)
+            if (condition) {
+                if (parts.length) {
+                    parts.push('and', condition)
+                } else {
+                    parts.push(condition)
+                }
+            }
+            return parts.join(' ') || 'all'
+        })
+        .join(', ')
+}
+
+function formatSupportsCondition(condition: any): string {
+    switch (condition.type) {
+        case 'declaration':
+            return `(${formatPropertyId(condition.propertyId)}:${formatFeatureValue(condition.value)})`
+        case 'selector':
+            return `selector(${condition.value})`
+        case 'not':
+            return `not ${formatSupportsCondition(condition.value)}`
+        case 'and':
+        case 'or':
+            return condition.value.map(formatSupportsCondition).join(` ${condition.type} `)
+        default:
+            return ''
+    }
+}
+
+function formatNestedAtRule(rule: any) {
+    switch (rule.type) {
+        case 'media':
+            return `@media ${formatMediaQuery(rule.value.query)}`
+        case 'supports':
+            return `@supports ${formatSupportsCondition(rule.value.condition)}`
+        case 'container': {
+            const condition = formatCondition(rule.value.condition)
+            return `@container ${[rule.value.name, condition].filter(Boolean).join(' ')}`
+        }
+        case 'starting-style':
+            return '@starting-style'
+    }
+}
+
+function getNestedAtRuleChildren(rule: any) {
+    if (rule.type === 'media' || rule.type === 'supports' || rule.type === 'container' || rule.type === 'starting-style') {
+        return rule.value.rules as Rule[]
+    }
+}
+
+function sameAtRules(a: string[] | undefined, b: string[] | undefined) {
+    const left = a || []
+    const right = b || []
+    return left.length === right.length && left.every((value, index) => value === right[index])
+}
+
 function getDeclarationName(declaration: Declaration) {
     if (declaration.property === 'custom') return declaration.value.name
     if (declaration.property === 'unparsed') return formatPropertyId(declaration.value.propertyId)
@@ -656,12 +781,15 @@ function insertSelectorSuffix(className: string, suffix: string) {
     return className + suffix
 }
 
-function parseComponent(rule: any, parsed: ParsedDirectives) {
+function parseComponent(rule: any, parsed: ParsedDirectives, atRules: string[] = []) {
     const selectorDefinition = parseComponentDefinitionSelector(rule.value.selectors)
     if (!selectorDefinition) {
         throw new Error('Component definition selector must start with a single class selector')
     }
     const { classNames, declarations } = collectStyleRule(rule, true)
+    if (atRules.length && classNames.length) {
+        throw new Error('@compose is not supported inside nested at-rules in @master components')
+    }
     const selectorSuffix = componentSelectorToClassSuffix(selectorDefinition.selector)
     const normalizedClassNames = normalizeClassNames(classNames)
         .map((className) => insertSelectorSuffix(className, selectorSuffix))
@@ -675,15 +803,19 @@ function parseComponent(rule: any, parsed: ParsedDirectives) {
         definitions.splice(firstSelectorDefinitionIndex, 0, ...normalizedClassNames)
     }
     if (Object.keys(declarations).length) {
-        const existingDefinition = definitions.find((definition) =>
-            typeof definition !== 'string' && definition.selector === selectorDefinition.selector
-        )
-        if (typeof existingDefinition !== 'string' && existingDefinition) {
+        const existingDefinition = definitions[definitions.length - 1]
+        if (
+            existingDefinition
+            && typeof existingDefinition !== 'string'
+            && existingDefinition.selector === selectorDefinition.selector
+            && sameAtRules(existingDefinition.atRules, atRules)
+        ) {
             Object.assign(existingDefinition.declarations, declarations)
         } else {
             definitions.push({
                 selector: selectorDefinition.selector,
-                declarations: declarations as PropertiesHyphen
+                declarations: declarations as PropertiesHyphen,
+                ...(atRules.length ? { atRules: [...atRules] } : {})
             })
         }
     }
@@ -692,7 +824,42 @@ function parseComponent(rule: any, parsed: ParsedDirectives) {
     }
 }
 
-function parseUtility(rule: any, parsed: ParsedDirectives) {
+function pushUtilityRule(definition: UtilityDefinition, declarations: Record<string, string>, atRules: string[]) {
+    definition.rules ??= []
+    const existingRule = definition.rules[definition.rules.length - 1]
+    if (existingRule && sameAtRules(existingRule.atRules, atRules)) {
+        Object.assign(existingRule.declarations, declarations)
+    } else {
+        definition.rules.push({
+            ...(atRules.length ? { atRules: [...atRules] } : {}),
+            declarations: declarations as PropertiesHyphen
+        })
+    }
+}
+
+function ensureUtilityRules(definition: UtilityDefinition) {
+    if (!definition.declarations) return
+    const declarations = definition.declarations as PropertiesHyphen
+    delete definition.declarations
+    const atRules = definition.atRules
+    delete definition.atRules
+    pushUtilityRule(definition, declarations as Record<string, string>, atRules || [])
+}
+
+function mergeUtilityDeclarations(definition: UtilityDefinition, declarations: Record<string, string>, atRules: string[]) {
+    if (atRules.length || definition.rules?.length) {
+        ensureUtilityRules(definition)
+        pushUtilityRule(definition, declarations, atRules)
+        return
+    }
+
+    definition.declarations = {
+        ...(definition.declarations as PropertiesHyphen),
+        ...(declarations as PropertiesHyphen)
+    }
+}
+
+function parseUtility(rule: any, parsed: ParsedDirectives, atRules: string[] = []) {
     const name = parseClassDefinitionSelector(rule.value.selectors)
     if (!name) {
         throw new Error('Utility definition selector must be a single class selector')
@@ -704,17 +871,16 @@ function parseUtility(rule: any, parsed: ParsedDirectives) {
     )
     if (existingDefinition) {
         existingDefinition.type = UtilityType.Static
-        existingDefinition.declarations = {
-            ...(existingDefinition.declarations as PropertiesHyphen),
-            ...(declarations as PropertiesHyphen)
-        }
+        mergeUtilityDeclarations(existingDefinition, declarations, atRules)
         return
     }
-    parsed.config.utilities.push({
+
+    const definition = {
         name,
-        type: UtilityType.Static,
-        declarations: declarations as PropertiesHyphen
-    } satisfies UtilityDefinition)
+        type: UtilityType.Static
+    } satisfies UtilityDefinition
+    mergeUtilityDeclarations(definition, declarations, atRules)
+    parsed.config.utilities.push(definition)
 }
 
 function formatKeyframeSelector(selector: KeyframeSelector) {
@@ -765,13 +931,13 @@ function parseModeBlock(rule: any, mode: string, parsed: ParsedDirectives) {
     }
 }
 
-function parseMasterStyleRule(rule: any, parsed: ParsedDirectives, options: CompileCSSOptions, section: MasterSection) {
+function parseMasterStyleRule(rule: any, parsed: ParsedDirectives, options: CompileCSSOptions, section: MasterSection, atRules: string[] = []) {
     if (section === 'utilities') {
-        parseUtility(rule, parsed)
+        parseUtility(rule, parsed, atRules)
         return
     }
     if (section === 'components') {
-        parseComponent(rule, parsed)
+        parseComponent(rule, parsed, atRules)
         return
     }
     if (section === 'animations') {
@@ -796,42 +962,61 @@ function parseMasterStyleRule(rule: any, parsed: ParsedDirectives, options: Comp
     warn(parsed, options, `Unsupported @master selector "${formatSelectors(rule.value.selectors)}". @master only accepts mode variable blocks, @at, and @selector.`)
 }
 
+function parseMasterChildRule(child: Rule, parsed: ParsedDirectives, options: CompileCSSOptions, section: MasterSection, atRules: string[] = []) {
+    const nestedAtRuleChildren = getNestedAtRuleChildren(child)
+    if (nestedAtRuleChildren) {
+        if (section !== 'components' && section !== 'utilities') {
+            throw new Error(`Nested at-rules are only allowed in @master components and @master utilities`)
+        }
+        const atRule = formatNestedAtRule(child)
+        if (!atRule) {
+            throw new Error(`Unsupported nested at-rule in @master ${section}`)
+        }
+        for (const nestedChild of nestedAtRuleChildren) {
+            parseMasterChildRule(nestedChild, parsed, options, section, [...atRules, atRule])
+        }
+        return
+    }
+
+    if (child.type === 'nested-declarations') {
+        if (section !== 'root') {
+            throw new Error(`@master ${section} does not accept config declarations`)
+        }
+        parseMasterDeclarations(child.value.declarations, parsed.config)
+        return
+    }
+    if ((child.type === 'unknown' || child.type === 'custom') && child.value?.name === 'at') {
+        if (section !== 'root') {
+            throw new Error('@at is only allowed in @master')
+        }
+        parseAtDefinition(child, parsed)
+        return
+    }
+    if ((child.type === 'unknown' || child.type === 'custom') && child.value?.name === 'selector') {
+        if (section !== 'root') {
+            throw new Error('@selector is only allowed in @master')
+        }
+        parseSelectorDefinition(child, parsed)
+        return
+    }
+    if (child.type === 'keyframes') {
+        if (section !== 'animations') {
+            throw new Error('@keyframes is only allowed in @master animations')
+        }
+        parseKeyframes(child, parsed.config)
+        return
+    }
+    if (child.type === 'style') {
+        parseMasterStyleRule(child, parsed, options, section, atRules)
+        return
+    }
+    throw new Error(`Unsupported rule in @master${section === 'root' ? '' : ' ' + section}`)
+}
+
 function parseMasterRule(rule: any, parsed: ParsedDirectives, options: CompileCSSOptions) {
     const section = getMasterSection(rule)
     for (const child of rule.body.value as Rule[]) {
-        if (child.type === 'nested-declarations') {
-            if (section !== 'root') {
-                throw new Error(`@master ${section} does not accept config declarations`)
-            }
-            parseMasterDeclarations(child.value.declarations, parsed.config)
-            continue
-        }
-        if ((child.type === 'unknown' || child.type === 'custom') && child.value?.name === 'at') {
-            if (section !== 'root') {
-                throw new Error('@at is only allowed in @master')
-            }
-            parseAtDefinition(child, parsed)
-            continue
-        }
-        if ((child.type === 'unknown' || child.type === 'custom') && child.value?.name === 'selector') {
-            if (section !== 'root') {
-                throw new Error('@selector is only allowed in @master')
-            }
-            parseSelectorDefinition(child, parsed)
-            continue
-        }
-        if (child.type === 'keyframes') {
-            if (section !== 'animations') {
-                throw new Error('@keyframes is only allowed in @master animations')
-            }
-            parseKeyframes(child, parsed.config)
-            continue
-        }
-        if (child.type === 'style') {
-            parseMasterStyleRule(child, parsed, options, section)
-            continue
-        }
-        throw new Error(`Unsupported rule in @master${section === 'root' ? '' : ' ' + section}`)
+        parseMasterChildRule(child, parsed, options, section)
     }
 }
 
