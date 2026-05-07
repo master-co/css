@@ -79,129 +79,6 @@ Local relative CSS imports are resolved as one configuration graph. Package impo
 
 ---
 
-## Root options
-Root options live in the base `@master` block. They are the small set of decisions that shape every generated rule: how numbers convert to units, how spacing scales, where selectors are scoped, and how modes are written.
-
-Most projects set these once near the top of `master.css`, then spend most of their time defining tokens, utilities, and components below them.
-
-```css name=master.css
-@master {
-    root-size: 16;
-    base-unit: 4;
-    default-mode: light;
-    mode-trigger: media;
-    scope: #app;
-}
-```
-
-### `root-size`
-Use `root-size` when the project has a different root font-size convention. Master CSS uses it to convert numeric values into `rem` and `em`.
-
-<DocProp defaultValue="16" types={['number']} />
-
-```css name=master.css
-@master {
-    root-size: 10;
-}
-```
-
-```css
-.font\:16 {
-    font-size: 1.6rem;
-}
-```
-
-### `base-unit`
-Use `base-unit` to define the rhythm behind multiplier units such as `1x`, `2x`, and `4x`. With the default `base-unit: 4`, `4x` equals `16px`, then converts through `root-size`.
-
-<DocProp defaultValue="4" types={['number']} />
-
-```html
-<div class="p:4x gap:2x"></div>
-```
-
-```css
-.p\:4x {
-    padding: 1rem;
-}
-
-.gap\:2x {
-    gap: .5rem;
-}
-```
-
-### `scope`
-Use `scope` when Master CSS should only affect a specific application root, such as an embedded widget, admin app, or migration area inside a larger page.
-
-<DocProp defaultValue="''" types={['string']} />
-
-```css name=master.css
-@master {
-    scope: #app;
-}
-```
-
-```css
-#app .text\:center {
-    text-align: center;
-}
-```
-
-### `important`
-Use `important` only when the surrounding cascade is hard to control, such as when integrating with a legacy stylesheet or third-party system. It is intentionally global.
-
-<DocProp defaultValue="false" types={['boolean']} />
-
-```css name=master.css
-@master {
-    important;
-}
-
-@master {
-    !important;
-}
-```
-
-```css
-.hidden {
-    display: none !important;
-}
-```
-
-### `default-mode`
-Use `default-mode` to decide which mode should also apply when no explicit mode is active.
-
-<DocProp defaultValue="'light'" types={["'light'", "'dark'", 'string', 'false']} />
-
-```css name=master.css
-@master {
-    default-mode: light;
-}
-```
-
-Set it to `false` when the application should not attach any mode to `:root` by default.
-
-```css name=master.css
-@master {
-    default-mode: false;
-}
-```
-
-### `mode-trigger`
-Use `mode-trigger` to choose how mode-specific values are emitted. System-driven themes usually use `media`; manually switched themes usually use `class`; shadow DOM integrations can use `host`.
-
-<DocProp defaultValue="'media'" types={["'media'", "'class'", "'host'"]} />
-
-```css name=master.css
-@master {
-    mode-trigger: class;
-}
-```
-
-Variables and mode behavior are covered in [Variables and Modes](/guide/variables-and-modes).
-
----
-
 ## Variables and modes
 Variables are design tokens. In `master.css`, write them as native custom property declarations inside `@master`.
 
@@ -428,6 +305,129 @@ export default config
 ```
 
 For most design-system work, prefer variables, static utilities, components, and built-in Master CSS functions in `master.css`. Reach for `functions` only when a token or utility declaration cannot express the transformation.
+
+---
+
+## Root options
+Root options live in the base `@master` block. They are the small set of decisions that shape every generated rule: how numbers convert to units, how spacing scales, where selectors are scoped, and how modes are written.
+
+Most projects set these once near the top of `master.css`, then spend most of their time defining tokens, utilities, and components below them.
+
+```css name=master.css
+@master {
+    root-size: 16;
+    base-unit: 4;
+    default-mode: light;
+    mode-trigger: media;
+    scope: #app;
+}
+```
+
+### `root-size`
+Use `root-size` when the project has a different root font-size convention. Master CSS uses it to convert numeric values into `rem` and `em`.
+
+<DocProp defaultValue="16" types={['number']} />
+
+```css name=master.css
+@master {
+    root-size: 10;
+}
+```
+
+```css
+.font\:16 {
+    font-size: 1.6rem;
+}
+```
+
+### `base-unit`
+Use `base-unit` to define the rhythm behind multiplier units such as `1x`, `2x`, and `4x`. With the default `base-unit: 4`, `4x` equals `16px`, then converts through `root-size`.
+
+<DocProp defaultValue="4" types={['number']} />
+
+```html
+<div class="p:4x gap:2x"></div>
+```
+
+```css
+.p\:4x {
+    padding: 1rem;
+}
+
+.gap\:2x {
+    gap: .5rem;
+}
+```
+
+### `scope`
+Use `scope` when Master CSS should only affect a specific application root, such as an embedded widget, admin app, or migration area inside a larger page.
+
+<DocProp defaultValue="''" types={['string']} />
+
+```css name=master.css
+@master {
+    scope: #app;
+}
+```
+
+```css
+#app .text\:center {
+    text-align: center;
+}
+```
+
+### `important`
+Use `important` only when the surrounding cascade is hard to control, such as when integrating with a legacy stylesheet or third-party system. It is intentionally global.
+
+<DocProp defaultValue="false" types={['boolean']} />
+
+```css name=master.css
+@master {
+    important;
+}
+
+@master {
+    !important;
+}
+```
+
+```css
+.hidden {
+    display: none !important;
+}
+```
+
+### `default-mode`
+Use `default-mode` to decide which mode should also apply when no explicit mode is active.
+
+<DocProp defaultValue="'light'" types={["'light'", "'dark'", 'string', 'false']} />
+
+```css name=master.css
+@master {
+    default-mode: light;
+}
+```
+
+Set it to `false` when the application should not attach any mode to `:root` by default.
+
+```css name=master.css
+@master {
+    default-mode: false;
+}
+```
+
+### `mode-trigger`
+Use `mode-trigger` to choose how mode-specific values are emitted. System-driven themes usually use `media`; manually switched themes usually use `class`; shadow DOM integrations can use `host`.
+
+<DocProp defaultValue="'media'" types={["'media'", "'class'", "'host'"]} />
+
+```css name=master.css
+@master {
+    mode-trigger: class;
+}
+```
+
+Variables and mode behavior are covered in [Variables and Modes](/guide/variables-and-modes).
 
 ---
 
