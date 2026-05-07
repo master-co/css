@@ -102,6 +102,45 @@ Equivalent markup stays semantic:
 
 ---
 
+## Variants in markup
+Component classes also accept selector and at-rule suffixes when the variant belongs to the usage site rather than the component definition.
+
+```css name=master.css
+@master components {
+    .btn {
+        @compose "block";
+    }
+
+    .btn:disabled > span {
+        @compose "opacity:.55";
+    }
+}
+```
+
+```html
+<button class="btn:hover@sm">
+    <span>Preview</span>
+</button>
+```
+
+The generated selector keeps the class identity and places the selector variant on the component root before the configured selector:
+
+```css
+@media (width >= 40rem) {
+    .btn\:hover\@sm:hover {
+        display: block;
+    }
+
+    .btn\:hover\@sm:hover:disabled > span {
+        opacity: .55;
+    }
+}
+```
+
+For a configured selector such as `.btn:disabled > span`, `btn:hover` becomes `:hover:disabled > span` on the component root. The hover state is not appended to the final descendant.
+
+---
+
 ## Generation behavior
 Component definitions are config, not output. Defining `.btn` does not generate CSS until `btn` appears in extracted classes.
 

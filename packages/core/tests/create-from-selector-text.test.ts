@@ -51,6 +51,14 @@ test.concurrent('component and mode', () => {
     ] } }).createFromSelectorText('.light .btn')?.[0]).toMatchObject({ name: 'btn', selectorText: '.btn' })
 })
 
+test.concurrent('component selector variant', () => {
+    const rules = createCSS({ components: { btn: [
+        { selector: '&:disabled>span', declarations: { display: 'block' } }
+    ] } }).createFromSelectorText('.btn\\:hover:hover:disabled>span')
+
+    expect(rules?.[0]).toMatchObject({ name: 'btn:hover', selectorText: '.btn\\:hover:hover:disabled>span' })
+})
+
 describe('group selector', () => {
     const config = { selectorTokens: {
             '::both': '::before,::after',

@@ -39,7 +39,8 @@ export default class ComponentRule {
         public declarations: PropertiesHyphen,
         public selector?: string,
         public atRuleDefinitions?: string[],
-        public layerName: ComponentLayerName = 'components'
+        public layerName: ComponentLayerName = 'components',
+        public selectorVariant?: string
     ) {
         this.layer = getComponentLayer(css, layerName)
         const atIndex = name.indexOf('@')
@@ -132,7 +133,10 @@ export default class ComponentRule {
                 pre = modeSelector + ' ' + pre
             }
         }
-        const base = pre + '.' + cssEscape(this.name)
+        const classSelector = pre + '.' + cssEscape(this.name)
+        const base = this.selectorVariant
+            ? this.selectorVariant.replace(/&/g, classSelector)
+            : classSelector
         return this.selector
             ? this.selector.replace(/&/g, base)
             : base
@@ -144,6 +148,7 @@ export default class ComponentRule {
             '@layer',
             this.layerName,
             this.selector || '&',
+            this.selectorVariant || '&',
             JSON.stringify(this.declarations),
             ...(this.atRuleDefinitions || []),
             '@component'

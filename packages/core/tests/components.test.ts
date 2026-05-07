@@ -200,6 +200,73 @@ describe('raw declarations', () => {
         expect(css.componentsLayer.text).toContain('@media (width>=31.25rem){.btn\\@sm{display:inline-flex}}')
     })
 
+    test('generates component rule declarations with selector variants', () => {
+        const css = createCSS({
+            components: {
+                btn: [
+                    {
+                        selector: '&',
+                        declarations: { display: 'block' }
+                    }
+                ]
+            }
+        }).add('btn:hover')
+
+        expect(css.componentsLayer.text).toContain('.btn\\:hover:hover{display:block}')
+    })
+
+    test('places selector variants before configured component selectors', () => {
+        const css = createCSS({
+            components: {
+                btn: [
+                    {
+                        selector: '&:disabled>span',
+                        declarations: { display: 'block' }
+                    }
+                ]
+            }
+        }).add('btn:hover')
+
+        expect(css.componentsLayer.text).toContain('.btn\\:hover:hover:disabled>span{display:block}')
+        expect(css.componentsLayer.text).not.toContain('.btn\\:hover:disabled>span:hover')
+    })
+
+    test('combines component selector variants with at-rule variants', () => {
+        const css = createCSS({
+            components: {
+                btn: [
+                    {
+                        selector: '&',
+                        declarations: { display: 'block' }
+                    }
+                ]
+            },
+            variables: [
+                { namespace: 'screen', key: 'sm', value: 640 }
+            ]
+        }).add('btn:hover@sm')
+
+        expect(css.componentsLayer.text).toContain('@media (width>=40rem){.btn\\:hover\\@sm:hover{display:block}}')
+    })
+
+    test('resolves selector tokens in component selector variants', () => {
+        const css = createCSS({
+            selectorTokens: {
+                ':interactive': ':is(:hover,:focus-visible)'
+            },
+            components: {
+                btn: [
+                    {
+                        selector: '&',
+                        declarations: { display: 'block' }
+                    }
+                ]
+            }
+        }).add('btn:interactive')
+
+        expect(css.componentsLayer.text).toContain('.btn\\:interactive:is(:hover,:focus-visible){display:block}')
+    })
+
     test('generates raw component declarations with configured at-rules', () => {
         const css = createCSS({
             components: {

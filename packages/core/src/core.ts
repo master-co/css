@@ -16,7 +16,40 @@ import registerGlobal from './register-global'
 import parseAt from './utils/parse-at'
 import parseValue from './utils/parse-value'
 import parseSelector, { SelectorNode } from './utils/parse-selector'
+import generateSelector from './utils/generate-selector'
 import resolveSelectorTokens from './utils/resolve-selector-tokens'
+
+const COMPONENT_SELECTOR_SUFFIX_START = new Set([':', '.', '#', '[', '>', '+', '~', '_', '*'])
+
+function findComponentAtSuffixIndex(suffix: string) {
+    let depth = 0
+    let quote = ''
+    for (let index = 0; index < suffix.length; index++) {
+        const char = suffix[index]
+        if (quote) {
+            if (char === '\\') {
+                index++
+            } else if (char === quote) {
+                quote = ''
+            }
+            continue
+        }
+        if (char === '"' || char === '\'') {
+            quote = char
+            continue
+        }
+        if (char === '(' || char === '[' || char === '{') {
+            depth++
+            continue
+        }
+        if (char === ')' || char === ']' || char === '}') {
+            depth--
+            continue
+        }
+        if (char === '@' && depth === 0) return index
+    }
+    return -1
+}
 
 export default class MasterCSS {
     readonly definedUtilities: DefinedUtility[] = []
@@ -31,6 +64,7 @@ export default class MasterCSS {
     readonly componentsLayer = new UtilityLayer('components', this)
     readonly utilitiesLayer = new UtilityLayer('utilities', this)
     readonly components = new Map<string, ComponentEntry>()
+    readonly componentNames: string[] = []
     readonly selectors = new Map<string, SelectorNode[]>()
     readonly variables = new Map<string, Variable>()
     readonly modes: string[] = []
@@ -284,7 +318,9 @@ export default class MasterCSS {
             this.components.set(name, {
                 selectorRules
             })
+            this.componentNames.push(name)
         }
+        this.componentNames.sort((a, b) => b.length - a.length)
     }
 
     resolveSelectors() {
@@ -562,19 +598,10 @@ export default class MasterCSS {
     generate(className: string, mode?: string): Utility[]
     generate(className: string, mode?: string): GeneratedUtility[] {
         let utilities: GeneratedUtility[] = []
-        const component = this.components.get(className)
-        if (component) {
-            this.appendComponentRules(utilities, className, component.selectorRules)
+        const componentClass = this.parseComponentClassName(className)
+        if (componentClass) {
+            this.appendComponentRules(utilities, className, componentClass.entry.selectorRules, componentClass.selectorVariant)
         } else {
-            const atIndex = className.indexOf('@')
-            if (atIndex !== -1) {
-                const name = className.slice(0, atIndex)
-                const component = this.components.get(name)
-                if (component) {
-                    const atToken = className.slice(atIndex)
-                    this.appendComponentRules(utilities, name + atToken, component.selectorRules)
-                }
-            }
             const utility = this.create(className, undefined, mode)
             if (utility && utility.valid) {
                 utilities.push(utility)
@@ -583,9 +610,48 @@ export default class MasterCSS {
         return utilities
     }
 
-    appendComponentRules(rules: GeneratedUtility[], className: string, selectorRules: ComponentEntry['selectorRules']) {
+    parseComponentClassName(className: string): { entry: ComponentEntry, selectorVariant?: string } | undefined {
+        const exactComponent = this.components.get(className)
+        if (exactComponent) return { entry: exactComponent }
+
+        for (const name of this.getComponentNames()) {
+            if (!className.startsWith(name)) continue
+            const suffix = className.slice(name.length)
+            if (!suffix) continue
+            const firstChar = suffix[0]
+            if (firstChar !== '@' && !COMPONENT_SELECTOR_SUFFIX_START.has(firstChar)) continue
+
+            const atIndex = findComponentAtSuffixIndex(suffix)
+            const selectorSuffix = atIndex === -1 ? suffix : suffix.slice(0, atIndex)
+            if (selectorSuffix && !COMPONENT_SELECTOR_SUFFIX_START.has(selectorSuffix[0])) continue
+
+            const component = this.components.get(name)
+            if (!component) continue
+
+            return {
+                entry: component,
+                ...(selectorSuffix
+                    ? { selectorVariant: generateSelector(parseSelector(selectorSuffix, this), '&') }
+                    : {})
+            }
+        }
+    }
+
+    getComponentNames() {
+        if (
+            this.componentNames.length !== this.components.size
+            || this.componentNames.some((name) => !this.components.has(name))
+        ) {
+            this.componentNames.length = 0
+            this.componentNames.push(...this.components.keys())
+            this.componentNames.sort((a, b) => b.length - a.length)
+        }
+        return this.componentNames
+    }
+
+    appendComponentRules(rules: GeneratedUtility[], className: string, selectorRules: ComponentEntry['selectorRules'], selectorVariant?: string) {
         for (const { selector, declarations, atRules, layer } of selectorRules) {
-            const componentRule = new ComponentRule(className, this, declarations, selector, atRules, layer)
+            const componentRule = new ComponentRule(className, this, declarations, selector, atRules, layer, selectorVariant)
             if (componentRule.valid) rules.push(componentRule)
         }
     }
@@ -664,6 +730,7 @@ export default class MasterCSS {
         this.classUtilities = new Map()
         this.modes.length = 0
         this.definedUtilities.length = 0
+        this.componentNames.length = 0
         this.baseLayer.reset()
         this.themeLayer.reset()
         this.presetLayer.reset()
