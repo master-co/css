@@ -6,7 +6,7 @@
 
 ## Inputs And Outputs
 
-- Input: CSS containing `@master`, variables, nested mode blocks, `@at`, `@selector`, `@master components`, `@master utilities`, component rules with `@compose`, and `@master animations`.
+- Input: CSS containing `@master`, variables, nested mode blocks, `@custom-at`, `@custom-selector`, `@master components`, `@master utilities`, component rules with `@compose`, and `@master animations`.
 - Output: CSS with consumed Master directives removed and generated Master CSS appended only for classes passed to the compiler.
 - `@master` definitions are config definitions. Defining a component, utility, variable, token, or animation does not emit CSS by itself; the class still needs to be used or extracted.
 - `compileCSSFile()` resolves local relative CSS `@import` graphs before compiling and returns absolute dependency paths.
@@ -25,8 +25,8 @@
 - `@master { important; }` and `@master { !important; }`
 - `@master { dark { --color-primary: #456; } }`
 - `light` and `dark` are core default modes; the compiler should only add custom modes such as `chrisma`.
-- `@master { @at motion-safe @media (prefers-reduced-motion: no-preference); }`
-- `@master { @selector ::scrollbar ::-webkit-scrollbar; }`
+- `@master { @custom-at motion-safe @media (prefers-reduced-motion: no-preference); }`
+- `@master { @custom-selector ::scrollbar ::-webkit-scrollbar; }`
 - `@master components { .btn { @compose "inline-flex"; display: inline-flex; } }`
 - `@master utilities { .content-auto { content-visibility: auto; } }`
 - `@master animations { fade { from { opacity: 0; } to { opacity: 1; } } }`

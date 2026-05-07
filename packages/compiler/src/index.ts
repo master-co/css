@@ -77,11 +77,11 @@ const MASTER_CUSTOM_AT_RULES = {
         prelude: '*',
         body: 'style-block'
     },
-    at: {
+    'custom-at': {
         prelude: '*',
         body: null
     },
-    selector: {
+    'custom-selector': {
         prelude: '*',
         body: null
     },
@@ -741,18 +741,18 @@ function normalizeAtValue(value: string) {
 function parseAtDefinition(rule: any, parsed: ParsedDirectives) {
     const match = /^(\S+)\s+(.+)$/.exec(formatPrelude(rule.value.prelude))
     if (!match) {
-        throw new Error('@at requires a token name and at-rule value')
+        throw new Error('@custom-at requires a token name and at-rule value')
     }
 
     const [, token, value] = match
     if (token.startsWith('@')) {
-        throw new Error(`@at names must not start with "@": ${token}`)
+        throw new Error(`@custom-at names must not start with "@": ${token}`)
     }
     if (token.startsWith(':')) {
-        throw new Error(`@at names cannot be selector tokens: ${token}`)
+        throw new Error(`@custom-at names cannot be selector tokens: ${token}`)
     }
     if (!value.trim().startsWith('@')) {
-        throw new Error(`@at "${token}" must use an explicit at-rule value`)
+        throw new Error(`@custom-at "${token}" must use an explicit at-rule value`)
     }
     parsed.config.atTokens ??= {}
     parsed.config.atTokens[token] = normalizeAtValue(value)
@@ -761,12 +761,12 @@ function parseAtDefinition(rule: any, parsed: ParsedDirectives) {
 function parseSelectorDefinition(rule: any, parsed: ParsedDirectives) {
     const match = /^(\S+)\s+(.+)$/.exec(formatPrelude(rule.value.prelude))
     if (!match) {
-        throw new Error('@selector requires a selector token name and selector value')
+        throw new Error('@custom-selector requires a selector token name and selector value')
     }
 
     const [, token, value] = match
     if (!token.startsWith(':')) {
-        throw new Error(`@selector names must start with ":" or "::": ${token}`)
+        throw new Error(`@custom-selector names must start with ":" or "::": ${token}`)
     }
     parsed.config.selectorTokens ??= {}
     parsed.config.selectorTokens[token] = value.trim()
@@ -1161,14 +1161,14 @@ function parseMasterStyleRule(rule: any, parsed: ParsedDirectives, options: Comp
     const mode = parseSingleTypeSelector(rule.value.selectors)
     if (mode) {
         if (HTML_TAG_NAMES.has(mode)) {
-            warn(parsed, options, `Unsupported @master block "${mode}". @master only accepts config declarations, mode variable blocks, @at, and @selector. Move regular CSS selectors outside @master.`)
+            warn(parsed, options, `Unsupported @master block "${mode}". @master only accepts config declarations, mode variable blocks, @custom-at, and @custom-selector. Move regular CSS selectors outside @master.`)
             return
         }
         parseModeBlock(rule, mode, parsed)
         return
     }
 
-    warn(parsed, options, `Unsupported @master selector "${formatSelectors(rule.value.selectors)}". @master only accepts mode variable blocks, @at, and @selector.`)
+    warn(parsed, options, `Unsupported @master selector "${formatSelectors(rule.value.selectors)}". @master only accepts mode variable blocks, @custom-at, and @custom-selector.`)
 }
 
 function parseComponentLayerBlock(rule: Rule) {
@@ -1223,16 +1223,16 @@ function parseMasterChildRule(child: Rule, parsed: ParsedDirectives, options: Co
         parseMasterDeclarations(child.value.declarations, parsed.config)
         return
     }
-    if ((child.type === 'unknown' || child.type === 'custom') && child.value?.name === 'at') {
+    if ((child.type === 'unknown' || child.type === 'custom') && child.value?.name === 'custom-at') {
         if (section !== 'root') {
-            throw new Error('@at is only allowed in @master')
+            throw new Error('@custom-at is only allowed in @master')
         }
         parseAtDefinition(child, parsed)
         return
     }
-    if ((child.type === 'unknown' || child.type === 'custom') && child.value?.name === 'selector') {
+    if ((child.type === 'unknown' || child.type === 'custom') && child.value?.name === 'custom-selector') {
         if (section !== 'root') {
-            throw new Error('@selector is only allowed in @master')
+            throw new Error('@custom-selector is only allowed in @master')
         }
         parseSelectorDefinition(child, parsed)
         return
@@ -1281,10 +1281,10 @@ function validateTokenConflicts(parsed: ParsedDirectives) {
     if (!atTokens) return
     for (const token of Object.keys(atTokens)) {
         if (modes.has(token)) {
-            throw new Error(`@at "${token}" conflicts with mode "${token}"`)
+            throw new Error(`@custom-at "${token}" conflicts with mode "${token}"`)
         }
         if (screens.has(token)) {
-            throw new Error(`@at "${token}" conflicts with screen variable "--screen-${token}"`)
+            throw new Error(`@custom-at "${token}" conflicts with screen variable "--screen-${token}"`)
         }
     }
 }
@@ -1701,11 +1701,11 @@ export function compileCSS(source: string, options: CompileCSSOptions = {}): Com
                     compose() {
                         throw new Error('@compose is only allowed in @master components')
                     },
-                    at() {
-                        throw new Error('@at is only allowed in @master')
+                    'custom-at'() {
+                        throw new Error('@custom-at is only allowed in @master')
                     },
-                    selector() {
-                        throw new Error('@selector is only allowed in @master')
+                    'custom-selector'() {
+                        throw new Error('@custom-selector is only allowed in @master')
                     }
                 }
             }

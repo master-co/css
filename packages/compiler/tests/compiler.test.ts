@@ -26,9 +26,9 @@ describe.concurrent('@master/css-compiler', () => {
                 --spacing-card: 24;
                 --screen-md: 768;
 
-                @at motion-safe @media (prefers-reduced-motion: no-preference);
-                @at supports-backdrop @supports (backdrop-filter: blur(0));
-                @selector ::scrollbar ::-webkit-scrollbar;
+                @custom-at motion-safe @media (prefers-reduced-motion: no-preference);
+                @custom-at supports-backdrop @supports (backdrop-filter: blur(0));
+                @custom-selector ::scrollbar ::-webkit-scrollbar;
 
                 dark {
                     --color-primary: #456;
@@ -103,8 +103,8 @@ describe.concurrent('@master/css-compiler', () => {
                 --color-primary: #123;
                 --screen-md: 768;
 
-                @at motion-safe @media (prefers-reduced-motion: no-preference);
-                @selector ::scrollbar ::-webkit-scrollbar;
+                @custom-at motion-safe @media (prefers-reduced-motion: no-preference);
+                @custom-selector ::scrollbar ::-webkit-scrollbar;
 
                 dark {
                     --color-primary: #456;
@@ -700,10 +700,10 @@ describe.concurrent('@master/css-compiler', () => {
                 --screen-md: 640;
                 --screen-md: 768;
 
-                @at motion-safe @media (hover: hover);
-                @at motion-safe @media (prefers-reduced-motion: no-preference);
-                @selector :interactive :hover;
-                @selector :interactive :focus-visible;
+                @custom-at motion-safe @media (hover: hover);
+                @custom-at motion-safe @media (prefers-reduced-motion: no-preference);
+                @custom-selector :interactive :hover;
+                @custom-selector :interactive :focus-visible;
 
                 dark {
                     --color-primary: #333;
@@ -941,36 +941,36 @@ describe.concurrent('@master/css-compiler', () => {
         `, ['btn'])).toContain('@media print{.btn{display:none}}')
     })
 
-    it('rejects invalid @at and @selector names and conflicts', () => {
+    it('rejects invalid @custom-at and @custom-selector names and conflicts', () => {
         expect(() => process(`
             @master {
-                @at @motion-safe @media (prefers-reduced-motion: no-preference);
+                @custom-at @motion-safe @media (prefers-reduced-motion: no-preference);
             }
-        `)).toThrow('@at names must not start with "@"')
+        `)).toThrow('@custom-at names must not start with "@"')
 
         expect(() => process(`
             @master {
-                @at :headings :is(h1, h2, h3);
+                @custom-at :headings :is(h1, h2, h3);
             }
-        `)).toThrow('@at names cannot be selector tokens')
+        `)).toThrow('@custom-at names cannot be selector tokens')
 
         expect(() => process(`
             @master {
-                @selector headings :is(h1, h2, h3);
+                @custom-selector headings :is(h1, h2, h3);
             }
-        `)).toThrow('@selector names must start with ":" or "::"')
+        `)).toThrow('@custom-selector names must start with ":" or "::"')
 
         expect(() => process(`
             @master {
-                @at dark @media (prefers-color-scheme: dark);
+                @custom-at dark @media (prefers-color-scheme: dark);
             }
-        `)).toThrow('@at "dark" conflicts with mode "dark"')
+        `)).toThrow('@custom-at "dark" conflicts with mode "dark"')
 
         expect(() => process(`
             @master {
-                @at md @media (width >= 48rem);
+                @custom-at md @media (width >= 48rem);
             }
-        `)).toThrow('@at "md" conflicts with screen variable "--screen-md"')
+        `)).toThrow('@custom-at "md" conflicts with screen variable "--screen-md"')
 
         expect(() => process(`
             @master {
@@ -981,13 +981,13 @@ describe.concurrent('@master/css-compiler', () => {
         `)).toThrow('Mode "md" conflicts with screen variable "--screen-md"')
     })
 
-    it('rejects @at and @selector outside @master', () => {
+    it('rejects @custom-at and @custom-selector outside @master', () => {
         expect(() => process(`
-            @at motion-safe @media (prefers-reduced-motion: no-preference);
-        `)).toThrow('@at is only allowed in @master')
+            @custom-at motion-safe @media (prefers-reduced-motion: no-preference);
+        `)).toThrow('@custom-at is only allowed in @master')
 
         expect(() => process(`
-            @selector :headings :is(h1, h2, h3);
-        `)).toThrow('@selector is only allowed in @master')
+            @custom-selector :headings :is(h1, h2, h3);
+        `)).toThrow('@custom-selector is only allowed in @master')
     })
 })
