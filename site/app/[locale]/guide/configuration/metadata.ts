@@ -1,10 +1,9 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-    title: 'Configuration',
-    description: 'Implement your design system using the configuration API.',
-    category: 'Customization',
-    order: 1,
+    title: 'CSS Configuration',
+    description: 'Configure Master CSS from master.css with CSS-first directives, tokens, utilities, components, and build-time output.',
+    category: 'Fundamentals',
     fileURL: import.meta.url
 })
 

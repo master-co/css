@@ -3,7 +3,7 @@ import ComponentsOverview from '../components/components/Overview.mdx'
 ## Overview [sr-only]
 As the styles grow, the class name combinations and the same design patterns appear over and over again in the code. To improve development efficiency and maintain design consistency, you should reuse or access them in some way.
 
-Traditionally, we define components like `.btn` or `.card` by writing CSS rules. In Master CSS, define reusable styles in `@master components` so they become config-backed, on-demand component classes.
+Traditionally, we define components like `.btn` or `.card` by writing CSS rules. In Master CSS, define reusable styles in `@master components` so they become config-backed, on-demand component classes. This guide focuses on the strategy of when to abstract; for the full configuration surface, start with [CSS Configuration](/guide/configuration), and for exact component behavior, see [Components](/guide/components).
 ```css name=master.css
 @master components {
     .btn {
@@ -235,4 +235,5 @@ We define [variables and modes](/guide/variables-and-modes) to create tokens sup
 
 - Moderately abstracting styles make design easier to manage and maintain consistency, but it doesn't mean that all styles should be abstracted.
 - Only abstract styles that have the potential for reuse, rather than naming them simply for brevity or naming's sake.
+- Keep utilities for primitives and one-off layout decisions; move repeated UI patterns into components when the class name becomes a product concept.
 - A good CSS structure combines abstract classes and utility classes — don’t get hung up on specific approaches.

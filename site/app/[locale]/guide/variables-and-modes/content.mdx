@@ -3,6 +3,8 @@ Variables are design tokens. Modes are named contexts such as light, dark, high 
 
 <ModeImg src="/master-css-variables-and-modes.svg" alt='Master CSS Variables and Modes' />
 
+Define variables and modes in [`master.css`](/guide/configuration) so tokens, screens, mode defaults, and mode triggers live next to the rest of the CSS configuration. The file stays close to native CSS: variables are custom property declarations, and mode-specific values are nested blocks.
+
 For a classic example, use the `primary` token in markup instead of writing separate values for each theme:
 
 ```html
@@ -46,6 +48,8 @@ Use the token in markup through the property namespace:
 <!-- @MARK bg:primary --><!-- @MARK font:sans --><!-- @MARK p:card --><!-- @MARK @md -->
 <div class="bg:primary font:sans p:card grid-cols:2@md">…</div>
 ```
+
+`screen` variables also become responsive at tokens. A declaration such as `--screen-md: 768;` lets `grid-cols:2@md` generate a media query without separately defining an at token.
 
 ---
 

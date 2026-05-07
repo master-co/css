@@ -36,6 +36,8 @@ For the View Transitions guide specifically:
 
 ## Content Strategy
 
+Use sentence case for public documentation headings inside guide `content.mdx` files: capitalize the first word and proper nouns only. Avoid title case such as `Root Options`; prefer `Root options`.
+
 Guides should teach in this order:
 
 1. Explain the native web feature in plain language with links to authoritative references such as MDN or web.dev.
