@@ -60,12 +60,16 @@ const jsInjection = clone(readGrammar('master-css.injection-js.json'))
 jsInjection.injectTo = ['source.js']
 const reactInjection = clone(readGrammar('master-css.injection-react.json'))
 reactInjection.injectTo = ['source.tsx']
+const cssInjection = clone(readGrammar('master-css.injection-css.json'))
+cssInjection.injectTo = ['source.css']
 const embeddedHighlighter = await createHighlighter({
     themes: [theme],
     langs: [
+        'css',
         'js',
         'tsx',
         coreGrammar,
+        cssInjection,
         jsInjection,
         reactInjection
     ]
@@ -148,4 +152,86 @@ test('React injection highlights class function calls inside attribute bindings'
     const tokens = tokensFor(embeddedHighlighter, '<div className={clsx(\'fg:red\')}></div>', 'tsx')
     assertTokenScope(tokens, 'fg', 'support.type.property-name.css')
     assertTokenScope(tokens, 'red', 'support.constant.property-value.css')
+})
+
+test('CSS injection highlights @master root configuration blocks', () => {
+    const tokens = tokensFor(embeddedHighlighter, `
+        @master {
+            root-size: 16;
+            --color-primary: $color-blue-60/.8;
+
+            dark {
+                --color-primary: #818cf8;
+            }
+
+            @custom-at motion-safe @media (prefers-reduced-motion: no-preference);
+            @custom-selector :interactive :is(:hover, :focus-visible);
+        }
+    `, 'css')
+
+    assertTokenScope(tokens, 'master', 'keyword.control.at-rule.master-css.css')
+    assertTokenScope(tokens, 'root-size', 'support.type.property-name.css')
+    assertTokenScope(tokens, '--color-primary', 'variable.css')
+    assertTokenScope(tokens, 'color-blue-60', 'variable.other.master-css.css')
+    assertTokenScope(tokens, '.8', 'constant.numeric.css')
+    assertTokenScope(tokens, 'dark', 'entity.name.tag.css')
+    assertTokenScope(tokens, 'custom-at', 'keyword.control.at-rule.custom-at.master-css.css')
+    assertTokenScope(tokens, 'motion-safe', 'variable.parameter.master-css.at-token.css')
+    assertTokenScope(tokens, 'media', 'keyword.control.at-rule.css')
+    assertTokenScope(tokens, 'custom-selector', 'keyword.control.at-rule.custom-selector.master-css.css')
+    assertTokenScope(tokens, ':interactive', 'entity.other.attribute-name.pseudo-class.css')
+})
+
+test('CSS injection highlights @master component directives and compose classes', () => {
+    const tokens = tokensFor(embeddedHighlighter, `
+        @master components {
+            .btn {
+                @compose "inline-flex fg:primary:hover@md";
+                @at dark {
+                    @compose 'bg:surface';
+                }
+
+                &:hover {
+                    color: var(--color-primary);
+                }
+            }
+        }
+    `, 'css')
+
+    assertTokenScope(tokens, 'components', 'storage.modifier.master-css.section.css')
+    assertTokenScope(tokens, 'btn', 'entity.other.attribute-name.class.css')
+    assertTokenScope(tokens, 'compose', 'keyword.control.at-rule.compose.master-css.css')
+    assertTokenScope(tokens, 'inline-flex', 'support.constant.property-value.css')
+    assertTokenScope(tokens, 'fg', 'support.type.property-name.css')
+    assertTokenScope(tokens, 'hover', 'entity.other.attribute-name.pseudo-class.css')
+    assertTokenScope(tokens, '@md', 'keyword.control.at-rule')
+    assertTokenScope(tokens, 'at', 'keyword.control.at-rule.at.master-css.css')
+    assertTokenScope(tokens, 'dark', 'support.constant.property-value.css')
+    assertTokenScope(tokens, 'bg', 'support.type.property-name.css')
+    assertTokenScope(tokens, '&', 'entity.name.tag.css')
+    assertTokenScope(tokens, 'color', 'support.type.property-name.css')
+})
+
+test('CSS injection highlights @master animation shorthand blocks', () => {
+    const tokens = tokensFor(embeddedHighlighter, `
+        @master animations {
+            fade-in {
+                from {
+                    opacity: 0;
+                }
+
+                50%,
+                to {
+                    opacity: .62;
+                }
+            }
+        }
+    `, 'css')
+
+    assertTokenScope(tokens, 'animations', 'storage.modifier.master-css.section.css')
+    assertTokenScope(tokens, 'fade-in', 'entity.name.tag.custom.css')
+    assertTokenScope(tokens, 'from', 'entity.other.keyframe-offset.css')
+    assertTokenScope(tokens, '50%', 'entity.other.keyframe-offset.percentage.css')
+    assertTokenScope(tokens, 'to', 'entity.other.keyframe-offset.css')
+    assertTokenScope(tokens, 'opacity', 'support.type.property-name.css')
 })

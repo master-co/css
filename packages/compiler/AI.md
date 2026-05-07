@@ -18,6 +18,7 @@
 - Prefer using the public `@master/css` engine for rule generation.
 - Avoid duplicating core parser, selector, priority, and layer behavior.
 - Do not reintroduce PostCSS in this package.
+- If `@master` CSS configuration syntax is expanded or changed incompatibly, update the TextMate/Shiki highlighting in `packages/language` in the same change when practical.
 
 ## Directive MVP
 

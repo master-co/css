@@ -12,6 +12,7 @@ export declare type Grammar = {
 
 const core = (await import('../syntaxes/master-css.json')).default
 const injectionClass = (await import('../syntaxes/master-css.injection-class.json')).default
+const injectionCSS = (await import('../syntaxes/master-css.injection-css.json')).default
 const injectionJS = (await import('../syntaxes/master-css.injection-js.json')).default
 const injectionReact = (await import('../syntaxes/master-css.injection-react.json')).default
 const injectionString = (await import('../syntaxes/master-css.injection-string.json')).default
@@ -28,6 +29,19 @@ const grammars = [
             'source',
             'text'
         ]
+    },
+    {
+        ...injectionCSS,
+        injectTo: [
+            'source.css',
+            'source.css.scss'
+        ],
+        embeddedLangs: [
+            'master-css'
+        ],
+        vscodeEmbeddedLanguages: {
+            'meta.embedded.block.master-css.class': 'master-css'
+        },
     },
     {
         ...injectionReact,

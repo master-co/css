@@ -87,6 +87,17 @@
                 ]
             },
             {
+                "scopeName": "source.master-css.injection-css",
+                "path": "./syntaxes/master-css.injection-css.json",
+                "embeddedLanguages": {
+                    "meta.embedded.block.master-css.class": "master-css"
+                },
+                "injectTo": [
+                    "source.css",
+                    "source.css.scss"
+                ]
+            },
+            {
                 "scopeName": "source.master-css.injection-react",
                 "path": "./syntaxes/master-css.injection-react.json",
                 "injectTo": [
@@ -226,9 +237,7 @@
                     "items": {
                         "type": "string"
                     },
-                    "default": [
-                        "components"
-                    ]
+                    "default": []
                 },
                 "masterCSS.classFunctions": {
                     "type": "array",
