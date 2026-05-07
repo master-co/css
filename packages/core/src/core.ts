@@ -16,6 +16,7 @@ import registerGlobal from './register-global'
 import parseAt from './utils/parse-at'
 import parseValue from './utils/parse-value'
 import parseSelector, { SelectorNode } from './utils/parse-selector'
+import resolveSelectorTokens from './utils/resolve-selector-tokens'
 
 export default class MasterCSS {
     readonly definedUtilities: DefinedUtility[] = []
@@ -273,12 +274,8 @@ export default class MasterCSS {
                 if (!selector.includes('&')) {
                     throw new Error(`Component "${name}" selector must include "&"`)
                 }
-                let resolvedSelector = selector
-                for (const token of Object.keys(this.config.selectorTokens || {}).sort((a, b) => b.length - a.length)) {
-                    resolvedSelector = resolvedSelector.split(token).join(this.config.selectorTokens![token])
-                }
                 selectorRules.push({
-                    selector: resolvedSelector,
+                    selector: resolveSelectorTokens(selector, this.config.selectorTokens),
                     declarations: declarations as any,
                     ...(atRules?.length ? { atRules } : {})
                 })

@@ -9,6 +9,7 @@ import {
     screens as defaultScreens,
     UtilityType
 } from '@master/css'
+import resolveSelectorTokens from '@master/css/utils/resolve-selector-tokens'
 import { transform } from 'lightningcss'
 import type { PropertiesHyphen } from 'csstype'
 import type {
@@ -1129,13 +1130,9 @@ function resolveComponentSelectorTokens(parsed: ParsedDirectives) {
     if (!selectorTokens || !components) return
     for (const name in components) {
         components[name] = components[name].map((definition) => {
-            let selector = definition.selector
-            for (const token of Object.keys(selectorTokens).sort((a, b) => b.length - a.length)) {
-                selector = selector.split(token).join(selectorTokens[token])
-            }
             return {
                 ...definition,
-                selector
+                selector: resolveSelectorTokens(definition.selector, selectorTokens)
             }
         })
     }

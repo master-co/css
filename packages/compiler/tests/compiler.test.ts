@@ -255,6 +255,19 @@ describe.concurrent('@master/css-compiler', () => {
         expect(css).toContain('.btn{background-color:rgb(17 34 51)}')
     })
 
+    it('keeps native selector names when resolving composed component selectors', () => {
+        const result = compileCSS(`
+            @master components {
+                .code-line-add {
+                    @compose "content:'+'!:not(:only-child):before";
+                }
+            }
+        `, { classes: ['code-line-add'] })
+
+        expect(result.config.components?.['code-line-add']?.[0].selector).toBe('&:not(:only-child):before')
+        expect(result.css).toContain(".code-line-add:not(:only-child):before{content:'+'!important}")
+    })
+
     it('expands repeated component definitions in declaration order', () => {
         const result = compileCSS(`
             @master components {

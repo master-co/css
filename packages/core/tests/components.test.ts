@@ -254,4 +254,36 @@ describe('raw declarations', () => {
         expect(css.componentsLayer.text).toContain('.btn{display:inline-flex}')
         expect(css.componentsLayer.text).toContain('.btn:hover{display:block}')
     })
+
+    test('does not expand selector token prefixes inside native component selectors', () => {
+        const css = createCSS({
+            components: {
+                'code-line-add': [
+                    {
+                        selector: '&:not(:only-child):before',
+                        declarations: { content: "'+'!important" }
+                    }
+                ]
+            }
+        }).add('code-line-add')
+
+        expect(css.components.get('code-line-add')?.selectorRules[0].selector).toBe('&:not(:only-child):before')
+        expect(css.componentsLayer.text).toContain(".code-line-add:not(:only-child):before{content:'+'!important}")
+    })
+
+    test('resolves selector token shorthands in component selectors', () => {
+        const css = createCSS({
+            components: {
+                btn: [
+                    {
+                        selector: '&:only',
+                        declarations: { display: 'block' }
+                    }
+                ]
+            }
+        }).add('btn')
+
+        expect(css.components.get('btn')?.selectorRules[0].selector).toBe('&:only-child')
+        expect(css.componentsLayer.text).toContain('.btn:only-child{display:block}')
+    })
 })
