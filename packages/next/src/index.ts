@@ -32,18 +32,25 @@ function applyMasterCSSWebpackConfig(config: WebpackConfig, loaderPath: string) 
 
 function applyMasterCSSTurbopackConfig(nextConfig: NextConfig, loaderPath: string) {
     const rules = nextConfig.turbopack?.rules || {}
-    const cssConfigRules = rules['*.css?master-css-config']
+    const configRules = rules['*']
     const masterCSSConfigRule = {
+        condition: {
+            all: [
+                { path: /\.css$/ },
+                { query: /master-css-config/ }
+            ]
+        },
         loaders: [loaderPath],
+        type: 'ecmascript' as const,
         as: '*.js'
     }
     return {
         ...nextConfig.turbopack,
         rules: {
             ...rules,
-            '*.css?master-css-config': [
+            '*': [
                 masterCSSConfigRule,
-                ...(Array.isArray(cssConfigRules) ? cssConfigRules : cssConfigRules ? [cssConfigRules] : [])
+                ...(Array.isArray(configRules) ? configRules : configRules ? [configRules] : [])
             ]
         } satisfies TurbopackRules
     }

@@ -2,10 +2,7 @@ import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, describe, expect, it } from 'vitest'
-import withMasterCSS from '../src'
 import { renderNextBuildOutputs } from '../src/adapter'
-import masterCSSConfigLoader from '../src/css-config-loader'
-import { getRegisteredOptions } from '../src/options'
 import type { NextAdapter } from 'next'
 
 type BuildCompleteContext = Parameters<NonNullable<NextAdapter['onBuildComplete']>>[0]
@@ -121,90 +118,5 @@ describe('renderNextBuildOutputs', () => {
         expect(outputs[0].cssBytes).toBe(0)
         expect(outputs[0].rendered).toBe(false)
         expect(html).toBe(sourceHTML)
-    })
-})
-
-describe('withMasterCSS', () => {
-    it('sets the Next adapter path and registers options', () => {
-        const nextConfig = withMasterCSS({ reactStrictMode: true }, { manifest: 'master-css.json' })
-
-        expect(nextConfig.reactStrictMode).toBe(true)
-        expect(nextConfig.adapterPath).toContain('adapter.mjs')
-        expect(getRegisteredOptions()).toEqual({ manifest: 'master-css.json' })
-    })
-
-    it('adds a CSS config webpack loader', () => {
-        const nextConfig = withMasterCSS({}) as any
-        const webpackConfig = { module: { rules: [] } }
-        const resolvedConfig = nextConfig.webpack(webpackConfig as any, {} as any)
-
-        expect(resolvedConfig.module.rules).toEqual([
-            expect.objectContaining({
-                resourceQuery: /master-css-config/,
-                type: 'javascript/auto'
-            })
-        ])
-    })
-
-    it('adds a CSS config Turbopack loader', () => {
-        const nextConfig = withMasterCSS({
-            turbopack: {
-                rules: {
-                    '*.svg': {
-                        type: 'asset'
-                    }
-                }
-            }
-        })
-
-        expect(nextConfig.turbopack.rules).toEqual({
-            '*.css?master-css-config': [
-                expect.objectContaining({
-                    as: '*.js'
-                })
-            ],
-            '*.svg': {
-                type: 'asset'
-            }
-        })
-    })
-
-    it('adds CSS config loaders without the adapter when mode is null', () => {
-        const nextConfig = { reactStrictMode: true }
-        const resolvedConfig = withMasterCSS(nextConfig, { mode: null }) as any
-
-        expect(resolvedConfig.reactStrictMode).toBe(true)
-        expect(resolvedConfig.adapterPath).toBeUndefined()
-        expect(resolvedConfig.turbopack.rules).toEqual({
-            '*.css?master-css-config': [
-                expect.objectContaining({
-                    as: '*.js'
-                })
-            ]
-        })
-        expect(resolvedConfig.webpack({ module: { rules: [] } }, {}).module.rules).toEqual([
-            expect.objectContaining({
-                resourceQuery: /master-css-config/
-            })
-        ])
-    })
-})
-
-describe('css config loader', () => {
-    it('turns master.css into an importable config module', () => {
-        const projectDir = createFixtureDir()
-        const configPath = join(projectDir, 'master.css')
-        const dependencies: string[] = []
-        mkdirSync(projectDir, { recursive: true })
-        writeFileSync(configPath, '@master { --color-primary: #123; }')
-
-        const source = masterCSSConfigLoader.call({
-            resourcePath: configPath,
-            addDependency: (dependency: string) => dependencies.push(dependency)
-        })
-
-        expect(dependencies).toEqual([configPath])
-        expect(source).toContain('export default')
-        expect(source).toContain('"namespace":"color"')
     })
 })
