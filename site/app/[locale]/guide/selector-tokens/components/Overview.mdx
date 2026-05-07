@@ -1,9 +1,7 @@
-```js name=master.css.js
-export default {
-    selectorTokens: {
-        ':headings': ':is(h1,h2,h3,h4,h5,h6)', // [!code highlight]
-        ':first': ':first-child', // [!code highlight]
-    }
+```css name=master.css
+@master {
+    @custom-selector :headings :is(h1, h2, h3, h4, h5, h6);
+    @custom-selector :first :first-child;
 }
 ```
 Simplify your markup:

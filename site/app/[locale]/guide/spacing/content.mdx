@@ -42,15 +42,11 @@ The `spacing` variable namespace is shared across related rules:
 <SpacingHeirs />
 It allows you to declare spacing without `spacing-` prefix, making it easier to write with spacing-related rules.
 
-```js name=master.css.js
-export default {
-    variables: {
-        spacing: {
-            sm: 12, // [!code highlight]
-            md: 16, // [!code highlight]
-            lg: 24, // [!code highlight]
-        }
-    }
+```css name=master.css
+@master {
+    --spacing-sm: 12; /* [!code highlight] */
+    --spacing-md: 16; /* [!code highlight] */
+    --spacing-lg: 24; /* [!code highlight] */
 }
 ```
 Apply the custom spacing tokens in your markup:
@@ -99,14 +95,10 @@ In some cases, pixel-accurate control is necessary. Master CSS allows raw unitle
 ## Common mistakes
 ### Do not use numeric keys as tokens
 (x) Avoid defining spacing tokens with numeric keys.
-```js name=master.css.js
-export default {
-    variables: {
-        spacing: {
-            1: 4, // [!code --]
-            2: 8 // [!code --]
-        }
-    }
+```css name=master.css
+@master {
+    --spacing-1: 4; /* [!code --] */
+    --spacing-2: 8; /* [!code --] */
 }
 ```
 

@@ -162,7 +162,7 @@ For example, the following HTML:
 Render the HTML:
 ```ts name=server.ts
 import { render } from '@master/css-server'
-import config from './master.css'
+import config from './master.css?master-css-config'
 
 const indexHTML = readFileSync('./index.html', 'utf-8')
 
@@ -209,6 +209,32 @@ Static Extraction is a zero-runtime rendering mode in which all CSS rules are pr
 Unlike runtime-based solutions, Static Extraction does not rely on any client-side JavaScript to inject or manage styles. It outputs pure CSS assets that are linked in the final HTML, allowing for maximum performance, minimal JavaScript runtime overhead, and optimal compatibility with static hosting environments.
 
 This rendering strategy is functionally equivalent to how [Tailwind CSS](https://tailwindcss.com/) operates in production: styles are compiled ahead-of-time based on actual class name usage across your project, enabling aggressive tree-shaking and style deduplication.
+
+### CSS config and generation
+`master.css` is a CSS config source. `@master` definitions are converted into config and removed from the CSS output; they do not generate rules by themselves.
+
+```css name=master.css
+@master components {
+    .btn {
+        @compose "inline-flex px:1rem";
+    }
+}
+```
+
+Static extraction still emits `.btn` only when `btn` appears in scanned source:
+
+```html
+<!-- @MARK btn -->
+<button class="btn">Save</button>
+```
+
+When a framework file needs the config object at runtime, import the CSS config through the integration query:
+
+```ts
+import config from './master.css?master-css-config'
+```
+
+Without the query, a `.css` import follows the normal stylesheet pipeline.
 
 ### Dynamic classes limitations
 Since static extraction scans the source archive as plain text, it is impossible to predict the results of these string concatenation or interpolation.

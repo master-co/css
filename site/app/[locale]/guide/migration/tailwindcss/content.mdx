@@ -131,16 +131,13 @@ module.exports = {
     }
 }
 ```
-```js name=master.css.js
-/** @type {import('@master/css').Config} */
-export default {
-    screens: {
-        'sm': 640,
-        'md': 768,
-        'lg': 1024,
-        'xl': 1280,
-        '2xl': 1536
-    }
+```css name=master.css
+@master {
+    --screen-sm: 640;
+    --screen-md: 768;
+    --screen-lg: 1024;
+    --screen-xl: 1280;
+    --screen-2xl: 1536;
 }
 ```
 (x) No longer need redundant screen options.
@@ -177,12 +174,9 @@ module.exports = {
     }
 }
 ```
-```js name=master.css.js
-/** @type {import('@master/css').Config} */
-export default {
-    atTokens: {
-        tall: 'media (min-height: 800px)'
-    }
+```css name=master.css
+@master {
+    @custom-at tall @media (min-height: 800px);
 }
 ```
 
@@ -190,7 +184,7 @@ export default {
 
 ## Strategies
 ### Alternative to `@apply`
-Use [components](/guide/components) to abstract styles instead of `@apply`.
+Use [components](/guide/components) and `@compose` to abstract styles instead of Tailwind's `@apply`.
 ```css name=main.css
 @tailwind base;
 @tailwind components;

@@ -1,22 +1,74 @@
 ## Overview [sr-only]
 <Default />
-You can predefine selector tokens to simplify your markup. This is useful for common selectors that you use frequently, such as `:first`, `:last`, or `:nth()`. By defining these tokens, you can use them in your HTML without having to write the full selector each time.
+Selector tokens name selectors that are repeated across markup or CSS config definitions. They are useful for common selectors such as `:headings`, `:interactive`, and `::scrollbar`.
 <Overview />
 
 ---
 
-## Basic usage
-### Add a selector token
-Create a selector token to reuse a selector expression in your markup.
-```js name=master.css.js
-export default {
-    selectorTokens: {
-        ':headings': ':is(h1,h2,h3,h4,h5,h6)', // [!code highlight]
+## Define a selector token
+Define selector tokens inside the root `@master` block with `@custom-selector`.
+
+```css name=master.css
+@master {
+    @custom-selector :headings :is(h1, h2, h3, h4, h5, h6);
+    @custom-selector :interactive :is(:hover, :focus-visible);
+    @custom-selector ::scrollbar ::-webkit-scrollbar;
+}
+```
+
+Use selector tokens anywhere Master CSS accepts a selector suffix:
+
+```html
+<!-- @MARK :headings -->
+<article class="font:semibold_:headings">…</article>
+
+<!-- @MARK :interactive -->
+<button class="fg:primary:interactive">Save</button>
+
+<!-- @MARK ::scrollbar -->
+<div class="w:.5rem::scrollbar">…</div>
+```
+
+Generated CSS:
+
+```css
+.font\:semibold_\:headings :is(h1, h2, h3, h4, h5, h6) {
+    font-weight: 600;
+}
+
+.fg\:primary\:interactive:is(:hover, :focus-visible) {
+    color: var(--color-primary);
+}
+
+.w\:\.5rem\:\:scrollbar::-webkit-scrollbar {
+    width: .5rem;
+}
+```
+
+---
+
+## Use selector tokens in components
+Inside `@master components`, prefer native nested selectors instead of putting selector suffixes inside `@compose`.
+
+```css name=master.css
+@master {
+    @custom-selector :interactive :is(:hover, :focus-visible);
+}
+
+@master components {
+    .btn {
+        @compose "inline-flex ai:center jc:center";
+
+        &:interactive {
+            @compose "fg:primary";
+        }
     }
 }
 ```
-Use the selector token in your markup:
-```html
-<!-- @MARK :headings -->
-<div class="font:bold_:headings">…</div>
-```
+
+This keeps the utility list reusable and makes the selector structure visible in CSS. The compiler resolves `:interactive` before grouping component definitions, so repeated definitions for the same resolved selector are merged.
+
+---
+
+## Naming rules
+Selector token names must start with `:` or `::`. Names that look like at tokens belong in [at tokens](/guide/at-tokens), not selector tokens.

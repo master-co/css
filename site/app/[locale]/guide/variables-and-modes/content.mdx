@@ -1,190 +1,197 @@
 ## Overview [sr-only]
-This document explains how to define and use variables and modes in the Master CSS framework. Variables allow for reusable values throughout your styles, while modes enable conditional styling for different contexts like light/dark themes.
+Variables are design tokens. Modes are named contexts such as light, dark, high contrast, or a product theme. Together they let one semantic class such as `bg:primary` generate the right CSS for every mode.
 
 <ModeImg src="/master-css-variables-and-modes.svg" alt='Master CSS Variables and Modes' />
 
-For a classic example, use the `primary` token in your markup:
+For a classic example, use the `primary` token in markup instead of writing separate values for each theme:
+
 ```html
 <div class="bg:#000000@light">…</div> <!-- [!code --] -->
 <div class="bg:#ffffff@dark">…</div> <!-- [!code --] -->
 <div class="bg:primary">…</div>
 ```
-Design tokens are a fundamental part of design systems and are crucial for maintaining design consistency and efficiency in projects, especially in larger organizations or projects with complex design requirements. They help bridge the gap between design and development, promoting collaboration and ensuring a cohesive user experience.
 
 ---
 
-## Understanding variables
-Variables in Master CSS provide a way to define reusable values that can be referenced throughout your styling. They help maintain consistency and make theme changes simpler.
+## Define variables
+In `master.css`, define variables with native CSS custom property declarations inside `@master`.
 
-### Defining variables
-Variables are defined in the [`variables`](/guide/configuration#variables) section of your configuration file. The basic syntax follows a hierarchical structure:
-<Code lang="js" name="master.css.js">{require('../../../../../packages/server/tests/fixtures/define-variables/master.css.js?raw')}</Code>
-- Variable `black` is parsed as a color-type variable.
-- Variable `primary` is linked to `$color-black` and parsed as a color-type variable.
-- Variable `full` is parsed as a string-type variable.
-- Variable `md` is parsed as a number-type variable.
+```css name=master.css
+@master {
+    --color-primary: #4f46e5;
+    --color-surface: #ffffff;
+    --font-family-sans: Inter, ui-sans-serif, system-ui, sans-serif;
+    --spacing-card: 24;
+    --screen-md: 768;
+}
+```
 
-(i) Spacing variables should be defined in [`spacing`](/guide/variables#add-a-spacing-variable) section.
+The compiler converts these declarations into `config.variables`:
 
-### Using variables in classes
-Once defined, you can use these variables in your markup. The syntax for using variables is straightforward:
-<Code lang="html">{require('../../../../../packages/server/tests/fixtures/define-variables/template.html?raw')}</Code>
-<details>
-    <summary>Generated CSS</summary>
-    <Code lang="css" beautify>{require('../../../../../packages/server/tests/fixtures/define-variables/generated.css?raw')}</Code>
-</details>
+```js
+{
+    variables: [
+        { namespace: 'color', key: 'primary', value: '#4f46e5' },
+        { namespace: 'color', key: 'surface', value: '#ffffff' },
+        { namespace: 'font-family', key: 'sans', value: 'Inter, ui-sans-serif, system-ui, sans-serif' },
+        { namespace: 'spacing', key: 'card', value: 24 },
+        { namespace: 'screen', key: 'md', value: 768 }
+    ]
+}
+```
 
-### Contextual resolution of variables
-Master CSS resolves variable names like `primary` based on their usage context. When used with color-related properties — such as `background-color` or its shorthand `bg` — the system maps `primary` accordingly:
+Use the token in markup through the property namespace:
+
+```html
+<!-- @MARK bg:primary --><!-- @MARK font:sans --><!-- @MARK p:card --><!-- @MARK @md -->
+<div class="bg:primary font:sans p:card grid-cols:2@md">…</div>
+```
+
+---
+
+## Contextual resolution
+Master CSS resolves token names by the property that uses them. `primary` maps to `color.primary` when used by color-related utilities, while `sans` maps to `font-family.sans` when used by font-family utilities.
+
 ```html
 <div class="background-color:primary">…</div>
-<div class="bg:primary">…</div><!-- [!code highlight] -->
+<div class="bg:primary">…</div>
+<div class="font-family:sans">…</div>
+<div class="font:sans">…</div>
 ```
-This contextual alias resolution avoids conflicts with similarly named variables and ensures consistent, predictable behavior. For example, `variables.primary` always maps to a color property when used in a color context, never to unrelated properties. This design promotes concise, semantic markup without sacrificing clarity.
 
-### Namespace-aware variable mapping
-Variables can be defined within the namespace of a specific CSS property and applied using shorthand syntax. For example, you can define a custom `font-family` variable in your configuration:
-```js name=master.css.js
-export default {
-    variables: {
-        'font-family': {
-            'open-sans': 'Open Sans' /* [!code highlight] */
+This keeps markup concise while avoiding global token collisions across namespaces.
+
+---
+
+## Modes
+Define mode-specific variables with nested mode blocks inside `@master`.
+
+```css name=master.css
+@master {
+    light {
+        --color-primary: #4f46e5;
+        --color-surface: #ffffff;
+    }
+
+    dark {
+        --color-primary: #818cf8;
+        --color-surface: #111827;
+    }
+}
+```
+
+`light` and `dark` are always available modes. If you define a new mode, the compiler adds it automatically.
+
+```css name=master.css
+@master {
+    chrisma {
+        --color-primary: #ff0;
+    }
+}
+```
+
+When a variable has mode-specific values, Master CSS emits a CSS custom property and references it from generated utilities and components.
+
+```css
+@layer theme {
+    .light,
+    :root {
+        --color-primary: rgb(79 70 229);
+    }
+
+    .dark {
+        --color-primary: rgb(129 140 248);
+    }
+}
+
+@layer utilities {
+    .bg\:primary {
+        background-color: var(--color-primary);
+    }
+}
+```
+
+The same mechanism applies when native declarations inside `@master components` use `var(--color-primary)`: the theme variables are still generated when a component or utility references them.
+
+---
+
+## Mode triggers
+`mode-trigger` controls how mode-specific output is written.
+
+```css name=master.css
+@master {
+    mode-trigger: media;
+}
+```
+
+| Trigger | Output behavior |
+|---------|-----------------|
+| `media` | Uses `@media (prefers-color-scheme: <mode>)` for light/dark modes. |
+| `class` | Uses class wrappers such as `.dark &`. |
+| `host` | Uses shadow host wrappers such as `:host(.dark) &`. |
+
+For component definitions, `@at dark` follows the same trigger:
+
+```css name=master.css
+@master {
+    mode-trigger: class;
+}
+
+@master components {
+    .btn {
+        @at dark {
+            @compose "bg:neutral-90";
         }
     }
 }
 ```
-Once defined, you can reference the variable in your markup using the shorthand property:
-```html
-<div class="font-family:open-sans">…</div>
-<div class="font:open-sans">…</div><!-- [!code highlight] -->
-```
 
-This ensures that `open-sans` is only interpreted as a `font-family` value, promoting both clarity and brevity in your code.
-
-### Variable inlining mechanism
-For non-mode variables, optimization is achieved by directly inlining values `#000` and removing intermediate references `variables.primary`.
-```css
-.bg\:primary {
-    background-color: #000;
-}
-```
-You can also use native CSS variable declarations explicitly, but it will not generate `--primary: #000` rules and you will have to define them manually as usual.
-```html
-<!-- @MARK fg:var(--primary) -->
-<div class="fg:var(--color-primary)">…</div>
-```
-It will be compiled to:
-```css
-.fg\:var\(--color-primary\) {
-    color: var(--color-primary);
-}
-```
+With `mode-trigger: class`, the component selector becomes `.dark .btn`.
 
 ---
 
-## Modes for variables
-Modes in Master CSS allow you to define different variable values based on the context, such as light or dark themes. This enables you to create responsive designs that adapt to user preferences or system settings.
+## Default mode
+`default-mode` controls which class-triggered mode is also attached to `:root`.
 
-Modes can be applied to individual classes using the `@<mode>` syntax:
-<Code lang="html">{require('../../../../../packages/server/tests/fixtures/apply-styles-with-modes-in-classes/template.html?raw')}</Code>
-<details>
-    <summary>Generated CSS</summary>
-    <Code lang="css" beautify>{require('../../../../../packages/server/tests/fixtures/apply-styles-with-modes-in-classes/generated.css?raw')}</Code>
-</details>
-However, when attempting to implement a complete design system, marking the mode in the template not only clutters the markup but also makes your design structure harder to standardize and maintain.
-
-### Defining variables with modes
-Variable modes are defined in the `modes` section of your configuration file. For example, add color variables in different modes.
-<Code lang="js" name="master.css.js">{require('../../../../../packages/server/tests/fixtures/add-colors-by-theme/master.css.js?raw')}</Code>
-- The dark mode defines a `primary` color of `#000000`.
-- The light mode defines a `primary` color of `#ffffff`.
-- The default defines a `primary` color of `#ff0000`.
-
-### Using mode variables in classes
-You can use mode variables like `primary` in your markup by applying the same variable name in different contexts without confusion.
-<Code lang="html">{require('../../../../../packages/server/tests/fixtures/add-colors-by-theme/template.html?raw')}</Code>
-<details>
-    <summary>Generated CSS</summary>
-    <Code lang="css" beautify>{require('../../../../../packages/server/tests/fixtures/add-colors-by-theme/generated.css?raw')}</Code>
-</details>
-Since Master CSS recognizes that the `primary` variable is mode-dependent, it compiles it into a standard CSS custom property and accesses it via the `var(--primary)` syntax.
-
-### Mode triggers
-Master CSS supports three mode triggers, allowing you to choose how modes are applied in your styles. The available triggers are:
-
-- `media` Uses media queries to apply the mode based on user preferences.
-- `class` Applies the mode based on a class name.
-- `host` Applies the mode based on the shadow host element's class.
-
-```js name=master.css.js
-export default {
-    modeTrigger: 'media' /* default */ /* [!code highlight] */
+```css name=master.css
+@master {
+    default-mode: light;
+    mode-trigger: class;
 }
 ```
 
-For example, apply the background color `#000` in dark mode:
-```html
-<div class="bg:black@dark">
-```
-By default, drive theme styles through `'media'` queries:
+With default `light` mode:
+
 ```css
-/* @MARK @media (prefers-color-scheme: dark) */
-@media (prefers-color-scheme: dark) {
-    .bg\:#000000 {
-        background-color: #000000
-    }
-}
-```
-Drive theme styles through `'class'` names:
-```css
-/* @MARK .dark */
-.dark .bg\:#000000 {
-    background-color: #000000
-}
-```
-Drive theme styles through shadow DOM's `'host'`:
-```css
-/* @MARK :host(.dark) */
-:host(.dark) .bg\:#000000 {
-    background-color: #000000
+.light,
+:root {
+    --color-primary: rgb(79 70 229);
 }
 ```
 
-### Default mode
-The default mode is applied when no specific mode is specified. You can set the default mode in your configuration file:
-```js name=master.css.js
-export default {
-    defaultMode: 'light', /* default */ /* [!code highlight] */
-    modeTrigger: 'class'
+Set `default-mode: false;` when no mode should be applied by default.
+
+```css name=master.css
+@master {
+    default-mode: false;
 }
 ```
-With default `'light'` mode:
-```css
-.light, :root {
-    --color-primary: 0 0 0;
-}
-```
-No default mode `false`:
-```css
-.light {
-    --color-primary: 0 0 0;
-}
-```
-(i) The `defaultMode` has no effect with `'media'` trigger, as CSS always applies either light or dark color preferences based on the user's system settings.
+
+`default-mode` has no effect with `mode-trigger: media`, because the browser decides the active color scheme from user/system preferences.
 
 ---
 
 ## Implementing mode switching
-You can use the `prefers-color-scheme` media query to detect the user's system preference. However, *CSS does not allow you to control the user's `prefers-color-scheme`.*
+Use `mode-trigger: class` when users can switch modes manually.
 
-### Using class-driven styles
-To enable manual mode switching, use a class-based approach instead.
-```js name=master.css.js
-export default {
-    modeTrigger: 'class' /* [!code highlight] */
+```css name=master.css
+@master {
+    mode-trigger: class;
 }
 ```
-Then you can control the theme mode by adding the `dark` class to the `<html>`:
+
+Then control the theme by adding the mode class to `<html>`:
+
 ```html
 <!-- @MARK dark -->
 <html class="dark">
@@ -194,20 +201,13 @@ Then you can control the theme mode by adding the `dark` class to the `<html>`:
 </html>
 ```
 
-### Detect and store user preferences
-To detect and store user preferences, use JavaScript to check the user's system preference and store it in `localStorage`. This allows you to persist the user's choice across sessions.
 ```js
-const key = 'theme-preference';
-const defaultPreference = 'system';
-const preference = localStorage.getItem(key) || defaultPreference;
+const key = 'theme-preference'
+const preference = localStorage.getItem(key) || 'system'
 const value = preference === 'system'
-    ? matchMedia('(prefers-color-scheme:dark)').matches ? 'dark' : 'light'
-    : preference;
+    ? matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+    : preference
 
-document.documentElement.classList.add(value);
-
-if (['dark', 'light'].includes(value)) {
-    document.documentElement.style.colorScheme = value;
-}
+document.documentElement.classList.add(value)
+document.documentElement.style.colorScheme = value
 ```
-This code checks the user's preference and applies the appropriate class to the `<html>` element. It also sets the `color-scheme` property to ensure proper rendering of colors in the selected mode.

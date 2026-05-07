@@ -1,13 +1,14 @@
-<Code lang="js" name="master.css.js">{require('../tests/add-a-media-query/master.css.js?raw')}</Code>
+```css name=master.css
+@master {
+    @custom-at landscape @media (orientation: landscape);
+}
+```
 Employ concise yet semantically meaningful markup.
-<Code lang="html">{require('../tests/add-a-media-query/template.html?raw')}</Code>
-<details>
-    <summary>Generated CSS</summary>
-    <div>
-        <Code lang="css" beautify>{require('../tests/add-a-media-query/generated.css?raw')}</Code>
-    </div>
-</details>
-(!) You wouldn't want to write full conditions within the markup.
+```html
+<!-- @MARK @landscape -->
+<div class="aspect:2/1@landscape">…</div>
+```
+(!) You usually do not want to write full conditions in markup.
 ```html
 <!-- @MARK @media(orientation:landscape) -->
 <div class="aspect:2/1@media(orientation:landscape)">…</div>

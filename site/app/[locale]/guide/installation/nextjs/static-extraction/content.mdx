@@ -78,6 +78,8 @@ import StaticExtractionIntro from '../../../rendering-modes/components/StaticExt
         <StepL>
             ### <StepNum />Import virtual CSS module
             Import the virtual CSS module `virtual:master.css` into the `app/globals.css`.
+
+            (i) Static extraction reads your `master.css` config and scans source files. `@master` definitions are not emitted directly; only classes discovered in source generate CSS.
         </StepL>
         <StepR>
             ```css name=app/globals.css

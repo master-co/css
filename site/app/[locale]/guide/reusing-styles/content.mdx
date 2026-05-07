@@ -103,34 +103,6 @@ Apply the components:
         <Code lang="css" beautify>{require('../../../../../packages/server/tests/fixtures/add-styles-in-a-nested-structure/generated.css?raw')}</Code>
     </div>
 </details>
-### Extend an existing style
-Create a new abstract style by repeating the shared declarations and adding what differs.
-```css name=master.css
-@master components {
-    .a {
-        color: oklch(0% 0 none);
-    }
-
-    .b {
-        text-decoration-line: underline;
-        color: oklch(0% 0 none);
-    }
-}
-```
-You can see that `b` keeps the same text color as `a` and adds underline styling:
-<Demo $py={0}>
-    <DemoPanel>
-        <span className="font:20 fg:lime">a</span>
-        <span className="font:20 fg:lime text:underline">b</span>
-    </DemoPanel>
-</Demo>
-<Code lang="html">{require('../../../../../packages/server/tests/fixtures/extend-an-existing-style/template.html?raw')}</Code>
-<details>
-    <summary>Generated CSS</summary>
-    <div>
-        <Code lang="css" beautify>{require('../../../../../packages/server/tests/fixtures/extend-an-existing-style/generated.css?raw')}</Code>
-    </div>
-</details>
 
 ---
 

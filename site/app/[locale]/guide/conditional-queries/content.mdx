@@ -236,7 +236,7 @@ Use `@<container>(<size>)` to apply styles based on the specific target containe
         {['container:sidebar', 'hidden@container(sidebar)sm']}
     </Class2CSS>
 </details>
-Any shorthand not listed in `config.atTokens` will be implicitly treated as a `@container`, falling back to the default behavior of being eligible for container queries.
+Any shorthand not listed as a screen, mode, or `@custom-at` token will be implicitly treated as a `@container`, falling back to the default behavior of being eligible for container queries.
 
 ---
 

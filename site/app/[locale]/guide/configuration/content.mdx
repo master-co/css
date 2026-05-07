@@ -11,7 +11,79 @@ import { config } from '@master/css'
 ```bash action=create
 @master/css@rc
 ```
-If you don't have a configuration file, [create](/reference/create-app) one first.
+If you don't have a configuration file, [create](/reference/create-app) one first. The primary configuration format is `master.css`.
+
+```css name=master.css
+@master {
+    root-size: 16;
+    base-unit: 4;
+    default-mode: light;
+    mode-trigger: media;
+    scope: #app;
+
+    --color-primary: #4f46e5;
+    --screen-md: 768;
+
+    dark {
+        --color-primary: #818cf8;
+    }
+
+    @custom-at motion-safe @media (prefers-reduced-motion: no-preference);
+    @custom-selector :headings :is(h1, h2, h3, h4, h5, h6);
+}
+
+@master components {
+    .btn {
+        @compose "inline-flex ai:center jc:center px:1rem py:.625rem r:.5rem";
+        background: var(--color-primary);
+        color: white;
+    }
+}
+
+@master utilities {
+    .content-auto {
+        content-visibility: auto;
+        contain-intrinsic-size: auto 32rem;
+    }
+}
+
+@master animations {
+    fade-in {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+}
+```
+
+`@master` blocks are converted into runtime/build config. They are not emitted as CSS by themselves, and component definitions are still generated only when the component class is used in markup or extracted from source.
+
+---
+
+## CSS config graph
+Use native CSS `@import` to split a CSS config into files. Local relative `.css` imports are resolved into one config graph before compilation.
+
+```css name=master.css
+@import './styles/theme.css';
+@import './styles/button.css';
+
+@master components {
+    .btn {
+        display: block;
+    }
+}
+```
+
+```css name=styles/button.css
+@master components {
+    .btn {
+        font-size: 1rem;
+    }
+}
+```
+
+For repeated component definitions with the same selector, at-rules, and layer, declarations are merged in import/source order. In the example above, `.btn` becomes one component definition with both `font-size: 1rem` and `display: block`.
+
+Root options, variables, animations, `@custom-at`, and `@custom-selector` are last-write-wins when repeated. Package imports and regular CSS outside `@master` stay as normal CSS output.
 
 ---
 
@@ -25,7 +97,7 @@ Customizing [functions](/guide/functions) for your design system.
 <FunctionsOverview />
 
 ### `.atTokens`
-Customizing [at tokens](/guide/at-tokens) for your design system.
+Customizing [at tokens](/guide/at-tokens) for your design system with `@custom-at`.
 <AtTokensOverview />
 
 ### `.utilities`
@@ -33,7 +105,7 @@ Customizing [utilities](/guide/utilities) for your design system.
 <UtilitiesOverview />
 
 ### `.selectorTokens`
-Customizing [selector tokens](/guide/selector-tokens) for your design system.
+Customizing [selector tokens](/guide/selector-tokens) for your design system with `@custom-selector`.
 <SelectorTokensOverview />
 
 ### `.components`
@@ -49,16 +121,11 @@ Customizing [variables](/guide/variables) and [screen sizes](/guide/screen-sizes
 Customizing [modes](/guide/variables-and-modes) for your design tokens.
 
 ### `.extends`
-Extend custom or external configuration.
+Extend custom or external configuration. In `master.css`, prefer local CSS imports for CSS-defined config.
 <DocProp types={["any[]"]} />
-```js name=master.css.js
-export default {
-    extends: [
-        require('@master/ui'),// [!code ++]
-        require('./styles/btn.css'),// [!code ++]
-        …
-    ]
-}
+```css name=master.css
+@import './styles/tokens.css'; /* [!code ++] */
+@import './styles/components.css'; /* [!code ++] */
 ```
 
 ### `.important`
@@ -66,12 +133,14 @@ Make all generated CSS declarations `!important`.
 
 <DocProp defaultValue="false" types={['boolean']} />
 
-(!|) Using `js important: true` should be considered as a last option, as it's a compromise.
-```js name=master.css.js
-export default {
-    important: true// [!code ++]
+(!|) Global important output should be a last option because it changes the whole cascade contract.
+```css name=master.css
+@master {
+    important; /* [!code ++] */
 }
 ```
+You can also write the flag as `!important;`.
+
 Generated CSS:
 ```css
 .hidden {
@@ -93,9 +162,9 @@ Specify the conversion factor for `rem` and `em`.
 <DocProp defaultValue="16" types={['number']} />
 
 Here's a common use case with `rootSize: 10`:
-```js name=master.css.js
-export default {
-    rootSize: 10// [!code ++]
+```css name=master.css
+@master {
+    root-size: 10; /* [!code ++] */
 }
 ```
 
@@ -131,9 +200,9 @@ Limit the generated CSS rules to a specific scope with CSS selectors.
 <DocProp defaultValue="''" types={['string']} />
 
 (!|) Don't make it part of your coding style, but as a last resort to solve problems.
-```js name=master.css.js
-export default {
-    scope: '#app'/* [!code ++] */
+```css name=master.css
+@master {
+    scope: #app; /* [!code ++] */
 }
 ```
 All Master CSS syntax will only be applied if the `<body id="app">`.

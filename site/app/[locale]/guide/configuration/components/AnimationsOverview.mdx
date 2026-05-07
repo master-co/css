@@ -1,14 +1,22 @@
-```js name=master.css.js
-export default {
-    animations: {
-        'slide-in-up': {
-            from: {
-                transform: 'translateY(100%)'
-            },
-            to: {
-                transform: 'translateY(0)'
-            }
+```css name=master.css
+@master animations {
+    slide-in-up {
+        from {
+            transform: translateY(100%);
         }
+
+        to {
+            transform: translateY(0);
+        }
+    }
+}
+```
+You can also write native `@keyframes` inside `@master animations`:
+```css name=master.css
+@master animations {
+    @keyframes slide-in-up {
+        from { transform: translateY(100%); }
+        to { transform: translateY(0); }
     }
 }
 ```

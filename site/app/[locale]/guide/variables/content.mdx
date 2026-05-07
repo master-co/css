@@ -1,133 +1,117 @@
 ## Overview [sr-only]
 <Default />
-In Master CSS, variables are used to manage tokens in the design system, such as colors, font families, etc., even based on different theme modes.
+In Master CSS, variables are design tokens defined in `master.css` with native custom property declarations. They can represent colors, spacing, typography, shadows, screen sizes, motion tokens, generated content, and mode-specific theme values.
 <Overview />
 
 ---
 
-## Add a string variable
-Create a string variable to reuse it in your markup.
-```js name=master.css.js
-export default {
-    variables: {
-        content: { /* [!code highlight] */
-            hash: '" #"', /* [!code highlight] */
-            external: '" ↗"' /* [!code highlight] */
-        }, /* [!code highlight] */
-    }
+## Add variables
+Define variables inside the root `@master` block.
+
+```css name=master.css
+@master {
+    --content-hash: " #";
+    --content-external: " ↗";
+    --color-primary: #4f46e5;
+    --spacing-card: 24;
+    --font-family-sans: Inter, ui-sans-serif, system-ui, sans-serif;
 }
 ```
-Use the variable in your markup:
+
+Use the variables in markup:
+
 ```html
-<!-- @MARK hash --><!-- @MARK external -->
-<div class="content:hash content:external">…</div>
+<!-- @MARK content:hash --><!-- @MARK bg:primary --><!-- @MARK p:card --><!-- @MARK font:sans -->
+<div class="content:hash bg:primary p:card font:sans">…</div>
 ```
+
+The property prefix after `--` becomes the variable namespace. For example, `--color-primary` becomes `color.primary`, and `--spacing-card` becomes `spacing.card`.
 
 ---
 
 ## Use custom colors
-### Add a color
-Add the primary color using `#000`, `oklch(0% 0 none)`, or `hsl(0 0% 0%)`.
-<Code lang="js" name="master.css.js">{require('../../../../../packages/server/tests/fixtures/add-a-color/master.css.js?raw')}</Code>
-Apply it using color-related syntax and even change the opacity.
-<Code lang="html">{require('../../../../../packages/server/tests/fixtures/add-a-color/template.html?raw')}</Code>
-<details>
-    <summary>Generated CSS</summary>
-    <div>
-        <Code lang="css" beautify>{require('../../../../../packages/server/tests/fixtures/add-a-color/generated.css?raw')}</Code>
-    </div>
-</details>
+Add custom colors with native color values.
 
-(i) If a color is used only once in all markups, you can optionally not abstract it into a token.
+```css name=master.css
+@master {
+    --color-primary: #1192e8;
+    --color-primary-10: #e5f6ff;
+    --color-primary-20: #bae6ff;
+}
+```
+
+Apply them using color-related syntax:
+
+```html
+<!-- @MARK bg:primary --><!-- @MARK fill:primary-20 -->
+<button class="bg:primary">Save</button>
+<svg class="fill:primary-20">20</svg>
+```
+
+If a color is used only once, you can keep it inline in markup instead of creating a token:
+
 ```html
 <button class="bg:#ceb195">Milk Tea</button>
 ```
-Variables only support `rgb` and `hsl`, in the future, they will be compatible with all native CSS functions, such as `rgba`, `hsla`, `lab`, and others. [#346](https://github.com/master-co/css/issues/346)
 
-### Add a color with opacity
-Add color variables with opacity using `#00000080`, `rgb(0 0 0/.5)`, or `hsl(0 0% 0%/.5)`.
-<Code lang="js" name="master.css.js">{require('../../../../../packages/server/tests/fixtures/add-a-color-with-opacity/master.css.js?raw')}</Code>
-Apply it using color-related syntax like [`fg:`](/reference/color).
-<Code lang="html">{require('../../../../../packages/server/tests/fixtures/add-a-color-with-opacity/template.html?raw')}</Code>
-<details>
-    <summary>Generated CSS</summary>
-    <div>
-        <Code lang="css" beautify>{require('../../../../../packages/server/tests/fixtures/add-a-color-with-opacity/generated.css?raw')}</Code>
-    </div>
-</details>
-(x) Color variables with opacity cannot use `/alpha` to change the opacity.
-```html
-<!-- @MARK primary/.5 -->
-<div class="fg:primary/.5">…</div>
+---
+
+## Add aliases
+Reference another token with `$`.
+
+```css name=master.css
+@master {
+    --color-brand: #4f46e5;
+    --color-primary: $color-brand;
+    --color-primary-soft: $color-brand/.16;
+}
 ```
 
-### Add a color alias
-Create an alias for a color to link its value to an existing color.
-<Code lang="js" name="master.css.js">{require('../../../../../packages/server/tests/fixtures/add-an-alias/master.css.js?raw')}</Code>
-Apply it using color-related syntax.
-<Code lang="html">{require('../../../../../packages/server/tests/fixtures/add-an-alias/template.html?raw')}</Code>
-<details>
-    <summary>Generated CSS</summary>
-    <div>
-        <Code lang="css" beautify>{require('../../../../../packages/server/tests/fixtures/add-an-alias/generated.css?raw')}</Code>
-    </div>
-</details>
-For example, say you have multiple color variables referencing the same color token. If that color needs updating, you would only need to update the source instead of manually updating every instance of the color.
+```html
+<!-- @MARK bg:primary --><!-- @MARK bg:primary-soft -->
+<div class="bg:primary">…</div>
+<div class="bg:primary-soft">…</div>
+```
 
-### Add a color alias with opacity
-Create an alias for a color with opacity to link its value to an existing color.
-<Code lang="js" name="master.css.js">{require('../../../../../packages/server/tests/fixtures/add-an-alias-with-opacity/master.css.js?raw')}</Code>
-Apply it using color-related syntax like [`fg:`](/reference/color).
-<Code lang="html">{require('../../../../../packages/server/tests/fixtures/add-an-alias-with-opacity/template.html?raw')}</Code>
-<details>
-    <summary>Generated CSS</summary>
-    <div>
-        <Code lang="css" beautify>{require('../../../../../packages/server/tests/fixtures/add-an-alias-with-opacity/generated.css?raw')}</Code>
-    </div>
-</details>
-As shown above, creating an alias `secondary` linked to an existing alias `primary` with opacity `/.5` is possible, and the opacity will be multiplied `0.5 * 0.5 = 0.25`.
+---
 
-### Add color shades
-Sets multiple shades for a single color.
-```js name=master.css.js
-export default {
-    variables: {
-        color: {
-            primary: { /* [!code ++] */
-                '': '#1192e8', /* primary */ /* [!code ++] */
-                10: '#e5f6ff', /* primary-10 */ /* [!code ++] */
-                20: '#bae6ff', /* primary-20 */ /* [!code ++] */
-            } /* [!code ++] */
-        }
+## Add mode variables
+Use nested mode blocks for theme-specific values.
+
+```css name=master.css
+@master {
+    light {
+        --color-primary: #4f46e5;
+        --color-surface: #ffffff;
+    }
+
+    dark {
+        --color-primary: #818cf8;
+        --color-surface: #111827;
     }
 }
 ```
-Apply it using color-related syntax like [`fill:`](/reference/fill).
+
+Using modes for variables gives you one semantic source of truth:
+
 ```html
-<!-- @MARK fill:primary-20 -->
-<svg class="fill:primary-20 …">20</svg>
+<!-- @MARK bg:primary --><!-- @MARK bg:surface -->
+<div class="bg:surface">
+    <button class="bg:primary">Save</button>
+</div>
 ```
 
-### Add colors based on modes
-Add color variables in different theme modes.
-<Code lang="js" name="master.css.js">{require('../../../../../packages/server/tests/fixtures/add-colors-by-theme/master.css.js?raw')}</Code>
-Using modes for variables, you can access a single source of truth and simplify the markup.
-<Code lang="html">{require('../../../../../packages/server/tests/fixtures/add-colors-by-theme/template.html?raw')}</Code>
-<details>
-    <summary>Generated CSS</summary>
-    <div>
-        <Code lang="css" beautify>{require('../../../../../packages/server/tests/fixtures/add-colors-by-theme/generated.css?raw')}</Code>
-    </div>
-</details>
+See [variables and modes](/guide/variables-and-modes) for mode triggers, default mode behavior, and manual mode switching.
 
-### Override default colors
-(!) Access the same key as the preset to override default colors, like `blue-5` ~ `blue-95`.
-```js name=master.css.js
-export default {
-    variables: {
-        color: {
-            blue: '#4589ff' /* [!code ++] */
-        }
-    }
+---
+
+## Override preset variables
+Define the same token key as a preset token to override it.
+
+```css name=master.css
+@master {
+    --color-blue: #4589ff;
 }
 ```
+
+Presets, user variables, and imported CSS configs are resolved into one config. Later definitions win when the same root variable key is repeated.

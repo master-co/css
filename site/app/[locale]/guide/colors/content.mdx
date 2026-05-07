@@ -10,16 +10,12 @@ The hues of each color in the preset palette range from 0, 5, ..., to 100, and y
 ```
 
 ### Adapting default colors
-You can adapt the default color palette to your brand's primary color by using the `variables` object in your `master.css.js` file. For example, inherit from indigo:
-```js name=master.css.js
-import { variables } from '@master/css'
-
-export default {
-    variables: {
-        color: {
-            primary: variables.indigo /* [!code highlight] */
-        }
-    }
+You can adapt the default color palette to your brand's primary color by defining color variables in `master.css`.
+```css name=master.css
+@master {
+    --color-primary: #4f46e5; /* [!code highlight] */
+    --color-primary-5: #eef2ff; /* [!code highlight] */
+    --color-primary-60: #4f46e5; /* [!code highlight] */
 }
 ```
 Apply them using the color-realted syntax:
@@ -94,13 +90,9 @@ By default, theme modes [drive](/guide/configuration#default-mode) base color va
 </div>
 ```
 Add a primitive color to the base variables group.
-```js name=master.css.js
-export default {
-    variables: {
-        color: {
-            primary: '#000' /* [!code ++] */
-        }
-    }
+```css name=master.css
+@master {
+    --color-primary: #000; /* [!code ++] */
 }
 ```
 Apply the custom color:

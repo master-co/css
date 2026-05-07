@@ -1,52 +1,106 @@
 ## Overview [sr-only]
 <Default />
-In native CSS, it's not possible to reuse queries through CSS variables. Master CSS uses `atTokens` to name *media queries*, *feature queries*, *container queries*, and other `@` suffix expressions so they can be applied directly in markup.
+Native CSS cannot store full `@media`, `@supports`, or `@container` rules in CSS variables. Master CSS uses at tokens to name reusable conditional rules and apply them from markup or from CSS config definitions.
 <Overview />
 
 ---
 
-## Basic usage
-### Add a media query token
-Create a media query token, such as `@landscape`, to represent landscape orientation.
-<Code lang="js" name="master.css.js">{require('./tests/add-a-media-query/master.css.js?raw')}</Code>
-When displayed in landscape orientation, the image is presented in a 2:1 aspect ratio.
-<Code lang="html">{require('./tests/add-a-media-query/template.html?raw')}</Code>
-<details>
-    <summary>Generated CSS</summary>
-    <div>
-        <Code lang="css" beautify>{require('./tests/add-a-media-query/generated.css?raw')}</Code>
-    </div>
-</details>
+## Define an at token
+Define custom at tokens inside the root `@master` block with `@custom-at`.
 
-### Add a feature query token
-Create a feature query token, such as `@supports-backdrop`, to apply styles based on `backdrop-filter` support.
-<Code lang="js" name="master.css.js">{require('./tests/add-a-feature-query/master.css.js?raw')}</Code>
-Applies translucent background only when `backdrop-filter` is supported.
-<Code lang="html">{require('./tests/add-a-feature-query/template.html?raw')}</Code>
-<details>
-    <summary>Generated CSS</summary>
-    <div>
-        <Code lang="css" beautify>{require('./tests/add-a-feature-query/generated.css?raw')}</Code>
-    </div>
-</details>
+```css name=master.css
+@master {
+    @custom-at motion-safe @media (prefers-reduced-motion: no-preference);
+    @custom-at supports-backdrop @supports (backdrop-filter: blur(0));
+    @custom-at card-wide @container card (width >= 42rem);
+    @custom-at start @starting-style;
+}
+```
 
-### Add a feature name token
-Create a feature name token to shorten the syntax of a feature query.
-```js name=master.css.js
-export default {
-    atTokens: {
-        h: 'height' // [!code highlight]
+The token name is written without a leading `@` in the definition. Use the token as an `@` suffix in markup:
+
+```html
+<!-- @MARK @motion-safe -->
+<div class="@fade-in|.2s@motion-safe">…</div>
+
+<!-- @MARK @supports-backdrop -->
+<div class="bg:white/.8@supports-backdrop">…</div>
+```
+
+Generated CSS:
+
+```css
+@media (prefers-reduced-motion: no-preference) {
+    .\@fade-in\|\.2s\@motion-safe {
+        animation: fade-in .2s;
+    }
+}
+
+@supports (backdrop-filter: blur(0)) {
+    .bg\:white\/\.8\@supports-backdrop {
+        background-color: rgb(255 255 255 / .8);
     }
 }
 ```
-Use the token `h`:
-```html
-<!-- @MARK h -->
-<div class="hidden@container(h<=200)">…</div>
+
+---
+
+## Use at tokens in CSS config
+Inside `@master components` and `@master utilities`, use `@at` blocks instead of putting conditional suffixes inside `@compose`. This keeps the composed utility list plain and lets the surrounding CSS structure describe the condition.
+
+```css name=master.css
+@master {
+    @custom-at motion-safe @media (prefers-reduced-motion: no-preference);
+}
+
+@master components {
+    .card {
+        @compose "p:1rem r:.75rem";
+
+        @at motion-safe {
+            @compose "@fade-in|.2s";
+        }
+    }
+}
 ```
-<details>
-    <summary>Generated CSS</summary>
-    <Class2CSS>
-        {['hidden@container(h<=200)']}
-    </Class2CSS>
-</details>
+
+`@at` accepts custom at tokens, screen tokens such as `md`, mode names such as `dark`, and raw Master CSS at syntax such as `<sm`.
+
+```css name=master.css
+@master {
+    mode-trigger: class;
+}
+
+@master components {
+    .btn {
+        @compose "inline-flex";
+
+        @at dark {
+            @compose "bg:neutral-90";
+        }
+
+        @at <sm {
+            @compose "block";
+        }
+    }
+}
+```
+
+With `mode-trigger: class`, `@at dark` becomes a selector wrapper such as `.dark &`. With `mode-trigger: media`, it becomes `@media (prefers-color-scheme: dark)`.
+
+---
+
+## Built-in tokens and conflicts
+Screen variables automatically create at tokens such as `@md`, and modes automatically create at tokens such as `@dark`.
+
+```css name=master.css
+@master {
+    --screen-md: 768;
+
+    dark {
+        --color-primary: #000;
+    }
+}
+```
+
+Custom at token names cannot start with `@`, cannot start with `:` or `::`, and cannot conflict with screen or mode names. Use [selector tokens](/guide/selector-tokens) for selector aliases.

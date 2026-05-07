@@ -24,7 +24,7 @@
     <Step $row>
         <StepL>
             ### <StepNum />Create a configuration file
-            Run the command to create a [master.css.js](/guide/configuration) file.
+            Run the command to create a [master.css](/guide/configuration) file.
         </StepL>
         <StepR>
             ```bash action=create
@@ -38,6 +38,7 @@
             Add a `masterCSS` vite plugin in `vite.config.js`.
 
             - By default, `options.mode` is set to `runtime`.
+            - Use `mode: 'extract'` to generate `virtual:master.css` from scanned source files.
         </StepL>
         <StepR>
             ```js name=vite.config.js

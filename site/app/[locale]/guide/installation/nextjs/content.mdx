@@ -47,6 +47,8 @@ import ProgressiveRenderingIntro from '../../rendering-modes/components/Progress
         <StepL>
             ### <StepNum />Set up CSS runtime engine
             Create an App Router client boundary for `CSSRuntimeProvider` and load your `master.css` config through the Next.js adapter.
+
+            (i) Keep the `?master-css-config` query. A plain `.css` import is treated as a stylesheet by Next.js, while this query loads the compiled Master CSS config object.
         </StepL>
         <StepR>
             ```tsx name=app/client.tsx
@@ -100,6 +102,8 @@ import ProgressiveRenderingIntro from '../../rendering-modes/components/Progress
             Register the Master CSS Next.js adapter to pre-render CSS for build-time HTML outputs during `next build`.
 
             (i) This adapter uses the Next.js 16 Adapter API and runs in `onBuildComplete`. It pre-renders static and pre-rendered HTML outputs, while dynamic SSR responses continue to rely on the runtime engine.
+
+            (i) `@master` definitions in `master.css` are config only. Component CSS is generated when component classes are found in the built HTML or later observed by the runtime engine.
         </StepL>
         <StepR>
             ```js name=next.config.mjs

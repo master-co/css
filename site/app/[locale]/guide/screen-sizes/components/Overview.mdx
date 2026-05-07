@@ -1,9 +1,7 @@
-```js name=master.css.js
-export default {
-    screens: {
-        md: 1024, // [!code highlight]
-        lg: 1280, // [!code highlight]
-    }
+```css name=master.css
+@master {
+    --screen-md: 1024; /* [!code highlight] */
+    --screen-lg: 1280; /* [!code highlight] */
 }
 ```
 For example, `md` becomes the shared token for the following forms:
@@ -14,3 +12,4 @@ For example, `md` becomes the shared token for the following forms:
 <div class="max-w:screen-md">…</div>
 <!-- @MARK @container(md) -->
 <div class="hidden@container(md)">…</div>
+```

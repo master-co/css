@@ -6,8 +6,34 @@ Utilities work with [selector tokens](/guide/selector-tokens), [at tokens](/guid
 ---
 
 ## Add a custom utility
-Use `config.utilities` only when your design system needs a reusable primitive that cannot be represented cleanly by existing utilities or components.
+Use `@master utilities` only when your design system needs a reusable primitive that cannot be represented cleanly by existing utilities or components. CSS-defined utilities are currently static utilities: a class name maps to native declarations.
 <Overview />
+
+Custom utilities cannot use `@compose`. If you want to compose existing Master CSS utilities into a semantic class such as `.btn` or `.card`, use [components](/guide/components).
+
+```css name=master.css
+@master utilities {
+    .content-auto {
+        content-visibility: auto;
+        contain-intrinsic-size: auto 32rem;
+    }
+
+    .print-hidden {
+        @at print {
+            display: none;
+        }
+    }
+}
+```
+
+Use the utility in markup:
+
+```html
+<!-- @MARK content-auto --><!-- @MARK print-hidden -->
+<section class="content-auto print-hidden">…</section>
+```
+
+Like components, utility definitions in `master.css` are converted into config. A custom utility is generated only when its class appears in markup or is extracted from source.
 
 ---
 

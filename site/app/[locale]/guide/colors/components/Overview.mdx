@@ -1,19 +1,12 @@
-```js name=master.css.js
-import { variables } from '@master/css'
-
-export default {
-    variables: {
-        'font-family': {
-            sans: 'Inter'
-         },
-        screen: { desktop: 1280 },
-        spacing: { sm: 10 },
-        primary: '#000000'
-    }
+```css name=master.css
+@master {
+    --color-primary: #4f46e5;
+    --color-primary-10: #eef2ff;
+    --color-primary-60: #4f46e5;
 }
 ```
-Apply custom variables using ambiguous shorthand:
+Apply custom colors:
 ```html
-<!-- @MARK font:sans --><!-- @MARK max-w:screen-desktop --><!-- @MARK m:sm --><!-- @MARK bg:primary -->
-<div class="font:sans max-w:screen-desktop m:sm bg:primary">…</div>
+<!-- @MARK bg:primary-10 --><!-- @MARK fg:primary-60 -->
+<div class="bg:primary-10 fg:primary-60">…</div>
 ```

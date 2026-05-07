@@ -213,15 +213,13 @@ Start from the smallest reliable size, then add conditions only where the compon
 ---
 
 ## Add reusable sizing tokens
-For repeated product dimensions, add named variables in `master.css.js` and use those names in sizing rules. Numeric values are converted with the rule's default unit, while explicit CSS units and functions are preserved.
+For repeated product dimensions, add named variables in `master.css` and use those names in sizing rules. Numeric values are converted with the rule's default unit, while explicit CSS units and functions are preserved.
 
-```js name=master.css.js
-export default {
-    variables: {
-        sidebar: 280,
-        measure: '72ch',
-        panel: 'clamp(18rem,50vw,42rem)'
-    }
+```css name=master.css
+@master {
+    --width-sidebar: 280;
+    --max-width-measure: 72ch;
+    --width-panel: clamp(18rem,50vw,42rem);
 }
 ```
 
