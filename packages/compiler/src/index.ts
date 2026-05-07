@@ -811,12 +811,21 @@ function parseComposeRule(rule: any) {
     }
 }
 
-function collectStyleRule(rule: any, allowCompose: boolean) {
+function isNestedStyleRule(rule: Rule) {
+    return rule.type === 'style' || rule.type === 'media' || rule.type === 'supports' || rule.type === 'container' || rule.type === 'starting-style' || rule.type === 'layer-block'
+}
+
+function collectStyleRule(rule: any, allowCompose: boolean, allowNestedRules = false) {
     const classNames: string[] = []
     const declarations = collectDeclarations(rule.value.declarations)
+    const nestedRules: Rule[] = []
     for (const child of rule.value.rules) {
         if (child.type === 'nested-declarations') {
             Object.assign(declarations, collectDeclarations(child.value.declarations))
+            continue
+        }
+        if (allowNestedRules && isNestedStyleRule(child)) {
+            nestedRules.push(child)
             continue
         }
         const compose = parseComposeRule(child)
@@ -834,8 +843,70 @@ function collectStyleRule(rule: any, allowCompose: boolean) {
     }
     return {
         classNames,
-        declarations
+        declarations,
+        nestedRules
     }
+}
+
+function splitSelectorList(selectorText: string) {
+    const selectors: string[] = []
+    let current = ''
+    let depth = 0
+    let quote = ''
+
+    for (let index = 0; index < selectorText.length; index++) {
+        const char = selectorText[index]
+        if (quote) {
+            current += char
+            if (char === '\\') {
+                current += selectorText[++index] || ''
+            } else if (char === quote) {
+                quote = ''
+            }
+            continue
+        }
+        if (char === '"' || char === '\'') {
+            quote = char
+            current += char
+            continue
+        }
+        if (char === '(' || char === '[') {
+            depth++
+            current += char
+            continue
+        }
+        if (char === ')' || char === ']') {
+            depth--
+            current += char
+            continue
+        }
+        if (char === ',' && depth === 0) {
+            selectors.push(current.trim())
+            current = ''
+            continue
+        }
+        current += char
+    }
+
+    if (current.trim()) selectors.push(current.trim())
+    return selectors
+}
+
+function combineComponentSelectors(parentSelector: string, childSelector: string) {
+    const parentSelectors = splitSelectorList(parentSelector)
+    const childSelectors = splitSelectorList(childSelector)
+    const selectors: string[] = []
+
+    for (const child of childSelectors) {
+        for (const parent of parentSelectors) {
+            selectors.push(child.includes('&')
+                ? child.replace(/&/g, parent)
+                : `${parent} ${child}`
+            )
+        }
+    }
+
+    return selectors.join(',')
 }
 
 function componentSelectorToClassSuffix(selector: string) {
@@ -877,12 +948,54 @@ function insertSelectorSuffix(className: string, suffix: string) {
     return className + suffix
 }
 
-function parseComponent(rule: any, parsed: ParsedDirectives, atRules: string[] = [], layer?: ComponentLayerName) {
-    const selectorDefinition = parseComponentDefinitionSelector(rule.value.selectors)
+type ComponentSelectorDefinition = {
+    name: string
+    selector: string
+}
+
+function parseNestedComponentChildRule(child: Rule, parsed: ParsedDirectives, parentSelectorDefinition: ComponentSelectorDefinition, atRules: string[], layer?: ComponentLayerName) {
+    const componentLayerBlock = parseComponentLayerBlock(child)
+    if (componentLayerBlock) {
+        if (layer) {
+            throw new Error('Nested @layer blocks are not allowed in @master components')
+        }
+        for (const nestedChild of componentLayerBlock.rules) {
+            parseNestedComponentChildRule(nestedChild, parsed, parentSelectorDefinition, atRules, componentLayerBlock.layer)
+        }
+        return
+    }
+
+    const nestedAtRuleChildren = getNestedAtRuleChildren(child)
+    if (nestedAtRuleChildren) {
+        const atRule = formatNestedAtRule(child)
+        if (!atRule) {
+            throw new Error('Unsupported nested at-rule in @master components')
+        }
+        for (const nestedChild of nestedAtRuleChildren) {
+            parseNestedComponentChildRule(nestedChild, parsed, parentSelectorDefinition, [...atRules, atRule], layer)
+        }
+        return
+    }
+
+    if (child.type === 'style') {
+        parseComponent(child, parsed, atRules, layer, parentSelectorDefinition)
+        return
+    }
+
+    throw new Error('Components only accept declarations, @compose, nested selectors, and nested at-rules')
+}
+
+function parseComponent(rule: any, parsed: ParsedDirectives, atRules: string[] = [], layer?: ComponentLayerName, parentSelectorDefinition?: ComponentSelectorDefinition) {
+    const selectorDefinition = parentSelectorDefinition
+        ? {
+            name: parentSelectorDefinition.name,
+            selector: combineComponentSelectors(parentSelectorDefinition.selector, formatSelectors(rule.value.selectors))
+        }
+        : parseComponentDefinitionSelector(rule.value.selectors)
     if (!selectorDefinition) {
         throw new Error('Component definition selector must start with a single class selector')
     }
-    const { classNames, declarations } = collectStyleRule(rule, true)
+    const { classNames, declarations, nestedRules } = collectStyleRule(rule, true, true)
     const selectorSuffix = componentSelectorToClassSuffix(selectorDefinition.selector)
     const normalizedClassNames = normalizeClassNames(classNames)
         .map((className) => insertSelectorSuffix(className, selectorSuffix))
@@ -914,6 +1027,9 @@ function parseComponent(rule: any, parsed: ParsedDirectives, atRules: string[] =
     }
     if (!parsed.componentNames.includes(selectorDefinition.name)) {
         parsed.componentNames.push(selectorDefinition.name)
+    }
+    for (const nestedRule of nestedRules) {
+        parseNestedComponentChildRule(nestedRule, parsed, selectorDefinition, atRules, layer)
     }
 }
 

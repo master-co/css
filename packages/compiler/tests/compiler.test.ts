@@ -336,6 +336,91 @@ describe.concurrent('@master/css-compiler', () => {
         expect(result.css).not.toContain('@layer components{@layer preset')
     })
 
+    it('supports nested selectors in component definitions', () => {
+        const result = compileCSS(`
+            @master components {
+                .prose {
+                    :is(p) {
+                        @compose "font:md";
+                    }
+
+                    :is(li) {
+                        @compose "font:sm";
+                    }
+
+                    > a,
+                    code {
+                        color: red;
+                    }
+                }
+            }
+        `, { classes: ['prose'] })
+
+        expect(result.config.components?.prose).toEqual([
+            {
+                selector: '& :is(p)',
+                declarations: {
+                    'font-size': '1rem'
+                }
+            },
+            {
+                selector: '& :is(li)',
+                declarations: {
+                    'font-size': '0.875rem'
+                }
+            },
+            {
+                selector: '&>a,& code',
+                declarations: {
+                    color: 'red'
+                }
+            }
+        ])
+        expect(result.css).toContain('.prose :is(p){font-size:1rem}')
+        expect(result.css).toContain('.prose :is(li){font-size:0.875rem}')
+        expect(result.css).toContain('.prose>a,.prose code{color:red}')
+    })
+
+    it('supports nested selectors inside component layer and at-rule blocks', () => {
+        const result = compileCSS(`
+            @master components {
+                .prose {
+                    @layer preset {
+                        :is(p) {
+                            @compose "font:md";
+                        }
+
+                        @media print {
+                            :is(li) {
+                                display: none;
+                            }
+                        }
+                    }
+                }
+            }
+        `, { classes: ['prose'] })
+
+        expect(result.config.components?.prose).toEqual([
+            {
+                selector: '& :is(p)',
+                layer: 'preset',
+                declarations: {
+                    'font-size': '1rem'
+                }
+            },
+            {
+                selector: '& :is(li)',
+                atRules: ['@media print'],
+                layer: 'preset',
+                declarations: {
+                    display: 'none'
+                }
+            }
+        ])
+        expect(result.css).toContain('@layer preset{.prose :is(p){font-size:1rem}@media print{.prose :is(li){display:none}}}')
+        expect(result.css).not.toContain('@layer components{@layer preset')
+    })
+
     it('expands repeated component definitions in declaration order', () => {
         const result = compileCSS(`
             @master components {
