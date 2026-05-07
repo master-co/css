@@ -3,7 +3,7 @@
 import CSSRuntimeProvider from '@master/css.react'
 import config from '../master.css?master-css-config'
 
-export default function MasterRuntimeProvider({ children }: {
+export default function Client({ children }: {
     children: React.ReactNode
 }) {
     return (

@@ -1,5 +1,5 @@
 import './globals.css'
-import MasterRuntimeProvider from './master-runtime-provider'
+import Client from './client'
 
 export const metadata = {
     title: 'Master CSS Next.js Adapter',
@@ -12,9 +12,9 @@ export default function RootLayout({ children }: {
     return (
         <html lang="en" hidden={process.env.NODE_ENV === 'development'}>
             <body>
-                <MasterRuntimeProvider>
+                <Client>
                     {children}
-                </MasterRuntimeProvider>
+                </Client>
             </body>
         </html>
     )
