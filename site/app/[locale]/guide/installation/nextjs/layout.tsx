@@ -18,7 +18,6 @@ export const { Page, dynamic, revalidate, generateMetadata } = createLayout({
     content: ({ $ }) =>
         <Tabs className="mb:8x">
             <Tab href='/guide/installation/nextjs'>{$('Progressive Rendering')} <TabBadge>{$('Recommanded')}</TabBadge></Tab>
-            <Tab href='/guide/installation/nextjs/runtime-rendering'>{$('Runtime Rendering')}</Tab>
             <Tab href='/guide/installation/nextjs/static-extraction'>{$('Static Extraction')}</Tab>
         </Tabs>,
     Layout,
