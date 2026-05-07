@@ -1721,6 +1721,90 @@ function pushComponentMergeEvent(
     getComponentMergeBucket(buckets, selector, atRules, layer, event.order).events.push(event)
 }
 
+type ComponentAtRuleFeature = [string, number, number]
+
+const COMPONENT_AT_FEATURE_REGEX = /\(\s*(width|height|resolution)\s*(>=|<=|>|<)\s*(-?(?:\d+(?:\.\d+)?|\.\d+))([a-z%]*)\s*\)/g
+
+function normalizeComponentAtFeatureValue(value: number, unit: string, rootSize: number) {
+    if (unit === 'px') return value / rootSize
+    return value
+}
+
+function getComponentAtRuleFeatures(atRules: string[] | undefined, rootSize: number) {
+    const featureMap = new Map<string, { min?: number, max?: number }>()
+    for (const atRule of atRules || []) {
+        for (const match of atRule.matchAll(COMPONENT_AT_FEATURE_REGEX)) {
+            const [, name, operator, rawValue, unit] = match
+            const value = normalizeComponentAtFeatureValue(Number(rawValue), unit, rootSize)
+            const entry = featureMap.get(name) ?? {}
+            switch (operator) {
+                case '>':
+                    entry.min = value + 0.02
+                    break
+                case '>=':
+                    entry.min = value
+                    break
+                case '<':
+                    entry.max = value - 0.02
+                    break
+                case '<=':
+                    entry.max = value
+                    break
+            }
+            featureMap.set(name, entry)
+        }
+    }
+    return [...featureMap.entries()]
+        .map(([name, entry]) => [
+            name,
+            entry.min ?? 0,
+            entry.max ?? Number.MAX_SAFE_INTEGER
+        ] as ComponentAtRuleFeature)
+        .sort(([a], [b]) => a.localeCompare(b, undefined, { numeric: true }))
+}
+
+function compareComponentAtRuleFeatures(
+    a: ComponentAtRuleFeature[],
+    b: ComponentAtRuleFeature[]
+) {
+    const len = Math.max(a.length, b.length)
+    for (let index = 0; index < len; index++) {
+        const left = a[index]
+        const right = b[index]
+        if (!left) return -1
+        if (!right) return 1
+        const [nameA, minA, maxA] = left
+        const [nameB, minB, maxB] = right
+        const nameCompare = nameA.localeCompare(nameB, undefined, { numeric: true })
+        if (nameCompare !== 0) return nameCompare
+        const rangeA = maxA - minA
+        const rangeB = maxB - minB
+        if (rangeA !== rangeB) return rangeB - rangeA
+        if (minA !== minB) return minB - minA
+        if (maxA !== maxB) return maxB - maxA
+    }
+    return 0
+}
+
+function compareComponentMergeBuckets(a: ComponentMergeBucket, b: ComponentMergeBucket, rootSize: number) {
+    const layerA = a.layer || 'components'
+    const layerB = b.layer || 'components'
+    if (layerA === layerB && a.selector === b.selector) {
+        const atRuleStateA = a.atRules?.length ? 1 : 0
+        const atRuleStateB = b.atRules?.length ? 1 : 0
+        if (atRuleStateA !== atRuleStateB) return atRuleStateA - atRuleStateB
+        if (atRuleStateA && atRuleStateB) {
+            const featuresA = getComponentAtRuleFeatures(a.atRules, rootSize)
+            const featuresB = getComponentAtRuleFeatures(b.atRules, rootSize)
+            if (featuresA.length && featuresB.length) {
+                const featureCompare = compareComponentAtRuleFeatures(featuresA, featuresB)
+                if (featureCompare !== 0) return featureCompare
+            }
+        }
+    }
+    return a.order - b.order
+}
+
 function finalizeComponentDefinitions(parsed: ParsedDirectives, options: CompileCSSOptions) {
     if (!parsed.componentDefinitions) return
     const css = createComposeCSS(parsed, options)
@@ -1753,7 +1837,7 @@ function finalizeComponentDefinitions(parsed: ParsedDirectives, options: Compile
             }
         }
         parsed.config.components[name] = [...buckets.values()]
-            .sort((a, b) => a.order - b.order)
+            .sort((a, b) => compareComponentMergeBuckets(a, b, css.config.rootSize || defaultConfig.rootSize!))
             .flatMap((bucket) => {
                 const definition = createMergedComponentDefinition(bucket)
                 return definition ? [definition] : []

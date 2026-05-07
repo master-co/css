@@ -564,6 +564,88 @@ describe.concurrent('@master/css-compiler', () => {
         expect(result.css).toContain('.btn:hover{background-color:var(--color-green);color:#fff}')
     })
 
+    it('orders matching base component buckets before conditional buckets', () => {
+        const result = compileCSS(`
+            @master components {
+                @media (width >= 52.125rem) {
+                    .prose :is(h1, h2, h3) {
+                        @compose "{mt:16x;scroll-mt:100}";
+                    }
+                }
+
+                .prose :is(h1, h2, h3) {
+                    @compose "{mt:8x;scroll-mt:72}";
+                }
+            }
+        `, { classes: ['prose'] })
+
+        expect(result.config.components?.prose).toEqual([
+            {
+                selector: '& :is(h1,h2,h3)',
+                declarations: {
+                    'margin-top': '2rem',
+                    'scroll-margin-top': '4.5rem'
+                }
+            },
+            {
+                selector: '& :is(h1,h2,h3)',
+                atRules: ['@media (width>=52.125rem)'],
+                declarations: {
+                    'margin-top': '4rem',
+                    'scroll-margin-top': '6.25rem'
+                }
+            }
+        ])
+        const baseIndex = result.css.indexOf('.prose :is(h1,h2,h3){margin-top:2rem;scroll-margin-top:4.5rem}')
+        const mediaIndex = result.css.indexOf('@media (width>=52.125rem){.prose :is(h1,h2,h3){margin-top:4rem;scroll-margin-top:6.25rem}}')
+        expect(baseIndex).toBeGreaterThan(-1)
+        expect(mediaIndex).toBeGreaterThan(baseIndex)
+    })
+
+    it('orders matching conditional component buckets by comparable at-rule ranges', () => {
+        const result = compileCSS(`
+            @master {
+                --screen-sm: 640;
+                --screen-md: 768;
+            }
+
+            @master components {
+                @at md {
+                    .btn {
+                        font-size: 1rem;
+                    }
+                }
+
+                @at sm {
+                    .btn {
+                        font-size: .875rem;
+                    }
+                }
+            }
+        `, { classes: ['btn'] })
+
+        expect(result.config.components?.btn).toEqual([
+            {
+                selector: '&',
+                atRules: ['@media (width>=40rem)'],
+                declarations: {
+                    'font-size': '.875rem'
+                }
+            },
+            {
+                selector: '&',
+                atRules: ['@media (width>=48rem)'],
+                declarations: {
+                    'font-size': '1rem'
+                }
+            }
+        ])
+        const smIndex = result.css.indexOf('@media (width>=40rem){.btn{font-size:.875rem}}')
+        const mdIndex = result.css.indexOf('@media (width>=48rem){.btn{font-size:1rem}}')
+        expect(smIndex).toBeGreaterThan(-1)
+        expect(mdIndex).toBeGreaterThan(smIndex)
+    })
+
     it('merges composed utility rule selectors into component selector buckets', () => {
         const result = compileCSS(`
             @master components {
