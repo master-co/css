@@ -37,7 +37,7 @@
             },
             "patterns": [
                 {
-                    "include": "#master-css-block-body"
+                    "include": "#master-css-nested-block-body"
                 }
             ]
         },
@@ -198,7 +198,7 @@
             },
             "patterns": [
                 {
-                    "include": "#master-css-block-body"
+                    "include": "#master-css-nested-block-body"
                 }
             ]
         },

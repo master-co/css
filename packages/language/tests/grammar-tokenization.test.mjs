@@ -212,6 +212,33 @@ test('CSS injection highlights @master component directives and compose classes'
     assertTokenScope(tokens, 'color', 'support.type.property-name.css')
 })
 
+test('CSS injection highlights declarations inside @master utilities @at blocks', () => {
+    const tokens = tokensFor(embeddedHighlighter, `
+        @master utilities {
+            .content-auto {
+                content-visibility: auto;
+                contain-intrinsic-size: auto 32rem;
+            }
+
+            .print-hidden {
+                @at print {
+                    display: none;
+                }
+            }
+        }
+    `, 'css')
+
+    assertTokenScope(tokens, 'utilities', 'storage.modifier.master-css.section.css')
+    assertTokenScope(tokens, 'content-auto', 'entity.other.attribute-name.class.css')
+    assertTokenScope(tokens, 'content-visibility', 'meta.property-name.css')
+    assertTokenScope(tokens, 'contain-intrinsic-size', 'meta.property-name.css')
+    assertTokenScope(tokens, 'print-hidden', 'entity.other.attribute-name.class.css')
+    assertTokenScope(tokens, 'at', 'keyword.control.at-rule.at.master-css.css')
+    assertTokenScope(tokens, 'print', 'support.constant.property-value.css')
+    assertTokenScope(tokens, 'display', 'support.type.property-name.css')
+    assertTokenScope(tokens, 'none', 'support.constant.property-value.css')
+})
+
 test('CSS injection highlights @master animation shorthand blocks', () => {
     const tokens = tokensFor(embeddedHighlighter, `
         @master animations {
