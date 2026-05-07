@@ -1,6 +1,5 @@
 import './globals.css'
-import CSSRuntimeProvider from '@master/css.react'
-import config from '../master.css?master-css-config'
+import Client from './client'
 import { ReactNode } from 'react';
 
 export const metadata = {
@@ -14,9 +13,9 @@ export default function RootLayout({ children }: Readonly<{
     return (
         <html lang="en" hidden>
             <body>
-                <CSSRuntimeProvider config={config}>
+                <Client>
                     {children}
-                </CSSRuntimeProvider>
+                </Client>
             </body>
         </html>
     )

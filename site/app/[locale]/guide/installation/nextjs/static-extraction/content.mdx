@@ -15,32 +15,16 @@ import StaticExtractionIntro from '../../../rendering-modes/components/StaticExt
             If you don't have a Next.js project, create one first. It's recommended to refer to [Create Next App](https://nextjs.org/docs/api-reference/create-app-next-app).
         </StepL>
         <StepR>
-            <CodeTabs>
-                {[
-                    {
-                        name: 'Terminal',
-                        lang: 'bash',
-                        code: `
-                            npm create next-app --app --ts
-                            cd my-app
-                        `
-                    },
-                    {
-                        name: 'Terminal (pages/)',
-                        lang: 'bash',
-                        code: `
-                            npm create next-app --ts
-                            cd my-app
-                        `
-                    }
-                ]}
-            </CodeTabs>
+            ```bash name=Terminal
+            npm create next-app --app --ts
+            cd my-app
+            ```
         </StepR>
     </Step>
     <Step $row>
         <StepL>
             ### <StepNum />Create a configuration file
-            Run the command to create a [master.css.js](/guide/configuration) file.
+            Run the command to create a [master.css](/guide/configuration) file.
         </StepL>
         <StepR>
             ```bash action=create
@@ -96,26 +80,10 @@ import StaticExtractionIntro from '../../../rendering-modes/components/StaticExt
             Import the virtual CSS module `virtual:master.css` into the `app/globals.css`.
         </StepL>
         <StepR>
-            <CodeTabs>
-                {[
-                    {
-                        name: 'app/globals.css',
-                        lang: 'css',
-                        code: `
-                            @import 'virtual:master.css'; /* [!code ++] */
-                            …
-                        `
-                    },
-                    {
-                        name: 'styles/globals.css',
-                        lang: 'css',
-                        code: `
-                            @import 'virtual:master.css'; /* [!code ++] */
-                            …
-                        `
-                    }
-                ]}
-            </CodeTabs>
+            ```css name=app/globals.css
+            @import 'virtual:master.css';
+            …
+            ```
         </StepR>
     </Step>
     <Step $row>

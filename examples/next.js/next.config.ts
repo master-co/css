@@ -5,4 +5,4 @@ const nextConfig: NextConfig = {
   /* config options here */
 };
 
-export default withMasterCSS(nextConfig, { mode: null });
+export default withMasterCSS(nextConfig);
