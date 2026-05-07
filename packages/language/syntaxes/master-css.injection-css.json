@@ -23,9 +23,6 @@
                 "2": {
                     "name": "punctuation.definition.keyword.css"
                 },
-                "3": {
-                    "name": "storage.modifier.master-css.section.css"
-                },
                 "5": {
                     "name": "punctuation.section.master-css.begin.bracket.curly.css"
                 }

@@ -50,6 +50,22 @@ function assertNoTokenScope(tokens, content, scope) {
     )
 }
 
+function assertTrimmedTokenScope(tokens, content, scope) {
+    assert.ok(
+        tokens.some((token) => token.content.trim() === content && scopesOf(token).includes(scope)),
+        `Expected trimmed token ${JSON.stringify(content)} to include ${scope}. Actual tokens:\n` +
+        tokens.map((token) => `${JSON.stringify(token.content)} ${scopesOf(token).join(' ')}`).join('\n')
+    )
+}
+
+function assertNoTrimmedTokenScope(tokens, content, scope) {
+    assert.equal(
+        tokens.some((token) => token.content.trim() === content && scopesOf(token).includes(scope)),
+        false,
+        `Did not expect trimmed token ${JSON.stringify(content)} to include ${scope}`
+    )
+}
+
 const coreGrammar = readGrammar('master-css.json')
 const coreHighlighter = await createHighlighter({
     themes: [theme],
@@ -198,7 +214,8 @@ test('CSS injection highlights @master component directives and compose classes'
         }
     `, 'css')
 
-    assertTokenScope(tokens, 'components', 'storage.modifier.master-css.section.css')
+    assertTrimmedTokenScope(tokens, 'components', 'meta.at-rule.master-css.css')
+    assertNoTrimmedTokenScope(tokens, 'components', 'storage.modifier.master-css.section.css')
     assertTokenScope(tokens, 'btn', 'entity.other.attribute-name.class.css')
     assertTokenScope(tokens, 'compose', 'keyword.control.at-rule.compose.master-css.css')
     assertTokenScope(tokens, 'inline-flex', 'support.constant.property-value.css')
@@ -228,7 +245,8 @@ test('CSS injection highlights declarations inside @master utilities @at blocks'
         }
     `, 'css')
 
-    assertTokenScope(tokens, 'utilities', 'storage.modifier.master-css.section.css')
+    assertTrimmedTokenScope(tokens, 'utilities', 'meta.at-rule.master-css.css')
+    assertNoTrimmedTokenScope(tokens, 'utilities', 'storage.modifier.master-css.section.css')
     assertTokenScope(tokens, 'content-auto', 'entity.other.attribute-name.class.css')
     assertTokenScope(tokens, 'content-visibility', 'meta.property-name.css')
     assertTokenScope(tokens, 'contain-intrinsic-size', 'meta.property-name.css')
@@ -255,7 +273,8 @@ test('CSS injection highlights @master animation shorthand blocks', () => {
         }
     `, 'css')
 
-    assertTokenScope(tokens, 'animations', 'storage.modifier.master-css.section.css')
+    assertTrimmedTokenScope(tokens, 'animations', 'meta.at-rule.master-css.css')
+    assertNoTrimmedTokenScope(tokens, 'animations', 'storage.modifier.master-css.section.css')
     assertTokenScope(tokens, 'fade-in', 'entity.name.tag.custom.css')
     assertTokenScope(tokens, 'from', 'entity.other.keyframe-offset.css')
     assertTokenScope(tokens, '50%', 'entity.other.keyframe-offset.percentage.css')
