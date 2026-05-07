@@ -32,43 +32,16 @@ The generated CSS is emitted in the `components` layer:
 @layer components {
     .btn {
         display: inline-flex;
-    }
-
-    .btn {
         gap: 0.5rem;
-    }
-
-    .btn {
         border-radius: 0.5rem;
-    }
-
-    .btn {
         padding-left: 1rem;
         padding-right: 1rem;
-    }
-
-    .btn {
         padding-top: 0.625rem;
         padding-bottom: 0.625rem;
-    }
-
-    .btn {
         align-items: center;
-    }
-
-    .btn {
         font-size: 0.875rem;
-    }
-
-    .btn {
         font-weight: 500;
-    }
-
-    .btn {
         justify-content: center;
-    }
-
-    .btn {
         background: var(--color-primary);
         color: #fff;
     }
@@ -154,7 +127,7 @@ This keeps unused component definitions out of the final CSS. In Vite extract mo
 ---
 
 ## Definition order
-You can split a component into multiple rules. They are preserved in config order, so later declarations with the same property override earlier declarations through the normal CSS cascade.
+You can split a component into multiple rules. Definitions with the same selector, at-rules, and layer are merged. Native declarations keep their source order relative to `@compose`, while composed utilities are sorted with Master CSS rule priority before they are merged.
 
 ```css name=master.css
 @master components {
@@ -172,7 +145,7 @@ You can split a component into multiple rules. They are preserved in config orde
 }
 ```
 
-The compiler expands `@compose` into flat component definition objects:
+The compiler expands `@compose` into merged component definition objects:
 
 ```js
 {
@@ -181,25 +154,7 @@ The compiler expands `@compose` into flat component definition objects:
             {
                 selector: '&',
                 declarations: {
-                    display: 'inline-flex'
-                }
-            },
-            {
-                selector: '&',
-                declarations: {
-                    display: 'inline-flex',
                     color: 'black'
-                }
-            },
-            {
-                selector: '&',
-                declarations: {
-                    display: 'block'
-                }
-            },
-            {
-                selector: '&',
-                declarations: {
                     display: 'block',
                     'font-size': '1rem'
                 }

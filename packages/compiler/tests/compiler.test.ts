@@ -78,14 +78,8 @@ describe.concurrent('@master/css-compiler', () => {
         `, { classes: ['btn', 'card', 'block@md', 'w:10::scrollbar', 'bg:base@dark', 'backdrop-filter:blur(16)@supports-backdrop'] })
 
         expect(result.css).toContain('@layer base,theme,preset,components,utilities;')
-        expect(result.css).toContain('#app .btn{border-radius:0.75rem}')
-        expect(result.css).toContain('#app .btn{padding-left:1rem;padding-right:1rem}')
-        expect(result.css).toContain('#app .btn{padding-top:0.5rem;padding-bottom:0.5rem}')
-        expect(result.css).toContain('#app .btn{align-items:center}')
-        expect(result.css).toContain('#app .btn{background-color:var(--color-primary)}')
-        expect(result.css).toContain('#app .btn{justify-content:center}')
-        expect(result.css).toContain('#app .btn{display:inline-flex}')
-        expect(result.css).toContain('#app .card{content-visibility:auto;contain-intrinsic-size:auto 32rem}')
+        expect(result.css).toContain('#app .btn{border-radius:0.75rem;padding-left:1rem;padding-right:1rem;padding-top:0.5rem;padding-bottom:0.5rem;align-items:center;background-color:var(--color-primary);justify-content:center;display:inline-flex}')
+        expect(result.css).toContain('#app .card{content-visibility:auto;contain-intrinsic-size:auto 32rem;padding:1.5rem;border-radius:0.75rem;background-color:var(--color-base);border:1px solid var(--color-ring)}')
         expect(result.css).toContain('#app .card:before{content:\'\'')
         expect(result.css).toContain('@media (width>=48rem){#app .block\\@md{display:block}}')
         expect(result.css).toContain('#app .w\\:10\\:\\:scrollbar::-webkit-scrollbar')
@@ -158,12 +152,7 @@ describe.concurrent('@master/css-compiler', () => {
                     {
                         selector: '&',
                         declarations: {
-                            'background-color': 'var(--color-primary)'
-                        }
-                    },
-                    {
-                        selector: '&',
-                        declarations: {
+                            'background-color': 'var(--color-primary)',
                             display: 'inline-flex'
                         }
                     },
@@ -257,8 +246,7 @@ describe.concurrent('@master/css-compiler', () => {
             }
         `, ['btn'])
 
-        expect(css).toContain('.btn{display:block}')
-        expect(css).toContain('.btn{background-color:rgb(17 34 51)}')
+        expect(css).toContain('.btn{display:block;background-color:rgb(17 34 51)}')
     })
 
     it('keeps native selector names when resolving composed component selectors', () => {
@@ -296,17 +284,17 @@ describe.concurrent('@master/css-compiler', () => {
 
         expect(result.config.components?.prose).toEqual([
             {
-                selector: '&',
-                layer: 'preset',
-                declarations: {
-                    color: 'var(--color-text)'
-                }
-            },
-            {
                 selector: '& :is(p)',
                 layer: 'preset',
                 declarations: {
                     'font-size': '1rem'
+                }
+            },
+            {
+                selector: '&',
+                layer: 'preset',
+                declarations: {
+                    color: 'var(--color-text)'
                 }
             },
             {
@@ -318,7 +306,7 @@ describe.concurrent('@master/css-compiler', () => {
                 }
             }
         ])
-        expect(result.css).toContain('@layer preset{.prose{color:var(--color-text)}.prose :is(p){font-size:1rem}@media print{.prose{display:none}}}')
+        expect(result.css).toContain('@layer preset{.prose :is(p){font-size:1rem}.prose{color:var(--color-text)}@media print{.prose{display:none}}}')
         expect(result.css).not.toContain('@layer components{@layer preset')
     })
 
@@ -433,7 +421,7 @@ describe.concurrent('@master/css-compiler', () => {
         expect(result.css).not.toContain('@layer components{@layer preset')
     })
 
-    it('expands repeated component definitions in declaration order', () => {
+    it('merges repeated component definitions in declaration order', () => {
         const result = compileCSS(`
             @master components {
                 .btn {
@@ -454,16 +442,95 @@ describe.concurrent('@master/css-compiler', () => {
             {
                 selector: '&',
                 declarations: {
-                    display: 'inline-flex'
+                    color: 'red',
+                    display: 'block',
+                    'font-size': '1rem'
                 }
-            },
+            }
+        ])
+        expect(result.css).toContain('.btn{color:red;display:block;font-size:1rem}')
+    })
+
+    it('preserves native declaration and @compose override order while merging components', () => {
+        const beforeCompose = compileCSS(`
+            @master components {
+                .btn {
+                    display: inline-block;
+                    @compose "block";
+                }
+            }
+        `, { classes: ['btn'] })
+        const afterCompose = compileCSS(`
+            @master components {
+                .btn {
+                    @compose "block";
+                    display: inline-block;
+                }
+            }
+        `, { classes: ['btn'] })
+        const importantBeforeCompose = compileCSS(`
+            @master components {
+                .btn {
+                    display: block !important;
+                    @compose "inline-flex";
+                }
+            }
+        `, { classes: ['btn'] })
+
+        expect(beforeCompose.config.components?.btn).toEqual([
             {
                 selector: '&',
                 declarations: {
-                    display: 'inline-flex',
-                    color: 'red'
+                    display: 'block'
                 }
-            },
+            }
+        ])
+        expect(beforeCompose.css).toContain('.btn{display:block}')
+        expect(afterCompose.config.components?.btn).toEqual([
+            {
+                selector: '&',
+                declarations: {
+                    display: 'inline-block'
+                }
+            }
+        ])
+        expect(afterCompose.css).toContain('.btn{display:inline-block}')
+        expect(importantBeforeCompose.config.components?.btn).toEqual([
+            {
+                selector: '&',
+                declarations: {
+                    display: 'block !important'
+                }
+            }
+        ])
+    })
+
+    it('merges composed component utilities by resolved selector, at-rules, and layer buckets', () => {
+        const result = compileCSS(`
+            @master {
+                mode-trigger: class;
+                --screen-sm: 640;
+                --screen-md: 768;
+            }
+
+            @master components {
+                .btn {
+                    @compose "block font:sm@sm font:md@md bg:green:hover";
+                }
+
+                @at sm {
+                    .btn {
+                        line-height: 1.4;
+                    }
+                }
+
+                .btn:hover {
+                    color: white;
+                }
+            }
+        `, { classes: ['btn'] })
+
+        expect(result.config.components?.btn).toEqual([
             {
                 selector: '&',
                 declarations: {
@@ -472,14 +539,72 @@ describe.concurrent('@master/css-compiler', () => {
             },
             {
                 selector: '&',
+                atRules: ['@media (width>=40rem)'],
                 declarations: {
-                    display: 'block',
+                    'font-size': '0.875rem',
+                    'line-height': '1.4'
+                }
+            },
+            {
+                selector: '&',
+                atRules: ['@media (width>=48rem)'],
+                declarations: {
                     'font-size': '1rem'
+                }
+            },
+            {
+                selector: '&:hover',
+                declarations: {
+                    'background-color': 'var(--color-green)',
+                    color: '#fff'
                 }
             }
         ])
-        expect(result.css).toContain('.btn{display:inline-flex;color:red}')
-        expect(result.css).toContain('.btn{display:block;font-size:1rem}')
+        expect(result.css).toContain('@media (width>=40rem){.btn{font-size:0.875rem;line-height:1.4}}')
+        expect(result.css).toContain('.btn:hover{background-color:var(--color-green);color:#fff}')
+    })
+
+    it('merges composed utility rule selectors into component selector buckets', () => {
+        const result = compileCSS(`
+            @master components {
+                .btn {
+                    @compose "focus-ring";
+                }
+
+                .btn:focus-visible {
+                    outline-offset: 2px;
+                }
+            }
+        `, {
+            classes: ['btn'],
+            config: {
+                utilities: [
+                    {
+                        name: 'focus-ring',
+                        type: UtilityType.Static,
+                        rules: [
+                            {
+                                selector: '&:focus-visible',
+                                declarations: {
+                                    outline: '2px solid currentColor'
+                                }
+                            }
+                        ]
+                    }
+                ]
+            }
+        })
+
+        expect(result.config.components?.btn).toEqual([
+            {
+                selector: '&:focus-visible',
+                declarations: {
+                    outline: '2px solid currentColor',
+                    'outline-offset': '2px'
+                }
+            }
+        ])
+        expect(result.css).toContain('.btn:focus-visible{outline:2px solid currentColor;outline-offset:2px}')
     })
 
     it('merges repeated static utility definitions by name', () => {
@@ -594,7 +719,7 @@ describe.concurrent('@master/css-compiler', () => {
             {
                 selector: '&',
                 declarations: {
-                    display: 'block'
+                    display: 'flex'
                 }
             },
             {
@@ -644,12 +769,6 @@ describe.concurrent('@master/css-compiler', () => {
                     opacity: '0'
                 }
             },
-            {
-                selector: '&',
-                declarations: {
-                    display: 'flex'
-                }
-            }
         ])
         expect(result.config.utilities).toEqual([
             {
@@ -681,12 +800,10 @@ describe.concurrent('@master/css-compiler', () => {
                 ]
             }
         ])
-        const blockIndex = result.css.indexOf('.btn{display:block}')
-        const printIndex = result.css.indexOf('@media print{@media (prefers-reduced-motion:no-preference){.btn{display:none}}}')
         const flexIndex = result.css.indexOf('.btn{display:flex}')
-        expect(blockIndex).toBeGreaterThan(-1)
-        expect(printIndex).toBeGreaterThan(blockIndex)
-        expect(flexIndex).toBeGreaterThan(printIndex)
+        const printIndex = result.css.indexOf('@media print{@media (prefers-reduced-motion:no-preference){.btn{display:none}}}')
+        expect(flexIndex).toBeGreaterThan(-1)
+        expect(printIndex).toBeGreaterThan(flexIndex)
         expect(result.css).toContain('.dark .btn{color:#fff}')
         expect(result.css).toContain('.dark .btn:hover{opacity:.8}')
         expect(result.css).toContain('@media (width>=48rem){.btn{display:inline-flex}}')

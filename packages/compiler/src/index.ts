@@ -11,6 +11,7 @@ import {
 } from '@master/css'
 import resolveSelectorTokens from '@master/css/utils/resolve-selector-tokens'
 import parseAt from '@master/css/utils/parse-at'
+import compareRulePriority from '@master/css/utils/compare-rule-priority'
 import { transform } from 'lightningcss'
 import type { PropertiesHyphen } from 'csstype'
 import type {
@@ -63,17 +64,29 @@ export interface ResolvedCSSImportGraph {
 
 interface PendingComponentCompose {
     type: 'compose'
+    order: number
     className: string
+    selector: string
     atRules?: string[]
     layer?: ComponentLayerName
 }
 
-type ParsedComponentDefinition = ComponentDefinition | PendingComponentCompose
+interface PendingComponentNative {
+    type: 'native'
+    order: number
+    selector: string
+    declarations: PropertiesHyphen
+    atRules?: string[]
+    layer?: ComponentLayerName
+}
+
+type ParsedComponentDefinition = PendingComponentCompose | PendingComponentNative
 
 type ParsedUtilityRuleDefinition = UtilityRuleDefinition
 
 export interface ParsedDirectives extends Pick<CompileCSSResult, 'config' | 'componentNames' | 'warnings'> {
     componentDefinitions?: Record<string, ParsedComponentDefinition[]>
+    componentOrder?: number
 }
 
 const MASTER_CUSTOM_AT_RULES = {
@@ -617,6 +630,11 @@ function getParsedComponentDefinitions(parsed: ParsedDirectives, name: string) {
     return parsed.componentDefinitions[name]
 }
 
+function nextComponentOrder(parsed: ParsedDirectives) {
+    parsed.componentOrder = (parsed.componentOrder || 0) + 1
+    return parsed.componentOrder
+}
+
 function getUtilityAtRuleDefinitions(utility: Utility) {
     const atRules: string[] = []
     if (utility.atRules) {
@@ -664,7 +682,11 @@ function cloneDeclarations(declarations: PropertiesHyphen, important?: boolean) 
     return result
 }
 
-function createComponentDefinitionsFromCompose(className: string, css: ReturnType<typeof createCSS>): ComponentDefinition[] {
+interface ComposedComponentDefinition extends ComponentDefinition {
+    utility: Utility
+}
+
+function createComponentDefinitionsFromCompose(className: string, css: ReturnType<typeof createCSS>): ComposedComponentDefinition[] {
     const utility = css.create(className, '__master_component__')
     if (!utility?.valid) {
         throw new Error(`Invalid @compose class: ${className}`)
@@ -673,8 +695,9 @@ function createComponentDefinitionsFromCompose(className: string, css: ReturnTyp
     const layer = getUtilityComponentLayer(utility)
     const utilityAtRules = getUtilityAtRuleDefinitions(utility)
     const declarationRules = utility.declarationRules || (utility.declarations ? [{ declarations: utility.declarations }] : [])
-    return declarationRules.map(({ declarations, atRules }) => ({
-        selector,
+    return declarationRules.map(({ declarations, atRules, selector: ruleSelector }) => ({
+        utility,
+        selector: ruleSelector ? combineComponentSelectors(selector, ruleSelector) : selector,
         declarations: cloneDeclarations(declarations, utility.important),
         ...(layer ? { layer } : {}),
         ...([...utilityAtRules, ...(atRules || [])].length
@@ -859,8 +882,66 @@ function isNestedStyleRule(rule: Rule) {
         || Boolean(parseMasterAtRuleBlock(rule))
 }
 
+type ComponentStyleRuleBodyItem =
+    | {
+        type: 'declarations'
+        declarations: Record<string, string>
+    }
+    | {
+        type: 'compose'
+        classNames: string[]
+    }
+    | {
+        type: 'nested'
+        rule: Rule
+    }
+
 function collectStyleRule(rule: any, allowCompose: boolean, allowNestedRules = false) {
     return collectStyleRuleBody(rule.value.declarations, rule.value.rules, allowCompose, allowNestedRules)
+}
+
+function collectComponentStyleRule(rule: any) {
+    return collectComponentStyleRuleBody(rule.value.declarations, rule.value.rules)
+}
+
+function collectComponentStyleRuleBody(block: DeclarationBlock<Declaration>, rules: Rule[]) {
+    const items: ComponentStyleRuleBodyItem[] = []
+    const declarations = collectDeclarations(block)
+    if (Object.keys(declarations).length) {
+        items.push({
+            type: 'declarations',
+            declarations
+        })
+    }
+    for (const child of rules) {
+        if (child.type === 'nested-declarations') {
+            const nestedDeclarations = collectDeclarations(child.value.declarations)
+            if (Object.keys(nestedDeclarations).length) {
+                items.push({
+                    type: 'declarations',
+                    declarations: nestedDeclarations
+                })
+            }
+            continue
+        }
+        if (isNestedStyleRule(child)) {
+            items.push({
+                type: 'nested',
+                rule: child
+            })
+            continue
+        }
+        const compose = parseComposeRule(child)
+        if (compose) {
+            items.push({
+                type: 'compose',
+                classNames: [compose]
+            })
+            continue
+        }
+        throw new Error('Components only accept declarations, @compose, nested selectors, and nested at-rules')
+    }
+    return items
 }
 
 function collectStyleRuleBody(block: DeclarationBlock<Declaration>, rules: Rule[], allowCompose: boolean, allowNestedRules = false) {
@@ -1009,46 +1090,46 @@ const EMPTY_DECLARATION_BLOCK: DeclarationBlock<Declaration> = {
 function parseComponentDefinitionBody(
     parsed: ParsedDirectives,
     selectorDefinition: ComponentSelectorDefinition,
-    classNames: string[],
-    declarations: Record<string, string>,
-    nestedRules: Rule[],
+    items: ComponentStyleRuleBodyItem[],
     atRules: string[] = [],
     layer?: ComponentLayerName
 ) {
-    const selectorSuffix = componentSelectorToClassSuffix(selectorDefinition.selector)
-    const normalizedClassNames = normalizeClassNames(classNames)
-        .map((className) => insertSelectorSuffix(className, selectorSuffix))
     const definitions = getParsedComponentDefinitions(parsed, selectorDefinition.name)
-    definitions.push(...normalizedClassNames.map((className) => ({
-        type: 'compose' as const,
-        className,
-        ...(atRules.length ? { atRules: [...atRules] } : {}),
-        ...(layer ? { layer } : {})
-    })))
-    if (Object.keys(declarations).length) {
-        const existingDefinition = definitions[definitions.length - 1]
-        if (
-            existingDefinition
-            && !('type' in existingDefinition)
-            && existingDefinition.selector === selectorDefinition.selector
-            && existingDefinition.layer === layer
-            && sameAtRules(existingDefinition.atRules, atRules)
-        ) {
-            Object.assign(existingDefinition.declarations, declarations)
-        } else {
-            definitions.push({
+    const selectorSuffix = componentSelectorToClassSuffix(selectorDefinition.selector)
+
+    for (const item of items) {
+        if (item.type === 'compose') {
+            const normalizedClassNames = normalizeClassNames(item.classNames)
+                .map((className) => insertSelectorSuffix(className, selectorSuffix))
+            definitions.push(...normalizedClassNames.map((className) => ({
+                type: 'compose' as const,
+                order: nextComponentOrder(parsed),
+                className,
                 selector: selectorDefinition.selector,
-                declarations: declarations as PropertiesHyphen,
+                ...(atRules.length ? { atRules: [...atRules] } : {}),
+                ...(layer ? { layer } : {})
+            })))
+            continue
+        }
+
+        if (item.type === 'declarations') {
+            if (!Object.keys(item.declarations).length) continue
+            definitions.push({
+                type: 'native',
+                order: nextComponentOrder(parsed),
+                selector: selectorDefinition.selector,
+                declarations: item.declarations as PropertiesHyphen,
                 ...(atRules.length ? { atRules: [...atRules] } : {}),
                 ...(layer ? { layer } : {})
             })
+            continue
         }
+
+        parseNestedComponentChildRule(item.rule, parsed, selectorDefinition, atRules, layer)
     }
+
     if (!parsed.componentNames.includes(selectorDefinition.name)) {
         parsed.componentNames.push(selectorDefinition.name)
-    }
-    for (const nestedRule of nestedRules) {
-        parseNestedComponentChildRule(nestedRule, parsed, selectorDefinition, atRules, layer)
     }
 }
 
@@ -1059,8 +1140,7 @@ function parseComponentRuleBody(
     atRules: string[] = [],
     layer?: ComponentLayerName
 ) {
-    const { classNames, declarations, nestedRules } = collectStyleRuleBody(EMPTY_DECLARATION_BLOCK, rules, true, true)
-    parseComponentDefinitionBody(parsed, selectorDefinition, classNames, declarations, nestedRules, atRules, layer)
+    parseComponentDefinitionBody(parsed, selectorDefinition, collectComponentStyleRuleBody(EMPTY_DECLARATION_BLOCK, rules), atRules, layer)
 }
 
 function parseNestedComponentChildRule(child: Rule, parsed: ParsedDirectives, parentSelectorDefinition: ComponentSelectorDefinition, atRules: string[], layer?: ComponentLayerName) {
@@ -1107,8 +1187,7 @@ function parseComponent(rule: any, parsed: ParsedDirectives, atRules: string[] =
     if (!selectorDefinition) {
         throw new Error('Component definition selector must start with a single class selector')
     }
-    const { classNames, declarations, nestedRules } = collectStyleRule(rule, true, true)
-    parseComponentDefinitionBody(parsed, selectorDefinition, classNames, declarations, nestedRules, atRules, layer)
+    parseComponentDefinitionBody(parsed, selectorDefinition, collectComponentStyleRule(rule), atRules, layer)
 }
 
 function pushUtilityRule(definition: UtilityDefinition, declarations: Record<string, string>, atRules: string[]) {
@@ -1532,14 +1611,129 @@ function finalizeUtilityDefinitions(parsed: ParsedDirectives, options: CompileCS
     }
 }
 
+type ComponentMergeEvent =
+    | {
+        type: 'compose'
+        order: number
+        utility: Utility
+        declarations: PropertiesHyphen
+    }
+    | {
+        type: 'native'
+        order: number
+        declarations: PropertiesHyphen
+    }
+
+interface ComponentMergeBucket {
+    selector: string
+    atRules?: string[]
+    layer?: ComponentLayerName
+    order: number
+    events: ComponentMergeEvent[]
+}
+
+function resolveComponentSelector(selector: string, css: ReturnType<typeof createCSS>) {
+    return css.config.selectorTokens
+        ? resolveSelectorTokens(selector, css.config.selectorTokens)
+        : selector
+}
+
+function getComponentMergeBucketKey(selector: string, atRules: string[] | undefined, layer: ComponentLayerName | undefined) {
+    return JSON.stringify([layer || '', selector, atRules || []])
+}
+
+function getComponentMergeBucket(
+    buckets: Map<string, ComponentMergeBucket>,
+    selector: string,
+    atRules: string[] | undefined,
+    layer: ComponentLayerName | undefined,
+    order: number
+) {
+    const key = getComponentMergeBucketKey(selector, atRules, layer)
+    const existingBucket = buckets.get(key)
+    if (existingBucket) {
+        existingBucket.order = Math.min(existingBucket.order, order)
+        return existingBucket
+    }
+    const bucket: ComponentMergeBucket = {
+        selector,
+        ...(atRules?.length ? { atRules } : {}),
+        ...(layer ? { layer } : {}),
+        order,
+        events: []
+    }
+    buckets.set(key, bucket)
+    return bucket
+}
+
+function isImportantDeclarationValue(value: unknown) {
+    return String(value).trim().endsWith('!important')
+}
+
+function applyComponentDeclaration(declarations: PropertiesHyphen, propertyName: string, value: unknown) {
+    const key = propertyName as keyof PropertiesHyphen
+    const currentValue = declarations[key]
+    if (currentValue !== undefined && isImportantDeclarationValue(currentValue) && !isImportantDeclarationValue(value)) {
+        return
+    }
+    delete declarations[key]
+    declarations[key] = value as any
+}
+
+function applyComponentDeclarations(declarations: PropertiesHyphen, incomingDeclarations: PropertiesHyphen) {
+    for (const propertyName in incomingDeclarations) {
+        applyComponentDeclaration(declarations, propertyName, incomingDeclarations[propertyName as keyof PropertiesHyphen])
+    }
+}
+
+function createMergedComponentDefinition(bucket: ComponentMergeBucket): ComponentDefinition | undefined {
+    const declarations: PropertiesHyphen = {}
+    const composeBatch: Extract<ComponentMergeEvent, { type: 'compose' }>[] = []
+    const flushComposeBatch = () => {
+        composeBatch.sort((a, b) => compareRulePriority(a.utility, b.utility) || a.order - b.order)
+        for (const event of composeBatch) {
+            applyComponentDeclarations(declarations, event.declarations)
+        }
+        composeBatch.length = 0
+    }
+
+    for (const event of [...bucket.events].sort((a, b) => a.order - b.order)) {
+        if (event.type === 'compose') {
+            composeBatch.push(event)
+            continue
+        }
+        flushComposeBatch()
+        applyComponentDeclarations(declarations, event.declarations)
+    }
+    flushComposeBatch()
+
+    if (!Object.keys(declarations).length) return
+    return {
+        selector: bucket.selector,
+        declarations,
+        ...(bucket.atRules?.length ? { atRules: bucket.atRules } : {}),
+        ...(bucket.layer ? { layer: bucket.layer } : {})
+    }
+}
+
+function pushComponentMergeEvent(
+    buckets: Map<string, ComponentMergeBucket>,
+    selector: string,
+    atRules: string[] | undefined,
+    layer: ComponentLayerName | undefined,
+    event: ComponentMergeEvent
+) {
+    getComponentMergeBucket(buckets, selector, atRules, layer, event.order).events.push(event)
+}
+
 function finalizeComponentDefinitions(parsed: ParsedDirectives, options: CompileCSSOptions) {
     if (!parsed.componentDefinitions) return
     const css = createComposeCSS(parsed, options)
     parsed.config.components = {}
     for (const name in parsed.componentDefinitions) {
-        const definitions: ComponentDefinition[] = []
+        const buckets = new Map<string, ComponentMergeBucket>()
         for (const definition of parsed.componentDefinitions[name]) {
-            if ('type' in definition) {
+            if (definition.type === 'compose') {
                 const composedDefinitions = createComponentDefinitionsFromCompose(definition.className, css)
                 for (const composedDefinition of composedDefinitions) {
                     const { atRules: _composedAtRules, ...composedDefinitionWithoutAtRules } = composedDefinition
@@ -1547,24 +1741,28 @@ function finalizeComponentDefinitions(parsed: ParsedDirectives, options: Compile
                         ...(definition.atRules || []),
                         ...(_composedAtRules || [])
                     ], css, composedDefinition.selector)
-                    definitions.push({
-                        ...composedDefinitionWithoutAtRules,
-                        selector: resolved.selector,
-                        ...(definition.layer ? { layer: definition.layer } : {}),
-                        ...(resolved.atRules?.length ? { atRules: resolved.atRules } : {})
+                    pushComponentMergeEvent(buckets, resolveComponentSelector(resolved.selector, css), resolved.atRules, definition.layer || composedDefinitionWithoutAtRules.layer, {
+                        type: 'compose',
+                        order: definition.order,
+                        utility: composedDefinitionWithoutAtRules.utility,
+                        declarations: composedDefinitionWithoutAtRules.declarations as PropertiesHyphen
                     })
                 }
             } else {
-                const { atRules: _definitionAtRules, ...definitionWithoutAtRules } = definition
-                const resolved = resolveConfiguredAtRules(_definitionAtRules, css, definition.selector)
-                definitions.push({
-                    ...definitionWithoutAtRules,
-                    selector: resolved.selector,
-                    ...(resolved.atRules?.length ? { atRules: resolved.atRules } : {})
+                const resolved = resolveConfiguredAtRules(definition.atRules, css, definition.selector)
+                pushComponentMergeEvent(buckets, resolveComponentSelector(resolved.selector, css), resolved.atRules, definition.layer, {
+                    type: 'native',
+                    order: definition.order,
+                    declarations: definition.declarations
                 })
             }
         }
-        parsed.config.components[name] = definitions
+        parsed.config.components[name] = [...buckets.values()]
+            .sort((a, b) => a.order - b.order)
+            .flatMap((bucket) => {
+                const definition = createMergedComponentDefinition(bucket)
+                return definition ? [definition] : []
+            })
     }
 }
 
