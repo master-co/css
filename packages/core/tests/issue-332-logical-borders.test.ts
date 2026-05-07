@@ -33,7 +33,7 @@ describe('issue #332 follow-up: logical borders + corner radii', () => {
     ]
 
     test.each(cases)('%s → %s', (input, expected) => {
-        const css = new MasterCSS(undefined, defaultConfig)
+        const css = new MasterCSS(defaultConfig)
         const rule = css.create(input)
         expect(rule).toBeDefined()
         expect(rule?.text).toContain(expected)

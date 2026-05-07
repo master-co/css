@@ -21,10 +21,9 @@ export default class CSSRuntime extends MasterCSS {
 
     constructor(
         public root: Document | ShadowRoot = document,
-        public customConfig: Config = defaultConfig,
-        public baseConfig?: Config
+        public customConfig: Config = {}
     ) {
-        super(customConfig, baseConfig)
+        super(defaultConfig, customConfig)
         // Do not use instanceof here, because it will not work
         const rootConstructorName = root?.constructor.name
         if (rootConstructorName === 'HTMLDocument' || rootConstructorName === 'Document') {
@@ -355,6 +354,7 @@ export default class CSSRuntime extends MasterCSS {
             this.style!.sheet.deleteRule(i)
         }
         super.refresh(customConfig)
+        this.customConfig = customConfig
         /**
          * 拿當前所有的 classNames 按照最新的 colors, config.utilities 匹配並生成新的 style
          * 所以 refresh 過後 rules 可能會變多也可能會變少

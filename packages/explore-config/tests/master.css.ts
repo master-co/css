@@ -1,13 +1,10 @@
-import { Config } from '@master/css'
+import { Config, extendConfig } from '@master/css'
 import card from './card.css'
 
-export default {
-    extends: [
-        card
-    ],
+export default extendConfig(card, {
     components: {
         btn: [
             { selector: '&', declarations: { display: 'inline-flex' } }
         ]
     }
-} as Config
+}) as Config

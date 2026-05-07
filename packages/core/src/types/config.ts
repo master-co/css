@@ -70,7 +70,6 @@ export interface FunctionDefinition {
 export type FunctionDefinitions = Record<string, FunctionDefinition>;
 
 export interface Config {
-    extends?: (Config | any)[]
     components?: ComponentDefinitions
     atTokens?: AtTokenDefinitions
     selectorTokens?: SelectorTokenDefinitions

@@ -1,10 +1,7 @@
-import type { Config } from '@master/css'
+import { type Config, extendConfig } from '@master/css'
 import preset from './preset.css'
 
-export default {
-    extends: [
-        preset
-    ],
+export default extendConfig(preset, {
     components: {
         'bundle-button': [
             { selector: '&', declarations: { display: 'inline-flex' } },
@@ -12,4 +9,4 @@ export default {
             { selector: '&', declarations: { 'background-color': 'oklch(63.7% 0.237 25.331)' } }
         ]
     }
-} as Config
+}) as Config

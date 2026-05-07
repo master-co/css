@@ -25,10 +25,8 @@ test('loads Master CSS TypeScript config files from the ESLint cwd', async () =>
             import preset from './preset.css'
 
             export default {
-                extends: [
-                    preset
-                ],
                 components: {
+                    ...preset.components,
                     'fixture-button': [
                         { selector: '&', declarations: { display: 'inline-flex' } }
                     ]

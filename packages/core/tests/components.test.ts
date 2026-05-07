@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest'
-import { createCSS, UtilityType } from '../src'
+import { createCSS, extendConfig, MasterCSS, UtilityType } from '../src'
 
 describe('comp -> comp -> var', () => {
     const css = createCSS({
@@ -26,16 +26,14 @@ describe('comp -> comp -> var', () => {
     })
 })
 
-describe('extends', () => {
-    const css = createCSS({
-        extends: [
-            { components: { a: [{ selector: '&', declarations: { order: '1' } }] } },
-            { components: { b: [{ selector: '&', declarations: { order: '2' } }] } },
-            { components: { c: [{ selector: '&', declarations: { order: '3' } }] } },
-            { components: { a: [{ selector: '&', declarations: { order: '11' } }] } }
-        ],
-        components: { b: [{ selector: '&', declarations: { order: '22' } }] }
-    })
+describe('extendConfig', () => {
+    const css = createCSS(extendConfig(
+        { components: { a: [{ selector: '&', declarations: { order: '1' } }] } },
+        { components: { b: [{ selector: '&', declarations: { order: '2' } }] } },
+        { components: { c: [{ selector: '&', declarations: { order: '3' } }] } },
+        { components: { a: [{ selector: '&', declarations: { order: '11' } }] } },
+        { components: { b: [{ selector: '&', declarations: { order: '22' } }] } }
+    ))
     test('a should be order:11', () => {
         expect(css.components.get('a')).toEqual({ selectorRules: [{ selector: '&', declarations: { order: '11' } }] })
     })
@@ -43,6 +41,29 @@ describe('extends', () => {
         expect(css.components.get('b')).toEqual({ selectorRules: [{ selector: '&', declarations: { order: '22' } }] })
     })
     test('c should be order:3', () => {
+        expect(css.components.get('c')).toEqual({ selectorRules: [{ selector: '&', declarations: { order: '3' } }] })
+    })
+})
+
+describe('MasterCSS config arguments', () => {
+    const css = new MasterCSS(
+        {
+            components: {
+                a: [{ selector: '&', declarations: { order: '1' } }],
+                b: [{ selector: '&', declarations: { order: '2' } }]
+            }
+        },
+        {
+            components: {
+                b: [{ selector: '&', declarations: { order: '22' } }],
+                c: [{ selector: '&', declarations: { order: '3' } }]
+            }
+        }
+    )
+
+    test('merges base and custom config constructor arguments', () => {
+        expect(css.components.get('a')).toEqual({ selectorRules: [{ selector: '&', declarations: { order: '1' } }] })
+        expect(css.components.get('b')).toEqual({ selectorRules: [{ selector: '&', declarations: { order: '22' } }] })
         expect(css.components.get('c')).toEqual({ selectorRules: [{ selector: '&', declarations: { order: '3' } }] })
     })
 })

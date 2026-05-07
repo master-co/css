@@ -16,14 +16,14 @@ describe('issue #215: touch: shorthand for touch-action', () => {
     ]
 
     test.each(cases)('%s → %s', (input, expected) => {
-        const css = new MasterCSS(undefined, defaultConfig)
+        const css = new MasterCSS(defaultConfig)
         const rule = css.create(input)
         expect(rule).toBeDefined()
         expect(rule?.text).toContain(expected)
     })
 
     test('touch-action: long form still works (regression)', () => {
-        const css = new MasterCSS(undefined, defaultConfig)
+        const css = new MasterCSS(defaultConfig)
         const rule = css.create('touch-action:none')
         expect(rule?.text).toContain('touch-action:none')
     })

@@ -1,11 +1,8 @@
 import config1 from './master-1-1.css'
 import config2 from './master-1-2.css'
+import { extendConfig } from '../../../src'
 
-const config = {
-    extends: [
-        config1,
-        config2,
-    ],
+const config = extendConfig(config1, config2, {
     variables: [
         { key: 'fourth', value: '$first' },
         { key: 'first', value: 'oklch(0.18 0 0)' },
@@ -30,7 +27,7 @@ const config = {
             { selector: '&', declarations: { 'background-color': 'oklch(63.7% 0.237 25.331)' } }
         ]
     }
-}
+})
 
 module.exports = {
     config

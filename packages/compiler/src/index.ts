@@ -4,6 +4,7 @@ import {
     AT_IDENTIFIERS,
     config as defaultConfig,
     createCSS,
+    extendConfig,
     generateAt,
     generateSelector,
     screens as defaultScreens,
@@ -1525,10 +1526,7 @@ function resolveComponentSelectorTokens(parsed: ParsedDirectives) {
 function createComposeCSS(parsed: ParsedDirectives, options: CompileCSSOptions) {
     const configWithoutComponents = { ...parsed.config }
     delete configWithoutComponents.components
-    return createCSS(options.config
-        ? { extends: [options.config, configWithoutComponents] }
-        : configWithoutComponents
-    )
+    return createCSS(extendConfig(options.config, configWithoutComponents))
 }
 
 function combineSelectorWrapper(selector: string, wrapper: string) {
@@ -1579,10 +1577,7 @@ function finalizeUtilityDefinitions(parsed: ParsedDirectives, options: CompileCS
     const utilities = parsed.config.utilities
     if (!utilities?.length) return
 
-    const css = createCSS(options.config
-        ? { extends: [options.config, parsed.config] }
-        : parsed.config
-    )
+    const css = createCSS(extendConfig(options.config, parsed.config))
 
     for (const definition of utilities) {
         if (definition.atRules?.some(readMasterAtRuleReference)) {
@@ -2095,10 +2090,7 @@ export function resolveCSSImportGraph(file: string): ResolvedCSSImportGraph {
 }
 
 function createDirectiveCSS(parsed: ParsedDirectives, options: CompileCSSOptions) {
-    const css = createCSS(options.config
-        ? { extends: [options.config, parsed.config] }
-        : parsed.config
-    )
+    const css = createCSS(extendConfig(options.config, parsed.config))
     const classes = options.classes || []
     for (const className of classes) {
         css.add(className)

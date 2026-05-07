@@ -12,32 +12,18 @@ export declare type ExtendedConfig = {
     components?: ComponentDefinitions
 } & Omit<Config, 'variables' | 'modes' | 'atTokens' | 'selectorTokens'>
 
+type ConfigInput = Config | ExtendedConfig | { config: Config | ExtendedConfig } | undefined
+
 function utilitySlot(utility: UtilityDefinition) {
     return `${utility.name}\0${utility.type === UtilityType.Static ? 'static' : 'syntax'}`
 }
 
-export default function extendConfig(...configs: (Config | undefined)[]) {
-    const collectConfigs = (
-        config: Config | ExtendedConfig | undefined,
-        result: (Config | ExtendedConfig)[] = []
-    ): (Config | ExtendedConfig)[] => {
-        if (!config) return result
-        if (config.extends?.length) {
-            for (const ext of config.extends) {
-                collectConfigs('config' in ext ? ext.config : ext, result)
-            }
-        }
-        const cleanConfig = { ...config }
-        delete cleanConfig.extends
-        result.push(cleanConfig)
-        return result
-    }
+function resolveConfigInput(config: ConfigInput) {
+    if (!config) return
+    return 'config' in config ? config.config : config
+}
 
-    const allConfigs = configs.reduce<(Config | ExtendedConfig)[]>(
-        (acc, config) => collectConfigs(config, acc),
-        []
-    )
-
+export default function extendConfig(...configs: ConfigInput[]) {
     let extendedConfig: ExtendedConfig = { __extended: true }
 
     for (const {
@@ -50,7 +36,7 @@ export default function extendConfig(...configs: (Config | undefined)[]) {
         selectorTokens,
         functions,
         ...rest
-    } of allConfigs) {
+    } of configs.map(resolveConfigInput).filter(Boolean) as (Config | ExtendedConfig)[]) {
         const isExtended = '__extended' in rest
         if (isExtended) delete rest.__extended
 

@@ -11,7 +11,7 @@ export default class CSSTester {
         if (baseConfig === null) {
             this.css = new MasterCSS(config)
         } else {
-            this.css = new MasterCSS(config, baseConfig || defaultConfig)
+            this.css = new MasterCSS(baseConfig || defaultConfig, config)
         }
     }
 

@@ -9,21 +9,15 @@ withFixture('config', async (context) => {
 
         expect(context.rootWorkspace?.languageService?.settings.config).toMatchObject({
             components: {
+                'fixture-card': [
+                    { selector: '&', declarations: { display: 'block' } }
+                ],
                 'fixture-button': [
                     { selector: '&', declarations: { display: 'inline-flex' } },
                     { selector: '&', declarations: { color: 'oklch(100% 0 none)' } },
                     { selector: '&', declarations: { 'background-color': 'oklch(63.7% 0.237 25.331)' } }
                 ]
-            },
-            extends: [
-                {
-                    components: {
-                        'fixture-card': [
-                            { selector: '&', declarations: { display: 'block' } }
-                        ]
-                    }
-                }
-            ]
+            }
         })
 
         await context.server.onDidClose({ document: textDocument })

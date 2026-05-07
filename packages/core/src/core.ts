@@ -70,12 +70,17 @@ export default class MasterCSS {
     readonly modes: string[] = []
     readonly atRules = new Map<string, AtRule>()
     readonly animations = new Map<string, AnimationDefinitions>()
+    baseConfig?: Config
+    customConfig?: Config
 
-    constructor(
-        public customConfig?: Config,
-        public baseConfig?: Config,
-    ) {
-        this.resolve(customConfig)
+    constructor(config?: Config, customConfig?: Config) {
+        if (customConfig === undefined) {
+            this.customConfig = config
+        } else {
+            this.baseConfig = config
+            this.customConfig = customConfig
+        }
+        this.resolve()
     }
 
     get text() {

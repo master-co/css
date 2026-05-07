@@ -2,7 +2,7 @@ import { it, test, expect } from 'vitest'
 import { createCSS } from '../../../src'
 import config from './master-css'
 
-it.concurrent('config extends', () => {
+it.concurrent('extendConfig merges config files', () => {
     const css = createCSS(config)
     expect(css.config).toMatchObject({
         components: {
