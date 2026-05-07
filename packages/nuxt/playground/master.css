@@ -1,0 +1,7 @@
+@master components {
+    .box {
+        display: flex;
+        font-size: 1em;
+        background-color: oklch(91.7% 0.08 205.041);
+    }
+}

@@ -164,7 +164,7 @@ Register the runtime provider in your root layout:
 
 ```tsx name=app/layout.tsx
 import CSSRuntimeProvider from '@master/css.react'
-import config from '../master.css'
+import config from '../master.css?master-css-config'
 
 export default function RootLayout({ children }: {
     children: React.ReactNode

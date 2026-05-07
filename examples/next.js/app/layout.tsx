@@ -1,6 +1,6 @@
 import './globals.css'
 import CSSRuntimeProvider from '@master/css.react'
-import config from '../master.css'
+import config from '../master.css?master-css-config'
 
 export const metadata = {
     title: 'Create Next App',

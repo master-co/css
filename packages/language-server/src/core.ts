@@ -162,8 +162,8 @@ export default class CSSLanguageServer {
         await this.init()
         const workspace = this.findClosestWorkspace(params.document.uri)
         if (!workspace) return
-        const name = path.parse(params.document.uri).name
-        if (name === 'master.css' || name.endsWith('.css')) {
+        const name = path.basename(URI.parse(params.document.uri).fsPath)
+        if (name === 'master.css' || name.endsWith('.css') || name.startsWith('master.css.')) {
             this.refreshSemanticTokens()
             this.connection.sendRequest('masterCSS/restart', {
                 title: 'Updating Master CSS configuration',
@@ -200,7 +200,7 @@ export default class CSSLanguageServer {
             this.console.info(`Registered global workspace folder`)
         }
         if (workspaces === 'auto') {
-            (await glob('**/master.css.*', {
+            (await glob(['**/master.css', '**/master.css.*'], {
                 cwd: workspaceFolderCWD,
                 absolute: true,
                 onlyFiles: true,

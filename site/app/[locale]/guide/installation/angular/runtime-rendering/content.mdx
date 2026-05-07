@@ -32,7 +32,7 @@ import RuntimeRenderingIntro from '../../../rendering-modes/components/RuntimeRe
     <Step $row>
         <StepL>
             ### <StepNum />Create a configuration file
-            Run the command to create a [master.css.js](/guide/configuration) file.
+            Run the command to create a [master.css](/guide/configuration) file.
         </StepL>
         <StepR>
             ```bash action=create
@@ -54,16 +54,15 @@ import RuntimeRenderingIntro from '../../../rendering-modes/components/RuntimeRe
     <Step $row>
         <StepL>
             ### <StepNum />Set up CSS runtime engine
-            Import `master.css.ts` into the entry file `src/main.ts` to enable the runtime engine.
+            Initialize the runtime engine in the entry file `src/main.ts`.
         </StepL>
         <StepR>
             ```ts name=src/main.ts
                import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
                import { AppModule } from './app/app.module';
                import { initCSSRuntime } from '@master/css-runtime'; // [!code ++]
-               import config from '../master.css'; // [!code ++]
 
-               initCSSRuntime(config); // [!code ++]
+               initCSSRuntime(); // [!code ++]
 
                platformBrowserDynamic().bootstrapModule(AppModule)
                    .catch(err => console.error(err));

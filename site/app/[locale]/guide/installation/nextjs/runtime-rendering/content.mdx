@@ -51,11 +51,11 @@ import RuntimeRenderingIntro from '../../../rendering-modes/components/RuntimeRe
     <Step $row>
         <StepL>
             ### <StepNum />Install Master CSS
-            Install Master CSS React into your project via package managers.
+            Install Master CSS React and the Next.js adapter into your project via package managers.
         </StepL>
         <StepR>
             ```bash action=install
-            @master/css.react@rc
+            @master/css.react@rc @master/css.next@rc
             ```
         </StepR>
     </Step>
@@ -64,7 +64,7 @@ import RuntimeRenderingIntro from '../../../rendering-modes/components/RuntimeRe
             ### <StepNum />Set up CSS runtime engine
             Register Master CSS Runtime with official `CSSRuntimeProvider` and provide instance context.
             1. Register the `CSSRuntimeProvider`
-            2. Import the config `../master.css`
+            2. Import the config `../master.css?master-css-config`
             3. Add `html <html hidden>` to avoid [FOUC](https://en.wikipedia.org/wiki/Flash_of_unstyled_content)
         </StepL>
         <StepR>
@@ -76,7 +76,7 @@ import RuntimeRenderingIntro from '../../../rendering-modes/components/RuntimeRe
                         code: `
                             import './globals.css'
                             import CSSRuntimeProvider from '@master/css.react' // [!code ++]
-                            import config from '../master.css' // [!code ++]
+                            import config from '../master.css?master-css-config' // [!code ++]
 
                             export const metadata = {
                                 title: 'Create Next App',
@@ -103,7 +103,7 @@ import RuntimeRenderingIntro from '../../../rendering-modes/components/RuntimeRe
                             import '../styles/globals.css'
                             import type { AppProps } from 'next/app'
                             import CSSRuntimeProvider from '@master/css.react' // [!code +]
-                            import config from '../master.css' // [!code ++]
+                            import config from '../master.css?master-css-config' // [!code ++]
                             export default function App({ Component, pageProps }: AppProps) {
                                 return (
                                     <CSSRuntimeProvider config={config}>
@@ -115,6 +115,24 @@ import RuntimeRenderingIntro from '../../../rendering-modes/components/RuntimeRe
                     }
                 ]}
             </CodeTabs>
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Set up Next.js config
+            Register the Master CSS Next.js config loader without enabling build-time pre-rendering.
+        </StepL>
+        <StepR>
+            ```js name=next.config.mjs
+            import { withMasterCSS } from '@master/css.next' // [!code ++]
+
+            /** @type {import('next').NextConfig} */
+            const nextConfig = withMasterCSS({ // [!code ++]
+                /* your Next.js config */ // [!code ++]
+            }, { mode: null }) // [!code ++]
+
+            export default nextConfig
+            ```
         </StepR>
     </Step>
     <Step $row>

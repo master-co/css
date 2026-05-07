@@ -5,7 +5,6 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join, resolve } from 'node:path';
 import bootstrap from './src/main.server';
 import { render } from '@master/css-server';
-import config from './master.css';
 
 // The Express app is exported so that it can be used by serverless Functions.
 export function app(): express.Express {
@@ -38,7 +37,7 @@ export function app(): express.Express {
         publicPath: browserDistFolder,
         providers: [{ provide: APP_BASE_HREF, useValue: baseUrl }],
       })
-      .then((html) => res.send(render(html, config).html))
+      .then((html) => res.send(render(html).html))
       .catch((err) => next(err));
   });
 

@@ -4,7 +4,6 @@ import { resolve } from 'node:path'
 import { Command } from 'commander'
 import { readJSONFileSync } from '@techor/fs'
 import log from '@techor/log'
-import detectAppExt from '../detect-app-ext'
 import detectAppTech from '../detect-app-tech'
 import detectPackageManager from '../detect-package-manager'
 import { downloadTemplate } from 'giget'
@@ -12,9 +11,7 @@ import { Options } from '../Options'
 import { execSync } from 'node:child_process'
 import { existsSync, writeFileSync } from 'node:fs'
 import ora from 'ora'
-import CONFIG_ESM_TEXT from '../master.css.mjs.js'
-import CONFIG_TS_TEXT from '../master.css.ts.js'
-import CONFIG_TEXT from '../master.css.js.js'
+import CONFIG_TEXT from '../master-css-template'
 import { dirname } from 'path'
 import { fileURLToPath } from 'url'
 import { exit } from 'node:process'
@@ -32,7 +29,6 @@ program
     .version(pkg.version || 'workspace:^')
     .argument('[project name]', 'The project name is used to create the folder')
     .option('-o, --override', 'Override existing definition file')
-    .option('--ext <ext>', 'Specify the extension mjs, ts, js')
     .option('--pm <package manager>', 'Specify the package manager npm, yarn, pnpm, bun')
     .option('--example <folder name>', 'Specify the example folder name', 'blank')
     .action(async function (appName: string | undefined, options: Options) {
@@ -94,7 +90,6 @@ program
             }
         } else {
             const appPkg = readJSONFileSync('package.json')
-            options.ext = options.ext || detectAppExt()
             const create = (fileName: string, text: string) => {
                 const configExists = existsSync(fileName)
                 if (!configExists) {
@@ -107,18 +102,7 @@ program
                     log.x`**${fileName}** already exists`
                 }
             }
-            // create master.css.* file
-            switch (options.ext) {
-                case 'js':
-                    create('master.css.js', CONFIG_TEXT)
-                    break
-                case 'mjs':
-                    create('master.css.mjs', CONFIG_ESM_TEXT)
-                    break
-                case 'ts':
-                    create('master.css.ts', CONFIG_TS_TEXT)
-                    break
-            }
+            create('master.css', CONFIG_TEXT)
             if (!appPkg?.dependencies?.['@master/css']) {
                 log.i(`Detected **${options.pm}**`)
                 log.i`Start "${options.pm} add @master/css@${BRANCH}"`

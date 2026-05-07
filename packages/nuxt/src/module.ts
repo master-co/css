@@ -1,7 +1,9 @@
 import { defineNuxtModule, addServerPlugin, createResolver, addPlugin } from '@nuxt/kit'
 import { name } from '../package.json'
 import masterCSS, { VIRTUAL_CONFIG_ID } from '@master/css.vite'
+import { loadConfigSync } from '@master/css-explore-config/sync'
 import type { Plugin } from 'vite'
+import { extname } from 'node:path'
 import ensureCSSConfigPath from '../../../shared/utils/ensure-css-config-path'
 import defaultOptions, { type ModuleOptions } from './options'
 
@@ -17,8 +19,14 @@ export default defineNuxtModule<{ config?: string }>({
         const configPath = ensureCSSConfigPath(options.config, nuxt.options.rootDir)
         nuxt.hook('nitro:config', (config) => {
             if (configPath) {
-                config.alias ??= {}
-                config.alias[VIRTUAL_CONFIG_ID] = configPath
+                if (extname(configPath) === '.css') {
+                    const result = loadConfigSync(configPath)
+                    config.virtual ??= {}
+                    config.virtual[VIRTUAL_CONFIG_ID] = `export default ${JSON.stringify(result.config)}`
+                } else {
+                    config.alias ??= {}
+                    config.alias[VIRTUAL_CONFIG_ID] = configPath
+                }
             } else {
                 config.virtual ??= {}
                 config.virtual[VIRTUAL_CONFIG_ID] = `export default {}`

@@ -1,0 +1,25 @@
+@master {
+    light {
+        --color-yellow-ring: $color-black/.1;
+        --color-touch-yellow: $color-yellow-30;
+        --color-text-yellow-contrast: $color-yellow-90;
+    }
+
+    dark {
+        --color-yellow-ring: $color-white/.3;
+        --color-touch-yellow: $color-yellow-40;
+        --color-text-yellow-contrast: $color-yellow-95;
+    }
+}
+
+@master components {
+    .yellow {
+        outline: 0.0625rem var(--color-yellow-ring) solid;
+        background-color: var(--color-yellow);
+        color: var(--color-text-yellow-contrast);
+    }
+
+    .touch-yellow:hover {
+        background-color: var(--color-touch-yellow);
+    }
+}

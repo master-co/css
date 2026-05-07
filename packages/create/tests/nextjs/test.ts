@@ -5,7 +5,7 @@ import { join } from 'node:path'
 import { existsSync } from 'node:fs'
 
 it('creates a new app', () => {
-    rm(join(__dirname, 'master.css.ts'))
+    rm(join(__dirname, 'master.css'))
     execSync('tsx ../../src/bin', { cwd: __dirname })
-    expect(existsSync(join(__dirname, 'master.css.ts'))).toBe(true)
+    expect(existsSync(join(__dirname, 'master.css'))).toBe(true)
 })

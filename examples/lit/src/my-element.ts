@@ -4,7 +4,7 @@ import masterLogo from './assets/master.svg'
 import litLogo from './assets/lit.svg'
 import { cssRuntime } from '@master/css-runtime'
 import type { CSSRuntime } from '@master/css-runtime'
-import config from '../master.css'
+import config from '../master.css?master-css-config'
 
 /**
  * An example element.

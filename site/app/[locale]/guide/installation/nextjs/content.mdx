@@ -73,7 +73,7 @@ import ProgressiveRenderingIntro from '../../rendering-modes/components/Progress
                         code: `
                             import './globals.css'
                             import CSSRuntimeProvider from '@master/css.react' // [!code ++]
-                            import config from '../master.css' // [!code ++]
+                            import config from '../master.css?master-css-config' // [!code ++]
 
                             export const metadata = {
                                 title: 'Create Next App',
@@ -100,7 +100,7 @@ import ProgressiveRenderingIntro from '../../rendering-modes/components/Progress
                             import '../styles/globals.css'
                             import type { AppProps } from 'next/app'
                             import CSSRuntimeProvider from '@master/css.react' // [!code +]
-                            import config from '../master.css' // [!code ++]
+                            import config from '../master.css?master-css-config' // [!code ++]
 
                             export default function App({ Component, pageProps }: AppProps) {
                                 return (

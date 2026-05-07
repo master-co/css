@@ -3,15 +3,67 @@ import type { NextConfig } from 'next'
 import { registerOptions, type Options } from './options'
 
 type WithAdapterPath<T extends NextConfig> = T & { adapterPath: string }
+type WebpackConfig = Parameters<NonNullable<NextConfig['webpack']>>[0]
+type WebpackContext = Parameters<NonNullable<NextConfig['webpack']>>[1]
+type TurbopackRules = NonNullable<NonNullable<NextConfig['turbopack']>['rules']>
 
 function resolveAdapterPath() {
     return fileURLToPath(new URL('./adapter.mjs', import.meta.url))
 }
 
+function resolveCSSConfigLoaderPath() {
+    return fileURLToPath(new URL('./css-config-loader.mjs', import.meta.url))
+}
+
+function applyMasterCSSWebpackConfig(config: WebpackConfig, loaderPath: string) {
+    config.module ??= {}
+    config.module.rules ??= []
+    config.module.rules.push({
+        resourceQuery: /master-css-config/,
+        type: 'javascript/auto',
+        use: [
+            {
+                loader: loaderPath
+            }
+        ]
+    })
+    return config
+}
+
+function applyMasterCSSTurbopackConfig(nextConfig: NextConfig, loaderPath: string) {
+    const rules = nextConfig.turbopack?.rules || {}
+    const cssConfigRules = rules['*.css?master-css-config']
+    const masterCSSConfigRule = {
+        loaders: [loaderPath],
+        as: '*.js'
+    }
+    return {
+        ...nextConfig.turbopack,
+        rules: {
+            ...rules,
+            '*.css?master-css-config': [
+                masterCSSConfigRule,
+                ...(Array.isArray(cssConfigRules) ? cssConfigRules : cssConfigRules ? [cssConfigRules] : [])
+            ]
+        } satisfies TurbopackRules
+    }
+}
+
 export function withMasterCSS<T extends NextConfig>(nextConfig: T, options: Options & { mode: null }): T
 export function withMasterCSS<T extends NextConfig>(nextConfig?: T, options?: Options): WithAdapterPath<T>
 export function withMasterCSS<T extends NextConfig>(nextConfig: T = {} as T, options: Options = {}): T | WithAdapterPath<T> {
-    if (options.mode === null) return nextConfig
+    const cssConfigLoaderPath = resolveCSSConfigLoaderPath()
+    const userWebpack = nextConfig.webpack
+    const nextConfigWithCSSConfigLoader = {
+        ...nextConfig,
+        turbopack: applyMasterCSSTurbopackConfig(nextConfig, cssConfigLoaderPath),
+        webpack(config: WebpackConfig, context: WebpackContext) {
+            const resolvedConfig = userWebpack ? userWebpack(config, context) || config : config
+            return applyMasterCSSWebpackConfig(resolvedConfig, cssConfigLoaderPath)
+        }
+    }
+
+    if (options.mode === null) return nextConfigWithCSSConfigLoader
 
     const adapterPath = resolveAdapterPath()
     const existingAdapterPath = nextConfig.adapterPath
@@ -22,7 +74,7 @@ export function withMasterCSS<T extends NextConfig>(nextConfig: T = {} as T, opt
     registerOptions(options)
 
     return {
-        ...nextConfig,
+        ...nextConfigWithCSSConfigLoader,
         adapterPath
     }
 }

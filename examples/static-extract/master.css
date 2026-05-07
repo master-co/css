@@ -1,1 +1,3 @@
-@layer base,theme,preset,components,utilities;@layer utilities{.italic{font-style:italic}.m\:12x{margin:3rem}.fg\:primary{color:rgb(0 0 0)}.font\:40{font-size:2.5rem}.font\:heavy{font-weight:900}.text\:center{text-align:center}}
+@master {
+    --primary: #000000;
+}

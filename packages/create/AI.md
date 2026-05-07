@@ -9,7 +9,7 @@ This package scaffolds Master CSS config files or downloads example projects.
 - `src/bin/index.ts`
 - `src/detect-app-tech.ts`
 - `src/detect-app-ext.ts`
-- `src/master.css.*.js`
+- `src/master-css-template.ts`
 - `tests/*`
 
 ## Risks
@@ -32,4 +32,3 @@ pnpm --filter @master/create-css test
 pnpm --filter @master/create-css build
 pnpm --filter @master/create-css type-check
 ```
-

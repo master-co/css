@@ -299,6 +299,9 @@ importers:
         specifier: ^3.2.0
         version: 3.2.0
     devDependencies:
+      '@master/css.vite':
+        specifier: workspace:^
+        version: link:../../packages/vite
       typescript:
         specifier: ^6.0.3
         version: 6.0.3
@@ -497,6 +500,9 @@ importers:
         specifier: ^3.3.2
         version: 3.3.2
     devDependencies:
+      '@master/css.vite':
+        specifier: workspace:^
+        version: link:../../packages/vite
       typescript:
         specifier: ^6.0.3
         version: 6.0.3
@@ -522,6 +528,9 @@ importers:
       '@master/css-cli':
         specifier: workspace:^
         version: link:../../packages/cli
+      '@master/css.next':
+        specifier: workspace:^
+        version: link:../../packages/next
       '@types/node':
         specifier: ^25.6.0
         version: 25.6.0
@@ -543,6 +552,9 @@ importers:
 
   examples/next.js-with-runtime-rendering:
     dependencies:
+      '@master/css.next':
+        specifier: workspace:^
+        version: link:../../packages/next
       '@master/css-runtime':
         specifier: workspace:^
         version: link:../../packages/runtime
@@ -1583,6 +1595,9 @@ importers:
 
   packages/nuxt:
     dependencies:
+      '@master/css-explore-config':
+        specifier: workspace:^
+        version: link:../explore-config
       '@master/css-server':
         specifier: workspace:^
         version: link:../server

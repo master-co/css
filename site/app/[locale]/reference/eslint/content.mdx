@@ -157,7 +157,7 @@ Specifies object keys to ignore checking.
 </Code>
 
 ### `settings.config`
-Specify a custom Master CSS configuration or path. By default, it reads a module named `master.css.*` based on the current working directory.
+Specify a custom Master CSS configuration or path. By default, it reads `master.css` based on the current working directory.
 <Code lang="js" name="eslint.config.js">
 {`
     export default [
@@ -171,7 +171,7 @@ Specify a custom Master CSS configuration or path. By default, it reads a module
     ]
 `}
 </Code>
-If the `master.css` module cannot be found, you can specify the path:
+If the `master.css` file cannot be found, you can specify the path:
 ```js name=eslint.config.js
 import { fileURLToPath } from 'node:url'
 
@@ -179,12 +179,11 @@ export default [
     {
         settings: {
             "@master/css": {
-                config: fileURLToPath(new URL('master.css.ts', import.meta.url))
+                config: fileURLToPath(new URL('master.css', import.meta.url))
             }
         }
     }
 ]
 ```
-
 
 

@@ -6,7 +6,7 @@ export default [
     {
         settings: {
             '@master/css': {
-                config: fileURLToPath(new URL('master.css.ts', import.meta.url))
+                config: fileURLToPath(new URL('master.css', import.meta.url))
             }
         }
     },

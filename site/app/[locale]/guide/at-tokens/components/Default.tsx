@@ -13,9 +13,8 @@ export default () =>
             <tbody>
                 {
                     [
-                        ...Object.keys(atTokens)
-                            .map((tokenName) => {
-                                const tokenValue = atTokens[tokenName]
+                        ...Object.entries(atTokens)
+                            .map(([tokenName, tokenValue]) => {
                                 return (
                                     <tr key={tokenName}>
                                         <th><code>{tokenName}</code></th>

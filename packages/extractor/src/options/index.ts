@@ -21,6 +21,7 @@ const options: Options = {
         '**/*.test.*',
         '**/*test.{js,cjs,mjs,ts}',
         '**/*.options.*',
+        '**/master.css',
         '**/*master.css.*',
         '**/*master.css-renderer.*',
         '**/*README.md',

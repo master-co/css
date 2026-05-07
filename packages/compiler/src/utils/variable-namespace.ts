@@ -4,16 +4,24 @@ const variableNamespaces = variables
     .map(({ namespace }) => namespace)
     .filter(Boolean) as string[]
 
+const dottedNamespaceAliases = Object.fromEntries(
+    variableNamespaces
+        .filter((namespace) => namespace.includes('.'))
+        .map((namespace) => [namespace.replace(/\./g, '-'), namespace])
+)
+
 const namespaces = Array.from(new Set([
     ...utilities
         .filter(({ type }) => type !== UtilityType.Static)
         .map(({ name }) => name),
     ...variableNamespaces,
+    ...Object.keys(dottedNamespaceAliases),
     'screen',
     'radius'
 ])).sort((a, b) => b.length - a.length)
 
 const namespaceAliases: Record<string, string> = {
+    ...dottedNamespaceAliases,
     radius: 'border-radius'
 }
 
@@ -34,9 +42,10 @@ export default function resolveVariableNamespace(customProperty: string): Variab
 
     const namespace = namespaceAliases[matchedNamespace] ?? matchedNamespace
     const key = name.slice(matchedNamespace.length + 1)
+    const normalizedPrefix = namespace.replace(/\./g, '-')
 
     return {
-        name: matchedNamespace === namespace ? name : namespace + '-' + key,
+        name: matchedNamespace === normalizedPrefix ? name : normalizedPrefix + '-' + key,
         namespace,
         group: namespace,
         key

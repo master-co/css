@@ -1,0 +1,4 @@
+@master {
+    mode-trigger: media;
+    --primary: $(yellow);
+}

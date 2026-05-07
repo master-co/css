@@ -24,13 +24,13 @@ export interface LoadConfigResult {
 export type ExploreConfigResult = ExploreConfigPath & LoadConfigResult
 
 export const DEFAULT_EXTENSIONS = [
+    'css',
     'js',
     'mjs',
     'ts',
     'cjs',
     'cts',
-    'mts',
-    'css'
+    'mts'
 ]
 
 export const DEFAULT_RESOLVED_KEYS = [

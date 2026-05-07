@@ -1,24 +1,9 @@
-```ts name=master.css.ts
-import { UtilityType } from '@master/css'
-
-export default {
-    utilities: [
-        {
-            name: 'round', // [!code highlight]
-            type: UtilityType.Static, // [!code highlight]
-            declarations: { // [!code highlight]
-                'border-radius': '50%', // [!code highlight]
-                'aspect-ratio': '1/1' // [!code highlight]
-            } // [!code highlight]
-        },
-        {
-            name: 'foo', // [!code highlight]
-            unit: 'rem', // [!code highlight]
-            declarations: { // [!code highlight]
-                width: undefined // [!code highlight]
-            } // [!code highlight]
-        }
-    ]
+```css name=master.css
+@master utilities {
+    .round { /* [!code highlight] */
+        border-radius: 50%; /* [!code highlight] */
+        aspect-ratio: 1 / 1; /* [!code highlight] */
+    } /* [!code highlight] */
 }
 ```
 Apply a static utility:
@@ -26,15 +11,11 @@ Apply a static utility:
 <!-- @MARK round -->
 <div class="round">o</div>
 ```
-Apply a value utility:
-```html
-<!-- @MARK foo:32 -->
-<div class="foo:32"></div>
-```
 Generated CSS:
 ```css
-.foo\:32 {
-    width: 2rem;
+.round {
+    border-radius: 50%;
+    aspect-ratio: 1 / 1;
 }
 ```
 Use utilities with selectors and at-rules:

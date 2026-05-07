@@ -14,11 +14,11 @@
     <Step $row>
         <StepL>
             ### <StepNum />Install Master CSS
-            Install [`@master/css-runtime`](/reference/runtime) into your project.
+            Install [`@master/css-runtime`](/reference/runtime) and [`@master/css.vite`](/guide/installation/vite) into your project.
         </StepL>
         <StepR>
             ```bash action=install
-            @master/css-runtime@rc
+            @master/css-runtime@rc @master/css.vite@rc
             ```
         </StepR>
     </Step>
@@ -35,6 +35,24 @@
     </Step>
     <Step $row>
         <StepL>
+            ### <StepNum />Set up Vite config
+            Register the Master CSS Vite config loader without automatic runtime injection.
+        </StepL>
+        <StepR>
+            ```ts name=vite.config.ts
+            import { defineConfig } from 'vite'
+            import masterCSS from '@master/css.vite' // [!code highlight]
+
+            export default defineConfig({
+                plugins: [
+                    masterCSS({ mode: null, injectNormalCSS: false }) // [!code highlight]
+                ]
+            })
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
             ### <StepNum />Set up CSS runtime engine
             Decorate your Lit element with `@cssRuntime()` to initialize Master CSS Runtime for the element's shadow root.
         </StepL>
@@ -44,7 +62,7 @@
             import { customElement } from 'lit/decorators.js'
             import { cssRuntime } from '@master/css-runtime' // [!code highlight]
             import type { CSSRuntime } from '@master/css-runtime' // [!code highlight]
-            import config from '../master.css' // [!code highlight]
+            import config from '../master.css?master-css-config' // [!code highlight]
 
             @customElement('my-element')
             @cssRuntime({ config }) // [!code highlight]

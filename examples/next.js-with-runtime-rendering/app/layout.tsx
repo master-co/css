@@ -1,6 +1,6 @@
 import './globals.css'
 import CSSRuntimeProvider from '@master/css.react'
-import config from '../master.css'
+import config from '../master.css?master-css-config'
 import { ReactNode } from 'react';
 
 export const metadata = {

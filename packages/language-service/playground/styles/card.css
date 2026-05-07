@@ -1,0 +1,5 @@
+@master components {
+    .card {
+        display: inline-flex;
+    }
+}

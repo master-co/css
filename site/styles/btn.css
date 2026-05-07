@@ -1,0 +1,49 @@
+@master components {
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        outline-offset: -0.0625rem;
+    }
+
+    .btn-xs {
+        border-radius: 0.25rem;
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+        font-size: 0.75rem;
+        height: 1.5rem;
+    }
+
+    .btn-sm {
+        border-radius: 0.375rem;
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
+        font-size: 0.75rem;
+        height: 2rem;
+    }
+
+    .btn-md {
+        border-radius: 0.375rem;
+        padding-left: 1rem;
+        padding-right: 1rem;
+        font-size: 0.875rem;
+        height: 2.5rem;
+    }
+
+    .btn-lg {
+        border-radius: 0.5rem;
+        padding-left: 1.25rem;
+        padding-right: 1.25rem;
+        font-size: 1rem;
+        height: 3rem;
+    }
+
+    .btn-xl {
+        border-radius: 0.625rem;
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+        font-size: 1rem;
+        height: 3.5rem;
+    }
+}

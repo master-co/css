@@ -5,8 +5,8 @@ import { readFileSync } from 'node:fs'
 import { rm } from 'shared/utils/fs'
 
 it('init cjs', async () => {
-    rm(join(__dirname, 'master.css.js'))
+    rm(join(__dirname, 'master.css'))
     execSync('tsx ../../src/bin', { cwd: __dirname })
-    const config = (await import('../../src/master.css.js.js')).default
-    expect(readFileSync(join(__dirname, 'master.css.js'), 'utf-8')).toEqual(config)
+    const config = (await import('../../src/master-css-template')).default
+    expect(readFileSync(join(__dirname, 'master.css'), 'utf-8')).toEqual(config)
 })

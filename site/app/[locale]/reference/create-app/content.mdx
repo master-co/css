@@ -1,6 +1,4 @@
-import MASTER_CSS_CJS_RAW from '~/site/../packages/create/src/master.css.js.js'
-import MASTER_CSS_ESM_RAW from '~/site/../packages/create/src/master.css.mjs.js'
-import MASTER_CSS_TS_RAW from '~/site/../packages/create/src/master.css.ts.js'
+import MASTER_CSS_RAW from '~/site/../packages/create/src/master-css-template'
 
 ## Usage [sr-only]
 ### Create a config file
@@ -18,47 +16,17 @@ Or you can specify an argument to create a new project, which by default uses th
 ---
 
 ## API Reference
-### `create --ext esm`
-Specify creating a `master.css.mjs` file in ECMAScript Modules format. If `package.json` is set `"type": "module"` will be enabled automatically.
-<DocProp defaultValue="auto" types={['boolean']} />
+### `create`
+Create a `master.css` config file in the current project.
+<DocProp defaultValue="'master.css'" types={['string']} />
 ```bash action=create
-@master/css@rc --ext esm
+@master/css@rc
 ```
 <details>
     <summary>View the generated file</summary>
     <div>
-        <Code lang="js" name="master.css.mjs">
-            {MASTER_CSS_ESM_RAW}
-        </Code>
-    </div>
-</details>
-
-### `create --ext cjs`
-Specify creating a `master.css.js` file in CommonJS format.
-<DocProp defaultValue="auto" types={['boolean']} />
-```bash action=create
-@master/css@rc --ext cjs
-```
-<details>
-    <summary>View the generated file</summary>
-    <div>
-        <Code lang="js" name="master.css.js">
-            {MASTER_CSS_CJS_RAW}
-        </Code>
-    </div>
-</details>
-
-### `create --ext ts`
-Specify creating a `master.css.ts` file in TypeScript format. Automatically enabled if `tsconfig.json` exists.
-<DocProp defaultValue="auto" types={['boolean']} />
-```bash action=create
-@master/css@rc --ext ts
-```
-<details>
-    <summary>View the generated file</summary>
-    <div>
-        <Code lang="js" name="master.css.ts">
-            {MASTER_CSS_TS_RAW}
+        <Code lang="css" name="master.css">
+            {MASTER_CSS_RAW}
         </Code>
     </div>
 </details>

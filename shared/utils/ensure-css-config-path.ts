@@ -1,7 +1,7 @@
 import { existsSync } from 'node:fs'
 import { resolve } from 'node:path'
 
-const EXTENSIONS = ['js', 'mjs', 'ts', 'cjs', 'cts', 'mts']
+const EXTENSIONS = ['css', 'js', 'mjs', 'ts', 'cjs', 'cts', 'mts']
 
 export default function ensureCSSConfigPath(name = 'master.css', root = process.cwd()) {
     // check if the name is a path

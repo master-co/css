@@ -49,7 +49,7 @@ test('returns undefined when the config file does not exist', async () => {
     expect(await exploreConfig({ cwd: __dirname, name: 'missing.css' })).toBeUndefined()
 })
 
-test('loads CSS configs after script configs', async () => {
+test('prefers CSS configs before script configs', async () => {
     const cwd = mkdtempSync(join(tmpdir(), 'master-css-config-'))
     try {
         writeFileSync(join(cwd, 'master.css'), `
@@ -74,11 +74,9 @@ test('loads CSS configs after script configs', async () => {
 
         writeFileSync(join(cwd, 'master.css.ts'), `export default { components: { script: [{ selector: '&', declarations: { display: 'block' } }] } }`)
         expect((await exploreConfig({ cwd }))?.config).toStrictEqual({
-            components: {
-                script: [
-                    { selector: '&', declarations: { display: 'block' } }
-                ]
-            }
+            variables: [
+                { namespace: 'color', key: 'primary', value: '#123' }
+            ]
         })
     } finally {
         rmSync(cwd, { force: true, recursive: true })
@@ -131,16 +129,16 @@ test('loads config results directly', async () => {
     })
 })
 
-test('resolves CSS configs with the lowest default priority', async () => {
+test('resolves CSS configs with the highest default priority', async () => {
     const cwd = mkdtempSync(join(tmpdir(), 'master-css-config-'))
     try {
         writeFileSync(join(cwd, 'master.css'), '')
         writeFileSync(join(cwd, 'master.css.ts'), `export default {}`)
 
         expect(resolveConfigPath({ cwd })).toMatchObject({
-            basename: 'master.css.ts',
-            extension: 'ts',
-            path: join(cwd, 'master.css.ts')
+            basename: 'master.css',
+            extension: 'css',
+            path: join(cwd, 'master.css')
         })
     } finally {
         rmSync(cwd, { force: true, recursive: true })
