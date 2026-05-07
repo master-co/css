@@ -6,7 +6,9 @@ createTester({
         '@master/css': {
             classAttributes: ['test', 'className', 'class'],
             config: {
-                components: { zDialog: ['z:10000'] },
+                components: { zDialog: [
+                    { selector: '&', declarations: { 'z-index': 10000 } }
+                ] },
             },
         },
     },

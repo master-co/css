@@ -2,7 +2,14 @@
 
 export default {
     components: {
-        btn: ['font:14 h:40 text:center bg:primary fg:white font:medium']
+        btn: [
+            { selector: '&', declarations: { 'font-size': '0.875rem' } },
+            { selector: '&', declarations: { height: '2.5rem' } },
+            { selector: '&', declarations: { 'text-align': 'center' } },
+            { selector: '&', declarations: { 'background-color': 'var(--color-primary)' } },
+            { selector: '&', declarations: { color: '#fff' } },
+            { selector: '&', declarations: { 'font-weight': '500' } }
+        ]
     },
     modeTrigger: 'class',
     modes: ['light', 'dark'],

@@ -84,19 +84,21 @@ We built in commonly used animations, and the `@master/keyframes.css` package is
 To customize keyframes, check out the [Animations](/guide/configuration#animations) documentation.
 
 ### Using abstract styles
-Deprecate extended `classes` ​​in favor of `config.components`.
-```js name=master.css.js
+Deprecate extended `classes` ​​in favor of `@master components`.
+```js
 import { Style } from '@master/css' /* [!code --] */
 
 Style.extend('classes', { /* [!code --] */
    btn: '…' /* [!code --] */
 }) /* [!code --] */
+```
 
-export default { /* [!code ++] */
-    components: { /* [!code ++] */
-        btn: '…' /* [!code ++] */
-    } /* [!code ++] */
-} /* [!code ++] */
+```css name=master.css
+@master components {
+    .btn {
+        @compose "…";
+    }
+}
 ```
 Apply the style:
 ```html

@@ -1,4 +1,11 @@
-<Code lang="js" name="master.css.js">{require('../tests/add-a-style/master.css.js?raw')}</Code>
+```css name=master.css
+@master components {
+    .btn {
+        display: inline-flex;
+        height: 2.5rem;
+    }
+}
+```
 Apply the `btn` style to the button element:
 <Demo>
     <button className="justify-center items-center inline-flex bg:invert fg:invert font:14 font:medium h:10x px:4x r:2x">Submit</button>

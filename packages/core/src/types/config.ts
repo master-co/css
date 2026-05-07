@@ -50,12 +50,11 @@ export type AtTokenDefinition = number | string
 export interface AtTokenDefinitions {
     [key: string]: AtTokenDefinition | AtTokenDefinitions;
 }
-export interface ComponentSelectorDefinition {
+export interface ComponentDefinition {
     selector: string
     declarations: CSSDeclarations
     atRules?: string[]
 }
-export type ComponentDefinition = string | ComponentSelectorDefinition
 export type ComponentDefinitions = Record<string, ComponentDefinition[]>
 export type UtilityDefinitions = UtilityDefinition[]
 export type VariableDefinitions = VariableDefinition[]

@@ -2,6 +2,10 @@ import type { Config } from '@master/css'
 
 export default {
     components: {
-        btn: 'inline-flex px:4x bg:error'
+        btn: [
+            { selector: '&', declarations: { display: 'inline-flex' } },
+            { selector: '&', declarations: { 'padding-left': '1rem', 'padding-right': '1rem' } },
+            { selector: '&', declarations: { 'background-color': 'error' } }
+        ]
     }
 } as Config

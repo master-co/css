@@ -2,6 +2,8 @@ import { Config } from '@master/css'
 
 export default {
     components: {
-        card: 'inline-flex'
+        card: [
+            { selector: '&', declarations: { display: 'inline-flex' } }
+        ]
     }
 } as Config

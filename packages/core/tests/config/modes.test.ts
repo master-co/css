@@ -9,11 +9,16 @@ test.concurrent('media modes', () => {
 })
 
 test('components', () => {
-    expectLayers({ components: '.dark .btn\\@dark{display:block}' }, 'btn@dark', { components: { btn: ['block'] }, modeTrigger: 'class' })
+    expectLayers({ components: '.dark .btn\\@dark{display:block}' }, 'btn@dark', { components: { btn: [
+        { selector: '&', declarations: { display: 'block' } }
+    ] }, modeTrigger: 'class' })
 })
 
-test('component utilities can include modes and selectors', () => {
-    const css = createCSS({ components: { btn: ['block@dark font:16:hover'] }, modeTrigger: 'class' }).add('btn')
+test('components can include modes and selectors', () => {
+    const css = createCSS({ components: { btn: [
+        { selector: '.dark &', declarations: { display: 'block' } },
+        { selector: '&:hover', declarations: { 'font-size': '1rem' } }
+    ] }, modeTrigger: 'class' }).add('btn')
 
     expect(css.componentsLayer.text).toContain('.dark .btn{display:block}')
     expect(css.componentsLayer.text).toContain('.btn:hover{font-size:1rem}')

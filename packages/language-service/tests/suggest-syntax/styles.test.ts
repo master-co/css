@@ -6,12 +6,14 @@ import { Settings } from '../../src'
 const settings: Settings = {
     config: {
         components: {
-            btn: ['inline-block']
+            btn: [
+                { selector: '&', declarations: { display: 'inline-block' } }
+            ]
         }
     }
 }
 it.concurrent('info', () => expect(hint('b', settings)?.find(({ label }) => label === 'btn')).toMatchObject({
-    detail: 'inline-block (style)',
+    detail: '& (component)',
     documentation: {
         kind: 'markdown',
         value: dedent`

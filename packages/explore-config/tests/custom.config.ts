@@ -2,6 +2,8 @@ import type { Config } from '@master/css'
 
 export default {
     components: {
-        custom: ['inline-flex']
+        custom: [
+            { selector: '&', declarations: { display: 'inline-flex' } }
+        ]
     }
 } as Config

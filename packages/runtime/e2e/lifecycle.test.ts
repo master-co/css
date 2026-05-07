@@ -29,7 +29,11 @@ test('destroy on progressive', async ({ page }) => {
 test('prevent attach layer twice', async ({ page }) => {
     await init(page, '@layer base, theme, preset, components, utilities;', {
         components: {
-            'app-wrapper': ['mx:auto', 'px:5x', 'h:10x']
+            'app-wrapper': [
+                { selector: '&', declarations: { 'margin-left': 'auto', 'margin-right': 'auto' } },
+                { selector: '&', declarations: { 'padding-left': '1.25rem', 'padding-right': '1.25rem' } },
+                { selector: '&', declarations: { height: '2.5rem' } }
+            ]
         }
     })
     await page.evaluate(() => {

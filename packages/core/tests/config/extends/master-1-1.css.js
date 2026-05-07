@@ -1,7 +1,13 @@
 const config = {
     components: {
-        btn: ['font:19 h:70 text:center'],
-        btn4: ['font:200']
+        btn: [
+            { selector: '&', declarations: { 'font-size': '1.1875rem' } },
+            { selector: '&', declarations: { height: '4.375rem' } },
+            { selector: '&', declarations: { 'text-align': 'center' } }
+        ],
+        btn4: [
+            { selector: '&', declarations: { 'font-size': '12.5rem' } }
+        ]
     }
 }
 

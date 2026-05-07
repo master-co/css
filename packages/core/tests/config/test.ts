@@ -6,7 +6,13 @@ test.concurrent('components', () => {
     expectLayers(
         { components: '.\\?{padding-left:1.25rem;padding-right:1.25rem}.\\?{font-size:0.875rem}.\\?{height:2.5rem}.\\?{text-align:center}.\\?:hover{color:#fff}' },
         '?',
-        { components: { '?': ['font:14 text:center h:40 px:20 fg:#fff:hover'] } }
+        { components: { '?': [
+            { selector: '&', declarations: { 'padding-left': '1.25rem', 'padding-right': '1.25rem' } },
+            { selector: '&', declarations: { 'font-size': '0.875rem' } },
+            { selector: '&', declarations: { height: '2.5rem' } },
+            { selector: '&', declarations: { 'text-align': 'center' } },
+            { selector: '&:hover', declarations: { color: '#fff' } }
+        ] } }
     )
 })
 

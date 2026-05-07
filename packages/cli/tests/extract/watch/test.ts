@@ -30,7 +30,9 @@ const originHTMLText = dedent`
 const originConfigText = `import type { Config } from '@master/css'
 const config: Config = {
     components: {
-        btn: ['bg:red']
+        btn: [
+            { selector: '&', declarations: { 'background-color': 'oklch(63.7% 0.237 25.331)' } }
+        ]
     },
     variables: [
         { namespace: 'color', key: 'primary', value: '$(color-blue)' }
@@ -109,7 +111,7 @@ it('start watch process', async () => {
 it('change config file `components` and reset process', async () => {
     await Promise.all([
         waitForWatchRestart(() => {
-            fs.writeFileSync(configFilepath, originConfigText.replace('bg:red', 'bg:blue'))
+            fs.writeFileSync(configFilepath, originConfigText.replace('oklch(63.7% 0.237 25.331)', 'var(--color-blue)'))
         }),
         waitForCSSContent((css) => css.includes('.btn{background-color:var(--color-blue)'))
     ])

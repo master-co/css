@@ -1,8 +1,8 @@
 export default {
     components: {
-        card: ['r:2x'], /* [!code highlight] */
-        'card-header': ['bb:1|black'], /* [!code highlight] */
-        'card-content': ['p:5x'], /* [!code highlight] */
-        'card-footer': ['bt:1|black'], /* [!code highlight] */
+        card: [{ selector: '&', declarations: { 'border-radius': '0.5rem' } }], /* [!code highlight] */
+        'card-header': [{ selector: '&', declarations: { 'border-bottom': '0.0625rem solid oklch(0% 0 none)' } }], /* [!code highlight] */
+        'card-content': [{ selector: '&', declarations: { padding: '1.25rem' } }], /* [!code highlight] */
+        'card-footer': [{ selector: '&', declarations: { 'border-top': '0.0625rem solid oklch(0% 0 none)' } }], /* [!code highlight] */
     }
 }

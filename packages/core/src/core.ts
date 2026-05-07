@@ -11,7 +11,7 @@ import UtilityLayer from './utility-layer'
 import NonLayer from './non-layer'
 import { ColorVariable, ComponentEntry, DefinedUtility, GeneratedUtility, Variable } from './types/syntax'
 import { AtRule, AtRuleValueNode } from './utils/parse-at'
-import { AnimationDefinitions, ComponentSelectorDefinition, Config, UtilityDefinition, VariableDefinition } from './types/config'
+import { AnimationDefinitions, ComponentDefinition, Config, UtilityDefinition, VariableDefinition } from './types/config'
 import registerGlobal from './register-global'
 import parseAt from './utils/parse-at'
 import parseValue from './utils/parse-value'
@@ -259,38 +259,31 @@ export default class MasterCSS {
 
     resolveComponents() {
         const { components = {} } = this.config
-        const normalizeClassNames = (classNames?: string | string[]) => {
-            if (!classNames) return []
-            return (Array.isArray(classNames) ? classNames.join(' ') : classNames)
-                .replace(/(?:\n\s*)+/g, ' ')
-                .trim()
-                .split(' ')
-                .filter(Boolean)
-        }
         for (const name in components) {
             const definition = components[name]
             if (!Array.isArray(definition)) {
                 throw new Error(`Component "${name}" must be an array`)
             }
-            const classNames: string[] = []
             const selectorRules: ComponentEntry['selectorRules'] = []
             for (const item of definition) {
-                if (typeof item === 'string') {
-                    classNames.push(...normalizeClassNames(item))
-                    continue
+                if (typeof item !== 'object' || !item) {
+                    throw new Error(`Component "${name}" definitions must be objects`)
                 }
-                const { selector, declarations, atRules } = item as ComponentSelectorDefinition
+                const { selector, declarations, atRules } = item as ComponentDefinition
                 if (!selector.includes('&')) {
                     throw new Error(`Component "${name}" selector must include "&"`)
                 }
+                let resolvedSelector = selector
+                for (const token of Object.keys(this.config.selectorTokens || {}).sort((a, b) => b.length - a.length)) {
+                    resolvedSelector = resolvedSelector.split(token).join(this.config.selectorTokens![token])
+                }
                 selectorRules.push({
-                    selector,
+                    selector: resolvedSelector,
                     declarations: declarations as any,
                     ...(atRules?.length ? { atRules } : {})
                 })
             }
             this.components.set(name, {
-                classNames,
                 selectorRules
             })
         }
@@ -573,14 +566,6 @@ export default class MasterCSS {
         let utilities: GeneratedUtility[] = []
         const component = this.components.get(className)
         if (component) {
-            component.classNames.forEach((cls) => {
-                const utility = this.create(cls, className, mode)
-                if (utility && utility.valid) {
-                    utilities.push(utility)
-                } else {
-                    console.error(`Invalid class "${cls}" found in ${className} component.`)
-                }
-            })
             this.appendComponentRules(utilities, className, component.selectorRules)
         } else {
             const atIndex = className.indexOf('@')
@@ -589,13 +574,7 @@ export default class MasterCSS {
                 const component = this.components.get(name)
                 if (component) {
                     const atToken = className.slice(atIndex)
-                    component.classNames.forEach((eachUtility) => {
-                        const utility = this.create(eachUtility + atToken, className, mode)
-                        if (utility && utility.valid) {
-                            utilities.push(utility)
-                        }
-                    })
-                    this.appendComponentRules(utilities, className, component.selectorRules)
+                    this.appendComponentRules(utilities, name + atToken, component.selectorRules)
                 }
             }
             const utility = this.create(className, undefined, mode)

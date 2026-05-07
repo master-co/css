@@ -3,13 +3,20 @@ import { jsxTester } from './testers'
 
 jsxTester.run('class matching components', rule, {
     valid: [
-        { code: 'export default { components: { btn: ["block"] } }' },
-        { code: 'export default { components: { btn: ["font:12 h:6x px:2x r:2x", { selector: "&", declarations: { display: "inline-flex" } }] } }' },
+        { code: 'export default { components: { btn: [{ selector: "&", declarations: { display: "block" } }] } }' },
+        { code: 'export default { components: { btn: [{ selector: "&", declarations: { fontSize: "0.75rem", height: "1.5rem", paddingLeft: "0.5rem", paddingRight: "0.5rem", borderRadius: "0.5rem" } }, { selector: "&", declarations: { display: "inline-flex" } }] } }' },
         { code: 'export default { components: { btn: [{ selector: "&", declarations: { color: "bg:error" } }] } }' }
     ],
     invalid: [
-        { code: 'export default { components: { btn: ["bg:error"] } }', errors: [{ messageId: 'invalidClass' }] },
-        { code: 'const components = "bg:error"', errors: [{ messageId: 'invalidClass' }] },
-        { code: 'const components = { btn: ["bg:error"] }', errors: [{ messageId: 'invalidClass' }] },
+        {
+            code: 'const classes = "bg:error"',
+            settings: { '@master/css': { classDeclarations: ['classes'] } },
+            errors: [{ messageId: 'invalidClass' }]
+        },
+        {
+            code: 'const classes = { btn: ["bg:error"] }',
+            settings: { '@master/css': { classDeclarations: ['classes'] } },
+            errors: [{ messageId: 'invalidClass' }]
+        },
     ]
 })

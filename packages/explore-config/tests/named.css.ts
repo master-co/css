@@ -2,12 +2,16 @@ import type { Config } from '@master/css'
 
 export const config = {
     components: {
-        named: ['inline-flex']
+        named: [
+            { selector: '&', declarations: { display: 'inline-flex' } }
+        ]
     }
 } as Config
 
 export default {
     components: {
-        fallback: ['block']
+        fallback: [
+            { selector: '&', declarations: { display: 'block' } }
+        ]
     }
 } as Config

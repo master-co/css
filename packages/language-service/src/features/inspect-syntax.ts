@@ -14,8 +14,8 @@ export default function inspectSyntax(this: CSSLanguageService, document: TextDo
         start: document.positionAt(classPosition.range.start),
         end: document.positionAt(classPosition.range.end)
     }
-    const componentClasses = this.css.components.get(token)
-    if (componentClasses) {
+    const component = this.css.components.get(token)
+    if (component) {
         const documentation = getCSSDataDocumentation({} as any, {
             generatedCSS: generateCSS([token], this.css),
             docs: '/guide/components'
@@ -24,7 +24,7 @@ export default function inspectSyntax(this: CSSLanguageService, document: TextDo
             return {
                 contents: {
                     kind: documentation.kind,
-                    value: `(style) ` + componentClasses.classNames.join(' ') + '\n' + documentation.value
+                    value: `(component) ` + component.selectorRules.map(({ selector }) => selector).join(', ') + '\n' + documentation.value
                 }
             }
         }

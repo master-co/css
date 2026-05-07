@@ -7,6 +7,9 @@ export default {
     ],
     modes: ['light', 'dark'],
     components: {
-        btn: ['inline-flex', 'bg:primary']
+        btn: [
+            { selector: '&', declarations: { display: 'inline-flex' } },
+            { selector: '&', declarations: { 'background-color': 'var(--primary)' } }
+        ]
     }
 } satisfies Config

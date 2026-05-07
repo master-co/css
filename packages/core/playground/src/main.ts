@@ -2,6 +2,8 @@ import { createCSS } from '../../src'
 
 console.log(createCSS({
     components: {
-        btn: 'block@preset'
+        btn: [
+            { selector: '&', atRules: ['@layer preset'], declarations: { display: 'block' } }
+        ]
     }
 }).generate('btn')[0].text)

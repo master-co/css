@@ -48,11 +48,11 @@ You can also restrict teams to using [configuration](/guide/configuration) to cr
 ```html
 <button class="inline-flex px:4x">…</button>
 ```
-(o) Or create the custom style `btn` using the [components](/guide/components) configuration.
-```js name=master.css.js
-export default {
-    components: {
-        btn: 'inline-flex px:4x'// [!code highlight]
+(o) Or create the custom style `btn` using [components](/guide/components) in `master.css`.
+```css name=master.css
+@master components {
+    .btn {
+        @compose "inline-flex px:4x"; /* [!code highlight] */
     }
 }
 ```

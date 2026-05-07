@@ -47,11 +47,21 @@ describe('ConfigVirtualModulePlugin', () => {
             ],
             components: {
                 btn: [
-                    'bg:primary',
                     {
                         selector: '&',
                         declarations: {
-                            'font-size': '1rem',
+                            'font-size': '1rem'
+                        }
+                    },
+                    {
+                        selector: '&',
+                        declarations: {
+                            'background-color': 'rgb(17 34 51)'
+                        }
+                    },
+                    {
+                        selector: '&',
+                        declarations: {
                             display: 'inline-flex'
                         }
                     }

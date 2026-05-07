@@ -1,7 +1,20 @@
 export default {
     components: {
-        btn: ['inline-flex', 'font:semibold'], // [!code highlight]
-        'btn-sm': ['r:6', 'px:3x', 'font:12', 'h:8x'], // [!code highlight]
-        'btn-md': ['r:6', 'px:4x', 'font:14', 'h:10x'], // [!code highlight]
+        btn: [
+            { selector: '&', declarations: { display: 'inline-flex' } },
+            { selector: '&', declarations: { 'font-weight': '600' } }
+        ], // [!code highlight]
+        'btn-sm': [
+            { selector: '&', declarations: { 'border-radius': '0.375rem' } },
+            { selector: '&', declarations: { 'padding-left': '0.75rem', 'padding-right': '0.75rem' } },
+            { selector: '&', declarations: { 'font-size': '0.75rem' } },
+            { selector: '&', declarations: { height: '2rem' } }
+        ], // [!code highlight]
+        'btn-md': [
+            { selector: '&', declarations: { 'border-radius': '0.375rem' } },
+            { selector: '&', declarations: { 'padding-left': '1rem', 'padding-right': '1rem' } },
+            { selector: '&', declarations: { 'font-size': '0.875rem' } },
+            { selector: '&', declarations: { height: '2.5rem' } }
+        ], // [!code highlight]
     }
 }

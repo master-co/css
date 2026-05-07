@@ -3,15 +3,38 @@ import ComponentsOverview from '../components/components/Overview.mdx'
 ## Overview [sr-only]
 As the styles grow, the class name combinations and the same design patterns appear over and over again in the code. To improve development efficiency and maintain design consistency, you should reuse or access them in some way.
 
-Traditionally, we define components like `.btn` or `.card` by writing CSS rules. In Master CSS, we use `config.components` to abstract and make them more flexible.
-<Code lang="js" name="master.css.js">{require('../../../../../packages/server/tests/fixtures/apply-styles/master.css.js?raw')}</Code>
-An abstract style consists of one or more syntaxes, you can provide a class name for this set of classes and reuse it anywhere.
+Traditionally, we define components like `.btn` or `.card` by writing CSS rules. In Master CSS, define reusable styles in `@master components` so they become config-backed, on-demand component classes.
+```css name=master.css
+@master components {
+    .btn {
+        display: inline-flex;
+        font-weight: 600;
+    }
+
+    .btn-sm {
+        border-radius: 0.375rem;
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
+        font-size: 0.75rem;
+        height: 2rem;
+    }
+
+    .btn-md {
+        border-radius: 0.375rem;
+        padding-left: 1rem;
+        padding-right: 1rem;
+        font-size: 0.875rem;
+        height: 2.5rem;
+    }
+}
+```
+An abstract style consists of one or more declarations. You can provide a class name for this set of declarations and reuse it anywhere.
 
 (click) Try making the viewport width smaller
 <ResizeZone width="100%" originX="center" showRuler>
     <IFrame src="/examples/responsive-button" height={138} />
 </ResizeZone>
-You can even conditionally apply abstract styles via at-rules:
+You can apply the component class alongside conditional utility classes:
 <Code lang="html">{require('../../../../../packages/server/tests/fixtures/apply-styles/template.html?raw')}</Code>
 <details>
     <summary>Generated CSS</summary>
@@ -31,7 +54,14 @@ Create an abstract style using Master CSS syntaxes.
 
 ### Add a style with states
 Create an abstract style with [state selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
-<Code lang="js" name="master.css.js">{require('../../../../../packages/server/tests/fixtures/add-a-style-with-states/master.css.js?raw')}</Code>
+```css name=master.css
+@master components {
+    .btn:focus {
+        outline: 0.125rem var(--color-invert) solid;
+        outline-offset: 0.125rem;
+    }
+}
+```
 (click) Try clicking the button to see the outline effect
 <Demo>
     <button className="justify-center items-center inline-flex bg:invert fg:invert font:14 font:medium h:10x px:4x r:2x outline:2|invert:focus outline-offset:2:focus">Submit</button>
@@ -45,8 +75,26 @@ Create an abstract style with [state selectors](/guide/state-selectors) and [con
 </details>
 
 ### Add styles in a nested structure
-Create and manage a set of abstract styles in a nested structure. Rather than repeating the same style names over and over again, you can write one style inside another. Master CSS will automatically combine the outer style’s name with the inner style’s.
-<Code lang="js" name="master.css.js">{require('../../../../../packages/server/tests/fixtures/add-styles-in-a-nested-structure/master.css.js?raw')}</Code>
+Create and manage a set of abstract styles for a shared structure. Keep each generated class explicit so markup, output, and config stay easy to trace.
+```css name=master.css
+@master components {
+    .card {
+        border-radius: 0.5rem;
+    }
+
+    .card-header {
+        border-bottom: 0.0625rem solid oklch(0% 0 none);
+    }
+
+    .card-content {
+        padding: 1.25rem;
+    }
+
+    .card-footer {
+        border-top: 0.0625rem solid oklch(0% 0 none);
+    }
+}
+```
 Apply the components:
 <Code lang="html">{require('../../../../../packages/server/tests/fixtures/add-styles-in-a-nested-structure/template.html?raw')}</Code>
 <details>
@@ -55,12 +103,21 @@ Apply the components:
         <Code lang="css" beautify>{require('../../../../../packages/server/tests/fixtures/add-styles-in-a-nested-structure/generated.css?raw')}</Code>
     </div>
 </details>
-The empty string `''` represents an outer style, much like Sass's `&`.
-
 ### Extend an existing style
-Create a new abstract style by extending an existing style and adding additional syntax.
-<Code lang="js" name="master.css.js">{require('../../../../../packages/server/tests/fixtures/extend-an-existing-style/master.css.js?raw')}</Code>
-You can see that `b` inherits the text lime color of `a`:
+Create a new abstract style by repeating the shared declarations and adding what differs.
+```css name=master.css
+@master components {
+    .a {
+        color: oklch(0% 0 none);
+    }
+
+    .b {
+        text-decoration-line: underline;
+        color: oklch(0% 0 none);
+    }
+}
+```
+You can see that `b` keeps the same text color as `a` and adds underline styling:
 <Demo $py={0}>
     <DemoPanel>
         <span className="font:20 fg:lime">a</span>
@@ -82,28 +139,47 @@ As usual, you can split the styles into multiple files for management. When the 
 <ExplorerView>
 {[
     { name: 'styles', children: [
-        { name: 'button.ts' },
-        { name: 'card.ts' }
+        { name: 'button.css' },
+        { name: 'base.css' }
     ]},
-    { name: 'master.css.ts' }
+    { name: 'master.css' }
 ]}
 </ExplorerView>
 
 ### Create button styles
 Let's implement a rich button.
-<Code lang="ts" name="styles/button.ts">
-    {require('../../../../styles/btn.ts?raw')}
-</Code>
-[Extend](/guide/configuration#extends) them uniformly in the __master.css.ts__ entry file.
-```js name=master.css.ts
-import type { Config } from '@master/css'
-import button from './styles/button'
+```css name=styles/button.css
+@master components {
+    .btn {
+        @compose "inline-flex ai:center jc:center";
+        font-weight: 600;
+        outline-offset: -0.0625rem;
+    }
 
-export default {
-    extends: [
-        button
-    ]
-} as Config
+    .btn-xs {
+        @compose "r:.25rem px:.5rem font:.75rem h:1.5rem";
+    }
+
+    .btn-sm {
+        @compose "r:.375rem px:.75rem font:.75rem h:2rem";
+    }
+
+    .btn-md {
+        @compose "r:.375rem px:1rem font:.875rem h:2.5rem";
+    }
+
+    .btn-lg {
+        @compose "r:.5rem px:1.25rem font:1rem h:3rem";
+    }
+
+    .btn-xl {
+        @compose "r:.625rem px:1.5rem font:1rem h:3.5rem";
+    }
+}
+```
+Import component files from the CSS config entry.
+```css name=master.css
+@import './styles/button.css';
 ```
 
 To apply the button sizes.
@@ -138,9 +214,33 @@ To design a scalable style, you should ensure the single responsibility of class
 
 ### Create common variables and styles
 We define [variables and modes](/guide/variables-and-modes) to create tokens supporting light/dark modes in advance. This not only simplifies template markup but also reduces CSS rule output.
-<Code lang="ts" name="master.css.ts">
-    {require('../../../../styles/base.ts?raw')}
-</Code>
+```css name=styles/base.css
+@master {
+    light {
+        --color-yellow-ring: $(color-black/.1);
+        --color-touch-yellow: $(color-yellow-30);
+        --color-text-yellow-contrast: $(color-yellow-90);
+    }
+
+    dark {
+        --color-yellow-ring: $(color-white/.3);
+        --color-touch-yellow: $(color-yellow-40);
+        --color-text-yellow-contrast: $(color-yellow-95);
+    }
+}
+
+@master components {
+    .yellow {
+        outline: 0.0625rem var(--color-yellow-ring) solid;
+        background-color: var(--color-yellow);
+        color: var(--color-text-yellow-contrast);
+    }
+
+    .touch-yellow:hover {
+        background-color: var(--color-touch-yellow);
+    }
+}
+```
 - Variables
     - `yellow-ring` is an outline color that complements a yellow background.
     - `touch-yellow` is a background color on hover.

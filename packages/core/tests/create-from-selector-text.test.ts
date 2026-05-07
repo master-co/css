@@ -34,28 +34,37 @@ test.concurrent(':within and mode and scope', () => {
 })
 
 test.concurrent('component conflicts with the mode', () => {
-    expect(createCSS({ components: { 'light': ['block font:bold'] } }).createFromSelectorText('.light .light\@light')?.[0]).toMatchObject({ name: 'block', fixedClass: 'light' })
-    expect(createCSS({ components: { 'light': ['block font:bold'] } }).createFromSelectorText('.light .light\@light')?.[1]).toMatchObject({ name: 'font:bold', fixedClass: 'light' })
+    const rules = createCSS({ components: { 'light': [
+        { selector: '&', declarations: { display: 'block' } },
+        { selector: '&', declarations: { 'font-weight': '700' } }
+    ] } }).createFromSelectorText('.light .light\@light')
+
+    expect(rules?.[0]).toMatchObject({ name: 'light' })
+    expect(rules?.[0]?.text).toBe('.light{display:block}')
+    expect(rules?.[1]).toMatchObject({ name: 'light' })
+    expect(rules?.[1]?.text).toBe('.light{font-weight:700}')
 })
 
 test.concurrent('component and mode', () => {
-    expect(createCSS({ components: { 'btn': ['block'] } }).createFromSelectorText('.light .btn')?.[0]).toMatchObject({ name: 'block', fixedClass: 'btn' })
+    expect(createCSS({ components: { 'btn': [
+        { selector: '&', declarations: { display: 'block' } }
+    ] } }).createFromSelectorText('.light .btn')?.[0]).toMatchObject({ name: 'btn', selectorText: '.btn' })
 })
 
 describe('group selector', () => {
     const config = { selectorTokens: {
             '::both': '::before,::after',
-        }, components: { btn: ['block::both'] } }
+        }, components: { btn: [
+            { selector: '&::before,&::after', declarations: { display: 'block' } }
+        ] } }
     test.concurrent('utilities', () => {
         expect(createCSS(config).createFromSelectorText('.block\\:\\:both::before, .block\\:\\:both::after')?.[0]).toMatchObject({ name: 'block::both' })
     })
 
     test.concurrent('components', () => {
         expect(createCSS(config).createFromSelectorText('.btn::before,.btn::after')?.[0]).toMatchObject({
-            name: 'block::both',
-            fixedClass: 'btn',
-            selectorText: '.btn::before,.btn::after',
-            text: '.btn::before,.btn::after{display:block}',
+            name: 'btn',
         })
+        expect(createCSS(config).createFromSelectorText('.btn::before,.btn::after')?.[0]?.text).toBe('.btn::before,.btn::after{display:block}')
     })
 })

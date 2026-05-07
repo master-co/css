@@ -3,7 +3,24 @@ Master CSS analyzes the syntax and inserts it into the appropriate layer, allowi
 <LayersDefault />
 
 Here is an example that covers all layers:
-<Code lang="js" name="master.css.js">{require('./tests/overview/master.css.js?raw')}</Code>
+```css name=master.css
+@master {
+    light {
+        --color-primary: #000000;
+    }
+
+    dark {
+        --color-primary: #ffffff;
+    }
+}
+
+@master components {
+    .btn {
+        @compose "inline-flex";
+        background-color: var(--color-primary);
+    }
+}
+```
 <Code lang="html" name="hero.html">{require('./tests/overview/template.html?raw')}</Code>
 <details>
     <summary>Generated CSS</summary>
@@ -14,7 +31,7 @@ Here is an example that covers all layers:
 - **Base** — rules from `@base` (e.g., `mcss list-style:none_ul@base`).
 - **Theme** — rules from variables and `config.variables`.
 - **Preset** — rules from `@preset` syntax (e.g., `mcss text:16_p@preset`).
-- **Components** — rules from abstract components and `config.components`.
+- **Components** — rules from abstract components defined in `@master components` or `config.components`.
 - **Utilities** — rules from common utilities (e.g., `mcss flex`, `mcss @fade|1s`).
 - All keyframes are placed at the top level.
 
@@ -122,4 +139,3 @@ If styles conflict, the order of priority: **Utilities** > **Components** > **Th
 1. Create base styles via CSS files and packages instead of defining a lot of `@base` syntax.
 1. Create preset styles based on base styles.
 1. Create component styles based on base and preset styles.
-

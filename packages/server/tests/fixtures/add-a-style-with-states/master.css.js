@@ -1,5 +1,8 @@
 export default {
     components: {
-        btn: ['outline:2|invert:focus', 'outline-offset:2:focus'] // [!code highlight]
+        btn: [
+            { selector: '&:focus', declarations: { outline: '0.125rem var(--color-invert) solid' } },
+            { selector: '&:focus', declarations: { 'outline-offset': '0.125rem' } }
+        ] // [!code highlight]
     }
 }

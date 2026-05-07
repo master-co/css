@@ -1,11 +1,21 @@
 import { existsSync, readFileSync } from 'node:fs'
 import { dirname, extname, isAbsolute, resolve } from 'node:path'
-import { config as defaultConfig, createCSS, screens as defaultScreens, UtilityType } from '@master/css'
+import {
+    AT_IDENTIFIERS,
+    config as defaultConfig,
+    createCSS,
+    generateAt,
+    generateSelector,
+    screens as defaultScreens,
+    UtilityType
+} from '@master/css'
 import { transform } from 'lightningcss'
 import type { PropertiesHyphen } from 'csstype'
 import type {
     AnimationDefinitions,
+    ComponentDefinition,
     Config,
+    Utility,
     UtilityDefinition,
     VariableValue
 } from '@master/css'
@@ -47,7 +57,17 @@ export interface ResolvedCSSImportGraph {
     dependencies: string[]
 }
 
-export type ParsedDirectives = Pick<CompileCSSResult, 'config' | 'componentNames' | 'warnings'>
+interface PendingComponentCompose {
+    type: 'compose'
+    className: string
+    atRules?: string[]
+}
+
+type ParsedComponentDefinition = ComponentDefinition | PendingComponentCompose
+
+export interface ParsedDirectives extends Pick<CompileCSSResult, 'config' | 'componentNames' | 'warnings'> {
+    componentDefinitions?: Record<string, ParsedComponentDefinition[]>
+}
 
 const MASTER_CUSTOM_AT_RULES = {
     master: {
@@ -578,6 +598,64 @@ function sameAtRules(a: string[] | undefined, b: string[] | undefined) {
     return left.length === right.length && left.every((value, index) => value === right[index])
 }
 
+function getParsedComponentDefinitions(parsed: ParsedDirectives, name: string) {
+    parsed.componentDefinitions ??= {}
+    parsed.componentDefinitions[name] ??= []
+    return parsed.componentDefinitions[name]
+}
+
+function getUtilityAtRuleDefinitions(utility: Utility) {
+    const atRules: string[] = []
+    if (utility.atRules) {
+        for (const id of AT_IDENTIFIERS) {
+            const nodes = utility.atRules[id]
+            if (!nodes) continue
+            atRules.push(generateAt({ id, nodes }))
+        }
+    }
+    return atRules
+}
+
+function getUtilityComponentSelector(utility: Utility, css: ReturnType<typeof createCSS>) {
+    let selector = utility.selectorNodes
+        ? generateSelector(utility.selectorNodes, '&')
+        : '&'
+    if (utility.mode && css.config.modeTrigger !== 'media') {
+        const modeSelector = css.getModeSelector(utility.mode)
+        if (modeSelector) selector = `${modeSelector} ${selector}`
+    }
+    return selector
+}
+
+function cloneDeclarations(declarations: PropertiesHyphen, important?: boolean) {
+    const result: PropertiesHyphen = {}
+    for (const propertyName in declarations) {
+        const propertyValue = declarations[propertyName as keyof PropertiesHyphen]
+        const value = String(propertyValue)
+        result[propertyName as keyof PropertiesHyphen] = (important && !value.endsWith('!important'))
+            ? `${value}!important` as any
+            : value as any
+    }
+    return result
+}
+
+function createComponentDefinitionsFromCompose(className: string, css: ReturnType<typeof createCSS>): ComponentDefinition[] {
+    const utility = css.create(className, '__master_component__')
+    if (!utility?.valid) {
+        throw new Error(`Invalid @compose class: ${className}`)
+    }
+    const selector = getUtilityComponentSelector(utility, css)
+    const utilityAtRules = getUtilityAtRuleDefinitions(utility)
+    const declarationRules = utility.declarationRules || (utility.declarations ? [{ declarations: utility.declarations }] : [])
+    return declarationRules.map(({ declarations, atRules }) => ({
+        selector,
+        declarations: cloneDeclarations(declarations, utility.important),
+        ...([...utilityAtRules, ...(atRules || [])].length
+            ? { atRules: [...utilityAtRules, ...(atRules || [])] }
+            : {})
+    }))
+}
+
 function getDeclarationName(declaration: Declaration) {
     if (declaration.property === 'custom') return declaration.value.name
     if (declaration.property === 'unparsed') return formatPropertyId(declaration.value.propertyId)
@@ -787,26 +865,20 @@ function parseComponent(rule: any, parsed: ParsedDirectives, atRules: string[] =
         throw new Error('Component definition selector must start with a single class selector')
     }
     const { classNames, declarations } = collectStyleRule(rule, true)
-    if (atRules.length && classNames.length) {
-        throw new Error('@compose is not supported inside nested at-rules in @master components')
-    }
     const selectorSuffix = componentSelectorToClassSuffix(selectorDefinition.selector)
     const normalizedClassNames = normalizeClassNames(classNames)
         .map((className) => insertSelectorSuffix(className, selectorSuffix))
-    parsed.config.components ??= {}
-    parsed.config.components[selectorDefinition.name] ??= []
-    const definitions = parsed.config.components[selectorDefinition.name]
-    const firstSelectorDefinitionIndex = definitions.findIndex((definition) => typeof definition !== 'string')
-    if (firstSelectorDefinitionIndex === -1) {
-        definitions.push(...normalizedClassNames)
-    } else {
-        definitions.splice(firstSelectorDefinitionIndex, 0, ...normalizedClassNames)
-    }
+    const definitions = getParsedComponentDefinitions(parsed, selectorDefinition.name)
+    definitions.push(...normalizedClassNames.map((className) => ({
+        type: 'compose' as const,
+        className,
+        ...(atRules.length ? { atRules: [...atRules] } : {})
+    })))
     if (Object.keys(declarations).length) {
         const existingDefinition = definitions[definitions.length - 1]
         if (
             existingDefinition
-            && typeof existingDefinition !== 'string'
+            && !('type' in existingDefinition)
             && existingDefinition.selector === selectorDefinition.selector
             && sameAtRules(existingDefinition.atRules, atRules)
         ) {
@@ -1057,7 +1129,6 @@ function resolveComponentSelectorTokens(parsed: ParsedDirectives) {
     if (!selectorTokens || !components) return
     for (const name in components) {
         components[name] = components[name].map((definition) => {
-            if (typeof definition === 'string') return definition
             let selector = definition.selector
             for (const token of Object.keys(selectorTokens).sort((a, b) => b.length - a.length)) {
                 selector = selector.split(token).join(selectorTokens[token])
@@ -1067,6 +1138,42 @@ function resolveComponentSelectorTokens(parsed: ParsedDirectives) {
                 selector
             }
         })
+    }
+}
+
+function createComposeCSS(parsed: ParsedDirectives, options: CompileCSSOptions) {
+    const configWithoutComponents = { ...parsed.config }
+    delete configWithoutComponents.components
+    return createCSS(options.config
+        ? { extends: [options.config, configWithoutComponents] }
+        : configWithoutComponents
+    )
+}
+
+function finalizeComponentDefinitions(parsed: ParsedDirectives, options: CompileCSSOptions) {
+    if (!parsed.componentDefinitions) return
+    const css = createComposeCSS(parsed, options)
+    parsed.config.components = {}
+    for (const name in parsed.componentDefinitions) {
+        const definitions: ComponentDefinition[] = []
+        for (const definition of parsed.componentDefinitions[name]) {
+            if ('type' in definition) {
+                const composedDefinitions = createComponentDefinitionsFromCompose(definition.className, css)
+                for (const composedDefinition of composedDefinitions) {
+                    const atRules = [
+                        ...(definition.atRules || []),
+                        ...(composedDefinition.atRules || [])
+                    ]
+                    definitions.push({
+                        ...composedDefinition,
+                        ...(atRules.length ? { atRules } : {})
+                    })
+                }
+            } else {
+                definitions.push(definition)
+            }
+        }
+        parsed.config.components[name] = definitions
     }
 }
 
@@ -1442,13 +1549,16 @@ export function compileCSS(source: string, options: CompileCSSOptions = {}): Com
         }
     })
     validateTokenConflicts(parsed)
+    finalizeComponentDefinitions(parsed, options)
     resolveComponentSelectorTokens(parsed)
     const css = createDirectiveCSS(parsed, options)
     const generatedCSS = options.classes?.length ? css.text : ''
     const remainingCSS = transformed.code.toString().trim()
 
     return {
-        ...parsed,
+        config: parsed.config,
+        componentNames: parsed.componentNames,
+        warnings: parsed.warnings,
         css: [remainingCSS, generatedCSS].filter(Boolean).join('\n\n'),
         generatedCSS,
         dependencies: []

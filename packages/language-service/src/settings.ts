@@ -41,8 +41,8 @@ const settings: Settings = {
         "[ngClass]": ["\"", "\""]
     },
     /**
-     * @example const components = 'a b'
-     * @example { components: { btn: ['a', 'b'] } }
+     * @example const classes = 'a b'
+     * @example { classes: { btn: 'a b' } }
      */
     classDeclarations: CLASS_DECLARATIONS,
     /**

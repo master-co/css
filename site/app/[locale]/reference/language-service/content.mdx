@@ -121,10 +121,9 @@ Specify which variable declarations or object properties should provide features
 <DocProp types={['string[]']} defaultValue={JSON.stringify(settings.classDeclarations)} />
 
 Object properties:
-```js name=master.css.js
-/** @type {import('@master/css').Config} */
-export default {
-    components: {
+```js name=classes.js
+export const styles = {
+    classes: {
         // @MARK target
         btn: 'target'
     }
@@ -132,7 +131,7 @@ export default {
 ```
 Variable declarations:
 ```js
-const components = {
+const classes = {
     // @MARK target
     btn: 'target'
 }

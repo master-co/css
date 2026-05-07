@@ -21,7 +21,7 @@ export const IMAGE_VALUE_REGEX = /(?:url|linear-gradient|radial-gradient|repeati
 export const COLOR_VALUE_REGEX = /(?:#|(?:color|color-contrast|color-mix|hwb|lab|lch|oklab|oklch|rgb|rgba|hsl|hsla|light-dark)\(.*\)|(?:\$colors)(?![a-zA-Z0-9-]))/
 export const NUMBER_VALUE_REGEX = /(?:[\d.]|(?:max|min|calc|clamp)\([^|]*\))/
 export const CLASS_ATTRIBUTES = ['class', 'className']
-export const CLASS_DECLARATIONS = ['components']
+export const CLASS_DECLARATIONS = []
 export const CLASS_FUNCTIONS = ['clsx', 'cva', 'ctl', 'cv', 'class', 'classnames', 'classVariant', 'styled(?:\\s+)?(?:\\.\\w+)?', 'classList(?:\\s+)?\\.(?:add|remove|toggle|replace)']
 export const BORDER_STYLE_VALUES = ['none', 'auto', 'hidden', 'dotted', 'dashed', 'solid', 'double', 'groove', 'ridge', 'inset', 'outset']
 export const AT_COMPARISON_OPERATORS = ['>=', '<=', '>', '<', '=']

@@ -6,6 +6,10 @@ export default {
         preset
     ],
     components: {
-        'bundle-button': ['inline-flex fg:white bg:blue']
+        'bundle-button': [
+            { selector: '&', declarations: { display: 'inline-flex' } },
+            { selector: '&', declarations: { color: 'oklch(100% 0 none)' } },
+            { selector: '&', declarations: { 'background-color': 'oklch(63.7% 0.237 25.331)' } }
+        ]
     }
 } as Config

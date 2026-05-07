@@ -11,7 +11,13 @@ export default {
     ],
     modes: ['light', 'dark'],
     components: {
-        yellow: ['outline:1|yellow-ring', 'bg:yellow', 'fg:yellow-contrast'],
-        'touch-yellow': ['bg:touch-yellow:hover']
+        yellow: [
+            { selector: '&', declarations: { outline: '0.0625rem var(--color-yellow-ring) solid' } },
+            { selector: '&', declarations: { 'background-color': 'var(--color-yellow)' } },
+            { selector: '&', declarations: { color: 'var(--color-text-yellow-contrast)' } }
+        ],
+        'touch-yellow': [
+            { selector: '&:hover', declarations: { 'background-color': 'var(--color-touch-yellow)' } }
+        ]
     },
 } as Config

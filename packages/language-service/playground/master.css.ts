@@ -6,7 +6,10 @@ export default {
         card
     ],
     components: {
-        btn: ['inline-flex', 'text:center']
+        btn: [
+            { selector: '&', declarations: { display: 'inline-flex' } },
+            { selector: '&', declarations: { 'text-align': 'center' } }
+        ]
     },
     variables: [
         { key: 'foo', value: 123 },

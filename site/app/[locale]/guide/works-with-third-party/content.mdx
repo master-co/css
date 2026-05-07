@@ -52,14 +52,18 @@ In Sass, `@include meta.load-css()` allows you to import CSS files within a `@la
 Using the preset layer to reduce the specificity of traditional styles allows you to override them directly through custom [components](/guide/components), without the risk of your styles being unintentionally overridden.
 
 For example, create custom components for Swiper.
-```js name=master.css.js
-export default {
-    components: {
-        swiper: {
-            '': 'max-w:screen-sm',  // .swiper
-            wrapper: 'bg:red',      // .swiper-wrapper
-            slide: 'bg:blue'        // .swiper-slide
-        }
+```css name=master.css
+@master components {
+    .swiper {
+        @compose "max-w:screen-sm";
+    }
+
+    .swiper-wrapper {
+        @compose "bg:red";
+    }
+
+    .swiper-slide {
+        @compose "bg:blue";
     }
 }
 ```

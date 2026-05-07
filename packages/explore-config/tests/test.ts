@@ -18,7 +18,9 @@ test('loads the default TypeScript config', async () => {
 test('loads an explicit config file name', async () => {
     expect((await exploreConfig({ cwd: __dirname, name: 'custom.config.ts' }))?.config).toStrictEqual({
         components: {
-            custom: ['inline-flex']
+            custom: [
+                { selector: '&', declarations: { display: 'inline-flex' } }
+            ]
         }
     })
 })
@@ -26,7 +28,9 @@ test('loads an explicit config file name', async () => {
 test('resolves named config exports before default exports', async () => {
     expect((await exploreConfig({ cwd: __dirname, name: 'named.css.ts' }))?.config).toStrictEqual({
         components: {
-            named: ['inline-flex']
+            named: [
+                { selector: '&', declarations: { display: 'inline-flex' } }
+            ]
         }
     })
 })
@@ -34,7 +38,9 @@ test('resolves named config exports before default exports', async () => {
 test('loads CommonJS configs', async () => {
     expect((await exploreConfig({ cwd: __dirname, name: 'legacy.css.cjs' }))?.config).toStrictEqual({
         components: {
-            legacy: ['inline-flex']
+            legacy: [
+                { selector: '&', declarations: { display: 'inline-flex' } }
+            ]
         }
     })
 })
@@ -66,10 +72,12 @@ test('loads CSS configs after script configs', async () => {
             ]
         })
 
-        writeFileSync(join(cwd, 'master.css.ts'), `export default { components: { script: ['block'] } }`)
+        writeFileSync(join(cwd, 'master.css.ts'), `export default { components: { script: [{ selector: '&', declarations: { display: 'block' } }] } }`)
         expect((await exploreConfig({ cwd }))?.config).toStrictEqual({
             components: {
-                script: ['block']
+                script: [
+                    { selector: '&', declarations: { display: 'block' } }
+                ]
             }
         })
     } finally {
@@ -90,7 +98,9 @@ test('returns an explore result for downstream integrations', async () => {
         dependencies: [join(__dirname, 'custom.config.ts')],
         config: {
             components: {
-                custom: ['inline-flex']
+                custom: [
+                    { selector: '&', declarations: { display: 'inline-flex' } }
+                ]
             }
         }
     })
@@ -103,7 +113,9 @@ test('loads config results directly', async () => {
         dependencies: [path],
         config: {
             components: {
-                custom: ['inline-flex']
+                custom: [
+                    { selector: '&', declarations: { display: 'inline-flex' } }
+                ]
             }
         }
     })
@@ -111,7 +123,9 @@ test('loads config results directly', async () => {
         dependencies: [path],
         config: {
             components: {
-                custom: ['inline-flex']
+                custom: [
+                    { selector: '&', declarations: { display: 'inline-flex' } }
+                ]
             }
         }
     })
@@ -234,7 +248,9 @@ test('supports custom extension order', async () => {
         extensions: ['ts', 'cjs']
     }))?.config).toStrictEqual({
         components: {
-            legacy: ['inline-flex']
+            legacy: [
+                { selector: '&', declarations: { display: 'inline-flex' } }
+            ]
         }
     })
 })
@@ -243,16 +259,20 @@ test('reloads changed config files without reusing module cache', async () => {
     const cwd = mkdtempSync(join(tmpdir(), 'master-css-config-'))
     const configPath = join(cwd, 'master.css.ts')
     try {
-        writeFileSync(configPath, `export default { components: { one: ['block'] } }`)
+        writeFileSync(configPath, `export default { components: { one: [{ selector: '&', declarations: { display: 'block' } }] } }`)
         expect((await exploreConfig({ cwd }))?.config).toStrictEqual({
             components: {
-                one: ['block']
+                one: [
+                    { selector: '&', declarations: { display: 'block' } }
+                ]
             }
         })
-        writeFileSync(configPath, `export default { components: { two: ['inline-flex'] } }`)
+        writeFileSync(configPath, `export default { components: { two: [{ selector: '&', declarations: { display: 'inline-flex' } }] } }`)
         expect((await exploreConfig({ cwd }))?.config).toStrictEqual({
             components: {
-                two: ['inline-flex']
+                two: [
+                    { selector: '&', declarations: { display: 'inline-flex' } }
+                ]
             }
         })
     } finally {

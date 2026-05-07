@@ -242,17 +242,27 @@ Semantic secondary:
 
 Design token is a core methodology for practicing design systems, so appropriately abstracting styles and markup can help you create visually consistent user interfaces more effectively, and Master CSS [configuration](/guide/configuration) is born for this.
 
-Assuming the card can be reused, you can abstract it using [components](/guide/components) with a concise syntax:
-```js name=master.css.js
-export default {
-    components: {
-        card: {
-            '': 'flex translateY(-5):hover ~transform|.2s overflow:hidden bg:white r:10',
-            image: 'object:cover w:140 aspect:16/9',
-            content: 'p:25',
-            title: 'font:medium text:18',
-            text: 'text:14 lines:2'
-        }
+Assuming the card can be reused, you can abstract it using [components](/guide/components) in `master.css`:
+```css name=master.css
+@master components {
+    .card {
+        @compose "flex translateY(-5):hover ~transform|.2s overflow:hidden bg:white r:10";
+    }
+
+    .card-image {
+        @compose "object:cover w:140 aspect:16/9";
+    }
+
+    .card-content {
+        @compose "p:25";
+    }
+
+    .card-title {
+        @compose "font:medium text:18";
+    }
+
+    .card-text {
+        @compose "text:14 lines:2";
     }
 }
 ```

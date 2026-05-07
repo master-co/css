@@ -200,11 +200,10 @@ Use [components](/guide/components) to abstract styles instead of `@apply`.
     @apply py-2 px-5 bg-white hover:bg-black;
 }
 ```
-```js name=master.css.js
-/** @type {import('@master/css').Config} */
-export default {
-    components: {
-        btn: 'p:2x|5x bg:white bg:black:hover'
+```css name=master.css
+@master components {
+    .btn {
+        @compose "p:2x|5x bg:white bg:black:hover";
     }
 }
 ```

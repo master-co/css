@@ -70,10 +70,14 @@ import CSSTester from './tester'
 //     ]
 // })
 
-new CSSTester({ components: { 'btn-primary': ['bg:blue bg:blue:hover bg:blue:disabled'] } }).priority('componentsLayer', { components: [
+new CSSTester({ components: { 'btn-primary': [
+    { selector: '&', declarations: { 'background-color': 'oklch(63.7% 0.237 25.331)' } },
+    { selector: '&:hover', declarations: { 'background-color': 'oklch(63.7% 0.237 25.331)' } },
+    { selector: '&:disabled', declarations: { 'background-color': 'oklch(63.7% 0.237 25.331)' } }
+] } }).priority('componentsLayer', { components: [
         'btn-primary', [
-            'bg:blue',
-            'bg:blue:hover',
-            'bg:blue:disabled'
+            'btn-primary',
+            'btn-primary',
+            'btn-primary'
         ]
     ] })

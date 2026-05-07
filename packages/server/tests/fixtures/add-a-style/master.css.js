@@ -1,5 +1,8 @@
 export default {
     components: {
-        btn: ['inline-flex', 'h:10x'] // [!code highlight]
+        btn: [
+            { selector: '&', declarations: { display: 'inline-flex' } },
+            { selector: '&', declarations: { height: '2.5rem' } }
+        ] // [!code highlight]
     }
 }

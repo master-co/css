@@ -1,7 +1,30 @@
 import Tester from '../tester'
 
 new Tester({
-    components: { btn: ['block fg:blue'], 'btn-sm': ['font:12'], 'btn-md': ['font:14'], card: ['text:center p:5x p:10x'], yellow: ['bg:yellow fg:yellow-contrast outline:1|yellow-ring'], 'touch-yellow': ['bg:touch-yellow:hover'] },
+    components: {
+        btn: [
+            { selector: '&', declarations: { display: 'block' } },
+            { selector: '&', declarations: { color: 'oklch(54.6% 0.245 262.881)' } }
+        ],
+        'btn-sm': [
+            { selector: '&', declarations: { 'font-size': '0.75rem' } }
+        ],
+        'btn-md': [
+            { selector: '&', declarations: { 'font-size': '0.875rem' } }
+        ],
+        card: [
+            { selector: '&', declarations: { 'text-align': 'center' } },
+            { selector: '&', declarations: { padding: '2.5rem' } }
+        ],
+        yellow: [
+            { selector: '&', declarations: { 'background-color': 'var(--yellow)' } },
+            { selector: '&', declarations: { color: 'var(--yellow-contrast)' } },
+            { selector: '&', declarations: { outline: '0.0625rem var(--yellow-ring) solid' } }
+        ],
+        'touch-yellow': [
+            { selector: '&:hover', declarations: { 'background-color': 'var(--touch-yellow)' } }
+        ]
+    },
     variables: [
         { namespace: 'yellow', key: 'ring', value: '$(yellow-30)', mode: 'light' },
         { namespace: 'touch', key: 'yellow', value: '$(yellow-30)', mode: 'light' },

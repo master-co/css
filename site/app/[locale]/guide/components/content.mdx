@@ -153,8 +153,8 @@ This keeps unused component definitions out of the final CSS. In Vite extract mo
 
 ---
 
-## Merging definitions
-You can split a component into multiple rules. Rules with the same component name and selector are merged in config order; later declarations with the same property override earlier declarations.
+## Definition order
+You can split a component into multiple rules. They are preserved in config order, so later declarations with the same property override earlier declarations through the normal CSS cascade.
 
 ```css name=master.css
 @master components {
@@ -172,19 +172,35 @@ You can split a component into multiple rules. Rules with the same component nam
 }
 ```
 
-The resulting component keeps both composed classes, and the later `display` declaration wins:
+The compiler expands `@compose` into flat component definition objects:
 
 ```js
 {
     components: {
         btn: [
-            'inline-flex',
-            'block',
+            {
+                selector: '&',
+                declarations: {
+                    display: 'inline-flex'
+                }
+            },
+            {
+                selector: '&',
+                declarations: {
+                    display: 'inline-flex',
+                    color: 'black'
+                }
+            },
+            {
+                selector: '&',
+                declarations: {
+                    display: 'block'
+                }
+            },
             {
                 selector: '&',
                 declarations: {
                     display: 'block',
-                    color: 'black',
                     'font-size': '1rem'
                 }
             }
@@ -225,7 +241,7 @@ Local relative `.css` imports are compiled into one config graph. Package import
 - Put component definitions in `@master components`; component selectors directly under `@master` are invalid.
 - Component selectors must start with a single class selector such as `.btn`, `.card`, or `.field::before`.
 - `@compose` is only valid inside component definitions.
-- Component definitions accept native declarations and `@compose`; nested arbitrary rules belong in regular CSS outside `@master components`.
+- Component definitions accept native declarations and `@compose`; nested at-rules can contain additional component selectors.
 - Standard HTML tag selectors such as `body` or `html` are not valid inside `@master` definitions.
 - Utilities still win over components in the default layer order: `@layer base,theme,preset,components,utilities;`.
 

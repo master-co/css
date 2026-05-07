@@ -198,7 +198,7 @@ export const cases = {
         //             '::both': '::before,::after',
         //         },
         //         components: {
-        //             'btn': ['block::both']
+        //             'btn': [{ selector: '&::before,&::after', declarations: { display: 'block' } }]
         //         }
         //     },
         //     '.btn'

@@ -20,11 +20,11 @@ test('Runtime - class changed', async ({ page, mount }) => {
 test('Runtime - config changed', async ({ page, mount }) => {
     const runtimeComponentInstance = await mount(<RuntimeComponent></RuntimeComponent>)
     await runtimeComponentInstance.waitFor({ state: 'visible' })
-    expect(await page.evaluate(() => globalThis.cssRuntime.text)).toContain('.btn{border:0.125rem var(--color-red) solid}')
+    expect(await page.evaluate(() => globalThis.cssRuntime.text)).toContain('.btn{border:0.125rem solid oklch(63.7% 0.237 25.331)}')
 
     const $button = await page.$('#config-btn')
     await $button?.click()
-    expect(await page.evaluate(() => globalThis.cssRuntime.text)).not.toContain('.btn{border:0.125rem var(--color-red) solid}')
+    expect(await page.evaluate(() => globalThis.cssRuntime.text)).not.toContain('.btn{border:0.125rem solid oklch(63.7% 0.237 25.331)}')
 })
 
 test('Runtime - root changed', async ({ page, mount }) => {

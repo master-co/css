@@ -61,7 +61,9 @@ createTester({
     settings: {
         '@master/css': {
             config: {
-                components: { btn: ['block'] }
+                components: { btn: [
+                    { selector: '&', declarations: { display: 'block' } }
+                ] }
             }
         }
     }

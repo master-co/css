@@ -149,8 +149,18 @@ describe.concurrent('@master/css-compiler', () => {
             ],
             components: {
                 btn: [
-                    'bg:primary',
-                    'block@dark',
+                    {
+                        selector: '&',
+                        declarations: {
+                            'background-color': 'var(--color-primary)'
+                        }
+                    },
+                    {
+                        selector: '.dark &',
+                        declarations: {
+                            display: 'block'
+                        }
+                    },
                     {
                         selector: '&',
                         declarations: {
@@ -245,7 +255,7 @@ describe.concurrent('@master/css-compiler', () => {
         expect(css).toContain('.btn{background-color:rgb(17 34 51)}')
     })
 
-    it('merges repeated component definitions by selector', () => {
+    it('expands repeated component definitions in declaration order', () => {
         const result = compileCSS(`
             @master components {
                 .btn {
@@ -263,18 +273,35 @@ describe.concurrent('@master/css-compiler', () => {
         `, { classes: ['btn'] })
 
         expect(result.config.components?.btn).toEqual([
-            'inline-flex',
-            'block',
+            {
+                selector: '&',
+                declarations: {
+                    display: 'inline-flex'
+                }
+            },
+            {
+                selector: '&',
+                declarations: {
+                    display: 'inline-flex',
+                    color: 'red'
+                }
+            },
+            {
+                selector: '&',
+                declarations: {
+                    display: 'block'
+                }
+            },
             {
                 selector: '&',
                 declarations: {
                     display: 'block',
-                    color: 'red',
                     'font-size': '1rem'
                 }
             }
         ])
-        expect(result.css).toContain('.btn{display:block;color:red;font-size:1rem}')
+        expect(result.css).toContain('.btn{display:inline-flex;color:red}')
+        expect(result.css).toContain('.btn{display:block;font-size:1rem}')
     })
 
     it('merges repeated static utility definitions by name', () => {
@@ -737,7 +764,7 @@ describe.concurrent('@master/css-compiler', () => {
             }
         `)).toThrow('@compose is only allowed in @master components')
 
-        expect(() => process(`
+        expect(process(`
             @master components {
                 @media print {
                     .btn {
@@ -745,7 +772,7 @@ describe.concurrent('@master/css-compiler', () => {
                     }
                 }
             }
-        `)).toThrow('@compose is not supported inside nested at-rules in @master components')
+        `, ['btn'])).toContain('@media print{.btn{display:none}}')
     })
 
     it('rejects invalid @at and @selector names and conflicts', () => {

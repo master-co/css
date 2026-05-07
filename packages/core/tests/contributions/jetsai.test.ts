@@ -31,13 +31,13 @@ export const buttonConfig: Config = { variables: [
         { namespace: 'color', key: buttonTokens.primaryHover, value: '$color-' + colorTokens.blue900 },
         { namespace: 'color', key: buttonTokens.primaryDisabled, value: '$color-' + colorTokens.blue200 },
         { namespace: 'color', key: buttonTokens.disabled, value: '$color-' + colorTokens.gray200 }
-    ], components: { 'btn-primary': [[
-            `t:${textTokens.onColor}`,
-            `t:${textTokens.disabled}:disabled`,
-            `bg:${buttonTokens.primary}`,
-            `bg:${buttonTokens.primaryHover}:hover`,
-            `bg:${buttonTokens.primaryDisabled}:disabled`
-        ].join(' ')] } }
+    ], components: { 'btn-primary': [
+        { selector: '&', declarations: { 'background-color': 'rgb(34 66 163)' } },
+        { selector: '&', declarations: { '-webkit-text-fill-color': 'oklch(100% 0 none)' } },
+        { selector: '&:hover', declarations: { 'background-color': 'rgb(21 37 89)' } },
+        { selector: '&:disabled', declarations: { 'background-color': 'rgb(205 224 247)' } },
+        { selector: '&:disabled', declarations: { '-webkit-text-fill-color': 'rgb(146 151 161)' } }
+    ] } }
 
 export const colorConfig: Config = { variables: [
         { namespace: 'color', key: colorTokens.blue200, value: '#CDE0F7' },

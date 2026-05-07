@@ -19,8 +19,12 @@ test('master.css.js config custom classname', async () => {
     fs.writeFileSync(path.join(__dirname, 'master.css.ts'), `
         export default {
             components: {
-                'blue-btn': ['bg:blue'],
-                btn: ['bg:gray']
+                'blue-btn': [
+                    { selector: '&', declarations: { 'background-color': 'oklch(63.7% 0.237 25.331)' } }
+                ],
+                btn: [
+                    { selector: '&', declarations: { 'background-color': 'oklch(55.1% 0.027 264.364)' } }
+                ]
             }
         }
     `, { flag: 'w' })

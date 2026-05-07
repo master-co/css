@@ -1,5 +1,7 @@
 module.exports = {
     components: {
-        legacy: ['inline-flex']
+        legacy: [
+            { selector: '&', declarations: { display: 'inline-flex' } }
+        ]
     }
 }

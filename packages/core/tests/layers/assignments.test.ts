@@ -18,7 +18,9 @@ test.concurrent('with selectors', () => {
 })
 
 test.concurrent('using components', async () => {
-    const css = createCSS({ components: { btn: ['block@base'] } }).add('btn')
+    const css = createCSS({ components: { btn: [
+        { selector: '&', atRules: ['@layer base'], declarations: { display: 'block' } }
+    ] } }).add('btn')
     expect(css.componentsLayer.text).toContain('@layer base{.btn{display:block}}')
 })
 

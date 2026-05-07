@@ -45,7 +45,10 @@ test.concurrent('renders semantic tokens for class attributes', () => {
             config: {
                 variables: [{ key: 'brand', value: '#123456' }],
                 components: {
-                    btn: ['fg:brand', 'block']
+                    btn: [
+                        { selector: '&', declarations: { color: 'var(--brand)' } },
+                        { selector: '&', declarations: { display: 'block' } }
+                    ]
                 }
             }
         }

@@ -2,7 +2,9 @@ import CSSRuntime, { initCSSRuntime } from '../../src'
 
 // initCSSRuntime({
 //     components: {
-//         btn: 'bg:black'
+//         btn: [
+//             { selector: '&', declarations: { 'background-color': 'black' } }
+//         ]
 //     }
 // })
 

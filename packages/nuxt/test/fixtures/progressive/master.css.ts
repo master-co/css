@@ -1,5 +1,8 @@
 export default {
     components: {
-        box: ['flex font:1em']
+        box: [
+            { selector: '&', declarations: { display: 'flex' } },
+            { selector: '&', declarations: { 'font-size': '1em' } }
+        ]
     }
 }

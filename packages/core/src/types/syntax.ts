@@ -23,7 +23,6 @@ export interface DefinedUtility {
 }
 
 export interface ComponentEntry {
-    classNames: string[]
     selectorRules: {
         selector: string
         declarations: PropertiesHyphen
