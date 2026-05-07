@@ -33,6 +33,7 @@ export interface UtilityDefinition {
 export interface UtilityRuleDefinition {
     declarations: CSSDeclarations
     atRules?: string[]
+    selector?: string
 }
 
 export type VariableValue = number | string | false | (number | string)[]

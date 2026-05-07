@@ -246,7 +246,11 @@ Assuming the card can be reused, you can abstract it using [components](/guide/c
 ```css name=master.css
 @master components {
     .card {
-        @compose "flex translateY(-5):hover ~transform|.2s overflow:hidden bg:white r:10";
+        @compose "flex ~transform|.2s overflow:hidden bg:white r:10";
+
+        &:hover {
+            @compose "translateY(-5)";
+        }
     }
 
     .card-image {

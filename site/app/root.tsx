@@ -13,7 +13,6 @@ export default function RootClient(props: {
     translations: any,
     hidden?: boolean,
 }) {
-    console.log(cssConfig)
     return (
         <RootLayout {...props} app={app} cssConfig={cssConfig} redirects={redirects} />
     )

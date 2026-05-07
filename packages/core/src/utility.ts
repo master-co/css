@@ -26,7 +26,7 @@ export class Utility {
     readonly priority!: RulePriority
     readonly type: UtilityType = UtilityType.Normal
     readonly declarations?: PropertiesHyphen
-    readonly declarationRules?: { declarations: PropertiesHyphen, atRules?: string[] }[]
+    readonly declarationRules?: { declarations: PropertiesHyphen, atRules?: string[], selector?: string }[]
     readonly layer: Layer
     readonly valid: boolean = true
     animationNames?: Set<string>
@@ -181,15 +181,16 @@ export class Utility {
         } else {
             const declarationRules = [
                 ...(definition.declarations
-                    ? [{ declarations: definition.declarations as PropertiesHyphen, atRules: definition.atRules }]
+                    ? [{ declarations: definition.declarations as PropertiesHyphen, atRules: definition.atRules, selector: undefined }]
                     : []),
-                ...(definition.rules?.map(({ declarations, atRules }) => ({
+                ...(definition.rules?.map(({ declarations, atRules, selector }) => ({
                     declarations: declarations as PropertiesHyphen,
-                    atRules
+                    atRules,
+                    selector
                 })) || [])
             ]
             this.declarations = declarationRules[0]?.declarations
-            if (declarationRules.length > 1 || declarationRules.some(({ atRules }) => atRules?.length)) {
+            if (declarationRules.length > 1 || declarationRules.some(({ atRules, selector }) => atRules?.length || selector)) {
                 this.declarationRules = declarationRules
             }
         }
@@ -235,12 +236,12 @@ export class Utility {
     get text() {
         if (!this.valid) return ''
         if (this.declarationRules) {
-            return this.declarationRules.map(({ declarations, atRules }) => this.createRuleText(declarations, atRules)).join('')
+            return this.declarationRules.map(({ declarations, atRules, selector }) => this.createRuleText(declarations, atRules, selector)).join('')
         }
         return this.createRuleText(this.declarations!)
     }
 
-    createRuleText(declarations: PropertiesHyphen, atRules?: string[]) {
+    createRuleText(declarations: PropertiesHyphen, atRules?: string[], selector?: string) {
         const propertiesText: string[] = []
         for (const propertyName in declarations) {
             const propertyValue = declarations[propertyName as keyof PropertiesHyphen]
@@ -249,7 +250,7 @@ export class Utility {
                 propertyText + (((this.important || this.css.config.important) && !propertyText.endsWith('!important')) ? '!important' : '')
             )
         }
-        let text = this.selectorText + '{' + propertiesText.join(';') + '}'
+        let text = this.createSelectorText(selector) + '{' + propertiesText.join(';') + '}'
         if (this.atRules !== undefined)
             AT_IDENTIFIERS.forEach(id => {
                 const nodes = this.atRules?.[id]
@@ -260,6 +261,10 @@ export class Utility {
     }
 
     get selectorText() {
+        return this.createSelectorText()
+    }
+
+    createSelectorText(selector?: string) {
         let pre = ''
         if (this.css.config.scope) {
             pre = this.css.config.scope + ' ' + pre
@@ -271,9 +276,12 @@ export class Utility {
             }
         }
         const body = pre + '.' + cssEscape(this.fixedClass ?? this.name)
-        return this.selectorNodes
+        const base = this.selectorNodes
             ? generateSelector(this.selectorNodes, body)
             : body
+        return selector
+            ? selector.replace(/&/g, base)
+            : base
     }
 
     resolveValue = (valueComponents: ValueComponent[], unit: string, bypassVariableNames: string[], bypassParsing: boolean) => {

@@ -6,7 +6,7 @@
 
 ## Inputs And Outputs
 
-- Input: CSS containing `@master`, variables, nested mode blocks, `@custom-at`, `@custom-selector`, `@master components`, `@master utilities`, component rules with `@compose`, and `@master animations`.
+- Input: CSS containing `@master`, variables, nested mode blocks, `@custom-at`, `@custom-selector`, `@master components`, `@master utilities`, condition blocks with `@at`, component rules with `@compose`, and `@master animations`.
 - Output: CSS with consumed Master directives removed and generated Master CSS appended only for classes passed to the compiler.
 - `@master` definitions are config definitions. Defining a component, utility, variable, token, or animation does not emit CSS by itself; the class still needs to be used or extracted.
 - `compileCSSFile()` resolves local relative CSS `@import` graphs before compiling and returns absolute dependency paths.
@@ -28,7 +28,9 @@
 - `@master { @custom-at motion-safe @media (prefers-reduced-motion: no-preference); }`
 - `@master { @custom-selector ::scrollbar ::-webkit-scrollbar; }`
 - `@master components { .btn { @compose "inline-flex"; display: inline-flex; } }`
+- `@master components { .btn { @at dark { @compose "bg:neutral-90"; } } }`
 - `@master utilities { .content-auto { content-visibility: auto; } }`
+- `@master utilities { .print-hidden { @at print { display: none; } } }`
 - `@master animations { fade { from { opacity: 0; } to { opacity: 1; } } }`
 - Component definition selectors must start with one class selector.
 - `@compose` is allowed only in component definitions.

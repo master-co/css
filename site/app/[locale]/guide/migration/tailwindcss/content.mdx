@@ -203,7 +203,11 @@ Use [components](/guide/components) to abstract styles instead of `@apply`.
 ```css name=master.css
 @master components {
     .btn {
-        @compose "p:2x|5x bg:white bg:black:hover";
+        @compose "p:2x|5x bg:white";
+
+        &:hover {
+            @compose "bg:black";
+        }
     }
 }
 ```

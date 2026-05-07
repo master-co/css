@@ -43,7 +43,10 @@ describe.concurrent('@master/css-compiler', () => {
                 }
 
                 .card {
-                    @compose "p:card bg:base r:card content-auto @fade-in|1s@motion-safe";
+                    @compose "p:card bg:base r:card content-auto";
+                    @at motion-safe {
+                        @compose "@fade-in|1s";
+                    }
                     border: 1px solid var(--color-ring);
                 }
 
@@ -113,7 +116,10 @@ describe.concurrent('@master/css-compiler', () => {
 
             @master components {
                 .btn {
-                    @compose "bg:primary block@dark";
+                    @compose "bg:primary";
+                    @at dark {
+                        @compose "block";
+                    }
                     display: inline-flex;
                 }
             }
@@ -156,15 +162,15 @@ describe.concurrent('@master/css-compiler', () => {
                         }
                     },
                     {
-                        selector: '.dark &',
-                        declarations: {
-                            display: 'block'
-                        }
-                    },
-                    {
                         selector: '&',
                         declarations: {
                             display: 'inline-flex'
+                        }
+                    },
+                    {
+                        selector: '.dark &',
+                        declarations: {
+                            display: 'block'
                         }
                     }
                 ]
@@ -273,7 +279,9 @@ describe.concurrent('@master/css-compiler', () => {
             @master components {
                 @layer preset {
                     .prose {
-                        @compose "font:md_:is(p)";
+                        :is(p) {
+                            @compose "font:md";
+                        }
                         color: var(--color-text);
                     }
 
@@ -288,17 +296,17 @@ describe.concurrent('@master/css-compiler', () => {
 
         expect(result.config.components?.prose).toEqual([
             {
-                selector: '& :is(p)',
-                layer: 'preset',
-                declarations: {
-                    'font-size': '1rem'
-                }
-            },
-            {
                 selector: '&',
                 layer: 'preset',
                 declarations: {
                     color: 'var(--color-text)'
+                }
+            },
+            {
+                selector: '& :is(p)',
+                layer: 'preset',
+                declarations: {
+                    'font-size': '1rem'
                 }
             },
             {
@@ -310,15 +318,19 @@ describe.concurrent('@master/css-compiler', () => {
                 }
             }
         ])
-        expect(result.css).toContain('@layer preset{.prose :is(p){font-size:1rem}.prose{color:var(--color-text)}@media print{.prose{display:none}}}')
+        expect(result.css).toContain('@layer preset{.prose{color:var(--color-text)}.prose :is(p){font-size:1rem}@media print{.prose{display:none}}}')
         expect(result.css).not.toContain('@layer components{@layer preset')
     })
 
-    it('maps composed layer tokens to top-level component definition layers', () => {
+    it('supports nested component layer blocks', () => {
         const result = compileCSS(`
             @master components {
                 .prose {
-                    @compose "font:md_:is(p)@preset";
+                    @layer preset {
+                        :is(p) {
+                            @compose "font:md";
+                        }
+                    }
                 }
             }
         `, { classes: ['prose'] })
@@ -499,16 +511,38 @@ describe.concurrent('@master/css-compiler', () => {
         expect(result.css).toContain('.content-auto{content-visibility:auto;contain-intrinsic-size:auto 32rem;display:block}')
     })
 
-    it('supports nested at-rules in component and utility definitions', () => {
+    it('supports nested at-rules and @at tokens in component and utility definitions', () => {
         const result = compileCSS(`
+            @master {
+                mode-trigger: class;
+                --screen-md: 768;
+                @custom-at motion-safe @media (prefers-reduced-motion: no-preference);
+            }
+
             @master components {
                 .btn {
                     display: block;
+
+                    @at dark {
+                        color: white;
+
+                        &:hover {
+                            opacity: .8;
+                        }
+                    }
+                }
+
+                @at md {
+                    .btn {
+                        @compose "inline-flex";
+                    }
                 }
 
                 @media print {
-                    .btn {
-                        display: none;
+                    @at motion-safe {
+                        .btn {
+                            display: none;
+                        }
                     }
 
                     @supports (display: grid) {
@@ -538,9 +572,13 @@ describe.concurrent('@master/css-compiler', () => {
             @master utilities {
                 .print-hidden {
                     visibility: visible;
+
+                    @at dark {
+                        opacity: .5;
+                    }
                 }
 
-                @media print {
+                @at print {
                     .print-hidden {
                         visibility: hidden;
                     }
@@ -560,8 +598,27 @@ describe.concurrent('@master/css-compiler', () => {
                 }
             },
             {
+                selector: '.dark &',
+                declarations: {
+                    color: '#fff'
+                }
+            },
+            {
+                selector: '.dark &:hover',
+                declarations: {
+                    opacity: '.8'
+                }
+            },
+            {
                 selector: '&',
-                atRules: ['@media print'],
+                atRules: ['@media (width>=48rem)'],
+                declarations: {
+                    display: 'inline-flex'
+                }
+            },
+            {
+                selector: '&',
+                atRules: ['@media print', '@media (prefers-reduced-motion:no-preference)'],
                 declarations: {
                     display: 'none'
                 }
@@ -605,6 +662,12 @@ describe.concurrent('@master/css-compiler', () => {
                         }
                     },
                     {
+                        selector: '.dark &',
+                        declarations: {
+                            opacity: '.5'
+                        }
+                    },
+                    {
                         atRules: ['@media print'],
                         declarations: {
                             visibility: 'hidden'
@@ -619,11 +682,14 @@ describe.concurrent('@master/css-compiler', () => {
             }
         ])
         const blockIndex = result.css.indexOf('.btn{display:block}')
-        const printIndex = result.css.indexOf('@media print{.btn{display:none}}')
+        const printIndex = result.css.indexOf('@media print{@media (prefers-reduced-motion:no-preference){.btn{display:none}}}')
         const flexIndex = result.css.indexOf('.btn{display:flex}')
         expect(blockIndex).toBeGreaterThan(-1)
         expect(printIndex).toBeGreaterThan(blockIndex)
         expect(flexIndex).toBeGreaterThan(printIndex)
+        expect(result.css).toContain('.dark .btn{color:#fff}')
+        expect(result.css).toContain('.dark .btn:hover{opacity:.8}')
+        expect(result.css).toContain('@media (width>=48rem){.btn{display:inline-flex}}')
         expect(result.css).toContain('@media print{@supports (display:grid){.btn{display:grid}}}')
         expect(result.css).toContain('@container card (width>=42rem){.btn:hover{opacity:.5}}')
         expect(result.css).toContain('@starting-style{.btn{opacity:0}}')
@@ -631,6 +697,7 @@ describe.concurrent('@master/css-compiler', () => {
         const hiddenIndex = result.css.indexOf('@media print{.print-hidden{visibility:hidden}}')
         const collapseIndex = result.css.indexOf('.print-hidden{visibility:collapse}')
         expect(visibleIndex).toBeGreaterThan(-1)
+        expect(result.css).toContain('.dark .print-hidden{opacity:.5}')
         expect(hiddenIndex).toBeGreaterThan(visibleIndex)
         expect(collapseIndex).toBeGreaterThan(hiddenIndex)
     })
@@ -939,6 +1006,26 @@ describe.concurrent('@master/css-compiler', () => {
                 }
             }
         `, ['btn'])).toContain('@media print{.btn{display:none}}')
+    })
+
+    it('rejects @at outside component and utility definitions', () => {
+        expect(() => process(`
+            @at dark {
+                .btn {
+                    display: none;
+                }
+            }
+        `)).toThrow('@at is only allowed in @master components and @master utilities')
+
+        expect(() => process(`
+            @master {
+                @at dark {
+                    .btn {
+                        display: none;
+                    }
+                }
+            }
+        `)).toThrow('@at is only allowed in @master components and @master utilities')
     })
 
     it('rejects invalid @custom-at and @custom-selector names and conflicts', () => {

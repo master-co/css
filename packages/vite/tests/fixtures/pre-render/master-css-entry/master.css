@@ -5,7 +5,10 @@
 
 @master components {
     .card {
-        @compose "bg:brand font:18@md";
+        @compose "bg:brand";
+        @at md {
+            @compose "font:18";
+        }
         border-color: #456;
     }
 }

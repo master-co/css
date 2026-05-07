@@ -37,13 +37,19 @@
     }
 
     .card {
-        @compose "grid gap:1rem p:card bg:base r:card max-w:42rem content-auto @demo-fade-in|.55s@motion-safe";
+        @compose "grid gap:1rem p:card bg:base r:card max-w:42rem content-auto";
+        @at motion-safe {
+            @compose "@demo-fade-in|.55s";
+        }
         border: 1px solid var(--color-ring);
         box-shadow: 0 22px 70px rgb(17 24 39 / 12%);
     }
 
     .live-label {
-        @compose "inline-flex ai:center jc:center h:24 px:.75rem bg:primary r:pill font:12 font:semibold @demo-pulse|1.4s|infinite@motion-safe";
+        @compose "inline-flex ai:center jc:center h:24 px:.75rem bg:primary r:pill font:12 font:semibold";
+        @at motion-safe {
+            @compose "@demo-pulse|1.4s|infinite";
+        }
         color: white;
         justify-self: start;
         letter-spacing: .04em;
@@ -51,7 +57,10 @@
     }
 
     .title {
-        @compose "m:0 font:40 font:56@md leading:1 fg:ink";
+        @compose "m:0 font:40 leading:1 fg:ink";
+        @at md {
+            @compose "font:56";
+        }
         max-width: 12ch;
     }
 

@@ -242,6 +242,27 @@ describe('raw declarations', () => {
         expect(css.utilitiesLayer.text).toContain('@media print{.print-hidden{display:none}}')
     })
 
+    test('generates static utility rules with configured selectors', () => {
+        const css = createCSS({
+            utilities: [
+                {
+                    name: 'theme-hidden',
+                    type: UtilityType.Static,
+                    declarations: { display: 'block' },
+                    rules: [
+                        {
+                            selector: '.dark &',
+                            declarations: { display: 'none' }
+                        }
+                    ]
+                }
+            ]
+        }).add('theme-hidden')
+
+        expect(css.utilitiesLayer.text).toContain('.theme-hidden{display:block}')
+        expect(css.utilitiesLayer.text).toContain('.dark .theme-hidden{display:none}')
+    })
+
     test('keeps component rule declarations separate when variants differ', () => {
         const css = createCSS()
         css.components.set('btn', {

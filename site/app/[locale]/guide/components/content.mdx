@@ -78,45 +78,45 @@ The generated CSS is emitted in the `components` layer:
 ---
 
 ## Composition
-`@compose` accepts the same class syntax you would write in markup. Keep it quoted so grouped declarations and punctuation-heavy syntax can be parsed without ambiguity.
+`@compose` accepts Master CSS utility declarations. Keep it quoted so grouped declarations and punctuation-heavy syntax can be parsed without ambiguity. In component definitions, put selector states in nested selectors and put conditional variants in `@at` blocks.
 
 ```css name=master.css
 @master components {
     .empty-state {
         @compose "grid ai:center jc:center min-h:16rem p:1.25rem text:center";
-    }
 
-    .empty-state::before {
-        @compose "{content:'';block;size:3rem;r:50%}";
-        background: color-mix(in oklab, currentColor 12%, transparent);
+        &::before {
+            @compose "{content:'';block;size:3rem;r:50%}";
+            background: color-mix(in oklab, currentColor 12%, transparent);
+        }
     }
 }
 ```
 
-When the selector is derived from the same component class, composed classes receive the selector suffix automatically. In the example above, `size:3rem` is generated for `.empty-state::before`, not for `.empty-state`.
+When the selector is derived from the same component class, nest the selector inside the component rule. In the example above, `size:3rem` is generated for `.empty-state::before`, not for `.empty-state`.
 
 ---
 
 ## States and conditions
-Component selectors can include pseudo-classes, pseudo-elements, and conditional class syntax.
+Component definitions can include nested selectors and `@at` condition blocks.
 
 ```css name=master.css
 @master components {
     .btn {
         @compose "inline-flex ai:center jc:center px:1rem py:.625rem r:.5rem";
         transition: background-color .15s ease, box-shadow .15s ease;
-    }
 
-    .btn:hover {
-        @compose "bg:primary/.9";
-    }
+        &:hover {
+            @compose "bg:primary/.9";
+        }
 
-    .btn:focus-visible {
-        @compose "outline:2|primary outline-offset:2";
-    }
+        &:focus-visible {
+            @compose "outline:2|primary outline-offset:2";
+        }
 
-    .btn {
-        @compose "block@<sm";
+        @at <sm {
+            @compose "block";
+        }
     }
 }
 ```
@@ -241,7 +241,7 @@ Local relative `.css` imports are compiled into one config graph. Package import
 - Put component definitions in `@master components`; component selectors directly under `@master` are invalid.
 - Component selectors must start with a single class selector such as `.btn`, `.card`, or `.field::before`.
 - `@compose` is only valid inside component definitions.
-- Component definitions accept native declarations and `@compose`; nested at-rules can contain additional component selectors.
+- Component definitions accept native declarations, `@compose`, nested selectors, native nested at-rules, and `@at` condition blocks.
 - Standard HTML tag selectors such as `body` or `html` are not valid inside `@master` definitions.
 - Utilities still win over components in the default layer order: `@layer base,theme,preset,components,utilities;`.
 
