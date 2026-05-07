@@ -7,6 +7,22 @@ import generateAt from './utils/generate-at'
 import parseAt, { AtRuleNode, AtRuleStringNode } from './utils/parse-at'
 import collectVariableNames from './utils/collect-variable-names'
 import wrapAtRules from './utils/wrap-at-rules'
+import type { ComponentLayerName } from './types/config'
+
+function getComponentLayer(css: MasterCSS, layerName: ComponentLayerName) {
+    switch (layerName) {
+        case 'base':
+            return css.baseLayer
+        case 'preset':
+            return css.presetLayer
+        case 'utilities':
+            return css.utilitiesLayer
+        case 'components':
+            return css.componentsLayer
+        default:
+            throw new Error(`Unsupported component layer: ${layerName}`)
+    }
+}
 
 export default class ComponentRule {
     native?: CSSRule
@@ -22,9 +38,10 @@ export default class ComponentRule {
         public css: MasterCSS,
         public declarations: PropertiesHyphen,
         public selector?: string,
-        public atRuleDefinitions?: string[]
+        public atRuleDefinitions?: string[],
+        public layerName: ComponentLayerName = 'components'
     ) {
-        this.layer = css.componentsLayer
+        this.layer = getComponentLayer(css, layerName)
         const atIndex = name.indexOf('@')
         if (atIndex !== -1) {
             const atTokens = name.slice(atIndex + 1).split('@')
@@ -124,6 +141,8 @@ export default class ComponentRule {
     get key(): string {
         return [
             this.name,
+            '@layer',
+            this.layerName,
             this.selector || '&',
             JSON.stringify(this.declarations),
             ...(this.atRuleDefinitions || []),

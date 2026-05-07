@@ -270,14 +270,15 @@ export default class MasterCSS {
                 if (typeof item !== 'object' || !item) {
                     throw new Error(`Component "${name}" definitions must be objects`)
                 }
-                const { selector, declarations, atRules } = item as ComponentDefinition
+                const { selector, declarations, atRules, layer } = item as ComponentDefinition
                 if (!selector.includes('&')) {
                     throw new Error(`Component "${name}" selector must include "&"`)
                 }
                 selectorRules.push({
                     selector: resolveSelectorTokens(selector, this.config.selectorTokens),
                     declarations: declarations as any,
-                    ...(atRules?.length ? { atRules } : {})
+                    ...(atRules?.length ? { atRules } : {}),
+                    ...(layer ? { layer } : {})
                 })
             }
             this.components.set(name, {
@@ -583,8 +584,8 @@ export default class MasterCSS {
     }
 
     appendComponentRules(rules: GeneratedUtility[], className: string, selectorRules: ComponentEntry['selectorRules']) {
-        for (const { selector, declarations, atRules } of selectorRules) {
-            const componentRule = new ComponentRule(className, this, declarations, selector, atRules)
+        for (const { selector, declarations, atRules, layer } of selectorRules) {
+            const componentRule = new ComponentRule(className, this, declarations, selector, atRules, layer)
             if (componentRule.valid) rules.push(componentRule)
         }
     }

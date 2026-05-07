@@ -286,4 +286,22 @@ describe('raw declarations', () => {
         expect(css.components.get('btn')?.selectorRules[0].selector).toBe('&:only-child')
         expect(css.componentsLayer.text).toContain('.btn:only-child{display:block}')
     })
+
+    test('inserts component definitions into configured top-level layers', () => {
+        const css = createCSS({
+            components: {
+                prose: [
+                    {
+                        selector: '& :is(p)',
+                        layer: 'preset',
+                        declarations: { 'font-size': '1rem' }
+                    }
+                ]
+            }
+        }).add('prose')
+
+        expect(css.presetLayer.text).toContain('@layer preset{.prose :is(p){font-size:1rem}}')
+        expect(css.componentsLayer.text).toBe('')
+        expect(css.text).not.toContain('@layer components{@layer preset')
+    })
 })

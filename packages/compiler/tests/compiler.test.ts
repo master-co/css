@@ -268,6 +268,74 @@ describe.concurrent('@master/css-compiler', () => {
         expect(result.css).toContain(".code-line-add:not(:only-child):before{content:'+'!important}")
     })
 
+    it('supports component definitions inside top-level layer blocks', () => {
+        const result = compileCSS(`
+            @master components {
+                @layer preset {
+                    .prose {
+                        @compose "font:md_:is(p)";
+                        color: var(--color-text);
+                    }
+
+                    @media print {
+                        .prose {
+                            display: none;
+                        }
+                    }
+                }
+            }
+        `, { classes: ['prose'] })
+
+        expect(result.config.components?.prose).toEqual([
+            {
+                selector: '& :is(p)',
+                layer: 'preset',
+                declarations: {
+                    'font-size': '1rem'
+                }
+            },
+            {
+                selector: '&',
+                layer: 'preset',
+                declarations: {
+                    color: 'var(--color-text)'
+                }
+            },
+            {
+                selector: '&',
+                atRules: ['@media print'],
+                layer: 'preset',
+                declarations: {
+                    display: 'none'
+                }
+            }
+        ])
+        expect(result.css).toContain('@layer preset{.prose :is(p){font-size:1rem}.prose{color:var(--color-text)}@media print{.prose{display:none}}}')
+        expect(result.css).not.toContain('@layer components{@layer preset')
+    })
+
+    it('maps composed layer tokens to top-level component definition layers', () => {
+        const result = compileCSS(`
+            @master components {
+                .prose {
+                    @compose "font:md_:is(p)@preset";
+                }
+            }
+        `, { classes: ['prose'] })
+
+        expect(result.config.components?.prose).toEqual([
+            {
+                selector: '& :is(p)',
+                layer: 'preset',
+                declarations: {
+                    'font-size': '1rem'
+                }
+            }
+        ])
+        expect(result.css).toContain('@layer preset{.prose :is(p){font-size:1rem}}')
+        expect(result.css).not.toContain('@layer components{@layer preset')
+    })
+
     it('expands repeated component definitions in declaration order', () => {
         const result = compileCSS(`
             @master components {

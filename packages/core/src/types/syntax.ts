@@ -1,4 +1,4 @@
-import { UtilityDefinition } from './config'
+import { ComponentLayerName, UtilityDefinition } from './config'
 import type { PropertiesHyphen } from 'csstype'
 
 export type ValueComponent = StringValueComponent | NumberValueComponent | FunctionValueComponent | VariableValueComponent | SeparatorValueComponent
@@ -27,6 +27,7 @@ export interface ComponentEntry {
         selector: string
         declarations: PropertiesHyphen
         atRules?: string[]
+        layer?: ComponentLayerName
     }[]
 }
 

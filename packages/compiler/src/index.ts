@@ -14,6 +14,7 @@ import { transform } from 'lightningcss'
 import type { PropertiesHyphen } from 'csstype'
 import type {
     AnimationDefinitions,
+    ComponentLayerName,
     ComponentDefinition,
     Config,
     Utility,
@@ -62,6 +63,7 @@ interface PendingComponentCompose {
     type: 'compose'
     className: string
     atRules?: string[]
+    layer?: ComponentLayerName
 }
 
 type ParsedComponentDefinition = ComponentDefinition | PendingComponentCompose
@@ -94,6 +96,7 @@ type MasterSection = 'root' | 'components' | 'utilities' | 'animations'
 const DEFAULT_MODE_NAMES = new Set(defaultConfig.modes || [])
 const DEFAULT_SCREEN_NAMES = new Set(Object.keys(defaultScreens))
 const IMPORTANT_FLAG_VALUE = '__master_important__'
+const COMPONENT_LAYER_NAMES = new Set<ComponentLayerName>(['base', 'preset', 'components', 'utilities'])
 
 const HTML_TAG_NAMES = new Set([
     'a',
@@ -611,10 +614,22 @@ function getUtilityAtRuleDefinitions(utility: Utility) {
         for (const id of AT_IDENTIFIERS) {
             const nodes = utility.atRules[id]
             if (!nodes) continue
+            if (id === 'layer' && getUtilityComponentLayer(utility)) continue
             atRules.push(generateAt({ id, nodes }))
         }
     }
     return atRules
+}
+
+function getUtilityComponentLayer(utility: Utility) {
+    const layerNodes = utility.atRules?.layer
+    if (layerNodes?.length !== 1) return
+    const layerNode = layerNodes[0]
+    if (!('value' in layerNode)) return
+    const layerName = String(layerNode.value)
+    if (COMPONENT_LAYER_NAMES.has(layerName as ComponentLayerName)) {
+        return layerName as ComponentLayerName
+    }
 }
 
 function getUtilityComponentSelector(utility: Utility, css: ReturnType<typeof createCSS>) {
@@ -646,11 +661,13 @@ function createComponentDefinitionsFromCompose(className: string, css: ReturnTyp
         throw new Error(`Invalid @compose class: ${className}`)
     }
     const selector = getUtilityComponentSelector(utility, css)
+    const layer = getUtilityComponentLayer(utility)
     const utilityAtRules = getUtilityAtRuleDefinitions(utility)
     const declarationRules = utility.declarationRules || (utility.declarations ? [{ declarations: utility.declarations }] : [])
     return declarationRules.map(({ declarations, atRules }) => ({
         selector,
         declarations: cloneDeclarations(declarations, utility.important),
+        ...(layer ? { layer } : {}),
         ...([...utilityAtRules, ...(atRules || [])].length
             ? { atRules: [...utilityAtRules, ...(atRules || [])] }
             : {})
@@ -860,7 +877,7 @@ function insertSelectorSuffix(className: string, suffix: string) {
     return className + suffix
 }
 
-function parseComponent(rule: any, parsed: ParsedDirectives, atRules: string[] = []) {
+function parseComponent(rule: any, parsed: ParsedDirectives, atRules: string[] = [], layer?: ComponentLayerName) {
     const selectorDefinition = parseComponentDefinitionSelector(rule.value.selectors)
     if (!selectorDefinition) {
         throw new Error('Component definition selector must start with a single class selector')
@@ -873,7 +890,8 @@ function parseComponent(rule: any, parsed: ParsedDirectives, atRules: string[] =
     definitions.push(...normalizedClassNames.map((className) => ({
         type: 'compose' as const,
         className,
-        ...(atRules.length ? { atRules: [...atRules] } : {})
+        ...(atRules.length ? { atRules: [...atRules] } : {}),
+        ...(layer ? { layer } : {})
     })))
     if (Object.keys(declarations).length) {
         const existingDefinition = definitions[definitions.length - 1]
@@ -881,6 +899,7 @@ function parseComponent(rule: any, parsed: ParsedDirectives, atRules: string[] =
             existingDefinition
             && !('type' in existingDefinition)
             && existingDefinition.selector === selectorDefinition.selector
+            && existingDefinition.layer === layer
             && sameAtRules(existingDefinition.atRules, atRules)
         ) {
             Object.assign(existingDefinition.declarations, declarations)
@@ -888,7 +907,8 @@ function parseComponent(rule: any, parsed: ParsedDirectives, atRules: string[] =
             definitions.push({
                 selector: selectorDefinition.selector,
                 declarations: declarations as PropertiesHyphen,
-                ...(atRules.length ? { atRules: [...atRules] } : {})
+                ...(atRules.length ? { atRules: [...atRules] } : {}),
+                ...(layer ? { layer } : {})
             })
         }
     }
@@ -1004,13 +1024,13 @@ function parseModeBlock(rule: any, mode: string, parsed: ParsedDirectives) {
     }
 }
 
-function parseMasterStyleRule(rule: any, parsed: ParsedDirectives, options: CompileCSSOptions, section: MasterSection, atRules: string[] = []) {
+function parseMasterStyleRule(rule: any, parsed: ParsedDirectives, options: CompileCSSOptions, section: MasterSection, atRules: string[] = [], layer?: ComponentLayerName) {
     if (section === 'utilities') {
         parseUtility(rule, parsed, atRules)
         return
     }
     if (section === 'components') {
-        parseComponent(rule, parsed, atRules)
+        parseComponent(rule, parsed, atRules, layer)
         return
     }
     if (section === 'animations') {
@@ -1035,7 +1055,36 @@ function parseMasterStyleRule(rule: any, parsed: ParsedDirectives, options: Comp
     warn(parsed, options, `Unsupported @master selector "${formatSelectors(rule.value.selectors)}". @master only accepts mode variable blocks, @at, and @selector.`)
 }
 
-function parseMasterChildRule(child: Rule, parsed: ParsedDirectives, options: CompileCSSOptions, section: MasterSection, atRules: string[] = []) {
+function parseComponentLayerBlock(rule: Rule) {
+    if (rule.type !== 'layer-block') return
+    const layerName = (rule.value.name || []).join('.')
+    if (!layerName) {
+        throw new Error('@layer in @master components requires a layer name')
+    }
+    if (!COMPONENT_LAYER_NAMES.has(layerName as ComponentLayerName)) {
+        throw new Error(`Unsupported @master components layer: ${layerName}`)
+    }
+    return {
+        layer: layerName as ComponentLayerName,
+        rules: rule.value.rules as Rule[]
+    }
+}
+
+function parseMasterChildRule(child: Rule, parsed: ParsedDirectives, options: CompileCSSOptions, section: MasterSection, atRules: string[] = [], layer?: ComponentLayerName) {
+    const componentLayerBlock = parseComponentLayerBlock(child)
+    if (componentLayerBlock) {
+        if (section !== 'components') {
+            throw new Error('@layer is only allowed in @master components')
+        }
+        if (layer) {
+            throw new Error('Nested @layer blocks are not allowed in @master components')
+        }
+        for (const nestedChild of componentLayerBlock.rules) {
+            parseMasterChildRule(nestedChild, parsed, options, section, atRules, componentLayerBlock.layer)
+        }
+        return
+    }
+
     const nestedAtRuleChildren = getNestedAtRuleChildren(child)
     if (nestedAtRuleChildren) {
         if (section !== 'components' && section !== 'utilities') {
@@ -1046,7 +1095,7 @@ function parseMasterChildRule(child: Rule, parsed: ParsedDirectives, options: Co
             throw new Error(`Unsupported nested at-rule in @master ${section}`)
         }
         for (const nestedChild of nestedAtRuleChildren) {
-            parseMasterChildRule(nestedChild, parsed, options, section, [...atRules, atRule])
+            parseMasterChildRule(nestedChild, parsed, options, section, [...atRules, atRule], layer)
         }
         return
     }
@@ -1080,7 +1129,7 @@ function parseMasterChildRule(child: Rule, parsed: ParsedDirectives, options: Co
         return
     }
     if (child.type === 'style') {
-        parseMasterStyleRule(child, parsed, options, section, atRules)
+        parseMasterStyleRule(child, parsed, options, section, atRules, layer)
         return
     }
     throw new Error(`Unsupported rule in @master${section === 'root' ? '' : ' ' + section}`)
@@ -1163,6 +1212,7 @@ function finalizeComponentDefinitions(parsed: ParsedDirectives, options: Compile
                     ]
                     definitions.push({
                         ...composedDefinition,
+                        ...(definition.layer ? { layer: definition.layer } : {}),
                         ...(atRules.length ? { atRules } : {})
                     })
                 }

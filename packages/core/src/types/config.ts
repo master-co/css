@@ -47,6 +47,7 @@ export type AnimationDefinitions = Record<string, CSSKeyframes>;
 export type SelectorTokenDefinitions = Record<string, string>;
 export type AtIdentifier = typeof AT_IDENTIFIERS[number]
 export type AtTokenDefinition = number | string
+export type ComponentLayerName = 'base' | 'preset' | 'components' | 'utilities'
 export interface AtTokenDefinitions {
     [key: string]: AtTokenDefinition | AtTokenDefinitions;
 }
@@ -54,6 +55,7 @@ export interface ComponentDefinition {
     selector: string
     declarations: CSSDeclarations
     atRules?: string[]
+    layer?: ComponentLayerName
 }
 export type ComponentDefinitions = Record<string, ComponentDefinition[]>
 export type UtilityDefinitions = UtilityDefinition[]
