@@ -6,9 +6,9 @@
 
 ## Inputs And Outputs
 
-- Input: CSS containing `@master`, variables, nested mode blocks, `@custom-at`, `@custom-selector`, `@master components`, `@master utilities`, condition blocks with `@at`, component rules with `@compose`, and `@master animations`.
+- Input: CSS containing `@master`, variables, nested mode blocks, `@custom-at`, `@custom-selector`, `@layer general`, condition blocks with `@at`, reusable main style rules with `@compose`, and native `@keyframes`.
 - Output: CSS with consumed Master directives removed and generated Master CSS appended only for classes passed to the compiler.
-- `@master` definitions are config definitions. Defining a component, utility, variable, token, or animation does not emit CSS by itself; the class still needs to be used or extracted.
+- `@master` definitions are config definitions. Defining a main style, utility, variable, token, or animation does not emit CSS by itself; the class still needs to be used or extracted.
 - `compileCSSFile()` resolves local relative CSS `@import` graphs before compiling and returns absolute dependency paths.
 
 ## Boundaries
@@ -28,14 +28,14 @@
 - `light` and `dark` are core default modes; the compiler should only add custom modes such as `chrisma`.
 - `@master { @custom-at motion-safe @media (prefers-reduced-motion: no-preference); }`
 - `@master { @custom-selector ::scrollbar ::-webkit-scrollbar; }`
-- `@master components { .btn { @compose "inline-flex"; display: inline-flex; } }`
-- `@master components { .btn { @at dark { @compose "bg:neutral-90"; } } }`
-- `@master utilities { .content-auto { content-visibility: auto; } }`
-- `@master utilities { .print-hidden { @at print { display: none; } } }`
-- `@master animations { fade { from { opacity: 0; } to { opacity: 1; } } }`
-- Component definition selectors must start with one class selector.
-- `@compose` is allowed only in component definitions.
-- Utilities defined in CSS are static utilities only.
+- `@master { .btn { @compose "inline-flex"; display: inline-flex; } }`
+- `@master { .btn { @at dark { @compose "bg:neutral-90"; } } }`
+- `@master { @layer general { .content-auto { content-visibility: auto; } } }`
+- `@master { @layer general { .print-hidden { @at print { display: none; } } } }`
+- `@master { @keyframes fade { from { opacity: 0; } to { opacity: 1; } } }`
+- Main style definition selectors must start with one class selector.
+- `@compose` is allowed only in main style definitions.
+- General utilities defined in CSS are static utilities only.
 - `body`, `html`, and other HTML tag rules inside `@master` should warn because regular CSS selectors must live outside Master directives.
 - The compiler package does not scan unrelated `.css` files for class usage. Pair CSS configs with `@master/css.vite` extract mode or pass extracted classes through `compileCSS(..., { classes })`.
 

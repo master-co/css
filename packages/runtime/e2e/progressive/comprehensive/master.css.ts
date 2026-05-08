@@ -6,10 +6,15 @@ export default {
         { key: 'primary', value: '#ffffff', mode: 'dark' }
     ],
     modes: ['light', 'dark'],
-    components: {
-        btn: [
-            { selector: '&', declarations: { display: 'inline-flex' } },
-            { selector: '&', declarations: { 'background-color': 'var(--primary)' } }
-        ]
-    }
+    utilities: [
+        {
+            name: 'btn',
+            type: -4,
+            layer: 'main',
+            rules: [
+                { selector: '&', declarations: { display: 'inline-flex' } },
+                { selector: '&', declarations: { 'background-color': 'var(--primary)' } }
+            ]
+        }
+    ]
 } satisfies Config

@@ -126,9 +126,16 @@ test.concurrent('colors', () => {
     expectLayers(
         { theme: ':root{--color-primary-filled:oklch(0% 0 none)}.light{--color-primary-filled:oklch(100% 0 none)}.dark{--color-primary-filled:oklch(0% 0 none)}', components: '.btn{background-color:var(--color-primary-filled)}' },
         'btn',
-        { variables: [{ namespace: 'color', key: 'primary-filled', value: '$color-black' }, { namespace: 'color', key: 'primary-filled', value: '$color-white', mode: 'light' }, { namespace: 'color', key: 'primary-filled', value: '$color-black', mode: 'dark' }], modes: ['light', 'dark'], modeTrigger: 'class', components: { btn: [
-            { selector: '&', declarations: { 'background-color': 'var(--color-primary-filled)' } }
-        ] } }
+        { variables: [{ namespace: 'color', key: 'primary-filled', value: '$color-black' }, { namespace: 'color', key: 'primary-filled', value: '$color-white', mode: 'light' }, { namespace: 'color', key: 'primary-filled', value: '$color-black', mode: 'dark' }], modes: ['light', 'dark'], modeTrigger: 'class', utilities: [
+            {
+                name: 'btn',
+                type: -4,
+                layer: 'main',
+                rules: [
+                    { selector: '&', declarations: { 'background-color': 'var(--color-primary-filled)' } }
+                ]
+            }
+        ] }
     )
 
     expectLayers(
@@ -137,9 +144,16 @@ test.concurrent('colors', () => {
             utilities: '.bg\\:primary-filled{background-color:var(--color-primary-filled)}'
         },
         'bg:primary-filled',
-        { variables: [{ namespace: 'color', key: 'primary-filled', value: '$color-black' }, { namespace: 'color', key: 'primary-filled', value: '$color-white', mode: 'light' }, { namespace: 'color', key: 'primary-filled', value: '$color-black', mode: 'dark' }], modes: ['light', 'dark'], components: { btn: [
-            { selector: '&', declarations: { 'background-color': 'var(--color-primary-filled)' } }
-        ] }, modeTrigger: 'class' }
+        { variables: [{ namespace: 'color', key: 'primary-filled', value: '$color-black' }, { namespace: 'color', key: 'primary-filled', value: '$color-white', mode: 'light' }, { namespace: 'color', key: 'primary-filled', value: '$color-black', mode: 'dark' }], modes: ['light', 'dark'], utilities: [
+            {
+                name: 'btn',
+                type: -4,
+                layer: 'main',
+                rules: [
+                    { selector: '&', declarations: { 'background-color': 'var(--color-primary-filled)' } }
+                ]
+            }
+        ], modeTrigger: 'class' }
     )
 
     expectLayers(
@@ -147,9 +161,16 @@ test.concurrent('colors', () => {
             utilities: '.dark .bg\\:primary-filled\\@dark{background-color:oklch(100% 0 none)}'
         },
         'bg:primary-filled@dark',
-        { variables: [{ namespace: 'color', key: 'primary-filled', value: '$color-white' }, { namespace: 'color', key: 'primary-filled', value: '$color-black', mode: 'light' }, { namespace: 'color', key: 'primary-filled', value: '$color-white', mode: 'dark' }], modes: ['light', 'dark'], components: { btn: [
-            { selector: '&', declarations: { 'background-color': 'var(--color-primary-filled)' } }
-        ] }, modeTrigger: 'class' }
+        { variables: [{ namespace: 'color', key: 'primary-filled', value: '$color-white' }, { namespace: 'color', key: 'primary-filled', value: '$color-black', mode: 'light' }, { namespace: 'color', key: 'primary-filled', value: '$color-white', mode: 'dark' }], modes: ['light', 'dark'], utilities: [
+            {
+                name: 'btn',
+                type: -4,
+                layer: 'main',
+                rules: [
+                    { selector: '&', declarations: { 'background-color': 'var(--color-primary-filled)' } }
+                ]
+            }
+        ], modeTrigger: 'class' }
     )
 
     expectLayers(

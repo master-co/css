@@ -1,4 +1,4 @@
-@master components {
+@master {
     .box {
         display: flex;
         font-size: 1em;

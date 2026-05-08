@@ -181,7 +181,7 @@ export const cases = {
                     ':combo': ':is(h1,h2)+div',
                 } }
         ],
-        // unsupported: component token + selector token
+        // unsupported: static utility selector + selector token
         // ['>span::both', '.btn>span::before,.btn>span::after', [
         //     { type: 'combinator', raw: '>', value: '>' },
         //     { raw: 'span', value: 'span' },
@@ -197,9 +197,9 @@ export const cases = {
         //         selectorTokens: {
         //             '::both': '::before,::after',
         //         },
-        //         components: {
-        //             'btn': [{ selector: '&::before,&::after', declarations: { display: 'block' } }]
-        //         }
+        //         utilities: [
+        //             { name: 'btn', type: -4, layer: 'main', rules: [{ selector: '&::before,&::after', declarations: { display: 'block' } }] }
+        //         ]
         //     },
         //     '.btn'
         // ]

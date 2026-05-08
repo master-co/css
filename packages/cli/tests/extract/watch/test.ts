@@ -27,19 +27,21 @@ const originHTMLText = dedent`
     </html>
 `
 
-const originConfigText = `import type { Config } from '@master/css'
-const config: Config = {
-    components: {
-        btn: [
-            { selector: '&', declarations: { 'background-color': 'oklch(63.7% 0.237 25.331)' } }
-        ]
-    },
+const originConfigText = `export default {
+    utilities: [
+        {
+            name: 'btn',
+            type: -4,
+            layer: 'main',
+            rules: [
+                { selector: '&', declarations: { 'background-color': 'oklch(63.7% 0.237 25.331)' } }
+            ]
+        }
+    ],
     variables: [
         { namespace: 'color', key: 'primary', value: '$(color-blue)' }
     ]
 }
-
-export default config
 `
 
 let workspacePath: string
@@ -75,10 +77,10 @@ beforeAll(() => {
     workspacePath = fs.mkdtempSync(path.join(os.tmpdir(), 'master-css-cli-watch-'))
     HTMLFilepath = path.join(workspacePath, 'test.html')
     configFilepath = path.join(workspacePath, 'master.css.ts')
-    virtualCSSFilepath = path.join(workspacePath, 'master.css')
+    virtualCSSFilepath = path.join(workspacePath, 'output.css')
     fs.writeFileSync(HTMLFilepath, originHTMLText, { flag: 'w+' })
     fs.writeFileSync(configFilepath, originConfigText, { flag: 'w+' })
-    subprocess = execa(process.execPath, ['--import', tsxLoaderURL, cliFilepath, 'extract', '-w'], {
+    subprocess = execa(process.execPath, ['--import', tsxLoaderURL, cliFilepath, 'extract', '-w', '-o', virtualCSSFilepath], {
         cwd: workspacePath,
         forceKillAfterDelay: 1000
     })
@@ -108,15 +110,17 @@ it('start watch process', async () => {
     expect(fileCSSText).toContain(cssEscape('btn'))
 }, 120000)
 
-it('change config file `components` and reset process', async () => {
+it('change config file utilities and reset process', async () => {
+    const nextConfigFilepath = configFilepath + '.next'
     await Promise.all([
         waitForWatchRestart(() => {
-            fs.writeFileSync(configFilepath, originConfigText.replace('oklch(63.7% 0.237 25.331)', 'var(--color-blue)'))
+            fs.writeFileSync(nextConfigFilepath, originConfigText.replace('oklch(63.7% 0.237 25.331)', 'oklch(55.1% 0.027 264.364)'))
+            fs.renameSync(nextConfigFilepath, configFilepath)
         }),
-        waitForCSSContent((css) => css.includes('.btn{background-color:var(--color-blue)'))
+        waitForCSSContent((css) => css.includes('.btn{background-color:oklch(55.1% 0.027 264.364)'))
     ])
-    const fileCSSText = await waitForCSSContent((css) => css.includes('.btn{background-color:var(--color-blue)'))
-    expect(fileCSSText).toContain('.btn{background-color:var(--color-blue)')
+    const fileCSSText = await waitForCSSContent((css) => css.includes('.btn{background-color:oklch(55.1% 0.027 264.364)'))
+    expect(fileCSSText).toContain('.btn{background-color:oklch(55.1% 0.027 264.364)')
 }, 120000)
 
 it('change html file class attr and update', async () => {

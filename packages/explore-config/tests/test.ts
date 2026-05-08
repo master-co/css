@@ -6,6 +6,17 @@ import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { tmpdir } from 'node:os'
 
+function mainUtility(name: string, declarations: Record<string, string>) {
+    return {
+        name,
+        type: -4,
+        layer: 'main',
+        rules: [
+            { selector: '&', declarations }
+        ]
+    }
+}
+
 test('loads the default TypeScript config', async () => {
     expect(await exploreConfig({ cwd: __dirname })).toMatchObject({
         basename: 'master.css.ts',
@@ -17,31 +28,25 @@ test('loads the default TypeScript config', async () => {
 
 test('loads an explicit config file name', async () => {
     expect((await exploreConfig({ cwd: __dirname, name: 'custom.config.ts' }))?.config).toStrictEqual({
-        components: {
-            custom: [
-                { selector: '&', declarations: { display: 'inline-flex' } }
-            ]
-        }
+        utilities: [
+            mainUtility('custom', { display: 'inline-flex' })
+        ]
     })
 })
 
 test('resolves named config exports before default exports', async () => {
     expect((await exploreConfig({ cwd: __dirname, name: 'named.css.ts' }))?.config).toStrictEqual({
-        components: {
-            named: [
-                { selector: '&', declarations: { display: 'inline-flex' } }
-            ]
-        }
+        utilities: [
+            mainUtility('named', { display: 'inline-flex' })
+        ]
     })
 })
 
 test('loads CommonJS configs', async () => {
     expect((await exploreConfig({ cwd: __dirname, name: 'legacy.css.cjs' }))?.config).toStrictEqual({
-        components: {
-            legacy: [
-                { selector: '&', declarations: { display: 'inline-flex' } }
-            ]
-        }
+        utilities: [
+            mainUtility('legacy', { display: 'inline-flex' })
+        ]
     })
 })
 
@@ -72,7 +77,7 @@ test('prefers CSS configs before script configs', async () => {
             ]
         })
 
-        writeFileSync(join(cwd, 'master.css.ts'), `export default { components: { script: [{ selector: '&', declarations: { display: 'block' } }] } }`)
+        writeFileSync(join(cwd, 'master.css.ts'), `export default { utilities: [{ name: 'script', type: -4, layer: 'main', rules: [{ selector: '&', declarations: { display: 'block' } }] }] }`)
         expect((await exploreConfig({ cwd }))?.config).toStrictEqual({
             variables: [
                 { namespace: 'color', key: 'primary', value: '#123' }
@@ -95,11 +100,9 @@ test('returns an explore result for downstream integrations', async () => {
         path: join(__dirname, 'custom.config.ts'),
         dependencies: [join(__dirname, 'custom.config.ts')],
         config: {
-            components: {
-                custom: [
-                    { selector: '&', declarations: { display: 'inline-flex' } }
-                ]
-            }
+            utilities: [
+                mainUtility('custom', { display: 'inline-flex' })
+            ]
         }
     })
 })
@@ -110,21 +113,17 @@ test('loads config results directly', async () => {
     await expect(loadConfig(path)).resolves.toStrictEqual({
         dependencies: [path],
         config: {
-            components: {
-                custom: [
-                    { selector: '&', declarations: { display: 'inline-flex' } }
-                ]
-            }
+            utilities: [
+                mainUtility('custom', { display: 'inline-flex' })
+            ]
         }
     })
     expect(loadConfigSync(path)).toStrictEqual({
         dependencies: [path],
         config: {
-            components: {
-                custom: [
-                    { selector: '&', declarations: { display: 'inline-flex' } }
-                ]
-            }
+            utilities: [
+                mainUtility('custom', { display: 'inline-flex' })
+            ]
         }
     })
 })
@@ -152,7 +151,7 @@ test('loads imported CSS config files', async () => {
         const entry = join(cwd, 'master.css')
         const button = join(cwd, 'styles/button.css')
         writeFileSync(button, `
-            @master components {
+            @master {
                 .btn {
                     font-size: 1rem;
                     display: inline-flex;
@@ -162,7 +161,7 @@ test('loads imported CSS config files', async () => {
         writeFileSync(entry, `
             @import './styles/button.css';
 
-            @master components {
+            @master {
                 .btn {
                     display: block;
                 }
@@ -173,17 +172,17 @@ test('loads imported CSS config files', async () => {
 
         expect(result?.dependencies).toEqual([entry, button])
         expect(result?.config).toStrictEqual({
-            components: {
-                btn: [
-                    {
-                        selector: '&',
-                        declarations: {
-                            'font-size': '1rem',
-                            display: 'block'
-                        }
+            utilities: [
+                {
+                    name: 'btn',
+                    type: -4,
+                    layer: 'main',
+                    declarations: {
+                        'font-size': '1rem',
+                        display: 'block'
                     }
-                ]
-            }
+                }
+            ]
         })
     } finally {
         rmSync(cwd, { force: true, recursive: true })
@@ -197,7 +196,7 @@ test('loads imported CSS config files synchronously', () => {
         const entry = join(cwd, 'master.css')
         const button = join(cwd, 'styles/button.css')
         writeFileSync(button, `
-            @master components {
+            @master {
                 .btn {
                     font-size: 1rem;
                 }
@@ -211,16 +210,16 @@ test('loads imported CSS config files synchronously', () => {
 
         expect(result?.dependencies).toEqual([entry, button])
         expect(result?.config).toStrictEqual({
-            components: {
-                btn: [
-                    {
-                        selector: '&',
-                        declarations: {
-                            'font-size': '1rem'
-                        }
+            utilities: [
+                {
+                    name: 'btn',
+                    type: -4,
+                    layer: 'main',
+                    declarations: {
+                        'font-size': '1rem'
                     }
-                ]
-            }
+                }
+            ]
         })
     } finally {
         rmSync(cwd, { force: true, recursive: true })
@@ -245,11 +244,9 @@ test('supports custom extension order', async () => {
         name: 'legacy.css',
         extensions: ['ts', 'cjs']
     }))?.config).toStrictEqual({
-        components: {
-            legacy: [
-                { selector: '&', declarations: { display: 'inline-flex' } }
-            ]
-        }
+        utilities: [
+            mainUtility('legacy', { display: 'inline-flex' })
+        ]
     })
 })
 
@@ -257,21 +254,17 @@ test('reloads changed config files without reusing module cache', async () => {
     const cwd = mkdtempSync(join(tmpdir(), 'master-css-config-'))
     const configPath = join(cwd, 'master.css.ts')
     try {
-        writeFileSync(configPath, `export default { components: { one: [{ selector: '&', declarations: { display: 'block' } }] } }`)
+        writeFileSync(configPath, `export default { utilities: [{ name: 'one', type: -4, layer: 'main', rules: [{ selector: '&', declarations: { display: 'block' } }] }] }`)
         expect((await exploreConfig({ cwd }))?.config).toStrictEqual({
-            components: {
-                one: [
-                    { selector: '&', declarations: { display: 'block' } }
-                ]
-            }
+            utilities: [
+                mainUtility('one', { display: 'block' })
+            ]
         })
-        writeFileSync(configPath, `export default { components: { two: [{ selector: '&', declarations: { display: 'inline-flex' } }] } }`)
+        writeFileSync(configPath, `export default { utilities: [{ name: 'two', type: -4, layer: 'main', rules: [{ selector: '&', declarations: { display: 'inline-flex' } }] }] }`)
         expect((await exploreConfig({ cwd }))?.config).toStrictEqual({
-            components: {
-                two: [
-                    { selector: '&', declarations: { display: 'inline-flex' } }
-                ]
-            }
+            utilities: [
+                mainUtility('two', { display: 'inline-flex' })
+            ]
         })
     } finally {
         rmSync(cwd, { force: true, recursive: true })

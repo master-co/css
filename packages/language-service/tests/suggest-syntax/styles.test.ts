@@ -5,20 +5,25 @@ import { Settings } from '../../src'
 
 const settings: Settings = {
     config: {
-        components: {
-            btn: [
-                { selector: '&', declarations: { display: 'inline-block' } }
-            ]
-        }
+        utilities: [
+            {
+                name: 'btn',
+                type: -4,
+                layer: 'main',
+                rules: [
+                    { selector: '&', declarations: { display: 'inline-block' } }
+                ]
+            }
+        ]
     }
 }
 it.concurrent('info', () => expect(hint('b', settings)?.find(({ label }) => label === 'btn')).toMatchObject({
-    detail: '& (component)',
+    detail: 'main style',
     documentation: {
         kind: 'markdown',
         value: dedent`
             \`\`\`css
-            @layer components {
+            @layer main {
               .btn {
                 display: inline-block
               }

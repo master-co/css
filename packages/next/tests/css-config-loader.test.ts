@@ -49,7 +49,7 @@ describe('css config loader', () => {
             '@master {',
             '    --color-primary: #123;',
             '}',
-            '@master components {',
+            '@master {',
             '    .btn {',
             '        color: var(--color-primary);',
             '    }',
@@ -75,7 +75,7 @@ describe('css config loader', () => {
                     value: '#123'
                 }
             ],
-            components: {
+           : {
                 btn: [
                     {
                         selector: '&',

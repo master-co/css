@@ -10,9 +10,7 @@
         --color-touch-yellow: $color-yellow-40;
         --color-text-yellow-contrast: $color-yellow-95;
     }
-}
 
-@master components {
     .yellow {
         outline: 0.0625rem var(--color-yellow-ring) solid;
         background-color: var(--color-yellow);

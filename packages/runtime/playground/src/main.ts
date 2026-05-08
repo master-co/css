@@ -1,11 +1,16 @@
 import CSSRuntime, { initCSSRuntime } from '../../src'
 
 // initCSSRuntime({
-//     components: {
-//         btn: [
-//             { selector: '&', declarations: { 'background-color': 'black' } }
-//         ]
-//     }
+//     utilities: [
+//         {
+//             name: 'btn',
+//             type: -4,
+//             layer: 'main',
+//             rules: [
+//                 { selector: '&', declarations: { 'background-color': 'black' } }
+//             ]
+//         }
+//     ]
 // })
 
 // const createElement = (name: string) => {

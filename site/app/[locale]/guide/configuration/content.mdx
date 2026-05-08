@@ -1,7 +1,7 @@
 ## Overview [sr-only]
 `master.css` is the primary configuration file for Master CSS. It is where your project turns CSS knowledge into a configured design system: tokens are written as custom properties, conditions are written as at-rules, selectors stay selectors, and reusable UI patterns are written as class rules.
 
-That makes configuration feel closer to authoring CSS than filling out a JavaScript object. A single file can describe the scale of the system, the tokens it exposes, the conditions it understands, the utilities it adds, and the components it abstracts.
+That makes configuration feel closer to authoring CSS than filling out a JavaScript object. A single file can describe the scale of the system, the tokens it exposes, the conditions it understands, the general utilities it adds, and the main styles it abstracts.
 
 ```css name=master.css
 @master {
@@ -22,16 +22,14 @@ That makes configuration feel closer to authoring CSS than filling out a JavaScr
 
     @custom-at motion-safe @media (prefers-reduced-motion: no-preference);
     @custom-selector :interactive :is(:hover, :focus-visible);
-}
 
-@master utilities {
-    .content-auto {
-        content-visibility: auto;
-        contain-intrinsic-size: auto 32rem;
+    @layer general {
+        .content-auto {
+            content-visibility: auto;
+            contain-intrinsic-size: auto 32rem;
+        }
     }
-}
 
-@master components {
     .btn {
         @compose "inline-flex ai:center jc:center gap:xs px:md py:xs r:lg font:sm font:medium";
         background: var(--color-primary);
@@ -41,10 +39,8 @@ That makes configuration feel closer to authoring CSS than filling out a JavaScr
             @compose "outline:2|primary outline-offset:2";
         }
     }
-}
 
-@master animations {
-    fade-in {
+    @keyframes fade-in {
         from { opacity: 0; transform: translateY(.25rem); }
         to { opacity: 1; transform: translateY(0); }
     }
@@ -64,15 +60,15 @@ If you do not have a `master.css` file yet, create one from the starter command:
 ## Why CSS configuration
 CSS-first configuration keeps the design system close to the platform. Instead of moving every decision into JavaScript, `master.css` lets CSS carry the structure of the system.
 
-For teams, that means the configuration can be reviewed like CSS. Designers and engineers can read token declarations, scan component rules, and understand where custom utilities come from. For the build, it means the config can be compiled ahead of time and shared with extractors, runtimes, language tooling, and framework integrations.
+For teams, that means the configuration can be reviewed like CSS. Designers and engineers can read token declarations, scan main style rules, and understand where custom utilities in the general layer come from. For the build, it means the config can be compiled ahead of time and shared with extractors, runtimes, language tooling, and framework integrations.
 
-Use native CSS imports when the file grows. This keeps tokens, utilities, components, and animations in focused files without inventing a separate module system.
+Use native CSS imports when the file grows. This keeps tokens, general utilities, main styles, and animations in focused files without inventing a separate module system.
 
 ```css name=master.css
-@import './styles/tokens.css';
-@import './styles/utilities.css';
-@import './styles/components.css';
+@import './styles/theme.css';
 @import './styles/animations.css';
+@import './styles/btn.css';
+@import './styles/card.css';
 ```
 
 Local relative CSS imports are resolved as one configuration graph. Package imports and regular CSS outside `@master` remain normal CSS.
@@ -142,10 +138,10 @@ Use them in markup as at-rule suffixes:
 <div class="@fade-in|fast@motion-safe bg:white/.8@supports-backdrop"></div>
 ```
 
-Inside CSS-defined components and utilities, prefer `@at` blocks so the utility list stays plain.
+Inside CSS-defined main styles and general utilities, prefer `@at` blocks so the utility list stays plain.
 
 ```css name=master.css
-@master components {
+@master {
     .toast {
         @at motion-safe {
             @compose "@fade-in|fast";
@@ -159,7 +155,7 @@ See [At Tokens](/guide/at-tokens) for naming rules and conflict behavior.
 ---
 
 ## Custom selector tokens
-Use `@custom-selector` to name selectors that repeat across utilities or component definitions. The token keeps markup readable while the generated CSS still uses the real selector.
+Use `@custom-selector` to name selectors that repeat across general utilities or main style definitions. The token keeps markup readable while the generated CSS still uses the real selector.
 
 ```css name=master.css
 @master {
@@ -178,7 +174,7 @@ Use `@custom-selector` to name selectors that repeat across utilities or compone
 Nested component selectors can use the same tokens:
 
 ```css name=master.css
-@master components {
+@master {
     .link {
         &:interactive {
             @compose "fg:primary";
@@ -191,19 +187,21 @@ See [Selector Tokens](/guide/selector-tokens) for selector token usage in markup
 
 ---
 
-## Custom utilities
-Use `@master utilities` for reusable primitives that should behave like utility classes. These are not semantic components; they are low-level capabilities you want available everywhere. CSS-defined utilities are static utilities: one class name maps to one set of native declarations.
+## General Utilities
+Use `@layer general` inside `@master` for reusable primitives that should behave like utility classes. These are not semantic components; they are low-level capabilities you want available everywhere. CSS-defined general utilities are static utilities: one class name maps to one set of native declarations.
 
 ```css name=master.css
-@master utilities {
-    .content-auto {
-        content-visibility: auto;
-        contain-intrinsic-size: auto 32rem;
-    }
+@master {
+    @layer general {
+        .content-auto {
+            content-visibility: auto;
+            contain-intrinsic-size: auto 32rem;
+        }
 
-    .print-hidden {
-        @at print {
-            display: none;
+        .print-hidden {
+            @at print {
+                display: none;
+            }
         }
     }
 }
@@ -213,15 +211,15 @@ Use `@master utilities` for reusable primitives that should behave like utility 
 <article class="content-auto print-hidden">…</article>
 ```
 
-Custom utilities cannot use `@compose`. If the class describes a semantic UI pattern such as a button or card, use a component instead. See [Utilities](/guide/utilities) for details.
+General utilities cannot use `@compose`. If the class describes a semantic UI pattern such as a button or card, use a main style instead. See [Utilities](/guide/utilities) for details.
 
 ---
 
-## Components
-Components are named style compositions for UI patterns such as `.btn`, `.card`, `.field`, and `.page`. They let you turn repeated class lists into project vocabulary without emitting unused CSS.
+## Main Styles
+Main styles are named style compositions for UI patterns such as `.btn`, `.card`, `.field`, and `.page`. They let you turn repeated class lists into project vocabulary without emitting unused CSS.
 
 ```css name=master.css
-@master components {
+@master {
     .btn {
         @compose "inline-flex ai:center jc:center gap:xs px:md py:xs r:lg font:sm font:medium";
         background: var(--color-primary);
@@ -238,10 +236,10 @@ Components are named style compositions for UI patterns such as `.btn`, `.card`,
 <button class="btn">Save changes</button>
 ```
 
-Component definitions are converted to config. They are generated only when the component class is used in markup or extracted from source files.
+Main style definitions are converted to config. They are generated only when the class is used in markup or extracted from source files.
 
 ```css
-@layer components {
+@layer main {
     .btn {
         display: inline-flex;
         align-items: center;
@@ -257,11 +255,11 @@ Use [Reusing Styles](/guide/reusing-styles) for the design strategy around when 
 ---
 
 ## Animations
-Put keyframes in `@master animations`. They become config-backed animations and are emitted only when a generated class or declaration references them.
+Put keyframes in `@master`. They become config-backed animations and are emitted only when a generated class or declaration references them.
 
 ```css name=master.css
-@master animations {
-    fade-in {
+@master {
+    @keyframes fade-in {
         from { opacity: 0; }
         to { opacity: 1; }
     }
@@ -277,7 +275,7 @@ Put keyframes in `@master animations`. They become config-backed animations and 
 <div class="@fade-in|fast|decelerate @slide-up|fast@motion-safe"></div>
 ```
 
-Animations are emitted outside cascade layers, while animation-related utilities remain in the utilities layer.
+Animations are emitted outside cascade layers, while animation-related utilities remain in the general layer.
 
 ```css
 @keyframes fade-in {
@@ -304,14 +302,14 @@ const config: Config = extendConfig(cssConfig, {
 export default config
 ```
 
-For most design-system work, prefer variables, static utilities, components, and built-in Master CSS functions in `master.css`. Reach for `functions` only when a token or utility declaration cannot express the transformation.
+For most design-system work, prefer variables, static utilities in the general layer, main styles, and built-in Master CSS functions in `master.css`. Reach for `functions` only when a token or utility declaration cannot express the transformation.
 
 ---
 
 ## Root options
 Root options live in the base `@master` block. They are the small set of decisions that shape every generated rule: how numbers convert to units, how spacing scales, where selectors are scoped, and how modes are written.
 
-Most projects set these once near the top of `master.css`, then spend most of their time defining tokens, utilities, and components below them.
+Most projects set these once near the top of `master.css`, then spend most of their time defining tokens, general utilities, and main styles below them.
 
 ```css name=master.css
 @master {
@@ -385,11 +383,9 @@ Use `important` only when the surrounding cascade is hard to control, such as wh
 @master {
     important;
 }
-
-@master {
-    !important;
-}
 ```
+
+The shorthand `!important;` is also accepted in the same position.
 
 ```css
 .hidden {
@@ -450,7 +446,7 @@ const engine = new MasterCSS(config, {
 })
 ```
 
-Use programmatic config for tests, library presets, integration glue, and executable extension points. Use `master.css` for app-level tokens, utilities, components, selectors, at tokens, animations, and structural CSS config.
+Use programmatic config for tests, library presets, integration glue, and executable extension points. Use `master.css` for app-level tokens, general utilities, main styles, selectors, at tokens, animations, and structural CSS config.
 
 ---
 
@@ -458,12 +454,12 @@ Use programmatic config for tests, library presets, integration glue, and execut
 Configuration changes affect the generated CSS model:
 
 ```css
-@layer base, theme, preset, components, utilities;
+@layer base, theme, preset, main, general;
 ```
 
-- Variables generate theme rules only when referenced by generated utilities or components.
-- Components generate in the `components` layer only when their class is used.
-- Utilities generate in the `utilities` layer only when their class is used.
+- Variables generate theme rules only when referenced by generated general utilities or main styles.
+- Main styles generate in the `main` layer only when their class is used.
+- General utilities generate in the `general` layer only when their class is used.
 - Animations generate keyframes only when referenced.
 - Root options such as `scope`, `important`, `root-size`, and `base-unit` alter generated rules globally.
 

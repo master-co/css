@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unsafe-declaration-merging */
 import { Utility } from './utility'
-import ComponentRule from './component-rule'
 import hexToRgb from './utils/hex-to-rgb'
 import extendConfig, { ExtendedConfig } from './utils/extend-config'
 import { type PropertiesHyphen } from 'csstype'
@@ -9,62 +8,26 @@ import UtilityType from './utility-type'
 import Layer from './layer'
 import UtilityLayer from './utility-layer'
 import NonLayer from './non-layer'
-import { ColorVariable, ComponentEntry, DefinedUtility, GeneratedUtility, Variable } from './types/syntax'
+import { ColorVariable, DefinedUtility, GeneratedUtility, Variable } from './types/syntax'
 import { AtRule, AtRuleValueNode } from './utils/parse-at'
-import { AnimationDefinitions, ComponentDefinition, Config, UtilityDefinition, VariableDefinition } from './types/config'
+import { AnimationDefinitions, Config, UtilityDefinition, UtilityLayerName, VariableDefinition } from './types/config'
 import registerGlobal from './register-global'
 import parseAt from './utils/parse-at'
 import parseValue from './utils/parse-value'
 import parseSelector, { SelectorNode } from './utils/parse-selector'
-import generateSelector from './utils/generate-selector'
-import resolveSelectorTokens from './utils/resolve-selector-tokens'
-
-const COMPONENT_SELECTOR_SUFFIX_START = new Set([':', '.', '#', '[', '>', '+', '~', '_', '*'])
-
-function findComponentAtSuffixIndex(suffix: string) {
-    let depth = 0
-    let quote = ''
-    for (let index = 0; index < suffix.length; index++) {
-        const char = suffix[index]
-        if (quote) {
-            if (char === '\\') {
-                index++
-            } else if (char === quote) {
-                quote = ''
-            }
-            continue
-        }
-        if (char === '"' || char === '\'') {
-            quote = char
-            continue
-        }
-        if (char === '(' || char === '[' || char === '{') {
-            depth++
-            continue
-        }
-        if (char === ')' || char === ']' || char === '}') {
-            depth--
-            continue
-        }
-        if (char === '@' && depth === 0) return index
-    }
-    return -1
-}
 
 export default class MasterCSS {
     readonly definedUtilities: DefinedUtility[] = []
     readonly config!: ExtendedConfig
-    readonly layerStatementRule = new Rule('layer-statement', '@layer base,theme,preset,components,utilities;')
+    readonly layerStatementRule = new Rule('layer-statement', '@layer base,theme,preset,main,general;')
     readonly rules: (Layer | Rule)[] = [this.layerStatementRule]
     readonly classUtilities = new Map<string, GeneratedUtility[]>()
     readonly animationsNonLayer = new NonLayer(this)
     readonly baseLayer = new UtilityLayer('base', this)
     readonly themeLayer = new Layer('theme', this)
     readonly presetLayer = new UtilityLayer('preset', this)
-    readonly componentsLayer = new UtilityLayer('components', this)
-    readonly utilitiesLayer = new UtilityLayer('utilities', this)
-    readonly components = new Map<string, ComponentEntry>()
-    readonly componentNames: string[] = []
+    readonly mainLayer = new UtilityLayer('main', this)
+    readonly generalLayer = new UtilityLayer('general', this)
     readonly selectors = new Map<string, SelectorNode[]>()
     readonly variables = new Map<string, Variable>()
     readonly modes: string[] = []
@@ -86,12 +49,31 @@ export default class MasterCSS {
     get text() {
         return this.rules
             .sort((a, b) => {
-                const order = ['layer-statement', 'base', 'theme', 'preset', 'components', 'utilities']
+                const order = ['layer-statement', 'base', 'theme', 'preset', 'main', 'general']
                 const indexA = order.indexOf(a.name) === -1 ? Infinity : order.indexOf(a.name)
                 const indexB = order.indexOf(b.name) === -1 ? Infinity : order.indexOf(b.name)
                 return indexA - indexB
             })
             .map(({ text }) => text).join('')
+    }
+
+    getUtilityLayer(layerName: UtilityLayerName = 'general') {
+        switch (layerName) {
+            case 'base':
+                return this.baseLayer
+            case 'preset':
+                return this.presetLayer
+            case 'main':
+                return this.mainLayer
+            case 'general':
+                return this.generalLayer
+            default:
+                throw new Error(`Unsupported utility layer: ${layerName}`)
+        }
+    }
+
+    getUtilityLayers() {
+        return [this.baseLayer, this.presetLayer, this.mainLayer, this.generalLayer]
     }
 
     resolve(customConfig?: Config) {
@@ -109,7 +91,6 @@ export default class MasterCSS {
         this.resolveSelectors()
         this.resolveAtRules()
         this.resolveUtilities()
-        this.resolveComponents()
     }
 
     resolveAnimations() {
@@ -295,37 +276,6 @@ export default class MasterCSS {
                 }
             })
 
-    }
-
-    resolveComponents() {
-        const { components = {} } = this.config
-        for (const name in components) {
-            const definition = components[name]
-            if (!Array.isArray(definition)) {
-                throw new Error(`Component "${name}" must be an array`)
-            }
-            const selectorRules: ComponentEntry['selectorRules'] = []
-            for (const item of definition) {
-                if (typeof item !== 'object' || !item) {
-                    throw new Error(`Component "${name}" definitions must be objects`)
-                }
-                const { selector, declarations, atRules, layer } = item as ComponentDefinition
-                if (!selector.includes('&')) {
-                    throw new Error(`Component "${name}" selector must include "&"`)
-                }
-                selectorRules.push({
-                    selector: resolveSelectorTokens(selector, this.config.selectorTokens),
-                    declarations: declarations as any,
-                    ...(atRules?.length ? { atRules } : {}),
-                    ...(layer ? { layer } : {})
-                })
-            }
-            this.components.set(name, {
-                selectorRules
-            })
-            this.componentNames.push(name)
-        }
-        this.componentNames.sort((a, b) => b.length - a.length)
     }
 
     resolveSelectors() {
@@ -562,12 +512,16 @@ export default class MasterCSS {
      * @returns css text
      */
     match(className: string): DefinedUtility | undefined {
+        return this.matchAll(className)[0]
+    }
+
+    matchAll(className: string): DefinedUtility[] {
         /**
          * 1. variable
          * @example fg:primary bg:blue
          */
         for (const eachUtility of this.definedUtilities) {
-            if (eachUtility.matchers.variable?.test(className)) return eachUtility
+            if (eachUtility.matchers.variable?.test(className)) return [eachUtility]
         }
 
         /**
@@ -575,7 +529,7 @@ export default class MasterCSS {
          * @example bg:current box-content font:12
          */
         for (const eachUtility of this.definedUtilities) {
-            if (eachUtility.matchers.value?.test(className)) return eachUtility
+            if (eachUtility.matchers.value?.test(className)) return [eachUtility]
         }
 
         /**
@@ -583,16 +537,23 @@ export default class MasterCSS {
          * @example text-align:center color:blue-40
          */
         for (const eachUtility of this.definedUtilities) {
-            if (eachUtility.matchers.key?.test(className)) return eachUtility
+            if (eachUtility.matchers.key?.test(className)) return [eachUtility]
         }
 
         /**
          * 4. arbitrary
          * @example custom RegExp, utility
          */
+        const staticUtilities: DefinedUtility[] = []
         for (const eachUtility of this.definedUtilities) {
-            if (eachUtility.matchers.arbitrary?.test(className)) return eachUtility
+            if (!eachUtility.matchers.arbitrary?.test(className)) continue
+            if (eachUtility.definition.type === UtilityType.Static) {
+                staticUtilities.push(eachUtility)
+                continue
+            }
+            return [eachUtility]
         }
+        return staticUtilities
     }
 
     /**
@@ -602,63 +563,7 @@ export default class MasterCSS {
      */
     generate(className: string, mode?: string): Utility[]
     generate(className: string, mode?: string): GeneratedUtility[] {
-        let utilities: GeneratedUtility[] = []
-        const componentClass = this.parseComponentClassName(className)
-        if (componentClass) {
-            this.appendComponentRules(utilities, className, componentClass.entry.selectorRules, componentClass.selectorVariant)
-        } else {
-            const utility = this.create(className, undefined, mode)
-            if (utility && utility.valid) {
-                utilities.push(utility)
-            }
-        }
-        return utilities
-    }
-
-    parseComponentClassName(className: string): { entry: ComponentEntry, selectorVariant?: string } | undefined {
-        const exactComponent = this.components.get(className)
-        if (exactComponent) return { entry: exactComponent }
-
-        for (const name of this.getComponentNames()) {
-            if (!className.startsWith(name)) continue
-            const suffix = className.slice(name.length)
-            if (!suffix) continue
-            const firstChar = suffix[0]
-            if (firstChar !== '@' && !COMPONENT_SELECTOR_SUFFIX_START.has(firstChar)) continue
-
-            const atIndex = findComponentAtSuffixIndex(suffix)
-            const selectorSuffix = atIndex === -1 ? suffix : suffix.slice(0, atIndex)
-            if (selectorSuffix && !COMPONENT_SELECTOR_SUFFIX_START.has(selectorSuffix[0])) continue
-
-            const component = this.components.get(name)
-            if (!component) continue
-
-            return {
-                entry: component,
-                ...(selectorSuffix
-                    ? { selectorVariant: generateSelector(parseSelector(selectorSuffix, this), '&') }
-                    : {})
-            }
-        }
-    }
-
-    getComponentNames() {
-        if (
-            this.componentNames.length !== this.components.size
-            || this.componentNames.some((name) => !this.components.has(name))
-        ) {
-            this.componentNames.length = 0
-            this.componentNames.push(...this.components.keys())
-            this.componentNames.sort((a, b) => b.length - a.length)
-        }
-        return this.componentNames
-    }
-
-    appendComponentRules(rules: GeneratedUtility[], className: string, selectorRules: ComponentEntry['selectorRules'], selectorVariant?: string) {
-        for (const { selector, declarations, atRules, layer } of selectorRules) {
-            const componentRule = new ComponentRule(className, this, declarations, selector, atRules, layer, selectorVariant)
-            if (componentRule.valid) rules.push(componentRule)
-        }
+        return this.createAll(className, undefined, mode)
     }
 
     /**
@@ -667,19 +572,37 @@ export default class MasterCSS {
      * @returns Utility
      */
     create(className: string, fixedClass?: string, mode?: string): Utility | undefined {
-        const utility = this.utilitiesLayer.rules.find((rule): rule is Utility =>
-            rule instanceof Utility && rule.key === ((fixedClass ? fixedClass + ' ' : '') + className)
-        )
-        if (utility) return utility
         const registeredUtility = this.match(className)
-        if (registeredUtility) return new Utility(className, this, registeredUtility, fixedClass, mode)
+        if (registeredUtility) return this.createWithDefinition(className, registeredUtility, fixedClass, mode)
+    }
+
+    createAll(className: string, fixedClass?: string, mode?: string): Utility[] {
+        const utilities: Utility[] = []
+        for (const registeredUtility of this.matchAll(className)) {
+            const utility = this.createWithDefinition(className, registeredUtility, fixedClass, mode)
+            if (utility && utility.valid) utilities.push(utility)
+        }
+        return utilities
+    }
+
+    createWithDefinition(className: string, registeredUtility: DefinedUtility, fixedClass?: string, mode?: string): Utility | undefined {
+        const key = (fixedClass ? fixedClass + ' ' : '') + className
+        for (const layer of this.getUtilityLayers()) {
+            const utility = layer.rules.find((rule): rule is Utility =>
+                rule instanceof Utility
+                && rule.key === key
+                && rule.registeredUtility === registeredUtility
+            )
+            if (utility) return utility
+        }
+        return new Utility(className, this, registeredUtility, fixedClass, mode)
     }
 
     /**
      * Create utility from given selector text
      * @param selectorText
      */
-    createFromSelectorText(selectorText: string) {
+    createFromSelectorText(selectorText: string, layerName?: UtilityLayerName) {
         const selectorTextSplits = selectorText.split(' ')
         const stopChars = /[.#\[!\*>+~:,\s]/
         for (let i = 0; i < selectorTextSplits.length; i++) {
@@ -706,6 +629,7 @@ export default class MasterCSS {
                     l++
                 }
                 const utilities = this.generate(className)
+                    .filter((utility) => !layerName || utility.layerName === layerName)
                 if (utilities.length) return utilities
             }
         }
@@ -730,17 +654,14 @@ export default class MasterCSS {
         // @ts-ignore
         this.selectors = new Map()
         // @ts-ignore
-        this.components = new Map()
-        // @ts-ignore
         this.classUtilities = new Map()
         this.modes.length = 0
         this.definedUtilities.length = 0
-        this.componentNames.length = 0
         this.baseLayer.reset()
         this.themeLayer.reset()
         this.presetLayer.reset()
-        this.componentsLayer.reset()
-        this.utilitiesLayer.reset()
+        this.mainLayer.reset()
+        this.generalLayer.reset()
         this.animationsNonLayer.reset()
         return this
     }

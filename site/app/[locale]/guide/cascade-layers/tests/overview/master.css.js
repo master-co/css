@@ -4,10 +4,15 @@ export default {
         { namespace: 'color', key: 'primary', value: '#ffffff', mode: 'dark' }
     ],
     modes: ['light', 'dark'],
-    components: {
-        btn: [
-            { selector: '&', declarations: { display: 'inline-flex' } },
-            { selector: '&', declarations: { 'background-color': 'var(--color-primary)' } }
-        ]
-    }
+    utilities: [
+        {
+            name: 'btn',
+            type: -4,
+            layer: 'main',
+            rules: [
+                { selector: '&', declarations: { display: 'inline-flex' } },
+                { selector: '&', declarations: { 'background-color': 'var(--color-primary)' } }
+            ]
+        }
+    ]
 }

@@ -11,7 +11,7 @@ test.concurrent('inset', () => {
 })
 
 it.concurrent('checks inset order', () => {
-    expect(createCSS().add('top:0', 'left:0', 'inset:0', 'right:0', 'bottom:0').utilitiesLayer.rules)
+    expect(createCSS().add('top:0', 'left:0', 'inset:0', 'right:0', 'bottom:0').generalLayer.rules)
         .toMatchObject([
             { name: 'inset:0' },
             { name: 'bottom:0' },

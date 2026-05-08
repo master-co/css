@@ -1,5 +1,9 @@
 import { test, expect, describe } from 'vitest'
-import { createCSS } from '../src'
+import { createCSS, UtilityType } from '../src'
+
+function mainStyle(name: string, rules: any[]) {
+    return { name, type: UtilityType.Static, layer: 'main' as const, rules }
+}
 
 test.concurrent('basic', () => {
     expect(createCSS().createFromSelectorText('.font\\:heavy')?.[0]).toMatchObject({ name: 'font:heavy' })
@@ -34,37 +38,36 @@ test.concurrent(':within and mode and scope', () => {
 })
 
 test.concurrent('component conflicts with the mode', () => {
-    const rules = createCSS({ components: { 'light': [
+    const rules = createCSS({ utilities: [mainStyle('light', [
         { selector: '&', declarations: { display: 'block' } },
         { selector: '&', declarations: { 'font-weight': '700' } }
-    ] } }).createFromSelectorText('.light .light\@light')
+    ])] }).createFromSelectorText('.light .light\@light')
 
     expect(rules?.[0]).toMatchObject({ name: 'light' })
-    expect(rules?.[0]?.text).toBe('.light{display:block}')
-    expect(rules?.[1]).toMatchObject({ name: 'light' })
-    expect(rules?.[1]?.text).toBe('.light{font-weight:700}')
+    expect(rules?.[0]?.text).toBe('.light{display:block}.light{font-weight:700}')
 })
 
 test.concurrent('component and mode', () => {
-    expect(createCSS({ components: { 'btn': [
+    expect(createCSS({ utilities: [mainStyle('btn', [
         { selector: '&', declarations: { display: 'block' } }
-    ] } }).createFromSelectorText('.light .btn')?.[0]).toMatchObject({ name: 'btn', selectorText: '.btn' })
+    ])] }).createFromSelectorText('.light .btn')?.[0]).toMatchObject({ name: 'btn', selectorText: '.btn' })
 })
 
 test.concurrent('component selector variant', () => {
-    const rules = createCSS({ components: { btn: [
+    const rules = createCSS({ utilities: [mainStyle('btn', [
         { selector: '&:disabled>span', declarations: { display: 'block' } }
-    ] } }).createFromSelectorText('.btn\\:hover:hover:disabled>span')
+    ])] }).createFromSelectorText('.btn\\:hover:hover:disabled>span')
 
-    expect(rules?.[0]).toMatchObject({ name: 'btn:hover', selectorText: '.btn\\:hover:hover:disabled>span' })
+    expect(rules?.[0]).toMatchObject({ name: 'btn:hover' })
+    expect(rules?.[0]?.text).toBe('.btn\\:hover:hover:disabled>span{display:block}')
 })
 
 describe('group selector', () => {
     const config = { selectorTokens: {
             '::both': '::before,::after',
-        }, components: { btn: [
+        }, utilities: [mainStyle('btn', [
             { selector: '&::before,&::after', declarations: { display: 'block' } }
-        ] } }
+        ])] }
     test.concurrent('utilities', () => {
         expect(createCSS(config).createFromSelectorText('.block\\:\\:both::before, .block\\:\\:both::after')?.[0]).toMatchObject({ name: 'block::both' })
     })

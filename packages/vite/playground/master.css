@@ -28,9 +28,7 @@
 
     @custom-at motion-safe @media (prefers-reduced-motion: no-preference);
     @custom-selector ::scrollbar ::-webkit-scrollbar;
-}
 
-@master components {
     .page {
         @compose "grid ai:center jc:center min-h:100vh p:1.25rem bg:panel fg:ink";
         font-family: Inter, ui-sans-serif, system-ui, sans-serif;
@@ -76,17 +74,15 @@
         cursor: pointer;
         justify-self: start;
     }
-}
 
-@master utilities {
-    .content-auto {
-        content-visibility: auto;
-        contain-intrinsic-size: auto 28rem;
+    @layer general {
+        .content-auto {
+            content-visibility: auto;
+            contain-intrinsic-size: auto 28rem;
+        }
     }
-}
 
-@master animations {
-    demo-fade-in {
+    @keyframes demo-fade-in {
         from {
             opacity: 0;
             transform: translateY(.5rem);
@@ -98,7 +94,7 @@
         }
     }
 
-    demo-pulse {
+    @keyframes demo-pulse {
         0%,
         to {
             opacity: 1;

@@ -94,7 +94,7 @@ Define mode-specific variables with nested mode blocks inside `@master`.
 }
 ```
 
-When a variable has mode-specific values, Master CSS emits a CSS custom property and references it from generated utilities and components.
+When a variable has mode-specific values, Master CSS emits a CSS custom property and references it from generated utilities and main styles.
 
 ```css
 @layer theme {
@@ -108,14 +108,14 @@ When a variable has mode-specific values, Master CSS emits a CSS custom property
     }
 }
 
-@layer utilities {
+@layer general {
     .bg\:primary {
         background-color: var(--color-primary);
     }
 }
 ```
 
-The same mechanism applies when native declarations inside `@master components` use `var(--color-primary)`: the theme variables are still generated when a component or utility references them.
+The same mechanism applies when native declarations inside `@master` main style definitions use `var(--color-primary)`: the theme variables are still generated when a main style or utility references them.
 
 ---
 
@@ -134,14 +134,12 @@ The same mechanism applies when native declarations inside `@master components` 
 | `class` | Uses class wrappers such as `.dark &`. |
 | `host` | Uses shadow host wrappers such as `:host(.dark) &`. |
 
-For component definitions, `@at dark` follows the same trigger:
+For main style definitions, `@at dark` follows the same trigger:
 
 ```css name=master.css
 @master {
     mode-trigger: class;
-}
 
-@master components {
     .btn {
         @at dark {
             @compose "bg:neutral-90";

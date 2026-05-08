@@ -6,7 +6,7 @@
 class string
   -> MasterCSS.add()
   -> generate()
-  -> component expansion if class is configured in components
+  -> match configured static utilities, including main-layer project styles
   -> create()
   -> match() against variable, value, key, arbitrary matchers
   -> new Utility()
@@ -41,7 +41,7 @@ Risks:
 default config + user config
   -> extendConfig()
   -> recursively collect extends
-  -> flatten variables, modes, components, atTokens
+  -> flatten variables, modes, atTokens
   -> merge utilities, selectorTokens, functions, animations
   -> MasterCSS.resolve()
   -> resolveVariables()
@@ -49,7 +49,6 @@ default config + user config
   -> resolveSelectors()
   -> resolveAtRules()
   -> resolveUtilities()
-  -> resolveComponents()
 ```
 
 Main files:
@@ -64,7 +63,7 @@ Risks:
 
 - Extend order and flattening affect all config consumers.
 - Variable aliases and modes affect inlining vs CSS custom property output.
-- Component recursion affects semantic class output.
+- Static utility layer assignment affects semantic class output and cascade behavior.
 
 ## Build-Time Extraction
 

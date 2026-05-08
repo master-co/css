@@ -1,4 +1,4 @@
-@master components {
+@master {
     .card {
         display: inline-flex;
     }

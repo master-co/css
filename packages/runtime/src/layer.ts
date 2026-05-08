@@ -2,8 +2,13 @@ import { Layer, Rule, VariableRule } from '@master/css'
 import findNativeCSSRuleIndex from 'shared/utils/find-native-css-rule-index'
 import CSSRuntime from './core'
 
+function getRuleNodes(rule: Rule | VariableRule) {
+    const nodes = (rule as { nodes?: { native?: CSSRule, text: string }[] }).nodes
+    return Array.isArray(nodes) ? nodes : undefined
+}
+
 export default class RuntimeLayer extends Layer {
-    readonly rules: Rule[] = []
+    readonly rules: (Rule | VariableRule)[] = []
     readonly tokenCounts = new Map<string, number>()
     native: CSSLayerBlockRule | null = null
 
@@ -26,6 +31,7 @@ export default class RuntimeLayer extends Layer {
     insert(rule: Rule | VariableRule, index = this.rules.length) {
         const insertedIndex = super.insert(rule, index)
         if (insertedIndex === undefined || !this.native) return
+        const nativeInsertIndex = this.getNativeInsertIndex(insertedIndex)
         const insertRuleSafely = (text: string, position: number) => {
             // Checks if the rule is inserted in a native CSS rule with this.attach()
             if (this.rules.length === 1) {
@@ -45,16 +51,26 @@ export default class RuntimeLayer extends Layer {
                 }
             }
         }
-        if ('nodes' in rule) {
-            let currentIndex = insertedIndex
-            rule.nodes.forEach((node) => {
+        const nodes = getRuleNodes(rule)
+        if (nodes) {
+            let currentIndex = nativeInsertIndex
+            nodes.forEach((node) => {
                 node.native = insertRuleSafely(node.text, currentIndex)
                 if (node.native) currentIndex++
             })
         } else {
-            rule.native = insertRuleSafely(rule.text, insertedIndex)
+            ;(rule as Rule).native = insertRuleSafely(rule.text, nativeInsertIndex)
         }
         return insertedIndex
+    }
+
+    getNativeInsertIndex(index: number) {
+        let nativeIndex = 0
+        for (let i = 0; i < index; i++) {
+            const rule = this.rules[i]
+            nativeIndex += getRuleNodes(rule)?.length ?? 1
+        }
+        return nativeIndex
     }
 
     detach() {
@@ -82,10 +98,11 @@ export default class RuntimeLayer extends Layer {
                 }
             }
         }
-        if ('nodes' in deletedRule) {
-            deletedRule.nodes.forEach((node) => deleteRuleSafely(node.native))
+        const nodes = getRuleNodes(deletedRule)
+        if (nodes) {
+            nodes.forEach((node) => deleteRuleSafely(node.native))
         } else {
-            deleteRuleSafely(deletedRule.native)
+            deleteRuleSafely((deletedRule as Rule).native)
         }
         return deletedRule
     }

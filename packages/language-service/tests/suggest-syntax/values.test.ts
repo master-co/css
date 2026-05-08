@@ -26,7 +26,7 @@ describe.concurrent('detail and documentation', () => {
             kind: 'markdown',
             value: dedent`
                     \`\`\`css
-                    @layer utilities {
+                    @layer general {
                       .font\\:sans {
                         font-family: \"Inter\", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'
                       }
@@ -52,7 +52,7 @@ describe.concurrent('detail and documentation', () => {
             kind: 'markdown',
             value: dedent`
                     \`\`\`css
-                    @layer utilities {
+                    @layer general {
                       .font-style\\:italic {
                         font-style: italic
                       }
@@ -80,7 +80,7 @@ describe.concurrent('retype on no hints', () => {
             kind: 'markdown',
             value: dedent`
                     \`\`\`css
-                    @layer utilities {
+                    @layer general {
                       .d\\:block {
                         display: block
                       }

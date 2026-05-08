@@ -1,18 +1,28 @@
 import { test } from 'vitest'
 
+import { UtilityType } from '../../src'
 import { expectLayers } from '../test'
 
 test.concurrent('components', () => {
     expectLayers(
         { components: '.\\?{padding-left:1.25rem;padding-right:1.25rem}.\\?{font-size:0.875rem}.\\?{height:2.5rem}.\\?{text-align:center}.\\?:hover{color:#fff}' },
         '?',
-        { components: { '?': [
-            { selector: '&', declarations: { 'padding-left': '1.25rem', 'padding-right': '1.25rem' } },
-            { selector: '&', declarations: { 'font-size': '0.875rem' } },
-            { selector: '&', declarations: { height: '2.5rem' } },
-            { selector: '&', declarations: { 'text-align': 'center' } },
-            { selector: '&:hover', declarations: { color: '#fff' } }
-        ] } }
+        {
+            utilities: [
+                {
+                    name: '?',
+                    type: UtilityType.Static,
+                    layer: 'main',
+                    rules: [
+                        { selector: '&', declarations: { 'padding-left': '1.25rem', 'padding-right': '1.25rem' } },
+                        { selector: '&', declarations: { 'font-size': '0.875rem' } },
+                        { selector: '&', declarations: { height: '2.5rem' } },
+                        { selector: '&', declarations: { 'text-align': 'center' } },
+                        { selector: '&:hover', declarations: { color: '#fff' } }
+                    ]
+                }
+            ]
+        }
     )
 })
 

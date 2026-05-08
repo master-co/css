@@ -1,16 +1,6 @@
 
 
 export default {
-    components: {
-        btn: [
-            { selector: '&', declarations: { 'font-size': '0.875rem' } },
-            { selector: '&', declarations: { height: '2.5rem' } },
-            { selector: '&', declarations: { 'text-align': 'center' } },
-            { selector: '&', declarations: { 'background-color': 'var(--color-primary)' } },
-            { selector: '&', declarations: { color: '#fff' } },
-            { selector: '&', declarations: { 'font-weight': '500' } }
-        ]
-    },
     modeTrigger: 'class',
     modes: ['light', 'dark'],
     variables: [
@@ -51,6 +41,19 @@ export default {
         { namespace: 'color', key: 'fade', value: '$(color-white)', mode: 'dark' }
     ],
     utilities: [
+        {
+            name: 'btn',
+            type: -4,
+            layer: 'main',
+            rules: [
+                { selector: '&', declarations: { 'font-size': '0.875rem' } },
+                { selector: '&', declarations: { height: '2.5rem' } },
+                { selector: '&', declarations: { 'text-align': 'center' } },
+                { selector: '&', declarations: { 'background-color': 'var(--color-primary)' } },
+                { selector: '&', declarations: { color: '#fff' } },
+                { selector: '&', declarations: { 'font-weight': '500' } }
+            ]
+        },
         { name: 'show', type: -4, declarations: { display: 'block' } },
         { name: 'hide-text', type: -4, declarations: { 'font-size': '0px' } },
         { name: 'zero', type: -4, declarations: { 'font-size': '0px', height: '0px' } }

@@ -1,17 +1,27 @@
 import type { Config } from '@master/css'
 
 export const config = {
-    components: {
-        named: [
-            { selector: '&', declarations: { display: 'inline-flex' } }
-        ]
-    }
+    utilities: [
+        {
+            name: 'named',
+            type: -4,
+            layer: 'main',
+            rules: [
+                { selector: '&', declarations: { display: 'inline-flex' } }
+            ]
+        }
+    ]
 } as Config
 
 export default {
-    components: {
-        fallback: [
-            { selector: '&', declarations: { display: 'block' } }
-        ]
-    }
+    utilities: [
+        {
+            name: 'fallback',
+            type: -4,
+            layer: 'main',
+            rules: [
+                { selector: '&', declarations: { display: 'block' } }
+            ]
+        }
+    ]
 } as Config

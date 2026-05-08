@@ -45,28 +45,18 @@ describe('ConfigVirtualModulePlugin', () => {
                 { namespace: 'color', key: 'primary', value: '#123' },
                 { namespace: 'screen', key: 'md', value: 48 }
             ],
-            components: {
-                btn: [
-                    {
-                        selector: '&',
-                        declarations: {
-                            'font-size': '1rem'
-                        }
-                    },
-                    {
-                        selector: '&',
-                        declarations: {
-                            'background-color': 'rgb(17 34 51)'
-                        }
-                    },
-                    {
-                        selector: '&',
-                        declarations: {
-                            display: 'inline-flex'
-                        }
+            utilities: expect.arrayContaining([
+                {
+                    name: 'btn',
+                    type: -4,
+                    layer: 'main',
+                    declarations: {
+                        'font-size': '1rem',
+                        'background-color': 'rgb(17 34 51)',
+                        display: 'inline-flex'
                     }
-                ]
-            }
+                }
+            ])
         })
     })
 
@@ -104,16 +94,16 @@ describe('ConfigVirtualModulePlugin', () => {
                 { namespace: 'color', key: 'accent', value: '#456' },
                 { namespace: 'color', key: 'accent', value: '#789', mode: 'dark' }
             ],
-            components: {
-                badge: [
-                    {
-                        selector: '&',
-                        declarations: {
-                            display: 'inline-flex'
-                        }
+            utilities: expect.arrayContaining([
+                {
+                    name: 'badge',
+                    type: -4,
+                    layer: 'main',
+                    declarations: {
+                        display: 'inline-flex'
                     }
-                ]
-            }
+                }
+            ])
         })
         expect(config.modes).toBeUndefined()
     })

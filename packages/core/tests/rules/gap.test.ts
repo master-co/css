@@ -8,7 +8,7 @@ it.concurrent('validates gap rules', () => {
 })
 
 it.concurrent('checks gap order', () => {
-    expect(createCSS().add('gap-x:16', 'gap:16', 'gap-y:16').utilitiesLayer.rules)
+    expect(createCSS().add('gap-x:16', 'gap:16', 'gap-y:16').generalLayer.rules)
         .toMatchObject([
             { name: 'gap:16' },
             { name: 'gap-x:16' },

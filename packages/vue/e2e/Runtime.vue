@@ -4,9 +4,16 @@
     import type { Config } from '@master/css'
 
     const config = ref<Config>({
-        components: {
-            btn: ['b:2|red']
-        }
+        utilities: [
+            {
+                name: 'btn',
+                type: -4,
+                layer: 'main',
+                rules: [
+                    { selector: '&', declarations: { border: '0.125rem var(--color-red) solid' } }
+                ]
+            }
+        ]
     })
     const root = ref()
     const containerRef = ref()

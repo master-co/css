@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest'
-import { createCSS } from '../../src'
+import { createCSS, UtilityType } from '../../src'
 import { expectLayers } from '../test'
 
 test.concurrent('base and preset', async () => {
@@ -17,13 +17,22 @@ test.concurrent('with selectors', () => {
     expectLayers({ preset: '.font\\:12_\\:is\\(code\\,pre\\)\\@preset :is(code,pre){font-size:0.75rem}' }, 'font:12_:is(code,pre)@preset')
 })
 
-test.concurrent('using components', async () => {
-    const css = createCSS({ components: { btn: [
-        { selector: '&', atRules: ['@layer base'], declarations: { display: 'block' } }
-    ] } }).add('btn')
-    expect(css.componentsLayer.text).toContain('@layer base{.btn{display:block}}')
+test.concurrent('using main', async () => {
+    const css = createCSS({
+        utilities: [
+            {
+                name: 'btn',
+                type: UtilityType.Static,
+                layer: 'main',
+                rules: [
+                    { selector: '&', atRules: ['@layer base'], declarations: { display: 'block' } }
+                ]
+            }
+        ]
+    }).add('btn')
+    expect(css.mainLayer.text).toContain('@layer base{.btn{display:block}}')
 })
 
 test.concurrent('conflicts', async () => {
-    expectLayers({ utilities: '@layer base.preset{.block\\@base\\@preset{display:block}}' }, 'block@base@preset')
+    expectLayers({ general: '@layer base.preset{.block\\@base\\@preset{display:block}}' }, 'block@base@preset')
 })

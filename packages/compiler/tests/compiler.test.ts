@@ -9,8 +9,31 @@ function process(css: string, classes?: string[]) {
     return compileCSS(css, { classes }).css
 }
 
+function getStaticUtility(result: ReturnType<typeof compileCSS>, name: string, layer = 'main') {
+    return result.config.utilities?.find((definition) =>
+        definition.name === name
+        && (definition.type ?? UtilityType.Static) === UtilityType.Static
+        && (definition.layer ?? 'general') === layer
+    )
+}
+
+function getStaticUtilityRules(result: ReturnType<typeof compileCSS>, name: string, layer = 'main') {
+    const definition = getStaticUtility(result, name, layer)
+    if (!definition) return undefined
+    const rules = (definition.rules ?? (definition.declarations ? [{ declarations: definition.declarations }] : [])) as Array<{
+        selector?: string
+        atRules?: string[]
+        declarations: unknown
+    }>
+    return rules.map((rule) => ({
+        selector: rule.selector ?? '&',
+        ...(rule.atRules?.length ? { atRules: rule.atRules } : {}),
+        declarations: rule.declarations
+    }))
+}
+
 describe.concurrent('@master/css-compiler', () => {
-    it('generates variables, components, utilities, at tokens, selector tokens, screens, modes, and animations', () => {
+    it('generates variables,, general, at tokens, selector tokens, screens, modes, and', () => {
         const result = compileCSS(`
             @master {
                 root-size: 16;
@@ -36,7 +59,7 @@ describe.concurrent('@master/css-compiler', () => {
                 }
             }
 
-            @master components {
+            @master {
                 .btn {
                     @compose "ai:center jc:center px:1rem py:.5rem bg:primary r:card";
                     display: inline-flex;
@@ -55,8 +78,8 @@ describe.concurrent('@master/css-compiler', () => {
                 }
             }
 
-            @master animations {
-                fade-in {
+            @master {
+                @keyframes fade-in {
                     from {
                         opacity: 0;
                         transform: translateY(.5rem);
@@ -69,15 +92,17 @@ describe.concurrent('@master/css-compiler', () => {
                 }
             }
 
-            @master utilities {
-                .content-auto {
-                    content-visibility: auto;
-                    contain-intrinsic-size: auto 32rem;
+            @master {
+                @layer general {
+                    .content-auto {
+                        content-visibility: auto;
+                        contain-intrinsic-size: auto 32rem;
+                    }
                 }
             }
         `, { classes: ['btn', 'card', 'block@md', 'w:10::scrollbar', 'bg:base@dark', 'backdrop-filter:blur(16)@supports-backdrop'] })
 
-        expect(result.css).toContain('@layer base,theme,preset,components,utilities;')
+        expect(result.css).toContain('@layer base,theme,preset,main,general;')
         expect(result.css).toContain('#app .btn{border-radius:0.75rem;padding-left:1rem;padding-right:1rem;padding-top:0.5rem;padding-bottom:0.5rem;align-items:center;background-color:var(--color-primary);justify-content:center;display:inline-flex}')
         expect(result.css).toContain('#app .card{content-visibility:auto;contain-intrinsic-size:auto 32rem;padding:1.5rem;border-radius:0.75rem;background-color:var(--color-base);border:1px solid var(--color-ring)}')
         expect(result.css).toContain('#app .card:before{content:\'\'')
@@ -108,7 +133,7 @@ describe.concurrent('@master/css-compiler', () => {
                 }
             }
 
-            @master components {
+            @master {
                 .btn {
                     @compose "bg:primary";
                     @at dark {
@@ -118,9 +143,11 @@ describe.concurrent('@master/css-compiler', () => {
                 }
             }
 
-            @master utilities {
-                .content-auto {
-                    content-visibility: auto;
+            @master {
+                @layer general {
+                    .content-auto {
+                        content-visibility: auto;
+                    }
                 }
             }
         `)
@@ -147,32 +174,6 @@ describe.concurrent('@master/css-compiler', () => {
                     mode: 'dark'
                 }
             ],
-            components: {
-                btn: [
-                    {
-                        selector: '&',
-                        declarations: {
-                            'background-color': 'var(--color-primary)',
-                            display: 'inline-flex'
-                        }
-                    },
-                    {
-                        selector: '.dark &',
-                        declarations: {
-                            display: 'block'
-                        }
-                    }
-                ]
-            },
-            utilities: [
-                {
-                    name: 'content-auto',
-                    type: UtilityType.Static,
-                    declarations: {
-                        'content-visibility': 'auto'
-                    }
-                }
-            ],
             atTokens: {
                 'motion-safe': 'media(prefers-reduced-motion:no-preference)'
             },
@@ -180,7 +181,30 @@ describe.concurrent('@master/css-compiler', () => {
                 '::scrollbar': '::-webkit-scrollbar'
             }
         })
-        expect(result.componentNames).toEqual(['btn'])
+        expect(getStaticUtilityRules(result, 'btn')).toEqual([
+            {
+                selector: '&',
+                declarations: {
+                    'background-color': 'var(--color-primary)',
+                    display: 'inline-flex'
+                }
+            },
+            {
+                selector: '.dark &',
+                declarations: {
+                    display: 'block'
+                }
+            }
+        ])
+        expect(getStaticUtility(result, 'content-auto', 'general')).toEqual({
+            name: 'content-auto',
+            type: UtilityType.Static,
+            layer: 'general',
+            declarations: {
+                'content-visibility': 'auto'
+            }
+        })
+        expect(result.classNames).toEqual(['btn'])
         expect(result.config.modes).toBeUndefined()
         expect(result.generatedCSS).toBe('')
         expect(result.css).toBe('')
@@ -233,13 +257,13 @@ describe.concurrent('@master/css-compiler', () => {
         `)).toThrow('Use "important;" or "!important;" to enable important output')
     })
 
-    it('supports @master components as an organizational section', () => {
+    it('supports @master as an organizational section', () => {
         const css = process(`
             @master {
                 --color-primary: #123;
             }
 
-            @master components {
+            @master {
                 .btn {
                     @compose "block bg:primary";
                 }
@@ -251,20 +275,20 @@ describe.concurrent('@master/css-compiler', () => {
 
     it('keeps native selector names when resolving composed component selectors', () => {
         const result = compileCSS(`
-            @master components {
+            @master {
                 .code-line-add {
                     @compose "content:'+'!:not(:only-child):before";
                 }
             }
         `, { classes: ['code-line-add'] })
 
-        expect(result.config.components?.['code-line-add']?.[0].selector).toBe('&:not(:only-child):before')
+        expect(getStaticUtilityRules(result, 'code-line-add')?.[0].selector).toBe('&:not(:only-child):before')
         expect(result.css).toContain(".code-line-add:not(:only-child):before{content:'+'!important}")
     })
 
     it('supports component definitions inside top-level layer blocks', () => {
         const result = compileCSS(`
-            @master components {
+            @master {
                 @layer preset {
                     .prose {
                         :is(p) {
@@ -282,17 +306,16 @@ describe.concurrent('@master/css-compiler', () => {
             }
         `, { classes: ['prose'] })
 
-        expect(result.config.components?.prose).toEqual([
+        expect(getStaticUtility(result, 'prose', 'preset')).toMatchObject({ layer: 'preset' })
+        expect(getStaticUtilityRules(result, 'prose', 'preset')).toEqual([
             {
                 selector: '& :is(p)',
-                layer: 'preset',
                 declarations: {
                     'font-size': '1rem'
                 }
             },
             {
                 selector: '&',
-                layer: 'preset',
                 declarations: {
                     color: 'var(--color-text)'
                 }
@@ -300,19 +323,18 @@ describe.concurrent('@master/css-compiler', () => {
             {
                 selector: '&',
                 atRules: ['@media print'],
-                layer: 'preset',
                 declarations: {
                     display: 'none'
                 }
             }
         ])
         expect(result.css).toContain('@layer preset{.prose :is(p){font-size:1rem}.prose{color:var(--color-text)}@media print{.prose{display:none}}}')
-        expect(result.css).not.toContain('@layer components{@layer preset')
+        expect(result.css).not.toContain('@layer{@layer preset')
     })
 
     it('supports nested component layer blocks', () => {
         const result = compileCSS(`
-            @master components {
+            @master {
                 .prose {
                     @layer preset {
                         :is(p) {
@@ -323,22 +345,21 @@ describe.concurrent('@master/css-compiler', () => {
             }
         `, { classes: ['prose'] })
 
-        expect(result.config.components?.prose).toEqual([
+        expect(getStaticUtilityRules(result, 'prose', 'preset')).toEqual([
             {
                 selector: '& :is(p)',
-                layer: 'preset',
                 declarations: {
                     'font-size': '1rem'
                 }
             }
         ])
         expect(result.css).toContain('@layer preset{.prose :is(p){font-size:1rem}}')
-        expect(result.css).not.toContain('@layer components{@layer preset')
+        expect(result.css).not.toContain('@layer{@layer preset')
     })
 
     it('supports nested selectors in component definitions', () => {
         const result = compileCSS(`
-            @master components {
+            @master {
                 .prose {
                     :is(p) {
                         @compose "font:md";
@@ -356,7 +377,7 @@ describe.concurrent('@master/css-compiler', () => {
             }
         `, { classes: ['prose'] })
 
-        expect(result.config.components?.prose).toEqual([
+        expect(getStaticUtilityRules(result, 'prose')).toEqual([
             {
                 selector: '& :is(p)',
                 declarations: {
@@ -383,7 +404,7 @@ describe.concurrent('@master/css-compiler', () => {
 
     it('supports nested selectors inside component layer and at-rule blocks', () => {
         const result = compileCSS(`
-            @master components {
+            @master {
                 .prose {
                     @layer preset {
                         :is(p) {
@@ -400,10 +421,9 @@ describe.concurrent('@master/css-compiler', () => {
             }
         `, { classes: ['prose'] })
 
-        expect(result.config.components?.prose).toEqual([
+        expect(getStaticUtilityRules(result, 'prose', 'preset')).toEqual([
             {
                 selector: '& :is(p)',
-                layer: 'preset',
                 declarations: {
                     'font-size': '1rem'
                 }
@@ -411,19 +431,18 @@ describe.concurrent('@master/css-compiler', () => {
             {
                 selector: '& :is(li)',
                 atRules: ['@media print'],
-                layer: 'preset',
                 declarations: {
                     display: 'none'
                 }
             }
         ])
         expect(result.css).toContain('@layer preset{.prose :is(p){font-size:1rem}@media print{.prose :is(li){display:none}}}')
-        expect(result.css).not.toContain('@layer components{@layer preset')
+        expect(result.css).not.toContain('@layer{@layer preset')
     })
 
     it('merges repeated component definitions in declaration order', () => {
         const result = compileCSS(`
-            @master components {
+            @master {
                 .btn {
                     @compose "inline-flex";
                     display: inline-flex;
@@ -438,7 +457,7 @@ describe.concurrent('@master/css-compiler', () => {
             }
         `, { classes: ['btn'] })
 
-        expect(result.config.components?.btn).toEqual([
+        expect(getStaticUtilityRules(result, 'btn')).toEqual([
             {
                 selector: '&',
                 declarations: {
@@ -451,9 +470,9 @@ describe.concurrent('@master/css-compiler', () => {
         expect(result.css).toContain('.btn{color:red;display:block;font-size:1rem}')
     })
 
-    it('preserves native declaration and @compose override order while merging components', () => {
+    it('preserves native declaration and @compose override order while merging', () => {
         const beforeCompose = compileCSS(`
-            @master components {
+            @master {
                 .btn {
                     display: inline-block;
                     @compose "block";
@@ -461,7 +480,7 @@ describe.concurrent('@master/css-compiler', () => {
             }
         `, { classes: ['btn'] })
         const afterCompose = compileCSS(`
-            @master components {
+            @master {
                 .btn {
                     @compose "block";
                     display: inline-block;
@@ -469,7 +488,7 @@ describe.concurrent('@master/css-compiler', () => {
             }
         `, { classes: ['btn'] })
         const importantBeforeCompose = compileCSS(`
-            @master components {
+            @master {
                 .btn {
                     display: block !important;
                     @compose "inline-flex";
@@ -477,7 +496,7 @@ describe.concurrent('@master/css-compiler', () => {
             }
         `, { classes: ['btn'] })
 
-        expect(beforeCompose.config.components?.btn).toEqual([
+        expect(getStaticUtilityRules(beforeCompose, 'btn')).toEqual([
             {
                 selector: '&',
                 declarations: {
@@ -486,7 +505,7 @@ describe.concurrent('@master/css-compiler', () => {
             }
         ])
         expect(beforeCompose.css).toContain('.btn{display:block}')
-        expect(afterCompose.config.components?.btn).toEqual([
+        expect(getStaticUtilityRules(afterCompose, 'btn')).toEqual([
             {
                 selector: '&',
                 declarations: {
@@ -495,7 +514,7 @@ describe.concurrent('@master/css-compiler', () => {
             }
         ])
         expect(afterCompose.css).toContain('.btn{display:inline-block}')
-        expect(importantBeforeCompose.config.components?.btn).toEqual([
+        expect(getStaticUtilityRules(importantBeforeCompose, 'btn')).toEqual([
             {
                 selector: '&',
                 declarations: {
@@ -505,7 +524,7 @@ describe.concurrent('@master/css-compiler', () => {
         ])
     })
 
-    it('merges composed component utilities by resolved selector, at-rules, and layer buckets', () => {
+    it('merges composed component general by resolved selector, at-rules, and layer buckets', () => {
         const result = compileCSS(`
             @master {
                 mode-trigger: class;
@@ -513,7 +532,7 @@ describe.concurrent('@master/css-compiler', () => {
                 --screen-md: 768;
             }
 
-            @master components {
+            @master {
                 .btn {
                     @compose "block font:sm@sm font:md@md bg:green:hover";
                 }
@@ -530,7 +549,7 @@ describe.concurrent('@master/css-compiler', () => {
             }
         `, { classes: ['btn'] })
 
-        expect(result.config.components?.btn).toEqual([
+        expect(getStaticUtilityRules(result, 'btn')).toEqual([
             {
                 selector: '&',
                 declarations: {
@@ -566,7 +585,7 @@ describe.concurrent('@master/css-compiler', () => {
 
     it('orders matching base component buckets before conditional buckets', () => {
         const result = compileCSS(`
-            @master components {
+            @master {
                 @media (width >= 52.125rem) {
                     .prose :is(h1, h2, h3) {
                         @compose "{mt:16x;scroll-mt:100}";
@@ -579,7 +598,7 @@ describe.concurrent('@master/css-compiler', () => {
             }
         `, { classes: ['prose'] })
 
-        expect(result.config.components?.prose).toEqual([
+        expect(getStaticUtilityRules(result, 'prose')).toEqual([
             {
                 selector: '& :is(h1,h2,h3)',
                 declarations: {
@@ -609,7 +628,7 @@ describe.concurrent('@master/css-compiler', () => {
                 --screen-md: 768;
             }
 
-            @master components {
+            @master {
                 @at md {
                     .btn {
                         font-size: 1rem;
@@ -624,7 +643,7 @@ describe.concurrent('@master/css-compiler', () => {
             }
         `, { classes: ['btn'] })
 
-        expect(result.config.components?.btn).toEqual([
+        expect(getStaticUtilityRules(result, 'btn')).toEqual([
             {
                 selector: '&',
                 atRules: ['@media (width>=40rem)'],
@@ -648,7 +667,7 @@ describe.concurrent('@master/css-compiler', () => {
 
     it('merges composed utility rule selectors into component selector buckets', () => {
         const result = compileCSS(`
-            @master components {
+            @master {
                 .btn {
                     @compose "focus-ring";
                 }
@@ -664,6 +683,7 @@ describe.concurrent('@master/css-compiler', () => {
                     {
                         name: 'focus-ring',
                         type: UtilityType.Static,
+                        layer: 'general',
                         rules: [
                             {
                                 selector: '&:focus-visible',
@@ -677,7 +697,7 @@ describe.concurrent('@master/css-compiler', () => {
             }
         })
 
-        expect(result.config.components?.btn).toEqual([
+        expect(getStaticUtilityRules(result, 'btn')).toEqual([
             {
                 selector: '&:focus-visible',
                 declarations: {
@@ -691,15 +711,17 @@ describe.concurrent('@master/css-compiler', () => {
 
     it('merges repeated static utility definitions by name', () => {
         const result = compileCSS(`
-            @master utilities {
-                .content-auto {
-                    content-visibility: auto;
-                    contain-intrinsic-size: auto 16rem;
-                }
+            @master {
+                @layer general {
+                    .content-auto {
+                        content-visibility: auto;
+                        contain-intrinsic-size: auto 16rem;
+                    }
 
-                .content-auto {
-                    contain-intrinsic-size: auto 32rem;
-                    display: block;
+                    .content-auto {
+                        contain-intrinsic-size: auto 32rem;
+                        display: block;
+                    }
                 }
             }
         `, { classes: ['content-auto'] })
@@ -708,6 +730,7 @@ describe.concurrent('@master/css-compiler', () => {
             {
                 name: 'content-auto',
                 type: UtilityType.Static,
+                layer: 'general',
                 declarations: {
                     'content-visibility': 'auto',
                     'contain-intrinsic-size': 'auto 32rem',
@@ -726,7 +749,7 @@ describe.concurrent('@master/css-compiler', () => {
                 @custom-at motion-safe @media (prefers-reduced-motion: no-preference);
             }
 
-            @master components {
+            @master {
                 .btn {
                     display: block;
 
@@ -776,28 +799,30 @@ describe.concurrent('@master/css-compiler', () => {
                 }
             }
 
-            @master utilities {
-                .print-hidden {
-                    visibility: visible;
-
-                    @at dark {
-                        opacity: .5;
-                    }
-                }
-
-                @at print {
+            @master {
+                @layer general {
                     .print-hidden {
-                        visibility: hidden;
-                    }
-                }
+                        visibility: visible;
 
-                .print-hidden {
-                    visibility: collapse;
+                        @at dark {
+                            opacity: .5;
+                        }
+                    }
+
+                    @at print {
+                        .print-hidden {
+                            visibility: hidden;
+                        }
+                    }
+
+                    .print-hidden {
+                        visibility: collapse;
+                    }
                 }
             }
         `, { classes: ['btn', 'print-hidden'] })
 
-        expect(result.config.components?.btn).toEqual([
+        expect(getStaticUtilityRules(result, 'btn')).toEqual([
             {
                 selector: '&',
                 declarations: {
@@ -852,36 +877,35 @@ describe.concurrent('@master/css-compiler', () => {
                 }
             },
         ])
-        expect(result.config.utilities).toEqual([
-            {
-                name: 'print-hidden',
-                type: UtilityType.Static,
-                rules: [
-                    {
-                        declarations: {
-                            visibility: 'visible'
-                        }
-                    },
-                    {
-                        selector: '.dark &',
-                        declarations: {
-                            opacity: '.5'
-                        }
-                    },
-                    {
-                        atRules: ['@media print'],
-                        declarations: {
-                            visibility: 'hidden'
-                        }
-                    },
-                    {
-                        declarations: {
-                            visibility: 'collapse'
-                        }
+        expect(getStaticUtility(result, 'print-hidden', 'general')).toEqual({
+            name: 'print-hidden',
+            type: UtilityType.Static,
+            layer: 'general',
+            rules: [
+                {
+                    declarations: {
+                        visibility: 'visible'
                     }
-                ]
-            }
-        ])
+                },
+                {
+                    selector: '.dark &',
+                    declarations: {
+                        opacity: '.5'
+                    }
+                },
+                {
+                    atRules: ['@media print'],
+                    declarations: {
+                        visibility: 'hidden'
+                    }
+                },
+                {
+                    declarations: {
+                        visibility: 'collapse'
+                    }
+                }
+            ]
+        })
         const flexIndex = result.css.indexOf('.btn{display:flex}')
         const printIndex = result.css.indexOf('@media print{@media (prefers-reduced-motion:no-preference){.btn{display:none}}}')
         expect(flexIndex).toBeGreaterThan(-1)
@@ -915,24 +939,26 @@ describe.concurrent('@master/css-compiler', () => {
                 }
             }
 
-            @master animations {
-                fade {
+            @master {
+                @keyframes fade {
                     to {
                         background: var(--color-accent);
                     }
                 }
             }
 
-            @master components {
+            @master {
                 .btn {
                     background: var(--color-primary, transparent);
                     animation: fade 1s;
                 }
             }
 
-            @master utilities {
-                .surface {
-                    background: var(--color-primary);
+            @master {
+                @layer general {
+                    .surface {
+                        background: var(--color-primary);
+                    }
                 }
             }
         `, { classes: ['btn', 'surface'] })
@@ -947,7 +973,7 @@ describe.concurrent('@master/css-compiler', () => {
         expect(result.css).toContain('@keyframes fade{to{background:var(--color-accent)}}')
     })
 
-    it('uses the last definition for repeated root config, variables, tokens, and animations', () => {
+    it('uses the last definition for repeated root config, variables, tokens, and', () => {
         const result = compileCSS(`
             @master {
                 root-size: 16;
@@ -977,14 +1003,14 @@ describe.concurrent('@master/css-compiler', () => {
                 }
             }
 
-            @master animations {
-                fade {
+            @master {
+                @keyframes fade {
                     from {
                         opacity: 0;
                     }
                 }
 
-                fade {
+                @keyframes fade {
                     to {
                         opacity: 1;
                     }
@@ -1043,7 +1069,7 @@ describe.concurrent('@master/css-compiler', () => {
                     box-sizing: border-box;
                 }
 
-                @master components {
+                @master {
                     .btn {
                         font-size: 1rem;
                         display: inline-flex;
@@ -1058,7 +1084,7 @@ describe.concurrent('@master/css-compiler', () => {
                     color: red;
                 }
 
-                @master components {
+                @master {
                     .btn {
                         display: block;
                     }
@@ -1068,7 +1094,7 @@ describe.concurrent('@master/css-compiler', () => {
             const result = compileCSSFile(entry, { classes: ['btn'] })
 
             expect(result.dependencies).toEqual([entry, button])
-            expect(result.config.components?.btn).toEqual([
+            expect(getStaticUtilityRules(result, 'btn')).toEqual([
                 {
                     selector: '&',
                     declarations: {
@@ -1100,19 +1126,9 @@ describe.concurrent('@master/css-compiler', () => {
         }
     })
 
-    it('supports shorthand animation blocks in @master animations', () => {
+    it('supports native @keyframes blocks in @master', () => {
         const css = process(`
-            @master animations {
-                fade {
-                    50% {
-                        opacity: .5;
-                    }
-
-                    to {
-                        opacity: 1;
-                    }
-                }
-
+            @master {
                 @keyframes reveal {
                     from {
                         opacity: 0;
@@ -1123,10 +1139,8 @@ describe.concurrent('@master/css-compiler', () => {
                     }
                 }
             }
-        `, ['@fade|1s', '@reveal|1s'])
+        `, ['@reveal|1s'])
 
-        expect(css).toContain('@keyframes fade')
-        expect(css).toContain('50%{opacity:.5}')
         expect(css).toContain('@keyframes reveal')
     })
 
@@ -1150,7 +1164,7 @@ describe.concurrent('@master/css-compiler', () => {
         expect(result.warnings[1]).toContain('Unsupported @master block "html"')
     })
 
-    it('warns when component selectors are placed in @master root', () => {
+    it('supports main style selectors directly in @master root', () => {
         const result = compileCSS(`
             @master {
                 .btn {
@@ -1160,25 +1174,41 @@ describe.concurrent('@master/css-compiler', () => {
             }
         `)
 
-        expect(result.warnings).toHaveLength(1)
-        expect(result.warnings[0]).toContain('Component definitions must be placed in @master components')
-        expect(result.config.components).toBeUndefined()
+        expect(result.warnings).toEqual([])
+        expect(getStaticUtilityRules(result, 'btn')).toEqual([
+            {
+                selector: '&',
+                declarations: {
+                    display: 'inline-flex'
+                }
+            }
+        ])
     })
 
-    it('rejects @keyframes in @master root', () => {
+    it('rejects @keyframes inside @layer blocks', () => {
         expect(() => process(`
             @master {
-                @keyframes fade {
-                    from {
-                        opacity: 0;
+                @layer general {
+                    @keyframes fade {
+                        from {
+                            opacity: 0;
+                        }
                     }
+                }
+            }
+        `)).toThrow('@keyframes is only allowed directly in @master')
+    })
 
+    it('rejects shorthand animation blocks in @master', () => {
+        expect(() => process(`
+            @master {
+                fade {
                     to {
                         opacity: 1;
                     }
                 }
             }
-        `)).toThrow('@keyframes is only allowed in @master animations')
+        `)).toThrow('Mode "fade" only accepts custom property declarations')
     })
 
     it('rejects @compose outside component definitions', () => {
@@ -1186,18 +1216,20 @@ describe.concurrent('@master/css-compiler', () => {
             .btn {
                 @compose "block";
             }
-        `)).toThrow('@compose is only allowed in @master components')
+        `)).toThrow('@compose is only allowed in @master')
 
         expect(() => process(`
-            @master utilities {
-                .content-auto {
-                    @compose "block";
+            @master {
+                @layer general {
+                    .content-auto {
+                        @compose "block";
+                    }
                 }
             }
-        `)).toThrow('@compose is only allowed in @master components')
+        `)).toThrow('@compose is only allowed in @master class definitions')
 
         expect(process(`
-            @master components {
+            @master {
                 @media print {
                     .btn {
                         @compose "hidden";
@@ -1207,16 +1239,16 @@ describe.concurrent('@master/css-compiler', () => {
         `, ['btn'])).toContain('@media print{.btn{display:none}}')
     })
 
-    it('rejects @at outside component and utility definitions', () => {
+    it('rejects @at outside @master and supports @at around class definitions', () => {
         expect(() => process(`
             @at dark {
                 .btn {
                     display: none;
                 }
             }
-        `)).toThrow('@at is only allowed in @master components and @master utilities')
+        `)).toThrow('@at is only allowed in @master class definitions')
 
-        expect(() => process(`
+        expect(process(`
             @master {
                 @at dark {
                     .btn {
@@ -1224,7 +1256,19 @@ describe.concurrent('@master/css-compiler', () => {
                     }
                 }
             }
-        `)).toThrow('@at is only allowed in @master components and @master utilities')
+        `, ['btn'])).toContain('@media (prefers-color-scheme:dark){.btn{display:none}}')
+
+        expect(process(`
+            @master {
+                @layer general {
+                    @at print {
+                        .print-hidden {
+                            display: none;
+                        }
+                    }
+                }
+            }
+        `, ['print-hidden'])).toContain('@media print{.print-hidden{display:none}}')
     })
 
     it('rejects invalid @custom-at and @custom-selector names and conflicts', () => {

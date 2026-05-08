@@ -214,7 +214,7 @@ This rendering strategy is functionally equivalent to how [Tailwind CSS](https:/
 `master.css` is a CSS config source. `@master` definitions are converted into config and removed from the CSS output; they do not generate rules by themselves.
 
 ```css name=master.css
-@master components {
+@master {
     .btn {
         @compose "inline-flex px:md";
     }

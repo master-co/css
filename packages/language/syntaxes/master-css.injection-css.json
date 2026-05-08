@@ -13,7 +13,7 @@
     ],
     "repository": {
         "master-css-block": {
-            "begin": "((@)master)(?:\\s+(components|utilities|animations))?(\\s*)(\\{)",
+            "begin": "((@)master)(\\s*)(\\{)",
             "end": "(\\})",
             "name": "meta.at-rule.master-css.css",
             "beginCaptures": {
@@ -23,7 +23,7 @@
                 "2": {
                     "name": "punctuation.definition.keyword.css"
                 },
-                "5": {
+                "4": {
                     "name": "punctuation.section.master-css.begin.bracket.curly.css"
                 }
             },

@@ -16,9 +16,9 @@ This method works, but there's a major drawback: even if you only use `animation
 
 Master CSS [animations](/guide/configuration#animations) are generated on-demand by parsing the values of `animation` and `animation-name`, then injecting only the necessary keyframes into the final stylesheet.
 
-(o) Customize your keyframes in `@master animations`.
+(o) Customize your keyframes in `@master`.
 ```css name=master.css
-@master animations {
+@master {
     animation1 { /* [!code ++] */
         from { opacity: 0; } /* [!code ++] */
         to { opacity: 1; } /* [!code ++] */

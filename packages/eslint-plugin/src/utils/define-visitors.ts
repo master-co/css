@@ -24,7 +24,7 @@ export default function defineVisitors({ context, settings }: { context: RuleCon
         if (prop.key.type === 'Identifier') return prop.key.name
         if (prop.key.type === 'Literal') return prop.key.value
     }
-    const visitComponentDefinition = (node) => {
+    const visitUtilityDefinitions = (node) => {
         if (!node) return
         if (node.type === 'ArrayExpression') {
             node.elements.forEach((element) => {
@@ -39,18 +39,11 @@ export default function defineVisitors({ context, settings }: { context: RuleCon
         }
     }
     const visitClassDeclarationNode = (name, node) => {
-        if (name !== 'components') {
+        if (name !== 'utilities') {
             visitClassNode(node)
             return
         }
-        if (!node || node.type !== 'ObjectExpression') {
-            visitClassNode(node)
-            return
-        }
-        for (const prop of node.properties) {
-            if (prop.type !== 'Property' || prop.shorthand) continue
-            visitComponentDefinition(prop.value)
-        }
+        visitUtilityDefinitions(node)
     }
     const CallExpression = function (node) {
         if (!allowCalleeNode(node)) return

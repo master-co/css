@@ -61,9 +61,16 @@ createTester({
     settings: {
         '@master/css': {
             config: {
-                components: { btn: [
-                    { selector: '&', declarations: { display: 'block' } }
-                ] }
+                utilities: [
+                    {
+                        name: 'btn',
+                        type: -4,
+                        layer: 'main',
+                        rules: [
+                            { selector: '&', declarations: { display: 'block' } }
+                        ]
+                    }
+                ]
             }
         }
     }

@@ -1,9 +1,14 @@
 import type { Config } from '@master/css'
 
 export default {
-    components: {
-        'fixture-card': [
-            { selector: '&', declarations: { display: 'block' } }
-        ]
-    }
+    utilities: [
+        {
+            name: 'fixture-card',
+            type: -4,
+            layer: 'main',
+            rules: [
+                { selector: '&', declarations: { display: 'block' } }
+            ]
+        }
+    ]
 } as Config

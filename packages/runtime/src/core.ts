@@ -1,5 +1,5 @@
 import { MasterCSS, config as defaultConfig, VariableRule, AnimationRule } from '@master/css'
-import { type Config } from '@master/css'
+import { type Config, type UtilityLayerName } from '@master/css'
 import registerGlobal from './register-global'
 import { HydrateResult } from './types'
 import RuntimeLayer from './layer'
@@ -12,8 +12,8 @@ export default class CSSRuntime extends MasterCSS {
     readonly baseLayer = new RuntimeUtilityLayer('base', this)
     readonly themeLayer = new RuntimeLayer('theme', this)
     readonly presetLayer = new RuntimeUtilityLayer('preset', this)
-    readonly componentsLayer = new RuntimeUtilityLayer('components', this)
-    readonly utilitiesLayer = new RuntimeUtilityLayer('utilities', this)
+    readonly mainLayer = new RuntimeUtilityLayer('main', this)
+    readonly generalLayer = new RuntimeUtilityLayer('general', this)
     readonly classCounts = new Map<string, number>()
     observer?: MutationObserver
     progressive = false
@@ -262,11 +262,11 @@ export default class CSSRuntime extends MasterCSS {
                 case 'preset':
                     layer = this.presetLayer
                     break
-                case 'components':
-                    layer = this.componentsLayer
+                case 'main':
+                    layer = this.mainLayer
                     break
-                case 'utilities':
-                    layer = this.utilitiesLayer
+                case 'general':
+                    layer = this.generalLayer
                     break
                 default:
                     console.error(`Cannot recognize the layer \`${eachCSSLayerRule.name}\`. (https://rc.css.master.co/messages/hydration-errors)`)
@@ -286,29 +286,34 @@ export default class CSSRuntime extends MasterCSS {
                     console.error(`Cannot get the selector text from \`${eachNativeLayerRule.cssText}\`. (${layer.name}) (https://rc.css.master.co/messages/hydration-errors)`)
                     continue
                 }
-                const createdUtilities = this.createFromSelectorText(selectorText)
+                const createdUtilities = this.createFromSelectorText(selectorText, layer.name as UtilityLayerName)
                 if (createdUtilities) {
                     for (const createdUtility of createdUtilities) {
                         layer.rules.push(createdUtility)
                         layer.insertVariables(createdUtility)
                         layer.insertAnimations(createdUtility)
                         result.allUtilities.push(createdUtility)
-                        try {
-                            const checkRuleIndex = checkSheet.insertRule(createdUtility.text)
-                            const checkNodeNativeRule = checkSheet.cssRules.item(checkRuleIndex)
-                            if (checkNodeNativeRule) {
-                                const checkNodeNativeRuleText = checkNodeNativeRule.cssText.trim()
-                                const match = unresolvedCSSRules.get(checkNodeNativeRuleText)
-                                if (match) {
-                                    createdUtility.native = match
-                                    unresolvedCSSRules.delete(checkNodeNativeRuleText)
-                                    continue
+                        const nodes = Array.isArray(createdUtility.nodes)
+                            ? createdUtility.nodes
+                            : [createdUtility]
+                        for (const node of nodes) {
+                            try {
+                                const checkRuleIndex = checkSheet.insertRule(node.text)
+                                const checkNodeNativeRule = checkSheet.cssRules.item(checkRuleIndex)
+                                if (checkNodeNativeRule) {
+                                    const checkNodeNativeRuleText = checkNodeNativeRule.cssText.trim()
+                                    const match = unresolvedCSSRules.get(checkNodeNativeRuleText)
+                                    if (match) {
+                                        node.native = match
+                                        unresolvedCSSRules.delete(checkNodeNativeRuleText)
+                                        continue
+                                    }
                                 }
-                            }
-                            console.error(`Cannot retrieve CSS rule for \`${createdUtility.text}\`. (${layer.name}) (https://rc.css.master.co/messages/hydration-errors)`)
-                        } catch (error) {
-                            if (process.env.NODE_ENV === 'development') {
-                                console.debug(`Cannot insert CSS rule for \`${createdUtility.text}\`. (${layer.name}) (https://rc.css.master.co/messages/hydration-errors)`)
+                                console.error(`Cannot retrieve CSS rule for \`${node.text}\`. (${layer.name}) (https://rc.css.master.co/messages/hydration-errors)`)
+                            } catch (error) {
+                                if (process.env.NODE_ENV === 'development') {
+                                    console.debug(`Cannot insert CSS rule for \`${node.text}\`. (${layer.name}) (https://rc.css.master.co/messages/hydration-errors)`)
+                                }
                             }
                         }
                     }

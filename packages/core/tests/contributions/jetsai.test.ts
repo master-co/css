@@ -1,4 +1,4 @@
-import { Config, utilities } from '../../src'
+import { Config, utilities, UtilityType } from '../../src'
 import { extendConfig } from '../../src'
 import CSSTester from '../tester'
 
@@ -31,13 +31,20 @@ export const buttonConfig: Config = { variables: [
         { namespace: 'color', key: buttonTokens.primaryHover, value: '$color-' + colorTokens.blue900 },
         { namespace: 'color', key: buttonTokens.primaryDisabled, value: '$color-' + colorTokens.blue200 },
         { namespace: 'color', key: buttonTokens.disabled, value: '$color-' + colorTokens.gray200 }
-    ], components: { 'btn-primary': [
-        { selector: '&', declarations: { 'background-color': 'rgb(34 66 163)' } },
-        { selector: '&', declarations: { '-webkit-text-fill-color': 'oklch(100% 0 none)' } },
-        { selector: '&:hover', declarations: { 'background-color': 'rgb(21 37 89)' } },
-        { selector: '&:disabled', declarations: { 'background-color': 'rgb(205 224 247)' } },
-        { selector: '&:disabled', declarations: { '-webkit-text-fill-color': 'rgb(146 151 161)' } }
-    ] } }
+    ], utilities: [
+        {
+            name: 'btn-primary',
+            type: UtilityType.Static,
+            layer: 'main',
+            rules: [
+                { selector: '&', declarations: { 'background-color': 'rgb(34 66 163)' } },
+                { selector: '&', declarations: { '-webkit-text-fill-color': 'oklch(100% 0 none)' } },
+                { selector: '&:hover', declarations: { 'background-color': 'rgb(21 37 89)' } },
+                { selector: '&:disabled', declarations: { 'background-color': 'rgb(205 224 247)' } },
+                { selector: '&:disabled', declarations: { '-webkit-text-fill-color': 'rgb(146 151 161)' } }
+            ]
+        }
+    ] }
 
 export const colorConfig: Config = { variables: [
         { namespace: 'color', key: colorTokens.blue200, value: '#CDE0F7' },
@@ -53,7 +60,10 @@ const extendedConfig = extendConfig(colorConfig, textConfig, buttonConfig)
 
 new CSSTester({
     ...extendedConfig,
-    utilities
+    utilities: [
+        ...(extendedConfig.utilities || []),
+        ...utilities
+    ]
 }, null).layers({
     'bg:button-primary': {
         utilities: '.bg\\:button-primary{background-color:rgb(34 66 163)}'

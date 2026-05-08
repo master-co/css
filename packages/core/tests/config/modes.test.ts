@@ -1,5 +1,5 @@
 import { test, expect } from 'vitest'
-import { Config, createCSS } from '../../src'
+import { Config, createCSS, UtilityType } from '../../src'
 import { expectLayers } from '../test'
 
 test.concurrent('media modes', () => {
@@ -9,17 +9,35 @@ test.concurrent('media modes', () => {
 })
 
 test('components', () => {
-    expectLayers({ components: '.dark .btn\\@dark{display:block}' }, 'btn@dark', { components: { btn: [
-        { selector: '&', declarations: { display: 'block' } }
-    ] }, modeTrigger: 'class' })
+    expectLayers({ main: '.dark .btn\\@dark{display:block}' }, 'btn@dark', {
+        utilities: [
+            {
+                name: 'btn',
+                type: UtilityType.Static,
+                layer: 'main',
+                rules: [{ selector: '&', declarations: { display: 'block' } }]
+            }
+        ],
+        modeTrigger: 'class'
+    })
 })
 
 test('components can include modes and selectors', () => {
-    const css = createCSS({ components: { btn: [
-        { selector: '.dark &', declarations: { display: 'block' } },
-        { selector: '&:hover', declarations: { 'font-size': '1rem' } }
-    ] }, modeTrigger: 'class' }).add('btn')
+    const css = createCSS({
+        utilities: [
+            {
+                name: 'btn',
+                type: UtilityType.Static,
+                layer: 'main',
+                rules: [
+                    { selector: '.dark &', declarations: { display: 'block' } },
+                    { selector: '&:hover', declarations: { 'font-size': '1rem' } }
+                ]
+            }
+        ],
+        modeTrigger: 'class'
+    }).add('btn')
 
-    expect(css.componentsLayer.text).toContain('.dark .btn{display:block}')
-    expect(css.componentsLayer.text).toContain('.btn:hover{font-size:1rem}')
+    expect(css.mainLayer.text).toContain('.dark .btn{display:block}')
+    expect(css.mainLayer.text).toContain('.btn:hover{font-size:1rem}')
 })

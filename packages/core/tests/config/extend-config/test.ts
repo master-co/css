@@ -1,32 +1,36 @@
 import { it, test, expect } from 'vitest'
-import { createCSS } from '../../../src'
+import { createCSS, UtilityType } from '../../../src'
 import config from './master-css'
+
+function getMainRules(css: ReturnType<typeof createCSS>, name: string) {
+    return css.config.utilities?.find((definition) =>
+        definition.name === name
+        && (definition.type ?? UtilityType.Static) === UtilityType.Static
+        && (definition.layer ?? 'general') === 'main'
+    )?.rules
+}
 
 it.concurrent('extendConfig merges config files', () => {
     const css = createCSS(config)
-    expect(css.config).toMatchObject({
-        components: {
-            'blue-btn': [
-                { selector: '&', declarations: { 'font-size': '0.875rem' } },
-                { selector: '&', declarations: { height: '2.5rem' } },
-                { selector: '&', declarations: { 'text-align': 'center' } },
-                { selector: '&', declarations: { 'background-color': 'oklch(63.7% 0.237 25.331)' } }
-            ],
-            btn: [
-                { selector: '&', declarations: { 'font-size': '0.875rem' } },
-                { selector: '&', declarations: { height: '2.5rem' } },
-                { selector: '&', declarations: { 'text-align': 'center' } }
-            ],
-            btn3: [
-                { selector: '&', declarations: { 'font-size': '0.9375rem' } },
-                { selector: '&', declarations: { height: '5.625rem' } },
-                { selector: '&', declarations: { 'text-align': 'center' } }
-            ],
-            btn4: [
-                { selector: '&', declarations: { 'font-size': '12.5rem' } }
-            ]
-        }
-    })
+    expect(getMainRules(css, 'blue-btn')).toEqual([
+        { selector: '&', declarations: { 'font-size': '0.875rem' } },
+        { selector: '&', declarations: { height: '2.5rem' } },
+        { selector: '&', declarations: { 'text-align': 'center' } },
+        { selector: '&', declarations: { 'background-color': 'oklch(63.7% 0.237 25.331)' } }
+    ])
+    expect(getMainRules(css, 'btn')).toEqual([
+        { selector: '&', declarations: { 'font-size': '0.875rem' } },
+        { selector: '&', declarations: { height: '2.5rem' } },
+        { selector: '&', declarations: { 'text-align': 'center' } }
+    ])
+    expect(getMainRules(css, 'btn3')).toEqual([
+        { selector: '&', declarations: { 'font-size': '0.9375rem' } },
+        { selector: '&', declarations: { height: '5.625rem' } },
+        { selector: '&', declarations: { 'text-align': 'center' } }
+    ])
+    expect(getMainRules(css, 'btn4')).toEqual([
+        { selector: '&', declarations: { 'font-size': '12.5rem' } }
+    ])
     expect(css.variables.get('first')).toMatchObject({ name: 'first', key: 'first', type: 'color', space: 'oklch', value: '0.18 0 0' })
     expect(css.variables.get('first')?.modes).toMatchObject({
         dark: { space: 'oklch', value: '0% 0 none' },

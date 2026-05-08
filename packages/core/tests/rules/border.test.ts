@@ -54,7 +54,7 @@ it.concurrent('validates border rules', () => {
 })
 
 it.concurrent('checks border order', () => {
-    expect(createCSS().add('bt:1|solid', 'b:1|solid', 'br:1|solid').utilitiesLayer.rules)
+    expect(createCSS().add('bt:1|solid', 'b:1|solid', 'br:1|solid').generalLayer.rules)
         .toMatchObject([
             { name: 'b:1|solid' },
             { name: 'br:1|solid' },
@@ -71,7 +71,7 @@ test.concurrent('autofill solid', () => {
     expectLayers(
         {
             theme: '.light,:root{--line:solid}.dark{--line:dotted}',
-            utilities: '.border\\:16\\|line{border:1rem var(--line) solid}'
+            general: '.border\\:16\\|line{border:1rem var(--line) solid}'
         },
         'border:16|line',
         { variables: [{ key: 'line', value: 'solid', mode: 'light' }, { key: 'line', value: 'dotted', mode: 'dark' }], modes: ['light', 'dark'], modeTrigger: 'class' }
@@ -80,7 +80,7 @@ test.concurrent('autofill solid', () => {
     expectLayers(
         {
             theme: '.light,:root{--line:solid}.dark{--line:dotted}',
-            utilities: '.border\\:16\\|line{border:1rem var(--line) solid}'
+            general: '.border\\:16\\|line{border:1rem var(--line) solid}'
         },
         'border:16|line',
         { variables: [{ key: 'line', value: 'solid', mode: 'light' }, { key: 'line', value: 'dotted', mode: 'dark' }], modes: ['light', 'dark'], modeTrigger: 'class' }

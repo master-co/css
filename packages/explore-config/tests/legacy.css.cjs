@@ -1,7 +1,12 @@
 module.exports = {
-    components: {
-        legacy: [
-            { selector: '&', declarations: { display: 'inline-flex' } }
-        ]
-    }
+    utilities: [
+        {
+            name: 'legacy',
+            type: -4,
+            layer: 'main',
+            rules: [
+                { selector: '&', declarations: { display: 'inline-flex' } }
+            ]
+        }
+    ]
 }

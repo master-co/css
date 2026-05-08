@@ -1,4 +1,4 @@
-@layer base, theme, preset, components, utilities;
+@layer base, theme, preset, main, general;
 
 @layer base {
     .list-style\:none_ul\@base ul {
@@ -25,14 +25,14 @@
     }
 }
 
-@layer components {
+@layer main {
     .btn {
         display: inline-flex;
         background-color: rgb(var(--primary))
     }
 }
 
-@layer utilities {
+@layer general {
     .flex {
         display: flex
     }

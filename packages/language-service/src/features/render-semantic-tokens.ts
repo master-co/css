@@ -166,11 +166,13 @@ export default function renderSemanticTokens(this: CSSLanguageService, document:
         const { raw, token } = classPosition
         if (!raw) continue
         const classStart = classPosition.range.start
-        if (this.css.components.get(token)) {
+        const rules = this.css.generate(token)
+        const mainStyle = rules.find((rule) => rule.type === UtilityType.Static && rule.layerName === 'main')
+        if (mainStyle) {
             pushToken(semanticTokens, classStart, raw.length, 'class', ['declaration'])
             continue
         }
-        const rule = this.css.generate(token)[0]
+        const rule = rules[0]
         if (!rule) continue
         if (rule.type === UtilityType.Static) {
             pushToken(semanticTokens, classStart, raw.length, 'class')

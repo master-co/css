@@ -48,15 +48,13 @@ In each workspace, import the shared CSS config files and add workspace-specific
 
 @master {
     --color-primary: #4f46e5;
-}
 
-@master components {
     .app-shell {
         @compose "min-h:100vh bg:base";
     }
 }
 ```
-Later definitions in the workspace file can override root options, variables, tokens, animations, utilities, and matching component buckets.
+Later definitions in the workspace file can override root options, variables, tokens, general utilities, and matching main style buckets.
 
 (x) Forgot to create __/apps/a/master.css__ in the workspace and import the root configuration.
 <ExplorerView>

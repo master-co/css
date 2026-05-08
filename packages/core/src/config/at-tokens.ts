@@ -11,6 +11,8 @@ const atTokens = {
     'reduce-motion': 'media(prefers-reduced-motion:reduce)',
     base: 'layer(base)',
     preset: 'layer(preset)',
+    main: 'layer(main)',
+    general: 'layer(general)',
     start: 'starting-style',
     w: 'width',
     h: 'height',

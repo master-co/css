@@ -8,16 +8,26 @@ withFixture('config', async (context) => {
         await context.server.onDidOpen({ document: textDocument })
 
         expect(context.rootWorkspace?.languageService?.settings.config).toMatchObject({
-            components: {
-                'fixture-card': [
-                    { selector: '&', declarations: { display: 'block' } }
-                ],
-                'fixture-button': [
-                    { selector: '&', declarations: { display: 'inline-flex' } },
-                    { selector: '&', declarations: { color: 'oklch(100% 0 none)' } },
-                    { selector: '&', declarations: { 'background-color': 'oklch(63.7% 0.237 25.331)' } }
-                ]
-            }
+            utilities: expect.arrayContaining([
+                {
+                    name: 'fixture-card',
+                    type: -4,
+                    layer: 'main',
+                    rules: [
+                        { selector: '&', declarations: { display: 'block' } }
+                    ]
+                },
+                {
+                    name: 'fixture-button',
+                    type: -4,
+                    layer: 'main',
+                    rules: [
+                        { selector: '&', declarations: { display: 'inline-flex' } },
+                        { selector: '&', declarations: { color: 'oklch(100% 0 none)' } },
+                        { selector: '&', declarations: { 'background-color': 'oklch(63.7% 0.237 25.331)' } }
+                    ]
+                }
+            ])
         })
 
         await context.server.onDidClose({ document: textDocument })

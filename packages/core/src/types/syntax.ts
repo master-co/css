@@ -1,5 +1,4 @@
-import { ComponentLayerName, UtilityDefinition } from './config'
-import type { PropertiesHyphen } from 'csstype'
+import { UtilityDefinition, UtilityLayerName } from './config'
 
 export type ValueComponent = StringValueComponent | NumberValueComponent | FunctionValueComponent | VariableValueComponent | SeparatorValueComponent
 export interface StringValueComponent { text?: string, token: string, type: 'string', value: string }
@@ -22,16 +21,8 @@ export interface DefinedUtility {
     definition: UtilityDefinition
 }
 
-export interface ComponentEntry {
-    selectorRules: {
-        selector: string
-        declarations: PropertiesHyphen
-        atRules?: string[]
-        layer?: ComponentLayerName
-    }[]
-}
-
-export type GeneratedUtility = import('../utility').Utility | import('../component-rule').default
+export type GeneratedUtility = import('../utility').Utility
+export type ExplicitUtilityLayerName = UtilityLayerName
 
 export type MediaFeatureComponent = {
     type: string

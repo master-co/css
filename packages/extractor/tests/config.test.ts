@@ -18,14 +18,24 @@ test('reject string extractor options', async () => {
 test('master.css.js config custom classname', async () => {
     fs.writeFileSync(path.join(__dirname, 'master.css.ts'), `
         export default {
-            components: {
-                'blue-btn': [
-                    { selector: '&', declarations: { 'background-color': 'oklch(63.7% 0.237 25.331)' } }
-                ],
-                btn: [
-                    { selector: '&', declarations: { 'background-color': 'oklch(55.1% 0.027 264.364)' } }
-                ]
-            }
+            utilities: [
+                {
+                    name: 'blue-btn',
+                    type: -4,
+                    layer: 'main',
+                    rules: [
+                        { selector: '&', declarations: { 'background-color': 'oklch(63.7% 0.237 25.331)' } }
+                    ]
+                },
+                {
+                    name: 'btn',
+                    type: -4,
+                    layer: 'main',
+                    rules: [
+                        { selector: '&', declarations: { 'background-color': 'oklch(55.1% 0.027 264.364)' } }
+                    ]
+                }
+            ]
         }
     `, { flag: 'w' })
     const extractor = await new CSSExtractor({}, __dirname).init()

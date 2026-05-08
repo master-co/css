@@ -1,6 +1,6 @@
 import extend from 'json-safe-extend'
 import UtilityType from '../utility-type'
-import type { ComponentDefinitions, Config, UtilityDefinition, VariableDefinitions } from '../types/config'
+import type { Config, UtilityDefinition, VariableDefinitions } from '../types/config'
 import flattenObject from './flatten-object'
 
 export declare type ExtendedConfig = {
@@ -9,13 +9,16 @@ export declare type ExtendedConfig = {
     modes?: string[]
     atTokens?: Record<string, string | number>
     selectorTokens?: Record<string, string>
-    components?: ComponentDefinitions
 } & Omit<Config, 'variables' | 'modes' | 'atTokens' | 'selectorTokens'>
 
 type ConfigInput = Config | ExtendedConfig | { config: Config | ExtendedConfig } | undefined
 
 function utilitySlot(utility: UtilityDefinition) {
-    return `${utility.name}\0${utility.type === UtilityType.Static ? 'static' : 'syntax'}`
+    return [
+        utility.name,
+        utility.type === UtilityType.Static ? 'static' : 'syntax',
+        utility.type === UtilityType.Static ? (utility.layer || 'general') : ''
+    ].join('\0')
 }
 
 function resolveConfigInput(config: ConfigInput) {
@@ -29,7 +32,6 @@ export default function extendConfig(...configs: ConfigInput[]) {
     for (const {
         variables,
         modes,
-        components,
         animations,
         atTokens,
         utilities,
@@ -64,12 +66,6 @@ export default function extendConfig(...configs: ConfigInput[]) {
                     extendedConfig.modes.push(mode)
                 }
             }
-        }
-
-        // components
-        if (components) {
-            extendedConfig.components ??= {}
-            Object.assign(extendedConfig.components, components)
         }
 
         // at tokens

@@ -9,13 +9,21 @@
             selectorTokens: {
                 '::both': '::before,::after',
             },
-            components: {
-                btn: ['bg:black block::both']
-            }
+            utilities: [
+                {
+                    name: 'btn',
+                    type: -4,
+                    layer: 'main',
+                    rules: [
+                        { selector: '&::before,&::after', declarations: { display: 'block' } },
+                        { selector: '&', declarations: { 'background-color': 'oklch(0% 0 none)' } }
+                    ]
+                }
+            ]
         }
     </script>
     <style id="master">
-        @layer components {
+        @layer main {
             .btn::before,
             .btn::after {
                 display: block

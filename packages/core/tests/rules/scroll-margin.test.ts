@@ -2,7 +2,7 @@ import { it, test, expect } from 'vitest'
 import { createCSS } from '../../src'
 
 it.concurrent('checks scroll-margin order', () => {
-    expect(createCSS().add('scroll-mx:0', 'scroll-ml:0', 'scroll-mr:0', 'scroll-m:0', 'scroll-mt:0', 'scroll-mb:0', 'scroll-my:0').utilitiesLayer.rules)
+    expect(createCSS().add('scroll-mx:0', 'scroll-ml:0', 'scroll-mr:0', 'scroll-m:0', 'scroll-mt:0', 'scroll-mb:0', 'scroll-my:0').generalLayer.rules)
         .toMatchObject([
             { name: 'scroll-m:0' },
             { name: 'scroll-mx:0' },

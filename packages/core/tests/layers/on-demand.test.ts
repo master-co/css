@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest'
-import { createCSS } from '../../src'
+import { createCSS, UtilityType } from '../../src'
 
 test.concurrent('empty', () => {
     const css = createCSS()
@@ -10,18 +10,27 @@ test.concurrent('utility', () => {
     const css = createCSS()
     css.add('text:center')
     expect(css.text).toContain(css.layerStatementRule.text)
-    expect(css.text).toContain('@layer utilities{.text\\:center{text-align:center}}')
+    expect(css.text).toContain('@layer general{.text\\:center{text-align:center}}')
 })
 
 test.concurrent('manipulate', () => {
-    const css = createCSS({ components: { 'btn': [
-        { selector: '&', declarations: { display: 'block' } }
-    ] } })
+    const css = createCSS({
+        utilities: [
+            {
+                name: 'btn',
+                type: UtilityType.Static,
+                layer: 'main',
+                rules: [
+                    { selector: '&', declarations: { display: 'block' } }
+                ]
+            }
+        ]
+    })
     expect(css.text).toContain(css.layerStatementRule.text)
     css.add('text:center', 'font:bold')
-    expect(css.text).toContain('@layer utilities{.font\\:bold{font-weight:700}.text\\:center{text-align:center}}')
+    expect(css.text).toContain('@layer general{.font\\:bold{font-weight:700}.text\\:center{text-align:center}}')
     css.add('btn')
-    expect(css.text).toContain('@layer components{.btn{display:block}')
+    expect(css.text).toContain('@layer main{.btn{display:block}')
     css.remove('text:center', 'font:bold', 'btn')
     expect(css.text).toBe(css.layerStatementRule.text)
 })
@@ -29,5 +38,5 @@ test.concurrent('manipulate', () => {
 test('prevent duplicate insertion', () => {
     const css = createCSS()
     css.add('text:center', 'text:center')
-    expect(css.utilitiesLayer.rules.length).toBe(1)
+    expect(css.generalLayer.rules.length).toBe(1)
 })

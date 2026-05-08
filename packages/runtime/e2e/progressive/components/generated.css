@@ -1,4 +1,4 @@
-@layer base, theme, preset, components, utilities;
+@layer base, theme, preset, main, general;
 
 @layer theme {
     :root {
@@ -6,7 +6,7 @@
     }
 }
 
-@layer components {
+@layer main {
     .btn {
         background-color: var(--color-foo);
     }

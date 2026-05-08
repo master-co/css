@@ -17,11 +17,10 @@ import { transform } from 'lightningcss'
 import type { PropertiesHyphen } from 'csstype'
 import type {
     AnimationDefinitions,
-    ComponentLayerName,
-    ComponentDefinition,
     Config,
     Utility,
     UtilityDefinition,
+    UtilityLayerName,
     UtilityRuleDefinition,
     VariableValue
 } from '@master/css'
@@ -51,7 +50,7 @@ export interface CompileCSSFileOptions extends CompileCSSOptions {
 
 export interface CompileCSSResult {
     config: Config
-    componentNames: string[]
+    classNames: string[]
     css: string
     generatedCSS: string
     warnings: string[]
@@ -69,7 +68,7 @@ interface PendingComponentCompose {
     className: string
     selector: string
     atRules?: string[]
-    layer?: ComponentLayerName
+    layer?: UtilityLayerName
 }
 
 interface PendingComponentNative {
@@ -78,14 +77,14 @@ interface PendingComponentNative {
     selector: string
     declarations: PropertiesHyphen
     atRules?: string[]
-    layer?: ComponentLayerName
+    layer?: UtilityLayerName
 }
 
 type ParsedComponentDefinition = PendingComponentCompose | PendingComponentNative
 
 type ParsedUtilityRuleDefinition = UtilityRuleDefinition
 
-export interface ParsedDirectives extends Pick<CompileCSSResult, 'config' | 'componentNames' | 'warnings'> {
+export interface ParsedDirectives extends Pick<CompileCSSResult, 'config' | 'classNames' | 'warnings'> {
     componentDefinitions?: Record<string, ParsedComponentDefinition[]>
     componentOrder?: number
 }
@@ -113,13 +112,13 @@ const MASTER_CUSTOM_AT_RULES = {
     }
 } satisfies CustomAtRules
 
-type MasterSection = 'root' | 'components' | 'utilities' | 'animations'
+type MasterSection = 'root'
 
 const DEFAULT_MODE_NAMES = new Set(defaultConfig.modes || [])
 const DEFAULT_SCREEN_NAMES = new Set(Object.keys(defaultScreens))
 const IMPORTANT_FLAG_VALUE = '__master_important__'
 const MASTER_AT_RULE_PREFIX = '__master_at__:'
-const COMPONENT_LAYER_NAMES = new Set<ComponentLayerName>(['base', 'preset', 'components', 'utilities'])
+const UTILITY_LAYER_NAMES = new Set<UtilityLayerName>(['base', 'preset', 'main', 'general'])
 
 const HTML_TAG_NAMES = new Set([
     'a',
@@ -650,14 +649,7 @@ function getUtilityAtRuleDefinitions(utility: Utility) {
 }
 
 function getUtilityComponentLayer(utility: Utility) {
-    const layerNodes = utility.atRules?.layer
-    if (layerNodes?.length !== 1) return
-    const layerNode = layerNodes[0]
-    if (!('value' in layerNode)) return
-    const layerName = String(layerNode.value)
-    if (COMPONENT_LAYER_NAMES.has(layerName as ComponentLayerName)) {
-        return layerName as ComponentLayerName
-    }
+    return utility.explicitLayerName
 }
 
 function getUtilityComponentSelector(utility: Utility, css: ReturnType<typeof createCSS>) {
@@ -683,12 +675,19 @@ function cloneDeclarations(declarations: PropertiesHyphen, important?: boolean) 
     return result
 }
 
-interface ComposedComponentDefinition extends ComponentDefinition {
+interface MergedStyleDefinition {
+    selector: string
+    declarations: PropertiesHyphen
+    atRules?: string[]
+    layer?: UtilityLayerName
+}
+
+interface ComposedComponentDefinition extends MergedStyleDefinition {
     utility: Utility
 }
 
 function createComponentDefinitionsFromCompose(className: string, css: ReturnType<typeof createCSS>): ComposedComponentDefinition[] {
-    const utility = css.create(className, '__master_component__')
+    const utility = css.create(className)
     if (!utility?.valid) {
         throw new Error(`Invalid @compose class: ${className}`)
     }
@@ -964,10 +963,10 @@ function collectStyleRuleBody(block: DeclarationBlock<Declaration>, rules: Rule[
             continue
         }
         if (compose) {
-            throw new Error('@compose is only allowed in @master components')
+            throw new Error('@compose is only allowed in @master class definitions outside @layer general')
         }
         throw new Error(allowCompose
-            ? 'Components only accept declarations and @compose'
+            ? 'Class definitions only accept declarations and @compose'
             : 'Utilities only accept declarations'
         )
     }
@@ -1093,7 +1092,7 @@ function parseComponentDefinitionBody(
     selectorDefinition: ComponentSelectorDefinition,
     items: ComponentStyleRuleBodyItem[],
     atRules: string[] = [],
-    layer?: ComponentLayerName
+    layer?: UtilityLayerName
 ) {
     const definitions = getParsedComponentDefinitions(parsed, selectorDefinition.name)
     const selectorSuffix = componentSelectorToClassSuffix(selectorDefinition.selector)
@@ -1129,8 +1128,8 @@ function parseComponentDefinitionBody(
         parseNestedComponentChildRule(item.rule, parsed, selectorDefinition, atRules, layer)
     }
 
-    if (!parsed.componentNames.includes(selectorDefinition.name)) {
-        parsed.componentNames.push(selectorDefinition.name)
+    if (!parsed.classNames.includes(selectorDefinition.name)) {
+        parsed.classNames.push(selectorDefinition.name)
     }
 }
 
@@ -1139,16 +1138,16 @@ function parseComponentRuleBody(
     parsed: ParsedDirectives,
     selectorDefinition: ComponentSelectorDefinition,
     atRules: string[] = [],
-    layer?: ComponentLayerName
+    layer?: UtilityLayerName
 ) {
     parseComponentDefinitionBody(parsed, selectorDefinition, collectComponentStyleRuleBody(EMPTY_DECLARATION_BLOCK, rules), atRules, layer)
 }
 
-function parseNestedComponentChildRule(child: Rule, parsed: ParsedDirectives, parentSelectorDefinition: ComponentSelectorDefinition, atRules: string[], layer?: ComponentLayerName) {
+function parseNestedComponentChildRule(child: Rule, parsed: ParsedDirectives, parentSelectorDefinition: ComponentSelectorDefinition, atRules: string[], layer?: UtilityLayerName) {
     const componentLayerBlock = parseComponentLayerBlock(child)
     if (componentLayerBlock) {
         if (layer) {
-            throw new Error('Nested @layer blocks are not allowed in @master components')
+            throw new Error('Nested @layer blocks are not allowed in @master')
         }
         parseComponentRuleBody(componentLayerBlock.rules, parsed, parentSelectorDefinition, atRules, componentLayerBlock.layer)
         return
@@ -1164,7 +1163,7 @@ function parseNestedComponentChildRule(child: Rule, parsed: ParsedDirectives, pa
     if (nestedAtRuleChildren) {
         const atRule = formatNestedAtRule(child)
         if (!atRule) {
-            throw new Error('Unsupported nested at-rule in @master components')
+            throw new Error('Unsupported nested at-rule in @master')
         }
         parseComponentRuleBody(nestedAtRuleChildren, parsed, parentSelectorDefinition, [...atRules, atRule], layer)
         return
@@ -1178,7 +1177,7 @@ function parseNestedComponentChildRule(child: Rule, parsed: ParsedDirectives, pa
     throw new Error('Components only accept declarations, @compose, nested selectors, and nested at-rules')
 }
 
-function parseComponent(rule: any, parsed: ParsedDirectives, atRules: string[] = [], layer?: ComponentLayerName, parentSelectorDefinition?: ComponentSelectorDefinition) {
+function parseComponent(rule: any, parsed: ParsedDirectives, atRules: string[] = [], layer?: UtilityLayerName, parentSelectorDefinition?: ComponentSelectorDefinition) {
     const selectorDefinition = parentSelectorDefinition
         ? {
             name: parentSelectorDefinition.name,
@@ -1227,10 +1226,10 @@ function mergeUtilityDeclarations(definition: UtilityDefinition, declarations: R
     }
 }
 
-function parseNestedUtilityChildRule(child: Rule, parsed: ParsedDirectives, name: string, atRules: string[]) {
+function parseNestedUtilityChildRule(child: Rule, parsed: ParsedDirectives, name: string, atRules: string[], layer: UtilityLayerName) {
     const masterAtRuleBlock = parseMasterAtRuleBlock(child)
     if (masterAtRuleBlock) {
-        parseUtilityRuleBody(masterAtRuleBlock.rules, parsed, name, [...atRules, createMasterAtRuleReference(masterAtRuleBlock.token)])
+        parseUtilityRuleBody(masterAtRuleBlock.rules, parsed, name, [...atRules, createMasterAtRuleReference(masterAtRuleBlock.token)], layer)
         return
     }
 
@@ -1238,40 +1237,43 @@ function parseNestedUtilityChildRule(child: Rule, parsed: ParsedDirectives, name
     if (nestedAtRuleChildren) {
         const atRule = formatNestedAtRule(child)
         if (!atRule) {
-            throw new Error('Unsupported nested at-rule in @master utilities')
+            throw new Error('Unsupported nested at-rule in @layer general')
         }
-        parseUtilityRuleBody(nestedAtRuleChildren, parsed, name, [...atRules, atRule])
+        parseUtilityRuleBody(nestedAtRuleChildren, parsed, name, [...atRules, atRule], layer)
         return
     }
 
     throw new Error('Utilities only accept declarations and nested at-rules')
 }
 
-function parseUtilityRuleBody(rules: Rule[], parsed: ParsedDirectives, name: string, atRules: string[] = []) {
+function parseUtilityRuleBody(rules: Rule[], parsed: ParsedDirectives, name: string, atRules: string[] = [], layer: UtilityLayerName = 'general') {
     const { declarations, nestedRules } = collectStyleRuleBody(EMPTY_DECLARATION_BLOCK, rules, false, true)
     if (Object.keys(declarations).length) {
         parsed.config.utilities ??= []
         const existingDefinition = parsed.config.utilities.find((definition) =>
             definition.name === name && (definition.type ?? UtilityType.Static) === UtilityType.Static
+            && (definition.layer || 'general') === layer
         )
         if (existingDefinition) {
             existingDefinition.type = UtilityType.Static
+            existingDefinition.layer = layer
             mergeUtilityDeclarations(existingDefinition, declarations, atRules)
         } else {
             const definition = {
                 name,
-                type: UtilityType.Static
+                type: UtilityType.Static,
+                layer
             } satisfies UtilityDefinition
             mergeUtilityDeclarations(definition, declarations, atRules)
             parsed.config.utilities.push(definition)
         }
     }
     for (const nestedRule of nestedRules) {
-        parseNestedUtilityChildRule(nestedRule, parsed, name, atRules)
+        parseNestedUtilityChildRule(nestedRule, parsed, name, atRules, layer)
     }
 }
 
-function parseUtility(rule: any, parsed: ParsedDirectives, atRules: string[] = []) {
+function parseUtility(rule: any, parsed: ParsedDirectives, atRules: string[] = [], layer: UtilityLayerName = 'general') {
     const name = parseClassDefinitionSelector(rule.value.selectors)
     if (!name) {
         throw new Error('Utility definition selector must be a single class selector')
@@ -1280,16 +1282,19 @@ function parseUtility(rule: any, parsed: ParsedDirectives, atRules: string[] = [
     parsed.config.utilities ??= []
     const existingDefinition = parsed.config.utilities.find((definition) =>
         definition.name === name && (definition.type ?? UtilityType.Static) === UtilityType.Static
+        && (definition.layer || 'general') === layer
     )
     if (existingDefinition) {
         existingDefinition.type = UtilityType.Static
+        existingDefinition.layer = layer
         if (Object.keys(declarations).length) {
             mergeUtilityDeclarations(existingDefinition, declarations, atRules)
         }
     } else {
         const definition = {
             name,
-            type: UtilityType.Static
+            type: UtilityType.Static,
+            layer
         } satisfies UtilityDefinition
         if (Object.keys(declarations).length) {
             mergeUtilityDeclarations(definition, declarations, atRules)
@@ -1297,7 +1302,7 @@ function parseUtility(rule: any, parsed: ParsedDirectives, atRules: string[] = [
         parsed.config.utilities.push(definition)
     }
     for (const nestedRule of nestedRules) {
-        parseNestedUtilityChildRule(nestedRule, parsed, name, atRules)
+        parseNestedUtilityChildRule(nestedRule, parsed, name, atRules, layer)
     }
 }
 
@@ -1332,7 +1337,6 @@ function parseKeyframes(rule: any, config: Config) {
 function getMasterSection(rule: any): MasterSection {
     const prelude = formatPrelude(rule.prelude)
     if (!prelude) return 'root'
-    if (prelude === 'components' || prelude === 'utilities' || prelude === 'animations') return prelude
     throw new Error(`Unsupported @master section: ${prelude}`)
 }
 
@@ -1349,60 +1353,49 @@ function parseModeBlock(rule: any, mode: string, parsed: ParsedDirectives) {
     }
 }
 
-function parseMasterStyleRule(rule: any, parsed: ParsedDirectives, options: CompileCSSOptions, section: MasterSection, atRules: string[] = [], layer?: ComponentLayerName) {
-    if (section === 'utilities') {
-        parseUtility(rule, parsed, atRules)
-        return
-    }
-    if (section === 'components') {
-        parseComponent(rule, parsed, atRules, layer)
-        return
-    }
-    if (section === 'animations') {
-        throw new Error('@master animations only accepts animation blocks and @keyframes')
-    }
-
+function parseMasterStyleRule(rule: any, parsed: ParsedDirectives, options: CompileCSSOptions, section: MasterSection, atRules: string[] = [], layer?: UtilityLayerName) {
     if (parseComponentDefinitionSelector(rule.value.selectors)) {
-        warn(parsed, options, `Component definitions must be placed in @master components: ${formatSelectors(rule.value.selectors)}`)
+        if ((layer || 'main') === 'general') {
+            parseUtility(rule, parsed, atRules, 'general')
+        } else {
+            parseComponent(rule, parsed, atRules, layer)
+        }
         return
     }
 
     const mode = parseSingleTypeSelector(rule.value.selectors)
     if (mode) {
         if (HTML_TAG_NAMES.has(mode)) {
-            warn(parsed, options, `Unsupported @master block "${mode}". @master only accepts config declarations, mode variable blocks, @custom-at, and @custom-selector. Move regular CSS selectors outside @master.`)
+            warn(parsed, options, `Unsupported @master block "${mode}". @master only accepts config declarations, mode variable blocks, @custom-at, @custom-selector, @keyframes, @layer, and class definitions. Move regular CSS selectors outside @master.`)
             return
         }
         parseModeBlock(rule, mode, parsed)
         return
     }
 
-    warn(parsed, options, `Unsupported @master selector "${formatSelectors(rule.value.selectors)}". @master only accepts mode variable blocks, @custom-at, and @custom-selector.`)
+    warn(parsed, options, `Unsupported @master selector "${formatSelectors(rule.value.selectors)}". @master only accepts mode variable blocks, @custom-at, @custom-selector, and class definitions.`)
 }
 
 function parseComponentLayerBlock(rule: Rule) {
     if (rule.type !== 'layer-block') return
     const layerName = (rule.value.name || []).join('.')
     if (!layerName) {
-        throw new Error('@layer in @master components requires a layer name')
+        throw new Error('@layer in @master requires a layer name')
     }
-    if (!COMPONENT_LAYER_NAMES.has(layerName as ComponentLayerName)) {
-        throw new Error(`Unsupported @master components layer: ${layerName}`)
+    if (!UTILITY_LAYER_NAMES.has(layerName as UtilityLayerName)) {
+        throw new Error(`Unsupported @master layer: ${layerName}`)
     }
     return {
-        layer: layerName as ComponentLayerName,
+        layer: layerName as UtilityLayerName,
         rules: rule.value.rules as Rule[]
     }
 }
 
-function parseMasterChildRule(child: Rule, parsed: ParsedDirectives, options: CompileCSSOptions, section: MasterSection, atRules: string[] = [], layer?: ComponentLayerName) {
+function parseMasterChildRule(child: Rule, parsed: ParsedDirectives, options: CompileCSSOptions, section: MasterSection, atRules: string[] = [], layer?: UtilityLayerName) {
     const componentLayerBlock = parseComponentLayerBlock(child)
     if (componentLayerBlock) {
-        if (section !== 'components') {
-            throw new Error('@layer is only allowed in @master components')
-        }
         if (layer) {
-            throw new Error('Nested @layer blocks are not allowed in @master components')
+            throw new Error('Nested @layer blocks are not allowed in @master')
         }
         for (const nestedChild of componentLayerBlock.rules) {
             parseMasterChildRule(nestedChild, parsed, options, section, atRules, componentLayerBlock.layer)
@@ -1412,9 +1405,6 @@ function parseMasterChildRule(child: Rule, parsed: ParsedDirectives, options: Co
 
     const masterAtRuleBlock = parseMasterAtRuleBlock(child)
     if (masterAtRuleBlock) {
-        if (section !== 'components' && section !== 'utilities') {
-            throw new Error('@at is only allowed in @master components and @master utilities')
-        }
         for (const nestedChild of masterAtRuleBlock.rules) {
             parseMasterChildRule(nestedChild, parsed, options, section, [...atRules, createMasterAtRuleReference(masterAtRuleBlock.token)], layer)
         }
@@ -1423,9 +1413,6 @@ function parseMasterChildRule(child: Rule, parsed: ParsedDirectives, options: Co
 
     const nestedAtRuleChildren = getNestedAtRuleChildren(child)
     if (nestedAtRuleChildren) {
-        if (section !== 'components' && section !== 'utilities') {
-            throw new Error(`Nested at-rules are only allowed in @master components and @master utilities`)
-        }
         const atRule = formatNestedAtRule(child)
         if (!atRule) {
             throw new Error(`Unsupported nested at-rule in @master ${section}`)
@@ -1437,9 +1424,7 @@ function parseMasterChildRule(child: Rule, parsed: ParsedDirectives, options: Co
     }
 
     if (child.type === 'nested-declarations') {
-        if (section !== 'root') {
-            throw new Error(`@master ${section} does not accept config declarations`)
-        }
+        if (layer) throw new Error(`@layer ${layer} does not accept config declarations`)
         parseMasterDeclarations(child.value.declarations, parsed.config)
         return
     }
@@ -1458,9 +1443,7 @@ function parseMasterChildRule(child: Rule, parsed: ParsedDirectives, options: Co
         return
     }
     if (child.type === 'keyframes') {
-        if (section !== 'animations') {
-            throw new Error('@keyframes is only allowed in @master animations')
-        }
+        if (layer) throw new Error('@keyframes is only allowed directly in @master')
         parseKeyframes(child, parsed.config)
         return
     }
@@ -1509,24 +1492,8 @@ function validateTokenConflicts(parsed: ParsedDirectives) {
     }
 }
 
-function resolveComponentSelectorTokens(parsed: ParsedDirectives) {
-    const selectorTokens = parsed.config.selectorTokens
-    const components = parsed.config.components
-    if (!selectorTokens || !components) return
-    for (const name in components) {
-        components[name] = components[name].map((definition) => {
-            return {
-                ...definition,
-                selector: resolveSelectorTokens(definition.selector, selectorTokens)
-            }
-        })
-    }
-}
-
 function createComposeCSS(parsed: ParsedDirectives, options: CompileCSSOptions) {
-    const configWithoutComponents = { ...parsed.config }
-    delete configWithoutComponents.components
-    return createCSS(extendConfig(options.config, configWithoutComponents))
+    return createCSS(extendConfig(options.config, parsed.config))
 }
 
 function combineSelectorWrapper(selector: string, wrapper: string) {
@@ -1622,7 +1589,7 @@ type ComponentMergeEvent =
 interface ComponentMergeBucket {
     selector: string
     atRules?: string[]
-    layer?: ComponentLayerName
+    layer?: UtilityLayerName
     order: number
     events: ComponentMergeEvent[]
 }
@@ -1633,7 +1600,7 @@ function resolveComponentSelector(selector: string, css: ReturnType<typeof creat
         : selector
 }
 
-function getComponentMergeBucketKey(selector: string, atRules: string[] | undefined, layer: ComponentLayerName | undefined) {
+function getComponentMergeBucketKey(selector: string, atRules: string[] | undefined, layer: UtilityLayerName | undefined) {
     return JSON.stringify([layer || '', selector, atRules || []])
 }
 
@@ -1641,7 +1608,7 @@ function getComponentMergeBucket(
     buckets: Map<string, ComponentMergeBucket>,
     selector: string,
     atRules: string[] | undefined,
-    layer: ComponentLayerName | undefined,
+    layer: UtilityLayerName | undefined,
     order: number
 ) {
     const key = getComponentMergeBucketKey(selector, atRules, layer)
@@ -1681,7 +1648,7 @@ function applyComponentDeclarations(declarations: PropertiesHyphen, incomingDecl
     }
 }
 
-function createMergedComponentDefinition(bucket: ComponentMergeBucket): ComponentDefinition | undefined {
+function createMergedComponentDefinition(bucket: ComponentMergeBucket): MergedStyleDefinition | undefined {
     const declarations: PropertiesHyphen = {}
     const composeBatch: Extract<ComponentMergeEvent, { type: 'compose' }>[] = []
     const flushComposeBatch = () => {
@@ -1715,7 +1682,7 @@ function pushComponentMergeEvent(
     buckets: Map<string, ComponentMergeBucket>,
     selector: string,
     atRules: string[] | undefined,
-    layer: ComponentLayerName | undefined,
+    layer: UtilityLayerName | undefined,
     event: ComponentMergeEvent
 ) {
     getComponentMergeBucket(buckets, selector, atRules, layer, event.order).events.push(event)
@@ -1787,8 +1754,8 @@ function compareComponentAtRuleFeatures(
 }
 
 function compareComponentMergeBuckets(a: ComponentMergeBucket, b: ComponentMergeBucket, rootSize: number) {
-    const layerA = a.layer || 'components'
-    const layerB = b.layer || 'components'
+    const layerA = a.layer || 'main'
+    const layerB = b.layer || 'main'
     if (layerA === layerB && a.selector === b.selector) {
         const atRuleStateA = a.atRules?.length ? 1 : 0
         const atRuleStateB = b.atRules?.length ? 1 : 0
@@ -1805,10 +1772,45 @@ function compareComponentMergeBuckets(a: ComponentMergeBucket, b: ComponentMerge
     return a.order - b.order
 }
 
+function getStaticUtilityDefinition(parsed: ParsedDirectives, name: string, layer: UtilityLayerName) {
+    parsed.config.utilities ??= []
+    const existingDefinition = parsed.config.utilities.find((definition) =>
+        definition.name === name
+        && (definition.type ?? UtilityType.Static) === UtilityType.Static
+        && (definition.layer || 'general') === layer
+    )
+    if (existingDefinition) {
+        existingDefinition.type = UtilityType.Static
+        existingDefinition.layer = layer
+        return existingDefinition
+    }
+    const definition = {
+        name,
+        type: UtilityType.Static,
+        layer
+    } satisfies UtilityDefinition
+    parsed.config.utilities.push(definition)
+    return definition
+}
+
+function pushStaticUtilityStyleRule(definition: UtilityDefinition, styleDefinition: MergedStyleDefinition) {
+    const rule = {
+        declarations: styleDefinition.declarations,
+        ...(styleDefinition.selector !== '&' ? { selector: styleDefinition.selector } : {}),
+        ...(styleDefinition.atRules?.length ? { atRules: styleDefinition.atRules } : {})
+    } satisfies UtilityRuleDefinition
+    if (!definition.declarations && !definition.rules?.length && !rule.selector && !rule.atRules?.length) {
+        definition.declarations = rule.declarations
+        return
+    }
+    ensureUtilityRules(definition)
+    definition.rules ??= []
+    definition.rules.push(rule)
+}
+
 function finalizeComponentDefinitions(parsed: ParsedDirectives, options: CompileCSSOptions) {
     if (!parsed.componentDefinitions) return
     const css = createComposeCSS(parsed, options)
-    parsed.config.components = {}
     for (const name in parsed.componentDefinitions) {
         const buckets = new Map<string, ComponentMergeBucket>()
         for (const definition of parsed.componentDefinitions[name]) {
@@ -1836,12 +1838,17 @@ function finalizeComponentDefinitions(parsed: ParsedDirectives, options: Compile
                 })
             }
         }
-        parsed.config.components[name] = [...buckets.values()]
+        const definitions = [...buckets.values()]
             .sort((a, b) => compareComponentMergeBuckets(a, b, css.config.rootSize || defaultConfig.rootSize!))
             .flatMap((bucket) => {
                 const definition = createMergedComponentDefinition(bucket)
                 return definition ? [definition] : []
             })
+        for (const definition of definitions) {
+            const layer = definition.layer || 'main'
+            const utilityDefinition = getStaticUtilityDefinition(parsed, name, layer)
+            pushStaticUtilityStyleRule(utilityDefinition, definition)
+        }
     }
 }
 
@@ -2185,10 +2192,10 @@ function createDirectiveCSS(parsed: ParsedDirectives, options: CompileCSSOptions
 export function compileCSS(source: string, options: CompileCSSOptions = {}): CompileCSSResult {
     const parsed: ParsedDirectives = {
         config: {},
-        componentNames: [],
+        classNames: [],
         warnings: []
     }
-    const preprocessedSource = preprocessMasterAnimations(preprocessMasterFlags(source))
+    const preprocessedSource = preprocessMasterFlags(source)
     const transformed = transform({
         filename: options.from || 'master.css',
         code: Buffer.from(preprocessedSource),
@@ -2201,7 +2208,7 @@ export function compileCSS(source: string, options: CompileCSSOptions = {}): Com
                         return []
                     },
                     compose() {
-                        throw new Error('@compose is only allowed in @master components')
+                        throw new Error('@compose is only allowed in @master class definitions outside @layer general')
                     },
                     'custom-at'() {
                         throw new Error('@custom-at is only allowed in @master')
@@ -2210,7 +2217,7 @@ export function compileCSS(source: string, options: CompileCSSOptions = {}): Com
                         throw new Error('@custom-selector is only allowed in @master')
                     },
                     at() {
-                        throw new Error('@at is only allowed in @master components and @master utilities')
+                        throw new Error('@at is only allowed in @master class definitions')
                     }
                 }
             }
@@ -2219,14 +2226,13 @@ export function compileCSS(source: string, options: CompileCSSOptions = {}): Com
     validateTokenConflicts(parsed)
     finalizeUtilityDefinitions(parsed, options)
     finalizeComponentDefinitions(parsed, options)
-    resolveComponentSelectorTokens(parsed)
     const css = createDirectiveCSS(parsed, options)
     const generatedCSS = options.classes?.length ? css.text : ''
     const remainingCSS = transformed.code.toString().trim()
 
     return {
         config: parsed.config,
-        componentNames: parsed.componentNames,
+        classNames: parsed.classNames,
         warnings: parsed.warnings,
         css: [remainingCSS, generatedCSS].filter(Boolean).join('\n\n'),
         generatedCSS,
@@ -2249,10 +2255,10 @@ export function compileCSSFile(file: string, options: CompileCSSFileOptions = {}
 }
 
 export function parseDirectives(source: string, options: CompileCSSOptions = {}) {
-    const { config, componentNames, warnings } = compileCSS(source, options)
+    const { config, classNames, warnings } = compileCSS(source, options)
     return {
         config,
-        componentNames,
+        classNames,
         warnings
     }
 }

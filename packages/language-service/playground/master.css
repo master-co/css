@@ -3,9 +3,7 @@
 @master {
     --foo: 123;
     --global: #ff00ff;
-}
 
-@master components {
     .btn {
         display: inline-flex;
         text-align: center;

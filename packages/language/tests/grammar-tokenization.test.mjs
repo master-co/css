@@ -200,7 +200,7 @@ test('CSS injection highlights @master root configuration blocks', () => {
 
 test('CSS injection highlights @master component directives and compose classes', () => {
     const tokens = tokensFor(embeddedHighlighter, `
-        @master components {
+        @master {
             .btn {
                 @compose "inline-flex fg:primary:hover@md";
                 @at dark {
@@ -214,8 +214,6 @@ test('CSS injection highlights @master component directives and compose classes'
         }
     `, 'css')
 
-    assertTrimmedTokenScope(tokens, 'components', 'meta.at-rule.master-css.css')
-    assertNoTrimmedTokenScope(tokens, 'components', 'storage.modifier.master-css.section.css')
     assertTokenScope(tokens, 'btn', 'entity.other.attribute-name.class.css')
     assertTokenScope(tokens, 'compose', 'keyword.control.at-rule.compose.master-css.css')
     assertTokenScope(tokens, 'inline-flex', 'support.constant.property-value.css')
@@ -229,24 +227,24 @@ test('CSS injection highlights @master component directives and compose classes'
     assertTokenScope(tokens, 'color', 'support.type.property-name.css')
 })
 
-test('CSS injection highlights declarations inside @master utilities @at blocks', () => {
+test('CSS injection highlights declarations inside @master @layer general @at blocks', () => {
     const tokens = tokensFor(embeddedHighlighter, `
-        @master utilities {
-            .content-auto {
-                content-visibility: auto;
-                contain-intrinsic-size: auto 32rem;
-            }
+        @master {
+            @layer general {
+                .content-auto {
+                    content-visibility: auto;
+                    contain-intrinsic-size: auto 32rem;
+                }
 
-            .print-hidden {
-                @at print {
-                    display: none;
+                .print-hidden {
+                    @at print {
+                        display: none;
+                    }
                 }
             }
         }
     `, 'css')
 
-    assertTrimmedTokenScope(tokens, 'utilities', 'meta.at-rule.master-css.css')
-    assertNoTrimmedTokenScope(tokens, 'utilities', 'storage.modifier.master-css.section.css')
     assertTokenScope(tokens, 'content-auto', 'entity.other.attribute-name.class.css')
     assertTokenScope(tokens, 'content-visibility', 'meta.property-name.css')
     assertTokenScope(tokens, 'contain-intrinsic-size', 'meta.property-name.css')
@@ -257,10 +255,10 @@ test('CSS injection highlights declarations inside @master utilities @at blocks'
     assertTokenScope(tokens, 'none', 'support.constant.property-value.css')
 })
 
-test('CSS injection highlights @master animation shorthand blocks', () => {
+test('CSS injection highlights @master native keyframes blocks', () => {
     const tokens = tokensFor(embeddedHighlighter, `
-        @master animations {
-            fade-in {
+        @master {
+            @keyframes fade-in {
                 from {
                     opacity: 0;
                 }
@@ -273,9 +271,7 @@ test('CSS injection highlights @master animation shorthand blocks', () => {
         }
     `, 'css')
 
-    assertTrimmedTokenScope(tokens, 'animations', 'meta.at-rule.master-css.css')
-    assertNoTrimmedTokenScope(tokens, 'animations', 'storage.modifier.master-css.section.css')
-    assertTokenScope(tokens, 'fade-in', 'entity.name.tag.custom.css')
+    assertTokenScope(tokens, 'keyframes', 'keyword.control.at-rule.css')
     assertTokenScope(tokens, 'from', 'entity.other.keyframe-offset.css')
     assertTokenScope(tokens, '50%', 'entity.other.keyframe-offset.percentage.css')
     assertTokenScope(tokens, 'to', 'entity.other.keyframe-offset.css')

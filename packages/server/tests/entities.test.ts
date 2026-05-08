@@ -13,7 +13,7 @@ test('>', () => {
     expect(render(
         `<div class="mt:0&gt;div"></div>`
     ).html).toEqual([
-        '<style id="master">@layer base,theme,preset,components,utilities;@layer utilities{.mt\\:0\\>div>div{margin-top:0rem}}</style>',
+        '<style id="master">@layer base,theme,preset,main,general;@layer general{.mt\\:0\\>div>div{margin-top:0rem}}</style>',
         `<div class="mt:0&gt;div"></div>`
     ].join(''))
 })
@@ -22,7 +22,7 @@ test('\'', () => {
     expect(render(
         `<div class="font-feature:'salt'"></div>`
     ).html).toEqual([
-        `<style id="master">@layer base,theme,preset,components,utilities;@layer utilities{.font-feature\\:\\'salt\\'{font-feature-settings:'salt'}}</style>`,
+        `<style id="master">@layer base,theme,preset,main,general;@layer general{.font-feature\\:\\'salt\\'{font-feature-settings:'salt'}}</style>`,
         `<div class="font-feature:'salt'"></div>`
     ].join(''))
 })

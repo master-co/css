@@ -13,24 +13,24 @@ test('selectors', async ({ page, browserName }) => {
     const prerenderHTML = readFileSync(resolve(__dirname, 'prerender.html'), 'utf-8')
     await page.evaluate((html) => document.body.innerHTML = html, prerenderHTML)
     await init(page, generatedCSS, config)
-    expect((await page.evaluate(() => cssRuntime.rules)).map(({ name }) => name)).toEqual(['layer-statement', 'utilities'])
-    expect(await page.evaluate(() => cssRuntime.utilitiesLayer.rules.find((rule) => rule.name === 'block::before,::after'))).toMatchObject({
+    expect((await page.evaluate(() => cssRuntime.rules)).map(({ name }) => name)).toEqual(['layer-statement', 'general'])
+    expect(await page.evaluate(() => cssRuntime.generalLayer.rules.find((rule) => rule.name === 'block::before,::after'))).toMatchObject({
         selectorNodes: [
             { raw: '::before', type: 'pseudo-element', value: 'before' },
             { raw: ',', type: 'separator', value: ',' },
             { raw: '::after', type: 'pseudo-element', value: 'after' },
         ],
     })
-    expect(await page.evaluate(() => cssRuntime.utilitiesLayer.rules.find((rule) => rule.name === 'block::before,::after')?.selectorText))
+    expect(await page.evaluate(() => cssRuntime.generalLayer.rules.find((rule) => rule.name === 'block::before,::after')?.selectorText))
         .toBe('.block\\:\\:before\\,\\:\\:after::before,.block\\:\\:before\\,\\:\\:after::after')
 
-    expect(await page.evaluate(() => cssRuntime.utilitiesLayer.rules.find((rule) => rule.name === 'block::before,::after')?.text))
+    expect(await page.evaluate(() => cssRuntime.generalLayer.rules.find((rule) => rule.name === 'block::before,::after')?.text))
         .toBe('.block\\:\\:before\\,\\:\\:after::before,.block\\:\\:before\\,\\:\\:after::after{display:block}')
-    expect(await page.evaluate(() => cssRuntime.utilitiesLayer.rules.find((rule) => rule.name === 'block::before,::after')?.native?.cssText))
+    expect(await page.evaluate(() => cssRuntime.generalLayer.rules.find((rule) => rule.name === 'block::before,::after')?.native?.cssText))
         .toBe('.block\\:\\:before\\,\\:\\:after::before, .block\\:\\:before\\,\\:\\:after::after { display: block; }')
 
-    expect(await page.evaluate(() => cssRuntime.utilitiesLayer.rules.find((rule) => rule.name === 'hidden::slider-thumb')?.text))
+    expect(await page.evaluate(() => cssRuntime.generalLayer.rules.find((rule) => rule.name === 'hidden::slider-thumb')?.text))
         .toBe('.hidden\\:\\:slider-thumb::-webkit-slider-thumb{display:none}')
-    expect(await page.evaluate(() => cssRuntime.utilitiesLayer.rules.find((rule) => rule.name === 'hidden::slider-thumb')?.native?.cssText))
+    expect(await page.evaluate(() => cssRuntime.generalLayer.rules.find((rule) => rule.name === 'hidden::slider-thumb')?.native?.cssText))
         .toBe('.hidden\\:\\:slider-thumb::-webkit-slider-thumb { display: none; }')
 })

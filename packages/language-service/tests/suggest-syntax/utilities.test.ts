@@ -9,7 +9,7 @@ test.concurrent('info', () => expect(hint('b')?.find(({ label }) => label === 'b
         kind: 'markdown',
         value: dedent`
             \`\`\`css
-            @layer utilities {
+            @layer general {
               .block {
                 display: block
               }

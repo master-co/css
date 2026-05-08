@@ -48,14 +48,12 @@ Generated CSS:
 ---
 
 ## Use selector tokens in components
-Inside `@master components`, prefer native nested selectors instead of putting selector suffixes inside `@compose`.
+Inside `@master`, prefer native nested selectors instead of putting selector suffixes inside `@compose`.
 
 ```css name=master.css
 @master {
     @custom-selector :interactive :is(:hover, :focus-visible);
-}
 
-@master components {
     .btn {
         @compose "inline-flex ai:center jc:center";
 
@@ -66,7 +64,7 @@ Inside `@master components`, prefer native nested selectors instead of putting s
 }
 ```
 
-This keeps the utility list reusable and makes the selector structure visible in CSS. The compiler resolves `:interactive` before grouping component definitions, so repeated definitions for the same resolved selector are merged.
+This keeps the utility list reusable and makes the selector structure visible in CSS. The compiler resolves `:interactive` before grouping main style definitions, so repeated definitions for the same resolved selector are merged.
 
 ---
 

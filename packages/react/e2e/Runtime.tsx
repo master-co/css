@@ -4,11 +4,16 @@ import type { Config } from '@master/css'
 
 export default function Runtime() {
     const [config, setConfig] = useState<Config>({
-        components: {
-            btn: [
-                { selector: '&', declarations: { border: '0.125rem solid oklch(63.7% 0.237 25.331)' } }
-            ]
-        }
+        utilities: [
+            {
+                name: 'btn',
+                type: -4,
+                layer: 'main',
+                rules: [
+                    { selector: '&', declarations: { border: '0.125rem solid oklch(63.7% 0.237 25.331)' } }
+                ]
+            }
+        ]
     })
     const [root, setRoot] = useState<ShadowRoot>()
     const containerRef = useRef<HTMLDivElement>(null)

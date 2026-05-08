@@ -13,11 +13,16 @@ test('loads Master CSS TypeScript config files from the ESLint cwd', async () =>
             import type { Config } from '@master/css'
 
             export default {
-                components: {
-                    'fixture-card': [
-                        { selector: '&', declarations: { display: 'block' } }
-                    ]
-                }
+                utilities: [
+                    {
+                        name: 'fixture-card',
+                        type: -4,
+                        layer: 'main',
+                        rules: [
+                            { selector: '&', declarations: { display: 'block' } }
+                        ]
+                    }
+                ]
             } as Config
         `)
         writeFileSync(join(cwd, 'master.css.ts'), `
@@ -25,12 +30,17 @@ test('loads Master CSS TypeScript config files from the ESLint cwd', async () =>
             import preset from './preset.css'
 
             export default {
-                components: {
-                    ...preset.components,
-                    'fixture-button': [
-                        { selector: '&', declarations: { display: 'inline-flex' } }
-                    ]
-                }
+                utilities: [
+                    ...preset.utilities,
+                    {
+                        name: 'fixture-button',
+                        type: -4,
+                        layer: 'main',
+                        rules: [
+                            { selector: '&', declarations: { display: 'inline-flex' } }
+                        ]
+                    }
+                ]
             } as Config
         `)
         writeFileSync(join(cwd, 'index.jsx'), `<div className="fixture-button fixture-card zzz"></div>`)

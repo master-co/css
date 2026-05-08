@@ -15,7 +15,7 @@ it.concurrent('checks that different input sources should have the same output',
         'b:0'
     ]
     const output = [
-        // utilities
+        // general
         { name: 'block' },
         { name: 'fixed' },
         { name: 'round' },
@@ -42,7 +42,7 @@ it.concurrent('checks that different input sources should have the same output',
         { name: 'text:center' },
     ]
     for (let i = 0; i < 10; i++) {
-        expect(createCSS().add(...shuffle([...input])).utilitiesLayer.rules).toMatchObject(output)
+        expect(createCSS().add(...shuffle([...input])).generalLayer.rules).toMatchObject(output)
     }
 })
 
@@ -62,7 +62,7 @@ it.concurrent('checks style declarations', () => {
         { name: 'font:32@md' }
     ]
     for (let i = 0; i < 10; i++) {
-        expect(createCSS().add(...shuffle([...input])).utilitiesLayer.rules).toMatchObject(output)
+        expect(createCSS().add(...shuffle([...input])).generalLayer.rules).toMatchObject(output)
     }
 })
 
@@ -80,5 +80,5 @@ it.concurrent('checks media order', () => {
     expect(createCSS({ atTokens: {
             tablet: 391,
             desktop: 1025,
-        } }).add(...shuffle([...input])).utilitiesLayer.rules).toMatchObject(output)
+        } }).add(...shuffle([...input])).generalLayer.rules).toMatchObject(output)
 })

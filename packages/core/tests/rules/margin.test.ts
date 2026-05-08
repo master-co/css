@@ -2,7 +2,7 @@ import { it, test, expect } from 'vitest'
 import { createCSS } from '../../src'
 
 it.concurrent('checks margin order', () => {
-    expect(createCSS().add('mx:0', 'ml:0', 'mr:0', 'm:0', 'mt:0', 'mb:0', 'my:0').utilitiesLayer.rules)
+    expect(createCSS().add('mx:0', 'ml:0', 'mr:0', 'm:0', 'mt:0', 'mb:0', 'my:0').generalLayer.rules)
         .toMatchObject([
             { name: 'm:0' },
             { name: 'mx:0' },

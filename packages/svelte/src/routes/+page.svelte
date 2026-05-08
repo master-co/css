@@ -4,9 +4,16 @@
 
     let containerRef = $state<HTMLDivElement>();
     let config = $state<Config>({
-        components: {
-            btn: ["b:2|red"],
-        },
+        utilities: [
+            {
+                name: "btn",
+                type: -4,
+                layer: "main",
+                rules: [
+                    { selector: "&", declarations: { border: "0.125rem var(--color-red) solid" } },
+                ],
+            },
+        ],
     });
     let root = $state<ShadowRoot | Document | undefined | null>();
     let destroy = $state(false);

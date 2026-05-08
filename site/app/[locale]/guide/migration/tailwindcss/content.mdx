@@ -187,7 +187,7 @@ module.exports = {
 Use [components](/guide/components) and `@compose` to abstract styles instead of Tailwind's `@apply`.
 ```css name=main.css
 @tailwind base;
-@tailwind components;
+@tailwind;
 @tailwind utilities;
 
 .btn {
@@ -195,7 +195,7 @@ Use [components](/guide/components) and `@compose` to abstract styles instead of
 }
 ```
 ```css name=master.css
-@master components {
+@master {
     .btn {
         @compose "p:2x|5x bg:white";
 

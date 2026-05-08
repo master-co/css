@@ -66,7 +66,7 @@ describe.concurrent('pseudo-class', () => {
             'kind': 'markdown',
             'value': dedent`
                 \`\`\`css
-                @layer utilities {
+                @layer general {
                   .block\\:first:first-child {
                     display: block
                   }
@@ -123,7 +123,7 @@ describe.concurrent('pseudo-element', () => {
         'documentation': {
             'kind': 'markdown',
             'value': dedent`\`\`\`css
-                @layer utilities {
+                @layer general {
                   .block\\:\\:placeholder::placeholder {
                     display: block
                   }

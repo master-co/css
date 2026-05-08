@@ -77,7 +77,7 @@ test('AristideBH', async () => {
 	}
 </style>
         `)
-    expect(extractor?.css.utilitiesLayer.rules.map(({ name }) => name)).toEqual([
+    expect(extractor?.css.generalLayer.rules.map(({ name }) => name)).toEqual([
         'flex',
         'flex-col',
         'flex-row',

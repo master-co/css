@@ -36,7 +36,7 @@ it.concurrent('validates border-color rules', () => {
 })
 
 it.concurrent('checks border-color order', () => {
-    expect(createCSS().add('bt:white', 'b:white', 'bl:white', 'bx:white').utilitiesLayer.rules)
+    expect(createCSS().add('bt:white', 'b:white', 'bl:white', 'bx:white').generalLayer.rules)
         .toMatchObject([
             { name: 'b:white' },
             { name: 'bx:white' },

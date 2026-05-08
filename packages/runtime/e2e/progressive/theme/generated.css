@@ -1,4 +1,4 @@
-@layer base, theme, preset, components, utilities;
+@layer base, theme, preset, main, general;
 
 @layer theme {
     .light, :root {
@@ -10,7 +10,7 @@
     }
 }
 
-@layer utilities {
+@layer general {
     .fg\:primary {
         color: rgb(var(--primary))
     }

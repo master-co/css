@@ -1,6 +1,6 @@
-@layer base, theme, preset, components, utilities;
+@layer base, theme, preset, main, general;
 
-@layer utilities {
+@layer general {
     .block\:\:before\,\:\:after::before,
     .block\:\:before\,\:\:after::after {
         display: block

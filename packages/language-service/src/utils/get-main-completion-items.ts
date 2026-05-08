@@ -10,6 +10,7 @@ export default function getMainCompletionItems(css: MasterCSS = createCSS()): Co
     const addedKeys = new Set<string>()
     for (const eachDefinedUtility of css.definedUtilities) {
         if (eachDefinedUtility.definition.type === UtilityType.Static) {
+            const isMainStyle = eachDefinedUtility.definition.layer === 'main'
             const { data, detail, docs } = getUtilityInfo(eachDefinedUtility, css)
             const utilityName = eachDefinedUtility.id.slice(1)
             completionItems.push({
@@ -17,9 +18,9 @@ export default function getMainCompletionItems(css: MasterCSS = createCSS()): Co
                 kind: CompletionItemKind.Value,
                 documentation: getCSSDataDocumentation(data, {
                     generatedCSS: generateCSS([utilityName], css),
-                    docs
+                    docs: isMainStyle ? '/guide/components' : docs
                 }),
-                detail
+                detail: isMainStyle ? 'main style' : detail
             })
         } else {
             const nativeProperties = cssDataProvider.provideProperties()
@@ -85,22 +86,6 @@ export default function getMainCompletionItems(css: MasterCSS = createCSS()): Co
             }
         })
     })
-
-    if (css.config.components) {
-        for (const componentClass in css.config.components) {
-            const componentTokens = css.components.get(componentClass)
-            if (!componentTokens) continue
-            completionItems.push({
-                label: componentClass,
-                kind: CompletionItemKind.Value,
-                documentation: getCSSDataDocumentation({} as any, {
-                    generatedCSS: generateCSS([componentClass], css),
-                    docs: '/guide/components'
-                }),
-                detail: componentTokens.selectorRules.map(({ selector }) => selector).join(', ') + ' (component)',
-            })
-        }
-    }
 
     return sortCompletionItems(completionItems)
 }

@@ -10,6 +10,7 @@ export type CSSDeclarations = PropertiesHyphen | Record<string, string | number 
 export interface UtilityDefinition {
     name: string
     type?: UtilityType
+    layer?: UtilityLayerName
     matcher?: RegExp | string
     sign?: string
     key?: string
@@ -48,17 +49,10 @@ export type AnimationDefinitions = Record<string, CSSKeyframes>;
 export type SelectorTokenDefinitions = Record<string, string>;
 export type AtIdentifier = typeof AT_IDENTIFIERS[number]
 export type AtTokenDefinition = number | string
-export type ComponentLayerName = 'base' | 'preset' | 'components' | 'utilities'
+export type UtilityLayerName = 'base' | 'preset' | 'main' | 'general'
 export interface AtTokenDefinitions {
     [key: string]: AtTokenDefinition | AtTokenDefinitions;
 }
-export interface ComponentDefinition {
-    selector: string
-    declarations: CSSDeclarations
-    atRules?: string[]
-    layer?: ComponentLayerName
-}
-export type ComponentDefinitions = Record<string, ComponentDefinition[]>
 export type UtilityDefinitions = UtilityDefinition[]
 export type VariableDefinitions = VariableDefinition[]
 export type ModeDefinitions = string[];
@@ -70,7 +64,6 @@ export interface FunctionDefinition {
 export type FunctionDefinitions = Record<string, FunctionDefinition>;
 
 export interface Config {
-    components?: ComponentDefinitions
     atTokens?: AtTokenDefinitions
     selectorTokens?: SelectorTokenDefinitions
     variables?: VariableDefinitions

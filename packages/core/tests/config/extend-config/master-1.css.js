@@ -14,19 +14,29 @@ const config = extendConfig(config1, config2, {
         { key: 'third-2', value: '$color-white', mode: 'dark' },
     ],
     modes: ['light', 'dark'],
-    components: {
-        btn: [
-            { selector: '&', declarations: { 'font-size': '0.875rem' } },
-            { selector: '&', declarations: { height: '2.5rem' } },
-            { selector: '&', declarations: { 'text-align': 'center' } }
-        ],
-        'blue-btn': [
-            { selector: '&', declarations: { 'font-size': '0.875rem' } },
-            { selector: '&', declarations: { height: '2.5rem' } },
-            { selector: '&', declarations: { 'text-align': 'center' } },
-            { selector: '&', declarations: { 'background-color': 'oklch(63.7% 0.237 25.331)' } }
-        ]
-    }
+    utilities: [
+        {
+            name: 'btn',
+            type: -4,
+            layer: 'main',
+            rules: [
+                { selector: '&', declarations: { 'font-size': '0.875rem' } },
+                { selector: '&', declarations: { height: '2.5rem' } },
+                { selector: '&', declarations: { 'text-align': 'center' } }
+            ]
+        },
+        {
+            name: 'blue-btn',
+            type: -4,
+            layer: 'main',
+            rules: [
+                { selector: '&', declarations: { 'font-size': '0.875rem' } },
+                { selector: '&', declarations: { height: '2.5rem' } },
+                { selector: '&', declarations: { 'text-align': 'center' } },
+                { selector: '&', declarations: { 'background-color': 'oklch(63.7% 0.237 25.331)' } }
+            ]
+        }
+    ]
 })
 
 module.exports = {

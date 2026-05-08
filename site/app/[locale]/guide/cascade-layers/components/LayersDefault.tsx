@@ -30,12 +30,12 @@ export default () => {
                     <tr>
                         <th>Components</th>
                         <td>Where the used <Link href="/guide/components">components</Link> are generated.</td>
-                        <td className="white-space:nowrap"><code>{'@layer components { … }'}</code></td>
+                        <td className="white-space:nowrap"><code>{'@layer main { … }'}</code></td>
                     </tr>
                     <tr>
                         <th>Utilities</th>
                         <td>Where the utility styles are generated.</td>
-                        <td className="white-space:nowrap"><code>{'@layer utilities { … }'}</code></td>
+                        <td className="white-space:nowrap"><code>{'@layer general { … }'}</code></td>
                     </tr>
                 </tbody>
             </table>

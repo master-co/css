@@ -9,9 +9,10 @@ import type { NumberValueComponent, DefinedUtility, ValueComponent, VariableValu
 import { AtRuleNode, AtRuleStringNode, AtRuleValueNode, } from './utils/parse-at'
 import parseValue from './utils/parse-value'
 import parseAt from './utils/parse-at'
-import { AtIdentifier } from './types/config'
+import { AtIdentifier, UtilityLayerName } from './types/config'
 import generateAt from './utils/generate-at'
 import parseSelector, { SelectorNode } from './utils/parse-selector'
+import resolveSelectorTokens from './utils/resolve-selector-tokens'
 import generateSelector from './utils/generate-selector'
 import { calcRulePriority, RulePriority } from './utils/compare-rule-priority'
 import collectVariableNames from './utils/collect-variable-names'
@@ -22,12 +23,15 @@ import functionTransformers from './function-transformers'
 
 export class Utility {
     native?: CSSRule
+    nodes?: UtilityRuleNode[]
     readonly atRules?: Partial<Record<AtIdentifier, AtRuleNode[]>>
     readonly priority!: RulePriority
     readonly type: UtilityType = UtilityType.Normal
     readonly declarations?: PropertiesHyphen
     readonly declarationRules?: { declarations: PropertiesHyphen, atRules?: string[], selector?: string }[]
     readonly layer: Layer
+    readonly layerName: UtilityLayerName
+    explicitLayerName?: UtilityLayerName
     readonly valid: boolean = true
     animationNames?: Set<string>
     variableNames?: Set<string>
@@ -39,7 +43,7 @@ export class Utility {
         mode?: string
     ) {
         this.mode = mode as string
-        this.layer = css.utilitiesLayer
+        this.layerName = registeredUtility.definition.layer || 'general'
         Object.assign(this, registeredUtility)
         const { id, definition } = registeredUtility
         const { declarer, declarerOptions, transformer, transformerOptions, type, unit, sign } = definition
@@ -120,20 +124,16 @@ export class Utility {
             }
         }
 
-        if (this.fixedClass) {
-            this.layer = css.componentsLayer
-        } else {
-            const onlyNode = this.atRules?.layer?.length === 1 && this.atRules.layer[0] as AtRuleValueNode
-            if (onlyNode) {
-                if (onlyNode.value === 'base') {
-                    this.layer = css.baseLayer
-                    this.atRules.layer = undefined
-                } else if (onlyNode.value === 'preset') {
-                    this.layer = css.presetLayer
-                    this.atRules.layer = undefined
-                }
+        const onlyNode = this.atRules?.layer?.length === 1 && this.atRules.layer[0] as AtRuleValueNode
+        if (onlyNode) {
+            const layerName = String(onlyNode.value)
+            if (layerName === 'base' || layerName === 'preset' || layerName === 'main' || layerName === 'general') {
+                this.layerName = layerName
+                this.explicitLayerName = layerName
+                this.atRules.layer = undefined
             }
         }
+        this.layer = css.getUtilityLayer(this.layerName)
 
         // 7. value
         let newValue: string
@@ -186,7 +186,7 @@ export class Utility {
                 ...(definition.rules?.map(({ declarations, atRules, selector }) => ({
                     declarations: declarations as PropertiesHyphen,
                     atRules,
-                    selector
+                    selector: selector ? resolveSelectorTokens(selector, css.config.selectorTokens) : selector
                 })) || [])
             ]
             this.declarations = declarationRules[0]?.declarations
@@ -230,11 +230,19 @@ export class Utility {
                 }
             }
             this.priority = calcRulePriority(this)
+            if (declarationRules.length > 1) {
+                this.nodes = declarationRules.map(({ declarations, atRules, selector }) =>
+                    new UtilityRuleNode(this, declarations, atRules, selector)
+                )
+            }
         }
     }
 
     get text() {
         if (!this.valid) return ''
+        if (this.nodes) {
+            return this.nodes.map(({ text }) => text).join('')
+        }
         if (this.declarationRules) {
             return this.declarationRules.map(({ declarations, atRules, selector }) => this.createRuleText(declarations, atRules, selector)).join('')
         }
@@ -577,6 +585,21 @@ export class Utility {
 
     get key(): string {
         return (this.fixedClass ? this.fixedClass + ' ' : '') + this.name
+    }
+}
+
+export class UtilityRuleNode {
+    native?: CSSRule
+
+    constructor(
+        public readonly rule: Utility,
+        public readonly declarations: PropertiesHyphen,
+        public readonly atRules?: string[],
+        public readonly selector?: string
+    ) { }
+
+    get text() {
+        return this.rule.createRuleText(this.declarations, this.atRules, this.selector)
     }
 }
 

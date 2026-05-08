@@ -2,7 +2,7 @@ import type { Hover, HoverParams, Range } from 'vscode-languageserver-protocol'
 import type CSSLanguageService from '../core'
 import type { TextDocument } from 'vscode-languageserver-textdocument'
 import { getCSSDataDocumentation } from '../utils/get-css-data-documentation'
-import { Layer, UtilityType, generateCSS, isCoreRule } from '@master/css'
+import { UtilityType, generateCSS, isCoreRule } from '@master/css'
 import cssDataProvider from '../utils/css-data-provider'
 import getUtilityInfo from '../utils/get-utility-info'
 
@@ -14,8 +14,9 @@ export default function inspectSyntax(this: CSSLanguageService, document: TextDo
         start: document.positionAt(classPosition.range.start),
         end: document.positionAt(classPosition.range.end)
     }
-    const component = this.css.components.get(token)
-    if (component) {
+    const utilities = this.css.generate(token)
+    const mainStyle = utilities.find((utility) => utility.type === UtilityType.Static && utility.layerName === 'main')
+    if (mainStyle) {
         const documentation = getCSSDataDocumentation({} as any, {
             generatedCSS: generateCSS([token], this.css),
             docs: '/guide/components'
@@ -24,12 +25,11 @@ export default function inspectSyntax(this: CSSLanguageService, document: TextDo
             return {
                 contents: {
                     kind: documentation.kind,
-                    value: `(component) ` + component.selectorRules.map(({ selector }) => selector).join(', ') + '\n' + documentation.value
+                    value: `(main) ` + documentation.value
                 }
             }
         }
     } else {
-        const utilities = this.css.generate(token)
         const utility = utilities[0]
         if (utility) {
             if (utility.type === UtilityType.Static) {

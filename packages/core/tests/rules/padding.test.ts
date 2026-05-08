@@ -2,7 +2,7 @@ import { it, test, expect } from 'vitest'
 import { createCSS } from '../../src'
 
 it.concurrent('checks padding order', () => {
-    expect(createCSS().add('px:0', 'pl:0', 'pr:0', 'p:0', 'pt:0', 'pb:0', 'py:0').utilitiesLayer.rules)
+    expect(createCSS().add('px:0', 'pl:0', 'pr:0', 'p:0', 'pt:0', 'pb:0', 'py:0').generalLayer.rules)
         .toMatchObject([
             { name: 'p:0' },
             { name: 'px:0' },
