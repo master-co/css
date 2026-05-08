@@ -16,7 +16,7 @@ export const { Page, dynamic, revalidate, generateMetadata } = createLayout({
     categoryLink: '/guide/installation/integrations',
     icon: 'nextjs',
     content: ({ $ }) =>
-        <Tabs className="mb:8x">
+        <Tabs className="mb:xl">
             <Tab href='/guide/installation/nextjs'>{$('Progressive Rendering')} <TabBadge>{$('Recommanded')}</TabBadge></Tab>
             <Tab href='/guide/installation/nextjs/static-extraction'>{$('Static Extraction')}</Tab>
         </Tabs>,

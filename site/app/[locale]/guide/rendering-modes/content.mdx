@@ -24,7 +24,7 @@ It packaged as a JavaScript module [`@master/css-runtime`](/reference/runtime), 
     …
 </head>
 <body>
-    <h1 class="italic m:12x fg:strong font:40 font:heavy">Hello World</h1>
+    <h1 class="italic m:2xl fg:strong font:5xl font:heavy">Hello World</h1>
 </body>
 </html>
 ```
@@ -52,17 +52,17 @@ The following continuous DOM manipulation takes you to understand the behavior o
     <Step>
         #### <StepNum />Added Master CSS class names to elements in links
         ```js
-        // @MARK font:48
-        h1.classList.add('font:48')
+        // @MARK font:6xl
+        h1.classList.add('font:6xl')
         ```
-        Add class name `font:48` to `html <h1>`
+        Add class name `font:6xl` to `html <h1>`
         ```html
-        <!-- @MARK font:48 -->
-        <h1 class="text:center font:48">Hello World</h1>
+        <!-- @MARK font:6xl -->
+        <h1 class="text:center font:6xl">Hello World</h1>
         ```
-        The runtime engine observes that `html <h1>` adds the new class name `font:48` and generates the corresponding CSS rules:
+        The runtime engine observes that `html <h1>` adds the new class name `font:6xl` and generates the corresponding CSS rules:
         ```css
-        .font\:48 { /* [!code ++] */
+        .font\:6xl { /* [!code ++] */
             font-size: 3rem /* [!code ++] */
         } /* [!code ++] */
 
@@ -79,11 +79,11 @@ The following continuous DOM manipulation takes you to understand the behavior o
         ```
         Remove class name `text:center` from `html <h1>`
         ```html
-        <h1 class="text:center font:48">Hello World</h1>
+        <h1 class="text:center font:6xl">Hello World</h1>
         ```
         The runtime engine observes that the class name `text:center` is removed from `html <h1>` and removes the corresponding CSS rule:
         ```css
-        .font\:48 {
+        .font\:6xl {
             font-size: 3rem
         }
 
@@ -97,13 +97,13 @@ The following continuous DOM manipulation takes you to understand the behavior o
         ```js
         h1.remove()
         ```
-        Remove the `html <h1>` with class `font:48`
+        Remove the `html <h1>` with class `font:6xl`
         ```html
-        <h1 class="font:48">Hello World</h1> <!-- [!code ++] -->
+        <h1 class="font:6xl">Hello World</h1> <!-- [!code ++] -->
         ```
-        The runtime engine observes that the `html <h1>` element with the class name `font:48` is removed and removes the corresponding CSS rule:
+        The runtime engine observes that the `html <h1>` element with the class name `font:6xl` is removed and removes the corresponding CSS rule:
         ```css
-        .font\:48 { /* [!code --] */
+        .font\:6xl { /* [!code --] */
             font-size: 3rem /* [!code --] */
         } /* [!code --] */
         ```
@@ -156,7 +156,7 @@ For example, the following HTML:
     <script src="https://cdn.master.co/css-runtime@rc"></script>
 </head>
 <body>
-    <h1 class="font:40 font:heavy">Hello World</h1>
+    <h1 class="font:5xl font:heavy">Hello World</h1>
 </body>
 ```
 Render the HTML:
@@ -177,14 +177,14 @@ The server renderer parses the HTML and generates the internal style sheet:
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script src="https://cdn.master.co/css-runtime@rc"></script>
     <style id="master"> /* [!code ++] */
-        .font\:40 { /* [!code ++] */
+        .font\:5xl { /* [!code ++] */
             font-size: 2.5rem /* [!code ++] */
         } /* [!code ++] */
     </style> <!-- [!code ++] -->
 </head>
 <body>
-    <!-- @MARK font:40 -->
-    <h1 class="font:40">Hello World</h1>
+    <!-- @MARK font:5xl -->
+    <h1 class="font:5xl">Hello World</h1>
 </body>
 ```
 What benifits does this bring? The server renderer generates the critical CSS (**5kB**) based on the class names used in the HTML, instead of the entire application source code (**500kB**).
@@ -216,7 +216,7 @@ This rendering strategy is functionally equivalent to how [Tailwind CSS](https:/
 ```css name=master.css
 @master components {
     .btn {
-        @compose "inline-flex px:1rem";
+        @compose "inline-flex px:md";
     }
 }
 ```

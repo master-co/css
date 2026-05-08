@@ -66,7 +66,7 @@ Use short tokens for common cases, and use raw at-rule syntax when a condition i
 The same property can have different values under different conditions.
 ```html
 <!-- @MARK @sm @md -->
-<h2 class="font:18 font:24@sm font:32@md …">
+<h2 class="font:lg font:2xl@sm font:3xl@md …">
 ```
 You can also combine a selector and a query in one class.
 ```html
@@ -151,7 +151,7 @@ Use `@motion` for motion-safe animation and `@reduce-motion` for reduced-motion 
 <AnimationDirectionBasicDemo className="@direction:normal" />
 ```html
 <!-- @MARK @motion -->
-<svg class="@rotate|1s|linear|infinite@motion">...</svg>
+<svg class="@rotate|slowest|linear|infinite@motion">...</svg>
 ```
 
 {/* ### `prefers-color-scheme` 🚧 */}
@@ -170,7 +170,7 @@ Use `@landscape` or `@portrait` to apply styles based on device orientation.
 <StartingStyleExample />
 ```html
 <!-- @MARK scale(0)@start -->
-<div id="target" popover="auto" class="~transform|.3s scale(0)@start">
+<div id="target" popover="auto" class="~transform|slow|smooth scale(0)@start">
     ...
     <button popovertarget="target" popovertargetaction="hide">Close</button>
 </div>
@@ -179,7 +179,7 @@ Use `@landscape` or `@portrait` to apply styles based on device orientation.
 <details>
     <summary>Generated CSS</summary>
     <Class2CSS>
-        {['~transform|.3s', 'scale(0)@starting-style']}
+        {['~transform|slow|smooth', 'scale(0)@starting-style']}
     </Class2CSS>
 </details>
 

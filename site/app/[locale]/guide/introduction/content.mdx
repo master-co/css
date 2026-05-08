@@ -8,10 +8,10 @@ Master CSS is a markup-driven CSS language with smart rules allowing you to writ
 Under the hood, Master CSS automatically adds [vendor prefixes](/guide/browser-support), smartly [ordering CSS rules](#smart-rule-ordering), and more. This allows you to focus on building your website rather than spending a lot of effort writing and maintaining CSS rules.
 
 <Demo $py={0}>
-    <h1 className="fg:indigo fg:red:hover font:32 font:40@sm font:heavy m:10x text:center">Hello World</h1>
+    <h1 className="fg:indigo fg:red:hover font:3xl font:5xl@sm font:heavy m:2xl text:center">Hello World</h1>
 </Demo>
 ```html name=hero.html
-<h1 class="fg:indigo fg:red:hover font:32 font:40@sm font:heavy m:10x text:center">
+<h1 class="fg:indigo fg:red:hover font:3xl font:5xl@sm font:heavy m:2xl text:center">
     Hello World
 </h1>
 ```
@@ -83,7 +83,7 @@ Master CSS is the first language to highlight class names fully, making identify
 (!) Do you find writing utility classes sometimes seem lengthy or hard to read?
 <Demo $py={0}>
     <DemoPanel>
-        <code className="font:16@sm token language-html">
+        <code className="font:md@sm token language-html">
             <span className="token tag"><span className="token tag"><span className="token punctuation">&lt;</span>div</span> <span className="token attr-name">class</span><span className="token attr-value"><span className="token punctuation attr-equals">=</span><span className="token punctuation">"</span>sm:hover:bg-[#ceb195] …<span className="token punctuation">"</span></span><span className="token punctuation">&gt;</span></span>
         </code>
     </DemoPanel>
@@ -91,7 +91,7 @@ Master CSS is the first language to highlight class names fully, making identify
 (o) Light up your class names in markup from now on!
 <Demo $py={0}>
     <DemoPanel>
-        <InlineCode lang="html" className="font:16@sm">{'<div class="bg:#ceb195:hover@sm …">'}</InlineCode>
+        <InlineCode lang="html" className="font:md@sm">{'<div class="bg:#ceb195:hover@sm …">'}</InlineCode>
     </DemoPanel>
 </Demo>
 This feature is included in the [Master CSS Language Service](/guide/language-service).
@@ -106,9 +106,9 @@ mt-9 rounded-lg flex text-slate-700 hover:bg-slate-200 sm:bg-slate-300
 ```
 (o) Improve readability with syntax highlighting.
 ```mcss
-mt:9x r:2x flex fg:slate-70 bg:slate-20:hover bg:slate-30@sm
-mt:9x r:2x flex fg:slate-70 bg:slate-20:hover bg:slate-30@sm
-mt:9x r:2x flex fg:slate-70 bg:slate-20:hover bg:slate-30@sm
+mt:9x r:lg flex fg:slate-70 bg:slate-20:hover bg:slate-30@sm
+mt:9x r:lg flex fg:slate-70 bg:slate-20:hover bg:slate-30@sm
+mt:9x r:lg flex fg:slate-70 bg:slate-20:hover bg:slate-30@sm
 ```
 We take pride in the experience improvement of syntax highlighting in template markup. This feature effectively reduces discomfort caused by "long class names" and facilitates a quick understanding of the overall style.
 
@@ -116,7 +116,7 @@ Master CSS also features autocompletion, generated CSS preview, and more. Check 
 
 ### Predictable Syntax
 Have you ever felt anxious about adding styles to class attributes? Master CSS was the first to introduce [syntax validation](/guide/code-linting#syntax-error-checks) of classes in template markup, which helps you find errors early before building and dramatically improves the developer experience.
-<Image className="aspect:2/1 r:2x max-w:screen-xs w:full" src={require('~/site/public/syntax-error-checks.webp').default} alt="Syntax error checks" unoptimized />
+<Image className="aspect:2/1 r:lg max-w:screen-xs w:full" src={require('~/site/public/syntax-error-checks.webp').default} alt="Syntax error checks" unoptimized />
 
 (x) <span className="text:error">Invalid value for \`font\` property.</span>
 ```html
@@ -246,7 +246,7 @@ Assuming the card can be reused, you can abstract it using [components](/guide/c
 ```css name=master.css
 @master components {
     .card {
-        @compose "flex ~transform|.2s overflow:hidden bg:white r:10";
+        @compose "flex ~transform|fast|smooth overflow:hidden bg:white r:xl";
 
         &:hover {
             @compose "translateY(-5)";
@@ -254,19 +254,19 @@ Assuming the card can be reused, you can abstract it using [components](/guide/c
     }
 
     .card-image {
-        @compose "object:cover w:140 aspect:16/9";
+        @compose "object:cover w:35x aspect:16/9";
     }
 
     .card-content {
-        @compose "p:25";
+        @compose "p:lg";
     }
 
     .card-title {
-        @compose "font:medium text:18";
+        @compose "font:lg font:medium";
     }
 
     .card-text {
-        @compose "text:14 lines:2";
+        @compose "font:sm lines:2";
     }
 }
 ```
@@ -379,10 +379,10 @@ Separating the two introduces a layer of abstraction where the cost usually outw
 (o) You can now easily control style states in markup.
 ```html
 <!-- @MARK @md [disabled] -->
-<button class="font:14 font:20@md opacity:.5[disabled]" disabled>Bravo!</button>
+<button class="font:sm font:xl@md opacity:.5[disabled]" disabled>Bravo!</button>
 ```
 
-(o) Build a visually consistent UI with [design tokens](/variables-and-modes).
+(o) Build a visually consistent UI with [design tokens](/guide/design-tokens).
 ```html
 <h1 class="font:lg fg:primary">Hello World</h1>
 ```

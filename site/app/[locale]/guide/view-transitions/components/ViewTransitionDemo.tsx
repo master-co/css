@@ -10,8 +10,8 @@ type ViewTransitionDocument = Document & {
 }
 
 const rootTransitionClassName = [
-    'animation-duration:.42s::vt-group(panel)',
-    'animation-duration:.42s::vt-group(title)',
+    'animation-duration:slow::vt-group(panel)',
+    'animation-duration:slow::vt-group(title)',
 ].join(' ')
 
 const views = [
@@ -79,7 +79,7 @@ export default function ViewTransitionDemo() {
                                 aria-pressed={activeButton}
                                 className={clsx(
                                     'app-panel text:left p:md cursor:pointer min-h:18x',
-                                    'b:1|line-light r:md',
+                                    'b:1|light r:md',
                                     activeButton ? 'bg:surface outline:2|accent' : 'bg:base:hover'
                                 )}
                                 key={view.id}

@@ -35,7 +35,7 @@ Master CSS includes a set of preset foundation tokens, and each project can exte
 Use the most meaningful token available for the design decision you are making.
 
 1. Prefer role tokens when the value carries product meaning, such as `bg:base`, `bg:surface`, `fg:strong`, `fg:neutral`, line colors like `lightest` in border context, or project roles like `primary`.
-2. Prefer scale tokens when the value belongs to a foundation scale, such as `p:md`, `gap:lg`, `text:2xl`, `r:xl`, `shadow:md`, `@duration:fast`, or `@easing:smooth`.
+2. Prefer scale tokens when the value belongs to a foundation scale, such as `p:md`, `gap:lg`, `font:2xl` for font-size-only, `text:2xl` for a complete type treatment, `r:xl`, `shadow:md`, `@duration:fast`, or `@easing:smooth`.
 3. Prefer contextual shorthand when a utility already knows the token namespace, such as `b:1|lightest` instead of `b:1|line-lightest`.
 4. Use structural values when the value describes layout behavior rather than visual styling, such as `w:full`, `w:1/2`, `max-w:screen-md`, `h:100dvh`, `@md`, or `@container(md)`.
 5. Use low-level values only when no token represents the decision, when the value is local and measured, or when the guide is teaching the syntax itself.
@@ -52,7 +52,7 @@ Use the most meaningful token available for the design decision you are making.
 (o) Visual decisions use configured tokens.
 
 ```html
-<article class="p:lg r:lg bg:base shadow:sm text:md">
+<article class="p:lg r:lg bg:base shadow:sm font:md">
     ...
 </article>
 ```
@@ -68,7 +68,7 @@ Foundation tokens are the shared vocabulary for the most common UI decisions.
 | --- | --- | --- |
 | Color | `bg:base`, `bg:surface`, `fg:strong`, `fg:neutral`, <code>b:1&#124;lightest</code>, `bg:blue-5` | `bg:#fff`, `fg:oklch(...)`, one-off palette values where a role token fits |
 | Spacing | `p:sm`, `gap:md`, `mt:lg`, `px:xl` | `p:3x`, `gap:1rem`, `mt:12px` |
-| Typography | `text:lg`, `font:medium`, `leading:md`, `tracking:tight` | `font:18`, `leading:1.4`, `tracking:-0.02em` when a token exists |
+| Typography | `font:lg`, `text:lg`, `font:medium`, `leading:md`, `tracking:tight` | `font:18`, `leading:1.4`, `tracking:-0.02em` when a token exists |
 | Corner radius | `r:md`, `r:lg`, `r:2xl`, `rounded`, `round` | `r:2x`, `r:8px` for standard cards and controls |
 | Elevation | `shadow:xs`, `shadow:sm`, `shadow:md`, `shadow:lg` | Raw multi-part `box-shadow` values in markup |
 | Motion | `@duration:fast`, `@duration:slow`, `@easing:smooth`, `@easing:crisp` | Repeated `150ms`, `300ms`, or custom cubic-bezier values |
@@ -180,7 +180,7 @@ For page layout, prefer fluid and constrained values first: `w:full`, fractions,
 ---
 
 ## Typography
-Use `text:<size>` when you want the complete type treatment. It applies the tuned font size, line height, and letter spacing for that scale.
+Use `font:<size>` when you only want the font-size token. Use `text:<size>` when you want the complete type treatment; it can apply the tuned font size, line height, and letter spacing for that scale.
 
 (x) The type size, line height, and tracking are manually assembled.
 
@@ -197,8 +197,8 @@ Use `text:<size>` when you want the complete type treatment. It applies the tune
 Use lower-level typography tokens when you are intentionally adjusting one property:
 
 ```html
-<p class="text:md leading:lg">Long-form content</p>
-<button class="text:sm font:medium tracking:normal">Save</button>
+<p class="font:md leading:lg">Long-form content</p>
+<button class="font:sm font:medium tracking:normal">Save</button>
 ```
 
 Avoid raw font sizes, line heights, or letter spacing in product examples unless the guide is comparing them against the tokenized approach or teaching the underlying declaration.

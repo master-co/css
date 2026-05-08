@@ -12,7 +12,7 @@ export const { Page, dynamic, revalidate, generateMetadata } = createLayout({
     categories,
     noTOC: true,
     content: ({ $ }) =>
-        <Tabs className="mb:8x">
+        <Tabs className="mb:xl">
             <Tab href='/guide/installation'>{$('Quick Start')} <TabBadge>{$('Recommanded')}</TabBadge></Tab>
             <Tab href='/guide/installation/cli'>{$('Standalone CLI')}</Tab>
             <Tab href='/guide/installation/cdn'>{$('Runtime CDN')}</Tab>

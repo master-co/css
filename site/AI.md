@@ -101,7 +101,8 @@ Before changing guide demo layout, spacing, sizing, color, radius, typography, o
 Follow the public [Design Tokens](/guide/design-tokens) policy when writing site code, demos, and examples:
 
 - Use a token-first approach. Check `packages/core/src/config/variables.ts` and prefer configured foundation tokens before low-level values.
-- Prefer semantic role tokens when available, such as `bg:base`, `bg:surface`, `fg:strong`, `fg:neutral`, line colors like `lightest` in border context, `primary`, `text:<size>`, `r:<token>`, `shadow:<token>`, `@duration:<token>`, and `@easing:<token>`.
+- Prefer semantic role tokens when available, such as `bg:base`, `bg:surface`, `fg:strong`, `fg:neutral`, line colors like `lightest` in border context, `primary`, `r:<token>`, `shadow:<token>`, `@duration:<token>`, and `@easing:<token>`.
+- Preserve typography semantics: use `font:<size>` when replacing a raw font-size-only class like `font:40`, and use `text:<size>` only when the complete type treatment is intended because it can include font size, line height, and letter spacing.
 - Prefer scale tokens for spacing and visual rhythm, such as `p:sm`, `gap:md`, and `mt:lg`, instead of routine `x`, `rem`, `px`, raw color, raw shadow, or raw timing values.
 - Prefer contextual shorthand syntax when a utility already resolves a namespace, such as `b:1|lightest` instead of `b:1|line-lightest`, `fg:neutral` instead of `fg:text-neutral`, and `~opacity|fast|smooth` instead of `~opacity|duration-fast|easing-smooth`.
 - Low-level values are acceptable when the page is teaching syntax, no token exists, the value is local measured geometry, or the value describes structural layout such as `w:1/2`, `h:100dvh`, `m:0`, `m:1`, `z:1`, or `opacity:.64`.

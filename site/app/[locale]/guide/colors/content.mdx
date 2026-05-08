@@ -73,10 +73,10 @@ As your styles grow, arbitrarily applying `@dark` or `@light` in template markup
 By default, theme modes [drive](/guide/configuration#default-mode) base color variables meticulously adjusted in light and dark modes.
 <Demo $py={0} $px={0}>
     <DemoLight>
-        <div className="bg:yellow aspect:2/1 size:full|12x r:1x"></div>
+        <div className="bg:yellow aspect:2/1 size:full|12x r:sm"></div>
     </DemoLight>
     <DemoDark>
-        <div className="bg:yellow aspect:2/1 size:full|12x r:1x"></div>
+        <div className="bg:yellow aspect:2/1 size:full|12x r:sm"></div>
     </DemoDark>
 </Demo>
 ```html
@@ -140,10 +140,10 @@ Apply the custom color:
 By default, theme modes [drive](/guide/configuration#default-mode) text variables are meticulously adjusted in light and dark modes.
 <Demo $py={0} $px={0}>
     <DemoLight>
-        <div className="fg:yellow font:heavy font:96">M</div>
+        <div className="fg:yellow font:heavy font:9xl">M</div>
     </DemoLight>
     <DemoDark>
-        <div className="fg:yellow font:heavy font:96">M</div>
+        <div className="fg:yellow font:heavy font:9xl">M</div>
     </DemoDark>
 </Demo>
 ```html
@@ -172,20 +172,20 @@ By default, theme modes [drive](/guide/configuration#default-mode) line variable
 
 <Demo $py={0} $px={0}>
     <DemoLight>
-        <div className="b:3x|neutral size:96"></div>
+        <div className="b:3x|neutral size:24x"></div>
     </DemoLight>
     <DemoDark>
-        <div className="b:3x|neutral size:96"></div>
+        <div className="b:3x|neutral size:24x"></div>
     </DemoDark>
 </Demo>
 ```html
 <div class="light">
     <!-- @MARK b:3x|neutral -->
-    <div class="b:3x|neutral size:96"></div>
+    <div class="b:3x|neutral size:24x"></div>
 </div>
 <div class="dark">
     <!-- @MARK b:3x|neutral -->
-    <div class="b:3x|neutral size:96"></div>
+    <div class="b:3x|neutral size:24x"></div>
 </div>
 ```
 See the [border color](/reference/border-color#use-custom-border-colors) reference for more details on how to add custom border colors.

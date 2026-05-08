@@ -8,11 +8,11 @@ export default () => (
         <table className=''>
             <thead>
                 <tr>
-                    <th className="sticky bg:base pt:4x top:48 z:1 top:60@sm">Modes</th>
-                    <th className="sticky bg:base pt:4x text:center top:48 w:1/6 z:1 top:60@sm">Progressive</th>
-                    <th className="sticky bg:base pt:4x text:center top:48 w:1/6 z:1 top:60@sm">Runtime</th>
-                    <th className="sticky bg:base pt:4x text:center top:48 w:1/6 z:1 top:60@sm">Extract</th>
-                    <th className="sticky bg:base pt:4x text:center top:48 w:1/6 z:1 top:60@sm">Pre-render</th>
+                    <th className="sticky bg:base pt:md top:48 z:1 top:60@sm">Modes</th>
+                    <th className="sticky bg:base pt:md text:center top:48 w:1/6 z:1 top:60@sm">Progressive</th>
+                    <th className="sticky bg:base pt:md text:center top:48 w:1/6 z:1 top:60@sm">Runtime</th>
+                    <th className="sticky bg:base pt:md text:center top:48 w:1/6 z:1 top:60@sm">Extract</th>
+                    <th className="sticky bg:base pt:md text:center top:48 w:1/6 z:1 top:60@sm">Pre-render</th>
                 </tr>
             </thead>
             <tbody>

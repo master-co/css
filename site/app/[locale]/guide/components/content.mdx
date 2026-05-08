@@ -11,7 +11,7 @@ Use a class selector inside `@master components`. Put Master CSS classes in `@co
 ```css name=master.css
 @master components {
     .btn {
-        @compose "inline-flex ai:center jc:center gap:.5rem px:1rem py:.625rem r:.5rem font:14 font:medium";
+        @compose "inline-flex ai:center jc:center gap:xs px:md py:xs r:lg font:sm font:medium";
         background: var(--color-primary);
         color: white;
     }
@@ -36,8 +36,8 @@ The generated CSS is emitted in the `components` layer:
         border-radius: 0.5rem;
         padding-left: 1rem;
         padding-right: 1rem;
-        padding-top: 0.625rem;
-        padding-bottom: 0.625rem;
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
         align-items: center;
         font-size: 0.875rem;
         font-weight: 500;
@@ -56,17 +56,17 @@ The generated CSS is emitted in the `components` layer:
 ```css name=master.css
 @master components {
     .empty-state {
-        @compose "grid ai:center jc:center min-h:16rem p:1.25rem text:center";
+        @compose "grid ai:center jc:center min-h:64x p:lg text:center";
 
         &::before {
-            @compose "{content:'';block;size:3rem;r:50%}";
+            @compose "{content:'';block;size:12x;r:full}";
             background: color-mix(in oklab, currentColor 12%, transparent);
         }
     }
 }
 ```
 
-When the selector is derived from the same component class, nest the selector inside the component rule. In the example above, `size:3rem` is generated for `.empty-state::before`, not for `.empty-state`.
+When the selector is derived from the same component class, nest the selector inside the component rule. In the example above, `size:12x` is generated for `.empty-state::before`, not for `.empty-state`.
 
 ---
 
@@ -76,7 +76,7 @@ Component definitions can include nested selectors and `@at` condition blocks.
 ```css name=master.css
 @master components {
     .btn {
-        @compose "inline-flex ai:center jc:center px:1rem py:.625rem r:.5rem";
+        @compose "inline-flex ai:center jc:center px:md py:xs r:lg";
         transition: background-color .15s ease, box-shadow .15s ease;
 
         &:hover {
@@ -147,11 +147,11 @@ Component definitions are config, not output. Defining `.btn` does not generate 
 ```css name=master.css
 @master components {
     .btn {
-        @compose "inline-flex px:1rem";
+        @compose "inline-flex px:md";
     }
 
     .card {
-        @compose "p:1rem r:.75rem";
+        @compose "p:md r:xl";
     }
 }
 ```
@@ -220,13 +220,13 @@ Component definitions are grouped by resolved selector, resolved at-rules, and l
 
     @at md {
         .btn {
-            @compose "font:16";
+            @compose "font:md";
         }
     }
 
     @layer preset {
         .btn {
-            @compose "r:.5rem";
+            @compose "r:lg";
         }
     }
 }
@@ -251,7 +251,7 @@ Use native CSS `@import` from the CSS config entry to organize components.
 ```css name=styles/button.css
 @master components {
     .btn {
-        @compose "inline-flex ai:center jc:center px:1rem py:.625rem r:.5rem";
+        @compose "inline-flex ai:center jc:center px:md py:xs r:lg";
         background: var(--color-primary);
         color: white;
     }

@@ -64,7 +64,7 @@ Create an abstract style with [state selectors](/guide/state-selectors) and [con
 ```
 (click) Try clicking the button to see the outline effect
 <Demo>
-    <button className="justify-center items-center inline-flex bg:invert fg:invert font:14 font:medium h:10x px:4x r:2x outline:2|invert:focus outline-offset:2:focus">Submit</button>
+    <button className="justify-center items-center inline-flex bg:invert fg:invert font:sm font:medium h:10x px:md r:lg outline:2|invert:focus outline-offset:2:focus">Submit</button>
 </Demo>
 <Code lang="html">{require('../../../../../packages/server/tests/fixtures/add-a-style-with-states/template.html?raw')}</Code>
 <details>
@@ -129,23 +129,23 @@ Let's implement a rich button.
     }
 
     .btn-xs {
-        @compose "r:.25rem px:.5rem font:.75rem h:1.5rem";
+        @compose "r:sm px:xs font:xs h:6x";
     }
 
     .btn-sm {
-        @compose "r:.375rem px:.75rem font:.75rem h:2rem";
+        @compose "r:md px:sm font:xs h:8x";
     }
 
     .btn-md {
-        @compose "r:.375rem px:1rem font:.875rem h:2.5rem";
+        @compose "r:md px:md font:sm h:10x";
     }
 
     .btn-lg {
-        @compose "r:.5rem px:1.25rem font:1rem h:3rem";
+        @compose "r:lg px:lg font:md h:12x";
     }
 
     .btn-xl {
-        @compose "r:.625rem px:1.5rem font:1rem h:3.5rem";
+        @compose "r:xl px:lg font:md h:14x";
     }
 }
 ```
@@ -155,7 +155,7 @@ Import component files from the CSS config entry.
 ```
 
 To apply the button sizes.
-<Demo className="gap:8x">
+<Demo className="gap:xl">
     <button className="btn btn-xs yellow touch-yellow">Submit</button>
     <button className="btn btn-sm yellow touch-yellow">Submit</button>
     <button className="btn btn-md yellow touch-yellow">Submit</button>
@@ -221,7 +221,7 @@ We define [variables and modes](/guide/variables-and-modes) to create tokens sup
     - `.yellow` sets a background, foreground and outline style for a yellow theme.
     - `.yellow-touch` sets a background, foreground and outline style for a yellow theme interaction.
 
-<Demo className="gap:8x">
+<Demo className="gap:xl">
     <button className="btn btn-md yellow touch-yellow">Submit</button>
 </Demo>
 ```html

@@ -49,11 +49,11 @@ export const code2 = `
 `
 
 export const code3 = `
-    <div class="flex translateY(-5):hover ~transform|.2s overflow:hidden bg:white r:10">
-        <img class="object:cover w:140 aspect:16/9" … />
-        <div class="p:25">
-            <div class="font:medium text:18">Mountain</div>
-            <div class="text:14 lines:2">A mountain is an elevated portion of the Earth's crust, generally with steep sides that show significant exposed bedrock.</div>
+    <div class="flex translateY(-5):hover ~transform|fast|smooth overflow:hidden bg:white r:xl">
+        <img class="object:cover w:35x aspect:16/9" … />
+        <div class="p:lg">
+            <div class="font:lg font:medium">Mountain</div>
+            <div class="font:sm lines:2">A mountain is an elevated portion of the Earth's crust, generally with steep sides that show significant exposed bedrock.</div>
         </div>
     </div>
 `
@@ -62,12 +62,12 @@ import mountainImage from '~/site/public/images/mountain.jpg'
 
 You always abstract your style, even when unsure about its reusability.
 <Demo>
-    <div className="mx:auto max-w:480">
-        <div className="flex translateY(-5):hover ~transform|.2s overflow:hidden bg:surface r:10 s:panel justify-center items-center">
+    <div className="mx:auto max-w:120x">
+        <div className="flex translateY(-5):hover ~transform|fast|smooth overflow:hidden bg:surface r:xl s:panel justify-center items-center">
             <Image className="object:cover aspect:1/1 flex:0|0|auto" src={mountainImage} placeholder="blur" width={140} height={140} priority={true} alt="Markup-driven CSS Overview" />
-            <div className="p:25">
-                <div className="fg:strong font:medium text:18">Mountain</div>
-                <div className="text:14 lines:2">A mountain is an elevated portion of the Earth's crust, generally with steep sides that show significant exposed bedrock.</div>
+            <div className="p:lg">
+                <div className="fg:strong font:lg font:medium">Mountain</div>
+                <div className="font:sm lines:2">A mountain is an elevated portion of the Earth's crust, generally with steep sides that show significant exposed bedrock.</div>
             </div>
         </div>
     </div>

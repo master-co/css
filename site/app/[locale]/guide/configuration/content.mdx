@@ -33,7 +33,7 @@ That makes configuration feel closer to authoring CSS than filling out a JavaScr
 
 @master components {
     .btn {
-        @compose "inline-flex ai:center jc:center gap:.5rem px:1rem py:.625rem r:.5rem font:14 font:medium";
+        @compose "inline-flex ai:center jc:center gap:xs px:md py:xs r:lg font:sm font:medium";
         background: var(--color-primary);
         color: white;
 
@@ -139,7 +139,7 @@ Use `@custom-at` to name reusable `@media`, `@supports`, `@container`, and simil
 Use them in markup as at-rule suffixes:
 
 ```html
-<div class="@fade-in|.2s@motion-safe bg:white/.8@supports-backdrop"></div>
+<div class="@fade-in|fast@motion-safe bg:white/.8@supports-backdrop"></div>
 ```
 
 Inside CSS-defined components and utilities, prefer `@at` blocks so the utility list stays plain.
@@ -148,7 +148,7 @@ Inside CSS-defined components and utilities, prefer `@at` blocks so the utility 
 @master components {
     .toast {
         @at motion-safe {
-            @compose "@fade-in|.2s";
+            @compose "@fade-in|fast";
         }
     }
 }
@@ -223,7 +223,7 @@ Components are named style compositions for UI patterns such as `.btn`, `.card`,
 ```css name=master.css
 @master components {
     .btn {
-        @compose "inline-flex ai:center jc:center gap:.5rem px:1rem py:.625rem r:.5rem font:14 font:medium";
+        @compose "inline-flex ai:center jc:center gap:xs px:md py:xs r:lg font:sm font:medium";
         background: var(--color-primary);
         color: white;
 
@@ -274,7 +274,7 @@ Put keyframes in `@master animations`. They become config-backed animations and 
 ```
 
 ```html
-<div class="@fade-in|.2s|ease-out @slide-up|.2s@motion-safe"></div>
+<div class="@fade-in|fast|decelerate @slide-up|fast@motion-safe"></div>
 ```
 
 Animations are emitted outside cascade layers, while animation-related utilities remain in the utilities layer.
