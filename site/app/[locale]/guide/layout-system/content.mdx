@@ -8,20 +8,20 @@ In Master CSS, those decisions stay close to the markup and share the same found
 * [Sizing](/guide/sizing) defines wrappers, fixed regions, fluid regions, and constraints.
 * Grid and Flex utilities express the actual composition.
 
-(resize) Drag the edges to see the shell move from a compact stacked layout to 8-column and 12-column compositions.
+(resize) Drag the edges to see the surface move from a compact stacked layout to an 8-column composition.
 
 <ResizeZone width="100%" originX="center" showRuler>
-    <IFrame src="/examples/layout-system" height={760} scrolling="yes" />
+    <IFrame src="/examples/layout-system" height={540} />
 </ResizeZone>
 
 ```html
-<!-- @MARK max-w:screen-lg --><!-- @MARK grid-cols:4 --><!-- @MARK grid-cols:8@2xs --><!-- @MARK grid-cols:12@md -->
-<main class="w:full max-w:screen-lg mx:auto p:md p:lg@2xs">
-    <section class="grid-cols:4 grid-cols:8@2xs grid-cols:12@md gap:sm gap:md@2xs">
-        <aside class="grid-col-span:4 grid-col-span:2@2xs grid-col-span:3@md">...</aside>
-        <section class="grid-col-span:4 grid-col-span:6@2xs grid-col-span:9@md grid-cols:4 grid-cols:6@2xs grid-cols:9@md gap:sm gap:md@2xs">
-            ...
-        </section>
+<!-- @MARK max-w:screen-xs --><!-- @MARK grid-cols:4 --><!-- @MARK grid-cols:8@2xs --><!-- @MARK gap:md@2xs -->
+<main class="w:full max-w:screen-xs mx:auto p:md">
+    <section class="grid-cols:4 grid-cols:8@2xs gap:sm gap:md@2xs">
+        <header class="grid-col-span:4 grid-col-span:8@2xs">...</header>
+        <article class="grid-col-span:4 grid-col-span:4@2xs">...</article>
+        <article class="grid-col-span:4 grid-col-span:5@2xs">...</article>
+        <aside class="grid-col-span:4 grid-col-span:3@2xs">...</aside>
     </section>
 </main>
 ```
@@ -29,7 +29,7 @@ In Master CSS, those decisions stay close to the markup and share the same found
 <details>
     <summary>Generated CSS</summary>
     <Class2CSS>
-        {['w:full', 'max-w:screen-lg', 'mx:auto', 'p:md', 'p:lg@2xs', 'grid-cols:4', 'grid-cols:8@2xs', 'grid-cols:12@md', 'gap:sm', 'gap:md@2xs', 'grid-col-span:4', 'grid-col-span:2@2xs', 'grid-col-span:3@md', 'grid-col-span:6@2xs', 'grid-col-span:9@md', 'grid-cols:6@2xs', 'grid-cols:9@md']}
+        {['w:full', 'max-w:screen-xs', 'mx:auto', 'p:md', 'grid-cols:4', 'grid-cols:8@2xs', 'gap:sm', 'gap:md@2xs', 'grid-col-span:4', 'grid-col-span:8@2xs', 'grid-col-span:4@2xs', 'grid-col-span:5@2xs', 'grid-col-span:3@2xs']}
     </Class2CSS>
 </details>
 
