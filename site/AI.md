@@ -96,7 +96,17 @@ For View Transitions demos:
 
 ## Design References
 
-Before changing guide demo layout, spacing, sizing, color, radius, typography, or responsive behavior, inspect the relevant `Fundations` guide pages and follow their current patterns. Prefer semantic Master CSS tokens in demos; use low-level values only when the surrounding code already uses them or when the example is specifically teaching low-level sizing.
+Before changing guide demo layout, spacing, sizing, color, radius, typography, or responsive behavior, inspect the relevant `Fundations` guide pages and follow their current patterns.
+
+Follow the public [Design Tokens](/guide/design-tokens) policy when writing site code, demos, and examples:
+
+- Use a token-first approach. Check `packages/core/src/config/variables.ts` and prefer configured foundation tokens before low-level values.
+- Prefer semantic role tokens when available, such as `bg:base`, `bg:surface`, `fg:strong`, `fg:neutral`, line colors like `lightest` in border context, `primary`, `text:<size>`, `r:<token>`, `shadow:<token>`, `@duration:<token>`, and `@easing:<token>`.
+- Prefer scale tokens for spacing and visual rhythm, such as `p:sm`, `gap:md`, and `mt:lg`, instead of routine `x`, `rem`, `px`, raw color, raw shadow, or raw timing values.
+- Prefer contextual shorthand syntax when a utility already resolves a namespace, such as `b:1|lightest` instead of `b:1|line-lightest`, `fg:neutral` instead of `fg:text-neutral`, and `~opacity|fast|smooth` instead of `~opacity|duration-fast|easing-smooth`.
+- Low-level values are acceptable when the page is teaching syntax, no token exists, the value is local measured geometry, or the value describes structural layout such as `w:1/2`, `h:100dvh`, `m:0`, `m:1`, `z:1`, or `opacity:.64`.
+- If a low-level visual value is reused across product surfaces or examples, promote it to a named token instead of repeating it.
+- Use the docs callout markers as regular text paragraphs, not code comments: `(x)` for incorrect examples, `(o)` for correct examples, `(!)` for warnings, and `(i)` for informational notes. Place them immediately before the relevant fenced code block or paragraph so the docs styling can transform them.
 
 ## Assets
 

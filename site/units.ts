@@ -3,8 +3,8 @@ const units = {
         categories: [
             'Overview',
             'Getting Started',
-            'Syntax Tutorial',
             'Fundamentals',
+            'Syntax Tutorial',
             'Fundations',
             'Customization',
             'Production Optimization',
