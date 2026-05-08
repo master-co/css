@@ -95,7 +95,7 @@ There is no second syntax and no separate critical CSS file to maintain. You sti
 
 Tailwind CSS and Master CSS both make utility-first authoring practical, but they optimize different parts of the pipeline.
 
-[Tailwind detects classes by scanning source files as plain text](https://tailwindcss.com/docs/detecting-classes-in-source-files), then generates CSS for the utilities it can detect. That model is excellent when the class graph is mostly static and visible in source, and it maps closely to [Master CSS Static Extraction](/guide/rendering-modes#static-extraction). It is also why Tailwind recommends complete class names instead of runtime string construction.
+[Tailwind detects classes by scanning source files as plain text](https://tailwindcss.com/docs/detecting-classes-in-source-files), then generates CSS for the utilities it can detect. That model is excellent when the class graph is mostly static and visible in source, and it maps closely to [Master CSS Static Extraction for Next.js](/guide/installation/nextjs/static-extraction). It is also why Tailwind recommends complete class names instead of runtime string construction.
 
 Progressive Rendering starts from a different place: the rendered document.
 
@@ -154,27 +154,52 @@ This is not a claim that one pipeline replaces the other. It is a different trad
 
 ## Install it
 
+For the full setup, follow [Progressive Rendering in Next.js](/guide/installation/nextjs). If your project needs a source-scanned CSS build instead, use [Static Extraction in Next.js](/guide/installation/nextjs/static-extraction).
+
+Create a `master.css` configuration file:
+
+```bash action=create
+@master/css@rc
+```
+
 Install the React runtime provider and the Next.js adapter:
 
 ```bash action=install
 @master/css.react@rc @master/css.next@rc
 ```
 
-Register the runtime provider in your root layout:
+Create an App Router client boundary for the runtime provider:
 
-```tsx name=app/layout.tsx
+```tsx name=app/client.tsx
+'use client'
+
 import CSSRuntimeProvider from '@master/css.react'
 import config from '../master.css?master-css-config'
 
-export default function RootLayout({ children }: {
-    children: React.ReactNode
-}) {
+export default function Client({ children }: { children: React.ReactNode }) {
+    return (
+        <CSSRuntimeProvider config={config}>
+            {children}
+        </CSSRuntimeProvider>
+    )
+}
+```
+
+Keep the `?master-css-config` query. A plain `.css` import is treated as a stylesheet by Next.js, while this query loads the compiled Master CSS config object.
+
+Then wrap the root layout with that client boundary:
+
+```tsx name=app/layout.tsx
+import './globals.css'
+import Client from './client'
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
     return (
         <html lang="en" hidden={process.env.NODE_ENV === 'development'}>
             <body>
-                <CSSRuntimeProvider config={config}>
+                <Client>
                     {children}
-                </CSSRuntimeProvider>
+                </Client>
             </body>
         </html>
     )
@@ -186,17 +211,19 @@ Then register the adapter:
 ```js name=next.config.mjs
 import { withMasterCSS } from '@master/css.next'
 
+/** @type {import('next').NextConfig} */
 const nextConfig = withMasterCSS({
-    // your Next.js config
+    /* your Next.js config */
 })
 
 export default nextConfig
 ```
 
-Run a production build to see pre-rendered CSS in the HTML output:
+Development uses the runtime engine directly for fast refresh. Run a production build to verify that `<style id="master">` is pre-rendered into static and pre-rendered HTML outputs:
 
-```bash action=run
-build
+```bash name=Terminal
+npm run build
+npm run start
 ```
 
 ---
