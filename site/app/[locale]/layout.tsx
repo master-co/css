@@ -5,7 +5,7 @@ import HTML from 'internal/layouts/html'
 import dictionaries from '~/site/dictionaries'
 
 export default async function Layout({ children, params }: {
-    children: React.ReactElement,
+    children: React.ReactNode,
     params: Promise<{ locale: typeof i18n.locales[number] }>
 }) {
     const { locale } = await params

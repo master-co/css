@@ -7,7 +7,7 @@ import redirects from '~/site/redirects.mjs'
 import cssConfig from '~/site/master.css?master-css-config'
 
 export default function RootClient(props: {
-    children: React.ReactElement,
+    children: React.ReactNode,
     locale: typeof i18n.locales[number],
     style?: React.CSSProperties,
     translations: any,

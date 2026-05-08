@@ -10,7 +10,7 @@ export async function generateStaticParams() {
 import pageCategories from '~/site/.categories/messages.json'
 
 export default async function Layout({ children }: {
-    children: React.ReactElement
+    children: React.ReactNode
 }) {
     return (
         <Body className="bg:base">
@@ -20,5 +20,4 @@ export default async function Layout({ children }: {
         </Body>
     )
 }
-
 

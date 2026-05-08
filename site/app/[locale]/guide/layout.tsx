@@ -10,8 +10,7 @@ export async function generateStaticParams() {
 }
 
 export default async function Layout({ children }: {
-    children: React.ReactElement,
-    locale: typeof i18n.locales[number]
+    children: React.ReactNode
 }) {
     return (
         <Body className="bg:base">
@@ -23,4 +22,3 @@ export default async function Layout({ children }: {
         </Body>
     )
 }
-

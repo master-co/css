@@ -13,7 +13,7 @@ export async function generateStaticParams() {
 }
 
 export default async function Layout({ children }: {
-    children: React.ReactElement
+    children: React.ReactNode
 }) {
     return (
         <Body>
