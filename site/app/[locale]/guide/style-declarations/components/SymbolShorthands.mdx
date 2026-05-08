@@ -7,9 +7,9 @@ export const code2 = `
     <div class="@fade|1s|ease ~opacity|3s">
 `
 
-Syntax: <code><span className="token value mcss language-mcss"><span className="token mcss"><span className="token Mkey">property-name</span><span className="token Mvalueroot"><span className="token Mcolon">:</span><span className="token Mvalue"><span className="token Mnumber_unit"><span className="token Mnumber">value</span></span></span></span></span></span></code> → <code><span className="token value mcss language-mcss"><span className="token mcss"><span className="token Mkey">symbol</span><span className="token Mvalueroot"><span className="token Mvalue"><span className="token Mnumber_unit"><span className="token Mnumber">value</span></span></span></span></span></span></code>
+Syntax: <code><span className="token value mcss language-mcss"><span className="token mcss"><span className="token Mkey">property-name</span><span className="token Mvalueroot"><span className="token Mcolon">:</span><span className="token Mvalue"><span className="token Mnumber_unit"><span className="token Mnumber">value</span></span></span></span></span></span></code> -> <code><span className="token value mcss language-mcss"><span className="token mcss"><span className="token Mkey">symbol</span><span className="token Mvalueroot"><span className="token Mvalue"><span className="token Mnumber_unit"><span className="token Mnumber">value</span></span></span></span></span></span></code>
 
-Use `~` and `@` as derivative symbols for `transition` and `animation` to make class declarations more elegant.
+Use `~` for `transition` and `@` for `animation` when the declaration is mostly made of values.
 <Code lang="html">
     {code1}
 </Code>
@@ -18,6 +18,8 @@ Use `~` and `@` as derivative symbols for `transition` and `animation` to make c
 <Code lang="html">
     {code2}
 </Code>
+
+(i) At the start of a declaration, `@` means animation. At the end of a class, `@md`, `@print`, and similar suffixes mean [conditional queries](/guide/conditional-queries).
 
 export const code3 = `
     <!-- @MARK animation-name:fade --><!-- @MARK transition-property:transform -->
@@ -28,12 +30,12 @@ export const code4 = `
     <div class="@name:fade ~property:transform">
 `
 
-Related properties also work: <code><span className="token value mcss language-mcss"><span className="token mcss"><span className="token Mkey">property-name</span><span className="token Mvalueroot"><span className="token Mcolon">:</span><span className="token Mvalue"><span className="token Mnumber_unit"><span className="token Mnumber">value</span></span></span></span></span></span></code> → <code><span className="token value mcss language-mcss"><span className="token mcss"><span className="token Mkey">symbolname</span><span className="token Mvalueroot"><span className="token Mcolon">:</span><span className="token Mvalue"><span className="token Mnumber_unit"><span className="token Mnumber">value</span></span></span></span></span></span></code>
+Related longhand properties also work: <code><span className="token value mcss language-mcss"><span className="token mcss"><span className="token Mkey">property-name</span><span className="token Mvalueroot"><span className="token Mcolon">:</span><span className="token Mvalue"><span className="token Mnumber_unit"><span className="token Mnumber">value</span></span></span></span></span></span></code> -> <code><span className="token value mcss language-mcss"><span className="token mcss"><span className="token Mkey">symbolname</span><span className="token Mvalueroot"><span className="token Mcolon">:</span><span className="token Mvalue"><span className="token Mnumber_unit"><span className="token Mnumber">value</span></span></span></span></span></span></code>
 <Code lang="html">
     {code3}
 </Code>
 
-(o) Reduce `animation-*` and `transition-` to `@*` and `~*`. <Dropped p1={code3} p2={code4} target="class" />
+(o) Reduce `animation-*` and `transition-*` to `@*` and `~*`. <Dropped p1={code3} p2={code4} target="class" />
 <Code lang="html">
     {code4}
 </Code>

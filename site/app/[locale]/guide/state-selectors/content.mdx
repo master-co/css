@@ -11,19 +11,31 @@ import animals from 'internal/data/animals'
 <!-- @MARK [open] -->
 <details class="bg:white[open]" open></details>
 ```
-Master CSS provides a powerful and flexible way to style elements using selectors. These selectors allow you to apply styles based on the state of an element, such as `:hover`, `:active`, `:focus`, or based on attributes like `[disabled]` or `[open]`.
+State selectors let one declaration apply only when a selector matches. Append the selector after the declaration value:
+
+```txt
+property:value<selector>
+```
+
+Common examples include interaction states such as `:hover`, validation states such as `:invalid`, and attributes such as `[disabled]` or `[open]`.
+
 ```html
 <!-- @MARK :hover --><!-- @MARK :active -->
 <h2 class="font:18 font:24:hover font:32:active …">
 ```
-You can also combine selectors, stack multiple states to create dynamic and interactive designs.
+Selectors can be stacked when the CSS selector itself needs more detail.
 ```html
 <!-- @MARK :hover:not(.active) -->
 <div class="bg:blue-20:hover:not(.active) …">
 ```
-With support for all CSS selectors, Master CSS ensures that you can achieve precise and efficient styling for any scenario.
+If you also need a breakpoint, mode, or other condition, put the [conditional query](/guide/conditional-queries) after the selector.
 
-For readability, Master CSS uses [selector tokens](/guide/selector-tokens) in the configuration to name common selectors.
+```html
+<!-- @MARK :hover@md -->
+<button class="bg:blue:hover@md">Save</button>
+```
+
+For readability, Master CSS can use [selector tokens](/guide/selector-tokens) to name selectors that appear often.
 ```html
 <div class="mt:3x:first"><!-- [!code highlight] -->
 <div class="mt:3x:first-child">
@@ -32,7 +44,7 @@ For readability, Master CSS uses [selector tokens](/guide/selector-tokens) in th
 <div class="mt:3x:rtl"><!-- [!code highlight] -->
 <div class="mt:3x:dir(rtl)">
 ```
-Also, you can use them to create custom tokens for any selector you want.
+You can also create project-specific selector tokens for longer selectors.
 ```html
 <div class="font:semibold_:headings"><!-- [!code highlight] -->
 <div class="font:semibold_:is(h1,h2,h3,h4,h5,h6)">
@@ -41,20 +53,20 @@ Also, you can use them to create custom tokens for any selector you want.
 ---
 
 ## Basic selectors
-Master CSS supports all CSS selectors, including:
+Master CSS accepts native selector syntax. The selector is relative to the element that owns the class unless a combinator points to another element.
 
 | Selector              | Description                                           | Preview CSS                               |
 |-----------------------|-------------------------------------------------------|-------------------------------------------|
-| `*`                   | Universal selector (selects all elements)             | `css * { margin: 0; }`                    |
-| `element`             | Type selector (tag name)                              | `css p { color: red; }`                   |
+| `*`                   | Universal selector                                    | `css * { margin: 0; }`                    |
+| `element`             | Type selector                                         | `css p { color: red; }`                   |
 | `.class`              | Class selector                                        | `css .box { padding: 1rem; }`             |
 | `#id`                 | ID selector                                           | `css #header { background: blue; }`       |
 | `[attribute]`         | Attribute selector                                    | `css [disabled] { opacity: 0.5; }`        |
-| `:pseudo-class`       | Pseudo-class selector                                 | `css a:hover { color: blue; }` |
+| `:pseudo-class`       | Pseudo-class selector                                 | `css a:hover { color: blue; }`            |
 | `::pseudo-element`    | Pseudo-element selector                               | `css p::first-letter { font-size: 2em; }` |
 
 ### `*` — Universal
-Style all elements using the universal selector `*`.
+Use `*` as a wildcard. In `>*`, every direct child matches.
 ```html
 <!-- @MARK * -->
 <div class="bg:blue>*">
@@ -65,49 +77,49 @@ Style all elements using the universal selector `*`.
 ```
 
 ### `element`
-Style elements based on their type using the type selector.
+Use a type selector to target elements by tag name.
 ```html
 <!-- @MARK span -->
 <div class="bg:blue>span">
     <span>hit</span>
 </div>
 ```
-(i) Use `:is()` or `:where()` to resolve type selector conflicts.
+(i) If a raw type selector is hard to read or conflicts with nearby syntax, wrap it with `:is()` or `:where()`.
 ```html
 <!-- @MARK :is(span) -->
 <span class="bg:blue:is(span)"></span>
 ```
 
 ### `.class`
-Style elements using custom classes like `.active` to indicate their states.
+Use a class selector for custom application state, such as `.active`, `.selected`, or `.expanded`.
 ```html
 <!-- @MARK .active -->
 <div class="bg:blue.active active">...</div>
 ```
 
 ### `#id`
-Style elements using IDs like `#nav` to indicate their states.
+Use an ID selector when the state is tied to a unique element.
 ```html
 <!-- @MARK #nav -->
 <nav id="nav" class="bg:blue#nav">...</nav>
 ```
 
 ### `[attribute]`
-Style elements using attributes like `[disabled]` to indicate their states.
+Use attribute selectors for DOM state that already lives in markup, such as `[disabled]`, `[open]`, `aria-*`, and `data-*`.
 ```html
 <!-- @MARK [disabled] -->
 <button class="bg:blue[disabled]" disabled>Submit</button>
 ```
 
 ### `:pseudo-class`
-Style elements using pseudo-classes like `:hover` to indicate their states.
+Use pseudo-classes for browser-managed states.
 ```html
 <!-- @MARK :hover -->
 <button class="bg:blue:hover">Submit</button>
 ```
 
 ### `::pseudo-element`
-Style elements using pseudo-elements like `::before` and `::after` to add decorative content.
+Use pseudo-elements such as `::before` and `::after` when the style should target generated content.
 ```html
 <!-- @MARK ::before -->
 <div class="content:'“'::before">quotes</div>
@@ -116,7 +128,7 @@ Style elements using pseudo-elements like `::before` and `::after` to add decora
 ---
 
 ## Combinators
-Master CSS supports the following combinators to select elements based on their relationships in the DOM tree:
+Combinators target elements by their relationship to the element that owns the class. Use them when the declaration should style a child, sibling, or descendant instead of the element itself.
 
 | Selector          | Description               | Preview CSS                 |
 |-------------------|---------------------------|-----------------------------|
@@ -126,7 +138,7 @@ Master CSS supports the following combinators to select elements based on their 
 | `A ~ B`           | General sibling selector  | `css h1 ~ p { color: gray; }`   |
 
 ### `_` — Descendant
-Style elements that are descendants of a specified element using the descendant combinator `_` to proxy the space.
+Use `_` as the descendant combinator. It stands in for the CSS space, because spaces split class names in HTML.
 ```html
 <!-- @MARK _ -->
 <div class="bg:blue_div">
@@ -140,7 +152,7 @@ Style elements that are descendants of a specified element using the descendant 
 ```
 
 ### `>` — Child
-Style elements that are direct children of a specified element using the child combinator `>`.
+Use `>` when only direct children should match.
 ```html
 <!-- @MARK >div -->
 <div class="bg:blue>div">
@@ -149,7 +161,7 @@ Style elements that are direct children of a specified element using the child c
 ```
 
 ### `+` — Adjacent sibling
-Style elements that are adjacent siblings of a specified element using the adjacent sibling combinator `+`.
+Use `+` to style the next sibling when it appears immediately after the current element.
 ```html
 <!-- @MARK +div -->
 <div class="bg:blue+div"></div>
@@ -157,7 +169,7 @@ Style elements that are adjacent siblings of a specified element using the adjac
 ```
 
 ### `~` — General sibling
-Style elements that are siblings of a specified element using the general sibling combinator `~`.
+Use `~` to style later siblings that share the same parent.
 ```html
 <!-- @MARK ~div -->
 <div class="bg:blue~div"></div>
@@ -169,7 +181,7 @@ Style elements that are siblings of a specified element using the general siblin
 ---
 
 ## Selector groups
-Style multiple elements using the selector list separator `,`.
+Use `,` when the same declaration should apply to several selectors.
 ```html
 <!-- @MARK , -->
 <div class="content:'“'::before,::after">quotes</div>
@@ -180,7 +192,7 @@ Style multiple elements using the selector list separator `,`.
     {[`content:'“'::before,::after`]}
   </Class2CSS>
 </details>
-You can use with any combinator. For example, select direct children of multiple elements.
+Selector groups also work with combinators. In this example, the declaration applies to direct `div` and `span` children.
 ```html
 <!-- @MARK , -->
 <div class="block>div,>span">hit</div>
@@ -196,7 +208,7 @@ You can use with any combinator. For example, select direct children of multiple
 
 ## Pseudo-classes
 ### `:hover`, `:active`, `:focus`
-Style elements with different interactive appearances on `:hover`, `:active`, and `:focus`.
+Use interaction pseudo-classes to give controls feedback as people hover, press, focus, or navigate with a keyboard.
 
 (click) Try clicking the button to see states change
 <Demo>
@@ -207,8 +219,14 @@ Style elements with different interactive appearances on `:hover`, `:active`, an
 <button class="bg:indigo bg:pink:hover bg:purple:active">Submit</button>
 ```
 
+Use `:focus-visible` for keyboard focus rings when you want to avoid showing the focus style after every pointer click.
+```html
+<!-- @MARK :focus-visible -->
+<button class="outline:2|solid|blue:focus-visible">Submit</button>
+```
+
 ### `:first`, `:last`, `:odd`, `:even`
-Select and style elements using `:first`, `:last`, `:odd`, `:even`, and `:nth(N)` shorthands.
+Use structural shorthands such as `:first`, `:last`, `:odd`, `:even`, and `:nth(N)` to style list items by position.
 <Demo $py={0}>
     <DemoPanel $p={0} className="w:full max-w:360">
         <ul className="list-style:none p:20|0 m:0">
@@ -234,7 +252,7 @@ Select and style elements using `:first`, `:last`, `:odd`, `:even`, and `:nth(N)
 ```
 
 ### `:valid`, `:invalid`, `:required`
-Style controls using `:valid`, `:invalid`, `:required` based on form validations.
+Use form validation pseudo-classes to reflect native validity without writing JavaScript state.
 
 (type) Try typing `co` as a valid email address
 <Demo>
@@ -246,14 +264,14 @@ Style controls using `:valid`, `:invalid`, `:required` based on form validations
 ```
 
 ### `:disabled`
-Style elements using `:disabled` to indicate disabled states.
+Use `:disabled` for controls that cannot be interacted with.
 ```html
 <!-- @MARK :disabled -->
 <button class="opacity:.5:disabled" disabled>Submit</button>
 ```
 
 ### `:checked`, `:indeterminate`
-Style checkboxes and radio buttons using `:checked` and `:indeterminate` to indicate their states.
+Use `:checked` and `:indeterminate` for checkboxes, radio buttons, switches, and custom controls backed by native inputs.
 <Demo>
     <input type="checkbox" className="appearance:none bg:indigo:checked b:1|line-light r:4 size:5x" defaultChecked />
 </Demo>
@@ -263,14 +281,14 @@ Style checkboxes and radio buttons using `:checked` and `:indeterminate` to indi
 ```
 
 ### `:rtl`, `:ltr`
-Style elements based on their text direction using `:rtl` (`:dir(rtl)`) and `:ltr` (`:dir(ltr)`).
+Use `:rtl` and `:ltr` to react to text direction. They map to `:dir(rtl)` and `:dir(ltr)`.
 ```html
 <!-- @MARK :rtl -->
 <div class="mr:2x:rtl">...</div>
 ```
 
 ### `:has()`
-Style elements based on their children using `:has()`.
+Use `:has()` when the current element should change because it contains a matching child or descendant.
 ```html
 <!-- @MARK :has(.active) -->
 <div class="bg:blue:has(.active)">
@@ -281,16 +299,16 @@ Style elements based on their children using `:has()`.
 ```
 
 ### `:not()`
-Style elements using `:not()` to exclude certain elements from being styled.
+Use `:not()` to exclude a selector from the match.
 ```html
 <!-- @MARK :not(.active) -->
 <div class="fg:green:not(.active) active">...</div>
 ```
 
 ### `:of()`
-The only proprietary selector introduced by Master CSS. It resembles the native `:has()` pseudo-class but extends its capabilities with upward selection, enabling styles to be conditionally applied based on the state of *parent*, *ancestor*, or *adjacent* elements.
+`:of()` is the only proprietary selector introduced by Master CSS. It lets the current element respond to a parent, ancestor, or previous sibling. Use native selectors first when they can express the relationship; use `:of()` when you need to style the current element from outside-in context.
 
-(i) Style the element based on its ancestor.
+(i) Style the element when an ancestor matches.
 ```html
 <!-- @MARK active -->
 <div class="active">
@@ -300,7 +318,7 @@ The only proprietary selector introduced by Master CSS. It resembles the native 
     </div>
 </div>
 ```
-(i) Style the element based on its parent.
+(i) Style the element when its parent matches.
 ```html
 <!-- @MARK active -->
 <div class="active">
@@ -308,14 +326,14 @@ The only proprietary selector introduced by Master CSS. It resembles the native 
     <div class="hidden:of(.active>)">hidden</div>
 </div>
 ```
-(i) Style the element based on its previous adjacent sibling.
+(i) Style the element when its previous adjacent sibling matches.
 ```html
 <!-- @MARK active -->
 <div class="active"></div>
 <!-- @MARK :of(.active+) -->
 <div class="hidden:of(.active+)">hidden</div>
 ```
-(i) Style the element based on all of its preceding siblings.
+(i) Style the element when one of its preceding siblings matches.
 ```html
 <!-- @MARK active -->
 <div class="active"></div>
@@ -323,7 +341,7 @@ The only proprietary selector introduced by Master CSS. It resembles the native 
 <!-- @MARK :of(.active~) -->
 <div class="hidden:of(.active~)">hidden</div>
 ```
-(x) Cannot use combinators or pseudo-elements before ':of()'.
+(x) Do not put combinators or pseudo-elements before `:of()`.
 ```html
 <div class="hidden_div::before:of(.active)">hidden</div>
 ```
@@ -332,7 +350,7 @@ The only proprietary selector introduced by Master CSS. It resembles the native 
 
 ## Pseudo-elements
 ### `::before`, `::after`
-Attach pseudo-elements to an element using `::before` and `::after`.
+Use `::before` and `::after` to style generated content attached to the element.
 <Demo $py={0}>
     <DemoPanel>
         <q className="italic fg:strong font:medium font:18">Be the change you wish to see in the world.</q>
@@ -346,7 +364,7 @@ Attach pseudo-elements to an element using `::before` and `::after`.
 ```
 
 ### `::scrollbar`
-Beautify the scrollbar of an element using `::scrollbar`, `::scrollbar-thumb`, `::scrollbar-track`, `::scrollbar-button`, `::scrollbar-corner` and `::scrollbar-track-piece` shorthand.
+Style scrollbars with `::scrollbar`, `::scrollbar-thumb`, `::scrollbar-track`, `::scrollbar-button`, `::scrollbar-corner`, and `::scrollbar-track-piece` shorthands.
 
 (hover) Try scrolling horizontally and interact with the scroll bar
 <Demo $py={0} $px={0}>
@@ -369,7 +387,7 @@ Beautify the scrollbar of an element using `::scrollbar`, `::scrollbar-thumb`, `
 
 ## Attribute selectors
 ### `[open]`
-Style `<details>` elements based on their `open` attribute using `[open]`. This allows you to apply specific styles when the `<details>` element is expanded.
+Use `[open]` to style a `<details>` element while it is expanded.
 ```html
 <!-- @MARK [open] -->
 <details class="bg:white[open]" open>
@@ -379,28 +397,28 @@ Style `<details>` elements based on their `open` attribute using `[open]`. This 
 ```
 
 ### `[aria-<key>=<value>]`
-Style elements based on their [ARIA](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA) attributes using `[aria-<key>=<value>]`.
+Use [ARIA](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA) attributes when accessible state is already present in the DOM.
 ```html
 <!-- @MARK [aria-checked] -->
 <div class="bg:blue[aria-checked=true]" aria-checked="true">...</div>
 ```
 
 ### `[data-<key>=<value>]`
-Style elements based on their custom data attributes using `[data-<key>=<value>]`.
+Use `data-*` attributes for component state that is not covered by native attributes or ARIA.
 ```html
 <!-- @MARK [data-active] -->
 <div class="bg:blue[data-active]" data-active>...</div>
 ```
 
 ### `[<attr>=<value>]`
-Style elements based on their attribute values.
+Match an exact attribute value.
 ```html
 <!-- @MARK [type=checkbox] -->
 <input class="b:blue[type=checkbox]" type="checkbox" />
 ```
 
 ### `[<attr>^=<value>]`
-Style elements based on their attribute values that start with a specific string.
+Match values that start with a specific string.
 
 (i) Links that start with `http`.
 <Demo>
@@ -412,7 +430,7 @@ Style elements based on their attribute values that start with a specific string
 ```
 
 ### `[<attr>$=<value>]`
-Style elements based on their attribute values that end with a specific string.
+Match values that end with a specific string.
 <Demo>
     <a className="{content:'⬇';ml:1x}[href$='.pdf']::after" href="https://….pdf">PDF</a>
 </Demo>
@@ -422,21 +440,21 @@ Style elements based on their attribute values that end with a specific string.
 ```
 
 ### `[<attr>*=<value>]`
-Style elements based on their attribute values that contain a specific string.
+Match values that contain a specific string.
 ```html
 <!-- @MARK [title*=master] -->
 <div class="bg:yellow[title*=master]" title="mastercss">...</div>
 ```
 
 ### `[<attr>|=<value>]`
-Style elements based on their attribute values that start with a specific string and are followed by a hyphen.
+Match a value exactly or followed by a hyphen, which is common for language codes.
 ```html
 <!-- @MARK [lang|=en] -->
 <div class="bg:blue[lang|=en]" lang="en-US">...</div>
 ```
 
 ### `[<attr>~=<value>]`
-Style elements based on their attribute values that is a whitespace-separated list of words, one of which is exactly value.
+Match one word inside a whitespace-separated attribute value.
 ```html
 <!-- @MARK [title~=css] -->
 <div class="bg:blue[title~=css]" title="master css">...</div>

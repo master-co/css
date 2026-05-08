@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
     title: 'Conditional Queries',
-    description: 'Apply styles based on theme modes, print, breakpoints, and other queries.',
+    description: 'Learn how to append at-rule conditions for breakpoints, modes, media types, container queries, supports checks, and ranges.',
     category: 'Syntax Tutorial',
     order: 3,
     fileURL: import.meta.url

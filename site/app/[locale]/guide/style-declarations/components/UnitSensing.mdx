@@ -7,16 +7,16 @@ export const code2 =`
     <p class="rotate(30) @duration:200">
 `
 
-Writing CSS units in a class seems a little weird.
+Some properties have an obvious default unit. Master CSS can infer that unit from the property instead of requiring you to type it every time.
 <Code lang="html">
     {code1}
 </Code>
 
-(o) Omits the unit mark. <Dropped p1={code1} p2={code2} target="class" />
+(o) Omit the unit when the property can infer it clearly. <Dropped p1={code1} p2={code2} target="class" />
 <Code lang="html">
     {code2}
 </Code>
 
-When rotation transform is applied without specified units, it will be interpreted as `deg` rather than invalid `px` based on consensus.
+When a rotation transform is written without a unit, it is interpreted as `deg` instead of invalid `px`.
 
-Similarly, time properties without units are translated to `ms`, and you can also use decimal values like `.2s`.
+Similarly, time properties without units are interpreted as `ms`. You can still write explicit values such as `.2s` when seconds read better.

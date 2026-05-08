@@ -1,4 +1,4 @@
-Using multiplier units determines the [spacing](/reference/spacing)/size scale and ensures visual consistency.
+Use multiplier units when a value should follow the configured spacing and size rhythm.
 ```html
 <!-- @MARK m:4x -->
 <div class="m:4x"></div>
@@ -9,4 +9,4 @@ Generated CSS:
     margin: 1rem; /* 4x = 4*4 = 16px, 16px / 16 = 1rem */
 }
 ```
-By default, multiplier [base unit](/guide/configuration#baseunit) is 4.
+By default, the multiplier [base unit](/guide/configuration#baseunit) is `4`, so `4x` means `16px` before conversion. This makes repeated spacing values consistent without forcing you to create a named token for every small step.

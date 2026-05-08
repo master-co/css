@@ -9,7 +9,7 @@ export const code2 = `
 
 Syntax: <code className="token language-mcss"><span className="token mcss"><span className="token Mvalue">utility</span></span></code>
 
-Writing the native CSS directly makes your markup verbose.
+The most explicit form is a native property name plus a value. It is easy to understand, but it can make markup noisy when the same common properties appear everywhere.
 <Code lang="html">
     {code1}
 </Code>
@@ -19,12 +19,12 @@ Writing the native CSS directly makes your markup verbose.
     {code2}
 </Code>
 
-When the characteristics of a native CSS property can be accurately conveyed through its value alone, we [utilize the value directly as a utility class](/guide/utilities#default-reference). For example, we reduce `mcss display:block` to simply `mcss block`.
+When the meaning is still clear without the property name, Master CSS can use the value itself as a [default utility](/guide/utilities#default-reference). For example, `mcss display:block` becomes `mcss block`, and `mcss position:absolute` becomes `mcss abs`.
 
-However, we do not reduce `mcss font-weight:lighter` to `mcss lighter` can be too ambiguous, potentially referring to brightness rather than `font-weight`.
+Not every value becomes a utility. Master CSS avoids shortcuts when the result would be ambiguous. For example, `mcss font-weight:lighter` is not reduced to `mcss lighter`, because `lighter` could also sound like a color or brightness change.
 
-In addition, several useful utility classes are provided, such as [screen readers](/reference/screen-readers) and [text size](/reference/text-size) with line height, etc.
+Several utilities are also higher-level conveniences, such as [screen readers](/reference/screen-readers) and [text size](/reference/text-size) classes that include line-height decisions.
 
-Utilities effectively reduce markup complexity, improve readability, and maintain the intended meaning of the property.
+Use utilities when the shorter class still communicates the intended CSS. Keep the explicit property form when the shortcut would make a reader stop and guess.
 
 To learn more about customizing utilities, check out the [utilities](/guide/utilities) documentation.

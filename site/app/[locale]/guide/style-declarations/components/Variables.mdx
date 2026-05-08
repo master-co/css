@@ -1,9 +1,9 @@
-(x) You can't declare CSS variables with the state through inline styles.
+(x) Inline styles can declare CSS variables, but they cannot respond to selectors or queries.
 ```html
 <div style="--color: red; --size: 5rem">
 ```
 
-(o) Declare CSS variables based on any state.
+(o) Use `$<name>:<value>` when a variable needs the same selector and query power as any other Master CSS declaration.
 ```html
 <!-- @MARK $color:red:hover --><!-- @MARK $size:5rem@sm -->
 <div class="$color:red:hover $size:5rem@sm">
@@ -12,3 +12,5 @@ Generated CSS:
 <Class2CSS>
     {['$color:red:hover', '$size:5rem@sm']}
 </Class2CSS>
+
+This is useful for component internals: set a variable in one state, then let several child declarations or native CSS rules consume the same custom property.

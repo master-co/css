@@ -6,7 +6,7 @@ export const code2 = `
     <ul class="{block;font:14;text:center}>li:hover@md">…</ul>
 `
 
-Sometimes, you need to apply the same styles across multiple selectors or media queries, where the grouping syntax brings joy to you.
+When several declarations share the same selector or query suffix, group the declarations first and write the suffix once.
 <Code lang="html">
     {code1}
 </Code>
@@ -15,3 +15,5 @@ Sometimes, you need to apply the same styles across multiple selectors or media 
 <Code lang="html">
     {code2}
 </Code>
+
+Inside `{...}`, separate declarations with semicolons. After the closing `}`, append selectors and conditional queries exactly as you would on a single declaration.

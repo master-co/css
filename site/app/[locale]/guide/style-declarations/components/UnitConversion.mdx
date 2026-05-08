@@ -7,7 +7,7 @@ export const code2 = `
     <p class="font:48">
 `
 
-Do you frequently check the reference table for `rem` to `px` when writing CSS?
+For many size-related utilities, you can think in pixels while Master CSS emits browser-friendly units.
 <Code lang="html">
     {code1}
 </Code>
@@ -17,8 +17,8 @@ Do you frequently check the reference table for `rem` to `px` when writing CSS?
     {code2}
 </Code>
 
-The `48` without specified units is translated to pixels and is converted to a browser-friendly `2rem` when generating CSS rules.
+The unitless `48` is interpreted as pixels for `font` and converted to `3rem` when CSS is generated.
 
-We've predefined [practical units and conversion behavior](/guide/utilities#syntax-reference) based on the characteristics of different utilities, and most of them involve converting from `px` to `rem`.
+Master CSS defines [practical unit and conversion behavior](/guide/utilities#syntax-reference) by utility. Many size values convert from pixels to `rem`, while other properties keep or infer a different unit.
 
-You can easily associate the default behavior with the property's characteristics.
+Use explicit units when you need to preserve a value exactly as written.

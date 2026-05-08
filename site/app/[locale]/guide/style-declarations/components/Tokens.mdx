@@ -7,17 +7,17 @@ export const code2 =`
     <p class="width:fit box:border flex-col">
 `
 
-Applying certain property values ​​is often not so concise in class attributes.
+Some native values are descriptive but long in markup, especially when they appear in every component.
 <Code lang="html">
     {code1}
 </Code>
 
-(o) Use variables to simplify primitive values and [ambiguous shorthands](#ambiguous-shorthands). <Dropped p1={code1} p2={code2} target="class" />
+(o) Use variable aliases and [ambiguous shorthands](#ambiguous-shorthands) to keep the same meaning with fewer characters. <Dropped p1={code1} p2={code2} target="class" />
 <Code lang="html">
     {code2}
 </Code>
 
 import VariablesOverview from '~/site/app/[locale]/guide/variables/components/Overview.mdx'
 
-By default, Master CSS uses predefined variables to simplify native values. You can customize [variables](/guide/variables) to implement your design system, for example:
+Master CSS ships with predefined variables for common primitive values. You can also define [variables](/guide/variables) for your own design system, then use semantic tokens instead of repeating raw CSS values.
 <VariablesOverview />

@@ -1,6 +1,6 @@
 Syntax: <code><span className="token value mcss language-mcss"><span className="token mcss"><span className="token Mgroup"><span className="token Mbracket">{'{'}</span><span className="token Mkey">property</span><span className="token Mvalueroot"><span className="token Mcolon">:</span><span className="token Mvalue"><span className="token Mnumber_unit">value</span></span></span></span><span className="token Mbracket">{'}'}</span></span></span></code>
 
-Master CSS allows you to use non-standard or unsupported CSS properties, using `{}` curly braces like native CSS declarations.
+Use arbitrary properties when you need a native CSS declaration that does not have a built-in utility yet. Wrap the declaration in `{}` so Master CSS treats it like a CSS property/value pair.
 ```html
 <!-- @MARK {block-size:5rem} -->
 <div class="{block-size:5rem}">
@@ -11,3 +11,5 @@ Generated CSS:
     block-size: 5rem;
 }
 ```
+
+Prefer built-in utilities when they exist, because they can include token resolution, unit conversion, sorting, and validation behavior. Arbitrary properties are the escape hatch for platform features, experiments, and one-off declarations.

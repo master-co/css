@@ -7,9 +7,9 @@ export const code2 = `
     <p class="f:16 mt:32 jc:center">
 `
 
-Syntax: <code><span className="token value mcss language-mcss"><span className="token mcss"><span className="token Mkey">property-name</span><span className="token Mvalueroot"><span className="token Mcolon">:</span><span className="token Mvalue"><span className="token Mnumber_unit"><span className="token Mnumber">value</span></span></span></span></span></span></code> → <code><span className="token value mcss language-mcss"><span className="token mcss"><span className="token Mkey">pn</span><span className="token Mvalueroot"><span className="token Mcolon">:</span><span className="token Mvalue"><span className="token Mnumber_unit"><span className="token Mnumber">value</span></span></span></span></span></span></code>
+Syntax: <code><span className="token value mcss language-mcss"><span className="token mcss"><span className="token Mkey">property-name</span><span className="token Mvalueroot"><span className="token Mcolon">:</span><span className="token Mvalue"><span className="token Mnumber_unit"><span className="token Mnumber">value</span></span></span></span></span></span></code> -> <code><span className="token value mcss language-mcss"><span className="token mcss"><span className="token Mkey">pn</span><span className="token Mvalueroot"><span className="token Mcolon">:</span><span className="token Mvalue"><span className="token Mnumber_unit"><span className="token Mnumber">value</span></span></span></span></span></span></code>
 
-Property names are still too long on class names?
+Property names can still be long after you learn the syntax. Abbreviations are optional, but they are useful for common layout and spacing properties.
 <Code lang="html">
     {code1}
 </Code>
@@ -19,7 +19,7 @@ Property names are still too long on class names?
     {code2}
 </Code>
 
-Using abbreviations depends on team conventions or personal habits. Not every style property supports abbreviations, but some sensible abbreviations are recommended.
+Use abbreviations when they are common enough to read at a glance. Prefer full property names for rare properties or when a shortcut would surprise other people on the project.
 
 export const code3 = `
     <!-- @MARK width:32 --><!-- @MARK height:32 --><!-- @MARK border-radius:5 --><!-- @MARK z-index:10 --><!-- @MARK margin-top:1 --><!-- @MARK margin-bottom:1 --><!-- @MARK padding-left:1 --><!-- @MARK padding-right:1 -->
@@ -42,12 +42,12 @@ export const code6 = `
     {code3}
 </Code>
 
-(o) Use abbreviations common to the math field and CSS utility libraries. <Dropped p1={code3} p2={code4} target="class" />
+(o) Use abbreviations common in geometry, coordinates, and CSS utility libraries. <Dropped p1={code3} p2={code4} target="class" />
 <Code lang="html">
     {code4}
 </Code>
 
-(o) Even use `x`, `y` to express direction. <Dropped p1={code3} p2={code5} target="class" />
+(o) Use `x` and `y` to express paired directions. <Dropped p1={code3} p2={code5} target="class" />
 <Code lang="html">
     {code5}
 </Code>
@@ -55,11 +55,11 @@ export const code6 = `
 - Geometry: `w` width, `h` height, `r` radius.
 - Coordinates: `x` axis, `y` axis, `z` axis.
 - Spacing: `m` margin, `p` padding.
-- Directions: `t` top, `b` bottom, `l` left, `r` right.
+- Directions: `t` top, `b` bottom, `l` left, `r` right, usually after a spacing prefix like `mt`, `pb`, or `pr`.
 
 (o) Use `mcss size:w|h` to simplify it further! <Dropped p1={code3} p2={code6} target="class" />
 <Code lang="html">
     {code6}
 </Code>
 
-Utilizing abbreviations can significantly reduce template markup and provide greater flexibility and faster iteration.
+Abbreviations reduce template size, but the goal is still readable markup. Mix explicit and abbreviated declarations as needed.

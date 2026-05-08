@@ -7,12 +7,14 @@ export const code2 = `
     <div class="w:calc(100%-16) h:$(size-sm) bg:black/.5">
 `
 
-Declare native [functions](/guide/rules#functions) directly; that's how flexible it is.
+Write native CSS functions directly when that is the clearest expression of the value.
 <Code lang="html">
     {code1}
 </Code>
 
-(o) Rely on unit conversions and [variable syntax](/reference/variable). <Dropped p1={code1} p2={code2} target="class" />
+(o) Combine functions with unit conversion, token shortcuts, and [variable syntax](/reference/variable). <Dropped p1={code1} p2={code2} target="class" />
 <Code lang="html">
     {code2}
 </Code>
+
+Inside functions, Master CSS still resolves the parts it understands. For example, unitless size values can convert, `$(size-sm)` references a CSS variable, and color opacity syntax like `black/.5` stays compact.

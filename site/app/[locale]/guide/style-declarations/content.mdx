@@ -10,6 +10,14 @@
     </div>
 </div>
 ```
+Master CSS classes are CSS declarations written directly in markup. Read each class from left to right: start with the style you want, then add optional [state selectors](/guide/state-selectors) and optional [conditional queries](/guide/conditional-queries).
+
+```html
+<!-- @MARK fg:white --><!-- @MARK :hover --><!-- @MARK @md -->
+<button class="fg:white:hover@md">Save</button>
+```
+
+The examples in this guide start with explicit CSS-like declarations, then show how to shorten them with utilities, shorthands, abbreviations, variables, and unit rules. When you are learning a new class, write the explicit form first. Once the output is clear, use the shorter form that still reads well to your team.
 
 ---
 
@@ -91,3 +99,23 @@ Change the text color of an element using color functions like `rgb()`, `hsl()`,
 <!-- @MARK fg:rgb(23,95,233) -->
 <p class="fg:rgb(23,95,233)">Aa</p>
 ```
+
+---
+
+## Combine with states and queries
+After the declaration itself is clear, you can attach selectors and conditions without changing the declaration syntax.
+
+```html
+<!-- @MARK bg:indigo --><!-- @MARK bg:purple:hover@md --><!-- @MARK ~background-color|.2s -->
+<button class="bg:indigo bg:purple:hover@md ~background-color|.2s">
+    Save
+</button>
+```
+
+This means:
+
+- `bg:indigo` applies by default.
+- `bg:purple:hover@md` applies only when the button is hovered and the viewport matches `@md`.
+- `~background-color|.2s` adds a `background-color` transition.
+
+The rest of the syntax tutorial builds on this model: declarations first, then selectors, then queries.
