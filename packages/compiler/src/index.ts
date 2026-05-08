@@ -1492,6 +1492,21 @@ function validateTokenConflicts(parsed: ParsedDirectives) {
     }
 }
 
+function warnUnsupportedMediaModes(parsed: ParsedDirectives, options: CompileCSSOptions) {
+    const config = extendConfig(defaultConfig, options.config, parsed.config)
+    if (config.modeTrigger !== 'media') return
+
+    const customModes = new Set((config.modes || []).filter((mode) => !DEFAULT_MODE_NAMES.has(mode)))
+    if (typeof config.defaultMode === 'string' && !DEFAULT_MODE_NAMES.has(config.defaultMode)) {
+        customModes.add(config.defaultMode)
+    }
+    if (!customModes.size) return
+
+    const modeList = [...customModes].map((mode) => `"${mode}"`).join(', ')
+    const subject = customModes.size === 1 ? 'mode' : 'modes'
+    warn(parsed, options, `Custom ${subject} ${modeList} will not work with mode-trigger: media. Browsers only support light and dark prefers-color-scheme values; use mode-trigger: class or host for custom modes.`)
+}
+
 function createComposeCSS(parsed: ParsedDirectives, options: CompileCSSOptions) {
     return createCSS(extendConfig(options.config, parsed.config))
 }
@@ -2224,6 +2239,7 @@ export function compileCSS(source: string, options: CompileCSSOptions = {}): Com
         }
     })
     validateTokenConflicts(parsed)
+    warnUnsupportedMediaModes(parsed, options)
     finalizeUtilityDefinitions(parsed, options)
     finalizeComponentDefinitions(parsed, options)
     const css = createDirectiveCSS(parsed, options)

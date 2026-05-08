@@ -232,6 +232,47 @@ describe.concurrent('@master/css-compiler', () => {
         expect(result.css).toContain('.chrisma .bg\\:primary\\@chrisma{background-color:rgb(255 255 0)}')
     })
 
+    it('warns when media mode trigger is used with custom modes', () => {
+        const warnings: string[] = []
+        const result = compileCSS(`
+            @master {
+                chrisma {
+                    --color-primary: #ff0;
+                }
+            }
+        `, { onWarning: (warning) => warnings.push(warning) })
+
+        expect(result.config.modes).toEqual(['chrisma'])
+        expect(result.warnings).toEqual([
+            'Custom mode "chrisma" will not work with mode-trigger: media. Browsers only support light and dark prefers-color-scheme values; use mode-trigger: class or host for custom modes.'
+        ])
+        expect(warnings).toEqual(result.warnings)
+    })
+
+    it('does not warn for custom modes when mode trigger is class or host', () => {
+        const classResult = compileCSS(`
+            @master {
+                mode-trigger: class;
+
+                chrisma {
+                    --color-primary: #ff0;
+                }
+            }
+        `)
+        const hostResult = compileCSS(`
+            @master {
+                mode-trigger: host;
+
+                chrisma {
+                    --color-primary: #ff0;
+                }
+            }
+        `)
+
+        expect(classResult.warnings).toEqual([])
+        expect(hostResult.warnings).toEqual([])
+    })
+
     it('supports important flags in @master root', () => {
         const importantResult = compileCSS(`
             @master {
@@ -400,6 +441,39 @@ describe.concurrent('@master/css-compiler', () => {
         expect(result.css).toContain('.prose :is(p){font-size:1rem}')
         expect(result.css).toContain('.prose :is(li){font-size:0.875rem}')
         expect(result.css).toContain('.prose>a,.prose code{color:red}')
+    })
+
+    it('resolves built-in selector tokens in nested component selectors', () => {
+        const tokenResult = compileCSS(`
+            @master {
+                .article {
+                    &::scrollbar {
+                        width: 1rem;
+                    }
+                }
+            }
+        `, { classes: ['article'] })
+
+        const nativeResult = compileCSS(`
+            @master {
+                .article {
+                    &::-webkit-scrollbar {
+                        width: 1rem;
+                    }
+                }
+            }
+        `, { classes: ['article'] })
+
+        expect(getStaticUtilityRules(tokenResult, 'article')).toEqual([
+            {
+                selector: '&::-webkit-scrollbar',
+                declarations: {
+                    width: '1rem'
+                }
+            }
+        ])
+        expect(tokenResult.css).toBe(nativeResult.css)
+        expect(tokenResult.css).toContain('.article::-webkit-scrollbar{width:1rem}')
     })
 
     it('supports nested selectors inside component layer and at-rule blocks', () => {

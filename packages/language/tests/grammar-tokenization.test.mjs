@@ -182,6 +182,7 @@ test('CSS injection highlights @master root configuration blocks', () => {
 
             @custom-at motion-safe @media (prefers-reduced-motion: no-preference);
             @custom-selector :interactive :is(:hover, :focus-visible);
+            @custom-selector ::scrollbar ::-webkit-scrollbar;
         }
     `, 'css')
 
@@ -196,6 +197,7 @@ test('CSS injection highlights @master root configuration blocks', () => {
     assertTokenScope(tokens, 'media', 'keyword.control.at-rule.css')
     assertTokenScope(tokens, 'custom-selector', 'keyword.control.at-rule.custom-selector.master-css.css')
     assertTokenScope(tokens, ':interactive', 'entity.other.attribute-name.pseudo-class.css')
+    assertTokenScope(tokens, '::scrollbar', 'entity.other.attribute-name.pseudo-element.css')
 })
 
 test('CSS injection highlights @master component directives and compose classes', () => {
@@ -209,6 +211,10 @@ test('CSS injection highlights @master component directives and compose classes'
 
                 &:hover {
                     color: var(--color-primary);
+                }
+
+                &::scrollbar {
+                    width: .25rem;
                 }
             }
         }
@@ -224,6 +230,8 @@ test('CSS injection highlights @master component directives and compose classes'
     assertTokenScope(tokens, 'dark', 'support.constant.property-value.css')
     assertTokenScope(tokens, 'bg', 'support.type.property-name.css')
     assertTokenScope(tokens, '&', 'entity.name.tag.css')
+    assertTokenScope(tokens, '::', 'entity.other.attribute-name.pseudo-element.css')
+    assertTokenScope(tokens, 'scrollbar', 'entity.other.attribute-name.pseudo-element.css')
     assertTokenScope(tokens, 'color', 'support.type.property-name.css')
 })
 

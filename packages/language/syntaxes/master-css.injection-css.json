@@ -249,7 +249,7 @@
             ]
         },
         "master-css-custom-selector": {
-            "begin": "((@)custom-selector)(\\s+)(:{1,2}[^\\s;]+)",
+            "begin": "((@)custom-selector)(\\s+)((::[^\\s;]+)|(:[^\\s;]+))",
             "end": "(;)|(?=\\})",
             "name": "meta.at-rule.custom-selector.master-css.css",
             "beginCaptures": {
@@ -259,7 +259,10 @@
                 "2": {
                     "name": "punctuation.definition.keyword.css"
                 },
-                "4": {
+                "5": {
+                    "name": "entity.other.attribute-name.pseudo-element.css"
+                },
+                "6": {
                     "name": "entity.other.attribute-name.pseudo-class.css"
                 }
             },
@@ -334,6 +337,9 @@
                             "include": "source.css#selector-innards"
                         },
                         {
+                            "include": "#master-css-selector-token"
+                        },
+                        {
                             "match": "\\b[-\\w]+\\b",
                             "name": "entity.name.tag.css"
                         }
@@ -388,6 +394,32 @@
                 },
                 {
                     "include": "source.css"
+                }
+            ]
+        },
+        "master-css-selector-token": {
+            "patterns": [
+                {
+                    "match": "(::)([-_a-zA-Z][-_a-zA-Z0-9]*)",
+                    "captures": {
+                        "1": {
+                            "name": "entity.other.attribute-name.pseudo-element.css punctuation.definition.entity.css"
+                        },
+                        "2": {
+                            "name": "entity.other.attribute-name.pseudo-element.css"
+                        }
+                    }
+                },
+                {
+                    "match": "(:)([-_a-zA-Z][-_a-zA-Z0-9]*)",
+                    "captures": {
+                        "1": {
+                            "name": "entity.other.attribute-name.pseudo-class.css punctuation.definition.entity.css"
+                        },
+                        "2": {
+                            "name": "entity.other.attribute-name.pseudo-class.css"
+                        }
+                    }
                 }
             ]
         },

@@ -39,7 +39,7 @@ function renderTokens(content: string, ext: Parameters<typeof createDoc>[0] = 't
 
 test.concurrent('renders semantic tokens for class attributes', () => {
     const { tokens } = renderTokens(
-        '<div className="fg:brand:hover@sm block m:4x bg:rgb(0|0|0) btn"></div>',
+        '<div className="fg:brand:hover@sm block m:4x bg:rgb(0|0|0) w:10::scrollbar btn"></div>',
         'tsx',
         {
             config: {
@@ -68,6 +68,8 @@ test.concurrent('renders semantic tokens for class attributes', () => {
         { text: 'block', type: 'class', modifiers: [] },
         { text: '4x', type: 'number', modifiers: [] },
         { text: 'rgb', type: 'function', modifiers: [] },
+        { text: '::', type: 'operator', modifiers: [] },
+        { text: 'scrollbar', type: 'modifier', modifiers: [] },
         { text: 'btn', type: 'class', modifiers: ['declaration'] }
     ]))
 })
