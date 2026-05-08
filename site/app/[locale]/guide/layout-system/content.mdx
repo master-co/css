@@ -1,0 +1,359 @@
+## Overview [sr-only]
+CSS layout is built from native primitives. [CSS Grid](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_grid_layout) arranges content across two axes. [Flexbox](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_flexible_box_layout) distributes content along one axis. A layout system turns those primitives into repeatable decisions: page containers, column counts, gutters, outer margins, content regions, and responsive rules.
+
+In Master CSS, those decisions stay close to the markup and share the same foundations as the rest of the interface:
+
+* [Screen sizes](/guide/screen-sizes) define when layout changes.
+* [Spacing](/guide/spacing) defines gutters, margins, and section rhythm.
+* [Sizing](/guide/sizing) defines wrappers, fixed regions, fluid regions, and constraints.
+* Grid and Flex utilities express the actual composition.
+
+(resize) Drag the edges to see the shell move from a compact stacked layout to 8-column and 12-column compositions.
+
+<ResizeZone width="100%" originX="center" showRuler>
+    <IFrame src="/examples/layout-system" height={760} scrolling="yes" />
+</ResizeZone>
+
+```html
+<!-- @MARK max-w:screen-lg --><!-- @MARK grid-cols:4 --><!-- @MARK grid-cols:8@2xs --><!-- @MARK grid-cols:12@md -->
+<main class="w:full max-w:screen-lg mx:auto p:md p:lg@2xs">
+    <section class="grid-cols:4 grid-cols:8@2xs grid-cols:12@md gap:sm gap:md@2xs">
+        <aside class="grid-col-span:4 grid-col-span:2@2xs grid-col-span:3@md">...</aside>
+        <section class="grid-col-span:4 grid-col-span:6@2xs grid-col-span:9@md grid-cols:4 grid-cols:6@2xs grid-cols:9@md gap:sm gap:md@2xs">
+            ...
+        </section>
+    </section>
+</main>
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['w:full', 'max-w:screen-lg', 'mx:auto', 'p:md', 'p:lg@2xs', 'grid-cols:4', 'grid-cols:8@2xs', 'grid-cols:12@md', 'gap:sm', 'gap:md@2xs', 'grid-col-span:4', 'grid-col-span:2@2xs', 'grid-col-span:3@md', 'grid-col-span:6@2xs', 'grid-col-span:9@md', 'grid-cols:6@2xs', 'grid-cols:9@md']}
+    </Class2CSS>
+</details>
+
+---
+
+## Define the system
+A layout system should answer five questions before individual components start styling themselves.
+
+| Decision | Master CSS foundation | Typical utilities |
+| --- | --- | --- |
+| Canvas width | Screen sizes and sizing | `w:full`, `max-w:screen-lg`, `mx:auto` |
+| Outer margin | Spacing | `px:md`, `px:xl@md` |
+| Columns | Grid | `grid-cols:4`, `grid-cols:12@md` |
+| Gutters | Spacing | `gap:md`, `gap-x:lg`, `gap-y:xl` |
+| Region behavior | Grid, Flex, and queries | `grid-col-span:8@md`, `flex-row@2xs`, `@container(md)` |
+
+These decisions are separate on purpose. A page can keep the same maximum width while changing column count. A component can keep the same columns while increasing its gutter. A reusable card can respond to its container instead of the viewport.
+
+---
+
+## Start with a page container
+The container defines the live area for the layout. Use `w:full` so the wrapper can shrink, `max-w:screen-*` so it aligns with the [screen size scale](/guide/screen-sizes), `mx:auto` to center it, and horizontal padding from the [spacing scale](/guide/spacing) for the outer margin.
+
+```html
+<!-- @MARK w:full --><!-- @MARK max-w:screen-lg --><!-- @MARK mx:auto --><!-- @MARK px:md --><!-- @MARK px:xl@md -->
+<main class="w:full max-w:screen-lg mx:auto px:md px:xl@md">
+    ...
+</main>
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['w:full', 'max-w:screen-lg', 'mx:auto', 'px:md', 'px:xl@md']}
+    </Class2CSS>
+</details>
+
+Use the wrapper for page-level alignment. Use inner grids for content relationships. This keeps outer margins, columns, and card padding from competing with each other.
+
+(i) Use `screen-*` values for layout wrappers that should match breakpoint decisions. Use local `x`, `ch`, or `clamp()` values when the maximum width is based on content measure instead of the responsive scale.
+
+---
+
+## Build column grids
+Column grids are most useful when several regions need to align across a page. A 4, 8, or 12 column structure is a practical default because it supports halves, thirds, quarters, and asymmetrical content regions without forcing narrow columns everywhere.
+
+Use `grid-cols:<count>` to create equal-width columns. It also sets `display:grid`, so a separate `grid` class is not required for this pattern.
+
+```html
+<!-- @MARK grid-cols:4 --><!-- @MARK grid-cols:8@2xs --><!-- @MARK grid-cols:12@md --><!-- @MARK gap:lg -->
+<section class="grid-cols:4 grid-cols:8@2xs grid-cols:12@md gap:lg">
+    <article class="grid-col-span:4 grid-col-span:5@2xs grid-col-span:8@md">...</article>
+    <aside class="grid-col-span:4 grid-col-span:3@2xs grid-col-span:4@md">...</aside>
+</section>
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['grid-cols:4', 'grid-cols:8@2xs', 'grid-cols:12@md', 'gap:lg', 'grid-col-span:4', 'grid-col-span:5@2xs', 'grid-col-span:8@md', 'grid-col-span:3@2xs', 'grid-col-span:4@md']}
+    </Class2CSS>
+</details>
+
+Start with the smallest layout that works, then add breakpoint-specific column counts and spans only where the relationship changes. This keeps the markup readable and avoids maintaining unused breakpoints.
+
+---
+
+## Use gutters from spacing
+Gutters are the spaces between columns and rows. They should come from spacing tokens so grid rhythm matches component padding, form spacing, and section separation.
+
+Use `gap:*` when both axes share the same rhythm. Use `gap-x:*` and `gap-y:*` when horizontal gutters and vertical stacking need different values.
+
+```html
+<!-- @MARK gap:md --><!-- @MARK gap-x:lg@md --><!-- @MARK gap-y:xl@md -->
+<section class="grid-cols:1 grid-cols:3@md gap:md gap-x:lg@md gap-y:xl@md">
+    ...
+</section>
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['grid-cols:1', 'grid-cols:3@md', 'gap:md', 'gap-x:lg@md', 'gap-y:xl@md']}
+    </Class2CSS>
+</details>
+
+(x) Do not use arbitrary gutters as the default language of a design system.
+
+```html
+<section class="grid-cols:3 gap:23">...</section>
+```
+
+(o) Use a shared spacing token, or add one when the product has a named gutter.
+
+```html
+<section class="grid-cols:3 gap:lg">...</section>
+```
+
+---
+
+## Place regions intentionally
+Grid placement should describe the region's role in the layout, not the visual size of an individual card. Use spans for common regions and line placement when the design needs a specific start or end.
+
+| Goal | Utility |
+| --- | --- |
+| Span columns | `grid-col-span:<count>` |
+| Place between lines | `grid-col:<start>/<end>` |
+| Set explicit start | `grid-col-start:<line>` |
+| Set explicit end | `grid-col-end:<line>` |
+| Span rows | `grid-row-span:<count>` |
+| Assign a named area | `grid-area:<name>` |
+
+```html
+<!-- @MARK grid-col-span:12 --><!-- @MARK grid-col:3/11@md --><!-- @MARK grid-row-span:2@md -->
+<section class="grid-cols:12 gap:lg">
+    <header class="grid-col-span:12">...</header>
+    <article class="grid-col:3/11@md grid-row-span:2@md">...</article>
+</section>
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['grid-cols:12', 'gap:lg', 'grid-col-span:12', 'grid-col:3/11@md', 'grid-row-span:2@md']}
+    </Class2CSS>
+</details>
+
+For regular content pages, spans are usually easier to maintain than exact line numbers. Use exact lines for editorial layouts, dashboards, and app shells where the page has a stable structural grid.
+
+---
+
+## Choose Grid or Flex
+Use Grid when the parent owns the columns, rows, or area placement. Use Flexbox when the content owns its natural size and the parent only needs to distribute, align, wrap, or switch direction.
+
+| Use Grid for | Use Flexbox for |
+| --- | --- |
+| Page regions | Toolbars |
+| Card galleries | Menus and tabs |
+| Editorial spans | Media objects |
+| Dashboards | Inline controls |
+| Two-axis alignment | One-axis distribution |
+
+<Demo>
+    <article className="container w:full flex flex-col flex-row@container(2xs) gap:md bg:surface b:1|lightest shadow:xs r:lg p:md">
+        <div className="grid place-content:center w:full w:36x@container(2xs) aspect:4/3 flex:0@container(2xs) bg:primary/.12 r:md">
+            <div className="grid-cols:3 gap:2xs w:20x">
+                <div className="h:5x bg:primary/.25 r:sm"></div>
+                <div className="h:5x bg:primary/.35 r:sm"></div>
+                <div className="h:5x bg:primary/.2 r:sm"></div>
+                <div className="h:5x bg:primary/.2 r:sm"></div>
+                <div className="h:5x bg:primary/.45 r:sm"></div>
+                <div className="h:5x bg:primary/.3 r:sm"></div>
+            </div>
+        </div>
+        <div className="min-w:0 flex:1">
+            <DemoLabel>Flex media object</DemoLabel>
+            <div className="font:semibold fg:strong">Quarterly planning</div>
+            <p className="m:0 mt:xs text:sm fg:neutral">The image keeps a measured basis while the content expands, shrinks, and wraps around the available inline space.</p>
+            <div className="flex flex:wrap gap:xs mt:md">
+                <span className="px:xs py:2xs r:sm bg:primary/.12 fg:primary text:xs">Roadmap</span>
+                <span className="px:xs py:2xs r:sm bg:green/.12 fg:green text:xs">Ready</span>
+            </div>
+        </div>
+    </article>
+</Demo>
+
+```html
+<!-- @MARK container --><!-- @MARK w:full --><!-- @MARK flex --><!-- @MARK flex-col --><!-- @MARK flex-row@container(2xs) -->
+<article class="container w:full flex flex-col flex-row@container(2xs) gap:md">
+    <img class="w:full w:36x@container(2xs) flex:0@container(2xs)" alt="" />
+    <div class="min-w:0 flex:1">...</div>
+</article>
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['container', 'flex', 'flex-col', 'flex-row@container(2xs)', 'gap:md', 'w:full', 'w:36x@container(2xs)', 'flex:0@container(2xs)', 'min-w:0', 'flex:1']}
+    </Class2CSS>
+</details>
+
+`min-w:0` is important for flexible text regions. It allows long content to shrink inside a flex or grid item instead of forcing the whole layout wider than the container.
+
+---
+
+## Use container queries for components
+Viewport breakpoints are a good fit for page-level layout. Container queries are a better fit for reusable components because the same component can appear in a narrow sidebar, a modal, or a wide content column.
+
+Add `container` to the component boundary, then use `@container(<screen>)` on descendants.
+
+```html
+<section class="container">
+    <!-- @MARK grid-cols:2@container(2xs) --><!-- @MARK gap:lg@container(2xs) -->
+    <article class="grid-cols:1 grid-cols:2@container(2xs) gap:md gap:lg@container(2xs)">
+        ...
+    </article>
+</section>
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['container', 'grid-cols:1', 'grid-cols:2@container(2xs)', 'gap:md', 'gap:lg@container(2xs)']}
+    </Class2CSS>
+</details>
+
+Use viewport breakpoints for global decisions such as page shell, navigation mode, and maximum canvas width. Use container queries for cards, forms, media objects, and reusable panels.
+
+---
+
+## Add explicit tracks only when needed
+`grid-cols:*` is best for equal columns. Use `grid-template-cols:*` when the layout needs fixed, intrinsic, or mixed tracks.
+
+```html
+<!-- @MARK grid --><!-- @MARK grid-template-cols:18x|minmax(0,1fr) --><!-- @MARK gap:md -->
+<section class="grid grid-template-cols:18x|minmax(0,1fr) gap:md">
+    <nav>...</nav>
+    <main class="min-w:0">...</main>
+</section>
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['grid', 'grid-template-cols:18x|minmax(0,1fr)', 'gap:md', 'min-w:0']}
+    </Class2CSS>
+</details>
+
+Use explicit tracks for app shells, data views, split panes, and content that has a real fixed region. For ordinary responsive content, equal columns plus spans are usually more flexible.
+
+---
+
+## Common patterns
+### Page shell
+```html
+<!-- @MARK max-w:screen-xl --><!-- @MARK px:lg --><!-- @MARK px:2xl@lg -->
+<main class="w:full max-w:screen-xl mx:auto px:lg px:2xl@lg">
+    ...
+</main>
+```
+
+### Content with sidebar
+```html
+<!-- @MARK grid-cols:12@md --><!-- @MARK grid-col-span:8@md --><!-- @MARK grid-col-span:4@md -->
+<section class="grid-cols:1 grid-cols:12@md gap:xl">
+    <article class="grid-col-span:8@md">...</article>
+    <aside class="grid-col-span:4@md">...</aside>
+</section>
+```
+
+### Responsive card gallery
+```html
+<!-- @MARK grid-cols:2@2xs --><!-- @MARK grid-cols:3@md --><!-- @MARK gap:lg -->
+<section class="grid-cols:1 grid-cols:2@2xs grid-cols:3@md gap:lg">
+    ...
+</section>
+```
+
+### Wrapping toolbar
+```html
+<!-- @MARK flex --><!-- @MARK flex:wrap --><!-- @MARK gap:sm --><!-- @MARK items-center -->
+<div class="flex flex:wrap items-center gap:sm">
+    ...
+</div>
+```
+
+### Media object
+```html
+<!-- @MARK flex-row@2xs --><!-- @MARK w:32x@2xs --><!-- @MARK min-w:0 -->
+<article class="flex flex-col flex-row@2xs gap:md">
+    <img class="w:full w:32x@2xs flex:0@2xs" alt="" />
+    <div class="min-w:0">...</div>
+</article>
+```
+
+---
+
+## Common mistakes
+### Changing columns without changing spans
+(x) The grid becomes 12 columns, but each region still spans the mobile 4-column structure.
+
+```html
+<section class="grid-cols:4 grid-cols:12@md gap:lg">
+    <article class="grid-col-span:4">...</article>
+    <aside class="grid-col-span:4">...</aside>
+</section>
+```
+
+(o) Update the spans at the same breakpoint as the column change.
+
+```html
+<section class="grid-cols:4 grid-cols:12@md gap:lg">
+    <article class="grid-col-span:4 grid-col-span:8@md">...</article>
+    <aside class="grid-col-span:4 grid-col-span:4@md">...</aside>
+</section>
+```
+
+### Using viewport breakpoints inside every component
+(x) The card changes based on the page viewport, even when it appears in a narrow parent.
+
+```html
+<article class="grid-cols:1 grid-cols:2@md gap:lg">...</article>
+```
+
+(o) Let the card respond to the space it actually receives.
+
+```html
+<section class="container">
+    <article class="grid-cols:1 grid-cols:2@container(2xs) gap:lg">...</article>
+</section>
+```
+
+### Treating Grid and Flex as interchangeable
+Use Grid when children need to share a column system. Use Flexbox when children need to wrap, align, or distribute along one axis. This distinction keeps page layout predictable and keeps components simple.
+
+---
+
+## Summary
+Build layout systems from stable foundations:
+
+* Use `screen` tokens for breakpoint and wrapper decisions.
+* Use spacing tokens for gutters, outer margins, and section rhythm.
+* Use `grid-cols:*` and placement utilities for page regions and galleries.
+* Use `flex`, direction, wrapping, and `flex:*` for one-axis component layout.
+* Use container queries when a reusable component should adapt to its own available width.
+
+The result is a layout language that is explicit in markup, token-aligned with the design system, and flexible enough for both page-level grids and component-level composition.

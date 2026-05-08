@@ -94,6 +94,14 @@ For View Transitions demos:
 - Always provide a no-API fallback that runs the update immediately.
 - Keep article detail views single-column unless the guide explicitly demonstrates a multi-column destination layout.
 
+For Layout System and similar foundation layout demos:
+
+- Prefer one polished, practical UI composition over abstract placeholder grids when the guide is teaching product layout decisions. Good examples include app shells, dashboards, content with sidebars, media objects, card galleries, and editorial regions.
+- Use `<ResizeZone>` with `<IFrame>` for the primary responsive demo when the lesson depends on viewport width, matching the responsive-design guide pattern. Keep the iframe page under `site/app/[locale]/examples/<slug>/`.
+- Pair each practical demo with a reduced code sample that exposes the layout strategy, not every decorative class. Highlight containers, column counts, spans, gutters, screen-size variants, and container-query variants.
+- Use abstract boxes only for low-level anatomy such as explaining columns, gutters, line placement, or track sizing where real UI would obscure the concept.
+- Keep layout examples token-aligned: `screen-*` for wrappers, spacing tokens for gutters and margins, Grid for page regions, Flexbox for one-axis component layout, and `min-w:0` where flexible content can overflow.
+
 ## Design References
 
 Before changing guide demo layout, spacing, sizing, color, radius, typography, or responsive behavior, inspect the relevant `Fundations` guide pages and follow their current patterns.
