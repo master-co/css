@@ -28,12 +28,12 @@ export default () => {
                         <td className="white-space:nowrap"><code>{'@layer preset { … }'}</code></td>
                     </tr>
                     <tr>
-                        <th>Components</th>
-                        <td>Where the used <Link href="/guide/components">components</Link> are generated.</td>
+                        <th>Main</th>
+                        <td>Where the used <Link href="/guide/components">main styles</Link> are generated.</td>
                         <td className="white-space:nowrap"><code>{'@layer main { … }'}</code></td>
                     </tr>
                     <tr>
-                        <th>Utilities</th>
+                        <th>General</th>
                         <td>Where the utility styles are generated.</td>
                         <td className="white-space:nowrap"><code>{'@layer general { … }'}</code></td>
                     </tr>

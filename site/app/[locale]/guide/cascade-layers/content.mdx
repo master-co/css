@@ -1,8 +1,75 @@
-## Understanding all layers [sr-only]
-Master CSS analyzes the syntax and inserts it into the appropriate layer, allowing you to focus on the UI without worrying about style precedence.
+## How layers control the cascade [sr-only]
+CSS cascade layers let a stylesheet decide which groups of rules should win before selector specificity is compared. Master CSS uses that native model as the backbone of its output, so utilities, project styles, presets, variables, and resets can coexist without turning every override into a specificity contest.
+
+Every generated stylesheet starts with the same layer statement:
+
+```css
+@layer base,theme,preset,main,general;
+```
+
+Layers declared later have higher priority for normal declarations. In Master CSS, the practical order is:
+
+```txt
+general > main > preset > theme > base
+```
+
 <LayersDefault />
 
-Here is an example that covers all layers:
+This order is intentional. Foundation rules go early, product vocabulary goes in the middle, and one-off utility decisions stay late enough to override project styles when markup asks for it.
+
+---
+
+## The five layers
+### Base
+Use `base` for low-level resets and normalization. This layer should make the browser environment predictable, not express a brand or component design.
+
+Rules enter the base layer through `@base` syntax or regular CSS written inside `@layer base`.
+
+### Theme
+Use `theme` for generated CSS custom properties. Variables defined in `@master` or `config.variables` are emitted here only when a generated rule references them.
+
+Theme rules are intentionally early: they provide values that later layers consume, but they should not compete with layout, color, or component declarations directly.
+
+### Preset
+Use `preset` for broad element defaults such as typography inside an article, code styling, or vendor defaults you want to keep below app-level styles.
+
+Rules enter the preset layer through `@preset` syntax or explicit `@layer preset` definitions. Because preset sits before `main` and `general`, components and utilities can still override it without `!important`.
+
+### Main
+Use `main` for project styles that carry product meaning: `.btn`, `.card`, `.field`, `.toolbar`, `.app-shell`. In CSS config, write these class definitions directly inside `@master`.
+
+```css name=master.css
+@master {
+    .btn {
+        @compose "inline-flex";
+        background-color: var(--color-primary);
+    }
+}
+```
+
+The compiler converts these definitions into static `config.utilities` entries with `layer: 'main'`. They remain on-demand: defining `.btn` does not emit CSS until `btn` is used or extracted.
+
+### General
+Use `general` for utilities: built-in utilities, animation utilities, and custom static utilities written in `@layer general` inside `@master`.
+
+```css name=master.css
+@master {
+    @layer general {
+        .content-auto {
+            content-visibility: auto;
+            contain-intrinsic-size: auto 32rem;
+        }
+    }
+}
+```
+
+General is the final layer, so utility classes can intentionally override main styles from markup.
+
+---
+
+## A complete flow
+This example touches every generated layer. The CSS config defines theme variables and a main style, while the markup uses base, preset, and general utilities.
+
 ```css name=master.css
 @master {
     light {
@@ -19,26 +86,29 @@ Here is an example that covers all layers:
     }
 }
 ```
+
 <Code lang="html" name="hero.html">{require('./tests/overview/template.html?raw')}</Code>
+
 <details>
     <summary>Generated CSS</summary>
     <Code lang="css" beautify>{require('./tests/overview/generated.css?raw')}</Code>
 </details>
 
-- The first line defines the cascade order. Layers declared later will override earlier ones in case of conflicts.
-- **Base** — rules from `@base` (e.g., `mcss list-style:none_ul@base`).
-- **Theme** — rules from variables and `config.variables`.
-- **Preset** — rules from `@preset` syntax (e.g., `mcss text:16_p@preset`).
-- **Main** — project style rules from class definitions in `@master` or static utilities with `layer: 'main'`.
-- **General** — built-in and custom utility rules (e.g., `mcss flex`, `mcss @fade|1s`).
-- All keyframes are placed at the top level.
+Notice the shape of the output:
+
+- The layer statement defines the global order once.
+- Theme variables are emitted in `@layer theme`.
+- The `.btn` definition is emitted in `@layer main`.
+- `flex` and `@fade|1s` are emitted in `@layer general`.
+- `@keyframes` are emitted at the top level, outside cascade layers.
 
 ---
 
-## Adding base styles
-To normalize browser and preset global styles for more concise-style programming, add CSS rules in the base layer.
+## Base is for normalization
+Put reset-style rules in the base layer when they should sit below every design decision.
 
-(i) Add a CSS rule for base styles in your global CSS file
+(i) Add base rules in a global CSS file when the reset is part of the application shell.
+
 ```css name=globals.css
 @layer base {
     ul {
@@ -46,50 +116,55 @@ To normalize browser and preset global styles for more concise-style programming
     }
 }
 ```
-Or you can add base styles with `@base` in the HTML:
+
+You can also use `@base` from markup:
+
 <Code lang="html">{require('./tests/adding-base-styles/template.html?raw')}</Code>
+
 <details>
     <summary>Generated CSS</summary>
     <Code lang="css" beautify>{require('./tests/adding-base-styles/generated.css?raw')}</Code>
 </details>
 
-In most cases, the official package, [`@master/normal.css`](/reference/normal-css), can help you normalize browser styles.
+In most projects, [`@master/normal.css`](/reference/normal-css) is the better starting point for browser normalization.
 
 ---
 
-## Adding preset styles
-To preset fonts, foreground colors, etc. based on your brand, use `@preset` to define these styles in elements.
+## Preset is for broad defaults
+Put brand or content defaults in the preset layer when they should apply across selected descendants but still remain easy to override.
 
-(i) Use selectors and `@preset` to preset styles for elements and states.
 <Code lang="html">{require('./tests/adding-preset-styles/template.html?raw')}</Code>
+
 <details>
     <summary>Generated CSS</summary>
     <Code lang="css" beautify>{require('./tests/adding-preset-styles/generated.css?raw')}</Code>
 </details>
 
-Without `@preset`, you would have to always add `css !important` whenever you customize the same CSS property for the selected element.
+(x) Do not put brand defaults into the base layer.
 
-(x) Don't add brand-related preset styles to the base layer.
 ```html
 <!-- @MARK font:mono_:is(code,pre)@base -->
 <body class="font:mono_:is(code,pre)@base">…</body>
 ```
-The preset layer styles should be built on top of the base layer.
+
+Base should normalize. Preset should express broad design defaults.
 
 ---
 
-## Overriding main styles
-You can override the [components](/guide/components) by adding utility syntax, without having to prioritize rules.
+## General can override main
+Layer order is checked before selector specificity. That means a general utility can override a main style even when the main style comes from a named component.
 
-For example, add `flex` to override the display declaration `inline-flex` of the button.
+For example, `.btn` defines `display: inline-flex` in the main layer. Adding `flex` in markup moves the final `display` decision to the general layer.
+
 ```html
 <!-- @MARK btn flex -->
 <button class="btn flex">Submit</button>
 ```
+
 <details>
     <summary>Generated CSS</summary>
     ```css
-    @layer base, theme, preset, main, general;
+    @layer base,theme,preset,main,general;
 
     @layer main {
         .btn {
@@ -106,34 +181,69 @@ For example, add `flex` to override the display declaration `inline-flex` of the
     ```
 </details>
 
+Use this as the normal override path: keep reusable product styles in `main`, then use utilities in `general` for local adjustments.
 
 ---
 
-## Overriding preset styles
-You can select descendants with `@preset` to preset styles, preventing main styles and general utilities from being overwritten.
+## Preset stays below local decisions
+Preset rules are useful for descendants because they can establish defaults without blocking local classes.
 
-For example, set the default paragraph text size to `16` and change the text size of a specific paragraph to `24`.
+For example, set paragraph text to `16` across an article, then override one paragraph with `text:24`.
+
 <Code lang="html">{require('./tests/overriding-preset-styles/template.html?raw')}</Code>
+
 <details>
     <summary>Generated CSS</summary>
     <Code lang="css" beautify>{require('./tests/overriding-preset-styles/generated.css?raw')}</Code>
 </details>
 
-This way, you can set preset styles for multiple targets at once while still being able to modify specific elements' styles as needed.
+This is the reason preset sits before main and general: defaults should be broad, but final element-level decisions should stay close to the element.
+
+---
+
+## Writing regular CSS
+Regular CSS outside `@layer` follows the native cascade outside Master CSS's layer model. If you want a rule to participate in the same priority system, place it in the layer that matches its responsibility.
+
+```css name=app.css
+@layer preset {
+    article :is(h1, h2, h3) {
+        font-weight: 700;
+    }
+}
+
+@layer main {
+    .card {
+        border-radius: .75rem;
+    }
+}
+```
+
+Inside `@master`, prefer the configured forms:
+
+```css name=master.css
+@master {
+    @layer general {
+        .content-auto {
+            content-visibility: auto;
+        }
+    }
+
+    .card {
+        @compose "block";
+        border-radius: .75rem;
+    }
+}
+```
 
 ---
 
 ## Summary
-By leveraging CSS cascade layers, you can structure your styles for better maintainability and prevent unwanted overrides.
+Cascade layers are the contract that makes Master CSS predictable:
 
-If styles conflict, the order of priority: **General** > **Main** > **Preset** > **Theme** > **Base**.
+1. `base` normalizes the platform.
+1. `theme` provides generated variables.
+1. `preset` sets broad defaults.
+1. `main` holds project vocabulary from `@master` class definitions.
+1. `general` holds utilities and final local adjustments.
 
-### Responsibilities
-1. Use the base layer for global resets and normalization.
-1. Use the preset layer for brand-specific defaults.
-1. Other layers are automatically generated based on your syntax and configuration.
-
-### Best Practices
-1. Create base styles via CSS files and packages instead of defining a lot of `@base` syntax.
-1. Create preset styles based on base styles.
-1. Create main styles based on base and preset styles.
+When declarations conflict, solve the problem by choosing the correct layer first. Reach for specificity or `!important` only when you are intentionally integrating with CSS that sits outside this layer model.
