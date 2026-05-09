@@ -3,9 +3,9 @@
 ---
 
 ## The CSS language
-Master CSS is a markup-driven CSS language with smart rules allowing you to write familiar CSS using concise syntax within HTML/JSX.
+Master CSS is a markup-driven CSS language and framework. It lets you write familiar CSS decisions as concise class syntax in HTML, JSX, and other template markup.
 
-Under the hood, Master CSS automatically adds [vendor prefixes](/guide/browser-support), smartly [ordering CSS rules](#smart-rule-ordering), and more. This allows you to focus on building your website rather than spending a lot of effort writing and maintaining CSS rules.
+Under the hood, Master CSS generates real CSS rules, adds [vendor prefixes](/guide/browser-support), places rules in predictable [cascade layers](/guide/cascade-layers), and [orders CSS rules](#smart-rule-ordering) for you. This lets you focus on building your interface instead of maintaining a growing set of hand-written CSS rules.
 
 <Demo $py={0}>
     <h1 className="fg:indigo fg:red:hover font:3xl font:5xl@sm font:heavy m:2xl text:center">Hello World</h1>
@@ -15,12 +15,12 @@ Under the hood, Master CSS automatically adds [vendor prefixes](/guide/browser-s
     Hello World
 </h1>
 ```
-[Declaring styles](/guide/style-declarations) through the `class` attribute, attaching [selector states](/guide/state-selectors), and even base them on [conditional queries](/guide/conditional-queries). There's no need to write any inline style sheets, including creating external CSS files; just add syntax classes in your HTML.
+[Declare styles](/guide/style-declarations) through the `class` attribute, attach [selector states](/guide/state-selectors), and scope them with [conditional queries](/guide/conditional-queries). For one-off styling, you can stay in markup. When styles become part of a design system, move tokens and reusable classes into [`master.css`](/guide/configuration).
 
-You can write atomic classes `text:center` or [abstract styles](/guide/components) `btn` based on the characteristics of your project and team.
+You can use utility classes such as `text:center` for local decisions, or define config-backed [components](/guide/components) such as `btn` when a repeated class list becomes project vocabulary.
 
 
-### Structured Syntax
+### Structured syntax
 Writing the same syntax as `style=""` within `class=""` serves no purpose. We aim to provide a logically simplified CSS declaration with an elegant syntax.
 
 It can be reducible:
@@ -56,7 +56,7 @@ It can be [stateful and selectable](/guide/selector-tokens):
 <!-- Use simplified :first instead of :nth-child to set pink background -->
 <div class="bg:pink:first">
 ```
-It can be [responsive](/guide/responsive-design) and [conditional](/guide/apply-conditionally):
+It can be [responsive](/guide/responsive-design) and [conditional](/guide/conditional-queries):
 ```html
 <!-- Set width to 50rem, when screen width >=1024 -->
 <div class="width:800@>=1024">
@@ -75,9 +75,9 @@ These examples are only the tip of the iceberg.
 
 "I'd need to learn a new language to use Master CSS."
 
-Rest assured, the Master CSS syntax is based on native CSS, positioned very similarly to [SASS](https://sass-lang.com). You can begin by writing familiar native-ish CSS and gradually incorporate our enhancements and syntactic sugar over time.
+Rest assured, the Master CSS syntax is based on native CSS, positioned very similarly to [Sass](https://sass-lang.com). You can begin by writing familiar native-ish CSS and gradually incorporate our enhancements and syntactic sugar over time.
 
-### Injected Syntax Highlighting
+### Injected syntax highlighting
 Master CSS is the first language to highlight class names fully, making identifying their properties, appearance, and state faster.
 
 (!) Do you find writing utility classes sometimes seem lengthy or hard to read?
@@ -114,7 +114,7 @@ We take pride in the experience improvement of syntax highlighting in template m
 
 Master CSS also features autocompletion, generated CSS preview, and more. Check out our [Language Service](/guide/language-service) for more information.
 
-### Predictable Syntax
+### Predictable syntax
 Have you ever felt anxious about adding styles to class attributes? Master CSS was the first to introduce [syntax validation](/guide/code-linting#syntax-error-checks) of classes in template markup, which helps you find errors early before building and dramatically improves the developer experience.
 <Image className="aspect:2/1 r:lg max-w:screen-xs w:full" src={require('~/site/public/syntax-error-checks.webp').default} alt="Syntax error checks" unoptimized />
 
@@ -130,7 +130,7 @@ To learn more, check out the [Code Linting](/guide/code-linting) documentation.
 ---
 
 ## The CSS framework
-Master CSS is a standalone CSS framework that provides various packages and solutions to expedite the development, including integrations for popular JavaScript frameworks, [code linting](#code-linting) for unifying team style, [language service](#language-service) to enhance the developer experience, [configuration](/guide/configuration) API for design systems, and [more](#main-features).
+Master CSS is a standalone CSS framework with packages for core generation, browser runtime rendering, server rendering, static extraction, framework integrations, [code linting](/guide/code-linting), [language service](/guide/language-service), and CSS-first [configuration](/guide/configuration).
 <details>
     <summary>View all official packages</summary>
     <div>
@@ -138,8 +138,32 @@ Master CSS is a standalone CSS framework that provides various packages and solu
     </div>
 </details>
 
+### CSS-first configuration
+`master.css` is the primary configuration file. Tokens are native custom properties, selector shortcuts use `@custom-selector`, conditional shortcuts use `@custom-at`, low-level custom utilities live in `@layer general`, and semantic component classes live directly inside `@master`.
+
+```css name=master.css
+@master {
+    --color-primary: #4f46e5;
+    --screen-md: 768;
+
+    @custom-at motion-safe @media (prefers-reduced-motion: no-preference);
+    @custom-selector :interactive :is(:hover, :focus-visible);
+
+    .btn {
+        @compose "inline-flex ai:center jc:center px:md py:xs r:lg";
+        background: var(--color-primary);
+
+        &:interactive {
+            @compose "outline:2|primary outline-offset:2";
+        }
+    }
+}
+```
+
+The `@master` block is configuration, not regular stylesheet output. Master CSS compiles it into config, then generates only the classes used in markup or found by extractors.
+
 ### Innovative rendering technology
-Master CSS provides three [rendering modes](/guide/rendering-modes), and you can choose according to project scale and application scenarios to meet your business needs.
+Master CSS provides three [rendering modes](/guide/rendering-modes): runtime rendering for dynamic interfaces, static extraction for source-scanned builds, and progressive rendering for pre-rendered critical CSS plus runtime hydration. Choose the mode that fits your framework and deployment model.
 
 This is a real-world benchmark of [critical CSS](https://web.dev/articles/codelab-extract-and-inline-critical-css) on page load for well-known official documentation websites.
 <CriticalCSSBenchmark />
@@ -148,7 +172,7 @@ According to HTTP Archive [CSS Bytes](https://httparchive.org/reports/page-weigh
 Master CSS only injects the CSS required by the page, so the official documentation site is super tiny, about **~6 kB per page** (brotli).
 {/* Reducing [critical CSS](https://web.dev/articles/codelab-extract-and-inline-critical-css) can improve page loading speed, browser rendering performance, and SEO metrics. */}
 
-One of the most unique, the [progressive rendering](/guide/rendering-modes#progressive-rendering) works by pre-rendering the critical CSS based on the element's class names and deferring the runtime engine for any future dynamic class names.
+[Progressive rendering](/guide/rendering-modes#progressive-rendering) works by pre-rendering critical CSS from rendered class names, then deferring the runtime engine for future dynamic classes. The [Next.js guide](/guide/installation/nextjs) uses this model through the React runtime provider and the Next.js adapter.
 ```html name=index.html
 <!DOCTYPE html>
 <html lang="en">
@@ -172,10 +196,19 @@ This ensures the page generates the ultra-lightweight CSS and the fastest first-
 
 Initially, Master CSS was intended to create a CSS engine for production browser runtimes, so we concentrated on performance such as syntax parsing, rule generation, cache sharing, and even browser rendering.
 
-Master CSS doesn't use heavy-duty build tools like PostCSS, Autoprefixer, or any minifiers, as these rules are generated with optimization.
+Master CSS generates optimized CSS directly. Integrations can pre-render, extract, or hydrate CSS without depending on a PostCSS, Autoprefixer, or CSS minifier pipeline.
 
 ### The foundation for design systems
-Master CSS provides rich [configuration](/guide/configuration) to help you build a consistent, easy-to-manage, and scalable design system. We've built a series of neutral design tokens and created a universal Master Design System, which makes your design system on top of or use it as a quick starting point.
+Master CSS provides rich [configuration](/guide/configuration) to help you build a consistent and scalable design system. Use [design tokens](/guide/design-tokens) for color, spacing, typography, radius, elevation, and motion; use [screen sizes](/guide/screen-sizes), [sizing](/guide/sizing), and the [layout system](/guide/layout-system) to keep page structure aligned with those foundations.
+
+### Predictable cascade layers
+Every generated stylesheet starts with the same layer statement:
+
+```css
+@layer base, theme, preset, main, general;
+```
+
+`base` normalizes the platform, `theme` emits variables, `preset` holds broad defaults, `main` holds project vocabulary from `@master` component definitions, and `general` holds utility classes. Because `general` comes last, local utility decisions can override reusable project styles without reaching for `!important`.
 
 ---
 
@@ -228,7 +261,7 @@ In contrast, Master CSS offers a "flat" approach to applying styles on elements,
 ### Syntax-first strategy
 It seems that Master CSS is against the traditional abstract coding style?
 
-No, we advocate a mixed development strategy - **syntax first, semantic second**.
+No, we advocate a mixed development strategy: **syntax first, semantic second**.
 
 Syntax first:
 - Styles with no reuse potential.
@@ -240,9 +273,9 @@ Semantic secondary:
 - Styles that need to be visually consistent, such as primary color, secondary color.
 - Has a standard design system.
 
-Design token is a core methodology for practicing design systems, so appropriately abstracting styles and markup can help you create visually consistent user interfaces more effectively, and Master CSS [configuration](/guide/configuration) is born for this.
+Design tokens are a core methodology for practicing design systems. Master CSS [configuration](/guide/configuration) lets you abstract styles only when the abstraction carries product meaning.
 
-Assuming the card can be reused, you can abstract it using [components](/guide/components) in `master.css`:
+Assuming the card can be reused, define it as a main style using [components](/guide/components) in `master.css`:
 ```css name=master.css
 @master {
     .card {
@@ -280,6 +313,8 @@ Then, use the abstract class as before:
     </div>
 </div>
 ```
+
+The component definitions stay on-demand. They are emitted in the `main` layer only when `card`, `card-image`, and the other component classes appear in markup or are discovered by extraction.
 
 ---
 
@@ -389,7 +424,7 @@ Separating the two introduces a layer of abstraction where the cost usually outw
 
 ---
 
-## Comprehensive Comparisons
+## Comprehensive comparisons
 Here’s a comprehensive comparison of Master CSS, Tailwind CSS and Bootstrap:
 <Comparisons />
 
