@@ -20,6 +20,8 @@ import { SyncHook, AsyncSeriesHook } from 'tapable'
 import { MasterCSSExtractorPlugin } from '../src'
 import { VIRTUAL_CONFIG_ID, MASTER_CSS_CONFIG_QUERY } from '../src/common'
 import path from 'node:path'
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
 
 // Build a minimal compiler / compilation pair whose hooks behave the
 // way webpack@5 declares them. Includes the hooks VirtualModulesPlugin
@@ -167,6 +169,48 @@ describe('MasterCSSExtractorPlugin (C1 race fix)', () => {
             .toContain('"key":"accent","value":"#456"')
     })
 
+    test('resolves virtual CSS module imports to the CSS virtual module', async () => {
+        const plugin = makePlugin()
+        const { compiler } = makeFakeCompiler()
+        ;(compiler as any).webpack = { sources: { RawSource: function NoopSource(this: object) { /* stub */ } } }
+        plugin.apply(compiler as any)
+
+        const normalModuleFactory = makeNormalModuleFactory()
+        compiler.hooks.normalModuleFactory.call(normalModuleFactory)
+        const resolveData = {
+            request: 'virtual:master.css',
+            context: process.cwd(),
+            contextInfo: {},
+            fileDependencies: new Set<string>()
+        }
+
+        await resolveBefore(normalModuleFactory, resolveData)
+
+        expect(resolveData.request).toBe('master.css')
+    })
+
+    test('resolves CSS @import master.css to a separate CSS import virtual module', async () => {
+        const plugin = makePlugin()
+        const { compiler } = makeFakeCompiler()
+        ;(compiler as any).webpack = { sources: { RawSource: function NoopSource(this: object) { /* stub */ } } }
+        plugin.apply(compiler as any)
+
+        const normalModuleFactory = makeNormalModuleFactory()
+        compiler.hooks.normalModuleFactory.call(normalModuleFactory)
+        const resolveData = {
+            request: 'master.css',
+            context: process.cwd(),
+            contextInfo: {
+                issuer: path.join(process.cwd(), 'src/styles.css')
+            },
+            fileDependencies: new Set<string>()
+        }
+
+        await resolveBefore(normalModuleFactory, resolveData)
+
+        expect(resolveData.request).toContain(path.join('node_modules', '.master-css', 'master-css-import.css'))
+    })
+
     test('adds default CSS config as a compilation dependency', () => {
         const root = path.resolve(__dirname, 'fixtures/config-virtual-module/css-only')
         const plugin = makePlugin({ config: 'master.css' }, root)
@@ -177,6 +221,68 @@ describe('MasterCSSExtractorPlugin (C1 race fix)', () => {
         compiler.hooks.thisCompilation.call(compilation as any)
 
         expect(compilation.fileDependencies.has(path.join(root, 'master.css'))).toBe(true)
+    })
+
+    test('extends source stylesheet @master configs before root master.css and prunes unused SCSS native classes', async () => {
+        const root = mkdtempSync(path.join(tmpdir(), 'master-css-webpack-'))
+        try {
+            mkdirSync(path.join(root, 'src'), { recursive: true })
+            writeFileSync(path.join(root, 'master.css'), [
+                '.root-native {',
+                '    color: #789;',
+                '}',
+                '',
+                '.root-unused {',
+                '    color: #abc;',
+                '}',
+                '',
+                '@master {',
+                '    .btn {',
+                '        display: grid;',
+                '    }',
+                '}'
+            ].join('\n'))
+
+            const plugin = await new MasterCSSExtractorPlugin({
+                config: 'master.css',
+                include: [],
+                sources: [],
+                module: 'virtual:master.css',
+                verbose: 0
+            } as any, root).init()
+
+            ;(plugin as any).styleCSSSources.set(path.join(root, 'src/styles.scss'), [
+                '$accent: #123;',
+                '',
+                '.native-used {',
+                '    color: $accent;',
+                '}',
+                '',
+                '.native-unused {',
+                '    color: #456;',
+                '}',
+                '',
+                '@master {',
+                '    .btn {',
+                '        display: inline-flex;',
+                '    }',
+                '}'
+            ].join('\n'))
+            plugin.latentClasses.add('btn')
+            plugin.latentClasses.add('native-used')
+            plugin.latentClasses.add('root-native')
+
+            const css = await (plugin as any).createExtractedCSS()
+
+            expect(css).toContain('.native-used')
+            expect(css).not.toContain('.native-unused')
+            expect(css).toContain('.root-native')
+            expect(css).not.toContain('.root-unused')
+            expect(css).toContain('.btn{display:grid}')
+            expect(css).not.toContain('.btn{display:inline-flex}')
+        } finally {
+            rmSync(root, { recursive: true, force: true })
+        }
     })
 
     test('resets extractor when the default CSS config changes in watch mode', async () => {

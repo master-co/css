@@ -1,10 +1,9 @@
 import { readFile, writeFile, mkdir } from 'node:fs/promises'
 import { dirname, extname, join, resolve } from 'node:path'
-import type { Config } from '@master/css'
-import exploreConfig from '@master/css-explore-config'
 import { render } from '@master/css-server'
 import type { NextAdapter } from 'next'
 import { getRegisteredOptions, resolveOptions, type Options } from './options'
+import { resolveMasterCSSBuildConfig } from './style-config'
 
 type BuildCompleteContext = Parameters<NonNullable<NextAdapter['onBuildComplete']>>[0]
 type BuildOutputs = BuildCompleteContext['outputs']
@@ -69,11 +68,6 @@ function collectHTMLBuildOutputs(outputs: BuildOutputs): HTMLBuildOutput[] {
     return htmlOutputs
 }
 
-async function resolveMasterCSSConfig(projectDir: string, configOption: string | Config): Promise<Config | undefined> {
-    if (typeof configOption !== 'string') return configOption
-    return (await exploreConfig({ cwd: projectDir, name: configOption }))?.config
-}
-
 async function writeManifest(ctx: BuildCompleteContext, files: RenderedOutput[], manifest: boolean | string) {
     if (!manifest) return
     const manifestPath = typeof manifest === 'string'
@@ -89,23 +83,37 @@ async function writeManifest(ctx: BuildCompleteContext, files: RenderedOutput[],
     await writeFile(manifestPath, JSON.stringify(data, null, 2))
 }
 
+function replaceMasterStyleText(html: string, cssText: string) {
+    return html.replace(
+        /(<style\b(?=[^>]*\bid=(["'])master\2)[^>]*>)([\s\S]*?)(<\/style>)/,
+        (_match, open: string, _quote: string, _content: string, close: string) => open + cssText + close
+    )
+}
+
 export async function renderNextBuildOutputs(ctx: BuildCompleteContext, rawOptions: Options = getRegisteredOptions() ?? {}) {
     const options = resolveOptions(rawOptions)
     if (options.mode === null) return []
 
-    const config = await resolveMasterCSSConfig(ctx.projectDir, options.config)
+    const baseBuildConfig = await resolveMasterCSSBuildConfig(ctx.projectDir, options.config)
     const htmlOutputs = collectHTMLBuildOutputs(ctx.outputs)
     const renderedOutputs: RenderedOutput[] = []
 
     for (const output of htmlOutputs) {
         const sourceHTML = await readFile(output.filePath, 'utf-8')
-        const rendered = render(sourceHTML, config)
-        const hasGeneratedCSS = Boolean(rendered.css?.classUtilities.size)
-        const cssText = hasGeneratedCSS ? rendered.css?.text ?? '' : ''
-        const didRender = hasGeneratedCSS && rendered.html !== sourceHTML
+        const rendered = render(sourceHTML, baseBuildConfig.config)
+        const buildConfig = await resolveMasterCSSBuildConfig(ctx.projectDir, options.config, rendered.classes)
+        const generatedCSS = rendered.css?.classUtilities.size ? rendered.css.text : ''
+        const cssText = [
+            buildConfig.nativeCSS,
+            generatedCSS
+        ].filter(Boolean).join('\n\n')
+        const renderedHTML = cssText
+            ? replaceMasterStyleText(rendered.html, cssText)
+            : sourceHTML
+        const didRender = renderedHTML !== sourceHTML
 
         if (didRender) {
-            await writeFile(output.filePath, rendered.html)
+            await writeFile(output.filePath, renderedHTML)
         }
 
         renderedOutputs.push({

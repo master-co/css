@@ -1582,6 +1582,9 @@ importers:
       '@master/css':
         specifier: workspace:^
         version: link:../core
+      '@master/css-compiler':
+        specifier: workspace:^
+        version: link:../compiler
       '@master/css-explore-config':
         specifier: workspace:^
         version: link:../explore-config
@@ -1934,6 +1937,9 @@ importers:
       '@master/css':
         specifier: workspace:^
         version: link:../core
+      '@master/css-compiler':
+        specifier: workspace:^
+        version: link:../compiler
       '@master/css-explore-config':
         specifier: workspace:^
         version: link:../explore-config

@@ -119,4 +119,56 @@ describe('renderNextBuildOutputs', () => {
         expect(outputs[0].rendered).toBe(false)
         expect(html).toBe(sourceHTML)
     })
+
+    it('extends source stylesheet @master configs before root master.css and prunes unused SCSS native classes', async () => {
+        const projectDir = createFixtureDir()
+        const distDir = join(projectDir, '.next')
+        const htmlFile = join(distDir, 'server/app/index.html')
+        mkdirSync(join(distDir, 'server/app'), { recursive: true })
+        mkdirSync(join(projectDir, 'src'), { recursive: true })
+        writeFileSync(join(projectDir, 'src/styles.scss'), [
+            '$accent: #123;',
+            '',
+            '.native-used {',
+            '    color: $accent;',
+            '}',
+            '',
+            '.native-unused {',
+            '    color: #456;',
+            '}',
+            '',
+            '@master {',
+            '    .btn {',
+            '        display: inline-flex;',
+            '    }',
+            '}'
+        ].join('\n'))
+        writeFileSync(join(projectDir, 'master.css'), [
+            '.root-native {',
+            '    color: #789;',
+            '}',
+            '',
+            '.root-unused {',
+            '    color: #abc;',
+            '}',
+            '',
+            '@master {',
+            '    .btn {',
+            '        display: grid;',
+            '    }',
+            '}'
+        ].join('\n'))
+        writeFileSync(htmlFile, '<!doctype html><html><head></head><body><button class="btn native-used root-native">Button</button></body></html>')
+
+        const outputs = await renderNextBuildOutputs(createBuildContext(projectDir, htmlFile))
+        const html = readFileSync(htmlFile, 'utf-8')
+
+        expect(outputs[0].rendered).toBe(true)
+        expect(html).toContain('.native-used')
+        expect(html).not.toContain('.native-unused')
+        expect(html).toContain('.root-native')
+        expect(html).not.toContain('.root-unused')
+        expect(html).toContain('.btn{display:grid}')
+        expect(html).not.toContain('.btn{display:inline-flex}')
+    })
 })

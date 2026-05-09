@@ -1,9 +1,11 @@
 import { CSSExtractor, Options } from '@master/css-extractor'
 import { loadConfig, resolveConfigPath, type ExploreConfigPath } from '@master/css-explore-config'
+import { createCSS, extendConfig } from '@master/css'
 import type { Compiler } from 'webpack'
 import VirtualModulesPlugin from 'webpack-virtual-modules'
 import log from '@techor/log'
 import path from 'node:path'
+import { readFileSync } from 'node:fs'
 import { MASTER_CSS_CONFIG_QUERY, VIRTUAL_CONFIG_DIR, VIRTUAL_CONFIG_ID } from './common'
 import {
     stripMasterCSSConfigQuery,
@@ -12,6 +14,15 @@ import {
     toVirtualCSSConfigModulePath,
     toVirtualDefaultConfigModulePath
 } from './utils/config-module'
+import {
+    STYLE_CSS_REQUEST_RE,
+    cleanStyleRequest,
+    compileStyleCSS,
+    isMasterStyleSource,
+    isStyleCSSRequest,
+    refreshExtractorNativeClasses,
+    removeVirtualCSSImports
+} from './utils/style-css'
 
 const NAME = 'MasterCSSExtractorPlugin'
 const EMPTY_CONFIG_MODULE = 'export default {};'
@@ -33,11 +44,16 @@ function hasModifiedFile(modifiedFiles: ReadonlySet<string> | undefined, filePat
     return false
 }
 
+function getResolveIssuer(resolveData: { context?: string, contextInfo?: { issuer?: string } }) {
+    return resolveData.contextInfo?.issuer || resolveData.context || ''
+}
+
 export class MasterCSSExtractorPlugin extends CSSExtractor {
 
     pluginInitialized = false
     moduleContentByPath: any = {}
     defaultConfigDependencies: string[] = []
+    styleCSSSources = new Map<string, string>()
 
     private resolveDefaultConfigPath(): ExploreConfigPath | undefined {
         if (typeof this.options.config === 'string') {
@@ -62,26 +78,126 @@ export class MasterCSSExtractorPlugin extends CSSExtractor {
         return toNativeConfigModule(resolvedConfig.path)
     }
 
+    private getVirtualCSSModuleIds() {
+        const moduleId = this.options.module as string
+        return [...new Set([
+            moduleId,
+            moduleId.startsWith('virtual:') ? moduleId.slice('virtual:'.length) : `virtual:${moduleId}`
+        ])]
+    }
+
+    private getExtractorClasses() {
+        return [...new Set([
+            ...(this.latentClasses || []),
+            ...(this.validClasses || []),
+            ...(this.usedNativeClasses || []),
+            ...(this.options.includeClasses || [])
+        ])]
+    }
+
+    private async createExtractedCSS() {
+        const classes = this.getExtractorClasses()
+        const configPath = this.resolvedConfigPath
+        if (!this.styleCSSSources.size && path.extname(configPath || '') !== '.css') {
+            return this.css.text
+        }
+
+        const styleResults = await Promise.all(
+            Array.from(this.styleCSSSources)
+                .map(([id, source]) => compileStyleCSS(id, source, { classes }))
+        )
+        const styleConfigs = styleResults.map((result) => result.config)
+        const nativeCSS = styleResults.map((result) => result.nativeCSS).filter(Boolean)
+        let config = this.config
+
+        if (configPath && path.extname(configPath) === '.css') {
+            const configResult = await loadConfig(configPath, { classes })
+            config = configResult.config
+            if (configResult.nativeCSS) {
+                nativeCSS.push(configResult.nativeCSS)
+            }
+        }
+
+        const css = createCSS(extendConfig(...styleConfigs, config))
+        for (const className of classes) {
+            css.add(className)
+        }
+        return [...nativeCSS, css.text].filter(Boolean).join('\n\n')
+    }
+
+    private async registerStyleCSSSource(modulePath: string, source: string) {
+        const filename = cleanStyleRequest(modulePath)
+        const cleanSource = removeVirtualCSSImports(source, this.getVirtualCSSModuleIds()).code
+        const result = await compileStyleCSS(filename, cleanSource)
+        this.styleCSSSources.set(filename, cleanSource)
+        refreshExtractorNativeClasses(this, result.nativeClassNames)
+    }
+
+    private readOriginalStyleSource(modulePath: string, fallback: string) {
+        if (!isStyleCSSRequest(modulePath)) return fallback
+        try {
+            return readFileSync(cleanStyleRequest(modulePath), 'utf-8')
+        } catch {
+            return fallback
+        }
+    }
+
+    private async processModuleContents(entries: [string, string][], isVirtualCSSModulePath: (modulePath: string) => boolean) {
+        const insertEntries: [string, string][] = []
+        const styleEntries: [string, string][] = []
+        const moduleIds = this.getVirtualCSSModuleIds()
+
+        for (const [modulePath, content] of entries) {
+            if (isVirtualCSSModulePath(modulePath)) continue
+            const source = this.readOriginalStyleSource(modulePath, content)
+            if (isStyleCSSRequest(modulePath) && isMasterStyleSource(source, moduleIds)) {
+                styleEntries.push([modulePath, source])
+            } else {
+                if (isStyleCSSRequest(modulePath)) {
+                    this.styleCSSSources.delete(cleanStyleRequest(modulePath))
+                }
+                insertEntries.push([modulePath, content])
+            }
+        }
+
+        await Promise.all(styleEntries.map(([modulePath, content]) =>
+            this.registerStyleCSSSource(modulePath, content)
+        ))
+        await Promise.all(insertEntries.map(([modulePath, content]) =>
+            this.insert(modulePath, content)
+        ))
+    }
+
     apply(compiler: Compiler) {
         let virtualModuleId = ''
+        let virtualCSSImportModuleId = ''
         let virtualConfigModuleId = ''
         let virtualModule: VirtualModulesPlugin
         let resetReplayChain: Promise<unknown> = Promise.resolve()
-        const writeVirtualCSSModule = () => {
+        const cssVirtualImporters = new Set<string>()
+        const isVirtualCSSModulePath = (modulePath: string) => {
+            const normalizedModulePath = normalizePath(modulePath)
+            const normalizedVirtualModuleId = normalizePath(virtualModuleId)
+            return normalizedModulePath === normalizedVirtualModuleId ||
+                normalizedModulePath.endsWith(`/node_modules/${(this.options.module as string).replace(/^virtual:/, '')}`)
+        }
+        const writeVirtualCSSModule = async () => {
             if (!virtualModule || !virtualModuleId) return
-            virtualModule.writeModule(virtualModuleId, this.css.text)
+            const cssText = await this.createExtractedCSS()
+            const hasCSSVirtualImporters = cssVirtualImporters.size > 0
+            virtualModule.writeModule(virtualModuleId, hasCSSVirtualImporters ? '' : cssText)
+            if (virtualCSSImportModuleId) {
+                virtualModule.writeModule(virtualCSSImportModuleId, hasCSSVirtualImporters ? cssText : '')
+            }
         }
         const writeDefaultConfigModule = async () => {
             if (!virtualModule || !virtualConfigModuleId) return
             virtualModule.writeModule(virtualConfigModuleId, await this.createDefaultConfigModule())
         }
         const replayModuleContents = async () => {
-            await Promise.all(
-                Object.entries(this.moduleContentByPath)
-                    .map(([modulePath, moduleContent]) =>
-                        this.insert(modulePath, String(moduleContent))
-                    )
-            )
+            const entries = Object.entries(this.moduleContentByPath)
+                .map(([modulePath, moduleContent]) => [modulePath, String(moduleContent)] as [string, string])
+            await this.processModuleContents(entries, isVirtualCSSModulePath)
         }
 
         if (!this.pluginInitialized) {
@@ -90,7 +206,9 @@ export class MasterCSSExtractorPlugin extends CSSExtractor {
                     options.include = []
                 })
                 .on('change', () => {
-                    writeVirtualCSSModule()
+                    writeVirtualCSSModule().catch((error: unknown) => {
+                        console.error('[master-css.webpack] virtual CSS module update failed:', error)
+                    })
                 })
                 .on('configChange', () => {
                     writeDefaultConfigModule().catch((error: unknown) => {
@@ -113,7 +231,7 @@ export class MasterCSSExtractorPlugin extends CSSExtractor {
             compiler.hooks.beforeRun.tapPromise(NAME, async () => {
                 await this.init()
                 await this.prepare()
-                writeVirtualCSSModule()
+                await writeVirtualCSSModule()
                 log``
             })
             compiler.hooks.watchRun.tapPromise(NAME, async (watchingCompiler) => {
@@ -134,10 +252,12 @@ export class MasterCSSExtractorPlugin extends CSSExtractor {
 
         const compilerContext = compiler.context || this.cwd || process.cwd()
         virtualModuleId = 'node_modules/' + this.options.module?.replace('virtual:', '')
+        virtualCSSImportModuleId = path.join(compilerContext, VIRTUAL_CONFIG_DIR, 'master-css-import.css')
         virtualConfigModuleId = toVirtualDefaultConfigModulePath(compilerContext)
         virtualModule = new VirtualModulesPlugin({
             // can be fixed: `Module not found: Can't resolve 'virtual:master.css'`
             [virtualModuleId]: '',
+            [virtualCSSImportModuleId]: '',
             [virtualConfigModuleId]: EMPTY_CONFIG_MODULE
         })
 
@@ -160,6 +280,22 @@ export class MasterCSSExtractorPlugin extends CSSExtractor {
                             callback()
                         })
                         .catch((error: Error) => callback(error))
+                    return
+                }
+
+                const virtualCSSModuleId = (this.options.module as string).startsWith('virtual:')
+                    ? this.options.module as string
+                    : `virtual:${this.options.module as string}`
+                const cssModuleId = (this.options.module as string).replace(/^virtual:/, '')
+                if (request === virtualCSSModuleId || request === cssModuleId) {
+                    const issuer = getResolveIssuer(resolveData)
+                    if (STYLE_CSS_REQUEST_RE.test(issuer)) {
+                        cssVirtualImporters.add(issuer)
+                        resolveData.request = virtualCSSImportModuleId
+                    } else if (request === virtualCSSModuleId) {
+                        resolveData.request = cssModuleId
+                    }
+                    callback()
                     return
                 }
 
@@ -202,6 +338,7 @@ export class MasterCSSExtractorPlugin extends CSSExtractor {
         })
 
         compiler.hooks.thisCompilation.tap(NAME, (compilation) => {
+            cssVirtualImporters.clear()
             const resolvedConfig = this.resolveDefaultConfigPath()
             if (resolvedConfig?.extension === 'css') {
                 for (const dependency of this.defaultConfigDependencies.length ? this.defaultConfigDependencies : [resolvedConfig.path]) {
@@ -218,6 +355,7 @@ export class MasterCSSExtractorPlugin extends CSSExtractor {
                 const modulePath = module['resourceResolveData']?.['path'] || module['resource']
                 if (!modulePath) return
                 if (isVirtualConfigModulePath(modulePath)) return
+                if (isVirtualCSSModulePath(modulePath)) return
                 // @ts-expect-error webpack internals
                 const moduleContent = module['_source']?.source()
                 if (moduleContent === undefined || moduleContent === null) return
@@ -234,10 +372,8 @@ export class MasterCSSExtractorPlugin extends CSSExtractor {
                 if (!pendingByPath.size) return
                 const entries = Array.from(pendingByPath.entries())
                 pendingByPath.clear()
-                await Promise.all(entries.map(([modulePath, content]) =>
-                    this.insert(modulePath, content)
-                ))
-                writeVirtualCSSModule()
+                await this.processModuleContents(entries, isVirtualCSSModulePath)
+                await writeVirtualCSSModule()
             })
         })
     }
