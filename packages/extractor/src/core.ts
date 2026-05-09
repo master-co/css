@@ -2,18 +2,18 @@ import { default as defaultOptions, Options } from './options'
 import { createCSS, MasterCSS } from '@master/css'
 import type { Config } from '@master/css'
 import extractLatentClasses from './functions/extract-latent-classes'
-import fs, { existsSync } from 'fs'
+import fs from 'fs'
 import { minimatch } from 'minimatch'
 import log from '@techor/log'
 import extend from '@techor/extend'
-import exploreCSSConfig from '@master/css-explore-config'
+import exploreCSSConfig, { resolveConfigPath } from '@master/css-explore-config'
 import { generateValidRules } from '@master/css-validator'
 import chokidar, { type ChokidarOptions, type FSWatcher } from 'chokidar'
 import { EventEmitter } from 'node:events'
 import { createHash } from 'node:crypto'
 import cssEscape from 'shared/utils/css-escape'
 import { explorePathsSync } from '@techor/glob'
-import path, { resolve } from 'path'
+import path from 'path'
 import { Stats } from 'node:fs'
 import bytes from 'bytes'
 
@@ -22,6 +22,8 @@ export default class CSSExtractor extends EventEmitter {
     latentClasses = new Set<string>()
     validClasses = new Set<string>()
     invalidClasses = new Set<string>()
+    nativeClassNames = new Set<string>()
+    usedNativeClasses = new Set<string>()
     watching = false
     watchers: FSWatcher[] = []
     initialized = false
@@ -74,13 +76,17 @@ export default class CSSExtractor extends EventEmitter {
             log.tree(this.options)
             log``
         }
+        const configResult = typeof this.options.config === 'object'
+            ? undefined
+            : await exploreCSSConfig({
+                name: this.options.config as string,
+                cwd: this.cwd
+            })
+        this.nativeClassNames = new Set(configResult?.nativeClassNames || [])
         this.css = createCSS(
             typeof this.options.config === 'object'
                 ? this.options.config
-                : (await exploreCSSConfig({
-                    name: this.options.config as string,
-                    cwd: this.cwd
-                }))?.config
+                : configResult?.config
         )
         this.emit('init', this.options, this.config)
         this.initialized = true
@@ -93,6 +99,8 @@ export default class CSSExtractor extends EventEmitter {
         this.latentClasses.clear()
         this.validClasses.clear()
         this.invalidClasses.clear()
+        this.nativeClassNames.clear()
+        this.usedNativeClasses.clear()
         this.contentHashes.clear()
         this.validRulesCache.clear()
         this.cachedFixedSourcePaths = undefined
@@ -110,6 +118,8 @@ export default class CSSExtractor extends EventEmitter {
         this.latentClasses.clear()
         this.validClasses.clear()
         this.invalidClasses.clear()
+        this.nativeClassNames.clear()
+        this.usedNativeClasses.clear()
         this.contentHashes.clear()
         this.validRulesCache.clear()
         this.removeAllListeners()
@@ -185,13 +195,13 @@ export default class CSSExtractor extends EventEmitter {
         }
 
         // Single-pass filter (was three sequential `.filter` chains, each
-        // allocating a new array). Skip classes already known invalid /
-        // already known valid / explicitly excluded by user config.
+        // allocating a new array). Track native CSS classes separately, then
+        // skip generated-rule candidates already known invalid / already
+        // known valid / explicitly excluded by user config.
         const excludeClasses = this.options.excludeClasses
         const latentClasses: string[] = []
+        const nativeClasses: string[] = []
         for (const eachLatentClass of allLatent) {
-            if (this.invalidClasses.has(eachLatentClass)) continue
-            if (this.validClasses.has(eachLatentClass)) continue
             if (excludeClasses?.length) {
                 let excluded = false
                 for (const eachIgnoreClass of excludeClasses) {
@@ -204,9 +214,15 @@ export default class CSSExtractor extends EventEmitter {
                 }
                 if (excluded) continue
             }
+            if (this.nativeClassNames.has(eachLatentClass) && !this.usedNativeClasses.has(eachLatentClass)) {
+                this.usedNativeClasses.add(eachLatentClass)
+                nativeClasses.push(eachLatentClass)
+            }
+            if (this.invalidClasses.has(eachLatentClass)) continue
+            if (this.validClasses.has(eachLatentClass)) continue
             latentClasses.push(eachLatentClass)
         }
-        if (!latentClasses.length) {
+        if (!latentClasses.length && !nativeClasses.length) {
             return false
         }
 
@@ -232,11 +248,12 @@ export default class CSSExtractor extends EventEmitter {
                 this.invalidClasses.add(eachLatentClass)
             }
         }
-        if (this.css.definedUtilities.length && validClasses.length) {
+        if (validClasses.length || nativeClasses.length) {
             if (this.options.verbose) {
                 time = process.hrtime(time)
                 const spent = Math.round(((time[0] * 1e9 + time[1]) / 1e6) * 10) / 10
-                log.ok`**${path.relative(this.cwd, source)}** ${validClasses.length} classes inserted ${log.chalk.gray('in')} ${spent}ms ${this.options.verbose > 1 ? validClasses : ''}`
+                const changedClasses = [...validClasses, ...nativeClasses]
+                log.ok`**${path.relative(this.cwd, source)}** ${changedClasses.length} classes inserted ${log.chalk.gray('in')} ${spent}ms ${this.options.verbose > 1 ? changedClasses : ''}`
             }
             this.emit('change')
         }
@@ -394,13 +411,11 @@ export default class CSSExtractor extends EventEmitter {
     */
     get configPath(): string | undefined {
         if (typeof this.options.config === 'string') {
-            // try to find the config file with the given name and options.extensions
-            for (const eachExtension of ['js', 'mjs', 'ts', 'cjs', 'cts', 'mts']) {
-                const eachBasename = this.options.config + '.' + eachExtension
-                if (existsSync(resolve(this.cwd || '', eachBasename))) {
-                    return eachBasename
-                }
-            }
+            const resolvedConfigPath = resolveConfigPath({
+                name: this.options.config,
+                cwd: this.cwd
+            })
+            if (resolvedConfigPath) return path.relative(this.cwd, resolvedConfigPath.path)
         }
     }
 

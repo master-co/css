@@ -210,6 +210,49 @@ describe.concurrent('@master/css-compiler', () => {
         expect(result.css).toBe('')
     })
 
+    it('keeps native class rules outside @master on demand', () => {
+        const result = compileCSS(`
+            body {
+                margin: 0;
+            }
+
+            .native,
+            .unused:hover {
+                color: red;
+            }
+
+            @media (width >= 48rem) {
+                .card .title {
+                    color: blue;
+                }
+
+                .unused-card {
+                    color: pink;
+                }
+            }
+
+            @master {
+                .btn {
+                    @compose "block";
+                }
+            }
+        `, { classes: ['btn', 'native', 'title'] })
+
+        expect(result.nativeClassNames).toEqual([
+            'native',
+            'unused',
+            'card',
+            'title',
+            'unused-card'
+        ])
+        expect(result.css).toContain('body')
+        expect(result.css).toContain('.native')
+        expect(result.css).not.toContain('.unused:hover')
+        expect(result.css).toContain('.card .title')
+        expect(result.css).not.toContain('.unused-card')
+        expect(result.css).toContain('.btn{display:block}')
+    })
+
     it('keeps light and dark as core defaults and auto-registers custom modes', () => {
         const result = compileCSS(`
             @master {
@@ -1165,7 +1208,7 @@ describe.concurrent('@master/css-compiler', () => {
                 }
             `)
 
-            const result = compileCSSFile(entry, { classes: ['btn'] })
+            const result = compileCSSFile(entry, { classes: ['btn', 'page'] })
 
             expect(result.dependencies).toEqual([entry, button])
             expect(getStaticUtilityRules(result, 'btn')).toEqual([
@@ -1178,7 +1221,7 @@ describe.concurrent('@master/css-compiler', () => {
                 }
             ])
             expect(result.css).toContain('@import "@master/normal.css";')
-            expect(result.css).toContain('box-sizing: border-box')
+            expect(result.css).not.toContain('box-sizing: border-box')
             expect(result.css).toContain('color: red')
             expect(result.css).toContain('.btn{font-size:1rem;display:block}')
         } finally {

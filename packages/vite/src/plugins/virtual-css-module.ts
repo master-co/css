@@ -1,6 +1,7 @@
 import type { Plugin } from 'vite'
 import { PluginContext } from '../core'
 import { PluginOptions } from '../options'
+import getExtractedCSS from '../utils/extracted-css'
 
 export default function VirtualCSSModulePlugin(options: PluginOptions, context: PluginContext): Plugin {
     // Whether some module ever asked Vite to load the virtual master.css.
@@ -23,9 +24,9 @@ export default function VirtualCSSModulePlugin(options: PluginOptions, context: 
                 return context.extractor.slotCSSRule
             }
         },
-        generateBundle(options, bundle) {
+        async generateBundle(options, bundle) {
             const slotCSSRule = context.extractor.slotCSSRule
-            const realCSS = context.extractor.css.text
+            const realCSS = await getExtractedCSS(context)
             const cssFileNames = Object.keys(bundle).filter(eachFileName => eachFileName.endsWith('.css'))
             let replacedAny = false
             for (const eachCssFileName of cssFileNames) {

@@ -10,6 +10,10 @@ export interface ExploreConfigOptions {
     found?: (basename: string, path: string) => void
 }
 
+export interface LoadConfigOptions extends Pick<ExploreConfigOptions, 'resolvedKeys'> {
+    classes?: string[]
+}
+
 export interface ExploreConfigPath {
     basename: string
     extension: string
@@ -19,6 +23,11 @@ export interface ExploreConfigPath {
 export interface LoadConfigResult {
     config: Config
     dependencies: string[]
+    classNames?: string[]
+    nativeClassNames?: string[]
+    css?: string
+    generatedCSS?: string
+    warnings?: string[]
 }
 
 export type ExploreConfigResult = ExploreConfigPath & LoadConfigResult

@@ -8,6 +8,7 @@ import {
     swcTransform,
     type ExploreConfigOptions,
     type ExploreConfigResult,
+    type LoadConfigOptions,
     type LoadConfigResult
 } from './shared'
 
@@ -40,13 +41,18 @@ function loadConfigModuleSync(path: string) {
     return jiti(path)
 }
 
-export function loadConfigSync(path: string, options: Pick<ExploreConfigOptions, 'resolvedKeys'> = {}): LoadConfigResult {
+export function loadConfigSync(path: string, options: LoadConfigOptions = {}): LoadConfigResult {
     if (extname(path) === '.css') {
         const compileCSSFile = loadCompileCSSSync()
-        const result = compileCSSFile(path)
+        const result = compileCSSFile(path, { classes: options.classes })
         return {
             config: result.config,
-            dependencies: result.dependencies
+            dependencies: result.dependencies,
+            classNames: result.classNames,
+            nativeClassNames: result.nativeClassNames,
+            css: result.css,
+            generatedCSS: result.generatedCSS,
+            warnings: result.warnings
         }
     }
     return {
@@ -58,13 +64,12 @@ export function loadConfigSync(path: string, options: Pick<ExploreConfigOptions,
 export function exploreConfigSync(options: ExploreConfigOptions & { name?: string } = {}) {
     const resolvedConfig = resolveConfigPath(options)
     if (!resolvedConfig) return
-    const { config, dependencies } = loadConfigSync(resolvedConfig.path, options)
+    const result = loadConfigSync(resolvedConfig.path, options)
     const found = Object.hasOwn(options, 'found') ? options.found : DEFAULT_FOUND
     found?.(resolvedConfig.basename, resolvedConfig.path)
     return {
         ...resolvedConfig,
-        config,
-        dependencies
+        ...result
     } satisfies ExploreConfigResult
 }
 

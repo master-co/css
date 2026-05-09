@@ -62,6 +62,13 @@ export default function ExtractMode(options: PluginOptions, context: PluginConte
                 if (!EXTRACTABLE_EXT.test(id)) return
                 await context.extractor?.insert(id, code)
             },
+            transformIndexHtml: {
+                order: 'pre',
+                handler: async (html, { filename, server }) => {
+                    if (server) return
+                    await context.extractor.insert(filename, html)
+                }
+            },
             async configureServer(server) {
                 await server.waitForRequestsIdle()
             }

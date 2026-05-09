@@ -9,6 +9,7 @@ import {
     type ExploreConfigOptions,
     type ExploreConfigPath,
     type ExploreConfigResult,
+    type LoadConfigOptions,
     type LoadConfigResult
 } from './shared'
 
@@ -18,6 +19,7 @@ export {
     type ExploreConfigOptions,
     type ExploreConfigPath,
     type ExploreConfigResult,
+    type LoadConfigOptions,
     type LoadConfigResult
 }
 
@@ -56,13 +58,18 @@ async function loadConfigModule(path: string) {
     return jiti(path)
 }
 
-export async function loadConfig(path: string, options: Pick<ExploreConfigOptions, 'resolvedKeys'> = {}): Promise<LoadConfigResult> {
+export async function loadConfig(path: string, options: LoadConfigOptions = {}): Promise<LoadConfigResult> {
     if (extname(path) === '.css') {
         const compileCSSFile = await loadCompileCSS()
-        const result = compileCSSFile(path)
+        const result = compileCSSFile(path, { classes: options.classes })
         return {
             config: result.config,
-            dependencies: result.dependencies
+            dependencies: result.dependencies,
+            classNames: result.classNames,
+            nativeClassNames: result.nativeClassNames,
+            css: result.css,
+            generatedCSS: result.generatedCSS,
+            warnings: result.warnings
         }
     }
     return {
@@ -74,13 +81,12 @@ export async function loadConfig(path: string, options: Pick<ExploreConfigOption
 export async function exploreConfig(options: ExploreConfigOptions & { name?: string } = {}) {
     const resolvedConfig = resolveConfigPath(options)
     if (!resolvedConfig) return
-    const { config, dependencies } = await loadConfig(resolvedConfig.path, options)
+    const result = await loadConfig(resolvedConfig.path, options)
     const found = Object.hasOwn(options, 'found') ? options.found : DEFAULT_FOUND
     found?.(resolvedConfig.basename, resolvedConfig.path)
     return {
         ...resolvedConfig,
-        config,
-        dependencies
+        ...result
     } satisfies ExploreConfigResult
 }
 

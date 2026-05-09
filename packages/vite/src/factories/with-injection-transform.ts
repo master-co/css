@@ -9,10 +9,11 @@ export default function withInjectionTransform(
     mark: string,
     generate: () => string
 ): { code: string; map: any } | null {
-    if (context.entryId !== id || code.includes(mark)) return null
+    const generatedCode = generate()
+    if (context.entryId !== id || code.includes(mark) || code.includes(generatedCode)) return null
     const ext = path.extname(id)
     const s = new MagicString(code)
-    const injectCode = '\n' + mark + '\n' + generate() + '\n'
+    const injectCode = '\n' + mark + '\n' + generatedCode + '\n'
     switch (ext) {
         case '.vue': {
             const hasScriptSetup = /<script\s+setup.*?>/.test(code)

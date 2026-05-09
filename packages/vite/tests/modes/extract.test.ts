@@ -163,5 +163,35 @@ describe('ExtractMode (C7 + C8 fixes)', () => {
             ])
             expect(calls).toEqual([])
         })
+
+        test('build transformIndexHtml feeds HTML to the extractor', async () => {
+            const ctx: any = {}
+            const plugins = ExtractMode({} as any, ctx)
+            await findPlugin(plugins, 'master-css:extractor').configResolved.call({}, fakeViteConfig)
+            const staticPlugin = findPlugin(plugins, 'master-css:static')
+
+            await staticPlugin.transformIndexHtml.handler.call(
+                {},
+                '<div class="page"></div>',
+                { filename: '/proj/index.html' }
+            )
+
+            expect(ctx.extractor.insertCalls).toEqual(['/proj/index.html'])
+        })
+
+        test('serve transformIndexHtml is left to the HMR plugin', async () => {
+            const ctx: any = {}
+            const plugins = ExtractMode({} as any, ctx)
+            await findPlugin(plugins, 'master-css:extractor').configResolved.call({}, fakeViteConfig)
+            const staticPlugin = findPlugin(plugins, 'master-css:static')
+
+            await staticPlugin.transformIndexHtml.handler.call(
+                {},
+                '<div class="page"></div>',
+                { filename: '/proj/index.html', server: {} }
+            )
+
+            expect(ctx.extractor.insertCalls).toEqual([])
+        })
     })
 })

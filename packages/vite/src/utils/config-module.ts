@@ -8,12 +8,12 @@ export function stripMasterCSSConfigQuery(id: string) {
 }
 
 export function toResolvedMasterCSSConfigId(file: string) {
-    return RESOLVED_MASTER_CSS_CONFIG_QUERY_PREFIX + encodeURIComponent(file).replace(/\./g, '%2E')
+    return RESOLVED_MASTER_CSS_CONFIG_QUERY_PREFIX + Buffer.from(file).toString('base64url')
 }
 
 export function fromResolvedMasterCSSConfigId(id: string) {
     return id.startsWith(RESOLVED_MASTER_CSS_CONFIG_QUERY_PREFIX)
-        ? decodeURIComponent(id.slice(RESOLVED_MASTER_CSS_CONFIG_QUERY_PREFIX.length))
+        ? Buffer.from(id.slice(RESOLVED_MASTER_CSS_CONFIG_QUERY_PREFIX.length), 'base64url').toString()
         : undefined
 }
 

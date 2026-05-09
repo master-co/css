@@ -2,6 +2,7 @@ import type { Plugin, ViteDevServer } from 'vite'
 import { existsSync, readFileSync } from 'fs'
 import { PluginContext } from '../core'
 import { PluginOptions } from '../options'
+import getExtractedCSS from '../utils/extracted-css'
 
 const HMR_EVENT_UPDATE = 'master-css-hmr:update'
 
@@ -14,6 +15,7 @@ export default function VirtualCSSHMRPlugin(options: PluginOptions, context: Plu
         const resolvedVirtualModuleId = context.extractor.resolvedVirtualModuleId
         const virtualCSSModule = server.moduleGraph.getModuleById(resolvedVirtualModuleId)
         if (virtualCSSModule) {
+            const css = await getExtractedCSS(context)
             // Awaited so the C4 serialisation chain in `buildStart()` is
             // observable: without this, the update chain resolves before
             // the heavy module-graph reload completes, and a second
@@ -33,7 +35,7 @@ export default function VirtualCSSHMRPlugin(options: PluginOptions, context: Plu
                 event: HMR_EVENT_UPDATE,
                 data: {
                     id: resolvedVirtualModuleId,
-                    css: context.extractor.css.text,
+                    css,
                     timestamp
                 }
             })
@@ -105,9 +107,9 @@ export default function VirtualCSSHMRPlugin(options: PluginOptions, context: Plu
                 return context.extractor.resolvedVirtualModuleId
             }
         },
-        load(id) {
+        async load(id) {
             if (id === context.extractor.resolvedVirtualModuleId) {
-                return context.extractor.css.text
+                return await getExtractedCSS(context)
             }
         },
         transformIndexHtml: {

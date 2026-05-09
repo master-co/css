@@ -1,7 +1,13 @@
-@import '@master/normal.css';
-
 body {
-    background-color: red;
+    background-color: #eef3f8;
+}
+
+.native-note {
+    text-wrap: pretty;
+}
+
+.unused-native-note {
+    color: red;
 }
 
 @master {

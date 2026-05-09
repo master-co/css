@@ -5,7 +5,7 @@ import {
     MASTER_CSS_CONFIG_QUERY,
     RESOLVED_VIRTUAL_CONFIG_ID
 } from '../../src/common'
-import { toResolvedMasterCSSConfigId } from '../../src/utils/config-module'
+import { fromResolvedMasterCSSConfigId, toResolvedMasterCSSConfigId } from '../../src/utils/config-module'
 
 const FIXTURE_DIR = path.resolve(__dirname, '../fixtures/config-virtual-module')
 
@@ -25,6 +25,15 @@ function parseDefaultExport(code: string) {
 }
 
 describe('ConfigVirtualModulePlugin', () => {
+    it('encodes per-file CSS config ids without a .css suffix for Vite dev', () => {
+        const file = path.join(FIXTURE_DIR, 'theme.css')
+        const id = toResolvedMasterCSSConfigId(file)
+
+        expect(id).not.toContain('.css')
+        expect(id).not.toContain('%2Ecss')
+        expect(fromResolvedMasterCSSConfigId(id)).toBe(file)
+    })
+
     it('loads the default virtual config from master.css', async () => {
         const context = { extractor: {} as any } as any
         const plugin = ConfigVirtualModulePlugin({ config: 'master.css' }, context)

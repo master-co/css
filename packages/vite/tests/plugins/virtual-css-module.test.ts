@@ -19,6 +19,9 @@
  */
 import { describe, test, expect, vi } from 'vitest'
 import VirtualCSSModulePlugin from '../../src/plugins/virtual-css-module'
+import { mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import path from 'node:path'
 
 function makeContext(slot: string, css: string) {
     return {
@@ -55,7 +58,7 @@ describe('VirtualCSSModulePlugin (D1 placeholder-leak warn)', () => {
         const bundle = makeBundle({
             'assets/index-abc.css': `body{margin:0}${SLOT}`,
         })
-        ;(plugin as any).generateBundle.call({ warn }, {}, bundle)
+        await (plugin as any).generateBundle.call({ warn }, {}, bundle)
 
         expect(bundle['assets/index-abc.css'].source).toContain(REAL_CSS)
         expect(bundle['assets/index-abc.css'].source).not.toContain(SLOT)
@@ -74,7 +77,7 @@ describe('VirtualCSSModulePlugin (D1 placeholder-leak warn)', () => {
         const bundle = makeBundle({
             'assets/index-abc.css': 'body{margin:0}#virtual_master_css{--slot:0}',
         })
-        ;(plugin as any).generateBundle.call({ warn }, {}, bundle)
+        await (plugin as any).generateBundle.call({ warn }, {}, bundle)
 
         expect(warn).toHaveBeenCalledTimes(1)
         const msg = warn.mock.calls[0][0] as string
@@ -92,7 +95,7 @@ describe('VirtualCSSModulePlugin (D1 placeholder-leak warn)', () => {
         const bundle = makeBundle({
             'assets/index-abc.css': 'body{margin:0}',
         })
-        ;(plugin as any).generateBundle.call({ warn }, {}, bundle)
+        await (plugin as any).generateBundle.call({ warn }, {}, bundle)
 
         expect(warn).not.toHaveBeenCalled()
     })
@@ -110,7 +113,7 @@ describe('VirtualCSSModulePlugin (D1 placeholder-leak warn)', () => {
         const bundle = makeBundle({
             'assets/index-abc.css': 'body{margin:0}', // placeholder absent
         })
-        ;(plugin as any).generateBundle.call({ warn }, {}, bundle)
+        await (plugin as any).generateBundle.call({ warn }, {}, bundle)
 
         expect(warn).not.toHaveBeenCalled()
     })
@@ -125,10 +128,55 @@ describe('VirtualCSSModulePlugin (D1 placeholder-leak warn)', () => {
             'assets/index-abc.css': { type: 'asset', source: `body{margin:0}${SLOT}` },
             'assets/index-abc.js': { type: 'chunk', code: 'console.log(1)' }, // must not be touched
         }
-        ;(plugin as any).generateBundle.call({ warn }, {}, bundle)
+        await (plugin as any).generateBundle.call({ warn }, {}, bundle)
 
         expect(bundle['assets/index-abc.css'].source).toContain(REAL_CSS)
         expect(bundle['assets/index-abc.js'].code).toBe('console.log(1)')
         expect(warn).not.toHaveBeenCalled()
+    })
+
+    test('compiles native CSS config class rules on demand', async () => {
+        const root = mkdtempSync(path.join(tmpdir(), 'master-css-vite-'))
+        try {
+            const configPath = path.join(root, 'master.css')
+            writeFileSync(configPath, `
+                body {
+                    margin: 0;
+                }
+
+                .native-card,
+                .unused-card {
+                    color: red;
+                }
+
+                @master {
+                    .btn {
+                        display: inline-flex;
+                    }
+                }
+            `)
+            const ctx = makeContext(SLOT, '@layer base,theme,preset,main,general;')
+            ctx.extractor.resolvedConfigPath = configPath
+            ctx.extractor.validClasses = new Set(['btn'])
+            ctx.extractor.usedNativeClasses = new Set(['native-card'])
+            ctx.extractor.options.includeClasses = []
+            const plugin = VirtualCSSModulePlugin({} as any, ctx)
+            const warn = vi.fn()
+            ;(plugin as any).load.call({ warn }, ctx.extractor.resolvedVirtualModuleId)
+
+            const bundle = makeBundle({
+                'assets/index-abc.css': SLOT,
+            })
+            await (plugin as any).generateBundle.call({ warn }, {}, bundle)
+
+            const css = String(bundle['assets/index-abc.css'].source)
+            expect(css).toContain('body')
+            expect(css).toContain('.native-card')
+            expect(css).not.toContain('.unused-card')
+            expect(css).toContain('.btn{display:inline-flex}')
+            expect(warn).not.toHaveBeenCalled()
+        } finally {
+            rmSync(root, { recursive: true, force: true })
+        }
     })
 })
