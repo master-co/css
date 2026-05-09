@@ -11,5 +11,8 @@
   "devDependencies": {
     "typescript": "^6.0.3",
     "vite": "^8.0.10"
+  },
+  "dependencies": {
+    "@master/normal.css": "^3.2.0"
   }
 }
