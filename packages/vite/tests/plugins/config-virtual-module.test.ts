@@ -117,7 +117,7 @@ describe('ConfigVirtualModulePlugin', () => {
         expect(config.modes).toBeUndefined()
     })
 
-    it('invalidates unimported CSS config modules without forcing a JS HMR update', async () => {
+    it('handles unimported CSS config changes through CSS HMR only', async () => {
         const context = { extractor: {} as any } as any
         context.extractor = {
             options: { include: [] },
@@ -129,6 +129,7 @@ describe('ConfigVirtualModulePlugin', () => {
         const buttonConfigPath = path.join(root, 'styles/button.css')
         const module = { importers: new Set() }
         const invalidateModule = vi.fn()
+        const send = vi.fn()
 
         await (plugin.configResolved as any).call({}, viteConfig)
         const result = await (plugin.handleHotUpdate as any)({
@@ -137,16 +138,18 @@ describe('ConfigVirtualModulePlugin', () => {
                 moduleGraph: {
                     getModuleById: vi.fn((id) => id === RESOLVED_VIRTUAL_CONFIG_ID ? module : undefined),
                     invalidateModule
-                }
+                },
+                ws: { send }
             }
         })
 
         expect(context.extractor.reset).toHaveBeenCalledWith(context.extractor.options)
         expect(invalidateModule).toHaveBeenCalledWith(module)
-        expect(result).toBeUndefined()
+        expect(send).not.toHaveBeenCalled()
+        expect(result).toEqual([])
     })
 
-    it('returns imported CSS config modules so Vite can reload config consumers', async () => {
+    it('full reloads when the default virtual config module is imported', async () => {
         const context = { extractor: {} as any } as any
         context.extractor = {
             options: { include: [] },
@@ -158,6 +161,7 @@ describe('ConfigVirtualModulePlugin', () => {
         const importer = {}
         const module = { importers: new Set([importer]) }
         const invalidateModule = vi.fn()
+        const send = vi.fn()
 
         await (plugin.configResolved as any).call({}, viteConfig)
         const result = await (plugin.handleHotUpdate as any)({
@@ -166,12 +170,56 @@ describe('ConfigVirtualModulePlugin', () => {
                 moduleGraph: {
                     getModuleById: vi.fn((id) => id === RESOLVED_VIRTUAL_CONFIG_ID ? module : undefined),
                     invalidateModule
-                }
+                },
+                ws: { send }
             }
         })
 
         expect(context.extractor.reset).toHaveBeenCalledWith(context.extractor.options)
         expect(invalidateModule).toHaveBeenCalledWith(module)
-        expect(result).toEqual([module])
+        expect(send).toHaveBeenCalledWith({
+            type: 'full-reload',
+            path: '*',
+            triggeredBy: path.join(root, 'master.css')
+        })
+        expect(result).toEqual([])
+    })
+
+    it('full reloads when a per-file CSS config module is imported', async () => {
+        const context = {
+            extractor: {
+                options: { include: [] },
+                reset: vi.fn(async () => undefined)
+            } as any
+        } as any
+        const plugin = ConfigVirtualModulePlugin({ config: 'master.css' }, context)
+        const root = path.join(FIXTURE_DIR, 'css-only')
+        const viteConfig = createResolvedConfig(root)
+        const configPath = path.join(root, 'master.css')
+        const importer = {}
+        const module = { importers: new Set([importer]) }
+        const invalidateModule = vi.fn()
+        const send = vi.fn()
+
+        await (plugin.configResolved as any).call({}, viteConfig)
+        const result = await (plugin.handleHotUpdate as any)({
+            file: configPath,
+            server: {
+                moduleGraph: {
+                    getModuleById: vi.fn((id) => id === toResolvedMasterCSSConfigId(configPath) ? module : undefined),
+                    invalidateModule
+                },
+                ws: { send }
+            }
+        })
+
+        expect(context.extractor.reset).toHaveBeenCalledWith(context.extractor.options)
+        expect(invalidateModule).toHaveBeenCalledWith(module)
+        expect(send).toHaveBeenCalledWith({
+            type: 'full-reload',
+            path: '*',
+            triggeredBy: configPath
+        })
+        expect(result).toEqual([])
     })
 })

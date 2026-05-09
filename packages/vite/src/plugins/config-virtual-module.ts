@@ -10,10 +10,10 @@ import {
     toResolvedMasterCSSConfigId
 } from '../utils/config-module'
 
-function invalidateImportedConfigModule(module: ModuleNode | undefined, server: ViteDevServer) {
-    if (!module) return
+function invalidateConfigModule(module: ModuleNode | undefined, server: ViteDevServer): boolean {
+    if (!module) return false
     server.moduleGraph.invalidateModule(module)
-    if (module.importers.size) return module
+    return module.importers.size > 0
 }
 
 export function ConfigVirtualModulePlugin(
@@ -89,34 +89,40 @@ export function ConfigVirtualModulePlugin(
             }
         },
         async handleHotUpdate({ file, server }) {
-            const modules = []
+            let handled = false
+            let needsFullReload = false
             const defaultConfigDependencies = context.configPath
                 ? cssConfigDependencies.get(context.configPath) || [context.configPath]
                 : []
             if (defaultConfigDependencies.includes(file)) {
+                handled = true
                 await context.extractor?.reset(context.extractor.options)
-                const module = invalidateImportedConfigModule(
+                needsFullReload ||= invalidateConfigModule(
                     server.moduleGraph.getModuleById(RESOLVED_VIRTUAL_CONFIG_ID),
                     server
                 )
-                if (module) {
-                    modules.push(module)
-                }
             }
             const queryConfigPaths = new Set([file])
             for (const [configPath, dependencies] of cssConfigDependencies) {
                 if (dependencies.includes(file)) queryConfigPaths.add(configPath)
             }
             for (const configPath of queryConfigPaths) {
-                const queryModule = invalidateImportedConfigModule(
-                    server.moduleGraph.getModuleById(toResolvedMasterCSSConfigId(configPath)),
+                const queryModule = server.moduleGraph.getModuleById(toResolvedMasterCSSConfigId(configPath))
+                if (!queryModule) continue
+                handled = true
+                needsFullReload ||= invalidateConfigModule(
+                    queryModule,
                     server
                 )
-                if (queryModule) {
-                    modules.push(queryModule)
-                }
             }
-            if (modules.length) return modules
+            if (needsFullReload) {
+                server.ws.send({
+                    type: 'full-reload',
+                    path: '*',
+                    triggeredBy: file
+                })
+            }
+            if (handled) return []
         }
     }
 }
