@@ -62,11 +62,13 @@ export async function loadConfig(path: string, options: LoadConfigOptions = {}):
     if (extname(path) === '.css') {
         const compileCSSFile = await loadCompileCSS()
         const result = compileCSSFile(path, { classes: options.classes })
+        const nativeCSS = (result as typeof result & { nativeCSS?: string }).nativeCSS
         return {
             config: result.config,
             dependencies: result.dependencies,
             classNames: result.classNames,
             nativeClassNames: result.nativeClassNames,
+            nativeCSS,
             css: result.css,
             generatedCSS: result.generatedCSS,
             warnings: result.warnings

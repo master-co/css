@@ -4,10 +4,10 @@ import type { PluginContext } from '../core'
 import { PluginOptions } from '../options'
 import { existsSync, readFileSync } from 'fs'
 import path from 'path'
-import { hasVirtualCSSImport } from './virtual-css-import'
+import { isMasterStyleSource } from '../utils/style-css'
 
 const __MASTER_CSS_VIRTUAL_MODULE_INJECTED__ = '/*__MASTER_CSS_VIRTUAL_MODULE_INJECTED__*/'
-const JS_CSS_IMPORT_RE = /import\s+(?:[^'"]*?\s+from\s*)?["']([^"']+\.css(?:\?[^"']*)?)["']|import\(\s*["']([^"']+\.css(?:\?[^"']*)?)["']\s*\)/g
+const JS_CSS_IMPORT_RE = /import\s+(?:[^'"]*?\s+from\s*)?["']([^"']+\.(?:css|scss|sass)(?:\?[^"']*)?)["']|import\(\s*["']([^"']+\.(?:css|scss|sass)(?:\?[^"']*)?)["']\s*\)/g
 
 function cleanUrl(id: string): string {
     return id.replace(/[?#].*$/, '')
@@ -41,7 +41,7 @@ async function importsVirtualCSSFromCSS(
         const resolved = await resolve(specifier, id)
         const cssPath = cleanUrl(resolved?.id || path.resolve(path.dirname(cleanUrl(id)), specifier))
         if (cssPath.startsWith('\0') || !existsSync(cssPath)) continue
-        if (hasVirtualCSSImport(readFileSync(cssPath, 'utf-8'), moduleId)) {
+        if (isMasterStyleSource(readFileSync(cssPath, 'utf-8'), moduleId)) {
             return true
         }
     }

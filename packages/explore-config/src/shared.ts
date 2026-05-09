@@ -25,6 +25,7 @@ export interface LoadConfigResult {
     dependencies: string[]
     classNames?: string[]
     nativeClassNames?: string[]
+    nativeCSS?: string
     css?: string
     generatedCSS?: string
     warnings?: string[]

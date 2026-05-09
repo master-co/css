@@ -26,10 +26,15 @@ import path from 'node:path'
 function makeContext(slot: string, css: string) {
     return {
         extractor: {
-            options: { module: 'virtual:master.css' },
             resolvedVirtualModuleId: '\0virtual:master.css',
             slotCSSRule: slot,
             css: { text: css },
+            config: {},
+            latentClasses: new Set(),
+            validClasses: new Set(),
+            nativeClassNames: new Set(),
+            usedNativeClasses: new Set(),
+            options: { includeClasses: [], module: 'virtual:master.css' },
         },
     } as any
 }
@@ -211,6 +216,58 @@ describe('VirtualCSSModulePlugin (D1 placeholder-leak warn)', () => {
             expect(css).toContain('.native-card')
             expect(css).not.toContain('.unused-card')
             expect(css).toContain('.btn{display:inline-flex}')
+            expect(warn).not.toHaveBeenCalled()
+        } finally {
+            rmSync(root, { recursive: true, force: true })
+        }
+    })
+
+    test('extends source stylesheet @master configs before root master.css and prunes unused SCSS native classes', async () => {
+        const root = mkdtempSync(path.join(tmpdir(), 'master-css-vite-'))
+        try {
+            const configPath = path.join(root, 'master.css')
+            writeFileSync(configPath, `
+                @master {
+                    .btn {
+                        display: grid;
+                    }
+                }
+            `)
+            const ctx = makeContext(SLOT, '@layer base,theme,preset,main,general;')
+            ctx.extractor.resolvedConfigPath = configPath
+            ctx.extractor.latentClasses = new Set(['btn', 'native-used'])
+            ctx.styleCSSSources = new Map([[
+                path.join(root, 'src/styles.scss'),
+                `
+                    $accent: red;
+
+                    .native-used,
+                    .native-unused {
+                        color: $accent;
+                    }
+
+                    @master {
+                        .btn {
+                            display: inline-flex;
+                        }
+                    }
+                `
+            ]])
+
+            const plugin = VirtualCSSModulePlugin({} as any, ctx)
+            const warn = vi.fn()
+            ;(plugin as any).load.call({ warn }, ctx.extractor.resolvedVirtualModuleId)
+
+            const bundle = makeBundle({
+                'assets/index-abc.css': SLOT,
+            })
+            await (plugin as any).generateBundle.call({ warn }, {}, bundle)
+
+            const css = String(bundle['assets/index-abc.css'].source)
+            expect(css).toContain('.native-used')
+            expect(css).not.toContain('.native-unused')
+            expect(css).toContain('.btn{display:grid}')
+            expect(css).not.toContain('.btn{display:inline-flex}')
             expect(warn).not.toHaveBeenCalled()
         } finally {
             rmSync(root, { recursive: true, force: true })

@@ -52,6 +52,7 @@ export interface CompileCSSResult {
     config: Config
     classNames: string[]
     nativeClassNames: string[]
+    nativeCSS: string
     css: string
     generatedCSS: string
     warnings: string[]
@@ -2346,6 +2347,7 @@ export function compileCSS(source: string, options: CompileCSSOptions = {}): Com
         classNames: parsed.classNames,
         nativeClassNames: parsed.nativeClassNames,
         warnings: parsed.warnings,
+        nativeCSS: remainingCSS,
         css: [remainingCSS, generatedCSS].filter(Boolean).join('\n\n'),
         generatedCSS,
         dependencies: []

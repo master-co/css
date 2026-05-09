@@ -30,6 +30,7 @@ export interface PluginContext {
     extractor: CSSExtractor
     virtualCSSImporters?: Set<string>
     virtualCSSPlaceholderEmitted?: boolean
+    styleCSSSources?: Map<string, string>
 }
 
 export default function masterCSS(options?: PluginOptions): Plugin[] {

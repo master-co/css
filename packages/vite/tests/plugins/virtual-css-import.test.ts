@@ -10,6 +10,12 @@ function makeContext(command: 'serve' | 'build', css = '.fg\\:red{color:red}') {
             options: { module: 'virtual:master.css' },
             slotCSSRule: SLOT,
             css: { text: css },
+            config: {},
+            latentClasses: new Set(['fg:red']),
+            validClasses: new Set(),
+            nativeClassNames: new Set(),
+            usedNativeClasses: new Set(),
+            emit: () => undefined,
         },
     } as any
 }
@@ -43,7 +49,7 @@ describe('VirtualCSSImportPlugin', () => {
             '/project/src/style.css'
         )
 
-        expect(result.code).toBe(`${SLOT}\nbody{margin:0}`)
+        expect(result.code).toBe(SLOT)
         expect(context.virtualCSSImporters).toEqual(new Set(['/project/src/style.css']))
         expect(context.virtualCSSPlaceholderEmitted).toBe(true)
     })
@@ -58,9 +64,25 @@ describe('VirtualCSSImportPlugin', () => {
             '/project/src/style.css'
         )
 
-        expect(result.code).toBe('.fg\\:red{color:red}')
+        expect(result.code).toContain('.fg\\:red')
         expect(context.virtualCSSImporters).toEqual(new Set(['/project/src/style.css']))
         expect(context.virtualCSSPlaceholderEmitted).toBeUndefined()
+    })
+
+    test('build transform treats @master stylesheets as virtual CSS entries', async () => {
+        const context = makeContext('build')
+        const plugin = VirtualCSSImportPlugin({}, context)
+
+        const result = await (plugin as any).transform.call(
+            {},
+            '@master { .card { display: grid; } }\n.card { color: red }',
+            '/project/src/style.css'
+        )
+
+        expect(result.code).toBe(SLOT)
+        expect(context.styleCSSSources.get('/project/src/style.css')).toContain('@master')
+        expect(context.virtualCSSImporters).toEqual(new Set(['/project/src/style.css']))
+        expect(context.virtualCSSPlaceholderEmitted).toBe(true)
     })
 
     test('ignores non-CSS modules and unrelated CSS imports', async () => {

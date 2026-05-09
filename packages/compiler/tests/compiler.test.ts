@@ -246,11 +246,15 @@ describe.concurrent('@master/css-compiler', () => {
             'unused-card'
         ])
         expect(result.css).toContain('body')
+        expect(result.nativeCSS).toContain('body')
         expect(result.css).toContain('.native')
+        expect(result.nativeCSS).toContain('.native')
         expect(result.css).not.toContain('.unused:hover')
+        expect(result.nativeCSS).not.toContain('.unused:hover')
         expect(result.css).toContain('.card .title')
         expect(result.css).not.toContain('.unused-card')
         expect(result.css).toContain('.btn{display:block}')
+        expect(result.nativeCSS).not.toContain('.btn{display:block}')
     })
 
     it('keeps light and dark as core defaults and auto-registers custom modes', () => {

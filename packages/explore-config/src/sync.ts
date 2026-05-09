@@ -45,11 +45,13 @@ export function loadConfigSync(path: string, options: LoadConfigOptions = {}): L
     if (extname(path) === '.css') {
         const compileCSSFile = loadCompileCSSSync()
         const result = compileCSSFile(path, { classes: options.classes })
+        const nativeCSS = (result as typeof result & { nativeCSS?: string }).nativeCSS
         return {
             config: result.config,
             dependencies: result.dependencies,
             classNames: result.classNames,
             nativeClassNames: result.nativeClassNames,
+            nativeCSS,
             css: result.css,
             generatedCSS: result.generatedCSS,
             warnings: result.warnings
