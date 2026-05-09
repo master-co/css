@@ -28,6 +28,8 @@ export interface PluginContext {
     configPath?: string
     configResult?: ExploreConfigResult
     extractor: CSSExtractor
+    virtualCSSImporters?: Set<string>
+    virtualCSSPlaceholderEmitted?: boolean
 }
 
 export default function masterCSS(options?: PluginOptions): Plugin[] {

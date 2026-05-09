@@ -3,6 +3,7 @@ import { type Plugin } from 'vite'
 import CSSExtractor from '@master/css-extractor'
 import VirtualCSSModulePlugin from '../plugins/virtual-css-module'
 import VirtualCSSHMRPlugin from '../plugins/virtual-css-hmr'
+import VirtualCSSImportPlugin from '../plugins/virtual-css-import'
 import InjectVirtualModulePlugin from '../plugins/inject-virtual-module'
 import { PluginOptions } from '../options'
 
@@ -73,6 +74,7 @@ export default function ExtractMode(options: PluginOptions, context: PluginConte
                 await server.waitForRequestsIdle()
             }
         },
+        VirtualCSSImportPlugin(options, context),
         VirtualCSSHMRPlugin(options, context),
         VirtualCSSModulePlugin(options, context),
     ]

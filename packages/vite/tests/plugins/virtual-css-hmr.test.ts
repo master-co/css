@@ -168,6 +168,25 @@ describe('VirtualCSSHMRPlugin (C3+C4 race fixes)', () => {
         expect(reloadSpy).toHaveBeenCalledTimes(2)
     })
 
+    test('reloads CSS files that import the virtual Master CSS module', async () => {
+        const extractor = makeExtractor()
+        const cssModule = { file: '/style.css' }
+        const server = makeServer()
+        ;(server.moduleGraph as any).getModuleById = (id: string) => id === '/style.css' ? cssModule : null
+
+        const plugin = VirtualCSSHMRPlugin({} as any, {
+            extractor,
+            virtualCSSImporters: new Set(['/style.css']),
+        } as any)
+        ;(plugin as any).configureServer.call({}, server as any)
+        ;(plugin as any).buildStart.call({})
+
+        extractor.emit('change')
+        await tick(5)
+
+        expect(server.reloadModule).toHaveBeenCalledWith(cssModule)
+    })
+
     test('C4: an error in one reset does not poison the chain (subsequent resets still run)', async () => {
         const extractor = makeExtractor()
 

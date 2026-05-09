@@ -40,6 +40,13 @@ export default function VirtualCSSHMRPlugin(options: PluginOptions, context: Plu
                 }
             })
         }
+        const virtualCSSImporters = Array.from(context.virtualCSSImporters || [])
+        await Promise.all(virtualCSSImporters.map(async (eachModuleId) => {
+            const eachModule = server.moduleGraph.getModuleById(eachModuleId)
+            if (eachModule) {
+                await server.reloadModule(eachModule)
+            }
+        }))
         return virtualCSSModule
     }
     const handleReset = async ({ server }: { server: ViteDevServer }) => {

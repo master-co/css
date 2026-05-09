@@ -65,6 +65,43 @@ describe('VirtualCSSModulePlugin (D1 placeholder-leak warn)', () => {
         expect(warn).not.toHaveBeenCalled()
     })
 
+    test('deduplicates duplicate placeholder occurrences in the same CSS asset', async () => {
+        const ctx = makeContext(SLOT, REAL_CSS)
+        const plugin = VirtualCSSModulePlugin({} as any, ctx)
+        const warn = vi.fn()
+
+        ;(plugin as any).load.call({ warn }, ctx.extractor.resolvedVirtualModuleId)
+
+        const bundle = makeBundle({
+            'assets/index-abc.css': `${SLOT}body{margin:0}${SLOT}`,
+        })
+        await (plugin as any).generateBundle.call({ warn }, {}, bundle)
+
+        const css = String(bundle['assets/index-abc.css'].source)
+        expect(css).not.toContain(SLOT)
+        expect(css.match(new RegExp(REAL_CSS.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'))).toHaveLength(1)
+        expect(css).toBe(`${REAL_CSS}body{margin:0}`)
+        expect(warn).not.toHaveBeenCalled()
+    })
+
+    test('keeps one extracted CSS copy per CSS asset', async () => {
+        const ctx = makeContext(SLOT, REAL_CSS)
+        const plugin = VirtualCSSModulePlugin({} as any, ctx)
+        const warn = vi.fn()
+
+        ;(plugin as any).load.call({ warn }, ctx.extractor.resolvedVirtualModuleId)
+
+        const bundle = makeBundle({
+            'assets/index-abc.css': SLOT,
+            'assets/admin-abc.css': `${SLOT}${SLOT}`,
+        })
+        await (plugin as any).generateBundle.call({ warn }, {}, bundle)
+
+        expect(bundle['assets/index-abc.css'].source).toBe(REAL_CSS)
+        expect(bundle['assets/admin-abc.css'].source).toBe(REAL_CSS)
+        expect(warn).not.toHaveBeenCalled()
+    })
+
     test('warns when placeholder was emitted but no CSS asset still contains it', async () => {
         const ctx = makeContext(SLOT, REAL_CSS)
         const plugin = VirtualCSSModulePlugin({} as any, ctx)

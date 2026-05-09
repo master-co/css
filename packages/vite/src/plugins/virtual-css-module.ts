@@ -3,6 +3,17 @@ import { PluginContext } from '../core'
 import { PluginOptions } from '../options'
 import getExtractedCSS from '../utils/extracted-css'
 
+function replaceSlotCSSRule(source: string, slotCSSRule: string, realCSS: string): { source: string, replaced: boolean } {
+    let replaced = false
+    const nextSource = source.split(slotCSSRule).map((part, index) => {
+        if (index === 0) return part
+        if (replaced) return part
+        replaced = true
+        return realCSS + part
+    }).join('')
+    return { source: nextSource, replaced }
+}
+
 export default function VirtualCSSModulePlugin(options: PluginOptions, context: PluginContext): Plugin {
     // Whether some module ever asked Vite to load the virtual master.css.
     // Without this we cannot tell "user did not import virtual:master.css"
@@ -21,6 +32,7 @@ export default function VirtualCSSModulePlugin(options: PluginOptions, context: 
         load(id, opt) {
             if (id === context.extractor.resolvedVirtualModuleId) {
                 placeholderEmitted = true
+                context.virtualCSSPlaceholderEmitted = true
                 return context.extractor.slotCSSRule
             }
         },
@@ -34,10 +46,12 @@ export default function VirtualCSSModulePlugin(options: PluginOptions, context: 
                 if (chunk.type === 'asset') {
                     // @ts-expect-error rollup OutputAsset.source is string|Uint8Array
                     const oldSource = String(bundle[eachCssFileName]['source'])
-                    const newSource = oldSource.replace(slotCSSRule, realCSS)
-                    if (newSource !== oldSource) {
+                    const result = replaceSlotCSSRule(oldSource, slotCSSRule, realCSS)
+                    if (result.source !== oldSource) {
                         // @ts-expect-error see above
-                        bundle[eachCssFileName]['source'] = newSource
+                        bundle[eachCssFileName]['source'] = result.source
+                    }
+                    if (result.replaced) {
                         replacedAny = true
                     }
                 }
@@ -52,7 +66,7 @@ export default function VirtualCSSModulePlugin(options: PluginOptions, context: 
             // Without this warn the build silently ships CSS missing every
             // extracted class; the user only finds out at runtime against
             // an unstyled page. Surface it loudly at build time instead.
-            if (placeholderEmitted && !replacedAny && realCSS.length > 0) {
+            if ((placeholderEmitted || context.virtualCSSPlaceholderEmitted) && !replacedAny && realCSS.length > 0) {
                 this.warn(
                     `[master-css.vite] Could not splice extracted CSS into any bundle asset. ` +
                     `The placeholder "${slotCSSRule}" was emitted but no CSS chunk in the final ` +
