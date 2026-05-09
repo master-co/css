@@ -302,6 +302,8 @@ const config: Config = extendConfig(cssConfig, {
 export default config
 ```
 
+If TypeScript cannot resolve the `?master-css-config` import, add the client type reference for the integration that compiles the CSS config, such as `@master/css.vite/client`, `@master/css.next/client`, or `@master/css.webpack/client`.
+
 For most design-system work, prefer variables, static utilities in the general layer, main styles, and built-in Master CSS functions in `master.css`. Reach for `functions` only when a token or utility declaration cannot express the transformation.
 
 ---

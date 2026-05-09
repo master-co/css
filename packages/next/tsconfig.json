@@ -4,6 +4,7 @@
         "outDir": "dist"
     },
     "include": [
+        "client.d.ts",
         "src/**/*.ts",
         "tests/**/*.test.ts"
     ],

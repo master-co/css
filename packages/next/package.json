@@ -49,9 +49,13 @@
             "types": "./dist/adapter.d.ts",
             "import": "./dist/adapter.mjs",
             "default": "./dist/adapter.mjs"
+        },
+        "./client": {
+            "types": "./client.d.ts"
         }
     },
     "files": [
+        "client.d.ts",
         "dist"
     ],
     "publishConfig": {

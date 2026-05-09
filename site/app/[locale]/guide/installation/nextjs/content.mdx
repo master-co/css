@@ -45,6 +45,17 @@ import ProgressiveRenderingIntro from '../../rendering-modes/components/Progress
     </Step>
     <Step $row>
         <StepL>
+            ### <StepNum />Add client types
+            Create a project-local environment file for the Master CSS config import types. Keep this separate from `next-env.d.ts`, because Next.js regenerates that file.
+        </StepL>
+        <StepR>
+            ```ts name=master-css-env.d.ts
+            /// <reference types="@master/css.next/client" />
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
             ### <StepNum />Set up CSS runtime engine
             Create an App Router client boundary for `CSSRuntimeProvider` and load your `master.css` config through the Next.js adapter.
 

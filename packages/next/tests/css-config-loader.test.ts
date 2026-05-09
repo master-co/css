@@ -75,16 +75,16 @@ describe('css config loader', () => {
                     value: '#123'
                 }
             ],
-           : {
-                btn: [
-                    {
-                        selector: '&',
-                        declarations: {
-                            color: 'var(--color-primary)'
-                        }
+            utilities: [
+                {
+                    name: 'btn',
+                    type: -4,
+                    layer: 'main',
+                    declarations: {
+                        color: 'var(--color-primary)'
                     }
-                ]
-            }
+                }
+            ]
         })
     })
 })

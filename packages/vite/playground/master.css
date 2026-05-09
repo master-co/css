@@ -1,5 +1,9 @@
 @import '@master/normal.css';
 
+body {
+    background-color: red;
+}
+
 @master {
     root-size: 16;
     base-unit: 4;

@@ -236,6 +236,19 @@ import config from './master.css?master-css-config'
 
 Without the query, a `.css` import follows the normal stylesheet pipeline.
 
+In TypeScript projects, add the matching client type reference for the integration that handles the import:
+
+```ts
+// Vite
+/// <reference types="@master/css.vite/client" />
+
+// Next.js
+/// <reference types="@master/css.next/client" />
+
+// Webpack
+/// <reference types="@master/css.webpack/client" />
+```
+
 ### Dynamic classes limitations
 Since static extraction scans the source archive as plain text, it is impossible to predict the results of these string concatenation or interpolation.
 

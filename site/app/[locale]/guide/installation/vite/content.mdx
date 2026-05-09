@@ -55,6 +55,18 @@
     </Step>
     <Step $row>
         <StepL>
+            ### <StepNum />Add client types
+            If TypeScript source files import the Master CSS config object, add the Vite client types and Master CSS Vite client types to your environment file.
+        </StepL>
+        <StepR>
+            ```ts name=src/vite-env.d.ts
+            /// <reference types="vite/client" />
+            /// <reference types="@master/css.vite/client" />
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
             ### <StepNum />Start dev server
             Run the command to start the Vite dev server.
         </StepL>

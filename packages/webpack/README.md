@@ -62,5 +62,12 @@ module.exports = {
 }
 ```
 
+## Client types
+Add the client type reference when TypeScript source files import `master.css` or Master CSS config modules:
+
+```ts
+/// <reference types="@master/css.webpack/client" />
+```
+
 ## Documentation
 Check out the official [documentation](https://rc.css.master.co/guide/installation/webpack/static-extraction).

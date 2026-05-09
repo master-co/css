@@ -56,6 +56,18 @@
     </Step>
     <Step $row>
         <StepL>
+            ### <StepNum />Add client types
+            Add the Vite client types and Master CSS Vite client types before importing `master.css?master-css-config` from TypeScript.
+        </StepL>
+        <StepR>
+            ```ts name=src/app.d.ts
+            /// <reference types="vite/client" />
+            /// <reference types="@master/css.vite/client" />
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
             ### <StepNum />Set up Master CSS renderer
             Create a `src/hooks.server.ts` and use the `render()` to scan the rendered HTML of the Svelte pages, extract class names, generate CSS rules, and inject the CSS text.
         </StepL>

@@ -65,5 +65,13 @@ const config = {
 export default config
 ```
 
+## Client types
+Add the client type reference when TypeScript source files import Master CSS config modules:
+
+```ts
+/// <reference types="vite/client" />
+/// <reference types="@master/css.vite/client" />
+```
+
 ## Documentation
 Check out the official [documentation](https://rc.css.master.co/guide/installation/vite).

@@ -41,9 +41,13 @@
             "types": "./dist/index.d.ts",
             "import": "./dist/index.mjs",
             "require": "./dist/index.cjs"
+        },
+        "./client": {
+            "types": "./client.d.ts"
         }
     },
     "files": [
+        "client.d.ts",
         "dist"
     ],
     "publishConfig": {

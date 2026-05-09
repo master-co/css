@@ -53,6 +53,18 @@
     </Step>
     <Step $row>
         <StepL>
+            ### <StepNum />Add client types
+            Add the Vite client types and Master CSS Vite client types before importing `master.css?master-css-config` from TypeScript.
+        </StepL>
+        <StepR>
+            ```ts name=src/vite-env.d.ts
+            /// <reference types="vite/client" />
+            /// <reference types="@master/css.vite/client" />
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
             ### <StepNum />Set up CSS runtime engine
             Decorate your Lit element with `@cssRuntime()` to initialize Master CSS Runtime for the element's shadow root.
         </StepL>

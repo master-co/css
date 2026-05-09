@@ -1,6 +1,1 @@
-declare module '*?master-css-config' {
-    import type { Config } from '@master/css'
-
-    const config: Config
-    export default config
-}
+/// <reference types="@master/css.next/client" />
