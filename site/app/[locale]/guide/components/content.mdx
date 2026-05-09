@@ -258,7 +258,7 @@ Use native CSS `@import` from the CSS config entry to organize main styles.
 }
 ```
 
-Local relative `.css` imports are compiled into one config graph. Package imports and regular CSS that are not part of `@master` definitions stay as normal CSS.
+Local relative `.css` imports are compiled into one config graph. Package imports stay normal CSS. Regular CSS outside `@master` stays native CSS and can be pruned by extract or progressive integrations when its class selectors are unused.
 
 ---
 

@@ -12,11 +12,11 @@ import ProgressiveRenderingIntro from '../../rendering-modes/components/Progress
     <Step $row>
         <StepL>
             ### <StepNum />Create a Next.js project
-            If you don't have a Next.js project, create one first. It's recommended to refer to [Create Next App](https://nextjs.org/docs/api-reference/create-app-next-app).
+            If you don't have a Next.js project, create one first. It's recommended to refer to [Create Next App](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
         </StepL>
         <StepR>
             ```bash name=Terminal
-            npm create next-app --app --ts
+            npx create-next-app@latest my-app --ts --app --no-tailwind
             cd my-app
             ```
         </StepR>
@@ -56,7 +56,7 @@ import ProgressiveRenderingIntro from '../../rendering-modes/components/Progress
     </Step>
     <Step $row>
         <StepL>
-            ### <StepNum />Set up CSS runtime engine
+            ### <StepNum />Set up the CSS runtime engine
             Create an App Router client boundary for `CSSRuntimeProvider` and load your `master.css` config through the Next.js adapter.
 
             (i) Keep the `?master-css-config` query. A plain `.css` import is treated as a stylesheet by Next.js, while this query loads the compiled Master CSS config object.
@@ -74,6 +74,33 @@ import ProgressiveRenderingIntro from '../../rendering-modes/components/Progress
                         {children}
                     </CSSRuntimeProvider>
                 )
+            }
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Author app stylesheet config
+            Keep the normal `app/globals.css` import in the root layout. You can define local `@master` classes and regular CSS in that stylesheet.
+
+            (i) Regular class selectors outside `@master` are not utilities. The adapter keeps them only when the built HTML uses the class.
+        </StepL>
+        <StepR>
+            ```css name=app/globals.css
+            html,
+            body {
+                margin: 0;
+                min-height: 100%;
+            }
+
+            .native-card {
+                border: 1px solid rgb(0 0 0 / 12%);
+            }
+
+            @master {
+                .hero-title {
+                    @compose "m:0 font:5xl font:heavy fg:strong";
+                }
             }
             ```
         </StepR>
@@ -114,7 +141,9 @@ import ProgressiveRenderingIntro from '../../rendering-modes/components/Progress
 
             (i) This adapter uses the Next.js 16 Adapter API and runs in `onBuildComplete`. It pre-renders static and pre-rendered HTML outputs, while dynamic SSR responses continue to rely on the runtime engine.
 
-            (i) `@master` definitions in `master.css` are config only. Component CSS is generated when component classes are found in the built HTML or later observed by the runtime engine.
+            (i) `@master` definitions in `master.css` and source stylesheets are config only. Component CSS is generated when component classes are found in the built HTML or later observed by the runtime engine.
+
+            (i) When a class is defined in both `app/globals.css` and the root `master.css`, the root `master.css` config is applied last.
         </StepL>
         <StepR>
             ```js name=next.config.mjs
@@ -148,7 +177,7 @@ import ProgressiveRenderingIntro from '../../rendering-modes/components/Progress
         ```tsx name=app/page.tsx
         export default function Home() {
             return (
-                <h1 className="italic m:2xl fg:strong font:5xl font:heavy">Hello World</h1>
+                <h1 className="hero-title native-card m:2xl">Hello World</h1>
             )
         }
         ```

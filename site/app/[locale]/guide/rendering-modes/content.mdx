@@ -211,7 +211,7 @@ Unlike runtime-based solutions, Static Extraction does not rely on any client-si
 This rendering strategy is functionally equivalent to how [Tailwind CSS](https://tailwindcss.com/) operates in production: styles are compiled ahead-of-time based on actual class name usage across your project, enabling aggressive tree-shaking and style deduplication.
 
 ### CSS config and generation
-`master.css` is a CSS config source. `@master` definitions are converted into config and removed from the CSS output; they do not generate rules by themselves.
+`master.css` is the root CSS config source. `@master` definitions are converted into config and removed from regular CSS output; they do not generate rules by themselves.
 
 ```css name=master.css
 @master {
@@ -226,6 +226,18 @@ Static extraction still emits `.btn` only when `btn` appears in scanned source:
 ```html
 <!-- @MARK btn -->
 <button class="btn">Save</button>
+```
+
+Source stylesheets can also define local `@master` config fragments. Integrations compile these fragments before the root `master.css`, so the root config remains the final override point.
+
+```css name=src/style.css
+@import 'virtual:master.css';
+
+@master {
+    .btn {
+        @compose "inline-flex px:lg";
+    }
+}
 ```
 
 When a framework file needs the config object at runtime, import the CSS config through the integration query:
@@ -248,6 +260,53 @@ In TypeScript projects, add the matching client type reference for the integrati
 // Webpack
 /// <reference types="@master/css.webpack/client" />
 ```
+
+### CSS imports
+In extract mode, the generated stylesheet is exposed as a virtual CSS module. JavaScript imports are supported, but the preferred location is often the framework's existing stylesheet entry.
+
+```js name=src/main.js
+import 'virtual:master.css'
+```
+
+```css name=src/style.css
+@import 'virtual:master.css';
+```
+
+Webpack-based integrations also support the shorter CSS import:
+
+```css name=src/style.css
+@import 'master.css';
+```
+
+Use one import path for the generated stylesheet. If both JavaScript and CSS import the virtual CSS module in Webpack, the integration keeps the CSS output on the stylesheet import path.
+
+### Native CSS pruning
+Regular CSS outside `@master` remains native CSS. Class selectors in that native CSS are scanned and emitted on demand, so non-utility classes can live beside Master CSS config without shipping unused rules.
+
+```css name=src/style.css
+@import 'virtual:master.css';
+
+.native-card {
+    border: 1px solid rgb(0 0 0 / 12%);
+}
+
+.unused-card {
+    color: red;
+}
+
+@master {
+    .btn {
+        @compose "inline-flex px:md";
+    }
+}
+```
+
+```html
+<!-- @MARK native-card btn -->
+<article class="native-card btn">Card</article>
+```
+
+The generated CSS keeps `.native-card` and `.btn`, while `.unused-card` is removed because no scanned source uses it.
 
 ### Dynamic classes limitations
 Since static extraction scans the source archive as plain text, it is impossible to predict the results of these string concatenation or interpolation.
@@ -275,10 +334,10 @@ In addition to the three main rendering modes mentioned above, Master CSS also u
 
 | Mode                      | Description                                                                                                                                           |
 |---------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `'runtime'`               | Detects the application's entry file, automatically injects the initialization of `CSSRuntime`, and imports the `config` code.                        |
-| `'extract'`               | Detects the application's entry file, automatically imports the `virtual:master.css` module, and triggers the static extraction workflow.             |
-| `'pre-render'`            | Renders all `*.html` dependencies and injects CSS internally. This mode may be integrated with other SSR capabilities.                                |
-| `'progressive'`           | Combines `runtime` and `pre-render` modes.                                                                                                            |
+| `'runtime'`               | Detects the application's entry file, automatically injects the initialization of `CSSRuntime`, and imports the `config` code.                                      |
+| `'extract'`               | Scans source files, supports JavaScript or CSS imports of the generated virtual stylesheet, and compiles `@master` blocks from source stylesheets.                   |
+| `'pre-render'`            | Renders all `*.html` dependencies and injects CSS internally. This mode may be integrated with other SSR capabilities.                                              |
+| `'progressive'`           | Combines `runtime` and `pre-render` modes. Framework adapters can also prune native CSS from source stylesheets against the rendered classes.                       |
 
 ---
 

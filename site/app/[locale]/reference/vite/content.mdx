@@ -21,6 +21,19 @@ Add `@master/css.vite/client` to the project environment file when TypeScript so
 /// <reference types="@master/css.vite/client" />
 ```
 
+### Virtual CSS imports
+In extract mode, import the generated stylesheet from JavaScript or from a source stylesheet.
+
+```js name=src/main.js
+import 'virtual:master.css'
+```
+
+```css name=src/style.css
+@import 'virtual:master.css';
+```
+
+Source stylesheets can also contain `@master` definitions. Their config is extended before the root `master.css` config, and regular class selectors outside `@master` are emitted only when those classes are detected in source.
+
 ---
 
 ## API Reference

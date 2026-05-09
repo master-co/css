@@ -2,11 +2,12 @@
     <Step $row>
         <StepL>
             ### <StepNum />Create a Vite project
-            If you don't have a Vite project, create one first. It's recommended to refer to [Getting Started - Vite](https://vite.dev/guide/)
+            If you don't have a Vite project, create one first. Vite treats the project root `index.html` as the entry point and the default templates usually load source files from `src/`.
         </StepL>
         <StepR>
-            ```bash action=create
-            vite@latest my-app
+            ```bash name=Terminal
+            npm create vite@latest my-app
+            cd my-app
             ```
         </StepR>
     </Step>
@@ -37,8 +38,7 @@
             ### <StepNum />Set up Master CSS
             Add a `masterCSS` vite plugin in `vite.config.js`.
 
-            - By default, `options.mode` is set to `runtime`.
-            - Use `mode: 'extract'` to generate `virtual:master.css` from scanned source files.
+            This example uses static extraction. Use `masterCSS()` without options when you want runtime rendering instead.
         </StepL>
         <StepR>
             ```js name=vite.config.js
@@ -47,9 +47,47 @@
 
             export default defineConfig({
                 plugins: [
-                    masterCSS() // [!code highlight]
+                    masterCSS({ // [!code highlight]
+                        mode: 'extract' // [!code highlight]
+                    }) // [!code highlight]
                 ]
             })
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Import extracted CSS
+            In extract mode, import the virtual CSS module from the stylesheet your Vite entry already loads, such as `src/style.css`.
+
+            (i) You can also import `virtual:master.css` from `src/main.js`. Use one import location for the generated stylesheet.
+        </StepL>
+        <StepR>
+            ```css name=src/style.css
+            @import 'virtual:master.css';
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Define local CSS
+            Source stylesheets can define `@master` component classes and regular CSS together. Regular class selectors are kept only when the class appears in scanned source.
+
+            (i) If the same `@master` class is also defined in the root `master.css`, the root config is applied last.
+        </StepL>
+        <StepR>
+            ```css name=src/style.css
+            @import 'virtual:master.css';
+
+            .native-card {
+                border: 1px solid rgb(0 0 0 / 12%);
+            }
+
+            @master {
+                .btn {
+                    @compose "inline-flex ai:center px:md h:40 r:md bg:primary fg:white";
+                }
+            }
             ```
         </StepR>
     </Step>
@@ -83,7 +121,7 @@
         </StepL>
         <StepR>
             ```html name=index.html
-            <h1 class="italic m:2xl fg:strong font:5xl font:heavy">Hello World</h1>
+            <h1 class="btn native-card m:2xl">Hello World</h1>
             ```
         </StepR>
     </Step>

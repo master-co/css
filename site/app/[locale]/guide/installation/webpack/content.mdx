@@ -2,14 +2,14 @@
     <Step $row>
         <StepL>
             ### <StepNum />Create a project
-            If you don't have a Webpack project, create one first. It's recommended to refer to [Getting Started - Webpack](https://webpack.js.org/guides/getting-started)
+            If you don't have a Webpack project, create one first. This guide uses a small app with `src/index.js`, `src/style.css`, and `src/index.html`.
         </StepL>
         <StepR>
             ```bash name=Terminal
-            mkdir project
-            cd project
+            mkdir my-app
+            cd my-app
             npm init -y
-            npm install webpack webpack-cli webpack-dev-server html-webpack-plugin css-loader style-loader ts-loader --save-dev
+            npm install webpack webpack-cli webpack-dev-server html-webpack-plugin css-loader style-loader --save-dev
             ```
         </StepR>
     </Step>
@@ -49,7 +49,7 @@
     <Step $row>
         <StepL>
             ### <StepNum />Create a Webpack config file
-            Create and configure the `webpack.config.js` file.
+            Create and configure the `webpack.config.js` file. The extractor scans `src/index.html` and your JavaScript modules, then writes the generated CSS into the virtual CSS module.
         </StepL>
         <StepR>
             ```js name=webpack.config.js
@@ -70,6 +70,8 @@
                     new MasterCSSExtractorPlugin({ sources: ['./src/index.html'] })
                 ],
                 devServer: {
+                    static: './dist',
+                    port: 8080,
                     watchFiles: ['src/**/*']
                 },
                 module: {
@@ -84,7 +86,7 @@
     <Step $row>
         <StepL>
             ### <StepNum />Configure a HTML file
-            Create and configure the `src/index.html` file.
+            Create and configure the `src/index.html` template file.
         </StepL>
         <StepR>
             ```html name=src/index.html
@@ -92,9 +94,10 @@
             <html lang="en">
             <head>
                 <meta charset="utf-8" />
+                <title>Master CSS Webpack</title>
             </head>
             <body>
-                <h1>Hello World</h1>
+                <h1 class="hero-title native-card">Hello World</h1>
             </body>
             </html>
             ```
@@ -102,12 +105,48 @@
     </Step>
     <Step $row>
         <StepL>
-            ### <StepNum />Import virtual CSS module
-            Import the virtual CSS module `master.css` into the `src/index.js`.
+            ### <StepNum />Import the app stylesheet
+            Import your stylesheet from the JavaScript entry.
         </StepL>
         <StepR>
             ```js name=src/index.js
-            import 'master.css';
+            import './style.css'
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Import extracted CSS
+            Import the generated CSS module from `src/style.css`.
+
+            (i) `@import 'master.css'` and `@import 'virtual:master.css'` both point to the generated virtual CSS module. If you also import it from JavaScript, Webpack keeps one CSS output path.
+        </StepL>
+        <StepR>
+            ```css name=src/style.css
+            @import 'master.css';
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Author stylesheet config
+            Source stylesheets can define `@master` classes and regular CSS together. Regular class selectors are not utilities; they are kept only when the scanned source uses the class.
+
+            (i) If a class is defined in both `src/style.css` and the root `master.css`, the root `master.css` config is applied last.
+        </StepL>
+        <StepR>
+            ```css name=src/style.css
+            @import 'master.css';
+
+            .native-card {
+                border: 1px solid rgb(0 0 0 / 12%);
+            }
+
+            @master {
+                .hero-title {
+                    @compose "m:0 font:5xl font:heavy fg:strong";
+                }
+            }
             ```
         </StepR>
     </Step>
@@ -146,14 +185,14 @@
         <html lang="en">
         <head>
             <meta charset="utf-8" />
-            <script src="./index.js"></script>
+            <title>Master CSS Webpack</title>
         </head>
         <body>
-            <h1 class="italic m:2xl fg:strong font:5xl font:heavy">Hello World</h1>
+            <h1 class="hero-title native-card">Hello World</h1>
         </body>
         </html>
         ```
         Open your browser to watch the changes.
-        <HelloWorld url="localhost:3000" />
+        <HelloWorld url="localhost:8080" />
     </Step>
 </StepSection>
