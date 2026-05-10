@@ -119,7 +119,8 @@ describe('withMasterCSS', () => {
                 expect.objectContaining({
                     condition: expect.objectContaining({
                         all: expect.arrayContaining([
-                            { path: /\.css$/ },
+                            { path: expect.any(RegExp) },
+                            { content: expect.any(RegExp) },
                             { not: { query: /master-css-config/ } }
                         ])
                     }),

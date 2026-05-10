@@ -2,7 +2,7 @@ import { fileURLToPath } from 'node:url'
 import { relative } from 'node:path'
 import type { NextConfig } from 'next'
 import {
-    createVirtualCSSImportPattern,
+    createMasterStyleCSSPattern,
     prepareNextExtract,
     resolveExtractOutputPath,
     resolveExtractStatePath,
@@ -125,8 +125,8 @@ function applyMasterCSSExtractTurbopackConfig(
         condition: {
             all: [
                 { not: 'foreign' as const },
-                { path: /\.css$/ },
-                { content: createVirtualCSSImportPattern(moduleId) },
+                { path: /\.(css|scss|sass)$/ },
+                { content: createMasterStyleCSSPattern(moduleId) },
                 { not: { query: /master-css-config/ } }
             ]
         },

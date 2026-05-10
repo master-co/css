@@ -1,16 +1,22 @@
 import CSSExtractor, { type Options as ExtractorOptions } from '@master/css-extractor'
 import defaultExtractorOptions from '@master/css-extractor/options'
-import { createCSS, type Config } from '@master/css'
+import { compileCSS, type CompileCSSOptions } from '@master/css-compiler'
+import { createCSS, extendConfig, VariableRule, type Config } from '@master/css'
 import { loadConfig, resolveConfigPath } from '@master/css-explore-config'
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { existsSync, readFileSync } from 'node:fs'
-import { dirname, resolve } from 'node:path'
+import { createRequire } from 'node:module'
+import { dirname, extname, resolve } from 'node:path'
+import { pathToFileURL } from 'node:url'
 import { resolveOptions, type Options, type ResolvedOptions } from './options'
 
 const STATE_VERSION = 1
 const DEFAULT_EXTRACT_OUTPUT = '.master-css/next.css'
 const DEFAULT_STATE_FILE = 'next-extract-state.json'
 const DEFAULT_SCAN_LOG_FILE = 'next-extract-scanned-sources.log'
+const STYLE_CSS_REQUEST_RE = /\.(css|scss|sass)(?:[?#].*)?$/
+const CSS_IMPORT_RE = /@import\s+(?:url\(\s*)?(["'])([^"']+)\1\s*\)?[^;]*;/g
+const require = createRequire(import.meta.url)
 
 export interface ExtractState {
     version: 1
@@ -29,8 +35,12 @@ interface ExtractSession {
     extractor: CSSExtractor
     ready: Promise<CSSExtractor>
     write: () => Promise<void>
+    styleCSSSources: Map<string, string>
     watching?: boolean
 }
+
+type CSSInstance = ReturnType<typeof createCSS>
+type VariableDefinition = NonNullable<Config['variables']>[number]
 
 interface PrepareNextExtractOptions {
     projectDir?: string
@@ -76,36 +86,192 @@ function escapeRegExp(source: string) {
 
 export function createVirtualCSSImportPattern(moduleId: string) {
     const escapedModuleId = escapeRegExp(moduleId)
-    return new RegExp(String.raw`@import\s+(?:url\(\s*)?(['"])${escapedModuleId}\1\s*\)?\s*;?`, 'g')
+    return new RegExp(String.raw`@import\s+(?:url\(\s*)?(['"])${escapedModuleId}\1\s*\)?[^;]*;`)
 }
 
-export async function replaceExtractedCSSImport(statePath: string, source: string) {
+export function createMasterStyleCSSPattern(moduleId: string) {
+    return new RegExp(`@master|${createVirtualCSSImportPattern(moduleId).source}`)
+}
+
+function cleanStyleRequest(id: string) {
+    return id.replace(/[?#].*$/, '')
+}
+
+export function isStyleCSSRequest(id: string) {
+    return STYLE_CSS_REQUEST_RE.test(id)
+}
+
+function replaceVirtualCSSImport(source: string, moduleId: string, replacement: string) {
+    let replaced = false
+    const code = source.replace(CSS_IMPORT_RE, (rule, _quote: string, id: string) => {
+        if (id !== moduleId) return rule
+        replaced = true
+        return replacement
+    })
+    return { code, replaced }
+}
+
+function removeVirtualCSSImport(source: string, moduleId: string) {
+    return replaceVirtualCSSImport(source, moduleId, '').code
+}
+
+function hasVirtualCSSImport(source: string, moduleId: string) {
+    return replaceVirtualCSSImport(source, moduleId, '').replaced
+}
+
+export function isMasterStyleSource(source: string, moduleId: string) {
+    return source.includes('@master') || hasVirtualCSSImport(source, moduleId)
+}
+
+async function preprocessStyleCSS(source: string, id: string) {
+    const filename = cleanStyleRequest(id)
+    const extension = extname(filename)
+    if (extension !== '.scss' && extension !== '.sass') return source
+
+    const sass = require('sass') as typeof import('sass')
+    const result = await sass.compileStringAsync(source, {
+        url: pathToFileURL(filename),
+        style: 'expanded',
+        syntax: extension === '.sass' ? 'indented' : 'scss'
+    })
+    return result.css
+}
+
+async function compileStyleCSS(id: string, source: string, options: CompileCSSOptions = {}) {
+    const css = await preprocessStyleCSS(source, id)
+    return compileCSS(css, {
+        ...options,
+        from: cleanStyleRequest(id)
+    })
+}
+
+function getNativeCSS(result: { css?: string, generatedCSS?: string, nativeCSS?: string }) {
+    if (result.nativeCSS !== undefined) return result.nativeCSS
+    const css = result.css || ''
+    const generatedCSS = result.generatedCSS || ''
+    if (generatedCSS && css.endsWith(generatedCSS)) {
+        return css.slice(0, -generatedCSS.length).trim()
+    }
+    return css
+}
+
+function getVariableDefinitionName(definition: VariableDefinition) {
+    return definition.namespace
+        ? `${definition.namespace.replace(/\./g, '-')}${definition.key ? '-' + definition.key : ''}`
+        : definition.key
+}
+
+function collectCSSVariableReferences(source: string) {
+    const references = new Set<string>()
+    for (const match of source.matchAll(/var\(\s*--([_a-zA-Z0-9-]+)/g)) {
+        references.add(match[1])
+    }
+    return references
+}
+
+function collectConfigVariableNames(configs: Config[]) {
+    const names = new Set<string>()
+    for (const config of configs) {
+        for (const definition of config.variables || []) {
+            names.add(getVariableDefinitionName(definition))
+        }
+    }
+    return names
+}
+
+function insertVariableRules(css: CSSInstance, variableNames: Iterable<string>) {
+    for (const variableName of variableNames) {
+        const variable = css.variables.get(variableName)
+        if (!variable) continue
+        css.themeLayer.insert(new VariableRule(variableName, variable, css))
+    }
+}
+
+function insertStyleVariableRules(css: CSSInstance, styleConfigs: Config[], nativeCSS: string[]) {
+    const styleVariableNames = collectConfigVariableNames(styleConfigs)
+    const variableNames = new Set(styleVariableNames)
+    for (const source of nativeCSS) {
+        for (const variableName of collectCSSVariableReferences(source)) {
+            if (css.variables.has(variableName)) {
+                variableNames.add(variableName)
+            }
+        }
+    }
+    insertVariableRules(css, variableNames)
+}
+
+function refreshExtractorNativeClasses(extractor: CSSExtractor, nativeClassNames: string[]) {
+    let changed = false
+    for (const className of nativeClassNames) {
+        if (!extractor.nativeClassNames.has(className)) {
+            extractor.nativeClassNames.add(className)
+            changed = true
+        }
+        if (extractor.latentClasses.has(className) && !extractor.usedNativeClasses.has(className)) {
+            extractor.usedNativeClasses.add(className)
+            changed = true
+        }
+    }
+    if (changed) {
+        extractor.emit('change')
+    }
+}
+
+async function registerStyleCSSSource(session: ExtractSession, id: string, source: string) {
+    const filename = cleanStyleRequest(id)
+    const cleanSource = removeVirtualCSSImport(source, session.extractor.options.module as string)
+    const result = await compileStyleCSS(filename, cleanSource)
+    session.styleCSSSources.set(filename, cleanSource)
+    refreshExtractorNativeClasses(session.extractor, result.nativeClassNames)
+}
+
+export async function transformExtractStyleSource(statePath: string, resourcePath: string, source: string) {
     const state = readExtractState(statePath)
-    if (!source.includes(state.options.module)) return source
-    const cssText = existsSync(state.outputPath)
-        ? await readFile(state.outputPath, 'utf-8')
-        : ''
-    return source.replace(createVirtualCSSImportPattern(state.options.module), cssText)
+    if (!isStyleCSSRequest(resourcePath) || !isMasterStyleSource(source, state.options.module)) return source
+    const options = resolveOptions({
+        mode: 'extract',
+        config: state.options.config,
+        extractorOptions: state.options.extractorOptions,
+        debug: state.options.debug
+    })
+    const session = await getOrCreateExtractSession(state.projectDir, state.outputPath, options)
+    await registerStyleCSSSource(session, resourcePath, source)
+    await session.write()
+    return readFile(state.outputPath, 'utf-8')
 }
 
-async function createExtractedCSS(projectDir: string, extractor: CSSExtractor) {
-    const classes = getExtractorClasses(extractor)
+async function createExtractedCSS(projectDir: string, session: ExtractSession) {
+    const extractor = session.extractor
+    const classes = getExtractorClasses(session.extractor)
     const config = extractor.options.config
     const resolvedConfig = typeof config === 'string'
         ? resolveConfigPath({ cwd: projectDir, name: config })
         : undefined
+    const styleResults = await Promise.all(
+        Array.from(session.styleCSSSources)
+            .map(([id, source]) => compileStyleCSS(id, source, { classes }))
+    )
+    const styleConfigs = styleResults.map((result) => result.config)
     const configResult = resolvedConfig
         ? await loadConfig(resolvedConfig.path, { classes })
         : undefined
-    const css = createCSS(typeof config === 'string'
-        ? configResult?.config
-        : config
-    )
+    const nativeCSS = styleResults.map(getNativeCSS).filter(Boolean)
+    if (configResult) {
+        const configNativeCSS = getNativeCSS(configResult)
+        if (configNativeCSS) nativeCSS.push(configNativeCSS)
+    }
+    const css = createCSS(extendConfig(
+        ...styleConfigs,
+        typeof config === 'string'
+            ? configResult?.config
+            : config
+    ))
+    insertStyleVariableRules(css, styleConfigs, nativeCSS)
     for (const className of classes) {
         css.add(className)
     }
     return [
-        configResult?.nativeCSS,
+        ...nativeCSS,
         css.text
     ].filter(Boolean).join('\n\n')
 }
@@ -118,10 +284,11 @@ async function writeExtractedCSS(outputPath: string, cssText: string) {
 function createSession(projectDir: string, outputPath: string, options: ResolvedOptions): ExtractSession {
     const extractor = new CSSExtractor(resolveExtractorOptions(options), projectDir)
     let writeChain = Promise.resolve()
+    let session: ExtractSession
     const write = () => {
         writeChain = writeChain
             .then(async () => {
-                const cssText = await createExtractedCSS(projectDir, extractor)
+                const cssText = await createExtractedCSS(projectDir, session)
                 await writeExtractedCSS(outputPath, cssText)
             })
             .catch((error: unknown) => {
@@ -144,11 +311,14 @@ function createSession(projectDir: string, outputPath: string, options: Resolved
         void write()
     })
 
-    return {
+    session = {
         extractor,
         ready,
-        write
+        write,
+        styleCSSSources: new Map()
     }
+
+    return session
 }
 
 export function resolveExtractOutputPath(projectDir: string) {
@@ -258,7 +428,7 @@ export async function scanExtractModule(statePath: string, resourcePath: string,
     if (changed) {
         await session.write()
     } else if (!existsSync(state.outputPath)) {
-        const cssText = await createExtractedCSS(state.projectDir, session.extractor)
+        const cssText = await createExtractedCSS(state.projectDir, session)
         await writeExtractedCSS(state.outputPath, cssText)
     }
 }

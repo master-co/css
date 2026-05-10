@@ -4,7 +4,6 @@ import { join } from 'node:path'
 import { beforeEach, describe, expect, it } from 'vitest'
 import {
     prepareNextExtract,
-    replaceExtractedCSSImport,
     resolveExtractOutputPath,
     resolveExtractScanLogPath,
     resolveExtractStatePath
@@ -39,9 +38,10 @@ function runExtractLoader(statePath: string, resourcePath: string, source: strin
     })
 }
 
-function runExtractCSSLoader(statePath: string, source: string) {
+function runExtractCSSLoader(statePath: string, resourcePath: string, source: string) {
     return new Promise<string>((resolve, reject) => {
         const context: ThisParameterType<typeof masterCSSNextExtractCSSLoader> = {
+            resourcePath,
             cacheable: () => undefined,
             getOptions: () => ({ statePath }),
             async: () => (error, content) => {
@@ -84,11 +84,11 @@ describe('Next extract mode', () => {
         expect(css).toContain('margin:0')
     })
 
-    it('replaces virtual CSS imports in app stylesheets for dev CSS chunks', async () => {
+    it('registers app stylesheets and replaces virtual CSS imports for dev CSS chunks', async () => {
         const root = createFixture()
         writeFileSync(join(root, 'app/page.tsx'), `
             export default function Page() {
-                return <main className="block">Hello</main>
+                return <main className="main block">Hello</main>
             }
         `)
 
@@ -97,12 +97,46 @@ describe('Next extract mode', () => {
 
         await prepareNextExtract({ mode: 'extract' }, { projectDir: root })
 
-        const source = '@import "virtual:master.css";\nbody{margin:0}'
-        const replaced = await runExtractCSSLoader(statePath, source)
-        expect(replaced).toBe(await replaceExtractedCSSImport(statePath, source))
+        const source = `
+            @import "virtual:master.css";
+            @import url('virtual:master.css') layer(master);
+
+            @master {
+                --color-primary: #ff0000;
+            }
+
+            .main {
+                background-color: var(--color-primary);
+            }
+        `
+        const replaced = await runExtractCSSLoader(statePath, join(root, 'app/globals.css'), source)
         expect(replaced).toContain('display:block')
-        expect(replaced).toContain('body{margin:0}')
+        expect(replaced).toContain('--color-primary')
+        expect(replaced).toContain('--color-primary:red')
+        expect(replaced).toContain('.main')
+        expect(replaced).toContain('background-color: var(--color-primary)')
+        expect(replaced).not.toContain('@master')
         expect(replaced).not.toContain('virtual:master.css')
+        expect(replaced).not.toContain('layer(master)')
+        expect(readFileSync(outputPath, 'utf-8')).toBe(replaced)
+    })
+
+    it('treats app stylesheets with @master as extracted CSS entries without virtual imports', async () => {
+        const root = createFixture()
+        const outputPath = resolveExtractOutputPath(root)
+        const statePath = resolveExtractStatePath(outputPath)
+
+        await prepareNextExtract({ mode: 'extract' }, { projectDir: root })
+
+        const replaced = await runExtractCSSLoader(statePath, join(root, 'app/theme.css'), `
+            @master {
+                --color-primary: #00f;
+            }
+        `)
+
+        expect(replaced).toContain('--color-primary')
+        expect(replaced).toContain('--color-primary:rgb(0 0 255)')
+        expect(replaced).not.toContain('@master')
     })
 
     it('lets the scanner loader feed an imported module into the extractor incrementally', async () => {

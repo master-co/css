@@ -26,6 +26,14 @@ Extract mode keeps the same `virtual:master.css` authoring model used by other M
 
 ```css name=app/globals.css
 @import 'virtual:master.css';
+
+@master {
+    --color-primary: #ff0000;
+}
+
+.main {
+    background-color: var(--color-primary);
+}
 ```
 
 Then enable it in `next.config.mjs`:
@@ -43,7 +51,7 @@ const nextConfig = await withMasterCSS({
 export default nextConfig
 ```
 
-Under the hood, extract mode first scans the configured source files with `@master/css-extractor` and writes a generated CSS file. Turbopack then replaces CSS imports of `virtual:master.css` with that generated CSS. During Turbopack builds, a scanner loader also reads JavaScript and TypeScript modules that pass through the module graph, so imported files can incrementally feed additional class names into the extractor.
+Under the hood, extract mode first scans the configured source files with `@master/css-extractor` and writes a generated CSS file. Turbopack then replaces CSS imports of `virtual:master.css` with that generated CSS. Stylesheets can also contain `@master {}` blocks; those blocks are merged into the extracted config, and variables defined there are emitted for native CSS that references them. During Turbopack builds, a scanner loader also reads JavaScript and TypeScript modules that pass through the module graph, so imported files can incrementally feed additional class names into the extractor.
 
 This is intentionally different from the older Webpack setup. Next.js does not expose a Turbopack plugin API equivalent to Webpack plugins, so the Next integration uses source scanning as the correctness baseline and loader scanning as an incremental layer.
 

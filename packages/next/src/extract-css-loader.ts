@@ -1,6 +1,7 @@
-import { replaceExtractedCSSImport } from './extract'
+import { transformExtractStyleSource } from './extract'
 
 interface LoaderContext {
+    resourcePath: string
     cacheable?: (flag?: boolean) => void
     async?: () => (error: Error | null, content?: string) => void
     getOptions?: () => {
@@ -22,7 +23,7 @@ export default function masterCSSNextExtractCSSLoader(this: LoaderContext, sourc
         return
     }
 
-    const run = replaceExtractedCSSImport(statePath, source)
+    const run = transformExtractStyleSource(statePath, this.resourcePath, source)
         .then((content) => callback(null, content))
         .catch((error: Error) => callback(error))
 
