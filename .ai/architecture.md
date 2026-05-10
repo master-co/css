@@ -7,6 +7,7 @@ shared / external data
   ↓
 @master/css
   ↓
+@master/css-compiler
 @master/css-validator
 @master/css-server
 @master/css-extractor
@@ -64,13 +65,17 @@ Important files:
 
 `packages/server` parses HTML, extracts classes, generates CSS, and injects `style#master`.
 
-`packages/extractor` scans source files, extracts latent classes, validates them, and emits CSS for static output.
+`packages/compiler` compiles CSS-authored Master config blocks and native CSS into data that downstream packages can merge with generated output.
+
+`packages/extractor` scans source files, extracts latent classes, validates them, and emits CSS for static output. It also owns shared stylesheet extraction helpers for integrations that need to compile `@master` CSS sources, normalize virtual CSS imports, and merge native CSS with extracted Master CSS.
 
 ## Integration Packages
 
 `packages/vite` coordinates runtime, extract, pre-render, and progressive modes.
 
 `packages/webpack` provides static extraction through Webpack virtual modules.
+
+`packages/next` integrates pre-render and extract modes without depending on Webpack-specific extraction internals.
 
 Framework packages wrap those lower layers for Astro, Nuxt, React, Vue, and Svelte.
 

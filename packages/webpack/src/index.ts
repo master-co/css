@@ -1,6 +1,6 @@
 import { CSSExtractor, Options } from '@master/css-extractor'
 import { loadConfig, resolveConfigPath, type ExploreConfigPath } from '@master/css-explore-config'
-import { createCSS, extendConfig } from '@master/css'
+import { createExtractedCSS, registerStyleCSSSource as registerExtractorStyleCSSSource } from '@master/css-extractor/style'
 import type { Compiler } from 'webpack'
 import VirtualModulesPlugin from 'webpack-virtual-modules'
 import log from '@techor/log'
@@ -17,11 +17,8 @@ import {
 import {
     STYLE_CSS_REQUEST_RE,
     cleanStyleRequest,
-    compileStyleCSS,
     isMasterStyleSource,
-    isStyleCSSRequest,
-    refreshExtractorNativeClasses,
-    removeVirtualCSSImports
+    isStyleCSSRequest
 } from './utils/style-css'
 
 const NAME = 'MasterCSSExtractorPlugin'
@@ -96,41 +93,20 @@ export class MasterCSSExtractorPlugin extends CSSExtractor {
     }
 
     private async createExtractedCSS() {
-        const classes = this.getExtractorClasses()
-        const configPath = this.resolvedConfigPath
-        if (!this.styleCSSSources.size && path.extname(configPath || '') !== '.css') {
-            return this.css.text
-        }
-
-        const styleResults = await Promise.all(
-            Array.from(this.styleCSSSources)
-                .map(([id, source]) => compileStyleCSS(id, source, { classes }))
-        )
-        const styleConfigs = styleResults.map((result) => result.config)
-        const nativeCSS = styleResults.map((result) => result.nativeCSS).filter(Boolean)
-        let config = this.config
-
-        if (configPath && path.extname(configPath) === '.css') {
-            const configResult = await loadConfig(configPath, { classes })
-            config = configResult.config
-            if (configResult.nativeCSS) {
-                nativeCSS.push(configResult.nativeCSS)
-            }
-        }
-
-        const css = createCSS(extendConfig(...styleConfigs, config))
-        for (const className of classes) {
-            css.add(className)
-        }
-        return [...nativeCSS, css.text].filter(Boolean).join('\n\n')
+        return createExtractedCSS({
+            extractor: this,
+            styleCSSSources: this.styleCSSSources,
+            classes: this.getExtractorClasses(),
+            loadConfigMode: 'css',
+            projectDir: this.cwd
+        })
     }
 
     private async registerStyleCSSSource(modulePath: string, source: string) {
-        const filename = cleanStyleRequest(modulePath)
-        const cleanSource = removeVirtualCSSImports(source, this.getVirtualCSSModuleIds()).code
-        const result = await compileStyleCSS(filename, cleanSource)
-        this.styleCSSSources.set(filename, cleanSource)
-        refreshExtractorNativeClasses(this, result.nativeClassNames)
+        await registerExtractorStyleCSSSource(this, this.styleCSSSources, modulePath, source, {
+            moduleIds: this.getVirtualCSSModuleIds(),
+            projectDir: this.cwd
+        })
     }
 
     private readOriginalStyleSource(modulePath: string, fallback: string) {

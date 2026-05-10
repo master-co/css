@@ -1,8 +1,8 @@
 import { fileURLToPath } from 'node:url'
 import { relative } from 'node:path'
 import type { NextConfig } from 'next'
+import { createMasterStyleCSSPattern } from '@master/css-extractor/style'
 import {
-    createMasterStyleCSSPattern,
     prepareNextExtract,
     resolveExtractOutputPath,
     resolveExtractStatePath,

@@ -2,23 +2,25 @@
 
 ## Responsibility
 
-`@master/css-extractor` statically scans source files, extracts possible Master CSS classes, validates them, inserts valid rules into core layers, and exports CSS.
+`@master/css-extractor` statically scans source files, extracts possible Master CSS classes, validates them, inserts valid rules into core layers, exports CSS, and provides shared stylesheet extraction helpers for build integrations.
 
 ## Inputs And Outputs
 
-- Input: extractor options, source globs, source text, Master CSS config.
-- Output: `css.text`, exported CSS file, valid/invalid/latent class caches, watch events.
+- Input: extractor options, source globs, source text, Master CSS config, stylesheet sources that import the Master CSS virtual module.
+- Output: `css.text`, exported CSS file, valid/invalid/latent class caches, compiled native CSS, stylesheet-local Master CSS config, watch events.
 
 ## Public APIs
 
 - `CSSExtractor`
 - `options`
+- `style`
 - `extractLatentClasses`
 - option types
 
 ## Core Files
 
 - `src/core.ts`
+- `src/style.ts`
 - `src/functions/extract-latent-classes.ts`
 - `src/options/index.ts`
 
@@ -27,6 +29,7 @@
 - Focused extraction heuristic fixes.
 - Watch/config reset fixes.
 - Option handling fixes with tests.
+- Shared stylesheet extraction behavior used by Vite, Webpack, and Next integrations.
 
 ## Forbidden Without Explicit Request
 
@@ -40,7 +43,8 @@
 - `invalidClasses` and `validClasses` cache behavior.
 - Watch reset loops.
 - Source allow/exclude matching.
-- Vite/Webpack virtual-module consumers.
+- Vite/Webpack/Next virtual-module consumers.
+- Stylesheet `@master` config merging and generated CSS ordering.
 
 ## Required Tests
 
@@ -53,6 +57,7 @@ pnpm --filter @master/css-extractor build
 Use or extend:
 
 - `tests/extract.test.ts`
+- `tests/style.test.ts`
 - `tests/syntax.test.ts`
 - `tests/source`
 

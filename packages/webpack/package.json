@@ -56,7 +56,6 @@
     },
     "dependencies": {
         "@master/css": "workspace:^",
-        "@master/css-compiler": "workspace:^",
         "@master/css-explore-config": "workspace:^",
         "@master/css-extractor": "workspace:^",
         "@techor/log": "^3.2.5",

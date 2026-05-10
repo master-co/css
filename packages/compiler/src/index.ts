@@ -407,9 +407,9 @@ function recordNativeClassNames(parsed: ParsedDirectives, classNames: string[]) 
     }
 }
 
-function filterNativeStyleRule(rule: any, parsed: ParsedDirectives, classFilter?: Set<string>) {
+function getNativeStyleSelectorFilters(rule: any, parsed: ParsedDirectives, classFilter?: Set<string>) {
     const selectors = rule.value.selectors as Selector[]
-    if (!selectors?.length) return rule
+    if (!selectors?.length) return
 
     const selectorEntries = selectors.map((selector) => ({
         selector,
@@ -419,14 +419,11 @@ function filterNativeStyleRule(rule: any, parsed: ParsedDirectives, classFilter?
 
     if (!classFilter) return
 
-    const filteredSelectors = selectorEntries
-        .filter(({ classNames }) => !classNames.length || classNames.some((className) => classFilter.has(className)))
-        .map(({ selector }) => selector)
+    const selectorFilters = selectorEntries
+        .map(({ classNames }) => !classNames.length || classNames.some((className) => classFilter.has(className)))
 
-    if (!filteredSelectors.length) return []
-    if (filteredSelectors.length === selectors.length) return
-    rule.value.selectors = filteredSelectors
-    return rule
+    if (selectorFilters.every(Boolean)) return
+    return selectorFilters
 }
 
 function removeEmptyRuleBlock(rule: any) {
@@ -450,14 +447,22 @@ function pruneEmptyRuleBlocks(code: Uint8Array, filename: string) {
 }
 
 function filterNativeCSS(code: Uint8Array, filename: string, parsed: ParsedDirectives, classFilter?: Set<string>) {
+    const selectorFilters: boolean[] = []
     return transform({
         filename,
         code,
         visitor: {
             Rule: {
                 style(rule) {
-                    return filterNativeStyleRule(rule, parsed, classFilter)
+                    const filters = getNativeStyleSelectorFilters(rule, parsed, classFilter)
+                    if (!filters) return
+                    if (!filters.some(Boolean)) return []
+                    selectorFilters.push(...filters)
                 }
+            },
+            Selector() {
+                if (!selectorFilters.length) return
+                if (!selectorFilters.shift()) return []
             }
         }
     }).code

@@ -5,9 +5,10 @@
 | Package | Entry Points | Responsibility |
 |---|---|---|
 | `@master/css` | `.`, `./*` | Core engine, config, rules, types, utilities |
+| `@master/css-compiler` | `.` | Compile CSS-defined Master config and native CSS |
 | `@master/css-runtime` | `.` | Browser runtime, DOM observation, hydration |
 | `@master/css-server` | `.` | HTML render and CSS injection |
-| `@master/css-extractor` | `.`, `./options` | Static class extraction and CSS output |
+| `@master/css-extractor` | `.`, `./options`, `./style` | Static class extraction, CSS output, and shared stylesheet extraction helpers |
 | `@master/postcss` | `.` | PostCSS directives for CSS-defined variables, utilities, and components |
 | `@master/css.vite` | `.` | Vite modes and plugin orchestration |
 | `@master/css.webpack` | `.` | Webpack extraction plugin |

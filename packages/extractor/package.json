@@ -43,6 +43,11 @@
             "import": "./dist/index.mjs",
             "default": "./dist/index.mjs"
         },
+        "./style": {
+            "types": "./dist/style.d.ts",
+            "import": "./dist/style.mjs",
+            "default": "./dist/style.mjs"
+        },
         "./options": {
             "types": "./dist/options/index.d.ts",
             "import": "./dist/options/index.mjs",
@@ -53,6 +58,9 @@
         "*": {
             ".": [
                 "./dist/index.d.ts"
+            ],
+            "./style": [
+                "./dist/style.d.ts"
             ],
             "./options": [
                 "./dist/options/index.d.ts"
@@ -68,6 +76,7 @@
     },
     "dependencies": {
         "@master/css": "workspace:^",
+        "@master/css-compiler": "workspace:^",
         "@master/css-explore-config": "workspace:^",
         "@master/css-validator": "workspace:^",
         "@techor/extend": "^3.2.5",

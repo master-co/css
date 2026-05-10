@@ -1,9 +1,7 @@
 import { readdir, readFile } from 'node:fs/promises'
-import { createRequire } from 'node:module'
 import { extname, join, resolve } from 'node:path'
-import { pathToFileURL } from 'node:url'
 import { createCSS, extendConfig, type Config } from '@master/css'
-import { compileCSS, type CompileCSSOptions, type CompileCSSResult } from '@master/css-compiler'
+import { compileStyleCSS, isMasterStyleSource, removeStyleCSSImports } from '@master/css-extractor/style'
 import { loadConfig, resolveConfigPath, type ExploreConfigResult } from '@master/css-explore-config'
 
 const STYLE_EXTENSIONS = new Set(['.css', '.scss', '.sass'])
@@ -17,18 +15,8 @@ const IGNORED_DIRECTORIES = new Set([
     'out',
     'public'
 ])
-const CSS_IMPORT_RE = /@import\s+(?:url\(\s*)?(["'])([^"']+)\1\s*\)?[^;]*;/g
 const DEFAULT_CSS_MODULE_ID = 'master.css'
 const DEFAULT_VIRTUAL_CSS_MODULE_ID = 'virtual:master.css'
-const require = createRequire(import.meta.url)
-
-interface SassModule {
-    compileStringAsync(source: string, options: {
-        url: URL
-        style: 'expanded'
-        syntax: 'scss' | 'indented'
-    }): Promise<{ css: string }>
-}
 
 interface MasterStyleSource {
     file: string
@@ -42,71 +30,8 @@ export interface MasterCSSBuildConfig {
     styleSources: string[]
 }
 
-function getCSSImportIds(moduleIds: Iterable<string>) {
-    const ids = new Set(moduleIds)
-    for (const id of Array.from(ids)) {
-        if (id.startsWith('virtual:')) {
-            ids.add(id.slice('virtual:'.length))
-        }
-    }
-    return ids
-}
-
-function replaceCSSImports(source: string, moduleIds: Iterable<string>, replacement: string): { code: string, replaced: boolean } {
-    let replaced = false
-    const ids = getCSSImportIds(moduleIds)
-    const code = source.replace(CSS_IMPORT_RE, (rule, _quote: string, id: string) => {
-        if (!ids.has(id)) return rule
-        replaced = true
-        return replacement
-    })
-    return { code, replaced }
-}
-
-function isMasterStyleSource(source: string, moduleIds: Iterable<string>) {
-    return source.includes('@master') || replaceCSSImports(source, moduleIds, '').replaced
-}
-
 function cleanMasterStyleSource(source: string, moduleIds: Iterable<string>) {
-    return replaceCSSImports(source, moduleIds, '').code
-}
-
-function loadSass(projectDir: string | undefined): SassModule {
-    if (projectDir) {
-        try {
-            return createRequire(join(projectDir, 'package.json'))('sass') as SassModule
-        } catch {
-            // Fall through to this package's dependency graph for tests and linked workspaces.
-        }
-    }
-    return require('sass') as SassModule
-}
-
-async function preprocessStyleCSS(source: string, file: string, projectDir?: string) {
-    const extension = extname(file)
-    if (extension !== '.scss' && extension !== '.sass') {
-        return source
-    }
-    const sass = loadSass(projectDir)
-    const result = await sass.compileStringAsync(source, {
-        url: pathToFileURL(file),
-        style: 'expanded',
-        syntax: extension === '.sass' ? 'indented' : 'scss'
-    })
-    return result.css
-}
-
-async function compileStyleCSS(
-    file: string,
-    source: string,
-    options: CompileCSSOptions & { projectDir?: string } = {}
-): Promise<CompileCSSResult> {
-    const { projectDir, ...compileOptions } = options
-    const css = await preprocessStyleCSS(source, file, projectDir)
-    return compileCSS(css, {
-        ...compileOptions,
-        from: file
-    })
+    return removeStyleCSSImports(source, moduleIds).code
 }
 
 async function collectMasterStyleSources(
