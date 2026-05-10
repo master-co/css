@@ -71,9 +71,9 @@
     <Step $row>
         <StepL>
             ### <StepNum />Define local CSS
-            Source stylesheets can define `@master` component classes and regular CSS together. Regular class selectors are kept only when the class appears in scanned source.
+            Source stylesheets can contain ordinary CSS and `@master` definitions together. In extract mode, ordinary class selectors are kept only when the class appears in scanned source.
 
-            (i) If the same `@master` class is also defined in the root `master.css`, the root config is applied last.
+            (i) Import the stylesheet from `master.css` when you want its `@master {}` blocks to participate in the config graph.
         </StepL>
         <StepR>
             ```css name=src/style.css
@@ -88,6 +88,10 @@
                     @compose "inline-flex ai:center px:md h:40 r:md bg:primary fg:white";
                 }
             }
+            ```
+
+            ```css name=master.css
+            @import './src/style.css';
             ```
         </StepR>
     </Step>

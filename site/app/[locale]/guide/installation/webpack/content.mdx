@@ -129,10 +129,10 @@
     </Step>
     <Step $row>
         <StepL>
-            ### <StepNum />Author stylesheet config
-            Source stylesheets can define `@master` classes and regular CSS together. Regular class selectors are not utilities; they are kept only when the scanned source uses the class.
+            ### <StepNum />Author app CSS and config
+            Source stylesheets can contain ordinary CSS and `@master` definitions together. In extract mode, ordinary class selectors are kept only when the class appears in scanned source.
 
-            (i) If a class is defined in both `src/style.css` and the root `master.css`, the root `master.css` config is applied last.
+            (i) Import the stylesheet from `master.css` when you want its `@master {}` blocks to participate in the config graph.
         </StepL>
         <StepR>
             ```css name=src/style.css
@@ -147,6 +147,10 @@
                     @compose "m:0 font:5xl font:heavy fg:strong";
                 }
             }
+            ```
+
+            ```css name=master.css
+            @import './src/style.css';
             ```
         </StepR>
     </Step>

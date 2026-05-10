@@ -70,18 +70,22 @@ import StaticExtractionIntro from '../../../rendering-modes/components/StaticExt
             ### <StepNum />Import virtual CSS module
             Import the generated CSS module from `app/globals.css`.
 
-            (i) Use `virtual:master.css` for the generated stylesheet. App stylesheets can also contain `@master {}` blocks for local Master CSS config and native CSS that references those variables.
+            (i) Use `virtual:master.css` for the generated stylesheet. Ordinary class selectors in this stylesheet are pruned against detected source classes.
         </StepL>
         <StepR>
             ```css name=app/globals.css
             @import 'virtual:master.css';
 
-            @master {
-                --color-primary: #ff0000;
-            }
-
             .main {
                 background-color: var(--color-primary);
+            }
+
+            @master {
+                --color-primary: #ff0000;
+
+                .hero-title {
+                    @compose "m:0 font:5xl font:heavy fg:strong";
+                }
             }
             ```
         </StepR>
@@ -89,21 +93,13 @@ import StaticExtractionIntro from '../../../rendering-modes/components/StaticExt
     <Step $row>
         <StepL>
             ### <StepNum />Author CSS config
-            Define shared Master CSS styles in the root `master.css` config. Regular app CSS can stay in `app/globals.css`, and stylesheet-local `@master {}` blocks are merged into the extracted CSS before the root config.
+            Use `master.css` as the workspace entry for the CSS config graph.
 
-            (i) Extract mode scans source files for class names, then generates CSS from stylesheet-local `@master {}` blocks and the root Master CSS config.
+            (i) `@master {}` blocks can live in imported CSS files such as `app/globals.css`. The config compiler reads those blocks and ignores ordinary CSS outside `@master`.
         </StepL>
         <StepR>
             ```css name=master.css
-            @master {
-                .hero-title {
-                    @compose "m:0 font:5xl font:heavy fg:strong";
-                }
-            }
-
-            .native-card {
-                border: 1px solid rgb(0 0 0 / 12%);
-            }
+            @import './app/globals.css';
             ```
         </StepR>
     </Step>
@@ -124,7 +120,7 @@ import StaticExtractionIntro from '../../../rendering-modes/components/StaticExt
         ```tsx name=app/page.tsx
         export default function Home() {
             return (
-                <h1 className="hero-title native-card m:2xl">Hello World</h1>
+                <h1 className="hero-title main m:2xl">Hello World</h1>
             )
         }
         ```

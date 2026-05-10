@@ -7,13 +7,14 @@ Officially integrated packages or extensions will automatically read the __maste
 
 ---
 
-## One root master.css
-Whether it's a single repository or a monorepo, create a __master.css__ file in the root directory for your design system.
+## One workspace entry
+Whether it's a single repository or a monorepo, create a __master.css__ file in the root directory as the workspace entry. It can define `@master {}` directly or import the CSS files that contain those definitions.
 <ExplorerView>
 {[
     { name: 'src', children: [
         { name: 'eslint.config.js' },
-        { name: 'master.css' }
+        { name: 'master.css' },
+        { name: 'globals.css' }
     ]}
 ]}
 </ExplorerView>
@@ -56,7 +57,7 @@ In each workspace, import the shared CSS config files and add workspace-specific
 ```
 Later definitions in the workspace file can override root options, variables, tokens, general utilities, and matching main style buckets.
 
-(x) Forgot to create __/apps/a/master.css__ in the workspace and import the root configuration.
+(x) Forgot to create __/apps/a/master.css__ in the workspace and import the shared entry.
 <ExplorerView>
 {[
     { name: 'apps', children: [
@@ -73,4 +74,4 @@ Later definitions in the workspace file can override root options, variables, to
 
 Unless this workspace is not using Master CSS, this is a common oversight.
 
-Finally, using a monorepo and having multiple workspaces doesn't mean you have to create multiple configurations. In most cases, you just need [one root master.css](#one-root-mastercss).
+Finally, using a monorepo and having multiple workspaces doesn't mean you have to create multiple configurations. In most cases, you just need [one workspace entry](#one-workspace-entry).

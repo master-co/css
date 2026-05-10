@@ -32,7 +32,7 @@ import 'virtual:master.css'
 @import 'virtual:master.css';
 ```
 
-Source stylesheets can also contain `@master` definitions. Their config is extended before the root `master.css` config, and regular class selectors outside `@master` are emitted only when those classes are detected in source.
+Source stylesheets that import the virtual module are treated as extractable CSS entries. Ordinary CSS outside `@master` is pruned against detected classes. If the same stylesheet contains `@master {}` config, import it from `master.css` so the config graph can read those definitions.
 
 ---
 

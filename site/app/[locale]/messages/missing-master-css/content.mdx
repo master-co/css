@@ -1,0 +1,60 @@
+## Causes [sr-only]
+### Why this warning occurred
+
+An integration started without finding a `master.css` file in the current project directory.
+
+```txt
+[@master/css.vite] master.css was not found in /path/to/project.
+Create /path/to/project/master.css and import your project stylesheet entry from it, for example:
+  @import "./src/globals.css";
+Master CSS uses this file as the workspace entry for integrations, language service, and VS Code. Only @master blocks are read as config from imported CSS.
+```
+
+Master CSS can still generate utility CSS without a config file, but integrations and editor tooling use `master.css` as the workspace entry. The file tells Master CSS where the project-level config graph starts.
+
+`@master {}` blocks do not have to be written directly in `master.css`. They can live in ordinary CSS files such as `src/globals.css` or `app/globals.css`, as long as `master.css` imports those files with a relative CSS import.
+
+---
+
+## Solutions
+### Create a workspace entry
+
+Create `master.css` at the project root and import your stylesheet entry.
+
+```css name=master.css
+@import './src/globals.css';
+```
+
+Then keep tokens, component rules, animations, or other Master CSS config in that imported stylesheet or in files imported by it.
+
+```css name=src/globals.css
+@master {
+    --color-primary: #4f46e5;
+
+    .btn {
+        @compose "inline-flex ai:center px:md h:40 r:md bg:primary fg:white";
+    }
+}
+```
+
+Ordinary CSS outside `@master` stays native CSS and follows the integration's stylesheet behavior.
+
+### Use a custom config path
+
+If your config entry is not named `master.css`, pass the integration's `config` option.
+
+```js name=vite.config.js
+import masterCSS from '@master/css.vite'
+
+export default {
+    plugins: [
+        masterCSS({
+            config: 'styles/master.css'
+        })
+    ]
+}
+```
+
+### Ignore the warning
+
+You can ignore this warning when the current project intentionally has no Master CSS config and does not need shared tokens, component definitions, animations, language-service workspace detection, or editor integration behavior.

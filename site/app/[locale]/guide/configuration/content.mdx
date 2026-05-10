@@ -71,7 +71,7 @@ Use native CSS imports when the file grows. This keeps tokens, general utilities
 @import './styles/card.css';
 ```
 
-Local relative CSS imports are resolved as one configuration graph. Package imports remain normal CSS. Regular CSS outside `@master` stays native CSS; extract and progressive integrations can prune class selector rules against the classes they detect.
+Local relative CSS imports are resolved as one configuration graph. Only `@master` content contributes to the config; ordinary CSS outside `@master` is ignored by the config compiler. Keep app-level native CSS in the stylesheet entry owned by your framework or bundler.
 
 ---
 

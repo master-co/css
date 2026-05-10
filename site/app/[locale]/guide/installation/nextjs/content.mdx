@@ -80,10 +80,10 @@ import ProgressiveRenderingIntro from '../../rendering-modes/components/Progress
     </Step>
     <Step $row>
         <StepL>
-            ### <StepNum />Author app stylesheet config
-            Keep the normal `app/globals.css` import in the root layout. You can define local `@master` classes and regular CSS in that stylesheet.
+            ### <StepNum />Author app CSS and config
+            Keep the normal `app/globals.css` import in the root layout. The same stylesheet can hold regular CSS and `@master` definitions.
 
-            (i) Regular class selectors outside `@master` are not utilities. The adapter keeps them only when the built HTML uses the class.
+            (i) Import the stylesheet from `master.css` when you want its `@master {}` blocks to participate in the config graph. Ordinary CSS outside `@master` still follows the app stylesheet pipeline.
         </StepL>
         <StepR>
             ```css name=app/globals.css
@@ -102,6 +102,10 @@ import ProgressiveRenderingIntro from '../../rendering-modes/components/Progress
                     @compose "m:0 font:5xl font:heavy fg:strong";
                 }
             }
+            ```
+
+            ```css name=master.css
+            @import './app/globals.css';
             ```
         </StepR>
     </Step>
@@ -141,9 +145,7 @@ import ProgressiveRenderingIntro from '../../rendering-modes/components/Progress
 
             (i) This adapter uses the Next.js 16 Adapter API and runs in `onBuildComplete`. It pre-renders static and pre-rendered HTML outputs, while dynamic SSR responses continue to rely on the runtime engine.
 
-            (i) `@master` definitions in `master.css` and source stylesheets are config only. Component CSS is generated when component classes are found in the built HTML or later observed by the runtime engine.
-
-            (i) When a class is defined in both `app/globals.css` and the root `master.css`, the root `master.css` config is applied last.
+            (i) Component CSS is generated when component classes are found in the built HTML or later observed by the runtime engine.
         </StepL>
         <StepR>
             ```js name=next.config.mjs

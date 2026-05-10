@@ -12,6 +12,6 @@ export default (props: Props) => create({
     props,
     metadata,
     dictionaries,
-    title: 'Next Adapter',
+    title: 'Master CSS Next.js',
     icon: 'nextjs'
 })
