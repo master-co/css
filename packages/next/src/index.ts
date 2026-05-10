@@ -1,11 +1,19 @@
 import { fileURLToPath } from 'node:url'
+import { relative } from 'node:path'
 import type { NextConfig } from 'next'
-import { registerOptions, type Options } from './options'
+import {
+    createVirtualCSSImportPattern,
+    prepareNextExtract,
+    resolveExtractOutputPath,
+    resolveExtractStatePath,
+} from './extract'
+import { registerOptions, resolveOptions, type Options } from './options'
 
 type WithAdapterPath<T extends NextConfig> = T & { adapterPath: string }
 type WebpackConfig = Parameters<NonNullable<NextConfig['webpack']>>[0]
 type WebpackContext = Parameters<NonNullable<NextConfig['webpack']>>[1]
 type TurbopackRules = NonNullable<NonNullable<NextConfig['turbopack']>['rules']>
+type TurbopackRuleConfigCollection = TurbopackRules[string]
 
 function resolveAdapterPath() {
     return fileURLToPath(new URL('./adapter.mjs', import.meta.url))
@@ -13,6 +21,23 @@ function resolveAdapterPath() {
 
 function resolveCSSConfigLoaderPath() {
     return fileURLToPath(new URL('./css-config-loader.mjs', import.meta.url))
+}
+
+function resolveExtractLoaderPath() {
+    return fileURLToPath(new URL('./extract-loader.mjs', import.meta.url))
+}
+
+function resolveExtractCSSLoaderPath() {
+    return fileURLToPath(new URL('./extract-css-loader.mjs', import.meta.url))
+}
+
+function toAliasTarget(projectDir: string, outputPath: string) {
+    const relativePath = relative(projectDir, outputPath).replace(/\\/g, '/')
+    return relativePath.startsWith('.') ? relativePath : `./${relativePath}`
+}
+
+function toRuleArray(rule: TurbopackRuleConfigCollection | undefined) {
+    return Array.isArray(rule) ? rule : rule ? [rule] : []
 }
 
 function applyMasterCSSWebpackConfig(config: WebpackConfig, loaderPath: string) {
@@ -50,18 +75,93 @@ function applyMasterCSSTurbopackConfig(nextConfig: NextConfig, loaderPath: strin
             ...rules,
             '*': [
                 masterCSSConfigRule,
-                ...(Array.isArray(configRules) ? configRules : configRules ? [configRules] : [])
+                ...toRuleArray(configRules)
             ]
         } satisfies TurbopackRules
     }
 }
 
-export function withMasterCSS<T extends NextConfig>(nextConfig: T, options: Options & { mode: null }): T
-export function withMasterCSS<T extends NextConfig>(nextConfig?: T, options?: Options): WithAdapterPath<T>
-export function withMasterCSS<T extends NextConfig>(nextConfig: T = {} as T, options: Options = {}): T | WithAdapterPath<T> {
-    const cssConfigLoaderPath = resolveCSSConfigLoaderPath()
+function createExtractSourceRule(path: RegExp, as: string, type: 'typescript' | 'ecmascript') {
+    return {
+        condition: {
+            all: [
+                { not: 'foreign' as const },
+                { path }
+            ]
+        },
+        as,
+        type
+    }
+}
+
+function applyMasterCSSExtractTurbopackConfig(
+    nextConfig: NextConfig,
+    cssConfigLoaderPath: string,
+    extractLoaderPath: string,
+    extractCSSLoaderPath: string,
+    statePath: string,
+    outputPath: string,
+    moduleId: string
+) {
+    const turbopackConfig = applyMasterCSSTurbopackConfig(nextConfig, cssConfigLoaderPath)
+    const rules = turbopackConfig.rules || {}
+    const starRules = toRuleArray(rules['*'])
+    const extractLoader = {
+        loader: extractLoaderPath,
+        options: {
+            statePath
+        }
+    }
+    const sourceRules = [
+        createExtractSourceRule(/\.tsx$/, '*.tsx', 'typescript'),
+        createExtractSourceRule(/\.ts$/, '*.ts', 'typescript'),
+        createExtractSourceRule(/\.jsx$/, '*.jsx', 'ecmascript'),
+        createExtractSourceRule(/\.js$/, '*.js', 'ecmascript')
+    ].map((rule) => ({
+        ...rule,
+        loaders: [extractLoader]
+    }))
+    const cssImportRule = {
+        condition: {
+            all: [
+                { not: 'foreign' as const },
+                { path: /\.css$/ },
+                { content: createVirtualCSSImportPattern(moduleId) },
+                { not: { query: /master-css-config/ } }
+            ]
+        },
+        loaders: [
+            {
+                loader: extractCSSLoaderPath,
+                options: {
+                    statePath
+                }
+            }
+        ],
+        type: 'css' as const,
+        as: '*.css'
+    }
+
+    return {
+        ...turbopackConfig,
+        resolveAlias: {
+            ...turbopackConfig.resolveAlias,
+            [moduleId]: outputPath
+        },
+        rules: {
+            ...rules,
+            '*': [
+                ...sourceRules,
+                cssImportRule,
+                ...starRules
+            ]
+        } satisfies TurbopackRules
+    }
+}
+
+function createConfigWithCSSConfigLoader<T extends NextConfig>(nextConfig: T, cssConfigLoaderPath: string) {
     const userWebpack = nextConfig.webpack
-    const nextConfigWithCSSConfigLoader = {
+    return {
         ...nextConfig,
         turbopack: applyMasterCSSTurbopackConfig(nextConfig, cssConfigLoaderPath),
         webpack(config: WebpackConfig, context: WebpackContext) {
@@ -69,6 +169,39 @@ export function withMasterCSS<T extends NextConfig>(nextConfig: T = {} as T, opt
             return applyMasterCSSWebpackConfig(resolvedConfig, cssConfigLoaderPath)
         }
     }
+}
+
+export function withMasterCSS<T extends NextConfig>(nextConfig: T, options: Options & { mode: null }): T
+export function withMasterCSS<T extends NextConfig>(nextConfig: T, options: Options & { mode: 'extract' }): Promise<T>
+export function withMasterCSS<T extends NextConfig>(nextConfig?: T, options?: Options): WithAdapterPath<T>
+export function withMasterCSS<T extends NextConfig>(nextConfig: T = {} as T, options: Options = {}): T | WithAdapterPath<T> | Promise<T> {
+    const resolvedOptions = resolveOptions(options)
+    const cssConfigLoaderPath = resolveCSSConfigLoaderPath()
+
+    if (resolvedOptions.mode === 'extract') {
+        return prepareNextExtract(options, {
+            watch: process.env.NODE_ENV === 'development'
+        }).then((setup) => {
+            if (!setup) return nextConfig
+            const outputPath = resolveExtractOutputPath(setup.projectDir)
+            const statePath = resolveExtractStatePath(outputPath)
+            const aliasTarget = toAliasTarget(setup.projectDir, outputPath)
+            return {
+                ...nextConfig,
+                turbopack: applyMasterCSSExtractTurbopackConfig(
+                    nextConfig,
+                    cssConfigLoaderPath,
+                    resolveExtractLoaderPath(),
+                    resolveExtractCSSLoaderPath(),
+                    statePath,
+                    aliasTarget,
+                    resolvedOptions.module
+                )
+            }
+        })
+    }
+
+    const nextConfigWithCSSConfigLoader = createConfigWithCSSConfigLoader(nextConfig, cssConfigLoaderPath)
 
     if (options.mode === null) return nextConfigWithCSSConfigLoader
 

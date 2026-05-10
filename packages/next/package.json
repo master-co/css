@@ -69,6 +69,7 @@
         "@master/css": "workspace:^",
         "@master/css-compiler": "workspace:^",
         "@master/css-explore-config": "workspace:^",
+        "@master/css-extractor": "workspace:^",
         "@master/css-server": "workspace:^"
     },
     "devDependencies": {

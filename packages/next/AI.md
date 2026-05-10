@@ -2,13 +2,15 @@
 
 ## Responsibility
 
-`@master/css.next` integrates Master CSS with Next.js Adapter API. It post-processes build-time HTML outputs, renders page-required CSS with `@master/css-server`, and writes the injected HTML back to the Next build output.
+`@master/css.next` integrates Master CSS with Next.js. It supports build-time HTML pre-rendering through the Next.js Adapter API and static extraction through a generated CSS file plus Turbopack scanner loader.
 
 ## Scope
 
-- This package supports build-time pre-rendering only.
+- This package supports `pre-render` and `extract` modes.
 - It does not transform dynamic SSR responses.
 - It does not implement App Router request-time class collection.
+- Extract mode must not rely on `nextConfig.webpack` or `@master/css.webpack`.
+- Extract mode uses `CSSExtractor` as the source of static extraction behavior.
 
 ## Public APIs
 
@@ -21,6 +23,9 @@
 
 - `src/index.ts`
 - `src/adapter.ts`
+- `src/extract.ts`
+- `src/extract-css-loader.ts`
+- `src/extract-loader.ts`
 - `src/options.ts`
 
 ## Risks
@@ -29,6 +34,7 @@
 - Accidentally processing non-HTML assets.
 - Duplicate writes when the same fallback HTML is listed through multiple output groups.
 - Hiding request-time limitations behind a build-time adapter.
+- Turbopack loader behavior is an incremental scanner; source-glob extraction remains the correctness baseline.
 
 ## Validation
 

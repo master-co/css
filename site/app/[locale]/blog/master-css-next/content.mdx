@@ -18,6 +18,37 @@ This turns Progressive Rendering from a post-build convention into a framework-l
 
 ---
 
+## Static Extraction for Turbopack
+
+`@master/css.next` also supports a source-scanned CSS workflow for projects that do not need runtime rendering or route-level HTML pre-rendering.
+
+Extract mode keeps the same `virtual:master.css` authoring model used by other Master CSS build integrations:
+
+```css name=app/globals.css
+@import 'virtual:master.css';
+```
+
+Then enable it in `next.config.mjs`:
+
+```js name=next.config.mjs
+import { withMasterCSS } from '@master/css.next'
+
+/** @type {import('next').NextConfig} */
+const nextConfig = await withMasterCSS({
+    // your Next.js config
+}, {
+    mode: 'extract'
+})
+
+export default nextConfig
+```
+
+Under the hood, extract mode first scans the configured source files with `@master/css-extractor` and writes a generated CSS file. Turbopack then replaces CSS imports of `virtual:master.css` with that generated CSS. During Turbopack builds, a scanner loader also reads JavaScript and TypeScript modules that pass through the module graph, so imported files can incrementally feed additional class names into the extractor.
+
+This is intentionally different from the older Webpack setup. Next.js does not expose a Turbopack plugin API equivalent to Webpack plugins, so the Next integration uses source scanning as the correctness baseline and loader scanning as an incremental layer.
+
+---
+
 ## Progressive Rendering for Next.js
 
 Master CSS is markup-driven. The class is the source of truth:
@@ -233,6 +264,8 @@ npm run start
 `@master/css.next` is a build-time adapter. It processes static and pre-rendered HTML outputs produced during `next build`.
 
 Dynamic SSR responses still rely on the Master CSS runtime engine, because those responses are produced at request time rather than in the completed build output. This is intentional: the first HTML response gets the CSS that can be known at build time, and the runtime continues the rendering model where the page becomes dynamic.
+
+In extract mode, the generated CSS asset comes from source scanning. It works best when the complete class strings are visible in source files. The Turbopack scanner loader improves incremental updates for modules that pass through the build, but source-glob extraction remains the production correctness baseline.
 
 If another integration already owns Next.js `adapterPath`, use runtime mode until adapter composition is available.
 

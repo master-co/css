@@ -591,12 +591,9 @@ importers:
 
   examples/next.js-with-static-extraction:
     dependencies:
-      '@master/css-runtime':
+      '@master/css.next':
         specifier: workspace:^
-        version: link:../../packages/runtime
-      '@master/css.webpack':
-        specifier: workspace:^
-        version: link:../../packages/webpack
+        version: link:../../packages/next
       '@types/node':
         specifier: ^25.6.0
         version: 25.6.0
@@ -1588,6 +1585,9 @@ importers:
       '@master/css-explore-config':
         specifier: workspace:^
         version: link:../explore-config
+      '@master/css-extractor':
+        specifier: workspace:^
+        version: link:../extractor
       '@master/css-server':
         specifier: workspace:^
         version: link:../server

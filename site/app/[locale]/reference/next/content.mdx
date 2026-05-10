@@ -1,0 +1,64 @@
+## Installation [sr-only]
+```bash action=install
+@master/css.next@rc
+```
+
+```js name=next.config.mjs
+import { withMasterCSS } from '@master/css.next'
+
+/** @type {import('next').NextConfig} */
+const nextConfig = withMasterCSS({
+    /* your Next.js config */
+})
+
+export default nextConfig
+```
+
+### Modes
+`@master/css.next` supports two integration modes:
+
+| Mode | Description |
+| --- | --- |
+| `'pre-render'` | Uses the Next.js Adapter API to render CSS into static and pre-rendered HTML outputs during `next build`. |
+| `'extract'` | Scans source files with `@master/css-extractor`, writes a generated stylesheet, and wires `virtual:master.css` into Turbopack CSS processing. |
+
+Use `pre-render` when you want route HTML to carry its first-render CSS. Use `extract` when your classes are statically visible in source and you want a generated CSS asset.
+
+### Static extraction
+In extract mode, import the generated stylesheet from your app stylesheet:
+
+```css name=app/globals.css
+@import 'virtual:master.css';
+```
+
+Then enable extract mode:
+
+```js name=next.config.mjs
+import { withMasterCSS } from '@master/css.next'
+
+/** @type {import('next').NextConfig} */
+const nextConfig = await withMasterCSS({
+    /* your Next.js config */
+}, {
+    mode: 'extract'
+})
+
+export default nextConfig
+```
+
+Extract mode uses source-glob scanning as the correctness baseline. A Turbopack CSS loader replaces `@import 'virtual:master.css'` with the generated CSS, and a scanner loader also scans JavaScript and TypeScript modules as they pass through the build, so imported files such as `app/main.ts` can incrementally feed new classes into the generated CSS. Keep app stylesheets in the normal Next.js CSS pipeline and place Master CSS config in the root `master.css`.
+
+### Client types
+Add `@master/css.next/client` to a project environment file when TypeScript imports `virtual:master.css`, `virtual:master-css-config`, or `*.css?master-css-config`.
+
+```ts name=master-css-env.d.ts
+/// <reference types="@master/css.next/client" />
+```
+
+---
+
+## API Reference
+### `options`
+The `options` object is passed to `withMasterCSS(nextConfig, options)`.
+
+<Code lang="ts" name="options.ts">{require('../../../../../packages/next/src/options.ts?raw')}</Code>

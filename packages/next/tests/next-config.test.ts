@@ -1,4 +1,7 @@
 import { describe, expect, it } from 'vitest'
+import { mkdirSync, mkdtempSync, writeFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
 import withMasterCSS from '../src'
 import { getRegisteredOptions } from '../src/options'
 
@@ -79,5 +82,53 @@ describe('withMasterCSS', () => {
                 resourceQuery: /master-css-config/
             })
         ])
+    })
+
+    it('sets up extract mode with Turbopack rules without adding a webpack callback', async () => {
+        const cwd = process.cwd()
+        const root = mkdtempSync(join(tmpdir(), 'master-css-next-config-'))
+        mkdirSync(join(root, 'app'), { recursive: true })
+        writeFileSync(join(root, 'master.css'), '@master {}')
+        writeFileSync(join(root, 'app/page.tsx'), 'export default function Page() { return <main className="block" /> }')
+        try {
+            process.chdir(root)
+            const nextConfig = await withMasterCSS({}, {
+                mode: 'extract'
+            }) as any
+
+            expect(nextConfig.webpack).toBeUndefined()
+            expect(nextConfig.turbopack.resolveAlias['virtual:master.css']).toContain('.master-css/next.css')
+            expect(nextConfig.turbopack.rules['*']).toEqual(expect.arrayContaining([
+                expect.objectContaining({
+                    loaders: [
+                        expect.objectContaining({
+                            options: expect.objectContaining({
+                                statePath: expect.stringContaining('next-extract-state.json')
+                            })
+                        })
+                    ]
+                }),
+                expect.objectContaining({
+                    condition: {
+                        all: [
+                            { path: /\.css$/ },
+                            { query: /master-css-config/ }
+                        ]
+                    }
+                }),
+                expect.objectContaining({
+                    condition: expect.objectContaining({
+                        all: expect.arrayContaining([
+                            { path: /\.css$/ },
+                            { not: { query: /master-css-config/ } }
+                        ])
+                    }),
+                    type: 'css',
+                    as: '*.css'
+                })
+            ]))
+        } finally {
+            process.chdir(cwd)
+        }
     })
 })

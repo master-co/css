@@ -35,34 +35,31 @@ import StaticExtractionIntro from '../../../rendering-modes/components/StaticExt
     <Step $row>
         <StepL>
             ### <StepNum />Install Master CSS
-            Install the Master CSS extractor into your project via package managers.
+            Install the Master CSS Next.js integration into your project via package managers.
         </StepL>
         <StepR>
             ```bash action=install
-            @master/css.webpack@rc
+            @master/css.next@rc
             ```
         </StepR>
     </Step>
     <Step $row>
         <StepL>
-            ### <StepNum />Set up CSS extractor
-            Define one `MasterCSSExtractorPlugin` instance outside the exported Next.js config, then add it to Webpack.
+            ### <StepNum />Set up extract mode
+            Register the Master CSS Next.js integration in `extract` mode. This creates the generated stylesheet and wires `virtual:master.css` into Turbopack CSS processing.
 
-            (!) Do not create `MasterCSSExtractorPlugin` inside the `webpack` callback. Next.js can call that callback more than once.
+            (i) Extract mode scans source files as the correctness baseline. During Turbopack builds, a scanner loader also feeds visited JavaScript and TypeScript modules into the extractor for incremental updates.
         </StepL>
         <StepR>
-            ```ts name=next.config.ts
-            import type { NextConfig } from 'next'
-            import { MasterCSSExtractorPlugin } from '@master/css.webpack' // [!code ++]
+            ```js name=next.config.mjs
+            import { withMasterCSS } from '@master/css.next' // [!code ++]
 
-            const masterCSS = new MasterCSSExtractorPlugin() // [!code ++]
-
-            const nextConfig: NextConfig = {
-                webpack(config) { // [!code ++]
-                    config.plugins.push(masterCSS) // [!code ++]
-                    return config // [!code ++]
-                } // [!code ++]
-            }
+            /** @type {import('next').NextConfig} */
+            const nextConfig = await withMasterCSS({ // [!code ++]
+                /* your Next.js config */ // [!code ++]
+            }, { // [!code ++]
+                mode: 'extract' // [!code ++]
+            }) // [!code ++]
 
             export default nextConfig
             ```
@@ -73,37 +70,31 @@ import StaticExtractionIntro from '../../../rendering-modes/components/StaticExt
             ### <StepNum />Import virtual CSS module
             Import the generated CSS module from `app/globals.css`.
 
-            (i) `@import 'master.css'` and `@import 'virtual:master.css'` both point to the generated virtual CSS module in Webpack. Use one of them, not both.
+            (i) Use `virtual:master.css` for the generated stylesheet. Keep the root `master.css` file for Master CSS configuration.
         </StepL>
         <StepR>
             ```css name=app/globals.css
-            @import 'master.css';
+            @import 'virtual:master.css';
             ```
         </StepR>
     </Step>
     <Step $row>
         <StepL>
-            ### <StepNum />Author app stylesheet config
-            Source stylesheets can define `@master` classes and regular CSS. Regular class selectors are scanned like Tailwind-style native CSS and emitted only when used.
+            ### <StepNum />Author CSS config
+            Define Master CSS styles in the root `master.css` config. Regular app CSS can stay in `app/globals.css` and continues through the normal Next.js CSS pipeline.
 
-            (i) If a class is defined in both `app/globals.css` and the root `master.css`, the root `master.css` config is applied last.
+            (i) Extract mode scans source files for class names, then generates CSS from the root Master CSS config.
         </StepL>
         <StepR>
-            ```css name=app/globals.css
-            @import 'master.css';
-
-            .native-card {
-                border: 1px solid rgb(0 0 0 / 12%);
-            }
-
-            .unused-card {
-                color: red;
-            }
-
+            ```css name=master.css
             @master {
                 .hero-title {
                     @compose "m:0 font:5xl font:heavy fg:strong";
                 }
+            }
+
+            .native-card {
+                border: 1px solid rgb(0 0 0 / 12%);
             }
             ```
         </StepR>

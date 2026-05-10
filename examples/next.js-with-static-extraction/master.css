@@ -1,1 +1,3 @@
-@master {}
+@master {
+    --color-primary: #ff0000;
+}
