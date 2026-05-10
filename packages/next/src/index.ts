@@ -8,6 +8,7 @@ import {
     resolveExtractStatePath,
 } from './extract'
 import { registerOptions, resolveOptions, type Options } from './options'
+import { warnMissingNextConfig } from './config-warning'
 
 type WithAdapterPath<T extends NextConfig> = T & { adapterPath: string }
 type WebpackConfig = Parameters<NonNullable<NextConfig['webpack']>>[0]
@@ -177,6 +178,7 @@ export function withMasterCSS<T extends NextConfig>(nextConfig?: T, options?: Op
 export function withMasterCSS<T extends NextConfig>(nextConfig: T = {} as T, options: Options = {}): T | WithAdapterPath<T> | Promise<T> {
     const resolvedOptions = resolveOptions(options)
     const cssConfigLoaderPath = resolveCSSConfigLoaderPath()
+    warnMissingNextConfig(process.cwd(), resolvedOptions.config)
 
     if (resolvedOptions.mode === 'extract') {
         return prepareNextExtract(options, {

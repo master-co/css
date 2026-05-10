@@ -12,9 +12,10 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { existsSync, readFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { resolveOptions, type Options, type ResolvedOptions } from './options'
+import { warnMissingNextConfig } from './config-warning'
 
 const STATE_VERSION = 1
-const DEFAULT_EXTRACT_OUTPUT = '.master-css/next.css'
+const DEFAULT_EXTRACT_OUTPUT = '.master/next.css'
 const DEFAULT_STATE_FILE = 'next-extract-state.json'
 const DEFAULT_SCAN_LOG_FILE = 'next-extract-scanned-sources.log'
 
@@ -33,9 +34,9 @@ export interface ExtractState {
 
 interface ExtractSession {
     extractor: CSSExtractor
+    styleCSSSources: Map<string, string>
     ready: Promise<CSSExtractor>
     write: () => Promise<void>
-    styleCSSSources: Map<string, string>
     watching?: boolean
 }
 
@@ -109,6 +110,7 @@ async function writeExtractedCSS(outputPath: string, cssText: string) {
 
 function createSession(projectDir: string, outputPath: string, options: ResolvedOptions): ExtractSession {
     const extractor = new CSSExtractor(resolveExtractorOptions(options), projectDir)
+    const styleCSSSources = new Map<string, string>()
     let writeChain = Promise.resolve()
     let session: ExtractSession
     const write = () => {
@@ -139,9 +141,9 @@ function createSession(projectDir: string, outputPath: string, options: Resolved
 
     session = {
         extractor,
+        styleCSSSources,
         ready,
-        write,
-        styleCSSSources: new Map()
+        write
     }
 
     return session
@@ -234,6 +236,7 @@ export async function prepareNextExtract(rawOptions: Options = {}, setupOptions:
     if (options.mode !== 'extract') return
 
     const projectDir = setupOptions.projectDir ?? process.cwd()
+    warnMissingNextConfig(projectDir, options.config)
     const outputPath = resolveExtractOutputPath(projectDir)
     const statePath = resolveExtractStatePath(outputPath)
     const scanLogPath = resolveExtractScanLogPath(outputPath)

@@ -52,7 +52,7 @@ test('master.css.js config custom classname', async () => {
     ).toEqual(['rel', 'blue-btn', 'test', 'btn'])
 })
 
-test('tracks native CSS classes from CSS config as used classes', async () => {
+test('ignores native CSS classes from CSS config files', async () => {
     const cwd = mkdtempSync(join(tmpdir(), 'master-css-extractor-'))
     try {
         writeFileSync(join(cwd, 'master.css'), `
@@ -75,10 +75,10 @@ test('tracks native CSS classes from CSS config as used classes', async () => {
 
         await extractor.insert('src/index.html', '<div class="native-card btn"></div>')
 
-        expect([...extractor.nativeClassNames]).toEqual(['native-card'])
-        expect([...extractor.usedNativeClasses]).toEqual(['native-card'])
+        expect([...extractor.nativeClassNames]).toEqual([])
+        expect([...extractor.usedNativeClasses]).toEqual([])
         expect(extractor.validClasses.has('btn')).toBe(true)
-        expect(changes).toEqual([['native-card']])
+        expect(changes).toEqual([[]])
     } finally {
         rmSync(cwd, { recursive: true, force: true })
     }

@@ -4,11 +4,10 @@ import getExtractedCSS from '../utils/extracted-css'
 import {
     isMasterStyleSource,
     isStyleCSSRequest,
-    registerStyleCSSSource,
-    replaceVirtualCSSImport
+    registerStyleCSSSource
 } from '../utils/style-css'
 
-export { replaceVirtualCSSImport } from '../utils/style-css'
+export { replaceVirtualCSSImport, replaceStyleCSSImports } from '../utils/style-css'
 
 export default function VirtualCSSImportPlugin(_options: unknown, context: PluginContext): Plugin {
     return {
@@ -28,19 +27,8 @@ export default function VirtualCSSImportPlugin(_options: unknown, context: Plugi
             const replacement = isServe
                 ? await getExtractedCSS(context)
                 : context.extractor.slotCSSRule
-            const result = replaceVirtualCSSImport(code, moduleId, replacement)
             context.virtualCSSImporters ??= new Set()
             context.virtualCSSImporters.add(id)
-
-            if (!result.replaced) {
-                if (!isServe) {
-                    context.virtualCSSPlaceholderEmitted = true
-                }
-                return {
-                    code: replacement,
-                    map: null
-                }
-            }
 
             if (!isServe) {
                 context.virtualCSSPlaceholderEmitted = true

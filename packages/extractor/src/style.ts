@@ -1,5 +1,5 @@
 import { compileCSS, type CompileCSSOptions, type CompileCSSResult } from '@master/css-compiler'
-import { createCSS, extendConfig, VariableRule, type Config } from '@master/css'
+import { AnimationRule, createCSS, extendConfig, VariableRule, type Config } from '@master/css'
 import { loadConfig } from '@master/css-explore-config'
 import { createRequire } from 'node:module'
 import { extname, join } from 'node:path'
@@ -11,8 +11,6 @@ export const STYLE_CSS_REQUEST_RE = /\.(css|scss|sass)(?:[?#].*)?$/
 const CSS_IMPORT_RE = /@import\s+(?:url\(\s*)?(["'])([^"']+)\1\s*\)?[^;]*;/g
 const require = createRequire(import.meta.url)
 
-type CSSInstance = ReturnType<typeof createCSS>
-type VariableDefinition = NonNullable<Config['variables']>[number]
 type StyleCSSModuleIds = string | Iterable<string>
 type LoadConfigMode = 'always' | 'css' | false
 
@@ -39,7 +37,6 @@ export interface CreateExtractedCSSOptions extends CompileStyleCSSOptions {
     config?: Config
     configPath?: string
     loadConfigMode?: LoadConfigMode
-    emitStyleVariables?: boolean
 }
 
 function toModuleIdArray(moduleIds: StyleCSSModuleIds) {
@@ -81,7 +78,7 @@ export function createStyleCSSImportPattern(moduleIds: StyleCSSModuleIds) {
 }
 
 export function createMasterStyleCSSPattern(moduleIds: StyleCSSModuleIds) {
-    return new RegExp(`@master|${createStyleCSSImportPattern(moduleIds).source}`)
+    return createStyleCSSImportPattern(moduleIds)
 }
 
 export function cleanStyleRequest(id: string) {
@@ -112,7 +109,7 @@ export function hasStyleCSSImport(source: string, moduleIds: StyleCSSModuleIds) 
 }
 
 export function isMasterStyleSource(source: string, moduleIds: StyleCSSModuleIds) {
-    return source.includes('@master') || hasStyleCSSImport(source, moduleIds)
+    return hasStyleCSSImport(source, moduleIds)
 }
 
 export async function preprocessStyleCSS(source: string, id: string, options: CompileStyleCSSOptions = {}) {
@@ -195,12 +192,6 @@ export async function registerStyleCSSSource(
     return result
 }
 
-function getVariableDefinitionName(definition: VariableDefinition) {
-    return definition.namespace
-        ? `${definition.namespace.replace(/\./g, '-')}${definition.key ? '-' + definition.key : ''}`
-        : definition.key
-}
-
 export function collectCSSVariableReferences(source: string) {
     const references = new Set<string>()
     for (const match of source.matchAll(/var\(\s*--([_a-zA-Z0-9-]+)/g)) {
@@ -209,35 +200,57 @@ export function collectCSSVariableReferences(source: string) {
     return references
 }
 
-function collectConfigVariableNames(configs: Config[]) {
-    const names = new Set<string>()
-    for (const config of configs) {
-        for (const definition of config.variables || []) {
-            names.add(getVariableDefinitionName(definition))
+function collectStyleCSSVariableReferences(nativeCSS: string[]) {
+    const references = new Set<string>()
+    for (const source of nativeCSS) {
+        for (const reference of collectCSSVariableReferences(source)) {
+            references.add(reference)
         }
     }
-    return names
+    return references
 }
 
-function insertVariableRules(css: CSSInstance, variableNames: Iterable<string>) {
-    for (const variableName of variableNames) {
-        const variable = css.variables.get(variableName)
+function insertVariableReferences(css: ReturnType<typeof createCSS>, references: Set<string>) {
+    for (const name of references) {
+        const variable = css.variables.get(name)
         if (!variable) continue
-        css.themeLayer.insert(new VariableRule(variableName, variable, css))
+        css.themeLayer.insert(new VariableRule(name, variable, css))
     }
 }
 
-function insertStyleVariableRules(css: CSSInstance, styleConfigs: Config[], nativeCSS: string[]) {
-    const styleVariableNames = collectConfigVariableNames(styleConfigs)
-    const variableNames = new Set(styleVariableNames)
-    for (const source of nativeCSS) {
-        for (const variableName of collectCSSVariableReferences(source)) {
-            if (css.variables.has(variableName)) {
-                variableNames.add(variableName)
+function collectCSSAnimationReferences(source: string, animationNames: Iterable<string>) {
+    const references = new Set<string>()
+    const names = Array.from(animationNames)
+    if (!names.length) return references
+    for (const match of source.matchAll(/\banimation(?:-name)?\s*:\s*([^;{}]+)/g)) {
+        const value = match[1]
+        for (const name of names) {
+            if (new RegExp(String.raw`(^|[\s,])${escapeRegExp(name)}(?=$|[\s,])`).test(value)) {
+                references.add(name)
             }
         }
     }
-    insertVariableRules(css, variableNames)
+    return references
+}
+
+function collectNativeCSSAnimationReferences(nativeCSS: string[], animationNames: Iterable<string>) {
+    const references = new Set<string>()
+    for (const source of nativeCSS) {
+        for (const reference of collectCSSAnimationReferences(source, animationNames)) {
+            references.add(reference)
+        }
+    }
+    return references
+}
+
+function insertAnimationReferences(css: ReturnType<typeof createCSS>, references: Set<string>) {
+    for (const name of references) {
+        const keyframes = css.animations.get(name)
+        if (!keyframes) continue
+        const rule = new AnimationRule(name, keyframes, css)
+        css.animationsNonLayer.insert(rule)
+        insertVariableReferences(css, rule.variableNames ?? new Set())
+    }
 }
 
 export async function createExtractedCSS(options: CreateExtractedCSSOptions) {
@@ -247,7 +260,6 @@ export async function createExtractedCSS(options: CreateExtractedCSSOptions) {
         config: configOption,
         configPath = extractor.resolvedConfigPath,
         loadConfigMode = 'always',
-        emitStyleVariables = true,
         ...compileOptions
     } = options
     const classes = compileOptions.classes ?? getExtractorClasses(extractor)
@@ -256,7 +268,7 @@ export async function createExtractedCSS(options: CreateExtractedCSSOptions) {
         (loadConfigMode === 'css' && extname(configPath) === '.css')
     ))
 
-    if (!styleCSSSources?.size && !shouldLoadConfig) {
+    if (!shouldLoadConfig && !configOption && !compileOptions.classes && !styleCSSSources?.size) {
         return extractor.css.text
     }
 
@@ -267,26 +279,17 @@ export async function createExtractedCSS(options: CreateExtractedCSSOptions) {
                 classes
             }))
     )
-    const styleConfigs = styleResults.map((result) => result.config)
+    const nativeCSS = styleResults.map((result) => result.nativeCSS).filter(Boolean)
     const configResult = shouldLoadConfig && configPath
         ? await loadConfig(configPath, { classes })
         : undefined
-    const nativeCSS = styleResults.map(getNativeCSS).filter(Boolean)
-    if (configResult) {
-        const configNativeCSS = getNativeCSS(configResult)
-        if (configNativeCSS) nativeCSS.push(configNativeCSS)
-    }
 
-    const css = createCSS(extendConfig(
-        ...styleConfigs,
-        configResult?.config ?? configOption ?? extractor.config
-    ))
-    if (emitStyleVariables) {
-        insertStyleVariableRules(css, styleConfigs, nativeCSS)
-    }
+    const css = createCSS(extendConfig(configResult?.config ?? configOption ?? extractor.config))
     for (const className of classes) {
         css.add(className)
     }
+    insertVariableReferences(css, collectStyleCSSVariableReferences(nativeCSS))
+    insertAnimationReferences(css, collectNativeCSSAnimationReferences(nativeCSS, css.animations.keys()))
     return [
         ...nativeCSS,
         css.text

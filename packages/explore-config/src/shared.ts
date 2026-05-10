@@ -8,6 +8,7 @@ export interface ExploreConfigOptions {
     extensions?: string[]
     resolvedKeys?: string[]
     found?: (basename: string, path: string) => void
+    missing?: (name: string, cwd: string) => void
 }
 
 export interface LoadConfigOptions extends Pick<ExploreConfigOptions, 'resolvedKeys'> {
@@ -49,6 +50,9 @@ export const DEFAULT_RESOLVED_KEYS = [
 ]
 
 export const DEFAULT_FOUND = (basename: string) => process.env.DEBUG && console.log(`[Master CSS] Loaded ${basename}`)
+export const DEFAULT_MISSING = undefined
+
+const warnedMissingConfigs = new Set<string>()
 
 type TransformSync = typeof import('@swc/wasm')['transformSync']
 
@@ -103,6 +107,45 @@ export function resolveConfigPath(options: ExploreConfigOptions & { name?: strin
             }
         }
     }
+}
+
+export interface MissingConfigWarningOptions {
+    name?: string
+    cwd?: string
+    integration?: string
+    force?: boolean
+}
+
+export function formatMissingConfigWarning(options: MissingConfigWarningOptions = {}) {
+    const name = options.name || 'master.css'
+    const cwd = resolve(options.cwd || '')
+    const integration = options.integration || 'Master CSS'
+    const entryPath = resolve(cwd, name)
+    return [
+        `[${integration}] ${name} was not found in ${cwd}.`,
+        `Create ${entryPath} and import your project stylesheet entry from it, for example:`,
+        '  @import "./src/globals.css";',
+        'Master CSS uses this file as the workspace entry for integrations, language service, and VS Code. Only @master blocks are read as config from imported CSS.',
+        'https://rc.css.master.co/messages/missing-master-css'
+    ].join('\n')
+}
+
+export function warnMissingConfig(options: MissingConfigWarningOptions = {}) {
+    if (!options.force && (process.env.NODE_ENV === 'test' || process.env.VITEST)) return
+
+    const name = options.name || 'master.css'
+    const cwd = resolve(options.cwd || '')
+    const integration = options.integration || 'Master CSS'
+    const key = `${integration}\0${cwd}\0${name}`
+    if (warnedMissingConfigs.has(key)) return
+
+    warnedMissingConfigs.add(key)
+    console.warn(formatMissingConfigWarning({
+        ...options,
+        cwd,
+        name,
+        integration
+    }))
 }
 
 export function swcTransform(options: TransformOptions, transformSync: TransformSync): TransformResult {

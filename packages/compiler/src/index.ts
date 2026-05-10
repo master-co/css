@@ -41,6 +41,7 @@ export interface CompileCSSOptions {
     config?: Parameters<typeof createCSS>[0]
     classes?: string[]
     from?: string
+    preserveNativeCSS?: boolean
     onWarning?: (warning: string) => void
 }
 
@@ -2343,11 +2344,14 @@ export function compileCSS(source: string, options: CompileCSSOptions = {}): Com
     finalizeComponentDefinitions(parsed, options)
     const css = createDirectiveCSS(parsed, options)
     const generatedCSS = options.classes?.length ? css.text : ''
-    const filteredCode = filterNativeCSS(transformed.code, options.from || 'master.css', parsed, classFilter)
-    const remainingCode = classFilter
-        ? pruneEmptyRuleBlocks(filteredCode, options.from || 'master.css')
-        : filteredCode
-    const remainingCSS = remainingCode.toString().trim()
+    let remainingCSS = ''
+    if (options.preserveNativeCSS !== false) {
+        const filteredCode = filterNativeCSS(transformed.code, options.from || 'master.css', parsed, classFilter)
+        const remainingCode = classFilter
+            ? pruneEmptyRuleBlocks(filteredCode, options.from || 'master.css')
+            : filteredCode
+        remainingCSS = remainingCode.toString().trim()
+    }
 
     return {
         config: parsed.config,

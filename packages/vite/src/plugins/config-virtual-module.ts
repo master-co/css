@@ -1,6 +1,6 @@
 import type { ModuleNode, Plugin, ViteDevServer } from 'vite'
 import { PluginContext } from '../core'
-import exploreConfig, { loadConfig } from '@master/css-explore-config'
+import exploreConfig, { loadConfig, warnMissingConfig } from '@master/css-explore-config'
 import { MASTER_CSS_CONFIG_QUERY, RESOLVED_VIRTUAL_CONFIG_ID, VIRTUAL_CONFIG_ID } from '../common'
 import { PluginOptions } from '../options'
 import {
@@ -40,7 +40,15 @@ export function ConfigVirtualModulePlugin(
         name: 'master-css:virtual-module:config',
         enforce: 'pre',
         async configResolved(config) {
-            context.configResult = await exploreConfig({ name: options.config, cwd: config.root })
+            context.configResult = await exploreConfig({
+                name: options.config,
+                cwd: config.root,
+                missing: (name, cwd) => warnMissingConfig({
+                    integration: '@master/css.vite',
+                    name,
+                    cwd
+                })
+            })
             context.configPath = context.configResult?.path
             if (process.env.DEBUG) {
                 console.log(`[@master/css.vite] config: ${context.configPath || 'none'}`)

@@ -1,5 +1,5 @@
 import { CSSExtractor, Options } from '@master/css-extractor'
-import { loadConfig, resolveConfigPath, type ExploreConfigPath } from '@master/css-explore-config'
+import { loadConfig, resolveConfigPath, warnMissingConfig, type ExploreConfigPath } from '@master/css-explore-config'
 import { createExtractedCSS, registerStyleCSSSource as registerExtractorStyleCSSSource } from '@master/css-extractor/style'
 import type { Compiler } from 'webpack'
 import VirtualModulesPlugin from 'webpack-virtual-modules'
@@ -61,6 +61,16 @@ export class MasterCSSExtractorPlugin extends CSSExtractor {
         }
     }
 
+    private warnMissingDefaultConfig() {
+        if (typeof this.options.config !== 'string') return
+        if (this.resolveDefaultConfigPath()) return
+        warnMissingConfig({
+            integration: '@master/css.webpack',
+            name: this.options.config,
+            cwd: this.cwd
+        })
+    }
+
     private async createDefaultConfigModule(resolvedConfig = this.resolveDefaultConfigPath()) {
         if (typeof this.options.config === 'object') {
             return toConfigModule(this.options.config)
@@ -73,14 +83,6 @@ export class MasterCSSExtractorPlugin extends CSSExtractor {
         }
         this.defaultConfigDependencies = [resolvedConfig.path]
         return toNativeConfigModule(resolvedConfig.path)
-    }
-
-    private getVirtualCSSModuleIds() {
-        const moduleId = this.options.module as string
-        return [...new Set([
-            moduleId,
-            moduleId.startsWith('virtual:') ? moduleId.slice('virtual:'.length) : `virtual:${moduleId}`
-        ])]
     }
 
     private getExtractorClasses() {
@@ -100,6 +102,14 @@ export class MasterCSSExtractorPlugin extends CSSExtractor {
             loadConfigMode: 'css',
             projectDir: this.cwd
         })
+    }
+
+    private getVirtualCSSModuleIds() {
+        const moduleId = this.options.module as string
+        return [...new Set([
+            moduleId,
+            moduleId.startsWith('virtual:') ? moduleId.slice('virtual:'.length) : `virtual:${moduleId}`
+        ])]
     }
 
     private async registerStyleCSSSource(modulePath: string, source: string) {
@@ -126,14 +136,15 @@ export class MasterCSSExtractorPlugin extends CSSExtractor {
         for (const [modulePath, content] of entries) {
             if (isVirtualCSSModulePath(modulePath)) continue
             const source = this.readOriginalStyleSource(modulePath, content)
-            if (isStyleCSSRequest(modulePath) && isMasterStyleSource(source, moduleIds)) {
-                styleEntries.push([modulePath, source])
-            } else {
-                if (isStyleCSSRequest(modulePath)) {
+            if (isStyleCSSRequest(modulePath)) {
+                if (isMasterStyleSource(source, moduleIds)) {
+                    styleEntries.push([modulePath, source])
+                } else {
                     this.styleCSSSources.delete(cleanStyleRequest(modulePath))
                 }
-                insertEntries.push([modulePath, content])
+                continue
             }
+            insertEntries.push([modulePath, content])
         }
 
         await Promise.all(styleEntries.map(([modulePath, content]) =>
@@ -206,12 +217,14 @@ export class MasterCSSExtractorPlugin extends CSSExtractor {
             /* update the Virtual CSS module after initialization */
             compiler.hooks.beforeRun.tapPromise(NAME, async () => {
                 await this.init()
+                this.warnMissingDefaultConfig()
                 await this.prepare()
                 await writeVirtualCSSModule()
                 log``
             })
             compiler.hooks.watchRun.tapPromise(NAME, async (watchingCompiler) => {
                 await this.init()
+                this.warnMissingDefaultConfig()
                 const resolvedConfig = this.resolveDefaultConfigPath()
                 const modifiedFiles = (watchingCompiler as Compiler & { modifiedFiles?: ReadonlySet<string> }).modifiedFiles
                 const defaultConfigDependencies = this.defaultConfigDependencies.length

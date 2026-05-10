@@ -32,14 +32,37 @@ describe('style CSS extraction helpers', () => {
         expect(result.code).toContain('@import "./other.css";')
     })
 
-    it('detects @master stylesheets and virtual CSS imports', () => {
-        expect(isMasterStyleSource('@master { --color-primary: red; }', 'virtual:master.css')).toBe(true)
+    it('detects virtual CSS imports only', () => {
+        expect(isMasterStyleSource('@master { --color-primary: red; }', 'virtual:master.css')).toBe(false)
         expect(isMasterStyleSource('@import "master.css";', 'virtual:master.css')).toBe(true)
         expect(isMasterStyleSource('@import "./other.css";', 'virtual:master.css')).toBe(false)
     })
 
-    it('merges stylesheet @master config, native CSS, root config, and extracted classes', async () => {
+    it('uses root master.css config only and ignores stylesheet-local CSS config sources', async () => {
         const root = createFixture()
+        writeFileSync(join(root, 'master.css'), `
+            .root-native {
+                color: red;
+            }
+
+            @master {
+                --color-primary: #ff0000;
+
+                @keyframes fade {
+                    from {
+                        opacity: 0;
+                    }
+
+                    to {
+                        opacity: 1;
+                    }
+                }
+
+                .btn {
+                    display: grid;
+                }
+            }
+        `)
         const extractor = new CSSExtractor({
             include: [],
             config: 'master.css',
@@ -53,15 +76,21 @@ describe('style CSS extraction helpers', () => {
             @import "virtual:master.css";
 
             @master {
-                --color-primary: #ff0000;
+                .btn {
+                    display: inline-flex;
+                }
             }
 
-            .main,
+            .main {
+                color: var(--color-primary);
+                animation-name: fade;
+            }
+
             .unused {
-                background-color: var(--color-primary);
+                color: var(--color-primary);
             }
         `)
-        await extractor.insert(join(root, 'app/page.tsx'), '<main class="main block"></main>')
+        await extractor.insert(join(root, 'app/page.tsx'), '<main class="btn block main"></main>')
 
         const css = await createExtractedCSS({
             extractor,
@@ -69,10 +98,13 @@ describe('style CSS extraction helpers', () => {
             projectDir: root
         })
 
+        expect(css).not.toContain('.root-native')
         expect(css).toContain('.main')
         expect(css).not.toContain('.unused')
-        expect(css).toContain('background-color: var(--color-primary)')
-        expect(css).toContain('@layer theme{:root{--color-primary:red}}')
+        expect(css).toContain('--color-primary:red')
+        expect(css).toContain('@keyframes fade')
+        expect(css).toContain('.btn{display:grid}')
+        expect(css).not.toContain('.btn{display:inline-flex}')
         expect(css).toContain('.block{display:block}')
         expect(css).not.toContain('@master')
         expect(css).not.toContain('virtual:master.css')

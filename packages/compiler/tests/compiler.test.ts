@@ -1257,6 +1257,52 @@ describe.concurrent('@master/css-compiler', () => {
         }
     })
 
+    it('can compile CSS config files without preserving native CSS', () => {
+        const root = mkdtempSync(join(tmpdir(), 'master-css-compiler-'))
+        try {
+            mkdirSync(join(root, 'styles'))
+            const entry = join(root, 'master.css')
+            const button = join(root, 'styles/button.css')
+            writeFileSync(button, `
+                .reset {
+                    box-sizing: border-box;
+                }
+
+                @master {
+                    .btn {
+                        font-size: 1rem;
+                    }
+                }
+            `)
+            writeFileSync(entry, `
+                @import "./styles/button.css";
+
+                .page {
+                    color: red;
+                }
+
+                @master {
+                    .btn {
+                        display: block;
+                    }
+                }
+            `)
+
+            const result = compileCSSFile(entry, {
+                classes: ['btn', 'page'],
+                preserveNativeCSS: false
+            })
+
+            expect(result.dependencies).toEqual([entry, button])
+            expect(result.nativeCSS).toBe('')
+            expect(result.css).not.toContain('box-sizing: border-box')
+            expect(result.css).not.toContain('color: red')
+            expect(result.css).toContain('.btn{font-size:1rem;display:block}')
+        } finally {
+            rmSync(root, { recursive: true, force: true })
+        }
+    })
+
     it('rejects circular CSS file imports', () => {
         const root = mkdtempSync(join(tmpdir(), 'master-css-compiler-'))
         try {

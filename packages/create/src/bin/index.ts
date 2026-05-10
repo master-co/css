@@ -9,7 +9,7 @@ import detectPackageManager from '../detect-package-manager'
 import { downloadTemplate } from 'giget'
 import { Options } from '../Options'
 import { execSync } from 'node:child_process'
-import { existsSync, writeFileSync } from 'node:fs'
+import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import ora from 'ora'
 import CONFIG_TEXT from '../master-css-template'
 import { dirname } from 'path'
@@ -22,6 +22,27 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 const pkg = readJSONFileSync(resolve(__dirname, '../../package.json'))
 const program = new Command()
+
+function ensureGitIgnoreEntry(entry: string) {
+    const fileName = '.gitignore'
+    const content = existsSync(fileName) ? readFileSync(fileName, 'utf-8') : ''
+    const hasEntry = content
+        .split(/\r?\n/)
+        .some((line) => {
+            const value = line.trim()
+            return value === entry || value === `/${entry}`
+        })
+    if (hasEntry) return
+    const prefix = content && !content.endsWith('\n') ? '\n' : ''
+    writeFileSync(fileName, `${content}${prefix}${entry}\n`)
+    log.ok`Added **${entry}** to **${fileName}**`
+}
+
+function prepareDetectedApp(tech: ReturnType<typeof detectAppTech>) {
+    if (tech === 'nextjs') {
+        ensureGitIgnoreEntry('.master')
+    }
+}
 
 program
     .name(pkg.name)
@@ -72,6 +93,7 @@ program
                 targetPackages.push(key)
             }
             writeFileSync('package.json', JSON.stringify(appPkg, null, 4), { flag: 'w' })
+            prepareDetectedApp(detectAppTech())
             spinner.stop()
             log.ok`Cloned example from "${examplePath}"`
             log``
@@ -111,6 +133,7 @@ program
                 log``
             }
             const tech = detectAppTech()
+            prepareDetectedApp(tech)
             if (tech) {
                 log.i(`Detected **${tech}** (https://${BRANCH}.css.master.co/docs/installation/${tech})`)
             } else {

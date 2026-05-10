@@ -223,7 +223,7 @@ describe('MasterCSSExtractorPlugin (C1 race fix)', () => {
         expect(compilation.fileDependencies.has(path.join(root, 'master.css'))).toBe(true)
     })
 
-    test('extends source stylesheet @master configs before root master.css and prunes unused SCSS native classes', async () => {
+    test('shakes source stylesheet native CSS while ignoring source stylesheet CSS configs', async () => {
         const root = mkdtempSync(path.join(tmpdir(), 'master-css-webpack-'))
         try {
             mkdirSync(path.join(root, 'src'), { recursive: true })
@@ -237,6 +237,8 @@ describe('MasterCSSExtractorPlugin (C1 race fix)', () => {
                 '}',
                 '',
                 '@master {',
+                '    --color-primary: #123456;',
+                '',
                 '    .btn {',
                 '        display: grid;',
                 '    }',
@@ -251,33 +253,24 @@ describe('MasterCSSExtractorPlugin (C1 race fix)', () => {
                 verbose: 0
             } as any, root).init()
 
-            ;(plugin as any).styleCSSSources.set(path.join(root, 'src/styles.scss'), [
-                '$accent: #123;',
-                '',
-                '.native-used {',
-                '    color: $accent;',
-                '}',
-                '',
-                '.native-unused {',
-                '    color: #456;',
-                '}',
-                '',
-                '@master {',
-                '    .btn {',
-                '        display: inline-flex;',
-                '    }',
-                '}'
-            ].join('\n'))
             plugin.latentClasses.add('btn')
             plugin.latentClasses.add('native-used')
             plugin.latentClasses.add('root-native')
+            ;(plugin as any).styleCSSSources.set(path.join(root, 'src/styles.css'), [
+                '@import "virtual:master.css";',
+                '',
+                '.native-used {',
+                '    color: var(--color-primary);',
+                '}'
+            ].join('\n'))
 
             const css = await (plugin as any).createExtractedCSS()
 
             expect(css).toContain('.native-used')
             expect(css).not.toContain('.native-unused')
-            expect(css).toContain('.root-native')
+            expect(css).not.toContain('.root-native')
             expect(css).not.toContain('.root-unused')
+            expect(css).toContain('--color-primary:rgb(18 52 86)')
             expect(css).toContain('.btn{display:grid}')
             expect(css).not.toContain('.btn{display:inline-flex}')
         } finally {

@@ -69,7 +69,7 @@ describe('VirtualCSSImportPlugin', () => {
         expect(context.virtualCSSPlaceholderEmitted).toBeUndefined()
     })
 
-    test('build transform treats @master stylesheets as virtual CSS entries', async () => {
+    test('ignores standalone @master stylesheets without virtual CSS imports', async () => {
         const context = makeContext('build')
         const plugin = VirtualCSSImportPlugin({}, context)
 
@@ -79,10 +79,9 @@ describe('VirtualCSSImportPlugin', () => {
             '/project/src/style.css'
         )
 
-        expect(result.code).toBe(SLOT)
-        expect(context.styleCSSSources.get('/project/src/style.css')).toContain('@master')
-        expect(context.virtualCSSImporters).toEqual(new Set(['/project/src/style.css']))
-        expect(context.virtualCSSPlaceholderEmitted).toBe(true)
+        expect(result).toBeUndefined()
+        expect(context.virtualCSSImporters).toBeUndefined()
+        expect(context.virtualCSSPlaceholderEmitted).toBeUndefined()
     })
 
     test('ignores non-CSS modules and unrelated CSS imports', async () => {

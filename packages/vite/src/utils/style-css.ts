@@ -16,7 +16,8 @@ export {
     cleanStyleRequest,
     compileStyleCSS,
     isMasterStyleSource,
-    isStyleCSSRequest
+    isStyleCSSRequest,
+    replaceStyleCSSImports
 }
 
 export function replaceVirtualCSSImport(code: string, moduleId: string, replacement: string) {

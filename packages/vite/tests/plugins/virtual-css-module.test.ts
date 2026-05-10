@@ -177,7 +177,7 @@ describe('VirtualCSSModulePlugin (D1 placeholder-leak warn)', () => {
         expect(warn).not.toHaveBeenCalled()
     })
 
-    test('compiles native CSS config class rules on demand', async () => {
+    test('compiles root master.css config rules and ignores native CSS', async () => {
         const root = mkdtempSync(path.join(tmpdir(), 'master-css-vite-'))
         try {
             const configPath = path.join(root, 'master.css')
@@ -212,8 +212,8 @@ describe('VirtualCSSModulePlugin (D1 placeholder-leak warn)', () => {
             await (plugin as any).generateBundle.call({ warn }, {}, bundle)
 
             const css = String(bundle['assets/index-abc.css'].source)
-            expect(css).toContain('body')
-            expect(css).toContain('.native-card')
+            expect(css).not.toContain('body')
+            expect(css).not.toContain('.native-card')
             expect(css).not.toContain('.unused-card')
             expect(css).toContain('.btn{display:inline-flex}')
             expect(warn).not.toHaveBeenCalled()
@@ -222,12 +222,14 @@ describe('VirtualCSSModulePlugin (D1 placeholder-leak warn)', () => {
         }
     })
 
-    test('extends source stylesheet @master configs before root master.css and prunes unused SCSS native classes', async () => {
+    test('ignores source stylesheet CSS configs and uses root master.css only', async () => {
         const root = mkdtempSync(path.join(tmpdir(), 'master-css-vite-'))
         try {
             const configPath = path.join(root, 'master.css')
             writeFileSync(configPath, `
                 @master {
+                    --color-primary: #123456;
+
                     .btn {
                         display: grid;
                     }
@@ -243,7 +245,7 @@ describe('VirtualCSSModulePlugin (D1 placeholder-leak warn)', () => {
 
                     .native-used,
                     .native-unused {
-                        color: $accent;
+                        color: var(--color-primary);
                     }
 
                     @master {
@@ -266,6 +268,7 @@ describe('VirtualCSSModulePlugin (D1 placeholder-leak warn)', () => {
             const css = String(bundle['assets/index-abc.css'].source)
             expect(css).toContain('.native-used')
             expect(css).not.toContain('.native-unused')
+            expect(css).toContain('--color-primary:rgb(18 52 86)')
             expect(css).toContain('.btn{display:grid}')
             expect(css).not.toContain('.btn{display:inline-flex}')
             expect(warn).not.toHaveBeenCalled()

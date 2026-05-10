@@ -3,24 +3,32 @@ import { pathToFileURL } from 'node:url'
 import {
     DEFAULT_EXTENSIONS,
     DEFAULT_FOUND,
+    DEFAULT_MISSING,
+    formatMissingConfigWarning,
     resolveConfig,
     resolveConfigPath,
     swcTransform,
+    warnMissingConfig,
     type ExploreConfigOptions,
     type ExploreConfigPath,
     type ExploreConfigResult,
     type LoadConfigOptions,
-    type LoadConfigResult
+    type LoadConfigResult,
+    type MissingConfigWarningOptions
 } from './shared'
 
 export {
     DEFAULT_EXTENSIONS,
+    DEFAULT_MISSING,
+    formatMissingConfigWarning,
     resolveConfigPath,
+    warnMissingConfig,
     type ExploreConfigOptions,
     type ExploreConfigPath,
     type ExploreConfigResult,
     type LoadConfigOptions,
-    type LoadConfigResult
+    type LoadConfigResult,
+    type MissingConfigWarningOptions
 }
 
 type CreateJiti = typeof import('jiti')['createJiti']
@@ -61,7 +69,10 @@ async function loadConfigModule(path: string) {
 export async function loadConfig(path: string, options: LoadConfigOptions = {}): Promise<LoadConfigResult> {
     if (extname(path) === '.css') {
         const compileCSSFile = await loadCompileCSS()
-        const result = compileCSSFile(path, { classes: options.classes })
+        const result = compileCSSFile(path, {
+            classes: options.classes,
+            preserveNativeCSS: false
+        })
         const nativeCSS = (result as typeof result & { nativeCSS?: string }).nativeCSS
         return {
             config: result.config,
@@ -82,7 +93,11 @@ export async function loadConfig(path: string, options: LoadConfigOptions = {}):
 
 export async function exploreConfig(options: ExploreConfigOptions & { name?: string } = {}) {
     const resolvedConfig = resolveConfigPath(options)
-    if (!resolvedConfig) return
+    if (!resolvedConfig) {
+        const missing = Object.hasOwn(options, 'missing') ? options.missing : DEFAULT_MISSING
+        missing?.(options.name || 'master.css', options.cwd || '')
+        return
+    }
     const result = await loadConfig(resolvedConfig.path, options)
     const found = Object.hasOwn(options, 'found') ? options.found : DEFAULT_FOUND
     found?.(resolvedConfig.basename, resolvedConfig.path)

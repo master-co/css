@@ -120,7 +120,7 @@ describe('renderNextBuildOutputs', () => {
         expect(html).toBe(sourceHTML)
     })
 
-    it('extends source stylesheet @master configs before root master.css and prunes unused SCSS native classes', async () => {
+    it('uses root master.css config only and ignores native stylesheet CSS', async () => {
         const projectDir = createFixtureDir()
         const distDir = join(projectDir, '.next')
         const htmlFile = join(distDir, 'server/app/index.html')
@@ -164,9 +164,9 @@ describe('renderNextBuildOutputs', () => {
         const html = readFileSync(htmlFile, 'utf-8')
 
         expect(outputs[0].rendered).toBe(true)
-        expect(html).toContain('.native-used')
+        expect(html).not.toContain('.native-used')
         expect(html).not.toContain('.native-unused')
-        expect(html).toContain('.root-native')
+        expect(html).not.toContain('.root-native')
         expect(html).not.toContain('.root-unused')
         expect(html).toContain('.btn{display:grid}')
         expect(html).not.toContain('.btn{display:inline-flex}')

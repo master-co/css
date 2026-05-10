@@ -11,7 +11,7 @@
 # next.js
 /.next/
 /out/
-/.master-css/
+/.master/
 
 # production
 /build

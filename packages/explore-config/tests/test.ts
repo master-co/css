@@ -1,5 +1,5 @@
-import { test, expect } from 'vitest'
-import exploreConfig, { loadConfig, resolveConfigPath } from '../src'
+import { test, expect, vi } from 'vitest'
+import exploreConfig, { formatMissingConfigWarning, loadConfig, resolveConfigPath, warnMissingConfig } from '../src'
 import exploreConfigSync, { loadConfigSync } from '../src/sync'
 import config from './master.css'
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
@@ -52,6 +52,52 @@ test('loads CommonJS configs', async () => {
 
 test('returns undefined when the config file does not exist', async () => {
     expect(await exploreConfig({ cwd: __dirname, name: 'missing.css' })).toBeUndefined()
+})
+
+test('calls missing when the config file does not exist', async () => {
+    const missing = vi.fn()
+
+    expect(await exploreConfig({
+        cwd: __dirname,
+        name: 'missing.css',
+        missing
+    })).toBeUndefined()
+    expect(missing).toHaveBeenCalledWith('missing.css', __dirname)
+})
+
+test('formats and dedupes missing config warnings', () => {
+    const cwd = mkdtempSync(join(tmpdir(), 'master-css-config-'))
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
+    try {
+        const warning = formatMissingConfigWarning({
+            integration: '@master/css.test',
+            name: 'master.css',
+            cwd
+        })
+
+        expect(warning).toContain(`[@master/css.test] master.css was not found in ${cwd}.`)
+        expect(warning).toContain('@import "./src/globals.css";')
+        expect(warning).toContain('https://rc.css.master.co/messages/missing-master-css')
+
+        warnMissingConfig({
+            integration: '@master/css.test',
+            name: 'master.css',
+            cwd,
+            force: true
+        })
+        warnMissingConfig({
+            integration: '@master/css.test',
+            name: 'master.css',
+            cwd,
+            force: true
+        })
+
+        expect(warn).toHaveBeenCalledTimes(1)
+        expect(warn.mock.calls[0][0]).toBe(warning)
+    } finally {
+        warn.mockRestore()
+        rmSync(cwd, { force: true, recursive: true })
+    }
 })
 
 test('prefers CSS configs before script configs', async () => {
@@ -151,6 +197,10 @@ test('loads imported CSS config files', async () => {
         const entry = join(cwd, 'master.css')
         const button = join(cwd, 'styles/button.css')
         writeFileSync(button, `
+            .button-native {
+                color: red;
+            }
+
             @master {
                 .btn {
                     font-size: 1rem;
@@ -160,6 +210,10 @@ test('loads imported CSS config files', async () => {
         `)
         writeFileSync(entry, `
             @import './styles/button.css';
+
+            body {
+                margin: 0;
+            }
 
             @master {
                 .btn {
@@ -171,6 +225,8 @@ test('loads imported CSS config files', async () => {
         const result = await exploreConfig({ cwd })
 
         expect(result?.dependencies).toEqual([entry, button])
+        expect(result?.nativeCSS).toBe('')
+        expect(result?.css).toBe('')
         expect(result?.config).toStrictEqual({
             utilities: [
                 {

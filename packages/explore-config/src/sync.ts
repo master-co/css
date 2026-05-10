@@ -2,6 +2,7 @@ import { createRequire } from 'node:module'
 import { extname } from 'node:path'
 import { pathToFileURL } from 'node:url'
 import {
+    DEFAULT_MISSING,
     DEFAULT_FOUND,
     resolveConfig,
     resolveConfigPath,
@@ -44,7 +45,10 @@ function loadConfigModuleSync(path: string) {
 export function loadConfigSync(path: string, options: LoadConfigOptions = {}): LoadConfigResult {
     if (extname(path) === '.css') {
         const compileCSSFile = loadCompileCSSSync()
-        const result = compileCSSFile(path, { classes: options.classes })
+        const result = compileCSSFile(path, {
+            classes: options.classes,
+            preserveNativeCSS: false
+        })
         const nativeCSS = (result as typeof result & { nativeCSS?: string }).nativeCSS
         return {
             config: result.config,
@@ -65,7 +69,11 @@ export function loadConfigSync(path: string, options: LoadConfigOptions = {}): L
 
 export function exploreConfigSync(options: ExploreConfigOptions & { name?: string } = {}) {
     const resolvedConfig = resolveConfigPath(options)
-    if (!resolvedConfig) return
+    if (!resolvedConfig) {
+        const missing = Object.hasOwn(options, 'missing') ? options.missing : DEFAULT_MISSING
+        missing?.(options.name || 'master.css', options.cwd || '')
+        return
+    }
     const result = loadConfigSync(resolvedConfig.path, options)
     const found = Object.hasOwn(options, 'found') ? options.found : DEFAULT_FOUND
     found?.(resolvedConfig.basename, resolvedConfig.path)
