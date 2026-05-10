@@ -20,11 +20,11 @@ function getStaticUtility(result: ReturnType<typeof compileCSS>, name: string, l
 function getStaticUtilityRules(result: ReturnType<typeof compileCSS>, name: string, layer = 'main') {
     const definition = getStaticUtility(result, name, layer)
     if (!definition) return undefined
-    const rules = (definition.rules ?? (definition.declarations ? [{ declarations: definition.declarations }] : [])) as Array<{
+    const rules = (definition.rules ?? (definition.declarations ? [{ declarations: definition.declarations }] : [])) as {
         selector?: string
         atRules?: string[]
         declarations: unknown
-    }>
+    }[]
     return rules.map((rule) => ({
         selector: rule.selector ?? '&',
         ...(rule.atRules?.length ? { atRules: rule.atRules } : {}),
@@ -257,6 +257,30 @@ describe.concurrent('@master/css-compiler', () => {
         expect(result.nativeCSS).not.toContain('.btn{display:block}')
     })
 
+    it('keeps native class rules with CSS variables on demand', () => {
+        const result = compileCSS(`
+            .main {
+                background-color: var(--color-primary);
+            }
+
+            @media (prefers-color-scheme: dark) {
+                .main {
+                    color: var(--color-primary);
+                }
+            }
+
+            .unused {
+                color: var(--color-primary);
+            }
+        `, { classes: ['main'] })
+
+        expect(result.nativeClassNames).toEqual(['main', 'unused'])
+        expect(result.nativeCSS).toContain('.main')
+        expect(result.nativeCSS).toContain('background-color: var(--color-primary)')
+        expect(result.nativeCSS).toContain('@media (prefers-color-scheme: dark)')
+        expect(result.nativeCSS).not.toContain('.unused')
+    })
+
     it('keeps light and dark as core defaults and auto-registers custom modes', () => {
         const result = compileCSS(`
             @master {
@@ -371,7 +395,7 @@ describe.concurrent('@master/css-compiler', () => {
         `, { classes: ['code-line-add'] })
 
         expect(getStaticUtilityRules(result, 'code-line-add')?.[0].selector).toBe('&:not(:only-child):before')
-        expect(result.css).toContain(".code-line-add:not(:only-child):before{content:'+'!important}")
+        expect(result.css).toContain('.code-line-add:not(:only-child):before{content:\'+\'!important}')
     })
 
     it('supports component definitions inside top-level layer blocks', () => {

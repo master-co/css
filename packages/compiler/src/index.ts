@@ -417,19 +417,20 @@ function filterNativeStyleRule(rule: any, parsed: ParsedDirectives, classFilter?
     }))
     recordNativeClassNames(parsed, selectorEntries.flatMap((entry) => entry.classNames))
 
-    if (!classFilter) return rule
+    if (!classFilter) return
 
     const filteredSelectors = selectorEntries
         .filter(({ classNames }) => !classNames.length || classNames.some((className) => classFilter.has(className)))
         .map(({ selector }) => selector)
 
     if (!filteredSelectors.length) return []
+    if (filteredSelectors.length === selectors.length) return
     rule.value.selectors = filteredSelectors
     return rule
 }
 
 function removeEmptyRuleBlock(rule: any) {
-    return rule.value?.rules?.length ? rule : []
+    return rule.value?.rules?.length ? undefined : []
 }
 
 function pruneEmptyRuleBlocks(code: Uint8Array, filename: string) {
@@ -1165,7 +1166,7 @@ function insertSelectorSuffix(className: string, suffix: string) {
     return className + suffix
 }
 
-type ComponentSelectorDefinition = {
+interface ComponentSelectorDefinition {
     name: string
     selector: string
 }
@@ -1941,8 +1942,9 @@ function finalizeComponentDefinitions(parsed: ParsedDirectives, options: Compile
                 })
             }
         }
+        const rootSize = css.config.rootSize || defaultConfig.rootSize || 16
         const definitions = [...buckets.values()]
-            .sort((a, b) => compareComponentMergeBuckets(a, b, css.config.rootSize || defaultConfig.rootSize!))
+            .sort((a, b) => compareComponentMergeBuckets(a, b, rootSize))
             .flatMap((bucket) => {
                 const definition = createMergedComponentDefinition(bucket)
                 return definition ? [definition] : []
