@@ -9,8 +9,7 @@
         "lint": "next lint"
     },
     "dependencies": {
-        "@master/css-runtime": "workspace:^",
-        "@master/css.webpack": "workspace:^",
+        "@master/css.next": "workspace:^",
         "@types/node": "^25.6.0",
         "@types/react": "^19.2.14",
         "@types/react-dom": "^19.2.3",
