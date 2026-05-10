@@ -27,6 +27,21 @@ components/
 - `components/` contains interactive demos and guide-local presentational components.
 - Category membership comes from metadata. Run `pnpm --filter site prepare-app` when adding or renaming pages so local `.categories` files refresh.
 
+Message pages live under:
+
+```txt
+site/app/[locale]/messages/<slug>/
+```
+
+Use message pages for console errors, warnings, diagnostics, and runtime/build messages that need user-facing explanation. Each new message page should follow the same `metadata.ts`, `page.tsx`, and `content.mdx` shape as existing messages, use category `Errors` or `Warnings`, and explain:
+
+1. The exact message or representative message text.
+2. Why it appears.
+3. The smallest fix.
+4. When it can be safely ignored, if applicable.
+
+When adding a new error or warning in code, prefer including a stable `/messages/<slug>` URL in the emitted message and add or update the matching message page in the same change.
+
 For the View Transitions guide specifically:
 
 - Route slug is `/guide/view-transitions`.
