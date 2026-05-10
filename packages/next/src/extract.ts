@@ -7,6 +7,7 @@ import {
     isStyleCSSRequest,
     registerStyleCSSSource
 } from '@master/css-extractor/style'
+import { loadConfig, resolveConfigPath } from '@master/css-explore-config'
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { existsSync, readFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
@@ -95,7 +96,15 @@ async function createExtractedCSS(projectDir: string, session: ExtractSession) {
 
 async function writeExtractedCSS(outputPath: string, cssText: string) {
     await mkdir(dirname(outputPath), { recursive: true })
+    try {
+        if (await readFile(outputPath, 'utf-8') === cssText) {
+            return false
+        }
+    } catch {
+        // File does not exist yet.
+    }
     await writeFile(outputPath, cssText)
+    return true
 }
 
 function createSession(projectDir: string, outputPath: string, options: ResolvedOptions): ExtractSession {
@@ -179,6 +188,29 @@ export function readExtractState(statePath: string): ExtractState {
         throw new Error(`Unsupported Master CSS Next extract state version: ${String(state.version)}`)
     }
     return state
+}
+
+async function resolveExtractConfigDependencies(projectDir: string, extractorOptions: ExtractorOptions) {
+    if (typeof extractorOptions.config !== 'string') return []
+    const resolvedConfig = resolveConfigPath({
+        cwd: projectDir,
+        name: extractorOptions.config
+    })
+    if (!resolvedConfig) return []
+    try {
+        return (await loadConfig(resolvedConfig.path)).dependencies
+    } catch {
+        return [resolvedConfig.path]
+    }
+}
+
+export async function addExtractCSSDependencies(statePath: string, addDependency?: (file: string) => void) {
+    if (!addDependency) return
+    const state = readExtractState(statePath)
+    addDependency(state.outputPath)
+    for (const dependency of await resolveExtractConfigDependencies(state.projectDir, state.options.extractorOptions)) {
+        addDependency(dependency)
+    }
 }
 
 export async function getOrCreateExtractSession(

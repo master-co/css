@@ -39,9 +39,16 @@ function runExtractLoader(statePath: string, resourcePath: string, source: strin
 }
 
 function runExtractCSSLoader(statePath: string, resourcePath: string, source: string) {
+    return runExtractCSSLoaderWithDependencies(statePath, resourcePath, source)
+        .then((result) => result.content)
+}
+
+function runExtractCSSLoaderWithDependencies(statePath: string, resourcePath: string, source: string) {
+    const dependencies: string[] = []
     return new Promise<string>((resolve, reject) => {
         const context: ThisParameterType<typeof masterCSSNextExtractCSSLoader> = {
             resourcePath,
+            addDependency: (dependency) => dependencies.push(dependency),
             cacheable: () => undefined,
             getOptions: () => ({ statePath }),
             async: () => (error, content) => {
@@ -54,7 +61,7 @@ function runExtractCSSLoader(statePath: string, resourcePath: string, source: st
         }
 
         masterCSSNextExtractCSSLoader.call(context, source)
-    })
+    }).then((content) => ({ content, dependencies }))
 }
 
 describe('Next extract mode', () => {
@@ -119,6 +126,27 @@ describe('Next extract mode', () => {
         expect(replaced).not.toContain('virtual:master.css')
         expect(replaced).not.toContain('layer(master)')
         expect(readFileSync(outputPath, 'utf-8')).toBe(replaced)
+    })
+
+    it('adds output and root config files as CSS loader dependencies for dev updates', async () => {
+        const root = createFixture()
+        writeFileSync(join(root, 'theme.css'), '@master { --color-primary: #00f; }')
+        writeFileSync(join(root, 'master.css'), '@import "./theme.css";')
+
+        const outputPath = resolveExtractOutputPath(root)
+        const statePath = resolveExtractStatePath(outputPath)
+
+        await prepareNextExtract({ mode: 'extract' }, { projectDir: root })
+
+        const result = await runExtractCSSLoaderWithDependencies(
+            statePath,
+            join(root, 'app/globals.css'),
+            '@import "virtual:master.css";'
+        )
+
+        expect(result.dependencies).toContain(outputPath)
+        expect(result.dependencies).toContain(join(root, 'master.css'))
+        expect(result.dependencies).toContain(join(root, 'theme.css'))
     })
 
     it('treats app stylesheets with @master as extracted CSS entries without virtual imports', async () => {

@@ -1,7 +1,7 @@
 @import 'virtual:master.css';
 
 @master {
-    --color-primary: #ff0000;
+    --color-primary: #ffff00;
 }
 
 .main {

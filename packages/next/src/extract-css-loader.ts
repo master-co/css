@@ -1,7 +1,8 @@
-import { transformExtractStyleSource } from './extract'
+import { addExtractCSSDependencies, transformExtractStyleSource } from './extract'
 
 interface LoaderContext {
     resourcePath: string
+    addDependency?: (file: string) => void
     cacheable?: (flag?: boolean) => void
     async?: () => (error: Error | null, content?: string) => void
     getOptions?: () => {
@@ -23,7 +24,8 @@ export default function masterCSSNextExtractCSSLoader(this: LoaderContext, sourc
         return
     }
 
-    const run = transformExtractStyleSource(statePath, this.resourcePath, source)
+    const run = addExtractCSSDependencies(statePath, this.addDependency?.bind(this))
+        .then(() => transformExtractStyleSource(statePath, this.resourcePath, source))
         .then((content) => callback(null, content))
         .catch((error: Error) => callback(error))
 
