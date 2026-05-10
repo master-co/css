@@ -22,29 +22,38 @@ The language service will create at least a root workspace regardless of whether
 
 ---
 
-## One master.css per microservice
-When there are different design systems or complex requirements in a monorepo, you may need to create __master.css__ and __eslint.config.js__ for multiple folders to serve as [workspaces](/reference/language-server#workspaces).
+## One package project, one workspace
+Inside one `package.json` project, Master CSS supports one workspace instance. That workspace has one configuration graph, one extraction context, and one set of tool integrations for the current project boundary.
 
-(i) This will create two workspaces, `/` and `/apps/a`.
+Master CSS does not split a single package project into separate utility workspaces from multiple extraction outputs. For example, do not model one package as independent `admin.css` and `shop.css` extraction areas and expect the language service, ESLint, and build integrations to treat them as separate Master CSS workspaces.
+
+When different applications need cleanly separated CSS extraction, configuration, linting, and editor behavior, create separate projects in the monorepo. A typical structure is `projects/admin` and `projects/shop`, with each project owning its own `package.json`, `master.css`, and integration config.
+
+(i) This creates separate project boundaries for `projects/admin` and `projects/shop`.
 <ExplorerView>
 {[
-    { name: 'apps', children: [
-        { name: 'a', children: [
+    { name: 'projects', children: [
+        { name: 'admin', children: [
+            { name: 'package.json' },
             { name: 'eslint.config.js' },
             { name: 'master.css' }
         ]},
-        { name: 'b' }
+        { name: 'shop', children: [
+            { name: 'package.json' },
+            { name: 'eslint.config.js' },
+            { name: 'master.css' }
+        ]}
     ]},
-    { name: 'eslint.config.js' },
+    { name: 'package.json' },
     { name: 'master.css' }
 ]}
 </ExplorerView>
 
-Note that `/apps/b` will be considered part of the root workspace `/`.
+This keeps each application's generated CSS, source scanning, diagnostics, and editor state aligned with the same project root. Shared design tokens can still live at the repository root and be imported by each project workspace.
 
 ### Share the configuration
 In each workspace, import the shared CSS config files and add workspace-specific definitions after them.
-```css name=apps/a/master.css
+```css name=projects/admin/master.css
 @import '../../master.css';
 
 @master {
@@ -57,21 +66,34 @@ In each workspace, import the shared CSS config files and add workspace-specific
 ```
 Later definitions in the workspace file can override root options, variables, tokens, general utilities, and matching main style buckets.
 
-(x) Forgot to create __/apps/a/master.css__ in the workspace and import the shared entry.
+(x) Keep multiple application extraction targets inside one package project.
 <ExplorerView>
 {[
-    { name: 'apps', children: [
-        { name: 'a', children: [
-            { name: 'eslint.config.js' },
-            { name: 'master.css' }
-        ]},
-        { name: 'b' }
+    { name: 'app', children: [
+        { name: 'admin.css' },
+        { name: 'shop.css' },
+        { name: 'globals.css' }
     ]},
-    { name: 'eslint.config.js' },
+    { name: 'package.json' },
     { name: 'master.css' }
 ]}
 </ExplorerView>
 
-Unless this workspace is not using Master CSS, this is a common oversight.
+(o) Give each application its own package project and Master CSS workspace.
+<ExplorerView>
+{[
+    { name: 'projects', children: [
+        { name: 'admin', children: [
+            { name: 'package.json' },
+            { name: 'master.css' }
+        ]},
+        { name: 'shop', children: [
+            { name: 'package.json' },
+            { name: 'master.css' }
+        ]}
+    ]},
+    { name: 'master.css' }
+]}
+</ExplorerView>
 
 Finally, using a monorepo and having multiple workspaces doesn't mean you have to create multiple configurations. In most cases, you just need [one workspace entry](#one-workspace-entry).
