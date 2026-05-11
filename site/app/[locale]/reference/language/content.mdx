@@ -100,6 +100,20 @@ highlighter.codeToHtml(html, { lang: 'html' })
 
 Shiki uses the static grammar data from this package. It does not load project configuration or render LSP semantic tokens by itself.
 
+Use the language service Shiki transformer when you need configuration-aware semantic token classes in Shiki output:
+```ts
+import { transformerMasterCSSSemanticTokens } from '@master/css-language-service/shiki'
+import config from './master.css'
+
+highlighter.codeToHtml(html, {
+    lang: 'html',
+    transformers: [
+        transformerMasterCSSSemanticTokens({ config })
+    ]
+})
+```
+The transformer decorates Shiki spans with classes such as `mcss-semantic-class`, `mcss-semantic-class-declaration`, `mcss-semantic-property`, `mcss-semantic-variable`, `mcss-semantic-type`, and `mcss-semantic-modifier`.
+
 ### Monaco Editor
 The [Monaco Editor](https://github.com/microsoft/monaco-editor) is the fully featured code editor from VS Code. Integrate Monaco Editor based on the above [shiki](#shiki) setup.
 ```ts

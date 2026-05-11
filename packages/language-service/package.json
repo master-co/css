@@ -53,6 +53,11 @@
             "types": "./dist/index.d.ts",
             "import": "./dist/index.mjs",
             "default": "./dist/index.mjs"
+        },
+        "./shiki": {
+            "types": "./dist/shiki.d.ts",
+            "import": "./dist/shiki.mjs",
+            "default": "./dist/shiki.mjs"
         }
     },
     "files": [
