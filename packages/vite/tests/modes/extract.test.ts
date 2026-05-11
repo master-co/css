@@ -4,7 +4,7 @@
  *  C7 — `master-css:extractor.configResolved` previously did
  *       `context.extractor.options.include = []` unconditionally,
  *       silently wiping a user-supplied
- *       `extractorOptions: { include: [...] }` option. Now only
+ *       `extractor: { include: [...] }` option. Now only
  *       blanked when the user did NOT pass one.
  *
  *  C8 — `master-css:static.transform` accepted every non-`.css` module
@@ -54,7 +54,7 @@ describe('shared extractor plugins (C7 + C8 fixes)', () => {
         vi.clearAllMocks()
     })
 
-    describe('C7 — respects user-supplied extractorOptions.include', () => {
+    describe('C7 — respects user-supplied extractor.include', () => {
         test('default options: extractor.options.include is blanked', async () => {
             const ctx: any = {}
             const plugins = [
@@ -68,7 +68,7 @@ describe('shared extractor plugins (C7 + C8 fixes)', () => {
 
         test('user-supplied include is preserved (NOT blanked)', async () => {
             const ctx: any = {}
-            const pluginOptions = { extractorOptions: { include: ['node_modules/some-lib/dist/**/*.js'] } } as any
+            const pluginOptions = { extractor: { include: ['node_modules/some-lib/dist/**/*.js'] } } as any
             const plugins = [
                 ExtractorPlugin(pluginOptions, ctx),
                 UsageGraphPlugin(pluginOptions, ctx)
@@ -85,7 +85,7 @@ describe('shared extractor plugins (C7 + C8 fixes)', () => {
             // intent — both mean "trust Vite to feed me modules". Don't trip
             // on this edge case.
             const ctx: any = {}
-            const pluginOptions = { extractorOptions: { include: [] } } as any
+            const pluginOptions = { extractor: { include: [] } } as any
             const plugins = [
                 ExtractorPlugin(pluginOptions, ctx),
                 UsageGraphPlugin(pluginOptions, ctx)

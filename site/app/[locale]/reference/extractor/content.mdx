@@ -77,6 +77,27 @@ Typically you would use it with the following limitations:
 Exclude class names accidentally extracted by the scanning process.
 <DocProp defaultValue={options.excludeClasses} types={['string[]', 'RegExp[]']} />
 
+### `options.shakeNative`
+Prune native CSS class selector rules in linked stylesheets based on extracted class usage.
+<DocProp defaultValue={options.shakeNative} types={['boolean']} />
+
+When enabled, a stylesheet that imports the virtual Master CSS module becomes a linked native stylesheet:
+
+```css
+@import "virtual:master.css";
+@import "./styles/btn.css";
+
+.card {
+    color: red;
+}
+
+.unused {
+    color: blue;
+}
+```
+
+The virtual import is removed, local relative CSS imports are expanded, and native class rules are kept only when their class names are found by the extractor. Stylesheets that do not import the virtual module are left untouched.
+
 ### `extractLatentClasses()`
 Extract latent classes from string content.
 <DocFn>

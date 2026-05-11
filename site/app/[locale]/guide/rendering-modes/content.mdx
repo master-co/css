@@ -231,7 +231,7 @@ The extractor does not observe the DOM and does not execute application code. It
             plugins: [
                 masterCSS({
                     mode: 'extract',
-                    extractorOptions: {
+                    extractor: {
                         include: ['src/**/*.{html,js,jsx,ts,tsx,vue,svelte,astro,md,mdx}']
                     }
                 })

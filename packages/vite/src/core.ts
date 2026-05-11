@@ -63,7 +63,7 @@ export default function masterCSS(options?: PluginOptions): Plugin[] {
     ]
     const usesExtractor = options.mode !== null && (
         options.mode === 'extract' ||
-        options.extractorOptions?.shakeNative !== false
+        options.extractor?.shakeNative !== false
     )
     if (usesExtractor) {
         plugins.push(

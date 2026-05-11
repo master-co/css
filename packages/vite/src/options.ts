@@ -25,9 +25,9 @@ export interface PluginOptions {
     mode?: 'runtime' | 'extract' | 'progressive' | 'pre-render' | null
 
     /**
-     * Extractor options for the static extraction mode.
+     * Extractor options for class usage scanning and linked native CSS shaking.
      */
-    extractorOptions?: ExtractorOptions
+    extractor?: ExtractorOptions
 
     /**
      * Path to the Master CSS config file.
