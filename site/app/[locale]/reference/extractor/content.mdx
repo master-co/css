@@ -82,7 +82,6 @@ Prune native CSS class selector rules from a stylesheet by declaring `@master sh
 
 ```css
 @master shake;
-@import "virtual:master.css";
 @import "./styles/btn.css";
 
 .card {
@@ -94,7 +93,7 @@ Prune native CSS class selector rules from a stylesheet by declaring `@master sh
 }
 ```
 
-Local relative `.css` imports are expanded, `@master shake;` is removed from the compiled output, and native class rules are kept only when their class names are found by the extractor. The `virtual:master.css` import is optional for native shaking; use it only where the generated Master CSS should be inserted.
+Local relative `.css` imports are expanded, `@master shake;` is removed from the compiled output, and native class rules are kept only when their class names are found by the extractor. See [Shaking unused classes](/guide/shaking-unused-classes) for the full model.
 
 ### `extractLatentClasses()`
 Extract latent classes from string content.

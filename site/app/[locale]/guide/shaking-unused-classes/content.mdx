@@ -1,0 +1,325 @@
+## Overview [sr-only]
+Class extraction decides which classes are used. Native CSS shaking uses that usage graph to remove unused native CSS class rules from stylesheets that opt in with `@master shake;`.
+
+```txt
+source usage + @master shake stylesheet
+  -> used native class names
+  -> shaken native CSS
+```
+
+`@master shake;` is a stylesheet directive. It says that the current CSS entry should be managed by Master CSS for native class rule shaking.
+
+```css name=src/style.css
+@master shake;
+
+.card {
+    border: 1px solid rgb(0 0 0 / 12%);
+}
+
+.unused {
+    color: red;
+}
+```
+
+If source files use `card` but never use `unused`, the output keeps `.card` and removes `.unused`.
+
+```html name=src/index.html
+<!-- @MARK card -->
+<article class="card">Card</article>
+```
+
+```css name=generated.css
+.card {
+    border: 1px solid rgb(0 0 0 / 12%);
+}
+```
+
+Use [`Extracting latent classes`](/guide/extracting-latent-classes) for the source scanning model. This page focuses on what happens after native CSS opts into shaking.
+
+---
+
+## Shake directive
+Use `@master shake;` at the top level of a CSS entry whose native class rules should be usage-shaken.
+
+```css name=src/app.css
+@master shake;
+
+.app-shell {
+    min-height: 100dvh;
+}
+
+.debug-outline {
+    outline: 1px solid red;
+}
+```
+
+The directive is removed from the compiled output. It is not a browser-facing at-rule.
+
+```css name=output.css
+.app-shell {
+    min-height: 100dvh;
+}
+```
+
+Omit the directive when a stylesheet contains class names that are intentionally invisible to the extractor.
+
+```css name=src/vendor-overrides.css
+.cms-card {
+    color: red;
+}
+
+.injected-by-payment-widget {
+    color: blue;
+}
+```
+
+This stylesheet stays in the normal CSS pipeline and its native rules are preserved as written because it did not declare `@master shake;`.
+
+---
+
+## Import graph
+When a `.css` entry declares `@master shake;`, its local relative `.css` imports are expanded into the same shake graph.
+
+```css name=src/style.css
+@master shake;
+@import "./styles/cards.css";
+@import "./styles/buttons.css";
+
+.page {
+    display: grid;
+}
+```
+
+```css name=src/styles/cards.css
+.card {
+    border: 1px solid rgb(0 0 0 / 12%);
+}
+
+.unused-card {
+    color: red;
+}
+```
+
+```css name=src/styles/buttons.css
+.button {
+    display: inline-flex;
+}
+
+.unused-button {
+    color: blue;
+}
+```
+
+```tsx name=src/App.tsx
+export function App() {
+    return (
+        <main className="page">
+            <article className="card">
+                <button className="button">Save</button>
+            </article>
+        </main>
+    )
+}
+```
+
+The compiled native CSS keeps `.page`, `.card`, and `.button`, then removes `.unused-card` and `.unused-button`.
+
+```txt
+src/style.css
+  -> declares @master shake
+  -> imports ./styles/cards.css
+  -> imports ./styles/buttons.css
+  -> shaken as one root graph
+```
+
+Only local relative `.css` imports are expanded this way. Bare package imports, remote imports, and non-CSS imports stay in the bundler's normal CSS pipeline.
+
+---
+
+## Root scope
+`@master shake;` is root-scoped. The stylesheet directly processed by the integration is the root; imported files are dependencies of that root.
+
+```txt
+app/a/a.css
+  -> imports ../shared.css
+
+app/b/b.css
+  -> imports ../shared.css
+```
+
+```css name=app/a/a.css
+@master shake;
+@import "../shared.css";
+
+.a-page {
+    color: red;
+}
+```
+
+```css name=app/b/b.css
+@master shake;
+@import "../shared.css";
+
+.b-page {
+    color: blue;
+}
+```
+
+```css name=app/shared.css
+@master shake;
+
+.shared-card {
+    border: 1px solid rgb(0 0 0 / 12%);
+}
+
+.only-used-in-b {
+    color: blue;
+}
+```
+
+When `shared.css` is imported into `a.css`, the nested `@master shake;` is removed and does not create a second output. `shared.css` follows `a.css` as part of the `a.css` root graph.
+
+If `app/a/page.tsx` uses `a-page shared-card`, then the `a.css` output keeps `.a-page` and `.shared-card`, but removes `.b-page` and `.only-used-in-b`.
+
+If `app/b/page.tsx` uses `b-page shared-card only-used-in-b`, then the `b.css` output can keep `.b-page`, `.shared-card`, and `.only-used-in-b`.
+
+The same imported file can therefore be shaken differently under different roots. If `shared.css` is also imported directly by JavaScript or by a framework route, then `shared.css` becomes its own root and its own top-level `@master shake;` applies there.
+
+---
+
+## Rule filtering
+Native shaking filters class selector rules by detected usage. A class rule is kept when its selector branch references a class that is used.
+
+```css name=src/style.css
+@master shake;
+
+body {
+    margin: 0;
+}
+
+.card,
+.unused:hover {
+    border: 1px solid rgb(0 0 0 / 12%);
+}
+
+@media (width >= 48rem) {
+    .card .title {
+        font-weight: 700;
+    }
+
+    .debug-card {
+        outline: 1px solid red;
+    }
+}
+```
+
+```html name=src/index.html
+<!-- @MARK card title -->
+<article class="card">
+    <h2 class="title">Card</h2>
+</article>
+```
+
+The output keeps `body`, `.card`, and `.card .title`. It removes `.unused:hover` and `.debug-card`.
+
+```css name=output.css
+body {
+    margin: 0;
+}
+
+.card {
+    border: 1px solid rgb(0 0 0 / 12%);
+}
+
+@media (width >= 48rem) {
+    .card .title {
+        font-weight: 700;
+    }
+}
+```
+
+Rules without class selectors, such as `body`, `html`, `:root`, and keyframes, are not class-usage rules and are preserved. Empty at-rule blocks are removed after their unused class rules are pruned.
+
+---
+
+## Config references
+Shaken native CSS can reference variables and keyframes from the config graph rooted at `master.css`. When a kept native rule uses `var(--*)` or a configured animation name, Master CSS includes the required config output.
+
+```css name=master.css
+@master {
+    --color-primary: #175cff;
+
+    @keyframes fade-in {
+        from {
+            opacity: 0;
+        }
+
+        to {
+            opacity: 1;
+        }
+    }
+}
+```
+
+```css name=src/style.css
+@master shake;
+
+.notice {
+    color: var(--color-primary);
+    animation-name: fade-in;
+}
+
+.unused-notice {
+    color: var(--color-primary);
+}
+```
+
+```html name=src/index.html
+<!-- @MARK notice -->
+<p class="notice">Saved</p>
+```
+
+The kept `.notice` rule pulls in `--color-primary` and `@keyframes fade-in`. `.unused-notice` is removed, so it does not keep anything alive by itself.
+
+---
+
+## Included classes
+If a native class is used by a bounded external source, include it explicitly so shaking keeps the rule.
+
+```css name=src/dialog.css
+@master shake;
+
+.dialog-open {
+    overflow: hidden;
+}
+
+.dialog-closing {
+    pointer-events: none;
+}
+```
+
+```ts name=vite.config.ts
+export default defineConfig({
+    plugins: [
+        masterCSS({
+            extractor: {
+                includeClasses: [
+                    'dialog-open',
+                    'dialog-closing'
+                ]
+            }
+        })
+    ]
+})
+```
+
+Use this for known class contracts. Do not use it as a replacement for putting normal application classes in source.
+
+---
+
+## Checklist
+- Add `@master shake;` only to CSS entries whose native class rules should be pruned.
+- Remember that local relative `.css` imports follow the root's shaking decision.
+- Treat nested `@master shake;` in imported files as redundant under the parent root.
+- Use `includeClasses` for native classes used by bounded external systems.
+- Omit `@master shake;` for vendor, CMS, legacy, or third-party styles whose class usage is not visible to the extractor.

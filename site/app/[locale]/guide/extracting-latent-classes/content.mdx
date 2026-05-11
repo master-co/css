@@ -1,0 +1,298 @@
+## Overview [sr-only]
+Static extraction starts by finding latent classes. A latent class is a possible class name found in source text before Master CSS has proved whether it is a valid utility, configured class, or native class from a shaken stylesheet.
+
+```txt
+source text
+  -> latent class candidates
+  -> validated classes
+  -> generated CSS
+```
+
+The extractor does not run your app. It reads files as text, collects strings that may be classes, and lets the Master CSS engine decide which candidates can produce CSS.
+
+```html name=src/index.html
+<!-- @MARK card p:md bg:surface shadow:md -->
+<article class="card p:md bg:surface shadow:md">
+    <h2 class="font:lg font:semibold">Release notes</h2>
+</article>
+```
+
+The source contains `card`, `p:md`, `bg:surface`, `shadow:md`, `font:lg`, and `font:semibold`. Those candidates are validated against the active config. Valid classes generate CSS; invalid candidates are cached and ignored.
+
+```css name=generated.css
+@layer base,theme,preset,main,general;
+
+@layer general {
+    .p\:md {
+        padding: 1rem
+    }
+
+    .shadow\:md {
+        box-shadow: var(--shadow-md)
+    }
+}
+```
+
+The same extraction model is used by build integrations and by tools that call `@master/css-extractor` directly.
+
+---
+
+## Source boundaries
+The extractor only sees files inside its source boundary. Configure that boundary with `extractor.include`, `extractor.exclude`, and, when needed, `extractor.sources`.
+
+```ts name=vite.config.ts
+import { defineConfig } from 'vite'
+import masterCSS from '@master/css.vite'
+
+export default defineConfig({
+    plugins: [
+        masterCSS({
+            mode: 'extract',
+            extractor: {
+                include: [
+                    'src/**/*.{html,js,jsx,ts,tsx,vue,svelte,astro,md,mdx}'
+                ],
+                exclude: [
+                    'src/**/*.test.tsx',
+                    'src/**/*.stories.tsx'
+                ]
+            }
+        })
+    ]
+})
+```
+
+`include` broadly defines files that may contain classes. `exclude` removes known noise such as tests, generated files, build output, and vendor code. `sources` is for mandatory files that should be scanned even if they would otherwise be excluded.
+
+```ts name=vite.config.ts
+export default defineConfig({
+    plugins: [
+        masterCSS({
+            mode: 'extract',
+            extractor: {
+                include: ['app/**/*.{ts,tsx,mdx}'],
+                exclude: ['app/admin/**'],
+                sources: ['app/admin/critical-classes.ts']
+            }
+        })
+    ]
+})
+```
+
+In Vite, transformed modules are also fed to the extractor during development. That makes updates fast, but production correctness still depends on class names that exist in scanned source files or are explicitly included.
+
+---
+
+## Candidate extraction
+Extraction is intentionally broad. The scanner looks through markup, JSX, strings, template literals, object maps, and framework files for tokens that could be class names.
+
+```tsx name=src/Button.tsx
+const toneClasses = {
+    neutral: 'bg:surface fg:body',
+    danger: 'bg:red fg:white'
+}
+
+export function Button({ danger }: { danger?: boolean }) {
+    return (
+        <button className={`btn r:md px:md ${danger ? toneClasses.danger : toneClasses.neutral}`}>
+            Delete
+        </button>
+    )
+}
+```
+
+The extractor can see all complete class strings in this file:
+
+```txt
+bg:surface
+fg:body
+bg:red
+fg:white
+btn
+r:md
+px:md
+```
+
+It will also see unrelated words from source text. That is expected. Candidates only matter after validation.
+
+```tsx name=src/EmptyState.tsx
+export function EmptyState() {
+    return <p className="fg:muted">No invoices found.</p>
+}
+```
+
+Words such as `function`, `return`, `No`, `invoices`, and `found` may be discovered as candidates, but they do not match valid Master CSS rules or known native classes, so they do not produce output.
+
+---
+
+## Validation
+After candidate extraction, Master CSS validates each class against the active config graph. A candidate can be accepted in three common ways:
+
+- It is a built-in utility, such as `block`, `fg:red`, or `grid-cols:3`.
+- It is defined by your project config in `master.css`.
+- It matches a native class collected from a stylesheet that declares [`@master shake;`](/guide/shaking-unused-classes).
+
+```css name=master.css
+@master {
+    .btn {
+        @compose "inline-flex ai:center px:md h:40 r:md";
+    }
+
+    .hero-title {
+        @compose "m:0 font:5xl font:heavy fg:strong";
+    }
+}
+```
+
+```tsx name=src/Hero.tsx
+export function Hero() {
+    return (
+        <section className="grid gap:xl">
+            <h1 className="hero-title">Master CSS</h1>
+            <a className="btn bg:primary fg:white" href="/docs">Read docs</a>
+        </section>
+    )
+}
+```
+
+`hero-title` and `btn` are valid because the project config defines them. `grid`, `gap:xl`, `bg:primary`, and `fg:white` are validated through the utility engine.
+
+Configured classes are still on-demand. Defining `.btn` in `master.css` does not emit it by itself; `.btn` must appear in scanned source or be included through `includeClasses`.
+
+---
+
+## Complete classes
+Extraction works when the complete class string exists in source. It cannot infer class names from fragments, data returned by an API, or values assembled after startup.
+
+(x) Do not build class names from fragments.
+
+```tsx
+const className = 'bg:' + (error ? 'red' : 'green')
+```
+
+The complete strings `bg:red` and `bg:green` do not exist in source, so a static extractor cannot reliably generate either rule.
+
+(o) Write complete class names.
+
+```tsx
+const className = error ? 'bg:red' : 'bg:green'
+```
+
+For component variants, map dynamic inputs to complete class lists.
+
+(x) Avoid utility fragments in props.
+
+```tsx
+function Badge({ tone }: { tone: 'red' | 'green' | 'gray' }) {
+    return <span className={`bg:${tone} fg:white r:full px:xs`}>Status</span>
+}
+```
+
+(o) Use a static variant map.
+
+```tsx
+const toneClasses = {
+    danger: 'bg:red fg:white',
+    success: 'bg:green fg:white',
+    neutral: 'bg:gray-10 fg:gray-90'
+}
+
+function Badge({ tone }: { tone: keyof typeof toneClasses }) {
+    return <span className={`r:full px:xs ${toneClasses[tone]}`}>Status</span>
+}
+```
+
+This also gives each variant room to choose its own contrast, hover state, disabled treatment, and dark-mode behavior.
+
+---
+
+## Runtime values
+When the value is dynamic but the declaration shape is stable, keep the class static and pass the value through a CSS variable.
+
+```tsx
+function Headline({ size }: { size: string }) {
+    return (
+        <h1
+            className="font-size:$(headline-size) line-height:1.1"
+            style={{ '--headline-size': size } as React.CSSProperties}
+        >
+            Launch notes
+        </h1>
+    )
+}
+```
+
+The class `font-size:$(headline-size)` is complete and extractable. The runtime value lives in `--headline-size`, which is normal CSS.
+
+Use the same pattern for data-driven sizes, positions, and progress values.
+
+```tsx
+function Progress({ value }: { value: number }) {
+    return (
+        <div className="h:4x bg:surface r:full overflow:hidden">
+            <div
+                className="h:full w:$(progress) bg:primary ~width|fast|smooth"
+                style={{ '--progress': `${value}%` } as React.CSSProperties}
+            />
+        </div>
+    )
+}
+```
+
+If the class name itself only exists after the page is running, use [runtime rendering](/guide/rendering-modes#runtime-rendering) or [progressive rendering](/guide/rendering-modes#progressive-rendering). The browser runtime can observe the DOM and generate rules for classes that appear later.
+
+---
+
+## Included and excluded classes
+Use `includeClasses` for bounded classes that do not exist in scanned source. Common cases include CMS enums, database values, server-rendered fragments, or a third-party widget with a known class contract.
+
+```ts name=vite.config.ts
+export default defineConfig({
+    plugins: [
+        masterCSS({
+            mode: 'extract',
+            extractor: {
+                includeClasses: [
+                    'dialog-open',
+                    'translateY(-5):hover',
+                    'bg:primary@dark'
+                ]
+            }
+        })
+    ]
+})
+```
+
+`includeClasses` does not bypass validation. The class still needs to be a valid Master CSS class, a configured class from `master.css`, or a known native class from a shaken stylesheet.
+
+Use `excludeClasses` when broad scanning finds tokens that look like valid classes but should not generate CSS.
+
+```ts name=vite.config.ts
+export default defineConfig({
+    plugins: [
+        masterCSS({
+            mode: 'extract',
+            extractor: {
+                excludeClasses: [
+                    /^debug-/,
+                    'example-token'
+                ]
+            }
+        })
+    ]
+})
+```
+
+Keep both lists small. The most reliable extraction path is still complete class strings in source.
+
+---
+
+## Checklist
+- Put complete class names in scanned source.
+- Map variants to complete class strings.
+- Use CSS variables for runtime values.
+- Keep source globs broad enough to include framework files and content files.
+- Use `includeClasses` only for bounded classes the extractor cannot see.
+- Use `excludeClasses` for real false positives.
+- Use runtime or progressive rendering for classes created after startup.
+- Use [`@master shake;`](/guide/shaking-unused-classes) when native CSS class rules should be usage-shaken.
