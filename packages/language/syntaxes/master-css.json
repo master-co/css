@@ -176,14 +176,6 @@
                     }
                 },
                 {
-                    "match": "(?<![\\-])\\b(table\\-column\\-group|table\\-header\\-group|table\\-footer\\-group|table\\-row\\-group|center\\-content|table\\-caption|flex\\-col\\-reverse|flex\\-row\\-reverse|break\\-spaces|table\\-column|inline\\-block|inline\\-table|inline\\-flex|inline\\-grid|untouchable|capitalize|break\\-word|table\\-cell|flow\\-root|list\\-item|table\\-row|invisible|lowercase|uppercase|contents|overflow|flex\\-col|flex\\-row|sr\\-only|isolate|oblique|rounded|visible|max\\-vh|max\\-vw|min\\-vh|min\\-vw|center|hidden|italic|inline|middle|static|sticky|square|block|fixed|round|table|video|full|(?:flex(?!\\:(?:row|col|column|wrap|nowrap|\\d)(?:\\-reverse)?))|grid|hide|abs|rel|vh|vw)(?![\\-A-Za-z0-9])",
-                    "captures": {
-                        "1": {
-                            "name": "support.constant.property-value.css"
-                        }
-                    }
-                },
-                {
                     "match": "(\\-)?(\\d+\\.\\d+|\\.\\d+|\\d+)(%|cm|mm|q|in|pt|pc|px|em|rem|ex|rex|cap|rcap|ch|rch|ic|ric|lh|rlh|vw|svw|lvw|dvw|vh|svh|lvh|dvh|vi|svi|lvi|dvi|vb|svb|lvb|dvb|vmin|svmin|lvmin|dvmin|vmax|svmax|lvmax|dvmax|cqw|cqh|cqi|cqb|cqmin|cqmax|deg|grad|rad|turn|s|ms|hz|khz|dpi|dpcm|dppx|x(?![A-Za-z])|fr|db|st)?(x)(\\-)?(\\d+\\.\\d+|\\.\\d+|\\d+)(%|cm|mm|q|in|pt|pc|px|em|rem|ex|rex|cap|rcap|ch|rch|ic|ric|lh|rlh|vw|svw|lvw|dvw|vh|svh|lvh|dvh|vi|svi|lvi|dvi|vb|svb|lvb|dvb|vmin|svmin|lvmin|dvmin|vmax|svmax|lvmax|dvmax|cqw|cqh|cqi|cqb|cqmin|cqmax|deg|grad|rad|turn|s|ms|hz|khz|dpi|dpcm|dppx|x(?![A-Za-z])|fr|db|st)?(?![A-Za-z])",
                     "captures": {
                         "1": {
