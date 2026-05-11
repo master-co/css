@@ -145,7 +145,33 @@ function pushState(tokens: SemanticTokenItem[], classStart: number, token: strin
         if (char === '!') {
             pushToken(tokens, classStart + i, 1, 'operator')
             i++
-        } else if (char === '_' || char === '(' || char === ')' || char === '[' || char === ']' || char === ',') {
+        } else if (char === '_' || char === '>' || char === '+' || char === '~') {
+            pushToken(tokens, classStart + i, 1, 'operator')
+            i++
+            const match = token.slice(i).match(/^\*?[A-Za-z][\w-]*/)
+            if (match) {
+                pushToken(tokens, classStart + i, match[0].length, 'type')
+                i += match[0].length
+            }
+        } else if (char === '.' || char === '#') {
+            pushToken(tokens, classStart + i, 1, 'operator')
+            const nameStart = i + 1
+            const match = token.slice(nameStart).match(/^[\w-]+/)
+            if (match) {
+                pushToken(tokens, classStart + nameStart, match[0].length, char === '.' ? 'class' : 'variable')
+                i = nameStart + match[0].length
+            } else {
+                i = nameStart
+            }
+        } else if (char === '(' || char === ',') {
+            pushToken(tokens, classStart + i, 1, 'operator')
+            i++
+            const match = token.slice(i).match(/^\*?[A-Za-z][\w-]*/)
+            if (match) {
+                pushToken(tokens, classStart + i, match[0].length, 'type')
+                i += match[0].length
+            }
+        } else if (char === ')' || char === '[' || char === ']') {
             pushToken(tokens, classStart + i, 1, 'operator')
             i++
         } else if (char === '@') {
@@ -185,7 +211,9 @@ export default function renderSemanticTokens(this: CSSLanguageService, document:
         const rule = rules[0]
         if (!rule) continue
         if (rule.type === UtilityType.Static) {
-            pushToken(semanticTokens, classStart, raw.length, 'class')
+            const stateStart = raw.length - (rule.stateToken?.length ?? 0)
+            pushToken(semanticTokens, classStart, stateStart, 'class')
+            pushState(semanticTokens, classStart, token, stateStart)
             continue
         }
         pushKey(semanticTokens, classStart, rule.keyToken)

@@ -39,7 +39,7 @@ function renderTokens(content: string, ext: Parameters<typeof createDoc>[0] = 't
 
 test.concurrent('renders semantic tokens for class attributes', () => {
     const { tokens } = renderTokens(
-        '<div className="fg:brand:hover@sm block m:4x bg:rgb(0|0|0) w:10::scrollbar btn"></div>',
+        '<div className="fg:brand:hover@sm block block:hover block:state-name hidden_div::before:of(.active) m:4x bg:rgb(0|0|0) w:10::scrollbar btn"></div>',
         'tsx',
         {
             config: {
@@ -66,6 +66,16 @@ test.concurrent('renders semantic tokens for class attributes', () => {
         { text: 'hover', type: 'modifier', modifiers: [] },
         { text: '@sm', type: 'keyword', modifiers: [] },
         { text: 'block', type: 'class', modifiers: [] },
+        { text: ':', type: 'operator', modifiers: [] },
+        { text: 'state-name', type: 'modifier', modifiers: [] },
+        { text: 'hidden', type: 'class', modifiers: [] },
+        { text: '_', type: 'operator', modifiers: [] },
+        { text: 'div', type: 'type', modifiers: [] },
+        { text: '::', type: 'operator', modifiers: [] },
+        { text: 'before', type: 'modifier', modifiers: [] },
+        { text: 'of', type: 'modifier', modifiers: [] },
+        { text: '.', type: 'operator', modifiers: [] },
+        { text: 'active', type: 'class', modifiers: [] },
         { text: '4x', type: 'number', modifiers: [] },
         { text: 'rgb', type: 'function', modifiers: [] },
         { text: '::', type: 'operator', modifiers: [] },
@@ -90,7 +100,7 @@ test.concurrent('renders semantic tokens for master-css documents', () => {
 
 test.concurrent('renders semantic tokens for CSS-like values', () => {
     const { tokens } = renderTokens(
-        '<div className="h:$size-sm fg:$color-blue-50/.5 content:x::before bg:rgb(0|0|0) fg:red_:where(a:hover) font:mono_:is(code,pre)@base"></div>',
+        '<div className="h:$size-sm fg:$color-blue-50/.5 content:x::before bg:rgb(0|0|0) fg:red_:where(a:hover) font:mono_:is(code,pre)@base font:semibold_:headings font:semibold_:is(h1,h2,h3,h4,h5,h6)"></div>',
         'tsx',
         {
             config: {
@@ -115,10 +125,20 @@ test.concurrent('renders semantic tokens for CSS-like values', () => {
         { text: '_', type: 'operator', modifiers: [] },
         { text: 'where', type: 'modifier', modifiers: [] },
         { text: '(', type: 'operator', modifiers: [] },
+        { text: 'a', type: 'type', modifiers: [] },
         { text: 'hover', type: 'modifier', modifiers: [] },
         { text: ')', type: 'operator', modifiers: [] },
         { text: 'is', type: 'modifier', modifiers: [] },
+        { text: 'code', type: 'type', modifiers: [] },
         { text: ',', type: 'operator', modifiers: [] },
+        { text: 'pre', type: 'type', modifiers: [] },
+        { text: 'headings', type: 'modifier', modifiers: [] },
+        { text: 'h1', type: 'type', modifiers: [] },
+        { text: 'h2', type: 'type', modifiers: [] },
+        { text: 'h3', type: 'type', modifiers: [] },
+        { text: 'h4', type: 'type', modifiers: [] },
+        { text: 'h5', type: 'type', modifiers: [] },
+        { text: 'h6', type: 'type', modifiers: [] },
         { text: '@base', type: 'keyword', modifiers: [] }
     ]))
 })

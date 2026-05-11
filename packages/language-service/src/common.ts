@@ -17,7 +17,8 @@ export const SEMANTIC_TOKEN_TYPES = [
     'string',
     'keyword',
     'modifier',
-    'operator'
+    'operator',
+    'type'
 ] as const
 export const SEMANTIC_TOKEN_MODIFIERS = [
     'declaration',

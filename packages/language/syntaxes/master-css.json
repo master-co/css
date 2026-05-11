@@ -75,18 +75,7 @@
                     }
                 },
                 {
-                    "match": "(?<![^\\s;:{]+:[^\\s;]*)(?!(?:table\\-column\\-group|table\\-header\\-group|table\\-footer\\-group|table\\-row\\-group|center\\-content|table\\-caption|flex\\-col\\-reverse|flex\\-row\\-reverse|break\\-spaces|table\\-column|inline\\-block|inline\\-table|inline\\-flex|inline\\-grid|untouchable|capitalize|break\\-word|table\\-cell|flow\\-root|list\\-item|table\\-row|invisible|lowercase|uppercase|contents|overflow|flex\\-col|flex\\-row|sr\\-only|isolate|oblique|rounded|visible|max\\-vh|max\\-vw|min\\-vh|min\\-vw|center|hidden|italic|inline|middle|static|sticky|square|block|fixed|round|table|video|full|(?:flex(?!\\:(?:row|col|column|wrap|nowrap|\\d)(?:\\-reverse)?))|grid|hide|abs|rel|vh|vw)(?=:))([^\\s;:\"'`{(]+)(:)(?!:)",
-                    "captures": {
-                        "1": {
-                            "name": "support.type.property-name.css"
-                        },
-                        "2": {
-                            "name": "variable punctuation.separator.key-value.css"
-                        }
-                    }
-                },
-                {
-                    "match": "(?<![^\\s;:{]+:[^\\s;]*)(order|o)(:)(?=first|last)",
+                    "match": "(?<![^\\s;:{]+:[^\\s;]*)([^\\s;:\"'`{(]+)(:)(?!:)",
                     "captures": {
                         "1": {
                             "name": "support.type.property-name.css"
@@ -172,14 +161,6 @@
                         },
                         "2": {
                             "name": "variable punctuation.section.function.begin.bracket.round.css"
-                        }
-                    }
-                },
-                {
-                    "match": "(?<![\\-])\\b(table\\-column\\-group|table\\-header\\-group|table\\-footer\\-group|table\\-row\\-group|center\\-content|table\\-caption|flex\\-col\\-reverse|flex\\-row\\-reverse|break\\-spaces|table\\-column|inline\\-block|inline\\-table|inline\\-flex|inline\\-grid|untouchable|capitalize|break\\-word|table\\-cell|flow\\-root|list\\-item|table\\-row|invisible|lowercase|uppercase|contents|overflow|flex\\-col|flex\\-row|sr\\-only|isolate|oblique|rounded|visible|max\\-vh|max\\-vw|min\\-vh|min\\-vw|center|hidden|italic|inline|middle|static|sticky|square|block|fixed|round|table|video|full|(?:flex(?!\\:(?:row|col|column|wrap|nowrap|\\d)(?:\\-reverse)?))|grid|hide|abs|rel|vh|vw)(?![\\-A-Za-z0-9])",
-                    "captures": {
-                        "1": {
-                            "name": "support.constant.property-value.css"
                         }
                     }
                 },
@@ -325,40 +306,6 @@
                     }
                 },
                 {
-                    "match": "(?<![\\-])\\b(table\\-column\\-group|table\\-header\\-group|table\\-footer\\-group|table\\-row\\-group|center\\-content|table\\-caption|flex\\-col\\-reverse|flex\\-row\\-reverse|break\\-spaces|table\\-column|inline\\-block|inline\\-table|inline\\-flex|inline\\-grid|untouchable|capitalize|break\\-word|table\\-cell|flow\\-root|list\\-item|table\\-row|invisible|lowercase|uppercase|contents|overflow|flex\\-col|flex\\-row|sr\\-only|isolate|oblique|rounded|visible|max\\-vh|max\\-vw|min\\-vh|min\\-vw|center|hidden|italic|inline|middle|static|sticky|square|block|fixed|round|table|video|full|(?:flex(?!\\:(?:row|col|column|wrap|nowrap|\\d)(?:\\-reverse)?))|grid|hide|abs|rel|vh|vw)(?![\\-A-Za-z0-9])(\\:{2})(\\-?[A-Za-z][\\w-]*)(\\()?",
-                    "captures": {
-                        "1": {
-                            "name": "support.constant.property-value.css"
-                        },
-                        "2": {
-                            "name": "entity.other.attribute-name.pseudo-element.css punctuation.definition.entity.css"
-                        },
-                        "3": {
-                            "name": "entity.other.attribute-name.pseudo-element.css"
-                        },
-                        "4": {
-                            "name": "variable punctuation.section.function.begin.bracket.round.css"
-                        }
-                    }
-                },
-                {
-                    "match": "(?<![\\-])\\b(table\\-column\\-group|table\\-header\\-group|table\\-footer\\-group|table\\-row\\-group|center\\-content|table\\-caption|flex\\-col\\-reverse|flex\\-row\\-reverse|break\\-spaces|table\\-column|inline\\-block|inline\\-table|inline\\-flex|inline\\-grid|untouchable|capitalize|break\\-word|table\\-cell|flow\\-root|list\\-item|table\\-row|invisible|lowercase|uppercase|contents|overflow|flex\\-col|flex\\-row|sr\\-only|isolate|oblique|rounded|visible|max\\-vh|max\\-vw|min\\-vh|min\\-vw|center|hidden|italic|inline|middle|static|sticky|square|block|fixed|round|table|video|full|(?:flex(?!\\:(?:row|col|column|wrap|nowrap|\\d)(?:\\-reverse)?))|grid|hide|abs|rel|vh|vw)(?![\\-A-Za-z0-9])(\\:)(?!:)(\\-?[A-Za-z][\\w-]*)(\\()?",
-                    "captures": {
-                        "1": {
-                            "name": "support.constant.property-value.css"
-                        },
-                        "2": {
-                            "name": "entity.other.attribute-name.pseudo-class.css punctuation.definition.entity.css"
-                        },
-                        "3": {
-                            "name": "entity.other.attribute-name.pseudo-class.css"
-                        },
-                        "4": {
-                            "name": "variable punctuation.section.function.begin.bracket.round.css"
-                        }
-                    }
-                },
-                {
                     "match": "(\\:{2})(\\-?[A-Za-z][\\w-]*)(\\()?",
                     "captures": {
                         "1": {
@@ -491,23 +438,7 @@
                     }
                 },
                 {
-                    "match": "(?<=[^\\s]+@)(charset|color\\-profile|container|counter\\-style|document|font\\-face|font\\-feature\\-values|font\\-palette\\-values|import|keyframes|layer|media|namespace|page|property|supports)",
-                    "captures": {
-                        "1": {
-                            "name": "keyword.control.at-rule"
-                        }
-                    }
-                },
-                {
-                    "match": "(?<=[^\\s]+@supports[^\\s])(selector|font\\-format)",
-                    "captures": {
-                        "1": {
-                            "name": "keyword.control.at-rule"
-                        }
-                    }
-                },
-                {
-                    "match": "(?<=[^\\s]+@(?:charset|color\\-profile|container|counter\\-style|document|font\\-face|font\\-feature\\-values|font\\-palette\\-values|import|keyframes|layer|media|namespace|page|property|supports)[^\\s]*)(\\|)",
+                    "match": "(?<=[^\\s]+@[^\\s]*)(\\|)",
                     "captures": {
                         "1": {
                             "name": "keyword.operator.css"
@@ -515,15 +446,7 @@
                     }
                 },
                 {
-                    "match": "(?<=[^\\s]+@(?:charset|color\\-profile|container|counter\\-style|document|font\\-face|font\\-feature\\-values|font\\-palette\\-values|import|keyframes|layer|media|namespace|page|property|supports)[^\\s]*)(not|and|or)",
-                    "captures": {
-                        "1": {
-                            "name": "keyword.operator.logical.feature"
-                        }
-                    }
-                },
-                {
-                    "match": "(?<=[^\\s]+@(?:charset|color\\-profile|container|counter\\-style|document|font\\-face|font\\-feature\\-values|font\\-palette\\-values|import|keyframes|layer|media|namespace|page|property|supports)[^\\s]*)(\\()",
+                    "match": "(?<=[^\\s]+@[^\\s]*)(\\()",
                     "captures": {
                         "1": {
                             "name": "variable punctuation.definition.parameters.begin.bracket.round.css"
@@ -531,7 +454,7 @@
                     }
                 },
                 {
-                    "match": "(?<=[^\\s]+@(?:charset|color\\-profile|container|counter\\-style|document|font\\-face|font\\-feature\\-values|font\\-palette\\-values|import|keyframes|layer|media|namespace|page|property|supports)[^\\s]*)(\\))",
+                    "match": "(?<=[^\\s]+@[^\\s]*)(\\))",
                     "captures": {
                         "1": {
                             "name": "variable punctuation.definition.parameters.end.bracket.round.css"
@@ -539,7 +462,7 @@
                     }
                 },
                 {
-                    "match": "(?<=[^\\s]+@(?:charset|color\\-profile|container|counter\\-style|document|font\\-face|font\\-feature\\-values|font\\-palette\\-values|import|keyframes|layer|media|namespace|page|property|supports)[^\\s]*)([^\\s():]+)(:)",
+                    "match": "(?<=[^\\s]+@[^\\s]*)([^\\s():]+)(:)",
                     "captures": {
                         "1": {
                             "name": "support.type.property-name"
