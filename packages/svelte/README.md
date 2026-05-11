@@ -54,3 +54,22 @@
 
 ## Documentation
 Check out the official [documentation](https://rc.css.master.co/guide/installation/svelte).
+
+## Usage
+
+```ts name=vite.config.ts
+import { sveltekit } from '@sveltejs/kit/vite'
+import { defineConfig } from 'vite'
+import masterCSS from '@master/css.svelte/vite'
+
+export default defineConfig({
+    plugins: [
+        sveltekit(),
+        masterCSS()
+    ]
+})
+```
+
+```ts name=src/hooks.server.ts
+export { default as handle } from '@master/css.svelte/hooks.server'
+```

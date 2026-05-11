@@ -3,6 +3,7 @@ import { svelteAdapter } from './adapter.js'
 
 export default function masterCSS(options: PluginOptions = {}) {
     return baseVite({
+        mode: 'progressive',
         ...options,
         extractor: {
             ...options.extractor,

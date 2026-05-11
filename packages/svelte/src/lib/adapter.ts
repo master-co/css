@@ -24,6 +24,10 @@ interface SvelteMarkupNode {
     children?: SvelteMarkupNode[]
 }
 
+function isSvelteSource(source: string) {
+    return /\.svelte(?:\?|$)/.test(source) && !/[?&]type=style(?:&|$)/.test(source)
+}
+
 function addClassString(classes: Set<string>, value: string | undefined) {
     if (!value) return
     for (const className of extractLatentClasses(value)) {
@@ -83,7 +87,7 @@ export function extractSvelteClasses(source: string, content: string): string[] 
 export function svelteAdapter(): SourceAdapter {
     return {
         name: 'svelte',
-        test: /\.svelte(?:\?|$)/,
+        test: isSvelteSource,
         extract({ source, content }: SourceAdapterInput) {
             return extractSvelteClasses(source, content)
         }

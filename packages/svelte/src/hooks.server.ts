@@ -1,10 +1,3 @@
-import { render } from '@master/css-server'
-import type { Handle } from '@sveltejs/kit'
+import { createMasterCSSHandle } from './lib/server.js'
 
-const handle: Handle = async ({ event, resolve }) => {
-    return await resolve(event, {
-        transformPageChunk: ({ html }) => render(html).html
-    })
-}
-
-export default handle
+export const handle = createMasterCSSHandle()

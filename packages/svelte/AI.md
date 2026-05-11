@@ -2,20 +2,22 @@
 
 ## Responsibility
 
-This package provides a Svelte runtime provider, a helper for accessing runtime context, and a SvelteKit server hook that renders CSS through `@master/css-server`.
+This package provides a Svelte runtime provider, a helper for accessing runtime context, a Svelte source adapter, a Vite wrapper, and a SvelteKit server hook that injects early streamed CSS through `@master/css-server`.
 
 ## Main Files
 
 - `src/lib/CSSRuntimeProvider.svelte`
 - `src/lib/get-css-runtime.ts`
 - `src/lib/index.ts`
-- `src/hooks.server.ts`
+- `src/lib/server.ts`
+- `src/lib/hooks.server.ts`
+- `src/lib/vite.ts`
 
 ## Risks
 
 - Context key consistency.
 - Svelte package output behavior.
-- Server hook rendering all page chunks.
+- Server hook streaming behavior and early CSS injection.
 - Runtime cleanup on unmount.
 
 ## Rules
@@ -29,6 +31,6 @@ This package provides a Svelte runtime provider, a helper for accessing runtime 
 ```sh
 pnpm --filter @master/css.svelte build
 pnpm --filter @master/css.svelte check
+pnpm --filter @master/css.svelte test
 pnpm --filter @master/css.svelte lint
 ```
-

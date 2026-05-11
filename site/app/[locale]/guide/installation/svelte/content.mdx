@@ -15,11 +15,11 @@
     <Step $row>
         <StepL>
             ### <StepNum />Install Master CSS
-            Install `@master/css.vite` plugin into your project.
+            Install `@master/css.svelte` into your project.
         </StepL>
         <StepR>
             ```bash action=install
-            @master/css.vite@rc
+            @master/css.svelte@rc
             ```
         </StepR>
     </Step>
@@ -37,18 +37,18 @@
     <Step $row>
         <StepL>
             ### <StepNum />Set up Master CSS
-            Add a `masterCSS` vite plugin in `vite.config.js`.
-
-            - Set `options.mode` to `progressive`
+            Add the Master CSS Svelte Vite plugin in `vite.config.js`. The Svelte integration uses `progressive` mode by default.
         </StepL>
         <StepR>
             ```js name=vite.config.js
+            import { sveltekit } from '@sveltejs/kit/vite'
             import { defineConfig } from 'vite'
-            import masterCSS from '@master/css.vite' // [!code highlight]
+            import masterCSS from '@master/css.svelte/vite' // [!code highlight]
 
             export default defineConfig({
                 plugins: [
-                    masterCSS({ mode: 'progressive' }) // [!code highlight]
+                    sveltekit(),
+                    masterCSS() // [!code highlight]
                 ]
             })
             ```
@@ -56,33 +56,14 @@
     </Step>
     <Step $row>
         <StepL>
-            ### <StepNum />Add client types
-            Add the Vite client types and Master CSS Vite client types before importing `master.css?master-css-config` from TypeScript.
-        </StepL>
-        <StepR>
-            ```ts name=src/app.d.ts
-            /// <reference types="vite/client" />
-            /// <reference types="@master/css.vite/client" />
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
             ### <StepNum />Set up Master CSS renderer
-            Create a `src/hooks.server.ts` and use the `render()` to scan the rendered HTML of the Svelte pages, extract class names, generate CSS rules, and inject the CSS text.
+            Create a `src/hooks.server.ts` and export the Master CSS handle. It injects early streamed CSS before `</head>`, while the client runtime hydrates classes discovered after the head is flushed.
+
+            If the project already has a server `handle`, compose it with SvelteKit's `sequence()`.
         </StepL>
         <StepR>
             ```ts name=src/hooks.server.ts
-            import { render } from '@master/css-server'
-            import config from '../master.css?master-css-config'
-
-            /** @type {import('@sveltejs/kit').Handle} */
-            export async function handle({ event, resolve }) {
-                return await resolve(event, {
-                    transformPageChunk: ({ html }) =>
-                        render(html, config).html
-                })
-            }
+            export { default as handle } from '@master/css.svelte/hooks.server'
             ```
         </StepR>
     </Step>

@@ -172,6 +172,14 @@ describe('shared extractor plugins (C7 + C8 fixes)', () => {
             expect(calls).toEqual([])
         })
 
+        test('framework style subrequests are not extracted', async () => {
+            const calls = await drive([
+                '/proj/src/App.svelte?svelte&type=style&lang.css',
+                '/proj/src/App.vue?vue&type=style&index=0&lang.css',
+            ])
+            expect(calls).toEqual([])
+        })
+
         test('build transformIndexHtml feeds HTML to the extractor', async () => {
             const ctx: any = {}
             const plugins = [

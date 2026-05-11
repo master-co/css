@@ -11,8 +11,7 @@
         "lint": "eslint"
     },
     "dependencies": {
-        "@master/css-server": "workspace:^",
-        "@master/css.vite": "workspace:^"
+        "@master/css.svelte": "workspace:^"
     },
     "devDependencies": {
         "@eslint/compat": "^2.0.5",

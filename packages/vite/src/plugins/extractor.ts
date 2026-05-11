@@ -10,6 +10,11 @@ import type { PluginOptions } from '../options'
 // virtual chunk through the regex-heavy `extractLatentClasses`. The trailing
 // `(?:\?|$)` lets through Vite's `?import` / `?url` / `?raw` suffixes.
 export const EXTRACTABLE_EXT = /\.(html|js|jsx|mjs|cjs|ts|tsx|mts|cts|svelte|astro|vue|md|mdx|pug|php)(?:\?|$)/
+const STYLE_QUERY = /[?&]type=style(?:&|$)/
+
+export function isExtractableSource(id: string) {
+    return EXTRACTABLE_EXT.test(id) && !STYLE_QUERY.test(id)
+}
 
 export function ExtractorPlugin(options: PluginOptions, context: PluginContext): Plugin {
     return {
@@ -56,7 +61,7 @@ export function UsageGraphPlugin(_options: PluginOptions, context: PluginContext
             if (id === context.extractor.resolvedVirtualModuleId) return
             // Only feed Master-CSS-bearing source extensions to the extractor.
             // Linked CSS files are handled by the stylesheet plugin instead.
-            if (!EXTRACTABLE_EXT.test(id)) return
+            if (!isExtractableSource(id)) return
             await context.extractor?.insert(id, code)
         },
         transformIndexHtml: {
