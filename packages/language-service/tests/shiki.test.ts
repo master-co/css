@@ -152,3 +152,57 @@ test.concurrent('applies semantic decorations in the Shiki tokens hook', () => {
         })
     ]))
 })
+
+test.concurrent('uses native CSS syntax styles for selector semantic tokens', () => {
+    const code = 'block>li:hover@md'
+    const options: MasterCSSShikiCodeToHastOptions = {
+        lang: 'mcss'
+    }
+    const transformer = transformerMasterCSSSemanticTokens()
+    const transformedTokens = transformer.tokens.call({
+        source: code,
+        options,
+        codeToTokens: () => ({
+            tokens: [[
+                { content: 'div', offset: 0, htmlStyle: { color: 'type' } },
+                { content: '>', offset: 3, htmlStyle: { color: 'selector-operator' } },
+                { content: 'li', offset: 4, htmlStyle: { color: 'type' } },
+                { content: ':', offset: 6, htmlStyle: { color: 'pseudo-operator' } },
+                { content: 'hover', offset: 7, htmlStyle: { color: 'modifier' } }
+            ]]
+        })
+    }, [[{ content: code, offset: 0, htmlStyle: { color: 'key' } }]])
+    const tokens = transformedTokens?.flat().map((token) => ({
+        content: token.content,
+        htmlStyle: token.htmlStyle,
+        className: token.htmlAttrs?.class
+    }))
+
+    expect(tokens).toEqual(expect.arrayContaining([
+        {
+            content: 'block',
+            htmlStyle: { color: 'key' },
+            className: 'mcss-semantic mcss-semantic-class'
+        },
+        {
+            content: '>',
+            htmlStyle: { color: 'selector-operator' },
+            className: 'mcss-semantic mcss-semantic-operator'
+        },
+        {
+            content: 'li',
+            htmlStyle: { color: 'type' },
+            className: 'mcss-semantic mcss-semantic-type'
+        },
+        {
+            content: ':',
+            htmlStyle: { color: 'pseudo-operator' },
+            className: 'mcss-semantic mcss-semantic-operator'
+        },
+        {
+            content: 'hover',
+            htmlStyle: { color: 'modifier' },
+            className: 'mcss-semantic mcss-semantic-modifier'
+        }
+    ]))
+})

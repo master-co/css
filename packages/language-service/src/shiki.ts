@@ -36,9 +36,14 @@ export interface MasterCSSShikiCodeToHastOptions {
     [key: string]: unknown
 }
 
+export interface MasterCSSShikiCodeToTokensResult {
+    tokens: ShikiToken[][]
+}
+
 export interface MasterCSSShikiTransformerContext {
     source: string
     options: MasterCSSShikiCodeToHastOptions
+    codeToTokens?: (code: string, options: MasterCSSShikiCodeToHastOptions) => MasterCSSShikiCodeToTokensResult
 }
 
 export interface MasterCSSShikiTransformer {
@@ -97,6 +102,14 @@ export interface MasterCSSShikiSemanticTokensOptions {
      * visually aligned when they share the same semantic type.
      */
     semanticTokenStyles?: MasterCSSShikiSemanticTokenStyles
+    /**
+     * Reuse Shiki's native CSS grammar styles for selector-like semantic tokens
+     * when possible, so Master CSS selectors stay aligned with CSS/SASS without
+     * hardcoded theme colors.
+     *
+     * @default true
+     */
+    matchCSSSyntaxStyles?: boolean
 }
 
 const shikiLanguageIds: Record<string, string> = {
@@ -229,7 +242,8 @@ function mergeClassProperty(current: unknown, next: unknown) {
 
 function applySemanticDecorationToToken(
     token: ShikiToken,
-    decorations: MasterCSSShikiSemanticDecoration[]
+    decorations: MasterCSSShikiSemanticDecoration[],
+    resolveSyntaxStyle?: (token: ShikiToken, decoration: MasterCSSShikiSemanticDecoration, decorations: MasterCSSShikiSemanticDecoration[]) => Record<string, string> | undefined
 ) {
     const tokenStart = token.offset
     const tokenEnd = token.offset + token.content.length
@@ -246,6 +260,11 @@ function applySemanticDecorationToToken(
         const style = parseStyleProperty(properties.style)
         if (style) {
             Object.assign(htmlStyle, style)
+        } else {
+            const syntaxStyle = resolveSyntaxStyle?.(token, decoration, decorations)
+            if (syntaxStyle) {
+                Object.assign(htmlStyle, syntaxStyle)
+            }
         }
         for (const [name, value] of Object.entries(properties)) {
             if (name === 'class' || name === 'style' || value === undefined) continue
@@ -257,6 +276,57 @@ function applySemanticDecorationToToken(
         ...token,
         htmlAttrs,
         htmlStyle
+    }
+}
+
+function cloneStyle(style: unknown) {
+    return style && typeof style === 'object' && !Array.isArray(style)
+        ? Object.fromEntries(Object
+            .entries(style)
+            .filter((entry): entry is [string, string] => typeof entry[1] === 'string'))
+        : undefined
+}
+
+function findTokenStyle(tokens: ShikiToken[], content: string, offset = 0) {
+    let seen = 0
+    for (const token of tokens) {
+        if (token.content !== content) continue
+        if (seen++ < offset) continue
+        return cloneStyle(token.htmlStyle)
+    }
+}
+
+function isPseudoOperator(token: ShikiToken, decorations: MasterCSSShikiSemanticDecoration[]) {
+    return (token.content === ':' || token.content === '::')
+        && decorations.some((decoration) => decoration.start === token.offset + token.content.length && decoration.type === 'modifier')
+}
+
+function createCSSSyntaxStyleResolver(
+    context: MasterCSSShikiTransformerContext,
+    options: MasterCSSShikiSemanticTokensOptions
+) {
+    if (options.matchCSSSyntaxStyles === false || typeof context.codeToTokens !== 'function') return
+    try {
+        const { lang: _lang, decorations: _decorations, transformers: _transformers, ...tokenOptions } = context.options
+        const cssTokens = context.codeToTokens('div>li:hover{color:red}', {
+            ...tokenOptions,
+            lang: 'css'
+        }).tokens.flat()
+        const typeStyle = findTokenStyle(cssTokens, 'li') ?? findTokenStyle(cssTokens, 'div')
+        const selectorOperatorStyle = findTokenStyle(cssTokens, '>')
+        const pseudoOperatorStyle = findTokenStyle(cssTokens, ':')
+        const modifierStyle = findTokenStyle(cssTokens, 'hover')
+
+        return (token: ShikiToken, decoration: MasterCSSShikiSemanticDecoration, decorations: MasterCSSShikiSemanticDecoration[]) => {
+            if (decoration.type === 'type') return typeStyle
+            if (decoration.type === 'modifier') return modifierStyle
+            if (decoration.type === 'operator') {
+                if (token.content === '>') return selectorOperatorStyle
+                if (isPseudoOperator(token, decorations)) return pseudoOperatorStyle
+            }
+        }
+    } catch {
+        return
     }
 }
 
@@ -333,7 +403,8 @@ export function transformerMasterCSSSemanticTokens(
             })
             if (!decorations.length) return
             const tokensSplitAtSemanticBoundaries = splitTokensAtOffsets(tokens, decorations.flatMap(({ start, end }) => [start, end]))
-            return tokensSplitAtSemanticBoundaries.map((line) => line.map((token) => applySemanticDecorationToToken(token, decorations)))
+            const resolveSyntaxStyle = createCSSSyntaxStyleResolver(this, options)
+            return tokensSplitAtSemanticBoundaries.map((line) => line.map((token) => applySemanticDecorationToToken(token, decorations, resolveSyntaxStyle)))
         }
     }
 }
