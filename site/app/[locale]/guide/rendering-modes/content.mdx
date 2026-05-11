@@ -3,6 +3,16 @@ import CriticalCSSBenchmark from '../introduction/components/CriticalCSSBenchmar
 ## Overview [sr-only]
 <CriticalCSSBenchmark />
 
+Master CSS uses integrations like Vite to further break down the rendering modes, allowing you to start the project with zero configuration.
+
+| Mode                      | Description                                                                                                                                           |
+|---------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `'runtime'`               | Detects the application's entry file, automatically injects the initialization of `CSSRuntime`, and imports the `config` code.                                      |
+| `'extract'`               | Scans source files, supports JavaScript or CSS imports of the generated virtual stylesheet, and generates CSS from the config graph rooted at `master.css`.          |
+| `'pre-render'`            | Renders all `*.html` dependencies and injects CSS internally. This mode may be integrated with other SSR capabilities.                                              |
+| `'progressive'`           | Combines `runtime` and `pre-render` modes for first-render CSS plus client-side updates.                                                                            |
+
+
 ---
 
 ## Runtime Rendering
@@ -338,18 +348,6 @@ const className = error ? 'bg:red' : 'bg:green'
 Write complete class names in source, or pass runtime values through CSS variables while keeping the Master CSS class itself complete. Use [Runtime Rendering](#runtime-rendering) when class names are created only after the page is running.
 
 Source-glob scanning is the production correctness baseline. Some integrations also scan files as they pass through the module graph for faster incremental updates, but the final build still depends on statically discoverable class strings.
-
----
-
-## Available Modes
-In addition to the three main rendering modes mentioned above, Master CSS also uses integrations like Vite to further break down the rendering modes, allowing you to start the project with zero configuration.
-
-| Mode                      | Description                                                                                                                                           |
-|---------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `'runtime'`               | Detects the application's entry file, automatically injects the initialization of `CSSRuntime`, and imports the `config` code.                                      |
-| `'extract'`               | Scans source files, supports JavaScript or CSS imports of the generated virtual stylesheet, and generates CSS from the config graph rooted at `master.css`.          |
-| `'pre-render'`            | Renders all `*.html` dependencies and injects CSS internally. This mode may be integrated with other SSR capabilities.                                              |
-| `'progressive'`           | Combines `runtime` and `pre-render` modes for first-render CSS plus client-side updates.                                                                            |
 
 ---
 
