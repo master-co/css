@@ -88,6 +88,38 @@ test.concurrent('renders semantic tokens for master-css documents', () => {
     ]))
 })
 
+test.concurrent('renders semantic tokens for CSS-like values', () => {
+    const { tokens } = renderTokens(
+        '<div className="h:$size-sm fg:$color-blue-50/.5 content:x::before bg:rgb(0|0|0) fg:red_:where(a:hover)"></div>',
+        'tsx',
+        {
+            config: {
+                variables: [
+                    { key: 'size-sm', value: 16 },
+                    { namespace: 'color', key: 'blue-50', value: 'oklch(60% 0.2 250)' }
+                ]
+            }
+        }
+    )
+
+    expect(tokens).toEqual(expect.arrayContaining([
+        { text: '$size-sm', type: 'variable', modifiers: [] },
+        { text: '$color-blue-50', type: 'variable', modifiers: [] },
+        { text: '/', type: 'operator', modifiers: [] },
+        { text: '.5', type: 'number', modifiers: [] },
+        { text: 'x', type: 'string', modifiers: [] },
+        { text: '::', type: 'operator', modifiers: [] },
+        { text: 'before', type: 'modifier', modifiers: [] },
+        { text: 'rgb', type: 'function', modifiers: [] },
+        { text: '|', type: 'operator', modifiers: [] },
+        { text: '_', type: 'operator', modifiers: [] },
+        { text: 'where', type: 'modifier', modifiers: [] },
+        { text: '(', type: 'operator', modifiers: [] },
+        { text: 'hover', type: 'modifier', modifiers: [] },
+        { text: ')', type: 'operator', modifiers: [] }
+    ]))
+})
+
 test.concurrent('returns no semantic tokens when disabled', () => {
     const doc = createDoc('tsx', '<div className="fg:red"></div>')
     const languageService = new CSSLanguageService({

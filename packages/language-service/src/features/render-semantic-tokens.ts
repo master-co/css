@@ -70,9 +70,17 @@ function pushKey(tokens: SemanticTokenItem[], start: number, keyToken?: string) 
 
 function pushValueComponent(tokens: SemanticTokenItem[], classStart: number, valueStart: number, valueText: string, component: ValueComponent) {
     switch (component.type) {
-        case 'variable':
-            pushToken(tokens, valueStart, valueText.length, 'variable')
+        case 'variable': {
+            const alphaStart = valueText.lastIndexOf('/')
+            if (component.alpha !== undefined && alphaStart > 0) {
+                pushToken(tokens, valueStart, alphaStart, 'variable')
+                pushToken(tokens, valueStart + alphaStart, 1, 'operator')
+                pushToken(tokens, valueStart + alphaStart + 1, valueText.length - alphaStart - 1, 'number')
+            } else {
+                pushToken(tokens, valueStart, valueText.length, 'variable')
+            }
             break
+        }
         case 'number':
             pushToken(tokens, valueStart, valueText.length, 'number')
             break
@@ -135,6 +143,9 @@ function pushState(tokens: SemanticTokenItem[], classStart: number, token: strin
     for (let i = stateStart; i < token.length;) {
         const char = token[i]
         if (char === '!') {
+            pushToken(tokens, classStart + i, 1, 'operator')
+            i++
+        } else if (char === '_' || char === '(' || char === ')' || char === '[' || char === ']') {
             pushToken(tokens, classStart + i, 1, 'operator')
             i++
         } else if (char === '@') {

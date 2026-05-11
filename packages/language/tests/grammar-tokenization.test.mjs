@@ -74,6 +74,8 @@ const coreHighlighter = await createHighlighter({
 
 const jsInjection = clone(readGrammar('master-css.injection-js.json'))
 jsInjection.injectTo = ['source.js']
+const classInjection = clone(readGrammar('master-css.injection-class.json'))
+classInjection.injectTo = ['text.html.basic']
 const reactInjection = clone(readGrammar('master-css.injection-react.json'))
 reactInjection.injectTo = ['source.tsx']
 const cssInjection = clone(readGrammar('master-css.injection-css.json'))
@@ -82,9 +84,11 @@ const embeddedHighlighter = await createHighlighter({
     themes: [theme],
     langs: [
         'css',
+        'html',
         'js',
         'tsx',
         coreGrammar,
+        classInjection,
         cssInjection,
         jsInjection,
         reactInjection
@@ -105,6 +109,7 @@ test('core grammar highlights grouped declarations and separators', () => {
     assertTokenScope(tokens, '{', 'punctuation.section.property-list.begin')
     assertTokenScope(tokens, 'fg', 'support.type.property-name.css')
     assertTokenScope(tokens, ';', 'master-css.class.split')
+    assertTokenScope(tokens, ';', 'punctuation.terminator.rule.css')
     assertTokenScope(tokens, 'bg', 'support.type.property-name.css')
     assertTokenScope(tokens, '}', 'punctuation.section.property-list.end')
 })
@@ -125,10 +130,23 @@ test('core grammar highlights functions, numeric values, units, and value separa
     const tokens = tokensFor(coreHighlighter, 'translate(10x|20px)', 'master-css')
     assertTokenScope(tokens, 'translate', 'support.function.misc.css')
     assertTokenScope(tokens, '10', 'constant.numeric.css')
-    assertTokenScope(tokens, 'x', 'keyword.other.unit')
-    assertTokenScope(tokens, '|', 'comment.block')
+    assertTokenScope(tokens, 'x|', 'keyword.other.unit')
+    assertTokenScope(tokens, 'x|', 'keyword.operator.css')
     assertTokenScope(tokens, '20', 'constant.numeric.css')
     assertTokenScope(tokens, 'px', 'keyword.other.unit')
+})
+
+test('core grammar aligns strings and selector separators with CSS-like scopes', () => {
+    const stringValue = tokensFor(coreHighlighter, 'content:"hello"::before content:\'x\'::after', 'master-css')
+    assertTokenScope(stringValue, '"hello"', 'string.quoted.double.html')
+    assertTokenScope(stringValue, '\'x\'', 'string.quoted.single.html')
+
+    const selector = tokensFor(coreHighlighter, 'fg:red_:where(a:hover) bg:blue-5:has(:checked)', 'master-css')
+    assertTokenScope(selector, '_', 'keyword.operator.combinator')
+    assertTokenScope(selector, 'where', 'entity.other.attribute-name.pseudo-class.css')
+    assertTokenScope(selector, 'a', 'entity.name.tag.css')
+    assertTokenScope(selector, 'has', 'entity.other.attribute-name.pseudo-class.css')
+    assertTokenScope(selector, ')', 'punctuation.section.function.end.bracket.round.css')
 })
 
 test('core grammar highlights plain variable references as value tokens', () => {
@@ -154,6 +172,7 @@ test('core grammar treats x as a unit only before non-letter boundaries', () => 
 
     const sizePair = tokensFor(coreHighlighter, 'size:10x20', 'master-css')
     assertTokenScope(sizePair, 'x', 'master-css.class.x')
+    assertTokenScope(sizePair, 'x', 'keyword.operator.css')
 
     const mediaTokenName = tokensFor(coreHighlighter, '@media(width:2xl)', 'master-css')
     assertTokenScope(mediaTokenName, '2xl', 'support.constant.property-value.css')
@@ -213,6 +232,27 @@ test('React injection highlights class function calls inside attribute bindings'
     const tokens = tokensFor(embeddedHighlighter, '<div className={clsx(\'fg:red\')}></div>', 'tsx')
     assertTokenScope(tokens, 'fg', 'support.type.property-name.css')
     assertTokenScope(tokens, 'red', 'support.constant.property-value.css')
+})
+
+test('HTML injection stops at the class attribute quote after selector suffixes', () => {
+    const tokens = tokensFor(embeddedHighlighter, `
+        <article class="text:16_p@preset">
+            <p class="text:24">24</p>
+            <p>16</p>
+        </article>
+    `, 'html')
+
+    assertTokenScope(tokens, 'text', 'support.type.property-name.css')
+    assertTokenScope(tokens, '16', 'constant.numeric.css')
+    assertTokenScope(tokens, '_', 'keyword.operator.combinator')
+    assertTokenScope(tokens, 'p@preset', 'keyword.control.at-rule')
+    assertTokenScope(tokens, '"', 'punctuation.definition.string.end.html')
+    assert.ok(
+        tokens.some((token) => token.content === 'p'
+            && scopesOf(token).includes('entity.name.tag.html')
+            && !scopesOf(token).includes('string.quoted.double.html')),
+        'Expected nested <p> tags to remain HTML after the class attribute closes'
+    )
 })
 
 test('CSS injection highlights @master root configuration blocks', () => {

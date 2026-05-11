@@ -58,7 +58,7 @@
                     "match": "(;)",
                     "captures": {
                         "1": {
-                            "name": "variable master-css.class.split"
+                            "name": "punctuation.terminator.rule.css master-css.class.split"
                         }
                     }
                 }
@@ -135,6 +135,22 @@
                     }
                 },
                 {
+                    "match": "(?<=[\\:\\|,\\(])(\"(?:\\\\.|[^\"\\\\])*\")",
+                    "captures": {
+                        "1": {
+                            "name": "string.quoted.double.html"
+                        }
+                    }
+                },
+                {
+                    "match": "(?<=[\\:\\|,\\(])('(?:\\\\.|[^'\\\\])*')",
+                    "captures": {
+                        "1": {
+                            "name": "string.quoted.single.html"
+                        }
+                    }
+                },
+                {
                     "match": "(?<=(?:[^\\s;:]+:|[@~]|(?:[^\\s;\\:\\|,]+\\())[^\\s;\\:\"'`]*)(\\$[-\\w]+)((/)(\\d*\\.\\d+|\\d+))?",
                     "captures": {
                         "1": {
@@ -180,7 +196,7 @@
                             "name": "keyword.other.unit"
                         },
                         "4": {
-                            "name": "variable master-css.class.x"
+                            "name": "keyword.operator.css master-css.class.x"
                         },
                         "5": {
                             "name": "keyword.operator.css"
@@ -206,7 +222,7 @@
                             "name": "keyword.other.unit"
                         },
                         "4": {
-                            "name": "variable master-css.class.x"
+                            "name": "keyword.operator.css master-css.class.x"
                         }
                     }
                 },
@@ -222,7 +238,7 @@
                     "match": "(?<=(?:[^\\s;:]+:|[@~]|(?:[^\\s;\\:\\|,]+\\())[^\\s;\\:\"'`]*)(\\|)",
                     "captures": {
                         "1": {
-                            "name": "comment.block"
+                            "name": "keyword.operator.css"
                         }
                     }
                 },
@@ -323,7 +339,7 @@
                     }
                 },
                 {
-                    "match": "(\\:)(nth\\-last\\-of\\-type|nth\\-last\\-child|nth\\-of\\-type|host\\-context|nth\\-child|where|lang|host|not|nth|is)(\\()",
+                    "match": "(\\:)(nth\\-last\\-of\\-type|nth\\-last\\-child|nth\\-of\\-type|host\\-context|nth\\-child|where|lang|host|has|not|nth|is)(\\()",
                     "captures": {
                         "1": {
                             "name": "entity.other.attribute-name.pseudo-class.css punctuation.definition.entity.css"
@@ -337,7 +353,15 @@
                     }
                 },
                 {
-                    "match": "(?<=\\:{1,2}(?:nth\\-last\\-of\\-type|nth\\-last\\-child|nth\\-of\\-type|nth\\-child|host\\-context|lang|host|is|not|nth|where|part|slotted)\\([^\\s;\\(]*)(\\))",
+                    "match": "(?<=\\:(?:has|is|not|where)\\()(\\*?[A-Za-z][\\w-]*)",
+                    "captures": {
+                        "1": {
+                            "name": "entity.name.tag.css"
+                        }
+                    }
+                },
+                {
+                    "match": "(?<=\\:{1,2}(?:nth\\-last\\-of\\-type|nth\\-last\\-child|nth\\-of\\-type|nth\\-child|host\\-context|lang|host|has|is|not|nth|where|part|slotted)\\([^\\s;\\(]*)(\\))",
                     "captures": {
                         "1": {
                             "name": "variable punctuation.section.function.end.bracket.round.css"
@@ -384,7 +408,7 @@
                     "match": "(?:(_)|(\\+(?!\\d)|>|~))(\\*?[^\\s;'\"`@:><.\\[\\],_\\+\\(\\)\\{]*)",
                     "captures": {
                         "1": {
-                            "name": "comment.block"
+                            "name": "keyword.operator.combinator"
                         },
                         "2": {
                             "name": "keyword.operator.combinator"
@@ -463,7 +487,7 @@
                     "match": "(?<=[^\\s]+@(?:charset|color\\-profile|container|counter\\-style|document|font\\-face|font\\-feature\\-values|font\\-palette\\-values|import|keyframes|layer|media|namespace|page|property|supports)[^\\s]*)(\\|)",
                     "captures": {
                         "1": {
-                            "name": "comment.block"
+                            "name": "keyword.operator.css"
                         }
                     }
                 },
