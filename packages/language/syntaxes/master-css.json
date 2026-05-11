@@ -359,7 +359,7 @@
                     }
                 },
                 {
-                    "match": "(?<=[^\\s;:]+:[^\\s;]*)(\\:{2})(\\-?[A-Za-z][\\w-]*)(\\()?",
+                    "match": "(\\:{2})(\\-?[A-Za-z][\\w-]*)(\\()?",
                     "captures": {
                         "1": {
                             "name": "entity.other.attribute-name.pseudo-element.css punctuation.definition.entity.css"
@@ -373,7 +373,7 @@
                     }
                 },
                 {
-                    "match": "(?<=[^\\s;:]+:[^\\s;]*)(?<!:)(\\:)(?!:)(\\-?[A-Za-z][\\w-]*)(\\()?",
+                    "match": "(?<!:)(\\:)(?!:)(\\-?[A-Za-z][\\w-]*)(\\()?",
                     "captures": {
                         "1": {
                             "name": "entity.other.attribute-name.pseudo-class.css punctuation.definition.entity.css"
