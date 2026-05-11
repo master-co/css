@@ -339,7 +339,7 @@
                     }
                 },
                 {
-                    "match": "(\\:)(has|is|not|where)(\\()(\\*?[A-Za-z][\\w-]*)(,)(\\*?[A-Za-z][\\w-]*)(\\))",
+                    "match": "(\\:)(has|is|not|where)(\\()",
                     "captures": {
                         "1": {
                             "name": "entity.other.attribute-name.pseudo-class.css punctuation.definition.entity.css"
@@ -349,18 +349,6 @@
                         },
                         "3": {
                             "name": "variable punctuation.section.function.begin.bracket.round.css"
-                        },
-                        "4": {
-                            "name": "entity.name.tag.css"
-                        },
-                        "5": {
-                            "name": "punctuation.separator.list.comma.css"
-                        },
-                        "6": {
-                            "name": "entity.name.tag.css"
-                        },
-                        "7": {
-                            "name": "variable punctuation.section.function.end.bracket.round.css"
                         }
                     }
                 },
@@ -375,6 +363,17 @@
                         },
                         "3": {
                             "name": "variable punctuation.section.function.begin.bracket.round.css"
+                        }
+                    }
+                },
+                {
+                    "match": "(?<=\\:(?:has|is|not|where)\\([^\\s;\\)]*)(,)(\\*?[A-Za-z][\\w-]*)",
+                    "captures": {
+                        "1": {
+                            "name": "punctuation.separator.list.comma.css"
+                        },
+                        "2": {
+                            "name": "entity.name.tag.css"
                         }
                     }
                 },
@@ -413,6 +412,17 @@
                         },
                         "2": {
                             "name": "entity.other.attribute-name.pseudo-element.css"
+                        }
+                    }
+                },
+                {
+                    "match": "(?<=[^\\s;:]+:[^\\s;]*)(?<!:)(\\:)(?!:)([A-Za-z][\\w-]*)",
+                    "captures": {
+                        "1": {
+                            "name": "entity.other.attribute-name.pseudo-class.css punctuation.definition.entity.css"
+                        },
+                        "2": {
+                            "name": "entity.other.attribute-name.pseudo-class.css"
                         }
                     }
                 },

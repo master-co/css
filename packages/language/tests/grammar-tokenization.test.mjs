@@ -141,7 +141,7 @@ test('core grammar aligns strings and selector separators with CSS-like scopes',
     assertTokenScope(stringValue, '"hello"', 'string.quoted.double.html')
     assertTokenScope(stringValue, '\'x\'', 'string.quoted.single.html')
 
-    const selector = tokensFor(coreHighlighter, 'fg:red_:where(a:hover) bg:blue-5:has(:checked) font:mono_:is(code,pre)@base', 'master-css')
+    const selector = tokensFor(coreHighlighter, 'fg:red_:where(a:hover) bg:blue-5:has(:checked) font:mono_:is(code,pre)@base font:semibold_:headings font:semibold_:heading-xl font:semibold_:is(h1,h2,h3,h4,h5,h6)', 'master-css')
     assertTokenScope(selector, '_', 'keyword.operator.combinator')
     assertTokenScope(selector, 'where', 'entity.other.attribute-name.pseudo-class.css')
     assertTokenScope(selector, 'a', 'entity.name.tag.css')
@@ -149,6 +149,15 @@ test('core grammar aligns strings and selector separators with CSS-like scopes',
     assertTokenScope(selector, 'is', 'entity.other.attribute-name.pseudo-class.css')
     assertTokenScope(selector, 'code', 'entity.name.tag.css')
     assertTokenScope(selector, 'pre', 'entity.name.tag.css')
+    assertTokenScope(selector, 'headings', 'entity.other.attribute-name.pseudo-class.css')
+    assertTokenScope(selector, 'heading-xl', 'entity.other.attribute-name.pseudo-class.css')
+    assertNoTokenScope(selector, 'headings', 'support.constant.property-value.css')
+    assertTokenScope(selector, 'h1', 'entity.name.tag.css')
+    assertTokenScope(selector, 'h2', 'entity.name.tag.css')
+    assertTokenScope(selector, 'h3', 'entity.name.tag.css')
+    assertTokenScope(selector, 'h4', 'entity.name.tag.css')
+    assertTokenScope(selector, 'h5', 'entity.name.tag.css')
+    assertTokenScope(selector, 'h6', 'entity.name.tag.css')
     assertTokenScope(selector, ')', 'punctuation.section.function.end.bracket.round.css')
 })
 
@@ -239,6 +248,8 @@ test('React injection highlights class function calls inside attribute bindings'
 
 test('HTML injection stops at the class attribute quote after selector suffixes', () => {
     const tokens = tokensFor(embeddedHighlighter, `
+        <div class="font:semibold_:headings font:semibold_:heading-xl">x</div>
+        <div class="font:semibold_:is(h1,h2,h3,h4,h5,h6)">x</div>
         <article class="text:16_p@preset">
             <p class="text:24">24</p>
             <p>16</p>
@@ -249,6 +260,16 @@ test('HTML injection stops at the class attribute quote after selector suffixes'
     assertTokenScope(tokens, '16', 'constant.numeric.css')
     assertTokenScope(tokens, '_', 'keyword.operator.combinator')
     assertTokenScope(tokens, 'p@preset', 'keyword.control.at-rule')
+    assertTokenScope(tokens, 'headings', 'entity.other.attribute-name.pseudo-class.css')
+    assertTokenScope(tokens, 'heading-xl', 'entity.other.attribute-name.pseudo-class.css')
+    assertNoTokenScope(tokens, 'headings', 'support.constant.property-value.css')
+    assertTokenScope(tokens, 'h1', 'entity.name.tag.css')
+    assertTokenScope(tokens, 'h2', 'entity.name.tag.css')
+    assertTokenScope(tokens, 'h3', 'entity.name.tag.css')
+    assertTokenScope(tokens, 'h4', 'entity.name.tag.css')
+    assertTokenScope(tokens, 'h5', 'entity.name.tag.css')
+    assertTokenScope(tokens, 'h6', 'entity.name.tag.css')
+    assertNoTokenScope(tokens, 'h2', 'support.constant.property-value.css')
     assertTokenScope(tokens, '"', 'punctuation.definition.string.end.html')
     assert.ok(
         tokens.some((token) => token.content === 'p'
