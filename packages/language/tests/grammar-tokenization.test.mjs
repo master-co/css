@@ -119,6 +119,29 @@ test('core grammar highlights functions, numeric values, units, and value separa
     assertTokenScope(tokens, 'px', 'keyword.other.unit')
 })
 
+test('core grammar treats x as a unit only before non-letter boundaries', () => {
+    const baseUnit = tokensFor(coreHighlighter, 'p:2x', 'master-css')
+    assertTokenScope(baseUnit, 'x', 'keyword.other.unit')
+
+    const tokenName = tokensFor(coreHighlighter, 'm:2xl font:2xs', 'master-css')
+    assertTokenScope(tokenName, '2xl', 'support.constant.property-value.css')
+    assertTokenScope(tokenName, '2xs', 'support.constant.property-value.css')
+    assertNoTokenScope(tokenName, '2', 'constant.numeric.css')
+    assertNoTokenScope(tokenName, 'x', 'keyword.other.unit')
+    assertNoTokenScope(tokenName, 'x', 'master-css.class.x')
+
+    const sizePair = tokensFor(coreHighlighter, 'size:10x20', 'master-css')
+    assertTokenScope(sizePair, 'x', 'master-css.class.x')
+
+    const mediaTokenName = tokensFor(coreHighlighter, '@media(width:2xl)', 'master-css')
+    assertTokenScope(mediaTokenName, '2xl', 'support.constant.property-value.css')
+    assertNoTokenScope(mediaTokenName, '2', 'constant.numeric.css')
+    assertNoTokenScope(mediaTokenName, 'x', 'keyword.other.unit')
+
+    const mediaResolution = tokensFor(coreHighlighter, '@media(resolution:2x)', 'master-css')
+    assertTokenScope(mediaResolution, 'x', 'keyword.other.unit')
+})
+
 test('core grammar highlights real pseudo classes instead of stale misspellings', () => {
     const tokens = tokensFor(coreHighlighter, 'fg:red:placeholder-shown', 'master-css')
     assertTokenScope(tokens, 'placeholder-shown', 'entity.other.attribute-name.pseudo-class.css')

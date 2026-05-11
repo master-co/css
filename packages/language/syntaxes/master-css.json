@@ -154,7 +154,7 @@
                     }
                 },
                 {
-                    "match": "(\\-)?(\\d+\\.\\d+|\\.\\d+|\\d+)(%|cm|mm|q|in|pt|pc|px|em|rem|ex|rex|cap|rcap|ch|rch|ic|ric|lh|rlh|vw|svw|lvw|dvw|vh|svh|lvh|dvh|vi|svi|lvi|dvi|vb|svb|lvb|dvb|vmin|svmin|lvmin|dvmin|vmax|svmax|lvmax|dvmax|cqw|cqh|cqi|cqb|cqmin|cqmax|deg|grad|rad|turn|s|ms|hz|khz|dpi|dpcm|dppx|x|fr|db|st)?(x)(\\-)?(\\d+\\.\\d+|\\.\\d+|\\d+)(%|cm|mm|q|in|pt|pc|px|em|rem|ex|rex|cap|rcap|ch|rch|ic|ric|lh|rlh|vw|svw|lvw|dvw|vh|svh|lvh|dvh|vi|svi|lvi|dvi|vb|svb|lvb|dvb|vmin|svmin|lvmin|dvmin|vmax|svmax|lvmax|dvmax|cqw|cqh|cqi|cqb|cqmin|cqmax|deg|grad|rad|turn|s|ms|hz|khz|dpi|dpcm|dppx|x|fr|db|st)?",
+                    "match": "(\\-)?(\\d+\\.\\d+|\\.\\d+|\\d+)(%|cm|mm|q|in|pt|pc|px|em|rem|ex|rex|cap|rcap|ch|rch|ic|ric|lh|rlh|vw|svw|lvw|dvw|vh|svh|lvh|dvh|vi|svi|lvi|dvi|vb|svb|lvb|dvb|vmin|svmin|lvmin|dvmin|vmax|svmax|lvmax|dvmax|cqw|cqh|cqi|cqb|cqmin|cqmax|deg|grad|rad|turn|s|ms|hz|khz|dpi|dpcm|dppx|x(?![A-Za-z])|fr|db|st)?(x)(\\-)?(\\d+\\.\\d+|\\.\\d+|\\d+)(%|cm|mm|q|in|pt|pc|px|em|rem|ex|rex|cap|rcap|ch|rch|ic|ric|lh|rlh|vw|svw|lvw|dvw|vh|svh|lvh|dvh|vi|svi|lvi|dvi|vb|svb|lvb|dvb|vmin|svmin|lvmin|dvmin|vmax|svmax|lvmax|dvmax|cqw|cqh|cqi|cqb|cqmin|cqmax|deg|grad|rad|turn|s|ms|hz|khz|dpi|dpcm|dppx|x(?![A-Za-z])|fr|db|st)?(?![A-Za-z])",
                     "captures": {
                         "1": {
                             "name": "keyword.operator.css"
@@ -180,7 +180,7 @@
                     }
                 },
                 {
-                    "match": "(?<=(?:[^\\s;:]+:|[@~]|(?:[^\\s;\\:\\|,]+\\())[^\\s;\\:\"'`]*)(\\+|\\-|\\*|\\/)?(\\d+\\.\\d+|\\.\\d+|\\d+)(%|cm|mm|q|in|pt|pc|px|em|rem|ex|rex|cap|rcap|ch|rch|ic|ric|lh|rlh|vw|svw|lvw|dvw|vh|svh|lvh|dvh|vi|svi|lvi|dvi|vb|svb|lvb|dvb|vmin|svmin|lvmin|dvmin|vmax|svmax|lvmax|dvmax|cqw|cqh|cqi|cqb|cqmin|cqmax|deg|grad|rad|turn|s|ms|hz|khz|dpi|dpcm|dppx|x|fr|db|st)?(x)?",
+                    "match": "(?<=(?:[^\\s;:]+:|[@~]|(?:[^\\s;\\:\\|,]+\\())[^\\s;\\:\"'`]*)(\\+|\\-|\\*|\\/)?(\\d+\\.\\d+|\\.\\d+|\\d+)(%|cm|mm|q|in|pt|pc|px|em|rem|ex|rex|cap|rcap|ch|rch|ic|ric|lh|rlh|vw|svw|lvw|dvw|vh|svh|lvh|dvh|vi|svi|lvi|dvi|vb|svb|lvb|dvb|vmin|svmin|lvmin|dvmin|vmax|svmax|lvmax|dvmax|cqw|cqh|cqi|cqb|cqmin|cqmax|deg|grad|rad|turn|s|ms|hz|khz|dpi|dpcm|dppx|x(?![A-Za-z])|fr|db|st)?(x(?![A-Za-z]))?(?![A-Za-z])",
                     "captures": {
                         "1": {
                             "name": "keyword.operator.css"
@@ -197,7 +197,7 @@
                     }
                 },
                 {
-                    "match": "(?<=(?:[^\\s;:]+:|[@~]|(?:[^\\s;\\:\\|,]+\\())[^\\s;\\:\"'`]*)(\\.\\d+)",
+                    "match": "(?<=(?:[^\\s;:]+:|[@~]|(?:[^\\s;\\:\\|,]+\\())[^\\s;\\:\"'`]*)(\\.\\d+)(?![A-Za-z])",
                     "captures": {
                         "1": {
                             "name": "constant.numeric.css"
@@ -393,7 +393,7 @@
         "master-css-media": {
             "patterns": [
                 {
-                    "match": "(?<!(?:\\s)|(?:\\=[\"'`])|[;{])(@[^\\s;\"`'\\()|{}:]+)(?:(\\()([^\\s:\\)]+)(:)(\\d+)?(\\%|cm|mm|q|in|pt|pc|px|em|rem|ex|rex|cap|rcap|ch|rch|ic|ric|lh|rlh|vw|svw|lvw|dvw|vh|svh|lvh|dvh|vi|svi|lvi|dvi|vb|svb|lvb|dvb|vmin|svmin|lvmin|dvmin|vmax|svmax|lvmax|dvmax|cqw|cqh|cqi|cqb|cqmin|cqmax|deg|grad|rad|turn|s|ms|hz|khz|dpi|dpcm|dppx|x|fr|db|st)?([^\\s\\)]+)?(\\)))?",
+                    "match": "(?<!(?:\\s)|(?:\\=[\"'`])|[;{])(@[^\\s;\"`'\\()|{}:]+)(?:(\\()([^\\s:\\)]+)(:)(\\d+(?=(?:\\%|cm|mm|q|in|pt|pc|px|em|rem|ex|rex|cap|rcap|ch|rch|ic|ric|lh|rlh|vw|svw|lvw|dvw|vh|svh|lvh|dvh|vi|svi|lvi|dvi|vb|svb|lvb|dvb|vmin|svmin|lvmin|dvmin|vmax|svmax|lvmax|dvmax|cqw|cqh|cqi|cqb|cqmin|cqmax|deg|grad|rad|turn|s|ms|hz|khz|dpi|dpcm|dppx|x(?![A-Za-z])|fr|db|st)?(?:[^A-Za-z]|\\))))?(\\%|cm|mm|q|in|pt|pc|px|em|rem|ex|rex|cap|rcap|ch|rch|ic|ric|lh|rlh|vw|svw|lvw|dvw|vh|svh|lvh|dvh|vi|svi|lvi|dvi|vb|svb|lvb|dvb|vmin|svmin|lvmin|dvmin|vmax|svmax|lvmax|dvmax|cqw|cqh|cqi|cqb|cqmin|cqmax|deg|grad|rad|turn|s|ms|hz|khz|dpi|dpcm|dppx|x(?![A-Za-z])|fr|db|st)?([^\\s\\)]+)?(\\)))?",
                     "captures": {
                         "1": {
                             "name": "keyword.control.at-rule"
