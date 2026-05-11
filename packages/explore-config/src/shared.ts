@@ -1,7 +1,6 @@
 import { existsSync } from 'node:fs'
-import { extname, parse, resolve } from 'node:path'
+import { parse, resolve } from 'node:path'
 import type { Config } from '@master/css'
-import type { TransformOptions, TransformResult } from 'jiti'
 
 export interface ExploreConfigOptions {
     cwd?: string
@@ -39,8 +38,6 @@ export const DEFAULT_EXTENSIONS = [
     'js',
     'mjs',
     'ts',
-    'cjs',
-    'cts',
     'mts'
 ]
 
@@ -53,8 +50,6 @@ export const DEFAULT_FOUND = (basename: string) => process.env.DEBUG && console.
 export const DEFAULT_MISSING = undefined
 
 const warnedMissingConfigs = new Set<string>()
-
-type TransformSync = typeof import('@swc/wasm')['transformSync']
 
 function normalizeExtension(extension: string) {
     return extension.startsWith('.') ? extension.slice(1) : extension
@@ -146,40 +141,6 @@ export function warnMissingConfig(options: MissingConfigWarningOptions = {}) {
         name,
         integration
     }))
-}
-
-export function swcTransform(options: TransformOptions, transformSync: TransformSync): TransformResult {
-    const filename = options.filename || ''
-    const extension = extname(filename)
-    const isTypeScript = options.ts || extension === '.ts' || extension === '.tsx' || extension === '.mts' || extension === '.cts'
-    const isJSX = options.jsx || extension === '.jsx' || extension === '.tsx'
-    const output = transformSync(options.source, {
-        filename,
-        sourceMaps: false,
-        jsc: {
-            target: 'es2022',
-            parser: isTypeScript
-                ? {
-                    syntax: 'typescript',
-                    tsx: Boolean(isJSX),
-                    decorators: true,
-                    dynamicImport: true
-                }
-                : {
-                    syntax: 'ecmascript',
-                    jsx: Boolean(isJSX),
-                    decorators: true,
-                    dynamicImport: true
-                }
-        },
-        module: {
-            type: 'commonjs',
-            importInterop: 'swc'
-        }
-    })
-    return {
-        code: output.code
-    }
 }
 
 export function resolveConfig(configModule: Record<string, unknown>, options: Pick<ExploreConfigOptions, 'resolvedKeys'> = {}) {

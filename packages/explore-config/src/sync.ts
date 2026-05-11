@@ -1,45 +1,23 @@
 import { createRequire } from 'node:module'
 import { extname } from 'node:path'
-import { pathToFileURL } from 'node:url'
 import {
     DEFAULT_MISSING,
     DEFAULT_FOUND,
     resolveConfig,
     resolveConfigPath,
-    swcTransform,
     type ExploreConfigOptions,
     type ExploreConfigResult,
     type LoadConfigOptions,
     type LoadConfigResult
 } from './shared'
+import { collectScriptDependencies, requireConfigModule } from './script'
 
-type CreateJiti = typeof import('jiti')['createJiti']
-type TransformSync = typeof import('@swc/wasm')['transformSync']
 type CompileCSSFile = typeof import('@master/css-compiler')['compileCSSFile']
 
 const require = createRequire(import.meta.url)
 
-function loadScriptLoaderSync() {
-    return {
-        createJiti: require('jiti').createJiti as CreateJiti,
-        transformSync: require('@swc/wasm').transformSync as TransformSync
-    }
-}
-
 function loadCompileCSSSync() {
     return require('@master/css-compiler').compileCSSFile as CompileCSSFile
-}
-
-function loadConfigModuleSync(path: string) {
-    const { createJiti, transformSync } = loadScriptLoaderSync()
-    const jiti = createJiti(pathToFileURL(path).href, {
-        cache: false,
-        debug: false,
-        fsCache: false,
-        moduleCache: false,
-        transform: (options) => swcTransform(options, transformSync)
-    })
-    return jiti(path)
 }
 
 export function loadConfigSync(path: string, options: LoadConfigOptions = {}): LoadConfigResult {
@@ -62,8 +40,8 @@ export function loadConfigSync(path: string, options: LoadConfigOptions = {}): L
         }
     }
     return {
-        config: resolveConfig(loadConfigModuleSync(path), options),
-        dependencies: [path]
+        config: resolveConfig(requireConfigModule(path), options),
+        dependencies: collectScriptDependencies(path)
     }
 }
 

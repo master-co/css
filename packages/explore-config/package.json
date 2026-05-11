@@ -58,7 +58,8 @@
     },
     "dependencies": {
         "@master/css-compiler": "workspace:^",
-        "@swc/wasm": "^1.15.33",
-        "jiti": "^2.6.1"
+        "oxc-parser": "^0.129.0",
+        "oxc-resolver": "^11.19.1",
+        "oxc-transform": "^0.128.0"
     }
 }

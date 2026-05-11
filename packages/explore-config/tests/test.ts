@@ -42,14 +42,6 @@ test('resolves named config exports before default exports', async () => {
     })
 })
 
-test('loads CommonJS configs', async () => {
-    expect((await exploreConfig({ cwd: __dirname, name: 'legacy.css.cjs' }))?.config).toStrictEqual({
-        utilities: [
-            mainUtility('legacy', { display: 'inline-flex' })
-        ]
-    })
-})
-
 test('returns undefined when the config file does not exist', async () => {
     expect(await exploreConfig({ cwd: __dirname, name: 'missing.css' })).toBeUndefined()
 })
@@ -174,6 +166,49 @@ test('loads config results directly', async () => {
     })
 })
 
+test('tracks imported script config dependencies', async () => {
+    const cwd = mkdtempSync(join(tmpdir(), 'master-css-config-'))
+    const configPath = join(cwd, 'master.css.ts')
+    const palettePath = join(cwd, 'palette.ts')
+    try {
+        writeFileSync(palettePath, `export const display = 'inline-flex'`)
+        writeFileSync(configPath, `
+            import { display } from './palette'
+
+            export default {
+                utilities: [
+                    { name: 'imported', type: -4, layer: 'main', rules: [{ selector: '&', declarations: { display } }] }
+                ]
+            }
+        `)
+
+        await expect(loadConfig(configPath)).resolves.toStrictEqual({
+            dependencies: [
+                configPath,
+                palettePath
+            ],
+            config: {
+                utilities: [
+                    mainUtility('imported', { display: 'inline-flex' })
+                ]
+            }
+        })
+        expect(loadConfigSync(configPath)).toStrictEqual({
+            dependencies: [
+                configPath,
+                palettePath
+            ],
+            config: {
+                utilities: [
+                    mainUtility('imported', { display: 'inline-flex' })
+                ]
+            }
+        })
+    } finally {
+        rmSync(cwd, { force: true, recursive: true })
+    }
+})
+
 test('resolves CSS configs with the highest default priority', async () => {
     const cwd = mkdtempSync(join(tmpdir(), 'master-css-config-'))
     try {
@@ -295,15 +330,23 @@ test('calls found with the matched basename and absolute path', async () => {
 })
 
 test('supports custom extension order', async () => {
-    expect((await exploreConfig({
-        cwd: __dirname,
-        name: 'legacy.css',
-        extensions: ['ts', 'cjs']
-    }))?.config).toStrictEqual({
-        utilities: [
-            mainUtility('legacy', { display: 'inline-flex' })
-        ]
-    })
+    const cwd = mkdtempSync(join(tmpdir(), 'master-css-config-'))
+    try {
+        writeFileSync(join(cwd, 'master.css.ts'), `export default { utilities: [{ name: 'ts', type: -4, layer: 'main', rules: [{ selector: '&', declarations: { display: 'block' } }] }] }`)
+        writeFileSync(join(cwd, 'master.css.mts'), `export default { utilities: [{ name: 'mts', type: -4, layer: 'main', rules: [{ selector: '&', declarations: { display: 'inline-flex' } }] }] }`)
+
+        expect((await exploreConfig({
+            cwd,
+            name: 'master.css',
+            extensions: ['mts', 'ts']
+        }))?.config).toStrictEqual({
+            utilities: [
+                mainUtility('mts', { display: 'inline-flex' })
+            ]
+        })
+    } finally {
+        rmSync(cwd, { force: true, recursive: true })
+    }
 })
 
 test('reloads changed config files without reusing module cache', async () => {
@@ -320,6 +363,38 @@ test('reloads changed config files without reusing module cache', async () => {
         expect((await exploreConfig({ cwd }))?.config).toStrictEqual({
             utilities: [
                 mainUtility('two', { display: 'inline-flex' })
+            ]
+        })
+    } finally {
+        rmSync(cwd, { force: true, recursive: true })
+    }
+})
+
+test('reloads changed imported config dependencies without reusing module cache', async () => {
+    const cwd = mkdtempSync(join(tmpdir(), 'master-css-config-'))
+    const configPath = join(cwd, 'master.css.ts')
+    const palettePath = join(cwd, 'palette.ts')
+    try {
+        writeFileSync(configPath, `
+            import { display } from './palette'
+
+            export default {
+                utilities: [
+                    { name: 'imported', type: -4, layer: 'main', rules: [{ selector: '&', declarations: { display } }] }
+                ]
+            }
+        `)
+        writeFileSync(palettePath, `export const display = 'block'`)
+        expect((await exploreConfig({ cwd }))?.config).toStrictEqual({
+            utilities: [
+                mainUtility('imported', { display: 'block' })
+            ]
+        })
+
+        writeFileSync(palettePath, `export const display = 'inline-flex'`)
+        expect((await exploreConfig({ cwd }))?.config).toStrictEqual({
+            utilities: [
+                mainUtility('imported', { display: 'inline-flex' })
             ]
         })
     } finally {

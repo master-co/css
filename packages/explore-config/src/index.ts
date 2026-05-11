@@ -1,5 +1,4 @@
 import { extname } from 'node:path'
-import { pathToFileURL } from 'node:url'
 import {
     DEFAULT_EXTENSIONS,
     DEFAULT_FOUND,
@@ -7,7 +6,6 @@ import {
     formatMissingConfigWarning,
     resolveConfig,
     resolveConfigPath,
-    swcTransform,
     warnMissingConfig,
     type ExploreConfigOptions,
     type ExploreConfigPath,
@@ -16,6 +14,7 @@ import {
     type LoadConfigResult,
     type MissingConfigWarningOptions
 } from './shared'
+import { collectScriptDependencies, importConfigModule } from './script'
 
 export {
     DEFAULT_EXTENSIONS,
@@ -31,39 +30,8 @@ export {
     type MissingConfigWarningOptions
 }
 
-type CreateJiti = typeof import('jiti')['createJiti']
-type TransformSync = typeof import('@swc/wasm')['transformSync']
-
-let scriptLoaderPromise: Promise<{
-    createJiti: CreateJiti
-    transformSync: TransformSync
-}> | undefined
-
-async function loadScriptLoader() {
-    scriptLoaderPromise ||= Promise.all([
-        import('jiti'),
-        import('@swc/wasm')
-    ]).then(([jiti, swc]) => ({
-        createJiti: jiti.createJiti,
-        transformSync: swc.transformSync
-    }))
-    return scriptLoaderPromise
-}
-
 async function loadCompileCSS() {
     return (await import('@master/css-compiler')).compileCSSFile
-}
-
-async function loadConfigModule(path: string) {
-    const { createJiti, transformSync } = await loadScriptLoader()
-    const jiti = createJiti(pathToFileURL(path).href, {
-        cache: false,
-        debug: false,
-        fsCache: false,
-        moduleCache: false,
-        transform: (options) => swcTransform(options, transformSync)
-    })
-    return jiti(path)
 }
 
 export async function loadConfig(path: string, options: LoadConfigOptions = {}): Promise<LoadConfigResult> {
@@ -86,8 +54,8 @@ export async function loadConfig(path: string, options: LoadConfigOptions = {}):
         }
     }
     return {
-        config: resolveConfig(await loadConfigModule(path), options),
-        dependencies: [path]
+        config: resolveConfig(await importConfigModule(path), options),
+        dependencies: collectScriptDependencies(path)
     }
 }
 

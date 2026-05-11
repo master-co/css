@@ -58,6 +58,8 @@ npm install @master/css-explore-config
 ```
 
 ## Usage
+Script configs are loaded as native ESM. TypeScript, TSX, and JSX files are transformed with Oxc, and local script imports are reported as dependencies.
+
 ```ts
 import exploreConfig from '@master/css-explore-config'
 
