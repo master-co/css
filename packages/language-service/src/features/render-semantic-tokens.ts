@@ -205,7 +205,9 @@ export default function renderSemanticTokens(this: CSSLanguageService, document:
         const rules = this.css.generate(token)
         const mainStyle = rules.find((rule) => rule.type === UtilityType.Static && rule.layerName === 'main')
         if (mainStyle) {
-            pushToken(semanticTokens, classStart, raw.length, 'class', ['declaration'])
+            const stateStart = raw.length - (mainStyle.stateToken?.length ?? 0)
+            pushToken(semanticTokens, classStart, stateStart, 'class', ['declaration'])
+            pushState(semanticTokens, classStart, token, stateStart)
             continue
         }
         const rule = rules[0]
