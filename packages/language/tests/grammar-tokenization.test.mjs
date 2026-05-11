@@ -109,6 +109,18 @@ test('core grammar highlights grouped declarations and separators', () => {
     assertTokenScope(tokens, '}', 'punctuation.section.property-list.end')
 })
 
+test('core grammar highlights static class values without matching hyphenated prefixes', () => {
+    const flexDirection = tokensFor(coreHighlighter, 'flex-col flex-row-reverse', 'master-css')
+    assertTokenScope(flexDirection, 'flex-col', 'support.constant.property-value.css')
+    assertTokenScope(flexDirection, 'flex-row-reverse', 'support.constant.property-value.css')
+    assertNoTokenScope(flexDirection, 'flex', 'support.constant.property-value.css')
+
+    const prefixed = tokensFor(coreHighlighter, 'block-start grid-cols:2', 'master-css')
+    assertNoTokenScope(prefixed, 'block', 'support.constant.property-value.css')
+    assertNoTokenScope(prefixed, 'grid', 'support.constant.property-value.css')
+    assertTokenScope(prefixed, 'grid-cols', 'support.type.property-name.css')
+})
+
 test('core grammar highlights functions, numeric values, units, and value separators', () => {
     const tokens = tokensFor(coreHighlighter, 'translate(10x|20px)', 'master-css')
     assertTokenScope(tokens, 'translate', 'support.function.misc.css')
