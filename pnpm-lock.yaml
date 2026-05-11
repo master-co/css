@@ -1506,6 +1506,9 @@ importers:
       minimatch:
         specifier: ^10.2.5
         version: 10.2.5
+      oxc-parser:
+        specifier: ^0.129.0
+        version: 0.129.0
       pex-color:
         specifier: ^2.3.0
         version: 2.3.0

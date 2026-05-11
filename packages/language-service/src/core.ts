@@ -10,13 +10,14 @@ import editSyntaxColors from './features/edit-syntax-colors'
 import renderSemanticTokens from './features/render-semantic-tokens'
 import suggestSyntax from './features/suggest-syntax'
 import { TextDocument } from 'vscode-languageserver-textdocument'
-import getClassPositions from './utils/get-class-positions'
+import getClassPositions, { ClassPositionCache } from './utils/get-class-positions'
 
 export interface ClassPosition { range: { start: number, end: number }, raw: string, token: string }
 
 export default class CSSLanguageService extends EventEmitter {
     css: MasterCSS
     settings: Settings
+    private classPositionCache = new ClassPositionCache()
 
     constructor(
         public customSettings?: Settings
@@ -52,14 +53,36 @@ export default class CSSLanguageService extends EventEmitter {
     }
 
     getClassPositions(textDocument: TextDocument): ClassPosition[] {
-        return getClassPositions(textDocument, this.settings)
+        return getClassPositions(textDocument, this.settings, {
+            cache: this.classPositionCache
+        })
     }
 
     getClassPosition(textDocument: TextDocument, position: Position): ClassPosition | undefined {
+        const cachedOxcClassPosition = getClassPositions(textDocument, this.settings, {
+            position,
+            includeEmpty: true,
+            provider: 'oxc',
+            oxcMode: 'cache-only',
+            cache: this.classPositionCache
+        })[0]
+        if (cachedOxcClassPosition) return cachedOxcClassPosition
+
+        const regexClassPosition = getClassPositions(textDocument, this.settings, {
+            position,
+            includeEmpty: true,
+            provider: 'regex'
+        })[0]
+        if (regexClassPosition && !regexClassPosition.raw.includes('${')) {
+            return regexClassPosition
+        }
+
         return getClassPositions(textDocument, this.settings, {
             position,
-            includeEmpty: true
-        })[0]
+            includeEmpty: true,
+            provider: 'oxc',
+            cache: this.classPositionCache
+        })[0] ?? regexClassPosition
     }
 
     isDocumentAccepted(doc: TextDocument): boolean {

@@ -26,6 +26,7 @@
         "js-beautify": "^1.15.4",
         "lodash.escaperegexp": "^4.1.2",
         "minimatch": "^10.2.5",
+        "oxc-parser": "^0.129.0",
         "pex-color": "^2.3.0",
         "vscode-css-languageservice": "^6.3.10",
         "vscode-languageserver-protocol": "^3.17.5",

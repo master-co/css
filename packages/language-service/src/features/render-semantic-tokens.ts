@@ -2,7 +2,6 @@ import type CSSLanguageService from '../core'
 import type { TextDocument } from 'vscode-languageserver-textdocument'
 import type { SemanticTokens } from 'vscode-languageserver-protocol'
 import { SEMANTIC_TOKEN_MODIFIERS, SEMANTIC_TOKEN_TYPES } from '../common'
-import getClassPositions from '../utils/get-class-positions'
 import { UtilityType, type ValueComponent } from '@master/css'
 
 type SemanticTokenType = typeof SEMANTIC_TOKEN_TYPES[number]
@@ -162,7 +161,7 @@ function pushState(tokens: SemanticTokenItem[], classStart: number, token: strin
 
 export default function renderSemanticTokens(this: CSSLanguageService, document: TextDocument): SemanticTokens {
     const semanticTokens: SemanticTokenItem[] = []
-    for (const classPosition of getClassPositions(document, this.settings)) {
+    for (const classPosition of this.getClassPositions(document)) {
         const { raw, token } = classPosition
         if (!raw) continue
         const classStart = classPosition.range.start

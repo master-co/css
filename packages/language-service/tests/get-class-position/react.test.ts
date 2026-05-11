@@ -15,6 +15,12 @@ test.concurrent('empty string with double quote', () => {
     expectClassPosition(target, contents, 'tsx')
 })
 
+test.concurrent('spaced jsx attribute assignment', () => {
+    const target = 'class-a'
+    const contents = ['export default () => <div className = "', target, '"></div>']
+    expectClassPosition(target, contents, 'tsx')
+})
+
 test.concurrent('empty binding', () => {
     const contents = ['export default () => <div className={', '', '}></div>']
     const doc = createDoc('tsx', contents.join(''))
@@ -51,4 +57,23 @@ test.concurrent('template literal and newlines', () => {
     const target = `class-e`
     const contents = ['export default () => <div className={clsx("class-a class-b",`class-c class-d\n', target, '`)}></div>']
     expectClassPosition(target, contents)
+})
+
+test.concurrent('template literal expressions use quasi ranges', () => {
+    const doc = createDoc('tsx', 'export default () => <div className={`class-a ${active ? "class-b" : "hidden"} class-c`}></div>')
+    const languageService = new CSSLanguageService()
+    expect(languageService.getClassPositions(doc).map((classPosition) => classPosition.token)).toEqual([
+        'class-a',
+        'class-b',
+        'hidden',
+        'class-c'
+    ])
+})
+
+test.concurrent('parse failure falls back to regex positions', () => {
+    const doc = createDoc('tsx', 'const broken = <\nexport default () => <div className="class-a"></div>')
+    const languageService = new CSSLanguageService()
+    expect(languageService.getClassPositions(doc).map((classPosition) => classPosition.token)).toEqual([
+        'class-a'
+    ])
 })
