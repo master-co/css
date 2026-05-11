@@ -75,7 +75,7 @@
                     }
                 },
                 {
-                    "match": "(?<![^\\s;:{]+:[^\\s;]*)([^\\s;:\"'`{(]+)(:)(?!:)(?!\\-webkit\\-|\\-moz\\-|\\-o\\-|\\-ms\\-)(?!(?:out\\-of\\-range|first\\-of\\-type|last\\-of\\-type|only\\-of\\-type|file\\-selector\\-button|scrollbar\\-track\\-piece|search\\-cancel\\-button|search\\-results\\-button|any\\-link|focus\\-visible|focus\\-within|read\\-only|read\\-write|placeholder\\-shown|in\\-range|first\\-letter|first\\-child|last\\-child|only\\-child|first\\-letter|first\\-line|scrollbar\\-button|scrollbar\\-thumb|scrollbar\\-track|scrollbar\\-corner|link|visited|target|scope|hover|has|of|active|focus|autofill|enabled|disabled|default|checked|indeterminate|valid|invalid|required|optional|root|empty|defined|fullscreen|odd|even|first|last|after|before|backdrop|cue|marker|placeholder|selection|scrollbar|resizer|nth\\-last\\-of\\-type|nth\\-last\\-child|nth\\-of\\-type|nth\\-child|host\\-context|lang|host|is|not|nth|where|part|slotted)(?![\\w-]))",
+                    "match": "(?<![^\\s;:{]+:[^\\s;]*)(?!(?:table\\-column\\-group|table\\-header\\-group|table\\-footer\\-group|table\\-row\\-group|center\\-content|table\\-caption|flex\\-col\\-reverse|flex\\-row\\-reverse|break\\-spaces|table\\-column|inline\\-block|inline\\-table|inline\\-flex|inline\\-grid|untouchable|capitalize|break\\-word|table\\-cell|flow\\-root|list\\-item|table\\-row|invisible|lowercase|uppercase|contents|overflow|flex\\-col|flex\\-row|sr\\-only|isolate|oblique|rounded|visible|max\\-vh|max\\-vw|min\\-vh|min\\-vw|center|hidden|italic|inline|middle|static|sticky|square|block|fixed|round|table|video|full|(?:flex(?!\\:(?:row|col|column|wrap|nowrap|\\d)(?:\\-reverse)?))|grid|hide|abs|rel|vh|vw)(?=:))([^\\s;:\"'`{(]+)(:)(?!:)",
                     "captures": {
                         "1": {
                             "name": "support.type.property-name.css"
@@ -325,7 +325,41 @@
                     }
                 },
                 {
-                    "match": "(\\:{1,2})(slotted|part)(\\()",
+                    "match": "(?<![\\-])\\b(table\\-column\\-group|table\\-header\\-group|table\\-footer\\-group|table\\-row\\-group|center\\-content|table\\-caption|flex\\-col\\-reverse|flex\\-row\\-reverse|break\\-spaces|table\\-column|inline\\-block|inline\\-table|inline\\-flex|inline\\-grid|untouchable|capitalize|break\\-word|table\\-cell|flow\\-root|list\\-item|table\\-row|invisible|lowercase|uppercase|contents|overflow|flex\\-col|flex\\-row|sr\\-only|isolate|oblique|rounded|visible|max\\-vh|max\\-vw|min\\-vh|min\\-vw|center|hidden|italic|inline|middle|static|sticky|square|block|fixed|round|table|video|full|(?:flex(?!\\:(?:row|col|column|wrap|nowrap|\\d)(?:\\-reverse)?))|grid|hide|abs|rel|vh|vw)(?![\\-A-Za-z0-9])(\\:{2})(\\-?[A-Za-z][\\w-]*)(\\()?",
+                    "captures": {
+                        "1": {
+                            "name": "support.constant.property-value.css"
+                        },
+                        "2": {
+                            "name": "entity.other.attribute-name.pseudo-element.css punctuation.definition.entity.css"
+                        },
+                        "3": {
+                            "name": "entity.other.attribute-name.pseudo-element.css"
+                        },
+                        "4": {
+                            "name": "variable punctuation.section.function.begin.bracket.round.css"
+                        }
+                    }
+                },
+                {
+                    "match": "(?<![\\-])\\b(table\\-column\\-group|table\\-header\\-group|table\\-footer\\-group|table\\-row\\-group|center\\-content|table\\-caption|flex\\-col\\-reverse|flex\\-row\\-reverse|break\\-spaces|table\\-column|inline\\-block|inline\\-table|inline\\-flex|inline\\-grid|untouchable|capitalize|break\\-word|table\\-cell|flow\\-root|list\\-item|table\\-row|invisible|lowercase|uppercase|contents|overflow|flex\\-col|flex\\-row|sr\\-only|isolate|oblique|rounded|visible|max\\-vh|max\\-vw|min\\-vh|min\\-vw|center|hidden|italic|inline|middle|static|sticky|square|block|fixed|round|table|video|full|(?:flex(?!\\:(?:row|col|column|wrap|nowrap|\\d)(?:\\-reverse)?))|grid|hide|abs|rel|vh|vw)(?![\\-A-Za-z0-9])(\\:)(?!:)(\\-?[A-Za-z][\\w-]*)(\\()?",
+                    "captures": {
+                        "1": {
+                            "name": "support.constant.property-value.css"
+                        },
+                        "2": {
+                            "name": "entity.other.attribute-name.pseudo-class.css punctuation.definition.entity.css"
+                        },
+                        "3": {
+                            "name": "entity.other.attribute-name.pseudo-class.css"
+                        },
+                        "4": {
+                            "name": "variable punctuation.section.function.begin.bracket.round.css"
+                        }
+                    }
+                },
+                {
+                    "match": "(?<=[^\\s;:]+:[^\\s;]*)(\\:{2})(\\-?[A-Za-z][\\w-]*)(\\()?",
                     "captures": {
                         "1": {
                             "name": "entity.other.attribute-name.pseudo-element.css punctuation.definition.entity.css"
@@ -339,7 +373,7 @@
                     }
                 },
                 {
-                    "match": "(\\:)(has|is|not|where)(\\()",
+                    "match": "(?<=[^\\s;:]+:[^\\s;]*)(?<!:)(\\:)(?!:)(\\-?[A-Za-z][\\w-]*)(\\()?",
                     "captures": {
                         "1": {
                             "name": "entity.other.attribute-name.pseudo-class.css punctuation.definition.entity.css"
@@ -353,21 +387,7 @@
                     }
                 },
                 {
-                    "match": "(\\:)(nth\\-last\\-of\\-type|nth\\-last\\-child|nth\\-of\\-type|host\\-context|nth\\-child|where|lang|host|has|not|nth|is)(\\()",
-                    "captures": {
-                        "1": {
-                            "name": "entity.other.attribute-name.pseudo-class.css punctuation.definition.entity.css"
-                        },
-                        "2": {
-                            "name": "entity.other.attribute-name.pseudo-class.css"
-                        },
-                        "3": {
-                            "name": "variable punctuation.section.function.begin.bracket.round.css"
-                        }
-                    }
-                },
-                {
-                    "match": "(?<=\\:(?:has|is|not|where)\\([^\\s;\\)]*)(,)(\\*?[A-Za-z][\\w-]*)",
+                    "match": "(?<=\\:\\-?[A-Za-z][\\w-]*\\([^\\s;\\)]*)(,)(\\*?[A-Za-z][\\w-]*)",
                     "captures": {
                         "1": {
                             "name": "punctuation.separator.list.comma.css"
@@ -378,7 +398,7 @@
                     }
                 },
                 {
-                    "match": "(?<=\\:(?:has|is|not|where)\\()(\\*?[A-Za-z][\\w-]*)",
+                    "match": "(?<=\\:\\-?[A-Za-z][\\w-]*\\()(\\*?[A-Za-z][\\w-]*)",
                     "captures": {
                         "1": {
                             "name": "entity.name.tag.css"
@@ -386,43 +406,10 @@
                     }
                 },
                 {
-                    "match": "(?<=\\:{1,2}(?:nth\\-last\\-of\\-type|nth\\-last\\-child|nth\\-of\\-type|nth\\-child|host\\-context|lang|host|has|is|not|nth|where|part|slotted)\\([^\\s;\\(]*)(\\))",
+                    "match": "(?<=\\:{1,2}\\-?[A-Za-z][\\w-]*\\([^\\s;\\(]*)(\\))",
                     "captures": {
                         "1": {
                             "name": "variable punctuation.section.function.end.bracket.round.css"
-                        }
-                    }
-                },
-                {
-                    "match": "(\\:)((?:\\-webkit\\-|\\-moz\\-|\\-o\\-|\\-ms\\-)?(?:out\\-of\\-range|only\\-of\\-type|last\\-of\\-type|first\\-of\\-type|placeholder\\-shown|focus\\-visible|focus\\-within|first\\-letter|first\\-child|last\\-child|only\\-child|read\\-write|read\\-only|any\\-link|in\\-range|indeterminate|fullscreen|autofill|disabled|required|optional|visited|enabled|default|checked|invalid|defined|target|active|hover|scope|focus|valid|empty|first|link|root|even|last|odd|has|of))",
-                    "captures": {
-                        "1": {
-                            "name": "entity.other.attribute-name.pseudo-class.css punctuation.definition.entity.css"
-                        },
-                        "2": {
-                            "name": "entity.other.attribute-name.pseudo-class.css"
-                        }
-                    }
-                },
-                {
-                    "match": "(\\:{1,2})((?:\\-webkit\\-|\\-moz\\-|\\-o\\-|\\-ms\\-)?(?:range\\-thumb|slider\\-thumb|file\\-selector-button|search\\-cancel\\-button|search\\-results\\-button|scrollbar\\-track\\-piece|scrollbar\\-button|scrollbar\\-track|scrollbar\\-thumb|scrollbar\\-corner|first\\-letter|first\\-line|placeholder|scrollbar|selection|backdrop|resizer|before|after|marker|cue))",
-                    "captures": {
-                        "1": {
-                            "name": "entity.other.attribute-name.pseudo-element.css punctuation.definition.entity.css"
-                        },
-                        "2": {
-                            "name": "entity.other.attribute-name.pseudo-element.css"
-                        }
-                    }
-                },
-                {
-                    "match": "(?<=[^\\s;:]+:[^\\s;]*)(?<!:)(\\:)(?!:)([A-Za-z][\\w-]*)",
-                    "captures": {
-                        "1": {
-                            "name": "entity.other.attribute-name.pseudo-class.css punctuation.definition.entity.css"
-                        },
-                        "2": {
-                            "name": "entity.other.attribute-name.pseudo-class.css"
                         }
                     }
                 },

@@ -118,12 +118,12 @@ test('grammar registration imports every syntax grammar', () => {
     assert.match(source, /vscodeEmbeddedLanguages:\s*{\s*'meta\.embedded\.block\.master-css\.class':\s*'master-css'\s*}/s)
 })
 
-test('grammar source does not contain known misspelled CSS pseudo selectors', () => {
-    const raw = grammarFiles
-        .map((file) => readFileSync(resolve(syntaxesDir, file), 'utf8'))
-        .join('\n')
+test('core grammar does not hard-code pseudo selector names', () => {
+    const raw = readFileSync(resolve(syntaxesDir, 'master-css.json'), 'utf8')
     assert.equal(raw.includes('placeholder\\\\-showen'), false)
+    assert.equal(raw.includes('placeholder\\\\-shown'), false)
     assert.equal(raw.includes('first\\\\-selector\\\\-button'), false)
-    assert.equal(raw.includes('placeholder\\\\-shown'), true)
-    assert.equal(raw.includes('file\\\\-selector-button'), true)
+    assert.equal(raw.includes('file\\\\-selector-button'), false)
+    assert.equal(raw.includes('hover'), false)
+    assert.equal(raw.includes('disabled'), false)
 })

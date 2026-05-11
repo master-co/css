@@ -115,9 +115,12 @@ test('core grammar highlights grouped declarations and separators', () => {
 })
 
 test('core grammar highlights static class values without matching hyphenated prefixes', () => {
-    const flexDirection = tokensFor(coreHighlighter, 'flex-col flex-row-reverse', 'master-css')
+    const flexDirection = tokensFor(coreHighlighter, 'flex-col flex-row-reverse flex:row flex:1', 'master-css')
     assertTokenScope(flexDirection, 'flex-col', 'support.constant.property-value.css')
     assertTokenScope(flexDirection, 'flex-row-reverse', 'support.constant.property-value.css')
+    assertTokenScope(flexDirection, 'flex', 'support.type.property-name.css')
+    assertTokenScope(flexDirection, 'row', 'support.constant.property-value.css')
+    assertTokenScope(flexDirection, '1', 'constant.numeric.css')
     assertNoTokenScope(flexDirection, 'flex', 'support.constant.property-value.css')
 
     const prefixed = tokensFor(coreHighlighter, 'block-start grid-cols:2', 'master-css')
@@ -141,8 +144,12 @@ test('core grammar aligns strings and selector separators with CSS-like scopes',
     assertTokenScope(stringValue, '"hello"', 'string.quoted.double.html')
     assertTokenScope(stringValue, '\'x\'', 'string.quoted.single.html')
 
-    const selector = tokensFor(coreHighlighter, 'fg:red_:where(a:hover) bg:blue-5:has(:checked) font:mono_:is(code,pre)@base font:semibold_:headings font:semibold_:heading-xl font:semibold_:is(h1,h2,h3,h4,h5,h6)', 'master-css')
+    const selector = tokensFor(coreHighlighter, 'fg:red:hover@sm fg:red:placeholder-showen block:hover block:state-name fg:red_:where(a:hover) bg:blue-5:has(:checked) font:mono_:is(code,pre)@base font:semibold_:headings font:semibold_:heading-xl font:semibold_:is(h1,h2,h3,h4,h5,h6)', 'master-css')
     assertTokenScope(selector, '_', 'keyword.operator.combinator')
+    assertTokenScope(selector, 'hover', 'entity.other.attribute-name.pseudo-class.css')
+    assertTokenScope(selector, 'placeholder-showen', 'entity.other.attribute-name.pseudo-class.css')
+    assertTokenScope(selector, 'block', 'support.constant.property-value.css')
+    assertTokenScope(selector, 'state-name', 'entity.other.attribute-name.pseudo-class.css')
     assertTokenScope(selector, 'where', 'entity.other.attribute-name.pseudo-class.css')
     assertTokenScope(selector, 'a', 'entity.name.tag.css')
     assertTokenScope(selector, 'has', 'entity.other.attribute-name.pseudo-class.css')
@@ -195,10 +202,10 @@ test('core grammar treats x as a unit only before non-letter boundaries', () => 
     assertTokenScope(mediaResolution, 'x', 'keyword.other.unit')
 })
 
-test('core grammar highlights real pseudo classes instead of stale misspellings', () => {
-    const tokens = tokensFor(coreHighlighter, 'fg:red:placeholder-shown', 'master-css')
+test('core grammar highlights dynamic pseudo class names', () => {
+    const tokens = tokensFor(coreHighlighter, 'fg:red:placeholder-shown fg:red:placeholder-showen', 'master-css')
     assertTokenScope(tokens, 'placeholder-shown', 'entity.other.attribute-name.pseudo-class.css')
-    assertNoTokenScope(tokens, 'placeholder-showen', 'entity.other.attribute-name.pseudo-class.css')
+    assertTokenScope(tokens, 'placeholder-showen', 'entity.other.attribute-name.pseudo-class.css')
 })
 
 test('core grammar highlights file selector button pseudo element', () => {
