@@ -662,10 +662,10 @@ export default function Play(props: any) {
                         layout === '5' && 'hidden!@md',
                         {
                             'full!@<md': tab !== 'Preview',
-                            'br:1|lightest': !layout,
-                            'bl:1|lightest': layout === '2',
-                            'bb:1|lightest': layout === '3',
-                            'bt:1|lightest': layout === '4'
+                            'br:1|lighter': !layout,
+                            'bl:1|lighter': layout === '2',
+                            'bb:1|lighter': layout === '3',
+                            'bt:1|lighter': layout === '4'
                         }
                     )}
                     width={tab === 'Preview' ? '' : width}

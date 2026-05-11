@@ -10,7 +10,7 @@ const disposables: Disposable[] = []
 export function activate(context: ExtensionContext) {
 
     // The server is implemented in node
-    const serverModule = context.asAbsolutePath(path.join('dist', 'server.min.cjs'))
+    const serverModule = context.asAbsolutePath(path.join('dist', 'server.min.mjs'))
     console.log('Loading server from ', serverModule)
 
     // The debug options for the server

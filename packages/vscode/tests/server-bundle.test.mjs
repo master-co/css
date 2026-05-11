@@ -7,7 +7,7 @@ import { expect, test } from 'vitest'
 const here = dirname(fileURLToPath(import.meta.url))
 const packageDir = resolve(here, '..')
 const distDir = resolve(packageDir, 'dist')
-const serverPath = resolve(distDir, 'server.min.cjs')
+const serverPath = resolve(distDir, 'server.min.mjs')
 const workspaceDir = resolve(here, 'fixtures', 'bundled-config')
 
 function encode(message) {

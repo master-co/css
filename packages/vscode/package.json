@@ -31,10 +31,10 @@
     "activationEvents": [
         "onStartupFinished"
     ],
-    "main": "./dist/extension.min.cjs",
+    "main": "./dist/extension.min.mjs",
     "exports": {
-        ".": "./dist/extension.min.cjs",
-        "./server": "./dist/server.min.cjs"
+        ".": "./dist/extension.min.mjs",
+        "./server": "./dist/server.min.mjs"
     },
     "files": [
         "dist",
@@ -293,5 +293,11 @@
         "@vscode/vsce": "^3.9.1",
         "shared": "workspace:^",
         "vscode-languageclient": "^9.0.1"
+    },
+    "peerDependencies": {
+        "lightningcss": "^1.32.0",
+        "oxc-parser": "^0.129.0",
+        "oxc-resolver": "^11.19.1",
+        "oxc-transform": "^0.128.0"
     }
 }

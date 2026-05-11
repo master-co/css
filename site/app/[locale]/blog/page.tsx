@@ -50,12 +50,12 @@ export default async function Page(props: any) {
     return <>
         <main className='px:5x pt:12x pt:15x@sm'>
             <div className="mx:auto my:18x max-w:screen-md prose my:30x@sm">
-                <div className='bl:1|dotted|line-lighter bt:1|dotted|line-lighter grid-cols:1 grid-cols:2@sm grid-cols:3@md'>
+                <div className='bl:1|lighter bt:1|lighter grid-cols:1 grid-cols:2@sm grid-cols:3@md'>
                     {pages
                         .map((page: any, index: number) => {
                             const formattedDate = dayjs(page.date).format('ddd, MMMM D')
                             return (
-                                <div key={page.pathname + index} className={clsx('bb:1|dotted|line-lighter br:1|dotted|line-lighter')}>
+                                <div key={page.pathname + index} className={clsx('bb:1|dotted|lighter br:1|dotted|lighter')}>
                                     <Link href={page.pathname} className={clsx('~background-color|.2s gap:5x p:6x flex flex-col h:full bg:surface:hover p:12x@sm')}>
                                         <div className="flex justify-content:space-between mb:-1x">
                                             <div className='text:12 fg:accent'>{formattedDate}</div>
