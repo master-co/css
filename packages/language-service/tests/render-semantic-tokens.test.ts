@@ -90,7 +90,7 @@ test.concurrent('renders semantic tokens for master-css documents', () => {
 
 test.concurrent('renders semantic tokens for CSS-like values', () => {
     const { tokens } = renderTokens(
-        '<div className="h:$size-sm fg:$color-blue-50/.5 content:x::before bg:rgb(0|0|0) fg:red_:where(a:hover)"></div>',
+        '<div className="h:$size-sm fg:$color-blue-50/.5 content:x::before bg:rgb(0|0|0) fg:red_:where(a:hover) font:mono_:is(code,pre)@base"></div>',
         'tsx',
         {
             config: {
@@ -116,7 +116,10 @@ test.concurrent('renders semantic tokens for CSS-like values', () => {
         { text: 'where', type: 'modifier', modifiers: [] },
         { text: '(', type: 'operator', modifiers: [] },
         { text: 'hover', type: 'modifier', modifiers: [] },
-        { text: ')', type: 'operator', modifiers: [] }
+        { text: ')', type: 'operator', modifiers: [] },
+        { text: 'is', type: 'modifier', modifiers: [] },
+        { text: ',', type: 'operator', modifiers: [] },
+        { text: '@base', type: 'keyword', modifiers: [] }
     ]))
 })
 

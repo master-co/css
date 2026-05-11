@@ -145,7 +145,7 @@ function pushState(tokens: SemanticTokenItem[], classStart: number, token: strin
         if (char === '!') {
             pushToken(tokens, classStart + i, 1, 'operator')
             i++
-        } else if (char === '_' || char === '(' || char === ')' || char === '[' || char === ']') {
+        } else if (char === '_' || char === '(' || char === ')' || char === '[' || char === ']' || char === ',') {
             pushToken(tokens, classStart + i, 1, 'operator')
             i++
         } else if (char === '@') {

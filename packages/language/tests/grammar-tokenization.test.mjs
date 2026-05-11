@@ -141,11 +141,14 @@ test('core grammar aligns strings and selector separators with CSS-like scopes',
     assertTokenScope(stringValue, '"hello"', 'string.quoted.double.html')
     assertTokenScope(stringValue, '\'x\'', 'string.quoted.single.html')
 
-    const selector = tokensFor(coreHighlighter, 'fg:red_:where(a:hover) bg:blue-5:has(:checked)', 'master-css')
+    const selector = tokensFor(coreHighlighter, 'fg:red_:where(a:hover) bg:blue-5:has(:checked) font:mono_:is(code,pre)@base', 'master-css')
     assertTokenScope(selector, '_', 'keyword.operator.combinator')
     assertTokenScope(selector, 'where', 'entity.other.attribute-name.pseudo-class.css')
     assertTokenScope(selector, 'a', 'entity.name.tag.css')
     assertTokenScope(selector, 'has', 'entity.other.attribute-name.pseudo-class.css')
+    assertTokenScope(selector, 'is', 'entity.other.attribute-name.pseudo-class.css')
+    assertTokenScope(selector, 'code', 'entity.name.tag.css')
+    assertTokenScope(selector, 'pre', 'entity.name.tag.css')
     assertTokenScope(selector, ')', 'punctuation.section.function.end.bracket.round.css')
 })
 
