@@ -60,7 +60,7 @@ const nextConfig = await withMasterCSS({
 export default nextConfig
 ```
 
-Extract mode uses source-glob scanning as the correctness baseline. A Turbopack CSS loader replaces `@import 'virtual:master.css'` with the generated CSS, and CSS files that import the virtual stylesheet are treated as extractable CSS entries. Ordinary class selectors are pruned against detected classes; `var(--*)` and animation references can pull matching variables and keyframes from the config graph rooted at `master.css`. A scanner loader also scans JavaScript and TypeScript modules as they pass through the build, so imported files such as `app/main.ts` can incrementally feed new classes into the generated CSS. `@master {}` blocks can live in app stylesheets or other CSS files as long as they are imported by `master.css`.
+Extract mode uses source-glob scanning as the correctness baseline. A Turbopack CSS loader replaces `@import 'virtual:master.css'` with the generated CSS. CSS files that declare `@master shake;` are treated as native CSS shaking roots, so ordinary class selectors are pruned against detected classes; `var(--*)` and animation references can pull matching variables and keyframes from the config graph rooted at `master.css`. A scanner loader also scans JavaScript and TypeScript modules as they pass through the build, so imported files such as `app/main.ts` can incrementally feed new classes into the generated CSS. `@master {}` blocks can live in app stylesheets or other CSS files as long as they are imported by `master.css`.
 
 ### Client types
 Add `@master/css.next/client` to a project environment file when TypeScript imports `virtual:master.css`, `virtual:master-css-config`, or `*.css?master-css-config`.

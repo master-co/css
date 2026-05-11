@@ -77,13 +77,11 @@ Typically you would use it with the following limitations:
 Exclude class names accidentally extracted by the scanning process.
 <DocProp defaultValue={options.excludeClasses} types={['string[]', 'RegExp[]']} />
 
-### `options.shakeNative`
-Prune native CSS class selector rules in linked stylesheets based on extracted class usage.
-<DocProp defaultValue={options.shakeNative} types={['boolean']} />
-
-When enabled, a stylesheet that imports the virtual Master CSS module becomes a linked native stylesheet:
+### Native CSS shaking
+Prune native CSS class selector rules from a stylesheet by declaring `@master shake;` in that stylesheet:
 
 ```css
+@master shake;
 @import "virtual:master.css";
 @import "./styles/btn.css";
 
@@ -96,7 +94,7 @@ When enabled, a stylesheet that imports the virtual Master CSS module becomes a 
 }
 ```
 
-The virtual import is removed, local relative CSS imports are expanded, and native class rules are kept only when their class names are found by the extractor. Stylesheets that do not import the virtual module are left untouched.
+Local relative `.css` imports are expanded, `@master shake;` is removed from the compiled output, and native class rules are kept only when their class names are found by the extractor. The `virtual:master.css` import is optional for native shaking; use it only where the generated Master CSS should be inserted.
 
 ### `extractLatentClasses()`
 Extract latent classes from string content.

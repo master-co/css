@@ -5,7 +5,9 @@ import { describe, expect, it } from 'vitest'
 import CSSExtractor from '../src/core'
 import {
     createExtractedCSS,
+    hasMasterShakeDirective,
     isMasterStyleSource,
+    removeMasterShakeDirectives,
     registerStyleCSSSource,
     replaceStyleCSSImports
 } from '../src/style'
@@ -32,10 +34,28 @@ describe('style CSS extraction helpers', () => {
         expect(result.code).toContain('@import "./other.css";')
     })
 
-    it('detects virtual CSS imports only', () => {
+    it('detects virtual CSS imports and master shake directives', () => {
         expect(isMasterStyleSource('@master { --color-primary: red; }', 'virtual:master.css')).toBe(false)
         expect(isMasterStyleSource('@import "master.css";', 'virtual:master.css')).toBe(true)
+        expect(isMasterStyleSource('@master shake;', 'virtual:master.css')).toBe(true)
         expect(isMasterStyleSource('@import "./other.css";', 'virtual:master.css')).toBe(false)
+    })
+
+    it('removes top-level master shake directives', () => {
+        const result = removeMasterShakeDirectives([
+            '@master shake;',
+            '',
+            '@media (min-width: 768px) {',
+            '    @master shake;',
+            '}',
+            '',
+            '.card { color: red; }'
+        ].join('\n'))
+
+        expect(hasMasterShakeDirective('@master shake\n.card { color: red; }')).toBe(true)
+        expect(result.removed).toBe(true)
+        expect(result.code).not.toContain('@master shake;\n\n.card')
+        expect(result.code).toContain('@media (min-width: 768px) {\n    @master shake;\n}')
     })
 
     it('uses root master.css config only and ignores stylesheet-local CSS config sources', async () => {
@@ -71,8 +91,9 @@ describe('style CSS extraction helpers', () => {
         await extractor.init()
         await extractor.prepare()
 
-        const styleCSSSources = new Map<string, string>()
+        const styleCSSSources = new Map()
         await registerStyleCSSSource(extractor, styleCSSSources, join(root, 'app/globals.css'), `
+            @master shake;
             @import "virtual:master.css";
 
             @master {
@@ -110,7 +131,7 @@ describe('style CSS extraction helpers', () => {
         expect(css).not.toContain('virtual:master.css')
     })
 
-    it('shakes local CSS imports from linked stylesheets', async () => {
+    it('shakes local CSS imports from master shake roots', async () => {
         const root = createFixture()
         mkdirSync(join(root, 'app/styles'), { recursive: true })
         writeFileSync(join(root, 'app/styles/btn.css'), `
@@ -129,8 +150,9 @@ describe('style CSS extraction helpers', () => {
         }, root)
         await extractor.init()
 
-        const styleCSSSources = new Map<string, string>()
+        const styleCSSSources = new Map()
         const result = await registerStyleCSSSource(extractor, styleCSSSources, join(root, 'app/globals.css'), `
+            @master shake;
             @import "virtual:master.css";
             @import "./styles/btn.css";
 
@@ -161,17 +183,16 @@ describe('style CSS extraction helpers', () => {
         expect(css).not.toContain('@import "./styles/btn.css"')
     })
 
-    it('preserves linked native CSS when native shaking is disabled', async () => {
+    it('preserves native CSS without a master shake directive', async () => {
         const root = createFixture()
         const extractor = new CSSExtractor({
             include: [],
             config: 'master.css',
-            module: 'virtual:master.css',
-            shakeNative: false
+            module: 'virtual:master.css'
         }, root)
         await extractor.init()
 
-        const styleCSSSources = new Map<string, string>()
+        const styleCSSSources = new Map()
         await registerStyleCSSSource(extractor, styleCSSSources, join(root, 'app/globals.css'), `
             @import "virtual:master.css";
 
@@ -197,6 +218,46 @@ describe('style CSS extraction helpers', () => {
         expect(css).toContain('.unused')
     })
 
+    it('removes imported master shake directives without making dependencies independent roots', async () => {
+        const root = createFixture()
+        mkdirSync(join(root, 'app/styles'), { recursive: true })
+        writeFileSync(join(root, 'app/styles/btn.css'), `
+            @master shake;
+
+            .btn-native {
+                color: red;
+            }
+
+            .btn-unused {
+                color: blue;
+            }
+        `)
+        const extractor = new CSSExtractor({
+            include: [],
+            config: 'master.css',
+            module: 'virtual:master.css'
+        }, root)
+        await extractor.init()
+
+        const styleCSSSources = new Map()
+        await registerStyleCSSSource(extractor, styleCSSSources, join(root, 'app/globals.css'), `
+            @import "virtual:master.css";
+            @import "./styles/btn.css";
+        `)
+        await extractor.insert(join(root, 'app/page.html'), '<div class="btn-native"></div>')
+
+        const css = await createExtractedCSS({
+            extractor,
+            styleCSSSources,
+            projectDir: root
+        })
+
+        expect([...extractor.nativeClassNames]).toEqual([])
+        expect(css).toContain('.btn-native')
+        expect(css).toContain('.btn-unused')
+        expect(css).not.toContain('@master shake')
+    })
+
     it('can emit shaken native CSS without generated Master CSS', async () => {
         const root = createFixture()
         const extractor = new CSSExtractor({
@@ -206,9 +267,9 @@ describe('style CSS extraction helpers', () => {
         }, root)
         await extractor.init()
 
-        const styleCSSSources = new Map<string, string>()
+        const styleCSSSources = new Map()
         await registerStyleCSSSource(extractor, styleCSSSources, join(root, 'app/globals.css'), `
-            @import "virtual:master.css";
+            @master shake;
 
             .card {
                 display: grid;
@@ -227,7 +288,7 @@ describe('style CSS extraction helpers', () => {
         expect(css).not.toContain('.block{display:block}')
     })
 
-    it('returns empty CSS when generated output is disabled without linked stylesheets', async () => {
+    it('returns empty CSS when generated output is disabled without style sources', async () => {
         const root = createFixture()
         const extractor = new CSSExtractor({
             include: [],

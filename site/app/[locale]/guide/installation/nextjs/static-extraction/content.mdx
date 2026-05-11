@@ -60,10 +60,11 @@
             ### <StepNum />Import virtual CSS module
             Import the generated CSS module from `app/globals.css`.
 
-            (i) Use `virtual:master.css` for the generated stylesheet. Ordinary class selectors in this stylesheet are pruned against detected source classes.
+            (i) Use `virtual:master.css` for the generated stylesheet. Add `@master shake;` when ordinary class selectors in this stylesheet should be pruned against detected source classes.
         </StepL>
         <StepR>
             ```css name=app/globals.css
+            @master shake;
             @import 'virtual:master.css';
 
             .main {

@@ -1,0 +1,306 @@
+## Overview [sr-only]
+Master CSS output is driven by usage. The framework does not ship every token, component, utility, and native stylesheet rule that your project knows about. It builds a usage graph from source files, `master.css`, and CSS entries that opt into native shaking, then emits the CSS that is needed by the classes it can see.
+
+```txt
+source files + master.css config + @master shake CSS entries
+  -> extracted class usage
+  -> generated Master CSS + shaken native CSS
+```
+
+That model keeps the output small without requiring you to manually maintain a separate stylesheet for every page.
+
+```html name=src/index.html
+<!-- @MARK btn bg:primary:hover -->
+<button class="btn bg:primary:hover">Save</button>
+```
+
+```css name=generated.css
+@layer base,theme,preset,main,general;
+
+@layer main {
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+}
+
+@layer general {
+    .bg\:primary\:hover:hover {
+        background-color: var(--color-primary)
+    }
+}
+```
+
+The exact delivery mechanism depends on the [rendering mode](/guide/rendering-modes), but the usage model stays the same: complete class strings are detected, valid Master CSS rules are generated, and unused native class rules can be removed from stylesheets that declare `@master shake;`.
+
+---
+
+## Scanning source files
+Static extraction reads source files as text. It does not run your application, evaluate branches, execute helper functions, or parse framework-specific component state. It scans for strings that could be class names, then passes those candidates to the Master CSS engine. Candidates that do not match a known utility, configured main style, configured general utility, or native class rule are ignored.
+
+```tsx name=src/Card.tsx
+export function Card() {
+    return (
+        <article className="card p:md r:lg shadow:md">
+            <h2 className="font:lg font:semibold">Usage-based CSS</h2>
+            <p className="fg:muted">Only the classes above need CSS.</p>
+        </article>
+    )
+}
+```
+
+The extractor sees strings such as `card`, `p:md`, `r:lg`, `shadow:md`, `font:lg`, `font:semibold`, and `fg:muted`. It then generates CSS only for the classes that are valid in the active configuration.
+
+Configure the source boundary in the integration's extractor options:
+
+```ts name=vite.config.ts
+import { defineConfig } from 'vite'
+import masterCSS from '@master/css.vite'
+
+export default defineConfig({
+    plugins: [
+        masterCSS({
+            mode: 'extract',
+            extractor: {
+                include: ['src/**/*.{html,js,jsx,ts,tsx,vue,svelte,astro,md,mdx}'],
+                exclude: ['src/**/*.test.tsx', 'src/**/*.stories.tsx']
+            }
+        })
+    ]
+})
+```
+
+`include` and `exclude` define which files are scanned for class usage. In Vite, transformed modules also feed the same extractor during development so updates are fast, but production correctness still depends on class strings that exist in the source files or are explicitly included.
+
+---
+
+## Complete classes are the contract
+Extraction works when a class exists in source as a complete string. It cannot infer class names from partial string concatenation, interpolation, data returned by an API, or values assembled after the app starts.
+
+(x) Do not build class names from fragments.
+```tsx
+const className = 'bg:' + (error ? 'red' : 'green')
+```
+
+The strings `bg:red` and `bg:green` do not appear in source, so a static extractor cannot reliably generate them.
+
+(o) Write complete class names.
+```tsx
+const className = error ? 'bg:red' : 'bg:green'
+```
+
+For component variants, map dynamic inputs to complete class lists.
+
+(x) Do not construct utility fragments from props.
+```tsx
+function Badge({ tone }: { tone: 'red' | 'green' | 'gray' }) {
+    return <span className={`bg:${tone} fg:white r:full px:xs`}>Status</span>
+}
+```
+
+(o) Map variants to static class strings.
+```tsx
+const toneClasses = {
+    danger: 'bg:red fg:white',
+    success: 'bg:green fg:white',
+    neutral: 'bg:gray-10 fg:gray-90'
+}
+
+function Badge({ tone }: { tone: keyof typeof toneClasses }) {
+    return <span className={`r:full px:xs ${toneClasses[tone]}`}>Status</span>
+}
+```
+
+This is also better product code: each variant can choose its own foreground, contrast, hover state, and disabled treatment instead of forcing every tone through the same string template.
+
+When the value is dynamic but the declaration shape is stable, pass the value through a CSS variable and keep the Master CSS class complete.
+
+```tsx
+function Headline({ size }: { size: string }) {
+    return (
+        <h1
+            className="font-size:$(headline-size) line-height:1.1"
+            style={{ '--headline-size': size } as React.CSSProperties}
+        >
+            Launch notes
+        </h1>
+    )
+}
+```
+
+The class `font-size:$(headline-size)` is static and extractable. The runtime value lives in `--headline-size`, which is normal CSS.
+
+Use the same pattern for values that come from data:
+
+```tsx
+function Progress({ value }: { value: number }) {
+    return (
+        <div className="h:4x bg:surface r:full overflow:hidden">
+            <div
+                className="h:full w:$(progress) bg:primary ~width|fast|smooth"
+                style={{ '--progress': `${value}%` } as React.CSSProperties}
+            />
+        </div>
+    )
+}
+```
+
+If a class name truly only exists after the page is running, use [runtime rendering](/guide/rendering-modes#runtime-rendering) or [progressive rendering](/guide/rendering-modes#progressive-rendering) so the browser runtime can observe the DOM and generate missing rules.
+
+---
+
+## Fixed and excluded classes
+Some classes are intentionally absent from source files. They may come from a CMS field, a database value, a limited remote enum, or a framework integration that injects markup later. Use `includeClasses` when you know the class list and want the extractor to treat it as used. The class still needs to be a valid Master CSS class, a configured class from [`master.css`](/guide/configuration), or a native class from a stylesheet that declares `@master shake;`.
+
+```ts name=vite.config.ts
+import { defineConfig } from 'vite'
+import masterCSS from '@master/css.vite'
+
+export default defineConfig({
+    plugins: [
+        masterCSS({
+            mode: 'extract',
+            extractor: {
+                includeClasses: [
+                    'dialog-open',
+                    'translateY(-5):hover',
+                    'bg:primary@dark'
+                ]
+            }
+        })
+    ]
+})
+```
+
+Use `excludeClasses` when source scanning finds strings that look like classes but should not generate CSS.
+
+```ts name=vite.config.ts
+export default defineConfig({
+    plugins: [
+        masterCSS({
+            mode: 'extract',
+            extractor: {
+                excludeClasses: [
+                    /^debug-/,
+                    'example-token'
+                ]
+            }
+        })
+    ]
+})
+```
+
+Keep this list small. If a class can exist as a complete string in source, prefer putting it there. Explicit inclusion is best for bounded cases where the extractor cannot see the source of truth.
+
+---
+
+## Shaking native CSS
+Master CSS can also remove unused native CSS class rules from CSS entries that opt in with `@master shake;`. This directive marks the current stylesheet as a shaking root. Local relative `.css` imports from that root are compiled into the same graph and shaken with the same usage data.
+
+```css name=src/style.css
+@master shake;
+@import "virtual:master.css";
+@import "./styles/cards.css";
+
+.native-card {
+    border: 1px solid rgb(0 0 0 / 12%);
+    border-radius: .75rem;
+}
+
+.unused-card {
+    color: red;
+}
+```
+
+```css name=src/styles/cards.css
+.card-title {
+    font-weight: 700;
+}
+
+.legacy-card {
+    color: purple;
+}
+```
+
+```html name=src/index.html
+<!-- @MARK btn -->
+<article class="native-card btn">
+    <h2 class="card-title">Card</h2>
+</article>
+```
+
+With `@master shake;`, the local relative `.css` import graph is compiled together:
+
+```txt
+src/style.css
+  -> declares @master shake
+  -> imports virtual:master.css
+  -> imports ./styles/cards.css
+```
+
+The output keeps native rules whose class names are used and removes unused native class rules. The virtual import is separate: it inserts generated Master CSS in extract mode, but it is not what enables native shaking.
+
+```css name=generated.css
+.card-title {
+    font-weight: 700;
+}
+
+.native-card {
+    border: 1px solid rgb(0 0 0 / 12%);
+    border-radius: .75rem;
+}
+
+@layer base,theme,preset,main,general;
+@layer main {
+    .btn { ... }
+}
+```
+
+`.native-card` and `.card-title` are kept because source files use those classes. `.unused-card` and `.legacy-card` are removed. Native rules without class selectors, such as `body`, `html`, and `:root`, are preserved because they are not class-usage rules.
+
+Omit `@master shake;` when a stylesheet contains native class names that are intentionally not visible to the extractor:
+
+```css name=src/legacy.css
+@import "virtual:master.css";
+
+.cms-card {
+    color: red;
+}
+
+.injected-by-third-party {
+    color: blue;
+}
+```
+
+This stylesheet can still receive generated Master CSS through `virtual:master.css`, but its native class rules are preserved as written.
+
+`@master shake;` is root-scoped. If `src/style.css` imports `./styles/cards.css`, the imported file follows the root's shaking decision. A nested `@master shake;` inside `cards.css` is removed when it is imported into the parent graph; it does not create a second output. If `cards.css` is also imported directly by JavaScript or a framework route, then it becomes its own root and its own `@master shake;` directive applies there.
+
+---
+
+## How rendering modes use the usage graph
+The same usage rules apply across rendering modes. The difference is when and where the CSS is delivered.
+
+| Mode | How usage becomes CSS |
+|---|---|
+| `runtime` | The browser runtime observes the DOM and generates Master CSS rules as classes appear. CSS entries that declare `@master shake;` can still be shaken during the build. |
+| `extract` | Source files are scanned at build time and emitted as a generated stylesheet. CSS entries that declare `@master shake;` are shaken into the same output path. |
+| `pre-render` | HTML is rendered first, then the server renderer injects CSS for the classes visible in that HTML. |
+| `progressive` | The first render is pre-rendered, then the browser runtime hydrates the stylesheet and handles later class changes. |
+
+Use `runtime` or `progressive` when class names are created only after the page is running. Use `extract` when source files contain the complete class set needed for production.
+
+---
+
+## Checklist
+- Write complete class names in source.
+- Map component variants to complete class strings.
+- Use CSS variables for runtime values.
+- Put design-system definitions inside `@master`.
+- Put app-level native CSS outside `@master`.
+- Use `@master shake;` on CSS entries whose native class rules should be usage-shaken.
+- Import `virtual:master.css` only where generated Master CSS should be inserted.
+- Use `includeClasses` for bounded classes source scanning cannot see.
+- Use `excludeClasses` for false positives.
+- Use runtime or progressive rendering when class names are genuinely created after startup.

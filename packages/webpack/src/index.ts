@@ -1,6 +1,6 @@
 import { CSSExtractor, Options } from '@master/css-extractor'
 import { loadConfig, resolveConfigPath, warnMissingConfig, type ExploreConfigPath } from '@master/css-explore-config'
-import { createExtractedCSS, registerStyleCSSSource as registerExtractorStyleCSSSource } from '@master/css-extractor/style'
+import { createExtractedCSS, registerStyleCSSSource as registerExtractorStyleCSSSource, type StyleCSSSources } from '@master/css-extractor/style'
 import type { Compiler } from 'webpack'
 import VirtualModulesPlugin from 'webpack-virtual-modules'
 import log from '@techor/log'
@@ -50,7 +50,7 @@ export class MasterCSSExtractorPlugin extends CSSExtractor {
     pluginInitialized = false
     moduleContentByPath: any = {}
     defaultConfigDependencies: string[] = []
-    styleCSSSources = new Map<string, string>()
+    styleCSSSources: StyleCSSSources = new Map()
 
     private resolveDefaultConfigPath(): ExploreConfigPath | undefined {
         if (typeof this.options.config === 'string') {

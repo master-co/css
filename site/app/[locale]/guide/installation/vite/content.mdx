@@ -71,12 +71,13 @@
     <Step $row>
         <StepL>
             ### <StepNum />Define local CSS
-            Source stylesheets can contain ordinary CSS and `@master` definitions together. In extract mode, ordinary class selectors are kept only when the class appears in scanned source.
+            Source stylesheets can contain ordinary CSS and `@master` definitions together. Add `@master shake;` when ordinary class selectors should be kept only if the class appears in scanned source.
 
             (i) Import the stylesheet from `master.css` when you want its `@master {}` blocks to participate in the config graph.
         </StepL>
         <StepR>
             ```css name=src/style.css
+            @master shake;
             @import 'virtual:master.css';
 
             .native-card {

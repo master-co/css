@@ -256,13 +256,16 @@ describe('MasterCSSExtractorPlugin (C1 race fix)', () => {
             plugin.latentClasses.add('btn')
             plugin.latentClasses.add('native-used')
             plugin.latentClasses.add('root-native')
-            ;(plugin as any).styleCSSSources.set(path.join(root, 'src/styles.css'), [
-                '@import "virtual:master.css";',
-                '',
-                '.native-used {',
-                '    color: var(--color-primary);',
-                '}'
-            ].join('\n'))
+            ;(plugin as any).styleCSSSources.set(path.join(root, 'src/styles.css'), {
+                shake: true,
+                source: [
+                    '@import "virtual:master.css";',
+                    '',
+                    '.native-used {',
+                    '    color: var(--color-primary);',
+                    '}'
+                ].join('\n')
+            })
 
             const css = await (plugin as any).createExtractedCSS()
 

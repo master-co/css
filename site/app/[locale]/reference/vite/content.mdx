@@ -29,10 +29,11 @@ import 'virtual:master.css'
 ```
 
 ```css name=src/style.css
+@master shake;
 @import 'virtual:master.css';
 ```
 
-Source stylesheets that import the virtual module are treated as extractable CSS entries. Ordinary CSS outside `@master` is pruned against detected classes. If the same stylesheet contains `@master {}` config, import it from `master.css` so the config graph can read those definitions.
+Source stylesheets that declare `@master shake;` are treated as native CSS shaking roots. Ordinary CSS outside `@master` is pruned against detected classes. The virtual import only inserts generated Master CSS. If the same stylesheet contains `@master {}` config, import it from `master.css` so the config graph can read those definitions.
 
 ---
 

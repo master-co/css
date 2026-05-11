@@ -34,12 +34,19 @@ export interface RegisterStyleCSSSourceOptions extends CompileStyleCSSOptions {
 
 export interface CreateExtractedCSSOptions extends CompileStyleCSSOptions {
     extractor: CSSExtractor
-    styleCSSSources?: Map<string, string>
+    styleCSSSources?: StyleCSSSources
     config?: Config
     configPath?: string
     loadConfigMode?: LoadConfigMode
     includeGeneratedCSS?: boolean
 }
+
+export interface StyleCSSSource {
+    source: string
+    shake: boolean
+}
+
+export type StyleCSSSources = Map<string, StyleCSSSource>
 
 export interface ResolvedStyleCSSSource {
     source: string
@@ -280,8 +287,95 @@ export function hasStyleCSSImport(source: string, moduleIds: StyleCSSModuleIds) 
     return removeStyleCSSImports(source, moduleIds).replaced
 }
 
+function isIdentChar(char: string | undefined) {
+    return Boolean(char && /[-_a-zA-Z0-9]/.test(char))
+}
+
+function findMasterShakeDirectives(source: string) {
+    const directives: { start: number, end: number }[] = []
+    let quote = ''
+    let comment = false
+    let depth = 0
+    for (let index = 0; index < source.length; index++) {
+        const char = source[index]
+        const next = source[index + 1]
+        if (comment) {
+            if (char === '*' && next === '/') {
+                comment = false
+                index++
+            }
+            continue
+        }
+        if (quote) {
+            if (char === '\\') {
+                index++
+            } else if (char === quote) {
+                quote = ''
+            }
+            continue
+        }
+        if (char === '/' && next === '*') {
+            comment = true
+            index++
+            continue
+        }
+        if (char === '"' || char === '\'') {
+            quote = char
+            continue
+        }
+        if (char === '{') {
+            depth++
+            continue
+        }
+        if (char === '}') {
+            depth--
+            continue
+        }
+        if (depth !== 0 || !source.startsWith('@master', index)) continue
+
+        let cursor = index + '@master'.length
+        if (isIdentChar(source[cursor]) || !/\s/.test(source[cursor] || '')) continue
+        while (/\s/.test(source[cursor] || '')) cursor++
+        if (!source.startsWith('shake', cursor) || isIdentChar(source[cursor + 'shake'.length])) continue
+        cursor += 'shake'.length
+        while (source[cursor] === ' ' || source[cursor] === '\t') cursor++
+
+        let end = cursor
+        if (source[cursor] === ';') {
+            end = cursor + 1
+        } else if (source[cursor] === '\r' || source[cursor] === '\n' || source[cursor] === undefined) {
+            end = cursor
+        } else {
+            continue
+        }
+
+        directives.push({ start: index, end })
+        index = end - 1
+    }
+    return directives
+}
+
+export function removeMasterShakeDirectives(source: string) {
+    const directives = findMasterShakeDirectives(source)
+    if (!directives.length) return { code: source, removed: false }
+    let code = ''
+    let index = 0
+    for (const directive of directives) {
+        code += source.slice(index, directive.start)
+        index = directive.end
+    }
+    return {
+        code: code + source.slice(index),
+        removed: true
+    }
+}
+
+export function hasMasterShakeDirective(source: string) {
+    return findMasterShakeDirectives(source).length > 0
+}
+
 export function isMasterStyleSource(source: string, moduleIds: StyleCSSModuleIds) {
-    return hasStyleCSSImport(source, moduleIds)
+    return hasStyleCSSImport(source, moduleIds) || hasMasterShakeDirective(source)
 }
 
 export async function preprocessStyleCSS(source: string, id: string, options: CompileStyleCSSOptions = {}) {
@@ -349,7 +443,7 @@ export function refreshExtractorNativeClasses(extractor: CSSExtractor, nativeCla
 
 export async function registerStyleCSSSource(
     extractor: CSSExtractor,
-    styleCSSSources: Map<string, string>,
+    styleCSSSources: StyleCSSSources,
     id: string,
     source: string,
     options: RegisterStyleCSSSourceOptions = {}
@@ -357,12 +451,17 @@ export async function registerStyleCSSSource(
     const filename = cleanStyleRequest(id)
     const moduleIds = options.moduleIds ?? extractor.options.module as string
     const resolvedSource = resolveStyleCSSImportGraph(filename, source)
-    const cleanSource = removeStyleCSSImports(resolvedSource.source, moduleIds).code
+    const shake = hasMasterShakeDirective(source)
+    const sourceWithoutImports = removeStyleCSSImports(resolvedSource.source, moduleIds).code
+    const cleanSource = removeMasterShakeDirectives(sourceWithoutImports).code
     const { moduleIds: _moduleIds, ...compileOptions } = options
     const result = await compileStyleCSS(filename, cleanSource, compileOptions)
     result.dependencies = resolvedSource.dependencies
-    styleCSSSources.set(filename, cleanSource)
-    if (extractor.options.shakeNative !== false) {
+    styleCSSSources.set(filename, {
+        source: cleanSource,
+        shake
+    })
+    if (shake) {
         refreshExtractorNativeClasses(extractor, result.nativeClassNames)
     }
     return result
@@ -440,7 +539,6 @@ export async function createExtractedCSS(options: CreateExtractedCSSOptions) {
         ...compileOptions
     } = options
     const classes = compileOptions.classes ?? getExtractorClasses(extractor)
-    const shakeNative = extractor.options.shakeNative !== false
     const shouldLoadConfig = Boolean(configPath && (
         loadConfigMode === 'always' ||
         (loadConfigMode === 'css' && extname(configPath) === '.css')
@@ -452,9 +550,9 @@ export async function createExtractedCSS(options: CreateExtractedCSSOptions) {
 
     const styleResults = await Promise.all(
         Array.from(styleCSSSources || [])
-            .map(([id, source]) => compileStyleCSS(id, source, {
+            .map(([id, styleSource]) => compileStyleCSS(id, styleSource.source, {
                 ...compileOptions,
-                classes: shakeNative ? classes : undefined
+                classes: styleSource.shake ? classes : undefined
             }))
     )
     const nativeCSS = styleResults.map((result) => result.nativeCSS).filter(Boolean)

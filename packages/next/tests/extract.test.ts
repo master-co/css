@@ -123,6 +123,39 @@ describe('Next extract mode', () => {
         expect(readFileSync(outputPath, 'utf-8')).toContain('--color-primary:red')
     })
 
+    it('shakes dev CSS chunks that declare master shake', async () => {
+        const root = createFixture()
+        writeFileSync(join(root, 'app/page.tsx'), `
+            export default function Page() {
+                return <main className="main block">Hello</main>
+            }
+        `)
+
+        const outputPath = resolveExtractOutputPath(root)
+        const statePath = resolveExtractStatePath(outputPath)
+
+        await prepareNextExtract({ mode: 'extract' }, { projectDir: root })
+
+        const replaced = await runExtractCSSLoader(statePath, join(root, 'app/globals.css'), `
+            @master shake;
+            @import "virtual:master.css";
+
+            .main {
+                color: red;
+            }
+
+            .unused {
+                color: blue;
+            }
+        `)
+
+        expect(replaced).toContain('display:block')
+        expect(replaced).toContain('.main')
+        expect(replaced).not.toContain('.unused')
+        expect(replaced).not.toContain('@master shake')
+        expect(readFileSync(outputPath, 'utf-8')).not.toContain('.unused')
+    })
+
     it('adds output and root config files as CSS loader dependencies for dev updates', async () => {
         const root = createFixture()
         writeFileSync(join(root, 'theme.css'), '@master { --color-primary: #00f; }')

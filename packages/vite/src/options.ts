@@ -25,7 +25,7 @@ export interface PluginOptions {
     mode?: 'runtime' | 'extract' | 'progressive' | 'pre-render' | null
 
     /**
-     * Extractor options for class usage scanning and linked native CSS shaking.
+     * Extractor options for class usage scanning.
      */
     extractor?: ExtractorOptions
 

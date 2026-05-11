@@ -2,10 +2,12 @@ import {
     STYLE_CSS_REQUEST_RE,
     cleanStyleRequest,
     compileStyleCSS,
+    hasMasterShakeDirective,
     hasStyleCSSImport,
     isMasterStyleSource,
     isStyleCSSRequest,
     registerStyleCSSSource as registerExtractorStyleCSSSource,
+    removeMasterShakeDirectives,
     removeStyleCSSImports,
     replaceStyleCSSImports
 } from '@master/css-extractor/style'
@@ -15,8 +17,10 @@ export {
     STYLE_CSS_REQUEST_RE,
     cleanStyleRequest,
     compileStyleCSS,
+    hasMasterShakeDirective,
     isMasterStyleSource,
     isStyleCSSRequest,
+    removeMasterShakeDirectives,
     replaceStyleCSSImports
 }
 

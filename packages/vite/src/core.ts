@@ -1,4 +1,5 @@
 import CSSExtractor from '@master/css-extractor'
+import type { StyleCSSSources } from '@master/css-extractor/style'
 import type { ExploreConfigResult } from '@master/css-explore-config'
 import type { Plugin, ResolvedConfig } from 'vite'
 import fg from 'fast-glob'
@@ -34,7 +35,7 @@ export interface PluginContext {
     extractor: CSSExtractor
     virtualCSSImporters?: Set<string>
     virtualCSSPlaceholderEmitted?: boolean
-    styleCSSSources?: Map<string, string>
+    styleCSSSources?: StyleCSSSources
     includeGeneratedCSS?: boolean
 }
 
@@ -61,10 +62,7 @@ export default function masterCSS(options?: PluginOptions): Plugin[] {
         ResolveContextPlugin(),
         ConfigVirtualModulePlugin(options, context)
     ]
-    const usesExtractor = options.mode !== null && (
-        options.mode === 'extract' ||
-        options.extractor?.shakeNative !== false
-    )
+    const usesExtractor = options.mode !== null
     if (usesExtractor) {
         plugins.push(
             ExtractorPlugin(options, context),

@@ -240,7 +240,9 @@ describe('VirtualCSSModulePlugin (D1 placeholder-leak warn)', () => {
             ctx.extractor.latentClasses = new Set(['btn', 'native-used'])
             ctx.styleCSSSources = new Map([[
                 path.join(root, 'src/styles.scss'),
-                `
+                {
+                    shake: true,
+                    source: `
                     $accent: red;
 
                     .native-used,
@@ -254,6 +256,7 @@ describe('VirtualCSSModulePlugin (D1 placeholder-leak warn)', () => {
                         }
                     }
                 `
+                }
             ]])
 
             const plugin = VirtualCSSModulePlugin({} as any, ctx)

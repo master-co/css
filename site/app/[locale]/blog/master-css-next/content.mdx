@@ -182,6 +182,7 @@ npm run start
 Extract mode keeps the same `virtual:master.css` authoring model used by other Master CSS build integrations:
 
 ```css name=app/globals.css
+@master shake;
 @import 'virtual:master.css';
 
 .main {
@@ -214,9 +215,9 @@ const nextConfig = await withMasterCSS({
 export default nextConfig
 ```
 
-Under the hood, extract mode scans the configured source files with `@master/css-extractor` and writes a generated CSS file under `.master/`. A Turbopack CSS loader replaces imports of `virtual:master.css` with that generated CSS, and CSS files that import the virtual stylesheet are treated as extractable CSS entries.
+Under the hood, extract mode scans the configured source files with `@master/css-extractor` and writes a generated CSS file under `.master/`. A Turbopack CSS loader replaces imports of `virtual:master.css` with that generated CSS, and CSS files that declare `@master shake;` are treated as native CSS shaking roots.
 
-Ordinary class selectors are pruned against detected classes. References to `var(--*)` or configured animation names can pull matching variables and keyframes from the config graph rooted at `master.css`. During Turbopack builds, a scanner loader also reads JavaScript and TypeScript modules that pass through the module graph, so imported files can incrementally feed additional class names into the extractor.
+Ordinary class selectors in those roots are pruned against detected classes. References to `var(--*)` or configured animation names can pull matching variables and keyframes from the config graph rooted at `master.css`. During Turbopack builds, a scanner loader also reads JavaScript and TypeScript modules that pass through the module graph, so imported files can incrementally feed additional class names into the extractor.
 
 This mode is intentionally source-scanned. It works best when complete class strings are visible in source files, and source-glob extraction remains the production correctness baseline.
 

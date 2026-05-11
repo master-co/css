@@ -52,7 +52,6 @@ const options: Options = {
     ],
     includeClasses: [],
     excludeClasses: [],
-    shakeNative: true,
 }
 
 export interface Options {
@@ -66,10 +65,6 @@ export interface Options {
     exclude?: FastGlobPattern[]
     includeClasses?: string[]
     excludeClasses?: string[] | RegExp[]
-    /**
-     * Whether linked native stylesheets should prune class selector rules by extracted usage.
-     */
-    shakeNative?: boolean
 }
 
 export default options

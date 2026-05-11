@@ -69,6 +69,26 @@ describe('VirtualCSSImportPlugin', () => {
         expect(context.virtualCSSPlaceholderEmitted).toBeUndefined()
     })
 
+    test('treats @master shake stylesheets as managed CSS entries', async () => {
+        const context = makeContext('build')
+        const plugin = VirtualCSSImportPlugin({}, context)
+
+        const result = await (plugin as any).transform.call(
+            {},
+            '@master shake;\n.card{color:red}',
+            '/project/src/style.css'
+        )
+
+        expect(result.code).toBe(SLOT)
+        expect(context.styleCSSSources.get('/project/src/style.css')).toMatchObject({
+            shake: true,
+            source: expect.stringContaining('.card')
+        })
+        expect(context.styleCSSSources.get('/project/src/style.css').source).not.toContain('@master shake')
+        expect(context.virtualCSSImporters).toEqual(new Set(['/project/src/style.css']))
+        expect(context.virtualCSSPlaceholderEmitted).toBe(true)
+    })
+
     test('ignores standalone @master stylesheets without virtual CSS imports', async () => {
         const context = makeContext('build')
         const plugin = VirtualCSSImportPlugin({}, context)

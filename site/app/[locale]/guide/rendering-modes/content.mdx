@@ -306,11 +306,12 @@ Webpack-based integrations also support the shorter CSS import:
 Use one import path for the generated stylesheet. If both JavaScript and CSS import the virtual CSS module in Webpack, the integration keeps the CSS output on the stylesheet import path.
 
 ### Native CSS entries
-Regular CSS outside `@master` remains native CSS. When a stylesheet imports the generated virtual CSS module, integrations treat that stylesheet as an extractable CSS entry and prune class selectors against detected source classes.
+Regular CSS outside `@master` remains native CSS. When a stylesheet declares `@master shake;`, integrations treat that stylesheet as a shake root and prune class selectors against detected source classes.
 
-Those native rules can also pull matching config variables referenced by `var(--*)` and configured keyframes referenced by animation declarations.
+Those native rules can also pull matching config variables referenced by `var(--*)` and configured keyframes referenced by animation declarations. Import `virtual:master.css` only where the generated Master CSS should be inserted.
 
 ```css name=src/style.css
+@master shake;
 @import 'virtual:master.css';
 
 .native-card {
@@ -330,24 +331,22 @@ Those native rules can also pull matching config variables referenced by `var(--
 The generated CSS contains `.native-card` and `.btn` when both classes are scanned. `.unused-card` is removed because no scanned source uses it.
 
 ### Dynamic class limitations
-Static extraction can only generate CSS for class strings that are visible in scanned source. It cannot evaluate conditions, run helper functions, resolve remote content, or predict classes assembled by string concatenation.
+Static extraction depends on complete class strings that exist in scanned source files. It cannot evaluate conditions, run helper functions, resolve remote content, or predict classes assembled by string concatenation.
 
-(x) Don't construct truncated class names
+(x) Do not construct partial class names.
 ```tsx
 const className = 'bg:' + (error ? 'red': 'green')
 ```
-(o) Write complete classes
+(o) Map states to complete class names.
 ```tsx
 const className = error ? 'bg:red' : 'bg:green'
 ```
-(o) Support dynamic values using CSS variables
+(o) Pass dynamic values through CSS variables while keeping the class static.
 ```tsx
 <div className="font-size:$(size)@sm" style={{ '--size': size }}></div>
 ```
 
-Write complete class names in source, or pass runtime values through CSS variables while keeping the Master CSS class itself complete. Use [Runtime Rendering](#runtime-rendering) when class names are created only after the page is running.
-
-Source-glob scanning is the production correctness baseline. Some integrations also scan files as they pass through the module graph for faster incremental updates, but the final build still depends on statically discoverable class strings.
+For the full model, including source scanning, fixed classes, and native CSS shaking, see [Extracting and shaking](/guide/extracting-and-shaking).
 
 ---
 

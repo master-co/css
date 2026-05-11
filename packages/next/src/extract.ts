@@ -5,7 +5,8 @@ import {
     createExtractedCSS as createExtractorExtractedCSS,
     isMasterStyleSource,
     isStyleCSSRequest,
-    registerStyleCSSSource
+    registerStyleCSSSource,
+    type StyleCSSSources
 } from '@master/css-extractor/style'
 import { loadConfig, resolveConfigPath } from '@master/css-explore-config'
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
@@ -34,7 +35,7 @@ export interface ExtractState {
 
 interface ExtractSession {
     extractor: CSSExtractor
-    styleCSSSources: Map<string, string>
+    styleCSSSources: StyleCSSSources
     ready: Promise<CSSExtractor>
     write: () => Promise<void>
     watching?: boolean
@@ -110,7 +111,7 @@ async function writeExtractedCSS(outputPath: string, cssText: string) {
 
 function createSession(projectDir: string, outputPath: string, options: ResolvedOptions): ExtractSession {
     const extractor = new CSSExtractor(resolveExtractorOptions(options), projectDir)
-    const styleCSSSources = new Map<string, string>()
+    const styleCSSSources: StyleCSSSources = new Map()
     let writeChain = Promise.resolve()
     let session: ExtractSession
     const write = () => {
