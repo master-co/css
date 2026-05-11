@@ -7,21 +7,6 @@ Officially integrated packages or extensions will automatically read the __maste
 
 ---
 
-## One workspace entry
-Whether it's a single repository or a monorepo, create a __master.css__ file in the root directory as the workspace entry. It can define `@master {}` directly or import the CSS files that contain those definitions.
-<ExplorerView>
-{[
-    { name: 'src', children: [
-        { name: 'eslint.config.js' },
-        { name: 'master.css' },
-        { name: 'globals.css' }
-    ]}
-]}
-</ExplorerView>
-The language service will create at least a root workspace regardless of whether `master.css` exists.
-
----
-
 ## One project, one workspace
 Inside one `package.json` project, Master CSS supports one workspace instance. That workspace has one configuration graph, one extraction context, and one set of tool integrations for the current project boundary.
 
