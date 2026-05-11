@@ -131,6 +131,16 @@ test('core grammar highlights functions, numeric values, units, and value separa
     assertTokenScope(tokens, 'px', 'keyword.other.unit')
 })
 
+test('core grammar highlights plain variable references as value tokens', () => {
+    const tokens = tokensFor(coreHighlighter, 'h:$size-sm font-size:$headline-size fg:$color-blue-50/.5', 'master-css')
+    assertTokenScope(tokens, '$size-sm', 'variable.other.master-css.css')
+    assertTokenScope(tokens, '$headline-size', 'variable.other.master-css.css')
+    assertTokenScope(tokens, '$color-blue-50', 'variable.other.master-css.css')
+    assertTokenScope(tokens, '/', 'keyword.operator.css')
+    assertTokenScope(tokens, '.5', 'constant.numeric.css')
+    assertNoTokenScope(tokens, '50', 'constant.numeric.css')
+})
+
 test('core grammar treats x as a unit only before non-letter boundaries', () => {
     const baseUnit = tokensFor(coreHighlighter, 'p:2x', 'master-css')
     assertTokenScope(baseUnit, 'x', 'keyword.other.unit')

@@ -135,6 +135,20 @@
                     }
                 },
                 {
+                    "match": "(?<=(?:[^\\s;:]+:|[@~]|(?:[^\\s;\\:\\|,]+\\())[^\\s;\\:\"'`]*)(\\$[-\\w]+)((/)(\\d*\\.\\d+|\\d+))?",
+                    "captures": {
+                        "1": {
+                            "name": "variable.other.master-css.css"
+                        },
+                        "3": {
+                            "name": "keyword.operator.css"
+                        },
+                        "4": {
+                            "name": "constant.numeric.css"
+                        }
+                    }
+                },
+                {
                     "match": "(?<![^\\s]+@[^\\s]+)([^\\s;\\:\\|,@\"'`\\)]+)(\\()",
                     "captures": {
                         "1": {
