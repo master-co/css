@@ -13,13 +13,6 @@ export default () => <CodeTabs>{[
             <link rel="preload" as="script" href="https://cdn.master.co/css-runtime@rc">
             <link rel="preload" as="style" href="https://cdn.master.co/normal.css">
             <link rel="stylesheet" href="https://cdn.master.co/normal.css">
-            <script>
-                window.masterCSSConfig = {
-                    variables: [
-                        { key: 'primary', value: '#000000' }
-                    ]
-                }
-            </script>
             <script src="https://cdn.master.co/css-runtime@rc"></script>
         </head>
         <body>
@@ -42,11 +35,7 @@ export default () => <CodeTabs>{[
             <link rel="stylesheet" href="https://cdn.master.co/normal.css">
             <script type="module">
                 import { initCSSRuntime } from 'https://cdn.master.co/css-runtime@rc/+esm'
-                initCSSRuntime({
-                    variables: [
-                        { key: 'primary', value: '#000000' }
-                    ]
-                })
+                initCSSRuntime()
             </script>
         </head>
         <body>

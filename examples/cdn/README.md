@@ -75,13 +75,6 @@
     <link rel="preload" as="script" href="https://cdn.master.co/css-runtime@rc">
     <link rel="preload" as="style" href="https://cdn.master.co/normal.css@rc">
     <link rel="stylesheet" href="https://cdn.master.co/normal.css@rc">
-    <script>
-        window.masterCSSConfig = {
-            variables: {
-                primary: '#000000'
-            }
-        }
-    </script>
     <script src="https://cdn.master.co/css-runtime@rc"></script>
 </head>
 <body>

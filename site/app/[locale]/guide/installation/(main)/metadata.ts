@@ -4,7 +4,7 @@ const metadata = define({
     title: {
         absolute: 'Installing Master CSS'
     },
-    description: 'Master CSS provides three rendering modes, which you can choose according to project scale and scenarios to meet your business requirements.',
+    description: 'Install Master CSS with Vite, generate CSS from class names, and start styling in a few steps.',
     category: 'Getting Started',
     order: 2,
     other: {

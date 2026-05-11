@@ -1,8 +1,85 @@
-import Installation from '../vite/content.mdx';
 import Footer from './footer.mdx'
 
 ## Installation [sr-only]
-Quickly create a local-launched project by specifying a [rendering mode](/guide/rendering-modes) via the official Vite plugin.
+Start with Vite and the official plugin. This quick start uses [static extraction](/guide/rendering-modes#static-extraction) for generated CSS.
 
-<Installation />
+<StepSection>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Create a Vite project
+            Create an app and enter the project directory.
+        </StepL>
+        <StepR>
+            ```bash name=Terminal
+            npm create vite@latest my-app
+            cd my-app
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Install and initialize
+            Add the Vite plugin, then create `master.css`.
+        </StepL>
+        <StepR>
+            ```bash action=install
+            @master/css.vite@rc
+            ```
+
+            ```bash action=create
+            @master/css@rc
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Configure Vite
+            Register `masterCSS()` in extract mode.
+        </StepL>
+        <StepR>
+            ```js name=vite.config.js
+            import { defineConfig } from 'vite'
+            import masterCSS from '@master/css.vite' // [!code highlight]
+
+            export default defineConfig({
+                plugins: [
+                    masterCSS({ // [!code highlight]
+                        mode: 'extract' // [!code highlight]
+                    }) // [!code highlight]
+                ]
+            })
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Import generated CSS
+            Import the virtual stylesheet once from the CSS file your app already loads.
+        </StepL>
+        <StepR>
+            ```css name=src/style.css
+            @import 'virtual:master.css';
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Run and style
+            Start the dev server, then add Master CSS classes.
+        </StepL>
+        <StepR>
+            ```bash name=Terminal&action=run
+            dev
+            ```
+
+            ```html name=index.html
+            <h1 class="italic m:2xl fg:strong font:5xl font:heavy">
+                Hello World
+            </h1>
+            ```
+        </StepR>
+    </Step>
+    <HelloWorld url="localhost:5173" />
+</StepSection>
+
 <Footer />
