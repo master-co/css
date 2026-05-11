@@ -109,4 +109,139 @@ describe('style CSS extraction helpers', () => {
         expect(css).not.toContain('@master')
         expect(css).not.toContain('virtual:master.css')
     })
+
+    it('shakes local CSS imports from linked stylesheets', async () => {
+        const root = createFixture()
+        mkdirSync(join(root, 'app/styles'), { recursive: true })
+        writeFileSync(join(root, 'app/styles/btn.css'), `
+            .btn-native {
+                color: red;
+            }
+
+            .btn-unused {
+                color: blue;
+            }
+        `)
+        const extractor = new CSSExtractor({
+            include: [],
+            config: 'master.css',
+            module: 'virtual:master.css'
+        }, root)
+        await extractor.init()
+
+        const styleCSSSources = new Map<string, string>()
+        const result = await registerStyleCSSSource(extractor, styleCSSSources, join(root, 'app/globals.css'), `
+            @import "virtual:master.css";
+            @import "./styles/btn.css";
+
+            .card {
+                display: grid;
+            }
+
+            .unused {
+                display: block;
+            }
+        `)
+        await extractor.insert(join(root, 'app/page.html'), '<div class="card btn-native"></div>')
+
+        const css = await createExtractedCSS({
+            extractor,
+            styleCSSSources,
+            projectDir: root
+        })
+
+        expect(result.dependencies).toEqual([
+            join(root, 'app/globals.css'),
+            join(root, 'app/styles/btn.css')
+        ])
+        expect(css).toContain('.card')
+        expect(css).toContain('.btn-native')
+        expect(css).not.toContain('.unused')
+        expect(css).not.toContain('.btn-unused')
+        expect(css).not.toContain('@import "./styles/btn.css"')
+    })
+
+    it('preserves linked native CSS when native shaking is disabled', async () => {
+        const root = createFixture()
+        const extractor = new CSSExtractor({
+            include: [],
+            config: 'master.css',
+            module: 'virtual:master.css',
+            shakeNative: false
+        }, root)
+        await extractor.init()
+
+        const styleCSSSources = new Map<string, string>()
+        await registerStyleCSSSource(extractor, styleCSSSources, join(root, 'app/globals.css'), `
+            @import "virtual:master.css";
+
+            .card {
+                display: grid;
+            }
+
+            .unused {
+                display: block;
+            }
+        `)
+        await extractor.insert(join(root, 'app/page.html'), '<div class="card"></div>')
+
+        const css = await createExtractedCSS({
+            extractor,
+            styleCSSSources,
+            projectDir: root
+        })
+
+        expect([...extractor.nativeClassNames]).toEqual([])
+        expect([...extractor.usedNativeClasses]).toEqual([])
+        expect(css).toContain('.card')
+        expect(css).toContain('.unused')
+    })
+
+    it('can emit shaken native CSS without generated Master CSS', async () => {
+        const root = createFixture()
+        const extractor = new CSSExtractor({
+            include: [],
+            config: 'master.css',
+            module: 'virtual:master.css'
+        }, root)
+        await extractor.init()
+
+        const styleCSSSources = new Map<string, string>()
+        await registerStyleCSSSource(extractor, styleCSSSources, join(root, 'app/globals.css'), `
+            @import "virtual:master.css";
+
+            .card {
+                display: grid;
+            }
+        `)
+        await extractor.insert(join(root, 'app/page.html'), '<div class="card block"></div>')
+
+        const css = await createExtractedCSS({
+            extractor,
+            styleCSSSources,
+            projectDir: root,
+            includeGeneratedCSS: false
+        })
+
+        expect(css).toContain('.card')
+        expect(css).not.toContain('.block{display:block}')
+    })
+
+    it('returns empty CSS when generated output is disabled without linked stylesheets', async () => {
+        const root = createFixture()
+        const extractor = new CSSExtractor({
+            include: [],
+            config: 'master.css',
+            module: 'virtual:master.css'
+        }, root)
+        await extractor.init()
+        await extractor.insert(join(root, 'app/page.html'), '<div class="block"></div>')
+
+        const css = await createExtractedCSS({
+            extractor,
+            includeGeneratedCSS: false
+        })
+
+        expect(css).toBe('')
+    })
 })

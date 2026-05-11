@@ -21,7 +21,10 @@ export default function VirtualCSSImportPlugin(_options: unknown, context: Plugi
             if (!moduleId) return
             if (!isMasterStyleSource(code, moduleId)) return
 
-            await registerStyleCSSSource(context, id, code)
+            const result = await registerStyleCSSSource(context, id, code)
+            for (const dependency of result.dependencies) {
+                this.addWatchFile?.(dependency)
+            }
 
             const isServe = context.config?.command === 'serve'
             const replacement = isServe

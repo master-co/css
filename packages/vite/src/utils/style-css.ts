@@ -32,9 +32,9 @@ export function hasVirtualCSSImport(code: string, moduleId: string) {
     return hasStyleCSSImport(code, moduleId)
 }
 
-export async function registerStyleCSSSource(context: PluginContext, id: string, source: string): Promise<void> {
+export async function registerStyleCSSSource(context: PluginContext, id: string, source: string) {
     context.styleCSSSources ??= new Map()
-    await registerExtractorStyleCSSSource(context.extractor, context.styleCSSSources, id, source, {
+    return registerExtractorStyleCSSSource(context.extractor, context.styleCSSSources, id, source, {
         moduleIds: context.extractor.options.module as string,
         projectDir: context.config?.root
     })

@@ -12,6 +12,10 @@ import RuntimeMode from './modes/runtime'
 import ProgressiveMode from './modes/progressive'
 import PreRenderMode from './modes/pre-render'
 import InjectNormalCSSPlugin from './plugins/inject-normal-css'
+import { ExtractorPlugin, UsageGraphPlugin } from './plugins/extractor'
+import VirtualCSSImportPlugin from './plugins/virtual-css-import'
+import VirtualCSSHMRPlugin from './plugins/virtual-css-hmr'
+import VirtualCSSModulePlugin from './plugins/virtual-css-module'
 import defaultPluginOptions, { PluginOptions } from './options'
 
 const __filename = fileURLToPath(import.meta.url)
@@ -31,11 +35,14 @@ export interface PluginContext {
     virtualCSSImporters?: Set<string>
     virtualCSSPlaceholderEmitted?: boolean
     styleCSSSources?: Map<string, string>
+    includeGeneratedCSS?: boolean
 }
 
 export default function masterCSS(options?: PluginOptions): Plugin[] {
     options = { ...defaultPluginOptions, ...options }
-    const context = {} as PluginContext
+    const context = {
+        includeGeneratedCSS: options.mode === 'extract'
+    } as PluginContext
     const ResolveContextPlugin = () => {
         return {
             name: 'master-css:resolve-context',
@@ -54,6 +61,19 @@ export default function masterCSS(options?: PluginOptions): Plugin[] {
         ResolveContextPlugin(),
         ConfigVirtualModulePlugin(options, context)
     ]
+    const usesExtractor = options.mode !== null && (
+        options.mode === 'extract' ||
+        options.extractorOptions?.shakeNative !== false
+    )
+    if (usesExtractor) {
+        plugins.push(
+            ExtractorPlugin(options, context),
+            UsageGraphPlugin(options, context),
+            VirtualCSSImportPlugin(options, context),
+            VirtualCSSHMRPlugin(options, context),
+            VirtualCSSModulePlugin(options, context)
+        )
+    }
     switch (options.mode) {
         case 'runtime':
             plugins.push(...RuntimeMode(options, context))

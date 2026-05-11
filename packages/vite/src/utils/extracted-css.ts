@@ -5,6 +5,7 @@ export default async function getExtractedCSS(context: PluginContext): Promise<s
     return createExtractedCSS({
         extractor: context.extractor,
         styleCSSSources: context.styleCSSSources,
-        projectDir: context.config?.root
+        projectDir: context.config?.root,
+        includeGeneratedCSS: context.includeGeneratedCSS
     })
 }

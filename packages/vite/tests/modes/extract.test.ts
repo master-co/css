@@ -1,5 +1,5 @@
 /**
- * Tests for the C7 + C8 fixes to ExtractMode.
+ * Tests for the C7 + C8 fixes to Vite's shared extractor plugins.
  *
  *  C7 — `master-css:extractor.configResolved` previously did
  *       `context.extractor.options.include = []` unconditionally,
@@ -16,7 +16,7 @@
  * Both fixes preserve the current PluginOptions surface.
  */
 import { describe, test, expect, vi, beforeEach } from 'vitest'
-import ExtractMode from '../../src/modes/extract'
+import { ExtractorPlugin, UsageGraphPlugin } from '../../src/plugins/extractor'
 
 vi.mock('@master/css-extractor', () => {
     // Lightweight stand-in for CSSExtractor that records calls without
@@ -49,7 +49,7 @@ function findPlugin(plugins: any[], name: string) {
 
 const fakeViteConfig = { root: '/proj' } as any
 
-describe('ExtractMode (C7 + C8 fixes)', () => {
+describe('shared extractor plugins (C7 + C8 fixes)', () => {
     beforeEach(() => {
         vi.clearAllMocks()
     })
@@ -57,7 +57,10 @@ describe('ExtractMode (C7 + C8 fixes)', () => {
     describe('C7 — respects user-supplied extractorOptions.include', () => {
         test('default options: extractor.options.include is blanked', async () => {
             const ctx: any = {}
-            const plugins = ExtractMode({} as any, ctx)
+            const plugins = [
+                ExtractorPlugin({} as any, ctx),
+                UsageGraphPlugin({} as any, ctx)
+            ]
             const ex = findPlugin(plugins, 'master-css:extractor')
             await ex.configResolved.call({}, fakeViteConfig)
             expect(ctx.extractor.options.include).toEqual([])
@@ -65,10 +68,11 @@ describe('ExtractMode (C7 + C8 fixes)', () => {
 
         test('user-supplied include is preserved (NOT blanked)', async () => {
             const ctx: any = {}
-            const plugins = ExtractMode(
-                { extractorOptions: { include: ['node_modules/some-lib/dist/**/*.js'] } } as any,
-                ctx,
-            )
+            const pluginOptions = { extractorOptions: { include: ['node_modules/some-lib/dist/**/*.js'] } } as any
+            const plugins = [
+                ExtractorPlugin(pluginOptions, ctx),
+                UsageGraphPlugin(pluginOptions, ctx)
+            ]
             const ex = findPlugin(plugins, 'master-css:extractor')
             await ex.configResolved.call({}, fakeViteConfig)
             expect(ctx.extractor.options.include).toEqual([
@@ -81,10 +85,11 @@ describe('ExtractMode (C7 + C8 fixes)', () => {
             // intent — both mean "trust Vite to feed me modules". Don't trip
             // on this edge case.
             const ctx: any = {}
-            const plugins = ExtractMode(
-                { extractorOptions: { include: [] } } as any,
-                ctx,
-            )
+            const pluginOptions = { extractorOptions: { include: [] } } as any
+            const plugins = [
+                ExtractorPlugin(pluginOptions, ctx),
+                UsageGraphPlugin(pluginOptions, ctx)
+            ]
             await findPlugin(plugins, 'master-css:extractor').configResolved.call({}, fakeViteConfig)
             expect(ctx.extractor.options.include).toEqual([])
         })
@@ -93,7 +98,10 @@ describe('ExtractMode (C7 + C8 fixes)', () => {
     describe('C8 — transform allow-list', () => {
         async function drive(ids: string[]) {
             const ctx: any = {}
-            const plugins = ExtractMode({} as any, ctx)
+            const plugins = [
+                ExtractorPlugin({} as any, ctx),
+                UsageGraphPlugin({} as any, ctx)
+            ]
             await findPlugin(plugins, 'master-css:extractor').configResolved.call({}, fakeViteConfig)
             const staticPlugin = findPlugin(plugins, 'master-css:static')
             for (const id of ids) {
@@ -166,7 +174,10 @@ describe('ExtractMode (C7 + C8 fixes)', () => {
 
         test('build transformIndexHtml feeds HTML to the extractor', async () => {
             const ctx: any = {}
-            const plugins = ExtractMode({} as any, ctx)
+            const plugins = [
+                ExtractorPlugin({} as any, ctx),
+                UsageGraphPlugin({} as any, ctx)
+            ]
             await findPlugin(plugins, 'master-css:extractor').configResolved.call({}, fakeViteConfig)
             const staticPlugin = findPlugin(plugins, 'master-css:static')
 
@@ -181,7 +192,10 @@ describe('ExtractMode (C7 + C8 fixes)', () => {
 
         test('serve transformIndexHtml is left to the HMR plugin', async () => {
             const ctx: any = {}
-            const plugins = ExtractMode({} as any, ctx)
+            const plugins = [
+                ExtractorPlugin({} as any, ctx),
+                UsageGraphPlugin({} as any, ctx)
+            ]
             await findPlugin(plugins, 'master-css:extractor').configResolved.call({}, fakeViteConfig)
             const staticPlugin = findPlugin(plugins, 'master-css:static')
 
