@@ -122,6 +122,7 @@ const DEFAULT_SCREEN_NAMES = new Set(Object.keys(defaultScreens))
 const IMPORTANT_FLAG_VALUE = '__master_important__'
 const MASTER_AT_RULE_PREFIX = '__master_at__:'
 const UTILITY_LAYER_NAMES = new Set<UtilityLayerName>(['base', 'preset', 'main', 'general'])
+const STANDALONE_MASTER_DIRECTIVE_NAMES = new Set(['shake', 'source', 'class'])
 
 const HTML_TAG_NAMES = new Set([
     'a',
@@ -2086,6 +2087,105 @@ function preprocessMasterFlags(source: string) {
     return output + source.slice(index)
 }
 
+function isIdentChar(char: string | undefined) {
+    return Boolean(char && /[-_a-zA-Z0-9]/.test(char))
+}
+
+function findStandaloneMasterDirectiveEnd(source: string, start: number) {
+    let quote = ''
+    let comment = false
+    for (let index = start; index < source.length; index++) {
+        const char = source[index]
+        const next = source[index + 1]
+        if (comment) {
+            if (char === '*' && next === '/') {
+                comment = false
+                index++
+            }
+            continue
+        }
+        if (quote) {
+            if (char === '\\') {
+                index++
+            } else if (char === quote) {
+                quote = ''
+            }
+            continue
+        }
+        if (char === '/' && next === '*') {
+            comment = true
+            index++
+            continue
+        }
+        if (char === '"' || char === '\'') {
+            quote = char
+            continue
+        }
+        if (char === ';') return index + 1
+        if (char === '{') return -1
+    }
+    return -1
+}
+
+function removeStandaloneMasterDirectives(source: string) {
+    let output = ''
+    let offset = 0
+    let quote = ''
+    let comment = false
+    let depth = 0
+    for (let index = 0; index < source.length; index++) {
+        const char = source[index]
+        const next = source[index + 1]
+        if (comment) {
+            if (char === '*' && next === '/') {
+                comment = false
+                index++
+            }
+            continue
+        }
+        if (quote) {
+            if (char === '\\') {
+                index++
+            } else if (char === quote) {
+                quote = ''
+            }
+            continue
+        }
+        if (char === '/' && next === '*') {
+            comment = true
+            index++
+            continue
+        }
+        if (char === '"' || char === '\'') {
+            quote = char
+            continue
+        }
+        if (char === '{') {
+            depth++
+            continue
+        }
+        if (char === '}') {
+            depth--
+            continue
+        }
+        if (depth !== 0 || !source.startsWith('@master', index)) continue
+
+        let cursor = index + '@master'.length
+        if (isIdentChar(source[cursor]) || !/\s/.test(source[cursor] || '')) continue
+        while (/\s/.test(source[cursor] || '')) cursor++
+        const nameStart = cursor
+        while (isIdentChar(source[cursor])) cursor++
+        const name = source.slice(nameStart, cursor)
+        if (!STANDALONE_MASTER_DIRECTIVE_NAMES.has(name)) continue
+        const end = findStandaloneMasterDirectiveEnd(source, cursor)
+        if (end === -1) continue
+        output += source.slice(offset, index)
+        offset = end
+        index = end - 1
+    }
+    return offset ? output + source.slice(offset) : source
+}
+
 function convertBareAnimations(body: string) {
     let output = ''
     let index = 0
@@ -2310,7 +2410,7 @@ export function compileCSS(source: string, options: CompileCSSOptions = {}): Com
     const classFilter = options.classes === undefined
         ? undefined
         : new Set(options.classes)
-    const preprocessedSource = preprocessMasterFlags(source)
+    const preprocessedSource = preprocessMasterFlags(removeStandaloneMasterDirectives(source))
     const transformed = transform({
         filename: options.from || 'master.css',
         code: Buffer.from(preprocessedSource),

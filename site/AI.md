@@ -71,6 +71,8 @@ Visible examples in documentation should be as framework-neutral as practical:
 
 - Prefer native `html`, `css`, and `js` code blocks for the reader-facing examples.
 - Use `class`, not React `className`, in visible HTML examples.
+- In `/guide` pages, prefer CSS extractor directives such as `@master source`, `@master source exclude`, `@master source force`, `@master class`, and `@master class exclude` over JavaScript `extractor` option examples when teaching source scanning, safelisting, or blocklisting. Use JS plugin options only when the section is specifically about integration configuration.
+- Prefer shorthand Master CSS variable references such as `w:$size` over `w:$(size)` unless the example is intentionally teaching legacy syntax, function syntax, fallback behavior, or migration behavior.
 - Use `document.startViewTransition()` with a direct DOM update and fallback in visible JavaScript examples.
 - Avoid exposing Next.js, React state, `flushSync`, or `next/image` in visible examples unless the section is explicitly about a framework integration.
 - The implementation demo may use React, Next.js, and `flushSync`; the displayed code does not need to match it exactly.

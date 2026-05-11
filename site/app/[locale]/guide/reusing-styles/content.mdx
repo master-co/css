@@ -3,7 +3,9 @@ import ComponentsOverview from '../components/components/Overview.mdx'
 ## Overview [sr-only]
 As the styles grow, the class name combinations and the same design patterns appear over and over again in the code. To improve development efficiency and maintain design consistency, you should reuse or access them in some way.
 
-Traditionally, we define components like `.btn` or `.card` by writing CSS rules. In Master CSS, define reusable styles in `@master` so they become config-backed, on-demand component classes. This guide focuses on the strategy of when to abstract; for the full configuration surface, start with [CSS Configuration](/guide/configuration), and for exact component behavior, see [Components](/guide/components).
+Writing `.btn` at the top level of a stylesheet creates a normal CSS rule. It is emitted by your stylesheet pipeline as native CSS, and Master CSS does not treat `btn` as a generated class. Writing `.btn` inside `@master` defines a config-backed component class instead: it is generated on demand only when `btn` is used or extracted, emitted in the `main` cascade layer, and can use Master CSS features such as `@compose`, nested selectors, `@at` conditions, modes, and variant suffixes in markup.
+
+This guide focuses on the strategy of when to abstract; for the full configuration surface, start with [CSS Configuration](/guide/configuration), and for exact component behavior, see [Components](/guide/components).
 ```css name=master.css
 @master {
     .btn {
@@ -189,15 +191,15 @@ We define [variables and modes](/guide/variables-and-modes) to create tokens sup
 ```css name=styles/base.css
 @master {
     light {
-        --color-yellow-ring: $(color-black/.1);
-        --color-touch-yellow: $(color-yellow-30);
-        --color-text-yellow-contrast: $(color-yellow-90);
+        --color-yellow-ring: $color-black/.1;
+        --color-touch-yellow: $color-yellow-30;
+        --color-text-yellow-contrast: $color-yellow-90;
     }
 
     dark {
-        --color-yellow-ring: $(color-white/.3);
-        --color-touch-yellow: $(color-yellow-40);
-        --color-text-yellow-contrast: $(color-yellow-95);
+        --color-yellow-ring: $color-white/.3;
+        --color-touch-yellow: $color-yellow-40;
+        --color-text-yellow-contrast: $color-yellow-95;
     }
 
     .yellow {

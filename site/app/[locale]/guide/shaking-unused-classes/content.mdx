@@ -187,6 +187,87 @@ The same imported file can therefore be shaken differently under different roots
 
 ---
 
+## Scoped extraction
+By default, a shaken stylesheet uses the global extractor scope. Add `@master source`, `@master source exclude`, `@master source force`, `@master class`, and `@master class exclude` inside the stylesheet graph when that root needs a narrower or wider usage graph.
+
+```txt
+app/a/a.css
+  -> scans app/a/page.tsx
+  -> imports ../shared.css
+
+app/b/b.css
+  -> scans app/b/page.tsx
+  -> imports ../shared.css
+```
+
+```css name=app/a/a.css
+@master shake;
+@master source './page.tsx';
+@import "../shared.css";
+
+.a-card {
+    color: red;
+}
+
+.b-card {
+    color: blue;
+}
+```
+
+```css name=app/b/b.css
+@master shake;
+@master source './page.tsx';
+@import "../shared.css";
+
+.a-card {
+    color: red;
+}
+
+.b-card {
+    color: blue;
+}
+```
+
+```css name=app/shared.css
+@master class 'shared-card';
+@master class exclude 'debug-*';
+
+.shared-card {
+    border: 1px solid rgb(0 0 0 / 12%);
+}
+
+.debug-outline {
+    outline: 1px solid red;
+}
+```
+
+`./page.tsx` is resolved relative to the CSS file that declared it. The directives in `shared.css` are merged into whichever root imports it, so `shared-card` is included for both roots and `debug-*` is blocked for both roots.
+
+```tsx name=app/a/page.tsx
+export default function Page() {
+    return <article className="a-card shared-card">A</article>
+}
+```
+
+```tsx name=app/b/page.tsx
+export default function Page() {
+    return <article className="b-card shared-card">B</article>
+}
+```
+
+The `a.css` output keeps `.a-card` and `.shared-card`. The `b.css` output keeps `.b-card` and `.shared-card`. Both roots remove `.debug-outline` because the imported `@master class exclude 'debug-*';` directive belongs to each root scope.
+
+Use `@master source force` when a root must scan a file even though the global or local exclude list would remove it.
+
+```css name=app/a/a.css
+@master shake;
+@master source './**/*.tsx';
+@master source exclude './**/*.test.tsx';
+@master source force './always-scan.test.tsx';
+```
+
+---
+
 ## Rule filtering
 Native shaking filters class selector rules by detected usage. A class rule is kept when its selector branch references a class that is used.
 
@@ -288,6 +369,7 @@ If a native class is used by a bounded external source, include it explicitly so
 
 ```css name=src/dialog.css
 @master shake;
+@master class 'dialog-open dialog-closing';
 
 .dialog-open {
     overflow: hidden;
@@ -298,21 +380,6 @@ If a native class is used by a bounded external source, include it explicitly so
 }
 ```
 
-```ts name=vite.config.ts
-export default defineConfig({
-    plugins: [
-        masterCSS({
-            extractor: {
-                includeClasses: [
-                    'dialog-open',
-                    'dialog-closing'
-                ]
-            }
-        })
-    ]
-})
-```
-
 Use this for known class contracts. Do not use it as a replacement for putting normal application classes in source.
 
 ---
@@ -321,5 +388,5 @@ Use this for known class contracts. Do not use it as a replacement for putting n
 - Add `@master shake;` only to CSS entries whose native class rules should be pruned.
 - Remember that local relative `.css` imports follow the root's shaking decision.
 - Treat nested `@master shake;` in imported files as redundant under the parent root.
-- Use `includeClasses` for native classes used by bounded external systems.
+- Use `@master class` for native classes used by bounded external systems.
 - Omit `@master shake;` for vendor, CMS, legacy, or third-party styles whose class usage is not visible to the extractor.

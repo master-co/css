@@ -64,7 +64,7 @@ export interface Options {
     include?: FastGlobPattern[]
     exclude?: FastGlobPattern[]
     includeClasses?: string[]
-    excludeClasses?: string[] | RegExp[]
+    excludeClasses?: (string | RegExp)[]
 }
 
 export default options

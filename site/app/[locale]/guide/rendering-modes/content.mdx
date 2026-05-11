@@ -221,22 +221,10 @@ The extractor does not observe the DOM and does not execute application code. It
 <StepSection>
     <Step>
         #### <StepNum />Load the extraction context
-        The integration creates an extractor with source globs, exclude globs, optional fixed classes, and the config graph rooted at `master.css`. In watch mode, config and source changes reset or update this context.
+        The integration creates an extractor with source directives, optional fixed classes, and the config graph rooted at `master.css`. In watch mode, config and source changes reset or update this context.
 
-        ```js name=vite.config.js
-        import { defineConfig } from 'vite'
-        import masterCSS from '@master/css.vite'
-
-        export default defineConfig({
-            plugins: [
-                masterCSS({
-                    mode: 'extract',
-                    extractor: {
-                        include: ['src/**/*.{html,js,jsx,ts,tsx,vue,svelte,astro,md,mdx}']
-                    }
-                })
-            ]
-        })
+        ```css name=master.css
+        @master source 'src/**/*.{html,js,jsx,ts,tsx,vue,svelte,astro,md,mdx}';
         ```
     </Step>
     <Step>
@@ -343,7 +331,7 @@ const className = error ? 'bg:red' : 'bg:green'
 ```
 (o) Pass dynamic values through CSS variables while keeping the class static.
 ```tsx
-<div className="font-size:$(size)@sm" style={{ '--size': size }}></div>
+<div className="font-size:$size@sm" style={{ '--size': size }}></div>
 ```
 
 For the full source scanning model, see [Extracting latent classes](/guide/extracting-latent-classes). For native CSS pruning, see [Shaking unused classes](/guide/shaking-unused-classes).

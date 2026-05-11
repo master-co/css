@@ -33,7 +33,8 @@ export function ExtractorPlugin(options: PluginOptions, context: PluginContext):
                 && Array.isArray(options.extractor.include)
                 ? options.extractor.include
                 : null
-            if (!userInclude || userInclude.length === 0) {
+            const cssInclude = context.extractor.extractorDirectives?.include
+            if ((!userInclude || userInclude.length === 0) && (!cssInclude || cssInclude.length === 0)) {
                 context.extractor.options.include = []
             }
         },

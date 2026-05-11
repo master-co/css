@@ -75,7 +75,23 @@ Typically you would use it with the following limitations:
 
 ### `options.excludeClasses`
 Exclude class names accidentally extracted by the scanning process.
-<DocProp defaultValue={options.excludeClasses} types={['string[]', 'RegExp[]']} />
+<DocProp defaultValue={options.excludeClasses} types={['(string | RegExp)[]']} />
+
+### CSS directives
+Extractor options can also be declared in CSS. When these directives are loaded through the `master.css` config graph, they become global extractor defaults. When they appear in a stylesheet root, they only affect that root.
+
+```css
+@master source 'src/**/*.{html,js,jsx,ts,tsx,vue,svelte,astro,md,mdx}';
+@master source exclude 'src/**/*.test.tsx';
+@master source force 'src/generated.tsx';
+
+@master class 'dialog-open bg:primary@dark';
+@master class exclude 'legacy-*';
+```
+
+`@master source` maps to `options.include`, `@master source exclude` maps to `options.exclude`, `@master source force` maps to `options.sources`, `@master class` maps to `options.includeClasses`, and `@master class exclude` maps to `options.excludeClasses`.
+
+Bare source globs are resolved from `cwd`. Globs that start with `./` or `../` are resolved relative to the CSS file that declares the directive. `@master class exclude` accepts exact strings and `*` / `?` wildcard patterns.
 
 ### Native CSS shaking
 Prune native CSS class selector rules from a stylesheet by declaring `@master shake;` in that stylesheet:

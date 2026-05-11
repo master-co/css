@@ -16,6 +16,12 @@ import { explorePathsSync } from '@techor/glob'
 import path from 'path'
 import { Stats } from 'node:fs'
 import bytes from 'bytes'
+import {
+    collectExtractorDirectivesFromCSSGraph,
+    createExtractorDirectives,
+    mergeExtractorOptions,
+    type ExtractorDirectives
+} from './directives'
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
 export default class CSSExtractor extends EventEmitter {
@@ -28,6 +34,7 @@ export default class CSSExtractor extends EventEmitter {
     watchers: FSWatcher[] = []
     initialized = false
     initializing?: Promise<this>
+    extractorDirectives: ExtractorDirectives = createExtractorDirectives()
 
     /**
      * Per-source content-hash cache. When the same `source` arrives with the
@@ -82,6 +89,10 @@ export default class CSSExtractor extends EventEmitter {
                 name: this.options.config as string,
                 cwd: this.cwd
             })
+        this.extractorDirectives = configResult?.extension === 'css'
+            ? collectExtractorDirectivesFromCSSGraph(configResult.path, undefined, this.cwd).directives
+            : createExtractorDirectives()
+        this.options = mergeExtractorOptions(this.options, this.extractorDirectives)
         this.nativeClassNames = new Set(configResult?.nativeClassNames || [])
         this.css = createCSS(
             typeof this.options.config === 'object'
@@ -103,6 +114,7 @@ export default class CSSExtractor extends EventEmitter {
         this.usedNativeClasses.clear()
         this.contentHashes.clear()
         this.validRulesCache.clear()
+        this.extractorDirectives = createExtractorDirectives()
         this.cachedFixedSourcePaths = undefined
         this.cachedAllowedSourcePaths = undefined
         this.initialized = false
@@ -122,6 +134,7 @@ export default class CSSExtractor extends EventEmitter {
         this.usedNativeClasses.clear()
         this.contentHashes.clear()
         this.validRulesCache.clear()
+        this.extractorDirectives = createExtractorDirectives()
         this.removeAllListeners()
         await this.closeWatch()
         this.emit('destroy')
@@ -384,18 +397,15 @@ export default class CSSExtractor extends EventEmitter {
             source = source.split('?')[0]
         }
         const { include, exclude, sources } = this.options
-        if (sources)
-            for (const eachSource of sources) {
-                if (minimatch(source, eachSource, { dot: true })) return true
-            }
-        if (include)
-            for (const eachIncludePattern of include) {
-                if (!minimatch(source, eachIncludePattern, { dot: true })) return false
-            }
-        if (exclude)
-            for (const eachExcludePattern of exclude) {
-                if (minimatch(source, eachExcludePattern, { dot: true })) return false
-            }
+        if (sources?.some((eachSource) => minimatch(source, eachSource, { dot: true }))) {
+            return true
+        }
+        if (include?.length && !include.some((eachIncludePattern) => minimatch(source, eachIncludePattern, { dot: true }))) {
+            return false
+        }
+        if (exclude?.some((eachExcludePattern) => minimatch(source, eachExcludePattern, { dot: true }))) {
+            return false
+        }
         return true
     }
 
@@ -442,4 +452,5 @@ export default class CSSExtractor extends EventEmitter {
 export default interface CSSExtractor {
     css: MasterCSS
     options: Options
+    extractorDirectives: ExtractorDirectives
 }

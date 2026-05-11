@@ -52,7 +52,7 @@ describe('style CSS extraction helpers', () => {
             '.card { color: red; }'
         ].join('\n'))
 
-        expect(hasMasterShakeDirective('@master shake\n.card { color: red; }')).toBe(true)
+        expect(hasMasterShakeDirective('@master shake;\n.card { color: red; }')).toBe(true)
         expect(result.removed).toBe(true)
         expect(result.code).not.toContain('@master shake;\n\n.card')
         expect(result.code).toContain('@media (min-width: 768px) {\n    @master shake;\n}')

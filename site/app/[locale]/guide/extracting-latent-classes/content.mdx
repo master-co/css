@@ -38,45 +38,20 @@ The same extraction model is used by build integrations and by tools that call `
 ---
 
 ## Source boundaries
-The extractor only sees files inside its source boundary. Configure that boundary with `extractor.include`, `extractor.exclude`, and, when needed, `extractor.sources`.
+The extractor only sees files inside its source boundary. Configure that boundary with `@master source`, `@master source exclude`, and, when needed, `@master source force`.
 
-```ts name=vite.config.ts
-import { defineConfig } from 'vite'
-import masterCSS from '@master/css.vite'
-
-export default defineConfig({
-    plugins: [
-        masterCSS({
-            mode: 'extract',
-            extractor: {
-                include: [
-                    'src/**/*.{html,js,jsx,ts,tsx,vue,svelte,astro,md,mdx}'
-                ],
-                exclude: [
-                    'src/**/*.test.tsx',
-                    'src/**/*.stories.tsx'
-                ]
-            }
-        })
-    ]
-})
+```css name=master.css
+@master source 'src/**/*.{html,js,jsx,ts,tsx,vue,svelte,astro,md,mdx}';
+@master source exclude 'src/**/*.test.tsx';
+@master source exclude 'src/**/*.stories.tsx';
 ```
 
-`include` broadly defines files that may contain classes. `exclude` removes known noise such as tests, generated files, build output, and vendor code. `sources` is for mandatory files that should be scanned even if they would otherwise be excluded.
+`@master source` broadly defines files that may contain classes. `@master source exclude` removes known noise such as tests, generated files, build output, and vendor code. `@master source force` is for mandatory files that should be scanned even if they would otherwise be excluded.
 
-```ts name=vite.config.ts
-export default defineConfig({
-    plugins: [
-        masterCSS({
-            mode: 'extract',
-            extractor: {
-                include: ['app/**/*.{ts,tsx,mdx}'],
-                exclude: ['app/admin/**'],
-                sources: ['app/admin/critical-classes.ts']
-            }
-        })
-    ]
-})
+```css name=master.css
+@master source 'app/**/*.{ts,tsx,mdx}';
+@master source exclude 'app/admin/**';
+@master source force 'app/admin/critical-classes.ts';
 ```
 
 In Vite, transformed modules are also fed to the extractor during development. That makes updates fast, but production correctness still depends on class names that exist in scanned source files or are explicitly included.
@@ -157,7 +132,7 @@ export function Hero() {
 
 `hero-title` and `btn` are valid because the project config defines them. `grid`, `gap:xl`, `bg:primary`, and `fg:white` are validated through the utility engine.
 
-Configured classes are still on-demand. Defining `.btn` in `master.css` does not emit it by itself; `.btn` must appear in scanned source or be included through `includeClasses`.
+Configured classes are still on-demand. Defining `.btn` in `master.css` does not emit it by itself; `.btn` must appear in scanned source or be included through `@master class`.
 
 ---
 
@@ -213,7 +188,7 @@ When the value is dynamic but the declaration shape is stable, keep the class st
 function Headline({ size }: { size: string }) {
     return (
         <h1
-            className="font-size:$(headline-size) line-height:1.1"
+            className="font-size:$headline-size line-height:1.1"
             style={{ '--headline-size': size } as React.CSSProperties}
         >
             Launch notes
@@ -222,7 +197,7 @@ function Headline({ size }: { size: string }) {
 }
 ```
 
-The class `font-size:$(headline-size)` is complete and extractable. The runtime value lives in `--headline-size`, which is normal CSS.
+The class `font-size:$headline-size` is complete and extractable. The runtime value lives in `--headline-size`, which is normal CSS.
 
 Use the same pattern for data-driven sizes, positions, and progress values.
 
@@ -231,7 +206,7 @@ function Progress({ value }: { value: number }) {
     return (
         <div className="h:4x bg:surface r:full overflow:hidden">
             <div
-                className="h:full w:$(progress) bg:primary ~width|fast|smooth"
+                className="h:full w:$progress bg:primary ~width|fast|smooth"
                 style={{ '--progress': `${value}%` } as React.CSSProperties}
             />
         </div>
@@ -244,43 +219,19 @@ If the class name itself only exists after the page is running, use [runtime ren
 ---
 
 ## Included and excluded classes
-Use `includeClasses` for bounded classes that do not exist in scanned source. Common cases include CMS enums, database values, server-rendered fragments, or a third-party widget with a known class contract.
+Use `@master class` for bounded classes that do not exist in scanned source. Common cases include CMS enums, database values, server-rendered fragments, or a third-party widget with a known class contract.
 
-```ts name=vite.config.ts
-export default defineConfig({
-    plugins: [
-        masterCSS({
-            mode: 'extract',
-            extractor: {
-                includeClasses: [
-                    'dialog-open',
-                    'translateY(-5):hover',
-                    'bg:primary@dark'
-                ]
-            }
-        })
-    ]
-})
+```css name=master.css
+@master class 'dialog-open translateY(-5):hover bg:primary@dark';
 ```
 
-`includeClasses` does not bypass validation. The class still needs to be a valid Master CSS class, a configured class from `master.css`, or a known native class from a shaken stylesheet.
+`@master class` does not bypass validation. The class still needs to be a valid Master CSS class, a configured class from `master.css`, or a known native class from a shaken stylesheet.
 
-Use `excludeClasses` when broad scanning finds tokens that look like valid classes but should not generate CSS.
+Use `@master class exclude` when broad scanning finds tokens that look like valid classes but should not generate CSS.
 
-```ts name=vite.config.ts
-export default defineConfig({
-    plugins: [
-        masterCSS({
-            mode: 'extract',
-            extractor: {
-                excludeClasses: [
-                    /^debug-/,
-                    'example-token'
-                ]
-            }
-        })
-    ]
-})
+```css name=master.css
+@master class exclude 'debug-*';
+@master class exclude 'example-token';
 ```
 
 Keep both lists small. The most reliable extraction path is still complete class strings in source.
@@ -292,7 +243,7 @@ Keep both lists small. The most reliable extraction path is still complete class
 - Map variants to complete class strings.
 - Use CSS variables for runtime values.
 - Keep source globs broad enough to include framework files and content files.
-- Use `includeClasses` only for bounded classes the extractor cannot see.
-- Use `excludeClasses` for real false positives.
+- Use `@master class` only for bounded classes the extractor cannot see.
+- Use `@master class exclude` for real false positives.
 - Use runtime or progressive rendering for classes created after startup.
 - Use [`@master shake;`](/guide/shaking-unused-classes) when native CSS class rules should be usage-shaken.

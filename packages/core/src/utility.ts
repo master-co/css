@@ -401,7 +401,9 @@ export class Utility {
                                 break
                         }
                     } else {
-                        currentValue += eachValueComponent.text = `var(--${eachValueComponent.name}${(eachValueComponent.fallback ? ',' + eachValueComponent.fallback : '')})`
+                        currentValue += eachValueComponent.text = eachValueComponent.alpha !== undefined
+                            ? `color-mix(in oklab,var(--${eachValueComponent.name}) ${Number(eachValueComponent.alpha) * 100}%,transparent)`
+                            : `var(--${eachValueComponent.name}${(eachValueComponent.fallback ? ',' + eachValueComponent.fallback : '')})`
                     }
                     break
                 case 'separator':
@@ -446,6 +448,11 @@ export class Utility {
             if (currentValue) {
                 let handled = false
                 if (!isVarFunction || currentValueComponents.length) {
+                    const pushVariable = (variableName: string, alpha?: string, token = currentValue) => {
+                        const valueComponent: VariableValueComponent = { type: 'variable', name: variableName, variable: this.css.variables.get(variableName), token }
+                        if (alpha) valueComponent.alpha = Number(alpha)
+                        currentValueComponents.push(valueComponent)
+                    }
                     const handleVariable = (variableName: string, alpha?: string) => {
                         const globalVariableValue = this.css.variables.get(variableName)
                         const variable = this.variables?.get(variableName) || globalVariableValue
@@ -453,15 +460,17 @@ export class Utility {
                             const name = variable.name ?? variableName
                             if (!bypassVariableNames.includes(name)) {
                                 handled = true
-                                const valueComponent: VariableValueComponent = { type: 'variable', name, variable: this.css.variables.get(name), token: currentValue }
-                                if (alpha) valueComponent.alpha = Number(alpha)
-                                currentValueComponents.push(valueComponent)
+                                pushVariable(name, alpha)
                             }
                         }
                     }
                     if (/^\$[a-zA-Z0-9-]+(?:\/[^\/]+)?$/.test(currentValue)) {
                         const [raw, alpha] = currentValue.slice(1).split('/')
                         handleVariable(raw, alpha)
+                        if (!handled && !bypassVariableNames.includes(raw)) {
+                            handled = true
+                            pushVariable(raw, alpha)
+                        }
                     } else {
                         handleVariable(currentValue)
                         if (!handled) {

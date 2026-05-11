@@ -8,6 +8,9 @@
             "include": "#master-css-block"
         },
         {
+            "include": "#master-css-extractor-directives"
+        },
+        {
             "include": "#master-css-standalone-directives"
         }
     ],
@@ -35,6 +38,211 @@
             "patterns": [
                 {
                     "include": "#master-css-nested-block-body"
+                }
+            ]
+        },
+        "master-css-extractor-directives": {
+            "patterns": [
+                {
+                    "include": "#master-css-shake-directive"
+                },
+                {
+                    "include": "#master-css-source-directive"
+                },
+                {
+                    "include": "#master-css-class-directive"
+                }
+            ]
+        },
+        "master-css-shake-directive": {
+            "begin": "((@)master)(\\s+)(shake)(?=\\s|;)",
+            "end": "(;)|(?=\\})",
+            "name": "meta.at-rule.master-css.shake.css",
+            "beginCaptures": {
+                "1": {
+                    "name": "keyword.control.at-rule.master-css.css"
+                },
+                "2": {
+                    "name": "punctuation.definition.keyword.css"
+                },
+                "4": {
+                    "name": "support.type.property-name.css"
+                }
+            },
+            "endCaptures": {
+                "1": {
+                    "name": "punctuation.terminator.rule.css"
+                }
+            },
+            "patterns": [
+                {
+                    "include": "source.css#comment-block"
+                }
+            ]
+        },
+        "master-css-source-directive": {
+            "begin": "((@)master)(\\s+)(source)(?=\\s)",
+            "end": "(;)|(?=\\})",
+            "name": "meta.at-rule.master-css.source.css",
+            "beginCaptures": {
+                "1": {
+                    "name": "keyword.control.at-rule.master-css.css"
+                },
+                "2": {
+                    "name": "punctuation.definition.keyword.css"
+                },
+                "4": {
+                    "name": "support.type.property-name.css"
+                }
+            },
+            "endCaptures": {
+                "1": {
+                    "name": "punctuation.terminator.rule.css"
+                }
+            },
+            "patterns": [
+                {
+                    "include": "source.css#comment-block"
+                },
+                {
+                    "match": "\\b(exclude|force)\\b",
+                    "captures": {
+                        "1": {
+                            "name": "storage.modifier.master-css.css"
+                        }
+                    }
+                },
+                {
+                    "include": "#master-css-directive-string-double"
+                },
+                {
+                    "include": "#master-css-directive-string-single"
+                }
+            ]
+        },
+        "master-css-class-directive": {
+            "begin": "((@)master)(\\s+)(class)(?=\\s)",
+            "end": "(;)|(?=\\})",
+            "name": "meta.at-rule.master-css.class.css",
+            "beginCaptures": {
+                "1": {
+                    "name": "keyword.control.at-rule.master-css.css"
+                },
+                "2": {
+                    "name": "punctuation.definition.keyword.css"
+                },
+                "4": {
+                    "name": "support.type.property-name.css"
+                }
+            },
+            "endCaptures": {
+                "1": {
+                    "name": "punctuation.terminator.rule.css"
+                }
+            },
+            "patterns": [
+                {
+                    "include": "source.css#comment-block"
+                },
+                {
+                    "match": "\\b(exclude)\\b",
+                    "captures": {
+                        "1": {
+                            "name": "storage.modifier.master-css.css"
+                        }
+                    }
+                },
+                {
+                    "include": "#master-css-class-string-double"
+                },
+                {
+                    "include": "#master-css-class-string-single"
+                }
+            ]
+        },
+        "master-css-directive-string-double": {
+            "begin": "(\")",
+            "end": "(\")",
+            "name": "string.quoted.double.css",
+            "beginCaptures": {
+                "1": {
+                    "name": "punctuation.definition.string.begin.css"
+                }
+            },
+            "endCaptures": {
+                "1": {
+                    "name": "punctuation.definition.string.end.css"
+                }
+            }
+        },
+        "master-css-directive-string-single": {
+            "begin": "(')",
+            "end": "(')",
+            "name": "string.quoted.single.css",
+            "beginCaptures": {
+                "1": {
+                    "name": "punctuation.definition.string.begin.css"
+                }
+            },
+            "endCaptures": {
+                "1": {
+                    "name": "punctuation.definition.string.end.css"
+                }
+            }
+        },
+        "master-css-class-string-double": {
+            "begin": "(\")",
+            "end": "(\")",
+            "contentName": "meta.embedded.block.master-css.class",
+            "beginCaptures": {
+                "1": {
+                    "name": "string.quoted.double.css"
+                }
+            },
+            "endCaptures": {
+                "1": {
+                    "name": "string.quoted.double.css"
+                }
+            },
+            "patterns": [
+                {
+                    "include": "source.master-css"
+                },
+                {
+                    "match": "(\\S)",
+                    "captures": {
+                        "1": {
+                            "name": "string.quoted.double.css"
+                        }
+                    }
+                }
+            ]
+        },
+        "master-css-class-string-single": {
+            "begin": "(')",
+            "end": "(')",
+            "contentName": "meta.embedded.block.master-css.class",
+            "beginCaptures": {
+                "1": {
+                    "name": "string.quoted.single.css"
+                }
+            },
+            "endCaptures": {
+                "1": {
+                    "name": "string.quoted.single.css"
+                }
+            },
+            "patterns": [
+                {
+                    "include": "source.master-css"
+                },
+                {
+                    "match": "(\\S)",
+                    "captures": {
+                        "1": {
+                            "name": "string.quoted.single.css"
+                        }
+                    }
                 }
             ]
         },

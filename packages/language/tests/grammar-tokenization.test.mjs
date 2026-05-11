@@ -200,6 +200,28 @@ test('CSS injection highlights @master root configuration blocks', () => {
     assertTokenScope(tokens, '::scrollbar', 'entity.other.attribute-name.pseudo-element.css')
 })
 
+test('CSS injection highlights top-level extractor directives', () => {
+    const tokens = tokensFor(embeddedHighlighter, `
+        @master shake;
+        @master source './src/**/*.tsx';
+        @master source exclude './src/**/*.test.tsx';
+        @master source force './src/generated.tsx';
+        @master class 'dialog-open bg:primary@dark';
+        @master class exclude 'legacy-*';
+    `, 'css')
+
+    assertTokenScope(tokens, 'master', 'keyword.control.at-rule.master-css.css')
+    assertTokenScope(tokens, 'shake', 'support.type.property-name.css')
+    assertTokenScope(tokens, 'source', 'support.type.property-name.css')
+    assertTokenScope(tokens, 'class', 'support.type.property-name.css')
+    assertTokenScope(tokens, 'exclude', 'storage.modifier.master-css.css')
+    assertTokenScope(tokens, 'force', 'storage.modifier.master-css.css')
+    assertTokenScope(tokens, './src/**/*.tsx', 'string.quoted.single.css')
+    assertTokenScope(tokens, 'bg', 'support.type.property-name.css')
+    assertTokenScope(tokens, 'primary', 'support.constant.property-value.css')
+    assertTokenScope(tokens, '@dark', 'keyword.control.at-rule')
+})
+
 test('CSS injection highlights @master component directives and compose classes', () => {
     const tokens = tokensFor(embeddedHighlighter, `
         @master {

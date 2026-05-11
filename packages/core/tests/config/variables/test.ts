@@ -17,6 +17,8 @@ describe.concurrent('sigil', () => {
     it.concurrent('sigil in class', () => {
         expect(createCSS().create('fg:$color-white')?.text).toContain('oklch(100% 0 none)')
         expect(createCSS().create('fg:$color-white/.5')?.text).toContain('oklch(100% 0 none/0.5)')
+        expect(createCSS().create('w:$size')?.text).toBe('.w\\:\\$size{width:var(--size)}')
+        expect(createCSS().create('fg:$brand/.5')?.text).toBe('.fg\\:\\$brand\\/\\.5{color:color-mix(in oklab,var(--brand) 50%,transparent)}')
     })
     it.concurrent('sigil in config', () => {
         expect(createCSS({ variables: [{ key: 'a', value: '$color-white' }] }).create('fg:a')?.text).toContain('oklch(100% 0 none)')

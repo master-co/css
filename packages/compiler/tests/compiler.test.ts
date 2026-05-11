@@ -281,6 +281,33 @@ describe.concurrent('@master/css-compiler', () => {
         expect(result.nativeCSS).not.toContain('.unused')
     })
 
+    it('ignores standalone extractor directives', () => {
+        const result = compileCSS(`
+            @master source './src/**/*.tsx';
+            @master source exclude './src/**/*.test.tsx';
+            @master source force './src/generated.tsx';
+            @master class 'btn text:center';
+            @master class exclude 'legacy-*';
+            @master shake;
+
+            .card {
+                color: red;
+            }
+
+            @master {
+                .btn {
+                    @compose "block";
+                }
+            }
+        `, { classes: ['btn', 'card'] })
+
+        expect(result.css).toContain('.card')
+        expect(result.css).toContain('.btn{display:block}')
+        expect(result.css).not.toContain('@master source')
+        expect(result.css).not.toContain('@master class')
+        expect(result.css).not.toContain('@master shake')
+    })
+
     it('keeps light and dark as core defaults and auto-registers custom modes', () => {
         const result = compileCSS(`
             @master {
