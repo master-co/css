@@ -1,9 +1,24 @@
 import { AstroIntegration } from 'astro'
 import { default as vitePlugin, CSS_RUNTIME_INJECTIOIN } from '@master/css.vite'
 import defaultOptions, { type IntegrationOptions } from './options'
+import { astroAdapter } from './adapter'
+
+function withAstroAdapter(options: IntegrationOptions): IntegrationOptions {
+    return {
+        ...options,
+        extractor: {
+            ...options.extractor,
+            adapters: [
+                ...(options.extractor?.adapters || []),
+                astroAdapter()
+            ]
+        }
+    }
+}
 
 export default function masterCSS(options?: IntegrationOptions): AstroIntegration {
     options = { ...defaultOptions, ...options }
+    const viteOptions = withAstroAdapter(options)
     return {
         name: '@master/css.astro',
         hooks: {
@@ -12,10 +27,10 @@ export default function masterCSS(options?: IntegrationOptions): AstroIntegratio
                     case 'progressive':
                     case 'runtime':
                         injectScript('page', CSS_RUNTIME_INJECTIOIN)
-                        updateConfig({ vite: { plugins: [vitePlugin({ ...options, injectRuntime: false }) as never] } })
+                        updateConfig({ vite: { plugins: [vitePlugin({ ...viteOptions, injectRuntime: false }) as never] } })
                         break
                     default:
-                        updateConfig({ vite: { plugins: [vitePlugin(options) as never] } })
+                        updateConfig({ vite: { plugins: [vitePlugin(viteOptions) as never] } })
                         break
                 }
                 switch (options.mode) {

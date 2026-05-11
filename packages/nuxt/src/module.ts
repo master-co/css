@@ -1,11 +1,25 @@
 import { defineNuxtModule, addServerPlugin, createResolver, addPlugin } from '@nuxt/kit'
 import { name } from '../package.json'
 import masterCSS, { VIRTUAL_CONFIG_ID } from '@master/css.vite'
+import { vueAdapter } from '@master/css.vue/adapter'
 import { loadConfigSync } from '@master/css-explore-config/sync'
 import type { Plugin } from 'vite'
 import { extname } from 'node:path'
 import ensureCSSConfigPath from '../../../shared/utils/ensure-css-config-path'
 import defaultOptions, { type ModuleOptions } from './options'
+
+function withVueAdapter(options: ModuleOptions): ModuleOptions {
+    return {
+        ...options,
+        extractor: {
+            ...options.extractor,
+            adapters: [
+                ...(options.extractor?.adapters || []),
+                vueAdapter()
+            ]
+        }
+    }
+}
 
 export default defineNuxtModule<{ config?: string }>({
     meta: {
@@ -17,6 +31,7 @@ export default defineNuxtModule<{ config?: string }>({
         if (!nuxt.options.ssr || nuxt.options._prepare) return
         const { resolve } = createResolver(import.meta.url)
         const configPath = ensureCSSConfigPath(options.config, nuxt.options.rootDir)
+        const viteOptions = withVueAdapter(options)
         nuxt.hook('nitro:config', (config) => {
             if (configPath) {
                 if (extname(configPath) === '.css') {
@@ -35,7 +50,7 @@ export default defineNuxtModule<{ config?: string }>({
         const addCSSVitePlugin = (mode = options.mode) => {
             nuxt.hook('vite:extendConfig', (viteConfig) => {
                 viteConfig.plugins = viteConfig.plugins || []
-                viteConfig.plugins.push(masterCSS({ ...options, mode }) as unknown as Plugin)
+                viteConfig.plugins.push(masterCSS({ ...viteOptions, mode }) as unknown as Plugin)
             })
         }
         switch (options.mode) {

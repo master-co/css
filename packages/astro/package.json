@@ -44,6 +44,11 @@
             "types": "./dist/index.d.ts",
             "import": "./dist/index.mjs",
             "default": "./dist/index.mjs"
+        },
+        "./adapter": {
+            "types": "./dist/adapter.d.ts",
+            "import": "./dist/adapter.mjs",
+            "default": "./dist/adapter.mjs"
         }
     },
     "files": [
@@ -58,6 +63,7 @@
         "vite": ">=6"
     },
     "dependencies": {
+        "@master/css-extractor": "workspace:^",
         "@master/css.vite": "workspace:^"
     },
     "devDependencies": {

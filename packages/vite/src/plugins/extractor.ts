@@ -9,7 +9,7 @@ import type { PluginOptions } from '../options'
 // hook to this allow-list avoids pumping every .json / image-as-module /
 // virtual chunk through the regex-heavy `extractLatentClasses`. The trailing
 // `(?:\?|$)` lets through Vite's `?import` / `?url` / `?raw` suffixes.
-export const EXTRACTABLE_EXT = /\.(html|js|jsx|ts|tsx|svelte|astro|vue|md|mdx|pug|php)(?:\?|$)/
+export const EXTRACTABLE_EXT = /\.(html|js|jsx|mjs|cjs|ts|tsx|mts|cts|svelte|astro|vue|md|mdx|pug|php)(?:\?|$)/
 
 export function ExtractorPlugin(options: PluginOptions, context: PluginContext): Plugin {
     return {

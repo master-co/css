@@ -37,6 +37,16 @@
         ".": {
             "types": "./dist/index.d.ts",
             "svelte": "./dist/index.js"
+        },
+        "./adapter": {
+            "types": "./dist/adapter.d.ts",
+            "import": "./dist/adapter.js",
+            "default": "./dist/adapter.js"
+        },
+        "./vite": {
+            "types": "./dist/vite.d.ts",
+            "import": "./dist/vite.js",
+            "default": "./dist/vite.js"
         }
     },
     "files": [
@@ -53,7 +63,9 @@
     },
     "dependencies": {
         "@master/css": "workspace:^",
-        "@master/css-runtime": "workspace:^"
+        "@master/css-extractor": "workspace:^",
+        "@master/css-runtime": "workspace:^",
+        "@master/css.vite": "workspace:^"
     },
     "devDependencies": {
         "@eslint/compat": "^2.0.5",

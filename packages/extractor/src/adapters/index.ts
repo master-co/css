@@ -1,0 +1,4 @@
+export type { SourceAdapter, SourceAdapterInput } from './types'
+export { matchesSourceAdapter } from './types'
+export { HTML_SOURCE_EXT, extractHTMLClasses, htmlAdapter } from './html'
+export { OXC_SOURCE_EXT, extractOxcClasses, oxcAdapter } from './oxc'

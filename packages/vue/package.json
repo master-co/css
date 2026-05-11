@@ -46,6 +46,16 @@
             "types": "./dist/index.d.ts",
             "import": "./dist/index.js",
             "default": "./dist/index.js"
+        },
+        "./adapter": {
+            "types": "./dist/adapter.d.ts",
+            "import": "./dist/adapter.js",
+            "default": "./dist/adapter.js"
+        },
+        "./vite": {
+            "types": "./dist/vite.d.ts",
+            "import": "./dist/vite.js",
+            "default": "./dist/vite.js"
         }
     },
     "files": [
@@ -59,6 +69,8 @@
         "vue": ">= 3.0.0"
     },
     "dependencies": {
+        "@master/css-extractor": "workspace:^",
+        "@master/css.vite": "workspace:^",
         "@master/css-runtime": "workspace:^",
         "@techor/extend": "^3.2.5"
     },

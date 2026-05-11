@@ -10,11 +10,17 @@ export default defineConfig({
         lib: {
             entry: [
                 resolve(__dirname, 'src/index.ts'),
+                resolve(__dirname, 'src/adapter.ts'),
+                resolve(__dirname, 'src/vite.ts'),
             ],
             formats: ['es']
         },
         rollupOptions: {
-            external: ['vue', ...Object.keys(pkg.dependencies)]
+            external: (id) => id === 'vue' ||
+                id.startsWith('vue/') ||
+                Object.keys(pkg.dependencies).some((dependency) =>
+                    id === dependency || id.startsWith(`${dependency}/`)
+                )
         },
     },
 })

@@ -1,5 +1,6 @@
 import type { Config } from '@master/css'
-import type { Pattern as FastGlobPattern, Pattern } from 'fast-glob'
+import type { Pattern as FastGlobPattern } from 'fast-glob'
+import type { SourceAdapter } from '../adapters'
 
 const options: Options = {
     // enable verbose Logs
@@ -13,7 +14,7 @@ const options: Options = {
     // forcibly specify sources for scanning, not excluded by `options.exclude`
     sources: [],
     // specify sources for scanning
-    include: ['**/*.{html,js,jsx,ts,tsx,svelte,astro,vue,md,mdx,pug,php}'],
+    include: ['**/*.{html,htm,js,jsx,mjs,cjs,ts,tsx,mts,cts,svelte,astro,vue,md,mdx,pug,php}'],
     // specify sources to exclude
     exclude: [
         '**/*.css',
@@ -52,6 +53,7 @@ const options: Options = {
     ],
     includeClasses: [],
     excludeClasses: [],
+    adapters: [],
 }
 
 export interface Options {
@@ -65,6 +67,7 @@ export interface Options {
     exclude?: FastGlobPattern[]
     includeClasses?: string[]
     excludeClasses?: (string | RegExp)[]
+    adapters?: SourceAdapter[]
 }
 
 export default options

@@ -22,6 +22,17 @@ import {
     mergeExtractorOptions,
     type ExtractorDirectives
 } from './directives'
+import {
+    htmlAdapter,
+    matchesSourceAdapter,
+    oxcAdapter,
+    type SourceAdapter
+} from './adapters'
+
+const builtInAdapters = [
+    htmlAdapter(),
+    oxcAdapter()
+]
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
 export default class CSSExtractor extends EventEmitter {
@@ -167,8 +178,12 @@ export default class CSSExtractor extends EventEmitter {
         if (!source || !content || !this.isSourceAllowed(source)) {
             return []
         }
+        const adapter = this.resolveSourceAdapter(source)
+        const extractedClasses = adapter
+            ? adapter.extract({ source, content })
+            : extractLatentClasses(content)
         const latentClasses: string[] = []
-        for (const eachLatentClasses of extractLatentClasses(content)) {
+        for (const eachLatentClasses of extractedClasses) {
             if (this.latentClasses.has(eachLatentClasses)) {
                 continue
             } else {
@@ -271,6 +286,14 @@ export default class CSSExtractor extends EventEmitter {
             this.emit('change')
         }
         return true
+    }
+
+    resolveSourceAdapter(source: string): SourceAdapter | undefined {
+        const adapters = [
+            ...(this.options.adapters || []),
+            ...builtInAdapters
+        ]
+        return adapters.find((adapter) => matchesSourceAdapter(adapter, source))
     }
 
     insertFile(source: string) {

@@ -116,8 +116,12 @@ function applyMasterCSSExtractTurbopackConfig(
     const sourceRules = [
         createExtractSourceRule(/\.tsx$/, '*.tsx', 'typescript'),
         createExtractSourceRule(/\.ts$/, '*.ts', 'typescript'),
+        createExtractSourceRule(/\.mts$/, '*.mts', 'typescript'),
+        createExtractSourceRule(/\.cts$/, '*.cts', 'typescript'),
         createExtractSourceRule(/\.jsx$/, '*.jsx', 'ecmascript'),
-        createExtractSourceRule(/\.js$/, '*.js', 'ecmascript')
+        createExtractSourceRule(/\.js$/, '*.js', 'ecmascript'),
+        createExtractSourceRule(/\.mjs$/, '*.mjs', 'ecmascript'),
+        createExtractSourceRule(/\.cjs$/, '*.cjs', 'ecmascript')
     ].map((rule) => ({
         ...rule,
         loaders: [extractLoader]

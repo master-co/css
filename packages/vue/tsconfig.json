@@ -3,13 +3,13 @@
     "compilerOptions": {
         "outDir": "dist",
         "lib": [
-            "ES2020",
+            "ES2022",
             "DOM",
             "DOM.Iterable"
         ],
         "isolatedModules": true,
-        "noUnusedLocals": true,
-        "noUnusedParameters": true,
+        "noUnusedLocals": false,
+        "noUnusedParameters": false,
         "noFallthroughCasesInSwitch": true,
         // As long as you are using a build tool, we recommend you to author and ship in ES modules.
         // Even if you are targeting Node.js, because

@@ -34,7 +34,6 @@ const SENTINEL_REGEX = /^COMPLETE-STRING--/
 // ─── Hoisted regexes ─────────────────────────────────────────────────────────
 const NON_WHITESPACE_RUN = /\S+/g
 const COMPLETE_STRING = /((?<!\\)["'`])(?:\\\1|(?:(?!\1))[\S\s])*(?<!\\)\1/g
-const COMPLETE_STRING_CAPTURE = /((?<!\\)["'`])((?:\\\1|(?:(?!\1))[\S\s])*)((?<!\\)\1)/g
 const NON_QUOTE_RUN = /[^"'`]+/g
 const SPLIT_SENTINEL_TEXT = 'SPLIT_BY_THIS'
 
