@@ -25,12 +25,12 @@
             "end": "(\\})",
             "captures": {
                 "1": {
-                    "name": "variable punctuation.section.property-list.begin"
+                    "name": "punctuation.section.property-list.begin.bracket.curly.css"
                 }
             },
             "endCaptures": {
                 "1": {
-                    "name": "variable punctuation.section.property-list.end"
+                    "name": "punctuation.section.property-list.end.bracket.curly.css"
                 }
             },
             "contentName": "meta.embedded master-css.class.group",
@@ -58,7 +58,7 @@
                     "match": "(;)",
                     "captures": {
                         "1": {
-                            "name": "punctuation.terminator.rule.css master-css.class.split"
+                            "name": "punctuation.terminator.rule.css"
                         }
                     }
                 }
@@ -81,7 +81,7 @@
                             "name": "support.type.property-name.css"
                         },
                         "2": {
-                            "name": "variable punctuation.separator.key-value.css"
+                            "name": "punctuation.separator.key-value.css"
                         }
                     }
                 }
@@ -96,13 +96,13 @@
                             "name": "support.function.misc.css"
                         },
                         "2": {
-                            "name": "variable punctuation.section.function.begin.bracket.round.css"
+                            "name": "punctuation.section.function.begin.bracket.round.css"
                         },
                         "3": {
                             "name": "variable.argument.css"
                         },
                         "4": {
-                            "name": "variable punctuation.section.function.end.bracket.round.css"
+                            "name": "punctuation.section.function.end.bracket.round.css"
                         }
                     }
                 },
@@ -113,13 +113,13 @@
                             "name": "support.function.misc.css"
                         },
                         "2": {
-                            "name": "variable punctuation.section.function.begin.bracket.round.css"
+                            "name": "punctuation.section.function.begin.bracket.round.css"
                         },
                         "3": {
                             "name": "variable.argument.css"
                         },
                         "4": {
-                            "name": "variable punctuation.section.function.end.bracket.round.css"
+                            "name": "punctuation.section.function.end.bracket.round.css"
                         }
                     }
                 },
@@ -160,7 +160,7 @@
                             "name": "support.function.misc.css"
                         },
                         "2": {
-                            "name": "variable punctuation.section.function.begin.bracket.round.css"
+                            "name": "punctuation.section.function.begin.bracket.round.css"
                         }
                     }
                 },
@@ -227,7 +227,7 @@
                     "match": "(?<=(?:[^\\s;:]+:|[@~]|(?:[^\\s;\\:\\|,]+\\())[^\\s;\\:\"'`]*)(,)",
                     "captures": {
                         "1": {
-                            "name": "variable punctuation.separator.list.comma.css"
+                            "name": "punctuation.separator.list.comma.css"
                         }
                     }
                 },
@@ -243,7 +243,7 @@
                     "match": "(?<=(?:[^\\s;:]+:|[@~]|(?:[^\\s;\\:\\|,]+\\())[^\\s;\\:\"'`]*)(\\()",
                     "captures": {
                         "1": {
-                            "name": "variable punctuation.section.function.begin.bracket.round.css"
+                            "name": "punctuation.section.function.begin.bracket.round.css"
                         }
                     }
                 },
@@ -251,7 +251,7 @@
                     "match": "(?<=[^\\s;\\:\\|,]+\\([^\\s;\\:]*)(\\))",
                     "captures": {
                         "1": {
-                            "name": "variable punctuation.section.function.end.bracket.round.css"
+                            "name": "punctuation.section.function.end.bracket.round.css"
                         }
                     }
                 },
@@ -315,7 +315,7 @@
                             "name": "entity.other.attribute-name.pseudo-element.css"
                         },
                         "3": {
-                            "name": "variable punctuation.section.function.begin.bracket.round.css"
+                            "name": "punctuation.section.function.begin.bracket.round.css"
                         }
                     }
                 },
@@ -329,7 +329,7 @@
                             "name": "entity.other.attribute-name.pseudo-class.css"
                         },
                         "3": {
-                            "name": "variable punctuation.section.function.begin.bracket.round.css"
+                            "name": "punctuation.section.function.begin.bracket.round.css"
                         }
                     }
                 },
@@ -356,7 +356,7 @@
                     "match": "(?<=\\:{1,2}\\-?[A-Za-z][\\w-]*\\([^\\s;\\(]*)(\\))",
                     "captures": {
                         "1": {
-                            "name": "variable punctuation.section.function.end.bracket.round.css"
+                            "name": "punctuation.section.function.end.bracket.round.css"
                         }
                     }
                 },
@@ -364,13 +364,13 @@
                     "match": "(\\[)([^\\s\\]]+)(\\])",
                     "captures": {
                         "1": {
-                            "name": "variable punctuation.definition.entity.begin.bracket.square.css"
+                            "name": "punctuation.definition.entity.begin.bracket.square.css"
                         },
                         "2": {
                             "name": "entity.other.attribute-name.css"
                         },
                         "3": {
-                            "name": "variable punctuation.definition.entity.end.bracket.square.css"
+                            "name": "punctuation.definition.entity.end.bracket.square.css"
                         }
                     }
                 },
@@ -407,13 +407,13 @@
                             "name": "keyword.control.at-rule"
                         },
                         "2": {
-                            "name": "variable punctuation.definition.parameters.begin.bracket.round.css"
+                            "name": "punctuation.definition.parameters.begin.bracket.round.css"
                         },
                         "3": {
                             "name": "support.type.property-name.media.css"
                         },
                         "4": {
-                            "name": "variable punctuation.separator.key-value.css"
+                            "name": "punctuation.separator.key-value.css"
                         },
                         "5": {
                             "name": "constant.numeric.css"
@@ -425,7 +425,7 @@
                             "name": "support.constant.property-value.css"
                         },
                         "8": {
-                            "name": "variable punctuation.definition.parameters.end.bracket.round.css"
+                            "name": "punctuation.definition.parameters.end.bracket.round.css"
                         }
                     }
                 },
@@ -449,7 +449,7 @@
                     "match": "(?<=[^\\s]+@[^\\s]*)(\\()",
                     "captures": {
                         "1": {
-                            "name": "variable punctuation.definition.parameters.begin.bracket.round.css"
+                            "name": "punctuation.definition.parameters.begin.bracket.round.css"
                         }
                     }
                 },
@@ -457,7 +457,7 @@
                     "match": "(?<=[^\\s]+@[^\\s]*)(\\))",
                     "captures": {
                         "1": {
-                            "name": "variable punctuation.definition.parameters.end.bracket.round.css"
+                            "name": "punctuation.definition.parameters.end.bracket.round.css"
                         }
                     }
                 },

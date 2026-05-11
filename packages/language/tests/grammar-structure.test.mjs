@@ -138,3 +138,9 @@ test('core grammar does not hard-code key, value, selector, or at-rule names', (
     assert.equal(raw.includes('keyframes'), false)
     assert.equal(raw.includes('supports'), false)
 })
+
+test('core grammar keeps CSS punctuation scopes aligned with native CSS', () => {
+    const raw = readFileSync(resolve(syntaxesDir, 'master-css.json'), 'utf8')
+    assert.equal(raw.includes('master-css.class.split'), false)
+    assert.equal(raw.includes('variable punctuation'), false)
+})

@@ -99,6 +99,7 @@ test('core grammar highlights Master CSS declaration, selector, and at tokens', 
     const tokens = tokensFor(coreHighlighter, 'fg:red:hover@sm', 'master-css')
     assertTokenScope(tokens, 'fg', 'support.type.property-name.css')
     assertTokenScope(tokens, ':', 'punctuation.separator.key-value.css')
+    assertNoTokenScope(tokens, ':', 'variable')
     assertTokenScope(tokens, 'red', 'support.constant.property-value.css')
     assertTokenScope(tokens, 'hover', 'entity.other.attribute-name.pseudo-class.css')
     assertTokenScope(tokens, '@sm', 'keyword.control.at-rule')
@@ -106,12 +107,14 @@ test('core grammar highlights Master CSS declaration, selector, and at tokens', 
 
 test('core grammar highlights grouped declarations and separators', () => {
     const tokens = tokensFor(coreHighlighter, '{fg:red;bg:blue}', 'master-css')
-    assertTokenScope(tokens, '{', 'punctuation.section.property-list.begin')
+    assertTokenScope(tokens, '{', 'punctuation.section.property-list.begin.bracket.curly.css')
+    assertNoTokenScope(tokens, '{', 'variable')
     assertTokenScope(tokens, 'fg', 'support.type.property-name.css')
-    assertTokenScope(tokens, ';', 'master-css.class.split')
     assertTokenScope(tokens, ';', 'punctuation.terminator.rule.css')
+    assertNoTokenScope(tokens, ';', 'master-css.class.split')
     assertTokenScope(tokens, 'bg', 'support.type.property-name.css')
-    assertTokenScope(tokens, '}', 'punctuation.section.property-list.end')
+    assertTokenScope(tokens, '}', 'punctuation.section.property-list.end.bracket.curly.css')
+    assertNoTokenScope(tokens, '}', 'variable')
 })
 
 test('core grammar leaves predefined static values to semantic tokens', () => {
@@ -132,11 +135,19 @@ test('core grammar leaves predefined static values to semantic tokens', () => {
 test('core grammar highlights functions, numeric values, units, and value separators', () => {
     const tokens = tokensFor(coreHighlighter, 'translate(10x|20px)', 'master-css')
     assertTokenScope(tokens, 'translate', 'support.function.misc.css')
+    assertTokenScope(tokens, '(', 'punctuation.section.function.begin.bracket.round.css')
+    assertNoTokenScope(tokens, '(', 'variable')
     assertTokenScope(tokens, '10', 'constant.numeric.css')
     assertTokenScope(tokens, 'x|', 'keyword.other.unit')
     assertTokenScope(tokens, 'x|', 'keyword.operator.css')
     assertTokenScope(tokens, '20', 'constant.numeric.css')
     assertTokenScope(tokens, 'px', 'keyword.other.unit')
+    assertTokenScope(tokens, ')', 'punctuation.section.function.end.bracket.round.css')
+    assertNoTokenScope(tokens, ')', 'variable')
+
+    const list = tokensFor(coreHighlighter, 'rgb(0,0,0)', 'master-css')
+    assertTokenScope(list, ',', 'punctuation.separator.list.comma.css')
+    assertNoTokenScope(list, ',', 'variable')
 })
 
 test('core grammar aligns strings and selector separators with CSS-like scopes', () => {
@@ -200,9 +211,13 @@ test('core grammar treats x as a unit only before non-letter boundaries', () => 
     assertTokenScope(sizePair, 'x', 'keyword.operator.css')
 
     const mediaTokenName = tokensFor(coreHighlighter, '@media(width:2xl)', 'master-css')
+    assertTokenScope(mediaTokenName, '(', 'punctuation.definition.parameters.begin.bracket.round.css')
+    assertNoTokenScope(mediaTokenName, '(', 'variable')
     assertTokenScope(mediaTokenName, '2xl', 'support.constant.property-value.css')
     assertNoTokenScope(mediaTokenName, '2', 'constant.numeric.css')
     assertNoTokenScope(mediaTokenName, 'x', 'keyword.other.unit')
+    assertTokenScope(mediaTokenName, ')', 'punctuation.definition.parameters.end.bracket.round.css')
+    assertNoTokenScope(mediaTokenName, ')', 'variable')
 
     const mediaResolution = tokensFor(coreHighlighter, '@media(resolution:2x)', 'master-css')
     assertTokenScope(mediaResolution, 'x', 'keyword.other.unit')
