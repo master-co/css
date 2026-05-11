@@ -203,68 +203,81 @@ The [CSS runtime](#runtime-rendering) then takes over to detect any changes in d
 
 ---
 
-## Static Extraction
-Static Extraction is a zero-runtime rendering mode in which all CSS rules are precomputed during the build process. This approach statically analyzes your source files — such as `.html, .js, .jsx, .ts, .svelte`, and more — to collect class names and generate a minimal, deterministic CSS bundle before the application is deployed.
+## Static extraction
+Static extraction is a zero-runtime rendering mode where the build scans source files, finds complete Master CSS class strings, validates them against the configured engine, and writes the resulting CSS before deployment.
 
-Unlike runtime-based solutions, Static Extraction does not rely on any client-side JavaScript to inject or manage styles. It outputs pure CSS assets that are linked in the final HTML, allowing for maximum performance, minimal JavaScript runtime overhead, and optimal compatibility with static hosting environments.
+The extractor does not observe the DOM and does not execute application code. Its input is source text, CSS entries, extraction options, and the compiled [configuration](/guide/configuration). Its output is a CSS asset that the browser loads like any other stylesheet.
 
-This rendering strategy is functionally equivalent to how [Tailwind CSS](https://tailwindcss.com/) operates in production: styles are compiled ahead-of-time based on actual class name usage across your project, enabling aggressive tree-shaking and style deduplication.
+<StepSection>
+    <Step>
+        #### <StepNum />Load the extraction context
+        The integration creates an extractor with source globs, exclude globs, optional fixed classes, and the config graph rooted at `master.css`. In watch mode, config and source changes reset or update this context.
 
-### CSS config and generation
-`master.css` is the default entry for the CSS config graph. It can hold `@master` definitions directly or import CSS files that contain them. `@master` definitions are converted into config and removed from regular CSS output; they do not generate rules by themselves.
+        ```js name=vite.config.js
+        import { defineConfig } from 'vite'
+        import masterCSS from '@master/css.vite'
 
-```css name=master.css
-@import './src/buttons.css';
-```
+        export default defineConfig({
+            plugins: [
+                masterCSS({
+                    mode: 'extract',
+                    extractorOptions: {
+                        include: ['src/**/*.{html,js,jsx,ts,tsx,vue,svelte,astro,md,mdx}']
+                    }
+                })
+            ]
+        })
+        ```
+    </Step>
+    <Step>
+        #### <StepNum />Scan source text
+        Source files such as `.html`, `.js`, `.jsx`, `.ts`, `.tsx`, `.vue`, `.svelte`, `.astro`, `.md`, and `.mdx` are scanned as text. The extractor collects candidate class strings from markup and string literals, then filters obvious non-class tokens before validation.
 
-```css name=src/buttons.css
-@master {
-    .btn {
-        @compose "inline-flex px:md";
-    }
-}
-```
+        ```html name=src/index.html
+        <!-- @MARK btn text:center -->
+        <button class="btn text:center">Save</button>
+        ```
+    </Step>
+    <Step>
+        #### <StepNum />Validate candidates
+        Each candidate is passed through the Master CSS engine. Valid classes insert rules into the same layers used by runtime and server rendering; invalid candidates are cached and skipped on later scans.
 
-Static extraction still emits `.btn` only when `btn` appears in scanned source:
+        ```css name=master.css
+        @master {
+            .btn {
+                @compose "inline-flex px:md";
+            }
+        }
+        ```
 
-```html
-<!-- @MARK btn -->
-<button class="btn">Save</button>
-```
+        With this config, `btn` is valid because the project defines it, and `text:center` is valid because it is a built-in utility. Configured classes are still on-demand: defining `.btn` does not emit anything until `btn` appears in scanned source or in the extractor's fixed class list.
+    </Step>
+    <Step>
+        #### <StepNum />Compose final CSS
+        The generated stylesheet contains the valid Master CSS rules, retained native CSS from extractable style entries, and any referenced variables or keyframes needed by those rules.
 
-Source stylesheets choose where the generated stylesheet is imported. If they also contain `@master {}` blocks, import those stylesheets from `master.css` so the config graph can read them.
+        ```css name=generated.css
+        @layer base,theme,preset,main,general;
 
-```css name=src/style.css
-@import 'virtual:master.css';
+        @layer main {
+            .btn {
+                display: inline-flex;
+                padding-left: 1rem;
+                padding-right: 1rem;
+            }
+        }
 
-.panel {
-    padding: 1rem;
-}
-```
+        @layer general {
+            .text\:center {
+                text-align: center;
+            }
+        }
+        ```
+    </Step>
+</StepSection>
 
-When a framework file needs the config object at runtime, import the CSS config through the integration query:
-
-```ts
-import config from './master.css?master-css-config'
-```
-
-Without the query, a `.css` import follows the normal stylesheet pipeline.
-
-In TypeScript projects, add the matching client type reference for the integration that handles the import:
-
-```ts
-// Vite
-/// <reference types="@master/css.vite/client" />
-
-// Next.js
-/// <reference types="@master/css.next/client" />
-
-// Webpack
-/// <reference types="@master/css.webpack/client" />
-```
-
-### CSS imports
-In extract mode, the generated stylesheet is exposed as a virtual CSS module. JavaScript imports are supported, but the preferred location is often the framework's existing stylesheet entry.
+### Generated stylesheet entry
+In extract mode, the generated stylesheet is exposed as a virtual CSS module. Import it from the stylesheet your framework already bundles, or from JavaScript when that is the integration's preferred entry.
 
 ```js name=src/main.js
 import 'virtual:master.css'
@@ -282,8 +295,9 @@ Webpack-based integrations also support the shorter CSS import:
 
 Use one import path for the generated stylesheet. If both JavaScript and CSS import the virtual CSS module in Webpack, the integration keeps the CSS output on the stylesheet import path.
 
-### Native CSS
+### Native CSS entries
 Regular CSS outside `@master` remains native CSS. When a stylesheet imports the generated virtual CSS module, integrations treat that stylesheet as an extractable CSS entry and prune class selectors against detected source classes.
+
 Those native rules can also pull matching config variables referenced by `var(--*)` and configured keyframes referenced by animation declarations.
 
 ```css name=src/style.css
@@ -303,12 +317,12 @@ Those native rules can also pull matching config variables referenced by `var(--
 <article class="native-card btn">Card</article>
 ```
 
-The generated Master CSS contains `.native-card` and `.btn` when both classes are scanned. `.unused-card` is removed because no scanned source uses it.
+The generated CSS contains `.native-card` and `.btn` when both classes are scanned. `.unused-card` is removed because no scanned source uses it.
 
-### Dynamic classes limitations
-Since static extraction scans the source archive as plain text, it is impossible to predict the results of these string concatenation or interpolation.
+### Dynamic class limitations
+Static extraction can only generate CSS for class strings that are visible in scanned source. It cannot evaluate conditions, run helper functions, resolve remote content, or predict classes assembled by string concatenation.
 
-(x) Don't truncate class names to construct
+(x) Don't construct truncated class names
 ```tsx
 const className = 'bg:' + (error ? 'red': 'green')
 ```
@@ -316,13 +330,14 @@ const className = 'bg:' + (error ? 'red': 'green')
 ```tsx
 const className = error ? 'bg:red' : 'bg:green'
 ```
-(o) Support dynamic values ​​using CSS variables
+(o) Support dynamic values using CSS variables
 ```tsx
 <div className="font-size:$(size)@sm" style={{ '--size': size }}></div>
 ```
-In short, you must write out the full class in your source code and ensure it is not truncated, so it can be correctly scanned and detected.
 
-Due to the limitations of static scanning, this is also one of the primary reasons we created the Master CSS [Runtime](#runtime-rendering).
+Write complete class names in source, or pass runtime values through CSS variables while keeping the Master CSS class itself complete. Use [Runtime Rendering](#runtime-rendering) when class names are created only after the page is running.
+
+Source-glob scanning is the production correctness baseline. Some integrations also scan files as they pass through the module graph for faster incremental updates, but the final build still depends on statically discoverable class strings.
 
 ---
 

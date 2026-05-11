@@ -60,9 +60,9 @@ If you do not have a `master.css` file yet, create one from the starter command:
 ## Why CSS configuration
 CSS-first configuration keeps the design system close to the platform. Instead of moving every decision into JavaScript, `master.css` lets CSS carry the structure of the system.
 
-For teams, that means the configuration can be reviewed like CSS. Designers and engineers can read token declarations, scan main style rules, and understand where custom utilities in the general layer come from. For the build, it means the config can be compiled ahead of time and shared with extractors, runtimes, language tooling, and framework integrations.
+For teams, that means the configuration can be reviewed like CSS. Designers and engineers can read token declarations, scan main style rules, and understand where custom utilities in the general layer come from. For tooling, it means one config graph can be compiled ahead of time and shared with renderers, extractors, language services, framework integrations, and lint rules.
 
-Use native CSS imports when the file grows. This keeps tokens, general utilities, main styles, and animations in focused files without inventing a separate module system.
+Build integrations use `master.css` as the default entry for this graph. The file can define `@master` content directly, or import local CSS files that contain `@master` blocks. Use native CSS imports when the file grows; this keeps tokens, general utilities, main styles, and animations in focused files without inventing a separate module system.
 
 ```css name=master.css
 @import './styles/theme.css';
@@ -71,7 +71,18 @@ Use native CSS imports when the file grows. This keeps tokens, general utilities
 @import './styles/card.css';
 ```
 
+```css name=styles/btn.css
+@master {
+    .btn {
+        background: var(--color-primary);
+        color: white;
+    }
+}
+```
+
 Local relative CSS imports are resolved as one configuration graph. Only `@master` content contributes to the config; ordinary CSS outside `@master` is ignored by the config compiler. Keep app-level native CSS in the stylesheet entry owned by your framework or bundler.
+
+Only `@master` sections become configuration. Defining `.btn` this way does not emit `.btn` immediately; Master CSS still generates CSS only after `btn` is used by the active renderer or discovered by tooling.
 
 ---
 
@@ -187,7 +198,7 @@ See [Selector Tokens](/guide/selector-tokens) for selector token usage in markup
 
 ---
 
-## General Utilities
+## General utilities
 Use `@layer general` inside `@master` for reusable primitives that should behave like utility classes. These are not semantic components; they are low-level capabilities you want available everywhere. CSS-defined general utilities are static utilities: one class name maps to one set of native declarations.
 
 ```css name=master.css
@@ -215,7 +226,7 @@ General utilities cannot use `@compose`. If the class describes a semantic UI pa
 
 ---
 
-## Main Styles
+## Main styles
 Main styles are named style compositions for UI patterns such as `.btn`, `.card`, `.field`, and `.page`. They let you turn repeated class lists into project vocabulary without emitting unused CSS.
 
 ```css name=master.css
@@ -449,6 +460,39 @@ const engine = new MasterCSS(config, {
 ```
 
 Use programmatic config for tests, library presets, integration glue, and executable extension points. Use `master.css` for app-level tokens, general utilities, main styles, selectors, at tokens, animations, and structural CSS config.
+
+---
+
+## Import compiled config
+Most projects let the integration load `master.css` automatically. When application code needs the compiled config object, import the CSS config through the integration query:
+
+```ts
+import config from './master.css?master-css-config'
+```
+
+The query tells the integration to compile the CSS configuration and return a JavaScript config object. Without the query, a `.css` import follows the normal stylesheet pipeline.
+
+Use this when a server hook, runtime initializer, test, or framework adapter needs the same config object that comes from `master.css`.
+
+```ts
+import { initCSSRuntime } from '@master/css-runtime'
+import config from './master.css?master-css-config'
+
+initCSSRuntime(config)
+```
+
+In TypeScript projects, add the matching client type reference for the integration that handles the import:
+
+```ts
+// Vite
+/// <reference types="@master/css.vite/client" />
+
+// Next.js
+/// <reference types="@master/css.next/client" />
+
+// Webpack
+/// <reference types="@master/css.webpack/client" />
+```
 
 ---
 

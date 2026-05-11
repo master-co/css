@@ -22,7 +22,7 @@ The language service will create at least a root workspace regardless of whether
 
 ---
 
-## One package project, one workspace
+## One project, one workspace
 Inside one `package.json` project, Master CSS supports one workspace instance. That workspace has one configuration graph, one extraction context, and one set of tool integrations for the current project boundary.
 
 Master CSS does not split a single package project into separate utility workspaces from multiple extraction outputs. For example, do not model one package as independent `admin.css` and `shop.css` extraction areas and expect the language service, ESLint, and build integrations to treat them as separate Master CSS workspaces.
