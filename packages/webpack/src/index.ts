@@ -10,7 +10,6 @@ import { MASTER_CSS_CONFIG_QUERY, VIRTUAL_CONFIG_DIR, VIRTUAL_CONFIG_ID } from '
 import {
     stripMasterCSSConfigQuery,
     toConfigModule,
-    toNativeConfigModule,
     toVirtualCSSConfigModulePath,
     toVirtualDefaultConfigModulePath
 } from './utils/config-module'
@@ -76,13 +75,9 @@ export class MasterCSSExtractorPlugin extends CSSExtractor {
             return toConfigModule(this.options.config)
         }
         if (!resolvedConfig) return EMPTY_CONFIG_MODULE
-        if (resolvedConfig.extension === 'css') {
-            const result = await loadConfig(resolvedConfig.path)
-            this.defaultConfigDependencies = result.dependencies
-            return toConfigModule(result.config)
-        }
-        this.defaultConfigDependencies = [resolvedConfig.path]
-        return toNativeConfigModule(resolvedConfig.path)
+        const result = await loadConfig(resolvedConfig.path)
+        this.defaultConfigDependencies = result.dependencies
+        return toConfigModule(result.config)
     }
 
     private getExtractorClasses() {
@@ -230,7 +225,7 @@ export class MasterCSSExtractorPlugin extends CSSExtractor {
                 const defaultConfigDependencies = this.defaultConfigDependencies.length
                     ? this.defaultConfigDependencies
                     : resolvedConfig ? [resolvedConfig.path] : []
-                if (resolvedConfig?.extension === 'css' && defaultConfigDependencies.some((dependency) => hasModifiedFile(modifiedFiles, dependency))) {
+                if (defaultConfigDependencies.some((dependency) => hasModifiedFile(modifiedFiles, dependency))) {
                     await this.reset(this.options)
                     await resetReplayChain
                 }
@@ -260,10 +255,8 @@ export class MasterCSSExtractorPlugin extends CSSExtractor {
                     this.createDefaultConfigModule(resolvedConfig)
                         .then((moduleContent) => {
                             virtualModule.writeModule(virtualConfigModuleId, moduleContent)
-                            if (resolvedConfig?.extension === 'css') {
-                                for (const dependency of this.defaultConfigDependencies) {
-                                    resolveData.fileDependencies.add(dependency)
-                                }
+                            for (const dependency of this.defaultConfigDependencies) {
+                                resolveData.fileDependencies.add(dependency)
                             }
                             resolveData.request = virtualConfigModuleId
                             callback()
@@ -329,7 +322,7 @@ export class MasterCSSExtractorPlugin extends CSSExtractor {
         compiler.hooks.thisCompilation.tap(NAME, (compilation) => {
             cssVirtualImporters.clear()
             const resolvedConfig = this.resolveDefaultConfigPath()
-            if (resolvedConfig?.extension === 'css') {
+            if (resolvedConfig) {
                 for (const dependency of this.defaultConfigDependencies.length ? this.defaultConfigDependencies : [resolvedConfig.path]) {
                     compilation.fileDependencies.add(dependency)
                 }

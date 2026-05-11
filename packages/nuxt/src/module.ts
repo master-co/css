@@ -2,7 +2,7 @@ import { defineNuxtModule, addServerPlugin, createResolver, addPlugin } from '@n
 import { name } from '../package.json'
 import masterCSS, { VIRTUAL_CONFIG_ID } from '@master/css.vite'
 import { vueAdapter } from '@master/css.vue/adapter'
-import { loadConfigSync } from '@master/css-explore-config/sync'
+import { loadConfig } from '@master/css-explore-config'
 import type { Plugin } from 'vite'
 import { extname } from 'node:path'
 import ensureCSSConfigPath from '../../../shared/utils/ensure-css-config-path'
@@ -21,6 +21,17 @@ function withVueAdapter(options: ModuleOptions): ModuleOptions {
     }
 }
 
+function addNitroWatchDependencies(config: { devServer?: { watch?: string[] } }, dependencies: string[]) {
+    if (!dependencies.length) return
+    config.devServer ??= {}
+    config.devServer.watch ??= []
+    for (const dependency of dependencies) {
+        if (!config.devServer.watch.includes(dependency)) {
+            config.devServer.watch.push(dependency)
+        }
+    }
+}
+
 export default defineNuxtModule<{ config?: string }>({
     meta: {
         name,
@@ -32,10 +43,11 @@ export default defineNuxtModule<{ config?: string }>({
         const { resolve } = createResolver(import.meta.url)
         const configPath = ensureCSSConfigPath(options.config, nuxt.options.rootDir)
         const viteOptions = withVueAdapter(options)
-        nuxt.hook('nitro:config', (config) => {
+        nuxt.hook('nitro:config', async (config) => {
             if (configPath) {
+                const result = await loadConfig(configPath)
+                addNitroWatchDependencies(config, result.dependencies)
                 if (extname(configPath) === '.css') {
-                    const result = loadConfigSync(configPath)
                     config.virtual ??= {}
                     config.virtual[VIRTUAL_CONFIG_ID] = `export default ${JSON.stringify(result.config)}`
                 } else {

@@ -23,7 +23,3 @@ export function toVirtualCSSConfigModulePath(context: string, file: string) {
 export function toConfigModule(config: Config) {
     return `export default ${JSON.stringify(config)};`
 }
-
-export function toNativeConfigModule(file: string) {
-    return `import config from ${JSON.stringify(file)}; export default config;`
-}

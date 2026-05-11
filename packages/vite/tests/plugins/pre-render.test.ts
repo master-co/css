@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import path from 'node:path'
+import { mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
 import masterCSS from '../../src'
 
 const FIXTURE_DIR = path.resolve(__dirname, '../fixtures/pre-render/master-css-entry')
@@ -43,5 +45,68 @@ describe('PreRenderPlugin', () => {
         expect(html).toContain('@layer main{.card{background-color:rgb(17 34 51);border-color:#456}')
         expect(html).toContain('@media (width>=48rem){.card{font-size:1.125rem}}')
         expect(html).toContain('@layer general{.p\\:2{padding:0.125rem}}')
+    })
+
+    it('reloads script config dependencies for pre-rendered HTML', async () => {
+        const root = mkdtempSync(path.join(tmpdir(), 'master-css-vite-pre-render-'))
+        const configPath = path.join(root, 'master.css.ts')
+        const tokenPath = path.join(root, 'tokens.ts')
+        try {
+            writeFileSync(tokenPath, 'export const cardColor = "#123456"\n')
+            writeFileSync(configPath, [
+                'import { cardColor } from "./tokens"',
+                '',
+                'export default {',
+                '    utilities: [',
+                '        {',
+                '            name: "card",',
+                '            type: -4,',
+                '            layer: "main",',
+                '            rules: [',
+                '                { selector: "&", declarations: { color: cardColor } }',
+                '            ]',
+                '        }',
+                '    ]',
+                '}'
+            ].join('\n'))
+
+            const plugins = masterCSS({
+                mode: 'pre-render',
+                injectNormalCSS: false,
+                config: 'master.css.ts'
+            })
+            const viteConfig = {
+                root,
+                plugins,
+                server: {
+                    fs: {
+                        allow: [],
+                    },
+                },
+            }
+
+            await resolveConfigHooks(plugins, viteConfig)
+
+            const preRenderPlugin = plugins.find((plugin) => plugin.name === 'master-css:pre-render')
+            expect(preRenderPlugin).toBeDefined()
+            let result = await (preRenderPlugin as any).transformIndexHtml.call(
+                {},
+                '<html><head></head><body><section class="card">Content</section></body></html>',
+            )
+            let html = typeof result === 'string' ? result : result.html
+            expect(html).toContain('.card{color:#123456}')
+
+            writeFileSync(tokenPath, 'export const cardColor = "#abcdef"\n')
+            await (preRenderPlugin as any).handleHotUpdate.call({}, { file: tokenPath })
+
+            result = await (preRenderPlugin as any).transformIndexHtml.call(
+                {},
+                '<html><head></head><body><section class="card">Content</section></body></html>',
+            )
+            html = typeof result === 'string' ? result : result.html
+            expect(html).toContain('.card{color:#abcdef}')
+        } finally {
+            rmSync(root, { recursive: true, force: true })
+        }
     })
 })

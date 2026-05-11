@@ -223,6 +223,54 @@ describe('MasterCSSExtractorPlugin (C1 race fix)', () => {
         expect(compilation.fileDependencies.has(path.join(root, 'master.css'))).toBe(true)
     })
 
+    test('adds default script config graph as virtual config dependencies', async () => {
+        const root = mkdtempSync(path.join(tmpdir(), 'master-css-webpack-config-'))
+        const configPath = path.join(root, 'master.css.ts')
+        const tokenPath = path.join(root, 'tokens.ts')
+        try {
+            writeFileSync(tokenPath, 'export const cardColor = "#123456"\n')
+            writeFileSync(configPath, [
+                'import { cardColor } from "./tokens"',
+                '',
+                'export default {',
+                '    utilities: [',
+                '        {',
+                '            name: "card",',
+                '            type: -4,',
+                '            layer: "main",',
+                '            rules: [',
+                '                { selector: "&", declarations: { color: cardColor } }',
+                '            ]',
+                '        }',
+                '    ]',
+                '}'
+            ].join('\n'))
+
+            const plugin = makePlugin({ config: 'master.css.ts' }, root)
+            const { compiler } = makeFakeCompiler({ context: root })
+            ;(compiler as any).webpack = { sources: { RawSource: function NoopSource(this: object) { /* stub */ } } }
+
+            plugin.apply(compiler as any)
+            const normalModuleFactory = makeNormalModuleFactory()
+            compiler.hooks.normalModuleFactory.call(normalModuleFactory)
+            const resolveData = {
+                request: VIRTUAL_CONFIG_ID,
+                context: root,
+                contextInfo: {},
+                fileDependencies: new Set<string>()
+            }
+
+            await resolveBefore(normalModuleFactory, resolveData)
+
+            expect(resolveData.fileDependencies.has(configPath)).toBe(true)
+            expect(resolveData.fileDependencies.has(tokenPath)).toBe(true)
+            expect((compiler.inputFileSystem._writeVirtualFile as any).mock.calls.at(-1)?.[2])
+                .toContain('"color":"#123456"')
+        } finally {
+            rmSync(root, { recursive: true, force: true })
+        }
+    })
+
     test('shakes source stylesheet native CSS while ignoring source stylesheet CSS configs', async () => {
         const root = mkdtempSync(path.join(tmpdir(), 'master-css-webpack-'))
         try {
@@ -302,6 +350,53 @@ describe('MasterCSSExtractorPlugin (C1 race fix)', () => {
         })
 
         expect(reset).toHaveBeenCalledWith(plugin.options)
+    })
+
+    test('resets extractor when a default script config dependency changes in watch mode', async () => {
+        const root = mkdtempSync(path.join(tmpdir(), 'master-css-webpack-watch-'))
+        const configPath = path.join(root, 'master.css.ts')
+        const tokenPath = path.join(root, 'tokens.ts')
+        try {
+            writeFileSync(tokenPath, 'export const cardColor = "#123456"\n')
+            writeFileSync(configPath, [
+                'import { cardColor } from "./tokens"',
+                '',
+                'export default {',
+                '    utilities: [',
+                '        {',
+                '            name: "card",',
+                '            type: -4,',
+                '            layer: "main",',
+                '            rules: [',
+                '                { selector: "&", declarations: { color: cardColor } }',
+                '            ]',
+                '        }',
+                '    ]',
+                '}'
+            ].join('\n'))
+
+            const plugin = makePlugin({ config: 'master.css.ts' }, root)
+            ;(plugin as any).defaultConfigDependencies = [configPath, tokenPath]
+            const reset = vi.fn(async function (this: MasterCSSExtractorPlugin) {
+                this.emit('reset')
+                return this
+            })
+            ;(plugin as any).reset = reset
+            const { compiler } = makeFakeCompiler({
+                context: root,
+                modifiedFiles: new Set([tokenPath])
+            })
+            ;(compiler as any).webpack = { sources: { RawSource: function NoopSource(this: object) { /* stub */ } } }
+
+            plugin.apply(compiler as any)
+            await new Promise<void>((resolve, reject) => {
+                compiler.hooks.watchRun.callAsync(compiler, (error) => error ? reject(error) : resolve())
+            })
+
+            expect(reset).toHaveBeenCalledWith(plugin.options)
+        } finally {
+            rmSync(root, { recursive: true, force: true })
+        }
     })
 
     test('does not reset extractor when a non-config file changes in watch mode', async () => {

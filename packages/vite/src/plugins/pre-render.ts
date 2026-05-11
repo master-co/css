@@ -7,7 +7,21 @@ import { PluginOptions } from '../options'
 
 export default function PreRenderPlugin(options: PluginOptions, context: PluginContext): Plugin {
     let cssConfig: Config | undefined = undefined
+    let cssConfigDependencies: string[] = []
     let enabled = true
+    const loadCSSConfig = async (pluginContext?: { addWatchFile?: (id: string) => void }) => {
+        if (!context.configPath) {
+            cssConfig = undefined
+            cssConfigDependencies = []
+            return
+        }
+        const result = await loadConfig(context.configPath)
+        cssConfig = result.config
+        cssConfigDependencies = result.dependencies
+        for (const dependency of cssConfigDependencies) {
+            pluginContext?.addWatchFile?.(dependency)
+        }
+    }
     return {
         name: 'master-css:pre-render',
         enforce: 'pre',
@@ -20,9 +34,15 @@ export default function PreRenderPlugin(options: PluginOptions, context: PluginC
                 }
                 return
             }
-            if (context.configPath) {
-                cssConfig = (await loadConfig(context.configPath)).config
-            }
+            await loadCSSConfig()
+        },
+        async buildStart() {
+            if (!enabled) return
+            await loadCSSConfig(this)
+        },
+        async handleHotUpdate({ file }) {
+            if (!enabled || !cssConfigDependencies.includes(file)) return
+            await loadCSSConfig()
         },
         transformIndexHtml(html) {
             if (!enabled) return

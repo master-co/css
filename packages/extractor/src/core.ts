@@ -45,6 +45,7 @@ export default class CSSExtractor extends EventEmitter {
     watchers: FSWatcher[] = []
     initialized = false
     initializing?: Promise<this>
+    configDependencies: string[] = []
     extractorDirectives: ExtractorDirectives = createExtractorDirectives()
 
     /**
@@ -103,6 +104,7 @@ export default class CSSExtractor extends EventEmitter {
         this.extractorDirectives = configResult?.extension === 'css'
             ? collectExtractorDirectivesFromCSSGraph(configResult.path, undefined, this.cwd).directives
             : createExtractorDirectives()
+        this.configDependencies = configResult?.dependencies || []
         this.options = mergeExtractorOptions(this.options, this.extractorDirectives)
         this.nativeClassNames = new Set(configResult?.nativeClassNames || [])
         this.css = createCSS(
@@ -125,6 +127,7 @@ export default class CSSExtractor extends EventEmitter {
         this.usedNativeClasses.clear()
         this.contentHashes.clear()
         this.validRulesCache.clear()
+        this.configDependencies = []
         this.extractorDirectives = createExtractorDirectives()
         this.cachedFixedSourcePaths = undefined
         this.cachedAllowedSourcePaths = undefined
@@ -145,6 +148,7 @@ export default class CSSExtractor extends EventEmitter {
         this.usedNativeClasses.clear()
         this.contentHashes.clear()
         this.validRulesCache.clear()
+        this.configDependencies = []
         this.extractorDirectives = createExtractorDirectives()
         this.removeAllListeners()
         await this.closeWatch()
@@ -346,11 +350,17 @@ export default class CSSExtractor extends EventEmitter {
             await this.watchSource(sourcePaths)
         }
 
-        if (resolvedConfigPath) {
-            await this.watch('add change unlink', resolvedConfigPath, async () => {
+        const configDependencies = this.configDependencies.length
+            ? this.configDependencies
+            : resolvedConfigPath ? [resolvedConfigPath] : []
+        if (configDependencies.length) {
+            await this.watch('add change unlink', configDependencies, async (configDependency) => {
                 if (this.options.verbose) {
                     log``
-                    log`[change] **${this.configPath}**`
+                    const changedConfigPath = path.isAbsolute(configDependency)
+                        ? path.relative(this.cwd, configDependency)
+                        : configDependency
+                    log`[change] **${changedConfigPath}**`
                 }
                 await this.reset()
                 this.emit('configChange')
