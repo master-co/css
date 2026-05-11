@@ -5,9 +5,15 @@ import type { Settings } from './settings'
 
 type SemanticTokenType = typeof SEMANTIC_TOKEN_TYPES[number]
 type SemanticTokenModifier = typeof SEMANTIC_TOKEN_MODIFIERS[number]
+export type MasterCSSShikiSemanticTokenStyleKey = SemanticTokenType | `${SemanticTokenType}.${SemanticTokenModifier}`
+export type MasterCSSShikiSemanticTokenStyle = string | Record<string, string>
+export type MasterCSSShikiSemanticTokenStyles = Partial<Record<MasterCSSShikiSemanticTokenStyleKey, MasterCSSShikiSemanticTokenStyle>>
 interface ShikiToken {
     content: string
     offset: number
+    htmlStyle?: Record<string, string>
+    htmlAttrs?: Record<string, unknown>
+    [key: string]: unknown
 }
 
 interface ShikiPosition {
@@ -84,6 +90,13 @@ export interface MasterCSSShikiSemanticTokensOptions {
      * TextMate token span when possible.
      */
     alwaysWrap?: boolean
+    /**
+     * Inline styles applied by semantic token type or type.modifier. These
+     * styles intentionally replace the underlying TextMate token style for the
+     * decorated range, which keeps tokens such as `block` and `block:hover`
+     * visually aligned when they share the same semantic type.
+     */
+    semanticTokenStyles?: MasterCSSShikiSemanticTokenStyles
 }
 
 const shikiLanguageIds: Record<string, string> = {
@@ -130,6 +143,123 @@ function createLanguageService(options: MasterCSSShikiSemanticTokensOptions) {
     })
 }
 
+function stringifyStyle(style: MasterCSSShikiSemanticTokenStyle) {
+    if (typeof style === 'string') return style
+    return Object.entries(style)
+        .map(([property, value]) => `${property}:${value}`)
+        .join(';')
+}
+
+function resolveSemanticTokenStyle(
+    type: SemanticTokenType,
+    modifiers: SemanticTokenModifier[],
+    styles?: MasterCSSShikiSemanticTokenStyles
+) {
+    if (!styles) return
+    const matchedStyles = [
+        styles[type],
+        ...modifiers.map((modifier) => styles[`${type}.${modifier}` as MasterCSSShikiSemanticTokenStyleKey])
+    ].filter((style): style is MasterCSSShikiSemanticTokenStyle => Boolean(style))
+    if (!matchedStyles.length) return
+    return matchedStyles.map(stringifyStyle).join(';')
+}
+
+function splitToken(token: ShikiToken, breakpoints: number[]) {
+    const tokens: ShikiToken[] = []
+    let lastOffset = 0
+    for (const offset of breakpoints) {
+        if (offset > lastOffset) {
+            tokens.push({
+                ...token,
+                content: token.content.slice(lastOffset, offset),
+                offset: token.offset + lastOffset
+            })
+        }
+        lastOffset = offset
+    }
+    if (lastOffset < token.content.length) {
+        tokens.push({
+            ...token,
+            content: token.content.slice(lastOffset),
+            offset: token.offset + lastOffset
+        })
+    }
+    return tokens
+}
+
+function splitTokensAtOffsets(tokens: ShikiToken[][], breakpoints: number[]) {
+    const sortedBreakpoints = [...new Set(breakpoints)].sort((a, b) => a - b)
+    if (!sortedBreakpoints.length) return tokens
+    return tokens.map((line) => {
+        return line.flatMap((token) => {
+            const breakpointsInToken = sortedBreakpoints
+                .filter((offset) => token.offset < offset && offset < token.offset + token.content.length)
+                .map((offset) => offset - token.offset)
+            return breakpointsInToken.length ? splitToken(token, breakpointsInToken) : token
+        })
+    })
+}
+
+function parseStyleProperty(style: unknown) {
+    if (typeof style === 'string') {
+        return Object.fromEntries(style
+            .split(';')
+            .map((declaration) => declaration.split(':'))
+            .filter(([property, value]) => property && value)
+            .map(([property, ...value]) => [property.trim(), value.join(':').trim()]))
+    }
+    if (style && typeof style === 'object' && !Array.isArray(style)) {
+        return Object.fromEntries(Object
+            .entries(style)
+            .filter((entry): entry is [string, string] => typeof entry[1] === 'string'))
+    }
+}
+
+function resolveClassNames(value: unknown): string[] {
+    if (Array.isArray(value)) return value.flatMap(resolveClassNames)
+    return typeof value === 'string' ? value.split(/\s+/).filter(Boolean) : []
+}
+
+function mergeClassProperty(current: unknown, next: unknown) {
+    return [
+        ...resolveClassNames(current),
+        ...resolveClassNames(next)
+    ].join(' ')
+}
+
+function applySemanticDecorationToToken(
+    token: ShikiToken,
+    decorations: MasterCSSShikiSemanticDecoration[]
+) {
+    const tokenStart = token.offset
+    const tokenEnd = token.offset + token.content.length
+    const matchedDecorations = decorations.filter(({ start, end }) => start <= tokenStart && tokenEnd <= end)
+    if (!matchedDecorations.length) return token
+
+    const htmlAttrs: Record<string, unknown> = { ...token.htmlAttrs }
+    const htmlStyle: Record<string, string> = { ...token.htmlStyle }
+    for (const decoration of matchedDecorations) {
+        const properties = decoration.properties ?? {}
+        if (properties.class) {
+            htmlAttrs.class = mergeClassProperty(htmlAttrs.class, properties.class)
+        }
+        const style = parseStyleProperty(properties.style)
+        if (style) {
+            Object.assign(htmlStyle, style)
+        }
+        for (const [name, value] of Object.entries(properties)) {
+            if (name === 'class' || name === 'style' || value === undefined) continue
+            htmlAttrs[name] = typeof value === 'string' ? value : String(value)
+        }
+    }
+
+    return {
+        ...token,
+        htmlAttrs,
+        htmlStyle
+    }
+}
+
 function decodeSemanticTokenDecorations(
     document: TextDocument,
     data: number[],
@@ -157,6 +287,7 @@ function decodeSemanticTokenDecorations(
             `${classPrefix}-${type}`,
             ...modifiers.map((modifier) => `${classPrefix}-${type}-${modifier}`)
         ]
+        const style = resolveSemanticTokenStyle(type, modifiers, options.semanticTokenStyles)
         decorations.push({
             start,
             end,
@@ -165,6 +296,7 @@ function decodeSemanticTokenDecorations(
             alwaysWrap: options.alwaysWrap,
             properties: {
                 class: classNames,
+                ...(style ? { style } : undefined),
                 ...(includeDataAttributes
                     ? {
                         'data-semantic-token-type': type,
@@ -194,16 +326,14 @@ export function transformerMasterCSSSemanticTokens(
     return {
         name: 'master-css:semantic-tokens',
         enforce: 'post',
-        tokens(this: MasterCSSShikiTransformerContext) {
+        tokens(this: MasterCSSShikiTransformerContext, tokens) {
             const decorations = createMasterCSSShikiSemanticTokenDecorations(this.source, {
                 ...options,
                 lang: options.lang ?? this.options.lang
             })
             if (!decorations.length) return
-            this.options.decorations = [
-                ...(this.options.decorations ?? []),
-                ...decorations
-            ]
+            const tokensSplitAtSemanticBoundaries = splitTokensAtOffsets(tokens, decorations.flatMap(({ start, end }) => [start, end]))
+            return tokensSplitAtSemanticBoundaries.map((line) => line.map((token) => applySemanticDecorationToToken(token, decorations)))
         }
     }
 }

@@ -81,7 +81,35 @@ test.concurrent('creates Shiki decorations from Master CSS semantic tokens', () 
     expect(tokens.filter(({ text, type, modifiers }) => text === 'btn' && type === 'class' && modifiers.includes('declaration'))).toHaveLength(3)
 })
 
-test.concurrent('appends semantic decorations from the Shiki tokens hook', () => {
+test.concurrent('applies semantic token styles by type and modifier', () => {
+    const code = 'block block:hover btn:hover'
+    const decorations = createMasterCSSShikiSemanticTokenDecorations(code, {
+        lang: 'mcss',
+        config,
+        semanticTokenStyles: {
+            class: {
+                color: 'var(--mcss-semantic-class)',
+                '--shiki-dark': 'var(--mcss-semantic-class-dark)'
+            },
+            'class.declaration': {
+                'font-weight': '600'
+            }
+        }
+    })
+    const classDecorations = decorations.filter((decoration) => decoration.type === 'class')
+    const blockStyles = classDecorations
+        .filter((decoration) => code.slice(decoration.start, decoration.end) === 'block')
+        .map((decoration) => decoration.properties?.style)
+    const btnStyle = classDecorations.find((decoration) => code.slice(decoration.start, decoration.end) === 'btn')?.properties?.style
+
+    expect(blockStyles).toEqual([
+        'color:var(--mcss-semantic-class);--shiki-dark:var(--mcss-semantic-class-dark)',
+        'color:var(--mcss-semantic-class);--shiki-dark:var(--mcss-semantic-class-dark)'
+    ])
+    expect(btnStyle).toBe('color:var(--mcss-semantic-class);--shiki-dark:var(--mcss-semantic-class-dark);font-weight:600')
+})
+
+test.concurrent('applies semantic decorations in the Shiki tokens hook', () => {
     const code = '<div className="btn:hover@sm"></div>'
     const options: MasterCSSShikiCodeToHastOptions = {
         lang: 'tsx',
@@ -92,30 +120,35 @@ test.concurrent('appends semantic decorations from the Shiki tokens hook', () =>
     const transformer = transformerMasterCSSSemanticTokens({
         config,
         classPrefix: 'master-css-token',
-        dataAttributes: false
+        dataAttributes: false,
+        semanticTokenStyles: {
+            'class.declaration': {
+                'font-weight': '600'
+            }
+        }
     })
 
-    transformer.tokens.call({ source: code, options }, [])
+    const transformedTokens = transformer.tokens.call({ source: code, options }, [[{ content: code, offset: 0 }]])
+    const semanticTokens = transformedTokens?.flat().filter((token) => token.htmlAttrs?.class)
 
     expect(options.decorations?.[0]?.properties?.class).toBe('existing-decoration')
-    expect(options.decorations).toEqual(expect.arrayContaining([
+    expect(options.decorations).toHaveLength(1)
+    expect(semanticTokens).toEqual(expect.arrayContaining([
         expect.objectContaining({
-            start: code.indexOf('btn'),
-            end: code.indexOf('btn') + 'btn'.length,
-            type: 'class',
-            modifiers: ['declaration'],
-            properties: {
-                class: ['master-css-token', 'master-css-token-class', 'master-css-token-class-declaration']
+            content: 'btn',
+            htmlAttrs: {
+                class: 'master-css-token master-css-token-class master-css-token-class-declaration'
+            },
+            htmlStyle: {
+                'font-weight': '600'
             }
         }),
         expect.objectContaining({
-            start: code.indexOf('hover'),
-            end: code.indexOf('hover') + 'hover'.length,
-            type: 'modifier',
-            modifiers: [],
-            properties: {
-                class: ['master-css-token', 'master-css-token-modifier']
-            }
+            content: 'hover',
+            htmlAttrs: {
+                class: 'master-css-token master-css-token-modifier'
+            },
+            htmlStyle: {}
         })
     ]))
 })
