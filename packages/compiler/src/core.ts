@@ -122,6 +122,10 @@ const MASTER_CUSTOM_AT_RULES = {
         prelude: '*',
         body: 'style-block'
     },
+    mode: {
+        prelude: '*',
+        body: 'style-block'
+    },
     compose: {
         prelude: '<string>',
         body: null
@@ -1464,12 +1468,32 @@ function warn(parsed: ParsedDirectives, options: CompileCSSOptions, message: str
     options.onWarning?.(message)
 }
 
-function parseModeBlock(rule: any, mode: string, parsed: ParsedDirectives) {
-    addMasterMode(parsed.config, mode)
-    parseMasterDeclarations(rule.value.declarations, parsed.config, mode)
-    if (rule.value.rules.length) {
-        throw new Error(`Mode "${mode}" only accepts custom property declarations`)
+function parseMasterModeBlock(rule: any, parsed: ParsedDirectives, atRules: string[] = [], layer?: UtilityLayerName) {
+    if ((rule.type !== 'custom' && rule.type !== 'unknown') || rule.value?.name !== 'mode') return
+    if (layer || atRules.length) {
+        throw new Error('@mode is only allowed directly in @master')
     }
+
+    const mode = formatPrelude(rule.value.prelude)
+    if (!mode) {
+        throw new Error('@mode requires a mode name')
+    }
+    if (/\s/.test(mode)) {
+        throw new Error('@mode requires a single mode name')
+    }
+
+    addMasterMode(parsed.config, mode)
+    const rules = rule.value.body?.value
+    if (!Array.isArray(rules)) {
+        throw new Error('@mode requires a style block')
+    }
+    for (const child of rules as Rule[]) {
+        if (child.type !== 'nested-declarations') {
+            throw new Error(`Mode "${mode}" only accepts custom property declarations`)
+        }
+        parseMasterDeclarations(child.value.declarations, parsed.config, mode)
+    }
+    return true
 }
 
 function parseMasterStyleRule(rule: any, parsed: ParsedDirectives, options: CompileCSSOptions, section: MasterSection, atRules: string[] = [], layer?: UtilityLayerName) {
@@ -1485,14 +1509,13 @@ function parseMasterStyleRule(rule: any, parsed: ParsedDirectives, options: Comp
     const mode = parseSingleTypeSelector(rule.value.selectors)
     if (mode) {
         if (HTML_TAG_NAMES.has(mode)) {
-            warn(parsed, options, `Unsupported @master block "${mode}". @master only accepts config declarations, mode variable blocks, @custom-at, @custom-selector, @keyframes, @layer, and class definitions. Move regular CSS selectors outside @master.`)
+            warn(parsed, options, `Unsupported @master block "${mode}". @master only accepts config declarations, @mode blocks, @custom-at, @custom-selector, @keyframes, @layer, and class definitions. Move regular CSS selectors outside @master.`)
             return
         }
-        parseModeBlock(rule, mode, parsed)
-        return
+        throw new Error(`Unsupported @master block "${mode}". Use @mode ${mode} { ... } for mode-specific variables, or @keyframes ${mode} { ... } for animations.`)
     }
 
-    warn(parsed, options, `Unsupported @master selector "${formatSelectors(rule.value.selectors)}". @master only accepts mode variable blocks, @custom-at, @custom-selector, and class definitions.`)
+    warn(parsed, options, `Unsupported @master selector "${formatSelectors(rule.value.selectors)}". @master only accepts @mode blocks, @custom-at, @custom-selector, and class definitions.`)
 }
 
 function parseComponentLayerBlock(rule: Rule) {
@@ -1527,6 +1550,10 @@ function parseMasterChildRule(child: Rule, parsed: ParsedDirectives, options: Co
         for (const nestedChild of masterAtRuleBlock.rules) {
             parseMasterChildRule(nestedChild, parsed, options, section, [...atRules, createMasterAtRuleReference(masterAtRuleBlock.token)], layer)
         }
+        return
+    }
+
+    if (parseMasterModeBlock(child, parsed, atRules, layer)) {
         return
     }
 
@@ -2307,6 +2334,9 @@ export function compileCSS(source: string, options: CompileCSSOptions = {}): Com
                     },
                     at() {
                         throw new Error('@at is only allowed in @master class definitions')
+                    },
+                    mode() {
+                        throw new Error('@mode is only allowed in @master')
                     }
                 }
             }

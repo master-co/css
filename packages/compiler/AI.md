@@ -6,7 +6,7 @@
 
 ## Inputs And Outputs
 
-- Input: CSS containing `@master`, variables, nested mode blocks, `@custom-at`, `@custom-selector`, `@layer general`, condition blocks with `@at`, reusable main style rules with `@compose`, and native `@keyframes`.
+- Input: CSS containing `@master`, variables, `@mode` blocks, `@custom-at`, `@custom-selector`, `@layer general`, condition blocks with `@at`, reusable main style rules with `@compose`, and native `@keyframes`.
 - Output: CSS with consumed Master directives removed and generated Master CSS appended only for classes passed to the compiler.
 - `@master` definitions are config definitions. Defining a main style, utility, variable, token, or animation does not emit CSS by itself; the class still needs to be used or extracted.
 - `compileCSSFile()` resolves local relative CSS `@import` graphs before compiling and returns absolute dependency paths.
@@ -24,7 +24,7 @@
 
 - `@master { root-size: 16; --color-primary: #123; --screen-md: 768; }`
 - `@master { important; }` and `@master { !important; }`
-- `@master { dark { --color-primary: #456; } }`
+- `@master { @mode dark { --color-primary: #456; } }`
 - `light` and `dark` are core default modes; the compiler should only add custom modes such as `chrisma`.
 - `@master { @custom-at motion-safe @media (prefers-reduced-motion: no-preference); }`
 - `@master { @custom-selector ::scrollbar ::-webkit-scrollbar; }`

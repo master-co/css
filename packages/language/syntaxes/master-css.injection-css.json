@@ -283,6 +283,9 @@
                     "include": "#master-css-compose"
                 },
                 {
+                    "include": "#master-css-mode-block"
+                },
+                {
                     "include": "#master-css-at-block"
                 },
                 {
@@ -290,6 +293,35 @@
                 },
                 {
                     "include": "#master-css-custom-selector"
+                }
+            ]
+        },
+        "master-css-mode-block": {
+            "begin": "((@)mode)(\\s+)([^\\s{;]+)(\\s*)(\\{)",
+            "end": "(\\})",
+            "name": "meta.at-rule.mode.master-css.css",
+            "beginCaptures": {
+                "1": {
+                    "name": "keyword.control.at-rule.mode.master-css.css"
+                },
+                "2": {
+                    "name": "punctuation.definition.keyword.css"
+                },
+                "4": {
+                    "name": "support.constant.property-value.css"
+                },
+                "6": {
+                    "name": "punctuation.section.at-rule.begin.bracket.curly.css"
+                }
+            },
+            "endCaptures": {
+                "1": {
+                    "name": "punctuation.section.at-rule.end.bracket.curly.css"
+                }
+            },
+            "patterns": [
+                {
+                    "include": "#master-css-nested-block-body"
                 }
             ]
         },

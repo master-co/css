@@ -1,10 +1,10 @@
 @master {
 
-    light {
+    @mode light {
         --color-card: #ffffff;
     }
 
-    dark {
+    @mode dark {
         --color-card: $color-gray-80;
     }
 

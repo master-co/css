@@ -320,7 +320,7 @@ test('CSS injection highlights @master root configuration blocks', () => {
             root-size: 16;
             --color-primary: $color-blue-60/.8;
 
-            dark {
+            @mode dark {
                 --color-primary: #818cf8;
             }
 
@@ -335,7 +335,8 @@ test('CSS injection highlights @master root configuration blocks', () => {
     assertTokenScope(tokens, '--color-primary', 'variable.css')
     assertTokenScope(tokens, 'color-blue-60', 'variable.other.master-css.css')
     assertTokenScope(tokens, '.8', 'constant.numeric.css')
-    assertTokenScope(tokens, 'dark', 'entity.name.tag.css')
+    assertTokenScope(tokens, 'mode', 'keyword.control.at-rule.mode.master-css.css')
+    assertTokenScope(tokens, 'dark', 'support.constant.property-value.css')
     assertTokenScope(tokens, 'custom-at', 'keyword.control.at-rule.custom-at.master-css.css')
     assertTokenScope(tokens, 'motion-safe', 'variable.parameter.master-css.at-token.css')
     assertTokenScope(tokens, 'media', 'keyword.control.at-rule.css')

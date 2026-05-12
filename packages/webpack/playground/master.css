@@ -15,7 +15,7 @@
     --spacing-card: 24;
     --screen-md: 48;
 
-    dark {
+    @mode dark {
         --color-primary: #8fb5ff;
         --color-base: #111827;
         --color-ink: #f8fafc;

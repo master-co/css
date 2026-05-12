@@ -3,7 +3,7 @@
 @master {
     --color-accent: #456;
 
-    dark {
+    @mode dark {
         --color-accent: #789;
     }
 }

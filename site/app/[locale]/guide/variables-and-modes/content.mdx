@@ -68,16 +68,16 @@ This keeps markup concise while avoiding global token collisions across namespac
 ---
 
 ## Modes
-Define mode-specific variables with nested mode blocks inside `@master`.
+Define mode-specific variables with `@mode` blocks inside `@master`.
 
 ```css name=master.css
 @master {
-    light {
+    @mode light {
         --color-primary: #4f46e5;
         --color-surface: #ffffff;
     }
 
-    dark {
+    @mode dark {
         --color-primary: #818cf8;
         --color-surface: #111827;
     }
@@ -88,7 +88,7 @@ Define mode-specific variables with nested mode blocks inside `@master`.
 
 ```css name=master.css
 @master {
-    chrisma {
+    @mode chrisma {
         --color-primary: #ff0;
     }
 }

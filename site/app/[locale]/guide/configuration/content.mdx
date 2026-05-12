@@ -15,7 +15,7 @@ That makes configuration feel closer to authoring CSS than filling out a JavaScr
     --color-panel: #ffffff;
     --screen-md: 768;
 
-    dark {
+    @mode dark {
         --color-primary: #818cf8;
         --color-panel: #111827;
     }
@@ -107,21 +107,21 @@ Token names are contextual. `primary` resolves as a color in `bg:primary`, `sans
 </section>
 ```
 
-Mode-specific values are nested under the mode name. `light` and `dark` are always available, and new modes are added when you define them.
+Mode-specific values live in `@mode` blocks. `light` and `dark` are always available, and new modes are added when you define them.
 
 ```css name=master.css
 @master {
-    light {
+    @mode light {
         --color-panel: #ffffff;
         --color-primary: #4f46e5;
     }
 
-    dark {
+    @mode dark {
         --color-panel: #111827;
         --color-primary: #818cf8;
     }
 
-    high-contrast {
+    @mode high-contrast {
         --color-primary: #ffff00;
     }
 }

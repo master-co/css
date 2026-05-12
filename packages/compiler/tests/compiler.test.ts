@@ -53,7 +53,7 @@ describe.concurrent('@master/css-compiler', () => {
                 @custom-at supports-backdrop @supports (backdrop-filter: blur(0));
                 @custom-selector ::scrollbar ::-webkit-scrollbar;
 
-                dark {
+                @mode dark {
                     --color-primary: #456;
                     --color-base: #000;
                 }
@@ -128,7 +128,7 @@ describe.concurrent('@master/css-compiler', () => {
                 @custom-at motion-safe @media (prefers-reduced-motion: no-preference);
                 @custom-selector ::scrollbar ::-webkit-scrollbar;
 
-                dark {
+                @mode dark {
                     --color-primary: #456;
                 }
             }
@@ -315,11 +315,11 @@ describe.concurrent('@master/css-compiler', () => {
 
                 --color-primary: #123;
 
-                dark {
+                @mode dark {
                     --color-primary: #456;
                 }
 
-                chrisma {
+                @mode chrisma {
                     --color-primary: #ff0;
                 }
             }
@@ -330,11 +330,21 @@ describe.concurrent('@master/css-compiler', () => {
         expect(result.css).toContain('.chrisma .bg\\:primary\\@chrisma{background-color:rgb(255 255 0)}')
     })
 
+    it('requires @mode for mode variable blocks', () => {
+        expect(() => process(`
+            @master {
+                dark {
+                    --color-primary: #456;
+                }
+            }
+        `)).toThrow('Use @mode dark { ... } for mode-specific variables')
+    })
+
     it('warns when media mode trigger is used with custom modes', () => {
         const warnings: string[] = []
         const result = compileCSS(`
             @master {
-                chrisma {
+                @mode chrisma {
                     --color-primary: #ff0;
                 }
             }
@@ -352,7 +362,7 @@ describe.concurrent('@master/css-compiler', () => {
             @master {
                 mode-trigger: class;
 
-                chrisma {
+                @mode chrisma {
                     --color-primary: #ff0;
                 }
             }
@@ -361,7 +371,7 @@ describe.concurrent('@master/css-compiler', () => {
             @master {
                 mode-trigger: host;
 
-                chrisma {
+                @mode chrisma {
                     --color-primary: #ff0;
                 }
             }
@@ -1100,12 +1110,12 @@ describe.concurrent('@master/css-compiler', () => {
     it('generates theme variables used by raw component and utility declarations', () => {
         const result = compileCSS(`
             @master {
-                dark {
+                @mode dark {
                     --color-primary: #000;
                     --color-accent: #f0f;
                 }
 
-                light {
+                @mode light {
                     --color-primary: #ff0;
                     --color-accent: #0ff;
                 }
@@ -1169,7 +1179,7 @@ describe.concurrent('@master/css-compiler', () => {
                 @custom-selector :interactive :hover;
                 @custom-selector :interactive :focus-visible;
 
-                dark {
+                @mode dark {
                     --color-primary: #333;
                     --color-primary: #444;
                 }
@@ -1426,7 +1436,7 @@ describe.concurrent('@master/css-compiler', () => {
                     }
                 }
             }
-        `)).toThrow('Mode "fade" only accepts custom property declarations')
+        `)).toThrow('Use @mode fade { ... } for mode-specific variables, or @keyframes fade { ... } for animations')
     })
 
     it('rejects @compose outside component definitions', () => {
@@ -1522,14 +1532,14 @@ describe.concurrent('@master/css-compiler', () => {
 
         expect(() => process(`
             @master {
-                md {
+                @mode md {
                     --color-primary: #ff0;
                 }
             }
         `)).toThrow('Mode "md" conflicts with screen variable "--screen-md"')
     })
 
-    it('rejects @custom-at and @custom-selector outside @master', () => {
+    it('rejects @custom-at, @custom-selector, and @mode outside @master', () => {
         expect(() => process(`
             @custom-at motion-safe @media (prefers-reduced-motion: no-preference);
         `)).toThrow('@custom-at is only allowed in @master')
@@ -1537,5 +1547,11 @@ describe.concurrent('@master/css-compiler', () => {
         expect(() => process(`
             @custom-selector :headings :is(h1, h2, h3);
         `)).toThrow('@custom-selector is only allowed in @master')
+
+        expect(() => process(`
+            @mode dark {
+                --color-primary: #456;
+            }
+        `)).toThrow('@mode is only allowed in @master')
     })
 })
