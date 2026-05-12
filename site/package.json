@@ -17,6 +17,7 @@
     },
     "dependencies": {
         "@master/colors": "^3.0.0",
+        "@master/css-compiler": "workspace:^",
         "@master/normal.css": "^3.2.0",
         "@monaco-editor/react": "^4.7.0",
         "@next/mdx": "16.2.4",

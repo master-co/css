@@ -38,6 +38,11 @@
             "types": "./dist/index.d.ts",
             "import": "./dist/index.mjs",
             "default": "./dist/index.mjs"
+        },
+        "./browser": {
+            "types": "./dist/browser.d.ts",
+            "import": "./dist/browser.mjs",
+            "default": "./dist/browser.mjs"
         }
     },
     "files": [
@@ -49,7 +54,8 @@
     },
     "dependencies": {
         "@master/css": "workspace:^",
-        "lightningcss": "^1.32.0"
+        "lightningcss": "^1.32.0",
+        "lightningcss-wasm": "^1.32.0"
     },
     "devDependencies": {
         "shared": "workspace:^"

@@ -1,34 +1,26 @@
 'use client'
 
 import type { editor } from 'monaco-editor'
-import { use, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useDebouncedCallback } from 'use-debounce'
-import { snackbar } from 'internal/utils/snackbar'
 import dedent from 'ts-dedent'
-import { IconBrandCss3, IconChevronDown, IconDeviceDesktop, IconDeviceMobile } from '@tabler/icons-react'
+import { IconBrandCss3, IconDeviceDesktop, IconDeviceMobile } from '@tabler/icons-react'
 import Tabs, { Tab } from 'internal/components/Tabs'
 import useRewritedPathname from 'internal/uses/rewrited-pathname'
 import { useSearchParams } from 'next/navigation'
 import LanguageButton from 'internal/components/LanguageButton'
 import ThemeButton from 'internal/components/ThemeButton'
-import { getScriptHTML } from './getScriptHTML'
-import { getStyleHTML } from './getStyleHTML'
 import { beautifyCSS } from 'internal/utils/beautify-css'
 import templates from './templates'
 import Resizable from 'internal/components/Resizable'
-import { getLinkHTML } from './getLinkHTML'
 import { useThemeMode } from '@master/theme-mode.react'
 import Header from 'internal/components/Header'
 import HeaderNav from 'internal/components/HeaderNav'
-import i18n from 'internal/common/i18n.config.mjs'
 import { screens, variables } from '@master/css'
 import clsx from 'clsx'
-import dynamic from 'next/dynamic'
-import { useRouter } from 'next/navigation'
 import Link from 'internal/components/Link'
 import Editor, { loader, type Monaco } from '@monaco-editor/react'
 import DocMenuButton from 'internal/components/DocMenuButton'
-import { useLocale } from 'internal/contexts/locale'
 import { useTranslation } from 'internal/contexts/i18n'
 import HeaderContent from 'internal/components/HeaderContent'
 import createHighlighter, { themes } from 'internal/utils/create-highlighter'
@@ -42,11 +34,6 @@ if (typeof window !== 'undefined') {
         }
     })
 }
-
-const ShareButton = dynamic(() => import('./components/ShareButton'))
-
-// import { Registry } from 'monaco-textmate'
-// import { wireTmGrammars } from 'monaco-editor-textmate'
 
 const monoFallbackFont = variables.find(({ namespace, key }) => namespace === 'font-family' && key === 'mono-fallback')?.value
 
@@ -73,33 +60,80 @@ const editorHTMLOptions: any = {
     }
 }
 
-export default function Play(props: any) {
+const template = templates[0]
+const previewBaseCSS = `*,::before,::after{box-sizing:border-box}html{-webkit-text-size-adjust:100%;tab-size:4}body{margin:0}img,svg,video,canvas{display:block;max-width:100%}button,input,textarea,select{font:inherit}a{color:inherit;text-decoration:none}`
+let compilerPromise: Promise<typeof import('@master/css-compiler/browser')> | undefined
+
+function loadCompiler() {
+    compilerPromise ??= import('@master/css-compiler/browser')
+    return compilerPromise
+}
+
+function getFileContent(files: PlayFile[], title: string) {
+    return files.find((file) => file.title === title)?.content || ''
+}
+
+function extractClassNamesFromHTML(html: string) {
+    const classNames = new Set<string>()
+
+    if (typeof window !== 'undefined' && typeof DOMParser !== 'undefined') {
+        const document = new DOMParser().parseFromString(html, 'text/html')
+        document.querySelectorAll('[class]').forEach((element) => {
+            element.getAttribute('class')?.split(/\s+/).filter(Boolean).forEach((className) => classNames.add(className))
+        })
+    } else {
+        for (const match of html.matchAll(/\bclass\s*=\s*(["'])(.*?)\1/gs)) {
+            match[2].split(/\s+/).filter(Boolean).forEach((className) => classNames.add(className))
+        }
+    }
+
+    return [...classNames]
+}
+
+function formatCSSSize(cssText: string) {
+    return Math.round(new TextEncoder().encode(cssText).length / 1024 * 100) / 100 + 'KB'
+}
+
+function createPreviewHTML() {
+    return dedent`<html>
+        <head>
+            <script>${require('./previewHandler.js?raw')}</script>
+            <style>${previewBaseCSS}</style>
+            <style>
+                body {
+                    font-family: Inter, Noto Sans TC, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+                }
+            </style>
+        </head>
+        <body></body>
+    </html>`
+}
+
+function getErrorMessage(error: unknown) {
+    return error instanceof Error ? error.message : String(error)
+}
+
+export default function Play() {
     const $ = useTranslation()
     const app = useApp()
-    const locale = useLocale()
-    const router = useRouter()
     const themeMode = useThemeMode()
     const searchParams = useSearchParams()
     const pathname = useRewritedPathname()
-    const versionSelectRef = useRef<HTMLSelectElement>(null)
-    const monacoProvidersRef = useRef<any>([])
-    const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null)
-    const monacoRef = useRef<Monaco | null>(null)
     const previewIframeRef = useRef<HTMLIFrameElement>(null)
-    const prevVersionRef = useRef(props.shareItem?.version ?? process.env.NEXT_PUBLIC_VERSION)
-    const [shareId, setShareId] = useState(props.shareId ?? '')
-    const [sharing, setSharing] = useState(false)
-    const [version, setVersion] = useState(props.shareItem?.version ?? process.env.NEXT_PUBLIC_VERSION)
+    const filesRef = useRef<PlayFile[]>(template.files)
+    const compiledCSSRef = useRef('')
+    const compileTicketRef = useRef(0)
+    const highlighterRef = useRef<Awaited<ReturnType<typeof createHighlighter>> | null>(null)
+    const [files, setFiles] = useState<PlayFile[]>(template.files)
     const [generatedCSSText, setGeneratedCSSText] = useState('')
     const [generatedCSSSize, setGeneratedCSSSize] = useState('0KB')
-    const template = useMemo(() => templates.find((eachTemplate) => eachTemplate.version === version), [version])
-    const [previewErrorEvent, setPreviewErrorEvent] = useState<any>()
+    const [compiling, setCompiling] = useState(true)
+    const [compileWarnings, setCompileWarnings] = useState<string[]>([])
+    const [previewErrorEvent, setPreviewErrorEvent] = useState<PlayErrorEvent | null>(null)
     const layout = useMemo(() => searchParams?.get('layout'), [searchParams])
     const preview = useMemo(() => searchParams?.get('preview'), [searchParams])
-    const shareItem: PlayShare = useMemo(() => props.shareItem || template, [props.shareItem, template])
-    const tab = useMemo(() => searchParams?.get('tab') || shareItem.files[0].title, [searchParams, shareItem.files])
+    const tab = useMemo(() => searchParams?.get('tab') || files[0].title, [searchParams, files])
     const getTheme = useCallback(() => themeMode.value === 'dark' ? themes.dark : themes.light, [themeMode.value])
-    const [highlighter, setHighlighter] = useState<Awaited<ReturnType<typeof createHighlighter>>>()
 
     const getSearchPath = useCallback((name?: string, value?: any) => {
         const urlSearchParams = new URLSearchParams(searchParams?.toString())
@@ -118,43 +152,18 @@ export default function Play(props: any) {
         window.history.pushState(null, '', newPath)
     }, [getSearchPath])
 
-    const generateDatabaseShareItem = useCallback((target: any) => ({
-        files: target.files,
-        dependencies: template?.dependencies,
-        version
-    }), [template?.dependencies, version])
-
-    const [strignifiedPrevShareItem, setStrignifiedPrevShareItem] = useState(JSON.stringify(generateDatabaseShareItem(shareItem)))
-    const [shareable, setShareable] = useState(false)
-    const sharePathname = useMemo(() => {
-        if (typeof window === 'undefined') {
-            return ''
-        }
-        return `${locale === i18n.defaultLocale ? '' : `/${locale}`}/play/${shareId}${window.location.search}`
-    }, [locale, shareId])
-
     useEffect(() => {
-        if (prevVersionRef.current !== version) {
-            prevVersionRef.current = version
-            setStrignifiedPrevShareItem(JSON.stringify(generateDatabaseShareItem(shareItem)))
-            setShareable(false)
-        }
-    }, [generateDatabaseShareItem, shareItem, version])
-
-    const validateShareable = useCallback(() => {
-        const databaseShareItem = generateDatabaseShareItem(shareItem)
-        const strignifiedDatabaseShareItem = JSON.stringify(databaseShareItem)
-        setShareable(strignifiedDatabaseShareItem !== strignifiedPrevShareItem)
-    }, [generateDatabaseShareItem, shareItem, strignifiedPrevShareItem])
+        filesRef.current = files
+    }, [files])
 
     /**
-     * 避免切換到更大視口時仍停留在僅小視口支援的 Preview 或 Generated CSS 瀏覽模式
+     * Avoid keeping mobile-only Preview or Generated CSS tabs selected when resizing up.
      */
     useEffect(() => {
         const onResize = () => {
             if (window.innerWidth >= screens.md) {
                 if (tab === 'Preview' || tab === 'Generated CSS') {
-                    pushShallowURL('tab', shareItem.files[0].title)
+                    pushShallowURL('tab', files[0].title)
                 }
             } else {
                 pushShallowURL('preview', '')
@@ -164,136 +173,73 @@ export default function Play(props: any) {
         return () => {
             window.removeEventListener('resize', onResize)
         }
-    }, [tab, shareItem.files, router, pushShallowURL])
+    }, [tab, files, pushShallowURL])
 
-    /**
-     * 需避免即時編輯 HTML, Config 或切換 Theme 時更新 previewHTML，否則 Preview 將重載並造成視覺閃爍
-     */
-    const previewHTML = useMemo(() => {
-        let headInnerHTML = ''
-        let bodyInnerHTML = ''
-
-        const appendFile = (eachFile: PlayShareFile) => {
-            if (!eachFile) {
-                eachFile = template?.files.find(({ title }: any) => title === eachFile.title) as PlayShareFile
+    const postPreviewUpdate = useCallback((html: string, css: string) => {
+        previewIframeRef.current?.contentWindow?.postMessage({
+            type: 'preview:update',
+            content: {
+                html,
+                css
             }
-            const content = eachFile.content
-            if (!content) {
-                return
-            }
-            switch (eachFile.language) {
-                case 'html':
-                    bodyInnerHTML += content
-                    return
-                case 'javascript':
-                    let eachScriptHTML = getScriptHTML({ ...eachFile, text: content })
-                    if (eachFile.name === 'master.css.js') {
-                        eachScriptHTML = eachScriptHTML
-                            .replace(/(export default|export const config =)/, 'window.masterCSSConfig =')
-                    }
-                    headInnerHTML += eachScriptHTML
-                    break
-                case 'css':
-                    headInnerHTML += getStyleHTML({ ...eachFile, text: content })
-                    break
-            }
-        }
-
-        shareItem.files
-            .filter((eachFile) => eachFile.priority === 'low')
-            .filter((eachFile) => appendFile(eachFile))
-
-        shareItem?.links?.forEach((link) => {
-            headInnerHTML += getLinkHTML(link)
-        })
-
-        shareItem?.dependencies?.styles
-            ?.forEach((style) => {
-                headInnerHTML += getStyleHTML(style)
-            })
-
-        shareItem?.dependencies?.scripts
-            ?.forEach((script) => {
-                headInnerHTML += getScriptHTML(script)
-            })
-
-        shareItem.files
-            .filter((eachFile) => eachFile.priority !== 'low')
-            .filter((eachFile) => appendFile(eachFile))
-
-        return dedent`<html>
-            <head>
-                <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300..700&family=Inter:wght@100..900&family=Noto+Sans+TC:wght@100..900&display=swap" rel="stylesheet" />
-                <script>${require('./previewHandler.js?raw')}</script>
-                <style>body { font-family: Inter, Noto Sans TC, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji" }</style>
-                ${headInnerHTML}
-            </head>
-            <body>${bodyInnerHTML}</body>
-        </html>`
-    }, [shareItem, template?.files])
-
-    const tabFile: { id: string, language: string, content: string, readOnly: boolean, name: string, title: string } = useMemo(() => {
-        switch (tab) {
-            // mobile
-            case 'Generated CSS':
-                return {
-                    id: 'GeneratedCSS',
-                    title: 'Generated CSS',
-                    name: 'master.css',
-                    language: 'css',
-                    content: generatedCSSText,
-                    readOnly: true
-                }
-            // mobile
-            case 'Preview':
-                return shareItem.files[0]
-            default:
-                return shareItem.files.find((eachTab: any) => eachTab.title === tab) as any
-        }
-    }, [tab, generatedCSSText, shareItem.files])
-
-    const hotUpdatePreviewByFile = useDebouncedCallback(() => {
-        if (editorRef.current) {
-            tabFile.content = editorRef.current?.getValue()
-            validateShareable()
-        }
-
-        previewIframeRef?.current?.contentWindow?.postMessage({
-            id: tabFile.id,
-            language: tabFile.language,
-            name: tabFile.name,
-            title: tabFile.title,
-            content: tabFile.content
         }, window.location.origin)
+    }, [])
 
-        setTimeout(() => {
+    const compileAndPreview = useCallback(async (nextFiles = filesRef.current) => {
+        const ticket = ++compileTicketRef.current
+        const html = getFileContent(nextFiles, 'HTML')
+        const sourceCSS = getFileContent(nextFiles, 'CSS')
+        const classes = extractClassNamesFromHTML(html)
+
+        setCompiling(true)
+
+        try {
+            const { compileCSS } = await loadCompiler()
+            const result = await compileCSS(sourceCSS, {
+                classes,
+                from: 'playground.css'
+            })
+            if (ticket !== compileTicketRef.current) return
+
+            const cssText = result.css
+            compiledCSSRef.current = cssText
+            setGeneratedCSSText(cssText ? beautifyCSS(cssText) : '')
+            setGeneratedCSSSize(formatCSSSize(cssText))
+            setCompileWarnings(result.warnings)
             setPreviewErrorEvent(null)
-        })
+            postPreviewUpdate(html, cssText)
+        } catch (error) {
+            if (ticket !== compileTicketRef.current) return
+            setPreviewErrorEvent({
+                type: 'error',
+                lineno: 1,
+                message: getErrorMessage(error),
+                filename: 'master.css',
+                datetime: new Date()
+            })
+        } finally {
+            if (ticket === compileTicketRef.current) {
+                setCompiling(false)
+            }
+        }
+    }, [postPreviewUpdate])
+
+    const hotUpdatePreviewByFiles = useDebouncedCallback((nextFiles: PlayFile[]) => {
+        void compileAndPreview(nextFiles)
     }, 250)
 
-    // dispose monaco providers
     useEffect(() => {
-        const providers = monacoProvidersRef.current
-
-        return () => {
-            providers.forEach((provider: any) => {
-                provider.dispose()
-            })
-            editorRef.current?.dispose()
-        }
-    }, [])
+        void compileAndPreview(filesRef.current)
+    }, [compileAndPreview])
 
     useEffect(() => {
         const onMessage = (event: MessageEvent) => {
-            const { type, content } = event.data
             if (event.origin !== document.location.origin) {
                 return
             }
-            switch (type) {
-                case 'cssUpdate':
-                    const cssText = content ? beautifyCSS(content) : ''
-                    setGeneratedCSSSize(Math.round(new TextEncoder().encode(content).length / 1024 * 100) / 100 + 'KB')
-                    setGeneratedCSSText(cssText)
+            switch (event.data?.type) {
+                case 'previewReady':
+                    postPreviewUpdate(getFileContent(filesRef.current, 'HTML'), compiledCSSRef.current)
                     break
                 case 'error':
                     setPreviewErrorEvent(event.data)
@@ -309,215 +255,63 @@ export default function Play(props: any) {
         return () => {
             window.removeEventListener('message', onMessage)
         }
-    }, [shareable])
+    }, [postPreviewUpdate])
 
     useEffect(() => {
-        const onUnload = (event: any) => {
-            event.preventDefault()
-            event.returnValue = true
-        }
-        if (shareable) {
-            window.addEventListener('beforeunload', onUnload)
-        } else {
-            window.removeEventListener('beforeunload', onUnload)
-        }
         return () => {
-            window.removeEventListener('beforeunload', onUnload)
+            highlighterRef.current?.dispose()
         }
-    }, [shareable])
-
-    const copyShareLink = useCallback(async (newSharePathname?: string) => {
-        snackbar('Share link copied!')
-        await navigator.clipboard.writeText(window.location.origin + (newSharePathname || sharePathname))
-    }, [sharePathname])
-
-    const share = useCallback(async (writeShareItem: any) => {
-        if (!shareable) {
-            return
-        }
-        setSharing(true)
-        const databaseShareItem = generateDatabaseShareItem(shareItem)
-        const newShareId = await writeShareItem({
-            ...databaseShareItem,
-            createdAt: new Date().toISOString()
-        })
-        const newSharePathname = `${locale === i18n.defaultLocale ? '' : `/${locale}`}/play/${newShareId}${window.location.search}`
-        setShareId(newShareId)
-        setStrignifiedPrevShareItem(JSON.stringify(databaseShareItem))
-        setShareable(false)
-        setSharing(false)
-        copyShareLink(newSharePathname)
-        window.history.pushState(null, '', newSharePathname)
-    }, [copyShareLink, generateDatabaseShareItem, locale, shareItem, shareable])
-
-    const responsive = useMemo(() => {
-        return preview === 'responsive'
-            // 避免在 @<md 時觸發響應式預覽
-            && tab !== 'Preview'
-    }, [tab, preview])
-
-    // change version
-    const onVersionSelectChange = (event: any) => {
-        if (shareable) {
-            if (!window.confirm('Are you sure you want to discard the current changes?')) {
-                event.preventDefault()
-                return
-            }
-        }
-        setVersion(event.target.value)
-    }
+    }, [])
 
     const registerShiki = useCallback(async (monaco: Monaco) => {
         monaco.languages.html.htmlDefaults.setOptions(editorHTMLOptions)
-        if (highlighter) {
-            highlighter.dispose()
-        }
-        const newHighlighter = await createHighlighter()
-        setHighlighter(newHighlighter)
-        shikiToMonaco(newHighlighter, monaco)
+        highlighterRef.current?.dispose()
+        const highlighter = await createHighlighter()
+        highlighterRef.current = highlighter
+        shikiToMonaco(highlighter, monaco)
         setTimeout(() => {
             monaco.editor.setTheme(getTheme())
         })
-    }, [getTheme, highlighter])
+    }, [getTheme])
 
-    const editorOnMount = useCallback(async (editor: editor.IStandaloneCodeEditor, monaco: Monaco) => {
-        // TODO: 須確認是否可由 @monaco-editor/react 的相關 API 改寫，不要用 monaco-editor
-        editorRef.current = editor
-        monacoRef.current = monaco
+    const editorOnMount = useCallback(async (_editor: editor.IStandaloneCodeEditor, monaco: Monaco) => {
         await registerShiki(monaco)
-        // const [{ languages }] = await Promise.all([
-        //     import('monaco-editor'),
-        // ])
-
-
-        // const {
-        //     CompletionItemProvider,
-        //     ColorPresentationProvider,
-        //     DocumentColorsProvider,
-        //     HoverItemProvider
-        // } = await import('./master-css-monaco')
-
-        // monacoProvidersRef.current.replace(languages.registerCompletionItemProvider('html', {
-        //     provideCompletionItems: function (model, position) {
-        //         return CompletionItemProvider(model, position, 'html')
-        //     },
-        //     triggerCharacters: [':', '@', '~'],
-        // }))
-
-        // monacoProvidersRef.current.replace(languages.registerCompletionItemProvider('javascript', {
-        //     provideCompletionItems: function (model, position) {
-        //         return CompletionItemProvider(model, position, 'javascript')
-        //     },
-        //     triggerCharacters: [':', '@', '~'],
-        // }))
-
-        // monacoProvidersRef.current.replace(languages.registerHoverProvider('html', {
-        //     provideHover: function (model, position) {
-        //         var result = HoverItemProvider(position, model)
-        //         if (result != null) {
-        //             return result
-        //         }
-        //     },
-        // }))
-
-        // monacoProvidersRef.current.replace(languages.registerColorProvider('html', {
-        //     provideColorPresentations(model, colorInfo) {
-        //         return ColorPresentationProvider(model, colorInfo)
-        //     },
-
-        //     provideDocumentColors(model, token) {
-        //         return DocumentColorsProvider(model)
-        //     },
-        // }))
-
-        // monacoProvidersRef.current.replace(languages.registerColorProvider('javascript', {
-        //     provideColorPresentations(model, colorInfo) {
-        //         return ColorPresentationProvider(model, colorInfo)
-        //     },
-
-        //     provideDocumentColors(model, token) {
-        //         return DocumentColorsProvider(model)
-        //     },
-        // }))
-
-        // languages.register({ id: 'master-css' })
-        // languages.register({ id: 'master-css-injection-class' })
-
-        // const registry = new Registry({
-        //     getGrammarDefinition: async (scopeName) => {
-        //         switch (scopeName) {
-        //             case 'source.master-css':
-        //                 return {
-        //                     format: 'json',
-        //                     content: await (await fetch('/tmLanguage/master-css.tmLanguage.json')).text(),
-        //                 }
-        //             case 'source.master-css.injection-class':
-        //                 return {
-        //                     format: 'json',
-        //                     content: await (await fetch('/tmLanguage/master-css.injection-class.tmLanguage.json')).text(),
-        //                 }
-        //             case 'source.master-css.injection-js':
-        //                 return {
-        //                     format: 'json',
-        //                     content: await (await fetch('/tmLanguage/master-css.injection-js.tmLanguage.json')).text(),
-        //                 }
-        //             case 'source.master-css.injection-string':
-        //                 return {
-        //                     format: 'json',
-        //                     content: await (await fetch('/tmLanguage/master-css.injection-string.tmLanguage.json')).text(),
-        //                 }
-        //             default:
-        //                 return null
-        //         }
-        //     },
-        //     getInjections(scopeName: ScopeName): string[] | undefined {
-        //         switch (scopeName) {
-        //             case 'source.master-css.injection-class':
-        //                 return [
-        //                     "source",
-        //                     "text"
-        //                 ]
-        //             case 'source.master-css.injection-js':
-        //                 return [
-        //                     "source.js",
-        //                     "source.ts"
-        //                 ]
-        //             case 'source.master-css.injection-string':
-        //                 return [
-        //                     "source.js",
-        //                     "source.ts"
-        //                 ]
-        //             default:
-        //                 return undefined
-        //         }
-        //         const grammar = grammars[scopeName];
-        //         return grammar ? grammar.injections : undefined;
-        //     },
-        // })
-        // const grammars = new Map()
-        // grammars.set('master-css', 'source.master-css')
-        // await wireTmGrammars(monaco, registry, grammars, editor)
-        // const grammar = await registry.loadGrammar(languages.get(languageId))
-
-        // languages.setTokensProvider(languageId, {
-        //     getInitialState: () => new TokenizerState(INITIAL),
-        //     tokenize: (line: string, state: TokenizerState) => {
-        //         const res = grammar.tokenizeLine(line, state.ruleStack)
-        //         return {
-        //             endState: new TokenizerState(res.ruleStack),
-        //             tokens: res.tokens.map(token => ({
-        //                 ...token,
-        //                 // TODO: At the moment, monaco-editor doesn't seem to accept array of scopes
-        //                 scopes: editor ? TMToMonacoToken(editor, token.scopes) : token.scopes[token.scopes.length - 1]
-        //             })),
-        //         }
-        //     }
-        // })
-        previewIframeRef?.current?.contentWindow?.postMessage({ type: 'editorReady' }, window.location.origin)
     }, [registerShiki])
+
+    const updateFileContent = useCallback((fileId: string, content: string) => {
+        const nextFiles = filesRef.current.map((file) => file.id === fileId ? { ...file, content } : file)
+        filesRef.current = nextFiles
+        setFiles(nextFiles)
+        hotUpdatePreviewByFiles(nextFiles)
+    }, [hotUpdatePreviewByFiles])
+
+    const responsive = useMemo(() => {
+        return preview === 'responsive'
+            && tab !== 'Preview'
+    }, [tab, preview])
+
+    const tabFile: PlayFile = useMemo(() => {
+        switch (tab) {
+            case 'Generated CSS':
+                return {
+                    id: 'GeneratedCSS',
+                    title: 'Generated CSS',
+                    name: 'master.generated.css',
+                    language: 'css',
+                    content: generatedCSSText,
+                    readOnly: true
+                }
+            case 'Preview':
+                return files[0]
+            default:
+                return files.find((eachTab) => eachTab.title === tab) || files[0]
+        }
+    }, [tab, generatedCSSText, files])
 
     const width = useMemo(() => (!layout || layout === '2') ? '50%' : '100%', [layout])
     const height = useMemo(() => (!layout || layout === '2') ? '100%' : '50%', [layout])
+    const previewHTML = useMemo(() => createPreviewHTML(), [])
+
     return (
         <div className="abs flex flex-col full">
             <Header fixed={false}>
@@ -525,54 +319,22 @@ export default function Play(props: any) {
                     <Link href={'/'}>
                         {<app.Logotype width={168} height={20} />}
                     </Link>
-                    <label className='app-header-nav rel gap:5 font:medium ml:auto ml:30@md'>
-                        v{version}
-                        <select ref={versionSelectRef} name="version" defaultValue={version}
-                            className="abs full inset:0 cursor:pointer opacity:0"
-                            onChange={onVersionSelectChange}>
-                            {templates.map(({ version: eachVersion }) => (
-                                <option value={eachVersion} key={eachVersion} disabled={props.shareItem && version !== eachVersion}>
-                                    v{eachVersion}
-                                </option>
-                            ))}
-                            {/* {
-                            shareItem?.version && !templates.find((eachTemplate) => eachTemplate.version === version)
-                            && <option value={shareItem.version} disabled>
-                                v{shareItem?.version}
-                            </option>
-                        } */}
-                        </select>
-                        <IconChevronDown className="size:1em mr:-3 stroke:1.5" />
-                    </label>
+                    <div className='app-header-nav rel gap:5 font:medium ml:auto ml:30@md'>
+                        v{template.version}
+                    </div>
                     {app.navs?.map(({ fullName, Icon, ...eachLink }: any, index) =>
-                        <HeaderNav className={clsx('hidden@<md', index === app.navs.length - 1 && 'mr:auto')} key={eachLink.name} {...eachLink} onClick={(event: any) => {
-                            if (shareable) {
-                                if (!window.confirm('Are you sure to go to another page and discard current changes?')) {
-                                    event.preventDefault()
-                                    return
-                                }
-                            }
-                        }}>
+                        <HeaderNav className={clsx('hidden@<md', index === app.navs.length - 1 && 'mr:auto')} key={eachLink.name} {...eachLink}>
                             {$(eachLink.name)}
                         </HeaderNav>
                     )}
-                    {(shareId && !shareable) &&
-                        <button className="app-header-icon mx:12 hidden@<md" onClick={() => copyShareLink()}>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" strokeWidth="1.2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
-                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                <path d="M9 15l6 -6"></path>
-                                <path d="M11 6l.463 -.536a5 5 0 0 1 7.071 7.072l-.534 .464"></path>
-                                <path d="M13 18l-.397 .534a5.068 5.068 0 0 1 -7.127 0a4.972 4.972 0 0 1 0 -7.071l.524 -.463"></path>
-                            </svg>
-                            <span className="font:12 ml:10 tracking:0">
-                                {shareId}
-                            </span>
-                        </button>}
-                    {/* share button */}
-                    {shareable && <ShareButton className={clsx('hidden@<md', sharing ? 'app-header-nav' : 'app-header-icon')} disabled={sharing} onClick={share}>
-                        {sharing && <span className="ml:10">{$('Sharing ...')}</span>}
-                    </ShareButton>}
-                    {(shareId || shareable) && <div className='mx:4x bg:line-light h:1em w:1 hidden@<md'></div>}
+                    <button className="app-header-icon hidden!" aria-hidden tabIndex={-1}>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" strokeWidth="1.2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                            <path d="M9 15l6 -6"></path>
+                            <path d="M11 6l.463 -.536a5 5 0 0 1 7.071 7.072l-.534 .464"></path>
+                            <path d="M13 18l-.397 .534a5.068 5.068 0 0 1 -7.127 0a4.972 4.972 0 0 1 0 -7.071l.524 -.463"></path>
+                        </svg>
+                    </button>
                     <button className="app-header-icon hidden@<md" onClick={() => pushShallowURL('layout', layout ? '' : '2')}>
                         <svg className={clsx({ 'stroke:accent': !layout || layout === '2' })} xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" strokeWidth="1.2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
                             <path className={clsx(
@@ -607,21 +369,18 @@ export default function Play(props: any) {
                     </button>
                     <span className='hidden'>{layout}</span>
                     <div className='mx:4x bg:line-light h:1em w:1 hidden@<md'></div>
-                    {/* preview: desktop */}
                     <button className="app-header-icon hidden@<md" onClick={() => pushShallowURL('preview', '')}>
                         <IconDeviceDesktop width="22" height="22" className={clsx(
                             'stroke:1.3',
                             !preview ? 'fill:accent/.15 stroke:accent' : 'fill:text-lightest/.2 stroke:current'
                         )} />
                     </button>
-                    {/* preview: responsive */}
                     <button className="app-header-icon hidden@<md" onClick={() => pushShallowURL('preview', 'responsive')}>
                         <IconDeviceMobile width="22" height="22" className={clsx(
                             'stroke:1.3',
                             responsive ? 'fill:accent/.15 stroke:accent' : 'fill:text-lightest/.2 stroke:current'
                         )} />
                     </button>
-                    {/* preview: css */}
                     <button className="app-header-icon hidden@<md" onClick={() => pushShallowURL('preview', 'css')}>
                         <IconBrandCss3 width="22" height="22" className={clsx(
                             'stroke:1.3',
@@ -633,7 +392,8 @@ export default function Play(props: any) {
                     <LanguageButton className="app-header-icon hidden@<md" />
                     <ThemeButton className="app-header-icon mr:-12 hidden@<md"
                         onChange={(theme: string) => {
-                            previewIframeRef?.current?.contentWindow?.postMessage({
+                            previewIframeRef.current?.contentWindow?.postMessage({
+                                type: 'preview:theme',
                                 theme
                             }, window.location.origin)
                         }}
@@ -673,12 +433,11 @@ export default function Play(props: any) {
                     showHeight={true}
                 >
                     <Tabs className="flex:0|0|auto" contentClassName="px:5x px:10x@sm">
-                        {shareItem.files.map((file, index) => (
+                        {files.map((file, index) => (
                             <Tab onClick={() => pushShallowURL('tab', index === 0 ? '' : file.title)} size="sm" key={file.id} active={tab === file.title}>
                                 {file.title || ''}
                             </Tab>
                         ))}
-                        {/* mobile couldn't support tab active */}
                         <Tab onClick={() => pushShallowURL('tab', 'Generated CSS')} size="sm" className="hidden@md" active={tab === 'Generated CSS'}>
                             Generated CSS
                         </Tab>
@@ -686,7 +445,6 @@ export default function Play(props: any) {
                             Preview
                         </Tab>
                     </Tabs>
-                    {/* fix render issue */}
                     <span className='hidden'>{tab}</span>
                     <div className='full min-h:0'>
                         <Editor
@@ -696,7 +454,7 @@ export default function Play(props: any) {
                             height="100%"
                             width="100%"
                             theme={getTheme()}
-                            defaultValue={tabFile.content}
+                            value={tabFile.content}
                             defaultLanguage={tabFile.language}
                             path={tabFile.id}
                             options={{
@@ -704,7 +462,11 @@ export default function Play(props: any) {
                                 readOnly: tabFile.readOnly
                             }}
                             onMount={editorOnMount}
-                            onChange={hotUpdatePreviewByFile}
+                            onChange={(value) => {
+                                if (!tabFile.readOnly && tabFile.id) {
+                                    updateFileContent(tabFile.id, value || '')
+                                }
+                            }}
                         />
                     </div>
                 </Resizable>
@@ -735,17 +497,17 @@ export default function Play(props: any) {
                             style={{ width: '100%', height: '100%', borderRadius: 0, margin: 0, padding: 0, border: 0 }}
                             sandbox="allow-popups-to-escape-sandbox allow-scripts allow-popups allow-forms allow-same-origin allow-pointer-lock allow-top-navigation allow-modals"
                             srcDoc={previewHTML}
+                            onLoad={() => postPreviewUpdate(getFileContent(filesRef.current, 'HTML'), compiledCSSRef.current)}
                         />
                         <div className={clsx('flex flex-col h:full', { 'hidden!': preview !== 'css' })}>
                             <div className='flex bb:1|lightest flex:0|0|auto px:5x align-items:center font:12 h:48 justify-content:space-between px:10x@sm'>
-                                <div>Generated CSS</div>
-                                <div className="fg:light">{generatedCSSSize}</div>
+                                <div>{compiling ? 'Compiling CSS' : 'Generated CSS'}</div>
+                                <div className="fg:light">{compileWarnings.length ? `${compileWarnings.length} warnings` : generatedCSSSize}</div>
                             </div>
                             <Editor
                                 height="100%"
                                 width="100%"
                                 theme={getTheme()}
-                                defaultValue={generatedCSSText}
                                 value={generatedCSSText}
                                 language="css"
                                 beforeMount={registerShiki}
@@ -758,7 +520,7 @@ export default function Play(props: any) {
                         {previewErrorEvent &&
                             <div className="abs full inset:0 p:12x fg:red bg:red-5@light bg:red-95@dark">
                                 <h2 className="font:20">Error at line {previewErrorEvent.lineno === 1 ? 1 : previewErrorEvent.lineno - 1}</h2>
-                                <div className="p:15|20 r:5 my:20 font:14 font:medium bg:black/.2@dark bg:red-90@light">
+                                <div className="p:15|20 r:5 my:20 font:14 font:medium bg:black/.2@dark bg:red-90@light white-space:pre-wrap">
                                     {previewErrorEvent.message}
                                 </div>
                                 <div className="font:12">{previewErrorEvent.datetime.toLocaleTimeString()} {previewErrorEvent.datetime.toDateString()}, {previewErrorEvent.filename}</div>
@@ -771,25 +533,19 @@ export default function Play(props: any) {
     )
 }
 
-export interface PlayShare {
-    files: PlayShareFile[]
-    dependencies: PlayShareDependencies
-    version: string
-    links: string[]
-    createdAt: number
-}
-
-export interface PlayShareFile {
+export interface PlayFile {
     title?: string
     name?: string
     language?: 'html' | 'javascript' | 'css' | 'plaintext'
-    path?: string
     content?: string
-    priority?: 'low'
     id?: string
+    readOnly?: boolean
 }
 
-export interface PlayShareDependencies {
-    styles: any[]
-    scripts: any[]
+interface PlayErrorEvent {
+    type: 'error'
+    lineno: number
+    message: string
+    filename: string
+    datetime: Date
 }

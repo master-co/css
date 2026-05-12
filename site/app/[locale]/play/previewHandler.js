@@ -1,58 +1,28 @@
 /* eslint-disable */
 const targetOrigin = parent.document.location.origin
-let prevCSSText = ''
-let prevHtmlContent = ''
+let htmlContent = ''
 
-const updateCSSText = (force) => {
-    let cssRuntime;
-    let cssText;
-    if (
-        cssRuntime = window.runtimeCSS || window.cssRuntime || window.MasterCSS && window.MasterCSS.root
-    ) {
-        cssText = cssRuntime.text
-    } else if (
-        // support v1
-        cssRuntime = window.MasterStyleSheet && window.MasterStyleSheet.root
-    ) {
-        cssText = cssRuntime.styles.map(({ text }) => text).join('');
-    }
-    if (cssRuntime) {
-        if (prevCSSText !== cssText || force) {
-            prevCSSText = cssText
-            parent.postMessage(
-                {
-                    type: 'cssUpdate',
-                    content: cssText
-                },
-                targetOrigin
-            )
-        }
-    }
+const compiledStyle = document.createElement('style')
+compiledStyle.type = 'text/css'
+compiledStyle.setAttribute('data-master-play-compiled', '')
+document.head.appendChild(compiledStyle)
+
+const syncRoot = () => {
+    document.documentElement.className = parent.document.documentElement.className.replace('overflow-x:hidden', '')
+    document.documentElement.setAttribute('style', parent.document.documentElement.getAttribute('style') || '')
+}
+
+const renderHTML = (content) => {
+    htmlContent = content
+    document.body.innerHTML = htmlContent
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    document.documentElement.className = parent.document.documentElement.className.replace('overflow-x:hidden', '')
-    document.documentElement.setAttribute('style', parent.document.documentElement.getAttribute('style'))
-    updateCSSText()
+    syncRoot()
+    parent.postMessage({ type: 'previewReady' }, targetOrigin)
 })
 
-const observer = new MutationObserver((records) => {
-    records.forEach(({ attributeName }) => {
-        switch (attributeName) {
-            case 'class':
-                /* 手動移除可能包含 Master CSS 的類名來避免 Generated CSS 包含 */
-                document.documentElement.setAttribute('class',
-                    parent.document.documentElement.getAttribute(attributeName)
-                        .replace('overflow-x:hidden', '')
-                )
-                break
-            case 'style':
-                /* 手動移除可能包含 Master CSS 的類名來避免 Generated CSS 包含 */
-                document.documentElement.setAttribute('style', parent.document.documentElement.getAttribute(attributeName))
-                break
-        }
-    })
-})
+const observer = new MutationObserver(syncRoot)
 
 observer.observe(parent.document.documentElement, {
     attributes: true,
@@ -60,27 +30,22 @@ observer.observe(parent.document.documentElement, {
 })
 
 window.addEventListener('message', function (event) {
-    const { type, language, content } = event.data
     if (event.origin !== targetOrigin) { return }
+    const { type, content, theme } = event.data
     switch (type) {
-        case 'editorReady':
-            updateCSSText(true)
-            break
-        default:
-            switch (language) {
-                case 'html':
-                    prevHtmlContent = content
-                    this.document.body.innerHTML = content
-                    break
-                case 'javascript':
-                    if (!prevHtmlContent) {
-                        prevHtmlContent = this.document.body.innerHTML
-                    } else {
-                        this.document.body.innerHTML = prevHtmlContent
-                    }
-                    break
+        case 'preview:update':
+            if (typeof content?.html === 'string') {
+                renderHTML(content.html)
             }
-            setTimeout(updateCSSText)
+            if (typeof content?.css === 'string') {
+                compiledStyle.textContent = content.css
+            }
+            break
+        case 'preview:theme':
+            syncRoot()
+            if (theme) {
+                document.documentElement.dataset.theme = theme
+            }
             break
     }
 })
