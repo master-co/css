@@ -61,7 +61,6 @@ const editorHTMLOptions: any = {
 }
 
 const template = templates[0]
-const previewBaseCSS = `*,::before,::after{box-sizing:border-box}html{-webkit-text-size-adjust:100%;tab-size:4}body{margin:0}img,svg,video,canvas{display:block;max-width:100%}button,input,textarea,select{font:inherit}a{color:inherit;text-decoration:none}`
 const playShareApiURL = (process.env.NEXT_PUBLIC_PLAY_API_URL || '/api/play').replace(/\/+$/, '')
 let compilerPromise: Promise<typeof import('@master/css-compiler/browser')> | undefined
 
@@ -98,13 +97,8 @@ function formatCSSSize(cssText: string) {
 function createPreviewHTML() {
     return dedent`<html>
         <head>
-            <script>${require('./previewHandler.js?raw')}</script>
-            <style>${previewBaseCSS}</style>
-            <style>
-                body {
-                    font-family: Inter, Noto Sans TC, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
-                }
-            </style>
+            <style>${require('../../../node_modules/@master/normal.css/dist/index.css?raw')}</style>
+            <script>${require('./preview.js?raw')}</script>
         </head>
         <body></body>
     </html>`
