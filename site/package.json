@@ -18,7 +18,7 @@
     "dependencies": {
         "@master/colors": "^3.0.0",
         "@master/css-compiler": "workspace:^",
-        "@master/normal.css": "^3.2.0",
+        "@master/normal.css": "^3.3.1",
         "@monaco-editor/react": "^4.7.0",
         "@next/mdx": "16.2.4",
         "class-variant": "^2.0.6",
@@ -34,7 +34,7 @@
     "devDependencies": {
         "@master/css.next": "workspace:^",
         "@shikijs/monaco": "^4.0.2",
-        "eslint": "^10.2.1",
+        "eslint": "^10.3.0",
         "internal": "workspace:^",
         "tsx": "^4.21.0",
         "typescript": "^6.0.3"

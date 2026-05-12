@@ -27,19 +27,19 @@
         "url": "https://github.com/master-co/css.git"
     },
     "dependencies": {
-        "@eslint/compat": "^2.0.5",
-        "@playwright/test": "^1.59.1",
+        "@eslint/compat": "^2.1.0",
+        "@playwright/test": "^1.60.0",
         "@swc-node/jest": "^1.9.1",
         "@techor/fs": "^3.2.5",
         "@techor/glob": "^3.2.5",
         "@techor/jest-dom": "^3.2.5",
         "@techor/repo": "^3.2.5",
-        "@types/node": "^25.6.0",
+        "@types/node": "^25.7.0",
         "@types/node-fetch": "^2.6.13",
         "@types/shuffle-array": "^1.0.5",
         "cross-env": "^10.1.0",
         "edit-json-file": "^1.8.1",
-        "eslint": "^10.2.1",
+        "eslint": "^10.3.0",
         "eslint-plugin-playwright": "^2.10.2",
         "execa": "^9.6.1",
         "fast-glob": "^3.3.3",
@@ -57,8 +57,8 @@
         "ts-jest": "^29.4.9",
         "tsx": "^4.21.0",
         "typescript": "^6.0.3",
-        "vite": "^8.0.10",
-        "vitest": "^4.1.5"
+        "vite": "^8.0.12",
+        "vitest": "^4.1.6"
     },
     "devDependencies": {
         "@master/create-css": "workspace:^",
