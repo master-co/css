@@ -1,20 +1,15 @@
 @master {
-    --color-play-accent: oklch(72% 0.18 75);
-    --color-play-ink: oklch(24% 0.02 250);
-
-    dark {
-        --color-play-accent: oklch(82% 0.14 75);
-        --color-play-ink: oklch(94% 0.02 250);
-    }
-
     @custom-at motion-safe @media (prefers-reduced-motion: no-preference);
 
+    .play-stage {
+        @compose "min-h:100dvh bg:surface flex items-center justify-center p:lg";
+    }
+
     .play-card {
-        @compose "block bg:base fg:neutral max-w:560 mx:auto outline:1|lightest p:8x r:3x shadow:lg";
-        color: var(--color-play-ink);
+        @compose "bg:base fg:neutral max-w:screen-xs w:full b:1|lightest p:xl r:lg shadow:lg";
 
         @at motion-safe {
-            transition: transform .18s ease, box-shadow .18s ease;
+            @compose "~transform|fast|smooth";
         }
 
         &:hover {
@@ -22,26 +17,32 @@
         }
     }
 
+    .play-logo {
+        @compose "mb:lg";
+    }
+
+    .play-kicker {
+        @compose "fg:primary font:xs font:semibold m:0 mb:xs";
+    }
+
     .play-title {
-        @compose "fg:strong font:32 font:extrabold line-height:1.1 m:0";
+        @compose "fg:strong text:4xl font:heavy m:0";
         text-wrap: balance;
     }
 
+    .play-copy {
+        @compose "text:md fg:neutral m:0 mt:md";
+    }
+
+    .play-panel {
+        @compose "bg:surface b:1|lightest r:md flex flex-wrap:wrap gap:sm mt:lg p:md";
+    }
+
+    .play-chip {
+        @compose "bg:base fg:strong b:1|lightest font:xs font:medium px:sm py:xs r:full";
+    }
+
     .play-button {
-        @compose "inline-flex items-center justify-center fg:black font:14 font:semibold h:48 mt:6x px:6x r:2x";
-        background: var(--color-play-accent);
+        @compose "inline-flex items-center justify-center bg:primary fg:base font:sm font:semibold h:48 mt:lg px:lg r:md";
     }
-
-    @layer general {
-        .play-stage {
-            min-height: 100dvh;
-            background:
-                radial-gradient(circle at 20% 10%, color-mix(in oklab, var(--color-play-accent) 36%, transparent), transparent 28rem),
-                linear-gradient(135deg, color-mix(in oklab, Canvas 94%, var(--color-play-accent)), Canvas);
-        }
-    }
-}
-
-.play-card strong {
-    color: var(--color-play-accent);
 }

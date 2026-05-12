@@ -1,8 +1,10 @@
-import { notFound } from 'next/navigation'
+import Play from '../Play'
 
 export const dynamic = 'force-static'
 export const revalidate = false
 
-export default async function Page() {
-    notFound()
+export default function Page() {
+    return (
+        <Play />
+    )
 }

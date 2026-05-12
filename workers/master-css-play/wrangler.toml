@@ -1,0 +1,16 @@
+name = "master-css-play"
+main = "src/index.ts"
+compatibility_date = "2026-05-12"
+account_id = "337580da126498c38a54d4d5cd2024c8"
+workers_dev = true
+
+routes = [
+    { pattern = "css.master.co/api/play/*", zone_name = "master.co" }
+]
+
+[vars]
+PLAY_ALLOWED_ORIGINS = "https://css.master.co,http://localhost:3000,http://127.0.0.1:3000"
+
+[[kv_namespaces]]
+binding = "PLAY_SHARES"
+id = "d1211ca89fed447c9fa17966091faea8"

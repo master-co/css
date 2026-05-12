@@ -62,6 +62,7 @@ const editorHTMLOptions: any = {
 
 const template = templates[0]
 const previewBaseCSS = `*,::before,::after{box-sizing:border-box}html{-webkit-text-size-adjust:100%;tab-size:4}body{margin:0}img,svg,video,canvas{display:block;max-width:100%}button,input,textarea,select{font:inherit}a{color:inherit;text-decoration:none}`
+const playShareApiURL = (process.env.NEXT_PUBLIC_PLAY_API_URL || '/api/play').replace(/\/+$/, '')
 let compilerPromise: Promise<typeof import('@master/css-compiler/browser')> | undefined
 
 function loadCompiler() {
@@ -113,23 +114,145 @@ function getErrorMessage(error: unknown) {
     return error instanceof Error ? error.message : String(error)
 }
 
-export default function Play() {
+function createFileId(file: PlayFile, index: number) {
+    const suffix = typeof crypto !== 'undefined' && 'randomUUID' in crypto
+        ? crypto.randomUUID()
+        : Math.random().toString(36).slice(2)
+    return `play-${index}-${file.title || file.name || 'file'}-${suffix}`
+}
+
+function reviveFiles(files: PlayFile[]) {
+    return files.map((file, index) => ({
+        title: file.title,
+        name: file.name,
+        language: file.language,
+        content: file.content || '',
+        id: createFileId(file, index)
+    }))
+}
+
+function serializeFiles(files: PlayFile[]) {
+    return files.map(({ title, name, language, content }) => ({
+        title,
+        name,
+        language,
+        content: content || ''
+    }))
+}
+
+function stringifyFiles(files: PlayFile[]) {
+    return JSON.stringify(serializeFiles(files))
+}
+
+async function getResponseError(response: Response) {
+    try {
+        const body = await response.json()
+        if (typeof body?.error === 'string') {
+            return body.error
+        }
+    } catch {
+        // Fall back to the HTTP status below.
+    }
+    return response.statusText || `Request failed with ${response.status}`
+}
+
+async function createPlayShare(files: PlayFile[]) {
+    const response = await fetch(`${playShareApiURL}/shares`, {
+        method: 'POST',
+        headers: {
+            'content-type': 'application/json'
+        },
+        body: JSON.stringify({
+            version: 1,
+            files: serializeFiles(files)
+        })
+    })
+
+    if (!response.ok) {
+        throw new Error(await getResponseError(response))
+    }
+
+    const body = await response.json()
+    if (!body?.id || typeof body.id !== 'string') {
+        throw new Error('Invalid share response')
+    }
+    return body.id
+}
+
+async function fetchPlayShare(shareId: string) {
+    const response = await fetch(`${playShareApiURL}/shares/${encodeURIComponent(shareId)}`)
+    if (!response.ok) {
+        throw new Error(await getResponseError(response))
+    }
+
+    const body = await response.json()
+    if (!Array.isArray(body?.files)) {
+        throw new Error('Invalid share data')
+    }
+    return reviveFiles(body.files)
+}
+
+function getShareURL(shareId: string) {
+    const url = new URL(window.location.href)
+    const nextPathname = url.pathname.match(/\/play(?:\/[^/]+)?$/)
+        ? url.pathname.replace(/\/play(?:\/[^/]+)?$/, `/play/${shareId}`)
+        : `${url.pathname.replace(/\/$/, '')}/play/${shareId}`
+    url.pathname = nextPathname
+    return url
+}
+
+function getShareIdFromPathname(pathname?: string | null) {
+    return pathname?.match(/\/play\/([^/?#]+)/)?.[1] || ''
+}
+
+function ShareIcon({ className }: { className?: string }) {
+    return (
+        <svg className={className} xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" strokeWidth="1.3" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
+            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+            <path className="fill:text-lightest/.2" d="M8 9h-1a2 2 0 0 0 -2 2v8a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-8a2 2 0 0 0 -2 -2h-1"></path>
+            <path d="M12 14v-11"></path>
+            <path d="M9 6l3 -3l3 3"></path>
+        </svg>
+    )
+}
+
+function CheckIcon({ className }: { className?: string }) {
+    return (
+        <svg className={className} xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" strokeWidth="1.3" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
+            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+            <path className="fill:accent/.15" d="M12 3a9 9 0 1 0 0 18a9 9 0 0 0 0 -18z"></path>
+            <path d="M9 12l2 2l4 -4"></path>
+        </svg>
+    )
+}
+
+export default function Play({ shareId }: PlayProps = {}) {
     const $ = useTranslation()
     const app = useApp()
     const themeMode = useThemeMode()
     const searchParams = useSearchParams()
     const pathname = useRewritedPathname()
+    const pathShareId = useMemo(() => getShareIdFromPathname(pathname), [pathname])
     const previewIframeRef = useRef<HTMLIFrameElement>(null)
     const filesRef = useRef<PlayFile[]>(template.files)
     const compiledCSSRef = useRef('')
     const compileTicketRef = useRef(0)
+    const skipNextShareLoadRef = useRef('')
+    const copiedTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
     const highlighterRef = useRef<Awaited<ReturnType<typeof createHighlighter>> | null>(null)
     const [files, setFiles] = useState<PlayFile[]>(template.files)
+    const [currentShareId, setCurrentShareId] = useState(shareId || pathShareId)
+    const [baselineFilesText, setBaselineFilesText] = useState(() => stringifyFiles(template.files))
     const [generatedCSSText, setGeneratedCSSText] = useState('')
     const [generatedCSSSize, setGeneratedCSSSize] = useState('0KB')
     const [compiling, setCompiling] = useState(true)
     const [compileWarnings, setCompileWarnings] = useState<string[]>([])
     const [previewErrorEvent, setPreviewErrorEvent] = useState<PlayErrorEvent | null>(null)
+    const [sharing, setSharing] = useState(false)
+    const [copied, setCopied] = useState(false)
+    const [shareError, setShareError] = useState('')
+    const filesText = useMemo(() => stringifyFiles(files), [files])
+    const shareable = filesText !== baselineFilesText
     const layout = useMemo(() => searchParams?.get('layout'), [searchParams])
     const preview = useMemo(() => searchParams?.get('preview'), [searchParams])
     const tab = useMemo(() => searchParams?.get('tab') || files[0].title, [searchParams, files])
@@ -155,6 +278,10 @@ export default function Play() {
     useEffect(() => {
         filesRef.current = files
     }, [files])
+
+    useEffect(() => {
+        setCurrentShareId(shareId || pathShareId)
+    }, [pathShareId, shareId])
 
     /**
      * Avoid keeping mobile-only Preview or Generated CSS tabs selected when resizing up.
@@ -233,6 +360,41 @@ export default function Play() {
     }, [compileAndPreview])
 
     useEffect(() => {
+        if (!currentShareId) return
+        if (skipNextShareLoadRef.current === currentShareId) {
+            skipNextShareLoadRef.current = ''
+            return
+        }
+
+        let cancelled = false
+        void (async () => {
+            try {
+                const nextFiles = await fetchPlayShare(currentShareId)
+                if (cancelled) return
+                filesRef.current = nextFiles
+                setFiles(nextFiles)
+                setBaselineFilesText(stringifyFiles(nextFiles))
+                setShareError('')
+                void compileAndPreview(nextFiles)
+            } catch (error) {
+                if (cancelled) return
+                setShareError(getErrorMessage(error))
+                setPreviewErrorEvent({
+                    type: 'error',
+                    lineno: 1,
+                    message: getErrorMessage(error),
+                    filename: 'share',
+                    datetime: new Date()
+                })
+            }
+        })()
+
+        return () => {
+            cancelled = true
+        }
+    }, [currentShareId, compileAndPreview])
+
+    useEffect(() => {
         const onMessage = (event: MessageEvent) => {
             if (event.origin !== document.location.origin) {
                 return
@@ -260,8 +422,24 @@ export default function Play() {
     useEffect(() => {
         return () => {
             highlighterRef.current?.dispose()
+            if (copiedTimeoutRef.current) {
+                clearTimeout(copiedTimeoutRef.current)
+            }
         }
     }, [])
+
+    useEffect(() => {
+        const onUnload = (event: BeforeUnloadEvent) => {
+            event.preventDefault()
+            event.returnValue = true
+        }
+        if (shareable) {
+            window.addEventListener('beforeunload', onUnload)
+        }
+        return () => {
+            window.removeEventListener('beforeunload', onUnload)
+        }
+    }, [shareable])
 
     const registerShiki = useCallback(async (monaco: Monaco) => {
         monaco.languages.html.htmlDefaults.setOptions(editorHTMLOptions)
@@ -282,8 +460,38 @@ export default function Play() {
         const nextFiles = filesRef.current.map((file) => file.id === fileId ? { ...file, content } : file)
         filesRef.current = nextFiles
         setFiles(nextFiles)
+        setCopied(false)
+        setShareError('')
         hotUpdatePreviewByFiles(nextFiles)
     }, [hotUpdatePreviewByFiles])
+
+    const shareCurrentFiles = useCallback(async () => {
+        if (sharing) return
+
+        setSharing(true)
+        setShareError('')
+
+        try {
+            const id = await createPlayShare(filesRef.current)
+            const shareURL = getShareURL(id)
+            skipNextShareLoadRef.current = id
+            setCurrentShareId(id)
+            setBaselineFilesText(stringifyFiles(filesRef.current))
+            window.history.pushState(null, '', shareURL.pathname + shareURL.search)
+            await navigator.clipboard?.writeText(shareURL.toString()).catch(() => undefined)
+            setCopied(true)
+            if (copiedTimeoutRef.current) {
+                clearTimeout(copiedTimeoutRef.current)
+            }
+            copiedTimeoutRef.current = setTimeout(() => {
+                setCopied(false)
+            }, 2000)
+        } catch (error) {
+            setShareError(getErrorMessage(error))
+        } finally {
+            setSharing(false)
+        }
+    }, [sharing])
 
     const responsive = useMemo(() => {
         return preview === 'responsive'
@@ -311,6 +519,7 @@ export default function Play() {
     const width = useMemo(() => (!layout || layout === '2') ? '50%' : '100%', [layout])
     const height = useMemo(() => (!layout || layout === '2') ? '100%' : '50%', [layout])
     const previewHTML = useMemo(() => createPreviewHTML(), [])
+    const shareButtonTitle = shareError || (copied ? 'Copied share link' : sharing ? 'Sharing ...' : 'Share')
 
     return (
         <div className="abs flex flex-col full">
@@ -327,14 +536,16 @@ export default function Play() {
                             {$(eachLink.name)}
                         </HeaderNav>
                     )}
-                    <button className="app-header-icon hidden!" aria-hidden tabIndex={-1}>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" strokeWidth="1.2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
-                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                            <path d="M9 15l6 -6"></path>
-                            <path d="M11 6l.463 -.536a5 5 0 0 1 7.071 7.072l-.534 .464"></path>
-                            <path d="M13 18l-.397 .534a5.068 5.068 0 0 1 -7.127 0a4.972 4.972 0 0 1 0 -7.071l.524 -.463"></path>
-                        </svg>
-                    </button>
+                    {(shareable || copied) &&
+                        <button className={clsx('hidden@<md', sharing ? 'app-header-nav' : 'app-header-icon')} onClick={shareCurrentFiles} disabled={sharing} aria-label={shareButtonTitle} title={shareButtonTitle}>
+                            {copied && !shareable && !sharing
+                                ? <CheckIcon className="stroke:accent" />
+                                : <ShareIcon className={clsx('stroke:current', sharing && 'opacity:.5', shareError && 'stroke:red')} />
+                            }
+                            {sharing && <span className="ml:10">{$('Sharing ...')}</span>}
+                        </button>}
+                    <span className='hidden'>{shareError}</span>
+                    {(shareable || copied) && <div className='mx:4x bg:line-light h:1em w:1 hidden@<md'></div>}
                     <button className="app-header-icon hidden@<md" onClick={() => pushShallowURL('layout', layout ? '' : '2')}>
                         <svg className={clsx({ 'stroke:accent': !layout || layout === '2' })} xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" strokeWidth="1.2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
                             <path className={clsx(
@@ -540,6 +751,10 @@ export interface PlayFile {
     content?: string
     id?: string
     readOnly?: boolean
+}
+
+interface PlayProps {
+    shareId?: string
 }
 
 interface PlayErrorEvent {
