@@ -10,7 +10,7 @@ This package provides a Nuxt module that wires Master CSS into Vite, Nitro, clie
 - `src/options.ts`
 - `src/runtime/css-runtime.ts`
 - `src/runtime/css-server.ts`
-- `test/fixtures/*`
+- `tests/fixtures/*`
 
 ## Risks
 
@@ -32,4 +32,3 @@ pnpm --filter @master/css.nuxt test
 pnpm --filter @master/css.nuxt build
 pnpm --filter @master/css.nuxt lint
 ```
-

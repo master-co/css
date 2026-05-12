@@ -50,6 +50,7 @@ pnpm --filter @master/css-server build
 ```
 
 Fixture output lives in `tests/fixtures/**/generated.css`. Update only for intentional output changes.
+End-to-end rendering cases live in package-local `e2e/**`.
 
 ## Good Changes
 
@@ -61,4 +62,3 @@ Fixture output lives in `tests/fixtures/**/generated.css`. Update only for inten
 - Emitting unsorted CSS.
 - Injecting duplicate `style#master` tags.
 - Treating `className` as HTML class in server HTML parsing without a clear requirement.
-

@@ -1,5 +1,5 @@
 import { describe, test, expect } from 'vitest'
-import { MasterCSS, config as defaultConfig } from '../src'
+import { MasterCSS, config as defaultConfig } from '../../src'
 
 describe('issue #332 follow-up: logical borders + corner radii', () => {
     const cases: [string, string][] = [

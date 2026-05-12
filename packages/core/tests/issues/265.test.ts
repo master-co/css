@@ -1,5 +1,5 @@
 import { describe, test, expect } from 'vitest'
-import { MasterCSS, config as defaultConfig } from '../src'
+import { MasterCSS, config as defaultConfig } from '../../src'
 
 describe('issue #265: View Transitions API foundation', () => {
     test('view-transition-name applies as a CSS declaration', () => {

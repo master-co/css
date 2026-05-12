@@ -1,7 +1,7 @@
 // https://github.com/master-co/css/issues/383
 
 import { test, expect } from '@playwright/test'
-import init from '../init'
+import init from '../../e2e/init'
 
 test('383', async ({ page }) => {
     await page.evaluate(() => {

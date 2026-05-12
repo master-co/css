@@ -1,6 +1,6 @@
 import { it, test, expect } from 'vitest'
 import { readFileSync } from 'fs'
-import { render } from '../../../src'
+import { render } from '../../src'
 import path from 'path'
 
 it('removes comments in transformPageChunk can break Svelte\'s hydration', () => {

@@ -30,4 +30,3 @@ pnpm --filter @master/css-devtools-hook e2e
 pnpm --filter @master/css-devtools-hook build
 pnpm --filter @master/css-devtools-hook type-check
 ```
-

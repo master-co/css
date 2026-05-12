@@ -1,5 +1,5 @@
 import { describe, test, expect } from 'vitest'
-import { MasterCSS, createCSS } from '../src'
+import { MasterCSS, createCSS } from '../../src'
 
 describe('issue #346: CSS color functions are native variable values', () => {
     const cases: [string, string][] = [

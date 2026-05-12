@@ -1,5 +1,5 @@
 import { describe, test, expect } from 'vitest'
-import { MasterCSS } from '../src'
+import { MasterCSS } from '../../src'
 
 describe('issue #147: hsl() values stay as native CSS variable values', () => {
     test('hsl() string in variables.color is preserved', () => {

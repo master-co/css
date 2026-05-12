@@ -60,7 +60,7 @@ Use or extend:
 - `e2e/lifecycle.test.ts`
 - `e2e/class-usages.test.ts`
 - `e2e/progressive/**`
-- issue-specific e2e tests
+- `tests/issues/*.test.ts` for issue-specific browser regressions
 
 ## Good Changes
 

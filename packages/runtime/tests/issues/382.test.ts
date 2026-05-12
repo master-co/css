@@ -1,7 +1,7 @@
 // https://github.com/master-co/css/issues/382
 
 import { test, expect } from '@playwright/test'
-import init from '../init'
+import init from '../../e2e/init'
 
 test('O to O', async ({ page }) => {
     await page.evaluate(() => {

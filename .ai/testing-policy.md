@@ -48,3 +48,4 @@ Prefer tests that cover the smallest behavior:
 - Language features: `packages/language-service/tests`
 - ESLint parser/autofix behavior: `packages/eslint-plugin/tests`
 
+Issue regressions should use `tests/issues/<issue-number>.test.ts` inside the affected package. Keep fixture files under `tests/fixtures/**`; keep browser suites in package-local `e2e/**` unless the test is specifically an issue regression.
