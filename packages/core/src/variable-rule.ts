@@ -1,5 +1,6 @@
 import MasterCSS from './core'
-import { ColorVariable, LiteralVariable, NumberVariable, StringVariable, Variable } from './types/syntax'
+import { ResolvedVariableValue, Variable } from './types/syntax'
+import { normalizeVariableValue } from './utils/css-variables'
 
 export default class VariableRule {
     nodes: VariableRuleNode[] = []
@@ -11,7 +12,7 @@ export default class VariableRule {
     ) {
         const hasDefaultValue = variable.value !== undefined
         if (hasDefaultValue) {
-            this.nodes.push(new VariableRuleNode(this, variable, css))
+            this.nodes.push(new VariableRuleNode(this, variable as ResolvedVariableValue, css))
         }
         if (variable.modes && this.css.config.modeTrigger) {
             for (const mode in variable.modes) {
@@ -37,21 +38,13 @@ export default class VariableRule {
     }
 }
 
-type VariableMap = {
-    string: StringVariable
-    number: NumberVariable
-    color: ColorVariable
-}
-
-type VariableType = LiteralVariable['type']
-
-export class VariableRuleNode<T extends VariableType = VariableType> {
+export class VariableRuleNode {
     native?: CSSRule
     isDefaultMode = false
 
     constructor(
-        public readonly rule: VariableRule & { variable: VariableMap[T] },
-        public readonly variable: VariableMap[T],
+        public readonly rule: VariableRule,
+        public readonly variable: ResolvedVariableValue,
         public readonly css: MasterCSS,
         public readonly mode?: string,
     ) { }
@@ -72,25 +65,26 @@ export class VariableRuleNode<T extends VariableType = VariableType> {
         }
     }
 
-    get text(): string {
-        let value = ''
-        switch (this.rule.variable.type) {
-            case 'color': {
-                const color = this.variable as ColorVariable
-                value = (color.alpha ?? 1) < 1
-                    ? `${color.space}(${color.value}/${color.alpha})`
-                    : `${color.space}(${color.value})`
-                break
-            }
-            case 'number':
-                value = String((this.variable as NumberVariable).value)
-                break
-            case 'string':
-                value = (this.variable as StringVariable).value
-                break
-        }
+    get declarationName() {
+        return `--${this.rule.name}`
+    }
 
-        let text = `${this.selectorText}{--${this.rule.name}:${value}}`
+    get declarationValue() {
+        return normalizeVariableValue(this.variable.value).value
+    }
+
+    get declarationText() {
+        return `${this.declarationName}:${this.declarationValue}`
+    }
+
+    get mediaText() {
+        return this.css.config.modeTrigger === 'media' && this.mode
+            ? `@media (prefers-color-scheme:${this.mode})`
+            : ''
+    }
+
+    get text(): string {
+        let text = `${this.selectorText}{${this.declarationText}}`
         if (this.css.config.modeTrigger === 'media' && this.mode) {
             text = `@media (prefers-color-scheme:${this.mode}){${text}}`
         }

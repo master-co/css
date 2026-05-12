@@ -4,8 +4,8 @@ import CSSTester from '../tester'
 new CSSTester({ modeTrigger: 'class', defaultMode: 'light', variables: [{ namespace: 'color', key: 'white', value: 'oklch(100% 0 none)' }, { namespace: 'color', key: 'black', value: 'oklch(0% 0 none)' }, { namespace: 'color', key: 'invert', value: '$color-black', mode: 'light' }, { namespace: 'color', key: 'invert', value: '$color-white', mode: 'dark' }], modes: ['light', 'dark'], utilities }, null).layers({
     'bg:invert': {
         theme: [
-            '.light,:root{--color-invert:oklch(0% 0 none)}',
-            '.dark{--color-invert:oklch(100% 0 none)}'
+            '.light,:root{--color-invert:var(--color-black)}',
+            '.dark{--color-invert:var(--color-white)}'
         ],
         utilities: '.bg\\:invert{background-color:var(--color-invert)}'
     }

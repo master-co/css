@@ -1,4 +1,4 @@
-import type { MasterCSS, ColorVariable } from '@master/css'
+import type { MasterCSS } from '@master/css'
 import type { ColorPresentationParams } from 'vscode-languageserver-protocol'
 import Color from 'colorjs.io'
 
@@ -10,7 +10,7 @@ export default function convertColorByToken(color: ColorPresentationParams['colo
             outputSpace = valueComponent.name
             break
         case 'variable':
-            outputSpace = (valueComponent.variable as ColorVariable)?.space
+            outputSpace = String(valueComponent.variable?.value || '').match(/^([a-zA-Z][\w-]*)\(/)?.[1] || outputSpace
             break
         case 'string':
             outputSpace = 'srgb'

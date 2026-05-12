@@ -1,7 +1,6 @@
 import type { PropertiesHyphen } from 'csstype'
 import type { Variable } from '../types/syntax'
-
-const CSS_VARIABLE_REFERENCE = /var\(\s*--([_a-zA-Z0-9-]+)\b/g
+import { CSS_VARIABLE_REFERENCE } from './css-variables'
 
 export default function collectVariableNames(declarations: PropertiesHyphen, variables: Map<string, Variable>) {
     const variableNames = new Set<string>()

@@ -23,7 +23,7 @@ test('destroy on progressive', async ({ page }) => {
         document.body.classList.add('block')
         document.body.classList.add('font:bold')
     })
-    expect(await page.evaluate(() => Array.from(globalThis.cssRuntime.style?.sheet?.cssRules || []).length)).toBe(2)
+    expect(await page.evaluate(() => Array.from(globalThis.cssRuntime.style?.sheet?.cssRules || []).length)).toBe(3)
 })
 
 test('prevent attach layer twice', async ({ page }) => {

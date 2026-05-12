@@ -480,10 +480,16 @@ function collectStyleCSSVariableReferences(nativeCSS: string[]) {
 }
 
 function insertVariableReferences(css: ReturnType<typeof createCSS>, references: Set<string>) {
-    for (const name of references) {
+    const insert = (name: string, visited = new Set<string>()) => {
+        if (visited.has(name)) return
+        visited.add(name)
         const variable = css.variables.get(name)
-        if (!variable) continue
+        if (!variable) return
         css.themeLayer.insert(new VariableRule(name, variable, css))
+        variable.dependencies?.forEach((dependency) => insert(dependency, visited))
+    }
+    for (const name of references) {
+        insert(name)
     }
 }
 

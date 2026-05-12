@@ -1,5 +1,11 @@
 @layer base, theme, preset, main, general;
 
+@layer theme {
+    :root {
+        --content-external: " ↗"
+    }
+}
+
 @layer general {
     .block\:\:before\,\:\:after::before,
     .block\:\:before\,\:\:after::after {
@@ -15,6 +21,6 @@
     }
 
     .content\:external\:\:after::after {
-        content: " ↗"
+        content: var(--content-external)
     }
 }

@@ -41,7 +41,7 @@ test.concurrent('viewports', () => {
 test.concurrent('colors', () => {
     expectLayers(
         {
-            utilities: '.fg\\:newColor{color:rgb(99 105 124)}'
+            utilities: '.fg\\:newColor{color:var(--newColor)}'
         },
         'fg:newColor',
         { variables: [

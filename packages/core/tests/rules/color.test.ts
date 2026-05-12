@@ -5,15 +5,15 @@ import { expectLayers } from '../test'
 test.concurrent('color', () => {
     expectLayers(
         {
-            utilities: '.color\\:current\\:hover:hover{color:currentColor}'
+            utilities: '.color\\:current\\:hover:hover{color:var(--color-current)}'
         },
         'color:current:hover'
     )
-    expect(createCSS().create('color:current')?.declarations).toStrictEqual({ color: 'currentColor' })
-    expect(createCSS().create('color:current')?.text).toContain('color:currentColor')
+    expect(createCSS().create('color:current')?.declarations).toStrictEqual({ color: 'var(--color-current)' })
+    expect(createCSS().create('color:current')?.text).toContain('color:var(--color-current)')
     expect(createCSS().create('color:rgb(255,255,255)')?.text).toContain('color:rgb(255,255,255)')
     expect(createCSS().create('fg:#fff')?.text).toContain('color:#fff')
-    expect(createCSS().create('fg:current')?.text).toContain('color:currentColor')
+    expect(createCSS().create('fg:current')?.text).toContain('color:var(--color-current)')
     expect(createCSS().create('fg:transparent')?.text).toContain('color:transparent')
     expect(createCSS().create('fg:inherit')?.text).toContain('color:inherit')
 })

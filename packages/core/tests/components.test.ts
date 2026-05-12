@@ -140,8 +140,8 @@ describe('raw declarations', () => {
             ]
         }).add('btn')
 
-        expect(css.themeLayer.text).toContain('@media (prefers-color-scheme:light){:root{--color-primary:rgb(255 255 0)}}')
-        expect(css.themeLayer.text).toContain('@media (prefers-color-scheme:dark){:root{--color-primary:rgb(0 0 0)}}')
+        expect(css.themeLayer.text).toContain('@media (prefers-color-scheme:light){:root{--color-primary:#ff0}}')
+        expect(css.themeLayer.text).toContain('@media (prefers-color-scheme:dark){:root{--color-primary:#000}}')
         expect(css.mainLayer.text).toContain('.btn{background:var(--color-primary, transparent)}')
     })
 
@@ -163,8 +163,8 @@ describe('raw declarations', () => {
             ]
         }).add('surface')
 
-        expect(css.themeLayer.text).toContain('@media (prefers-color-scheme:light){:root{--color-primary:rgb(255 255 0)}}')
-        expect(css.themeLayer.text).toContain('@media (prefers-color-scheme:dark){:root{--color-primary:rgb(0 0 0)}}')
+        expect(css.themeLayer.text).toContain('@media (prefers-color-scheme:light){:root{--color-primary:#ff0}}')
+        expect(css.themeLayer.text).toContain('@media (prefers-color-scheme:dark){:root{--color-primary:#000}}')
         expect(css.generalLayer.text).toContain('.surface{background:var(--color-primary)}')
     })
 
@@ -193,8 +193,8 @@ describe('raw declarations', () => {
             ]
         }).add('btn')
 
-        expect(css.themeLayer.text).toContain('@media (prefers-color-scheme:light){:root{--color-primary:rgb(255 255 0)}}')
-        expect(css.themeLayer.text).toContain('@media (prefers-color-scheme:dark){:root{--color-primary:rgb(0 0 0)}}')
+        expect(css.themeLayer.text).toContain('@media (prefers-color-scheme:light){:root{--color-primary:#ff0}}')
+        expect(css.themeLayer.text).toContain('@media (prefers-color-scheme:dark){:root{--color-primary:#000}}')
         expect(css.animationsNonLayer.text).toContain('@keyframes fade{to{background:var(--color-primary)}}')
 
         css.remove('btn')

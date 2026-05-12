@@ -4,11 +4,11 @@ import { createCSS } from '../../../src'
 it.concurrent('should be able to access related font variables using inherited rules', () => {
     expect(Array.from(createCSS().definedUtilities.find(({ id }) => id === 'font')?.variables?.keys() || [])).toEqual([
         'sans',
+        'serif',
+        'mono',
         'sans-fallback',
         'serif-fallback',
         'mono-fallback',
-        'serif',
-        'mono',
         'thin',
         '-thin',
         'extralight',

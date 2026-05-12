@@ -4,13 +4,14 @@ import registerGlobal from './register-global'
 import { HydrateResult } from './types'
 import RuntimeLayer from './layer'
 import RuntimeUtilityLayer, { RuntimeUtilityLayerInstance } from './utility-layer'
+import RuntimeThemeLayer from './theme-layer'
 
 export default class CSSRuntime extends MasterCSS {
     static instances = new WeakMap<Document | ShadowRoot, CSSRuntime>()
     readonly host: Element
     readonly container: HTMLElement | ShadowRoot
     readonly baseLayer = new RuntimeUtilityLayer('base', this)
-    readonly themeLayer = new RuntimeLayer('theme', this)
+    readonly themeLayer = new RuntimeThemeLayer('theme', this)
     readonly presetLayer = new RuntimeUtilityLayer('preset', this)
     readonly mainLayer = new RuntimeUtilityLayer('main', this)
     readonly generalLayer = new RuntimeUtilityLayer('general', this)
@@ -205,37 +206,29 @@ export default class CSSRuntime extends MasterCSS {
                 const eachCSSLayerRule = eachNativeCSSRule as CSSLayerBlockRule
                 if ((eachNativeCSSRule as CSSLayerBlockRule).name === 'theme') {
                     this.themeLayer.native = eachCSSLayerRule
-                    let variableRule: VariableRule | undefined
-                    const unresolvedCSSRules = new Map<string, CSSRule>()
-                    for (const rule of eachCSSLayerRule.cssRules) {
-                        // trim() for fix the firefox bug that the cssText ends with \n\n
-                        unresolvedCSSRules.set(rule.cssText.trim(), rule)
+                    const hydrateStyleRule = (styleRule: CSSStyleRule) => {
+                        for (let i = 0; i < styleRule.style.length; i++) {
+                            const propertyName = styleRule.style.item(i)
+                            if (!propertyName.startsWith('--')) continue
+                            const variableName = propertyName.slice(2)
+                            if (this.themeLayer.rules.find(({ name }) => name === variableName)) continue
+                            const variable = this.variables.get(variableName)
+                            if (!variable) continue
+                            const variableRule = new VariableRule(variableName, variable, this)
+                            this.themeLayer.rules.push(variableRule)
+                            this.themeLayer.tokenCounts.set(variableRule.name, 0)
+                        }
                     }
                     for (const cssRule of eachCSSLayerRule.cssRules) {
-                        if (!unresolvedCSSRules.has(cssRule.cssText)) continue
-                        const variableCSSRule = (cssRule.constructor.name === 'CSSMediaRule'
-                            ? (cssRule as CSSMediaRule).cssRules[0]
-                            : cssRule) as CSSStyleRule
-                        const variableName = variableCSSRule.style[0].slice(2)
-                        const variable = this.variables.get(variableName)
-                        if (!variable) continue
-                        variableRule = new VariableRule(variableName, variable, this)
-                        this.themeLayer.rules.push(variableRule)
-                        this.themeLayer.tokenCounts.set(variableRule.name, 0)
-                        variableRule.nodes.forEach((node) => {
-                            const checkRuleIndex = checkSheet.insertRule(node.text)
-                            const checkNodeNativeRule = checkSheet.cssRules.item(checkRuleIndex)
-                            if (checkNodeNativeRule) {
-                                const checkNodeNativeRuleText = checkNodeNativeRule.cssText.trim()
-                                const match = unresolvedCSSRules.get(checkNodeNativeRuleText)
-                                if (match) {
-                                    node.native = match
-                                    unresolvedCSSRules.delete(checkNodeNativeRuleText)
-                                    return
-                                }
+                        if (cssRule instanceof CSSStyleRule) {
+                            hydrateStyleRule(cssRule)
+                        } else if (cssRule instanceof CSSGroupingRule) {
+                            for (const childRule of cssRule.cssRules) {
+                                if (childRule instanceof CSSStyleRule) hydrateStyleRule(childRule)
                             }
-                        })
+                        }
                     }
+                    this.themeLayer.syncNativeBuckets()
                     if (this.themeLayer.rules.length) this.rules.push(this.themeLayer)
                 } else {
                     cssLayerRules.push(eachCSSLayerRule)

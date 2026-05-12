@@ -5,7 +5,7 @@ import { expectLayers } from '../../test'
 test.concurrent('number', () => {
     expectLayers(
         {
-            utilities: '.m\\:x1{margin:1rem}'
+            utilities: '.m\\:x1{margin:calc(var(--spacing-x1) / 16 * 1rem)}'
         },
         'm:x1',
         { variables: [{ namespace: 'spacing', key: 'x1', value: 16 }] }
@@ -36,7 +36,7 @@ test.concurrent('number with themes', () => {
 test.concurrent('number using variable function', () => {
     expectLayers(
         {
-            utilities: '.m\\:\\$\\(spacing-x1\\){margin:1rem}'
+            utilities: '.m\\:\\$\\(spacing-x1\\){margin:calc(var(--spacing-x1) / 16 * 1rem)}'
         },
         'm:$(spacing-x1)',
         { variables: [{ namespace: 'spacing', key: 'x1', value: 16 }] }
@@ -65,15 +65,15 @@ test.concurrent('number with themes using variable function', () => {
 })
 
 test.concurrent('variables', () => {
-    expect(createCSS({ variables: [{ namespace: 'spacing', key: 'x1', value: 16 }, { namespace: 'spacing', key: 'x2', value: 32 }] }).create('m:$(spacing-x1)')?.text).toBe('.m\\:\\$\\(spacing-x1\\){margin:1rem}')
+    expect(createCSS({ variables: [{ namespace: 'spacing', key: 'x1', value: 16 }, { namespace: 'spacing', key: 'x2', value: 32 }] }).create('m:$(spacing-x1)')?.text).toBe('.m\\:\\$\\(spacing-x1\\){margin:calc(var(--spacing-x1) / 16 * 1rem)}')
 })
 
 test.concurrent('negative variables', () => {
-    expect(createCSS({ variables: [{ namespace: 'spacing', key: 'x1', value: 16 }, { namespace: 'spacing', key: 'x2', value: 32 }] }).create('m:$(-spacing-x1)')?.text).toBe('.m\\:\\$\\(-spacing-x1\\){margin:-1rem}')
+    expect(createCSS({ variables: [{ namespace: 'spacing', key: 'x1', value: 16 }, { namespace: 'spacing', key: 'x2', value: 32 }] }).create('m:$(-spacing-x1)')?.text).toBe('.m\\:\\$\\(-spacing-x1\\){margin:calc(var(---spacing-x1) / 16 * 1rem)}')
 
     expectLayers(
         {
-            utilities: '.w\\:-11x{width:-3.75rem}'
+            utilities: '.w\\:-11x{width:calc(var(---width-11x) / 16 * 1rem)}'
         },
         'w:-11x',
         { variables: [{ namespace: 'width', key: '11x', value: 60 }] }
@@ -83,7 +83,7 @@ test.concurrent('negative variables', () => {
 test.concurrent('negative screens', () => {
     expectLayers(
         {
-            utilities: '.mb\\:-screen-md{margin-bottom:-64rem}'
+            utilities: '.mb\\:-screen-md{margin-bottom:calc(var(---screen-md) / 16 * 1rem)}'
         },
         'mb:-screen-md'
     )

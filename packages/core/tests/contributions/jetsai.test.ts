@@ -66,40 +66,40 @@ new CSSTester({
     ]
 }, null).layers({
     'bg:button-primary': {
-        utilities: '.bg\\:button-primary{background-color:rgb(34 66 163)}'
+        utilities: '.bg\\:button-primary{background-color:var(--color-button-primary)}'
     },
     'bg:button-primary-hover': {
-        utilities: '.bg\\:button-primary-hover{background-color:rgb(21 37 89)}'
+        utilities: '.bg\\:button-primary-hover{background-color:var(--color-button-primary-hover)}'
     },
     'bg:button-primary-disabled': {
-        utilities: '.bg\\:button-primary-disabled{background-color:rgb(205 224 247)}'
+        utilities: '.bg\\:button-primary-disabled{background-color:var(--color-button-primary-disabled)}'
     },
     'bg:button-disabled': {
-        utilities: '.bg\\:button-disabled{background-color:rgb(233 238 248)}'
+        utilities: '.bg\\:button-disabled{background-color:var(--color-button-disabled)}'
     },
     'bg:button-background-hover': {
         utilities: '.bg\\:button-background-hover{background:button-background-hover}'
     },
     'bg:blue200': {
-        utilities: '.bg\\:blue200{background-color:rgb(205 224 247)}'
+        utilities: '.bg\\:blue200{background-color:var(--color-blue200)}'
     },
     'bg:blue700': {
-        utilities: '.bg\\:blue700{background-color:rgb(34 66 163)}'
+        utilities: '.bg\\:blue700{background-color:var(--color-blue700)}'
     },
     'bg:blue900': {
-        utilities: '.bg\\:blue900{background-color:rgb(21 37 89)}'
+        utilities: '.bg\\:blue900{background-color:var(--color-blue900)}'
     },
     'bg:gray200': {
-        utilities: '.bg\\:gray200{background-color:rgb(233 238 248)}'
+        utilities: '.bg\\:gray200{background-color:var(--color-gray200)}'
     },
     'bg:gray500': {
-        utilities: '.bg\\:gray500{background-color:rgb(146 151 161)}'
+        utilities: '.bg\\:gray500{background-color:var(--color-gray500)}'
     },
     'bg:text-disabled': {
-        utilities: '.bg\\:text-disabled{background-color:rgb(146 151 161)}'
+        utilities: '.bg\\:text-disabled{background-color:var(--color-text-disabled)}'
     },
     'bg:text-on-color': {
-        utilities: '.bg\\:text-on-color{background-color:oklch(100% 0 none)}'
+        utilities: '.bg\\:text-on-color{background-color:var(--color-text-on-color)}'
     },
     'btn-primary': { components: '.btn-primary{background-color:rgb(34 66 163)}.btn-primary{-webkit-text-fill-color:oklch(100% 0 none)}.btn-primary:hover{background-color:rgb(21 37 89)}.btn-primary:disabled{background-color:rgb(205 224 247)}.btn-primary:disabled{-webkit-text-fill-color:rgb(146 151 161)}' },
 })

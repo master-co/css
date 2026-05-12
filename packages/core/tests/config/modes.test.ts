@@ -4,8 +4,8 @@ import { expectLayers } from '../test'
 
 test.concurrent('media modes', () => {
     const config = { modeTrigger: 'media' } as Config
-    expect(createCSS(config).add('bg:invert').themeLayer.text).toContain('@media (prefers-color-scheme:light){:root{--color-invert:oklch(0% 0 none)}}')
-    expect(createCSS(config).add('bg:color-invert').themeLayer.text).toContain('@media (prefers-color-scheme:dark){:root{--color-invert:oklch(100% 0 none)}}')
+    expect(createCSS(config).add('bg:invert').themeLayer.text).toContain('@media (prefers-color-scheme:light){:root{--color-invert:var(--color-black)}}')
+    expect(createCSS(config).add('bg:color-invert').themeLayer.text).toContain('@media (prefers-color-scheme:dark){:root{--color-invert:var(--color-white)}}')
 })
 
 test('components', () => {

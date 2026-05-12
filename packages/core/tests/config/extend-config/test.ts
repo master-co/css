@@ -31,18 +31,18 @@ it.concurrent('extendConfig merges config files', () => {
     expect(getMainRules(css, 'btn4')).toEqual([
         { selector: '&', declarations: { 'font-size': '12.5rem' } }
     ])
-    expect(css.variables.get('first')).toMatchObject({ name: 'first', key: 'first', type: 'color', space: 'oklch', value: '0.18 0 0' })
+    expect(css.variables.get('first')).toMatchObject({ name: 'first', key: 'first', type: 'string', value: 'oklch(0.18 0 0)' })
     expect(css.variables.get('first')?.modes).toMatchObject({
-        dark: { space: 'oklch', value: '0% 0 none' },
-        light: { space: 'oklch', value: '0 0 0' }
+        dark: { value: '$color-black' },
+        light: { value: 'oklch(0,0,0)' }
     })
-    expect(css.variables.get('second')).toMatchObject({ type: 'color' })
+    expect(css.variables.get('second')).toMatchObject({ type: 'string' })
     expect(css.variables.get('second')?.modes).toMatchObject({
-        dark: { space: 'oklch', value: '0% 0 none' },
-        light: { space: 'oklch', value: '0 0 0', alpha: .5 }
+        dark: { value: '$color-black' },
+        light: { value: 'oklch(0 0 0/.5)' }
     })
-    expect(css.variables.get('third')).toMatchObject({ type: 'color', space: 'oklch', value: '0% 0 none' })
-    expect(css.variables.get('third')?.modes).toMatchObject({ dark: { space: 'oklch', value: '100% 0 none' } })
-    expect(css.variables.get('third-2')?.modes).toMatchObject({ dark: { space: 'oklch', value: '100% 0 none' } })
-    expect(css.variables.get('fourth')).toMatchObject({ type: 'color', space: 'oklch', value: '0.18 0 0' })
+    expect(css.variables.get('third')).toMatchObject({ type: 'string', value: '$color-black' })
+    expect(css.variables.get('third')?.modes).toMatchObject({ dark: { value: '$color-white' } })
+    expect(css.variables.get('third-2')?.modes).toMatchObject({ dark: { value: '$color-white' } })
+    expect(css.variables.get('fourth')).toMatchObject({ type: 'string', value: '$first' })
 })

@@ -40,11 +40,17 @@ export default function withUtilityLayer<TBase extends new (...args: any[]) => L
         delete(key: string) {
             const utility = super.delete(key) as Utility | Rule | undefined
             if (!utility) return
-            const deleteLayerToken = (layerToken: string, layer: Layer | NonLayer) => {
+            const deleteLayerToken = (layerToken: string, layer: Layer | NonLayer, visited = new Set<string>()) => {
+                if (visited.has(layerToken)) return
+                visited.add(layerToken)
                 const count = layer.tokenCounts.get(layerToken) ?? 0
                 if (count <= 1) {
                     const deletedRule = layer.delete(layerToken)
                     layer.tokenCounts.delete(layerToken)
+                    if (layer === this.css.themeLayer) {
+                        const variable = this.css.variables.get(layerToken)
+                        variable?.dependencies?.forEach((dependency) => deleteLayerToken(dependency, layer, visited))
+                    }
                     return deletedRule
                 } else {
                     layer.tokenCounts.set(layerToken, count - 1)
@@ -69,18 +75,22 @@ export default function withUtilityLayer<TBase extends new (...args: any[]) => L
 
         insertVariables(utility: Utility | Rule) {
             if (!('variableNames' in utility)) return
-            utility.variableNames?.forEach((eachVariableName) => {
+            const insertVariable = (eachVariableName: string, visited = new Set<string>()) => {
+                if (visited.has(eachVariableName)) return
+                visited.add(eachVariableName)
+                const variable = this.css.variables.get(eachVariableName)
+                if (!variable) return
                 if (this.css.themeLayer.rules.find(({ name }) => name === eachVariableName)) {
                     const count = this.css.themeLayer.tokenCounts.get(eachVariableName) || 0
                     this.css.themeLayer.tokenCounts.set(eachVariableName, count + 1)
                 } else {
-                    const variable = this.css.variables.get(eachVariableName)
-                    if (!variable) return
                     const newRule = new VariableRule(eachVariableName, variable, this.css)
                     this.css.themeLayer.insert(newRule)
                     this.css.themeLayer.tokenCounts.set(eachVariableName, 1)
                 }
-            })
+                variable.dependencies?.forEach((dependency) => insertVariable(dependency, visited))
+            }
+            utility.variableNames?.forEach((eachVariableName) => insertVariable(eachVariableName))
         }
 
         insertAnimations(utility: Utility | Rule) {

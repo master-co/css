@@ -72,7 +72,7 @@ export default class CSSTester {
             base = Array.isArray(base) ? base.join('') : base
             general = Array.isArray(general) ? general.join('') : general
             animations = Array.isArray(animations) ? animations.join('') : animations
-            if (theme) expect(css.themeLayer.rules.map(rules => rules.text).join('')).toContain(theme)
+            if (theme) expect(css.themeLayer.text).toContain(theme)
             if (main) expect(css.mainLayer.rules.map(rules => rules.text).join('')).toContain(main)
             if (preset) expect(css.presetLayer.rules.map(rules => rules.text).join('')).toContain(preset)
             if (base) expect(css.baseLayer.rules.map(rules => rules.text).join('')).toContain(base)

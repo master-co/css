@@ -11,9 +11,9 @@ it.concurrent('calc', () => {
 })
 
 it.concurrent('calc with variables', () => {
-    expect(createCSS({ variables: [{ key: 'x1', value: 60 }] }).create('w:calc(-2+$(x1))')?.text).toBe('.w\\:calc\\(-2\\+\\$\\(x1\\)\\){width:calc(-0.125rem + 60 / 16 * 1rem)}')
-    expect(createCSS({ variables: [{ key: '1x', value: 60 }] }).create('w:calc(-2-$(1x))')?.text).toBe('.w\\:calc\\(-2-\\$\\(1x\\)\\){width:calc(-0.125rem - 60 / 16 * 1rem)}')
-    expect(createCSS({ variables: [{ key: '1x', value: 60 }] }).create('w:calc(-$(1x)-2)')?.text).toBe('.w\\:calc\\(-\\$\\(1x\\)-2\\){width:calc(-60 / 16 * 1rem - 0.125rem)}')
-    expect(createCSS({ variables: [{ key: '1x', value: 60 }] }).create('w:calc(-1*($(1x)*2)*3-2)')?.text).toBe('.w\\:calc\\(-1\\*\\(\\$\\(1x\\)\\*2\\)\\*3-2\\){width:calc(-1 * (60 * 2) * 3 / 16 * 1rem - 0.125rem)}')
+    expect(createCSS({ variables: [{ key: 'x1', value: 60 }] }).create('w:calc(-2+$(x1))')?.text).toBe('.w\\:calc\\(-2\\+\\$\\(x1\\)\\){width:calc(-0.125rem + var(--x1) / 16 * 1rem)}')
+    expect(createCSS({ variables: [{ key: '1x', value: 60 }] }).create('w:calc(-2-$(1x))')?.text).toBe('.w\\:calc\\(-2-\\$\\(1x\\)\\){width:calc(-0.125rem - var(--1x) / 16 * 1rem)}')
+    expect(createCSS({ variables: [{ key: '1x', value: 60 }] }).create('w:calc(-$(1x)-2)')?.text).toBe('.w\\:calc\\(-\\$\\(1x\\)-2\\){width:calc(-var(--1x) / 16 * 1rem - 0.125rem)}')
+    expect(createCSS({ variables: [{ key: '1x', value: 60 }] }).create('w:calc(-1*($(1x)*2)*3-2)')?.text).toBe('.w\\:calc\\(-1\\*\\(\\$\\(1x\\)\\*2\\)\\*3-2\\){width:calc(-1 * (var(--1x) * 2) * 3 - 0.125rem)}')
     expect(createCSS().create('translateX(calc(-25%-2x))')?.text).toBe('.translateX\\(calc\\(-25\\%-2x\\)\\){transform:translateX(calc(-25% - 0.5rem))}')
 })

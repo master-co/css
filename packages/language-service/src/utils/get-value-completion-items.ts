@@ -39,17 +39,14 @@ export default function getValueCompletionItems(css: MasterCSS = createCSS(), ru
                 docs: '/reference/' + (eachNativePropertyData?.name || 'variables')
             })
         }
-        if (variable.type === 'color') {
+        if (variable.namespace?.startsWith('color')) {
             if (Object.keys(variable.modes || {}).length) {
                 completionItem.kind = CompletionItemKind.Color
                 completionItem.detail = variable.name
             } else {
                 // todo: packages/core should support getTextByVariable(variable)
                 const configKey = 'variables.' + (variable.group ? variable.group + '.' + variable.key : variable.name)
-                const valueToken = ((variable.space && variable.value)
-                    // vscode doesn't support rgba(0 0 0/.5) in detail
-                    ? `${variable.space}(${variable.value.split(' ').join(',')})`
-                    : variable.value)
+                const valueToken = variable.value ?? variable.name
                 // detail is shown in the detail pane
                 // todo: variable.token should be recorded as original config variable
                 completionItem.detail = String(configKey)
@@ -64,9 +61,10 @@ export default function getValueCompletionItems(css: MasterCSS = createCSS(), ru
         } else if (variable.type === 'number') {
             if (variable.name.startsWith('-') && eachNativePropertyData?.syntax?.includes('absolute')) return
             completionItem.detail = String(variable.name)
-            completionItem.sortText = (variable.group || '') + (variable.value >= 0
-                ? String(variable.value).padStart(10, '0')
-                : '-' + String(Math.abs(variable.value)).padStart(10, '0'))
+            const value = typeof variable.value === 'number' ? variable.value : 0
+            completionItem.sortText = (variable.group || '') + (value >= 0
+                ? String(value).padStart(10, '0')
+                : '-' + String(Math.abs(value)).padStart(10, '0'))
         } else {
             completionItem.detail = String(variable.value || variable.name)
         }

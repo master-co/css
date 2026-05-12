@@ -5,7 +5,7 @@ import UtilityType from './utility-type'
 import { type PropertiesHyphen } from 'csstype'
 import { VALUE_DELIMITERS, BASE_UNIT_REGEX, AT_IDENTIFIERS } from './common'
 import Layer from './layer'
-import type { NumberValueComponent, DefinedUtility, ValueComponent, VariableValueComponent, Variable, ColorVariable } from './types/syntax'
+import type { NumberValueComponent, DefinedUtility, ValueComponent, VariableValueComponent, Variable } from './types/syntax'
 import { AtRuleNode, AtRuleStringNode, AtRuleValueNode, } from './utils/parse-at'
 import parseValue from './utils/parse-value'
 import parseAt from './utils/parse-at'
@@ -20,6 +20,7 @@ import wrapAtRules from './utils/wrap-at-rules'
 import declarers from './declarers'
 import transformers from './transformers'
 import functionTransformers from './function-transformers'
+import { createCSSVariableReference, createNumberVariableReference } from './utils/css-variables'
 
 export class Utility {
     native?: CSSRule
@@ -316,94 +317,29 @@ export class Utility {
                             + VALUE_DELIMITERS[eachValueComponent.symbol as keyof typeof VALUE_DELIMITERS]
                     }
                     break
-                // todo: 應挪到 parseValues 階段處理才能支援 variables: { x: 'calc(20vw-30px)' } 這種情況，並且解析上可能會比較合理、精簡
                 case 'variable':
                     const variable = this.css.variables.get(eachValueComponent.name)
+                    const resolveFallback = () => {
+                        if (!eachValueComponent.fallback) return
+                        const fallbackComponents: ValueComponent[] = []
+                        this.parseValues(fallbackComponents, 0, eachValueComponent.fallback, unit, '', undefined, bypassParsing, bypassVariableNames)
+                        return this.resolveValue(fallbackComponents, unit, bypassVariableNames, bypassParsing)
+                    }
+                    const emitVariable = (variable?: Variable) => {
+                        if (variable?.type === 'number' && eachValueComponent.alpha === undefined && !bypassParsing) {
+                            return createNumberVariableReference(variable, unit, this.css.config.rootSize)
+                        }
+                        return createCSSVariableReference(eachValueComponent.name, eachValueComponent.alpha, resolveFallback())
+                    }
                     if (variable) {
-                        const handleVariable = (
-                            normalHandler: (variable: Variable) => void,
-                            varHandler: () => void
-                        ) => {
-                            if (variable.modes) {
-                                if (this.mode) {
-                                    const themeVariable = variable.modes[this.mode] ?? variable
-                                    if (themeVariable?.value) {
-                                        normalHandler(themeVariable as any)
-                                    }
-                                } else {
-                                    if (this.variableNames) {
-                                        this.variableNames.add(eachValueComponent.name)
-                                    } else {
-                                        this.variableNames = new Set([eachValueComponent.name])
-                                    }
-                                    varHandler()
-                                }
-                            } else {
-                                normalHandler(variable)
-                            }
+                        if (this.variableNames) {
+                            this.variableNames.add(eachValueComponent.name)
+                        } else {
+                            this.variableNames = new Set([eachValueComponent.name])
                         }
-                        switch (variable.type) {
-                            case 'string':
-                                handleVariable(
-                                    (variable) => {
-                                        const valueComponents: ValueComponent[] = []
-                                        this.parseValues(valueComponents, 0, variable.value as string, unit, '', undefined, bypassParsing, [...bypassVariableNames, eachValueComponent.name])
-                                        currentValue += eachValueComponent.text = this.resolveValue(
-                                            valueComponents,
-                                            unit,
-                                            [...bypassVariableNames, eachValueComponent.name],
-                                            bypassParsing
-                                        )
-                                    },
-                                    () => {
-                                        currentValue += eachValueComponent.text = `var(--${eachValueComponent.name})`
-                                    }
-                                )
-                                break
-                            case 'number':
-                                handleVariable(
-                                    (variable) => {
-                                        if (bypassParsing) {
-                                            currentValue += eachValueComponent.text = String(variable.value)
-                                        } else {
-                                            const valueComponent = this.parseValue(variable.value, unit) as NumberValueComponent
-                                            currentValue += eachValueComponent.text = valueComponent.value + (valueComponent.unit ?? '')
-                                        }
-                                    },
-                                    () => {
-                                        currentValue += eachValueComponent.text = unit
-                                            ? `calc(var(--${eachValueComponent.name}) / 16 * 1rem)`
-                                            : `var(--${eachValueComponent.name})`
-                                    }
-                                )
-                                break
-                            case 'color':
-                                let alpha = eachValueComponent.alpha
-                                handleVariable(
-                                    (variable) => {
-                                        const colorVariable = variable as ColorVariable
-                                        alpha = (alpha || 1) * (colorVariable.alpha || 1)
-                                        if (alpha < 1) {
-                                            currentValue += eachValueComponent.text = `${colorVariable.space}(${colorVariable.value}/${alpha})`
-                                        } else {
-                                            currentValue += eachValueComponent.text = `${colorVariable.space}(${colorVariable.value})`
-                                        }
-                                    },
-                                    () => {
-                                        if (alpha !== undefined) {
-                                            // use color-mix
-                                            currentValue += eachValueComponent.text = `color-mix(in oklab,var(--${eachValueComponent.name}) ${Number(alpha) * 100}%,transparent)`
-                                        } else {
-                                            currentValue += eachValueComponent.text = `var(--${eachValueComponent.name})`
-                                        }
-                                    }
-                                )
-                                break
-                        }
+                        currentValue += eachValueComponent.text = emitVariable(variable)
                     } else {
-                        currentValue += eachValueComponent.text = eachValueComponent.alpha !== undefined
-                            ? `color-mix(in oklab,var(--${eachValueComponent.name}) ${Number(eachValueComponent.alpha) * 100}%,transparent)`
-                            : `var(--${eachValueComponent.name}${(eachValueComponent.fallback ? ',' + eachValueComponent.fallback : '')})`
+                        currentValue += eachValueComponent.text = emitVariable()
                     }
                     break
                 case 'separator':

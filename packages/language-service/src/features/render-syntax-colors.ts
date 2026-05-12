@@ -3,7 +3,20 @@ import { instancePattern } from '../utils/regex'
 import CSSLanguageService from '../core'
 import type { TextDocument } from 'vscode-languageserver-textdocument'
 import Color from 'colorjs.io'
-import { UtilityType, type ValueComponent } from '@master/css'
+import { UtilityType, type ValueComponent, type Variable } from '@master/css'
+
+function resolveVariableColorValue(variable: Variable | undefined, variables: Map<string, Variable>): string | undefined {
+    let current = variable
+    for (let i = 0; i < 8; i++) {
+        const value = current?.value
+        if (value === undefined) return
+        const text = String(value)
+        const alias = /^\$\((.*?)\)(?: ?\/ ?.+?)?$|^\$([a-zA-Z0-9-]+)(?: ?\/ ?.+?)?$|^var\(--([_a-zA-Z0-9-]+)\)$/.exec(text)
+        const aliasName = alias?.[1] ?? alias?.[2] ?? alias?.[3]
+        if (!aliasName) return text
+        current = variables.get(aliasName)
+    }
+}
 
 export default async function renderSyntaxColors(this: CSSLanguageService, document: TextDocument): Promise<ColorInformation[] | undefined> {
     const text = document.getText() ?? ''
@@ -33,8 +46,11 @@ export default async function renderSyntaxColors(this: CSSLanguageService, docum
                             }
                             break
                         case 'variable':
-                            if (valueComponent.variable?.type === 'color') {
-                                color = new Color(valueComponent.text)
+                            if (valueComponent.variable?.namespace?.startsWith('color') && valueComponent.variable.value !== undefined) {
+                                color = new Color(resolveVariableColorValue(valueComponent.variable, this.css.variables) || String(valueComponent.variable.value))
+                                if (valueComponent.alpha !== undefined) {
+                                    color.alpha *= valueComponent.alpha
+                                }
                             }
                             break
                         case 'string':

@@ -43,10 +43,13 @@ type VariableCommon = {
     group?: string,
     name: string,
     key: string,
-    modes?: Record<string, LiteralVariable>
+    modes?: Record<string, ResolvedVariableValue>
+    dependencies?: Set<string>
 }
-export type StringVariable = { type: 'string', value: string }
+export type StringVariable = { type: 'string', value: string | number }
 export type NumberVariable = { type: 'number', value: number }
-export type ColorVariable = { type: 'color', value: string, space: 'rgb' | 'hsl', alpha?: number }
-export type LiteralVariable = StringVariable | NumberVariable | ColorVariable
-export type Variable = LiteralVariable & VariableCommon
+export type ResolvedVariableValue = StringVariable | NumberVariable
+export type Variable = VariableCommon & {
+    type: ResolvedVariableValue['type']
+    value?: ResolvedVariableValue['value']
+}
