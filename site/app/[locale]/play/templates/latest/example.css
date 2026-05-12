@@ -37,10 +37,6 @@
         @compose "flex fg:strong font:medium";
     }
 
-    .feature-icon {
-        @compose "fill:text-primary/.2 flex:0|0|auto mr:sm stroke:text-primary";
-    }
-
     .hint {
         @compose "italic mt:0 text:xs";
     }

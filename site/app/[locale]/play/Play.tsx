@@ -63,10 +63,30 @@ const editorHTMLOptions: any = {
 const template = templates[0]
 const playShareApiURL = (process.env.NEXT_PUBLIC_PLAY_API_URL || '/api/play').replace(/\/+$/, '')
 let compilerPromise: Promise<typeof import('@master/css-compiler/browser')> | undefined
+let playHighlighterPromise: ReturnType<typeof createHighlighter> | undefined
+// shikiToMonaco installs global Monaco providers and patches setTheme without
+// returning disposables. Keep one highlighter alive for those closures.
+const shikiMonacoRegistrations = new WeakMap<Monaco, Promise<void>>()
 
 function loadCompiler() {
     compilerPromise ??= import('@master/css-compiler/browser')
     return compilerPromise
+}
+
+function loadPlayHighlighter() {
+    playHighlighterPromise ??= createHighlighter()
+    return playHighlighterPromise
+}
+
+async function registerMonacoShiki(monaco: Monaco) {
+    let registration = shikiMonacoRegistrations.get(monaco)
+    if (!registration) {
+        registration = loadPlayHighlighter().then((highlighter) => {
+            shikiToMonaco(highlighter, monaco)
+        })
+        shikiMonacoRegistrations.set(monaco, registration)
+    }
+    await registration
 }
 
 function getFileContent(files: PlayFile[], title: string) {
@@ -238,7 +258,6 @@ export default function Play({ shareId }: PlayProps = {}) {
     const compileTicketRef = useRef(0)
     const skipNextShareLoadRef = useRef('')
     const copiedTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-    const highlighterRef = useRef<Awaited<ReturnType<typeof createHighlighter>> | null>(null)
     const [files, setFiles] = useState<PlayFile[]>(template.files)
     const [currentShareId, setCurrentShareId] = useState(shareId || pathShareId)
     const [baselineFilesText, setBaselineFilesText] = useState(() => stringifyFiles(template.files))
@@ -420,7 +439,6 @@ export default function Play({ shareId }: PlayProps = {}) {
 
     useEffect(() => {
         return () => {
-            highlighterRef.current?.dispose()
             if (copiedTimeoutRef.current) {
                 clearTimeout(copiedTimeoutRef.current)
             }
@@ -442,10 +460,7 @@ export default function Play({ shareId }: PlayProps = {}) {
 
     const registerShiki = useCallback(async (monaco: Monaco) => {
         monaco.languages.html.htmlDefaults.setOptions(editorHTMLOptions)
-        highlighterRef.current?.dispose()
-        const highlighter = await createHighlighter()
-        highlighterRef.current = highlighter
-        shikiToMonaco(highlighter, monaco)
+        await registerMonacoShiki(monaco)
         setTimeout(() => {
             monaco.editor.setTheme(getTheme())
         })
