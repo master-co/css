@@ -1,16 +1,28 @@
-<main class="play-stage">
-    <section class="play-card">
-        <img class="play-logo" src="/images/css-logotype@light.svg" alt="Master CSS" width="200" />
-        <p class="play-kicker">Master CSS Play</p>
-        <h1 class="play-title">Build token-led interfaces in markup.</h1>
-        <p class="play-copy">
-            Edit this card to compose components, native CSS, and generated utilities from the same design foundations.
-        </p>
-        <div class="play-panel">
-            <span class="play-chip">bg:surface</span>
-            <span class="play-chip">r:lg</span>
-            <span class="play-chip">shadow:lg</span>
+<div class="play-stage">
+    <div class="card">
+        <div class="card-body">
+            <img class="card-logotype block@light hidden" src="/images/css-logotype@light.svg" alt="Master CSS Play" width="200" />
+            <img class="card-logotype block@dark hidden" src="/images/css-logotype@dark.svg" alt="Master CSS Play" width="200" />
+            <p>A real-time code editor for Master CSS, including:</p>
+            <ul class="feature-list">
+                <li class="feature-item">Rendering with your custom CSS.</li>
+                <li class="feature-item">Previewing results without reloading.</li>
+                <li class="feature-item">Resizing devices for responsive design.</li>
+                <li class="feature-item">Sharing your masterpiece.</li>
+            </ul>
+            <p>Here you can quickly create demos, ideas, prototypes, and even use it for learning.</p>
         </div>
-        <a class="play-button" href="/guide/design-tokens">Explore tokens</a>
-    </section>
-</main>
+        <div class="card-footer">
+            <p class="hint">Don't know how to use Master CSS syntax yet?</p>
+            <a class="btn" href="/guide/introduction">
+                Learn syntax
+                <svg class="btn-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                    <path class="btn-arrow-line" d="M5 12l14 0"></path>
+                    <path d="M13 18l6 -6"></path>
+                    <path d="M13 6l6 6"></path>
+                </svg>
+            </a>
+        </div>
+    </div>
+</div>

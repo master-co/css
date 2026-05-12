@@ -98,6 +98,11 @@ function createPreviewHTML() {
     return dedent`<html>
         <head>
             <style>${require('../../../node_modules/@master/normal.css/dist/index.css?raw')}</style>
+            <style>
+                body {
+                    font-family: Inter, Noto Sans TC, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+                }
+            </style>
             <script>${require('./preview.js?raw')}</script>
         </head>
         <body></body>

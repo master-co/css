@@ -1,48 +1,63 @@
 @master {
-    @custom-at motion-safe @media (prefers-reduced-motion: no-preference);
+
+    light {
+        --color-card: #ffffff;
+    }
+
+    dark {
+        --color-card: $color-gray-80;
+    }
 
     .play-stage {
-        @compose "min-h:100dvh bg:surface flex items-center justify-center p:lg";
+        @compose "flex items-center justify-center min-vh p:lg";
     }
 
-    .play-card {
-        @compose "bg:base fg:neutral max-w:screen-xs w:full b:1|lightest p:xl r:lg shadow:lg";
-
-        @at motion-safe {
-            @compose "~transform|fast|smooth";
-        }
-
-        &:hover {
-            transform: translateY(-2px);
-        }
+    .card {
+        @compose "fg:neutral m:auto max-w:screen-3xs mt:lg_:where(p,ul) my:sm_:where(li) outline:1|lightest r:lg shadow:lg text:md_:where(p,li)";
+        background-color: var(--color-card);
     }
 
-    .play-logo {
-        @compose "mb:lg";
+    .card-body {
+        @compose "p:xl p:2xl@sm";
     }
 
-    .play-kicker {
-        @compose "fg:primary font:xs font:semibold m:0 mb:xs";
+    .card-footer {
+        @compose "bt:1|dotted|light p:lg p:xl@sm pt:md@sm";
     }
 
-    .play-title {
-        @compose "fg:strong text:4xl font:heavy m:0";
-        text-wrap: balance;
+    .card-logotype {
+        @compose "mt:md mb:xl mx:auto";
     }
 
-    .play-copy {
-        @compose "text:md fg:neutral m:0 mt:md";
+    .feature-list {
+        @compose "m:0 p:0";
     }
 
-    .play-panel {
-        @compose "bg:surface b:1|lightest r:md flex flex-wrap:wrap gap:sm mt:lg p:md";
+    .feature-item {
+        @compose "flex fg:strong font:medium";
     }
 
-    .play-chip {
-        @compose "bg:base fg:strong b:1|lightest font:xs font:medium px:sm py:xs r:full";
+    .feature-icon {
+        @compose "fill:text-primary/.2 flex:0|0|auto mr:sm stroke:text-primary";
     }
 
-    .play-button {
-        @compose "inline-flex items-center justify-center bg:primary fg:base font:sm font:semibold h:48 mt:lg px:lg r:md";
+    .hint {
+        @compose "italic mt:0 text:xs";
+    }
+
+    .btn {
+        @compose "inline-flex items-center justify-center rel b:1|yellow-active bg:yellow fg:yellow-text font:sm font:medium h:48 mt:md px:lg r:sm text:center w:full";
+    }
+
+    .btn-icon {
+        @compose "abs right:md";
+    }
+
+    .btn-arrow-line {
+        @compose "~opacity|fast|smooth opacity:0 scale(0) transform-origin:5x|center";
+    }
+
+    .btn:hover .btn-arrow-line {
+        @compose "opacity:1 scale(1)";
     }
 }
