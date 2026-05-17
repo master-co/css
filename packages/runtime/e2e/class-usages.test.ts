@@ -92,3 +92,25 @@ test('add an element to z2', async ({ page }) => {
         'z:101': 1,
     })
 })
+
+test('remove a class while the subtree is disconnected and append again', async ({ page }) => {
+    await init(page)
+    await page.evaluate(() => {
+        const parent = document.createElement('div')
+        parent.id = 'parent'
+        parent.innerHTML = '<div id="child" class="z:1"></div>'
+        document.body.append(parent)
+    })
+    expect(await page.evaluate(() => Object.fromEntries(globalThis.cssRuntime.classCounts))).toMatchObject({
+        'z:1': 1
+    })
+
+    await page.evaluate(() => {
+        const parent = document.getElementById('parent')!
+        const child = document.getElementById('child')!
+        parent.remove()
+        child.removeAttribute('class')
+        document.body.append(parent)
+    })
+    expect(await page.evaluate(() => Object.fromEntries(globalThis.cssRuntime.classCounts))).toMatchObject({})
+})

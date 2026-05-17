@@ -5,6 +5,11 @@ import { HydrateResult } from './types'
 import RuntimeLayer from './layer'
 import RuntimeUtilityLayer, { RuntimeUtilityLayerInstance } from './utility-layer'
 import RuntimeThemeLayer from './theme-layer'
+import RuntimeClassTracker from './class-tracker'
+
+function getCSSRuleText(cssRule: CSSRule) {
+    return cssRule.cssText.trim()
+}
 
 export default class CSSRuntime extends MasterCSS {
     static instances = new WeakMap<Document | ShadowRoot, CSSRuntime>()
@@ -16,6 +21,7 @@ export default class CSSRuntime extends MasterCSS {
     readonly mainLayer = new RuntimeUtilityLayer('main', this)
     readonly generalLayer = new RuntimeUtilityLayer('general', this)
     readonly classCounts = new Map<string, number>()
+    private readonly classTracker = new RuntimeClassTracker()
     observer?: MutationObserver
     progressive = false
     observing = false
@@ -61,30 +67,15 @@ export default class CSSRuntime extends MasterCSS {
             }
         }
 
-        // Prepare snapshot map
-        const elementClasses = new WeakMap<Element, Set<string>>()
-
         // Initial scan and populate counts + snapshot
-        const connectedNames = new Set<string>()
-        const increaseClassCount = (className: string) => {
-            const count = this.classCounts.get(className) || 0
-            if (!count) connectedNames.add(className)
-            this.classCounts.set(className, count + 1)
-        }
-        const elementsWithClass = this.root.querySelectorAll('[class]')
-        elementsWithClass.forEach(el => {
-            const clsList = el.classList
-            if (clsList) {
-                el.classList.forEach(increaseClassCount)
-            }
-            elementClasses.set(el, new Set(clsList))
-        })
+        const connectedNames = this.classTracker.collectConnected(this.root, this.classCounts)
 
         // Hydration or style creation
         if (this.progressive) {
             const hydrateResult = this.hydrate(this.style!.sheet!.cssRules)
+            const hydratedClassNames = new Set(hydrateResult.allUtilities.map(({ fixedClass, name }) => fixedClass || name))
             for (const cls of connectedNames) {
-                if (!hydrateResult.allUtilities.find(r => (r.fixedClass || r.name) === cls)) {
+                if (!hydratedClassNames.has(cls)) {
                     this.add(cls)
                     if (process.env.NODE_ENV === 'development') {
                         console.debug(`Missing prerendered rule for class \`${cls}\``)
@@ -92,7 +83,8 @@ export default class CSSRuntime extends MasterCSS {
                 }
             }
         } else {
-            this.style = document.createElement('style')
+            const ownerDocument = 'createElement' in this.root ? this.root : this.root.ownerDocument
+            this.style = ownerDocument.createElement('style')
             this.style.id = 'master'
             this.style.setAttribute('blocking', 'render')
             this.container.append(this.style)
@@ -102,76 +94,24 @@ export default class CSSRuntime extends MasterCSS {
         }
 
         this.observer = new MutationObserver(records => {
-            const deltaCounts = new Map<string, number>()
-            const nodeMap = new Map<Element, number>()
-            const attrRecords = new Set<Element>()
-            const visited = new WeakSet<Element>()
-
-            const updateDelta = (cls: string, delta: number) =>
-                deltaCounts.set(cls, (deltaCounts.get(cls) || 0) + delta)
-
-            const diffAndSnapshot = (el: Element) => {
-                const prev = new Set(elementClasses.get(el) || [])
-                const next = new Set(el.classList)
-                for (const c of next) if (!prev.has(c)) updateDelta(c, 1)
-                for (const c of prev) if (!next.has(c)) updateDelta(c, -1)
-                elementClasses.set(el, next)
-            }
-
-            const removeSnapshot = (el: Element) => {
-                for (const c of elementClasses.get(el) || []) updateDelta(c, -1)
-                elementClasses.delete(el)
-            }
-
-            for (const record of records) {
-                if (record.type === 'childList') {
-                    for (const node of record.addedNodes)
-                        if (node instanceof Element && node.isConnected)
-                            nodeMap.set(node, (nodeMap.get(node) || 0) + 1)
-
-                    for (const node of record.removedNodes)
-                        if (node instanceof Element && !node.isConnected)
-                            nodeMap.set(node, (nodeMap.get(node) || 0) - 1)
-                } else if (record.type === 'attributes' && record.attributeName === 'class') {
-                    attrRecords.add(record.target as Element)
-                }
-            }
-
-            const traverseIncludingSelf = (el: Element, fn: (el: Element) => void, visited: WeakSet<Element>) => {
-                if (!visited.has(el)) {
-                    visited.add(el)
-                    fn(el)
-                    for (const child of el.children) {
-                        traverseIncludingSelf(child, fn, visited)
-                    }
-                } else {
-                    nodeMap.delete(el)
-                }
-            }
-
-            for (const [node, count] of nodeMap) {
-                if (count > 0) {
-                    traverseIncludingSelf(node, diffAndSnapshot, visited)
-                } else if (count < 0 && !node.isConnected) {
-                    traverseIncludingSelf(node, removeSnapshot, visited)
-                }
-            }
-
-            for (const el of attrRecords) {
-                if (!visited.has(el)) diffAndSnapshot(el)
-            }
+            const deltaCounts = this.classTracker.collectMutations(records)
+            const addedClassNames: string[] = []
+            const removedClassNames: string[] = []
 
             for (const [cls, change] of deltaCounts) {
                 const current = this.classCounts.get(cls) || 0
                 const next = current + change
                 if (next > 0) {
                     this.classCounts.set(cls, next)
-                    if (current === 0) this.add(cls)
+                    if (current === 0) addedClassNames.push(cls)
                 } else {
                     this.classCounts.delete(cls)
-                    this.remove(cls)
+                    removedClassNames.push(cls)
                 }
             }
+
+            if (addedClassNames.length) this.add(...addedClassNames)
+            if (removedClassNames.length) this.remove(...removedClassNames)
 
             globalThis.__MASTER_CSS_DEVTOOLS_HOOK__?.emit('runtime:mutated', {
                 records,
@@ -184,7 +124,6 @@ export default class CSSRuntime extends MasterCSS {
             childList: true,
             attributes: true,
             attributeFilter: ['class'],
-            attributeOldValue: true,
             subtree: true,
         })
 
@@ -206,17 +145,19 @@ export default class CSSRuntime extends MasterCSS {
                 const eachCSSLayerRule = eachNativeCSSRule as CSSLayerBlockRule
                 if ((eachNativeCSSRule as CSSLayerBlockRule).name === 'theme') {
                     this.themeLayer.native = eachCSSLayerRule
+                    const hydratedVariableNames = new Set(this.themeLayer.rules.map(({ name }) => name))
                     const hydrateStyleRule = (styleRule: CSSStyleRule) => {
                         for (let i = 0; i < styleRule.style.length; i++) {
                             const propertyName = styleRule.style.item(i)
                             if (!propertyName.startsWith('--')) continue
                             const variableName = propertyName.slice(2)
-                            if (this.themeLayer.rules.find(({ name }) => name === variableName)) continue
+                            if (hydratedVariableNames.has(variableName)) continue
                             const variable = this.variables.get(variableName)
                             if (!variable) continue
                             const variableRule = new VariableRule(variableName, variable, this)
                             this.themeLayer.rules.push(variableRule)
                             this.themeLayer.tokenCounts.set(variableRule.name, 0)
+                            hydratedVariableNames.add(variableRule.name)
                         }
                     }
                     for (const cssRule of eachCSSLayerRule.cssRules) {
@@ -269,11 +210,11 @@ export default class CSSRuntime extends MasterCSS {
             const unresolvedCSSRules = new Map<string, CSSRule>()
             for (const rule of eachCSSLayerRule.cssRules) {
                 // trim() for fix the firefox bug that the cssText ends with \n\n
-                unresolvedCSSRules.set(rule.cssText.trim(), rule)
+                unresolvedCSSRules.set(getCSSRuleText(rule), rule)
             }
 
             for (const eachNativeLayerRule of eachCSSLayerRule.cssRules) {
-                if (!unresolvedCSSRules.has(eachNativeLayerRule.cssText)) continue
+                if (!unresolvedCSSRules.has(getCSSRuleText(eachNativeLayerRule))) continue
                 const selectorText = this.getSelectorText(eachNativeLayerRule)
                 if (!selectorText) {
                     console.error(`Cannot get the selector text from \`${eachNativeLayerRule.cssText}\`. (${layer.name}) (https://rc.css.master.co/messages/hydration-errors)`)
@@ -292,15 +233,19 @@ export default class CSSRuntime extends MasterCSS {
                         for (const node of nodes) {
                             try {
                                 const checkRuleIndex = checkSheet.insertRule(node.text)
-                                const checkNodeNativeRule = checkSheet.cssRules.item(checkRuleIndex)
-                                if (checkNodeNativeRule) {
-                                    const checkNodeNativeRuleText = checkNodeNativeRule.cssText.trim()
-                                    const match = unresolvedCSSRules.get(checkNodeNativeRuleText)
-                                    if (match) {
-                                        node.native = match
-                                        unresolvedCSSRules.delete(checkNodeNativeRuleText)
-                                        continue
+                                try {
+                                    const checkNodeNativeRule = checkSheet.cssRules.item(checkRuleIndex)
+                                    if (checkNodeNativeRule) {
+                                        const checkNodeNativeRuleText = getCSSRuleText(checkNodeNativeRule)
+                                        const match = unresolvedCSSRules.get(checkNodeNativeRuleText)
+                                        if (match) {
+                                            node.native = match
+                                            unresolvedCSSRules.delete(checkNodeNativeRuleText)
+                                            continue
+                                        }
                                     }
+                                } finally {
+                                    checkSheet.deleteRule(checkRuleIndex)
                                 }
                                 console.error(`Cannot retrieve CSS rule for \`${node.text}\`. (${layer.name}) (https://rc.css.master.co/messages/hydration-errors)`)
                             } catch (error) {
@@ -338,6 +283,7 @@ export default class CSSRuntime extends MasterCSS {
         this.observing = false
         this.reset()
         this.classCounts.clear()
+        this.classTracker.reset()
         if (!this.progressive) {
             this.style?.remove()
             this.style = null
@@ -348,7 +294,8 @@ export default class CSSRuntime extends MasterCSS {
 
     refresh(customConfig = this.customConfig) {
         if (!this.observing || !this.style!.sheet) return this
-        for (let i = 1; i <= this.style!.sheet.cssRules.length - 1; i++) {
+        const cssRules = this.style!.sheet.cssRules
+        for (let i = cssRules.length - 1; i > 0; i--) {
             this.style!.sheet.deleteRule(i)
         }
         super.refresh(customConfig)

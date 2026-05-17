@@ -71,3 +71,22 @@ test('insert static utility with multiple native rules into existing layer', asy
     expect(await page.evaluate(() => globalThis.cssRuntime.generalLayer.native?.cssRules.length)).toBe(4)
     expect(consoleErrors.find((message) => message.includes('insertRule'))).toBeUndefined()
 })
+
+test('refresh clears stale native keyframes', async ({ page }) => {
+    await init(page)
+    await page.evaluate(() => {
+        document.body.classList.add('@fade|1s', '@flash|1s')
+    })
+    expect(await page.evaluate(() => Array.from(globalThis.cssRuntime.style!.sheet!.cssRules)
+        .filter((cssRule) => cssRule.constructor.name === 'CSSKeyframesRule')
+        .map((cssRule) => (cssRule as CSSKeyframesRule).name)
+    )).toEqual(['fade', 'flash'])
+
+    await page.evaluate(() => {
+        globalThis.cssRuntime.refresh({})
+    })
+    expect(await page.evaluate(() => Array.from(globalThis.cssRuntime.style!.sheet!.cssRules)
+        .filter((cssRule) => cssRule.constructor.name === 'CSSKeyframesRule')
+        .map((cssRule) => (cssRule as CSSKeyframesRule).name)
+    )).toEqual(['fade', 'flash'])
+})
