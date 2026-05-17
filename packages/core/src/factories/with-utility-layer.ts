@@ -6,6 +6,37 @@ import { Utility } from '../utility'
 import compareRulePriority from '../utils/compare-rule-priority'
 import VariableRule from '../variable-rule'
 
+function findUtilityInsertIndex(rules: (Utility | Rule)[], utility: Utility) {
+    let low = 0
+    let high = rules.length
+
+    while (low < high) {
+        const mid = (low + high) >> 1
+        const rule = rules[mid]
+        if (!(rule instanceof Utility)) {
+            return findUtilityInsertIndexLinear(rules, utility)
+        }
+        if (compareRulePriority(utility, rule) < 0) {
+            high = mid
+        } else {
+            low = mid + 1
+        }
+    }
+
+    return low
+}
+
+function findUtilityInsertIndexLinear(rules: (Utility | Rule)[], utility: Utility) {
+    for (let i = 0; i < rules.length; i++) {
+        const rule = rules[i]
+        if (!(rule instanceof Utility)) continue
+        if (compareRulePriority(utility, rule) < 0) {
+            return i
+        }
+    }
+    return rules.length
+}
+
 export default function withUtilityLayer<TBase extends new (...args: any[]) => Layer>(Base: TBase) {
     return class UtilityLayer extends Base {
         rules: (Utility | Rule)[] = []
@@ -18,23 +49,17 @@ export default function withUtilityLayer<TBase extends new (...args: any[]) => L
         * media width selectors
         */
         insert(utility: Utility | Rule) {
-            if (this.rules.includes(utility)) return
+            if (this.get(utility.key)) return
             if ('valid' in utility && !utility.valid) return
             let index = this.rules.length
             if (utility instanceof Utility) {
-                for (let i = 0; i < this.rules.length; i++) {
-                    const rule = this.rules[i]
-                    if (!(rule instanceof Utility)) continue
-                    if (compareRulePriority(utility, rule) < 0) {
-                        index = i
-                        break
-                    }
-                }
+                index = findUtilityInsertIndex(this.rules, utility)
             }
-            super.insert(utility, index)
+            const insertedIndex = super.insert(utility, index)
+            if (insertedIndex === undefined) return
             this.insertVariables(utility)
             this.insertAnimations(utility)
-            return index
+            return insertedIndex
         }
 
         delete(key: string) {

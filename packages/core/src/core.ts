@@ -16,9 +16,14 @@ import parseAt from './utils/parse-at'
 import parseValue from './utils/parse-value'
 import parseSelector, { SelectorNode } from './utils/parse-selector'
 import { normalizeVariableValue } from './utils/css-variables'
+import naturalCompare from './utils/natural-compare'
 
 export default class MasterCSS {
     readonly definedUtilities: DefinedUtility[] = []
+    protected readonly variableMatcherUtilities: DefinedUtility[] = []
+    protected readonly valueMatcherUtilities: DefinedUtility[] = []
+    protected readonly keyMatcherUtilities: DefinedUtility[] = []
+    protected readonly arbitraryMatcherUtilities: DefinedUtility[] = []
     readonly config!: ExtendedConfig
     readonly layerStatementRule = new Rule('layer-statement', '@layer base,theme,preset,main,general;')
     readonly rules: (Layer | Rule)[] = [this.layerStatementRule]
@@ -125,6 +130,33 @@ export default class MasterCSS {
         const utilitiesEntries = utilities.map((definition) => [definition.name, definition] as [string, UtilityDefinition])
 
         const utilitiesEntriesLength = utilitiesEntries.length
+        const variablesByNamespace = new Map<string, [string, Variable][]>()
+        const addVariableToNamespace = (namespace: string, variable: Variable) => {
+            const dashedNamespace = namespace.replace(/\./g, '-')
+            let variableKey = variable.name
+            if (variableKey.startsWith('-' + dashedNamespace) || variableKey.startsWith(dashedNamespace)) {
+                variableKey = variableKey.slice(dashedNamespace.length + 1)
+            }
+            const namespaceVariables = variablesByNamespace.get(namespace)
+            if (namespaceVariables) {
+                namespaceVariables.push([variableKey, variable])
+            } else {
+                variablesByNamespace.set(namespace, [[variableKey, variable]])
+            }
+        }
+        for (const variable of this.variables.values()) {
+            const namespaces = new Set<string>()
+            if (variable.namespace) {
+                const namespaceParts = variable.namespace.split('.')
+                for (let i = 1; i <= namespaceParts.length; i++) {
+                    namespaces.add(namespaceParts.slice(0, i).join('.'))
+                }
+            }
+            if (variable.group) namespaces.add(variable.group)
+            for (const namespace of namespaces) {
+                addVariableToNamespace(namespace, variable)
+            }
+        }
 
         // Main loop
         utilitiesEntries
@@ -142,7 +174,7 @@ export default class MasterCSS {
                         return aKindIndex - bKindIndex
                     }
                 }
-                return b[0].localeCompare(a[0], undefined, { numeric: true })
+                return naturalCompare(b[0], a[0])
             })
             .forEach(([id, def], index) => {
                 const order = utilitiesEntriesLength - 1 - index
@@ -177,20 +209,13 @@ export default class MasterCSS {
 
                 // Helper: resolve variable groups
                 const addNamespace = (namespace: string) => {
-                    const dashedNamespace = namespace.replace(/\./g, '-')
-                    this.variables.forEach(v => {
-                        if (v.namespace === namespace || v.namespace?.startsWith(namespace + '.') || v.group === namespace) {
-                            let variableKey = v.name
-                            if (variableKey.startsWith('-' + dashedNamespace) || variableKey.startsWith(dashedNamespace)) {
-                                variableKey = variableKey.slice(dashedNamespace.length + 1)
-                            }
-                            if (definedUtility.variables) {
-                                definedUtility.variables.set(variableKey, v)
-                            } else {
-                                definedUtility.variables = new Map([[variableKey, v]])
-                            }
+                    for (const [variableKey, variable] of variablesByNamespace.get(namespace) || []) {
+                        if (definedUtility.variables) {
+                            definedUtility.variables.set(variableKey, variable)
+                        } else {
+                            definedUtility.variables = new Map([[variableKey, variable]])
                         }
-                    })
+                    }
                 }
 
                 // 1. Auto variable binding
@@ -275,6 +300,11 @@ export default class MasterCSS {
                         `^${keys.length > 1 ? `(${keys.join('|')})` : keys[0]}:.`
                     )
                 }
+
+                if (definedUtility.matchers.variable) this.variableMatcherUtilities.push(definedUtility)
+                if (definedUtility.matchers.value) this.valueMatcherUtilities.push(definedUtility)
+                if (definedUtility.matchers.key) this.keyMatcherUtilities.push(definedUtility)
+                if (definedUtility.matchers.arbitrary) this.arbitraryMatcherUtilities.push(definedUtility)
             })
 
     }
@@ -413,7 +443,21 @@ export default class MasterCSS {
      * @returns css text
      */
     match(className: string): DefinedUtility | undefined {
-        return this.matchAll(className)[0]
+        for (const eachUtility of this.variableMatcherUtilities) {
+            if (eachUtility.matchers.variable!.test(className)) return eachUtility
+        }
+
+        for (const eachUtility of this.valueMatcherUtilities) {
+            if (eachUtility.matchers.value!.test(className)) return eachUtility
+        }
+
+        for (const eachUtility of this.keyMatcherUtilities) {
+            if (eachUtility.matchers.key!.test(className)) return eachUtility
+        }
+
+        for (const eachUtility of this.arbitraryMatcherUtilities) {
+            if (eachUtility.matchers.arbitrary!.test(className)) return eachUtility
+        }
     }
 
     matchAll(className: string): DefinedUtility[] {
@@ -421,24 +465,24 @@ export default class MasterCSS {
          * 1. variable
          * @example fg:primary bg:blue
          */
-        for (const eachUtility of this.definedUtilities) {
-            if (eachUtility.matchers.variable?.test(className)) return [eachUtility]
+        for (const eachUtility of this.variableMatcherUtilities) {
+            if (eachUtility.matchers.variable!.test(className)) return [eachUtility]
         }
 
         /**
          * 2. value (ambiguous.key * ambiguous.values)
          * @example bg:current box-content font:12
          */
-        for (const eachUtility of this.definedUtilities) {
-            if (eachUtility.matchers.value?.test(className)) return [eachUtility]
+        for (const eachUtility of this.valueMatcherUtilities) {
+            if (eachUtility.matchers.value!.test(className)) return [eachUtility]
         }
 
         /**
          * 3. full key
          * @example text-align:center color:blue-40
          */
-        for (const eachUtility of this.definedUtilities) {
-            if (eachUtility.matchers.key?.test(className)) return [eachUtility]
+        for (const eachUtility of this.keyMatcherUtilities) {
+            if (eachUtility.matchers.key!.test(className)) return [eachUtility]
         }
 
         /**
@@ -446,8 +490,8 @@ export default class MasterCSS {
          * @example custom RegExp, utility
          */
         const staticUtilities: DefinedUtility[] = []
-        for (const eachUtility of this.definedUtilities) {
-            if (!eachUtility.matchers.arbitrary?.test(className)) continue
+        for (const eachUtility of this.arbitraryMatcherUtilities) {
+            if (!eachUtility.matchers.arbitrary!.test(className)) continue
             if (eachUtility.definition.type === UtilityType.Static) {
                 staticUtilities.push(eachUtility)
                 continue
@@ -489,11 +533,10 @@ export default class MasterCSS {
     createWithDefinition(className: string, registeredUtility: DefinedUtility, fixedClass?: string, mode?: string): Utility | undefined {
         const key = (fixedClass ? fixedClass + ' ' : '') + className
         for (const layer of this.getUtilityLayers()) {
-            const utility = layer.rules.find((rule): rule is Utility =>
-                rule instanceof Utility
-                && rule.key === key
-                && rule.registeredUtility === registeredUtility
-            )
+            const rule = layer.get(key)
+            const utility = rule instanceof Utility && rule.registeredUtility === registeredUtility
+                ? rule
+                : undefined
             if (utility) return utility
         }
         return new Utility(className, this, registeredUtility, fixedClass, mode)
@@ -558,6 +601,10 @@ export default class MasterCSS {
         this.classUtilities = new Map()
         this.modes.length = 0
         this.definedUtilities.length = 0
+        this.variableMatcherUtilities.length = 0
+        this.valueMatcherUtilities.length = 0
+        this.keyMatcherUtilities.length = 0
+        this.arbitraryMatcherUtilities.length = 0
         this.baseLayer.reset()
         this.themeLayer.reset()
         this.presetLayer.reset()

@@ -1,6 +1,6 @@
 import extend from 'json-safe-extend'
 import UtilityType from '../utility-type'
-import type { Config, UtilityDefinition, VariableDefinitions } from '../types/config'
+import type { Config, UtilityDefinition, VariableDefinition, VariableDefinitions } from '../types/config'
 import flattenObject from './flatten-object'
 
 export declare type ExtendedConfig = {
@@ -21,6 +21,14 @@ function utilitySlot(utility: UtilityDefinition) {
     ].join('\0')
 }
 
+function variableSlot(variable: VariableDefinition) {
+    return [
+        variable.key,
+        variable.namespace || '',
+        variable.mode || ''
+    ].join('\0')
+}
+
 function resolveConfigInput(config: ConfigInput) {
     if (!config) return
     return 'config' in config ? config.config : config
@@ -28,6 +36,12 @@ function resolveConfigInput(config: ConfigInput) {
 
 export default function extendConfig(...configs: ConfigInput[]) {
     let extendedConfig: ExtendedConfig = { __extended: true }
+    const variableMap = new Map<string, VariableDefinition>()
+    const modeSet = new Set<string>()
+    const utilityMap = new Map<string, UtilityDefinition>()
+    let hasVariables = false
+    let hasModes = false
+    let hasUtilities = false
 
     for (const {
         variables,
@@ -44,27 +58,21 @@ export default function extendConfig(...configs: ConfigInput[]) {
 
         // variables
         if (variables) {
-            extendedConfig.variables ??= []
+            hasVariables = true
             for (const variable of variables) {
-                const foundIndex = extendedConfig.variables.findIndex((existing) =>
-                    existing.key === variable.key
-                    && existing.namespace === variable.namespace
-                    && existing.mode === variable.mode
-                )
-                if (foundIndex !== -1) {
-                    extendedConfig.variables.splice(foundIndex, 1)
+                const slot = variableSlot(variable)
+                if (variableMap.has(slot)) {
+                    variableMap.delete(slot)
                 }
-                extendedConfig.variables.push(variable)
+                variableMap.set(slot, variable)
             }
         }
 
         // modes
         if (modes) {
-            extendedConfig.modes ??= []
+            hasModes = true
             for (const mode of modes) {
-                if (!extendedConfig.modes.includes(mode)) {
-                    extendedConfig.modes.push(mode)
-                }
+                modeSet.add(mode)
             }
         }
 
@@ -82,14 +90,13 @@ export default function extendConfig(...configs: ConfigInput[]) {
 
         // utilities
         if (utilities) {
-            extendedConfig.utilities ??= []
+            hasUtilities = true
             for (const utility of utilities) {
                 const slot = utilitySlot(utility)
-                const foundIndex = extendedConfig.utilities.findIndex((existing) => utilitySlot(existing) === slot)
-                if (foundIndex !== -1) {
-                    extendedConfig.utilities.splice(foundIndex, 1)
+                if (utilityMap.has(slot)) {
+                    utilityMap.delete(slot)
                 }
-                extendedConfig.utilities.push(utility)
+                utilityMap.set(slot, utility)
             }
         }
 
@@ -108,6 +115,10 @@ export default function extendConfig(...configs: ConfigInput[]) {
         // merge the rest (non-structured fields)
         extendedConfig = extend({}, extendedConfig, rest) as ExtendedConfig
     }
+
+    if (hasVariables) extendedConfig.variables = Array.from(variableMap.values())
+    if (hasModes) extendedConfig.modes = Array.from(modeSet)
+    if (hasUtilities) extendedConfig.utilities = Array.from(utilityMap.values())
 
     return extendedConfig
 }

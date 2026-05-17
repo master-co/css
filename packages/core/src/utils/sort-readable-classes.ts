@@ -3,6 +3,7 @@ import createCSS from '../create'
 import compareRulePriority from './compare-rule-priority'
 import { Utility } from '../utility'
 import { __UNSORTED__ } from '../common'
+import naturalCompare from './natural-compare'
 
 /**
  * Sorts classes in a consistent order
@@ -77,7 +78,7 @@ export default function sortReadableClasses(classes: string[], css = createCSS()
         const mainClassA = mainSet.has(a.rule) ? a.rule.fixedClass || a.rule.name : undefined
         const mainClassB = mainSet.has(b.rule) ? b.rule.fixedClass || b.rule.name : undefined
         if (mainClassA && mainClassB) {
-            return mainClassA.localeCompare(mainClassB, undefined, { numeric: true })
+            return naturalCompare(mainClassA, mainClassB)
         }
 
         return compareRulePriority(a.rule, b.rule)
@@ -93,6 +94,6 @@ export default function sortReadableClasses(classes: string[], css = createCSS()
                 .filter(className => orderedClasses.indexOf(className) === -1),
             ...unsortedClasses
         ]
-            .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }))
+            .sort(naturalCompare)
     ]
 }

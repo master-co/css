@@ -1,6 +1,7 @@
 import { Utility } from '../utility'
 import { AtRuleNode } from './parse-at'
 import { SelectorNode } from './parse-selector'
+import naturalCompare from './natural-compare'
 
 // ✅ RulePriority definition
 export type RulePriority = {
@@ -86,7 +87,7 @@ export function calcRulePriority(rule: Utility): RulePriority {
     }
     if (rule.atRules?.media) extractFeatures(rule.atRules.media)
     if (rule.atRules?.container) extractFeatures(rule.atRules.container)
-    features.sort(([a], [b]) => a.localeCompare(b, undefined, { numeric: true }))
+    features.sort(([a], [b]) => naturalCompare(a, b))
     const selector = extractSelectorPriority(rule.selectorNodes ?? [])
     return {
         features,
@@ -106,7 +107,7 @@ function compareFeatureTuples(
         if (!bb) return 1
         const [nameA, minA, maxA] = aa
         const [nameB, minB, maxB] = bb
-        const nameCmp = nameA.localeCompare(nameB, undefined, { numeric: true })
+        const nameCmp = naturalCompare(nameA, nameB)
         if (nameCmp !== 0) return nameCmp
         const rangeA = maxA - minA
         const rangeB = maxB - minB
@@ -149,5 +150,5 @@ export default function compareRulePriority(a: Utility, b: Utility): number {
     if (typeCmp !== 0) return typeCmp
 
     // 4. fallback: name
-    return a.key.localeCompare(b.key, undefined, { numeric: true })
+    return naturalCompare(a.key, b.key)
 }
