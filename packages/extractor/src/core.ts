@@ -3,7 +3,7 @@ import { createCSS, MasterCSS } from '@master/css'
 import type { Config } from '@master/css'
 import extractLatentClasses from './functions/extract-latent-classes'
 import fs from 'fs'
-import { minimatch } from 'minimatch'
+import { Minimatch } from 'minimatch'
 import log from '@techor/log'
 import extend from '@techor/extend'
 import exploreCSSConfig, { resolveConfigPath } from '@master/css-explore-config'
@@ -28,11 +28,35 @@ import {
     oxcAdapter,
     type SourceAdapter
 } from './adapters'
+import {
+    createClassExclusionMatcher,
+    isClassExcludedByMatcher,
+    type ClassExclusionMatcher
+} from './utils/class-exclusion'
 
 const builtInAdapters = [
     htmlAdapter(),
     oxcAdapter()
 ]
+
+const sourceMatchOptions = { dot: true }
+
+interface SourceMatchers {
+    sources: Minimatch[]
+    include: Minimatch[]
+    exclude: Minimatch[]
+}
+
+function createSourceMatchers(patterns?: Options['include']) {
+    return (patterns || []).map((pattern) => new Minimatch(String(pattern), sourceMatchOptions))
+}
+
+function matchesAnySource(source: string, matchers: Minimatch[]) {
+    for (const matcher of matchers) {
+        if (matcher.match(source)) return true
+    }
+    return false
+}
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
 export default class CSSExtractor extends EventEmitter {
@@ -68,6 +92,15 @@ export default class CSSExtractor extends EventEmitter {
     private cachedFixedSourcePaths?: string[]
     /** Memoized result of `allowedSourcePaths` getter (fs IO via fast-glob). */
     private cachedAllowedSourcePaths?: string[]
+    /** Precompiled minimatch patterns for per-module allow/exclude checks. */
+    private sourceMatchers?: SourceMatchers
+    private sourceMatcherOptions?: Pick<Options, 'sources' | 'include' | 'exclude'>
+    /** Memoized adapter list so per-file extraction does not rebuild it. */
+    private sourceAdapters?: SourceAdapter[]
+    private sourceAdapterOptions?: Options['adapters']
+    /** Pre-split class exclusion matchers for `insert()` hot path. */
+    private classExclusionMatcher?: ClassExclusionMatcher
+    private classExclusionOptions?: Options['excludeClasses']
 
     constructor(
         public customOptions: Options = {},
@@ -106,6 +139,12 @@ export default class CSSExtractor extends EventEmitter {
             : createExtractorDirectives()
         this.configDependencies = configResult?.dependencies || []
         this.options = mergeExtractorOptions(this.options, this.extractorDirectives)
+        this.sourceMatchers = undefined
+        this.sourceMatcherOptions = undefined
+        this.sourceAdapters = undefined
+        this.sourceAdapterOptions = undefined
+        this.classExclusionMatcher = undefined
+        this.classExclusionOptions = undefined
         this.nativeClassNames = new Set(configResult?.nativeClassNames || [])
         this.css = createCSS(
             typeof this.options.config === 'object'
@@ -131,6 +170,12 @@ export default class CSSExtractor extends EventEmitter {
         this.extractorDirectives = createExtractorDirectives()
         this.cachedFixedSourcePaths = undefined
         this.cachedAllowedSourcePaths = undefined
+        this.sourceMatchers = undefined
+        this.sourceMatcherOptions = undefined
+        this.sourceAdapters = undefined
+        this.sourceAdapterOptions = undefined
+        this.classExclusionMatcher = undefined
+        this.classExclusionOptions = undefined
         this.initialized = false
         this.initializing = undefined
         await this.init(customOptions)
@@ -150,6 +195,14 @@ export default class CSSExtractor extends EventEmitter {
         this.validRulesCache.clear()
         this.configDependencies = []
         this.extractorDirectives = createExtractorDirectives()
+        this.cachedFixedSourcePaths = undefined
+        this.cachedAllowedSourcePaths = undefined
+        this.sourceMatchers = undefined
+        this.sourceMatcherOptions = undefined
+        this.sourceAdapters = undefined
+        this.sourceAdapterOptions = undefined
+        this.classExclusionMatcher = undefined
+        this.classExclusionOptions = undefined
         this.removeAllListeners()
         await this.closeWatch()
         this.emit('destroy')
@@ -230,22 +283,10 @@ export default class CSSExtractor extends EventEmitter {
         // allocating a new array). Track native CSS classes separately, then
         // skip generated-rule candidates already known invalid / already
         // known valid / explicitly excluded by user config.
-        const excludeClasses = this.options.excludeClasses
         const latentClasses: string[] = []
         const nativeClasses: string[] = []
         for (const eachLatentClass of allLatent) {
-            if (excludeClasses?.length) {
-                let excluded = false
-                for (const eachIgnoreClass of excludeClasses) {
-                    if (typeof eachIgnoreClass === 'string') {
-                        if (eachIgnoreClass === eachLatentClass) { excluded = true; break }
-                    } else if (eachIgnoreClass.test(eachLatentClass)) {
-                        excluded = true
-                        break
-                    }
-                }
-                if (excluded) continue
-            }
+            if (this.isClassExcluded(eachLatentClass)) continue
             if (this.nativeClassNames.has(eachLatentClass) && !this.usedNativeClasses.has(eachLatentClass)) {
                 this.usedNativeClasses.add(eachLatentClass)
                 nativeClasses.push(eachLatentClass)
@@ -293,11 +334,45 @@ export default class CSSExtractor extends EventEmitter {
     }
 
     resolveSourceAdapter(source: string): SourceAdapter | undefined {
-        const adapters = [
-            ...(this.options.adapters || []),
-            ...builtInAdapters
-        ]
+        if (!this.sourceAdapters || this.sourceAdapterOptions !== this.options.adapters) {
+            this.sourceAdapterOptions = this.options.adapters
+            this.sourceAdapters = [
+                ...(this.options.adapters || []),
+                ...builtInAdapters
+            ]
+        }
+        const adapters = this.sourceAdapters
         return adapters.find((adapter) => matchesSourceAdapter(adapter, source))
+    }
+
+    private getSourceMatchers(): SourceMatchers {
+        const { sources, include, exclude } = this.options
+        if (
+            !this.sourceMatchers ||
+            this.sourceMatcherOptions?.sources !== sources ||
+            this.sourceMatcherOptions?.include !== include ||
+            this.sourceMatcherOptions?.exclude !== exclude
+        ) {
+            this.sourceMatcherOptions = { sources, include, exclude }
+            this.sourceMatchers = {
+                sources: createSourceMatchers(sources),
+                include: createSourceMatchers(include),
+                exclude: createSourceMatchers(exclude)
+            }
+        }
+        return this.sourceMatchers
+    }
+
+    private getClassExclusionMatcher(): ClassExclusionMatcher {
+        if (!this.classExclusionMatcher || this.classExclusionOptions !== this.options.excludeClasses) {
+            this.classExclusionOptions = this.options.excludeClasses
+            this.classExclusionMatcher = createClassExclusionMatcher(this.options.excludeClasses)
+        }
+        return this.classExclusionMatcher
+    }
+
+    private isClassExcluded(className: string) {
+        return isClassExcludedByMatcher(className, this.getClassExclusionMatcher())
     }
 
     insertFile(source: string) {
@@ -429,14 +504,14 @@ export default class CSSExtractor extends EventEmitter {
         if (source.includes('?')) {
             source = source.split('?')[0]
         }
-        const { include, exclude, sources } = this.options
-        if (sources?.some((eachSource) => minimatch(source, eachSource, { dot: true }))) {
+        const { include, exclude, sources } = this.getSourceMatchers()
+        if (sources.length && matchesAnySource(source, sources)) {
             return true
         }
-        if (include?.length && !include.some((eachIncludePattern) => minimatch(source, eachIncludePattern, { dot: true }))) {
+        if (include.length && !matchesAnySource(source, include)) {
             return false
         }
-        if (exclude?.some((eachExcludePattern) => minimatch(source, eachExcludePattern, { dot: true }))) {
+        if (exclude.length && matchesAnySource(source, exclude)) {
             return false
         }
         return true

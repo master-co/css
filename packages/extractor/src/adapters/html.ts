@@ -1,19 +1,13 @@
 import { Parser } from 'htmlparser2'
-import extractLatentClasses from '../functions/extract-latent-classes'
+import { addClassString } from './class-string'
 import { extractOxcClasses } from './oxc'
 import type { SourceAdapter } from './types'
 
 export const HTML_SOURCE_EXT = /\.html?(?:\?|$)/
 
-function addClassString(classes: Set<string>, value: string | undefined) {
-    if (!value) return
-    for (const className of extractLatentClasses(value)) {
-        if (className) classes.add(className)
-    }
-}
-
 export function extractHTMLClasses(source: string, content: string): string[] {
     const classes = new Set<string>()
+    const classStringCache = new Map<string, string[]>()
     let scriptDepth = 0
     let scriptContent = ''
 
@@ -31,7 +25,7 @@ export function extractHTMLClasses(source: string, content: string): string[] {
                 scriptDepth++
                 return
             }
-            addClassString(classes, attributes.class)
+            addClassString(classes, attributes.class, classStringCache)
         },
         ontext(text) {
             if (scriptDepth > 0) {

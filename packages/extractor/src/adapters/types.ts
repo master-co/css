@@ -10,7 +10,9 @@ export interface SourceAdapter {
 }
 
 export function matchesSourceAdapter(adapter: SourceAdapter, source: string) {
-    return typeof adapter.test === 'function'
-        ? adapter.test(source)
-        : adapter.test.test(source)
+    if (typeof adapter.test === 'function') return adapter.test(source)
+    adapter.test.lastIndex = 0
+    const matched = adapter.test.test(source)
+    adapter.test.lastIndex = 0
+    return matched
 }

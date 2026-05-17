@@ -30,6 +30,8 @@
 const SENTINEL_PREFIX = 'COMPLETE-STRING--'
 const SENTINEL_SUFFIX = '--'
 const SENTINEL_REGEX = /^COMPLETE-STRING--/
+const RESTORE_SENTINEL = /COMPLETE-STRING--(\d+)--/g
+const MANY_COMPLETE_STRINGS = 8
 
 // ─── Hoisted regexes ─────────────────────────────────────────────────────────
 const NON_WHITESPACE_RUN = /\S+/g
@@ -78,14 +80,52 @@ const REJECT_PATTERNS: RegExp[] = [
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
+interface ProtectedContent {
+    content: string
+    strings: string[]
+    restoreAll: boolean
+}
+
 function findCompleteString(content: string): string[] | null {
     return content?.match(COMPLETE_STRING)
 }
 
-function replaceCompleteString(content: string, completeStrings: string[] | null): string {
-    if (!completeStrings) return content
+function replaceCompleteString(content: string, completeStrings: string[]): string {
     for (let i = 0; i < completeStrings.length; i++) {
         content = content.replace(completeStrings[i], SENTINEL_PREFIX + i + SENTINEL_SUFFIX)
+    }
+    return content
+}
+
+function protectCompleteStrings(content: string): ProtectedContent | undefined {
+    const completeStrings = findCompleteString(content)
+    if (!completeStrings) return
+    if (completeStrings.length < MANY_COMPLETE_STRINGS) {
+        return {
+            content: replaceCompleteString(content, completeStrings),
+            strings: completeStrings,
+            restoreAll: false
+        }
+    }
+    let index = 0
+    return {
+        content: content.replace(COMPLETE_STRING, () => SENTINEL_PREFIX + index++ + SENTINEL_SUFFIX),
+        strings: completeStrings,
+        restoreAll: true
+    }
+}
+
+function restoreAllCompleteStrings(content: string, strings: string[]): string {
+    return content.replace(RESTORE_SENTINEL, (match, index: string) => strings[Number(index)] ?? match)
+}
+
+function restoreCompleteStrings(protectedContent: ProtectedContent): string {
+    if (protectedContent.restoreAll) {
+        return restoreAllCompleteStrings(protectedContent.content, protectedContent.strings)
+    }
+    let content = protectedContent.content
+    for (let i = 0; i < protectedContent.strings.length; i++) {
+        content = content.replace(SENTINEL_PREFIX + i + SENTINEL_SUFFIX, protectedContent.strings[i])
     }
     return content
 }
@@ -94,14 +134,12 @@ function keepCompleteStringAndProcessContent(
     content: string,
     process: (content: string) => string
 ): string {
-    const completeStrings = findCompleteString(content)
-    if (!completeStrings) return process(content)
-    content = replaceCompleteString(content, completeStrings)
-    content = process(content)
-    for (let i = 0; i < completeStrings.length; i++) {
-        content = content.replace(SENTINEL_PREFIX + i + SENTINEL_SUFFIX, completeStrings[i])
-    }
-    return content
+    const protectedContent = protectCompleteStrings(content)
+    if (!protectedContent) return process(content)
+    return restoreCompleteStrings({
+        ...protectedContent,
+        content: process(protectedContent.content)
+    })
 }
 
 function splitStringByQuotation(content: string): string[] {
@@ -175,8 +213,8 @@ function needExclude(content: string): boolean {
 }
 
 function checkToExclude(content: string): boolean {
-    const completeStrings = findCompleteString(content)
-    const checkContent = replaceCompleteString(content, completeStrings)
+    const protectedContent = protectCompleteStrings(content)
+    const checkContent = protectedContent?.content ?? content
     const groupMatch = GROUP_BODY.exec(checkContent)
     if (groupMatch) {
         return groupMatch[1].split(';').some(needExclude)

@@ -63,3 +63,49 @@ describe('valid-rules memo (Phase A optimisation)', () => {
         expect(ex.validRulesCache.size).toBe(1)
     })
 })
+
+describe('class exclusion matcher', () => {
+    test('resets stateful regular expressions while filtering repeated classes', async () => {
+        const ex = await new CSSExtractor({
+            config: {} as any,
+            include: [],
+            excludeClasses: [/^bg:/g]
+        }).init()
+
+        await ex.insert(SOURCE, `<div className="bg:red bg:blue block">hi</div>`)
+
+        expect(ex.validClasses.has('bg:red')).toBe(false)
+        expect(ex.validClasses.has('bg:blue')).toBe(false)
+        expect(ex.validClasses.has('block')).toBe(true)
+    })
+
+    test('rebuilds when excludeClasses is reassigned', async () => {
+        const ex = await new CSSExtractor({
+            config: {} as any,
+            include: [],
+            excludeClasses: [/^bg:/]
+        }).init()
+
+        await ex.insert('excluded.tsx', `<div className="bg:red block">hi</div>`)
+        ex.options.excludeClasses = []
+        await ex.insert('included.tsx', `<div className="bg:blue">hi</div>`)
+
+        expect(ex.validClasses.has('bg:red')).toBe(false)
+        expect(ex.validClasses.has('bg:blue')).toBe(true)
+    })
+})
+
+describe('source matcher cache', () => {
+    test('rebuilds when include is reassigned', async () => {
+        const ex = await new CSSExtractor({
+            config: {} as any,
+            include: ['**/*.html']
+        }).init()
+
+        expect(ex.extract('component.tsx', `<div className="block">hi</div>`)).toEqual([])
+
+        ex.options.include = ['**/*.tsx']
+
+        expect(ex.extract('component.tsx', `<div className="block">hi</div>`)).toEqual(['block'])
+    })
+})

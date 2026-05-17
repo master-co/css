@@ -48,6 +48,7 @@ describe('differential vs legacy — synthetic fixtures', () => {
         ['unicode', '<div class="bg:white">日本語テスト</div>'],
         ['very long', '<div class="' + Array(500).fill('bg:white').join(' ') + '">x</div>'],
         ['deeply nested strings', `const x = clsx('a', clsx('b', clsx('c', 'd')))`],
+        ['many complete strings', Array.from({ length: 12 }, (_, index) => `'bg:${index}'`).join(' ')],
         ['malformed quote', `<div class="bg:white">unterminated`],
         ['malformed paren', `<div class="bg:url(/foo.png">x</div>`],
         ['css-in-js', `const sx = { bg:white: true, 'fg:black': true, m:8: 0 }`],

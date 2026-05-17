@@ -2,6 +2,7 @@ import { describe, expect, test } from 'vitest'
 import CSSExtractor, {
     extractHTMLClasses,
     extractOxcClasses,
+    matchesSourceAdapter,
     type SourceAdapter
 } from '../src'
 
@@ -22,6 +23,20 @@ describe('built-in source adapters', () => {
             'flex',
             'hidden',
             'm:8'
+        ])
+    })
+
+    test('ignores module specifiers, require calls, dynamic imports, and common directives with Oxc', () => {
+        expect(extractOxcClasses('component.tsx', `
+            'use client'
+            import React from 'react'
+            export { helper } from 'pkg'
+            await import('lazy-module')
+            const fs = require('fs')
+            const classes = 'block fg:red'
+        `)).toEqual([
+            'block',
+            'fg:red'
         ])
     })
 
@@ -55,5 +70,16 @@ describe('built-in source adapters', () => {
         }).init()
 
         expect(extractor.extract('fixture.txt', 'hidden')).toEqual(['block'])
+    })
+
+    test('matches adapters with global regular expressions consistently', () => {
+        const adapter: SourceAdapter = {
+            name: 'global-regexp',
+            test: /\.txt$/g,
+            extract: () => []
+        }
+
+        expect(matchesSourceAdapter(adapter, 'a.txt')).toBe(true)
+        expect(matchesSourceAdapter(adapter, 'b.txt')).toBe(true)
     })
 })

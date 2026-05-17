@@ -19,6 +19,7 @@ import {
     type ExtractorDirectives
 } from './directives'
 import type { Options as ExtractorOptions } from './options'
+import { filterExcludedClasses } from './utils/class-exclusion'
 
 export const STYLE_CSS_REQUEST_RE = /\.(css|scss|sass)(?:[?#].*)?$/
 
@@ -358,19 +359,6 @@ export function getExtractorClasses(extractor: CSSExtractor) {
         ...(extractor.usedNativeClasses || []),
         ...(extractor.options.includeClasses || [])
     ])], extractor.options.excludeClasses)
-}
-
-function isClassExcluded(className: string, excludeClasses?: ExtractorOptions['excludeClasses']) {
-    if (!excludeClasses?.length) return false
-    return excludeClasses.some((excludedClass) =>
-        typeof excludedClass === 'string'
-            ? excludedClass === className
-            : excludedClass.test(className)
-    )
-}
-
-function filterExcludedClasses(classes: string[], excludeClasses?: ExtractorOptions['excludeClasses']) {
-    return classes.filter((className) => !isClassExcluded(className, excludeClasses))
 }
 
 function getExtractorOptionClasses(options: ExtractorOptions, projectDir = process.cwd()) {

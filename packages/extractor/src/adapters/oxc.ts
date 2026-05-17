@@ -1,4 +1,5 @@
 import { parseSync, visitorKeys } from 'oxc-parser'
+import { addClassString } from './class-string'
 import extractLatentClasses from '../functions/extract-latent-classes'
 import type { SourceAdapter } from './types'
 
@@ -7,6 +8,7 @@ export const OXC_SOURCE_EXT = /\.(?:(?:[cm]?[jt]s)|(?:[jt]sx))(?:\?|$)/
 interface OxcNode {
     type: string
     value?: unknown
+    directive?: unknown
     expressions?: unknown[]
     quasis?: {
         value?: {
@@ -21,15 +23,37 @@ function normalizeSource(source: string) {
     return source.split('?')[0] || source
 }
 
-function addClassString(classes: Set<string>, value: string | undefined | null) {
-    if (!value) return
-    for (const className of extractLatentClasses(value)) {
-        if (className) classes.add(className)
-    }
-}
-
 function isOxcNode(value: unknown): value is OxcNode {
     return !!value && typeof value === 'object' && typeof (value as { type?: unknown }).type === 'string'
+}
+
+function isIdentifierNamed(value: unknown, name: string) {
+    return isOxcNode(value) && value.type === 'Identifier' && value.name === name
+}
+
+function isStaticImportOrReexport(node: OxcNode) {
+    return node.type === 'ImportDeclaration' ||
+        node.type === 'ExportAllDeclaration' ||
+        node.type === 'ExportNamedDeclaration' && isOxcNode(node.source)
+}
+
+function isRequireCall(node: OxcNode) {
+    return node.type === 'CallExpression' && isIdentifierNamed(node.callee, 'require')
+}
+
+function isKnownDirective(node: OxcNode) {
+    return node.type === 'ExpressionStatement' && (
+        node.directive === 'use strict' ||
+        node.directive === 'use client' ||
+        node.directive === 'use server'
+    )
+}
+
+function shouldSkipNode(node: OxcNode) {
+    return isKnownDirective(node) ||
+        isStaticImportOrReexport(node) ||
+        node.type === 'ImportExpression' ||
+        isRequireCall(node)
 }
 
 function getTemplateLiteralValue(node: OxcNode) {
@@ -54,27 +78,32 @@ export function extractOxcClasses(source: string, content: string): string[] {
     }
 
     const classes = new Set<string>()
-    const visit = (node: unknown) => {
-        if (!isOxcNode(node)) return
+    const classStringCache = new Map<string, string[]>()
+    const stack: unknown[] = [parseResult.program]
+    while (stack.length) {
+        const node = stack.pop()
+        if (!isOxcNode(node)) continue
+        if (shouldSkipNode(node)) continue
 
         if (node.type === 'Literal' && typeof node.value === 'string') {
-            addClassString(classes, node.value)
+            addClassString(classes, node.value, classStringCache)
         } else if (node.type === 'TemplateLiteral') {
-            addClassString(classes, getTemplateLiteralValue(node))
+            addClassString(classes, getTemplateLiteralValue(node), classStringCache)
         }
 
         const keys = visitorKeys[node.type] || []
-        for (const key of keys) {
+        for (let keyIndex = keys.length - 1; keyIndex >= 0; keyIndex--) {
+            const key = keys[keyIndex]
             const value = node[key]
             if (Array.isArray(value)) {
-                for (const child of value) visit(child)
+                for (let index = value.length - 1; index >= 0; index--) {
+                    stack.push(value[index])
+                }
             } else {
-                visit(value)
+                stack.push(value)
             }
         }
     }
-
-    visit(parseResult.program)
     return [...classes]
 }
 
