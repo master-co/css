@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test'
 import init from './init'
 
-test('expects the animation output', async ({ page, browserName }) => {
+test('expects the animation output', async ({ page }) => {
     await init(page)
     await page.evaluate(() => {
         const p = document.createElement('p')
@@ -36,12 +36,9 @@ test('expects the animation output', async ({ page, browserName }) => {
         rotate: 1,
         shake: 1,
     })
-    // TODO: firefox -> 1
-    if (browserName !== 'firefox') {
-        expect(await page.evaluate(() => Object.fromEntries(globalThis.cssRuntime.animationsNonLayer.tokenCounts))).toMatchObject({
-            zoom: 2,
-        })
-    }
+    expect(await page.evaluate(() => Object.fromEntries(globalThis.cssRuntime.animationsNonLayer.tokenCounts))).toMatchObject({
+        zoom: 2,
+    })
     const cssText = await page.evaluate(() => globalThis.cssRuntime.text)
     expect(cssText).toContain('@keyframes fade{0%{opacity:0}to{opacity:1}}')
     expect(cssText).toContain('@keyframes flash{0%,50%,to{opacity:1}25%,75%{opacity:0}}')
@@ -109,9 +106,6 @@ test('expects the animation output', async ({ page, browserName }) => {
         p?.classList.remove('{@zoom|1s;f:16}')
     })
 
-    // TODO: firefox -> 1
-    if (browserName !== 'firefox') {
-        expect(await page.evaluate(() => globalThis.cssRuntime.animationsNonLayer.tokenCounts)).toMatchObject({})
-        expect(await page.evaluate(() => globalThis.cssRuntime.text)).not.toContain('@keyframes zoom{0%{transform:scale(0)}to{transform:none}}')
-    }
+    expect(await page.evaluate(() => Object.fromEntries(globalThis.cssRuntime.animationsNonLayer.tokenCounts))).toEqual({})
+    expect(await page.evaluate(() => globalThis.cssRuntime.text)).not.toContain('@keyframes zoom{0%{transform:scale(0)}to{transform:none}}')
 })

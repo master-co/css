@@ -33,12 +33,11 @@ test('complex', async ({ page }) => {
         }, readFileSync(resolve(__dirname, './complex.html'), 'utf-8').toString())
     ).toBeTruthy()
 
-    // todo: Do not work on firefox
-    // expect(
-    //     await page.evaluate(async () => {
-    //         document.body.innerHTML = ''
-    //         await new Promise(resolve => setTimeout(resolve, 100))
-    //         return Object.fromEntries(globalThis.cssRuntime.classCounts)
-    //     })
-    // ).toEqual({})
+    expect(
+        await page.evaluate(async () => {
+            document.body.innerHTML = ''
+            await new Promise(resolve => setTimeout(resolve, 100))
+            return Object.fromEntries(globalThis.cssRuntime.classCounts)
+        })
+    ).toEqual({})
 })

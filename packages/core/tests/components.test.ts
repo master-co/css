@@ -371,13 +371,13 @@ describe('raw declarations', () => {
                 mainStyle('code-line-add', [
                     {
                         selector: '&:not(:only-child):before',
-                        declarations: { content: "'+'!important" }
+                        declarations: { content: '\'+\'!important' }
                     }
                 ])
             ]
         }).add('code-line-add')
 
-        expect(css.mainLayer.text).toContain(".code-line-add:not(:only-child):before{content:'+'!important}")
+        expect(css.mainLayer.text).toContain('.code-line-add:not(:only-child):before{content:\'+\'!important}')
     })
 
     test('resolves selector token shorthands in component selectors', () => {

@@ -69,8 +69,7 @@ test('expects the variable output', async ({ page }) => {
     expect(text).toMatch(/\.light\{[^}]*--color-fourth:#000000[^}]*\}/)
     expect(text).toMatch(/\.dark\{[^}]*--color-fifth:#022222[^}]*\}/)
     expect(text).toMatch(/\.light,:root\{[^}]*--color-fifth:#033333[^}]*\}/)
-    // todo: insertRule throw error
-    // expect(text).toContain('.\\{outline\\:fourth\\;accent\\:fifth\\}{outline-color:rgb(var(--fourth));accent-color:rgb(var(--fifth))}')
+    expect(text).toContain('.\\{outline\\:fourth\\;accent\\:fifth\\}{outline-color:var(--color-fourth);accent-color:var(--color-fifth)}')
     expect(text).toContain('.fg\\:second{color:var(--color-second)}')
     expect(text).toMatch(/\.light,:root\{[^}]*--color-sixth:#666666[^}]*\}/)
 

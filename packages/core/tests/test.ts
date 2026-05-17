@@ -24,4 +24,8 @@ export const expectLayers = (
     if (layers.animations) expect(css.animationsNonLayer.text).toContain(`${layers.animations ?? ''}`)
 }
 
-test.todo('hidden@sm and flex ordering')
+test('keeps responsive hidden after base display utilities', () => {
+    const css = createCSS().add('hidden@sm', 'flex')
+
+    expect(css.generalLayer.text).toBe('@layer general{.flex{display:flex}@media (width>=52.125rem){.hidden\\@sm{display:none}}}')
+})
