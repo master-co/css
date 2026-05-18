@@ -29,12 +29,15 @@ export default class RuntimeLayer extends Layer {
     }
 
     insert(rule: Rule | VariableRule, index = this.rules.length) {
+        const hadNative = !!this.native?.parentStyleSheet
+        const wasEmpty = this.rules.length === 0
         const insertedIndex = super.insert(rule, index)
         if (insertedIndex === undefined || !this.native) return
         const nativeInsertIndex = this.getNativeInsertIndex(insertedIndex)
+        const wasAttachedWithRule = !hadNative && wasEmpty
         const insertRuleSafely = (text: string, position: number) => {
             // Checks if the rule is inserted in a native CSS rule with this.attach()
-            if (this.rules.length === 1) {
+            if (wasAttachedWithRule) {
                 return this.native!.cssRules.item(position) as CSSRule
             } else {
                 try {

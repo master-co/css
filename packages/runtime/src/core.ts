@@ -282,6 +282,7 @@ export default class CSSRuntime extends MasterCSS {
         // @ts-ignore
         this.observing = false
         this.reset()
+        this.resolve(this.customConfig)
         this.classCounts.clear()
         this.classTracker.reset()
         if (!this.progressive) {

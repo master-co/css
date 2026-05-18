@@ -69,16 +69,17 @@ export default function withUtilityLayer<TBase extends new (...args: any[]) => L
                 if (visited.has(layerToken)) return
                 visited.add(layerToken)
                 const count = layer.tokenCounts.get(layerToken) ?? 0
+                const variable = layer === this.css.themeLayer
+                    ? this.css.variables.get(layerToken)
+                    : undefined
                 if (count <= 1) {
                     const deletedRule = layer.delete(layerToken)
                     layer.tokenCounts.delete(layerToken)
-                    if (layer === this.css.themeLayer) {
-                        const variable = this.css.variables.get(layerToken)
-                        variable?.dependencies?.forEach((dependency) => deleteLayerToken(dependency, layer, visited))
-                    }
+                    variable?.dependencies?.forEach((dependency) => deleteLayerToken(dependency, layer, visited))
                     return deletedRule
                 } else {
                     layer.tokenCounts.set(layerToken, count - 1)
+                    variable?.dependencies?.forEach((dependency) => deleteLayerToken(dependency, layer, visited))
                 }
             }
             if ('variableNames' in utility) utility.variableNames?.forEach((eachVariableName) => {
