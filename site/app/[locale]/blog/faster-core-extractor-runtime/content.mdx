@@ -1,53 +1,46 @@
-Performance work is most valuable when it makes the common path cheaper without changing the public contract. For Master CSS, that contract is strict: the same class strings must produce the same CSS rules, in the same cascade layers, across runtime rendering, static extraction, and server-side generation.
+The latest Master CSS performance pass focused on the three packages that sit on the critical path:
 
-The latest optimization round focused on three packages that sit on that path:
+- `@master/css` for rule matching, config resolution, layer insertion, and CSS output.
+- `@master/css-extractor` for source scanning, class filtering, validation, and static stylesheet generation.
+- `@master/css-runtime` for live DOM observation, hydration, and stylesheet updates in the browser.
 
-- `@master/css`, where classes are matched, sorted, inserted into layers, and emitted as CSS.
-- `@master/css-extractor`, where source files are scanned, filtered, validated, and inserted into the generated stylesheet.
-- `@master/css-runtime`, where DOM mutations are observed and translated into live stylesheet changes in the browser.
-
-Each package has a different hot path, so each section includes its own benchmark. The goal was not to invent a new rendering model. It was to remove repeated work from the model we already rely on.
-
-<ArticleTOC data={toc}/>
-
----
-
-## The constraint
-
-Master CSS has several delivery modes: runtime rendering, static extraction, server rendering, pre-rendering, and progressive rendering. They all depend on the same output model:
+The public contract did not change. The same class strings still produce the same CSS rules, in the same cascade layers:
 
 ```css
 @layer base,theme,preset,main,general;
 ```
 
-That shared model is useful because it gives every integration the same cascade contract. It also raises the bar for optimization. A performance change cannot casually reorder rules, skip variable dependencies, loosen extraction enough to create false positives, or let the runtime leak native CSS rules after DOM changes.
+What changed is the amount of work required to get there. The largest wins came from removing repeated scans, caching stable inputs, and replacing accidental quadratic checks with direct lookups.
 
-This round followed one rule: keep CSS output and observable APIs stable, then reduce the number of scans, allocations, and validations required to reach the same output.
+<ArticleTOC data={toc}/>
 
 ---
 
-## Core: faster rule matching and insertion
+## The headline numbers
 
-The core engine used to keep all resolved utilities in one broad list and check the relevant matcher shape at runtime. That shape is simple, but it makes every class pay for matcher categories it cannot possibly use.
+The broad shape of the release is straightforward:
 
-The resolver now builds separate utility lists for the actual matching phases:
+| Package | Hot path | Best measured change |
+| --- | --- | ---: |
+| `@master/css` | Unique rule insertion and CSS emission | **328.8x faster** |
+| `@master/css` | Config extension | **64.6x faster** |
+| `@master/css-extractor` | Unchanged source re-insert | **1688.4x faster** |
+| `@master/css-extractor` | Cold `extractLatentClasses()` scan | **1.19x faster** |
+| `@master/css-runtime` | Progressive hydration missing-class check | **128x faster** |
+| `@master/css-runtime` | Theme hydration variable dedupe | **about 117x faster by mean** |
+| `@master/css-runtime` | DOM mutation handling | **1.14x to 1.25x faster** |
 
-- variable matchers
-- value matchers
-- key matchers
-- arbitrary and static matchers
+The biggest multipliers are in paths that were doing repeated work: growing layer scans, unchanged source extraction, hydrated class lookup, and duplicate theme variable checks. The smaller runtime mutation gains are still useful because they happen on browser-facing DOM work, where native costs are part of the total.
 
-`match()` and `matchAll()` still preserve the same priority order, but they no longer repeatedly branch across unrelated matcher types. A class such as `fg:primary` reaches the variable matcher path first; a native key such as `text-align:center` reaches the key matcher path without walking the full utility registry.
+---
 
-Variable binding also moved from repeated namespace scans to a pre-indexed map. Instead of walking every variable for every utility namespace, core builds a namespace index once during `resolveUtilities()`, then attaches the relevant variables to each defined utility.
+## Core: faster matching, config, and insertion
 
-The same idea applies to config extension. Variables and utilities are now merged through slot maps rather than repeated `findIndex()` and `splice()` passes. The behavior remains "later config wins", but the merge path is linear and easier to reason about for large configs.
+Core now does less work before it emits the same CSS. Resolved utilities are split by matcher type, variable namespaces are pre-indexed, config extension uses maps instead of repeated `findIndex()` and `splice()`, and layers keep a key lookup map for duplicate checks and deletion.
 
-Rule insertion received a separate cleanup. Layers now maintain a key lookup map behind the rules array, so duplicate checks and deletions do not need a full scan. Utility insertion still uses `compareRulePriority()`, but the sorted insertion path can use binary search when the layer contains utility rules. If a layer contains mixed rule types, it falls back to the existing linear priority scan.
+Rule ordering still goes through the same priority comparison logic. The insertion path simply finds the right place faster, using binary search when the layer contains utility rules and falling back to the existing linear scan for mixed rule types.
 
-The important part is that the ordering function did not change. The layer still emits the same CSS order; the engine just spends less time finding the insertion point.
-
-The benchmark for this core work used local `pnpm exec tsx --eval` microbench scripts against the old and optimized paths. Times are milliseconds. Averages include the first measured run, so they include some cold-start and JIT cost.
+Setup and resolver microbenchmarks:
 
 | Scenario | Before avg | After avg | Result |
 | --- | ---: | ---: | ---: |
@@ -63,9 +56,9 @@ The insertion stress test used 3000 unique generated classes, `w:0` through `w:2
 | `css.add(...classes)` | 10118.08ms | 39.29ms | **257.5x faster** |
 | `css.add(...classes); css.text` | 10100.24ms | 30.72ms | **328.8x faster** |
 
-That stress test is intentionally shaped around the insertion algorithm. It shows why the layer key index and sorted insertion path matter: the old path repeatedly scanned a growing layer, while the new path avoids duplicate linear lookup and uses binary search when possible.
+That benchmark is intentionally shaped around insertion. It shows the effect of avoiding duplicate linear lookup and repeatedly scanning a growing layer.
 
-A more ordinary mixed workload used 3000 classes built from common utilities, with repeated values plus `:hover` and `@sm` variants.
+A more ordinary mixed workload used 3000 common classes with repeated values plus `:hover` and `@sm` variants.
 
 | Scenario | Before avg | After avg | Result |
 | --- | ---: | ---: | ---: |
@@ -73,46 +66,31 @@ A more ordinary mixed workload used 3000 classes built from common utilities, wi
 | `add()` | 11.87ms | 5.18ms | **2.3x faster** |
 | `add(); text` | 11.69ms | 4.84ms | **2.4x faster** |
 
-This is the more representative shape for application code: repeated classes, reused rules, and a smaller final stylesheet than the unique-rule stress case.
+The practical result: worst-case insertion is dramatically cheaper, while normal repeated utility workloads also improve without changing CSS output.
 
 ---
 
-## Extractor: cheaper source scanning
+## Extractor: faster cold scans, near-free cache hits
 
-Static extraction has two very different workloads:
+Extractor has two important workloads: first-time scans and repeated dev-server inserts. This pass improved both, but the repeated path changed the most.
 
-1. Cold extraction, where a project or build scans many files for the first time.
-2. Repeated extraction, where dev servers, HMR, or build transforms ask about the same source content again.
+The low-level scanner now hoists shared regular expressions, avoids recursive trimming, uses cheaper complete-string protection, and runs rejection checks through a single loop. The JavaScript and TypeScript adapter skips module specifiers, `require()` calls, dynamic imports, and directives such as `'use client'`.
 
-Both paths had avoidable work, but not in the same place. Cold extraction is dominated by scanning and filtering. Repeated extraction is dominated by asking the same questions again.
+The pipeline now also caches stable inputs:
 
-The low-level `extractLatentClasses()` path now hoists shared regular expressions, avoids recursive trimming, protects complete strings with a cheaper sentinel strategy, and runs rejection checks through a single loop. These changes are small individually, but this function runs across every scanned source.
+- source globs are precompiled with `Minimatch`;
+- source adapters are memoized;
+- `excludeClasses` is split once into exact strings and regular expressions;
+- `insert(source, content)` skips extraction when the content hash is unchanged;
+- valid rule generation is memoized per class string.
 
-The JavaScript and TypeScript adapter became more selective as well. The Oxc adapter now skips module specifiers, `require()` calls, dynamic imports, and common directives such as `'use client'`. It also uses an explicit stack for AST traversal, which avoids recursion overhead and keeps traversal control local.
-
-At the extractor pipeline level, repeated work is now cached where the inputs are stable:
-
-- Source matching uses precompiled `Minimatch` instances.
-- The resolved source adapter list is memoized.
-- `excludeClasses` is split into exact strings and regular expressions once, then reused.
-- `insert(source, content)` stores a content hash and skips the whole extraction and validation pipeline when the same source arrives unchanged.
-- Valid rule generation is memoized per class string, so repeated classes across many files do not re-run validation and generation.
-
-The practical outcome is that cold extraction gets a modest but broad improvement, while unchanged HMR re-fires become effectively a cache hit.
-
-The extractor benchmark compares the legacy and current `extractLatentClasses()` implementations against real workspace files from `examples/` and site MDX content.
+The benchmark uses real workspace files from `examples/` and site MDX content:
 
 ```bash
 pnpm --filter @master/css-extractor bench
 ```
 
-Methodology:
-
-- 327 files
-- 20 measured iterations per file
-- 3 warmup iterations
-- median time per file
-- total is the sum of per-file medians
+Methodology: 327 files, 3 warmups, 20 measured iterations per file, median per file, summed across files.
 
 | Benchmark | Legacy | Current | Result |
 | --- | ---: | ---: | ---: |
@@ -120,7 +98,7 @@ Methodology:
 | Same source and content re-insert | 36.301ms | 0.022ms | **1688.4x faster** |
 | 200 files with the same class | - | 0.88ms total | **1 unique class validated** |
 
-Some larger documentation pages show the effect more clearly:
+Larger documentation pages show the cold-scan improvement more clearly:
 
 | File | Legacy | Current | Result |
 | --- | ---: | ---: | ---: |
@@ -129,37 +107,19 @@ Some larger documentation pages show the effect more clearly:
 | `guide/configuration/content.mdx` | 1.798ms | 1.208ms | **1.49x faster** |
 | `guide/colors/content.mdx` | 1.499ms | 1.017ms | **1.47x faster** |
 
-These numbers are local microbenchmarks, not a universal production claim. They are useful because they measure the paths that static extraction hits repeatedly: string scanning, class filtering, source re-insertion, and duplicate validation.
+The takeaway is split: cold extraction gets a broad modest gain, while unchanged HMR-style re-inserts become effectively a cache hit.
 
 ---
 
-## Runtime: smaller DOM mutation deltas
+## Runtime: smaller DOM deltas and faster hydration
 
-The browser runtime has a different hot path. It does not scan project files; it watches live DOM changes and keeps a stylesheet synchronized with the set of classes currently in use.
+Runtime work is dominated by live DOM changes and hydration checks. The new `RuntimeClassTracker` keeps a `WeakMap` snapshot of class sets per element, then turns mutation records into class deltas. Added classes increment counts, removed classes decrement counts, and disconnected subtrees remove only classes the runtime previously observed.
 
-The runtime now delegates class accounting to a `RuntimeClassTracker`. The tracker keeps a `WeakMap` snapshot of class sets per element, then turns mutation records into class deltas:
+The runtime also batches added and removed class names before touching the stylesheet and no longer asks `MutationObserver` for `attributeOldValue`, because it already owns the previous class snapshot.
 
-- new classes produce positive deltas;
-- removed classes produce negative deltas;
-- disconnected subtrees remove only the classes that were previously observed;
-- class changes on reconnected nodes are reconciled against the stored snapshot.
+Hydration received the largest runtime gains. Progressive hydration now checks missing connected classes through a `Set` of hydrated class names, and theme hydration dedupes variable declarations directly.
 
-This keeps mutation handling focused on what actually changed. The runtime batches added and removed class names before calling `add()` and `remove()`, instead of interleaving stylesheet work inside the mutation scan.
-
-It also avoids requesting `attributeOldValue` from `MutationObserver`. The runtime already owns the previous class snapshot, so the browser no longer needs to retain old class attribute strings for every class mutation.
-
-Several correctness fixes landed with the optimization:
-
-- `disconnect()` clears counts and snapshots, then re-resolves config before a later `observe()` rescan.
-- Shadow roots create their `style#master` element from the correct owner document.
-- Progressive hydration now uses a `Set` of hydrated class names when deciding which connected classes are missing.
-- Hydration cleans up temporary rules inserted into the check stylesheet.
-- Refresh deletes native CSS rules from the end of the stylesheet, avoiding index drift.
-- Runtime layers can attach an empty native layer, insert multi-rule utilities at the correct native index, and avoid duplicate insertion when attaching a layer already inserted by `insertRule()`.
-
-Those changes are performance work because they reduce unnecessary mutation processing, but they are also lifecycle hardening. A faster runtime is only useful if it keeps counts, layers, and native CSS rules correct across disconnects, reconnects, shadow roots, hydration, and refreshes.
-
-The runtime benchmark used an isolated browser microbench in Firefox 148. Each scenario ran with 5 warmup passes and 30 measured trials; the table reports median milliseconds.
+Browser microbench methodology: Firefox 148, isolated page, 5 warmups, 30 measured trials, median milliseconds.
 
 | Scenario | Before | After | Result |
 | --- | ---: | ---: | ---: |
@@ -170,44 +130,20 @@ The runtime benchmark used an isolated browser microbench in Firefox 148. Each s
 | Progressive hydration missing check, 5000 connected classes / 4000 hydrated classes | 64ms | 0.5ms | **128x faster** |
 | Theme hydration variable dedupe, 6000 declarations / 1500 unique variables | 27ms | less than 1ms | **about 117x faster by mean** |
 
-The mutation numbers are deliberately modest because they measure browser-facing work where DOM cost, MutationObserver delivery, and native stylesheet operations all matter. The important runtime change is that the hot path consistently does less JavaScript bookkeeping: no `attributeOldValue`, fewer short-lived `Set` copies, iterative subtree traversal, and batched stylesheet updates.
+The mutation numbers are smaller because they include browser-facing DOM and stylesheet costs. The hydration numbers are larger because they remove repeated list scans from paths that scale with the number of connected or hydrated classes.
 
-The hydration numbers are larger because they remove accidental quadratic checks. A progressive page with thousands of connected classes should not compare each connected class against every hydrated utility with `find()`. Moving that check to a `Set` makes the cost track the class count directly.
-
-One runtime result was correctness rather than timing: refreshing a sheet with 1000 keyframes previously left 501 native rules behind in the benchmark. The optimized path deletes native rules from the end and leaves only the layer statement rule after refresh.
+One correctness benchmark also improved the refresh path. Refreshing a sheet with 1000 keyframes previously left 501 native rules behind. The optimized path deletes native rules from the end and leaves only the layer statement rule after refresh.
 
 ---
 
-## Tests that protect the work
+## What stayed stable
 
-The optimization work added and updated focused coverage rather than broad snapshots.
+The performance work is guarded by focused core, extractor, and runtime coverage. The important invariants remain unchanged:
 
-Core tests cover rule dependency cleanup and selector recovery for scoped mode selectors. That matters because layer maps and insertion shortcuts must still remove shared variables and recover class names from generated selectors.
+- the cascade layer statement is still `@layer base,theme,preset,main,general;`;
+- rule priority still uses the same comparison logic;
+- static extraction still requires discoverable complete class strings;
+- runtime usage counts still remove rules when usage reaches zero;
+- keyframes still emit outside layers.
 
-Extractor tests cover adapter behavior, global regular expression matching, content-hash cache behavior, valid rule memoization, class exclusion matcher state, and source matcher cache rebuilding when options are reassigned.
-
-Runtime e2e tests cover class usage counts, subtree removal while disconnected, lifecycle reconnects, shadow root isolation, hydration with unknown pre-rendered rules, multi-rule native insertion, and shared variable dependency removal.
-
-These tests define the boundary of the optimization: faster internals are allowed; changed CSS output, stale native rules, leaked counts, and changed extraction semantics are not.
-
----
-
-## What changes for users
-
-Most users do not need to change application code.
-
-Static extraction should feel cheaper during builds and especially during repeated dev-server work. Projects with large MDX documentation trees, many examples, or repeated utility classes across many files benefit from both the faster scanner and the cache path.
-
-Runtime rendering should spend less time turning DOM mutations into stylesheet operations. Applications with frequent class changes, mounted and unmounted subtrees, or shadow root usage get more predictable bookkeeping.
-
-Core generation benefits every mode because the same matcher, config, and layer code sits underneath runtime rendering, static extraction, server rendering, and progressive rendering.
-
-What did not change is just as important:
-
-- The cascade layer statement is unchanged.
-- Rule priority still goes through the same comparison logic.
-- Static extraction still needs complete class strings it can discover.
-- The runtime still tracks real DOM classes and removes rules when usage reaches zero.
-- Keyframes still emit outside layers.
-
-The result is a quieter kind of performance release: fewer repeated scans, fewer repeated validations, fewer native stylesheet surprises, and the same CSS contract at the end.
+The result is a faster pipeline with the same CSS contract: cheaper rule generation, cheaper static extraction, cheaper runtime mutation handling, and much faster cache and hydration paths.
