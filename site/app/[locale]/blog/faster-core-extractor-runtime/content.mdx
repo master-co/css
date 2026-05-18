@@ -1,14 +1,10 @@
 The latest Master CSS performance pass focused on the three packages that sit on the critical path:
 
-- `@master/css` for rule matching, config resolution, layer insertion, and CSS output.
+- `@master/css` for rule matching, config resolution, rule insertion, and CSS output.
 - `@master/css-extractor` for source scanning, class filtering, validation, and static stylesheet generation.
 - `@master/css-runtime` for live DOM observation, hydration, and stylesheet updates in the browser.
 
-The public contract did not change. The same class strings still produce the same CSS rules, in the same cascade layers:
-
-```css
-@layer base,theme,preset,main,general;
-```
+The public contract did not change. The same class strings still produce the same CSS output in the same order.
 
 What changed is the amount of work required to get there. The largest wins came from removing repeated scans, caching stable inputs, and replacing accidental quadratic checks with direct lookups.
 
@@ -30,15 +26,15 @@ The broad shape of the release is straightforward:
 | `@master/css-runtime` | Theme hydration variable dedupe | **about 117x faster by mean** |
 | `@master/css-runtime` | DOM mutation handling | **1.14x to 1.25x faster** |
 
-The biggest multipliers are in paths that were doing repeated work: growing layer scans, unchanged source extraction, hydrated class lookup, and duplicate theme variable checks. The smaller runtime mutation gains are still useful because they happen on browser-facing DOM work, where native costs are part of the total.
+The biggest multipliers are in paths that were doing repeated work: growing rule scans, unchanged source extraction, hydrated class lookup, and duplicate theme variable checks. The smaller runtime mutation gains are still useful because they happen on browser-facing DOM work, where native costs are part of the total.
 
 ---
 
 ## Core: faster matching, config, and insertion
 
-Core now does less work before it emits the same CSS. Resolved utilities are split by matcher type, variable namespaces are pre-indexed, config extension uses maps instead of repeated `findIndex()` and `splice()`, and layers keep a key lookup map for duplicate checks and deletion.
+Core now does less work before it emits the same CSS. Resolved utilities are split by matcher type, variable namespaces are pre-indexed, config extension uses maps instead of repeated `findIndex()` and `splice()`, and rule lists keep a key lookup map for duplicate checks and deletion.
 
-Rule ordering still goes through the same priority comparison logic. The insertion path simply finds the right place faster, using binary search when the layer contains utility rules and falling back to the existing linear scan for mixed rule types.
+Rule ordering still goes through the same priority comparison logic. The insertion path simply finds the right place faster, using binary search when the target list contains utility rules and falling back to the existing linear scan for mixed rule types.
 
 Setup and resolver microbenchmarks:
 
@@ -49,14 +45,14 @@ Setup and resolver microbenchmarks:
 | `resolveUtilities()` | 16.00ms | 2.10ms | **7.6x faster** |
 | Utility numeric sort | 5.27ms | 0.36ms | **14.6x faster** |
 
-The insertion stress test used 3000 unique generated classes, `w:0` through `w:2999`, and confirmed `generalLayer.rules.length === 3000`.
+The insertion stress test used 3000 unique generated classes, `w:0` through `w:2999`, and confirmed that 3000 generated rules were inserted.
 
 | Scenario | Before avg | After avg | Result |
 | --- | ---: | ---: | ---: |
 | `css.add(...classes)` | 10118.08ms | 39.29ms | **257.5x faster** |
 | `css.add(...classes); css.text` | 10100.24ms | 30.72ms | **328.8x faster** |
 
-That benchmark is intentionally shaped around insertion. It shows the effect of avoiding duplicate linear lookup and repeatedly scanning a growing layer.
+That benchmark is intentionally shaped around insertion. It shows the effect of avoiding duplicate linear lookup and repeatedly scanning a growing rule list.
 
 A more ordinary mixed workload used 3000 common classes with repeated values plus `:hover` and `@sm` variants.
 
@@ -132,7 +128,7 @@ Browser microbench methodology: Firefox 148, isolated page, 5 warmups, 30 measur
 
 The mutation numbers are smaller because they include browser-facing DOM and stylesheet costs. The hydration numbers are larger because they remove repeated list scans from paths that scale with the number of connected or hydrated classes.
 
-One correctness benchmark also improved the refresh path. Refreshing a sheet with 1000 keyframes previously left 501 native rules behind. The optimized path deletes native rules from the end and leaves only the layer statement rule after refresh.
+One correctness benchmark also improved the refresh path. Refreshing a sheet with 1000 keyframes previously left 501 stale native rules behind. The optimized path deletes native rules from the end and avoids stale rules after refresh.
 
 ---
 
@@ -140,10 +136,8 @@ One correctness benchmark also improved the refresh path. Refreshing a sheet wit
 
 The performance work is guarded by focused core, extractor, and runtime coverage. The important invariants remain unchanged:
 
-- the cascade layer statement is still `@layer base,theme,preset,main,general;`;
 - rule priority still uses the same comparison logic;
 - static extraction still requires discoverable complete class strings;
 - runtime usage counts still remove rules when usage reaches zero;
-- keyframes still emit outside layers.
 
 The result is a faster pipeline with the same CSS contract: cheaper rule generation, cheaper static extraction, cheaper runtime mutation handling, and much faster cache and hydration paths.
