@@ -81,6 +81,17 @@ test.concurrent('creates Shiki decorations from Master CSS semantic tokens', () 
     expect(tokens.filter(({ text, type, modifiers }) => text === 'btn' && type === 'class' && modifiers.includes('declaration'))).toHaveLength(3)
 })
 
+test.concurrent('skips semantic token decorations inside host comments', () => {
+    const code = '<!-- <div class="fg:red"></div> -->\n<div class="fg:blue"></div>'
+    const decorations = createMasterCSSShikiSemanticTokenDecorations(code, {
+        lang: 'html'
+    })
+    const texts = decorations.map((decoration) => code.slice(decoration.start, decoration.end))
+
+    expect(texts).toContain('blue')
+    expect(texts).not.toContain('red')
+})
+
 test.concurrent('applies semantic token styles by type and modifier', () => {
     const code = 'block block:hover btn:hover'
     const decorations = createMasterCSSShikiSemanticTokenDecorations(code, {

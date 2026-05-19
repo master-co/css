@@ -63,6 +63,16 @@ test.concurrent('group syntax', () => {
     expectClassPosition(target, contents)
 })
 
+test.concurrent('ignores class attributes inside HTML comments', () => {
+    const doc = createDoc('html', '<!-- <div class="fg:red"></div> -->\n<div class="fg:blue"></div>')
+    const languageService = new CSSLanguageService()
+
+    expect(languageService.getClassPositions(doc).map((classPosition) => classPosition.token)).toEqual([
+        'fg:blue'
+    ])
+    expect(languageService.getClassPosition(doc, doc.positionAt(17))).toBeUndefined()
+})
+
 test.concurrent('nested strings and literals', () => {
     const target = `content:\\'\\'`
     const contents = [`export default () => <div className={'block `, target, `'}>hello world</div>`]

@@ -31,6 +31,11 @@ interface OxcClassPositionsResult {
     positions: ClassPosition[]
 }
 
+interface SourceRange {
+    start: number
+    end: number
+}
+
 interface OxcNode {
     type: string
     start?: number
@@ -76,6 +81,41 @@ const OXC_SOURCE_BY_LANGUAGE_ID: Record<string, string> = {
     javascriptreact: 'document.jsx',
     typescriptreact: 'document.tsx'
 }
+
+const HTML_COMMENT_LANGUAGE_IDS = new Set([
+    'html',
+    'angular-html',
+    'vue',
+    'svelte',
+    'astro',
+    'markdown',
+    'mdx'
+])
+
+const BLOCK_COMMENT_LANGUAGE_IDS = new Set([
+    'javascript',
+    'typescript',
+    'javascriptreact',
+    'typescriptreact',
+    'css',
+    'scss',
+    'less',
+    'vue',
+    'svelte',
+    'astro'
+])
+
+const LINE_COMMENT_LANGUAGE_IDS = new Set([
+    'javascript',
+    'typescript',
+    'javascriptreact',
+    'typescriptreact',
+    'scss',
+    'less',
+    'vue',
+    'svelte',
+    'astro'
+])
 
 export class ClassPositionCache {
     private oxc = new Map<string, CachedOxcClassPositions>()
@@ -260,6 +300,76 @@ function hasClassPositionLookaround(text: string, settings: Settings) {
     }
 
     return false
+}
+
+function collectDelimitedRanges(source: string, startDelimiter: string, endDelimiter: string) {
+    const ranges: SourceRange[] = []
+    let searchStart = 0
+    while (searchStart < source.length) {
+        const start = source.indexOf(startDelimiter, searchStart)
+        if (start < 0) break
+        const endIndex = source.indexOf(endDelimiter, start + startDelimiter.length)
+        const end = endIndex < 0 ? source.length : endIndex + endDelimiter.length
+        ranges.push({ start, end })
+        searchStart = end
+    }
+    return ranges
+}
+
+function collectSlashCommentRanges(source: string, includeLineComments: boolean, includeBlockComments: boolean) {
+    const ranges: SourceRange[] = []
+    let quote: '"' | '\'' | '`' | undefined
+    let escaped = false
+    for (let i = 0; i < source.length; i++) {
+        const char = source[i]
+        const next = source[i + 1]
+        if (quote) {
+            if (escaped) {
+                escaped = false
+            } else if (char === '\\') {
+                escaped = true
+            } else if (char === quote) {
+                quote = undefined
+            }
+            continue
+        }
+        if (char === '"' || char === '\'' || char === '`') {
+            quote = char
+            continue
+        }
+        if (includeLineComments && char === '/' && next === '/') {
+            const lineEnd = source.indexOf('\n', i + 2)
+            const end = lineEnd < 0 ? source.length : lineEnd
+            ranges.push({ start: i, end })
+            i = end
+            continue
+        }
+        if (includeBlockComments && char === '/' && next === '*') {
+            const blockEnd = source.indexOf('*/', i + 2)
+            const end = blockEnd < 0 ? source.length : blockEnd + 2
+            ranges.push({ start: i, end })
+            i = end - 1
+        }
+    }
+    return ranges
+}
+
+function collectCommentRanges(source: string, languageId: string) {
+    const ranges: SourceRange[] = []
+    if (HTML_COMMENT_LANGUAGE_IDS.has(languageId)) {
+        ranges.push(...collectDelimitedRanges(source, '<!--', '-->'))
+    }
+    const includeBlockComments = BLOCK_COMMENT_LANGUAGE_IDS.has(languageId)
+    const includeLineComments = LINE_COMMENT_LANGUAGE_IDS.has(languageId)
+    if (includeBlockComments || includeLineComments) {
+        ranges.push(...collectSlashCommentRanges(source, includeLineComments, includeBlockComments))
+    }
+    return ranges.sort((a, b) => a.start - b.start || a.end - b.end)
+}
+
+function overlapsCommentRange(start: number, end: number, commentRanges: SourceRange[]) {
+    const normalizedEnd = start === end ? end + 1 : end
+    return commentRanges.some((range) => start < range.end && normalizedEnd > range.start)
 }
 
 function collectOxcStringLiteral(
@@ -476,6 +586,7 @@ export default function getClassPositions(
     settings: Settings,
     options: GetClassPositionsOptions = {}
 ): ClassPosition[] {
+    const sourceText = textDocument.getText()
     const includeEmpty = options.includeEmpty ?? false
     const provider = options.provider ?? 'all'
     const onlyOxc = provider === 'oxc'
@@ -487,16 +598,22 @@ export default function getClassPositions(
     const endIndex = options.position
         ? textDocument.offsetAt({ line: options.position.line + lookaroundLines, character: 0 })
         : undefined
-    const text = textDocument.getText().substring(startIndex, endIndex)
+    const text = sourceText.substring(startIndex, endIndex)
+    let commentRanges: SourceRange[] | undefined
     const classPositions: ClassPosition[] = []
     const { classAttributeBindings, classAttributes, classDeclarations, classFunctions } = settings
     const acceptsPosition = (start: number, end: number) => {
         if (positionIndex === undefined) return true
         return start <= positionIndex && positionIndex <= end
     }
+    const acceptsClassRange = (start: number, end: number) => {
+        if (!acceptsPosition(start, end)) return false
+        commentRanges ??= collectCommentRanges(sourceText, textDocument.languageId)
+        return !overlapsCommentRange(start, end, commentRanges)
+    }
 
     if (textDocument.languageId === 'master-css') {
-        return collectClassPositions(text, startIndex, '', includeEmpty, acceptsPosition)
+        return collectClassPositions(text, startIndex, '', includeEmpty, acceptsClassRange)
     }
 
     if (provider !== 'regex') {
@@ -570,8 +687,8 @@ export default function getClassPositions(
 
     if (stringExpressions.length) {
         resolve(stringExpressions, (eachAttrStart, eachClassPositionEnd, [, pair]) => {
-            const eachClassName = textDocument.getText().substring(eachAttrStart, eachClassPositionEnd)
-            classPositions.push(...collectClassPositions(eachClassName, eachAttrStart, pair, includeEmpty, acceptsPosition))
+            const eachClassName = sourceText.substring(eachAttrStart, eachClassPositionEnd)
+            classPositions.push(...collectClassPositions(eachClassName, eachAttrStart, pair, includeEmpty, acceptsClassRange))
         })
     }
 
@@ -585,9 +702,9 @@ export default function getClassPositions(
 
     if (assignmentExpressions.length) {
         resolve(assignmentExpressions, (eachAttrStart, eachClassPositionEnd) => {
-            const eachClassPositionExpression = textDocument.getText().substring(eachAttrStart, eachClassPositionEnd)
+            const eachClassPositionExpression = sourceText.substring(eachAttrStart, eachClassPositionEnd)
             if (['""', '\'\'', '``'].includes(eachClassPositionExpression)) {
-                if (includeEmpty && acceptsPosition(eachAttrStart + 1, eachAttrStart + 1)) {
+                if (includeEmpty && acceptsClassRange(eachAttrStart + 1, eachAttrStart + 1)) {
                     classPositions.push({
                         range: { start: eachAttrStart + 1, end: eachAttrStart + 1 },
                         raw: '',
@@ -601,21 +718,21 @@ export default function getClassPositions(
                 if (classExpressionMatch.index === undefined) continue
                 const eachClassName = classExpressionMatch[1]
                 const classNameStart = eachAttrStart + classExpressionMatch.index + 1
-                classPositions.push(...collectClassPositions(eachClassName, classNameStart, '"', includeEmpty, acceptsPosition))
+                classPositions.push(...collectClassPositions(eachClassName, classNameStart, '"', includeEmpty, acceptsClassRange))
             }
 
             for (const classExpressionMatch of eachClassPositionExpression.matchAll(/(?<!\\)'([\s\S]*?)(?<!\\)'/g)) {
                 if (classExpressionMatch.index === undefined) continue
                 const eachClassName = classExpressionMatch[1]
                 const classNameStart = eachAttrStart + classExpressionMatch.index + 1
-                classPositions.push(...collectClassPositions(eachClassName, classNameStart, '\'', includeEmpty, acceptsPosition))
+                classPositions.push(...collectClassPositions(eachClassName, classNameStart, '\'', includeEmpty, acceptsClassRange))
             }
 
             for (const classExpressionMatch of eachClassPositionExpression.matchAll(/(?<!\\)`([\s\S]*?)(?<!\\)`/g)) {
                 if (classExpressionMatch.index === undefined) continue
                 const eachClassName = classExpressionMatch[1]
                 const classNameStart = eachAttrStart + classExpressionMatch.index + 1
-                classPositions.push(...collectClassPositions(eachClassName, classNameStart, '`', includeEmpty, acceptsPosition))
+                classPositions.push(...collectClassPositions(eachClassName, classNameStart, '`', includeEmpty, acceptsClassRange))
             }
         })
     }
