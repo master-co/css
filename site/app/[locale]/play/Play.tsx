@@ -117,7 +117,7 @@ function formatCSSSize(cssText: string) {
 function createPreviewHTML() {
     return dedent`<html>
         <head>
-            <style>${require('~/packages/core/normal.css?raw')}</style>
+            <style>${require('../../../../packages/core/normal.css?raw')}</style>
             <style>
                 body {
                     font-family: Inter, Noto Sans TC, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;

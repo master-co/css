@@ -1,153 +1,371 @@
 ## Installation [sr-only]
-Just import it into your global CSS file.
+Import the default stylesheet once in your global CSS file.
 ```css
 @import '@master/css';
 ```
-The default `@master/css` stylesheet imports these base styles for new Master CSS projects.
 
-<details>
-    <summary>Import on demand</summary>
-    <Code lang="css">
-        {require('../../../../../packages/core/normal.css?raw')}
-    </Code>
-</details>
+Base styles are the normalization rules included by the default Master CSS stylesheet. They are emitted in the `base` cascade layer, so component styles and utilities can override them predictably.
 
-Base styles provide a lightweight normalizing stylesheet, `@master/css/normal.css`, similar to [modern-normalize](https://github.com/sindresorhus/modern-normalize) and [normalize.css](https://github.com/necolas/normalize.css) you are familiar with but better:
-
----
-
-## Consistency
-### Consistent device view height
-Fixed the inconsistent appearance of the viewport height across browsers.
-
-### Consistent abbreviation styles
-Fixed the inconsistent appearance of `html <abbr>` across browsers.
-
-### Consistent control styles
-Fixed the inconsistent appearance of controls across browsers.
-
-### Consistent horizontal lines
-Fixed the inconsistent appearance of horizontal lines across browsers.
-<Demo $py={0}>
-    <DemoPanel className="grid-cols:2 gap:8x gap:12x@sm w:full">
-        <div>
-            <small>Before</small>
-            <hr className="mt:20! mb:0! {all:revert}" />
-        </div>
-        <div>
-            <small>After</small>
-            <hr className="mt:20! mb:0! border-color:inherit!" />
-        </div>
-    </DemoPanel>
-</Demo>
-
-### Consistent bold styles
-Fixed the inconsistent font weight of `html <b>` and `html <strong>` across browsers.
-
-### Consistent code styles
-Fixed the inconsistent font size of code-related elements across browsers.
-
-### Consistent small styles
-Fixed the inconsistent font size of `html <small>` across browsers.
-
-### Consistent superscript and subscript styles
-Fixed the inconsistent appearance of superscripts and subscripts across browsers.
-<Demo $py={0}>
-    <DemoPanel>
-        <p className="my:0">This paragraph contains a <sub>subscript</sub> and a <sup>superscript</sup>.</p>
-    </DemoPanel>
-</Demo>
-
-### Consistent table styles
-Fixed the inconsistent appearance of tables across browsers.
-
-### Intuitive sizing control
-Control the size of elements more intuitively, including content and padding, without worrying about the impact of padding and borders on dimensions.
-
----
-
-## Elimination
-### Remove anchor styles
-The `html <a>` element usually serves as more than just an inline text link; it could be a button, navigation, or even a card.
-
-Removing its default underline and inheriting the parent color allows you to start with a clean style.
-<Demo $py={0}>
-    <DemoPanel className="grid-cols:2 gap:8x gap:12x@sm">
-        <div>
-            <small>Before</small>
-            <a href="#" className="mt:10 block text:underline fg:revert">Learn more</a>
-        </div>
-        <div>
-            <small>After</small>
-            <a href="#" className="mt:10 block">Learn more</a>
-        </div>
-    </DemoPanel>
-</Demo>
-
-### Remove control styles
-Inherit the font family, size, and color of control elements from the parent's settings and remove spacing and background as a cleaner starting point.
-
-### Remove default borders and preset to solid style
-Remove borders from all elements to give you the freedom to fully customize the appearance of your elements, preset to the most used solid style.
-
-### Remove default spacing
-Setting margins and padding to zero allows you to customize the appearance and spacing of elements without worrying about the impact of default browser styles.
-
-### Remove heading styles
-Remove heading styles as headless semantic tags. Typically you won't rely on the browser's default size and font weight.
-
-### Remove list styles
-Remove the `ul` styles while retaining it as a commonly used structural markup for elements like the navbar and menu.
-
-### Remove tap highlight color
-You should customize the tap highlight color based on current UI features rather than relying on the default.
-The `-webkit-tap-highlight-color` CSS property controls the highlight color that appears when an element is tapped on a mobile device, such as Safari and some WebKit-based mobile browsers.
-
-### Eliminate click delays
-Disable double-click to zoom on links, input fields, and buttons to improve responsiveness for touch devices.
-<figure>
-    <iframe className="aspect:16/9 w:full" src="https://www.youtube.com/embed/AjUpiwvIa5A?si=qatiz-LszvYqE15c&amp;controls=0" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowFullScreen></iframe>
-    <figcaption>[300ms tap delay, gone away](https://developer.chrome.com/blog/300ms-tap-delay-gone-away)</figcaption>
-</figure>
-An instantly responsive UI enables users to confidently press each button without pausing and waiting for a response. To learn more about the influence of human reaction times and web performance, explore the [introduction to RAIL](https://web.dev/articles/rail).
-
-(x) Disabling `user-scalable=no` can harm user experience, accessibility, and mobile-friendliness and have negative SEO implications.
-```html
-<!-- @MARK user-scalable=no -->
-<meta name="viewport" content="width=device-width, user-scalable=no">
+```css
+@layer base {
+    /* base normalization rules */
+}
 ```
 
+This reference focuses on the source rules themselves. Visual demos are intentionally omitted because this page is already rendered with the same base styles it documents.
+
 ---
 
-## Improvement
-### Better text rendering and appearance
-Ensure consistent, clear, high-quality text and font appearance across various browsers.
-
-### Readable tab size
-Setting the tab size to 4 makes the code more structured and easier to read.
-
-### Responsive friendly media elements
-Preset the maximum width of media-related elements to the parent container to make them responsive.
-<Demo>
-    <div className="grid-cols:2 gap:20">
-        <div>
-            <small>Before</small>
-            <div className="mt:10 b:1|crimson-40 square overflow:hidden">
-                <Image src={require('~/site/public/images/chicken.png').default} width={500} height={500} alt="No responsive image" className="max-w:none" />
-            </div>
-        </div>
-        <div>
-            <small>After</small>
-            <div className="mt:10 b:1|green-40 square">
-                <Image src={require('~/site/public/images/chicken.png').default} width={500} height={500} alt="Responsive image" />
-            </div>
-        </div>
-    </div>
-</Demo>
-Browsers default these elements to `inline` display. `block` can be centered using common tricks like `margin: auto`.
-
-For media that needs to overflow the container, you can cancel the maximum width by selecting descendants:
-```html
-<!-- @MARK max-w:none_:where(img) -->
-<article class="max-w:none_:where(img)">…</article>
+## Rendering
+### Text rendering
+```css
+* {
+    text-rendering: geometricPrecision;
+}
 ```
+
+Requests precise glyph positioning across the document. This favors consistent text appearance in UI surfaces where alignment and shape precision matter.
+
+### Body text metrics
+```css
+body {
+    line-height: 1.2;
+    text-size-adjust: 100%;
+    -webkit-text-size-adjust: 100%;
+    -moz-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+}
+```
+
+Sets a compact default line height, prevents mobile browsers from automatically resizing text, and normalizes font smoothing for macOS and WebKit-based browsers.
+
+### Font variables
+```css
+:root, :host {
+    --font-sans: Inter;
+    --font-sans-fallback: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-mono-fallback: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+    --font-serif-fallback: ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif;
+}
+
+body, :host {
+    font-family: var(--font-sans, ''), var(--font-sans-fallback);
+}
+
+code, kbd, samp, pre {
+    font-family: var(--font-mono, ''), var(--font-mono-fallback);
+}
+```
+
+Defines shared font stacks for documents and shadow hosts. The body uses the sans stack, while code-related elements use the monospace stack.
+
+### Tab size
+```css
+body {
+    -moz-tab-size: 4;
+    tab-size: 4;
+}
+```
+
+Normalizes tab width to four spaces, keeping preformatted text readable without relying on browser defaults.
+
+---
+
+## Layout
+### Box sizing
+```css
+*, ::before, ::after {
+    box-sizing: border-box;
+}
+```
+
+Makes declared widths and heights include padding and borders. This gives layout primitives a more predictable sizing model.
+
+### Embedded media
+```css
+img, svg, video, canvas, audio, iframe, embed, object {
+    max-width: 100%;
+    display: block;
+}
+```
+
+Prevents embedded media from overflowing its container by default and removes inline-baseline spacing by rendering media elements as blocks.
+
+### Viewport height
+```css
+html, body {
+    height: 100dvh;
+    height: -webkit-fill-available;
+    height: -moz-available;
+}
+```
+
+Provides a consistent full-height root baseline across modern browsers and older WebKit or Firefox implementations.
+
+---
+
+## Interaction
+### Touch behavior
+```css
+a, button {
+    touch-action: manipulation;
+}
+```
+
+Allows taps on links and buttons to respond without legacy double-tap delay behavior.
+
+### Selection on button-like elements
+```css
+[role=button], summary,
+button, [type=button] {
+    -webkit-user-select: none;
+    user-select: none;
+}
+```
+
+Prevents accidental text selection on native buttons and button-like interactive elements.
+
+### Tap highlight
+```css
+body {
+    -webkit-tap-highlight-color: transparent;
+}
+```
+
+Removes the default WebKit tap highlight so pressed and active states can be designed explicitly.
+
+---
+
+## Inline elements
+### Links
+```css
+a {
+    color: inherit;
+    text-decoration: none;
+}
+```
+
+Resets anchors to inherit text color and removes default underlines. This makes links suitable for navigation items, cards, buttons, and custom inline link styles.
+
+### Abbreviations
+```css
+abbr[title] {
+    text-decoration: underline dotted;
+}
+```
+
+Uses a dotted underline for titled abbreviations, matching the semantic hint without relying on inconsistent browser defaults.
+
+### Bold text
+```css
+b, strong {
+    font-weight: bolder;
+}
+```
+
+Keeps bold semantic text visually stronger than surrounding content.
+
+### Code-like elements
+```css
+pre,
+code,
+kbd,
+samp {
+    font-size: 1em;
+}
+```
+
+Prevents browser-specific font-size differences on code-related elements while allowing the monospace family rule to handle the font stack.
+
+### Small text
+```css
+small {
+    font-size: 80%;
+}
+```
+
+Normalizes `small` to a predictable relative size.
+
+### Superscript and subscript
+```css
+sub, sup {
+    font-size: 75%;
+    line-height: 0;
+    position: relative;
+    vertical-align: baseline;
+}
+
+sub {
+    bottom: -0.25em;
+}
+
+sup {
+    top: -0.5em;
+}
+```
+
+Sizes superscript and subscript consistently, anchors them to the baseline, and prevents them from increasing line height unexpectedly.
+
+---
+
+## Native controls
+### Form controls
+```css
+button, input, optgroup, select, textarea {
+    font: inherit;
+    font-feature-settings: inherit;
+    font-variation-settings: inherit;
+    font-size: 100%;
+    margin: 0;
+    padding: 0;
+    color: inherit;
+    background-color: transparent;
+}
+```
+
+Makes form controls inherit surrounding typography and color, and removes default spacing and background. Components can then define their own control appearance from a neutral baseline.
+
+### Firefox control internals
+```css
+::-moz-focus-inner {
+    border-style: none;
+    padding: 0;
+}
+
+:-moz-ui-invalid {
+    box-shadow: none;
+}
+```
+
+Removes Firefox-specific inner focus padding, borders, and invalid-field shadows that otherwise diverge from other browsers.
+
+### Search inputs
+```css
+[type="search"] {
+    appearance: textfield;
+    outline-offset: -2px;
+}
+
+::-webkit-search-decoration {
+    -webkit-appearance: none;
+}
+```
+
+Normalizes search input appearance and removes WebKit's built-in search decoration.
+
+### Number inputs
+```css
+::-webkit-inner-spin-button, ::-webkit-outer-spin-button {
+    height: auto;
+}
+```
+
+Keeps WebKit number input spin buttons at their native height instead of inheriting unexpected sizing from surrounding styles.
+
+### File upload buttons
+```css
+::-webkit-file-upload-button {
+    -webkit-appearance: button;
+    font: inherit;
+}
+```
+
+Makes WebKit file upload buttons use button appearance while inheriting the surrounding font.
+
+---
+
+## Native element consistency
+### Progress
+```css
+progress {
+    vertical-align: baseline;
+}
+```
+
+Aligns progress elements with surrounding inline text.
+
+### Horizontal rules
+```css
+hr {
+    height: 0;
+    color: inherit;
+}
+```
+
+Removes browser-specific height and makes horizontal rules inherit the current text color.
+
+### Tables
+```css
+table {
+    text-indent: 0;
+    border-color: inherit;
+}
+```
+
+Prevents unexpected text indentation and makes table borders inherit the current border color baseline.
+
+### Hidden content
+```css
+[hidden] {
+    display: none;
+}
+```
+
+Preserves the platform meaning of the `hidden` attribute by removing hidden elements from layout.
+
+---
+
+## Structural resets
+### Borders
+```css
+*, ::before, ::after {
+    border-width: 0;
+    border-style: solid;
+}
+```
+
+Removes default borders while setting `solid` as the baseline border style. A component can add only width and color when it needs a standard solid border.
+
+### Margins
+```css
+body, blockquote, dl, dd, hr, figure, p, pre, h1, h2, h3, h4, h5, h6 {
+    margin: 0;
+}
+```
+
+Removes default margins from common document and text elements so spacing is explicit and component-owned.
+
+### Padding
+```css
+td, legend, fieldset {
+    padding: 0;
+}
+
+ul, ol {
+    margin: 0;
+    padding: 0;
+}
+```
+
+Removes default padding from table, form grouping, and list elements. Lists also lose their default margins here.
+
+### Lists
+```css
+ul {
+    list-style: none;
+}
+```
+
+Removes unordered list markers while preserving list semantics.
+
+### Headings
+```css
+h1, h2, h3, h4, h5, h6 {
+    font-size: inherit;
+    font-weight: inherit;
+}
+```
+
+Keeps heading semantics without forcing browser-defined heading size or weight into component layouts.
