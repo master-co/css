@@ -13,6 +13,7 @@ const units = {
     reference: {
         categories: [
             'Overview',
+            'Base',
             'Syntax',
             'Package'
         ]

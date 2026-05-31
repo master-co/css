@@ -31,7 +31,6 @@ const developerToolPackages = [
 
 const solutionPackages = [
     await import('~/site/node_modules/@master/colors/package.json'),
-    await import('~/site/node_modules/@master/normal.css/package.json'),
     await import('~/site/node_modules/theme-mode/package.json'),
     await import('~/site/node_modules/class-variant/package.json'),
 ]

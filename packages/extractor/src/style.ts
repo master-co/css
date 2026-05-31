@@ -90,8 +90,7 @@ let defaultStyleCSS: string | undefined
 function getDefaultStyleCSS() {
     if (defaultStyleCSS !== undefined) return defaultStyleCSS
     try {
-        const cssRequire = createRequire(require.resolve('@master/css/index.css'))
-        defaultStyleCSS = readFileSync(cssRequire.resolve('@master/normal.css'), 'utf-8').trim()
+        defaultStyleCSS = readFileSync(require.resolve('@master/css/normal.css'), 'utf-8').trim()
     } catch {
         defaultStyleCSS = ''
     }

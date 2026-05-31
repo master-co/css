@@ -125,7 +125,8 @@ describe('style CSS extraction helpers', () => {
         })
 
         expect(css).not.toContain('.root-native')
-        expect(css).toContain('text-rendering:geometricPrecision')
+        expect(css).toContain('@layer base')
+        expect(css).toContain('text-rendering: geometricPrecision')
         expect(css).toContain('.main')
         expect(css).not.toContain('.unused')
         expect(css).toContain('--color-primary:red')

@@ -29,7 +29,6 @@
         "@figma/eslint-plugin-figma-plugins": "^1.0.0",
         "@figma/plugin-typings": "^1.125.0",
         "@master/css": "workspace:^",
-        "@master/normal.css": "^3.2.0",
         "@types/react": "^19.2.14",
         "@types/react-dom": "^19.2.3",
         "@vitejs/plugin-react": "^6.0.1",

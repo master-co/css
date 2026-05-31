@@ -43,7 +43,8 @@
         "mastercss"
     ],
     "sideEffects": [
-        "./index.css"
+        "./index.css",
+        "./normal.css"
     ],
     "main": "./dist/index.mjs",
     "jsnext:main": "./dist/index.mjs",
@@ -59,6 +60,7 @@
             "default": "./dist/index.mjs"
         },
         "./index.css": "./index.css",
+        "./normal.css": "./normal.css",
         "./*": {
             "types": "./dist/*.d.ts",
             "import": "./dist/*.mjs",
@@ -68,7 +70,8 @@
     "bin": "./dist/bin/index.mjs",
     "files": [
         "dist",
-        "index.css"
+        "index.css",
+        "normal.css"
     ],
     "publishConfig": {
         "access": "public",
@@ -76,7 +79,6 @@
     },
     "dependencies": {
         "@master/colors": "^3.0.0",
-        "@master/normal.css": "^3.2.0",
         "csstype": "^3.2.3",
         "json-safe-extend": "^3.2.5"
     },

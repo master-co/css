@@ -1,4 +1,4 @@
-import '@master/normal.css'
+import '@master/css/normal.css'
 import { Viewport } from 'next'
 
 export const viewport: Viewport = {

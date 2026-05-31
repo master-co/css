@@ -37,7 +37,7 @@
         "provenance": true
     },
     "dependencies": {
-        "@master/css": "2.0.0-rc.38",
+        "@master/css": "workspace:^",
         "@techor/fs": "^3.2.5",
         "@techor/log": "^3.2.5",
         "commander": "^14.0.3",

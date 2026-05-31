@@ -849,11 +849,8 @@ importers:
         specifier: workspace:^
         version: link:../packages/language
       '@master/css.react':
-        specifier: rc
-        version: 2.0.0-rc.69(@types/react@19.2.14)(react@19.2.5)
-      '@master/normal.css':
-        specifier: ^3.2.0
-        version: 3.2.0
+        specifier: workspace:^
+        version: link:../packages/react
       '@master/styled.react':
         specifier: ^2.0.6
         version: 2.0.6(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
@@ -1233,9 +1230,6 @@ importers:
       '@master/colors':
         specifier: ^3.0.0
         version: 3.0.0
-      '@master/normal.css':
-        specifier: ^3.2.0
-        version: 3.2.0
       csstype:
         specifier: ^3.2.3
         version: 3.2.3
@@ -1250,8 +1244,8 @@ importers:
   packages/create:
     dependencies:
       '@master/css':
-        specifier: 2.0.0-rc.38
-        version: 2.0.0-rc.38
+        specifier: workspace:^
+        version: link:../core
       '@techor/fs':
         specifier: ^3.2.5
         version: 3.2.5
@@ -1444,9 +1438,6 @@ importers:
       '@master/css':
         specifier: workspace:^
         version: link:../core
-      '@master/normal.css':
-        specifier: ^3.2.0
-        version: 3.2.0
       '@types/react':
         specifier: ^19.2.14
         version: 19.2.14
@@ -1986,9 +1977,6 @@ importers:
       '@master/css-compiler':
         specifier: workspace:^
         version: link:../packages/compiler
-      '@master/normal.css':
-        specifier: ^3.3.1
-        version: 3.3.1
       '@monaco-editor/react':
         specifier: ^4.7.0
         version: 4.7.0(monaco-editor@0.55.1)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
@@ -5106,37 +5094,8 @@ packages:
     engines: {node: '>=18'}
     hasBin: true
 
-  '@master/colors@2.2.0':
-    resolution: {integrity: sha512-Yt/zX9TFDEKfnK7DYY/uhG9e6k1M2gElKQfElTCp0BVmFMNLrOLTforfSe5dlQLsazC90hir+MfYGvYddY7vcw==}
-
   '@master/colors@3.0.0':
     resolution: {integrity: sha512-1fqX0gncBTXtaidwCqJmOXgW6n0Ikh8DAFsW9/FKwiSYxrNdE0LlI4I0ozbdFdFRfheTV9MUbReiqeuDnD75aQ==}
-
-  '@master/css-devtools-hook@2.0.0-rc.69':
-    resolution: {integrity: sha512-FVcK38mJiGhepBTi3K0gZt2+N+fEp9U47u6fXFJrjafu1Blakah/bnhfNgF3Stensm6vw/y8BNPErfZg7Mmu/g==}
-
-  '@master/css-runtime@2.0.0-rc.69':
-    resolution: {integrity: sha512-1SUBiSWNbAbHiCOFqRUmAD4MWrwC6AMY7u6BPP8LqWMTcWu/7J7I27qcinnR5tRJvkUnIBjdTmUuWRklL2wCpA==}
-
-  '@master/css.react@2.0.0-rc.69':
-    resolution: {integrity: sha512-q+qeLTn/+z00ecNsTBiF3yuf7hYR3Zm7d8RaZiwhX3sq/E/jwnd1B1boLtd6QwVwfl/pHhmJP4tQdEwg7pHvqA==}
-    peerDependencies:
-      '@types/react': '>=16'
-      react: '>=16'
-
-  '@master/css@2.0.0-rc.38':
-    resolution: {integrity: sha512-fCPCW4j7YgPpr354C4v9OmsGr/3Ri4cGR1vxpDNIjS7eaptnelWfCTjxjqvoIhs+QOqHJ7ylZsvTY5XJh45h6Q==}
-    hasBin: true
-
-  '@master/css@2.0.0-rc.69':
-    resolution: {integrity: sha512-HET2rQjk7Q3k5T/ieqgUoxrSp4eE7b0x4b9QPv5Wrz+lTngKFLkrgrQh6oPmMDIcxYlparWD+7NtOLUhNrByMA==}
-    hasBin: true
-
-  '@master/normal.css@3.2.0':
-    resolution: {integrity: sha512-ErWm7JPFZGJVfSjCub43vBwaspTbr60hZlXyc0Kw9qp47hDB7dLjfcKj5aBDN/Hog74d4fbjrd7rGqIgRsJy8A==}
-
-  '@master/normal.css@3.3.1':
-    resolution: {integrity: sha512-Eu86+6OHCUkOGp9JSSRnwXa0vv+TkchrHK15QbOUeCF3Un6yn868TVtRYc6tmTQTXKo15ITCpHBzV7tkkmVVAg==}
 
   '@master/styled.react@2.0.6':
     resolution: {integrity: sha512-b0MSyz6UZgk2G1FReS72f2Fyn+rHCifadT+hA+4sCU2f4xer5dwF6YwlTM2FmTw7cLA4HHA8RAqkRooUFCUMbg==}
@@ -22560,40 +22519,7 @@ snapshots:
       - encoding
       - supports-color
 
-  '@master/colors@2.2.0': {}
-
   '@master/colors@3.0.0': {}
-
-  '@master/css-devtools-hook@2.0.0-rc.69': {}
-
-  '@master/css-runtime@2.0.0-rc.69':
-    dependencies:
-      '@master/css': 2.0.0-rc.69
-      '@master/css-devtools-hook': 2.0.0-rc.69
-
-  '@master/css.react@2.0.0-rc.69(@types/react@19.2.14)(react@19.2.5)':
-    dependencies:
-      '@master/css-runtime': 2.0.0-rc.69
-      '@types/react': 19.2.14
-      react: 19.2.5
-
-  '@master/css@2.0.0-rc.38':
-    dependencies:
-      '@master/colors': 2.2.0
-      '@master/normal.css': 3.3.1
-      '@techor/extend': 3.2.5
-      csstype: 3.2.3
-
-  '@master/css@2.0.0-rc.69':
-    dependencies:
-      '@master/colors': 3.0.0
-      '@master/normal.css': 3.2.0
-      csstype: 3.2.3
-      json-safe-extend: 3.2.5
-
-  '@master/normal.css@3.2.0': {}
-
-  '@master/normal.css@3.3.1': {}
 
   '@master/styled.react@2.0.6(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)':
     dependencies:

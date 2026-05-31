@@ -1259,7 +1259,7 @@ describe.concurrent('@master/css-compiler', () => {
                 }
             `)
             writeFileSync(entry, `
-                @import "@master/normal.css";
+                @import "@master/css/normal.css";
                 @import "./styles/button.css";
 
                 .page {
@@ -1285,7 +1285,7 @@ describe.concurrent('@master/css-compiler', () => {
                     }
                 }
             ])
-            expect(result.css).toContain('@import "@master/normal.css";')
+            expect(result.css).toContain('@import "@master/css/normal.css";')
             expect(result.css).not.toContain('box-sizing: border-box')
             expect(result.css).toContain('color: red')
             expect(result.css).toContain('.btn{font-size:1rem;display:block}')
