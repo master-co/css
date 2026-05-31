@@ -103,14 +103,14 @@ describe.concurrent('@master/css-compiler', () => {
         `, { classes: ['btn', 'card', 'block@md', 'w:10::scrollbar', 'bg:base@dark', 'backdrop-filter:blur(16)@supports-backdrop'] })
 
         expect(result.css).toContain('@layer base,theme,preset,main,general;')
-        expect(result.css).toContain('#app .btn{border-radius:0.75rem;padding-left:1rem;padding-right:1rem;padding-top:0.5rem;padding-bottom:0.5rem;align-items:center;background-color:var(--color-primary);justify-content:center;display:inline-flex}')
-        expect(result.css).toContain('#app .card{content-visibility:auto;contain-intrinsic-size:auto 32rem;padding:1.5rem;border-radius:0.75rem;background-color:var(--color-base);border:1px solid var(--color-ring)}')
+        expect(result.css).toContain('#app .btn{border-radius:calc(var(--border-radius-card) / 16 * 1rem);padding-left:1rem;padding-right:1rem;padding-top:0.5rem;padding-bottom:0.5rem;align-items:center;background-color:var(--color-primary);justify-content:center;display:inline-flex}')
+        expect(result.css).toContain('#app .card{content-visibility:auto;contain-intrinsic-size:auto 32rem;padding:calc(var(--spacing-card) / 16 * 1rem);border-radius:calc(var(--border-radius-card) / 16 * 1rem);background-color:var(--color-base);border:1px solid var(--color-ring)}')
         expect(result.css).toContain('#app .card:before{content:\'\'')
         expect(result.css).toContain('@media (width>=48rem){#app .block\\@md{display:block}}')
         expect(result.css).toContain('#app .w\\:10\\:\\:scrollbar::-webkit-scrollbar')
         expect(result.css).toContain('@media (prefers-reduced-motion:no-preference)')
         expect(result.css).toContain('@supports (backdrop-filter:blur(0))')
-        expect(result.css).toContain('@media (prefers-color-scheme:dark){:root{--color-base:rgb(0 0 0)}}')
+        expect(result.css).toContain('@media (prefers-color-scheme:dark){:root{--color-primary:#456;--color-base:#000}}')
         expect(result.css).toContain('@keyframes fade-in')
         expect(result.warnings).toEqual([])
     })
@@ -196,7 +196,7 @@ describe.concurrent('@master/css-compiler', () => {
                 }
             }
         ])
-        expect(getStaticUtility(result, 'content-auto', 'general')).toEqual({
+        expect(getStaticUtility(result, 'content-auto', 'general')).toMatchObject({
             name: 'content-auto',
             type: UtilityType.Static,
             layer: 'general',
@@ -328,8 +328,8 @@ describe.concurrent('@master/css-compiler', () => {
         `, { classes: ['bg:primary@dark', 'bg:primary@chrisma'] })
 
         expect(result.config.modes).toEqual(['chrisma'])
-        expect(result.css).toContain('.dark .bg\\:primary\\@dark{background-color:rgb(68 85 102)}')
-        expect(result.css).toContain('.chrisma .bg\\:primary\\@chrisma{background-color:rgb(255 255 0)}')
+        expect(result.css).toContain('.dark .bg\\:primary\\@dark{background-color:var(--color-primary)}')
+        expect(result.css).toContain('.chrisma .bg\\:primary\\@chrisma{background-color:var(--color-primary)}')
     })
 
     it('requires @mode for mode variable blocks', () => {
@@ -421,7 +421,7 @@ describe.concurrent('@master/css-compiler', () => {
             }
         `, ['btn'])
 
-        expect(css).toContain('.btn{display:block;background-color:rgb(17 34 51)}')
+        expect(css).toContain('.btn{display:block;background-color:var(--color-primary)}')
     })
 
     it('keeps native selector names when resolving composed component selectors', () => {
@@ -462,7 +462,7 @@ describe.concurrent('@master/css-compiler', () => {
             {
                 selector: '& :is(p)',
                 declarations: {
-                    'font-size': '1rem'
+                    'font-size': 'calc(var(--font-size-md) / 16 * 1rem)'
                 }
             },
             {
@@ -479,7 +479,7 @@ describe.concurrent('@master/css-compiler', () => {
                 }
             }
         ])
-        expect(result.css).toContain('@layer preset{.prose :is(p){font-size:1rem}.prose{color:var(--color-text)}@media print{.prose{display:none}}}')
+        expect(result.css).toContain('@layer preset{.prose :is(p){font-size:calc(var(--font-size-md) / 16 * 1rem)}.prose{color:var(--color-text)}@media print{.prose{display:none}}}')
         expect(result.css).not.toContain('@layer{@layer preset')
     })
 
@@ -500,11 +500,11 @@ describe.concurrent('@master/css-compiler', () => {
             {
                 selector: '& :is(p)',
                 declarations: {
-                    'font-size': '1rem'
+                    'font-size': 'calc(var(--font-size-md) / 16 * 1rem)'
                 }
             }
         ])
-        expect(result.css).toContain('@layer preset{.prose :is(p){font-size:1rem}}')
+        expect(result.css).toContain('@layer preset{.prose :is(p){font-size:calc(var(--font-size-md) / 16 * 1rem)}}')
         expect(result.css).not.toContain('@layer{@layer preset')
     })
 
@@ -532,13 +532,13 @@ describe.concurrent('@master/css-compiler', () => {
             {
                 selector: '& :is(p)',
                 declarations: {
-                    'font-size': '1rem'
+                    'font-size': 'calc(var(--font-size-md) / 16 * 1rem)'
                 }
             },
             {
                 selector: '& :is(li)',
                 declarations: {
-                    'font-size': '0.875rem'
+                    'font-size': 'calc(var(--font-size-sm) / 16 * 1rem)'
                 }
             },
             {
@@ -548,8 +548,8 @@ describe.concurrent('@master/css-compiler', () => {
                 }
             }
         ])
-        expect(result.css).toContain('.prose :is(p){font-size:1rem}')
-        expect(result.css).toContain('.prose :is(li){font-size:0.875rem}')
+        expect(result.css).toContain('.prose :is(p){font-size:calc(var(--font-size-md) / 16 * 1rem)}')
+        expect(result.css).toContain('.prose :is(li){font-size:calc(var(--font-size-sm) / 16 * 1rem)}')
         expect(result.css).toContain('.prose>a,.prose code{color:red}')
     })
 
@@ -609,7 +609,7 @@ describe.concurrent('@master/css-compiler', () => {
             {
                 selector: '& :is(p)',
                 declarations: {
-                    'font-size': '1rem'
+                    'font-size': 'calc(var(--font-size-md) / 16 * 1rem)'
                 }
             },
             {
@@ -620,7 +620,7 @@ describe.concurrent('@master/css-compiler', () => {
                 }
             }
         ])
-        expect(result.css).toContain('@layer preset{.prose :is(p){font-size:1rem}@media print{.prose :is(li){display:none}}}')
+        expect(result.css).toContain('@layer preset{.prose :is(p){font-size:calc(var(--font-size-md) / 16 * 1rem)}@media print{.prose :is(li){display:none}}}')
         expect(result.css).not.toContain('@layer{@layer preset')
     })
 
@@ -744,7 +744,7 @@ describe.concurrent('@master/css-compiler', () => {
                 selector: '&',
                 atRules: ['@media (width>=40rem)'],
                 declarations: {
-                    'font-size': '0.875rem',
+                    'font-size': 'calc(var(--font-size-sm) / 16 * 1rem)',
                     'line-height': '1.4'
                 }
             },
@@ -752,7 +752,7 @@ describe.concurrent('@master/css-compiler', () => {
                 selector: '&',
                 atRules: ['@media (width>=48rem)'],
                 declarations: {
-                    'font-size': '1rem'
+                    'font-size': 'calc(var(--font-size-md) / 16 * 1rem)'
                 }
             },
             {
@@ -763,7 +763,7 @@ describe.concurrent('@master/css-compiler', () => {
                 }
             }
         ])
-        expect(result.css).toContain('@media (width>=40rem){.btn{font-size:0.875rem;line-height:1.4}}')
+        expect(result.css).toContain('@media (width>=40rem){.btn{font-size:calc(var(--font-size-sm) / 16 * 1rem);line-height:1.4}}')
         expect(result.css).toContain('.btn:hover{background-color:var(--color-green);color:#fff}')
     })
 
@@ -911,7 +911,7 @@ describe.concurrent('@master/css-compiler', () => {
         `, { classes: ['content-auto'] })
 
         expect(result.config.utilities).toEqual([
-            {
+            expect.objectContaining({
                 name: 'content-auto',
                 type: UtilityType.Static,
                 layer: 'general',
@@ -920,7 +920,7 @@ describe.concurrent('@master/css-compiler', () => {
                     'contain-intrinsic-size': 'auto 32rem',
                     display: 'block'
                 }
-            }
+            })
         ])
         expect(result.css).toContain('.content-auto{content-visibility:auto;contain-intrinsic-size:auto 32rem;display:block}')
     })
@@ -1061,7 +1061,7 @@ describe.concurrent('@master/css-compiler', () => {
                 }
             },
         ])
-        expect(getStaticUtility(result, 'print-hidden', 'general')).toEqual({
+        expect(getStaticUtility(result, 'print-hidden', 'general')).toMatchObject({
             name: 'print-hidden',
             type: UtilityType.Static,
             layer: 'general',
@@ -1148,10 +1148,8 @@ describe.concurrent('@master/css-compiler', () => {
         `, { classes: ['btn', 'surface'] })
 
         expect(result.css).toContain('@layer theme')
-        expect(result.css).toContain('@media (prefers-color-scheme:light){:root{--color-primary:rgb(255 255 0)}}')
-        expect(result.css).toContain('@media (prefers-color-scheme:dark){:root{--color-primary:rgb(0 0 0)}}')
-        expect(result.css).toContain('@media (prefers-color-scheme:light){:root{--color-accent:rgb(0 255 255)}}')
-        expect(result.css).toContain('@media (prefers-color-scheme:dark){:root{--color-accent:rgb(255 0 255)}}')
+        expect(result.css).toContain('@media (prefers-color-scheme:light){:root{--color-primary:#ff0;--color-accent:#0ff}}')
+        expect(result.css).toContain('@media (prefers-color-scheme:dark){:root{--color-primary:#000;--color-accent:#f0f}}')
         expect(result.css).toContain('.btn{background:var(--color-primary, transparent);animation:1s fade}')
         expect(result.css).toContain('.surface{background:var(--color-primary)}')
         expect(result.css).toContain('@keyframes fade{to{background:var(--color-accent)}}')

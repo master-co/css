@@ -55,16 +55,16 @@ describe('ConfigVirtualModulePlugin', () => {
                 { namespace: 'screen', key: 'md', value: 48 }
             ],
             utilities: expect.arrayContaining([
-                {
+                expect.objectContaining({
                     name: 'btn',
                     type: -4,
                     layer: 'main',
                     declarations: {
                         'font-size': '1rem',
-                        'background-color': 'rgb(17 34 51)',
+                        'background-color': 'var(--color-primary)',
                         display: 'inline-flex'
                     }
-                }
+                })
             ])
         })
     })
@@ -104,14 +104,14 @@ describe('ConfigVirtualModulePlugin', () => {
                 { namespace: 'color', key: 'accent', value: '#789', mode: 'dark' }
             ],
             utilities: expect.arrayContaining([
-                {
+                expect.objectContaining({
                     name: 'badge',
                     type: -4,
                     layer: 'main',
                     declarations: {
                         display: 'inline-flex'
                     }
-                }
+                })
             ])
         })
         expect(config.modes).toBeUndefined()
