@@ -73,3 +73,7 @@ export default defineConfig({
 ```ts name=src/hooks.server.ts
 export { default as handle } from '@master/css.svelte/hooks.server'
 ```
+
+```css name=src/routes/styles.css
+@import '@master/css';
+```

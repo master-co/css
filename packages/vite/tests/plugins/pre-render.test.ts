@@ -18,7 +18,6 @@ describe('PreRenderPlugin', () => {
     it('renders HTML classes with the default master.css config entry', async () => {
         const plugins = masterCSS({
             mode: 'pre-render',
-            injectNormalCSS: false,
         })
         const viteConfig = {
             root: FIXTURE_DIR,
@@ -72,7 +71,6 @@ describe('PreRenderPlugin', () => {
 
             const plugins = masterCSS({
                 mode: 'pre-render',
-                injectNormalCSS: false,
                 config: 'master.css.ts'
             })
             const viteConfig = {

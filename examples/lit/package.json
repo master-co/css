@@ -9,6 +9,7 @@
         "preview": "vite preview"
     },
     "dependencies": {
+        "@master/css": "workspace:^",
         "@master/css-runtime": "workspace:^",
         "lit": "^3.3.2"
     },

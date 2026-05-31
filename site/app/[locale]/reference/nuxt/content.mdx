@@ -9,6 +9,14 @@ export default defineNuxtConfig({
     ]
 })
 ```
+Import the default stylesheet from a global Vue style block:
+
+```vue name=app.vue
+<style>
+@import '@master/css';
+</style>
+```
+
 The default `'progressive'` mode integrates Nuxt’s SSR, SSG, ISR, and Hybrid rendering strategies through Nitro, automatically loading custom configurations — so you can get started with zero setup.
 
 ---

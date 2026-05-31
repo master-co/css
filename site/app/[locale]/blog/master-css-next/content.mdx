@@ -182,8 +182,9 @@ npm run start
 Extract mode keeps the same `virtual:master.css` authoring model used by other Master CSS build integrations:
 
 ```css name=app/globals.css
-@master shake;
+@import '@master/css';
 @import 'virtual:master.css';
+@master shake;
 
 .main {
     background-color: var(--color-primary);

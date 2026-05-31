@@ -98,6 +98,29 @@
     </Step>
     <Step $row>
         <StepL>
+            ### <StepNum />Link the default stylesheet
+            Link the Master CSS default stylesheet from the Blazor document layout.
+        </StepL>
+        <StepR>
+            <CodeTabs>
+                {[
+                    {
+                        name: 'Pages/_Layout.cshtml',
+                        lang: 'html',
+                        code: `
+                            <html>
+                                <head>
+                                    <link rel="stylesheet" href="https://cdn.master.co/css@rc/index.css"> <!-- [!code highlight] -->
+                                </head>
+                            </html>
+                        `
+                    }
+                ]}
+            </CodeTabs>
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
             ### <StepNum />Add an NPM build script
             Add an NPM build script on script section of the `package.json` file.
         </StepL>

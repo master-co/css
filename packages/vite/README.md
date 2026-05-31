@@ -65,6 +65,12 @@ const config = {
 export default config
 ```
 
+Import the default stylesheet from the CSS entry your app already loads:
+
+```css
+@import '@master/css';
+```
+
 ## Client types
 Add the client type reference when TypeScript source files import Master CSS config modules:
 

@@ -11,6 +11,7 @@
         "lint": "eslint"
     },
     "dependencies": {
+        "@master/css": "workspace:^",
         "@master/css.vite": "workspace:^",
         "vue": "^3.5.33"
     },

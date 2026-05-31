@@ -283,6 +283,9 @@ importers:
       '@astrojs/sitemap':
         specifier: ^3.7.2
         version: 3.7.2
+      '@master/css':
+        specifier: workspace:^
+        version: link:../../packages/core
       '@master/css.astro':
         specifier: workspace:^
         version: link:../../packages/astro
@@ -292,12 +295,12 @@ importers:
 
   examples/blank:
     dependencies:
+      '@master/css':
+        specifier: workspace:^
+        version: link:../../packages/core
       '@master/css-runtime':
         specifier: workspace:^
         version: link:../../packages/runtime
-      '@master/normal.css':
-        specifier: ^3.2.0
-        version: 3.2.0
     devDependencies:
       '@master/css.vite':
         specifier: workspace:^
@@ -356,6 +359,9 @@ importers:
       '@inertiajs/react':
         specifier: ^3.0.3
         version: 3.0.3(axios@1.16.0)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
+      '@master/css':
+        specifier: workspace:^
+        version: link:../../packages/core
       '@master/css.vite':
         specifier: workspace:^
         version: link:../../packages/vite
@@ -493,6 +499,9 @@ importers:
 
   examples/lit:
     dependencies:
+      '@master/css':
+        specifier: workspace:^
+        version: link:../../packages/core
       '@master/css-runtime':
         specifier: workspace:^
         version: link:../../packages/runtime
@@ -512,6 +521,9 @@ importers:
 
   examples/next.js:
     dependencies:
+      '@master/css':
+        specifier: workspace:^
+        version: link:../../packages/core
       '@master/css.react':
         specifier: workspace:^
         version: link:../../packages/react
@@ -552,6 +564,9 @@ importers:
 
   examples/next.js-extract:
     dependencies:
+      '@master/css':
+        specifier: workspace:^
+        version: link:../../packages/core
       '@master/css.next':
         specifier: workspace:^
         version: link:../../packages/next
@@ -585,6 +600,9 @@ importers:
 
   examples/nuxt.js:
     dependencies:
+      '@master/css':
+        specifier: workspace:^
+        version: link:../../packages/core
       '@master/css.nuxt':
         specifier: workspace:^
         version: link:../../packages/nuxt
@@ -604,6 +622,9 @@ importers:
 
   examples/react:
     dependencies:
+      '@master/css':
+        specifier: workspace:^
+        version: link:../../packages/core
       '@master/css.vite':
         specifier: workspace:^
         version: link:../../packages/vite
@@ -668,6 +689,9 @@ importers:
 
   examples/svelte:
     dependencies:
+      '@master/css':
+        specifier: workspace:^
+        version: link:../../packages/core
       '@master/css.svelte':
         specifier: workspace:^
         version: link:../../packages/svelte
@@ -716,6 +740,10 @@ importers:
         version: 8.0.10(@types/node@25.7.0)(@vitejs/devtools@0.1.18)(esbuild@0.28.0)(jiti@2.7.0)(less@4.4.2)(sass@1.99.0)(terser@5.46.2)(tsx@4.21.0)(yaml@2.8.4)
 
   examples/vite:
+    dependencies:
+      '@master/css':
+        specifier: workspace:^
+        version: link:../../packages/core
     devDependencies:
       '@master/css.vite':
         specifier: workspace:^
@@ -729,6 +757,9 @@ importers:
 
   examples/vue.js:
     dependencies:
+      '@master/css':
+        specifier: workspace:^
+        version: link:../../packages/core
       '@master/css.vite':
         specifier: workspace:^
         version: link:../../packages/vite
@@ -775,6 +806,9 @@ importers:
 
   examples/webpack:
     devDependencies:
+      '@master/css':
+        specifier: workspace:^
+        version: link:../../packages/core
       '@master/css.webpack':
         specifier: workspace:^
         version: link:../../packages/webpack
@@ -1811,9 +1845,6 @@ importers:
       '@master/css-server':
         specifier: workspace:^
         version: link:../server
-      '@master/normal.css':
-        specifier: ^3.2.0
-        version: 3.2.0
       fast-glob:
         specifier: ^3.3.3
         version: 3.3.3

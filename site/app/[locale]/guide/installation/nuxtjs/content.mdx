@@ -52,6 +52,19 @@
     </Step>
     <Step $row>
         <StepL>
+            ### <StepNum />Import the default stylesheet
+            Import the Master CSS default stylesheet from a global Vue style block.
+        </StepL>
+        <StepR>
+            ```vue name=app.vue
+            <style>
+            @import '@master/css';
+            </style>
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
             ### <StepNum />Launch server
             Run `npm run dev` to start your Nuxt.js development server
         </StepL>

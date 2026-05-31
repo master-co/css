@@ -30,6 +30,7 @@ It packaged as a JavaScript module [`@master/css-runtime`](/reference/runtime), 
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdn.master.co/css@rc/index.css">
     <script src="https://cdn.master.co/css-runtime@rc"></script> <!-- [!code highlight] -->
     …
 </head>
@@ -130,6 +131,7 @@ Where are the generated CSS rules inserted? The runtime engine appends `html <st
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdn.master.co/css@rc/index.css">
     <script src="https://cdn.master.co/css-runtime@rc"></script>
     <style id="master"></style> <!-- [!code highlight] -->
 </head>
@@ -282,6 +284,7 @@ import 'virtual:master.css'
 ```
 
 ```css name=src/style.css
+@import '@master/css';
 @import 'virtual:master.css';
 ```
 
@@ -299,8 +302,9 @@ Regular CSS outside `@master` remains native CSS. When a stylesheet declares `@m
 Those native rules can also pull matching config variables referenced by `var(--*)` and configured keyframes referenced by animation declarations. Import `virtual:master.css` only where the generated Master CSS should be inserted.
 
 ```css name=src/style.css
-@master shake;
+@import '@master/css';
 @import 'virtual:master.css';
+@master shake;
 
 .native-card {
     border: 1px solid rgb(0 0 0 / 12%);

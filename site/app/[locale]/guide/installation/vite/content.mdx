@@ -57,13 +57,14 @@
     </Step>
     <Step $row>
         <StepL>
-            ### <StepNum />Import extracted CSS
-            In extract mode, import the virtual CSS module from the stylesheet your Vite entry already loads, such as `src/style.css`.
+            ### <StepNum />Import stylesheets
+            Import the Master CSS default stylesheet and the virtual CSS module from the stylesheet your Vite entry already loads, such as `src/style.css`.
 
             (i) You can also import `virtual:master.css` from `src/main.js`. Use one import location for the generated stylesheet.
         </StepL>
         <StepR>
             ```css name=src/style.css
+            @import '@master/css';
             @import 'virtual:master.css';
             ```
         </StepR>
@@ -77,8 +78,9 @@
         </StepL>
         <StepR>
             ```css name=src/style.css
-            @master shake;
+            @import '@master/css';
             @import 'virtual:master.css';
+            @master shake;
 
             .native-card {
                 border: 1px solid rgb(0 0 0 / 12%);

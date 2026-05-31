@@ -57,15 +57,16 @@
     </Step>
     <Step $row>
         <StepL>
-            ### <StepNum />Import virtual CSS module
-            Import the generated CSS module from `app/globals.css`.
+            ### <StepNum />Import stylesheets
+            Import the Master CSS default stylesheet and generated CSS module from `app/globals.css`.
 
             (i) Use `virtual:master.css` for the generated stylesheet. Add `@master shake;` when ordinary class selectors in this stylesheet should be pruned against detected source classes.
         </StepL>
         <StepR>
             ```css name=app/globals.css
-            @master shake;
+            @import '@master/css';
             @import 'virtual:master.css';
+            @master shake;
 
             .main {
                 background-color: var(--color-primary);

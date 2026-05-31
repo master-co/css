@@ -128,7 +128,7 @@ This is the mode that best represents the Master CSS rendering model: render wha
 
 - resolves the Master CSS config as a virtual module;
 - detects common Vite entry modules;
-- injects `@master/normal.css` by default;
+- keeps the default stylesheet as an explicit `@import "@master/css"` in app CSS;
 - injects the runtime where runtime behavior is enabled;
 - exposes `virtual:master.css` for extraction workflows;
 - handles static extraction output;

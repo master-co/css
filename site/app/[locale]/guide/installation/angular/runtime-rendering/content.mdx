@@ -61,6 +61,17 @@
     </Step>
     <Step $row>
         <StepL>
+            ### <StepNum />Import the default stylesheet
+            Import the Master CSS default stylesheet from Angular's global stylesheet.
+        </StepL>
+        <StepR>
+            ```css name=src/styles.css
+            @import '@master/css';
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
             ### <StepNum />Prevent flash of unstyled content
             Add `html <html hidden>` to avoid [FOUC](https://en.wikipedia.org/wiki/Flash_of_unstyled_content) caused by the runtime engine not yet injecting CSS rules.
         </StepL>

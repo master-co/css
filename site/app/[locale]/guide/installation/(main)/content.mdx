@@ -53,11 +53,12 @@ Start with Vite and the official plugin. This quick start uses [static extractio
     </Step>
     <Step $row>
         <StepL>
-            ### <StepNum />Import generated CSS
-            Import the virtual stylesheet once from the CSS file your app already loads.
+            ### <StepNum />Import stylesheets
+            Import the Master CSS default stylesheet and the generated virtual stylesheet once from the CSS file your app already loads.
         </StepL>
         <StepR>
             ```css name=src/style.css
+            @import '@master/css';
             @import 'virtual:master.css';
             ```
         </StepR>

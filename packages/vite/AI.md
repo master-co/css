@@ -2,7 +2,7 @@
 
 ## Responsibility
 
-`@master/css.vite` integrates Master CSS into Vite. It supports `runtime`, `extract`, `pre-render`, and `progressive` modes, handles config virtual modules, injects runtime/normal CSS/virtual CSS imports, avoids FOUC, and pre-renders HTML.
+`@master/css.vite` integrates Master CSS into Vite. It supports `runtime`, `extract`, `pre-render`, and `progressive` modes, handles config virtual modules, injects runtime/virtual CSS imports, avoids FOUC, and pre-renders HTML.
 
 ## Inputs And Outputs
 
@@ -66,4 +66,3 @@ For integration-level changes, also run affected example builds when practical.
 - Injecting duplicate imports.
 - Breaking SSR builds with browser-only code.
 - Replacing virtual CSS placeholder logic without asset tests.
-

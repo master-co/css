@@ -8,6 +8,9 @@
         "build": "tsc && vite build",
         "preview": "vite preview"
     },
+    "dependencies": {
+        "@master/css": "workspace:^"
+    },
     "devDependencies": {
         "@master/css.vite": "workspace:^",
         "typescript": "^6.0.3",

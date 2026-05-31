@@ -116,13 +116,14 @@
     </Step>
     <Step $row>
         <StepL>
-            ### <StepNum />Import extracted CSS
-            Import the generated CSS module from `src/style.css`.
+            ### <StepNum />Import stylesheets
+            Import the Master CSS default stylesheet and generated CSS module from `src/style.css`.
 
             (i) `@import 'master.css'` and `@import 'virtual:master.css'` both point to the generated virtual CSS module. If you also import it from JavaScript, Webpack keeps one CSS output path.
         </StepL>
         <StepR>
             ```css name=src/style.css
+            @import '@master/css';
             @import 'master.css';
             ```
         </StepR>
@@ -136,8 +137,9 @@
         </StepL>
         <StepR>
             ```css name=src/style.css
-            @master shake;
+            @import '@master/css';
             @import 'master.css';
+            @master shake;
 
             .native-card {
                 border: 1px solid rgb(0 0 0 / 12%);

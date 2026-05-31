@@ -54,6 +54,17 @@
     </Step>
     <Step $row>
         <StepL>
+            ### <StepNum />Import the default stylesheet
+            Import the Master CSS default stylesheet from Angular's global stylesheet.
+        </StepL>
+        <StepR>
+            ```css name=src/styles.css
+            @import '@master/css';
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
             ### <StepNum />Set up Angular Universal
             Run the command to create a Angular server-side application.
         </StepL>

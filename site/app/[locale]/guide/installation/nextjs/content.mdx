@@ -71,17 +71,13 @@
     <Step $row>
         <StepL>
             ### <StepNum />Author app CSS and config
-            Keep the normal `app/globals.css` import in the root layout. The same stylesheet can hold regular CSS and `@master` definitions.
+            Keep the normal `app/globals.css` import in the root layout. The same stylesheet can import Master CSS defaults, hold regular CSS, and define `@master` blocks.
 
             (i) Import the stylesheet from `master.css` when you want its `@master {}` blocks to participate in the config graph. Ordinary CSS outside `@master` still follows the app stylesheet pipeline.
         </StepL>
         <StepR>
             ```css name=app/globals.css
-            html,
-            body {
-                margin: 0;
-                min-height: 100%;
-            }
+            @import '@master/css';
 
             .native-card {
                 border: 1px solid rgb(0 0 0 / 12%);

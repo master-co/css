@@ -56,6 +56,23 @@
     </Step>
     <Step $row>
         <StepL>
+            ### <StepNum />Import the default stylesheet
+            Import the Master CSS default stylesheet from a global stylesheet and load it from the root layout.
+        </StepL>
+        <StepR>
+            ```css name=src/routes/styles.css
+            @import '@master/css';
+            ```
+
+            ```svelte name=src/routes/+layout.svelte
+            <script lang="ts">
+                import './styles.css'
+            </script>
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
             ### <StepNum />Set up Master CSS renderer
             Create a `src/hooks.server.ts` and export the Master CSS handle. It injects early streamed CSS before `</head>`, while the client runtime hydrates classes discovered after the head is flushed.
 

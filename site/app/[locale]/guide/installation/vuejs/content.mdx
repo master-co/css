@@ -55,6 +55,17 @@
     </Step>
     <Step $row>
         <StepL>
+            ### <StepNum />Import the default stylesheet
+            Import the Master CSS default stylesheet from your app stylesheet.
+        </StepL>
+        <StepR>
+            ```css name=src/style.css
+            @import '@master/css';
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
             ### <StepNum />Start dev server
             Run the command to start the Vite dev server.
         </StepL>

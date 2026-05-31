@@ -9,6 +9,7 @@
         "lint": "next lint"
     },
     "dependencies": {
+        "@master/css": "workspace:^",
         "@master/css.react": "workspace:^",
         "next": "^16.2.4",
         "react": "^19.2.5",

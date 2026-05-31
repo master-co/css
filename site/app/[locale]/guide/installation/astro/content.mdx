@@ -55,6 +55,19 @@
     </Step>
     <Step $row>
         <StepL>
+            ### <StepNum />Import the default stylesheet
+            Import the Master CSS default stylesheet from a global Astro stylesheet.
+        </StepL>
+        <StepR>
+            ```astro name=src/layouts/Layout.astro
+            <style is:global>
+                @import '@master/css';
+            </style>
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
             ### <StepNum />Start dev server
             Run the command to start the Astro dev server.
         </StepL>

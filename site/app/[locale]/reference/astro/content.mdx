@@ -12,6 +12,13 @@ export default defineConfig({
     ]
 })
 ```
+Import the default stylesheet from a global Astro stylesheet:
+
+```astro name=src/layouts/Layout.astro
+<style is:global>
+    @import '@master/css';
+</style>
+```
 
 ---
 

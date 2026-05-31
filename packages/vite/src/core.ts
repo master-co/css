@@ -12,7 +12,6 @@ import ExtractMode from './modes/extract'
 import RuntimeMode from './modes/runtime'
 import ProgressiveMode from './modes/progressive'
 import PreRenderMode from './modes/pre-render'
-import InjectNormalCSSPlugin from './plugins/inject-normal-css'
 import { ExtractorPlugin, UsageGraphPlugin } from './plugins/extractor'
 import VirtualCSSImportPlugin from './plugins/virtual-css-import'
 import VirtualCSSHMRPlugin from './plugins/virtual-css-hmr'
@@ -85,10 +84,6 @@ export default function masterCSS(options?: PluginOptions): Plugin[] {
         case 'pre-render':
             plugins.push(...PreRenderMode(options, context))
             break
-    }
-
-    if (options.injectNormalCSS) {
-        plugins.push(InjectNormalCSSPlugin(options, context))
     }
 
     return plugins

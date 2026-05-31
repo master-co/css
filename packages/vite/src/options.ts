@@ -4,7 +4,6 @@ import type { Options as ExtractorOptions } from '@master/css-extractor'
 const options: PluginOptions = {
     mode: 'runtime',
     config: 'master.css',
-    injectNormalCSS: true,
     injectRuntime: true,
     injectVirtualModule: true,
     avoidFOUC: true,
@@ -34,11 +33,6 @@ export interface PluginOptions {
      * Defaults to `'master.css'`.
      */
     config?: string
-
-    /**
-     * Whether to inject the `@master/normal.css` module into the entry file.
-     */
-    injectNormalCSS?: boolean
 
     /**
      * Whether to include Master CSS’s runtime engine into the entry file.

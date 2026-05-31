@@ -28,6 +28,7 @@ Use `pre-render` when you want route HTML to carry its first-render CSS. Use `ex
 In extract mode, import the generated stylesheet from your app stylesheet:
 
 ```css name=app/globals.css
+@import '@master/css';
 @import 'virtual:master.css';
 
 .main {

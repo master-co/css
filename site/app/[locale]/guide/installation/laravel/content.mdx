@@ -58,6 +58,18 @@
     </Step>
     <Step $row>
         <StepL>
+            ### <StepNum />Import stylesheets
+            Import the Master CSS default stylesheet and the generated virtual stylesheet from Laravel's Vite CSS entry.
+        </StepL>
+        <StepR>
+            ```css name=resources/css/app.css
+            @import '@master/css';
+            @import 'virtual:master.css';
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
             ### <StepNum />Launch server
             Run Laravel and Vite development servers.
         </StepL>

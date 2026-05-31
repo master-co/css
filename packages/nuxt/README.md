@@ -54,3 +54,9 @@
 
 ## Documentation
 Check out the official [documentation](https://rc.css.master.co/guide/installation/nuxtjs).
+
+```vue name=app.vue
+<style>
+@import '@master/css';
+</style>
+```

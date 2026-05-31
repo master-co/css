@@ -45,9 +45,20 @@
 
             export default defineConfig({
                 plugins: [
-                    masterCSS({ mode: null, injectNormalCSS: false }) // [!code highlight]
+                    masterCSS({ mode: null }) // [!code highlight]
                 ]
             })
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Import the default stylesheet
+            Import the Master CSS default stylesheet from the page stylesheet your Lit entry already loads.
+        </StepL>
+        <StepR>
+            ```css name=src/index.css
+            @import '@master/css';
             ```
         </StepR>
     </Step>

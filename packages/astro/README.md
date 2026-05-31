@@ -67,5 +67,9 @@ export default defineConfig({
 })
 ```
 
+```css
+@import '@master/css';
+```
+
 ## Documentation
 Check out the official [documentation](https://rc.css.master.co/guide/installation/astro).
