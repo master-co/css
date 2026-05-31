@@ -1,6 +1,7 @@
 import { createConnection, TextDocuments, InitializeParams, InitializeResult, WorkspaceFolder, Disposable, Connection, ClientCapabilities, TextDocumentChangeEvent, DidChangeConfigurationParams, HoverParams, CompletionParams, DocumentColorParams, ColorPresentationParams, RemoteConsole, SemanticTokensParams } from 'vscode-languageserver/node.js'
 import { TextDocument } from 'vscode-languageserver-textdocument'
 import path from 'node:path'
+import { readFile } from 'node:fs/promises'
 import CSSLanguageService, { Settings as CSSLanguageServiceSettings } from '@master/css-language-service'
 import { Settings } from './settings'
 import exploreConfig from '@master/css-explore-config'
@@ -10,6 +11,31 @@ import { Config } from '@master/css'
 import { SERVER_CAPABILITIES } from '@master/css-language-service'
 import glob from 'fast-glob'
 import { URI } from 'vscode-uri'
+
+const MASTER_CSS_WORKSPACE_DEPENDENCIES = new Set([
+    '@master/css',
+    '@master/css-runtime',
+    '@master/css-server',
+    '@master/css-extractor',
+    '@master/css-cli',
+    '@master/css.vite',
+    '@master/css.webpack',
+    '@master/css.astro',
+    '@master/css.nuxt',
+    '@master/css.react',
+    '@master/css.vue',
+    '@master/css.svelte',
+    '@master/css.next'
+])
+
+const PACKAGE_JSON_DEPENDENCY_FIELDS = [
+    'dependencies',
+    'devDependencies',
+    'peerDependencies',
+    'optionalDependencies'
+] as const
+
+type PackageJSON = Partial<Record<typeof PACKAGE_JSON_DEPENDENCY_FIELDS[number], unknown>>
 
 export declare interface Workspace {
     uri: string
@@ -200,13 +226,27 @@ export default class CSSLanguageServer {
             this.console.info(`Registered global workspace folder`)
         }
         if (workspaces === 'auto') {
-            (await glob(['**/master.css', '**/master.css.*'], {
-                cwd: workspaceFolderCWD,
-                absolute: true,
-                onlyFiles: true,
-                ignore: ['**/node_modules/**']
-            }))
+            const [workspaceConfigFiles, packageJSONFiles] = await Promise.all([
+                glob(['**/master.css', '**/master.css.*'], {
+                    cwd: workspaceFolderCWD,
+                    absolute: true,
+                    onlyFiles: true,
+                    ignore: ['**/node_modules/**']
+                }),
+                glob('**/package.json', {
+                    cwd: workspaceFolderCWD,
+                    absolute: true,
+                    onlyFiles: true,
+                    ignore: ['**/node_modules/**']
+                })
+            ])
+            workspaceConfigFiles
                 .forEach((workspaceFile) => resolvedWorkspaceDirectories.add(path.dirname(path.resolve(workspaceFile))))
+            await Promise.all(packageJSONFiles.map(async (packageJSONFile) => {
+                if (await this.hasMasterCSSDependency(packageJSONFile)) {
+                    resolvedWorkspaceDirectories.add(path.dirname(path.resolve(packageJSONFile)))
+                }
+            }))
         } else if (workspaces?.length) {
             (await glob(workspaces, {
                 cwd: workspaceFolderCWD,
@@ -225,6 +265,22 @@ export default class CSSLanguageServer {
                 languageServiceSettings
             })
         })
+    }
+
+    private async hasMasterCSSDependency(packageJSONFile: string) {
+        try {
+            const packageJSON = JSON.parse(await readFile(packageJSONFile, 'utf8')) as PackageJSON
+            return PACKAGE_JSON_DEPENDENCY_FIELDS.some((field) => {
+                const dependencies = packageJSON[field]
+                if (!dependencies || typeof dependencies !== 'object') return false
+                for (const dependency of MASTER_CSS_WORKSPACE_DEPENDENCIES) {
+                    if (dependency in dependencies) return true
+                }
+                return false
+            })
+        } catch {
+            return false
+        }
     }
 
     async initWorkspaceLanguageService(workspace: Workspace) {

@@ -86,7 +86,8 @@ pkg.set('contributes.configuration', {
                 'string',
                 'array'
             ],
-            'default': settings.workspaces
+            'default': settings.workspaces,
+            'description': 'Configure Master CSS workspaces. The default auto mode detects master.css / master.css.* configuration files and package.json files that declare Master CSS package dependencies.'
         }
     }
 })

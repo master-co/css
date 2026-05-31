@@ -277,7 +277,8 @@
                         "string",
                         "array"
                     ],
-                    "default": "auto"
+                    "default": "auto",
+                    "description": "Configure Master CSS workspaces. The default auto mode detects master.css / master.css.* configuration files and package.json files that declare Master CSS package dependencies."
                 }
             }
         }

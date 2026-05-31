@@ -35,7 +35,7 @@
 
 ## Risk Areas
 
-- `workspaces: 'auto'` discovery.
+- `workspaces: 'auto'` discovery from config files and package dependencies.
 - Closest workspace selection.
 - Config loading with `@master/css-explore-config`.
 - Restart behavior after config/settings saves.
@@ -56,7 +56,7 @@ Use or extend:
 
 ## Good Changes
 
-- Add a monorepo fixture for workspace resolution.
+- Add a monorepo fixture for config-file or package-dependency workspace resolution.
 - Fix config reload and test restart behavior.
 
 ## Dangerous Changes
@@ -64,4 +64,3 @@ Use or extend:
 - Treating external documents as belonging to the wrong workspace.
 - Loading config from an unintended directory.
 - Adding diagnostics without client/server capability updates.
-

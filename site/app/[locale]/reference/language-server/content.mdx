@@ -37,20 +37,24 @@ import { settings } from '@master/css-language-server'
 Specify the workspace where the independent [`CSSLanguageService`](/reference/language-service#csslanguageservice) should be created, always including the root workspace. See the [Monorepo](/guide/monorepo) documentation to understand the purpose of this option.
 <DocProp defaultValue={settings.workspaces} types={["FastGlobPattern[] | 'auto'"]} />
 
-By default `auto`, a new workspace is automatically created based on the location of the `master.css.*` configuration file.
+By default `auto`, a new workspace is automatically created based on the location of the `master.css` / `master.css.*` configuration file or a `package.json` that declares a Master CSS package dependency. Dependency-based detection reads `dependencies`, `devDependencies`, `peerDependencies`, and `optionalDependencies`, so it works before `node_modules` is installed.
 
-(i) Automatically create `/` and `/apps/a` workspaces.
+(i) Automatically create `/`, `/apps/a`, and `/apps/b` workspaces.
 <ExplorerView>
 {[
     { name: 'apps', children: [
         { name: 'a', children: [
             { name: 'master.css.js' }
         ]},
-        { name: 'b' }
+        { name: 'b', children: [
+            { name: 'package.json' }
+        ]},
     ]},
     { name: 'master.css.js' }
 ]}
 </ExplorerView>
+
+`/apps/b/package.json` can be detected without a config file when it declares `@master/css` or an official runtime/integration package such as `@master/css-runtime`, `@master/css.vite`, `@master/css.webpack`, `@master/css.react`, `@master/css.vue`, `@master/css.svelte`, `@master/css.astro`, `@master/css.nuxt`, or `@master/css.next`.
 
 (i) A root workspace will still be automatically created without a root configuration.
 <ExplorerView>

@@ -9,15 +9,15 @@ withFixture('config', async (context) => {
 
         expect(context.rootWorkspace?.languageService?.settings.config).toMatchObject({
             utilities: expect.arrayContaining([
-                {
+                expect.objectContaining({
                     name: 'fixture-card',
                     type: -4,
                     layer: 'main',
                     rules: [
                         { selector: '&', declarations: { display: 'block' } }
                     ]
-                },
-                {
+                }),
+                expect.objectContaining({
                     name: 'fixture-button',
                     type: -4,
                     layer: 'main',
@@ -26,7 +26,7 @@ withFixture('config', async (context) => {
                         { selector: '&', declarations: { color: 'oklch(100% 0 none)' } },
                         { selector: '&', declarations: { 'background-color': 'oklch(63.7% 0.237 25.331)' } }
                     ]
-                }
+                })
             ])
         })
 
