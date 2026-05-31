@@ -289,6 +289,7 @@ describe.concurrent('@master/css-compiler', () => {
             @master class 'btn text:center';
             @master class exclude 'legacy-*';
             @master shake;
+            @master no-shake;
 
             .card {
                 color: red;
@@ -306,6 +307,7 @@ describe.concurrent('@master/css-compiler', () => {
         expect(result.css).not.toContain('@master source')
         expect(result.css).not.toContain('@master class')
         expect(result.css).not.toContain('@master shake')
+        expect(result.css).not.toContain('@master no-shake')
     })
 
     it('keeps light and dark as core defaults and auto-registers custom modes', () => {

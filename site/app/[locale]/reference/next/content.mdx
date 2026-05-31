@@ -20,7 +20,7 @@ export default nextConfig
 | Mode | Description |
 | --- | --- |
 | `'pre-render'` | Uses the Next.js Adapter API to render CSS into static and pre-rendered HTML outputs during `next build`. |
-| `'extract'` | Scans source files with `@master/css-extractor`, writes a generated stylesheet, and wires `virtual:master.css` into Turbopack CSS processing. |
+| `'extract'` | Scans source files with `@master/css-extractor`, writes a generated stylesheet, and wires Master CSS stylesheet imports into Turbopack CSS processing. |
 
 Use `pre-render` when you want route HTML to carry its first-render CSS. Use `extract` when your classes are statically visible in source and you want a generated CSS asset.
 
@@ -29,7 +29,6 @@ In extract mode, import the generated stylesheet from your app stylesheet:
 
 ```css name=app/globals.css
 @import '@master/css';
-@import 'virtual:master.css';
 
 .main {
     background-color: var(--color-primary);
@@ -61,10 +60,10 @@ const nextConfig = await withMasterCSS({
 export default nextConfig
 ```
 
-Extract mode uses source-glob scanning as the correctness baseline. A Turbopack CSS loader replaces `@import 'virtual:master.css'` with the generated CSS. CSS files that declare `@master shake;` are treated as native CSS shaking roots, so ordinary class selectors are pruned against detected classes; `var(--*)` and animation references can pull matching variables and keyframes from the config graph rooted at `master.css`. A scanner loader also scans JavaScript and TypeScript modules as they pass through the build, so imported files such as `app/main.ts` can incrementally feed new classes into the generated CSS. `@master {}` blocks can live in app stylesheets or other CSS files as long as they are imported by `master.css`.
+Extract mode uses source-glob scanning as the correctness baseline. A Turbopack CSS loader replaces `@import '@master/css'` with the generated CSS. CSS files that import `@master/css` are treated as native CSS shaking roots by default, so ordinary class selectors are pruned against detected classes; `var(--*)` and animation references can pull matching variables and keyframes from the config graph rooted at `master.css`. Add `@master no-shake;` when native CSS must be preserved. A scanner loader also scans JavaScript and TypeScript modules as they pass through the build, so imported files such as `app/main.ts` can incrementally feed new classes into the generated CSS. `@master {}` blocks can live in app stylesheets or other CSS files as long as they are imported by `master.css`.
 
 ### Client types
-Add `@master/css.next/client` to a project environment file when TypeScript imports `virtual:master.css`, `virtual:master-css-config`, or `*.css?master-css-config`.
+Add `@master/css.next/client` to a project environment file when TypeScript imports `virtual:master-css-config` or `*.css?master-css-config`.
 
 ```ts name=master-css-env.d.ts
 /// <reference types="@master/css.next/client" />

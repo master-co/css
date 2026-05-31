@@ -83,7 +83,7 @@ describe('extractor CSS directives', () => {
 
         const styleCSSSources = new Map()
         const result = await registerStyleCSSSource(extractor, styleCSSSources, join(root, 'app/a/a.css'), `
-            @master shake;
+            @import "@master/css";
             @master source './*.tsx';
 
             .card {
@@ -130,7 +130,7 @@ describe('extractor CSS directives', () => {
 
         const styleCSSSources = new Map()
         await registerStyleCSSSource(extractor, styleCSSSources, join(root, 'app/a/a.css'), `
-            @master shake;
+            @import "@master/css";
             @import '../shared.css';
         `)
 

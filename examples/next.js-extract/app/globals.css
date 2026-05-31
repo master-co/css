@@ -1,5 +1,4 @@
 @import '@master/css';
-@import 'virtual:master.css';
 
 .main {
     background-color: var(--color-primary);

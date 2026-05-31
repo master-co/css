@@ -26,8 +26,9 @@ export const STYLE_CSS_REQUEST_RE = /\.(css|scss|sass)(?:[?#].*)?$/
 const CSS_IMPORT_RE = /@import\s+(?:url\(\s*)?(["'])([^"']+)\1\s*\)?[^;]*;/g
 const require = createRequire(import.meta.url)
 
-type StyleCSSModuleIds = string | Iterable<string>
 type LoadConfigMode = 'always' | 'css' | false
+
+const MASTER_CSS_PACKAGE_MODULE_IDS = ['@master/css', '@master/css/index.css']
 
 export interface SassModule {
     compileStringAsync(source: string, options: {
@@ -43,7 +44,6 @@ export interface CompileStyleCSSOptions extends CompileCSSOptions {
 }
 
 export interface RegisterStyleCSSSourceOptions extends CompileStyleCSSOptions {
-    moduleIds?: StyleCSSModuleIds
 }
 
 export interface CreateExtractedCSSOptions extends CompileStyleCSSOptions {
@@ -58,6 +58,7 @@ export interface CreateExtractedCSSOptions extends CompileStyleCSSOptions {
 export interface StyleCSSSource {
     source: string
     shake: boolean
+    includeDefaultCSS?: boolean
     directives: ExtractorDirectives
     sourceDependencies: string[]
 }
@@ -67,10 +68,6 @@ export type StyleCSSSources = Map<string, StyleCSSSource>
 export interface ResolvedStyleCSSSource {
     source: string
     dependencies: string[]
-}
-
-function toModuleIdArray(moduleIds: StyleCSSModuleIds) {
-    return typeof moduleIds === 'string' ? [moduleIds] : Array.from(moduleIds)
 }
 
 function escapeRegExp(source: string) {
@@ -88,27 +85,30 @@ function defaultLoadSass(projectDir?: string): SassModule {
     return require('sass') as SassModule
 }
 
-export function normalizeStyleCSSModuleIds(moduleIds: StyleCSSModuleIds) {
-    const ids = new Set<string>()
-    for (const id of toModuleIdArray(moduleIds)) {
-        if (!id) continue
-        ids.add(id)
-        if (id.startsWith('virtual:')) {
-            ids.add(id.slice('virtual:'.length))
-        } else {
-            ids.add(`virtual:${id}`)
-        }
+let defaultStyleCSS: string | undefined
+
+function getDefaultStyleCSS() {
+    if (defaultStyleCSS !== undefined) return defaultStyleCSS
+    try {
+        const cssRequire = createRequire(require.resolve('@master/css/index.css'))
+        defaultStyleCSS = readFileSync(cssRequire.resolve('@master/normal.css'), 'utf-8').trim()
+    } catch {
+        defaultStyleCSS = ''
     }
-    return ids
+    return defaultStyleCSS
 }
 
-export function createStyleCSSImportPattern(moduleIds: StyleCSSModuleIds) {
-    const ids = [...normalizeStyleCSSModuleIds(moduleIds)].map(escapeRegExp)
+export function normalizeStyleCSSModuleIds() {
+    return new Set(MASTER_CSS_PACKAGE_MODULE_IDS)
+}
+
+export function createStyleCSSImportPattern() {
+    const ids = [...normalizeStyleCSSModuleIds()].map(escapeRegExp)
     return new RegExp(String.raw`@import\s+(?:url\(\s*)?(['"])(?:${ids.join('|')})\1\s*\)?[^;]*;`)
 }
 
-export function createMasterStyleCSSPattern(moduleIds: StyleCSSModuleIds) {
-    return createStyleCSSImportPattern(moduleIds)
+export function createMasterStyleCSSPattern() {
+    return createStyleCSSImportPattern()
 }
 
 export function cleanStyleRequest(id: string) {
@@ -119,9 +119,9 @@ export function isStyleCSSRequest(id: string) {
     return STYLE_CSS_REQUEST_RE.test(id)
 }
 
-export function replaceStyleCSSImports(source: string, moduleIds: StyleCSSModuleIds, replacement: string) {
+export function replaceStyleCSSImports(source: string, replacement: string) {
     let replaced = false
-    const ids = normalizeStyleCSSModuleIds(moduleIds)
+    const ids = normalizeStyleCSSModuleIds()
     const code = source.replace(CSS_IMPORT_RE, (rule, _quote: string, id: string) => {
         if (!ids.has(id)) return rule
         replaced = true
@@ -295,24 +295,40 @@ export function resolveStyleCSSImportGraph(file: string, source: string): Resolv
     }
 }
 
-export function removeStyleCSSImports(source: string, moduleIds: StyleCSSModuleIds) {
-    return replaceStyleCSSImports(source, moduleIds, '')
+export function removeStyleCSSImports(source: string) {
+    return replaceStyleCSSImports(source, '')
 }
 
-export function hasStyleCSSImport(source: string, moduleIds: StyleCSSModuleIds) {
-    return removeStyleCSSImports(source, moduleIds).replaced
+export function hasStyleCSSImport(source: string) {
+    return removeStyleCSSImports(source).replaced
+}
+
+export function hasDefaultStyleCSSImport(source: string) {
+    return hasStyleCSSImport(source)
+}
+
+export function isMasterCSSModuleId(id: string) {
+    return normalizeStyleCSSModuleIds().has(id)
+}
+
+export function removeMasterStyleDirectives(source: string) {
+    return removeExtractorDirectiveStatements(source)
 }
 
 export function removeMasterShakeDirectives(source: string) {
-    return removeExtractorDirectiveStatements(source)
+    return removeMasterStyleDirectives(source)
 }
 
 export function hasMasterShakeDirective(source: string) {
     return findExtractorDirectiveStatements(source).some((statement) => statement.name === 'shake')
 }
 
-export function isMasterStyleSource(source: string, moduleIds: StyleCSSModuleIds) {
-    return hasStyleCSSImport(source, moduleIds) || hasMasterShakeDirective(source)
+export function hasMasterNoShakeDirective(source: string) {
+    return findExtractorDirectiveStatements(source).some((statement) => statement.name === 'no-shake')
+}
+
+export function isMasterStyleSource(source: string) {
+    return hasStyleCSSImport(source) || hasMasterShakeDirective(source)
 }
 
 export async function preprocessStyleCSS(source: string, id: string, options: CompileStyleCSSOptions = {}) {
@@ -415,7 +431,6 @@ export async function registerStyleCSSSource(
     options: RegisterStyleCSSSourceOptions = {}
 ) {
     const filename = cleanStyleRequest(id)
-    const moduleIds = options.moduleIds ?? extractor.options.module as string
     const resolvedSource = resolveStyleCSSImportGraph(filename, source)
     const collectedDirectives = extname(filename) === '.css'
         ? collectExtractorDirectivesFromCSSGraph(filename, source, extractor.cwd)
@@ -423,10 +438,12 @@ export async function registerStyleCSSSource(
             directives: createExtractorDirectives(),
             dependencies: []
         }
-    const shake = hasMasterShakeDirective(source)
-    const sourceWithoutImports = removeStyleCSSImports(resolvedSource.source, moduleIds).code
-    const cleanSource = removeMasterShakeDirectives(sourceWithoutImports).code
-    const { moduleIds: _moduleIds, ...compileOptions } = options
+    const includeDefaultCSS = hasDefaultStyleCSSImport(source)
+    const masterCSSImport = hasStyleCSSImport(source)
+    const shake = !hasMasterNoShakeDirective(source) && (hasMasterShakeDirective(source) || masterCSSImport)
+    const sourceWithoutImports = removeStyleCSSImports(resolvedSource.source).code
+    const cleanSource = removeMasterStyleDirectives(sourceWithoutImports).code
+    const compileOptions = options
     const result = await compileStyleCSS(filename, cleanSource, compileOptions)
     const scopedOptions = mergeExtractorOptions(extractor.options, collectedDirectives.directives)
     const sourceDependencies = hasExtractorSourceDirectives(collectedDirectives.directives)
@@ -440,6 +457,7 @@ export async function registerStyleCSSSource(
     styleCSSSources.set(filename, {
         source: cleanSource,
         shake,
+        includeDefaultCSS,
         directives: collectedDirectives.directives,
         sourceDependencies
     })
@@ -498,8 +516,9 @@ function collectCSSAnimationReferences(source: string, animationNames: Iterable<
 
 function collectNativeCSSAnimationReferences(nativeCSS: string[], animationNames: Iterable<string>) {
     const references = new Set<string>()
+    const names = Array.from(animationNames)
     for (const source of nativeCSS) {
-        for (const reference of collectCSSAnimationReferences(source, animationNames)) {
+        for (const reference of collectCSSAnimationReferences(source, names)) {
             references.add(reference)
         }
     }
@@ -545,7 +564,12 @@ export async function createExtractedCSS(options: CreateExtractedCSSOptions) {
                     : undefined
             }))
     )
-    const nativeCSS = styleResults.map((result) => result.nativeCSS).filter(Boolean)
+    const nativeCSS = [
+        Array.from(styleCSSSources?.values() || []).some((styleSource) => styleSource.includeDefaultCSS)
+            ? getDefaultStyleCSS()
+            : '',
+        ...styleResults.map((result) => result.nativeCSS)
+    ].filter(Boolean)
     const configResult = shouldLoadConfig && configPath
         ? await loadConfig(configPath, { classes })
         : undefined

@@ -9,7 +9,7 @@ const require = createRequire(import.meta.url)
 const tscPath = require.resolve('typescript/bin/tsc')
 
 describe('@master/css.webpack/client', () => {
-    it('provides types for Master CSS virtual modules', () => {
+    it('provides types for CSS config query imports', () => {
         const root = mkdtempSync(path.join(tmpdir(), 'master-css-webpack-client-'))
 
         try {
@@ -53,7 +53,6 @@ describe('@master/css.webpack/client', () => {
 /// <reference types="@master/css.webpack/client" />
 
 import type { Config } from '@master/css'
-import 'master.css'
 import virtualConfig from 'virtual:master-css-config'
 import localConfig from './master.css?master-css-config'
 

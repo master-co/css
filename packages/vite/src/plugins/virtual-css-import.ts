@@ -7,19 +7,17 @@ import {
     registerStyleCSSSource
 } from '../utils/style-css'
 
-export { replaceVirtualCSSImport, replaceStyleCSSImports } from '../utils/style-css'
+export { replaceMasterCSSImport, replaceStyleCSSImports } from '../utils/style-css'
 
 export default function VirtualCSSImportPlugin(_options: unknown, context: PluginContext): Plugin {
     return {
-        name: 'master-css:static:virtual-css-import',
+        name: 'master-css:static:css-import',
         enforce: 'pre',
         async transform(code, id) {
             if (id.startsWith('\0')) return
             if (!isStyleCSSRequest(id)) return
 
-            const moduleId = context.extractor?.options.module
-            if (!moduleId) return
-            if (!isMasterStyleSource(code, moduleId)) return
+            if (!isMasterStyleSource(code)) return
 
             const result = await registerStyleCSSSource(context, id, code)
             for (const dependency of result.dependencies) {

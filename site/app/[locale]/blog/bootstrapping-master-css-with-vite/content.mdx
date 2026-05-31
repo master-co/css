@@ -15,7 +15,7 @@ The original Vite integration focused on Static Extraction. It worked well for p
 The new `@master/css.vite` plugin unifies the modes behind one entry point:
 
 - `runtime`: injects the Master CSS runtime and config so styles can be generated in the browser.
-- `extract`: imports `virtual:master.css` and runs the static extraction workflow.
+- `extract`: wires Master CSS stylesheet imports into the static extraction workflow.
 - `pre-render`: renders HTML output and injects the CSS needed by those documents.
 - `progressive`: combines pre-rendered first-response CSS with the runtime engine for dynamic UI.
 
@@ -130,7 +130,6 @@ This is the mode that best represents the Master CSS rendering model: render wha
 - detects common Vite entry modules;
 - keeps the default stylesheet as an explicit `@import "@master/css"` in app CSS;
 - injects the runtime where runtime behavior is enabled;
-- exposes `virtual:master.css` for extraction workflows;
 - handles static extraction output;
 - pre-renders HTML when the selected mode requires it;
 - applies FOUC avoidance for runtime-first rendering.

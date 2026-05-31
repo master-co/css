@@ -47,6 +47,9 @@
                     "include": "#master-css-shake-directive"
                 },
                 {
+                    "include": "#master-css-no-shake-directive"
+                },
+                {
                     "include": "#master-css-source-directive"
                 },
                 {
@@ -58,6 +61,32 @@
             "begin": "((@)master)(\\s+)(shake)(?=\\s|;)",
             "end": "(;)|(?=\\})",
             "name": "meta.at-rule.master-css.shake.css",
+            "beginCaptures": {
+                "1": {
+                    "name": "keyword.control.at-rule.master-css.css"
+                },
+                "2": {
+                    "name": "punctuation.definition.keyword.css"
+                },
+                "4": {
+                    "name": "support.type.property-name.css"
+                }
+            },
+            "endCaptures": {
+                "1": {
+                    "name": "punctuation.terminator.rule.css"
+                }
+            },
+            "patterns": [
+                {
+                    "include": "source.css#comment-block"
+                }
+            ]
+        },
+        "master-css-no-shake-directive": {
+            "begin": "((@)master)(\\s+)(no-shake)(?=\\s|;)",
+            "end": "(;)|(?=\\})",
+            "name": "meta.at-rule.master-css.no-shake.css",
             "beginCaptures": {
                 "1": {
                     "name": "keyword.control.at-rule.master-css.css"

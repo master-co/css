@@ -29,8 +29,7 @@ function makeExtractor() {
     extractor.prepare = vi.fn(async () => undefined)
     extractor.insert = vi.fn(async () => true)
     extractor.css = { text: '/* css */' }
-    extractor.resolvedVirtualModuleId = '\0virtual:master.css'
-    extractor.options = { module: 'virtual:master.css' }
+    extractor.options = {}
     return extractor as any
 }
 
@@ -39,7 +38,7 @@ function makeServer({ modules = [] as ModuleEntry[] } = {}) {
     return {
         moduleGraph: {
             idToModuleMap: new Map(modules),
-            getModuleById: () => null, // updateVirtualModule short-circuits without a virtual module
+            getModuleById: () => null,
         },
         reloadModule: vi.fn(),
         ws: { send: vi.fn() },
@@ -73,7 +72,7 @@ describe('VirtualCSSHMRPlugin (C3+C4 race fixes)', () => {
             modules: [
                 ['/a.tsx', { transformResult: { code: '<div class="bg:white">a</div>' }, file: '/a.tsx' }],
                 ['/b.tsx', { transformResult: { code: '<div class="fg:black">b</div>' }, file: '/b.tsx' }],
-                ['\0virtual:master.css', { transformResult: { code: '' }, file: undefined }], // must be filtered out
+                ['\0plugin-virtual', { transformResult: { code: '' }, file: undefined }], // must be filtered out
             ],
         })
 
@@ -94,16 +93,15 @@ describe('VirtualCSSHMRPlugin (C3+C4 race fixes)', () => {
         // prepare ran
         expect(prepareCalls).toEqual(['prepare'])
         // insert called for: index.html (from transformIndexHtml), then both real modules
-        // (the virtual module entry must be filtered).
+        // (virtual module entries must be filtered).
         expect(insertCalls).toContain('/index.html') // from transformIndexHtml above is recorded BEFORE reset
         expect(insertCalls).toContain('/a.tsx')
         expect(insertCalls).toContain('/b.tsx')
-        // Critically: the virtual module's own id must never have been re-inserted
-        expect(insertCalls).not.toContain('\0virtual:master.css')
+        // Critically: virtual module ids must never have been re-inserted
+        expect(insertCalls).not.toContain('\0plugin-virtual')
 
-        // updateVirtualModule was called after reset settled (server.ws.send may
-        // be 0 because getModuleById returned null — that's fine, it short-
-        // circuits on purpose; the assertion below proves the chain ran).
+        // CSS importer updates run after reset settles; no importer is registered
+        // here, so the assertion below only proves the chain completed.
         expect(server.ws.send.mock.calls.length).toBeGreaterThanOrEqual(updateSendCallsBefore)
     })
 
@@ -139,20 +137,21 @@ describe('VirtualCSSHMRPlugin (C3+C4 race fixes)', () => {
 
     test('C4: a second change is queued behind the first — no overlap', async () => {
         const extractor = makeExtractor()
-        // Wire updateVirtualModule observability via reloadModule. We force the
-        // virtual module to "exist" so the inner branch runs.
+        // Wire CSS-importer update observability via reloadModule.
         const server = makeServer()
+        const cssModule = { file: '/style.css' }
         let releaseFirstReload!: () => void
         const firstReload = new Promise<void>((r) => { releaseFirstReload = r })
         const reloadSpy = vi.fn()
             .mockImplementationOnce(() => firstReload) // returns the unresolved promise as-is
             .mockImplementationOnce(() => Promise.resolve())
         server.reloadModule = reloadSpy
-        // Make getModuleById return a truthy value so updateVirtualModule's inner
-        // block runs (which calls reloadModule).
-        ;(server.moduleGraph as any).getModuleById = () => ({})
+        ;(server.moduleGraph as any).getModuleById = (id: string) => id === '/style.css' ? cssModule : null
 
-        const plugin = VirtualCSSHMRPlugin({} as any, { extractor } as any)
+        const plugin = VirtualCSSHMRPlugin({} as any, {
+            extractor,
+            virtualCSSImporters: new Set(['/style.css'])
+        } as any)
         ;(plugin as any).configureServer.call({}, server as any)
         ;(plugin as any).buildStart.call({})
 
@@ -168,7 +167,7 @@ describe('VirtualCSSHMRPlugin (C3+C4 race fixes)', () => {
         expect(reloadSpy).toHaveBeenCalledTimes(2)
     })
 
-    test('reloads CSS files that import the virtual Master CSS module', async () => {
+    test('reloads CSS files that import Master CSS', async () => {
         const extractor = makeExtractor()
         const cssModule = { file: '/style.css' }
         const server = makeServer()
@@ -221,7 +220,7 @@ describe('VirtualCSSHMRPlugin (C3+C4 race fixes)', () => {
         // Pin down the slowest-insert-determines-completion property. If the
         // module-graph promise array were ever silently dropped again (the
         // original C3 bug), this test would fail because the slowest module
-        // wouldn't be observed by the time updateVirtualModule fired.
+        // wouldn't be observed by the time the CSS importer reload fired.
         const extractor = makeExtractor()
         const completed: string[] = []
         extractor.insert = vi.fn(async (id: string) => {
@@ -239,11 +238,13 @@ describe('VirtualCSSHMRPlugin (C3+C4 race fixes)', () => {
                 ['/c.tsx', { transformResult: { code: 'c' }, file: '/c.tsx' }],
             ],
         })
-        // Force the virtual module branch in updateVirtualModule to run so we
-        // can observe ordering w.r.t. the module-graph promises.
-        ;(server.moduleGraph as any).getModuleById = () => ({})
+        const cssModule = { file: '/style.css' }
+        ;(server.moduleGraph as any).getModuleById = (id: string) => id === '/style.css' ? cssModule : null
 
-        const plugin = VirtualCSSHMRPlugin({} as any, { extractor } as any)
+        const plugin = VirtualCSSHMRPlugin({} as any, {
+            extractor,
+            virtualCSSImporters: new Set(['/style.css'])
+        } as any)
         ;(plugin as any).configureServer.call({}, server as any)
         ;(plugin as any).buildStart.call({})
 
@@ -253,8 +254,7 @@ describe('VirtualCSSHMRPlugin (C3+C4 race fixes)', () => {
         await tick(2)
 
         // All three module inserts must have completed *before* the chain was
-        // considered done — i.e. updateVirtualModule (which fires reloadModule)
-        // ran AFTER the slowest insert.
+        // considered done — i.e. CSS importer reload ran AFTER the slowest insert.
         expect(completed).toEqual(expect.arrayContaining(['/a.tsx', '/b.tsx', '/c.tsx']))
         expect(server.reloadModule).toHaveBeenCalled()
     })

@@ -15,7 +15,7 @@ function createFixture() {
     const root = mkdtempSync(join(tmpdir(), 'master-css-next-extract-'))
     mkdirSync(join(root, 'app'), { recursive: true })
     writeFileSync(join(root, 'master.css'), '@master {}')
-    writeFileSync(join(root, 'app/globals.css'), '@import "virtual:master.css";')
+    writeFileSync(join(root, 'app/globals.css'), '@import "@master/css";')
     return root
 }
 
@@ -91,7 +91,7 @@ describe('Next extract mode', () => {
         expect(css).toContain('margin:0')
     })
 
-    it('replaces virtual CSS imports for dev CSS chunks and preserves ordinary CSS', async () => {
+    it('replaces @master/css imports for dev CSS chunks and preserves ordinary CSS', async () => {
         const root = createFixture()
         writeFileSync(join(root, 'master.css'), '@master { --color-primary: #ff0000; }')
         writeFileSync(join(root, 'app/page.tsx'), `
@@ -106,7 +106,7 @@ describe('Next extract mode', () => {
         await prepareNextExtract({ mode: 'extract' }, { projectDir: root })
 
         const source = `
-            @import "virtual:master.css";
+            @import "@master/css";
 
             .main {
                 color: var(--color-primary);
@@ -118,12 +118,12 @@ describe('Next extract mode', () => {
         expect(replaced).toContain('.main')
         expect(replaced).toContain('color: var(--color-primary)')
         expect(replaced).not.toContain('@master')
-        expect(replaced).not.toContain('virtual:master.css')
+        expect(replaced).not.toContain('@master/css')
         expect(readFileSync(outputPath, 'utf-8')).toContain('.main')
         expect(readFileSync(outputPath, 'utf-8')).toContain('--color-primary:red')
     })
 
-    it('shakes dev CSS chunks that declare master shake', async () => {
+    it('shakes dev CSS chunks that import @master/css', async () => {
         const root = createFixture()
         writeFileSync(join(root, 'app/page.tsx'), `
             export default function Page() {
@@ -137,8 +137,7 @@ describe('Next extract mode', () => {
         await prepareNextExtract({ mode: 'extract' }, { projectDir: root })
 
         const replaced = await runExtractCSSLoader(statePath, join(root, 'app/globals.css'), `
-            @master shake;
-            @import "virtual:master.css";
+            @import "@master/css";
 
             .main {
                 color: red;
@@ -152,7 +151,7 @@ describe('Next extract mode', () => {
         expect(replaced).toContain('display:block')
         expect(replaced).toContain('.main')
         expect(replaced).not.toContain('.unused')
-        expect(replaced).not.toContain('@master shake')
+        expect(replaced).not.toContain('@master/css')
         expect(readFileSync(outputPath, 'utf-8')).not.toContain('.unused')
     })
 
@@ -169,7 +168,7 @@ describe('Next extract mode', () => {
         const result = await runExtractCSSLoaderWithDependencies(
             statePath,
             join(root, 'app/globals.css'),
-            '@import "virtual:master.css";'
+            '@import "@master/css";'
         )
 
         expect(result.dependencies).toContain(outputPath)
@@ -177,7 +176,7 @@ describe('Next extract mode', () => {
         expect(result.dependencies).toContain(join(root, 'theme.css'))
     })
 
-    it('ignores app stylesheets with @master when they do not import the virtual CSS entry', async () => {
+    it('ignores app stylesheets with @master when they do not import @master/css', async () => {
         const root = createFixture()
         const outputPath = resolveExtractOutputPath(root)
         const statePath = resolveExtractStatePath(outputPath)

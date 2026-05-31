@@ -36,7 +36,6 @@ vi.mock('@master/css-extractor', () => {
                 this.insertCalls.push(id)
                 return true
             }
-            readonly resolvedVirtualModuleId = '\0virtual:master.css'
         },
     }
 })
@@ -137,7 +136,7 @@ describe('shared extractor plugins (C7 + C8 fixes)', () => {
                 '/proj/src/icon.png',                  // raw asset
                 '/proj/src/icon.svg?url',              // ?url
                 '/proj/src/audio.mp3',                 // binary
-                '\0virtual:master.css',                // own virtual module
+                '\0plugin-virtual',                    // virtual module
                 '\0plugin-vue:export-helper',          // 3rd-party virtual
                 '\0vite/modulepreload-polyfill.js',     // Vite virtual with source extension
             ])
@@ -159,8 +158,8 @@ describe('shared extractor plugins (C7 + C8 fixes)', () => {
             ])
         })
 
-        test('virtual master.css module id is always rejected', async () => {
-            const calls = await drive(['\0virtual:master.css'])
+        test('virtual module ids are always rejected', async () => {
+            const calls = await drive(['\0plugin-virtual'])
             expect(calls).toEqual([])
         })
 

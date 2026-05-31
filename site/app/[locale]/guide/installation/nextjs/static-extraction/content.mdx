@@ -36,7 +36,7 @@
     <Step $row>
         <StepL>
             ### <StepNum />Set up extract mode
-            Register the Master CSS Next.js integration in `extract` mode. This creates the generated stylesheet and wires `virtual:master.css` into Turbopack CSS processing.
+            Register the Master CSS Next.js integration in `extract` mode. This creates the generated stylesheet and wires Master CSS stylesheet imports into Turbopack CSS processing.
 
             (i) Extract mode scans source files as the correctness baseline. During Turbopack builds, a scanner loader also feeds visited JavaScript and TypeScript modules into the extractor for incremental updates.
         </StepL>
@@ -58,15 +58,11 @@
     <Step $row>
         <StepL>
             ### <StepNum />Import stylesheets
-            Import the Master CSS default stylesheet and generated CSS module from `app/globals.css`.
-
-            (i) Use `virtual:master.css` for the generated stylesheet. Add `@master shake;` when ordinary class selectors in this stylesheet should be pruned against detected source classes.
+            Import Master CSS from `app/globals.css`. This import inserts the generated stylesheet and enables native CSS shaking for this stylesheet root.
         </StepL>
         <StepR>
             ```css name=app/globals.css
             @import '@master/css';
-            @import 'virtual:master.css';
-            @master shake;
 
             .main {
                 background-color: var(--color-primary);

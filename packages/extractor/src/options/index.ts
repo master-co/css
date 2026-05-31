@@ -5,8 +5,6 @@ import type { SourceAdapter } from '../adapters'
 const options: Options = {
     // enable verbose Logs
     verbose: 1,
-    // specify virtual CSS module id (e.g. .virtual:home.css)
-    module: 'virtual:master.css',
     // specify output file path
     output: 'master.css',
     // specify Master CSS config file path or inline config
@@ -61,7 +59,6 @@ export interface Options {
     config?: string | Config,
     output?: string,
     path?: string,
-    module?: string,
     sources?: FastGlobPattern[]
     include?: FastGlobPattern[]
     exclude?: FastGlobPattern[]

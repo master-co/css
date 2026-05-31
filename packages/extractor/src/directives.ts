@@ -3,7 +3,7 @@ import { dirname, extname, isAbsolute, relative, resolve } from 'node:path'
 import { explorePathsSync } from '@techor/glob'
 import type { Options } from './options'
 
-const MASTER_DIRECTIVE_NAMES = new Set(['shake', 'source', 'class'])
+const MASTER_DIRECTIVE_NAMES = new Set(['shake', 'no-shake', 'source', 'class'])
 
 export interface ExtractorDirectives {
     include: string[]

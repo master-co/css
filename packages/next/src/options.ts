@@ -33,7 +33,6 @@ export interface ResolvedOptions {
     mode: Mode
     config: string | Config
     extractorOptions: ExtractorOptions
-    module: string
     manifest: boolean | string
     debug: boolean
 }
@@ -47,7 +46,6 @@ export function resolveOptions(options: Options = {}): ResolvedOptions {
         mode: options.mode ?? 'pre-render',
         config: options.config ?? 'master.css',
         extractorOptions: options.extractorOptions ?? {},
-        module: options.extractorOptions?.module ?? 'virtual:master.css',
         manifest: options.manifest ?? false,
         debug: options.debug ?? false
     }

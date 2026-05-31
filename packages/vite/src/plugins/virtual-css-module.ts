@@ -1,6 +1,6 @@
 import type { Plugin } from 'vite'
-import { PluginContext } from '../core'
-import { PluginOptions } from '../options'
+import type { PluginContext } from '../core'
+import type { PluginOptions } from '../options'
 import getExtractedCSS from '../utils/extracted-css'
 
 function replaceSlotCSSRule(source: string, slotCSSRule: string, realCSS: string): { source: string, replaced: boolean } {
@@ -14,29 +14,12 @@ function replaceSlotCSSRule(source: string, slotCSSRule: string, realCSS: string
     return { source: nextSource, replaced }
 }
 
-export default function VirtualCSSModulePlugin(options: PluginOptions, context: PluginContext): Plugin {
-    // Whether some module ever asked Vite to load the virtual master.css.
-    // Without this we cannot tell "user did not import virtual:master.css"
-    // (no replacement expected) apart from "user imported it but downstream
-    // CSS pipeline ate the placeholder" (silent build failure).
-    let placeholderEmitted = false
+export default function VirtualCSSModulePlugin(_options: PluginOptions, context: PluginContext): Plugin {
     return {
-        name: 'master-css:static:virtual-css-module:build',
+        name: 'master-css:static:css-slot:build',
         enforce: 'pre',
         apply: 'build',
-        resolveId(id) {
-            if (id === context.extractor.options.module) {
-                return context.extractor.resolvedVirtualModuleId
-            }
-        },
-        load(id, opt) {
-            if (id === context.extractor.resolvedVirtualModuleId) {
-                placeholderEmitted = true
-                context.virtualCSSPlaceholderEmitted = true
-                return context.extractor.slotCSSRule
-            }
-        },
-        async generateBundle(options, bundle) {
+        async generateBundle(_options, bundle) {
             const slotCSSRule = context.extractor.slotCSSRule
             const realCSS = await getExtractedCSS(context)
             const cssFileNames = Object.keys(bundle).filter(eachFileName => eachFileName.endsWith('.css'))
@@ -56,17 +39,10 @@ export default function VirtualCSSModulePlugin(options: PluginOptions, context: 
                     }
                 }
             }
-            // The placeholder was emitted (user imported the virtual module)
-            // but no CSS chunk in the final bundle still contained it. The
-            // cause is Vite's downstream CSS pipeline mutating the rule
-            // between `load()` and `generateBundle` — could be a PostCSS
-            // plugin in the user's vite config (autoprefixer / cssnano /
-            // preset-env / tailwind), Vite's bundled minifier (esbuild or
-            // lightningcss), or any other vite plugin transforming `.css`.
-            // Without this warn the build silently ships CSS missing every
-            // extracted class; the user only finds out at runtime against
-            // an unstyled page. Surface it loudly at build time instead.
-            if ((placeholderEmitted || context.virtualCSSPlaceholderEmitted) && !replacedAny && realCSS.length > 0) {
+            // The placeholder was emitted by a managed CSS import but no CSS
+            // chunk in the final bundle still contained it. A downstream CSS
+            // plugin or minifier likely rewrote or dropped the internal slot.
+            if (context.virtualCSSPlaceholderEmitted && !replacedAny && realCSS.length > 0) {
                 this.warn(
                     `[master-css.vite] Could not splice extracted CSS into any bundle asset. ` +
                     `The placeholder "${slotCSSRule}" was emitted but no CSS chunk in the final ` +

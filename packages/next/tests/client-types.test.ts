@@ -55,7 +55,6 @@ describe('@master/css.next/client', () => {
 import type { Config } from '@master/css'
 import config from './master.css?master-css-config'
 import virtualConfig from 'virtual:master-css-config'
-import 'virtual:master.css'
 
 config satisfies Config
 virtualConfig satisfies Config

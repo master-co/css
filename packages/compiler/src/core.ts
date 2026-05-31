@@ -139,7 +139,7 @@ const DEFAULT_SCREEN_NAMES = new Set(Object.keys(defaultScreens))
 const IMPORTANT_FLAG_VALUE = '__master_important__'
 const MASTER_AT_RULE_PREFIX = '__master_at__:'
 const UTILITY_LAYER_NAMES = new Set<UtilityLayerName>(['base', 'preset', 'main', 'general'])
-const STANDALONE_MASTER_DIRECTIVE_NAMES = new Set(['shake', 'source', 'class'])
+const STANDALONE_MASTER_DIRECTIVE_NAMES = new Set(['shake', 'no-shake', 'source', 'class'])
 
 const HTML_TAG_NAMES = new Set([
     'a',

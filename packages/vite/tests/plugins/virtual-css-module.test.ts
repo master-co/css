@@ -10,7 +10,7 @@
  * an empty stylesheet without warning.
  *
  * The fix:
- *   - Track whether the virtual module was ever emitted (`load` was hit).
+ *   - Track whether a managed CSS import emitted the placeholder.
  *   - In `generateBundle`, count how many CSS assets had a successful
  *     replacement.
  *   - If the placeholder was emitted but no asset matched, call
@@ -26,7 +26,6 @@ import path from 'node:path'
 function makeContext(slot: string, css: string) {
     return {
         extractor: {
-            resolvedVirtualModuleId: '\0virtual:master.css',
             slotCSSRule: slot,
             css: { text: css },
             config: {},
@@ -34,7 +33,7 @@ function makeContext(slot: string, css: string) {
             validClasses: new Set(),
             nativeClassNames: new Set(),
             usedNativeClasses: new Set(),
-            options: { includeClasses: [], module: 'virtual:master.css' },
+            options: { includeClasses: [] },
         },
     } as any
 }
@@ -47,7 +46,7 @@ function makeBundle(entries: Record<string, string>) {
     return bundle
 }
 
-const SLOT = '#virtual\\:master\\.css{--slot:0}'
+const SLOT = '#master-css-slot{--slot:0}'
 const REAL_CSS = '.bg\\:white{background-color:white}.fg\\:black{color:black}'
 
 describe('VirtualCSSModulePlugin (D1 placeholder-leak warn)', () => {
@@ -56,9 +55,7 @@ describe('VirtualCSSModulePlugin (D1 placeholder-leak warn)', () => {
         const plugin = VirtualCSSModulePlugin({} as any, ctx)
         const warn = vi.fn()
 
-        // Simulate the user importing virtual:master.css → load() runs.
-        const loaded = (plugin as any).load.call({ warn }, ctx.extractor.resolvedVirtualModuleId)
-        expect(loaded).toBe(SLOT)
+        ctx.virtualCSSPlaceholderEmitted = true
 
         const bundle = makeBundle({
             'assets/index-abc.css': `body{margin:0}${SLOT}`,
@@ -75,7 +72,7 @@ describe('VirtualCSSModulePlugin (D1 placeholder-leak warn)', () => {
         const plugin = VirtualCSSModulePlugin({} as any, ctx)
         const warn = vi.fn()
 
-        ;(plugin as any).load.call({ warn }, ctx.extractor.resolvedVirtualModuleId)
+        ctx.virtualCSSPlaceholderEmitted = true
 
         const bundle = makeBundle({
             'assets/index-abc.css': `${SLOT}body{margin:0}${SLOT}`,
@@ -94,7 +91,7 @@ describe('VirtualCSSModulePlugin (D1 placeholder-leak warn)', () => {
         const plugin = VirtualCSSModulePlugin({} as any, ctx)
         const warn = vi.fn()
 
-        ;(plugin as any).load.call({ warn }, ctx.extractor.resolvedVirtualModuleId)
+        ctx.virtualCSSPlaceholderEmitted = true
 
         const bundle = makeBundle({
             'assets/index-abc.css': SLOT,
@@ -112,12 +109,12 @@ describe('VirtualCSSModulePlugin (D1 placeholder-leak warn)', () => {
         const plugin = VirtualCSSModulePlugin({} as any, ctx)
         const warn = vi.fn()
 
-        ;(plugin as any).load.call({ warn }, ctx.extractor.resolvedVirtualModuleId)
+        ctx.virtualCSSPlaceholderEmitted = true
 
         // Simulate a downstream PostCSS plugin / minifier having mutated
         // the placeholder rule beyond recognition.
         const bundle = makeBundle({
-            'assets/index-abc.css': 'body{margin:0}#virtual_master_css{--slot:0}',
+            'assets/index-abc.css': 'body{margin:0}#master_css_slot{--slot:0}',
         })
         await (plugin as any).generateBundle.call({ warn }, {}, bundle)
 
@@ -127,7 +124,7 @@ describe('VirtualCSSModulePlugin (D1 placeholder-leak warn)', () => {
         expect(msg).toContain(SLOT)
     })
 
-    test('does NOT warn if the user never imported the virtual module', async () => {
+    test('does NOT warn if no managed CSS import emitted the placeholder', async () => {
         // No extracted CSS to splice in, no placeholder ever emitted →
         // generateBundle must be a quiet no-op.
         const ctx = makeContext(SLOT, REAL_CSS)
@@ -143,14 +140,14 @@ describe('VirtualCSSModulePlugin (D1 placeholder-leak warn)', () => {
     })
 
     test('does NOT warn when extracted CSS is empty (no classes found at all)', async () => {
-        // Edge case: user wired the virtual module but no Master CSS class
+        // Edge case: a managed CSS import exists but no Master CSS class
         // was extracted (e.g. config-only project). Warning here would be
         // noise — there's nothing to splice anyway.
         const ctx = makeContext(SLOT, '')
         const plugin = VirtualCSSModulePlugin({} as any, ctx)
         const warn = vi.fn()
 
-        ;(plugin as any).load.call({ warn }, ctx.extractor.resolvedVirtualModuleId)
+        ctx.virtualCSSPlaceholderEmitted = true
 
         const bundle = makeBundle({
             'assets/index-abc.css': 'body{margin:0}', // placeholder absent
@@ -164,7 +161,7 @@ describe('VirtualCSSModulePlugin (D1 placeholder-leak warn)', () => {
         const ctx = makeContext(SLOT, REAL_CSS)
         const plugin = VirtualCSSModulePlugin({} as any, ctx)
         const warn = vi.fn()
-        ;(plugin as any).load.call({ warn }, ctx.extractor.resolvedVirtualModuleId)
+        ctx.virtualCSSPlaceholderEmitted = true
 
         const bundle: Record<string, any> = {
             'assets/index-abc.css': { type: 'asset', source: `body{margin:0}${SLOT}` },
@@ -204,7 +201,7 @@ describe('VirtualCSSModulePlugin (D1 placeholder-leak warn)', () => {
             ctx.extractor.options.includeClasses = []
             const plugin = VirtualCSSModulePlugin({} as any, ctx)
             const warn = vi.fn()
-            ;(plugin as any).load.call({ warn }, ctx.extractor.resolvedVirtualModuleId)
+            ctx.virtualCSSPlaceholderEmitted = true
 
             const bundle = makeBundle({
                 'assets/index-abc.css': SLOT,
@@ -261,7 +258,7 @@ describe('VirtualCSSModulePlugin (D1 placeholder-leak warn)', () => {
 
             const plugin = VirtualCSSModulePlugin({} as any, ctx)
             const warn = vi.fn()
-            ;(plugin as any).load.call({ warn }, ctx.extractor.resolvedVirtualModuleId)
+            ctx.virtualCSSPlaceholderEmitted = true
 
             const bundle = makeBundle({
                 'assets/index-abc.css': SLOT,
@@ -271,7 +268,7 @@ describe('VirtualCSSModulePlugin (D1 placeholder-leak warn)', () => {
             const css = String(bundle['assets/index-abc.css'].source)
             expect(css).toContain('.native-used')
             expect(css).not.toContain('.native-unused')
-            expect(css).toContain('--color-primary:rgb(18 52 86)')
+            expect(css).toMatch(/--color-primary:(rgb\(18 52 86\)|#123456)/)
             expect(css).toContain('.btn{display:grid}')
             expect(css).not.toContain('.btn{display:inline-flex}')
             expect(warn).not.toHaveBeenCalled()

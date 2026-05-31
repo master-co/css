@@ -38,7 +38,7 @@
     <Step $row>
         <StepL>
             ### <StepNum />Add client types
-            If your source files are type-checked, add the Webpack client types before importing the generated `master.css` module or Master CSS config modules.
+            If your source files are type-checked, add the Webpack client types before importing Master CSS config modules.
         </StepL>
         <StepR>
             ```ts name=src/master-css-env.d.ts
@@ -49,7 +49,7 @@
     <Step $row>
         <StepL>
             ### <StepNum />Create a Webpack config file
-            Create and configure the `webpack.config.js` file. The extractor scans `src/index.html` and your JavaScript modules, then writes the generated CSS into the virtual CSS module.
+            Create and configure the `webpack.config.js` file. The extractor scans `src/index.html` and your JavaScript modules, then writes generated CSS into the stylesheet that imports `@master/css`.
         </StepL>
         <StepR>
             ```js name=webpack.config.js
@@ -117,29 +117,24 @@
     <Step $row>
         <StepL>
             ### <StepNum />Import stylesheets
-            Import the Master CSS default stylesheet and generated CSS module from `src/style.css`.
-
-            (i) `@import 'master.css'` and `@import 'virtual:master.css'` both point to the generated virtual CSS module. If you also import it from JavaScript, Webpack keeps one CSS output path.
+            Import Master CSS from `src/style.css`. This import inserts the generated stylesheet and enables native CSS shaking for this stylesheet root.
         </StepL>
         <StepR>
             ```css name=src/style.css
             @import '@master/css';
-            @import 'master.css';
             ```
         </StepR>
     </Step>
     <Step $row>
         <StepL>
             ### <StepNum />Author app CSS and config
-            Source stylesheets can contain ordinary CSS and `@master` definitions together. Add `@master shake;` when ordinary class selectors should be kept only if the class appears in scanned source.
+            Source stylesheets can contain ordinary CSS and `@master` definitions together. Ordinary class selectors are kept only when they appear in scanned source. Add `@master no-shake;` only when native CSS must be preserved as written.
 
             (i) Import the stylesheet from `master.css` when you want its `@master {}` blocks to participate in the config graph.
         </StepL>
         <StepR>
             ```css name=src/style.css
             @import '@master/css';
-            @import 'master.css';
-            @master shake;
 
             .native-card {
                 border: 1px solid rgb(0 0 0 / 12%);

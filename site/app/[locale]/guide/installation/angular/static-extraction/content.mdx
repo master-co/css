@@ -114,7 +114,7 @@
     <Step $row>
         <StepL>
             ### <StepNum />Import stylesheets
-            Import the Master CSS default stylesheet and the `master.css` virtual CSS module into the global CSS file `src/styles.css`.
+            Import Master CSS into the global CSS file `src/styles.css`.
 
             (!) Don&#39;t import it in the <code>src/main.ts</code>, you&#39;ll get some errors about webpack loaders.
         </StepL>
@@ -122,7 +122,6 @@
             ```css name=src/styles.css
             /* You can add global styles to this file, and also import other style files */
             @import '@master/css'; /* [!code ++] */
-            @import 'virtual:master.css'; /* [!code ++] */
             ```
         </StepR>
     </Step>

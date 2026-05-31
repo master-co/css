@@ -28,7 +28,6 @@ export interface ExtractState {
     options: {
         config: string | Config
         extractorOptions: ExtractorOptions
-        module: string
         debug: boolean
     }
 }
@@ -64,7 +63,6 @@ function resolveExtractorOptions(options: ResolvedOptions): ExtractorOptions {
         ...options.extractorOptions,
         config: options.extractorOptions.config ?? options.config,
         exclude: [...new Set(exclude)],
-        module: options.module,
         output: DEFAULT_EXTRACT_OUTPUT,
         verbose: options.extractorOptions.verbose ?? (options.debug ? 1 : 0)
     }
@@ -72,7 +70,7 @@ function resolveExtractorOptions(options: ResolvedOptions): ExtractorOptions {
 
 export async function transformExtractStyleSource(statePath: string, resourcePath: string, source: string) {
     const state = readExtractState(statePath)
-    if (!isStyleCSSRequest(resourcePath) || !isMasterStyleSource(source, state.options.module)) return source
+    if (!isStyleCSSRequest(resourcePath) || !isMasterStyleSource(source)) return source
     const options = resolveOptions({
         mode: 'extract',
         config: state.options.config,
@@ -81,7 +79,6 @@ export async function transformExtractStyleSource(statePath: string, resourcePat
     })
     const session = await getOrCreateExtractSession(state.projectDir, state.outputPath, options)
     await registerStyleCSSSource(session.extractor, session.styleCSSSources, resourcePath, source, {
-        moduleIds: state.options.module,
         projectDir: state.projectDir
     })
     await session.write()
@@ -177,7 +174,6 @@ export async function writeExtractState(
         options: {
             config: options.config,
             extractorOptions: resolveExtractorOptions(options),
-            module: options.module,
             debug: options.debug
         }
     }

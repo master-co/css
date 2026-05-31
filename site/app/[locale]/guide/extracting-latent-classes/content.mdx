@@ -105,7 +105,7 @@ After candidate extraction, Master CSS validates each class against the active c
 
 - It is a built-in utility, such as `block`, `fg:red`, or `grid-cols:3`.
 - It is defined by your project config in `master.css`.
-- It matches a native class collected from a stylesheet that declares [`@master shake;`](/guide/shaking-unused-classes).
+- It matches a native class collected from a stylesheet that imports [`@master/css`](/guide/shaking-unused-classes).
 
 ```css name=master.css
 @master {
@@ -246,4 +246,4 @@ Keep both lists small. The most reliable extraction path is still complete class
 - Use `@master class` only for bounded classes the extractor cannot see.
 - Use `@master class exclude` for real false positives.
 - Use runtime or progressive rendering for classes created after startup.
-- Use [`@master shake;`](/guide/shaking-unused-classes) when native CSS class rules should be usage-shaken.
+- Import [`@master/css`](/guide/shaking-unused-classes) from stylesheet roots whose native CSS class rules should be usage-shaken.

@@ -1,5 +1,4 @@
 import { fileURLToPath } from 'node:url'
-import { relative } from 'node:path'
 import type { NextConfig } from 'next'
 import { createMasterStyleCSSPattern } from '@master/css-extractor/style'
 import {
@@ -30,11 +29,6 @@ function resolveExtractLoaderPath() {
 
 function resolveExtractCSSLoaderPath() {
     return fileURLToPath(new URL('./extract-css-loader.mjs', import.meta.url))
-}
-
-function toAliasTarget(projectDir: string, outputPath: string) {
-    const relativePath = relative(projectDir, outputPath).replace(/\\/g, '/')
-    return relativePath.startsWith('.') ? relativePath : `./${relativePath}`
 }
 
 function toRuleArray(rule: TurbopackRuleConfigCollection | undefined) {
@@ -100,9 +94,7 @@ function applyMasterCSSExtractTurbopackConfig(
     cssConfigLoaderPath: string,
     extractLoaderPath: string,
     extractCSSLoaderPath: string,
-    statePath: string,
-    outputPath: string,
-    moduleId: string
+    statePath: string
 ) {
     const turbopackConfig = applyMasterCSSTurbopackConfig(nextConfig, cssConfigLoaderPath)
     const rules = turbopackConfig.rules || {}
@@ -131,7 +123,7 @@ function applyMasterCSSExtractTurbopackConfig(
             all: [
                 { not: 'foreign' as const },
                 { path: /\.(css|scss|sass)$/ },
-                { content: createMasterStyleCSSPattern(moduleId) },
+                { content: createMasterStyleCSSPattern() },
                 { not: { query: /master-css-config/ } }
             ]
         },
@@ -149,10 +141,6 @@ function applyMasterCSSExtractTurbopackConfig(
 
     return {
         ...turbopackConfig,
-        resolveAlias: {
-            ...turbopackConfig.resolveAlias,
-            [moduleId]: outputPath
-        },
         rules: {
             ...rules,
             '*': [
@@ -191,7 +179,6 @@ export function withMasterCSS<T extends NextConfig>(nextConfig: T = {} as T, opt
             if (!setup) return nextConfig
             const outputPath = resolveExtractOutputPath(setup.projectDir)
             const statePath = resolveExtractStatePath(outputPath)
-            const aliasTarget = toAliasTarget(setup.projectDir, outputPath)
             return {
                 ...nextConfig,
                 turbopack: applyMasterCSSExtractTurbopackConfig(
@@ -199,9 +186,7 @@ export function withMasterCSS<T extends NextConfig>(nextConfig: T = {} as T, opt
                     cssConfigLoaderPath,
                     resolveExtractLoaderPath(),
                     resolveExtractCSSLoaderPath(),
-                    statePath,
-                    aliasTarget,
-                    resolvedOptions.module
+                    statePath
                 )
             }
         })

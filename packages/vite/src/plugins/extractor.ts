@@ -58,7 +58,6 @@ export function UsageGraphPlugin(_options: PluginOptions, context: PluginContext
         },
         async transform(code, id) {
             if (id.startsWith('\0')) return
-            if (id === context.extractor.resolvedVirtualModuleId) return
             // Only feed Master-CSS-bearing source extensions to the extractor.
             // Linked CSS files are handled by the stylesheet plugin instead.
             if (!isExtractableSource(id)) return

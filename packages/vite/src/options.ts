@@ -5,7 +5,6 @@ const options: PluginOptions = {
     mode: 'runtime',
     config: 'master.css',
     injectRuntime: true,
-    injectVirtualModule: true,
     avoidFOUC: true,
 }
 
@@ -16,7 +15,7 @@ export interface PluginOptions {
      * Defines how Master CSS should be integrated into the build.
      *
      * - `'runtime'`: Detects the application's entry file, automatically injects the initialization of CSSRuntime, and imports the config code.
-     * - `'extract'`: Detects the application's entry file, automatically imports the `virtual:master.css` module, and triggers the static extraction workflow.
+     * - `'extract'`: Detects the application's entry file, wires the generated CSS module, and triggers the static extraction workflow.
      * - `'pre-render'`: Renders all `*.html` dependencies and injects CSS internally. This mode may be integrated with other SSR capabilities.
      * - `'progressive'`: Combines `'runtime'` and `'pre-render'` modes.
      * - `null`: Disables automatic integration
@@ -38,12 +37,6 @@ export interface PluginOptions {
      * Whether to include Master CSS’s runtime engine into the entry file.
      */
     injectRuntime?: boolean
-
-    /**
-     * Whether to register the virtual module `virtual:master.css`.
-     * Allows importing it directly in user code for dynamic injection.
-     */
-    injectVirtualModule?: boolean
 
     /**
      * Prevents Flash of Unstyled Content (FOUC) during the initial render.

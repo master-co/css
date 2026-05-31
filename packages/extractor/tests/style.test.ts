@@ -5,6 +5,7 @@ import { describe, expect, it } from 'vitest'
 import CSSExtractor from '../src/core'
 import {
     createExtractedCSS,
+    hasMasterNoShakeDirective,
     hasMasterShakeDirective,
     isMasterStyleSource,
     removeMasterShakeDirectives,
@@ -20,42 +21,48 @@ function createFixture() {
 }
 
 describe('style CSS extraction helpers', () => {
-    it('replaces virtual CSS imports with CSS import modifiers', () => {
+    it('replaces @master/css imports with CSS import modifiers', () => {
         const result = replaceStyleCSSImports([
-            '@import "virtual:master.css";',
+            '@import "@master/css" layer(master);',
             '@import url(\'master.css\') layer(master);',
             '@import "./other.css";'
-        ].join('\n'), 'virtual:master.css', '/* master */')
+        ].join('\n'), '/* master */')
 
         expect(result.replaced).toBe(true)
         expect(result.code).toContain('/* master */')
-        expect(result.code).not.toContain('virtual:master.css')
-        expect(result.code).not.toContain('layer(master)')
+        expect(result.code).not.toContain('@master/css')
+        expect(result.code).toContain('@import url(\'master.css\') layer(master);')
         expect(result.code).toContain('@import "./other.css";')
     })
 
-    it('detects virtual CSS imports and master shake directives', () => {
-        expect(isMasterStyleSource('@master { --color-primary: red; }', 'virtual:master.css')).toBe(false)
-        expect(isMasterStyleSource('@import "master.css";', 'virtual:master.css')).toBe(true)
-        expect(isMasterStyleSource('@master shake;', 'virtual:master.css')).toBe(true)
-        expect(isMasterStyleSource('@import "./other.css";', 'virtual:master.css')).toBe(false)
+    it('detects Master CSS imports and legacy master shake directives', () => {
+        expect(isMasterStyleSource('@master { --color-primary: red; }')).toBe(false)
+        expect(isMasterStyleSource('@import "@master/css";')).toBe(true)
+        expect(isMasterStyleSource('@import "virtual:master.css";')).toBe(false)
+        expect(isMasterStyleSource('@import "master.css";')).toBe(false)
+        expect(isMasterStyleSource('@master shake;')).toBe(true)
+        expect(isMasterStyleSource('@master no-shake;')).toBe(false)
+        expect(isMasterStyleSource('@import "./other.css";')).toBe(false)
     })
 
-    it('removes top-level master shake directives', () => {
+    it('removes top-level master style directives', () => {
         const result = removeMasterShakeDirectives([
             '@master shake;',
+            '@master no-shake;',
             '',
             '@media (min-width: 768px) {',
             '    @master shake;',
+            '    @master no-shake;',
             '}',
             '',
             '.card { color: red; }'
         ].join('\n'))
 
         expect(hasMasterShakeDirective('@master shake;\n.card { color: red; }')).toBe(true)
+        expect(hasMasterNoShakeDirective('@master no-shake;\n.card { color: red; }')).toBe(true)
         expect(result.removed).toBe(true)
-        expect(result.code).not.toContain('@master shake;\n\n.card')
-        expect(result.code).toContain('@media (min-width: 768px) {\n    @master shake;\n}')
+        expect(result.code).not.toContain('@master no-shake;\n\n.card')
+        expect(result.code).toContain('@media (min-width: 768px) {\n    @master shake;\n    @master no-shake;\n}')
     })
 
     it('uses root master.css config only and ignores stylesheet-local CSS config sources', async () => {
@@ -85,16 +92,14 @@ describe('style CSS extraction helpers', () => {
         `)
         const extractor = new CSSExtractor({
             include: [],
-            config: 'master.css',
-            module: 'virtual:master.css'
+            config: 'master.css'
         }, root)
         await extractor.init()
         await extractor.prepare()
 
         const styleCSSSources = new Map()
         await registerStyleCSSSource(extractor, styleCSSSources, join(root, 'app/globals.css'), `
-            @master shake;
-            @import "virtual:master.css";
+            @import "@master/css";
 
             @master {
                 .btn {
@@ -120,6 +125,7 @@ describe('style CSS extraction helpers', () => {
         })
 
         expect(css).not.toContain('.root-native')
+        expect(css).toContain('text-rendering:geometricPrecision')
         expect(css).toContain('.main')
         expect(css).not.toContain('.unused')
         expect(css).toContain('--color-primary:red')
@@ -129,9 +135,10 @@ describe('style CSS extraction helpers', () => {
         expect(css).toContain('.block{display:block}')
         expect(css).not.toContain('@master')
         expect(css).not.toContain('virtual:master.css')
+        expect(css).not.toContain('@master/css')
     })
 
-    it('shakes local CSS imports from master shake roots', async () => {
+    it('shakes local CSS imports from Master CSS import roots by default', async () => {
         const root = createFixture()
         mkdirSync(join(root, 'app/styles'), { recursive: true })
         writeFileSync(join(root, 'app/styles/btn.css'), `
@@ -145,15 +152,13 @@ describe('style CSS extraction helpers', () => {
         `)
         const extractor = new CSSExtractor({
             include: [],
-            config: 'master.css',
-            module: 'virtual:master.css'
+            config: 'master.css'
         }, root)
         await extractor.init()
 
         const styleCSSSources = new Map()
         const result = await registerStyleCSSSource(extractor, styleCSSSources, join(root, 'app/globals.css'), `
-            @master shake;
-            @import "virtual:master.css";
+            @import "@master/css";
             @import "./styles/btn.css";
 
             .card {
@@ -183,18 +188,18 @@ describe('style CSS extraction helpers', () => {
         expect(css).not.toContain('@import "./styles/btn.css"')
     })
 
-    it('preserves native CSS without a master shake directive', async () => {
+    it('preserves native CSS when a Master CSS import root opts out of shaking', async () => {
         const root = createFixture()
         const extractor = new CSSExtractor({
             include: [],
-            config: 'master.css',
-            module: 'virtual:master.css'
+            config: 'master.css'
         }, root)
         await extractor.init()
 
         const styleCSSSources = new Map()
         await registerStyleCSSSource(extractor, styleCSSSources, join(root, 'app/globals.css'), `
-            @import "virtual:master.css";
+            @import "@master/css";
+            @master no-shake;
 
             .card {
                 display: grid;
@@ -216,6 +221,7 @@ describe('style CSS extraction helpers', () => {
         expect([...extractor.usedNativeClasses]).toEqual([])
         expect(css).toContain('.card')
         expect(css).toContain('.unused')
+        expect(css).not.toContain('@master no-shake')
     })
 
     it('removes imported master shake directives without making dependencies independent roots', async () => {
@@ -234,14 +240,14 @@ describe('style CSS extraction helpers', () => {
         `)
         const extractor = new CSSExtractor({
             include: [],
-            config: 'master.css',
-            module: 'virtual:master.css'
+            config: 'master.css'
         }, root)
         await extractor.init()
 
         const styleCSSSources = new Map()
         await registerStyleCSSSource(extractor, styleCSSSources, join(root, 'app/globals.css'), `
-            @import "virtual:master.css";
+            @import "@master/css";
+            @master no-shake;
             @import "./styles/btn.css";
         `)
         await extractor.insert(join(root, 'app/page.html'), '<div class="btn-native"></div>')
@@ -256,14 +262,14 @@ describe('style CSS extraction helpers', () => {
         expect(css).toContain('.btn-native')
         expect(css).toContain('.btn-unused')
         expect(css).not.toContain('@master shake')
+        expect(css).not.toContain('@master no-shake')
     })
 
     it('can emit shaken native CSS without generated Master CSS', async () => {
         const root = createFixture()
         const extractor = new CSSExtractor({
             include: [],
-            config: 'master.css',
-            module: 'virtual:master.css'
+            config: 'master.css'
         }, root)
         await extractor.init()
 
@@ -292,8 +298,7 @@ describe('style CSS extraction helpers', () => {
         const root = createFixture()
         const extractor = new CSSExtractor({
             include: [],
-            config: 'master.css',
-            module: 'virtual:master.css'
+            config: 'master.css'
         }, root)
         await extractor.init()
         await extractor.insert(join(root, 'app/page.html'), '<div class="block"></div>')

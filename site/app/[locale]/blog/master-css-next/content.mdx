@@ -179,12 +179,10 @@ npm run start
 
 `@master/css.next` also supports a source-scanned CSS workflow for projects that do not need runtime rendering or route-level HTML pre-rendering.
 
-Extract mode keeps the same `virtual:master.css` authoring model used by other Master CSS build integrations:
+Extract mode uses the same Master CSS stylesheet import model as the other build integrations:
 
 ```css name=app/globals.css
 @import '@master/css';
-@import 'virtual:master.css';
-@master shake;
 
 .main {
     background-color: var(--color-primary);
@@ -216,7 +214,7 @@ const nextConfig = await withMasterCSS({
 export default nextConfig
 ```
 
-Under the hood, extract mode scans the configured source files with `@master/css-extractor` and writes a generated CSS file under `.master/`. A Turbopack CSS loader replaces imports of `virtual:master.css` with that generated CSS, and CSS files that declare `@master shake;` are treated as native CSS shaking roots.
+Under the hood, extract mode scans the configured source files with `@master/css-extractor` and writes a generated CSS file under `.master/`. A Turbopack CSS loader replaces `@import "@master/css"` with that generated CSS, and stylesheets that import `@master/css` are treated as native CSS shaking roots by default.
 
 Ordinary class selectors in those roots are pruned against detected classes. References to `var(--*)` or configured animation names can pull matching variables and keyframes from the config graph rooted at `master.css`. During Turbopack builds, a scanner loader also reads JavaScript and TypeScript modules that pass through the module graph, so imported files can incrementally feed additional class names into the extractor.
 

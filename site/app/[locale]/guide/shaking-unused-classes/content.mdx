@@ -1,16 +1,16 @@
 ## Overview [sr-only]
-Class extraction decides which classes are used. Native CSS shaking uses that usage graph to remove unused native CSS class rules from stylesheets that opt in with `@master shake;`.
+Class extraction decides which classes are used. Native CSS shaking uses that usage graph to remove unused native CSS class rules from Master-managed stylesheets.
 
 ```txt
-source usage + @master shake stylesheet
+source usage + @import "@master/css" stylesheet
   -> used native class names
   -> shaken native CSS
 ```
 
-`@master shake;` is a stylesheet directive. It says that the current CSS entry should be managed by Master CSS for native class rule shaking.
+A stylesheet becomes Master-managed when it imports `@master/css`. Native class selector rules in that stylesheet are shaken by default.
 
 ```css name=src/style.css
-@master shake;
+@import "@master/css";
 
 .card {
     border: 1px solid rgb(0 0 0 / 12%);
@@ -34,15 +34,15 @@ If source files use `card` but never use `unused`, the output keeps `.card` and 
 }
 ```
 
-Use [`Extracting latent classes`](/guide/extracting-latent-classes) for the source scanning model. This page focuses on what happens after native CSS opts into shaking.
+Use [`Extracting latent classes`](/guide/extracting-latent-classes) for the source scanning model. This page focuses on what happens after a stylesheet enters the Master CSS pipeline.
 
 ---
 
-## Shake directive
-Use `@master shake;` at the top level of a CSS entry whose native class rules should be usage-shaken.
+## Default shaking
+Import `@master/css` from the CSS entry that should receive generated Master CSS. Ordinary class selector rules in that entry are pruned against detected source classes.
 
 ```css name=src/app.css
-@master shake;
+@import "@master/css";
 
 .app-shell {
     min-height: 100dvh;
@@ -53,7 +53,7 @@ Use `@master shake;` at the top level of a CSS entry whose native class rules sh
 }
 ```
 
-The directive is removed from the compiled output. It is not a browser-facing at-rule.
+The Master import is replaced by generated CSS. It is not emitted as a browser-facing package import by the integration.
 
 ```css name=output.css
 .app-shell {
@@ -61,9 +61,12 @@ The directive is removed from the compiled output. It is not a browser-facing at
 }
 ```
 
-Omit the directive when a stylesheet contains class names that are intentionally invisible to the extractor.
+Use `@master no-shake;` when the stylesheet contains class names that are intentionally invisible to the extractor.
 
 ```css name=src/vendor-overrides.css
+@import "@master/css";
+@master no-shake;
+
 .cms-card {
     color: red;
 }
@@ -73,15 +76,15 @@ Omit the directive when a stylesheet contains class names that are intentionally
 }
 ```
 
-This stylesheet stays in the normal CSS pipeline and its native rules are preserved as written because it did not declare `@master shake;`.
+This stylesheet is still Master-managed, but its native CSS is preserved as written.
 
 ---
 
 ## Import graph
-When a `.css` entry declares `@master shake;`, its local relative `.css` imports are expanded into the same shake graph.
+When a Master-managed `.css` entry imports local relative `.css` files, those imports are expanded into the same shake graph.
 
 ```css name=src/style.css
-@master shake;
+@import "@master/css";
 @import "./styles/cards.css";
 @import "./styles/buttons.css";
 
@@ -126,18 +129,18 @@ The compiled native CSS keeps `.page`, `.card`, and `.button`, then removes `.un
 
 ```txt
 src/style.css
-  -> declares @master shake
+  -> imports @master/css
   -> imports ./styles/cards.css
   -> imports ./styles/buttons.css
   -> shaken as one root graph
 ```
 
-Only local relative `.css` imports are expanded this way. Bare package imports, remote imports, and non-CSS imports stay in the bundler's normal CSS pipeline.
+Only local relative `.css` imports are expanded this way. Bare package imports, remote imports, and non-CSS imports stay in the bundler's normal CSS pipeline unless they are one of the Master CSS entry imports.
 
 ---
 
 ## Root scope
-`@master shake;` is root-scoped. The stylesheet directly processed by the integration is the root; imported files are dependencies of that root.
+Shaking is root-scoped. The stylesheet directly processed by the integration is the root; imported files are dependencies of that root.
 
 ```txt
 app/a/a.css
@@ -148,7 +151,7 @@ app/b/b.css
 ```
 
 ```css name=app/a/a.css
-@master shake;
+@import "@master/css";
 @import "../shared.css";
 
 .a-page {
@@ -157,7 +160,7 @@ app/b/b.css
 ```
 
 ```css name=app/b/b.css
-@master shake;
+@import "@master/css";
 @import "../shared.css";
 
 .b-page {
@@ -166,8 +169,6 @@ app/b/b.css
 ```
 
 ```css name=app/shared.css
-@master shake;
-
 .shared-card {
     border: 1px solid rgb(0 0 0 / 12%);
 }
@@ -177,13 +178,11 @@ app/b/b.css
 }
 ```
 
-When `shared.css` is imported into `a.css`, the nested `@master shake;` is removed and does not create a second output. `shared.css` follows `a.css` as part of the `a.css` root graph.
-
 If `app/a/page.tsx` uses `a-page shared-card`, then the `a.css` output keeps `.a-page` and `.shared-card`, but removes `.b-page` and `.only-used-in-b`.
 
 If `app/b/page.tsx` uses `b-page shared-card only-used-in-b`, then the `b.css` output can keep `.b-page`, `.shared-card`, and `.only-used-in-b`.
 
-The same imported file can therefore be shaken differently under different roots. If `shared.css` is also imported directly by JavaScript or by a framework route, then `shared.css` becomes its own root and its own top-level `@master shake;` applies there.
+The same imported file can therefore be shaken differently under different roots. If `shared.css` is also imported directly by JavaScript or by a framework route, then `shared.css` becomes its own root only when that direct import enters the Master CSS pipeline.
 
 ---
 
@@ -201,8 +200,8 @@ app/b/b.css
 ```
 
 ```css name=app/a/a.css
-@master shake;
-@master source './page.tsx';
+@import "@master/css";
+@master source "./page.tsx";
 @import "../shared.css";
 
 .a-card {
@@ -215,8 +214,8 @@ app/b/b.css
 ```
 
 ```css name=app/b/b.css
-@master shake;
-@master source './page.tsx';
+@import "@master/css";
+@master source "./page.tsx";
 @import "../shared.css";
 
 .a-card {
@@ -229,8 +228,8 @@ app/b/b.css
 ```
 
 ```css name=app/shared.css
-@master class 'shared-card';
-@master class exclude 'debug-*';
+@master class "shared-card";
+@master class exclude "debug-*";
 
 .shared-card {
     border: 1px solid rgb(0 0 0 / 12%);
@@ -255,15 +254,15 @@ export default function Page() {
 }
 ```
 
-The `a.css` output keeps `.a-card` and `.shared-card`. The `b.css` output keeps `.b-card` and `.shared-card`. Both roots remove `.debug-outline` because the imported `@master class exclude 'debug-*';` directive belongs to each root scope.
+The `a.css` output keeps `.a-card` and `.shared-card`. The `b.css` output keeps `.b-card` and `.shared-card`. Both roots remove `.debug-outline` because the imported `@master class exclude "debug-*";` directive belongs to each root scope.
 
 Use `@master source force` when a root must scan a file even though the global or local exclude list would remove it.
 
 ```css name=app/a/a.css
-@master shake;
-@master source './**/*.tsx';
-@master source exclude './**/*.test.tsx';
-@master source force './always-scan.test.tsx';
+@import "@master/css";
+@master source "./**/*.tsx";
+@master source exclude "./**/*.test.tsx";
+@master source force "./always-scan.test.tsx";
 ```
 
 ---
@@ -272,7 +271,7 @@ Use `@master source force` when a root must scan a file even though the global o
 Native shaking filters class selector rules by detected usage. A class rule is kept when its selector branch references a class that is used.
 
 ```css name=src/style.css
-@master shake;
+@import "@master/css";
 
 body {
     margin: 0;
@@ -343,7 +342,7 @@ Shaken native CSS can reference variables and keyframes from the config graph ro
 ```
 
 ```css name=src/style.css
-@master shake;
+@import "@master/css";
 
 .notice {
     color: var(--color-primary);
@@ -368,8 +367,8 @@ The kept `.notice` rule pulls in `--color-primary` and `@keyframes fade-in`. `.u
 If a native class is used by a bounded external source, include it explicitly so shaking keeps the rule.
 
 ```css name=src/dialog.css
-@master shake;
-@master class 'dialog-open dialog-closing';
+@import "@master/css";
+@master class "dialog-open dialog-closing";
 
 .dialog-open {
     overflow: hidden;
@@ -385,8 +384,8 @@ Use this for known class contracts. Do not use it as a replacement for putting n
 ---
 
 ## Checklist
-- Add `@master shake;` only to CSS entries whose native class rules should be pruned.
+- Import `@master/css` from CSS entries that should receive generated Master CSS and native CSS shaking.
+- Add `@master no-shake;` to Master-managed entries whose native CSS must be preserved.
 - Remember that local relative `.css` imports follow the root's shaking decision.
-- Treat nested `@master shake;` in imported files as redundant under the parent root.
 - Use `@master class` for native classes used by bounded external systems.
-- Omit `@master shake;` for vendor, CMS, legacy, or third-party styles whose class usage is not visible to the extractor.
+- Keep vendor, CMS, legacy, or third-party styles outside Master-managed roots unless their class usage is visible to the extractor or protected with `@master no-shake;`.

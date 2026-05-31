@@ -1,7 +1,3 @@
-declare module 'master.css' {}
-
-declare module 'virtual:master.css' {}
-
 declare module '*?master-css-config' {
     import type { Config } from '@master/css'
 

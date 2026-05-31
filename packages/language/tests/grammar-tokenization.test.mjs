@@ -348,6 +348,7 @@ test('CSS injection highlights @master root configuration blocks', () => {
 test('CSS injection highlights top-level extractor directives', () => {
     const tokens = tokensFor(embeddedHighlighter, `
         @master shake;
+        @master no-shake;
         @master source './src/**/*.tsx';
         @master source exclude './src/**/*.test.tsx';
         @master source force './src/generated.tsx';
@@ -357,6 +358,7 @@ test('CSS injection highlights top-level extractor directives', () => {
 
     assertTokenScope(tokens, 'master', 'keyword.control.at-rule.master-css.css')
     assertTokenScope(tokens, 'shake', 'support.type.property-name.css')
+    assertTokenScope(tokens, 'no-shake', 'support.type.property-name.css')
     assertTokenScope(tokens, 'source', 'support.type.property-name.css')
     assertTokenScope(tokens, 'class', 'support.type.property-name.css')
     assertTokenScope(tokens, 'exclude', 'storage.modifier.master-css.css')

@@ -1,45 +1,14 @@
 import type { Plugin, ViteDevServer } from 'vite'
 import { existsSync, readFileSync } from 'fs'
-import { PluginContext } from '../core'
-import { PluginOptions } from '../options'
-import getExtractedCSS from '../utils/extracted-css'
-
-const HMR_EVENT_UPDATE = 'master-css-hmr:update'
+import type { PluginContext } from '../core'
+import type { PluginOptions } from '../options'
 
 /** HMR when the config and source files changed */
-export default function VirtualCSSHMRPlugin(options: PluginOptions, context: PluginContext): Plugin {
+export default function VirtualCSSHMRPlugin(_options: PluginOptions, context: PluginContext): Plugin {
     let transformedIndexHTMLModule: { id: string, code: string }
     const servers: ViteDevServer[] = []
-    const updateVirtualModule = async ({ server, timestamp = Date.now() }: { server: ViteDevServer, timestamp?: number }) => {
+    const updateStyleCSSImporters = async ({ server }: { server: ViteDevServer }) => {
         if (!server) return
-        const resolvedVirtualModuleId = context.extractor.resolvedVirtualModuleId
-        const virtualCSSModule = server.moduleGraph.getModuleById(resolvedVirtualModuleId)
-        if (virtualCSSModule) {
-            const css = await getExtractedCSS(context)
-            // Awaited so the C4 serialisation chain in `buildStart()` is
-            // observable: without this, the update chain resolves before
-            // the heavy module-graph reload completes, and a second
-            // `change` could overlap a first.
-            await server.reloadModule(virtualCSSModule)
-            server.ws.send({
-                type: 'update',
-                updates: [{
-                    type: 'js-update',
-                    path: resolvedVirtualModuleId,
-                    acceptedPath: resolvedVirtualModuleId,
-                    timestamp
-                }]
-            })
-            server.ws.send({
-                type: 'custom',
-                event: HMR_EVENT_UPDATE,
-                data: {
-                    id: resolvedVirtualModuleId,
-                    css,
-                    timestamp
-                }
-            })
-        }
         const virtualCSSImporters = Array.from(context.virtualCSSImporters || [])
         await Promise.all(virtualCSSImporters.map(async (eachModuleId) => {
             const eachModule = server.moduleGraph.getModuleById(eachModuleId)
@@ -47,7 +16,6 @@ export default function VirtualCSSHMRPlugin(options: PluginOptions, context: Plu
                 await server.reloadModule(eachModule)
             }
         }))
-        return virtualCSSModule
     }
     const handleReset = async ({ server }: { server: ViteDevServer }) => {
         const tasks: Promise<unknown>[] = []
@@ -64,7 +32,7 @@ export default function VirtualCSSHMRPlugin(options: PluginOptions, context: Plu
               finished re-extracting open modules. Push spread instead. */
         tasks.push(
             ...Array.from(server.moduleGraph.idToModuleMap.keys())
-                .filter((eachModuleId) => eachModuleId !== context.extractor.resolvedVirtualModuleId)
+                .filter((eachModuleId) => !eachModuleId.startsWith('\0'))
                 .map(async (eachModuleId: string) => {
                     const eachModule = server.moduleGraph.idToModuleMap.get(eachModuleId)
                     if (eachModule) {
@@ -78,10 +46,10 @@ export default function VirtualCSSHMRPlugin(options: PluginOptions, context: Plu
                 })
         )
         await Promise.all(tasks)
-        await updateVirtualModule({ server })
+        await updateStyleCSSImporters({ server })
     }
     return {
-        name: 'master-css:static:virtual-css-module:hmr',
+        name: 'master-css:static:css-import:hmr',
         enforce: 'pre',
         apply: 'serve',
         buildStart() {
@@ -105,19 +73,9 @@ export default function VirtualCSSHMRPlugin(options: PluginOptions, context: Plu
                 })
                 .on('change', () => {
                     updateChain = updateChain
-                        .then(() => Promise.all(servers.map((eachServer) => updateVirtualModule({ server: eachServer }))))
+                        .then(() => Promise.all(servers.map((eachServer) => updateStyleCSSImporters({ server: eachServer }))))
                         .catch(onError('hmr update'))
                 })
-        },
-        async resolveId(id) {
-            if (context.extractor.options.module && id.includes(context.extractor.options.module) || id.includes(context.extractor.resolvedVirtualModuleId)) {
-                return context.extractor.resolvedVirtualModuleId
-            }
-        },
-        async load(id) {
-            if (id === context.extractor.resolvedVirtualModuleId) {
-                return await getExtractedCSS(context)
-            }
         },
         transformIndexHtml: {
             order: 'pre',

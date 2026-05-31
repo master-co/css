@@ -40,14 +40,6 @@ import { options } from '@master/css-extractor'
 import options from '@master/css-extractor/options'
 ```
 
-### `options.module`
-Custom Master CSS virtual module ID, this option does not support Master CSS CLI.
-<DocProp defaultValue={`'${options.module}'`} types={['string']} />
-Then you can import with a custom virtual module ID in the entry file like `main.js`:
-```js name=main.js
-import 'virtual:master.css'
-```
-
 ### `options.config`
 Customize your Master CSS [configuration](/guide/configuration) or the path to the configuration file, the default configuration file is read with [.cwd](#cwd) in the root directory of the project.
 <DocProp defaultValue={`'${options.config}'`} types={['string', 'Config']} />
@@ -94,10 +86,10 @@ Extractor options can also be declared in CSS. When these directives are loaded 
 Bare source globs are resolved from `cwd`. Globs that start with `./` or `../` are resolved relative to the CSS file that declares the directive. `@master class exclude` accepts exact strings and `*` / `?` wildcard patterns.
 
 ### Native CSS shaking
-Prune native CSS class selector rules from a stylesheet by declaring `@master shake;` in that stylesheet:
+Prune native CSS class selector rules from a stylesheet by importing `@master/css` in that stylesheet:
 
 ```css
-@master shake;
+@import "@master/css";
 @import "./styles/btn.css";
 
 .card {
@@ -109,7 +101,7 @@ Prune native CSS class selector rules from a stylesheet by declaring `@master sh
 }
 ```
 
-Local relative `.css` imports are expanded, `@master shake;` is removed from the compiled output, and native class rules are kept only when their class names are found by the extractor. See [Shaking unused classes](/guide/shaking-unused-classes) for the full model.
+Local relative `.css` imports are expanded, the Master import is replaced by generated CSS, and native class rules are kept only when their class names are found by the extractor. Add `@master no-shake;` to preserve native CSS in a Master-managed root. See [Shaking unused classes](/guide/shaking-unused-classes) for the full model.
 
 ### `extractLatentClasses()`
 Extract latent classes from string content.

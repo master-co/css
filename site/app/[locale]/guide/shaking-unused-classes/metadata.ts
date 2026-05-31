@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
     title: 'Shaking unused classes',
-    description: 'Understand how Master CSS removes unused native CSS class rules with @master shake.',
+    description: 'Understand how Master CSS removes unused native CSS class rules from managed stylesheets.',
     category: 'Fundamentals',
     fileURL: import.meta.url
 })

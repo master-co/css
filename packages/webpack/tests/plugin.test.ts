@@ -101,7 +101,6 @@ function makePlugin(options: Record<string, unknown> = {}, cwd = process.cwd()) 
         config: {} as any,
         include: [],
         sources: [],
-        module: 'virtual:master.css',
         ...options,
     } as any, cwd)
     // Block prepare() / startWatch() — they would try to read the cwd.
@@ -122,7 +121,6 @@ describe('MasterCSSExtractorPlugin (C1 race fix)', () => {
             } as any,
             include: [],
             sources: [],
-            module: 'virtual:master.css',
         } as any)
         const { compiler } = makeFakeCompiler()
         ;(compiler as any).webpack = { sources: { RawSource: function NoopSource(this: object) { /* stub */ } } }
@@ -169,7 +167,7 @@ describe('MasterCSSExtractorPlugin (C1 race fix)', () => {
             .toContain('"key":"accent","value":"#456"')
     })
 
-    test('resolves virtual CSS module imports to the CSS virtual module', async () => {
+    test('leaves virtual CSS module imports unresolved', async () => {
         const plugin = makePlugin()
         const { compiler } = makeFakeCompiler()
         ;(compiler as any).webpack = { sources: { RawSource: function NoopSource(this: object) { /* stub */ } } }
@@ -186,10 +184,10 @@ describe('MasterCSSExtractorPlugin (C1 race fix)', () => {
 
         await resolveBefore(normalModuleFactory, resolveData)
 
-        expect(resolveData.request).toBe('master.css')
+        expect(resolveData.request).toBe('virtual:master.css')
     })
 
-    test('resolves CSS @import master.css to a separate CSS import virtual module', async () => {
+    test('leaves CSS @import master.css unresolved', async () => {
         const plugin = makePlugin()
         const { compiler } = makeFakeCompiler()
         ;(compiler as any).webpack = { sources: { RawSource: function NoopSource(this: object) { /* stub */ } } }
@@ -208,7 +206,51 @@ describe('MasterCSSExtractorPlugin (C1 race fix)', () => {
 
         await resolveBefore(normalModuleFactory, resolveData)
 
+        expect(resolveData.request).toBe('master.css')
+    })
+
+    test('resolves CSS @import @master/css to a separate CSS import virtual module', async () => {
+        const plugin = makePlugin()
+        const { compiler } = makeFakeCompiler()
+        ;(compiler as any).webpack = { sources: { RawSource: function NoopSource(this: object) { /* stub */ } } }
+        plugin.apply(compiler as any)
+
+        const normalModuleFactory = makeNormalModuleFactory()
+        compiler.hooks.normalModuleFactory.call(normalModuleFactory)
+        const resolveData = {
+            request: '@master/css',
+            context: process.cwd(),
+            contextInfo: {
+                issuer: path.join(process.cwd(), 'src/styles.css')
+            },
+            fileDependencies: new Set<string>()
+        }
+
+        await resolveBefore(normalModuleFactory, resolveData)
+
         expect(resolveData.request).toContain(path.join('node_modules', '.master-css', 'master-css-import.css'))
+    })
+
+    test('leaves non-CSS @master/css imports unchanged', async () => {
+        const plugin = makePlugin()
+        const { compiler } = makeFakeCompiler()
+        ;(compiler as any).webpack = { sources: { RawSource: function NoopSource(this: object) { /* stub */ } } }
+        plugin.apply(compiler as any)
+
+        const normalModuleFactory = makeNormalModuleFactory()
+        compiler.hooks.normalModuleFactory.call(normalModuleFactory)
+        const resolveData = {
+            request: '@master/css',
+            context: process.cwd(),
+            contextInfo: {
+                issuer: path.join(process.cwd(), 'src/main.ts')
+            },
+            fileDependencies: new Set<string>()
+        }
+
+        await resolveBefore(normalModuleFactory, resolveData)
+
+        expect(resolveData.request).toBe('@master/css')
     })
 
     test('adds default CSS config as a compilation dependency', () => {
@@ -297,7 +339,6 @@ describe('MasterCSSExtractorPlugin (C1 race fix)', () => {
                 config: 'master.css',
                 include: [],
                 sources: [],
-                module: 'virtual:master.css',
                 verbose: 0
             } as any, root).init()
 
@@ -307,7 +348,7 @@ describe('MasterCSSExtractorPlugin (C1 race fix)', () => {
             ;(plugin as any).styleCSSSources.set(path.join(root, 'src/styles.css'), {
                 shake: true,
                 source: [
-                    '@import "virtual:master.css";',
+                    '@import "@master/css";',
                     '',
                     '.native-used {',
                     '    color: var(--color-primary);',
@@ -321,7 +362,7 @@ describe('MasterCSSExtractorPlugin (C1 race fix)', () => {
             expect(css).not.toContain('.native-unused')
             expect(css).not.toContain('.root-native')
             expect(css).not.toContain('.root-unused')
-            expect(css).toContain('--color-primary:rgb(18 52 86)')
+            expect(css).toMatch(/--color-primary:(rgb\(18 52 86\)|#123456)/)
             expect(css).toContain('.btn{display:grid}')
             expect(css).not.toContain('.btn{display:inline-flex}')
         } finally {

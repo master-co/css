@@ -547,12 +547,8 @@ export default class CSSExtractor extends EventEmitter {
         }
     }
 
-    get resolvedVirtualModuleId(): string {
-        return '\0' + this.options.module
-    }
-
     get slotCSSRule(): string {
-        return '#' + cssEscape(this.options.module as string) + '{--slot:0}'
+        return '#' + cssEscape('master-css-slot') + '{--slot:0}'
     }
 }
 

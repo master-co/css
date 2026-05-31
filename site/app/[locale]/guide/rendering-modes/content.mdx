@@ -277,34 +277,21 @@ The extractor does not observe the DOM and does not execute application code. It
 </StepSection>
 
 ### Generated stylesheet entry
-In extract mode, the generated stylesheet is exposed as a virtual CSS module. Import it from the stylesheet your framework already bundles, or from JavaScript when that is the integration's preferred entry.
-
-```js name=src/main.js
-import 'virtual:master.css'
-```
+In extract mode, import the generated stylesheet from the stylesheet your framework already bundles.
 
 ```css name=src/style.css
 @import '@master/css';
-@import 'virtual:master.css';
 ```
 
-Webpack-based integrations also support the shorter CSS import:
-
-```css name=src/style.css
-@import 'master.css';
-```
-
-Use one import path for the generated stylesheet. If both JavaScript and CSS import the virtual CSS module in Webpack, the integration keeps the CSS output on the stylesheet import path.
+Use one `@import '@master/css'` entry for the generated stylesheet. That import is also the insertion point for generated Master CSS.
 
 ### Native CSS entries
-Regular CSS outside `@master` remains native CSS. When a stylesheet declares `@master shake;`, integrations treat that stylesheet as a shake root and prune class selectors against detected source classes.
+Regular CSS outside `@master` remains native CSS. When a stylesheet imports `@master/css`, integrations treat that stylesheet as a shake root by default and prune class selectors against detected source classes.
 
-Those native rules can also pull matching config variables referenced by `var(--*)` and configured keyframes referenced by animation declarations. Import `virtual:master.css` only where the generated Master CSS should be inserted.
+Those native rules can also pull matching config variables referenced by `var(--*)` and configured keyframes referenced by animation declarations. Add `@master no-shake;` when native CSS must be preserved.
 
 ```css name=src/style.css
 @import '@master/css';
-@import 'virtual:master.css';
-@master shake;
 
 .native-card {
     border: 1px solid rgb(0 0 0 / 12%);
