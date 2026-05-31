@@ -11,8 +11,8 @@ export default () => <CodeTabs>{[
             <meta charset="utf-8">
             <meta name="viewport" content="width=device-width, initial-scale=1">
             <link rel="preload" as="script" href="https://cdn.master.co/css-runtime@rc">
-            <link rel="preload" as="style" href="https://cdn.master.co/css@rc/index.css">
-            <link rel="stylesheet" href="https://cdn.master.co/css@rc/index.css">
+            <link rel="preload" as="style" href="https://cdn.master.co/css@rc/normal.css">
+            <link rel="stylesheet" href="https://cdn.master.co/css@rc/normal.css">
             <script src="https://cdn.master.co/css-runtime@rc"></script>
         </head>
         <body>
@@ -30,9 +30,9 @@ export default () => <CodeTabs>{[
         <head>
             <meta charset="utf-8">
             <meta name="viewport" content="width=device-width, initial-scale=1">
-            <link rel="preload" as="style" href="https://cdn.master.co/css@rc/index.css">
+            <link rel="preload" as="style" href="https://cdn.master.co/css@rc/normal.css">
             <link rel="modulepreload" href="https://cdn.master.co/css-runtime@rc/+esm">
-            <link rel="stylesheet" href="https://cdn.master.co/css@rc/index.css">
+            <link rel="stylesheet" href="https://cdn.master.co/css@rc/normal.css">
             <script type="module">
                 import { initCSSRuntime } from 'https://cdn.master.co/css-runtime@rc/+esm'
                 initCSSRuntime()
@@ -52,9 +52,9 @@ export default () => <CodeTabs>{[
         <head>
             <meta charset="utf-8">
             <meta name="viewport" content="width=device-width, initial-scale=1">
-            <link rel="preload" as="style" href="https://esm.sh/@master/css@rc/index.css?css">
+            <link rel="preload" as="style" href="https://esm.sh/@master/css@rc/normal.css?css">
             <link rel="modulepreload" href="https://esm.sh/@master/css-runtime@rc">
-            <link rel="stylesheet" href="https://esm.sh/@master/css@rc/index.css?css">
+            <link rel="stylesheet" href="https://esm.sh/@master/css@rc/normal.css?css">
             <script type="module">
                 import { initCSSRuntime } from 'https://esm.sh/@master/css-runtime@rc'
                 initCSSRuntime({
