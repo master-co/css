@@ -44,7 +44,8 @@
     ],
     "sideEffects": [
         "./index.css",
-        "./normal.css"
+        "./normal.css",
+        "./theme.css"
     ],
     "main": "./dist/index.mjs",
     "jsnext:main": "./dist/index.mjs",
@@ -61,6 +62,7 @@
         },
         "./index.css": "./index.css",
         "./normal.css": "./normal.css",
+        "./theme.css": "./theme.css",
         "./*": {
             "types": "./dist/*.d.ts",
             "import": "./dist/*.mjs",
@@ -71,7 +73,8 @@
     "files": [
         "dist",
         "index.css",
-        "normal.css"
+        "normal.css",
+        "theme.css"
     ],
     "publishConfig": {
         "access": "public",
