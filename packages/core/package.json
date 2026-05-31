@@ -42,18 +42,23 @@
         "build-tools",
         "mastercss"
     ],
-    "sideEffects": false,
+    "sideEffects": [
+        "./index.css"
+    ],
     "main": "./dist/index.mjs",
     "jsnext:main": "./dist/index.mjs",
     "esnext": "./dist/index.mjs",
     "module": "./dist/index.mjs",
+    "style": "./index.css",
     "types": "./dist/index.d.ts",
     "exports": {
         ".": {
+            "style": "./index.css",
             "types": "./dist/index.d.ts",
             "import": "./dist/index.mjs",
             "default": "./dist/index.mjs"
         },
+        "./index.css": "./index.css",
         "./*": {
             "types": "./dist/*.d.ts",
             "import": "./dist/*.mjs",
@@ -62,7 +67,8 @@
     },
     "bin": "./dist/bin/index.mjs",
     "files": [
-        "dist"
+        "dist",
+        "index.css"
     ],
     "publishConfig": {
         "access": "public",

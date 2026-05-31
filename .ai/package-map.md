@@ -4,7 +4,7 @@
 
 | Package | Entry Points | Responsibility |
 |---|---|---|
-| `@master/css` | `.`, `./*` | Core engine, config, rules, types, utilities |
+| `@master/css` | `.`, `./index.css`, `./*` | Core engine, config, rules, types, utilities, default stylesheet |
 | `@master/css-compiler` | `.` | Compile CSS-defined Master config and native CSS |
 | `@master/css-runtime` | `.` | Browser runtime, DOM observation, hydration |
 | `@master/css-server` | `.` | HTML render and CSS injection |
