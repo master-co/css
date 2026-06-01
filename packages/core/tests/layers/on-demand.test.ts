@@ -3,13 +3,12 @@ import { createCSS, UtilityType } from '../../src'
 
 test.concurrent('empty', () => {
     const css = createCSS()
-    expect(css.text).toBe(css.layerStatementRule.text)
+    expect(css.text).toBe('')
 })
 
 test.concurrent('utility', () => {
     const css = createCSS()
     css.add('text:center')
-    expect(css.text).toContain(css.layerStatementRule.text)
     expect(css.text).toContain('@layer general{.text\\:center{text-align:center}}')
 })
 
@@ -26,14 +25,13 @@ test.concurrent('manipulate', () => {
             }
         ]
     })
-    expect(css.text).toContain(css.layerStatementRule.text)
     css.add('text:center', 'font:bold')
     expect(css.text).toContain('@layer theme{:root{--font-weight-bold:700}}')
     expect(css.text).toContain('@layer general{.font\\:bold{font-weight:var(--font-weight-bold)}.text\\:center{text-align:center}}')
     css.add('btn')
     expect(css.text).toContain('@layer main{.btn{display:block}')
     css.remove('text:center', 'font:bold', 'btn')
-    expect(css.text).toBe(css.layerStatementRule.text)
+    expect(css.text).toBe('')
 })
 
 test('prevent duplicate insertion', () => {

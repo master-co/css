@@ -12,7 +12,7 @@ test('O to O', async ({ page }) => {
             </div>
         `
     })
-    await init(page, '@layer base, theme, preset, main, general;')
+    await init(page)
     await page.evaluate(() => {
         const createElement = (name: string) => {
             const el = document.createElement('div')
@@ -50,7 +50,7 @@ test('O to X', async ({ page }) => {
             </div>
         `
     })
-    await init(page, '@layer base, theme, preset, main, general;')
+    await init(page)
     await page.evaluate(() => {
         const createElement = (name: string) => {
             const el = document.createElement('div')
@@ -74,7 +74,7 @@ test('O to X', async ({ page }) => {
 })
 
 test('X to O', async ({ page }) => {
-    await init(page, '@layer base, theme, preset, main, general;')
+    await init(page)
     await page.evaluate(() => {
         const createElement = (name: string) => {
             const el = document.createElement('div')
@@ -108,7 +108,7 @@ test('X to O', async ({ page }) => {
 
 
 test('X to X', async ({ page }) => {
-    await init(page, '@layer base, theme, preset, main, general;')
+    await init(page)
     await page.evaluate(() => {
         const createElement = (name: string) => {
             const el = document.createElement('div')

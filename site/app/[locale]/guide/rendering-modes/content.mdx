@@ -257,8 +257,6 @@ The extractor does not observe the DOM and does not execute application code. It
         The generated stylesheet contains the valid Master CSS rules, retained native CSS from extractable style entries, and any referenced variables or keyframes needed by those rules.
 
         ```css name=generated.css
-        @layer base,theme,preset,main,general;
-
         @layer main {
             .btn {
                 display: inline-flex;

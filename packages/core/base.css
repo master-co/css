@@ -1,3 +1,5 @@
+@layer base, theme, preset, main, general;
+
 @layer base {
     /* Improve text rendering precision across browsers. */
     * {

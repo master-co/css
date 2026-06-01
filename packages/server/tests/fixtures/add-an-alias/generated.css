@@ -1,1 +1,1 @@
-@layer base,theme,preset,main,general;@layer general{.fg\:secondary{color:oklch(100% 0 none)}}
+@layer general{.fg\:secondary{color:oklch(100% 0 none)}}

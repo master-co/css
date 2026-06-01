@@ -1,1 +1,1 @@
-@layer base,theme,preset,main,general;@layer preset{.font\:mono_\:is\(code\,pre\)\@preset :is(code,pre){font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,Courier New,monospace}}
+@layer preset{.font\:mono_\:is\(code\,pre\)\@preset :is(code,pre){font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,Courier New,monospace}}

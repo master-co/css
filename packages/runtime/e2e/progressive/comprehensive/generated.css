@@ -1,5 +1,3 @@
-@layer base, theme, preset, main, general;
-
 @layer base {
     .list-style\:none_ul\@base ul {
         list-style: none

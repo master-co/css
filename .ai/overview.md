@@ -61,7 +61,6 @@ Compared with CSS-in-JS:
 The core output uses cascade layers:
 
 ```txt
-layer-statement
 base
 theme
 preset
@@ -70,10 +69,10 @@ general
 keyframes outside layers
 ```
 
-The layer statement is:
+The layer statement is declared by `packages/core/base.css`:
 
 ```css
-@layer base,theme,preset,main,general;
+@layer base, theme, preset, main, general;
 ```
 
-General utilities should override main project styles, theme variables support modes, preset sits above base, and keyframes are not wrapped in layers.
+Core-generated CSS emits layer blocks but does not dynamically add or process the layer statement. General utilities should override main project styles, theme variables support modes, preset sits above base, and keyframes are not wrapped in layers.

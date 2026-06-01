@@ -1,7 +1,7 @@
 ## How layers control the cascade [sr-only]
 CSS cascade layers let a stylesheet decide which groups of rules should win before selector specificity is compared. Master CSS uses that native model as the backbone of its output, so utilities, project styles, presets, variables, and resets can coexist without turning every override into a specificity contest.
 
-Every generated stylesheet starts with the same layer statement:
+The default `@master/css/base.css` stylesheet declares the layer order:
 
 ```css
 @layer base, theme, preset, main, general;
@@ -15,7 +15,7 @@ general > main > preset > theme > base
 
 <LayersDefault />
 
-This order is intentional. Foundation rules go early, product vocabulary goes in the middle, and one-off utility decisions stay late enough to override project styles when markup asks for it.
+Generated CSS emits rules into those layer blocks. This order is intentional. Foundation rules go early, product vocabulary goes in the middle, and one-off utility decisions stay late enough to override project styles when markup asks for it.
 
 ---
 
@@ -96,7 +96,7 @@ This example touches every generated layer. The CSS config defines theme variabl
 
 Notice the shape of the output:
 
-- The layer statement defines the global order once.
+- `@master/css/base.css` defines the global layer order once.
 - Theme variables are emitted in `@layer theme`.
 - The `.btn` definition is emitted in `@layer main`.
 - `flex` and `@fade|1s` are emitted in `@layer general`.
@@ -164,8 +164,6 @@ For example, `.btn` defines `display: inline-flex` in the main layer. Adding `fl
 <details>
     <summary>Generated CSS</summary>
     ```css
-    @layer base,theme,preset,main,general;
-
     @layer main {
         .btn {
             display: inline-flex;

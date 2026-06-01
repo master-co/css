@@ -13,7 +13,7 @@ test('selectors', async ({ page, browserName }) => {
     const prerenderHTML = readFileSync(resolve(__dirname, 'prerender.html'), 'utf-8')
     await page.evaluate((html) => document.body.innerHTML = html, prerenderHTML)
     await init(page, generatedCSS, config)
-    expect((await page.evaluate(() => cssRuntime.rules)).map(({ name }) => name)).toEqual(['layer-statement', 'theme', 'general'])
+    expect((await page.evaluate(() => cssRuntime.rules)).map(({ name }) => name)).toEqual(['theme', 'general'])
     expect(await page.evaluate(() => cssRuntime.generalLayer.rules.find((rule) => rule.name === 'block::before,::after'))).toMatchObject({
         selectorNodes: [
             { raw: '::before', type: 'pseudo-element', value: 'before' },

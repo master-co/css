@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test'
 import init from './init'
 
 test('destroy on progressive', async ({ page }) => {
-    await init(page, '@layer base, theme, preset, main, general;')
+    await init(page, '@layer general{}')
     await page.evaluate(() => {
         document.body.classList.add('text:center')
     })
@@ -11,23 +11,23 @@ test('destroy on progressive', async ({ page }) => {
         .filter(cssRule => cssRule === globalThis.cssRuntime.generalLayer.native)
         .length
     )).toBe(1)
-    expect(await page.evaluate(() => Array.from(globalThis.cssRuntime.style?.sheet?.cssRules || []).length)).toBe(2)
+    expect(await page.evaluate(() => Array.from(globalThis.cssRuntime.style?.sheet?.cssRules || []).length)).toBe(1)
     await page.evaluate(() => {
         globalThis.cssRuntime.destroy()
         globalThis.cssRuntime.resolve()
     })
     expect(await page.evaluate(() => globalThis.cssRuntime.generalLayer.rules.length)).toBe(0)
-    expect(await page.evaluate(() => Array.from(globalThis.cssRuntime.style?.sheet?.cssRules || []).length)).toBe(1)
+    expect(await page.evaluate(() => Array.from(globalThis.cssRuntime.style?.sheet?.cssRules || []).length)).toBe(0)
     await page.evaluate(() => {
         globalThis.cssRuntime.observe()
         document.body.classList.add('block')
         document.body.classList.add('font:bold')
     })
-    expect(await page.evaluate(() => Array.from(globalThis.cssRuntime.style?.sheet?.cssRules || []).length)).toBe(3)
+    expect(await page.evaluate(() => Array.from(globalThis.cssRuntime.style?.sheet?.cssRules || []).length)).toBe(2)
 })
 
 test('prevent attach layer twice', async ({ page }) => {
-    await init(page, '@layer base, theme, preset, main, general;', {
+    await init(page, '@layer main{}', {
         utilities: [
             {
                 name: 'app-wrapper',

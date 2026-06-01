@@ -202,13 +202,13 @@ Master CSS generates optimized CSS directly. Integrations can pre-render, extrac
 Master CSS provides rich [configuration](/guide/configuration) to help you build a consistent and scalable design system. Use [design tokens](/guide/design-tokens) for color, spacing, typography, radius, elevation, and motion; use [screen sizes](/guide/screen-sizes), [sizing](/guide/sizing), and the [layout system](/guide/layout-system) to keep page structure aligned with those foundations.
 
 ### Predictable cascade layers
-Every generated stylesheet starts with the same layer statement:
+The default `@master/css/base.css` stylesheet declares the cascade layer order once:
 
 ```css
 @layer base, theme, preset, main, general;
 ```
 
-`base` normalizes the platform, `theme` emits variables, `preset` holds broad defaults, `main` holds project vocabulary from `@master` component definitions, and `general` holds utility classes. Because `general` comes last, local utility decisions can override reusable project styles without reaching for `!important`.
+Generated CSS then emits rules into `base`, `theme`, `preset`, `main`, and `general` blocks. `base` normalizes the platform, `theme` emits variables, `preset` holds broad defaults, `main` holds project vocabulary from `@master` component definitions, and `general` holds utility classes. Because `general` comes last, local utility decisions can override reusable project styles without reaching for `!important`.
 
 ---
 

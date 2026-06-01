@@ -14,7 +14,7 @@ test('comprehensive', async ({ page }) => {
     await page.evaluate((html) => document.body.innerHTML = html, prerenderHTML)
     await init(page, generatedCSS, config)
     const rules = await page.evaluate(() => globalThis.cssRuntime.rules)
-    expect(rules.map(({ name }) => name)).toEqual(['layer-statement', 'theme', 'fade', 'base', 'preset', 'main', 'general'])
+    expect(rules.map(({ name }) => name)).toEqual(['theme', 'fade', 'base', 'preset', 'main', 'general'])
     expect(await page.evaluate(() => globalThis.cssRuntime.baseLayer.native?.cssRules.length)).toEqual(1)
     expect(await page.evaluate(() => globalThis.cssRuntime.presetLayer.native?.cssRules.length)).toEqual(1)
     expect(await page.evaluate(() => globalThis.cssRuntime.generalLayer.native?.cssRules.length)).toEqual(2)

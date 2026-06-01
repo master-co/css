@@ -96,5 +96,5 @@ Add or update tests in:
 
 - Reordering `AT_IDENTIFIERS`.
 - Changing `UtilityType` values.
-- Changing layer names or layer statement.
+- Changing layer names or the `base.css` layer statement.
 - Making extraction/runtime-specific assumptions in core.

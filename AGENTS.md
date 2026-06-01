@@ -13,13 +13,13 @@ Master CSS is a markup-driven CSS language and framework. Class strings such as 
 - Build integrations such as `packages/vite` and `packages/webpack`
 - Editor and lint tooling in `packages/language-service`, `packages/language-server`, `packages/language`, `packages/vscode`, and `packages/eslint-plugin`
 
-The core output model is intentionally stable:
+The layer order is intentionally stable and declared by `packages/core/base.css`:
 
 ```txt
-@layer base,theme,preset,main,general;
+@layer base, theme, preset, main, general;
 ```
 
-Rules are emitted into `base`, `theme`, `preset`, `main`, and `general` layers. Keyframes are emitted outside layers. Any CSS output difference must be intentional, explainable, and covered by tests.
+Generated rules are emitted into `base`, `theme`, `preset`, `main`, and `general` layer blocks without dynamically adding the layer statement. Keyframes are emitted outside layers. Any CSS output difference must be intentional, explainable, and covered by tests.
 
 ## Before Editing
 

@@ -67,7 +67,7 @@ test('shadow roots maintain isolated runtime state and style nodes', async ({ pa
         documentHasBlockRule: false,
         shadowCounts: { block: 1 },
         shadowHasStyle: true,
-        shadowText: '@layer base,theme,preset,main,general;@layer general{.block{display:block}}',
+        shadowText: '@layer general{.block{display:block}}',
         instanceRegistered: true
     })
 })
@@ -81,7 +81,7 @@ test('progressive hydration keeps usable classes when prerendered CSS has unknow
     await page.evaluate(() => {
         document.body.innerHTML = '<div class="block"></div>'
     })
-    await init(page, '@layer base, theme, preset, main, general;@layer general{.unknown{color:red}}')
+    await init(page, '@layer general{.unknown{color:red}}')
 
     const result = await page.evaluate(() => ({
         ruleNames: globalThis.cssRuntime.generalLayer.rules.map(({ name }) => name),

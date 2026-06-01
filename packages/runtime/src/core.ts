@@ -89,8 +89,6 @@ export default class CSSRuntime extends MasterCSS {
             this.style.id = 'master'
             this.style.setAttribute('blocking', 'render')
             this.container.append(this.style)
-            this.style.sheet!.insertRule(this.layerStatementRule.text)
-            this.layerStatementRule.native = this.style.sheet!.cssRules.item(0) as CSSLayerStatementRule
             connectedNames.forEach(cls => this.add(cls))
         }
 
@@ -175,8 +173,6 @@ export default class CSSRuntime extends MasterCSS {
                 } else {
                     cssLayerRules.push(eachCSSLayerRule)
                 }
-            } else if (eachNativeCSSRule.constructor.name === 'CSSLayerStatementRule') {
-                this.layerStatementRule.native = eachNativeCSSRule as CSSLayerStatementRule
             } else if (eachNativeCSSRule.constructor.name === 'CSSKeyframesRule') {
                 const nativeKeyframsRule = eachNativeCSSRule as CSSKeyframesRule
                 const keyframes = this.animations.get(nativeKeyframsRule.name)
@@ -297,7 +293,7 @@ export default class CSSRuntime extends MasterCSS {
     refresh(customConfig = this.customConfig) {
         if (!this.observing || !this.style!.sheet) return this
         const cssRules = this.style!.sheet.cssRules
-        for (let i = cssRules.length - 1; i > 0; i--) {
+        for (let i = cssRules.length - 1; i >= 0; i--) {
             this.style!.sheet.deleteRule(i)
         }
         super.refresh(customConfig)

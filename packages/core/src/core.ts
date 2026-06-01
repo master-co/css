@@ -2,7 +2,7 @@
 import { Utility } from './utility'
 import extendConfig, { ExtendedConfig } from './utils/extend-config'
 import { type PropertiesHyphen } from 'csstype'
-import { Rule } from './rule'
+import type { Rule } from './rule'
 import UtilityType from 'shared/utility-type'
 import Layer from './layer'
 import ThemeLayer from './theme-layer'
@@ -25,8 +25,7 @@ export default class MasterCSS {
     protected readonly keyMatcherUtilities: DefinedUtility[] = []
     protected readonly arbitraryMatcherUtilities: DefinedUtility[] = []
     readonly config!: ExtendedConfig
-    readonly layerStatementRule = new Rule('layer-statement', '@layer base,theme,preset,main,general;')
-    readonly rules: (Layer | Rule)[] = [this.layerStatementRule]
+    readonly rules: (Layer | Rule)[] = []
     readonly classUtilities = new Map<string, Utility[]>()
     readonly animationsNonLayer = new NonLayer(this)
     readonly baseLayer = new UtilityLayer('base', this)
@@ -55,7 +54,7 @@ export default class MasterCSS {
     get text() {
         return this.rules
             .sort((a, b) => {
-                const order = ['layer-statement', 'base', 'theme', 'preset', 'main', 'general']
+                const order = ['base', 'theme', 'preset', 'main', 'general']
                 const indexA = order.indexOf(a.name) === -1 ? Infinity : order.indexOf(a.name)
                 const indexB = order.indexOf(b.name) === -1 ? Infinity : order.indexOf(b.name)
                 return indexA - indexB

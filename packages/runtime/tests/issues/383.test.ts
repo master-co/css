@@ -9,7 +9,7 @@ test('383', async ({ page }) => {
             <div class="text:center"></div>
         `
     })
-    await init(page, '@layer base, theme, preset, main, general;')
+    await init(page)
     expect(await page.evaluate(() => globalThis.cssRuntime.generalLayer?.native?.parentStyleSheet)).toBeDefined()
     await page.evaluate(() => {
         document.body.innerHTML = ``

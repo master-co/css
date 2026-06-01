@@ -14,7 +14,7 @@ test('components', async ({ page }) => {
     await page.evaluate((html) => document.body.innerHTML = html, prerenderHTML)
     await init(page, generatedCSS, config)
     expect(await page.evaluate(() => globalThis.cssRuntime.mainLayer.native?.cssRules.length)).toEqual(2)
-    expect((await page.evaluate(() => globalThis.cssRuntime.rules)).map(({ name }) => name)).toEqual(['layer-statement', 'theme', 'main'])
+    expect((await page.evaluate(() => globalThis.cssRuntime.rules)).map(({ name }) => name)).toEqual(['theme', 'main'])
     expect(await page.evaluate(() => globalThis.cssRuntime.mainLayer.rules.find((rule) => rule.name === 'btn')?.text))
         .toBe('.btn{background-color:var(--color-foo)}')
     expect(await page.evaluate(() => globalThis.cssRuntime.mainLayer.rules.find((rule) => rule.name === 'btn')?.selectorText))

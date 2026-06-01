@@ -1,1 +1,1 @@
-@layer base,theme,preset,main,general;@layer theme{.light,:root{--text-lime:76 141 7}.dark{--text-lime:145 217 26}}@layer main{.b{-webkit-text-decoration:underline;text-decoration:underline}.a{color:rgb(var(--text-lime))}.b{color:rgb(var(--text-lime))}}
+@layer theme{.light,:root{--text-lime:76 141 7}.dark{--text-lime:145 217 26}}@layer main{.b{-webkit-text-decoration:underline;text-decoration:underline}.a{color:rgb(var(--text-lime))}.b{color:rgb(var(--text-lime))}}

@@ -194,7 +194,7 @@ describe('VirtualCSSModulePlugin (D1 placeholder-leak warn)', () => {
                     }
                 }
             `)
-            const ctx = makeContext(SLOT, '@layer base,theme,preset,main,general;')
+            const ctx = makeContext(SLOT, '')
             ctx.extractor.resolvedConfigPath = configPath
             ctx.extractor.validClasses = new Set(['btn'])
             ctx.extractor.usedNativeClasses = new Set(['native-card'])
@@ -232,7 +232,7 @@ describe('VirtualCSSModulePlugin (D1 placeholder-leak warn)', () => {
                     }
                 }
             `)
-            const ctx = makeContext(SLOT, '@layer base,theme,preset,main,general;')
+            const ctx = makeContext(SLOT, '')
             ctx.extractor.resolvedConfigPath = configPath
             ctx.extractor.latentClasses = new Set(['btn', 'native-used'])
             ctx.styleCSSSources = new Map([[

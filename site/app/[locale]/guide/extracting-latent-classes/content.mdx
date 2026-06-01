@@ -20,8 +20,6 @@ The extractor does not run your app. It reads files as text, collects strings th
 The source contains `card`, `p:md`, `bg:surface`, `shadow:md`, `font:lg`, and `font:semibold`. Those candidates are validated against the active config. Valid classes generate CSS; invalid candidates are cached and ignored.
 
 ```css name=generated.css
-@layer base,theme,preset,main,general;
-
 @layer general {
     .p\:md {
         padding: 1rem

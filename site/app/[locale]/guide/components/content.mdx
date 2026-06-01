@@ -27,8 +27,6 @@ Use the component class in markup:
 The generated CSS is emitted in the `main` layer:
 
 ```css
-@layer base,theme,preset,main,general;
-
 @layer main {
     .btn {
         display: inline-flex;
@@ -268,7 +266,7 @@ Local relative `.css` imports are compiled into one config graph. Only `@master`
 - `@compose` is only valid inside component definitions.
 - Component definitions accept native declarations, `@compose`, nested selectors, native nested at-rules, and `@at` condition blocks.
 - Standard HTML tag selectors such as `body` or `html` are not valid inside `@master` definitions.
-- Utilities still win over main in the default layer order: `@layer base,theme,preset,main,general;`.
+- Utilities still win over main because `@master/css/base.css` declares `@layer base, theme, preset, main, general;`.
 
 ---
 

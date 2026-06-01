@@ -497,11 +497,7 @@ In TypeScript projects, add the matching client type reference for the integrati
 ---
 
 ## Output model
-Configuration changes affect the generated CSS model:
-
-```css
-@layer base, theme, preset, main, general;
-```
+Configuration changes affect the generated CSS model. The default `@master/css/base.css` stylesheet declares the layer order, and generated rules are emitted into the matching layer blocks.
 
 - Variables generate theme rules only when referenced by generated general utilities or main styles.
 - Main styles generate in the `main` layer only when their class is used.
