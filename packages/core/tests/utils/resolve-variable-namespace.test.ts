@@ -2,12 +2,16 @@ import { expect, test } from 'vitest'
 import variableNamespaces from '../../src/variable-namespaces'
 import { resolveVariableNamespace } from '../../src/utils'
 
-test.concurrent('exports only explicit utility variable namespaces', () => {
+test.concurrent('exports canonical Master CSS variable namespaces', () => {
     expect(variableNamespaces).toEqual([
+        'animation',
+        'aspect-ratio',
+        'blur',
         'border-radius',
         'color',
         'color-line',
         'color-text',
+        'drop-shadow',
         'duration',
         'easing',
         'font-family',
@@ -15,12 +19,19 @@ test.concurrent('exports only explicit utility variable namespaces', () => {
         'font-style',
         'font-variant',
         'font-weight',
+        'letter-spacing',
+        'line-height',
         'outline-color',
         'outline-offset',
         'outline-style',
         'outline-width',
+        'perspective',
+        'screen',
         'shadow',
+        'shadow-inset',
         'spacing',
+        'tab-size',
+        'zoom',
     ])
 })
 
@@ -42,15 +53,45 @@ test.concurrent('resolves variable namespace prefixes by longest match', () => {
     })
 })
 
-test.concurrent('resolves implicit utility namespaces', () => {
+test.concurrent('resolves Master CSS namespaces', () => {
+    expect(resolveVariableNamespace('--animation-fade')).toEqual({
+        name: 'animation-fade',
+        namespace: 'animation',
+        key: 'fade'
+    })
+    expect(resolveVariableNamespace('--aspect-ratio-video')).toEqual({
+        name: 'aspect-ratio-video',
+        namespace: 'aspect-ratio',
+        key: 'video'
+    })
     expect(resolveVariableNamespace('--letter-spacing-wide')).toEqual({
         name: 'letter-spacing-wide',
         namespace: 'letter-spacing',
         key: 'wide'
     })
+    expect(resolveVariableNamespace('--line-height-tight')).toEqual({
+        name: 'line-height-tight',
+        namespace: 'line-height',
+        key: 'tight'
+    })
+    expect(resolveVariableNamespace('--shadow-inset-sm')).toEqual({
+        name: 'shadow-inset-sm',
+        namespace: 'shadow-inset',
+        key: 'sm'
+    })
     expect(resolveVariableNamespace('--screen-md')).toEqual({
         name: 'screen-md',
         namespace: 'screen',
         key: 'md'
+    })
+    expect(resolveVariableNamespace('--tab-size-github')).toEqual({
+        name: 'tab-size-github',
+        namespace: 'tab-size',
+        key: 'github'
+    })
+    expect(resolveVariableNamespace('--zoom-compact')).toEqual({
+        name: 'zoom-compact',
+        namespace: 'zoom',
+        key: 'compact'
     })
 })

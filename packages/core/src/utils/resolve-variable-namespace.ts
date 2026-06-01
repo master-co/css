@@ -10,7 +10,6 @@ const namespaces = [
     ...new Set([
         ...variableNamespaces,
         ...implicitVariableNamespaces,
-        'screen'
     ])
 ].sort((a, b) => b.length - a.length)
 
