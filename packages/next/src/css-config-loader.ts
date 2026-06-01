@@ -1,4 +1,5 @@
 import { loadConfigModuleSync } from '@master/css-explore-config/sync'
+import { config, createConfigFromCSSDirectives } from '@master/css'
 
 interface LoaderContext {
     resourcePath: string
@@ -6,7 +7,10 @@ interface LoaderContext {
 }
 
 export default function masterCSSConfigLoader(this: LoaderContext) {
-    const result = loadConfigModuleSync(this.resourcePath)
+    const result = loadConfigModuleSync(this.resourcePath, {
+        createConfigFromCSSDirectives,
+        baseConfig: config
+    })
     for (const dependency of result.dependencies) {
         this.addDependency?.(dependency)
     }

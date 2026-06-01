@@ -1,6 +1,5 @@
-import type { Config } from '@master/css'
-import type { LoadConfigResult } from './shared'
 import path from 'node:path'
+import type { Config } from './css-config.js'
 
 export const VIRTUAL_CONFIG_ID = 'virtual:master-css-config'
 export const MASTER_CSS_CONFIG_QUERY = '?master-css-config'
@@ -8,7 +7,18 @@ export const RESOLVED_MASTER_CSS_CONFIG_QUERY_PREFIX = '\0master-css-config:'
 export const VIRTUAL_CONFIG_DIR = 'node_modules/.master-css'
 export const EMPTY_CONFIG_MODULE = 'export default {};'
 
-export interface ConfigModuleResult extends LoadConfigResult {
+export interface CSSConfigLoadResult<TConfig extends object = Config> {
+    config: TConfig
+    dependencies: string[]
+    classNames?: string[]
+    nativeClassNames?: string[]
+    nativeCSS?: string
+    css?: string
+    generatedCSS?: string
+    warnings?: string[]
+}
+
+export type CSSConfigModuleResult<TConfig extends object = Config> = CSSConfigLoadResult<TConfig> & {
     code: string
 }
 
@@ -26,11 +36,11 @@ export function stripResourceQuery(resourcePath: string) {
     return resourcePath.replace(/[?#].*$/, '')
 }
 
-export function toConfigModule(config: Config) {
+export function toConfigModule(config: object) {
     return `export default ${JSON.stringify(config)};`
 }
 
-export function toConfigModuleResult(result: LoadConfigResult): ConfigModuleResult {
+export function toConfigModuleResult<T extends CSSConfigLoadResult>(result: T): T & { code: string } {
     return {
         ...result,
         code: toConfigModule(result.config)

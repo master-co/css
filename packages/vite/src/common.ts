@@ -2,7 +2,7 @@ import {
     MASTER_CSS_CONFIG_QUERY as MASTER_CSS_CONFIG_REQUEST_QUERY,
     RESOLVED_MASTER_CSS_CONFIG_QUERY_PREFIX as RESOLVED_MASTER_CSS_CONFIG_REQUEST_QUERY_PREFIX,
     VIRTUAL_CONFIG_ID as MASTER_CSS_VIRTUAL_CONFIG_ID
-} from '@master/css-explore-config'
+} from 'shared/css-config-module'
 
 const ENTRIES = '{main,app,index}.{js,ts,jsx,tsx,mjs,cjs,vue}'
 

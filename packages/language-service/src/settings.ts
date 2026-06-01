@@ -1,5 +1,6 @@
 /* eslint-disable quotes */
-import { CLASS_ATTRIBUTES, CLASS_FUNCTIONS, CLASS_DECLARATIONS, Config } from '@master/css'
+import { CLASS_ATTRIBUTES, CLASS_FUNCTIONS, CLASS_DECLARATIONS } from '@master/css'
+import type { Config } from 'shared/css-config'
 
 /**
  * @example styles https://regex101.com/r/HLPdsw/1

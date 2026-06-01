@@ -5,12 +5,11 @@ import { pathToFileURL, fileURLToPath } from 'node:url'
 import { parseSync, visitorKeys, type OxcError as ParserError } from 'oxc-parser'
 import { ResolverFactory } from 'oxc-resolver'
 import { transformSync, type OxcError, type TransformOptions } from 'oxc-transform'
-import { loadCSSConfigModuleSync } from './css'
 import {
     MASTER_CSS_CONFIG_QUERY,
     isMasterCSSConfigRequest,
     stripMasterCSSConfigQuery
-} from './module'
+} from 'shared/css-config-module'
 
 const CONFIG_LOAD_ID_PARAM = 'master-css-load'
 const CSS_CONFIG_QUERY_PARAM = MASTER_CSS_CONFIG_QUERY.slice(1)
@@ -89,6 +88,11 @@ const resolver = new ResolverFactory({
 
 let hooksRegistered = false
 let loadId = 0
+let loadCSSConfigModuleSource: ((path: string) => string) | undefined
+
+export function configureCSSConfigModuleSourceLoader(loader: (path: string) => string) {
+    loadCSSConfigModuleSource = loader
+}
 
 function isURLSpecifier(specifier: string) {
     return URL_SCHEME_RE.test(specifier)
@@ -215,10 +219,13 @@ function registerOxcHooks() {
         load(url, context, nextLoad) {
             const fileURL = new URL(url)
             if (fileURL.protocol === 'file:' && fileURL.searchParams.has(CSS_CONFIG_QUERY_PARAM)) {
+                if (!loadCSSConfigModuleSource) {
+                    throw new Error('Master CSS config module loader is not configured.')
+                }
                 return {
                     format: 'module',
                     shortCircuit: true,
-                    source: loadCSSConfigModuleSync(cleanFileURLToPath(fileURL)).code
+                    source: loadCSSConfigModuleSource(cleanFileURLToPath(fileURL))
                 }
             }
             if (fileURL.protocol === 'file:' && isTransformable(fileURL.pathname)) {

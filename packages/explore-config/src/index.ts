@@ -1,4 +1,14 @@
-import { dirname, extname, isAbsolute, resolve } from 'node:path'
+import { extname } from 'node:path'
+import { createCSSConfigLoader, type CompileCSSFile, type CSSDirectiveConfigAdapter } from 'shared/css-config-loader'
+import type { Config } from 'shared/css-config'
+import {
+    createMasterCSSConfigLoaderPlugin as createSharedMasterCSSConfigLoaderPlugin
+} from 'shared/css-config-loader-plugin'
+import {
+    stripResourceQuery,
+    toConfigModuleResult,
+    type CSSConfigModuleResult
+} from 'shared/css-config-module'
 import {
     DEFAULT_EXTENSIONS,
     DEFAULT_FOUND,
@@ -15,16 +25,7 @@ import {
     type MissingConfigWarningOptions
 } from './shared'
 import { collectScriptDependencies, importConfigModule } from './script'
-import { loadCSSConfig } from './css'
-import {
-    fromResolvedMasterCSSConfigId,
-    isMasterCSSConfigRequest,
-    stripMasterCSSConfigQuery,
-    stripResourceQuery,
-    toConfigModuleResult,
-    toResolvedMasterCSSConfigId,
-    type ConfigModuleResult
-} from './module'
+import './sync'
 
 export {
     DEFAULT_EXTENSIONS,
@@ -39,11 +40,46 @@ export {
     type LoadConfigResult,
     type MissingConfigWarningOptions
 }
-export * from './module'
-export { loadCSSConfig, loadCSSConfigModule } from './css'
+export * from 'shared/css-config-module'
+
+export type ConfigModuleResult = CSSConfigModuleResult<Config>
+
+async function loadCompileCSS() {
+    return (await import('@master/css-compiler')).compileCSSFile as CompileCSSFile
+}
+
+async function loadCSSDirectiveConfigAdapter(options: LoadConfigOptions = {}) {
+    if (options.createConfigFromCSSDirectives) {
+        return {
+            createConfigFromCSSDirectives: options.createConfigFromCSSDirectives,
+            baseConfig: options.baseConfig
+        }
+    }
+    const masterCSS = await import('@master/css')
+    return {
+        createConfigFromCSSDirectives: masterCSS.createConfigFromCSSDirectives as CSSDirectiveConfigAdapter<Config>,
+        baseConfig: masterCSS.config as Config
+    }
+}
+
+export async function loadCSSConfig(path: string, options: LoadConfigOptions = {}): Promise<LoadConfigResult> {
+    const { createConfigFromCSSDirectives, baseConfig } = await loadCSSDirectiveConfigAdapter(options)
+    return createCSSConfigLoader({
+        compileCSSFile: await loadCompileCSS(),
+        createConfigFromCSSDirectives,
+        baseConfig
+    }).loadCSSConfig(path, options)
+}
+
+export async function loadCSSConfigModule(path: string, options: LoadConfigOptions = {}): Promise<ConfigModuleResult> {
+    return createCSSConfigLoader({
+        compileCSSFile: await loadCompileCSS(),
+        ...await loadCSSDirectiveConfigAdapter(options)
+    }).loadCSSConfigModule(path, options)
+}
 
 export async function loadConfig(path: string, options: LoadConfigOptions = {}): Promise<LoadConfigResult> {
-    if (extname(path) === '.css') {
+    if (extname(stripResourceQuery(path)) === '.css') {
         return loadCSSConfig(path, options)
     }
     return {
@@ -59,31 +95,16 @@ export async function loadConfigModule(path: string, options: LoadConfigOptions 
 export function createMasterCSSConfigLoaderPlugin(options: {
     cwd?: string
     loadConfigModule?: typeof loadConfigModule
+    createConfigFromCSSDirectives?: LoadConfigOptions['createConfigFromCSSDirectives']
+    baseConfig?: LoadConfigOptions['baseConfig']
 } = {}) {
-    return {
-        name: 'master-css:config-loader',
-        enforce: 'pre' as const,
-        async resolveId(this: { resolve?: (id: string, importer?: string, options?: { skipSelf?: boolean }) => Promise<{ id: string } | null | undefined> }, id: string, importer?: string) {
-            if (!isMasterCSSConfigRequest(id)) return
-            const sourceId = stripMasterCSSConfigQuery(id)
-            const resolved = await this.resolve?.(sourceId, importer, { skipSelf: true })
-            if (resolved) return toResolvedMasterCSSConfigId(resolved.id)
-            const baseDir = importer
-                ? dirname(stripResourceQuery(importer))
-                : options.cwd || process.cwd()
-            const file = isAbsolute(sourceId) ? sourceId : resolve(baseDir, sourceId)
-            return toResolvedMasterCSSConfigId(file)
-        },
-        async load(this: { addWatchFile?: (id: string) => void }, id: string) {
-            const configPath = fromResolvedMasterCSSConfigId(id)
-            if (!configPath) return
-            const result = await (options.loadConfigModule || loadConfigModule)(configPath)
-            for (const dependency of result.dependencies) {
-                this.addWatchFile?.(dependency)
-            }
-            return result.code
-        }
-    }
+    return createSharedMasterCSSConfigLoaderPlugin({
+        cwd: options.cwd,
+        loadConfigModule: (path) => (options.loadConfigModule || loadConfigModule)(path, {
+            createConfigFromCSSDirectives: options.createConfigFromCSSDirectives,
+            baseConfig: options.baseConfig
+        })
+    })
 }
 
 export async function exploreConfig(options: ExploreConfigOptions & { name?: string } = {}) {

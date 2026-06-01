@@ -1,4 +1,4 @@
-import { ValueComponent } from '../types/syntax'
+import type { ValueComponent } from 'shared/css-syntax'
 
 export default function pair(_: string, valueComponents: ValueComponent[], data: [string, string]) {
     const [x, y] = data

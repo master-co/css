@@ -1,5 +1,5 @@
 import type { PropertiesHyphen } from 'csstype'
-import type { Variable } from '../types/syntax'
+import type { Variable } from 'shared/css-syntax'
 import { CSS_VARIABLE_REFERENCE } from './css-variables'
 
 export default function collectVariableNames(declarations: PropertiesHyphen, variables: Map<string, Variable>) {

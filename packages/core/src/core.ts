@@ -3,14 +3,14 @@ import { Utility } from './utility'
 import extendConfig, { ExtendedConfig } from './utils/extend-config'
 import { type PropertiesHyphen } from 'csstype'
 import { Rule } from './rule'
-import UtilityType from './utility-type'
+import UtilityType from 'shared/utility-type'
 import Layer from './layer'
 import ThemeLayer from './theme-layer'
 import UtilityLayer from './utility-layer'
 import NonLayer from './non-layer'
-import { DefinedUtility, GeneratedUtility, Variable } from './types/syntax'
+import type { DefinedUtility, Variable } from 'shared/css-syntax'
 import { AtRule, AtRuleValueNode } from './utils/parse-at'
-import { AnimationDefinitions, Config, UtilityDefinition, UtilityLayerName, VariableDefinition } from './types/config'
+import type { AnimationDefinitions, Config, UtilityDefinition, UtilityLayerName, VariableDefinition } from 'shared/css-config'
 import registerGlobal from './register-global'
 import parseAt from './utils/parse-at'
 import parseValue from './utils/parse-value'
@@ -27,7 +27,7 @@ export default class MasterCSS {
     readonly config!: ExtendedConfig
     readonly layerStatementRule = new Rule('layer-statement', '@layer base,theme,preset,main,general;')
     readonly rules: (Layer | Rule)[] = [this.layerStatementRule]
-    readonly classUtilities = new Map<string, GeneratedUtility[]>()
+    readonly classUtilities = new Map<string, Utility[]>()
     readonly animationsNonLayer = new NonLayer(this)
     readonly baseLayer = new UtilityLayer('base', this)
     readonly themeLayer = new ThemeLayer('theme', this)
@@ -497,10 +497,9 @@ export default class MasterCSS {
     /**
      * Generate utilities from class name
      * @param className
-     * @returns GeneratedUtility[]
+     * @returns Utility[]
      */
-    generate(className: string, mode?: string): Utility[]
-    generate(className: string, mode?: string): GeneratedUtility[] {
+    generate(className: string, mode?: string): Utility[] {
         return this.createAll(className, undefined, mode)
     }
 

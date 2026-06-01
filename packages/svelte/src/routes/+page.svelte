@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { Config } from "@master/css/types/config";
+    import type { Config } from "@master/css";
     import CSSRuntimeProvider from "../lib/CSSRuntimeProvider.svelte";
 
     let containerRef = $state<HTMLDivElement>();

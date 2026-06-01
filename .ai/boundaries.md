@@ -47,7 +47,10 @@ These require source tracing, focused tests, and clear explanation:
 - Submodule setup
 - Package boundary direction
 
+## Cycle Handling
+
+When a change creates circular package pressure, do not patch around it with package-specific loaders or hidden runtime imports. Extract the common, dependency-free contract, config type, module protocol, or generic factory into `shared`, then add an explicit adapter in the package that owns the runtime behavior.
+
 ## CSS Output Rule
 
 Any generated CSS change is a behavior change. Do not hide it in a refactor.
-

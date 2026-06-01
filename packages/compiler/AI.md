@@ -2,21 +2,21 @@
 
 ## Responsibility
 
-`@master/css-compiler` parses Master CSS stylesheet directives and compiles them into generated Master CSS output through `@master/css`.
+`@master/css-compiler` parses Master CSS stylesheet directives and native CSS into shared CSS directive results. It does not import `@master/css`; core-specific interpretation is handled by `@master/css` adapters.
 
 ## Inputs And Outputs
 
 - Input: CSS containing `@master`, variables, `@mode` blocks, `@custom-at`, `@custom-selector`, `@layer general`, condition blocks with `@at`, reusable main style rules with `@compose`, and native `@keyframes`.
-- Output: CSS with consumed Master directives removed and generated Master CSS appended only for classes passed to the compiler.
+- Output: shared directive data, component definitions, native CSS with consumed Master directives removed, native class names, warnings, and CSS import dependencies.
 - `@master` definitions are config definitions. Defining a main style, utility, variable, token, or animation does not emit CSS by itself; the class still needs to be used or extracted.
 - `compileCSSFile()` resolves local relative CSS `@import` graphs before compiling and returns absolute dependency paths.
 
 ## Boundaries
 
 - Do not make `@master/css` depend on this package.
+- Do not make this package depend on `@master/css`.
 - Keep directive parsing package-local.
-- Prefer using the public `@master/css` engine for rule generation.
-- Avoid duplicating core parser, selector, priority, and layer behavior.
+- Emit shared directive contracts from `shared/css-directives`; leave variable namespace resolution, utility composition, selector token resolution, at-rule parsing, priority, and CSS generation to core adapters.
 - Do not reintroduce PostCSS in this package.
 - If `@master` CSS configuration syntax is expanded or changed incompatibly, update the TextMate/Shiki highlighting in `packages/language` in the same change when practical.
 
@@ -25,7 +25,7 @@
 - `@master { root-size: 16; --color-primary: #123; --screen-md: 768; }`
 - `@master { important; }` and `@master { !important; }`
 - `@master { @mode dark { --color-primary: #456; } }`
-- `light` and `dark` are core default modes; the compiler should only add custom modes such as `chrisma`.
+- The compiler records mode declarations as written. Core adapters decide which modes are defaults.
 - `@master { @custom-at motion-safe @media (prefers-reduced-motion: no-preference); }`
 - `@master { @custom-selector ::scrollbar ::-webkit-scrollbar; }`
 - `@master { .btn { @compose "inline-flex"; display: inline-flex; } }`
@@ -37,7 +37,7 @@
 - `@compose` is allowed only in main style definitions.
 - General utilities defined in CSS are static utilities only.
 - `body`, `html`, and other HTML tag rules inside `@master` should warn because regular CSS selectors must live outside Master directives.
-- The compiler package does not scan unrelated `.css` files for class usage. Pair CSS configs with `@master/css.vite` extract mode or pass extracted classes through `compileCSS(..., { classes })`.
+- The compiler package does not scan unrelated `.css` files for class usage. Pair CSS configs with `@master/css.vite` extract mode or pass extracted classes through `compileCSS(..., { classes })` when filtering native CSS.
 
 ## Tests
 

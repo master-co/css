@@ -1,7 +1,7 @@
 import type { Plugin } from 'vite'
 import { PluginContext } from '../core'
 import { render } from '@master/css-server'
-import { Config } from '@master/css'
+import type { Config } from 'shared/css-config'
 import { loadConfig } from '@master/css-explore-config'
 import { PluginOptions } from '../options'
 

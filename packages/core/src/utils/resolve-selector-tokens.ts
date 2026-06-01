@@ -1,4 +1,4 @@
-import type { SelectorTokenDefinitions } from '../types/config'
+import type { SelectorTokenDefinitions } from 'shared/css-config'
 
 const IDENTIFIER_CHAR_RE = /[a-zA-Z0-9_-]/
 const PREFIXED_TOKEN_RE = /^[:.#]/

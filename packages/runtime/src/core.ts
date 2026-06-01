@@ -1,5 +1,5 @@
 import { MasterCSS, config as defaultConfig, VariableRule, AnimationRule } from '@master/css'
-import { type Config, type UtilityLayerName } from '@master/css'
+import type { Config, UtilityLayerName } from 'shared/css-config'
 import registerGlobal from './register-global'
 import { HydrateResult } from './types'
 import RuntimeLayer from './layer'

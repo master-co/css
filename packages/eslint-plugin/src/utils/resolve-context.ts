@@ -1,7 +1,8 @@
 import type { RuleContext } from '@typescript-eslint/utils/ts-eslint'
 import settings, { Settings } from '../settings'
 import exploreConfigSync from '@master/css-explore-config/sync'
-import { Config, MasterCSS, createCSS } from '@master/css'
+import { MasterCSS, createCSS } from '@master/css'
+import type { Config } from 'shared/css-config'
 
 declare interface CSSCache {
     cwd: string

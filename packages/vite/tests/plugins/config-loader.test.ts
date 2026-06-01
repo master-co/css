@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest'
 import path from 'node:path'
 import { ConfigLoaderPlugin } from '../../src/plugins/config-loader'
-import { MASTER_CSS_CONFIG_QUERY, fromResolvedMasterCSSConfigId, toResolvedMasterCSSConfigId } from '@master/css-explore-config'
+import { MASTER_CSS_CONFIG_QUERY, fromResolvedMasterCSSConfigId, toResolvedMasterCSSConfigId } from 'shared/css-config-module'
 
 const FIXTURE_DIR = path.resolve(__dirname, '../fixtures/config-virtual-module')
 

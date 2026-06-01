@@ -1,5 +1,6 @@
 import parseHTML from './parse-html'
-import { MasterCSS, Config, createCSS } from '@master/css'
+import { MasterCSS, createCSS } from '@master/css'
+import type { Config } from 'shared/css-config'
 
 /**
  * Renders the Master CSS string from HTML

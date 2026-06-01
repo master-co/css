@@ -1,5 +1,5 @@
 /* eslint-disable quotes */
-import type { VariableDefinitions } from '../types/config'
+import type { VariableDefinitions } from 'shared/css-config'
 
 const variables = [
     {

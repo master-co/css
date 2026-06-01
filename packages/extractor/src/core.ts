@@ -1,6 +1,6 @@
 import { default as defaultOptions, Options } from './options'
 import { createCSS, MasterCSS } from '@master/css'
-import type { Config } from '@master/css'
+import type { Config } from 'shared/css-config'
 import extractLatentClasses from './functions/extract-latent-classes'
 import fs from 'fs'
 import { Minimatch } from 'minimatch'

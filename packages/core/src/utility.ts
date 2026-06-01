@@ -1,15 +1,15 @@
 /* eslint-disable @typescript-eslint/no-unsafe-declaration-merging */
 import MasterCSS from './core'
 import cssEscape from 'shared/utils/css-escape'
-import UtilityType from './utility-type'
+import UtilityType, { type UtilityType as UtilityTypeValue } from 'shared/utility-type'
 import { type PropertiesHyphen } from 'csstype'
 import { VALUE_DELIMITERS, BASE_UNIT_REGEX, AT_IDENTIFIERS } from './common'
 import Layer from './layer'
-import type { NumberValueComponent, DefinedUtility, ValueComponent, VariableValueComponent, Variable } from './types/syntax'
+import type { NumberValueComponent, DefinedUtility, ValueComponent, VariableValueComponent, Variable } from 'shared/css-syntax'
 import { AtRuleNode, AtRuleStringNode, AtRuleValueNode, } from './utils/parse-at'
 import parseValue from './utils/parse-value'
 import parseAt from './utils/parse-at'
-import { AtIdentifier, UtilityLayerName } from './types/config'
+import type { AtIdentifier, UtilityLayerName } from 'shared/css-config'
 import generateAt from './utils/generate-at'
 import parseSelector, { SelectorNode } from './utils/parse-selector'
 import resolveSelectorTokens from './utils/resolve-selector-tokens'
@@ -27,7 +27,7 @@ export class Utility {
     nodes?: UtilityRuleNode[]
     readonly atRules?: Partial<Record<AtIdentifier, AtRuleNode[]>>
     readonly priority!: RulePriority
-    readonly type: UtilityType = UtilityType.Normal
+    readonly type: UtilityTypeValue = UtilityType.Normal
     readonly declarations?: PropertiesHyphen
     readonly declarationRules?: { declarations: PropertiesHyphen, atRules?: string[], selector?: string }[]
     readonly layer: Layer
@@ -140,7 +140,7 @@ export class Utility {
         let newValue: string
         if (this.valueComponents) {
             if (transformer) {
-                const transform = transformers[transformer] as any
+                const transform = (transformers as Record<string, any>)[transformer]
                 this.valueComponents = transform.call(this, this.valueComponents, transformerOptions)
             }
             newValue = this.resolveValue(this.valueComponents, unit, [], false)
@@ -165,7 +165,7 @@ export class Utility {
                     this.declarationRules = [{ declarations, atRules: definition.atRules }]
                 }
             } else if (declarer) {
-                const declare = declarers[declarer] as any
+                const declare = (declarers as Record<string, any>)[declarer]
                 const declarations = declare.call(this, newValue, this.valueComponents, declarerOptions) as PropertiesHyphen | undefined
                 this.declarations = declarations
                 if (declarations && definition.atRules?.length) {
@@ -305,7 +305,7 @@ export class Utility {
                     if (fnTransformer && !eachValueComponent.bypassTransform) {
                         const resolvedValue = this.resolveValue(eachValueComponent.children, functionDefinition.unit ?? unit, bypassVariableNames, bypassParsing || eachValueComponent.name === 'calc')
                         let result: any
-                        const fnTransform = functionTransformers[fnTransformer] as any
+                        const fnTransform = (functionTransformers as Record<string, any>)[fnTransformer]
                         result = fnTransform.call(this, resolvedValue, bypassVariableNames, functionDefinition.transformerOptions)
                         currentValue += eachValueComponent.token = eachValueComponent.text = typeof result === 'string'
                             ? result

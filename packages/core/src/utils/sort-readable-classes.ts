@@ -1,4 +1,4 @@
-import UtilityType from '../utility-type'
+import UtilityType from 'shared/utility-type'
 import createCSS from '../create'
 import compareRulePriority from './compare-rule-priority'
 import { Utility } from '../utility'

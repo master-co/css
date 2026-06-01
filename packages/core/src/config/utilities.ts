@@ -1,6 +1,6 @@
-import UtilityType from '../utility-type'
+import UtilityType from 'shared/utility-type'
 import { BORDER_STYLE_VALUES } from '../common'
-import type { UtilityDefinitions } from '../types/config'
+import type { UtilityDefinitions } from 'shared/css-config'
 
 const utilities = [
     {

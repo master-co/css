@@ -1,4 +1,4 @@
-import { ValueComponent } from '../types/syntax'
+import type { ValueComponent } from 'shared/css-syntax'
 import { BORDER_STYLE_VALUES } from '../common'
 
 export default function autoFillSolid(valueComponents: ValueComponent[]) {

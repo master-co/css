@@ -1,4 +1,4 @@
-import type { Config } from '@master/css'
+import type { Config } from 'shared/css-config'
 import type { Pattern as FastGlobPattern } from 'fast-glob'
 import type { SourceAdapter } from '../adapters'
 

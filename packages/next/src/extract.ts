@@ -1,6 +1,6 @@
 import CSSExtractor, { type Options as ExtractorOptions } from '@master/css-extractor'
 import defaultExtractorOptions from '@master/css-extractor/options'
-import { type Config } from '@master/css'
+import type { Config } from 'shared/css-config'
 import {
     createExtractedCSS as createExtractorExtractedCSS,
     isMasterStyleSource,

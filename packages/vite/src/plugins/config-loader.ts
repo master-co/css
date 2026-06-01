@@ -1,12 +1,12 @@
 import type { ModuleNode, Plugin, ViteDevServer } from 'vite'
 import { PluginContext } from '../core'
+import { loadConfigModule } from '@master/css-explore-config'
 import {
     fromResolvedMasterCSSConfigId,
     isMasterCSSConfigRequest,
-    loadConfigModule,
     stripMasterCSSConfigQuery,
     toResolvedMasterCSSConfigId
-} from '@master/css-explore-config'
+} from 'shared/css-config-module'
 
 function invalidateConfigModule(module: ModuleNode | undefined, server: ViteDevServer): boolean {
     if (!module) return false

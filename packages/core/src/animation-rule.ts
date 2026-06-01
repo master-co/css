@@ -1,5 +1,5 @@
 import MasterCSS from './core'
-import { AnimationDefinitions } from './types/config'
+import type { AnimationDefinitions } from 'shared/css-config'
 import collectVariableNames from './utils/collect-variable-names'
 import type { PropertiesHyphen } from 'csstype'
 

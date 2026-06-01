@@ -1,11 +1,18 @@
 import type { ViteUserConfig } from 'vitest/config'
-import { createMasterCSSConfigLoaderPlugin } from '../packages/explore-config/src'
-import { loadCoreThemeConfigModule } from '../packages/core/theme-config-loader'
+import { compileCSSFile } from '../packages/compiler/src'
+import { createCSSConfigLoader } from './css-config-loader'
+import { createMasterCSSConfigLoaderPlugin } from './css-config-loader-plugin'
+import createConfigFromCSSDirectives from '../packages/core/src/utils/create-config-from-css-directives'
+
+const cssConfigLoader = createCSSConfigLoader({
+    compileCSSFile,
+    createConfigFromCSSDirectives
+})
 
 const config: ViteUserConfig = {
     plugins: [
         createMasterCSSConfigLoaderPlugin({
-            loadConfigModule: loadCoreThemeConfigModule
+            loadConfigModule: cssConfigLoader.loadCSSConfigModule
         })
     ],
     test: {

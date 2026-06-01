@@ -1,6 +1,5 @@
 import { Utility } from '../utility'
 import { VALUE_DELIMITERS } from '../common'
-import { GeneratedUtility } from '../types/syntax'
 
 export default function coreGroup(this: Utility, value: string) {
     const declarations: any = {}
@@ -15,7 +14,7 @@ export default function coreGroup(this: Utility, value: string) {
             declarations[propName] = propertyName.slice(indexOfColon + 1).replace(/\|/g, ' ')
         }
     }
-    const handleRule = (rule: GeneratedUtility) => {
+    const handleRule = (rule: Utility) => {
         const ruleDeclarations = rule.declarations as Record<string, unknown>
         for (const propertyName in ruleDeclarations) {
             let propertyValue = String(ruleDeclarations[propertyName])

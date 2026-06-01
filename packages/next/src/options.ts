@@ -1,4 +1,4 @@
-import type { Config } from '@master/css'
+import type { Config } from 'shared/css-config'
 import type { Options as ExtractorOptions } from '@master/css-extractor'
 
 export type Mode = 'pre-render' | 'extract' | null

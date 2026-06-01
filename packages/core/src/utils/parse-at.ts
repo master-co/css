@@ -1,6 +1,6 @@
 import { AT_COMPARABLE_FEATURES, AT_COMPARISON_OPERATORS, AT_IDENTIFIERS, AT_LOGICAL_OPERATORS } from '../common'
 import type MasterCSS from '../core'
-import { AtIdentifier } from '../types/config'
+import type { AtIdentifier } from 'shared/css-config'
 import parsePair from './parse-pair'
 import parseValue from './parse-value'
 import replaceCharOutsideQuotes from './replace-char-outside-quotes'

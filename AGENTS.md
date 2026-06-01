@@ -37,13 +37,15 @@ Preserve dependency direction:
 
 ```txt
 shared / external data
-  -> @master/css core
+  -> @master/css core / @master/css-compiler directive parsing
   -> validator / server / extractor / runtime / language-service
   -> build plugins / CLI / ESLint / language-server
   -> framework integrations / VS Code / examples / site
 ```
 
 Do not make core depend on integrations, runtime, server, extractor, language service, ESLint, or examples.
+
+When package cycles or self-build cycles appear, prefer extracting dependency-free contracts, IR, and type-only schemas into `shared`, then adapt at the owning package boundary. Keep core-specific behavior in `@master/css` adapters and re-export shared contracts from the main package entry when they are part of the public boundary.
 
 ## High-Risk Areas
 

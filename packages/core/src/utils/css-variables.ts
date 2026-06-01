@@ -1,4 +1,4 @@
-import type { Variable } from '../types/syntax'
+import type { Variable } from 'shared/css-syntax'
 
 export const CSS_VARIABLE_REFERENCE = /var\(\s*--([_a-zA-Z0-9-]+)\b/g
 

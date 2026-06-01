@@ -9,6 +9,7 @@ const SCOPED_VARIABLE_PRIORITY = 'aaaa'
 const AMBIGUOUS_PRIORITY = 'bbbb'
 const NATIVE_PRIORITY = 'ccccc'
 const GLOBAL_VARIABLE_PRIORITY = 'zzzz'
+const NATIVE_UTILITY_TYPES = new Set<number>([UtilityType.Native, UtilityType.NativeShorthand])
 
 export default function getValueCompletionItems(css: MasterCSS = createCSS(), ruleKey: string): CompletionItem[] {
     const nativeProperties = cssDataProvider.provideProperties()
@@ -94,7 +95,7 @@ export default function getValueCompletionItems(css: MasterCSS = createCSS(), ru
          */
         if (eachDefinedUtility.keys.includes(ruleKey) && eachDefinedUtility.definition.includeAnimations) {
             css.animations.forEach((_, animationName) => {
-                const isNative = eachDefinedUtility.definition.type && ([UtilityType.Native, UtilityType.NativeShorthand]).includes(eachDefinedUtility.definition.type)
+                const isNative = eachDefinedUtility.definition.type !== undefined && NATIVE_UTILITY_TYPES.has(eachDefinedUtility.definition.type)
                 completionItems.push({
                     label: animationName,
                     kind: CompletionItemKind.Value,
@@ -117,7 +118,7 @@ export default function getValueCompletionItems(css: MasterCSS = createCSS(), ru
             for (const value of eachDefinedUtility.definition.values) {
                 if (typeof value !== 'string') continue
                 const nativeValueData = nativePropertyData?.values?.find((x: { name: string }) => x.name === value)
-                const isNative = eachDefinedUtility.definition.type && ([UtilityType.Native, UtilityType.NativeShorthand]).includes(eachDefinedUtility.definition.type)
+                const isNative = eachDefinedUtility.definition.type !== undefined && NATIVE_UTILITY_TYPES.has(eachDefinedUtility.definition.type)
                 completionItems.push({
                     label: value,
                     kind: CompletionItemKind.Value,

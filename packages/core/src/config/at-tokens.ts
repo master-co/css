@@ -1,4 +1,4 @@
-import type { AtTokenDefinitions } from '../types/config'
+import type { AtTokenDefinitions } from 'shared/css-config'
 
 const atTokens = {
     all: 'media(all)',

@@ -1,4 +1,4 @@
-import type { Config } from './types/config'
+import type { Config } from 'shared/css-config'
 import { config } from './config'
 import MasterCSS from './core'
 

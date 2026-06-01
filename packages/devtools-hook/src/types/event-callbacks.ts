@@ -1,4 +1,4 @@
-import type { Config } from '@master/css'
+import type { Config } from 'shared/css-config'
 import type { CSSRuntime, HydrateResult } from '@master/css-runtime'
 
 export default interface EventCallbacks {

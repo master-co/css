@@ -1,5 +1,5 @@
 import parseColorValue from '../utils/parse-color-value'
-import { Config } from '@master/css'
+import type { Config } from 'shared/css-config'
 import { COLOR_VALUE_REGEX } from '@master/css/common'
 import getVariableCollections from './getVariableCollections'
 import notify from '../utils/notify'

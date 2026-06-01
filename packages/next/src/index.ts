@@ -1,7 +1,7 @@
 import { fileURLToPath } from 'node:url'
 import type { NextConfig } from 'next'
 import { createMasterStyleCSSPattern } from '@master/css-extractor/style'
-import { MASTER_CSS_CONFIG_QUERY } from '@master/css-explore-config'
+import { MASTER_CSS_CONFIG_QUERY } from 'shared/css-config-module'
 import {
     prepareNextExtract,
     resolveExtractOutputPath,

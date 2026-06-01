@@ -1,5 +1,5 @@
 import { Utility } from '../utility'
-import { StringValueComponent } from '../types/syntax'
+import type { StringValueComponent } from 'shared/css-syntax'
 import functions from '../config/functions'
 import { BASE_UNIT_REGEX } from '../common'
 

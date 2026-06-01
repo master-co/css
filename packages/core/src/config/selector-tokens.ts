@@ -1,4 +1,4 @@
-import type { SelectorTokenDefinitions } from '../types/config'
+import type { SelectorTokenDefinitions } from 'shared/css-config'
 
 const selectorTokens = {
     ':first': ':first-child',

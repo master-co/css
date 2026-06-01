@@ -1,5 +1,5 @@
 import { installHook } from '@master/css-devtools-hook'
-import type { Config } from '@master/css'
+import type { Config } from 'shared/css-config'
 import type Core from './core'
 import startDebuggers from './debuggers'
 

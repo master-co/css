@@ -53,10 +53,10 @@
         "provenance": true
     },
     "devDependencies": {
-        "@master/css": "workspace:^",
         "shared": "workspace:^"
     },
     "dependencies": {
+        "@master/css": "workspace:^",
         "@master/css-compiler": "workspace:^",
         "oxc-parser": "^0.129.0",
         "oxc-resolver": "^11.19.1",

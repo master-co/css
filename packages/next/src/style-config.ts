@@ -1,5 +1,6 @@
 import { resolve } from 'node:path'
-import { createCSS, extendConfig, type Config } from '@master/css'
+import { createCSS, extendConfig } from '@master/css'
+import type { Config } from 'shared/css-config'
 import { loadConfig, resolveConfigPath, type ExploreConfigResult } from '@master/css-explore-config'
 import { warnMissingNextConfig } from './config-warning'
 

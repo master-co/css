@@ -1,6 +1,6 @@
 import extend from 'json-safe-extend'
-import UtilityType from '../utility-type'
-import type { Config, UtilityDefinition, VariableDefinition, VariableDefinitions } from '../types/config'
+import UtilityType from 'shared/utility-type'
+import type { Config, UtilityDefinition, VariableDefinition, VariableDefinitions } from 'shared/css-config'
 import flattenObject from './flatten-object'
 
 export declare type ExtendedConfig = {

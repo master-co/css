@@ -2,16 +2,19 @@ import { CSSExtractor, Options } from '@master/css-extractor'
 import {
     loadConfigModule,
     resolveConfigPath,
-    stripMasterCSSConfigQuery,
-    toConfigModule,
-    toVirtualCSSConfigModulePath,
-    toVirtualDefaultConfigModulePath,
-    MASTER_CSS_CONFIG_QUERY,
-    VIRTUAL_CONFIG_DIR,
-    VIRTUAL_CONFIG_ID,
     warnMissingConfig,
     type ExploreConfigPath
 } from '@master/css-explore-config'
+import {
+    MASTER_CSS_CONFIG_QUERY,
+    VIRTUAL_CONFIG_DIR,
+    VIRTUAL_CONFIG_ID,
+    EMPTY_CONFIG_MODULE,
+    stripMasterCSSConfigQuery,
+    toConfigModule,
+    toVirtualCSSConfigModulePath,
+    toVirtualDefaultConfigModulePath
+} from 'shared/css-config-module'
 import { createExtractedCSS, registerStyleCSSSource as registerExtractorStyleCSSSource, type StyleCSSSources } from '@master/css-extractor/style'
 import type { Compiler } from 'webpack'
 import VirtualModulesPlugin from 'webpack-virtual-modules'
@@ -27,7 +30,6 @@ import {
 } from './utils/style-css'
 
 const NAME = 'MasterCSSPlugin'
-const EMPTY_CONFIG_MODULE = 'export default {};'
 
 function isVirtualConfigModulePath(modulePath: string) {
     return modulePath.replace(/\\/g, '/').includes(`${VIRTUAL_CONFIG_DIR}/`)

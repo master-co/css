@@ -1,5 +1,8 @@
 {
     "name": "shared",
     "private": true,
-    "type": "module"
+    "type": "module",
+    "exports": {
+        "./*": "./*.ts"
+    }
 }

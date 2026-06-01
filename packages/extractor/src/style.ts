@@ -1,5 +1,6 @@
 import { compileCSS, type CompileCSSOptions, type CompileCSSResult } from '@master/css-compiler'
-import { AnimationRule, createCSS, extendConfig, VariableRule, type Config } from '@master/css'
+import { AnimationRule, createCSS, extendConfig, VariableRule } from '@master/css'
+import type { Config } from 'shared/css-config'
 import { loadConfig } from '@master/css-explore-config'
 import { createRequire } from 'node:module'
 import { dirname, extname, join, resolve } from 'node:path'

@@ -1,4 +1,4 @@
-import { FunctionDefinition } from '../types/config'
+import type { FunctionDefinition } from 'shared/css-config'
 
 const functions = {
     translate: { unit: 'rem' },

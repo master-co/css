@@ -2,7 +2,7 @@
 
 ## Responsibility
 
-`@master/css` is the core engine. It resolves config, matches class syntax, creates `Utility` objects, resolves values/variables/functions/selectors/at-rules/modes, inserts rules into cascade layers, and emits CSS text.
+`@master/css` is the core engine. It resolves config, matches class syntax, creates `Utility` objects, resolves values/variables/functions/selectors/at-rules/modes, inserts rules into cascade layers, and emits CSS text. Pure config contracts live in `shared/css-config`; core re-exports and interprets them.
 
 ## Inputs And Outputs
 

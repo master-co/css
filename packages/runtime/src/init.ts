@@ -1,5 +1,5 @@
 import CSSRuntime from './core'
-import type { Config } from '@master/css'
+import type { Config } from 'shared/css-config'
 
 /**
  * Initialize a new CSSRuntime instance and observe the target root

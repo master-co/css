@@ -53,7 +53,6 @@
         "provenance": true
     },
     "dependencies": {
-        "@master/css": "workspace:^",
         "lightningcss": "^1.32.0",
         "lightningcss-wasm": "^1.32.0"
     },

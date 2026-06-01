@@ -1,4 +1,4 @@
-import type { VariableDefinition } from '../types/config'
+import type { VariableDefinition } from 'shared/css-config'
 import type { ExtendedConfig } from './extend-config'
 
 function variableSlot(variable: VariableDefinition) {

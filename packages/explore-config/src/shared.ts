@@ -1,6 +1,8 @@
 import { existsSync } from 'node:fs'
 import { parse, resolve } from 'node:path'
-import type { Config } from '@master/css'
+import type { Config } from 'shared/css-config'
+import type { CSSDirectiveConfigAdapter } from 'shared/css-config-loader'
+import type { CSSConfigLoadResult } from 'shared/css-config-module'
 
 export interface ExploreConfigOptions {
     cwd?: string
@@ -12,6 +14,8 @@ export interface ExploreConfigOptions {
 
 export interface LoadConfigOptions extends Pick<ExploreConfigOptions, 'resolvedKeys'> {
     classes?: string[]
+    createConfigFromCSSDirectives?: CSSDirectiveConfigAdapter<Config>
+    baseConfig?: Config
 }
 
 export interface ExploreConfigPath {
@@ -20,16 +24,7 @@ export interface ExploreConfigPath {
     path: string
 }
 
-export interface LoadConfigResult {
-    config: Config
-    dependencies: string[]
-    classNames?: string[]
-    nativeClassNames?: string[]
-    nativeCSS?: string
-    css?: string
-    generatedCSS?: string
-    warnings?: string[]
-}
+export interface LoadConfigResult extends CSSConfigLoadResult<Config> { }
 
 export type ExploreConfigResult = ExploreConfigPath & LoadConfigResult
 

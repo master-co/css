@@ -11,7 +11,7 @@ import type {
     ModeDefinitions,
     SelectorTokenDefinitions,
     VariableDefinitions
-} from './types/config'
+} from 'shared/css-config'
 
 const atTokens = themeConfig.atTokens || {} satisfies AtTokenDefinitions
 const selectorTokens = themeConfig.selectorTokens || {} satisfies SelectorTokenDefinitions
