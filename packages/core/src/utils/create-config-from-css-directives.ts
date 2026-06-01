@@ -17,7 +17,7 @@ import defaultAtTokens from '../config/at-tokens'
 import defaultFunctions from '../config/functions'
 import defaultSelectorTokens from '../config/selector-tokens'
 import defaultUtilities from '../config/utilities'
-import defaultVariables, { modes as defaultModes, screens as defaultScreens } from '../config/variables'
+import defaultVariables, { modes as defaultModes } from '../config/variables'
 import type { Config, UtilityDefinition, UtilityLayerName, UtilityRuleDefinition, VariableDefinition } from 'shared/css-config'
 import type { Utility } from '../utility'
 import compareRulePriority from './compare-rule-priority'
@@ -77,7 +77,10 @@ type ComponentAtRuleFeature = [string, number, number]
 
 const COMPONENT_AT_FEATURE_REGEX = /\(\s*(width|height|resolution)\s*(>=|<=|>|<)\s*(-?(?:\d+(?:\.\d+)?|\.\d+))([a-z%]*)\s*\)/g
 const DEFAULT_MODE_NAMES = new Set(defaultModes)
-const DEFAULT_SCREEN_NAMES = new Set(Object.keys(defaultScreens))
+const DEFAULT_SCREEN_NAMES = new Set(defaultVariables
+    .filter(({ namespace }) => namespace === 'screen')
+    .map(({ key }) => key)
+)
 
 function isCSSDirectiveResult(input: CSSDirectiveInput): input is CSSDirectiveResult {
     return 'config' in input

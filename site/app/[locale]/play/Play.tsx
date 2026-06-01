@@ -16,7 +16,8 @@ import Resizable from 'internal/components/Resizable'
 import { useThemeMode } from '@master/theme-mode.react'
 import Header from 'internal/components/Header'
 import HeaderNav from 'internal/components/HeaderNav'
-import { screens, variables } from '@master/css'
+import { variables } from '@master/css'
+import { screenVariableValues } from '~/site/utils/screen-variables'
 import clsx from 'clsx'
 import Link from 'internal/components/Link'
 import Editor, { loader, type Monaco } from '@monaco-editor/react'
@@ -306,7 +307,7 @@ export default function Play({ shareId }: PlayProps = {}) {
      */
     useEffect(() => {
         const onResize = () => {
-            if (window.innerWidth >= screens.md) {
+            if (window.innerWidth >= screenVariableValues.md) {
                 if (tab === 'Preview' || tab === 'Generated CSS') {
                     pushShallowURL('tab', files[0].title)
                 }

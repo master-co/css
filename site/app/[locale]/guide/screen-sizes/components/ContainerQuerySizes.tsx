@@ -1,6 +1,7 @@
-import { generateAt, parseAt, screens } from '@master/css'
+import { generateAt, parseAt } from '@master/css'
 import css from '~/internal/common/css'
 import InlineCode from '~/internal/components/InlineCode'
+import { screenVariableEntries } from '~/site/utils/screen-variables'
 
 const formatValue = (value: number) => `${value}px / ${value / 16}rem`
 
@@ -17,14 +18,13 @@ export default () => {
                 </thead>
                 <tbody>
                     {
-                        Object.entries(screens)
-                            .map(([name, value]) => (
-                                <tr key={name}>
-                                    <th className="white-space:nowrap"><InlineCode>{`@container(${name})`}</InlineCode></th>
-                                    <td className="white-space:nowrap"><InlineCode>{formatValue(value)}</InlineCode></td>
-                                    <td><InlineCode lang="css">{generateAt(parseAt(`@container(${name})`, css))}</InlineCode></td>
-                                </tr>
-                            ))
+                        screenVariableEntries.map(([name, value]) => (
+                            <tr key={name}>
+                                <th className="white-space:nowrap"><InlineCode>{`@container(${name})`}</InlineCode></th>
+                                <td className="white-space:nowrap"><InlineCode>{formatValue(value)}</InlineCode></td>
+                                <td><InlineCode lang="css">{generateAt(parseAt(`@container(${name})`, css))}</InlineCode></td>
+                            </tr>
+                        ))
                     }
                 </tbody>
             </table>

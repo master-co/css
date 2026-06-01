@@ -24,11 +24,6 @@ const variables = [
 const modes = themeConfig.modes?.length
     ? themeConfig.modes
     : [...new Set(variables.map(({ mode }) => mode).filter(Boolean))] as ModeDefinitions
-const screens = Object.fromEntries(
-    variables
-        .filter(({ namespace, value }) => namespace === 'screen' && typeof value === 'number')
-        .map(({ key, value }) => [key, value])
-) as Record<string, number>
 
 const config: Config = {
     atTokens,
@@ -54,6 +49,5 @@ export {
     functions,
     animations,
     variables,
-    modes,
-    screens
+    modes
 }
