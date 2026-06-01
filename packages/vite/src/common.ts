@@ -1,3 +1,9 @@
+import {
+    MASTER_CSS_CONFIG_QUERY as MASTER_CSS_CONFIG_REQUEST_QUERY,
+    RESOLVED_MASTER_CSS_CONFIG_QUERY_PREFIX as RESOLVED_MASTER_CSS_CONFIG_REQUEST_QUERY_PREFIX,
+    VIRTUAL_CONFIG_ID as MASTER_CSS_VIRTUAL_CONFIG_ID
+} from '@master/css-explore-config'
+
 const ENTRIES = '{main,app,index}.{js,ts,jsx,tsx,mjs,cjs,vue}'
 
 export const ENTRY_MODULE_PATTERNS = [
@@ -16,10 +22,10 @@ export const HTML_ENTRIES = [
     'index.html',
 ]
 
-export const VIRTUAL_CONFIG_ID = 'virtual:master-css-config'
+export const VIRTUAL_CONFIG_ID = MASTER_CSS_VIRTUAL_CONFIG_ID
 export const RESOLVED_VIRTUAL_CONFIG_ID = `\0${VIRTUAL_CONFIG_ID}`
-export const MASTER_CSS_CONFIG_QUERY = '?master-css-config'
-export const RESOLVED_MASTER_CSS_CONFIG_QUERY_PREFIX = '\0master-css-config:'
+export const MASTER_CSS_CONFIG_QUERY = MASTER_CSS_CONFIG_REQUEST_QUERY
+export const RESOLVED_MASTER_CSS_CONFIG_QUERY_PREFIX = RESOLVED_MASTER_CSS_CONFIG_REQUEST_QUERY_PREFIX
 export const CSS_RUNTIME_INJECTIOIN = [
     `import { initCSSRuntime } from '@master/css-runtime';`,
     `import masterCSSConfig from 'virtual:master-css-config';`,

@@ -1,4 +1,3 @@
-import { createRequire } from 'node:module'
 import { extname } from 'node:path'
 import {
     DEFAULT_MISSING,
@@ -11,38 +10,24 @@ import {
     type LoadConfigResult
 } from './shared'
 import { collectScriptDependencies, requireConfigModule } from './script'
+import { loadCSSConfigSync } from './css'
+import { stripResourceQuery, toConfigModuleResult, type ConfigModuleResult } from './module'
 
-type CompileCSSFile = typeof import('@master/css-compiler')['compileCSSFile']
-
-const require = createRequire(import.meta.url)
-
-function loadCompileCSSSync() {
-    return require('@master/css-compiler').compileCSSFile as CompileCSSFile
-}
+export * from './module'
+export { loadCSSConfigModuleSync, loadCSSConfigSync } from './css'
 
 export function loadConfigSync(path: string, options: LoadConfigOptions = {}): LoadConfigResult {
     if (extname(path) === '.css') {
-        const compileCSSFile = loadCompileCSSSync()
-        const result = compileCSSFile(path, {
-            classes: options.classes,
-            preserveNativeCSS: false
-        })
-        const nativeCSS = (result as typeof result & { nativeCSS?: string }).nativeCSS
-        return {
-            config: result.config,
-            dependencies: result.dependencies,
-            classNames: result.classNames,
-            nativeClassNames: result.nativeClassNames,
-            nativeCSS,
-            css: result.css,
-            generatedCSS: result.generatedCSS,
-            warnings: result.warnings
-        }
+        return loadCSSConfigSync(path, options)
     }
     return {
         config: resolveConfig(requireConfigModule(path), options),
         dependencies: collectScriptDependencies(path)
     }
+}
+
+export function loadConfigModuleSync(path: string, options: LoadConfigOptions = {}): ConfigModuleResult {
+    return toConfigModuleResult(loadConfigSync(stripResourceQuery(path), options))
 }
 
 export function exploreConfigSync(options: ExploreConfigOptions & { name?: string } = {}) {

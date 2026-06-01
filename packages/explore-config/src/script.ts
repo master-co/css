@@ -5,8 +5,15 @@ import { pathToFileURL, fileURLToPath } from 'node:url'
 import { parseSync, visitorKeys, type OxcError as ParserError } from 'oxc-parser'
 import { ResolverFactory } from 'oxc-resolver'
 import { transformSync, type OxcError, type TransformOptions } from 'oxc-transform'
+import { loadCSSConfigModuleSync } from './css'
+import {
+    MASTER_CSS_CONFIG_QUERY,
+    isMasterCSSConfigRequest,
+    stripMasterCSSConfigQuery
+} from './module'
 
 const CONFIG_LOAD_ID_PARAM = 'master-css-load'
+const CSS_CONFIG_QUERY_PARAM = MASTER_CSS_CONFIG_QUERY.slice(1)
 const URL_SCHEME_RE = /^[a-zA-Z][a-zA-Z\d+.-]*:/
 const require = createRequire(import.meta.url)
 const nativeImport = createNativeImport()
@@ -87,6 +94,10 @@ function isURLSpecifier(specifier: string) {
     return URL_SCHEME_RE.test(specifier)
 }
 
+function isMasterCSSPackageRequest(specifier: string) {
+    return specifier === '@master/css' || specifier.startsWith('@master/css/')
+}
+
 function cleanFileURLToPath(url: string | URL) {
     const fileURL = new URL(url)
     fileURL.search = ''
@@ -143,10 +154,14 @@ function shouldPropagateLoadId(path: string) {
 
 function resolveModuleRequest(importerPath: string, request: string) {
     if (isBuiltin(request) || isURLSpecifier(request)) return
+    if (isMasterCSSPackageRequest(request)) return
+    const sourceRequest = isMasterCSSConfigRequest(request)
+        ? stripMasterCSSConfigQuery(request)
+        : request
 
     const result = (() => {
         try {
-            return resolver.resolveFileSync(importerPath, request)
+            return resolver.resolveFileSync(importerPath, sourceRequest)
         } catch {
             return
         }
@@ -176,7 +191,7 @@ function registerOxcHooks() {
                 }
             }
 
-            if (isBuiltin(specifier) || isURLSpecifier(specifier) || !context.parentURL?.startsWith('file:')) {
+            if (isBuiltin(specifier) || isURLSpecifier(specifier) || isMasterCSSPackageRequest(specifier) || !context.parentURL?.startsWith('file:')) {
                 return nextResolve(specifier, context)
             }
 
@@ -184,6 +199,9 @@ function registerOxcHooks() {
             if (!resolvedPath) return nextResolve(specifier, context)
 
             const url = pathToFileURL(resolvedPath)
+            if (isMasterCSSConfigRequest(specifier)) {
+                url.searchParams.set(CSS_CONFIG_QUERY_PARAM, '')
+            }
             const parentLoadId = new URL(context.parentURL).searchParams.get(CONFIG_LOAD_ID_PARAM)
             if (parentLoadId && shouldPropagateLoadId(resolvedPath)) {
                 url.searchParams.set(CONFIG_LOAD_ID_PARAM, parentLoadId)
@@ -196,6 +214,13 @@ function registerOxcHooks() {
         },
         load(url, context, nextLoad) {
             const fileURL = new URL(url)
+            if (fileURL.protocol === 'file:' && fileURL.searchParams.has(CSS_CONFIG_QUERY_PARAM)) {
+                return {
+                    format: 'module',
+                    shortCircuit: true,
+                    source: loadCSSConfigModuleSync(cleanFileURLToPath(fileURL)).code
+                }
+            }
             if (fileURL.protocol === 'file:' && isTransformable(fileURL.pathname)) {
                 return {
                     format: 'module',

@@ -1,4 +1,4 @@
-import { extname } from 'node:path'
+import { dirname, extname, isAbsolute, resolve } from 'node:path'
 import {
     DEFAULT_EXTENSIONS,
     DEFAULT_FOUND,
@@ -15,6 +15,16 @@ import {
     type MissingConfigWarningOptions
 } from './shared'
 import { collectScriptDependencies, importConfigModule } from './script'
+import { loadCSSConfig } from './css'
+import {
+    fromResolvedMasterCSSConfigId,
+    isMasterCSSConfigRequest,
+    stripMasterCSSConfigQuery,
+    stripResourceQuery,
+    toConfigModuleResult,
+    toResolvedMasterCSSConfigId,
+    type ConfigModuleResult
+} from './module'
 
 export {
     DEFAULT_EXTENSIONS,
@@ -29,33 +39,50 @@ export {
     type LoadConfigResult,
     type MissingConfigWarningOptions
 }
-
-async function loadCompileCSS() {
-    return (await import('@master/css-compiler')).compileCSSFile
-}
+export * from './module'
+export { loadCSSConfig, loadCSSConfigModule } from './css'
 
 export async function loadConfig(path: string, options: LoadConfigOptions = {}): Promise<LoadConfigResult> {
     if (extname(path) === '.css') {
-        const compileCSSFile = await loadCompileCSS()
-        const result = compileCSSFile(path, {
-            classes: options.classes,
-            preserveNativeCSS: false
-        })
-        const nativeCSS = (result as typeof result & { nativeCSS?: string }).nativeCSS
-        return {
-            config: result.config,
-            dependencies: result.dependencies,
-            classNames: result.classNames,
-            nativeClassNames: result.nativeClassNames,
-            nativeCSS,
-            css: result.css,
-            generatedCSS: result.generatedCSS,
-            warnings: result.warnings
-        }
+        return loadCSSConfig(path, options)
     }
     return {
         config: resolveConfig(await importConfigModule(path), options),
         dependencies: collectScriptDependencies(path)
+    }
+}
+
+export async function loadConfigModule(path: string, options: LoadConfigOptions = {}): Promise<ConfigModuleResult> {
+    return toConfigModuleResult(await loadConfig(stripResourceQuery(path), options))
+}
+
+export function createMasterCSSConfigLoaderPlugin(options: {
+    cwd?: string
+    loadConfigModule?: typeof loadConfigModule
+} = {}) {
+    return {
+        name: 'master-css:config-loader',
+        enforce: 'pre' as const,
+        async resolveId(this: { resolve?: (id: string, importer?: string, options?: { skipSelf?: boolean }) => Promise<{ id: string } | null | undefined> }, id: string, importer?: string) {
+            if (!isMasterCSSConfigRequest(id)) return
+            const sourceId = stripMasterCSSConfigQuery(id)
+            const resolved = await this.resolve?.(sourceId, importer, { skipSelf: true })
+            if (resolved) return toResolvedMasterCSSConfigId(resolved.id)
+            const baseDir = importer
+                ? dirname(stripResourceQuery(importer))
+                : options.cwd || process.cwd()
+            const file = isAbsolute(sourceId) ? sourceId : resolve(baseDir, sourceId)
+            return toResolvedMasterCSSConfigId(file)
+        },
+        async load(this: { addWatchFile?: (id: string) => void }, id: string) {
+            const configPath = fromResolvedMasterCSSConfigId(id)
+            if (!configPath) return
+            const result = await (options.loadConfigModule || loadConfigModule)(configPath)
+            for (const dependency of result.dependencies) {
+                this.addWatchFile?.(dependency)
+            }
+            return result.code
+        }
     }
 }
 

@@ -5,7 +5,7 @@ import {
     MASTER_CSS_CONFIG_QUERY,
     RESOLVED_VIRTUAL_CONFIG_ID
 } from '../../src/common'
-import { fromResolvedMasterCSSConfigId, toResolvedMasterCSSConfigId } from '../../src/utils/config-module'
+import { fromResolvedMasterCSSConfigId, toResolvedMasterCSSConfigId } from '@master/css-explore-config'
 
 const FIXTURE_DIR = path.resolve(__dirname, '../fixtures/config-virtual-module')
 

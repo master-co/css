@@ -1,6 +1,6 @@
 import { test, expect, vi } from 'vitest'
-import exploreConfig, { formatMissingConfigWarning, loadConfig, resolveConfigPath, warnMissingConfig } from '../src'
-import exploreConfigSync, { loadConfigSync } from '../src/sync'
+import exploreConfig, { formatMissingConfigWarning, loadConfig, loadConfigModule, resolveConfigPath, warnMissingConfig } from '../src'
+import exploreConfigSync, { loadConfigModuleSync, loadConfigSync } from '../src/sync'
 import config from './master.css'
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
@@ -166,6 +166,24 @@ test('loads config results directly', async () => {
     })
 })
 
+test('turns config results into JavaScript modules', async () => {
+    const cwd = mkdtempSync(join(tmpdir(), 'master-css-config-'))
+    try {
+        const path = join(cwd, 'master.css')
+        writeFileSync(path, '@master { --color-primary: #123; }')
+
+        const result = await loadConfigModule(path)
+        const syncResult = loadConfigModuleSync(path + '?master-css-config')
+
+        expect(result.dependencies).toContain(path)
+        expect(result.code).toContain('export default')
+        expect(result.code).toContain('"namespace":"color"')
+        expect(syncResult.code).toBe(result.code)
+    } finally {
+        rmSync(cwd, { force: true, recursive: true })
+    }
+})
+
 test('tracks imported script config dependencies', async () => {
     const cwd = mkdtempSync(join(tmpdir(), 'master-css-config-'))
     const configPath = join(cwd, 'master.css.ts')
@@ -268,6 +286,10 @@ test('loads imported CSS config files', async () => {
                     name: 'btn',
                     type: -4,
                     layer: 'main',
+                    unit: '',
+                    separators: [
+                        ','
+                    ],
                     declarations: {
                         'font-size': '1rem',
                         display: 'block'
@@ -306,6 +328,10 @@ test('loads imported CSS config files synchronously', () => {
                     name: 'btn',
                     type: -4,
                     layer: 'main',
+                    unit: '',
+                    separators: [
+                        ','
+                    ],
                     declarations: {
                         'font-size': '1rem'
                     }

@@ -1,6 +1,7 @@
 import { fileURLToPath } from 'node:url'
 import type { NextConfig } from 'next'
 import { createMasterStyleCSSPattern } from '@master/css-extractor/style'
+import { MASTER_CSS_CONFIG_QUERY } from '@master/css-explore-config'
 import {
     prepareNextExtract,
     resolveExtractOutputPath,
@@ -14,6 +15,7 @@ type WebpackConfig = Parameters<NonNullable<NextConfig['webpack']>>[0]
 type WebpackContext = Parameters<NonNullable<NextConfig['webpack']>>[1]
 type TurbopackRules = NonNullable<NonNullable<NextConfig['turbopack']>['rules']>
 type TurbopackRuleConfigCollection = TurbopackRules[string]
+const MASTER_CSS_CONFIG_RESOURCE_QUERY = new RegExp(MASTER_CSS_CONFIG_QUERY.slice(1))
 
 function resolveAdapterPath() {
     return fileURLToPath(new URL('./adapter.mjs', import.meta.url))
@@ -39,7 +41,7 @@ function applyMasterCSSWebpackConfig(config: WebpackConfig, loaderPath: string) 
     config.module ??= {}
     config.module.rules ??= []
     config.module.rules.push({
-        resourceQuery: /master-css-config/,
+        resourceQuery: MASTER_CSS_CONFIG_RESOURCE_QUERY,
         type: 'javascript/auto',
         use: [
             {
@@ -57,7 +59,7 @@ function applyMasterCSSTurbopackConfig(nextConfig: NextConfig, loaderPath: strin
         condition: {
             all: [
                 { path: /\.css$/ },
-                { query: /master-css-config/ }
+                { query: MASTER_CSS_CONFIG_RESOURCE_QUERY }
             ]
         },
         loaders: [loaderPath],
@@ -124,7 +126,7 @@ function applyMasterCSSExtractTurbopackConfig(
                 { not: 'foreign' as const },
                 { path: /\.(css|scss|sass)$/ },
                 { content: createMasterStyleCSSPattern() },
-                { not: { query: /master-css-config/ } }
+                { not: { query: MASTER_CSS_CONFIG_RESOURCE_QUERY } }
             ]
         },
         loaders: [

@@ -1,18 +1,23 @@
 import { CSSExtractor, Options } from '@master/css-extractor'
-import { loadConfig, resolveConfigPath, warnMissingConfig, type ExploreConfigPath } from '@master/css-explore-config'
+import {
+    loadConfigModule,
+    resolveConfigPath,
+    stripMasterCSSConfigQuery,
+    toConfigModule,
+    toVirtualCSSConfigModulePath,
+    toVirtualDefaultConfigModulePath,
+    MASTER_CSS_CONFIG_QUERY,
+    VIRTUAL_CONFIG_DIR,
+    VIRTUAL_CONFIG_ID,
+    warnMissingConfig,
+    type ExploreConfigPath
+} from '@master/css-explore-config'
 import { createExtractedCSS, registerStyleCSSSource as registerExtractorStyleCSSSource, type StyleCSSSources } from '@master/css-extractor/style'
 import type { Compiler } from 'webpack'
 import VirtualModulesPlugin from 'webpack-virtual-modules'
 import log from '@techor/log'
 import path from 'node:path'
 import { readFileSync } from 'node:fs'
-import { MASTER_CSS_CONFIG_QUERY, VIRTUAL_CONFIG_DIR, VIRTUAL_CONFIG_ID } from './common'
-import {
-    stripMasterCSSConfigQuery,
-    toConfigModule,
-    toVirtualCSSConfigModulePath,
-    toVirtualDefaultConfigModulePath
-} from './utils/config-module'
 import {
     STYLE_CSS_REQUEST_RE,
     cleanStyleRequest,
@@ -76,9 +81,9 @@ export class MasterCSSExtractorPlugin extends CSSExtractor {
             return toConfigModule(this.options.config)
         }
         if (!resolvedConfig) return EMPTY_CONFIG_MODULE
-        const result = await loadConfig(resolvedConfig.path)
+        const result = await loadConfigModule(resolvedConfig.path)
         this.defaultConfigDependencies = result.dependencies
-        return toConfigModule(result.config)
+        return result.code
     }
 
     private getExtractorClasses() {
@@ -278,8 +283,8 @@ export class MasterCSSExtractorPlugin extends CSSExtractor {
                         }
                         try {
                             const virtualCSSConfigModuleId = toVirtualCSSConfigModulePath(compilerContext, resolvedPath)
-                            const result = await loadConfig(resolvedPath)
-                            virtualModule.writeModule(virtualCSSConfigModuleId, toConfigModule(result.config))
+                            const result = await loadConfigModule(resolvedPath)
+                            virtualModule.writeModule(virtualCSSConfigModuleId, result.code)
                             for (const dependency of result.dependencies) {
                                 resolveData.fileDependencies.add(dependency)
                             }

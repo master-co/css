@@ -1,14 +1,14 @@
 import type { ModuleNode, Plugin, ViteDevServer } from 'vite'
 import { PluginContext } from '../core'
-import exploreConfig, { loadConfig, warnMissingConfig } from '@master/css-explore-config'
+import exploreConfig, {
+    fromResolvedMasterCSSConfigId,
+    loadConfigModule,
+    stripMasterCSSConfigQuery,
+    toResolvedMasterCSSConfigId,
+    warnMissingConfig
+} from '@master/css-explore-config'
 import { MASTER_CSS_CONFIG_QUERY, RESOLVED_VIRTUAL_CONFIG_ID, VIRTUAL_CONFIG_ID } from '../common'
 import { PluginOptions } from '../options'
-import {
-    fromResolvedMasterCSSConfigId,
-    stripMasterCSSConfigQuery,
-    toConfigModule,
-    toResolvedMasterCSSConfigId
-} from '../utils/config-module'
 
 function invalidateConfigModule(module: ModuleNode | undefined, server: ViteDevServer): boolean {
     if (!module) return false
@@ -78,11 +78,11 @@ export function ConfigVirtualModulePlugin(
             if (id === RESOLVED_VIRTUAL_CONFIG_ID) {
                 if (context.configPath) {
                     if (context.configResult?.extension === 'css') {
-                        const result = await loadConfig(context.configPath)
+                        const result = await loadConfigModule(context.configPath)
                         context.configResult.config = result.config
                         context.configResult.dependencies = result.dependencies
                         watchConfigDependencies(this, context.configPath, result.dependencies)
-                        return toConfigModule(result.config)
+                        return result.code
                     }
                     return `import config from ${JSON.stringify(context.configPath)}; export default config;`
                 } else {
@@ -91,9 +91,9 @@ export function ConfigVirtualModulePlugin(
             }
             const configPath = fromResolvedMasterCSSConfigId(id)
             if (configPath) {
-                const result = await loadConfig(configPath)
+                const result = await loadConfigModule(configPath)
                 watchConfigDependencies(this, configPath, result.dependencies)
-                return toConfigModule(result.config)
+                return result.code
             }
         },
         async handleHotUpdate({ file, server }) {
