@@ -92,7 +92,7 @@ let defaultStyleCSS: string | undefined
 function getDefaultStyleCSS() {
     if (defaultStyleCSS !== undefined) return defaultStyleCSS
     try {
-        defaultStyleCSS = readFileSync(require.resolve('@master/css/normal.css'), 'utf-8').trim()
+        defaultStyleCSS = readFileSync(require.resolve('@master/css/base.css'), 'utf-8').trim()
     } catch {
         defaultStyleCSS = ''
     }

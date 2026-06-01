@@ -327,7 +327,7 @@ describe.concurrent('@master/css-compiler', () => {
                 }
             `)
             writeFileSync(entry, `
-                @import "@master/css/normal.css";
+                @import "@master/css/base.css";
                 @import "./styles/button.css";
 
                 @master {

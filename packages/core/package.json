@@ -44,7 +44,7 @@
     ],
     "sideEffects": [
         "./index.css",
-        "./normal.css",
+        "./base.css",
         "./theme.css"
     ],
     "main": "./dist/index.mjs",
@@ -61,7 +61,7 @@
             "default": "./dist/index.mjs"
         },
         "./index.css": "./index.css",
-        "./normal.css": "./normal.css",
+        "./base.css": "./base.css",
         "./theme.css": "./theme.css",
         "./*": {
             "types": "./dist/*.d.ts",
@@ -73,7 +73,7 @@
     "files": [
         "dist",
         "index.css",
-        "normal.css",
+        "base.css",
         "theme.css"
     ],
     "publishConfig": {
