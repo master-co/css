@@ -1231,6 +1231,11 @@ const utilities = [
         type: UtilityType.Native
     },
     {
+        name: 'tab-size',
+        key: 'tab',
+        type: UtilityType.Native
+    },
+    {
         name: 'vertical-align',
         key: 'v',
         subkey: 'vertical',
@@ -1567,6 +1572,10 @@ const utilities = [
         name: 'rotate',
         type: UtilityType.Native,
         unit: 'deg'
+    },
+    {
+        name: 'zoom',
+        type: UtilityType.Native
     },
     {
         name: 'view-transition-name',
