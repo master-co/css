@@ -2,7 +2,7 @@ import defineVisitors from '../utils/define-visitors'
 import resolveContext from '../utils/resolve-context'
 import createRule from '../create-rule'
 import settingsSchema from '../settings-schema'
-import { sortReadableClasses } from '@master/css'
+import { sortReadableClasses } from '@master/css/utils'
 
 export default createRule({
     name: 'consistent-class-order',

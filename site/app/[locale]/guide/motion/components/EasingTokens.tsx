@@ -1,4 +1,6 @@
-import { variables } from '@master/css'
+import config from '@master/css/config'
+
+const variables = config.variables || []
 
 const easingUsage: Record<string, string> = {
     smooth: 'Balanced movement',

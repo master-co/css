@@ -1,5 +1,6 @@
 import { type CompletionItem, CompletionItemKind } from 'vscode-languageserver-protocol'
-import { UtilityType, MasterCSS, createCSS, generateCSS, isCoreRule } from '@master/css'
+import { UtilityType, MasterCSS, createCSS } from '@master/css'
+import { generateCSS, isCoreRule } from '@master/css/utils'
 import { getCSSDataDocumentation } from './get-css-data-documentation'
 import sortCompletionItems from './sort-completion-items'
 import getUtilityInfo from './get-utility-info'

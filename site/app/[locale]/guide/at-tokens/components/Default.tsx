@@ -1,5 +1,7 @@
-import { atTokens } from '@master/css'
+import config from '@master/css/config'
 import InlineCode from 'internal/components/InlineCode'
+
+const atTokens = config.atTokens || {}
 
 export default () =>
     <figure className='doc-table'>

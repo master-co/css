@@ -1,5 +1,6 @@
 import { test, expect, describe } from 'vitest'
-import { AtRule, Config, parseAt } from '../../src'
+import { Config } from '../../src'
+import { type AtRule, parseAt } from '../../src/utils'
 import { createCSS } from '@master/css'
 
 export const cases = {

@@ -1,5 +1,6 @@
 import { describe, test, expect } from 'vitest'
-import { MasterCSS, config as defaultConfig } from '../../src'
+import { MasterCSS } from '../../src'
+import defaultConfig from '../../src/config'
 
 describe('issue #215: touch: shorthand for touch-action', () => {
     const cases: [string, string][] = [

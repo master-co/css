@@ -1,5 +1,6 @@
 import { describe, expect, test } from 'vitest'
-import { createCSS, extendConfig, MasterCSS, UtilityType } from '../src'
+import { createCSS, MasterCSS, UtilityType } from '../src'
+import { extendConfig } from '../src/utils'
 
 function mainStyle(name: string, rules: any[], layer: 'base' | 'preset' | 'main' | 'general' = 'main') {
     return { name, type: UtilityType.Static, layer, rules }

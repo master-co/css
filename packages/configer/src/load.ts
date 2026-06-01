@@ -27,8 +27,8 @@ async function loadCompileCSS() {
 
 async function loadCSSDirectiveConfigAdapter(options: LoadConfigOptions = {}) {
     if (options.createConfigFromCSSDirectives) return options.createConfigFromCSSDirectives
-    const masterCSS = await import('@master/css')
-    return masterCSS.createConfigFromCSSDirectives as CSSDirectiveConfigAdapter<Config>
+    const module = await import('@master/css/create-config-from-css-directives')
+    return module.default as CSSDirectiveConfigAdapter<Config>
 }
 
 async function loadCSSConfig(path: string, options: LoadConfigOptions = {}): Promise<LoadConfigResult> {

@@ -1,6 +1,7 @@
 import { type CompletionItem, CompletionItemKind } from 'vscode-languageserver-protocol'
 import cssDataProvider from './css-data-provider'
-import { MasterCSS, createCSS, UtilityType, Variable, generateCSS, isCoreRule } from '@master/css'
+import { MasterCSS, createCSS, UtilityType, Variable } from '@master/css'
+import { generateCSS, isCoreRule } from '@master/css/utils'
 import { getCSSDataDocumentation } from './get-css-data-documentation'
 import sortCompletionItems from './sort-completion-items'
 import type { IValueData } from 'vscode-css-languageservice'

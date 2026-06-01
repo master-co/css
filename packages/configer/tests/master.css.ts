@@ -1,4 +1,5 @@
-import { Config, extendConfig } from '@master/css'
+import { Config } from '@master/css'
+import { extendConfig } from '@master/css/utils'
 import card from './card.css'
 
 export default extendConfig(card, {

@@ -1,5 +1,5 @@
 import initCSSRuntime from './init'
-import { extendConfig } from '@master/css'
+import { extendConfig } from '@master/css/utils'
 
 const customConfigs = window.masterCSSConfigs
 const customConfig = window.masterCSSConfig

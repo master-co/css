@@ -1,5 +1,6 @@
 import { resolve } from 'node:path'
-import { createCSS, extendConfig } from '@master/css'
+import { createCSS } from '@master/css'
+import { extendConfig } from '@master/css/utils'
 import type { Config } from 'shared/css-config'
 import type { ExploreConfigResult } from '@master/css-configer/explore'
 import { loadConfig } from '@master/css-configer/load'

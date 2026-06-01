@@ -1,5 +1,7 @@
-import { utilities } from '../../src'
+import config from '../../src/config'
 import CSSTester from '../tester'
+
+const utilities = config.utilities || []
 
 new CSSTester({ modeTrigger: 'class', defaultMode: 'light', variables: [{ namespace: 'color', key: 'white', value: 'oklch(100% 0 none)' }, { namespace: 'color', key: 'black', value: 'oklch(0% 0 none)' }, { namespace: 'color', key: 'invert', value: '$color-black', mode: 'light' }, { namespace: 'color', key: 'invert', value: '$color-white', mode: 'dark' }], modes: ['light', 'dark'], utilities }, null).layers({
     'bg:invert': {

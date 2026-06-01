@@ -1,5 +1,7 @@
 import { expect, test } from 'vitest'
-import { Config, sortReadableClasses, MasterCSS, config as defaultConfig } from '../src'
+import { Config, MasterCSS } from '../src'
+import defaultConfig from '../src/config'
+import { sortReadableClasses } from '../src/utils'
 
 export default class CSSTester {
     public css: MasterCSS

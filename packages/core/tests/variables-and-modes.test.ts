@@ -1,6 +1,8 @@
 import { describe } from 'vitest'
-import { utilities } from '../src'
+import config from '../src/config'
 import CSSTester from './tester'
+
+const utilities = config.utilities || []
 
 describe('mix color spaces and modes', () => {
     new CSSTester({

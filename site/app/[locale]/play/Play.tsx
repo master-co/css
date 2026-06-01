@@ -16,7 +16,7 @@ import Resizable from 'internal/components/Resizable'
 import { useThemeMode } from '@master/theme-mode.react'
 import Header from 'internal/components/Header'
 import HeaderNav from 'internal/components/HeaderNav'
-import { variables } from '@master/css'
+import config from '@master/css/config'
 import { screenVariableValues } from '~/site/utils/screen-variables'
 import clsx from 'clsx'
 import Link from 'internal/components/Link'
@@ -27,6 +27,8 @@ import HeaderContent from 'internal/components/HeaderContent'
 import createHighlighter, { themes } from 'internal/utils/create-highlighter'
 import { useApp } from 'internal/contexts/app'
 import { shikiToMonaco } from '@shikijs/monaco'
+
+const variables = config.variables || []
 
 if (typeof window !== 'undefined') {
     loader.config({

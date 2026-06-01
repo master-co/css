@@ -1,6 +1,8 @@
 import { it, test, expect, describe } from 'vitest'
 import { createCSS } from '../src'
-import { variables } from '../src'
+import config from '../src/config'
+
+const variables = config.variables || []
 
 test.concurrent('uncomplete', () => {
     expect(createCSS().generate('b:')[0]).toBeUndefined()

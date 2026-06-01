@@ -1,5 +1,5 @@
 import { loadConfigModuleSync } from '@master/css-configer/load-sync'
-import { createConfigFromCSSDirectives } from '@master/css'
+import createConfigFromCSSDirectives from '@master/css/create-config-from-css-directives'
 
 interface LoaderContext {
     resourcePath: string

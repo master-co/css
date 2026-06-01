@@ -1,6 +1,6 @@
 import { test, expect, describe } from 'vitest'
 import equalSelectors from '../../src/utils/equal-selectors'
-import { parseSelector } from '../../src'
+import { parseSelector } from '../../src/utils'
 import css from '../css'
 
 const equivalentCases = {

@@ -127,7 +127,7 @@ export default class MasterCSS {
 
         if (!utilities) return
 
-        const utilitiesEntries = utilities.map((definition) => [definition.name, definition] as [string, UtilityDefinition])
+        const utilitiesEntries = utilities.map((definition) => [definition.name, { ...definition }] as [string, UtilityDefinition])
 
         const utilitiesEntriesLength = utilitiesEntries.length
         const variablesByNamespace = new Map<string, [string, Variable][]>()

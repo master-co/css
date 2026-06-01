@@ -1,5 +1,7 @@
-import { selectorTokens } from '@master/css'
+import config from '@master/css/config'
 import InlineCode from 'internal/components/InlineCode'
+
+const selectorTokens = config.selectorTokens || {}
 
 export default () =>
     <figure className='doc-table'>

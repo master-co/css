@@ -1,7 +1,8 @@
-import { animations } from '@master/css'
+import config from '@master/css/config'
 import ExpandContent from '~/internal/components/ExpandContent'
 import InlineCode from '~/internal/components/InlineCode'
 
+const animations = config.animations || {}
 type AnimationKeyframes = typeof animations[keyof typeof animations]
 
 const getCSS = (name: string, keyframes: AnimationKeyframes) => {

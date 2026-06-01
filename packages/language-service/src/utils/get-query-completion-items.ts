@@ -1,4 +1,5 @@
-import { AT_SIGN, AtRule, MasterCSS, createCSS, QUERY_COMPARISON_OPERATORS, QUERY_LOGICAL_OPERATORS, generateAt, generateCSS, getSingleAtNumberRuleNode, parseAt } from '@master/css'
+import { AT_SIGN, MasterCSS, createCSS, QUERY_COMPARISON_OPERATORS, QUERY_LOGICAL_OPERATORS } from '@master/css'
+import { type AtRule, generateAt, generateCSS, getSingleAtNumberRuleNode, parseAt } from '@master/css/utils'
 import { CompletionItem, CompletionItemKind } from 'vscode-languageserver-protocol'
 import sortCompletionItems from './sort-completion-items'
 import { getCSSDataDocumentation } from './get-css-data-documentation'

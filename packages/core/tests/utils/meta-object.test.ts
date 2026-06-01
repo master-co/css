@@ -1,5 +1,5 @@
 import { it, expect } from 'vitest'
-import { flattenMetaObject, nestMetaObject } from '../../src'
+import { flattenMetaObject, nestMetaObject } from '../../src/utils'
 
 it('flattens and nests a single-level object', () => {
     const input = { color: { primary: '#000' } }

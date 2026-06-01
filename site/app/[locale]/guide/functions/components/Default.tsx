@@ -1,6 +1,8 @@
-import { functions } from '@master/css'
+import config from '@master/css/config'
 import InlineCode from 'internal/components/InlineCode'
 import ExpandContent from '~/internal/components/ExpandContent'
+
+const functions = config.functions || {}
 
 export default () =>
     <figure>

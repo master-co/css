@@ -29,10 +29,10 @@ function loadCompileCSSSync() {
 
 function loadCSSDirectiveConfigAdapterSync(options: LoadConfigOptions = {}) {
     if (options.createConfigFromCSSDirectives) return options.createConfigFromCSSDirectives
-    const masterCSS = require('@master/css') as {
-        createConfigFromCSSDirectives: CSSDirectiveConfigAdapter<Config>
+    const module = require('@master/css/create-config-from-css-directives') as {
+        default: CSSDirectiveConfigAdapter<Config>
     }
-    return masterCSS.createConfigFromCSSDirectives
+    return module.default
 }
 
 function loadCSSConfigSync(path: string, options: LoadConfigOptions = {}): LoadConfigResult {

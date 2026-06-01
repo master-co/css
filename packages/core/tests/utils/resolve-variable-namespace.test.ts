@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest'
-import { resolveVariableNamespace } from '../../src'
+import { resolveVariableNamespace } from '../../src/utils'
 
 test.concurrent('resolves variable namespace prefixes by longest match', () => {
     expect(resolveVariableNamespace('--color-line-lightest')).toEqual({

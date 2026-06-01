@@ -1,6 +1,6 @@
 import config1 from './master-1.css'
 import config2 from './master-2.css'
-import { extendConfig } from '../../../src'
+import { extendConfig } from '../../../src/utils'
 
 /** @type {import('../../../src').Config} */
 const config = extendConfig(config1, config2, {

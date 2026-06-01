@@ -1,6 +1,8 @@
 import { it, expect } from 'vitest'
 import { createCSS } from '../../src'
-import { variables } from '../../src'
+import config from '../../src/config'
+
+const variables = config.variables || []
 
 it.concurrent('customizes fonts', () => {
     const css = createCSS({ variables: [{ namespace: 'font-family', key: 'sans', value: '"Inter", $font-family-sans-fallback' }, { namespace: 'font-family', key: 'mono', value: '"Fira Code", $font-family-mono-fallback' }] })

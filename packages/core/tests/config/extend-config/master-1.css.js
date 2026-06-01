@@ -1,6 +1,6 @@
 import config1 from './master-1-1.css'
 import config2 from './master-1-2.css'
-import { extendConfig } from '../../../src'
+import { extendConfig } from '../../../src/utils'
 
 const config = extendConfig(config1, config2, {
     variables: [

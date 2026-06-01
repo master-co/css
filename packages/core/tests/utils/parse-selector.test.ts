@@ -1,5 +1,6 @@
 import { test, expect, describe } from 'vitest'
-import { Config, parseSelector, createCSS } from '../../src'
+import { Config, createCSS } from '../../src'
+import { parseSelector } from '../../src/utils'
 import { SelectorNode } from '../../src/utils/parse-selector'
 
 export const cases = {

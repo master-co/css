@@ -1,4 +1,5 @@
-import { MasterCSS, createCSS, SelectorTokenDefinitions, generateCSS } from '@master/css'
+import { MasterCSS, createCSS, SelectorTokenDefinitions } from '@master/css'
+import { generateCSS } from '@master/css/utils'
 import cssDataProvider from './css-data-provider'
 import { type CompletionItem, CompletionItemKind } from 'vscode-languageserver-protocol'
 import sortCompletionItems from './sort-completion-items'

@@ -1,6 +1,7 @@
-import { utilities } from '@master/css'
+import config from '@master/css/config'
 
 const namespaces = ['duration', 'easing']
+const utilities = config.utilities || []
 
 export default () =>
     <figure>

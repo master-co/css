@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest'
 import createCSSDirectiveConfig from '../../src/utils/create-config-from-css-directives'
+import createConfigFromCSSDirectives from '../../src/create-config-from-css-directives'
 import {
-    createConfigFromCSSDirectives,
     createCSS,
     UtilityType,
     type CSSDirectiveResult

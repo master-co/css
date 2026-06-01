@@ -1,5 +1,6 @@
 import { describe, expect, test } from 'vitest'
-import { extendConfig, UtilityType } from '../../src'
+import { UtilityType } from '../../src'
+import { extendConfig } from '../../src/utils'
 
 // describe('variables', () => {
 //     test.concurrent('basic', () => {

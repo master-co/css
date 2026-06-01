@@ -1,5 +1,7 @@
 import { Fragment } from 'react'
-import { utilities } from '@master/css'
+import config from '@master/css/config'
+
+const utilities = config.utilities || []
 
 export default () => <>
     {

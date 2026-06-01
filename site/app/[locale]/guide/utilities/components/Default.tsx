@@ -1,6 +1,9 @@
-import { utilities, UtilityType } from '@master/css'
+import { UtilityType } from '@master/css'
+import config from '@master/css/config'
 import InlineCode from 'internal/components/InlineCode'
 import ExpandContent from '~/internal/components/ExpandContent'
+
+const utilities = config.utilities || []
 
 const staticUtilities = Object.fromEntries(
     utilities

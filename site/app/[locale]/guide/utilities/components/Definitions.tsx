@@ -1,6 +1,12 @@
-import { utilities, UtilityType } from '@master/css'
+import { UtilityType } from '@master/css'
+import config from '@master/css/config'
 import ExpandContent from '~/internal/components/ExpandContent'
 import InlineCode from '~/internal/components/InlineCode'
+
+const utilities = config.utilities || []
+const utilityTypeNames = new Map<number, string>(
+    Object.entries(UtilityType).map(([name, value]) => [value, name])
+)
 
 const Definitions = () =>
     <figure>
@@ -25,7 +31,7 @@ const Definitions = () =>
                                         <th><InlineCode className="white-space:nowrap">{utility.name}</InlineCode></th>
                                         <td>
                                             {utility.type
-                                                ? <code>{UtilityType[utility.type]}</code>
+                                                ? <code>{utilityTypeNames.get(utility.type)}</code>
                                                 : <span className="fg:lightest">-</span>}
                                         </td>
                                         <td>

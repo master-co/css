@@ -1,5 +1,6 @@
 import { describe, test, expect } from 'vitest'
-import { MasterCSS, config as defaultConfig } from '../../src'
+import { MasterCSS } from '../../src'
+import defaultConfig from '../../src/config'
 
 describe('issue #358: clamp() with bare arithmetic in middle arg', () => {
     test('font-size:clamp(1.5rem,2vw+1rem,2.25rem) auto-wraps the arithmetic arg in calc()', () => {

@@ -1,4 +1,4 @@
-import { generateAt, parseAt } from '@master/css'
+import { generateAt, parseAt } from '@master/css/utils'
 import css from '~/internal/common/css'
 import InlineCode from '~/internal/components/InlineCode'
 import { screenVariableEntries } from '~/site/utils/screen-variables'

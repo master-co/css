@@ -1,4 +1,5 @@
-import { type Config, extendConfig } from '@master/css'
+import type { Config } from '@master/css'
+import { extendConfig } from '@master/css/utils'
 import preset from './preset.css'
 
 export default extendConfig(preset, {

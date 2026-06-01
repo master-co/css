@@ -1,5 +1,5 @@
 import { test, expect, describe } from 'vitest'
-import { generateSelector } from '../../src'
+import { generateSelector } from '../../src/utils'
 import { cases } from './parse-selector.test'
 
 describe.concurrent.each(Object.entries(cases))('%s', (_, cases) => {

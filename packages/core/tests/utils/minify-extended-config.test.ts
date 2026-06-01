@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { ExtendedConfig, minifyExtendedConfig } from '../../src'
+import { type ExtendedConfig, minifyExtendedConfig } from '../../src/utils'
 
 describe('minifyExtendedConfig', () => {
     it('should hoist identical variables across all modes', () => {
