@@ -4,6 +4,7 @@ import type { ExploreConfigResult } from '@master/css-explore-config'
 import type { Plugin, ResolvedConfig } from 'vite'
 import fg from 'fast-glob'
 import { ENTRY_MODULE_PATTERNS } from './common'
+import { ConfigLoaderPlugin } from './plugins/config-loader'
 import { ConfigVirtualModulePlugin } from './plugins/config-virtual-module'
 import path from 'path'
 import { readFileSync } from 'fs'
@@ -59,7 +60,8 @@ export default function masterCSS(options?: PluginOptions): Plugin[] {
     }
     const plugins: Plugin[] = [
         ResolveContextPlugin(),
-        ConfigVirtualModulePlugin(options, context)
+        ConfigVirtualModulePlugin(options, context),
+        ConfigLoaderPlugin(context)
     ]
     const usesExtractor = options.mode !== null
     if (usesExtractor) {

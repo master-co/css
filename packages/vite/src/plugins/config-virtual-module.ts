@@ -1,13 +1,10 @@
 import type { ModuleNode, Plugin, ViteDevServer } from 'vite'
 import { PluginContext } from '../core'
 import exploreConfig, {
-    fromResolvedMasterCSSConfigId,
     loadConfigModule,
-    stripMasterCSSConfigQuery,
-    toResolvedMasterCSSConfigId,
     warnMissingConfig
 } from '@master/css-explore-config'
-import { MASTER_CSS_CONFIG_QUERY, RESOLVED_VIRTUAL_CONFIG_ID, VIRTUAL_CONFIG_ID } from '../common'
+import { RESOLVED_VIRTUAL_CONFIG_ID, VIRTUAL_CONFIG_ID } from '../common'
 import { PluginOptions } from '../options'
 
 function invalidateConfigModule(module: ModuleNode | undefined, server: ViteDevServer): boolean {
@@ -66,13 +63,8 @@ export function ConfigVirtualModulePlugin(
         buildStart() {
             watchConfigDependencies(this, context.configPath, context.configResult?.dependencies || [])
         },
-        async resolveId(id, importer) {
+        async resolveId(id) {
             if (id === VIRTUAL_CONFIG_ID) return RESOLVED_VIRTUAL_CONFIG_ID
-            if (id.endsWith(MASTER_CSS_CONFIG_QUERY)) {
-                const sourceId = stripMasterCSSConfigQuery(id)
-                const resolved = await this.resolve(sourceId, importer, { skipSelf: true })
-                if (resolved) return toResolvedMasterCSSConfigId(resolved.id)
-            }
         },
         async load(id) {
             if (id === RESOLVED_VIRTUAL_CONFIG_ID) {
@@ -89,12 +81,6 @@ export function ConfigVirtualModulePlugin(
                     return `export default {}`
                 }
             }
-            const configPath = fromResolvedMasterCSSConfigId(id)
-            if (configPath) {
-                const result = await loadConfigModule(configPath)
-                watchConfigDependencies(this, configPath, result.dependencies)
-                return result.code
-            }
         },
         async handleHotUpdate({ file, server }) {
             let handled = false
@@ -107,19 +93,6 @@ export function ConfigVirtualModulePlugin(
                 await context.extractor?.reset(context.extractor.options)
                 needsFullReload ||= invalidateConfigModule(
                     server.moduleGraph.getModuleById(RESOLVED_VIRTUAL_CONFIG_ID),
-                    server
-                )
-            }
-            const queryConfigPaths = new Set([file])
-            for (const [configPath, dependencies] of cssConfigDependencies) {
-                if (dependencies.includes(file)) queryConfigPaths.add(configPath)
-            }
-            for (const configPath of queryConfigPaths) {
-                const queryModule = server.moduleGraph.getModuleById(toResolvedMasterCSSConfigId(configPath))
-                if (!queryModule) continue
-                handled = true
-                needsFullReload ||= invalidateConfigModule(
-                    queryModule,
                     server
                 )
             }
