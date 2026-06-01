@@ -5,6 +5,7 @@ import {
     extendConfig,
     generateAt,
     generateSelector,
+    resolveVariableNamespace,
     screens as defaultScreens,
     UtilityType
 } from '@master/css'
@@ -33,7 +34,6 @@ import type {
 } from 'lightningcss'
 import type * as LightningCSS from 'lightningcss'
 import unquote from './utils/unquote'
-import resolveVariableNamespace from './utils/variable-namespace'
 
 export type CSSTransform = typeof LightningCSS.transform
 

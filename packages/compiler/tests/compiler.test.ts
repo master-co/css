@@ -45,7 +45,7 @@ describe.concurrent('@master/css-compiler', () => {
                 --color-primary: #123;
                 --color-base: #fff;
                 --color-ring: #e5e7eb;
-                --radius-card: 12;
+                --border-radius-card: 12;
                 --spacing-card: 24;
                 --screen-md: 768;
 
@@ -208,6 +208,34 @@ describe.concurrent('@master/css-compiler', () => {
         expect(result.config.modes).toBeUndefined()
         expect(result.generatedCSS).toBe('')
         expect(result.css).toBe('')
+    })
+
+    it('resolves hyphenated variable namespaces by longest prefix', () => {
+        const result = compileCSS(`
+            @master {
+                --color-line-lightest: #eee;
+                --color-text-strong: #111;
+                --color-blue-50: #00f;
+            }
+        `)
+
+        expect(result.config.variables).toEqual([
+            {
+                namespace: 'color-line',
+                key: 'lightest',
+                value: '#eee'
+            },
+            {
+                namespace: 'color-text',
+                key: 'strong',
+                value: '#111'
+            },
+            {
+                namespace: 'color',
+                key: 'blue-50',
+                value: '#00f'
+            }
+        ])
     })
 
     it('keeps native class rules outside @master on demand', () => {

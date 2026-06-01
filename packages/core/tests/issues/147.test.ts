@@ -16,10 +16,10 @@ describe('issue #147: hsl() values stay as native CSS variable values', () => {
         expect(css.variables.get('color-primary')?.value).toBe('hsl(210 100% 50% / 0.5)')
     })
 
-    test('hsl() in nested color group keeps namespace metadata', () => {
-        const css = new MasterCSS({ variables: [{ namespace: 'color.brand', key: 'primary', value: 'hsl(210 100% 50%)' }, { namespace: 'color.brand', key: 'secondary', value: 'hsl(290 80% 40%)' }] })
-        expect(css.variables.get('color-brand-primary')).toMatchObject({ namespace: 'color.brand', value: 'hsl(210 100% 50%)' })
-        expect(css.variables.get('color-brand-secondary')).toMatchObject({ namespace: 'color.brand', value: 'hsl(290 80% 40%)' })
+    test('hsl() in flat color keys keeps namespace metadata', () => {
+        const css = new MasterCSS({ variables: [{ namespace: 'color', key: 'brand-primary', value: 'hsl(210 100% 50%)' }, { namespace: 'color', key: 'brand-secondary', value: 'hsl(290 80% 40%)' }] })
+        expect(css.variables.get('color-brand-primary')).toMatchObject({ namespace: 'color', value: 'hsl(210 100% 50%)' })
+        expect(css.variables.get('color-brand-secondary')).toMatchObject({ namespace: 'color', value: 'hsl(290 80% 40%)' })
     })
 
     test('legacy comma-separated hsl() is preserved', () => {

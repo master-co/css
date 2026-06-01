@@ -1,6 +1,13 @@
 import type { ViteUserConfig } from 'vitest/config'
+import { createMasterCSSConfigLoaderPlugin } from '../packages/explore-config/src'
+import { loadCoreThemeConfigModule } from '../packages/core/theme-config-loader'
 
 const config: ViteUserConfig = {
+    plugins: [
+        createMasterCSSConfigLoaderPlugin({
+            loadConfigModule: loadCoreThemeConfigModule
+        })
+    ],
     test: {
         include: [
             'tests/**/*.{test,spec}.?(c|m)[jt]s?(x)',

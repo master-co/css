@@ -132,10 +132,9 @@ export default class MasterCSS {
         const utilitiesEntriesLength = utilitiesEntries.length
         const variablesByNamespace = new Map<string, [string, Variable][]>()
         const addVariableToNamespace = (namespace: string, variable: Variable) => {
-            const dashedNamespace = namespace.replace(/\./g, '-')
             let variableKey = variable.name
-            if (variableKey.startsWith('-' + dashedNamespace) || variableKey.startsWith(dashedNamespace)) {
-                variableKey = variableKey.slice(dashedNamespace.length + 1)
+            if (variableKey.startsWith('-' + namespace) || variableKey.startsWith(namespace)) {
+                variableKey = variableKey.slice(namespace.length + 1)
             }
             const namespaceVariables = variablesByNamespace.get(namespace)
             if (namespaceVariables) {
@@ -146,13 +145,7 @@ export default class MasterCSS {
         }
         for (const variable of this.variables.values()) {
             const namespaces = new Set<string>()
-            if (variable.namespace) {
-                const namespaceParts = variable.namespace.split('.')
-                for (let i = 1; i <= namespaceParts.length; i++) {
-                    namespaces.add(namespaceParts.slice(0, i).join('.'))
-                }
-            }
-            if (variable.group) namespaces.add(variable.group)
+            if (variable.namespace) namespaces.add(variable.namespace)
             for (const namespace of namespaces) {
                 addVariableToNamespace(namespace, variable)
             }
@@ -207,7 +200,7 @@ export default class MasterCSS {
                 const keys: string[] = []
                 let key = originalKey
 
-                // Helper: resolve variable groups
+                // Helper: resolve variable namespaces
                 const addNamespace = (namespace: string) => {
                     for (const [variableKey, variable] of variablesByNamespace.get(namespace) || []) {
                         if (definedUtility.variables) {
@@ -221,7 +214,7 @@ export default class MasterCSS {
                 // 1. Auto variable binding
                 addNamespace(id)
 
-                // 2. Rule-defined variable groups
+                // 2. Rule-defined variable namespaces
                 if (namespaces) {
                     namespaces.forEach(addNamespace)
                 }
@@ -359,13 +352,13 @@ export default class MasterCSS {
             if (definition.value === false) return
             const namespace = definition.namespace
             const name = namespace
-                ? `${namespace.replace(/\./g, '-')}${definition.key ? '-' + definition.key : ''}`
+                ? `${namespace}${definition.key ? '-' + definition.key : ''}`
                 : definition.key
             return {
                 name,
                 key: definition.key,
                 value: Array.isArray(definition.value) ? definition.value.join(',') : definition.value,
-                ...(namespace ? { namespace, group: namespace } : {})
+                ...(namespace ? { namespace } : {})
             } as Variable
         }
         const addDependencies = (variable: Variable) => {
@@ -401,7 +394,7 @@ export default class MasterCSS {
                         key: newVariable.key,
                         type,
                         modes: { [mode]: modeVariable },
-                        ...(newVariable.namespace ? { namespace: newVariable.namespace, group: newVariable.group } : {})
+                        ...(newVariable.namespace ? { namespace: newVariable.namespace } : {})
                     } as Variable
                     addDependencies(rootVariable)
                     this.variables.set(name, rootVariable)

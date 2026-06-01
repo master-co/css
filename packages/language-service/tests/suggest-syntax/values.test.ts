@@ -26,9 +26,15 @@ describe.concurrent('detail and documentation', () => {
             kind: 'markdown',
             value: dedent`
                     \`\`\`css
+                    @layer theme {
+                      :root {
+                        --font-family-sans: "Inter", var(--font-family-sans-fallback);
+                        --font-family-sans-fallback: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'
+                      }
+                    }
                     @layer general {
                       .font\\:sans {
-                        font-family: \"Inter\", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'
+                        font-family: var(--font-family-sans)
                       }
                     }
                     \`\`\`

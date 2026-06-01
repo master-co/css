@@ -122,7 +122,7 @@ test.concurrent('custom variable', async () => {
     const doc = createDoc('tsx', content)
     const languageService = new CSSLanguageService({
         config: {
-            variables: [{ key: 'custom', value: '#333333' }]
+            variables: [{ namespace: 'color', key: 'custom', value: '#333333' }]
         }
     })
     expect(await languageService.renderSyntaxColors(doc)).toStrictEqual([{
@@ -137,7 +137,7 @@ test.concurrent('custom variable/alpha', async () => {
     const doc = createDoc('tsx', content)
     const languageService = new CSSLanguageService({
         config: {
-            variables: [{ key: 'custom', value: '#333333' }]
+            variables: [{ namespace: 'color', key: 'custom', value: '#333333' }]
         }
     })
     expect(await languageService.renderSyntaxColors(doc)).toStrictEqual([{

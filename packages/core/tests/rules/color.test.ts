@@ -14,6 +14,8 @@ test.concurrent('color', () => {
     expect(createCSS().create('color:rgb(255,255,255)')?.text).toContain('color:rgb(255,255,255)')
     expect(createCSS().create('fg:#fff')?.text).toContain('color:#fff')
     expect(createCSS().create('fg:current')?.text).toContain('color:var(--color-current)')
+    expect(createCSS().create('fg:strong')?.text).toContain('color:var(--color-text-strong)')
+    expect(createCSS().create('fg:blue-50')?.text).toContain('color:var(--color-blue-50)')
     expect(createCSS().create('fg:transparent')?.text).toContain('color:transparent')
     expect(createCSS().create('fg:inherit')?.text).toContain('color:inherit')
 })

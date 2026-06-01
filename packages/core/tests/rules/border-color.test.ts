@@ -3,6 +3,8 @@ import { createCSS } from '../../src'
 
 it.concurrent('validates border-color rules', () => {
     expect(createCSS().create('b:white')?.text).toContain('border-color:var(--color-white)')
+    expect(createCSS().create('b:lightest')?.text).toContain('border-color:var(--color-line-lightest)')
+    expect(createCSS().create('b:blue-50')?.text).toContain('border-color:var(--color-blue-50)')
     expect(createCSS().create('b:rgb(0,0,0,0.75)')?.text).toContain('border-color:rgb(0,0,0,0.75)')
     expect(createCSS().create('border:white')?.text).toContain('border-color:var(--color-white)')
     expect(createCSS().create('border-color:white')?.text).toContain('border-color:var(--color-white)')

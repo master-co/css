@@ -40,7 +40,6 @@ export interface MediaQuery {
 
 type VariableCommon = {
     namespace?: string,
-    group?: string,
     name: string,
     key: string,
     modes?: Record<string, ResolvedVariableValue>

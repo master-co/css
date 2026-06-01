@@ -765,7 +765,7 @@ const utilities = [
         name: 'color',
         key: 'fg',
         type: UtilityType.Native,
-        namespaces: ['color.text']
+        namespaces: ['color-text', 'color']
     },
     {
         name: 'margin-left',
@@ -1151,7 +1151,7 @@ const utilities = [
         aliasGroups: ['text-decoration'],
         kind: 'color',
         type: UtilityType.Native,
-        namespaces: ['color', 'color.text']
+        namespaces: ['color-text', 'color']
     },
     {
         name: 'text-decoration-style',
@@ -1179,7 +1179,7 @@ const utilities = [
         values: ['underline', 'overline', 'line-through'],
         unit: 'rem',
         type: UtilityType.NativeShorthand,
-        namespaces: ['color', 'color.text'],
+        namespaces: ['color-text', 'color'],
         declarations: ['-webkit-text-decoration', 'text-decoration']
     },
     {
@@ -1478,7 +1478,7 @@ const utilities = [
         aliasGroups: ['text', 't'],
         kind: 'color',
         type: UtilityType.Native,
-        namespaces: ['color', 'color.text'],
+        namespaces: ['color-text', 'color'],
         declarations: ['-webkit-text-fill-color']
     },
     {
@@ -1771,35 +1771,35 @@ const utilities = [
         aliasGroups: ['bt', 'border-top'],
         kind: 'color',
         type: UtilityType.Native,
-        namespaces: ['color', 'color.line'],
+        namespaces: ['color-line', 'color'],
     },
     {
         name: 'border-bottom-color',
         aliasGroups: ['bb', 'border-bottom'],
         kind: 'color',
         type: UtilityType.Native,
-        namespaces: ['color', 'color.line'],
+        namespaces: ['color-line', 'color'],
     },
     {
         name: 'border-left-color',
         aliasGroups: ['bl', 'border-left'],
         kind: 'color',
         type: UtilityType.Native,
-        namespaces: ['color', 'color.line'],
+        namespaces: ['color-line', 'color'],
     },
     {
         name: 'border-right-color',
         aliasGroups: ['br', 'border-right'],
         kind: 'color',
         type: UtilityType.Native,
-        namespaces: ['color', 'color.line'],
+        namespaces: ['color-line', 'color'],
     },
     {
         name: 'border-x-color',
         aliasGroups: ['bx', 'border-x'],
         kind: 'color',
         type: UtilityType.Shorthand,
-        namespaces: ['color', 'color.line'],
+        namespaces: ['color-line', 'color'],
         declarations: ['border-left-color', 'border-right-color']
     },
     {
@@ -1807,7 +1807,7 @@ const utilities = [
         aliasGroups: ['by', 'border-y'],
         kind: 'color',
         type: UtilityType.Shorthand,
-        namespaces: ['color', 'color.line'],
+        namespaces: ['color-line', 'color'],
         declarations: ['border-top-color', 'border-bottom-color']
     },
     {
@@ -1815,7 +1815,7 @@ const utilities = [
         aliasGroups: ['b', 'border'],
         kind: 'color',
         type: UtilityType.NativeShorthand,
-        namespaces: ['color', 'color.line'],
+        namespaces: ['color-line', 'color'],
     },
     {
         name: 'border-top-left-radius',
@@ -2020,7 +2020,7 @@ const utilities = [
         type: UtilityType.NativeShorthand,
         unit: 'rem',
         transformer: 'auto-fill-solid',
-        namespaces: ['color', 'color.line'],
+        namespaces: ['color-line', 'color'],
     },
     {
         name: 'border-bottom',
@@ -2028,7 +2028,7 @@ const utilities = [
         type: UtilityType.NativeShorthand,
         unit: 'rem',
         transformer: 'auto-fill-solid',
-        namespaces: ['color', 'color.line'],
+        namespaces: ['color-line', 'color'],
     },
     {
         name: 'border-left',
@@ -2036,7 +2036,7 @@ const utilities = [
         type: UtilityType.NativeShorthand,
         unit: 'rem',
         transformer: 'auto-fill-solid',
-        namespaces: ['color', 'color.line'],
+        namespaces: ['color-line', 'color'],
     },
     {
         name: 'border-right',
@@ -2044,7 +2044,7 @@ const utilities = [
         type: UtilityType.NativeShorthand,
         unit: 'rem',
         transformer: 'auto-fill-solid',
-        namespaces: ['color', 'color.line'],
+        namespaces: ['color-line', 'color'],
     },
     {
         name: 'border-x',
@@ -2052,7 +2052,7 @@ const utilities = [
         unit: 'rem',
         type: UtilityType.Shorthand,
         transformer: 'auto-fill-solid',
-        namespaces: ['color', 'color.line'],
+        namespaces: ['color-line', 'color'],
         declarations: ['border-left', 'border-right']
     },
     {
@@ -2061,7 +2061,7 @@ const utilities = [
         unit: 'rem',
         type: UtilityType.Shorthand,
         transformer: 'auto-fill-solid',
-        namespaces: ['color', 'color.line'],
+        namespaces: ['color-line', 'color'],
         declarations: ['border-top', 'border-bottom']
     },
     {
@@ -2070,20 +2070,20 @@ const utilities = [
         unit: 'rem',
         type: UtilityType.NativeShorthand,
         transformer: 'auto-fill-solid',
-        namespaces: ['color', 'color.line'],
+        namespaces: ['color-line', 'color'],
     },
     {
-        name: 'border-inline-start-color', kind: 'color', type: UtilityType.Native, namespaces: ['color', 'color.line'] },
+        name: 'border-inline-start-color', kind: 'color', type: UtilityType.Native, namespaces: ['color-line', 'color'] },
     {
-        name: 'border-inline-end-color', kind: 'color', type: UtilityType.Native, namespaces: ['color', 'color.line'] },
+        name: 'border-inline-end-color', kind: 'color', type: UtilityType.Native, namespaces: ['color-line', 'color'] },
     {
-        name: 'border-block-start-color', kind: 'color', type: UtilityType.Native, namespaces: ['color', 'color.line'] },
+        name: 'border-block-start-color', kind: 'color', type: UtilityType.Native, namespaces: ['color-line', 'color'] },
     {
-        name: 'border-block-end-color', kind: 'color', type: UtilityType.Native, namespaces: ['color', 'color.line'] },
+        name: 'border-block-end-color', kind: 'color', type: UtilityType.Native, namespaces: ['color-line', 'color'] },
     {
-        name: 'border-inline-color', kind: 'color', type: UtilityType.NativeShorthand, namespaces: ['color', 'color.line'] },
+        name: 'border-inline-color', kind: 'color', type: UtilityType.NativeShorthand, namespaces: ['color-line', 'color'] },
     {
-        name: 'border-block-color', kind: 'color', type: UtilityType.NativeShorthand, namespaces: ['color', 'color.line'] },
+        name: 'border-block-color', kind: 'color', type: UtilityType.NativeShorthand, namespaces: ['color-line', 'color'] },
     {
         name: 'border-inline-start-style', values: BORDER_STYLE_VALUES, type: UtilityType.Native },
     {
@@ -2109,17 +2109,17 @@ const utilities = [
     {
         name: 'border-block-width', kind: 'number', unit: 'rem', type: UtilityType.NativeShorthand },
     {
-        name: 'border-inline-start', unit: 'rem', type: UtilityType.NativeShorthand, transformer: 'auto-fill-solid', namespaces: ['color', 'color.line'] },
+        name: 'border-inline-start', unit: 'rem', type: UtilityType.NativeShorthand, transformer: 'auto-fill-solid', namespaces: ['color-line', 'color'] },
     {
-        name: 'border-inline-end', unit: 'rem', type: UtilityType.NativeShorthand, transformer: 'auto-fill-solid', namespaces: ['color', 'color.line'] },
+        name: 'border-inline-end', unit: 'rem', type: UtilityType.NativeShorthand, transformer: 'auto-fill-solid', namespaces: ['color-line', 'color'] },
     {
-        name: 'border-block-start', unit: 'rem', type: UtilityType.NativeShorthand, transformer: 'auto-fill-solid', namespaces: ['color', 'color.line'] },
+        name: 'border-block-start', unit: 'rem', type: UtilityType.NativeShorthand, transformer: 'auto-fill-solid', namespaces: ['color-line', 'color'] },
     {
-        name: 'border-block-end', unit: 'rem', type: UtilityType.NativeShorthand, transformer: 'auto-fill-solid', namespaces: ['color', 'color.line'] },
+        name: 'border-block-end', unit: 'rem', type: UtilityType.NativeShorthand, transformer: 'auto-fill-solid', namespaces: ['color-line', 'color'] },
     {
-        name: 'border-inline', unit: 'rem', type: UtilityType.NativeShorthand, transformer: 'auto-fill-solid', namespaces: ['color', 'color.line'] },
+        name: 'border-inline', unit: 'rem', type: UtilityType.NativeShorthand, transformer: 'auto-fill-solid', namespaces: ['color-line', 'color'] },
     {
-        name: 'border-block', unit: 'rem', type: UtilityType.NativeShorthand, transformer: 'auto-fill-solid', namespaces: ['color', 'color.line'] },
+        name: 'border-block', unit: 'rem', type: UtilityType.NativeShorthand, transformer: 'auto-fill-solid', namespaces: ['color-line', 'color'] },
     {
         name: 'border-start-start-radius', unit: 'rem', type: UtilityType.Native, namespaces: ['border-radius'] },
     {
@@ -2525,7 +2525,7 @@ const utilities = [
         aliasGroups: ['outline'],
         kind: 'color',
         type: UtilityType.Native,
-        namespaces: ['color', 'color.line'],
+        namespaces: ['color-line', 'color'],
     },
     {
         name: 'outline-offset',
@@ -2556,7 +2556,7 @@ const utilities = [
             'outline-style',
             'outline-offset',
             'outline-color',
-            'color.line',
+            'color-line',
             'color'
         ],
         transformer: 'auto-fill-solid'
@@ -2575,7 +2575,7 @@ const utilities = [
         name: 'caret-color',
         key: 'caret',
         type: UtilityType.Native,
-        namespaces: ['color', 'color.text']
+        namespaces: ['color-text', 'color']
     },
     {
         name: 'scroll-behavior',

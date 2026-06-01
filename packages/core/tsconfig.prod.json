@@ -5,6 +5,7 @@
         "outDir": "dist",
     },
     "include": [
+        "master-css-config.d.ts",
         "src/**/*"
     ]
 }

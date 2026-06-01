@@ -16,7 +16,7 @@ export default function getValueCompletionItems(css: MasterCSS = createCSS(), ru
     const nativeKey = css.definedUtilities.find(({ keys }) => keys.includes(ruleKey))?.id
     const nativePropertyData = nativeProperties.find(({ name }) => name === nativeKey)
     const generateVariableCompletionItem = (variable: Variable, { scoped } = { scoped: false }): CompletionItem | undefined => {
-        const eachNativePropertyData = nativeProperties.find((x: { name: string }) => x.name === variable.group) || nativePropertyData
+        const eachNativePropertyData = nativeProperties.find((x: { name: string }) => x.name === variable.namespace) || nativePropertyData
         const appliedValue = scoped ? variable.key : variable.name
         const documentation = getCSSDataDocumentation(eachNativePropertyData, {
             generatedCSS: generateCSS([ruleKey + ':' + appliedValue], css),
@@ -45,7 +45,7 @@ export default function getValueCompletionItems(css: MasterCSS = createCSS(), ru
                 completionItem.detail = variable.name
             } else {
                 // todo: packages/core should support getTextByVariable(variable)
-                const configKey = 'variables.' + (variable.group ? variable.group + '.' + variable.key : variable.name)
+                const configKey = 'variables.' + (variable.namespace ? variable.namespace + '.' + variable.key : variable.name)
                 const valueToken = variable.value ?? variable.name
                 // detail is shown in the detail pane
                 // todo: variable.token should be recorded as original config variable
@@ -62,7 +62,7 @@ export default function getValueCompletionItems(css: MasterCSS = createCSS(), ru
             if (variable.name.startsWith('-') && eachNativePropertyData?.syntax?.includes('absolute')) return
             completionItem.detail = String(variable.name)
             const value = typeof variable.value === 'number' ? variable.value : 0
-            completionItem.sortText = (variable.group || '') + (value >= 0
+            completionItem.sortText = (variable.namespace || '') + (value >= 0
                 ? String(value).padStart(10, '0')
                 : '-' + String(Math.abs(value)).padStart(10, '0'))
         } else {
