@@ -26,7 +26,7 @@
 | `@master/eslint-config-css` | `.` | ESLint config wrapper |
 | `@master/css-cli` | `mcss`, `mastercss` | Extract and render CLI |
 | `@master/create-css` | bin | Config/app scaffolding |
-| `@master/css-explore-config` | `.` | Locate and load Master CSS config |
+| `@master/css-configer` | `./explore`, `./explore-sync`, `./load`, `./load-sync`, `./path`, `./module` | Resolve, load, and serialize Master CSS config |
 | `@master/css-devtools-hook` | `.` | Runtime event hook |
 | `@master/css.figma` | plugin bundle | Figma variable import/export |
 

@@ -1,21 +1,13 @@
 import { existsSync } from 'node:fs'
 import { parse, resolve } from 'node:path'
-import type { Config } from 'shared/css-config'
-import type { CSSDirectiveConfigAdapter } from 'shared/css-config-loader'
-import type { CSSConfigLoadResult } from 'shared/css-config-module'
 
 export interface ExploreConfigOptions {
     cwd?: string
+    name?: string
     extensions?: string[]
     resolvedKeys?: string[]
     found?: (basename: string, path: string) => void
     missing?: (name: string, cwd: string) => void
-}
-
-export interface LoadConfigOptions extends Pick<ExploreConfigOptions, 'resolvedKeys'> {
-    classes?: string[]
-    createConfigFromCSSDirectives?: CSSDirectiveConfigAdapter<Config>
-    baseConfig?: Config
 }
 
 export interface ExploreConfigPath {
@@ -24,21 +16,12 @@ export interface ExploreConfigPath {
     path: string
 }
 
-export interface LoadConfigResult extends CSSConfigLoadResult<Config> { }
-
-export type ExploreConfigResult = ExploreConfigPath & LoadConfigResult
-
 export const DEFAULT_EXTENSIONS = [
     'css',
     'js',
     'mjs',
     'ts',
     'mts'
-]
-
-export const DEFAULT_RESOLVED_KEYS = [
-    'config',
-    'default'
 ]
 
 export const DEFAULT_FOUND = (basename: string) => process.env.DEBUG && console.log(`[Master CSS] Loaded ${basename}`)
@@ -65,7 +48,7 @@ function resolveExistingPath(cwd: string, name: string, extension: string): Expl
     }
 }
 
-export function resolveConfigPath(options: ExploreConfigOptions & { name?: string } = {}): ExploreConfigPath | undefined {
+export function resolveConfigPath(options: ExploreConfigOptions = {}): ExploreConfigPath | undefined {
     const name = options.name || 'master.css'
     const cwd = options.cwd || ''
     const extensions = (options.extensions || DEFAULT_EXTENSIONS).map(normalizeExtension)
@@ -136,15 +119,4 @@ export function warnMissingConfig(options: MissingConfigWarningOptions = {}) {
         name,
         integration
     }))
-}
-
-export function resolveConfig(configModule: Record<string, unknown>, options: Pick<ExploreConfigOptions, 'resolvedKeys'> = {}) {
-    const resolvedKeys = options.resolvedKeys || DEFAULT_RESOLVED_KEYS
-    let config: unknown
-    for (const key of resolvedKeys) {
-        config = configModule[key]
-        if (config) break
-    }
-    if (!config) config = configModule
-    return config as Config
 }

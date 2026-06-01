@@ -37,7 +37,7 @@
 
 - `workspaces: 'auto'` discovery from config files and package dependencies.
 - Closest workspace selection.
-- Config loading with `@master/css-explore-config`.
+- Config loading with `@master/css-configer`.
 - Restart behavior after config/settings saves.
 
 ## Required Tests

@@ -1,9 +1,8 @@
 import type { ModuleNode, Plugin, ViteDevServer } from 'vite'
 import { PluginContext } from '../core'
-import exploreConfig, {
-    loadConfigModule,
-    warnMissingConfig
-} from '@master/css-explore-config'
+import exploreConfig from '@master/css-configer/explore'
+import { loadConfigModule } from '@master/css-configer/load'
+import { warnMissingConfig } from '@master/css-configer/path'
 import { RESOLVED_VIRTUAL_CONFIG_ID, VIRTUAL_CONFIG_ID } from '../common'
 import { PluginOptions } from '../options'
 

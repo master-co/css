@@ -56,7 +56,7 @@
     },
     "dependencies": {
         "@master/css": "workspace:^",
-        "@master/css-explore-config": "workspace:^",
+        "@master/css-configer": "workspace:^",
         "@master/css-extractor": "workspace:^",
         "@techor/log": "^3.2.5",
         "webpack-virtual-modules": "^0.6.2"

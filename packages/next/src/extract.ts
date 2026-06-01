@@ -8,7 +8,8 @@ import {
     registerStyleCSSSource,
     type StyleCSSSources
 } from '@master/css-extractor/style'
-import { loadConfig, resolveConfigPath } from '@master/css-explore-config'
+import { loadConfig } from '@master/css-configer/load'
+import { resolveConfigPath } from '@master/css-configer/path'
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { existsSync, readFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'

@@ -1,6 +1,6 @@
 import type { RuleContext } from '@typescript-eslint/utils/ts-eslint'
 import settings, { Settings } from '../settings'
-import exploreConfigSync from '@master/css-explore-config/sync'
+import exploreConfigSync from '@master/css-configer/explore-sync'
 import { MasterCSS, createCSS } from '@master/css'
 import type { Config } from 'shared/css-config'
 

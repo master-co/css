@@ -65,7 +65,7 @@
         "@master/css": "workspace:^",
         "@master/css-cli": "workspace:^",
         "@master/css-devtools-hook": "workspace:^",
-        "@master/css-explore-config": "workspace:^",
+        "@master/css-configer": "workspace:^",
         "@master/css-extractor": "workspace:^",
         "@master/css-language": "workspace:^",
         "@master/css-language-server": "workspace:^",

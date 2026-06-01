@@ -10,7 +10,7 @@
         </picture>
     </a>
 </p>
-<p align="center">A utility for exploring a Master CSS config file</p>
+<p align="center">Utilities for resolving, loading, and serializing Master CSS config files</p>
 
 <p align="center">
     <a aria-label="GitHub release (latest by date including pre-releases)" href="https://github.com/master-co/css/releases">
@@ -20,11 +20,11 @@
             <img alt="NPM Version" src="https://img.shields.io/github/v/release/master-co/css?include_prereleases&color=f6f7f8&label=&style=for-the-badge&logo=github">
         </picture>
     </a>
-    <a aria-label="NPM Package" href="https://www.npmjs.com/package/@master/css-explore-config">
+    <a aria-label="NPM Package" href="https://www.npmjs.com/package/@master/css-configer">
         <picture>
-            <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/npm/dm/@master/css-explore-config?color=212022&label=%20&logo=npm&style=for-the-badge">
-            <source media="(prefers-color-scheme: light)" srcset="https://img.shields.io/npm/dm/@master/css-explore-config?color=f6f7f8&label=%20&logo=npm&style=for-the-badge">
-            <img alt="NPM package ( download / month )" src="https://img.shields.io/npm/dm/@master/css-explore-config?color=f6f7f8&label=%20&logo=npm&style=for-the-badge">
+            <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/npm/dm/@master/css-configer?color=212022&label=%20&logo=npm&style=for-the-badge">
+            <source media="(prefers-color-scheme: light)" srcset="https://img.shields.io/npm/dm/@master/css-configer?color=f6f7f8&label=%20&logo=npm&style=for-the-badge">
+            <img alt="NPM package ( download / month )" src="https://img.shields.io/npm/dm/@master/css-configer?color=f6f7f8&label=%20&logo=npm&style=for-the-badge">
         </picture>
     </a>
     <a aria-label="Discord Community" href="https://discord.gg/sZNKpAAAw6">
@@ -54,22 +54,29 @@
 
 ## Installation
 ```bash
-npm install @master/css-explore-config
+npm install @master/css-configer
 ```
 
 ## Usage
 Script configs are loaded as native ESM. TypeScript, TSX, and JSX files are transformed with Oxc, and local script imports are reported as dependencies.
 
 ```ts
-import exploreConfig from '@master/css-explore-config'
+import exploreConfig from '@master/css-configer/explore'
 
 const result = await exploreConfig()
 const config = result?.config
 ```
 
 ```ts
-import exploreConfigSync from '@master/css-explore-config/sync'
+import exploreConfigSync from '@master/css-configer/explore-sync'
 
 const result = exploreConfigSync()
 const config = result?.config
+```
+
+```ts
+import { loadConfig, loadConfigModule } from '@master/css-configer/load'
+import { loadConfigSync, loadConfigModuleSync } from '@master/css-configer/load-sync'
+import { resolveConfigPath, warnMissingConfig } from '@master/css-configer/path'
+import { MASTER_CSS_CONFIG_QUERY, toConfigModule } from '@master/css-configer/module'
 ```

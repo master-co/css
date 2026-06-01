@@ -1,4 +1,4 @@
-import { loadConfigModuleSync } from '@master/css-explore-config/sync'
+import { loadConfigModuleSync } from '@master/css-configer/load-sync'
 import { config, createConfigFromCSSDirectives } from '@master/css'
 
 interface LoaderContext {

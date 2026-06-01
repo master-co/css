@@ -2,7 +2,7 @@ import { defineNuxtModule, addServerPlugin, createResolver, addPlugin } from '@n
 import { name } from '../package.json'
 import masterCSS, { VIRTUAL_CONFIG_ID } from '@master/css.vite'
 import { vueAdapter } from '@master/css.vue/adapter'
-import { loadConfig } from '@master/css-explore-config'
+import { loadConfig } from '@master/css-configer/load'
 import type { Plugin } from 'vite'
 import { extname } from 'node:path'
 import ensureCSSConfigPath from '../../../shared/utils/ensure-css-config-path'

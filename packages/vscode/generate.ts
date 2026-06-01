@@ -99,7 +99,7 @@ copyOrSymlink(fileURLToPath(new URL('../language/syntaxes', import.meta.url)), f
 // The bundled SWC wasm loader reads this asset from the extension dist directory.
 const swcWasmMainPath = require.resolve('@swc/wasm', {
     paths: [
-        fileURLToPath(new URL('../explore-config', import.meta.url))
+        fileURLToPath(new URL('../configer', import.meta.url))
     ]
 })
 const swcWasmPath = resolve(dirname(swcWasmMainPath), 'wasm_bg.wasm')

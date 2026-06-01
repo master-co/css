@@ -1,5 +1,5 @@
 import type { Config } from 'shared/css-config'
-import { resolveConfigPath, warnMissingConfig } from '@master/css-explore-config'
+import { resolveConfigPath, warnMissingConfig } from '@master/css-configer/path'
 
 export function warnMissingNextConfig(projectDir: string, config: string | Config) {
     if (typeof config !== 'string') return

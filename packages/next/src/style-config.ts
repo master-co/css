@@ -1,7 +1,9 @@
 import { resolve } from 'node:path'
 import { createCSS, extendConfig } from '@master/css'
 import type { Config } from 'shared/css-config'
-import { loadConfig, resolveConfigPath, type ExploreConfigResult } from '@master/css-explore-config'
+import type { ExploreConfigResult } from '@master/css-configer/explore'
+import { loadConfig } from '@master/css-configer/load'
+import { resolveConfigPath } from '@master/css-configer/path'
 import { warnMissingNextConfig } from './config-warning'
 
 export interface MasterCSSBuildConfig {

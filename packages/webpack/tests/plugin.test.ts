@@ -18,7 +18,7 @@
 import { describe, test, expect, vi } from 'vitest'
 import { SyncHook, AsyncSeriesHook } from 'tapable'
 import { MasterCSSPlugin } from '../src'
-import { VIRTUAL_CONFIG_ID, MASTER_CSS_CONFIG_QUERY } from 'shared/css-config-module'
+import { VIRTUAL_CONFIG_ID, MASTER_CSS_CONFIG_QUERY } from '@master/css-configer/module'
 import path from 'node:path'
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'

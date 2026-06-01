@@ -1,10 +1,10 @@
 import { CSSExtractor, Options } from '@master/css-extractor'
+import { loadConfigModule } from '@master/css-configer/load'
 import {
-    loadConfigModule,
     resolveConfigPath,
     warnMissingConfig,
     type ExploreConfigPath
-} from '@master/css-explore-config'
+} from '@master/css-configer/path'
 import {
     MASTER_CSS_CONFIG_QUERY,
     VIRTUAL_CONFIG_DIR,
@@ -14,7 +14,7 @@ import {
     toConfigModule,
     toVirtualCSSConfigModulePath,
     toVirtualDefaultConfigModulePath
-} from 'shared/css-config-module'
+} from '@master/css-configer/module'
 import { createExtractedCSS, registerStyleCSSSource as registerExtractorStyleCSSSource, type StyleCSSSources } from '@master/css-extractor/style'
 import type { Compiler } from 'webpack'
 import VirtualModulesPlugin from 'webpack-virtual-modules'
