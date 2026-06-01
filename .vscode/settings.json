@@ -1,7 +1,6 @@
 {
     "eslint.useFlatConfig": true,
     "yaml.format.singleQuote": true,
-    "javascript.format.semicolons": "remove",
     "[yaml]": {
         "editor.insertSpaces": true,
         "editor.tabSize": 4

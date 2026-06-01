@@ -16,6 +16,7 @@
             "@master/css.webpack": [ "./node_modules/@master/css.webpack/src" ],
             "@master/css-language-server": [ "./node_modules/@master/css-language-server/src" ],
             "@master/css-language-service": [ "./node_modules/@master/css-language-service/src" ],
+            "@master/css-language-service/*": [ "./node_modules/@master/css-language-service/src/*" ],
             "@master/css-language": [ "./node_modules/@master/css-language/src" ],
             "@master/css-devtools-hook": [ "./node_modules/@master/css-devtools-hook/src" ],
             "@master/css-configer/*": [ "./node_modules/@master/css-configer/src/*" ],

@@ -1,5 +1,14 @@
 import Link from 'internal/components/Link'
 
+type PackageMetadata = {
+    name: string
+    description: string
+    repository: {
+        url: string
+        directory?: string
+    }
+}
+
 const mainPackages = [
     await import('~/packages/core/package.json'),
     await import('~/packages/runtime/package.json'),
@@ -29,10 +38,22 @@ const developerToolPackages = [
     await import('~/packages/devtools-hook/package.json'),
 ]
 
-const solutionPackages = [
-    await import('~/site/node_modules/@master/colors/package.json'),
-    await import('~/site/node_modules/theme-mode/package.json'),
-    await import('~/site/node_modules/class-variant/package.json'),
+const solutionPackages: PackageMetadata[] = [
+    {
+        name: '@master/colors',
+        description: 'A precision-crafted P3 color system designed for modern UIs',
+        repository: { url: 'https://github.com/master-co/colors.git' }
+    },
+    {
+        name: 'theme-mode',
+        description: 'A lightweight utility for switching CSS theme modes',
+        repository: { url: 'https://github.com/master-co/theme-mode.git' }
+    },
+    {
+        name: 'class-variant',
+        description: 'Create reusable and extensible style class variants',
+        repository: { url: 'https://github.com/master-co/styled.git' }
+    },
 ]
 
 export default () => {

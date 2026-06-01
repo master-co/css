@@ -454,13 +454,64 @@ function formatDeclarationValue(declaration: Declaration) {
     if (declaration.property === 'unparsed') {
         return formatTokenOrValues(declaration.value.value)
     }
-    const declarationText = formatDeclaration(declaration)
+    const formatted = formatDeclarationValueOverride(declaration)
+    if (formatted !== undefined) return formatted
+    let declarationText: string
+    try {
+        declarationText = formatDeclaration(declaration)
+    } catch (error) {
+        const fallback = formatDeclarationValueFallback(declaration)
+        if (fallback !== undefined) return fallback
+        throw error
+    }
     const colonIndex = declarationText.indexOf(':')
     return declarationText.slice(colonIndex + 1).trim()
 }
 
 function formatNumber(value: number) {
     return String(value).replace(/^(-?)0\./, '$1.')
+}
+
+function formatDeclarationValueOverride(declaration: Declaration): string | undefined {
+    if (declaration.property !== 'aspect-ratio') return
+    const value = declaration.value as any
+    if (!Array.isArray(value.ratio)) return
+    const ratio = `${formatNumber(value.ratio[0])}/${formatNumber(value.ratio[1])}`
+    return value.auto ? `auto ${ratio}` : ratio
+}
+
+function formatDimensionNumber(value: number) {
+    if (Number.isInteger(value) && Math.abs(value) >= 1_000_000_000) {
+        return value.toExponential().replace('e+', 'e')
+    }
+    return formatNumber(value)
+}
+
+function formatDimensionValue(value: any): string | undefined {
+    if (value?.type !== 'dimension') return
+    return `${formatDimensionNumber(value.value.value)}${value.value.unit}`
+}
+
+function formatBorderRadiusCorner(value: any): string | undefined {
+    if (!Array.isArray(value) || value.length !== 2) return
+    const horizontal = formatDimensionValue(value[0])
+    const vertical = formatDimensionValue(value[1])
+    if (!horizontal || !vertical) return
+    return horizontal === vertical ? horizontal : `${horizontal} ${vertical}`
+}
+
+function formatDeclarationValueFallback(declaration: Declaration): string | undefined {
+    if (declaration.property !== 'border-radius') return
+    const value = declaration.value as any
+    const corners = [
+        value.topLeft,
+        value.topRight,
+        value.bottomRight,
+        value.bottomLeft
+    ].map(formatBorderRadiusCorner)
+    const firstCorner = corners[0]
+    if (!firstCorner || corners.some((corner) => corner !== firstCorner)) return
+    return firstCorner
 }
 
 function formatPropertyId(propertyId: { property?: string }) {

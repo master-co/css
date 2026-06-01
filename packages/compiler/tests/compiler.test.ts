@@ -203,6 +203,53 @@ describe.concurrent('@master/css-compiler', () => {
         ])
     })
 
+    it('records static utility definitions without normalizing core default values', () => {
+        const result = compileCSS(`
+            @master {
+                @layer general {
+                    .square {
+                        aspect-ratio: 1/1;
+                    }
+
+                    .video {
+                        aspect-ratio: 16/9;
+                    }
+
+                    .rounded {
+                        border-radius: 1e9em;
+                    }
+                }
+            }
+        `)
+
+        expect(result.config.utilities).toEqual([
+            {
+                name: 'square',
+                type: 'static',
+                layer: 'general',
+                declarations: {
+                    'aspect-ratio': '1/1'
+                }
+            },
+            {
+                name: 'video',
+                type: 'static',
+                layer: 'general',
+                declarations: {
+                    'aspect-ratio': '16/9'
+                }
+            },
+            {
+                name: 'rounded',
+                type: 'static',
+                layer: 'general',
+                declarations: {
+                    'border-radius': '1e9em'
+                }
+            }
+        ])
+    })
+
     it('keeps and filters native class rules outside @master', () => {
         const result = compileCSS(`
             body {
