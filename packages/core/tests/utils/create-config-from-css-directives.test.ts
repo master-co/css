@@ -1,6 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
 import {
-    config as defaultConfig,
     createConfigFromCSSDirectives,
     createCSS,
     UtilityType,
@@ -64,7 +63,7 @@ describe.concurrent('createConfigFromCSSDirectives', () => {
                     }
                 ]
             }
-        }), { baseConfig: defaultConfig })
+        }))
 
         expect(getUtility(result, 'print-hidden', 'general')).toMatchObject({
             name: 'print-hidden',
@@ -137,7 +136,7 @@ describe.concurrent('createConfigFromCSSDirectives', () => {
                     }
                 ]
             }
-        }), { baseConfig: defaultConfig })
+        }))
 
         expect(result.config.modes).toEqual(['dark'])
         expect(getUtility(result, 'btn')).toMatchObject({
@@ -186,7 +185,7 @@ describe.concurrent('createConfigFromCSSDirectives', () => {
                     dark: 'media(prefers-color-scheme:dark)'
                 }
             }
-        }), { baseConfig: defaultConfig })).toThrow('@custom-at "dark" conflicts with mode "dark"')
+        }))).toThrow('@custom-at "dark" conflicts with mode "dark"')
 
         expect(() => createConfigFromCSSDirectives(directiveResult({
             config: {

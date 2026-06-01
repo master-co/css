@@ -3,26 +3,22 @@ import {
     type CSSDirectiveComponentDefinition,
     type CSSDirectiveConfig,
     type CSSDirectiveLayerName,
-    type CSSDirectiveResult,
-    type CSSDirectiveUtilityDefinition,
-    type CSSDirectiveUtilityRuleDefinition,
-    type CSSDirectiveVariableDefinition
+    type CSSDirectiveResult
 } from 'shared/css-directives'
 import type { PropertiesHyphen } from 'csstype'
 import { AT_IDENTIFIERS } from '../common'
+import { config as defaultConfig } from '../config'
 import MasterCSS from '../core'
 import UtilityType from 'shared/utility-type'
-import defaultFunctions from '../functions'
-import defaultUtilities from '../utilities'
-import type { Config, UtilityDefinition, UtilityLayerName, UtilityRuleDefinition, VariableDefinition } from 'shared/css-config'
+import type { Config, UtilityDefinition, UtilityLayerName, UtilityRuleDefinition } from 'shared/css-config'
 import type { Utility } from '../utility'
 import compareRulePriority from './compare-rule-priority'
+import { createConfig } from './create-default-config'
 import extendConfig from './extend-config'
 import generateAt from './generate-at'
 import generateSelector from './generate-selector'
 import parseAt from './parse-at'
 import resolveSelectorTokens from './resolve-selector-tokens'
-import resolveVariableNamespace from './resolve-variable-namespace'
 
 export interface CreateConfigFromCSSDirectivesOptions {
     config?: Config
@@ -86,102 +82,6 @@ function getDirectiveComponents(input: CSSDirectiveInput) {
     return isCSSDirectiveResult(input) ? input.componentDefinitions : undefined
 }
 
-function createDefaultBaseConfig(): Config {
-    return {
-        utilities: defaultUtilities,
-        functions: defaultFunctions,
-        scope: '',
-        rootSize: 16,
-        baseUnit: 4,
-        important: false,
-        defaultMode: 'light',
-        modeTrigger: 'media'
-    }
-}
-
-function cloneUtilityRule(rule: CSSDirectiveUtilityRuleDefinition): UtilityRuleDefinition {
-    return {
-        declarations: { ...rule.declarations },
-        ...(rule.selector ? { selector: rule.selector } : {}),
-        ...(rule.atRules?.length ? { atRules: [...rule.atRules] } : {})
-    }
-}
-
-function cloneUtility(definition: CSSDirectiveUtilityDefinition): UtilityDefinition {
-    return {
-        name: definition.name,
-        type: UtilityType.Static,
-        ...(definition.layer ? { layer: definition.layer } : {}),
-        ...(definition.declarations ? { declarations: { ...definition.declarations } } : {}),
-        ...(definition.atRules?.length ? { atRules: [...definition.atRules] } : {}),
-        ...(definition.rules?.length ? { rules: definition.rules.map(cloneUtilityRule) } : {})
-    }
-}
-
-function addMode(config: Config, mode: string) {
-    config.modes ??= []
-    if (!config.modes.includes(mode)) config.modes.push(mode)
-}
-
-function resolveDirectiveVariable(variable: CSSDirectiveVariableDefinition): VariableDefinition {
-    const resolved = variable.key
-        ? {
-            name: variable.name,
-            namespace: variable.namespace,
-            key: variable.key
-        }
-        : resolveVariableNamespace(variable.name)
-    if (variable.mode && resolved.namespace === 'screen') {
-        throw new Error(`Screen variables cannot be mode-specific: screen-${resolved.key}@${variable.mode}`)
-    }
-    return {
-        ...(resolved.namespace ? { namespace: resolved.namespace } : {}),
-        key: resolved.key,
-        value: variable.value,
-        ...(variable.mode ? { mode: variable.mode } : {})
-    }
-}
-
-function variableSlot(variable: VariableDefinition) {
-    return [
-        variable.key,
-        variable.namespace || '',
-        variable.mode || ''
-    ].join('\0')
-}
-
-function addVariable(config: Config, variable: CSSDirectiveVariableDefinition) {
-    const definition = resolveDirectiveVariable(variable)
-    if (definition.mode) addMode(config, definition.mode)
-    config.variables ??= []
-    const foundIndex = config.variables.findIndex((existing) => variableSlot(existing) === variableSlot(definition))
-    if (foundIndex !== -1) config.variables.splice(foundIndex, 1)
-    config.variables.push(definition)
-}
-
-function createConfig(input: CSSDirectiveConfig) {
-    const config: Config = {}
-    if (input.rootSize !== undefined) config.rootSize = input.rootSize
-    if (input.baseUnit !== undefined) config.baseUnit = input.baseUnit
-    if (input.defaultMode !== undefined) config.defaultMode = input.defaultMode
-    if (input.modeTrigger !== undefined) config.modeTrigger = input.modeTrigger
-    if (input.scope !== undefined) config.scope = input.scope
-    if (input.important !== undefined) config.important = input.important
-    if (input.atTokens) config.atTokens = { ...input.atTokens }
-    if (input.selectorTokens) config.selectorTokens = { ...input.selectorTokens }
-    if (input.animations) config.animations = { ...input.animations }
-    if (input.utilities?.length) config.utilities = input.utilities.map(cloneUtility)
-
-    for (const mode of input.modes || []) {
-        addMode(config, mode)
-    }
-    for (const variable of input.variables || []) {
-        addVariable(config, variable)
-    }
-
-    return config
-}
-
 function warn(warnings: string[], options: CreateConfigFromCSSDirectivesOptions, message: string) {
     warnings.push(message)
     options.onWarning?.(message)
@@ -202,8 +102,12 @@ function collectScreenNames(config: Config) {
     )
 }
 
+function getBaseConfig(options: CreateConfigFromCSSDirectivesOptions) {
+    return options.baseConfig || defaultConfig
+}
+
 function createValidationConfig(config: Config, options: CreateConfigFromCSSDirectivesOptions) {
-    return extendConfig(createDefaultBaseConfig(), options.baseConfig, options.config, config)
+    return extendConfig(getBaseConfig(options), options.config, config)
 }
 
 function validateTokenConflicts(config: Config, options: CreateConfigFromCSSDirectivesOptions) {
@@ -251,7 +155,7 @@ function warnUnsupportedMediaModes(config: Config, options: CreateConfigFromCSSD
 }
 
 function createDirectiveCSS(config: Config, options: CreateConfigFromCSSDirectivesOptions) {
-    return new MasterCSS(options.baseConfig || createDefaultBaseConfig(), extendConfig(options.config, config))
+    return new MasterCSS(getBaseConfig(options), extendConfig(options.config, config))
 }
 
 function getUtilityAtRuleDefinitions(utility: Utility) {

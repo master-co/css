@@ -2,11 +2,11 @@ import type { Config } from 'techor'
 import { compileCSSFile } from '../compiler/src'
 import { createCSSConfigLoader } from 'shared/css-config-loader'
 import { createMasterCSSConfigLoaderPlugin } from 'shared/css-config-loader-plugin'
-import createConfigFromCSSDirectives from './src/utils/create-config-from-css-directives'
+import { createConfig } from './src/utils/create-default-config'
 
 const cssConfigLoader = createCSSConfigLoader({
     compileCSSFile,
-    createConfigFromCSSDirectives
+    createConfigFromCSSDirectives: createConfig
 })
 
 const config: Config = {
