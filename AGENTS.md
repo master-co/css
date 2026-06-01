@@ -53,7 +53,7 @@ Modify these only with focused tests and a clear reason:
 
 - `packages/core/src/core.ts`
 - `packages/core/src/utility.ts`
-- `packages/core/src/config/utilities.ts`
+- `packages/core/src/utilities.ts`
 - `packages/core/src/utils/compare-rule-priority.ts`
 - `packages/core/src/utils/parse-at.ts`
 - `packages/core/src/utils/parse-selector.ts`

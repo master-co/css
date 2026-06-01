@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
+import createCSSDirectiveConfig from '../../src/utils/create-config-from-css-directives'
 import {
     createConfigFromCSSDirectives,
     createCSS,
@@ -30,6 +31,20 @@ function getUtility(result: ReturnType<typeof createConfigFromCSSDirectives>, na
 }
 
 describe.concurrent('createConfigFromCSSDirectives', () => {
+    it('keeps the internal adapter independent from the default config', () => {
+        const result = createCSSDirectiveConfig(directiveResult({
+            config: {
+                atTokens: {
+                    dark: 'media(prefers-color-scheme:dark)'
+                }
+            }
+        }))
+
+        expect(result.config.atTokens).toEqual({
+            dark: 'media(prefers-color-scheme:dark)'
+        })
+    })
+
     it('resolves raw variable names through core namespaces by longest prefix', () => {
         const result = createConfigFromCSSDirectives(directiveResult({
             config: {
