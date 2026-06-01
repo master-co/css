@@ -1,5 +1,5 @@
 /**
- * Regression tests for the C1 race in MasterCSSExtractorPlugin.
+ * Regression tests for the C1 race in MasterCSSPlugin.
  *
  * The previous implementation attached an `async` callback to
  * `compilation.hooks.succeedModule` via `.tap()`. `succeedModule` is a
@@ -17,7 +17,7 @@
  */
 import { describe, test, expect, vi } from 'vitest'
 import { SyncHook, AsyncSeriesHook } from 'tapable'
-import { MasterCSSExtractorPlugin } from '../src'
+import { MasterCSSPlugin } from '../src'
 import { VIRTUAL_CONFIG_ID, MASTER_CSS_CONFIG_QUERY } from '@master/css-explore-config'
 import path from 'node:path'
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
@@ -97,7 +97,7 @@ function makeModule(resourcePath: string, source: string) {
 // only want to drive the webpack hook surface. We keep the real
 // constructor + init() so `this.options` is populated correctly.
 function makePlugin(options: Record<string, unknown> = {}, cwd = process.cwd()) {
-    const plugin = new MasterCSSExtractorPlugin({
+    const plugin = new MasterCSSPlugin({
         config: {} as any,
         include: [],
         sources: [],
@@ -111,9 +111,9 @@ function makePlugin(options: Record<string, unknown> = {}, cwd = process.cwd()) 
     return plugin
 }
 
-describe('MasterCSSExtractorPlugin (C1 race fix)', () => {
+describe('MasterCSSPlugin (C1 race fix)', () => {
     test('resolves virtual:master-css-config to a JS virtual module', async () => {
-        const plugin = new MasterCSSExtractorPlugin({
+        const plugin = new MasterCSSPlugin({
             config: {
                 variables: [
                     { namespace: 'color', key: 'primary', value: '#123' }
@@ -335,7 +335,7 @@ describe('MasterCSSExtractorPlugin (C1 race fix)', () => {
                 '}'
             ].join('\n'))
 
-            const plugin = await new MasterCSSExtractorPlugin({
+            const plugin = await new MasterCSSPlugin({
                 config: 'master.css',
                 include: [],
                 sources: [],
@@ -374,7 +374,7 @@ describe('MasterCSSExtractorPlugin (C1 race fix)', () => {
         const root = path.resolve(__dirname, 'fixtures/config-virtual-module/css-only')
         const configPath = path.join(root, 'master.css')
         const plugin = makePlugin({ config: 'master.css' }, root)
-        const reset = vi.fn(async function (this: MasterCSSExtractorPlugin) {
+        const reset = vi.fn(async function (this: MasterCSSPlugin) {
             this.emit('reset')
             return this
         })
@@ -418,7 +418,7 @@ describe('MasterCSSExtractorPlugin (C1 race fix)', () => {
 
             const plugin = makePlugin({ config: 'master.css.ts' }, root)
             ;(plugin as any).defaultConfigDependencies = [configPath, tokenPath]
-            const reset = vi.fn(async function (this: MasterCSSExtractorPlugin) {
+            const reset = vi.fn(async function (this: MasterCSSPlugin) {
                 this.emit('reset')
                 return this
             })
@@ -443,7 +443,7 @@ describe('MasterCSSExtractorPlugin (C1 race fix)', () => {
     test('does not reset extractor when a non-config file changes in watch mode', async () => {
         const root = path.resolve(__dirname, 'fixtures/config-virtual-module/css-only')
         const plugin = makePlugin({ config: 'master.css' }, root)
-        const reset = vi.fn(async function (this: MasterCSSExtractorPlugin) {
+        const reset = vi.fn(async function (this: MasterCSSPlugin) {
             this.emit('reset')
             return this
         })

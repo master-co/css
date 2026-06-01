@@ -1,6 +1,6 @@
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { MasterCSSExtractorPlugin } from '@master/css.webpack'
+import { MasterCSSPlugin } from '@master/css.webpack'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -13,7 +13,7 @@ export default {
         clean: true
     },
     plugins: [
-        new MasterCSSExtractorPlugin({
+        new MasterCSSPlugin({
             config: 'master.css',
             sources: [
                 './index.html',

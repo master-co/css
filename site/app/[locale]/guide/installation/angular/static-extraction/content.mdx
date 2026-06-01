@@ -45,15 +45,15 @@
         <StepL>
             ### <StepNum />Set up CSS extractor
             - Create a `webpack.config.js` file
-            - Add a `MasterCSSExtractorPlugin` to the plugins
+            - Add a `MasterCSSPlugin` to the plugins
         </StepL>
         <StepR>
             ```js name=webpack.config.js
-            const { MasterCSSExtractorPlugin } = require('@master/css.webpack') // [!code ++]
+            const { MasterCSSPlugin } = require('@master/css.webpack') // [!code ++]
 
             module.exports = (config) => { // [!code ++]
                 config.plugins.push( // [!code ++]
-                    new MasterCSSExtractorPlugin({ // [!code ++]
+                    new MasterCSSPlugin({ // [!code ++]
                         sources: ['src/index.html'] // [!code ++]
                     }) // [!code ++]
                 ) // [!code ++]

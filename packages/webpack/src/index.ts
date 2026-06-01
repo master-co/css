@@ -26,7 +26,7 @@ import {
     isStyleCSSRequest
 } from './utils/style-css'
 
-const NAME = 'MasterCSSExtractorPlugin'
+const NAME = 'MasterCSSPlugin'
 const EMPTY_CONFIG_MODULE = 'export default {};'
 
 function isVirtualConfigModulePath(modulePath: string) {
@@ -50,7 +50,7 @@ function getResolveIssuer(resolveData: { context?: string, contextInfo?: { issue
     return resolveData.contextInfo?.issuer || resolveData.context || ''
 }
 
-export class MasterCSSExtractorPlugin extends CSSExtractor {
+export class MasterCSSPlugin extends CSSExtractor {
 
     pluginInitialized = false
     moduleContentByPath: any = {}
