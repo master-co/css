@@ -11,7 +11,6 @@ export type {
 export interface LoadConfigOptions extends Pick<ExploreConfigOptions, 'resolvedKeys'> {
     classes?: string[]
     createConfigFromCSSDirectives?: CSSDirectiveConfigAdapter<Config>
-    baseConfig?: Config
 }
 
 export type LoadConfigResult = CSSConfigLoadResult<Config>

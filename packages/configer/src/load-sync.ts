@@ -28,41 +28,25 @@ function loadCompileCSSSync() {
 }
 
 function loadCSSDirectiveConfigAdapterSync(options: LoadConfigOptions = {}) {
-    if (options.createConfigFromCSSDirectives) {
-        return {
-            createConfigFromCSSDirectives: options.createConfigFromCSSDirectives,
-            baseConfig: options.baseConfig
-        }
-    }
+    if (options.createConfigFromCSSDirectives) return options.createConfigFromCSSDirectives
     const masterCSS = require('@master/css') as {
-        createConfigFromCSSDirectives?: CSSDirectiveConfigAdapter<Config>
-        config?: Config
+        createConfigFromCSSDirectives: CSSDirectiveConfigAdapter<Config>
     }
-    if (masterCSS.createConfigFromCSSDirectives) {
-        return {
-            createConfigFromCSSDirectives: masterCSS.createConfigFromCSSDirectives,
-            baseConfig: masterCSS.config
-        }
-    }
-    return {
-        createConfigFromCSSDirectives: require('../../core/src/utils/create-config-from-css-directives').default as CSSDirectiveConfigAdapter<Config>,
-        baseConfig: masterCSS.config
-    }
+    return masterCSS.createConfigFromCSSDirectives
 }
 
 function loadCSSConfigSync(path: string, options: LoadConfigOptions = {}): LoadConfigResult {
-    const { createConfigFromCSSDirectives, baseConfig } = loadCSSDirectiveConfigAdapterSync(options)
+    const createConfigFromCSSDirectives = loadCSSDirectiveConfigAdapterSync(options)
     return createCSSConfigLoader({
         compileCSSFile: loadCompileCSSSync(),
-        createConfigFromCSSDirectives,
-        baseConfig
+        createConfigFromCSSDirectives
     }).loadCSSConfig(path, options)
 }
 
 function loadCSSConfigModuleSync(path: string, options: LoadConfigOptions = {}): ConfigModuleResult {
     return createCSSConfigLoader({
         compileCSSFile: loadCompileCSSSync(),
-        ...loadCSSDirectiveConfigAdapterSync(options)
+        createConfigFromCSSDirectives: loadCSSDirectiveConfigAdapterSync(options)
     }).loadCSSConfigModule(path, options)
 }
 

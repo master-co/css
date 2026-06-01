@@ -26,25 +26,16 @@ async function loadCompileCSS() {
 }
 
 async function loadCSSDirectiveConfigAdapter(options: LoadConfigOptions = {}) {
-    if (options.createConfigFromCSSDirectives) {
-        return {
-            createConfigFromCSSDirectives: options.createConfigFromCSSDirectives,
-            baseConfig: options.baseConfig
-        }
-    }
+    if (options.createConfigFromCSSDirectives) return options.createConfigFromCSSDirectives
     const masterCSS = await import('@master/css')
-    return {
-        createConfigFromCSSDirectives: masterCSS.createConfigFromCSSDirectives as CSSDirectiveConfigAdapter<Config>,
-        baseConfig: masterCSS.config as Config
-    }
+    return masterCSS.createConfigFromCSSDirectives as CSSDirectiveConfigAdapter<Config>
 }
 
 async function loadCSSConfig(path: string, options: LoadConfigOptions = {}): Promise<LoadConfigResult> {
-    const { createConfigFromCSSDirectives, baseConfig } = await loadCSSDirectiveConfigAdapter(options)
+    const createConfigFromCSSDirectives = await loadCSSDirectiveConfigAdapter(options)
     return createCSSConfigLoader({
         compileCSSFile: await loadCompileCSS(),
-        createConfigFromCSSDirectives,
-        baseConfig
+        createConfigFromCSSDirectives
     }).loadCSSConfig(path, options)
 }
 

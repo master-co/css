@@ -1,5 +1,5 @@
 import { loadConfigModuleSync } from '@master/css-configer/load-sync'
-import { config, createConfigFromCSSDirectives } from '@master/css'
+import { createConfigFromCSSDirectives } from '@master/css'
 
 interface LoaderContext {
     resourcePath: string
@@ -8,8 +8,7 @@ interface LoaderContext {
 
 export default function masterCSSConfigLoader(this: LoaderContext) {
     const result = loadConfigModuleSync(this.resourcePath, {
-        createConfigFromCSSDirectives,
-        baseConfig: config
+        createConfigFromCSSDirectives
     })
     for (const dependency of result.dependencies) {
         this.addDependency?.(dependency)

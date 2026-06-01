@@ -30,7 +30,6 @@ import resolveSelectorTokens from './resolve-selector-tokens'
 
 export interface CreateConfigFromCSSDirectivesOptions {
     config?: Config
-    baseConfig?: Config
     onWarning?: (warning: string) => void
 }
 
@@ -131,7 +130,7 @@ function resolveUtilityType(type: InputUtilityDefinition['type']) {
 
 function cloneUtility(definition: InputUtilityDefinition): UtilityDefinition {
     const type = resolveUtilityType(definition.type)
-    return {
+    const utility = {
         ...definition,
         ...(type !== undefined ? { type } : {}),
         ...(definition.declarations
@@ -144,6 +143,11 @@ function cloneUtility(definition: InputUtilityDefinition): UtilityDefinition {
         ...(definition.atRules?.length ? { atRules: [...definition.atRules] } : {}),
         ...(definition.rules?.length ? { rules: definition.rules.map(cloneUtilityRule) } : {})
     } as UtilityDefinition
+    if (utility.type === UtilityType.Static) {
+        utility.unit ??= ''
+        utility.separators ??= [',']
+    }
+    return utility
 }
 
 function addMode(config: Config, mode: string) {
@@ -216,12 +220,12 @@ function normalizeConfig(input: ConfigInput = {}) {
     return config
 }
 
-function createValidationConfig(config: Config, options: CreateConfigFromCSSDirectivesOptions) {
-    return extendConfig(options.baseConfig, options.config, config)
+function createSemanticConfig(config: Config, options: CreateConfigFromCSSDirectivesOptions) {
+    return extendConfig(options.config, config)
 }
 
 function validateTokenConflicts(config: Config, options: CreateConfigFromCSSDirectivesOptions) {
-    const mergedConfig = createValidationConfig(config, options)
+    const mergedConfig = createSemanticConfig(config, options)
     const modes = collectModeNames(mergedConfig)
     const screens = collectScreenNames(mergedConfig)
 
@@ -250,7 +254,7 @@ function validateTokenConflicts(config: Config, options: CreateConfigFromCSSDire
 }
 
 function warnUnsupportedMediaModes(config: Config, options: CreateConfigFromCSSDirectivesOptions, warnings: string[]) {
-    const mergedConfig = createValidationConfig(config, options)
+    const mergedConfig = createSemanticConfig(config, options)
     if (mergedConfig.modeTrigger !== 'media') return
 
     const customModes = new Set((mergedConfig.modes || []).filter((mode) => !MEDIA_MODE_NAMES.has(mode)))
@@ -265,7 +269,7 @@ function warnUnsupportedMediaModes(config: Config, options: CreateConfigFromCSSD
 }
 
 function createDirectiveCSS(config: Config, options: CreateConfigFromCSSDirectivesOptions) {
-    return new MasterCSS(options.baseConfig, extendConfig(options.config, config))
+    return new MasterCSS(createSemanticConfig(config, options))
 }
 
 function getUtilityAtRuleDefinitions(utility: Utility) {
@@ -393,12 +397,20 @@ function combineSelectorWrapper(selector: string, wrapper: string) {
     return wrapper.replace(/&/g, selector)
 }
 
+function isBareAtRuleReference(token: string) {
+    return /^-?[_a-zA-Z][-_a-zA-Z0-9]*$/.test(token)
+}
+
 function resolveMasterAtRuleReference(token: string, css: MasterCSS) {
     if (css.modes.includes(token)) {
         const modeSelector = css.getModeSelector(token)
         return modeSelector
             ? { selector: `${modeSelector} &` }
             : { atRules: [`@media (prefers-color-scheme:${token})`] }
+    }
+
+    if (isBareAtRuleReference(token) && !css.atRules.has(token)) {
+        throw new Error(`Unknown @at token: ${token}`)
     }
 
     return {
@@ -666,7 +678,9 @@ function getStaticUtilityDefinition(config: Config, name: string, layer: Utility
     const definition = {
         name,
         type: UtilityType.Static,
-        layer
+        layer,
+        unit: '',
+        separators: [',']
     } satisfies UtilityDefinition
     config.utilities.push(definition)
     return definition
@@ -745,8 +759,6 @@ export default function createConfigFromCSSDirectives(input: CSSDirectiveInput, 
     const css = createDirectiveCSS(config, options)
     finalizeUtilityDefinitions(config, css)
     finalizeComponentDefinitions(config, getDirectiveComponents(input), css)
-
-    createDirectiveCSS(config, options)
 
     return {
         config,

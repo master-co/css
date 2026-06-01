@@ -14,7 +14,6 @@ export type CSSDirectiveConfigAdapter<TConfig extends object = Config> = (
     result: CSSDirectiveResult,
     options?: {
         config?: TConfig
-        baseConfig?: TConfig
         onWarning?: (warning: string) => void
     }
 ) => CSSDirectiveConfigAdapterResult<TConfig>
@@ -30,14 +29,12 @@ export type CompileCSSFile = (
 export interface LoadCSSConfigOptions<TConfig extends object = Config> {
     classes?: string[]
     config?: TConfig
-    baseConfig?: TConfig
     onWarning?: (warning: string) => void
 }
 
 export interface CSSConfigLoaderOptions<TConfig extends object = Config> {
     compileCSSFile: CompileCSSFile
     createConfigFromCSSDirectives: CSSDirectiveConfigAdapter<TConfig>
-    baseConfig?: TConfig
 }
 
 function normalizeAdapterResult<TConfig extends object>(result: CSSDirectiveConfigAdapterResult<TConfig>): { config: TConfig, warnings?: string[] } {
@@ -69,7 +66,6 @@ export function createCSSConfigLoader<TConfig extends object = Config>(options: 
         })
         return toCSSConfigLoadResult(result, options.createConfigFromCSSDirectives(result, {
             config: loadOptions.config,
-            baseConfig: loadOptions.baseConfig || options.baseConfig,
             onWarning: loadOptions.onWarning
         }))
     }

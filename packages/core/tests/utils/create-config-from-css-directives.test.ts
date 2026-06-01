@@ -45,6 +45,64 @@ describe.concurrent('createConfigFromCSSDirectives', () => {
         })
     })
 
+    it('finalizes self-contained @compose and @at directives without a base config', () => {
+        const result = createCSSDirectiveConfig(directiveResult({
+            config: {
+                atTokens: {
+                    wide: 'media(width>=64rem)'
+                },
+                utilities: [
+                    {
+                        name: 'inline',
+                        type: 'static',
+                        layer: 'general',
+                        declarations: {
+                            display: 'inline'
+                        }
+                    }
+                ]
+            },
+            componentDefinitions: {
+                badge: [
+                    {
+                        type: 'compose',
+                        order: 1,
+                        className: 'inline',
+                        selector: '&',
+                        atRules: [createCSSDirectiveAtRuleReference('wide')]
+                    }
+                ]
+            }
+        }))
+
+        expect(getUtility(result, 'badge')?.rules).toEqual([
+            {
+                atRules: ['@media (width>=64rem)'],
+                declarations: {
+                    display: 'inline'
+                }
+            }
+        ])
+    })
+
+    it('throws for unknown directive @at references', () => {
+        expect(() => createConfigFromCSSDirectives(directiveResult({
+            config: {
+                utilities: [
+                    {
+                        name: 'chrisma-only',
+                        type: 'static',
+                        layer: 'general',
+                        declarations: {
+                            display: 'block'
+                        },
+                        atRules: [createCSSDirectiveAtRuleReference('chrisma')]
+                    }
+                ]
+            }
+        }))).toThrow('Unknown @at token: chrisma')
+    })
+
     it('resolves raw variable names through core namespaces by longest prefix', () => {
         const result = createConfigFromCSSDirectives(directiveResult({
             config: {

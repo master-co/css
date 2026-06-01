@@ -45,7 +45,7 @@ function createConfigFromCSSDirectives(
 ): CSSDirectiveConfigResult {
     return createCSSDirectiveConfig(input, {
         ...options,
-        baseConfig: options.baseConfig ?? config
+        config: extendConfig(config, options.config)
     })
 }
 
