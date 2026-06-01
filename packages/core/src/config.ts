@@ -2,8 +2,8 @@
 /// <reference path="../master-css-config.d.ts" />
 
 import themeConfig from '../theme.css?master-css-config'
-import utilities from './config/utilities'
-import functions from './config/functions'
+import utilities from './utilities'
+import functions from './functions'
 import type {
     AnimationDefinitions,
     AtTokenDefinitions,
@@ -33,12 +33,12 @@ const config: Config = {
     animations,
     variables,
     modes,
-    scope: '',
-    rootSize: 16,
-    baseUnit: 4,
-    important: false,
-    defaultMode: 'light',
-    modeTrigger: 'media',
+    scope: themeConfig.scope ?? '',
+    rootSize: themeConfig.rootSize ?? 16,
+    baseUnit: themeConfig.baseUnit ?? 4,
+    important: themeConfig.important ?? false,
+    defaultMode: themeConfig.defaultMode ?? 'light',
+    modeTrigger: themeConfig.modeTrigger ?? 'media',
 }
 
 export {

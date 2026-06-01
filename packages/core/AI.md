@@ -30,9 +30,9 @@ Important public symbols include:
 - `src/core.ts`
 - `src/utility.ts`
 - `src/factories/with-utility-layer.ts`
-- `src/config/utilities.ts`
-- `src/config/variables.ts`
-- `src/config/modes.ts`
+- `src/utilities.ts`
+- `src/functions.ts`
+- `theme.css`
 - `src/utils/compare-rule-priority.ts`
 - `src/utils/parse-at.ts`
 - `src/utils/generate-at.ts`
@@ -64,7 +64,7 @@ Important public symbols include:
 - Selector and at-rule parsing.
 - `compare-rule-priority.ts`.
 - Component expansion and fixed-class output.
-- `config/utilities.ts`, because small matcher/type changes can affect many classes.
+- `src/utilities.ts`, because small matcher/type changes can affect many classes.
 
 ## Required Tests
 

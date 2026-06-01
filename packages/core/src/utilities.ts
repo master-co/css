@@ -1,5 +1,5 @@
 import UtilityType from 'shared/utility-type'
-import { BORDER_STYLE_VALUES } from '../common'
+import { BORDER_STYLE_VALUES } from './common'
 import type { UtilityDefinitions } from 'shared/css-config'
 
 const utilities = [

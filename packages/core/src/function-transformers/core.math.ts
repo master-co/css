@@ -1,6 +1,6 @@
 import { Utility } from '../utility'
 import type { StringValueComponent } from 'shared/css-syntax'
-import functions from '../config/functions'
+import functions from '../functions'
 import { BASE_UNIT_REGEX } from '../common'
 
 interface CoreMathData {

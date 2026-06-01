@@ -1,4 +1,9 @@
 @master {
+    root-size: 16;
+    base-unit: 4;
+    default-mode: light;
+    mode-trigger: media;
+
     --full: 100%;
     --fit: fit-content;
     --max: max-content;

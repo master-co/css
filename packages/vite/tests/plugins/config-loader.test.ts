@@ -54,7 +54,7 @@ describe('ConfigLoaderPlugin', () => {
                 })
             ])
         })
-        expect(config.modes).toBeUndefined()
+        expect(config.modes).toEqual(['dark'])
     })
 
     it('full reloads when a per-file CSS config module is imported', async () => {

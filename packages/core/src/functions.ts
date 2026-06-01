@@ -1,4 +1,4 @@
-import type { FunctionDefinition } from 'shared/css-config'
+import type { FunctionDefinitions } from 'shared/css-config'
 
 const functions = {
     translate: { unit: 'rem' },
@@ -50,6 +50,6 @@ const functions = {
     'scaleZ': { unit: '' },
     $: { transformer: 'core.variable' },
     calc: { transformer: 'core.math' },
-} satisfies Record<string, FunctionDefinition>
+} satisfies FunctionDefinitions
 
 export default functions

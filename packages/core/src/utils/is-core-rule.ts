@@ -1,4 +1,4 @@
-import utilities from '../config/utilities'
+import utilities from '../utilities'
 import UtilityType from 'shared/utility-type'
 
 export default function isCoreRule(id: string) {

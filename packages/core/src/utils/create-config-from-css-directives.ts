@@ -12,12 +12,8 @@ import type { PropertiesHyphen } from 'csstype'
 import { AT_IDENTIFIERS } from '../common'
 import MasterCSS from '../core'
 import UtilityType from 'shared/utility-type'
-import defaultAnimations from '../config/animations'
-import defaultAtTokens from '../config/at-tokens'
-import defaultFunctions from '../config/functions'
-import defaultSelectorTokens from '../config/selector-tokens'
-import defaultUtilities from '../config/utilities'
-import defaultVariables, { modes as defaultModes } from '../config/variables'
+import defaultFunctions from '../functions'
+import defaultUtilities from '../utilities'
 import type { Config, UtilityDefinition, UtilityLayerName, UtilityRuleDefinition, VariableDefinition } from 'shared/css-config'
 import type { Utility } from '../utility'
 import compareRulePriority from './compare-rule-priority'
@@ -76,11 +72,7 @@ interface ComponentMergeBucket {
 type ComponentAtRuleFeature = [string, number, number]
 
 const COMPONENT_AT_FEATURE_REGEX = /\(\s*(width|height|resolution)\s*(>=|<=|>|<)\s*(-?(?:\d+(?:\.\d+)?|\.\d+))([a-z%]*)\s*\)/g
-const DEFAULT_MODE_NAMES = new Set(defaultModes)
-const DEFAULT_SCREEN_NAMES = new Set(defaultVariables
-    .filter(({ namespace }) => namespace === 'screen')
-    .map(({ key }) => key)
-)
+const MEDIA_MODE_NAMES = new Set(['light', 'dark'])
 
 function isCSSDirectiveResult(input: CSSDirectiveInput): input is CSSDirectiveResult {
     return 'config' in input
@@ -96,13 +88,8 @@ function getDirectiveComponents(input: CSSDirectiveInput) {
 
 function createDefaultBaseConfig(): Config {
     return {
-        atTokens: defaultAtTokens,
-        selectorTokens: defaultSelectorTokens,
         utilities: defaultUtilities,
         functions: defaultFunctions,
-        animations: defaultAnimations,
-        variables: defaultVariables,
-        modes: defaultModes,
         scope: '',
         rootSize: 16,
         baseUnit: 4,
@@ -132,7 +119,6 @@ function cloneUtility(definition: CSSDirectiveUtilityDefinition): UtilityDefinit
 }
 
 function addMode(config: Config, mode: string) {
-    if (DEFAULT_MODE_NAMES.has(mode)) return
     config.modes ??= []
     if (!config.modes.includes(mode)) config.modes.push(mode)
 }
@@ -201,20 +187,37 @@ function warn(warnings: string[], options: CreateConfigFromCSSDirectivesOptions,
     options.onWarning?.(message)
 }
 
-function validateTokenConflicts(config: Config) {
-    const modes = new Set([...DEFAULT_MODE_NAMES, ...(config.modes || [])])
-    const customScreens = (config.variables || [])
+function collectModeNames(config: Config) {
+    const modes = new Set(config.modes || [])
+    if (typeof config.defaultMode === 'string') {
+        modes.add(config.defaultMode)
+    }
+    return modes
+}
+
+function collectScreenNames(config: Config) {
+    return new Set((config.variables || [])
         .filter((variable) => variable.namespace === 'screen')
         .map((variable) => variable.key)
-    const screens = new Set([...DEFAULT_SCREEN_NAMES, ...customScreens])
+    )
+}
 
-    for (const mode of config.modes || []) {
+function createValidationConfig(config: Config, options: CreateConfigFromCSSDirectivesOptions) {
+    return extendConfig(createDefaultBaseConfig(), options.baseConfig, options.config, config)
+}
+
+function validateTokenConflicts(config: Config, options: CreateConfigFromCSSDirectivesOptions) {
+    const mergedConfig = createValidationConfig(config, options)
+    const modes = collectModeNames(mergedConfig)
+    const screens = collectScreenNames(mergedConfig)
+
+    for (const mode of collectModeNames(config)) {
         if (screens.has(mode)) {
             throw new Error(`Mode "${mode}" conflicts with screen variable "--screen-${mode}"`)
         }
     }
 
-    for (const screen of screens) {
+    for (const screen of collectScreenNames(config)) {
         if (modes.has(screen)) {
             throw new Error(`Screen variable "--screen-${screen}" conflicts with mode "${screen}"`)
         }
@@ -233,11 +236,11 @@ function validateTokenConflicts(config: Config) {
 }
 
 function warnUnsupportedMediaModes(config: Config, options: CreateConfigFromCSSDirectivesOptions, warnings: string[]) {
-    const mergedConfig = extendConfig(createDefaultBaseConfig(), options.config, config)
+    const mergedConfig = createValidationConfig(config, options)
     if (mergedConfig.modeTrigger !== 'media') return
 
-    const customModes = new Set((mergedConfig.modes || []).filter((mode) => !DEFAULT_MODE_NAMES.has(mode)))
-    if (typeof mergedConfig.defaultMode === 'string' && !DEFAULT_MODE_NAMES.has(mergedConfig.defaultMode)) {
+    const customModes = new Set((mergedConfig.modes || []).filter((mode) => !MEDIA_MODE_NAMES.has(mode)))
+    if (typeof mergedConfig.defaultMode === 'string' && !MEDIA_MODE_NAMES.has(mergedConfig.defaultMode)) {
         customModes.add(mergedConfig.defaultMode)
     }
     if (!customModes.size) return
@@ -722,7 +725,7 @@ export default function createConfigFromCSSDirectives(input: CSSDirectiveInput, 
     const config = createConfig(getDirectiveConfig(input))
     const warnings = isCSSDirectiveResult(input) ? [...input.warnings] : []
 
-    validateTokenConflicts(config)
+    validateTokenConflicts(config, options)
     warnUnsupportedMediaModes(config, options, warnings)
 
     const css = createDirectiveCSS(config, options)

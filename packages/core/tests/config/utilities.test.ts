@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest'
-import utilities from '../../src/config/utilities'
+import utilities from '../../src/utilities'
 
 test.concurrent('default utilities do not reuse key, subkey, or sign tokens', () => {
     const seen = new Map<string, string>()

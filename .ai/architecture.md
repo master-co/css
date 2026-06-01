@@ -56,7 +56,9 @@ Important files:
 - `src/core.ts`
 - `src/utility.ts`
 - `src/factories/with-utility-layer.ts`
-- `src/config/utilities.ts`
+- `src/utilities.ts`
+- `src/functions.ts`
+- `theme.css`
 - `src/utils/compare-rule-priority.ts`
 - `src/utils/parse-at.ts`
 - `src/utils/parse-selector.ts`
