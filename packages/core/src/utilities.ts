@@ -2287,7 +2287,7 @@ const utilities = [
     {
         name: 'stroke',
         type: UtilityType.Native,
-        namespaces: ['color']
+        namespaces: ['color', 'color-line']
     },
     {
         name: 'x',
