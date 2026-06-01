@@ -6,6 +6,8 @@ test.concurrent('outline', () => {
     expect(createCSS().create('outline:current')?.text).toContain('outline-color:var(--color-current)')
     expect(createCSS().create('outline:transparent')?.text).toContain('outline-color:transparent')
     expect(createCSS().create('outline:black')?.text).toContain('outline-color:var(--color-black)')
+    expect(createCSS().create('outline:line-neutral')?.text).toContain('outline-color:var(--color-line-neutral)')
+    expect(createCSS().create('outline:$line-neutral')?.text).toContain('outline:var(--color-line-neutral)')
     expect(createCSS().create('outline:2|black')?.text).toContain('outline:0.125rem var(--color-black) solid')
     expect(createCSS().create('outline:1')?.text).toContain('outline-width:0.0625rem')
     expect(createCSS().create('outline:dashed|black')?.text).toContain('outline:dashed var(--color-black)')

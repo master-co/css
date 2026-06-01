@@ -562,7 +562,7 @@ export default function Play({ shareId }: PlayProps = {}) {
                             {sharing && <span className="ml:10">{$('Sharing ...')}</span>}
                         </button>}
                     <span className='hidden'>{shareError}</span>
-                    {(shareable || copied) && <div className='mx:4x bg:color-line-light h:1em w:1 hidden@<md'></div>}
+                    {(shareable || copied) && <div className='mx:4x bg:line-light h:1em w:1 hidden@<md'></div>}
                     <button className="app-header-icon hidden@<md" onClick={() => pushShallowURL('layout', layout ? '' : '2')}>
                         <svg className={clsx({ 'stroke:accent': !layout || layout === '2' })} xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" strokeWidth="1.2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
                             <path className={clsx(
@@ -596,7 +596,7 @@ export default function Play({ shareId }: PlayProps = {}) {
                         </svg>
                     </button>
                     <span className='hidden'>{layout}</span>
-                    <div className='mx:4x bg:color-line-light h:1em w:1 hidden@<md'></div>
+                    <div className='mx:4x bg:line-light h:1em w:1 hidden@<md'></div>
                     <button className="app-header-icon hidden@<md" onClick={() => pushShallowURL('preview', '')}>
                         <IconDeviceDesktop width="22" height="22" className={clsx(
                             'stroke:1.3',
@@ -616,7 +616,7 @@ export default function Play({ shareId }: PlayProps = {}) {
                         )} />
                     </button>
                     <span className='hidden'>{preview}</span>
-                    <div className='mx:4x bg:color-line-light h:1em w:1 hidden@<md'></div>
+                    <div className='mx:4x bg:line-light h:1em w:1 hidden@<md'></div>
                     <LanguageButton className="app-header-icon hidden@<md" />
                     <ThemeButton className="app-header-icon mr:-12 hidden@<md"
                         onChange={(theme: string) => {

@@ -20,6 +20,7 @@ it.concurrent('validates border-color rules', () => {
     expect(createCSS().create('border-top-color:white')?.text).toContain('border-top-color:var(--color-white)')
 
     expect(createCSS().create('bl:white')?.text).toContain('border-left-color:var(--color-white)')
+    expect(createCSS().create('bl:line-lighter')?.text).toContain('border-left-color:var(--color-line-lighter)')
     expect(createCSS().create('bl:rgb(0,0,0,0.75)')?.text).toContain('border-left-color:rgb(0,0,0,0.75)')
     expect(createCSS().create('border-left:white')?.text).toContain('border-left-color:var(--color-white)')
     expect(createCSS().create('border-left-color:white')?.text).toContain('border-left-color:var(--color-white)')

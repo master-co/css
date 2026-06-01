@@ -130,16 +130,30 @@ export default class MasterCSS {
 
         const utilitiesEntriesLength = utilitiesEntries.length
         const variablesByNamespace = new Map<string, [string, Variable][]>()
-        const addVariableToNamespace = (namespace: string, variable: Variable) => {
-            let variableKey = variable.name
-            if (variableKey.startsWith('-' + namespace) || variableKey.startsWith(namespace)) {
-                variableKey = variableKey.slice(namespace.length + 1)
-            }
+        const addVariableAliasToNamespace = (namespace: string, variableKey: string, variable: Variable) => {
             const namespaceVariables = variablesByNamespace.get(namespace)
             if (namespaceVariables) {
                 namespaceVariables.push([variableKey, variable])
             } else {
                 variablesByNamespace.set(namespace, [[variableKey, variable]])
+            }
+        }
+        const addVariableToNamespace = (namespace: string, variable: Variable) => {
+            let variableKey = variable.name
+            if (variableKey.startsWith('-' + namespace) || variableKey.startsWith(namespace)) {
+                variableKey = variableKey.slice(namespace.length + 1)
+            }
+            addVariableAliasToNamespace(namespace, variableKey, variable)
+
+            if (namespace.startsWith('color-')) {
+                const colorNamespaceKey = namespace.slice('color-'.length)
+                const colorVariableKey = variableKey.startsWith(colorNamespaceKey + '-')
+                    ? variableKey
+                    : colorNamespaceKey + '-' + variableKey
+                if (colorVariableKey !== variableKey) {
+                    addVariableAliasToNamespace(namespace, colorVariableKey, variable)
+                }
+                addVariableAliasToNamespace('color', colorVariableKey, variable)
             }
         }
         for (const variable of this.variables.values()) {
