@@ -17,13 +17,8 @@ export function UsageGraphPlugin(context: MasterCSSWebpackContext): WebpackSubPl
         apply(compiler: Compiler) {
             compiler.hooks.thisCompilation.tap(context.name, (compilation) => {
                 const resolvedConfig = context.resolveDefaultConfigPath()
-                if (resolvedConfig) {
-                    const defaultConfigDependencies = context.getDefaultConfigDependencies().length
-                        ? context.getDefaultConfigDependencies()
-                        : [resolvedConfig.path]
-                    for (const dependency of defaultConfigDependencies) {
-                        compilation.fileDependencies.add(dependency)
-                    }
+                for (const dependency of context.getDefaultConfigDependencyPaths(resolvedConfig)) {
+                    compilation.fileDependencies.add(dependency)
                 }
 
                 // Per-module: only synchronously record source. `succeedModule` is a

@@ -10,19 +10,19 @@ import {
     toConfigModule,
     toVirtualDefaultConfigModulePath
 } from '@master/css-configer/module'
-import { createExtractedCSS, registerStyleCSSSource as registerExtractorStyleCSSSource, type StyleCSSSources } from '@master/css-extractor/style'
+import {
+    cleanStyleRequest,
+    createExtractedCSS,
+    hasMasterStyleEntrypoint,
+    isStyleCSSRequest,
+    registerStyleCSSSource as registerExtractorStyleCSSSource,
+    resolveMasterStyleSource,
+    type StyleCSSSources
+} from '@master/css-extractor/style'
 import { toVirtualCSSModulePath } from 'shared/css-virtual-module'
 import type { Compiler } from 'webpack'
 import type VirtualModulesPlugin from 'webpack-virtual-modules'
 import { readFileSync } from 'node:fs'
-import {
-    cleanStyleRequest,
-    hasMasterCSSImport,
-    hasMasterShakeDirective,
-    isMasterStyleSource,
-    isStyleCSSRequest,
-    resolveStyleCSSImportGraph
-} from './utils/style-css'
 import { normalizePath } from './utils/path'
 import { ExtractorLifecyclePlugin } from './plugins/extractor-lifecycle'
 import { VirtualModuleRegistryPlugin } from './plugins/virtual-modules'
@@ -44,7 +44,6 @@ export interface MasterCSSWebpackContext {
     virtualCSSImportModuleId: string
     virtualConfigModuleId: string
     virtualModule?: VirtualModulesPlugin
-    resetReplayChain: Promise<unknown>
     on(...args: Parameters<CSSExtractor['on']>): unknown
     init(customOptions?: Options): Promise<unknown>
     reset(customOptions?: Options): Promise<unknown>
@@ -53,7 +52,7 @@ export interface MasterCSSWebpackContext {
     getOptions(): Options
     getPluginInitialized(): boolean
     setPluginInitialized(pluginInitialized: boolean): void
-    getDefaultConfigDependencies(): string[]
+    getDefaultConfigDependencyPaths(resolvedConfig?: ExploreConfigPath): string[]
     setModuleContent(modulePath: string, moduleContent: unknown): void
     resolveDefaultConfigPath(): ExploreConfigPath | undefined
     warnMissingDefaultConfig(): void
@@ -65,6 +64,8 @@ export interface MasterCSSWebpackContext {
     writeGeneratedCSSModule(): Promise<void>
     writeDefaultConfigModule(): Promise<void>
     replayModuleContents(): Promise<void>
+    queueResetReplay(): Promise<unknown>
+    waitForResetReplay(): Promise<unknown>
     isGeneratedCSSModulePath(modulePath: string): boolean
 }
 
@@ -74,6 +75,7 @@ export class MasterCSSPlugin {
     pluginInitialized = false
     moduleContentByPath: Record<string, unknown> = {}
     defaultConfigDependencies: string[] = []
+    resetReplayChain: Promise<unknown> = Promise.resolve()
     styleCSSSources: StyleCSSSources = new Map()
 
     constructor(
@@ -183,12 +185,22 @@ export class MasterCSSPlugin {
 
     private async createDefaultConfigModule(resolvedConfig = this.resolveDefaultConfigPath()) {
         if (typeof this.options.config === 'object') {
+            this.defaultConfigDependencies = []
             return toConfigModule(this.options.config)
         }
-        if (!resolvedConfig) return EMPTY_CONFIG_MODULE
+        if (!resolvedConfig) {
+            this.defaultConfigDependencies = []
+            return EMPTY_CONFIG_MODULE
+        }
         const result = await loadConfigModule(resolvedConfig.path)
         this.defaultConfigDependencies = result.dependencies
         return result.code
+    }
+
+    private getDefaultConfigDependencyPaths(resolvedConfig = this.resolveDefaultConfigPath()) {
+        return this.defaultConfigDependencies.length
+            ? this.defaultConfigDependencies
+            : resolvedConfig ? [resolvedConfig.path] : []
     }
 
     private getExtractorClasses() {
@@ -235,8 +247,8 @@ export class MasterCSSPlugin {
             const source = this.readOriginalStyleSource(modulePath, content)
             if (isStyleCSSRequest(modulePath)) {
                 if (
-                    (hasMasterShakeDirective(source) || hasMasterCSSImport(source)) &&
-                    isMasterStyleSource(resolveStyleCSSImportGraph(modulePath, source, this.cwd).source)
+                    hasMasterStyleEntrypoint(source) &&
+                    resolveMasterStyleSource(modulePath, source, this.cwd)
                 ) {
                     styleEntries.push([modulePath, source])
                 } else {
@@ -263,7 +275,6 @@ export class MasterCSSPlugin {
             compilerContext,
             virtualCSSImportModuleId: toVirtualCSSModulePath(compilerContext),
             virtualConfigModuleId: toVirtualDefaultConfigModulePath(compilerContext),
-            resetReplayChain: Promise.resolve(),
             on: (...args) => this.on(...args),
             init: (customOptions = this.customOptions) => this.init(customOptions),
             reset: (customOptions = this.customOptions) => this.reset(customOptions),
@@ -274,7 +285,7 @@ export class MasterCSSPlugin {
             setPluginInitialized: (pluginInitialized) => {
                 this.pluginInitialized = pluginInitialized
             },
-            getDefaultConfigDependencies: () => this.defaultConfigDependencies,
+            getDefaultConfigDependencyPaths: (resolvedConfig) => this.getDefaultConfigDependencyPaths(resolvedConfig),
             setModuleContent: (modulePath, moduleContent) => {
                 this.moduleContentByPath[modulePath] = moduleContent
             },
@@ -296,6 +307,16 @@ export class MasterCSSPlugin {
                     .map(([modulePath, moduleContent]) => [modulePath, String(moduleContent)] as [string, string])
                 await this.processModuleContents(entries, context.isGeneratedCSSModulePath)
             },
+            queueResetReplay: () => {
+                this.resetReplayChain = this.resetReplayChain
+                    .then(context.replayModuleContents)
+                    .then(context.writeGeneratedCSSModule)
+                    .catch((error: unknown) => {
+                        console.error('[master-css.webpack] reset replay failed:', error)
+                    })
+                return this.resetReplayChain
+            },
+            waitForResetReplay: () => this.resetReplayChain,
             isGeneratedCSSModulePath: (modulePath) => {
                 const normalizedModulePath = normalizePath(modulePath)
                 const normalizedGeneratedCSSImportModuleId = normalizePath(context.virtualCSSImportModuleId)

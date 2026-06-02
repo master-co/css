@@ -5,6 +5,7 @@ import {
     createStyleCSSHostSource,
     hasMasterNoShakeDirective,
     hasMasterShakeDirective,
+    hasMasterStyleEntrypoint,
     isMasterCSSPackageStyleFile,
     hasStyleCSSImport,
     isMasterCSSModuleId,
@@ -13,6 +14,7 @@ import {
     registerStyleCSSSource as registerExtractorStyleCSSSource,
     removeMasterStyleDirectives,
     removeMasterShakeDirectives,
+    resolveMasterStyleSource,
     resolveStyleCSSImportGraph,
     removeStyleCSSImports,
     replaceStyleCSSImports
@@ -26,12 +28,14 @@ export {
     createStyleCSSHostSource,
     hasMasterNoShakeDirective,
     hasMasterShakeDirective,
+    hasMasterStyleEntrypoint,
     isMasterCSSPackageStyleFile,
     isMasterCSSModuleId,
     isMasterStyleSource,
     isStyleCSSRequest,
     removeMasterStyleDirectives,
     removeMasterShakeDirectives,
+    resolveMasterStyleSource,
     resolveStyleCSSImportGraph,
     replaceStyleCSSImports
 }

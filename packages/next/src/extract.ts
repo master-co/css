@@ -5,10 +5,9 @@ import {
     createStyleCSSHostSource,
     createExtractedCSS as createExtractorExtractedCSS,
     isMasterCSSPackageStyleFile,
-    isMasterStyleSource,
     isStyleCSSRequest,
     removeMasterStyleDirectives,
-    resolveStyleCSSImportGraph,
+    resolveMasterStyleSource,
     registerStyleCSSSource,
     type StyleCSSSources
 } from '@master/css-extractor/style'
@@ -76,8 +75,7 @@ function resolveExtractorOptions(options: ResolvedOptions): ExtractorOptions {
 export async function transformExtractStyleSource(statePath: string, resourcePath: string, source: string) {
     const state = readExtractState(statePath)
     if (!isStyleCSSRequest(resourcePath)) return source
-    const resolvedSource = resolveStyleCSSImportGraph(resourcePath, source, state.projectDir)
-    if (!isMasterStyleSource(resolvedSource.source)) return source
+    if (!resolveMasterStyleSource(resourcePath, source, state.projectDir)) return source
     if (isMasterCSSPackageStyleFile(resourcePath)) {
         return removeMasterStyleDirectives(source).code
     }

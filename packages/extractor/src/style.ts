@@ -328,6 +328,21 @@ export function hasDefaultStyleCSSImport(source: string) {
     return hasStyleCSSImport(source)
 }
 
+export function hasMasterStyleEntrypoint(source: string) {
+    return hasMasterShakeDirective(source) || hasStyleCSSImport(source)
+}
+
+export function resolveMasterStyleSource(
+    file: string,
+    source: string,
+    projectDir?: string
+) {
+    if (!isStyleCSSRequest(file)) return
+    const resolvedSource = resolveStyleCSSImportGraph(file, source, projectDir)
+    if (!isMasterStyleSource(resolvedSource.source)) return
+    return resolvedSource
+}
+
 export function isMasterCSSModuleId(id: string) {
     return normalizeStyleCSSModuleIds().has(id)
 }
@@ -545,18 +560,18 @@ function insertVariableReferences(css: ReturnType<typeof createCSS>, references:
         css.themeLayer.insert(new VariableRule(name, variable, css))
         variable.dependencies?.forEach((dependency) => insert(dependency, visited))
     }
+    const visited = new Set<string>()
     for (const name of references) {
-        insert(name)
+        insert(name, visited)
     }
 }
 
-function collectCSSAnimationReferences(source: string, animationNames: Iterable<string>) {
+function collectCSSAnimationReferences(source: string, animationNames: readonly string[]) {
     const references = new Set<string>()
-    const names = Array.from(animationNames)
-    if (!names.length) return references
+    if (!animationNames.length) return references
     for (const match of source.matchAll(/\banimation(?:-name)?\s*:\s*([^;{}]+)/g)) {
         const value = match[1]
-        for (const name of names) {
+        for (const name of animationNames) {
             if (new RegExp(String.raw`(^|[\s,])${escapeRegExp(name)}(?=$|[\s,])`).test(value)) {
                 references.add(name)
             }

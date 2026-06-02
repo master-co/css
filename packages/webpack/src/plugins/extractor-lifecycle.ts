@@ -26,12 +26,7 @@ export function ExtractorLifecyclePlugin(context: MasterCSSWebpackContext): Webp
                 context.writeDefaultConfigModule().catch((error: unknown) => {
                     console.error('[master-css.webpack] config module update failed:', error)
                 })
-                context.resetReplayChain = context.resetReplayChain
-                    .then(context.replayModuleContents)
-                    .then(context.writeGeneratedCSSModule)
-                    .catch((error: unknown) => {
-                        console.error('[master-css.webpack] reset replay failed:', error)
-                    })
+                void context.queueResetReplay()
             })
             void context.init()
 
@@ -48,12 +43,10 @@ export function ExtractorLifecyclePlugin(context: MasterCSSWebpackContext): Webp
                 context.warnMissingDefaultConfig()
                 const resolvedConfig = context.resolveDefaultConfigPath()
                 const modifiedFiles = (watchingCompiler as Compiler & { modifiedFiles?: ReadonlySet<string> }).modifiedFiles
-                const defaultConfigDependencies = context.getDefaultConfigDependencies().length
-                    ? context.getDefaultConfigDependencies()
-                    : resolvedConfig ? [resolvedConfig.path] : []
+                const defaultConfigDependencies = context.getDefaultConfigDependencyPaths(resolvedConfig)
                 if (defaultConfigDependencies.some((dependency) => hasModifiedFile(modifiedFiles, dependency))) {
                     await context.reset(context.getOptions())
-                    await context.resetReplayChain
+                    await context.waitForResetReplay()
                 }
                 await context.startWatch()
             })

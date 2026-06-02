@@ -5,13 +5,11 @@ import type { PluginOptions } from '../options'
 import getExtractedCSS from '../utils/extracted-css'
 import {
     createStyleCSSHostSource,
-    hasMasterCSSImport,
-    hasMasterShakeDirective,
+    hasMasterStyleEntrypoint,
     isMasterCSSPackageStyleFile,
-    isMasterStyleSource,
     isStyleCSSRequest,
     removeMasterStyleDirectives,
-    resolveStyleCSSImportGraph,
+    resolveMasterStyleSource,
     registerStyleCSSSource
 } from '../utils/style-css'
 
@@ -46,10 +44,9 @@ export default function VirtualCSSImportPlugin(options: PluginOptions, context: 
         async transform(code, id) {
             if (id.startsWith('\0')) return
             if (!isStyleCSSRequest(id)) return
-            if (!hasMasterShakeDirective(code) && !hasMasterCSSImport(code)) return
+            if (!hasMasterStyleEntrypoint(code)) return
 
-            const resolvedSource = resolveStyleCSSImportGraph(id, code, context.config?.root)
-            if (!isMasterStyleSource(resolvedSource.source)) return
+            if (!resolveMasterStyleSource(id, code, context.config?.root)) return
 
             if (isMasterCSSPackageStyleFile(id)) {
                 return {

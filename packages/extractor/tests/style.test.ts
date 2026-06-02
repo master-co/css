@@ -7,9 +7,11 @@ import {
     createExtractedCSS,
     hasMasterNoShakeDirective,
     hasMasterShakeDirective,
+    hasMasterStyleEntrypoint,
     isMasterStyleSource,
     removeMasterShakeDirectives,
     registerStyleCSSSource,
+    resolveMasterStyleSource,
     resolveStyleCSSImportGraph,
     replaceStyleCSSImports
 } from '../src/style'
@@ -37,6 +39,10 @@ describe('style CSS extraction helpers', () => {
     })
 
     it('detects Master CSS imports and master shake directives', () => {
+        expect(hasMasterStyleEntrypoint('@import "@master/css";')).toBe(true)
+        expect(hasMasterStyleEntrypoint('@master shake;')).toBe(true)
+        expect(hasMasterStyleEntrypoint('@master { --color-primary: red; }')).toBe(false)
+        expect(hasMasterStyleEntrypoint('@import "./other.css";')).toBe(false)
         expect(isMasterStyleSource('@master { --color-primary: red; }')).toBe(false)
         expect(isMasterStyleSource('@import "@master/css";')).toBe(false)
         expect(isMasterStyleSource(resolveStyleCSSImportGraph(
@@ -48,6 +54,29 @@ describe('style CSS extraction helpers', () => {
         expect(isMasterStyleSource('@master shake;')).toBe(true)
         expect(isMasterStyleSource('@master no-shake;')).toBe(false)
         expect(isMasterStyleSource('@import "./other.css";')).toBe(false)
+    })
+
+    it('resolves Master style sources through the stylesheet import graph', () => {
+        const root = createFixture()
+        const result = resolveMasterStyleSource(
+            join(root, 'app/globals.css'),
+            '@import "@master/css";',
+            root
+        )
+
+        expect(result?.source).toContain('@master shake')
+        expect(result?.dependencies).toContain(join(root, 'app/globals.css'))
+        expect(result?.dependencies.some((dependency) => dependency.replace(/\\/g, '/').endsWith('packages/core/index.css'))).toBe(true)
+        expect(resolveMasterStyleSource(
+            join(root, 'app/theme.css'),
+            '@master { --color-primary: red; }',
+            root
+        )).toBeUndefined()
+        expect(resolveMasterStyleSource(
+            join(root, 'app/main.ts'),
+            '@import "@master/css";',
+            root
+        )).toBeUndefined()
     })
 
     it('removes top-level master style directives', () => {
