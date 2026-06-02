@@ -8,6 +8,9 @@ import type { Config } from 'shared/css-config'
 const config = {
     rootSize: 16,
     baseUnit: 4,
+    defaultMode: 'light',
+    modeTrigger: 'media',
+    modes: ['light', 'dark'],
     utilities,
     functions,
 } satisfies Config

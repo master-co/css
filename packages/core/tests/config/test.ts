@@ -5,7 +5,13 @@ import createCSSWithTheme from '../helpers/create-css-with-theme'
 import { expectLayers } from '../test'
 
 test.concurrent('default config excludes theme tokens', () => {
-    expect(createCSS().create('fg:black')?.text).toContain('color:black')
+    const css = createCSS()
+    expect(css.config).toMatchObject({
+        defaultMode: 'light',
+        modeTrigger: 'media',
+        modes: ['light', 'dark']
+    })
+    expect(css.create('fg:black')?.text).toContain('color:black')
     expect(createCSSWithTheme().create('fg:black')?.text).toContain('color:var(--color-black)')
 })
 
