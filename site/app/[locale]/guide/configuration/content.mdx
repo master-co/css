@@ -84,6 +84,27 @@ Local relative CSS imports are resolved as one configuration graph. Only `@maste
 
 Only `@master` sections become configuration. Defining `.btn` this way does not emit `.btn` immediately; Master CSS still generates CSS only after `btn` is used by the active renderer or discovered by tooling.
 
+### Config graph and style entries
+`master.css` is the config graph root. It can import files that contain tokens, mode blocks, custom at tokens, custom selector tokens, main styles, general utilities, and keyframes. Build integrations load this graph automatically when their `config` option points to `master.css`.
+
+Application stylesheets are different: they are browser-facing CSS entries. Import `@master/css` from the stylesheet your app already loads when that entry should receive generated Master CSS and default base/theme/utility definitions.
+
+```css name=src/style.css
+@import '@master/css';
+
+.native-card {
+    border: 1px solid rgb(0 0 0 / 12%);
+}
+```
+
+If that same stylesheet also contains `@master {}` blocks, import it from `master.css` so those blocks participate in the config graph.
+
+```css name=master.css
+@import './src/style.css';
+```
+
+This keeps two responsibilities explicit: `master.css` owns configuration, while app stylesheets own CSS output and native CSS shaking roots.
+
 ---
 
 ## Variables and modes
@@ -388,7 +409,7 @@ Use `scope` when Master CSS should only affect a specific application root, such
 ```
 
 ### `important`
-Use `important` only when the surrounding cascade is hard to control, such as when integrating with a legacy stylesheet or third-party system. It is intentionally global.
+Use `important` only when the surrounding cascade is hard to control, such as when integrating with existing stylesheet contracts or third-party systems. It is intentionally global.
 
 <DocProp defaultValue="false" types={['boolean']} />
 
@@ -462,13 +483,19 @@ Use programmatic config for tests, library presets, integration glue, and execut
 ---
 
 ## Import compiled config
-Most projects let the integration load `master.css` automatically. When application code needs the compiled config object, import the CSS config through the integration query:
+Most projects let the integration load `master.css` automatically. When application code needs the compiled config object, import the default virtual config module:
+
+```ts
+import config from 'virtual:master-css-config'
+```
+
+The virtual module resolves the integration's configured `master.css` file. When you need a specific CSS config file instead, import it with the integration query:
 
 ```ts
 import config from './master.css?master-css-config'
 ```
 
-The query tells the integration to compile the CSS configuration and return a JavaScript config object. Without the query, a `.css` import follows the normal stylesheet pipeline.
+The query tells the integration to compile that CSS configuration file and return a JavaScript config object. Without the query, a `.css` import follows the normal stylesheet pipeline.
 
 Use this when a server hook, runtime initializer, test, or framework adapter needs the same config object that comes from `master.css`.
 

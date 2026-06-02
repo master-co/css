@@ -88,7 +88,7 @@ pnpm --filter @master/css-extractor bench
 
 Methodology: 327 files, 3 warmups, 20 measured iterations per file, median per file, summed across files.
 
-| Benchmark | Legacy | Current | Result |
+| Benchmark | Previous | Current | Result |
 | --- | ---: | ---: | ---: |
 | `extractLatentClasses()` median sum | 49.97ms | 42.11ms | **1.19x faster** |
 | Same source and content re-insert | 36.301ms | 0.022ms | **1688.4x faster** |
@@ -96,7 +96,7 @@ Methodology: 327 files, 3 warmups, 20 measured iterations per file, median per f
 
 Larger documentation pages show the cold-scan improvement more clearly:
 
-| File | Legacy | Current | Result |
+| File | Previous | Current | Result |
 | --- | ---: | ---: | ---: |
 | `guide/conditional-queries/content.mdx` | 1.842ms | 1.107ms | **1.66x faster** |
 | `guide/state-selectors/content.mdx` | 1.954ms | 1.221ms | **1.60x faster** |

@@ -36,16 +36,15 @@
     <Step $row>
         <StepL>
             ### <StepNum />Set up CSS runtime engine
-            Initialize the runtime engine with your configuration.
+            Initialize the runtime engine in the browser entry. This manual setup uses the default runtime config; use an official build integration when application code needs to import the compiled `master.css` config object.
         </StepL>
         <StepR>
             ```ts name=src/main.ts
             import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
             import { AppModule } from './app/app.module';
             import { initCSSRuntime } from '@master/css-runtime'; // [!code ++]
-            import config from '../master.css'; // [!code ++]
 
-            initCSSRuntime(config); // [!code ++]
+            initCSSRuntime(); // [!code ++]
 
             platformBrowserDynamic().bootstrapModule(AppModule)
                 .catch(err => console.error(err));
@@ -75,14 +74,13 @@
         </StepR>
     </Step>
     <Step $row>
-     <StepL>
+        <StepL>
             ### <StepNum />Set up CSS pre-rendering
-            All CSS rules are pre-rendered and injected into HTML on the server side or at build time.
+            All CSS rules are pre-rendered and injected into HTML on the server side or at build time. This manual example renders with the default config.
         </StepL>
         <StepR>
             ```ts name=server.ts
             import { render } from '@master/css-server'; // [!code ++]
-            import config from './master.css'; // [!code ++]
             …
             export function app() {
                 …
@@ -93,7 +91,7 @@
                         (error: Error, html: string) => { // [!code ++]
                             error // [!code ++]
                                 ? console.error(error) // [!code ++]
-                                : res.send(render(html, config).html) // [!code ++]
+                                : res.send(render(html).html) // [!code ++]
                         } // [!code ++]
                     ) // [!code ++]
                 }); // [!code ++]

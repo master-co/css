@@ -6,6 +6,24 @@
 ---
 
 ## API Reference
+### Stylesheet entries
+`@master/css` exports the default stylesheet and the split stylesheet entries used by integrations.
+
+```css
+@import '@master/css';
+```
+
+The default stylesheet contains:
+
+```css
+@master shake;
+@import "./base.css";
+@import "./theme.css";
+@import "./utilities.css";
+```
+
+Use `@import '@master/css/base.css';` when a runtime-only page only needs the base layer declaration and normalization rules. Use the default `@master/css` import from app stylesheets that should receive generated Master CSS and native CSS shaking in extract mode.
+
 ### `MasterCSS`
 The main body of this package is the class `MasterCSS`, which encapsulates the core business of Master CSS.
 ```js
@@ -83,4 +101,4 @@ css.destroy()
 ```
 
 ### `globalThis.MasterCSS`
-<DocProp defaultValue="MasterCSS" types={['typeof CSSRuntime']} />
+<DocProp defaultValue="MasterCSS" types={['typeof MasterCSS']} />

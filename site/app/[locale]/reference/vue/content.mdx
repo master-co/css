@@ -1,0 +1,59 @@
+## Installation [sr-only]
+```bash action=install
+@master/css.vue@rc
+```
+
+`@master/css.vue` provides Vue runtime helpers around [`@master/css-runtime`](/reference/runtime). Use it when a Vue app or a Vue-managed shadow root needs an explicit runtime provider and injectable runtime instance.
+
+For a Vite-powered Vue app that only needs automatic runtime injection, start with the [Vue installation guide](/guide/installation/vuejs). For Nuxt SSR and progressive rendering, use the [Nuxt guide](/guide/installation/nuxtjs).
+
+---
+
+## API Reference
+### `<CSSRuntimeProvider>`
+The provider initializes a `CSSRuntime` for `document` by default, refreshes it when `config` changes, recreates it when `root` changes, and destroys it on unmount.
+
+```vue
+<script setup lang="ts">
+import CSSRuntimeProvider from '@master/css.vue'
+import config from './master.css?master-css-config'
+</script>
+
+<template>
+    <CSSRuntimeProvider :config="config">
+        <slot />
+    </CSSRuntimeProvider>
+</template>
+```
+
+Use `virtual:master-css-config` when the active integration should load the default configured `master.css` file.
+
+### Provider props
+```ts
+interface CSSRuntimeProviderProps {
+    config?: Config
+    root?: Document | ShadowRoot | null
+}
+```
+
+`root` defaults to `document`. Pass a `ShadowRoot` when Vue renders into a shadow tree and the runtime should observe only that tree.
+
+### `useCSSRuntime()`
+Access the runtime ref provided by `CSSRuntimeProvider`.
+
+```vue
+<script setup lang="ts">
+import { useCSSRuntime } from '@master/css.vue'
+
+const cssRuntime = useCSSRuntime()
+</script>
+```
+
+The returned value is a `ShallowRef<CSSRuntime | undefined> | undefined`. It is `undefined` outside the provider, and its `.value` is set after the provider mounts.
+
+### `CSS_RUNTIME_INJECTION_KEY`
+Vue injection key used by the provider and `useCSSRuntime()`.
+
+```ts
+import { CSS_RUNTIME_INJECTION_KEY } from '@master/css.vue'
+```

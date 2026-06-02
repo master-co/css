@@ -3,15 +3,16 @@ import CriticalCSSBenchmark from '../introduction/components/CriticalCSSBenchmar
 ## Overview [sr-only]
 <CriticalCSSBenchmark />
 
-Master CSS uses integrations like Vite to further break down the rendering modes, allowing you to start the project with zero configuration.
+Master CSS integrations choose how generated rules reach the browser. The same `master.css` config graph can be used by runtime rendering, static extraction, server rendering, and progressive hydration.
 
 | Mode                      | Description                                                                                                                                           |
 |---------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `'runtime'`               | Detects the application's entry file, automatically injects the initialization of `CSSRuntime`, and imports the `config` code.                                      |
-| `'extract'`               | Scans source files, supports JavaScript or CSS imports of the generated virtual stylesheet, and generates CSS from the config graph rooted at `master.css`.          |
-| `'pre-render'`            | Renders all `*.html` dependencies and injects CSS internally. This mode may be integrated with other SSR capabilities.                                              |
-| `'progressive'`           | Combines `runtime` and `pre-render` modes for first-render CSS plus client-side updates.                                                                            |
+| `'runtime'`               | Starts `CSSRuntime` in the browser, observes connected elements, and generates rules as class names appear. Vite can inject the runtime and default config module automatically. |
+| `'extract'`               | Scans source files, replaces `@import '@master/css'` in managed CSS entries, shakes native CSS, and generates CSS from the config graph rooted at `master.css`. |
+| `'pre-render'`            | Renders HTML output and injects the critical CSS required by the rendered class names. This mode is usually owned by SSR/SSG integrations. |
+| `'progressive'`           | Combines pre-rendered first-page CSS with client-side runtime hydration for classes that appear after the initial HTML. |
 
+Every mode uses the same cascade layer model. The default `@master/css/base.css` stylesheet declares `@layer base, theme, preset, main, general;`, while generated rules are emitted into layer blocks without redeclaring the global order.
 
 ---
 
@@ -23,7 +24,7 @@ Master CSS Runtime relies on the lifecycle of individual elements. Only the Mast
 </figure>
 The runtime engine uses the standard [Web APIs - Mutation Observer](https://developer.mozilla.org/zh-TW/docs/Web/API/MutationObserver) to observe the DOM changes in class names at runtime and generate/remove its corresponding CSS rules on the fly.
 
-It packaged as a JavaScript module [`@master/css-runtime`](/reference/runtime), so you can easily import and activate it in the browser.
+It is packaged as [`@master/css-runtime`](/reference/runtime), so it can be imported by integrations or initialized directly in the browser.
 ```html
 <!DOCTYPE html>
 <html lang="en">
@@ -145,6 +146,15 @@ const sheet = document.querySelector('style[id="master"]').sheet
 console.log(sheet.cssRules)
 ```
 
+When runtime code needs project tokens, modes, or component definitions, load the compiled config object from the integration. `virtual:master-css-config` resolves the default `master.css`; `./master.css?master-css-config` compiles a specific CSS config file.
+
+```js
+import { initCSSRuntime } from '@master/css-runtime'
+import config from 'virtual:master-css-config'
+
+initCSSRuntime(config)
+```
+
 ---
 
 ## Progressive Rendering
@@ -220,6 +230,8 @@ Static extraction is a zero-runtime rendering mode where the build scans source 
 
 The extractor does not observe the DOM and does not execute application code. Its input is source text, CSS entries, extraction options, and the compiled [configuration](/guide/configuration). Its output is a CSS asset that the browser loads like any other stylesheet.
 
+The CSS entry point is explicit: import `@master/css` from the stylesheet that should receive generated Master CSS. In extract mode, integrations replace that import with generated CSS and treat the same stylesheet as a native CSS shaking root.
+
 <StepSection>
     <Step>
         #### <StepNum />Load the extraction context
@@ -281,7 +293,7 @@ In extract mode, import the generated stylesheet from the stylesheet your framew
 @import '@master/css';
 ```
 
-Use one `@import '@master/css'` entry for the generated stylesheet. That import is also the insertion point for generated Master CSS.
+Use one `@import '@master/css'` entry for each generated stylesheet root. That import is also the insertion point for generated Master CSS, default base styles, theme variables, and utilities required by detected classes.
 
 ### Native CSS entries
 Regular CSS outside `@master` remains native CSS. When a stylesheet imports `@master/css`, integrations treat that stylesheet as a shake root by default and prune class selectors against detected source classes.

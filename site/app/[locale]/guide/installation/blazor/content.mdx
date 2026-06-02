@@ -84,15 +84,14 @@
     <Step $row>
         <StepL>
             ### <StepNum />Set up CSS runtime engine
-            Create a new file `npm_packages/src/index.js` and import the `master.css` config to enable the runtime engine.
+            Create a new file `npm_packages/src/index.js` and initialize the runtime engine. This manual setup uses the default runtime config; use an official build integration when application code needs to import the compiled `master.css` config object.
         </StepL>
         <StepR>
             ```js name=npm_packages/src/index.js
             …
             import { initCSSRuntime } from '@master/css-runtime'; // [!code highlight]
-            import config from 'master.css'; // [!code highlight]
 
-            initCSSRuntime(config) // [!code highlight]
+            initCSSRuntime() // [!code highlight]
             ```
         </StepR>
     </Step>

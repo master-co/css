@@ -103,7 +103,7 @@ Shiki uses the static grammar data from this package. It does not load project c
 Use the language service Shiki transformer when you need configuration-aware semantic token classes in Shiki output:
 ```ts
 import { transformerMasterCSSSemanticTokens } from '@master/css-language-service/shiki'
-import config from './master.css'
+import config from './master.css?master-css-config'
 
 highlighter.codeToHtml(html, {
     lang: 'html',

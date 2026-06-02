@@ -69,6 +69,16 @@ Add `@master/css.next/client` to a project environment file when TypeScript impo
 /// <reference types="@master/css.next/client" />
 ```
 
+### Config imports
+The integration exposes two config module forms:
+
+```ts
+import config from 'virtual:master-css-config'
+import explicitConfig from './master.css?master-css-config'
+```
+
+Use the virtual module for the configured default `master.css` file. Use the query form when a specific CSS config file should be compiled. Both are backed by [`@master/css-configer`](/reference/configer).
+
 ---
 
 ## API Reference

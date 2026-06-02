@@ -78,7 +78,7 @@ Extractor options can also be declared in CSS. When these directives are loaded 
 @master source force 'src/generated.tsx';
 
 @master class 'dialog-open bg:primary@dark';
-@master class exclude 'legacy-*';
+@master class exclude 'debug-*';
 ```
 
 `@master source` maps to `options.include`, `@master source exclude` maps to `options.exclude`, `@master source force` maps to `options.sources`, `@master class` maps to `options.includeClasses`, and `@master class exclude` maps to `options.excludeClasses`.

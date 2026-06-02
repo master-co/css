@@ -30,6 +30,16 @@ In extract mode, import the generated stylesheet from a source stylesheet.
 
 Source stylesheets that import `@master/css` are treated as native CSS shaking roots by default. Ordinary CSS outside `@master` is pruned against detected classes, and the import inserts generated Master CSS. Add `@master no-shake;` when native CSS must be preserved. If the same stylesheet contains `@master {}` config, import it from `master.css` so the config graph can read those definitions.
 
+### Config imports
+The plugin exposes two config module forms:
+
+```ts
+import config from 'virtual:master-css-config'
+import explicitConfig from './master.css?master-css-config'
+```
+
+Use the virtual module for the plugin's configured default `master.css` file. Use the query form when a specific CSS config file should be compiled. Both are backed by [`@master/css-configer`](/reference/configer).
+
 ---
 
 ## API Reference

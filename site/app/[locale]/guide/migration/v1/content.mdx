@@ -8,7 +8,7 @@ The Master CSS Runtime has been separated from the `@master/css` package and is 
 ```js
 import { init } from '@master/css'; /* [!code --] */
 import { initCSSRuntime } from '@master/css-runtime' /* [!code ++] */
-import config from './master.css' /* [!code ++] */
+import config from './master.css?master-css-config' /* [!code ++] */
 
 init() /* [!code --] */
 initCSSRuntime(config) /* [!code ++] */
@@ -77,7 +77,7 @@ In v2, you can apply the [default](/guide/configuration#animations) out of the b
 <!-- @MARK @ping|1s|infinite -->
 <div class="@ping|1s|infinite"></div>
 ```
-We built in commonly used, and the `@master/keyframes.css` package is deprecated.
+Animation presets are built into the current config, so remove separate `@master/keyframes.css` imports.
 ```css name=main.css
 @import '@master/keyframes.css'; /* [!code --] */
 ```

@@ -1,0 +1,103 @@
+## Installation [sr-only]
+```bash action=install
+@master/css-configer@rc
+```
+
+`@master/css-configer` resolves, loads, and serializes Master CSS config files for build tools, language tools, and server integrations. It is the shared config boundary used by packages such as Vite, Next.js, Webpack, the extractor, and language tooling.
+
+The package can load CSS-first config from `master.css`, script config from JavaScript or TypeScript files, and imported config dependencies. CSS config files are compiled through `@master/css-compiler` and returned as JavaScript config objects.
+
+---
+
+## Explore config
+Use `exploreConfig()` to find and load a config file from a working directory. The default name is `master.css`.
+
+```ts
+import exploreConfig from '@master/css-configer/explore'
+
+const result = await exploreConfig({
+    cwd: process.cwd(),
+    name: 'master.css'
+})
+
+const config = result?.config
+const dependencies = result?.dependencies
+```
+
+Use the sync entry when the host integration cannot be async.
+
+```ts
+import exploreConfigSync from '@master/css-configer/explore-sync'
+
+const result = exploreConfigSync({ cwd: process.cwd() })
+```
+
+---
+
+## Load a known config
+Use `loadConfig()` when the config path is already known.
+
+```ts
+import { loadConfig, loadConfigModule } from '@master/css-configer/load'
+
+const result = await loadConfig('/project/master.css')
+const moduleResult = await loadConfigModule('/project/master.css')
+```
+
+`loadConfig()` returns the config object and dependency list. `loadConfigModule()` returns JavaScript module code, which is useful for virtual modules and loader output.
+
+```ts
+import { loadConfigSync, loadConfigModuleSync } from '@master/css-configer/load-sync'
+
+const result = loadConfigSync('/project/master.css')
+const moduleResult = loadConfigModuleSync('/project/master.css')
+```
+
+---
+
+## Resolve config paths
+Use the path utilities when an integration accepts a config name or path.
+
+```ts
+import { resolveConfigPath, warnMissingConfig } from '@master/css-configer/path'
+
+const resolved = resolveConfigPath({
+    name: 'master.css',
+    cwd: process.cwd()
+})
+
+if (!resolved) {
+    warnMissingConfig({
+        integration: '@master/css.vite',
+        name: 'master.css',
+        cwd: process.cwd()
+    })
+}
+```
+
+The resolver reports the config path and extension so integrations can decide whether to compile CSS config or import script config directly.
+
+---
+
+## Config modules
+The module utilities define the config import contract used by official integrations.
+
+```ts
+import {
+    MASTER_CSS_CONFIG_QUERY,
+    VIRTUAL_CONFIG_ID,
+    toConfigModule,
+    toVirtualDefaultConfigModulePath,
+    toVirtualCSSConfigModulePath,
+} from '@master/css-configer/module'
+```
+
+| API | Purpose |
+| --- | --- |
+| `VIRTUAL_CONFIG_ID` | The default config module id, `virtual:master-css-config`. |
+| `MASTER_CSS_CONFIG_QUERY` | The query suffix, `?master-css-config`, used to compile a specific CSS config file. |
+| `toConfigModule(config)` | Serializes a config object into an ESM default export. |
+| `toVirtualDefaultConfigModulePath(context)` | Creates the virtual path for the default config module. |
+| `toVirtualCSSConfigModulePath(context, file)` | Creates a virtual path for a specific queried CSS config file. |
+
+Use `virtual:master-css-config` when application code should receive the integration's default config. Use `./master.css?master-css-config` when the code should compile one explicit CSS config file through the active integration.

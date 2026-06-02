@@ -5,7 +5,7 @@
 To import and initialize the runtime engine in the entry file, such as `main.js`:
 ```js name=main.js
 import { initCSSRuntime } from '@master/css-runtime'
-import config from './master.css'
+import config from './master.css?master-css-config'
 
 initCSSRuntime(config)
 ```
@@ -20,10 +20,10 @@ import CSSRuntime from '@master/css-runtime'
 
 const cssRuntime = new CSSRuntime(document, config)
 ```
-`CSSRuntime` uses the provided config directly. Use `initCSSRuntime(config)` when the runtime should extend the default config with a project config.
+`CSSRuntime` uses the provided config directly. Use `initCSSRuntime(config)` when the runtime should extend the default config with a project config and reuse an existing runtime for the same root.
 
 ### `CSSRuntime.instances`
-All objects instantiated via `js new WeakMap()`.
+Runtime instances keyed by `Document` or `ShadowRoot`.
 <DocProp defaultValue="[]" types={['WeakMap<Document | ShadowRoot, CSSRuntime>']} />
 
 ### `cssRuntime.root`
@@ -51,10 +51,7 @@ Observe the `class` attribute changes of `js this.root` and all descendant eleme
 ### `cssRuntime.disconnect()`
 Cancel the previous `.observe()` of `js this.root`.
 <DocFn>
-    {[
-        { name: 'options?', type: 'MutationObserverInit', defaultValue: '{ subtree: true, childList: true }' },
-        { name: 'return', type: 'this' },
-    ]}
+    {[ { name: 'return', type: 'this | undefined' } ]}
 </DocFn>
 
 ### `cssRuntime.refresh()`
@@ -73,7 +70,7 @@ Clear all rules and styles and reset to initial.
 </DocFn>
 
 ### `cssRuntime.destroy()`
-Destroy and remove the current instance from `globalThis.cssRuntimes`.
+Destroy and remove the current instance from `CSSRuntime.instances`.
 <DocFn>
     {[ { name: 'return', type: 'this' } ]}
 </DocFn>
@@ -90,7 +87,9 @@ Initializes the Master CSS runtime rendering engine.
 <DocFn>
     {[
         { name: 'config?', type: 'Config', defaultValue: 'undefined' },
-        { name: 'return', type: 'MasterCSS' },
+        { name: 'root?', type: 'Document | ShadowRoot', defaultValue: 'document' },
+        { name: 'autoObserve?', type: 'boolean', defaultValue: 'true' },
+        { name: 'return', type: 'CSSRuntime' },
     ]}
 </DocFn>
 ```ts
@@ -100,7 +99,25 @@ const css = initCSSRuntime()
 ```
 Equivalent to:
 ```ts
-import CSSRuntime from '@master/css-runtime'
+import CSSRuntime, { resolveRuntimeConfig } from '@master/css-runtime'
 
-const cssRuntime = new CSSRuntime().observe()
+const cssRuntime = new CSSRuntime(document, resolveRuntimeConfig()).observe()
 ```
+
+If a runtime already exists for the same root, `initCSSRuntime()` returns that instance instead of creating a second observer.
+
+### `resolveRuntimeConfig()`
+Merges the default Master CSS config with a project config before runtime refresh or initialization.
+<DocFn>
+    {[
+        { name: 'config?', type: 'Config', defaultValue: 'undefined' },
+        { name: 'return', type: 'Config' },
+    ]}
+</DocFn>
+```ts
+import { resolveRuntimeConfig } from '@master/css-runtime'
+
+cssRuntime.refresh(resolveRuntimeConfig(config))
+```
+
+React, Vue, and Svelte runtime providers use this helper when their `config` prop changes, so provider refreshes keep built-in utilities and project config together.

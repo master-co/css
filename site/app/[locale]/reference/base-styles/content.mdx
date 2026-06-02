@@ -4,7 +4,13 @@ Import the default stylesheet once in your global CSS file.
 @import '@master/css';
 ```
 
-Base styles are the normalization rules included by the default Master CSS stylesheet. They are emitted in the `base` cascade layer, so component styles and utilities can override them predictably.
+If a page only needs the base layer declaration and normalization rules, import the split entry directly.
+
+```css
+@import '@master/css/base.css';
+```
+
+Base styles are the normalization rules included by the default Master CSS stylesheet and the direct `@master/css/base.css` entry. They are emitted in the `base` cascade layer, so component styles and utilities can override them predictably.
 
 ```css
 @layer base {
@@ -114,7 +120,7 @@ a, button {
 }
 ```
 
-Allows taps on links and buttons to respond without legacy double-tap delay behavior.
+Allows taps on links and buttons to respond without the old double-tap delay behavior.
 
 ### Selection on button-like elements
 ```css

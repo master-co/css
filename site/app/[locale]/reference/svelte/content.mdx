@@ -1,0 +1,82 @@
+## Installation [sr-only]
+```bash action=install
+@master/css.svelte@rc
+```
+
+`@master/css.svelte` provides the SvelteKit integration, server hook, and runtime provider for Svelte apps. The package combines static or progressive CSS generation with [`@master/css-runtime`](/reference/runtime) hydration.
+
+Start with the [Svelte installation guide](/guide/installation/svelte) for the full project setup.
+
+---
+
+## API Reference
+### Vite plugin
+Use the Svelte Vite entry with SvelteKit.
+
+```ts name=vite.config.ts
+import { sveltekit } from '@sveltejs/kit/vite'
+import { defineConfig } from 'vite'
+import masterCSS from '@master/css.svelte/vite'
+
+export default defineConfig({
+    plugins: [
+        sveltekit(),
+        masterCSS()
+    ]
+})
+```
+
+### Server hook
+Export the server handle to inject streamed CSS before `</head>`.
+
+```ts name=src/hooks.server.ts
+export { default as handle } from '@master/css.svelte/hooks.server'
+```
+
+If the project already has a server `handle`, compose it with SvelteKit's `sequence()`.
+
+### `<CSSRuntimeProvider>`
+The provider initializes a `CSSRuntime` for `document` by default, refreshes it when `config` changes, recreates it when `root` changes, and destroys it on unmount.
+
+```svelte
+<script lang="ts">
+    import CSSRuntimeProvider from '@master/css.svelte'
+    import config from '../master.css?master-css-config'
+</script>
+
+<CSSRuntimeProvider {config}>
+    <slot />
+</CSSRuntimeProvider>
+```
+
+Use `virtual:master-css-config` when the active integration should load the default configured `master.css` file.
+
+### Provider props
+```ts
+interface CSSRuntimeProviderProps {
+    config?: Config
+    root?: Document | ShadowRoot | null
+}
+```
+
+`root` defaults to `document`. Pass a `ShadowRoot` when Svelte renders into a shadow tree and the runtime should observe only that tree.
+
+### `getCSSRuntime()`
+Access the runtime store provided by `CSSRuntimeProvider`.
+
+```svelte
+<script lang="ts">
+    import { getCSSRuntime } from '@master/css.svelte'
+
+    const cssRuntime = getCSSRuntime()
+</script>
+```
+
+The returned value is a `Writable<CSSRuntime | undefined>`. It is available to descendants of `CSSRuntimeProvider`.
+
+### `CSS_RUNTIME_CONTEXT_KEY`
+Svelte context key used by the provider and `getCSSRuntime()`.
+
+```ts
+import { CSS_RUNTIME_CONTEXT_KEY } from '@master/css.svelte'
+```
