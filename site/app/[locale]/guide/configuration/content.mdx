@@ -454,9 +454,7 @@ const merged = extendConfig(config, {
     scope: '#app'
 })
 
-const engine = new MasterCSS(config, {
-    scope: '#app'
-})
+const engine = new MasterCSS(merged)
 ```
 
 Use programmatic config for tests, library presets, integration glue, and executable extension points. Use `master.css` for app-level tokens, general utilities, main styles, selectors, at tokens, animations, and structural CSS config.

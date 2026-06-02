@@ -9,20 +9,19 @@
 ### `MasterCSS`
 The main body of this package is the class `MasterCSS`, which encapsulates the core business of Master CSS.
 ```js
-import { MasterCSS, config, createCSS } from '@master/css'
+import { MasterCSS, createCSS } from '@master/css'
 
-const css = createCSS(customConfig)
-const customCSS = new MasterCSS(config, customConfig)
+const css = createCSS(config)
+const customCSS = new MasterCSS(config)
 ```
 <DocFn>
     {[
-        { name: 'baseConfig', type: 'Config?', defaultValue: 'undefined' },
-        { name: 'customConfig', type: 'Config?', defaultValue: 'undefined' },
+        { name: 'config?', type: 'Config', defaultValue: 'undefined' },
     ]}
 </DocFn>
 
 ### `css.config`
-The `css.config` property is the resolved config used by the engine. `new MasterCSS(baseConfig, customConfig)` merges both configs; `createCSS(customConfig)` passes the default config as the base config.
+The `css.config` property is the resolved config used by the engine. `new MasterCSS(config)` uses the provided config directly; `createCSS(config)` extends the default config with the provided config.
 <DocProp types={['Config']} />
 
 ### `css.text`
@@ -57,7 +56,7 @@ css.delete('text:center', ...)
 Refresh the Master CSS with the configuration.
 <DocFn>
     {[
-        { name: 'config?', type: 'Config', defaultValue: 'this.customConfig' },
+        { name: 'config?', type: 'Config', defaultValue: 'this.config' },
         { name: 'return', type: 'this' },
     ]}
 </DocFn>

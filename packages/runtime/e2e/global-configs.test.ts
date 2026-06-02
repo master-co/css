@@ -23,5 +23,5 @@ test('merges global config entries', async ({ page }) => {
     expect(await page.evaluate(() => globalThis.cssRuntime.variables.get('primary'))).toBeDefined()
     expect(await page.evaluate(() => globalThis.cssRuntime.variables.get('secondary'))).toBeDefined()
     expect(await page.evaluate(() => globalThis.cssRuntime.variables.get('accent'))).toBeDefined()
-    expect(await page.evaluate(() => 'extends' in globalThis.cssRuntime.customConfig)).toBe(false)
+    expect(await page.evaluate(() => globalThis.cssRuntime.config.__extended)).toBe(true)
 })

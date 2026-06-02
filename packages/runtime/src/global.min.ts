@@ -1,15 +1,14 @@
 import initCSSRuntime from './init'
-import { extendConfig } from '@master/css/utils'
 
-const customConfigs = window.masterCSSConfigs
-const customConfig = window.masterCSSConfig
+const windowConfigs = window.masterCSSConfigs
+const windowConfig = window.masterCSSConfig
 const configs = []
 
-if (customConfigs) configs.push(...customConfigs)
-if (customConfig) configs.push(customConfig)
+if (windowConfigs) configs.push(...windowConfigs)
+if (windowConfig) configs.push(windowConfig)
 
 if (configs.length) {
-    initCSSRuntime(extendConfig(...configs))
+    initCSSRuntime(configs)
 } else {
     initCSSRuntime()
 }

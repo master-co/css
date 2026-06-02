@@ -26,8 +26,7 @@ const variables = [
 const modes = ['light', 'dark']
 
 test.beforeEach(async ({ page }) => {
-    await init(page, '', { modeTrigger: 'class' })
-    await page.evaluate(({ variables, modes }) => globalThis.cssRuntime.refresh({ variables, modes, modeTrigger: 'class' }), { variables, modes })
+    await init(page, '', { variables, modes, modeTrigger: 'class' })
 })
 
 test('expects the variable output', async ({ page }) => {

@@ -1,7 +1,8 @@
 import type { Config } from 'shared/css-config'
-import config from './config'
+import defaultConfig from './config'
 import MasterCSS from './core'
+import extendConfig from './utils/extend-config'
 
-export default function createCSS(customConfig?: Config) {
-    return new MasterCSS(config, customConfig)
+export default function createCSS(config?: Config) {
+    return new MasterCSS(extendConfig(defaultConfig, config))
 }

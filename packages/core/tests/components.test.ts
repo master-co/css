@@ -50,8 +50,8 @@ describe('extendConfig', () => {
     })
 })
 
-describe('MasterCSS config arguments', () => {
-    const css = new MasterCSS(
+describe('MasterCSS config', () => {
+    const css = new MasterCSS(extendConfig(
         {
             utilities: [
                 mainStyle('a', [{ selector: '&', declarations: { order: '1' } }]),
@@ -64,9 +64,9 @@ describe('MasterCSS config arguments', () => {
                 mainStyle('c', [{ selector: '&', declarations: { order: '3' } }])
             ]
         }
-    )
+    ))
 
-    test('merges base and custom config constructor arguments', () => {
+    test('uses a single extended config constructor argument', () => {
         css.add('a', 'b', 'c')
         expect(css.mainLayer.text).toContain('.a{order:1}')
         expect(css.mainLayer.text).toContain('.b{order:22}')

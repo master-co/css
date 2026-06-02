@@ -1,19 +1,19 @@
 import { expect, test } from 'vitest'
 import { Config, MasterCSS } from '../src'
 import defaultConfig from '../src/config'
-import { sortReadableClasses } from '../src/utils'
+import { extendConfig, sortReadableClasses } from '../src/utils'
 
 export default class CSSTester {
     public css: MasterCSS
 
     constructor(
         public config?: Config,
-        public baseConfig: Config | null = defaultConfig,
+        public defaultedConfig: Config | null = defaultConfig,
     ) {
-        if (baseConfig === null) {
+        if (defaultedConfig === null) {
             this.css = new MasterCSS(config)
         } else {
-            this.css = new MasterCSS(baseConfig || defaultConfig, config)
+            this.css = new MasterCSS(extendConfig(defaultedConfig || defaultConfig, config))
         }
     }
 

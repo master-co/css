@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-declaration-merging */
 import { Utility } from './utility'
-import extendConfig, { ExtendedConfig } from './utils/extend-config'
+import { type ExtendedConfig } from './utils/extend-config'
 import { type PropertiesHyphen } from 'csstype'
 import type { Rule } from './rule'
 import UtilityType from 'shared/utility-type'
@@ -38,17 +38,9 @@ export default class MasterCSS {
     readonly modes: string[] = []
     readonly atRules = new Map<string, AtRule>()
     readonly animations = new Map<string, AnimationDefinitions>()
-    baseConfig?: Config
-    customConfig?: Config
 
-    constructor(config?: Config, customConfig?: Config) {
-        if (customConfig === undefined) {
-            this.customConfig = config
-        } else {
-            this.baseConfig = config
-            this.customConfig = customConfig
-        }
-        this.resolve()
+    constructor(config?: Config) {
+        this.resolve(config)
     }
 
     get text() {
@@ -81,16 +73,9 @@ export default class MasterCSS {
         return [this.baseLayer, this.presetLayer, this.mainLayer, this.generalLayer]
     }
 
-    resolve(customConfig?: Config) {
-        if (customConfig) {
-            this.customConfig = customConfig
-        } else {
-            customConfig = this.customConfig
-        }
+    resolve(config: Config = this.config) {
         // @ts-expect-error read-only
-        this.config = this.baseConfig
-            ? extendConfig(this.baseConfig, customConfig)
-            : extendConfig(customConfig)
+        this.config = config || {}
         this.resolveVariables()
         this.resolveAnimations()
         this.resolveSelectors()
@@ -587,9 +572,9 @@ export default class MasterCSS {
     /**
      * 根據蒐集到的所有 DOM class 重新 create
      */
-    refresh(customConfig?: Config) {
+    refresh(config: Config = this.config) {
         this.reset()
-        this.resolve(customConfig)
+        this.resolve(config)
         return this
     }
 

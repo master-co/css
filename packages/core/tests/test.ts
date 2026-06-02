@@ -13,9 +13,9 @@ export const expectLayers = (
         preset?: string
     },
     className: string | string[],
-    customConfig?: Config
+    config?: Config
 ) => {
-    const css = createCSS(customConfig).add(...(Array.isArray(className) ? className : [className]))
+    const css = createCSS(config).add(...(Array.isArray(className) ? className : [className]))
     if (layers.theme) expect(css.themeLayer.text).toContain(`@layer theme{${layers.theme ?? ''}}`)
     if (layers.main || layers.components) expect(css.mainLayer.text).toContain(`@layer main{${layers.main ?? layers.components ?? ''}}`)
     if (layers.preset) expect(css.presetLayer.text).toContain(`@layer preset{${layers.preset ?? ''}}`)

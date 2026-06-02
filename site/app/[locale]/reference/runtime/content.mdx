@@ -18,8 +18,9 @@ The `Runtime` extends the [`MasterCSS`](/reference/core#mastercss) and only work
 ```ts
 import CSSRuntime from '@master/css-runtime'
 
-const cssRuntime = new CSSRuntime(config)
+const cssRuntime = new CSSRuntime(document, config)
 ```
+`CSSRuntime` uses the provided config directly. Use `initCSSRuntime(config)` when the runtime should extend the default config with a project config.
 
 ### `CSSRuntime.instances`
 All objects instantiated via `js new WeakMap()`.
@@ -57,10 +58,10 @@ Cancel the previous `.observe()` of `js this.root`.
 </DocFn>
 
 ### `cssRuntime.refresh()`
-Refresh the Master Runtime CSS with the configuration.
+Refresh the Master Runtime CSS with the resolved configuration.
 <DocFn>
     {[
-        { name: 'config?', type: 'Config', defaultValue: 'this.customConfig' },
+        { name: 'config?', type: 'Config', defaultValue: 'this.config' },
         { name: 'return', type: 'this' },
     ]}
 </DocFn>
@@ -88,7 +89,7 @@ Record the registered root `document` Runtime CSS instance; the field will be re
 Initializes the Master CSS runtime rendering engine.
 <DocFn>
     {[
-        { name: 'config?', type: 'Config', defaultValue: 'undefined' },
+        { name: 'config?', type: 'Config | Config[]', defaultValue: 'undefined' },
         { name: 'return', type: 'MasterCSS' },
     ]}
 </DocFn>

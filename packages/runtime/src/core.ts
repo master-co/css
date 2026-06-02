@@ -29,9 +29,9 @@ export default class CSSRuntime extends MasterCSS {
 
     constructor(
         public root: Document | ShadowRoot = document,
-        public customConfig: Config = {}
+        config: Config = defaultConfig
     ) {
-        super(defaultConfig, customConfig)
+        super(config)
         // Do not use instanceof here, because it will not work
         const rootConstructorName = root?.constructor.name
         if (rootConstructorName === 'HTMLDocument' || rootConstructorName === 'Document') {
@@ -279,7 +279,7 @@ export default class CSSRuntime extends MasterCSS {
         // @ts-ignore
         this.observing = false
         this.reset()
-        this.resolve(this.customConfig)
+        this.resolve()
         this.classCounts.clear()
         this.classTracker.reset()
         if (!this.progressive) {
@@ -290,14 +290,13 @@ export default class CSSRuntime extends MasterCSS {
         return this
     }
 
-    refresh(customConfig = this.customConfig) {
+    refresh(config: Config = this.config) {
         if (!this.observing || !this.style!.sheet) return this
         const cssRules = this.style!.sheet.cssRules
         for (let i = cssRules.length - 1; i >= 0; i--) {
             this.style!.sheet.deleteRule(i)
         }
-        super.refresh(customConfig)
-        this.customConfig = customConfig
+        super.refresh(config)
         /**
          * 拿當前所有的 classNames 按照最新的 colors, config.utilities 匹配並生成新的 style
          * 所以 refresh 過後 rules 可能會變多也可能會變少
@@ -305,7 +304,7 @@ export default class CSSRuntime extends MasterCSS {
         this.classCounts.forEach((_, className) => {
             this.add(className)
         })
-        globalThis.__MASTER_CSS_DEVTOOLS_HOOK__?.emit('runtime:refreshed', { cssRuntime: this, customConfig })
+        globalThis.__MASTER_CSS_DEVTOOLS_HOOK__?.emit('runtime:refreshed', { cssRuntime: this, config })
         return this
     }
 

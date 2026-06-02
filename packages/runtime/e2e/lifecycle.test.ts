@@ -83,7 +83,7 @@ test('refresh clears stale native keyframes', async ({ page }) => {
     )).toEqual(['fade', 'flash'])
 
     await page.evaluate(() => {
-        globalThis.cssRuntime.refresh({})
+        globalThis.cssRuntime.refresh()
     })
     expect(await page.evaluate(() => Array.from(globalThis.cssRuntime.style!.sheet!.cssRules)
         .filter((cssRule) => cssRule.constructor.name === 'CSSKeyframesRule')

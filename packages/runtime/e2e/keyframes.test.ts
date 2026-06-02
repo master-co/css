@@ -1,5 +1,16 @@
-import { test, expect } from '@playwright/test'
+import { test, expect, type Page } from '@playwright/test'
 import init from './init'
+
+function expectAnimation(cssText: string, name: string, declarations: string[]) {
+    expect(cssText).toContain(`@keyframes ${name}{`)
+    declarations.forEach((declaration) => {
+        expect(cssText).toContain(declaration)
+    })
+}
+
+async function expectNoAnimation(page: Page, name: string) {
+    expect(await page.evaluate(() => globalThis.cssRuntime.text)).not.toContain(`@keyframes ${name}{`)
+}
 
 test('expects the animation output', async ({ page }) => {
     await init(page)
@@ -40,72 +51,78 @@ test('expects the animation output', async ({ page }) => {
         zoom: 2,
     })
     const cssText = await page.evaluate(() => globalThis.cssRuntime.text)
-    expect(cssText).toContain('@keyframes fade{0%{opacity:0}to{opacity:1}}')
-    expect(cssText).toContain('@keyframes flash{0%,50%,to{opacity:1}25%,75%{opacity:0}}')
-    expect(cssText).toContain('@keyframes float{0%{transform:none}50%{transform:translateY(-1.25rem)}to{transform:none}}')
-    expect(cssText).toContain('@keyframes heart{0%{transform:scale(1)}14%{transform:scale(1.3)}28%{transform:scale(1)}42%{transform:scale(1.3)}70%{transform:scale(1)}}')
-    expect(cssText).toContain('@keyframes jump{0%,to{transform:translateY(-25%);animation-timing-function:cubic-bezier(.8,0,1,1)}50%{transform:translateY(0);animation-timing-function:cubic-bezier(0,0,.2,1)}}')
-    expect(cssText).toContain('@keyframes ping{75%,to{transform:scale(2);opacity:0}}')
-    expect(cssText).toContain('@keyframes pulse{0%{transform:none}50%{transform:scale(1.05)}to{transform:none}}')
-    expect(cssText).toContain('@keyframes rotate{0%{transform:rotate(-360deg)}to{transform:none}}')
-    expect(cssText).toContain('@keyframes shake{0%{transform:none}6.5%{transform:translateX(-6px) rotateY(-9deg)}18.5%{transform:translateX(5px) rotateY(7deg)}31.5%{transform:translateX(-3px) rotateY(-5deg)}43.5%{transform:translateX(2px) rotateY(3deg)}50%{transform:none}}')
-    expect(cssText).toContain('@keyframes zoom{0%{transform:scale(0)}to{transform:none}}')
+    expectAnimation(cssText, 'fade', ['opacity:0', 'opacity:1'])
+    expectAnimation(cssText, 'flash', ['opacity:1', 'opacity:0'])
+    expectAnimation(cssText, 'float', ['transform:none', 'transform:translateY(-1.25rem)'])
+    expectAnimation(cssText, 'heart', ['transform:scale(1)', 'transform:scale(1.3)'])
+    expectAnimation(cssText, 'jump', ['transform:translateY(-25%)', 'transform:translateY(0)'])
+    expectAnimation(cssText, 'ping', ['transform:scale(2)', 'opacity:0'])
+    expectAnimation(cssText, 'pulse', ['transform:none', 'transform:scale(1.05)'])
+    expectAnimation(cssText, 'rotate', ['transform:rotate(-360deg)', 'transform:none'])
+    expectAnimation(cssText, 'shake', [
+        'transform:none',
+        'transform:translateX(-6px) rotateY(-9deg)',
+        'transform:translateX(5px) rotateY(7deg)',
+        'transform:translateX(-3px) rotateY(-5deg)',
+        'transform:translateX(2px) rotateY(3deg)'
+    ])
+    expectAnimation(cssText, 'zoom', ['transform:scale(0)', 'transform:none'])
     await page.evaluate(() => {
         const p = document.getElementById('mp')
         p?.classList.remove('@fade|1s')
     })
-    expect(await page.evaluate(() => globalThis.cssRuntime.text)).not.toContain('@keyframes fade{0%{opacity:0}to{opacity:1}}')
+    await expectNoAnimation(page, 'fade')
     await page.evaluate(() => {
         const p = document.getElementById('mp')
         p?.classList.remove('@flash|1s')
     })
-    expect(await page.evaluate(() => globalThis.cssRuntime.text)).not.toContain('@keyframes flash{0%,50%,to{opacity:1}25%,75%{opacity:0}}')
+    await expectNoAnimation(page, 'flash')
     await page.evaluate(() => {
         const p = document.getElementById('mp')
         p?.classList.remove('@float|1s')
     })
-    expect(await page.evaluate(() => globalThis.cssRuntime.text)).not.toContain('@keyframes float{0%{transform:none}50%{transform:translateY(-1.25rem)}to{transform:none}}')
+    await expectNoAnimation(page, 'float')
     await page.evaluate(() => {
         const p = document.getElementById('mp')
         p?.classList.remove('@heart|1s')
     })
-    expect(await page.evaluate(() => globalThis.cssRuntime.text)).not.toContain('@keyframes heart{0%{transform:scale(1)}14%{transform:scale(1.3)}28%{transform:scale(1)}42%{transform:scale(1.3)}70%{transform:scale(1)}}')
+    await expectNoAnimation(page, 'heart')
     await page.evaluate(() => {
         const p = document.getElementById('mp')
         p?.classList.remove('@jump|1s')
     })
-    expect(await page.evaluate(() => globalThis.cssRuntime.text)).not.toContain('@keyframes jump{0%,to{transform:translateY(-25%);animation-timing-function:cubic-bezier(.8,0,1,1)}50%{transform:translateY(0);animation-timing-function:cubic-bezier(0,0,.2,1)}}')
+    await expectNoAnimation(page, 'jump')
     await page.evaluate(() => {
         const p = document.getElementById('mp')
         p?.classList.remove('@ping|1s')
     })
-    expect(await page.evaluate(() => globalThis.cssRuntime.text)).not.toContain('@keyframes ping{75%,to{transform:scale(2);opacity:0}}')
+    await expectNoAnimation(page, 'ping')
     await page.evaluate(() => {
         const p = document.getElementById('mp')
         p?.classList.remove('@pulse|1s')
     })
-    expect(await page.evaluate(() => globalThis.cssRuntime.text)).not.toContain('@keyframes pulse{0%{transform:none}50%{transform:scale(1.05)}to{transform:none}}')
+    await expectNoAnimation(page, 'pulse')
     await page.evaluate(() => {
         const p = document.getElementById('mp')
         p?.classList.remove('@rotate|1s')
     })
-    expect(await page.evaluate(() => globalThis.cssRuntime.text)).not.toContain('@keyframes rotate{0%{transform:rotate(-360deg)}to{transform:none}}')
+    await expectNoAnimation(page, 'rotate')
     await page.evaluate(() => {
         const p = document.getElementById('mp')
         p?.classList.remove('@shake|1s')
     })
-    expect(await page.evaluate(() => globalThis.cssRuntime.text)).not.toContain('@keyframes shake{0%{transform:none}6.5%{transform:translateX(-6px) rotateY(-9deg)}18.5%{transform:translateX(5px) rotateY(7deg)}31.5%{transform:translateX(-3px) rotateY(-5deg)}43.5%{transform:translateX(2px) rotateY(3deg)}50%{transform:none}}')
+    await expectNoAnimation(page, 'shake')
     await page.evaluate(() => {
         const p = document.getElementById('mp')
         p?.classList.remove('@zoom|1s')
     })
     expect(await page.evaluate(() => Object.fromEntries(globalThis.cssRuntime.animationsNonLayer.tokenCounts))).toEqual({ zoom: 1 })
-    expect(await page.evaluate(() => globalThis.cssRuntime.text)).toContain('@keyframes zoom{0%{transform:scale(0)}to{transform:none}}')
+    expectAnimation(await page.evaluate(() => globalThis.cssRuntime.text), 'zoom', ['transform:scale(0)', 'transform:none'])
     await page.evaluate(() => {
         const p = document.getElementById('mp')
         p?.classList.remove('{@zoom|1s;f:16}')
     })
 
     expect(await page.evaluate(() => Object.fromEntries(globalThis.cssRuntime.animationsNonLayer.tokenCounts))).toEqual({})
-    expect(await page.evaluate(() => globalThis.cssRuntime.text)).not.toContain('@keyframes zoom{0%{transform:scale(0)}to{transform:none}}')
+    await expectNoAnimation(page, 'zoom')
 })

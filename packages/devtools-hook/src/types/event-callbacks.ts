@@ -6,7 +6,7 @@ export default interface EventCallbacks {
     'runtime:hydrated': (context: { cssRuntime: CSSRuntime, result: HydrateResult }) => void
     'runtime:observed': (context: { cssRuntime: CSSRuntime }) => void
     'runtime:mutated': (context: { cssRuntime: CSSRuntime, classCounts: Map<string, number>, records: MutationRecord[] }) => void
-    'runtime:refreshed': (context: { cssRuntime: CSSRuntime, customConfig: Config }) => void
+    'runtime:refreshed': (context: { cssRuntime: CSSRuntime, config: Config }) => void
     'runtime:disconnected': (context: { cssRuntime: CSSRuntime }) => void
     'runtime:destroyed': (context: { cssRuntime: CSSRuntime }) => void
 }
