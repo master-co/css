@@ -7,7 +7,7 @@
         "dev": "pnpm build:next-adapter && pnpm prepare-app && next dev --turbo",
         "build": "pnpm prepare-app && pnpm build:llms && pnpm build:repo && pnpm build:next",
         "build:repo": "cd ../ && pnpm build && cd site",
-        "build:next-adapter": "cd ../ && pnpm --filter @master/css.next build && cd site",
+        "build:next-adapter": "cd ../ && pnpm --filter @master/css.next... build && cd site",
         "build:next": "cross-env NODE_OPTIONS=--max-old-space-size=16384 next build --turbo",
         "build:llms": "tsx scripts/generate-llms-txt.ts",
         "test:llms": "tsx --test scripts/generate-llms-txt.test.ts",

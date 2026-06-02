@@ -1,3 +1,4 @@
+@import '../packages/core/theme.css';
 @import '../internal/master.css';
 @import './styles/base.css';
 @import './styles/btn.css';
