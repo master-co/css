@@ -49,23 +49,23 @@
     <Step $row>
         <StepL>
             ### <StepNum />Create a Webpack config file
-            Create and configure the `webpack.config.js` file. The extractor scans `src/index.html` and your JavaScript modules, then writes generated CSS into the stylesheet that imports `@master/css`.
+            Create and configure the `webpack.config.mjs` file. The extractor scans `src/index.html` and your JavaScript modules, then writes generated CSS into the stylesheet that imports `@master/css`.
         </StepL>
         <StepR>
-            ```js name=webpack.config.js
-            const path = require('path')
-            const HtmlWebpackPlugin = require('html-webpack-plugin')
-            const { MasterCSSPlugin } = require('@master/css.webpack')
+            ```js name=webpack.config.mjs
+            import path from 'node:path'
+            import HtmlWebpackPlugin from 'html-webpack-plugin'
+            import MasterCSSPlugin from '@master/css.webpack'
 
-            module.exports = {
+            export default {
                 entry: './src/index.js',
                 output: {
                     filename: 'bundle.js',
-                    path: path.join(__dirname, 'dist')
+                    path: path.resolve('dist')
                 },
                 plugins: [
                     new HtmlWebpackPlugin({
-                        template: path.join(__dirname, 'src/index.html')
+                        template: path.resolve('src/index.html')
                     }),
                     new MasterCSSPlugin({ sources: ['./src/index.html'] })
                 ],

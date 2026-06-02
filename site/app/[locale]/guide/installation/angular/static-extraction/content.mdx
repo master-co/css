@@ -49,7 +49,7 @@
         </StepL>
         <StepR>
             ```js name=webpack.config.js
-            const { MasterCSSPlugin } = require('@master/css.webpack') // [!code ++]
+            const MasterCSSPlugin = require('@master/css.webpack') // [!code ++]
 
             module.exports = (config) => { // [!code ++]
                 config.plugins.push( // [!code ++]

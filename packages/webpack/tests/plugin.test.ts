@@ -17,7 +17,7 @@
  */
 import { describe, test, expect, vi } from 'vitest'
 import { SyncHook, AsyncSeriesHook } from 'tapable'
-import { MasterCSSPlugin } from '../src'
+import MasterCSSPlugin from '../src'
 import { VIRTUAL_CONFIG_ID, MASTER_CSS_CONFIG_QUERY } from '@master/css-configer/module'
 import { VIRTUAL_CSS_ID } from 'shared/css-virtual-module'
 import path from 'node:path'
@@ -113,6 +113,10 @@ function makePlugin(options: Record<string, unknown> = {}, cwd = process.cwd()) 
 }
 
 describe('MasterCSSPlugin (C1 race fix)', () => {
+    test('exports the plugin as the default export', () => {
+        expect(MasterCSSPlugin.name).toBe('MasterCSSPlugin')
+    })
+
     test('resolves virtual:master-css-config to a JS virtual module', async () => {
         const plugin = new MasterCSSPlugin({
             config: {

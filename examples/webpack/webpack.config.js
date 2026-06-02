@@ -1,6 +1,6 @@
 const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
-const { MasterCSSPlugin } = require('@master/css.webpack')
+const MasterCSSPlugin = require('@master/css.webpack')
 
 module.exports = {
     entry: './src/index.js',

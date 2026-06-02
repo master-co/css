@@ -53,9 +53,9 @@
 </div>
 
 ```js
-const { MasterCSSPlugin } = require('@master/css.webpack')
+import MasterCSSPlugin from '@master/css.webpack'
 
-module.exports = {
+export default {
     plugins: [
         new MasterCSSPlugin()
     ]
