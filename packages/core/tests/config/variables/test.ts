@@ -1,5 +1,5 @@
 import { it, test, expect, describe } from 'vitest'
-import { createCSS } from '../../../src'
+import { createCSS, UtilityType } from '../../../src'
 import config from '../../config'
 import { expectLayers } from '../../test'
 
@@ -58,4 +58,20 @@ test.concurrent('rule variables', () => {
     )
     expect(createCSS({ variables: [{ namespace: 'border', key: 'input', value: '1|solid|test-70' }, { namespace: 'test', key: '70', value: '#000' }] }).create('b:input')?.text).toBe('.b\\:input{border:var(--border-input)}')
     expect(createCSS({ variables: [{ key: 'zero', value: 0 }] }).create('box-shadow:0|0|$(zero)|2|black')?.text).toContain('box-shadow:0rem 0rem calc(var(--zero) / 16 * 1rem) 0.125rem var(--color-black)')
+})
+
+test.concurrent('matches overlapping utility namespaces by longest prefix', () => {
+    const css = createCSS({
+        variables: [{ namespace: 'tone-line', key: 'soft', value: '#000' }],
+        utilities: [{
+            name: 'tone-border-color',
+            key: 'tone-border',
+            type: UtilityType.Native,
+            namespaces: ['tone', 'tone-line'],
+            declarations: ['border-color']
+        }]
+    })
+
+    expect(css.create('tone-border:soft')?.text).toBe('.tone-border\\:soft{border-color:var(--tone-line-soft)}')
+    expect(css.create('tone-border:line-soft')?.text).toBe('.tone-border\\:line-soft{border-color:var(--tone-line-soft)}')
 })

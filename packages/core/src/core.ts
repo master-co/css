@@ -115,6 +115,15 @@ export default class MasterCSS {
 
         const utilitiesEntriesLength = utilitiesEntries.length
         const variablesByNamespace = new Map<string, [string, Variable][]>()
+        const getVariableKeyByNamespace = (variableName: string, namespace: string) => {
+            const negative = variableName.startsWith('-')
+            const positiveName = negative ? variableName.slice(1) : variableName
+            if (positiveName !== namespace && !positiveName.startsWith(namespace + '-')) return
+            const variableKey = positiveName === namespace
+                ? ''
+                : positiveName.slice(namespace.length + 1)
+            return negative ? '-' + variableKey : variableKey
+        }
         const addVariableAliasToNamespace = (namespace: string, variableKey: string, variable: Variable) => {
             const namespaceVariables = variablesByNamespace.get(namespace)
             if (namespaceVariables) {
@@ -124,22 +133,8 @@ export default class MasterCSS {
             }
         }
         const addVariableToNamespace = (namespace: string, variable: Variable) => {
-            let variableKey = variable.name
-            if (variableKey.startsWith('-' + namespace) || variableKey.startsWith(namespace)) {
-                variableKey = variableKey.slice(namespace.length + 1)
-            }
-            addVariableAliasToNamespace(namespace, variableKey, variable)
-
-            if (namespace.startsWith('color-')) {
-                const colorNamespaceKey = namespace.slice('color-'.length)
-                const colorVariableKey = variableKey.startsWith(colorNamespaceKey + '-')
-                    ? variableKey
-                    : colorNamespaceKey + '-' + variableKey
-                if (colorVariableKey !== variableKey) {
-                    addVariableAliasToNamespace(namespace, colorVariableKey, variable)
-                }
-                addVariableAliasToNamespace('color', colorVariableKey, variable)
-            }
+            const variableKey = getVariableKeyByNamespace(variable.name, namespace)
+            if (variableKey !== undefined) addVariableAliasToNamespace(namespace, variableKey, variable)
         }
         for (const variable of this.variables.values()) {
             const namespaces = new Set<string>()
@@ -198,13 +193,26 @@ export default class MasterCSS {
                 const keys: string[] = []
                 let key = originalKey
 
-                // Helper: resolve variable namespaces
+                const addVariable = (variableKey: string, variable: Variable) => {
+                    if (definedUtility.variables?.has(variableKey)) return
+                    if (definedUtility.variables) {
+                        definedUtility.variables.set(variableKey, variable)
+                    } else {
+                        definedUtility.variables = new Map([[variableKey, variable]])
+                    }
+                }
                 const addNamespace = (namespace: string) => {
                     for (const [variableKey, variable] of variablesByNamespace.get(namespace) || []) {
-                        if (definedUtility.variables) {
-                            definedUtility.variables.set(variableKey, variable)
-                        } else {
-                            definedUtility.variables = new Map([[variableKey, variable]])
+                        addVariable(variableKey, variable)
+                    }
+                }
+                const addMatchedNamespaces = (namespaces: string[]) => {
+                    const sortedNamespaces = [...new Set(namespaces)]
+                        .sort((a, b) => b.length - a.length)
+                    for (const variable of this.variables.values()) {
+                        for (const namespace of sortedNamespaces) {
+                            const variableKey = getVariableKeyByNamespace(variable.name, namespace)
+                            if (variableKey !== undefined) addVariable(variableKey, variable)
                         }
                     }
                 }
@@ -214,7 +222,7 @@ export default class MasterCSS {
 
                 // 2. Rule-defined variable namespaces
                 if (namespaces) {
-                    namespaces.forEach(addNamespace)
+                    addMatchedNamespaces(namespaces)
                 }
 
                 if (id.endsWith('()')) {
