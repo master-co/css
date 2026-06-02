@@ -30,6 +30,7 @@ import {
 } from './utils/style-css'
 
 const NAME = 'MasterCSSPlugin'
+const VIRTUAL_CSS_ID = 'virtual:master.css'
 
 function isVirtualConfigModulePath(modulePath: string) {
     return modulePath.replace(/\\/g, '/').includes(`${VIRTUAL_CONFIG_DIR}/`)
@@ -250,6 +251,12 @@ export class MasterCSSPlugin extends CSSExtractor {
                             callback()
                         })
                         .catch((error: Error) => callback(error))
+                    return
+                }
+
+                if (request === VIRTUAL_CSS_ID && !STYLE_CSS_REQUEST_RE.test(getResolveIssuer(resolveData))) {
+                    resolveData.request = virtualCSSImportModuleId
+                    callback()
                     return
                 }
 

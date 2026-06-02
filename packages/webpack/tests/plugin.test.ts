@@ -167,7 +167,7 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
             .toContain('"key":"accent","value":"#456"')
     })
 
-    test('leaves virtual CSS module imports unresolved', async () => {
+    test('resolves virtual CSS module imports to the generated CSS virtual module', async () => {
         const plugin = makePlugin()
         const { compiler } = makeFakeCompiler()
         ;(compiler as any).webpack = { sources: { RawSource: function NoopSource(this: object) { /* stub */ } } }
@@ -178,7 +178,31 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
         const resolveData = {
             request: 'virtual:master.css',
             context: process.cwd(),
-            contextInfo: {},
+            contextInfo: {
+                issuer: path.join(process.cwd(), 'src/main.ts')
+            },
+            fileDependencies: new Set<string>()
+        }
+
+        await resolveBefore(normalModuleFactory, resolveData)
+
+        expect(resolveData.request).toContain(path.join('node_modules', '.master-css', 'master-css-import.css'))
+    })
+
+    test('leaves CSS @import virtual:master.css unresolved', async () => {
+        const plugin = makePlugin()
+        const { compiler } = makeFakeCompiler()
+        ;(compiler as any).webpack = { sources: { RawSource: function NoopSource(this: object) { /* stub */ } } }
+        plugin.apply(compiler as any)
+
+        const normalModuleFactory = makeNormalModuleFactory()
+        compiler.hooks.normalModuleFactory.call(normalModuleFactory)
+        const resolveData = {
+            request: 'virtual:master.css',
+            context: process.cwd(),
+            contextInfo: {
+                issuer: path.join(process.cwd(), 'src/styles.css')
+            },
             fileDependencies: new Set<string>()
         }
 
