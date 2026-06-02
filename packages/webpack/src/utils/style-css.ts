@@ -2,10 +2,12 @@ export {
     STYLE_CSS_REQUEST_RE,
     cleanStyleRequest,
     compileStyleCSS,
-    isMasterCSSModuleId,
+    hasMasterShakeDirective,
+    hasStyleCSSImport as hasMasterCSSImport,
     isMasterStyleSource,
     isStyleCSSRequest,
-    refreshExtractorNativeClasses
+    refreshExtractorNativeClasses,
+    resolveStyleCSSImportGraph
 } from '@master/css-extractor/style'
 
 export {

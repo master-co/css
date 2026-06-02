@@ -1,4 +1,5 @@
 import initCSSRuntime from './init'
+import themeConfig from '@master/css/theme.css?master-css-config'
 import { extendConfig } from '@master/css/utils'
 
 const windowConfigs = window.masterCSSConfigs
@@ -9,7 +10,7 @@ if (windowConfigs) configs.push(...windowConfigs)
 if (windowConfig) configs.push(windowConfig)
 
 if (configs.length) {
-    initCSSRuntime(extendConfig(...configs))
+    initCSSRuntime(extendConfig(themeConfig, ...configs))
 } else {
-    initCSSRuntime()
+    initCSSRuntime(themeConfig)
 }

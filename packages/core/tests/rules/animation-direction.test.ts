@@ -1,16 +1,15 @@
 import { it, test, expect } from 'vitest'
-import { createCSS } from '../../src'
-
+import createCSSWithTheme from '../helpers/create-css-with-theme'
 it.concurrent('animation-direction', () => {
-    expect(createCSS().create('animation-direction:normal')?.declarations).toStrictEqual({ 'animation-direction': 'normal' })
-    expect(createCSS().create('@direction:normal')?.declarations).toStrictEqual({ 'animation-direction': 'normal' })
+    expect(createCSSWithTheme().create('animation-direction:normal')?.declarations).toStrictEqual({ 'animation-direction': 'normal' })
+    expect(createCSSWithTheme().create('@direction:normal')?.declarations).toStrictEqual({ 'animation-direction': 'normal' })
 
-    expect(createCSS().create('animation-direction:reverse')?.declarations).toStrictEqual({ 'animation-direction': 'reverse' })
-    expect(createCSS().create('@direction:reverse')?.declarations).toStrictEqual({ 'animation-direction': 'reverse' })
+    expect(createCSSWithTheme().create('animation-direction:reverse')?.declarations).toStrictEqual({ 'animation-direction': 'reverse' })
+    expect(createCSSWithTheme().create('@direction:reverse')?.declarations).toStrictEqual({ 'animation-direction': 'reverse' })
 
-    expect(createCSS().create('animation-direction:alternate')?.declarations).toStrictEqual({ 'animation-direction': 'alternate' })
-    expect(createCSS().create('@direction:alternate')?.declarations).toStrictEqual({ 'animation-direction': 'alternate' })
+    expect(createCSSWithTheme().create('animation-direction:alternate')?.declarations).toStrictEqual({ 'animation-direction': 'alternate' })
+    expect(createCSSWithTheme().create('@direction:alternate')?.declarations).toStrictEqual({ 'animation-direction': 'alternate' })
 
-    expect(createCSS().create('animation-direction:alternate-reverse')?.declarations).toStrictEqual({ 'animation-direction': 'alternate-reverse' })
-    expect(createCSS().create('@direction:alternate-reverse')?.declarations).toStrictEqual({ 'animation-direction': 'alternate-reverse' })
+    expect(createCSSWithTheme().create('animation-direction:alternate-reverse')?.declarations).toStrictEqual({ 'animation-direction': 'alternate-reverse' })
+    expect(createCSSWithTheme().create('@direction:alternate-reverse')?.declarations).toStrictEqual({ 'animation-direction': 'alternate-reverse' })
 })

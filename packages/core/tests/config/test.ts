@@ -1,7 +1,13 @@
-import { test } from 'vitest'
+import { expect, test } from 'vitest'
 
-import { UtilityType } from '../../src'
+import { createCSS, UtilityType } from '../../src'
+import createCSSWithTheme from '../helpers/create-css-with-theme'
 import { expectLayers } from '../test'
+
+test.concurrent('default config excludes theme tokens', () => {
+    expect(createCSS().create('fg:black')?.text).toContain('color:black')
+    expect(createCSSWithTheme().create('fg:black')?.text).toContain('color:var(--color-black)')
+})
 
 test.concurrent('components', () => {
     expectLayers(

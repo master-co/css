@@ -1,6 +1,5 @@
 import { it, test, expect } from 'vitest'
-import { createCSS } from '../../src'
-
+import createCSSWithTheme from '../helpers/create-css-with-theme'
 test.concurrent('writing', () => {
-    expect(createCSS().create('writing:rl')?.text).toContain('writing-mode:rl')
+    expect(createCSSWithTheme().create('writing:rl')?.text).toContain('writing-mode:rl')
 })

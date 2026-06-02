@@ -113,13 +113,11 @@ describe('Next extract mode', () => {
             }
         `
         const replaced = await runExtractCSSLoader(statePath, join(root, 'app/globals.css'), source)
-        expect(replaced).toContain('display:block')
-        expect(replaced).toContain('--color-primary:red')
-        expect(replaced).toContain('.main')
-        expect(replaced).toContain('color: var(--color-primary)')
-        expect(replaced).not.toContain('@master')
-        expect(replaced).not.toContain('@master/css')
+        expect(replaced).toBe('@import "@master/css";')
+        expect(replaced).not.toContain('.main')
         expect(readFileSync(outputPath, 'utf-8')).toContain('.main')
+        expect(readFileSync(outputPath, 'utf-8')).toContain('display:block')
+        expect(readFileSync(outputPath, 'utf-8')).toContain('color: var(--color-primary)')
         expect(readFileSync(outputPath, 'utf-8')).toContain('--color-primary:red')
     })
 
@@ -148,10 +146,11 @@ describe('Next extract mode', () => {
             }
         `)
 
-        expect(replaced).toContain('display:block')
-        expect(replaced).toContain('.main')
+        expect(replaced).toBe('@import "@master/css";')
+        expect(readFileSync(outputPath, 'utf-8')).toContain('display:block')
+        expect(readFileSync(outputPath, 'utf-8')).toContain('.main')
         expect(replaced).not.toContain('.unused')
-        expect(replaced).not.toContain('@master/css')
+        expect(replaced).toContain('@master/css')
         expect(readFileSync(outputPath, 'utf-8')).not.toContain('.unused')
     })
 

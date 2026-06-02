@@ -1,8 +1,7 @@
 import { expect, test } from 'vitest'
-import { createCSS } from '../../src'
-
+import createCSSWithTheme from '../helpers/create-css-with-theme'
 test.concurrent('add an animation syntax top-level', () => {
-    const css = createCSS()
+    const css = createCSSWithTheme()
     css.add('@fade|.3s')
     expect(css.text).toEqual([
         '@layer general{.\\@fade\\|\\.3s{animation:fade 0.3s}}',

@@ -4,6 +4,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import withMasterCSS from '../src'
 import { getRegisteredOptions } from '../src/options'
+import { VIRTUAL_CSS_ID } from 'shared/css-virtual-module'
 
 describe('withMasterCSS', () => {
     it('sets the Next adapter path and registers options', () => {
@@ -97,7 +98,7 @@ describe('withMasterCSS', () => {
             }) as any
 
             expect(nextConfig.webpack).toBeUndefined()
-            expect(nextConfig.turbopack.resolveAlias).toBeUndefined()
+            expect(nextConfig.turbopack.resolveAlias[VIRTUAL_CSS_ID]).toContain(join('.master', 'next.css'))
             expect(nextConfig.turbopack.rules['*']).toEqual(expect.arrayContaining([
                 expect.objectContaining({
                     loaders: [

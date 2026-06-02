@@ -1,5 +1,6 @@
 import config from '../../src/config'
 import CSSTester from '../tester'
+import createCSSWithTheme from '../helpers/create-css-with-theme'
 
 const utilities = config.utilities || []
 
@@ -15,6 +16,6 @@ new CSSTester({ modeTrigger: 'class', defaultMode: 'light', variables: [{ namesp
 
 // test.concurrent('default mode with host modes', () => {
 //     const config = { modeTrigger: 'host' } as Config
-//     expect(createCSS(config).add('bg:invert').text).toContain(':host(.light),:host{--invert:0 0 0}')
-//     expect(createCSS(config).add('bg:invert').text).toContain(':host(.dark){--invert:255 255 255}')
+//     expect(createCSSWithTheme(config).add('bg:invert').text).toContain(':host(.light),:host{--invert:0 0 0}')
+//     expect(createCSSWithTheme(config).add('bg:invert').text).toContain(':host(.dark){--invert:255 255 255}')
 // })

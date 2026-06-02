@@ -53,6 +53,7 @@ describe('@master/css.next/client', () => {
 /// <reference types="@master/css.next/client" />
 
 import type { Config } from '@master/css'
+import 'virtual:master-utilities.css'
 import config from './master.css?master-css-config'
 import virtualConfig from 'virtual:master-css-config'
 

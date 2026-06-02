@@ -1,6 +1,7 @@
 import { expect, test } from 'vitest'
-import { createCSS, UtilityType } from '../../src'
+import { UtilityType } from '../../src'
 import { expectLayers } from '../test'
+import createCSSWithTheme from '../helpers/create-css-with-theme'
 
 test.concurrent('base and preset', async () => {
     expectLayers({ base: '.block\\@base{display:block}' }, 'block@base')
@@ -18,7 +19,7 @@ test.concurrent('with selectors', () => {
 })
 
 test.concurrent('using main', async () => {
-    const css = createCSS({
+    const css = createCSSWithTheme({
         utilities: [
             {
                 name: 'btn',

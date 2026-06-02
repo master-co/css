@@ -1,7 +1,8 @@
 import { test, expect, describe } from 'vitest'
-import { Config, createCSS } from '../../src'
+import { Config } from '../../src'
 import { parseSelector } from '../../src/utils'
 import { SelectorNode } from '../../src/utils/parse-selector'
+import createCSSWithTheme from '../helpers/create-css-with-theme'
 
 export const cases = {
     basic: [
@@ -209,6 +210,6 @@ export const cases = {
 
 describe.concurrent.each(Object.entries(cases))('%s', (_, cases) => {
     test.concurrent.each(cases)('%s', (raw, _, nodes, config) => {
-        expect(parseSelector(raw, createCSS(config))).toEqual(nodes)
+        expect(parseSelector(raw, createCSSWithTheme(config))).toEqual(nodes)
     })
 })

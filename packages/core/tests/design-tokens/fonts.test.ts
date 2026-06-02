@@ -1,11 +1,11 @@
 import { it, expect } from 'vitest'
-import { createCSS } from '../../src'
-import config from '../../src/config'
+import { themeConfig } from '../helpers/create-css-with-theme'
+import createCSSWithTheme from '../helpers/create-css-with-theme'
 
-const variables = config.variables || []
+const variables = themeConfig.variables || []
 
 it.concurrent('customizes fonts', () => {
-    const css = createCSS({ variables: [{ namespace: 'font-family', key: 'sans', value: '"Inter", $font-family-sans-fallback' }, { namespace: 'font-family', key: 'mono', value: '"Fira Code", $font-family-mono-fallback' }] })
+    const css = createCSSWithTheme({ variables: [{ namespace: 'font-family', key: 'sans', value: '"Inter", $font-family-sans-fallback' }, { namespace: 'font-family', key: 'mono', value: '"Fira Code", $font-family-mono-fallback' }] })
     const defaultVariable = (key: string) => variables.find((variable) => variable.namespace === 'font-family' && variable.key === key)?.value
     const sans = css.variables.get('font-family-sans')
     const mono = css.variables.get('font-family-mono')
@@ -16,7 +16,7 @@ it.concurrent('customizes fonts', () => {
 })
 
 // it.concurrent('customizes fonts using strings', () => {
-//     const css = createCSS({
+//     const css = createCSSWithTheme({
 //         variables: {
 //             fontFamily: {
 //                 sans: 'Inter,ui-sans-serif'

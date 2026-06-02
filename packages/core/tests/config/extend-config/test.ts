@@ -1,8 +1,9 @@
 import { it, test, expect } from 'vitest'
-import { createCSS, UtilityType } from '../../../src'
+import { UtilityType } from '../../../src'
 import config from './master-css'
+import createCSSWithTheme from '../../helpers/create-css-with-theme'
 
-function getMainRules(css: ReturnType<typeof createCSS>, name: string) {
+function getMainRules(css: ReturnType<typeof createCSSWithTheme>, name: string) {
     return css.config.utilities?.find((definition) =>
         definition.name === name
         && (definition.type ?? UtilityType.Static) === UtilityType.Static
@@ -11,7 +12,7 @@ function getMainRules(css: ReturnType<typeof createCSS>, name: string) {
 }
 
 it.concurrent('extendConfig merges config files', () => {
-    const css = createCSS(config)
+    const css = createCSSWithTheme(config)
     expect(getMainRules(css, 'blue-btn')).toEqual([
         { selector: '&', declarations: { 'font-size': '0.875rem' } },
         { selector: '&', declarations: { height: '2.5rem' } },

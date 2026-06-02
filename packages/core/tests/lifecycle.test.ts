@@ -1,7 +1,7 @@
 import { expect, test } from 'vitest'
 import css from './css'
-import { createCSS, UtilityType } from '../src'
-
+import { UtilityType } from '../src'
+import createCSSWithTheme from './helpers/create-css-with-theme'
 test.concurrent('mb:48', ({ task }) => {
     css.add(task.name)
     expect(css.generalLayer.rules.length).toBe(1)
@@ -21,7 +21,7 @@ test.concurrent('mb:48@preset', ({ task }) => {
 })
 
 test.concurrent('btn@sm', ({ task }) => {
-    const css = createCSS({
+    const css = createCSSWithTheme({
         utilities: [
             {
                 name: 'btn',

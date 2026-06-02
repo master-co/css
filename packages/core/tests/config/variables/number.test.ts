@@ -1,6 +1,6 @@
 import { it, test, expect } from 'vitest'
-import { createCSS } from '../../../src'
 import { expectLayers } from '../../test'
+import createCSSWithTheme from '../../helpers/create-css-with-theme'
 
 test.concurrent('number', () => {
     expectLayers(
@@ -65,11 +65,11 @@ test.concurrent('number with themes using variable function', () => {
 })
 
 test.concurrent('variables', () => {
-    expect(createCSS({ variables: [{ namespace: 'spacing', key: 'x1', value: 16 }, { namespace: 'spacing', key: 'x2', value: 32 }] }).create('m:$(spacing-x1)')?.text).toBe('.m\\:\\$\\(spacing-x1\\){margin:calc(var(--spacing-x1) / 16 * 1rem)}')
+    expect(createCSSWithTheme({ variables: [{ namespace: 'spacing', key: 'x1', value: 16 }, { namespace: 'spacing', key: 'x2', value: 32 }] }).create('m:$(spacing-x1)')?.text).toBe('.m\\:\\$\\(spacing-x1\\){margin:calc(var(--spacing-x1) / 16 * 1rem)}')
 })
 
 test.concurrent('negative variables', () => {
-    expect(createCSS({ variables: [{ namespace: 'spacing', key: 'x1', value: 16 }, { namespace: 'spacing', key: 'x2', value: 32 }] }).create('m:$(-spacing-x1)')?.text).toBe('.m\\:\\$\\(-spacing-x1\\){margin:calc(var(---spacing-x1) / 16 * 1rem)}')
+    expect(createCSSWithTheme({ variables: [{ namespace: 'spacing', key: 'x1', value: 16 }, { namespace: 'spacing', key: 'x2', value: 32 }] }).create('m:$(-spacing-x1)')?.text).toBe('.m\\:\\$\\(-spacing-x1\\){margin:calc(var(---spacing-x1) / 16 * 1rem)}')
 
     expectLayers(
         {

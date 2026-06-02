@@ -1,8 +1,7 @@
 import { test, expect, describe } from 'vitest'
 import { Config } from '../../src'
 import { type AtRule, parseAt } from '../../src/utils'
-import { createCSS } from '@master/css'
-
+import createCSSWithTheme from '../helpers/create-css-with-theme'
 export const cases = {
     id: [
         ['print', '@media print', { id: 'media', nodes: [{ raw: 'print', value: 'print', type: 'string' }] }],
@@ -199,6 +198,6 @@ export const cases = {
 
 describe.concurrent.each(Object.entries(cases))('%s', (_, caseGroup) => {
     test.concurrent.each(caseGroup)('%s', (input, _, atRule, config) => {
-        expect(parseAt(input, createCSS(config))).toEqual(atRule)
+        expect(parseAt(input, createCSSWithTheme(config))).toEqual(atRule)
     })
 })

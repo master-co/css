@@ -1,6 +1,5 @@
 import { it, test, expect } from 'vitest'
-import { createCSS } from '../../src'
-
+import createCSSWithTheme from '../helpers/create-css-with-theme'
 it.concurrent('background clip', () => {
-    expect(createCSS().create('bg-clip:text')?.text).toContain('background-clip:text')
+    expect(createCSSWithTheme().create('bg-clip:text')?.text).toContain('background-clip:text')
 })

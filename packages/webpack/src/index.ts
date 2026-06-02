@@ -16,21 +16,22 @@ import {
     toVirtualDefaultConfigModulePath
 } from '@master/css-configer/module'
 import { createExtractedCSS, registerStyleCSSSource as registerExtractorStyleCSSSource, type StyleCSSSources } from '@master/css-extractor/style'
+import { VIRTUAL_CSS_ID, toVirtualCSSModulePath } from 'shared/css-virtual-module'
 import type { Compiler } from 'webpack'
 import VirtualModulesPlugin from 'webpack-virtual-modules'
 import log from '@techor/log'
 import path from 'node:path'
 import { readFileSync } from 'node:fs'
 import {
-    STYLE_CSS_REQUEST_RE,
     cleanStyleRequest,
-    isMasterCSSModuleId,
+    hasMasterCSSImport,
+    hasMasterShakeDirective,
     isMasterStyleSource,
-    isStyleCSSRequest
+    isStyleCSSRequest,
+    resolveStyleCSSImportGraph
 } from './utils/style-css'
 
 const NAME = 'MasterCSSPlugin'
-const VIRTUAL_CSS_ID = 'virtual:master.css'
 
 function isVirtualConfigModulePath(modulePath: string) {
     return modulePath.replace(/\\/g, '/').includes(`${VIRTUAL_CONFIG_DIR}/`)
@@ -49,16 +50,99 @@ function hasModifiedFile(modifiedFiles: ReadonlySet<string> | undefined, filePat
     return false
 }
 
-function getResolveIssuer(resolveData: { context?: string, contextInfo?: { issuer?: string } }) {
-    return resolveData.contextInfo?.issuer || resolveData.context || ''
-}
+export class MasterCSSPlugin {
 
-export class MasterCSSPlugin extends CSSExtractor {
-
+    readonly extractor: CSSExtractor
     pluginInitialized = false
     moduleContentByPath: any = {}
     defaultConfigDependencies: string[] = []
     styleCSSSources: StyleCSSSources = new Map()
+
+    constructor(
+        customOptions: Options = {},
+        public cwd = process.cwd()
+    ) {
+        this.extractor = new CSSExtractor(customOptions, cwd)
+    }
+
+    get customOptions() {
+        return this.extractor.customOptions
+    }
+
+    set customOptions(customOptions: Options) {
+        this.extractor.customOptions = customOptions
+    }
+
+    get options() {
+        return this.extractor.options
+    }
+
+    get css() {
+        return this.extractor.css
+    }
+
+    get config() {
+        return this.extractor.config
+    }
+
+    get resolvedConfigPath() {
+        return this.extractor.resolvedConfigPath
+    }
+
+    get slotCSSRule() {
+        return this.extractor.slotCSSRule
+    }
+
+    get latentClasses() {
+        return this.extractor.latentClasses
+    }
+
+    get validClasses() {
+        return this.extractor.validClasses
+    }
+
+    get invalidClasses() {
+        return this.extractor.invalidClasses
+    }
+
+    get nativeClassNames() {
+        return this.extractor.nativeClassNames
+    }
+
+    get usedNativeClasses() {
+        return this.extractor.usedNativeClasses
+    }
+
+    on(...args: Parameters<CSSExtractor['on']>) {
+        this.extractor.on(...args)
+        return this
+    }
+
+    emit(...args: Parameters<CSSExtractor['emit']>) {
+        return this.extractor.emit(...args)
+    }
+
+    async init(customOptions: Options = this.customOptions) {
+        await this.extractor.init(customOptions)
+        return this
+    }
+
+    async reset(customOptions: Options = this.customOptions) {
+        await this.extractor.reset(customOptions)
+        return this
+    }
+
+    prepare() {
+        return this.extractor.prepare()
+    }
+
+    startWatch() {
+        return this.extractor.startWatch()
+    }
+
+    insert(source: string, content: string) {
+        return this.extractor.insert(source, content)
+    }
 
     private resolveDefaultConfigPath(): ExploreConfigPath | undefined {
         if (typeof this.options.config === 'string') {
@@ -91,25 +175,26 @@ export class MasterCSSPlugin extends CSSExtractor {
 
     private getExtractorClasses() {
         return [...new Set([
-            ...(this.latentClasses || []),
-            ...(this.validClasses || []),
-            ...(this.usedNativeClasses || []),
+            ...(this.extractor.latentClasses || []),
+            ...(this.extractor.validClasses || []),
+            ...(this.extractor.usedNativeClasses || []),
             ...(this.options.includeClasses || [])
         ])]
     }
 
-    private async createExtractedCSS() {
+    private async createExtractedCSS(options: { includeNativeCSS?: boolean } = {}) {
         return createExtractedCSS({
-            extractor: this,
+            extractor: this.extractor,
             styleCSSSources: this.styleCSSSources,
             classes: this.getExtractorClasses(),
             loadConfigMode: 'css',
-            projectDir: this.cwd
+            projectDir: this.cwd,
+            includeNativeCSS: options.includeNativeCSS
         })
     }
 
     private async registerStyleCSSSource(modulePath: string, source: string) {
-        await registerExtractorStyleCSSSource(this, this.styleCSSSources, modulePath, source, {
+        await registerExtractorStyleCSSSource(this.extractor, this.styleCSSSources, modulePath, source, {
             projectDir: this.cwd
         })
     }
@@ -131,7 +216,10 @@ export class MasterCSSPlugin extends CSSExtractor {
             if (isGeneratedCSSModulePath(modulePath)) continue
             const source = this.readOriginalStyleSource(modulePath, content)
             if (isStyleCSSRequest(modulePath)) {
-                if (isMasterStyleSource(source)) {
+                if (
+                    (hasMasterShakeDirective(source) || hasMasterCSSImport(source)) &&
+                    isMasterStyleSource(resolveStyleCSSImportGraph(modulePath, source, this.cwd).source)
+                ) {
                     styleEntries.push([modulePath, source])
                 } else {
                     this.styleCSSSources.delete(cleanStyleRequest(modulePath))
@@ -161,7 +249,7 @@ export class MasterCSSPlugin extends CSSExtractor {
         }
         const writeGeneratedCSSModule = async () => {
             if (!virtualModule || !virtualCSSImportModuleId) return
-            const cssText = await this.createExtractedCSS()
+            const cssText = await this.createExtractedCSS({ includeNativeCSS: false })
             virtualModule.writeModule(virtualCSSImportModuleId, cssText)
         }
         const writeDefaultConfigModule = async () => {
@@ -227,7 +315,7 @@ export class MasterCSSPlugin extends CSSExtractor {
         }
 
         const compilerContext = compiler.context || this.cwd || process.cwd()
-        virtualCSSImportModuleId = path.join(compilerContext, VIRTUAL_CONFIG_DIR, 'master-css-import.css')
+        virtualCSSImportModuleId = toVirtualCSSModulePath(compilerContext)
         virtualConfigModuleId = toVirtualDefaultConfigModulePath(compilerContext)
         virtualModule = new VirtualModulesPlugin({
             [virtualCSSImportModuleId]: '',
@@ -254,17 +342,8 @@ export class MasterCSSPlugin extends CSSExtractor {
                     return
                 }
 
-                if (request === VIRTUAL_CSS_ID && !STYLE_CSS_REQUEST_RE.test(getResolveIssuer(resolveData))) {
+                if (request === VIRTUAL_CSS_ID) {
                     resolveData.request = virtualCSSImportModuleId
-                    callback()
-                    return
-                }
-
-                if (isMasterCSSModuleId(request)) {
-                    const issuer = getResolveIssuer(resolveData)
-                    if (STYLE_CSS_REQUEST_RE.test(issuer)) {
-                        resolveData.request = virtualCSSImportModuleId
-                    }
                     callback()
                     return
                 }

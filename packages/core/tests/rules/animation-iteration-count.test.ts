@@ -1,10 +1,9 @@
 import { it, test, expect } from 'vitest'
-import { createCSS } from '../../src'
-
+import createCSSWithTheme from '../helpers/create-css-with-theme'
 it.concurrent('animation-iteration-count', () => {
-    expect(createCSS().create('animation-iteration-count:infinite')?.declarations).toStrictEqual({ 'animation-iteration-count': 'infinite' })
-    expect(createCSS().create('@iteration:infinite')?.declarations).toStrictEqual({ 'animation-iteration-count': 'infinite' })
+    expect(createCSSWithTheme().create('animation-iteration-count:infinite')?.declarations).toStrictEqual({ 'animation-iteration-count': 'infinite' })
+    expect(createCSSWithTheme().create('@iteration:infinite')?.declarations).toStrictEqual({ 'animation-iteration-count': 'infinite' })
 
-    expect(createCSS().create('animation-iteration-count:1')?.declarations).toStrictEqual({ 'animation-iteration-count': '1' })
-    expect(createCSS().create('@iteration:1')?.declarations).toStrictEqual({ 'animation-iteration-count': '1' })
+    expect(createCSSWithTheme().create('animation-iteration-count:1')?.declarations).toStrictEqual({ 'animation-iteration-count': '1' })
+    expect(createCSSWithTheme().create('@iteration:1')?.declarations).toStrictEqual({ 'animation-iteration-count': '1' })
 })

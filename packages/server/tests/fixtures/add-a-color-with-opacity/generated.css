@@ -1,1 +1,1 @@
-@layer general{.fg\:primary{color:rgb(0 0 0/0.5)}}
+@layer theme{:root{--primary:rgb(0 0 0/0.5)}}@layer general{.fg\:primary{color:var(--primary)}}

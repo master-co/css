@@ -2,6 +2,7 @@ import { fileURLToPath } from 'node:url'
 import type { NextConfig } from 'next'
 import { createMasterStyleCSSPattern } from '@master/css-extractor/style'
 import { MASTER_CSS_CONFIG_QUERY } from '@master/css-configer/module'
+import { VIRTUAL_CSS_ID } from 'shared/css-virtual-module'
 import {
     prepareNextExtract,
     resolveExtractOutputPath,
@@ -33,11 +34,15 @@ function resolveExtractCSSLoaderPath() {
     return fileURLToPath(new URL('./extract-css-loader.mjs', import.meta.url))
 }
 
+function resolveEmptyCSSPath() {
+    return fileURLToPath(new URL('../empty.css', import.meta.url))
+}
+
 function toRuleArray(rule: TurbopackRuleConfigCollection | undefined) {
     return Array.isArray(rule) ? rule : rule ? [rule] : []
 }
 
-function applyMasterCSSWebpackConfig(config: WebpackConfig, loaderPath: string) {
+function applyMasterCSSWebpackConfig(config: WebpackConfig, loaderPath: string, virtualCSSPath: string) {
     config.module ??= {}
     config.module.rules ??= []
     config.module.rules.push({
@@ -49,10 +54,15 @@ function applyMasterCSSWebpackConfig(config: WebpackConfig, loaderPath: string) 
             }
         ]
     })
+    config.resolve ??= {}
+    config.resolve.alias = {
+        ...(config.resolve.alias || {}),
+        [VIRTUAL_CSS_ID]: virtualCSSPath
+    }
     return config
 }
 
-function applyMasterCSSTurbopackConfig(nextConfig: NextConfig, loaderPath: string) {
+function applyMasterCSSTurbopackConfig(nextConfig: NextConfig, loaderPath: string, virtualCSSPath: string) {
     const rules = nextConfig.turbopack?.rules || {}
     const configRules = rules['*']
     const masterCSSConfigRule = {
@@ -68,6 +78,10 @@ function applyMasterCSSTurbopackConfig(nextConfig: NextConfig, loaderPath: strin
     }
     return {
         ...nextConfig.turbopack,
+        resolveAlias: {
+            ...nextConfig.turbopack?.resolveAlias,
+            [VIRTUAL_CSS_ID]: virtualCSSPath
+        },
         rules: {
             ...rules,
             '*': [
@@ -96,9 +110,10 @@ function applyMasterCSSExtractTurbopackConfig(
     cssConfigLoaderPath: string,
     extractLoaderPath: string,
     extractCSSLoaderPath: string,
+    virtualCSSPath: string,
     statePath: string
 ) {
-    const turbopackConfig = applyMasterCSSTurbopackConfig(nextConfig, cssConfigLoaderPath)
+    const turbopackConfig = applyMasterCSSTurbopackConfig(nextConfig, cssConfigLoaderPath, virtualCSSPath)
     const rules = turbopackConfig.rules || {}
     const starRules = toRuleArray(rules['*'])
     const extractLoader = {
@@ -154,14 +169,14 @@ function applyMasterCSSExtractTurbopackConfig(
     }
 }
 
-function createConfigWithCSSConfigLoader<T extends NextConfig>(nextConfig: T, cssConfigLoaderPath: string) {
+function createConfigWithCSSConfigLoader<T extends NextConfig>(nextConfig: T, cssConfigLoaderPath: string, virtualCSSPath: string) {
     const userWebpack = nextConfig.webpack
     return {
         ...nextConfig,
-        turbopack: applyMasterCSSTurbopackConfig(nextConfig, cssConfigLoaderPath),
+        turbopack: applyMasterCSSTurbopackConfig(nextConfig, cssConfigLoaderPath, virtualCSSPath),
         webpack(config: WebpackConfig, context: WebpackContext) {
             const resolvedConfig = userWebpack ? userWebpack(config, context) || config : config
-            return applyMasterCSSWebpackConfig(resolvedConfig, cssConfigLoaderPath)
+            return applyMasterCSSWebpackConfig(resolvedConfig, cssConfigLoaderPath, virtualCSSPath)
         }
     }
 }
@@ -188,13 +203,14 @@ export function withMasterCSS<T extends NextConfig>(nextConfig: T = {} as T, opt
                     cssConfigLoaderPath,
                     resolveExtractLoaderPath(),
                     resolveExtractCSSLoaderPath(),
+                    outputPath,
                     statePath
                 )
             }
         })
     }
 
-    const nextConfigWithCSSConfigLoader = createConfigWithCSSConfigLoader(nextConfig, cssConfigLoaderPath)
+    const nextConfigWithCSSConfigLoader = createConfigWithCSSConfigLoader(nextConfig, cssConfigLoaderPath, resolveEmptyCSSPath())
 
     if (options.mode === null) return nextConfigWithCSSConfigLoader
 

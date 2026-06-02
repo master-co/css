@@ -1,6 +1,6 @@
 import { it, test, expect } from 'vitest'
-import { createCSS } from '../src'
 import shuffle from 'shuffle-array'
+import createCSSWithTheme from './helpers/create-css-with-theme'
 
 it.concurrent('checks that different input sources should have the same output', () => {
     const input = [
@@ -42,7 +42,7 @@ it.concurrent('checks that different input sources should have the same output',
         { name: 'text:center' },
     ]
     for (let i = 0; i < 10; i++) {
-        expect(createCSS().add(...shuffle([...input])).generalLayer.rules).toMatchObject(output)
+        expect(createCSSWithTheme().add(...shuffle([...input])).generalLayer.rules).toMatchObject(output)
     }
 })
 
@@ -62,7 +62,7 @@ it.concurrent('checks style declarations', () => {
         { name: 'font:32@md' }
     ]
     for (let i = 0; i < 10; i++) {
-        expect(createCSS().add(...shuffle([...input])).generalLayer.rules).toMatchObject(output)
+        expect(createCSSWithTheme().add(...shuffle([...input])).generalLayer.rules).toMatchObject(output)
     }
 })
 
@@ -77,7 +77,7 @@ it.concurrent('checks media order', () => {
         { name: 'hidden@tablet&<desktop' },
         { name: '{flex-row}@2xs&<xs' }
     ]
-    expect(createCSS({ atTokens: {
+    expect(createCSSWithTheme({ atTokens: {
             tablet: 391,
             desktop: 1025,
         } }).add(...shuffle([...input])).generalLayer.rules).toMatchObject(output)

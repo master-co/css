@@ -1,1 +1,1 @@
-@layer general{.m\:md{margin:1.25rem}.bg\:black{background-color:rgb(0 0 0)}.bg\:primary{background-color:rgb(0 0 0)}.w\:full{width:100%}}
+@layer theme{:root{--color-black:#000;--color-primary:var(--color-black);--full:100%;--spacing-md:20}}@layer general{.m\:md{margin:calc(var(--spacing-md) / 16 * 1rem)}.bg\:black{background-color:var(--color-black)}.bg\:primary{background-color:var(--color-primary)}.w\:full{width:var(--full)}}

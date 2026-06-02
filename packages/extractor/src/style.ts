@@ -3,6 +3,7 @@ import { AnimationRule, createCSS, VariableRule } from '@master/css'
 import { extendConfig } from '@master/css/utils'
 import type { Config } from 'shared/css-config'
 import { loadConfig } from '@master/css-configer/load'
+import { VIRTUAL_CSS_ID } from 'shared/css-virtual-module'
 import { createRequire } from 'node:module'
 import { dirname, extname, join, resolve } from 'node:path'
 import { pathToFileURL } from 'node:url'
@@ -31,6 +32,7 @@ const require = createRequire(import.meta.url)
 type LoadConfigMode = 'always' | 'css' | false
 
 const MASTER_CSS_PACKAGE_MODULE_IDS = ['@master/css', '@master/css/index.css']
+const MASTER_CSS_PACKAGE_INDEX_ID = '@master/css/index.css'
 
 export interface SassModule {
     compileStringAsync(source: string, options: {
@@ -45,8 +47,7 @@ export interface CompileStyleCSSOptions extends CompileCSSOptions {
     loadSass?: (projectDir?: string) => SassModule
 }
 
-export interface RegisterStyleCSSSourceOptions extends CompileStyleCSSOptions {
-}
+export type RegisterStyleCSSSourceOptions = CompileStyleCSSOptions
 
 export interface CreateExtractedCSSOptions extends CompileStyleCSSOptions {
     extractor: CSSExtractor
@@ -55,12 +56,12 @@ export interface CreateExtractedCSSOptions extends CompileStyleCSSOptions {
     configPath?: string
     loadConfigMode?: LoadConfigMode
     includeGeneratedCSS?: boolean
+    includeNativeCSS?: boolean
 }
 
 export interface StyleCSSSource {
     source: string
     shake: boolean
-    includeDefaultCSS?: boolean
     directives: ExtractorDirectives
     sourceDependencies: string[]
 }
@@ -70,6 +71,10 @@ export type StyleCSSSources = Map<string, StyleCSSSource>
 export interface ResolvedStyleCSSSource {
     source: string
     dependencies: string[]
+}
+
+export interface ResolveStyleCSSImportGraphOptions {
+    expandMasterCSSPackage?: boolean
 }
 
 function escapeRegExp(source: string) {
@@ -87,25 +92,13 @@ function defaultLoadSass(projectDir?: string): SassModule {
     return require('sass') as SassModule
 }
 
-let defaultStyleCSS: string | undefined
-
-function getDefaultStyleCSS() {
-    if (defaultStyleCSS !== undefined) return defaultStyleCSS
-    try {
-        defaultStyleCSS = readFileSync(require.resolve('@master/css/base.css'), 'utf-8').trim()
-    } catch {
-        defaultStyleCSS = ''
-    }
-    return defaultStyleCSS
-}
-
 export function normalizeStyleCSSModuleIds() {
     return new Set(MASTER_CSS_PACKAGE_MODULE_IDS)
 }
 
 export function createStyleCSSImportPattern() {
     const ids = [...normalizeStyleCSSModuleIds()].map(escapeRegExp)
-    return new RegExp(String.raw`@import\s+(?:url\(\s*)?(['"])(?:${ids.join('|')})\1\s*\)?[^;]*;`)
+    return new RegExp(String.raw`(?:@master\s+shake\s*;|@import\s+(?:url\(\s*)?(['"])(?:${ids.join('|')})\1\s*\)?[^;]*;)`)
 }
 
 export function createMasterStyleCSSPattern() {
@@ -122,7 +115,10 @@ export function isStyleCSSRequest(id: string) {
 
 export function replaceStyleCSSImports(source: string, replacement: string) {
     let replaced = false
-    const ids = normalizeStyleCSSModuleIds()
+    const ids = new Set([
+        ...normalizeStyleCSSModuleIds(),
+        VIRTUAL_CSS_ID
+    ])
     const code = source.replace(CSS_IMPORT_RE, (rule, _quote: string, id: string) => {
         if (!ids.has(id)) return rule
         replaced = true
@@ -176,12 +172,24 @@ function findImportEnd(source: string, start: number) {
 }
 
 function parseImportSource(statement: string) {
-    const match = /^\s*@import\s+(?:(["'])(.*?)\1|url\(\s*(?:(["'])(.*?)\3|([^'")\s]+))\s*\))\s*;\s*$/s.exec(statement)
+    const match = /^\s*@import\s+(?:(["'])(.*?)\1|url\(\s*(?:(["'])(.*?)\3|([^'")\s]+))\s*\))[^;]*;\s*$/s.exec(statement)
     return match?.[2] || match?.[4] || match?.[5]
 }
 
 function isExpandableStyleImportSource(source: string) {
     return (source.startsWith('./') || source.startsWith('../')) && extname(source) === '.css'
+}
+
+function resolveMasterCSSPackageImport(source: string, projectDir?: string) {
+    if (!normalizeStyleCSSModuleIds().has(source)) return
+    const resolver = projectDir
+        ? createRequire(join(projectDir, 'package.json'))
+        : require
+    try {
+        return resolver.resolve(MASTER_CSS_PACKAGE_INDEX_ID)
+    } catch {
+        return require.resolve(MASTER_CSS_PACKAGE_INDEX_ID)
+    }
 }
 
 function findImportStatements(source: string) {
@@ -243,7 +251,9 @@ function resolveStyleCSSImportGraphFile(
     source: string,
     dependencies: string[],
     dependencySet: Set<string>,
-    stack: string[]
+    stack: string[],
+    projectDir?: string,
+    options: ResolveStyleCSSImportGraphOptions = {}
 ): string {
     const absoluteFile = resolve(file)
     if (stack.includes(absoluteFile)) {
@@ -262,8 +272,11 @@ function resolveStyleCSSImportGraphFile(
     for (const importStatement of imports) {
         output += source.slice(index, importStatement.start)
         const importSource = parseImportSource(importStatement.statement)
-        if (importSource && isExpandableStyleImportSource(importSource)) {
-            const importedFile = resolve(dirname(absoluteFile), importSource)
+        const packageFile = options.expandMasterCSSPackage !== false && importSource && importSource !== VIRTUAL_CSS_ID
+            ? resolveMasterCSSPackageImport(importSource, projectDir)
+            : undefined
+        if (packageFile || (importSource && isExpandableStyleImportSource(importSource))) {
+            const importedFile = packageFile || resolve(dirname(absoluteFile), importSource!)
             if (!existsSync(importedFile)) {
                 throw new Error(`CSS file not found: ${importedFile}`)
             }
@@ -272,7 +285,9 @@ function resolveStyleCSSImportGraphFile(
                 readFileSync(importedFile, 'utf-8'),
                 dependencies,
                 dependencySet,
-                [...stack, absoluteFile]
+                [...stack, absoluteFile],
+                projectDir,
+                options
             )
         } else {
             output += importStatement.statement
@@ -282,16 +297,21 @@ function resolveStyleCSSImportGraphFile(
     return output + source.slice(index)
 }
 
-export function resolveStyleCSSImportGraph(file: string, source: string): ResolvedStyleCSSSource {
+export function resolveStyleCSSImportGraph(
+    file: string,
+    source: string,
+    projectDir?: string,
+    options: ResolveStyleCSSImportGraphOptions = {}
+): ResolvedStyleCSSSource {
     const dependencies: string[] = []
-    if (extname(cleanStyleRequest(file)) !== '.css') {
+    if (!STYLE_CSS_REQUEST_RE.test(cleanStyleRequest(file))) {
         return {
             source,
             dependencies: [cleanStyleRequest(file)]
         }
     }
     return {
-        source: resolveStyleCSSImportGraphFile(cleanStyleRequest(file), source, dependencies, new Set(), []),
+        source: resolveStyleCSSImportGraphFile(cleanStyleRequest(file), source, dependencies, new Set(), [], projectDir, options),
         dependencies
     }
 }
@@ -312,8 +332,37 @@ export function isMasterCSSModuleId(id: string) {
     return normalizeStyleCSSModuleIds().has(id)
 }
 
+export function isMasterCSSPackageStyleFile(id: string) {
+    const file = cleanStyleRequest(id).replace(/\\/g, '/')
+    return /(?:^|\/)(?:packages\/core|@master\/css)\/(?:index|base|theme|utilities|runtime)\.css$/.test(file)
+}
+
 export function removeMasterStyleDirectives(source: string) {
     return removeExtractorDirectiveStatements(source)
+}
+
+export function createStyleCSSHostSource(source: string) {
+    const cleanSource = removeMasterStyleDirectives(source).code
+    const imports = findImportStatements(cleanSource)
+    const preservedImports: string[] = []
+    for (const importStatement of imports) {
+        const importSource = parseImportSource(importStatement.statement)
+        if (!importSource) continue
+        if (
+            importSource === VIRTUAL_CSS_ID ||
+            normalizeStyleCSSModuleIds().has(importSource) ||
+            !isExpandableStyleImportSource(importSource)
+        ) {
+            preservedImports.push(importStatement.statement.trim())
+        }
+    }
+    if (!preservedImports.some((statement) => {
+        const importSource = parseImportSource(statement)
+        return importSource && (importSource === VIRTUAL_CSS_ID || normalizeStyleCSSModuleIds().has(importSource))
+    })) {
+        preservedImports.unshift(`@import "@master/css";`)
+    }
+    return preservedImports.join('\n')
 }
 
 export function removeMasterShakeDirectives(source: string) {
@@ -329,7 +378,7 @@ export function hasMasterNoShakeDirective(source: string) {
 }
 
 export function isMasterStyleSource(source: string) {
-    return hasStyleCSSImport(source) || hasMasterShakeDirective(source)
+    return hasMasterShakeDirective(source)
 }
 
 export async function preprocessStyleCSS(source: string, id: string, options: CompileStyleCSSOptions = {}) {
@@ -432,16 +481,17 @@ export async function registerStyleCSSSource(
     options: RegisterStyleCSSSourceOptions = {}
 ) {
     const filename = cleanStyleRequest(id)
-    const resolvedSource = resolveStyleCSSImportGraph(filename, source)
+    const detectionSource = resolveStyleCSSImportGraph(filename, source, options.projectDir ?? extractor.cwd)
+    const resolvedSource = resolveStyleCSSImportGraph(filename, source, options.projectDir ?? extractor.cwd, {
+        expandMasterCSSPackage: false
+    })
     const collectedDirectives = extname(filename) === '.css'
-        ? collectExtractorDirectivesFromCSSGraph(filename, source, extractor.cwd)
+        ? collectExtractorDirectivesFromCSSGraph(filename, detectionSource.source, extractor.cwd)
         : {
             directives: createExtractorDirectives(),
             dependencies: []
         }
-    const includeDefaultCSS = hasDefaultStyleCSSImport(source)
-    const masterCSSImport = hasStyleCSSImport(source)
-    const shake = !hasMasterNoShakeDirective(source) && (hasMasterShakeDirective(source) || masterCSSImport)
+    const shake = !hasMasterNoShakeDirective(detectionSource.source) && hasMasterShakeDirective(detectionSource.source)
     const sourceWithoutImports = removeStyleCSSImports(resolvedSource.source).code
     const cleanSource = removeMasterStyleDirectives(sourceWithoutImports).code
     const compileOptions = options
@@ -452,13 +502,13 @@ export async function registerStyleCSSSource(
         : []
     result.dependencies = [...new Set([
         ...resolvedSource.dependencies,
+        ...detectionSource.dependencies,
         ...collectedDirectives.dependencies,
         ...sourceDependencies
     ])]
     styleCSSSources.set(filename, {
         source: cleanSource,
         shake,
-        includeDefaultCSS,
         directives: collectedDirectives.directives,
         sourceDependencies
     })
@@ -544,6 +594,7 @@ export async function createExtractedCSS(options: CreateExtractedCSSOptions) {
         configPath = extractor.resolvedConfigPath,
         loadConfigMode = 'always',
         includeGeneratedCSS = true,
+        includeNativeCSS = true,
         ...compileOptions
     } = options
     const classes = compileOptions.classes ?? getExtractorClasses(extractor)
@@ -565,12 +616,9 @@ export async function createExtractedCSS(options: CreateExtractedCSSOptions) {
                     : undefined
             }))
     )
-    const nativeCSS = [
-        Array.from(styleCSSSources?.values() || []).some((styleSource) => styleSource.includeDefaultCSS)
-            ? getDefaultStyleCSS()
-            : '',
-        ...styleResults.map((result) => result.nativeCSS)
-    ].filter(Boolean)
+    const nativeCSS = includeNativeCSS
+        ? styleResults.map((result) => result.nativeCSS).filter(Boolean)
+        : []
     const configResult = shouldLoadConfig && configPath
         ? await loadConfig(configPath, { classes })
         : undefined

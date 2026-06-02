@@ -2,14 +2,18 @@ import {
     STYLE_CSS_REQUEST_RE,
     cleanStyleRequest,
     compileStyleCSS,
+    createStyleCSSHostSource,
     hasMasterNoShakeDirective,
     hasMasterShakeDirective,
+    isMasterCSSPackageStyleFile,
     hasStyleCSSImport,
     isMasterCSSModuleId,
     isMasterStyleSource,
     isStyleCSSRequest,
     registerStyleCSSSource as registerExtractorStyleCSSSource,
+    removeMasterStyleDirectives,
     removeMasterShakeDirectives,
+    resolveStyleCSSImportGraph,
     removeStyleCSSImports,
     replaceStyleCSSImports
 } from '@master/css-extractor/style'
@@ -19,12 +23,16 @@ export {
     STYLE_CSS_REQUEST_RE,
     cleanStyleRequest,
     compileStyleCSS,
+    createStyleCSSHostSource,
     hasMasterNoShakeDirective,
     hasMasterShakeDirective,
+    isMasterCSSPackageStyleFile,
     isMasterCSSModuleId,
     isMasterStyleSource,
     isStyleCSSRequest,
+    removeMasterStyleDirectives,
     removeMasterShakeDirectives,
+    resolveStyleCSSImportGraph,
     replaceStyleCSSImports
 }
 

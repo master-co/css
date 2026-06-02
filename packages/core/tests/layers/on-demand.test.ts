@@ -1,19 +1,19 @@
 import { expect, test } from 'vitest'
-import { createCSS, UtilityType } from '../../src'
-
+import { UtilityType } from '../../src'
+import createCSSWithTheme from '../helpers/create-css-with-theme'
 test.concurrent('empty', () => {
-    const css = createCSS()
+    const css = createCSSWithTheme()
     expect(css.text).toBe('')
 })
 
 test.concurrent('utility', () => {
-    const css = createCSS()
+    const css = createCSSWithTheme()
     css.add('text:center')
     expect(css.text).toContain('@layer general{.text\\:center{text-align:center}}')
 })
 
 test.concurrent('manipulate', () => {
-    const css = createCSS({
+    const css = createCSSWithTheme({
         utilities: [
             {
                 name: 'btn',
@@ -35,7 +35,7 @@ test.concurrent('manipulate', () => {
 })
 
 test('prevent duplicate insertion', () => {
-    const css = createCSS()
+    const css = createCSSWithTheme()
     css.add('text:center', 'text:center')
     expect(css.generalLayer.rules.length).toBe(1)
 })

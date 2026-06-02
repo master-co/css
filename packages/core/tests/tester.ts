@@ -2,13 +2,14 @@ import { expect, test } from 'vitest'
 import { Config, MasterCSS } from '../src'
 import defaultConfig from '../src/config'
 import { extendConfig, sortReadableClasses } from '../src/utils'
+import { createThemeConfig } from './helpers/create-css-with-theme'
 
 export default class CSSTester {
     public css: MasterCSS
 
     constructor(
         public config?: Config,
-        public defaultedConfig: Config | null = defaultConfig,
+        public defaultedConfig: Config | null = createThemeConfig(defaultConfig),
     ) {
         if (defaultedConfig === null) {
             this.css = new MasterCSS(config)

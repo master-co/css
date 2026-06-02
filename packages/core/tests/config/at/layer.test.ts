@@ -1,8 +1,8 @@
 import { expect, test } from 'vitest'
-import { createCSS, UtilityType } from '../../../src'
-
+import { UtilityType } from '../../../src'
+import createCSSWithTheme from '../../helpers/create-css-with-theme'
 test.concurrent('layer at-rules can be used in component general', () => {
-    const css = createCSS({
+    const css = createCSSWithTheme({
         utilities: [
             {
                 name: 'btn',

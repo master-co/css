@@ -1,4 +1,7 @@
 export default {
+    variables: [
+        { namespace: 'screen', key: 'sm', value: 834 }
+    ],
     utilities: [
         { name: 'btn', type: -4, layer: 'main', rules: [
             { selector: '&', declarations: { display: 'inline-flex' } },

@@ -1,8 +1,7 @@
 import { it, test, expect } from 'vitest'
-import { createCSS } from '../../../src'
-
+import createCSSWithTheme from '../../helpers/create-css-with-theme'
 it.concurrent('should be able to access custom spacing variables using inherited rules', () => {
-    const css = createCSS({ variables: [{ namespace: 'spacing', key: 'md', value: 20 }] })
+    const css = createCSSWithTheme({ variables: [{ namespace: 'spacing', key: 'md', value: 20 }] })
     expect(css.create('mt:md')?.declarations).toStrictEqual({ 'margin-top': 'calc(var(--spacing-md) / 16 * 1rem)' })
     expect(css.create('p:md')?.declarations).toStrictEqual({ 'padding': 'calc(var(--spacing-md) / 16 * 1rem)' })
     expect(css.create('p:-md')?.declarations).toStrictEqual({ 'padding': 'calc(var(---spacing-md) / 16 * 1rem)' })

@@ -2,9 +2,13 @@ import CSSExtractor, { type Options as ExtractorOptions } from '@master/css-extr
 import defaultExtractorOptions from '@master/css-extractor/options'
 import type { Config } from 'shared/css-config'
 import {
+    createStyleCSSHostSource,
     createExtractedCSS as createExtractorExtractedCSS,
+    isMasterCSSPackageStyleFile,
     isMasterStyleSource,
     isStyleCSSRequest,
+    removeMasterStyleDirectives,
+    resolveStyleCSSImportGraph,
     registerStyleCSSSource,
     type StyleCSSSources
 } from '@master/css-extractor/style'
@@ -71,7 +75,12 @@ function resolveExtractorOptions(options: ResolvedOptions): ExtractorOptions {
 
 export async function transformExtractStyleSource(statePath: string, resourcePath: string, source: string) {
     const state = readExtractState(statePath)
-    if (!isStyleCSSRequest(resourcePath) || !isMasterStyleSource(source)) return source
+    if (!isStyleCSSRequest(resourcePath)) return source
+    const resolvedSource = resolveStyleCSSImportGraph(resourcePath, source, state.projectDir)
+    if (!isMasterStyleSource(resolvedSource.source)) return source
+    if (isMasterCSSPackageStyleFile(resourcePath)) {
+        return removeMasterStyleDirectives(source).code
+    }
     const options = resolveOptions({
         mode: 'extract',
         config: state.options.config,
@@ -83,7 +92,7 @@ export async function transformExtractStyleSource(statePath: string, resourcePat
         projectDir: state.projectDir
     })
     await session.write()
-    return readFile(state.outputPath, 'utf-8')
+    return createStyleCSSHostSource(source)
 }
 
 async function createExtractedCSS(projectDir: string, session: ExtractSession) {

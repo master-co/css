@@ -5,6 +5,9 @@ declare module '*?master-css-config' {
     export default config
 }
 
+declare module 'virtual:master-utilities.css' {
+}
+
 declare module 'virtual:master-css-config' {
     import type { Config } from '@master/css'
 

@@ -1,8 +1,7 @@
 import { it, expect } from 'vitest'
-import { createCSS } from '../../../src'
-
+import createCSSWithTheme from '../../helpers/create-css-with-theme'
 it.concurrent('should be able to access related font variables using inherited rules', () => {
-    expect(Array.from(createCSS().definedUtilities.find(({ id }) => id === 'font')?.variables?.keys() || [])).toEqual([
+    expect(Array.from(createCSSWithTheme().definedUtilities.find(({ id }) => id === 'font')?.variables?.keys() || [])).toEqual([
         'sans',
         'serif',
         'mono',

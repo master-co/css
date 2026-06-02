@@ -1,1 +1,1 @@
-@layer general{.fg\:secondary{color:oklch(100% 0 none)}}
+@layer theme{:root{--secondary:var(--color-white);--color-white:oklch(100% 0 none)}}@layer general{.fg\:secondary{color:var(--secondary)}}

@@ -19,6 +19,7 @@ import { describe, test, expect, vi } from 'vitest'
 import { SyncHook, AsyncSeriesHook } from 'tapable'
 import { MasterCSSPlugin } from '../src'
 import { VIRTUAL_CONFIG_ID, MASTER_CSS_CONFIG_QUERY } from '@master/css-configer/module'
+import { VIRTUAL_CSS_ID } from 'shared/css-virtual-module'
 import path from 'node:path'
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
@@ -176,7 +177,7 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
         const normalModuleFactory = makeNormalModuleFactory()
         compiler.hooks.normalModuleFactory.call(normalModuleFactory)
         const resolveData = {
-            request: 'virtual:master.css',
+            request: VIRTUAL_CSS_ID,
             context: process.cwd(),
             contextInfo: {
                 issuer: path.join(process.cwd(), 'src/main.ts')
@@ -186,10 +187,10 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
 
         await resolveBefore(normalModuleFactory, resolveData)
 
-        expect(resolveData.request).toContain(path.join('node_modules', '.master-css', 'master-css-import.css'))
+        expect(resolveData.request).toContain(path.join('node_modules', '.master-css', 'master-utilities.css'))
     })
 
-    test('leaves CSS @import virtual:master.css unresolved', async () => {
+    test('resolves CSS @import virtual utilities to the generated CSS virtual module', async () => {
         const plugin = makePlugin()
         const { compiler } = makeFakeCompiler()
         ;(compiler as any).webpack = { sources: { RawSource: function NoopSource(this: object) { /* stub */ } } }
@@ -198,7 +199,7 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
         const normalModuleFactory = makeNormalModuleFactory()
         compiler.hooks.normalModuleFactory.call(normalModuleFactory)
         const resolveData = {
-            request: 'virtual:master.css',
+            request: VIRTUAL_CSS_ID,
             context: process.cwd(),
             contextInfo: {
                 issuer: path.join(process.cwd(), 'src/styles.css')
@@ -208,7 +209,7 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
 
         await resolveBefore(normalModuleFactory, resolveData)
 
-        expect(resolveData.request).toBe('virtual:master.css')
+        expect(resolveData.request).toContain(path.join('node_modules', '.master-css', 'master-utilities.css'))
     })
 
     test('leaves CSS @import master.css unresolved', async () => {
@@ -233,7 +234,7 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
         expect(resolveData.request).toBe('master.css')
     })
 
-    test('resolves CSS @import @master/css to a separate CSS import virtual module', async () => {
+    test('leaves CSS @import @master/css package imports unchanged', async () => {
         const plugin = makePlugin()
         const { compiler } = makeFakeCompiler()
         ;(compiler as any).webpack = { sources: { RawSource: function NoopSource(this: object) { /* stub */ } } }
@@ -252,7 +253,7 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
 
         await resolveBefore(normalModuleFactory, resolveData)
 
-        expect(resolveData.request).toContain(path.join('node_modules', '.master-css', 'master-css-import.css'))
+        expect(resolveData.request).toBe('@master/css')
     })
 
     test('leaves non-CSS @master/css imports unchanged', async () => {

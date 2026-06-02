@@ -1,1 +1,1 @@
-@layer general{.bg\:primary\/\.5{background-color:rgb(0 0 0/0.5)}.fg\:primary{color:rgb(0 0 0)}}
+@layer theme{:root{--color-primary:#000}}@layer general{.bg\:primary\/\.5{background-color:color-mix(in oklab,var(--color-primary) 50%,transparent)}.fg\:primary{color:var(--color-primary)}}

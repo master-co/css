@@ -45,7 +45,8 @@
     "sideEffects": [
         "./index.css",
         "./base.css",
-        "./theme.css"
+        "./theme.css",
+        "./utilities.css"
     ],
     "main": "./dist/index.mjs",
     "jsnext:main": "./dist/index.mjs",
@@ -63,6 +64,7 @@
         "./index.css": "./index.css",
         "./base.css": "./base.css",
         "./theme.css": "./theme.css",
+        "./utilities.css": "./utilities.css",
         "./*": {
             "types": "./dist/*.d.ts",
             "import": "./dist/*.mjs",
@@ -74,7 +76,8 @@
         "dist",
         "index.css",
         "base.css",
-        "theme.css"
+        "theme.css",
+        "utilities.css"
     ],
     "publishConfig": {
         "access": "public",

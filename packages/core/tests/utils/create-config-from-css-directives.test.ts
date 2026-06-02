@@ -1,8 +1,8 @@
 import { describe, expect, it, vi } from 'vitest'
 import createCSSDirectiveConfig from '../../src/utils/create-config-from-css-directives'
 import createConfigFromCSSDirectives from '../../src/create-config-from-css-directives'
+import createCSSWithTheme, { createThemeConfig } from '../helpers/create-css-with-theme'
 import {
-    createCSS,
     UtilityType,
     type CSSDirectiveResult
 } from '../../src'
@@ -136,7 +136,7 @@ describe.concurrent('createConfigFromCSSDirectives', () => {
                     }
                 ]
             }
-        }))
+        }), { config: createThemeConfig() })
 
         expect(getUtility(result, 'print-hidden', 'general')).toMatchObject({
             name: 'print-hidden',
@@ -209,7 +209,7 @@ describe.concurrent('createConfigFromCSSDirectives', () => {
                     }
                 ]
             }
-        }))
+        }), { config: createThemeConfig() })
 
         expect(result.config.modes).toEqual(['dark'])
         expect(getUtility(result, 'btn')).toMatchObject({
@@ -244,7 +244,7 @@ describe.concurrent('createConfigFromCSSDirectives', () => {
             }
         ])
 
-        const css = createCSS(result.config).add('btn').text
+        const css = createCSSWithTheme(result.config).add('btn').text
         expect(css).toContain('.btn{display:flex}')
         expect(css).toContain('.dark .btn{background-color:var(--color-primary)}')
         expect(css).toContain('@media (width>=40rem){.btn{font-size:calc(var(--font-size-sm) / 16 * 1rem)}}')
@@ -258,7 +258,7 @@ describe.concurrent('createConfigFromCSSDirectives', () => {
                     dark: 'media(prefers-color-scheme:dark)'
                 }
             }
-        }))).toThrow('@custom-at "dark" conflicts with mode "dark"')
+        }), { config: createThemeConfig() })).toThrow('@custom-at "dark" conflicts with mode "dark"')
 
         expect(() => createConfigFromCSSDirectives(directiveResult({
             config: {
@@ -266,14 +266,14 @@ describe.concurrent('createConfigFromCSSDirectives', () => {
                     { name: 'screen-md', value: 768, mode: 'compact' }
                 ]
             }
-        }))).toThrow('Screen variables cannot be mode-specific: screen-md@compact')
+        }), { config: createThemeConfig() })).toThrow('Screen variables cannot be mode-specific: screen-md@compact')
 
         const onWarning = vi.fn()
         const result = createConfigFromCSSDirectives(directiveResult({
             config: {
                 modes: ['chrisma']
             }
-        }), { onWarning })
+        }), { config: createThemeConfig(), onWarning })
 
         expect(result.warnings).toEqual([
             'Custom mode "chrisma" will not work with mode-trigger: media. Browsers only support light and dark prefers-color-scheme values; use mode-trigger: class or host for custom modes.'

@@ -1,13 +1,14 @@
 import { describe, expect, test } from 'vitest'
-import { createCSS, MasterCSS, UtilityType } from '../src'
+import { MasterCSS, UtilityType } from '../src'
 import { extendConfig } from '../src/utils'
+import createCSSWithTheme from './helpers/create-css-with-theme'
 
 function mainStyle(name: string, rules: any[], layer: 'base' | 'preset' | 'main' | 'general' = 'main') {
     return { name, type: UtilityType.Static, layer, rules }
 }
 
 describe('comp -> comp -> var', () => {
-    const css = createCSS({
+    const css = createCSSWithTheme({
         utilities: [
             mainStyle('badge-primary', [
                 { selector: '&', declarations: { background: 'var(--primary)' } },
@@ -32,7 +33,7 @@ describe('comp -> comp -> var', () => {
 })
 
 describe('extendConfig', () => {
-    const css = createCSS(extendConfig(
+    const css = createCSSWithTheme(extendConfig(
         { utilities: [mainStyle('a', [{ selector: '&', declarations: { order: '1' } }])] },
         { utilities: [mainStyle('b', [{ selector: '&', declarations: { order: '2' } }])] },
         { utilities: [mainStyle('c', [{ selector: '&', declarations: { order: '3' } }])] },
@@ -76,7 +77,7 @@ describe('MasterCSS config', () => {
 
 describe('raw declarations', () => {
     test('supports raw declarations from config main', () => {
-        const css = createCSS({ utilities: [mainStyle('btn', [{ selector: '&', declarations: {
+        const css = createCSSWithTheme({ utilities: [mainStyle('btn', [{ selector: '&', declarations: {
                         'padding-left': '0.25rem',
                         'padding-right': '0.25rem'
                     } }, { selector: '&', declarations: {
@@ -91,7 +92,7 @@ describe('raw declarations', () => {
     })
 
     test('keeps component rules separate to preserve component order', () => {
-        const css = createCSS({
+        const css = createCSSWithTheme({
             utilities: [
                 mainStyle('btn', [
                 { selector: '&', declarations: { 'padding-left': '0.25rem', 'padding-right': '0.25rem' } },
@@ -110,7 +111,7 @@ describe('raw declarations', () => {
     })
 
     test('generates component rule declarations', () => {
-        const css = createCSS({
+        const css = createCSSWithTheme({
             utilities: [
                 mainStyle('btn', [
                     { selector: '&', declarations: { 'padding-left': '0.25rem', 'padding-right': '0.25rem' } },
@@ -124,7 +125,7 @@ describe('raw declarations', () => {
     })
 
     test('generates theme variables from raw component declarations with var fallbacks', () => {
-        const css = createCSS({
+        const css = createCSSWithTheme({
             variables: [
                 { namespace: 'color', key: 'primary', value: '#ff0', mode: 'light' },
                 { namespace: 'color', key: 'primary', value: '#000', mode: 'dark' }
@@ -147,7 +148,7 @@ describe('raw declarations', () => {
     })
 
     test('generates theme variables from static utility declarations', () => {
-        const css = createCSS({
+        const css = createCSSWithTheme({
             variables: [
                 { namespace: 'color', key: 'primary', value: '#ff0', mode: 'light' },
                 { namespace: 'color', key: 'primary', value: '#000', mode: 'dark' }
@@ -170,7 +171,7 @@ describe('raw declarations', () => {
     })
 
     test('generates and removes theme variables from animation keyframes', () => {
-        const css = createCSS({
+        const css = createCSSWithTheme({
             variables: [
                 { namespace: 'color', key: 'primary', value: '#ff0', mode: 'light' },
                 { namespace: 'color', key: 'primary', value: '#000', mode: 'dark' }
@@ -204,7 +205,7 @@ describe('raw declarations', () => {
     })
 
     test('generates component rule declarations with at-rules', () => {
-        const css = createCSS({
+        const css = createCSSWithTheme({
             atTokens: {
                 sm: 500
             },
@@ -221,7 +222,7 @@ describe('raw declarations', () => {
     })
 
     test('generates component rule declarations with selector variants', () => {
-        const css = createCSS({
+        const css = createCSSWithTheme({
             utilities: [
                 mainStyle('btn', [
                     {
@@ -236,7 +237,7 @@ describe('raw declarations', () => {
     })
 
     test('places selector variants before configured component selectors', () => {
-        const css = createCSS({
+        const css = createCSSWithTheme({
             utilities: [
                 mainStyle('btn', [
                     {
@@ -252,7 +253,7 @@ describe('raw declarations', () => {
     })
 
     test('combines component selector variants with at-rule variants', () => {
-        const css = createCSS({
+        const css = createCSSWithTheme({
             utilities: [
                 mainStyle('btn', [
                     {
@@ -270,7 +271,7 @@ describe('raw declarations', () => {
     })
 
     test('resolves selector tokens in component selector variants', () => {
-        const css = createCSS({
+        const css = createCSSWithTheme({
             selectorTokens: {
                 ':interactive': ':is(:hover,:focus-visible)'
             },
@@ -288,7 +289,7 @@ describe('raw declarations', () => {
     })
 
     test('generates raw component declarations with configured at-rules', () => {
-        const css = createCSS({
+        const css = createCSSWithTheme({
             utilities: [
                 mainStyle('btn', [
                     {
@@ -309,7 +310,7 @@ describe('raw declarations', () => {
     })
 
     test('generates static utility rules with configured at-rules', () => {
-        const css = createCSS({
+        const css = createCSSWithTheme({
             utilities: [
                 {
                     name: 'print-hidden',
@@ -331,7 +332,7 @@ describe('raw declarations', () => {
     })
 
     test('generates static utility rules with configured selectors', () => {
-        const css = createCSS({
+        const css = createCSSWithTheme({
             utilities: [
                 {
                     name: 'theme-hidden',
@@ -353,7 +354,7 @@ describe('raw declarations', () => {
     })
 
     test('keeps component rule declarations separate when variants differ', () => {
-        const css = createCSS({
+        const css = createCSSWithTheme({
             utilities: [
                 mainStyle('btn', [
                     { selector: '&', declarations: { display: 'inline-flex' } },
@@ -367,7 +368,7 @@ describe('raw declarations', () => {
     })
 
     test('does not expand selector token prefixes inside native component selectors', () => {
-        const css = createCSS({
+        const css = createCSSWithTheme({
             utilities: [
                 mainStyle('code-line-add', [
                     {
@@ -382,7 +383,7 @@ describe('raw declarations', () => {
     })
 
     test('resolves selector token shorthands in component selectors', () => {
-        const css = createCSS({
+        const css = createCSSWithTheme({
             utilities: [
                 mainStyle('btn', [
                     {
@@ -397,7 +398,7 @@ describe('raw declarations', () => {
     })
 
     test('inserts component definitions into configured top-level layers', () => {
-        const css = createCSS({
+        const css = createCSSWithTheme({
             utilities: [
                 mainStyle('prose', [
                     {

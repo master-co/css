@@ -63,7 +63,7 @@ module.exports = {
 ```
 
 ## Client types
-Add the client type reference when TypeScript source files import `virtual:master.css` or Master CSS config modules:
+Add the client type reference when TypeScript source files import `virtual:master-utilities.css` or Master CSS config modules:
 
 ```ts
 /// <reference types="@master/css.webpack/client" />

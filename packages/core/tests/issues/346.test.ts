@@ -1,6 +1,6 @@
 import { describe, test, expect } from 'vitest'
-import { MasterCSS, createCSS } from '../../src'
-
+import { MasterCSS } from '../../src'
+import createCSSWithTheme from '../helpers/create-css-with-theme'
 describe('issue #346: CSS color functions are native variable values', () => {
     const cases: [string, string][] = [
         ['rgb', 'rgb(0 128 255)'],
@@ -24,7 +24,7 @@ describe('issue #346: CSS color functions are native variable values', () => {
     })
 
     test('alpha alias becomes CSS runtime color-mix', () => {
-        const css = createCSS({ variables: [{ namespace: 'color', key: 'primary', value: 'oklch(0.5 0.15 240)' }, { namespace: 'color', key: 'soft', value: '$(color-primary)/.3' }] }).add('bg:soft')
+        const css = createCSSWithTheme({ variables: [{ namespace: 'color', key: 'primary', value: 'oklch(0.5 0.15 240)' }, { namespace: 'color', key: 'soft', value: '$(color-primary)/.3' }] }).add('bg:soft')
         expect(css.themeLayer.text).toContain('--color-soft:color-mix(in oklab,var(--color-primary) 30%,transparent)')
         expect(css.themeLayer.text).toContain('--color-primary:oklch(0.5 0.15 240)')
     })

@@ -61,14 +61,14 @@ export default function masterCSS(options?: PluginOptions): Plugin[] {
     const plugins: Plugin[] = [
         ResolveContextPlugin(),
         ConfigVirtualModulePlugin(options, context),
-        ConfigLoaderPlugin(context)
+        ConfigLoaderPlugin(context),
+        VirtualCSSImportPlugin(options, context)
     ]
     const usesExtractor = options.mode !== null
     if (usesExtractor) {
         plugins.push(
             ExtractorPlugin(options, context),
             UsageGraphPlugin(options, context),
-            VirtualCSSImportPlugin(options, context),
             VirtualCSSHMRPlugin(options, context),
             VirtualCSSModulePlugin(options, context)
         )

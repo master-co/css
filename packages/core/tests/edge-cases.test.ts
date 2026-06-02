@@ -1,13 +1,12 @@
 import { expect, test } from 'vitest'
-import { createCSS } from '../src'
-
+import createCSSWithTheme from './helpers/create-css-with-theme'
 test('keeps semicolons inside quoted group declaration values', () => {
-    expect(createCSS().create('{content:\'a;b\';block}')?.text)
+    expect(createCSSWithTheme().create('{content:\'a;b\';block}')?.text)
         .toBe('.\\{content\\:\\\'a\\;b\\\'\\;block\\}{content:\'a;b\';display:block}')
 })
 
 test('removes alias variable dependencies after shared utilities are removed', () => {
-    const css = createCSS({
+    const css = createCSSWithTheme({
         variables: [
             { key: 'brand', value: '$color-white' }
         ]
@@ -32,7 +31,7 @@ test('removes alias variable dependencies after shared utilities are removed', (
 })
 
 test('recovers class names from scoped mode selectors with escaped selector variants', () => {
-    const css = createCSS({
+    const css = createCSSWithTheme({
         scope: '#app',
         modes: ['dark'],
         modeTrigger: 'class'

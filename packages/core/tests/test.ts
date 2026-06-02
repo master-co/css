@@ -1,5 +1,6 @@
 import { test, expect } from 'vitest'
-import { Config, createCSS } from '../src'
+import { Config } from '../src'
+import createCSSWithTheme from './helpers/create-css-with-theme'
 
 export const expectLayers = (
     layers: {
@@ -15,7 +16,7 @@ export const expectLayers = (
     className: string | string[],
     config?: Config
 ) => {
-    const css = createCSS(config).add(...(Array.isArray(className) ? className : [className]))
+    const css = createCSSWithTheme(config).add(...(Array.isArray(className) ? className : [className]))
     if (layers.theme) expect(css.themeLayer.text).toContain(`@layer theme{${layers.theme ?? ''}}`)
     if (layers.main || layers.components) expect(css.mainLayer.text).toContain(`@layer main{${layers.main ?? layers.components ?? ''}}`)
     if (layers.preset) expect(css.presetLayer.text).toContain(`@layer preset{${layers.preset ?? ''}}`)
@@ -25,7 +26,7 @@ export const expectLayers = (
 }
 
 test('keeps responsive hidden after base display utilities', () => {
-    const css = createCSS().add('hidden@sm', 'flex')
+    const css = createCSSWithTheme().add('hidden@sm', 'flex')
 
     expect(css.generalLayer.text).toBe('@layer general{.flex{display:flex}@media (width>=52.125rem){.hidden\\@sm{display:none}}}')
 })

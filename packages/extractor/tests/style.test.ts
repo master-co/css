@@ -10,6 +10,7 @@ import {
     isMasterStyleSource,
     removeMasterShakeDirectives,
     registerStyleCSSSource,
+    resolveStyleCSSImportGraph,
     replaceStyleCSSImports
 } from '../src/style'
 
@@ -35,10 +36,14 @@ describe('style CSS extraction helpers', () => {
         expect(result.code).toContain('@import "./other.css";')
     })
 
-    it('detects Master CSS imports and legacy master shake directives', () => {
+    it('detects Master CSS imports and master shake directives', () => {
         expect(isMasterStyleSource('@master { --color-primary: red; }')).toBe(false)
-        expect(isMasterStyleSource('@import "@master/css";')).toBe(true)
-        expect(isMasterStyleSource('@import "virtual:master.css";')).toBe(false)
+        expect(isMasterStyleSource('@import "@master/css";')).toBe(false)
+        expect(isMasterStyleSource(resolveStyleCSSImportGraph(
+            join(createFixture(), 'app/globals.css'),
+            '@import "@master/css";'
+        ).source)).toBe(true)
+        expect(isMasterStyleSource('@import "virtual:master-utilities.css";')).toBe(false)
         expect(isMasterStyleSource('@import "master.css";')).toBe(false)
         expect(isMasterStyleSource('@master shake;')).toBe(true)
         expect(isMasterStyleSource('@master no-shake;')).toBe(false)
@@ -125,8 +130,8 @@ describe('style CSS extraction helpers', () => {
         })
 
         expect(css).not.toContain('.root-native')
-        expect(css).toContain('@layer base')
-        expect(css).toContain('text-rendering: geometricPrecision')
+        expect(css).not.toContain('@layer base')
+        expect(css).not.toContain('text-rendering: geometricPrecision')
         expect(css).toContain('.main')
         expect(css).not.toContain('.unused')
         expect(css).toContain('--color-primary:red')
@@ -135,7 +140,7 @@ describe('style CSS extraction helpers', () => {
         expect(css).not.toContain('.btn{display:inline-flex}')
         expect(css).toContain('.block{display:block}')
         expect(css).not.toContain('@master')
-        expect(css).not.toContain('virtual:master.css')
+        expect(css).not.toContain('virtual:master-utilities.css')
         expect(css).not.toContain('@master/css')
     })
 
@@ -178,10 +183,10 @@ describe('style CSS extraction helpers', () => {
             projectDir: root
         })
 
-        expect(result.dependencies).toEqual([
-            join(root, 'app/globals.css'),
-            join(root, 'app/styles/btn.css')
-        ])
+        expect(result.dependencies).toContain(join(root, 'app/globals.css'))
+        expect(result.dependencies).toContain(join(root, 'app/styles/btn.css'))
+        expect(result.dependencies).toContain(join(process.cwd(), '../core/index.css'))
+        expect(result.dependencies).toContain(join(process.cwd(), '../core/utilities.css'))
         expect(css).toContain('.card')
         expect(css).toContain('.btn-native')
         expect(css).not.toContain('.unused')
