@@ -3,7 +3,14 @@ import { jsxTester } from './testers'
 
 jsxTester.run('vue class order', rule, {
     valid: [
-        { code: `<div class="m:8 p:8 bg:black f:24 fg:white">Simple, basic</div>` }
+        { code: `<div class="m:8 p:8 bg:black f:24 fg:white">Simple, basic</div>` },
+        {
+            code: `<template><div :class="[condition && 'm:8 p:8', , null, false]">Sparse array</div></template>`,
+            filename: 'test.vue',
+            languageOptions: {
+                parser: await import('vue-eslint-parser')
+            }
+        }
     ],
     invalid: [
         {

@@ -1,38 +1,52 @@
 <script setup lang="ts">
-import { ref, provide, onMounted, onUnmounted, watch } from 'vue';
-import type { Config } from '@master/css';
-import { CSSRuntime, initCSSRuntime } from '@master/css-runtime';
+import { shallowRef, provide, onMounted, onUnmounted, watch } from 'vue'
+import type { Config } from '@master/css'
+import { initCSSRuntime, resolveRuntimeConfig } from '@master/css-runtime'
+import type { CSSRuntime } from '@master/css-runtime'
+import { CSS_RUNTIME_INJECTION_KEY } from './use-css-runtime'
 
-const cssRuntimeSymbol = Symbol('css-runtime');
 const props = defineProps<{
     config?: Config;
     root?: Document | ShadowRoot | null; // null for Element.shadowRoot
 }>();
 
-const cssRuntime = ref<CSSRuntime | undefined>(undefined);
+const cssRuntime = shallowRef<CSSRuntime | undefined>(undefined)
+
+function getRoot() {
+    return props.root ?? document
+}
+
+function initRuntime() {
+    cssRuntime.value = initCSSRuntime(props.config, getRoot())
+}
+
+function destroyRuntime() {
+    cssRuntime.value?.destroy()
+    cssRuntime.value = undefined
+}
 
 onMounted(() => {
-    cssRuntime.value = initCSSRuntime(props.config, props.root ?? document)
-    onUnmounted(() => {
-        cssRuntime.value?.destroy()
-        cssRuntime.value = undefined
-    })
+    initRuntime()
 })
+
+onUnmounted(destroyRuntime)
 
 watch(() => props.config, () => {
     if (cssRuntime.value) {
-        cssRuntime.value.refresh(props.config)
+        cssRuntime.value.refresh(resolveRuntimeConfig(props.config))
     }
 })
 
 watch(() => props.root, () => {
     if (cssRuntime.value) {
-        cssRuntime.value.destroy()
-        cssRuntime.value = initCSSRuntime(props.config, props.root ?? document)
+        const nextRoot = getRoot()
+        if (cssRuntime.value.root === nextRoot) return
+        destroyRuntime()
+        initRuntime()
     }
 })
 
-provide(cssRuntimeSymbol, cssRuntime.value)
+provide(CSS_RUNTIME_INJECTION_KEY, cssRuntime)
 </script>
 
 <template>

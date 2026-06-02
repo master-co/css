@@ -8,22 +8,34 @@ export default function defineVisitors({ context, settings }: { context: RuleCon
     const classAttributeRegex = new RegExp(`^(?:${settings.classAttributes.join('|')})$`)
     const classFunctionsRegex = new RegExp(`^(?:${settings.classFunctions.join('|')})`)
     const classDeclarationsRegex = new RegExp(`^(?:${settings.classDeclarations.join('|')})$`)
-    const allowCalleeNode = (node) => {
-        let calleeName = ''
-        const calleeNode = node.callee || node.tag
-        if (calleeNode.type === 'Identifier') {
-            calleeName = calleeNode.name
-        }
-        if (calleeNode.type === 'MemberExpression') {
-            calleeName = `${calleeNode.object.name}.${calleeNode.property.name}`
-        }
-        return classFunctionsRegex.test(calleeName)
-    }
     const visitClassNode = withVisitClassNode(visitNode, context)
-    const getPropertyName = (prop) => {
-        if (prop.key.type === 'Identifier') return prop.key.name
-        if (prop.key.type === 'Literal') return prop.key.value
+
+    const getStaticName = (node: any): string | undefined => {
+        if (!node) return
+        if (node.type === 'Identifier') return node.name
+        if (node.type === 'Literal' && typeof node.value === 'string') return node.value
     }
+
+    const getMemberExpressionName = (node: any): string | undefined => {
+        if (!node || node.type !== 'MemberExpression') return
+        const objectName = getStaticName(node.object)
+        const propertyName = getStaticName(node.property)
+        if (!objectName || !propertyName) return
+        return `${objectName}.${propertyName}`
+    }
+
+    const getCalleeName = (node: any): string | undefined => {
+        const calleeNode = node.callee || node.tag
+        return getStaticName(calleeNode) || getMemberExpressionName(calleeNode)
+    }
+
+    const allowCalleeNode = (node: any) => {
+        const calleeName = getCalleeName(node)
+        return calleeName ? classFunctionsRegex.test(calleeName) : false
+    }
+
+    const getPropertyName = (prop: any) => getStaticName(prop.key)
+
     const visitUtilityDefinitions = (node) => {
         if (!node) return
         if (node.type === 'ArrayExpression') {
@@ -96,7 +108,7 @@ export default function defineVisitors({ context, settings }: { context: RuleCon
     const templateBodyVisitor: RuleListener = {
         CallExpression,
         VAttribute: function (node: any) {
-            const name = node.key.argument?.name || node.key.name
+            const name = node.key?.argument?.name || node.key?.name
             if (!name || !classAttributeRegex.test(name)) return
             if (node.value && node.value.type === 'VLiteral') {
                 visitClassNode(node.value)

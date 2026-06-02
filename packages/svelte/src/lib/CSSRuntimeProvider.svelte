@@ -2,7 +2,7 @@
     import { onMount, setContext } from 'svelte';
     import { writable, get } from 'svelte/store';
     import type { Config } from '@master/css';
-    import { initCSSRuntime } from '@master/css-runtime';
+    import { initCSSRuntime, resolveRuntimeConfig } from '@master/css-runtime';
     import type { CSSRuntime } from '@master/css-runtime';
     import { CSS_RUNTIME_CONTEXT_KEY } from './get-css-runtime.js';
 
@@ -28,7 +28,7 @@
     $: {
         const currentCSSRuntime = get(cssRuntime);
         if (currentCSSRuntime) {
-            currentCSSRuntime.refresh(config);
+            currentCSSRuntime.refresh(resolveRuntimeConfig(config));
         }
     }
 

@@ -1,7 +1,6 @@
 import CSSRuntime from './core'
-import defaultConfig from '@master/css/config'
-import { extendConfig } from '@master/css/utils'
 import type { Config } from 'shared/css-config'
+import { resolveRuntimeConfig } from './config'
 
 /**
  * Initialize a new CSSRuntime instance and observe the target root
@@ -13,7 +12,7 @@ import type { Config } from 'shared/css-config'
 export default function initCSSRuntime(config?: Config, root: Document | ShadowRoot = document, autoObserve = true): CSSRuntime {
     let cssRuntime = globalThis.CSSRuntime.instances.get(root)
     if (cssRuntime) return cssRuntime
-    cssRuntime = new CSSRuntime(root, extendConfig(defaultConfig, config))
+    cssRuntime = new CSSRuntime(root, resolveRuntimeConfig(config))
     if (autoObserve) cssRuntime.observe()
     return cssRuntime
 }

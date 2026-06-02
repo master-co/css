@@ -7,6 +7,7 @@ export default function withVisitClassNode(
     context: RuleContext<any, any[]>
 ) {
     const visitNode = (node) => {
+        if (!node) return
         switch (node.type) {
             case 'BinaryExpression':
             case 'Identifier':
@@ -44,7 +45,7 @@ export default function withVisitClassNode(
                 }
                 return
             default:
-                let resolved = resolveClassNode(node, context)
+                const resolved = resolveClassNode(node, context)
                 if (!resolved) return
                 visit(node, resolved)
         }

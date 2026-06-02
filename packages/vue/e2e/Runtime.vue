@@ -2,6 +2,7 @@
     import CSSRuntimeProvider from '../src'
     import { ref, onMounted } from 'vue'
     import type { Config } from '@master/css'
+    import RuntimeConsumer from './RuntimeConsumer.vue'
 
     const config = ref<Config>({
         utilities: [
@@ -30,6 +31,7 @@
 
 <template>
     <CSSRuntimeProvider :root="root" :config="config">
+        <RuntimeConsumer />
         <button id="config-btn" class="btn" @click="config = {}"></button>
         <button id="root-btn" @click="root = shadowRoot"></button>
         <div id="container" :ref="el => containerRef = el"></div>

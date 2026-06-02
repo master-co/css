@@ -122,7 +122,7 @@ export default function resolveClassNode(node: any, context: RuleContext<any, an
             type: 'class',
             value: classValue,
             raw: classRaw,
-            range: [start, endOffset],
+            range: [startOffset, endOffset],
             loc: {
                 start: sourceCode.getLocFromIndex(startOffset),
                 end: sourceCode.getLocFromIndex(endOffset),

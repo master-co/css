@@ -27,6 +27,11 @@ test('Runtime - config changed', async ({ page, mount }) => {
     expect(await page.evaluate(() => globalThis.cssRuntime.text)).not.toContain('.btn{border:0.125rem var(--color-red) solid}')
 })
 
+test('Runtime - context injected', async ({ page, mount }) => {
+    await mount(RuntimeComponent)
+    await expect(page.locator('#runtime-context')).toHaveText('ready')
+})
+
 test('Runtime - root changed', async ({ page, mount }) => {
     await mount(RuntimeComponent)
     const $button = page.locator('#root-btn')
