@@ -59,6 +59,7 @@
         "react": ">=16"
     },
     "dependencies": {
+        "@master/css": "workspace:^",
         "@master/css-runtime": "workspace:^"
     },
     "devDependencies": {

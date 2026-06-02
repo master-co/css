@@ -3,12 +3,6 @@ import defaultConfig from '@master/css/config'
 import { extendConfig } from '@master/css/utils'
 import type { Config } from 'shared/css-config'
 
-export type CSSRuntimeConfigInput = Config | Config[]
-
-export function resolveCSSRuntimeConfig(config?: CSSRuntimeConfigInput) {
-    return extendConfig(defaultConfig, ...(Array.isArray(config) ? config : [config]))
-}
-
 /**
  * Initialize a new CSSRuntime instance and observe the target root
  * @param config master css config
@@ -16,10 +10,10 @@ export function resolveCSSRuntimeConfig(config?: CSSRuntimeConfigInput) {
  * @param autoObserve auto observe the target root
  * @returns master css instance
  */
-export default function initCSSRuntime(config?: CSSRuntimeConfigInput, root: Document | ShadowRoot = document, autoObserve = true): CSSRuntime {
+export default function initCSSRuntime(config?: Config, root: Document | ShadowRoot = document, autoObserve = true): CSSRuntime {
     let cssRuntime = globalThis.CSSRuntime.instances.get(root)
     if (cssRuntime) return cssRuntime
-    cssRuntime = new CSSRuntime(root, resolveCSSRuntimeConfig(config))
+    cssRuntime = new CSSRuntime(root, extendConfig(defaultConfig, config))
     if (autoObserve) cssRuntime.observe()
     return cssRuntime
 }

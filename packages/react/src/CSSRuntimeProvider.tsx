@@ -1,6 +1,8 @@
 'use client'
 
-import { CSSRuntime, initCSSRuntime, resolveCSSRuntimeConfig } from '@master/css-runtime'
+import { CSSRuntime, initCSSRuntime } from '@master/css-runtime'
+import defaultConfig from '@master/css/config'
+import { extendConfig } from '@master/css/utils'
 import { createContext, useContext, useRef, useState, ReactNode } from 'react'
 import type CSSRuntimeProviderProps from './types/provider-props'
 // fix: ReferenceError: React is not defined
@@ -29,7 +31,7 @@ export default function CSSRuntimeProvider(props: CSSRuntimeProviderProps) {
     /** on config change */
     useUpdateEffect(() => {
         if (cssRuntime.current) {
-            cssRuntime.current.refresh(resolveCSSRuntimeConfig(props.config))
+            cssRuntime.current.refresh(extendConfig(defaultConfig, props.config))
         }
     }, [props.config])
 

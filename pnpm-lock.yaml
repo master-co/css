@@ -1669,6 +1669,9 @@ importers:
 
   packages/react:
     dependencies:
+      '@master/css':
+        specifier: workspace:^
+        version: link:../core
       '@master/css-runtime':
         specifier: workspace:^
         version: link:../runtime
