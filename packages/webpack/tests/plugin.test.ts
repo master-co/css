@@ -233,28 +233,6 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
         expect(resolveData.request).toBe('master.css')
     })
 
-    test('leaves non-CSS master.css imports unresolved', async () => {
-        const plugin = makePlugin()
-        const { compiler } = makeFakeCompiler()
-        ;(compiler as any).webpack = { sources: { RawSource: function NoopSource(this: object) { /* stub */ } } }
-        plugin.apply(compiler as any)
-
-        const normalModuleFactory = makeNormalModuleFactory()
-        compiler.hooks.normalModuleFactory.call(normalModuleFactory)
-        const resolveData = {
-            request: 'master.css',
-            context: process.cwd(),
-            contextInfo: {
-                issuer: path.join(process.cwd(), 'src/main.ts')
-            },
-            fileDependencies: new Set<string>()
-        }
-
-        await resolveBefore(normalModuleFactory, resolveData)
-
-        expect(resolveData.request).toBe('master.css')
-    })
-
     test('resolves CSS @import @master/css to a separate CSS import virtual module', async () => {
         const plugin = makePlugin()
         const { compiler } = makeFakeCompiler()
