@@ -25,7 +25,7 @@
     <Step $row>
         <StepL>
             ### <StepNum />Create a configuration file
-            Run the command to create a [master.css](/guide/configuration) file.
+            Run the command to create a [project CSS entry](/guide/configuration).
         </StepL>
         <StepR>
             ```bash action=create
@@ -71,7 +71,7 @@
             ### <StepNum />Define local CSS
             Source stylesheets can contain ordinary CSS and `@master` definitions together. Ordinary class selectors are kept only when they appear in scanned source. Add `@master no-shake;` only when native CSS must be preserved as written.
 
-            (i) Import the stylesheet from `master.css` when you want its `@master {}` blocks to participate in the config graph.
+            (i) A stylesheet that imports `@master/css` is also a project CSS entry, so its `@master {}` blocks participate in the config graph.
         </StepL>
         <StepR>
             ```css name=src/style.css
@@ -88,7 +88,8 @@
             }
             ```
 
-            ```css name=master.css
+            ```css name=index.css
+            @master;
             @import './src/style.css';
             ```
         </StepR>

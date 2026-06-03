@@ -98,7 +98,8 @@ The `duration` and `easing` variable namespaces are shared across related rules:
 <MotionHeirs />
 This lets animation and transition use the same motion language without writing the `duration-` or `easing-` prefix in markup.
 
-```css name=master.css
+```css name=index.css
+@master;
 @master {
     --duration-fast: 150ms;
     --duration-slow: 300ms;
@@ -181,9 +182,10 @@ Use `@reduce-motion` to replace motion-heavy effects with a simpler state.
 ---
 
 ## Customize motion tokens
-Override motion tokens in `master.css` when your product needs a different rhythm. Keep duration and easing keys distinct because both namespaces are shared by `animation` and `transition` shorthands.
+Override motion tokens in the project CSS entry when your product needs a different rhythm. Keep duration and easing keys distinct because both namespaces are shared by `animation` and `transition` shorthands.
 
-```css name=master.css
+```css name=index.css
+@master;
 @master {
     --duration-fast: 120ms;
     --duration-slow: 280ms;

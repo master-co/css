@@ -15,7 +15,7 @@ Under the hood, Master CSS generates real CSS rules, adds [vendor prefixes](/gui
     Hello World
 </h1>
 ```
-[Declare styles](/guide/style-declarations) through the `class` attribute, attach [selector states](/guide/state-selectors), and scope them with [conditional queries](/guide/conditional-queries). For one-off styling, you can stay in markup. When styles become part of a design system, move tokens and reusable classes into [`master.css`](/guide/configuration).
+[Declare styles](/guide/style-declarations) through the `class` attribute, attach [selector states](/guide/state-selectors), and scope them with [conditional queries](/guide/conditional-queries). For one-off styling, you can stay in markup. When styles become part of a design system, move tokens and reusable classes into the [project CSS entry](/guide/configuration).
 
 You can use utility classes such as `text:center` for local decisions, or define config-backed [components](/guide/components) such as `btn` when a repeated class list becomes project vocabulary.
 
@@ -139,9 +139,10 @@ Master CSS is a standalone CSS framework with packages for core generation, brow
 </details>
 
 ### CSS-first configuration
-`master.css` is the primary configuration file. Tokens are native custom properties, selector shortcuts use `@custom-selector`, conditional shortcuts use `@custom-at`, low-level custom utilities live in `@layer general`, and semantic component classes live directly inside `@master`.
+The project CSS entry is the primary configuration source. Tokens are native custom properties, selector shortcuts use `@custom-selector`, conditional shortcuts use `@custom-at`, low-level custom utilities live in `@layer general`, and semantic component classes live directly inside `@master`.
 
-```css name=master.css
+```css name=index.css
+@master;
 @master {
     --color-primary: #4f46e5;
     --screen-md: 768;
@@ -275,8 +276,9 @@ Semantic secondary:
 
 Design tokens are a core methodology for practicing design systems. Master CSS [configuration](/guide/configuration) lets you abstract styles only when the abstraction carries product meaning.
 
-Assuming the card can be reused, define it as a main style using [components](/guide/components) in `master.css`:
-```css name=master.css
+Assuming the card can be reused, define it as a main style using [components](/guide/components) in the project CSS entry:
+```css name=index.css
+@master;
 @master {
     .card {
         @compose "flex ~transform|fast|smooth overflow:hidden bg:white r:xl";

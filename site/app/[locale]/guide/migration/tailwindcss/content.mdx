@@ -131,7 +131,8 @@ module.exports = {
     }
 }
 ```
-```css name=master.css
+```css name=index.css
+@master;
 @master {
     --screen-sm: 640;
     --screen-md: 768;
@@ -174,7 +175,8 @@ module.exports = {
     }
 }
 ```
-```css name=master.css
+```css name=index.css
+@master;
 @master {
     @custom-at tall @media (min-height: 800px);
 }
@@ -194,7 +196,8 @@ Use [components](/guide/components) and `@compose` to abstract styles instead of
     @apply py-2 px-5 bg-white hover:bg-black;
 }
 ```
-```css name=master.css
+```css name=index.css
+@master;
 @master {
     .btn {
         @compose "p:2x|5x bg:white";

@@ -12,7 +12,7 @@ export default {
         },
         {
             title: 'CSS',
-            name: 'master.css',
+            name: 'index.css',
             language: 'css' as const,
             id: nanoid(),
             content: require('./example.css?raw')

@@ -38,7 +38,8 @@ The same extraction model is used by build integrations and by tools that call `
 ## Source boundaries
 The extractor only sees files inside its source boundary. Configure that boundary with `@master source`, `@master source exclude`, and, when needed, `@master source force`.
 
-```css name=master.css
+```css name=index.css
+@master;
 @master source 'src/**/*.{html,js,jsx,ts,tsx,vue,svelte,astro,md,mdx}';
 @master source exclude 'src/**/*.test.tsx';
 @master source exclude 'src/**/*.stories.tsx';
@@ -46,7 +47,8 @@ The extractor only sees files inside its source boundary. Configure that boundar
 
 `@master source` broadly defines files that may contain classes. `@master source exclude` removes known noise such as tests, generated files, build output, and vendor code. `@master source force` is for mandatory files that should be scanned even if they would otherwise be excluded.
 
-```css name=master.css
+```css name=index.css
+@master;
 @master source 'app/**/*.{ts,tsx,mdx}';
 @master source exclude 'app/admin/**';
 @master source force 'app/admin/critical-classes.ts';
@@ -102,10 +104,11 @@ Words such as `function`, `return`, `No`, `invoices`, and `found` may be discove
 After candidate extraction, Master CSS validates each class against the active config graph. A candidate can be accepted in three common ways:
 
 - It is a built-in utility, such as `block`, `fg:red`, or `grid-cols:3`.
-- It is defined by your project config in `master.css`.
+- It is defined by your project config.
 - It matches a native class collected from a stylesheet that imports [`@master/css`](/guide/shaking-unused-classes).
 
-```css name=master.css
+```css name=index.css
+@master;
 @master {
     .btn {
         @compose "inline-flex ai:center px:md h:40 r:md";
@@ -130,7 +133,7 @@ export function Hero() {
 
 `hero-title` and `btn` are valid because the project config defines them. `grid`, `gap:xl`, `bg:primary`, and `fg:white` are validated through the utility engine.
 
-Configured classes are still on-demand. Defining `.btn` in `master.css` does not emit it by itself; `.btn` must appear in scanned source or be included through `@master class`.
+Configured classes are still on-demand. Defining `.btn` in the project CSS entry does not emit it by itself; `.btn` must appear in scanned source or be included through `@master class`.
 
 ---
 
@@ -219,15 +222,17 @@ If the class name itself only exists after the page is running, use [runtime ren
 ## Included and excluded classes
 Use `@master class` for bounded classes that do not exist in scanned source. Common cases include CMS enums, database values, server-rendered fragments, or a third-party widget with a known class contract.
 
-```css name=master.css
+```css name=index.css
+@master;
 @master class 'dialog-open translateY(-5):hover bg:primary@dark';
 ```
 
-`@master class` does not bypass validation. The class still needs to be a valid Master CSS class, a configured class from `master.css`, or a known native class from a shaken stylesheet.
+`@master class` does not bypass validation. The class still needs to be a valid Master CSS class, a configured class from project config, or a known native class from a shaken stylesheet.
 
 Use `@master class exclude` when broad scanning finds tokens that look like valid classes but should not generate CSS.
 
-```css name=master.css
+```css name=index.css
+@master;
 @master class exclude 'debug-*';
 @master class exclude 'example-token';
 ```

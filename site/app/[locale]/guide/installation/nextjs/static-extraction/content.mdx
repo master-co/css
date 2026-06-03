@@ -14,7 +14,7 @@
     <Step $row>
         <StepL>
             ### <StepNum />Create a configuration file
-            Run the command to create a [master.css](/guide/configuration) file.
+            Run the command to create a [project CSS entry](/guide/configuration).
         </StepL>
         <StepR>
             ```bash action=create
@@ -75,19 +75,6 @@
                     @compose "m:0 font:5xl font:heavy fg:strong";
                 }
             }
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
-            ### <StepNum />Author CSS config
-            Use `master.css` as the workspace entry for the CSS config graph.
-
-            (i) `@master {}` blocks can live in imported CSS files such as `app/globals.css`. The config compiler reads those blocks and ignores ordinary CSS outside `@master`.
-        </StepL>
-        <StepR>
-            ```css name=master.css
-            @import './app/globals.css';
             ```
         </StepR>
     </Step>

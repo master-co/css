@@ -62,7 +62,7 @@
     <Step $row>
         <StepL>
             ### <StepNum />Create a configuration file
-            Run the command to create a [master.css](/guide/configuration) file.
+            Run the command to create a [project CSS entry](/guide/configuration).
         </StepL>
         <StepR>
             ```bash action=create
@@ -84,7 +84,7 @@
     <Step $row>
         <StepL>
             ### <StepNum />Set up CSS runtime engine
-            Create a new file `npm_packages/src/index.js` and initialize the runtime engine. This manual setup uses the default runtime config; use an official build integration when application code needs to import the compiled `master.css` config object.
+            Create a new file `npm_packages/src/index.js` and initialize the runtime engine. This manual setup uses the default runtime config; use an official build integration when application code needs to import the compiled project config object.
         </StepL>
         <StepR>
             ```js name=npm_packages/src/index.js

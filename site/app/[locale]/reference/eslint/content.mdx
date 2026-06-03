@@ -157,32 +157,35 @@ Specifies object keys to ignore checking.
 </Code>
 
 ### `settings.config`
-Specify a custom Master CSS configuration or path. By default, it reads `master.css` based on the current working directory.
+Specify an explicit Master CSS configuration object. By default, ESLint loads the project CSS entry discovered from the current working directory.
 <Code lang="js" name="eslint.config.js">
 {`
     export default [
         {
             settings: {
                 "@master/css": {
-                    config: "${settings.config}"
+                    config: ${JSON.stringify(settings.config, null, 4)}
                 }
             }
         }
     ]
 `}
 </Code>
-If the `master.css` file cannot be found, you can specify the path:
+If the discovered project CSS entry is not the config you want for this ESLint run, pass an explicit config object:
 ```js name=eslint.config.js
-import { fileURLToPath } from 'node:url'
-
 export default [
     {
         settings: {
             "@master/css": {
-                config: fileURLToPath(new URL('master.css', import.meta.url))
+                config: {
+                    variables: {
+                        color: {
+                            primary: '#4f46e5'
+                        }
+                    }
+                }
             }
         }
     }
 ]
 ```
-

@@ -34,7 +34,7 @@ In the past, you added utility classes to your templates unsafely, lacking the c
 This is helpful if you make a typo or are unfamiliar with Master CSS syntax!
 
 ### Disallow unknown classes
-You can also restrict teams to using [configuration](/guide/configuration) to create [components](/guide/components) instead of defining classes through traditional `html <style>` or CSS files.
+You can also restrict teams to using [configuration](/guide/configuration) and [components](/guide/components) instead of defining classes through traditional `html <style>` or CSS files.
 
 (i) Based on syntax error checking, you can [disallow unknown classes](/reference/eslint#class-validation).
 <Image className="aspect:2/1 r:lg max-w:screen-xs w:full" src={require('~/site/public/disallow-unknown-class.webp').default} alt="Disallow unknown classes" unoptimized />
@@ -48,8 +48,9 @@ You can also restrict teams to using [configuration](/guide/configuration) to cr
 ```html
 <button class="inline-flex px:md">…</button>
 ```
-(o) Or create the custom style `btn` using [components](/guide/components) in `master.css`.
-```css name=master.css
+(o) Or create the custom style `btn` using [components](/guide/components) in the project CSS entry.
+```css name=index.css
+@master;
 @master {
     .btn {
         @compose "inline-flex px:md"; /* [!code highlight] */

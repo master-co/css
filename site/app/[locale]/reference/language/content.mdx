@@ -41,7 +41,7 @@ import declaration from '@master/css-language/declaration'
 ### Static and dynamic highlighting
 This package provides static [TextMate](https://macromates.com/manual/en/language_grammars) grammars. They are loaded by VS Code, Shiki, and other grammar consumers before any project configuration is known.
 
-Static grammar highlighting is intentionally configuration-independent. It can recognize stable Master CSS syntax such as declarations, values, selectors, queries, groups, functions, and punctuation, but it cannot know whether a token such as `brand`, `btn`, or `surface` comes from your `master.css.*` configuration.
+Static grammar highlighting is intentionally configuration-independent. It can recognize stable Master CSS syntax such as declarations, values, selectors, queries, groups, functions, and punctuation, but it cannot know whether a token such as `brand`, `btn`, or `surface` comes from your project configuration.
 
 For configuration-aware highlighting, use the [language service](/reference/language-service#settingsrendersemantictokens) through the [language server](/reference/language-server#semantic-tokens). The language server loads the workspace configuration, creates a configured Master CSS engine, and returns LSP semantic tokens for custom variables, components, utilities, and other parsed class parts.
 
@@ -103,7 +103,7 @@ Shiki uses the static grammar data from this package. It does not load project c
 Use the language service Shiki transformer when you need configuration-aware semantic token classes in Shiki output:
 ```ts
 import { transformerMasterCSSSemanticTokens } from '@master/css-language-service/shiki'
-import config from './master.css?master-css-config'
+import config from 'virtual:master-css-config'
 
 highlighter.codeToHtml(html, {
     lang: 'html',

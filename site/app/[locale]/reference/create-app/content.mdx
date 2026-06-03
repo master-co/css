@@ -1,7 +1,7 @@
 import MASTER_CSS_RAW from '~/site/../packages/create/src/master-css-template'
 
 ## Usage [sr-only]
-### Create a config file
+### Create a CSS entry
 Initialize Master CSS in an existing project.
 ```bash action=create
 @master/css@rc
@@ -17,15 +17,15 @@ Or you can specify an argument to create a new project, which by default uses th
 
 ## API Reference
 ### `create`
-Create a `master.css` config file in the current project.
-<DocProp defaultValue="'master.css'" types={['string']} />
+Create a project CSS entry in the current project.
+<DocProp defaultValue="'index.css'" types={['string']} />
 ```bash action=create
 @master/css@rc
 ```
 <details>
     <summary>View the generated file</summary>
     <div>
-        <Code lang="css" name="master.css">
+        <Code lang="css" name="index.css">
             {MASTER_CSS_RAW}
         </Code>
     </div>
@@ -46,7 +46,7 @@ Manually specify the package manager you are using.
 ```
 
 ### `create -o, --override`
-Override the existing Master CSS config file.
+Override the existing project CSS entry.
 <DocProp defaultValue="false" types={['boolean']} />
 ```bash action=create
 @master/css@rc --override

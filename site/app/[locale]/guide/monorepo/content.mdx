@@ -1,9 +1,9 @@
 ## Foreword [sr-only]
 The [Language Server](/reference/language-server) and [ESLint](/reference/eslint) both support the monorepo.
 
-By default, language server will form independent workspaces based on the location of the __master.css__ configuration files or `package.json` files that declare Master CSS package dependencies, independent of the package manager's workspace. The same goes for ESLint, which forms a new working directory based on the location of its configuration file.
+By default, language server forms independent workspaces from project CSS entries that contain `@master;` or `@import '@master/css'`, or from `package.json` files that declare Master CSS package dependencies, independent of the package manager's workspace. The same goes for ESLint, which forms a new working directory based on the location of its configuration file.
 
-Officially integrated packages or extensions will automatically read the __master.css__ configuration based on the current running directory. This means that you can start using it with zero configuration as long as you create a configuration file in the workspace, or declare a Master CSS dependency in that workspace's `package.json` when using the default configuration.
+Officially integrated packages or extensions automatically read the project CSS entry based on the current running directory. This means that you can start using it with zero configuration as long as you create a marked CSS entry in the workspace, or declare a Master CSS dependency in that workspace's `package.json` when using the default configuration.
 
 ---
 
@@ -12,7 +12,7 @@ Inside one `package.json` project, Master CSS supports one workspace instance. T
 
 Master CSS does not split a single package project into separate utility workspaces from multiple extraction outputs. For example, do not model one package as independent `admin.css` and `shop.css` extraction areas and expect the language service, ESLint, and build integrations to treat them as separate Master CSS workspaces.
 
-When different applications need cleanly separated CSS extraction, configuration, linting, and editor behavior, create separate projects in the monorepo. A typical structure is `projects/admin` and `projects/shop`, with each project owning its own `package.json`, `master.css`, and integration config.
+When different applications need cleanly separated CSS extraction, configuration, linting, and editor behavior, create separate projects in the monorepo. A typical structure is `projects/admin` and `projects/shop`, with each project owning its own `package.json`, CSS entry, and integration config.
 
 (i) This creates separate project boundaries for `projects/admin` and `projects/shop`.
 <ExplorerView>
@@ -21,16 +21,16 @@ When different applications need cleanly separated CSS extraction, configuration
         { name: 'admin', children: [
             { name: 'package.json' },
             { name: 'eslint.config.js' },
-            { name: 'master.css' }
+            { name: 'index.css' }
         ]},
         { name: 'shop', children: [
             { name: 'package.json' },
             { name: 'eslint.config.js' },
-            { name: 'master.css' }
+            { name: 'index.css' }
         ]}
     ]},
     { name: 'package.json' },
-    { name: 'master.css' }
+    { name: 'index.css' }
 ]}
 </ExplorerView>
 
@@ -38,8 +38,9 @@ This keeps each application's generated CSS, source scanning, diagnostics, and e
 
 ### Share the configuration
 In each workspace, import the shared CSS config files and add workspace-specific definitions after them.
-```css name=projects/admin/master.css
-@import '../../master.css';
+```css name=projects/admin/index.css
+@master;
+@import '../../index.css';
 
 @master {
     --color-primary: #4f46e5;
@@ -60,7 +61,7 @@ Later definitions in the workspace file can override root options, variables, to
         { name: 'globals.css' }
     ]},
     { name: 'package.json' },
-    { name: 'master.css' }
+    { name: 'index.css' }
 ]}
 </ExplorerView>
 
@@ -70,14 +71,14 @@ Later definitions in the workspace file can override root options, variables, to
     { name: 'projects', children: [
         { name: 'admin', children: [
             { name: 'package.json' },
-            { name: 'master.css' }
+            { name: 'index.css' }
         ]},
         { name: 'shop', children: [
             { name: 'package.json' },
-            { name: 'master.css' }
+            { name: 'index.css' }
         ]}
     ]},
-    { name: 'master.css' }
+    { name: 'index.css' }
 ]}
 </ExplorerView>
 

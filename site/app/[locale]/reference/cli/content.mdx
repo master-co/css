@@ -22,9 +22,9 @@ The command runs according to the preset [extractor options](/reference/extracto
 
 ### `extract -o, --output <path>`
 Watch for file changes and build continuously.
-<DocProp defaultValue="'master.css'" types={['string']} />
+<DocProp defaultValue="'.master/css.css'" types={['string']} />
 ```bash name=Terminal
-mcss extract --output master.css
+mcss extract --output .master/css.css
 ```
 
 ### `extract -v, --verbose`
@@ -47,13 +47,6 @@ The path in glob patterns of the source of the HTML file
 <DocProp types={['FastGlobPattern[]']} />
 ```bash name=Terminal
 mcss render "**/*.html"
-```
-
-### `render -c, --config <path>`
-The source path of the Master CSS [configuration](/guide/configuration).
-<DocProp defaultValue="'master.css.*'" types={['string']} />
-```bash name=Terminal
-mcss render "**/*.html" --config dir/master.css.js
 ```
 
 ### `render -a, --analyze`

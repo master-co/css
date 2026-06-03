@@ -39,12 +39,6 @@ In extract mode, import the generated stylesheet from your app stylesheet:
 }
 ```
 
-Use `master.css` as the workspace entry for the CSS config graph:
-
-```css name=master.css
-@import './app/globals.css';
-```
-
 Then enable extract mode:
 
 ```js name=next.config.mjs
@@ -60,24 +54,23 @@ const nextConfig = await withMasterCSS({
 export default nextConfig
 ```
 
-Extract mode uses source-glob scanning as the correctness baseline. A Turbopack CSS loader replaces `@import '@master/css'` with the generated CSS. CSS files that import `@master/css` are treated as native CSS shaking roots by default, so ordinary class selectors are pruned against detected classes; `var(--*)` and animation references can pull matching variables and keyframes from the config graph rooted at `master.css`. Add `@master no-shake;` when native CSS must be preserved. A scanner loader also scans JavaScript and TypeScript modules as they pass through the build, so imported files such as `app/main.ts` can incrementally feed new classes into the generated CSS. `@master {}` blocks can live in app stylesheets or other CSS files as long as they are imported by `master.css`.
+Extract mode uses source-glob scanning as the correctness baseline. A Turbopack CSS loader replaces `@import '@master/css'` with the generated CSS. CSS files that import `@master/css` are treated as native CSS shaking roots by default, so ordinary class selectors are pruned against detected classes; `var(--*)` and animation references can pull matching variables and keyframes from the project CSS entry graph. Add `@master no-shake;` when native CSS must be preserved. A scanner loader also scans JavaScript and TypeScript modules as they pass through the build, so imported files such as `app/main.ts` can incrementally feed new classes into the generated CSS.
 
 ### Client types
-Add `@master/css.next/client` to a project environment file when TypeScript imports `virtual:master-css-config` or `*.css?master-css-config`.
+Add `@master/css.next/client` to a project environment file when TypeScript imports `virtual:master-css-config`.
 
 ```ts name=master-css-env.d.ts
 /// <reference types="@master/css.next/client" />
 ```
 
 ### Config imports
-The integration exposes two config module forms:
+The integration exposes the canonical project-level config module:
 
 ```ts
 import config from 'virtual:master-css-config'
-import explicitConfig from './master.css?master-css-config'
 ```
 
-Use the virtual module for the configured default `master.css` file. Use the query form when a specific CSS config file should be compiled. Both are backed by [`@master/css-configer`](/reference/configer).
+Use the virtual module when application code should receive the same config graph that the integration discovered from the project CSS entry. It is backed by [`@master/css-configer`](/reference/configer).
 
 ---
 

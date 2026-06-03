@@ -14,7 +14,7 @@
     <Step $row>
         <StepL>
             ### <StepNum />Create a configuration file
-            Run the command to create a [master.css](/guide/configuration) file.
+            Run the command to create a [project CSS entry](/guide/configuration).
         </StepL>
         <StepR>
             ```bash action=create
@@ -47,16 +47,14 @@
     <Step $row>
         <StepL>
             ### <StepNum />Set up the CSS runtime engine
-            Create an App Router client boundary for `CSSRuntimeProvider` and load your `master.css` config through the Next.js adapter.
-
-            (i) Keep the `?master-css-config` query. A plain `.css` import is treated as a stylesheet by Next.js, while this query loads the compiled Master CSS config object.
+            Create an App Router client boundary for `CSSRuntimeProvider` and load the project-level config through the Next.js adapter.
         </StepL>
         <StepR>
             ```tsx name=app/client.tsx
             'use client'
 
             import CSSRuntimeProvider from '@master/css.react'
-            import config from '../master.css?master-css-config'
+            import config from 'virtual:master-css-config'
 
             export default function Client({ children }: { children: React.ReactNode }) {
                 return (
@@ -72,8 +70,6 @@
         <StepL>
             ### <StepNum />Author app CSS and config
             Keep the normal `app/globals.css` import in the root layout. The same stylesheet can import Master CSS defaults, hold regular CSS, and define `@master` blocks.
-
-            (i) Import the stylesheet from `master.css` when you want its `@master {}` blocks to participate in the config graph. Ordinary CSS outside `@master` still follows the app stylesheet pipeline.
         </StepL>
         <StepR>
             ```css name=app/globals.css
@@ -90,9 +86,6 @@
             }
             ```
 
-            ```css name=master.css
-            @import './app/globals.css';
-            ```
         </StepR>
     </Step>
     <Step $row>

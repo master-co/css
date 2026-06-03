@@ -25,7 +25,7 @@
     <Step $row>
         <StepL>
             ### <StepNum />Create a configuration file
-            Run the command to create a [master.css](/guide/configuration) file.
+            Run the command to create a [project CSS entry](/guide/configuration).
         </StepL>
         <StepR>
             ```bash action=create
@@ -65,7 +65,7 @@
     <Step $row>
         <StepL>
             ### <StepNum />Add client types
-            Add the Vite client types and Master CSS Vite client types before importing `master.css?master-css-config` from TypeScript.
+            Add the Vite client types and Master CSS Vite client types before importing `virtual:master-css-config` from TypeScript.
         </StepL>
         <StepR>
             ```ts name=src/vite-env.d.ts
@@ -85,7 +85,7 @@
             import { customElement } from 'lit/decorators.js'
             import { cssRuntime } from '@master/css-runtime' // [!code highlight]
             import type { CSSRuntime } from '@master/css-runtime' // [!code highlight]
-            import config from '../master.css?master-css-config' // [!code highlight]
+            import config from 'virtual:master-css-config' // [!code highlight]
 
             @customElement('my-element')
             @cssRuntime({ config }) // [!code highlight]

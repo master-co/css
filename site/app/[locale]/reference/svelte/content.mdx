@@ -41,7 +41,7 @@ The provider initializes a `CSSRuntime` for `document` by default, refreshes it 
 ```svelte
 <script lang="ts">
     import CSSRuntimeProvider from '@master/css.svelte'
-    import config from '../master.css?master-css-config'
+    import config from 'virtual:master-css-config'
 </script>
 
 <CSSRuntimeProvider {config}>
@@ -49,7 +49,7 @@ The provider initializes a `CSSRuntime` for `document` by default, refreshes it 
 </CSSRuntimeProvider>
 ```
 
-Use `virtual:master-css-config` when the active integration should load the default configured `master.css` file.
+Use `virtual:master-css-config` when the active integration should load the project-level config discovered from the CSS entry.
 
 ### Provider props
 ```ts

@@ -103,7 +103,7 @@ There is no second syntax and no separate critical CSS file to maintain. You sti
 
 For the full setup, follow [Progressive Rendering in Next.js](/guide/installation/nextjs). If your project needs a source-scanned CSS build instead, use [Static Extraction in Next.js](/guide/installation/nextjs/static-extraction).
 
-Create a `master.css` configuration file:
+Create a project CSS entry:
 
 ```bash action=create
 @master/css@rc
@@ -121,7 +121,7 @@ Create an App Router client boundary for the runtime provider:
 'use client'
 
 import CSSRuntimeProvider from '@master/css.react'
-import config from '../master.css?master-css-config'
+import config from 'virtual:master-css-config'
 
 export default function Client({ children }: { children: React.ReactNode }) {
     return (
@@ -132,7 +132,7 @@ export default function Client({ children }: { children: React.ReactNode }) {
 }
 ```
 
-Keep the `?master-css-config` query. A plain `.css` import is treated as a stylesheet by Next.js, while this query loads the compiled Master CSS config object.
+`virtual:master-css-config` loads the canonical project-level config object compiled by the Next.js adapter.
 
 Then wrap the root layout with that client boundary:
 
@@ -193,12 +193,6 @@ Extract mode uses the same Master CSS stylesheet import model as the other build
 }
 ```
 
-Use `master.css` as the workspace entry for that CSS config graph:
-
-```css name=master.css
-@import './app/globals.css';
-```
-
 Then enable extract mode in `next.config.mjs`:
 
 ```js name=next.config.mjs
@@ -216,7 +210,7 @@ export default nextConfig
 
 Under the hood, extract mode scans the configured source files with `@master/css-extractor` and writes a generated CSS file under `.master/`. A Turbopack CSS loader replaces `@import "@master/css"` with that generated CSS, and stylesheets that import `@master/css` are treated as native CSS shaking roots by default.
 
-Ordinary class selectors in those roots are pruned against detected classes. References to `var(--*)` or configured animation names can pull matching variables and keyframes from the config graph rooted at `master.css`. During Turbopack builds, a scanner loader also reads JavaScript and TypeScript modules that pass through the module graph, so imported files can incrementally feed additional class names into the extractor.
+Ordinary class selectors in those roots are pruned against detected classes. References to `var(--*)` or configured animation names can pull matching variables and keyframes from the project CSS entry graph. During Turbopack builds, a scanner loader also reads JavaScript and TypeScript modules that pass through the module graph, so imported files can incrementally feed additional class names into the extractor.
 
 This mode is intentionally source-scanned. It works best when complete class strings are visible in source files, and source-glob extraction remains the production correctness baseline.
 

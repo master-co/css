@@ -11,7 +11,7 @@ The package provides a convenient React provider and context for using `@master/
 The `CSSRuntimeProvider` will automatically initialize a `CSSRuntime` instance and manage it according to changes in config or root element.
 ```tsx
 import CSSRuntimeProvider from '@master/css.react'
-import config from './master.css?master-css-config'
+import config from 'virtual:master-css-config'
 
 export default function App({ children }) {
     return (
@@ -24,7 +24,7 @@ export default function App({ children }) {
 
 The provider calls `initCSSRuntime(config, root)` on mount, refreshes the runtime with `resolveRuntimeConfig(config)` when `config` changes, and recreates the runtime when `root` changes. It destroys the runtime on unmount.
 
-Use `virtual:master-css-config` when the integration should load the default configured `master.css` file, or `./master.css?master-css-config` when a specific CSS config file should be compiled.
+Use `virtual:master-css-config` when the integration should load the project-level config discovered from the CSS entry.
 
 ### `CSSRuntimeProviderProps`
 <Code lang="ts">{require('../../../../../packages/react/src/types/provider-props.ts?raw')}</Code>

@@ -8,7 +8,7 @@ The Master CSS Runtime has been separated from the `@master/css` package and is 
 ```js
 import { init } from '@master/css'; /* [!code --] */
 import { initCSSRuntime } from '@master/css-runtime' /* [!code ++] */
-import config from './master.css?master-css-config' /* [!code ++] */
+import config from 'virtual:master-css-config' /* [!code ++] */
 
 init() /* [!code --] */
 initCSSRuntime(config) /* [!code ++] */
@@ -45,7 +45,7 @@ Learn how to enable Master CSS progressive rendering in frameworks with [guides]
 ## Introducing configuration
 ### Using new custom variables
 Deprecate extended `colors` and `values` ​​in favor of the new `config.variables`.
-```js name=master.css.js
+```js name=config.js
 import { Style } from '@master/css' /* [!code --] */
 
 Style.extend('colors', { /* [!code --] */
@@ -93,7 +93,9 @@ Style.extend('classes', { /* [!code --] */
 }) /* [!code --] */
 ```
 
-```css name=master.css
+```css name=index.css
+@master;
+
 @master {
     .btn {
         @compose "…";
@@ -108,7 +110,7 @@ To learn more, check out the [Components](/guide/components) documentation.
 
 ### Merging media queries
 Deprecate extended `breakpoints` and `queries` ​​in favor of `config.variables` and `config.atTokens`.
-```js name=master.css.js
+```js name=config.js
 import { Style } from '@master/css' /* [!code --] */
 
 Style.extend('breakpoints', { /* [!code --] */
@@ -132,7 +134,7 @@ To learn more, check out the [at tokens](/guide/at-tokens) documentation.
 
 ### Unknown tokens as themes
 Deprecated `colorSchemes` and considered unknown media query tokens as themes.
-```js name=master.css.js
+```js name=config.js
 import { Style } from '@master/css' /* [!code --] */
 
 Style.colorSchemes.push('ocean'); /* [!code --] */
@@ -187,7 +189,7 @@ In v1, `$(key)` equals `var(--key)`.
 <div class="content:$(key)">var(--key)</div>
 ```
 In v2, `$key` accesses `config.variables.key` and falls back to `var(--key)` if not found.
-```js name=master.css.js
+```js name=config.js
 export default {
     variables: {
         key: '"`"'

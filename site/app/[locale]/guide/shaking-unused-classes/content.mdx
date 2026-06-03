@@ -323,9 +323,11 @@ Rules without class selectors, such as `body`, `html`, `:root`, and keyframes, a
 ---
 
 ## Config references
-Shaken native CSS can reference variables and keyframes from the config graph rooted at `master.css`. When a kept native rule uses `var(--*)` or a configured animation name, Master CSS includes the required config output.
+Shaken native CSS can reference variables and keyframes from the project CSS entry graph. When a kept native rule uses `var(--*)` or a configured animation name, Master CSS includes the required config output.
 
-```css name=master.css
+```css name=index.css
+@master;
+
 @master {
     --color-primary: #175cff;
 

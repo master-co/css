@@ -14,7 +14,7 @@ export default defineConfig({
 ```
 
 ### Client types
-Add `@master/css.vite/client` to the project environment file when TypeScript source files import `virtual:master-css-config` or `*.css?master-css-config`.
+Add `@master/css.vite/client` to the project environment file when TypeScript source files import `virtual:master-css-config`.
 
 ```ts name=src/vite-env.d.ts
 /// <reference types="vite/client" />
@@ -28,17 +28,16 @@ In extract mode, import the generated stylesheet from a source stylesheet.
 @import '@master/css';
 ```
 
-Source stylesheets that import `@master/css` are treated as native CSS shaking roots by default. Ordinary CSS outside `@master` is pruned against detected classes, and the import inserts generated Master CSS. Add `@master no-shake;` when native CSS must be preserved. If the same stylesheet contains `@master {}` config, import it from `master.css` so the config graph can read those definitions.
+Source stylesheets that import `@master/css` are treated as native CSS shaking roots by default. Ordinary CSS outside `@master` is pruned against detected classes, and the import inserts generated Master CSS. Add `@master no-shake;` when native CSS must be preserved. If the same stylesheet contains `@master {}` config, that stylesheet can also serve as the project CSS entry because `@import '@master/css'` is an entry marker.
 
 ### Config imports
-The plugin exposes two config module forms:
+The plugin exposes the canonical project-level config module:
 
 ```ts
 import config from 'virtual:master-css-config'
-import explicitConfig from './master.css?master-css-config'
 ```
 
-Use the virtual module for the plugin's configured default `master.css` file. Use the query form when a specific CSS config file should be compiled. Both are backed by [`@master/css-configer`](/reference/configer).
+Use the virtual module when application code should receive the same config graph that the plugin discovered from the project CSS entry. It is backed by [`@master/css-configer`](/reference/configer).
 
 ---
 

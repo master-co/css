@@ -24,7 +24,7 @@ Check out the [source code](https://github.com/master-co/css/blob/rc/packages/la
 const semanticTokens = languageService.renderSemanticTokens(textDocument)
 ```
 
-Semantic tokens are generated with the configured Master CSS engine, so custom variables, components, utilities, modes, and other config-dependent tokens can be classified after `master.css.*` is loaded by the caller.
+Semantic tokens are generated with the configured Master CSS engine, so custom variables, components, utilities, modes, and other config-dependent tokens can be classified after the project config is loaded by the caller.
 
 The default legend is exported for clients that need to decode or register the token types:
 ```js

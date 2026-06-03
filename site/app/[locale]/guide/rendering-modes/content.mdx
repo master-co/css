@@ -3,12 +3,12 @@ import CriticalCSSBenchmark from '../introduction/components/CriticalCSSBenchmar
 ## Overview [sr-only]
 <CriticalCSSBenchmark />
 
-Master CSS integrations choose how generated rules reach the browser. The same `master.css` config graph can be used by runtime rendering, static extraction, server rendering, and progressive hydration.
+Master CSS integrations choose how generated rules reach the browser. The same project CSS entry graph can be used by runtime rendering, static extraction, server rendering, and progressive hydration.
 
 | Mode                      | Description                                                                                                                                           |
 |---------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `'runtime'`               | Starts `CSSRuntime` in the browser, observes connected elements, and generates rules as class names appear. Vite can inject the runtime and default config module automatically. |
-| `'extract'`               | Scans source files, replaces `@import '@master/css'` in managed CSS entries, shakes native CSS, and generates CSS from the config graph rooted at `master.css`. |
+| `'extract'`               | Scans source files, replaces `@import '@master/css'` in managed CSS entries, shakes native CSS, and generates CSS from the project CSS entry graph. |
 | `'pre-render'`            | Renders HTML output and injects the critical CSS required by the rendered class names. This mode is usually owned by SSR/SSG integrations. |
 | `'progressive'`           | Combines pre-rendered first-page CSS with client-side runtime hydration for classes that appear after the initial HTML. |
 
@@ -146,7 +146,7 @@ const sheet = document.querySelector('style[id="master"]').sheet
 console.log(sheet.cssRules)
 ```
 
-When runtime code needs project tokens, modes, or component definitions, load the compiled config object from the integration. `virtual:master-css-config` resolves the default `master.css`; `./master.css?master-css-config` compiles a specific CSS config file.
+When runtime code needs project tokens, modes, or component definitions, load the compiled config object from the integration. `virtual:master-css-config` resolves the canonical project-level config discovered from the CSS entry.
 
 ```js
 import { initCSSRuntime } from '@master/css-runtime'
@@ -184,7 +184,7 @@ For example, the following HTML:
 Render the HTML:
 ```ts name=server.ts
 import { render } from '@master/css-server'
-import config from './master.css?master-css-config'
+import config from 'virtual:master-css-config'
 
 const indexHTML = readFileSync('./index.html', 'utf-8')
 
@@ -235,9 +235,10 @@ The CSS entry point is explicit: import `@master/css` from the stylesheet that s
 <StepSection>
     <Step>
         #### <StepNum />Load the extraction context
-        The integration creates an extractor with source directives, optional fixed classes, and the config graph rooted at `master.css`. In watch mode, config and source changes reset or update this context.
+        The integration creates an extractor with source directives, optional fixed classes, and the project CSS entry graph. In watch mode, config and source changes reset or update this context.
 
-        ```css name=master.css
+        ```css name=index.css
+        @master;
         @master source 'src/**/*.{html,js,jsx,ts,tsx,vue,svelte,astro,md,mdx}';
         ```
     </Step>
@@ -254,7 +255,9 @@ The CSS entry point is explicit: import `@master/css` from the stylesheet that s
         #### <StepNum />Validate candidates
         Each candidate is passed through the Master CSS engine. Valid classes insert rules into the same layers used by runtime and server rendering; invalid candidates are cached and skipped on later scans.
 
-        ```css name=master.css
+        ```css name=index.css
+        @master;
+
         @master {
             .btn {
                 @compose "inline-flex px:md";

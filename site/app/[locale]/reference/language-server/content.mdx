@@ -20,7 +20,7 @@ Check out the [source code](https://github.com/master-co/css/blob/rc/packages/la
 ### Semantic tokens
 The language server advertises `semanticTokensProvider` by default and handles `textDocument/semanticTokens/full` requests for open documents.
 
-Unlike static TextMate grammars, semantic tokens are resolved from the nearest workspace language service. This lets the server highlight config-dependent Master CSS tokens such as custom variables and components after loading `master.css.*`.
+Unlike static TextMate grammars, semantic tokens are resolved from the nearest workspace language service. This lets the server highlight config-dependent Master CSS tokens such as custom variables and components after loading the project CSS entry.
 
 When configuration or Master CSS settings change, the server requests a semantic token refresh from clients that support `workspace/semanticTokens/refresh`.
 
@@ -37,20 +37,20 @@ import { settings } from '@master/css-language-server'
 Specify the workspace where the independent [`CSSLanguageService`](/reference/language-service#csslanguageservice) should be created, always including the root workspace. See the [Monorepo](/guide/monorepo) documentation to understand the purpose of this option.
 <DocProp defaultValue={settings.workspaces} types={["FastGlobPattern[] | 'auto'"]} />
 
-By default `auto`, a new workspace is automatically created based on the location of the `master.css` / `master.css.*` configuration file or a `package.json` that declares a Master CSS package dependency. Dependency-based detection reads `dependencies`, `devDependencies`, `peerDependencies`, and `optionalDependencies`, so it works before `node_modules` is installed.
+By default `auto`, a new workspace is automatically created based on the location of a CSS file containing `@master;` or `@import '@master/css'`, or a `package.json` that declares a Master CSS package dependency. Dependency-based detection reads `dependencies`, `devDependencies`, `peerDependencies`, and `optionalDependencies`, so it works before `node_modules` is installed.
 
-(i) Automatically create `/`, `/apps/a`, and `/apps/b` workspaces.
+(i) Automatically create a project CSS entry`/`, `/apps/a`, and `/apps/b` workspaces.
 <ExplorerView>
 {[
     { name: 'apps', children: [
         { name: 'a', children: [
-            { name: 'master.css.js' }
+            { name: 'index.css' }
         ]},
         { name: 'b', children: [
             { name: 'package.json' }
         ]},
     ]},
-    { name: 'master.css.js' }
+    { name: 'index.css' }
 ]}
 </ExplorerView>
 
@@ -61,7 +61,7 @@ By default `auto`, a new workspace is automatically created based on the locatio
 {[
     { name: 'apps', children: [
         { name: 'a', children: [
-            { name: 'master.css.js' }
+            { name: 'index.css' }
         ]},
         { name: 'b' }
     ]}
@@ -80,11 +80,11 @@ It creates `/` and `/apps/b` workspaces.
 {[
     { name: 'apps', children: [
         { name: 'a', children: [
-            { name: 'master.css.js' }
+            { name: 'index.css' }
         ]},
         { name: 'b' }
     ]},
-    { name: 'master.css.js' }
+    { name: 'index.css' }
 ]}
 </ExplorerView>
 

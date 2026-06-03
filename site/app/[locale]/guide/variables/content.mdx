@@ -1,6 +1,6 @@
 ## Overview [sr-only]
 <Default />
-In Master CSS, variables are design tokens defined in `master.css` with native custom property declarations. They can represent colors, spacing, typography, shadows, screen sizes, motion tokens, generated content, and mode-specific theme values.
+In Master CSS, variables are design tokens defined in the project CSS entry with native custom property declarations. They can represent colors, spacing, typography, shadows, screen sizes, motion tokens, generated content, and mode-specific theme values.
 <Overview />
 
 ---
@@ -8,7 +8,8 @@ In Master CSS, variables are design tokens defined in `master.css` with native c
 ## Add variables
 Define variables inside the root `@master` block.
 
-```css name=master.css
+```css name=index.css
+@master;
 @master {
     --content-hash: " #";
     --content-external: " ↗";
@@ -32,7 +33,8 @@ The property prefix after `--` becomes the variable namespace. For example, `--c
 ## Use custom colors
 Add custom colors with native color values.
 
-```css name=master.css
+```css name=index.css
+@master;
 @master {
     --color-primary: #1192e8;
     --color-primary-10: #e5f6ff;
@@ -59,7 +61,8 @@ If a color is used only once, you can keep it inline in markup instead of creati
 ## Add aliases
 Reference another token with `$`.
 
-```css name=master.css
+```css name=index.css
+@master;
 @master {
     --color-brand: #4f46e5;
     --color-primary: $color-brand;
@@ -78,7 +81,8 @@ Reference another token with `$`.
 ## Add mode variables
 Use `@mode` blocks for theme-specific values.
 
-```css name=master.css
+```css name=index.css
+@master;
 @master {
     @mode light {
         --color-primary: #4f46e5;
@@ -108,7 +112,8 @@ See [variables and modes](/guide/variables-and-modes) for mode triggers, default
 ## Override preset variables
 Define the same token key as a preset token to override it.
 
-```css name=master.css
+```css name=index.css
+@master;
 @master {
     --color-blue: #4589ff;
 }

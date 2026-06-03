@@ -1,9 +1,11 @@
 ## Overview [sr-only]
-`master.css` is the primary configuration file for Master CSS. It is where your project turns CSS knowledge into a configured design system: tokens are written as custom properties, conditions are written as at-rules, selectors stay selectors, and reusable UI patterns are written as class rules.
+Your project CSS entry is the primary configuration source for Master CSS. It is where your project turns CSS knowledge into a configured design system: tokens are written as custom properties, conditions are written as at-rules, selectors stay selectors, and reusable UI patterns are written as class rules.
 
 That makes configuration feel closer to authoring CSS than filling out a JavaScript object. A single file can describe the scale of the system, the tokens it exposes, the conditions it understands, the general utilities it adds, and the main styles it abstracts.
 
-```css name=master.css
+```css name=index.css
+@master;
+
 @master {
     root-size: 16;
     base-unit: 4;
@@ -49,7 +51,7 @@ That makes configuration feel closer to authoring CSS than filling out a JavaScr
 
 The `@master` rules are configuration, not regular stylesheet output. They are compiled into a Master CSS config object, then the engine generates CSS only for classes that appear in markup or are found by extractors.
 
-If you do not have a `master.css` file yet, create one from the starter command:
+If you do not have a CSS entry yet, create one from the starter command:
 
 ```bash action=create
 @master/css@rc
@@ -58,13 +60,14 @@ If you do not have a `master.css` file yet, create one from the starter command:
 ---
 
 ## Why CSS configuration
-CSS-first configuration keeps the design system close to the platform. Instead of moving every decision into JavaScript, `master.css` lets CSS carry the structure of the system.
+CSS-first configuration keeps the design system close to the platform. Instead of moving every decision into JavaScript, the project CSS entry lets CSS carry the structure of the system.
 
 For teams, that means the configuration can be reviewed like CSS. Designers and engineers can read token declarations, scan main style rules, and understand where custom utilities in the general layer come from. For tooling, it means one config graph can be compiled ahead of time and shared with renderers, extractors, language services, framework integrations, and lint rules.
 
-Build integrations use `master.css` as the default entry for this graph. The file can define `@master` content directly, or import local CSS files that contain `@master` blocks. Use native CSS imports when the file grows; this keeps tokens, general utilities, main styles, and animations in focused files without inventing a separate module system.
+Build integrations discover the default graph from project CSS files that contain `@master;` or `@import '@master/css'`. The entry can define `@master` content directly, or import local CSS files that contain `@master` blocks. Use native CSS imports when the file grows; this keeps tokens, general utilities, main styles, and animations in focused files without inventing a separate module system.
 
-```css name=master.css
+```css name=index.css
+@master;
 @import './styles/theme.css';
 @import './styles/animations.css';
 @import './styles/btn.css';
@@ -85,7 +88,7 @@ Local relative CSS imports are resolved as one configuration graph. Only `@maste
 Only `@master` sections become configuration. Defining `.btn` this way does not emit `.btn` immediately; Master CSS still generates CSS only after `btn` is used by the active renderer or discovered by tooling.
 
 ### Config graph and style entries
-`master.css` is the config graph root. It can import files that contain tokens, mode blocks, custom at tokens, custom selector tokens, main styles, general utilities, and keyframes. Build integrations load this graph automatically when their `config` option points to `master.css`.
+The project CSS entry is the config graph root. It can import files that contain tokens, mode blocks, custom at tokens, custom selector tokens, main styles, general utilities, and keyframes. Build integrations load this graph automatically from the discovered entry, or from an explicit `Config` object passed to their `config` option.
 
 Application stylesheets are different: they are browser-facing CSS entries. Import `@master/css` from the stylesheet your app already loads when that entry should receive generated Master CSS and default base/theme/utility definitions.
 
@@ -97,20 +100,25 @@ Application stylesheets are different: they are browser-facing CSS entries. Impo
 }
 ```
 
-If that same stylesheet also contains `@master {}` blocks, import it from `master.css` so those blocks participate in the config graph.
+If that same stylesheet also contains `@master {}` blocks, it can be the project entry itself because `@import '@master/css'` is also an entry marker.
 
-```css name=master.css
-@import './src/style.css';
+```css name=src/style.css
+@import '@master/css';
+
+@master {
+    --color-primary: #4f46e5;
+}
 ```
 
-This keeps two responsibilities explicit: `master.css` owns configuration, while app stylesheets own CSS output and native CSS shaking roots.
+This keeps the mental model small: the stylesheet that imports `@master/css` receives generated CSS, and its import graph also provides project-level config.
 
 ---
 
 ## Variables and modes
-Variables are design tokens. In `master.css`, write them as native custom property declarations inside `@master`.
+Variables are design tokens. In the project CSS entry, write them as native custom property declarations inside `@master`.
 
-```css name=master.css
+```css name=index.css
+@master;
 @master {
     --color-primary: #4f46e5;
     --color-panel: #ffffff;
@@ -130,7 +138,8 @@ Token names are contextual. `primary` resolves as a color in `bg:primary`, `sans
 
 Mode-specific values live in `@mode` blocks. `light` and `dark` are always available, and new modes are added when you define them.
 
-```css name=master.css
+```css name=index.css
+@master;
 @master {
     @mode light {
         --color-panel: #ffffff;
@@ -155,7 +164,8 @@ For deeper behavior, mode switching, default mode, and mode triggers, continue t
 ## Custom at tokens
 Use `@custom-at` to name reusable `@media`, `@supports`, `@container`, and similar at-rules. This is useful when the condition has meaning in your product, not just in the browser syntax.
 
-```css name=master.css
+```css name=index.css
+@master;
 @master {
     @custom-at motion-safe @media (prefers-reduced-motion: no-preference);
     @custom-at supports-backdrop @supports (backdrop-filter: blur(0));
@@ -172,7 +182,8 @@ Use them in markup as at-rule suffixes:
 
 Inside CSS-defined main styles and general utilities, prefer `@at` blocks so the utility list stays plain.
 
-```css name=master.css
+```css name=index.css
+@master;
 @master {
     .toast {
         @at motion-safe {
@@ -189,7 +200,8 @@ See [At Tokens](/guide/at-tokens) for naming rules and conflict behavior.
 ## Custom selector tokens
 Use `@custom-selector` to name selectors that repeat across general utilities or main style definitions. The token keeps markup readable while the generated CSS still uses the real selector.
 
-```css name=master.css
+```css name=index.css
+@master;
 @master {
     @custom-selector :headings :is(h1, h2, h3, h4, h5, h6);
     @custom-selector :interactive :is(:hover, :focus-visible);
@@ -205,7 +217,8 @@ Use `@custom-selector` to name selectors that repeat across general utilities or
 
 Nested component selectors can use the same tokens:
 
-```css name=master.css
+```css name=index.css
+@master;
 @master {
     .link {
         &:interactive {
@@ -222,7 +235,8 @@ See [Selector Tokens](/guide/selector-tokens) for selector token usage in markup
 ## General utilities
 Use `@layer general` inside `@master` for reusable primitives that should behave like utility classes. These are not semantic components; they are low-level capabilities you want available everywhere. CSS-defined general utilities are static utilities: one class name maps to one set of native declarations.
 
-```css name=master.css
+```css name=index.css
+@master;
 @master {
     @layer general {
         .content-auto {
@@ -250,7 +264,8 @@ General utilities cannot use `@compose`. If the class describes a semantic UI pa
 ## Main styles
 Main styles are named style compositions for UI patterns such as `.btn`, `.card`, `.field`, and `.page`. They let you turn repeated class lists into project vocabulary without emitting unused CSS.
 
-```css name=master.css
+```css name=index.css
+@master;
 @master {
     .btn {
         @compose "inline-flex ai:center jc:center gap:xs px:md py:xs r:lg font:sm font:medium";
@@ -289,7 +304,8 @@ Use [Reusing Styles](/guide/reusing-styles) for the design strategy around when 
 ## Animations
 Put keyframes in `@master`. They become config-backed animations and are emitted only when a generated class or declaration references them.
 
-```css name=master.css
+```css name=index.css
+@master;
 @master {
     @keyframes fade-in {
         from { opacity: 0; }
@@ -321,9 +337,9 @@ Animations are emitted outside cascade layers, while animation-related utilities
 ## Functions
 Functions are the programmatic extension point for custom value transforms. Because a function transformer is executable JavaScript, define advanced custom functions in a JavaScript or TypeScript config object and merge it with CSS-derived config when needed.
 
-```ts name=master.css.ts
+```ts name=config.ts
 import { extendConfig, type Config } from '@master/css'
-import cssConfig from './master.css?master-css-config'
+import cssConfig from 'virtual:master-css-config'
 
 const config: Config = extendConfig(cssConfig, {
     functions: {
@@ -334,18 +350,19 @@ const config: Config = extendConfig(cssConfig, {
 export default config
 ```
 
-If TypeScript cannot resolve the `?master-css-config` import, add the client type reference for the integration that compiles the CSS config, such as `@master/css.vite/client`, `@master/css.next/client`, or `@master/css.webpack/client`.
+If TypeScript cannot resolve the virtual import, add the client type reference for the integration that compiles the CSS config, such as `@master/css.vite/client`, `@master/css.next/client`, or `@master/css.webpack/client`.
 
-For most design-system work, prefer variables, static utilities in the general layer, main styles, and built-in Master CSS functions in `master.css`. Reach for `functions` only when a token or utility declaration cannot express the transformation.
+For most design-system work, prefer variables, static utilities in the general layer, main styles, and built-in Master CSS functions in the project CSS entry. Reach for `functions` only when a token or utility declaration cannot express the transformation.
 
 ---
 
 ## Root options
 Root options live in the base `@master` block. They are the small set of decisions that shape every generated rule: how numbers convert to units, how spacing scales, where selectors are scoped, and how modes are written.
 
-Most projects set these once near the top of `master.css`, then spend most of their time defining tokens, general utilities, and main styles below them.
+Most projects set these once near the top of the project CSS entry, then spend most of their time defining tokens, general utilities, and main styles below them.
 
-```css name=master.css
+```css name=index.css
+@master;
 @master {
     root-size: 16;
     base-unit: 4;
@@ -360,7 +377,8 @@ Use `root-size` when the project has a different root font-size convention. Mast
 
 <DocProp defaultValue="16" types={['number']} />
 
-```css name=master.css
+```css name=index.css
+@master;
 @master {
     root-size: 10;
 }
@@ -396,7 +414,8 @@ Use `scope` when Master CSS should only affect a specific application root, such
 
 <DocProp defaultValue="''" types={['string']} />
 
-```css name=master.css
+```css name=index.css
+@master;
 @master {
     scope: #app;
 }
@@ -413,7 +432,8 @@ Use `important` only when the surrounding cascade is hard to control, such as wh
 
 <DocProp defaultValue="false" types={['boolean']} />
 
-```css name=master.css
+```css name=index.css
+@master;
 @master {
     important;
 }
@@ -432,7 +452,8 @@ Use `default-mode` to decide which mode should also apply when no explicit mode 
 
 <DocProp defaultValue="'light'" types={["'light'", "'dark'", 'string', 'false']} />
 
-```css name=master.css
+```css name=index.css
+@master;
 @master {
     default-mode: light;
 }
@@ -440,7 +461,8 @@ Use `default-mode` to decide which mode should also apply when no explicit mode 
 
 Set it to `false` when the application should not attach any mode to `:root` by default.
 
-```css name=master.css
+```css name=index.css
+@master;
 @master {
     default-mode: false;
 }
@@ -451,7 +473,8 @@ Use `mode-trigger` to choose how mode-specific values are emitted. System-driven
 
 <DocProp defaultValue="'media'" types={["'media'", "'class'", "'host'"]} />
 
-```css name=master.css
+```css name=index.css
+@master;
 @master {
     mode-trigger: class;
 }
@@ -462,7 +485,7 @@ Variables and mode behavior are covered in [Variables and Modes](/guide/variable
 ---
 
 ## Programmatic config
-`master.css` should be the default source of truth, but the core API still accepts config objects.
+The project CSS entry should be the default source of truth, but the core API still accepts explicit config objects.
 
 ```ts
 import { MasterCSS, config, createCSS, extendConfig } from '@master/css'
@@ -478,30 +501,24 @@ const merged = extendConfig(config, {
 const engine = new MasterCSS(merged)
 ```
 
-Use programmatic config for tests, library presets, integration glue, and executable extension points. Use `master.css` for app-level tokens, general utilities, main styles, selectors, at tokens, animations, and structural CSS config.
+Use programmatic config for tests, library presets, integration glue, and executable extension points. Use the project CSS entry for app-level tokens, general utilities, main styles, selectors, at tokens, animations, and structural CSS config.
 
 ---
 
 ## Import compiled config
-Most projects let the integration load `master.css` automatically. When application code needs the compiled config object, import the default virtual config module:
+Most projects let the integration load the project CSS entry automatically. When application code needs the compiled config object, import the default virtual config module:
 
 ```ts
 import config from 'virtual:master-css-config'
 ```
 
-The virtual module resolves the integration's configured `master.css` file. When you need a specific CSS config file instead, import it with the integration query:
+The virtual module is the canonical project-level config API. It resolves the integration's discovered or configured project CSS entry and returns the compiled JavaScript config object.
 
-```ts
-import config from './master.css?master-css-config'
-```
-
-The query tells the integration to compile that CSS configuration file and return a JavaScript config object. Without the query, a `.css` import follows the normal stylesheet pipeline.
-
-Use this when a server hook, runtime initializer, test, or framework adapter needs the same config object that comes from `master.css`.
+Use this when a server hook, runtime initializer, test, or framework adapter needs the same project config object that the build integration uses.
 
 ```ts
 import { initCSSRuntime } from '@master/css-runtime'
-import config from './master.css?master-css-config'
+import config from 'virtual:master-css-config'
 
 initCSSRuntime(config)
 ```
@@ -530,4 +547,4 @@ Configuration changes affect the generated CSS model. The default `@master/css/b
 - Animations generate keyframes only when referenced.
 - Root options such as `scope`, `important`, `root-size`, and `base-unit` alter generated rules globally.
 
-This is why CSS configuration pairs well with static extraction and build integrations: `master.css` can contain the whole design system, while the final stylesheet still contains only the pieces used by the application.
+This is why CSS configuration pairs well with static extraction and build integrations: the project CSS entry can contain the whole design system, while the final stylesheet still contains only the pieces used by the application.

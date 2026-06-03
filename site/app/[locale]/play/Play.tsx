@@ -362,7 +362,7 @@ export default function Play({ shareId }: PlayProps = {}) {
                 type: 'error',
                 lineno: 1,
                 message: getErrorMessage(error),
-                filename: 'master.css',
+                filename: 'index.css',
                 datetime: new Date()
             })
         } finally {

@@ -51,4 +51,4 @@ import {
 | `toVirtualDefaultConfigModulePath(context)` | Creates the virtual path for the default config module. |
 | `toVirtualCSSConfigModulePath(context, file)` | Creates a virtual path for a specific queried CSS config file. |
 
-Use `virtual:master-css-config` when application code should receive the integration's default config. Use `./index.css?master-css-config` when the code should compile one explicit CSS resource through the active integration.
+Use `virtual:master-css-config` when application code should receive the integration's canonical project-level config. Use `./index.css?master-css-config` only when the code intentionally compiles one explicit CSS resource through the active integration.

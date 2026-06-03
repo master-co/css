@@ -6,7 +6,8 @@ As the styles grow, the class name combinations and the same design patterns app
 Writing `.btn` at the top level of a stylesheet creates a normal CSS rule. It is emitted by your stylesheet pipeline as native CSS, and Master CSS does not treat `btn` as a generated class. Writing `.btn` inside `@master` defines a config-backed component class instead: it is generated on demand only when `btn` is used or extracted, emitted in the `main` cascade layer, and can use Master CSS features such as `@compose`, nested selectors, `@at` conditions, modes, and variant suffixes in markup.
 
 This guide focuses on the strategy of when to abstract; for the full configuration surface, start with [CSS Configuration](/guide/configuration), and for exact component behavior, see [Components](/guide/components).
-```css name=master.css
+```css name=index.css
+@master;
 @master {
     .btn {
         display: inline-flex;
@@ -56,7 +57,8 @@ Create an abstract style using Master CSS syntaxes.
 
 ### Add a style with states
 Create an abstract style with [state selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
-```css name=master.css
+```css name=index.css
+@master;
 @master {
     .btn:focus {
         outline: 0.125rem var(--color-invert) solid;
@@ -78,7 +80,8 @@ Create an abstract style with [state selectors](/guide/state-selectors) and [con
 
 ### Add styles in a nested structure
 Create and manage a set of abstract styles for a shared structure. Keep each generated class explicit so markup, output, and config stay easy to trace.
-```css name=master.css
+```css name=index.css
+@master;
 @master {
     .card {
         border-radius: 0.5rem;
@@ -116,7 +119,7 @@ As usual, you can split the styles into multiple files for management. When the 
         { name: 'button.css' },
         { name: 'base.css' }
     ]},
-    { name: 'master.css' }
+    { name: 'index.css' }
 ]}
 </ExplorerView>
 
@@ -152,7 +155,8 @@ Let's implement a rich button.
 }
 ```
 Import component files from the CSS config entry.
-```css name=master.css
+```css name=index.css
+@master;
 @import './styles/button.css';
 ```
 

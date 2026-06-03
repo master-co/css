@@ -1,7 +1,7 @@
 ## Overview [sr-only]
 Design tokens are named decisions in your design system. They give shared meaning to color, spacing, typography, corner radius, elevation, motion, and responsive breakpoints, so the same class names produce consistent interfaces across product surfaces.
 
-Master CSS includes a set of preset foundation tokens, and each project can extend or override them in `master.css`. Use a token-first approach: choose the configured token that communicates intent before reaching for low-level values such as `6x`, `1rem`, `24px`, raw colors, or raw shadows.
+Master CSS includes a set of preset foundation tokens, and each project can extend or override them in the project CSS entry. Use a token-first approach: choose the configured token that communicates intent before reaching for low-level values such as `6x`, `1rem`, `24px`, raw colors, or raw shadows.
 
 <Demo>
     <div className="container w:full">
@@ -243,7 +243,8 @@ When the reason is not obvious, prefer a token or add a small note in the surrou
 ## Add project tokens
 Create a project token when a value is reused, named in design specs, shared across components, or expected to change by theme or mode.
 
-```css name=master.css
+```css name=index.css
+@master;
 @master {
     --spacing-card: 24;
     --border-radius-card: 12;
