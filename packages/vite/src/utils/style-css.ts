@@ -24,6 +24,7 @@ import {
 } from '@master/css-configer/css'
 import type { PluginContext } from '../core'
 import { readFile } from 'node:fs/promises'
+import { getExtractor } from './extractor-context'
 
 export {
     STYLE_CSS_REQUEST_RE,
@@ -58,7 +59,7 @@ export function hasMasterCSSImport(code: string) {
 
 export async function registerStyleCSSSource(context: PluginContext, id: string, source: string) {
     context.styleCSSSources ??= new Map()
-    return registerExtractorStyleCSSSource(context.extractor, context.styleCSSSources, id, source, {
+    return registerExtractorStyleCSSSource(getExtractor(context), context.styleCSSSources, id, source, {
         projectDir: context.config?.root
     })
 }

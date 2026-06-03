@@ -1,6 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
 import path from 'node:path'
-import CSSExtractor from '@master/css-extractor'
 import { ConfigVirtualModulePlugin } from '../../src/plugins/config-virtual-module'
 import {
     RESOLVED_VIRTUAL_CONFIG_ID
@@ -23,20 +22,18 @@ function parseDefaultExport(code: string) {
     return JSON.parse(code.replace(/^export default /, '').replace(/;$/, ''))
 }
 
-async function createContext(root = path.join(FIXTURE_DIR, 'css-only')) {
+function createContext(root = path.join(FIXTURE_DIR, 'css-only')) {
     const viteConfig = createResolvedConfig(root)
     const context = {
-        config: viteConfig,
-        extractor: new CSSExtractor({ include: [] }, root)
+        config: viteConfig
     } as any
-    await context.extractor.init()
     return { context, viteConfig }
 }
 
 describe('ConfigVirtualModulePlugin', () => {
     it('loads the default virtual config from the managed CSS entry', async () => {
         const root = path.join(FIXTURE_DIR, 'css-only')
-        const { context, viteConfig } = await createContext(root)
+        const { context, viteConfig } = createContext(root)
         const plugin = ConfigVirtualModulePlugin({}, context)
 
         const code = await (plugin.load as any).call({}, RESOLVED_VIRTUAL_CONFIG_ID)
@@ -68,8 +65,7 @@ describe('ConfigVirtualModulePlugin', () => {
 
     it('handles unimported CSS config changes through CSS HMR only', async () => {
         const root = path.join(FIXTURE_DIR, 'css-only')
-        const { context } = await createContext(root)
-        context.extractor.reset = vi.fn(async () => undefined)
+        const { context } = createContext(root)
         const plugin = ConfigVirtualModulePlugin({}, context)
         const buttonConfigPath = path.join(root, 'styles/button.css')
         const module = { importers: new Set() }
@@ -88,7 +84,6 @@ describe('ConfigVirtualModulePlugin', () => {
             }
         })
 
-        expect(context.extractor.reset).toHaveBeenCalledWith(context.extractor.options)
         expect(invalidateModule).toHaveBeenCalledWith(module)
         expect(send).not.toHaveBeenCalled()
         expect(result).toEqual([])
@@ -96,8 +91,7 @@ describe('ConfigVirtualModulePlugin', () => {
 
     it('full reloads when the default virtual config module is imported', async () => {
         const root = path.join(FIXTURE_DIR, 'css-only')
-        const { context } = await createContext(root)
-        context.extractor.reset = vi.fn(async () => undefined)
+        const { context } = createContext(root)
         const plugin = ConfigVirtualModulePlugin({}, context)
         const importer = {}
         const module = { importers: new Set([importer]) }
@@ -117,7 +111,6 @@ describe('ConfigVirtualModulePlugin', () => {
             }
         })
 
-        expect(context.extractor.reset).toHaveBeenCalledWith(context.extractor.options)
         expect(invalidateModule).toHaveBeenCalledWith(module)
         expect(send).toHaveBeenCalledWith({
             type: 'full-reload',

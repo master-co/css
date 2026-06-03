@@ -1,5 +1,8 @@
 import { describe, expect, test } from 'vitest'
-import VirtualCSSImportPlugin, { replaceMasterCSSImport } from '../../src/plugins/virtual-css-import'
+import ExtractCSSPlugin, {
+    StyleCSSPlugin,
+    replaceMasterCSSImport
+} from '../../src/plugins/virtual-css-import'
 
 const SLOT = '#master-css-slot{--slot:0}'
 const VIRTUAL_CSS_ID = 'virtual:master-utilities.css'
@@ -49,7 +52,7 @@ describe('VirtualCSSImportPlugin', () => {
 
     test('build load emits the slot placeholder for bundle-time replacement', async () => {
         const context = makeContext('build')
-        const plugin = VirtualCSSImportPlugin({ mode: 'extract' } as any, context)
+        const plugin = ExtractCSSPlugin({ mode: 'extract' } as any, context)
 
         expect((plugin as any).resolveId(VIRTUAL_CSS_ID)).toBe(RESOLVED_VIRTUAL_CSS_ID)
         const result = await (plugin as any).load.call({}, RESOLVED_VIRTUAL_CSS_ID)
@@ -61,7 +64,7 @@ describe('VirtualCSSImportPlugin', () => {
 
     test('serve load inlines current extracted CSS and tracks the virtual CSS module for HMR', async () => {
         const context = makeContext('serve', '.fg\\:red{color:red}')
-        const plugin = VirtualCSSImportPlugin({ mode: 'extract' } as any, context)
+        const plugin = ExtractCSSPlugin({ mode: 'extract' } as any, context)
 
         const result = await (plugin as any).load.call({}, RESOLVED_VIRTUAL_CSS_ID)
 
@@ -70,16 +73,25 @@ describe('VirtualCSSImportPlugin', () => {
         expect(context.virtualCSSPlaceholderEmitted).toBeUndefined()
     })
 
-    test('returns empty virtual CSS outside extract mode', async () => {
-        const context = makeContext('serve', '.fg\\:red{color:red}')
-        const plugin = VirtualCSSImportPlugin({ mode: 'runtime' } as any, context)
+    test('style cleanup plugin removes Master directives without registering extract sources', async () => {
+        const context = makeContext('build')
+        const plugin = StyleCSSPlugin(context)
 
-        await expect((plugin as any).load.call({}, RESOLVED_VIRTUAL_CSS_ID)).resolves.toBe('')
+        const result = await (plugin as any).transform.call(
+            {},
+            '@import "@master/css";\n@master no-shake;\n.card{color:red}',
+            '/project/src/style.css'
+        )
+
+        expect(result.code).toContain('@import "@master/css";')
+        expect(result.code).toContain('.card{color:red}')
+        expect(result.code).not.toContain('@master no-shake')
+        expect(context.styleCSSSources).toBeUndefined()
     })
 
     test('treats @master/css import stylesheets as managed shaken CSS entries', async () => {
         const context = makeContext('build')
-        const plugin = VirtualCSSImportPlugin({ mode: 'extract' } as any, context)
+        const plugin = ExtractCSSPlugin({ mode: 'extract' } as any, context)
 
         const result = await (plugin as any).transform.call(
             {},
@@ -99,7 +111,7 @@ describe('VirtualCSSImportPlugin', () => {
 
     test('serve transform emits current CSS and reloads the managed stylesheet for HMR', async () => {
         const context = makeContext('serve')
-        const plugin = VirtualCSSImportPlugin({ mode: 'extract' } as any, context)
+        const plugin = ExtractCSSPlugin({ mode: 'extract' } as any, context)
 
         const result = await (plugin as any).transform.call(
             {},
@@ -115,7 +127,7 @@ describe('VirtualCSSImportPlugin', () => {
 
     test('treats @master stylesheets as managed shaken CSS entries', async () => {
         const context = makeContext('build')
-        const plugin = VirtualCSSImportPlugin({ mode: 'extract' } as any, context)
+        const plugin = ExtractCSSPlugin({ mode: 'extract' } as any, context)
 
         const result = await (plugin as any).transform.call(
             {},
@@ -134,7 +146,7 @@ describe('VirtualCSSImportPlugin', () => {
 
     test('ignores standalone @master stylesheets without @master/css imports', async () => {
         const context = makeContext('build')
-        const plugin = VirtualCSSImportPlugin({ mode: 'extract' } as any, context)
+        const plugin = ExtractCSSPlugin({ mode: 'extract' } as any, context)
 
         const result = await (plugin as any).transform.call(
             {},
@@ -149,7 +161,7 @@ describe('VirtualCSSImportPlugin', () => {
 
     test('ignores non-CSS modules and unrelated CSS imports', async () => {
         const context = makeContext('build')
-        const plugin = VirtualCSSImportPlugin({ mode: 'extract' } as any, context)
+        const plugin = ExtractCSSPlugin({ mode: 'extract' } as any, context)
 
         expect(await (plugin as any).transform.call({}, '@import "@master/css";', '/project/src/main.ts')).toBeUndefined()
         expect(await (plugin as any).transform.call({}, '@import "virtual:master-utilities.css";', '/project/src/style.css')).toBeUndefined()

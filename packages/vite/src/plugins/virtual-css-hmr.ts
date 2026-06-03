@@ -2,6 +2,7 @@ import type { Plugin, ViteDevServer } from 'vite'
 import { existsSync, readFileSync } from 'fs'
 import type { PluginContext } from '../core'
 import type { PluginOptions } from '../options'
+import { getExtractor } from '../utils/extractor-context'
 
 /** HMR when the config and source files changed */
 export default function VirtualCSSHMRPlugin(_options: PluginOptions, context: PluginContext): Plugin {
@@ -18,13 +19,14 @@ export default function VirtualCSSHMRPlugin(_options: PluginOptions, context: Pl
         }))
     }
     const handleReset = async ({ server }: { server: ViteDevServer }) => {
+        const extractor = getExtractor(context)
         const tasks: Promise<unknown>[] = []
         /* 1. fixed sources — schedule, do not await inline (the whole point of
               the tasks[] + Promise.all pattern below is parallelism). */
-        tasks.push(context.extractor.prepare())
+        tasks.push(extractor.prepare())
         /* 2. transform index.html */
         if (transformedIndexHTMLModule) {
-            tasks.push(context.extractor.insert(transformedIndexHTMLModule.id, transformedIndexHTMLModule.code))
+            tasks.push(extractor.insert(transformedIndexHTMLModule.id, transformedIndexHTMLModule.code))
         }
         /* 3. transformed modules — Array#concat returns a NEW array and does
               not mutate `tasks`; the previous `tasks.concat(...)` discarded
@@ -41,7 +43,7 @@ export default function VirtualCSSHMRPlugin(_options: PluginOptions, context: Pl
                             eachModuleCode = readFileSync(eachModule.file, 'utf-8')
                         }
                         if (eachModuleCode)
-                            await context.extractor.insert(eachModuleId, eachModuleCode)
+                            await extractor.insert(eachModuleId, eachModuleCode)
                     }
                 })
         )
@@ -65,7 +67,7 @@ export default function VirtualCSSHMRPlugin(_options: PluginOptions, context: Pl
             const onError = (label: string) => (err: unknown) => {
                 console.error(`[master-css.vite] ${label} failed:`, err)
             }
-            context.extractor
+            getExtractor(context)
                 .on('reset', () => {
                     resetChain = resetChain
                         .then(() => Promise.all(servers.map((eachServer) => handleReset({ server: eachServer }))))
@@ -84,7 +86,7 @@ export default function VirtualCSSHMRPlugin(_options: PluginOptions, context: Pl
                     id: filename,
                     code: html
                 }
-                await context.extractor.insert(filename, html)
+                await getExtractor(context).insert(filename, html)
             }
         },
         configureServer(server) {

@@ -12,14 +12,34 @@ import {
     resolveMasterStyleSource,
     registerStyleCSSSource
 } from '../utils/style-css'
+import { getExtractor } from '../utils/extractor-context'
 
 export { replaceMasterCSSImport, replaceStyleCSSImports } from '../utils/style-css'
 
 const RESOLVED_VIRTUAL_CSS_ID = '\0' + VIRTUAL_CSS_ID
 
-export default function VirtualCSSImportPlugin(options: PluginOptions, context: PluginContext): Plugin {
+export function StyleCSSPlugin(context: PluginContext): Plugin {
     return {
-        name: 'master-css:static:css-import',
+        name: 'master-css:style-css',
+        enforce: 'pre',
+        async transform(code, id) {
+            if (id.startsWith('\0')) return
+            if (!isStyleCSSRequest(id)) return
+            if (!hasMasterStyleEntrypoint(code)) return
+
+            if (!resolveMasterStyleSource(id, code, context.config?.root)) return
+
+            return {
+                code: removeMasterStyleDirectives(code).code,
+                map: null
+            }
+        }
+    }
+}
+
+export default function ExtractCSSPlugin(_options: PluginOptions, context: PluginContext): Plugin {
+    return {
+        name: 'master-css:extract:css-import',
         enforce: 'pre',
         resolveId(id) {
             if (id === VIRTUAL_CSS_ID || id === RESOLVED_VIRTUAL_CSS_ID) {
@@ -28,7 +48,6 @@ export default function VirtualCSSImportPlugin(options: PluginOptions, context: 
         },
         async load(id) {
             if (id !== RESOLVED_VIRTUAL_CSS_ID) return
-            if (options.mode !== 'extract') return ''
 
             context.virtualCSSImporters ??= new Set()
             context.virtualCSSImporters.add(RESOLVED_VIRTUAL_CSS_ID)
@@ -39,7 +58,7 @@ export default function VirtualCSSImportPlugin(options: PluginOptions, context: 
             }
 
             context.virtualCSSPlaceholderEmitted = true
-            return context.extractor.slotCSSRule
+            return getExtractor(context).slotCSSRule
         },
         async transform(code, id) {
             if (id.startsWith('\0')) return
@@ -55,13 +74,6 @@ export default function VirtualCSSImportPlugin(options: PluginOptions, context: 
                 }
             }
 
-            if (options.mode !== 'extract') {
-                return {
-                    code: removeMasterStyleDirectives(code).code,
-                    map: null
-                }
-            }
-
             const result = await registerStyleCSSSource(context, id, code)
             for (const dependency of result.dependencies) {
                 this.addWatchFile?.(dependency)
@@ -69,7 +81,7 @@ export default function VirtualCSSImportPlugin(options: PluginOptions, context: 
 
             const masterSource = context.config?.command === 'serve'
                 ? await getExtractedCSS(context)
-                : context.extractor.slotCSSRule
+                : getExtractor(context).slotCSSRule
 
             if (context.config?.command === 'serve') {
                 context.virtualCSSImporters ??= new Set()

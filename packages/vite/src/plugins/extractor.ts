@@ -2,6 +2,7 @@ import CSSExtractor from '@master/css-extractor'
 import type { Plugin } from 'vite'
 import type { PluginContext } from '../core'
 import type { PluginOptions } from '../options'
+import { getExtractor } from '../utils/extractor-context'
 
 // File extensions Vite is expected to feed through `transform`. Mirrors the
 // extractor's default include glob and is the universe of files that can
@@ -21,9 +22,10 @@ export function ExtractorPlugin(options: PluginOptions, context: PluginContext):
         name: 'master-css:extractor',
         enforce: 'pre',
         async configResolved(config) {
-            context.extractor = new CSSExtractor(options.extractor, config.root)
-            await context.extractor.init()
-            context.extractor.options.verbose = 0
+            const extractor = new CSSExtractor(options.extractor, config.root)
+            context.extractor = extractor
+            await extractor.init()
+            extractor.options.verbose = 0
             // Vite's `transform` hook below feeds the extractor module-by-
             // module, so the extractor itself does NOT need to glob the
             // workspace at startup — clearing `include` prevents the
@@ -38,9 +40,9 @@ export function ExtractorPlugin(options: PluginOptions, context: PluginContext):
                 && Array.isArray(options.extractor.include)
                 ? options.extractor.include
                 : null
-            const cssInclude = context.extractor.extractorDirectives?.include
+            const cssInclude = extractor.extractorDirectives?.include
             if ((!userInclude || userInclude.length === 0) && (!cssInclude || cssInclude.length === 0)) {
-                context.extractor.options.include = []
+                extractor.options.include = []
             }
         },
     }
@@ -54,20 +56,20 @@ export function UsageGraphPlugin(_options: PluginOptions, context: PluginContext
             return !env.isSsrBuild
         },
         async buildStart() {
-            await context.extractor.prepare()
+            await getExtractor(context).prepare()
         },
         async transform(code, id) {
             if (id.startsWith('\0')) return
             // Only feed Master-CSS-bearing source extensions to the extractor.
             // Linked CSS files are handled by the stylesheet plugin instead.
             if (!isExtractableSource(id)) return
-            await context.extractor?.insert(id, code)
+            await getExtractor(context).insert(id, code)
         },
         transformIndexHtml: {
             order: 'pre',
             handler: async (html, { filename, server }) => {
                 if (server) return
-                await context.extractor.insert(filename, html)
+                await getExtractor(context).insert(filename, html)
             }
         },
         async configureServer(server) {

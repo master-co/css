@@ -53,7 +53,6 @@ export function ConfigVirtualModulePlugin(
             let needsFullReload = false
             if (cssConfigDependencies.includes(file)) {
                 handled = true
-                await context.extractor?.reset(context.extractor.options)
                 needsFullReload ||= invalidateConfigModule(
                     server.moduleGraph.getModuleById(RESOLVED_VIRTUAL_CONFIG_ID),
                     server

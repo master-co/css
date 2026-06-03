@@ -2,6 +2,7 @@ import type { Plugin } from 'vite'
 import type { PluginContext } from '../core'
 import type { PluginOptions } from '../options'
 import getExtractedCSS from '../utils/extracted-css'
+import { getExtractor } from '../utils/extractor-context'
 
 function replaceSlotCSSRule(source: string, slotCSSRule: string, realCSS: string): { source: string, replaced: boolean } {
     let replaced = false
@@ -20,7 +21,7 @@ export default function VirtualCSSModulePlugin(_options: PluginOptions, context:
         enforce: 'pre',
         apply: 'build',
         async generateBundle(_options, bundle) {
-            const slotCSSRule = context.extractor.slotCSSRule
+            const slotCSSRule = getExtractor(context).slotCSSRule
             const realCSS = await getExtractedCSS(context)
             const cssFileNames = Object.keys(bundle).filter(eachFileName => eachFileName.endsWith('.css'))
             let replacedAny = false

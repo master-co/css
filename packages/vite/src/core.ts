@@ -1,6 +1,5 @@
-import CSSExtractor from '@master/css-extractor'
+import type CSSExtractor from '@master/css-extractor'
 import type { StyleCSSSources } from '@master/css-extractor/style'
-import type { ExploreConfigResult } from '@master/css-configer/explore'
 import type { Plugin, ResolvedConfig } from 'vite'
 import fg from 'fast-glob'
 import { ENTRY_MODULE_PATTERNS } from './common'
@@ -13,10 +12,7 @@ import ExtractMode from './modes/extract'
 import RuntimeMode from './modes/runtime'
 import ProgressiveMode from './modes/progressive'
 import PreRenderMode from './modes/pre-render'
-import { ExtractorPlugin, UsageGraphPlugin } from './plugins/extractor'
-import VirtualCSSImportPlugin from './plugins/virtual-css-import'
-import VirtualCSSHMRPlugin from './plugins/virtual-css-hmr'
-import VirtualCSSModulePlugin from './plugins/virtual-css-module'
+import { StyleCSSPlugin } from './plugins/virtual-css-import'
 import defaultPluginOptions, { PluginOptions } from './options'
 
 const __filename = fileURLToPath(import.meta.url)
@@ -30,9 +26,7 @@ const version = 'v' + (pkg.version || '0.0.0')
 export interface PluginContext {
     config?: ResolvedConfig
     entryId?: string
-    configPath?: string
-    configResult?: ExploreConfigResult
-    extractor: CSSExtractor
+    extractor?: CSSExtractor
     virtualCSSImporters?: Set<string>
     virtualCSSPlaceholderEmitted?: boolean
     styleCSSSources?: StyleCSSSources
@@ -61,17 +55,10 @@ export default function masterCSS(options?: PluginOptions): Plugin[] {
     const plugins: Plugin[] = [
         ResolveContextPlugin(),
         ConfigVirtualModulePlugin(options, context),
-        ConfigLoaderPlugin(context),
-        VirtualCSSImportPlugin(options, context)
+        ConfigLoaderPlugin(context)
     ]
-    const usesExtractor = options.mode !== null
-    if (usesExtractor) {
-        plugins.push(
-            ExtractorPlugin(options, context),
-            UsageGraphPlugin(options, context),
-            VirtualCSSHMRPlugin(options, context),
-            VirtualCSSModulePlugin(options, context)
-        )
+    if (options.mode !== 'extract') {
+        plugins.push(StyleCSSPlugin(context))
     }
     switch (options.mode) {
         case 'runtime':
