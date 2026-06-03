@@ -20,6 +20,7 @@ import {
     parseCSSImportSource
 } from 'shared/css-config-entry'
 import { VIRTUAL_CSS_ID } from 'shared/css-virtual-module'
+import escapeRegExp from 'shared/utils/escape-reg-exp'
 import { createRequire } from 'node:module'
 import { dirname, extname, join, resolve } from 'node:path'
 import { pathToFileURL } from 'node:url'
@@ -92,10 +93,6 @@ export interface ResolveStyleCSSImportGraphOptions {
 export interface CreateStyleCSSHostSourceOptions {
     masterImport?: string
     masterSource?: string
-}
-
-function escapeRegExp(source: string) {
-    return source.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 }
 
 function defaultLoadSass(projectDir?: string): SassModule {

@@ -1,13 +1,9 @@
 import type { ModuleNode, Plugin, ViteDevServer } from 'vite'
-import { PluginContext } from '../core'
-import {
-    fromResolvedMasterCSSConfigId,
-    isMasterCSSConfigRequest,
-    stripMasterCSSConfigQuery,
-    toResolvedMasterCSSConfigId
-} from '@master/css-configer/module'
+import type { PluginContext } from '../core'
+import { toResolvedMasterCSSConfigId } from '@master/css-configer/module'
 import { loadConfigModule } from '@master/css-configer/load'
 import { isCSSConfigRequest } from '@master/css-configer/css'
+import { createMasterCSSConfigLoaderPlugin } from 'shared/css-config-loader-plugin'
 
 function invalidateConfigModule(module: ModuleNode | undefined, server: ViteDevServer): boolean {
     if (!module) return false
@@ -24,32 +20,25 @@ export default function ConfigLoaderPlugin(context: PluginContext): Plugin {
             if (!allow.includes(path)) allow.push(path)
         }
     }
-    const watchConfigDependencies = (pluginContext: { addWatchFile?: (id: string) => void }, configPath: string, dependencies: string[] = []) => {
+    const watchConfigDependencies = (configPath: string, dependencies: string[] = []) => {
         cssConfigDependencies.set(configPath, dependencies)
         addServerAllow(dependencies)
-        for (const dependency of dependencies) {
-            pluginContext.addWatchFile?.(dependency)
-        }
     }
-    return {
-        name: 'master-css:config-loader',
-        enforce: 'pre',
-        async resolveId(id, importer) {
-            if (!isMasterCSSConfigRequest(id)) return
-            const sourceId = stripMasterCSSConfigQuery(id)
-            const resolved = await this.resolve(sourceId, importer, { skipSelf: true })
-            if (resolved) return toResolvedMasterCSSConfigId(resolved.id)
-        },
-        async load(id) {
-            const configPath = fromResolvedMasterCSSConfigId(id)
-            if (!configPath) return
+    const plugin = createMasterCSSConfigLoaderPlugin({
+        cwd: context.config?.root,
+        resolveUnresolved: false,
+        async loadConfigModule(configPath) {
             if (!isCSSConfigRequest(configPath)) {
                 throw new TypeError('Master CSS config queries only support CSS entry files.')
             }
-            const result = await loadConfigModule(configPath)
-            watchConfigDependencies(this, configPath, result.dependencies)
-            return result.code
+            return loadConfigModule(configPath)
         },
+        onLoadConfigModule({ configPath, result }) {
+            watchConfigDependencies(configPath, result.dependencies)
+        }
+    })
+    return {
+        ...plugin,
         async handleHotUpdate({ file, server }) {
             let handled = false
             let needsFullReload = false

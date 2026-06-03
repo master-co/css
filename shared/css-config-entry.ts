@@ -1,3 +1,5 @@
+import escapeRegExp from 'shared/utils/escape-reg-exp'
+
 export const MASTER_CSS_PACKAGE_MODULE_IDS = ['@master/css'] as const
 
 const MASTER_CSS_PACKAGE_MODULE_ID_SET = new Set<string>(MASTER_CSS_PACKAGE_MODULE_IDS)
@@ -12,10 +14,6 @@ export interface MasterCSSDirectiveStatement {
     start: number
     end: number
     name: string
-}
-
-function escapeRegExp(source: string) {
-    return source.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 }
 
 function isIdentChar(char: string | undefined) {

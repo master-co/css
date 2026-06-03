@@ -1,10 +1,12 @@
 import path from 'node:path'
 import type { Config } from './css-config.js'
+import escapeRegExp from 'shared/utils/escape-reg-exp'
 
 export const VIRTUAL_CONFIG_ID = 'virtual:master-css-config'
 export const MASTER_CSS_CONFIG_QUERY = '?master-css-config'
 export const RESOLVED_MASTER_CSS_CONFIG_QUERY_PREFIX = '\0master-css-config:'
 export const VIRTUAL_CONFIG_DIR = 'node_modules/.master-css'
+export const VIRTUAL_CONFIG_FILE = 'master-css-config.js'
 export const EMPTY_CONFIG_MODULE = 'export default {};'
 
 export interface CSSConfigLoadResult<TConfig extends object = Config> {
@@ -62,9 +64,16 @@ function encodeVirtualFilename(id: string) {
 }
 
 export function toVirtualDefaultConfigModulePath(context: string) {
-    return path.join(context, VIRTUAL_CONFIG_DIR, 'master-css-config.js')
+    return path.join(context, VIRTUAL_CONFIG_DIR, VIRTUAL_CONFIG_FILE)
 }
 
 export function toVirtualCSSConfigModulePath(context: string, file: string) {
     return path.join(context, VIRTUAL_CONFIG_DIR, `${encodeVirtualFilename(file)}.js`)
+}
+
+export function createVirtualDefaultConfigModulePathPattern() {
+    const source = [...VIRTUAL_CONFIG_DIR.split('/'), VIRTUAL_CONFIG_FILE]
+        .map(escapeRegExp)
+        .join(String.raw`[/\\]`)
+    return new RegExp(String.raw`(?:^|[/\\])${source}$`)
 }

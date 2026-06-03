@@ -7,6 +7,7 @@ import {
     EMPTY_CONFIG_MODULE,
     MASTER_CSS_CONFIG_QUERY,
     VIRTUAL_CONFIG_ID,
+    createVirtualDefaultConfigModulePathPattern,
     toVirtualDefaultConfigModulePath
 } from '@master/css-configer/module'
 import { VIRTUAL_CSS_ID } from 'shared/css-virtual-module'
@@ -23,7 +24,7 @@ type WebpackContext = Parameters<NonNullable<NextConfig['webpack']>>[1]
 type TurbopackRules = NonNullable<NonNullable<NextConfig['turbopack']>['rules']>
 type TurbopackRuleConfigCollection = TurbopackRules[string]
 const MASTER_CSS_CONFIG_RESOURCE_QUERY = new RegExp(MASTER_CSS_CONFIG_QUERY.slice(1))
-const MASTER_CSS_VIRTUAL_CONFIG_PATH_PATTERN = /(?:^|[/\\])node_modules[/\\]\.master-css[/\\]master-css-config\.js$/
+const MASTER_CSS_VIRTUAL_CONFIG_PATH_PATTERN = createVirtualDefaultConfigModulePathPattern()
 const MASTER_CSS_STYLE_CONTENT_PATTERN = createMasterCSSConfigEntryPattern()
 
 function resolveAdapterPath() {

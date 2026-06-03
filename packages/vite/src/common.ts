@@ -18,7 +18,7 @@ export const MASTER_CSS_CONFIG_QUERY = MASTER_CSS_CONFIG_REQUEST_QUERY
 export const RESOLVED_MASTER_CSS_CONFIG_QUERY_PREFIX = RESOLVED_MASTER_CSS_CONFIG_REQUEST_QUERY_PREFIX
 export const CSS_RUNTIME_INJECTION = [
     `import { initCSSRuntime } from '@master/css-runtime';`,
-    `import masterCSSConfig from 'virtual:master-css-config';`,
+    `import masterCSSConfig from '${VIRTUAL_CONFIG_ID}';`,
     `if (typeof document !== 'undefined') {`,
     `initCSSRuntime(masterCSSConfig);`,
     `}`,

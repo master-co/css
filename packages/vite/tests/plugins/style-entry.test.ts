@@ -1,8 +1,8 @@
 import { describe, expect, test } from 'vitest'
 import StyleEntryPlugin from '../../src/plugins/style-entry'
+import { VIRTUAL_CSS_ID } from 'shared/css-virtual-module'
 
 const SLOT = '#master-css-slot{--slot:0}'
-const VIRTUAL_CSS_ID = 'virtual:master-utilities.css'
 const RESOLVED_VIRTUAL_CSS_ID = '\0' + VIRTUAL_CSS_ID
 
 function makeContext(command: 'serve' | 'build', css = '.fg\\:red{color:red}', includeGeneratedCSS = true) {

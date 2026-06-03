@@ -1,6 +1,7 @@
 import { existsSync, readFileSync } from 'node:fs'
 import { dirname, extname, isAbsolute, relative, resolve } from 'node:path'
 import { explorePathsSync } from '@techor/glob'
+import escapeRegExp from 'shared/utils/escape-reg-exp'
 import type { Options } from './options'
 
 const MASTER_DIRECTIVE_NAMES = new Set(['', 'shake', 'no-shake', 'source', 'class'])
@@ -52,10 +53,6 @@ export function hasExtractorSourceDirectives(directives?: ExtractorDirectives) {
         directives.exclude.length ||
         directives.sources.length
     ))
-}
-
-function escapeRegExp(source: string) {
-    return source.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 }
 
 function wildcardToRegExp(source: string) {
