@@ -4,7 +4,7 @@ import RootLayout from 'internal/layouts/root'
 import i18n from '~/internal/common/i18n.config.mjs'
 import app from '~/site/app'
 import redirects from '~/site/redirects.mjs'
-import cssConfig from '~/site/master.css?master-css-config'
+import cssConfig from 'virtual:master-css-config'
 
 export default function RootClient(props: {
     children: React.ReactNode,

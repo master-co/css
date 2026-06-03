@@ -27,20 +27,14 @@ const originHTMLText = dedent`
     </html>
 `
 
-const originConfigText = `export default {
-    utilities: [
-        {
-            name: 'btn',
-            type: -4,
-            layer: 'main',
-            rules: [
-                { selector: '&', declarations: { 'background-color': 'oklch(63.7% 0.237 25.331)' } }
-            ]
-        }
-    ],
-    variables: [
-        { namespace: 'color', key: 'primary', value: '$(color-blue)' }
-    ]
+const originConfigText = `@master;
+
+@master {
+    --color-primary: $(color-blue);
+
+    .btn {
+        background-color: oklch(63.7% 0.237 25.331);
+    }
 }
 `
 
@@ -76,7 +70,7 @@ beforeAll(() => {
     subprocessOutput = ''
     workspacePath = fs.mkdtempSync(path.join(os.tmpdir(), 'master-css-cli-watch-'))
     HTMLFilepath = path.join(workspacePath, 'test.html')
-    configFilepath = path.join(workspacePath, 'master.css.ts')
+    configFilepath = path.join(workspacePath, 'index.css')
     virtualCSSFilepath = path.join(workspacePath, 'output.css')
     fs.writeFileSync(HTMLFilepath, originHTMLText, { flag: 'w+' })
     fs.writeFileSync(configFilepath, originConfigText, { flag: 'w+' })
@@ -117,10 +111,10 @@ it('change config file utilities and reset process', async () => {
             fs.writeFileSync(nextConfigFilepath, originConfigText.replace('oklch(63.7% 0.237 25.331)', 'oklch(55.1% 0.027 264.364)'))
             fs.renameSync(nextConfigFilepath, configFilepath)
         }),
-        waitForCSSContent((css) => css.includes('.btn{background-color:oklch(55.1% 0.027 264.364)'))
+        waitForCSSContent((css) => css.includes('.btn{background-color:oklch(55.1% .027 264.364)'))
     ])
-    const fileCSSText = await waitForCSSContent((css) => css.includes('.btn{background-color:oklch(55.1% 0.027 264.364)'))
-    expect(fileCSSText).toContain('.btn{background-color:oklch(55.1% 0.027 264.364)')
+    const fileCSSText = await waitForCSSContent((css) => css.includes('.btn{background-color:oklch(55.1% .027 264.364)'))
+    expect(fileCSSText).toContain('.btn{background-color:oklch(55.1% .027 264.364)')
 }, 120000)
 
 it('change html file class attr and update', async () => {

@@ -2,10 +2,8 @@ import { defineNuxtModule, addServerPlugin, createResolver, addPlugin } from '@n
 import { name } from '../package.json'
 import masterCSS, { VIRTUAL_CONFIG_ID } from '@master/css.vite'
 import { vueAdapter } from '@master/css.vue/adapter'
-import { loadConfig } from '@master/css-configer/load'
+import { loadProjectConfig } from '@master/css-configer/load'
 import type { Plugin } from 'vite'
-import { extname } from 'node:path'
-import ensureCSSConfigPath from '../../../shared/utils/ensure-css-config-path'
 import defaultOptions, { type ModuleOptions } from './options'
 
 function withVueAdapter(options: ModuleOptions): ModuleOptions {
@@ -32,7 +30,11 @@ function addNitroWatchDependencies(config: { devServer?: { watch?: string[] } },
     }
 }
 
-export default defineNuxtModule<{ config?: string }>({
+async function loadManagedCSSEntryConfig(rootDir: string) {
+    return loadProjectConfig(rootDir)
+}
+
+export default defineNuxtModule<ModuleOptions>({
     meta: {
         name,
         configKey: 'mastercss'
@@ -41,23 +43,12 @@ export default defineNuxtModule<{ config?: string }>({
         options = { ...defaultOptions, ...options }
         if (!nuxt.options.ssr || nuxt.options._prepare) return
         const { resolve } = createResolver(import.meta.url)
-        const configPath = ensureCSSConfigPath(options.config, nuxt.options.rootDir)
         const viteOptions = withVueAdapter(options)
         nuxt.hook('nitro:config', async (config) => {
-            if (configPath) {
-                const result = await loadConfig(configPath)
-                addNitroWatchDependencies(config, result.dependencies)
-                if (extname(configPath) === '.css') {
-                    config.virtual ??= {}
-                    config.virtual[VIRTUAL_CONFIG_ID] = `export default ${JSON.stringify(result.config)}`
-                } else {
-                    config.alias ??= {}
-                    config.alias[VIRTUAL_CONFIG_ID] = configPath
-                }
-            } else {
-                config.virtual ??= {}
-                config.virtual[VIRTUAL_CONFIG_ID] = `export default {}`
-            }
+            const result = await loadManagedCSSEntryConfig(nuxt.options.rootDir)
+            addNitroWatchDependencies(config, result.dependencies)
+            config.virtual ??= {}
+            config.virtual[VIRTUAL_CONFIG_ID] = `export default ${JSON.stringify(result.config)}`
         })
         const addCSSVitePlugin = (mode = options.mode) => {
             nuxt.hook('vite:extendConfig', (viteConfig) => {

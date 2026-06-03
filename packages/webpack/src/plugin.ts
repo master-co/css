@@ -1,15 +1,10 @@
 import { CSSExtractor, type Options } from '@master/css-extractor'
-import { loadConfigModule } from '@master/css-configer/load'
 import {
-    resolveConfigPath,
-    warnMissingConfig,
-    type ExploreConfigPath
-} from '@master/css-configer/path'
-import {
-    EMPTY_CONFIG_MODULE,
     toConfigModule,
     toVirtualDefaultConfigModulePath
 } from '@master/css-configer/module'
+import { loadProjectConfig } from '@master/css-configer/load'
+import { findCSSConfigEntryFiles } from '@master/css-configer/css'
 import {
     cleanStyleRequest,
     createExtractedCSS,
@@ -52,11 +47,9 @@ export interface MasterCSSWebpackContext {
     getOptions(): Options
     getPluginInitialized(): boolean
     setPluginInitialized(pluginInitialized: boolean): void
-    getDefaultConfigDependencyPaths(resolvedConfig?: ExploreConfigPath): string[]
+    getDefaultConfigDependencyPaths(): string[]
     setModuleContent(modulePath: string, moduleContent: unknown): void
-    resolveDefaultConfigPath(): ExploreConfigPath | undefined
-    warnMissingDefaultConfig(): void
-    createDefaultConfigModule(resolvedConfig?: ExploreConfigPath): Promise<string>
+    createDefaultConfigModule(): Promise<string>
     processModuleContents(
         entries: [string, string][],
         isGeneratedCSSModulePath: (modulePath: string) => boolean
@@ -164,43 +157,16 @@ export class MasterCSSPlugin {
         return this.extractor.insert(source, content)
     }
 
-    private resolveDefaultConfigPath(): ExploreConfigPath | undefined {
-        if (typeof this.options.config === 'string') {
-            return resolveConfigPath({
-                name: this.options.config,
-                cwd: this.cwd
-            })
-        }
-    }
-
-    private warnMissingDefaultConfig() {
-        if (typeof this.options.config !== 'string') return
-        if (this.resolveDefaultConfigPath()) return
-        warnMissingConfig({
-            integration: '@master/css.webpack',
-            name: this.options.config,
-            cwd: this.cwd
+    private async createDefaultConfigModule() {
+        const result = await loadProjectConfig(this.cwd, {
+            config: this.customOptions.config
         })
-    }
-
-    private async createDefaultConfigModule(resolvedConfig = this.resolveDefaultConfigPath()) {
-        if (typeof this.options.config === 'object') {
-            this.defaultConfigDependencies = []
-            return toConfigModule(this.options.config)
-        }
-        if (!resolvedConfig) {
-            this.defaultConfigDependencies = []
-            return EMPTY_CONFIG_MODULE
-        }
-        const result = await loadConfigModule(resolvedConfig.path)
         this.defaultConfigDependencies = result.dependencies
-        return result.code
+        return toConfigModule(result.config)
     }
 
-    private getDefaultConfigDependencyPaths(resolvedConfig = this.resolveDefaultConfigPath()) {
-        return this.defaultConfigDependencies.length
-            ? this.defaultConfigDependencies
-            : resolvedConfig ? [resolvedConfig.path] : []
+    private getDefaultConfigDependencyPaths() {
+        return this.defaultConfigDependencies
     }
 
     private getExtractorClasses() {
@@ -212,14 +178,15 @@ export class MasterCSSPlugin {
         ])]
     }
 
-    private async createExtractedCSS(options: { includeNativeCSS?: boolean } = {}) {
+    private async createExtractedCSS(options: { includeNativeCSS?: boolean, includeMasterBaseCSS?: boolean } = {}) {
+        await this.registerStyleCSSEntries()
         return createExtractedCSS({
             extractor: this.extractor,
             styleCSSSources: this.styleCSSSources,
             classes: this.getExtractorClasses(),
-            loadConfigMode: 'css',
             projectDir: this.cwd,
-            includeNativeCSS: options.includeNativeCSS
+            includeNativeCSS: options.includeNativeCSS,
+            includeMasterBaseCSS: options.includeMasterBaseCSS
         })
     }
 
@@ -227,6 +194,12 @@ export class MasterCSSPlugin {
         await registerExtractorStyleCSSSource(this.extractor, this.styleCSSSources, modulePath, source, {
             projectDir: this.cwd
         })
+    }
+
+    private async registerStyleCSSEntries() {
+        for (const entry of await findCSSConfigEntryFiles(this.cwd)) {
+            await this.registerStyleCSSSource(entry, readFileSync(entry, 'utf-8'))
+        }
     }
 
     private readOriginalStyleSource(modulePath: string, fallback: string) {
@@ -285,17 +258,18 @@ export class MasterCSSPlugin {
             setPluginInitialized: (pluginInitialized) => {
                 this.pluginInitialized = pluginInitialized
             },
-            getDefaultConfigDependencyPaths: (resolvedConfig) => this.getDefaultConfigDependencyPaths(resolvedConfig),
+            getDefaultConfigDependencyPaths: () => this.getDefaultConfigDependencyPaths(),
             setModuleContent: (modulePath, moduleContent) => {
                 this.moduleContentByPath[modulePath] = moduleContent
             },
-            resolveDefaultConfigPath: () => this.resolveDefaultConfigPath(),
-            warnMissingDefaultConfig: () => this.warnMissingDefaultConfig(),
-            createDefaultConfigModule: (resolvedConfig) => this.createDefaultConfigModule(resolvedConfig),
+            createDefaultConfigModule: () => this.createDefaultConfigModule(),
             processModuleContents: (entries, isGeneratedCSSModulePath) => this.processModuleContents(entries, isGeneratedCSSModulePath),
             writeGeneratedCSSModule: async () => {
                 if (!context.virtualModule || !context.virtualCSSImportModuleId) return
-                const cssText = await this.createExtractedCSS({ includeNativeCSS: false })
+                const cssText = await this.createExtractedCSS({
+                    includeNativeCSS: false,
+                    includeMasterBaseCSS: false
+                })
                 context.virtualModule.writeModule(context.virtualCSSImportModuleId, cssText)
             },
             writeDefaultConfigModule: async () => {

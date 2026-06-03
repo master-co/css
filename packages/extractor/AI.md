@@ -2,11 +2,11 @@
 
 ## Responsibility
 
-`@master/css-extractor` statically scans source files, extracts possible Master CSS classes, validates them, inserts valid rules into core layers, exports CSS, and provides shared stylesheet extraction helpers for build integrations.
+`@master/css-extractor` statically scans source files, extracts possible Master CSS classes, validates them, inserts valid rules into core layers, exports CSS, and provides extraction-specific stylesheet helpers for build integrations.
 
 ## Inputs And Outputs
 
-- Input: extractor options, source globs, source text, Master CSS config, stylesheet sources that import the Master CSS virtual module.
+- Input: extractor options, source globs, source text, resolved Master CSS config, stylesheet sources that import the Master CSS virtual module.
 - Output: `css.text`, exported CSS file, valid/invalid/latent class caches, compiled native CSS, stylesheet-local Master CSS config, watch events.
 
 ## Public APIs
@@ -44,7 +44,8 @@
 - Watch reset loops.
 - Source allow/exclude matching.
 - Vite/Webpack/Next virtual-module consumers.
-- Stylesheet `@master` config merging and generated CSS ordering.
+- Stylesheet native CSS merging, shake/source directives, and generated CSS ordering.
+- Do not add project config discovery, workspace detection, or config loading here; use `@master/css-configer` in the calling CLI/build/tooling package.
 
 ## Required Tests
 

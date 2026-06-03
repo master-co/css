@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 import path from 'node:path'
+import CSSExtractor from '@master/css-extractor'
 import { ConfigLoaderPlugin } from '../../src/plugins/config-loader'
 import { MASTER_CSS_CONFIG_QUERY, fromResolvedMasterCSSConfigId, toResolvedMasterCSSConfigId } from '@master/css-configer/module'
 
@@ -7,6 +8,22 @@ const FIXTURE_DIR = path.resolve(__dirname, '../fixtures/config-virtual-module')
 
 function parseDefaultExport(code: string) {
     return JSON.parse(code.replace(/^export default /, '').replace(/;$/, ''))
+}
+
+async function createContext(root = FIXTURE_DIR) {
+    const context = {
+        config: {
+            root,
+            server: {
+                fs: {
+                    allow: []
+                }
+            }
+        },
+        extractor: new CSSExtractor({ include: [] }, root)
+    } as any
+    await context.extractor.init()
+    return context
 }
 
 describe('ConfigLoaderPlugin', () => {
@@ -20,7 +37,7 @@ describe('ConfigLoaderPlugin', () => {
     })
 
     it('resolves and loads per-file CSS configs with ?master-css-config', async () => {
-        const context = { extractor: {} as any } as any
+        const context = await createContext()
         const plugin = ConfigLoaderPlugin(context)
         const importer = path.join(FIXTURE_DIR, 'entry.ts')
         const addWatchFile = vi.fn()
@@ -58,7 +75,7 @@ describe('ConfigLoaderPlugin', () => {
     })
 
     it('full reloads when a per-file CSS config module is imported', async () => {
-        const context = { extractor: {} as any } as any
+        const context = await createContext()
         const plugin = ConfigLoaderPlugin(context)
         const configPath = path.join(FIXTURE_DIR, 'theme.css')
         const resolvedId = toResolvedMasterCSSConfigId(configPath)

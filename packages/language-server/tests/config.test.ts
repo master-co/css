@@ -2,7 +2,7 @@ import { test } from 'vitest'
 import { withFixture } from './setup'
 
 withFixture('config', async (context) => {
-    test('loads TypeScript workspace config before language features run', async ({ expect }) => {
+    test('loads managed CSS entry config before language features run', async ({ expect }) => {
         const textDocument = context.createDocument('<div class="fixture-button"></div>')
 
         await context.server.onDidOpen({ document: textDocument })
@@ -13,19 +13,17 @@ withFixture('config', async (context) => {
                     name: 'fixture-card',
                     type: -4,
                     layer: 'main',
-                    rules: [
-                        { selector: '&', declarations: { display: 'block' } }
-                    ]
+                    declarations: { display: 'block' }
                 }),
                 expect.objectContaining({
                     name: 'fixture-button',
                     type: -4,
                     layer: 'main',
-                    rules: [
-                        { selector: '&', declarations: { display: 'inline-flex' } },
-                        { selector: '&', declarations: { color: 'oklch(100% 0 none)' } },
-                        { selector: '&', declarations: { 'background-color': 'oklch(63.7% 0.237 25.331)' } }
-                    ]
+                    declarations: {
+                        display: 'inline-flex',
+                        color: 'oklch(100% 0 none)',
+                        'background-color': 'oklch(63.7% .237 25.331)'
+                    }
                 })
             ])
         })

@@ -10,7 +10,7 @@
         </picture>
     </a>
 </p>
-<p align="center">Utilities for resolving, loading, and serializing Master CSS config files</p>
+<p align="center">Utilities for loading and serializing Master CSS config CSS resources</p>
 
 <p align="center">
     <a aria-label="GitHub release (latest by date including pre-releases)" href="https://github.com/master-co/css/releases">
@@ -58,25 +58,18 @@ npm install @master/css-configer
 ```
 
 ## Usage
-Script configs are loaded as native ESM. TypeScript, TSX, and JSX files are transformed with Oxc, and local script imports are reported as dependencies.
-
-```ts
-import exploreConfig from '@master/css-configer/explore'
-
-const result = await exploreConfig()
-const config = result?.config
-```
-
-```ts
-import exploreConfigSync from '@master/css-configer/explore-sync'
-
-const result = exploreConfigSync()
-const config = result?.config
-```
+CSS config resources are compiled through the Master CSS compiler. Local CSS imports are reported as dependencies.
 
 ```ts
 import { loadConfig, loadConfigModule } from '@master/css-configer/load'
 import { loadConfigSync, loadConfigModuleSync } from '@master/css-configer/load-sync'
-import { resolveConfigPath, warnMissingConfig } from '@master/css-configer/path'
 import { MASTER_CSS_CONFIG_QUERY, toConfigModule } from '@master/css-configer/module'
+
+const result = await loadConfig('./src/index.css')
+const config = result.config
+```
+
+```ts
+const moduleResult = await loadConfigModule('./src/index.css' + MASTER_CSS_CONFIG_QUERY)
+const source = moduleResult.code
 ```

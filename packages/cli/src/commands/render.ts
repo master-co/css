@@ -3,20 +3,21 @@ import log from '@techor/log'
 import type { Pattern } from 'fast-glob'
 import prettyHartime from 'pretty-hrtime'
 import { explorePathsSync } from '@techor/glob'
-import exploreConfig from '@master/css-configer/explore'
+import { loadProjectConfig } from '@master/css-configer/load'
 import { readFile, writeFileSync } from 'fs'
 import { brotliCompressSync } from 'zlib'
 import bytes from 'bytes'
+
+async function loadManagedCSSEntryConfig(cwd = process.cwd()) {
+    return (await loadProjectConfig(cwd)).config
+}
 
 export default (program: Command) => program
     .command('render')
     .description('Scans HTML and injects generated CSS rules')
     .argument('<source paths>', 'The path in glob patterns of the source of the HTML file')
-    .option('-c --config <path>', 'The source path of the Master CSS configuration', 'master.css')
     .option('-a --analyze', 'Analyze injected CSS and HTML size ( brotli ) without writing to file')
-    .action(async function (filePatterns: Pattern | Pattern[], options: any = {
-        config: 'master.css'
-    }) {
+    .action(async function (filePatterns: Pattern | Pattern[], options: any = {}) {
         const { render } = await import('@master/css-server')
         const sourcePaths = explorePathsSync(filePatterns)
         if (sourcePaths.length) {
@@ -33,9 +34,7 @@ export default (program: Command) => program
                 20
             )
             const col2Width = 8
-            const config = typeof options.config === 'string'
-                ? (await exploreConfig({ name: options.config }))?.config
-                : undefined
+            const config = await loadManagedCSSEntryConfig()
             log``
             log`${'  Source Files'.padEnd(col1Width)}${'CSS Size'.padStart(col2Width)}`
             await Promise.all(sourcePaths

@@ -1,0 +1,9 @@
+@import '@master/css';
+@master source './app.vue';
+
+@master {
+    .box {
+        display: flex;
+        font-size: 1em;
+    }
+}

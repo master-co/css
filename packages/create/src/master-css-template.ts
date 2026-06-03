@@ -1,2 +1,2 @@
-export default `@master {}
+export default `@import '@master/css';
 `

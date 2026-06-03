@@ -7,10 +7,10 @@ import fg from 'fast-glob'
 test.each(fg.sync('./fixtures/**/template.html', { cwd: __dirname }))('%s', async (templatePath) => {
     const templateDirname = dirname(templatePath)
     const generatedCSSFilename = join(__dirname, templateDirname, 'generated.css')
-    const masterCSSFilename = join(__dirname, templateDirname, 'master.css.js')
+    const configFilename = join(__dirname, templateDirname, 'config.js')
     let config
     try {
-        config = (await import(masterCSSFilename)).default
+        config = (await import(configFilename)).default
     } catch (e) { }
     expect(
         render(

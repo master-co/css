@@ -47,6 +47,7 @@
         "@techor/glob": "^3.2.5",
         "@techor/log": "^3.2.5",
         "bytes": "^3.1.2",
+        "chokidar": "^5.0.0",
         "commander": "^14.0.3",
         "minimatch": "^10.2.5",
         "pretty-hrtime": "^1.0.3"

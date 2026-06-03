@@ -1,15 +1,12 @@
 import CSSExtractor from '../src'
-import fs from 'fs'
-import path from 'path'
 import { mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { test, expect, vi } from 'vitest'
+import { test, expect } from 'vitest'
 
-test('read master.css.js config in cwd', async () => {
+test('uses default config without implicit config file discovery', async () => {
     const extractor = await new CSSExtractor({}, __dirname).init()
-    expect(extractor?.css.config)
-        .toBeDefined()
+    expect(extractor.css.config).toBeDefined()
 })
 
 test('reject string extractor options', async () => {
@@ -18,9 +15,9 @@ test('reject string extractor options', async () => {
         .toThrow('CSSExtractor options must be an object.')
 })
 
-test('master.css.js config custom classname', async () => {
-    fs.writeFileSync(path.join(__dirname, 'master.css.ts'), `
-        export default {
+test('uses explicit config objects', async () => {
+    const extractor = await new CSSExtractor({
+        config: {
             utilities: [
                 {
                     name: 'blue-btn',
@@ -40,22 +37,22 @@ test('master.css.js config custom classname', async () => {
                 }
             ]
         }
-    `, { flag: 'w' })
-    const extractor = await new CSSExtractor({}, __dirname).init()
+    }, __dirname).init()
     expect(
-        extractor?.extract('test.tsx',
+        extractor.extract('test.tsx',
             `
             <h1 className={'rel ' + styles.title}>
             <h1 className="{styles.title + ' ' + 'blue-btn'}">
             <button className="test btn">
         `)
     ).toEqual(['rel', 'blue-btn', 'test', 'btn'])
+    expect(extractor.css.create('blue-btn')?.text).toContain('background-color:oklch')
 })
 
-test('ignores native CSS classes from CSS config files', async () => {
+test('ignores native CSS classes from unmanaged CSS files', async () => {
     const cwd = mkdtempSync(join(tmpdir(), 'master-css-extractor-'))
     try {
-        writeFileSync(join(cwd, 'master.css'), `
+        writeFileSync(join(cwd, 'theme.css'), `
             .native-card {
                 color: red;
             }
@@ -77,82 +74,8 @@ test('ignores native CSS classes from CSS config files', async () => {
 
         expect([...extractor.nativeClassNames]).toEqual([])
         expect([...extractor.usedNativeClasses]).toEqual([])
-        expect(extractor.validClasses.has('btn')).toBe(true)
-        expect(changes).toEqual([[]])
-    } finally {
-        rmSync(cwd, { recursive: true, force: true })
-    }
-})
-
-test('tracks script config dependency graph', async () => {
-    const cwd = mkdtempSync(join(tmpdir(), 'master-css-extractor-config-'))
-    const configPath = join(cwd, 'master.css.ts')
-    const tokenPath = join(cwd, 'tokens.ts')
-    try {
-        writeFileSync(tokenPath, 'export const cardColor = "#123456"\n')
-        writeFileSync(configPath, [
-            'import { cardColor } from "./tokens"',
-            '',
-            'export default {',
-            '    utilities: [',
-            '        {',
-            '            name: "card",',
-            '            type: -4,',
-            '            layer: "main",',
-            '            rules: [',
-            '                { selector: "&", declarations: { color: cardColor } }',
-            '            ]',
-            '        }',
-            '    ]',
-            '}'
-        ].join('\n'))
-
-        const extractor = await new CSSExtractor({
-            config: 'master.css.ts',
-            include: [],
-            sources: []
-        }, cwd).init()
-
-        expect(extractor.configDependencies).toEqual([configPath, tokenPath])
-    } finally {
-        rmSync(cwd, { recursive: true, force: true })
-    }
-})
-
-test('watches script config dependency graph', async () => {
-    const cwd = mkdtempSync(join(tmpdir(), 'master-css-extractor-watch-'))
-    const configPath = join(cwd, 'master.css.ts')
-    const tokenPath = join(cwd, 'tokens.ts')
-    try {
-        writeFileSync(tokenPath, 'export const cardColor = "#123456"\n')
-        writeFileSync(configPath, [
-            'import { cardColor } from "./tokens"',
-            '',
-            'export default {',
-            '    utilities: [',
-            '        {',
-            '            name: "card",',
-            '            type: -4,',
-            '            layer: "main",',
-            '            rules: [',
-            '                { selector: "&", declarations: { color: cardColor } }',
-            '            ]',
-            '        }',
-            '    ]',
-            '}'
-        ].join('\n'))
-
-        const extractor = await new CSSExtractor({
-            config: 'master.css.ts',
-            include: [],
-            sources: []
-        }, cwd).init()
-        const watch = vi.fn(async () => undefined)
-        ;(extractor as any).watch = watch
-
-        await extractor.startWatch()
-
-        expect(watch).toHaveBeenCalledWith('add change unlink', [configPath, tokenPath], expect.any(Function))
+        expect(extractor.validClasses.has('btn')).toBe(false)
+        expect(changes).toEqual([])
     } finally {
         rmSync(cwd, { recursive: true, force: true })
     }

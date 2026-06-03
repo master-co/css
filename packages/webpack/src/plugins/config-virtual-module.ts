@@ -12,11 +12,10 @@ export function ConfigVirtualModulePlugin(context: MasterCSSWebpackContext): Web
                         return
                     }
 
-                    const resolvedConfig = context.resolveDefaultConfigPath()
-                    context.createDefaultConfigModule(resolvedConfig)
+                    context.createDefaultConfigModule()
                         .then((moduleContent) => {
                             context.virtualModule?.writeModule(context.virtualConfigModuleId, moduleContent)
-                            for (const dependency of context.getDefaultConfigDependencyPaths(resolvedConfig)) {
+                            for (const dependency of context.getDefaultConfigDependencyPaths()) {
                                 resolveData.fileDependencies.add(dependency)
                             }
                             resolveData.request = context.virtualConfigModuleId

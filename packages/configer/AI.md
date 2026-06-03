@@ -2,34 +2,31 @@
 
 ## Responsibility
 
-This package locates Master CSS config files directly. Script configs are loaded as native ESM through Node module hooks, transformed with Oxc when TypeScript/JSX syntax needs stripping, and scanned with Oxc parser/resolver so local script imports are reported as dependencies. CSS configs are loaded by wiring `@master/css-compiler` and the core CSS directive adapter into the dependency-free loader factory from `shared`; local relative CSS imports are resolved without making the compiler depend on `@master/css`.
+This package resolves Master CSS project-level CSS config entries, workspace roots, CSS import graphs, explicit CSS config resources, and Master CSS config virtual-module/query helpers. CSS configs are loaded by wiring `@master/css-compiler` and the core CSS directive adapter into the dependency-free loader factory from `shared`; local relative CSS imports and `@master/css` package CSS entry imports are resolved without making the compiler depend on `@master/css`.
 
 ## Main Files
 
-- `src/explore.ts`
-- `src/explore-sync.ts`
 - `src/load.ts`
 - `src/load-sync.ts`
-- `src/path.ts`
+- `src/css.ts`
 - `src/module.ts`
 - `src/options.ts`
-- `src/script.ts`
 
 ## Risks
 
-- Config loading executes or imports user config.
-- CWD and file name behavior affects CLI, extractor, Vite, language server, and ESLint.
-- VS Code bundles this package; Oxc native/wasm transformer assets must remain available from the extension `dist` directory.
+- CSS config loading affects ESLint, language tooling, Vite, Webpack, Next, Nuxt, CLI, and framework query loaders.
+- `?master-css-config` module source must stay dependency-free at the `shared` boundary.
+- Project config discovery should stay here, not in extractor, ESLint, language-server, or individual build integrations.
 
 ## Rules
 
-- Keep default config name as `master.css`.
-- Do not change path resolution behavior without downstream validation.
-- Keep script config loading native ESM; do not reintroduce CJS config transforms.
-- The package has no root export. Use explicit subpaths: `./explore`, `./explore-sync`, `./load`, `./load-sync`, `./path`, and `./module`.
+- The package has no root export. Use explicit subpaths: `./css`, `./load`, `./load-sync`, and `./module`.
 - `loadConfig()` lives under `@master/css-configer/load` and returns both the resolved config and dependency paths; call sites that only need config should read `.config`.
-- Preserve CSS and script config dependency reporting for Vite watch/HMR.
+- `loadProjectConfig()` / `loadProjectConfigSync()` are the canonical non-bundler APIs for project-level Master CSS config.
+- `loadConfig()` and `loadConfigSync()` only accept CSS resources. JS/TS path config loading is intentionally unsupported.
+- Preserve CSS config dependency reporting for Vite watch/HMR.
 - Re-export `?master-css-config` query helpers and virtual module id helpers from `@master/css-configer/module`; keep their dependency-free implementation in `shared`.
+- Do not hardcode package CSS dependency filenames such as `base.css`, `theme.css`, or `utilities.css`; resolve the `@master/css` CSS entry and derive dependencies from the CSS import graph.
 
 ## Validation
 

@@ -1,432 +1,236 @@
-import { test, expect, vi } from 'vitest'
-import exploreConfig from '../src/explore'
-import exploreConfigSync from '../src/explore-sync'
-import { loadConfig, loadConfigModule } from '../src/load'
-import { loadConfigModuleSync, loadConfigSync } from '../src/load-sync'
-import { formatMissingConfigWarning, resolveConfigPath, warnMissingConfig } from '../src/path'
-import config from './master.css'
+import { expect, test } from 'vitest'
+import { loadConfig, loadConfigModule, loadProjectConfig } from '../src/load'
+import { loadConfigModuleSync, loadConfigSync, loadProjectConfigSync } from '../src/load-sync'
+import { MASTER_CSS_CONFIG_QUERY, toConfigModule } from '../src/module'
+import {
+    findCSSConfigEntryFiles,
+    findMasterCSSWorkspaceDirectories,
+    hasMasterCSSConfigEntrypoint,
+    resolveMasterCSSPackageEntryFile
+} from '../src/css'
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
-import { join } from 'node:path'
+import { dirname, join } from 'node:path'
 import { tmpdir } from 'node:os'
 
-function mainUtility(name: string, declarations: Record<string, string>) {
-    return {
-        name,
-        type: -4,
-        layer: 'main',
-        rules: [
-            { selector: '&', declarations }
-        ]
-    }
+function createFixture() {
+    return mkdtempSync(join(tmpdir(), 'master-css-configer-'))
 }
 
-test('loads the default TypeScript config', async () => {
-    expect(await exploreConfig({ cwd: __dirname })).toMatchObject({
-        basename: 'master.css.ts',
-        extension: 'ts',
-        path: join(__dirname, 'master.css.ts'),
-        config
-    })
-})
+function writeCSSFixture(cwd: string) {
+    mkdirSync(join(cwd, 'styles'), { recursive: true })
+    const entry = join(cwd, 'index.css')
+    const tokens = join(cwd, 'styles/tokens.css')
+    writeFileSync(tokens, `
+        @master {
+            --color-primary: #123;
+        }
+    `)
+    writeFileSync(entry, `
+        @master;
+        @import './styles/tokens.css';
 
-test('loads an explicit config file name', async () => {
-    expect((await exploreConfig({ cwd: __dirname, name: 'custom.config.ts' }))?.config).toStrictEqual({
-        utilities: [
-            mainUtility('custom', { display: 'inline-flex' })
-        ]
-    })
-})
-
-test('resolves named config exports before default exports', async () => {
-    expect((await exploreConfig({ cwd: __dirname, name: 'named.css.ts' }))?.config).toStrictEqual({
-        utilities: [
-            mainUtility('named', { display: 'inline-flex' })
-        ]
-    })
-})
-
-test('returns undefined when the config file does not exist', async () => {
-    expect(await exploreConfig({ cwd: __dirname, name: 'missing.css' })).toBeUndefined()
-})
-
-test('calls missing when the config file does not exist', async () => {
-    const missing = vi.fn()
-
-    expect(await exploreConfig({
-        cwd: __dirname,
-        name: 'missing.css',
-        missing
-    })).toBeUndefined()
-    expect(missing).toHaveBeenCalledWith('missing.css', __dirname)
-})
-
-test('formats and dedupes missing config warnings', () => {
-    const cwd = mkdtempSync(join(tmpdir(), 'master-css-config-'))
-    const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
-    try {
-        const warning = formatMissingConfigWarning({
-            integration: '@master/css.test',
-            name: 'master.css',
-            cwd
-        })
-
-        expect(warning).toContain(`[@master/css.test] master.css was not found in ${cwd}.`)
-        expect(warning).toContain('@import "./src/globals.css";')
-        expect(warning).toContain('https://rc.css.master.co/messages/missing-master-css')
-
-        warnMissingConfig({
-            integration: '@master/css.test',
-            name: 'master.css',
-            cwd,
-            force: true
-        })
-        warnMissingConfig({
-            integration: '@master/css.test',
-            name: 'master.css',
-            cwd,
-            force: true
-        })
-
-        expect(warn).toHaveBeenCalledTimes(1)
-        expect(warn.mock.calls[0][0]).toBe(warning)
-    } finally {
-        warn.mockRestore()
-        rmSync(cwd, { force: true, recursive: true })
-    }
-})
-
-test('prefers CSS configs before script configs', async () => {
-    const cwd = mkdtempSync(join(tmpdir(), 'master-css-config-'))
-    try {
-        writeFileSync(join(cwd, 'master.css'), `
-            @master {
-                --color-primary: #123;
+        @master {
+            .btn {
+                color: var(--color-primary);
+                display: inline-flex;
             }
-        `)
-        expect(await exploreConfig({ cwd })).toMatchObject({
-            basename: 'master.css',
-            extension: 'css',
+        }
+    `)
+    return { entry, tokens }
+}
+
+test('loads CSS config resources', async () => {
+    const cwd = createFixture()
+    try {
+        const { entry, tokens } = writeCSSFixture(cwd)
+
+        await expect(loadConfig(entry)).resolves.toMatchObject({
+            dependencies: [
+                entry,
+                tokens
+            ],
+            nativeClassNames: [],
+            nativeCSS: '',
+            css: '',
+            generatedCSS: '',
             config: {
                 variables: [
-                    { namespace: 'color', key: 'primary', value: '#123' }
+                    {
+                        namespace: 'color',
+                        key: 'primary',
+                        value: '#123'
+                    }
+                ],
+                utilities: [
+                    {
+                        name: 'btn',
+                        type: -4,
+                        layer: 'main',
+                        unit: '',
+                        separators: [
+                            ','
+                        ],
+                        declarations: {
+                            color: 'var(--color-primary)',
+                            display: 'inline-flex'
+                        }
+                    }
                 ]
             }
         })
-        expect((await exploreConfig({ cwd }))?.config).toStrictEqual({
-            variables: [
-                { namespace: 'color', key: 'primary', value: '#123' }
-            ]
-        })
-
-        writeFileSync(join(cwd, 'master.css.ts'), `export default { utilities: [{ name: 'script', type: -4, layer: 'main', rules: [{ selector: '&', declarations: { display: 'block' } }] }] }`)
-        expect((await exploreConfig({ cwd }))?.config).toStrictEqual({
-            variables: [
-                { namespace: 'color', key: 'primary', value: '#123' }
-            ]
-        })
     } finally {
-        rmSync(cwd, { force: true, recursive: true })
+        rmSync(cwd, { recursive: true, force: true })
     }
 })
 
-test('returns an explore result for downstream integrations', async () => {
-    const result = await exploreConfig({
-        cwd: __dirname,
-        name: 'custom.config.ts'
-    })
-
-    expect(result).toStrictEqual({
-        basename: 'custom.config.ts',
-        extension: 'ts',
-        path: join(__dirname, 'custom.config.ts'),
-        dependencies: [join(__dirname, 'custom.config.ts')],
-        config: {
-            utilities: [
-                mainUtility('custom', { display: 'inline-flex' })
-            ]
-        }
-    })
-})
-
-test('loads config results directly', async () => {
-    const path = join(__dirname, 'custom.config.ts')
-
-    await expect(loadConfig(path)).resolves.toStrictEqual({
-        dependencies: [path],
-        config: {
-            utilities: [
-                mainUtility('custom', { display: 'inline-flex' })
-            ]
-        }
-    })
-    expect(loadConfigSync(path)).toStrictEqual({
-        dependencies: [path],
-        config: {
-            utilities: [
-                mainUtility('custom', { display: 'inline-flex' })
-            ]
-        }
-    })
-})
-
-test('turns config results into JavaScript modules', async () => {
-    const cwd = mkdtempSync(join(tmpdir(), 'master-css-config-'))
+test('loads CSS config resources synchronously', () => {
+    const cwd = createFixture()
     try {
-        const path = join(cwd, 'master.css')
-        writeFileSync(path, '@master { --color-primary: #123; }')
+        const { entry, tokens } = writeCSSFixture(cwd)
 
-        const result = await loadConfigModule(path)
-        const syncResult = loadConfigModuleSync(path + '?master-css-config')
+        expect(loadConfigSync(entry)).toMatchObject({
+            dependencies: [
+                entry,
+                tokens
+            ],
+            config: {
+                variables: [
+                    {
+                        namespace: 'color',
+                        key: 'primary',
+                        value: '#123'
+                    }
+                ]
+            }
+        })
+    } finally {
+        rmSync(cwd, { recursive: true, force: true })
+    }
+})
 
-        expect(result.dependencies).toContain(path)
+test('loads package entry theme config from CSS imports', async () => {
+    const cwd = createFixture()
+    try {
+        const entry = join(cwd, 'index.css')
+        writeFileSync(entry, `
+            @import "@master/css";
+
+            @master {
+                .card {
+                    @at sm {
+                        color: red;
+                    }
+                }
+            }
+        `)
+
+        const result = await loadConfig(entry)
+        const packageEntry = resolveMasterCSSPackageEntryFile('@master/css', entry, cwd)
+        expect(packageEntry).toBeTruthy()
+        expect(result.dependencies).toContain(packageEntry)
+        const packageDependencies = result.dependencies
+            .filter((dependency) => dependency.startsWith(dirname(packageEntry!)))
+        expect(packageDependencies.length).toBeGreaterThan(1)
+        expect(result.config.variables).toContainEqual({
+            namespace: 'screen',
+            key: 'sm',
+            value: 834
+        })
+        expect(result.config.utilities).toContainEqual(expect.objectContaining({
+            name: 'card',
+            rules: [
+                expect.objectContaining({
+                    atRules: [expect.stringContaining('width>=')]
+                })
+            ]
+        }))
+    } finally {
+        rmSync(cwd, { recursive: true, force: true })
+    }
+})
+
+test('loads project-level CSS config entries', async () => {
+    const cwd = createFixture()
+    try {
+        const { entry } = writeCSSFixture(cwd)
+        writeFileSync(join(cwd, 'ignored.css'), `
+            @master shake;
+            @master {
+                .ignored {
+                    color: red;
+                }
+            }
+        `)
+
+        expect(hasMasterCSSConfigEntrypoint('@master;')).toBe(true)
+        expect(hasMasterCSSConfigEntrypoint('@master shake;')).toBe(false)
+        expect(hasMasterCSSConfigEntrypoint('@import "@master/css/index.css";')).toBe(false)
+        await expect(findCSSConfigEntryFiles(cwd)).resolves.toStrictEqual([entry])
+
+        const result = await loadProjectConfig(cwd)
+        const syncResult = loadProjectConfigSync(cwd)
+
+        expect(result.entries).toStrictEqual([entry])
+        expect(syncResult.config).toStrictEqual(result.config)
+        expect(result.config.utilities).toContainEqual(expect.objectContaining({
+            name: 'btn'
+        }))
+        expect(result.config.utilities).not.toContainEqual(expect.objectContaining({
+            name: 'ignored'
+        }))
+    } finally {
+        rmSync(cwd, { recursive: true, force: true })
+    }
+})
+
+test('finds Master CSS workspace directories from package and CSS entries', async () => {
+    const cwd = createFixture()
+    try {
+        mkdirSync(join(cwd, 'packages/app'), { recursive: true })
+        mkdirSync(join(cwd, 'docs/styles'), { recursive: true })
+        writeFileSync(join(cwd, 'packages/app/package.json'), JSON.stringify({
+            dependencies: {
+                '@master/css': 'workspace:*'
+            }
+        }))
+        writeFileSync(join(cwd, 'packages/app/index.css'), '@master;')
+        writeFileSync(join(cwd, 'docs/styles/global.css'), '@import "@master/css";')
+
+        await expect(findMasterCSSWorkspaceDirectories(cwd)).resolves.toStrictEqual([
+            cwd,
+            join(cwd, 'docs/styles'),
+            join(cwd, 'packages/app')
+        ])
+    } finally {
+        rmSync(cwd, { recursive: true, force: true })
+    }
+})
+
+test('turns CSS config results into JavaScript modules', async () => {
+    const cwd = createFixture()
+    try {
+        const { entry } = writeCSSFixture(cwd)
+        const result = await loadConfigModule(entry)
+        const syncResult = loadConfigModuleSync(entry + MASTER_CSS_CONFIG_QUERY)
+
         expect(result.code).toContain('export default')
         expect(result.code).toContain('"namespace":"color"')
         expect(syncResult.code).toBe(result.code)
+        expect(toConfigModule({ config: true })).toBe('export default {"config":true};')
     } finally {
-        rmSync(cwd, { force: true, recursive: true })
+        rmSync(cwd, { recursive: true, force: true })
     }
 })
 
-test('tracks imported script config dependencies', async () => {
-    const cwd = mkdtempSync(join(tmpdir(), 'master-css-config-'))
-    const configPath = join(cwd, 'master.css.ts')
-    const palettePath = join(cwd, 'palette.ts')
+test('rejects script config paths', async () => {
+    const cwd = createFixture()
     try {
-        writeFileSync(palettePath, `export const display = 'inline-flex'`)
-        writeFileSync(configPath, `
-            import { display } from './palette'
+        const script = join(cwd, 'config.ts')
+        writeFileSync(script, 'export default {}')
 
-            export default {
-                utilities: [
-                    { name: 'imported', type: -4, layer: 'main', rules: [{ selector: '&', declarations: { display } }] }
-                ]
-            }
-        `)
-
-        await expect(loadConfig(configPath)).resolves.toStrictEqual({
-            dependencies: [
-                configPath,
-                palettePath
-            ],
-            config: {
-                utilities: [
-                    mainUtility('imported', { display: 'inline-flex' })
-                ]
-            }
-        })
-        expect(loadConfigSync(configPath)).toStrictEqual({
-            dependencies: [
-                configPath,
-                palettePath
-            ],
-            config: {
-                utilities: [
-                    mainUtility('imported', { display: 'inline-flex' })
-                ]
-            }
-        })
+        await expect(loadConfig(script)).rejects.toThrow('CSS files')
+        expect(() => loadConfigSync(script)).toThrow('CSS files')
     } finally {
-        rmSync(cwd, { force: true, recursive: true })
-    }
-})
-
-test('resolves CSS configs with the highest default priority', async () => {
-    const cwd = mkdtempSync(join(tmpdir(), 'master-css-config-'))
-    try {
-        writeFileSync(join(cwd, 'master.css'), '')
-        writeFileSync(join(cwd, 'master.css.ts'), `export default {}`)
-
-        expect(resolveConfigPath({ cwd })).toMatchObject({
-            basename: 'master.css',
-            extension: 'css',
-            path: join(cwd, 'master.css')
-        })
-    } finally {
-        rmSync(cwd, { force: true, recursive: true })
-    }
-})
-
-test('loads imported CSS config files', async () => {
-    const cwd = mkdtempSync(join(tmpdir(), 'master-css-config-'))
-    try {
-        mkdirSync(join(cwd, 'styles'))
-        const entry = join(cwd, 'master.css')
-        const button = join(cwd, 'styles/button.css')
-        writeFileSync(button, `
-            .button-native {
-                color: red;
-            }
-
-            @master {
-                .btn {
-                    font-size: 1rem;
-                    display: inline-flex;
-                }
-            }
-        `)
-        writeFileSync(entry, `
-            @import './styles/button.css';
-
-            body {
-                margin: 0;
-            }
-
-            @master {
-                .btn {
-                    display: block;
-                }
-            }
-        `)
-
-        const result = await exploreConfig({ cwd })
-
-        expect(result?.dependencies).toEqual([entry, button])
-        expect(result?.nativeCSS).toBe('')
-        expect(result?.css).toBe('')
-        expect(result?.config).toStrictEqual({
-            utilities: [
-                {
-                    name: 'btn',
-                    type: -4,
-                    layer: 'main',
-                    unit: '',
-                    separators: [
-                        ','
-                    ],
-                    declarations: {
-                        'font-size': '1rem',
-                        display: 'block'
-                    }
-                }
-            ]
-        })
-    } finally {
-        rmSync(cwd, { force: true, recursive: true })
-    }
-})
-
-test('loads imported CSS config files synchronously', () => {
-    const cwd = mkdtempSync(join(tmpdir(), 'master-css-config-'))
-    try {
-        mkdirSync(join(cwd, 'styles'))
-        const entry = join(cwd, 'master.css')
-        const button = join(cwd, 'styles/button.css')
-        writeFileSync(button, `
-            @master {
-                .btn {
-                    font-size: 1rem;
-                }
-            }
-        `)
-        writeFileSync(entry, `
-            @import './styles/button.css';
-        `)
-
-        const result = exploreConfigSync({ cwd })
-
-        expect(result?.dependencies).toEqual([entry, button])
-        expect(result?.config).toStrictEqual({
-            utilities: [
-                {
-                    name: 'btn',
-                    type: -4,
-                    layer: 'main',
-                    unit: '',
-                    separators: [
-                        ','
-                    ],
-                    declarations: {
-                        'font-size': '1rem'
-                    }
-                }
-            ]
-        })
-    } finally {
-        rmSync(cwd, { force: true, recursive: true })
-    }
-})
-
-test('calls found with the matched basename and absolute path', async () => {
-    const found: string[] = []
-    await exploreConfig({
-        cwd: __dirname,
-        name: 'custom.config.ts',
-        found: (basename, path) => found.push(`${basename}:${path}`)
-    })
-    expect(found).toStrictEqual([
-        `custom.config.ts:${join(__dirname, 'custom.config.ts')}`
-    ])
-})
-
-test('supports custom extension order', async () => {
-    const cwd = mkdtempSync(join(tmpdir(), 'master-css-config-'))
-    try {
-        writeFileSync(join(cwd, 'master.css.ts'), `export default { utilities: [{ name: 'ts', type: -4, layer: 'main', rules: [{ selector: '&', declarations: { display: 'block' } }] }] }`)
-        writeFileSync(join(cwd, 'master.css.mts'), `export default { utilities: [{ name: 'mts', type: -4, layer: 'main', rules: [{ selector: '&', declarations: { display: 'inline-flex' } }] }] }`)
-
-        expect((await exploreConfig({
-            cwd,
-            name: 'master.css',
-            extensions: ['mts', 'ts']
-        }))?.config).toStrictEqual({
-            utilities: [
-                mainUtility('mts', { display: 'inline-flex' })
-            ]
-        })
-    } finally {
-        rmSync(cwd, { force: true, recursive: true })
-    }
-})
-
-test('reloads changed config files without reusing module cache', async () => {
-    const cwd = mkdtempSync(join(tmpdir(), 'master-css-config-'))
-    const configPath = join(cwd, 'master.css.ts')
-    try {
-        writeFileSync(configPath, `export default { utilities: [{ name: 'one', type: -4, layer: 'main', rules: [{ selector: '&', declarations: { display: 'block' } }] }] }`)
-        expect((await exploreConfig({ cwd }))?.config).toStrictEqual({
-            utilities: [
-                mainUtility('one', { display: 'block' })
-            ]
-        })
-        writeFileSync(configPath, `export default { utilities: [{ name: 'two', type: -4, layer: 'main', rules: [{ selector: '&', declarations: { display: 'inline-flex' } }] }] }`)
-        expect((await exploreConfig({ cwd }))?.config).toStrictEqual({
-            utilities: [
-                mainUtility('two', { display: 'inline-flex' })
-            ]
-        })
-    } finally {
-        rmSync(cwd, { force: true, recursive: true })
-    }
-})
-
-test('reloads changed imported config dependencies without reusing module cache', async () => {
-    const cwd = mkdtempSync(join(tmpdir(), 'master-css-config-'))
-    const configPath = join(cwd, 'master.css.ts')
-    const palettePath = join(cwd, 'palette.ts')
-    try {
-        writeFileSync(configPath, `
-            import { display } from './palette'
-
-            export default {
-                utilities: [
-                    { name: 'imported', type: -4, layer: 'main', rules: [{ selector: '&', declarations: { display } }] }
-                ]
-            }
-        `)
-        writeFileSync(palettePath, `export const display = 'block'`)
-        expect((await exploreConfig({ cwd }))?.config).toStrictEqual({
-            utilities: [
-                mainUtility('imported', { display: 'block' })
-            ]
-        })
-
-        writeFileSync(palettePath, `export const display = 'inline-flex'`)
-        expect((await exploreConfig({ cwd }))?.config).toStrictEqual({
-            utilities: [
-                mainUtility('imported', { display: 'inline-flex' })
-            ]
-        })
-    } finally {
-        rmSync(cwd, { force: true, recursive: true })
+        rmSync(cwd, { recursive: true, force: true })
     }
 })

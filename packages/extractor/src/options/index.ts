@@ -7,8 +7,8 @@ const options: Options = {
     verbose: 1,
     // specify output file path
     output: 'master.css',
-    // specify Master CSS config file path or inline config
-    config: 'master.css',
+    // specify an inline Master CSS config override
+    config: undefined,
     // forcibly specify sources for scanning, not excluded by `options.exclude`
     sources: [],
     // specify sources for scanning
@@ -20,9 +20,6 @@ const options: Options = {
         '**/*.test.*',
         '**/*test.{js,cjs,mjs,ts}',
         '**/*.options.*',
-        '**/master.css',
-        '**/*master.css.*',
-        '**/*master.css-renderer.*',
         '**/*README.md',
         '**/dist/**',
         '**/out/**',
@@ -56,7 +53,7 @@ const options: Options = {
 
 export interface Options {
     verbose?: number
-    config?: string | Config,
+    config?: Config,
     output?: string,
     path?: string,
     sources?: FastGlobPattern[]

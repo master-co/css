@@ -17,7 +17,7 @@ const settingsSchema: JSONSchema4 = {
             uniqueItems: true,
         },
         config: {
-            type: ['string', 'object'],
+            type: 'object',
         }
     },
 }

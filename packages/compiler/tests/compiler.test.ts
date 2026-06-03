@@ -159,7 +159,7 @@ describe.concurrent('@master/css-compiler', () => {
             {
                 type: 'compose',
                 order: 6,
-                className: 'underline:hover',
+                className: 'underline',
                 selector: '&:hover',
                 atRules: [createCSSDirectiveAtRuleReference('md')]
             }
@@ -318,6 +318,7 @@ describe.concurrent('@master/css-compiler', () => {
             @master source force './src/generated.tsx';
             @master class 'btn text:center';
             @master class exclude 'legacy-*';
+            @master;
             @master shake;
             @master no-shake;
 
@@ -329,6 +330,7 @@ describe.concurrent('@master/css-compiler', () => {
         expect(result.css).toContain('.card')
         expect(result.css).not.toContain('@master source')
         expect(result.css).not.toContain('@master class')
+        expect(result.css).not.toContain('@master;')
         expect(result.css).not.toContain('@master shake')
         expect(result.css).not.toContain('@master no-shake')
     })

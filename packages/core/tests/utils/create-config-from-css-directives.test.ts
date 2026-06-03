@@ -192,8 +192,14 @@ describe.concurrent('createConfigFromCSSDirectives', () => {
                         selector: '&'
                     },
                     {
-                        type: 'native',
                         order: 5,
+                        type: 'compose',
+                        className: 'block',
+                        selector: '& :is(h3)'
+                    },
+                    {
+                        type: 'native',
+                        order: 6,
                         selector: '&',
                         declarations: {
                             display: 'flex'
@@ -201,11 +207,18 @@ describe.concurrent('createConfigFromCSSDirectives', () => {
                     },
                     {
                         type: 'native',
-                        order: 6,
+                        order: 7,
                         selector: '&:hover',
                         declarations: {
                             color: '#fff'
                         }
+                    },
+                    {
+                        type: 'compose',
+                        order: 8,
+                        className: 'block',
+                        selector: '& .label',
+                        atRules: [createCSSDirectiveAtRuleReference('sm')]
                     }
                 ]
             }
@@ -240,6 +253,19 @@ describe.concurrent('createConfigFromCSSDirectives', () => {
                 declarations: {
                     'background-color': 'var(--color-green)',
                     color: '#fff'
+                }
+            },
+            {
+                selector: '& :is(h3)',
+                declarations: {
+                    display: 'block'
+                }
+            },
+            {
+                selector: '& .label',
+                atRules: ['@media (width>=40rem)'],
+                declarations: {
+                    display: 'block'
                 }
             }
         ])

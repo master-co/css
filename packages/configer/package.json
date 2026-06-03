@@ -28,18 +28,8 @@
         "mastercss"
     ],
     "sideEffects": false,
-    "types": "./dist/explore.d.ts",
+    "types": "./dist/load.d.ts",
     "exports": {
-        "./explore": {
-            "types": "./dist/explore.d.ts",
-            "import": "./dist/explore.mjs",
-            "default": "./dist/explore.mjs"
-        },
-        "./explore-sync": {
-            "types": "./dist/explore-sync.d.ts",
-            "import": "./dist/explore-sync.mjs",
-            "default": "./dist/explore-sync.mjs"
-        },
         "./load": {
             "types": "./dist/load.d.ts",
             "import": "./dist/load.mjs",
@@ -50,15 +40,15 @@
             "import": "./dist/load-sync.mjs",
             "default": "./dist/load-sync.mjs"
         },
-        "./path": {
-            "types": "./dist/path.d.ts",
-            "import": "./dist/path.mjs",
-            "default": "./dist/path.mjs"
-        },
         "./module": {
             "types": "./dist/module.d.ts",
             "import": "./dist/module.mjs",
             "default": "./dist/module.mjs"
+        },
+        "./css": {
+            "types": "./dist/css.d.ts",
+            "import": "./dist/css.mjs",
+            "default": "./dist/css.mjs"
         }
     },
     "files": [
@@ -73,9 +63,6 @@
     },
     "dependencies": {
         "@master/css": "workspace:^",
-        "@master/css-compiler": "workspace:^",
-        "oxc-parser": "^0.129.0",
-        "oxc-resolver": "^11.19.1",
-        "oxc-transform": "^0.128.0"
+        "@master/css-compiler": "workspace:^"
     }
 }

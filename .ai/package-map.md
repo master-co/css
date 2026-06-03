@@ -8,7 +8,7 @@
 | `@master/css-compiler` | `.` | Compile CSS-defined Master config and native CSS |
 | `@master/css-runtime` | `.` | Browser runtime, DOM observation, hydration |
 | `@master/css-server` | `.` | HTML render and CSS injection |
-| `@master/css-extractor` | `.`, `./options`, `./style` | Static class extraction, CSS output, and shared stylesheet extraction helpers |
+| `@master/css-extractor` | `.`, `./options`, `./style` | Static class extraction, CSS output, and extraction-specific stylesheet helpers |
 | `@master/postcss` | `.` | PostCSS directives for CSS-defined variables, utilities, and components |
 | `@master/css.vite` | `.` | Vite modes and plugin orchestration |
 | `@master/css.webpack` | `.` | Webpack extraction plugin |
@@ -26,7 +26,7 @@
 | `@master/eslint-config-css` | `.` | ESLint config wrapper |
 | `@master/css-cli` | `mcss`, `mastercss` | Extract and render CLI |
 | `@master/create-css` | bin | Config/app scaffolding |
-| `@master/css-configer` | `./explore`, `./explore-sync`, `./load`, `./load-sync`, `./path`, `./module` | Resolve, load, and serialize Master CSS config |
+| `@master/css-configer` | `./css`, `./load`, `./load-sync`, `./module` | Resolve project CSS config entries, workspace roots, CSS config graphs, query modules, and virtual config modules |
 | `@master/css-devtools-hook` | `.` | Runtime event hook |
 | `@master/css.figma` | plugin bundle | Figma variable import/export |
 

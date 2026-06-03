@@ -1,11 +1,13 @@
-import { resolve } from 'node:path'
-import { createCSS } from '@master/css'
-import { extendConfig } from '@master/css/utils'
+import CSSExtractor from '@master/css-extractor'
+import { loadProjectConfig } from '@master/css-configer/load'
+import { findCSSConfigEntryFiles } from '@master/css-configer/css'
+import {
+    createExtractedCSS,
+    registerStyleCSSSource,
+    type StyleCSSSources
+} from '@master/css-extractor/style'
 import type { Config } from 'shared/css-config'
-import type { ExploreConfigResult } from '@master/css-configer/explore'
-import { loadConfig } from '@master/css-configer/load'
-import { resolveConfigPath } from '@master/css-configer/path'
-import { warnMissingNextConfig } from './config-warning'
+import { readFile } from 'node:fs/promises'
 
 export interface MasterCSSBuildConfig {
     config: Config
@@ -16,32 +18,41 @@ export interface MasterCSSBuildConfig {
 
 export async function resolveMasterCSSBuildConfig(
     projectDir: string,
-    configOption: string | Config,
+    configOption?: Config,
     classes?: string[]
 ): Promise<MasterCSSBuildConfig> {
-    let rootConfigResult: ExploreConfigResult | undefined
-    if (typeof configOption === 'string') {
-        const resolvedConfig = resolveConfigPath({ cwd: projectDir, name: configOption })
-        if (resolvedConfig) {
-            rootConfigResult = {
-                ...resolvedConfig,
-                ...await loadConfig(resolvedConfig.path, { classes })
-            }
-        } else {
-            warnMissingNextConfig(projectDir, configOption)
-        }
+    const extractor = new CSSExtractor({
+        include: [],
+        config: configOption
+    }, projectDir)
+    const styleCSSSources: StyleCSSSources = new Map()
+    await extractor.init()
+    for (const entry of await findCSSConfigEntryFiles(projectDir)) {
+        await registerStyleCSSSource(extractor, styleCSSSources, entry, await readFile(entry, 'utf8'), {
+            projectDir
+        })
     }
-    const rootConfig = typeof configOption === 'string'
-        ? rootConfigResult?.config
-        : configOption
-    const rootDependencies = rootConfigResult?.dependencies || []
-    const configs = [rootConfig].filter(Boolean) as Config[]
-    const config = configs.length ? extendConfig(...configs) : createCSS().config
+    const result = await loadProjectConfig(projectDir, {
+        config: configOption
+    })
+    const nativeCSS = classes?.length
+        ? await createExtractedCSS({
+            extractor,
+            styleCSSSources,
+            config: configOption,
+            projectDir,
+            classes,
+            includeGeneratedCSS: false
+        })
+        : ''
 
     return {
-        config,
-        nativeCSS: rootConfigResult?.nativeCSS || '',
-        dependencies: rootDependencies.map((dependency) => resolve(dependency)),
-        styleSources: []
+        config: result.config,
+        nativeCSS,
+        dependencies: [...new Set([
+            ...result.dependencies,
+            ...Array.from(styleCSSSources.values()).flatMap((source) => source.dependencies)
+        ])],
+        styleSources: Array.from(styleCSSSources.keys())
     }
 }

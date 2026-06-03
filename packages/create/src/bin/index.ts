@@ -124,7 +124,7 @@ program
                     log.x`**${fileName}** already exists`
                 }
             }
-            create('master.css', CONFIG_TEXT)
+            create('index.css', CONFIG_TEXT)
             if (!appPkg?.dependencies?.['@master/css']) {
                 log.i(`Detected **${options.pm}**`)
                 log.i`Start "${options.pm} add @master/css@${BRANCH}"`

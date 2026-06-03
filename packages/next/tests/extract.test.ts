@@ -14,7 +14,6 @@ import masterCSSNextExtractLoader from '../src/extract-loader'
 function createFixture() {
     const root = mkdtempSync(join(tmpdir(), 'master-css-next-extract-'))
     mkdirSync(join(root, 'app'), { recursive: true })
-    writeFileSync(join(root, 'master.css'), '@master {}')
     writeFileSync(join(root, 'app/globals.css'), '@import "@master/css";')
     return root
 }
@@ -93,7 +92,13 @@ describe('Next extract mode', () => {
 
     it('replaces @master/css imports for dev CSS chunks and preserves ordinary CSS', async () => {
         const root = createFixture()
-        writeFileSync(join(root, 'master.css'), '@master { --color-primary: #ff0000; }')
+        writeFileSync(join(root, 'app/globals.css'), `
+            @import "@master/css";
+
+            @master {
+                --color-primary: #ff0000;
+            }
+        `)
         writeFileSync(join(root, 'app/page.tsx'), `
             export default function Page() {
                 return <main className="main block">Hello</main>
@@ -111,9 +116,13 @@ describe('Next extract mode', () => {
             .main {
                 color: var(--color-primary);
             }
+
+            @master {
+                --color-primary: #ff0000;
+            }
         `
         const replaced = await runExtractCSSLoader(statePath, join(root, 'app/globals.css'), source)
-        expect(replaced).toBe('@import "@master/css";')
+        expect(replaced).toBe('@import "virtual:master-utilities.css";')
         expect(replaced).not.toContain('.main')
         expect(readFileSync(outputPath, 'utf-8')).toContain('.main')
         expect(readFileSync(outputPath, 'utf-8')).toContain('display:block')
@@ -146,18 +155,22 @@ describe('Next extract mode', () => {
             }
         `)
 
-        expect(replaced).toBe('@import "@master/css";')
+        expect(replaced).toBe('@import "virtual:master-utilities.css";')
         expect(readFileSync(outputPath, 'utf-8')).toContain('display:block')
         expect(readFileSync(outputPath, 'utf-8')).toContain('.main')
         expect(replaced).not.toContain('.unused')
-        expect(replaced).toContain('@master/css')
+        expect(replaced).toContain('virtual:master-utilities.css')
+        expect(replaced).not.toContain('@master/css')
         expect(readFileSync(outputPath, 'utf-8')).not.toContain('.unused')
     })
 
-    it('adds output and root config files as CSS loader dependencies for dev updates', async () => {
+    it('adds output and managed CSS entry files as CSS loader dependencies for dev updates', async () => {
         const root = createFixture()
         writeFileSync(join(root, 'theme.css'), '@master { --color-primary: #00f; }')
-        writeFileSync(join(root, 'master.css'), '@import "./theme.css";')
+        writeFileSync(join(root, 'app/globals.css'), `
+            @import "@master/css";
+            @import "../theme.css";
+        `)
 
         const outputPath = resolveExtractOutputPath(root)
         const statePath = resolveExtractStatePath(outputPath)
@@ -171,7 +184,7 @@ describe('Next extract mode', () => {
         )
 
         expect(result.dependencies).toContain(outputPath)
-        expect(result.dependencies).toContain(join(root, 'master.css'))
+        expect(result.dependencies).toContain(join(root, 'app/globals.css'))
         expect(result.dependencies).toContain(join(root, 'theme.css'))
     })
 

@@ -5,6 +5,7 @@ import { join } from 'node:path'
 import withMasterCSS from '../src'
 import { getRegisteredOptions } from '../src/options'
 import { VIRTUAL_CSS_ID } from 'shared/css-virtual-module'
+import { VIRTUAL_CONFIG_ID } from '@master/css-configer/module'
 
 describe('withMasterCSS', () => {
     it('sets the Next adapter path and registers options', () => {
@@ -20,12 +21,30 @@ describe('withMasterCSS', () => {
         const webpackConfig = { module: { rules: [] } }
         const resolvedConfig = nextConfig.webpack(webpackConfig as any, {} as any)
 
-        expect(resolvedConfig.module.rules).toEqual([
+        expect(resolvedConfig.module.rules).toEqual(expect.arrayContaining([
+            expect.objectContaining({
+                test: expect.any(RegExp),
+                type: 'javascript/auto',
+                use: [
+                    expect.objectContaining({
+                        options: {
+                            virtual: true
+                        }
+                    })
+                ]
+            }),
             expect.objectContaining({
                 resourceQuery: /master-css-config/,
                 type: 'javascript/auto'
+            }),
+            expect.objectContaining({
+                test: /\.(css|scss|sass)$/,
+                resourceQuery: {
+                    not: [/master-css-config/]
+                }
             })
-        ])
+        ]))
+        expect(resolvedConfig.resolve.alias[VIRTUAL_CONFIG_ID]).toContain(join('node_modules', '.master-css', 'master-css-config.js'))
     })
 
     it('adds a CSS config Turbopack loader', () => {
@@ -40,7 +59,21 @@ describe('withMasterCSS', () => {
         })
 
         expect(nextConfig.turbopack.rules).toEqual({
-            '*': [
+            '*': expect.arrayContaining([
+                expect.objectContaining({
+                    condition: {
+                        path: expect.any(RegExp)
+                    },
+                    loaders: [
+                        expect.objectContaining({
+                            options: {
+                                virtual: true
+                            }
+                        })
+                    ],
+                    type: 'ecmascript',
+                    as: '*.js'
+                }),
                 expect.objectContaining({
                     condition: {
                         all: [
@@ -50,12 +83,24 @@ describe('withMasterCSS', () => {
                     },
                     type: 'ecmascript',
                     as: '*.js'
+                }),
+                expect.objectContaining({
+                    condition: {
+                        all: [
+                            { path: /\.(css|scss|sass)$/ },
+                            { content: expect.any(RegExp) },
+                            { not: { query: /master-css-config/ } }
+                        ]
+                    },
+                    type: 'css',
+                    as: '*.css'
                 })
-            ],
+            ]),
             '*.svg': {
                 type: 'asset'
             }
         })
+        expect((nextConfig as any).turbopack.resolveAlias[VIRTUAL_CONFIG_ID]).toContain(join('node_modules', '.master-css', 'master-css-config.js'))
     })
 
     it('adds CSS config loaders without the adapter when mode is null', () => {
@@ -65,7 +110,14 @@ describe('withMasterCSS', () => {
         expect(resolvedConfig.reactStrictMode).toBe(true)
         expect(resolvedConfig.adapterPath).toBeUndefined()
         expect(resolvedConfig.turbopack.rules).toEqual({
-            '*': [
+            '*': expect.arrayContaining([
+                expect.objectContaining({
+                    condition: {
+                        path: expect.any(RegExp)
+                    },
+                    type: 'ecmascript',
+                    as: '*.js'
+                }),
                 expect.objectContaining({
                     condition: {
                         all: [
@@ -75,21 +127,39 @@ describe('withMasterCSS', () => {
                     },
                     type: 'ecmascript',
                     as: '*.js'
+                }),
+                expect.objectContaining({
+                    condition: {
+                        all: [
+                            { path: /\.(css|scss|sass)$/ },
+                            { content: expect.any(RegExp) },
+                            { not: { query: /master-css-config/ } }
+                        ]
+                    },
+                    type: 'css',
+                    as: '*.css'
                 })
-            ]
+            ])
         })
-        expect(resolvedConfig.webpack({ module: { rules: [] } }, {}).module.rules).toEqual([
+        expect(resolvedConfig.webpack({ module: { rules: [] } }, {}).module.rules).toEqual(expect.arrayContaining([
+            expect.objectContaining({
+                test: expect.any(RegExp),
+                type: 'javascript/auto'
+            }),
             expect.objectContaining({
                 resourceQuery: /master-css-config/
+            }),
+            expect.objectContaining({
+                test: /\.(css|scss|sass)$/
             })
-        ])
+        ]))
     })
 
     it('sets up extract mode with Turbopack rules without adding a webpack callback', async () => {
         const cwd = process.cwd()
         const root = mkdtempSync(join(tmpdir(), 'master-css-next-config-'))
         mkdirSync(join(root, 'app'), { recursive: true })
-        writeFileSync(join(root, 'master.css'), '@master {}')
+        writeFileSync(join(root, 'index.css'), '@master;')
         writeFileSync(join(root, 'app/page.tsx'), 'export default function Page() { return <main className="block" /> }')
         try {
             process.chdir(root)
@@ -99,7 +169,15 @@ describe('withMasterCSS', () => {
 
             expect(nextConfig.webpack).toBeUndefined()
             expect(nextConfig.turbopack.resolveAlias[VIRTUAL_CSS_ID]).toContain(join('.master', 'next.css'))
+            expect(nextConfig.turbopack.resolveAlias[VIRTUAL_CONFIG_ID]).toContain(join('node_modules', '.master-css', 'master-css-config.js'))
             expect(nextConfig.turbopack.rules['*']).toEqual(expect.arrayContaining([
+                expect.objectContaining({
+                    condition: {
+                        path: expect.any(RegExp)
+                    },
+                    type: 'ecmascript',
+                    as: '*.js'
+                }),
                 expect.objectContaining({
                     loaders: [
                         expect.objectContaining({

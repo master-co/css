@@ -1,9 +1,10 @@
 import type { Options as ExtractorOptions } from '@master/css-extractor'
+import type { Config } from 'shared/css-config'
 
 /* The default options */
 const options: PluginOptions = {
     mode: 'runtime',
-    config: 'master.css',
+    config: undefined,
     injectRuntime: true,
     avoidFOUC: true,
 }
@@ -28,10 +29,9 @@ export interface PluginOptions {
     extractor?: ExtractorOptions
 
     /**
-     * Path to the Master CSS config file.
-     * Defaults to `'master.css'`.
+     * Inline Master CSS config override.
      */
-    config?: string
+    config?: Config
 
     /**
      * Whether to include Master CSS’s runtime engine into the entry file.

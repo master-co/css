@@ -7,6 +7,7 @@ shared / external data
   ↓
 @master/css
 @master/css-compiler
+@master/css-configer
   ↓
 @master/css-validator
 @master/css-server
@@ -34,7 +35,7 @@ The core package must remain independent from integrations and tooling packages.
 
 When a feature creates a package cycle or self-build cycle, extract shared, dependency-free contracts or IR into `shared` first. Put runtime interpretation in the owning package adapter, such as core converting CSS directive results into `Config`, and re-export public contracts from the main package entry where appropriate.
 
-`shared` owns pure Master CSS config contracts, CSS directive result contracts, `?master-css-config` module id helpers, and generic CSS config loader/plugin factories. Package code should inject compiler and adapter implementations into those shared factories instead of importing a higher-level package to break cycles.
+`shared` owns pure Master CSS config contracts, CSS directive result contracts, config entry syntax helpers, `?master-css-config` / `virtual:master-css-config` module id helpers, and generic CSS config loader/plugin factories. Package code should inject compiler and adapter implementations into those shared factories instead of importing a higher-level package to break cycles.
 
 ## Core Package
 
@@ -73,7 +74,9 @@ Important files:
 
 `packages/compiler` parses CSS-authored Master config blocks and native CSS into shared directive results. Core-owned adapters convert those results into `Config` when downstream packages need core semantics such as utility composition, selector tokens, variable namespaces, and at-rule resolution.
 
-`packages/extractor` scans source files, extracts latent classes, validates them, and emits CSS for static output. It also owns shared stylesheet extraction helpers for integrations that need to compile `@master` CSS sources, normalize virtual CSS imports, and merge native CSS with extracted Master CSS.
+`packages/configer` resolves Master CSS project config entries, workspace roots, CSS import graphs, `?master-css-config` modules, and `virtual:master-css-config` project config modules. ESLint, language tooling, CLI, and build integrations should consume configer for project-level config instead of rediscovering entries locally.
+
+`packages/extractor` scans source files, extracts latent classes, validates them, and emits CSS for static output. It owns extraction-specific stylesheet helpers such as native CSS merging, shake/source directives, and generated CSS composition, but project config discovery and config loading belong in configer or the calling integration.
 
 ## Integration Packages
 

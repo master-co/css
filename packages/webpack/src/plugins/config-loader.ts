@@ -6,6 +6,7 @@ import {
 import { loadConfigModule } from '@master/css-configer/load'
 import type { Compiler } from 'webpack'
 import type { MasterCSSWebpackContext, WebpackSubPlugin } from '../plugin'
+import { isStyleCSSRequest } from '@master/css-extractor/style'
 
 export function ConfigLoaderPlugin(context: MasterCSSWebpackContext): WebpackSubPlugin {
     return {
@@ -35,6 +36,10 @@ export function ConfigLoaderPlugin(context: MasterCSSWebpackContext): WebpackSub
                                 return
                             }
                             try {
+                                if (!isStyleCSSRequest(resolvedPath)) {
+                                    callback(new TypeError('Master CSS config queries only support CSS entry files.'))
+                                    return
+                                }
                                 const virtualCSSConfigModuleId = toVirtualCSSConfigModulePath(context.compilerContext, resolvedPath)
                                 const result = await loadConfigModule(resolvedPath)
                                 context.virtualModule?.writeModule(virtualCSSConfigModuleId, result.code)

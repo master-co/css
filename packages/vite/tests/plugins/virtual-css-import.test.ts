@@ -27,8 +27,7 @@ describe('VirtualCSSImportPlugin', () => {
         const result = replaceMasterCSSImport(
             [
                 '@import "@master/css";',
-                '@import "@master/css/index.css";',
-                '@import url(\'master.css\');',
+                '@import url(\'theme.css\');',
                 '@import "./other.css";',
             ].join('\n'),
             SLOT
@@ -37,9 +36,15 @@ describe('VirtualCSSImportPlugin', () => {
         expect(result.replaced).toBe(true)
         expect(result.code).toContain(SLOT)
         expect(result.code).not.toContain('@import "@master/css"')
-        expect(result.code).not.toContain('@import "@master/css/index.css"')
-        expect(result.code).toContain('@import url(\'master.css\');')
+        expect(result.code).toContain('@import url(\'theme.css\');')
         expect(result.code).toContain('@import "./other.css";')
+    })
+
+    test('does not treat @master/css subpath imports as CSS config entries', () => {
+        const result = replaceMasterCSSImport('@import "@master/css/index.css";', SLOT)
+
+        expect(result.replaced).toBe(false)
+        expect(result.code).toContain('@import "@master/css/index.css";')
     })
 
     test('build load emits the slot placeholder for bundle-time replacement', async () => {
@@ -82,32 +87,49 @@ describe('VirtualCSSImportPlugin', () => {
             '/project/src/style.css'
         )
 
-        expect(result.code).toBe('@import "@master/css";')
+        expect(result.code).toBe(SLOT)
         expect(context.styleCSSSources.get('/project/src/style.css')).toMatchObject({
             shake: true,
             source: expect.stringContaining('.card')
         })
         expect(context.styleCSSSources.get('/project/src/style.css').source).not.toContain('@master/css')
-        expect(context.virtualCSSImporters).toEqual(new Set([RESOLVED_VIRTUAL_CSS_ID]))
+        expect(context.virtualCSSImporters).toBeUndefined()
+        expect(context.virtualCSSPlaceholderEmitted).toBe(true)
+    })
+
+    test('serve transform emits current CSS and reloads the managed stylesheet for HMR', async () => {
+        const context = makeContext('serve')
+        const plugin = VirtualCSSImportPlugin({ mode: 'extract' } as any, context)
+
+        const result = await (plugin as any).transform.call(
+            {},
+            '@import "@master/css";\n.card{color:red}',
+            '/project/src/style.css'
+        )
+
+        expect(result.code).toContain('.fg\\:red')
+        expect(result.code).not.toBe(SLOT)
+        expect(context.virtualCSSImporters).toEqual(new Set(['/project/src/style.css']))
         expect(context.virtualCSSPlaceholderEmitted).toBeUndefined()
     })
 
-    test('treats @master shake stylesheets as managed CSS entries', async () => {
+    test('treats @master stylesheets as managed shaken CSS entries', async () => {
         const context = makeContext('build')
         const plugin = VirtualCSSImportPlugin({ mode: 'extract' } as any, context)
 
         const result = await (plugin as any).transform.call(
             {},
-            '@master shake;\n.card{color:red}',
+            '@master;\n.card{color:red}',
             '/project/src/style.css'
         )
 
-        expect(result.code).toBe('@import "@master/css";')
+        expect(result.code).toBe(SLOT)
         expect(context.styleCSSSources.get('/project/src/style.css')).toMatchObject({
             shake: true,
             source: expect.stringContaining('.card')
         })
-        expect(context.styleCSSSources.get('/project/src/style.css').source).not.toContain('@master shake')
+        expect(context.styleCSSSources.get('/project/src/style.css').source).not.toContain('@master;')
+        expect(context.virtualCSSPlaceholderEmitted).toBe(true)
     })
 
     test('ignores standalone @master stylesheets without @master/css imports', async () => {
@@ -131,7 +153,7 @@ describe('VirtualCSSImportPlugin', () => {
 
         expect(await (plugin as any).transform.call({}, '@import "@master/css";', '/project/src/main.ts')).toBeUndefined()
         expect(await (plugin as any).transform.call({}, '@import "virtual:master-utilities.css";', '/project/src/style.css')).toBeUndefined()
-        expect(await (plugin as any).transform.call({}, '@import "master.css";', '/project/src/style.css')).toBeUndefined()
+        expect(await (plugin as any).transform.call({}, '@import "theme.css";', '/project/src/style.css')).toBeUndefined()
         expect(await (plugin as any).transform.call({}, '@import "./other.css";', '/project/src/style.css')).toBeUndefined()
     })
 })

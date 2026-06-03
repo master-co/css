@@ -11,13 +11,12 @@ import {
     registerStyleCSSSource,
     type StyleCSSSources
 } from '@master/css-extractor/style'
-import { loadConfig } from '@master/css-configer/load'
-import { resolveConfigPath } from '@master/css-configer/path'
+import { findCSSConfigEntryFiles } from '@master/css-configer/css'
+import { VIRTUAL_CSS_ID } from 'shared/css-virtual-module'
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { existsSync, readFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { resolveOptions, type Options, type ResolvedOptions } from './options'
-import { warnMissingNextConfig } from './config-warning'
 
 const STATE_VERSION = 1
 const DEFAULT_EXTRACT_OUTPUT = '.master/next.css'
@@ -30,7 +29,7 @@ export interface ExtractState {
     outputPath: string
     scanLogPath: string
     options: {
-        config: string | Config
+        config?: Config
         extractorOptions: ExtractorOptions
         debug: boolean
     }
@@ -76,7 +75,7 @@ export async function transformExtractStyleSource(statePath: string, resourcePat
     const state = readExtractState(statePath)
     if (!isStyleCSSRequest(resourcePath)) return source
     if (!resolveMasterStyleSource(resourcePath, source, state.projectDir)) return source
-    if (isMasterCSSPackageStyleFile(resourcePath)) {
+    if (isMasterCSSPackageStyleFile(resourcePath, state.projectDir)) {
         return removeMasterStyleDirectives(source).code
     }
     const options = resolveOptions({
@@ -90,7 +89,7 @@ export async function transformExtractStyleSource(statePath: string, resourcePat
         projectDir: state.projectDir
     })
     await session.write()
-    return createStyleCSSHostSource(source)
+    return createStyleCSSHostSource(source, { masterImport: VIRTUAL_CSS_ID })
 }
 
 async function createExtractedCSS(projectDir: string, session: ExtractSession) {
@@ -99,6 +98,14 @@ async function createExtractedCSS(projectDir: string, session: ExtractSession) {
         styleCSSSources: session.styleCSSSources,
         projectDir
     })
+}
+
+async function registerStyleCSSEntries(projectDir: string, session: ExtractSession) {
+    for (const entry of await findCSSConfigEntryFiles(projectDir)) {
+        await registerStyleCSSSource(session.extractor, session.styleCSSSources, entry, await readFile(entry, 'utf8'), {
+            projectDir
+        })
+    }
 }
 
 async function writeExtractedCSS(outputPath: string, cssText: string) {
@@ -133,6 +140,7 @@ function createSession(projectDir: string, outputPath: string, options: Resolved
     const ready = extractor
         .init()
         .then(async () => {
+            await registerStyleCSSEntries(projectDir, session)
             await extractor.prepare()
             await write()
             return extractor
@@ -197,26 +205,21 @@ export function readExtractState(statePath: string): ExtractState {
     return state
 }
 
-async function resolveExtractConfigDependencies(projectDir: string, extractorOptions: ExtractorOptions) {
-    if (typeof extractorOptions.config !== 'string') return []
-    const resolvedConfig = resolveConfigPath({
-        cwd: projectDir,
-        name: extractorOptions.config
-    })
-    if (!resolvedConfig) return []
-    try {
-        return (await loadConfig(resolvedConfig.path)).dependencies
-    } catch {
-        return [resolvedConfig.path]
-    }
-}
-
 export async function addExtractCSSDependencies(statePath: string, addDependency?: (file: string) => void) {
     if (!addDependency) return
     const state = readExtractState(statePath)
+    const options = resolveOptions({
+        mode: 'extract',
+        config: state.options.config,
+        extractorOptions: state.options.extractorOptions,
+        debug: state.options.debug
+    })
+    const session = await getOrCreateExtractSession(state.projectDir, state.outputPath, options)
     addDependency(state.outputPath)
-    for (const dependency of await resolveExtractConfigDependencies(state.projectDir, state.options.extractorOptions)) {
-        addDependency(dependency)
+    for (const styleSource of session.styleCSSSources.values()) {
+        for (const dependency of styleSource.dependencies) {
+            addDependency(dependency)
+        }
     }
 }
 
@@ -241,7 +244,6 @@ export async function prepareNextExtract(rawOptions: Options = {}, setupOptions:
     if (options.mode !== 'extract') return
 
     const projectDir = setupOptions.projectDir ?? process.cwd()
-    warnMissingNextConfig(projectDir, options.config)
     const outputPath = resolveExtractOutputPath(projectDir)
     const statePath = resolveExtractStatePath(outputPath)
     const scanLogPath = resolveExtractScanLogPath(outputPath)

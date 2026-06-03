@@ -25,59 +25,54 @@ describe('extractor CSS directives', () => {
             @master source force './src/force-exclude.tsx';
             @master class 'not-exclude';
             @master class exclude 'legacy-*';
-        `, join(root, 'master.css'), root)
+        `, join(root, 'app/entry.css'), root)
 
-        expect(directives.include).toEqual(['exclude/**/*.tsx'])
-        expect(directives.exclude).toEqual(['src/**/*.test.tsx'])
-        expect(directives.sources).toEqual(['src/force-exclude.tsx'])
+        expect(directives.include).toEqual(['app/exclude/**/*.tsx'])
+        expect(directives.exclude).toEqual(['app/src/**/*.test.tsx'])
+        expect(directives.sources).toEqual(['app/src/force-exclude.tsx'])
         expect(directives.includeClasses).toEqual(['not-exclude'])
         expect(directives.excludeClasses[0]).toBeInstanceOf(RegExp)
         expect((directives.excludeClasses[0] as RegExp).test('legacy-card')).toBe(true)
     })
 
-    it('loads global extractor directives from the master.css config graph', async () => {
+    it('loads extractor directives from a managed CSS entry graph', async () => {
         const root = createFixture()
-        writeFileSync(join(root, 'master.css'), `
-            @master source './app/**/*.tsx';
-            @master source exclude './app/**/*.test.tsx';
-            @master source force './app/forced.test.tsx';
-            @master class 'font:semibold legacy-token';
-            @master class exclude 'legacy-*';
-        `)
         writeFileSync(join(root, 'app/page.tsx'), '<div class="block"></div>')
         writeFileSync(join(root, 'app/skip.test.tsx'), '<div class="text:center"></div>')
         writeFileSync(join(root, 'app/forced.test.tsx'), '<div class="fg:red"></div>')
 
         const extractor = new CSSExtractor({
-            include: [],
-            config: 'master.css'
+            include: []
         }, root)
         await extractor.init()
-        await extractor.prepare()
+        const styleCSSSources = new Map()
+        await registerStyleCSSSource(extractor, styleCSSSources, join(root, 'app/entry.css'), `
+            @master;
+            @master source './**/*.tsx';
+            @master source exclude './**/*.test.tsx';
+            @master source force './forced.test.tsx';
+            @master class 'font:semibold legacy-token';
+            @master class exclude 'legacy-*';
+        `)
+        const css = await createExtractedCSS({
+            extractor,
+            styleCSSSources,
+            projectDir: root
+        })
 
-        expect(extractor.extractorDirectives.include).toEqual(['app/**/*.tsx'])
-        expect(extractor.extractorDirectives.exclude).toEqual(['app/**/*.test.tsx'])
-        expect(extractor.extractorDirectives.sources).toEqual(['app/forced.test.tsx'])
-        expect(extractor.options.include).toContain('app/**/*.tsx')
-        expect(extractor.options.exclude).toContain('app/**/*.test.tsx')
-        expect(extractor.options.sources).toContain('app/forced.test.tsx')
-        expect(extractor.options.includeClasses).toContain('font:semibold')
-        expect(extractor.options.includeClasses).toContain('legacy-token')
-        expect(extractor.css.text).toContain('.block{display:block}')
-        expect(extractor.css.text).toContain('.fg\\:red{color:red}')
-        expect(extractor.css.text).toContain('.font\\:semibold{font:semibold}')
-        expect(extractor.css.text).not.toContain('.text\\:center')
-        expect(extractor.css.text).not.toContain('legacy-token')
+        expect(css).toContain('.block{display:block}')
+        expect(css).toContain('.fg\\:red{color:red}')
+        expect(css).toContain('.font\\:semibold{font:semibold}')
+        expect(css).not.toContain('.text\\:center')
+        expect(css).not.toContain('legacy-token')
     })
 
     it('uses stylesheet-local source directives for a shaken CSS root', async () => {
         const root = createFixture()
-        writeFileSync(join(root, 'master.css'), '@master {}')
         writeFileSync(join(root, 'app/a/page.tsx'), '<div class="card"></div>')
         writeFileSync(join(root, 'app/b/page.tsx'), '<div class="unused"></div>')
         const extractor = new CSSExtractor({
-            include: [],
-            config: 'master.css'
+            include: []
         }, root)
         await extractor.init()
 
@@ -109,7 +104,6 @@ describe('extractor CSS directives', () => {
 
     it('merges imported stylesheet class directives into the parent root scope', async () => {
         const root = createFixture()
-        writeFileSync(join(root, 'master.css'), '@master {}')
         writeFileSync(join(root, 'app/shared.css'), `
             @master class 'shared-card legacy-card';
             @master class exclude 'legacy-*';
@@ -123,8 +117,7 @@ describe('extractor CSS directives', () => {
             }
         `)
         const extractor = new CSSExtractor({
-            include: [],
-            config: 'master.css'
+            include: []
         }, root)
         await extractor.init()
 

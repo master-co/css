@@ -120,7 +120,7 @@ describe('renderNextBuildOutputs', () => {
         expect(html).toBe(sourceHTML)
     })
 
-    it('uses root master.css config only and ignores native stylesheet CSS', async () => {
+    it('uses the managed CSS entry config and native CSS only', async () => {
         const projectDir = createFixtureDir()
         const distDir = join(projectDir, '.next')
         const htmlFile = join(distDir, 'server/app/index.html')
@@ -143,7 +143,9 @@ describe('renderNextBuildOutputs', () => {
             '    }',
             '}'
         ].join('\n'))
-        writeFileSync(join(projectDir, 'master.css'), [
+        writeFileSync(join(projectDir, 'app.css'), [
+            '@master;',
+            '',
             '.root-native {',
             '    color: #789;',
             '}',
@@ -166,7 +168,7 @@ describe('renderNextBuildOutputs', () => {
         expect(outputs[0].rendered).toBe(true)
         expect(html).not.toContain('.native-used')
         expect(html).not.toContain('.native-unused')
-        expect(html).not.toContain('.root-native')
+        expect(html).toContain('.root-native')
         expect(html).not.toContain('.root-unused')
         expect(html).toContain('.btn{display:grid}')
         expect(html).not.toContain('.btn{display:inline-flex}')

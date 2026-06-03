@@ -34,6 +34,7 @@ function makeContext(slot: string, css: string) {
             nativeClassNames: new Set(),
             usedNativeClasses: new Set(),
             options: { includeClasses: [] },
+            emit: vi.fn(),
         },
     } as any
 }
@@ -174,11 +175,13 @@ describe('VirtualCSSModulePlugin (D1 placeholder-leak warn)', () => {
         expect(warn).not.toHaveBeenCalled()
     })
 
-    test('compiles root master.css config rules and ignores native CSS', async () => {
+    test('compiles managed CSS entry config rules and preserves used native CSS', async () => {
         const root = mkdtempSync(path.join(tmpdir(), 'master-css-vite-'))
         try {
-            const configPath = path.join(root, 'master.css')
-            writeFileSync(configPath, `
+            const entryPath = path.join(root, 'app.css')
+            writeFileSync(entryPath, `
+                @master;
+
                 body {
                     margin: 0;
                 }
@@ -195,7 +198,14 @@ describe('VirtualCSSModulePlugin (D1 placeholder-leak warn)', () => {
                 }
             `)
             const ctx = makeContext(SLOT, '')
-            ctx.extractor.resolvedConfigPath = configPath
+            ctx.config = {
+                root,
+                server: {
+                    fs: {
+                        allow: []
+                    }
+                }
+            }
             ctx.extractor.validClasses = new Set(['btn'])
             ctx.extractor.usedNativeClasses = new Set(['native-card'])
             ctx.extractor.options.includeClasses = []
@@ -209,8 +219,8 @@ describe('VirtualCSSModulePlugin (D1 placeholder-leak warn)', () => {
             await (plugin as any).generateBundle.call({ warn }, {}, bundle)
 
             const css = String(bundle['assets/index-abc.css'].source)
-            expect(css).not.toContain('body')
-            expect(css).not.toContain('.native-card')
+            expect(css).toContain('body')
+            expect(css).toContain('.native-card')
             expect(css).not.toContain('.unused-card')
             expect(css).toContain('.btn{display:inline-flex}')
             expect(warn).not.toHaveBeenCalled()
@@ -219,11 +229,18 @@ describe('VirtualCSSModulePlugin (D1 placeholder-leak warn)', () => {
         }
     })
 
-    test('ignores source stylesheet CSS configs and uses root master.css only', async () => {
+    test('uses the managed CSS entry for config and native CSS shaking', async () => {
         const root = mkdtempSync(path.join(tmpdir(), 'master-css-vite-'))
         try {
-            const configPath = path.join(root, 'master.css')
-            writeFileSync(configPath, `
+            const entryPath = path.join(root, 'app.css')
+            writeFileSync(entryPath, `
+                @master;
+
+                .native-used,
+                .native-unused {
+                    color: var(--color-primary);
+                }
+
                 @master {
                     --color-primary: #123456;
 
@@ -233,28 +250,15 @@ describe('VirtualCSSModulePlugin (D1 placeholder-leak warn)', () => {
                 }
             `)
             const ctx = makeContext(SLOT, '')
-            ctx.extractor.resolvedConfigPath = configPath
-            ctx.extractor.latentClasses = new Set(['btn', 'native-used'])
-            ctx.styleCSSSources = new Map([[
-                path.join(root, 'src/styles.scss'),
-                {
-                    shake: true,
-                    source: `
-                    $accent: red;
-
-                    .native-used,
-                    .native-unused {
-                        color: var(--color-primary);
+            ctx.config = {
+                root,
+                server: {
+                    fs: {
+                        allow: []
                     }
-
-                    @master {
-                        .btn {
-                            display: inline-flex;
-                        }
-                    }
-                `
                 }
-            ]])
+            }
+            ctx.extractor.latentClasses = new Set(['btn', 'native-used'])
 
             const plugin = VirtualCSSModulePlugin({} as any, ctx)
             const warn = vi.fn()
@@ -270,7 +274,6 @@ describe('VirtualCSSModulePlugin (D1 placeholder-leak warn)', () => {
             expect(css).not.toContain('.native-unused')
             expect(css).toMatch(/--color-primary:(rgb\(18 52 86\)|#123456)/)
             expect(css).toContain('.btn{display:grid}')
-            expect(css).not.toContain('.btn{display:inline-flex}')
             expect(warn).not.toHaveBeenCalled()
         } finally {
             rmSync(root, { recursive: true, force: true })

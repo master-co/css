@@ -1,10 +1,13 @@
 import { createConnection, TextDocuments, InitializeParams, InitializeResult, WorkspaceFolder, Disposable, Connection, ClientCapabilities, TextDocumentChangeEvent, DidChangeConfigurationParams, HoverParams, CompletionParams, DocumentColorParams, ColorPresentationParams, RemoteConsole, SemanticTokensParams } from 'vscode-languageserver/node.js'
 import { TextDocument } from 'vscode-languageserver-textdocument'
 import path from 'node:path'
-import { readFile } from 'node:fs/promises'
 import CSSLanguageService, { Settings as CSSLanguageServiceSettings } from '@master/css-language-service'
 import { Settings } from './settings'
-import exploreConfig from '@master/css-configer/explore'
+import {
+    findCSSConfigEntryFiles,
+    findMasterCSSWorkspaceDirectories
+} from '@master/css-configer/css'
+import { loadProjectConfig } from '@master/css-configer/load'
 import extend from '@techor/extend'
 import settings from './settings'
 import type { Config } from 'shared/css-config'
@@ -12,36 +15,12 @@ import { SERVER_CAPABILITIES } from '@master/css-language-service'
 import glob from 'fast-glob'
 import { URI } from 'vscode-uri'
 
-const MASTER_CSS_WORKSPACE_DEPENDENCIES = new Set([
-    '@master/css',
-    '@master/css-runtime',
-    '@master/css-server',
-    '@master/css-extractor',
-    '@master/css-cli',
-    '@master/css.vite',
-    '@master/css.webpack',
-    '@master/css.astro',
-    '@master/css.nuxt',
-    '@master/css.react',
-    '@master/css.vue',
-    '@master/css.svelte',
-    '@master/css.next'
-])
-
-const PACKAGE_JSON_DEPENDENCY_FIELDS = [
-    'dependencies',
-    'devDependencies',
-    'peerDependencies',
-    'optionalDependencies'
-] as const
-
-type PackageJSON = Partial<Record<typeof PACKAGE_JSON_DEPENDENCY_FIELDS[number], unknown>>
-
 export declare interface Workspace {
     uri: string
     openedTextDocuments: TextDocument[]
     languageService?: CSSLanguageService
     languageServiceSettings: CSSLanguageServiceSettings
+    configEntries?: string[]
 }
 
 export default class CSSLanguageServer {
@@ -189,7 +168,7 @@ export default class CSSLanguageServer {
         const workspace = this.findClosestWorkspace(params.document.uri)
         if (!workspace) return
         const name = path.basename(URI.parse(params.document.uri).fsPath)
-        if (name === 'master.css' || name.endsWith('.css') || name.startsWith('master.css.')) {
+        if (name.endsWith('.css')) {
             this.refreshSemanticTokens()
             this.connection.sendRequest('masterCSS/restart', {
                 title: 'Updating Master CSS configuration',
@@ -226,27 +205,9 @@ export default class CSSLanguageServer {
             this.console.info(`Registered global workspace folder`)
         }
         if (workspaces === 'auto') {
-            const [workspaceConfigFiles, packageJSONFiles] = await Promise.all([
-                glob(['**/master.css', '**/master.css.*'], {
-                    cwd: workspaceFolderCWD,
-                    absolute: true,
-                    onlyFiles: true,
-                    ignore: ['**/node_modules/**']
-                }),
-                glob('**/package.json', {
-                    cwd: workspaceFolderCWD,
-                    absolute: true,
-                    onlyFiles: true,
-                    ignore: ['**/node_modules/**']
-                })
-            ])
-            workspaceConfigFiles
-                .forEach((workspaceFile) => resolvedWorkspaceDirectories.add(path.dirname(path.resolve(workspaceFile))))
-            await Promise.all(packageJSONFiles.map(async (packageJSONFile) => {
-                if (await this.hasMasterCSSDependency(packageJSONFile)) {
-                    resolvedWorkspaceDirectories.add(path.dirname(path.resolve(packageJSONFile)))
-                }
-            }))
+            for (const workspaceDir of await findMasterCSSWorkspaceDirectories(workspaceFolderCWD)) {
+                resolvedWorkspaceDirectories.add(workspaceDir)
+            }
         } else if (workspaces?.length) {
             (await glob(workspaces, {
                 cwd: workspaceFolderCWD,
@@ -256,30 +217,15 @@ export default class CSSLanguageServer {
             }))
                 .forEach((workspaceDir) => resolvedWorkspaceDirectories.add(path.resolve(workspaceDir)))
         }
-        resolvedWorkspaceDirectories.forEach(async (workspaceDir) => {
+        for (const workspaceDir of resolvedWorkspaceDirectories) {
             const workspaceURI = URI.file(workspaceDir).toString()
             this.console.info(`Added workspace ${workspaceURI}`)
             this.workspaces.set(workspaceURI, {
                 uri: workspaceURI,
                 openedTextDocuments: [],
-                languageServiceSettings
+                languageServiceSettings,
+                configEntries: await findCSSConfigEntryFiles(workspaceDir)
             })
-        })
-    }
-
-    private async hasMasterCSSDependency(packageJSONFile: string) {
-        try {
-            const packageJSON = JSON.parse(await readFile(packageJSONFile, 'utf8')) as PackageJSON
-            return PACKAGE_JSON_DEPENDENCY_FIELDS.some((field) => {
-                const dependencies = packageJSON[field]
-                if (!dependencies || typeof dependencies !== 'object') return false
-                for (const dependency of MASTER_CSS_WORKSPACE_DEPENDENCIES) {
-                    if (dependency in dependencies) return true
-                }
-                return false
-            })
-        } catch {
-            return false
         }
     }
 
@@ -287,21 +233,26 @@ export default class CSSLanguageServer {
         let workspaceConfig: Config | undefined
         if (workspace !== this.globalWorkspace) {
             try {
-                workspaceConfig = (await exploreConfig({
-                    cwd: workspace.uri && URI.parse(workspace.uri).fsPath,
-                    found: undefined
-                }))?.config
+                workspaceConfig = await this.loadWorkspaceConfig(workspace)
             } catch (e: any) {
                 this.console.info(`Failed to load config from ${workspace.uri}`)
                 this.console.error(e instanceof Error ? e.stack : e.toString())
             }
             if (workspaceConfig) {
-                this.console.info(`Initialized workspace ${workspaceConfig ? '(with config file)' : ''} ${workspace.uri}`)
+                this.console.info(`Initialized workspace ${workspace.configEntries?.length ? '(with config entry)' : '(with config)'} ${workspace.uri}`)
             } else {
                 this.console.info(`Initialized workspace ${workspace.uri}`)
             }
         }
         workspace.languageService = new CSSLanguageService({ ...workspace.languageServiceSettings, config: workspaceConfig })
+    }
+
+    private async loadWorkspaceConfig(workspace: Workspace) {
+        const cwd = workspace.uri ? URI.parse(workspace.uri).fsPath : process.cwd()
+        const result = await loadProjectConfig(cwd, {
+            config: workspace.languageServiceSettings.config
+        })
+        return result.entries.length ? result.config : workspace.languageServiceSettings.config
     }
 
     destroyLanguageService(workspace: Workspace) {

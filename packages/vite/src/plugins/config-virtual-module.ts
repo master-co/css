@@ -1,8 +1,7 @@
 import type { ModuleNode, Plugin, ViteDevServer } from 'vite'
 import { PluginContext } from '../core'
-import exploreConfig from '@master/css-configer/explore'
-import { loadConfigModule } from '@master/css-configer/load'
-import { warnMissingConfig } from '@master/css-configer/path'
+import { loadProjectConfig } from '@master/css-configer/load'
+import { toConfigModule } from '@master/css-configer/module'
 import { RESOLVED_VIRTUAL_CONFIG_ID, VIRTUAL_CONFIG_ID } from '../common'
 import { PluginOptions } from '../options'
 
@@ -16,7 +15,7 @@ export function ConfigVirtualModulePlugin(
     options: PluginOptions,
     context: PluginContext
 ): Plugin {
-    const cssConfigDependencies = new Map<string, string[]>()
+    let cssConfigDependencies: string[] = []
     const addServerAllow = (paths: string[]) => {
         const allow = context.config?.server.fs.allow
         if (!allow) return
@@ -24,70 +23,35 @@ export function ConfigVirtualModulePlugin(
             if (!allow.includes(path)) allow.push(path)
         }
     }
-    const watchConfigDependencies = (pluginContext: { addWatchFile?: (id: string) => void }, configPath?: string, dependencies: string[] = []) => {
-        if (!configPath) return
-        cssConfigDependencies.set(configPath, dependencies)
-        addServerAllow(dependencies)
-        for (const dependency of dependencies) {
+    const loadDefaultConfig = async (pluginContext: { addWatchFile?: (id: string) => void }) => {
+        const result = await loadProjectConfig(context.config?.root, {
+            config: options.config
+        })
+        cssConfigDependencies = result.dependencies
+        addServerAllow(result.dependencies)
+        for (const dependency of result.dependencies) {
             pluginContext.addWatchFile?.(dependency)
         }
+        return toConfigModule(result.config)
     }
     return {
         name: 'master-css:virtual-module:config',
         enforce: 'pre',
-        async configResolved(config) {
-            context.configResult = await exploreConfig({
-                name: options.config,
-                cwd: config.root,
-                missing: (name, cwd) => warnMissingConfig({
-                    integration: '@master/css.vite',
-                    name,
-                    cwd
-                })
-            })
-            context.configPath = context.configResult?.path
-            if (process.env.DEBUG) {
-                console.log(`[@master/css.vite] config: ${context.configPath || 'none'}`)
-            }
-            if (context.configPath) {
-                const dependencies = context.configResult?.dependencies || [context.configPath]
-                cssConfigDependencies.set(context.configPath, dependencies)
-                for (const dependency of dependencies) {
-                    if (!config.server.fs.allow.includes(dependency)) {
-                        config.server.fs.allow.push(dependency)
-                    }
-                }
-            }
-        },
-        buildStart() {
-            watchConfigDependencies(this, context.configPath, context.configResult?.dependencies || [])
+        async buildStart() {
+            await loadDefaultConfig(this)
         },
         async resolveId(id) {
             if (id === VIRTUAL_CONFIG_ID) return RESOLVED_VIRTUAL_CONFIG_ID
         },
         async load(id) {
             if (id === RESOLVED_VIRTUAL_CONFIG_ID) {
-                if (context.configPath) {
-                    if (context.configResult?.extension === 'css') {
-                        const result = await loadConfigModule(context.configPath)
-                        context.configResult.config = result.config
-                        context.configResult.dependencies = result.dependencies
-                        watchConfigDependencies(this, context.configPath, result.dependencies)
-                        return result.code
-                    }
-                    return `import config from ${JSON.stringify(context.configPath)}; export default config;`
-                } else {
-                    return `export default {}`
-                }
+                return await loadDefaultConfig(this)
             }
         },
         async handleHotUpdate({ file, server }) {
             let handled = false
             let needsFullReload = false
-            const defaultConfigDependencies = context.configPath
-                ? cssConfigDependencies.get(context.configPath) || [context.configPath]
-                : []
-            if (defaultConfigDependencies.includes(file)) {
+            if (cssConfigDependencies.includes(file)) {
                 handled = true
                 await context.extractor?.reset(context.extractor.options)
                 needsFullReload ||= invalidateConfigModule(

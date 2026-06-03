@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test'
 import init from '../../init'
-import config from './master.css'
+import config from './config'
 import { readFileSync } from 'fs'
 import { fileURLToPath } from 'url'
 import { dirname, resolve } from 'path'

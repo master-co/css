@@ -13,6 +13,7 @@
 ## Implementation Guidance
 
 - Use structured parsing helpers instead of ad hoc string manipulation when available.
+- For CSS syntax, import graphs, transforms, and syntax-aware rewrites, prefer established parser/transformer libraries or existing compiler APIs such as Lightning CSS, PostCSS, or `@master/css-compiler` before adding custom string scanners. If a small hand-written scanner is still used, keep it centralized, dependency-free where possible, and covered by tests so it can be replaced later.
 - Preserve existing matcher, parser, transformer, declarer, and layer patterns.
 - Keep package-local code local unless a shared abstraction is already established.
 - Avoid cross-package refactors unless the task explicitly requires them.
@@ -29,4 +30,3 @@ Do not add dependencies unless:
 ## Generated Files
 
 Do not edit `dist`, generated build output, generated framework output, or unrelated snapshots.
-

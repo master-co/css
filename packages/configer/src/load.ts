@@ -1,5 +1,9 @@
 import { extname } from 'node:path'
-import { createCSSConfigLoader, type CompileCSSFile, type CSSDirectiveConfigAdapter } from 'shared/css-config-loader'
+import {
+    createCSSConfigLoader,
+    type CompileCSSFile,
+    type CSSDirectiveConfigAdapter
+} from 'shared/css-config-loader'
 import type { Config } from 'shared/css-config'
 import {
     stripResourceQuery,
@@ -7,22 +11,26 @@ import {
     type CSSConfigModuleResult
 } from 'shared/css-config-module'
 import {
-    resolveConfig,
     type LoadConfigOptions,
-    type LoadConfigResult
+    type LoadConfigResult,
+    type LoadProjectConfigOptions,
+    type LoadProjectConfigResult
 } from './options'
-import { collectScriptDependencies, importConfigModule } from './script'
-import './load-sync'
+import { compileCSSConfigFile, findCSSConfigEntryFiles } from './css'
+import { compileProjectConfigEntries } from './project'
 
 export type {
     LoadConfigOptions,
-    LoadConfigResult
+    LoadConfigResult,
+    LoadProjectConfigOptions,
+    LoadProjectConfigResult
 } from './options'
 
 export type ConfigModuleResult = CSSConfigModuleResult<Config>
 
 async function loadCompileCSS() {
-    return (await import('@master/css-compiler')).compileCSSFile as CompileCSSFile
+    const { compileCSS } = await import('@master/css-compiler')
+    return ((path, options) => compileCSSConfigFile(compileCSS, path, options)) as CompileCSSFile
 }
 
 async function loadCSSDirectiveConfigAdapter(options: LoadConfigOptions = {}) {
@@ -43,12 +51,23 @@ export async function loadConfig(path: string, options: LoadConfigOptions = {}):
     if (extname(stripResourceQuery(path)) === '.css') {
         return loadCSSConfig(path, options)
     }
-    return {
-        config: resolveConfig(await importConfigModule(path), options),
-        dependencies: collectScriptDependencies(path)
-    }
+    throw new TypeError('Master CSS config modules can only be loaded from CSS files.')
 }
 
 export async function loadConfigModule(path: string, options: LoadConfigOptions = {}): Promise<ConfigModuleResult> {
     return toConfigModuleResult(await loadConfig(stripResourceQuery(path), options))
+}
+
+export async function loadProjectConfig(projectDir = process.cwd(), options: LoadProjectConfigOptions = {}): Promise<LoadProjectConfigResult> {
+    const entries = options.entries ?? await findCSSConfigEntryFiles(projectDir)
+    return compileProjectConfigEntries(
+        entries,
+        await loadCompileCSS(),
+        await loadCSSDirectiveConfigAdapter(options),
+        options
+    )
+}
+
+export async function loadProjectConfigModule(projectDir = process.cwd(), options: LoadProjectConfigOptions = {}) {
+    return toConfigModuleResult(await loadProjectConfig(projectDir, options))
 }

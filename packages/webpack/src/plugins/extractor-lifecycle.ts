@@ -32,7 +32,6 @@ export function ExtractorLifecyclePlugin(context: MasterCSSWebpackContext): Webp
 
             compiler.hooks.beforeRun.tapPromise(context.name, async () => {
                 await context.init()
-                context.warnMissingDefaultConfig()
                 await context.prepare()
                 await context.writeGeneratedCSSModule()
                 log``
@@ -40,10 +39,8 @@ export function ExtractorLifecyclePlugin(context: MasterCSSWebpackContext): Webp
 
             compiler.hooks.watchRun.tapPromise(context.name, async (watchingCompiler) => {
                 await context.init()
-                context.warnMissingDefaultConfig()
-                const resolvedConfig = context.resolveDefaultConfigPath()
                 const modifiedFiles = (watchingCompiler as Compiler & { modifiedFiles?: ReadonlySet<string> }).modifiedFiles
-                const defaultConfigDependencies = context.getDefaultConfigDependencyPaths(resolvedConfig)
+                const defaultConfigDependencies = context.getDefaultConfigDependencyPaths()
                 if (defaultConfigDependencies.some((dependency) => hasModifiedFile(modifiedFiles, dependency))) {
                     await context.reset(context.getOptions())
                     await context.waitForResetReplay()

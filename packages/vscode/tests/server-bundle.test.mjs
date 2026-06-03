@@ -152,12 +152,11 @@ function createLanguageServer() {
     }
 }
 
-test('build emits the SWC wasm asset beside the server bundle', () => {
+test('build emits the server bundle', () => {
     expect(statSync(serverPath).isFile()).toBe(true)
-    expect(statSync(resolve(distDir, 'wasm_bg.wasm')).size).toBeGreaterThan(0)
 })
 
-test('bundled language server loads a TypeScript workspace config', async () => {
+test('bundled language server loads a CSS workspace entry', async () => {
     const server = createLanguageServer()
     const workspaceUri = pathToFileURL(workspaceDir).toString()
     const documentUri = pathToFileURL(resolve(workspaceDir, 'index.html')).toString()
@@ -195,7 +194,7 @@ test('bundled language server loads a TypeScript workspace config', async () => 
 
         await server.waitForNotification((message) =>
             message.method === 'window/logMessage'
-            && message.params?.message?.includes('Initialized workspace (with config file)')
+            && message.params?.message?.includes('Initialized workspace (with config entry)')
         )
 
         expect(server.stderr().includes('Cannot find module')).toBe(false)

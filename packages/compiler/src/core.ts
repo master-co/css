@@ -98,7 +98,7 @@ type MasterSection = 'root'
 
 const IMPORTANT_FLAG_VALUE = '__master_important__'
 const UTILITY_LAYER_NAMES = new Set<CSSDirectiveLayerName>(['base', 'preset', 'main', 'general'])
-const STANDALONE_MASTER_DIRECTIVE_NAMES = new Set(['shake', 'no-shake', 'source', 'class'])
+const STANDALONE_MASTER_DIRECTIVE_NAMES = new Set(['', 'shake', 'no-shake', 'source', 'class'])
 
 const HTML_TAG_NAMES = new Set([
     'a',
@@ -1084,45 +1084,6 @@ function combineComponentSelectors(parentSelector: string, childSelector: string
     return selectors.join(',')
 }
 
-function componentSelectorToClassSuffix(selector: string) {
-    if (selector === '&') return ''
-    if (!selector.startsWith('&')) return ''
-    return selector.slice(1).replace(/\s+/g, '_')
-}
-
-function insertSelectorSuffix(className: string, suffix: string) {
-    if (!suffix) return className
-    let depth = 0
-    let quote = ''
-    for (let index = 0; index < className.length; index++) {
-        const char = className[index]
-        if (quote) {
-            if (char === '\\') {
-                index++
-            } else if (char === quote) {
-                quote = ''
-            }
-            continue
-        }
-        if (char === '"' || char === '\'') {
-            quote = char
-            continue
-        }
-        if (char === '(' || char === '[' || char === '{') {
-            depth++
-            continue
-        }
-        if (char === ')' || char === ']' || char === '}') {
-            depth--
-            continue
-        }
-        if (char === '@' && index > 0 && depth === 0) {
-            return className.slice(0, index) + suffix + className.slice(index)
-        }
-    }
-    return className + suffix
-}
-
 interface ComponentSelectorDefinition {
     name: string
     selector: string
@@ -1141,12 +1102,10 @@ function parseComponentDefinitionBody(
     layer?: CSSDirectiveLayerName
 ) {
     const definitions = getParsedComponentDefinitions(parsed, selectorDefinition.name)
-    const selectorSuffix = componentSelectorToClassSuffix(selectorDefinition.selector)
 
     for (const item of items) {
         if (item.type === 'compose') {
             const normalizedClassNames = normalizeClassNames(item.classNames)
-                .map((className) => insertSelectorSuffix(className, selectorSuffix))
             definitions.push(...normalizedClassNames.map((className) => ({
                 type: 'compose' as const,
                 order: nextComponentOrder(parsed),
@@ -1737,7 +1696,8 @@ function removeStandaloneMasterDirectives(source: string) {
         if (depth !== 0 || !source.startsWith('@master', index)) continue
 
         let cursor = index + '@master'.length
-        if (isIdentChar(source[cursor]) || !/\s/.test(source[cursor] || '')) continue
+        if (isIdentChar(source[cursor])) continue
+        if (source[cursor] !== ';' && !/\s/.test(source[cursor] || '')) continue
         while (/\s/.test(source[cursor] || '')) cursor++
         const nameStart = cursor
         while (isIdentChar(source[cursor])) cursor++

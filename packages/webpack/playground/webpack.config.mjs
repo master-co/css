@@ -14,7 +14,6 @@ export default {
     },
     plugins: [
         new MasterCSSPlugin({
-            config: 'master.css',
             sources: [
                 './index.html',
                 './src/**/*.{js,html}'
@@ -24,9 +23,7 @@ export default {
     devServer: {
         static: {
             directory: __dirname,
-            watch: {
-                ignored: path.join(__dirname, 'master.css')
-            }
+            watch: {}
         },
         host: '127.0.0.1',
         port: 5175

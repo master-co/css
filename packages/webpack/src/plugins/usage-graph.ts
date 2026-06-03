@@ -16,8 +16,7 @@ export function UsageGraphPlugin(context: MasterCSSWebpackContext): WebpackSubPl
     return {
         apply(compiler: Compiler) {
             compiler.hooks.thisCompilation.tap(context.name, (compilation) => {
-                const resolvedConfig = context.resolveDefaultConfigPath()
-                for (const dependency of context.getDefaultConfigDependencyPaths(resolvedConfig)) {
+                for (const dependency of context.getDefaultConfigDependencyPaths()) {
                     compilation.fileDependencies.add(dependency)
                 }
 

@@ -1189,6 +1189,9 @@ importers:
       bytes:
         specifier: ^3.1.2
         version: 3.1.2
+      chokidar:
+        specifier: ^5.0.0
+        version: 5.0.0
       commander:
         specifier: ^14.0.3
         version: 14.0.3
@@ -1230,15 +1233,6 @@ importers:
       '@master/css-compiler':
         specifier: workspace:^
         version: link:../compiler
-      oxc-parser:
-        specifier: ^0.129.0
-        version: 0.129.0
-      oxc-resolver:
-        specifier: ^11.19.1
-        version: 11.19.1(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)
-      oxc-transform:
-        specifier: ^0.128.0
-        version: 0.128.0
     devDependencies:
       shared:
         specifier: workspace:^
@@ -1473,6 +1467,9 @@ importers:
       '@master/css-configer':
         specifier: workspace:^
         version: link:../configer
+      '@master/css-extractor':
+        specifier: workspace:^
+        version: link:../extractor
       '@master/css-language-service':
         specifier: workspace:^
         version: link:../language-service
@@ -1599,6 +1596,9 @@ importers:
       '@master/css-configer':
         specifier: workspace:^
         version: link:../configer
+      '@master/css-extractor':
+        specifier: workspace:^
+        version: link:../extractor
       '@master/css-server':
         specifier: workspace:^
         version: link:../server

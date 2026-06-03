@@ -1,0 +1,10 @@
+@master;
+@import './preset.css';
+
+@master {
+    .fixture-button {
+        display: inline-flex;
+        color: oklch(100% 0 none);
+        background-color: oklch(63.7% 0.237 25.331);
+    }
+}

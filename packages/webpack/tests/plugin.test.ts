@@ -216,7 +216,7 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
         expect(resolveData.request).toContain(path.join('node_modules', '.master-css', 'master-utilities.css'))
     })
 
-    test('leaves CSS @import master.css unresolved', async () => {
+    test('leaves unrelated CSS @import unresolved', async () => {
         const plugin = makePlugin()
         const { compiler } = makeFakeCompiler()
         ;(compiler as any).webpack = { sources: { RawSource: function NoopSource(this: object) { /* stub */ } } }
@@ -225,7 +225,7 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
         const normalModuleFactory = makeNormalModuleFactory()
         compiler.hooks.normalModuleFactory.call(normalModuleFactory)
         const resolveData = {
-            request: 'master.css',
+            request: 'theme.css',
             context: process.cwd(),
             contextInfo: {
                 issuer: path.join(process.cwd(), 'src/styles.css')
@@ -235,7 +235,7 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
 
         await resolveBefore(normalModuleFactory, resolveData)
 
-        expect(resolveData.request).toBe('master.css')
+        expect(resolveData.request).toBe('theme.css')
     })
 
     test('leaves CSS @import @master/css package imports unchanged', async () => {
@@ -282,42 +282,39 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
         expect(resolveData.request).toBe('@master/css')
     })
 
-    test('adds default CSS config as a compilation dependency', () => {
+    test('adds managed CSS entry files as virtual config dependencies', async () => {
         const root = path.resolve(__dirname, 'fixtures/config-virtual-module/css-only')
-        const plugin = makePlugin({ config: 'master.css' }, root)
-        const { compiler, compilation } = makeFakeCompiler({ context: root })
+        const plugin = makePlugin({}, root)
+        const { compiler } = makeFakeCompiler({ context: root })
         ;(compiler as any).webpack = { sources: { RawSource: function NoopSource(this: object) { /* stub */ } } }
 
         plugin.apply(compiler as any)
-        compiler.hooks.thisCompilation.call(compilation as any)
+        const normalModuleFactory = makeNormalModuleFactory()
+        compiler.hooks.normalModuleFactory.call(normalModuleFactory)
+        const resolveData = {
+            request: VIRTUAL_CONFIG_ID,
+            context: root,
+            contextInfo: {},
+            fileDependencies: new Set<string>()
+        }
 
-        expect(compilation.fileDependencies.has(path.join(root, 'master.css'))).toBe(true)
+        await resolveBefore(normalModuleFactory, resolveData)
+
+        expect(resolveData.fileDependencies.has(path.join(root, 'app.css'))).toBe(true)
     })
 
-    test('adds default script config graph as virtual config dependencies', async () => {
+    test('adds managed CSS import graph as virtual config dependencies', async () => {
         const root = mkdtempSync(path.join(tmpdir(), 'master-css-webpack-config-'))
-        const configPath = path.join(root, 'master.css.ts')
-        const tokenPath = path.join(root, 'tokens.ts')
+        const entryPath = path.join(root, 'app.css')
+        const themePath = path.join(root, 'theme.css')
         try {
-            writeFileSync(tokenPath, 'export const cardColor = "#123456"\n')
-            writeFileSync(configPath, [
-                'import { cardColor } from "./tokens"',
-                '',
-                'export default {',
-                '    utilities: [',
-                '        {',
-                '            name: "card",',
-                '            type: -4,',
-                '            layer: "main",',
-                '            rules: [',
-                '                { selector: "&", declarations: { color: cardColor } }',
-                '            ]',
-                '        }',
-                '    ]',
-                '}'
+            writeFileSync(themePath, '@master { .card { color: #123456; } }')
+            writeFileSync(entryPath, [
+                '@master;',
+                '@import "./theme.css";'
             ].join('\n'))
 
-            const plugin = makePlugin({ config: 'master.css.ts' }, root)
+            const plugin = makePlugin({}, root)
             const { compiler } = makeFakeCompiler({ context: root })
             ;(compiler as any).webpack = { sources: { RawSource: function NoopSource(this: object) { /* stub */ } } }
 
@@ -333,8 +330,8 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
 
             await resolveBefore(normalModuleFactory, resolveData)
 
-            expect(resolveData.fileDependencies.has(configPath)).toBe(true)
-            expect(resolveData.fileDependencies.has(tokenPath)).toBe(true)
+            expect(resolveData.fileDependencies.has(entryPath)).toBe(true)
+            expect(resolveData.fileDependencies.has(themePath)).toBe(true)
             expect((compiler.inputFileSystem._writeVirtualFile as any).mock.calls.at(-1)?.[2])
                 .toContain('"color":"#123456"')
         } finally {
@@ -342,17 +339,23 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
         }
     })
 
-    test('shakes source stylesheet native CSS while ignoring source stylesheet CSS configs', async () => {
+    test('shakes managed CSS entry native CSS and uses its config', async () => {
         const root = mkdtempSync(path.join(tmpdir(), 'master-css-webpack-'))
         try {
             mkdirSync(path.join(root, 'src'), { recursive: true })
-            writeFileSync(path.join(root, 'master.css'), [
+            writeFileSync(path.join(root, 'app.css'), [
+                '@master;',
+                '',
                 '.root-native {',
                 '    color: #789;',
                 '}',
                 '',
                 '.root-unused {',
                 '    color: #abc;',
+                '}',
+                '',
+                '.native-used {',
+                '    color: var(--color-primary);',
                 '}',
                 '',
                 '@master {',
@@ -365,35 +368,23 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
             ].join('\n'))
 
             const plugin = await new MasterCSSPlugin({
-                config: 'master.css',
                 include: [],
                 sources: [],
                 verbose: 0
-            } as any, root).init()
+            }, root).init()
 
             plugin.latentClasses.add('btn')
             plugin.latentClasses.add('native-used')
             plugin.latentClasses.add('root-native')
-            ;(plugin as any).styleCSSSources.set(path.join(root, 'src/styles.css'), {
-                shake: true,
-                source: [
-                    '@import "@master/css";',
-                    '',
-                    '.native-used {',
-                    '    color: var(--color-primary);',
-                    '}'
-                ].join('\n')
-            })
 
             const css = await (plugin as any).createExtractedCSS()
 
             expect(css).toContain('.native-used')
             expect(css).not.toContain('.native-unused')
-            expect(css).not.toContain('.root-native')
+            expect(css).toContain('.root-native')
             expect(css).not.toContain('.root-unused')
             expect(css).toMatch(/--color-primary:(rgb\(18 52 86\)|#123456)/)
             expect(css).toContain('.btn{display:grid}')
-            expect(css).not.toContain('.btn{display:inline-flex}')
         } finally {
             rmSync(root, { recursive: true, force: true })
         }
@@ -401,8 +392,9 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
 
     test('resets extractor when the default CSS config changes in watch mode', async () => {
         const root = path.resolve(__dirname, 'fixtures/config-virtual-module/css-only')
-        const configPath = path.join(root, 'master.css')
-        const plugin = makePlugin({ config: 'master.css' }, root)
+        const configPath = path.join(root, 'app.css')
+        const plugin = makePlugin({}, root)
+        ;(plugin as any).defaultConfigDependencies = [configPath]
         const reset = vi.fn(async function (this: MasterCSSPlugin) {
             this.emit('reset')
             return this
@@ -422,30 +414,15 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
         expect(reset).toHaveBeenCalledWith(plugin.options)
     })
 
-    test('resets extractor when a default script config dependency changes in watch mode', async () => {
+    test('resets extractor when a managed CSS import dependency changes in watch mode', async () => {
         const root = mkdtempSync(path.join(tmpdir(), 'master-css-webpack-watch-'))
-        const configPath = path.join(root, 'master.css.ts')
-        const tokenPath = path.join(root, 'tokens.ts')
+        const configPath = path.join(root, 'app.css')
+        const tokenPath = path.join(root, 'theme.css')
         try {
-            writeFileSync(tokenPath, 'export const cardColor = "#123456"\n')
-            writeFileSync(configPath, [
-                'import { cardColor } from "./tokens"',
-                '',
-                'export default {',
-                '    utilities: [',
-                '        {',
-                '            name: "card",',
-                '            type: -4,',
-                '            layer: "main",',
-                '            rules: [',
-                '                { selector: "&", declarations: { color: cardColor } }',
-                '            ]',
-                '        }',
-                '    ]',
-                '}'
-            ].join('\n'))
+            writeFileSync(tokenPath, '@master { .card { color: #123456; } }')
+            writeFileSync(configPath, '@master;\n@import "./theme.css";')
 
-            const plugin = makePlugin({ config: 'master.css.ts' }, root)
+            const plugin = makePlugin({}, root)
             ;(plugin as any).defaultConfigDependencies = [configPath, tokenPath]
             const reset = vi.fn(async function (this: MasterCSSPlugin) {
                 this.emit('reset')
@@ -471,7 +448,8 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
 
     test('does not reset extractor when a non-config file changes in watch mode', async () => {
         const root = path.resolve(__dirname, 'fixtures/config-virtual-module/css-only')
-        const plugin = makePlugin({ config: 'master.css' }, root)
+        const plugin = makePlugin({}, root)
+        ;(plugin as any).defaultConfigDependencies = [path.join(root, 'app.css')]
         const reset = vi.fn(async function (this: MasterCSSPlugin) {
             this.emit('reset')
             return this

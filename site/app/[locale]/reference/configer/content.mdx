@@ -3,45 +3,20 @@
 @master/css-configer@rc
 ```
 
-`@master/css-configer` resolves, loads, and serializes Master CSS config files for build tools, language tools, and server integrations. It is the shared config boundary used by packages such as Vite, Next.js, Webpack, the extractor, and language tooling.
+`@master/css-configer` loads and serializes Master CSS config CSS resources for build tools and server integrations. It is the shared config boundary used by packages such as Vite, Next.js, Webpack, and the extractor.
 
-The package can load CSS-first config from `master.css`, script config from JavaScript or TypeScript files, and imported config dependencies. CSS config files are compiled through `@master/css-compiler` and returned as JavaScript config objects.
-
----
-
-## Explore config
-Use `exploreConfig()` to find and load a config file from a working directory. The default name is `master.css`.
-
-```ts
-import exploreConfig from '@master/css-configer/explore'
-
-const result = await exploreConfig({
-    cwd: process.cwd(),
-    name: 'master.css'
-})
-
-const config = result?.config
-const dependencies = result?.dependencies
-```
-
-Use the sync entry when the host integration cannot be async.
-
-```ts
-import exploreConfigSync from '@master/css-configer/explore-sync'
-
-const result = exploreConfigSync({ cwd: process.cwd() })
-```
+The package compiles explicit CSS resources through `@master/css-compiler` and returns JavaScript config objects. It does not discover workspace config paths or load JavaScript/TypeScript config files.
 
 ---
 
-## Load a known config
-Use `loadConfig()` when the config path is already known.
+## Load CSS config
+Use `loadConfig()` when the CSS resource path is already known.
 
 ```ts
 import { loadConfig, loadConfigModule } from '@master/css-configer/load'
 
-const result = await loadConfig('/project/master.css')
-const moduleResult = await loadConfigModule('/project/master.css')
+const result = await loadConfig('/project/src/index.css')
+const moduleResult = await loadConfigModule('/project/src/index.css')
 ```
 
 `loadConfig()` returns the config object and dependency list. `loadConfigModule()` returns JavaScript module code, which is useful for virtual modules and loader output.
@@ -49,33 +24,9 @@ const moduleResult = await loadConfigModule('/project/master.css')
 ```ts
 import { loadConfigSync, loadConfigModuleSync } from '@master/css-configer/load-sync'
 
-const result = loadConfigSync('/project/master.css')
-const moduleResult = loadConfigModuleSync('/project/master.css')
+const result = loadConfigSync('/project/src/index.css')
+const moduleResult = loadConfigModuleSync('/project/src/index.css')
 ```
-
----
-
-## Resolve config paths
-Use the path utilities when an integration accepts a config name or path.
-
-```ts
-import { resolveConfigPath, warnMissingConfig } from '@master/css-configer/path'
-
-const resolved = resolveConfigPath({
-    name: 'master.css',
-    cwd: process.cwd()
-})
-
-if (!resolved) {
-    warnMissingConfig({
-        integration: '@master/css.vite',
-        name: 'master.css',
-        cwd: process.cwd()
-    })
-}
-```
-
-The resolver reports the config path and extension so integrations can decide whether to compile CSS config or import script config directly.
 
 ---
 
@@ -100,4 +51,4 @@ import {
 | `toVirtualDefaultConfigModulePath(context)` | Creates the virtual path for the default config module. |
 | `toVirtualCSSConfigModulePath(context, file)` | Creates a virtual path for a specific queried CSS config file. |
 
-Use `virtual:master-css-config` when application code should receive the integration's default config. Use `./master.css?master-css-config` when the code should compile one explicit CSS config file through the active integration.
+Use `virtual:master-css-config` when application code should receive the integration's default config. Use `./index.css?master-css-config` when the code should compile one explicit CSS resource through the active integration.

@@ -3,7 +3,7 @@ import { dirname, extname, isAbsolute, relative, resolve } from 'node:path'
 import { explorePathsSync } from '@techor/glob'
 import type { Options } from './options'
 
-const MASTER_DIRECTIVE_NAMES = new Set(['shake', 'no-shake', 'source', 'class'])
+const MASTER_DIRECTIVE_NAMES = new Set(['', 'shake', 'no-shake', 'source', 'class'])
 
 export interface ExtractorDirectives {
     include: string[]
@@ -275,7 +275,8 @@ export function findExtractorDirectiveStatements(source: string): ExtractorDirec
         if (depth !== 0 || !source.startsWith('@master', index)) continue
 
         let cursor = index + '@master'.length
-        if (isIdentChar(source[cursor]) || !/\s/.test(source[cursor] || '')) continue
+        if (isIdentChar(source[cursor])) continue
+        if (source[cursor] !== ';' && !/\s/.test(source[cursor] || '')) continue
         while (/\s/.test(source[cursor] || '')) cursor++
         const nameStart = cursor
         while (isIdentChar(source[cursor])) cursor++

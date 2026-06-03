@@ -10,10 +10,9 @@ export interface Options {
      */
     mode?: Mode
     /**
-     * Master CSS config object or config file basename/path.
-     * Defaults to `master.css`.
+     * Inline Master CSS config override.
      */
-    config?: string | Config
+    config?: Config
     /**
      * Extractor options for static extraction mode.
      */
@@ -31,7 +30,7 @@ export interface Options {
 
 export interface ResolvedOptions {
     mode: Mode
-    config: string | Config
+    config?: Config
     extractorOptions: ExtractorOptions
     manifest: boolean | string
     debug: boolean
@@ -44,7 +43,7 @@ declare global {
 export function resolveOptions(options: Options = {}): ResolvedOptions {
     return {
         mode: options.mode ?? 'pre-render',
-        config: options.config ?? 'master.css',
+        config: options.config,
         extractorOptions: options.extractorOptions ?? {},
         manifest: options.manifest ?? false,
         debug: options.debug ?? false

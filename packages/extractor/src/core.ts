@@ -6,8 +6,6 @@ import fs from 'fs'
 import { Minimatch } from 'minimatch'
 import log from '@techor/log'
 import extend from '@techor/extend'
-import exploreCSSConfig from '@master/css-configer/explore'
-import { resolveConfigPath } from '@master/css-configer/path'
 import { generateValidRules } from '@master/css-validator'
 import chokidar, { type ChokidarOptions, type FSWatcher } from 'chokidar'
 import { EventEmitter } from 'node:events'
@@ -17,12 +15,7 @@ import { explorePathsSync } from '@techor/glob'
 import path from 'path'
 import { Stats } from 'node:fs'
 import bytes from 'bytes'
-import {
-    collectExtractorDirectivesFromCSSGraph,
-    createExtractorDirectives,
-    mergeExtractorOptions,
-    type ExtractorDirectives
-} from './directives'
+import { createExtractorDirectives, type ExtractorDirectives } from './directives'
 import {
     htmlAdapter,
     matchesSourceAdapter,
@@ -129,29 +122,16 @@ export default class CSSExtractor extends EventEmitter {
             log.tree(this.options)
             log``
         }
-        const configResult = typeof this.options.config === 'object'
-            ? undefined
-            : await exploreCSSConfig({
-                name: this.options.config as string,
-                cwd: this.cwd
-            })
-        this.extractorDirectives = configResult?.extension === 'css'
-            ? collectExtractorDirectivesFromCSSGraph(configResult.path, undefined, this.cwd).directives
-            : createExtractorDirectives()
-        this.configDependencies = configResult?.dependencies || []
-        this.options = mergeExtractorOptions(this.options, this.extractorDirectives)
+        this.extractorDirectives = createExtractorDirectives()
+        this.configDependencies = []
         this.sourceMatchers = undefined
         this.sourceMatcherOptions = undefined
         this.sourceAdapters = undefined
         this.sourceAdapterOptions = undefined
         this.classExclusionMatcher = undefined
         this.classExclusionOptions = undefined
-        this.nativeClassNames = new Set(configResult?.nativeClassNames || [])
-        this.css = createCSS(
-            typeof this.options.config === 'object'
-                ? this.options.config
-                : configResult?.config
-        )
+        this.nativeClassNames = new Set()
+        this.css = createCSS(this.options.config)
         this.emit('init', this.options, this.config)
         this.initialized = true
         return this
@@ -525,27 +505,12 @@ export default class CSSExtractor extends EventEmitter {
         return this.css.config
     }
 
-    /**
-     * computed from string `options.config`
-    */
     get configPath(): string | undefined {
-        if (typeof this.options.config === 'string') {
-            const resolvedConfigPath = resolveConfigPath({
-                name: this.options.config,
-                cwd: this.cwd
-            })
-            if (resolvedConfigPath) return path.relative(this.cwd, resolvedConfigPath.path)
-        }
+        return undefined
     }
 
-    /**
-     * computed from string `options.config`
-    */
     get resolvedConfigPath(): string | undefined {
-        const configPath = this.configPath
-        if (configPath) {
-            return path.resolve(this.cwd, configPath)
-        }
+        return undefined
     }
 
     get slotCSSRule(): string {

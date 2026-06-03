@@ -2,22 +2,27 @@ import type { Plugin } from 'vite'
 import { PluginContext } from '../core'
 import { render } from '@master/css-server'
 import type { Config } from 'shared/css-config'
-import { loadConfig } from '@master/css-configer/load'
+import { loadProjectConfig } from '@master/css-configer/load'
 import { PluginOptions } from '../options'
 
 export default function PreRenderPlugin(options: PluginOptions, context: PluginContext): Plugin {
     let cssConfig: Config | undefined = undefined
     let cssConfigDependencies: string[] = []
     let enabled = true
-    const loadCSSConfig = async (pluginContext?: { addWatchFile?: (id: string) => void }) => {
-        if (!context.configPath) {
-            cssConfig = undefined
-            cssConfigDependencies = []
-            return
+    const addServerAllow = (paths: string[]) => {
+        const allow = context.config?.server.fs.allow
+        if (!allow) return
+        for (const path of paths) {
+            if (!allow.includes(path)) allow.push(path)
         }
-        const result = await loadConfig(context.configPath)
+    }
+    const loadCSSConfig = async (pluginContext?: { addWatchFile?: (id: string) => void }) => {
+        const result = await loadProjectConfig(context.config?.root, {
+            config: options.config
+        })
         cssConfig = result.config
         cssConfigDependencies = result.dependencies
+        addServerAllow(cssConfigDependencies)
         for (const dependency of cssConfigDependencies) {
             pluginContext?.addWatchFile?.(dependency)
         }

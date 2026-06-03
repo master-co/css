@@ -38,7 +38,7 @@ function readJavaScriptFiles(dir: string): string {
 }
 
 describe('playground', () => {
-    it('imports master.css as a Next config module', () => {
+    it('imports the global CSS entry as a Next config module', () => {
         buildPlayground()
 
         const htmlPath = join(playgroundDir, '.next/server/app/index.html')

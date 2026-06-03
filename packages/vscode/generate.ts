@@ -2,10 +2,9 @@ import editJsonFile from 'edit-json-file'
 import copyOrSymlink from '~/internal/utils/copy-or-symlink'
 import settings from '../language-server/src/settings'
 import { grammars, declaration } from '../language/src'
-import { fileURLToPath } from 'node:url'
+import { dirname, join } from 'node:path'
 import { createRequire } from 'node:module'
-import { copyFileSync, mkdirSync } from 'node:fs'
-import { dirname, resolve } from 'node:path'
+import { fileURLToPath } from 'node:url'
 
 const pkg = editJsonFile(fileURLToPath(new URL('./package.json', import.meta.url)), { stringify_width: 4 })
 const require = createRequire(import.meta.url)
@@ -87,7 +86,7 @@ pkg.set('contributes.configuration', {
                 'array'
             ],
             'default': settings.workspaces,
-            'description': 'Configure Master CSS workspaces. The default auto mode detects master.css / master.css.* configuration files and package.json files that declare Master CSS package dependencies.'
+            'description': 'Configure Master CSS workspaces. The default auto mode detects CSS files with @master; or @import "@master/css", and package.json files that declare Master CSS package dependencies.'
         }
     }
 })
@@ -95,14 +94,4 @@ pkg.set('contributes.configuration', {
 pkg.save()
 
 copyOrSymlink(fileURLToPath(new URL('../language/syntaxes', import.meta.url)), fileURLToPath(new URL('./syntaxes', import.meta.url)))
-
-// The bundled SWC wasm loader reads this asset from the extension dist directory.
-const swcWasmMainPath = require.resolve('@swc/wasm', {
-    paths: [
-        fileURLToPath(new URL('../configer', import.meta.url))
-    ]
-})
-const swcWasmPath = resolve(dirname(swcWasmMainPath), 'wasm_bg.wasm')
-const distDir = fileURLToPath(new URL('./dist', import.meta.url))
-mkdirSync(distDir, { recursive: true })
-copyFileSync(swcWasmPath, resolve(distDir, 'wasm_bg.wasm'))
+copyOrSymlink(join(dirname(require.resolve('css-tree/package.json')), 'data'), fileURLToPath(new URL('./data', import.meta.url)))

@@ -10,7 +10,8 @@ import {
 } from 'shared/css-directives'
 import type { PropertiesHyphen } from 'csstype'
 import { AT_IDENTIFIERS } from '../common'
-import MasterCSS from '../core'
+import createCSS from '../create'
+import type MasterCSS from '../core'
 import UtilityType from 'shared/utility-type'
 import type {
     Config,
@@ -269,7 +270,7 @@ function warnUnsupportedMediaModes(config: Config, options: CreateConfigFromCSSD
 }
 
 function createDirectiveCSS(config: Config, options: CreateConfigFromCSSDirectivesOptions) {
-    return new MasterCSS(createSemanticConfig(config, options))
+    return createCSS(createSemanticConfig(config, options))
 }
 
 function getUtilityAtRuleDefinitions(utility: Utility) {
@@ -409,7 +410,7 @@ function resolveMasterAtRuleReference(token: string, css: MasterCSS) {
             : { atRules: [`@media (prefers-color-scheme:${token})`] }
     }
 
-    if (isBareAtRuleReference(token) && !css.atRules.has(token)) {
+    if (isBareAtRuleReference(token) && !css.atRules.has(token) && !collectScreenNames(css.config).has(token)) {
         throw new Error(`Unknown @at token: ${token}`)
     }
 
@@ -714,10 +715,11 @@ function finalizeComponentDefinitions(config: Config, componentDefinitions: Reco
                 const composedDefinitions = createComponentDefinitionsFromCompose(definition.className, css)
                 for (const composedDefinition of composedDefinitions) {
                     const { atRules: _composedAtRules, ...composedDefinitionWithoutAtRules } = composedDefinition
+                    const selector = combineComponentSelectors(definition.selector, composedDefinition.selector)
                     const resolved = resolveConfiguredAtRules([
                         ...(definition.atRules || []),
                         ...(_composedAtRules || [])
-                    ], css, composedDefinition.selector)
+                    ], css, selector)
                     pushComponentMergeEvent(buckets, resolveComponentSelector(resolved.selector, css), resolved.atRules, toUtilityLayerName(definition.layer) || composedDefinitionWithoutAtRules.layer, {
                         type: 'compose',
                         order: definition.order,

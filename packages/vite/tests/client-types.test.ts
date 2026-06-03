@@ -55,7 +55,7 @@ describe('@master/css.vite/client', () => {
 import type { Config } from '@master/css'
 import 'virtual:master-utilities.css'
 import virtualConfig from 'virtual:master-css-config'
-import localConfig from './master.css?master-css-config'
+import localConfig from './app.css?master-css-config'
 
 virtualConfig satisfies Config
 localConfig satisfies Config

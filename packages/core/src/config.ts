@@ -5,7 +5,7 @@ import functions from './functions'
 import utilities from './utilities'
 import type { Config } from 'shared/css-config'
 
-const config = {
+const config: Config = {
     rootSize: 16,
     baseUnit: 4,
     defaultMode: 'light',
@@ -13,6 +13,6 @@ const config = {
     modes: ['light', 'dark'],
     utilities,
     functions,
-} satisfies Config
+}
 
 export default config
