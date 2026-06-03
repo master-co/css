@@ -9,7 +9,7 @@ export default function ProgressiveMode(options: PluginOptions, context: PluginC
         PreRenderPlugin(options, context),
     ]
     if (options.injectRuntime) {
-        plugins.push(InjectRuntimePlugin(options, context))
+        plugins.push(InjectRuntimePlugin(options))
     }
     return plugins
 }

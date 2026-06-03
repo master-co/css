@@ -7,7 +7,7 @@ import ExtractMode from './modes/extract'
 import RuntimeMode from './modes/runtime'
 import ProgressiveMode from './modes/progressive'
 import PreRenderMode from './modes/pre-render'
-import ResolveContextPlugin from './plugins/resolve-context'
+import ContextPlugin from './plugins/context'
 import ExtractorPlugin from './plugins/extractor'
 import UsageGraphPlugin from './plugins/usage-graph'
 import StyleEntryPlugin from './plugins/style-entry'
@@ -17,7 +17,6 @@ import defaultPluginOptions, { PluginOptions } from './options'
 
 export interface PluginContext {
     config?: ResolvedConfig
-    entryId?: string
     extractor?: CSSExtractor
     virtualCSSImporters?: Set<string>
     virtualCSSPlaceholderEmitted?: boolean
@@ -31,7 +30,7 @@ export default function masterCSS(options?: PluginOptions): Plugin[] {
         includeGeneratedCSS: options.mode === 'extract'
     } as PluginContext
     const plugins: Plugin[] = [
-        ResolveContextPlugin(options, context),
+        ContextPlugin(options, context),
         ConfigVirtualModulePlugin(options, context),
         ConfigLoaderPlugin(context),
         ExtractorPlugin(options, context),

@@ -67,9 +67,7 @@
         "@master/css-extractor": "workspace:^",
         "@master/css-runtime": "workspace:^",
         "@master/css-server": "workspace:^",
-        "fast-glob": "^3.3.3",
-        "magic-string": "^0.30.21",
-        "source-map": "^0.7.6"
+        "magic-string": "^0.30.21"
     },
     "devDependencies": {
         "shared": "workspace:^"

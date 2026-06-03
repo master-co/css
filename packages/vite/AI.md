@@ -32,7 +32,6 @@
 - `src/common.ts`
 - `src/modes/*`
 - `src/plugins/*`
-- `src/factories/with-injection-transform.ts`
 
 ## Allowed Changes
 
@@ -48,8 +47,8 @@
 
 ## Risk Areas
 
-- Entry detection in `ENTRY_MODULE_PATTERNS`.
-- Injection into `.vue`, `.svelte`, `.astro`, and JS/TS entry files.
+- HTML entry detection in FOUC transforms.
+- Runtime HTML injection and its interaction with Vite HTML transforms.
 - Static extraction HMR.
 - `transformIndexHtml` pre-render behavior.
 - SvelteKit pre-render skip.

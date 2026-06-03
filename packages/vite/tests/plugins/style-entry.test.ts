@@ -1,6 +1,5 @@
 import { describe, expect, test } from 'vitest'
 import StyleEntryPlugin from '../../src/plugins/style-entry'
-import { replaceMasterCSSImport } from '../../src/utils/style-css'
 
 const SLOT = '#master-css-slot{--slot:0}'
 const VIRTUAL_CSS_ID = 'virtual:master-utilities.css'
@@ -25,30 +24,6 @@ function makeContext(command: 'serve' | 'build', css = '.fg\\:red{color:red}', i
 }
 
 describe('StyleEntryPlugin', () => {
-    test('replaces CSS @import rules that target @master/css', () => {
-        const result = replaceMasterCSSImport(
-            [
-                '@import "@master/css";',
-                '@import url(\'theme.css\');',
-                '@import "./other.css";',
-            ].join('\n'),
-            SLOT
-        )
-
-        expect(result.replaced).toBe(true)
-        expect(result.code).toContain(SLOT)
-        expect(result.code).not.toContain('@import "@master/css"')
-        expect(result.code).toContain('@import url(\'theme.css\');')
-        expect(result.code).toContain('@import "./other.css";')
-    })
-
-    test('does not treat @master/css subpath imports as CSS config entries', () => {
-        const result = replaceMasterCSSImport('@import "@master/css/index.css";', SLOT)
-
-        expect(result.replaced).toBe(false)
-        expect(result.code).toContain('@import "@master/css/index.css";')
-    })
-
     test('build load emits the slot placeholder for bundle-time replacement', async () => {
         const context = makeContext('build')
         const plugin = StyleEntryPlugin({ mode: 'extract' } as any, context)

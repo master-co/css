@@ -5,13 +5,12 @@ import type { PluginOptions } from '../options'
 import getExtractedCSS from '../utils/extracted-css'
 import {
     createStyleCSSHostSource,
-    hasMasterStyleEntrypoint,
     isMasterCSSPackageStyleFile,
     isStyleCSSRequest,
     removeMasterStyleDirectives,
-    resolveMasterStyleSource,
-    registerStyleCSSSource
-} from '../utils/style-css'
+    resolveMasterStyleSource
+} from '@master/css-extractor/style'
+import { registerStyleCSSSource } from '../utils/register-style-source'
 import { getExtractor } from '../utils/extractor-context'
 
 const RESOLVED_VIRTUAL_CSS_ID = '\0' + VIRTUAL_CSS_ID
@@ -41,7 +40,6 @@ export default function StyleEntryPlugin(_options: PluginOptions, context: Plugi
         async transform(code, id) {
             if (id.startsWith('\0')) return
             if (!isStyleCSSRequest(id)) return
-            if (!hasMasterStyleEntrypoint(code)) return
             if (!resolveMasterStyleSource(id, code, context.config?.root)) return
 
             if (isMasterCSSPackageStyleFile(id, context.config?.root)) {

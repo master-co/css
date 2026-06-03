@@ -168,7 +168,7 @@ describe('withMasterCSS', () => {
             }) as any
 
             expect(nextConfig.webpack).toBeUndefined()
-            expect(nextConfig.turbopack.resolveAlias[VIRTUAL_CSS_ID]).toContain(join('.master', 'next.css'))
+            expect(nextConfig.turbopack.resolveAlias[VIRTUAL_CSS_ID]).toBe('./.master/next.css')
             expect(nextConfig.turbopack.resolveAlias[VIRTUAL_CONFIG_ID]).toContain(join('node_modules', '.master-css', 'master-css-config.js'))
             expect(nextConfig.turbopack.rules['*']).toEqual(expect.arrayContaining([
                 expect.objectContaining({

@@ -252,9 +252,16 @@ export function resolveMasterStyleSource(
     projectDir?: string
 ) {
     if (!isStyleCSSRequest(file)) return
-    const unresolvedPackageSource = resolveStyleCSSImportGraph(file, source, projectDir, {
-        expandMasterCSSPackage: false
-    })
+    const sourceHasMasterEntry = hasMasterStyleEntrypoint(source)
+    let unresolvedPackageSource: ResolvedStyleCSSSource
+    try {
+        unresolvedPackageSource = resolveStyleCSSImportGraph(file, source, projectDir, {
+            expandMasterCSSPackage: false
+        })
+    } catch (error) {
+        if (!sourceHasMasterEntry) return
+        throw error
+    }
     if (!isMasterStyleSource(unresolvedPackageSource.source)) return
     return resolveStyleCSSImportGraph(file, source, projectDir)
 }
@@ -297,7 +304,7 @@ export function createStyleCSSHostSource(source: string, options: CreateStyleCSS
     }
     if (hasMasterSource) {
         if (masterSource) {
-            preservedImports.unshift(masterSource)
+            preservedImports.push(masterSource)
         }
     } else if (!preservedImports.some((statement) => {
         const importSource = parseCSSImportSource(statement)

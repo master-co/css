@@ -98,4 +98,5 @@ Add or update tests in:
 - Changing `UtilityType` values.
 - Changing layer names or the `base.css` layer statement.
 - Making extraction/runtime-specific assumptions in core.
+- Importing build-tool virtual modules from package CSS files; integrations own generated utility injection.
 - Loading CSS config resources from core tests.

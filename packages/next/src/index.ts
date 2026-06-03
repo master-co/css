@@ -61,7 +61,7 @@ function ensureVirtualConfigPath(projectDir = process.cwd()) {
 
 function toTurbopackProjectPath(file: string, projectDir = process.cwd()) {
     const relativePath = relative(projectDir, file).replace(/\\/g, '/')
-    return relativePath.startsWith('.') ? relativePath : `./${relativePath}`
+    return relativePath.startsWith('./') || relativePath.startsWith('../') ? relativePath : `./${relativePath}`
 }
 
 function toRuleArray(rule: TurbopackRuleConfigCollection | undefined) {
@@ -302,6 +302,7 @@ export function withMasterCSS<T extends NextConfig>(nextConfig: T = {} as T, opt
             if (!setup) return nextConfig
             const outputPath = resolveExtractOutputPath(setup.projectDir)
             const statePath = resolveExtractStatePath(outputPath)
+            const turbopackVirtualCSSPath = toTurbopackProjectPath(outputPath, setup.projectDir)
             return {
                 ...nextConfig,
                 turbopack: applyMasterCSSExtractTurbopackConfig(
@@ -310,7 +311,7 @@ export function withMasterCSS<T extends NextConfig>(nextConfig: T = {} as T, opt
                     styleCSSLoaderPath,
                     resolveExtractLoaderPath(),
                     resolveExtractCSSLoaderPath(),
-                    outputPath,
+                    turbopackVirtualCSSPath,
                     turbopackVirtualConfigPath,
                     statePath
                 )

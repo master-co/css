@@ -83,6 +83,16 @@ describe('style CSS extraction helpers', () => {
             '@import "@master/css";',
             root
         )).toBeUndefined()
+        expect(resolveMasterStyleSource(
+            join(root, 'app/regular.css'),
+            '@import "./missing.css";',
+            root
+        )).toBeUndefined()
+        expect(() => resolveMasterStyleSource(
+            join(root, 'app/entry.css'),
+            '@master;\n@import "./missing.css";',
+            root
+        )).toThrow('CSS file not found')
     })
 
     it('derives package host CSS from the package entry graph', async () => {
@@ -94,6 +104,7 @@ describe('style CSS extraction helpers', () => {
         expect(hostSource.source).toContain('@layer base')
         expect(hostSource.source).toContain('text-rendering: geometricprecision')
         expect(hostSource.source).not.toContain('@master/css/base.css')
+        expect(hostSource.source).not.toContain('virtual:master-utilities.css')
         expect(hostSource.source).not.toContain('@master')
     })
 
@@ -125,6 +136,19 @@ describe('style CSS extraction helpers', () => {
         })
 
         expect(result).toBe('')
+    })
+
+    it('keeps native imports before generated host CSS', () => {
+        const result = createStyleCSSHostSource([
+            '@import "@master/css";',
+            '@import "@fontsource/fira-mono";',
+            '',
+            '.card { color: red; }'
+        ].join('\n'), {
+            masterSource: '#master-css-slot{--slot:0}'
+        })
+
+        expect(result).toBe('@import "@fontsource/fira-mono";\n#master-css-slot{--slot:0}')
     })
 
     it('uses the managed CSS entry config and native CSS sources', async () => {

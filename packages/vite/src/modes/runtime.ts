@@ -7,7 +7,7 @@ import { PluginOptions } from '../options'
 export default function RuntimeMode(options: PluginOptions, context: PluginContext): Plugin[] {
     const plugins: Plugin[] = []
     if (options.injectRuntime) {
-        plugins.push(InjectRuntimePlugin(options, context))
+        plugins.push(InjectRuntimePlugin(options))
     }
     if (options.avoidFOUC) {
         plugins.push(AvoidFOUCPlugin(options, context))

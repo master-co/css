@@ -1,5 +1,5 @@
 import { AstroIntegration } from 'astro'
-import { default as vitePlugin, CSS_RUNTIME_INJECTIOIN } from '@master/css.vite'
+import { default as vitePlugin, CSS_RUNTIME_INJECTION } from '@master/css.vite'
 import defaultOptions, { type IntegrationOptions } from './options'
 import { astroAdapter } from './adapter'
 
@@ -26,7 +26,7 @@ export default function masterCSS(options?: IntegrationOptions): AstroIntegratio
                 switch (options.mode) {
                     case 'progressive':
                     case 'runtime':
-                        injectScript('page', CSS_RUNTIME_INJECTIOIN)
+                        injectScript('page', CSS_RUNTIME_INJECTION)
                         updateConfig({ vite: { plugins: [vitePlugin({ ...viteOptions, injectRuntime: false }) as never] } })
                         break
                     default:

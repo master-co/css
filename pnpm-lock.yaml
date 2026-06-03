@@ -1827,15 +1827,9 @@ importers:
       '@master/css-server':
         specifier: workspace:^
         version: link:../server
-      fast-glob:
-        specifier: ^3.3.3
-        version: 3.3.3
       magic-string:
         specifier: ^0.30.21
         version: 0.30.21
-      source-map:
-        specifier: ^0.7.6
-        version: 0.7.6
       vite:
         specifier: '>=6'
         version: 8.0.10(@types/node@25.7.0)(@vitejs/devtools@0.1.18)(esbuild@0.28.0)(jiti@2.7.0)(less@4.4.2)(sass@1.99.0)(terser@5.46.2)(tsx@4.21.0)(yaml@2.8.4)

@@ -7,7 +7,7 @@ import {
     toResolvedMasterCSSConfigId
 } from '@master/css-configer/module'
 import { loadConfigModule } from '@master/css-configer/load'
-import { isStyleCSSRequest } from '@master/css-extractor/style'
+import { isCSSConfigRequest } from '@master/css-configer/css'
 
 function invalidateConfigModule(module: ModuleNode | undefined, server: ViteDevServer): boolean {
     if (!module) return false
@@ -43,7 +43,7 @@ export default function ConfigLoaderPlugin(context: PluginContext): Plugin {
         async load(id) {
             const configPath = fromResolvedMasterCSSConfigId(id)
             if (!configPath) return
-            if (!isStyleCSSRequest(configPath)) {
+            if (!isCSSConfigRequest(configPath)) {
                 throw new TypeError('Master CSS config queries only support CSS entry files.')
             }
             const result = await loadConfigModule(configPath)
