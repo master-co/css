@@ -24,17 +24,6 @@
     </Step>
     <Step $row>
         <StepL>
-            ### <StepNum />Create a configuration file
-            Run the command to create a [project CSS entry](/guide/configuration).
-        </StepL>
-        <StepR>
-            ```bash action=create
-            @master/css@rc
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
             ### <StepNum />Set up Master CSS
             Add a [`@master/css.nuxt`](/reference/nuxt) module in `nuxt.config.ts`.
 
@@ -53,7 +42,7 @@
     <Step $row>
         <StepL>
             ### <StepNum />Import the default stylesheet
-            Import the Master CSS default stylesheet from a global Vue style block.
+            Import Master CSS from a global Vue style block. This style block is also the project CSS entry.
         </StepL>
         <StepR>
             ```vue name=app.vue

@@ -1,7 +1,0 @@
-{
-    "name": "cjs.test",
-    "private": true,
-    "dependencies": {
-        "@master/css": "2.0.0-rc.14"
-    }
-}

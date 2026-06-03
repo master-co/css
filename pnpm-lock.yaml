@@ -108,9 +108,6 @@ importers:
         specifier: ^4.1.6
         version: 4.1.6(@opentelemetry/api@1.9.1)(@types/node@25.7.0)(happy-dom@20.9.0)(jsdom@26.1.0)(vite@8.0.12)
     devDependencies:
-      '@master/create-css':
-        specifier: workspace:^
-        version: link:packages/create
       '@master/css':
         specifier: workspace:^
         version: link:packages/core
@@ -1204,34 +1201,6 @@ importers:
       json-safe-extend:
         specifier: ^3.2.5
         version: 3.2.5
-    devDependencies:
-      shared:
-        specifier: workspace:^
-        version: link:../../shared
-
-  packages/create:
-    dependencies:
-      '@master/css':
-        specifier: workspace:^
-        version: link:../core
-      '@techor/fs':
-        specifier: ^3.2.5
-        version: 3.2.5
-      '@techor/log':
-        specifier: ^3.2.5
-        version: 3.2.5
-      commander:
-        specifier: ^14.0.3
-        version: 14.0.3
-      detect-package-manager:
-        specifier: ^3.0.2
-        version: 3.0.2
-      giget:
-        specifier: ^3.2.0
-        version: 3.2.0
-      ora:
-        specifier: ^9.4.0
-        version: 9.4.0
     devDependencies:
       shared:
         specifier: workspace:^
@@ -11064,10 +11033,6 @@ packages:
   detect-node@2.1.0:
     resolution: {integrity: sha512-T0NIuQpnTvFDATNuHN5roPwSBG83rFsuO+MXXH9/3N1eFbn4wcPjttvjMLEPWJ0RGUYgQE7cGgS3tNxbqCGM7g==}
 
-  detect-package-manager@3.0.2:
-    resolution: {integrity: sha512-8JFjJHutStYrfWwzfretQoyNGoZVW1Fsrp4JO9spa7h/fBfwgTMEIy4/LBzRDGsxwVPHU0q+T9YvwLDJoOApLQ==}
-    engines: {node: '>=12'}
-
   devalue@5.8.0:
     resolution: {integrity: sha512-2zA9pFEsnp7vWBZbXF5JAgAq0fsUIt/1XPbRiAmRV3lp/2C3upzH+sADiyy66aFCihoLEsrQHxNM5w1gIDfsBg==}
 
@@ -14957,10 +14922,6 @@ packages:
 
   ora@9.3.0:
     resolution: {integrity: sha512-lBX72MWFduWEf7v7uWf5DHp9Jn5BI8bNPGuFgtXMmr2uDz2Gz2749y3am3agSDdkhHPHYmmxEGSKH85ZLGzgXw==}
-    engines: {node: '>=20'}
-
-  ora@9.4.0:
-    resolution: {integrity: sha512-84cglkRILFxdtA8hAvLNdMrtBpPNBTrQ9/ulg0FA7xLMnD6mifv+enAIeRmvtv+WgdCE+LPGOfQmtJRrVaIVhQ==}
     engines: {node: '>=20'}
 
   ordered-binary@1.6.1:
@@ -29506,10 +29467,6 @@ snapshots:
 
   detect-node@2.1.0: {}
 
-  detect-package-manager@3.0.2:
-    dependencies:
-      execa: 5.1.1
-
   devalue@5.8.0: {}
 
   devframe@0.1.18(@modelcontextprotocol/sdk@1.26.0(zod@4.4.2))(@nuxt/kit@4.4.4(magicast@0.5.2))(launch-editor@2.13.2)(typescript@6.0.3):
@@ -35448,17 +35405,6 @@ snapshots:
       wcwidth: 1.0.1
 
   ora@9.3.0:
-    dependencies:
-      chalk: 5.6.2
-      cli-cursor: 5.0.0
-      cli-spinners: 3.4.0
-      is-interactive: 2.0.0
-      is-unicode-supported: 2.1.0
-      log-symbols: 7.0.1
-      stdin-discarder: 0.3.2
-      string-width: 8.2.1
-
-  ora@9.4.0:
     dependencies:
       chalk: 5.6.2
       cli-cursor: 5.0.0

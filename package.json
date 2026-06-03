@@ -61,7 +61,6 @@
         "vitest": "^4.1.6"
     },
     "devDependencies": {
-        "@master/create-css": "workspace:^",
         "@master/css": "workspace:^",
         "@master/css-cli": "workspace:^",
         "@master/css-devtools-hook": "workspace:^",

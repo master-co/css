@@ -24,17 +24,6 @@
     </Step>
     <Step $row>
         <StepL>
-            ### <StepNum />Create a configuration file
-            Run the command to create a [project CSS entry](/guide/configuration).
-        </StepL>
-        <StepR>
-            ```bash action=create
-            @master/css@rc
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
             ### <StepNum />Set up Master CSS
             Add the Master CSS Astro integration in `astro.config.js`.
 
@@ -57,7 +46,7 @@
     <Step $row>
         <StepL>
             ### <StepNum />Import the default stylesheet
-            Import the Master CSS default stylesheet from a global Astro stylesheet.
+            Import Master CSS from a global Astro stylesheet. This style block is also the project CSS entry.
         </StepL>
         <StepR>
             ```astro name=src/layouts/Layout.astro

@@ -13,17 +13,6 @@
     </Step>
     <Step $row>
         <StepL>
-            ### <StepNum />Create a configuration file
-            Run the command to create a [project CSS entry](/guide/configuration).
-        </StepL>
-        <StepR>
-            ```bash action=create
-            @master/css@rc
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
             ### <StepNum />Install Master CSS
             Install Master CSS React and the Next.js adapter into your project via package managers.
         </StepL>
@@ -69,7 +58,7 @@
     <Step $row>
         <StepL>
             ### <StepNum />Author app CSS and config
-            Keep the normal `app/globals.css` import in the root layout. The same stylesheet can import Master CSS defaults, hold regular CSS, and define `@master` blocks.
+            Keep the normal `app/globals.css` import in the root layout. The same stylesheet imports Master CSS defaults, holds regular CSS, defines `@master` blocks, and serves as the project CSS entry.
         </StepL>
         <StepR>
             ```css name=app/globals.css

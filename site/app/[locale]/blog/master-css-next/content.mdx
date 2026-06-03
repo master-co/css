@@ -103,10 +103,10 @@ There is no second syntax and no separate critical CSS file to maintain. You sti
 
 For the full setup, follow [Progressive Rendering in Next.js](/guide/installation/nextjs). If your project needs a source-scanned CSS build instead, use [Static Extraction in Next.js](/guide/installation/nextjs/static-extraction).
 
-Create a project CSS entry:
+Import Master CSS from the stylesheet your app already loads. This stylesheet also serves as the project CSS entry:
 
-```bash action=create
-@master/css@rc
+```css name=app/globals.css
+@import '@master/css';
 ```
 
 Install the React runtime provider and the Next.js adapter:

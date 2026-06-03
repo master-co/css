@@ -24,17 +24,6 @@
     </Step>
     <Step $row>
         <StepL>
-            ### <StepNum />Create a configuration file
-            Run the command to create a [project CSS entry](/guide/configuration).
-        </StepL>
-        <StepR>
-            ```bash action=create
-            @master/css@rc
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
             ### <StepNum />Set up Vite config
             Register the Master CSS Vite config loader without automatic runtime injection.
         </StepL>
@@ -54,7 +43,7 @@
     <Step $row>
         <StepL>
             ### <StepNum />Import the default stylesheet
-            Import the Master CSS default stylesheet from the page stylesheet your Lit entry already loads.
+            Import Master CSS from the page stylesheet your Lit entry already loads. This stylesheet is also the project CSS entry.
         </StepL>
         <StepR>
             ```css name=src/index.css

@@ -18,16 +18,12 @@ Start with Vite and the official plugin. This quick start uses [static extractio
     </Step>
     <Step $row>
         <StepL>
-            ### <StepNum />Install and initialize
-            Add the Vite plugin, then create a project CSS entry.
+            ### <StepNum />Install Master CSS
+            Add the Vite plugin.
         </StepL>
         <StepR>
             ```bash action=install
             @master/css.vite@rc
-            ```
-
-            ```bash action=create
-            @master/css@rc
             ```
         </StepR>
     </Step>
@@ -54,7 +50,7 @@ Start with Vite and the official plugin. This quick start uses [static extractio
     <Step $row>
         <StepL>
             ### <StepNum />Import stylesheets
-            Import Master CSS once from the CSS file your app already loads.
+            Import Master CSS once from the CSS file your app already loads. This stylesheet is also the project CSS entry.
         </StepL>
         <StepR>
             ```css name=src/style.css

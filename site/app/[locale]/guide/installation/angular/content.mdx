@@ -13,17 +13,6 @@
     </Step>
     <Step $row>
         <StepL>
-            ### <StepNum />Create a configuration file
-            Run the command to create a [project CSS entry](/guide/configuration).
-        </StepL>
-        <StepR>
-            ```bash action=create
-            @master/css@rc
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
             ### <StepNum />Install Master CSS
             Install Master CSS Server into your project via package managers.
         </StepL>
@@ -54,7 +43,7 @@
     <Step $row>
         <StepL>
             ### <StepNum />Import the default stylesheet
-            Import the Master CSS default stylesheet from Angular's global stylesheet.
+            Import Master CSS from Angular's global stylesheet. This stylesheet is also the project CSS entry.
         </StepL>
         <StepR>
             ```css name=src/styles.css

@@ -51,10 +51,10 @@ That makes configuration feel closer to authoring CSS than filling out a JavaScr
 
 The `@master` rules are configuration, not regular stylesheet output. They are compiled into a Master CSS config object, then the engine generates CSS only for classes that appear in markup or are found by extractors.
 
-If you do not have a CSS entry yet, create one from the starter command:
+If you do not have a CSS entry yet, create one by adding the project marker to `index.css`:
 
-```bash action=create
-@master/css@rc
+```css name=index.css
+@master;
 ```
 
 ---

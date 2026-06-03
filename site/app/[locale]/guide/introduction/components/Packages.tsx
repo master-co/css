@@ -16,7 +16,6 @@ const mainPackages = [
     await import('~/packages/extractor/package.json'),
     await import('~/packages/validator/package.json'),
     await import('~/packages/cli/package.json'),
-    await import('~/packages/create/package.json'),
 ]
 
 const integrationPackages = [

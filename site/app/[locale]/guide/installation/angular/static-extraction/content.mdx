@@ -21,17 +21,6 @@
     </Step>
     <Step $row>
         <StepL>
-            ### <StepNum />Create a configuration file
-            Run the command to create a [project CSS entry](/guide/configuration).
-        </StepL>
-        <StepR>
-            ```bash action=create
-            @master/css@rc
-            ```
-        </StepR>
-    </Step>
-    <Step $row>
-        <StepL>
             ### <StepNum />Install Master CSS and others
             Install the Master CSS and Angular custom webpack plugin into your project via package managers.
         </StepL>
@@ -114,7 +103,7 @@
     <Step $row>
         <StepL>
             ### <StepNum />Import stylesheets
-            Import Master CSS into the global CSS file `src/styles.css`.
+            Import Master CSS into the global CSS file `src/styles.css`. This stylesheet is also the project CSS entry.
 
             (!) Don&#39;t import it in the <code>src/main.ts</code>, you&#39;ll get some errors about webpack loaders.
         </StepL>
