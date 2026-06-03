@@ -20,8 +20,9 @@ import { SyncHook, AsyncSeriesHook } from 'tapable'
 import MasterCSSPlugin from '../src'
 import { VIRTUAL_CONFIG_ID, MASTER_CSS_CONFIG_QUERY } from '@master/css-configer/module'
 import { VIRTUAL_CSS_ID } from 'shared/css-virtual-module'
+import { transformStyleSource } from '../src/utils/transform-style-source'
 import path from 'node:path'
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 
 // Build a minimal compiler / compilation pair whose hooks behave the
@@ -51,6 +52,11 @@ function makeFakeCompiler(options: {
         },
         context: options.context || process.cwd(),
         modifiedFiles: options.modifiedFiles,
+        options: {
+            module: {
+                rules: []
+            }
+        },
         inputFileSystem: {
             _writeVirtualFile: vi.fn()
         },
@@ -115,6 +121,69 @@ function makePlugin(options: Record<string, unknown> = {}, cwd = process.cwd()) 
 describe('MasterCSSPlugin (C1 race fix)', () => {
     test('exports the plugin as the default export', () => {
         expect(MasterCSSPlugin.name).toBe('MasterCSSPlugin')
+    })
+
+    test('installs a pre style loader for managed CSS entries', () => {
+        const plugin = makePlugin()
+        const { compiler } = makeFakeCompiler()
+        ;(compiler as any).webpack = { sources: { RawSource: function NoopSource(this: object) { /* stub */ } } }
+
+        plugin.apply(compiler as any)
+
+        expect((compiler as any).options.module.rules).toEqual(expect.arrayContaining([
+            expect.objectContaining({
+                test: expect.any(RegExp),
+                enforce: 'pre',
+                use: [
+                    expect.objectContaining({
+                        loader: expect.stringContaining('style-css-loader'),
+                        options: {
+                            virtualCSSImportModuleId: expect.stringContaining('master-utilities.css')
+                        }
+                    })
+                ]
+            })
+        ]))
+    })
+
+    test('rewrites managed CSS entries to the generated CSS virtual import', async () => {
+        const root = mkdtempSync(path.join(tmpdir(), 'master-css-webpack-style-'))
+        const entryPath = path.join(root, 'app.css')
+        const themePath = path.join(root, 'theme.css')
+        try {
+            writeFileSync(themePath, '@master { .card { display: grid; } }')
+            writeFileSync(entryPath, [
+                '@master;',
+                '@import "./theme.css";',
+                '',
+                '.native { color: red; }'
+            ].join('\n'))
+
+            const result = await transformStyleSource(entryPath, readFileSync(entryPath, 'utf-8'), {
+                projectDir: root,
+                masterImport: '../node_modules/.master-css/master-utilities.css'
+            })
+
+            expect(result.code).toBe('@import "../node_modules/.master-css/master-utilities.css";')
+            expect(result.dependencies).toContain(entryPath)
+            expect(result.dependencies).toContain(themePath)
+        } finally {
+            rmSync(root, { recursive: true, force: true })
+        }
+    })
+
+    test('strips Master directives from package CSS files before css-loader sees them', async () => {
+        const themePath = path.resolve(__dirname, '../../core/theme.css')
+        const result = await transformStyleSource(
+            themePath,
+            '@master { --color-primary: red; }\n:root { color: red; }',
+            {
+                projectDir: path.resolve(__dirname, '../../../examples/webpack')
+            }
+        )
+
+        expect(result.code).not.toContain('@master')
+        expect(result.code).toContain(':root')
     })
 
     test('resolves virtual:master-css-config to a JS virtual module', async () => {
@@ -343,7 +412,8 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
         const root = mkdtempSync(path.join(tmpdir(), 'master-css-webpack-'))
         try {
             mkdirSync(path.join(root, 'src'), { recursive: true })
-            writeFileSync(path.join(root, 'app.css'), [
+            const entryPath = path.join(root, 'app.css')
+            const source = [
                 '@master;',
                 '',
                 '.root-native {',
@@ -365,7 +435,8 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
                 '        display: grid;',
                 '    }',
                 '}'
-            ].join('\n'))
+            ].join('\n')
+            writeFileSync(entryPath, source)
 
             const plugin = await new MasterCSSPlugin({
                 include: [],
@@ -377,6 +448,7 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
             plugin.latentClasses.add('native-used')
             plugin.latentClasses.add('root-native')
 
+            await (plugin as any).processModuleContents([[entryPath, source]], () => false)
             const css = await (plugin as any).createExtractedCSS()
 
             expect(css).toContain('.native-used')

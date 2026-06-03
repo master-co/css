@@ -1,4 +1,4 @@
-import { existsSync, readFileSync } from 'node:fs'
+import { existsSync, readFileSync, realpathSync } from 'node:fs'
 import { createRequire } from 'node:module'
 import { dirname, extname, isAbsolute, resolve } from 'node:path'
 import { transform } from 'lightningcss'
@@ -317,12 +317,21 @@ function stripRequest(id: string) {
     return id.replace(/[?#].*$/, '')
 }
 
+function resolveComparablePath(file: string) {
+    const filename = resolve(file)
+    try {
+        return realpathSync(filename)
+    } catch {
+        return filename
+    }
+}
+
 export function isMasterCSSPackageStyleFile(id: string, projectDir?: string) {
-    const filename = resolve(stripRequest(id))
+    const filename = resolveComparablePath(stripRequest(id))
     if (extname(filename) !== '.css') return false
     try {
         return resolveMasterCSSPackageImportGraph(projectDir).dependencies.some((dependency) => {
-            return resolve(dependency) === filename
+            return resolveComparablePath(dependency) === filename
         })
     } catch {
         return false

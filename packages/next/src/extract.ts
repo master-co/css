@@ -12,10 +12,9 @@ import {
     type StyleCSSSources
 } from '@master/css-extractor/style'
 import { findCSSConfigEntryFiles } from '@master/css-configer/css'
-import { VIRTUAL_CSS_ID } from 'shared/css-virtual-module'
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { existsSync, readFileSync } from 'node:fs'
-import { dirname, resolve } from 'node:path'
+import { dirname, relative, resolve } from 'node:path'
 import { resolveOptions, type Options, type ResolvedOptions } from './options'
 
 const STATE_VERSION = 1
@@ -71,6 +70,14 @@ function resolveExtractorOptions(options: ResolvedOptions): ExtractorOptions {
     }
 }
 
+function toCSSImportPath(fromFile: string, toFile: string) {
+    let importPath = relative(dirname(fromFile), toFile).replace(/\\/g, '/')
+    if (!importPath.startsWith('.')) {
+        importPath = './' + importPath
+    }
+    return importPath
+}
+
 export async function transformExtractStyleSource(statePath: string, resourcePath: string, source: string) {
     const state = readExtractState(statePath)
     if (!isStyleCSSRequest(resourcePath)) return source
@@ -89,7 +96,7 @@ export async function transformExtractStyleSource(statePath: string, resourcePat
         projectDir: state.projectDir
     })
     await session.write()
-    return createStyleCSSHostSource(source, { masterImport: VIRTUAL_CSS_ID })
+    return createStyleCSSHostSource(source, { masterImport: toCSSImportPath(resourcePath, state.outputPath) })
 }
 
 async function createExtractedCSS(projectDir: string, session: ExtractSession) {

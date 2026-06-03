@@ -6,9 +6,9 @@ import {
 import { loadConfigModule } from '@master/css-configer/load'
 import type { Compiler } from 'webpack'
 import type { MasterCSSWebpackContext, WebpackSubPlugin } from '../plugin'
-import { isStyleCSSRequest } from '@master/css-extractor/style'
+import { isCSSConfigRequest } from '@master/css-configer/css'
 
-export function ConfigLoaderPlugin(context: MasterCSSWebpackContext): WebpackSubPlugin {
+export default function ConfigLoaderPlugin(context: MasterCSSWebpackContext): WebpackSubPlugin {
     return {
         apply(compiler: Compiler) {
             compiler.hooks.normalModuleFactory.tap(context.name, (normalModuleFactory) => {
@@ -36,7 +36,7 @@ export function ConfigLoaderPlugin(context: MasterCSSWebpackContext): WebpackSub
                                 return
                             }
                             try {
-                                if (!isStyleCSSRequest(resolvedPath)) {
+                                if (!isCSSConfigRequest(resolvedPath)) {
                                     callback(new TypeError('Master CSS config queries only support CSS entry files.'))
                                     return
                                 }

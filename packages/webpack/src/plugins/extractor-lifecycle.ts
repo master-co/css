@@ -4,7 +4,7 @@ import type { Compiler } from 'webpack'
 import type { MasterCSSWebpackContext, WebpackSubPlugin } from '../plugin'
 import { hasModifiedFile } from '../utils/path'
 
-export function ExtractorLifecyclePlugin(context: MasterCSSWebpackContext): WebpackSubPlugin {
+export default function ExtractorLifecyclePlugin(context: MasterCSSWebpackContext): WebpackSubPlugin {
     return {
         apply(compiler: Compiler) {
             if (context.getPluginInitialized()) return

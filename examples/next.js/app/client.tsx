@@ -1,7 +1,7 @@
 'use client'
 
 import CSSRuntimeProvider from '@master/css.react'
-import config from '../master.css?master-css-config'
+import config from 'virtual:master-css-config'
 
 export default function Client({ children }: {
     children: React.ReactNode

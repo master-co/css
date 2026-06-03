@@ -2,9 +2,9 @@ import {
     compileStyleCSS,
     createMasterCSSPackageHostSource,
     createStyleCSSHostSource,
-    hasStyleCSSImport,
     isMasterCSSPackageStyleFile,
-    removeMasterStyleDirectives
+    removeMasterStyleDirectives,
+    resolveMasterStyleSource
 } from '@master/css-extractor/style'
 
 interface LoaderContext {
@@ -18,7 +18,9 @@ async function transformStyleSource(resourcePath: string, source: string, projec
     const dependencies: string[] = []
     let code = source
 
-    if (hasStyleCSSImport(source)) {
+    const resolvedSource = resolveMasterStyleSource(resourcePath, source, projectDir)
+    if (resolvedSource) {
+        dependencies.push(...resolvedSource.dependencies)
         const masterHostSource = await createMasterCSSPackageHostSource(projectDir, { projectDir })
         dependencies.push(...masterHostSource.dependencies)
         code = createStyleCSSHostSource(source, { masterSource: masterHostSource.source })
@@ -26,9 +28,21 @@ async function transformStyleSource(resourcePath: string, source: string, projec
 
     if (isMasterCSSPackageStyleFile(resourcePath, projectDir)) {
         code = removeMasterStyleDirectives(code).code
+        if (!code.includes('@master')) {
+            return { code, dependencies }
+        }
+        const result = await compileStyleCSS(resourcePath, code, {
+            projectDir,
+            preserveNativeCSS: true
+        })
+        dependencies.push(...(result.dependencies || []))
+        return {
+            code: result.nativeCSS || result.css || '',
+            dependencies
+        }
     }
 
-    if (!/@master\b/.test(code)) return { code, dependencies }
+    if (!resolvedSource) return { code, dependencies }
 
     const result = await compileStyleCSS(resourcePath, code, {
         projectDir,

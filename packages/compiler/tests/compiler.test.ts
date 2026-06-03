@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { mkdtempSync, mkdirSync, readFileSync, rmSync, symlinkSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -12,6 +12,7 @@ import {
     compileProjectConfig,
     createConfigFromCSSResult,
     inspectCSS,
+    isMasterCSSPackageStyleFile,
     resolveMasterCSSPackageEntryFile
 } from '../src'
 
@@ -477,6 +478,20 @@ describe.concurrent('@master/css-compiler', () => {
             key: 'sm',
             value: 834
         })
+    })
+
+    it('detects package CSS files across workspace symlinks', () => {
+        const root = mkdtempSync(join(tmpdir(), 'master-css-compiler-'))
+        try {
+            const scope = join(root, 'node_modules/@master')
+            mkdirSync(scope, { recursive: true })
+            symlinkSync(resolve(here, '../../core'), join(scope, 'css'), 'dir')
+
+            expect(isMasterCSSPackageStyleFile(resolve(here, '../../core/theme.css'), root)).toBe(true)
+            expect(isMasterCSSPackageStyleFile(join(root, 'node_modules/@master/css/theme.css'), root)).toBe(true)
+        } finally {
+            rmSync(root, { recursive: true, force: true })
+        }
     })
 
     it('compiles project CSS entries into a semantic config', () => {

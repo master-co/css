@@ -122,7 +122,7 @@ describe('Next extract mode', () => {
             }
         `
         const replaced = await runExtractCSSLoader(statePath, join(root, 'app/globals.css'), source)
-        expect(replaced).toBe('@import "virtual:master-utilities.css";')
+        expect(replaced).toBe('@import "../.master/next.css";')
         expect(replaced).not.toContain('.main')
         expect(readFileSync(outputPath, 'utf-8')).toContain('.main')
         expect(readFileSync(outputPath, 'utf-8')).toContain('display:block')
@@ -155,11 +155,11 @@ describe('Next extract mode', () => {
             }
         `)
 
-        expect(replaced).toBe('@import "virtual:master-utilities.css";')
+        expect(replaced).toBe('@import "../.master/next.css";')
         expect(readFileSync(outputPath, 'utf-8')).toContain('display:block')
         expect(readFileSync(outputPath, 'utf-8')).toContain('.main')
         expect(replaced).not.toContain('.unused')
-        expect(replaced).toContain('virtual:master-utilities.css')
+        expect(replaced).toContain('../.master/next.css')
         expect(replaced).not.toContain('@master/css')
         expect(readFileSync(outputPath, 'utf-8')).not.toContain('.unused')
     })

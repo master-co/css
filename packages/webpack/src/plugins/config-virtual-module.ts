@@ -2,7 +2,7 @@ import { VIRTUAL_CONFIG_ID } from '@master/css-configer/module'
 import type { Compiler } from 'webpack'
 import type { MasterCSSWebpackContext, WebpackSubPlugin } from '../plugin'
 
-export function ConfigVirtualModulePlugin(context: MasterCSSWebpackContext): WebpackSubPlugin {
+export default function ConfigVirtualModulePlugin(context: MasterCSSWebpackContext): WebpackSubPlugin {
     return {
         apply(compiler: Compiler) {
             compiler.hooks.normalModuleFactory.tap(context.name, (normalModuleFactory) => {

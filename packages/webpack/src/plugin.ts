@@ -4,11 +4,9 @@ import {
     toVirtualDefaultConfigModulePath
 } from '@master/css-configer/module'
 import { loadProjectConfig } from '@master/css-configer/load'
-import { findCSSConfigEntryFiles } from '@master/css-configer/css'
 import {
     cleanStyleRequest,
     createExtractedCSS,
-    hasMasterStyleEntrypoint,
     isStyleCSSRequest,
     registerStyleCSSSource as registerExtractorStyleCSSSource,
     resolveMasterStyleSource,
@@ -19,12 +17,13 @@ import type { Compiler } from 'webpack'
 import type VirtualModulesPlugin from 'webpack-virtual-modules'
 import { readFileSync } from 'node:fs'
 import { normalizePath } from './utils/path'
-import { ExtractorLifecyclePlugin } from './plugins/extractor-lifecycle'
-import { VirtualModuleRegistryPlugin } from './plugins/virtual-modules'
-import { ConfigVirtualModulePlugin } from './plugins/config-virtual-module'
-import { VirtualCSSImportPlugin } from './plugins/virtual-css-import'
-import { ConfigLoaderPlugin } from './plugins/config-loader'
-import { UsageGraphPlugin } from './plugins/usage-graph'
+import ExtractorLifecyclePlugin from './plugins/extractor-lifecycle'
+import VirtualModuleRegistryPlugin from './plugins/virtual-modules'
+import ConfigVirtualModulePlugin from './plugins/config-virtual-module'
+import VirtualCSSImportPlugin from './plugins/virtual-css-import'
+import ConfigLoaderPlugin from './plugins/config-loader'
+import UsageGraphPlugin from './plugins/usage-graph'
+import StyleEntryPlugin from './plugins/style-entry'
 
 const NAME = 'MasterCSSPlugin'
 
@@ -175,7 +174,6 @@ export class MasterCSSPlugin {
     }
 
     private async createExtractedCSS(options: { includeNativeCSS?: boolean, includeMasterBaseCSS?: boolean } = {}) {
-        await this.registerStyleCSSEntries()
         return createExtractedCSS({
             extractor: this.extractor,
             styleCSSSources: this.styleCSSSources,
@@ -190,12 +188,6 @@ export class MasterCSSPlugin {
         await registerExtractorStyleCSSSource(this.extractor, this.styleCSSSources, modulePath, source, {
             projectDir: this.cwd
         })
-    }
-
-    private async registerStyleCSSEntries() {
-        for (const entry of await findCSSConfigEntryFiles(this.cwd)) {
-            await this.registerStyleCSSSource(entry, readFileSync(entry, 'utf-8'))
-        }
     }
 
     private readOriginalStyleSource(modulePath: string, fallback: string) {
@@ -215,10 +207,7 @@ export class MasterCSSPlugin {
             if (isGeneratedCSSModulePath(modulePath)) continue
             const source = this.readOriginalStyleSource(modulePath, content)
             if (isStyleCSSRequest(modulePath)) {
-                if (
-                    hasMasterStyleEntrypoint(source) &&
-                    resolveMasterStyleSource(modulePath, source, this.cwd)
-                ) {
+                if (resolveMasterStyleSource(modulePath, source, this.cwd)) {
                     styleEntries.push([modulePath, source])
                 } else {
                     this.styleCSSSources.delete(cleanStyleRequest(modulePath))
@@ -304,6 +293,7 @@ export class MasterCSSPlugin {
             ConfigVirtualModulePlugin(context),
             VirtualCSSImportPlugin(context),
             ConfigLoaderPlugin(context),
+            StyleEntryPlugin(context),
             UsageGraphPlugin(context)
         ]
     }

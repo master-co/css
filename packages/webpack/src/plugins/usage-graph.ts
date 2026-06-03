@@ -12,7 +12,7 @@ interface WebpackSourceModule {
     }
 }
 
-export function UsageGraphPlugin(context: MasterCSSWebpackContext): WebpackSubPlugin {
+export default function UsageGraphPlugin(context: MasterCSSWebpackContext): WebpackSubPlugin {
     return {
         apply(compiler: Compiler) {
             compiler.hooks.thisCompilation.tap(context.name, (compilation) => {

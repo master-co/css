@@ -1,9 +1,8 @@
 import { loadConfigModuleSync } from '@master/css-configer/load-sync'
 import { loadProjectConfig } from '@master/css-configer/load'
 import { toConfigModule } from '@master/css-configer/module'
+import { isCSSConfigRequest } from '@master/css-configer/css'
 import type { Config } from 'shared/css-config'
-import { extname } from 'node:path'
-import { stripResourceQuery } from 'shared/css-config-module'
 import { getRegisteredOptions } from './options'
 
 interface LoaderContext {
@@ -36,7 +35,7 @@ async function loadVirtualConfigModule(context: LoaderContext, config?: Config) 
 
 function loadCSSConfigModule(context: LoaderContext) {
     const resourcePath = context.resourcePath
-    if (extname(stripResourceQuery(resourcePath)) !== '.css') {
+    if (!isCSSConfigRequest(resourcePath)) {
         throw new TypeError('Master CSS config queries only support CSS entry files.')
     }
     const result = loadConfigModuleSync(resourcePath)
