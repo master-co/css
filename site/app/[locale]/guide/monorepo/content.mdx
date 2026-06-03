@@ -37,7 +37,7 @@ When different applications need cleanly separated CSS extraction, configuration
 This keeps each application's generated CSS, source scanning, diagnostics, and editor state aligned with the same project root. Shared design tokens can still live at the repository root and be imported by each project workspace.
 
 ### Share the configuration
-In each workspace, import the shared CSS config files and add workspace-specific definitions after them.
+In each workspace, import shared project CSS files and add workspace-specific definitions after them.
 ```css name=projects/admin/index.css
 @master;
 @import '../../index.css';

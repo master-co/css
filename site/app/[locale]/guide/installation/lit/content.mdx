@@ -25,7 +25,7 @@
     <Step $row>
         <StepL>
             ### <StepNum />Set up Vite config
-            Register the Master CSS Vite config loader without automatic runtime injection.
+            Register the Master CSS Vite plugin. The default runtime integration initializes the document root; the Lit decorator below initializes each component shadow root.
         </StepL>
         <StepR>
             ```ts name=vite.config.ts
@@ -34,7 +34,7 @@
 
             export default defineConfig({
                 plugins: [
-                    masterCSS({ mode: null }) // [!code highlight]
+                    masterCSS() // [!code highlight]
                 ]
             })
             ```
@@ -65,8 +65,8 @@
     </Step>
     <Step $row>
         <StepL>
-            ### <StepNum />Set up CSS runtime engine
-            Decorate your Lit element with `@cssRuntime()` to initialize Master CSS Runtime for the element's shadow root.
+            ### <StepNum />Set up shadow-root runtime
+            Decorate your Lit element with `@cssRuntime()` to initialize Master CSS Runtime for the element's shadow root. Import `virtual:master-css-config` so the shadow runtime receives the same project-level config that Vite discovered from the project CSS entry.
         </StepL>
         <StepR>
             ```ts name=src/my-element.ts
