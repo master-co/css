@@ -2,7 +2,7 @@
     <Step $row>
         <StepL>
             ### <StepNum />Create a project
-            If you don't have a Astro project, create one first. It's recommended to refer to [Getting Started - Astro](https://docs.astro.build/en/getting-started).
+            If you don't have an Astro project, create one first. It's recommended to refer to [Getting Started - Astro](https://docs.astro.build/en/getting-started).
         </StepL>
         <StepR>
             ```bash name=Terminal
@@ -14,7 +14,7 @@
     <Step $row>
         <StepL>
             ### <StepNum />Install Master CSS
-            Install [`@master/css.astro`](/reference/astro) plugin into your project.
+            Install the [`@master/css.astro`](/reference/astro) integration into your project.
         </StepL>
         <StepR>
             ```bash action=install
@@ -36,9 +36,10 @@
     <Step $row>
         <StepL>
             ### <StepNum />Set up Master CSS
-            Add a `masterCSS` astro integration in `astro.config.js`.
+            Add the Master CSS Astro integration in `astro.config.js`.
 
-            - By default, `options.mode` is set to `runtime`.
+            - By default, `options.mode` is set to `progressive`.
+            - Progressive mode pre-renders initial CSS with Astro middleware, then hydrates the runtime in the browser.
         </StepL>
         <StepR>
             ```js name=astro.config.js
@@ -63,6 +64,19 @@
             <style is:global>
                 @import '@master/css';
             </style>
+            ```
+        </StepR>
+    </Step>
+    <Step $row>
+        <StepL>
+            ### <StepNum />Verify progressive output
+            Run a production build to verify that Astro writes pre-rendered CSS into the generated HTML.
+
+            The output should include `html <style id="master">` for initial classes and a module script for runtime hydration.
+        </StepL>
+        <StepR>
+            ```bash name=Terminal
+            npm run build
             ```
         </StepR>
     </Step>

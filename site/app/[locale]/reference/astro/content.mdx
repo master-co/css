@@ -12,6 +12,8 @@ export default defineConfig({
     ]
 })
 ```
+By default, `masterCSS()` uses [progressive rendering](/guide/rendering-modes#progressive-rendering). The integration registers Astro middleware to inject pre-rendered `html <style id="master">` into HTML responses and injects the runtime script for browser hydration.
+
 Import the default stylesheet from a global Astro stylesheet:
 
 ```astro name=src/layouts/Layout.astro
@@ -25,6 +27,9 @@ Import the default stylesheet from a global Astro stylesheet:
 ## API Reference
 ### `options`
 The `options` object extends the [VitePluginOptions](/reference/vite#options) and is passed to the `@master/css.astro` integration. It allows you to configure the behavior of the integration.
+
+For `pre-render` and `progressive` modes, Astro owns the HTML rendering step through `@master/css.astro/middleware`, so you do not need to add `@master/css-server` manually.
+
 ```js name=astro.config.js
 import { defineConfig } from 'astro/config'
 import masterCSS from '@master/css.astro'

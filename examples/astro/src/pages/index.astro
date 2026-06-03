@@ -3,81 +3,78 @@ import Layout from '../layouts/Layout.astro';
 import Card from '../components/Card.astro';
 ---
 
-<Layout title="Welcome to Astro.">
-	<main>
-		<h1 class="text:center tracking:-.015em">
-            <span class="text-gradient mr:10">Astro</span> Master CSS
-        </h1>
-		<p class="instructions p:25!">
-			To get started, open the directory <code>src/pages</code> in your project.<br />
-			<strong>Code Challenge:</strong> Tweak the "Welcome to Astro" message above.
-		</p>
-		<ul role="list" class="link-card-grid">
+<Layout title="Master CSS Astro progressive rendering">
+	<main class="min-h:100vh p:10x bg:#f8fafc fg:#0f172a">
+		<section class="max-width:960px mx:auto py:12x">
+			<p class="inline-flex align-items:center h:32 px:3x r:999 bg:#eff6ff fg:royalblue font:14 font-weight:600">
+				Astro integration
+			</p>
+			<h1 class="m:0 mt:4x font:48 font-weight:800 tracking:-.015em">
+				Progressive rendering by default
+			</h1>
+			<p class="max-width:640px fg:#475569 font:18 line-height:1.7">
+				The Astro integration pre-renders the CSS needed for the initial HTML and hydrates the Master CSS runtime for classes that appear later in the browser.
+			</p>
+			<div class="mt:6x p:5x r:10 bg:white border:1px|solid|#e2e8f0">
+				<p class="m:0 fg:#475569 line-height:1.6">
+					This button starts with pre-rendered classes. Click it to add a new runtime-only class after the page has loaded.
+				</p>
+				<button
+					data-runtime-toggle
+					class="inline-flex align-items:center h:44 px:5x mt:4x bg:black fg:white r:6 text:14 font-weight:600 border:0 cursor:pointer"
+				>
+					Hydrate runtime class
+				</button>
+				<p data-runtime-status class="m:0 mt:3x fg:#475569 font:14">
+					Waiting for interaction
+				</p>
+			</div>
+		</section>
+		<section class="max-width:960px mx:auto pb:12x">
+			<ul role="list" class="grid grid-cols:3 gap:4x p:0 m:0">
 			<Card
-				href="https://docs.astro.build/"
-				title="Documentation"
-				body="Learn how Astro works and explore the official API docs."
+				href="https://css.master.co/guide/rendering-modes#progressive-rendering"
+				title="Pre-rendered CSS"
+				body="Astro middleware injects style#master into HTML during static generation or server rendering."
 			/>
 			<Card
-				href="https://astro.build/integrations/"
-				title="Integrations"
-				body="Supercharge your project with new frameworks and libraries."
+				href="https://css.master.co/reference/runtime"
+				title="Runtime hydration"
+				body="The browser runtime reuses the pre-rendered stylesheet and observes class changes after load."
 			/>
 			<Card
-				href="https://astro.build/themes/"
-				title="Themes"
-				body="Explore a galaxy of community-built starter themes."
+				href="https://css.master.co/guide/installation/astro"
+				title="Default setup"
+				body="Use masterCSS() in astro.config.mjs. Progressive mode is enabled unless you choose another mode."
 			/>
-			<Card
-				href="https://astro.build/chat/"
-				title="Community"
-				body="Come say hi to our amazing Discord community. ❤️"
-			/>
-		</ul>
+			</ul>
+		</section>
 	</main>
 </Layout>
 
+<script>
+	const button = document.querySelector('[data-runtime-toggle]');
+	const status = document.querySelector('[data-runtime-status]');
+	let active = false;
+
+	button?.addEventListener('click', () => {
+		active = !active;
+		button.classList.toggle('bg:black', !active);
+		button.classList.toggle('bg:royalblue', active);
+		status?.classList.toggle('fg:#475569', !active);
+		status?.classList.toggle('fg:mediumblue', active);
+		if (status) {
+			status.textContent = active
+				? 'Runtime generated bg:royalblue and fg:mediumblue after hydration.'
+				: 'Waiting for interaction';
+		}
+	});
+</script>
+
 <style>
-	main {
-		margin: auto;
-		padding: 1.5rem;
-		max-width: 60ch;
-	}
-	h1 {
-		font-size: 3rem;
-		font-weight: 800;
-		margin: 0;
-	}
-	.text-gradient {
-		background-image: var(--accent-gradient);
-		-webkit-background-clip: text;
-		-webkit-text-fill-color: transparent;
-		background-size: 400%;
-		background-position: 0%;
-	}
-	.instructions {
-		line-height: 1.6;
-		margin: 1rem 0;
-		border: 1px solid rgba(var(--accent), 25%);
-		background-color: white;
-		padding: 1rem;
-		border-radius: 0.4rem;
-	}
-	.instructions code {
-		font-size: 0.875em;
-		font-weight: bold;
-		background: rgba(var(--accent), 12%);
-		color: rgb(var(--accent));
-		border-radius: 4px;
-		padding: 0.3em 0.45em;
-	}
-	.instructions strong {
-		color: rgb(var(--accent));
-	}
-	.link-card-grid {
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(24ch, 1fr));
-		gap: 1rem;
-		padding: 0;
+	@media (max-width: 760px) {
+		.grid-cols\:3 {
+			grid-template-columns: 1fr;
+		}
 	}
 </style>

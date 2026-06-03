@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
     title: 'Set up Master CSS in Astro',
-    description: 'Guide to setting up Master CSS in your Astro project.',
+    description: 'Guide to setting up Master CSS progressive rendering in your Astro project.',
     category: 'Integrations',
     vercelOG: true,
     fileURL: import.meta.url
