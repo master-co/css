@@ -52,6 +52,17 @@ function matchesAnySource(source: string, matchers: Minimatch[]) {
     return false
 }
 
+function isStyleModuleRequest(source: string) {
+    const queryStart = source.indexOf('?')
+    if (queryStart === -1) return false
+    return new URLSearchParams(source.slice(queryStart + 1)).get('type') === 'style'
+}
+
+function cleanSourceRequest(source: string) {
+    const queryStart = source.indexOf('?')
+    return queryStart === -1 ? source : source.slice(0, queryStart)
+}
+
 // eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
 export default class CSSExtractor extends EventEmitter {
     latentClasses = new Set<string>()
@@ -477,10 +488,8 @@ export default class CSSExtractor extends EventEmitter {
     }
 
     isSourceAllowed(source: string): boolean {
-        /* remove if params exists */
-        if (source.includes('?')) {
-            source = source.split('?')[0]
-        }
+        if (isStyleModuleRequest(source)) return false
+        source = cleanSourceRequest(source)
         const { include, exclude, sources } = this.getSourceMatchers()
         if (sources.length && matchesAnySource(source, sources)) {
             return true

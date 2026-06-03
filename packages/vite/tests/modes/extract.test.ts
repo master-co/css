@@ -7,11 +7,9 @@
  *       `extractor: { include: [...] }` option. Now only
  *       blanked when the user did NOT pass one.
  *
- *  C8 — `master-css:usage-graph.transform` accepted every non-`.css` module
- *       — including `.json`, `?import` / `?url` query requests, and
- *       binary-asset shim modules — pumping noise through the extractor.
- *       Now restricted to a file-extension allow-list mirroring the
- *       extractor's default include glob.
+ *  C8 — Vite virtual modules must not be sent through the extractor, while
+ *       real Vite module ids are delegated to the extractor's own source
+ *       matcher.
  *
  * Both fixes preserve the current PluginOptions surface.
  */
@@ -95,7 +93,7 @@ describe('shared extractor plugins (C7 + C8 fixes)', () => {
         })
     })
 
-    describe('C8 — transform allow-list', () => {
+    describe('C8 — usage graph delegation', () => {
         async function drive(ids: string[]) {
             const ctx: any = {}
             const plugins = [
@@ -110,7 +108,7 @@ describe('shared extractor plugins (C7 + C8 fixes)', () => {
             return ctx.extractor.insertCalls
         }
 
-        test('allows real source extensions', async () => {
+        test('delegates real source modules to the extractor', async () => {
             const calls = await drive([
                 '/proj/src/App.tsx',
                 '/proj/src/main.ts',
@@ -131,17 +129,19 @@ describe('shared extractor plugins (C7 + C8 fixes)', () => {
             ])
         })
 
-        test('rejects non-source extensions (json / png-as-module / virtual chunks)', async () => {
+        test('delegates non-virtual module ids to the extractor source matcher', async () => {
             const calls = await drive([
                 '/proj/src/data.json',                // json
                 '/proj/src/icon.png',                  // raw asset
                 '/proj/src/icon.svg?url',              // ?url
                 '/proj/src/audio.mp3',                 // binary
-                '\0plugin-virtual',                    // virtual module
-                '\0plugin-vue:export-helper',          // 3rd-party virtual
-                '\0vite/modulepreload-polyfill.js',     // Vite virtual with source extension
             ])
-            expect(calls).toEqual([])
+            expect(calls).toEqual([
+                '/proj/src/data.json',
+                '/proj/src/icon.png',
+                '/proj/src/icon.svg?url',
+                '/proj/src/audio.mp3',
+            ])
         })
 
         test('respects vite query suffixes on source files (?import / ?raw)', async () => {
@@ -151,7 +151,8 @@ describe('shared extractor plugins (C7 + C8 fixes)', () => {
                 '/proj/src/Component.svelte?vue&type=script',
             ])
             // All three are source files Vite is forwarding through transform
-            // with a query suffix. The allow-list must let them through.
+            // with a query suffix. The extractor source matcher owns whether
+            // they are usable.
             expect(calls).toEqual([
                 '/proj/src/App.tsx?import',
                 '/proj/src/markdown.md?raw',
@@ -160,24 +161,34 @@ describe('shared extractor plugins (C7 + C8 fixes)', () => {
         })
 
         test('virtual module ids are always rejected', async () => {
-            const calls = await drive(['\0plugin-virtual'])
+            const calls = await drive([
+                '\0plugin-virtual',
+                '\0plugin-vue:export-helper',
+                '\0vite/modulepreload-polyfill.js',
+            ])
             expect(calls).toEqual([])
         })
 
-        test('CSS files are not extracted (existing behaviour preserved)', async () => {
+        test('CSS files are delegated to the extractor source matcher', async () => {
             const calls = await drive([
                 '/proj/src/style.css',
                 '/proj/src/component.module.css',
             ])
-            expect(calls).toEqual([])
+            expect(calls).toEqual([
+                '/proj/src/style.css',
+                '/proj/src/component.module.css',
+            ])
         })
 
-        test('framework style subrequests are not extracted', async () => {
+        test('framework style subrequests are delegated to the extractor source matcher', async () => {
             const calls = await drive([
                 '/proj/src/App.svelte?svelte&type=style&lang.css',
                 '/proj/src/App.vue?vue&type=style&index=0&lang.css',
             ])
-            expect(calls).toEqual([])
+            expect(calls).toEqual([
+                '/proj/src/App.svelte?svelte&type=style&lang.css',
+                '/proj/src/App.vue?vue&type=style&index=0&lang.css',
+            ])
         })
 
         test('build transformIndexHtml feeds HTML to the extractor', async () => {

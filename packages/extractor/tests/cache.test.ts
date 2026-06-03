@@ -108,4 +108,27 @@ describe('source matcher cache', () => {
 
         expect(ex.extract('component.tsx', `<div className="block">hi</div>`)).toEqual(['block'])
     })
+
+    test('normalizes Vite query suffixes before matching source paths', async () => {
+        const ex = await new CSSExtractor({ config: {} as any }).init()
+
+        expect(ex.isSourceAllowed('component.tsx?import')).toBe(true)
+        expect(ex.isSourceAllowed('content.md?raw')).toBe(true)
+    })
+
+    test('rejects non-source extensions with Vite query suffixes', async () => {
+        const ex = await new CSSExtractor({ config: {} as any }).init()
+
+        expect(ex.isSourceAllowed('data.json?import')).toBe(false)
+        expect(ex.isSourceAllowed('icon.svg?url')).toBe(false)
+        expect(ex.isSourceAllowed('audio.mp3')).toBe(false)
+    })
+
+    test('rejects framework style module requests', async () => {
+        const ex = await new CSSExtractor({ config: {} as any }).init()
+
+        expect(ex.isSourceAllowed('App.vue?vue&type=script')).toBe(true)
+        expect(ex.isSourceAllowed('App.vue?vue&type=style&index=0&lang.css')).toBe(false)
+        expect(ex.isSourceAllowed('App.svelte?svelte&type=style&lang.css')).toBe(false)
+    })
 })
