@@ -562,42 +562,6 @@ importers:
         specifier: ^6.0.3
         version: 6.0.3
 
-  examples/next.js-extract:
-    dependencies:
-      '@master/css':
-        specifier: workspace:^
-        version: link:../../packages/core
-      '@master/css.next':
-        specifier: workspace:^
-        version: link:../../packages/next
-      '@types/node':
-        specifier: ^25.6.0
-        version: 25.6.0
-      '@types/react':
-        specifier: ^19.2.14
-        version: 19.2.14
-      '@types/react-dom':
-        specifier: ^19.2.3
-        version: 19.2.3(@types/react@19.2.14)
-      eslint:
-        specifier: ^10.2.1
-        version: 10.3.0(jiti@2.7.0)
-      eslint-config-next:
-        specifier: ^16.2.4
-        version: 16.2.4(@typescript-eslint/parser@8.59.3(eslint@10.3.0(jiti@2.7.0))(typescript@6.0.3))(eslint-plugin-import-x@4.16.2(@typescript-eslint/utils@8.59.3(eslint@10.3.0(jiti@2.7.0))(typescript@6.0.3))(eslint-import-resolver-node@0.3.10)(eslint@10.3.0(jiti@2.7.0)))(eslint@10.3.0(jiti@2.7.0))(typescript@6.0.3)
-      next:
-        specifier: ^16.2.4
-        version: 16.2.4(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(@playwright/test@1.60.0)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)(sass@1.99.0)
-      react:
-        specifier: ^19.2.5
-        version: 19.2.5
-      react-dom:
-        specifier: ^19.2.5
-        version: 19.2.5(react@19.2.5)
-      typescript:
-        specifier: ^6.0.3
-        version: 6.0.3
-
   examples/nuxt.js:
     dependencies:
       '@master/css':
@@ -677,15 +641,6 @@ importers:
       vite:
         specifier: ^8.0.10
         version: 8.0.10(@types/node@25.7.0)(@vitejs/devtools@0.1.18)(esbuild@0.28.0)(jiti@2.7.0)(less@4.4.2)(sass@1.99.0)(terser@5.46.2)(tsx@4.21.0)(yaml@2.8.4)
-
-  examples/static-extract:
-    devDependencies:
-      '@master/css':
-        specifier: workspace:^
-        version: link:../../packages/core
-      '@master/css-cli':
-        specifier: workspace:^
-        version: link:../../packages/cli
 
   examples/svelte:
     dependencies:
