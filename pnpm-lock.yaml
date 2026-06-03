@@ -1098,6 +1098,9 @@ importers:
       '@master/css-extractor':
         specifier: workspace:^
         version: link:../extractor
+      '@master/css-server':
+        specifier: workspace:^
+        version: link:../server
       '@master/css.vite':
         specifier: workspace:^
         version: link:../vite

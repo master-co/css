@@ -1,6 +1,9 @@
-import { PluginOptions, options as defaultPluginOptions } from '@master/css.vite'
+import { type PluginOptions, options as defaultPluginOptions } from '@master/css.vite'
 
-const options: IntegrationOptions = defaultPluginOptions
+const options: IntegrationOptions = {
+    ...defaultPluginOptions,
+    mode: 'progressive'
+}
 
 export default options
 

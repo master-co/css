@@ -4,6 +4,7 @@
     "scripts": {
         "build": "techor build \"src/**/*.ts\" --formats esm",
         "dev": "pnpm build --watch",
+        "test": "vitest",
         "type-check": "tsc --noEmit",
         "lint": "eslint"
     },
@@ -49,6 +50,11 @@
             "types": "./dist/adapter.d.ts",
             "import": "./dist/adapter.mjs",
             "default": "./dist/adapter.mjs"
+        },
+        "./middleware": {
+            "types": "./dist/middleware.d.ts",
+            "import": "./dist/middleware.mjs",
+            "default": "./dist/middleware.mjs"
         }
     },
     "files": [
@@ -64,6 +70,7 @@
     },
     "dependencies": {
         "@master/css-extractor": "workspace:^",
+        "@master/css-server": "workspace:^",
         "@master/css.vite": "workspace:^"
     },
     "devDependencies": {

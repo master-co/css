@@ -3,6 +3,8 @@ import { default as vitePlugin, CSS_RUNTIME_INJECTION } from '@master/css.vite'
 import defaultOptions, { type IntegrationOptions } from './options'
 import { astroAdapter } from './adapter'
 
+export const ASTRO_MIDDLEWARE_ENTRYPOINT = '@master/css.astro/middleware'
+
 function withAstroAdapter(options: IntegrationOptions): IntegrationOptions {
     return {
         ...options,
@@ -16,30 +18,49 @@ function withAstroAdapter(options: IntegrationOptions): IntegrationOptions {
     }
 }
 
+function getViteOptions(options: IntegrationOptions): IntegrationOptions {
+    const viteOptions = withAstroAdapter(options)
+    switch (options.mode) {
+        case 'pre-render':
+        case 'progressive':
+            return {
+                ...viteOptions,
+                mode: null
+            }
+        case 'runtime':
+            return {
+                ...viteOptions,
+                injectRuntime: false
+            }
+        default:
+            return viteOptions
+    }
+}
+
 export default function masterCSS(options?: IntegrationOptions): AstroIntegration {
     options = { ...defaultOptions, ...options }
-    const viteOptions = withAstroAdapter(options)
     return {
         name: '@master/css.astro',
         hooks: {
-            'astro:config:setup': async ({ injectScript, updateConfig }) => {
+            'astro:config:setup': async ({ addMiddleware, injectScript, updateConfig }) => {
                 switch (options.mode) {
                     case 'progressive':
                     case 'runtime':
-                        injectScript('page', CSS_RUNTIME_INJECTION)
-                        updateConfig({ vite: { plugins: [vitePlugin({ ...viteOptions, injectRuntime: false }) as never] } })
-                        break
-                    default:
-                        updateConfig({ vite: { plugins: [vitePlugin(viteOptions) as never] } })
+                        if (options.injectRuntime) {
+                            injectScript('page', CSS_RUNTIME_INJECTION)
+                        }
                         break
                 }
                 switch (options.mode) {
+                    case 'pre-render':
                     case 'progressive':
-                        console.warn(`[@master/css.astro] 'progressive' mode is not yet supported. Use '@master/css-server' to set up server render first.`)
-                        break
-                    default:
+                        addMiddleware({
+                            order: 'pre',
+                            entrypoint: ASTRO_MIDDLEWARE_ENTRYPOINT
+                        })
                         break
                 }
+                updateConfig({ vite: { plugins: [vitePlugin(getViteOptions(options)) as never] } })
             }
         },
     }
