@@ -16,10 +16,8 @@
 The default stylesheet contains:
 
 ```css
-@master shake;
 @import "./base.css";
 @import "./theme.css";
-@import "./utilities.css";
 ```
 
 Use `@import '@master/css/base.css';` when a runtime-only page only needs the base layer declaration and normalization rules. Use the default `@master/css` import from app stylesheets that should receive generated Master CSS and native CSS shaking in extract mode.

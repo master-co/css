@@ -28,7 +28,7 @@ This package resolves Master CSS project-level CSS config entries, workspace roo
 - Preserve CSS config dependency reporting for Vite watch/HMR.
 - Re-export `?master-css-config` query helpers and virtual module id helpers from `@master/css-configer/module`; keep their dependency-free implementation in `shared`.
 - Entry discovery only checks top-level project markers: `@master;` and `@import "@master/css"`. Do not treat `@master shake;`, `@master no-shake;`, imported `@master {}` blocks, or package CSS files as independent project entries.
-- Do not hardcode package CSS dependency filenames such as `base.css`, `theme.css`, or `utilities.css`; import graph dependencies come from the compiler result.
+- Do not hardcode package CSS dependency filenames such as `base.css` or `theme.css`; import graph dependencies come from the compiler result.
 
 ## Validation
 
