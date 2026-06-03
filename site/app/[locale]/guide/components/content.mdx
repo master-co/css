@@ -9,7 +9,6 @@ In the project CSS entry or a local CSS file imported by it, define main styles 
 Use a class selector inside `@master`. Put Master CSS classes in `@compose`, and put native CSS declarations directly in the rule.
 
 ```css name=index.css
-@master;
 @master {
     .btn {
         @compose "inline-flex ai:center jc:center gap:xs px:md py:xs r:lg font:sm font:medium";
@@ -53,7 +52,6 @@ The generated CSS is emitted in the `main` layer:
 `@compose` accepts Master CSS utility declarations. Keep it quoted so grouped declarations and punctuation-heavy syntax can be parsed without ambiguity. In component definitions, put selector states in nested selectors and put conditional variants in `@at` blocks.
 
 ```css name=index.css
-@master;
 @master {
     .empty-state {
         @compose "grid ai:center jc:center min-h:64x p:lg text:center";
@@ -74,7 +72,6 @@ When the selector is derived from the same component class, nest the selector in
 Component definitions can include nested selectors and `@at` condition blocks.
 
 ```css name=index.css
-@master;
 @master {
     .btn {
         @compose "inline-flex ai:center jc:center px:md py:xs r:lg";
@@ -107,7 +104,6 @@ Equivalent markup stays semantic:
 Component classes also accept selector and at-rule suffixes when the variant belongs to the usage site rather than the component definition.
 
 ```css name=index.css
-@master;
 @master {
     .btn {
         @compose "block";
@@ -147,7 +143,6 @@ For a configured selector such as `.btn:disabled > span`, `btn:hover` becomes `:
 Component definitions are config, not output. Defining `.btn` does not generate CSS until `btn` appears in extracted classes.
 
 ```css name=index.css
-@master;
 @master {
     .btn {
         @compose "inline-flex px:md";
@@ -172,7 +167,6 @@ This keeps unused component definitions out of the final CSS. In Vite extract mo
 You can split a component into multiple rules. Definitions with the same selector, at-rules, and layer are merged. Native declarations keep their source order relative to `@compose`, while composed utilities are sorted with Master CSS rule priority before they are merged.
 
 ```css name=index.css
-@master;
 @master {
     .btn {
         @compose "inline-flex";
@@ -213,7 +207,6 @@ The compiler expands `@compose` into merged static utility definitions:
 Component definitions are grouped by resolved selector, resolved at-rules, and layer before they are emitted. That means the following definitions become separate buckets:
 
 ```css name=index.css
-@master;
 @master {
     .btn {
         @compose "inline-flex";

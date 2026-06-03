@@ -50,14 +50,9 @@ Whitespace is used in the class attribute of the template to separate different 
 Is it not very kind to use `\00a0` in markup?
 
 (o) Predefine your [font](/guide/variables#add-fonts) variables without `\00a0`.
-```js name=config.js
-/** @type {import('@master/css').Config} */
-export default {
-    variables: {
-        'font-family': {
-            'open-sans': 'Open Sans' /* [!code ++] */
-        }
-    }
+```css name=index.css
+@master {
+    --font-family-open-sans: Open Sans; /* [!code ++] */
 }
 ```
 Apply your custom fonts:
@@ -71,14 +66,10 @@ Apply your custom fonts:
 ## Customization
 ### Use custom fonts
 Customize your font tokens by defining [variables](/guide/variables). For example, add `Inter` as the general font and `Fira Code` as the code font.
-```js name=config.js
-export default {
-    variables: {
-        'font-family': {
-            sans: '"Inter", $font-family-sans-fallback', /* [!code ++] */
-            mono: '"Fira Code", $font-family-mono-fallback', /* [!code ++] */
-        }
-    }
+```css name=index.css
+@master {
+    --font-family-sans: "Inter", $font-family-sans-fallback; /* [!code ++] */
+    --font-family-mono: "Fira Code", $font-family-mono-fallback; /* [!code ++] */
 }
 ```
 Apply the defined `font-family` variables. For example, presetting the global fonts in `html <body>`:

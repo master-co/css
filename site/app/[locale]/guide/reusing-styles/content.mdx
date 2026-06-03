@@ -7,7 +7,6 @@ Writing `.btn` at the top level of a stylesheet creates a normal CSS rule. It is
 
 This guide focuses on the strategy of when to abstract; for the full configuration surface, start with [CSS Configuration](/guide/configuration), and for exact component behavior, see [Components](/guide/components).
 ```css name=index.css
-@master;
 @master {
     .btn {
         display: inline-flex;
@@ -58,7 +57,6 @@ Create an abstract style using Master CSS syntaxes.
 ### Add a style with states
 Create an abstract style with [state selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```css name=index.css
-@master;
 @master {
     .btn:focus {
         outline: 0.125rem var(--color-invert) solid;
@@ -81,7 +79,6 @@ Create an abstract style with [state selectors](/guide/state-selectors) and [con
 ### Add styles in a nested structure
 Create and manage a set of abstract styles for a shared structure. Keep each generated class explicit so markup, output, and config stay easy to trace.
 ```css name=index.css
-@master;
 @master {
     .card {
         border-radius: 0.5rem;

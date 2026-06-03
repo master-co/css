@@ -39,7 +39,6 @@ Rules enter the preset layer through `@preset` syntax or explicit `@layer preset
 Use `main` for project styles that carry product meaning: `.btn`, `.card`, `.field`, `.toolbar`, `.app-shell`. In CSS config, write these class definitions directly inside `@master`.
 
 ```css name=index.css
-@master;
 @master {
     .btn {
         @compose "inline-flex";
@@ -54,7 +53,6 @@ The compiler converts these definitions into static `config.utilities` entries w
 Use `general` for utilities: built-in utilities, animation utilities, and custom static utilities written in `@layer general` inside `@master`.
 
 ```css name=index.css
-@master;
 @master {
     @layer general {
         .content-auto {
@@ -73,7 +71,6 @@ General is the final layer, so utility classes can intentionally override main s
 This example touches every generated layer. The CSS config defines theme variables and a main style, while the markup uses base, preset, and general utilities.
 
 ```css name=index.css
-@master;
 @master {
     @mode light {
         --color-primary: #000000;
@@ -222,7 +219,6 @@ Regular CSS outside `@layer` follows the native cascade outside Master CSS's lay
 Inside `@master`, prefer the configured forms:
 
 ```css name=index.css
-@master;
 @master {
     @layer general {
         .content-auto {

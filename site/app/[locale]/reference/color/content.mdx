@@ -17,15 +17,9 @@ Apply styles based on different states using [selectors](/guide/state-selectors)
 ## Customization
 ### Use custom text colors
 Add a color to the text variable namespace.
-```js name=config.js
-export default {
-    variables: {
-        color: {
-            text: {
-                primary: '#000' /* [!code ++] */
-            }
-        }
-    }
+```css name=index.css
+@master {
+    --color-text-primary: #000; /* [!code ++] */
 }
 ```
 Apply the custom color:

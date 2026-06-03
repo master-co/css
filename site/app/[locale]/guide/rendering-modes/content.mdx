@@ -256,8 +256,6 @@ The CSS entry point is explicit: import `@master/css` from the stylesheet that s
         Each candidate is passed through the Master CSS engine. Valid classes insert rules into the same layers used by runtime and server rendering; invalid candidates are cached and skipped on later scans.
 
         ```css name=index.css
-        @master;
-
         @master {
             .btn {
                 @compose "inline-flex px:md";

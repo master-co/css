@@ -9,7 +9,6 @@ Selector tokens name selectors that are repeated across markup or `@master` defi
 Define selector tokens inside the root `@master` block with `@custom-selector`.
 
 ```css name=index.css
-@master;
 @master {
     @custom-selector :headings :is(h1, h2, h3, h4, h5, h6);
     @custom-selector :interactive :is(:hover, :focus-visible);
@@ -52,7 +51,6 @@ Generated CSS:
 Inside `@master`, prefer native nested selectors instead of putting selector suffixes inside `@compose`.
 
 ```css name=index.css
-@master;
 @master {
     @custom-selector :interactive :is(:hover, :focus-visible);
 

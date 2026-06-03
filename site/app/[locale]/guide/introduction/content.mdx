@@ -142,7 +142,6 @@ Master CSS is a standalone CSS framework with packages for core generation, brow
 The project CSS entry is the primary configuration source. Tokens are native custom properties, selector shortcuts use `@custom-selector`, conditional shortcuts use `@custom-at`, low-level custom utilities live in `@layer general`, and semantic component classes live directly inside `@master`.
 
 ```css name=index.css
-@master;
 @master {
     --color-primary: #4f46e5;
     --screen-md: 768;
@@ -278,7 +277,6 @@ Design tokens are a core methodology for practicing design systems. Master CSS [
 
 Assuming the card can be reused, define it as a main style using [components](/guide/components) in the project CSS entry:
 ```css name=index.css
-@master;
 @master {
     .card {
         @compose "flex ~transform|fast|smooth overflow:hidden bg:white r:xl";

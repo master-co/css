@@ -16,15 +16,17 @@ Vestibulum fringilla varius semper. Sed in placerat est, in iaculis urna. Sed at
 ## New Configuration API
 
 ### `.animations`
-You can now customize CSS [animations](/guide/configuration#animations) in an explicit config module:
-```js name=config.js
-export default {
-    animations: {
-        fade: {
-            '0%': { opacity: 0 },
-            'to': { opacity: 1 }
-        },
-        …
+You can now customize CSS [animations](/guide/configuration#animations) in the project CSS entry:
+```css name=index.css
+@master {
+    @keyframes fade {
+        0% {
+            opacity: 0;
+        }
+
+        to {
+            opacity: 1;
+        }
     }
 }
 ```

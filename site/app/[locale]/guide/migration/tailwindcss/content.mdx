@@ -132,7 +132,6 @@ module.exports = {
 }
 ```
 ```css name=index.css
-@master;
 @master {
     --screen-sm: 640;
     --screen-md: 768;
@@ -176,7 +175,6 @@ module.exports = {
 }
 ```
 ```css name=index.css
-@master;
 @master {
     @custom-at tall @media (min-height: 800px);
 }
@@ -197,7 +195,6 @@ Use [components](/guide/components) and `@compose` to abstract styles instead of
 }
 ```
 ```css name=index.css
-@master;
 @master {
     .btn {
         @compose "p:2x|5x bg:white";

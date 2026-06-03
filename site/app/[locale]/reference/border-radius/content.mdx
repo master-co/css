@@ -22,14 +22,10 @@ Apply styles based on different states using [selectors](/guide/state-selectors)
 ## Customization
 ### Use custom border radius
 Customize your border radius tokens by defining [variables](/guide/variables).
-```js name=config.js
-export default {
-    variables: {
-        'border-radius': {
-            xs: 2, /* [!code ++] */
-            sm: 4, /* [!code ++] */
-        }
-    }
+```css name=index.css
+@master {
+    --border-radius-xs: 2; /* [!code ++] */
+    --border-radius-sm: 4; /* [!code ++] */
 }
 ```
 Apply the defined `border-radius` variables.

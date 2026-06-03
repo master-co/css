@@ -4,8 +4,6 @@ Your project CSS entry is the primary configuration source for Master CSS. It is
 That makes configuration feel closer to authoring CSS than filling out a JavaScript object. A single file can describe the scale of the system, the tokens it exposes, the conditions it understands, the general utilities it adds, and the main styles it abstracts.
 
 ```css name=index.css
-@master;
-
 @master {
     root-size: 16;
     base-unit: 4;
@@ -118,7 +116,6 @@ This keeps the mental model small: the stylesheet that imports `@master/css` rec
 Variables are design tokens. In the project CSS entry, write them as native custom property declarations inside `@master`.
 
 ```css name=index.css
-@master;
 @master {
     --color-primary: #4f46e5;
     --color-panel: #ffffff;
@@ -139,7 +136,6 @@ Token names are contextual. `primary` resolves as a color in `bg:primary`, `sans
 Mode-specific values live in `@mode` blocks. `light` and `dark` are always available, and new modes are added when you define them.
 
 ```css name=index.css
-@master;
 @master {
     @mode light {
         --color-panel: #ffffff;
@@ -165,7 +161,6 @@ For deeper behavior, mode switching, default mode, and mode triggers, continue t
 Use `@custom-at` to name reusable `@media`, `@supports`, `@container`, and similar at-rules. This is useful when the condition has meaning in your product, not just in the browser syntax.
 
 ```css name=index.css
-@master;
 @master {
     @custom-at motion-safe @media (prefers-reduced-motion: no-preference);
     @custom-at supports-backdrop @supports (backdrop-filter: blur(0));
@@ -183,7 +178,6 @@ Use them in markup as at-rule suffixes:
 Inside CSS-defined main styles and general utilities, prefer `@at` blocks so the utility list stays plain.
 
 ```css name=index.css
-@master;
 @master {
     .toast {
         @at motion-safe {
@@ -201,7 +195,6 @@ See [At Tokens](/guide/at-tokens) for naming rules and conflict behavior.
 Use `@custom-selector` to name selectors that repeat across general utilities or main style definitions. The token keeps markup readable while the generated CSS still uses the real selector.
 
 ```css name=index.css
-@master;
 @master {
     @custom-selector :headings :is(h1, h2, h3, h4, h5, h6);
     @custom-selector :interactive :is(:hover, :focus-visible);
@@ -218,7 +211,6 @@ Use `@custom-selector` to name selectors that repeat across general utilities or
 Nested component selectors can use the same tokens:
 
 ```css name=index.css
-@master;
 @master {
     .link {
         &:interactive {
@@ -236,7 +228,6 @@ See [Selector Tokens](/guide/selector-tokens) for selector token usage in markup
 Use `@layer general` inside `@master` for reusable primitives that should behave like utility classes. These are not semantic components; they are low-level capabilities you want available everywhere. CSS-defined general utilities are static utilities: one class name maps to one set of native declarations.
 
 ```css name=index.css
-@master;
 @master {
     @layer general {
         .content-auto {
@@ -265,7 +256,6 @@ General utilities cannot use `@compose`. If the class describes a semantic UI pa
 Main styles are named style compositions for UI patterns such as `.btn`, `.card`, `.field`, and `.page`. They let you turn repeated class lists into project vocabulary without emitting unused CSS.
 
 ```css name=index.css
-@master;
 @master {
     .btn {
         @compose "inline-flex ai:center jc:center gap:xs px:md py:xs r:lg font:sm font:medium";
@@ -305,7 +295,6 @@ Use [Reusing Styles](/guide/reusing-styles) for the design strategy around when 
 Put keyframes in `@master`. They become config-backed animations and are emitted only when a generated class or declaration references them.
 
 ```css name=index.css
-@master;
 @master {
     @keyframes fade-in {
         from { opacity: 0; }
@@ -362,7 +351,6 @@ Root options live in the base `@master` block. They are the small set of decisio
 Most projects set these once near the top of the project CSS entry, then spend most of their time defining tokens, general utilities, and main styles below them.
 
 ```css name=index.css
-@master;
 @master {
     root-size: 16;
     base-unit: 4;
@@ -378,7 +366,6 @@ Use `root-size` when the project has a different root font-size convention. Mast
 <DocProp defaultValue="16" types={['number']} />
 
 ```css name=index.css
-@master;
 @master {
     root-size: 10;
 }
@@ -415,7 +402,6 @@ Use `scope` when Master CSS should only affect a specific application root, such
 <DocProp defaultValue="''" types={['string']} />
 
 ```css name=index.css
-@master;
 @master {
     scope: #app;
 }
@@ -433,7 +419,6 @@ Use `important` only when the surrounding cascade is hard to control, such as wh
 <DocProp defaultValue="false" types={['boolean']} />
 
 ```css name=index.css
-@master;
 @master {
     important;
 }
@@ -453,7 +438,6 @@ Use `default-mode` to decide which mode should also apply when no explicit mode 
 <DocProp defaultValue="'light'" types={["'light'", "'dark'", 'string', 'false']} />
 
 ```css name=index.css
-@master;
 @master {
     default-mode: light;
 }
@@ -462,7 +446,6 @@ Use `default-mode` to decide which mode should also apply when no explicit mode 
 Set it to `false` when the application should not attach any mode to `:root` by default.
 
 ```css name=index.css
-@master;
 @master {
     default-mode: false;
 }
@@ -474,7 +457,6 @@ Use `mode-trigger` to choose how mode-specific values are emitted. System-driven
 <DocProp defaultValue="'media'" types={["'media'", "'class'", "'host'"]} />
 
 ```css name=index.css
-@master;
 @master {
     mode-trigger: class;
 }
