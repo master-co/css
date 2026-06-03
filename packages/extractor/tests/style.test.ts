@@ -4,6 +4,7 @@ import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import CSSExtractor from '../src/core'
 import {
+    createStyleCSSHostSource,
     createMasterCSSPackageHostSource,
     createExtractedCSS,
     hasMasterNoShakeDirective,
@@ -116,6 +117,14 @@ describe('style CSS extraction helpers', () => {
         expect(result.removed).toBe(true)
         expect(result.code).not.toContain('@master no-shake;\n\n.card')
         expect(result.code).toContain('@media (min-width: 768px) {\n    @master shake;\n    @master no-shake;\n}')
+    })
+
+    it('treats an empty host source as an intentionally handled Master CSS import', () => {
+        const result = createStyleCSSHostSource('@import "@master/css";', {
+            masterSource: ''
+        })
+
+        expect(result).toBe('')
     })
 
     it('uses the managed CSS entry config and native CSS sources', async () => {

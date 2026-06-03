@@ -7,27 +7,20 @@ function pluginNames(mode?: PluginOptions['mode']) {
 }
 
 describe('masterCSS plugin composition', () => {
-    test.each(['runtime', 'pre-render', 'progressive', null] as const)('%s mode does not register extractor lifecycle plugins', (mode) => {
+    test.each(['runtime', 'extract', 'pre-render', 'progressive', null] as const)('%s mode registers the shared extractor and style entry pipeline', (mode) => {
         const names = pluginNames(mode)
 
-        expect(names).toContain('master-css:style-css')
-        expect(names).not.toContain('master-css:extractor')
-        expect(names).not.toContain('master-css:extract:css-import')
-        expect(names).not.toContain('master-css:static')
-        expect(names).not.toContain('master-css:static:css-import:hmr')
-        expect(names).not.toContain('master-css:static:css-slot:build')
-    })
-
-    test('extract mode owns the extractor lifecycle plugins', () => {
-        const names = pluginNames('extract')
-
-        expect(names).not.toContain('master-css:style-css')
+        expect(names.filter((name) => name === 'master-css:extractor')).toHaveLength(1)
+        expect(names.filter((name) => name === 'master-css:usage-graph')).toHaveLength(1)
+        expect(names.filter((name) => name === 'master-css:style-entry')).toHaveLength(1)
+        expect(names.filter((name) => name === 'master-css:style-entry:hmr')).toHaveLength(1)
+        expect(names.filter((name) => name === 'master-css:style-entry:build')).toHaveLength(1)
         expect(names).toEqual(expect.arrayContaining([
             'master-css:extractor',
-            'master-css:extract:css-import',
-            'master-css:static',
-            'master-css:static:css-import:hmr',
-            'master-css:static:css-slot:build'
+            'master-css:usage-graph',
+            'master-css:style-entry',
+            'master-css:style-entry:hmr',
+            'master-css:style-entry:build'
         ]))
     })
 })

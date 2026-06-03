@@ -11,7 +11,7 @@ function invalidateConfigModule(module: ModuleNode | undefined, server: ViteDevS
     return module.importers.size > 0
 }
 
-export function ConfigVirtualModulePlugin(
+export default function ConfigVirtualModulePlugin(
     options: PluginOptions,
     context: PluginContext
 ): Plugin {

@@ -19,11 +19,9 @@ import {
     replaceStyleCSSImports
 } from '@master/css-extractor/style'
 import {
-    findCSSConfigEntryFiles,
     hasMasterCSSConfigEntrypoint as hasMasterStyleEntrypoint
 } from '@master/css-configer/css'
 import type { PluginContext } from '../core'
-import { readFile } from 'node:fs/promises'
 import { getExtractor } from './extractor-context'
 
 export {
@@ -62,20 +60,4 @@ export async function registerStyleCSSSource(context: PluginContext, id: string,
     return registerExtractorStyleCSSSource(getExtractor(context), context.styleCSSSources, id, source, {
         projectDir: context.config?.root
     })
-}
-
-export async function registerStyleCSSEntries(context: PluginContext, pluginContext?: { addWatchFile?: (id: string) => void }) {
-    const projectDir = context.config?.root
-    if (!projectDir) return
-    context.styleCSSSources ??= new Map()
-    const allow = context.config?.server.fs.allow
-    const files = await findCSSConfigEntryFiles(projectDir)
-    for (const file of files) {
-        const source = await readFile(file, 'utf8')
-        const result = await registerStyleCSSSource(context, file, source)
-        for (const dependency of result.dependencies) {
-            if (allow && !allow.includes(dependency)) allow.push(dependency)
-            pluginContext?.addWatchFile?.(dependency)
-        }
-    }
 }

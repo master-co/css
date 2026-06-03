@@ -14,32 +14,11 @@ import {
 } from '../utils/style-css'
 import { getExtractor } from '../utils/extractor-context'
 
-export { replaceMasterCSSImport, replaceStyleCSSImports } from '../utils/style-css'
-
 const RESOLVED_VIRTUAL_CSS_ID = '\0' + VIRTUAL_CSS_ID
 
-export function StyleCSSPlugin(context: PluginContext): Plugin {
+export default function StyleEntryPlugin(_options: PluginOptions, context: PluginContext): Plugin {
     return {
-        name: 'master-css:style-css',
-        enforce: 'pre',
-        async transform(code, id) {
-            if (id.startsWith('\0')) return
-            if (!isStyleCSSRequest(id)) return
-            if (!hasMasterStyleEntrypoint(code)) return
-
-            if (!resolveMasterStyleSource(id, code, context.config?.root)) return
-
-            return {
-                code: removeMasterStyleDirectives(code).code,
-                map: null
-            }
-        }
-    }
-}
-
-export default function ExtractCSSPlugin(_options: PluginOptions, context: PluginContext): Plugin {
-    return {
-        name: 'master-css:extract:css-import',
+        name: 'master-css:style-entry',
         enforce: 'pre',
         resolveId(id) {
             if (id === VIRTUAL_CSS_ID || id === RESOLVED_VIRTUAL_CSS_ID) {
@@ -52,8 +31,7 @@ export default function ExtractCSSPlugin(_options: PluginOptions, context: Plugi
             context.virtualCSSImporters ??= new Set()
             context.virtualCSSImporters.add(RESOLVED_VIRTUAL_CSS_ID)
 
-            const isServe = context.config?.command === 'serve'
-            if (isServe) {
+            if (context.config?.command === 'serve') {
                 return await getExtractedCSS(context)
             }
 
@@ -64,7 +42,6 @@ export default function ExtractCSSPlugin(_options: PluginOptions, context: Plugi
             if (id.startsWith('\0')) return
             if (!isStyleCSSRequest(id)) return
             if (!hasMasterStyleEntrypoint(code)) return
-
             if (!resolveMasterStyleSource(id, code, context.config?.root)) return
 
             if (isMasterCSSPackageStyleFile(id, context.config?.root)) {

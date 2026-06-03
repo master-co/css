@@ -1,5 +1,5 @@
 /**
- * Regression tests for the C3 + C4 races in VirtualCSSHMRPlugin.
+ * Regression tests for the C3 + C4 races in StyleEntryHMRPlugin.
  *
  *  C3 — `tasks.concat(...)` does not mutate `tasks`. The original
  *       implementation discarded every promise returned by the
@@ -22,7 +22,7 @@
  */
 import { describe, test, expect, vi } from 'vitest'
 import { EventEmitter } from 'node:events'
-import VirtualCSSHMRPlugin from '../../src/plugins/virtual-css-hmr'
+import StyleEntryHMRPlugin from '../../src/plugins/style-entry-hmr'
 
 function makeExtractor() {
     const extractor = new EventEmitter() as unknown as Record<string, unknown> & EventEmitter
@@ -52,7 +52,7 @@ async function wait(ms: number) {
     await new Promise((r) => setTimeout(r, ms))
 }
 
-describe('VirtualCSSHMRPlugin (C3+C4 race fixes)', () => {
+describe('StyleEntryHMRPlugin (C3+C4 race fixes)', () => {
     test('C3: handleReset awaits prepare(), index.html re-insert, AND every module-graph re-insert', async () => {
         const extractor = makeExtractor()
         const insertCalls: string[] = []
@@ -76,7 +76,7 @@ describe('VirtualCSSHMRPlugin (C3+C4 race fixes)', () => {
             ],
         })
 
-        const plugin = VirtualCSSHMRPlugin({} as any, { extractor } as any)
+        const plugin = StyleEntryHMRPlugin({} as any, { extractor } as any)
         ;(plugin as any).configureServer.call({}, server as any)
         ;(plugin as any).buildStart.call({})
 
@@ -117,7 +117,7 @@ describe('VirtualCSSHMRPlugin (C3+C4 race fixes)', () => {
         extractor.prepare = prepareSpy
 
         const server = makeServer()
-        const plugin = VirtualCSSHMRPlugin({} as any, { extractor } as any)
+        const plugin = StyleEntryHMRPlugin({} as any, { extractor } as any)
         ;(plugin as any).configureServer.call({}, server as any)
         ;(plugin as any).buildStart.call({})
 
@@ -148,7 +148,7 @@ describe('VirtualCSSHMRPlugin (C3+C4 race fixes)', () => {
         server.reloadModule = reloadSpy
         ;(server.moduleGraph as any).getModuleById = (id: string) => id === '/style.css' ? cssModule : null
 
-        const plugin = VirtualCSSHMRPlugin({} as any, {
+        const plugin = StyleEntryHMRPlugin({} as any, {
             extractor,
             virtualCSSImporters: new Set(['/style.css'])
         } as any)
@@ -173,7 +173,7 @@ describe('VirtualCSSHMRPlugin (C3+C4 race fixes)', () => {
         const server = makeServer()
         ;(server.moduleGraph as any).getModuleById = (id: string) => id === '/style.css' ? cssModule : null
 
-        const plugin = VirtualCSSHMRPlugin({} as any, {
+        const plugin = StyleEntryHMRPlugin({} as any, {
             extractor,
             virtualCSSImporters: new Set(['/style.css']),
         } as any)
@@ -196,7 +196,7 @@ describe('VirtualCSSHMRPlugin (C3+C4 race fixes)', () => {
         extractor.prepare = prepareSpy
 
         const server = makeServer()
-        const plugin = VirtualCSSHMRPlugin({} as any, { extractor } as any)
+        const plugin = StyleEntryHMRPlugin({} as any, { extractor } as any)
         ;(plugin as any).configureServer.call({}, server as any)
         ;(plugin as any).buildStart.call({})
 
@@ -241,7 +241,7 @@ describe('VirtualCSSHMRPlugin (C3+C4 race fixes)', () => {
         const cssModule = { file: '/style.css' }
         ;(server.moduleGraph as any).getModuleById = (id: string) => id === '/style.css' ? cssModule : null
 
-        const plugin = VirtualCSSHMRPlugin({} as any, {
+            const plugin = StyleEntryHMRPlugin({} as any, {
             extractor,
             virtualCSSImporters: new Set(['/style.css'])
         } as any)

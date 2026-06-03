@@ -2,22 +2,8 @@ import CSSExtractor from '@master/css-extractor'
 import type { Plugin } from 'vite'
 import type { PluginContext } from '../core'
 import type { PluginOptions } from '../options'
-import { getExtractor } from '../utils/extractor-context'
 
-// File extensions Vite is expected to feed through `transform`. Mirrors the
-// extractor's default include glob and is the universe of files that can
-// realistically contain Master CSS class strings. Limiting the transform
-// hook to this allow-list avoids pumping every .json / image-as-module /
-// virtual chunk through the regex-heavy `extractLatentClasses`. The trailing
-// `(?:\?|$)` lets through Vite's `?import` / `?url` / `?raw` suffixes.
-export const EXTRACTABLE_EXT = /\.(html|js|jsx|mjs|cjs|ts|tsx|mts|cts|svelte|astro|vue|md|mdx|pug|php)(?:\?|$)/
-const STYLE_QUERY = /[?&]type=style(?:&|$)/
-
-export function isExtractableSource(id: string) {
-    return EXTRACTABLE_EXT.test(id) && !STYLE_QUERY.test(id)
-}
-
-export function ExtractorPlugin(options: PluginOptions, context: PluginContext): Plugin {
+export default function ExtractorPlugin(options: PluginOptions, context: PluginContext): Plugin {
     return {
         name: 'master-css:extractor',
         enforce: 'pre',
@@ -45,35 +31,5 @@ export function ExtractorPlugin(options: PluginOptions, context: PluginContext):
                 extractor.options.include = []
             }
         },
-    }
-}
-
-export function UsageGraphPlugin(_options: PluginOptions, context: PluginContext): Plugin {
-    return {
-        name: 'master-css:static',
-        enforce: 'pre',
-        apply(_, env) {
-            return !env.isSsrBuild
-        },
-        async buildStart() {
-            await getExtractor(context).prepare()
-        },
-        async transform(code, id) {
-            if (id.startsWith('\0')) return
-            // Only feed Master-CSS-bearing source extensions to the extractor.
-            // Linked CSS files are handled by the stylesheet plugin instead.
-            if (!isExtractableSource(id)) return
-            await getExtractor(context).insert(id, code)
-        },
-        transformIndexHtml: {
-            order: 'pre',
-            handler: async (html, { filename, server }) => {
-                if (server) return
-                await getExtractor(context).insert(filename, html)
-            }
-        },
-        async configureServer(server) {
-            await server.waitForRequestsIdle()
-        }
     }
 }

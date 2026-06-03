@@ -15,9 +15,9 @@ function replaceSlotCSSRule(source: string, slotCSSRule: string, realCSS: string
     return { source: nextSource, replaced }
 }
 
-export default function VirtualCSSModulePlugin(_options: PluginOptions, context: PluginContext): Plugin {
+export default function StyleEntryBuildPlugin(_options: PluginOptions, context: PluginContext): Plugin {
     return {
-        name: 'master-css:static:css-slot:build',
+        name: 'master-css:style-entry:build',
         enforce: 'pre',
         apply: 'build',
         async generateBundle(_options, bundle) {
@@ -45,11 +45,11 @@ export default function VirtualCSSModulePlugin(_options: PluginOptions, context:
             // plugin or minifier likely rewrote or dropped the internal slot.
             if (context.virtualCSSPlaceholderEmitted && !replacedAny && realCSS.length > 0) {
                 this.warn(
-                    `[master-css.vite] Could not splice extracted CSS into any bundle asset. ` +
+                    `[master-css.vite] Could not splice managed style CSS into any bundle asset. ` +
                     `The placeholder "${slotCSSRule}" was emitted but no CSS chunk in the final ` +
                     `bundle still contained it — Vite's downstream CSS pipeline (a PostCSS ` +
                     `plugin in your vite config, the bundler's CSS minifier, etc.) most likely ` +
-                    `rewrote or dropped it. The output will be missing all extracted classes.`
+                    `rewrote or dropped it. The output will be missing Master CSS output.`
                 )
             }
         }

@@ -15,7 +15,7 @@ function invalidateConfigModule(module: ModuleNode | undefined, server: ViteDevS
     return module.importers.size > 0
 }
 
-export function ConfigLoaderPlugin(context: PluginContext): Plugin {
+export default function ConfigLoaderPlugin(context: PluginContext): Plugin {
     const cssConfigDependencies = new Map<string, string[]>()
     const addServerAllow = (paths: string[]) => {
         const allow = context.config?.server.fs.allow

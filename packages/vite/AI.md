@@ -2,12 +2,20 @@
 
 ## Responsibility
 
-`@master/css.vite` integrates Master CSS into Vite. It supports `runtime`, `extract`, `pre-render`, and `progressive` modes, handles config virtual modules, injects runtime/virtual CSS imports, avoids FOUC, and pre-renders HTML.
+`@master/css.vite` integrates Master CSS into Vite. It supports `runtime`, `extract`, `pre-render`, and `progressive` modes, handles config virtual modules, maintains the shared extractor usage graph, manages stylesheet entries, injects runtime/virtual CSS imports, avoids FOUC, and pre-renders HTML.
 
 ## Inputs And Outputs
 
 - Input: Vite config, plugin options, entry modules, HTML, source transforms.
 - Output: Vite plugins, transformed entry code, virtual modules, generated CSS assets, pre-rendered HTML.
+
+## Architecture Notes
+
+- The extractor lifecycle is shared by every mode. It collects class usage and supports native CSS shaking regardless of whether the mode emits generated utilities.
+- `extract` mode differs by setting `includeGeneratedCSS`; the style entry pipeline is not extract-only.
+- `virtual:master-css-config` is the project-level Config API. It must not manage stylesheet output or extractor usage.
+- The style entry plugin only handles CSS files that Vite imports. Do not scan the workspace here to discover unimported CSS config entries.
+- Each file in `src/plugins` should define one plugin and default-export it.
 
 ## Public APIs
 

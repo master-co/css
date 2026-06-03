@@ -1,27 +1,19 @@
 import type CSSExtractor from '@master/css-extractor'
 import type { StyleCSSSources } from '@master/css-extractor/style'
 import type { Plugin, ResolvedConfig } from 'vite'
-import fg from 'fast-glob'
-import { ENTRY_MODULE_PATTERNS } from './common'
-import { ConfigLoaderPlugin } from './plugins/config-loader'
-import { ConfigVirtualModulePlugin } from './plugins/config-virtual-module'
-import path from 'path'
-import { readFileSync } from 'fs'
-import { fileURLToPath } from 'url'
+import ConfigLoaderPlugin from './plugins/config-loader'
+import ConfigVirtualModulePlugin from './plugins/config-virtual-module'
 import ExtractMode from './modes/extract'
 import RuntimeMode from './modes/runtime'
 import ProgressiveMode from './modes/progressive'
 import PreRenderMode from './modes/pre-render'
-import { StyleCSSPlugin } from './plugins/virtual-css-import'
+import ResolveContextPlugin from './plugins/resolve-context'
+import ExtractorPlugin from './plugins/extractor'
+import UsageGraphPlugin from './plugins/usage-graph'
+import StyleEntryPlugin from './plugins/style-entry'
+import StyleEntryHMRPlugin from './plugins/style-entry-hmr'
+import StyleEntryBuildPlugin from './plugins/style-entry-build'
 import defaultPluginOptions, { PluginOptions } from './options'
-
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
-
-const pkg = JSON.parse(
-    readFileSync(path.join(__dirname, '../package.json'), 'utf-8')
-)
-const version = 'v' + (pkg.version || '0.0.0')
 
 export interface PluginContext {
     config?: ResolvedConfig
@@ -38,28 +30,16 @@ export default function masterCSS(options?: PluginOptions): Plugin[] {
     const context = {
         includeGeneratedCSS: options.mode === 'extract'
     } as PluginContext
-    const ResolveContextPlugin = () => {
-        return {
-            name: 'master-css:resolve-context',
-            enforce: 'pre',
-            configResolved(config) {
-                context.config = config
-                context.entryId = fg.sync(ENTRY_MODULE_PATTERNS, { cwd: config.root, absolute: true, onlyFiles: true, caseSensitiveMatch: false })[0]
-                if (process.env.DEBUG) {
-                    console.log(`[@master/css.vite] mode: ${options.mode}`)
-                    console.log(`[@master/css.vite] entry: ${context.entryId || 'none'}`)
-                }
-            },
-        } as Plugin
-    }
     const plugins: Plugin[] = [
-        ResolveContextPlugin(),
+        ResolveContextPlugin(options, context),
         ConfigVirtualModulePlugin(options, context),
-        ConfigLoaderPlugin(context)
+        ConfigLoaderPlugin(context),
+        ExtractorPlugin(options, context),
+        UsageGraphPlugin(options, context),
+        StyleEntryPlugin(options, context),
+        StyleEntryHMRPlugin(options, context),
+        StyleEntryBuildPlugin(options, context)
     ]
-    if (options.mode !== 'extract') {
-        plugins.push(StyleCSSPlugin(context))
-    }
     switch (options.mode) {
         case 'runtime':
             plugins.push(...RuntimeMode(options, context))

@@ -278,6 +278,7 @@ function isStyleCSSHostImport(importSource: string, masterImport: string) {
 export function createStyleCSSHostSource(source: string, options: CreateStyleCSSHostSourceOptions = {}) {
     const masterImport = options.masterImport || '@master/css'
     const masterSource = options.masterSource
+    const hasMasterSource = Object.prototype.hasOwnProperty.call(options, 'masterSource')
     const cleanSource = removeMasterStyleDirectives(source).code
     const imports = findImportStatements(cleanSource)
     const preservedImports: string[] = []
@@ -285,7 +286,7 @@ export function createStyleCSSHostSource(source: string, options: CreateStyleCSS
         const importSource = parseCSSImportSource(importStatement.statement)
         if (!importSource) continue
         if (importSource === VIRTUAL_CSS_ID || normalizeStyleCSSModuleIds().has(importSource)) {
-            if (!masterSource && isStyleCSSHostImport(importSource, masterImport)) {
+            if (!hasMasterSource && isStyleCSSHostImport(importSource, masterImport)) {
                 preservedImports.push(importStatement.statement.trim())
             }
             continue
@@ -294,8 +295,10 @@ export function createStyleCSSHostSource(source: string, options: CreateStyleCSS
             preservedImports.push(importStatement.statement.trim())
         }
     }
-    if (masterSource) {
-        preservedImports.unshift(masterSource)
+    if (hasMasterSource) {
+        if (masterSource) {
+            preservedImports.unshift(masterSource)
+        }
     } else if (!preservedImports.some((statement) => {
         const importSource = parseCSSImportSource(statement)
         return importSource && isStyleCSSHostImport(importSource, masterImport)

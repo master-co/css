@@ -1,5 +1,5 @@
 /**
- * Tests for the D1 fix in VirtualCSSModulePlugin (the build-mode plugin
+ * Tests for the D1 fix in StyleEntryBuildPlugin (the build-mode plugin
  * that swaps the slot CSS placeholder for the real extracted CSS).
  *
  * D1 — `generateBundle` previously did a literal `String.replace()` on
@@ -18,7 +18,8 @@
  *     runtime against a blank page.
  */
 import { describe, test, expect, vi } from 'vitest'
-import VirtualCSSModulePlugin from '../../src/plugins/virtual-css-module'
+import StyleEntryBuildPlugin from '../../src/plugins/style-entry-build'
+import StyleEntryPlugin from '../../src/plugins/style-entry'
 import { mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
@@ -50,10 +51,10 @@ function makeBundle(entries: Record<string, string>) {
 const SLOT = '#master-css-slot{--slot:0}'
 const REAL_CSS = '.bg\\:white{background-color:white}.fg\\:black{color:black}'
 
-describe('VirtualCSSModulePlugin (D1 placeholder-leak warn)', () => {
+describe('StyleEntryBuildPlugin (D1 placeholder-leak warn)', () => {
     test('replaces placeholder when present and does NOT warn', async () => {
         const ctx = makeContext(SLOT, REAL_CSS)
-        const plugin = VirtualCSSModulePlugin({} as any, ctx)
+        const plugin = StyleEntryBuildPlugin({} as any, ctx)
         const warn = vi.fn()
 
         ctx.virtualCSSPlaceholderEmitted = true
@@ -70,7 +71,7 @@ describe('VirtualCSSModulePlugin (D1 placeholder-leak warn)', () => {
 
     test('deduplicates duplicate placeholder occurrences in the same CSS asset', async () => {
         const ctx = makeContext(SLOT, REAL_CSS)
-        const plugin = VirtualCSSModulePlugin({} as any, ctx)
+        const plugin = StyleEntryBuildPlugin({} as any, ctx)
         const warn = vi.fn()
 
         ctx.virtualCSSPlaceholderEmitted = true
@@ -89,7 +90,7 @@ describe('VirtualCSSModulePlugin (D1 placeholder-leak warn)', () => {
 
     test('keeps one extracted CSS copy per CSS asset', async () => {
         const ctx = makeContext(SLOT, REAL_CSS)
-        const plugin = VirtualCSSModulePlugin({} as any, ctx)
+        const plugin = StyleEntryBuildPlugin({} as any, ctx)
         const warn = vi.fn()
 
         ctx.virtualCSSPlaceholderEmitted = true
@@ -107,7 +108,7 @@ describe('VirtualCSSModulePlugin (D1 placeholder-leak warn)', () => {
 
     test('warns when placeholder was emitted but no CSS asset still contains it', async () => {
         const ctx = makeContext(SLOT, REAL_CSS)
-        const plugin = VirtualCSSModulePlugin({} as any, ctx)
+        const plugin = StyleEntryBuildPlugin({} as any, ctx)
         const warn = vi.fn()
 
         ctx.virtualCSSPlaceholderEmitted = true
@@ -121,7 +122,7 @@ describe('VirtualCSSModulePlugin (D1 placeholder-leak warn)', () => {
 
         expect(warn).toHaveBeenCalledTimes(1)
         const msg = warn.mock.calls[0][0] as string
-        expect(msg).toContain('Could not splice extracted CSS')
+        expect(msg).toContain('Could not splice managed style CSS')
         expect(msg).toContain(SLOT)
     })
 
@@ -129,7 +130,7 @@ describe('VirtualCSSModulePlugin (D1 placeholder-leak warn)', () => {
         // No extracted CSS to splice in, no placeholder ever emitted →
         // generateBundle must be a quiet no-op.
         const ctx = makeContext(SLOT, REAL_CSS)
-        const plugin = VirtualCSSModulePlugin({} as any, ctx)
+        const plugin = StyleEntryBuildPlugin({} as any, ctx)
         const warn = vi.fn()
 
         const bundle = makeBundle({
@@ -145,7 +146,7 @@ describe('VirtualCSSModulePlugin (D1 placeholder-leak warn)', () => {
         // was extracted (e.g. config-only project). Warning here would be
         // noise — there's nothing to splice anyway.
         const ctx = makeContext(SLOT, '')
-        const plugin = VirtualCSSModulePlugin({} as any, ctx)
+        const plugin = StyleEntryBuildPlugin({} as any, ctx)
         const warn = vi.fn()
 
         ctx.virtualCSSPlaceholderEmitted = true
@@ -160,7 +161,7 @@ describe('VirtualCSSModulePlugin (D1 placeholder-leak warn)', () => {
 
     test('only treats `type: asset` chunks (skips `chunk` entries)', async () => {
         const ctx = makeContext(SLOT, REAL_CSS)
-        const plugin = VirtualCSSModulePlugin({} as any, ctx)
+        const plugin = StyleEntryBuildPlugin({} as any, ctx)
         const warn = vi.fn()
         ctx.virtualCSSPlaceholderEmitted = true
 
@@ -179,7 +180,7 @@ describe('VirtualCSSModulePlugin (D1 placeholder-leak warn)', () => {
         const root = mkdtempSync(path.join(tmpdir(), 'master-css-vite-'))
         try {
             const entryPath = path.join(root, 'app.css')
-            writeFileSync(entryPath, `
+            const source = `
                 @master;
 
                 body {
@@ -196,9 +197,11 @@ describe('VirtualCSSModulePlugin (D1 placeholder-leak warn)', () => {
                         display: inline-flex;
                     }
                 }
-            `)
+            `
+            writeFileSync(entryPath, source)
             const ctx = makeContext(SLOT, '')
             ctx.config = {
+                command: 'build',
                 root,
                 server: {
                     fs: {
@@ -209,9 +212,11 @@ describe('VirtualCSSModulePlugin (D1 placeholder-leak warn)', () => {
             ctx.extractor.validClasses = new Set(['btn'])
             ctx.extractor.usedNativeClasses = new Set(['native-card'])
             ctx.extractor.options.includeClasses = []
-            const plugin = VirtualCSSModulePlugin({} as any, ctx)
+            const styleEntryPlugin = StyleEntryPlugin({ mode: 'extract' } as any, ctx)
+            const plugin = StyleEntryBuildPlugin({} as any, ctx)
             const warn = vi.fn()
-            ctx.virtualCSSPlaceholderEmitted = true
+
+            await (styleEntryPlugin as any).transform.call({ addWatchFile: vi.fn() }, source, entryPath)
 
             const bundle = makeBundle({
                 'assets/index-abc.css': SLOT,
@@ -233,7 +238,7 @@ describe('VirtualCSSModulePlugin (D1 placeholder-leak warn)', () => {
         const root = mkdtempSync(path.join(tmpdir(), 'master-css-vite-'))
         try {
             const entryPath = path.join(root, 'app.css')
-            writeFileSync(entryPath, `
+            const source = `
                 @master;
 
                 .native-used,
@@ -248,9 +253,11 @@ describe('VirtualCSSModulePlugin (D1 placeholder-leak warn)', () => {
                         display: grid;
                     }
                 }
-            `)
+            `
+            writeFileSync(entryPath, source)
             const ctx = makeContext(SLOT, '')
             ctx.config = {
+                command: 'build',
                 root,
                 server: {
                     fs: {
@@ -260,9 +267,11 @@ describe('VirtualCSSModulePlugin (D1 placeholder-leak warn)', () => {
             }
             ctx.extractor.latentClasses = new Set(['btn', 'native-used'])
 
-            const plugin = VirtualCSSModulePlugin({} as any, ctx)
+            const styleEntryPlugin = StyleEntryPlugin({ mode: 'extract' } as any, ctx)
+            const plugin = StyleEntryBuildPlugin({} as any, ctx)
             const warn = vi.fn()
-            ctx.virtualCSSPlaceholderEmitted = true
+
+            await (styleEntryPlugin as any).transform.call({ addWatchFile: vi.fn() }, source, entryPath)
 
             const bundle = makeBundle({
                 'assets/index-abc.css': SLOT,

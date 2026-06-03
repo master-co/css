@@ -1,5 +1,5 @@
 /**
- * Tests for the C7 + C8 fixes to Vite's shared extractor plugins.
+ * Tests for the C7 + C8 fixes to Vite's shared extractor lifecycle.
  *
  *  C7 — `master-css:extractor.configResolved` previously did
  *       `context.extractor.options.include = []` unconditionally,
@@ -7,7 +7,7 @@
  *       `extractor: { include: [...] }` option. Now only
  *       blanked when the user did NOT pass one.
  *
- *  C8 — `master-css:static.transform` accepted every non-`.css` module
+ *  C8 — `master-css:usage-graph.transform` accepted every non-`.css` module
  *       — including `.json`, `?import` / `?url` query requests, and
  *       binary-asset shim modules — pumping noise through the extractor.
  *       Now restricted to a file-extension allow-list mirroring the
@@ -16,7 +16,8 @@
  * Both fixes preserve the current PluginOptions surface.
  */
 import { describe, test, expect, vi, beforeEach } from 'vitest'
-import { ExtractorPlugin, UsageGraphPlugin } from '../../src/plugins/extractor'
+import ExtractorPlugin from '../../src/plugins/extractor'
+import UsageGraphPlugin from '../../src/plugins/usage-graph'
 
 vi.mock('@master/css-extractor', () => {
     // Lightweight stand-in for CSSExtractor that records calls without
@@ -102,9 +103,9 @@ describe('shared extractor plugins (C7 + C8 fixes)', () => {
                 UsageGraphPlugin({} as any, ctx)
             ]
             await findPlugin(plugins, 'master-css:extractor').configResolved.call({}, fakeViteConfig)
-            const staticPlugin = findPlugin(plugins, 'master-css:static')
+            const usageGraphPlugin = findPlugin(plugins, 'master-css:usage-graph')
             for (const id of ids) {
-                await staticPlugin.transform.call({}, '<div class="bg:white">x</div>', id)
+                await usageGraphPlugin.transform.call({}, '<div class="bg:white">x</div>', id)
             }
             return ctx.extractor.insertCalls
         }
@@ -186,9 +187,9 @@ describe('shared extractor plugins (C7 + C8 fixes)', () => {
                 UsageGraphPlugin({} as any, ctx)
             ]
             await findPlugin(plugins, 'master-css:extractor').configResolved.call({}, fakeViteConfig)
-            const staticPlugin = findPlugin(plugins, 'master-css:static')
+            const usageGraphPlugin = findPlugin(plugins, 'master-css:usage-graph')
 
-            await staticPlugin.transformIndexHtml.handler.call(
+            await usageGraphPlugin.transformIndexHtml.handler.call(
                 {},
                 '<div class="page"></div>',
                 { filename: '/proj/index.html' }
@@ -204,9 +205,9 @@ describe('shared extractor plugins (C7 + C8 fixes)', () => {
                 UsageGraphPlugin({} as any, ctx)
             ]
             await findPlugin(plugins, 'master-css:extractor').configResolved.call({}, fakeViteConfig)
-            const staticPlugin = findPlugin(plugins, 'master-css:static')
+            const usageGraphPlugin = findPlugin(plugins, 'master-css:usage-graph')
 
-            await staticPlugin.transformIndexHtml.handler.call(
+            await usageGraphPlugin.transformIndexHtml.handler.call(
                 {},
                 '<div class="page"></div>',
                 { filename: '/proj/index.html', server: {} }

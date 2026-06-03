@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 import path from 'node:path'
-import { ConfigVirtualModulePlugin } from '../../src/plugins/config-virtual-module'
+import ConfigVirtualModulePlugin from '../../src/plugins/config-virtual-module'
 import {
     RESOLVED_VIRTUAL_CONFIG_ID
 } from '../../src/common'
