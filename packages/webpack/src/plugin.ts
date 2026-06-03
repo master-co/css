@@ -98,10 +98,6 @@ export class MasterCSSPlugin {
         return this.extractor.config
     }
 
-    get resolvedConfigPath() {
-        return this.extractor.resolvedConfigPath
-    }
-
     get slotCSSRule() {
         return this.extractor.slotCSSRule
     }

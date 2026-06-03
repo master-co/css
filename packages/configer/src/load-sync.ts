@@ -1,15 +1,14 @@
-import { createRequire } from 'node:module'
 import { extname } from 'node:path'
 import {
-    createCSSConfigLoader,
-    type CompileCSSFile,
-    type CSSDirectiveConfigAdapter
-} from 'shared/css-config-loader'
+    compileCSSConfigFile,
+    compileCSSConfigModule,
+    compileProjectConfig,
+    compileProjectConfigModule
+} from '@master/css-compiler'
 import type { Config } from 'shared/css-config'
 import {
-    stripResourceQuery,
-    toConfigModuleResult,
-    type CSSConfigModuleResult
+    type CSSConfigModuleResult,
+    stripResourceQuery
 } from 'shared/css-config-module'
 import {
     type LoadConfigOptions,
@@ -17,8 +16,7 @@ import {
     type LoadProjectConfigOptions,
     type LoadProjectConfigResult
 } from './options'
-import { compileCSSConfigFile, findCSSConfigEntryFilesSync } from './css'
-import { compileProjectConfigEntries } from './project'
+import { findCSSConfigEntryFilesSync } from './css'
 
 export type {
     LoadConfigOptions,
@@ -29,50 +27,32 @@ export type {
 
 export type ConfigModuleResult = CSSConfigModuleResult<Config>
 
-const require = createRequire(import.meta.url)
-
-function loadCompileCSSSync() {
-    const { compileCSS } = require('@master/css-compiler') as typeof import('@master/css-compiler')
-    return ((path, options) => compileCSSConfigFile(compileCSS, path, options)) as CompileCSSFile
-}
-
-function loadCSSDirectiveConfigAdapterSync(options: LoadConfigOptions = {}) {
-    if (options.createConfigFromCSSDirectives) return options.createConfigFromCSSDirectives
-    const module = require('@master/css/create-config-from-css-directives') as {
-        default: CSSDirectiveConfigAdapter<Config>
-    }
-    return module.default
-}
-
-function loadCSSConfigSync(path: string, options: LoadConfigOptions = {}): LoadConfigResult {
-    const createConfigFromCSSDirectives = loadCSSDirectiveConfigAdapterSync(options)
-    return createCSSConfigLoader({
-        compileCSSFile: loadCompileCSSSync(),
-        createConfigFromCSSDirectives
-    }).loadCSSConfig(path, options)
-}
-
 export function loadConfigSync(path: string, options: LoadConfigOptions = {}): LoadConfigResult {
     if (extname(stripResourceQuery(path)) === '.css') {
-        return loadCSSConfigSync(path, options)
+        return compileCSSConfigFile(stripResourceQuery(path), options)
     }
     throw new TypeError('Master CSS config modules can only be loaded from CSS files.')
 }
 
 export function loadConfigModuleSync(path: string, options: LoadConfigOptions = {}): ConfigModuleResult {
-    return toConfigModuleResult(loadConfigSync(stripResourceQuery(path), options))
+    if (extname(stripResourceQuery(path)) === '.css') {
+        return compileCSSConfigModule(stripResourceQuery(path), options)
+    }
+    throw new TypeError('Master CSS config modules can only be loaded from CSS files.')
 }
 
 export function loadProjectConfigSync(projectDir = process.cwd(), options: LoadProjectConfigOptions = {}): LoadProjectConfigResult {
     const entries = options.entries ?? findCSSConfigEntryFilesSync(projectDir)
-    return compileProjectConfigEntries(
-        entries,
-        loadCompileCSSSync(),
-        loadCSSDirectiveConfigAdapterSync(options),
-        options
-    )
+    return compileProjectConfig(entries, {
+        ...options,
+        root: projectDir
+    })
 }
 
 export function loadProjectConfigModuleSync(projectDir = process.cwd(), options: LoadProjectConfigOptions = {}) {
-    return toConfigModuleResult(loadProjectConfigSync(projectDir, options))
+    const entries = options.entries ?? findCSSConfigEntryFilesSync(projectDir)
+    return compileProjectConfigModule(entries, {
+        ...options,
+        root: projectDir
+    })
 }

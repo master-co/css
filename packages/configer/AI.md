@@ -2,7 +2,7 @@
 
 ## Responsibility
 
-This package resolves Master CSS project-level CSS config entries, workspace roots, CSS import graphs, explicit CSS config resources, and Master CSS config virtual-module/query helpers. CSS configs are loaded by wiring `@master/css-compiler` and the core CSS directive adapter into the dependency-free loader factory from `shared`; local relative CSS imports and `@master/css` package CSS entry imports are resolved without making the compiler depend on `@master/css`.
+This package resolves Master CSS project-level CSS config entries, workspace roots, explicit CSS config resources, and Master CSS config virtual-module/query helpers. CSS configs are loaded by delegating CSS parsing, import graph resolution, and semantic config compilation to `@master/css-compiler`.
 
 ## Main Files
 
@@ -17,6 +17,7 @@ This package resolves Master CSS project-level CSS config entries, workspace roo
 - CSS config loading affects ESLint, language tooling, Vite, Webpack, Next, Nuxt, CLI, and framework query loaders.
 - `?master-css-config` module source must stay dependency-free at the `shared` boundary.
 - Project config discovery should stay here, not in extractor, ESLint, language-server, or individual build integrations.
+- Configer must not implement CSS import graph resolution or `@master {}` parsing.
 
 ## Rules
 
@@ -26,7 +27,8 @@ This package resolves Master CSS project-level CSS config entries, workspace roo
 - `loadConfig()` and `loadConfigSync()` only accept CSS resources. JS/TS path config loading is intentionally unsupported.
 - Preserve CSS config dependency reporting for Vite watch/HMR.
 - Re-export `?master-css-config` query helpers and virtual module id helpers from `@master/css-configer/module`; keep their dependency-free implementation in `shared`.
-- Do not hardcode package CSS dependency filenames such as `base.css`, `theme.css`, or `utilities.css`; resolve the `@master/css` CSS entry and derive dependencies from the CSS import graph.
+- Entry discovery only checks top-level project markers: `@master;` and `@import "@master/css"`. Do not treat `@master shake;`, `@master no-shake;`, imported `@master {}` blocks, or package CSS files as independent project entries.
+- Do not hardcode package CSS dependency filenames such as `base.css`, `theme.css`, or `utilities.css`; import graph dependencies come from the compiler result.
 
 ## Validation
 

@@ -1,7 +1,6 @@
 import { loadConfigModuleSync } from '@master/css-configer/load-sync'
 import { loadProjectConfig } from '@master/css-configer/load'
 import { toConfigModule } from '@master/css-configer/module'
-import createConfigFromCSSDirectives from '@master/css/create-config-from-css-directives'
 import type { Config } from 'shared/css-config'
 import { extname } from 'node:path'
 import { stripResourceQuery } from 'shared/css-config-module'
@@ -27,8 +26,7 @@ function getConfig(options?: MasterCSSConfigLoaderOptions) {
 async function loadVirtualConfigModule(context: LoaderContext, config?: Config) {
     const projectDir = context.rootContext || process.cwd()
     const result = await loadProjectConfig(projectDir, {
-        config,
-        createConfigFromCSSDirectives
+        config
     })
     for (const dependency of result.dependencies) {
         context.addDependency?.(dependency)
@@ -41,9 +39,7 @@ function loadCSSConfigModule(context: LoaderContext) {
     if (extname(stripResourceQuery(resourcePath)) !== '.css') {
         throw new TypeError('Master CSS config queries only support CSS entry files.')
     }
-    const result = loadConfigModuleSync(resourcePath, {
-        createConfigFromCSSDirectives
-    })
+    const result = loadConfigModuleSync(resourcePath)
     for (const dependency of result.dependencies) {
         context.addDependency?.(dependency)
     }

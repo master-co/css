@@ -45,10 +45,12 @@ describe('style CSS extraction helpers', () => {
         expect(hasMasterStyleEntrypoint('@master { --color-primary: red; }')).toBe(false)
         expect(hasMasterStyleEntrypoint('@import "./other.css";')).toBe(false)
         expect(isMasterStyleSource('@master { --color-primary: red; }')).toBe(false)
-        expect(isMasterStyleSource('@import "@master/css";')).toBe(false)
+        expect(isMasterStyleSource('@import "@master/css";')).toBe(true)
         expect(isMasterStyleSource(resolveStyleCSSImportGraph(
             join(createFixture(), 'app/globals.css'),
-            '@import "@master/css";'
+            '@import "@master/css";',
+            undefined,
+            { expandMasterCSSPackage: false }
         ).source)).toBe(true)
         expect(isMasterStyleSource('@import "virtual:master-utilities.css";')).toBe(false)
         expect(isMasterStyleSource('@import "master.css";')).toBe(false)
@@ -66,7 +68,8 @@ describe('style CSS extraction helpers', () => {
             root
         )
 
-        expect(result?.source).toContain('@master;')
+        expect(result?.source).toContain('@layer base')
+        expect(result?.source).not.toContain('@master;')
         expect(result?.dependencies).toContain(join(root, 'app/globals.css'))
         expect(result?.dependencies.filter((dependency) => !dependency.startsWith(root)).length).toBeGreaterThan(0)
         expect(resolveMasterStyleSource(

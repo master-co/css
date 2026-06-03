@@ -5,7 +5,7 @@
 | Package | Entry Points | Responsibility |
 |---|---|---|
 | `@master/css` | `.`, `./index.css`, `./normal.css`, `./*` | Core engine, config, rules, types, utilities, default stylesheet |
-| `@master/css-compiler` | `.` | Compile CSS-defined Master config and native CSS |
+| `@master/css-compiler` | `.` | Compile Master CSS stylesheet entries into semantic config, directive metadata, and native CSS |
 | `@master/css-runtime` | `.` | Browser runtime, DOM observation, hydration |
 | `@master/css-server` | `.` | HTML render and CSS injection |
 | `@master/css-extractor` | `.`, `./options`, `./style` | Static class extraction, CSS output, and extraction-specific stylesheet helpers |
@@ -26,13 +26,13 @@
 | `@master/eslint-config-css` | `.` | ESLint config wrapper |
 | `@master/css-cli` | `mcss`, `mastercss` | Extract and render CLI |
 | `@master/create-css` | bin | Config/app scaffolding |
-| `@master/css-configer` | `./css`, `./load`, `./load-sync`, `./module` | Resolve project CSS config entries, workspace roots, CSS config graphs, query modules, and virtual config modules |
+| `@master/css-configer` | `./css`, `./load`, `./load-sync`, `./module` | Resolve project CSS config entries, workspace roots, query modules, and virtual config modules |
 | `@master/css-devtools-hook` | `.` | Runtime event hook |
 | `@master/css.figma` | plugin bundle | Figma variable import/export |
 
 ## Dependency Direction
 
-Do not introduce reverse dependencies from core to integrations, runtime, server, extractor, language service, ESLint, examples, or site.
+Do not introduce reverse dependencies from core to compiler, integrations, runtime, server, extractor, language service, ESLint, examples, or site. The compiler may depend on core to convert CSS directive results into semantic `Config` values.
 
 ## Package Tests
 

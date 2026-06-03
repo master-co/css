@@ -1,15 +1,36 @@
 import { describe, expect, it } from 'vitest'
-import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from 'node:fs'
+import { mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
-import { join } from 'node:path'
+import { dirname, join, resolve } from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { createCSSDirectiveAtRuleReference } from 'shared/css-directives'
-import { compileCSS, compileCSSFile } from '../src'
+import {
+    compileCSS,
+    compileCSSConfig,
+    compileCSSConfigFile,
+    compileCSSFile,
+    compileProjectConfig,
+    createConfigFromCSSResult,
+    inspectCSS,
+    resolveMasterCSSPackageEntryFile
+} from '../src'
+
+const here = dirname(fileURLToPath(import.meta.url))
 
 function process(css: string, classes?: string[]) {
     return compileCSS(css, { classes }).css
 }
 
 describe.concurrent('@master/css-compiler', () => {
+    it('detects only project CSS entry markers', () => {
+        expect(inspectCSS('@master;').hasMasterEntry).toBe(true)
+        expect(inspectCSS('@import "@master/css";').hasMasterEntry).toBe(true)
+        expect(inspectCSS('@master shake;').hasMasterEntry).toBe(false)
+        expect(inspectCSS('@master no-shake;').hasMasterEntry).toBe(false)
+        expect(inspectCSS('@import "@master/css/index.css";').hasMasterEntry).toBe(false)
+        expect(inspectCSS('@master { --color-primary: #123; }').hasMasterEntry).toBe(false)
+    })
+
     it('compiles @master config directives into a CSS directive result', () => {
         const result = compileCSS(`
             @master {
@@ -358,6 +379,31 @@ describe.concurrent('@master/css-compiler', () => {
         })
     })
 
+    it('converts compiler results into semantic config at the compiler boundary', () => {
+        const source = `
+            @master {
+                --color-primary: #123;
+
+                .btn {
+                    color: var(--color-primary);
+                }
+            }
+        `
+        const directiveResult = compileCSS(source)
+        const resultFromSource = compileCSSConfig(source)
+        const resultFromCompilerResult = createConfigFromCSSResult(directiveResult)
+
+        expect(resultFromSource.config).toEqual(resultFromCompilerResult.config)
+        expect(resultFromSource.config.variables).toContainEqual({
+            namespace: 'color',
+            key: 'primary',
+            value: '#123'
+        })
+        expect(resultFromSource.config.utilities).toContainEqual(expect.objectContaining({
+            name: 'btn'
+        }))
+    })
+
     it('compiles CSS files with local relative imports', () => {
         const root = mkdtempSync(join(tmpdir(), 'master-css-compiler-'))
         try {
@@ -411,6 +457,81 @@ describe.concurrent('@master/css-compiler', () => {
                 }
             ])
             expect(result.css).toBe('')
+        } finally {
+            rmSync(root, { recursive: true, force: true })
+        }
+    })
+
+    it('compiles package CSS files without treating them as project entries', () => {
+        const coreIndex = resolve(here, '../../core/index.css')
+        const coreTheme = resolve(here, '../../core/theme.css')
+        const source = readFileSync(coreIndex, 'utf-8')
+
+        expect(inspectCSS(source).hasMasterEntry).toBe(false)
+
+        const result = compileCSSConfigFile(coreIndex)
+
+        expect(result.dependencies).toContain(coreTheme)
+        expect(result.config.variables).toContainEqual({
+            namespace: 'screen',
+            key: 'sm',
+            value: 834
+        })
+    })
+
+    it('compiles project CSS entries into a semantic config', () => {
+        const root = mkdtempSync(join(tmpdir(), 'master-css-compiler-'))
+        try {
+            mkdirSync(join(root, 'styles'))
+            const entry = join(root, 'index.css')
+            const theme = join(root, 'styles/theme.css')
+            writeFileSync(theme, `
+                @master {
+                    --color-primary: #123;
+
+                    .btn {
+                        color: var(--color-primary);
+                    }
+                }
+            `)
+            writeFileSync(entry, `
+                @master;
+                @import "./styles/theme.css";
+            `)
+
+            const result = compileProjectConfig([entry], { root })
+
+            expect(result.entries).toEqual([entry])
+            expect(result.dependencies).toEqual([entry, theme])
+            expect(result.config.variables).toContainEqual({
+                namespace: 'color',
+                key: 'primary',
+                value: '#123'
+            })
+            expect(result.config.utilities).toContainEqual(expect.objectContaining({
+                name: 'btn'
+            }))
+        } finally {
+            rmSync(root, { recursive: true, force: true })
+        }
+    })
+
+    it('resolves @master/css package imports through the package style entry', () => {
+        const root = mkdtempSync(join(tmpdir(), 'master-css-compiler-'))
+        try {
+            const entry = join(root, 'index.css')
+            writeFileSync(entry, '@import "@master/css";')
+
+            const result = compileCSSConfigFile(entry, { root })
+            const packageEntry = resolveMasterCSSPackageEntryFile('@master/css', entry, root)
+
+            expect(packageEntry).toBeTruthy()
+            expect(result.dependencies).toContain(packageEntry)
+            expect(result.config.variables).toContainEqual({
+                namespace: 'screen',
+                key: 'sm',
+                value: 834
+            })
         } finally {
             rmSync(root, { recursive: true, force: true })
         }

@@ -1,7 +1,7 @@
 import type { Config } from '../../src'
 import { createCSS } from '../../src'
 import { extendConfig } from '../../src/utils'
-import themeConfig from '../../theme.css?master-css-config'
+import themeConfig from './test-theme-config'
 
 export function createThemeConfig(config?: Config) {
     return extendConfig(themeConfig, config)

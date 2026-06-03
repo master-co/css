@@ -1,6 +1,14 @@
-import { compileCSS, type CompileCSSOptions, type CompileCSSResult } from '@master/css-compiler'
+import {
+    compileCSS,
+    createConfigFromCSSResult,
+    type CompileCSSOptions,
+    type CompileCSSResult
+} from '@master/css-compiler'
+import {
+    isMasterCSSPackageStyleFile as isMasterCSSCompilerPackageStyleFile,
+    resolveMasterCSSPackageImportGraph
+} from '@master/css-compiler'
 import { AnimationRule, createCSS, VariableRule } from '@master/css'
-import createConfigFromCSSDirectives from '@master/css/create-config-from-css-directives'
 import { extendConfig } from '@master/css/utils'
 import type { Config } from 'shared/css-config'
 import {
@@ -12,11 +20,6 @@ import {
     parseCSSImportSource
 } from 'shared/css-config-entry'
 import { VIRTUAL_CSS_ID } from 'shared/css-virtual-module'
-import {
-    findCSSConfigEntryFiles,
-    isMasterCSSPackageStyleFile as isMasterCSSConfigPackageStyleFile,
-    resolveMasterCSSPackageImportGraph
-} from '@master/css-configer/css'
 import { createRequire } from 'node:module'
 import { dirname, extname, join, resolve } from 'node:path'
 import { pathToFileURL } from 'node:url'
@@ -125,10 +128,6 @@ export function cleanStyleRequest(id: string) {
 
 export function isStyleCSSRequest(id: string) {
     return STYLE_CSS_REQUEST_RE.test(id)
-}
-
-export async function findStyleCSSEntryFiles(projectDir = process.cwd()) {
-    return findCSSConfigEntryFiles(projectDir)
 }
 
 export function replaceStyleCSSImports(source: string, replacement: string) {
@@ -253,9 +252,11 @@ export function resolveMasterStyleSource(
     projectDir?: string
 ) {
     if (!isStyleCSSRequest(file)) return
-    const resolvedSource = resolveStyleCSSImportGraph(file, source, projectDir)
-    if (!isMasterStyleSource(resolvedSource.source)) return
-    return resolvedSource
+    const unresolvedPackageSource = resolveStyleCSSImportGraph(file, source, projectDir, {
+        expandMasterCSSPackage: false
+    })
+    if (!isMasterStyleSource(unresolvedPackageSource.source)) return
+    return resolveStyleCSSImportGraph(file, source, projectDir)
 }
 
 export function isMasterCSSModuleId(id: string) {
@@ -263,7 +264,7 @@ export function isMasterCSSModuleId(id: string) {
 }
 
 export function isMasterCSSPackageStyleFile(id: string, projectDir?: string) {
-    return isMasterCSSConfigPackageStyleFile(id, projectDir)
+    return isMasterCSSCompilerPackageStyleFile(id, projectDir)
 }
 
 export function removeMasterStyleDirectives(source: string) {
@@ -344,7 +345,7 @@ export function hasMasterNoShakeDirective(source: string) {
 }
 
 export function isMasterStyleSource(source: string) {
-    return hasMasterEntryDirective(source)
+    return hasMasterStyleEntrypoint(source)
 }
 
 export async function preprocessStyleCSS(source: string, id: string, options: CompileStyleCSSOptions = {}) {
@@ -462,7 +463,7 @@ export async function registerStyleCSSSource(
             dependencies: []
         }
     const masterCSS = hasMasterCSSImport(resolvedSource.source)
-    const shake = !hasMasterNoShakeDirective(detectionSource.source) && isMasterStyleSource(detectionSource.source)
+    const shake = !hasMasterNoShakeDirective(detectionSource.source) && isMasterStyleSource(resolvedSource.source)
     const sourceWithoutImports = removeStyleCSSImports(resolvedSource.source).code
     const cleanSource = removeMasterStyleDirectives(sourceWithoutImports).code
     const compileOptions = options
@@ -526,7 +527,7 @@ export async function createStyleCSSConfig(options: CreateStyleCSSConfigOptions 
     const styleConfigs: Config[] = []
     for (const result of styleResults) {
         if (!hasCompiledStyleConfig(result)) continue
-        styleConfigs.push(createConfigFromCSSDirectives(result, {
+        styleConfigs.push(createConfigFromCSSResult(result, {
             config: extendConfig(...styleConfigs, config)
         }).config)
     }
@@ -653,7 +654,7 @@ export async function createExtractedCSS(options: CreateExtractedCSSOptions) {
     const styleConfigs: Config[] = []
     for (const result of styleResults) {
         if (!hasCompiledStyleConfig(result)) continue
-        styleConfigs.push(createConfigFromCSSDirectives(result, {
+        styleConfigs.push(createConfigFromCSSResult(result, {
             config: extendConfig(...styleConfigs, explicitConfig)
         }).config)
     }

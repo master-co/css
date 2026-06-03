@@ -1214,6 +1214,9 @@ importers:
 
   packages/compiler:
     dependencies:
+      '@master/css':
+        specifier: workspace:^
+        version: link:../core
       lightningcss:
         specifier: ^1.32.0
         version: 1.32.0
@@ -1227,9 +1230,6 @@ importers:
 
   packages/configer:
     dependencies:
-      '@master/css':
-        specifier: workspace:^
-        version: link:../core
       '@master/css-compiler':
         specifier: workspace:^
         version: link:../compiler
@@ -1364,9 +1364,6 @@ importers:
       '@master/css-compiler':
         specifier: workspace:^
         version: link:../compiler
-      '@master/css-configer':
-        specifier: workspace:^
-        version: link:../configer
       '@master/css-validator':
         specifier: workspace:^
         version: link:../validator
@@ -1467,9 +1464,6 @@ importers:
       '@master/css-configer':
         specifier: workspace:^
         version: link:../configer
-      '@master/css-extractor':
-        specifier: workspace:^
-        version: link:../extractor
       '@master/css-language-service':
         specifier: workspace:^
         version: link:../language-service
@@ -1596,9 +1590,6 @@ importers:
       '@master/css-configer':
         specifier: workspace:^
         version: link:../configer
-      '@master/css-extractor':
-        specifier: workspace:^
-        version: link:../extractor
       '@master/css-server':
         specifier: workspace:^
         version: link:../server

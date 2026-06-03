@@ -38,29 +38,30 @@ Risks:
 ## Config To Resolved Config
 
 ```txt
-default config + user config
-  -> extendConfig()
-  -> recursively collect extends
-  -> flatten variables, modes, atTokens
-  -> merge utilities, selectorTokens, functions, animations
-  -> MasterCSS.resolve()
-  -> resolveVariables()
-  -> resolveAnimations()
-  -> resolveSelectors()
-  -> resolveAtRules()
-  -> resolveUtilities()
+project CSS files containing @master; or @import "@master/css"
+  -> @master/css-configer discovers project entry files only
+  -> @master/css-compiler resolves CSS imports and package style imports
+  -> compiler parses @master {} directives, custom at/selectors, utilities, variables, keyframes
+  -> compiler converts directive result through the core adapter into Config
+  -> build tools / ESLint / language-server receive the same semantic project Config
+  -> MasterCSS.resolve() resolves variables, animations, selectors, at-rules, utilities
 ```
 
 Main files:
 
+- `packages/configer/src/css.ts`
+- `packages/configer/src/load.ts`
+- `packages/compiler/src/index.ts`
 - `packages/core/src/utils/extend-config.ts`
 - `packages/core/src/utils/flatten-meta-object.ts`
 - `packages/core/src/utils/flatten-object.ts`
 - `packages/core/src/core.ts`
-- `packages/core/src/config/*`
 
 Risks:
 
+- Entry detection must only use project-level markers: `@master;` and `@import "@master/css"`.
+- Package CSS such as `@master/css/index.css` must not contain or imply a project entry marker.
+- Configer must not implement CSS import graph or `@master {}` parsing.
 - Extend order and flattening affect all config consumers.
 - Variable aliases and modes affect inlining vs CSS custom property output.
 - Static utility layer assignment affects semantic class output and cascade behavior.
@@ -70,8 +71,10 @@ Risks:
 ```txt
 source globs / Vite modules / Webpack modules
   -> CSSExtractor.init()
-  -> load extractor options and Master CSS config
+  -> build tool / CLI registers managed CSS entries discovered by configer
   -> extractLatentClasses()
+  -> compile managed CSS through @master/css-compiler
+  -> merge style config returned by compiler with explicit Config options
   -> generateValidRules()
   -> insert valid rules into layers
   -> export css.text or virtual CSS module
@@ -80,6 +83,7 @@ source globs / Vite modules / Webpack modules
 Main files:
 
 - `packages/extractor/src/core.ts`
+- `packages/extractor/src/style.ts`
 - `packages/extractor/src/functions/extract-latent-classes.ts`
 - `packages/validator/src/generate-valid-rules.ts`
 - `packages/vite/src/modes/extract.ts`

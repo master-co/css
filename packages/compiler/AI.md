@@ -2,21 +2,23 @@
 
 ## Responsibility
 
-`@master/css-compiler` parses Master CSS stylesheet directives and native CSS into shared CSS directive results. It does not import `@master/css`; core-specific interpretation is handled by `@master/css` adapters.
+`@master/css-compiler` is the canonical CSS source compiler for Master CSS. It parses Master CSS stylesheet directives and native CSS, resolves CSS import graphs, detects project entry markers, parses standalone extraction directives, and uses `@master/css` core adapters to produce semantic `Config` values.
 
 ## Inputs And Outputs
 
 - Input: CSS containing `@master`, variables, `@mode` blocks, `@custom-at`, `@custom-selector`, `@layer general`, condition blocks with `@at`, reusable main style rules with `@compose`, and native `@keyframes`.
-- Output: shared directive data, component definitions, native CSS with consumed Master directives removed, native class names, warnings, and CSS import dependencies.
+- Output: semantic core `Config`, shared directive data for lower-level consumers, component definitions, native CSS with consumed Master directives removed, native class names, warnings, standalone directive metadata, and CSS import dependencies.
 - `@master` definitions are config definitions. Defining a main style, utility, variable, token, or animation does not emit CSS by itself; the class still needs to be used or extracted.
-- `compileCSSFile()` resolves local relative CSS `@import` graphs before compiling and returns absolute dependency paths.
+- `@master;` and `@import "@master/css"` are equivalent user project entry markers. Package CSS files such as `@master/css/index.css` must not contain `@master;`.
+- `compileCSSFile()` resolves CSS `@import` graphs before compiling and returns absolute dependency paths.
+- `compileProjectConfig()` compiles project entry CSS files into the canonical project-level `Config`.
 
 ## Boundaries
 
 - Do not make `@master/css` depend on this package.
-- Do not make this package depend on `@master/css`.
+- This package may depend on `@master/css` for semantic config conversion.
 - Keep directive parsing package-local.
-- Emit shared directive contracts from `shared/css-directives`; leave variable namespace resolution, utility composition, selector token resolution, at-rule parsing, priority, and CSS generation to core adapters.
+- Emit shared directive contracts from `shared/css-directives` for low-level consumers, and expose semantic `Config` APIs for config loading.
 - Do not reintroduce PostCSS in this package.
 - If `@master` CSS configuration syntax is expanded or changed incompatibly, update the TextMate/Shiki highlighting in `packages/language` in the same change when practical.
 
@@ -37,7 +39,8 @@
 - `@compose` is allowed only in main style definitions.
 - General utilities defined in CSS are static utilities only.
 - `body`, `html`, and other HTML tag rules inside `@master` should warn because regular CSS selectors must live outside Master directives.
-- The compiler package does not scan unrelated `.css` files for class usage. Pair CSS configs with `@master/css.vite` extract mode or pass extracted classes through `compileCSS(..., { classes })` when filtering native CSS.
+- The compiler package does not scan unrelated `.css` files for class usage. Pair CSS configs with extract mode or pass extracted classes through compiler options when filtering native CSS.
+- CSS/theme/source tests that depend on `.css` files belong here rather than in core tests.
 
 ## Tests
 

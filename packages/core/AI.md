@@ -8,6 +8,7 @@
 
 - Input: `Config`, class names, selector text.
 - Output: `MasterCSS` state, utility objects, layer state, CSS text.
+- Core tests must use TypeScript `Config` fixtures directly. Tests that need to parse `.css`, `theme.css`, `index.css`, `@master {}`, `@master;`, or CSS import graphs belong in `@master/css-compiler`.
 
 ## Public APIs
 
@@ -32,7 +33,6 @@ Important public symbols include:
 - `src/factories/with-utility-layer.ts`
 - `src/utilities.ts`
 - `src/functions.ts`
-- `theme.css`
 - `src/utils/compare-rule-priority.ts`
 - `src/utils/parse-at.ts`
 - `src/utils/generate-at.ts`
@@ -98,3 +98,4 @@ Add or update tests in:
 - Changing `UtilityType` values.
 - Changing layer names or the `base.css` layer statement.
 - Making extraction/runtime-specific assumptions in core.
+- Loading CSS config resources from core tests.

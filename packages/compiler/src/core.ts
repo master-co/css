@@ -67,6 +67,13 @@ export interface ParsedDirectives extends Pick<CompileCSSResult, 'config' | 'cla
     componentOrder?: number
 }
 
+export interface StandaloneMasterDirectiveStatement {
+    start: number
+    end: number
+    name: string
+    statement: string
+}
+
 const MASTER_CUSTOM_AT_RULES = {
     master: {
         prelude: '*',
@@ -1652,9 +1659,8 @@ function findStandaloneMasterDirectiveEnd(source: string, start: number) {
     return -1
 }
 
-function removeStandaloneMasterDirectives(source: string) {
-    let output = ''
-    let offset = 0
+export function findStandaloneMasterDirectiveStatements(source: string): StandaloneMasterDirectiveStatement[] {
+    const statements: StandaloneMasterDirectiveStatement[] = []
     let quote = ''
     let comment = false
     let depth = 0
@@ -1705,9 +1711,25 @@ function removeStandaloneMasterDirectives(source: string) {
         if (!STANDALONE_MASTER_DIRECTIVE_NAMES.has(name)) continue
         const end = findStandaloneMasterDirectiveEnd(source, cursor)
         if (end === -1) continue
-        output += source.slice(offset, index)
-        offset = end
+        statements.push({
+            start: index,
+            end,
+            name,
+            statement: source.slice(index, end)
+        })
         index = end - 1
+    }
+    return statements
+}
+
+function removeStandaloneMasterDirectives(source: string) {
+    const statements = findStandaloneMasterDirectiveStatements(source)
+    if (!statements.length) return source
+    let output = ''
+    let offset = 0
+    for (const statement of statements) {
+        output += source.slice(offset, statement.start)
+        offset = statement.end
     }
     return offset ? output + source.slice(offset) : source
 }

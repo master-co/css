@@ -397,7 +397,6 @@ export default class CSSExtractor extends EventEmitter {
 
     async startWatch(options: { emit?: boolean } = { emit: true }) {
         if (this.watching) return
-        const resolvedConfigPath = this.resolvedConfigPath
 
         const sourcePaths = this.options.sources?.length
             ? this.fixedSourcePaths
@@ -406,11 +405,8 @@ export default class CSSExtractor extends EventEmitter {
             await this.watchSource(sourcePaths)
         }
 
-        const configDependencies = this.configDependencies.length
-            ? this.configDependencies
-            : resolvedConfigPath ? [resolvedConfigPath] : []
-        if (configDependencies.length) {
-            await this.watch('add change unlink', configDependencies, async (configDependency) => {
+        if (this.configDependencies.length) {
+            await this.watch('add change unlink', this.configDependencies, async (configDependency) => {
                 if (this.options.verbose) {
                     log``
                     const changedConfigPath = path.isAbsolute(configDependency)
@@ -503,14 +499,6 @@ export default class CSSExtractor extends EventEmitter {
      */
     get config(): Config {
         return this.css.config
-    }
-
-    get configPath(): string | undefined {
-        return undefined
-    }
-
-    get resolvedConfigPath(): string | undefined {
-        return undefined
     }
 
     get slotCSSRule(): string {

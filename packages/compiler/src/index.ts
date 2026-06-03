@@ -1,8 +1,15 @@
 import { existsSync, readFileSync } from 'node:fs'
+import { createRequire } from 'node:module'
 import { dirname, extname, isAbsolute, resolve } from 'node:path'
 import { transform } from 'lightningcss'
+import createConfigFromCSSDirectives from '@master/css/create-config-from-css-directives'
+import { extendConfig } from '@master/css/utils'
+import type { Config } from '@master/css'
+import { toConfigModuleResult, type CSSConfigModuleResult } from 'shared/css-config-module'
 import {
     compileCSS,
+    findStandaloneMasterDirectiveStatements,
+    type CompileCSSOptions,
     setCSSTransform,
     type CompileCSSFileOptions,
     type CompileCSSResult,
@@ -12,6 +19,47 @@ import {
 export * from './core'
 
 setCSSTransform(transform)
+
+const require = createRequire(import.meta.url)
+const MASTER_CSS_PACKAGE_ID = '@master/css'
+
+interface CSSPackageJSON {
+    name?: unknown
+    style?: unknown
+    exports?: unknown
+}
+
+export interface InspectCSSResult {
+    hasMasterEntryDirective: boolean
+    hasMasterCSSImport: boolean
+    hasMasterEntry: boolean
+}
+
+export interface ResolveCSSImportGraphOptions {
+    projectDir?: string
+    expandPackageImports?: boolean
+}
+
+export type CompileCSSConfigOptions = Omit<CompileCSSFileOptions, 'config'> & {
+    config?: Config
+}
+
+export type CompileCSSConfigSourceOptions = Omit<CompileCSSOptions, 'config'> & {
+    config?: Config
+}
+
+export interface CompileCSSConfigResult extends Omit<CompileCSSResult, 'config'> {
+    config: Config
+    directives: CompileCSSResult
+}
+
+export interface CompileProjectConfigResult extends CompileCSSConfigResult {
+    entries: string[]
+}
+
+export type CompileCSSConfigModuleResult = CSSConfigModuleResult<Config> & {
+    directives: CompileCSSResult
+}
 
 function findImportEnd(source: string, startIndex: number) {
     let quote = ''
@@ -58,7 +106,7 @@ function findImportEnd(source: string, startIndex: number) {
 }
 
 function parseImportSource(statement: string) {
-    const match = /^\s*@import\s+(?:(["'])(.*?)\1|url\(\s*(?:(["'])(.*?)\3|([^'")\s]+))\s*\))\s*;\s*$/s.exec(statement)
+    const match = /^\s*@import\s+(?:(["'])(.*?)\1|url\(\s*(?:(["'])(.*?)\3|([^'")\s]+))\s*\))[^;]*;\s*$/s.exec(statement)
     return match?.[2] || match?.[4] || match?.[5]
 }
 
@@ -120,7 +168,97 @@ function findImportStatements(source: string) {
     return imports
 }
 
-function resolveCSSImportGraphFile(file: string, dependencies: string[], dependencySet: Set<string>, stack: string[]) {
+function removeImportStatements(source: string) {
+    const imports = findImportStatements(source)
+    if (!imports.length) return source
+    let output = ''
+    let index = 0
+    for (const importStatement of imports) {
+        output += source.slice(index, importStatement.start)
+        index = importStatement.end
+    }
+    return output + source.slice(index)
+}
+
+function readJSONFile<T>(file: string) {
+    return JSON.parse(readFileSync(file, 'utf-8')) as T
+}
+
+function findPackageRoot(entryFile: string, packageName: string) {
+    let directory = dirname(entryFile)
+    while (true) {
+        const packageJSONFile = resolve(directory, 'package.json')
+        if (existsSync(packageJSONFile)) {
+            try {
+                const packageJSON = readJSONFile<CSSPackageJSON>(packageJSONFile)
+                if (packageJSON.name === packageName) {
+                    return {
+                        directory,
+                        packageJSON
+                    }
+                }
+            } catch {
+                // Keep walking up in case this is not the package root.
+            }
+        }
+        const parentDirectory = dirname(directory)
+        if (parentDirectory === directory) return
+        directory = parentDirectory
+    }
+}
+
+function getPackageStyleEntry(packageJSON: CSSPackageJSON) {
+    if (typeof packageJSON.style === 'string') return packageJSON.style
+    if (!packageJSON.exports || typeof packageJSON.exports !== 'object') return
+    const rootExport = (packageJSON.exports as Record<string, unknown>)['.']
+    if (!rootExport || typeof rootExport !== 'object') return
+    const styleExport = (rootExport as Record<string, unknown>).style
+    return typeof styleExport === 'string' ? styleExport : undefined
+}
+
+function createProjectRequire(fromFile: string, projectDir?: string) {
+    return createRequire(resolve(projectDir || dirname(fromFile), 'package.json'))
+}
+
+export function resolveMasterCSSPackageEntryFile(importSource: string, fromFile = process.cwd(), projectDir?: string) {
+    if (importSource !== MASTER_CSS_PACKAGE_ID) return
+    const resolver = createProjectRequire(fromFile, projectDir)
+    let packageEntryFile: string
+    try {
+        packageEntryFile = resolver.resolve(MASTER_CSS_PACKAGE_ID)
+    } catch {
+        packageEntryFile = require.resolve(MASTER_CSS_PACKAGE_ID)
+    }
+    const packageRoot = findPackageRoot(packageEntryFile, MASTER_CSS_PACKAGE_ID)
+    if (!packageRoot) return
+    const styleEntry = getPackageStyleEntry(packageRoot.packageJSON)
+    if (!styleEntry) return
+    const styleFile = resolve(packageRoot.directory, styleEntry)
+    if (!existsSync(styleFile)) {
+        throw new Error(`${MASTER_CSS_PACKAGE_ID} CSS style entry was not found: ${styleFile}`)
+    }
+    return styleFile
+}
+
+export function inspectCSS(source: string): InspectCSSResult {
+    const hasMasterEntryDirective = findStandaloneMasterDirectiveStatements(source)
+        .some((statement) => statement.name === '')
+    const hasMasterCSSImport = findImportStatements(source)
+        .some((statement) => parseImportSource(statement.statement) === MASTER_CSS_PACKAGE_ID)
+    return {
+        hasMasterEntryDirective,
+        hasMasterCSSImport,
+        hasMasterEntry: hasMasterEntryDirective || hasMasterCSSImport
+    }
+}
+
+function resolveCSSImportGraphFile(
+    file: string,
+    dependencies: string[],
+    dependencySet: Set<string>,
+    stack: string[],
+    options: ResolveCSSImportGraphOptions = {}
+) {
     const absoluteFile = resolve(file)
     if (stack.includes(absoluteFile)) {
         throw new Error(`Circular CSS import: ${[...stack, absoluteFile].join(' -> ')}`)
@@ -142,9 +280,12 @@ function resolveCSSImportGraphFile(file: string, dependencies: string[], depende
     for (const importStatement of imports) {
         output += source.slice(index, importStatement.start)
         const importSource = parseImportSource(importStatement.statement)
-        if (importSource && isExpandableImportSource(importSource)) {
-            const importedFile = resolve(dirname(absoluteFile), importSource)
-            output += resolveCSSImportGraphFile(importedFile, dependencies, dependencySet, [...stack, absoluteFile])
+        const packageFile = options.expandPackageImports !== false && importSource
+            ? resolveMasterCSSPackageEntryFile(importSource, absoluteFile, options.projectDir)
+            : undefined
+        if (packageFile || (importSource && isExpandableImportSource(importSource))) {
+            const importedFile = packageFile || resolve(dirname(absoluteFile), importSource!)
+            output += resolveCSSImportGraphFile(importedFile, dependencies, dependencySet, [...stack, absoluteFile], options)
         } else {
             output += importStatement.statement
         }
@@ -153,20 +294,51 @@ function resolveCSSImportGraphFile(file: string, dependencies: string[], depende
     return output + source.slice(index)
 }
 
-export function resolveCSSImportGraph(file: string): ResolvedCSSImportGraph {
+export function resolveCSSImportGraph(file: string, options: ResolveCSSImportGraphOptions = {}): ResolvedCSSImportGraph {
     const dependencies: string[] = []
-    const source = resolveCSSImportGraphFile(file, dependencies, new Set(), [])
+    const source = resolveCSSImportGraphFile(file, dependencies, new Set(), [], options)
     return {
         source,
         dependencies
     }
 }
 
+export function resolveMasterCSSPackageImportGraph(projectDir?: string) {
+    const entry = resolveMasterCSSPackageEntryFile(MASTER_CSS_PACKAGE_ID, projectDir || process.cwd(), projectDir)
+    if (!entry) {
+        throw new Error(`Cannot resolve ${MASTER_CSS_PACKAGE_ID} CSS entry.`)
+    }
+    return resolveCSSImportGraph(entry, {
+        projectDir
+    })
+}
+
+function stripRequest(id: string) {
+    return id.replace(/[?#].*$/, '')
+}
+
+export function isMasterCSSPackageStyleFile(id: string, projectDir?: string) {
+    const filename = resolve(stripRequest(id))
+    if (extname(filename) !== '.css') return false
+    try {
+        return resolveMasterCSSPackageImportGraph(projectDir).dependencies.some((dependency) => {
+            return resolve(dependency) === filename
+        })
+    } catch {
+        return false
+    }
+}
+
 export function compileCSSFile(file: string, options: CompileCSSFileOptions = {}): CompileCSSResult {
     const { root, ...compileOptions } = options
     const absoluteFile = isAbsolute(file) ? file : resolve(root || '', file)
-    const graph = resolveCSSImportGraph(absoluteFile)
-    const result = compileCSS(graph.source, {
+    const graph = resolveCSSImportGraph(absoluteFile, {
+        projectDir: root
+    })
+    const source = compileOptions.preserveNativeCSS === false
+        ? removeImportStatements(graph.source)
+        : graph.source
+    const result = compileCSS(source, {
         ...compileOptions,
         from: absoluteFile
     })
@@ -174,4 +346,108 @@ export function compileCSSFile(file: string, options: CompileCSSFileOptions = {}
         ...result,
         dependencies: graph.dependencies
     }
+}
+
+function addUnique<T>(target: T[], values: Iterable<T> | undefined) {
+    if (!values) return
+    for (const value of values) {
+        if (!target.includes(value)) target.push(value)
+    }
+}
+
+function toCompileCSSConfigResult(
+    result: CompileCSSResult,
+    options: CompileCSSConfigSourceOptions = {}
+): CompileCSSConfigResult {
+    const adapterResult = createConfigFromCSSDirectives(result, {
+        config: options.config,
+        onWarning: options.onWarning
+    })
+    return {
+        ...result,
+        config: adapterResult.config,
+        warnings: adapterResult.warnings,
+        directives: result
+    }
+}
+
+export function createConfigFromCSSResult(
+    result: CompileCSSResult,
+    options: CompileCSSConfigSourceOptions = {}
+) {
+    return toCompileCSSConfigResult(result, options)
+}
+
+export function compileCSSConfig(source: string, options: CompileCSSConfigSourceOptions = {}): CompileCSSConfigResult {
+    const result = compileCSS(source, options)
+    return toCompileCSSConfigResult(result, options)
+}
+
+export function compileCSSConfigFile(file: string, options: CompileCSSConfigOptions = {}): CompileCSSConfigResult {
+    const result = compileCSSFile(file, {
+        ...options,
+        preserveNativeCSS: options.preserveNativeCSS ?? false
+    })
+    return toCompileCSSConfigResult(result, options)
+}
+
+export function compileProjectConfig(entries: string[], options: CompileCSSConfigOptions = {}): CompileProjectConfigResult {
+    const styleConfigs: Config[] = []
+    const dependencies: string[] = []
+    const classNames: string[] = []
+    const nativeClassNames: string[] = []
+    const nativeCSS: string[] = []
+    const css: string[] = []
+    const generatedCSS: string[] = []
+    const warnings: string[] = []
+    let directives: CompileCSSResult = {
+        config: {},
+        classNames: [],
+        nativeClassNames: [],
+        nativeCSS: '',
+        css: '',
+        generatedCSS: '',
+        warnings: [],
+        dependencies: []
+    }
+    for (const entry of entries) {
+        const result = compileCSSFile(entry, {
+            ...options,
+            preserveNativeCSS: options.preserveNativeCSS ?? false
+        })
+        directives = result
+        addUnique(dependencies, result.dependencies)
+        addUnique(classNames, result.classNames)
+        addUnique(nativeClassNames, result.nativeClassNames)
+        if (result.nativeCSS) nativeCSS.push(result.nativeCSS)
+        if (result.css) css.push(result.css)
+        if (result.generatedCSS) generatedCSS.push(result.generatedCSS)
+        addUnique(warnings, result.warnings)
+        const adapterResult = createConfigFromCSSDirectives(result, {
+            config: extendConfig(...styleConfigs, options.config),
+            onWarning: options.onWarning
+        })
+        styleConfigs.push(adapterResult.config)
+        addUnique(warnings, adapterResult.warnings)
+    }
+    return {
+        entries,
+        config: entries.length ? extendConfig(...styleConfigs, options.config) : options.config || {},
+        dependencies,
+        classNames,
+        nativeClassNames,
+        nativeCSS: nativeCSS.join('\n'),
+        css: css.join('\n'),
+        generatedCSS: generatedCSS.join('\n'),
+        warnings,
+        directives
+    }
+}
+
+export function compileCSSConfigModule(file: string, options: CompileCSSConfigOptions = {}): CompileCSSConfigModuleResult {
+    return toConfigModuleResult(compileCSSConfigFile(file, options))
+}
+
+export function compileProjectConfigModule(entries: string[], options: CompileCSSConfigOptions = {}) {
+    return toConfigModuleResult(compileProjectConfig(entries, options))
 }

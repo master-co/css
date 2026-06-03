@@ -62,7 +62,6 @@
         "shared": "workspace:^"
     },
     "dependencies": {
-        "@master/css": "workspace:^",
         "@master/css-compiler": "workspace:^"
     }
 }
