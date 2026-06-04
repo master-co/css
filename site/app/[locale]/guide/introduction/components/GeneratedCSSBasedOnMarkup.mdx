@@ -24,23 +24,23 @@ export const code3 = `
     <section class="bg:blue bg:red:hover p:xl p:2xl@md text:center">…</section>
 `
 
-What! Style without writing CSS rules?
+Consider a common styling task:
 
-"Let's create a section with background, interactive effects, and increase its padding when width `>=1024`."
+"Create a section with a blue background, a red hover state, centered text, and larger padding when the viewport is at least `1024px`."
 
-(!) A few moments later... Ok, Let's "name" it `home-section`.
+(!) In a traditional CSS workflow, the first step is often naming the thing before the style has proved reusable.
 <Code name="home.html" lang="html">
     {code1}
 </Code>
 
-(!) Create the home.css and start "writing the CSS rules".
+(!) Then you create a stylesheet rule, selector state, and media query for that name.
 <Code name="home.css" lang="css">
     {code2}
 </Code>
 
-"What's wrong with this process? It's quite typical." Yes, the result is great, but productivity optimization is a core tenet of Master CSS.
+This works, but it creates an abstraction before the design decision has earned one.
 
-(o) It's a one-liner code using Master CSS. <Dropped p1={code1 + code2} p2={code3} target="class" />
+(o) With Master CSS, the local decision can stay in markup until it becomes shared vocabulary. <Dropped p1={code1 + code2} p2={code3} target="class" />
 <Code name="home.html" lang="html">
     {code3}
 </Code>

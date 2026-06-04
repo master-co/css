@@ -8,3 +8,5 @@ export default function Page() {
         </Body>
     );
 }
+
+export { default as metadata } from './metadata'

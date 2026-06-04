@@ -60,7 +60,7 @@ export const code3 = `
 
 import mountainImage from '~/site/public/images/mountain.jpg'
 
-You always abstract your style, even when unsure about its reusability.
+A traditional CSS workflow often starts by turning a visual decision into a named class, even before the team knows whether that decision is reusable.
 <Demo>
     <div className="mx:auto max-w:120x">
         <div className="flex translateY(-5):hover ~transform|fast|smooth overflow:hidden bg:surface r:xl s:panel justify-center items-center">
@@ -81,9 +81,9 @@ You always abstract your style, even when unsure about its reusability.
         {code2}
     </Code>
 </details>
-(o) Quickly build styles in markup without naming baggage. <Dropped p1={code1 + code2} p2={code3} target="class" />
+(o) Keep the first version explicit in markup, then promote it later if the pattern becomes real. <Dropped p1={code1 + code2} p2={code3} target="class" />
 <Code name="card.html" lang="html">
     {code3}
 </Code>
 
-Yes, writing abstract classes seems standard, but doing it too early brings a lot of pain.
+Abstract classes are valuable when they carry stable meaning. They become expensive when they are created before that meaning exists.
