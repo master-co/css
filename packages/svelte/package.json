@@ -39,6 +39,10 @@
             "types": "./dist/index.d.ts",
             "svelte": "./dist/index.js"
         },
+        "./runtime-provider": {
+            "types": "./dist/runtime-provider.d.ts",
+            "svelte": "./dist/runtime-provider.js"
+        },
         "./adapter": {
             "types": "./dist/adapter.d.ts",
             "import": "./dist/adapter.js",

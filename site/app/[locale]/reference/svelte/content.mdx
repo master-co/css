@@ -5,6 +5,12 @@
 
 `@master/css.svelte` provides the SvelteKit integration, server hook, and runtime provider for Svelte apps. The package combines static or progressive CSS generation with [`@master/css-runtime`](/reference/runtime) hydration.
 
+```ts
+import { CSSRuntimeRegistry, CSSRuntimeProvider } from '@master/css.svelte'
+```
+
+Use `@master/css.svelte/runtime-provider` when you only need the provider API without the registry's `virtual:master-css-config` dependency.
+
 Start with the [Svelte installation guide](/guide/installation/svelte) for the full project setup.
 
 ---
@@ -35,13 +41,28 @@ export { default as handle } from '@master/css.svelte/hooks.server'
 
 If the project already has a server `handle`, compose it with SvelteKit's `sequence()`.
 
+### `<CSSRuntimeRegistry>`
+The registry initializes a `CSSRuntime` instance with the project-level config provided by the active Master CSS integration.
+
+```svelte
+<script lang="ts">
+    import { CSSRuntimeRegistry } from '@master/css.svelte'
+</script>
+
+<CSSRuntimeRegistry>
+    <slot />
+</CSSRuntimeRegistry>
+```
+
+The registry loads `virtual:master-css-config` internally, so use it when the official integration should load the project-level config discovered from the CSS entry.
+
 ### `<CSSRuntimeProvider>`
 The provider initializes a `CSSRuntime` for `document` by default, refreshes it when `config` changes, recreates it when `root` changes, and destroys it on unmount.
 
 ```svelte
 <script lang="ts">
-    import CSSRuntimeProvider from '@master/css.svelte'
-    import config from 'virtual:master-css-config'
+    import { CSSRuntimeProvider } from '@master/css.svelte/runtime-provider'
+    import config from './app.css?master-css-config'
 </script>
 
 <CSSRuntimeProvider {config}>
@@ -49,7 +70,7 @@ The provider initializes a `CSSRuntime` for `document` by default, refreshes it 
 </CSSRuntimeProvider>
 ```
 
-Use `virtual:master-css-config` when the active integration should load the project-level config discovered from the CSS entry.
+Use the provider subpath when you need a custom `?master-css-config` resource, a custom `root`, or an environment that does not resolve `virtual:master-css-config`.
 
 ### Provider props
 ```ts
@@ -66,7 +87,7 @@ Access the runtime store provided by `CSSRuntimeProvider`.
 
 ```svelte
 <script lang="ts">
-    import { getCSSRuntime } from '@master/css.svelte'
+    import { getCSSRuntime } from '@master/css.svelte/runtime-provider'
 
     const cssRuntime = getCSSRuntime()
 </script>
@@ -78,5 +99,5 @@ The returned value is a `Writable<CSSRuntime | undefined>`. It is available to d
 Svelte context key used by the provider and `getCSSRuntime()`.
 
 ```ts
-import { CSS_RUNTIME_CONTEXT_KEY } from '@master/css.svelte'
+import { CSS_RUNTIME_CONTEXT_KEY } from '@master/css.svelte/runtime-provider'
 ```

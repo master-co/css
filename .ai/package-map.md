@@ -16,7 +16,7 @@
 | `@master/css.nuxt` | `.` | Nuxt module |
 | `@master/css.react` | `.`, `./runtime-provider` | React runtime registry, provider, and hooks |
 | `@master/css.vue` | `.`, `./runtime-provider`, `./adapter`, `./vite` | Vue runtime registry, provider, and Vue SFC extraction adapter |
-| `@master/css.svelte` | `.` | Svelte runtime provider and helpers |
+| `@master/css.svelte` | `.`, `./runtime-provider`, `./adapter`, `./vite`, `./hooks.server` | Svelte runtime registry, provider, SvelteKit hook, Vite wrapper, and Svelte source adapter |
 | `@master/css-language` | `.`, `./declaration`, `./grammars` | Grammars and language declaration |
 | `@master/css-language-service` | `.` | Completion, hover, colors |
 | `@master/css-language-server` | `.` | LSP wrapper |

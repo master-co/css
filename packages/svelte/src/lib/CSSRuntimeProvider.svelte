@@ -1,13 +1,13 @@
 <script lang="ts">
     import { onMount, setContext } from 'svelte';
     import { writable, get } from 'svelte/store';
-    import type { Config } from '@master/css';
     import { initCSSRuntime, resolveRuntimeConfig } from '@master/css-runtime';
     import type { CSSRuntime } from '@master/css-runtime';
     import { CSS_RUNTIME_CONTEXT_KEY } from './get-css-runtime.js';
+    import type { CSSRuntimeProviderProps } from './types/provider-props.js';
 
-    export let config: Config | undefined;
-    export let root: Document | ShadowRoot | undefined | null = undefined;
+    export let config: CSSRuntimeProviderProps['config'] = undefined;
+    export let root: CSSRuntimeProviderProps['root'] = undefined;
 
     const cssRuntime = writable<CSSRuntime | undefined>(undefined);
     let mounted = false;

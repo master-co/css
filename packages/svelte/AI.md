@@ -7,8 +7,10 @@ This package provides a Svelte runtime provider, a helper for accessing runtime 
 ## Main Files
 
 - `src/lib/CSSRuntimeProvider.svelte`
+- `src/lib/CSSRuntimeRegistry.svelte`
 - `src/lib/get-css-runtime.ts`
 - `src/lib/index.ts`
+- `src/lib/runtime-provider.ts`
 - `src/lib/server.ts`
 - `src/lib/hooks.server.ts`
 - `src/lib/vite.ts`
@@ -19,11 +21,14 @@ This package provides a Svelte runtime provider, a helper for accessing runtime 
 - Svelte package output behavior.
 - Server hook streaming behavior and early CSS injection.
 - Runtime cleanup on unmount.
+- `CSSRuntimeRegistry` depends on `virtual:master-css-config` and should remain the quick-start integration entry.
+- `src/lib/runtime-provider.ts` must remain free of `virtual:master-css-config` imports for users that provide config manually.
 
 ## Rules
 
 - Do not duplicate server/runtime logic here.
 - Preserve Svelte packaging conventions.
+- Do not add a default export to the root entry.
 - Add tests or example validation before behavior changes.
 
 ## Validation
