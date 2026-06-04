@@ -1,6 +1,4 @@
-import config from '@master/css/config'
-
-const variables = config.variables || []
+import { getThemeVariables } from '~/site/utils/theme-variables'
 
 const durationUsage: Record<string, string> = {
     fastest: 'Pressed states, tiny feedback',
@@ -14,8 +12,7 @@ const durationUsage: Record<string, string> = {
 const getDurationNumber = (value: string) => Number(value.replace('ms', ''))
 
 export default () => {
-    const durationEntries = variables
-        .filter(({ namespace, mode }) => namespace === 'duration' && !mode)
+    const durationEntries = getThemeVariables('duration')
         .map(({ key, value }) => [key, String(value)] as const)
     const maxDuration = Math.max(...durationEntries.map(([, value]) => getDurationNumber(value)))
 

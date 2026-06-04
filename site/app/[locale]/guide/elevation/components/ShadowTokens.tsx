@@ -1,6 +1,4 @@
-import config from '@master/css/config'
-
-const variables = config.variables || []
+import { getThemeVariables } from '~/site/utils/theme-variables'
 
 const shadowApplications: Record<string, string> = {
     xs: 'Subtle separation, small controls',
@@ -12,8 +10,7 @@ const shadowApplications: Record<string, string> = {
 }
 
 export default () => {
-    const shadowEntries = variables
-        .filter(({ namespace, mode }) => namespace === 'shadow' && !mode)
+    const shadowEntries = getThemeVariables('shadow')
         .map(({ key, value }) => [key, String(value)] as const)
 
     return (

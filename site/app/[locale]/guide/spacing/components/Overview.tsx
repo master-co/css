@@ -1,11 +1,7 @@
-import config from '@master/css/config'
-
-const variables = config.variables || []
+import { getThemeNumberVariableEntries } from '~/site/utils/theme-variables'
 
 export default () => {
-    const spacingEntries = variables
-        .filter(({ namespace, mode }) => namespace === 'spacing' && !mode)
-        .map(({ key, value }) => [key, Number(value)] as const)
+    const spacingEntries = getThemeNumberVariableEntries('spacing')
 
     return (
         <figure>

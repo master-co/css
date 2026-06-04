@@ -1,9 +1,8 @@
-import config from '@master/css/config'
 import ExpandContent from '~/internal/components/ExpandContent'
 import InlineCode from '~/internal/components/InlineCode'
+import { themeAnimations } from '~/site/utils/theme-animations'
 
-const animations = config.animations || {}
-type AnimationKeyframes = typeof animations[keyof typeof animations]
+type AnimationKeyframes = typeof themeAnimations[keyof typeof themeAnimations]
 
 const getCSS = (name: string, keyframes: AnimationKeyframes) => {
     const frames = Object.entries(keyframes)
@@ -20,7 +19,7 @@ const getCSS = (name: string, keyframes: AnimationKeyframes) => {
 }
 
 export default () => {
-    const animationEntries = Object.entries(animations)
+    const animationEntries = Object.entries(themeAnimations)
 
     return (
         <ExpandContent>

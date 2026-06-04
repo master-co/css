@@ -1,11 +1,5 @@
-import config from '@master/css/config'
+import { getThemeNumberVariableEntries } from './theme-variables'
 
-const variables = config.variables || []
-
-export const screenVariableEntries = variables.flatMap(({ namespace, key, value }) =>
-    namespace === 'screen' && typeof value === 'number'
-        ? [[key, value] as const]
-        : []
-)
+export const screenVariableEntries = getThemeNumberVariableEntries('screen')
 
 export const screenVariableValues = Object.fromEntries(screenVariableEntries) as Record<string, number>

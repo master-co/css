@@ -16,8 +16,8 @@ import Resizable from 'internal/components/Resizable'
 import { useThemeMode } from '@master/theme-mode.react'
 import Header from 'internal/components/Header'
 import HeaderNav from 'internal/components/HeaderNav'
-import config from '@master/css/config'
 import { screenVariableValues } from '~/site/utils/screen-variables'
+import { getThemeVariables } from '~/site/utils/theme-variables'
 import clsx from 'clsx'
 import Link from 'internal/components/Link'
 import Editor, { loader, type Monaco } from '@monaco-editor/react'
@@ -28,8 +28,6 @@ import createHighlighter, { themes } from 'internal/utils/create-highlighter'
 import { useApp } from 'internal/contexts/app'
 import { shikiToMonaco } from '@shikijs/monaco'
 
-const variables = config.variables || []
-
 if (typeof window !== 'undefined') {
     loader.config({
         paths: {
@@ -38,7 +36,7 @@ if (typeof window !== 'undefined') {
     })
 }
 
-const monoFallbackFont = variables.find(({ namespace, key }) => namespace === 'font-family' && key === 'mono-fallback')?.value
+const monoFallbackFont = getThemeVariables('font-family').find(({ key }) => key === 'mono-fallback')?.value
 
 const editorOptions: editor.IStandaloneEditorConstructionOptions = {
     readOnly: false,
@@ -120,7 +118,7 @@ function formatCSSSize(cssText: string) {
 function createPreviewHTML() {
     return dedent`<html>
         <head>
-            <style>${require('../../../../packages/core/base.css?raw')}</style>
+            <style>${require('../../../../packages/core/src/base.css?raw')}</style>
             <style>
                 body {
                     font-family: Inter, Noto Sans TC, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;

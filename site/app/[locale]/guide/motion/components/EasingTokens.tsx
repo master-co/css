@@ -1,6 +1,4 @@
-import config from '@master/css/config'
-
-const variables = config.variables || []
+import { getThemeVariables } from '~/site/utils/theme-variables'
 
 const easingUsage: Record<string, string> = {
     smooth: 'Balanced movement',
@@ -15,8 +13,7 @@ const easingUsage: Record<string, string> = {
 }
 
 export default () => {
-    const easingEntries = variables
-        .filter(({ namespace, mode }) => namespace === 'easing' && !mode)
+    const easingEntries = getThemeVariables('easing')
         .map(({ key, value }) => [key, String(value)] as const)
 
     return (
