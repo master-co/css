@@ -173,7 +173,7 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
     })
 
     test('strips Master directives from package CSS files before css-loader sees them', async () => {
-        const themePath = path.resolve(__dirname, '../../core/theme.css')
+        const themePath = path.resolve(__dirname, '../../core/src/theme.css')
         const result = await transformStyleSource(
             themePath,
             '@master { --color-primary: red; }\n:root { color: red; }',

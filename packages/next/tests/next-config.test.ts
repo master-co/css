@@ -96,6 +96,30 @@ describe('withMasterCSS', () => {
                     as: '*.css'
                 })
             ]),
+            '*.js': [
+                expect.objectContaining({
+                    condition: {
+                        not: 'foreign'
+                    },
+                    type: 'ecmascript'
+                })
+            ],
+            '*.mjs': [
+                expect.objectContaining({
+                    condition: {
+                        not: 'foreign'
+                    },
+                    type: 'ecmascript'
+                })
+            ],
+            '*.cjs': [
+                expect.objectContaining({
+                    condition: {
+                        not: 'foreign'
+                    },
+                    type: 'ecmascript'
+                })
+            ],
             '*.svg': {
                 type: 'asset'
             }
@@ -139,7 +163,31 @@ describe('withMasterCSS', () => {
                     type: 'css',
                     as: '*.css'
                 })
-            ])
+            ]),
+            '*.js': [
+                expect.objectContaining({
+                    condition: {
+                        not: 'foreign'
+                    },
+                    type: 'ecmascript'
+                })
+            ],
+            '*.mjs': [
+                expect.objectContaining({
+                    condition: {
+                        not: 'foreign'
+                    },
+                    type: 'ecmascript'
+                })
+            ],
+            '*.cjs': [
+                expect.objectContaining({
+                    condition: {
+                        not: 'foreign'
+                    },
+                    type: 'ecmascript'
+                })
+            ]
         })
         expect(resolvedConfig.webpack({ module: { rules: [] } }, {}).module.rules).toEqual(expect.arrayContaining([
             expect.objectContaining({
