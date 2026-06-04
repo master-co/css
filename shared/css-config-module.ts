@@ -60,7 +60,7 @@ export function fromResolvedMasterCSSConfigId(id: string) {
 }
 
 function encodeVirtualFilename(id: string) {
-    return encodeURIComponent(id).replace(/\./g, '%2E')
+    return Buffer.from(id).toString('base64url')
 }
 
 export function toVirtualDefaultConfigModulePath(context: string) {

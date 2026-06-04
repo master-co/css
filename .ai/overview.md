@@ -69,7 +69,7 @@ general
 keyframes outside layers
 ```
 
-The layer statement is declared by `packages/core/base.css`:
+The layer statement is declared by `packages/core/src/base.css`:
 
 ```css
 @layer base, theme, preset, main, general;

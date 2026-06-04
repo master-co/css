@@ -13,7 +13,7 @@ Master CSS is a markup-driven CSS language and framework. Class strings such as 
 - Build integrations such as `packages/vite` and `packages/webpack`
 - Editor and lint tooling in `packages/language-service`, `packages/language-server`, `packages/language`, `packages/vscode`, and `packages/eslint-plugin`
 
-The layer order is intentionally stable and declared by `packages/core/base.css`:
+The layer order is intentionally stable and declared by `packages/core/src/base.css`:
 
 ```txt
 @layer base, theme, preset, main, general;

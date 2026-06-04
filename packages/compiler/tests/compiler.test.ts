@@ -464,8 +464,8 @@ describe.concurrent('@master/css-compiler', () => {
     })
 
     it('compiles package CSS files without treating them as project entries', () => {
-        const coreIndex = resolve(here, '../../core/index.css')
-        const coreTheme = resolve(here, '../../core/theme.css')
+        const coreIndex = resolve(here, '../../core/src/index.css')
+        const coreTheme = resolve(here, '../../core/src/theme.css')
         const source = readFileSync(coreIndex, 'utf-8')
 
         expect(inspectCSS(source).hasMasterEntry).toBe(false)
@@ -487,8 +487,8 @@ describe.concurrent('@master/css-compiler', () => {
             mkdirSync(scope, { recursive: true })
             symlinkSync(resolve(here, '../../core'), join(scope, 'css'), 'dir')
 
-            expect(isMasterCSSPackageStyleFile(resolve(here, '../../core/theme.css'), root)).toBe(true)
-            expect(isMasterCSSPackageStyleFile(join(root, 'node_modules/@master/css/theme.css'), root)).toBe(true)
+            expect(isMasterCSSPackageStyleFile(resolve(here, '../../core/src/theme.css'), root)).toBe(true)
+            expect(isMasterCSSPackageStyleFile(join(root, 'node_modules/@master/css/src/theme.css'), root)).toBe(true)
         } finally {
             rmSync(root, { recursive: true, force: true })
         }

@@ -43,26 +43,26 @@
         "mastercss"
     ],
     "sideEffects": [
-        "./index.css",
-        "./base.css",
-        "./theme.css"
+        "./src/index.css",
+        "./src/base.css",
+        "./src/theme.css"
     ],
     "main": "./dist/index.mjs",
     "jsnext:main": "./dist/index.mjs",
     "esnext": "./dist/index.mjs",
     "module": "./dist/index.mjs",
-    "style": "./index.css",
+    "style": "./src/index.css",
     "types": "./dist/index.d.ts",
     "exports": {
         ".": {
-            "style": "./index.css",
+            "style": "./src/index.css",
             "types": "./dist/index.d.ts",
             "import": "./dist/index.mjs",
             "default": "./dist/index.mjs"
         },
-        "./index.css": "./index.css",
-        "./base.css": "./base.css",
-        "./theme.css": "./theme.css",
+        "./index.css": "./src/index.css",
+        "./base.css": "./src/base.css",
+        "./theme.css": "./src/theme.css",
         "./*": {
             "types": "./dist/*.d.ts",
             "import": "./dist/*.mjs",
@@ -72,9 +72,9 @@
     "bin": "./dist/bin/index.mjs",
     "files": [
         "dist",
-        "index.css",
-        "base.css",
-        "theme.css"
+        "src/index.css",
+        "src/base.css",
+        "src/theme.css"
     ],
     "publishConfig": {
         "access": "public",
