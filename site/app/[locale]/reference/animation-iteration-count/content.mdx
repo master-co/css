@@ -1,9 +1,8 @@
 ## Overview [sr-only]
 <Overview/>
 
-Simplify the native syntax using the derived symbol.
+Use the native animation iteration count property directly.
 ```html
-<div class="@iteration:infinite"> <!-- [!code focus] -->
 <div class="animation-iteration-count:infinite">
 ```
 
@@ -12,17 +11,16 @@ Simplify the native syntax using the derived symbol.
 ## Basic usage
 ### Loop animation
 Play the animation in an infinite loop.
-<Basic className="@iteration:infinite animation:rotate|1s|linear"/>
+<Basic className="animation-iteration-count:infinite animation:rotate|1s|linear"/>
 
 ### Specify N iterations
 Specifies the number of times the animation iterates, even decimals.
 
 (hover) Hover over the icon to see animation iterations
-<Basic className="@iteration:2.5:hover animation:rotate|1s|linear|forwards:hover"/>
+<Basic className="animation-iteration-count:2.5:hover animation:rotate|1s|linear|forwards:hover"/>
 
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="@iteration:infinite:hover @iteration:infinite@sm @iteration:infinite@dark @iteration:infinite@print">…</div>
+<div class="animation-iteration-count:infinite:hover animation-iteration-count:infinite@sm animation-iteration-count:infinite@dark animation-iteration-count:infinite@print">…</div>
 ```
-

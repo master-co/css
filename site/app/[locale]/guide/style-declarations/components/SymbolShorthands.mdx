@@ -2,22 +2,13 @@ export const code1 = `
     <!-- @MARK animation-name:fade --><!-- @MARK animation-duration:1s --><!-- @MARK transition-property:opacity -->
     <div class="animation-name:fade animation-duration:1s transition-property:opacity">
 `
-export const code2 = `
-    <!-- @MARK @name:fade --><!-- @MARK @duration:1s --><!-- @MARK ~property:opacity -->
-    <div class="@name:fade @duration:1s ~property:opacity">
-`
 
-Use `@*:` for animation longhands and `~*:` for transition longhands.
+Animation and transition longhand declarations use their CSS property keys.
 <Code lang="html">
     {code1}
 </Code>
 
-(o) Reduce `animation-*` and `transition-*` longhands to their scoped key shorthands. <Dropped p1={code1} p2={code2} target="class" />
-<Code lang="html">
-    {code2}
-</Code>
-
-Animation and transition shorthand declarations keep the explicit property key:
+Animation and transition shorthand declarations also keep the explicit property key:
 ```html
 <!-- @MARK animation:fade|1s|ease --><!-- @MARK transition:opacity|3s -->
 <div class="animation:fade|1s|ease transition:opacity|3s">

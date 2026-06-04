@@ -3,10 +3,9 @@ import { IconCircle } from '@tabler/icons-react'
 ## Overview [sr-only]
 <Overview/>
 
-Simplify the native syntax using the derived symbol.
+Use the native animation direction property directly.
 ```html
-<div class="animation-direction:reverse"> <!-- [!code --] -->
-<div class="@direction:reverse"> <!-- [!code ++] -->
+<div class="animation-direction:reverse">
 ```
 
 ---
@@ -14,19 +13,19 @@ Simplify the native syntax using the derived symbol.
 ## Basic usage
 ### Play forward
 The animation plays forward in each cycle.
-<Basic className="@direction:normal"/>
+<Basic className="animation-direction:normal"/>
 
 ### Play backward
 The animation plays backward in each cycle. For example, rotate counterclockwise.
-<Basic className="@direction:reverse"/>
+<Basic className="animation-direction:reverse"/>
 
 ### Play alternately
 The animation **reverses direction each cycle** and **the first iteration plays forward**.
-<Basic className="@direction:alternate"/>
+<Basic className="animation-direction:alternate"/>
 
 ### Play alternately and reverse first
 The animation **reverses direction each cycle** and **the first iteration plays backward**.
-<Basic className="@direction:alternate-reverse"/>
+<Basic className="animation-direction:alternate-reverse"/>
 
 ### Fade out
 Reverse the [`animation:fade`](/reference/animation) animation so that you don't need to define a new keyframe for `fade-out`.
@@ -42,8 +41,8 @@ For one-shot animations, remove `infinite`.
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="@direction:normal:hover">…</div>
-<div class="@direction:normal@sm">…</div>
-<div class="@direction:normal@dark">…</div>
-<div class="@direction:normal@print">…</div>
+<div class="animation-direction:normal:hover">…</div>
+<div class="animation-direction:normal@sm">…</div>
+<div class="animation-direction:normal@dark">…</div>
+<div class="animation-direction:normal@print">…</div>
 ```

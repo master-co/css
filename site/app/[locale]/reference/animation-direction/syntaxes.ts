@@ -1,9 +1,9 @@
 const syntaxes = [
-    ['@direction:`value`,`…`'],
-    '@direction:normal',
-    '@direction:reverse',
-    '@direction:alternate',
-    '@direction:alternate-reverse',
+    ['animation-direction:`value`,`…`'],
+    'animation-direction:normal',
+    'animation-direction:reverse',
+    'animation-direction:alternate',
+    'animation-direction:alternate-reverse',
 ]
 
 export default syntaxes

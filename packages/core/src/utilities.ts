@@ -1683,25 +1683,21 @@ const utilities = [
     },
     {
         name: 'transition-property',
-        key: '~property',
         type: UtilityType.Native
     },
     {
         name: 'transition-timing-function',
-        key: '~easing',
         type: UtilityType.Native,
         namespaces: ['easing']
     },
     {
         name: 'transition-duration',
-        key: '~duration',
         type: UtilityType.Native,
         unit: 'ms',
         namespaces: ['duration']
     },
     {
         name: 'transition-delay',
-        key: '~delay',
         type: UtilityType.Native,
         unit: 'ms'
     },
@@ -1712,46 +1708,38 @@ const utilities = [
     },
     {
         name: 'animation-delay',
-        key: '@delay',
         type: UtilityType.Native,
         unit: 'ms'
     },
     {
         name: 'animation-direction',
-        key: '@direction',
         type: UtilityType.Native
     },
     {
         name: 'animation-duration',
-        key: '@duration',
         type: UtilityType.Native,
         unit: 'ms',
         namespaces: ['duration']
     },
     {
         name: 'animation-fill-mode',
-        key: '@fill',
         type: UtilityType.Native
     },
     {
         name: 'animation-iteration-count',
-        key: '@iteration',
         type: UtilityType.Native
     },
     {
         name: 'animation-name',
-        key: '@name',
         type: UtilityType.Native,
         includeAnimations: true
     },
     {
         name: 'animation-play-state',
-        key: '@play',
         type: UtilityType.Native
     },
     {
         name: 'animation-timing-function',
-        key: '@easing',
         type: UtilityType.Native,
         namespaces: ['easing']
     },

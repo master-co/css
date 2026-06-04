@@ -54,40 +54,13 @@ It only generates the CSS keyframe rule used:
 
 ---
 
-## Simplified Syntax
+## Explicit Motion Declarations
 
-### `animation-play-state:` to `@play:`
+Animation and transition longhands use their full CSS property keys:
 ```html
-<div class="animation-play-state:paused"> <!-- [!code --] -->
-<div class="animation-play-state:running"> <!-- [!code --] -->
-<div class="@play:paused"> <!-- [!code ++] -->
-<div class="@play:running"> <!-- [!code ++] -->
+<div class="animation-play-state:paused">
+<div class="animation-fill-mode:forwards">
+<div class="animation-iteration-count:infinite">
+<div class="animation-direction:alternate">
 ```
-To learn more, check out the [Animaiton Play State](/reference/animation-play-state) documentation.
-
-### `animation-fill-mode:` to `@fill:`
-```html
-<div class="animation-fill-mode:forwards"> <!-- [!code --] -->
-<div class="animation-fill-mode:backwards"> <!-- [!code --] -->
-<div class="animation-fill-mode:both"> <!-- [!code --] -->
-<div class="@fill:forwards"> <!-- [!code ++] -->
-<div class="@fill:backwards"> <!-- [!code ++] -->
-<div class="@fill:both"> <!-- [!code ++] -->
-```
-To learn more, check out the [Animaiton Fill Mode](/reference/animation-fill-mode) documentation.
-
-### `animation-iteration-count:` to `@iteration:`
-```html
-<div class="animation-iteration-count:infinite"> <!-- [!code --] -->
-<div class="@fill:infinite"> <!-- [!code ++] -->
-```
-To learn more, check out the [Animaiton Fill Mode](/reference/animation-iteration-count) documentation.
-
-### `animation-direction` values
-```html
-<div class="animation-direction:alternate"> <!-- [!code --] -->
-<div class="animation-direction:alternate-reverse"> <!-- [!code --] -->
-<div class="@direction:alternate"> <!-- [!code ++] -->
-<div class="@direction:alternate-reverse"> <!-- [!code ++] -->
-```
-To learn more, check out the [Animaiton Direction](/reference/animation-direction) documentation.
+To learn more, check out the [animation](/reference/animation) documentation.

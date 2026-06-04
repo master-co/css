@@ -4,7 +4,7 @@ import SyntaxTr from '~/site/components/SyntaxTr'
 import SyntaxPreview from './SyntaxPreview'
 
 export default () => {
-    const previewSyntax = '@play:running'
+    const previewSyntax = 'animation-play-state:running'
     return (
         <>
             <SyntaxTable>

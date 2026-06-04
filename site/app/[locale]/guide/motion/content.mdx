@@ -54,18 +54,18 @@ Use motion foundations to answer three questions:
 ---
 
 ## Duration tokens
-The `duration` namespace is intentionally named with the `fast` and `slow` families so the token remains readable in shorthands such as `animation:fade|fast|smooth` and `transition:opacity|faster|crisp`. Use duration tokens directly with `@duration`:
+The `duration` namespace is intentionally named with the `fast` and `slow` families so the token remains readable in shorthands such as `animation:fade|fast|smooth` and `transition:opacity|faster|crisp`. Use duration tokens directly with `animation-duration`:
 <DurationTokens />
 
 ```html
-<!-- @MARK @duration:fast -->
-<div class="@name:fade @duration:fast"></div>
+<!-- @MARK animation-duration:fast -->
+<div class="animation-name:fade animation-duration:fast"></div>
 ```
 
 <details>
     <summary>Generated CSS</summary>
     <Class2CSS>
-        {['@duration:fast', '@duration:slowest']}
+        {['animation-duration:fast', 'animation-duration:slowest']}
     </Class2CSS>
 </details>
 
@@ -76,8 +76,8 @@ The `easing` namespace only includes custom curves. Native CSS values such as `l
 <EasingTokens />
 
 ```html
-<!-- @MARK @easing:crisp -->
-<div class="@name:fade @duration:fast @easing:crisp"></div>
+<!-- @MARK animation-timing-function:crisp -->
+<div class="animation-name:fade animation-duration:fast animation-timing-function:crisp"></div>
 
 <!-- Native CSS timing functions stay native. -->
 <div class="animation:fade|slow|ease-in-out"></div>
@@ -87,7 +87,7 @@ The `easing` namespace only includes custom curves. Native CSS values such as `l
 <details>
     <summary>Generated CSS</summary>
     <Class2CSS>
-        {['@easing:crisp', '@easing:overshoot', 'animation:fade|slow|ease-in-out']}
+        {['animation-timing-function:crisp', 'animation-timing-function:overshoot', 'animation:fade|slow|ease-in-out']}
     </Class2CSS>
 </details>
 
@@ -110,8 +110,8 @@ This lets animation and transition use the same motion language without writing 
 
 Apply the custom motion tokens in your markup:
 ```html
-<!-- @MARK @duration:fast --><!-- @MARK @easing:smooth --><!-- @MARK transition:opacity|fast|crisp -->
-<div class="@duration:fast @easing:smooth transition:opacity|fast|crisp">...</div>
+<!-- @MARK animation-duration:fast --><!-- @MARK animation-timing-function:smooth --><!-- @MARK transition:opacity|fast|crisp -->
+<div class="animation-duration:fast animation-timing-function:smooth transition:opacity|fast|crisp">...</div>
 ```
 
 ---
@@ -167,7 +167,7 @@ Use `@motion` for non-essential motion so it only runs when the user has not ask
 Use `@reduce-motion` to replace motion-heavy effects with a simpler state.
 
 ```html
-<!-- @MARK @duration:fast@motion --><!-- @MARK opacity:1@reduce-motion -->
+<!-- @MARK animation-duration:fast@motion --><!-- @MARK opacity:1@reduce-motion -->
 <div class="animation:fade|fast|smooth@motion opacity:1@reduce-motion"></div>
 ```
 

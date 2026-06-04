@@ -1,11 +1,11 @@
 const syntaxes = [
-    ['@duration:`milliSeconds`,`…`'],
-    '@duration:fastest',
-    '@duration:faster',
-    '@duration:fast',
-    '@duration:slow',
-    '@duration:slower',
-    '@duration:slowest',
+    ['animation-duration:`milliSeconds`,`…`'],
+    'animation-duration:fastest',
+    'animation-duration:faster',
+    'animation-duration:fast',
+    'animation-duration:slow',
+    'animation-duration:slower',
+    'animation-duration:slowest',
 ]
 
 export default syntaxes

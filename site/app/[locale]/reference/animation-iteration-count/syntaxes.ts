@@ -1,6 +1,6 @@
 const syntaxes = [
-    ['@iteration:`value`'],
-    '@iteration:infinite'
+    ['animation-iteration-count:`value`'],
+    'animation-iteration-count:infinite'
 ]
 
 export default syntaxes

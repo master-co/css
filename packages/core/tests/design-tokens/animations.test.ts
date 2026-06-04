@@ -1,16 +1,20 @@
 import { expect, test } from 'vitest'
 import createCSSWithTheme from '../helpers/create-css-with-theme'
 test.concurrent('duration tokens', () => {
-    expect(createCSSWithTheme().create('@duration:fastest')?.declarations).toStrictEqual({ 'animation-duration': 'var(--duration-fastest)' })
-    expect(createCSSWithTheme().create('@duration:fast')?.declarations).toStrictEqual({ 'animation-duration': 'var(--duration-fast)' })
-    expect(createCSSWithTheme().create('@duration:slowest')?.declarations).toStrictEqual({ 'animation-duration': 'var(--duration-slowest)' })
-    expect(createCSSWithTheme().create('~duration:slower')?.declarations).toStrictEqual({ 'transition-duration': 'var(--duration-slower)' })
+    expect(createCSSWithTheme().create('@duration:fastest')).toBeUndefined()
+    expect(createCSSWithTheme().create('~duration:slower')).toBeUndefined()
+    expect(createCSSWithTheme().create('animation-duration:fastest')?.declarations).toStrictEqual({ 'animation-duration': 'var(--duration-fastest)' })
+    expect(createCSSWithTheme().create('animation-duration:fast')?.declarations).toStrictEqual({ 'animation-duration': 'var(--duration-fast)' })
+    expect(createCSSWithTheme().create('animation-duration:slowest')?.declarations).toStrictEqual({ 'animation-duration': 'var(--duration-slowest)' })
+    expect(createCSSWithTheme().create('transition-duration:slower')?.declarations).toStrictEqual({ 'transition-duration': 'var(--duration-slower)' })
 })
 
 test.concurrent('easing tokens', () => {
-    expect(createCSSWithTheme().create('@easing:smooth')?.declarations).toStrictEqual({ 'animation-timing-function': 'var(--easing-smooth)' })
-    expect(createCSSWithTheme().create('@easing:overshoot')?.declarations).toStrictEqual({ 'animation-timing-function': 'var(--easing-overshoot)' })
-    expect(createCSSWithTheme().create('~easing:crisp')?.declarations).toStrictEqual({ 'transition-timing-function': 'var(--easing-crisp)' })
+    expect(createCSSWithTheme().create('@easing:smooth')).toBeUndefined()
+    expect(createCSSWithTheme().create('~easing:crisp')).toBeUndefined()
+    expect(createCSSWithTheme().create('animation-timing-function:smooth')?.declarations).toStrictEqual({ 'animation-timing-function': 'var(--easing-smooth)' })
+    expect(createCSSWithTheme().create('animation-timing-function:overshoot')?.declarations).toStrictEqual({ 'animation-timing-function': 'var(--easing-overshoot)' })
+    expect(createCSSWithTheme().create('transition-timing-function:crisp')?.declarations).toStrictEqual({ 'transition-timing-function': 'var(--easing-crisp)' })
 })
 
 test.concurrent('animation tokens', () => {

@@ -6,10 +6,10 @@ export default ({ className }: any) => {
     const iconClassName = clsx(className, 'app-icon-primary animation:rotate|1s|linear|infinite size:12x stroke:.5')
     return (
         <Demo>
-            {className === '@direction:normal' && <IconRotateClockwise className={iconClassName} />}
-            {className === '@direction:reverse' && <IconRotate className={iconClassName} />}
-            {className === '@direction:alternate' && <IconRefresh className={iconClassName} />}
-            {className === '@direction:alternate-reverse' && <IconRefresh className={iconClassName} />}
+            {className === 'animation-direction:normal' && <IconRotateClockwise className={iconClassName} />}
+            {className === 'animation-direction:reverse' && <IconRotate className={iconClassName} />}
+            {className === 'animation-direction:alternate' && <IconRefresh className={iconClassName} />}
+            {className === 'animation-direction:alternate-reverse' && <IconRefresh className={iconClassName} />}
         </Demo>
     )
 }

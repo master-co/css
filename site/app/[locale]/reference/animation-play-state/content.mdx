@@ -6,15 +6,15 @@
 ## Basic usage
 ### Play animation
 Set it to run when the animation is paused.
-<Basic className="@play:running" />
+<Basic className="animation-play-state:running" />
 
 ### Pause animation
 Pauses the running animation.
-<Basic className="@play:paused" />
+<Basic className="animation-play-state:paused" />
 
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="@play:paused:hover @play:paused@sm @play:paused@dark @play:paused@print">…</div>
+<div class="animation-play-state:paused:hover animation-play-state:paused@sm animation-play-state:paused@dark animation-play-state:paused@print">…</div>
 ```
 

@@ -58,7 +58,7 @@ describe('differential vs legacy — synthetic fixtures', () => {
         ['arrow fn', `const fn = (x: string) => x + 'bg:white'`],
         ['minified', `e=t=>"bg:white",n=>n*2`],
         ['top-level @', '@font-face { font-family: \'X\' }'],
-        ['~ at-rule', 'transition:transform|.3s ~delay:0ms'],
+        ['transition longhand', 'transition:transform|.3s transition-delay:0ms'],
         ['function with !', `setupCounter(counterElement!)`],
         ['classnames helper', `<div className={cn('bg:white', cond && 'fg:black', { 'm:8': true })}>x</div>`],
         ['data attribute', '<div data-class="bg:white" class="real fg:black">x</div>'],

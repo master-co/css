@@ -1,9 +1,9 @@
 const syntaxes = [
-    ['@fill:`mode`,`…`'],
-    '@fill:none',
-    '@fill:forwards',
-    '@fill:backwards',
-    '@fill:both'
+    ['animation-fill-mode:`mode`,`…`'],
+    'animation-fill-mode:none',
+    'animation-fill-mode:forwards',
+    'animation-fill-mode:backwards',
+    'animation-fill-mode:both'
 ]
 
 export default syntaxes

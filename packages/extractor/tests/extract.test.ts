@@ -41,8 +41,8 @@ test('basic html', () => {
     expect(extractLatentClasses(`<div class="f:16 blur(2px) animation:shake|1s|infinite>li"></div>`)).toEqual(['f:16', 'blur(2px)', 'animation:shake|1s|infinite>li'])
 })
 
-test('utility sign syntax is not extracted', () => {
-    expect(extractLatentClasses('@fade|1s ~opacity|.2s @duration:fast ~duration:fast')).toEqual(['@duration:fast', '~duration:fast'])
+test('utility sign and symbol key syntax is not extracted', () => {
+    expect(extractLatentClasses('@fade|1s ~opacity|.2s @duration:fast @direction:normal ~duration:fast ~property:opacity animation-duration:fast transition-duration:fast')).toEqual(['animation-duration:fast', 'transition-duration:fast'])
 })
 
 test('content', () => {
@@ -254,14 +254,14 @@ test('home path', () => {
         ~/site/assets/master.svg
         ~/site/master.svg
         transition:padding|300ms|ease-in
-        ~delay:0ms
-        ~duration:.5ms
-        ~easing:steps(6,end)
+        transition-delay:0ms
+        transition-duration:.5ms
+        transition-timing-function:steps(6,end)
     `)).toEqual([
         'transition:padding|300ms|ease-in',
-        '~delay:0ms',
-        '~duration:.5ms',
-        '~easing:steps(6,end)'
+        'transition-delay:0ms',
+        'transition-duration:.5ms',
+        'transition-timing-function:steps(6,end)'
     ])
 })
 

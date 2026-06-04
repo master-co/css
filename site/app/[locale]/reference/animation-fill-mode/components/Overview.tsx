@@ -4,7 +4,7 @@ import SyntaxTr from '~/site/components/SyntaxTr'
 import SyntaxPreview from './SyntaxPreview'
 
 export default () => {
-    const previewSyntax = '@fill:none'
+    const previewSyntax = 'animation-fill-mode:none'
     return (
         <>
             <SyntaxTable>

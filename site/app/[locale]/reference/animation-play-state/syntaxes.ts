@@ -1,7 +1,7 @@
 const syntaxes = [
-    ['@play:`state`,`…`'],
-    '@play:running',
-    '@play:paused'
+    ['animation-play-state:`state`,`…`'],
+    'animation-play-state:running',
+    'animation-play-state:paused'
 ]
 
 export default syntaxes

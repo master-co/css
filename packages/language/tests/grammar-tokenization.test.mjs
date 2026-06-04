@@ -105,6 +105,25 @@ test('core grammar highlights Master CSS declaration, selector, and at tokens', 
     assertTokenScope(tokens, '@sm', 'keyword.control.at-rule')
 })
 
+test('core grammar does not highlight removed motion symbol keys as declarations', () => {
+    const removed = tokensFor(coreHighlighter, '@duration:fast ~duration:fast @direction:normal', 'master-css')
+    assert.equal(
+        removed.some((token) => scopesOf(token).includes('support.type.property-name.css')),
+        false
+    )
+    assert.equal(
+        removed.some((token) => scopesOf(token).includes('support.constant.property-value.css')),
+        false
+    )
+
+    const explicit = tokensFor(coreHighlighter, 'animation-duration:fast transition-duration:fast animation-direction:normal', 'master-css')
+    assertTokenScope(explicit, 'animation-duration', 'support.type.property-name.css')
+    assertTokenScope(explicit, 'transition-duration', 'support.type.property-name.css')
+    assertTokenScope(explicit, 'animation-direction', 'support.type.property-name.css')
+    assertTokenScope(explicit, 'fast', 'support.constant.property-value.css')
+    assertTokenScope(explicit, 'normal', 'support.constant.property-value.css')
+})
+
 test('core grammar highlights grouped declarations and separators', () => {
     const tokens = tokensFor(coreHighlighter, '{fg:red;bg:blue}', 'master-css')
     assertTokenScope(tokens, '{', 'punctuation.section.property-list.begin.bracket.curly.css')

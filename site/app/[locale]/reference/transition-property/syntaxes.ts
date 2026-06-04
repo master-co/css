@@ -1,5 +1,5 @@
 const syntaxes = [
-    ['~property:`value`,`…`']
+    ['transition-property:`value`,`…`']
 ]
 
 export default syntaxes

@@ -1,11 +1,11 @@
 const syntaxes = [
-    ['~duration:`milliSeconds`,`…`'],
-    '~duration:fastest',
-    '~duration:faster',
-    '~duration:fast',
-    '~duration:slow',
-    '~duration:slower',
-    '~duration:slowest',
+    ['transition-duration:`milliSeconds`,`…`'],
+    'transition-duration:fastest',
+    'transition-duration:faster',
+    'transition-duration:fast',
+    'transition-duration:slow',
+    'transition-duration:slower',
+    'transition-duration:slowest',
 ]
 
 export default syntaxes

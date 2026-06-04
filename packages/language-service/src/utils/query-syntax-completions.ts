@@ -45,17 +45,6 @@ export default function querySyntaxCompletions(q = '', css: MasterCSS = createCS
     // check by utilities and main styles
     if (!isStyle && !isUtility) {
         if (key === undefined && !valueSeparatorMatch) {
-            /**
-             * The server capability sets '@' and '~' as trigger characters for at and adjacent selectors.
-             * They are also supported key prefixes, such as @duration: and ~duration:.
-             * @example class="@"
-             * @example class="~"
-             */
-            if (field.startsWith('@') || field.startsWith('~')) {
-                return getMainCompletionItems(css)
-                    .filter(completionItem => completionItem.label.startsWith(field))
-                    .map((completionItem) => ({ ...completionItem, label: completionItem.label.slice(1) }))
-            }
             return getMainCompletionItems(css)
         }
 
