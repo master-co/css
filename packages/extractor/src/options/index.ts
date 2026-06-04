@@ -6,7 +6,7 @@ const options: Options = {
     // enable verbose Logs
     verbose: 1,
     // specify output file path
-    output: '.master/css.css',
+    output: 'master.css',
     // specify an inline Master CSS config override
     config: undefined,
     // forcibly specify sources for scanning, not excluded by `options.exclude`

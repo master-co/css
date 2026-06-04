@@ -21,10 +21,10 @@ mcss extract
 The command runs according to the preset [extractor options](/reference/extractor/#options).
 
 ### `extract -o, --output <path>`
-Watch for file changes and build continuously.
-<DocProp defaultValue="'.master/css.css'" types={['string']} />
+Specify the generated CSS output path.
+<DocProp defaultValue="'master.css'" types={['string']} />
 ```bash name=Terminal
-mcss extract --output .master/css.css
+mcss extract --output master.css
 ```
 
 ### `extract -v, --verbose`
