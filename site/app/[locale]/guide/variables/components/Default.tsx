@@ -1,4 +1,4 @@
-import css from '~/internal/common/css'
+import css from '~/site/common/theme-css'
 import ExpandContent from '~/internal/components/ExpandContent'
 import InlineCode from '~/internal/components/InlineCode'
 

@@ -1,5 +1,5 @@
 import { generateAt, parseAt } from '@master/css/utils'
-import css from '~/internal/common/css'
+import css from '~/site/common/theme-css'
 import InlineCode from '~/internal/components/InlineCode'
 import { screenVariableEntries } from '~/site/utils/screen-variables'
 
