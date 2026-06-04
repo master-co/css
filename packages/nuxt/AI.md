@@ -22,6 +22,7 @@ This package provides a Nuxt module that wires Master CSS into Vite, Nitro, clie
 ## Rules
 
 - Keep mode behavior aligned with Vite package semantics.
+- Use `@master/css.vue/vite` for the Vite plugin so Vue SFC extraction is owned by the Vue integration.
 - Do not add browser-only code to server runtime.
 - Do not alter Nuxt build options unless mode behavior requires it.
 

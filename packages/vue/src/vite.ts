@@ -13,3 +13,6 @@ export default function masterCSS(options: PluginOptions = {}) {
         }
     })
 }
+
+export { options, VIRTUAL_CONFIG_ID } from '@master/css.vite'
+export type { PluginOptions }
