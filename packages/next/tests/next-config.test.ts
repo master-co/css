@@ -103,7 +103,7 @@ describe('withMasterCSS', () => {
                     condition: {
                         all: [
                             { not: 'foreign' },
-                            { content: /master-css-config/ }
+                            { content: /\?master-css-config/ }
                         ]
                     },
                     type: 'ecmascript'
@@ -114,7 +114,7 @@ describe('withMasterCSS', () => {
                     condition: {
                         all: [
                             { not: 'foreign' },
-                            { content: /master-css-config/ }
+                            { content: /\?master-css-config/ }
                         ]
                     },
                     type: 'ecmascript'
@@ -125,10 +125,21 @@ describe('withMasterCSS', () => {
                     condition: {
                         all: [
                             { not: 'foreign' },
-                            { content: /master-css-config/ }
+                            { content: /\?master-css-config/ }
                         ]
                     },
                     type: 'ecmascript'
+                })
+            ],
+            '*.ts': [
+                expect.objectContaining({
+                    condition: {
+                        all: [
+                            { not: 'foreign' },
+                            { content: /\?master-css-config/ }
+                        ]
+                    },
+                    type: 'typescript'
                 })
             ],
             '*.svg': {
@@ -182,7 +193,7 @@ describe('withMasterCSS', () => {
                     condition: {
                         all: [
                             { not: 'foreign' },
-                            { content: /master-css-config/ }
+                            { content: /\?master-css-config/ }
                         ]
                     },
                     type: 'ecmascript'
@@ -193,7 +204,7 @@ describe('withMasterCSS', () => {
                     condition: {
                         all: [
                             { not: 'foreign' },
-                            { content: /master-css-config/ }
+                            { content: /\?master-css-config/ }
                         ]
                     },
                     type: 'ecmascript'
@@ -204,10 +215,21 @@ describe('withMasterCSS', () => {
                     condition: {
                         all: [
                             { not: 'foreign' },
-                            { content: /master-css-config/ }
+                            { content: /\?master-css-config/ }
                         ]
                     },
                     type: 'ecmascript'
+                })
+            ],
+            '*.ts': [
+                expect.objectContaining({
+                    condition: {
+                        all: [
+                            { not: 'foreign' },
+                            { content: /\?master-css-config/ }
+                        ]
+                    },
+                    type: 'typescript'
                 })
             ]
         })

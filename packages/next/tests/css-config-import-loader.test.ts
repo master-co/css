@@ -49,11 +49,11 @@ afterEach(() => {
 })
 
 describe('css config import loader', () => {
-    it('rewrites relative CSS config query imports to generated JS config modules', async () => {
+    it('rewrites relative CSS config query imports from TypeScript modules to generated JS config modules', async () => {
         const projectDir = createFixtureDir()
         const appDir = join(projectDir, 'app')
         const configPath = join(appDir, 'theme.css')
-        const resourcePath = join(appDir, 'config.mjs')
+        const resourcePath = join(appDir, 'config.ts')
         const dependencies: string[] = []
         mkdirSync(appDir, { recursive: true })
         writeFileSync(configPath, '@master { --color-primary: #123; }')

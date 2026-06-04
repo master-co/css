@@ -24,6 +24,7 @@ type WebpackContext = Parameters<NonNullable<NextConfig['webpack']>>[1]
 type TurbopackRules = NonNullable<NonNullable<NextConfig['turbopack']>['rules']>
 type TurbopackRuleConfigCollection = TurbopackRules[string]
 const MASTER_CSS_CONFIG_RESOURCE_QUERY = new RegExp(MASTER_CSS_CONFIG_QUERY.slice(1))
+const MASTER_CSS_CONFIG_IMPORT_CONTENT_PATTERN = new RegExp(`\\${MASTER_CSS_CONFIG_QUERY}`)
 const MASTER_CSS_VIRTUAL_CONFIG_PATH_PATTERN = createVirtualDefaultConfigModulePathPattern()
 const MASTER_CSS_STYLE_CONTENT_PATTERN = createMasterCSSConfigEntryPattern()
 const MASTER_CSS_REACT_PACKAGE_NAME = '@master/css.react'
@@ -233,15 +234,17 @@ function createCSSConfigImportSourceRules(cssConfigImportLoaderPath: string, pro
             projectDir
         }
     }
-    return [
+    const sourceRules = [
         ['*.js', 'ecmascript'],
         ['*.mjs', 'ecmascript'],
-        ['*.cjs', 'ecmascript']
-    ].map(([glob, type]) => [glob, {
+        ['*.cjs', 'ecmascript'],
+        ['*.ts', 'typescript']
+    ] as const
+    return sourceRules.map(([glob, type]) => [glob, {
         condition: {
             all: [
                 { not: 'foreign' as const },
-                { content: MASTER_CSS_CONFIG_RESOURCE_QUERY }
+                { content: MASTER_CSS_CONFIG_IMPORT_CONTENT_PATTERN }
             ]
         },
         type,

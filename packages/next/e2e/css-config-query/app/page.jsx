@@ -1,4 +1,4 @@
-import config from './config.mjs'
+import config from './config'
 
 function getVariable(namespace, key) {
     return config.variables?.find((variable) =>
