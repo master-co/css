@@ -4,14 +4,37 @@
 ```
 The package provides a convenient React provider and context for using `@master/css-runtime` in React applications.
 
+The root entry is intended for projects using an official Master CSS integration and exports named React APIs:
+```tsx
+import { CSSRuntimeRegistry, CSSRuntimeProvider } from '@master/css.react'
+```
+
+Use `@master/css.react/runtime-provider` when you only need the provider API without the registry's `virtual:master-css-config` dependency.
+
 ---
 
 ## API Reference
-### `<CSSRuntimeProvider>`
-The `CSSRuntimeProvider` will automatically initialize a `CSSRuntime` instance and manage it according to changes in config or root element.
+### `<CSSRuntimeRegistry>`
+The `CSSRuntimeRegistry` initializes a `CSSRuntime` instance with the project-level config provided by the active Master CSS integration.
 ```tsx
-import CSSRuntimeProvider from '@master/css.react'
-import config from 'virtual:master-css-config'
+import { CSSRuntimeRegistry } from '@master/css.react'
+
+export default function App({ children }) {
+    return (
+        <CSSRuntimeRegistry>
+            {children}
+        </CSSRuntimeRegistry>
+    )
+}
+```
+
+The registry loads `virtual:master-css-config` internally, so use it when the official integration should load the project-level config discovered from the CSS entry.
+
+### `<CSSRuntimeProvider>`
+The `CSSRuntimeProvider` initializes a `CSSRuntime` instance and manages it according to changes in config or root element.
+```tsx
+import { CSSRuntimeProvider } from '@master/css.react/runtime-provider'
+import config from './theme.css?master-css-config'
 
 export default function App({ children }) {
     return (
@@ -24,7 +47,7 @@ export default function App({ children }) {
 
 The provider calls `initCSSRuntime(config, root)` on mount, refreshes the runtime with `resolveRuntimeConfig(config)` when `config` changes, and recreates the runtime when `root` changes. It destroys the runtime on unmount.
 
-Use `virtual:master-css-config` when the integration should load the project-level config discovered from the CSS entry.
+Use the provider subpath when you need a custom `?master-css-config` resource, a custom `root`, or an environment that does not resolve `virtual:master-css-config`.
 
 ### `CSSRuntimeProviderProps`
 <Code lang="ts">{require('../../../../../packages/react/src/types/provider-props.ts?raw')}</Code>
@@ -32,7 +55,7 @@ Use `virtual:master-css-config` when the integration should load the project-lev
 ### `useCSSRuntime()`
 Access the [`CSSRuntime`](/reference/runtime) instance from components rendered inside `CSSRuntimeProvider`.
 ```tsx
-import { useCSSRuntime } from '@master/css.react'
+import { useCSSRuntime } from '@master/css.react/runtime-provider'
 
 export function YourComponent() {
     const cssRuntime = useCSSRuntime()

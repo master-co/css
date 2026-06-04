@@ -14,7 +14,7 @@
 | `@master/css.webpack` | `.` | Webpack extraction plugin |
 | `@master/css.astro` | `.` | Astro integration |
 | `@master/css.nuxt` | `.` | Nuxt module |
-| `@master/css.react` | `.` | React runtime provider |
+| `@master/css.react` | `.`, `./runtime-provider` | React runtime registry, provider, and hooks |
 | `@master/css.vue` | `.` | Vue runtime provider |
 | `@master/css.svelte` | `.` | Svelte runtime provider and helpers |
 | `@master/css-language` | `.`, `./declaration`, `./grammars` | Grammars and language declaration |

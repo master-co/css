@@ -115,43 +115,26 @@ Install the React runtime provider and the Next.js adapter:
 @master/css.react@rc @master/css.next@rc
 ```
 
-Create an App Router client boundary for the runtime provider:
-
-```tsx name=app/client.tsx
-'use client'
-
-import CSSRuntimeProvider from '@master/css.react'
-import config from 'virtual:master-css-config'
-
-export default function Client({ children }: { children: React.ReactNode }) {
-    return (
-        <CSSRuntimeProvider config={config}>
-            {children}
-        </CSSRuntimeProvider>
-    )
-}
-```
-
-`virtual:master-css-config` loads the canonical project-level config object compiled by the Next.js adapter.
-
-Then wrap the root layout with that client boundary:
+Wrap the root layout with the React runtime registry:
 
 ```tsx name=app/layout.tsx
 import './globals.css'
-import Client from './client'
+import { CSSRuntimeRegistry } from '@master/css.react'
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
     return (
         <html lang="en" hidden={process.env.NODE_ENV === 'development'}>
             <body>
-                <Client>
+                <CSSRuntimeRegistry>
                     {children}
-                </Client>
+                </CSSRuntimeRegistry>
             </body>
         </html>
     )
 }
 ```
+
+`CSSRuntimeRegistry` loads the canonical project-level config object compiled by the Next.js adapter.
 
 Then register the adapter:
 

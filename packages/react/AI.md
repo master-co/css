@@ -2,12 +2,14 @@
 
 ## Responsibility
 
-This package provides a React runtime provider and hook around `@master/css-runtime`.
+This package provides a React runtime registry, provider, and hook around `@master/css-runtime`.
 
 ## Main Files
 
 - `src/CSSRuntimeProvider.tsx`
+- `src/CSSRuntimeRegistry.tsx`
 - `src/index.tsx`
+- `src/runtime-provider.tsx`
 - `src/types/provider-props.ts`
 - `src/uses/*`
 - `e2e/*`
@@ -15,6 +17,8 @@ This package provides a React runtime provider and hook around `@master/css-runt
 ## Risks
 
 - Client-only runtime initialization.
+- `CSSRuntimeRegistry` depends on `virtual:master-css-config` and must only be exposed through integration-aware entry points.
+- `src/runtime-provider.tsx` must remain free of `virtual:master-css-config` imports for users that provide config manually.
 - Cleanup on unmount.
 - Refreshing runtime when config changes.
 - Destroy/recreate behavior when root changes.

@@ -1,5 +1,5 @@
 import { fileURLToPath } from 'node:url'
-import { dirname, relative } from 'node:path'
+import { dirname, join, relative } from 'node:path'
 import { existsSync, mkdirSync, writeFileSync } from 'node:fs'
 import type { NextConfig } from 'next'
 import { createMasterCSSConfigEntryPattern } from '@master/css-configer/css'
@@ -26,6 +26,23 @@ type TurbopackRuleConfigCollection = TurbopackRules[string]
 const MASTER_CSS_CONFIG_RESOURCE_QUERY = new RegExp(MASTER_CSS_CONFIG_QUERY.slice(1))
 const MASTER_CSS_VIRTUAL_CONFIG_PATH_PATTERN = createVirtualDefaultConfigModulePathPattern()
 const MASTER_CSS_STYLE_CONTENT_PATTERN = createMasterCSSConfigEntryPattern()
+const MASTER_CSS_REACT_PACKAGE_NAME = '@master/css.react'
+const MASTER_CSS_REACT_ENTRY_MODULE = [
+    `'use client'`,
+    `import React from 'react'`,
+    `import type { ReactNode } from 'react'`,
+    `// @ts-ignore virtual module provided by @master/css.next`,
+    `import config from '${VIRTUAL_CONFIG_ID}'`,
+    `import { CSSRuntimeProvider } from '${MASTER_CSS_REACT_PACKAGE_NAME}/runtime-provider'`,
+    `export { CSSRuntimeContext, CSSRuntimeProvider, useCSSRuntime } from '${MASTER_CSS_REACT_PACKAGE_NAME}/runtime-provider'`,
+    `export type { CSSRuntimeProviderProps } from '${MASTER_CSS_REACT_PACKAGE_NAME}/runtime-provider'`,
+    `export interface CSSRuntimeRegistryProps {`,
+    `    children?: ReactNode`,
+    `}`,
+    `export function CSSRuntimeRegistry(props: CSSRuntimeRegistryProps) {`,
+    `    return React.createElement(CSSRuntimeProvider, { config }, props.children)`,
+    `}`
+].join('\n')
 
 function resolveAdapterPath() {
     return fileURLToPath(new URL('./adapter.mjs', import.meta.url))
@@ -64,6 +81,14 @@ function ensureVirtualConfigPath(projectDir = process.cwd()) {
     return virtualConfigPath
 }
 
+function ensureReactEntryPath(projectDir = process.cwd()) {
+    const appDir = existsSync(join(projectDir, 'src/app')) ? join(projectDir, 'src/app') : join(projectDir, 'app')
+    const reactEntryPath = join(appDir, '_master-css', 'react.tsx')
+    mkdirSync(dirname(reactEntryPath), { recursive: true })
+    writeFileSync(reactEntryPath, MASTER_CSS_REACT_ENTRY_MODULE)
+    return reactEntryPath
+}
+
 function toTurbopackProjectPath(file: string, projectDir = process.cwd()) {
     const relativePath = relative(projectDir, file).replace(/\\/g, '/')
     return relativePath.startsWith('./') || relativePath.startsWith('../') ? relativePath : `./${relativePath}`
@@ -73,12 +98,25 @@ function toRuleArray(rule: TurbopackRuleConfigCollection | undefined) {
     return Array.isArray(rule) ? rule : rule ? [rule] : []
 }
 
+function withTranspilePackage<T extends NextConfig>(nextConfig: T, packageName: string) {
+    const transpilePackages = nextConfig.transpilePackages || []
+    if (transpilePackages.includes(packageName)) return nextConfig
+    return {
+        ...nextConfig,
+        transpilePackages: [
+            ...transpilePackages,
+            packageName
+        ]
+    } as T
+}
+
 function applyMasterCSSWebpackConfig(
     config: WebpackConfig,
     cssConfigLoaderPath: string,
     styleCSSLoaderPath: string,
     virtualCSSPath: string,
-    virtualConfigPath: string
+    virtualConfigPath: string,
+    reactEntryPath: string
 ) {
     config.module ??= {}
     config.module.rules ??= []
@@ -118,7 +156,8 @@ function applyMasterCSSWebpackConfig(
     config.resolve.alias = {
         ...(config.resolve.alias || {}),
         [VIRTUAL_CSS_ID]: virtualCSSPath,
-        [VIRTUAL_CONFIG_ID]: virtualConfigPath
+        [VIRTUAL_CONFIG_ID]: virtualConfigPath,
+        [`${MASTER_CSS_REACT_PACKAGE_NAME}$`]: reactEntryPath
     }
     return config
 }
@@ -130,6 +169,7 @@ function applyMasterCSSTurbopackConfig(
     styleCSSLoaderPath: string,
     virtualCSSPath: string,
     virtualConfigPath: string,
+    reactEntryPath: string,
     projectDir: string,
     includeStyleRule = true
 ) {
@@ -179,7 +219,8 @@ function applyMasterCSSTurbopackConfig(
         resolveAlias: {
             ...nextConfig.turbopack?.resolveAlias,
             [VIRTUAL_CSS_ID]: virtualCSSPath,
-            [VIRTUAL_CONFIG_ID]: virtualConfigPath
+            [VIRTUAL_CONFIG_ID]: virtualConfigPath,
+            [MASTER_CSS_REACT_PACKAGE_NAME]: reactEntryPath
         },
         rules: {
             ...rules,
@@ -242,10 +283,11 @@ function applyMasterCSSExtractTurbopackConfig(
     extractCSSLoaderPath: string,
     virtualCSSPath: string,
     virtualConfigPath: string,
+    reactEntryPath: string,
     projectDir: string,
     statePath: string
 ) {
-    const turbopackConfig = applyMasterCSSTurbopackConfig(nextConfig, cssConfigLoaderPath, cssConfigImportLoaderPath, styleCSSLoaderPath, virtualCSSPath, virtualConfigPath, projectDir, false)
+    const turbopackConfig = applyMasterCSSTurbopackConfig(nextConfig, cssConfigLoaderPath, cssConfigImportLoaderPath, styleCSSLoaderPath, virtualCSSPath, virtualConfigPath, reactEntryPath, projectDir, false)
     const rules = turbopackConfig.rules || {}
     const starRules = toRuleArray(rules['*'])
     const extractLoader = {
@@ -309,15 +351,17 @@ function createConfigWithCSSConfigLoader<T extends NextConfig>(
     virtualCSSPath: string,
     webpackVirtualConfigPath: string,
     turbopackVirtualConfigPath: string,
+    webpackReactEntryPath: string,
+    turbopackReactEntryPath: string,
     projectDir: string
 ) {
     const userWebpack = nextConfig.webpack
     return {
         ...nextConfig,
-        turbopack: applyMasterCSSTurbopackConfig(nextConfig, cssConfigLoaderPath, cssConfigImportLoaderPath, styleCSSLoaderPath, virtualCSSPath, turbopackVirtualConfigPath, projectDir),
+        turbopack: applyMasterCSSTurbopackConfig(nextConfig, cssConfigLoaderPath, cssConfigImportLoaderPath, styleCSSLoaderPath, virtualCSSPath, turbopackVirtualConfigPath, turbopackReactEntryPath, projectDir),
         webpack(config: WebpackConfig, context: WebpackContext) {
             const resolvedConfig = userWebpack ? userWebpack(config, context) || config : config
-            return applyMasterCSSWebpackConfig(resolvedConfig, cssConfigLoaderPath, styleCSSLoaderPath, virtualCSSPath, webpackVirtualConfigPath)
+            return applyMasterCSSWebpackConfig(resolvedConfig, cssConfigLoaderPath, styleCSSLoaderPath, virtualCSSPath, webpackVirtualConfigPath, webpackReactEntryPath)
         }
     } as T
 }
@@ -326,13 +370,16 @@ export function withMasterCSS<T extends NextConfig>(nextConfig: T, options: Opti
 export function withMasterCSS<T extends NextConfig>(nextConfig: T, options: Options & { mode: 'extract' }): Promise<T>
 export function withMasterCSS<T extends NextConfig>(nextConfig?: T, options?: Options): WithAdapterPath<T>
 export function withMasterCSS<T extends NextConfig>(nextConfig: T = {} as T, options: Options = {}): T | WithAdapterPath<T> | Promise<T> {
+    nextConfig = withTranspilePackage(nextConfig, MASTER_CSS_REACT_PACKAGE_NAME)
     const resolvedOptions = resolveOptions(options)
     const cssConfigLoaderPath = resolveCSSConfigLoaderPath()
     const cssConfigImportLoaderPath = resolveCSSConfigImportLoaderPath()
     const styleCSSLoaderPath = resolveStyleCSSLoaderPath()
     const projectDir = process.cwd()
     const virtualConfigPath = ensureVirtualConfigPath(projectDir)
+    const reactEntryPath = ensureReactEntryPath(projectDir)
     const turbopackVirtualConfigPath = toTurbopackProjectPath(virtualConfigPath, projectDir)
+    const turbopackReactEntryPath = toTurbopackProjectPath(reactEntryPath, projectDir)
     registerOptions(options)
 
     if (resolvedOptions.mode === 'extract') {
@@ -343,6 +390,7 @@ export function withMasterCSS<T extends NextConfig>(nextConfig: T = {} as T, opt
             const outputPath = resolveExtractOutputPath(setup.projectDir)
             const statePath = resolveExtractStatePath(outputPath)
             const turbopackVirtualCSSPath = toTurbopackProjectPath(outputPath, setup.projectDir)
+            const extractTurbopackReactEntryPath = toTurbopackProjectPath(ensureReactEntryPath(setup.projectDir), setup.projectDir)
             return {
                 ...nextConfig,
                 turbopack: applyMasterCSSExtractTurbopackConfig(
@@ -354,6 +402,7 @@ export function withMasterCSS<T extends NextConfig>(nextConfig: T = {} as T, opt
                     resolveExtractCSSLoaderPath(),
                     turbopackVirtualCSSPath,
                     turbopackVirtualConfigPath,
+                    extractTurbopackReactEntryPath,
                     setup.projectDir,
                     statePath
                 )
@@ -369,6 +418,8 @@ export function withMasterCSS<T extends NextConfig>(nextConfig: T = {} as T, opt
         resolveEmptyCSSPath(),
         virtualConfigPath,
         turbopackVirtualConfigPath,
+        reactEntryPath,
+        turbopackReactEntryPath,
         projectDir
     )
 

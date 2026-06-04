@@ -45,6 +45,11 @@
             "types": "./dist/index.d.ts",
             "import": "./dist/index.mjs",
             "default": "./dist/index.mjs"
+        },
+        "./runtime-provider": {
+            "types": "./dist/runtime-provider.d.ts",
+            "import": "./dist/runtime-provider.mjs",
+            "default": "./dist/runtime-provider.mjs"
         }
     },
     "files": [

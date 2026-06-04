@@ -1,4 +1,4 @@
-import CSSRuntimeProvider from '../src'
+import { CSSRuntimeProvider } from '../src/runtime-provider'
 import { useState, useEffect, useRef } from 'react'
 import type { Config } from '@master/css'
 

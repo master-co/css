@@ -1,5 +1,5 @@
 import './globals.css'
-import Client from './client'
+import { CSSRuntimeRegistry } from '@master/css.react'
 
 export const metadata = {
     title: 'Create Next App',
@@ -12,9 +12,9 @@ export default function RootLayout({ children }: {
     return (
         <html lang="en" hidden={process.env.NODE_ENV === 'development'}>
             <body>
-                <Client>
+                <CSSRuntimeRegistry>
                     {children}
-                </Client>
+                </CSSRuntimeRegistry>
             </body>
         </html>
     )

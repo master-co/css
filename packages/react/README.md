@@ -54,3 +54,33 @@
 
 ## Documentation
 Check out the official [documentation](https://rc.css.master.co/guide/installation/react).
+
+## Usage
+Use the registry with an official Master CSS integration:
+
+```tsx
+import { CSSRuntimeRegistry } from '@master/css.react'
+
+export default function Layout({ children }: { children: React.ReactNode }) {
+    return (
+        <CSSRuntimeRegistry>
+            {children}
+        </CSSRuntimeRegistry>
+    )
+}
+```
+
+Use the provider subpath when you need to pass a custom config or root:
+
+```tsx
+import { CSSRuntimeProvider } from '@master/css.react/runtime-provider'
+import config from './theme.css?master-css-config'
+
+export default function Layout({ children }: { children: React.ReactNode }) {
+    return (
+        <CSSRuntimeProvider config={config}>
+            {children}
+        </CSSRuntimeProvider>
+    )
+}
+```
