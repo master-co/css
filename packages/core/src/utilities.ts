@@ -1761,6 +1761,7 @@ const utilities = [
         sign: '@',
         type: UtilityType.NativeShorthand,
         includeAnimations: true,
+        transformer: 'animation-token',
         namespaces: ['duration', 'easing']
     },
     {

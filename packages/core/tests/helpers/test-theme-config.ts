@@ -321,6 +321,18 @@ const themeConfig: Config = {
             rewind: 'cubic-bezier(.36,0,.66,-.56)',
             spring: 'cubic-bezier(.68,-.6,.32,1.6)'
         }),
+        ...variables('animation', {
+            fade: 'fade 1s infinite',
+            flash: 'flash 1s infinite',
+            float: 'float 3s ease-in-out infinite',
+            heart: 'heart 1s infinite',
+            jump: 'jump 1s infinite',
+            ping: 'ping 1s infinite',
+            pulse: 'pulse 1s infinite',
+            rotate: 'rotate 1s linear infinite',
+            shake: 'shake 1s infinite',
+            zoom: 'zoom 1s infinite'
+        }),
         ...variables('shadow', {
             xs: '0 1px 2px oklch(0% 0 none / .08)',
             sm: '0 1px 2px oklch(0% 0 none / .06)',

@@ -12,18 +12,18 @@ export default () => {
                 return (
                     <SyntaxTr value={syntax} key={syntax} previewSyntax={previewSyntax}>
                         {typeof syntax === 'string' && {
-                            '@fade|1s|infinite': <IconCircle className={clsx('app-icon-primary contain:strict ml:-2 mr:3x stroke:1 v:top', syntax)} />,
+                            'animation:fade': <IconCircle className={clsx('app-icon-primary contain:strict ml:-2 mr:3x stroke:1 v:top', syntax)} />,
+                            'animation:ping': <IconCircle className={clsx('app-icon-primary contain:strict ml:-2 mr:3x stroke:1 v:top', syntax)} />,
+                            'animation:flash': <IconStar className={clsx('app-icon-primary contain:strict ml:-2 mr:3x stroke:1 v:top', syntax)} />,
+                            'animation:heart': <IconHeart className={clsx('app-icon-primary contain:strict ml:-2 mr:3x stroke:1 v:top', syntax)} />,
+                            'animation:jump': <IconBallTennis className={clsx('app-icon-primary contain:strict ml:-2 mr:3x stroke:1 v:top', syntax)} />,
+                            'animation:pulse': <IconHandFinger className={clsx('app-icon-primary contain:strict ml:-2 mr:3x stroke:1 v:top', syntax)} />,
+                            'animation:rotate': <IconLoader className={clsx('app-icon-primary contain:strict ml:-2 mr:3x stroke:1 v:top', syntax)} />,
+                            'animation:shake': <IconBell className={clsx('app-icon-primary contain:strict ml:-2 mr:3x stroke:1 v:top', syntax)} />,
+                            'animation:zoom': <IconMaximize className={clsx('app-icon-primary contain:strict ml:-2 mr:3x stroke:1 v:top', syntax)} />,
+                            'animation:float': <IconUfo className={clsx('app-icon-primary contain:strict ml:-2 mr:3x stroke:1 v:top', syntax)} />,
                             '@fade|1s|infinite|reverse': <IconCircle className={clsx('app-icon-primary contain:strict ml:-2 mr:3x stroke:1 v:top', syntax)} />,
-                            '@ping|1s|infinite': <IconCircle className={clsx('app-icon-primary contain:strict ml:-2 mr:3x stroke:1 v:top', syntax)} />,
-                            '@flash|1s|infinite': <IconStar className={clsx('app-icon-primary contain:strict ml:-2 mr:3x stroke:1 v:top', syntax)} />,
-                            '@heart|1s|infinite': <IconHeart className={clsx('app-icon-primary contain:strict ml:-2 mr:3x stroke:1 v:top', syntax)} />,
-                            '@jump|1s|infinite': <IconBallTennis className={clsx('app-icon-primary contain:strict ml:-2 mr:3x stroke:1 v:top', syntax)} />,
-                            '@pulse|1s|infinite': <IconHandFinger className={clsx('app-icon-primary contain:strict ml:-2 mr:3x stroke:1 v:top', syntax)} />,
-                            '@rotate|1s|infinite|linear': <IconLoader className={clsx('app-icon-primary contain:strict ml:-2 mr:3x stroke:1 v:top', syntax)} />,
                             '@rotate|1s|infinite|linear|reverse': <IconLoader className={clsx('app-icon-primary contain:strict ml:-2 mr:3x stroke:1 v:top', syntax)} />,
-                            '@shake|1s|infinite': <IconBell className={clsx('app-icon-primary contain:strict ml:-2 mr:3x stroke:1 v:top', syntax)} />,
-                            '@zoom|1s|infinite': <IconMaximize className={clsx('app-icon-primary contain:strict ml:-2 mr:3x stroke:1 v:top', syntax)} />,
-                            '@float|3s|ease-in-out|infinite': <IconUfo className={clsx('app-icon-primary contain:strict ml:-2 mr:3x stroke:1 v:top', syntax)} />
                         }[syntax]}
                     </SyntaxTr>
                 )

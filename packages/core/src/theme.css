@@ -115,6 +115,16 @@
     --easing-overshoot: cubic-bezier(.34,1.56,.64,1);
     --easing-rewind: cubic-bezier(.36,0,.66,-.56);
     --easing-spring: cubic-bezier(.68,-.6,.32,1.6);
+    --animation-fade: fade 1s infinite;
+    --animation-flash: flash 1s infinite;
+    --animation-float: float 3s ease-in-out infinite;
+    --animation-heart: heart 1s infinite;
+    --animation-jump: jump 1s infinite;
+    --animation-ping: ping 1s infinite;
+    --animation-pulse: pulse 1s infinite;
+    --animation-rotate: rotate 1s linear infinite;
+    --animation-shake: shake 1s infinite;
+    --animation-zoom: zoom 1s infinite;
 
     /* Shadows */
     --shadow-xs: 0 1px 2px oklch(0% 0 none / .08);

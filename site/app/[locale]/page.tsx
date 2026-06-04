@@ -9,4 +9,7 @@ export default function Page() {
     );
 }
 
-export { default as metadata } from './metadata'
+export const metadata = {
+    title: 'Master CSS - The CSS language and framework',
+    description: 'The CSS language and framework for rapidly building modern and high-performance websites.'
+}

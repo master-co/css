@@ -13,7 +13,16 @@ test.concurrent('easing tokens', () => {
     expect(createCSSWithTheme().create('~easing:crisp')?.declarations).toStrictEqual({ 'transition-timing-function': 'var(--easing-crisp)' })
 })
 
+test.concurrent('animation tokens', () => {
+    const css = createCSSWithTheme().add('animation:float')
+
+    expect(css.create('animation:float')?.declarations).toStrictEqual({ animation: 'var(--animation-float)' })
+    expect(css.themeLayer.text).toContain(':root{--animation-float:float 3s ease-in-out infinite}')
+    expect(css.animationsNonLayer.text).toContain('@keyframes float{0%{transform:none}50%{transform:translateY(-1.25rem)}to{transform:none}}')
+})
+
 test.concurrent('animation and transition shorthand tokens', () => {
     expect(createCSSWithTheme().create('@fade|fast|smooth')?.declarations).toStrictEqual({ animation: 'fade var(--duration-fast) var(--easing-smooth)' })
+    expect(createCSSWithTheme().create('animation:fade|fast|smooth')?.declarations).toStrictEqual({ animation: 'fade var(--duration-fast) var(--easing-smooth)' })
     expect(createCSSWithTheme().create('~opacity|faster|crisp')?.declarations).toStrictEqual({ transition: 'opacity var(--duration-faster) var(--easing-crisp)' })
 })
