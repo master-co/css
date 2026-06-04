@@ -1,3 +1,3 @@
-import themeConfig from './theme-config.mjs'
+import themeConfig from './theme-config'
 
 export const themeAnimations = themeConfig.animations || {}

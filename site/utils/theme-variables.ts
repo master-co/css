@@ -1,4 +1,4 @@
-import themeConfig from './theme-config.mjs'
+import themeConfig from './theme-config'
 import type { VariableDefinition } from '@master/css'
 
 const themeVariables = themeConfig.variables || []
