@@ -185,7 +185,6 @@ export default class MasterCSS {
                     aliasGroups,
                     values,
                     kind,
-                    sign,
                     key: originalKey,
                     namespaces,
                 } = def
@@ -234,9 +233,7 @@ export default class MasterCSS {
                     keys.push(id)
                 }
 
-                if (sign) {
-                    definedUtility.matchers.arbitrary = new RegExp(`^${sign}[^!*>+~:[@_]+\\|`)
-                } else if (!matcher && type !== UtilityType.Static) {
+                if (!matcher && type !== UtilityType.Static) {
                     if (!key && !subkey) {
                         keys.push(id)
                     } else {

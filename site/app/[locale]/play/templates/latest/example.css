@@ -50,7 +50,7 @@
     }
 
     .btn-arrow-line {
-        @compose "~opacity|fast|smooth opacity:0 scale(0) transform-origin:5x|center";
+        @compose "transition:opacity|fast|smooth opacity:0 scale(0) transform-origin:5x|center";
     }
 
     .btn:hover .btn-arrow-line {

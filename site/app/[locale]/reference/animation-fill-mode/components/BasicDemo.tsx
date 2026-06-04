@@ -10,7 +10,7 @@ export default function BasicDemo({ className }: any) {
     useEffect(() => {
         setTargetClassName('')
         setTimeout(() => {
-            setTargetClassName('@slide-to-right|3s')
+            setTargetClassName('animation:slide-to-right|3s')
         })
     }, [className])
     return (

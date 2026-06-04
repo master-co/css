@@ -5,8 +5,6 @@ export const VALUE_DELIMITERS = {
     '{': '}'
 }
 export const BASE_UNIT_REGEX = /^([+-]?(?:\d+(?:\.?\d+)?|\.\d+))x$/m // 1x, 1.1x, -1x, -.1x
-export const TRANSITION_SIGN = '~'
-export const ANIMATION_SIGN = '@'
 export const SELECTOR_SIGNS = [':', '_', '>', '+', '~']
 export const SELECTOR_COMBINATORS = ['_', '>', '+', '~']
 export const QUERY_COMPARISON_OPERATORS = ['>', '<', '=']

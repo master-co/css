@@ -59,7 +59,7 @@ It can express common CSS values without ceremony:
 <div class="scale(1.5)">
 
 <!-- Transition transform for .3s with ease timing -->
-<div class="~transform|.3s|ease">
+<div class="transition:transform|.3s|ease">
 
 <!-- Use a static utility that emits display: block -->
 <div class="block">
@@ -103,7 +103,7 @@ It can also attach [responsive](/guide/responsive-design) and [conditional](/gui
 <div class="hidden@print">
 
 <!-- Fade only when reduced motion is not requested -->
-<div class="@fade|.2s@motion">
+<div class="animation:fade|.2s@motion">
 ```
 
 You do not need to memorize everything before starting. Begin with explicit CSS-like classes, then adopt shorthands, abbreviations, tokens, and functions when they make the markup easier to read.
@@ -287,7 +287,7 @@ Assuming the card has become reusable, define it as a main style using [componen
 ```css name=index.css
 @master {
     .card {
-        @compose "flex ~transform|fast|smooth overflow:hidden bg:white r:xl";
+        @compose "flex transition:transform|fast|smooth overflow:hidden bg:white r:xl";
 
         &:hover {
             @compose "translateY(-5)";

@@ -35,7 +35,7 @@
         display: flex
     }
 
-    .\@fade\|1s {
+    .animation\:fade\|1s {
         animation: fade 1s
     }
 }

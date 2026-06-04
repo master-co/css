@@ -11,7 +11,8 @@ import { glob } from 'fast-glob'
  * implementation. Outputs must be identical for every input.
  *
  * The reference (`_legacy-extract-latent-classes.ts`) is a frozen snapshot
- * of `git show rc:packages/extractor/src/functions/extract-latent-classes.ts`.
+ * of `git show rc:packages/extractor/src/functions/extract-latent-classes.ts`,
+ * with intentionally removed syntax candidates kept in sync.
  * Any divergence here is a regression in the new impl.
  */
 
@@ -57,7 +58,7 @@ describe('differential vs legacy — synthetic fixtures', () => {
         ['arrow fn', `const fn = (x: string) => x + 'bg:white'`],
         ['minified', `e=t=>"bg:white",n=>n*2`],
         ['top-level @', '@font-face { font-family: \'X\' }'],
-        ['~ at-rule', '~transform|.3s ~delay:0ms'],
+        ['~ at-rule', 'transition:transform|.3s ~delay:0ms'],
         ['function with !', `setupCounter(counterElement!)`],
         ['classnames helper', `<div className={cn('bg:white', cond && 'fg:black', { 'm:8': true })}>x</div>`],
         ['data attribute', '<div data-class="bg:white" class="real fg:black">x</div>'],

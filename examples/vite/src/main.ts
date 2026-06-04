@@ -5,5 +5,5 @@ import { setupCounter } from './counter'
 // console.log('config', config)
 
 const counterElement = document.querySelector<HTMLButtonElement>('#counter')
-counterElement?.classList.add('~transform|.3s', 'scale(1.1):hover')
+counterElement?.classList.add('transition:transform|.3s', 'scale(1.1):hover')
 counterElement && setupCounter(counterElement)

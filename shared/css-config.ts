@@ -41,7 +41,6 @@ export interface UtilityDefinition<
     type?: UtilityType
     layer?: UtilityLayerName
     matcher?: RegExp | string
-    sign?: string
     key?: string
     subkey?: string
     aliasGroups?: string[]

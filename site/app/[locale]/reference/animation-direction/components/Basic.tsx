@@ -7,7 +7,7 @@ export default (props: any) => {
             <BasicDemo {...props} />
             <Code lang="html">{`
                 <!-- @MARK ${props.className} -->
-                <svg class="${props.className} @rotate|1s|linear|infinite">…</svg>
+                <svg class="${props.className} animation:rotate|1s|linear|infinite">…</svg>
             `}</Code>
         </>
     )

@@ -1707,7 +1707,6 @@ const utilities = [
     },
     {
         name: 'transition',
-        sign: '~',
         type: UtilityType.NativeShorthand,
         namespaces: ['duration', 'easing']
     },
@@ -1758,7 +1757,6 @@ const utilities = [
     },
     {
         name: 'animation',
-        sign: '@',
         type: UtilityType.NativeShorthand,
         includeAnimations: true,
         transformer: 'animation-token',

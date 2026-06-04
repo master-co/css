@@ -1,43 +1,26 @@
 export const code1 = `
-    <!-- @MARK animation:fade|1s|ease --> <!-- @MARK transition:opacity|3s -->
-    <div class="animation:fade|1s|ease transition:opacity|3s">
+    <!-- @MARK animation-name:fade --><!-- @MARK animation-duration:1s --><!-- @MARK transition-property:opacity -->
+    <div class="animation-name:fade animation-duration:1s transition-property:opacity">
 `
 export const code2 = `
-    <!-- @MARK @fade|1s|ease --><!-- @MARK ~opacity|3s -->
-    <div class="@fade|1s|ease ~opacity|3s">
+    <!-- @MARK @name:fade --><!-- @MARK @duration:1s --><!-- @MARK ~property:opacity -->
+    <div class="@name:fade @duration:1s ~property:opacity">
 `
 
-Syntax: <code><span className="token value mcss language-mcss"><span className="token mcss"><span className="token Mkey">property-name</span><span className="token Mvalueroot"><span className="token Mcolon">:</span><span className="token Mvalue"><span className="token Mnumber_unit"><span className="token Mnumber">value</span></span></span></span></span></span></code> -> <code><span className="token value mcss language-mcss"><span className="token mcss"><span className="token Mkey">symbol</span><span className="token Mvalueroot"><span className="token Mvalue"><span className="token Mnumber_unit"><span className="token Mnumber">value</span></span></span></span></span></span></code>
-
-Use `~` for `transition` and `@` for `animation` when the declaration is mostly made of values.
+Use `@*:` for animation longhands and `~*:` for transition longhands.
 <Code lang="html">
     {code1}
 </Code>
 
-(o) Use derivative symbols specific to Master CSS. <Dropped p1={code1} p2={code2} target="class" />
+(o) Reduce `animation-*` and `transition-*` longhands to their scoped key shorthands. <Dropped p1={code1} p2={code2} target="class" />
 <Code lang="html">
     {code2}
 </Code>
 
-(i) At the start of a declaration, `@` means animation. At the end of a class, `@md`, `@print`, and similar suffixes mean [conditional queries](/guide/conditional-queries).
-
-export const code3 = `
-    <!-- @MARK animation-name:fade --><!-- @MARK transition-property:transform -->
-    <div class="animation-name:fade transition-property:transform">
-`
-export const code4 = `
-    <!-- @MARK @name:fade --><!-- @MARK ~property:transform -->
-    <div class="@name:fade ~property:transform">
-`
-
-Related longhand properties also work: <code><span className="token value mcss language-mcss"><span className="token mcss"><span className="token Mkey">property-name</span><span className="token Mvalueroot"><span className="token Mcolon">:</span><span className="token Mvalue"><span className="token Mnumber_unit"><span className="token Mnumber">value</span></span></span></span></span></span></code> -> <code><span className="token value mcss language-mcss"><span className="token mcss"><span className="token Mkey">symbolname</span><span className="token Mvalueroot"><span className="token Mcolon">:</span><span className="token Mvalue"><span className="token Mnumber_unit"><span className="token Mnumber">value</span></span></span></span></span></span></code>
-<Code lang="html">
-    {code3}
-</Code>
-
-(o) Reduce `animation-*` and `transition-*` to `@*` and `~*`. <Dropped p1={code3} p2={code4} target="class" />
-<Code lang="html">
-    {code4}
-</Code>
+Animation and transition shorthand declarations keep the explicit property key:
+```html
+<!-- @MARK animation:fade|1s|ease --><!-- @MARK transition:opacity|3s -->
+<div class="animation:fade|1s|ease transition:opacity|3s">
+```
 
 To learn more, check out the [animation](/reference/animation) and [transition](/reference/transition) documentation.

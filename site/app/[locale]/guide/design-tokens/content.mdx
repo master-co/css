@@ -127,7 +127,7 @@ Property shorthand keeps frequently used declarations compact:
 | `r:lg`, `rt:md` | `border-radius:lg`, `border-top-radius:md` | Corner radius |
 | <code>b:1&#124;lightest</code>, <code>bt:1&#124;neutral</code> | <code>border:1&#124;lightest</code>, <code>border-top:1&#124;neutral</code> | Border width, style, and color |
 | `shadow:md` | `box-shadow:md` | Elevation |
-| <code>~opacity&#124;fast&#124;smooth</code> | <code>transition:opacity&#124;fast&#124;smooth</code> | Transitions |
+| <code>transition:opacity&#124;fast&#124;smooth</code> | <code>transition-property:opacity @duration:fast @easing:smooth</code> | Transitions |
 | `@duration:fast`, `@easing:smooth` | `animation-duration:fast`, `animation-timing-function:smooth` | Animation timing |
 
 Contextual token shorthand removes redundant namespace prefixes from values. The utility already knows which namespace to search.
@@ -145,7 +145,7 @@ Contextual token shorthand removes redundant namespace prefixes from values. The
 | `leading:md` | `leading:line-height-md` | Line-height utilities resolve leading tokens. |
 | `tracking:tight` | `tracking:letter-spacing-tight` | Letter-spacing utilities resolve tracking tokens. |
 | `@duration:fast` | `@duration:duration-fast` | Animation duration resolves duration tokens. |
-| <code>~opacity&#124;fast&#124;smooth</code> | <code>~opacity&#124;duration-fast&#124;easing-smooth</code> | Transition shorthand resolves duration and easing tokens. |
+| <code>transition:opacity&#124;fast&#124;smooth</code> | <code>transition:opacity&#124;duration-fast&#124;easing-smooth</code> | Transition shorthand resolves duration and easing tokens. |
 
 Use the longer form only when it improves clarity in a syntax lesson, or when you are intentionally showing how variable namespaces map to generated CSS.
 
@@ -211,13 +211,13 @@ Motion tokens keep timing and easing consistent across transitions and animation
 (x) Timing is hard-coded.
 
 ```html
-<button class="~opacity|150ms|cubic-bezier(.4,0,.2,1)">...</button>
+<button class="transition:opacity|150ms|cubic-bezier(.4,0,.2,1)">...</button>
 ```
 
 (o) Timing and easing use shared motion tokens.
 
 ```html
-<button class="~opacity|fast|smooth">...</button>
+<button class="transition:opacity|fast|smooth">...</button>
 ```
 
 Native CSS values such as `linear`, `ease-in-out`, `steps()`, and `cubic-bezier()` are valid when the exact timing function is part of the lesson or when no configured easing token expresses the interaction. For ordinary UI transitions, prefer `@duration:*` and `@easing:*`.

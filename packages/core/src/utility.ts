@@ -47,7 +47,7 @@ export class Utility {
         this.layerName = registeredUtility.definition.layer || 'general'
         Object.assign(this, registeredUtility)
         const { id, definition } = registeredUtility
-        const { declarer, declarerOptions, transformer, transformerOptions, type, unit, sign } = definition
+        const { declarer, declarerOptions, transformer, transformerOptions, type, unit } = definition
         this.type = type!
 
         // 1. value / selectorToken
@@ -57,9 +57,7 @@ export class Utility {
             stateToken = name.slice(id.length - 1)
         } else {
             let valueToken: string | undefined
-            if (sign && name.startsWith(sign)) {
-                valueToken = name.slice(1)
-            } else if (id.endsWith('()')) {
+            if (id.endsWith('()')) {
                 valueToken = name
             } else if (id === 'group') {
                 valueToken = name

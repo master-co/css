@@ -162,8 +162,8 @@ In Master CSS, write the pseudo-element after the declaration:
 ```html
 <html class="
     animation-duration:slow::vt-group(hero)
-    @fade|fast|both|reverse::vt-old(hero)
-    @fade|fast|both::vt-new(hero)
+    animation:fade|fast|both|reverse::vt-old(hero)
+    animation:fade|fast|both::vt-new(hero)
 ">
 ```
 
@@ -172,8 +172,8 @@ In Master CSS, write the pseudo-element after the declaration:
     <Class2CSS>
         {[
             'animation-duration:slow::vt-group(hero)',
-            '@fade|fast|both|reverse::vt-old(hero)',
-            '@fade|fast|both::vt-new(hero)'
+            'animation:fade|fast|both|reverse::vt-old(hero)',
+            'animation:fade|fast|both::vt-new(hero)'
         ]}
     </Class2CSS>
 </details>

@@ -7,7 +7,7 @@ export default ({ className }: any) => {
             <BasicDemo className={className} />
             <Code lang="html">{`
                 <!-- @MARK ${className} -->
-                <svg class="${className} @slide-to-right|3s @delay:1s!">…</svg>
+                <svg class="${className} animation:slide-to-right|3s @delay:1s!">…</svg>
             `}</Code>
         </>
     )

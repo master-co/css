@@ -206,7 +206,7 @@ function Progress({ value }: { value: number }) {
     return (
         <div className="h:4x bg:surface r:full overflow:hidden">
             <div
-                className="h:full w:$progress bg:primary ~width|fast|smooth"
+                className="h:full w:$progress bg:primary transition:width|fast|smooth"
                 style={{ '--progress': `${value}%` } as React.CSSProperties}
             />
         </div>

@@ -42,7 +42,7 @@
     .card {
         @compose "grid gap:1rem p:card bg:base r:card max-w:42rem content-auto";
         @at motion-safe {
-            @compose "@demo-fade-in|.55s";
+            @compose "animation:demo-fade-in|.55s";
         }
         border: 1px solid var(--color-ring);
         box-shadow: 0 22px 70px rgb(17 24 39 / 12%);
@@ -51,7 +51,7 @@
     .live-label {
         @compose "inline-flex ai:center jc:center h:24 px:.75rem bg:primary r:pill font:12 font:semibold";
         @at motion-safe {
-            @compose "@demo-pulse|1.4s|infinite";
+            @compose "animation:demo-pulse|1.4s|infinite";
         }
         color: white;
         justify-self: start;

@@ -564,7 +564,7 @@ export default function Play({ shareId }: PlayProps = {}) {
                     <button className="app-header-icon hidden@<md" onClick={() => pushShallowURL('layout', layout ? '' : '2')}>
                         <svg className={clsx({ 'stroke:accent': !layout || layout === '2' })} xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" strokeWidth="1.2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
                             <path className={clsx(
-                                '~transform|.2s',
+                                'transition:transform|.2s',
                                 (!layout || layout === '2') ? 'fill:accent/.15' : 'fill:text-lightest/.2',
                                 { 'translate(12,4)': !layout }
                             )} stroke="none" d="M1,0H8A0,0,0,0,1,8,0V16a0,0,0,0,1,0,0H0a0,0,0,0,1,0,0V1A1,1,0,0,1,1,0Z" transform='translate(4 4)' />
@@ -576,7 +576,7 @@ export default function Play({ shareId }: PlayProps = {}) {
                     <button className="app-header-icon hidden@<md" onClick={() => pushShallowURL('layout', layout === '3' ? '4' : '3')}>
                         <svg className={clsx({ 'stroke:accent': layout === '3' || layout === '4' }, 'rotate(90)')} xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" strokeWidth="1.2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
                             <path className={clsx(
-                                '~transform|.2s',
+                                'transition:transform|.2s',
                                 (layout === '3' || layout === '4') ? 'fill:accent/.15' : 'fill:text-lightest/.2',
                                 { 'translate(12,4)': layout === '3' }
                             )} stroke="none" d="M1,0H8A0,0,0,0,1,8,0V16a0,0,0,0,1,0,0H0a0,0,0,0,1,0,0V1A1,1,0,0,1,1,0Z" transform='translate(4 4)' />

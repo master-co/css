@@ -1,7 +1,7 @@
 import { CompletionItemKind, type CompletionItem } from 'vscode-languageserver-protocol'
 import getPseudoClassCompletionItems from './get-pseudo-class-completion-items'
 import getPseudoElementCompletionItems from './get-pseudo-element-completion-items'
-import { ANIMATION_SIGN, AT_SIGN, MasterCSS, createCSS, QUERY_COMPARISON_OPERATORS, QUERY_LOGICAL_OPERATORS, TRANSITION_SIGN } from '@master/css'
+import { AT_SIGN, MasterCSS, createCSS, QUERY_COMPARISON_OPERATORS, QUERY_LOGICAL_OPERATORS } from '@master/css'
 import { generateCSS } from '@master/css/utils'
 import { GROUP_TRIGGER_CHARACTER, SELECTOR_TRIGGER_CHARACTERS } from '../common'
 import getMainCompletionItems from './get-main-completion-items'
@@ -27,10 +27,7 @@ export default function querySyntaxCompletions(q = '', css: MasterCSS = createCS
             field = field.slice(1)
         }
     }
-    const signs = css.definedUtilities
-        .filter(({ definition }) => definition.sign)
-        .map(({ definition }) => definition.sign)
-    const keyMatch = field.match(new RegExp(`^[^${signs}'":\\s]+:`))
+    const keyMatch = field.match(/^[^'":\s]+:/)
     const atMatches = Array.from(field.matchAll(/@(?=(?:[^'"]|'[^']*'|"[^"]*")*$)/g))
     const valueSeparatorMatch = field.match(/\|(?=(?:[^'"]|'[^']*'|"[^"]*")*$)/g)
     const atInvoked = atMatches.findIndex(({ index }) => index !== 0) !== -1
@@ -49,13 +46,12 @@ export default function querySyntaxCompletions(q = '', css: MasterCSS = createCS
     if (!isStyle && !isUtility) {
         if (key === undefined && !valueSeparatorMatch) {
             /**
-             * The server capability sets '@' '~' as the trigger characters for at and adjacent selectors,
-             * but these two characters are also the prefix symbols of `animation` and `transition`,
-             * and should be filtered to prevent hints all completions items.
+             * The server capability sets '@' and '~' as trigger characters for at and adjacent selectors.
+             * They are also supported key prefixes, such as @duration: and ~duration:.
              * @example class="@"
              * @example class="~"
              */
-            if (field.startsWith(ANIMATION_SIGN) || field.startsWith(TRANSITION_SIGN)) {
+            if (field.startsWith('@') || field.startsWith('~')) {
                 return getMainCompletionItems(css)
                     .filter(completionItem => completionItem.label.startsWith(field))
                     .map((completionItem) => ({ ...completionItem, label: completionItem.label.slice(1) }))
@@ -64,11 +60,7 @@ export default function querySyntaxCompletions(q = '', css: MasterCSS = createCS
         }
 
         if (!atInvoked && !selectorInvokedRegex.test(field.slice(firstColonIndex + 1))) {
-            if (field.startsWith(ANIMATION_SIGN) && firstColonIndex === -1) {
-                return getValueCompletionItems(css, 'animation')
-            } else if (field.startsWith(TRANSITION_SIGN) && firstColonIndex === -1) {
-                return getValueCompletionItems(css, 'transition')
-            } else if (key && firstColonIndex !== -1) {
+            if (key && firstColonIndex !== -1) {
                 return getValueCompletionItems(css, key)
             }
         }

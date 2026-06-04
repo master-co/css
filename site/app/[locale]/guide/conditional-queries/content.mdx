@@ -151,7 +151,7 @@ Use `@motion` for motion-safe animation and `@reduce-motion` for reduced-motion 
 <AnimationDirectionBasicDemo className="@direction:normal" />
 ```html
 <!-- @MARK @motion -->
-<svg class="@rotate|slowest|linear|infinite@motion">...</svg>
+<svg class="animation:rotate|slowest|linear|infinite@motion">...</svg>
 ```
 
 {/* ### `prefers-color-scheme` 🚧 */}
@@ -170,7 +170,7 @@ Use `@landscape` or `@portrait` to apply styles based on device orientation.
 <StartingStyleExample />
 ```html
 <!-- @MARK scale(0)@start -->
-<div id="target" popover="auto" class="~transform|slow|smooth scale(0)@start">
+<div id="target" popover="auto" class="transition:transform|slow|smooth scale(0)@start">
     ...
     <button popovertarget="target" popovertargetaction="hide">Close</button>
 </div>
@@ -179,7 +179,7 @@ Use `@landscape` or `@portrait` to apply styles based on device orientation.
 <details>
     <summary>Generated CSS</summary>
     <Class2CSS>
-        {['~transform|slow|smooth', 'scale(0)@starting-style']}
+        {['transition:transform|slow|smooth', 'scale(0)@starting-style']}
     </Class2CSS>
 </details>
 

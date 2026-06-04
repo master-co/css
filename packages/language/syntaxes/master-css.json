@@ -67,14 +67,6 @@
         "master-css-key": {
             "patterns": [
                 {
-                    "match": "(?<![^\\s;\"'`<_\\@\\+>~\\[]+)([@~])",
-                    "captures": {
-                        "1": {
-                            "name": "support.type.property-name.css"
-                        }
-                    }
-                },
-                {
                     "match": "(?<![^\\s;:{]+:[^\\s;]*)([^\\s;:\"'`{(]+)(:)(?!:)",
                     "captures": {
                         "1": {
@@ -140,7 +132,7 @@
                     }
                 },
                 {
-                    "match": "(?<=(?:[^\\s;:]+:|[@~]|(?:[^\\s;\\:\\|,]+\\())[^\\s;\\:\"'`]*)(\\$[-\\w]+)((/)(\\d*\\.\\d+|\\d+))?",
+                    "match": "(?<=(?:[^\\s;:]+:|(?:[^\\s;\\:\\|,]+\\())[^\\s;\\:\"'`]*)(\\$[-\\w]+)((/)(\\d*\\.\\d+|\\d+))?",
                     "captures": {
                         "1": {
                             "name": "variable.other.master-css.css"
@@ -191,7 +183,7 @@
                     }
                 },
                 {
-                    "match": "(?<=(?:[^\\s;:]+:|[@~]|(?:[^\\s;\\:\\|,]+\\())[^\\s;\\:\"'`]*)(\\+|\\-|\\*|\\/)?(\\d+\\.\\d+|\\.\\d+|\\d+)(%|cm|mm|q|in|pt|pc|px|em|rem|ex|rex|cap|rcap|ch|rch|ic|ric|lh|rlh|vw|svw|lvw|dvw|vh|svh|lvh|dvh|vi|svi|lvi|dvi|vb|svb|lvb|dvb|vmin|svmin|lvmin|dvmin|vmax|svmax|lvmax|dvmax|cqw|cqh|cqi|cqb|cqmin|cqmax|deg|grad|rad|turn|s|ms|hz|khz|dpi|dpcm|dppx|x(?![A-Za-z])|fr|db|st)?(x(?![A-Za-z]))?(?![A-Za-z])",
+                    "match": "(?<=(?:[^\\s;:]+:|(?:[^\\s;\\:\\|,]+\\())[^\\s;\\:\"'`]*)(\\+|\\-|\\*|\\/)?(\\d+\\.\\d+|\\.\\d+|\\d+)(%|cm|mm|q|in|pt|pc|px|em|rem|ex|rex|cap|rcap|ch|rch|ic|ric|lh|rlh|vw|svw|lvw|dvw|vh|svh|lvh|dvh|vi|svi|lvi|dvi|vb|svb|lvb|dvb|vmin|svmin|lvmin|dvmin|vmax|svmax|lvmax|dvmax|cqw|cqh|cqi|cqb|cqmin|cqmax|deg|grad|rad|turn|s|ms|hz|khz|dpi|dpcm|dppx|x(?![A-Za-z])|fr|db|st)?(x(?![A-Za-z]))?(?![A-Za-z])",
                     "captures": {
                         "1": {
                             "name": "keyword.operator.css"
@@ -208,7 +200,7 @@
                     }
                 },
                 {
-                    "match": "(?<=(?:[^\\s;:]+:|[@~]|(?:[^\\s;\\:\\|,]+\\())[^\\s;\\:\"'`]*)(\\.\\d+)(?![A-Za-z])",
+                    "match": "(?<=(?:[^\\s;:]+:|(?:[^\\s;\\:\\|,]+\\())[^\\s;\\:\"'`]*)(\\.\\d+)(?![A-Za-z])",
                     "captures": {
                         "1": {
                             "name": "constant.numeric.css"
@@ -216,7 +208,7 @@
                     }
                 },
                 {
-                    "match": "(?<=(?:[^\\s;:]+:|[@~]|(?:[^\\s;\\:\\|,]+\\())[^\\s;\\:\"'`]*)(\\|)",
+                    "match": "(?<=(?:[^\\s;:]+:|(?:[^\\s;\\:\\|,]+\\())[^\\s;\\:\"'`]*)(\\|)",
                     "captures": {
                         "1": {
                             "name": "keyword.operator.css"
@@ -224,7 +216,7 @@
                     }
                 },
                 {
-                    "match": "(?<=(?:[^\\s;:]+:|[@~]|(?:[^\\s;\\:\\|,]+\\())[^\\s;\\:\"'`]*)(,)",
+                    "match": "(?<=(?:[^\\s;:]+:|(?:[^\\s;\\:\\|,]+\\())[^\\s;\\:\"'`]*)(,)",
                     "captures": {
                         "1": {
                             "name": "punctuation.separator.list.comma.css"
@@ -232,7 +224,7 @@
                     }
                 },
                 {
-                    "match": "(?<=(?:[^\\s;:]+:|[@~]|(?:[^\\s;\\:\\|,]+\\())[^\\s;\\:\"'`]*)(!)",
+                    "match": "(?<=(?:[^\\s;:]+:|(?:[^\\s;\\:\\|,]+\\())[^\\s;\\:\"'`]*)(!)",
                     "captures": {
                         "1": {
                             "name": "keyword.other.important.css"
@@ -240,7 +232,7 @@
                     }
                 },
                 {
-                    "match": "(?<=(?:[^\\s;:]+:|[@~]|(?:[^\\s;\\:\\|,]+\\())[^\\s;\\:\"'`]*)(\\()",
+                    "match": "(?<=(?:[^\\s;:]+:|(?:[^\\s;\\:\\|,]+\\())[^\\s;\\:\"'`]*)(\\()",
                     "captures": {
                         "1": {
                             "name": "punctuation.section.function.begin.bracket.round.css"

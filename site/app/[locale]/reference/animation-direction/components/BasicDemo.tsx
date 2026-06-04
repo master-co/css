@@ -3,7 +3,7 @@ import clsx from 'clsx'
 import Demo from 'internal/components/Demo'
 
 export default ({ className }: any) => {
-    const iconClassName = clsx(className, 'app-icon-primary @rotate|1s|linear|infinite size:12x stroke:.5')
+    const iconClassName = clsx(className, 'app-icon-primary animation:rotate|1s|linear|infinite size:12x stroke:.5')
     return (
         <Demo>
             {className === '@direction:normal' && <IconRotateClockwise className={iconClassName} />}

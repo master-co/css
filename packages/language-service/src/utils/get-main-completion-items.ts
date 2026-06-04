@@ -47,19 +47,6 @@ export default function getMainCompletionItems(css: MasterCSS = createCSS()): Co
                 })
             })
 
-            /**
-             * @example @ animation and ~ transition
-             */
-            if (eachDefinedUtility.definition?.sign && eachDefinedUtility.definition.includeAnimations) {
-                css.animations.forEach((animation, animationName) => {
-                    completionItems.push({
-                        ...eachCompletionItem,
-                        label: eachDefinedUtility.definition.sign + animationName + '|1s',
-                        kind: CompletionItemKind.Value
-                    })
-                })
-            }
-
             if (eachDefinedUtility.definition?.aliasGroups?.length) {
                 for (const aliasGroup of eachDefinedUtility.definition.aliasGroups) {
                     if (addedKeys.has(aliasGroup)) {

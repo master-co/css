@@ -22,8 +22,8 @@ export default () => {
                             'animation:shake': <IconBell className={clsx('app-icon-primary contain:strict ml:-2 mr:3x stroke:1 v:top', syntax)} />,
                             'animation:zoom': <IconMaximize className={clsx('app-icon-primary contain:strict ml:-2 mr:3x stroke:1 v:top', syntax)} />,
                             'animation:float': <IconUfo className={clsx('app-icon-primary contain:strict ml:-2 mr:3x stroke:1 v:top', syntax)} />,
-                            '@fade|1s|infinite|reverse': <IconCircle className={clsx('app-icon-primary contain:strict ml:-2 mr:3x stroke:1 v:top', syntax)} />,
-                            '@rotate|1s|infinite|linear|reverse': <IconLoader className={clsx('app-icon-primary contain:strict ml:-2 mr:3x stroke:1 v:top', syntax)} />,
+                            'animation:fade|1s|infinite|reverse': <IconCircle className={clsx('app-icon-primary contain:strict ml:-2 mr:3x stroke:1 v:top', syntax)} />,
+                            'animation:rotate|1s|infinite|linear|reverse': <IconLoader className={clsx('app-icon-primary contain:strict ml:-2 mr:3x stroke:1 v:top', syntax)} />,
                         }[syntax]}
                     </SyntaxTr>
                 )

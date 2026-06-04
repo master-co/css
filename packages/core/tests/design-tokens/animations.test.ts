@@ -22,7 +22,8 @@ test.concurrent('animation tokens', () => {
 })
 
 test.concurrent('animation and transition shorthand tokens', () => {
-    expect(createCSSWithTheme().create('@fade|fast|smooth')?.declarations).toStrictEqual({ animation: 'fade var(--duration-fast) var(--easing-smooth)' })
+    expect(createCSSWithTheme().create('@fade|fast|smooth')).toBeUndefined()
+    expect(createCSSWithTheme().create('~opacity|faster|crisp')).toBeUndefined()
     expect(createCSSWithTheme().create('animation:fade|fast|smooth')?.declarations).toStrictEqual({ animation: 'fade var(--duration-fast) var(--easing-smooth)' })
-    expect(createCSSWithTheme().create('~opacity|faster|crisp')?.declarations).toStrictEqual({ transition: 'opacity var(--duration-faster) var(--easing-crisp)' })
+    expect(createCSSWithTheme().create('transition:opacity|faster|crisp')?.declarations).toStrictEqual({ transition: 'opacity var(--duration-faster) var(--easing-crisp)' })
 })

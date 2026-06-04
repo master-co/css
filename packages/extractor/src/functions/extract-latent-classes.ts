@@ -55,7 +55,7 @@ const GROUP_BODY = /{(.*)}/
 
 // "Keep this token" patterns OR'd into one — cheaper than four separate
 // `.match()` calls.
-const KEEP_TOKEN = /(?:\S*\{\S*\})|(?:^[\w\-()]+:\S+)|(?:^\$[\w-]+:\S+)|(?:^[\w-]+\(\S+\))|(?:^[@~]\S+$)|(?:^[\w-]+)/
+const KEEP_TOKEN = /(?:\S*\{\S*\})|(?:^[\w\-()]+:\S+)|(?:^\$[\w-]+:\S+)|(?:^[\w-]+\(\S+\))|(?:^[@~][\w-]+:\S+$)|(?:^[\w-]+)/
 
 // CSS unit suffix used by the `WxH` shorthand recognizer.
 const CSS_UNIT_SUFFIX = '%|cm|mm|q|in|pt|pc|px|em|rem|ex|rex|cap|rcap|ch|rch|ic|ric|lh|rlh|vw|svw|lvw|dvw|vh|svh|lvh|dvh|vi|svi|lvi|dvi|vb|svb|lvb|dvb|vmin|svmin|lvmin|dvmin|vmax|svmax|lvmax|dvmax|cqw|cqh|cqi|cqb|cqmin|cqmax|deg|grad|rad|turn|s|ms|hz|khz|dpi|dpcm|dppx|x|fr|db|st'

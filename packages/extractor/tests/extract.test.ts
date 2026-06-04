@@ -7,7 +7,7 @@ it('extract latent classes from js raw', () => {
 
         const counterElement = document.querySelector<HTMLButtonElement>('#counter')
         const syntax = 'block'
-        counterElement?.classList.add('~transform|.3s', 'translateY(-5):hover', syntax)
+        counterElement?.classList.add('transition:transform|.3s', 'translateY(-5):hover', syntax)
 
         setupCounter(counterElement!)
     `
@@ -18,7 +18,7 @@ it('extract latent classes from js raw', () => {
             'counterElement',
             'syntax',
             'block',
-            '~transform|.3s',
+            'transition:transform|.3s',
             'translateY(-5):hover',
             'setupCounter(counterElement!)',
         ])
@@ -38,7 +38,11 @@ test('basic js object', () => {
 })
 
 test('basic html', () => {
-    expect(extractLatentClasses(`<div class="f:16 blur(2px) @shake|1s|infinite>li"></div>`)).toEqual(['f:16', 'blur(2px)', '@shake|1s|infinite>li'])
+    expect(extractLatentClasses(`<div class="f:16 blur(2px) animation:shake|1s|infinite>li"></div>`)).toEqual(['f:16', 'blur(2px)', 'animation:shake|1s|infinite>li'])
+})
+
+test('utility sign syntax is not extracted', () => {
+    expect(extractLatentClasses('@fade|1s ~opacity|.2s @duration:fast ~duration:fast')).toEqual(['@duration:fast', '~duration:fast'])
 })
 
 test('content', () => {
@@ -87,7 +91,6 @@ test('media', () => {
     font:16@<=789
     font:16@>=789
     font:16@>789
-    @animation_test@>789
     `)).toEqual([
         'bg:black@xl',
         'font:24@media(min-width:1024px)',
@@ -95,7 +98,6 @@ test('media', () => {
         'font:16@<=789',
         'font:16@>=789',
         'font:16@>789',
-        '@animation_test@>789'
     ])
 })
 
@@ -251,12 +253,12 @@ test('home path', () => {
     expect(extractLatentClasses(`
         ~/site/assets/master.svg
         ~/site/master.svg
-        ~padding|300ms|ease-in
+        transition:padding|300ms|ease-in
         ~delay:0ms
         ~duration:.5ms
         ~easing:steps(6,end)
     `)).toEqual([
-        '~padding|300ms|ease-in',
+        'transition:padding|300ms|ease-in',
         '~delay:0ms',
         '~duration:.5ms',
         '~easing:steps(6,end)'

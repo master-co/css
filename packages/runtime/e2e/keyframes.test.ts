@@ -17,23 +17,23 @@ test('expects the animation output', async ({ page }) => {
     await page.evaluate(() => {
         const p = document.createElement('p')
         p.id = 'mp'
-        p.classList.add('@fade|1s')
+        p.classList.add('animation:fade|1s')
         document.body.append(p)
     })
-    expect(await page.evaluate(() => globalThis.cssRuntime.text)).toContain('.\\@fade\\|1s{animation:fade 1s}')
+    expect(await page.evaluate(() => globalThis.cssRuntime.text)).toContain('.animation\\:fade\\|1s{animation:fade 1s}')
     await page.evaluate(() => {
         const p = document.getElementById('mp')
         p?.classList.add(
-            '@flash|1s',
-            '@float|1s',
-            '@heart|1s',
-            '@jump|1s',
-            '@ping|1s',
-            '@pulse|1s',
-            '@rotate|1s',
-            '@shake|1s',
-            '@zoom|1s',
-            '{@zoom|1s;f:16}'
+            'animation:flash|1s',
+            'animation:float|1s',
+            'animation:heart|1s',
+            'animation:jump|1s',
+            'animation:ping|1s',
+            'animation:pulse|1s',
+            'animation:rotate|1s',
+            'animation:shake|1s',
+            'animation:zoom|1s',
+            '{animation:zoom|1s;f:16}'
         )
     })
     expect(await page.evaluate(() => Object.fromEntries(globalThis.cssRuntime.animationsNonLayer.tokenCounts))).toMatchObject({
@@ -69,58 +69,58 @@ test('expects the animation output', async ({ page }) => {
     expectAnimation(cssText, 'zoom', ['transform:scale(0)', 'transform:none'])
     await page.evaluate(() => {
         const p = document.getElementById('mp')
-        p?.classList.remove('@fade|1s')
+        p?.classList.remove('animation:fade|1s')
     })
     await expectNoAnimation(page, 'fade')
     await page.evaluate(() => {
         const p = document.getElementById('mp')
-        p?.classList.remove('@flash|1s')
+        p?.classList.remove('animation:flash|1s')
     })
     await expectNoAnimation(page, 'flash')
     await page.evaluate(() => {
         const p = document.getElementById('mp')
-        p?.classList.remove('@float|1s')
+        p?.classList.remove('animation:float|1s')
     })
     await expectNoAnimation(page, 'float')
     await page.evaluate(() => {
         const p = document.getElementById('mp')
-        p?.classList.remove('@heart|1s')
+        p?.classList.remove('animation:heart|1s')
     })
     await expectNoAnimation(page, 'heart')
     await page.evaluate(() => {
         const p = document.getElementById('mp')
-        p?.classList.remove('@jump|1s')
+        p?.classList.remove('animation:jump|1s')
     })
     await expectNoAnimation(page, 'jump')
     await page.evaluate(() => {
         const p = document.getElementById('mp')
-        p?.classList.remove('@ping|1s')
+        p?.classList.remove('animation:ping|1s')
     })
     await expectNoAnimation(page, 'ping')
     await page.evaluate(() => {
         const p = document.getElementById('mp')
-        p?.classList.remove('@pulse|1s')
+        p?.classList.remove('animation:pulse|1s')
     })
     await expectNoAnimation(page, 'pulse')
     await page.evaluate(() => {
         const p = document.getElementById('mp')
-        p?.classList.remove('@rotate|1s')
+        p?.classList.remove('animation:rotate|1s')
     })
     await expectNoAnimation(page, 'rotate')
     await page.evaluate(() => {
         const p = document.getElementById('mp')
-        p?.classList.remove('@shake|1s')
+        p?.classList.remove('animation:shake|1s')
     })
     await expectNoAnimation(page, 'shake')
     await page.evaluate(() => {
         const p = document.getElementById('mp')
-        p?.classList.remove('@zoom|1s')
+        p?.classList.remove('animation:zoom|1s')
     })
     expect(await page.evaluate(() => Object.fromEntries(globalThis.cssRuntime.animationsNonLayer.tokenCounts))).toEqual({ zoom: 1 })
     expectAnimation(await page.evaluate(() => globalThis.cssRuntime.text), 'zoom', ['transform:scale(0)', 'transform:none'])
     await page.evaluate(() => {
         const p = document.getElementById('mp')
-        p?.classList.remove('{@zoom|1s;f:16}')
+        p?.classList.remove('{animation:zoom|1s;f:16}')
     })
 
     expect(await page.evaluate(() => Object.fromEntries(globalThis.cssRuntime.animationsNonLayer.tokenCounts))).toEqual({})

@@ -6,7 +6,7 @@ export default ({ className }: any) => {
     return (
         <Demo>
             <IconUfo className={clsx(className, 'size:12x mr:-48 stroke:.5 stroke:text-lightest')} strokeDasharray={1.5} />
-            <IconUfo className={clsx(className, 'app-icon-primary @float|3s|ease-in-out|infinite size:12x stroke:.5')} />
+            <IconUfo className={clsx(className, 'app-icon-primary animation:float|3s|ease-in-out|infinite size:12x stroke:.5')} />
         </Demo>
     )
 }

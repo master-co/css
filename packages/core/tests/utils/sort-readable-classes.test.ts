@@ -40,7 +40,7 @@ new Tester({
     5: 'btn btn@sm card block font:12 bg:red:hover block@sm box-content@base text:center@preset',
     6: 'btn btn@sm card block {text:center} font:12 m:1x>ul>li {font:bold;font:32}>ul>li bg:red:hover block@sm box-content@base text:center@preset',
     7: 'btn card unknow1 unknow2 unknow3',
-    8: 'abs @flash|3s|infinit inset:0 m:auto blend:overlay fg:white font:7vw font:heavy height:fit text:center abs@sm font:40@xs',
+    8: 'abs animation:flash|3s|infinit inset:0 m:auto blend:overlay fg:white font:7vw font:heavy height:fit text:center abs@sm font:40@xs',
     9: 'block round m:32 px:16 font:12 mb:48 bg:blue:hover font:24@sm font:32@md',
     10: 'block round m:32 my:16 px:16 bg:red font:12 mb:48 bg:blue:hover bg:purple:focus font:32@sm my:32@lg font:48@lg',
     11: 'flex flex-col',

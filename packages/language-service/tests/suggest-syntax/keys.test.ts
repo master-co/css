@@ -15,20 +15,10 @@ it.concurrent('starts with @ and list related', () => expect(hint('@')?.map(({ l
     'direction:',
     'duration:',
     'easing:',
-    'fade|1s',
     'fill:',
-    'flash|1s',
-    'float|1s',
-    'heart|1s',
     'iteration:',
-    'jump|1s',
     'name:',
-    'ping|1s',
     'play:',
-    'pulse|1s',
-    'rotate|1s',
-    'shake|1s',
-    'zoom|1s',
 ]))
 it.concurrent('starts with ~', () => expect(hint('~')?.[0]).toMatchObject({ label: 'delay:' }))
 it.concurrent('starts with ~ and list related', () => expect(hint('~')?.map(({ label }) => label)).toEqual([

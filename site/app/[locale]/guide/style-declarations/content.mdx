@@ -1,9 +1,9 @@
 ## Overview [sr-only]
 <Overview />
 ```html
-<div class="scale(1.1):hover ~transform|.2s">
+<div class="scale(1.1):hover transition:transform|.2s">
     <img class="untouchable" … />
-    <div class="abs @flash|3s|infinite blend:overlay height:fit inset:0 m:auto">
+    <div class="abs animation:flash|3s|infinite blend:overlay height:fit inset:0 m:auto">
         <h1 class="fg:white font:7vw font:40@xs font:heavy text:center">
             Hello, World!
         </h1>
@@ -106,8 +106,8 @@ Change the text color of an element using color functions like `rgb()`, `hsl()`,
 After the declaration itself is clear, you can attach selectors and conditions without changing the declaration syntax.
 
 ```html
-<!-- @MARK bg:indigo --><!-- @MARK bg:purple:hover@md --><!-- @MARK ~background-color|.2s -->
-<button class="bg:indigo bg:purple:hover@md ~background-color|.2s">
+<!-- @MARK bg:indigo --><!-- @MARK bg:purple:hover@md --><!-- @MARK transition:background-color|.2s -->
+<button class="bg:indigo bg:purple:hover@md transition:background-color|.2s">
     Save
 </button>
 ```
@@ -116,6 +116,6 @@ This means:
 
 - `bg:indigo` applies by default.
 - `bg:purple:hover@md` applies only when the button is hovered and the viewport matches `@md`.
-- `~background-color|.2s` adds a `background-color` transition.
+- `transition:background-color|.2s` adds a `background-color` transition.
 
 The rest of the syntax tutorial builds on this model: declarations first, then selectors, then queries.
