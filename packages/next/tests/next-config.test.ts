@@ -45,6 +45,8 @@ describe('withMasterCSS', () => {
             })
         ]))
         expect(resolvedConfig.resolve.alias[VIRTUAL_CONFIG_ID]).toContain(join('node_modules', '.master-css', 'master-css-config.js'))
+        expect(resolvedConfig.resolve.alias['@master/css.react']).toBeUndefined()
+        expect(resolvedConfig.resolve.alias['@master/css.react$']).toBeUndefined()
     })
 
     it('adds a CSS config Turbopack loader', () => {
@@ -99,7 +101,10 @@ describe('withMasterCSS', () => {
             '*.js': [
                 expect.objectContaining({
                     condition: {
-                        not: 'foreign'
+                        all: [
+                            { not: 'foreign' },
+                            { content: /master-css-config/ }
+                        ]
                     },
                     type: 'ecmascript'
                 })
@@ -107,7 +112,10 @@ describe('withMasterCSS', () => {
             '*.mjs': [
                 expect.objectContaining({
                     condition: {
-                        not: 'foreign'
+                        all: [
+                            { not: 'foreign' },
+                            { content: /master-css-config/ }
+                        ]
                     },
                     type: 'ecmascript'
                 })
@@ -115,7 +123,10 @@ describe('withMasterCSS', () => {
             '*.cjs': [
                 expect.objectContaining({
                     condition: {
-                        not: 'foreign'
+                        all: [
+                            { not: 'foreign' },
+                            { content: /master-css-config/ }
+                        ]
                     },
                     type: 'ecmascript'
                 })
@@ -125,6 +136,8 @@ describe('withMasterCSS', () => {
             }
         })
         expect((nextConfig as any).turbopack.resolveAlias[VIRTUAL_CONFIG_ID]).toContain(join('node_modules', '.master-css', 'master-css-config.js'))
+        expect((nextConfig as any).turbopack.resolveAlias['@master/css.react']).toBeUndefined()
+        expect((nextConfig as any).transpilePackages).toContain('@master/css.react')
     })
 
     it('adds CSS config loaders without the adapter when mode is null', () => {
@@ -167,7 +180,10 @@ describe('withMasterCSS', () => {
             '*.js': [
                 expect.objectContaining({
                     condition: {
-                        not: 'foreign'
+                        all: [
+                            { not: 'foreign' },
+                            { content: /master-css-config/ }
+                        ]
                     },
                     type: 'ecmascript'
                 })
@@ -175,7 +191,10 @@ describe('withMasterCSS', () => {
             '*.mjs': [
                 expect.objectContaining({
                     condition: {
-                        not: 'foreign'
+                        all: [
+                            { not: 'foreign' },
+                            { content: /master-css-config/ }
+                        ]
                     },
                     type: 'ecmascript'
                 })
@@ -183,7 +202,10 @@ describe('withMasterCSS', () => {
             '*.cjs': [
                 expect.objectContaining({
                     condition: {
-                        not: 'foreign'
+                        all: [
+                            { not: 'foreign' },
+                            { content: /master-css-config/ }
+                        ]
                     },
                     type: 'ecmascript'
                 })

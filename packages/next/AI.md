@@ -11,7 +11,8 @@
 - It does not implement App Router request-time class collection.
 - Extract mode must not rely on `nextConfig.webpack` or `@master/css.webpack`.
 - Extract mode uses `CSSExtractor` as the source of static extraction behavior.
-- The adapter aliases `@master/css.react` to a generated App Router client entry so `CSSRuntimeRegistry` can be imported from server layouts while still resolving `virtual:master-css-config`.
+- `CSSRuntimeRegistry` is imported from `@master/css.react`; do not alias it to generated App Router files.
+- Turbopack JS config-import rules must stay guarded by `content: /master-css-config/` so unrelated client modules keep their native Next client boundary handling.
 
 ## Public APIs
 
@@ -36,7 +37,7 @@
 - Duplicate writes when the same fallback HTML is listed through multiple output groups.
 - Hiding request-time limitations behind a build-time adapter.
 - Turbopack loader behavior is an incremental scanner; source-glob extraction remains the correctness baseline.
-- Moving the generated React entry outside the App Router graph can break Next/Turbopack client component classification.
+- Over-broad Turbopack JS loader rules can break Next/Turbopack client component classification for linked workspace packages.
 
 ## Validation
 
