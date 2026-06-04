@@ -47,6 +47,11 @@
             "import": "./dist/index.js",
             "default": "./dist/index.js"
         },
+        "./runtime-provider": {
+            "types": "./dist/runtime-provider.d.ts",
+            "import": "./dist/runtime-provider.js",
+            "default": "./dist/runtime-provider.js"
+        },
         "./adapter": {
             "types": "./dist/adapter.d.ts",
             "import": "./dist/adapter.js",

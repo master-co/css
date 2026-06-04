@@ -1,5 +1,5 @@
 <script setup lang="ts">
-    import CSSRuntimeProvider from '../src'
+    import { CSSRuntimeProvider } from '../src/runtime-provider'
     import { ref, onMounted } from 'vue'
     import type { Config } from '@master/css'
     import RuntimeConsumer from './RuntimeConsumer.vue'

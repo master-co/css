@@ -53,4 +53,32 @@
 </div>
 
 ## Documentation
-Check out the official [documentation](https://rc.css.master.co/guide/installation/vue).
+Check out the official [documentation](https://rc.css.master.co/guide/installation/vuejs).
+
+## Usage
+```vue
+<script setup lang="ts">
+import { CSSRuntimeRegistry } from '@master/css.vue'
+</script>
+
+<template>
+    <CSSRuntimeRegistry>
+        <slot />
+    </CSSRuntimeRegistry>
+</template>
+```
+
+Use the provider subpath when you need to pass a custom config or root:
+
+```vue
+<script setup lang="ts">
+import { CSSRuntimeProvider } from '@master/css.vue/runtime-provider'
+import config from './app.css?master-css-config'
+</script>
+
+<template>
+    <CSSRuntimeProvider :config="config">
+        <slot />
+    </CSSRuntimeProvider>
+</template>
+```

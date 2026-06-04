@@ -7,7 +7,9 @@ This package provides a Vue runtime provider around `@master/css-runtime`.
 ## Main Files
 
 - `src/CSSRuntimeProvider.vue`
+- `src/CSSRuntimeRegistry.vue`
 - `src/index.ts`
+- `src/runtime-provider.ts`
 - `e2e/*`
 
 ## Risks
@@ -15,11 +17,14 @@ This package provides a Vue runtime provider around `@master/css-runtime`.
 - Provider/injection timing.
 - Runtime cleanup.
 - Config and root watchers.
+- `CSSRuntimeRegistry` depends on `virtual:master-css-config` and should remain the quick-start integration entry.
+- `src/runtime-provider.ts` must remain free of `virtual:master-css-config` imports for users that provide config manually.
 
 ## Rules
 
 - Do not modify runtime core behavior here.
 - Keep browser lifecycle changes covered by e2e tests.
+- Do not add a default export to the root entry.
 
 ## Validation
 

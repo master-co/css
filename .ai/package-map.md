@@ -15,7 +15,7 @@
 | `@master/css.astro` | `.` | Astro integration |
 | `@master/css.nuxt` | `.` | Nuxt module |
 | `@master/css.react` | `.`, `./runtime-provider` | React runtime registry, provider, and hooks |
-| `@master/css.vue` | `.` | Vue runtime provider |
+| `@master/css.vue` | `.`, `./runtime-provider`, `./adapter`, `./vite` | Vue runtime registry, provider, and Vue SFC extraction adapter |
 | `@master/css.svelte` | `.` | Svelte runtime provider and helpers |
 | `@master/css-language` | `.`, `./declaration`, `./grammars` | Grammars and language declaration |
 | `@master/css-language-service` | `.` | Completion, hover, colors |

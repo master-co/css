@@ -1,6 +1,6 @@
 <script setup lang="ts">
     import { computed } from 'vue'
-    import { useCSSRuntime } from '../src'
+    import { useCSSRuntime } from '../src/runtime-provider'
 
     const cssRuntime = useCSSRuntime()
     const status = computed(() => cssRuntime?.value ? 'ready' : 'pending')

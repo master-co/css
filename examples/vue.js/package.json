@@ -12,7 +12,7 @@
     },
     "dependencies": {
         "@master/css": "workspace:^",
-        "@master/css.vite": "workspace:^",
+        "@master/css.vue": "workspace:^",
         "vue": "^3.5.33"
     },
     "devDependencies": {

@@ -1,14 +1,11 @@
 <script setup lang="ts">
 import { shallowRef, provide, onMounted, onUnmounted, watch } from 'vue'
-import type { Config } from '@master/css'
 import { initCSSRuntime, resolveRuntimeConfig } from '@master/css-runtime'
 import type { CSSRuntime } from '@master/css-runtime'
 import { CSS_RUNTIME_INJECTION_KEY } from './use-css-runtime'
+import type { CSSRuntimeProviderProps } from './types/provider-props'
 
-const props = defineProps<{
-    config?: Config;
-    root?: Document | ShadowRoot | null; // null for Element.shadowRoot
-}>();
+const props = defineProps<CSSRuntimeProviderProps>()
 
 const cssRuntime = shallowRef<CSSRuntime | undefined>(undefined)
 
