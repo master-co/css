@@ -23,14 +23,14 @@
     }
 }
 
-@layer main {
+@layer components {
     .btn {
         display: inline-flex;
         background-color: rgb(var(--primary))
     }
 }
 
-@layer general {
+@layer utilities {
     .flex {
         display: flex
     }

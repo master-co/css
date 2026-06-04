@@ -1,7 +1,7 @@
 import { it, test, expect } from 'vitest'
 import createCSSWithTheme from '../helpers/create-css-with-theme'
 it.concurrent('checks padding order', () => {
-    expect(createCSSWithTheme().add('px:0', 'pl:0', 'pr:0', 'p:0', 'pt:0', 'pb:0', 'py:0').generalLayer.rules)
+    expect(createCSSWithTheme().add('px:0', 'pl:0', 'pr:0', 'p:0', 'pt:0', 'pb:0', 'py:0').utilitiesLayer.rules)
         .toMatchObject([
             { name: 'p:0' },
             { name: 'px:0' },

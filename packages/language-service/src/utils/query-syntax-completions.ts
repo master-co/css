@@ -4,7 +4,7 @@ import getPseudoElementCompletionItems from './get-pseudo-element-completion-ite
 import { AT_SIGN, MasterCSS, createCSS, QUERY_COMPARISON_OPERATORS, QUERY_LOGICAL_OPERATORS } from '@master/css'
 import { generateCSS } from '@master/css/utils'
 import { GROUP_TRIGGER_CHARACTER, SELECTOR_TRIGGER_CHARACTERS } from '../common'
-import getMainCompletionItems from './get-main-completion-items'
+import getClassCompletionItems from './get-class-completion-items'
 import { SELECTOR_SIGNS } from '@master/css'
 import getValueCompletionItems from './get-value-completion-items'
 import getQueryCompletionItems from './get-query-completion-items'
@@ -16,7 +16,7 @@ export default function querySyntaxCompletions(q = '', css: MasterCSS = createCS
     const triggerCharacter = q.charAt(q.length - 1)
     const invoked = triggerCharacter === ' ' || field.length === 0
     if (invoked || field === GROUP_TRIGGER_CHARACTER || triggerCharacter === ';') {
-        return getMainCompletionItems(css)
+        return getClassCompletionItems(css)
     }
     const isGroup = field.startsWith(GROUP_TRIGGER_CHARACTER)
     if (isGroup) {
@@ -27,6 +27,9 @@ export default function querySyntaxCompletions(q = '', css: MasterCSS = createCS
             field = field.slice(1)
         }
     }
+    if (field.startsWith(AT_SIGN) || field.startsWith('~')) {
+        return []
+    }
     const keyMatch = field.match(/^[^'":\s]+:/)
     const atMatches = Array.from(field.matchAll(/@(?=(?:[^'"]|'[^']*'|"[^"]*")*$)/g))
     const valueSeparatorMatch = field.match(/\|(?=(?:[^'"]|'[^']*'|"[^"]*")*$)/g)
@@ -34,18 +37,18 @@ export default function querySyntaxCompletions(q = '', css: MasterCSS = createCS
     const firstColonIndex = keyMatch ? keyMatch[0].length - 1 : -1
     const selectorInvokedRegex = new RegExp(`[${SELECTOR_SIGNS.join('')}](?=(?:[^'"]|'[^']*'|"[^"]*")*$)`)
     const key = keyMatch ? keyMatch[0].slice(0, firstColonIndex) : undefined
-    const mainStyleNames = css.definedUtilities
-        .filter(({ definition }) => definition.type === -4 && definition.layer === 'main')
+    const componentNames = css.definedUtilities
+        .filter(({ definition }) => definition.type === -4 && definition.layer === 'components')
         .map(({ id }) => id.startsWith('.') ? id.slice(1) : id)
     const utilityNames = css.definedUtilities
         .filter(({ definition }) => definition.type === -4)
         .map(({ id }) => id.startsWith('.') ? id.slice(1) : id)
-    const isStyle = !!mainStyleNames.find((eachStyleName) => new RegExp(`^${eachStyleName}(?:\\b|_)`).test(field))
+    const isStyle = !!componentNames.find((eachStyleName) => new RegExp(`^${eachStyleName}(?:\\b|_)`).test(field))
     const isUtility = !!utilityNames.find((eachUtilityName) => new RegExp(`^${eachUtilityName}(?:\\b|_)`).test(field))
-    // check by utilities and main styles
+    // check by utilities and components
     if (!isStyle && !isUtility) {
         if (key === undefined && !valueSeparatorMatch) {
-            return getMainCompletionItems(css)
+            return getClassCompletionItems(css)
         }
 
         if (!atInvoked && !selectorInvokedRegex.test(field.slice(firstColonIndex + 1))) {

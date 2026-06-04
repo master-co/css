@@ -21,7 +21,7 @@
 - `src/core.ts`
 - `src/features/*`
 - `src/utils/query-syntax-completions.ts`
-- `src/utils/get-main-completion-items.ts`
+- `src/utils/get-class-completion-items.ts`
 - `src/utils/get-value-completion-items.ts`
 - `src/utils/get-query-completion-items.ts`
 - `src/utils/regex.ts`
@@ -70,4 +70,3 @@ Use or extend:
 - Assuming all class strings are HTML attributes.
 - Returning completions outside accepted documents.
 - Making completions inconsistent with core rule matching.
-

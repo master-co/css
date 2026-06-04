@@ -16,10 +16,10 @@ Master CSS is a markup-driven CSS language and framework. Class strings such as 
 The layer order is intentionally stable and declared by `packages/core/src/base.css`:
 
 ```txt
-@layer base, theme, preset, main, general;
+@layer theme, base, preset, components, utilities;
 ```
 
-Generated rules are emitted into `base`, `theme`, `preset`, `main`, and `general` layer blocks without dynamically adding the layer statement. Keyframes are emitted outside layers. Any CSS output difference must be intentional, explainable, and covered by tests.
+Generated rules are emitted into `theme`, `base`, `preset`, `components`, and `utilities` layer blocks without dynamically adding the layer statement. Keyframes are emitted outside layers. Any CSS output difference must be intentional, explainable, and covered by tests.
 
 ## Before Editing
 

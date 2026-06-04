@@ -12,5 +12,5 @@ await setup({ rootDir })
 it('matches generated CSS snapshot', async () => {
     const html = await $fetch('/') as string
     const match = html.match(/<style id="master">([\s\S]*?)<\/style>/)
-    expect(match?.[1] ?? '').toBe('@layer main{.box{display:flex;font-size:1em}}')
+    expect(match?.[1] ?? '').toBe('@layer components{.box{display:flex;font-size:1em}}')
 })

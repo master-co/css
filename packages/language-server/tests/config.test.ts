@@ -12,13 +12,13 @@ withFixture('config', async (context) => {
                 expect.objectContaining({
                     name: 'fixture-card',
                     type: -4,
-                    layer: 'main',
+                    layer: 'components',
                     declarations: { display: 'block' }
                 }),
                 expect.objectContaining({
                     name: 'fixture-button',
                     type: -4,
-                    layer: 'main',
+                    layer: 'components',
                     declarations: {
                         display: 'inline-flex',
                         color: 'oklch(100% 0 none)',

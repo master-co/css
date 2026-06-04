@@ -1,1 +1,1 @@
-@layer general{@media (prefers-color-scheme:dark){.bg\:black\@dark{background:black}}@media (prefers-color-scheme:light){.bg\:white\@light{background:white}}}
+@layer utilities{@media (prefers-color-scheme:dark){.bg\:black\@dark{background:black}}@media (prefers-color-scheme:light){.bg\:white\@light{background:white}}}

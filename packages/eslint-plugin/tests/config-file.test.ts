@@ -36,7 +36,7 @@ test('uses explicit Master CSS config objects from ESLint settings', async () =>
                                     {
                                         name: 'fixture-card',
                                         type: -4,
-                                        layer: 'main',
+                                        layer: 'components',
                                         rules: [
                                             { selector: '&', declarations: { display: 'block' } }
                                         ]
@@ -44,7 +44,7 @@ test('uses explicit Master CSS config objects from ESLint settings', async () =>
                                     {
                                         name: 'fixture-button',
                                         type: -4,
-                                        layer: 'main',
+                                        layer: 'components',
                                         rules: [
                                             { selector: '&', declarations: { display: 'inline-flex' } }
                                         ]

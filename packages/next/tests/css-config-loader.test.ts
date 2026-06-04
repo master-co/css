@@ -99,7 +99,7 @@ describe('css config loader', () => {
                 {
                     name: 'btn',
                     type: -4,
-                    layer: 'main',
+                    layer: 'components',
                     declarations: {
                         color: 'var(--color-primary)'
                     }

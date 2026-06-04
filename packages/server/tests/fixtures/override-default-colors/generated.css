@@ -1,1 +1,1 @@
-@layer theme{:root{--app-blue:#4589ff}}@layer general{.fg\:app-blue{color:var(--app-blue)}}
+@layer theme{:root{--app-blue:#4589ff}}@layer utilities{.fg\:app-blue{color:var(--app-blue)}}

@@ -200,7 +200,7 @@ export const cases = {
         //             '::both': '::before,::after',
         //         },
         //         utilities: [
-        //             { name: 'btn', type: -4, layer: 'main', rules: [{ selector: '&::before,&::after', declarations: { display: 'block' } }] }
+        //             { name: 'btn', type: -4, layer: 'components', rules: [{ selector: '&::before,&::after', declarations: { display: 'block' } }] }
         //         ]
         //     },
         //     '.btn'

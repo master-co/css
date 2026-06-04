@@ -2,26 +2,26 @@ import Tester from '../tester'
 
 new Tester({
     utilities: [
-        { name: 'btn', type: -4, layer: 'main', rules: [
+        { name: 'btn', type: -4, layer: 'components', rules: [
             { selector: '&', declarations: { display: 'block' } },
             { selector: '&', declarations: { color: 'oklch(54.6% 0.245 262.881)' } }
         ] },
-        { name: 'btn-sm', type: -4, layer: 'main', rules: [
+        { name: 'btn-sm', type: -4, layer: 'components', rules: [
             { selector: '&', declarations: { 'font-size': '0.75rem' } }
         ] },
-        { name: 'btn-md', type: -4, layer: 'main', rules: [
+        { name: 'btn-md', type: -4, layer: 'components', rules: [
             { selector: '&', declarations: { 'font-size': '0.875rem' } }
         ] },
-        { name: 'card', type: -4, layer: 'main', rules: [
+        { name: 'card', type: -4, layer: 'components', rules: [
             { selector: '&', declarations: { 'text-align': 'center' } },
             { selector: '&', declarations: { padding: '2.5rem' } }
         ] },
-        { name: 'yellow', type: -4, layer: 'main', rules: [
+        { name: 'yellow', type: -4, layer: 'components', rules: [
             { selector: '&', declarations: { 'background-color': 'var(--yellow)' } },
             { selector: '&', declarations: { color: 'var(--yellow-contrast)' } },
             { selector: '&', declarations: { outline: '0.0625rem var(--yellow-ring) solid' } }
         ] },
-        { name: 'touch-yellow', type: -4, layer: 'main', rules: [
+        { name: 'touch-yellow', type: -4, layer: 'components', rules: [
             { selector: '&:hover', declarations: { 'background-color': 'var(--touch-yellow)' } }
         ] }
     ],

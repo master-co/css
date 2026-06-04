@@ -29,10 +29,10 @@ describe.concurrent('detail and documentation', () => {
                     @layer theme {
                       :root {
                         --font-family-sans: "Inter", var(--font-family-sans-fallback);
-                        --font-family-sans-fallback: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"
+                        --font-family-sans-fallback: ui-sans-serif, system-ui, sans-serif
                       }
                     }
-                    @layer general {
+                    @layer utilities {
                       .font\\:sans {
                         font-family: var(--font-family-sans)
                       }
@@ -58,7 +58,7 @@ describe.concurrent('detail and documentation', () => {
             kind: 'markdown',
             value: dedent`
                     \`\`\`css
-                    @layer general {
+                    @layer utilities {
                       .font-style\\:italic {
                         font-style: italic
                       }
@@ -86,7 +86,7 @@ describe.concurrent('retype on no hints', () => {
             kind: 'markdown',
             value: dedent`
                     \`\`\`css
-                    @layer general {
+                    @layer utilities {
                       .d\\:block {
                         display: block
                       }
@@ -128,9 +128,7 @@ describe.concurrent('sorting', () => {
             'yellow-80',
             'yellow-90',
             'yellow-95',
-            'yellow-100',
-            'yellow-active',
-            'yellow-text'
+            'yellow-100'
         ])
     })
 })

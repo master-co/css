@@ -2,13 +2,13 @@ import { test, expect } from '@playwright/test'
 import init from './init'
 
 test('destroy on progressive', async ({ page }) => {
-    await init(page, '@layer general{}')
+    await init(page, '@layer utilities{}')
     await page.evaluate(() => {
         document.body.classList.add('text:center')
     })
-    expect(await page.evaluate(() => globalThis.cssRuntime.generalLayer.rules.length)).toBe(1)
+    expect(await page.evaluate(() => globalThis.cssRuntime.utilitiesLayer.rules.length)).toBe(1)
     expect(await page.evaluate(() => Array.from(globalThis.cssRuntime.style?.sheet?.cssRules || [])
-        .filter(cssRule => cssRule === globalThis.cssRuntime.generalLayer.native)
+        .filter(cssRule => cssRule === globalThis.cssRuntime.utilitiesLayer.native)
         .length
     )).toBe(1)
     expect(await page.evaluate(() => Array.from(globalThis.cssRuntime.style?.sheet?.cssRules || []).length)).toBe(1)
@@ -16,7 +16,7 @@ test('destroy on progressive', async ({ page }) => {
         globalThis.cssRuntime.destroy()
         globalThis.cssRuntime.resolve()
     })
-    expect(await page.evaluate(() => globalThis.cssRuntime.generalLayer.rules.length)).toBe(0)
+    expect(await page.evaluate(() => globalThis.cssRuntime.utilitiesLayer.rules.length)).toBe(0)
     expect(await page.evaluate(() => Array.from(globalThis.cssRuntime.style?.sheet?.cssRules || []).length)).toBe(0)
     await page.evaluate(() => {
         globalThis.cssRuntime.observe()
@@ -27,12 +27,12 @@ test('destroy on progressive', async ({ page }) => {
 })
 
 test('prevent attach layer twice', async ({ page }) => {
-    await init(page, '@layer main{}', {
+    await init(page, '@layer components{}', {
         utilities: [
             {
                 name: 'app-wrapper',
                 type: -4,
-                layer: 'main',
+                layer: 'components',
                 rules: [
                     { selector: '&', declarations: { 'margin-left': 'auto', 'margin-right': 'auto' } },
                     { selector: '&', declarations: { 'padding-left': '1.25rem', 'padding-right': '1.25rem' } },
@@ -44,7 +44,7 @@ test('prevent attach layer twice', async ({ page }) => {
     await page.evaluate(() => {
         document.body.classList.add('app-wrapper')
     })
-    expect(await page.evaluate(() => globalThis.cssRuntime.mainLayer.native?.cssRules?.length)).toBe(3)
+    expect(await page.evaluate(() => globalThis.cssRuntime.componentsLayer.native?.cssRules?.length)).toBe(3)
 })
 
 test('insert static utility with multiple native rules into existing layer', async ({ page }) => {
@@ -68,7 +68,7 @@ test('insert static utility with multiple native rules into existing layer', asy
             }
         ]
     })
-    expect(await page.evaluate(() => globalThis.cssRuntime.generalLayer.native?.cssRules.length)).toBe(4)
+    expect(await page.evaluate(() => globalThis.cssRuntime.utilitiesLayer.native?.cssRules.length)).toBe(4)
     expect(consoleErrors.find((message) => message.includes('insertRule'))).toBeUndefined()
 })
 

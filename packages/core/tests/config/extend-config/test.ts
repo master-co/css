@@ -3,33 +3,33 @@ import { UtilityType } from '../../../src'
 import config from './master-css'
 import createCSSWithTheme from '../../helpers/create-css-with-theme'
 
-function getMainRules(css: ReturnType<typeof createCSSWithTheme>, name: string) {
+function getComponentRules(css: ReturnType<typeof createCSSWithTheme>, name: string) {
     return css.config.utilities?.find((definition) =>
         definition.name === name
         && (definition.type ?? UtilityType.Static) === UtilityType.Static
-        && (definition.layer ?? 'general') === 'main'
+        && (definition.layer ?? 'utilities') === 'components'
     )?.rules
 }
 
 it.concurrent('extendConfig merges config files', () => {
     const css = createCSSWithTheme(config)
-    expect(getMainRules(css, 'blue-btn')).toEqual([
+    expect(getComponentRules(css, 'blue-btn')).toEqual([
         { selector: '&', declarations: { 'font-size': '0.875rem' } },
         { selector: '&', declarations: { height: '2.5rem' } },
         { selector: '&', declarations: { 'text-align': 'center' } },
         { selector: '&', declarations: { 'background-color': 'oklch(63.7% 0.237 25.331)' } }
     ])
-    expect(getMainRules(css, 'btn')).toEqual([
+    expect(getComponentRules(css, 'btn')).toEqual([
         { selector: '&', declarations: { 'font-size': '0.875rem' } },
         { selector: '&', declarations: { height: '2.5rem' } },
         { selector: '&', declarations: { 'text-align': 'center' } }
     ])
-    expect(getMainRules(css, 'btn3')).toEqual([
+    expect(getComponentRules(css, 'btn3')).toEqual([
         { selector: '&', declarations: { 'font-size': '0.9375rem' } },
         { selector: '&', declarations: { height: '5.625rem' } },
         { selector: '&', declarations: { 'text-align': 'center' } }
     ])
-    expect(getMainRules(css, 'btn4')).toEqual([
+    expect(getComponentRules(css, 'btn4')).toEqual([
         { selector: '&', declarations: { 'font-size': '12.5rem' } }
     ])
     expect(css.variables.get('first')).toMatchObject({ name: 'first', key: 'first', type: 'string', value: 'oklch(0.18 0 0)' })

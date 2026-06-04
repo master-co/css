@@ -41,9 +41,9 @@ describe('PreRenderPlugin', () => {
 
         expect(viteConfig.server.fs.allow).toContain(path.join(FIXTURE_DIR, 'app.css'))
         expect(html).toContain('<style id="master">')
-        expect(html).toContain('@layer main{.card{background-color:var(--color-brand);border-color:#456}')
+        expect(html).toContain('@layer components{.card{background-color:var(--color-brand);border-color:#456}')
         expect(html).toContain('@media (width>=48rem){.card{font-size:1.125rem}}')
-        expect(html).toContain('@layer general{.p\\:2{padding:0.125rem}}')
+        expect(html).toContain('@layer utilities{.p\\:2{padding:0.125rem}}')
     })
 
     it('reloads CSS entry dependencies for pre-rendered HTML', async () => {

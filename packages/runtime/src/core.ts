@@ -19,8 +19,8 @@ export default class CSSRuntime extends MasterCSS {
     readonly baseLayer = new RuntimeUtilityLayer('base', this)
     readonly themeLayer = new RuntimeThemeLayer('theme', this)
     readonly presetLayer = new RuntimeUtilityLayer('preset', this)
-    readonly mainLayer = new RuntimeUtilityLayer('main', this)
-    readonly generalLayer = new RuntimeUtilityLayer('general', this)
+    readonly componentsLayer = new RuntimeUtilityLayer('components', this)
+    readonly utilitiesLayer = new RuntimeUtilityLayer('utilities', this)
     readonly classCounts = new Map<string, number>()
     private readonly classTracker = new RuntimeClassTracker()
     observer?: MutationObserver
@@ -193,11 +193,11 @@ export default class CSSRuntime extends MasterCSS {
                 case 'preset':
                     layer = this.presetLayer
                     break
-                case 'main':
-                    layer = this.mainLayer
+                case 'components':
+                    layer = this.componentsLayer
                     break
-                case 'general':
-                    layer = this.generalLayer
+                case 'utilities':
+                    layer = this.utilitiesLayer
                     break
                 default:
                     console.error(`Cannot recognize the layer \`${eachCSSLayerRule.name}\`. (https://rc.css.master.co/messages/hydration-errors)`)

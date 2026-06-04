@@ -3,7 +3,7 @@ const config = {
         {
             name: 'btn3',
             type: -4,
-            layer: 'main',
+            layer: 'components',
             rules: [
                 { selector: '&', declarations: { 'font-size': '0.9375rem' } },
                 { selector: '&', declarations: { height: '5.625rem' } },

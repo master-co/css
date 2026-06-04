@@ -1,8 +1,8 @@
 import { test, expect, describe } from 'vitest'
 import { UtilityType } from '../src'
 import createCSSWithTheme from './helpers/create-css-with-theme'
-function mainStyle(name: string, rules: any[]) {
-    return { name, type: UtilityType.Static, layer: 'main' as const, rules }
+function component(name: string, rules: any[]) {
+    return { name, type: UtilityType.Static, layer: 'components' as const, rules }
 }
 
 test.concurrent('basic', () => {
@@ -38,7 +38,7 @@ test.concurrent(':within and mode and scope', () => {
 })
 
 test.concurrent('component conflicts with the mode', () => {
-    const rules = createCSSWithTheme({ utilities: [mainStyle('light', [
+    const rules = createCSSWithTheme({ utilities: [component('light', [
         { selector: '&', declarations: { display: 'block' } },
         { selector: '&', declarations: { 'font-weight': '700' } }
     ])] }).createFromSelectorText('.light .light\@light')
@@ -48,13 +48,13 @@ test.concurrent('component conflicts with the mode', () => {
 })
 
 test.concurrent('component and mode', () => {
-    expect(createCSSWithTheme({ utilities: [mainStyle('btn', [
+    expect(createCSSWithTheme({ utilities: [component('btn', [
         { selector: '&', declarations: { display: 'block' } }
     ])] }).createFromSelectorText('.light .btn')?.[0]).toMatchObject({ name: 'btn', selectorText: '.btn' })
 })
 
 test.concurrent('component selector variant', () => {
-    const rules = createCSSWithTheme({ utilities: [mainStyle('btn', [
+    const rules = createCSSWithTheme({ utilities: [component('btn', [
         { selector: '&:disabled>span', declarations: { display: 'block' } }
     ])] }).createFromSelectorText('.btn\\:hover:hover:disabled>span')
 
@@ -65,7 +65,7 @@ test.concurrent('component selector variant', () => {
 describe('group selector', () => {
     const config = { selectorTokens: {
             '::both': '::before,::after',
-        }, utilities: [mainStyle('btn', [
+        }, utilities: [component('btn', [
             { selector: '&::before,&::after', declarations: { display: 'block' } }
         ])] }
     test.concurrent('utilities', () => {

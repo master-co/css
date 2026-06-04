@@ -3,14 +3,14 @@ import { MasterCSS, UtilityType } from '../src'
 import { extendConfig } from '../src/utils'
 import createCSSWithTheme from './helpers/create-css-with-theme'
 
-function mainStyle(name: string, rules: any[], layer: 'base' | 'preset' | 'main' | 'general' = 'main') {
+function component(name: string, rules: any[], layer: 'base' | 'preset' | 'components' | 'utilities' = 'components') {
     return { name, type: UtilityType.Static, layer, rules }
 }
 
 describe('comp -> comp -> var', () => {
     const css = createCSSWithTheme({
         utilities: [
-            mainStyle('badge-primary', [
+            component('badge-primary', [
                 { selector: '&', declarations: { background: 'var(--primary)' } },
                 { selector: '&', declarations: { outline: '0.0625rem var(--primary-active) solid' } },
                 { selector: '&', declarations: { color: 'var(--primary-text)' } }
@@ -34,20 +34,20 @@ describe('comp -> comp -> var', () => {
 
 describe('extendConfig', () => {
     const css = createCSSWithTheme(extendConfig(
-        { utilities: [mainStyle('a', [{ selector: '&', declarations: { order: '1' } }])] },
-        { utilities: [mainStyle('b', [{ selector: '&', declarations: { order: '2' } }])] },
-        { utilities: [mainStyle('c', [{ selector: '&', declarations: { order: '3' } }])] },
-        { utilities: [mainStyle('a', [{ selector: '&', declarations: { order: '11' } }])] },
-        { utilities: [mainStyle('b', [{ selector: '&', declarations: { order: '22' } }])] }
+        { utilities: [component('a', [{ selector: '&', declarations: { order: '1' } }])] },
+        { utilities: [component('b', [{ selector: '&', declarations: { order: '2' } }])] },
+        { utilities: [component('c', [{ selector: '&', declarations: { order: '3' } }])] },
+        { utilities: [component('a', [{ selector: '&', declarations: { order: '11' } }])] },
+        { utilities: [component('b', [{ selector: '&', declarations: { order: '22' } }])] }
     ))
     test('a should be order:11', () => {
-        expect(css.add('a').mainLayer.text).toContain('.a{order:11}')
+        expect(css.add('a').componentsLayer.text).toContain('.a{order:11}')
     })
     test('b should be order:22', () => {
-        expect(css.add('b').mainLayer.text).toContain('.b{order:22}')
+        expect(css.add('b').componentsLayer.text).toContain('.b{order:22}')
     })
     test('c should be order:3', () => {
-        expect(css.add('c').mainLayer.text).toContain('.c{order:3}')
+        expect(css.add('c').componentsLayer.text).toContain('.c{order:3}')
     })
 })
 
@@ -55,29 +55,29 @@ describe('MasterCSS config', () => {
     const css = new MasterCSS(extendConfig(
         {
             utilities: [
-                mainStyle('a', [{ selector: '&', declarations: { order: '1' } }]),
-                mainStyle('b', [{ selector: '&', declarations: { order: '2' } }])
+                component('a', [{ selector: '&', declarations: { order: '1' } }]),
+                component('b', [{ selector: '&', declarations: { order: '2' } }])
             ]
         },
         {
             utilities: [
-                mainStyle('b', [{ selector: '&', declarations: { order: '22' } }]),
-                mainStyle('c', [{ selector: '&', declarations: { order: '3' } }])
+                component('b', [{ selector: '&', declarations: { order: '22' } }]),
+                component('c', [{ selector: '&', declarations: { order: '3' } }])
             ]
         }
     ))
 
     test('uses a single extended config constructor argument', () => {
         css.add('a', 'b', 'c')
-        expect(css.mainLayer.text).toContain('.a{order:1}')
-        expect(css.mainLayer.text).toContain('.b{order:22}')
-        expect(css.mainLayer.text).toContain('.c{order:3}')
+        expect(css.componentsLayer.text).toContain('.a{order:1}')
+        expect(css.componentsLayer.text).toContain('.b{order:22}')
+        expect(css.componentsLayer.text).toContain('.c{order:3}')
     })
 })
 
 describe('raw declarations', () => {
-    test('supports raw declarations from config main', () => {
-        const css = createCSSWithTheme({ utilities: [mainStyle('btn', [{ selector: '&', declarations: {
+    test('supports raw declarations from config components', () => {
+        const css = createCSSWithTheme({ utilities: [component('btn', [{ selector: '&', declarations: {
                         'padding-left': '0.25rem',
                         'padding-right': '0.25rem'
                     } }, { selector: '&', declarations: {
@@ -86,15 +86,15 @@ describe('raw declarations', () => {
                         display: 'inline-flex'
                     } }]) ] })
         css.add('btn')
-        expect(css.mainLayer.text).toContain('.btn{padding-left:0.25rem;padding-right:0.25rem}')
-        expect(css.mainLayer.text).toContain('.btn{font-weight:600}')
-        expect(css.mainLayer.text).toContain('.btn{display:inline-flex}')
+        expect(css.componentsLayer.text).toContain('.btn{padding-left:0.25rem;padding-right:0.25rem}')
+        expect(css.componentsLayer.text).toContain('.btn{font-weight:600}')
+        expect(css.componentsLayer.text).toContain('.btn{display:inline-flex}')
     })
 
     test('keeps component rules separate to preserve component order', () => {
         const css = createCSSWithTheme({
             utilities: [
-                mainStyle('btn', [
+                component('btn', [
                 { selector: '&', declarations: { 'padding-left': '0.25rem', 'padding-right': '0.25rem' } },
                 { selector: '&', declarations: { 'padding-top': '0.125rem', 'padding-bottom': '0.125rem' } },
                 { selector: '&', declarations: { 'font-weight': '600' } },
@@ -103,25 +103,25 @@ describe('raw declarations', () => {
             ]
         })
         css.add('btn')
-        expect(css.mainLayer.text.match(/\.btn\{/g)).toHaveLength(4)
-        expect(css.mainLayer.text).toContain('.btn{padding-left:0.25rem;padding-right:0.25rem}')
-        expect(css.mainLayer.text).toContain('.btn{padding-top:0.125rem;padding-bottom:0.125rem}')
-        expect(css.mainLayer.text).toContain('.btn{font-weight:600}')
-        expect(css.mainLayer.text).toContain('.btn{display:inline-flex}')
+        expect(css.componentsLayer.text.match(/\.btn\{/g)).toHaveLength(4)
+        expect(css.componentsLayer.text).toContain('.btn{padding-left:0.25rem;padding-right:0.25rem}')
+        expect(css.componentsLayer.text).toContain('.btn{padding-top:0.125rem;padding-bottom:0.125rem}')
+        expect(css.componentsLayer.text).toContain('.btn{font-weight:600}')
+        expect(css.componentsLayer.text).toContain('.btn{display:inline-flex}')
     })
 
     test('generates component rule declarations', () => {
         const css = createCSSWithTheme({
             utilities: [
-                mainStyle('btn', [
+                component('btn', [
                     { selector: '&', declarations: { 'padding-left': '0.25rem', 'padding-right': '0.25rem' } },
                     { selector: '&', declarations: { display: 'inline-flex' } }
                 ])
             ]
         })
         css.add('btn')
-        expect(css.mainLayer.text).toContain('.btn{padding-left:0.25rem;padding-right:0.25rem}')
-        expect(css.mainLayer.text).toContain('.btn{display:inline-flex}')
+        expect(css.componentsLayer.text).toContain('.btn{padding-left:0.25rem;padding-right:0.25rem}')
+        expect(css.componentsLayer.text).toContain('.btn{display:inline-flex}')
     })
 
     test('generates theme variables from raw component declarations with var fallbacks', () => {
@@ -131,7 +131,7 @@ describe('raw declarations', () => {
                 { namespace: 'color', key: 'primary', value: '#000', mode: 'dark' }
             ],
             utilities: [
-                mainStyle('btn', [
+                component('btn', [
                     {
                         selector: '&',
                         declarations: {
@@ -144,7 +144,7 @@ describe('raw declarations', () => {
 
         expect(css.themeLayer.text).toContain('@media (prefers-color-scheme:light){:root{--color-primary:#ff0}}')
         expect(css.themeLayer.text).toContain('@media (prefers-color-scheme:dark){:root{--color-primary:#000}}')
-        expect(css.mainLayer.text).toContain('.btn{background:var(--color-primary, transparent)}')
+        expect(css.componentsLayer.text).toContain('.btn{background:var(--color-primary, transparent)}')
     })
 
     test('generates theme variables from static utility declarations', () => {
@@ -157,7 +157,7 @@ describe('raw declarations', () => {
                 {
                     name: 'surface',
                     type: UtilityType.Static,
-                    layer: 'general',
+                    layer: 'utilities',
                     declarations: {
                         background: 'var(--color-primary)'
                     }
@@ -167,7 +167,7 @@ describe('raw declarations', () => {
 
         expect(css.themeLayer.text).toContain('@media (prefers-color-scheme:light){:root{--color-primary:#ff0}}')
         expect(css.themeLayer.text).toContain('@media (prefers-color-scheme:dark){:root{--color-primary:#000}}')
-        expect(css.generalLayer.text).toContain('.surface{background:var(--color-primary)}')
+        expect(css.utilitiesLayer.text).toContain('.surface{background:var(--color-primary)}')
     })
 
     test('generates and removes theme variables from animation keyframes', () => {
@@ -184,7 +184,7 @@ describe('raw declarations', () => {
                 }
             },
             utilities: [
-                mainStyle('btn', [
+                component('btn', [
                     {
                         selector: '&',
                         declarations: {
@@ -210,21 +210,21 @@ describe('raw declarations', () => {
                 sm: 500
             },
             utilities: [
-                mainStyle('btn', [
+                component('btn', [
                     { selector: '&', declarations: { 'font-weight': '600' } },
                     { selector: '&', declarations: { display: 'inline-flex' } }
                 ])
             ]
         })
         css.add('btn@sm')
-        expect(css.mainLayer.text).toContain('@media (width>=31.25rem){.btn\\@sm{font-weight:600}}')
-        expect(css.mainLayer.text).toContain('@media (width>=31.25rem){.btn\\@sm{display:inline-flex}}')
+        expect(css.componentsLayer.text).toContain('@media (width>=31.25rem){.btn\\@sm{font-weight:600}}')
+        expect(css.componentsLayer.text).toContain('@media (width>=31.25rem){.btn\\@sm{display:inline-flex}}')
     })
 
     test('generates component rule declarations with selector variants', () => {
         const css = createCSSWithTheme({
             utilities: [
-                mainStyle('btn', [
+                component('btn', [
                     {
                         selector: '&',
                         declarations: { display: 'block' }
@@ -233,13 +233,13 @@ describe('raw declarations', () => {
             ]
         }).add('btn:hover')
 
-        expect(css.mainLayer.text).toContain('.btn\\:hover:hover{display:block}')
+        expect(css.componentsLayer.text).toContain('.btn\\:hover:hover{display:block}')
     })
 
     test('places selector variants before configured component selectors', () => {
         const css = createCSSWithTheme({
             utilities: [
-                mainStyle('btn', [
+                component('btn', [
                     {
                         selector: '&:disabled>span',
                         declarations: { display: 'block' }
@@ -248,14 +248,14 @@ describe('raw declarations', () => {
             ]
         }).add('btn:hover')
 
-        expect(css.mainLayer.text).toContain('.btn\\:hover:hover:disabled>span{display:block}')
-        expect(css.mainLayer.text).not.toContain('.btn\\:hover:disabled>span:hover')
+        expect(css.componentsLayer.text).toContain('.btn\\:hover:hover:disabled>span{display:block}')
+        expect(css.componentsLayer.text).not.toContain('.btn\\:hover:disabled>span:hover')
     })
 
     test('combines component selector variants with at-rule variants', () => {
         const css = createCSSWithTheme({
             utilities: [
-                mainStyle('btn', [
+                component('btn', [
                     {
                         selector: '&',
                         declarations: { display: 'block' }
@@ -267,7 +267,7 @@ describe('raw declarations', () => {
             ]
         }).add('btn:hover@sm')
 
-        expect(css.mainLayer.text).toContain('@media (width>=40rem){.btn\\:hover\\@sm:hover{display:block}}')
+        expect(css.componentsLayer.text).toContain('@media (width>=40rem){.btn\\:hover\\@sm:hover{display:block}}')
     })
 
     test('resolves selector tokens in component selector variants', () => {
@@ -276,7 +276,7 @@ describe('raw declarations', () => {
                 ':interactive': ':is(:hover,:focus-visible)'
             },
             utilities: [
-                mainStyle('btn', [
+                component('btn', [
                     {
                         selector: '&',
                         declarations: { display: 'block' }
@@ -285,13 +285,13 @@ describe('raw declarations', () => {
             ]
         }).add('btn:interactive')
 
-        expect(css.mainLayer.text).toContain('.btn\\:interactive:is(:hover,:focus-visible){display:block}')
+        expect(css.componentsLayer.text).toContain('.btn\\:interactive:is(:hover,:focus-visible){display:block}')
     })
 
     test('generates raw component declarations with configured at-rules', () => {
         const css = createCSSWithTheme({
             utilities: [
-                mainStyle('btn', [
+                component('btn', [
                     {
                         selector: '&',
                         declarations: { display: 'block' }
@@ -305,8 +305,8 @@ describe('raw declarations', () => {
             ]
         }).add('btn')
 
-        expect(css.mainLayer.text).toContain('.btn{display:block}')
-        expect(css.mainLayer.text).toContain('@media print{.btn{display:none}}')
+        expect(css.componentsLayer.text).toContain('.btn{display:block}')
+        expect(css.componentsLayer.text).toContain('@media print{.btn{display:none}}')
     })
 
     test('generates static utility rules with configured at-rules', () => {
@@ -315,7 +315,7 @@ describe('raw declarations', () => {
                 {
                     name: 'print-hidden',
                     type: UtilityType.Static,
-                    layer: 'general',
+                    layer: 'utilities',
                     declarations: { display: 'block' },
                     rules: [
                         {
@@ -327,8 +327,8 @@ describe('raw declarations', () => {
             ]
         }).add('print-hidden')
 
-        expect(css.generalLayer.text).toContain('.print-hidden{display:block}')
-        expect(css.generalLayer.text).toContain('@media print{.print-hidden{display:none}}')
+        expect(css.utilitiesLayer.text).toContain('.print-hidden{display:block}')
+        expect(css.utilitiesLayer.text).toContain('@media print{.print-hidden{display:none}}')
     })
 
     test('generates static utility rules with configured selectors', () => {
@@ -337,7 +337,7 @@ describe('raw declarations', () => {
                 {
                     name: 'theme-hidden',
                     type: UtilityType.Static,
-                    layer: 'general',
+                    layer: 'utilities',
                     declarations: { display: 'block' },
                     rules: [
                         {
@@ -349,28 +349,28 @@ describe('raw declarations', () => {
             ]
         }).add('theme-hidden')
 
-        expect(css.generalLayer.text).toContain('.theme-hidden{display:block}')
-        expect(css.generalLayer.text).toContain('.dark .theme-hidden{display:none}')
+        expect(css.utilitiesLayer.text).toContain('.theme-hidden{display:block}')
+        expect(css.utilitiesLayer.text).toContain('.dark .theme-hidden{display:none}')
     })
 
     test('keeps component rule declarations separate when variants differ', () => {
         const css = createCSSWithTheme({
             utilities: [
-                mainStyle('btn', [
+                component('btn', [
                     { selector: '&', declarations: { display: 'inline-flex' } },
                     { selector: '&:hover', declarations: { display: 'block' } }
                 ])
             ]
         })
         css.add('btn')
-        expect(css.mainLayer.text).toContain('.btn{display:inline-flex}')
-        expect(css.mainLayer.text).toContain('.btn:hover{display:block}')
+        expect(css.componentsLayer.text).toContain('.btn{display:inline-flex}')
+        expect(css.componentsLayer.text).toContain('.btn:hover{display:block}')
     })
 
     test('does not expand selector token prefixes inside native component selectors', () => {
         const css = createCSSWithTheme({
             utilities: [
-                mainStyle('code-line-add', [
+                component('code-line-add', [
                     {
                         selector: '&:not(:only-child):before',
                         declarations: { content: '\'+\'!important' }
@@ -379,13 +379,13 @@ describe('raw declarations', () => {
             ]
         }).add('code-line-add')
 
-        expect(css.mainLayer.text).toContain('.code-line-add:not(:only-child):before{content:\'+\'!important}')
+        expect(css.componentsLayer.text).toContain('.code-line-add:not(:only-child):before{content:\'+\'!important}')
     })
 
     test('resolves selector token shorthands in component selectors', () => {
         const css = createCSSWithTheme({
             utilities: [
-                mainStyle('btn', [
+                component('btn', [
                     {
                         selector: '&:only',
                         declarations: { display: 'block' }
@@ -394,13 +394,13 @@ describe('raw declarations', () => {
             ]
         }).add('btn')
 
-        expect(css.mainLayer.text).toContain('.btn:only-child{display:block}')
+        expect(css.componentsLayer.text).toContain('.btn:only-child{display:block}')
     })
 
     test('inserts component definitions into configured top-level layers', () => {
         const css = createCSSWithTheme({
             utilities: [
-                mainStyle('prose', [
+                component('prose', [
                     {
                         selector: '& :is(p)',
                         declarations: { 'font-size': '1rem' }
@@ -410,7 +410,7 @@ describe('raw declarations', () => {
         }).add('prose')
 
         expect(css.presetLayer.text).toContain('@layer preset{.prose :is(p){font-size:1rem}}')
-        expect(css.mainLayer.text).toBe('')
-        expect(css.text).not.toContain('@layer main{@layer preset')
+        expect(css.componentsLayer.text).toBe('')
+        expect(css.text).not.toContain('@layer components{@layer preset')
     })
 })

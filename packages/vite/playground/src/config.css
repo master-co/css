@@ -73,7 +73,7 @@
         justify-self: start;
     }
 
-    @layer general {
+    @layer utilities {
         .content-auto {
             content-visibility: auto;
             contain-intrinsic-size: auto 28rem;

@@ -1,7 +1,7 @@
 import { it, test, expect } from 'vitest'
 import createCSSWithTheme from '../helpers/create-css-with-theme'
 it.concurrent('checks scroll-padding order', () => {
-    expect(createCSSWithTheme().add('scroll-px:0', 'scroll-pl:0', 'scroll-pr:0', 'scroll-p:0', 'scroll-pt:0', 'scroll-pb:0', 'scroll-py:0').generalLayer.rules)
+    expect(createCSSWithTheme().add('scroll-px:0', 'scroll-pl:0', 'scroll-pr:0', 'scroll-p:0', 'scroll-pt:0', 'scroll-pb:0', 'scroll-py:0').utilitiesLayer.rules)
         .toMatchObject([
             { name: 'scroll-p:0' },
             { name: 'scroll-px:0' },

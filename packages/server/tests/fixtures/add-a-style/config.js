@@ -3,7 +3,7 @@ export default {
         {
             name: 'btn',
             type: -4,
-            layer: 'main',
+            layer: 'components',
             rules: [
                 { selector: '&', declarations: { display: 'inline-flex' } },
                 { selector: '&', declarations: { height: '2.5rem' } }

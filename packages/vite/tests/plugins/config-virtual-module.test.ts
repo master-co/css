@@ -52,7 +52,7 @@ describe('ConfigVirtualModulePlugin', () => {
                 expect.objectContaining({
                     name: 'btn',
                     type: -4,
-                    layer: 'main',
+                    layer: 'components',
                     declarations: {
                         'font-size': '1rem',
                         'background-color': 'var(--color-primary)',

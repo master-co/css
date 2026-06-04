@@ -11,9 +11,13 @@ export function getCSSDataDocumentation(data?: IPropertyData | IValueData, addit
         values.push(getEntryStatus(data.status))
     }
     if (additional?.generatedCSS) {
+        const cssLines = beautifyCSS(additional.generatedCSS).split('\n')
+        if (cssLines[0] === '') {
+            cssLines.shift()
+        }
         values.push(
             '```css\n'
-            + beautifyCSS(additional.generatedCSS).split('\n').slice(1).join('\n')
+            + cssLines.join('\n')
             + '\n```'
         )
     }

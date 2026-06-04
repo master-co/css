@@ -13,7 +13,7 @@ const config: Settings['config'] = {
         {
             name: 'btn',
             type: -4,
-            layer: 'main',
+            layer: 'components',
             rules: [
                 { selector: '&', declarations: { display: 'block' } }
             ]

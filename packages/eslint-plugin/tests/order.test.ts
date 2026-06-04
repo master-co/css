@@ -10,7 +10,7 @@ createTester({
                     {
                         name: 'zDialog',
                         type: -4,
-                        layer: 'main',
+                        layer: 'components',
                         rules: [
                             { selector: '&', declarations: { 'z-index': 10000 } }
                         ]

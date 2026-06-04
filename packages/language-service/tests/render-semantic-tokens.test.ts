@@ -48,7 +48,7 @@ test.concurrent('renders semantic tokens for class attributes', () => {
                     {
                         name: 'btn',
                         type: -4,
-                        layer: 'main',
+                        layer: 'components',
                         rules: [
                             { selector: '&', declarations: { color: 'var(--brand)' } },
                             { selector: '&', declarations: { display: 'block' } }

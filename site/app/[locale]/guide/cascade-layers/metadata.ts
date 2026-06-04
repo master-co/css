@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
     title: 'Cascade Layers',
-    description: 'Understand how base, theme, preset, main, and general layers control style priority.',
+    description: 'Understand how theme, base, preset, components, and utilities layers control style priority.',
     category: 'Fundamentals',
     canIUseLink: 'https://caniuse.com/?search=%40layer',
     mdnLink: 'https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Cascade_layers',

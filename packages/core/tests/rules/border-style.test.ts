@@ -29,7 +29,7 @@ it.concurrent('validates border-style rules', () => {
 })
 
 it.concurrent('checks border-style order', () => {
-    expect(createCSSWithTheme().add('bt:solid', 'b:solid', 'bl:dotted', 'bx:solid').generalLayer.rules)
+    expect(createCSSWithTheme().add('bt:solid', 'b:solid', 'bl:dotted', 'bx:solid').utilitiesLayer.rules)
         .toMatchObject([
             { name: 'b:solid' },
             { name: 'bx:solid' },

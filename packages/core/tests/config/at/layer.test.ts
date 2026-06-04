@@ -1,13 +1,13 @@
 import { expect, test } from 'vitest'
 import { UtilityType } from '../../../src'
 import createCSSWithTheme from '../../helpers/create-css-with-theme'
-test.concurrent('layer at-rules can be used in component general', () => {
+test.concurrent('layer at-rules can be used in component utilities', () => {
     const css = createCSSWithTheme({
         utilities: [
             {
                 name: 'btn',
                 type: UtilityType.Static,
-                layer: 'main',
+                layer: 'components',
                 rules: [
                     { selector: '&', atRules: ['@layer preset'], declarations: { display: 'block' } },
                     { selector: '&', atRules: ['@layer base'], declarations: { display: 'inline' } }
@@ -16,6 +16,6 @@ test.concurrent('layer at-rules can be used in component general', () => {
         ]
     }).add('btn')
 
-    expect(css.mainLayer.text).toContain('@layer preset{.btn{display:block}}')
-    expect(css.mainLayer.text).toContain('@layer base{.btn{display:inline}}')
+    expect(css.componentsLayer.text).toContain('@layer preset{.btn{display:block}}')
+    expect(css.componentsLayer.text).toContain('@layer base{.btn{display:inline}}')
 })

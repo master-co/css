@@ -64,7 +64,7 @@ describe('ConfigLoaderPlugin', () => {
                 expect.objectContaining({
                     name: 'badge',
                     type: -4,
-                    layer: 'main',
+                    layer: 'components',
                     declarations: {
                         display: 'inline-flex'
                     }

@@ -22,11 +22,11 @@ function directiveResult(result: Partial<CSSDirectiveResult>): CSSDirectiveResul
     }
 }
 
-function getUtility(result: ReturnType<typeof createConfigFromCSSDirectives>, name: string, layer = 'main') {
+function getUtility(result: ReturnType<typeof createConfigFromCSSDirectives>, name: string, layer = 'components') {
     return result.config.utilities?.find((definition) =>
         definition.name === name
         && definition.type === UtilityType.Static
-        && (definition.layer ?? 'general') === layer
+        && (definition.layer ?? 'utilities') === layer
     )
 }
 
@@ -55,7 +55,7 @@ describe.concurrent('createConfigFromCSSDirectives', () => {
                     {
                         name: 'inline',
                         type: 'static',
-                        layer: 'general',
+                        layer: 'utilities',
                         declarations: {
                             display: 'inline'
                         }
@@ -92,7 +92,7 @@ describe.concurrent('createConfigFromCSSDirectives', () => {
                     {
                         name: 'chrisma-only',
                         type: 'static',
-                        layer: 'general',
+                        layer: 'utilities',
                         declarations: {
                             display: 'block'
                         },
@@ -128,7 +128,7 @@ describe.concurrent('createConfigFromCSSDirectives', () => {
                     {
                         name: 'print-hidden',
                         type: 'static',
-                        layer: 'general',
+                        layer: 'utilities',
                         declarations: {
                             display: 'none'
                         },
@@ -138,10 +138,10 @@ describe.concurrent('createConfigFromCSSDirectives', () => {
             }
         }), { config: createThemeConfig() })
 
-        expect(getUtility(result, 'print-hidden', 'general')).toMatchObject({
+        expect(getUtility(result, 'print-hidden', 'utilities')).toMatchObject({
             name: 'print-hidden',
             type: UtilityType.Static,
-            layer: 'general',
+            layer: 'utilities',
             unit: '',
             separators: [','],
             rules: [
@@ -228,7 +228,7 @@ describe.concurrent('createConfigFromCSSDirectives', () => {
         expect(getUtility(result, 'btn')).toMatchObject({
             name: 'btn',
             type: UtilityType.Static,
-            layer: 'main'
+            layer: 'components'
         })
         expect(getUtility(result, 'btn')?.rules).toEqual([
             {

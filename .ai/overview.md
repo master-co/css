@@ -37,7 +37,7 @@ Compared with Tailwind:
 - Syntax is closer to CSS declarations, such as `font:24`, `fg:red`, `bg:blue:hover@sm`.
 - Selectors and at-rules are first-class syntax suffixes.
 - Runtime and progressive rendering are supported in addition to static extraction.
-- Config defines utilities, variables, selector tokens, at tokens, functions, modes, and animations. Reusable project styles are static utilities in the `main` layer.
+- Config defines utilities, variables, selector tokens, at tokens, functions, modes, and animations. Reusable component classes are static utilities in the `components` layer.
 
 Compared with CSS-in-JS:
 
@@ -52,7 +52,7 @@ Compared with CSS-in-JS:
 - Static utility: A fixed class from `config.utilities`, such as `block` or `hidden`.
 - Variable: A config token that can be inlined or emitted as a CSS custom property.
 - Mode: A conditional variable/style context such as `light` or `dark`.
-- Main style: A semantic static utility emitted in the `main` layer.
+- Component: A semantic static utility emitted in the `components` layer.
 - Selector token: A named selector suffix expression.
 - At token: A named `@` suffix expression for media, container, supports, layer, starting-style, and screen conditions.
 
@@ -61,18 +61,18 @@ Compared with CSS-in-JS:
 The core output uses cascade layers:
 
 ```txt
-base
 theme
+base
 preset
-main
-general
+components
+utilities
 keyframes outside layers
 ```
 
 The layer statement is declared by `packages/core/src/base.css`:
 
 ```css
-@layer base, theme, preset, main, general;
+@layer theme, base, preset, components, utilities;
 ```
 
-Core-generated CSS emits layer blocks but does not dynamically add or process the layer statement. General utilities should override main project styles, theme variables support modes, preset sits above base, and keyframes are not wrapped in layers.
+Core-generated CSS emits layer blocks but does not dynamically add or process the layer statement. Utilities should override component project styles, theme variables support modes, preset sits above base, and keyframes are not wrapped in layers.

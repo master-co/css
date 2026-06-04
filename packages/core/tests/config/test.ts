@@ -24,7 +24,7 @@ test.concurrent('components', () => {
                 {
                     name: '?',
                     type: UtilityType.Static,
-                    layer: 'main',
+                    layer: 'components',
                     rules: [
                         { selector: '&', declarations: { 'padding-left': '1.25rem', 'padding-right': '1.25rem' } },
                         { selector: '&', declarations: { 'font-size': '0.875rem' } },

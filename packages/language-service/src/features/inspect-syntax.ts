@@ -16,8 +16,8 @@ export default function inspectSyntax(this: CSSLanguageService, document: TextDo
         end: document.positionAt(classPosition.range.end)
     }
     const utilities = this.css.generate(token)
-    const mainStyle = utilities.find((utility) => utility.type === UtilityType.Static && utility.layerName === 'main')
-    if (mainStyle) {
+    const component = utilities.find((utility) => utility.type === UtilityType.Static && utility.layerName === 'components')
+    if (component) {
         const documentation = getCSSDataDocumentation({} as any, {
             generatedCSS: generateCSS([token], this.css),
             docs: '/guide/components'
@@ -26,7 +26,7 @@ export default function inspectSyntax(this: CSSLanguageService, document: TextDo
             return {
                 contents: {
                     kind: documentation.kind,
-                    value: `(main) ` + documentation.value
+                    value: `(components) ` + documentation.value
                 }
             }
         }

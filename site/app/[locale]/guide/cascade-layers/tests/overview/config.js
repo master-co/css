@@ -8,7 +8,7 @@ export default {
         {
             name: 'btn',
             type: -4,
-            layer: 'main',
+            layer: 'components',
             rules: [
                 { selector: '&', declarations: { display: 'inline-flex' } },
                 { selector: '&', declarations: { 'background-color': 'var(--color-primary)' } }

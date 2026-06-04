@@ -29,7 +29,7 @@ it.concurrent('validates border-width rules', () => {
 })
 
 it.concurrent('checks border-width order', () => {
-    expect(createCSSWithTheme().add('bt:16', 'b:16', 'bl:16', 'bx:16').generalLayer.rules)
+    expect(createCSSWithTheme().add('bt:16', 'b:16', 'bl:16', 'bx:16').utilitiesLayer.rules)
         .toMatchObject([
             { name: 'b:16' },
             { name: 'bx:16' },

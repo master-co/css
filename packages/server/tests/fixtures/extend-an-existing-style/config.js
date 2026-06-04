@@ -3,7 +3,7 @@ export default {
         {
             name: 'a',
             type: -4,
-            layer: 'main',
+            layer: 'components',
             rules: [
                 { selector: '&', declarations: { color: 'oklch(0% 0 none)' } }
             ]
@@ -11,7 +11,7 @@ export default {
         {
             name: 'b',
             type: -4,
-            layer: 'main',
+            layer: 'components',
             rules: [
                 { selector: '&', declarations: { 'text-decoration-line': 'underline' } },
                 { selector: '&', declarations: { color: 'oklch(0% 0 none)' } }

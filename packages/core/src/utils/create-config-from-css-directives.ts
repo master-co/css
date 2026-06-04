@@ -646,8 +646,8 @@ function compareComponentAtRuleFeatures(
 }
 
 function compareComponentMergeBuckets(a: ComponentMergeBucket, b: ComponentMergeBucket, rootSize: number) {
-    const layerA = a.layer || 'main'
-    const layerB = b.layer || 'main'
+    const layerA = a.layer || 'components'
+    const layerB = b.layer || 'components'
     if (layerA === layerB && a.selector === b.selector) {
         const atRuleStateA = a.atRules?.length ? 1 : 0
         const atRuleStateB = b.atRules?.length ? 1 : 0
@@ -669,7 +669,7 @@ function getStaticUtilityDefinition(config: Config, name: string, layer: Utility
     const existingDefinition = config.utilities.find((definition) =>
         definition.name === name
         && (definition.type ?? UtilityType.Static) === UtilityType.Static
-        && (definition.layer || 'general') === layer
+        && (definition.layer || 'utilities') === layer
     )
     if (existingDefinition) {
         existingDefinition.type = UtilityType.Static
@@ -744,7 +744,7 @@ function finalizeComponentDefinitions(config: Config, componentDefinitions: Reco
                 return definition ? [definition] : []
             })
         for (const definition of definitions) {
-            const layer = definition.layer || 'main'
+            const layer = definition.layer || 'components'
             const utilityDefinition = getStaticUtilityDefinition(config, name, layer)
             pushStaticUtilityStyleRule(utilityDefinition, definition)
         }

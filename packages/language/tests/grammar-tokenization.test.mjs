@@ -423,10 +423,10 @@ test('CSS injection highlights @master component directives and compose classes'
     assertTokenScope(tokens, 'color', 'support.type.property-name.css')
 })
 
-test('CSS injection highlights declarations inside @master @layer general @at blocks', () => {
+test('CSS injection highlights declarations inside @master @layer utilities @at blocks', () => {
     const tokens = tokensFor(embeddedHighlighter, `
         @master {
-            @layer general {
+            @layer utilities {
                 .content-auto {
                     content-visibility: auto;
                     contain-intrinsic-size: auto 32rem;

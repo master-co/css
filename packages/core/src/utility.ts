@@ -44,7 +44,7 @@ export class Utility {
         mode?: string
     ) {
         this.mode = mode as string
-        this.layerName = registeredUtility.definition.layer || 'general'
+        this.layerName = registeredUtility.definition.layer || 'utilities'
         Object.assign(this, registeredUtility)
         const { id, definition } = registeredUtility
         const { declarer, declarerOptions, transformer, transformerOptions, type, unit } = definition
@@ -126,7 +126,7 @@ export class Utility {
         const onlyNode = this.atRules?.layer?.length === 1 && this.atRules.layer[0] as AtRuleValueNode
         if (onlyNode) {
             const layerName = String(onlyNode.value)
-            if (layerName === 'base' || layerName === 'preset' || layerName === 'main' || layerName === 'general') {
+            if (layerName === 'base' || layerName === 'preset' || layerName === 'components' || layerName === 'utilities') {
                 this.layerName = layerName
                 this.explicitLayerName = layerName
                 this.atRules.layer = undefined

@@ -65,7 +65,7 @@ test('loads CSS config resources', async () => {
                     {
                         name: 'btn',
                         type: -4,
-                        layer: 'main',
+                        layer: 'components',
                         unit: '',
                         separators: [
                             ','

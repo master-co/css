@@ -13,7 +13,7 @@
                 {
                     name: 'btn',
                     type: -4,
-                    layer: 'main',
+                    layer: 'components',
                     rules: [
                         { selector: '&::before,&::after', declarations: { display: 'block' } },
                         { selector: '&', declarations: { 'background-color': 'oklch(0% 0 none)' } }
@@ -23,7 +23,7 @@
         }
     </script>
     <style id="master">
-        @layer main {
+        @layer components {
             .btn::before,
             .btn::after {
                 display: block

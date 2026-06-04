@@ -6,7 +6,7 @@ it('render elements', () => {
         '<div class="text:center"></div>',
         '<div class="bg:white"></div>'
     ].join('')).html).toEqual([
-        '<style id="master">@layer general{.bg\\:white{background:white}.text\\:center{text-align:center}}</style>',
+        '<style id="master">@layer utilities{.bg\\:white{background:white}.text\\:center{text-align:center}}</style>',
         '<div class="text:center"></div>',
         '<div class="bg:white"></div>'
     ].join(''))

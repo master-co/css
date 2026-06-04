@@ -9,7 +9,7 @@ test.concurrent('empty', () => {
 test.concurrent('utility', () => {
     const css = createCSSWithTheme()
     css.add('text:center')
-    expect(css.text).toContain('@layer general{.text\\:center{text-align:center}}')
+    expect(css.text).toContain('@layer utilities{.text\\:center{text-align:center}}')
 })
 
 test.concurrent('manipulate', () => {
@@ -18,7 +18,7 @@ test.concurrent('manipulate', () => {
             {
                 name: 'btn',
                 type: UtilityType.Static,
-                layer: 'main',
+                layer: 'components',
                 rules: [
                     { selector: '&', declarations: { display: 'block' } }
                 ]
@@ -27,9 +27,9 @@ test.concurrent('manipulate', () => {
     })
     css.add('text:center', 'font:bold')
     expect(css.text).toContain('@layer theme{:root{--font-weight-bold:700}}')
-    expect(css.text).toContain('@layer general{.font\\:bold{font-weight:var(--font-weight-bold)}.text\\:center{text-align:center}}')
+    expect(css.text).toContain('@layer utilities{.font\\:bold{font-weight:var(--font-weight-bold)}.text\\:center{text-align:center}}')
     css.add('btn')
-    expect(css.text).toContain('@layer main{.btn{display:block}')
+    expect(css.text).toContain('@layer components{.btn{display:block}')
     css.remove('text:center', 'font:bold', 'btn')
     expect(css.text).toBe('')
 })
@@ -37,5 +37,5 @@ test.concurrent('manipulate', () => {
 test('prevent duplicate insertion', () => {
     const css = createCSSWithTheme()
     css.add('text:center', 'text:center')
-    expect(css.generalLayer.rules.length).toBe(1)
+    expect(css.utilitiesLayer.rules.length).toBe(1)
 })

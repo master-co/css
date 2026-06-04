@@ -5,7 +5,7 @@ import CSSRuntime, { initCSSRuntime } from '../../src'
 //         {
 //             name: 'btn',
 //             type: -4,
-//             layer: 'main',
+//             layer: 'components',
 //             rules: [
 //                 { selector: '&', declarations: { 'background-color': 'black' } }
 //             ]

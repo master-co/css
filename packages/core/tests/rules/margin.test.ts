@@ -1,7 +1,7 @@
 import { it, test, expect } from 'vitest'
 import createCSSWithTheme from '../helpers/create-css-with-theme'
 it.concurrent('checks margin order', () => {
-    expect(createCSSWithTheme().add('mx:0', 'ml:0', 'mr:0', 'm:0', 'mt:0', 'mb:0', 'my:0').generalLayer.rules)
+    expect(createCSSWithTheme().add('mx:0', 'ml:0', 'mr:0', 'm:0', 'mt:0', 'mb:0', 'my:0').utilitiesLayer.rules)
         .toMatchObject([
             { name: 'm:0' },
             { name: 'mx:0' },

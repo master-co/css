@@ -1,7 +1,7 @@
 ## Overview [sr-only]
 Components are named style compositions for UI patterns such as buttons, cards, fields, and layout shells. They are useful when a repeated class list becomes a design-system concept instead of one-off styling.
 
-In the project CSS entry or a local CSS file imported by it, define main styles directly in `@master`. The definitions are converted into static `config.utilities` entries with `layer: 'main'`; they are not emitted by themselves. Master CSS generates component CSS only when the component class is used in markup or extracted from source files. If you are deciding whether a style should become a component at all, read [Reusing Styles](/guide/reusing-styles) first.
+In the project CSS entry or a local CSS file imported by it, define components directly in `@master`. The definitions are converted into static `config.utilities` entries with `layer: 'components'`; they are not emitted by themselves. Master CSS generates component CSS only when the component class is used in markup or extracted from source files. If you are deciding whether a style should become a component at all, read [Reusing Styles](/guide/reusing-styles) first.
 
 ---
 
@@ -24,10 +24,10 @@ Use the component class in markup:
 <button class="btn">Save changes</button>
 ```
 
-The generated CSS is emitted in the `main` layer:
+The generated CSS is emitted in the `components` layer:
 
 ```css
-@layer main {
+@layer components {
     .btn {
         display: inline-flex;
         gap: 0.5rem;
@@ -190,7 +190,7 @@ The compiler expands `@compose` into merged static utility definitions:
         {
             name: 'btn',
             type: -4,
-            layer: 'main',
+            layer: 'components',
             declarations: {
                 color: 'black',
                 display: 'block',
@@ -235,7 +235,7 @@ The base `.btn`, `.btn:hover`, `@md .btn`, and `preset` layer definitions are ke
 ---
 
 ## Split files
-Use native CSS `@import` from the project CSS entry to organize main styles.
+Use native CSS `@import` from the project CSS entry to organize components.
 
 ```css name=index.css
 @master;
@@ -262,16 +262,16 @@ Local relative `.css` imports are compiled into one config graph. Only `@master`
 ---
 
 ## Rules and constraints
-- Put component definitions directly in `@master`; use `@layer preset`, `@layer main`, or `@layer general` when a definition needs a different output layer.
+- Put component definitions directly in `@master`; use `@layer preset`, `@layer components`, or `@layer utilities` when a definition needs a different output layer.
 - Component selectors must start with a single class selector such as `.btn`, `.card`, or `.field::before`.
 - `@compose` is only valid inside component definitions.
 - Component definitions accept native declarations, `@compose`, nested selectors, native nested at-rules, and `@at` condition blocks.
 - Standard HTML tag selectors such as `body` or `html` are not valid inside `@master` definitions.
-- Utilities still win over main because `@master/css/base.css` declares `@layer base, theme, preset, main, general;`.
+- Utilities still win over components because `@master/css/base.css` declares `@layer theme, base, preset, components, utilities;`.
 
 ---
 
-## When to use main
-Use main when the class name describes a reusable UI pattern: `.btn`, `.card`, `.field`, `.page`, `.toolbar`. Use general utilities when the class describes a reusable primitive or a one-off declaration.
+## When to use components
+Use components when the class name describes a reusable UI pattern: `.btn`, `.card`, `.field`, `.page`, `.toolbar`. Use utilities when the class describes a reusable primitive or a one-off declaration.
 
-Good component definitions usually stay small and composable. Prefer combining main styles with general utilities in markup instead of hiding every variation behind a new component name.
+Good component definitions usually stay small and composable. Prefer combining components with utilities in markup instead of hiding every variation behind a new component name.

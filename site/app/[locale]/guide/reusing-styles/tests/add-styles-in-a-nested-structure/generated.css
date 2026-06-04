@@ -1,1 +1,1 @@
-@layer theme{.light,:root{--gray:162 161 163}.dark{--gray:137 136 138}}@layer main{.card{border-radius:0.5rem}.card-content{padding:1.25rem}.card-footer{border-top:0.0625rem rgb(var(--gray)) solid}.card-header{border-bottom:0.0625rem rgb(var(--gray)) solid}}
+@layer theme{.light,:root{--gray:162 161 163}.dark{--gray:137 136 138}}@layer components{.card{border-radius:0.5rem}.card-content{padding:1.25rem}.card-footer{border-top:0.0625rem rgb(var(--gray)) solid}.card-header{border-bottom:0.0625rem rgb(var(--gray)) solid}}

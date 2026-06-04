@@ -31,8 +31,8 @@ export default class MasterCSS {
     readonly baseLayer = new UtilityLayer('base', this)
     readonly themeLayer = new ThemeLayer('theme', this)
     readonly presetLayer = new UtilityLayer('preset', this)
-    readonly mainLayer = new UtilityLayer('main', this)
-    readonly generalLayer = new UtilityLayer('general', this)
+    readonly componentsLayer = new UtilityLayer('components', this)
+    readonly utilitiesLayer = new UtilityLayer('utilities', this)
     readonly selectors = new Map<string, SelectorNode[]>()
     readonly variables = new Map<string, Variable>()
     readonly modes: string[] = []
@@ -46,7 +46,7 @@ export default class MasterCSS {
     get text() {
         return this.rules
             .sort((a, b) => {
-                const order = ['base', 'theme', 'preset', 'main', 'general']
+                const order = ['theme', 'base', 'preset', 'components', 'utilities']
                 const indexA = order.indexOf(a.name) === -1 ? Infinity : order.indexOf(a.name)
                 const indexB = order.indexOf(b.name) === -1 ? Infinity : order.indexOf(b.name)
                 return indexA - indexB
@@ -54,23 +54,23 @@ export default class MasterCSS {
             .map(({ text }) => text).join('')
     }
 
-    getUtilityLayer(layerName: UtilityLayerName = 'general') {
+    getUtilityLayer(layerName: UtilityLayerName = 'utilities') {
         switch (layerName) {
             case 'base':
                 return this.baseLayer
             case 'preset':
                 return this.presetLayer
-            case 'main':
-                return this.mainLayer
-            case 'general':
-                return this.generalLayer
+            case 'components':
+                return this.componentsLayer
+            case 'utilities':
+                return this.utilitiesLayer
             default:
                 throw new Error(`Unsupported utility layer: ${layerName}`)
         }
     }
 
     getUtilityLayers() {
-        return [this.baseLayer, this.presetLayer, this.mainLayer, this.generalLayer]
+        return [this.baseLayer, this.presetLayer, this.componentsLayer, this.utilitiesLayer]
     }
 
     resolve(config: Config = this.config) {
@@ -603,8 +603,8 @@ export default class MasterCSS {
         this.baseLayer.reset()
         this.themeLayer.reset()
         this.presetLayer.reset()
-        this.mainLayer.reset()
-        this.generalLayer.reset()
+        this.componentsLayer.reset()
+        this.utilitiesLayer.reset()
         this.animationsNonLayer.reset()
         return this
     }

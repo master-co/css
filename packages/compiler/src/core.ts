@@ -104,7 +104,7 @@ const MASTER_CUSTOM_AT_RULES = {
 type MasterSection = 'root'
 
 const IMPORTANT_FLAG_VALUE = '__master_important__'
-const UTILITY_LAYER_NAMES = new Set<CSSDirectiveLayerName>(['base', 'preset', 'main', 'general'])
+const UTILITY_LAYER_NAMES = new Set<CSSDirectiveLayerName>(['base', 'preset', 'components', 'utilities'])
 const STANDALONE_MASTER_DIRECTIVE_NAMES = new Set(['', 'shake', 'no-shake', 'source', 'class'])
 
 const HTML_TAG_NAMES = new Set([
@@ -1016,7 +1016,7 @@ function collectStyleRuleBody(block: DeclarationBlock<Declaration>, rules: Rule[
             continue
         }
         if (compose) {
-            throw new Error('@compose is only allowed in @master class definitions outside @layer general')
+            throw new Error('@compose is only allowed in @master class definitions outside @layer utilities')
         }
         throw new Error(allowCompose
             ? 'Class definitions only accept declarations and @compose'
@@ -1249,7 +1249,7 @@ function parseNestedUtilityChildRule(child: Rule, parsed: ParsedDirectives, name
     if (nestedAtRuleChildren) {
         const atRule = formatNestedAtRule(child)
         if (!atRule) {
-            throw new Error('Unsupported nested at-rule in @layer general')
+            throw new Error('Unsupported nested at-rule in @layer utilities')
         }
         parseUtilityRuleBody(nestedAtRuleChildren, parsed, name, [...atRules, atRule], layer)
         return
@@ -1258,13 +1258,13 @@ function parseNestedUtilityChildRule(child: Rule, parsed: ParsedDirectives, name
     throw new Error('Utilities only accept declarations and nested at-rules')
 }
 
-function parseUtilityRuleBody(rules: Rule[], parsed: ParsedDirectives, name: string, atRules: string[] = [], layer: CSSDirectiveLayerName = 'general') {
+function parseUtilityRuleBody(rules: Rule[], parsed: ParsedDirectives, name: string, atRules: string[] = [], layer: CSSDirectiveLayerName = 'utilities') {
     const { declarations, nestedRules } = collectStyleRuleBody(EMPTY_DECLARATION_BLOCK, rules, false, true)
     if (Object.keys(declarations).length) {
         parsed.config.utilities ??= []
         const existingDefinition = parsed.config.utilities.find((definition) =>
             definition.name === name && (definition.type ?? 'static') === 'static'
-            && (definition.layer || 'general') === layer
+            && (definition.layer || 'utilities') === layer
         )
         if (existingDefinition) {
             existingDefinition.type = 'static'
@@ -1285,7 +1285,7 @@ function parseUtilityRuleBody(rules: Rule[], parsed: ParsedDirectives, name: str
     }
 }
 
-function parseUtility(rule: any, parsed: ParsedDirectives, atRules: string[] = [], layer: CSSDirectiveLayerName = 'general') {
+function parseUtility(rule: any, parsed: ParsedDirectives, atRules: string[] = [], layer: CSSDirectiveLayerName = 'utilities') {
     const name = parseClassDefinitionSelector(rule.value.selectors)
     if (!name) {
         throw new Error('Utility definition selector must be a single class selector')
@@ -1294,7 +1294,7 @@ function parseUtility(rule: any, parsed: ParsedDirectives, atRules: string[] = [
     parsed.config.utilities ??= []
     const existingDefinition = parsed.config.utilities.find((definition) =>
         definition.name === name && (definition.type ?? 'static') === 'static'
-        && (definition.layer || 'general') === layer
+        && (definition.layer || 'utilities') === layer
     )
     if (existingDefinition) {
         existingDefinition.type = 'static'
@@ -1387,8 +1387,8 @@ function parseMasterModeBlock(rule: any, parsed: ParsedDirectives, atRules: stri
 
 function parseMasterStyleRule(rule: any, parsed: ParsedDirectives, options: CompileCSSOptions, section: MasterSection, atRules: string[] = [], layer?: CSSDirectiveLayerName) {
     if (parseComponentDefinitionSelector(rule.value.selectors)) {
-        if ((layer || 'main') === 'general') {
-            parseUtility(rule, parsed, atRules, 'general')
+        if ((layer || 'components') === 'utilities') {
+            parseUtility(rule, parsed, atRules, 'utilities')
         } else {
             parseComponent(rule, parsed, atRules, layer)
         }
@@ -1813,7 +1813,7 @@ export function compileCSS(source: string, options: CompileCSSOptions = {}): Com
                         return []
                     },
                     compose() {
-                        throw new Error('@compose is only allowed in @master class definitions outside @layer general')
+                        throw new Error('@compose is only allowed in @master class definitions outside @layer utilities')
                     },
                     'custom-at'() {
                         throw new Error('@custom-at is only allowed in @master')

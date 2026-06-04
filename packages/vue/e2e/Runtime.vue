@@ -9,7 +9,7 @@
             {
                 name: 'btn',
                 type: -4,
-                layer: 'main',
+                layer: 'components',
                 rules: [
                     { selector: '&', declarations: { border: '0.125rem var(--color-red) solid' } }
                 ]

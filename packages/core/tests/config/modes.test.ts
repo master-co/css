@@ -10,12 +10,12 @@ test.concurrent('media modes', () => {
 })
 
 test('components', () => {
-    expectLayers({ main: '.dark .btn\\@dark{display:block}' }, 'btn@dark', {
+    expectLayers({ components: '.dark .btn\\@dark{display:block}' }, 'btn@dark', {
         utilities: [
             {
                 name: 'btn',
                 type: UtilityType.Static,
-                layer: 'main',
+                layer: 'components',
                 rules: [{ selector: '&', declarations: { display: 'block' } }]
             }
         ],
@@ -29,7 +29,7 @@ test('components can include modes and selectors', () => {
             {
                 name: 'btn',
                 type: UtilityType.Static,
-                layer: 'main',
+                layer: 'components',
                 rules: [
                     { selector: '.dark &', declarations: { display: 'block' } },
                     { selector: '&:hover', declarations: { 'font-size': '1rem' } }
@@ -39,6 +39,6 @@ test('components can include modes and selectors', () => {
         modeTrigger: 'class'
     }).add('btn')
 
-    expect(css.mainLayer.text).toContain('.dark .btn{display:block}')
-    expect(css.mainLayer.text).toContain('.btn:hover{font-size:1rem}')
+    expect(css.componentsLayer.text).toContain('.dark .btn{display:block}')
+    expect(css.componentsLayer.text).toContain('.btn:hover{font-size:1rem}')
 })

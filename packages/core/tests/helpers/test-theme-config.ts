@@ -85,8 +85,8 @@ const themeConfig: Config = {
         'reduce-motion': '@media(prefers-reduced-motion:reduce)',
         base: '@layer base',
         preset: '@layer preset',
-        main: '@layer main',
-        general: '@layer general',
+        components: '@layer components',
+        utilities: '@layer utilities',
         start: '@starting-style',
         w: '@media (width)',
         h: '@media (height)'
@@ -171,7 +171,7 @@ const themeConfig: Config = {
         {
             name: 'gradient-text',
             type: UtilityType.Static,
-            layer: 'general',
+            layer: 'utilities',
             declarations: {
                 '-webkit-text-fill-color': 'transparent',
                 'background-clip': 'text'
@@ -180,7 +180,7 @@ const themeConfig: Config = {
         {
             name: 'box-content',
             type: UtilityType.Static,
-            layer: 'general',
+            layer: 'utilities',
             declarations: {
                 'box-sizing': 'content-box'
             }
@@ -188,7 +188,7 @@ const themeConfig: Config = {
         {
             name: 'box-border',
             type: UtilityType.Static,
-            layer: 'general',
+            layer: 'utilities',
             declarations: {
                 'box-sizing': 'border-box'
             }
@@ -196,7 +196,7 @@ const themeConfig: Config = {
         {
             name: 'round',
             type: UtilityType.Static,
-            layer: 'general',
+            layer: 'utilities',
             declarations: {
                 'border-radius': '50%',
                 'aspect-ratio': '1/1'

@@ -4,7 +4,7 @@
     }
 }
 
-@layer main {
+@layer components {
     .btn {
         background-color: var(--color-foo);
     }

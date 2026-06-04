@@ -4,7 +4,7 @@
     }
 }
 
-@layer general {
+@layer utilities {
     .block\:\:before\,\:\:after::before,
     .block\:\:before\,\:\:after::after {
         display: block

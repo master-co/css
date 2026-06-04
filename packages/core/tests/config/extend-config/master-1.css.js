@@ -18,7 +18,7 @@ const config = extendConfig(config1, config2, {
         {
             name: 'btn',
             type: -4,
-            layer: 'main',
+            layer: 'components',
             rules: [
                 { selector: '&', declarations: { 'font-size': '0.875rem' } },
                 { selector: '&', declarations: { height: '2.5rem' } },
@@ -28,7 +28,7 @@ const config = extendConfig(config1, config2, {
         {
             name: 'blue-btn',
             type: -4,
-            layer: 'main',
+            layer: 'components',
             rules: [
                 { selector: '&', declarations: { 'font-size': '0.875rem' } },
                 { selector: '&', declarations: { height: '2.5rem' } },

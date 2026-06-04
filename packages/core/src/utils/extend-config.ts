@@ -17,7 +17,7 @@ function utilitySlot(utility: UtilityDefinition) {
     return [
         utility.name,
         utility.type === UtilityType.Static ? 'static' : 'syntax',
-        utility.type === UtilityType.Static ? (utility.layer || 'general') : ''
+        utility.type === UtilityType.Static ? (utility.layer || 'utilities') : ''
     ].join('\0')
 }
 

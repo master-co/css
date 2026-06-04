@@ -20,7 +20,7 @@ export type AnimationDefinitions<TDeclarations = CSSDeclarations> = Record<strin
 export type SelectorTokenDefinitions = Record<string, string>
 export type AtIdentifier = typeof CSS_AT_IDENTIFIERS[number]
 export type AtTokenDefinition = number | string
-export type UtilityLayerName = 'base' | 'preset' | 'main' | 'general'
+export type UtilityLayerName = 'base' | 'preset' | 'components' | 'utilities'
 
 export interface AtTokenDefinitions {
     [key: string]: AtTokenDefinition | AtTokenDefinitions;

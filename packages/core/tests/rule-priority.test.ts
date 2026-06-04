@@ -1,6 +1,6 @@
 import CSSTester from './tester'
 
-// new CSSTester().priority('generalLayer', {
+// new CSSTester().priority('utilitiesLayer', {
 //     states: [
 //         'block',
 //         'block:hover',
@@ -74,14 +74,14 @@ new CSSTester({ utilities: [
     {
         name: 'btn-primary',
         type: -4,
-        layer: 'main',
+        layer: 'components',
         rules: [
             { selector: '&', declarations: { 'background-color': 'oklch(63.7% 0.237 25.331)' } },
             { selector: '&:hover', declarations: { 'background-color': 'oklch(63.7% 0.237 25.331)' } },
             { selector: '&:disabled', declarations: { 'background-color': 'oklch(63.7% 0.237 25.331)' } }
         ]
     }
-] }).priority('mainLayer', { main: [
+] }).priority('componentsLayer', { components: [
         'btn-primary', [
             'btn-primary'
         ]

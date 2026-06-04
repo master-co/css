@@ -188,10 +188,10 @@ describe.concurrent('@master/css-compiler', () => {
         ])
     })
 
-    it('records static utility definitions under @layer general', () => {
+    it('records static utility definitions under @layer utilities', () => {
         const result = compileCSS(`
             @master {
-                @layer general {
+                @layer utilities {
                     .content-auto {
                         content-visibility: auto;
 
@@ -207,7 +207,7 @@ describe.concurrent('@master/css-compiler', () => {
             {
                 name: 'content-auto',
                 type: 'static',
-                layer: 'general',
+                layer: 'utilities',
                 rules: [
                     {
                         declarations: {
@@ -228,7 +228,7 @@ describe.concurrent('@master/css-compiler', () => {
     it('records static utility definitions without normalizing core default values', () => {
         const result = compileCSS(`
             @master {
-                @layer general {
+                @layer utilities {
                     .square {
                         aspect-ratio: 1/1;
                     }
@@ -248,7 +248,7 @@ describe.concurrent('@master/css-compiler', () => {
             {
                 name: 'square',
                 type: 'static',
-                layer: 'general',
+                layer: 'utilities',
                 declarations: {
                     'aspect-ratio': '1/1'
                 }
@@ -256,7 +256,7 @@ describe.concurrent('@master/css-compiler', () => {
             {
                 name: 'video',
                 type: 'static',
-                layer: 'general',
+                layer: 'utilities',
                 declarations: {
                     'aspect-ratio': '16/9'
                 }
@@ -264,7 +264,7 @@ describe.concurrent('@master/css-compiler', () => {
             {
                 name: 'rounded',
                 type: 'static',
-                layer: 'general',
+                layer: 'utilities',
                 declarations: {
                     'border-radius': '1e9em'
                 }
@@ -603,7 +603,7 @@ describe.concurrent('@master/css-compiler', () => {
 
         expect(() => process(`
             @master {
-                @layer general {
+                @layer utilities {
                     .content-auto {
                         @compose "block";
                     }
@@ -633,7 +633,7 @@ describe.concurrent('@master/css-compiler', () => {
 
         expect(() => process(`
             @master {
-                @layer general {
+                @layer utilities {
                     @keyframes fade {
                         from { opacity: 0; }
                     }

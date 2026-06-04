@@ -763,8 +763,8 @@
 
     @custom-at base @layer base;
     @custom-at preset @layer preset;
-    @custom-at main @layer main;
-    @custom-at general @layer general;
+    @custom-at components @layer components;
+    @custom-at utilities @layer utilities;
 
     @custom-at start @starting-style;
 
@@ -800,7 +800,7 @@
     @custom-selector ::vt-new ::view-transition-new;
 
     /* Static utilities */
-    @layer general {
+    @layer utilities {
         .container { container-type: inline-size; }
         .square { aspect-ratio: 1/1; }
         .video { aspect-ratio: 16/9; }

@@ -5,7 +5,7 @@ console.log(createCSS({
         {
             name: 'btn',
             type: -4,
-            layer: 'main',
+            layer: 'components',
             rules: [
                 { selector: '&', atRules: ['@layer preset'], declarations: { display: 'block' } }
             ]

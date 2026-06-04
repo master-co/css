@@ -8,7 +8,7 @@
     }
 }
 
-@layer general {
+@layer utilities {
     .fg\:primary {
         color: rgb(var(--primary))
     }

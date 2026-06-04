@@ -167,7 +167,7 @@ Master CSS is also a standalone CSS framework. It includes the core rule engine,
 </details>
 
 ### CSS-first configuration
-The project CSS entry is the primary configuration source. Tokens are native custom properties, selector shortcuts use `@custom-selector`, conditional shortcuts use `@custom-at`, low-level custom utilities live in `@layer general`, and semantic component classes live directly inside `@master`.
+The project CSS entry is the primary configuration source. Tokens are native custom properties, selector shortcuts use `@custom-selector`, conditional shortcuts use `@custom-at`, low-level custom utilities live in `@layer utilities`, and semantic component classes live directly inside `@master`.
 
 ```css name=index.css
 @master {
@@ -238,10 +238,10 @@ The important habit is to abstract only when the abstraction carries product mea
 The default `@master/css/base.css` stylesheet declares the cascade layer order once:
 
 ```css
-@layer base, theme, preset, main, general;
+@layer theme, base, preset, components, utilities;
 ```
 
-Generated CSS emits rules into `base`, `theme`, `preset`, `main`, and `general` blocks. `base` normalizes the platform, `theme` emits variables, `preset` holds broad defaults, `main` holds project vocabulary from `@master` component definitions, and `general` holds utility classes. Because `general` comes last, local utility decisions can override reusable project styles without reaching for `!important`.
+Generated CSS emits rules into `theme`, `base`, `preset`, `components`, and `utilities` blocks. `theme` emits variables, `base` normalizes the platform, `preset` holds broad defaults, `components` holds project vocabulary from `@master` component definitions, and `utilities` holds utility classes. Because `utilities` comes last, local utility decisions can override reusable project styles without reaching for `!important`.
 
 ---
 
@@ -282,7 +282,7 @@ Use semantic tokens and components when:
 - The team has a design-system decision worth naming.
 - Consumers should use the concept without knowing every underlying utility.
 
-Assuming the card has become reusable, define it as a main style using [components](/guide/components) in the project CSS entry:
+Assuming the card has become reusable, define it as a component using [components](/guide/components) in the project CSS entry:
 
 ```css name=index.css
 @master {
@@ -324,7 +324,7 @@ Then use the semantic classes in markup:
 </div>
 ```
 
-The component definitions stay on-demand. They are emitted in the `main` layer only when `card`, `card-image`, and the other component classes appear in markup or are discovered by extraction.
+The component definitions stay on-demand. They are emitted in the `components` layer only when `card`, `card-image`, and the other component classes appear in markup or are discovered by extraction.
 
 ---
 

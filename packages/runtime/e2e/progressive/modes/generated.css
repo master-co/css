@@ -1,4 +1,4 @@
-@layer general {
+@layer utilities {
     .light .hidden\@light {
         display: none;
     }

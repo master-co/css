@@ -22,7 +22,7 @@ test('uses explicit config objects', async () => {
                 {
                     name: 'blue-btn',
                     type: -4,
-                    layer: 'main',
+                    layer: 'components',
                     rules: [
                         { selector: '&', declarations: { 'background-color': 'oklch(63.7% 0.237 25.331)' } }
                     ]
@@ -30,7 +30,7 @@ test('uses explicit config objects', async () => {
                 {
                     name: 'btn',
                     type: -4,
-                    layer: 'main',
+                    layer: 'components',
                     rules: [
                         { selector: '&', declarations: { 'background-color': 'oklch(55.1% 0.027 264.364)' } }
                     ]

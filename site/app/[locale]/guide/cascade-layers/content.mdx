@@ -4,13 +4,13 @@ CSS cascade layers let a stylesheet decide which groups of rules should win befo
 The default `@master/css/base.css` stylesheet declares the layer order:
 
 ```css
-@layer base, theme, preset, main, general;
+@layer theme, base, preset, components, utilities;
 ```
 
 Layers declared later have higher priority for normal declarations. In Master CSS, the practical order is:
 
 ```txt
-general > main > preset > theme > base
+utilities > components > preset > base > theme
 ```
 
 <LayersDefault />
@@ -33,10 +33,10 @@ Theme rules are intentionally early: they provide values that later layers consu
 ### Preset
 Use `preset` for broad element defaults such as typography inside an article, code styling, or vendor defaults you want to keep below app-level styles.
 
-Rules enter the preset layer through `@preset` syntax or explicit `@layer preset` definitions. Because preset sits before `main` and `general`, components and utilities can still override it without `!important`.
+Rules enter the preset layer through `@preset` syntax or explicit `@layer preset` definitions. Because preset sits before `components` and `utilities`, components and utilities can still override it without `!important`.
 
-### Main
-Use `main` for project styles that carry product meaning: `.btn`, `.card`, `.field`, `.toolbar`, `.app-shell`. In CSS config, write these class definitions directly inside `@master`.
+### Components
+Use `components` for project styles that carry product meaning: `.btn`, `.card`, `.field`, `.toolbar`, `.app-shell`. In CSS config, write these class definitions directly inside `@master`.
 
 ```css name=index.css
 @master {
@@ -47,14 +47,14 @@ Use `main` for project styles that carry product meaning: `.btn`, `.card`, `.fie
 }
 ```
 
-The compiler converts these definitions into static `config.utilities` entries with `layer: 'main'`. They remain on-demand: defining `.btn` does not emit CSS until `btn` is used or extracted.
+The compiler converts these definitions into static `config.utilities` entries with `layer: 'components'`. They remain on-demand: defining `.btn` does not emit CSS until `btn` is used or extracted.
 
-### General
-Use `general` for utilities: built-in utilities, animation utilities, and custom static utilities written in `@layer general` inside `@master`.
+### Utilities
+Use `utilities` for built-in utilities, animation utilities, and custom static utilities written in `@layer utilities` inside `@master`.
 
 ```css name=index.css
 @master {
-    @layer general {
+    @layer utilities {
         .content-auto {
             content-visibility: auto;
             contain-intrinsic-size: auto 32rem;
@@ -63,12 +63,12 @@ Use `general` for utilities: built-in utilities, animation utilities, and custom
 }
 ```
 
-General is the final layer, so utility classes can intentionally override main styles from markup.
+Utilities is the final layer, so utility classes can intentionally override component styles from markup.
 
 ---
 
 ## A complete flow
-This example touches every generated layer. The CSS config defines theme variables and a main style, while the markup uses base, preset, and general utilities.
+This example touches every generated layer. The CSS config defines theme variables and a component, while the markup uses base, preset, and utilities.
 
 ```css name=index.css
 @master {
@@ -98,8 +98,8 @@ Notice the shape of the output:
 
 - `@master/css/base.css` defines the global layer order once.
 - Theme variables are emitted in `@layer theme`.
-- The `.btn` definition is emitted in `@layer main`.
-- `flex` and `animation:fade|1s` are emitted in `@layer general`.
+- The `.btn` definition is emitted in `@layer components`.
+- `flex` and `animation:fade|1s` are emitted in `@layer utilities`.
 - `@keyframes` are emitted at the top level, outside cascade layers.
 
 ---
@@ -151,10 +151,10 @@ Base should normalize. Preset should express broad design defaults.
 
 ---
 
-## General can override main
-Layer order is checked before selector specificity. That means a general utility can override a main style even when the main style comes from a named component.
+## Utilities can override components
+Layer order is checked before selector specificity. That means a utility can override a component style even when the component style comes from a named component.
 
-For example, `.btn` defines `display: inline-flex` in the main layer. Adding `flex` in markup moves the final `display` decision to the general layer.
+For example, `.btn` defines `display: inline-flex` in the components layer. Adding `flex` in markup moves the final `display` decision to the utilities layer.
 
 ```html
 <!-- @MARK btn flex -->
@@ -164,14 +164,14 @@ For example, `.btn` defines `display: inline-flex` in the main layer. Adding `fl
 <details>
     <summary>Generated CSS</summary>
     ```css
-    @layer main {
+    @layer components {
         .btn {
             display: inline-flex;
             …
         }
     }
 
-    @layer general {
+    @layer utilities {
         .flex {
             display: flex;
         }
@@ -179,7 +179,7 @@ For example, `.btn` defines `display: inline-flex` in the main layer. Adding `fl
     ```
 </details>
 
-Use this as the normal override path: keep reusable product styles in `main`, then use utilities in `general` for local adjustments.
+Use this as the normal override path: keep reusable product styles in `components`, then use utilities in `utilities` for local adjustments.
 
 ---
 
@@ -195,7 +195,7 @@ For example, set paragraph text to `16` across an article, then override one par
     <Code lang="css" beautify>{require('./tests/overriding-preset-styles/generated.css?raw')}</Code>
 </details>
 
-This is the reason preset sits before main and general: defaults should be broad, but final element-level decisions should stay close to the element.
+This is the reason preset sits before components and utilities: defaults should be broad, but final element-level decisions should stay close to the element.
 
 ---
 
@@ -209,7 +209,7 @@ Regular CSS outside `@layer` follows the native cascade outside Master CSS's lay
     }
 }
 
-@layer main {
+@layer components {
     .card {
         border-radius: .75rem;
     }
@@ -220,7 +220,7 @@ Inside `@master`, prefer the configured forms:
 
 ```css name=index.css
 @master {
-    @layer general {
+    @layer utilities {
         .content-auto {
             content-visibility: auto;
         }
@@ -241,7 +241,7 @@ Cascade layers are the contract that makes Master CSS predictable:
 1. `base` normalizes the platform.
 1. `theme` provides generated variables.
 1. `preset` sets broad defaults.
-1. `main` holds project vocabulary from `@master` class definitions.
-1. `general` holds utilities and final local adjustments.
+1. `components` holds project vocabulary from `@master` class definitions.
+1. `utilities` holds utilities and final local adjustments.
 
 When declarations conflict, solve the problem by choosing the correct layer first. Reach for specificity or `!important` only when you are intentionally integrating with CSS that sits outside this layer model.

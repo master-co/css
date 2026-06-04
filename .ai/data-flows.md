@@ -6,7 +6,7 @@
 class string
   -> MasterCSS.add()
   -> generate()
-  -> match configured static utilities, including main-layer project styles
+  -> match configured static utilities, including components-layer project styles
   -> create()
   -> match() against variable, value, key, arbitrary matchers
   -> new Utility()

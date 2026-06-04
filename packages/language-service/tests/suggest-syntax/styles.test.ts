@@ -9,7 +9,7 @@ const settings: Settings = {
             {
                 name: 'btn',
                 type: -4,
-                layer: 'main',
+                layer: 'components',
                 rules: [
                     { selector: '&', declarations: { display: 'inline-block' } }
                 ]
@@ -18,12 +18,12 @@ const settings: Settings = {
     }
 }
 it.concurrent('info', () => expect(hint('b', settings)?.find(({ label }) => label === 'btn')).toMatchObject({
-    detail: 'main style',
+    detail: 'component',
     documentation: {
         kind: 'markdown',
         value: dedent`
             \`\`\`css
-            @layer main {
+            @layer components {
               .btn {
                 display: inline-block
               }

@@ -24,30 +24,30 @@ export default function sortReadableClasses(classes: string[], css = createCSS()
 
     css.add(...shouldSortClasses)
 
-    const seenMain = new Set<string>()
-    const dedupedMainRules = css.mainLayer.rules
+    const seenComponents = new Set<string>()
+    const dedupedComponentRules = css.componentsLayer.rules
         .filter((rule): rule is Utility => rule instanceof Utility)
         .filter(rule => {
             const className = rule.fixedClass || rule.name
-            if (seenMain.has(className)) return false
-            seenMain.add(className)
+            if (seenComponents.has(className)) return false
+            seenComponents.add(className)
             return true
         })
     const allRules = [
-        ...dedupedMainRules,
-        ...css.generalLayer.rules,
+        ...dedupedComponentRules,
+        ...css.utilitiesLayer.rules,
         ...css.baseLayer.rules,
         ...css.presetLayer.rules,
     ].filter((rule): rule is Utility => rule instanceof Utility)
 
     const baseSet = new Set(css.baseLayer.rules)
     const presetSet = new Set(css.presetLayer.rules)
-    const mainSet = new Set(css.mainLayer.rules)
+    const componentSet = new Set(css.componentsLayer.rules)
 
     const getGroupIndex = (rule: Utility): number => {
         if (baseSet.has(rule)) return 4
         if (presetSet.has(rule)) return 5
-        if (mainSet.has(rule)) return 0
+        if (componentSet.has(rule)) return 0
         if (rule.atRules) return 3
         if (rule.mode) return 2
         if (rule.selectorNodes?.length) return 1
@@ -55,7 +55,7 @@ export default function sortReadableClasses(classes: string[], css = createCSS()
     }
 
     const getTypeScore = (rule: Utility): number => {
-        if (mainSet.has(rule)) return 0
+        if (componentSet.has(rule)) return 0
         if (rule.fixedClass) return 0
         if (rule.type === UtilityType.Static) return 1
         return 2
@@ -75,10 +75,10 @@ export default function sortReadableClasses(classes: string[], css = createCSS()
             }
         }
 
-        const mainClassA = mainSet.has(a.rule) ? a.rule.fixedClass || a.rule.name : undefined
-        const mainClassB = mainSet.has(b.rule) ? b.rule.fixedClass || b.rule.name : undefined
-        if (mainClassA && mainClassB) {
-            return naturalCompare(mainClassA, mainClassB)
+        const componentClassA = componentSet.has(a.rule) ? a.rule.fixedClass || a.rule.name : undefined
+        const componentClassB = componentSet.has(b.rule) ? b.rule.fixedClass || b.rule.name : undefined
+        if (componentClassA && componentClassB) {
+            return naturalCompare(componentClassA, componentClassB)
         }
 
         return compareRulePriority(a.rule, b.rule)

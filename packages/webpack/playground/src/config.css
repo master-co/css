@@ -27,7 +27,7 @@
     @custom-at motion-safe @media (prefers-reduced-motion: no-preference);
     @custom-selector ::scrollbar ::-webkit-scrollbar;
 
-    @layer general {
+    @layer utilities {
         .content-auto {
             content-visibility: auto;
             contain-intrinsic-size: auto 28rem;

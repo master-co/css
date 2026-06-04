@@ -2,11 +2,15 @@ import { test, it, expect, describe } from 'vitest'
 import CSSLanguageService from '../../src/core'
 import createDoc from '../../src/utils/create-doc'
 import { Settings } from '../../src/settings'
+import { createThemeConfig } from '../../../core/tests/helpers/create-css-with-theme'
 
 export const hint = (target: string, settings: Settings = {}) => {
     const contents = [`<div class="`, target, `"></div>`]
     const doc = createDoc('html', contents.join(''))
-    const languageService = new CSSLanguageService(settings)
+    const languageService = new CSSLanguageService({
+        ...settings,
+        config: createThemeConfig(settings.config)
+    })
     return languageService.suggestSyntax(doc, doc.positionAt(contents[0].length + target.length), {
         triggerKind: 2,
         triggerCharacter: target.charAt(target.length - 1)

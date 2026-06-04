@@ -18,22 +18,22 @@ test.concurrent('with selectors', () => {
     expectLayers({ preset: '.font\\:12_\\:is\\(code\\,pre\\)\\@preset :is(code,pre){font-size:0.75rem}' }, 'font:12_:is(code,pre)@preset')
 })
 
-test.concurrent('using main', async () => {
+test.concurrent('using components', async () => {
     const css = createCSSWithTheme({
         utilities: [
             {
                 name: 'btn',
                 type: UtilityType.Static,
-                layer: 'main',
+                layer: 'components',
                 rules: [
                     { selector: '&', atRules: ['@layer base'], declarations: { display: 'block' } }
                 ]
             }
         ]
     }).add('btn')
-    expect(css.mainLayer.text).toContain('@layer base{.btn{display:block}}')
+    expect(css.componentsLayer.text).toContain('@layer base{.btn{display:block}}')
 })
 
 test.concurrent('conflicts', async () => {
-    expectLayers({ general: '@layer base.preset{.block\\@base\\@preset{display:block}}' }, 'block@base@preset')
+    expectLayers({ utilities: '@layer base.preset{.block\\@base\\@preset{display:block}}' }, 'block@base@preset')
 })

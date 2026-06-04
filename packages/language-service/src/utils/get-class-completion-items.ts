@@ -6,12 +6,12 @@ import sortCompletionItems from './sort-completion-items'
 import getUtilityInfo from './get-utility-info'
 import cssDataProvider from './css-data-provider'
 
-export default function getMainCompletionItems(css: MasterCSS = createCSS()): CompletionItem[] {
+export default function getClassCompletionItems(css: MasterCSS = createCSS()): CompletionItem[] {
     const completionItems: CompletionItem[] = []
     const addedKeys = new Set<string>()
     for (const eachDefinedUtility of css.definedUtilities) {
         if (eachDefinedUtility.definition.type === UtilityType.Static) {
-            const isMainStyle = eachDefinedUtility.definition.layer === 'main'
+            const isComponent = eachDefinedUtility.definition.layer === 'components'
             const { data, detail, docs } = getUtilityInfo(eachDefinedUtility, css)
             const utilityName = eachDefinedUtility.id.slice(1)
             completionItems.push({
@@ -19,9 +19,9 @@ export default function getMainCompletionItems(css: MasterCSS = createCSS()): Co
                 kind: CompletionItemKind.Value,
                 documentation: getCSSDataDocumentation(data, {
                     generatedCSS: generateCSS([utilityName], css),
-                    docs: isMainStyle ? '/guide/components' : docs
+                    docs: isComponent ? '/guide/components' : docs
                 }),
-                detail: isMainStyle ? 'main style' : detail
+                detail: isComponent ? 'component' : detail
             })
         } else {
             const nativeProperties = cssDataProvider.provideProperties()
