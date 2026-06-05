@@ -31,6 +31,20 @@ Generated rules are emitted into `theme`, `base`, `preset`, `components`, and `u
 
 Do not start by inventing a new abstraction. This repo already has established helpers for parsing, config resolution, rule matching, validation, and insertion.
 
+## Refactor Compatibility Policy
+
+Master CSS refactors optimize for a clean, correct design over backward compatibility. When a task asks for a refactor, rewrite, cleanup, migration, or re-architecture, do not preserve legacy APIs, legacy config shapes, old behavior, aliases, adapters, fixtures, or compatibility shims solely for compatibility unless the user or issue explicitly says compatibility is required.
+
+Breaking changes are acceptable in refactor work, but they must be intentional and visible:
+
+- List changed or removed public APIs, config shapes, class syntax, CSS output, runtime behavior, extraction behavior, language tooling behavior, or ESLint behavior.
+- Update tests and fixtures to prove the new intended behavior instead of preserving old compatibility paths.
+- Remove compatibility layers that obscure the new model, unless compatibility is explicitly required.
+- Keep the refactor scoped to the stated goal; do not use it as permission for unrelated churn.
+- If compatibility is required, implement it deliberately and cover that compatibility contract with tests.
+
+Routine bug fixes, documentation edits, and narrow feature additions should still preserve existing behavior unless the requested fix or correctness requires a behavior change.
+
 ## Architecture Rules
 
 Preserve dependency direction:
@@ -71,7 +85,9 @@ Modify these only with focused tests and a clear reason:
 - Do not reformat unrelated files.
 - Do not modify generated files, snapshots, or fixtures unless the output change is intentional.
 - Do not add dependencies unless the existing toolchain cannot reasonably solve the problem.
-- Do not change package names, public exports, build flow, release flow, CI, or lockfiles unless explicitly requested.
+- Do not change package names, build flow, release flow, CI, or lockfiles unless explicitly requested.
+- Keep public exports deliberate; routine work should not change them, and refactor work may change them only when they are part of the requested clean design.
+- Document and test any breaking surface from public export or behavior changes.
 - Do not reduce correctness just to make tests pass.
 - Do not guess when modifying parser, compiler, renderer, selector, at-rule, variable, mode, priority, or cascade behavior.
 

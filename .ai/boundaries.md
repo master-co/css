@@ -31,6 +31,12 @@ These require source tracing, focused tests, and clear explanation:
 - Build plugin injection and virtual modules
 - Generated CSS fixtures and snapshots
 
+## Refactor Compatibility Boundary
+
+When the requested work is a refactor, rewrite, cleanup, migration, or re-architecture, backward compatibility is not assumed. It is acceptable to remove old APIs, aliases, config forms, fixtures, compatibility branches, and transitional adapters when they conflict with the clean target design.
+
+Those changes still sit in the caution zone. The implementation must identify the breaking surface, update tests and fixtures for the new behavior, and explain why the old behavior was removed. If the user or issue requires compatibility, treat that compatibility as an explicit contract and test it.
+
 ## Do Not Modify Unless Explicitly Requested
 
 - `pnpm-lock.yaml`

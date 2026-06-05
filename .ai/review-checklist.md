@@ -7,6 +7,7 @@ Use this for human and AI review.
 - Dependency direction is preserved.
 - Public API changes are explicit.
 - Package exports are unchanged unless intentional.
+- Refactor changes do not keep legacy compatibility paths unless compatibility was explicitly required.
 - CSS output changes are intentional and explained.
 - Parser, syntax, selector, at-rule, variable, mode, priority, and cascade changes have tests.
 - Runtime or hydration changes have browser/e2e coverage.
@@ -21,4 +22,3 @@ Use this for human and AI review.
 - CI, release, lockfile, package manager, and generated files were not changed casually.
 - Docs/examples were updated if user-facing behavior changed.
 - Performance risk was considered for hot paths.
-

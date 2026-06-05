@@ -19,6 +19,14 @@
 - Avoid cross-package refactors unless the task explicitly requires them.
 - Avoid broad formatting edits.
 
+## Refactor Strategy
+
+For refactor, rewrite, cleanup, migration, or re-architecture tasks, prefer a clean and internally consistent design over preserving old compatibility paths. Do not add adapters, aliases, overloads, deprecated options, or fallback branches only to keep legacy behavior alive unless the user or issue explicitly requires compatibility.
+
+Refactors may change public exports, config shapes, generated CSS, runtime behavior, extraction behavior, or tooling behavior when that is part of the requested design. Make those breaking changes explicit, remove obsolete code paths, and update tests to describe the new contract.
+
+This does not loosen scope: keep changes tied to the refactor goal, avoid unrelated formatting, and preserve established package boundaries unless changing the boundary is the point of the task.
+
 ## Dependency Policy
 
 Do not add dependencies unless:
