@@ -1,6 +1,10 @@
 import { createCSS } from '@master/css'
 import themeConfig from '@master/css/theme.css?master-css-config'
 
-const css = createCSS(themeConfig)
+const themeCSS = createCSS(themeConfig)
 
-export default css
+export const createThemeCSS = () => {
+    return createCSS(themeConfig)
+}
+
+export default themeCSS
