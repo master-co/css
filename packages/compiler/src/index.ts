@@ -15,6 +15,12 @@ import {
     type CompileCSSResult,
     type ResolvedCSSImportGraph
 } from './core'
+import {
+    findCSSImportStatements,
+    removeCSSImportStatements,
+    replaceCSSImportStatements,
+    type CSSImportStatement
+} from './lexer/imports'
 
 export * from './core'
 
@@ -61,123 +67,8 @@ export type CompileCSSConfigModuleResult = CSSConfigModuleResult<Config> & {
     directives: CompileCSSResult
 }
 
-function findImportEnd(source: string, startIndex: number) {
-    let quote = ''
-    let comment = false
-    let depth = 0
-    for (let index = startIndex; index < source.length; index++) {
-        const char = source[index]
-        const next = source[index + 1]
-        if (comment) {
-            if (char === '*' && next === '/') {
-                comment = false
-                index++
-            }
-            continue
-        }
-        if (quote) {
-            if (char === '\\') {
-                index++
-            } else if (char === quote) {
-                quote = ''
-            }
-            continue
-        }
-        if (char === '/' && next === '*') {
-            comment = true
-            index++
-            continue
-        }
-        if (char === '"' || char === '\'') {
-            quote = char
-            continue
-        }
-        if (char === '(') {
-            depth++
-            continue
-        }
-        if (char === ')') {
-            depth--
-            continue
-        }
-        if (char === ';' && depth === 0) return index + 1
-    }
-    return -1
-}
-
-function parseImportSource(statement: string) {
-    const match = /^\s*@import\s+(?:(["'])(.*?)\1|url\(\s*(?:(["'])(.*?)\3|([^'")\s]+))\s*\))[^;]*;\s*$/s.exec(statement)
-    return match?.[2] || match?.[4] || match?.[5]
-}
-
 function isExpandableImportSource(source: string) {
     return (source.startsWith('./') || source.startsWith('../')) && extname(source) === '.css'
-}
-
-function findImportStatements(source: string) {
-    const imports: { start: number, end: number, statement: string }[] = []
-    let quote = ''
-    let comment = false
-    let depth = 0
-    for (let index = 0; index < source.length; index++) {
-        const char = source[index]
-        const next = source[index + 1]
-        if (comment) {
-            if (char === '*' && next === '/') {
-                comment = false
-                index++
-            }
-            continue
-        }
-        if (quote) {
-            if (char === '\\') {
-                index++
-            } else if (char === quote) {
-                quote = ''
-            }
-            continue
-        }
-        if (char === '/' && next === '*') {
-            comment = true
-            index++
-            continue
-        }
-        if (char === '"' || char === '\'') {
-            quote = char
-            continue
-        }
-        if (char === '{') {
-            depth++
-            continue
-        }
-        if (char === '}') {
-            depth--
-            continue
-        }
-        if (depth === 0 && source.startsWith('@import', index) && /\s/.test(source[index + '@import'.length] || '')) {
-            const end = findImportEnd(source, index)
-            if (end === -1) continue
-            imports.push({
-                start: index,
-                end,
-                statement: source.slice(index, end)
-            })
-            index = end - 1
-        }
-    }
-    return imports
-}
-
-function removeImportStatements(source: string) {
-    const imports = findImportStatements(source)
-    if (!imports.length) return source
-    let output = ''
-    let index = 0
-    for (const importStatement of imports) {
-        output += source.slice(index, importStatement.start)
-        index = importStatement.end
-    }
-    return output + source.slice(index)
 }
 
 function readJSONFile<T>(file: string) {
@@ -243,8 +134,8 @@ export function resolveMasterCSSPackageEntryFile(importSource: string, fromFile 
 export function inspectCSS(source: string): InspectCSSResult {
     const hasMasterEntryDirective = findStandaloneMasterDirectiveStatements(source)
         .some((statement) => statement.name === '')
-    const hasMasterCSSImport = findImportStatements(source)
-        .some((statement) => parseImportSource(statement.statement) === MASTER_CSS_PACKAGE_ID)
+    const hasMasterCSSImport = findCSSImportStatements(source)
+        .some((statement) => statement.source === MASTER_CSS_PACKAGE_ID)
     return {
         hasMasterEntryDirective,
         hasMasterCSSImport,
@@ -258,7 +149,7 @@ function resolveCSSImportGraphFile(
     dependencySet: Set<string>,
     stack: string[],
     options: ResolveCSSImportGraphOptions = {}
-) {
+): string {
     const absoluteFile = resolve(file)
     if (stack.includes(absoluteFile)) {
         throw new Error(`Circular CSS import: ${[...stack, absoluteFile].join(' -> ')}`)
@@ -272,29 +163,19 @@ function resolveCSSImportGraphFile(
     }
 
     const source = readFileSync(absoluteFile, 'utf-8')
-    const imports = findImportStatements(source)
+    const imports = findCSSImportStatements(source, absoluteFile)
     if (!imports.length) return source
 
-    let output = ''
-    let index = 0
-    for (const importStatement of imports) {
-        output += source.slice(index, importStatement.start)
-        const importSource = parseImportSource(importStatement.statement)
-        const packageFile = options.expandPackageImports !== false && importSource
+    return replaceCSSImportStatements(source, absoluteFile, (importStatement: CSSImportStatement): string | undefined => {
+        const importSource = importStatement.source
+        const packageFile = options.expandPackageImports !== false
             ? resolveMasterCSSPackageEntryFile(importSource, absoluteFile, options.projectDir)
             : undefined
-        if (packageFile || (importSource && isExpandableImportSource(importSource))) {
-            if (!importSource) {
-                throw new Error(`Unable to resolve CSS import in ${absoluteFile}`)
-            }
+        if (packageFile || isExpandableImportSource(importSource)) {
             const importedFile = packageFile || resolve(dirname(absoluteFile), importSource)
-            output += resolveCSSImportGraphFile(importedFile, dependencies, dependencySet, [...stack, absoluteFile], options)
-        } else {
-            output += importStatement.statement
+            return resolveCSSImportGraphFile(importedFile, dependencies, dependencySet, [...stack, absoluteFile], options)
         }
-        index = importStatement.end
-    }
-    return output + source.slice(index)
+    })
 }
 
 export function resolveCSSImportGraph(file: string, options: ResolveCSSImportGraphOptions = {}): ResolvedCSSImportGraph {
@@ -348,7 +229,7 @@ export function compileCSSFile(file: string, options: CompileCSSFileOptions = {}
         projectDir: root
     })
     const source = compileOptions.preserveNativeCSS === false
-        ? removeImportStatements(graph.source)
+        ? removeCSSImportStatements(graph.source, absoluteFile)
         : graph.source
     const result = compileCSS(source, {
         ...compileOptions,

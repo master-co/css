@@ -20,23 +20,16 @@ import type {
     Token,
     TokenOrValue
 } from 'lightningcss'
-import type * as LightningCSS from 'lightningcss'
+import { decodeCSS, encodeCSS, getCSSTransform, setCSSTransform, type CSSTransform } from './css-transform'
+import {
+    findStandaloneMasterDirectiveStatements,
+    removeStandaloneMasterDirectives,
+    type StandaloneMasterDirectiveStatement
+} from './lexer/standalone-master'
 import unquote from './utils/unquote'
 
-export type CSSTransform = typeof LightningCSS.transform
-
-let transform: CSSTransform | undefined
-
-export function setCSSTransform(transformer: CSSTransform) {
-    transform = transformer
-}
-
-function getCSSTransform() {
-    if (!transform) {
-        throw new Error('@master/css-compiler requires a CSS transform implementation. Use the default Node entry or initialize the browser entry.')
-    }
-    return transform
-}
+export { findStandaloneMasterDirectiveStatements, setCSSTransform }
+export type { CSSTransform, StandaloneMasterDirectiveStatement }
 
 export interface CompileCSSOptions {
     config?: unknown
@@ -64,13 +57,6 @@ type ParsedUtilityRuleDefinition = CSSDirectiveUtilityRuleDefinition
 export interface ParsedDirectives extends Pick<CompileCSSResult, 'config' | 'classNames' | 'nativeClassNames' | 'warnings'> {
     componentDefinitions?: Record<string, ParsedComponentDefinition[]>
     componentOrder?: number
-}
-
-export interface StandaloneMasterDirectiveStatement {
-    start: number
-    end: number
-    name: string
-    statement: string
 }
 
 const MASTER_CUSTOM_AT_RULES = {
@@ -104,7 +90,6 @@ type MasterSection = 'root'
 
 const UTILITY_LAYER_NAMES = new Set<CSSDirectiveLayerName>(['base', 'preset', 'components', 'utilities'])
 const TOP_LEVEL_DEFINITION_LAYER_NAMES = new Set<CSSDirectiveLayerName>(['preset', 'components', 'utilities'])
-const STANDALONE_MASTER_DIRECTIVE_NAMES = new Set(['', 'shake', 'no-shake', 'source', 'class'])
 
 const HTML_TAG_NAMES = new Set([
     'a',
@@ -243,14 +228,6 @@ function parseNumber(value: string) {
 
 function parseList(value: string) {
     return value.split(',').flatMap((part) => part.trim().split(/\s+/)).filter(Boolean)
-}
-
-function encodeCSS(source: string) {
-    return new TextEncoder().encode(source)
-}
-
-function decodeCSS(code: Uint8Array) {
-    return new TextDecoder().decode(code)
 }
 
 function parseVariableValue(value: string): CSSDirectiveVariableValue {
@@ -899,6 +876,7 @@ function parseComponentDefinitionSelector(selectors: Selector[]) {
     })
     return {
         name,
+        selectors: selectorTexts,
         selector: selectorTexts.join(',')
     }
 }
@@ -1033,53 +1011,8 @@ function collectStyleRuleBody(block: DeclarationBlock<Declaration>, rules: Rule[
     }
 }
 
-function splitSelectorList(selectorText: string) {
-    const selectors: string[] = []
-    let current = ''
-    let depth = 0
-    let quote = ''
-
-    for (let index = 0; index < selectorText.length; index++) {
-        const char = selectorText[index]
-        if (quote) {
-            current += char
-            if (char === '\\') {
-                current += selectorText[++index] || ''
-            } else if (char === quote) {
-                quote = ''
-            }
-            continue
-        }
-        if (char === '"' || char === '\'') {
-            quote = char
-            current += char
-            continue
-        }
-        if (char === '(' || char === '[') {
-            depth++
-            current += char
-            continue
-        }
-        if (char === ')' || char === ']') {
-            depth--
-            current += char
-            continue
-        }
-        if (char === ',' && depth === 0) {
-            selectors.push(current.trim())
-            current = ''
-            continue
-        }
-        current += char
-    }
-
-    if (current.trim()) selectors.push(current.trim())
-    return selectors
-}
-
-function combineComponentSelectors(parentSelector: string, childSelector: string) {
-    const parentSelectors = splitSelectorList(parentSelector)
-    const childSelectors = splitSelectorList(childSelector)
+function combineComponentSelectors(parentSelectors: string[], childSelectorAST: Selector[]) {
+    const childSelectors = childSelectorAST.map((selector) => formatSelectors([selector]))
     const selectors: string[] = []
 
     for (const child of childSelectors) {
@@ -1091,11 +1024,12 @@ function combineComponentSelectors(parentSelector: string, childSelector: string
         }
     }
 
-    return selectors.join(',')
+    return selectors
 }
 
 interface ComponentSelectorDefinition {
     name: string
+    selectors: string[]
     selector: string
 }
 
@@ -1194,10 +1128,14 @@ function parseNestedComponentChildRule(child: Rule, parsed: ParsedDirectives, pa
 
 function parseComponent(rule: any, parsed: ParsedDirectives, atRules: string[] = [], layer?: CSSDirectiveLayerName, parentSelectorDefinition?: ComponentSelectorDefinition) {
     const selectorDefinition = parentSelectorDefinition
-        ? {
-            name: parentSelectorDefinition.name,
-            selector: combineComponentSelectors(parentSelectorDefinition.selector, formatSelectors(rule.value.selectors))
-        }
+        ? (() => {
+            const selectors = combineComponentSelectors(parentSelectorDefinition.selectors, rule.value.selectors)
+            return {
+                name: parentSelectorDefinition.name,
+                selectors,
+                selector: selectors.join(',')
+            }
+        })()
         : parseComponentDefinitionSelector(rule.value.selectors)
     if (!selectorDefinition) {
         throw new Error('Component definition selector must start with a single class selector')
@@ -1551,121 +1489,6 @@ function parseTopLevelLayerBlock(rule: any, parsed: ParsedDirectives) {
     }
 }
 
-function isIdentChar(char: string | undefined) {
-    return Boolean(char && /[-_a-zA-Z0-9]/.test(char))
-}
-
-function findStandaloneMasterDirectiveEnd(source: string, start: number) {
-    let quote = ''
-    let comment = false
-    for (let index = start; index < source.length; index++) {
-        const char = source[index]
-        const next = source[index + 1]
-        if (comment) {
-            if (char === '*' && next === '/') {
-                comment = false
-                index++
-            }
-            continue
-        }
-        if (quote) {
-            if (char === '\\') {
-                index++
-            } else if (char === quote) {
-                quote = ''
-            }
-            continue
-        }
-        if (char === '/' && next === '*') {
-            comment = true
-            index++
-            continue
-        }
-        if (char === '"' || char === '\'') {
-            quote = char
-            continue
-        }
-        if (char === ';') return index + 1
-        if (char === '{') return -1
-    }
-    return -1
-}
-
-export function findStandaloneMasterDirectiveStatements(source: string): StandaloneMasterDirectiveStatement[] {
-    const statements: StandaloneMasterDirectiveStatement[] = []
-    let quote = ''
-    let comment = false
-    let depth = 0
-    for (let index = 0; index < source.length; index++) {
-        const char = source[index]
-        const next = source[index + 1]
-        if (comment) {
-            if (char === '*' && next === '/') {
-                comment = false
-                index++
-            }
-            continue
-        }
-        if (quote) {
-            if (char === '\\') {
-                index++
-            } else if (char === quote) {
-                quote = ''
-            }
-            continue
-        }
-        if (char === '/' && next === '*') {
-            comment = true
-            index++
-            continue
-        }
-        if (char === '"' || char === '\'') {
-            quote = char
-            continue
-        }
-        if (char === '{') {
-            depth++
-            continue
-        }
-        if (char === '}') {
-            depth--
-            continue
-        }
-        if (depth !== 0 || !source.startsWith('@master', index)) continue
-
-        let cursor = index + '@master'.length
-        if (isIdentChar(source[cursor])) continue
-        if (source[cursor] !== ';' && !/\s/.test(source[cursor] || '')) continue
-        while (/\s/.test(source[cursor] || '')) cursor++
-        const nameStart = cursor
-        while (isIdentChar(source[cursor])) cursor++
-        const name = source.slice(nameStart, cursor)
-        if (!STANDALONE_MASTER_DIRECTIVE_NAMES.has(name)) continue
-        const end = findStandaloneMasterDirectiveEnd(source, cursor)
-        if (end === -1) continue
-        statements.push({
-            start: index,
-            end,
-            name,
-            statement: source.slice(index, end)
-        })
-        index = end - 1
-    }
-    return statements
-}
-
-function removeStandaloneMasterDirectives(source: string) {
-    const statements = findStandaloneMasterDirectiveStatements(source)
-    if (!statements.length) return source
-    let output = ''
-    let offset = 0
-    for (const statement of statements) {
-        output += source.slice(offset, statement.start)
-        offset = statement.end
-    }
-    return offset ? output + source.slice(offset) : source
-}
-
 export function compileCSS(source: string, options: CompileCSSOptions = {}): CompileCSSResult {
     const parsed: ParsedDirectives = {
         config: {},
@@ -1676,7 +1499,7 @@ export function compileCSS(source: string, options: CompileCSSOptions = {}): Com
     const classFilter = options.classes === undefined
         ? undefined
         : new Set(options.classes)
-    const preprocessedSource = removeStandaloneMasterDirectives(source)
+    const preprocessedSource = removeStandaloneMasterDirectives(source, options.from || 'master.css')
     let ruleDepth = 0
     const transformed = getCSSTransform()({
         filename: options.from || 'master.css',

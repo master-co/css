@@ -11,6 +11,7 @@ import {
     compileCSSFile,
     compileProjectConfig,
     createConfigFromCSSResult,
+    findStandaloneMasterDirectiveStatements,
     inspectCSS,
     isMasterCSSPackageStyleFile,
     resolveMasterCSSPackageEntryFile
@@ -29,6 +30,7 @@ describe.concurrent('@master/css-compiler', () => {
         expect(inspectCSS('@master shake;').hasMasterEntry).toBe(false)
         expect(inspectCSS('@master no-shake;').hasMasterEntry).toBe(false)
         expect(inspectCSS('@import "@master/css/index.css";').hasMasterEntry).toBe(false)
+        expect(inspectCSS('@import url("@master/css") layer(master);').hasMasterEntry).toBe(true)
         expect(inspectCSS('@master { --color-primary: #123; }').hasMasterEntry).toBe(false)
     })
 
@@ -205,6 +207,32 @@ describe.concurrent('@master/css-compiler', () => {
                 selector: '&:hover',
                 layer: 'components',
                 atRules: [createCSSDirectiveAtRuleReference('md')]
+            }
+        ])
+    })
+
+    it('combines nested component selector lists from parsed selectors', () => {
+        const result = compileCSS(`
+            @layer components {
+                .btn,
+                .btn.primary {
+                    &:is(:hover, :focus-visible),
+                    &.active {
+                        color: red;
+                    }
+                }
+            }
+        `)
+
+        expect(result.componentDefinitions?.btn).toEqual([
+            {
+                type: 'native',
+                order: 1,
+                selector: '&:is(:hover,:focus-visible),&.primary:is(:hover,:focus-visible),&.active,&.primary.active',
+                layer: 'components',
+                declarations: {
+                    color: 'red'
+                }
             }
         ])
     })
@@ -428,6 +456,18 @@ describe.concurrent('@master/css-compiler', () => {
         expect(result.css).not.toContain('@master no-shake')
     })
 
+    it('finds only top-level standalone master directives', () => {
+        const statements = findStandaloneMasterDirectiveStatements(`
+            @master;
+
+            @media print {
+                @master shake;
+            }
+        `)
+
+        expect(statements.map(({ name }) => name)).toEqual([''])
+    })
+
     it('uses the last definition for repeated config values', () => {
         const result = compileCSS(`
             @master {
@@ -497,7 +537,7 @@ describe.concurrent('@master/css-compiler', () => {
             `)
             writeFileSync(entry, `
                 @import "@master/css/base.css";
-                @import "./styles/button.css";
+                @import url("./styles/button.css");
 
                 @layer components {
                     .btn {
