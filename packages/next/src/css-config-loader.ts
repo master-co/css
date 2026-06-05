@@ -1,8 +1,8 @@
 import { loadConfigModuleSync } from '@master/css-configer/load-sync'
 import { loadProjectConfig } from '@master/css-configer/load'
-import { toConfigModule } from '@master/css-configer/module'
+import { toConfigModule } from '@master/css-integration/config-module'
 import { isCSSConfigRequest } from '@master/css-configer/css'
-import type { Config } from 'shared/css-config'
+import type { Config } from '@master/css'
 import { getRegisteredOptions } from './options'
 
 interface LoaderContext {

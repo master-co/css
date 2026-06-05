@@ -7,7 +7,7 @@ import {
     isMasterCSSConfigRequest,
     stripMasterCSSConfigQuery,
     toVirtualCSSConfigModulePath
-} from '@master/css-configer/module'
+} from '@master/css-integration/config-module'
 
 const MASTER_CSS_CONFIG_IMPORT_PATTERN = /(\bimport\s+(?:[^'"]*?\s+from\s*)?|\bexport\s+[^'"]*?\s+from\s*|\bimport\s*\(\s*)(['"])([^'"]+)\2/g
 

@@ -5,7 +5,7 @@ import { transform } from 'lightningcss'
 import createConfigFromCSSDirectives from '@master/css/create-config-from-css-directives'
 import { extendConfig } from '@master/css/utils'
 import type { Config } from '@master/css'
-import { toConfigModuleResult, type CSSConfigModuleResult } from 'shared/css-config-module'
+import { toConfigModuleResult, type CSSConfigModuleResult } from '@master/css-integration/config-module'
 import {
     compileCSS,
     findStandaloneMasterDirectiveStatements,

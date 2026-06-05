@@ -1,7 +1,7 @@
 import type { ModuleNode, Plugin, ViteDevServer } from 'vite'
 import { PluginContext } from '../core'
 import { loadProjectConfig } from '@master/css-configer/load'
-import { toConfigModule } from '@master/css-configer/module'
+import { toConfigModule } from '@master/css-integration/config-module'
 import { RESOLVED_VIRTUAL_CONFIG_ID, VIRTUAL_CONFIG_ID } from '../common'
 import { PluginOptions } from '../options'
 

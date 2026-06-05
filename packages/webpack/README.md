@@ -66,7 +66,7 @@ export default {
 Add the client type reference when TypeScript source files import `virtual:master-utilities.css` or Master CSS config modules:
 
 ```ts
-/// <reference types="@master/css.webpack/client" />
+/// <reference types="@master/css-integration/client" />
 ```
 
 ## Documentation

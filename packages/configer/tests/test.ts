@@ -1,7 +1,7 @@
 import { expect, test } from 'vitest'
 import { loadConfig, loadConfigModule, loadProjectConfig } from '../src/load'
 import { loadConfigModuleSync, loadConfigSync, loadProjectConfigSync } from '../src/load-sync'
-import { MASTER_CSS_CONFIG_QUERY, toConfigModule } from '../src/module'
+import { MASTER_CSS_CONFIG_QUERY } from '@master/css-integration/config-module'
 import {
     findCSSConfigEntryFiles,
     findMasterCSSWorkspaceDirectories,
@@ -29,7 +29,7 @@ function writeCSSFixture(cwd: string) {
         @master;
         @import './styles/tokens.css';
 
-        @master {
+        @layer components {
             .btn {
                 color: var(--color-primary);
                 display: inline-flex;
@@ -115,7 +115,7 @@ test('loads package entry theme config from CSS imports', async () => {
         writeFileSync(entry, `
             @import "@master/css";
 
-            @master {
+            @layer components {
                 .card {
                     @at sm {
                         color: red;
@@ -155,7 +155,7 @@ test('loads project-level CSS config entries', async () => {
         const { entry } = writeCSSFixture(cwd)
         writeFileSync(join(cwd, 'ignored.css'), `
             @master shake;
-            @master {
+            @layer components {
                 .ignored {
                     color: red;
                 }
@@ -216,7 +216,6 @@ test('turns CSS config results into JavaScript modules', async () => {
         expect(result.code).toContain('export default')
         expect(result.code).toContain('"namespace":"color"')
         expect(syncResult.code).toBe(result.code)
-        expect(toConfigModule({ config: true })).toBe('export default {"config":true};')
     } finally {
         rmSync(cwd, { recursive: true, force: true })
     }

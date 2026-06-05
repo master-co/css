@@ -49,7 +49,7 @@ These require source tracing, focused tests, and clear explanation:
 
 ## Cycle Handling
 
-When a change creates circular package pressure, do not patch around it with package-specific loaders or hidden runtime imports. Extract the common, dependency-free contract, config type, module protocol, or generic factory into `shared`, then add an explicit adapter in the package that owns the runtime behavior.
+When a change creates circular package pressure, do not patch around it with package-specific loaders or hidden runtime imports. Extract core domain contracts into `shared`, extract adapter-neutral build/framework module protocols into `@master/css-integration`, then add an explicit adapter in the package that owns the runtime behavior.
 
 ## CSS Output Rule
 

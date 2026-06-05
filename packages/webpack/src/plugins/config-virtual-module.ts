@@ -1,5 +1,5 @@
-import { VIRTUAL_CONFIG_ID } from '@master/css-configer/module'
-import { VIRTUAL_PRELOADED_ID } from 'shared/css-preloaded-module'
+import { VIRTUAL_CONFIG_ID } from '@master/css-integration/config-module'
+import { VIRTUAL_PRELOADED_ID } from '@master/css-integration/preloaded-module'
 import type { Compiler } from 'webpack'
 import type { MasterCSSWebpackContext, WebpackSubPlugin } from '../plugin'
 

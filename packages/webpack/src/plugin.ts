@@ -1,8 +1,9 @@
 import { CSSExtractor, type Options } from '@master/css-extractor'
+import type { MasterCSSPreloaded } from '@master/css'
 import {
     toConfigModule,
     toVirtualDefaultConfigModulePath
-} from '@master/css-configer/module'
+} from '@master/css-integration/config-module'
 import { loadProjectConfig } from '@master/css-configer/load'
 import {
     cleanStyleRequest,
@@ -12,12 +13,11 @@ import {
     resolveMasterStyleSource,
     type StyleCSSSources
 } from '@master/css-extractor/style'
-import { toVirtualCSSModulePath } from 'shared/css-virtual-module'
+import { toVirtualCSSModulePath } from '@master/css-integration/style-module'
 import {
     toPreloadedModule,
     toVirtualPreloadedModulePath,
-    type MasterCSSPreloaded
-} from 'shared/css-preloaded-module'
+} from '@master/css-integration/preloaded-module'
 import type { Compiler } from 'webpack'
 import type VirtualModulesPlugin from 'webpack-virtual-modules'
 import { readFileSync } from 'node:fs'

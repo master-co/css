@@ -40,11 +40,6 @@
             "import": "./dist/load-sync.mjs",
             "default": "./dist/load-sync.mjs"
         },
-        "./module": {
-            "types": "./dist/module.d.ts",
-            "import": "./dist/module.mjs",
-            "default": "./dist/module.mjs"
-        },
         "./css": {
             "types": "./dist/css.d.ts",
             "import": "./dist/css.mjs",
@@ -62,6 +57,7 @@
         "shared": "workspace:^"
     },
     "dependencies": {
-        "@master/css-compiler": "workspace:^"
+        "@master/css-compiler": "workspace:^",
+        "@master/css-integration": "workspace:^"
     }
 }

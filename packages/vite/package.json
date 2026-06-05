@@ -45,13 +45,9 @@
             "types": "./dist/index.d.ts",
             "import": "./dist/index.mjs",
             "default": "./dist/index.mjs"
-        },
-        "./client": {
-            "types": "./client.d.ts"
         }
     },
     "files": [
-        "client.d.ts",
         "dist"
     ],
     "publishConfig": {
@@ -65,6 +61,7 @@
         "@master/css": "workspace:^",
         "@master/css-configer": "workspace:^",
         "@master/css-extractor": "workspace:^",
+        "@master/css-integration": "workspace:^",
         "@master/css-runtime": "workspace:^",
         "@master/css-server": "workspace:^",
         "magic-string": "^0.30.21"

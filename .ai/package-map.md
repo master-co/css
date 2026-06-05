@@ -25,13 +25,14 @@
 | `@master/eslint-plugin-css` | `.`, `./configs/*` | ESLint plugin |
 | `@master/eslint-config-css` | `.` | ESLint config wrapper |
 | `@master/css-cli` | `mcss`, `mastercss` | Extract and render CLI |
-| `@master/css-configer` | `./css`, `./load`, `./load-sync`, `./module` | Resolve project CSS config entries, workspace roots, query modules, and virtual config modules |
+| `@master/css-configer` | `./css`, `./load`, `./load-sync` | Resolve project CSS config entries, workspace roots, explicit CSS config resources, and project config module source |
+| `@master/css-integration` | `.`, `./client`, `./module`, `./config-module`, `./style-module`, `./preloaded-module`, `./config-loader-plugin`, `./runtime`, `./node` | Adapter-neutral integration contracts, virtual module ids, generated module source helpers, runtime injection source, and client ambient module declarations |
 | `@master/css-devtools-hook` | `.` | Runtime event hook |
 | `@master/css.figma` | plugin bundle | Figma variable import/export |
 
 ## Dependency Direction
 
-Do not introduce reverse dependencies from core to compiler, integrations, runtime, server, extractor, language service, ESLint, examples, or site. The compiler may depend on core to convert CSS directive results into semantic `Config` values.
+Do not introduce reverse dependencies from core to compiler, integration contracts, runtime, server, extractor, language service, ESLint, examples, or site. `@master/css-integration` may depend on core public types and must remain below compiler/configer/build integrations. The compiler may depend on core to convert CSS directive results into semantic `Config` values and on integration contracts for generated module result shapes.
 
 ## Package Tests
 

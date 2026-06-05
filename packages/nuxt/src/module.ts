@@ -1,6 +1,7 @@
 import { defineNuxtModule, addServerPlugin, createResolver, addPlugin } from '@nuxt/kit'
 import { name } from '../package.json'
-import masterCSS, { VIRTUAL_CONFIG_ID } from '@master/css.vue/vite'
+import masterCSS from '@master/css.vue/vite'
+import { VIRTUAL_CONFIG_ID } from '@master/css-integration/config-module'
 import { loadProjectConfigModule } from '@master/css-configer/load'
 import type { Plugin } from 'vite'
 import defaultOptions, { type ModuleOptions } from './options'

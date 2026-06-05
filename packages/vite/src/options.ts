@@ -1,5 +1,5 @@
 import type { Options as ExtractorOptions } from '@master/css-extractor'
-import type { Config } from 'shared/css-config'
+import type { Config } from '@master/css'
 
 /* The default options */
 const options: PluginOptions = {

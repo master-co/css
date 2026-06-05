@@ -1,8 +1,7 @@
 import type { Plugin } from 'vite'
 import { CSS_RUNTIME_INJECTION } from '../common'
+import { MASTER_CSS_RUNTIME_INJECTED_MARKER } from '@master/css-integration/runtime'
 import { PluginOptions } from '../options'
-
-const __MASTER_CSS_RUNTIME_INJECTED__ = '/*__MASTER_CSS_RUNTIME_INJECTED__*/'
 
 export default function InjectRuntimePlugin(
     _options: PluginOptions
@@ -11,7 +10,7 @@ export default function InjectRuntimePlugin(
         name: 'master-css:inject-runtime',
         enforce: 'pre',
         transformIndexHtml(html) {
-            if (html.includes(__MASTER_CSS_RUNTIME_INJECTED__) || html.includes(CSS_RUNTIME_INJECTION)) {
+            if (html.includes(MASTER_CSS_RUNTIME_INJECTED_MARKER) || html.includes(CSS_RUNTIME_INJECTION)) {
                 return
             }
             return {
@@ -23,7 +22,7 @@ export default function InjectRuntimePlugin(
                             type: 'module'
                         },
                         children: [
-                            __MASTER_CSS_RUNTIME_INJECTED__,
+                            MASTER_CSS_RUNTIME_INJECTED_MARKER,
                             CSS_RUNTIME_INJECTION
                         ].join('\n'),
                         injectTo: 'head-prepend'

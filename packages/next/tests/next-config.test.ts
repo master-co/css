@@ -4,9 +4,9 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import withMasterCSS from '../src'
 import { getRegisteredOptions } from '../src/options'
-import { VIRTUAL_CSS_ID } from 'shared/css-virtual-module'
-import { VIRTUAL_CONFIG_ID } from '@master/css-configer/module'
-import { VIRTUAL_PRELOADED_ID } from 'shared/css-preloaded-module'
+import { VIRTUAL_CONFIG_ID } from '@master/css-integration/config-module'
+import { VIRTUAL_CSS_ID } from '@master/css-integration/style-module'
+import { VIRTUAL_PRELOADED_ID } from '@master/css-integration/preloaded-module'
 
 describe('withMasterCSS', () => {
     it('sets the Next adapter path and registers options', () => {

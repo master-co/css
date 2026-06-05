@@ -6,7 +6,7 @@ import {
     stripResourceQuery,
     toResolvedMasterCSSConfigId,
     type CSSConfigModuleResult
-} from './css-config-module.js'
+} from './config-module'
 
 type MaybePromise<T> = T | Promise<T>
 

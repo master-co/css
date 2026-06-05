@@ -9,7 +9,7 @@ import type { Config } from 'shared/css-config'
 import {
     type CSSConfigModuleResult,
     stripResourceQuery
-} from 'shared/css-config-module'
+} from '@master/css-integration/config-module'
 import {
     type LoadConfigOptions,
     type LoadConfigResult,

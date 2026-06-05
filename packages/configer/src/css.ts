@@ -11,7 +11,7 @@ import {
     isMasterCSSModuleId,
     normalizeMasterCSSModuleIds
 } from 'shared/css-config-entry'
-import { stripResourceQuery } from 'shared/css-config-module'
+import { stripResourceQuery } from '@master/css-integration/config-module'
 
 const CSS_CONFIG_ENTRY_IGNORED_DIRECTORIES = new Set([
     'node_modules',

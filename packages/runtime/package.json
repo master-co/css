@@ -60,6 +60,7 @@
         "@master/css-devtools-hook": "workspace:^"
     },
     "devDependencies": {
+        "@master/css-integration": "workspace:^",
         "@playwright/test": "^1.59.1",
         "shared": "workspace:^"
     }

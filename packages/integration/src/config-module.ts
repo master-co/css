@@ -1,6 +1,5 @@
 import path from 'node:path'
-import type { Config } from './css-config.js'
-import escapeRegExp from 'shared/utils/escape-reg-exp'
+import type { Config } from '@master/css'
 
 export const VIRTUAL_CONFIG_ID = 'virtual:master-css-config'
 export const MASTER_CSS_CONFIG_QUERY = '?master-css-config'
@@ -69,6 +68,10 @@ export function toVirtualDefaultConfigModulePath(context: string) {
 
 export function toVirtualCSSConfigModulePath(context: string, file: string) {
     return path.join(context, VIRTUAL_CONFIG_DIR, `${encodeVirtualFilename(file)}.js`)
+}
+
+function escapeRegExp(source: string) {
+    return source.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 }
 
 export function createVirtualDefaultConfigModulePathPattern() {

@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest'
 import masterCSS, { ASTRO_MIDDLEWARE_ENTRYPOINT } from '../src/core'
 import defaultOptions from '../src/options'
-import { CSS_RUNTIME_INJECTION } from '@master/css.vite'
+import { CSS_RUNTIME_INJECTION } from '@master/css-integration/runtime'
 
 async function setup(options?: Parameters<typeof masterCSS>[0]) {
     const integration = masterCSS(options)

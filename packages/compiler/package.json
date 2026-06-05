@@ -54,6 +54,7 @@
     },
     "dependencies": {
         "@master/css": "workspace:^",
+        "@master/css-integration": "workspace:^",
         "lightningcss": "^1.32.0",
         "lightningcss-wasm": "^1.32.0"
     },

@@ -6,7 +6,7 @@ import {
     registerStyleCSSSource,
     type StyleCSSSources
 } from '@master/css-extractor/style'
-import type { Config } from 'shared/css-config'
+import type { Config } from '@master/css'
 import { readFile } from 'node:fs/promises'
 
 export interface MasterCSSBuildConfig {

@@ -1,6 +1,6 @@
 import CSSRuntime from './core'
-import type { Config } from 'shared/css-config'
-import type { MasterCSSPreloaded } from 'shared/css-preloaded-module'
+import type { Config } from '@master/css'
+import type { MasterCSSPreloaded } from '@master/css/preloaded'
 import { resolveRuntimeConfig } from './config'
 
 export interface CSSRuntimeInitOptions {

@@ -1,10 +1,8 @@
 import path from 'node:path'
-import { VIRTUAL_CONFIG_DIR } from './css-config-module.js'
+import type { MasterCSSPreloaded } from '@master/css/preloaded'
+import { VIRTUAL_CONFIG_DIR } from './config-module'
 
-export interface MasterCSSPreloaded {
-    variables?: Record<string, number>
-    animations?: Record<string, number>
-}
+export type { MasterCSSPreloaded }
 
 export const VIRTUAL_PRELOADED_ID = 'virtual:master-css-preloaded'
 export const VIRTUAL_PRELOADED_FILE = 'master-css-preloaded.js'

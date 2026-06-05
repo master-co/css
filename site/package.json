@@ -31,6 +31,7 @@
         "use-debounce": "^10.1.1"
     },
     "devDependencies": {
+        "@master/css-integration": "workspace:^",
         "@master/css.next": "workspace:^",
         "@shikijs/monaco": "^4.0.2",
         "eslint": "^10.3.0",

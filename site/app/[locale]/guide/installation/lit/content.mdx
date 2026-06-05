@@ -54,12 +54,12 @@
     <Step $row>
         <StepL>
             ### <StepNum />Add client types
-            Add the Vite client types and Master CSS Vite client types before importing `virtual:master-css-config` from TypeScript.
+            Add the Vite client types and Master CSS integration client types before importing `virtual:master-css-config` from TypeScript.
         </StepL>
         <StepR>
             ```ts name=src/vite-env.d.ts
             /// <reference types="vite/client" />
-            /// <reference types="@master/css.vite/client" />
+            /// <reference types="@master/css-integration/client" />
             ```
         </StepR>
     </Step>

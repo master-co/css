@@ -17,7 +17,7 @@ import parseValue from './utils/parse-value'
 import parseSelector, { SelectorNode } from './utils/parse-selector'
 import { normalizeVariableValue } from './utils/css-variables'
 import naturalCompare from './utils/natural-compare'
-import type { MasterCSSPreloaded } from 'shared/css-preloaded-module'
+import type { MasterCSSPreloaded } from './preloaded'
 
 export default class MasterCSS {
     readonly definedUtilities: DefinedUtility[] = []

@@ -86,12 +86,12 @@
     <Step $row>
         <StepL>
             ### <StepNum />Add client types
-            If TypeScript source files import the Master CSS config object, add the Vite client types and Master CSS Vite client types to your environment file.
+            If TypeScript source files import the Master CSS config object, add the Vite client types and Master CSS integration client types to your environment file.
         </StepL>
         <StepR>
             ```ts name=src/vite-env.d.ts
             /// <reference types="vite/client" />
-            /// <reference types="@master/css.vite/client" />
+            /// <reference types="@master/css-integration/client" />
             ```
         </StepR>
     </Step>

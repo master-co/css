@@ -123,6 +123,9 @@ importers:
       '@master/css-extractor':
         specifier: workspace:^
         version: link:packages/extractor
+      '@master/css-integration':
+        specifier: workspace:^
+        version: link:packages/integration
       '@master/css-language':
         specifier: workspace:^
         version: link:packages/language
@@ -296,6 +299,9 @@ importers:
         specifier: workspace:^
         version: link:../../packages/core
     devDependencies:
+      '@master/css-integration':
+        specifier: workspace:^
+        version: link:../../packages/integration
       '@master/css.vite':
         specifier: workspace:^
         version: link:../../packages/vite
@@ -503,6 +509,9 @@ importers:
         specifier: ^3.3.2
         version: 3.3.2
     devDependencies:
+      '@master/css-integration':
+        specifier: workspace:^
+        version: link:../../packages/integration
       '@master/css.vite':
         specifier: workspace:^
         version: link:../../packages/vite
@@ -794,9 +803,6 @@ importers:
       '@google-cloud/storage':
         specifier: ^7.19.0
         version: 7.19.0
-      '@master/css':
-        specifier: rc
-        version: 2.0.0-rc.69
       '@master/css-language':
         specifier: workspace:^
         version: link:../packages/language
@@ -1095,9 +1101,15 @@ importers:
 
   packages/astro:
     dependencies:
+      '@master/css':
+        specifier: workspace:^
+        version: link:../core
       '@master/css-extractor':
         specifier: workspace:^
         version: link:../extractor
+      '@master/css-integration':
+        specifier: workspace:^
+        version: link:../integration
       '@master/css-server':
         specifier: workspace:^
         version: link:../server
@@ -1172,6 +1184,9 @@ importers:
       '@master/css':
         specifier: workspace:^
         version: link:../core
+      '@master/css-integration':
+        specifier: workspace:^
+        version: link:../integration
       lightningcss:
         specifier: ^1.32.0
         version: 1.32.0
@@ -1188,6 +1203,9 @@ importers:
       '@master/css-compiler':
         specifier: workspace:^
         version: link:../compiler
+      '@master/css-integration':
+        specifier: workspace:^
+        version: link:../integration
     devDependencies:
       shared:
         specifier: workspace:^
@@ -1291,6 +1309,9 @@ importers:
       '@master/css-compiler':
         specifier: workspace:^
         version: link:../compiler
+      '@master/css-integration':
+        specifier: workspace:^
+        version: link:../integration
       '@master/css-validator':
         specifier: workspace:^
         version: link:../validator
@@ -1380,6 +1401,16 @@ importers:
       vite-plugin-singlefile:
         specifier: ^2.3.3
         version: 2.3.3(rollup@4.60.3)(vite@8.0.12)
+
+  packages/integration:
+    dependencies:
+      '@master/css':
+        specifier: workspace:^
+        version: link:../core
+    devDependencies:
+      shared:
+        specifier: workspace:^
+        version: link:../../shared
 
   packages/language: {}
 
@@ -1501,6 +1532,9 @@ importers:
       '@master/css-extractor':
         specifier: workspace:^
         version: link:../extractor
+      '@master/css-integration':
+        specifier: workspace:^
+        version: link:../integration
       '@master/css-server':
         specifier: workspace:^
         version: link:../server
@@ -1517,6 +1551,9 @@ importers:
       '@master/css-configer':
         specifier: workspace:^
         version: link:../configer
+      '@master/css-integration':
+        specifier: workspace:^
+        version: link:../integration
       '@master/css-server':
         specifier: workspace:^
         version: link:../server
@@ -1590,6 +1627,9 @@ importers:
       '@master/css':
         specifier: workspace:^
         version: link:../core
+      '@master/css-integration':
+        specifier: workspace:^
+        version: link:../integration
       '@master/css-runtime':
         specifier: workspace:^
         version: link:../runtime
@@ -1628,6 +1668,9 @@ importers:
         specifier: workspace:^
         version: link:../devtools-hook
     devDependencies:
+      '@master/css-integration':
+        specifier: workspace:^
+        version: link:../integration
       '@playwright/test':
         specifier: ^1.59.1
         version: 1.59.1
@@ -1662,6 +1705,9 @@ importers:
       '@master/css-extractor':
         specifier: workspace:^
         version: link:../extractor
+      '@master/css-integration':
+        specifier: workspace:^
+        version: link:../integration
       '@master/css-runtime':
         specifier: workspace:^
         version: link:../runtime
@@ -1748,6 +1794,9 @@ importers:
       '@master/css-extractor':
         specifier: workspace:^
         version: link:../extractor
+      '@master/css-integration':
+        specifier: workspace:^
+        version: link:../integration
       '@master/css-runtime':
         specifier: workspace:^
         version: link:../runtime
@@ -1801,9 +1850,15 @@ importers:
 
   packages/vue:
     dependencies:
+      '@master/css':
+        specifier: workspace:^
+        version: link:../core
       '@master/css-extractor':
         specifier: workspace:^
         version: link:../extractor
+      '@master/css-integration':
+        specifier: workspace:^
+        version: link:../integration
       '@master/css-runtime':
         specifier: workspace:^
         version: link:../runtime
@@ -1865,6 +1920,9 @@ importers:
       '@master/css-extractor':
         specifier: workspace:^
         version: link:../extractor
+      '@master/css-integration':
+        specifier: workspace:^
+        version: link:../integration
       '@techor/log':
         specifier: ^3.2.5
         version: 3.2.5
@@ -1923,6 +1981,9 @@ importers:
         specifier: ^10.1.1
         version: 10.1.1(react@19.2.5)
     devDependencies:
+      '@master/css-integration':
+        specifier: workspace:^
+        version: link:../packages/integration
       '@master/css.next':
         specifier: workspace:^
         version: link:../packages/next

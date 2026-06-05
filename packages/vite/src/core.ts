@@ -1,4 +1,5 @@
 import type CSSExtractor from '@master/css-extractor'
+import type { MasterCSSPreloaded } from '@master/css'
 import type { StyleCSSSources } from '@master/css-extractor/style'
 import type { Plugin, ResolvedConfig } from 'vite'
 import ConfigLoaderPlugin from './plugins/config-loader'
@@ -23,7 +24,7 @@ export interface PluginContext {
     virtualCSSPlaceholderEmitted?: boolean
     styleCSSSources?: StyleCSSSources
     includeGeneratedCSS?: boolean
-    preloaded?: import('shared/css-preloaded-module').MasterCSSPreloaded
+    preloaded?: MasterCSSPreloaded
 }
 
 export default function masterCSS(options?: PluginOptions): Plugin[] {

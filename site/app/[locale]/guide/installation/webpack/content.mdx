@@ -27,11 +27,11 @@
     <Step $row>
         <StepL>
             ### <StepNum />Add client types
-            If your source files are type-checked, add the Webpack client types before importing Master CSS config modules.
+            If your source files are type-checked, add the Master CSS integration client types before importing Master CSS config modules.
         </StepL>
         <StepR>
             ```ts name=src/master-css-env.d.ts
-            /// <reference types="@master/css.webpack/client" />
+            /// <reference types="@master/css-integration/client" />
             ```
         </StepR>
     </Step>

@@ -1,5 +1,5 @@
 import type { Config } from 'shared/css-config'
-import type { MasterCSSPreloaded } from 'shared/css-preloaded-module'
+import type { MasterCSSPreloaded } from './preloaded'
 import defaultConfig from './config'
 import MasterCSS from './core'
 import extendConfig from './utils/extend-config'

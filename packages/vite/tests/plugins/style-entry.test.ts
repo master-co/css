@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest'
 import StyleEntryPlugin from '../../src/plugins/style-entry'
-import { VIRTUAL_CSS_ID } from 'shared/css-virtual-module'
+import { VIRTUAL_CSS_ID } from '@master/css-integration/style-module'
 
 const SLOT = '#master-css-slot{--slot:0}'
 const RESOLVED_VIRTUAL_CSS_ID = '\0' + VIRTUAL_CSS_ID

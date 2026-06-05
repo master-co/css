@@ -1,5 +1,5 @@
 import path from 'node:path'
-import { VIRTUAL_CONFIG_DIR } from './css-config-module.js'
+import { VIRTUAL_CONFIG_DIR } from './config-module'
 
 export const VIRTUAL_CSS_ID = 'virtual:master-utilities.css'
 

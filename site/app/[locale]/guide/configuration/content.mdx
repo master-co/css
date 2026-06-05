@@ -356,7 +356,7 @@ const config: Config = extendConfig(cssConfig, {
 export default config
 ```
 
-If TypeScript cannot resolve the virtual import, add the client type reference for the integration that compiles the CSS config, such as `@master/css.vite/client`, `@master/css.next/client`, or `@master/css.webpack/client`.
+If TypeScript cannot resolve the virtual import, add the shared integration client type reference: `@master/css-integration/client`.
 
 For most design-system work, prefer variables, static utilities in the utilities layer, components, and built-in Master CSS functions in the project CSS entry. Reach for `functions` only when a token or utility declaration cannot express the transformation.
 
@@ -520,17 +520,10 @@ import config from 'virtual:master-css-config'
 initCSSRuntime(config)
 ```
 
-In TypeScript projects, add the matching client type reference for the integration that handles the import:
+In TypeScript projects, add the shared integration client type reference:
 
 ```ts
-// Vite
-/// <reference types="@master/css.vite/client" />
-
-// Next.js
-/// <reference types="@master/css.next/client" />
-
-// Webpack
-/// <reference types="@master/css.webpack/client" />
+/// <reference types="@master/css-integration/client" />
 ```
 
 ---

@@ -1,9 +1,9 @@
 import type { ModuleNode, Plugin, ViteDevServer } from 'vite'
 import type { PluginContext } from '../core'
-import { toResolvedMasterCSSConfigId } from '@master/css-configer/module'
+import { toResolvedMasterCSSConfigId } from '@master/css-integration/config-module'
 import { loadConfigModule } from '@master/css-configer/load'
 import { isCSSConfigRequest } from '@master/css-configer/css'
-import { createMasterCSSConfigLoaderPlugin } from 'shared/css-config-loader-plugin'
+import { createMasterCSSConfigLoaderPlugin } from '@master/css-integration/config-loader-plugin'
 
 function invalidateConfigModule(module: ModuleNode | undefined, server: ViteDevServer): boolean {
     if (!module) return false

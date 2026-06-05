@@ -69,7 +69,7 @@ import {
 ---
 
 ## Config modules
-The module utilities define the config import contract used by official integrations.
+The module utilities define the config import contract used by official integrations. They live in `@master/css-integration`; configer owns loading and discovery.
 
 ```ts
 import {
@@ -78,7 +78,7 @@ import {
     toConfigModule,
     toVirtualDefaultConfigModulePath,
     toVirtualCSSConfigModulePath,
-} from '@master/css-configer/module'
+} from '@master/css-integration/config-module'
 ```
 
 | API | Purpose |

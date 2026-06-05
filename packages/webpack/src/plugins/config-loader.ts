@@ -2,7 +2,7 @@ import {
     MASTER_CSS_CONFIG_QUERY,
     stripMasterCSSConfigQuery,
     toVirtualCSSConfigModulePath
-} from '@master/css-configer/module'
+} from '@master/css-integration/config-module'
 import { loadConfigModule } from '@master/css-configer/load'
 import type { Compiler } from 'webpack'
 import type { MasterCSSWebpackContext, WebpackSubPlugin } from '../plugin'

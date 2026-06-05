@@ -8,34 +8,46 @@ import { describe, it } from 'vitest'
 const require = createRequire(import.meta.url)
 const tscPath = require.resolve('typescript/bin/tsc')
 
-describe('@master/css.vite/client', () => {
-    it('provides types for Master CSS config virtual modules', () => {
-        const root = mkdtempSync(path.join(tmpdir(), 'master-css-vite-client-'))
+describe('@master/css-integration/client', () => {
+    it('provides types for Master CSS integration virtual modules', () => {
+        const root = mkdtempSync(path.join(tmpdir(), 'master-css-integration-client-'))
 
         try {
             const cssPackageDir = path.join(root, 'node_modules/@master/css')
-            const vitePackageDir = path.join(root, 'node_modules/@master/css.vite')
+            const integrationPackageDir = path.join(root, 'node_modules/@master/css-integration')
             const sourceDir = path.join(root, 'src')
 
             mkdirSync(cssPackageDir, { recursive: true })
-            mkdirSync(vitePackageDir, { recursive: true })
+            mkdirSync(integrationPackageDir, { recursive: true })
             mkdirSync(sourceDir, { recursive: true })
 
             writeFileSync(
                 path.join(cssPackageDir, 'package.json'),
                 JSON.stringify({
                     name: '@master/css',
-                    types: './index.d.ts'
+                    types: './index.d.ts',
+                    exports: {
+                        '.': {
+                            types: './index.d.ts'
+                        },
+                        './preloaded': {
+                            types: './preloaded.d.ts'
+                        }
+                    }
                 })
             )
             writeFileSync(
                 path.join(cssPackageDir, 'index.d.ts'),
-                'export interface Config { variables?: unknown[] }\nexport interface MasterCSSPreloaded { variables?: Record<string, number>; animations?: Record<string, number> }\n'
+                'export interface Config { variables?: unknown[] }\nexport type * from \'./preloaded\'\n'
             )
             writeFileSync(
-                path.join(vitePackageDir, 'package.json'),
+                path.join(cssPackageDir, 'preloaded.d.ts'),
+                'export interface MasterCSSPreloaded { variables?: Record<string, number>; animations?: Record<string, number> }\n'
+            )
+            writeFileSync(
+                path.join(integrationPackageDir, 'package.json'),
                 JSON.stringify({
-                    name: '@master/css.vite',
+                    name: '@master/css-integration',
                     exports: {
                         './client': {
                             types: './client.d.ts'
@@ -44,13 +56,13 @@ describe('@master/css.vite/client', () => {
                 })
             )
             writeFileSync(
-                path.join(vitePackageDir, 'client.d.ts'),
+                path.join(integrationPackageDir, 'client.d.ts'),
                 readFileSync(path.resolve(__dirname, '../client.d.ts'), 'utf8')
             )
             writeFileSync(
                 path.join(sourceDir, 'main.ts'),
                 `
-/// <reference types="@master/css.vite/client" />
+/// <reference types="@master/css-integration/client" />
 
 import type { Config } from '@master/css'
 import 'virtual:master-utilities.css'
@@ -59,7 +71,7 @@ import virtualPreloaded from 'virtual:master-css-preloaded'
 import localConfig from './app.css?master-css-config'
 
 virtualConfig satisfies Config
-virtualPreloaded satisfies import('@master/css').MasterCSSPreloaded
+virtualPreloaded satisfies import('@master/css/preloaded').MasterCSSPreloaded
 localConfig satisfies Config
 `.trimStart()
             )

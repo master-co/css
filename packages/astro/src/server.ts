@@ -1,5 +1,5 @@
 import { render } from '@master/css-server'
-import type { Config } from 'shared/css-config'
+import type { Config } from '@master/css'
 import type { MiddlewareHandler } from 'astro'
 
 const BODYLESS_STATUSES = new Set([204, 205, 304])

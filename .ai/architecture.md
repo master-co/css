@@ -7,6 +7,8 @@ shared / external data
   ↓
 @master/css
   ↓
+@master/css-integration
+  ↓
 @master/css-compiler
 @master/css-configer
   ↓
@@ -32,11 +34,11 @@ examples
 site
 ```
 
-The core package must remain independent from integrations and tooling packages. The compiler is the CSS front-end for core: it parses Master CSS stylesheets, resolves CSS import graphs, and uses core adapters to produce semantic `Config` objects and native CSS results.
+The core package must remain independent from integrations and tooling packages. `@master/css-integration` may depend on core public types, but core must not depend on it. The compiler is the CSS front-end for core: it parses Master CSS stylesheets, resolves CSS import graphs, and uses core adapters to produce semantic `Config` objects and native CSS results.
 
 When a feature creates a package cycle or self-build cycle, extract shared, dependency-free contracts or IR into `shared` first. Keep core independent; packages above core may depend on core for semantic interpretation.
 
-`shared` owns pure Master CSS config contracts, CSS directive result contracts, `?master-css-config` / `virtual:master-css-config` module id helpers, and dependency-free loader/plugin contracts. It must not own CSS parsing, import graph expansion, or Master CSS package resolution.
+`shared` owns pure Master CSS config contracts and CSS directive result contracts. `@master/css-integration` owns adapter-neutral integration contracts such as `?master-css-config`, `virtual:master-css-config`, `virtual:master-css-preloaded`, `virtual:master-utilities.css`, generated module source helpers, and dependency-light loader/plugin contracts. Neither package should own CSS parsing, import graph expansion, or Master CSS package resolution.
 
 ## Core Package
 
@@ -75,7 +77,9 @@ Important files:
 
 `packages/compiler` is the canonical CSS source compiler. It parses CSS-authored Master config blocks and native CSS, resolves CSS import graphs, detects project CSS entry markers (`@master;` and `@import "@master/css"`), parses standalone extraction directives, and converts directive results through core into semantic `Config` values. `@master;` and `@import "@master/css"` are user project entry markers; package CSS files such as `@master/css/index.css` must not contain `@master;`.
 
-`packages/configer` resolves Master CSS project config entries, workspace roots, `?master-css-config` modules, and `virtual:master-css-config` project config modules. It delegates CSS parsing, CSS import graph resolution, and config compilation to `@master/css-compiler`. ESLint, language tooling, CLI, and build integrations should consume configer for project-level config instead of rediscovering entries locally.
+`packages/configer` resolves Master CSS project config entries, workspace roots, explicit CSS config resources, and project config module source. It delegates CSS parsing, CSS import graph resolution, and config compilation to `@master/css-compiler`. ESLint, language tooling, CLI, and build integrations should consume configer for project-level config instead of rediscovering entries locally.
+
+`packages/integration` defines the virtual module and query protocol shared by build and framework integrations. It must stay adapter-neutral: no Vite, Next, Webpack, Runtime, Server, Extractor, Compiler, or Configer dependencies. Node filesystem helpers are isolated under its `./node` subpath.
 
 `packages/extractor` scans source files, extracts latent classes, validates them, and emits CSS for static output. It owns extraction-specific stylesheet helpers such as native CSS merging, shake/source directives, and generated CSS composition, but consumes compiler-provided CSS parsing/config results. Project config discovery and config loading belong in configer or the calling integration.
 

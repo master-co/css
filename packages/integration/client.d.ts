@@ -16,7 +16,7 @@ declare module 'virtual:master-css-config' {
 }
 
 declare module 'virtual:master-css-preloaded' {
-    import type { MasterCSSPreloaded } from '@master/css'
+    import type { MasterCSSPreloaded } from '@master/css/preloaded'
 
     const preloaded: MasterCSSPreloaded
     export default preloaded

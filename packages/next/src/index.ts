@@ -1,21 +1,20 @@
 import { fileURLToPath } from 'node:url'
-import { dirname, relative } from 'node:path'
-import { existsSync, mkdirSync, writeFileSync } from 'node:fs'
+import { relative } from 'node:path'
 import type { NextConfig } from 'next'
 import { createMasterCSSConfigEntryPattern } from '@master/css-configer/css'
 import {
-    EMPTY_CONFIG_MODULE,
     MASTER_CSS_CONFIG_QUERY,
     VIRTUAL_CONFIG_ID,
     createVirtualDefaultConfigModulePathPattern,
-    toVirtualDefaultConfigModulePath
-} from '@master/css-configer/module'
-import { VIRTUAL_CSS_ID } from 'shared/css-virtual-module'
+} from '@master/css-integration/config-module'
+import { VIRTUAL_CSS_ID } from '@master/css-integration/style-module'
 import {
-    EMPTY_PRELOADED_MODULE,
     VIRTUAL_PRELOADED_ID,
-    toVirtualPreloadedModulePath
-} from 'shared/css-preloaded-module'
+} from '@master/css-integration/preloaded-module'
+import {
+    ensureVirtualConfigModulePath,
+    ensureVirtualPreloadedModulePath
+} from '@master/css-integration/node'
 import {
     prepareNextExtract,
     resolveExtractOutputPath,
@@ -63,21 +62,11 @@ function resolveEmptyCSSPath() {
 }
 
 function ensureVirtualConfigPath(projectDir = process.cwd()) {
-    const virtualConfigPath = toVirtualDefaultConfigModulePath(projectDir)
-    mkdirSync(dirname(virtualConfigPath), { recursive: true })
-    if (!existsSync(virtualConfigPath)) {
-        writeFileSync(virtualConfigPath, EMPTY_CONFIG_MODULE)
-    }
-    return virtualConfigPath
+    return ensureVirtualConfigModulePath(projectDir)
 }
 
 function ensureVirtualPreloadedPath(projectDir = process.cwd()) {
-    const virtualPreloadedPath = toVirtualPreloadedModulePath(projectDir)
-    mkdirSync(dirname(virtualPreloadedPath), { recursive: true })
-    if (!existsSync(virtualPreloadedPath)) {
-        writeFileSync(virtualPreloadedPath, EMPTY_PRELOADED_MODULE)
-    }
-    return virtualPreloadedPath
+    return ensureVirtualPreloadedModulePath(projectDir)
 }
 
 function toTurbopackProjectPath(file: string, projectDir = process.cwd()) {

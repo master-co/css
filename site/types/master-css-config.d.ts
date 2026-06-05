@@ -1,1 +1,1 @@
-/// <reference types="@master/css.next/client" />
+/// <reference types="@master/css-integration/client" />

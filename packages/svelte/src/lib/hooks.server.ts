@@ -1,4 +1,4 @@
-/// <reference types="@master/css.vite/client" />
+/// <reference types="@master/css-integration/client" />
 
 import config from 'virtual:master-css-config'
 import { createMasterCSSHandle } from './server.js'

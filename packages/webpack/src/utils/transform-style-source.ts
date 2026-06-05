@@ -6,7 +6,7 @@ import {
     removeMasterStyleDirectives,
     resolveMasterStyleSource
 } from '@master/css-extractor/style'
-import { VIRTUAL_CSS_ID } from 'shared/css-virtual-module'
+import { VIRTUAL_CSS_ID } from '@master/css-integration/style-module'
 
 interface TransformStyleSourceOptions {
     projectDir?: string

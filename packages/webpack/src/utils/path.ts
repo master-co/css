@@ -1,4 +1,4 @@
-import { VIRTUAL_CONFIG_DIR } from '@master/css-configer/module'
+import { VIRTUAL_CONFIG_DIR } from '@master/css-integration/config-module'
 import path from 'node:path'
 
 export function isVirtualConfigModulePath(modulePath: string) {

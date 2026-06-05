@@ -76,7 +76,7 @@ Add the client type reference when TypeScript source files import Master CSS con
 
 ```ts
 /// <reference types="vite/client" />
-/// <reference types="@master/css.vite/client" />
+/// <reference types="@master/css-integration/client" />
 ```
 
 ## Documentation

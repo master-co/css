@@ -69,6 +69,8 @@
         "vite": ">=6"
     },
     "dependencies": {
+        "@master/css": "workspace:^",
+        "@master/css-integration": "workspace:^",
         "@master/css-extractor": "workspace:^",
         "@master/css-server": "workspace:^",
         "@master/css.vite": "workspace:^"

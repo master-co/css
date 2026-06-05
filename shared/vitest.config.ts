@@ -1,11 +1,13 @@
 import type { ViteUserConfig } from 'vitest/config'
-import { compileCSSConfigModule } from '../packages/compiler/src'
-import { createMasterCSSConfigLoaderPlugin } from './css-config-loader-plugin'
+import { createMasterCSSConfigLoaderPlugin } from '../packages/integration/src/config-loader-plugin'
 
 const config: ViteUserConfig = {
     plugins: [
         createMasterCSSConfigLoaderPlugin({
-            loadConfigModule: compileCSSConfigModule
+            async loadConfigModule(...args) {
+                const { compileCSSConfigModule } = await import('../packages/compiler/src')
+                return compileCSSConfigModule(...args)
+            }
         })
     ],
     test: {

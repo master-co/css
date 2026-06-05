@@ -17,7 +17,7 @@ export { default as createCSS } from './create'
 export * from 'shared/css-config'
 export * from 'shared/css-syntax'
 export * from 'shared/css-common'
-export type * from 'shared/css-preloaded-module'
+export type * from './preloaded'
 
 // factories
 export { default as withUtilityLayer } from './factories/with-utility-layer'

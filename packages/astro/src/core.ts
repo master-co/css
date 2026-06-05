@@ -1,5 +1,6 @@
 import { AstroIntegration } from 'astro'
-import { default as vitePlugin, CSS_RUNTIME_INJECTION } from '@master/css.vite'
+import vitePlugin from '@master/css.vite'
+import { CSS_RUNTIME_INJECTION } from '@master/css-integration/runtime'
 import defaultOptions, { type IntegrationOptions } from './options'
 import { astroAdapter } from './adapter'
 

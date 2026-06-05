@@ -63,7 +63,7 @@ CSS config resources are compiled through the Master CSS compiler. Local CSS imp
 ```ts
 import { loadConfig, loadConfigModule } from '@master/css-configer/load'
 import { loadConfigSync, loadConfigModuleSync } from '@master/css-configer/load-sync'
-import { MASTER_CSS_CONFIG_QUERY, toConfigModule } from '@master/css-configer/module'
+import { MASTER_CSS_CONFIG_QUERY } from '@master/css-integration/config-module'
 
 const result = await loadConfig('./src/index.css')
 const config = result.config

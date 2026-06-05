@@ -1,5 +1,5 @@
 import type { Config } from 'shared/css-config'
-import type { CSSConfigLoadResult } from 'shared/css-config-module'
+import type { CSSConfigLoadResult } from '@master/css-integration/config-module'
 
 export interface LoadConfigOptions {
     classes?: string[]

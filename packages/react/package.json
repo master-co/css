@@ -65,6 +65,7 @@
     },
     "dependencies": {
         "@master/css": "workspace:^",
+        "@master/css-integration": "workspace:^",
         "@master/css-runtime": "workspace:^"
     },
     "devDependencies": {

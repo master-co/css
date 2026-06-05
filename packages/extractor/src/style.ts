@@ -9,9 +9,9 @@ import {
     resolveMasterCSSPackageImportGraph
 } from '@master/css-compiler'
 import { AnimationRule, createCSS, VariableRule } from '@master/css'
+import type { MasterCSSPreloaded } from '@master/css'
 import { collectAnimationNamesFromDeclaration, extendConfig } from '@master/css/utils'
 import type { Config } from 'shared/css-config'
-import type { MasterCSSPreloaded } from 'shared/css-preloaded-module'
 import {
     findCSSImportStatements,
     hasMasterCSSImport,
@@ -20,7 +20,7 @@ import {
     normalizeMasterCSSModuleIds,
     parseCSSImportSource
 } from 'shared/css-config-entry'
-import { VIRTUAL_CSS_ID } from 'shared/css-virtual-module'
+import { VIRTUAL_CSS_ID } from '@master/css-integration/style-module'
 import escapeRegExp from 'shared/utils/escape-reg-exp'
 import { createRequire } from 'node:module'
 import { dirname, extname, join, resolve } from 'node:path'

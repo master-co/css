@@ -23,7 +23,6 @@
 - `options`
 - `PluginOptions`
 - `PluginContext`
-- common constants
 
 ## Core Files
 

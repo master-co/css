@@ -1,0 +1,95 @@
+{
+    "name": "@master/css-integration",
+    "type": "module",
+    "scripts": {
+        "build": "techor build \"src/**/*.ts\" --formats esm",
+        "dev": "pnpm build --watch",
+        "type-check": "tsc --noEmit",
+        "lint": "eslint",
+        "test": "vitest"
+    },
+    "license": "MIT",
+    "description": "Shared Master CSS integration contracts and virtual module helpers.",
+    "author": "Aoyue Design LLC.",
+    "funding": "https://rc.css.master.co/sponsor",
+    "homepage": "https://css.master.co",
+    "bugs": {
+        "url": "https://github.com/master-co/css/issues"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/master-co/css.git",
+        "directory": "packages/integration"
+    },
+    "keywords": [
+        "integration",
+        "virtual-module",
+        "css",
+        "mastercss"
+    ],
+    "sideEffects": false,
+    "main": "./dist/index.mjs",
+    "module": "./dist/index.mjs",
+    "jsnext:main": "./dist/index.mjs",
+    "esnext": "./dist/index.mjs",
+    "types": "./dist/index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.mjs",
+            "default": "./dist/index.mjs"
+        },
+        "./client": {
+            "types": "./client.d.ts"
+        },
+        "./module": {
+            "types": "./dist/module.d.ts",
+            "import": "./dist/module.mjs",
+            "default": "./dist/module.mjs"
+        },
+        "./config-module": {
+            "types": "./dist/config-module.d.ts",
+            "import": "./dist/config-module.mjs",
+            "default": "./dist/config-module.mjs"
+        },
+        "./style-module": {
+            "types": "./dist/style-module.d.ts",
+            "import": "./dist/style-module.mjs",
+            "default": "./dist/style-module.mjs"
+        },
+        "./preloaded-module": {
+            "types": "./dist/preloaded-module.d.ts",
+            "import": "./dist/preloaded-module.mjs",
+            "default": "./dist/preloaded-module.mjs"
+        },
+        "./config-loader-plugin": {
+            "types": "./dist/config-loader-plugin.d.ts",
+            "import": "./dist/config-loader-plugin.mjs",
+            "default": "./dist/config-loader-plugin.mjs"
+        },
+        "./runtime": {
+            "types": "./dist/runtime.d.ts",
+            "import": "./dist/runtime.mjs",
+            "default": "./dist/runtime.mjs"
+        },
+        "./node": {
+            "types": "./dist/node.d.ts",
+            "import": "./dist/node.mjs",
+            "default": "./dist/node.mjs"
+        }
+    },
+    "files": [
+        "client.d.ts",
+        "dist"
+    ],
+    "publishConfig": {
+        "access": "public",
+        "provenance": true
+    },
+    "dependencies": {
+        "@master/css": "workspace:^"
+    },
+    "devDependencies": {
+        "shared": "workspace:^"
+    }
+}

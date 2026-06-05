@@ -51,6 +51,7 @@ Main files:
 
 - `packages/configer/src/css.ts`
 - `packages/configer/src/load.ts`
+- `packages/integration/src/config-module.ts`
 - `packages/compiler/src/index.ts`
 - `packages/core/src/utils/extend-config.ts`
 - `packages/core/src/utils/flatten-meta-object.ts`
@@ -65,6 +66,7 @@ Risks:
 - Extend order and flattening affect all config consumers.
 - Variable aliases and modes affect inlining vs CSS custom property output.
 - Static utility layer assignment affects semantic class output and cascade behavior.
+- `?master-css-config` query ids, virtual module ids, and generated JavaScript module source helpers are integration protocol and belong in `@master/css-integration`, not configer.
 
 ## Build-Time Extraction
 
