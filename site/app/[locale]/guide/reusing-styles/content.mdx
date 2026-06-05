@@ -1,43 +1,92 @@
-import ComponentsOverview from '../components/components/Overview.mdx'
-
 ## Overview [sr-only]
-As the styles grow, the class name combinations and the same design patterns appear over and over again in the code. To improve development efficiency and maintain design consistency, you should reuse or access them in some way.
+Reusable styling starts with a decision, not a file. Keep local choices in markup, move shared values into theme tokens, and define component classes only when a repeated pattern has product meaning.
 
-Writing `.btn` at the top level of a stylesheet creates a normal CSS rule. It can use `@compose` and `@at`, but it is still emitted by that stylesheet as native CSS, and Master CSS does not treat `btn` as a generated class. Writing `.btn` in top-level `@layer components` defines a config-backed component class instead: it is generated on demand only when `btn` is used, scanned from source, or composed by another CSS-defined style, emitted in the `components` cascade layer, and can use Master CSS features such as `@compose`, nested selectors, `@at` conditions, modes, and variant suffixes in markup.
+Writing `.btn` at the top level of a stylesheet creates a normal CSS rule. It can use `@compose` and `@at`, but it is still emitted by that stylesheet as native CSS. Writing `.btn` in top-level `@layer components` defines a Master CSS component class instead: it is generated on demand when `btn` is used in markup, scanned from source, or composed by another CSS-defined style.
 
-This guide focuses on the strategy of when to abstract; for shared theme vocabulary, start with [Customizing theme](/guide/theme), and for exact component behavior, see [Components](/guide/components).
+---
+
+## Start with utilities
+Use utility classes when the style belongs to one element, one state, or one local layout decision. This keeps the relationship between markup and style explicit while the pattern is still changing.
+
+```html
+<button class="inline-flex ai:center jc:center gap:xs px:md py:xs r:lg font:sm font:medium bg:primary fg:white">
+    Save changes
+</button>
+```
+
+Do not abstract just to shorten a class list. Abstract when the name improves the product vocabulary: `btn`, `card`, `field`, `toolbar`, `empty-state`, or another role that appears across the interface.
+
+---
+
+## Move shared values into the theme
+When the repeated part is a value, make it a token instead of a class. Tokens keep markup semantic while still letting each component choose its own structure.
+
+```css name=index.css
+@master {
+    --color-yellow-ring: $color-black/.1;
+    --color-touch-yellow: $color-yellow-30;
+    --color-text-yellow-contrast: $color-yellow-90;
+    --border-radius-control: 8;
+    --spacing-control-x: 16;
+}
+```
+
+```html
+<button class="px:control-x r:control bg:yellow fg:text-yellow-contrast">
+    Submit
+</button>
+```
+
+Use [Customizing your theme](/guide/theme) and [Variables and Modes](/guide/variables-and-modes) when the reusable part is color, spacing, typography, radius, shadow, motion, screens, or mode-specific values.
+
+---
+
+## Create component classes
+<span id="components" />
+Use a component class when a repeated class list becomes a reusable UI pattern. Define components in top-level `@layer components`, put Master CSS classes in `@compose`, and write native declarations directly in the rule.
+
 ```css name=index.css
 @layer components {
     .btn {
-        display: inline-flex;
-        font-weight: 600;
-    }
-
-    .btn-sm {
-        border-radius: 0.375rem;
-        padding-left: 0.75rem;
-        padding-right: 0.75rem;
-        font-size: 0.75rem;
-        height: 2rem;
-    }
-
-    .btn-md {
-        border-radius: 0.375rem;
-        padding-left: 1rem;
-        padding-right: 1rem;
-        font-size: 0.875rem;
-        height: 2.5rem;
+        @compose "inline-flex ai:center jc:center gap:xs px:md py:xs r:lg font:sm font:medium";
+        background: var(--color-primary);
+        color: white;
     }
 }
 ```
-An abstract style consists of one or more declarations. You can provide a class name for this set of declarations and reuse it anywhere.
 
-(click) Try making the viewport width smaller
-<ResizeZone width="100%" originX="center" showRuler>
-    <IFrame src="/examples/responsive-button" height={138} />
-</ResizeZone>
-You can apply the component class alongside conditional utility classes:
+```html
+<button class="btn">Save changes</button>
+```
+
+The generated CSS is emitted in the `components` layer:
+
+```css
+@layer components {
+    .btn {
+        display: inline-flex;
+        gap: 0.5rem;
+        border-radius: 0.5rem;
+        padding-left: 1rem;
+        padding-right: 1rem;
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
+        align-items: center;
+        font-size: 0.875rem;
+        font-weight: 500;
+        justify-content: center;
+        background: var(--color-primary);
+        color: #fff;
+    }
+}
+```
+
+Component definitions are config, not output. Defining `.btn` does not generate CSS until `btn` appears in scanned classes or is composed by another CSS-defined style.
+
+You can still apply component classes alongside conditional utility classes when a variation belongs to one usage site:
+
 <Code lang="html">{require('../../../../../packages/server/tests/fixtures/apply-styles/template.html?raw')}</Code>
+
 <details>
     <summary>Generated CSS</summary>
     <div>
@@ -47,81 +96,46 @@ You can apply the component class alongside conditional utility classes:
 
 ---
 
-## Creating Components
-Master CSS introduces a concise syntax system for defining abstract, reusable styles called components. These components encapsulate styling logic that can be applied directly to HTML elements, enabling consistent design patterns, improved maintainability, and scalable UI development across your project.
+## Add states and conditions
+Put selector states in nested selectors and conditional variants in `@at` blocks. This keeps the component definition readable and keeps the markup semantic.
 
-### Add a style
-Create an abstract style using Master CSS syntaxes.
-<Overview />
-
-### Add a style with states
-Create an abstract style with [state selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```css name=index.css
 @layer components {
-    .btn:focus {
-        outline: 0.125rem var(--color-invert) solid;
-        outline-offset: 0.125rem;
+    .btn {
+        @compose "inline-flex ai:center jc:center px:md py:xs r:lg";
+        transition: background-color .15s ease, box-shadow .15s ease;
+
+        &:hover {
+            @compose "bg:primary/.9";
+        }
+
+        &:focus-visible {
+            @compose "outline:2|primary outline-offset:2";
+        }
+
+        @at <sm {
+            @compose "block";
+        }
     }
 }
 ```
+
+Equivalent markup stays short:
+
+```html
+<button class="btn">Continue</button>
+```
+
 (click) Try clicking the button to see the outline effect
 <Demo>
     <button className="justify-center items-center inline-flex bg:invert fg:invert font:sm font:medium h:10x px:md r:lg outline:2|invert:focus outline-offset:2:focus">Submit</button>
 </Demo>
-<Code lang="html">{require('../../../../../packages/server/tests/fixtures/add-a-style-with-states/template.html?raw')}</Code>
-<details>
-    <summary>Generated CSS</summary>
-    <div>
-        <Code lang="css" beautify>{require('../../../../../packages/server/tests/fixtures/add-a-style-with-states/generated.css?raw')}</Code>
-    </div>
-</details>
-
-### Add styles in a nested structure
-Create and manage a set of abstract styles for a shared structure. Keep each generated class explicit so markup, output, and config stay easy to trace.
-```css name=index.css
-@layer components {
-    .card {
-        border-radius: 0.5rem;
-    }
-
-    .card-header {
-        border-bottom: 0.0625rem solid oklch(0% 0 none);
-    }
-
-    .card-content {
-        padding: 1.25rem;
-    }
-
-    .card-footer {
-        border-top: 0.0625rem solid oklch(0% 0 none);
-    }
-}
-```
-Apply the components:
-<Code lang="html">{require('../../../../../packages/server/tests/fixtures/add-styles-in-a-nested-structure/template.html?raw')}</Code>
-<details>
-    <summary>Generated CSS</summary>
-    <div>
-        <Code lang="css" beautify>{require('../../../../../packages/server/tests/fixtures/add-styles-in-a-nested-structure/generated.css?raw')}</Code>
-    </div>
-</details>
 
 ---
 
-## Managing styles
-As usual, you can split the styles into multiple files for management. When the project is small in scale, you don't necessarily have to insist on splitting style files.
-<ExplorerView>
-{[
-    { name: 'styles', children: [
-        { name: 'button.css' },
-        { name: 'base.css' }
-    ]},
-    { name: 'index.css' }
-]}
-</ExplorerView>
+## Keep variants composable
+Avoid hiding every option behind a new component. Give each component class one responsibility, then combine it with tokens, utilities, or smaller component classes.
 
-### Create button styles
-Let's implement a rich button.
 ```css name=styles/button.css
 @layer components {
     .btn {
@@ -151,20 +165,7 @@ Let's implement a rich button.
     }
 }
 ```
-Import component files from the project CSS entry.
-```css name=index.css
-@master;
-@import './styles/button.css';
-```
 
-To apply the button sizes.
-<Demo className="gap:xl">
-    <button className="btn btn-xs yellow touch-yellow">Submit</button>
-    <button className="btn btn-sm yellow touch-yellow">Submit</button>
-    <button className="btn btn-md yellow touch-yellow">Submit</button>
-    <button className="btn btn-lg yellow touch-yellow">Submit</button>
-    <button className="btn btn-xl yellow touch-yellow">Submit</button>
-</Demo>
 ```html
 <!-- @MARK btn-xs -->
 <button class="btn btn-xs">Submit</button>
@@ -177,18 +178,126 @@ To apply the button sizes.
 <!-- @MARK btn-xl -->
 <button class="btn btn-xl">Submit</button>
 ```
-To apply with rounded styles.
-<Demo>
-    <button className="btn btn-md rounded yellow touch-yellow">Submit</button>
+
+<Demo className="gap:xl">
+    <button className="btn btn-xs yellow touch-yellow">Submit</button>
+    <button className="btn btn-sm yellow touch-yellow">Submit</button>
+    <button className="btn btn-md yellow touch-yellow">Submit</button>
+    <button className="btn btn-lg yellow touch-yellow">Submit</button>
+    <button className="btn btn-xl yellow touch-yellow">Submit</button>
 </Demo>
+
+Round the same button with a separate class instead of duplicating every size:
+
 ```html
 <!-- @MARK rounded -->
 <button class="btn btn-md rounded">Submit</button>
 ```
-To design a scalable style, you should ensure the single responsibility of class composition; otherwise, you may end up using a lot of `!important` to override rules or the `@preset` layer to lower default styles, ultimately leading to chaotic styles.
 
-### Create common variables and styles
-We define [variables and modes](/guide/variables-and-modes) to create tokens supporting light/dark modes in advance. This not only simplifies template markup but also reduces CSS rule output.
+<Demo>
+    <button className="btn btn-md rounded yellow touch-yellow">Submit</button>
+</Demo>
+
+If one class tries to own size, color, shape, layout, and interaction variants, overrides become fragile. Smaller classes compose better with utilities and rarely need `!important`.
+
+---
+
+## Build shared structures
+Create explicit classes for each meaningful part of a repeated structure. Avoid relying on descendant selectors when separate class names make the output easier to trace.
+
+```css name=index.css
+@layer components {
+    .card {
+        border-radius: 0.5rem;
+    }
+
+    .card-header {
+        border-bottom: 0.0625rem solid oklch(0% 0 none);
+    }
+
+    .card-content {
+        padding: 1.25rem;
+    }
+
+    .card-footer {
+        border-top: 0.0625rem solid oklch(0% 0 none);
+    }
+}
+```
+
+```html
+<article class="card">
+    <header class="card-header">Title</header>
+    <div class="card-content">Content</div>
+    <footer class="card-footer">Actions</footer>
+</article>
+```
+
+Use nested selectors when the selector is truly part of the component behavior:
+
+```css name=index.css
+@layer components {
+    .empty-state {
+        @compose "grid ai:center jc:center min-h:64x p:lg text:center";
+
+        &::before {
+            @compose "{content:'';block;size:12x;r:full}";
+            background: color-mix(in oklab, currentColor 12%, transparent);
+        }
+    }
+}
+```
+
+In this example, `size:12x` is generated for `.empty-state::before`, not for `.empty-state`.
+
+---
+
+## Use native CSS when output should be native
+`@compose` is not limited to component definitions. It can also be used in native style rules. The difference is output ownership:
+
+- `@layer components`, `@layer preset`, and `@layer utilities` create on-demand managed class definitions.
+- Native style rules lower to ordinary CSS in the stylesheet that contains them.
+
+```css name=index.css
+@layer utilities {
+    .flow {
+        @compose "grid gap:md";
+    }
+}
+
+.marketing-card {
+    @compose "flow p:lg r:xl shadow:md";
+    background: var(--color-surface);
+
+    @at dark {
+        @compose "shadow:none";
+    }
+}
+```
+
+Use native CSS when the selector is part of a stylesheet surface you already ship. Use components when the class should behave like a generated Master CSS class and only emit when it appears in markup or source scanning.
+
+---
+
+## Organize component files
+Split component definitions only when it helps ownership. Local CSS imports from the project CSS entry are compiled into one graph.
+
+<ExplorerView>
+{[
+    { name: 'styles', children: [
+        { name: 'button.css' },
+        { name: 'base.css' }
+    ]},
+    { name: 'index.css' }
+]}
+</ExplorerView>
+
+```css name=index.css
+@master;
+@import './styles/button.css';
+@import './styles/base.css';
+```
+
 ```css name=styles/base.css
 @master {
     light {
@@ -216,27 +325,34 @@ We define [variables and modes](/guide/variables-and-modes) to create tokens sup
     }
 }
 ```
-- Variables
-    - `yellow-ring` is an outline color that complements a yellow background.
-    - `touch-yellow` is a background color on hover.
-    - `text-yellow-contrast` is a contrasting color fine-tuned against a yellow background.
-- Components
-    - `.yellow` sets a background, foreground and outline style for a yellow theme.
-    - `.yellow-touch` sets a background, foreground and outline style for a yellow theme interaction.
 
 <Demo className="gap:xl">
     <button className="btn btn-md yellow touch-yellow">Submit</button>
 </Demo>
+
 ```html
 <!-- @MARK yellow touch-yellow -->
 <button class="btn btn-md yellow touch-yellow">Submit</button>
 ```
 
+`@master` config blocks, top-level managed layers, top-level `@keyframes`, and native style rules with `@compose` or `@at` are consumed by the Master CSS compiler. Ordinary CSS outside those managed targets remains native CSS in your app stylesheet pipeline.
+
+---
+
+## Component rules
+- Put component definitions in top-level `@layer components`; use `@layer preset` only when a definition intentionally belongs to the earlier preset layer.
+- Component selectors must start with a single class selector such as `.btn`, `.card`, or `.field::before`.
+- `@compose` is valid inside managed class definitions and native style rules.
+- Component definitions accept native declarations, `@compose`, nested selectors, native nested at-rules, and `@at` condition blocks.
+- CSS-defined managed classes can compose other CSS-defined managed classes. Circular `@compose` dependencies are invalid.
+- Standard HTML tag selectors such as `body` or `html` are not valid inside managed layer definitions.
+- Utilities still win over components because `@master/css/base.css` declares `@layer theme, base, preset, components, utilities;`.
+
 ---
 
 ## Summary
-
-- Moderately abstracting styles make design easier to manage and maintain consistency, but it doesn't mean that all styles should be abstracted.
-- Only abstract styles that have the potential for reuse, rather than naming them simply for brevity or naming's sake.
-- Keep utilities for primitives and one-off layout decisions; move repeated UI patterns into components when the class name becomes a product concept.
-- A good CSS structure combines abstract classes and utility classes — don’t get hung up on specific approaches.
+- Keep local styling in markup until a pattern proves it should be shared.
+- Move shared values into theme tokens before creating new classes.
+- Use component classes for reusable UI roles, not for every repeated declaration.
+- Keep component classes small enough to combine with tokens, utilities, states, and conditions.
+- Use native CSS when the selector belongs to a stylesheet you already ship; use managed component classes when the class should be generated on demand.

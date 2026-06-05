@@ -31,7 +31,7 @@ Think of each class as a small CSS statement:
 
 Under the hood, Master CSS generates real CSS rules, adds [vendor prefixes](/guide/compatibility#vendor-prefixes), places rules in predictable [cascade layers](/guide/cascade-layers), and [orders CSS rules](#smart-rule-ordering) for you. You keep the styling decision close to the element, while the engine handles the CSS output.
 
-For one-off interface work, you can stay in markup. When a value, selector, condition, primitive, native rule, or repeated pattern becomes part of your product vocabulary, move it into the [project CSS entry](/guide/theme) as a token, selector token, at token, utility, native composed rule, or [component](/guide/components).
+For one-off interface work, you can stay in markup. When a value, selector, condition, primitive, native rule, or repeated pattern becomes part of your product vocabulary, move it into the [project CSS entry](/guide/theme) as a token, selector token, at token, utility, native composed rule, or [component class](/guide/reusing-styles#components).
 
 ### Readable structured syntax
 Master CSS is not trying to put a second `style=""` attribute inside `class=""`. The syntax is CSS-like, but it is designed to be shorter, composable, and easier for tools to understand.
@@ -292,7 +292,7 @@ Use semantic tokens and components when:
 - The team has a design-system decision worth naming.
 - Consumers should use the concept without knowing every underlying utility.
 
-Assuming the card has become reusable, define it as a component using [components](/guide/components) in the project CSS entry:
+Assuming the card has become reusable, define it as a [component class](/guide/reusing-styles#components) in the project CSS entry:
 
 ```css name=index.css
 @layer components {
@@ -457,7 +457,7 @@ If you are new to Master CSS, continue in this order:
 2. [Style declarations](/guide/style-declarations) to learn the class syntax in detail.
 3. [State selectors](/guide/state-selectors), [responsive design](/guide/responsive-design), and [conditional queries](/guide/conditional-queries) to control when styles apply.
 4. [Rendering modes](/guide/rendering-modes) to choose runtime rendering, static rendering, or progressive rendering.
-5. [Design tokens](/guide/design-tokens), [theme](/guide/theme), and [components](/guide/components) when your project needs shared vocabulary.
+5. [Design tokens](/guide/design-tokens), [theme](/guide/theme), and [component classes](/guide/reusing-styles#components) when your project needs shared vocabulary.
 
 ---
 
