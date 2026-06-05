@@ -3,7 +3,7 @@ import define from 'internal/utils/metadata'
 const metadata = define({
     title: 'Corner Radius',
     description: 'Corner radius defines the roundness of UI elements\' corners.',
-    category: 'Foundations',
+    category: 'Design Foundations',
     fileURL: import.meta.url
 })
 

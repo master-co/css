@@ -3,7 +3,7 @@ import define from 'internal/utils/metadata'
 const metadata = define({
     title: 'Spacing',
     description: 'Learn how to use spacing tokens in your design system.',
-    category: 'Foundations',
+    category: 'Design Foundations',
     fileURL: import.meta.url
 })
 
