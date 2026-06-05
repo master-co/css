@@ -68,16 +68,16 @@ This keeps markup concise while avoiding global token collisions across namespac
 ---
 
 ## Modes
-Define mode-specific variables with `@mode` blocks inside `@master`.
+Define mode-specific variables with mode blocks inside `@master`.
 
 ```css name=index.css
 @master {
-    @mode light {
+    light {
         --color-primary: #4f46e5;
         --color-surface: #ffffff;
     }
 
-    @mode dark {
+    dark {
         --color-primary: #818cf8;
         --color-surface: #111827;
     }
@@ -88,7 +88,7 @@ Define mode-specific variables with `@mode` blocks inside `@master`.
 
 ```css name=index.css
 @master {
-    @mode chrisma {
+    chrisma {
         --color-primary: #ff0;
     }
 }
@@ -139,7 +139,9 @@ For component definitions, `@at dark` follows the same trigger:
 ```css name=index.css
 @master {
     mode-trigger: class;
+}
 
+@layer components {
     .btn {
         @at dark {
             @compose "bg:neutral-90";

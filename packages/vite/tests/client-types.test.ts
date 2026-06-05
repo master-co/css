@@ -30,7 +30,7 @@ describe('@master/css.vite/client', () => {
             )
             writeFileSync(
                 path.join(cssPackageDir, 'index.d.ts'),
-                'export interface Config { variables?: unknown[] }\n'
+                'export interface Config { variables?: unknown[] }\nexport interface MasterCSSPreloaded { variables?: Record<string, number>; animations?: Record<string, number> }\n'
             )
             writeFileSync(
                 path.join(vitePackageDir, 'package.json'),
@@ -55,9 +55,11 @@ describe('@master/css.vite/client', () => {
 import type { Config } from '@master/css'
 import 'virtual:master-utilities.css'
 import virtualConfig from 'virtual:master-css-config'
+import virtualPreloaded from 'virtual:master-css-preloaded'
 import localConfig from './app.css?master-css-config'
 
 virtualConfig satisfies Config
+virtualPreloaded satisfies import('@master/css').MasterCSSPreloaded
 localConfig satisfies Config
 `.trimStart()
             )

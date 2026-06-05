@@ -3,6 +3,7 @@ import type { StyleCSSSources } from '@master/css-extractor/style'
 import type { Plugin, ResolvedConfig } from 'vite'
 import ConfigLoaderPlugin from './plugins/config-loader'
 import ConfigVirtualModulePlugin from './plugins/config-virtual-module'
+import PreloadedVirtualModulePlugin from './plugins/preloaded-virtual-module'
 import ExtractMode from './modes/extract'
 import RuntimeMode from './modes/runtime'
 import ProgressiveMode from './modes/progressive'
@@ -22,6 +23,7 @@ export interface PluginContext {
     virtualCSSPlaceholderEmitted?: boolean
     styleCSSSources?: StyleCSSSources
     includeGeneratedCSS?: boolean
+    preloaded?: import('shared/css-preloaded-module').MasterCSSPreloaded
 }
 
 export default function masterCSS(options?: PluginOptions): Plugin[] {
@@ -32,6 +34,7 @@ export default function masterCSS(options?: PluginOptions): Plugin[] {
     const plugins: Plugin[] = [
         ContextPlugin(options, context),
         ConfigVirtualModulePlugin(options, context),
+        PreloadedVirtualModulePlugin(context),
         ConfigLoaderPlugin(context),
         ExtractorPlugin(options, context),
         UsageGraphPlugin(options, context),

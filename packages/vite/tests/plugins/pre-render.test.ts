@@ -52,7 +52,7 @@ describe('PreRenderPlugin', () => {
         const themePath = path.join(root, 'theme.css')
         try {
             writeFileSync(themePath, [
-                '@master {',
+                '@layer components {',
                 '    .card { color: #123456; }',
                 '}'
             ].join('\n'))
@@ -90,7 +90,7 @@ describe('PreRenderPlugin', () => {
             expect(html).toContain('.card{color:#123456}')
 
             writeFileSync(themePath, [
-                '@master {',
+                '@layer components {',
                 '    .card { color: #abcdef; }',
                 '}'
             ].join('\n'))

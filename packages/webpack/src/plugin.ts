@@ -6,13 +6,18 @@ import {
 import { loadProjectConfig } from '@master/css-configer/load'
 import {
     cleanStyleRequest,
-    createExtractedCSS,
+    createExtractedCSSResult,
     isStyleCSSRequest,
     registerStyleCSSSource as registerExtractorStyleCSSSource,
     resolveMasterStyleSource,
     type StyleCSSSources
 } from '@master/css-extractor/style'
 import { toVirtualCSSModulePath } from 'shared/css-virtual-module'
+import {
+    toPreloadedModule,
+    toVirtualPreloadedModulePath,
+    type MasterCSSPreloaded
+} from 'shared/css-preloaded-module'
 import type { Compiler } from 'webpack'
 import type VirtualModulesPlugin from 'webpack-virtual-modules'
 import { readFileSync } from 'node:fs'
@@ -37,6 +42,7 @@ export interface MasterCSSWebpackContext {
     compilerContext: string
     virtualCSSImportModuleId: string
     virtualConfigModuleId: string
+    virtualPreloadedModuleId: string
     virtualModule?: VirtualModulesPlugin
     on(...args: Parameters<CSSExtractor['on']>): unknown
     init(customOptions?: Options): Promise<unknown>
@@ -49,12 +55,14 @@ export interface MasterCSSWebpackContext {
     getDefaultConfigDependencyPaths(): string[]
     setModuleContent(modulePath: string, moduleContent: unknown): void
     createDefaultConfigModule(): Promise<string>
+    createPreloadedModule(): Promise<string>
     processModuleContents(
         entries: [string, string][],
         isGeneratedCSSModulePath: (modulePath: string) => boolean
     ): Promise<void>
     writeGeneratedCSSModule(): Promise<void>
     writeDefaultConfigModule(): Promise<void>
+    writePreloadedModule(): Promise<void>
     replayModuleContents(): Promise<void>
     queueResetReplay(): Promise<unknown>
     waitForResetReplay(): Promise<unknown>
@@ -67,6 +75,7 @@ export class MasterCSSPlugin {
     pluginInitialized = false
     moduleContentByPath: Record<string, unknown> = {}
     defaultConfigDependencies: string[] = []
+    preloaded: MasterCSSPreloaded = {}
     resetReplayChain: Promise<unknown> = Promise.resolve()
     styleCSSSources: StyleCSSSources = new Map()
 
@@ -173,8 +182,8 @@ export class MasterCSSPlugin {
         ])]
     }
 
-    private async createExtractedCSS(options: { includeNativeCSS?: boolean, includeMasterBaseCSS?: boolean } = {}) {
-        return createExtractedCSS({
+    private async createExtractedCSSResult(options: { includeNativeCSS?: boolean, includeMasterBaseCSS?: boolean } = {}) {
+        const result = await createExtractedCSSResult({
             extractor: this.extractor,
             styleCSSSources: this.styleCSSSources,
             classes: this.getExtractorClasses(),
@@ -182,6 +191,20 @@ export class MasterCSSPlugin {
             includeNativeCSS: options.includeNativeCSS,
             includeMasterBaseCSS: options.includeMasterBaseCSS
         })
+        this.preloaded = result.preloaded
+        return result
+    }
+
+    private async createPreloadedModule() {
+        if (!this.extractor.initialized) {
+            await this.init()
+        }
+        await this.createExtractedCSSResult()
+        return toPreloadedModule(this.preloaded)
+    }
+
+    private async createExtractedCSS(options: { includeNativeCSS?: boolean, includeMasterBaseCSS?: boolean } = {}) {
+        return (await this.createExtractedCSSResult(options)).css
     }
 
     private async registerStyleCSSSource(modulePath: string, source: string) {
@@ -233,6 +256,7 @@ export class MasterCSSPlugin {
             compilerContext,
             virtualCSSImportModuleId: toVirtualCSSModulePath(compilerContext),
             virtualConfigModuleId: toVirtualDefaultConfigModulePath(compilerContext),
+            virtualPreloadedModuleId: toVirtualPreloadedModulePath(compilerContext),
             on: (...args) => this.on(...args),
             init: (customOptions = this.customOptions) => this.init(customOptions),
             reset: (customOptions = this.customOptions) => this.reset(customOptions),
@@ -248,18 +272,24 @@ export class MasterCSSPlugin {
                 this.moduleContentByPath[modulePath] = moduleContent
             },
             createDefaultConfigModule: () => this.createDefaultConfigModule(),
+            createPreloadedModule: () => this.createPreloadedModule(),
             processModuleContents: (entries, isGeneratedCSSModulePath) => this.processModuleContents(entries, isGeneratedCSSModulePath),
             writeGeneratedCSSModule: async () => {
                 if (!context.virtualModule || !context.virtualCSSImportModuleId) return
-                const cssText = await this.createExtractedCSS({
+                const result = await this.createExtractedCSSResult({
                     includeNativeCSS: false,
                     includeMasterBaseCSS: false
                 })
-                context.virtualModule.writeModule(context.virtualCSSImportModuleId, cssText)
+                context.virtualModule.writeModule(context.virtualCSSImportModuleId, result.css)
+                await context.writePreloadedModule()
             },
             writeDefaultConfigModule: async () => {
                 if (!context.virtualModule || !context.virtualConfigModuleId) return
                 context.virtualModule.writeModule(context.virtualConfigModuleId, await this.createDefaultConfigModule())
+            },
+            writePreloadedModule: async () => {
+                if (!context.virtualModule || !context.virtualPreloadedModuleId) return
+                context.virtualModule.writeModule(context.virtualPreloadedModuleId, toPreloadedModule(this.preloaded))
             },
             replayModuleContents: async () => {
                 const entries = Object.entries(this.moduleContentByPath)

@@ -14,7 +14,11 @@ function getRoot() {
 }
 
 function initRuntime() {
-    cssRuntime.value = initCSSRuntime(props.config, getRoot())
+    cssRuntime.value = initCSSRuntime({
+        config: props.config,
+        root: getRoot(),
+        preloaded: props.preloaded
+    })
 }
 
 function destroyRuntime() {

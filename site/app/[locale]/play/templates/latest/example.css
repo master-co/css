@@ -1,13 +1,14 @@
 @master {
-
-    @mode light {
+    light {
         --color-card: #ffffff;
     }
 
-    @mode dark {
+    dark {
         --color-card: $color-gray-80;
     }
+}
 
+@layer components {
     .play-stage {
         @compose "flex items-center justify-center min-vh p:lg";
     }

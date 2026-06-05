@@ -15,21 +15,23 @@ That makes configuration feel closer to authoring CSS than filling out a JavaScr
     --color-panel: #ffffff;
     --screen-md: 768;
 
-    @mode dark {
+    dark {
         --color-primary: #818cf8;
         --color-panel: #111827;
     }
 
     @custom-at motion-safe @media (prefers-reduced-motion: no-preference);
     @custom-selector :interactive :is(:hover, :focus-visible);
+}
 
-    @layer utilities {
-        .content-auto {
-            content-visibility: auto;
-            contain-intrinsic-size: auto 32rem;
-        }
+@layer utilities {
+    .content-auto {
+        content-visibility: auto;
+        contain-intrinsic-size: auto 32rem;
     }
+}
 
+@layer components {
     .btn {
         @compose "inline-flex ai:center jc:center gap:xs px:md py:xs r:lg font:sm font:medium";
         background: var(--color-primary);
@@ -39,10 +41,17 @@ That makes configuration feel closer to authoring CSS than filling out a JavaScr
             @compose "outline:2|primary outline-offset:2";
         }
     }
+}
 
-    @keyframes fade-in {
-        from { opacity: 0; transform: translateY(.25rem); }
-        to { opacity: 1; transform: translateY(0); }
+@keyframes fade-in {
+    from {
+        opacity: 0;
+        transform: translateY(.25rem);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
 }
 ```
@@ -73,7 +82,7 @@ Build integrations discover the default graph from project CSS files that contai
 ```
 
 ```css name=styles/btn.css
-@master {
+@layer components {
     .btn {
         background: var(--color-primary);
         color: white;
@@ -133,21 +142,21 @@ Token names are contextual. `primary` resolves as a color in `bg:primary`, `sans
 </section>
 ```
 
-Mode-specific values live in `@mode` blocks. `light` and `dark` are always available, and new modes are added when you define them.
+Mode-specific values live in mode blocks. `light` and `dark` are always available, and new modes are added when you define them.
 
 ```css name=index.css
 @master {
-    @mode light {
+    light {
         --color-panel: #ffffff;
         --color-primary: #4f46e5;
     }
 
-    @mode dark {
+    dark {
         --color-panel: #111827;
         --color-primary: #818cf8;
     }
 
-    @mode high-contrast {
+    high-contrast {
         --color-primary: #ffff00;
     }
 }
@@ -178,7 +187,7 @@ Use them in markup as at-rule suffixes:
 Inside CSS-defined components and utilities, prefer `@at` blocks so the utility list stays plain.
 
 ```css name=index.css
-@master {
+@layer components {
     .toast {
         @at motion-safe {
             @compose "animation:fade-in|fast";
@@ -211,11 +220,9 @@ Use `@custom-selector` to name selectors that repeat across utilities or compone
 Nested component selectors can use the same tokens:
 
 ```css name=index.css
-@master {
-    .link {
-        &:interactive {
-            @compose "fg:primary";
-        }
+@layer components {
+    .link:interactive {
+        @compose "fg:primary";
     }
 }
 ```
@@ -225,20 +232,18 @@ See [Selector Tokens](/guide/selector-tokens) for selector token usage in markup
 ---
 
 ## Utilities
-Use `@layer utilities` inside `@master` for reusable primitives that should behave like utility classes. These are not semantic components; they are low-level capabilities you want available everywhere. CSS-defined utilities are static utilities: one class name maps to one set of native declarations.
+Use top-level `@layer utilities` for reusable primitives that should behave like utility classes. These are not semantic components; they are low-level capabilities you want available everywhere. CSS-defined utilities are static utilities: one class name maps to one set of native declarations.
 
 ```css name=index.css
-@master {
-    @layer utilities {
-        .content-auto {
-            content-visibility: auto;
-            contain-intrinsic-size: auto 32rem;
-        }
+@layer utilities {
+    .content-auto {
+        content-visibility: auto;
+        contain-intrinsic-size: auto 32rem;
+    }
 
-        .print-hidden {
-            @at print {
-                display: none;
-            }
+    .print-hidden {
+        @at print {
+            display: none;
         }
     }
 }
@@ -256,7 +261,7 @@ Utilities cannot use `@compose`. If the class describes a semantic UI pattern su
 Components are named style compositions for UI patterns such as `.btn`, `.card`, `.field`, and `.page`. They let you turn repeated class lists into project vocabulary without emitting unused CSS.
 
 ```css name=index.css
-@master {
+@layer components {
     .btn {
         @compose "inline-flex ai:center jc:center gap:xs px:md py:xs r:lg font:sm font:medium";
         background: var(--color-primary);
@@ -292,18 +297,26 @@ Use [Reusing Styles](/guide/reusing-styles) for the design strategy around when 
 ---
 
 ## Animations
-Put keyframes in `@master`. They become config-backed animations and are emitted only when a generated class or declaration references them.
+Put keyframes at the top level of the project CSS entry. They become config-backed animations and are emitted only when a generated class or declaration references them.
 
 ```css name=index.css
-@master {
-    @keyframes fade-in {
-        from { opacity: 0; }
-        to { opacity: 1; }
+@keyframes fade-in {
+    from {
+        opacity: 0;
     }
 
-    @keyframes slide-up {
-        from { transform: translateY(.5rem); }
-        to { transform: translateY(0); }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slide-up {
+    from {
+        transform: translateY(.5rem);
+    }
+
+    to {
+        transform: translateY(0);
     }
 }
 ```
@@ -316,8 +329,13 @@ Animations are emitted outside cascade layers, while animation-related utilities
 
 ```css
 @keyframes fade-in {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
 }
 ```
 
@@ -326,8 +344,7 @@ Animations are emitted outside cascade layers, while animation-related utilities
 ## Functions
 Functions are the programmatic extension point for custom value transforms. Because a function transformer is executable JavaScript, define advanced custom functions in a JavaScript or TypeScript config object and merge it with CSS-derived config when needed.
 
-```ts name=config.ts
-import { extendConfig, type Config } from '@master/css'
+```ts name=config.tsimport { extendConfig, type Config } from '@master/css'
 import cssConfig from 'virtual:master-css-config'
 
 const config: Config = extendConfig(cssConfig, {
@@ -469,8 +486,7 @@ Variables and mode behavior are covered in [Variables and Modes](/guide/variable
 ## Programmatic config
 The project CSS entry should be the default source of truth, but the core API still accepts explicit config objects.
 
-```ts
-import { MasterCSS, config, createCSS, extendConfig } from '@master/css'
+```tsimport { MasterCSS, config, createCSS, extendConfig } from '@master/css'
 
 const css = createCSS({
     scope: '#app'
@@ -498,8 +514,7 @@ The virtual module is the canonical project-level config API. It resolves the in
 
 Use this when a server hook, runtime initializer, test, or framework adapter needs the same project config object that the build integration uses.
 
-```ts
-import { initCSSRuntime } from '@master/css-runtime'
+```tsimport { initCSSRuntime } from '@master/css-runtime'
 import config from 'virtual:master-css-config'
 
 initCSSRuntime(config)

@@ -20,6 +20,7 @@ import { SyncHook, AsyncSeriesHook } from 'tapable'
 import MasterCSSPlugin from '../src'
 import { VIRTUAL_CONFIG_ID, MASTER_CSS_CONFIG_QUERY } from '@master/css-configer/module'
 import { VIRTUAL_CSS_ID } from 'shared/css-virtual-module'
+import { VIRTUAL_PRELOADED_ID } from 'shared/css-preloaded-module'
 import { transformStyleSource } from '../src/utils/transform-style-source'
 import path from 'node:path'
 import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
@@ -151,7 +152,7 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
         const entryPath = path.join(root, 'app.css')
         const themePath = path.join(root, 'theme.css')
         try {
-            writeFileSync(themePath, '@master { .card { display: grid; } }')
+            writeFileSync(themePath, '@layer components { .card { display: grid; } }')
             writeFileSync(entryPath, [
                 '@master;',
                 '@import "./theme.css";',
@@ -214,6 +215,31 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
         expect(resolveData.request).toContain(path.join('node_modules', '.master-css', 'master-css-config.js'))
         expect((compiler.inputFileSystem._writeVirtualFile as any).mock.calls.at(-1)?.[2])
             .toContain('"key":"primary","value":"#123"')
+    })
+
+    test('resolves virtual:master-css-preloaded to a JS virtual module', async () => {
+        const plugin = new MasterCSSPlugin({
+            include: [],
+            sources: [],
+        } as any)
+        const { compiler } = makeFakeCompiler()
+        ;(compiler as any).webpack = { sources: { RawSource: function NoopSource(this: object) { /* stub */ } } }
+        plugin.apply(compiler as any)
+
+        const normalModuleFactory = makeNormalModuleFactory()
+        compiler.hooks.normalModuleFactory.call(normalModuleFactory)
+        const resolveData = {
+            request: VIRTUAL_PRELOADED_ID,
+            context: process.cwd(),
+            contextInfo: {},
+            fileDependencies: new Set<string>()
+        }
+
+        await resolveBefore(normalModuleFactory, resolveData)
+
+        expect(resolveData.request).toContain(path.join('node_modules', '.master-css', 'master-css-preloaded.js'))
+        expect((compiler.inputFileSystem._writeVirtualFile as any).mock.calls.at(-1)?.[2])
+            .toBe('export default {"variables":{},"animations":{}};')
     })
 
     test('resolves ?master-css-config imports to per-file JS virtual modules', async () => {
@@ -377,7 +403,7 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
         const entryPath = path.join(root, 'app.css')
         const themePath = path.join(root, 'theme.css')
         try {
-            writeFileSync(themePath, '@master { .card { color: #123456; } }')
+            writeFileSync(themePath, '@layer components { .card { color: #123456; } }')
             writeFileSync(entryPath, [
                 '@master;',
                 '@import "./theme.css";'
@@ -430,7 +456,9 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
                 '',
                 '@master {',
                 '    --color-primary: #123456;',
+                '}',
                 '',
+                '@layer components {',
                 '    .btn {',
                 '        display: grid;',
                 '    }',
@@ -491,7 +519,7 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
         const configPath = path.join(root, 'app.css')
         const tokenPath = path.join(root, 'theme.css')
         try {
-            writeFileSync(tokenPath, '@master { .card { color: #123456; } }')
+            writeFileSync(tokenPath, '@layer components { .card { color: #123456; } }')
             writeFileSync(configPath, '@master;\n@import "./theme.css";')
 
             const plugin = makePlugin({}, root)

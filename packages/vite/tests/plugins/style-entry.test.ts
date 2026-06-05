@@ -127,7 +127,7 @@ describe('StyleEntryPlugin', () => {
 
         const result = await (plugin as any).transform.call(
             {},
-            '@master { .card { display: grid; } }\n.card { color: red }',
+            '@master { root-size: 16; }\n.card { color: red }',
             '/project/src/style.css'
         )
 

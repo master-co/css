@@ -45,13 +45,15 @@ Generated CSS:
 
 ---
 
-## Use at tokens in @master definitions
-Inside `@master` class definitions and `@layer utilities`, use `@at` blocks instead of putting conditional suffixes inside `@compose`. This keeps the composed utility list plain and lets the surrounding CSS structure describe the condition.
+## Use at tokens in managed definitions
+Inside `@layer components` and `@layer utilities`, use `@at` blocks instead of putting conditional suffixes inside `@compose`. This keeps the composed utility list plain and lets the surrounding CSS structure describe the condition.
 
 ```css name=index.css
 @master {
     @custom-at motion-safe @media (prefers-reduced-motion: no-preference);
+}
 
+@layer components {
     .card {
         @compose "p:md r:xl";
 
@@ -67,7 +69,9 @@ Inside `@master` class definitions and `@layer utilities`, use `@at` blocks inst
 ```css name=index.css
 @master {
     mode-trigger: class;
+}
 
+@layer components {
     .btn {
         @compose "inline-flex";
 
@@ -93,7 +97,7 @@ Screen variables automatically create at tokens such as `@md`, and modes automat
 @master {
     --screen-md: 768;
 
-    @mode dark {
+    dark {
         --color-primary: #000;
     }
 }

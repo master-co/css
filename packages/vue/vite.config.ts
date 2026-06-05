@@ -1,7 +1,7 @@
 import { defineConfig } from 'vite'
 import { resolve } from 'path'
 import vue from '@vitejs/plugin-vue'
-import { VIRTUAL_CONFIG_ID } from '@master/css.vite'
+import { VIRTUAL_CONFIG_ID, VIRTUAL_PRELOADED_ID } from '@master/css.vite'
 import pkg from './package.json'
 
 // https://vitejs.dev/config/
@@ -19,6 +19,7 @@ export default defineConfig({
         },
         rollupOptions: {
             external: (id) => id === VIRTUAL_CONFIG_ID ||
+                id === VIRTUAL_PRELOADED_ID ||
                 id === 'vue' ||
                 id.startsWith('vue/') ||
                 Object.keys(pkg.dependencies).some((dependency) =>

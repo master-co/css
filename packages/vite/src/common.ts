@@ -3,6 +3,7 @@ import {
     RESOLVED_MASTER_CSS_CONFIG_QUERY_PREFIX as RESOLVED_MASTER_CSS_CONFIG_REQUEST_QUERY_PREFIX,
     VIRTUAL_CONFIG_ID as MASTER_CSS_VIRTUAL_CONFIG_ID
 } from '@master/css-configer/module'
+import { VIRTUAL_PRELOADED_ID as MASTER_CSS_VIRTUAL_PRELOADED_ID } from 'shared/css-preloaded-module'
 
 export const HTML_ENTRIES = [
     'src/layouts/Layout.astro', // astro
@@ -14,12 +15,15 @@ export const HTML_ENTRIES = [
 
 export const VIRTUAL_CONFIG_ID = MASTER_CSS_VIRTUAL_CONFIG_ID
 export const RESOLVED_VIRTUAL_CONFIG_ID = `\0${VIRTUAL_CONFIG_ID}`
+export const VIRTUAL_PRELOADED_ID = MASTER_CSS_VIRTUAL_PRELOADED_ID
+export const RESOLVED_VIRTUAL_PRELOADED_ID = `\0${VIRTUAL_PRELOADED_ID}`
 export const MASTER_CSS_CONFIG_QUERY = MASTER_CSS_CONFIG_REQUEST_QUERY
 export const RESOLVED_MASTER_CSS_CONFIG_QUERY_PREFIX = RESOLVED_MASTER_CSS_CONFIG_REQUEST_QUERY_PREFIX
 export const CSS_RUNTIME_INJECTION = [
     `import { initCSSRuntime } from '@master/css-runtime';`,
     `import masterCSSConfig from '${VIRTUAL_CONFIG_ID}';`,
+    `import masterCSSPreloaded from '${VIRTUAL_PRELOADED_ID}';`,
     `if (typeof document !== 'undefined') {`,
-    `initCSSRuntime(masterCSSConfig);`,
+    `initCSSRuntime({ config: masterCSSConfig, preloaded: masterCSSPreloaded });`,
     `}`,
 ].join('\n')

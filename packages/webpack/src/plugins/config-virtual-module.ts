@@ -1,4 +1,5 @@
 import { VIRTUAL_CONFIG_ID } from '@master/css-configer/module'
+import { VIRTUAL_PRELOADED_ID } from 'shared/css-preloaded-module'
 import type { Compiler } from 'webpack'
 import type { MasterCSSWebpackContext, WebpackSubPlugin } from '../plugin'
 
@@ -7,6 +8,17 @@ export default function ConfigVirtualModulePlugin(context: MasterCSSWebpackConte
         apply(compiler: Compiler) {
             compiler.hooks.normalModuleFactory.tap(context.name, (normalModuleFactory) => {
                 normalModuleFactory.hooks.beforeResolve.tapAsync(context.name, (resolveData, callback) => {
+                    if (resolveData.request === VIRTUAL_PRELOADED_ID) {
+                        context.createPreloadedModule()
+                            .then((moduleContent) => {
+                                context.virtualModule?.writeModule(context.virtualPreloadedModuleId, moduleContent)
+                                resolveData.request = context.virtualPreloadedModuleId
+                                callback()
+                            })
+                            .catch((error: Error) => callback(error))
+                        return
+                    }
+
                     if (resolveData.request !== VIRTUAL_CONFIG_ID) {
                         callback()
                         return

@@ -1,4 +1,4 @@
-@master {
+@layer components {
     .badge {
         display: inline-flex;
     }
