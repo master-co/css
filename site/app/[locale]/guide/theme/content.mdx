@@ -1,0 +1,259 @@
+## Overview [sr-only]
+Your theme is the shared design vocabulary for a Master CSS project. It defines the values your markup reaches for every day: color roles, spacing, type, radius, shadows, motion, responsive screens, and mode-specific values.
+
+In Master CSS, you usually write that vocabulary in the project CSS entry with `@master {}`. The file still feels like CSS: tokens are custom properties, modes are nested blocks, named conditions use at-rules, and the rest of your application keeps using short classes.
+
+```css name=index.css
+@import '@master/css';
+
+@master {
+    --color-primary: #4f46e5;
+    --color-surface: #ffffff;
+}
+```
+
+```html
+<section class="bg:surface fg:strong p:card r:card shadow:card grid-cols:2@md">
+    <button class="bg:primary fg:white px:md py:xs r:md">Save</button>
+</section>
+```
+
+The `@master` block is configuration, not regular stylesheet output. Master CSS resolves it first, then generates only the variables, utilities, components, and keyframes that the application actually uses.
+
+---
+
+## Use the project CSS entry
+A project only needs a CSS entry that marks the Master CSS graph. Put `@master {}` in the stylesheet that imports `@master/css`, or in CSS already imported by that entry.
+
+```css name=index.css
+@import '@master/css';
+
+@master {
+    --color-primary: #4f46e5;
+}
+```
+
+The important part is the graph, not a special file name. Tokens, modes, motion, and project vocabulary can live wherever the project CSS entry already reaches them.
+
+---
+
+## A complete theme example
+This raw example shows a practical theme shape: global scale settings at the top, tokens in `@master {}`, mode overrides inside mode blocks, named conditions near the tokens that use them, and keyframes at the top level.
+
+<Code lang="css" name="theme.css">{require('./theme.css?raw')}</Code>
+
+Use this as a starting structure, not as a required schema. Most projects begin with colors, spacing, type, screens, and mode values, then add motion or selector shortcuts when they become shared product vocabulary.
+
+---
+
+## Define theme tokens
+<span id="variables" />
+Theme tokens are native custom properties inside `@master {}`. Their prefixes place them in the namespace that Master CSS utilities already understand.
+
+```css name=index.css
+@master {
+    --color-primary: #4f46e5;
+    --color-surface: #ffffff;
+    --color-text-strong: #111827;
+    --spacing-card: 24;
+    --font-family-sans: Inter, ui-sans-serif, system-ui, sans-serif;
+    --border-radius-card: 16;
+    --shadow-card: 0 16px 40px rgb(15 23 42 / .12);
+    --screen-md: 768;
+}
+```
+
+The same short token can resolve differently by context. `primary` is a color in `bg:primary`, `card` is spacing in `p:card`, radius in `r:card`, and shadow in `shadow:card`.
+
+```html
+<article class="bg:surface fg:strong p:card r:card shadow:card">
+    <h2 class="font:sans">Dashboard</h2>
+    <a class="fg:primary" href="/settings">Settings</a>
+</article>
+```
+
+For token strategy and naming discipline, use [Design Tokens](/guide/design-tokens). For the exact color, spacing, typography, radius, elevation, motion, and screen scales, continue into the foundation guides.
+
+---
+
+## Customize modes
+<span id="default-mode" />
+<span id="mode-trigger" />
+Mode blocks let one token name adapt across light, dark, or product-specific themes. Keep the class names semantic, then change the values per mode.
+
+```css name=index.css
+@master {
+    light {
+        --color-surface: #ffffff;
+        --color-text-strong: #111827;
+        --color-primary: #4f46e5;
+    }
+
+    dark {
+        --color-surface: #111827;
+        --color-text-strong: #f9fafb;
+        --color-primary: #818cf8;
+    }
+}
+```
+
+```html
+<section class="bg:surface fg:strong">
+    <button class="bg:primary fg:white">Save</button>
+</section>
+```
+
+Most projects leave mode behavior system-driven:
+
+```css name=index.css
+@master {
+    default-mode: light;
+    mode-trigger: media;
+}
+```
+
+Use `mode-trigger: class` when your app switches modes manually, and see [Variables and Modes](/guide/variables-and-modes) for the full mode behavior.
+
+---
+
+## Customize screen tokens
+Responsive breakpoints are theme tokens too. Define `screen` variables in `@master {}`, then use them as at-rule suffixes in markup.
+
+```css name=index.css
+@master {
+    --screen-sm: 640;
+    --screen-md: 768;
+    --screen-lg: 1024;
+}
+```
+
+```html
+<div class="grid-cols:1 grid-cols:2@md grid-cols:3@lg gap:md">
+    ...
+</div>
+```
+
+Keep screen tokens broad and product-wide. Use raw media or container syntax only when the condition belongs to one local component. See [Screen Sizes](/guide/screen-sizes) for the responsive scale.
+
+---
+
+## Name shared conditions
+When a condition repeats across markup or CSS-defined styles, give it a token. Use `@custom-at` for media, supports, container, and starting-style rules.
+
+```css name=index.css
+@master {
+    @custom-at motion-safe @media (prefers-reduced-motion: no-preference);
+    @custom-at supports-backdrop @supports (backdrop-filter: blur(0));
+    @custom-at card-wide @container card (width >= 42rem);
+}
+```
+
+```html
+<div class="animation:fade-in|fast@motion-safe bg:surface/.8@supports-backdrop">
+    ...
+</div>
+```
+
+Use `@custom-selector` for selectors that become product vocabulary.
+
+```css name=index.css
+@master {
+    @custom-selector :interactive :is(:hover, :focus-visible);
+    @custom-selector :headings :is(h1, h2, h3, h4, h5, h6);
+}
+```
+
+```html
+<article class="font:semibold_:headings">
+    <a class="fg:primary:interactive" href="/settings">Settings</a>
+</article>
+```
+
+For exact naming rules and conflict behavior, use [At Tokens](/guide/at-tokens) and [Selector Tokens](/guide/selector-tokens).
+
+---
+
+## Customize motion
+<span id="animations" />
+Motion belongs in the theme when timing, easing, and keyframes are shared by more than one surface.
+
+```css name=index.css
+@master {
+    --duration-fast: 150ms;
+    --duration-slow: 300ms;
+    --easing-smooth: cubic-bezier(.4, 0, .2, 1);
+
+    @custom-at motion-safe @media (prefers-reduced-motion: no-preference);
+}
+
+@keyframes fade-in {
+    from {
+        opacity: 0;
+        transform: translateY(.25rem);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+```
+
+```html
+<div class="animation:fade-in|slow|smooth@motion-safe">
+    ...
+</div>
+```
+
+Keyframes are emitted outside cascade layers, while animation utilities still generate in the utilities layer. For the complete animation syntax, see [Animation](/reference/animation).
+
+---
+
+## Tune project scales
+<span id="baseunit" />
+<span id="root-size" />
+<span id="scope" />
+Most theme work is tokens, but a few root settings shape every generated rule. Keep them near the top of `@master {}` and change them only when the project has a clear convention.
+
+```css name=index.css
+@master {
+    root-size: 16;
+    base-unit: 4;
+    scope: #app;
+}
+```
+
+`root-size` controls how numeric values convert to `rem` and `em`. `base-unit` controls multiplier units such as `1x`, `2x`, and `4x`. `scope` prefixes generated selectors when Master CSS should only style a specific application root.
+
+```html
+<div id="app">
+    <button class="p:4x font:16">Save</button>
+</div>
+```
+
+You do not need to set these in every project. Treat them as theme-level defaults, not a list of options to fill out.
+
+---
+
+## Keep patterns separate
+The theme should describe shared values and named conditions. Reusable UI patterns can live next to it, but they have a different job.
+
+```css name=components.css
+@layer components {
+    .btn {
+        @compose "inline-flex ai:center jc:center gap:xs px:md py:xs r:md font:sm font:medium";
+        background: var(--color-primary);
+        color: white;
+
+        &:disabled {
+            @compose "opacity:.55 pointer-events:none";
+        }
+    }
+}
+```
+
+```html
+<button class="btn">Save changes</button>
+```
+
+Use [Reusing Styles](/guide/reusing-styles) for abstraction strategy, [Components](/guide/components) for semantic UI classes, and [Utilities](/guide/utilities) for low-level project primitives.

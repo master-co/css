@@ -229,7 +229,7 @@ The [CSS runtime](#runtime-rendering) then takes over to detect any changes in d
 ## Static extraction
 Static extraction is a zero-runtime rendering mode where the build scans source files, finds complete Master CSS class strings, validates them against the configured engine, and writes the resulting CSS before deployment.
 
-The extractor does not observe the DOM and does not execute application code. Its input is source text, CSS entries, extraction options, and the compiled [configuration](/guide/configuration). Its output is a CSS asset that the browser loads like any other stylesheet.
+The extractor does not observe the DOM and does not execute application code. Its input is source text, CSS entries, extraction options, and the compiled [theme configuration](/guide/theme). Its output is a CSS asset that the browser loads like any other stylesheet.
 
 The CSS entry point is explicit: import `@master/css` from the stylesheet that should receive generated Master CSS. In extract mode, integrations replace that import with generated CSS and treat the same stylesheet as a native CSS shaking root.
 
