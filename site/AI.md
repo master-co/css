@@ -63,7 +63,7 @@ Guides should teach in this order:
 
 Keep reduced-motion handling and other progressive hardening after the primary example unless the guide is specifically about accessibility.
 
-For guide layout, visual design, responsive behavior, and token choices, use the existing `Fundations` category under `site/app/[locale]/guide` as the source of truth. Do not duplicate or enumerate those guide pages here; discover the relevant current pages from metadata or generated category data when needed.
+For guide layout, visual design, responsive behavior, and token choices, use the existing `Foundations` category under `site/app/[locale]/guide` as the source of truth. Do not duplicate or enumerate those guide pages here; discover the relevant current pages from metadata or generated category data when needed.
 
 ## Example Code
 
@@ -121,7 +121,7 @@ For Layout System and similar foundation layout demos:
 
 ## Design References
 
-Before changing guide demo layout, spacing, sizing, color, radius, typography, or responsive behavior, inspect the relevant `Fundations` guide pages and follow their current patterns.
+Before changing guide demo layout, spacing, sizing, color, radius, typography, or responsive behavior, inspect the relevant `Foundations` guide pages and follow their current patterns.
 
 Follow the public [Design Tokens](/guide/design-tokens) policy when writing site code, demos, and examples:
 
