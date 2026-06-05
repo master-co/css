@@ -7,7 +7,7 @@ const units = {
             'Syntax Tutorial',
             'Design Foundations',
             'Customization',
-            'Production Optimization',
+            'Build & Delivery',
         ]
     },
     reference: {

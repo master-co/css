@@ -3,7 +3,7 @@ import define from 'internal/utils/metadata'
 const metadata = define({
     title: 'Preventing flash of unstyled content',
     description: 'Improve the page loading experience and ensure seamless rendering of content.',
-    category: 'Production Optimization',
+    category: 'Build & Delivery',
     other: {
         subject: 'Unstyled Content'
     },
