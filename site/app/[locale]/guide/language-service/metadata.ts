@@ -9,7 +9,7 @@ const metadata = define({
     other: {
         subject: 'Language Service'
     },
-    order: 3,
+    order: 4,
     fileURL: import.meta.url
 })
 

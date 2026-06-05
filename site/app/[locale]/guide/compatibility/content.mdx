@@ -1,0 +1,190 @@
+## Overview [sr-only]
+Master CSS is designed to work with modern browser features, existing CSS files, component libraries, and third-party stylesheets. Compatibility mostly depends on the CSS features your project uses and the way external styles enter the cascade.
+
+Static extraction and server rendering generate regular CSS ahead of time. Runtime rendering uses the browser [MutationObserver](https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver) API to detect class changes and generate only the rules used by connected elements.
+
+The default stylesheet uses native [CSS cascade layers](https://developer.mozilla.org/en-US/docs/Web/CSS/@layer) to keep theme, base, preset, components, and utilities predictable:
+
+```css
+@layer theme, base, preset, components, utilities;
+```
+
+That means Master CSS works best in projects that target browsers with cascade layer support. If your project must support older browsers, treat `@layer` support as the main compatibility boundary and test the generated CSS against your browser matrix.
+
+---
+
+## Browser support
+The Master CSS engine does not polyfill every CSS feature. It generates CSS from the classes you use, so browser support is usually determined by the final CSS property, value, selector, at-rule, or platform feature in that output.
+
+For example, `bg:red` depends on normal `background-color` support, while `backdrop-filter:blur(16)` depends on `backdrop-filter` support. Modern features should be checked in [Can I use](https://caniuse.com/) or MDN before relying on them in production.
+
+Use this rule of thumb:
+
+- If the browser supports the generated CSS, Master CSS can use it.
+- If the browser does not support the generated CSS, use a fallback, avoid that class for that target, or gate it behind a feature query when appropriate.
+- If the class relies on a Master CSS runtime workflow, make sure the target browser supports the runtime APIs required by that workflow.
+
+---
+
+## Vendor prefixes
+Master CSS includes built-in vendor prefixes for common CSS properties and selectors, so you usually write the standard syntax and let the engine emit the compatibility form.
+
+### CSS properties
+Write the unprefixed class:
+
+```html
+<div class="backdrop-filter:blur(16)">…</div>
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['backdrop-filter:blur(16)']}
+    </Class2CSS>
+</details>
+
+### CSS selectors
+Use the Master CSS selector shorthand when one exists:
+
+```html
+<div class="bg:slate-90::scrollbar">…</div>
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['bg:slate-90::scrollbar']}
+    </Class2CSS>
+</details>
+
+---
+
+## New CSS features
+Master CSS does not need to know every future CSS feature before you can try it. Use arbitrary properties for new declarations and native selector syntax for new selectors.
+
+### New properties
+Use arbitrary property declarations when a property is not yet part of the built-in utility map:
+
+```html
+<!-- @MARK {new-property:value} -->
+<div class="{new-property:value}">…</div>
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    ```css
+    .\{new-property\:value\} {
+        new-property: value
+    }
+    ```
+</details>
+
+Once the property is supported by Master CSS core utilities, you can use the normal declaration syntax:
+
+```html
+<!-- @MARK new-property:value -->
+<div class="new-property:value">…</div>
+```
+
+### New selectors
+Selector suffixes can use native CSS selector syntax as long as the browser supports the selector.
+
+```html
+<!-- @MARK :has(:checked) -->
+<form class="outline:2|red:has(:checked)">…</form>
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['outline:2|red:has(:checked)']}
+    </Class2CSS>
+</details>
+
+---
+
+## Third-party styles
+Third-party libraries often ship CSS with their own selector strategy. Put vendor styles in a lower cascade layer when you want Master CSS components and utilities to override them without `!important`.
+
+For example, import Swiper styles into the `preset` layer:
+
+```css
+@import 'swiper/css'; /* [!code --] */
+@import 'swiper/css/navigation'; /* [!code --] */
+@import 'swiper/css/pagination'; /* [!code --] */
+
+@import 'swiper/css' layer(preset);
+@import 'swiper/css/navigation' layer(preset);
+@import 'swiper/css/pagination' layer(preset);
+```
+
+(!) Some bundlers may not support `@import ... layer(...)` for package CSS. Check your build tool before relying on layered package imports.
+
+If your project already uses Sass for vendor styles, wrap those imports in the same lower layer:
+
+```scss
+@use 'sass:meta';
+
+@layer preset {
+    @include meta.load-css('node_modules/swiper/css');
+    @include meta.load-css('node_modules/swiper/css/navigation');
+    @include meta.load-css('node_modules/swiper/css/pagination');
+}
+```
+
+Then define your application overrides in the `components` layer or use utilities in markup:
+
+```css name=index.css
+@layer components {
+    .swiper {
+        @compose "max-w:screen-sm";
+    }
+
+    .swiper-wrapper {
+        @compose "bg:red";
+    }
+
+    .swiper-slide {
+        @compose "bg:blue";
+    }
+}
+```
+
+```html
+<!-- @MARK bg:blue -->
+<div class="swiper-slide bg:blue">Slide 1</div>
+```
+
+This keeps vendor defaults below product components and utilities, reducing the need for forceful overrides.
+
+---
+
+## Existing CSS workflows
+Master CSS can coexist with native CSS, preprocessors, CSS modules, and framework `<style>` blocks. The most predictable setup is to keep one project CSS entry that imports `@master/css`, then let regular CSS files enter that graph through normal imports when they should share the same theme, layer order, extraction context, and native CSS shaking behavior.
+
+Use native CSS variables from your theme when module-scoped or component-scoped CSS needs shared design values:
+
+```css name=Button.module.css
+.button {
+    background-color: var(--color-primary);
+    border-radius: var(--border-radius-md);
+}
+```
+
+Use Master CSS classes in markup for styling that should be generated, validated, ordered, and highlighted by Master CSS tooling:
+
+```html
+<button class="bg:primary r:md px:md h:40">Save</button>
+```
+
+When a CSS file imports `@master/css`, it becomes a Master-managed stylesheet. Keep vendor, CMS, or externally injected classes outside managed roots unless the class usage is visible to extraction or protected with [`@master no-shake`](/guide/shaking-unused-classes#default-shaking).
+
+---
+
+## Checklist
+- Check browser support for the generated CSS feature, not just the Master CSS class.
+- Treat native cascade layers as the main browser compatibility boundary for the default stylesheet.
+- Write standard unprefixed properties and selectors when Master CSS already prefixes them.
+- Use arbitrary properties and native selector suffixes for new platform features.
+- Put third-party CSS in `preset` when you want components and utilities to override it.
+- Keep externally injected classes visible to extraction, outside managed roots, or protected from native CSS shaking.
