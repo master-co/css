@@ -43,7 +43,7 @@ The `spacing` variable namespace is shared across related rules:
 It allows you to declare spacing without `spacing-` prefix, making it easier to write with spacing-related rules.
 
 ```css name=index.css
-@master {
+@theme {
     --spacing-sm: 12; /* [!code highlight] */
     --spacing-md: 16; /* [!code highlight] */
     --spacing-lg: 24; /* [!code highlight] */
@@ -96,7 +96,7 @@ In some cases, pixel-accurate control is necessary. Master CSS allows raw unitle
 ### Do not use numeric keys as tokens
 (x) Avoid defining spacing tokens with numeric keys.
 ```css name=index.css
-@master {
+@theme {
     --spacing-1: 4; /* [!code --] */
     --spacing-2: 8; /* [!code --] */
 }

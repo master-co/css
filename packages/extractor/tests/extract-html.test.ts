@@ -56,7 +56,7 @@ it('extract latent classes from html', () => {
             '1.0',
             'CSS',
             'Static',
-            'Extraction',
+            'Rendering',
             'in',
             'app',
             'flex',

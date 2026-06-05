@@ -13,6 +13,10 @@ interface TransformStyleSourceOptions {
     masterImport?: string
 }
 
+function hasMasterStyleConfigDirective(source: string) {
+    return source.includes('@master') || source.includes('@theme')
+}
+
 export async function transformStyleSource(
     resourcePath: string,
     source: string,
@@ -25,7 +29,7 @@ export async function transformStyleSource(
     }
     if (isMasterCSSPackageStyleFile(resourcePath, projectDir)) {
         const cleanSource = removeMasterStyleDirectives(source).code
-        if (!cleanSource.includes('@master')) {
+        if (!hasMasterStyleConfigDirective(cleanSource)) {
             return {
                 code: cleanSource,
                 dependencies

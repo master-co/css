@@ -3,7 +3,9 @@
     base-unit: 4;
     default-mode: light;
     mode-trigger: media;
+}
 
+@theme {
     --color-brand: #4f46e5;
     --color-primary: $color-brand;
     --color-surface: #ffffff;
@@ -18,14 +20,16 @@
     --screen-sm: 640;
     --screen-md: 768;
     --screen-lg: 1024;
+}
 
-    dark {
-        --color-primary: #818cf8;
-        --color-surface: #111827;
-        --color-text-strong: #f9fafb;
-        --shadow-card: none;
-    }
+@theme dark {
+    --color-primary: #818cf8;
+    --color-surface: #111827;
+    --color-text-strong: #f9fafb;
+    --shadow-card: none;
+}
 
+@master {
     @custom-at motion-safe @media (prefers-reduced-motion: no-preference);
     @custom-at supports-backdrop @supports (backdrop-filter: blur(0));
     @custom-selector :interactive :is(:hover, :focus-visible);

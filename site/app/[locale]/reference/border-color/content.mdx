@@ -16,14 +16,12 @@ Apply styles based on different states using [selectors](/guide/state-selectors)
 ## Use custom border colors
 Add a color to the line variable namespace.
 ```css name=index.css
-@master {
-    light {
-        --color-line-light: $color-slate-60/.2; /* [!code highlight] */
-    }
+@theme light {
+    --color-line-light: $color-slate-60/.2; /* [!code highlight] */
+}
 
-    dark {
-        --color-line-light: $color-gray-30/.2; /* [!code highlight] */
-    }
+@theme dark {
+    --color-line-light: $color-gray-30/.2; /* [!code highlight] */
 }
 ```
 Apply the defined `line-*` variables using the inherited rules <FrameHeirs />.

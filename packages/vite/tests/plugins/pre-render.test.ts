@@ -60,7 +60,7 @@ describe('PreRenderPlugin', () => {
                 '@master;',
                 '@import "./theme.css";',
                 '',
-                '@master {',
+                '@theme {',
                 '    --color-brand: #123;',
                 '}'
             ].join('\n'))

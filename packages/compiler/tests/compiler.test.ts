@@ -31,10 +31,10 @@ describe.concurrent('@master/css-compiler', () => {
         expect(inspectCSS('@master no-shake;').hasMasterEntry).toBe(false)
         expect(inspectCSS('@import "@master/css/index.css";').hasMasterEntry).toBe(false)
         expect(inspectCSS('@import url("@master/css") layer(master);').hasMasterEntry).toBe(true)
-        expect(inspectCSS('@master { --color-primary: #123; }').hasMasterEntry).toBe(false)
+        expect(inspectCSS('@theme { --color-primary: #123; }').hasMasterEntry).toBe(false)
     })
 
-    it('compiles @master config directives into a CSS directive result', () => {
+    it('compiles @master and @theme directives into a CSS directive result', () => {
         const result = compileCSS(`
             @master {
                 root-size: 10;
@@ -44,19 +44,21 @@ describe.concurrent('@master/css-compiler', () => {
                 scope: #app;
                 important: on;
 
-                --color-primary: #123;
-                --screen-md: 768;
-
                 @custom-at motion-safe @media (prefers-reduced-motion: no-preference);
                 @custom-selector ::scrollbar ::-webkit-scrollbar;
+            }
 
-                dark {
-                    --color-primary: #456;
-                }
+            @theme {
+                --color-primary: #123;
+                --screen-md: 768;
+            }
 
-                chrisma {
-                    --color-primary: #ff0;
-                }
+            @theme dark {
+                --color-primary: #456;
+            }
+
+            @theme chrisma {
+                --color-primary: #ff0;
             }
 
             @keyframes fade {
@@ -131,7 +133,7 @@ describe.concurrent('@master/css-compiler', () => {
 
     it('keeps raw variable names for core namespace resolution', () => {
         const result = compileCSS(`
-            @master {
+            @theme {
                 --color-line-lightest: #eee;
                 --color-text-strong: #111;
                 --color-blue-50: #00f;
@@ -149,6 +151,9 @@ describe.concurrent('@master/css-compiler', () => {
         const result = compileCSS(`
             @master {
                 mode-trigger: class;
+            }
+
+            @theme {
                 --screen-md: 768;
             }
 
@@ -357,7 +362,7 @@ describe.concurrent('@master/css-compiler', () => {
 
     it('finalizes @compose in utility definitions and detects cycles', () => {
         const result = compileCSSConfig(`
-            @master {
+            @theme {
                 --color-primary: #123;
             }
 
@@ -405,11 +410,14 @@ describe.concurrent('@master/css-compiler', () => {
         const result = compileCSSConfig(`
             @master {
                 mode-trigger: class;
-                --color-primary: #123;
+            }
 
-                dark {
-                    --color-primary: #456;
-                }
+            @theme {
+                --color-primary: #123;
+            }
+
+            @theme dark {
+                --color-primary: #456;
             }
 
             .card {
@@ -426,7 +434,7 @@ describe.concurrent('@master/css-compiler', () => {
         expect(result.css).toBe(result.generatedCSS)
     })
 
-    it('keeps and filters native class rules outside @master', () => {
+    it('keeps and filters native class rules outside Master CSS directives', () => {
         const result = compileCSS(`
             body {
                 margin: 0;
@@ -529,7 +537,7 @@ describe.concurrent('@master/css-compiler', () => {
                 color: red;
             }
 
-            @master {
+            @theme {
                 --color-primary: #123;
             }
         `, { preserveNativeCSS: false })
@@ -582,10 +590,13 @@ describe.concurrent('@master/css-compiler', () => {
             @master {
                 root-size: 16;
                 root-size: 10;
-                --color-primary: #111;
-                --color-primary: #222;
                 @custom-selector :interactive :hover;
                 @custom-selector :interactive :focus-visible;
+            }
+
+            @theme {
+                --color-primary: #111;
+                --color-primary: #222;
             }
         `)
 
@@ -602,7 +613,7 @@ describe.concurrent('@master/css-compiler', () => {
 
     it('converts compiler results into semantic config at the compiler boundary', () => {
         const source = `
-            @master {
+            @theme {
                 --color-primary: #123;
             }
 
@@ -727,7 +738,7 @@ describe.concurrent('@master/css-compiler', () => {
             const entry = join(root, 'index.css')
             const theme = join(root, 'styles/theme.css')
             writeFileSync(theme, `
-                @master {
+                @theme {
                     --color-primary: #123;
                 }
 
@@ -794,24 +805,22 @@ describe.concurrent('@master/css-compiler', () => {
         }
     })
 
-    it('warns when regular HTML selectors are placed in @master', () => {
-        const warnings: string[] = []
-        const result = compileCSS(`
+    it('rejects style rules in @master', () => {
+        expect(() => compileCSS(`
             @master {
                 body {
                     margin: 0;
                 }
+            }
+        `)).toThrow('Unsupported @master selector: body')
 
-                html {
-                    color-scheme: light dark;
+        expect(() => compileCSS(`
+            @master {
+                .btn {
+                    display: inline-flex;
                 }
             }
-        `, { onWarning: (warning) => warnings.push(warning) })
-
-        expect(result.warnings).toHaveLength(2)
-        expect(warnings).toEqual(result.warnings)
-        expect(result.warnings[0]).toContain('Unsupported @master block "body"')
-        expect(result.warnings[1]).toContain('Unsupported @master block "html"')
+        `)).toThrow('@master does not accept class definitions')
     })
 
     it('rejects invalid directive placement and names', () => {
@@ -822,7 +831,21 @@ describe.concurrent('@master/css-compiler', () => {
                     --color-primary: #456;
                 }
             }
-        `)).toThrow('Mode at-rules are not supported')
+        `)).toThrow('@master does not accept @mode')
+
+        expect(() => process(`
+            @master {
+                --color-primary: #123;
+            }
+        `)).toThrow('Unsupported @master option: --color-primary')
+
+        expect(() => process(`
+            @master {
+                dark {
+                    --color-primary: #456;
+                }
+            }
+        `)).toThrow('Unsupported @master selector: dark')
 
         expect(() => process(`
             @compose "block";
@@ -836,7 +859,29 @@ describe.concurrent('@master/css-compiler', () => {
                     }
                 }
             }
-        `)).toThrow('@layer is not allowed in @master')
+        `)).toThrow('@master does not accept @layer')
+
+        expect(() => process(`
+            @theme {
+                root-size: 16;
+            }
+        `)).toThrow('Unsupported @theme declaration: root-size')
+
+        expect(() => process(`
+            @theme {
+                .card {
+                    color: red;
+                }
+            }
+        `)).toThrow('@theme only accepts custom property declarations')
+
+        expect(() => process(`
+            @media print {
+                @theme {
+                    --color-primary: #123;
+                }
+            }
+        `)).toThrow('@theme must be top-level')
 
         expect(() => process(`
             @master {
@@ -856,7 +901,7 @@ describe.concurrent('@master/css-compiler', () => {
                     from { opacity: 0; }
                 }
             }
-        `)).toThrow('@keyframes is not allowed in @master')
+        `)).toThrow('@master does not accept @keyframes')
 
         expect(() => process(`
             @layer utilities {

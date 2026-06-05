@@ -2,6 +2,9 @@
 
 @master {
     mode-trigger: media;
+}
+
+@theme {
     --primary: $(yellow);
 }
 

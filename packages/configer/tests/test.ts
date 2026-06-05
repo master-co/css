@@ -21,7 +21,7 @@ function writeCSSFixture(cwd: string) {
     const entry = join(cwd, 'index.css')
     const tokens = join(cwd, 'styles/tokens.css')
     writeFileSync(tokens, `
-        @master {
+        @theme {
             --color-primary: #123;
         }
     `)

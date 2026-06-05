@@ -1,6 +1,6 @@
 @master;
 
-@master {
+@theme {
     --color-brand: #123;
     --screen-md: 768;
 }

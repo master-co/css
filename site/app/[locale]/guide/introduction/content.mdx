@@ -170,10 +170,12 @@ Master CSS is also a standalone CSS framework. It includes the core rule engine,
 The project CSS entry is the primary configuration source. Tokens are native custom properties, selector shortcuts use `@custom-selector`, conditional shortcuts use `@custom-at`, low-level custom utilities live in `@layer utilities`, semantic component classes live in `@layer components`, and native CSS rules can use `@compose` when they should lower to ordinary stylesheet output.
 
 ```css name=index.css
-@master {
+@theme {
     --color-primary: #4f46e5;
     --screen-md: 768;
+}
 
+@master {
     @custom-at motion-safe @media (prefers-reduced-motion: no-preference);
     @custom-selector :interactive :is(:hover, :focus-visible);
 }
@@ -198,7 +200,7 @@ The project CSS entry is the primary configuration source. Tokens are native cus
 }
 ```
 
-The `@master` block and managed layers are configuration, not regular stylesheet output. Master CSS compiles them into config, then generates only the classes used in markup, discovered by source scanners, or composed by another CSS-defined style. Native rules such as `.notice` lower to CSS for the stylesheet that contains them.
+The `@theme` and `@master` blocks and managed layers are configuration, not regular stylesheet output. Master CSS compiles them into config, then generates only the classes used in markup, discovered by source scanners, or composed by another CSS-defined style. Native rules such as `.notice` lower to CSS for the stylesheet that contains them.
 
 ### Rendering for different delivery models
 Master CSS provides three main [rendering modes](/guide/rendering-modes):

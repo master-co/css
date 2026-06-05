@@ -1,6 +1,6 @@
 ## Overview [sr-only]
 <Default />
-Native CSS cannot store full `@media`, `@supports`, or `@container` rules in CSS variables. Master CSS uses at tokens to name reusable conditional rules and apply them from markup or from `@master` definitions.
+Native CSS cannot store full `@media`, `@supports`, or `@container` rules in CSS variables. Master CSS uses at tokens to name reusable conditional rules and apply them from markup or CSS-defined styles.
 <Overview />
 
 ---
@@ -102,12 +102,12 @@ With `mode-trigger: class`, `@at dark` becomes a selector wrapper such as `.dark
 Screen variables automatically create at tokens such as `@md`, and modes automatically create at tokens such as `@dark`.
 
 ```css name=index.css
-@master {
+@theme {
     --screen-md: 768;
+}
 
-    dark {
-        --color-primary: #000;
-    }
+@theme dark {
+    --color-primary: #000;
 }
 ```
 

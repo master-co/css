@@ -1,7 +1,7 @@
 @master;
 @import './styles/card.css';
 
-@master {
+@theme {
     --foo: 123;
     --global: #ff00ff;
 }

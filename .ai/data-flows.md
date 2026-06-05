@@ -41,7 +41,7 @@ Risks:
 project CSS files containing @master; or @import "@master/css"
   -> @master/css-configer discovers project entry files only
   -> @master/css-compiler resolves CSS imports and package style imports
-  -> compiler parses @master {} config directives, mode blocks, custom at/selectors, top-level managed layers, and top-level keyframes
+  -> compiler parses @theme token/mode directives, @master root options and custom conditions, top-level managed layers, and top-level keyframes
   -> compiler converts directive result through the core adapter into Config
   -> build tools / ESLint / language-server receive the same semantic project Config
   -> MasterCSS.resolve() resolves variables, animations, selectors, at-rules, utilities
@@ -62,7 +62,7 @@ Risks:
 
 - Entry detection must only use project-level markers: `@master;` and `@import "@master/css"`.
 - Package CSS such as `@master/css/index.css` must not contain or imply a project entry marker.
-- Configer must not implement CSS import graph or `@master {}` parsing.
+- Configer must not implement CSS import graph or CSS config directive parsing.
 - Extend order and flattening affect all config consumers.
 - Variable aliases and modes affect inlining vs CSS custom property output.
 - Static utility layer assignment affects semantic class output and cascade behavior.

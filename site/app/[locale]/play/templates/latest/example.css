@@ -1,11 +1,9 @@
-@master {
-    light {
-        --color-card: #ffffff;
-    }
+@theme light {
+    --color-card: #ffffff;
+}
 
-    dark {
-        --color-card: $color-gray-80;
-    }
+@theme dark {
+    --color-card: $color-gray-80;
 }
 
 @layer utilities {

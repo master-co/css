@@ -298,7 +298,7 @@ In static mode, import the generated stylesheet from the stylesheet your framewo
 Use one `@import '@master/css'` entry for each generated stylesheet root. That import is also the insertion point for generated Master CSS, default base styles, theme variables, and utilities required by detected classes.
 
 ### Native CSS entries
-Regular CSS outside `@master` remains native CSS. When a stylesheet imports `@master/css`, integrations treat that stylesheet as a shake root by default and prune class selectors against detected source classes.
+Regular CSS outside Master CSS directives remains native CSS. When a stylesheet imports `@master/css`, integrations treat that stylesheet as a shake root by default and prune class selectors against detected source classes.
 
 Those native rules can also pull matching config variables referenced by `var(--*)` and configured keyframes referenced by animation declarations. Add `@master no-shake;` when native CSS must be preserved.
 

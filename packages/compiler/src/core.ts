@@ -60,6 +60,10 @@ const MASTER_CUSTOM_AT_RULES = {
         prelude: '*',
         body: 'style-block'
     },
+    theme: {
+        prelude: '*',
+        body: 'style-block'
+    },
     'custom-at': {
         prelude: '*',
         body: null
@@ -86,122 +90,6 @@ type MasterSection = 'root'
 
 const UTILITY_LAYER_NAMES = new Set<CSSDirectiveLayerName>(['base', 'preset', 'components', 'utilities'])
 const TOP_LEVEL_DEFINITION_LAYER_NAMES = new Set<CSSDirectiveLayerName>(['preset', 'components', 'utilities'])
-
-const HTML_TAG_NAMES = new Set([
-    'a',
-    'abbr',
-    'address',
-    'area',
-    'article',
-    'aside',
-    'audio',
-    'b',
-    'base',
-    'bdi',
-    'bdo',
-    'blockquote',
-    'body',
-    'br',
-    'button',
-    'canvas',
-    'caption',
-    'cite',
-    'code',
-    'col',
-    'colgroup',
-    'data',
-    'datalist',
-    'dd',
-    'del',
-    'details',
-    'dfn',
-    'dialog',
-    'div',
-    'dl',
-    'dt',
-    'em',
-    'embed',
-    'fieldset',
-    'figcaption',
-    'figure',
-    'footer',
-    'form',
-    'h1',
-    'h2',
-    'h3',
-    'h4',
-    'h5',
-    'h6',
-    'head',
-    'header',
-    'hgroup',
-    'hr',
-    'html',
-    'i',
-    'iframe',
-    'img',
-    'input',
-    'ins',
-    'kbd',
-    'label',
-    'legend',
-    'li',
-    'link',
-    'main',
-    'map',
-    'mark',
-    'menu',
-    'meta',
-    'meter',
-    'nav',
-    'noscript',
-    'object',
-    'ol',
-    'optgroup',
-    'option',
-    'output',
-    'p',
-    'picture',
-    'pre',
-    'progress',
-    'q',
-    'rp',
-    'rt',
-    'ruby',
-    's',
-    'samp',
-    'script',
-    'search',
-    'section',
-    'select',
-    'slot',
-    'small',
-    'source',
-    'span',
-    'strong',
-    'style',
-    'sub',
-    'summary',
-    'sup',
-    'svg',
-    'table',
-    'tbody',
-    'td',
-    'template',
-    'textarea',
-    'tfoot',
-    'th',
-    'thead',
-    'time',
-    'title',
-    'tr',
-    'track',
-    'u',
-    'ul',
-    'var',
-    'video',
-    'wbr'
-])
 
 function normalizeClassNames(classNames: string[]) {
     return classNames.join(' ').replace(/(?:\n\s*)+/g, ' ').trim().split(' ').filter(Boolean)
@@ -232,16 +120,16 @@ function parseVariableValue(value: string): CSSDirectiveVariableValue {
     return numberValue === undefined ? trimmed : numberValue
 }
 
-function addMasterMode(config: CSSDirectiveConfig, mode: string) {
+function addThemeMode(config: CSSDirectiveConfig, mode: string) {
     config.modes ??= []
     if (!config.modes.includes(mode)) config.modes.push(mode)
 }
 
-function defineMasterVariable(config: CSSDirectiveConfig, property: string, rawValue: string, mode?: string) {
+function defineThemeVariable(config: CSSDirectiveConfig, property: string, rawValue: string, mode?: string) {
     const name = property.replace(/^--/, '')
     const value = parseVariableValue(rawValue)
     if (mode) {
-        addMasterMode(config, mode)
+        addThemeMode(config, mode)
     }
     config.variables ??= []
     const definition = {
@@ -290,7 +178,7 @@ function parseMasterOption(config: CSSDirectiveConfig, property: string, value: 
         }
         case 'modes':
             for (const mode of parseList(value)) {
-                addMasterMode(config, mode)
+                addThemeMode(config, mode)
             }
             return true
         case 'scope':
@@ -757,17 +645,10 @@ function collectDeclarations(block: DeclarationBlock<Declaration>) {
     return declarations
 }
 
-function parseMasterDeclarations(block: DeclarationBlock<Declaration>, config: CSSDirectiveConfig, mode?: string) {
+function parseMasterDeclarations(block: DeclarationBlock<Declaration>, config: CSSDirectiveConfig) {
     for (const declaration of (block.declarations || []) as Declaration[]) {
         const property = getDeclarationName(declaration)
         const value = formatDeclarationValue(declaration)
-        if (property.startsWith('--')) {
-            defineMasterVariable(config, property, value, mode)
-            continue
-        }
-        if (mode) {
-            throw new Error(`Mode "${mode}" only accepts custom property declarations`)
-        }
         if (!parseMasterOption(config, property, value)) {
             throw new Error(`Unsupported @master option: ${property}`)
         }
@@ -775,6 +656,21 @@ function parseMasterDeclarations(block: DeclarationBlock<Declaration>, config: C
     for (const declaration of (block.importantDeclarations || []) as Declaration[]) {
         const property = getDeclarationName(declaration)
         throw new Error(`@master does not accept !important declarations: ${property}`)
+    }
+}
+
+function parseThemeDeclarations(block: DeclarationBlock<Declaration>, config: CSSDirectiveConfig, mode?: string) {
+    for (const declaration of (block.declarations || []) as Declaration[]) {
+        const property = getDeclarationName(declaration)
+        const value = formatDeclarationValue(declaration)
+        if (!property.startsWith('--')) {
+            throw new Error(`Unsupported @theme declaration: ${property}`)
+        }
+        defineThemeVariable(config, property, value, mode)
+    }
+    for (const declaration of (block.importantDeclarations || []) as Declaration[]) {
+        const property = getDeclarationName(declaration)
+        throw new Error(`@theme does not accept !important declarations: ${property}`)
     }
 }
 
@@ -836,15 +732,6 @@ function parseSelectorDefinition(rule: any, parsed: ParsedDirectives) {
     }
     parsed.config.selectorTokens ??= {}
     parsed.config.selectorTokens[token] = value.trim()
-}
-
-function parseSingleTypeSelector(selectors: Selector[]) {
-    if (selectors.length !== 1) return
-    const selector = selectors[0]
-    if (selector.length !== 1) return
-    const selectorComponent = selector[0]
-    if (selectorComponent.type !== 'type') return
-    return selectorComponent.name
 }
 
 function parseManagedStyleDefinitionSelector(selectors: Selector[]) {
@@ -1248,54 +1135,21 @@ function getMasterSection(rule: any): MasterSection {
     throw new Error(`Unsupported @master section: ${prelude}`)
 }
 
-function warn(parsed: ParsedDirectives, options: CompileCSSOptions, message: string) {
-    parsed.warnings.push(message)
-    options.onWarning?.(message)
+function getThemeMode(rule: any) {
+    const prelude = formatPrelude(getCustomRulePrelude(rule))
+    if (!prelude) return
+    if (/\s/.test(prelude)) {
+        throw new Error('@theme mode must be a single token')
+    }
+    return prelude
 }
 
-function parseMasterModeBody(mode: string, rules: Rule[], parsed: ParsedDirectives) {
-    addMasterMode(parsed.config, mode)
-    for (const child of rules as Rule[]) {
-        if (child.type !== 'nested-declarations') {
-            throw new Error(`Mode "${mode}" only accepts custom property declarations`)
-        }
-        parseMasterDeclarations(child.value.declarations, parsed.config, mode)
-    }
-}
-
-function parseMasterModeStyleRule(rule: any, parsed: ParsedDirectives, options: CompileCSSOptions) {
-    const mode = parseSingleTypeSelector(rule.value.selectors)
-    if (!mode) return false
-    if (HTML_TAG_NAMES.has(mode)) {
-        warn(parsed, options, `Unsupported @master block "${mode}". @master only accepts config declarations, mode blocks, @custom-at, and @custom-selector. Move regular CSS selectors outside @master.`)
-        return true
-    }
-    const rules: Rule[] = []
-    if (rule.value.declarations) {
-        rules.push({
-            type: 'nested-declarations',
-            value: {
-                declarations: rule.value.declarations
-            }
-        } as unknown as Rule)
-    }
-    for (const child of rule.value.rules || []) {
-        rules.push(child)
-    }
-    parseMasterModeBody(mode, rules, parsed)
-    return true
-}
-
-function parseMasterStyleRule(rule: any, parsed: ParsedDirectives, options: CompileCSSOptions, section: MasterSection) {
-    if (parseMasterModeStyleRule(rule, parsed, options)) {
-        return
-    }
-
+function parseMasterStyleRule(rule: any) {
     if (parseManagedStyleDefinitionSelector(rule.value.selectors)) {
-        throw new Error('@master does not accept class definitions. Move class definitions to top-level @layer preset, @layer components, or @layer utilities.')
+        throw new Error('@master does not accept class definitions')
     }
 
-    warn(parsed, options, `Unsupported @master selector "${formatSelectors(rule.value.selectors)}". @master only accepts mode blocks, @custom-at, and @custom-selector.`)
+    throw new Error(`Unsupported @master selector: ${formatSelectors(rule.value.selectors)}`)
 }
 
 function parseManagedLayerBlock(rule: Rule) {
@@ -1313,24 +1167,23 @@ function parseManagedLayerBlock(rule: Rule) {
     }
 }
 
-function parseMasterChildRule(child: Rule, parsed: ParsedDirectives, options: CompileCSSOptions, section: MasterSection, atRules: string[] = [], layer?: CSSDirectiveLayerName) {
+function parseMasterChildRule(child: Rule, parsed: ParsedDirectives, section: MasterSection) {
     const managedLayerBlock = parseManagedLayerBlock(child)
     if (managedLayerBlock) {
-        throw new Error('@layer is not allowed in @master. Move layer definitions to top-level @layer preset, @layer components, or @layer utilities.')
+        throw new Error('@master does not accept @layer')
     }
 
     const masterAtRuleBlock = parseMasterAtRuleBlock(child)
     if (masterAtRuleBlock) {
-        throw new Error('@at is not allowed in @master. Use @at inside top-level @layer preset, @layer components, or @layer utilities definitions.')
+        throw new Error('@master does not accept @at')
     }
 
     const nestedAtRuleChildren = getNestedAtRuleChildren(child)
     if (nestedAtRuleChildren) {
-        throw new Error(`Unsupported nested at-rule in @master ${section}`)
+        throw new Error('@master does not accept nested at-rules')
     }
 
     if (child.type === 'nested-declarations') {
-        if (layer) throw new Error(`@layer ${layer} does not accept config declarations`)
         parseMasterDeclarations(child.value.declarations, parsed.config)
         return
     }
@@ -1349,26 +1202,41 @@ function parseMasterChildRule(child: Rule, parsed: ParsedDirectives, options: Co
         return
     }
     if (child.type === 'keyframes') {
-        throw new Error('@keyframes is not allowed in @master. Move animation definitions to top-level @keyframes.')
+        throw new Error('@master does not accept @keyframes')
     }
     if (child.type === 'style') {
-        parseMasterStyleRule(child, parsed, options, section)
+        parseMasterStyleRule(child)
         return
     }
     if ((child.type === 'unknown' || child.type === 'custom') && child.value?.name === 'mode') {
-        throw new Error('Mode at-rules are not supported. Use a mode block such as light { ... } inside @master.')
+        throw new Error('@master does not accept @mode')
     }
     throw new Error(`Unsupported rule in @master${section === 'root' ? '' : ' ' + section}`)
 }
 
-function parseMasterRule(rule: any, parsed: ParsedDirectives, options: CompileCSSOptions) {
+function parseMasterRule(rule: any, parsed: ParsedDirectives) {
     const section = getMasterSection(rule)
     const body = getCustomRuleBody(rule)
     if (!Array.isArray(body?.value)) {
         throw new Error('@master requires a style block')
     }
     for (const child of body.value as Rule[]) {
-        parseMasterChildRule(child, parsed, options, section)
+        parseMasterChildRule(child, parsed, section)
+    }
+}
+
+function parseThemeRule(rule: any, parsed: ParsedDirectives) {
+    const mode = getThemeMode(rule)
+    const body = getCustomRuleBody(rule)
+    if (!Array.isArray(body?.value)) {
+        throw new Error('@theme requires a style block')
+    }
+    if (mode) addThemeMode(parsed.config, mode)
+    for (const child of body.value as Rule[]) {
+        if (child.type !== 'nested-declarations') {
+            throw new Error('@theme only accepts custom property declarations')
+        }
+        parseThemeDeclarations(child.value.declarations, parsed.config, mode)
     }
 }
 
@@ -1429,7 +1297,7 @@ function parseTopLevelLayerChildRule(child: Rule, parsed: ParsedDirectives, atRu
         throw new Error('@compose requires a style rule')
     }
     if ((child.type === 'unknown' || child.type === 'custom') && child.value?.name === 'mode') {
-        throw new Error('Mode at-rules are not supported. Use a mode block such as light { ... } inside @master.')
+        throw new Error('Unsupported @mode rule')
     }
     if ((child.type === 'unknown' || child.type === 'custom') && child.value?.name === 'custom-at') {
         throw new Error('@custom-at is only allowed in @master')
@@ -1503,7 +1371,13 @@ export function compileCSS(source: string, options: CompileCSSOptions = {}): Com
                 if (rule.type === 'custom') {
                     switch (rule.value.name) {
                         case 'master':
-                            parseMasterRule(rule, parsed, options)
+                            parseMasterRule(rule, parsed)
+                            return []
+                        case 'theme':
+                            if (ruleDepth !== 0) {
+                                throw new Error('@theme must be top-level')
+                            }
+                            parseThemeRule(rule, parsed)
                             return []
                         case 'compose':
                             throw new Error('@compose requires a style rule')
@@ -1514,7 +1388,7 @@ export function compileCSS(source: string, options: CompileCSSOptions = {}): Com
                         case 'at':
                             throw new Error('@at requires a style rule or nested style rules')
                         case 'mode':
-                            throw new Error('Mode at-rules are not supported. Use a mode block such as light { ... } inside @master.')
+                            throw new Error('Unsupported @mode rule')
                     }
                 }
 

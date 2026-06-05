@@ -6,6 +6,6 @@ body {
     min-height: 100%;
 }
 
-@master {
+@theme {
     --color-primary: #0070f3;
 }

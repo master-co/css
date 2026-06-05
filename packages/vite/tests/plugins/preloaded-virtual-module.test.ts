@@ -20,7 +20,7 @@ describe('PreloadedVirtualModulePlugin', () => {
             await extractor.init()
             const styleCSSSources = new Map()
             await registerStyleCSSSource(extractor, styleCSSSources, join(root, 'app/globals.css'), `
-                @master {
+                @theme {
                     --color-primary: #ff0000;
                 }
 

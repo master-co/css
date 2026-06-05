@@ -8,6 +8,9 @@
             "include": "#master-css-block"
         },
         {
+            "include": "#master-css-theme-block"
+        },
+        {
             "include": "#master-css-managed-layer-block"
         },
         {
@@ -40,7 +43,36 @@
             },
             "patterns": [
                 {
-                    "include": "#master-css-nested-block-body"
+                    "include": "#master-css-master-block-body"
+                }
+            ]
+        },
+        "master-css-theme-block": {
+            "begin": "((@)theme)(?:(\\s+)([-_a-zA-Z][-_a-zA-Z0-9]*))?(\\s*)(\\{)",
+            "end": "(\\})",
+            "name": "meta.at-rule.theme.master-css.css",
+            "beginCaptures": {
+                "1": {
+                    "name": "keyword.control.at-rule.theme.master-css.css"
+                },
+                "2": {
+                    "name": "punctuation.definition.keyword.css"
+                },
+                "4": {
+                    "name": "support.constant.property-value.css"
+                },
+                "6": {
+                    "name": "punctuation.section.master-css.begin.bracket.curly.css"
+                }
+            },
+            "endCaptures": {
+                "1": {
+                    "name": "punctuation.section.master-css.end.bracket.curly.css"
+                }
+            },
+            "patterns": [
+                {
+                    "include": "#master-css-theme-block-body"
                 }
             ]
         },
@@ -278,6 +310,44 @@
                 }
             ]
         },
+        "master-css-master-block-body": {
+            "patterns": [
+                {
+                    "include": "source.css#comment-block"
+                },
+                {
+                    "include": "#master-css-root-important"
+                },
+                {
+                    "include": "#master-css-root-option-declaration"
+                },
+                {
+                    "include": "#master-css-custom-at"
+                },
+                {
+                    "include": "#master-css-custom-selector"
+                },
+                {
+                    "include": "source.css"
+                }
+            ]
+        },
+        "master-css-theme-block-body": {
+            "patterns": [
+                {
+                    "include": "source.css#comment-block"
+                },
+                {
+                    "include": "#master-css-custom-property-declaration"
+                },
+                {
+                    "include": "#master-css-property-value"
+                },
+                {
+                    "include": "source.css"
+                }
+            ]
+        },
         "master-css-block-body": {
             "patterns": [
                 {
@@ -315,9 +385,6 @@
                     "include": "#master-css-style-directives"
                 },
                 {
-                    "include": "#master-css-mode-block"
-                },
-                {
                     "include": "#master-css-custom-at"
                 },
                 {
@@ -332,29 +399,6 @@
                 },
                 {
                     "include": "#master-css-at-block"
-                }
-            ]
-        },
-        "master-css-mode-block": {
-            "begin": "\\s*([_a-zA-Z][-_a-zA-Z0-9]*)(\\s*)(\\{)",
-            "end": "(\\})",
-            "name": "meta.block.mode.master-css.css",
-            "beginCaptures": {
-                "1": {
-                    "name": "support.constant.property-value.css"
-                },
-                "3": {
-                    "name": "punctuation.section.property-list.begin.bracket.curly.css"
-                }
-            },
-            "endCaptures": {
-                "1": {
-                    "name": "punctuation.section.property-list.end.bracket.curly.css"
-                }
-            },
-            "patterns": [
-                {
-                    "include": "#master-css-nested-block-body"
                 }
             ]
         },
@@ -737,7 +781,7 @@
             }
         },
         "master-css-root-option-declaration": {
-            "begin": "(?<![-\\w])(root-size|base-unit|default-mode|mode-trigger|scope|modes)(\\s*)(:)",
+            "begin": "(?<![-\\w])(root-size|base-unit|default-mode|mode-trigger|scope|modes|important)(\\s*)(:)",
             "end": "(;)|(?=\\})",
             "name": "meta.property-list.master-css.option.css",
             "beginCaptures": {

@@ -29,7 +29,7 @@ const originHTMLText = dedent`
 
 const originConfigText = `@master;
 
-@master {
+@theme {
     --color-primary: $(color-blue);
 }
 

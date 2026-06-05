@@ -8,12 +8,12 @@ An integration started without finding a project CSS entry in the current projec
 Create /path/to/project/index.css and mark it as the project entry, for example:
   @master;
   @import "./src/globals.css";
-Master CSS uses this entry graph for integrations, language service, and VS Code. Only @master blocks are read as config from imported CSS.
+Master CSS uses this entry graph for integrations, language service, and VS Code. Imported CSS config blocks participate in the graph.
 ```
 
 Master CSS can still generate utility CSS without custom config, but integrations and editor tooling use the project CSS entry to find shared tokens, component definitions, animations, and workspace behavior.
 
-`@master {}` blocks do not have to be written directly in the entry file. They can live in ordinary CSS files such as `src/globals.css` or `app/globals.css`, as long as the entry imports those files with a relative CSS import. The entry itself is recognized by `@master;` or `@import '@master/css'`.
+`@theme` and `@master` config blocks do not have to be written directly in the entry file. They can live in ordinary CSS files such as `src/globals.css` or `app/globals.css`, as long as the entry imports those files with a relative CSS import. The entry itself is recognized by `@master;` or `@import '@master/css'`.
 
 ---
 
@@ -30,7 +30,7 @@ Create `index.css` at the project root and import your stylesheet entry.
 Then keep tokens, component rules, animations, or other Master CSS config in that imported stylesheet or in files imported by it.
 
 ```css name=src/globals.css
-@master {
+@theme {
     --color-primary: #4f46e5;
 }
 
@@ -41,7 +41,7 @@ Then keep tokens, component rules, animations, or other Master CSS config in tha
 }
 ```
 
-Ordinary CSS outside `@master` stays native CSS and follows the integration's stylesheet behavior.
+Ordinary CSS outside Master CSS directives stays native CSS and follows the integration's stylesheet behavior.
 
 ### Pass an explicit config object
 

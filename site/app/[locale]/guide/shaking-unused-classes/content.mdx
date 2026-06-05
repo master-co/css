@@ -326,7 +326,7 @@ Rules without class selectors, such as `body`, `html`, `:root`, and keyframes, a
 Shaken native CSS can reference variables and keyframes from the project CSS entry graph. When a kept native rule uses `var(--*)` or a configured animation name, Master CSS includes the required config output.
 
 ```css name=index.css
-@master {
+@theme {
     --color-primary: #175cff;
 }
 

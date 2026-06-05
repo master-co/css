@@ -8,7 +8,7 @@
 
 - Input: `Config`, class names, selector text.
 - Output: `MasterCSS` state, utility objects, layer state, CSS text.
-- Core tests must use TypeScript `Config` fixtures directly. Tests that need to parse `.css`, `theme.css`, `index.css`, `@master {}`, `@master;`, or CSS import graphs belong in `@master/css-compiler`.
+- Core tests must use TypeScript `Config` fixtures directly. Tests that need to parse `.css`, `theme.css`, `index.css`, `@theme`, `@master {}`, `@master;`, or CSS import graphs belong in `@master/css-compiler`.
 
 ## Public APIs
 

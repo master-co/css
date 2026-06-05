@@ -177,7 +177,7 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
         const themePath = path.resolve(__dirname, '../../core/src/theme.css')
         const result = await transformStyleSource(
             themePath,
-            '@master { --color-primary: red; }\n:root { color: red; }',
+            '@theme { --color-primary: red; }\n:root { color: red; }',
             {
                 projectDir: path.resolve(__dirname, '../../../examples/webpack')
             }
@@ -454,7 +454,7 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
                 '    color: var(--color-primary);',
                 '}',
                 '',
-                '@master {',
+                '@theme {',
                 '    --color-primary: #123456;',
                 '}',
                 '',

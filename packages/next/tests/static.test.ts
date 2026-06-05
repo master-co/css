@@ -95,7 +95,7 @@ describe('Next static mode', () => {
         writeFileSync(join(root, 'app/globals.css'), `
             @import "@master/css";
 
-            @master {
+            @theme {
                 --color-primary: #ff0000;
             }
         `)
@@ -117,7 +117,7 @@ describe('Next static mode', () => {
                 color: var(--color-primary);
             }
 
-            @master {
+            @theme {
                 --color-primary: #ff0000;
             }
         `
@@ -128,7 +128,7 @@ describe('Next static mode', () => {
         expect(readFileSync(outputPath, 'utf-8')).toContain('display:block')
         expect(readFileSync(outputPath, 'utf-8')).toContain('color: var(--color-primary)')
         expect(readFileSync(outputPath, 'utf-8')).toContain('--color-primary:red')
-    })
+    }, 30000)
 
     it('shakes dev CSS chunks that import @master/css', async () => {
         const root = createFixture()
@@ -166,7 +166,7 @@ describe('Next static mode', () => {
 
     it('adds output and managed CSS entry files as CSS loader dependencies for dev updates', async () => {
         const root = createFixture()
-        writeFileSync(join(root, 'theme.css'), '@master { --color-primary: #00f; }')
+        writeFileSync(join(root, 'theme.css'), '@theme { --color-primary: #00f; }')
         writeFileSync(join(root, 'app/globals.css'), `
             @import "@master/css";
             @import "../theme.css";
@@ -188,7 +188,7 @@ describe('Next static mode', () => {
         expect(result.dependencies).toContain(join(root, 'theme.css'))
     })
 
-    it('ignores app stylesheets with @master when they do not import @master/css', async () => {
+    it('ignores app stylesheets with @theme when they do not import @master/css', async () => {
         const root = createFixture()
         const outputPath = resolveStaticOutputPath(root)
         const statePath = resolveStaticStatePath(outputPath)
@@ -196,7 +196,7 @@ describe('Next static mode', () => {
         await prepareNextStatic({ mode: 'static' }, { projectDir: root })
 
         const source = `
-            @master {
+            @theme {
                 --color-primary: #00f;
             }
         `

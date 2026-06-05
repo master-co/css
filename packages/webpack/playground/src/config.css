@@ -3,7 +3,9 @@
     base-unit: 4;
     default-mode: light;
     mode-trigger: media;
+}
 
+@theme {
     --color-primary: #0061ff;
     --color-base: #ffffff;
     --color-ink: #172033;
@@ -14,19 +16,20 @@
     --radius-pill: 999;
     --spacing-card: 24;
     --screen-md: 48;
+}
 
-    dark {
-        --color-primary: #8fb5ff;
-        --color-base: #111827;
-        --color-ink: #f8fafc;
-        --color-muted: #aab6c7;
-        --color-panel: #182233;
-        --color-ring: #31415a;
-    }
+@theme dark {
+    --color-primary: #8fb5ff;
+    --color-base: #111827;
+    --color-ink: #f8fafc;
+    --color-muted: #aab6c7;
+    --color-panel: #182233;
+    --color-ring: #31415a;
+}
 
+@master {
     @custom-at motion-safe @media (prefers-reduced-motion: no-preference);
     @custom-selector ::scrollbar ::-webkit-scrollbar;
-
 }
 
 @layer utilities {

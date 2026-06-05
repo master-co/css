@@ -22,7 +22,7 @@ Do not abstract just to shorten a class list. Abstract when the name improves th
 When the repeated part is a value, make it a token instead of a class. Tokens keep markup semantic while still letting each component choose its own structure.
 
 ```css name=index.css
-@master {
+@theme {
     --color-yellow-ring: $color-black/.1;
     --color-touch-yellow: $color-yellow-30;
     --color-text-yellow-contrast: $color-yellow-90;
@@ -299,18 +299,16 @@ Split component definitions only when it helps ownership. Local CSS imports from
 ```
 
 ```css name=styles/base.css
-@master {
-    light {
-        --color-yellow-ring: $color-black/.1;
-        --color-touch-yellow: $color-yellow-30;
-        --color-text-yellow-contrast: $color-yellow-90;
-    }
+@theme light {
+    --color-yellow-ring: $color-black/.1;
+    --color-touch-yellow: $color-yellow-30;
+    --color-text-yellow-contrast: $color-yellow-90;
+}
 
-    dark {
-        --color-yellow-ring: $color-white/.3;
-        --color-touch-yellow: $color-yellow-40;
-        --color-text-yellow-contrast: $color-yellow-95;
-    }
+@theme dark {
+    --color-yellow-ring: $color-white/.3;
+    --color-touch-yellow: $color-yellow-40;
+    --color-text-yellow-contrast: $color-yellow-95;
 }
 
 @layer components {
@@ -335,7 +333,7 @@ Split component definitions only when it helps ownership. Local CSS imports from
 <button class="btn btn-md yellow touch-yellow">Submit</button>
 ```
 
-`@master` config blocks, top-level managed layers, top-level `@keyframes`, and native style rules with `@compose` or `@at` are consumed by the Master CSS compiler. Ordinary CSS outside those managed targets remains native CSS in your app stylesheet pipeline.
+`@theme` and `@master` config blocks, top-level managed layers, top-level `@keyframes`, and native style rules with `@compose` or `@at` are consumed by the Master CSS compiler. Ordinary CSS outside those managed targets remains native CSS in your app stylesheet pipeline.
 
 ---
 

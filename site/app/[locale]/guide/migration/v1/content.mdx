@@ -59,7 +59,7 @@ Style.extend('values', { /* [!code --] */
 ```
 
 ```css name=index.css
-@master {
+@theme {
     --color-primary: #000000; /* [!code ++] */
     --spacing-md: 20; /* [!code ++] */
 }
@@ -120,8 +120,11 @@ Style.extend('queries', { /* [!code --] */
 ```
 
 ```css name=index.css
-@master {
+@theme {
     --screen-laptop: 1024; /* [!code ++] */
+}
+
+@master {
     @custom-at watch @media (min-width: 38mm) and (max-width: 42mm); /* [!code ++] */
 }
 ```
@@ -185,7 +188,7 @@ In v1, `$(key)` equals `var(--key)`.
 ```
 In v2, `$key` accesses configured variables and falls back to `var(--key)` if not found.
 ```css name=index.css
-@master {
+@theme {
     --content-key: "`";
 }
 ```

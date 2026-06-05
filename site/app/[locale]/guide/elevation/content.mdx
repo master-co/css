@@ -83,7 +83,7 @@ Use the scale by surface role:
 Elevation tokens are defined in `variables.shadow`. The `box-shadow` rule references this namespace, so both `shadow:<token>` and `box-shadow:<token>` resolve the same values.
 
 ```css name=index.css
-@master {
+@theme {
     --shadow-sm: 0 1px 2px oklch(0% 0 none / .06), 0 2px 4px oklch(0% 0 none / .06);
     --shadow-md: 0 2px 4px -1px oklch(0% 0 none / .08), 0 6px 12px -2px oklch(0% 0 none / .08);
     --shadow-lg: 0 4px 8px -2px oklch(0% 0 none / .08), 0 12px 24px -4px oklch(0% 0 none / .10);
@@ -137,7 +137,7 @@ Use outlines and background tokens with shadows. An `outline:1|lightest` outline
 Override `shadow` variables when your product needs a softer, sharper, or more branded elevation scale. Keep the keys size-based so markup remains portable across components.
 
 ```css name=index.css
-@master {
+@theme {
     --shadow-xs: 0 1px 1px oklch(0% 0 none / .06);
     --shadow-sm: 0 2px 4px oklch(0% 0 none / .08);
     --shadow-md: 0 6px 16px oklch(0% 0 none / .10);

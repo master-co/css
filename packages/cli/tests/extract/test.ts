@@ -16,7 +16,7 @@ it('basic extract', async () => {
         fs.writeFileSync(join(cwd, 'b.html'), '<h1 class="m:12x text:center font:sans font:heavy font:48">Hello World</h1>', { flag: 'w' })
         fs.writeFileSync(join(cwd, 'main.css'), `
             @import "@master/css";
-            @master {
+            @theme {
                 --color-primary: $(blue);
             }
         `, { flag: 'w' })

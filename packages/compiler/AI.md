@@ -6,9 +6,9 @@
 
 ## Inputs And Outputs
 
-- Input: CSS containing `@master`, variables, mode blocks such as `dark { ... }`, `@custom-at`, `@custom-selector`, top-level managed `@layer preset`, `@layer components`, and `@layer utilities` blocks, condition blocks with `@at`, style rules with `@compose`, and top-level native `@keyframes`.
+- Input: CSS containing `@theme`, `@master`, `@custom-at`, `@custom-selector`, top-level managed `@layer preset`, `@layer components`, and `@layer utilities` blocks, condition blocks with `@at`, style rules with `@compose`, and top-level native `@keyframes`.
 - Output: semantic core `Config`, shared directive data for lower-level consumers, style definitions, native CSS with consumed Master directives removed, native class names, warnings, standalone directive metadata, and CSS import dependencies.
-- `@master` definitions are config definitions. Defining a component, utility, variable, token, or animation does not emit CSS by itself; the class still needs to be used or extracted.
+- `@theme` and `@master` definitions are config definitions. Defining a component, utility, variable, token, or animation does not emit CSS by itself; the class still needs to be used or extracted.
 - `@master;` and `@import "@master/css"` are equivalent user project entry markers. Package CSS files such as `@master/css/index.css` must not contain `@master;`.
 - `compileCSSFile()` resolves CSS `@import` graphs before compiling and returns absolute dependency paths.
 - `compileProjectConfig()` compiles project entry CSS files into the canonical project-level `Config`.
@@ -20,13 +20,14 @@
 - Keep directive parsing package-local.
 - Emit shared directive contracts from `shared/css-directives` for low-level consumers, and expose semantic `Config` APIs for config loading.
 - Do not reintroduce PostCSS in this package.
-- If `@master` CSS configuration syntax is expanded or changed incompatibly, update the TextMate/Shiki highlighting in `packages/language` in the same change when practical.
+- If CSS configuration directive syntax is expanded or changed incompatibly, update the TextMate/Shiki highlighting in `packages/language` in the same change when practical.
 
 ## Directive MVP
 
-- `@master { root-size: 16; --color-primary: #123; --screen-md: 768; }`
+- `@master { root-size: 16; }`
 - `@master { important: on; }` and `@master { important: off; }`
-- `@master { dark { --color-primary: #456; } }`
+- `@theme { --color-primary: #123; --screen-md: 768; }`
+- `@theme dark { --color-primary: #456; }`
 - The compiler records mode declarations as written. Core adapters decide which modes are defaults.
 - `@master { @custom-at motion-safe @media (prefers-reduced-motion: no-preference); }`
 - `@master { @custom-selector ::scrollbar ::-webkit-scrollbar; }`
