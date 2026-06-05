@@ -10,12 +10,12 @@
  *   4. trimString — remove leading `name=` and trailing punctuation
  *   5. needExclude — drop tokens that look like things other than classes
  *
- * Phase-B optimisations (vs the prior implementation, no public API change):
+ * Extractor implementation notes:
  *   - All regex literals are hoisted to module scope. Within a function,
  *     V8 already memoises them, but module scope makes the intent explicit
  *     and avoids accidental local rebuild.
- *   - `trimString` is now iterative (was recursive-to-fixpoint), so a long
- *     class with many trailing characters can no longer blow the stack.
+ *   - `trimString` is iterative, so a long class with many trailing
+ *     characters cannot blow the stack.
  *   - `needExclude` short-circuits via two cheap structural patterns first,
  *     then walks the explicit reject list — most input fails at the first
  *     check so we avoid 11 redundant regex evaluations.
@@ -24,8 +24,7 @@
  */
 
 // ─── Sentinel (placeholder for protected string literals) ────────────────────
-// We keep the original printable form for backwards compatibility with any
-// downstream tool that scans intermediate state. Practical collisions with
+// The printable form keeps debug output readable. Practical collisions with
 // real source require the user to literally write `COMPLETE-STRING--N--`.
 const SENTINEL_PREFIX = 'COMPLETE-STRING--'
 const SENTINEL_SUFFIX = '--'
@@ -152,8 +151,7 @@ function splitStringByQuotation(content: string): string[] {
 
 /**
  * Iteratively strip a leading `name=` prefix and trailing punctuation. The
- * old implementation recursed until a fixpoint; iterative form is safer
- * (no stack growth on long inputs) and equally simple.
+ * loop reaches the same fixed point without stack growth on long inputs.
  */
 function trimString(content: string): string {
     while (true) {

@@ -6,8 +6,7 @@
         "dev": "techor build --watch",
         "lint": "eslint",
         "type-check": "tsc --noEmit",
-        "test": "vitest",
-        "bench": "tsx tests/bench.ts"
+        "test": "vitest"
     },
     "license": "MIT",
     "description": "Master CSS source scanner for static rendering",
