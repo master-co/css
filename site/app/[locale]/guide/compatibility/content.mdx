@@ -36,7 +36,7 @@ Write the unprefixed class:
 <div class="backdrop-filter:blur(16)">…</div>
 ```
 
-<details>
+<details open>
     <summary>Generated CSS</summary>
     <Class2CSS>
         {['backdrop-filter:blur(16)']}
@@ -47,13 +47,13 @@ Write the unprefixed class:
 Use the Master CSS selector shorthand when one exists:
 
 ```html
-<div class="bg:slate-90::scrollbar">…</div>
+<div class="bg:#000::scrollbar">…</div>
 ```
 
-<details>
+<details open>
     <summary>Generated CSS</summary>
     <Class2CSS>
-        {['bg:slate-90::scrollbar']}
+        {['bg:#000::scrollbar']}
     </Class2CSS>
 </details>
 
@@ -120,17 +120,9 @@ For example, import Swiper styles into the `preset` layer:
 
 (!) Some bundlers may not support `@import ... layer(...)` for package CSS. Check your build tool before relying on layered package imports.
 
-If your project already uses Sass for vendor styles, wrap those imports in the same lower layer:
+Master CSS is meant to sit in the CSS build workflow, so you usually do not need a separate preprocessor just to bundle imports, share variables, add prefixes, or generate utility classes. Prefer native CSS imports, cascade layers, CSS variables, and Master CSS tokens before reaching for Sass, Less, or Stylus.
 
-```scss
-@use 'sass:meta';
-
-@layer preset {
-    @include meta.load-css('node_modules/swiper/css');
-    @include meta.load-css('node_modules/swiper/css/navigation');
-    @include meta.load-css('node_modules/swiper/css/pagination');
-}
-```
+If your project already uses a preprocessor, keep it at the edge of the workflow: compile it to regular CSS first, then make sure the resulting vendor rules enter the intended layer. Avoid making preprocessor-only features the recommended path for third-party compatibility.
 
 Then define your application overrides in the `components` layer or use utilities in markup:
 
