@@ -27,10 +27,8 @@
     --color-ring: #31415a;
 }
 
-@master {
-    @custom-at motion-safe @media (prefers-reduced-motion: no-preference);
-    @custom-selector ::scrollbar ::-webkit-scrollbar;
-}
+@custom-at motion-safe @media (prefers-reduced-motion: no-preference);
+@custom-selector ::scrollbar ::-webkit-scrollbar;
 
 @layer utilities {
     .content-auto {

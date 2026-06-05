@@ -34,8 +34,11 @@ describe.concurrent('@master/css-compiler', () => {
         expect(inspectCSS('@theme { --color-primary: #123; }').hasMasterEntry).toBe(false)
     })
 
-    it('compiles @master and @theme directives into a CSS directive result', () => {
+    it('compiles CSS config directives into a CSS directive result', () => {
         const result = compileCSS(`
+            @custom-at motion-safe @media (prefers-reduced-motion: no-preference);
+            @custom-selector ::scrollbar ::-webkit-scrollbar;
+
             @master {
                 root-size: 10;
                 base-unit: 8;
@@ -43,9 +46,6 @@ describe.concurrent('@master/css-compiler', () => {
                 mode-trigger: class;
                 scope: #app;
                 important: on;
-
-                @custom-at motion-safe @media (prefers-reduced-motion: no-preference);
-                @custom-selector ::scrollbar ::-webkit-scrollbar;
             }
 
             @theme {
@@ -587,11 +587,12 @@ describe.concurrent('@master/css-compiler', () => {
 
     it('uses the last definition for repeated config values', () => {
         const result = compileCSS(`
+            @custom-selector :interactive :hover;
+            @custom-selector :interactive :focus-visible;
+
             @master {
                 root-size: 16;
                 root-size: 10;
-                @custom-selector :interactive :hover;
-                @custom-selector :interactive :focus-visible;
             }
 
             @theme {
@@ -884,15 +885,23 @@ describe.concurrent('@master/css-compiler', () => {
         `)).toThrow('@theme must be top-level')
 
         expect(() => process(`
-            @master {
-                @custom-at @motion-safe @media (prefers-reduced-motion: no-preference);
+            @media print {
+                @custom-at motion-safe @media (prefers-reduced-motion: no-preference);
             }
+        `)).toThrow('@custom-at must be top-level')
+
+        expect(() => process(`
+            @media print {
+                @custom-selector :interactive :is(:hover, :focus-visible);
+            }
+        `)).toThrow('@custom-selector must be top-level')
+
+        expect(() => process(`
+            @custom-at @motion-safe @media (prefers-reduced-motion: no-preference);
         `)).toThrow('@custom-at names must not start with "@"')
 
         expect(() => process(`
-            @master {
-                @custom-selector headings :is(h1, h2, h3);
-            }
+            @custom-selector headings :is(h1, h2, h3);
         `)).toThrow('@custom-selector names must start with ":" or "::"')
 
         expect(() => process(`

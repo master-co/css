@@ -734,6 +734,14 @@ function parseSelectorDefinition(rule: any, parsed: ParsedDirectives) {
     parsed.config.selectorTokens[token] = value.trim()
 }
 
+function isCustomAtDefinition(rule: Rule) {
+    return (rule.type === 'unknown' || rule.type === 'custom') && rule.value?.name === 'custom-at'
+}
+
+function isCustomSelectorDefinition(rule: Rule) {
+    return (rule.type === 'unknown' || rule.type === 'custom') && rule.value?.name === 'custom-selector'
+}
+
 function parseManagedStyleDefinitionSelector(selectors: Selector[]) {
     const names = selectors.map((selector) => selector[0]?.type === 'class' ? selector[0].name : undefined)
     const name = names[0]
@@ -1187,20 +1195,6 @@ function parseMasterChildRule(child: Rule, parsed: ParsedDirectives, section: Ma
         parseMasterDeclarations(child.value.declarations, parsed.config)
         return
     }
-    if ((child.type === 'unknown' || child.type === 'custom') && child.value?.name === 'custom-at') {
-        if (section !== 'root') {
-            throw new Error('@custom-at is only allowed in @master')
-        }
-        parseAtDefinition(child, parsed)
-        return
-    }
-    if ((child.type === 'unknown' || child.type === 'custom') && child.value?.name === 'custom-selector') {
-        if (section !== 'root') {
-            throw new Error('@custom-selector is only allowed in @master')
-        }
-        parseSelectorDefinition(child, parsed)
-        return
-    }
     if (child.type === 'keyframes') {
         throw new Error('@master does not accept @keyframes')
     }
@@ -1299,11 +1293,11 @@ function parseTopLevelLayerChildRule(child: Rule, parsed: ParsedDirectives, atRu
     if ((child.type === 'unknown' || child.type === 'custom') && child.value?.name === 'mode') {
         throw new Error('Unsupported @mode rule')
     }
-    if ((child.type === 'unknown' || child.type === 'custom') && child.value?.name === 'custom-at') {
-        throw new Error('@custom-at is only allowed in @master')
+    if (isCustomAtDefinition(child)) {
+        throw new Error('@custom-at must be top-level')
     }
-    if ((child.type === 'unknown' || child.type === 'custom') && child.value?.name === 'custom-selector') {
-        throw new Error('@custom-selector is only allowed in @master')
+    if (isCustomSelectorDefinition(child)) {
+        throw new Error('@custom-selector must be top-level')
     }
     throw new Error(`Unsupported rule in top-level @layer ${layer}`)
 }
@@ -1348,6 +1342,14 @@ export function compileCSS(source: string, options: CompileCSSOptions = {}): Com
                             return []
                         }
                     }
+                    if (isCustomAtDefinition(rule)) {
+                        parseAtDefinition(rule, parsed)
+                        return []
+                    }
+                    if (isCustomSelectorDefinition(rule)) {
+                        parseSelectorDefinition(rule, parsed)
+                        return []
+                    }
                     const masterAtRuleBlock = parseMasterAtRuleBlock(rule)
                     if (masterAtRuleBlock) {
                         parseNativeRuleBody(masterAtRuleBlock.rules, parsed, [createCSSDirectiveAtRuleReference(masterAtRuleBlock.token)])
@@ -1382,9 +1384,9 @@ export function compileCSS(source: string, options: CompileCSSOptions = {}): Com
                         case 'compose':
                             throw new Error('@compose requires a style rule')
                         case 'custom-at':
-                            throw new Error('@custom-at is only allowed in @master')
+                            throw new Error('@custom-at must be top-level')
                         case 'custom-selector':
-                            throw new Error('@custom-selector is only allowed in @master')
+                            throw new Error('@custom-selector must be top-level')
                         case 'at':
                             throw new Error('@at requires a style rule or nested style rules')
                         case 'mode':

@@ -333,20 +333,23 @@ test('HTML injection stops at the class attribute quote after selector suffixes'
     )
 })
 
-test('CSS injection highlights @master root configuration blocks', () => {
+test('CSS injection highlights configuration directives', () => {
     const tokens = tokensFor(embeddedHighlighter, `
         @master {
             root-size: 16;
-            --color-primary: $color-blue-60/.8;
-
-            dark {
-                --color-primary: #818cf8;
-            }
-
-            @custom-at motion-safe @media (prefers-reduced-motion: no-preference);
-            @custom-selector :interactive :is(:hover, :focus-visible);
-            @custom-selector ::scrollbar ::-webkit-scrollbar;
         }
+
+        @theme {
+            --color-primary: $color-blue-60/.8;
+        }
+
+        @theme dark {
+            --color-primary: #818cf8;
+        }
+
+        @custom-at motion-safe @media (prefers-reduced-motion: no-preference);
+        @custom-selector :interactive :is(:hover, :focus-visible);
+        @custom-selector ::scrollbar ::-webkit-scrollbar;
     `, 'css')
 
     assertTokenScope(tokens, 'master', 'keyword.control.at-rule.master-css.css')
@@ -425,11 +428,16 @@ test('CSS injection highlights top-level component directives and compose classe
 test('CSS injection highlights compose and at directives inside native style rules', () => {
     const tokens = tokensFor(embeddedHighlighter, `
         @master {
+            root-size: 16;
+        }
+
+        @theme {
             --color-primary: #4f46e5;
             --screen-md: 768;
-            @custom-at motion-safe @media (prefers-reduced-motion: no-preference);
-            @custom-selector :interactive :is(:hover, :focus-visible);
         }
+
+        @custom-at motion-safe @media (prefers-reduced-motion: no-preference);
+        @custom-selector :interactive :is(:hover, :focus-visible);
 
         @layer components {
             .btn {

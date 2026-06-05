@@ -6,15 +6,13 @@ Native CSS cannot store full `@media`, `@supports`, or `@container` rules in CSS
 ---
 
 ## Define an at token
-Define custom at tokens inside the root `@master` block with `@custom-at`.
+Define custom at tokens at the top level with `@custom-at`.
 
 ```css name=index.css
-@master {
-    @custom-at motion-safe @media (prefers-reduced-motion: no-preference);
-    @custom-at supports-backdrop @supports (backdrop-filter: blur(0));
-    @custom-at card-wide @container card (width >= 42rem);
-    @custom-at start @starting-style;
-}
+@custom-at motion-safe @media (prefers-reduced-motion: no-preference);
+@custom-at supports-backdrop @supports (backdrop-filter: blur(0));
+@custom-at card-wide @container card (width >= 42rem);
+@custom-at start @starting-style;
 ```
 
 The token name is written without a leading `@` in the definition. Use the token as an `@` suffix in markup:
@@ -49,9 +47,7 @@ Generated CSS:
 Inside managed definitions and native style rules, use `@at` blocks instead of putting conditional suffixes inside `@compose`. This keeps the composed utility list plain and lets the surrounding CSS structure describe the condition.
 
 ```css name=index.css
-@master {
-    @custom-at motion-safe @media (prefers-reduced-motion: no-preference);
-}
+@custom-at motion-safe @media (prefers-reduced-motion: no-preference);
 
 @layer components {
     .card {

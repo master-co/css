@@ -20,7 +20,7 @@ This package owns the Master CSS language declaration and TextMate/Shiki grammar
 
 - Grammar changes affect VS Code, Shiki, docs highlighting, and package generation.
 - `packages/vscode/generate.ts` reads this package to update VS Code grammar contributions.
-- `packages/compiler` owns the CSS configuration directives such as `@theme` and `@master`; breaking or expanding that syntax usually requires matching grammar updates here.
+- `packages/compiler` owns the CSS configuration directives such as `@theme`, `@master`, `@custom-at`, and `@custom-selector`; breaking or expanding that syntax usually requires matching grammar updates here.
 
 ## Rules
 

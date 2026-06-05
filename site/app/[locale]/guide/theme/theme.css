@@ -29,11 +29,9 @@
     --shadow-card: none;
 }
 
-@master {
-    @custom-at motion-safe @media (prefers-reduced-motion: no-preference);
-    @custom-at supports-backdrop @supports (backdrop-filter: blur(0));
-    @custom-selector :interactive :is(:hover, :focus-visible);
-}
+@custom-at motion-safe @media (prefers-reduced-motion: no-preference);
+@custom-at supports-backdrop @supports (backdrop-filter: blur(0));
+@custom-selector :interactive :is(:hover, :focus-visible);
 
 @keyframes fade-in {
     from {

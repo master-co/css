@@ -6,14 +6,12 @@ Selector tokens name selectors that are repeated across markup or CSS-defined st
 ---
 
 ## Define a selector token
-Define selector tokens inside the root `@master` block with `@custom-selector`.
+Define selector tokens at the top level with `@custom-selector`.
 
 ```css name=index.css
-@master {
-    @custom-selector :headings :is(h1, h2, h3, h4, h5, h6);
-    @custom-selector :interactive :is(:hover, :focus-visible);
-    @custom-selector ::scrollbar ::-webkit-scrollbar;
-}
+@custom-selector :headings :is(h1, h2, h3, h4, h5, h6);
+@custom-selector :interactive :is(:hover, :focus-visible);
+@custom-selector ::scrollbar ::-webkit-scrollbar;
 ```
 
 Use selector tokens anywhere Master CSS accepts a selector suffix:
@@ -51,9 +49,7 @@ Generated CSS:
 Inside CSS-defined style rules, prefer native nested selectors instead of putting selector suffixes inside `@compose`.
 
 ```css name=index.css
-@master {
-    @custom-selector :interactive :is(:hover, :focus-visible);
-}
+@custom-selector :interactive :is(:hover, :focus-visible);
 
 @layer components {
     .btn {

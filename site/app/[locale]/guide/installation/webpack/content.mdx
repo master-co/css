@@ -117,9 +117,9 @@
     <Step $row>
         <StepL>
             ### <StepNum />Author app CSS and config
-            Source stylesheets can contain ordinary CSS, `@theme` tokens, `@master` settings, custom conditions, and managed layers together. Ordinary class selectors are kept only when they appear in scanned source. Add `@master no-shake;` only when native CSS must be preserved as written.
+            Source stylesheets can contain ordinary CSS, `@theme` tokens, `@master` settings, top-level custom conditions/selectors, and managed layers together. Ordinary class selectors are kept only when they appear in scanned source. Add `@master no-shake;` only when native CSS must be preserved as written.
 
-            (i) A stylesheet that imports `@master/css` is also a project CSS entry, so its Master CSS config blocks participate in the config graph.
+            (i) A stylesheet that imports `@master/css` is also a project CSS entry, so its Master CSS config directives participate in the config graph.
         </StepL>
         <StepR>
             ```css name=src/style.css

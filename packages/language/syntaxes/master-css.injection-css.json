@@ -17,6 +17,12 @@
             "include": "#master-css-style-directives"
         },
         {
+            "include": "#master-css-custom-at"
+        },
+        {
+            "include": "#master-css-custom-selector"
+        },
+        {
             "include": "#master-css-extractor-directives"
         }
     ],
@@ -322,12 +328,6 @@
                     "include": "#master-css-root-option-declaration"
                 },
                 {
-                    "include": "#master-css-custom-at"
-                },
-                {
-                    "include": "#master-css-custom-selector"
-                },
-                {
                     "include": "source.css"
                 }
             ]
@@ -383,12 +383,6 @@
             "patterns": [
                 {
                     "include": "#master-css-style-directives"
-                },
-                {
-                    "include": "#master-css-custom-at"
-                },
-                {
-                    "include": "#master-css-custom-selector"
                 }
             ]
         },
