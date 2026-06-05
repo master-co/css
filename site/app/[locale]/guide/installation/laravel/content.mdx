@@ -26,7 +26,7 @@
             ### <StepNum />Set up Master CSS
             Add a `masterCSS` vite plugin in `vite.config.js`.
 
-            - Set `options.mode` to `extract`
+            - Set `options.mode` to `static`
             - Add php files to `options.sources`
         </StepL>
         <StepR>
@@ -37,7 +37,7 @@
             export default defineConfig({
                 plugins: [
                     masterCSS({ // [!code highlight]
-                        mode: 'extract', // [!code highlight]
+                        mode: 'static', // [!code highlight]
                         sources: ['resources/views/**/*.php'] // [!code highlight]
                     }) // [!code highlight]
                 ]

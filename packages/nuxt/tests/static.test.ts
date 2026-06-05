@@ -6,7 +6,7 @@ import { dirname, resolve } from 'node:path'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
-const rootDir = resolve(__dirname, './fixtures/extract/')
+const rootDir = resolve(__dirname, './fixtures/static/')
 
 await setup({ rootDir })
 

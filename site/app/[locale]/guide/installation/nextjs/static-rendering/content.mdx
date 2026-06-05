@@ -24,10 +24,10 @@
     </Step>
     <Step $row>
         <StepL>
-            ### <StepNum />Set up extract mode
-            Register the Master CSS Next.js integration in `extract` mode. This creates the generated stylesheet and wires Master CSS stylesheet imports into Turbopack CSS processing.
+            ### <StepNum />Set up static mode
+            Register the Master CSS Next.js integration in `static` mode. This creates the generated stylesheet and wires Master CSS stylesheet imports into Turbopack CSS processing.
 
-            (i) Extract mode scans source files as the correctness baseline. During Turbopack builds, a scanner loader also feeds visited JavaScript and TypeScript modules into the extractor for incremental updates.
+            (i) Static mode scans source files as the correctness baseline. During Turbopack builds, a scanner loader also feeds visited JavaScript and TypeScript modules into the scanner for incremental updates.
         </StepL>
         <StepR>
             ```js name=next.config.mjs
@@ -37,7 +37,7 @@
             const nextConfig = await withMasterCSS({ // [!code ++]
                 /* your Next.js config */ // [!code ++]
             }, { // [!code ++]
-                mode: 'extract' // [!code ++]
+                mode: 'static' // [!code ++]
             }) // [!code ++]
 
             export default nextConfig

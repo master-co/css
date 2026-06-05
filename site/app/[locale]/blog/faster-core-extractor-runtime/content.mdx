@@ -26,7 +26,7 @@ The broad shape of the release is straightforward:
 | `@master/css-runtime` | Theme hydration variable dedupe | **about 117x faster by mean** |
 | `@master/css-runtime` | DOM mutation handling | **1.14x to 1.25x faster** |
 
-The biggest multipliers are in paths that were doing repeated work: growing rule scans, unchanged source extraction, hydrated class lookup, and duplicate theme variable checks. The smaller runtime mutation gains are still useful because they happen on browser-facing DOM work, where native costs are part of the total.
+The biggest multipliers are in paths that were doing repeated work: growing rule scans, unchanged source scanning, hydrated class lookup, and duplicate theme variable checks. The smaller runtime mutation gains are still useful because they happen on browser-facing DOM work, where native costs are part of the total.
 
 ---
 
@@ -77,7 +77,7 @@ The pipeline now also caches stable inputs:
 - source globs are precompiled with `Minimatch`;
 - source adapters are memoized;
 - `excludeClasses` is split once into exact strings and regular expressions;
-- `insert(source, content)` skips extraction when the content hash is unchanged;
+- `insert(source, content)` skips scanning when the content hash is unchanged;
 - valid rule generation is memoized per class string.
 
 The benchmark uses real workspace files from `examples/` and site MDX content:
@@ -103,7 +103,7 @@ Larger documentation pages show the cold-scan improvement more clearly:
 | `guide/theme/content.mdx` | 1.798ms | 1.208ms | **1.49x faster** |
 | `guide/colors/content.mdx` | 1.499ms | 1.017ms | **1.47x faster** |
 
-The takeaway is split: cold extraction gets a broad modest gain, while unchanged HMR-style re-inserts become effectively a cache hit.
+The takeaway is split: cold scans get a broad modest gain, while unchanged HMR-style re-inserts become effectively a cache hit.
 
 ---
 
@@ -137,7 +137,7 @@ One correctness benchmark also improved the refresh path. Refreshing a sheet wit
 The performance work is guarded by focused core, extractor, and runtime coverage. The important invariants remain unchanged:
 
 - rule priority still uses the same comparison logic;
-- static extraction still requires discoverable complete class strings;
+- static rendering still requires discoverable complete class strings;
 - runtime usage counts still remove rules when usage reaches zero;
 
-The result is a faster pipeline with the same CSS contract: cheaper rule generation, cheaper static extraction, cheaper runtime mutation handling, and much faster cache and hydration paths.
+The result is a faster pipeline with the same CSS contract: cheaper rule generation, cheaper static rendering, cheaper runtime mutation handling, and much faster cache and hydration paths.

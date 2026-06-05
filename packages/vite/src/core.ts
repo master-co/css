@@ -5,7 +5,7 @@ import type { Plugin, ResolvedConfig } from 'vite'
 import ConfigLoaderPlugin from './plugins/config-loader'
 import ConfigVirtualModulePlugin from './plugins/config-virtual-module'
 import PreloadedVirtualModulePlugin from './plugins/preloaded-virtual-module'
-import ExtractMode from './modes/extract'
+import StaticMode from './modes/static'
 import RuntimeMode from './modes/runtime'
 import ProgressiveMode from './modes/progressive'
 import PreRenderMode from './modes/pre-render'
@@ -30,7 +30,7 @@ export interface PluginContext {
 export default function masterCSS(options?: PluginOptions): Plugin[] {
     options = { ...defaultPluginOptions, ...options }
     const context = {
-        includeGeneratedCSS: options.mode === 'extract'
+        includeGeneratedCSS: options.mode === 'static'
     } as PluginContext
     const plugins: Plugin[] = [
         ContextPlugin(options, context),
@@ -47,8 +47,8 @@ export default function masterCSS(options?: PluginOptions): Plugin[] {
         case 'runtime':
             plugins.push(...RuntimeMode(options, context))
             break
-        case 'extract':
-            plugins.push(...ExtractMode(options, context))
+        case 'static':
+            plugins.push(...StaticMode(options, context))
             break
         case 'progressive':
             plugins.push(...ProgressiveMode(options, context))

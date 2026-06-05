@@ -47,7 +47,7 @@ Use `components` for project styles that carry product meaning: `.btn`, `.card`,
 }
 ```
 
-The compiler converts these definitions into static `config.utilities` entries with `layer: 'components'`. They remain on-demand: defining `.btn` does not emit CSS until `btn` is used or extracted.
+The compiler converts these definitions into static `config.utilities` entries with `layer: 'components'`. They remain on-demand: defining `.btn` does not emit CSS until `btn` is used or scanned from source.
 
 ### Utilities
 Use `utilities` for built-in utilities, animation utilities, and custom static utilities written in top-level `@layer utilities`. Custom utilities can use native declarations, `@compose`, nested selectors, and `@at` blocks.

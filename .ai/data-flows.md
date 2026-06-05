@@ -89,7 +89,7 @@ Main files:
 - `packages/extractor/src/style.ts`
 - `packages/extractor/src/functions/extract-latent-classes.ts`
 - `packages/validator/src/generate-valid-rules.ts`
-- `packages/vite/src/modes/extract.ts`
+- `packages/vite/src/modes/static.ts`
 - `packages/vite/src/plugins/virtual-css-module.ts`
 - `packages/webpack/src/index.ts`
 
@@ -97,7 +97,7 @@ Risks:
 
 - False positives increase CSS output.
 - False negatives omit required CSS.
-- Static extraction cannot infer truncated dynamic strings.
+- Static rendering cannot infer truncated dynamic strings.
 
 ## Runtime
 

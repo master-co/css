@@ -7,7 +7,7 @@ function pluginNames(mode?: PluginOptions['mode']) {
 }
 
 describe('masterCSS plugin composition', () => {
-    test.each(['runtime', 'extract', 'pre-render', 'progressive', null] as const)('%s mode registers the shared extractor and style entry pipeline', (mode) => {
+    test.each(['runtime', 'static', 'pre-render', 'progressive', null] as const)('%s mode registers the shared extractor and style entry pipeline', (mode) => {
         const names = pluginNames(mode)
 
         expect(names.filter((name) => name === 'master-css:extractor')).toHaveLength(1)

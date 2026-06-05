@@ -50,7 +50,7 @@ test('deriveTitle strips trailing [sr-only] / {.cls} markers from MDX headings',
 })
 
 test('deriveTitle falls back to titleized last segment when no heading', () => {
-    assert.equal(deriveTitle('no headings here', 'static-extraction'), 'Static Extraction')
+    assert.equal(deriveTitle('no headings here', 'static-rendering'), 'Static Rendering')
 })
 
 test('pageUrl strips content.mdx and prefixes locale', () => {

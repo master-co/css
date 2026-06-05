@@ -157,7 +157,7 @@ This matters because markup-driven CSS should still be refactorable, reviewable,
 ---
 
 ## The CSS framework
-Master CSS is also a standalone CSS framework. It includes the core rule engine, browser runtime rendering, server rendering, static extraction, framework integrations, [code linting](/guide/code-linting), [language service](/guide/language-service), and a CSS-first [theme](/guide/theme).
+Master CSS is also a standalone CSS framework. It includes the core rule engine, browser runtime rendering, server rendering, static rendering, framework integrations, [code linting](/guide/code-linting), [language service](/guide/language-service), and a CSS-first [theme](/guide/theme).
 
 <details>
     <summary>View all official packages</summary>
@@ -198,13 +198,13 @@ The project CSS entry is the primary configuration source. Tokens are native cus
 }
 ```
 
-The `@master` block and managed layers are configuration, not regular stylesheet output. Master CSS compiles them into config, then generates only the classes used in markup, discovered by extractors, or composed by another CSS-defined style. Native rules such as `.notice` lower to CSS for the stylesheet that contains them.
+The `@master` block and managed layers are configuration, not regular stylesheet output. Master CSS compiles them into config, then generates only the classes used in markup, discovered by source scanners, or composed by another CSS-defined style. Native rules such as `.notice` lower to CSS for the stylesheet that contains them.
 
 ### Rendering for different delivery models
 Master CSS provides three main [rendering modes](/guide/rendering-modes):
 
 - Runtime rendering watches class names in the browser and generates rules as elements appear or change.
-- Static extraction scans source files during builds and emits CSS before deployment.
+- Static rendering scans source files during builds and emits CSS before deployment.
 - Progressive rendering pre-renders first-page CSS, then hydrates the runtime for dynamic classes.
 
 Choose the mode that fits your framework and deployment model. A static marketing page, an SSR application, and a highly dynamic dashboard can all use the same class syntax while delivering CSS differently.
@@ -237,7 +237,7 @@ According to HTTP Archive [CSS Bytes](https://httparchive.org/reports/page-weigh
 </html>
 ```
 
-Master CSS generates optimized CSS directly. Integrations can pre-render, extract, or hydrate CSS without depending on a PostCSS, Autoprefixer, or CSS minifier pipeline.
+Master CSS generates optimized CSS directly. Integrations can pre-render, statically render, or hydrate CSS without depending on a PostCSS, Autoprefixer, or CSS minifier pipeline.
 
 ### The foundation for design systems
 Master CSS provides a rich [theme layer](/guide/theme) for scalable design systems. Use [design tokens](/guide/design-tokens) for color, spacing, typography, radius, elevation, and motion; use [screen sizes](/guide/screen-sizes), [sizing](/guide/sizing), and the [layout system](/guide/layout-system) to keep page structure aligned with those foundations.
@@ -334,7 +334,7 @@ Then use the semantic classes in markup:
 </div>
 ```
 
-The component definitions stay on-demand. They are emitted in the `components` layer only when `card`, `card-image`, and the other component classes appear in markup, are discovered by extraction, or are composed by another CSS-defined style.
+The component definitions stay on-demand. They are emitted in the `components` layer only when `card`, `card-image`, and the other component classes appear in markup, are discovered by source scanning, or are composed by another CSS-defined style.
 
 ---
 
@@ -456,7 +456,7 @@ If you are new to Master CSS, continue in this order:
 1. [Installation](/guide/installation) to set up the package for your framework.
 2. [Style declarations](/guide/style-declarations) to learn the class syntax in detail.
 3. [State selectors](/guide/state-selectors), [responsive design](/guide/responsive-design), and [conditional queries](/guide/conditional-queries) to control when styles apply.
-4. [Rendering modes](/guide/rendering-modes) to choose runtime rendering, static extraction, or progressive rendering.
+4. [Rendering modes](/guide/rendering-modes) to choose runtime rendering, static rendering, or progressive rendering.
 5. [Design tokens](/guide/design-tokens), [theme](/guide/theme), and [components](/guide/components) when your project needs shared vocabulary.
 
 ---

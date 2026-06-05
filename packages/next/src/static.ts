@@ -3,7 +3,7 @@ import defaultExtractorOptions from '@master/css-extractor/options'
 import type { Config } from '@master/css'
 import {
     createStyleCSSHostSource,
-    createExtractedCSS as createExtractorExtractedCSS,
+    createExtractedCSS as createExtractorStaticCSS,
     isMasterCSSPackageStyleFile,
     isStyleCSSRequest,
     removeMasterStyleDirectives,
@@ -18,11 +18,11 @@ import { dirname, relative, resolve } from 'node:path'
 import { resolveOptions, type Options, type ResolvedOptions } from './options'
 
 const STATE_VERSION = 1
-const DEFAULT_EXTRACT_OUTPUT = '.master/next.css'
-const DEFAULT_STATE_FILE = 'next-extract-state.json'
-const DEFAULT_SCAN_LOG_FILE = 'next-extract-scanned-sources.log'
+const DEFAULT_STATIC_OUTPUT = '.master/next.css'
+const DEFAULT_STATE_FILE = 'next-static-state.json'
+const DEFAULT_SCAN_LOG_FILE = 'next-static-scanned-sources.log'
 
-export interface ExtractState {
+export interface StaticState {
     version: 1
     projectDir: string
     outputPath: string
@@ -34,7 +34,7 @@ export interface ExtractState {
     }
 }
 
-interface ExtractSession {
+interface StaticSession {
     extractor: CSSExtractor
     styleCSSSources: StyleCSSSources
     ready: Promise<CSSExtractor>
@@ -42,17 +42,17 @@ interface ExtractSession {
     watching?: boolean
 }
 
-interface PrepareNextExtractOptions {
+interface PrepareNextStaticOptions {
     projectDir?: string
     watch?: boolean
 }
 
 declare global {
-    var __MASTER_CSS_NEXT_EXTRACT_SESSIONS__: Map<string, ExtractSession> | undefined
+    var __MASTER_CSS_NEXT_STATIC_SESSIONS__: Map<string, StaticSession> | undefined
 }
 
 function getSessions() {
-    return globalThis.__MASTER_CSS_NEXT_EXTRACT_SESSIONS__ ??= new Map()
+    return globalThis.__MASTER_CSS_NEXT_STATIC_SESSIONS__ ??= new Map()
 }
 
 function resolveExtractorOptions(options: ResolvedOptions): ExtractorOptions {
@@ -65,7 +65,7 @@ function resolveExtractorOptions(options: ResolvedOptions): ExtractorOptions {
         ...options.extractorOptions,
         config: options.extractorOptions.config ?? options.config,
         exclude: [...new Set(exclude)],
-        output: DEFAULT_EXTRACT_OUTPUT,
+        output: DEFAULT_STATIC_OUTPUT,
         verbose: options.extractorOptions.verbose ?? (options.debug ? 1 : 0)
     }
 }
@@ -78,20 +78,20 @@ function toCSSImportPath(fromFile: string, toFile: string) {
     return importPath
 }
 
-export async function transformExtractStyleSource(statePath: string, resourcePath: string, source: string) {
-    const state = readExtractState(statePath)
+export async function transformStaticStyleSource(statePath: string, resourcePath: string, source: string) {
+    const state = readStaticState(statePath)
     if (!isStyleCSSRequest(resourcePath)) return source
     if (!resolveMasterStyleSource(resourcePath, source, state.projectDir)) return source
     if (isMasterCSSPackageStyleFile(resourcePath, state.projectDir)) {
         return removeMasterStyleDirectives(source).code
     }
     const options = resolveOptions({
-        mode: 'extract',
+        mode: 'static',
         config: state.options.config,
         extractorOptions: state.options.extractorOptions,
         debug: state.options.debug
     })
-    const session = await getOrCreateExtractSession(state.projectDir, state.outputPath, options)
+    const session = await getOrCreateStaticSession(state.projectDir, state.outputPath, options)
     await registerStyleCSSSource(session.extractor, session.styleCSSSources, resourcePath, source, {
         projectDir: state.projectDir
     })
@@ -99,15 +99,15 @@ export async function transformExtractStyleSource(statePath: string, resourcePat
     return createStyleCSSHostSource(source, { masterImport: toCSSImportPath(resourcePath, state.outputPath) })
 }
 
-async function createExtractedCSS(projectDir: string, session: ExtractSession) {
-    return createExtractorExtractedCSS({
+async function createStaticCSS(projectDir: string, session: StaticSession) {
+    return createExtractorStaticCSS({
         extractor: session.extractor,
         styleCSSSources: session.styleCSSSources,
         projectDir
     })
 }
 
-async function registerStyleCSSEntries(projectDir: string, session: ExtractSession) {
+async function registerStyleCSSEntries(projectDir: string, session: StaticSession) {
     for (const entry of await findCSSConfigEntryFiles(projectDir)) {
         await registerStyleCSSSource(session.extractor, session.styleCSSSources, entry, await readFile(entry, 'utf8'), {
             projectDir
@@ -115,7 +115,7 @@ async function registerStyleCSSEntries(projectDir: string, session: ExtractSessi
     }
 }
 
-async function writeExtractedCSS(outputPath: string, cssText: string) {
+async function writeStaticCSS(outputPath: string, cssText: string) {
     await mkdir(dirname(outputPath), { recursive: true })
     try {
         if (await readFile(outputPath, 'utf-8') === cssText) {
@@ -128,19 +128,19 @@ async function writeExtractedCSS(outputPath: string, cssText: string) {
     return true
 }
 
-function createSession(projectDir: string, outputPath: string, options: ResolvedOptions): ExtractSession {
+function createSession(projectDir: string, outputPath: string, options: ResolvedOptions): StaticSession {
     const extractor = new CSSExtractor(resolveExtractorOptions(options), projectDir)
     const styleCSSSources: StyleCSSSources = new Map()
     let writeChain = Promise.resolve()
-    let session: ExtractSession
+    let session: StaticSession
     const write = () => {
         writeChain = writeChain
             .then(async () => {
-                const cssText = await createExtractedCSS(projectDir, session)
-                await writeExtractedCSS(outputPath, cssText)
+                const cssText = await createStaticCSS(projectDir, session)
+                await writeStaticCSS(outputPath, cssText)
             })
             .catch((error: unknown) => {
-                console.error('[@master/css.next] failed to write extracted CSS:', error)
+                console.error('[@master/css.next] failed to write static CSS:', error)
             })
         return writeChain
     }
@@ -170,26 +170,26 @@ function createSession(projectDir: string, outputPath: string, options: Resolved
     return session
 }
 
-export function resolveExtractOutputPath(projectDir: string) {
-    return resolve(projectDir, DEFAULT_EXTRACT_OUTPUT)
+export function resolveStaticOutputPath(projectDir: string) {
+    return resolve(projectDir, DEFAULT_STATIC_OUTPUT)
 }
 
-export function resolveExtractStatePath(outputPath: string) {
+export function resolveStaticStatePath(outputPath: string) {
     return resolve(dirname(outputPath), DEFAULT_STATE_FILE)
 }
 
-export function resolveExtractScanLogPath(outputPath: string) {
+export function resolveStaticScanLogPath(outputPath: string) {
     return resolve(dirname(outputPath), DEFAULT_SCAN_LOG_FILE)
 }
 
-export async function writeExtractState(
+export async function writeStaticState(
     projectDir: string,
     outputPath: string,
     statePath: string,
     scanLogPath: string,
     options: ResolvedOptions
 ) {
-    const state: ExtractState = {
+    const state: StaticState = {
         version: STATE_VERSION,
         projectDir,
         outputPath,
@@ -204,24 +204,24 @@ export async function writeExtractState(
     await writeFile(statePath, JSON.stringify(state, null, 2))
 }
 
-export function readExtractState(statePath: string): ExtractState {
-    const state = JSON.parse(readFileSync(statePath, 'utf-8')) as ExtractState
+export function readStaticState(statePath: string): StaticState {
+    const state = JSON.parse(readFileSync(statePath, 'utf-8')) as StaticState
     if (state.version !== STATE_VERSION) {
-        throw new Error(`Unsupported Master CSS Next extract state version: ${String(state.version)}`)
+        throw new Error(`Unsupported Master CSS Next static state version: ${String(state.version)}`)
     }
     return state
 }
 
-export async function addExtractCSSDependencies(statePath: string, addDependency?: (file: string) => void) {
+export async function addStaticCSSDependencies(statePath: string, addDependency?: (file: string) => void) {
     if (!addDependency) return
-    const state = readExtractState(statePath)
+    const state = readStaticState(statePath)
     const options = resolveOptions({
-        mode: 'extract',
+        mode: 'static',
         config: state.options.config,
         extractorOptions: state.options.extractorOptions,
         debug: state.options.debug
     })
-    const session = await getOrCreateExtractSession(state.projectDir, state.outputPath, options)
+    const session = await getOrCreateStaticSession(state.projectDir, state.outputPath, options)
     addDependency(state.outputPath)
     for (const styleSource of session.styleCSSSources.values()) {
         for (const dependency of styleSource.dependencies) {
@@ -230,7 +230,7 @@ export async function addExtractCSSDependencies(statePath: string, addDependency
     }
 }
 
-export async function getOrCreateExtractSession(
+export async function getOrCreateStaticSession(
     projectDir: string,
     outputPath: string,
     options: ResolvedOptions
@@ -246,17 +246,17 @@ export async function getOrCreateExtractSession(
     return session
 }
 
-export async function prepareNextExtract(rawOptions: Options = {}, setupOptions: PrepareNextExtractOptions = {}) {
+export async function prepareNextStatic(rawOptions: Options = {}, setupOptions: PrepareNextStaticOptions = {}) {
     const options = resolveOptions(rawOptions)
-    if (options.mode !== 'extract') return
+    if (options.mode !== 'static') return
 
     const projectDir = setupOptions.projectDir ?? process.cwd()
-    const outputPath = resolveExtractOutputPath(projectDir)
-    const statePath = resolveExtractStatePath(outputPath)
-    const scanLogPath = resolveExtractScanLogPath(outputPath)
-    const session = await getOrCreateExtractSession(projectDir, outputPath, options)
+    const outputPath = resolveStaticOutputPath(projectDir)
+    const statePath = resolveStaticStatePath(outputPath)
+    const scanLogPath = resolveStaticScanLogPath(outputPath)
+    const session = await getOrCreateStaticSession(projectDir, outputPath, options)
 
-    await writeExtractState(projectDir, outputPath, statePath, scanLogPath, options)
+    await writeStaticState(projectDir, outputPath, statePath, scanLogPath, options)
 
     if (setupOptions.watch && !session.watching) {
         await session.extractor.startWatch()
@@ -280,21 +280,21 @@ function appendScannedSource(scanLogPath: string, resourcePath: string) {
     return writeFile(scanLogPath, Array.from(existing).sort().join('\n') + '\n')
 }
 
-export async function scanExtractModule(statePath: string, resourcePath: string, source: string) {
-    const state = readExtractState(statePath)
+export async function scanStaticModule(statePath: string, resourcePath: string, source: string) {
+    const state = readStaticState(statePath)
     const options = resolveOptions({
-        mode: 'extract',
+        mode: 'static',
         config: state.options.config,
         extractorOptions: state.options.extractorOptions,
         debug: state.options.debug
     })
-    const session = await getOrCreateExtractSession(state.projectDir, state.outputPath, options)
+    const session = await getOrCreateStaticSession(state.projectDir, state.outputPath, options)
     await appendScannedSource(state.scanLogPath, resourcePath)
     const changed = await session.extractor.insert(resourcePath, source)
     if (changed) {
         await session.write()
     } else if (!existsSync(state.outputPath)) {
-        const cssText = await createExtractedCSS(state.projectDir, session)
-        await writeExtractedCSS(state.outputPath, cssText)
+        const cssText = await createStaticCSS(state.projectDir, session)
+        await writeStaticCSS(state.outputPath, cssText)
     }
 }

@@ -49,8 +49,8 @@ export default defineNuxtModule<ModuleOptions>({
                     src: resolve('./runtime/css-runtime')
                 })
                 break
-            case 'extract':
-                // Fix: [plugin ssr-styles] Cannot inline generated extraction CSS during SSR.
+            case 'static':
+                // Fix: [plugin ssr-styles] Cannot inline generated static CSS during SSR.
                 if (nuxt.options.features?.inlineStyles)
                     nuxt.options.features.inlineStyles = false
                 addCSSVitePlugin()

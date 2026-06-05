@@ -1,5 +1,5 @@
 ## Overview [sr-only]
-Class extraction decides which classes are used. Native CSS shaking uses that usage graph to remove unused native CSS class rules from Master-managed stylesheets.
+Class scanning decides which classes are used. Native CSS shaking uses that usage graph to remove unused native CSS class rules from Master-managed stylesheets.
 
 ```txt
 source usage + @import "@master/css" stylesheet
@@ -34,7 +34,7 @@ If source files use `card` but never use `unused`, the output keeps `.card` and 
 }
 ```
 
-Use [`Extracting latent classes`](/guide/extracting-latent-classes) for the source scanning model. This page focuses on what happens after a stylesheet enters the Master CSS pipeline.
+Use [`Scanning latent classes`](/guide/scanning-latent-classes) for the source scanning model. This page focuses on what happens after a stylesheet enters the Master CSS pipeline.
 
 ---
 
@@ -61,7 +61,7 @@ The Master import is replaced by generated CSS. It is not emitted as a browser-f
 }
 ```
 
-Use `@master no-shake;` when the stylesheet contains class names that are intentionally invisible to the extractor.
+Use `@master no-shake;` when the stylesheet contains class names that are intentionally invisible to the scanner.
 
 ```css name=src/vendor-overrides.css
 @import "@master/css";
@@ -186,8 +186,8 @@ The same imported file can therefore be shaken differently under different roots
 
 ---
 
-## Scoped extraction
-By default, a shaken stylesheet uses the global extractor scope. Add `@master source`, `@master source exclude`, `@master source force`, `@master class`, and `@master class exclude` inside the stylesheet graph when that root needs a narrower or wider usage graph.
+## Scoped scanning
+By default, a shaken stylesheet uses the global scanner scope. Add `@master source`, `@master source exclude`, `@master source force`, `@master class`, and `@master class exclude` inside the stylesheet graph when that root needs a narrower or wider usage graph.
 
 ```txt
 app/a/a.css
@@ -388,4 +388,4 @@ Use this for known class contracts. Do not use it as a replacement for putting n
 - Add `@master no-shake;` to Master-managed entries whose native CSS must be preserved.
 - Remember that local relative `.css` imports follow the root's shaking decision.
 - Use `@master class` for native classes used by bounded external systems.
-- Keep vendor, CMS, or third-party styles outside Master-managed roots unless their class usage is visible to the extractor or protected with `@master no-shake;`.
+- Keep vendor, CMS, or third-party styles outside Master-managed roots unless their class usage is visible to the scanner or protected with `@master no-shake;`.

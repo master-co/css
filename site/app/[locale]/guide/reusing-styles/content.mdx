@@ -3,7 +3,7 @@ import ComponentsOverview from '../components/components/Overview.mdx'
 ## Overview [sr-only]
 As the styles grow, the class name combinations and the same design patterns appear over and over again in the code. To improve development efficiency and maintain design consistency, you should reuse or access them in some way.
 
-Writing `.btn` at the top level of a stylesheet creates a normal CSS rule. It can use `@compose` and `@at`, but it is still emitted by that stylesheet as native CSS, and Master CSS does not treat `btn` as a generated class. Writing `.btn` in top-level `@layer components` defines a config-backed component class instead: it is generated on demand only when `btn` is used, extracted, or composed by another CSS-defined style, emitted in the `components` cascade layer, and can use Master CSS features such as `@compose`, nested selectors, `@at` conditions, modes, and variant suffixes in markup.
+Writing `.btn` at the top level of a stylesheet creates a normal CSS rule. It can use `@compose` and `@at`, but it is still emitted by that stylesheet as native CSS, and Master CSS does not treat `btn` as a generated class. Writing `.btn` in top-level `@layer components` defines a config-backed component class instead: it is generated on demand only when `btn` is used, scanned from source, or composed by another CSS-defined style, emitted in the `components` cascade layer, and can use Master CSS features such as `@compose`, nested selectors, `@at` conditions, modes, and variant suffixes in markup.
 
 This guide focuses on the strategy of when to abstract; for shared theme vocabulary, start with [Customizing theme](/guide/theme), and for exact component behavior, see [Components](/guide/components).
 ```css name=index.css

@@ -20,12 +20,12 @@ export default nextConfig
 | Mode | Description |
 | --- | --- |
 | `'pre-render'` | Uses the Next.js Adapter API to render CSS into static and pre-rendered HTML outputs during `next build`. |
-| `'extract'` | Scans source files with `@master/css-extractor`, writes a generated stylesheet, and wires Master CSS stylesheet imports into Turbopack CSS processing. |
+| `'static'` | Scans source files with `@master/css-extractor`, writes a generated stylesheet, and wires Master CSS stylesheet imports into Turbopack CSS processing. |
 
-Use `pre-render` when you want route HTML to carry its first-render CSS. Use `extract` when your classes are statically visible in source and you want a generated CSS asset.
+Use `pre-render` when you want route HTML to carry its first-render CSS. Use `static` when your classes are statically visible in source and you want a generated CSS asset.
 
-### Static extraction
-In extract mode, import the generated stylesheet from your app stylesheet:
+### Static Rendering
+In static mode, import the generated stylesheet from your app stylesheet:
 
 ```css name=app/globals.css
 @import '@master/css';
@@ -39,7 +39,7 @@ In extract mode, import the generated stylesheet from your app stylesheet:
 }
 ```
 
-Then enable extract mode:
+Then enable static mode:
 
 ```js name=next.config.mjs
 import { withMasterCSS } from '@master/css.next'
@@ -48,13 +48,13 @@ import { withMasterCSS } from '@master/css.next'
 const nextConfig = await withMasterCSS({
     /* your Next.js config */
 }, {
-    mode: 'extract'
+    mode: 'static'
 })
 
 export default nextConfig
 ```
 
-Extract mode uses source-glob scanning as the correctness baseline. A Turbopack CSS loader replaces `@import '@master/css'` with the generated CSS. CSS files that import `@master/css` are treated as native CSS shaking roots by default, so ordinary class selectors are pruned against detected classes; `var(--*)` and animation references can pull matching variables and keyframes from the project CSS entry graph. Add `@master no-shake;` when native CSS must be preserved. A scanner loader also scans JavaScript and TypeScript modules as they pass through the build, so imported files such as `app/main.ts` can incrementally feed new classes into the generated CSS.
+Static mode uses source-glob scanning as the correctness baseline. A Turbopack CSS loader replaces `@import '@master/css'` with the generated CSS. CSS files that import `@master/css` are treated as native CSS shaking roots by default, so ordinary class selectors are pruned against detected classes; `var(--*)` and animation references can pull matching variables and keyframes from the project CSS entry graph. Add `@master no-shake;` when native CSS must be preserved. A scanner loader also scans JavaScript and TypeScript modules as they pass through the build, so imported files such as `app/main.ts` can incrementally feed new classes into the generated CSS.
 
 ### Client types
 Add `@master/css-integration/client` to a project environment file when TypeScript imports Master CSS virtual modules.

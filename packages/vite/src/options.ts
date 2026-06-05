@@ -16,12 +16,12 @@ export interface PluginOptions {
      * Defines how Master CSS should be integrated into the build.
      *
      * - `'runtime'`: Injects CSSRuntime through Vite's HTML transform and imports the project config code.
-     * - `'extract'`: Wires the generated CSS module and enables generated utilities in the shared style entry pipeline.
+     * - `'static'`: Wires the generated CSS module and enables generated utilities in the shared style entry pipeline.
      * - `'pre-render'`: Renders all `*.html` dependencies and injects CSS internally. This mode may be integrated with other SSR capabilities.
      * - `'progressive'`: Combines `'runtime'` and `'pre-render'` modes.
      * - `null`: Disables automatic integration
      */
-    mode?: 'runtime' | 'extract' | 'progressive' | 'pre-render' | null
+    mode?: 'runtime' | 'static' | 'progressive' | 'pre-render' | null
 
     /**
      * Extractor options for class usage scanning.

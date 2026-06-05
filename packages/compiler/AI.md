@@ -40,7 +40,7 @@
 - `@compose` is allowed in managed class definitions and native style rules, including inside `@at`.
 - Utilities defined in CSS are static utilities only.
 - `body`, `html`, and other HTML tag rules inside top-level managed layers should warn because regular CSS selectors must live outside Master directives.
-- The compiler package does not scan unrelated `.css` files for class usage. Pair CSS configs with extract mode or pass extracted classes through compiler options when filtering native CSS.
+- The compiler package does not scan unrelated `.css` files for class usage. Pair CSS configs with static mode or pass extracted classes through compiler options when filtering native CSS.
 - CSS/theme/source tests that depend on `.css` files belong here rather than in core tests.
 
 ## Tests

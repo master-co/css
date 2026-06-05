@@ -10,7 +10,7 @@
         </picture>
     </a>
 </p>
-<p align="center">Master CSS static extractor for various raw text</p>
+<p align="center">Master CSS source scanner for static rendering</p>
 
 <p align="center">
     <a aria-label="GitHub release (latest by date including pre-releases)" href="https://github.com/master-co/css/releases">

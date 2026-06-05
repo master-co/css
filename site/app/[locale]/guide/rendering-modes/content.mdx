@@ -3,12 +3,12 @@ import CriticalCSSBenchmark from '../introduction/components/CriticalCSSBenchmar
 ## Overview [sr-only]
 <CriticalCSSBenchmark />
 
-Master CSS integrations choose how generated rules reach the browser. The same project CSS entry graph can be used by runtime rendering, static extraction, server rendering, and progressive hydration.
+Master CSS integrations choose how generated rules reach the browser. The same project CSS entry graph can be used by runtime rendering, static rendering, server rendering, and progressive hydration.
 
 | Mode                      | Description                                                                                                                                           |
 |---------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `'runtime'`               | Starts `CSSRuntime` in the browser, observes connected elements, and generates rules as class names appear. Vite can inject the runtime and default config module automatically. |
-| `'extract'`               | Scans source files, replaces `@import '@master/css'` in managed CSS entries, shakes native CSS, and generates CSS from the project CSS entry graph. |
+| `'static'`                | Scans source files, replaces `@import '@master/css'` in managed CSS entries, shakes native CSS, and generates CSS from the project CSS entry graph. |
 | `'pre-render'`            | Renders HTML output and injects the critical CSS required by the rendered class names. This mode is usually owned by SSR/SSG integrations. |
 | `'progressive'`           | Combines pre-rendered first-page CSS with client-side runtime hydration for classes that appear after the initial HTML. |
 
@@ -226,17 +226,17 @@ The [CSS runtime](#runtime-rendering) then takes over to detect any changes in d
 
 ---
 
-## Static extraction
-Static extraction is a zero-runtime rendering mode where the build scans source files, finds complete Master CSS class strings, validates them against the configured engine, and writes the resulting CSS before deployment.
+## Static Rendering
+Static rendering is a zero-runtime rendering mode where the build scans source files, finds complete Master CSS class strings, validates them against the configured engine, and writes the resulting CSS before deployment.
 
-The extractor does not observe the DOM and does not execute application code. Its input is source text, CSS entries, extraction options, and the compiled [theme configuration](/guide/theme). Its output is a CSS asset that the browser loads like any other stylesheet.
+The source scanner does not observe the DOM and does not execute application code. Its input is source text, CSS entries, scanner options, and the compiled [theme configuration](/guide/theme). Its output is a CSS asset that the browser loads like any other stylesheet.
 
-The CSS entry point is explicit: import `@master/css` from the stylesheet that should receive generated Master CSS. In extract mode, integrations replace that import with generated CSS and treat the same stylesheet as a native CSS shaking root.
+The CSS entry point is explicit: import `@master/css` from the stylesheet that should receive generated Master CSS. In static mode, integrations replace that import with generated CSS and treat the same stylesheet as a native CSS shaking root.
 
 <StepSection>
     <Step>
-        #### <StepNum />Load the extraction context
-        The integration creates an extractor with source directives, optional fixed classes, and the project CSS entry graph. In watch mode, config and source changes reset or update this context.
+        #### <StepNum />Load the scanning context
+        The integration creates a source scanner with source directives, optional fixed classes, and the project CSS entry graph. In watch mode, config and source changes reset or update this context.
 
         ```css name=index.css
         @master;
@@ -245,7 +245,7 @@ The CSS entry point is explicit: import `@master/css` from the stylesheet that s
     </Step>
     <Step>
         #### <StepNum />Scan source text
-        Source files such as `.html`, `.js`, `.jsx`, `.ts`, `.tsx`, `.vue`, `.svelte`, `.astro`, `.md`, and `.mdx` are scanned as text. The extractor collects candidate class strings from markup and string literals, then filters obvious non-class tokens before validation.
+        Source files such as `.html`, `.js`, `.jsx`, `.ts`, `.tsx`, `.vue`, `.svelte`, `.astro`, `.md`, and `.mdx` are scanned as text. The scanner collects candidate class strings from markup and string literals, then filters obvious non-class tokens before validation.
 
         ```html name=src/index.html
         <!-- @MARK btn text:center -->
@@ -264,11 +264,11 @@ The CSS entry point is explicit: import `@master/css` from the stylesheet that s
         }
         ```
 
-        With this config, `btn` is valid because the project defines it, and `text:center` is valid because it is a built-in utility. Configured classes are still on-demand: defining `.btn` does not emit anything until `btn` appears in scanned source or in the extractor's fixed class list.
+        With this config, `btn` is valid because the project defines it, and `text:center` is valid because it is a built-in utility. Configured classes are still on-demand: defining `.btn` does not emit anything until `btn` appears in scanned source or in the scanner's fixed class list.
     </Step>
     <Step>
         #### <StepNum />Compose final CSS
-        The generated stylesheet contains the valid Master CSS rules, retained native CSS from extractable style entries, and any referenced variables or keyframes needed by those rules.
+        The generated stylesheet contains the valid Master CSS rules, retained native CSS from managed style entries, and any referenced variables or keyframes needed by those rules.
 
         ```css name=generated.css
         @layer components {
@@ -289,7 +289,7 @@ The CSS entry point is explicit: import `@master/css` from the stylesheet that s
 </StepSection>
 
 ### Generated stylesheet entry
-In extract mode, import the generated stylesheet from the stylesheet your framework already bundles.
+In static mode, import the generated stylesheet from the stylesheet your framework already bundles.
 
 ```css name=src/style.css
 @import '@master/css';
@@ -322,7 +322,7 @@ Those native rules can also pull matching config variables referenced by `var(--
 The generated CSS contains `.native-card` and `.btn` when both classes are scanned. `.unused-card` is removed because no scanned source uses it.
 
 ### Dynamic class limitations
-Static extraction depends on complete class strings that exist in scanned source files. It cannot evaluate conditions, run helper functions, resolve remote content, or predict classes assembled by string concatenation.
+Static rendering depends on complete class strings that exist in scanned source files. It cannot evaluate conditions, run helper functions, resolve remote content, or predict classes assembled by string concatenation.
 
 (x) Do not construct partial class names.
 ```tsx
@@ -337,7 +337,7 @@ const className = error ? 'bg:red' : 'bg:green'
 <div className="font-size:$size@sm" style={{ '--size': size }}></div>
 ```
 
-For the full source scanning model, see [Extracting latent classes](/guide/extracting-latent-classes). For native CSS pruning, see [Shaking unused classes](/guide/shaking-unused-classes).
+For the full source scanning model, see [Scanning latent classes](/guide/scanning-latent-classes). For native CSS pruning, see [Shaking unused classes](/guide/shaking-unused-classes).
 
 ---
 

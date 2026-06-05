@@ -1,4 +1,4 @@
-import { scanExtractModule } from './extract'
+import { scanStaticModule } from './static'
 
 interface LoaderContext {
     resourcePath: string
@@ -9,22 +9,22 @@ interface LoaderContext {
     }
 }
 
-export default function masterCSSNextExtractLoader(this: LoaderContext, source: string) {
+export default function masterCSSNextStaticLoader(this: LoaderContext, source: string) {
     this.cacheable?.(false)
     const callback = this.async?.()
     const statePath = this.getOptions?.().statePath
 
     if (!callback) {
-        throw new Error('[@master/css.next] Extract loader requires an async loader context.')
+        throw new Error('[@master/css.next] Static loader requires an async loader context.')
     }
 
     if (!statePath) {
-        const error = new Error('[@master/css.next] Missing extract loader statePath option.')
+        const error = new Error('[@master/css.next] Missing static loader statePath option.')
         callback(error)
         return
     }
 
-    const run = scanExtractModule(statePath, this.resourcePath, source)
+    const run = scanStaticModule(statePath, this.resourcePath, source)
         .then(() => {
             callback(null, source)
         })

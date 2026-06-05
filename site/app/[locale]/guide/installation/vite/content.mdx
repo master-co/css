@@ -27,7 +27,7 @@
             ### <StepNum />Set up Master CSS
             Add a `masterCSS` vite plugin in `vite.config.js`.
 
-            This example uses static extraction. Use `masterCSS()` without options when you want runtime rendering instead.
+            This example uses static rendering. Use `masterCSS()` without options when you want runtime rendering instead.
         </StepL>
         <StepR>
             ```js name=vite.config.js
@@ -37,7 +37,7 @@
             export default defineConfig({
                 plugins: [
                     masterCSS({ // [!code highlight]
-                        mode: 'extract' // [!code highlight]
+                        mode: 'static' // [!code highlight]
                     }) // [!code highlight]
                 ]
             })

@@ -1,4 +1,4 @@
-import { addExtractCSSDependencies, transformExtractStyleSource } from './extract'
+import { addStaticCSSDependencies, transformStaticStyleSource } from './static'
 
 interface LoaderContext {
     resourcePath: string
@@ -10,22 +10,22 @@ interface LoaderContext {
     }
 }
 
-export default function masterCSSNextExtractCSSLoader(this: LoaderContext, source: string) {
+export default function masterCSSNextStaticCSSLoader(this: LoaderContext, source: string) {
     this.cacheable?.(false)
     const callback = this.async?.()
     const statePath = this.getOptions?.().statePath
 
     if (!callback) {
-        throw new Error('[@master/css.next] Extract CSS loader requires an async loader context.')
+        throw new Error('[@master/css.next] Static CSS loader requires an async loader context.')
     }
 
     if (!statePath) {
-        callback(new Error('[@master/css.next] Missing extract CSS loader statePath option.'))
+        callback(new Error('[@master/css.next] Missing static CSS loader statePath option.'))
         return
     }
 
-    const run = addExtractCSSDependencies(statePath, this.addDependency?.bind(this))
-        .then(() => transformExtractStyleSource(statePath, this.resourcePath, source))
+    const run = addStaticCSSDependencies(statePath, this.addDependency?.bind(this))
+        .then(() => transformStaticStyleSource(statePath, this.resourcePath, source))
         .then((content) => callback(null, content))
         .catch((error: Error) => callback(error))
 

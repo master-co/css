@@ -12,6 +12,6 @@ export default (props: Props) => create({
     props,
     metadata,
     dictionaries,
-    title: 'Static Extraction',
-    icon: 'nextjs'
+    title: 'Static Rendering',
+    icon: 'angular'
 })

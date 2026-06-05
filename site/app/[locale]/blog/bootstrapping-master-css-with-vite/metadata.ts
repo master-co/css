@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
     title: 'Master CSS Vite: one plugin for every rendering mode',
-    description: 'A cleaner Vite integration for runtime rendering, static extraction, pre-rendering, and progressive rendering.',
+    description: 'A cleaner Vite integration for runtime rendering, static rendering, pre-rendering, and progressive rendering.',
     category: 'New Feature',
     authors: [
         { name: 'Aron' }

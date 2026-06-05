@@ -212,7 +212,7 @@ describe('StyleEntryBuildPlugin (D1 placeholder-leak warn)', () => {
             ctx.extractor.validClasses = new Set(['btn'])
             ctx.extractor.usedNativeClasses = new Set(['native-card'])
             ctx.extractor.options.includeClasses = []
-            const styleEntryPlugin = StyleEntryPlugin({ mode: 'extract' } as any, ctx)
+            const styleEntryPlugin = StyleEntryPlugin({ mode: 'static' } as any, ctx)
             const plugin = StyleEntryBuildPlugin({} as any, ctx)
             const warn = vi.fn()
 
@@ -269,7 +269,7 @@ describe('StyleEntryBuildPlugin (D1 placeholder-leak warn)', () => {
             }
             ctx.extractor.latentClasses = new Set(['btn', 'native-used'])
 
-            const styleEntryPlugin = StyleEntryPlugin({ mode: 'extract' } as any, ctx)
+            const styleEntryPlugin = StyleEntryPlugin({ mode: 'static' } as any, ctx)
             const plugin = StyleEntryBuildPlugin({} as any, ctx)
             const warn = vi.fn()
 

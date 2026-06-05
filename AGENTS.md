@@ -9,7 +9,7 @@ Master CSS is a markup-driven CSS language and framework. Class strings such as 
 - Core generation in `packages/core`
 - Browser runtime rendering and hydration in `packages/runtime`
 - Server-side HTML rendering in `packages/server`
-- Static source extraction in `packages/extractor`
+- Static rendering source scanning in `packages/extractor`
 - Build integrations such as `packages/vite` and `packages/webpack`
 - Editor and lint tooling in `packages/language-service`, `packages/language-server`, `packages/language`, `packages/vscode`, and `packages/eslint-plugin`
 
@@ -86,7 +86,7 @@ Type(Target): Summary
 - `Type` must be one of `Bump`, `Feat`, `New`, `Perf`, `Add`, `Update`, `Improve`, `Fix`, `Deprecate`, `Drop`, `Docs`, `Upgrade`, `Revert`, `Example`, `Test`, `Refactor`, `Chore`, or `Misc`.
 - `Target` is required for this monorepo. Use the affected workspace, package, or role, such as `Core`, `Runtime`, `Extractor`, `CLI`, `Site`, `Repo`, or `AI`.
 - `Type`, `Target`, and `Summary` use sentence case. Do not end the summary with a period.
-- Examples: `Fix(Core): Parse escaped selectors`, `Docs(Site): Update box shadow reference`, `Test(CLI): Cover extract watch mode`.
+- Examples: `Fix(Core): Parse escaped selectors`, `Docs(Site): Update box shadow reference`, `Test(CLI): Cover watch output`.
 
 ## CSS Output Policy
 
@@ -95,7 +95,7 @@ Any CSS output change must be reviewed as a behavior change. Explain:
 - Which classes/configs changed output
 - Why the old output was wrong or incomplete
 - Which tests or fixtures prove the new output
-- Whether runtime hydration, static extraction, language service, ESLint, docs, or examples are affected
+- Whether runtime hydration, static rendering, language service, ESLint, docs, or examples are affected
 
 ## Testing Policy
 

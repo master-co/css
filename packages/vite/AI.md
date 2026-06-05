@@ -2,7 +2,7 @@
 
 ## Responsibility
 
-`@master/css.vite` integrates Master CSS into Vite. It supports `runtime`, `extract`, `pre-render`, and `progressive` modes, handles config and preloaded virtual modules, maintains the shared extractor usage graph, manages stylesheet entries, injects runtime/virtual CSS imports, avoids FOUC, and pre-renders HTML.
+`@master/css.vite` integrates Master CSS into Vite. It supports `runtime`, `static`, `pre-render`, and `progressive` modes, handles config and preloaded virtual modules, maintains the shared extractor usage graph, manages stylesheet entries, injects runtime/virtual CSS imports, avoids FOUC, and pre-renders HTML.
 
 ## Inputs And Outputs
 
@@ -12,7 +12,7 @@
 ## Architecture Notes
 
 - The extractor lifecycle is shared by every mode. It collects class usage and supports native CSS shaking regardless of whether the mode emits generated utilities.
-- `extract` mode differs by setting `includeGeneratedCSS`; the style entry pipeline is not extract-only.
+- `static` mode differs by setting `includeGeneratedCSS`; the style entry pipeline is not static-only.
 - `virtual:master-css-config` is the project-level Config API. It must not manage stylesheet output or extractor usage.
 - `virtual:master-css-preloaded` is derived from the managed CSS entry output and must only describe generated variables/keyframes that runtime should treat as already present.
 - The style entry plugin only handles CSS files that Vite imports. Do not scan the workspace here to discover unimported CSS config entries.
@@ -49,7 +49,7 @@
 
 - HTML entry detection in FOUC transforms.
 - Runtime HTML injection and its interaction with Vite HTML transforms.
-- Static extraction HMR.
+- Static rendering HMR.
 - `transformIndexHtml` pre-render behavior.
 - SvelteKit pre-render skip.
 

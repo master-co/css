@@ -36,7 +36,7 @@ Compared with Tailwind:
 
 - Syntax is closer to CSS declarations, such as `font:24`, `fg:red`, `bg:blue:hover@sm`.
 - Selectors and at-rules are first-class syntax suffixes.
-- Runtime and progressive rendering are supported in addition to static extraction.
+- Runtime and progressive rendering are supported in addition to static rendering.
 - Config defines utilities, variables, selector tokens, at tokens, functions, modes, and animations. Reusable component classes are static utilities in the `components` layer.
 
 Compared with CSS-in-JS:

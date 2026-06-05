@@ -2,7 +2,7 @@ Today we are introducing `@master/css.next`, the official Master CSS integration
 
 The headline is Progressive Rendering through the Next.js Adapter API. The adapter plugs into the Next.js build pipeline, receives the final static and pre-rendered HTML outputs, renders the Master CSS rules each document needs, and writes them back into the page as `<style id="master">`.
 
-This release also includes Static Extraction for Turbopack, so teams that prefer a generated CSS asset can use a source-scanned workflow. That path is useful, but it is secondary to the larger integration: Master CSS can now render from the HTML that Next.js actually produced.
+This release also includes Static Rendering for Turbopack, so teams that prefer a generated CSS asset can use a source-scanned workflow. That path is useful, but it is secondary to the larger integration: Master CSS can now render from the HTML that Next.js actually produced.
 
 <ArticleTOC data={toc}/>
 
@@ -101,7 +101,7 @@ There is no second syntax and no separate critical CSS file to maintain. You sti
 
 ## Install it
 
-For the full setup, follow [Progressive Rendering in Next.js](/guide/installation/nextjs). If your project needs a source-scanned CSS build instead, use [Static Extraction in Next.js](/guide/installation/nextjs/static-extraction).
+For the full setup, follow [Progressive Rendering in Next.js](/guide/installation/nextjs). If your project needs a source-scanned CSS build instead, use [Static Rendering in Next.js](/guide/installation/nextjs/static-rendering).
 
 Import Master CSS from the stylesheet your app already loads. This stylesheet also serves as the project CSS entry:
 
@@ -158,11 +158,11 @@ npm run start
 
 ---
 
-## Static Extraction for Turbopack
+## Static Rendering for Turbopack
 
 `@master/css.next` also supports a source-scanned CSS workflow for projects that do not need runtime rendering or route-level HTML pre-rendering.
 
-Extract mode uses the same Master CSS stylesheet import model as the other build integrations:
+Static mode uses the same Master CSS stylesheet import model as the other build integrations:
 
 ```css name=app/globals.css
 @import '@master/css';
@@ -176,7 +176,7 @@ Extract mode uses the same Master CSS stylesheet import model as the other build
 }
 ```
 
-Then enable extract mode in `next.config.mjs`:
+Then enable static mode in `next.config.mjs`:
 
 ```js name=next.config.mjs
 import { withMasterCSS } from '@master/css.next'
@@ -185,31 +185,31 @@ import { withMasterCSS } from '@master/css.next'
 const nextConfig = await withMasterCSS({
     // your Next.js config
 }, {
-    mode: 'extract'
+    mode: 'static'
 })
 
 export default nextConfig
 ```
 
-Under the hood, extract mode scans the configured source files with `@master/css-extractor` and writes a generated CSS file under `.master/`. A Turbopack CSS loader replaces `@import "@master/css"` with that generated CSS, and stylesheets that import `@master/css` are treated as native CSS shaking roots by default.
+Under the hood, static mode scans the configured source files with `@master/css-extractor` and writes a generated CSS file under `.master/`. A Turbopack CSS loader replaces `@import "@master/css"` with that generated CSS, and stylesheets that import `@master/css` are treated as native CSS shaking roots by default.
 
-Ordinary class selectors in those roots are pruned against detected classes. References to `var(--*)` or configured animation names can pull matching variables and keyframes from the project CSS entry graph. During Turbopack builds, a scanner loader also reads JavaScript and TypeScript modules that pass through the module graph, so imported files can incrementally feed additional class names into the extractor.
+Ordinary class selectors in those roots are pruned against detected classes. References to `var(--*)` or configured animation names can pull matching variables and keyframes from the project CSS entry graph. During Turbopack builds, a scanner loader also reads JavaScript and TypeScript modules that pass through the module graph, so imported files can incrementally feed additional class names into the scanner.
 
-This mode is intentionally source-scanned. It works best when complete class strings are visible in source files, and source-glob extraction remains the production correctness baseline.
+This mode is intentionally source-scanned. It works best when complete class strings are visible in source files, and source-glob scanning remains the production correctness baseline.
 
 ---
 
 ## Different from Tailwind CSS
 
-The useful comparison is not that source extraction is radically different. In extract mode, Master CSS and Tailwind CSS have a similar constraint: the scanner needs complete class names that are visible in source.
+The useful comparison is not that source scanning is radically different. In static mode, Master CSS and Tailwind CSS have a similar constraint: the scanner needs complete class names that are visible in source.
 
-[Tailwind detects classes by scanning source files as plain text](https://tailwindcss.com/docs/detecting-classes-in-source-files), then generates CSS for the utilities it can detect. Master CSS Static Extraction for Next.js follows the same general shape: scan source, generate CSS, and let the build load that generated stylesheet.
+[Tailwind detects classes by scanning source files as plain text](https://tailwindcss.com/docs/detecting-classes-in-source-files), then generates CSS for the utilities it can detect. Master CSS Static Rendering for Next.js follows the same general shape: scan source, generate CSS, and let the build load that generated stylesheet.
 
 The larger difference is Progressive Rendering.
 
 With `@master/css.next`, the first CSS pass can start from the HTML that Next.js has already rendered. That means layout composition, MDX output, generated markup, Server Component output, and route-level rendering all converge into one artifact before Master CSS renders the page CSS.
 
-For source extraction, a dynamic class still needs to resolve to complete class strings in source. For Progressive Rendering, a pre-rendered route can produce the final class list in HTML first:
+For source scanning, a dynamic class still needs to resolve to complete class strings in source. For Progressive Rendering, a pre-rendered route can produce the final class list in HTML first:
 
 ```tsx
 export function Badge({ tone }: {
@@ -233,7 +233,7 @@ If a pre-rendered route outputs this HTML:
 
 The practical difference:
 
-- In extract mode, Master CSS and Tailwind CSS both depend on statically discoverable source classes.
+- In static mode, Master CSS and Tailwind CSS both depend on statically discoverable source classes.
 - Tailwind CSS focuses on a compile-time stylesheet generated from source detection.
 - Master CSS Next.js can instead use Progressive Rendering to inline first-render CSS from Next.js HTML output.
 - The Master CSS runtime remains available for UI that cannot be known at build time.
@@ -248,7 +248,7 @@ This is a different tradeoff, not a claim that one pipeline replaces the other. 
 
 Dynamic SSR responses still rely on the Master CSS runtime engine, because those responses are produced at request time rather than in the completed build output. This is intentional: the first HTML response gets the CSS that can be known at build time, and the runtime continues the rendering model where the page becomes dynamic.
 
-In extract mode, the generated CSS asset comes from source scanning. It works best when the complete class strings are visible in source files. The Turbopack scanner loader improves incremental updates for modules that pass through the build, but source-glob extraction remains the production correctness baseline.
+In static mode, the generated CSS asset comes from source scanning. It works best when the complete class strings are visible in source files. The Turbopack scanner loader improves incremental updates for modules that pass through the build, but source-glob scanning remains the production correctness baseline.
 
 If another integration already owns Next.js `adapterPath`, use runtime mode until adapter composition is available.
 

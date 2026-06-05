@@ -1,7 +1,7 @@
 import type { Config } from '@master/css'
 import type { Options as ExtractorOptions } from '@master/css-extractor'
 
-export type Mode = 'pre-render' | 'extract' | null
+export type Mode = 'pre-render' | 'static' | null
 
 export interface Options {
     /**
@@ -14,7 +14,7 @@ export interface Options {
      */
     config?: Config
     /**
-     * Extractor options for static extraction mode.
+     * Extractor options for static rendering mode.
      */
     extractorOptions?: ExtractorOptions
     /**

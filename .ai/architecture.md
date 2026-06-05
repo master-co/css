@@ -85,11 +85,11 @@ Important files:
 
 ## Integration Packages
 
-`packages/vite` coordinates runtime, extract, pre-render, and progressive modes.
+`packages/vite` coordinates runtime, static, pre-render, and progressive modes.
 
-`packages/webpack` provides static extraction through Webpack virtual modules.
+`packages/webpack` provides static rendering through Webpack virtual modules.
 
-`packages/next` integrates pre-render and extract modes without depending on Webpack-specific extraction internals.
+`packages/next` integrates pre-render and static modes without depending on Webpack-specific extraction internals.
 
 Framework packages wrap those lower layers for Astro, Nuxt, React, Vue, and Svelte.
 

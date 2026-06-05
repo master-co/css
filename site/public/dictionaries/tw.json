@@ -46,7 +46,7 @@
     "Unstyled Content": "無樣式內容",
     "Critical Resources": "關鍵資源",
     "Runtime Rendering": "即時編譯",
-    "Static Extraction": "預先編譯",
+    "Static Rendering": "預先編譯",
     "Progressive Rendering": "漸進式渲染",
     "Get started with Master CSS": "開始使用 Master CSS",
     "code": "程式碼",

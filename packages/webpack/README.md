@@ -70,4 +70,4 @@ Add the client type reference when TypeScript source files import `virtual:maste
 ```
 
 ## Documentation
-Check out the official [documentation](https://rc.css.master.co/guide/installation/webpack/static-extraction).
+Check out the official [documentation](https://rc.css.master.co/guide/installation/webpack).

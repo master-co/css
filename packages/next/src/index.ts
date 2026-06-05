@@ -16,10 +16,10 @@ import {
     ensureVirtualPreloadedModulePath
 } from '@master/css-integration/node'
 import {
-    prepareNextExtract,
-    resolveExtractOutputPath,
-    resolveExtractStatePath,
-} from './extract'
+    prepareNextStatic,
+    resolveStaticOutputPath,
+    resolveStaticStatePath,
+} from './static'
 import { registerOptions, resolveOptions, type Options } from './options'
 
 type WithAdapterPath<T extends NextConfig> = T & { adapterPath: string }
@@ -49,12 +49,12 @@ function resolveStyleCSSLoaderPath() {
     return fileURLToPath(new URL('./style-css-loader.mjs', import.meta.url))
 }
 
-function resolveExtractLoaderPath() {
-    return fileURLToPath(new URL('./extract-loader.mjs', import.meta.url))
+function resolveStaticLoaderPath() {
+    return fileURLToPath(new URL('./static-loader.mjs', import.meta.url))
 }
 
-function resolveExtractCSSLoaderPath() {
-    return fileURLToPath(new URL('./extract-css-loader.mjs', import.meta.url))
+function resolveStaticCSSLoaderPath() {
+    return fileURLToPath(new URL('./static-css-loader.mjs', import.meta.url))
 }
 
 function resolveEmptyCSSPath() {
@@ -221,7 +221,7 @@ function applyMasterCSSTurbopackConfig(
     }
 }
 
-function createExtractSourceRule(path: RegExp, as: string, type: 'typescript' | 'ecmascript') {
+function createStaticSourceRule(path: RegExp, as: string, type: 'typescript' | 'ecmascript') {
     return {
         condition: {
             all: [
@@ -259,13 +259,13 @@ function createCSSConfigImportSourceRules(cssConfigImportLoaderPath: string, pro
     }] as const)
 }
 
-function applyMasterCSSExtractTurbopackConfig(
+function applyMasterCSSStaticTurbopackConfig(
     nextConfig: NextConfig,
     cssConfigLoaderPath: string,
     cssConfigImportLoaderPath: string,
     styleCSSLoaderPath: string,
-    extractLoaderPath: string,
-    extractCSSLoaderPath: string,
+    staticLoaderPath: string,
+    staticCSSLoaderPath: string,
     virtualCSSPath: string,
     virtualConfigPath: string,
     virtualPreloadedPath: string,
@@ -275,24 +275,24 @@ function applyMasterCSSExtractTurbopackConfig(
     const turbopackConfig = applyMasterCSSTurbopackConfig(nextConfig, cssConfigLoaderPath, cssConfigImportLoaderPath, styleCSSLoaderPath, virtualCSSPath, virtualConfigPath, virtualPreloadedPath, projectDir, false)
     const rules = turbopackConfig.rules || {}
     const starRules = toRuleArray(rules['*'])
-    const extractLoader = {
-        loader: extractLoaderPath,
+    const staticLoader = {
+        loader: staticLoaderPath,
         options: {
             statePath
         }
     }
     const sourceRules = [
-        createExtractSourceRule(/\.tsx$/, '*.tsx', 'typescript'),
-        createExtractSourceRule(/\.ts$/, '*.ts', 'typescript'),
-        createExtractSourceRule(/\.mts$/, '*.mts', 'typescript'),
-        createExtractSourceRule(/\.cts$/, '*.cts', 'typescript'),
-        createExtractSourceRule(/\.jsx$/, '*.jsx', 'ecmascript'),
-        createExtractSourceRule(/\.js$/, '*.js', 'ecmascript'),
-        createExtractSourceRule(/\.mjs$/, '*.mjs', 'ecmascript'),
-        createExtractSourceRule(/\.cjs$/, '*.cjs', 'ecmascript')
+        createStaticSourceRule(/\.tsx$/, '*.tsx', 'typescript'),
+        createStaticSourceRule(/\.ts$/, '*.ts', 'typescript'),
+        createStaticSourceRule(/\.mts$/, '*.mts', 'typescript'),
+        createStaticSourceRule(/\.cts$/, '*.cts', 'typescript'),
+        createStaticSourceRule(/\.jsx$/, '*.jsx', 'ecmascript'),
+        createStaticSourceRule(/\.js$/, '*.js', 'ecmascript'),
+        createStaticSourceRule(/\.mjs$/, '*.mjs', 'ecmascript'),
+        createStaticSourceRule(/\.cjs$/, '*.cjs', 'ecmascript')
     ].map((rule) => ({
         ...rule,
-        loaders: [extractLoader]
+        loaders: [staticLoader]
     }))
     const cssImportRule = {
         condition: {
@@ -305,7 +305,7 @@ function applyMasterCSSExtractTurbopackConfig(
         },
         loaders: [
             {
-                loader: extractCSSLoaderPath,
+                loader: staticCSSLoaderPath,
                 options: {
                     statePath
                 }
@@ -352,7 +352,7 @@ function createConfigWithCSSConfigLoader<T extends NextConfig>(
 }
 
 export function withMasterCSS<T extends NextConfig>(nextConfig: T, options: Options & { mode: null }): T
-export function withMasterCSS<T extends NextConfig>(nextConfig: T, options: Options & { mode: 'extract' }): Promise<T>
+export function withMasterCSS<T extends NextConfig>(nextConfig: T, options: Options & { mode: 'static' }): Promise<T>
 export function withMasterCSS<T extends NextConfig>(nextConfig?: T, options?: Options): WithAdapterPath<T>
 export function withMasterCSS<T extends NextConfig>(nextConfig: T = {} as T, options: Options = {}): T | WithAdapterPath<T> | Promise<T> {
     const projectDir = process.cwd()
@@ -367,23 +367,23 @@ export function withMasterCSS<T extends NextConfig>(nextConfig: T = {} as T, opt
     const turbopackVirtualPreloadedPath = toTurbopackProjectPath(virtualPreloadedPath, projectDir)
     registerOptions(options)
 
-    if (resolvedOptions.mode === 'extract') {
-        return prepareNextExtract(options, {
+    if (resolvedOptions.mode === 'static') {
+        return prepareNextStatic(options, {
             watch: process.env.NODE_ENV === 'development'
         }).then((setup) => {
             if (!setup) return nextConfig
-            const outputPath = resolveExtractOutputPath(setup.projectDir)
-            const statePath = resolveExtractStatePath(outputPath)
+            const outputPath = resolveStaticOutputPath(setup.projectDir)
+            const statePath = resolveStaticStatePath(outputPath)
             const turbopackVirtualCSSPath = toTurbopackProjectPath(outputPath, setup.projectDir)
             return {
                 ...nextConfig,
-                turbopack: applyMasterCSSExtractTurbopackConfig(
+                turbopack: applyMasterCSSStaticTurbopackConfig(
                     nextConfig,
                     cssConfigLoaderPath,
                     cssConfigImportLoaderPath,
                     styleCSSLoaderPath,
-                    resolveExtractLoaderPath(),
-                    resolveExtractCSSLoaderPath(),
+                    resolveStaticLoaderPath(),
+                    resolveStaticCSSLoaderPath(),
                     turbopackVirtualCSSPath,
                     turbopackVirtualConfigPath,
                     turbopackVirtualPreloadedPath,

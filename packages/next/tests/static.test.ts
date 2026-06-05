@@ -3,24 +3,24 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { beforeEach, describe, expect, it } from 'vitest'
 import {
-    prepareNextExtract,
-    resolveExtractOutputPath,
-    resolveExtractScanLogPath,
-    resolveExtractStatePath
-} from '../src/extract'
-import masterCSSNextExtractCSSLoader from '../src/extract-css-loader'
-import masterCSSNextExtractLoader from '../src/extract-loader'
+    prepareNextStatic,
+    resolveStaticOutputPath,
+    resolveStaticScanLogPath,
+    resolveStaticStatePath
+} from '../src/static'
+import masterCSSNextStaticCSSLoader from '../src/static-css-loader'
+import masterCSSNextStaticLoader from '../src/static-loader'
 
 function createFixture() {
-    const root = mkdtempSync(join(tmpdir(), 'master-css-next-extract-'))
+    const root = mkdtempSync(join(tmpdir(), 'master-css-next-static-'))
     mkdirSync(join(root, 'app'), { recursive: true })
     writeFileSync(join(root, 'app/globals.css'), '@import "@master/css";')
     return root
 }
 
-function runExtractLoader(statePath: string, resourcePath: string, source: string) {
+function runStaticLoader(statePath: string, resourcePath: string, source: string) {
     return new Promise<string>((resolve, reject) => {
-        const context: ThisParameterType<typeof masterCSSNextExtractLoader> = {
+        const context: ThisParameterType<typeof masterCSSNextStaticLoader> = {
             resourcePath,
             cacheable: () => undefined,
             getOptions: () => ({ statePath }),
@@ -33,19 +33,19 @@ function runExtractLoader(statePath: string, resourcePath: string, source: strin
             }
         }
 
-        masterCSSNextExtractLoader.call(context, source)
+        masterCSSNextStaticLoader.call(context, source)
     })
 }
 
-function runExtractCSSLoader(statePath: string, resourcePath: string, source: string) {
-    return runExtractCSSLoaderWithDependencies(statePath, resourcePath, source)
+function runStaticCSSLoader(statePath: string, resourcePath: string, source: string) {
+    return runStaticCSSLoaderWithDependencies(statePath, resourcePath, source)
         .then((result) => result.content)
 }
 
-function runExtractCSSLoaderWithDependencies(statePath: string, resourcePath: string, source: string) {
+function runStaticCSSLoaderWithDependencies(statePath: string, resourcePath: string, source: string) {
     const dependencies: string[] = []
     return new Promise<string>((resolve, reject) => {
-        const context: ThisParameterType<typeof masterCSSNextExtractCSSLoader> = {
+        const context: ThisParameterType<typeof masterCSSNextStaticCSSLoader> = {
             resourcePath,
             addDependency: (dependency) => dependencies.push(dependency),
             cacheable: () => undefined,
@@ -59,13 +59,13 @@ function runExtractCSSLoaderWithDependencies(statePath: string, resourcePath: st
             }
         }
 
-        masterCSSNextExtractCSSLoader.call(context, source)
+        masterCSSNextStaticCSSLoader.call(context, source)
     }).then((content) => ({ content, dependencies }))
 }
 
-describe('Next extract mode', () => {
+describe('Next static mode', () => {
     beforeEach(() => {
-        globalThis.__MASTER_CSS_NEXT_EXTRACT_SESSIONS__ = new Map()
+        globalThis.__MASTER_CSS_NEXT_STATIC_SESSIONS__ = new Map()
     })
 
     it('writes extracted CSS from source files including imported modules', async () => {
@@ -81,9 +81,9 @@ describe('Next extract mode', () => {
             export const mainClass = 'block m:0'
         `)
 
-        const outputPath = resolveExtractOutputPath(root)
+        const outputPath = resolveStaticOutputPath(root)
 
-        await prepareNextExtract({ mode: 'extract' }, { projectDir: root })
+        await prepareNextStatic({ mode: 'static' }, { projectDir: root })
 
         const css = readFileSync(outputPath, 'utf-8')
         expect(css).toContain('display:block')
@@ -105,10 +105,10 @@ describe('Next extract mode', () => {
             }
         `)
 
-        const outputPath = resolveExtractOutputPath(root)
-        const statePath = resolveExtractStatePath(outputPath)
+        const outputPath = resolveStaticOutputPath(root)
+        const statePath = resolveStaticStatePath(outputPath)
 
-        await prepareNextExtract({ mode: 'extract' }, { projectDir: root })
+        await prepareNextStatic({ mode: 'static' }, { projectDir: root })
 
         const source = `
             @import "@master/css";
@@ -121,7 +121,7 @@ describe('Next extract mode', () => {
                 --color-primary: #ff0000;
             }
         `
-        const replaced = await runExtractCSSLoader(statePath, join(root, 'app/globals.css'), source)
+        const replaced = await runStaticCSSLoader(statePath, join(root, 'app/globals.css'), source)
         expect(replaced).toBe('@import "../.master/next.css";')
         expect(replaced).not.toContain('.main')
         expect(readFileSync(outputPath, 'utf-8')).toContain('.main')
@@ -138,12 +138,12 @@ describe('Next extract mode', () => {
             }
         `)
 
-        const outputPath = resolveExtractOutputPath(root)
-        const statePath = resolveExtractStatePath(outputPath)
+        const outputPath = resolveStaticOutputPath(root)
+        const statePath = resolveStaticStatePath(outputPath)
 
-        await prepareNextExtract({ mode: 'extract' }, { projectDir: root })
+        await prepareNextStatic({ mode: 'static' }, { projectDir: root })
 
-        const replaced = await runExtractCSSLoader(statePath, join(root, 'app/globals.css'), `
+        const replaced = await runStaticCSSLoader(statePath, join(root, 'app/globals.css'), `
             @import "@master/css";
 
             .main {
@@ -172,12 +172,12 @@ describe('Next extract mode', () => {
             @import "../theme.css";
         `)
 
-        const outputPath = resolveExtractOutputPath(root)
-        const statePath = resolveExtractStatePath(outputPath)
+        const outputPath = resolveStaticOutputPath(root)
+        const statePath = resolveStaticStatePath(outputPath)
 
-        await prepareNextExtract({ mode: 'extract' }, { projectDir: root })
+        await prepareNextStatic({ mode: 'static' }, { projectDir: root })
 
-        const result = await runExtractCSSLoaderWithDependencies(
+        const result = await runStaticCSSLoaderWithDependencies(
             statePath,
             join(root, 'app/globals.css'),
             '@import "@master/css";'
@@ -190,17 +190,17 @@ describe('Next extract mode', () => {
 
     it('ignores app stylesheets with @master when they do not import @master/css', async () => {
         const root = createFixture()
-        const outputPath = resolveExtractOutputPath(root)
-        const statePath = resolveExtractStatePath(outputPath)
+        const outputPath = resolveStaticOutputPath(root)
+        const statePath = resolveStaticStatePath(outputPath)
 
-        await prepareNextExtract({ mode: 'extract' }, { projectDir: root })
+        await prepareNextStatic({ mode: 'static' }, { projectDir: root })
 
         const source = `
             @master {
                 --color-primary: #00f;
             }
         `
-        const replaced = await runExtractCSSLoader(statePath, join(root, 'app/theme.css'), source)
+        const replaced = await runStaticCSSLoader(statePath, join(root, 'app/theme.css'), source)
 
         expect(replaced).toBe(source)
         expect(readFileSync(outputPath, 'utf-8')).not.toContain('--color-primary')
@@ -208,12 +208,12 @@ describe('Next extract mode', () => {
 
     it('lets the scanner loader feed an imported module into the extractor incrementally', async () => {
         const root = createFixture()
-        const outputPath = resolveExtractOutputPath(root)
-        const statePath = resolveExtractStatePath(outputPath)
-        const scanLogPath = resolveExtractScanLogPath(outputPath)
+        const outputPath = resolveStaticOutputPath(root)
+        const statePath = resolveStaticStatePath(outputPath)
+        const scanLogPath = resolveStaticScanLogPath(outputPath)
 
-        await prepareNextExtract({
-            mode: 'extract',
+        await prepareNextStatic({
+            mode: 'static',
             extractorOptions: {
                 include: []
             }
@@ -225,7 +225,7 @@ describe('Next extract mode', () => {
         const source = `
             export const mainClass = 'block m:0'
         `
-        await expect(runExtractLoader(statePath, modulePath, source)).resolves.toBe(source)
+        await expect(runStaticLoader(statePath, modulePath, source)).resolves.toBe(source)
 
         const css = readFileSync(outputPath, 'utf-8')
         expect(css).toContain('display:block')
@@ -245,9 +245,9 @@ describe('Next extract mode', () => {
             }
         `)
 
-        const outputPath = resolveExtractOutputPath(root)
+        const outputPath = resolveStaticOutputPath(root)
 
-        await prepareNextExtract({ mode: 'extract' }, { projectDir: root })
+        await prepareNextStatic({ mode: 'static' }, { projectDir: root })
 
         const css = readFileSync(outputPath, 'utf-8')
         expect(css).toContain('display:block')

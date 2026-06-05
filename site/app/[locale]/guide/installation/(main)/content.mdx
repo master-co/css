@@ -1,7 +1,7 @@
 import Footer from './footer.mdx'
 
 ## Installation [sr-only]
-Start with Vite and the official plugin. This quick start uses [static extraction](/guide/rendering-modes#static-extraction) for generated CSS.
+Start with Vite and the official plugin. This quick start uses [static rendering](/guide/rendering-modes#static-rendering) for generated CSS.
 
 <StepSection>
     <Step $row>
@@ -30,7 +30,7 @@ Start with Vite and the official plugin. This quick start uses [static extractio
     <Step $row>
         <StepL>
             ### <StepNum />Configure Vite
-            Register `masterCSS()` in extract mode.
+            Register `masterCSS()` in static mode.
         </StepL>
         <StepR>
             ```js name=vite.config.js
@@ -40,7 +40,7 @@ Start with Vite and the official plugin. This quick start uses [static extractio
             export default defineConfig({
                 plugins: [
                     masterCSS({ // [!code highlight]
-                        mode: 'extract' // [!code highlight]
+                        mode: 'static' // [!code highlight]
                     }) // [!code highlight]
                 ]
             })

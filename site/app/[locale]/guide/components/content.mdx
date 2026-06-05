@@ -1,7 +1,7 @@
 ## Overview [sr-only]
 Components are named style compositions for UI patterns such as buttons, cards, fields, and layout shells. They are useful when a repeated class list becomes a design-system concept instead of one-off styling.
 
-In the project CSS entry or a local CSS file imported by it, define components in top-level `@layer components`. The definitions are converted into static `config.utilities` entries with `layer: 'components'`; they are not emitted by themselves. Master CSS generates component CSS only when the component class is used in markup, extracted from source files, or composed by another CSS-defined style. If you are deciding whether a style should become a component at all, read [Reusing Styles](/guide/reusing-styles) first.
+In the project CSS entry or a local CSS file imported by it, define components in top-level `@layer components`. The definitions are converted into static `config.utilities` entries with `layer: 'components'`; they are not emitted by themselves. Master CSS generates component CSS only when the component class is used in markup, scanned from source files, or composed by another CSS-defined style. If you are deciding whether a style should become a component at all, read [Reusing Styles](/guide/reusing-styles) first.
 
 ---
 
@@ -91,7 +91,7 @@ When the selector is derived from the same component class, nest the selector in
 }
 ```
 
-Use native CSS when the selector is part of a stylesheet surface you already ship. Use components when the class should behave like a generated Master CSS class and only emit when it appears in markup or extraction.
+Use native CSS when the selector is part of a stylesheet surface you already ship. Use components when the class should behave like a generated Master CSS class and only emit when it appears in markup or source scanning.
 
 ---
 
@@ -167,7 +167,7 @@ For a configured selector such as `.btn:disabled > span`, `btn:hover` becomes `:
 ---
 
 ## Generation behavior
-Component definitions are config, not output. Defining `.btn` does not generate CSS until `btn` appears in extracted classes or is composed by another CSS-defined style.
+Component definitions are config, not output. Defining `.btn` does not generate CSS until `btn` appears in scanned classes or is composed by another CSS-defined style.
 
 ```css name=index.css
 @layer components {
@@ -186,7 +186,7 @@ Component definitions are config, not output. Defining `.btn` does not generate 
 <button class="btn">Save</button>
 ```
 
-This keeps unused component definitions out of the final CSS. In Vite extract mode, the project CSS entry and its imported local CSS files can hold the definitions while the extractor and style compiler decide which classes are actually used or composed.
+This keeps unused component definitions out of the final CSS. In Vite static mode, the project CSS entry and its imported local CSS files can hold the definitions while the scanner and style compiler decide which classes are actually used or composed.
 
 ---
 

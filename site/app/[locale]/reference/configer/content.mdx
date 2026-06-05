@@ -5,7 +5,7 @@
 
 `@master/css-configer` is the shared project config boundary for CLI commands, ESLint, language tooling, and build integrations such as Vite, Next.js, Webpack, and Nuxt.
 
-It discovers project CSS entries and Master CSS workspace roots, then delegates CSS parsing, import graph resolution, and semantic config compilation to `@master/css-compiler`. The extractor stays focused on class/source extraction; callers pass it the compiled config and source directives.
+It discovers project CSS entries and Master CSS workspace roots, then delegates CSS parsing, import graph resolution, and semantic config compilation to `@master/css-compiler`. The extractor stays focused on class/source scanning; callers pass it the compiled config and source directives.
 
 Project entry discovery only treats CSS files with top-level `@master;` or `@import '@master/css'` as entries. Imported `@master {}` blocks participate in the entry graph, but they are not independent project entries. JavaScript/TypeScript config files are intentionally unsupported.
 

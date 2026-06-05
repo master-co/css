@@ -20,11 +20,11 @@ const extractor = new CSSExtractor(options, cwd)
 
 `cwd` is used to change the directory where [`.config`](#config), [`.include`](#include), [`.exclude`](#exclude) and [`.sources`](#sources) are currently running.
 
-`CSSExtractor` is the business logic encapsulation of Master CSS Static Extraction, which is usually used by build tools or third-party package authors.
+`CSSExtractor` is the source-scanning engine behind Master CSS Static Rendering, which is usually used by build tools or third-party package authors.
 
 This package is specific to the **Node.js** environment.
 
-To start using Master CSS static extraction, check out the [guide](http://localhost:3000/guide/installation) first.
+To start using Master CSS static rendering, check out the [guide](http://localhost:3000/guide/installation) first.
 
 🚧 Check out the [source code](https://github.com/master-co/css/blob/dev/rc/packages/extractor/src/core.ts) temporarily.
 
@@ -66,7 +66,7 @@ Typically you would use it with the following limitations:
 - Class names from asynchronous data.
 
 ### `options.excludeClasses`
-Exclude class names accidentally extracted by the scanning process.
+Exclude class names accidentally accepted by the scanning process.
 <DocProp defaultValue={options.excludeClasses} types={['(string | RegExp)[]']} />
 
 ### CSS directives

@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
     title: 'Making Master CSS faster across Core, Extractor, and Runtime',
-    description: 'A technical look at the latest performance work in rule generation, static extraction, and browser mutation tracking.',
+    description: 'A technical look at the latest performance work in rule generation, static rendering, and browser mutation tracking.',
     category: 'Engineering',
     authors: [
         { name: 'Aron' }

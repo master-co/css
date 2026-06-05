@@ -250,7 +250,7 @@ describe('withMasterCSS', () => {
         ]))
     })
 
-    it('sets up extract mode with Turbopack rules without adding a webpack callback', async () => {
+    it('sets up static mode with Turbopack rules without adding a webpack callback', async () => {
         const cwd = process.cwd()
         const root = mkdtempSync(join(tmpdir(), 'master-css-next-config-'))
         mkdirSync(join(root, 'app'), { recursive: true })
@@ -259,7 +259,7 @@ describe('withMasterCSS', () => {
         try {
             process.chdir(root)
             const nextConfig = await withMasterCSS({}, {
-                mode: 'extract'
+                mode: 'static'
             }) as any
 
             expect(nextConfig.webpack).toBeUndefined()
@@ -278,7 +278,7 @@ describe('withMasterCSS', () => {
                     loaders: [
                         expect.objectContaining({
                             options: expect.objectContaining({
-                                statePath: expect.stringContaining('next-extract-state.json')
+                                statePath: expect.stringContaining('next-static-state.json')
                             })
                         })
                     ]

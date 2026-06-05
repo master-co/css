@@ -1,5 +1,5 @@
 ## Overview [sr-only]
-Static extraction starts by finding latent classes. A latent class is a possible class name found in source text before Master CSS has proved whether it is a valid utility, configured class, or native class from a shaken stylesheet.
+Static rendering starts by finding latent classes. A latent class is a possible class name found in source text before Master CSS has proved whether it is a valid utility, configured class, or native class from a shaken stylesheet.
 
 ```txt
 source text
@@ -8,7 +8,7 @@ source text
   -> generated CSS
 ```
 
-The extractor does not run your app. It reads files as text, collects strings that may be classes, and lets the Master CSS engine decide which candidates can produce CSS.
+The scanner does not run your app. It reads files as text, collects strings that may be classes, and lets the Master CSS engine decide which candidates can produce CSS.
 
 ```html name=src/index.html
 <!-- @MARK card p:md bg:surface shadow:md -->
@@ -31,12 +31,12 @@ The source contains `card`, `p:md`, `bg:surface`, `shadow:md`, `font:lg`, and `f
 }
 ```
 
-The same extraction model is used by build integrations and by tools that call `@master/css-extractor` directly.
+The same scanning model is used by build integrations and by tools that call `@master/css-extractor` directly.
 
 ---
 
 ## Source boundaries
-The extractor only sees files inside its source boundary. Configure that boundary with `@master source`, `@master source exclude`, and, when needed, `@master source force`.
+The scanner only sees files inside its source boundary. Configure that boundary with `@master source`, `@master source exclude`, and, when needed, `@master source force`.
 
 ```css name=index.css
 @master;
@@ -54,12 +54,12 @@ The extractor only sees files inside its source boundary. Configure that boundar
 @master source force 'app/admin/critical-classes.ts';
 ```
 
-In Vite, transformed modules are also fed to the extractor during development. That makes updates fast, but production correctness still depends on class names that exist in scanned source files or are explicitly included.
+In Vite, transformed modules are also fed to the scanner during development. That makes updates fast, but production correctness still depends on class names that exist in scanned source files or are explicitly included.
 
 ---
 
-## Candidate extraction
-Extraction is intentionally broad. The scanner looks through markup, JSX, strings, template literals, object maps, and framework files for tokens that could be class names.
+## Candidate scanning
+Scanning is intentionally broad. The scanner looks through markup, JSX, strings, template literals, object maps, and framework files for tokens that could be class names.
 
 ```tsx name=src/Button.tsx
 const toneClasses = {
@@ -76,7 +76,7 @@ export function Button({ danger }: { danger?: boolean }) {
 }
 ```
 
-The extractor can see all complete class strings in this file:
+The scanner can see all complete class strings in this file:
 
 ```txt
 bg:surface
@@ -101,7 +101,7 @@ Words such as `function`, `return`, `No`, `invoices`, and `found` may be discove
 ---
 
 ## Validation
-After candidate extraction, Master CSS validates each class against the active config graph. A candidate can be accepted in three common ways:
+After candidate scanning, Master CSS validates each class against the active config graph. A candidate can be accepted in three common ways:
 
 - It is a built-in utility, such as `block`, `fg:red`, or `grid-cols:3`.
 - It is defined by your project config.
@@ -137,7 +137,7 @@ Configured classes are still on-demand. Defining `.btn` in the project CSS entry
 ---
 
 ## Complete classes
-Extraction works when the complete class string exists in source. It cannot infer class names from fragments, data returned by an API, or values assembled after startup.
+Static rendering works when the complete class string exists in source. It cannot infer class names from fragments, data returned by an API, or values assembled after startup.
 
 (x) Do not build class names from fragments.
 
@@ -145,7 +145,7 @@ Extraction works when the complete class string exists in source. It cannot infe
 const className = 'bg:' + (error ? 'red' : 'green')
 ```
 
-The complete strings `bg:red` and `bg:green` do not exist in source, so a static extractor cannot reliably generate either rule.
+The complete strings `bg:red` and `bg:green` do not exist in source, so static rendering cannot reliably generate either rule.
 
 (o) Write complete class names.
 
@@ -197,7 +197,7 @@ function Headline({ size }: { size: string }) {
 }
 ```
 
-The class `font-size:$headline-size` is complete and extractable. The runtime value lives in `--headline-size`, which is normal CSS.
+The class `font-size:$headline-size` is complete and visible to the scanner. The runtime value lives in `--headline-size`, which is normal CSS.
 
 Use the same pattern for data-driven sizes, positions, and progress values.
 
@@ -236,7 +236,7 @@ Use `@master class exclude` when broad scanning finds tokens that look like vali
 @master class exclude 'example-token';
 ```
 
-Keep both lists small. The most reliable extraction path is still complete class strings in source.
+Keep both lists small. The most reliable scanning path is still complete class strings in source.
 
 ---
 
@@ -245,7 +245,7 @@ Keep both lists small. The most reliable extraction path is still complete class
 - Map variants to complete class strings.
 - Use CSS variables for runtime values.
 - Keep source globs broad enough to include framework files and content files.
-- Use `@master class` only for bounded classes the extractor cannot see.
+- Use `@master class` only for bounded classes the scanner cannot see.
 - Use `@master class exclude` for real false positives.
 - Use runtime or progressive rendering for classes created after startup.
 - Import [`@master/css`](/guide/shaking-unused-classes) from stylesheet roots whose native CSS class rules should be usage-shaken.

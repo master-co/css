@@ -1,6 +1,6 @@
 Vite is one of the best foundations for modern frontend work: fast startup, predictable module graph, first-class plugins, and a build pipeline that is easy to extend without making the application feel heavy.
 
-`@master/css.vite` brings Master CSS into that pipeline as a first-class Vite integration. Instead of choosing between several setup guides, manual runtime imports, extraction scripts, and HTML post-processing steps, you install one plugin and choose the rendering model that matches your application.
+`@master/css.vite` brings Master CSS into that pipeline as a first-class Vite integration. Instead of choosing between several setup guides, manual runtime imports, scanning scripts, and HTML post-processing steps, you install one plugin and choose the rendering model that matches your application.
 
 The goal is simple: keep Master CSS authoring as direct as markup, while letting Vite own the integration work.
 
@@ -10,12 +10,12 @@ The goal is simple: keep Master CSS authoring as direct as markup, while letting
 
 ## One plugin, four rendering modes
 
-The original Vite integration focused on Static Extraction. It worked well for projects that wanted a compiled stylesheet, but the rest of the Master CSS rendering story still required manual setup.
+The original Vite integration focused on Static Rendering. It worked well for projects that wanted a compiled stylesheet, but the rest of the Master CSS rendering story still required manual setup.
 
 The new `@master/css.vite` plugin unifies the modes behind one entry point:
 
 - `runtime`: injects the Master CSS runtime and config so styles can be generated in the browser.
-- `extract`: wires Master CSS stylesheet imports into the static extraction workflow.
+- `static`: wires Master CSS stylesheet imports into the static rendering workflow.
 - `pre-render`: renders HTML output and injects the CSS needed by those documents.
 - `progressive`: combines pre-rendered first-response CSS with the runtime engine for dynamic UI.
 
@@ -73,9 +73,9 @@ export default defineConfig({
 })
 ```
 
-### Static Extraction
+### Static Rendering
 
-Use extract mode when your classes are visible in source and you want a compiled CSS asset before runtime. This is the closest mode to traditional utility-first build workflows.
+Use static mode when your classes are visible in source and you want a compiled CSS asset before runtime. This is the closest mode to traditional utility-first build workflows.
 
 ```js name=vite.config.js
 import { defineConfig } from 'vite'
@@ -83,7 +83,7 @@ import masterCSS from '@master/css.vite'
 
 export default defineConfig({
     plugins: [
-        masterCSS({ mode: 'extract' })
+        masterCSS({ mode: 'static' })
     ]
 })
 ```
@@ -130,7 +130,7 @@ This is the mode that best represents the Master CSS rendering model: render wha
 - detects common Vite entry modules;
 - keeps the default stylesheet as an explicit `@import "@master/css"` in app CSS;
 - injects the runtime where runtime behavior is enabled;
-- handles static extraction output;
+- handles static rendering output;
 - pre-renders HTML when the selected mode requires it;
 - applies FOUC avoidance for runtime-first rendering.
 
@@ -148,7 +148,7 @@ Vite is also the build foundation for many frameworks. `@master/css.vite` is the
 export default defineNuxtConfig({
     modules: [
         '@master/css.nuxt' // progressive by default [!code highlight]
-        // ['@master/css.nuxt', { mode: 'extract' }]
+        // ['@master/css.nuxt', { mode: 'static' }]
         // ['@master/css.nuxt', { mode: 'runtime' }]
         // ['@master/css.nuxt', { mode: 'pre-render' }]
     ]
@@ -163,7 +163,7 @@ import masterCSS from '@master/css.astro'
 export default defineConfig({
     integrations: [
         masterCSS() // 'runtime' [!code highlight]
-        // masterCSS({ mode: 'extract' })
+        // masterCSS({ mode: 'static' })
     ]
 })
 ```
@@ -174,7 +174,7 @@ export default defineConfig({
 
 The value of this release is not only that setup is shorter. It is that the rendering strategy is now explicit and local to the Vite config.
 
-Start with runtime mode when you want speed and flexibility. Move to Static Extraction when your class graph is source-visible and you want compiled CSS. Use Pre-rendering when the HTML is already available at build time. Choose Progressive Rendering when you want the first page response to be styled early without giving up runtime behavior.
+Start with runtime mode when you want speed and flexibility. Move to Static Rendering when your class graph is source-visible and you want compiled CSS. Use Pre-rendering when the HTML is already available at build time. Choose Progressive Rendering when you want the first page response to be styled early without giving up runtime behavior.
 
 That is the kind of choice a build tool should enable: one integration, multiple delivery strategies, and no extra application code when you change modes.
 

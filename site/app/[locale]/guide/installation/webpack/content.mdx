@@ -15,8 +15,8 @@
     </Step>
     <Step $row>
         <StepL>
-            ### <StepNum />Install Master CSS Extractor
-            Install the Master CSS extractor into your project via package managers.
+            ### <StepNum />Install Master CSS Webpack
+            Install the Master CSS Webpack integration into your project via package managers.
         </StepL>
         <StepR>
             ```bash action=install
@@ -38,7 +38,7 @@
     <Step $row>
         <StepL>
             ### <StepNum />Create a Webpack config file
-            Create and configure the `webpack.config.mjs` file. The extractor scans `src/index.html` and your JavaScript modules, then writes generated CSS into the stylesheet that imports `@master/css`.
+            Create and configure the `webpack.config.mjs` file. The scanner reads `src/index.html` and your JavaScript modules, then writes generated CSS into the stylesheet that imports `@master/css`.
         </StepL>
         <StepR>
             ```js name=webpack.config.mjs
