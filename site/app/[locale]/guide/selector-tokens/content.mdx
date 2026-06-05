@@ -47,8 +47,8 @@ Generated CSS:
 
 ---
 
-## Use selector tokens in components
-Inside managed component layers, prefer native nested selectors instead of putting selector suffixes inside `@compose`.
+## Use selector tokens in CSS-defined styles
+Inside CSS-defined style rules, prefer native nested selectors instead of putting selector suffixes inside `@compose`.
 
 ```css name=index.css
 @master {
@@ -64,9 +64,13 @@ Inside managed component layers, prefer native nested selectors instead of putti
         }
     }
 }
+
+.native-link:interactive {
+    @compose "fg:primary";
+}
 ```
 
-This keeps the utility list reusable and makes the selector structure visible in CSS. The compiler resolves `:interactive` before grouping component definitions, so repeated definitions for the same resolved selector are merged.
+This keeps the utility list reusable and makes the selector structure visible in CSS. The compiler resolves `:interactive` before grouping managed definitions or lowering native style rules, so repeated definitions for the same resolved selector are merged.
 
 ---
 

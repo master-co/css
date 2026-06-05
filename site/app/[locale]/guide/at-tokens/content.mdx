@@ -45,8 +45,8 @@ Generated CSS:
 
 ---
 
-## Use at tokens in managed definitions
-Inside `@layer components` and `@layer utilities`, use `@at` blocks instead of putting conditional suffixes inside `@compose`. This keeps the composed utility list plain and lets the surrounding CSS structure describe the condition.
+## Use at tokens in CSS rules
+Inside managed definitions and native style rules, use `@at` blocks instead of putting conditional suffixes inside `@compose`. This keeps the composed utility list plain and lets the surrounding CSS structure describe the condition.
 
 ```css name=index.css
 @master {
@@ -60,6 +60,14 @@ Inside `@layer components` and `@layer utilities`, use `@at` blocks instead of p
         @at motion-safe {
             @compose "animation:fade-in|fast";
         }
+    }
+}
+
+.native-card {
+    @compose "p:md r:xl";
+
+    @at motion-safe {
+        @compose "animation:fade-in|fast";
     }
 }
 ```

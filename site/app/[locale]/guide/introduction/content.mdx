@@ -31,7 +31,7 @@ Think of each class as a small CSS statement:
 
 Under the hood, Master CSS generates real CSS rules, adds [vendor prefixes](/guide/browser-support), places rules in predictable [cascade layers](/guide/cascade-layers), and [orders CSS rules](#smart-rule-ordering) for you. You keep the styling decision close to the element, while the engine handles the CSS output.
 
-For one-off interface work, you can stay in markup. When a value, selector, or repeated pattern becomes part of your product vocabulary, move it into the [project CSS entry](/guide/configuration) as a token, selector token, at token, utility, or [component](/guide/components).
+For one-off interface work, you can stay in markup. When a value, selector, condition, primitive, native rule, or repeated pattern becomes part of your product vocabulary, move it into the [project CSS entry](/guide/configuration) as a token, selector token, at token, utility, native composed rule, or [component](/guide/components).
 
 ### Readable structured syntax
 Master CSS is not trying to put a second `style=""` attribute inside `class=""`. The syntax is CSS-like, but it is designed to be shorter, composable, and easier for tools to understand.
@@ -167,7 +167,7 @@ Master CSS is also a standalone CSS framework. It includes the core rule engine,
 </details>
 
 ### CSS-first configuration
-The project CSS entry is the primary configuration source. Tokens are native custom properties, selector shortcuts use `@custom-selector`, conditional shortcuts use `@custom-at`, low-level custom utilities live in `@layer utilities`, and semantic component classes live in `@layer components`.
+The project CSS entry is the primary configuration source. Tokens are native custom properties, selector shortcuts use `@custom-selector`, conditional shortcuts use `@custom-at`, low-level custom utilities live in `@layer utilities`, semantic component classes live in `@layer components`, and native CSS rules can use `@compose` when they should lower to ordinary stylesheet output.
 
 ```css name=index.css
 @master {
@@ -188,9 +188,17 @@ The project CSS entry is the primary configuration source. Tokens are native cus
         }
     }
 }
+
+.notice {
+    @compose "p:md r:lg";
+
+    @at motion-safe {
+        @compose "transition:opacity|fast|smooth";
+    }
+}
 ```
 
-The `@master` block is configuration, not regular stylesheet output. Master CSS compiles it into config, then generates only the classes used in markup or discovered by extractors.
+The `@master` block and managed layers are configuration, not regular stylesheet output. Master CSS compiles them into config, then generates only the classes used in markup, discovered by extractors, or composed by another CSS-defined style. Native rules such as `.notice` lower to CSS for the stylesheet that contains them.
 
 ### Rendering for different delivery models
 Master CSS provides three main [rendering modes](/guide/rendering-modes):
@@ -243,7 +251,7 @@ The default `@master/css/base.css` stylesheet declares the cascade layer order o
 @layer theme, base, preset, components, utilities;
 ```
 
-Generated CSS emits rules into `theme`, `base`, `preset`, `components`, and `utilities` blocks. `theme` emits variables, `base` normalizes the platform, `preset` holds broad defaults, `components` holds project vocabulary from `@master` component definitions, and `utilities` holds utility classes. Because `utilities` comes last, local utility decisions can override reusable project styles without reaching for `!important`.
+Generated CSS emits rules into `theme`, `base`, `preset`, `components`, and `utilities` blocks. `theme` emits variables, `base` normalizes the platform, `preset` holds broad defaults, `components` holds product vocabulary from CSS-defined component classes, and `utilities` holds utility classes. Because `utilities` comes last, local utility decisions can override reusable project styles without reaching for `!important`.
 
 ---
 
@@ -326,7 +334,7 @@ Then use the semantic classes in markup:
 </div>
 ```
 
-The component definitions stay on-demand. They are emitted in the `components` layer only when `card`, `card-image`, and the other component classes appear in markup or are discovered by extraction.
+The component definitions stay on-demand. They are emitted in the `components` layer only when `card`, `card-image`, and the other component classes appear in markup, are discovered by extraction, or are composed by another CSS-defined style.
 
 ---
 
@@ -417,7 +425,7 @@ The concern to separate is usually business responsibility: page layout, product
 
 > Separate responsibilities, not files by default.
 
-When the styling decision is local, markup is the clearest place for it. When the decision becomes shared vocabulary, promote it into tokens, utilities, or components.
+When the styling decision is local, markup is the clearest place for it. When the decision becomes shared vocabulary, promote it into tokens, utilities, native composed CSS, or components.
 
 ---
 

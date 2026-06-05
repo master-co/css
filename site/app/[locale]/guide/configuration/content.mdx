@@ -1,7 +1,7 @@
 ## Overview [sr-only]
 Your project CSS entry is the primary configuration source for Master CSS. It is where your project turns CSS knowledge into a configured design system: tokens are written as custom properties, conditions are written as at-rules, selectors stay selectors, and reusable UI patterns are written as class rules.
 
-That makes configuration feel closer to authoring CSS than filling out a JavaScript object. A single file can describe the scale of the system, the tokens it exposes, the conditions it understands, the utilities it adds, and the components it abstracts.
+That makes configuration feel closer to authoring CSS than filling out a JavaScript object. A single file can describe the scale of the system, the tokens it exposes, the conditions it understands, the utilities it adds, the components it abstracts, and the native CSS that composes Master CSS utilities.
 
 ```css name=index.css
 @master {
@@ -25,6 +25,10 @@ That makes configuration feel closer to authoring CSS than filling out a JavaScr
 }
 
 @layer utilities {
+    .flow {
+        @compose "grid gap:md";
+    }
+
     .content-auto {
         content-visibility: auto;
         contain-intrinsic-size: auto 32rem;
@@ -54,9 +58,17 @@ That makes configuration feel closer to authoring CSS than filling out a JavaScr
         transform: translateY(0);
     }
 }
+
+.native-card {
+    @compose "p:lg r:xl shadow:md";
+
+    @at dark {
+        @compose "shadow:none";
+    }
+}
 ```
 
-The `@master` rules are configuration, not regular stylesheet output. They are compiled into a Master CSS config object, then the engine generates CSS only for classes that appear in markup or are found by extractors.
+The `@master` rules are configuration, not regular stylesheet output. Managed class definitions in `@layer preset`, `@layer components`, and `@layer utilities` are also compiled into config-backed static utilities. Native style rules that contain `@compose` or `@at` are lowered into CSS after the config is resolved.
 
 If you do not have a CSS entry yet, create one by adding the project marker to `index.css`:
 
@@ -71,7 +83,7 @@ CSS-first configuration keeps the design system close to the platform. Instead o
 
 For teams, that means the configuration can be reviewed like CSS. Designers and engineers can read token declarations, scan component rules, and understand where custom utilities in the utilities layer come from. For tooling, it means one config graph can be compiled ahead of time and shared with renderers, extractors, language services, framework integrations, and lint rules.
 
-Build integrations discover the default graph from project CSS files that contain `@master;` or `@import '@master/css'`. The entry can define `@master` content directly, or import local CSS files that contain `@master` blocks. Use native CSS imports when the file grows; this keeps tokens, utilities, components, and animations in focused files without inventing a separate module system.
+Build integrations discover the default graph from project CSS files that contain `@master;` or `@import '@master/css'`. The entry can define `@master` content directly, or import local CSS files that contain Master CSS directives. Use native CSS imports when the file grows; this keeps tokens, utilities, components, native composed CSS, and animations in focused files without inventing a separate module system.
 
 ```css name=index.css
 @master;
@@ -90,12 +102,12 @@ Build integrations discover the default graph from project CSS files that contai
 }
 ```
 
-Local relative CSS imports are resolved as one configuration graph. Only `@master` content contributes to the config; ordinary CSS outside `@master` is ignored by the config compiler. Keep app-level native CSS in the stylesheet entry owned by your framework or bundler.
+Local relative CSS imports are resolved as one graph. The compiler consumes `@master`, top-level managed `@layer preset`, `@layer components`, `@layer utilities`, top-level `@keyframes`, and native style rules that contain `@compose` or `@at`. Regular CSS without Master CSS directives remains native CSS in the stylesheet pipeline.
 
-Only `@master` sections become configuration. Defining `.btn` this way does not emit `.btn` immediately; Master CSS still generates CSS only after `btn` is used by the active renderer or discovered by tooling.
+Managed class definitions become configuration. Defining `.btn` in `@layer components` does not emit `.btn` immediately; Master CSS still generates CSS only after `btn` is used by the active renderer, discovered by tooling, or composed by another CSS-defined style. A top-level native `.btn { @compose "..." }` rule is different: it lowers to normal CSS for that stylesheet instead of creating an on-demand component class.
 
 ### Config graph and style entries
-The project CSS entry is the config graph root. It can import files that contain tokens, mode blocks, custom at tokens, custom selector tokens, components, utilities, and keyframes. Build integrations load this graph automatically from the discovered entry, or from an explicit `Config` object passed to their `config` option.
+The project CSS entry is the config graph root. It can import files that contain tokens, mode blocks, custom at tokens, custom selector tokens, components, utilities, native composed CSS, and keyframes. Build integrations load this graph automatically from the discovered entry, or from an explicit `Config` object passed to their `config` option.
 
 Application stylesheets are different: they are browser-facing CSS entries. Import `@master/css` from the stylesheet your app already loads when that entry should receive generated Master CSS and default base/theme/utility definitions.
 
@@ -184,9 +196,13 @@ Use them in markup as at-rule suffixes:
 <div class="animation:fade-in|fast@motion-safe bg:white/.8@supports-backdrop"></div>
 ```
 
-Inside CSS-defined components and utilities, prefer `@at` blocks so the utility list stays plain.
+Inside CSS-defined style rules, prefer `@at` blocks so the utility list stays plain and the surrounding CSS structure describes the condition.
 
 ```css name=index.css
+@master {
+    @custom-at motion-safe @media (prefers-reduced-motion: no-preference);
+}
+
 @layer components {
     .toast {
         @at motion-safe {
@@ -201,7 +217,7 @@ See [At Tokens](/guide/at-tokens) for naming rules and conflict behavior.
 ---
 
 ## Custom selector tokens
-Use `@custom-selector` to name selectors that repeat across utilities or component definitions. The token keeps markup readable while the generated CSS still uses the real selector.
+Use `@custom-selector` to name selectors that repeat across utilities, components, or native style rules lowered by Master CSS. The token keeps markup readable while the generated CSS still uses the real selector.
 
 ```css name=index.css
 @master {
@@ -217,7 +233,7 @@ Use `@custom-selector` to name selectors that repeat across utilities or compone
 </article>
 ```
 
-Nested component selectors can use the same tokens:
+CSS-defined style selectors can use the same tokens:
 
 ```css name=index.css
 @layer components {
@@ -232,10 +248,14 @@ See [Selector Tokens](/guide/selector-tokens) for selector token usage in markup
 ---
 
 ## Utilities
-Use top-level `@layer utilities` for reusable primitives that should behave like utility classes. These are not semantic components; they are low-level capabilities you want available everywhere. CSS-defined utilities are static utilities: one class name maps to one set of native declarations.
+Use top-level `@layer utilities` for reusable primitives that should behave like utility classes. These are not semantic components; they are low-level capabilities you want available everywhere. CSS-defined utilities are static utilities: one class name maps to native declarations, composed declarations, nested selectors, and conditional rules.
 
 ```css name=index.css
 @layer utilities {
+    .flow {
+        @compose "grid gap:md";
+    }
+
     .content-auto {
         content-visibility: auto;
         contain-intrinsic-size: auto 32rem;
@@ -250,10 +270,10 @@ Use top-level `@layer utilities` for reusable primitives that should behave like
 ```
 
 ```html
-<article class="content-auto print-hidden">…</article>
+<article class="flow content-auto print-hidden">…</article>
 ```
 
-Utilities cannot use `@compose`. If the class describes a semantic UI pattern such as a button or card, use a component instead. See [Utilities](/guide/utilities) for details.
+Utilities can use `@compose`, but the naming rule still matters. If the class describes a semantic UI pattern such as a button or card, use a component instead. See [Utilities](/guide/utilities) for details.
 
 ---
 
@@ -278,7 +298,7 @@ Components are named style compositions for UI patterns such as `.btn`, `.card`,
 <button class="btn">Save changes</button>
 ```
 
-Component definitions are converted to config. They are generated only when the class is used in markup or extracted from source files.
+Component definitions are converted to config. They are generated only when the class is used in markup, extracted from source files, or composed by another CSS-defined style.
 
 ```css
 @layer components {
@@ -358,14 +378,14 @@ export default config
 
 If TypeScript cannot resolve the virtual import, add the shared integration client type reference: `@master/css-integration/client`.
 
-For most design-system work, prefer variables, static utilities in the utilities layer, components, and built-in Master CSS functions in the project CSS entry. Reach for `functions` only when a token or utility declaration cannot express the transformation.
+For most design-system work, prefer variables, static utilities in the utilities layer, components, native composed CSS, and built-in Master CSS functions in the project CSS entry. Reach for `functions` only when a token or utility declaration cannot express the transformation.
 
 ---
 
 ## Root options
 Root options live in the base `@master` block. They are the small set of decisions that shape every generated rule: how numbers convert to units, how spacing scales, where selectors are scoped, and how modes are written.
 
-Most projects set these once near the top of the project CSS entry, then spend most of their time defining tokens, utilities, and components below them.
+Most projects set these once near the top of the project CSS entry, then spend most of their time defining tokens, utilities, components, and native composed CSS below them.
 
 ```css name=index.css
 @master {
@@ -499,7 +519,7 @@ const merged = extendConfig(config, {
 const engine = new MasterCSS(merged)
 ```
 
-Use programmatic config for tests, library presets, integration glue, and executable extension points. Use the project CSS entry for app-level tokens, utilities, components, selectors, at tokens, animations, and structural CSS config.
+Use programmatic config for tests, library presets, integration glue, and executable extension points. Use the project CSS entry for app-level tokens, utilities, components, native composed CSS, selectors, at tokens, animations, and structural CSS config.
 
 ---
 
@@ -542,6 +562,7 @@ Configuration changes affect the generated CSS model. The default `@master/css/b
 - Variables generate theme rules only when referenced by generated utilities or components.
 - Components generate in the `components` layer only when their class is used.
 - Utilities generate in the `utilities` layer only when their class is used.
+- Native style rules with `@compose` or `@at` lower into CSS for the stylesheet that contains them.
 - Animations generate keyframes only when referenced.
 - Root options such as `scope`, `important`, `root-size`, and `base-unit` alter generated rules globally.
 

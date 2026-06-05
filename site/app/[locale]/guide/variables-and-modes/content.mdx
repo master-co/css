@@ -115,7 +115,7 @@ When a variable has mode-specific values, Master CSS emits a CSS custom property
 }
 ```
 
-The same mechanism applies when native declarations inside managed component definitions use `var(--color-primary)`: the theme variables are still generated when a component or utility references them.
+The same mechanism applies when native declarations inside managed definitions or native composed style rules use `var(--color-primary)`: the theme variables are still generated when a component, utility, or lowered native rule references them.
 
 ---
 
@@ -134,7 +134,7 @@ The same mechanism applies when native declarations inside managed component def
 | `class` | Uses class wrappers such as `.dark &`. |
 | `host` | Uses shadow host wrappers such as `:host(.dark) &`. |
 
-For component definitions, `@at dark` follows the same trigger:
+For CSS-defined style rules, `@at dark` follows the same trigger:
 
 ```css name=index.css
 @master {
@@ -148,9 +148,15 @@ For component definitions, `@at dark` follows the same trigger:
         }
     }
 }
+
+.notice {
+    @at dark {
+        @compose "fg:neutral-20";
+    }
+}
 ```
 
-With `mode-trigger: class`, the component selector becomes `.dark .btn`.
+With `mode-trigger: class`, the selectors become `.dark .btn` and `.dark .notice`.
 
 ---
 

@@ -1,7 +1,7 @@
 ## Overview [sr-only]
 Components are named style compositions for UI patterns such as buttons, cards, fields, and layout shells. They are useful when a repeated class list becomes a design-system concept instead of one-off styling.
 
-In the project CSS entry or a local CSS file imported by it, define components in top-level `@layer components`. The definitions are converted into static `config.utilities` entries with `layer: 'components'`; they are not emitted by themselves. Master CSS generates component CSS only when the component class is used in markup or extracted from source files. If you are deciding whether a style should become a component at all, read [Reusing Styles](/guide/reusing-styles) first.
+In the project CSS entry or a local CSS file imported by it, define components in top-level `@layer components`. The definitions are converted into static `config.utilities` entries with `layer: 'components'`; they are not emitted by themselves. Master CSS generates component CSS only when the component class is used in markup, extracted from source files, or composed by another CSS-defined style. If you are deciding whether a style should become a component at all, read [Reusing Styles](/guide/reusing-styles) first.
 
 ---
 
@@ -49,7 +49,7 @@ The generated CSS is emitted in the `components` layer:
 ---
 
 ## Composition
-`@compose` accepts Master CSS utility declarations. Keep it quoted so grouped declarations and punctuation-heavy syntax can be parsed without ambiguity. In component definitions, put selector states in nested selectors and put conditional variants in `@at` blocks.
+`@compose` accepts Master CSS utility declarations and CSS-defined utilities or components. Keep it quoted so grouped declarations and punctuation-heavy syntax can be parsed without ambiguity. In component definitions, put selector states in nested selectors and put conditional variants in `@at` blocks.
 
 ```css name=index.css
 @layer components {
@@ -65,6 +65,33 @@ The generated CSS is emitted in the `components` layer:
 ```
 
 When the selector is derived from the same component class, nest the selector inside the component rule. In the example above, `size:12x` is generated for `.empty-state::before`, not for `.empty-state`.
+
+---
+
+## Compose outside components
+`@compose` is not limited to component definitions. It can also be used in CSS-defined utilities and native style rules. The difference is output ownership:
+
+- `@layer components`, `@layer preset`, and `@layer utilities` create on-demand managed class definitions.
+- Native style rules lower to ordinary CSS in the stylesheet that contains them.
+
+```css name=index.css
+@layer utilities {
+    .flow {
+        @compose "grid gap:md";
+    }
+}
+
+.marketing-card {
+    @compose "flow p:lg r:xl shadow:md";
+    background: var(--color-surface);
+
+    @at dark {
+        @compose "shadow:none";
+    }
+}
+```
+
+Use native CSS when the selector is part of a stylesheet surface you already ship. Use components when the class should behave like a generated Master CSS class and only emit when it appears in markup or extraction.
 
 ---
 
@@ -140,7 +167,7 @@ For a configured selector such as `.btn:disabled > span`, `btn:hover` becomes `:
 ---
 
 ## Generation behavior
-Component definitions are config, not output. Defining `.btn` does not generate CSS until `btn` appears in extracted classes.
+Component definitions are config, not output. Defining `.btn` does not generate CSS until `btn` appears in extracted classes or is composed by another CSS-defined style.
 
 ```css name=index.css
 @layer components {
@@ -159,7 +186,7 @@ Component definitions are config, not output. Defining `.btn` does not generate 
 <button class="btn">Save</button>
 ```
 
-This keeps unused component definitions out of the final CSS. In Vite extract mode, the project CSS entry and its imported local CSS files can hold the definitions while the extractor decides which classes are actually used.
+This keeps unused component definitions out of the final CSS. In Vite extract mode, the project CSS entry and its imported local CSS files can hold the definitions while the extractor and style compiler decide which classes are actually used or composed.
 
 ---
 
@@ -257,15 +284,16 @@ Use native CSS `@import` from the project CSS entry to organize components.
 }
 ```
 
-Local relative `.css` imports are compiled into one config graph. `@master` config blocks, top-level managed layers, and top-level `@keyframes` contribute to the Master CSS config; ordinary CSS outside those managed targets should live in your app stylesheet pipeline.
+Local relative `.css` imports are compiled into one graph. `@master` config blocks, top-level managed layers, top-level `@keyframes`, and native style rules with `@compose` or `@at` are consumed by the Master CSS compiler; ordinary CSS outside those managed targets remains native CSS in your app stylesheet pipeline.
 
 ---
 
 ## Rules and constraints
 - Put component definitions in top-level `@layer components`; use `@layer preset` only when a definition intentionally belongs to the earlier preset layer.
 - Component selectors must start with a single class selector such as `.btn`, `.card`, or `.field::before`.
-- `@compose` is only valid inside component definitions.
+- `@compose` is valid inside managed class definitions and native style rules.
 - Component definitions accept native declarations, `@compose`, nested selectors, native nested at-rules, and `@at` condition blocks.
+- CSS-defined managed classes can compose other CSS-defined managed classes. Circular `@compose` dependencies are invalid.
 - Standard HTML tag selectors such as `body` or `html` are not valid inside managed layer definitions.
 - Utilities still win over components because `@master/css/base.css` declares `@layer theme, base, preset, components, utilities;`.
 

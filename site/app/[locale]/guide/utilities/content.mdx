@@ -1,18 +1,22 @@
 ## Overview [sr-only]
 Master CSS utilities are the class syntax definitions that map class names to CSS declarations. Some utilities are fixed class names like `block` and `round`; others are value-based syntax like `font:16`, `bg:primary`, or `grid-cols:3`.
 
-Utilities work with [selector tokens](/guide/selector-tokens), [at tokens](/guide/at-tokens), modes, functions, and variables. Use them for reusable styling primitives. If you are defining semantic classes such as `.btn` or `.card`, use [components](/guide/components) instead.
+Utilities work with [selector tokens](/guide/selector-tokens), [at tokens](/guide/at-tokens), modes, functions, variables, and `@compose`. Use them for reusable styling primitives. If you are defining semantic classes such as `.btn` or `.card`, use [components](/guide/components) instead.
 
 ---
 
 ## Add a custom utility
-Use top-level `@layer utilities` only when your design system needs a reusable primitive that cannot be represented cleanly by existing utilities or components. CSS-defined utilities are currently static utilities: a class name maps to native declarations.
+Use top-level `@layer utilities` only when your design system needs a reusable primitive that cannot be represented cleanly by existing utilities or components. CSS-defined utilities are static utilities: a class name maps to native declarations, composed declarations, nested selectors, and conditional rules.
 <Overview />
 
-Custom utilities cannot use `@compose`. If you want to compose existing Master CSS utilities into a semantic class such as `.btn` or `.card`, use [components](/guide/components).
+Use `@compose` when a primitive should reuse existing Master CSS utilities. The composed utility list is resolved with the same rule priority as markup classes, then merged with native declarations in source order.
 
 ```css name=index.css
 @layer utilities {
+    .flow {
+        @compose "grid gap:md";
+    }
+
     .content-auto {
         content-visibility: auto;
         contain-intrinsic-size: auto 32rem;
@@ -29,11 +33,13 @@ Custom utilities cannot use `@compose`. If you want to compose existing Master C
 Use the utility in markup:
 
 ```html
-<!-- @MARK content-auto --><!-- @MARK print-hidden -->
-<section class="content-auto print-hidden">…</section>
+<!-- @MARK flow --><!-- @MARK content-auto --><!-- @MARK print-hidden -->
+<section class="flow content-auto print-hidden">…</section>
 ```
 
-Like components, utility definitions in the project CSS entry are converted into config. A custom utility is generated only when its class appears in markup or is extracted from source.
+Like components, utility definitions in the project CSS entry are converted into config. A custom utility is generated only when its class appears in markup, is extracted from source, or is composed by another CSS-defined style.
+
+(i) Use custom utilities for reusable primitives. Use [components](/guide/components) when the class name describes a product UI pattern such as `.btn`, `.card`, or `.field`.
 
 ---
 
