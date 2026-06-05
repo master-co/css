@@ -18,7 +18,9 @@ export default class VariableRule {
             for (const mode in variable.modes) {
                 const modeVariable = variable.modes[mode]
                 const variableRule = new VariableRuleNode(this, modeVariable, css, mode)
-                const isDefaultMode = hasDefaultValue ? false : this.css.config.defaultMode === mode
+                const isDefaultMode = hasDefaultValue
+                    ? false
+                    : this.css.config.defaultMode !== 'none' && this.css.config.defaultMode === mode
                 variableRule.isDefaultMode = isDefaultMode
                 if (isDefaultMode) {
                     this.nodes.unshift(variableRule)

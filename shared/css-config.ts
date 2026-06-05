@@ -67,6 +67,7 @@ export type UtilityDefinitions<
 
 export type VariableDefinitions = VariableDefinition[]
 export type ModeDefinitions = string[]
+export type DefaultModeDefinition = 'light' | 'dark' | 'none' | string
 
 export interface FunctionDefinition<TFunctionTransformerName extends string = string> {
     unit?: string
@@ -88,7 +89,7 @@ export interface Config<
     utilities?: UtilityDefinitions<TDeclarerName, TTransformerName, TDeclarations>
     rootSize?: number
     baseUnit?: number
-    defaultMode?: 'light' | 'dark' | string | false
+    defaultMode?: DefaultModeDefinition
     scope?: string
     important?: boolean
     functions?: FunctionDefinitions<TFunctionTransformerName>

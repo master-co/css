@@ -110,6 +110,25 @@ describe.concurrent('@master/css-compiler', () => {
         `).config.important).toBe(false)
     })
 
+    it('keeps default-mode none as the disabled default mode', () => {
+        const source = `
+            @master {
+                default-mode: none;
+            }
+        `
+
+        expect(compileCSS(source).config.defaultMode).toBe('none')
+        expect(compileCSSConfig(source).config.defaultMode).toBe('none')
+    })
+
+    it('rejects default-mode false', () => {
+        expect(() => compileCSS(`
+            @master {
+                default-mode: false;
+            }
+        `)).toThrow('default-mode must be a mode name or none')
+    })
+
     it('keeps raw variable names for core namespace resolution', () => {
         const result = compileCSS(`
             @master {

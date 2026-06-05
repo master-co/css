@@ -1,4 +1,4 @@
-import type { Config, UtilityLayerName, VariableValue } from './css-config.js'
+import type { Config, DefaultModeDefinition, UtilityLayerName, VariableValue } from './css-config.js'
 
 export type CSSDirectiveVariableValue = VariableValue
 
@@ -44,7 +44,7 @@ export interface CSSDirectiveConfig {
     utilities?: CSSDirectiveUtilityDefinition[]
     rootSize?: number
     baseUnit?: number
-    defaultMode?: 'light' | 'dark' | string | false
+    defaultMode?: DefaultModeDefinition
     scope?: string
     important?: boolean
     animations?: CSSDirectiveAnimationDefinitions

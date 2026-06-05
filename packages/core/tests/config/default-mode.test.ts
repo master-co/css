@@ -1,3 +1,4 @@
+import { expect, test } from 'vitest'
 import config from '../../src/config'
 import CSSTester from '../tester'
 import createCSSWithTheme from '../helpers/create-css-with-theme'
@@ -12,6 +13,24 @@ new CSSTester({ modeTrigger: 'class', defaultMode: 'light', variables: [{ namesp
         ],
         utilities: '.bg\\:invert{background-color:var(--color-invert)}'
     }
+})
+
+test.concurrent('default mode none disables root mode alias', () => {
+    const css = createCSSWithTheme({
+        modeTrigger: 'class',
+        defaultMode: 'none',
+        variables: [
+            { namespace: 'color', key: 'white', value: 'oklch(100% 0 none)' },
+            { namespace: 'color', key: 'black', value: 'oklch(0% 0 none)' },
+            { namespace: 'color', key: 'invert', value: '$color-black', mode: 'light' },
+            { namespace: 'color', key: 'invert', value: '$color-white', mode: 'dark' }
+        ],
+        modes: ['light', 'dark'],
+        utilities
+    }).add('bg:invert')
+
+    expect(css.themeLayer.text).toContain('.light{--color-invert:var(--color-black)}')
+    expect(css.themeLayer.text).not.toContain('.light,:root{--color-invert')
 })
 
 // test.concurrent('default mode with host modes', () => {

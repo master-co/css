@@ -207,14 +207,14 @@ function normalizeClassNames(classNames: string[]) {
     return classNames.join(' ').replace(/(?:\n\s*)+/g, ' ').trim().split(' ').filter(Boolean)
 }
 
-function parseBoolean(value: string) {
-    if (value === 'true') return true
-    if (value === 'false') return false
-}
-
 function parseOnOff(value: string) {
     if (value === 'on') return true
     if (value === 'off') return false
+}
+
+function parseDefaultMode(value: string): CSSDirectiveConfig['defaultMode'] {
+    if (value === 'false') throw new Error('default-mode must be a mode name or none')
+    return value
 }
 
 function parseNumber(value: string) {
@@ -274,7 +274,7 @@ function parseMasterOption(config: CSSDirectiveConfig, property: string, value: 
             return true
         }
         case 'default-mode':
-            config.defaultMode = parseBoolean(value) === false ? false : value as CSSDirectiveConfig['defaultMode']
+            config.defaultMode = parseDefaultMode(value)
             return true
         case 'mode-trigger':
             if (value !== 'class' && value !== 'media' && value !== 'host') {

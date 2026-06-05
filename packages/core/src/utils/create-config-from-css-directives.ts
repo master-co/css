@@ -82,6 +82,7 @@ type StyleAtRuleFeature = [string, number, number]
 
 const STYLE_AT_FEATURE_REGEX = /\(\s*(width|height|resolution)\s*(>=|<=|>|<)\s*(-?(?:\d+(?:\.\d+)?|\.\d+))([a-z%]*)\s*\)/g
 const MEDIA_MODE_NAMES = new Set(['light', 'dark'])
+const DEFAULT_MODE_NONE = 'none'
 
 function isCSSDirectiveResult(input: ConfigInput): input is CSSDirectiveResult {
     return 'config' in input
@@ -104,11 +105,14 @@ function warn(warnings: string[], options: CreateConfigFromCSSDirectivesOptions,
     options.onWarning?.(message)
 }
 
+function isNamedDefaultMode(defaultMode: Config['defaultMode']): defaultMode is string {
+    return typeof defaultMode === 'string' && defaultMode !== DEFAULT_MODE_NONE
+}
+
 function collectModeNames(config: Config) {
     const modes = new Set(config.modes || [])
-    if (typeof config.defaultMode === 'string') {
-        modes.add(config.defaultMode)
-    }
+    const defaultMode = config.defaultMode
+    if (isNamedDefaultMode(defaultMode)) modes.add(defaultMode)
     return modes
 }
 
@@ -261,8 +265,9 @@ function warnUnsupportedMediaModes(config: Config, options: CreateConfigFromCSSD
     if (mergedConfig.modeTrigger !== 'media') return
 
     const customModes = new Set((mergedConfig.modes || []).filter((mode) => !MEDIA_MODE_NAMES.has(mode)))
-    if (typeof mergedConfig.defaultMode === 'string' && !MEDIA_MODE_NAMES.has(mergedConfig.defaultMode)) {
-        customModes.add(mergedConfig.defaultMode)
+    const defaultMode = mergedConfig.defaultMode
+    if (isNamedDefaultMode(defaultMode) && !MEDIA_MODE_NAMES.has(defaultMode)) {
+        customModes.add(defaultMode)
     }
     if (!customModes.size) return
 
