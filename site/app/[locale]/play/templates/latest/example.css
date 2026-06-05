@@ -20,7 +20,7 @@
     }
 
     .card {
-        @compose "fg:neutral m:auto max-w:screen-3xs mt:lg_:where(p,ul) my:sm_:where(li) outline:1|lightest r:lg shadow:lg text:16_:where(p,li)";
+        @compose "fg:neutral m:auto max-w:screen-3xs mt:lg_:where(p,ul) my:sm_:where(li) outline:1|lightest r:lg shadow:lg text:md_:where(p,li)";
         background-color: var(--color-card);
     }
 
@@ -45,7 +45,7 @@
     }
 
     .hint {
-        @compose "italic mt:0 text:12";
+        @compose "italic mt:0 text:xs";
     }
 
     .btn {
