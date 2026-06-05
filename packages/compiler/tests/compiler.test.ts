@@ -40,7 +40,7 @@ describe.concurrent('@master/css-compiler', () => {
                 default-mode: dark;
                 mode-trigger: class;
                 scope: #app;
-                important;
+                important: on;
 
                 --color-primary: #123;
                 --screen-md: 768;
@@ -93,6 +93,19 @@ describe.concurrent('@master/css-compiler', () => {
         expect(result.css).toBe('')
         expect(result.generatedCSS).toBe('')
         expect(result.warnings).toEqual([])
+    })
+
+    it('converts important on and off declarations into booleans', () => {
+        expect(compileCSS(`
+            @master {
+                important: on;
+            }
+        `).config.important).toBe(true)
+        expect(compileCSS(`
+            @master {
+                important: off;
+            }
+        `).config.important).toBe(false)
     })
 
     it('keeps raw variable names for core namespace resolution', () => {
@@ -318,6 +331,59 @@ describe.concurrent('@master/css-compiler', () => {
         expect(result.css).toContain('.card .title')
         expect(result.css).not.toContain('.unused-card')
         expect(result.css).not.toContain('.btn{display:block}')
+    })
+
+    it('only consumes managed layers and keyframes at the stylesheet top level', () => {
+        const result = compileCSS(`
+            @media print {
+                @layer components {
+                    .native {
+                        color: red;
+                    }
+                }
+
+                @keyframes nested-fade {
+                    to {
+                        opacity: 1;
+                    }
+                }
+            }
+
+            @layer components {
+                .btn {
+                    @compose "block";
+                }
+            }
+
+            @keyframes fade {
+                to {
+                    opacity: 1;
+                }
+            }
+        `, { classes: ['native'] })
+
+        expect(result.componentDefinitions?.btn).toEqual([
+            {
+                type: 'compose',
+                order: 1,
+                className: 'block',
+                selector: '&',
+                layer: 'components'
+            }
+        ])
+        expect(result.config.animations).toEqual({
+            fade: {
+                to: {
+                    opacity: '1'
+                }
+            }
+        })
+        expect(result.css).toContain('@media print')
+        expect(result.css).toContain('@layer components')
+        expect(result.css).toContain('.native')
+        expect(result.css).toContain('@keyframes nested-fade')
+        expect(result.css).not.toContain('@keyframes fade{')
+        expect(result.css).not.toContain('.btn')
     })
 
     it('can remove native CSS for CSS config loading', () => {

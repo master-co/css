@@ -102,10 +102,8 @@ const MASTER_CUSTOM_AT_RULES = {
 
 type MasterSection = 'root'
 
-const IMPORTANT_FLAG_VALUE = '__master_important__'
 const UTILITY_LAYER_NAMES = new Set<CSSDirectiveLayerName>(['base', 'preset', 'components', 'utilities'])
 const TOP_LEVEL_DEFINITION_LAYER_NAMES = new Set<CSSDirectiveLayerName>(['preset', 'components', 'utilities'])
-const TOP_LEVEL_KEYFRAMES_AT_RULE = '@keyframes'
 const STANDALONE_MASTER_DIRECTIVE_NAMES = new Set(['', 'shake', 'no-shake', 'source', 'class'])
 
 const HTML_TAG_NAMES = new Set([
@@ -233,6 +231,11 @@ function parseBoolean(value: string) {
     if (value === 'false') return false
 }
 
+function parseOnOff(value: string) {
+    if (value === 'on') return true
+    if (value === 'off') return false
+}
+
 function parseNumber(value: string) {
     const numberValue = Number(value)
     if (!Number.isNaN(numberValue) && String(numberValue) === value) return numberValue
@@ -307,10 +310,9 @@ function parseMasterOption(config: CSSDirectiveConfig, property: string, value: 
             config.modeTrigger = value
             return true
         case 'important': {
-            if (value !== IMPORTANT_FLAG_VALUE) {
-                throw new Error('Use "important;" or "!important;" to enable important output')
-            }
-            config.important = true
+            const important = parseOnOff(value)
+            if (important === undefined) throw new Error('important must be on or off')
+            config.important = important
             return true
         }
         case 'modes':
@@ -1347,8 +1349,16 @@ function parseKeyframes(rule: any, config: CSSDirectiveConfig) {
     config.animations[name] = keyframes
 }
 
+function getCustomRulePrelude(rule: any) {
+    return rule.prelude ?? rule.value?.prelude
+}
+
+function getCustomRuleBody(rule: any) {
+    return rule.body ?? rule.value?.body
+}
+
 function getMasterSection(rule: any): MasterSection {
-    const prelude = formatPrelude(rule.prelude)
+    const prelude = formatPrelude(getCustomRulePrelude(rule))
     if (!prelude) return 'root'
     throw new Error(`Unsupported @master section: ${prelude}`)
 }
@@ -1468,7 +1478,11 @@ function parseMasterChildRule(child: Rule, parsed: ParsedDirectives, options: Co
 
 function parseMasterRule(rule: any, parsed: ParsedDirectives, options: CompileCSSOptions) {
     const section = getMasterSection(rule)
-    for (const child of rule.body.value as Rule[]) {
+    const body = getCustomRuleBody(rule)
+    if (!Array.isArray(body?.value)) {
+        throw new Error('@master requires a style block')
+    }
+    for (const child of body.value as Rule[]) {
         parseMasterChildRule(child, parsed, options, section)
     }
 }
@@ -1535,273 +1549,6 @@ function parseTopLevelLayerBlock(rule: any, parsed: ParsedDirectives) {
     for (const child of rule.value.rules as Rule[]) {
         parseTopLevelLayerChildRule(child, parsed, [], layerName as CSSDirectiveLayerName)
     }
-}
-
-type TopLevelMasterDefinitionKind = 'keyframes' | 'layer'
-
-function parseTopLevelMasterDefinition(source: string, kind: TopLevelMasterDefinitionKind, parsed: ParsedDirectives, options: CompileCSSOptions) {
-    getCSSTransform()({
-        filename: options.from || 'master.css',
-        code: encodeCSS(source),
-        customAtRules: MASTER_CUSTOM_AT_RULES,
-        visitor: {
-            Rule: kind === 'keyframes'
-                ? {
-                    keyframes(rule) {
-                        parseKeyframes(rule, parsed.config)
-                        return []
-                    }
-                }
-                : {
-                    'layer-block'(rule) {
-                        parseTopLevelLayerBlock(rule, parsed)
-                        return []
-                    }
-                }
-        }
-    })
-}
-
-function findMatchingBrace(source: string, openIndex: number) {
-    let depth = 0
-    let quote = ''
-    let comment = false
-    for (let index = openIndex; index < source.length; index++) {
-        const char = source[index]
-        const next = source[index + 1]
-        if (comment) {
-            if (char === '*' && next === '/') {
-                comment = false
-                index++
-            }
-            continue
-        }
-        if (quote) {
-            if (char === '\\') {
-                index++
-            } else if (char === quote) {
-                quote = ''
-            }
-            continue
-        }
-        if (char === '/' && next === '*') {
-            comment = true
-            index++
-            continue
-        }
-        if (char === '"' || char === '\'') {
-            quote = char
-            continue
-        }
-        if (char === '{') {
-            depth++
-            continue
-        }
-        if (char === '}') {
-            depth--
-            if (depth === 0) return index
-        }
-    }
-    return -1
-}
-
-function findTopLevelAtRuleBlock(source: string, start: number) {
-    let quote = ''
-    let comment = false
-    for (let index = start; index < source.length; index++) {
-        const char = source[index]
-        const next = source[index + 1]
-        if (comment) {
-            if (char === '*' && next === '/') {
-                comment = false
-                index++
-            }
-            continue
-        }
-        if (quote) {
-            if (char === '\\') {
-                index++
-            } else if (char === quote) {
-                quote = ''
-            }
-            continue
-        }
-        if (char === '/' && next === '*') {
-            comment = true
-            index++
-            continue
-        }
-        if (char === '"' || char === '\'') {
-            quote = char
-            continue
-        }
-        if (char === ';') return
-        if (char === '{') {
-            const closeIndex = findMatchingBrace(source, index)
-            if (closeIndex === -1) return
-            return {
-                openIndex: index,
-                closeIndex,
-                end: closeIndex + 1,
-                prelude: source.slice(start, index)
-            }
-        }
-    }
-}
-
-function isTopLevelAtRuleKeyword(source: string, index: number, keyword: string) {
-    return source.startsWith(keyword, index) && !isIdentChar(source[index + keyword.length])
-}
-
-function getTopLevelLayerDefinitionName(prelude: string) {
-    const match = /^@layer\s+([_a-zA-Z][-_a-zA-Z0-9]*)\s*$/.exec(prelude)
-    const layerName = match?.[1]
-    return TOP_LEVEL_DEFINITION_LAYER_NAMES.has(layerName as CSSDirectiveLayerName)
-        ? layerName as CSSDirectiveLayerName
-        : undefined
-}
-
-function consumeTopLevelMasterDefinitions(source: string, parsed: ParsedDirectives, options: CompileCSSOptions) {
-    let output = ''
-    let offset = 0
-    let quote = ''
-    let comment = false
-    let depth = 0
-    for (let index = 0; index < source.length; index++) {
-        const char = source[index]
-        const next = source[index + 1]
-        if (comment) {
-            if (char === '*' && next === '/') {
-                comment = false
-                index++
-            }
-            continue
-        }
-        if (quote) {
-            if (char === '\\') {
-                index++
-            } else if (char === quote) {
-                quote = ''
-            }
-            continue
-        }
-        if (char === '/' && next === '*') {
-            comment = true
-            index++
-            continue
-        }
-        if (char === '"' || char === '\'') {
-            quote = char
-            continue
-        }
-        if (depth === 0 && isTopLevelAtRuleKeyword(source, index, TOP_LEVEL_KEYFRAMES_AT_RULE)) {
-            const block = findTopLevelAtRuleBlock(source, index)
-            if (!block) continue
-            output += source.slice(offset, index)
-            parseTopLevelMasterDefinition(source.slice(index, block.end), 'keyframes', parsed, options)
-            offset = block.end
-            index = block.end - 1
-            continue
-        }
-        if (depth === 0 && isTopLevelAtRuleKeyword(source, index, '@layer')) {
-            const block = findTopLevelAtRuleBlock(source, index)
-            const layerName = block && getTopLevelLayerDefinitionName(block.prelude)
-            if (!block || !layerName) continue
-            output += source.slice(offset, index)
-            parseTopLevelMasterDefinition(source.slice(index, block.end), 'layer', parsed, options)
-            offset = block.end
-            index = block.end - 1
-            continue
-        }
-        if (char === '{') {
-            depth++
-            continue
-        }
-        if (char === '}') {
-            depth--
-        }
-    }
-    return output + source.slice(offset)
-}
-
-function convertMasterFlags(body: string) {
-    let output = ''
-    let statementStart = 0
-    let depth = 0
-    let quote = ''
-    let comment = false
-
-    const flush = (endIndex: number) => {
-        const statement = body.slice(statementStart, endIndex)
-        const match = /^(\s*)(!?important)(\s*;)(\s*)$/.exec(statement)
-        output += match
-            ? `${match[1]}important: ${IMPORTANT_FLAG_VALUE};${match[4]}`
-            : statement
-        statementStart = endIndex
-    }
-
-    for (let index = 0; index < body.length; index++) {
-        const char = body[index]
-        const next = body[index + 1]
-        if (comment) {
-            if (char === '*' && next === '/') {
-                comment = false
-                index++
-            }
-            continue
-        }
-        if (quote) {
-            if (char === '\\') {
-                index++
-            } else if (char === quote) {
-                quote = ''
-            }
-            continue
-        }
-        if (char === '/' && next === '*') {
-            comment = true
-            index++
-            continue
-        }
-        if (char === '"' || char === '\'') {
-            quote = char
-            continue
-        }
-        if (char === '{') {
-            depth++
-            continue
-        }
-        if (char === '}') {
-            depth--
-            if (depth === 0) {
-                flush(index + 1)
-            }
-            continue
-        }
-        if (char === ';' && depth === 0) {
-            flush(index + 1)
-        }
-    }
-
-    output += body.slice(statementStart)
-    return output
-}
-
-function preprocessMasterFlags(source: string) {
-    let output = ''
-    let index = 0
-    const pattern = /@master\s*\{/g
-    let match: RegExpExecArray | null
-    while ((match = pattern.exec(source))) {
-        const openIndex = match.index + match[0].length - 1
-        const closeIndex = findMatchingBrace(source, openIndex)
-        if (closeIndex === -1) break
-        const body = source.slice(openIndex + 1, closeIndex)
-        output += source.slice(index, openIndex + 1) + convertMasterFlags(body)
-        index = closeIndex
-        pattern.lastIndex = closeIndex + 1
-    }
-    return output + source.slice(index)
 }
 
 function isIdentChar(char: string | undefined) {
@@ -1919,62 +1666,6 @@ function removeStandaloneMasterDirectives(source: string) {
     return offset ? output + source.slice(offset) : source
 }
 
-function convertBareAnimations(body: string) {
-    let output = ''
-    let index = 0
-    while (index < body.length) {
-        const rest = body.slice(index)
-        const leading = /^\s+/.exec(rest)?.[0]
-        if (leading) {
-            output += leading
-            index += leading.length
-            continue
-        }
-        if (rest.startsWith('@keyframes')) {
-            const openIndex = body.indexOf('{', index)
-            if (openIndex === -1) break
-            const closeIndex = findMatchingBrace(body, openIndex)
-            if (closeIndex === -1) break
-            output += body.slice(index, closeIndex + 1)
-            index = closeIndex + 1
-            continue
-        }
-        const identifier = /^-?[_a-zA-Z][-_a-zA-Z0-9]*/.exec(rest)?.[0]
-        if (identifier) {
-            const afterIdentifier = index + identifier.length
-            const whitespace = /^\s*/.exec(body.slice(afterIdentifier))?.[0] || ''
-            const openIndex = afterIdentifier + whitespace.length
-            if (body[openIndex] === '{') {
-                const closeIndex = findMatchingBrace(body, openIndex)
-                if (closeIndex === -1) break
-                output += `@keyframes ${identifier}${whitespace}${body.slice(openIndex, closeIndex + 1)}`
-                index = closeIndex + 1
-                continue
-            }
-        }
-        output += body[index]
-        index++
-    }
-    return output + body.slice(index)
-}
-
-function preprocessMasterAnimations(source: string) {
-    let output = ''
-    let index = 0
-    const pattern = /@master\s+animations\s*\{/g
-    let match: RegExpExecArray | null
-    while ((match = pattern.exec(source))) {
-        const openIndex = match.index + match[0].length - 1
-        const closeIndex = findMatchingBrace(source, openIndex)
-        if (closeIndex === -1) break
-        const body = source.slice(openIndex + 1, closeIndex)
-        output += source.slice(index, openIndex + 1) + convertBareAnimations(body)
-        index = closeIndex
-        pattern.lastIndex = closeIndex + 1
-    }
-    return output + source.slice(index)
-}
-
 export function compileCSS(source: string, options: CompileCSSOptions = {}): CompileCSSResult {
     const parsed: ParsedDirectives = {
         config: {},
@@ -1985,38 +1676,50 @@ export function compileCSS(source: string, options: CompileCSSOptions = {}): Com
     const classFilter = options.classes === undefined
         ? undefined
         : new Set(options.classes)
-    const preprocessedSource = consumeTopLevelMasterDefinitions(
-        preprocessMasterFlags(removeStandaloneMasterDirectives(source)),
-        parsed,
-        options
-    )
+    const preprocessedSource = removeStandaloneMasterDirectives(source)
+    let ruleDepth = 0
     const transformed = getCSSTransform()({
         filename: options.from || 'master.css',
         code: encodeCSS(preprocessedSource),
         customAtRules: MASTER_CUSTOM_AT_RULES,
         visitor: {
-            Rule: {
-                custom: {
-                    master(rule) {
-                        parseMasterRule(rule, parsed, options)
+            Rule(rule: any) {
+                if (ruleDepth === 0) {
+                    if (rule.type === 'keyframes') {
+                        parseKeyframes(rule, parsed.config)
                         return []
-                    },
-                    compose() {
-                        throw new Error('@compose is only allowed inside top-level @layer preset or @layer components class definitions')
-                    },
-                    'custom-at'() {
-                        throw new Error('@custom-at is only allowed in @master')
-                    },
-                    'custom-selector'() {
-                        throw new Error('@custom-selector is only allowed in @master')
-                    },
-                    at() {
-                        throw new Error('@at is only allowed inside top-level @layer preset, @layer components, or @layer utilities definitions')
-                    },
-                    mode() {
-                        throw new Error('Legacy mode directives are not supported. Use a mode block such as light { ... } inside @master.')
+                    }
+                    if (rule.type === 'layer-block') {
+                        const layerName = (rule.value.name || []).join('.')
+                        if (TOP_LEVEL_DEFINITION_LAYER_NAMES.has(layerName as CSSDirectiveLayerName)) {
+                            parseTopLevelLayerBlock(rule, parsed)
+                            return []
+                        }
                     }
                 }
+
+                if (rule.type === 'custom') {
+                    switch (rule.value.name) {
+                        case 'master':
+                            parseMasterRule(rule, parsed, options)
+                            return []
+                        case 'compose':
+                            throw new Error('@compose is only allowed inside top-level @layer preset or @layer components class definitions')
+                        case 'custom-at':
+                            throw new Error('@custom-at is only allowed in @master')
+                        case 'custom-selector':
+                            throw new Error('@custom-selector is only allowed in @master')
+                        case 'at':
+                            throw new Error('@at is only allowed inside top-level @layer preset, @layer components, or @layer utilities definitions')
+                        case 'mode':
+                            throw new Error('Legacy mode directives are not supported. Use a mode block such as light { ... } inside @master.')
+                    }
+                }
+
+                ruleDepth++
+            },
+            RuleExit() {
+                ruleDepth--
             }
         }
     })

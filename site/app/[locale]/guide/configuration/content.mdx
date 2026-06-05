@@ -437,11 +437,11 @@ Use `important` only when the surrounding cascade is hard to control, such as wh
 
 ```css name=index.css
 @master {
-    important;
+    important: on;
 }
 ```
 
-The shorthand `!important;` is also accepted in the same position.
+Use `important: off;` to explicitly disable important output when merging CSS and JavaScript config sources.
 
 ```css
 .hidden {

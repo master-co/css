@@ -25,7 +25,7 @@
 ## Directive MVP
 
 - `@master { root-size: 16; --color-primary: #123; --screen-md: 768; }`
-- `@master { important; }` and `@master { !important; }`
+- `@master { important: on; }` and `@master { important: off; }`
 - `@master { dark { --color-primary: #456; } }`
 - The compiler records mode declarations as written. Core adapters decide which modes are defaults.
 - `@master { @custom-at motion-safe @media (prefers-reduced-motion: no-preference); }`
