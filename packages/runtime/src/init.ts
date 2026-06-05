@@ -23,7 +23,10 @@ export default function initCSSRuntime(options: CSSRuntimeInitOptions = {}): CSS
         preloaded
     } = options
     let cssRuntime = globalThis.CSSRuntime.instances.get(root)
-    if (cssRuntime) return cssRuntime
+    if (cssRuntime) {
+        cssRuntime.registerPreloaded(preloaded)
+        return cssRuntime
+    }
     cssRuntime = new CSSRuntime(root, resolveRuntimeConfig(config), preloaded)
     if (autoObserve) cssRuntime.observe()
     return cssRuntime

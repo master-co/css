@@ -31,7 +31,9 @@ const originConfigText = `@master;
 
 @master {
     --color-primary: $(color-blue);
+}
 
+@layer components {
     .btn {
         background-color: oklch(63.7% 0.237 25.331);
     }

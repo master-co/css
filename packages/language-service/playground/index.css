@@ -4,7 +4,9 @@
 @master {
     --foo: 123;
     --global: #ff00ff;
+}
 
+@layer components {
     .btn {
         display: inline-flex;
         text-align: center;

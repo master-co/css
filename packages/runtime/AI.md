@@ -2,17 +2,17 @@
 
 ## Responsibility
 
-`@master/css-runtime` runs Master CSS in the browser. It observes DOM class changes, creates or hydrates `style#master`, tracks class usage counts, and inserts/removes native CSS rules.
+`@master/css-runtime` runs Master CSS in the browser. It observes DOM class changes, creates or hydrates `style#master`, tracks class usage counts, registers preloaded global CSS counts, and inserts/removes native CSS rules.
 
 ## Inputs And Outputs
 
-- Input: `Document` or `ShadowRoot`, optional config, connected DOM classes, mutation records, pre-rendered CSS rules.
+- Input: `Document` or `ShadowRoot`, optional config, optional preloaded variable/keyframe counts, connected DOM classes, mutation records, pre-rendered CSS rules.
 - Output: live `style#master` stylesheet, runtime layer state, hydrated virtual rules, devtools events.
 
 ## Public APIs
 
 - `CSSRuntime`
-- `initCSSRuntime`
+- `initCSSRuntime({ config, root, autoObserve, preloaded })`
 - `RuntimeUtilityLayer`
 - runtime types
 
@@ -42,6 +42,7 @@
 
 - `MutationObserver` diff logic.
 - `classCounts` increment/decrement behavior.
+- Preloaded variable/keyframe counts must prevent duplicate runtime insertion without suppressing utility insertion.
 - Hydrating CSSLayerBlockRule and CSSKeyframesRule.
 - Matching generated rule text to native CSSRule text.
 - ShadowRoot vs Document behavior.

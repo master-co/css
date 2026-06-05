@@ -57,7 +57,7 @@ test('ignores native CSS classes from unmanaged CSS files', async () => {
                 color: red;
             }
 
-            @master {
+            @layer components {
                 .btn {
                     display: inline-flex;
                 }

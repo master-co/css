@@ -14,7 +14,7 @@ export default defineConfig({
 ```
 
 ### Client types
-Add `@master/css-integration/client` to the project environment file when TypeScript source files import `virtual:master-css-config`.
+Add `@master/css-integration/client` to the project environment file when TypeScript source files import Master CSS virtual modules.
 
 ```ts name=src/vite-env.d.ts
 /// <reference types="vite/client" />
@@ -30,14 +30,15 @@ In extract mode, import the generated stylesheet from a source stylesheet.
 
 Source stylesheets that import `@master/css` are treated as native CSS shaking roots by default. Ordinary CSS outside `@master` is pruned against detected classes, and the import inserts generated Master CSS. Add `@master no-shake;` when native CSS must be preserved. If the same stylesheet contains `@master {}` config, that stylesheet can also serve as the project CSS entry because `@import '@master/css'` is an entry marker.
 
-### Config imports
-The plugin exposes the canonical project-level config module:
+### Runtime input imports
+The plugin exposes canonical project-level runtime input modules:
 
 ```ts
 import config from 'virtual:master-css-config'
+import preloaded from 'virtual:master-css-preloaded'
 ```
 
-Use the virtual module when application code should receive the same config graph that the plugin discovered from the project CSS entry. It is backed by [`@master/css-configer`](/reference/configer).
+Use these virtual modules when application code should receive the same config graph and preloaded global CSS state that the plugin discovered from the project CSS entry. The config module is backed by [`@master/css-configer`](/reference/configer).
 
 ---
 

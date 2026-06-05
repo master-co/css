@@ -32,7 +32,9 @@ Then keep tokens, component rules, animations, or other Master CSS config in tha
 ```css name=src/globals.css
 @master {
     --color-primary: #4f46e5;
+}
 
+@layer components {
     .btn {
         @compose "inline-flex ai:center px:md h:40 r:md bg:primary fg:white";
     }

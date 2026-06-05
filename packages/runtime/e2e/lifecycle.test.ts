@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test'
+import initCSSRuntime from '../src/init'
 import init from './init'
 
 test('destroy on progressive', async ({ page }) => {
@@ -89,4 +90,29 @@ test('refresh clears stale native keyframes', async ({ page }) => {
         .filter((cssRule) => cssRule.constructor.name === 'CSSKeyframesRule')
         .map((cssRule) => (cssRule as CSSKeyframesRule).name)
     )).toEqual(['fade', 'flash'])
+})
+
+test('registers preloaded counts on an existing runtime', () => {
+    const root = { host: {} } as unknown as ShadowRoot
+    const cssRuntime = initCSSRuntime({ root, autoObserve: false })
+    const returnedCSSRuntime = initCSSRuntime({
+        root,
+        autoObserve: false,
+        preloaded: {
+            variables: {
+                'color-primary': 1
+            },
+            animations: {
+                fade: 1
+            }
+        }
+    })
+
+    expect(returnedCSSRuntime).toBe(cssRuntime)
+    expect(cssRuntime.preloaded.variables).toMatchObject({ 'color-primary': 1 })
+    expect(cssRuntime.preloaded.animations).toMatchObject({ fade: 1 })
+    expect(Object.fromEntries(cssRuntime.themeLayer.tokenCounts)).toMatchObject({ 'color-primary': 1 })
+    expect(Object.fromEntries(cssRuntime.animationsNonLayer.tokenCounts)).toMatchObject({ fade: 1 })
+
+    cssRuntime.destroy()
 })

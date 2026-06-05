@@ -1,15 +1,15 @@
 ## Overview [sr-only]
 Components are named style compositions for UI patterns such as buttons, cards, fields, and layout shells. They are useful when a repeated class list becomes a design-system concept instead of one-off styling.
 
-In the project CSS entry or a local CSS file imported by it, define components directly in `@master`. The definitions are converted into static `config.utilities` entries with `layer: 'components'`; they are not emitted by themselves. Master CSS generates component CSS only when the component class is used in markup or extracted from source files. If you are deciding whether a style should become a component at all, read [Reusing Styles](/guide/reusing-styles) first.
+In the project CSS entry or a local CSS file imported by it, define components in top-level `@layer components`. The definitions are converted into static `config.utilities` entries with `layer: 'components'`; they are not emitted by themselves. Master CSS generates component CSS only when the component class is used in markup or extracted from source files. If you are deciding whether a style should become a component at all, read [Reusing Styles](/guide/reusing-styles) first.
 
 ---
 
 ## Define a component
-Use a class selector inside `@master`. Put Master CSS classes in `@compose`, and put native CSS declarations directly in the rule.
+Use a class selector inside top-level `@layer components`. Put Master CSS classes in `@compose`, and put native CSS declarations directly in the rule.
 
 ```css name=index.css
-@master {
+@layer components {
     .btn {
         @compose "inline-flex ai:center jc:center gap:xs px:md py:xs r:lg font:sm font:medium";
         background: var(--color-primary);
@@ -52,7 +52,7 @@ The generated CSS is emitted in the `components` layer:
 `@compose` accepts Master CSS utility declarations. Keep it quoted so grouped declarations and punctuation-heavy syntax can be parsed without ambiguity. In component definitions, put selector states in nested selectors and put conditional variants in `@at` blocks.
 
 ```css name=index.css
-@master {
+@layer components {
     .empty-state {
         @compose "grid ai:center jc:center min-h:64x p:lg text:center";
 
@@ -72,7 +72,7 @@ When the selector is derived from the same component class, nest the selector in
 Component definitions can include nested selectors and `@at` condition blocks.
 
 ```css name=index.css
-@master {
+@layer components {
     .btn {
         @compose "inline-flex ai:center jc:center px:md py:xs r:lg";
         transition: background-color .15s ease, box-shadow .15s ease;
@@ -104,7 +104,7 @@ Equivalent markup stays semantic:
 Component classes also accept selector and at-rule suffixes when the variant belongs to the usage site rather than the component definition.
 
 ```css name=index.css
-@master {
+@layer components {
     .btn {
         @compose "block";
     }
@@ -143,7 +143,7 @@ For a configured selector such as `.btn:disabled > span`, `btn:hover` becomes `:
 Component definitions are config, not output. Defining `.btn` does not generate CSS until `btn` appears in extracted classes.
 
 ```css name=index.css
-@master {
+@layer components {
     .btn {
         @compose "inline-flex px:md";
     }
@@ -167,7 +167,7 @@ This keeps unused component definitions out of the final CSS. In Vite extract mo
 You can split a component into multiple rules. Definitions with the same selector, at-rules, and layer are merged. Native declarations keep their source order relative to `@compose`, while composed utilities are sorted with Master CSS rule priority before they are merged.
 
 ```css name=index.css
-@master {
+@layer components {
     .btn {
         @compose "inline-flex";
         display: inline-flex;
@@ -207,7 +207,7 @@ The compiler expands `@compose` into merged static utility definitions:
 Component definitions are grouped by resolved selector, resolved at-rules, and layer before they are emitted. That means the following definitions become separate buckets:
 
 ```css name=index.css
-@master {
+@layer components {
     .btn {
         @compose "inline-flex";
     }
@@ -221,11 +221,11 @@ Component definitions are grouped by resolved selector, resolved at-rules, and l
             @compose "font:md";
         }
     }
+}
 
-    @layer preset {
-        .btn {
-            @compose "r:lg";
-        }
+@layer preset {
+    .btn {
+        @compose "r:lg";
     }
 }
 ```
@@ -248,7 +248,7 @@ Use native CSS `@import` from the project CSS entry to organize components.
 ```
 
 ```css name=styles/button.css
-@master {
+@layer components {
     .btn {
         @compose "inline-flex ai:center jc:center px:md py:xs r:lg";
         background: var(--color-primary);
@@ -257,16 +257,16 @@ Use native CSS `@import` from the project CSS entry to organize components.
 }
 ```
 
-Local relative `.css` imports are compiled into one config graph. Only `@master` content contributes to component config; ordinary CSS outside `@master` is ignored by config compilation and should live in your app stylesheet pipeline.
+Local relative `.css` imports are compiled into one config graph. `@master` config blocks, top-level managed layers, and top-level `@keyframes` contribute to the Master CSS config; ordinary CSS outside those managed targets should live in your app stylesheet pipeline.
 
 ---
 
 ## Rules and constraints
-- Put component definitions directly in `@master`; use `@layer preset`, `@layer components`, or `@layer utilities` when a definition needs a different output layer.
+- Put component definitions in top-level `@layer components`; use `@layer preset` only when a definition intentionally belongs to the earlier preset layer.
 - Component selectors must start with a single class selector such as `.btn`, `.card`, or `.field::before`.
 - `@compose` is only valid inside component definitions.
 - Component definitions accept native declarations, `@compose`, nested selectors, native nested at-rules, and `@at` condition blocks.
-- Standard HTML tag selectors such as `body` or `html` are not valid inside `@master` definitions.
+- Standard HTML tag selectors such as `body` or `html` are not valid inside managed layer definitions.
 - Utilities still win over components because `@master/css/base.css` declares `@layer theme, base, preset, components, utilities;`.
 
 ---

@@ -108,7 +108,7 @@ After candidate extraction, Master CSS validates each class against the active c
 - It matches a native class collected from a stylesheet that imports [`@master/css`](/guide/shaking-unused-classes).
 
 ```css name=index.css
-@master {
+@layer components {
     .btn {
         @compose "inline-flex ai:center px:md h:40 r:md";
     }

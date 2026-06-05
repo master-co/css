@@ -1409,7 +1409,7 @@ function parseMasterChildRule(child: Rule, parsed: ParsedDirectives, options: Co
         return
     }
     if ((child.type === 'unknown' || child.type === 'custom') && child.value?.name === 'mode') {
-        throw new Error('Legacy mode directives are not supported. Use a mode block such as light { ... } inside @master.')
+        throw new Error('Mode at-rules are not supported. Use a mode block such as light { ... } inside @master.')
     }
     throw new Error(`Unsupported rule in @master${section === 'root' ? '' : ' ' + section}`)
 }
@@ -1468,7 +1468,7 @@ function parseTopLevelLayerChildRule(child: Rule, parsed: ParsedDirectives, atRu
         throw new Error('@compose is only allowed inside top-level @layer preset or @layer components class definitions')
     }
     if ((child.type === 'unknown' || child.type === 'custom') && child.value?.name === 'mode') {
-        throw new Error('Legacy mode directives are not supported. Use a mode block such as light { ... } inside @master.')
+        throw new Error('Mode at-rules are not supported. Use a mode block such as light { ... } inside @master.')
     }
     if ((child.type === 'unknown' || child.type === 'custom') && child.value?.name === 'custom-at') {
         throw new Error('@custom-at is only allowed in @master')
@@ -1535,7 +1535,7 @@ export function compileCSS(source: string, options: CompileCSSOptions = {}): Com
                         case 'at':
                             throw new Error('@at is only allowed inside top-level @layer preset, @layer components, or @layer utilities definitions')
                         case 'mode':
-                            throw new Error('Legacy mode directives are not supported. Use a mode block such as light { ... } inside @master.')
+                            throw new Error('Mode at-rules are not supported. Use a mode block such as light { ... } inside @master.')
                     }
                 }
 

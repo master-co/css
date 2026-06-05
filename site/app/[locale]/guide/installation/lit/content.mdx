@@ -66,7 +66,7 @@
     <Step $row>
         <StepL>
             ### <StepNum />Set up shadow-root runtime
-            Decorate your Lit element with `@cssRuntime()` to initialize Master CSS Runtime for the element's shadow root. Import `virtual:master-css-config` so the shadow runtime receives the same project-level config that Vite discovered from the project CSS entry.
+            Decorate your Lit element with `@cssRuntime()` to initialize Master CSS Runtime for the element's shadow root. Import the virtual runtime inputs so the shadow runtime receives the same project-level config and preloaded global CSS state that Vite discovered from the project CSS entry.
         </StepL>
         <StepR>
             ```ts name=src/my-element.ts
@@ -75,9 +75,10 @@
             import { cssRuntime } from '@master/css-runtime' // [!code highlight]
             import type { CSSRuntime } from '@master/css-runtime' // [!code highlight]
             import config from 'virtual:master-css-config' // [!code highlight]
+            import preloaded from 'virtual:master-css-preloaded' // [!code highlight]
 
             @customElement('my-element')
-            @cssRuntime({ config }) // [!code highlight]
+            @cssRuntime({ config, preloaded }) // [!code highlight]
             export class MyElement extends LitElement {
                 cssRuntime?: CSSRuntime // [!code highlight]
 

@@ -503,7 +503,7 @@ Use programmatic config for tests, library presets, integration glue, and execut
 
 ---
 
-## Import compiled config
+## Import compiled runtime inputs
 Most projects let the integration load the project CSS entry automatically. When application code needs the compiled config object, import the default virtual config module:
 
 ```ts
@@ -512,12 +512,20 @@ import config from 'virtual:master-css-config'
 
 The virtual module is the canonical project-level config API. It resolves the integration's discovered or configured project CSS entry and returns the compiled JavaScript config object.
 
-Use this when a server hook, runtime initializer, test, or framework adapter needs the same project config object that the build integration uses.
+Runtime and progressive rendering code should also import the preloaded module. It records variables and keyframes that the CSS entry already emitted, so the browser runtime can avoid inserting duplicate global CSS later.
 
-```tsimport { initCSSRuntime } from '@master/css-runtime'
+```ts
+import preloaded from 'virtual:master-css-preloaded'
+```
+
+Use these when a server hook, runtime initializer, test, or framework adapter needs the same project config object and preloaded global CSS state that the build integration uses.
+
+```ts
+import { initCSSRuntime } from '@master/css-runtime'
 import config from 'virtual:master-css-config'
+import preloaded from 'virtual:master-css-preloaded'
 
-initCSSRuntime(config)
+initCSSRuntime({ config, preloaded })
 ```
 
 In TypeScript projects, add the shared integration client type reference:

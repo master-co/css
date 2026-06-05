@@ -704,14 +704,14 @@ describe.concurrent('@master/css-compiler', () => {
     })
 
     it('rejects invalid directive placement and names', () => {
-        const legacyModeDirective = '@' + 'mode dark'
+        const unsupportedModeAtRule = '@' + 'mode dark'
         expect(() => process(`
             @master {
-                ${legacyModeDirective} {
+                ${unsupportedModeAtRule} {
                     --color-primary: #456;
                 }
             }
-        `)).toThrow('Legacy mode directives are not supported')
+        `)).toThrow('Mode at-rules are not supported')
 
         expect(() => process(`
             .btn {

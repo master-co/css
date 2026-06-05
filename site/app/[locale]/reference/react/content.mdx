@@ -9,7 +9,7 @@ The root entry is intended for projects using an official Master CSS integration
 import { CSSRuntimeRegistry, CSSRuntimeProvider } from '@master/css.react'
 ```
 
-Use `@master/css.react/runtime-provider` when you only need the provider API without the registry's `virtual:master-css-config` dependency.
+Use `@master/css.react/runtime-provider` when you only need the provider API without the registry's default virtual module dependencies.
 
 ---
 
@@ -28,7 +28,7 @@ export default function App({ children }) {
 }
 ```
 
-The registry loads `virtual:master-css-config` internally, so use it when the official integration should load the project-level config discovered from the CSS entry.
+The registry loads `virtual:master-css-config` and `virtual:master-css-preloaded` internally, so use it when the official integration should load the project-level config discovered from the CSS entry and the matching preloaded global CSS state.
 
 ### `<CSSRuntimeProvider>`
 The `CSSRuntimeProvider` initializes a `CSSRuntime` instance and manages it according to changes in config or root element.
@@ -45,9 +45,9 @@ export default function App({ children }) {
 }
 ```
 
-The provider calls `initCSSRuntime(config, root)` on mount, refreshes the runtime with `resolveRuntimeConfig(config)` when `config` changes, and recreates the runtime when `root` changes. It destroys the runtime on unmount.
+The provider calls `initCSSRuntime({ config, root, preloaded })` on mount, refreshes the runtime with `resolveRuntimeConfig(config)` when `config` changes, and recreates the runtime when `root` changes. It destroys the runtime on unmount.
 
-Use the provider subpath when you need a custom `?master-css-config` resource, a custom `root`, or an environment that does not resolve `virtual:master-css-config`.
+Use the provider subpath when you need a custom `?master-css-config` resource, custom `preloaded` data, a custom `root`, or an environment that does not resolve the default virtual modules.
 
 ### `CSSRuntimeProviderProps`
 <Code lang="ts">{require('../../../../../packages/react/src/types/provider-props.ts?raw')}</Code>

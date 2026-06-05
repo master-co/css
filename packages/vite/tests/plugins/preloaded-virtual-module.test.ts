@@ -12,7 +12,7 @@ function parseDefaultExport(code: string) {
 }
 
 describe('PreloadedVirtualModulePlugin', () => {
-    it('loads preloaded tokens from the managed CSS entry output', async () => {
+    it('loads preloaded counts from the managed CSS entry output', async () => {
         const root = mkdtempSync(join(tmpdir(), 'master-css-vite-preloaded-'))
         try {
             mkdirSync(join(root, 'app'), { recursive: true })

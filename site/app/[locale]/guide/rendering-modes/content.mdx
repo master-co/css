@@ -146,13 +146,14 @@ const sheet = document.querySelector('style[id="master"]').sheet
 console.log(sheet.cssRules)
 ```
 
-When runtime code needs project tokens, modes, or component definitions, load the compiled config object from the integration. `virtual:master-css-config` resolves the canonical project-level config discovered from the CSS entry.
+When runtime code needs project tokens, modes, or component definitions, load the compiled runtime inputs from the integration. `virtual:master-css-config` resolves the canonical project-level config discovered from the CSS entry, and `virtual:master-css-preloaded` records variables and keyframes that the entry already emitted.
 
 ```js
 import { initCSSRuntime } from '@master/css-runtime'
 import config from 'virtual:master-css-config'
+import preloaded from 'virtual:master-css-preloaded'
 
-initCSSRuntime(config)
+initCSSRuntime({ config, preloaded })
 ```
 
 ---
@@ -256,7 +257,7 @@ The CSS entry point is explicit: import `@master/css` from the stylesheet that s
         Each candidate is passed through the Master CSS engine. Valid classes insert rules into the same layers used by runtime and server rendering; invalid candidates are cached and skipped on later scans.
 
         ```css name=index.css
-        @master {
+        @layer components {
             .btn {
                 @compose "inline-flex px:md";
             }

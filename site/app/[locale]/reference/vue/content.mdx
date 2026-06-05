@@ -9,7 +9,7 @@
 import { CSSRuntimeRegistry, CSSRuntimeProvider } from '@master/css.vue'
 ```
 
-Use `@master/css.vue/runtime-provider` when you only need the provider API without the registry's `virtual:master-css-config` dependency.
+Use `@master/css.vue/runtime-provider` when you only need the provider API without the registry's default virtual module dependencies.
 
 For a Vite-powered Vue app that only needs automatic runtime injection, start with the [Vue installation guide](/guide/installation/vuejs). For Nuxt SSR and progressive rendering, use the [Nuxt guide](/guide/installation/nuxtjs).
 
@@ -31,7 +31,7 @@ import { CSSRuntimeRegistry } from '@master/css.vue'
 </template>
 ```
 
-The registry loads `virtual:master-css-config` internally, so use it when the official integration should load the project-level config discovered from the CSS entry.
+The registry loads `virtual:master-css-config` and `virtual:master-css-preloaded` internally, so use it when the official integration should load the project-level config discovered from the CSS entry and the matching preloaded global CSS state.
 
 ### `<CSSRuntimeProvider>`
 The provider initializes a `CSSRuntime` for `document` by default, refreshes it when `config` changes, recreates it when `root` changes, and destroys it on unmount.
@@ -49,12 +49,13 @@ import config from './app.css?master-css-config'
 </template>
 ```
 
-Use the provider subpath when you need a custom `?master-css-config` resource, a custom `root`, or an environment that does not resolve `virtual:master-css-config`.
+Use the provider subpath when you need a custom `?master-css-config` resource, custom `preloaded` data, a custom `root`, or an environment that does not resolve the default virtual modules.
 
 ### Provider props
 ```ts
 interface CSSRuntimeProviderProps {
     config?: Config
+    preloaded?: MasterCSSPreloaded
     root?: Document | ShadowRoot | null
 }
 ```

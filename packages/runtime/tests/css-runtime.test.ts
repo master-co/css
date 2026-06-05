@@ -16,5 +16,10 @@ cssRuntime({ config: { variables: [] } satisfies Config })(RuntimeElement)
 cssRuntime({
     config: {} satisfies Config,
     root: (host) => host.shadowRoot,
-    autoObserve: false
+    autoObserve: false,
+    preloaded: {
+        variables: {
+            primary: 1
+        }
+    }
 })(RuntimeElement)

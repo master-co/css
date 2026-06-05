@@ -1,6 +1,6 @@
 @master;
 
-@master {
+@layer components {
     .btn {
         display: inline-flex;
         padding-left: 1rem;

@@ -50,7 +50,7 @@ You can also restrict teams to using [configuration](/guide/configuration) and [
 ```
 (o) Or create the custom style `btn` using [components](/guide/components) in the project CSS entry.
 ```css name=index.css
-@master {
+@layer components {
     .btn {
         @compose "inline-flex px:md"; /* [!code highlight] */
     }

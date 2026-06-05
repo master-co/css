@@ -41,7 +41,7 @@ Risks:
 project CSS files containing @master; or @import "@master/css"
   -> @master/css-configer discovers project entry files only
   -> @master/css-compiler resolves CSS imports and package style imports
-  -> compiler parses @master {} directives, custom at/selectors, utilities, variables, keyframes
+  -> compiler parses @master {} config directives, mode blocks, custom at/selectors, top-level managed layers, and top-level keyframes
   -> compiler converts directive result through the core adapter into Config
   -> build tools / ESLint / language-server receive the same semantic project Config
   -> MasterCSS.resolve() resolves variables, animations, selectors, at-rules, utilities
@@ -79,7 +79,8 @@ source globs / Vite modules / Webpack modules
   -> merge style config returned by compiler with explicit Config options
   -> generateValidRules()
   -> insert valid rules into layers
-  -> export css.text or virtual CSS module
+  -> export css.text / virtual CSS module
+  -> export preloaded counts for generated variables and keyframes
 ```
 
 Main files:
@@ -102,8 +103,9 @@ Risks:
 
 ```txt
 document or shadow root
-  -> initCSSRuntime()
+  -> initCSSRuntime({ config, preloaded, root, autoObserve })
   -> CSSRuntime.observe()
+  -> register preloaded variable/keyframe counts
   -> find or create style#master
   -> hydrate pre-rendered layers or add connected classes
   -> MutationObserver detects class and child changes

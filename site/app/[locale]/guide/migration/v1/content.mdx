@@ -9,9 +9,10 @@ The Master CSS Runtime has been separated from the `@master/css` package and is 
 import { init } from '@master/css'; /* [!code --] */
 import { initCSSRuntime } from '@master/css-runtime' /* [!code ++] */
 import config from 'virtual:master-css-config' /* [!code ++] */
+import preloaded from 'virtual:master-css-preloaded' /* [!code ++] */
 
 init() /* [!code --] */
-initCSSRuntime(config) /* [!code ++] */
+initCSSRuntime({ config, preloaded }) /* [!code ++] */
 ```
 To fully step in, check out the [General Installation](/guide/installation/general) documentation.
 
@@ -92,7 +93,7 @@ Style.extend('classes', { /* [!code --] */
 ```
 
 ```css name=index.css
-@master {
+@layer components {
     .btn {
         @compose "…";
     }

@@ -6,8 +6,9 @@ To import and initialize the runtime engine in the entry file, such as `main.js`
 ```js name=main.js
 import { initCSSRuntime } from '@master/css-runtime'
 import config from 'virtual:master-css-config'
+import preloaded from 'virtual:master-css-preloaded'
 
-initCSSRuntime(config)
+initCSSRuntime({ config, preloaded })
 ```
 
 ---
@@ -20,7 +21,7 @@ import CSSRuntime from '@master/css-runtime'
 
 const cssRuntime = new CSSRuntime(document, config)
 ```
-`CSSRuntime` uses the provided config directly. Use `initCSSRuntime(config)` when the runtime should extend the default config with a project config and reuse an existing runtime for the same root.
+`CSSRuntime` uses the provided config directly. Use `initCSSRuntime({ config })` when the runtime should extend the default config with a project config and reuse an existing runtime for the same root.
 
 ### `CSSRuntime.instances`
 Runtime instances keyed by `Document` or `ShadowRoot`.
@@ -86,16 +87,21 @@ Record the registered root `document` Runtime CSS instance; the field will be re
 Initializes the Master CSS runtime rendering engine.
 <DocFn>
     {[
-        { name: 'config?', type: 'Config', defaultValue: 'undefined' },
-        { name: 'root?', type: 'Document | ShadowRoot', defaultValue: 'document' },
-        { name: 'autoObserve?', type: 'boolean', defaultValue: 'true' },
+        { name: 'options?', type: 'CSSRuntimeInitOptions', defaultValue: '{}' },
         { name: 'return', type: 'CSSRuntime' },
     ]}
 </DocFn>
 ```ts
 import { initCSSRuntime } from '@master/css-runtime'
+import config from 'virtual:master-css-config'
+import preloaded from 'virtual:master-css-preloaded'
 
-const css = initCSSRuntime()
+const css = initCSSRuntime({
+    config,
+    preloaded,
+    root: document,
+    autoObserve: true
+})
 ```
 Equivalent to:
 ```ts
@@ -105,6 +111,8 @@ const cssRuntime = new CSSRuntime(document, resolveRuntimeConfig()).observe()
 ```
 
 If a runtime already exists for the same root, `initCSSRuntime()` returns that instance instead of creating a second observer.
+
+`preloaded` tells the runtime which variables and keyframes were already emitted by the project CSS entry, so future dynamic classes can reuse them without inserting duplicate global CSS.
 
 ### `resolveRuntimeConfig()`
 Merges the default Master CSS config with a project config before runtime refresh or initialization.

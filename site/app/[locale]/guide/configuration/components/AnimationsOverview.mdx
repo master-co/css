@@ -1,22 +1,11 @@
 ```css name=index.css
-@master {
-    slide-in-up {
-        from {
-            transform: translateY(100%);
-        }
-
-        to {
-            transform: translateY(0);
-        }
+@keyframes slide-in-up {
+    from {
+        transform: translateY(100%);
     }
-}
-```
-You can also write native `@keyframes` inside `@master`:
-```css name=index.css
-@master {
-    @keyframes slide-in-up {
-        from { transform: translateY(100%); }
-        to { transform: translateY(0); }
+
+    to {
+        transform: translateY(0);
     }
 }
 ```

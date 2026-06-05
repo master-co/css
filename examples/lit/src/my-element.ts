@@ -5,6 +5,7 @@ import litLogo from './assets/lit.svg'
 import { cssRuntime } from '@master/css-runtime'
 import type { CSSRuntime } from '@master/css-runtime'
 import config from 'virtual:master-css-config'
+import preloaded from 'virtual:master-css-preloaded'
 
 /**
  * An example element.
@@ -13,7 +14,7 @@ import config from 'virtual:master-css-config'
  * @csspart button - The button
  */
 @customElement('my-element')
-@cssRuntime({ config })
+@cssRuntime({ config, preloaded })
 export class MyElement extends LitElement {
 
     cssRuntime?: CSSRuntime

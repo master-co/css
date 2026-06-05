@@ -1,4 +1,4 @@
-@master {
+@layer components {
     .btn {
         display: inline-flex;
         align-items: center;
