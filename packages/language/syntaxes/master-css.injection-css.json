@@ -11,6 +11,9 @@
             "include": "#master-css-managed-layer-block"
         },
         {
+            "include": "#master-css-style-directives"
+        },
+        {
             "include": "#master-css-extractor-directives"
         }
     ],
@@ -309,19 +312,26 @@
         "master-css-standalone-directives": {
             "patterns": [
                 {
-                    "include": "#master-css-compose"
+                    "include": "#master-css-style-directives"
                 },
                 {
                     "include": "#master-css-mode-block"
-                },
-                {
-                    "include": "#master-css-at-block"
                 },
                 {
                     "include": "#master-css-custom-at"
                 },
                 {
                     "include": "#master-css-custom-selector"
+                }
+            ]
+        },
+        "master-css-style-directives": {
+            "patterns": [
+                {
+                    "include": "#master-css-compose"
+                },
+                {
+                    "include": "#master-css-at-block"
                 }
             ]
         },

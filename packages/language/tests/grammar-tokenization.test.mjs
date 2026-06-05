@@ -422,6 +422,45 @@ test('CSS injection highlights top-level component directives and compose classe
     assertTokenScope(tokens, 'color', 'support.type.property-name.css')
 })
 
+test('CSS injection highlights compose and at directives inside native style rules', () => {
+    const tokens = tokensFor(embeddedHighlighter, `
+        @master {
+            --color-primary: #4f46e5;
+            --screen-md: 768;
+            @custom-at motion-safe @media (prefers-reduced-motion: no-preference);
+            @custom-selector :interactive :is(:hover, :focus-visible);
+        }
+
+        @layer components {
+            .btn {
+                @compose "inline-flex ai:center jc:center px:md py:xs r:lg";
+                background: var(--color-primary);
+                &:interactive {
+                    @compose "outline:2|primary outline-offset:2";
+                }
+            }
+        }
+
+        .notice {
+            @compose "p:md r:lg";
+            @at motion-safe {
+                @compose "transition:opacity|fast|smooth";
+            }
+        }
+    `, 'css')
+
+    assertTokenScope(tokens, 'notice', 'entity.other.attribute-name.class.css')
+    assertTokenScope(tokens, 'compose', 'keyword.control.at-rule.compose.master-css.css')
+    assertTokenScope(tokens, 'p', 'support.type.property-name.css')
+    assertTokenScope(tokens, 'md', 'support.constant.property-value.css')
+    assertTokenScope(tokens, 'at', 'keyword.control.at-rule.at.master-css.css')
+    assertTokenScope(tokens, 'motion-safe', 'support.constant.property-value.css')
+    assertTokenScope(tokens, 'transition', 'support.type.property-name.css')
+    assertTokenScope(tokens, 'opacity', 'support.constant.property-value.css')
+    assertTokenScope(tokens, 'fast', 'support.constant.property-value.css')
+    assertTokenScope(tokens, 'smooth', 'support.constant.property-value.css')
+})
+
 test('CSS injection highlights declarations inside top-level @layer utilities @at blocks', () => {
     const tokens = tokensFor(embeddedHighlighter, `
         @layer utilities {
