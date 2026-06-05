@@ -17,7 +17,11 @@ export function CSSRuntimeProvider(props: CSSRuntimeProviderProps) {
 
     /** onMounted */
     useIsomorphicLayoutEffect(() => {
-        cssRuntime.current = initCSSRuntime(props.config, props.root ?? document)
+        cssRuntime.current = initCSSRuntime({
+            config: props.config,
+            root: props.root ?? document,
+            preloaded: props.preloaded
+        })
         setRuntime(cssRuntime.current)
         return () => {
             cssRuntime.current?.destroy()
@@ -38,7 +42,11 @@ export function CSSRuntimeProvider(props: CSSRuntimeProviderProps) {
         if (cssRuntime.current) {
             cssRuntime.current.destroy()
             cssRuntime.current = undefined
-            cssRuntime.current = initCSSRuntime(props.config, props.root ?? document)
+            cssRuntime.current = initCSSRuntime({
+                config: props.config,
+                root: props.root ?? document,
+                preloaded: props.preloaded
+            })
             setRuntime(cssRuntime.current)
         }
     }, [props.root])

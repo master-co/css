@@ -7,6 +7,7 @@ import {
     createStyleCSSHostSource,
     createMasterCSSPackageHostSource,
     createExtractedCSS,
+    createExtractedCSSResult,
     hasMasterNoShakeDirective,
     hasMasterShakeDirective,
     hasMasterStyleEntrypoint,
@@ -165,17 +166,20 @@ describe('style CSS extraction helpers', () => {
 
             @master {
                 --color-primary: #ff0000;
+                --animation-main: scale 1s;
+            }
 
-                @keyframes fade {
-                    from {
-                        opacity: 0;
-                    }
-
-                    to {
-                        opacity: 1;
-                    }
+            @keyframes fade {
+                from {
+                    opacity: 0;
                 }
 
+                to {
+                    opacity: 1;
+                }
+            }
+
+            @layer components {
                 .btn {
                     display: grid;
                 }
@@ -211,6 +215,76 @@ describe('style CSS extraction helpers', () => {
         expect(css).not.toContain('@master')
         expect(css).not.toContain('virtual:master-utilities.css')
         expect(css).not.toContain('@master/css')
+    })
+
+    it('reports preloaded variables and animations emitted by the Master CSS entry', async () => {
+        const root = createFixture()
+        const extractor = new CSSExtractor({
+            include: []
+        }, root)
+        await extractor.init()
+
+        const styleCSSSources = new Map()
+        await registerStyleCSSSource(extractor, styleCSSSources, join(root, 'app/globals.css'), `
+            @master {
+                --animation-main: scale 1s;
+                --color-primary: #ff0000;
+            }
+
+            @keyframes fade {
+                from {
+                    opacity: 0;
+                }
+
+                to {
+                    opacity: 1;
+                }
+            }
+
+            @keyframes slide {
+                to {
+                    transform: translateX(1rem);
+                }
+            }
+
+            @keyframes scale {
+                to {
+                    transform: scale(1.1);
+                }
+            }
+
+            .main {
+                color: var(--color-primary);
+                animation-name: fade,slide;
+            }
+
+            .main-animated {
+                animation: var(--animation-main);
+            }
+        `)
+        await extractor.insert(join(root, 'app/page.tsx'), '<main class="main main-animated"></main>')
+
+        const result = await createExtractedCSSResult({
+            extractor,
+            styleCSSSources,
+            projectDir: root,
+            includeGeneratedCSS: false
+        })
+
+        expect(result.css).toContain('.main')
+        expect(result.css).toContain('--color-primary:red')
+        expect(result.css).toContain('@keyframes fade')
+        expect(result.preloaded).toEqual({
+            variables: {
+                'animation-main': 1,
+                'color-primary': 1
+            },
+            animations: {
+                fade: 1,
+                scale: 1,
+                slide: 1
+            }
+        })
     })
 
     it('shakes local CSS imports from Master CSS import roots by default', async () => {

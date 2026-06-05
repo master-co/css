@@ -50,8 +50,7 @@ export interface CompileCSSFileOptions extends CompileCSSOptions {
     root?: string
 }
 
-export interface CompileCSSResult extends CSSDirectiveResult {
-}
+export type CompileCSSResult = CSSDirectiveResult
 
 export interface ResolvedCSSImportGraph {
     source: string
@@ -105,6 +104,8 @@ type MasterSection = 'root'
 
 const IMPORTANT_FLAG_VALUE = '__master_important__'
 const UTILITY_LAYER_NAMES = new Set<CSSDirectiveLayerName>(['base', 'preset', 'components', 'utilities'])
+const TOP_LEVEL_DEFINITION_LAYER_NAMES = new Set<CSSDirectiveLayerName>(['preset', 'components', 'utilities'])
+const TOP_LEVEL_KEYFRAMES_AT_RULE = '@keyframes'
 const STANDALONE_MASTER_DIRECTIVE_NAMES = new Set(['', 'shake', 'no-shake', 'source', 'class'])
 
 const HTML_TAG_NAMES = new Set([
@@ -1016,7 +1017,7 @@ function collectStyleRuleBody(block: DeclarationBlock<Declaration>, rules: Rule[
             continue
         }
         if (compose) {
-            throw new Error('@compose is only allowed in @master class definitions outside @layer utilities')
+            throw new Error('@compose is only allowed inside top-level @layer preset or @layer components class definitions')
         }
         throw new Error(allowCompose
             ? 'Class definitions only accept declarations and @compose'
@@ -1357,54 +1358,49 @@ function warn(parsed: ParsedDirectives, options: CompileCSSOptions, message: str
     options.onWarning?.(message)
 }
 
-function parseMasterModeBlock(rule: any, parsed: ParsedDirectives, atRules: string[] = [], layer?: CSSDirectiveLayerName) {
-    if ((rule.type !== 'custom' && rule.type !== 'unknown') || rule.value?.name !== 'mode') return
-    if (layer || atRules.length) {
-        throw new Error('@mode is only allowed directly in @master')
-    }
-
-    const mode = formatPrelude(rule.value.prelude)
-    if (!mode) {
-        throw new Error('@mode requires a mode name')
-    }
-    if (/\s/.test(mode)) {
-        throw new Error('@mode requires a single mode name')
-    }
-
+function parseMasterModeBody(mode: string, rules: Rule[], parsed: ParsedDirectives) {
     addMasterMode(parsed.config, mode)
-    const rules = rule.value.body?.value
-    if (!Array.isArray(rules)) {
-        throw new Error('@mode requires a style block')
-    }
     for (const child of rules as Rule[]) {
         if (child.type !== 'nested-declarations') {
             throw new Error(`Mode "${mode}" only accepts custom property declarations`)
         }
         parseMasterDeclarations(child.value.declarations, parsed.config, mode)
     }
+}
+
+function parseMasterModeStyleRule(rule: any, parsed: ParsedDirectives, options: CompileCSSOptions) {
+    const mode = parseSingleTypeSelector(rule.value.selectors)
+    if (!mode) return false
+    if (HTML_TAG_NAMES.has(mode)) {
+        warn(parsed, options, `Unsupported @master block "${mode}". @master only accepts config declarations, mode blocks, @custom-at, and @custom-selector. Move regular CSS selectors outside @master.`)
+        return true
+    }
+    const rules: Rule[] = []
+    if (rule.value.declarations) {
+        rules.push({
+            type: 'nested-declarations',
+            value: {
+                declarations: rule.value.declarations
+            }
+        } as unknown as Rule)
+    }
+    for (const child of rule.value.rules || []) {
+        rules.push(child)
+    }
+    parseMasterModeBody(mode, rules, parsed)
     return true
 }
 
-function parseMasterStyleRule(rule: any, parsed: ParsedDirectives, options: CompileCSSOptions, section: MasterSection, atRules: string[] = [], layer?: CSSDirectiveLayerName) {
-    if (parseComponentDefinitionSelector(rule.value.selectors)) {
-        if ((layer || 'components') === 'utilities') {
-            parseUtility(rule, parsed, atRules, 'utilities')
-        } else {
-            parseComponent(rule, parsed, atRules, layer)
-        }
+function parseMasterStyleRule(rule: any, parsed: ParsedDirectives, options: CompileCSSOptions, section: MasterSection) {
+    if (parseMasterModeStyleRule(rule, parsed, options)) {
         return
     }
 
-    const mode = parseSingleTypeSelector(rule.value.selectors)
-    if (mode) {
-        if (HTML_TAG_NAMES.has(mode)) {
-            warn(parsed, options, `Unsupported @master block "${mode}". @master only accepts config declarations, @mode blocks, @custom-at, @custom-selector, @keyframes, @layer, and class definitions. Move regular CSS selectors outside @master.`)
-            return
-        }
-        throw new Error(`Unsupported @master block "${mode}". Use @mode ${mode} { ... } for mode-specific variables, or @keyframes ${mode} { ... } for animations.`)
+    if (parseComponentDefinitionSelector(rule.value.selectors)) {
+        throw new Error('@master does not accept class definitions. Move component definitions to top-level @layer preset or @layer components.')
     }
 
-    warn(parsed, options, `Unsupported @master selector "${formatSelectors(rule.value.selectors)}". @master only accepts @mode blocks, @custom-at, @custom-selector, and class definitions.`)
+    warn(parsed, options, `Unsupported @master selector "${formatSelectors(rule.value.selectors)}". @master only accepts mode blocks, @custom-at, and @custom-selector.`)
 }
 
 function parseComponentLayerBlock(rule: Rule) {
@@ -1425,37 +1421,17 @@ function parseComponentLayerBlock(rule: Rule) {
 function parseMasterChildRule(child: Rule, parsed: ParsedDirectives, options: CompileCSSOptions, section: MasterSection, atRules: string[] = [], layer?: CSSDirectiveLayerName) {
     const componentLayerBlock = parseComponentLayerBlock(child)
     if (componentLayerBlock) {
-        if (layer) {
-            throw new Error('Nested @layer blocks are not allowed in @master')
-        }
-        for (const nestedChild of componentLayerBlock.rules) {
-            parseMasterChildRule(nestedChild, parsed, options, section, atRules, componentLayerBlock.layer)
-        }
-        return
+        throw new Error('@layer is not allowed in @master. Move layer definitions to top-level @layer preset, @layer components, or @layer utilities.')
     }
 
     const masterAtRuleBlock = parseMasterAtRuleBlock(child)
     if (masterAtRuleBlock) {
-        for (const nestedChild of masterAtRuleBlock.rules) {
-            parseMasterChildRule(nestedChild, parsed, options, section, [...atRules, createCSSDirectiveAtRuleReference(masterAtRuleBlock.token)], layer)
-        }
-        return
-    }
-
-    if (parseMasterModeBlock(child, parsed, atRules, layer)) {
-        return
+        throw new Error('@at is not allowed in @master. Use @at inside top-level @layer preset, @layer components, or @layer utilities definitions.')
     }
 
     const nestedAtRuleChildren = getNestedAtRuleChildren(child)
     if (nestedAtRuleChildren) {
-        const atRule = formatNestedAtRule(child)
-        if (!atRule) {
-            throw new Error(`Unsupported nested at-rule in @master ${section}`)
-        }
-        for (const nestedChild of nestedAtRuleChildren) {
-            parseMasterChildRule(nestedChild, parsed, options, section, [...atRules, atRule], layer)
-        }
-        return
+        throw new Error(`Unsupported nested at-rule in @master ${section}`)
     }
 
     if (child.type === 'nested-declarations') {
@@ -1478,13 +1454,14 @@ function parseMasterChildRule(child: Rule, parsed: ParsedDirectives, options: Co
         return
     }
     if (child.type === 'keyframes') {
-        if (layer) throw new Error('@keyframes is only allowed directly in @master')
-        parseKeyframes(child, parsed.config)
-        return
+        throw new Error('@keyframes is not allowed in @master. Move animation definitions to top-level @keyframes.')
     }
     if (child.type === 'style') {
-        parseMasterStyleRule(child, parsed, options, section, atRules, layer)
+        parseMasterStyleRule(child, parsed, options, section)
         return
+    }
+    if ((child.type === 'unknown' || child.type === 'custom') && child.value?.name === 'mode') {
+        throw new Error('Legacy mode directives are not supported. Use a mode block such as light { ... } inside @master.')
     }
     throw new Error(`Unsupported rule in @master${section === 'root' ? '' : ' ' + section}`)
 }
@@ -1494,6 +1471,95 @@ function parseMasterRule(rule: any, parsed: ParsedDirectives, options: CompileCS
     for (const child of rule.body.value as Rule[]) {
         parseMasterChildRule(child, parsed, options, section)
     }
+}
+
+function parseTopLevelLayerChildRule(child: Rule, parsed: ParsedDirectives, atRules: string[], layer: CSSDirectiveLayerName) {
+    if (parseComponentLayerBlock(child)) {
+        throw new Error(`Nested @layer blocks are not allowed in top-level @layer ${layer}`)
+    }
+
+    const masterAtRuleBlock = parseMasterAtRuleBlock(child)
+    if (masterAtRuleBlock) {
+        for (const nestedChild of masterAtRuleBlock.rules) {
+            parseTopLevelLayerChildRule(nestedChild, parsed, [...atRules, createCSSDirectiveAtRuleReference(masterAtRuleBlock.token)], layer)
+        }
+        return
+    }
+
+    const nestedAtRuleChildren = getNestedAtRuleChildren(child)
+    if (nestedAtRuleChildren) {
+        const atRule = formatNestedAtRule(child)
+        if (!atRule) {
+            throw new Error(`Unsupported nested at-rule in top-level @layer ${layer}`)
+        }
+        for (const nestedChild of nestedAtRuleChildren) {
+            parseTopLevelLayerChildRule(nestedChild, parsed, [...atRules, atRule], layer)
+        }
+        return
+    }
+
+    if (child.type === 'nested-declarations') {
+        throw new Error(`Top-level @layer ${layer} only accepts class definitions and nested at-rules`)
+    }
+    if (child.type === 'keyframes') {
+        throw new Error('@keyframes is not allowed inside managed @layer blocks. Move animation definitions to top-level @keyframes.')
+    }
+    if (child.type === 'style') {
+        if (layer === 'utilities') {
+            parseUtility(child, parsed, atRules, layer)
+        } else {
+            parseComponent(child, parsed, atRules, layer)
+        }
+        return
+    }
+    if ((child.type === 'unknown' || child.type === 'custom') && child.value?.name === 'compose') {
+        throw new Error('@compose is only allowed inside top-level @layer preset or @layer components class definitions')
+    }
+    if ((child.type === 'unknown' || child.type === 'custom') && child.value?.name === 'mode') {
+        throw new Error('Legacy mode directives are not supported. Use a mode block such as light { ... } inside @master.')
+    }
+    if ((child.type === 'unknown' || child.type === 'custom') && child.value?.name === 'custom-at') {
+        throw new Error('@custom-at is only allowed in @master')
+    }
+    if ((child.type === 'unknown' || child.type === 'custom') && child.value?.name === 'custom-selector') {
+        throw new Error('@custom-selector is only allowed in @master')
+    }
+    throw new Error(`Unsupported rule in top-level @layer ${layer}`)
+}
+
+function parseTopLevelLayerBlock(rule: any, parsed: ParsedDirectives) {
+    const layerName = (rule.value.name || []).join('.')
+    if (!TOP_LEVEL_DEFINITION_LAYER_NAMES.has(layerName as CSSDirectiveLayerName)) {
+        throw new Error(`Unsupported managed @layer: ${layerName}`)
+    }
+    for (const child of rule.value.rules as Rule[]) {
+        parseTopLevelLayerChildRule(child, parsed, [], layerName as CSSDirectiveLayerName)
+    }
+}
+
+type TopLevelMasterDefinitionKind = 'keyframes' | 'layer'
+
+function parseTopLevelMasterDefinition(source: string, kind: TopLevelMasterDefinitionKind, parsed: ParsedDirectives, options: CompileCSSOptions) {
+    getCSSTransform()({
+        filename: options.from || 'master.css',
+        code: encodeCSS(source),
+        customAtRules: MASTER_CUSTOM_AT_RULES,
+        visitor: {
+            Rule: kind === 'keyframes'
+                ? {
+                    keyframes(rule) {
+                        parseKeyframes(rule, parsed.config)
+                        return []
+                    }
+                }
+                : {
+                    'layer-block'(rule) {
+                        parseTopLevelLayerBlock(rule, parsed)
+                        return []
+                    }
+                }
+        }
+    })
 }
 
 function findMatchingBrace(source: string, openIndex: number) {
@@ -1537,6 +1603,125 @@ function findMatchingBrace(source: string, openIndex: number) {
         }
     }
     return -1
+}
+
+function findTopLevelAtRuleBlock(source: string, start: number) {
+    let quote = ''
+    let comment = false
+    for (let index = start; index < source.length; index++) {
+        const char = source[index]
+        const next = source[index + 1]
+        if (comment) {
+            if (char === '*' && next === '/') {
+                comment = false
+                index++
+            }
+            continue
+        }
+        if (quote) {
+            if (char === '\\') {
+                index++
+            } else if (char === quote) {
+                quote = ''
+            }
+            continue
+        }
+        if (char === '/' && next === '*') {
+            comment = true
+            index++
+            continue
+        }
+        if (char === '"' || char === '\'') {
+            quote = char
+            continue
+        }
+        if (char === ';') return
+        if (char === '{') {
+            const closeIndex = findMatchingBrace(source, index)
+            if (closeIndex === -1) return
+            return {
+                openIndex: index,
+                closeIndex,
+                end: closeIndex + 1,
+                prelude: source.slice(start, index)
+            }
+        }
+    }
+}
+
+function isTopLevelAtRuleKeyword(source: string, index: number, keyword: string) {
+    return source.startsWith(keyword, index) && !isIdentChar(source[index + keyword.length])
+}
+
+function getTopLevelLayerDefinitionName(prelude: string) {
+    const match = /^@layer\s+([_a-zA-Z][-_a-zA-Z0-9]*)\s*$/.exec(prelude)
+    const layerName = match?.[1]
+    return TOP_LEVEL_DEFINITION_LAYER_NAMES.has(layerName as CSSDirectiveLayerName)
+        ? layerName as CSSDirectiveLayerName
+        : undefined
+}
+
+function consumeTopLevelMasterDefinitions(source: string, parsed: ParsedDirectives, options: CompileCSSOptions) {
+    let output = ''
+    let offset = 0
+    let quote = ''
+    let comment = false
+    let depth = 0
+    for (let index = 0; index < source.length; index++) {
+        const char = source[index]
+        const next = source[index + 1]
+        if (comment) {
+            if (char === '*' && next === '/') {
+                comment = false
+                index++
+            }
+            continue
+        }
+        if (quote) {
+            if (char === '\\') {
+                index++
+            } else if (char === quote) {
+                quote = ''
+            }
+            continue
+        }
+        if (char === '/' && next === '*') {
+            comment = true
+            index++
+            continue
+        }
+        if (char === '"' || char === '\'') {
+            quote = char
+            continue
+        }
+        if (depth === 0 && isTopLevelAtRuleKeyword(source, index, TOP_LEVEL_KEYFRAMES_AT_RULE)) {
+            const block = findTopLevelAtRuleBlock(source, index)
+            if (!block) continue
+            output += source.slice(offset, index)
+            parseTopLevelMasterDefinition(source.slice(index, block.end), 'keyframes', parsed, options)
+            offset = block.end
+            index = block.end - 1
+            continue
+        }
+        if (depth === 0 && isTopLevelAtRuleKeyword(source, index, '@layer')) {
+            const block = findTopLevelAtRuleBlock(source, index)
+            const layerName = block && getTopLevelLayerDefinitionName(block.prelude)
+            if (!block || !layerName) continue
+            output += source.slice(offset, index)
+            parseTopLevelMasterDefinition(source.slice(index, block.end), 'layer', parsed, options)
+            offset = block.end
+            index = block.end - 1
+            continue
+        }
+        if (char === '{') {
+            depth++
+            continue
+        }
+        if (char === '}') {
+            depth--
+        }
+    }
+    return output + source.slice(offset)
 }
 
 function convertMasterFlags(body: string) {
@@ -1800,7 +1985,11 @@ export function compileCSS(source: string, options: CompileCSSOptions = {}): Com
     const classFilter = options.classes === undefined
         ? undefined
         : new Set(options.classes)
-    const preprocessedSource = preprocessMasterFlags(removeStandaloneMasterDirectives(source))
+    const preprocessedSource = consumeTopLevelMasterDefinitions(
+        preprocessMasterFlags(removeStandaloneMasterDirectives(source)),
+        parsed,
+        options
+    )
     const transformed = getCSSTransform()({
         filename: options.from || 'master.css',
         code: encodeCSS(preprocessedSource),
@@ -1813,7 +2002,7 @@ export function compileCSS(source: string, options: CompileCSSOptions = {}): Com
                         return []
                     },
                     compose() {
-                        throw new Error('@compose is only allowed in @master class definitions outside @layer utilities')
+                        throw new Error('@compose is only allowed inside top-level @layer preset or @layer components class definitions')
                     },
                     'custom-at'() {
                         throw new Error('@custom-at is only allowed in @master')
@@ -1822,10 +2011,10 @@ export function compileCSS(source: string, options: CompileCSSOptions = {}): Com
                         throw new Error('@custom-selector is only allowed in @master')
                     },
                     at() {
-                        throw new Error('@at is only allowed in @master class definitions')
+                        throw new Error('@at is only allowed inside top-level @layer preset, @layer components, or @layer utilities definitions')
                     },
                     mode() {
-                        throw new Error('@mode is only allowed in @master')
+                        throw new Error('Legacy mode directives are not supported. Use a mode block such as light { ... } inside @master.')
                     }
                 }
             }

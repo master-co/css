@@ -8,10 +8,10 @@
             "include": "#master-css-block"
         },
         {
-            "include": "#master-css-extractor-directives"
+            "include": "#master-css-managed-layer-block"
         },
         {
-            "include": "#master-css-standalone-directives"
+            "include": "#master-css-extractor-directives"
         }
     ],
     "repository": {
@@ -326,26 +326,20 @@
             ]
         },
         "master-css-mode-block": {
-            "begin": "((@)mode)(\\s+)([^\\s{;]+)(\\s*)(\\{)",
+            "begin": "\\s*([_a-zA-Z][-_a-zA-Z0-9]*)(\\s*)(\\{)",
             "end": "(\\})",
-            "name": "meta.at-rule.mode.master-css.css",
+            "name": "meta.block.mode.master-css.css",
             "beginCaptures": {
                 "1": {
-                    "name": "keyword.control.at-rule.mode.master-css.css"
-                },
-                "2": {
-                    "name": "punctuation.definition.keyword.css"
-                },
-                "4": {
                     "name": "support.constant.property-value.css"
                 },
-                "6": {
-                    "name": "punctuation.section.at-rule.begin.bracket.curly.css"
+                "3": {
+                    "name": "punctuation.section.property-list.begin.bracket.curly.css"
                 }
             },
             "endCaptures": {
                 "1": {
-                    "name": "punctuation.section.at-rule.end.bracket.curly.css"
+                    "name": "punctuation.section.property-list.end.bracket.curly.css"
                 }
             },
             "patterns": [
@@ -629,6 +623,35 @@
                 },
                 {
                     "include": "source.css#rule-list-innards"
+                }
+            ]
+        },
+        "master-css-managed-layer-block": {
+            "begin": "((@)layer)(\\s+)(preset|components|utilities)(\\s*)(\\{)",
+            "end": "(\\})",
+            "name": "meta.at-rule.layer.master-css.css",
+            "beginCaptures": {
+                "1": {
+                    "name": "keyword.control.at-rule.css"
+                },
+                "2": {
+                    "name": "punctuation.definition.keyword.css"
+                },
+                "4": {
+                    "name": "entity.name.section.css"
+                },
+                "6": {
+                    "name": "punctuation.section.at-rule.begin.bracket.curly.css"
+                }
+            },
+            "endCaptures": {
+                "1": {
+                    "name": "punctuation.section.at-rule.end.bracket.curly.css"
+                }
+            },
+            "patterns": [
+                {
+                    "include": "#master-css-nested-block-body"
                 }
             ]
         },

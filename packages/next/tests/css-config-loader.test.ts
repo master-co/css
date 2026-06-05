@@ -69,7 +69,7 @@ describe('css config loader', () => {
             '@master {',
             '    --color-primary: #123;',
             '}',
-            '@master {',
+            '@layer components {',
             '    .btn {',
             '        color: var(--color-primary);',
             '    }',
@@ -118,6 +118,8 @@ describe('css config loader', () => {
             '@import "@master/css";',
             '@master {',
             '    --color-primary: #123;',
+            '}',
+            '@layer components {',
             '    .btn { color: var(--color-primary); }',
             '}'
         ].join('\n'))

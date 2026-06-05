@@ -17,6 +17,7 @@ import parseValue from './utils/parse-value'
 import parseSelector, { SelectorNode } from './utils/parse-selector'
 import { normalizeVariableValue } from './utils/css-variables'
 import naturalCompare from './utils/natural-compare'
+import type { MasterCSSPreloaded } from 'shared/css-preloaded-module'
 
 export default class MasterCSS {
     readonly definedUtilities: DefinedUtility[] = []
@@ -38,9 +39,14 @@ export default class MasterCSS {
     readonly modes: string[] = []
     readonly atRules = new Map<string, AtRule>()
     readonly animations = new Map<string, AnimationDefinitions>()
+    readonly preloaded: Required<MasterCSSPreloaded> = {
+        variables: {},
+        animations: {}
+    }
 
-    constructor(config?: Config) {
+    constructor(config?: Config, preloaded?: MasterCSSPreloaded) {
         this.resolve(config)
+        this.registerPreloaded(preloaded)
     }
 
     get text() {
@@ -81,6 +87,38 @@ export default class MasterCSS {
         this.resolveSelectors()
         this.resolveAtRules()
         this.resolveUtilities()
+    }
+
+    private applyPreloadedCounts(preloaded: MasterCSSPreloaded) {
+        for (const [name, count] of Object.entries(preloaded.variables || {})) {
+            if (!count) continue
+            this.themeLayer.tokenCounts.set(name, (this.themeLayer.tokenCounts.get(name) || 0) + count)
+        }
+        for (const [name, count] of Object.entries(preloaded.animations || {})) {
+            if (!count) continue
+            this.animationsNonLayer.tokenCounts.set(name, (this.animationsNonLayer.tokenCounts.get(name) || 0) + count)
+        }
+    }
+
+    registerPreloaded(preloaded?: MasterCSSPreloaded) {
+        if (!preloaded) return
+        for (const [name, count] of Object.entries(preloaded.variables || {})) {
+            if (!count) continue
+            this.preloaded.variables[name] = (this.preloaded.variables[name] || 0) + count
+        }
+        for (const [name, count] of Object.entries(preloaded.animations || {})) {
+            if (!count) continue
+            this.preloaded.animations[name] = (this.preloaded.animations[name] || 0) + count
+        }
+        this.applyPreloadedCounts(preloaded)
+    }
+
+    isPreloadedVariable(name: string) {
+        return Boolean(this.preloaded.variables[name])
+    }
+
+    isPreloadedAnimation(name: string) {
+        return Boolean(this.preloaded.animations[name])
     }
 
     resolveAnimations() {
@@ -580,6 +618,7 @@ export default class MasterCSS {
     refresh(config: Config = this.config) {
         this.reset()
         this.resolve(config)
+        this.applyPreloadedCounts(this.preloaded)
         return this
     }
 

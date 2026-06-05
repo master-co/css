@@ -6,6 +6,7 @@ import withMasterCSS from '../src'
 import { getRegisteredOptions } from '../src/options'
 import { VIRTUAL_CSS_ID } from 'shared/css-virtual-module'
 import { VIRTUAL_CONFIG_ID } from '@master/css-configer/module'
+import { VIRTUAL_PRELOADED_ID } from 'shared/css-preloaded-module'
 
 describe('withMasterCSS', () => {
     it('sets the Next adapter path and registers options', () => {
@@ -45,6 +46,7 @@ describe('withMasterCSS', () => {
             })
         ]))
         expect(resolvedConfig.resolve.alias[VIRTUAL_CONFIG_ID]).toContain(join('node_modules', '.master-css', 'master-css-config.js'))
+        expect(resolvedConfig.resolve.alias[VIRTUAL_PRELOADED_ID]).toContain(join('node_modules', '.master-css', 'master-css-preloaded.js'))
         expect(resolvedConfig.resolve.alias['@master/css.react']).toBeUndefined()
         expect(resolvedConfig.resolve.alias['@master/css.react$']).toBeUndefined()
     })
@@ -147,6 +149,7 @@ describe('withMasterCSS', () => {
             }
         })
         expect((nextConfig as any).turbopack.resolveAlias[VIRTUAL_CONFIG_ID]).toContain(join('node_modules', '.master-css', 'master-css-config.js'))
+        expect((nextConfig as any).turbopack.resolveAlias[VIRTUAL_PRELOADED_ID]).toContain(join('node_modules', '.master-css', 'master-css-preloaded.js'))
         expect((nextConfig as any).turbopack.resolveAlias['@master/css.react']).toBeUndefined()
         expect((nextConfig as any).transpilePackages).toContain('@master/css.react')
     })
@@ -262,6 +265,7 @@ describe('withMasterCSS', () => {
             expect(nextConfig.webpack).toBeUndefined()
             expect(nextConfig.turbopack.resolveAlias[VIRTUAL_CSS_ID]).toBe('./.master/next.css')
             expect(nextConfig.turbopack.resolveAlias[VIRTUAL_CONFIG_ID]).toContain(join('node_modules', '.master-css', 'master-css-config.js'))
+            expect(nextConfig.turbopack.resolveAlias[VIRTUAL_PRELOADED_ID]).toContain(join('node_modules', '.master-css', 'master-css-preloaded.js'))
             expect(nextConfig.turbopack.rules['*']).toEqual(expect.arrayContaining([
                 expect.objectContaining({
                     condition: {

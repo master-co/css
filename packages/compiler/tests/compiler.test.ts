@@ -48,18 +48,18 @@ describe.concurrent('@master/css-compiler', () => {
                 @custom-at motion-safe @media (prefers-reduced-motion: no-preference);
                 @custom-selector ::scrollbar ::-webkit-scrollbar;
 
-                @mode dark {
+                dark {
                     --color-primary: #456;
                 }
 
-                @mode chrisma {
+                chrisma {
                     --color-primary: #ff0;
                 }
+            }
 
-                @keyframes fade {
-                    from { opacity: 0; }
-                    to { opacity: 1; }
-                }
+            @keyframes fade {
+                from { opacity: 0; }
+                to { opacity: 1; }
             }
         `)
 
@@ -116,7 +116,9 @@ describe.concurrent('@master/css-compiler', () => {
             @master {
                 mode-trigger: class;
                 --screen-md: 768;
+            }
 
+            @layer components {
                 .btn {
                     @compose "inline-flex bg:primary";
                     display: flex;
@@ -144,18 +146,21 @@ describe.concurrent('@master/css-compiler', () => {
                 type: 'compose',
                 order: 1,
                 className: 'inline-flex',
-                selector: '&'
+                selector: '&',
+                layer: 'components'
             },
             {
                 type: 'compose',
                 order: 2,
                 className: 'bg:primary',
-                selector: '&'
+                selector: '&',
+                layer: 'components'
             },
             {
                 type: 'native',
                 order: 3,
                 selector: '&',
+                layer: 'components',
                 declarations: {
                     display: 'flex'
                 }
@@ -164,6 +169,7 @@ describe.concurrent('@master/css-compiler', () => {
                 type: 'native',
                 order: 4,
                 selector: '&',
+                layer: 'components',
                 atRules: [createCSSDirectiveAtRuleReference('dark')],
                 declarations: {
                     color: '#fff'
@@ -173,6 +179,7 @@ describe.concurrent('@master/css-compiler', () => {
                 type: 'native',
                 order: 5,
                 selector: '&',
+                layer: 'components',
                 atRules: ['@media print'],
                 declarations: {
                     opacity: '.5'
@@ -183,6 +190,7 @@ describe.concurrent('@master/css-compiler', () => {
                 order: 6,
                 className: 'underline',
                 selector: '&:hover',
+                layer: 'components',
                 atRules: [createCSSDirectiveAtRuleReference('md')]
             }
         ])
@@ -190,14 +198,12 @@ describe.concurrent('@master/css-compiler', () => {
 
     it('records static utility definitions under @layer utilities', () => {
         const result = compileCSS(`
-            @master {
-                @layer utilities {
-                    .content-auto {
-                        content-visibility: auto;
+            @layer utilities {
+                .content-auto {
+                    content-visibility: auto;
 
-                        @at print {
-                            display: none;
-                        }
+                    @at print {
+                        display: none;
                     }
                 }
             }
@@ -223,23 +229,22 @@ describe.concurrent('@master/css-compiler', () => {
                 ]
             }
         ])
+        expect(result.css).toBe('')
     })
 
     it('records static utility definitions without normalizing core default values', () => {
         const result = compileCSS(`
-            @master {
-                @layer utilities {
-                    .square {
-                        aspect-ratio: 1/1;
-                    }
+            @layer utilities {
+                .square {
+                    aspect-ratio: 1/1;
+                }
 
-                    .video {
-                        aspect-ratio: 16/9;
-                    }
+                .video {
+                    aspect-ratio: 16/9;
+                }
 
-                    .rounded {
-                        border-radius: 1e9em;
-                    }
+                .rounded {
+                    border-radius: 1e9em;
                 }
             }
         `)
@@ -293,7 +298,7 @@ describe.concurrent('@master/css-compiler', () => {
                 }
             }
 
-            @master {
+            @layer components {
                 .btn {
                     @compose "block";
                 }
@@ -384,12 +389,14 @@ describe.concurrent('@master/css-compiler', () => {
         const source = `
             @master {
                 --color-primary: #123;
+            }
 
+            @layer components {
                 .btn {
                     color: var(--color-primary);
                 }
             }
-        `
+            `
         const directiveResult = compileCSS(source)
         const resultFromSource = compileCSSConfig(source)
         const resultFromCompilerResult = createConfigFromCSSResult(directiveResult)
@@ -416,7 +423,7 @@ describe.concurrent('@master/css-compiler', () => {
                     box-sizing: border-box;
                 }
 
-                @master {
+                @layer components {
                     .btn {
                         font-size: 1rem;
                     }
@@ -426,7 +433,7 @@ describe.concurrent('@master/css-compiler', () => {
                 @import "@master/css/base.css";
                 @import "./styles/button.css";
 
-                @master {
+                @layer components {
                     .btn {
                         display: block;
                     }
@@ -444,6 +451,7 @@ describe.concurrent('@master/css-compiler', () => {
                     type: 'native',
                     order: 1,
                     selector: '&',
+                    layer: 'components',
                     declarations: {
                         'font-size': '1rem'
                     }
@@ -452,6 +460,7 @@ describe.concurrent('@master/css-compiler', () => {
                     type: 'native',
                     order: 2,
                     selector: '&',
+                    layer: 'components',
                     declarations: {
                         display: 'block'
                     }
@@ -503,7 +512,9 @@ describe.concurrent('@master/css-compiler', () => {
             writeFileSync(theme, `
                 @master {
                     --color-primary: #123;
+                }
 
+                @layer components {
                     .btn {
                         color: var(--color-primary);
                     }
@@ -587,29 +598,38 @@ describe.concurrent('@master/css-compiler', () => {
     })
 
     it('rejects invalid directive placement and names', () => {
+        const legacyModeDirective = '@' + 'mode dark'
         expect(() => process(`
             @master {
-                dark {
+                ${legacyModeDirective} {
                     --color-primary: #456;
                 }
             }
-        `)).toThrow('Use @mode dark { ... } for mode-specific variables')
+        `)).toThrow('Legacy mode directives are not supported')
 
         expect(() => process(`
             .btn {
                 @compose "block";
             }
-        `)).toThrow('@compose is only allowed in @master')
+        `)).toThrow('@compose is only allowed inside top-level @layer preset or @layer components class definitions')
 
         expect(() => process(`
             @master {
                 @layer utilities {
                     .content-auto {
-                        @compose "block";
+                        display: block;
                     }
                 }
             }
-        `)).toThrow('@compose is only allowed in @master class definitions')
+        `)).toThrow('@layer is not allowed in @master')
+
+        expect(() => process(`
+            @layer utilities {
+                .content-auto {
+                    @compose "block";
+                }
+            }
+        `)).toThrow('@compose is only allowed inside top-level @layer preset or @layer components class definitions')
 
         expect(() => process(`
             @at dark {
@@ -617,7 +637,7 @@ describe.concurrent('@master/css-compiler', () => {
                     display: none;
                 }
             }
-        `)).toThrow('@at is only allowed in @master class definitions')
+        `)).toThrow('@at is only allowed inside top-level @layer preset, @layer components, or @layer utilities definitions')
 
         expect(() => process(`
             @master {
@@ -633,12 +653,18 @@ describe.concurrent('@master/css-compiler', () => {
 
         expect(() => process(`
             @master {
-                @layer utilities {
-                    @keyframes fade {
-                        from { opacity: 0; }
-                    }
+                @keyframes fade {
+                    from { opacity: 0; }
                 }
             }
-        `)).toThrow('@keyframes is only allowed directly in @master')
+        `)).toThrow('@keyframes is not allowed in @master')
+
+        expect(() => process(`
+            @layer utilities {
+                @keyframes fade {
+                    from { opacity: 0; }
+                }
+            }
+        `)).toThrow('@keyframes is not allowed inside managed @layer blocks')
     })
 })

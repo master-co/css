@@ -1,15 +1,18 @@
 import type { Config } from 'shared/css-config'
+import type { MasterCSSPreloaded } from 'shared/css-preloaded-module'
 import CSSRuntime from './core'
 import initCSSRuntime from './init'
 
 type CSSRuntimeHostConstructor = new (...args: any[]) => HTMLElement
 type CSSRuntimeConfig = Config | ((host: HTMLElement) => Config | undefined)
 type CSSRuntimeRoot = ShadowRoot | ((host: HTMLElement) => ShadowRoot | null | undefined)
+type CSSRuntimePreloaded = MasterCSSPreloaded | ((host: HTMLElement) => MasterCSSPreloaded | undefined)
 
 export interface CSSRuntimeOptions {
     config?: CSSRuntimeConfig
     root?: CSSRuntimeRoot
     autoObserve?: boolean
+    preloaded?: CSSRuntimePreloaded
 }
 
 export type CSSRuntimeDecoratorOptions = CSSRuntimeOptions
@@ -22,6 +25,10 @@ function resolveRoot(host: HTMLElement, root: CSSRuntimeRoot | undefined): Shado
     return typeof root === 'function'
         ? root(host)
         : root || host.shadowRoot
+}
+
+function resolvePreloaded(host: HTMLElement, preloaded: CSSRuntimePreloaded | undefined): MasterCSSPreloaded | undefined {
+    return typeof preloaded === 'function' ? preloaded(host) : preloaded
 }
 
 export default function cssRuntime(options: CSSRuntimeOptions = {}): <T extends CSSRuntimeHostConstructor>(target: T) => T {
@@ -38,11 +45,12 @@ export default function cssRuntime(options: CSSRuntimeOptions = {}): <T extends 
                 if (!root) {
                     throw new Error('`@cssRuntime()` requires a shadow root. Provide `options.root` or create a shadow root before `connectedCallback()` finishes.')
                 }
-                this.cssRuntime = initCSSRuntime(
-                    resolveConfig(this, options.config),
+                this.cssRuntime = initCSSRuntime({
+                    config: resolveConfig(this, options.config),
                     root,
-                    options.autoObserve
-                )
+                    autoObserve: options.autoObserve,
+                    preloaded: resolvePreloaded(this, options.preloaded)
+                })
             }
 
             disconnectedCallback() {

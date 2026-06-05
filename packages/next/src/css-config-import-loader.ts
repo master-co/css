@@ -82,13 +82,14 @@ async function transformConfigImports(context: LoaderContext, source: string) {
     for (const match of source.matchAll(MASTER_CSS_CONFIG_IMPORT_PATTERN)) {
         const [fullMatch, prefix, quote, request] = match
         if (!isMasterCSSConfigRequest(request)) continue
+        if (match.index === undefined) continue
 
         matched = true
         const configPath = await resolveRequest(context, stripMasterCSSConfigQuery(request))
         const virtualConfigPath = writeCSSConfigModule(context, configPath)
         result += source.slice(lastIndex, match.index)
         result += `${prefix}${quote}${toModuleSpecifier(context.resourcePath, virtualConfigPath)}${quote}`
-        lastIndex = match.index! + fullMatch.length
+        lastIndex = match.index + fullMatch.length
     }
 
     if (!matched) return source

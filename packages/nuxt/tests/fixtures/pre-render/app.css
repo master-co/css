@@ -1,7 +1,7 @@
 @import '@master/css';
 @master source './app.vue';
 
-@master {
+@layer components {
     .box {
         display: flex;
         font-size: 1em;

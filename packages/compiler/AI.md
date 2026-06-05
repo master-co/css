@@ -6,7 +6,7 @@
 
 ## Inputs And Outputs
 
-- Input: CSS containing `@master`, variables, `@mode` blocks, `@custom-at`, `@custom-selector`, `@layer utilities`, condition blocks with `@at`, reusable component rules with `@compose`, and native `@keyframes`.
+- Input: CSS containing `@master`, variables, mode blocks such as `dark { ... }`, `@custom-at`, `@custom-selector`, top-level managed `@layer preset`, `@layer components`, and `@layer utilities` blocks, condition blocks with `@at`, reusable component rules with `@compose`, and top-level native `@keyframes`.
 - Output: semantic core `Config`, shared directive data for lower-level consumers, component definitions, native CSS with consumed Master directives removed, native class names, warnings, standalone directive metadata, and CSS import dependencies.
 - `@master` definitions are config definitions. Defining a component, utility, variable, token, or animation does not emit CSS by itself; the class still needs to be used or extracted.
 - `@master;` and `@import "@master/css"` are equivalent user project entry markers. Package CSS files such as `@master/css/index.css` must not contain `@master;`.
@@ -26,19 +26,19 @@
 
 - `@master { root-size: 16; --color-primary: #123; --screen-md: 768; }`
 - `@master { important; }` and `@master { !important; }`
-- `@master { @mode dark { --color-primary: #456; } }`
+- `@master { dark { --color-primary: #456; } }`
 - The compiler records mode declarations as written. Core adapters decide which modes are defaults.
 - `@master { @custom-at motion-safe @media (prefers-reduced-motion: no-preference); }`
 - `@master { @custom-selector ::scrollbar ::-webkit-scrollbar; }`
-- `@master { .btn { @compose "inline-flex"; display: inline-flex; } }`
-- `@master { .btn { @at dark { @compose "bg:neutral-90"; } } }`
-- `@master { @layer utilities { .content-auto { content-visibility: auto; } } }`
-- `@master { @layer utilities { .print-hidden { @at print { display: none; } } } }`
-- `@master { @keyframes fade { from { opacity: 0; } to { opacity: 1; } } }`
-- Component definition selectors must start with one class selector.
+- `@layer components { .btn { @compose "inline-flex"; display: inline-flex; } }`
+- `@layer components { .btn { @at dark { @compose "bg:neutral-90"; } } }`
+- `@layer utilities { .content-auto { content-visibility: auto; } }`
+- `@layer utilities { .print-hidden { @at print { display: none; } } }`
+- `@keyframes fade { from { opacity: 0; } to { opacity: 1; } }`
+- Component and utility definition selectors must start with one class selector.
 - `@compose` is allowed only in component definitions.
 - Utilities defined in CSS are static utilities only.
-- `body`, `html`, and other HTML tag rules inside `@master` should warn because regular CSS selectors must live outside Master directives.
+- `body`, `html`, and other HTML tag rules inside top-level managed layers should warn because regular CSS selectors must live outside Master directives.
 - The compiler package does not scan unrelated `.css` files for class usage. Pair CSS configs with extract mode or pass extracted classes through compiler options when filtering native CSS.
 - CSS/theme/source tests that depend on `.css` files belong here rather than in core tests.
 

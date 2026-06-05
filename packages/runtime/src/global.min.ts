@@ -10,7 +10,7 @@ if (windowConfigs) configs.push(...windowConfigs)
 if (windowConfig) configs.push(windowConfig)
 
 if (configs.length) {
-    initCSSRuntime(extendConfig(themeConfig, ...configs))
+    initCSSRuntime({ config: extendConfig(themeConfig, ...configs) })
 } else {
-    initCSSRuntime(themeConfig)
+    initCSSRuntime({ config: themeConfig })
 }

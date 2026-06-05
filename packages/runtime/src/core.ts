@@ -1,6 +1,7 @@
 import { MasterCSS, VariableRule, AnimationRule } from '@master/css'
 import defaultConfig from '@master/css/config'
 import type { Config, UtilityLayerName } from 'shared/css-config'
+import type { MasterCSSPreloaded } from 'shared/css-preloaded-module'
 import registerGlobal from './register-global'
 import { HydrateResult } from './types'
 import RuntimeLayer from './layer'
@@ -29,9 +30,10 @@ export default class CSSRuntime extends MasterCSS {
 
     constructor(
         public root: Document | ShadowRoot = document,
-        config: Config = defaultConfig
+        config: Config = defaultConfig,
+        preloaded?: MasterCSSPreloaded
     ) {
-        super(config)
+        super(config, preloaded)
         // Do not use instanceof here, because it will not work
         const rootConstructorName = root?.constructor.name
         if (rootConstructorName === 'HTMLDocument' || rootConstructorName === 'Document') {

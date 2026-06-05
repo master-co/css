@@ -9,8 +9,9 @@ import {
     resolveMasterCSSPackageImportGraph
 } from '@master/css-compiler'
 import { AnimationRule, createCSS, VariableRule } from '@master/css'
-import { extendConfig } from '@master/css/utils'
+import { collectAnimationNamesFromDeclaration, extendConfig } from '@master/css/utils'
 import type { Config } from 'shared/css-config'
+import type { MasterCSSPreloaded } from 'shared/css-preloaded-module'
 import {
     findCSSImportStatements,
     hasMasterCSSImport,
@@ -68,6 +69,11 @@ export interface CreateExtractedCSSOptions extends CompileStyleCSSOptions {
     includeGeneratedCSS?: boolean
     includeNativeCSS?: boolean
     includeMasterBaseCSS?: boolean
+}
+
+export interface CreateExtractedCSSResult {
+    css: string
+    preloaded: Required<MasterCSSPreloaded>
 }
 
 export interface StyleCSSSource {
@@ -581,25 +587,26 @@ function insertVariableReferences(css: ReturnType<typeof createCSS>, references:
     }
 }
 
-function collectCSSAnimationReferences(source: string, animationNames: readonly string[]) {
+function collectCSSAnimationReferences(source: string, css: ReturnType<typeof createCSS>) {
     const references = new Set<string>()
+    const animationNames = Array.from(css.animations.keys())
     if (!animationNames.length) return references
-    for (const match of source.matchAll(/\banimation(?:-name)?\s*:\s*([^;{}]+)/g)) {
-        const value = match[1]
-        for (const name of animationNames) {
-            if (new RegExp(String.raw`(^|[\s,])${escapeRegExp(name)}(?=$|[\s,])`).test(value)) {
-                references.add(name)
-            }
+    for (const match of source.matchAll(/\b(animation(?:-name)?)\s*:\s*([^;{}]+)/g)) {
+        for (const name of collectAnimationNamesFromDeclaration(match[1], match[2], {
+            animationNames,
+            variables: css.variables,
+            variableNames: collectCSSVariableReferences(match[2])
+        })) {
+            references.add(name)
         }
     }
     return references
 }
 
-function collectNativeCSSAnimationReferences(nativeCSS: string[], animationNames: Iterable<string>) {
+function collectNativeCSSAnimationReferences(nativeCSS: string[], css: ReturnType<typeof createCSS>) {
     const references = new Set<string>()
-    const names = Array.from(animationNames)
     for (const source of nativeCSS) {
-        for (const reference of collectCSSAnimationReferences(source, names)) {
+        for (const reference of collectCSSAnimationReferences(source, css)) {
             references.add(reference)
         }
     }
@@ -616,7 +623,35 @@ function insertAnimationReferences(css: ReturnType<typeof createCSS>, references
     }
 }
 
-export async function createExtractedCSS(options: CreateExtractedCSSOptions) {
+function createEmptyExtractedCSSResult(css = ''): CreateExtractedCSSResult {
+    return {
+        css,
+        preloaded: {
+            variables: {},
+            animations: {}
+        }
+    }
+}
+
+function createPreloaded(css: ReturnType<typeof createCSS>): Required<MasterCSSPreloaded> {
+    const preloaded: Required<MasterCSSPreloaded> = {
+        variables: {},
+        animations: {}
+    }
+    for (const rule of css.themeLayer.rules) {
+        if (rule instanceof VariableRule) {
+            preloaded.variables[rule.name] = 1
+        }
+    }
+    for (const rule of css.animationsNonLayer.rules) {
+        if (rule instanceof AnimationRule) {
+            preloaded.animations[rule.name] = 1
+        }
+    }
+    return preloaded
+}
+
+export async function createExtractedCSSResult(options: CreateExtractedCSSOptions): Promise<CreateExtractedCSSResult> {
     const {
         extractor,
         styleCSSSources,
@@ -629,7 +664,7 @@ export async function createExtractedCSS(options: CreateExtractedCSSOptions) {
     const classes = compileOptions.classes ?? getExtractorClasses(extractor)
 
     if (!configOption && !compileOptions.classes && !styleCSSSources?.size) {
-        return includeGeneratedCSS ? extractor.css.text : ''
+        return createEmptyExtractedCSSResult(includeGeneratedCSS ? extractor.css.text : '')
     }
 
     const hasMasterCSS = hasMasterCSSPackageSource(styleCSSSources)
@@ -679,12 +714,20 @@ export async function createExtractedCSS(options: CreateExtractedCSSOptions) {
         }
     }
     const variableReferences = collectStyleCSSVariableReferences(nativeCSS)
-    const animationReferences = collectNativeCSSAnimationReferences(nativeCSS, css.animations.keys())
+    const animationReferences = collectNativeCSSAnimationReferences(nativeCSS, css)
     insertVariableReferences(css, variableReferences)
     insertAnimationReferences(css, animationReferences)
     const shouldIncludeMasterCSS = includeGeneratedCSS || variableReferences.size || animationReferences.size
-    return [
+    const cssText = [
         ...nativeCSS,
         shouldIncludeMasterCSS ? css.text : ''
     ].filter(Boolean).join('\n\n')
+    return {
+        css: cssText,
+        preloaded: shouldIncludeMasterCSS ? createPreloaded(css) : createEmptyExtractedCSSResult().preloaded
+    }
+}
+
+export async function createExtractedCSS(options: CreateExtractedCSSOptions) {
+    return (await createExtractedCSSResult(options)).css
 }

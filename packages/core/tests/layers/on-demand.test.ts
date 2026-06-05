@@ -1,6 +1,6 @@
 import { expect, test } from 'vitest'
-import { UtilityType } from '../../src'
-import createCSSWithTheme from '../helpers/create-css-with-theme'
+import { createCSS, UtilityType } from '../../src'
+import createCSSWithTheme, { createThemeConfig } from '../helpers/create-css-with-theme'
 test.concurrent('empty', () => {
     const css = createCSSWithTheme()
     expect(css.text).toBe('')
@@ -38,4 +38,22 @@ test('prevent duplicate insertion', () => {
     const css = createCSSWithTheme()
     css.add('text:center', 'text:center')
     expect(css.utilitiesLayer.rules.length).toBe(1)
+})
+
+test.concurrent('does not duplicate preloaded variables', () => {
+    const css = createCSS(createThemeConfig(), {
+        variables: {
+            'color-red-60': 1
+        }
+    })
+    css.add('bg:red-60')
+    expect(css.text).toBe('@layer utilities{.bg\\:red-60{background-color:var(--color-red-60)}}')
+    expect(Object.fromEntries(css.themeLayer.tokenCounts)).toMatchObject({
+        'color-red-60': 2
+    })
+    css.remove('bg:red-60')
+    expect(css.text).toBe('')
+    expect(Object.fromEntries(css.themeLayer.tokenCounts)).toMatchObject({
+        'color-red-60': 1
+    })
 })

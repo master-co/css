@@ -12,6 +12,11 @@ import {
 } from '@master/css-configer/module'
 import { VIRTUAL_CSS_ID } from 'shared/css-virtual-module'
 import {
+    EMPTY_PRELOADED_MODULE,
+    VIRTUAL_PRELOADED_ID,
+    toVirtualPreloadedModulePath
+} from 'shared/css-preloaded-module'
+import {
     prepareNextExtract,
     resolveExtractOutputPath,
     resolveExtractStatePath,
@@ -66,6 +71,15 @@ function ensureVirtualConfigPath(projectDir = process.cwd()) {
     return virtualConfigPath
 }
 
+function ensureVirtualPreloadedPath(projectDir = process.cwd()) {
+    const virtualPreloadedPath = toVirtualPreloadedModulePath(projectDir)
+    mkdirSync(dirname(virtualPreloadedPath), { recursive: true })
+    if (!existsSync(virtualPreloadedPath)) {
+        writeFileSync(virtualPreloadedPath, EMPTY_PRELOADED_MODULE)
+    }
+    return virtualPreloadedPath
+}
+
 function toTurbopackProjectPath(file: string, projectDir = process.cwd()) {
     const relativePath = relative(projectDir, file).replace(/\\/g, '/')
     return relativePath.startsWith('./') || relativePath.startsWith('../') ? relativePath : `./${relativePath}`
@@ -92,7 +106,8 @@ function applyMasterCSSWebpackConfig(
     cssConfigLoaderPath: string,
     styleCSSLoaderPath: string,
     virtualCSSPath: string,
-    virtualConfigPath: string
+    virtualConfigPath: string,
+    virtualPreloadedPath: string
 ) {
     config.module ??= {}
     config.module.rules ??= []
@@ -132,7 +147,8 @@ function applyMasterCSSWebpackConfig(
     config.resolve.alias = {
         ...(config.resolve.alias || {}),
         [VIRTUAL_CSS_ID]: virtualCSSPath,
-        [VIRTUAL_CONFIG_ID]: virtualConfigPath
+        [VIRTUAL_CONFIG_ID]: virtualConfigPath,
+        [VIRTUAL_PRELOADED_ID]: virtualPreloadedPath
     }
     return config
 }
@@ -144,6 +160,7 @@ function applyMasterCSSTurbopackConfig(
     styleCSSLoaderPath: string,
     virtualCSSPath: string,
     virtualConfigPath: string,
+    virtualPreloadedPath: string,
     projectDir: string,
     includeStyleRule = true
 ) {
@@ -193,7 +210,8 @@ function applyMasterCSSTurbopackConfig(
         resolveAlias: {
             ...nextConfig.turbopack?.resolveAlias,
             [VIRTUAL_CSS_ID]: virtualCSSPath,
-            [VIRTUAL_CONFIG_ID]: virtualConfigPath
+            [VIRTUAL_CONFIG_ID]: virtualConfigPath,
+            [VIRTUAL_PRELOADED_ID]: virtualPreloadedPath
         },
         rules: {
             ...rules,
@@ -261,10 +279,11 @@ function applyMasterCSSExtractTurbopackConfig(
     extractCSSLoaderPath: string,
     virtualCSSPath: string,
     virtualConfigPath: string,
+    virtualPreloadedPath: string,
     projectDir: string,
     statePath: string
 ) {
-    const turbopackConfig = applyMasterCSSTurbopackConfig(nextConfig, cssConfigLoaderPath, cssConfigImportLoaderPath, styleCSSLoaderPath, virtualCSSPath, virtualConfigPath, projectDir, false)
+    const turbopackConfig = applyMasterCSSTurbopackConfig(nextConfig, cssConfigLoaderPath, cssConfigImportLoaderPath, styleCSSLoaderPath, virtualCSSPath, virtualConfigPath, virtualPreloadedPath, projectDir, false)
     const rules = turbopackConfig.rules || {}
     const starRules = toRuleArray(rules['*'])
     const extractLoader = {
@@ -328,15 +347,17 @@ function createConfigWithCSSConfigLoader<T extends NextConfig>(
     virtualCSSPath: string,
     webpackVirtualConfigPath: string,
     turbopackVirtualConfigPath: string,
+    webpackVirtualPreloadedPath: string,
+    turbopackVirtualPreloadedPath: string,
     projectDir: string
 ) {
     const userWebpack = nextConfig.webpack
     return {
         ...nextConfig,
-        turbopack: applyMasterCSSTurbopackConfig(nextConfig, cssConfigLoaderPath, cssConfigImportLoaderPath, styleCSSLoaderPath, virtualCSSPath, turbopackVirtualConfigPath, projectDir),
+        turbopack: applyMasterCSSTurbopackConfig(nextConfig, cssConfigLoaderPath, cssConfigImportLoaderPath, styleCSSLoaderPath, virtualCSSPath, turbopackVirtualConfigPath, turbopackVirtualPreloadedPath, projectDir),
         webpack(config: WebpackConfig, context: WebpackContext) {
             const resolvedConfig = userWebpack ? userWebpack(config, context) || config : config
-            return applyMasterCSSWebpackConfig(resolvedConfig, cssConfigLoaderPath, styleCSSLoaderPath, virtualCSSPath, webpackVirtualConfigPath)
+            return applyMasterCSSWebpackConfig(resolvedConfig, cssConfigLoaderPath, styleCSSLoaderPath, virtualCSSPath, webpackVirtualConfigPath, webpackVirtualPreloadedPath)
         }
     } as T
 }
@@ -352,7 +373,9 @@ export function withMasterCSS<T extends NextConfig>(nextConfig: T = {} as T, opt
     const cssConfigImportLoaderPath = resolveCSSConfigImportLoaderPath()
     const styleCSSLoaderPath = resolveStyleCSSLoaderPath()
     const virtualConfigPath = ensureVirtualConfigPath(projectDir)
+    const virtualPreloadedPath = ensureVirtualPreloadedPath(projectDir)
     const turbopackVirtualConfigPath = toTurbopackProjectPath(virtualConfigPath, projectDir)
+    const turbopackVirtualPreloadedPath = toTurbopackProjectPath(virtualPreloadedPath, projectDir)
     registerOptions(options)
 
     if (resolvedOptions.mode === 'extract') {
@@ -374,6 +397,7 @@ export function withMasterCSS<T extends NextConfig>(nextConfig: T = {} as T, opt
                     resolveExtractCSSLoaderPath(),
                     turbopackVirtualCSSPath,
                     turbopackVirtualConfigPath,
+                    turbopackVirtualPreloadedPath,
                     setup.projectDir,
                     statePath
                 )
@@ -389,6 +413,8 @@ export function withMasterCSS<T extends NextConfig>(nextConfig: T = {} as T, opt
         resolveEmptyCSSPath(),
         virtualConfigPath,
         turbopackVirtualConfigPath,
+        virtualPreloadedPath,
+        turbopackVirtualPreloadedPath,
         projectDir
     )
 

@@ -30,7 +30,7 @@ describe('@master/css.next/client', () => {
             )
             writeFileSync(
                 path.join(cssPackageDir, 'index.d.ts'),
-                'export interface Config { variables?: unknown[] }\n'
+                'export interface Config { variables?: unknown[] }\nexport interface MasterCSSPreloaded { variables?: Record<string, number>; animations?: Record<string, number> }\n'
             )
             writeFileSync(
                 path.join(nextPackageDir, 'package.json'),
@@ -56,9 +56,11 @@ import type { Config } from '@master/css'
 import 'virtual:master-utilities.css'
 import config from './app.css?master-css-config'
 import virtualConfig from 'virtual:master-css-config'
+import virtualPreloaded from 'virtual:master-css-preloaded'
 
 config satisfies Config
 virtualConfig satisfies Config
+virtualPreloaded satisfies import('@master/css').MasterCSSPreloaded
 `.trimStart()
             )
             writeFileSync(

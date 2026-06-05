@@ -284,7 +284,10 @@ function resolveCSSImportGraphFile(
             ? resolveMasterCSSPackageEntryFile(importSource, absoluteFile, options.projectDir)
             : undefined
         if (packageFile || (importSource && isExpandableImportSource(importSource))) {
-            const importedFile = packageFile || resolve(dirname(absoluteFile), importSource!)
+            if (!importSource) {
+                throw new Error(`Unable to resolve CSS import in ${absoluteFile}`)
+            }
+            const importedFile = packageFile || resolve(dirname(absoluteFile), importSource)
             output += resolveCSSImportGraphFile(importedFile, dependencies, dependencySet, [...stack, absoluteFile], options)
         } else {
             output += importStatement.statement

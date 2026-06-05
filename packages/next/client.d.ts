@@ -14,3 +14,10 @@ declare module 'virtual:master-css-config' {
     const config: Config
     export default config
 }
+
+declare module 'virtual:master-css-preloaded' {
+    import type { MasterCSSPreloaded } from '@master/css'
+
+    const preloaded: MasterCSSPreloaded
+    export default preloaded
+}

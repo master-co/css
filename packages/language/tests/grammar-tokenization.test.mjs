@@ -339,7 +339,7 @@ test('CSS injection highlights @master root configuration blocks', () => {
             root-size: 16;
             --color-primary: $color-blue-60/.8;
 
-            @mode dark {
+            dark {
                 --color-primary: #818cf8;
             }
 
@@ -354,7 +354,6 @@ test('CSS injection highlights @master root configuration blocks', () => {
     assertTokenScope(tokens, '--color-primary', 'variable.css')
     assertTokenScope(tokens, 'color-blue-60', 'variable.other.master-css.css')
     assertTokenScope(tokens, '.8', 'constant.numeric.css')
-    assertTokenScope(tokens, 'mode', 'keyword.control.at-rule.mode.master-css.css')
     assertTokenScope(tokens, 'dark', 'support.constant.property-value.css')
     assertTokenScope(tokens, 'custom-at', 'keyword.control.at-rule.custom-at.master-css.css')
     assertTokenScope(tokens, 'motion-safe', 'variable.parameter.master-css.at-token.css')
@@ -388,9 +387,9 @@ test('CSS injection highlights top-level extractor directives', () => {
     assertTokenScope(tokens, '@dark', 'keyword.control.at-rule')
 })
 
-test('CSS injection highlights @master component directives and compose classes', () => {
+test('CSS injection highlights top-level component directives and compose classes', () => {
     const tokens = tokensFor(embeddedHighlighter, `
-        @master {
+        @layer components {
             .btn {
                 @compose "inline-flex fg:primary:hover@md";
                 @at dark {
@@ -423,19 +422,17 @@ test('CSS injection highlights @master component directives and compose classes'
     assertTokenScope(tokens, 'color', 'support.type.property-name.css')
 })
 
-test('CSS injection highlights declarations inside @master @layer utilities @at blocks', () => {
+test('CSS injection highlights declarations inside top-level @layer utilities @at blocks', () => {
     const tokens = tokensFor(embeddedHighlighter, `
-        @master {
-            @layer utilities {
-                .content-auto {
-                    content-visibility: auto;
-                    contain-intrinsic-size: auto 32rem;
-                }
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+                contain-intrinsic-size: auto 32rem;
+            }
 
-                .print-hidden {
-                    @at print {
-                        display: none;
-                    }
+            .print-hidden {
+                @at print {
+                    display: none;
                 }
             }
         }
@@ -451,23 +448,21 @@ test('CSS injection highlights declarations inside @master @layer utilities @at 
     assertTokenScope(tokens, 'none', 'support.constant.property-value.css')
 })
 
-test('CSS injection highlights @master native keyframes blocks', () => {
+test('CSS injection highlights top-level native keyframes blocks', () => {
     const tokens = tokensFor(embeddedHighlighter, `
-        @master {
-            @keyframes fade-in {
-                from {
-                    opacity: 0;
-                }
+        @keyframes fade-in {
+            from {
+                opacity: 0;
+            }
 
-                50%,
-                to {
-                    opacity: .62;
-                }
+            50%,
+            to {
+                opacity: .62;
             }
         }
     `, 'css')
 
-    assertTokenScope(tokens, 'keyframes', 'keyword.control.at-rule.css')
+    assertTokenScope(tokens, 'keyframes', 'keyword.control.at-rule.keyframes.css')
     assertTokenScope(tokens, 'from', 'entity.other.keyframe-offset.css')
     assertTokenScope(tokens, '50%', 'entity.other.keyframe-offset.percentage.css')
     assertTokenScope(tokens, 'to', 'entity.other.keyframe-offset.css')

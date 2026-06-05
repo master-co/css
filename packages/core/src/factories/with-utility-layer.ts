@@ -106,7 +106,7 @@ export default function withUtilityLayer<TBase extends new (...args: any[]) => L
                 visited.add(eachVariableName)
                 const variable = this.css.variables.get(eachVariableName)
                 if (!variable) return
-                if (this.css.themeLayer.rules.find(({ name }) => name === eachVariableName)) {
+                if (this.css.themeLayer.rules.find(({ name }) => name === eachVariableName) || this.css.isPreloadedVariable(eachVariableName)) {
                     const count = this.css.themeLayer.tokenCounts.get(eachVariableName) || 0
                     this.css.themeLayer.tokenCounts.set(eachVariableName, count + 1)
                 } else {
@@ -122,7 +122,7 @@ export default function withUtilityLayer<TBase extends new (...args: any[]) => L
         insertAnimations(utility: Utility | Rule) {
             if (!('animationNames' in utility)) return
             utility.animationNames?.forEach((eachAnimationName) => {
-                if (this.css.animationsNonLayer.rules.find(({ name }) => name === eachAnimationName)) {
+                if (this.css.animationsNonLayer.rules.find(({ name }) => name === eachAnimationName) || this.css.isPreloadedAnimation(eachAnimationName)) {
                     const count = this.css.animationsNonLayer.tokenCounts.get(eachAnimationName) || 0
                     this.css.animationsNonLayer.tokenCounts.set(eachAnimationName, count + 1)
                 } else {

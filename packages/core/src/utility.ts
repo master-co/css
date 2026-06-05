@@ -20,7 +20,8 @@ import wrapAtRules from './utils/wrap-at-rules'
 import declarers from './declarers'
 import transformers from './transformers'
 import functionTransformers from './function-transformers'
-import { createCSSVariableReference, createNumberVariableReference, normalizeVariableValue } from './utils/css-variables'
+import { createCSSVariableReference, createNumberVariableReference } from './utils/css-variables'
+import collectAnimationNames from './utils/collect-animation-names'
 
 export class Utility {
     native?: CSSRule
@@ -199,32 +200,6 @@ export class Utility {
         if (!declarationRules.some(({ declarations }) => Object.entries(declarations ?? {}).length)) {
             this.valid = false
         } else {
-            const addAnimationName = (animationName: string) => {
-                if (!this.css.animations.has(animationName)) return
-                if (!this.animationNames) {
-                    this.animationNames = new Set([animationName])
-                } else {
-                    this.animationNames.add(animationName)
-                }
-            }
-            const collectAnimationNamesFromValue = (value: string | number | undefined) => {
-                if (value === undefined) return
-                const normalizedValue = normalizeVariableValue(value).value
-                for (const rawValue of normalizedValue.split(/\s+/)) {
-                    addAnimationName(rawValue.replace(/,$/, ''))
-                }
-            }
-            const collectAnimationNamesFromVariable = (variable?: Variable, visited = new Set<string>()) => {
-                if (!variable || visited.has(variable.name)) return
-                visited.add(variable.name)
-                collectAnimationNamesFromValue(variable.value)
-                for (const modeVariable of Object.values(variable.modes || {})) {
-                    collectAnimationNamesFromValue(modeVariable.value)
-                }
-                variable.dependencies?.forEach((dependency) => {
-                    collectAnimationNamesFromVariable(this.css.variables.get(dependency), visited)
-                })
-            }
             for (const { declarations } of declarationRules) {
                 const variableNames = collectVariableNames(declarations, this.css.variables)
                 if (variableNames) {
@@ -236,13 +211,17 @@ export class Utility {
                         }
                     }
                 }
-                for (const propertyName in declarations) {
-                    if (this.css.animations && (propertyName === 'animation' || propertyName === 'animation-name')) {
-                        const propertyValue = declarations[propertyName as keyof PropertiesHyphen] as string
-                        if (!propertyValue) continue
-                        collectAnimationNamesFromValue(propertyValue)
-                        for (const variableName of variableNames || []) {
-                            collectAnimationNamesFromVariable(this.css.variables.get(variableName))
+                const animationNames = collectAnimationNames(declarations, {
+                    animationNames: this.css.animations.keys(),
+                    variables: this.css.variables,
+                    variableNames
+                })
+                if (animationNames) {
+                    for (const animationName of animationNames) {
+                        if (this.animationNames) {
+                            this.animationNames.add(animationName)
+                        } else {
+                            this.animationNames = new Set([animationName])
                         }
                     }
                 }

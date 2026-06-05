@@ -7,6 +7,7 @@
     import type { CSSRuntimeProviderProps } from './types/provider-props.js';
 
     export let config: CSSRuntimeProviderProps['config'] = undefined;
+    export let preloaded: CSSRuntimeProviderProps['preloaded'] = undefined;
     export let root: CSSRuntimeProviderProps['root'] = undefined;
 
     const cssRuntime = writable<CSSRuntime | undefined>(undefined);
@@ -16,7 +17,7 @@
 
     onMount(() => {
         mounted = true;
-        cssRuntime.set(initCSSRuntime(config, getRoot()));
+        cssRuntime.set(initCSSRuntime({ config, root: getRoot(), preloaded }));
         return () => {
             mounted = false;
             const currentCSSRuntime = get(cssRuntime);
@@ -37,7 +38,7 @@
         const nextRoot = getRoot();
         if (currentCSSRuntime && currentCSSRuntime.root !== nextRoot) {
             currentCSSRuntime.destroy();
-            cssRuntime.set(initCSSRuntime(config, nextRoot));
+            cssRuntime.set(initCSSRuntime({ config, root: nextRoot, preloaded }));
         }
     }
 
