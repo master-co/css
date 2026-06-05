@@ -62,17 +62,16 @@ describe.concurrent('createConfigFromCSSDirectives', () => {
                     }
                 ]
             },
-            componentDefinitions: {
-                badge: [
-                    {
-                        type: 'compose',
-                        order: 1,
-                        className: 'inline',
-                        selector: '&',
-                        atRules: [createCSSDirectiveAtRuleReference('wide')]
-                    }
-                ]
-            }
+            styleDefinitions: [
+                {
+                    type: 'compose',
+                    order: 1,
+                    name: 'badge',
+                    className: 'inline',
+                    selector: '&',
+                    atRules: [createCSSDirectiveAtRuleReference('wide')]
+                }
+            ]
         }))
 
         expect(getUtility(result, 'badge')?.rules).toEqual([
@@ -155,7 +154,7 @@ describe.concurrent('createConfigFromCSSDirectives', () => {
         })
     })
 
-    it('finalizes component definitions with core compose, mode, selector, and at-rule behavior', () => {
+    it('finalizes style definitions with core compose, mode, selector, and at-rule behavior', () => {
         const result = createConfigFromCSSDirectives(directiveResult({
             config: {
                 modeTrigger: 'class',
@@ -165,63 +164,69 @@ describe.concurrent('createConfigFromCSSDirectives', () => {
                 ],
                 modes: ['dark']
             },
-            componentDefinitions: {
-                btn: [
-                    {
-                        type: 'compose',
-                        order: 1,
-                        className: 'block',
-                        selector: '&'
-                    },
-                    {
-                        type: 'compose',
-                        order: 2,
-                        className: 'bg:primary@dark',
-                        selector: '&'
-                    },
-                    {
-                        type: 'compose',
-                        order: 3,
-                        className: 'font:sm@sm',
-                        selector: '&'
-                    },
-                    {
-                        type: 'compose',
-                        order: 4,
-                        className: 'bg:green:hover',
-                        selector: '&'
-                    },
-                    {
-                        order: 5,
-                        type: 'compose',
-                        className: 'block',
-                        selector: '& :is(h3)'
-                    },
-                    {
-                        type: 'native',
-                        order: 6,
-                        selector: '&',
-                        declarations: {
-                            display: 'flex'
-                        }
-                    },
-                    {
-                        type: 'native',
-                        order: 7,
-                        selector: '&:hover',
-                        declarations: {
-                            color: '#fff'
-                        }
-                    },
-                    {
-                        type: 'compose',
-                        order: 8,
-                        className: 'block',
-                        selector: '& .label',
-                        atRules: [createCSSDirectiveAtRuleReference('sm')]
+            styleDefinitions: [
+                {
+                    type: 'compose',
+                    order: 1,
+                    name: 'btn',
+                    className: 'block',
+                    selector: '&'
+                },
+                {
+                    type: 'compose',
+                    order: 2,
+                    name: 'btn',
+                    className: 'bg:primary@dark',
+                    selector: '&'
+                },
+                {
+                    type: 'compose',
+                    order: 3,
+                    name: 'btn',
+                    className: 'font:sm@sm',
+                    selector: '&'
+                },
+                {
+                    type: 'compose',
+                    order: 4,
+                    name: 'btn',
+                    className: 'bg:green:hover',
+                    selector: '&'
+                },
+                {
+                    order: 5,
+                    type: 'compose',
+                    name: 'btn',
+                    className: 'block',
+                    selector: '& :is(h3)'
+                },
+                {
+                    type: 'native',
+                    order: 6,
+                    name: 'btn',
+                    selector: '&',
+                    declarations: {
+                        display: 'flex'
                     }
-                ]
-            }
+                },
+                {
+                    type: 'native',
+                    order: 7,
+                    name: 'btn',
+                    selector: '&:hover',
+                    declarations: {
+                        color: '#fff'
+                    }
+                },
+                {
+                    type: 'compose',
+                    order: 8,
+                    name: 'btn',
+                    className: 'block',
+                    selector: '& .label',
+                    atRules: [createCSSDirectiveAtRuleReference('sm')]
+                }
+            ]
         }), { config: createThemeConfig() })
 
         expect(result.config.modes).toEqual(['dark'])

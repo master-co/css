@@ -256,10 +256,17 @@ function toCompileCSSConfigResult(
         config: options.config,
         onWarning: options.onWarning
     })
+    const generatedCSS = adapterResult.generatedCSS || ''
+    const css = [
+        result.nativeCSS,
+        generatedCSS
+    ].filter(Boolean).join('\n')
     return {
         ...result,
         config: adapterResult.config,
         warnings: adapterResult.warnings,
+        generatedCSS,
+        css,
         directives: result
     }
 }
@@ -312,14 +319,19 @@ export function compileProjectConfig(entries: string[], options: CompileCSSConfi
         addUnique(dependencies, result.dependencies)
         addUnique(classNames, result.classNames)
         addUnique(nativeClassNames, result.nativeClassNames)
-        if (result.nativeCSS) nativeCSS.push(result.nativeCSS)
-        if (result.css) css.push(result.css)
-        if (result.generatedCSS) generatedCSS.push(result.generatedCSS)
         addUnique(warnings, result.warnings)
         const adapterResult = createConfigFromCSSDirectives(result, {
             config: extendConfig(...styleConfigs, options.config),
             onWarning: options.onWarning
         })
+        const entryGeneratedCSS = adapterResult.generatedCSS || ''
+        if (result.nativeCSS) nativeCSS.push(result.nativeCSS)
+        if (entryGeneratedCSS) generatedCSS.push(entryGeneratedCSS)
+        const entryCSS = [
+            result.nativeCSS,
+            entryGeneratedCSS
+        ].filter(Boolean).join('\n')
+        if (entryCSS) css.push(entryCSS)
         styleConfigs.push(adapterResult.config)
         addUnique(warnings, adapterResult.warnings)
     }

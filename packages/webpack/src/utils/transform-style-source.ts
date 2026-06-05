@@ -36,7 +36,7 @@ export async function transformStyleSource(
             preserveNativeCSS: true
         })
         return {
-            code: result.nativeCSS || result.css || '',
+            code: result.css || result.nativeCSS || '',
             dependencies: result.dependencies || dependencies
         }
     }

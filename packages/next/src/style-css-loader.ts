@@ -37,7 +37,7 @@ async function transformStyleSource(resourcePath: string, source: string, projec
         })
         dependencies.push(...(result.dependencies || []))
         return {
-            code: result.nativeCSS || result.css || '',
+            code: result.css || result.nativeCSS || '',
             dependencies
         }
     }
@@ -50,7 +50,7 @@ async function transformStyleSource(resourcePath: string, source: string, projec
     })
     dependencies.push(...(result.dependencies || []))
     return {
-        code: result.nativeCSS || result.css || '',
+        code: result.css || result.nativeCSS || '',
         dependencies
     }
 }

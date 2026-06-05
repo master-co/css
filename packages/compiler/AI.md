@@ -6,8 +6,8 @@
 
 ## Inputs And Outputs
 
-- Input: CSS containing `@master`, variables, mode blocks such as `dark { ... }`, `@custom-at`, `@custom-selector`, top-level managed `@layer preset`, `@layer components`, and `@layer utilities` blocks, condition blocks with `@at`, reusable component rules with `@compose`, and top-level native `@keyframes`.
-- Output: semantic core `Config`, shared directive data for lower-level consumers, component definitions, native CSS with consumed Master directives removed, native class names, warnings, standalone directive metadata, and CSS import dependencies.
+- Input: CSS containing `@master`, variables, mode blocks such as `dark { ... }`, `@custom-at`, `@custom-selector`, top-level managed `@layer preset`, `@layer components`, and `@layer utilities` blocks, condition blocks with `@at`, style rules with `@compose`, and top-level native `@keyframes`.
+- Output: semantic core `Config`, shared directive data for lower-level consumers, style definitions, native CSS with consumed Master directives removed, native class names, warnings, standalone directive metadata, and CSS import dependencies.
 - `@master` definitions are config definitions. Defining a component, utility, variable, token, or animation does not emit CSS by itself; the class still needs to be used or extracted.
 - `@master;` and `@import "@master/css"` are equivalent user project entry markers. Package CSS files such as `@master/css/index.css` must not contain `@master;`.
 - `compileCSSFile()` resolves CSS `@import` graphs before compiling and returns absolute dependency paths.
@@ -34,9 +34,10 @@
 - `@layer components { .btn { @at dark { @compose "bg:neutral-90"; } } }`
 - `@layer utilities { .content-auto { content-visibility: auto; } }`
 - `@layer utilities { .print-hidden { @at print { display: none; } } }`
+- `.card { @compose "block"; @at dark { @compose "fg:primary"; } }`
 - `@keyframes fade { from { opacity: 0; } to { opacity: 1; } }`
 - Component and utility definition selectors must start with one class selector.
-- `@compose` is allowed only in component definitions.
+- `@compose` is allowed in managed class definitions and native style rules, including inside `@at`.
 - Utilities defined in CSS are static utilities only.
 - `body`, `html`, and other HTML tag rules inside top-level managed layers should warn because regular CSS selectors must live outside Master directives.
 - The compiler package does not scan unrelated `.css` files for class usage. Pair CSS configs with extract mode or pass extracted classes through compiler options when filtering native CSS.

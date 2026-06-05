@@ -52,27 +52,29 @@ export interface CSSDirectiveConfig {
     modeTrigger?: CSSDirectiveModeTrigger
 }
 
-export interface CSSDirectiveComponentComposeDefinition {
+export interface CSSDirectiveStyleComposeDefinition {
     type: 'compose'
     order: number
     className: string
     selector: string
     atRules?: string[]
     layer?: CSSDirectiveLayerName
+    name?: string
 }
 
-export interface CSSDirectiveComponentNativeDefinition {
+export interface CSSDirectiveStyleNativeDefinition {
     type: 'native'
     order: number
     selector: string
     declarations: CSSDirectiveDeclarations
     atRules?: string[]
     layer?: CSSDirectiveLayerName
+    name?: string
 }
 
-export type CSSDirectiveComponentDefinition =
-    | CSSDirectiveComponentComposeDefinition
-    | CSSDirectiveComponentNativeDefinition
+export type CSSDirectiveStyleDefinition =
+    | CSSDirectiveStyleComposeDefinition
+    | CSSDirectiveStyleNativeDefinition
 
 export interface CSSDirectiveResult {
     config: CSSDirectiveConfig
@@ -83,7 +85,7 @@ export interface CSSDirectiveResult {
     generatedCSS: string
     warnings: string[]
     dependencies: string[]
-    componentDefinitions?: Record<string, CSSDirectiveComponentDefinition[]>
+    styleDefinitions?: CSSDirectiveStyleDefinition[]
 }
 
 export const CSS_DIRECTIVE_AT_RULE_REFERENCE_PREFIX = '__master_at__:'

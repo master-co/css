@@ -1,13 +1,11 @@
 import {
     createCSSDirectiveAtRuleReference,
     type CSSDirectiveAnimationDefinitions,
-    type CSSDirectiveComponentDefinition,
     type CSSDirectiveConfig,
     type CSSDirectiveDeclarations,
     type CSSDirectiveLayerName,
     type CSSDirectiveResult,
-    type CSSDirectiveUtilityDefinition,
-    type CSSDirectiveUtilityRuleDefinition,
+    type CSSDirectiveStyleDefinition,
     type CSSDirectiveVariableValue
 } from 'shared/css-directives'
 import type {
@@ -50,13 +48,11 @@ export interface ResolvedCSSImportGraph {
     dependencies: string[]
 }
 
-type ParsedComponentDefinition = CSSDirectiveComponentDefinition
-
-type ParsedUtilityRuleDefinition = CSSDirectiveUtilityRuleDefinition
+type ParsedStyleDefinition = CSSDirectiveStyleDefinition
 
 export interface ParsedDirectives extends Pick<CompileCSSResult, 'config' | 'classNames' | 'nativeClassNames' | 'warnings'> {
-    componentDefinitions?: Record<string, ParsedComponentDefinition[]>
-    componentOrder?: number
+    styleDefinitions?: ParsedStyleDefinition[]
+    styleOrder?: number
 }
 
 const MASTER_CUSTOM_AT_RULES = {
@@ -723,30 +719,25 @@ function formatNestedAtRule(rule: any) {
         }
         case 'starting-style':
             return '@starting-style'
+        case 'layer-block':
+            return `@layer ${(rule.value.name || []).join('.')}`
     }
 }
 
 function getNestedAtRuleChildren(rule: any) {
-    if (rule.type === 'media' || rule.type === 'supports' || rule.type === 'container' || rule.type === 'starting-style') {
+    if (rule.type === 'media' || rule.type === 'supports' || rule.type === 'container' || rule.type === 'starting-style' || rule.type === 'layer-block') {
         return rule.value.rules as Rule[]
     }
 }
 
-function sameAtRules(a: string[] | undefined, b: string[] | undefined) {
-    const left = a || []
-    const right = b || []
-    return left.length === right.length && left.every((value, index) => value === right[index])
+function getParsedStyleDefinitions(parsed: ParsedDirectives) {
+    parsed.styleDefinitions ??= []
+    return parsed.styleDefinitions
 }
 
-function getParsedComponentDefinitions(parsed: ParsedDirectives, name: string) {
-    parsed.componentDefinitions ??= {}
-    parsed.componentDefinitions[name] ??= []
-    return parsed.componentDefinitions[name]
-}
-
-function nextComponentOrder(parsed: ParsedDirectives) {
-    parsed.componentOrder = (parsed.componentOrder || 0) + 1
-    return parsed.componentOrder
+function nextStyleOrder(parsed: ParsedDirectives) {
+    parsed.styleOrder = (parsed.styleOrder || 0) + 1
+    return parsed.styleOrder
 }
 
 function getDeclarationName(declaration: Declaration) {
@@ -847,15 +838,6 @@ function parseSelectorDefinition(rule: any, parsed: ParsedDirectives) {
     parsed.config.selectorTokens[token] = value.trim()
 }
 
-function parseClassDefinitionSelector(selectors: Selector[]) {
-    if (selectors.length !== 1) return
-    const selector = selectors[0]
-    if (selector.length !== 1) return
-    const selectorComponent = selector[0]
-    if (selectorComponent.type !== 'class') return
-    return selectorComponent.name
-}
-
 function parseSingleTypeSelector(selectors: Selector[]) {
     if (selectors.length !== 1) return
     const selector = selectors[0]
@@ -865,7 +847,7 @@ function parseSingleTypeSelector(selectors: Selector[]) {
     return selectorComponent.name
 }
 
-function parseComponentDefinitionSelector(selectors: Selector[]) {
+function parseManagedStyleDefinitionSelector(selectors: Selector[]) {
     const names = selectors.map((selector) => selector[0]?.type === 'class' ? selector[0].name : undefined)
     const name = names[0]
     if (!name || names.some((eachName) => eachName !== name)) return
@@ -916,7 +898,7 @@ function isNestedStyleRule(rule: Rule) {
         || Boolean(parseMasterAtRuleBlock(rule))
 }
 
-type ComponentStyleRuleBodyItem =
+type StyleRuleBodyItem =
     | {
         type: 'declarations'
         declarations: Record<string, string>
@@ -930,16 +912,12 @@ type ComponentStyleRuleBodyItem =
         rule: Rule
     }
 
-function collectStyleRule(rule: any, allowCompose: boolean, allowNestedRules = false) {
-    return collectStyleRuleBody(rule.value.declarations, rule.value.rules, allowCompose, allowNestedRules)
+function collectDirectiveStyleRule(rule: any) {
+    return collectDirectiveStyleRuleBody(rule.value.declarations, rule.value.rules)
 }
 
-function collectComponentStyleRule(rule: any) {
-    return collectComponentStyleRuleBody(rule.value.declarations, rule.value.rules)
-}
-
-function collectComponentStyleRuleBody(block: DeclarationBlock<Declaration>, rules: Rule[]) {
-    const items: ComponentStyleRuleBodyItem[] = []
+function collectDirectiveStyleRuleBody(block: DeclarationBlock<Declaration>, rules: Rule[]) {
+    const items: StyleRuleBodyItem[] = []
     const declarations = collectDeclarations(block)
     if (Object.keys(declarations).length) {
         items.push({
@@ -973,45 +951,12 @@ function collectComponentStyleRuleBody(block: DeclarationBlock<Declaration>, rul
             })
             continue
         }
-        throw new Error('Components only accept declarations, @compose, nested selectors, and nested at-rules')
+        throw new Error('Style definitions only accept declarations, @compose, nested selectors, and nested at-rules')
     }
     return items
 }
 
-function collectStyleRuleBody(block: DeclarationBlock<Declaration>, rules: Rule[], allowCompose: boolean, allowNestedRules = false) {
-    const classNames: string[] = []
-    const declarations = collectDeclarations(block)
-    const nestedRules: Rule[] = []
-    for (const child of rules) {
-        if (child.type === 'nested-declarations') {
-            Object.assign(declarations, collectDeclarations(child.value.declarations))
-            continue
-        }
-        if (allowNestedRules && isNestedStyleRule(child)) {
-            nestedRules.push(child)
-            continue
-        }
-        const compose = parseComposeRule(child)
-        if (compose && allowCompose) {
-            classNames.push(compose)
-            continue
-        }
-        if (compose) {
-            throw new Error('@compose is only allowed inside top-level @layer preset or @layer components class definitions')
-        }
-        throw new Error(allowCompose
-            ? 'Class definitions only accept declarations and @compose'
-            : 'Utilities only accept declarations'
-        )
-    }
-    return {
-        classNames,
-        declarations,
-        nestedRules
-    }
-}
-
-function combineComponentSelectors(parentSelectors: string[], childSelectorAST: Selector[]) {
+function combineStyleSelectorLists(parentSelectors: string[], childSelectorAST: Selector[]) {
     const childSelectors = childSelectorAST.map((selector) => formatSelectors([selector]))
     const selectors: string[] = []
 
@@ -1027,8 +972,8 @@ function combineComponentSelectors(parentSelectors: string[], childSelectorAST: 
     return selectors
 }
 
-interface ComponentSelectorDefinition {
-    name: string
+interface StyleSelectorDefinition {
+    name?: string
     selectors: string[]
     selector: string
 }
@@ -1038,23 +983,25 @@ const EMPTY_DECLARATION_BLOCK: DeclarationBlock<Declaration> = {
     importantDeclarations: []
 }
 
-function parseComponentDefinitionBody(
+function parseStyleDefinitionBody(
     parsed: ParsedDirectives,
-    selectorDefinition: ComponentSelectorDefinition,
-    items: ComponentStyleRuleBodyItem[],
+    selectorDefinition: StyleSelectorDefinition,
+    items: StyleRuleBodyItem[],
     atRules: string[] = [],
-    layer?: CSSDirectiveLayerName
+    layer?: CSSDirectiveLayerName,
+    name = selectorDefinition.name
 ) {
-    const definitions = getParsedComponentDefinitions(parsed, selectorDefinition.name)
+    const definitions = getParsedStyleDefinitions(parsed)
 
     for (const item of items) {
         if (item.type === 'compose') {
             const normalizedClassNames = normalizeClassNames(item.classNames)
             definitions.push(...normalizedClassNames.map((className) => ({
                 type: 'compose' as const,
-                order: nextComponentOrder(parsed),
+                order: nextStyleOrder(parsed),
                 className,
                 selector: selectorDefinition.selector,
+                ...(name ? { name } : {}),
                 ...(atRules.length ? { atRules: [...atRules] } : {}),
                 ...(layer ? { layer } : {})
             })))
@@ -1065,8 +1012,9 @@ function parseComponentDefinitionBody(
             if (!Object.keys(item.declarations).length) continue
             definitions.push({
                 type: 'native',
-                order: nextComponentOrder(parsed),
+                order: nextStyleOrder(parsed),
                 selector: selectorDefinition.selector,
+                ...(name ? { name } : {}),
                 declarations: item.declarations,
                 ...(atRules.length ? { atRules: [...atRules] } : {}),
                 ...(layer ? { layer } : {})
@@ -1074,37 +1022,42 @@ function parseComponentDefinitionBody(
             continue
         }
 
-        parseNestedComponentChildRule(item.rule, parsed, selectorDefinition, atRules, layer)
+        if (name) {
+            parseNestedManagedStyleChildRule(item.rule, parsed, selectorDefinition as StyleSelectorDefinition & { name: string }, atRules, layer)
+        } else {
+            parseNestedNativeStyleChildRule(item.rule, parsed, selectorDefinition, atRules)
+        }
     }
 
-    if (!parsed.classNames.includes(selectorDefinition.name)) {
-        parsed.classNames.push(selectorDefinition.name)
+    if (name && !parsed.classNames.includes(name)) {
+        parsed.classNames.push(name)
     }
 }
 
-function parseComponentRuleBody(
+function parseStyleRuleBody(
     rules: Rule[],
     parsed: ParsedDirectives,
-    selectorDefinition: ComponentSelectorDefinition,
+    selectorDefinition: StyleSelectorDefinition,
     atRules: string[] = [],
-    layer?: CSSDirectiveLayerName
+    layer?: CSSDirectiveLayerName,
+    name = selectorDefinition.name
 ) {
-    parseComponentDefinitionBody(parsed, selectorDefinition, collectComponentStyleRuleBody(EMPTY_DECLARATION_BLOCK, rules), atRules, layer)
+    parseStyleDefinitionBody(parsed, selectorDefinition, collectDirectiveStyleRuleBody(EMPTY_DECLARATION_BLOCK, rules), atRules, layer, name)
 }
 
-function parseNestedComponentChildRule(child: Rule, parsed: ParsedDirectives, parentSelectorDefinition: ComponentSelectorDefinition, atRules: string[], layer?: CSSDirectiveLayerName) {
-    const componentLayerBlock = parseComponentLayerBlock(child)
-    if (componentLayerBlock) {
+function parseNestedManagedStyleChildRule(child: Rule, parsed: ParsedDirectives, parentSelectorDefinition: StyleSelectorDefinition, atRules: string[], layer?: CSSDirectiveLayerName) {
+    const managedLayerBlock = parseManagedLayerBlock(child)
+    if (managedLayerBlock) {
         if (layer) {
-            throw new Error('Nested @layer blocks are not allowed in @master')
+            throw new Error('Nested @layer blocks are not allowed inside managed style definitions')
         }
-        parseComponentRuleBody(componentLayerBlock.rules, parsed, parentSelectorDefinition, atRules, componentLayerBlock.layer)
+        parseStyleRuleBody(managedLayerBlock.rules, parsed, parentSelectorDefinition, atRules, managedLayerBlock.layer)
         return
     }
 
     const masterAtRuleBlock = parseMasterAtRuleBlock(child)
     if (masterAtRuleBlock) {
-        parseComponentRuleBody(masterAtRuleBlock.rules, parsed, parentSelectorDefinition, [...atRules, createCSSDirectiveAtRuleReference(masterAtRuleBlock.token)], layer)
+        parseStyleRuleBody(masterAtRuleBlock.rules, parsed, parentSelectorDefinition, [...atRules, createCSSDirectiveAtRuleReference(masterAtRuleBlock.token)], layer)
         return
     }
 
@@ -1114,75 +1067,119 @@ function parseNestedComponentChildRule(child: Rule, parsed: ParsedDirectives, pa
         if (!atRule) {
             throw new Error('Unsupported nested at-rule in @master')
         }
-        parseComponentRuleBody(nestedAtRuleChildren, parsed, parentSelectorDefinition, [...atRules, atRule], layer)
+        parseStyleRuleBody(nestedAtRuleChildren, parsed, parentSelectorDefinition, [...atRules, atRule], layer)
         return
     }
 
     if (child.type === 'style') {
-        parseComponent(child, parsed, atRules, layer, parentSelectorDefinition)
+        parseManagedStyleRule(child, parsed, atRules, layer, parentSelectorDefinition)
         return
     }
 
-    throw new Error('Components only accept declarations, @compose, nested selectors, and nested at-rules')
+    throw new Error('Style definitions only accept declarations, @compose, nested selectors, and nested at-rules')
 }
 
-function parseComponent(rule: any, parsed: ParsedDirectives, atRules: string[] = [], layer?: CSSDirectiveLayerName, parentSelectorDefinition?: ComponentSelectorDefinition) {
+function parseManagedStyleRule(rule: any, parsed: ParsedDirectives, atRules: string[] = [], layer?: CSSDirectiveLayerName, parentSelectorDefinition?: StyleSelectorDefinition) {
     const selectorDefinition = parentSelectorDefinition
         ? (() => {
-            const selectors = combineComponentSelectors(parentSelectorDefinition.selectors, rule.value.selectors)
+            const selectors = combineStyleSelectorLists(parentSelectorDefinition.selectors, rule.value.selectors)
             return {
                 name: parentSelectorDefinition.name,
                 selectors,
                 selector: selectors.join(',')
             }
         })()
-        : parseComponentDefinitionSelector(rule.value.selectors)
+        : parseManagedStyleDefinitionSelector(rule.value.selectors)
     if (!selectorDefinition) {
-        throw new Error('Component definition selector must start with a single class selector')
+        throw new Error('Managed style definition selector must start with a single class selector')
     }
-    parseComponentDefinitionBody(parsed, selectorDefinition, collectComponentStyleRule(rule), atRules, layer)
+    parseStyleDefinitionBody(parsed, selectorDefinition, collectDirectiveStyleRule(rule), atRules, layer)
 }
 
-function pushUtilityRule(definition: CSSDirectiveUtilityDefinition, declarations: CSSDirectiveDeclarations, atRules: string[]) {
-    definition.rules ??= []
-    const rules = definition.rules as ParsedUtilityRuleDefinition[]
-    const existingRule = rules[rules.length - 1]
-    if (existingRule && sameAtRules(existingRule.atRules, atRules)) {
-        Object.assign(existingRule.declarations, declarations)
-    } else {
-        rules.push({
-            ...(atRules.length ? { atRules: [...atRules] } : {}),
-            declarations
-        })
+function parseUtility(rule: any, parsed: ParsedDirectives, atRules: string[] = [], layer: CSSDirectiveLayerName = 'utilities') {
+    const selectorDefinition = parseManagedStyleDefinitionSelector(rule.value.selectors)
+    if (!selectorDefinition) {
+        throw new Error('Utility definition selector must start with a single class selector')
     }
+    parseStyleDefinitionBody(parsed, selectorDefinition, collectDirectiveStyleRule(rule), atRules, layer)
 }
 
-function ensureUtilityRules(definition: CSSDirectiveUtilityDefinition) {
-    if (!definition.declarations) return
-    const declarations = definition.declarations
-    delete definition.declarations
-    const atRules = definition.atRules
-    delete definition.atRules
-    pushUtilityRule(definition, declarations, atRules || [])
-}
-
-function mergeUtilityDeclarations(definition: CSSDirectiveUtilityDefinition, declarations: CSSDirectiveDeclarations, atRules: string[]) {
-    if (atRules.length || definition.rules?.length) {
-        ensureUtilityRules(definition)
-        pushUtilityRule(definition, declarations, atRules)
-        return
-    }
-
-    definition.declarations = {
-        ...definition.declarations,
-        ...declarations
+function parseNativeSelectorDefinition(selectors: Selector[], parentSelectorDefinition?: StyleSelectorDefinition): StyleSelectorDefinition {
+    const selectorTexts = parentSelectorDefinition
+        ? combineStyleSelectorLists(parentSelectorDefinition.selectors, selectors)
+        : selectors.map((selector) => formatSelectors([selector]))
+    return {
+        selectors: selectorTexts,
+        selector: selectorTexts.join(',')
     }
 }
 
-function parseNestedUtilityChildRule(child: Rule, parsed: ParsedDirectives, name: string, atRules: string[], layer: CSSDirectiveLayerName) {
+function parseNativeRuleBody(
+    rules: Rule[],
+    parsed: ParsedDirectives,
+    atRules: string[] = [],
+    parentSelectorDefinition?: StyleSelectorDefinition
+) {
+    for (const child of rules) {
+        const compose = parseComposeRule(child)
+        if (compose && parentSelectorDefinition) {
+            parseStyleDefinitionBody(parsed, parentSelectorDefinition, [{
+                type: 'compose',
+                classNames: [compose]
+            }], atRules, undefined, undefined)
+            continue
+        }
+
+        if (child.type === 'nested-declarations' && parentSelectorDefinition) {
+            const declarations = collectDeclarations(child.value.declarations)
+            if (Object.keys(declarations).length) {
+                parseStyleDefinitionBody(parsed, parentSelectorDefinition, [{
+                    type: 'declarations',
+                    declarations
+                }], atRules, undefined, undefined)
+            }
+            continue
+        }
+
+        const masterAtRuleBlock = parseMasterAtRuleBlock(child)
+        if (masterAtRuleBlock) {
+            parseNativeRuleBody(masterAtRuleBlock.rules, parsed, [...atRules, createCSSDirectiveAtRuleReference(masterAtRuleBlock.token)], parentSelectorDefinition)
+            continue
+        }
+
+        const nestedAtRuleChildren = getNestedAtRuleChildren(child)
+        if (nestedAtRuleChildren) {
+            const atRule = formatNestedAtRule(child)
+            if (!atRule) {
+                throw new Error('Unsupported nested at-rule in native CSS')
+            }
+            parseNativeRuleBody(nestedAtRuleChildren, parsed, [...atRules, atRule], parentSelectorDefinition)
+            continue
+        }
+
+        if (child.type === 'style') {
+            parseNativeStyleRule(child, parsed, atRules, parentSelectorDefinition)
+            continue
+        }
+
+        if (child.type === 'keyframes') {
+            throw new Error('@keyframes is not allowed inside @at. Move animation definitions to top-level @keyframes.')
+        }
+
+        if (compose) {
+            throw new Error('@compose requires a style rule')
+        }
+
+        if (child.type === 'nested-declarations') {
+            throw new Error('Native @at blocks only accept style rules, declarations, @compose, and nested at-rules')
+        }
+    }
+}
+
+function parseNestedNativeStyleChildRule(child: Rule, parsed: ParsedDirectives, parentSelectorDefinition: StyleSelectorDefinition, atRules: string[]) {
     const masterAtRuleBlock = parseMasterAtRuleBlock(child)
     if (masterAtRuleBlock) {
-        parseUtilityRuleBody(masterAtRuleBlock.rules, parsed, name, [...atRules, createCSSDirectiveAtRuleReference(masterAtRuleBlock.token)], layer)
+        parseNativeRuleBody(masterAtRuleBlock.rules, parsed, [...atRules, createCSSDirectiveAtRuleReference(masterAtRuleBlock.token)], parentSelectorDefinition)
         return
     }
 
@@ -1190,73 +1187,23 @@ function parseNestedUtilityChildRule(child: Rule, parsed: ParsedDirectives, name
     if (nestedAtRuleChildren) {
         const atRule = formatNestedAtRule(child)
         if (!atRule) {
-            throw new Error('Unsupported nested at-rule in @layer utilities')
+            throw new Error('Unsupported nested at-rule in native CSS')
         }
-        parseUtilityRuleBody(nestedAtRuleChildren, parsed, name, [...atRules, atRule], layer)
+        parseNativeRuleBody(nestedAtRuleChildren, parsed, [...atRules, atRule], parentSelectorDefinition)
         return
     }
 
-    throw new Error('Utilities only accept declarations and nested at-rules')
+    if (child.type === 'style') {
+        parseNativeStyleRule(child, parsed, atRules, parentSelectorDefinition)
+        return
+    }
+
+    throw new Error('Native CSS rules only accept declarations, @compose, nested selectors, and nested at-rules')
 }
 
-function parseUtilityRuleBody(rules: Rule[], parsed: ParsedDirectives, name: string, atRules: string[] = [], layer: CSSDirectiveLayerName = 'utilities') {
-    const { declarations, nestedRules } = collectStyleRuleBody(EMPTY_DECLARATION_BLOCK, rules, false, true)
-    if (Object.keys(declarations).length) {
-        parsed.config.utilities ??= []
-        const existingDefinition = parsed.config.utilities.find((definition) =>
-            definition.name === name && (definition.type ?? 'static') === 'static'
-            && (definition.layer || 'utilities') === layer
-        )
-        if (existingDefinition) {
-            existingDefinition.type = 'static'
-            existingDefinition.layer = layer
-            mergeUtilityDeclarations(existingDefinition, declarations, atRules)
-        } else {
-            const definition = {
-                name,
-                type: 'static',
-                layer
-            } satisfies CSSDirectiveUtilityDefinition
-            mergeUtilityDeclarations(definition, declarations, atRules)
-            parsed.config.utilities.push(definition)
-        }
-    }
-    for (const nestedRule of nestedRules) {
-        parseNestedUtilityChildRule(nestedRule, parsed, name, atRules, layer)
-    }
-}
-
-function parseUtility(rule: any, parsed: ParsedDirectives, atRules: string[] = [], layer: CSSDirectiveLayerName = 'utilities') {
-    const name = parseClassDefinitionSelector(rule.value.selectors)
-    if (!name) {
-        throw new Error('Utility definition selector must be a single class selector')
-    }
-    const { declarations, nestedRules } = collectStyleRule(rule, false, true)
-    parsed.config.utilities ??= []
-    const existingDefinition = parsed.config.utilities.find((definition) =>
-        definition.name === name && (definition.type ?? 'static') === 'static'
-        && (definition.layer || 'utilities') === layer
-    )
-    if (existingDefinition) {
-        existingDefinition.type = 'static'
-        existingDefinition.layer = layer
-        if (Object.keys(declarations).length) {
-            mergeUtilityDeclarations(existingDefinition, declarations, atRules)
-        }
-    } else {
-        const definition = {
-            name,
-            type: 'static',
-            layer
-        } satisfies CSSDirectiveUtilityDefinition
-        if (Object.keys(declarations).length) {
-            mergeUtilityDeclarations(definition, declarations, atRules)
-        }
-        parsed.config.utilities.push(definition)
-    }
-    for (const nestedRule of nestedRules) {
-        parseNestedUtilityChildRule(nestedRule, parsed, name, atRules, layer)
-    }
+function parseNativeStyleRule(rule: any, parsed: ParsedDirectives, atRules: string[] = [], parentSelectorDefinition?: StyleSelectorDefinition) {
+    const selectorDefinition = parseNativeSelectorDefinition(rule.value.selectors, parentSelectorDefinition)
+    parseStyleDefinitionBody(parsed, selectorDefinition, collectDirectiveStyleRule(rule), atRules, undefined, undefined)
 }
 
 function formatKeyframeSelector(selector: KeyframeSelector) {
@@ -1344,21 +1291,21 @@ function parseMasterStyleRule(rule: any, parsed: ParsedDirectives, options: Comp
         return
     }
 
-    if (parseComponentDefinitionSelector(rule.value.selectors)) {
-        throw new Error('@master does not accept class definitions. Move component definitions to top-level @layer preset or @layer components.')
+    if (parseManagedStyleDefinitionSelector(rule.value.selectors)) {
+        throw new Error('@master does not accept class definitions. Move class definitions to top-level @layer preset, @layer components, or @layer utilities.')
     }
 
     warn(parsed, options, `Unsupported @master selector "${formatSelectors(rule.value.selectors)}". @master only accepts mode blocks, @custom-at, and @custom-selector.`)
 }
 
-function parseComponentLayerBlock(rule: Rule) {
+function parseManagedLayerBlock(rule: Rule) {
     if (rule.type !== 'layer-block') return
     const layerName = (rule.value.name || []).join('.')
     if (!layerName) {
-        throw new Error('@layer in @master requires a layer name')
+        throw new Error('Managed @layer requires a layer name')
     }
     if (!UTILITY_LAYER_NAMES.has(layerName as CSSDirectiveLayerName)) {
-        throw new Error(`Unsupported @master layer: ${layerName}`)
+        throw new Error(`Unsupported managed @layer: ${layerName}`)
     }
     return {
         layer: layerName as CSSDirectiveLayerName,
@@ -1367,8 +1314,8 @@ function parseComponentLayerBlock(rule: Rule) {
 }
 
 function parseMasterChildRule(child: Rule, parsed: ParsedDirectives, options: CompileCSSOptions, section: MasterSection, atRules: string[] = [], layer?: CSSDirectiveLayerName) {
-    const componentLayerBlock = parseComponentLayerBlock(child)
-    if (componentLayerBlock) {
+    const managedLayerBlock = parseManagedLayerBlock(child)
+    if (managedLayerBlock) {
         throw new Error('@layer is not allowed in @master. Move layer definitions to top-level @layer preset, @layer components, or @layer utilities.')
     }
 
@@ -1425,8 +1372,22 @@ function parseMasterRule(rule: any, parsed: ParsedDirectives, options: CompileCS
     }
 }
 
+function containsNativeStyleDirective(rule: Rule): boolean {
+    if ((rule.type === 'unknown' || rule.type === 'custom') && (rule.value?.name === 'compose' || rule.value?.name === 'at')) {
+        return true
+    }
+    if (rule.type === 'style') {
+        return (rule.value.rules || []).some(containsNativeStyleDirective)
+    }
+    const nestedAtRuleChildren = getNestedAtRuleChildren(rule)
+    if (nestedAtRuleChildren) {
+        return nestedAtRuleChildren.some(containsNativeStyleDirective)
+    }
+    return false
+}
+
 function parseTopLevelLayerChildRule(child: Rule, parsed: ParsedDirectives, atRules: string[], layer: CSSDirectiveLayerName) {
-    if (parseComponentLayerBlock(child)) {
+    if (parseManagedLayerBlock(child)) {
         throw new Error(`Nested @layer blocks are not allowed in top-level @layer ${layer}`)
     }
 
@@ -1460,12 +1421,12 @@ function parseTopLevelLayerChildRule(child: Rule, parsed: ParsedDirectives, atRu
         if (layer === 'utilities') {
             parseUtility(child, parsed, atRules, layer)
         } else {
-            parseComponent(child, parsed, atRules, layer)
+            parseManagedStyleRule(child, parsed, atRules, layer)
         }
         return
     }
     if ((child.type === 'unknown' || child.type === 'custom') && child.value?.name === 'compose') {
-        throw new Error('@compose is only allowed inside top-level @layer preset or @layer components class definitions')
+        throw new Error('@compose requires a style rule')
     }
     if ((child.type === 'unknown' || child.type === 'custom') && child.value?.name === 'mode') {
         throw new Error('Mode at-rules are not supported. Use a mode block such as light { ... } inside @master.')
@@ -1519,6 +1480,24 @@ export function compileCSS(source: string, options: CompileCSSOptions = {}): Com
                             return []
                         }
                     }
+                    const masterAtRuleBlock = parseMasterAtRuleBlock(rule)
+                    if (masterAtRuleBlock) {
+                        parseNativeRuleBody(masterAtRuleBlock.rules, parsed, [createCSSDirectiveAtRuleReference(masterAtRuleBlock.token)])
+                        return []
+                    }
+                    const nestedAtRuleChildren = getNestedAtRuleChildren(rule)
+                    if (nestedAtRuleChildren && containsNativeStyleDirective(rule)) {
+                        const atRule = formatNestedAtRule(rule)
+                        if (!atRule) {
+                            throw new Error('Unsupported nested at-rule in native CSS')
+                        }
+                        parseNativeRuleBody(nestedAtRuleChildren, parsed, [atRule])
+                        return []
+                    }
+                    if (rule.type === 'style' && containsNativeStyleDirective(rule)) {
+                        parseNativeStyleRule(rule, parsed)
+                        return []
+                    }
                 }
 
                 if (rule.type === 'custom') {
@@ -1527,13 +1506,13 @@ export function compileCSS(source: string, options: CompileCSSOptions = {}): Com
                             parseMasterRule(rule, parsed, options)
                             return []
                         case 'compose':
-                            throw new Error('@compose is only allowed inside top-level @layer preset or @layer components class definitions')
+                            throw new Error('@compose requires a style rule')
                         case 'custom-at':
                             throw new Error('@custom-at is only allowed in @master')
                         case 'custom-selector':
                             throw new Error('@custom-selector is only allowed in @master')
                         case 'at':
-                            throw new Error('@at is only allowed inside top-level @layer preset, @layer components, or @layer utilities definitions')
+                            throw new Error('@at requires a style rule or nested style rules')
                         case 'mode':
                             throw new Error('Mode at-rules are not supported. Use a mode block such as light { ... } inside @master.')
                     }
@@ -1564,17 +1543,17 @@ export function compileCSS(source: string, options: CompileCSSOptions = {}): Com
         css: remainingCSS,
         generatedCSS: '',
         dependencies: [],
-        ...(parsed.componentDefinitions ? { componentDefinitions: parsed.componentDefinitions } : {})
+        ...(parsed.styleDefinitions ? { styleDefinitions: parsed.styleDefinitions } : {})
     }
 }
 
 export function parseDirectives(source: string, options: CompileCSSOptions = {}) {
-    const { config, classNames, nativeClassNames, warnings, componentDefinitions } = compileCSS(source, options)
+    const { config, classNames, nativeClassNames, warnings, styleDefinitions } = compileCSS(source, options)
     return {
         config,
         classNames,
         nativeClassNames,
         warnings,
-        ...(componentDefinitions ? { componentDefinitions } : {})
+        ...(styleDefinitions ? { styleDefinitions } : {})
     }
 }

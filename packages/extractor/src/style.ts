@@ -382,10 +382,18 @@ export async function compileStyleCSS(
 ): Promise<CompileCSSResult> {
     const { projectDir: _projectDir, loadSass: _loadSass, ...compileOptions } = options
     const css = await preprocessStyleCSS(source, id, options)
-    return compileCSS(css, {
+    const result = compileCSS(css, {
         ...compileOptions,
         from: cleanStyleRequest(id)
     })
+    const finalizedResult = createConfigFromCSSResult(result, {
+        config: compileOptions.config as Config | undefined
+    })
+    return {
+        ...result,
+        css: finalizedResult.css,
+        generatedCSS: finalizedResult.generatedCSS
+    }
 }
 
 export function getNativeCSS(result: { css?: string, generatedCSS?: string, nativeCSS?: string }) {
@@ -399,7 +407,7 @@ export function getNativeCSS(result: { css?: string, generatedCSS?: string, nati
 }
 
 function hasCompiledStyleConfig(result: CompileCSSResult) {
-    return Object.keys(result.config).length || Object.keys(result.componentDefinitions || {}).length
+    return Object.keys(result.config).length || Boolean(result.styleDefinitions?.length)
 }
 
 export function getExtractorClasses(extractor: CSSExtractor) {
@@ -684,22 +692,27 @@ export async function createExtractedCSSResult(options: CreateExtractedCSSOption
         ...(masterCSSResult ? [masterCSSResult] : []),
         ...entryStyleResults
     ]
-    const nativeCSS = [
-        ...(includeGeneratedCSS && includeMasterBaseCSS && masterCSSResult
-            ? [getNativeCSS(masterCSSResult)]
-            : []),
-        ...(includeNativeCSS
-            ? entryStyleResults.map((result) => result.nativeCSS).filter(Boolean)
-            : [])
-    ]
     const explicitConfig = configOption ?? extractor.customOptions?.config
     const styleConfigs: Config[] = []
+    const finalizedStyleResults = new Map<CompileCSSResult, ReturnType<typeof createConfigFromCSSResult>>()
     for (const result of styleResults) {
         if (!hasCompiledStyleConfig(result)) continue
-        styleConfigs.push(createConfigFromCSSResult(result, {
+        const finalizedResult = createConfigFromCSSResult(result, {
             config: extendConfig(...styleConfigs, explicitConfig)
-        }).config)
+        })
+        finalizedStyleResults.set(result, finalizedResult)
+        styleConfigs.push(finalizedResult.config)
     }
+    const nativeCSS = [
+        ...(includeGeneratedCSS && includeMasterBaseCSS && masterCSSResult
+            ? [getNativeCSS(finalizedStyleResults.get(masterCSSResult) || masterCSSResult)]
+            : []),
+        ...(includeNativeCSS
+            ? entryStyleResults
+                .map((result) => finalizedStyleResults.get(result)?.css || result.nativeCSS)
+                .filter(Boolean)
+            : [])
+    ]
     const css = createCSS(extendConfig(...styleConfigs, explicitConfig))
     if (includeGeneratedCSS) {
         const generatedClasses = new Set(classes)

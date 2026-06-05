@@ -126,7 +126,7 @@ describe.concurrent('@master/css-compiler', () => {
         ])
     })
 
-    it('records component definitions without resolving core utilities', () => {
+    it('records style definitions without resolving core utilities', () => {
         const result = compileCSS(`
             @master {
                 mode-trigger: class;
@@ -156,12 +156,13 @@ describe.concurrent('@master/css-compiler', () => {
         `)
 
         expect(result.classNames).toEqual(['btn'])
-        expect(result.componentDefinitions?.btn).toEqual([
+        expect(result.styleDefinitions).toEqual([
             {
                 type: 'compose',
                 order: 1,
                 className: 'inline-flex',
                 selector: '&',
+                name: 'btn',
                 layer: 'components'
             },
             {
@@ -169,12 +170,14 @@ describe.concurrent('@master/css-compiler', () => {
                 order: 2,
                 className: 'bg:primary',
                 selector: '&',
+                name: 'btn',
                 layer: 'components'
             },
             {
                 type: 'native',
                 order: 3,
                 selector: '&',
+                name: 'btn',
                 layer: 'components',
                 declarations: {
                     display: 'flex'
@@ -184,6 +187,7 @@ describe.concurrent('@master/css-compiler', () => {
                 type: 'native',
                 order: 4,
                 selector: '&',
+                name: 'btn',
                 layer: 'components',
                 atRules: [createCSSDirectiveAtRuleReference('dark')],
                 declarations: {
@@ -194,6 +198,7 @@ describe.concurrent('@master/css-compiler', () => {
                 type: 'native',
                 order: 5,
                 selector: '&',
+                name: 'btn',
                 layer: 'components',
                 atRules: ['@media print'],
                 declarations: {
@@ -205,6 +210,7 @@ describe.concurrent('@master/css-compiler', () => {
                 order: 6,
                 className: 'underline',
                 selector: '&:hover',
+                name: 'btn',
                 layer: 'components',
                 atRules: [createCSSDirectiveAtRuleReference('md')]
             }
@@ -224,11 +230,12 @@ describe.concurrent('@master/css-compiler', () => {
             }
         `)
 
-        expect(result.componentDefinitions?.btn).toEqual([
+        expect(result.styleDefinitions).toEqual([
             {
                 type: 'native',
                 order: 1,
                 selector: '&:is(:hover,:focus-visible),&.primary:is(:hover,:focus-visible),&.active,&.primary.active',
+                name: 'btn',
                 layer: 'components',
                 declarations: {
                     color: 'red'
@@ -250,24 +257,28 @@ describe.concurrent('@master/css-compiler', () => {
             }
         `)
 
-        expect(result.config.utilities).toEqual([
+        expect(result.config.utilities).toBeUndefined()
+        expect(result.styleDefinitions).toEqual([
             {
+                type: 'native',
                 name: 'content-auto',
-                type: 'static',
+                order: 1,
+                selector: '&',
                 layer: 'utilities',
-                rules: [
-                    {
-                        declarations: {
-                            'content-visibility': 'auto'
-                        }
-                    },
-                    {
-                        atRules: [createCSSDirectiveAtRuleReference('print')],
-                        declarations: {
-                            display: 'none'
-                        }
-                    }
-                ]
+                declarations: {
+                    'content-visibility': 'auto'
+                }
+            },
+            {
+                type: 'native',
+                name: 'content-auto',
+                order: 2,
+                selector: '&',
+                layer: 'utilities',
+                atRules: [createCSSDirectiveAtRuleReference('print')],
+                declarations: {
+                    display: 'none'
+                }
             }
         ])
         expect(result.css).toBe('')
@@ -290,32 +301,110 @@ describe.concurrent('@master/css-compiler', () => {
             }
         `)
 
-        expect(result.config.utilities).toEqual([
+        expect(result.config.utilities).toBeUndefined()
+        expect(result.styleDefinitions).toEqual([
             {
+                type: 'native',
+                order: 1,
                 name: 'square',
-                type: 'static',
+                selector: '&',
                 layer: 'utilities',
                 declarations: {
                     'aspect-ratio': '1/1'
                 }
             },
             {
+                type: 'native',
+                order: 2,
                 name: 'video',
-                type: 'static',
+                selector: '&',
                 layer: 'utilities',
                 declarations: {
                     'aspect-ratio': '16/9'
                 }
             },
             {
+                type: 'native',
+                order: 3,
                 name: 'rounded',
-                type: 'static',
+                selector: '&',
                 layer: 'utilities',
                 declarations: {
                     'border-radius': '1e9em'
                 }
             }
         ])
+    })
+
+    it('finalizes @compose in utility definitions and detects cycles', () => {
+        const result = compileCSSConfig(`
+            @master {
+                --color-primary: #123;
+            }
+
+            @layer utilities {
+                .btn-base {
+                    @compose "inline-flex";
+                    align-items: center;
+                }
+
+                .btn {
+                    @compose "btn-base bg:primary";
+                }
+            }
+        `)
+
+        expect(result.config.utilities?.filter((utility) => utility.name === 'btn-base' || utility.name === 'btn')).toMatchObject([
+            {
+                name: 'btn-base',
+                layer: 'utilities',
+                declarations: {
+                    display: 'inline-flex',
+                    'align-items': 'center'
+                }
+            },
+            {
+                name: 'btn',
+                layer: 'utilities',
+                declarations: {
+                    display: 'inline-flex',
+                    'align-items': 'center',
+                    'background-color': 'var(--color-primary)'
+                }
+            }
+        ])
+
+        expect(() => compileCSSConfig(`
+            @layer utilities {
+                .a { @compose "b"; }
+                .b { @compose "a"; }
+            }
+        `)).toThrow('Circular @compose dependency detected: a -> b -> a')
+    })
+
+    it('lowers native @compose and @at after semantic config resolution', () => {
+        const result = compileCSSConfig(`
+            @master {
+                mode-trigger: class;
+                --color-primary: #123;
+
+                dark {
+                    --color-primary: #456;
+                }
+            }
+
+            .card {
+                @compose "block bg:primary";
+
+                @at dark {
+                    @compose "fg:primary";
+                }
+            }
+        `)
+
+        expect(result.nativeCSS).toBe('')
+        expect(result.generatedCSS).toBe('.card{display:block;background-color:var(--color-primary)}.dark .card{color:var(--color-primary)}')
+        expect(result.css).toBe(result.generatedCSS)
     })
 
     it('keeps and filters native class rules outside @master', () => {
@@ -390,12 +479,13 @@ describe.concurrent('@master/css-compiler', () => {
             }
         `, { classes: ['native'] })
 
-        expect(result.componentDefinitions?.btn).toEqual([
+        expect(result.styleDefinitions).toEqual([
             {
                 type: 'compose',
                 order: 1,
                 className: 'block',
                 selector: '&',
+                name: 'btn',
                 layer: 'components'
             }
         ])
@@ -552,11 +642,12 @@ describe.concurrent('@master/css-compiler', () => {
 
             expect(result.dependencies).toEqual([entry, button])
             expect(result.config.utilities).toBeUndefined()
-            expect(result.componentDefinitions?.btn).toEqual([
+            expect(result.styleDefinitions).toEqual([
                 {
                     type: 'native',
                     order: 1,
                     selector: '&',
+                    name: 'btn',
                     layer: 'components',
                     declarations: {
                         'font-size': '1rem'
@@ -566,6 +657,7 @@ describe.concurrent('@master/css-compiler', () => {
                     type: 'native',
                     order: 2,
                     selector: '&',
+                    name: 'btn',
                     layer: 'components',
                     declarations: {
                         display: 'block'
@@ -714,10 +806,8 @@ describe.concurrent('@master/css-compiler', () => {
         `)).toThrow('Mode at-rules are not supported')
 
         expect(() => process(`
-            .btn {
-                @compose "block";
-            }
-        `)).toThrow('@compose is only allowed inside top-level @layer preset or @layer components class definitions')
+            @compose "block";
+        `)).toThrow('@compose requires a style rule')
 
         expect(() => process(`
             @master {
@@ -728,22 +818,6 @@ describe.concurrent('@master/css-compiler', () => {
                 }
             }
         `)).toThrow('@layer is not allowed in @master')
-
-        expect(() => process(`
-            @layer utilities {
-                .content-auto {
-                    @compose "block";
-                }
-            }
-        `)).toThrow('@compose is only allowed inside top-level @layer preset or @layer components class definitions')
-
-        expect(() => process(`
-            @at dark {
-                .btn {
-                    display: none;
-                }
-            }
-        `)).toThrow('@at is only allowed inside top-level @layer preset, @layer components, or @layer utilities definitions')
 
         expect(() => process(`
             @master {
