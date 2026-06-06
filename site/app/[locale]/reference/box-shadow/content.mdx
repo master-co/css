@@ -6,16 +6,41 @@ import ShadowTokens from './components/ShadowTokens'
 ---
 
 ## Basic usage
+### Use shadow tokens
+Use `shadow:*` tokens for common elevation levels.
+```html
+<!-- @MARK shadow:md -->
+<article class="shadow:md">
+    ...
+</article>
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['shadow:md']}
+    </Class2CSS>
+</details>
+
 ### Use raw values
 Use raw values when a shadow does not belong in the shared scale.
 
 ```html
 <!-- @MARK shadow:0|1|2|black/.12,0|4|8|black/.08 -->
-<div class="shadow:0|1|2|black/.12,0|4|8|black/.08">…</div>
+<div class="shadow:0|1|2|black/.12,0|4|8|black/.08">...</div>
+```
+
+### Use inset shadows
+Use `shadow:inset|...` when the shadow should render inside the element.
+```html
+<!-- @MARK shadow:inset|0|1|2|black/.12 -->
+<div class="shadow:inset|0|1|2|black/.12">...</div>
 ```
 
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="box-shadow:1|2|3|blue:hover box-shadow:1|2|3|blue@sm box-shadow:1|2|3|blue@dark box-shadow:1|2|3|blue@print">…</div>
+<div class="shadow:sm shadow:md:hover shadow:none@print">...</div>
 ```
+
+Prefer tokens for product surfaces. Use raw values for one-off art direction, then promote repeated values into the shadow scale.

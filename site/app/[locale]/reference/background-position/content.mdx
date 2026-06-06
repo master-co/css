@@ -1,9 +1,34 @@
 ## Overview [sr-only]
 <Overview/>
 
+## Examples
+### Position a background image
+Use `bg:center`, `bg:top`, `bg:right`, `bg:bottom`, or `bg:left` to set `background-position`.
+```html
+<!-- @MARK bg:url(/hero.jpg) --><!-- @MARK bg:center -->
+<section class="bg:url(/hero.jpg) bg:center bg:cover">
+    ...
+</section>
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['bg:url(/hero.jpg)', 'bg:center']}
+    </Class2CSS>
+</details>
+
+### Use explicit positions
+Use `background-position:*` when you need two-value or measured positions.
+```html
+<!-- @MARK background-position:50%|25% -->
+<div class="background-position:50%|25%">...</div>
+```
+
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="background-position:top:hover background-position:top@sm background-position:top@dark background-position:top@print">…</div>
+<div class="bg:center bg:top@sm bg:center@print">...</div>
 ```
 
+Position changes are most visible when the image is larger than the background area or when `bg:cover` crops the image.

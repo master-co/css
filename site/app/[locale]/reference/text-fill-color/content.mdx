@@ -1,9 +1,41 @@
 ## Overview [sr-only]
 <Overview/>
 
+## Examples
+### Fill text with a color
+Use `text-fill-color:*` to set the WebKit text fill color directly.
+```html
+<!-- @MARK text-fill-color:primary -->
+<span class="text-fill-color:primary">
+    Filled text
+</span>
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['text-fill-color:primary']}
+    </Class2CSS>
+</details>
+
+### Make text fill transparent
+Use `text:transparent` when the visible text should come from a background clip, stroke, or layered effect.
+```html
+<!-- @MARK text:transparent -->
+<h2 class="text:transparent bg-clip:text">
+    Gradient title
+</h2>
+```
+
+### Use the current color
+Use `text-fill-color:currentColor` when the fill should follow `color`.
+```html
+<!-- @MARK text-fill-color:currentColor -->
+<span class="fg:primary text-fill-color:currentColor">Current color</span>
+```
+
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="text-fill-color:blue:hover text-fill-color:blue@sm text-fill-color:blue@dark text-fill-color:blue@print">…</div>
+<span class="text-fill-color:primary:hover text-fill-color:currentColor@sm text-fill-color:currentColor@print">...</span>
 ```
-

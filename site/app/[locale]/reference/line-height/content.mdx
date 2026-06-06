@@ -6,9 +6,38 @@
 <BasicUsage />
 You can also use [`text:<size>`](/reference/text-size) to set a text size with a golden ratio line height.
 
+### Set line height with font size
+Use `leading:*` with `font:*` when the type size and line height need to be tuned independently.
+```html
+<!-- @MARK font:md --><!-- @MARK leading:lg -->
+<p class="font:md leading:lg">
+    Comfortable paragraph text for longer reading.
+</p>
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['font:md', 'leading:lg']}
+    </Class2CSS>
+</details>
+
+### Tighten display text
+Use `leading:1` or another compact value for large headings where default paragraph leading would create too much vertical space.
+```html
+<!-- @MARK font:5xl --><!-- @MARK leading:1 -->
+<h1 class="font:5xl leading:1">Launch faster</h1>
+```
+
+### Use explicit values
+Use `leading:*` with a unitless number, length, or token depending on the typographic need.
+```html
+<!-- @MARK leading:1.35 -->
+<p class="leading:1.35">Measured line height</p>
+```
+
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="leading:1:hover leading:1@sm leading:1@dark leading:1@print">…</div>
+<div class="leading:sm leading:md@sm leading:lg@print">...</div>
 ```
-

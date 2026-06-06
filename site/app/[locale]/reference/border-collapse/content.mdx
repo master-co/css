@@ -1,9 +1,42 @@
 ## Overview [sr-only]
 <Overview/>
 
+## Examples
+### Collapse table borders
+Use `border:collapse` when adjacent table cell borders should merge into a single border.
+```html
+<!-- @MARK border:collapse -->
+<table class="border:collapse">
+    <tr><td>Cell</td></tr>
+</table>
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['border:collapse']}
+    </Class2CSS>
+</details>
+
+### Separate table borders
+Use `border:separate` when cells need their own border boxes and spacing.
+```html
+<!-- @MARK border:separate -->
+<table class="border:separate">
+    <tr><td>Cell</td></tr>
+</table>
+```
+
+### Match border spacing to the mode
+Collapsed borders ignore `border-spacing`. Use separate borders when spacing between cells is part of the design.
+```html
+<table class="border:separate border-spacing:2x">
+    <tr><td>Cell</td></tr>
+</table>
+```
+
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="border-collapse:collapse:hover border-collapse:collapse@sm border-collapse:collapse@dark border-collapse:collapse@print">…</div>
+<table class="border:collapse border:separate@sm border:collapse@print">...</table>
 ```
-

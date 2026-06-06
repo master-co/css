@@ -1,20 +1,42 @@
 ## Overview [sr-only]
 <Overview/>
 
----
-
-## Basic usage
+## Examples
 ### Slice
-Use `box-decoration:slice` to apply the background, border, border-image, box-shadow, clip-page, margin, and padding to the box as if it were one continuous fragment.
-<Basic className="box-decoration:slice" />
+Use `box-decoration:slice` when inline fragments should share one continuous background, border, shadow, and decoration.
+```html
+<!-- @MARK box-decoration:slice -->
+<span class="box-decoration:slice bg:primary/.12">
+    Wrapped inline text
+</span>
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['box-decoration:slice']}
+    </Class2CSS>
+</details>
 
 ### Clone
-Use `box-decoration:clone` to apply the background, border, border-image, box-shadow, clip-page, margin, and padding to each fragment independently.
-<Basic className="box-decoration:clone" />
+Use `box-decoration:clone` when each wrapped line should get its own background, border, shadow, and decoration.
+```html
+<!-- @MARK box-decoration:clone -->
+<span class="box-decoration:clone bg:primary/.12 px:1x">
+    Wrapped inline text
+</span>
+```
+
+### Use on inline content
+This property is most visible when inline content wraps across multiple lines.
+```html
+<span class="box-decoration:clone bg:yellow/.2">
+    A highlighted phrase that can wrap
+</span>
+```
 
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="box-decoration:slice:hover box-decoration:slice@sm box-decoration:slice@dark box-decoration:slice@print">…</div>
+<span class="box-decoration:clone:hover box-decoration:slice@sm box-decoration:slice@print">...</span>
 ```
-

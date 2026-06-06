@@ -1,9 +1,57 @@
 ## Overview [sr-only]
 <Overview/>
 
+## Examples
+### Set a fixed or fluid width
+Use `w:*` to set the CSS `width` property. Values can come from the sizing scale, fractions, keywords, screen variables, native units, or CSS functions.
+```html
+<!-- @MARK w:64x -->
+<aside class="w:64x">...</aside>
+
+<!-- @MARK w:full --><!-- @MARK max-w:screen-md -->
+<main class="w:full max-w:screen-md">...</main>
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['w:64x', 'w:full', 'max-w:screen-md']}
+    </Class2CSS>
+</details>
+
+### Use fractions for proportional layout
+Fractions resolve to percentages, which makes them useful for split panels and simple responsive columns.
+```html
+<!-- @MARK w:full --><!-- @MARK w:1/2@sm -->
+<div class="w:full w:1/2@sm">
+    ...
+</div>
+```
+
+Fractions still follow native percentage behavior: the percentage is based on the containing block.
+
+### Use intrinsic width keywords
+Use `w:fit`, `w:min`, and `w:max` when the element should size itself from its content.
+```html
+<!-- @MARK w:fit --><!-- @MARK px:sm -->
+<button class="w:fit px:sm">
+    Compact action
+</button>
+```
+
+### Use screen widths for wrappers
+`w:screen-*` uses configured screen size variables. In page layout, it is usually paired with `max-w:screen-*` or `w:full` so the wrapper can shrink on smaller containers.
+```html
+<!-- @MARK w:full --><!-- @MARK max-w:screen-lg --><!-- @MARK mx:auto -->
+<main class="w:full max-w:screen-lg mx:auto">
+    ...
+</main>
+```
+
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="width:full:hover width:full@sm width:full@dark width:full@print">…</div>
+<div class="w:full w:1/2@sm w:fit:hover w:full@print">...</div>
 ```
 
+For both axes at once, use [size](/reference/size). For upper and lower bounds, use [max-width](/reference/max-width) and [min-width](/reference/min-width).

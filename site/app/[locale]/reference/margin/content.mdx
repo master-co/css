@@ -1,9 +1,58 @@
 ## Overview [sr-only]
 <Overview/>
 
+## Examples
+### Add margin on every side
+Use `m:*` to create space outside an element. Margin separates the element from neighboring boxes; it is not painted by the element background.
+```html
+<!-- @MARK m:md -->
+<aside class="m:md bg:surface b:1|lightest">
+    Detached content
+</aside>
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['m:md']}
+    </Class2CSS>
+</details>
+
+### Set one side
+Use `mt:*`, `mr:*`, `mb:*`, and `ml:*` for one physical side. One-side margins are useful for vertical rhythm between headings, paragraphs, media, and actions.
+```html
+<!-- @MARK mt:lg --><!-- @MARK mb:sm -->
+<section>
+    <h2 class="mt:lg mb:sm">Billing</h2>
+    <p class="m:0">Manage invoices and payment details.</p>
+</section>
+```
+
+### Set horizontal or vertical margins
+Use `mx:*` for left and right margins, and `my:*` for top and bottom margins.
+```html
+<!-- @MARK mx:auto --><!-- @MARK my:lg --><!-- @MARK max-w:screen-md -->
+<main class="w:full max-w:screen-md mx:auto my:lg">
+    ...
+</main>
+```
+
+`mx:auto` is the standard way to center a block with a constrained width. The element still needs a width or maximum width that leaves free inline space.
+
+### Avoid margin for internal spacing
+Use [padding](/reference/padding) for space inside a component and [gap](/reference/gap) for spacing between flex or grid children. Reserve margin for relationships between separate layout regions.
+```html
+<!-- @MARK gap:md -->
+<div class="flex gap:md">
+    <button>Cancel</button>
+    <button>Save</button>
+</div>
+```
+
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="m:10:hover m:10@sm m:10@dark m:10@print">…</div>
+<div class="m:0:hover m:md@sm m:lg@dark m:0@print">...</div>
 ```
 
+(i) Vertical margins can collapse in normal block flow, following native CSS behavior. Padding and gap do not collapse.

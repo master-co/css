@@ -1,9 +1,39 @@
 ## Overview [sr-only]
 <Overview/>
 
+## Examples
+### Disable selection on controls
+Use `user-select:none` for controls where accidental text selection makes the interaction feel broken.
+```html
+<!-- @MARK user-select:none -->
+<button class="user-select:none">
+    Drag handle
+</button>
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['user-select:none']}
+    </Class2CSS>
+</details>
+
+### Select all text in one click
+Use `user-select:all` for short values that users commonly copy whole, such as tokens or command snippets.
+```html
+<!-- @MARK user-select:all -->
+<code class="user-select:all">pnpm install @master/css</code>
+```
+
+### Preserve normal reading selection
+Use `user-select:text` for article content, code examples, and any text users may need to copy partially.
+```html
+<!-- @MARK user-select:text -->
+<p class="user-select:text">Select part of this sentence.</p>
+```
+
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="user-select:auto:hover user-select:auto@sm user-select:auto@dark user-select:auto@print">…</div>
+<div class="user-select:none:hover user-select:text@sm user-select:auto@print">...</div>
 ```
-

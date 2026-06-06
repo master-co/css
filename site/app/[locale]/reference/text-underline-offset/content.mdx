@@ -1,9 +1,40 @@
 ## Overview [sr-only]
 <Overview/>
 
+## Examples
+### Move underline away from text
+Use `text-underline-offset:*` to control the distance between text and its underline.
+```html
+<!-- @MARK text-underline-offset:4px -->
+<a class="text:underline text-underline-offset:4px">
+    Read more
+</a>
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['text-underline-offset:4px']}
+    </Class2CSS>
+</details>
+
+### Pair with decoration thickness
+Larger underline offsets often need a matching decoration thickness so the underline still feels intentional.
+```html
+<!-- @MARK text-underline-offset:2px -->
+<a class="text:underline text-decoration-thickness:2px text-underline-offset:2px">
+    Active section
+</a>
+```
+
+### Reset in compact contexts
+Use `text-underline-offset:0` for dense table or navigation labels when extra offset takes too much space.
+```html
+<a class="text-underline-offset:4px text-underline-offset:0@sm">Compact link</a>
+```
+
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="text-underline-offset:1:hover text-underline-offset:1@sm text-underline-offset:1@dark text-underline-offset:1@print">…</div>
+<a class="text-underline-offset:4px:hover text-underline-offset:2px@sm text-underline-offset:0@print">...</a>
 ```
-

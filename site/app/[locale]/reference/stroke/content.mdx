@@ -1,9 +1,34 @@
 ## Overview [sr-only]
 <Overview />
 
+## Examples
+### Set SVG stroke color
+Use `stroke:*` to set the stroke paint for SVG shapes.
+```html
+<!-- @MARK stroke:current -->
+<svg class="stroke:current" viewBox="0 0 16 16" aria-hidden="true">
+    <path d="M2 8h12" />
+</svg>
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['stroke:current']}
+    </Class2CSS>
+</details>
+
+### Use theme colors
+Use color tokens when icon strokes should follow the interface palette.
+```html
+<!-- @MARK stroke:primary -->
+<svg class="stroke:primary" aria-hidden="true"></svg>
+```
+
+Use [stroke-width](/reference/stroke-width) for line thickness.
+
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="stroke:blue-60:hover stroke:blue-60@sm stroke:blue-60@dark stroke:blue-60@print">…</div>
+<svg class="stroke:current stroke:primary:hover stroke:current@print">...</svg>
 ```
-

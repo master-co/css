@@ -1,9 +1,56 @@
 ## Overview [sr-only]
 <Overview/>
 
+## Examples
+### Add the same gap on both axes
+Use `gap:*` on flex and grid containers to set the spacing between children. Unlike margin, gap only affects space between items and does not add space around the outside edge.
+```html
+<!-- @MARK grid-cols:3 --><!-- @MARK gap:md -->
+<div class="grid-cols:3 gap:md">
+    <article>...</article>
+    <article>...</article>
+    <article>...</article>
+</div>
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['grid-cols:3', 'gap:md']}
+    </Class2CSS>
+</details>
+
+### Set row and column gaps separately
+Use `gap-y:*` for row gaps and `gap-x:*` for column gaps. This is common in card grids where horizontal gutters and vertical rhythm need different values.
+```html
+<!-- @MARK gap-x:lg --><!-- @MARK gap-y:xl -->
+<section class="grid-cols:1 grid-cols:3@md gap-x:lg gap-y:xl">
+    ...
+</section>
+```
+
+You can also set row and column values in one class with `gap:<row>|<column>`.
+```html
+<!-- @MARK gap:xl|lg -->
+<section class="grid-cols:3 gap:xl|lg">
+    ...
+</section>
+```
+
+### Use gap for component internals
+Gap is usually easier to maintain than child margins for toolbars, stacks, media objects, and repeated lists.
+```html
+<!-- @MARK flex --><!-- @MARK items-center --><!-- @MARK gap:sm -->
+<div class="flex items-center gap:sm">
+    <img class="size:8x round" alt="" />
+    <span>Aron</span>
+</div>
+```
+
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="gap:12:hover gap:12@sm gap:12@dark gap:12@print">…</div>
+<div class="gap:xs:hover gap:md@sm gap:lg@dark gap:0@print">...</div>
 ```
 
+For page and component rhythm, prefer shared spacing tokens such as `sm`, `md`, and `lg`.

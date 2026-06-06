@@ -1,9 +1,45 @@
 ## Overview [sr-only]
 <Overview/>
 
+## Examples
+### Indent the first line
+Use `text-indent:*` to offset the first formatted line of a block of text.
+```html
+<!-- @MARK text-indent:2em -->
+<p class="text-indent:2em">
+    The first line is indented while the rest of the paragraph follows the normal inline flow.
+</p>
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['text-indent:2em']}
+    </Class2CSS>
+</details>
+
+### Use spacing values
+Use a spacing or sizing value when the indent should align with the rest of the interface rhythm.
+```html
+<!-- @MARK text-indent:6x -->
+<p class="text-indent:6x">
+    This paragraph uses an indent tied to the shared scale.
+</p>
+```
+
+### Reset at a breakpoint
+Set the indent back to `0` when a layout changes or when print output should be more compact.
+```html
+<!-- @MARK text-indent:6x --><!-- @MARK text-indent:0@print -->
+<p class="text-indent:6x text-indent:0@print">
+    ...
+</p>
+```
+
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="text-indent:offset:hover text-indent:offset@sm text-indent:offset@dark text-indent:offset@print">…</div>
+<div class="text-indent:0 text-indent:4x@sm text-indent:0@print">...</div>
 ```
 
+Use margin or padding when the whole block should move; `text-indent` only affects the first formatted line.

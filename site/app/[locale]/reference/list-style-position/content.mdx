@@ -1,9 +1,42 @@
 ## Overview [sr-only]
 <Overview/>
 
+## Examples
+### Place markers inside the content box
+Use `list-style:inside` when markers should be part of the text block and align with wrapped lines.
+```html
+<!-- @MARK list-style:inside -->
+<ul class="list-style:inside">
+    <li>Long item that wraps inside the same text block.</li>
+</ul>
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['list-style:inside']}
+    </Class2CSS>
+</details>
+
+### Keep markers outside
+Use `list-style:outside` for the default marker placement outside the principal block box.
+```html
+<!-- @MARK list-style:outside -->
+<ul class="list-style:outside">
+    <li>Marker outside</li>
+</ul>
+```
+
+### Combine with marker type
+You can set position by itself or combine it with type using the `list-style:*|*` shorthand.
+```html
+<ul class="list-style:decimal|inside">
+    <li>Step</li>
+</ul>
+```
+
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="list-style-position:inside:hover list-style-position:inside@sm list-style-position:inside@dark list-style-position:inside@print">…</div>
+<ul class="list-style:inside:hover list-style:outside@sm list-style:outside@print">...</ul>
 ```
-

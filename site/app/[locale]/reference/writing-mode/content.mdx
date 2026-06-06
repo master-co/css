@@ -1,9 +1,40 @@
 ## Overview [sr-only]
 <Overview/>
 
+## Examples
+### Use vertical right-to-left flow
+Use `writing:vertical-rl` when text should flow vertically with columns progressing from right to left.
+```html
+<!-- @MARK writing:vertical-rl -->
+<p class="writing:vertical-rl">
+    Vertical label
+</p>
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['writing:vertical-rl']}
+    </Class2CSS>
+</details>
+
+### Restore horizontal text
+Use `writing:horizontal-tb` to return nested content to normal horizontal flow.
+```html
+<!-- @MARK writing:horizontal-tb -->
+<div class="writing:vertical-rl">
+    <span class="writing:horizontal-tb">ABC</span>
+</div>
+```
+
+### Pair with text orientation
+Use [`text:upright`](/reference/text-orientation) when characters should remain upright inside vertical writing.
+```html
+<p class="writing:vertical-rl text:upright">2026</p>
+```
+
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="writing-mode:horizontal-tb:hover writing-mode:horizontal-tb@sm writing-mode:horizontal-tb@dark writing-mode:horizontal-tb@print">…</div>
+<p class="writing:vertical-rl:hover writing:horizontal-tb@sm writing:horizontal-tb@print">...</p>
 ```
-

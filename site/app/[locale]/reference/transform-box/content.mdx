@@ -1,9 +1,42 @@
 ## Overview [sr-only]
 <Overview/>
 
+## Examples
+### Choose the transform reference box
+Use `transform-box:*` to choose which box is used for transform calculations. This is most useful for SVG elements whose fill box, stroke box, and view box can differ.
+```html
+<!-- @MARK transform-box:fill-box -->
+<svg viewBox="0 0 24 24">
+    <path class="transform-box:fill-box transform-origin:center transform:scale(.92)" d="M4 4h16v16H4z" />
+</svg>
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['transform-box:fill-box']}
+    </Class2CSS>
+</details>
+
+### Use the border box for HTML elements
+For regular HTML elements, `border-box` makes the element border box the transform reference.
+```html
+<!-- @MARK transform-box:border-box -->
+<div class="transform-box:border-box transform-origin:center transform:rotate(1deg)">
+    Card
+</div>
+```
+
+### Pair with transform origin
+`transform-box:*` changes the box; `transform-origin:*` chooses the point inside that box.
+```html
+<svg viewBox="0 0 24 24">
+    <circle class="transform-box:fill-box transform-origin:center transform:scale(1.1)" cx="12" cy="12" r="8" />
+</svg>
+```
+
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="transform-content:hover transform-content@sm transform-content@dark transform-content@print">…</div>
+<div class="transform-box:fill-box:hover transform-box:border-box@sm transform-box:border-box@print">...</div>
 ```
-

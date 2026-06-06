@@ -12,7 +12,7 @@ export default function BasicDemo({ className }: any) {
                     'ml:30': className === 'float:right'
                 })} src="/images/blur.png" width={160} height={90} alt="Float Image" />
                 <p className="my:0 text-align:justify">
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla et elit dictum, tempor augue quis, rhoncus enim. Nunc lacinia, velit vel convallis tincidunt, ante nisi maximus nunc, at aliquam nisi lectus in mauris. Nam eros sem, ullamcorper nec mollis nec, imperdiet a metus.
+                    Text wraps around the floated image and continues in the remaining inline space. Reset the float when the image should return to normal document flow.
                 </p>
             </DemoPanel>
         </Demo>

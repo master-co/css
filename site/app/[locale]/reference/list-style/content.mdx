@@ -1,9 +1,43 @@
 ## Overview [sr-only]
 <Overview/>
 
+## Examples
+### Set type and position together
+Use `list-style:*|*` when list marker type and marker position belong together.
+```html
+<!-- @MARK list-style:disc|inside -->
+<ul class="list-style:disc|inside">
+    <li>Install</li>
+    <li>Configure</li>
+</ul>
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['list-style:disc|inside']}
+    </Class2CSS>
+</details>
+
+### Use an image marker
+Use `list-style:url(*)` when the marker should come from an image asset.
+```html
+<!-- @MARK list-style:url(/marker.svg) -->
+<ul class="list-style:url(/marker.svg)">
+    <li>Custom marker</li>
+</ul>
+```
+
+### Split longhands when variants differ
+Use the type, position, and image pages when only one part of the list style changes across states.
+```html
+<ul class="list-style:decimal list-style:inside@sm">
+    <li>Step</li>
+</ul>
+```
+
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="list-style:url(…)|inside:hover list-style:url(…)|inside@sm list-style:url(…)|inside@dark list-style:url(…)|inside@print">…</div>
+<ul class="list-style:disc|inside:hover list-style:decimal@sm list-style:disc@print">...</ul>
 ```
-

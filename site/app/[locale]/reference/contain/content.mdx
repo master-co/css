@@ -1,9 +1,43 @@
 ## Overview [sr-only]
 <Overview/>
 
+## Examples
+### Contain layout and paint
+Use `contain:content` for self-contained panels where layout and paint work should not affect the outside page.
+```html
+<!-- @MARK contain:content -->
+<section class="contain:content">
+    Feed item
+</section>
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['contain:content']}
+    </Class2CSS>
+</details>
+
+### Contain painting
+Use `contain:paint` when overflowing visual effects should be contained without opting into every containment mode.
+```html
+<!-- @MARK contain:paint -->
+<div class="contain:paint">
+    Preview
+</div>
+```
+
+### Reset containment
+Use `contain:none` when a nested element needs to participate normally in layout or painting again.
+```html
+<!-- @MARK contain:none -->
+<div class="contain:content">
+    <div class="contain:none">Escapes containment</div>
+</div>
+```
+
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="contain:content:hover contain:content@sm contain:content@dark contain:content@print">…</div>
+<div class="contain:content contain:paint@sm contain:none@print">...</div>
 ```
-

@@ -1,9 +1,61 @@
 ## Overview [sr-only]
 <Overview/>
 
+## Examples
+### Hide overflowing content
+Use `overflow:hidden` when content should be clipped to the element box.
+```html
+<!-- @MARK overflow:hidden --><!-- @MARK r:md -->
+<div class="overflow:hidden r:md">
+    ...
+</div>
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['overflow:hidden']}
+    </Class2CSS>
+</details>
+
+### Create a scroll container
+Use `overflow:auto` when scrollbars should appear only if content overflows. Use axis-specific utilities when only one direction should scroll.
+```html
+<!-- @MARK max-h:64x --><!-- @MARK overflow-y:auto -->
+<div class="max-h:64x overflow-y:auto">
+    ...
+</div>
+
+<!-- @MARK overflow-x:auto -->
+<div class="overflow-x:auto">
+    <table>...</table>
+</div>
+```
+
+### Clip without scrolling
+Use `overflow:clip` when content should be clipped without creating a scroll container.
+```html
+<!-- @MARK overflow:clip -->
+<figure class="overflow:clip">
+    ...
+</figure>
+```
+
+Use `overflow:hidden` when you still need scroll-container behavior, clipping for border radius, or compatibility with patterns that depend on hidden overflow.
+
+### Truncate a single line
+Overflow is often paired with `white-space:nowrap` and `text-overflow:ellipsis` for one-line truncation.
+```html
+<!-- @MARK min-w:0 --><!-- @MARK overflow:hidden --><!-- @MARK white-space:nowrap --><!-- @MARK text-overflow:ellipsis -->
+<span class="min-w:0 overflow:hidden white-space:nowrap text-overflow:ellipsis">
+    A very long file name that should not widen the toolbar
+</span>
+```
+
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="overflow:auto:hover overflow:auto@sm overflow:auto@dark overflow:auto@print">…</div>
+<div class="overflow:hidden overflow:auto@sm overflow:visible@print">...</div>
 ```
 
+Use [overscroll-behavior](/reference/overscroll-behavior) when the problem is scroll chaining rather than clipping.

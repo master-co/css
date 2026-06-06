@@ -1,8 +1,43 @@
 ## Overview [sr-only]
 <Overview/>
 
+## Examples
+### Set animation speed
+Use `animation-duration:*` to define how long one cycle of the keyframes takes.
+```html
+<!-- @MARK animation-duration:300ms -->
+<div class="animation-name:fade animation-duration:300ms animation-fill-mode:both">
+    Fades in
+</div>
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['animation-duration:300ms']}
+    </Class2CSS>
+</details>
+
+### Slow down looping motion
+Looping indicators should often use a steady, readable duration so they do not distract from nearby content.
+```html
+<!-- @MARK animation-duration:1s -->
+<svg class="animation:rotate animation-duration:1s animation-timing-function:linear">
+    ...
+</svg>
+```
+
+### Remove animation in static output
+Use `animation-duration:0ms` when an animation should resolve immediately in print or other static contexts.
+```html
+<!-- @MARK animation-duration:0ms@print -->
+<div class="animation-duration:300ms animation-duration:0ms@print">
+    Static print state
+</div>
+```
+
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="animation-duration:fast:hover animation-duration:slow@sm animation-duration:slower@dark animation-duration:slowest@print">…</div>
+<div class="animation-duration:300ms:hover animation-duration:1s@sm animation-duration:0ms@print">...</div>
 ```

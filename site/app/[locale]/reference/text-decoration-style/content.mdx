@@ -1,9 +1,43 @@
 ## Overview [sr-only]
 <Overview/>
 
+## Examples
+### Use a wavy decoration
+Use `text-decoration-style:wavy` for spelling, grammar, or annotation styles where a straight underline would be ambiguous.
+```html
+<!-- @MARK text-decoration-style:wavy -->
+<span class="text:underline text-decoration-style:wavy">
+    Needs review
+</span>
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['text-decoration-style:wavy']}
+    </Class2CSS>
+</details>
+
+### Use dashed or dotted lines
+Use dashed and dotted decoration styles for secondary links or subtle annotations.
+```html
+<!-- @MARK text-decoration-style:dashed -->
+<a class="text:underline text-decoration-style:dashed">
+    Optional details
+</a>
+```
+
+### Return to solid lines
+Use `text-decoration-style:solid` when a state should remove a more decorative style.
+```html
+<!-- @MARK text-decoration-style:solid -->
+<a class="text-decoration-style:wavy text-decoration-style:solid:hover">
+    Hover
+</a>
+```
+
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="text-decoration-style:solid:hover text-decoration-style:solid@sm text-decoration-style:solid@dark text-decoration-style:solid@print">…</div>
+<a class="text-decoration-style:wavy:hover text-decoration-style:dashed@sm text-decoration-style:solid@print">...</a>
 ```
-

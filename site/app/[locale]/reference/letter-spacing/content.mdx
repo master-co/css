@@ -5,9 +5,31 @@
 ### Basic usage
 <BasicUsage />
 
+Use `tracking:*` to control letter spacing. Tight tracking is common for large headings, while wider tracking is often used for short uppercase labels.
+```html
+<!-- @MARK tracking:tight --><!-- @MARK tracking:wide -->
+<h1 class="tracking:tight">Product launch</h1>
+<p class="tracking:wide font:xs text-transform:uppercase">Preview</p>
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['tracking:tight', 'tracking:wide']}
+    </Class2CSS>
+</details>
+
+### Use a custom value
+Use `tracking:*` with an explicit CSS value when the spacing is a local typographic adjustment.
+```html
+<!-- @MARK tracking:.04em -->
+<span class="tracking:.04em">Custom tracking</span>
+```
+
+Avoid wide tracking on long paragraphs because it reduces readability.
+
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="tracking:1:hover tracking:1@sm tracking:1@dark tracking:1@print">…</div>
+<div class="tracking:normal tracking:tight@sm tracking:wide:hover tracking:normal@print">...</div>
 ```
-

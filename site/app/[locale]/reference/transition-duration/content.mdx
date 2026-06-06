@@ -1,8 +1,43 @@
 ## Overview [sr-only]
 <Overview/>
 
+## Examples
+### Set transition speed
+Use `transition-duration:*` to control how long a property takes to move from one value to another.
+```html
+<!-- @MARK transition-duration:150ms -->
+<button class="transition-property:background-color transition-duration:150ms bg:primary bg:primary/.86:hover">
+    Quick change
+</button>
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['transition-duration:150ms']}
+    </Class2CSS>
+</details>
+
+### Match duration to distance
+Short hover feedback usually feels best under a few hundred milliseconds. Larger position or panel changes can use a longer duration.
+```html
+<!-- @MARK transition-duration:300ms -->
+<aside class="transition-property:transform transition-duration:300ms transform:translateX(0)">
+    Panel
+</aside>
+```
+
+### Remove motion for static contexts
+Use `transition-duration:0ms` when a state should update immediately, such as print output or a compact fallback.
+```html
+<!-- @MARK transition-duration:0ms@print -->
+<button class="transition-duration:150ms transition-duration:0ms@print">
+    Print without motion
+</button>
+```
+
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="transition-duration:fast:hover transition-duration:slow@sm transition-duration:slower@dark transition-duration:slowest@print">…</div>
+<div class="transition-duration:150ms:hover transition-duration:300ms@sm transition-duration:0ms@print">...</div>
 ```

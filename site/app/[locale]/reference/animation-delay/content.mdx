@@ -1,9 +1,42 @@
 ## Overview [sr-only]
 <Overview/>
 
+## Examples
+### Delay animation start
+Use `animation-delay:*` to wait before the first animation cycle begins.
+```html
+<!-- @MARK animation-delay:120ms -->
+<div class="animation-name:fade animation-duration:300ms animation-delay:120ms">
+    Staggered item
+</div>
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['animation-delay:120ms']}
+    </Class2CSS>
+</details>
+
+### Offset looping animations
+Negative delays start an animation partway through its cycle. This is useful for spinner segments that should not all begin at the same frame.
+```html
+<!-- @MARK animation-delay:-120ms -->
+<svg class="animation:fade animation-delay:-120ms">
+    ...
+</svg>
+```
+
+### Stagger a list
+Apply increasing delays to siblings when each item should enter after the previous one.
+```html
+<li class="animation-name:fade animation-delay:0ms">One</li>
+<li class="animation-name:fade animation-delay:80ms">Two</li>
+<li class="animation-name:fade animation-delay:160ms">Three</li>
+```
+
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="animation-delay:300ms:hover animation-delay:300ms@sm animation-delay:300ms@dark animation-delay:300ms@print">…</div>
+<div class="animation-delay:120ms:hover animation-delay:0ms@sm animation-delay:0ms@print">...</div>
 ```
-

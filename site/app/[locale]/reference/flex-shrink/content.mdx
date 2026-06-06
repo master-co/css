@@ -1,9 +1,36 @@
 ## Overview [sr-only]
 <Overview/>
 
+## Examples
+### Allow an item to shrink
+Use `flex-shrink:1` when a flex item can become smaller than its basis to fit the row.
+```html
+<!-- @MARK flex --><!-- @MARK flex-shrink:1 -->
+<div class="flex">
+    <main class="flex-shrink:1 min-w:0">...</main>
+</div>
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['flex', 'flex-shrink:1', 'min-w:0']}
+    </Class2CSS>
+</details>
+
+### Prevent fixed media from shrinking
+Use `flex-shrink:0` for icons, avatars, and fixed side regions that should preserve their measured size.
+```html
+<!-- @MARK flex-shrink:0 --><!-- @MARK size:10x -->
+<img class="size:10x flex-shrink:0" src="..." alt="" />
+```
+
+Text siblings often need `min-w:0` so they shrink instead of pushing fixed media out of the container.
+
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="flex-shrink:1:hover flex-shrink:1@sm flex-shrink:1@dark flex-shrink:1@print">…</div>
+<div class="flex-shrink:1 flex-shrink:0@sm flex-shrink:1@print">...</div>
 ```
 
+Use [flex](/reference/flex) when the grow, shrink, and basis values should be expressed as one rule.

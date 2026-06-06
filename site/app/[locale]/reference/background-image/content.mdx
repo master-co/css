@@ -1,9 +1,38 @@
 ## Overview [sr-only]
 <Overview/>
 
+## Examples
+### Add a background image
+Use `bg:url(...)` to set `background-image`.
+```html
+<!-- @MARK bg:url(/hero.jpg) -->
+<section class="bg:url(/hero.jpg) bg:center bg:cover">
+    ...
+</section>
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['bg:url(/hero.jpg)']}
+    </Class2CSS>
+</details>
+
+### Use gradients
+Use native CSS gradient functions directly in the class.
+```html
+<!-- @MARK bg:linear-gradient(90deg,red,blue) -->
+<div class="bg:linear-gradient(90deg,red,blue)">
+    ...
+</div>
+```
+
+Pair image utilities with [background-position](/reference/background-position), [background-size](/reference/background-size), and [background-repeat](/reference/background-repeat) unless you intentionally want the full [background](/reference/background) shorthand.
+
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="bg:url(…):hover bg:url(…)@sm bg:url(…)@dark bg:url(…)@print">…</div>
+<div class="bg:none bg:url(/hero.jpg)@sm bg:none@print">...</div>
 ```
 
+Use local or bundled assets according to the framework integration you are using.

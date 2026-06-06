@@ -1,9 +1,39 @@
 ## Overview [sr-only]
 <Overview/>
 
+## Examples
+### Set a complete decoration
+Use `text-decoration:*|*|*|*` when line, color, style, and thickness should be declared together.
+```html
+<!-- @MARK text-decoration:underline|primary|wavy|2px -->
+<a class="text-decoration:underline|primary|wavy|2px">
+    Decorated link
+</a>
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['text-decoration:underline|primary|wavy|2px']}
+    </Class2CSS>
+</details>
+
+### Use line aliases
+Use `text:underline`, `text:line-through`, or `text:overline` for common line-only decoration.
+```html
+<!-- @MARK text:underline -->
+<a class="text:underline">Underlined link</a>
+```
+
+### Remove decoration
+Use `text-decoration:none` when inherited link decoration should be removed deliberately.
+```html
+<!-- @MARK text-decoration:none -->
+<a class="text-decoration:none">Plain link</a>
+```
+
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="text-decoration:underline:hover text-decoration:underline@sm text-decoration:underline@dark text-decoration:underline@print">…</div>
+<a class="text:underline:hover text-decoration:none@sm text-decoration:none@print">...</a>
 ```
-

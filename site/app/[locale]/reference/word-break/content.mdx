@@ -1,9 +1,52 @@
 ## Overview [sr-only]
 <Overview/>
 
+## Examples
+### Keep normal word boundaries
+Use `word-break:normal` for standard language-aware wrapping.
+```html
+<!-- @MARK word-break:normal -->
+<p class="word-break:normal">
+    Long words wrap at normal opportunities when the browser can find them.
+</p>
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['word-break:normal']}
+    </Class2CSS>
+</details>
+
+### Break anywhere inside words
+Use `word-break:break-all` for narrow columns where unbroken strings would otherwise overflow.
+```html
+<!-- @MARK word-break:break-all -->
+<p class="word-break:break-all">
+    pneumonoultramicroscopicsilicovolcanoconiosis
+</p>
+```
+
+This can make prose harder to read. Prefer [overflow-wrap](/reference/overflow-wrap) for user-generated URLs, hashes, or identifiers where emergency breaks are enough.
+
+### Keep CJK words together
+Use `word-break:keep-all` when CJK text should avoid breaking between characters.
+```html
+<!-- @MARK word-break:keep-all -->
+<p lang="ja" class="word-break:keep-all">CJK text without forced character breaks</p>
+```
+
+### Use the break-word shortcut
+Use `break-word` when you need the static shortcut for `word-break: break-word`.
+```html
+<!-- @MARK break-word -->
+<p class="break-word">very-long-unbroken-identifier</p>
+```
+
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="word-break:normal:hover word-break:normal@sm word-break:normal@dark word-break:normal@print">…</div>
+<div class="word-break:normal word-break:break-all@sm word-break:normal@print">...</div>
 ```
 
+Choose the least aggressive breaking rule that prevents overflow.

@@ -1,9 +1,36 @@
 ## Overview [sr-only]
 <Overview/>
 
+## Examples
+### Align grid items on both axes
+Use `place-items:*` as shorthand for `align-items` and `justify-items`.
+```html
+<!-- @MARK grid --><!-- @MARK place-items:center -->
+<div class="grid place-items:center h:48x">
+    <button>Centered</button>
+</div>
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['grid', 'place-items:center', 'h:48x']}
+    </Class2CSS>
+</details>
+
+### Stretch items
+Use `place-items:stretch` when children should fill their grid areas in both axes.
+```html
+<!-- @MARK place-items:stretch -->
+<section class="grid place-items:stretch">...</section>
+```
+
+Use [place-self](/reference/place-self) when only one item needs a different two-axis alignment.
+
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="place-items:baseline:hover place-items:baseline@sm place-items:baseline@dark place-items:baseline@print">…</div>
+<div class="place-items:stretch place-items:center@sm place-items:stretch@print">...</div>
 ```
 
+For flexbox, `place-items` has limited use; prefer [align-items](/reference/align-items) and [justify-content](/reference/justify-content).

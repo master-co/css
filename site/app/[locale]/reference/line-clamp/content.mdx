@@ -1,9 +1,42 @@
 ## Overview [sr-only]
 <Overview/>
 
+## Examples
+### Clamp long summaries
+Use `lines:*` to limit text to a fixed number of lines and hide the overflow.
+```html
+<!-- @MARK lines:3 -->
+<p class="lines:3">
+    Master CSS turns class strings into deterministic CSS rules, making it practical to keep styling close to markup without giving up cascade control.
+</p>
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['lines:3']}
+    </Class2CSS>
+</details>
+
+### Remove a clamp
+Use `lines:none` when a responsive layout has enough space to show the whole paragraph.
+```html
+<!-- @MARK lines:none@sm -->
+<p class="lines:2 lines:none@sm">
+    The full description appears once the layout has enough horizontal room.
+</p>
+```
+
+### Keep important content accessible
+Line clamping is visual truncation. Do not hide required legal, error, or instruction text behind a clamp without another way to read it.
+```html
+<p class="lines:2" title="Full project description">
+    Project description
+</p>
+```
+
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="lines:1:hover lines:1@sm lines:1@dark lines:1@print">…</div>
+<p class="lines:2:hover lines:3@sm lines:none@print">...</p>
 ```
-

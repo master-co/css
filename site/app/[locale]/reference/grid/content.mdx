@@ -1,9 +1,38 @@
 ## Overview [sr-only]
 <Overview/>
 
+## Examples
+### Set the native grid shorthand
+Use `grid:*` when you need the complete CSS `grid` shorthand in one class.
+```html
+<!-- @MARK grid:none -->
+<div class="grid:none">
+    ...
+</div>
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['grid:none']}
+    </Class2CSS>
+</details>
+
+### Define rows, columns, and auto flow together
+Use pipe separators for spaces inside the shorthand and `/` for the row/column separator.
+```html
+<!-- @MARK grid:auto-flow|1fr/1fr|1fr -->
+<section class="grid:auto-flow|1fr/1fr|1fr">
+    ...
+</section>
+```
+
+The `grid` shorthand resets several grid longhands. For most layouts, prefer focused utilities such as [grid-template-columns](/reference/grid-template-columns), [grid-template-rows](/reference/grid-template-rows), [grid-auto-flow](/reference/grid-auto-flow), and [gap](/reference/gap).
+
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="grid:none:hover grid:none@sm grid:none@dark grid:none@print">…</div>
+<div class="grid:none grid:auto-flow|1fr/1fr|1fr@sm grid:none@print">...</div>
 ```
 
+Use the static `grid` display utility when the goal is only `display: grid`.

@@ -1,9 +1,36 @@
 ## Overview [sr-only]
 <Overview/>
 
+## Examples
+### Align grid items inline
+Use `justify-items:*` to set the default inline-axis alignment for children in a grid container.
+```html
+<!-- @MARK grid --><!-- @MARK justify-items:center -->
+<div class="grid justify-items:center">
+    ...
+</div>
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['grid', 'justify-items:center']}
+    </Class2CSS>
+</details>
+
+### Stretch items by default
+Use `justify-items:stretch` when grid children should fill their grid areas inline.
+```html
+<!-- @MARK justify-items:stretch -->
+<section class="grid justify-items:stretch">...</section>
+```
+
+Use [justify-self](/reference/justify-self) when only one grid item needs different alignment.
+
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="justify-items:normal:hover justify-items:normal@sm justify-items:normal@dark justify-items:normal@print">…</div>
+<div class="justify-items:stretch justify-items:center@sm justify-items:stretch@print">...</div>
 ```
 
+For flexbox main-axis distribution, use [justify-content](/reference/justify-content) instead.

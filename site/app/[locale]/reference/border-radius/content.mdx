@@ -8,13 +8,38 @@
 ### Create a pill button
 <CreatePillButton />
 
-### Create a icon button
+### Create an icon button
 <CreateIconButton />
+
+### Use a radius token
+Use `r:*` to apply a border radius token or size directly.
+```html
+<!-- @MARK r:md -->
+<div class="r:md">
+    Rounded panel
+</div>
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['r:md']}
+    </Class2CSS>
+</details>
+
+### Round only one side
+Use side and corner aliases when only part of the element should be rounded.
+```html
+<!-- @MARK rt:md -->
+<div class="rt:md">
+    Rounded top
+</div>
+```
 
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="r:md:hover r:md@sm r:md@dark r:md@print">…</div>
+<div class="r:md:hover r:lg@sm r:0@print">...</div>
 ```
 
 ---
@@ -30,6 +55,5 @@ Customize your border radius tokens by defining [variables](/guide/variables).
 ```
 Apply the defined `border-radius` variables.
 ```html
-<!-- @MARK r:sm -->
-<div class="r:sm">…</div>
+<div class="r:sm">...</div>
 ```

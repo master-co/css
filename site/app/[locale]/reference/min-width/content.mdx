@@ -1,9 +1,57 @@
 ## Overview [sr-only]
 <Overview/>
 
+## Examples
+### Preserve a minimum inline size
+Use `min-w:*` to keep an element from shrinking below a usable width. It is useful for buttons, sidebars, table columns, and controls with fixed affordances.
+```html
+<!-- @MARK min-w:32x -->
+<button class="min-w:32x px:md">
+    Continue
+</button>
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['min-w:32x']}
+    </Class2CSS>
+</details>
+
+### Allow flexible children to shrink
+In flex and grid layouts, `min-w:0` is often the fix for text or media that refuses to shrink inside a constrained container.
+```html
+<!-- @MARK flex --><!-- @MARK min-w:0 --><!-- @MARK overflow:hidden -->
+<article class="flex gap:md">
+    <img class="size:12x flex:0" alt="" />
+    <div class="min-w:0 overflow:hidden">
+        Long content can truncate instead of widening the row.
+    </div>
+</article>
+```
+
+### Combine with width and max-width
+Use `min-w:*` as a lower bound, then let `w:*` or `max-w:*` describe the preferred or upper size.
+```html
+<!-- @MARK w:1/2 --><!-- @MARK min-w:40x --><!-- @MARK max-w:screen-sm -->
+<aside class="w:1/2 min-w:40x max-w:screen-sm">
+    ...
+</aside>
+```
+
+### Use intrinsic keywords
+Use `min-w:fit`, `min-w:min`, or `min-w:max` when content sizing should drive the lower bound.
+```html
+<!-- @MARK min-w:max -->
+<nav class="min-w:max">
+    ...
+</nav>
+```
+
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="min-w:full:hover min-w:full@sm min-w:full@dark min-w:full@print">…</div>
+<div class="min-w:0 min-w:32x@sm min-w:fit:hover min-w:0@print">...</div>
 ```
 
+Use [max-width](/reference/max-width) for upper bounds and [width](/reference/width) for the preferred size.

@@ -1,9 +1,36 @@
 ## Overview [sr-only]
 <Overview/>
 
+## Examples
+### Move an outline away from the element
+Use `outline-offset:*` to create space between an outline and the element edge.
+```html
+<!-- @MARK outline:2|solid|primary --><!-- @MARK outline-offset:2x -->
+<button class="outline:2|solid|primary outline-offset:2x">
+    Save
+</button>
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['outline-offset:2x']}
+    </Class2CSS>
+</details>
+
+### Pull an outline inward
+Negative values can pull the outline inside the element edge.
+```html
+<!-- @MARK outline-offset:-1 -->
+<button class="outline-offset:-1">...</button>
+```
+
+Use inward offsets carefully so the focus indicator remains visible.
+
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="outline-offset:2:hover outline-offset:2@sm outline-offset:2@dark outline-offset:2@print">…</div>
+<div class="outline-offset:0 outline-offset:2x:focus outline-offset:0@print">...</div>
 ```
 
+Offset changes only matter when an outline is visible.

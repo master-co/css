@@ -1,9 +1,36 @@
 ## Overview [sr-only]
 <Overview/>
 
+## Examples
+### Set outline width
+Use `outline:*` with a size to set `outline-width`.
+```html
+<!-- @MARK outline:2 -->
+<button class="outline:2 outline:solid">
+    ...
+</button>
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['outline:2']}
+    </Class2CSS>
+</details>
+
+### Use keyword widths
+Use `outline:thin`, `outline:medium`, or `outline:thick` for native keyword widths.
+```html
+<!-- @MARK outline:thick -->
+<button class="outline:thick outline:solid">...</button>
+```
+
+The outline also needs a style to be visible.
+
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="outline-width:medium:hover outline-width:medium@sm outline-width:medium@dark outline-width:medium@print">…</div>
+<div class="outline:0 outline:2:focus outline:0@print">...</div>
 ```
 
+Use [outline-offset](/reference/outline-offset) to move the outline away from the element edge.

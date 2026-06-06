@@ -1,9 +1,43 @@
 ## Overview [sr-only]
 <Overview/>
 
+## Examples
+### Hint an upcoming transform
+Use `will-change:*` sparingly to tell the browser that a property is likely to change soon.
+```html
+<!-- @MARK will-change:transform -->
+<button class="will-change:transform transition:transform|150ms|ease-out transform:translateY(-2px):hover">
+    Hover
+</button>
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['will-change:transform']}
+    </Class2CSS>
+</details>
+
+### Hint opacity changes
+Use `will-change:opacity` for elements that fade frequently, such as popovers or temporary overlays.
+```html
+<!-- @MARK will-change:opacity -->
+<div class="will-change:opacity transition:opacity|150ms|ease-out opacity:0 opacity:1:hover">
+    Preview
+</div>
+```
+
+### Reset when the hint is no longer useful
+Do not leave `will-change` on large parts of the page by default. Reset it with `will-change:auto` when the element returns to a static state.
+```html
+<!-- @MARK will-change:auto -->
+<div class="will-change:transform will-change:auto:active">
+    Active only when needed
+</div>
+```
+
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="will-change:auto:hover will-change:auto@sm will-change:auto@dark will-change:auto@print">…</div>
+<div class="will-change:transform:hover will-change:opacity@sm will-change:auto@print">...</div>
 ```
-

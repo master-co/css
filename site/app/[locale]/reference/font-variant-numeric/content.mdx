@@ -1,9 +1,39 @@
 ## Overview [sr-only]
 <Overview/>
 
+## Examples
+### Align tabular numbers
+Use `font:tabular-nums` for tables, timers, and dashboards where digits should line up across rows.
+```html
+<!-- @MARK font:tabular-nums -->
+<td class="font:tabular-nums">12,480.00</td>
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['font:tabular-nums']}
+    </Class2CSS>
+</details>
+
+### Show slashed zeroes
+Use `font:slashed-zero` when zeroes need to be visually distinct from the letter O.
+```html
+<!-- @MARK font:slashed-zero -->
+<code class="font:slashed-zero">OID-00042</code>
+```
+
+### Reset numeric variants
+Use `font:normal` to remove numeric variant features from a nested element.
+```html
+<!-- @MARK font:normal -->
+<span class="font:tabular-nums">
+    <span class="font:normal">Normal numbers</span>
+</span>
+```
+
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="font-variant-numeric:normal:hover font-variant-numeric:normal@sm font-variant-numeric:normal@dark font-variant-numeric:normal@print">…</div>
+<span class="font:tabular-nums:hover font:normal@sm font:normal@print">...</span>
 ```
-

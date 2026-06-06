@@ -1,9 +1,39 @@
 ## Overview [sr-only]
 <Overview/>
 
+## Examples
+### Cap width and height together
+Use `max:*` when both `max-width` and `max-height` should use the same value.
+```html
+<!-- @MARK max:24x -->
+<img class="max:24x object:contain" src="..." alt="" />
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['max:24x']}
+    </Class2CSS>
+</details>
+
+### Keep square media bounded
+Use `max:*` with `size:*` or `full` when media should fill available space but stay within a maximum box.
+```html
+<!-- @MARK full --><!-- @MARK max:40x -->
+<img class="full max:40x object:cover" src="..." alt="" />
+```
+
+### Use one-axis caps for layout
+Most page layout constraints only need one axis. Use [max-width](/reference/max-width) for wrappers and [max-height](/reference/max-height) for scroll regions.
+```html
+<!-- @MARK w:full --><!-- @MARK max-w:screen-md -->
+<main class="w:full max-w:screen-md">...</main>
+```
+
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="max:32:hover max:32@sm max:32@dark max:32@print">…</div>
+<div class="max:16x max:24x@sm max:full@print">...</div>
 ```
 
+Use `max:*` for paired limits; use one-axis max utilities when the element is intentionally rectangular.

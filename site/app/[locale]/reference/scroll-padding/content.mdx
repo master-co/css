@@ -1,9 +1,43 @@
 ## Overview [sr-only]
 <Overview/>
 
+## Examples
+### Pad the scroll container
+Use `scroll-p:*` on the scroll container to keep snapped or anchored content away from the container edges.
+```html
+<!-- @MARK scroll-p:10 -->
+<div class="overflow:auto scroll-p:10">
+    ...
+</div>
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['scroll-p:10']}
+    </Class2CSS>
+</details>
+
+### Reserve space for fixed headers
+Use `scroll-pt:*` when vertical scrolling should stop below a sticky or fixed header.
+```html
+<!-- @MARK scroll-pt:16x -->
+<main class="overflow:auto scroll-pt:16x">
+    ...
+</main>
+```
+
+### Pad horizontal snapping
+Use `scroll-px:*` on horizontal carousels so the first and last item can snap with visual breathing room.
+```html
+<!-- @MARK scroll-px:4x -->
+<div class="overflow-x:auto scroll-snap:x scroll-px:4x">
+    ...
+</div>
+```
+
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="scroll-p:10:hover scroll-p:10@sm scroll-p:10@dark scroll-p:10@print">…</div>
+<div class="scroll-p:10 scroll-pt:16x@sm scroll-p:0@print">...</div>
 ```
-

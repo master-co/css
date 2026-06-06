@@ -1,23 +1,47 @@
 ## Overview [sr-only]
 <Overview/>
 
-## Basic usage
-### Inset
-Use `inset:offset` to set the distance between the element and its parent element.
+## Examples
+### Pin all sides
+Use `inset:*` on positioned elements to set `top`, `right`, `bottom`, and `left` together.
 <Demo>
     <div className="bg:stripe-pink">
         <div className="box w:180 aspect-ratio:1/1 inset:20 rel">`inset:20`</div>
     </div>
 </Demo>
 ```html
+<!-- @MARK inset:20 -->
 <div>
     <div class="rel inset:20">inset:20</div>
+</div>
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['inset:20']}
+    </Class2CSS>
+</details>
+
+### Pin one side
+Use side utilities such as `top:*`, `right:*`, `bottom:*`, and `left:*` when only one edge should move.
+```html
+<!-- @MARK top:0 --><!-- @MARK right:0 -->
+<button class="abs top:0 right:0">
+    Close
+</button>
+```
+
+### Center overlays with inset
+`inset:0` is useful for overlays that should cover their positioned parent.
+```html
+<div class="rel">
+    <div class="abs inset:0"></div>
 </div>
 ```
 
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="inset:10:hover inset:10@sm inset:10@dark inset:10@print">…</div>
+<div class="inset:10:hover inset:20@sm inset:0@print">...</div>
 ```
-

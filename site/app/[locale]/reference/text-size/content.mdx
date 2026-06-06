@@ -4,7 +4,7 @@
 ## Examples
 ### Body text
 <BodyText />
-If you don’t want to include line height, use the [`font:<size>`](/reference/font-size).
+If you don't want to include line height, use the [`font:<size>`](/reference/font-size).
 
 ### Headings
 <Headings />
@@ -12,9 +12,24 @@ If you don’t want to include line height, use the [`font:<size>`](/reference/f
 ### Page titles, hero sections
 <PageTitles />
 
+### Use a precise size
+Use `text:*` when the type scale utility should set font size, line height, and letter spacing together.
+```html
+<!-- @MARK text:16 -->
+<p class="text:16">
+    Body copy
+</p>
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['text:16']}
+    </Class2CSS>
+</details>
+
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="text:40:hover text:40@sm text:40@dark text:40@print">…</div>
+<div class="text:20:hover text:40@sm text:16@print">...</div>
 ```
-

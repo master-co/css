@@ -1,9 +1,36 @@
 ## Overview [sr-only]
 <Overview/>
 
+## Examples
+### Align one item on both axes
+Use `place-self:*` as shorthand for `align-self` and `justify-self`.
+```html
+<!-- @MARK grid --><!-- @MARK place-self:end -->
+<div class="grid h:48x">
+    <button class="place-self:end">Save</button>
+</div>
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['grid', 'place-self:end', 'h:48x']}
+    </Class2CSS>
+</details>
+
+### Center one item
+Use `place-self:center` when one grid item should sit in the middle of its grid area.
+```html
+<!-- @MARK place-self:center -->
+<div class="place-self:center">...</div>
+```
+
+Use [place-items](/reference/place-items) when every child should share the same two-axis alignment.
+
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="place-self:baseline:hover place-self:baseline@sm place-self:baseline@dark place-self:baseline@print">…</div>
+<div class="place-self:auto place-self:center@sm place-self:auto@print">...</div>
 ```
 
+The effect depends on the parent layout mode and available space in the item area.

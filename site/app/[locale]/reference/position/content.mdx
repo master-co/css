@@ -4,8 +4,9 @@ import clsx from 'clsx'
 ## Overview [sr-only]
 <Overview/>
 
+## Examples
 ### Positioning elements as static
-Use `static`to position an element according to the normal flow of the document. All HTML elements are positioned static by default.
+Use `static` to position an element according to the normal document flow. HTML elements are static by default.
 <Demo className="pb:60">
     <code className="static p:20 box-perspective-pink">
         <div>static parent</div>
@@ -21,7 +22,7 @@ Use `static`to position an element according to the normal flow of the document.
 ```
 
 ### Positioning elements as relative
-Use `rel`to position an element according to the normal flow of the document, and then offset relative to itself based on the values of top, right, bottom, and left.
+Use `rel` to keep an element in the normal document flow while offsetting it relative to itself with top, right, bottom, and left values.
 <Demo className="pb:60">
     <div className="bg:stripe">
         <code className="rel p:20 top:30 left:20 box-perspective-pink inline-block">
@@ -37,7 +38,7 @@ Use `rel`to position an element according to the normal flow of the document, an
 ```
 
 ### Positioning elements as absolute
-Use `abs`to remove an element from the normal flow of the document, and the element positioned relative to its closest positioned ancestor.
+Use `abs` to remove an element from the normal document flow and position it relative to its closest positioned ancestor.
 <Demo>
     <code className="rel p:12x! box bg:stripe">
         <div>relative parent</div>
@@ -54,7 +55,7 @@ Use `abs`to remove an element from the normal flow of the document, and the elem
 ```
 
 ### Positioning elements as fixed
-Use `fixed`to remove an element from the normal flow of the document. The element positioned relative to the viewport, and it is always stays in the same place.
+Use `fixed` to remove an element from the normal document flow and position it relative to the viewport.
 <Demo>
     <div className="box ai:initial! jc:initial! p:8|20_li p:10|0! r:10 w:full max-w:340@sm max-h:250 overflow:auto">
         <input className="fixed z:1 bg:gray-23 bg:gray-18:focus fg:gray-40::placeholder outline:0 font:14 w:300 mx:10 p:12 leading:1 r:5" placeholder="Search for chats and messages" type="search" />
@@ -84,7 +85,7 @@ Use `fixed`to remove an element from the normal flow of the document. The elemen
     <ul>
         <li>
             <div class="rel">
-                <img src="…">
+                <img src="...">
             </div>
             <div>
                 <div class="flex">
@@ -94,13 +95,13 @@ Use `fixed`to remove an element from the normal flow of the document. The elemen
                 <p>Front-end needs a revolution</p>
             </div>
         </li>
-        …
+        ...
     </ul>
 </div>
 ```
 
 ### Positioning elements as sticky
-Use `sticky`to position an element base on scroll position. It&#39;s like place the element to a relative position until a given offset position is met and then changing the element to a fixed position.
+Use `sticky` to position an element based on scroll position. It behaves like a relatively positioned element until a given offset is reached, then sticks to that offset.
 <Demo>
     <div className="box block! p:8|20_li p:10|0! r:10 w:full max-w:340@sm max-h:250 overflow:auto">
         <ul className="list-style:none mt:10 pl:0 w:full">
@@ -124,20 +125,19 @@ Use `sticky`to position an element base on scroll position. It&#39;s like place 
 </Demo>
 ```html
 <ul class="overflow:auto">
-    …
+    ...
     <!-- @MARK sticky -->
     <li class="sticky top:0">
-        <img src="…">
+        <img src="...">
         <div>Joy</div>
-        …
+        ...
     </li>
-    …
+    ...
 </ul>
 ```
 
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="rel:hover rel@sm rel@dark rel@print">…</div>
+<div class="rel:hover rel@sm rel@dark rel@print">...</div>
 ```
-

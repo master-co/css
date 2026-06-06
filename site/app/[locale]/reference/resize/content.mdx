@@ -1,9 +1,43 @@
 ## Overview [sr-only]
 <Overview/>
 
+## Examples
+### Allow both-axis resizing
+Use `resize:both` on elements that should be manually resizable in both directions, such as textareas or debug panels.
+```html
+<!-- @MARK resize:both -->
+<textarea class="resize:both min-w:20x min-h:12x">
+    Notes
+</textarea>
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['resize:both']}
+    </Class2CSS>
+</details>
+
+### Restrict resizing to one axis
+Use `resize:vertical` for text inputs that can grow without breaking the surrounding layout.
+```html
+<!-- @MARK resize:vertical -->
+<textarea class="resize:vertical w:full min-h:10x">
+    Comment
+</textarea>
+```
+
+### Disable native resizing
+Use `resize:none` when the component already controls its own size or when the surrounding layout cannot absorb manual resizing.
+```html
+<!-- @MARK resize:none -->
+<textarea class="resize:none">
+    Fixed size
+</textarea>
+```
+
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="resize:both:hover resize:both@sm resize:both@dark resize:both@print">…</div>
+<textarea class="resize:none resize:vertical@sm resize:none@print">...</textarea>
 ```
-

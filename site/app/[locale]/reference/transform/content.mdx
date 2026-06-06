@@ -1,16 +1,51 @@
 ## Overview [sr-only]
 <Overview/>
 
-{/* ### Translate
-### Scale
-### Skew
-### Rotate
-### Perspective
-### Matrix */}
+## Examples
+### Move an element
+Use `transform:*` to write a native transform function directly in the class name.
+```html
+<!-- @MARK transform:translateY(-2px) -->
+<button class="transition:transform|150ms|ease-out transform:translateY(-2px):hover">
+    Lift
+</button>
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['transform:translateY(-2px)']}
+    </Class2CSS>
+</details>
+
+### Scale pressed controls
+Transforms are useful for small interaction feedback because they do not require layout recalculation.
+```html
+<!-- @MARK transform:scale(.98):active -->
+<button class="transition:transform|120ms|ease-out transform:scale(.98):active">
+    Press
+</button>
+```
+
+### Rotate or skew decorative elements
+Use the same property for rotate, skew, matrix, perspective, or any valid transform function list.
+```html
+<!-- @MARK transform:rotate(2deg) -->
+<div class="transform:rotate(2deg)">
+    Slightly rotated
+</div>
+```
+
+### Set the pivot separately
+Use [`transform-origin`](/reference/transform-origin) when the transform should rotate or scale around a specific point.
+```html
+<div class="transform-origin:top|right transform:scale(.95):hover">
+    Scales from the top right
+</div>
+```
 
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="transform:scale(1):hover transform:scale(1)@sm transform:scale(1)@dark transform:scale(1)@print">…</div>
+<div class="transform:translateY(-2px):hover transform:scale(.98)@sm transform:none@print">...</div>
 ```
-

@@ -1,9 +1,43 @@
 ## Overview [sr-only]
 <Overview/>
 
+## Examples
+### Limit what can animate
+Use `transition-property:*` to choose the properties that are allowed to animate. Prefer a small property list for predictable state changes.
+```html
+<!-- @MARK transition-property:opacity -->
+<div class="opacity:.6 transition-property:opacity transition-duration:150ms opacity:1:hover">
+    Online
+</div>
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['transition-property:opacity']}
+    </Class2CSS>
+</details>
+
+### Pair with duration and easing
+`transition-property:*` only chooses the property. Add `transition-duration:*` and `transition-timing-function:*` when the transition needs a specific feel.
+```html
+<!-- @MARK transition-property:transform -->
+<button class="transition-property:transform transition-duration:200ms transition-timing-function:ease-out transform:translateY(-1px):hover">
+    Lift
+</button>
+```
+
+### Disable accidental transitions
+Use `transition-property:none` to stop inherited component styles or variant styles from animating a state.
+```html
+<!-- @MARK transition-property:none -->
+<div class="transition-property:none@print">
+    Static in print
+</div>
+```
+
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="transition-property:all:hover transition-property:all@sm transition-property:all@dark transition-property:all@print">…</div>
+<div class="transition-property:opacity:hover transition-property:transform@sm transition-property:none@print">...</div>
 ```
-

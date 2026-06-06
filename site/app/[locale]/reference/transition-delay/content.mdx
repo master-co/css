@@ -1,8 +1,44 @@
 ## Overview [sr-only]
 <Overview/>
 
+## Examples
+### Delay a transition
+Use `transition-delay:*` to wait before a transition starts. This is useful for staggered affordances and hover details that should not flash immediately.
+```html
+<!-- @MARK transition-delay:75ms -->
+<span class="opacity:0 transition:opacity|150ms|ease-out transition-delay:75ms opacity:1:hover">
+    More details
+</span>
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['transition-delay:75ms']}
+    </Class2CSS>
+</details>
+
+### Stagger sibling elements
+Apply different delays to related elements while keeping the same duration and easing.
+```html
+<!-- @MARK transition-delay:150ms -->
+<div class="transition-property:opacity transition-duration:200ms">
+    <span class="transition-delay:0ms opacity:1">Step one</span>
+    <span class="transition-delay:150ms opacity:1">Step two</span>
+</div>
+```
+
+### Reset delay at breakpoints
+Remove a delay when the same UI becomes dense or task-focused at a larger viewport.
+```html
+<!-- @MARK transition-delay:0ms@sm -->
+<div class="transition-delay:100ms transition-delay:0ms@sm">
+    Immediate on desktop
+</div>
+```
+
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="transition-delay:300ms:hover transition-delay:300ms@sm transition-delay:300ms@dark transition-delay:300ms@print">…</div>
+<div class="transition-delay:75ms:hover transition-delay:0ms@sm transition-delay:0ms@print">...</div>
 ```

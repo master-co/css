@@ -1,9 +1,43 @@
 ## Overview [sr-only]
 <Overview/>
 
+## Examples
+### Align a snap item to the start
+Use `scroll-snap:start` on child items inside a snapping scroll container.
+```html
+<!-- @MARK scroll-snap:start -->
+<article class="scroll-snap:start">
+    Slide
+</article>
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['scroll-snap:start']}
+    </Class2CSS>
+</details>
+
+### Center snap items
+Use `scroll-snap:center` when cards should settle in the middle of the scroll viewport.
+```html
+<!-- @MARK scroll-snap:center -->
+<article class="scroll-snap:center">
+    Featured card
+</article>
+```
+
+### Disable item snapping
+Use `scroll-snap-align:none` for an item inside a snapping container that should not become a stop.
+```html
+<!-- @MARK scroll-snap-align:none -->
+<article class="scroll-snap-align:none">
+    Spacer
+</article>
+```
+
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="scroll-snap-align:center:hover scroll-snap-align:center@sm scroll-snap-align:center@dark scroll-snap-align:center@print">…</div>
+<article class="scroll-snap:start scroll-snap:center@sm scroll-snap-align:none@print">...</article>
 ```
-

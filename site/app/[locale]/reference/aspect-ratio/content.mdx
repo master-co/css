@@ -1,9 +1,53 @@
 ## Overview [sr-only]
 <Overview/>
 
+## Examples
+### Set a custom ratio
+Use `aspect:<ratio>` to reserve a proportional box before media or content finishes loading.
+```html
+<!-- @MARK aspect:4/3 --><!-- @MARK w:full -->
+<img class="w:full aspect:4/3 object:cover" src="..." alt="" />
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['aspect:4/3', 'w:full']}
+    </Class2CSS>
+</details>
+
+### Use square and video shortcuts
+Use `square` for `1 / 1` and `video` for a common widescreen media frame.
+```html
+<!-- @MARK square -->
+<div class="square bg:surface"></div>
+
+<!-- @MARK video -->
+<iframe class="w:full video" src="..." title="Product walkthrough"></iframe>
+```
+
+### Pair with one explicit axis
+Aspect ratio needs at least one axis to be resolved by width, height, or content. The common pattern is a fluid width with an aspect ratio.
+```html
+<!-- @MARK w:full --><!-- @MARK max-w:screen-sm --><!-- @MARK aspect:16/9 -->
+<figure class="w:full max-w:screen-sm aspect:16/9">
+    ...
+</figure>
+```
+
+If both width and height are fixed, the browser follows those dimensions and the ratio is only a preferred constraint.
+
+### Choose size for fixed squares
+Use [size](/reference/size) for fixed square UI elements. Use `aspect:*` when at least one axis should remain fluid.
+```html
+<!-- @MARK size:10x -->
+<button class="size:10x round">...</button>
+```
+
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="aspect:1/1:hover aspect:1/1@sm aspect:1/1@dark aspect:1/1@print">…</div>
+<div class="aspect:1/1 aspect:4/3@sm aspect:16/9@dark aspect:auto@print">...</div>
 ```
 
+Use `object:cover` or `object:contain` on replaced media when the content should adapt inside the reserved ratio.

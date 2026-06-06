@@ -1,9 +1,38 @@
 ## Overview [sr-only]
 <Overview/>
 
+## Examples
+### Align grid or wrapped flex content on both axes
+Use `place-content:*` as shorthand for `align-content` and `justify-content`.
+```html
+<!-- @MARK grid --><!-- @MARK place-content:center -->
+<div class="grid place-content:center h:64x">
+    ...
+</div>
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['grid', 'place-content:center', 'h:64x']}
+    </Class2CSS>
+</details>
+
+### Use separate axis values
+Pass two values when block and inline distribution should differ.
+```html
+<!-- @MARK place-content:start|space-between -->
+<section class="grid place-content:start|space-between">
+    ...
+</section>
+```
+
+Use [place-items](/reference/place-items) for item alignment inside grid areas, not distribution of the tracks as a group.
+
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="place-content:baseline:hover place-content:baseline@sm place-content:baseline@dark place-content:baseline@print">…</div>
+<div class="place-content:start place-content:center@sm place-content:start@print">...</div>
 ```
 
+`place-content` is visible only when the container has extra space to distribute.

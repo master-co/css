@@ -1,9 +1,47 @@
 ## Overview [sr-only]
 <Overview/>
 
+## Examples
+### Set a baseline height
+Use `min-h:*` when content may grow but the region still needs a minimum block size.
+```html
+<!-- @MARK min-h:48x -->
+<section class="min-h:48x">
+    ...
+</section>
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['min-h:48x']}
+    </Class2CSS>
+</details>
+
+### Build viewport sections
+Use native viewport units for full-screen or near full-screen layouts.
+```html
+<!-- @MARK min-h:100dvh -->
+<main class="min-h:100dvh">
+    ...
+</main>
+```
+
+`100dvh` follows the dynamic viewport size on modern mobile browsers. Use `min-vh` when the legacy `100vh` value is the intended cap.
+
+### Let content define the final size
+Unlike `h:*`, a minimum height does not clip or force overflow by itself. It establishes a floor, then lets content expand the element.
+```html
+<!-- @MARK min-h:32x --><!-- @MARK overflow:visible -->
+<article class="min-h:32x overflow:visible">
+    ...
+</article>
+```
+
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="min-h:full:hover min-h:full@sm min-h:full@dark min-h:full@print">…</div>
+<div class="min-h:32x min-h:100dvh@sm min-h:0@print">...</div>
 ```
 
+Use [height](/reference/height) when the element should have an exact height.

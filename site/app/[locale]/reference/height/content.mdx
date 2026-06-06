@@ -1,9 +1,55 @@
 ## Overview [sr-only]
 <Overview/>
 
+## Examples
+### Set a fixed height
+Use `h:*` to set the CSS `height` property. Fixed heights are best for controls, media frames, skeletons, and areas with intentionally bounded content.
+```html
+<!-- @MARK h:12x -->
+<div class="h:12x bg:surface">
+    ...
+</div>
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['h:12x']}
+    </Class2CSS>
+</details>
+
+### Fill a parent height
+Use `h:full` when the parent has a definite height.
+```html
+<!-- @MARK h:64x --><!-- @MARK h:full -->
+<section class="h:64x">
+    <div class="h:full">...</div>
+</section>
+```
+
+If the parent height is automatic, percentage heights such as `h:full` and `h:1/2` may not resolve the way you expect. This is native CSS behavior.
+
+### Use viewport and intrinsic values
+Use native CSS units for viewport-sized regions, and keywords when the content should define the block size.
+```html
+<!-- @MARK min-h:100dvh -->
+<main class="min-h:100dvh">...</main>
+
+<!-- @MARK h:fit -->
+<aside class="h:fit">...</aside>
+```
+
+### Size both axes together
+For square icons, avatars, and controls, prefer [size](/reference/size) over repeating `w:*` and `h:*`.
+```html
+<!-- @MARK size:10x -->
+<button class="size:10x round">...</button>
+```
+
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="height:full:hover height:full@sm height:full@dark height:full@print">…</div>
+<div class="h:10x:hover h:14x@sm h:full@dark h:auto@print">...</div>
 ```
 
+Use [min-height](/reference/min-height) when content may grow but the region still needs a baseline size.

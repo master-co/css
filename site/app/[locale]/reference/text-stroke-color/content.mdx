@@ -1,9 +1,43 @@
 ## Overview [sr-only]
 <Overview/>
 
+## Examples
+### Set text stroke color
+Use `text-stroke:*` with a color value to control only the stroke color.
+```html
+<!-- @MARK text-stroke:primary -->
+<h2 class="text-stroke:1px text-stroke:primary">
+    Stroke color
+</h2>
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['text-stroke:primary']}
+    </Class2CSS>
+</details>
+
+### Use the current color
+Use `text-stroke:current` when the stroke should follow the foreground color.
+```html
+<!-- @MARK text-stroke:current -->
+<h2 class="fg:primary text-stroke:1px text-stroke:current">
+    Current stroke
+</h2>
+```
+
+### Make the stroke transparent
+Use `text-stroke:transparent` to hide the stroke without changing width.
+```html
+<!-- @MARK text-stroke:transparent -->
+<h2 class="text-stroke:1px text-stroke:transparent">
+    No visible stroke
+</h2>
+```
+
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="text-stroke:blue-20:hover text-stroke:blue-20@sm text-stroke:blue-20@dark text-stroke:blue-20@print">…</div>
+<h2 class="text-stroke:primary:hover text-stroke:current@sm text-stroke:transparent@print">...</h2>
 ```
-

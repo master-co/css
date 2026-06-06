@@ -1,9 +1,41 @@
 ## Overview [sr-only]
 <Overview/>
 
+## Examples
+### Offset anchor targets
+Use `scroll-mt:*` on the target element so anchor navigation leaves room for fixed headers.
+```html
+<!-- @MARK scroll-mt:16x -->
+<section id="pricing" class="scroll-mt:16x">
+    Pricing
+</section>
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['scroll-mt:16x']}
+    </Class2CSS>
+</details>
+
+### Add horizontal snap margin
+Use `scroll-mx:*` on snap items when the item should stop with space on both sides.
+```html
+<!-- @MARK scroll-mx:4x -->
+<article class="scroll-snap:start scroll-mx:4x">
+    Slide
+</article>
+```
+
+### Use all-side margin for compact cases
+Use `scroll-m:*` when the same offset should apply on every side of the target.
+```html
+<!-- @MARK scroll-m:10 -->
+<h2 class="scroll-m:10">Overview</h2>
+```
+
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="scroll-m:10:hover scroll-m:10@sm scroll-m:10@dark scroll-m:10@print">…</div>
+<section class="scroll-mt:16x scroll-mt:8x@sm scroll-m:0@print">...</section>
 ```
-

@@ -1,9 +1,43 @@
 ## Overview [sr-only]
 <Overview/>
 
+## Examples
+### Set minimum width and height together
+Use `min:*` when both `min-width` and `min-height` should share the same value.
+```html
+<!-- @MARK min:10x -->
+<button class="min:10x">
+    ...
+</button>
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['min:10x']}
+    </Class2CSS>
+</details>
+
+### Preserve touch targets
+Pair `min:*` with flexible padding when a control can grow with content but must never become too small.
+```html
+<!-- @MARK min:11x --><!-- @MARK px:md -->
+<button class="min:11x px:md">
+    Save
+</button>
+```
+
+### Use fractions with care
+Fractions resolve from the parent size on both axes. They are useful inside definite-size containers, but less predictable when the parent height is automatic.
+```html
+<!-- @MARK min:1/2 -->
+<div class="min:1/2">...</div>
+```
+
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="min:32:hover min:32@sm min:32@dark min:32@print">…</div>
+<div class="min:8x min:10x@sm min:0@print">...</div>
 ```
 
+Use [min-width](/reference/min-width) or [min-height](/reference/min-height) when only one axis needs a lower bound.

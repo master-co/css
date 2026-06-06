@@ -1,9 +1,43 @@
 ## Overview [sr-only]
 <Overview/>
 
+## Examples
+### Contain nested scrolling
+Use `overscroll-behavior:contain` on a scroll area when reaching its edge should not chain scrolling to the page behind it.
+```html
+<!-- @MARK overscroll-behavior:contain -->
+<div class="overflow:auto overscroll-behavior:contain">
+    Modal content
+</div>
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['overscroll-behavior:contain']}
+    </Class2CSS>
+</details>
+
+### Block page bounce on one axis
+Use axis-specific utilities when only vertical or horizontal scroll chaining should be controlled.
+```html
+<!-- @MARK overscroll-behavior-y:none -->
+<div class="overflow-y:auto overscroll-behavior-y:none">
+    Sheet
+</div>
+```
+
+### Keep horizontal gestures local
+Horizontal carousels often need `overscroll-behavior-x:contain` so a sideways gesture stays inside the carousel.
+```html
+<!-- @MARK overscroll-behavior-x:contain -->
+<div class="overflow-x:auto overscroll-behavior-x:contain">
+    Carousel
+</div>
+```
+
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="overscroll-behavior:auto:hover overscroll-behavior:auto@sm overscroll-behavior:auto@dark overscroll-behavior:auto@print">…</div>
+<div class="overscroll-behavior:contain overscroll-behavior:auto@sm overscroll-behavior:auto@print">...</div>
 ```
-

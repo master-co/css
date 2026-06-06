@@ -1,11 +1,28 @@
 ## Overview [sr-only]
 <Overview/>
 
-### Stylize a shadow DOM
-Let&#39;s say this&#39;s your custom element and its tree:
+## Examples
+### Set a CSS custom property
+Use `$name:*` to assign a CSS custom property from the class string.
+```html
+<!-- @MARK $button-bg:red -->
+<button class="$button-bg:red bg:$(button-bg)">
+    Custom property
+</button>
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['$button-bg:red']}
+    </Class2CSS>
+</details>
+
+### Style a shadow DOM
+Assume this is your custom element and its tree:
 ```html
 <test-element>
-    ▼ #shadow-root (open)
+    #shadow-root (open)
         <button part="button"></button>
 </test-element>
 ```
@@ -22,14 +39,22 @@ and the element contains an encapsulated style like this:
 Elements in the shadow DOM cannot be selected via descendant selectors, but you can:
 ```html
 <test-element class="$button-bg:red $button-bg:pink@sm">
-    ▼ #shadow-root (open)
+    #shadow-root (open)
         <button part="button"></button>
 </test-element>
+```
+
+### Set measurement variables
+Use variables for values that are consumed by custom component CSS.
+```html
+<!-- @MARK $size:2.5rem -->
+<div class="$size:2.5rem">
+    Component reads var(--size)
+</div>
 ```
 
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="$size:2.5rem:hover $size:2.5rem@sm $size:2.5rem@dark $size:2.5rem@print">…</div>
+<div class="$size:2.5rem:hover $size:3rem@sm $size:0@print">...</div>
 ```
-

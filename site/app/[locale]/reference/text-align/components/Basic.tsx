@@ -5,6 +5,6 @@ export default ({ className }: any) => <>
     <BasicDemo className={className} />
     <Code lang="html">{`
         <!-- @MARK ${className} -->
-        <p class="${className}">Lorem ipsum dolor sit amet, ...</p>
+        <p class="${className}">Alignment changes how each line sits inside the paragraph.</p>
     `}</Code>
 </>

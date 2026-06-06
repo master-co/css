@@ -1,9 +1,39 @@
 ## Overview [sr-only]
 <Overview/>
 
+## Examples
+### Allow automatic hyphenation
+Use `hyphens:auto` for narrow text columns where long words can otherwise create uneven lines.
+```html
+<!-- @MARK hyphens:auto -->
+<p lang="en" class="hyphens:auto">
+    Antidisestablishmentarianism can hyphenate when the browser has language data.
+</p>
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['hyphens:auto']}
+    </Class2CSS>
+</details>
+
+### Respect manual hyphenation points
+Use `hyphens:manual` when the content includes soft hyphens or explicit hyphenation decisions.
+```html
+<!-- @MARK hyphens:manual -->
+<p class="hyphens:manual">trans&shy;formation</p>
+```
+
+### Disable hyphenation
+Use `hyphens:none` for codes, product names, or text where inserted hyphens would change meaning.
+```html
+<!-- @MARK hyphens:none -->
+<code class="hyphens:none">MASTERCSS_RUNTIME_TOKEN</code>
+```
+
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="hyphens:manual:hover hyphens:manual@sm hyphens:manual@dark hyphens:manual@print">…</div>
+<p class="hyphens:auto hyphens:none@sm hyphens:none@print">...</p>
 ```
-

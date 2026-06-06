@@ -1,23 +1,39 @@
 ## Overview [sr-only]
 <Overview />
 
----
-
-## Basic usage
+## Examples
 ### Float elements to the left
-Use `mcss float:left` to place an element to the left of its container.
-<Basic className="float:left" />
+Use `float:left` when inline content should wrap around an element on the left.
+```html
+<!-- @MARK float:left -->
+<img class="float:left mr:4x" src="/images/avatar.jpg" alt="Avatar">
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['float:left']}
+    </Class2CSS>
+</details>
 
 ### Float elements to the right
-Use `mcss float:right` to place an element to the right of its container.
-<Basic className="float:right" />
+Use `float:right` to place a pull quote, image, or callout on the right side of a text flow.
+```html
+<!-- @MARK float:right -->
+<aside class="float:right ml:4x">
+    Pull quote
+</aside>
+```
 
-### Not float
-Use `mcss float:none` to reset floats that are applied to an element.
-<Basic className="float:none" />
+### Reset floats
+Use `float:none` when a responsive or print context should return the element to normal flow.
+```html
+<!-- @MARK float:none -->
+<img class="float:left float:none@print" src="/images/avatar.jpg" alt="Avatar">
+```
 
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="float:left:hover float:left@sm float:left@dark float:left@print">…</div>
+<img class="float:left:hover float:right@sm float:none@print" src="/images/avatar.jpg" alt="">
 ```

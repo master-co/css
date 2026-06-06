@@ -1,9 +1,68 @@
 ## Overview [sr-only]
 <Overview/>
 
+## Examples
+### Align items on the main axis
+Use `justify-*` utilities to distribute flex or grid items along the container main axis. In a default row flexbox, that axis is horizontal.
+```html
+<!-- @MARK flex --><!-- @MARK justify-between -->
+<nav class="flex justify-between">
+    <a href="/">Home</a>
+    <a href="/settings">Settings</a>
+</nav>
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['flex', 'justify-between']}
+    </Class2CSS>
+</details>
+
+### Start, center, or end a group
+Use `justify-start`, `justify-center`, and `justify-end` for the most common positional alignment.
+```html
+<!-- @MARK justify-center -->
+<div class="flex justify-center gap:sm">
+    <button>Cancel</button>
+    <button>Save</button>
+</div>
+```
+
+In a column flexbox, the main axis becomes vertical, so `justify-center` centers items vertically instead.
+```html
+<!-- @MARK flex-col --><!-- @MARK justify-center -->
+<section class="flex flex-col justify-center h:64x">
+    ...
+</section>
+```
+
+### Distribute extra space
+Use `justify-between`, `justify-around`, or `justify-evenly` when the container has extra space to distribute between items.
+```html
+<!-- @MARK justify-evenly -->
+<ul class="flex justify-evenly gap:sm">
+    <li>One</li>
+    <li>Two</li>
+    <li>Three</li>
+</ul>
+```
+
+Use `gap:*` when the distance between items should be fixed. Use `justify-*` when the remaining container space should control placement.
+
+### Use explicit CSS values
+Use `justify-content:<value>` when you need a value that does not have a shortcut.
+```html
+<!-- @MARK justify-content:safe|center -->
+<div class="flex justify-content:safe|center">
+    ...
+</div>
+```
+
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="justify-content:normal:hover justify-content:normal@sm justify-content:normal@dark justify-content:normal@print">…</div>
+<div class="justify-start justify-center@sm justify-between@lg justify-start@print">...</div>
 ```
 
+Use [align-items](/reference/align-items) for the cross axis.

@@ -1,9 +1,43 @@
 ## Overview [sr-only]
 <Overview/>
 
+## Examples
+### Set decoration color
+Use `text-decoration-color:*` when only the decoration color should change.
+```html
+<!-- @MARK text-decoration-color:primary -->
+<a class="text:underline text-decoration-color:primary">
+    Colored underline
+</a>
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['text-decoration-color:primary']}
+    </Class2CSS>
+</details>
+
+### Follow the current text color
+Use `text-decoration:currentColor` when the decoration should track the foreground color.
+```html
+<!-- @MARK text-decoration:currentColor -->
+<a class="fg:primary text:underline text-decoration:currentColor">
+    Current color underline
+</a>
+```
+
+### Hide decoration color
+Use `text-decoration:transparent` when spacing or thickness should remain but the decoration should not be visible.
+```html
+<!-- @MARK text-decoration:transparent -->
+<a class="text:underline text-decoration:transparent">
+    Invisible underline
+</a>
+```
+
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="text-decoration-color:gray-10:hover text-decoration-color:gray-10@sm text-decoration-color:gray-10@dark text-decoration-color:gray-10@print">…</div>
+<a class="text-decoration-color:primary:hover text-decoration:currentColor@sm text-decoration:transparent@print">...</a>
 ```
-

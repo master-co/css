@@ -5,6 +5,20 @@
 ### Basic usage
 <BasicUsage />
 
+Use `font:*` size tokens for project typography steps such as body copy, labels, and headings. The token names come from the configured font-size scale.
+```html
+<!-- @MARK font:sm --><!-- @MARK font:2xl -->
+<p class="font:sm">Small supporting text</p>
+<h2 class="font:2xl">Section title</h2>
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['font:sm', 'font:2xl']}
+    </Class2CSS>
+</details>
+
 ### With line height
 Set the line height, use the [`leading:<size>`](/reference/line-height) syntax along with the font size.
 ```html
@@ -13,9 +27,19 @@ Set the line height, use the [`leading:<size>`](/reference/line-height) syntax a
 ```
 You can also use the [`text:<size>`](/reference/text-size) syntax to set the line height and font size together.
 
+### Use an explicit font size
+Use `font-size:*` when a one-off value should not become a named token.
+```html
+<!-- @MARK font-size:clamp(1.25rem,2vw,2rem) -->
+<h1 class="font-size:clamp(1.25rem,2vw,2rem)">
+    Fluid title
+</h1>
+```
+
+Prefer named tokens for repeated typography. Use explicit CSS values for local measured cases, demos, or fluid formulas.
+
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="font:16:hover font:16@sm font:16@dark font:16@print">…</div>
+<div class="font:sm font:md@sm font:lg@lg font:sm@print">...</div>
 ```
-

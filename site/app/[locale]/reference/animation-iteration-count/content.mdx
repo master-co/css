@@ -1,26 +1,42 @@
 ## Overview [sr-only]
 <Overview/>
 
-Use the native animation iteration count property directly.
+## Examples
+### Loop animation
+Use `animation-iteration-count:infinite` when an animation should repeat until the state changes.
 ```html
-<div class="animation-iteration-count:infinite">
+<!-- @MARK animation-iteration-count:infinite -->
+<div class="animation-name:rotate animation-duration:1s animation-timing-function:linear animation-iteration-count:infinite">
+    Loading
+</div>
 ```
 
----
-
-## Basic usage
-### Loop animation
-Play the animation in an infinite loop.
-<Basic className="animation-iteration-count:infinite animation:rotate|1s|linear"/>
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['animation-iteration-count:infinite']}
+    </Class2CSS>
+</details>
 
 ### Specify N iterations
-Specifies the number of times the animation iterates, even decimals.
+Use a number for one-shot or limited loops. Decimal values are valid when you need an animation to stop partway through a cycle.
+```html
+<!-- @MARK animation-iteration-count:3 -->
+<div class="animation-name:fade animation-duration:300ms animation-iteration-count:3">
+    Repeats three times
+</div>
+```
 
-(hover) Hover over the icon to see animation iterations
-<Basic className="animation-iteration-count:2.5:hover animation:rotate|1s|linear|forwards:hover"/>
+### Pair with fill mode
+When the last iteration should leave the element in its final state, combine the count with `animation-fill-mode:forwards` or `animation-fill-mode:both`.
+```html
+<div class="animation-name:fade animation-iteration-count:1 animation-fill-mode:both">
+    Ends at the final keyframe
+</div>
+```
 
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="animation-iteration-count:infinite:hover animation-iteration-count:infinite@sm animation-iteration-count:infinite@dark animation-iteration-count:infinite@print">…</div>
+<div class="animation-iteration-count:infinite:hover animation-iteration-count:3@sm animation-iteration-count:1@print">...</div>
 ```

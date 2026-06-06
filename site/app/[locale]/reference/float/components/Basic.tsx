@@ -7,8 +7,8 @@ export default ({ className }: any) => {
             <BasicDemo className={className} />
             <Code lang="html">{`
                 <!-- @MARK ${className} -->
-                <img class="${className}" … />
-                <p>Lorem ipsum dolor sit amet …</p>
+                <img class="${className}" ... />
+                <p>Text wraps around the floated image.</p>
             `}</Code>
         </>
     )

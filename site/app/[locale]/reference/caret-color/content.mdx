@@ -1,22 +1,44 @@
 ## Overview [sr-only]
 <Overview/>
 
-## Basic usage
-### Set the cursor color
-Use the `caret-color:color` to change the cursor color in text input.
+## Examples
+### Set the text caret color
+Use `caret:*` to change the insertion caret color in inputs and editable text.
 <InteractingIndicator>Focus on input to see the cursor color</InteractingIndicator>
 
 <Demo class="py:0">
-    <input type="text" className="p:5|10 caret-color:pink-70 transition:caret-color|.3s outline:none bg:white b:2px|solid|gray-83 b:2px|solid|pink-70:focus r:8" />
+    <input type="text" className="p:5|10 caret:pink-70 transition:caret-color|.3s outline:none bg:white b:2px|solid|gray-83 b:2px|solid|pink-70:focus r:8" />
 </Demo>
 ```html
-<!-- @MARK caret-color:pink-70 -->
-<input type="text" class="caret-color:pink-70">
+<!-- @MARK caret:pink-70 -->
+<input type="text" class="caret:pink-70">
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['caret:pink-70']}
+    </Class2CSS>
+</details>
+
+### Use the current text color
+Use `caret:current` when the caret should follow the foreground color.
+```html
+<!-- @MARK caret:current -->
+<input class="fg:primary caret:current" value="Editable value">
+```
+
+### Hide the caret intentionally
+Use `caret:transparent` only for custom editing surfaces that draw their own caret.
+```html
+<!-- @MARK caret:transparent -->
+<div contenteditable="true" class="caret:transparent">
+    Custom editor
+</div>
 ```
 
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="caret-color:blue-46:hover caret-color:blue-46@sm caret-color:blue-46@dark caret-color:blue-46@print">…</div>
+<input class="caret:primary:focus caret:current@sm caret:current@print">
 ```
-
