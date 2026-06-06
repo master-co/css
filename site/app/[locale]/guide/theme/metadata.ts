@@ -5,7 +5,7 @@ const metadata = define({
     description: 'Customize a Master CSS theme with @theme tokens, modes, screens, motion, and project-level CSS vocabulary.',
     category: 'Fundamentals',
     other: {
-        subject: 'Theme Configuration',
+        subject: 'Theme',
     },
     fileURL: import.meta.url
 })

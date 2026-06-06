@@ -1,7 +1,7 @@
 ## Overview [sr-only]
 Your theme is the shared design vocabulary for a Master CSS project. It defines the values your markup reaches for every day: color roles, spacing, type, radius, shadows, motion, responsive screens, and mode-specific values.
 
-In Master CSS, you usually write that vocabulary in the project CSS entry with `@theme` blocks for tokens, `@master` blocks for project settings, and top-level custom directives for named conditions and selector tokens. The file still feels like CSS: tokens are custom properties, mode values are separate theme blocks, named conditions use at-rules, and the rest of your application keeps using short classes.
+In Master CSS, that vocabulary usually lives in the project CSS entry: `@theme` for tokens and modes, `@master` for project settings, and top-level custom directives for named conditions and selector tokens. The file still feels like CSS, while markup keeps using short semantic classes.
 
 ```css name=index.css
 @import '@master/css';
@@ -37,22 +37,18 @@ The important part is the graph, not a special file name. Tokens, modes, motion,
 
 ---
 
-## A complete theme example
-This raw example shows a practical theme shape: global scale settings in `@master`, base tokens in `@theme`, mode overrides in `@theme <mode>`, named conditions and selector shortcuts as top-level directives near the tokens that use them, and keyframes at the top level.
-
-<Code lang="css" name="theme.css">{require('./theme.css?raw')}</Code>
-
-Use this as a starting structure, not as a required schema. Most projects begin with colors, spacing, type, screens, and mode values, then add motion or selector shortcuts when they become shared product vocabulary.
-
----
-
 ## Define theme tokens
 <span id="variables" />
+<span id="add-variables" />
+<span id="use-custom-colors" />
+<span id="add-fonts" />
 Theme tokens are native custom properties inside `@theme` blocks. Their prefixes place them in the namespace that Master CSS utilities already understand.
 
 ```css name=index.css
 @theme {
+    --content-hash: " #";
     --color-primary: #4f46e5;
+    --color-primary-soft: rgb(79 70 229 / .16);
     --color-surface: #ffffff;
     --color-text-strong: #111827;
     --spacing-card: 24;
@@ -66,19 +62,39 @@ Theme tokens are native custom properties inside `@theme` blocks. Their prefixes
 The same short token can resolve differently by context. `primary` is a color in `bg:primary`, `card` is spacing in `p:card`, radius in `r:card`, and shadow in `shadow:card`.
 
 ```html
-<article class="bg:surface fg:strong p:card r:card shadow:card">
+<!-- @MARK bg:surface --><!-- @MARK p:card --><!-- @MARK r:card --><!-- @MARK font:sans -->
+<article class="bg:surface fg:strong p:card r:card shadow:card font:sans">
     <h2 class="font:sans">Dashboard</h2>
     <a class="fg:primary" href="/settings">Settings</a>
 </article>
+```
+
+Use `$` when a token should alias another token.
+
+```css name=index.css
+@theme {
+    --color-brand: #4f46e5;
+    --color-primary: $color-brand;
+    --color-primary-soft: $color-brand/.16;
+}
+```
+
+Define the same token key as a preset token when you want to override it. Later definitions in the project CSS graph win.
+
+```css name=index.css
+@theme {
+    --color-blue: #4589ff;
+}
 ```
 
 For token strategy and naming discipline, use [Design Tokens](/guide/design-tokens). For the exact color, spacing, typography, radius, elevation, motion, and screen scales, continue into the foundation guides.
 
 ---
 
-## Customize modes
+## Customize mode values
 <span id="default-mode" />
 <span id="mode-trigger" />
+<span id="mode-triggers" />
 Mode-specific `@theme` blocks let one token name adapt across light, dark, or product-specific themes. Keep the class names semantic, then change the values per mode.
 
 ```css name=index.css
@@ -101,7 +117,36 @@ Mode-specific `@theme` blocks let one token name adapt across light, dark, or pr
 </section>
 ```
 
-Most projects leave mode behavior system-driven:
+`light` and `dark` are always available. Defining another mode adds it to the theme automatically.
+
+```css name=index.css
+@theme brand {
+    --color-primary: #ff0;
+}
+```
+
+When a token has mode-specific values, Master CSS emits a CSS custom property in the theme layer and generated utilities reference that property.
+
+```css
+@layer theme {
+    .light,
+    :root {
+        --color-primary: rgb(79 70 229);
+    }
+
+    .dark {
+        --color-primary: rgb(129 140 248);
+    }
+}
+
+@layer utilities {
+    .bg\:primary {
+        background-color: var(--color-primary);
+    }
+}
+```
+
+Most projects leave light and dark mode behavior system-driven:
 
 ```css name=index.css
 @master {
@@ -110,11 +155,42 @@ Most projects leave mode behavior system-driven:
 }
 ```
 
-Use `mode-trigger: class` when your app switches modes manually, and see [Variables and Modes](/guide/variables-and-modes) for the full mode behavior.
+Use `mode-trigger: class` when your app switches modes manually.
+
+| Trigger | Output behavior |
+|---------|-----------------|
+| `media` | Uses `@media (prefers-color-scheme: <mode>)` for light and dark modes. |
+| `class` | Uses class wrappers such as `.dark &`. |
+| `host` | Uses shadow host wrappers such as `:host(.dark) &`. |
+
+`default-mode` controls which class-triggered mode also attaches to `:root`. Set `default-mode: none;` when no mode should be applied by default. It has no effect with `mode-trigger: media`, because the browser decides the active color scheme from user or system preferences.
+
+For manual switching, put the active mode class on `<html>` and keep `color-scheme` in sync.
+
+```html
+<!-- @MARK dark -->
+<html class="dark">
+    <body>
+        <div class="bg:surface fg:strong">...</div>
+    </body>
+</html>
+```
+
+```js
+const key = 'theme-preference'
+const preference = localStorage.getItem(key) || 'system'
+const value = preference === 'system'
+    ? matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+    : preference
+
+document.documentElement.classList.add(value)
+document.documentElement.style.colorScheme = value
+```
 
 ---
 
 ## Customize screen tokens
+<span id="add-a-screen-size" />
 Responsive breakpoints are theme tokens too. Define `screen` variables in `@theme`, then use them as at-rule suffixes in markup.
 
 ```css name=index.css
@@ -251,3 +327,10 @@ The theme should describe shared values and named conditions. Reusable UI patter
 ```
 
 Use [Reusing Styles](/guide/reusing-styles) for abstraction strategy, [component classes](/guide/reusing-styles#components) for semantic UI classes, and [Utilities](/guide/utilities) for low-level project primitives.
+
+---
+
+## Default theme source
+Master CSS ships a default theme in `@master/css`. Read it as source, not as a required project template: copy only the tokens or settings you intentionally want to override.
+
+<Code lang="css" name="theme.css">{require('../../../../../packages/core/src/theme.css?raw')}</Code>

@@ -19,7 +19,7 @@ export default () => {
                     </tr>
                     <tr>
                         <th>Theme</th>
-                        <td>Where the used <Link href="/guide/variables">variables</Link> are generated.</td>
+                        <td>Where the used <Link href="/guide/theme#define-theme-tokens">theme tokens</Link> are generated.</td>
                         <td className="white-space:nowrap"><code>{'@layer theme { … }'}</code></td>
                     </tr>
                     <tr>
