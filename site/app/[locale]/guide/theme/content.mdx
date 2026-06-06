@@ -1,7 +1,7 @@
 ## Overview [sr-only]
-Your theme is the shared design vocabulary for a Master CSS project. It defines the values your markup reaches for every day: color roles, spacing, type, radius, shadows, motion, responsive screens, and mode-specific values.
+Your theme is the shared design vocabulary for a Master CSS project. It defines the values your markup reaches for every day: color roles, spacing, type, radius, shadows, motion, responsive screens, mode-specific values, named conditions, and shared selector aliases.
 
-In Master CSS, that vocabulary usually lives in the project CSS entry: `@theme` for tokens and modes, `@master` for project settings, and top-level custom directives for named conditions and selector tokens. The file still feels like CSS, while markup keeps using short semantic classes.
+In Master CSS, that vocabulary usually lives in the project CSS entry: `@theme` for tokens and modes, `@master` for project settings, `@custom-at` for named conditions, and `@custom-selector` for selector shortcuts. The file still feels like CSS, while markup keeps using short semantic classes.
 
 ```css name=index.css
 @import '@master/css';
@@ -9,21 +9,28 @@ In Master CSS, that vocabulary usually lives in the project CSS entry: `@theme` 
 @theme {
     --color-primary: #4f46e5;
     --color-surface: #ffffff;
+    --spacing-card: 24;
+    --border-radius-card: 16;
+    --shadow-card: 0 16px 40px rgb(15 23 42 / .12);
+    --screen-md: 768;
 }
+
+@custom-at motion-safe @media (prefers-reduced-motion: no-preference);
+@custom-selector :interactive :is(:hover, :focus-visible);
 ```
 
 ```html
 <section class="bg:surface fg:strong p:card r:card shadow:card grid-cols:2@md">
-    <button class="bg:primary fg:white px:md py:xs r:md">Save</button>
+    <button class="bg:primary fg:white px:md py:xs r:md fg:primary:interactive">Save</button>
 </section>
 ```
 
-The `@theme` and `@master` blocks, top-level custom directives, and managed layers are configuration, not regular stylesheet output. Master CSS resolves them first, then generates only the variables, utilities, components, and keyframes that the application actually uses.
+The `@theme`, `@master`, `@custom-at`, and `@custom-selector` directives are configuration, not regular stylesheet output. Master CSS resolves them first, then generates only the variables, utilities, components, and keyframes that the application actually uses.
 
 ---
 
-## Use the project CSS entry
-A project only needs a CSS entry that marks the Master CSS graph. Put `@theme`, `@master`, `@custom-at`, and `@custom-selector` directives in the stylesheet that imports `@master/css`, or in CSS already imported by that entry.
+## Project CSS entry
+A project only needs a CSS entry that marks the Master CSS graph. Put theme directives in the stylesheet that imports `@master/css`, or in CSS already imported by that entry.
 
 ```css name=index.css
 @import '@master/css';
@@ -33,17 +40,19 @@ A project only needs a CSS entry that marks the Master CSS graph. Put `@theme`, 
 }
 ```
 
-The important part is the graph, not a special file name. Tokens, modes, motion, and project vocabulary can live wherever the project CSS entry already reaches them.
+The important part is the graph, not a special file name. Tokens, modes, motion, named conditions, and selector shortcuts can live wherever the project CSS entry already reaches them.
 
 ---
 
-## Define theme tokens
+## Theme tokens
 <span id="variables" />
+<span id="define-theme-tokens" />
 <span id="add-variables" />
 <span id="use-custom-colors" />
 <span id="add-fonts" />
 Theme tokens are native custom properties inside `@theme` blocks. Their prefixes place them in the namespace that Master CSS utilities already understand.
 
+### Define tokens
 ```css name=index.css
 @theme {
     --content-hash: " #";
@@ -59,6 +68,7 @@ Theme tokens are native custom properties inside `@theme` blocks. Their prefixes
 }
 ```
 
+### Use contextual tokens
 The same short token can resolve differently by context. `primary` is a color in `bg:primary`, `card` is spacing in `p:card`, radius in `r:card`, and shadow in `shadow:card`.
 
 ```html
@@ -69,7 +79,8 @@ The same short token can resolve differently by context. `primary` is a color in
 </article>
 ```
 
-Use `$` when a token should alias another token.
+### Alias and override tokens
+Use `$` when a token should reference another token.
 
 ```css name=index.css
 @theme {
@@ -87,15 +98,38 @@ Define the same token key as a preset token when you want to override it. Later 
 }
 ```
 
+### Screen tokens
+<span id="add-a-screen-size" />
+Responsive breakpoints are theme tokens too. Define `screen` variables in `@theme`, then use them as at-rule suffixes in markup.
+
+```css name=index.css
+@theme {
+    --screen-sm: 640;
+    --screen-md: 768;
+    --screen-lg: 1024;
+}
+```
+
+```html
+<div class="grid-cols:1 grid-cols:2@md grid-cols:3@lg gap:md">
+    ...
+</div>
+```
+
+Keep screen tokens broad and product-wide. Use raw media or container syntax only when the condition belongs to one local component. See [Screen Sizes](/guide/screen-sizes) for the responsive scale.
+
 For token strategy and naming discipline, use [Design Tokens](/guide/design-tokens). For the exact color, spacing, typography, radius, elevation, motion, and screen scales, continue into the foundation guides.
 
 ---
 
-## Customize mode values
+## Modes
 <span id="default-mode" />
 <span id="mode-trigger" />
 <span id="mode-triggers" />
-Mode-specific `@theme` blocks let one token name adapt across light, dark, or product-specific themes. Keep the class names semantic, then change the values per mode.
+Modes let one token name adapt across light, dark, high-contrast, or product-specific themes.
+
+### Define mode values
+Mode-specific `@theme` blocks keep markup semantic while values change by mode.
 
 ```css name=index.css
 @theme light {
@@ -109,6 +143,10 @@ Mode-specific `@theme` blocks let one token name adapt across light, dark, or pr
     --color-text-strong: #f9fafb;
     --color-primary: #818cf8;
 }
+
+@theme brand {
+    --color-primary: #ff0;
+}
 ```
 
 ```html
@@ -117,35 +155,9 @@ Mode-specific `@theme` blocks let one token name adapt across light, dark, or pr
 </section>
 ```
 
-`light` and `dark` are always available. Defining another mode adds it to the theme automatically.
+`light` and `dark` are always available. Defining another mode adds it to the theme automatically. When a token has mode-specific values, Master CSS emits a CSS custom property in the theme layer and generated utilities reference that property.
 
-```css name=index.css
-@theme brand {
-    --color-primary: #ff0;
-}
-```
-
-When a token has mode-specific values, Master CSS emits a CSS custom property in the theme layer and generated utilities reference that property.
-
-```css
-@layer theme {
-    .light,
-    :root {
-        --color-primary: rgb(79 70 229);
-    }
-
-    .dark {
-        --color-primary: rgb(129 140 248);
-    }
-}
-
-@layer utilities {
-    .bg\:primary {
-        background-color: var(--color-primary);
-    }
-}
-```
-
+### Choose a mode trigger
 Most projects leave light and dark mode behavior system-driven:
 
 ```css name=index.css
@@ -155,8 +167,6 @@ Most projects leave light and dark mode behavior system-driven:
 }
 ```
 
-Use `mode-trigger: class` when your app switches modes manually.
-
 | Trigger | Output behavior |
 |---------|-----------------|
 | `media` | Uses `@media (prefers-color-scheme: <mode>)` for light and dark modes. |
@@ -165,7 +175,8 @@ Use `mode-trigger: class` when your app switches modes manually.
 
 `default-mode` controls which class-triggered mode also attaches to `:root`. Set `default-mode: none;` when no mode should be applied by default. It has no effect with `mode-trigger: media`, because the browser decides the active color scheme from user or system preferences.
 
-For manual switching, put the active mode class on `<html>` and keep `color-scheme` in sync.
+### Switch modes manually
+Use `mode-trigger: class` when your app switches modes manually. Put the active mode class on `<html>` and keep `color-scheme` in sync.
 
 ```html
 <!-- @MARK dark -->
@@ -189,61 +200,99 @@ document.documentElement.style.colorScheme = value
 
 ---
 
-## Customize screen tokens
-<span id="add-a-screen-size" />
-Responsive breakpoints are theme tokens too. Define `screen` variables in `@theme`, then use them as at-rule suffixes in markup.
+## Named conditions and selectors
+Named conditions and selector shortcuts belong in the theme when they become shared product vocabulary. Use them to keep repeated media queries, support checks, container queries, and selectors out of markup.
 
-```css name=index.css
-@theme {
-    --screen-sm: 640;
-    --screen-md: 768;
-    --screen-lg: 1024;
-}
-```
-
-```html
-<div class="grid-cols:1 grid-cols:2@md grid-cols:3@lg gap:md">
-    ...
-</div>
-```
-
-Keep screen tokens broad and product-wide. Use raw media or container syntax only when the condition belongs to one local component. See [Screen Sizes](/guide/screen-sizes) for the responsive scale.
-
----
-
-## Name shared conditions
-When a condition repeats across markup or CSS-defined styles, give it a token. Use `@custom-at` for media, supports, container, and starting-style rules.
+### At tokens
+<span id="at-tokens" />
+<span id="define-an-at-token" />
+Native CSS cannot store full `@media`, `@supports`, or `@container` rules in CSS variables. Master CSS uses `@custom-at` to name those reusable conditions.
 
 ```css name=index.css
 @custom-at motion-safe @media (prefers-reduced-motion: no-preference);
 @custom-at supports-backdrop @supports (backdrop-filter: blur(0));
 @custom-at card-wide @container card (width >= 42rem);
+@custom-at start @starting-style;
 ```
 
+The token name is written without a leading `@` in the definition. Use the token as an `@` suffix in markup:
+
 ```html
-<div class="animation:fade-in|fast@motion-safe bg:surface/.8@supports-backdrop">
+<!-- @MARK @motion-safe --><!-- @MARK @supports-backdrop -->
+<div class="animation:fade-in|fast@motion-safe bg:white/.8@supports-backdrop">
     ...
 </div>
 ```
 
-Use `@custom-selector` for selectors that become product vocabulary.
+### At tokens in CSS rules
+Inside managed definitions and native style rules, use `@at` blocks instead of putting conditional suffixes inside `@compose`.
 
 ```css name=index.css
-@custom-selector :interactive :is(:hover, :focus-visible);
-@custom-selector :headings :is(h1, h2, h3, h4, h5, h6);
+@custom-at motion-safe @media (prefers-reduced-motion: no-preference);
+
+@layer components {
+    .card {
+        @compose "p:md r:xl";
+
+        @at motion-safe {
+            @compose "animation:fade-in|fast";
+        }
+
+        @at <sm {
+            @compose "block";
+        }
+    }
+}
 ```
 
+`@at` accepts custom at tokens, screen tokens such as `md`, mode names such as `dark`, and raw Master CSS at syntax such as `<sm`.
+
+### Selector tokens
+<span id="selector-tokens" />
+<span id="define-a-selector-token" />
+Selector tokens name selectors that repeat across markup or CSS-defined styles. Define them with `@custom-selector`.
+
+```css name=index.css
+@custom-selector :headings :is(h1, h2, h3, h4, h5, h6);
+@custom-selector :interactive :is(:hover, :focus-visible);
+@custom-selector ::scrollbar ::-webkit-scrollbar;
+```
+
+Use selector tokens anywhere Master CSS accepts a selector suffix:
+
 ```html
+<!-- @MARK :headings --><!-- @MARK :interactive --><!-- @MARK ::scrollbar -->
 <article class="font:semibold_:headings">
-    <a class="fg:primary:interactive" href="/settings">Settings</a>
+    <button class="fg:primary:interactive">Save</button>
+    <div class="w:.5rem::scrollbar">...</div>
 </article>
 ```
 
-For exact naming rules and conflict behavior, use [At Tokens](/guide/at-tokens) and [Selector Tokens](/guide/selector-tokens).
+### Selector tokens in CSS rules
+Inside CSS-defined style rules, prefer native nested selectors instead of putting selector suffixes inside `@compose`.
+
+```css name=index.css
+@custom-selector :interactive :is(:hover, :focus-visible);
+
+@layer components {
+    .btn {
+        @compose "inline-flex ai:center jc:center";
+
+        &:interactive {
+            @compose "fg:primary";
+        }
+    }
+}
+```
+
+### Naming rules
+Screen variables automatically create at tokens such as `@md`, and modes automatically create at tokens such as `@dark`. Custom at token names cannot start with `@`, `:`, or `::`, and cannot conflict with screen or mode names.
+
+Selector token names must start with `:` or `::`. Names that look like conditions belong in `@custom-at`, not `@custom-selector`.
 
 ---
 
-## Customize motion
+## Motion
 <span id="animations" />
 Motion belongs in the theme when timing, easing, and keyframes are shared by more than one surface.
 
@@ -279,7 +328,7 @@ Keyframes are emitted outside cascade layers, while animation utilities still ge
 
 ---
 
-## Tune project scales
+## Project settings
 <span id="baseunit" />
 <span id="root-size" />
 <span id="scope" />
@@ -305,7 +354,7 @@ You do not need to set these in every project. Treat them as theme-level default
 
 ---
 
-## Keep patterns separate
+## Style patterns
 The theme should describe shared values and named conditions. Reusable UI patterns can live next to it, but they have a different job.
 
 ```css name=components.css
@@ -333,4 +382,6 @@ Use [Reusing Styles](/guide/reusing-styles) for abstraction strategy, [component
 ## Default theme source
 Master CSS ships a default theme in `@master/css`. Read it as source, not as a required project template: copy only the tokens or settings you intentionally want to override.
 
-<Code lang="css" name="theme.css">{require('../../../../../packages/core/src/theme.css?raw')}</Code>
+<ExpandContent>
+    <Code lang="css" name="theme.css">{require('../../../../../packages/core/src/theme.css?raw')}</Code>
+</ExpandContent>

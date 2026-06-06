@@ -13,5 +13,15 @@ export default [
         source: '/guide/variables-and-modes',
         destination: '/guide/theme',
         permanent: true
+    },
+    {
+        source: '/guide/at-tokens',
+        destination: '/guide/theme#at-tokens',
+        permanent: true
+    },
+    {
+        source: '/guide/selector-tokens',
+        destination: '/guide/theme#selector-tokens',
+        permanent: true
     }
 ]
