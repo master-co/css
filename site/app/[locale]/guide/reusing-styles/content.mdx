@@ -1,11 +1,12 @@
 ## Overview [sr-only]
 Reusable styling starts with a decision, not a file. Keep local choices in markup, move shared values into theme tokens, and define component classes only when a repeated pattern has product meaning.
 
-Writing `.btn` at the top level of a stylesheet creates a normal CSS rule. It can use `@compose` and `@at`, but it is still emitted by that stylesheet as native CSS. Writing `.btn` in top-level `@layer components` defines a Master CSS component class instead: it is generated on demand when `btn` is used in markup, scanned from source, or composed by another CSS-defined style.
+Writing `.btn` at the top level of a stylesheet creates a normal CSS rule. Writing `.btn` in top-level `@layer components` defines an on-demand component class. Writing `.flow` in top-level `@layer utilities` defines an on-demand utility class. All three can use `@compose` and `@at`, but they serve different ownership needs.
 
 ---
 
-## Start with utilities
+## Reuse decisions
+### Start with utilities
 Use utility classes when the style belongs to one element, one state, or one local layout decision. This keeps the relationship between markup and style explicit while the pattern is still changing.
 
 ```html
@@ -16,9 +17,7 @@ Use utility classes when the style belongs to one element, one state, or one loc
 
 Do not abstract just to shorten a class list. Abstract when the name improves the product vocabulary: `btn`, `card`, `field`, `toolbar`, `empty-state`, or another role that appears across the interface.
 
----
-
-## Move shared values into the theme
+### Move shared values into the theme
 When the repeated part is a value, make it a token instead of a class. Tokens keep markup semantic while still letting each component choose its own structure.
 
 ```css name=index.css
@@ -39,10 +38,39 @@ When the repeated part is a value, make it a token instead of a class. Tokens ke
 
 Use [Customizing your theme](/guide/theme) when the reusable part is color, spacing, typography, radius, shadow, motion, screens, or mode-specific values.
 
+### Create custom utilities
+Use top-level `@layer utilities` when your design system needs a reusable primitive that is still lower-level than a product component. Good utility names describe a styling capability, not a UI role.
+
+```css name=index.css
+@layer utilities {
+    .flow {
+        @compose "grid gap:md";
+    }
+
+    .content-auto {
+        content-visibility: auto;
+        contain-intrinsic-size: auto 32rem;
+    }
+
+    .print-hidden {
+        @at print {
+            display: none;
+        }
+    }
+}
+```
+
+```html
+<!-- @MARK flow --><!-- @MARK content-auto --><!-- @MARK print-hidden -->
+<section class="flow content-auto print-hidden">...</section>
+```
+
+Custom utility definitions are converted into config and generated only when the class appears in markup, is scanned from source, or is composed by another CSS-defined style. Use custom utilities for reusable primitives such as layout helpers, rendering hints, or print behavior. Use component classes when the name describes a product UI role such as `.btn`, `.card`, or `.field`.
+
 ---
 
-## Create component classes
-<span id="components" />
+## Component classes
+### Define a component class
 Use a component class when a repeated class list becomes a reusable UI pattern. Define components in top-level `@layer components`, put Master CSS classes in `@compose`, and write native declarations directly in the rule.
 
 ```css name=index.css
@@ -96,7 +124,7 @@ You can still apply component classes alongside conditional utility classes when
 
 ---
 
-## Add states and conditions
+### Add states and conditions
 Put selector states in nested selectors and conditional variants in `@at` blocks. This keeps the component definition readable and keeps the markup semantic.
 
 ```css name=index.css
@@ -133,7 +161,7 @@ Equivalent markup stays short:
 
 ---
 
-## Keep variants composable
+### Keep variants composable
 Avoid hiding every option behind a new component. Give each component class one responsibility, then combine it with tokens, utilities, or smaller component classes.
 
 ```css name=styles/button.css
@@ -202,7 +230,7 @@ If one class tries to own size, color, shape, layout, and interaction variants, 
 
 ---
 
-## Build shared structures
+### Build shared structures
 Create explicit classes for each meaningful part of a repeated structure. Avoid relying on descendant selectors when separate class names make the output easier to trace.
 
 ```css name=index.css
@@ -252,7 +280,8 @@ In this example, `size:12x` is generated for `.empty-state::before`, not for `.e
 
 ---
 
-## Use native CSS when output should be native
+## Native CSS and files
+### Use native CSS when output should be native
 `@compose` is not limited to component definitions. It can also be used in native style rules. The difference is output ownership:
 
 - `@layer components`, `@layer preset`, and `@layer utilities` create on-demand managed class definitions.
@@ -279,7 +308,7 @@ Use native CSS when the selector is part of a stylesheet surface you already shi
 
 ---
 
-## Organize component files
+### Organize component files
 Split component definitions only when it helps ownership. Local CSS imports from the project CSS entry are compiled into one graph.
 
 <ExplorerView>
@@ -337,7 +366,8 @@ Split component definitions only when it helps ownership. Local CSS imports from
 
 ---
 
-## Component rules
+## Rules and summary
+### Component rules
 - Put component definitions in top-level `@layer components`; use `@layer preset` only when a definition intentionally belongs to the earlier preset layer.
 - Component selectors must start with a single class selector such as `.btn`, `.card`, or `.field::before`.
 - `@compose` is valid inside managed class definitions and native style rules.
@@ -346,11 +376,10 @@ Split component definitions only when it helps ownership. Local CSS imports from
 - Standard HTML tag selectors such as `body` or `html` are not valid inside managed layer definitions.
 - Utilities still win over components because `@master/css/base.css` declares `@layer theme, base, preset, components, utilities;`.
 
----
-
-## Summary
+### Summary
 - Keep local styling in markup until a pattern proves it should be shared.
 - Move shared values into theme tokens before creating new classes.
+- Use custom utilities for reusable primitives that are not product UI roles.
 - Use component classes for reusable UI roles, not for every repeated declaration.
 - Keep component classes small enough to combine with tokens, utilities, states, and conditions.
 - Use native CSS when the selector belongs to a stylesheet you already ship; use managed component classes when the class should be generated on demand.

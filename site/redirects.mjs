@@ -23,5 +23,10 @@ export default [
         source: '/guide/selector-tokens',
         destination: '/guide/theme#selector-tokens',
         permanent: true
+    },
+    {
+        source: '/guide/utilities',
+        destination: '/guide/reusing-styles#create-custom-utilities',
+        permanent: true
     }
 ]

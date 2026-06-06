@@ -1,5 +1,5 @@
 import { permanentRedirect } from 'next/navigation'
 
 export default function Page() {
-    permanentRedirect('/guide/reusing-styles#components')
+    permanentRedirect('/guide/reusing-styles#component-classes')
 }

@@ -29,7 +29,7 @@ export default () => {
                     </tr>
                     <tr>
                         <th>Components</th>
-                        <td>Where the used <Link href="/guide/reusing-styles#components">component classes</Link> are generated.</td>
+                        <td>Where the used <Link href="/guide/reusing-styles#component-classes">component classes</Link> are generated.</td>
                         <td className="white-space:nowrap"><code>{'@layer components { … }'}</code></td>
                     </tr>
                     <tr>

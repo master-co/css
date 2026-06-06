@@ -19,7 +19,7 @@ The most explicit form is a native property name plus a value. It is easy to und
     {code2}
 </Code>
 
-When the meaning is still clear without the property name, Master CSS can use the value itself as a [default utility](/guide/utilities#default-reference). For example, `mcss display:block` becomes `mcss block`, and `mcss position:absolute` becomes `mcss abs`.
+When the meaning is still clear without the property name, Master CSS can use the value itself as a default utility. For example, `mcss display:block` becomes `mcss block`, and `mcss position:absolute` becomes `mcss abs`.
 
 Not every value becomes a utility. Master CSS avoids shortcuts when the result would be ambiguous. For example, `mcss font-weight:lighter` is not reduced to `mcss lighter`, because `lighter` could also sound like a color or brightness change.
 
@@ -27,4 +27,4 @@ Several utilities are also higher-level conveniences, such as [screen readers](/
 
 Use utilities when the shorter class still communicates the intended CSS. Keep the explicit property form when the shortcut would make a reader stop and guess.
 
-To learn more about customizing utilities, check out the [utilities](/guide/utilities) documentation.
+To learn more about project-specific utility classes, see [custom utilities](/guide/reusing-styles#create-custom-utilities).
