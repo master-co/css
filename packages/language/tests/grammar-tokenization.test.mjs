@@ -214,14 +214,19 @@ test('core grammar highlights plain variable references as value tokens', () => 
     assertNoTokenScope(tokens, '50', 'constant.numeric.css')
 })
 
-test('core grammar treats x as a unit only before non-letter boundaries', () => {
+test('core grammar separates x units from scale value tokens', () => {
     const baseUnit = tokensFor(coreHighlighter, 'p:2x', 'master-css')
     assertTokenScope(baseUnit, 'x', 'keyword.other.unit')
 
-    const tokenName = tokensFor(coreHighlighter, 'm:2xl font:2xs', 'master-css')
+    const tokenName = tokensFor(coreHighlighter, 'm:2xl font:2xs font:10xl text:12xl', 'master-css')
     assertTokenScope(tokenName, '2xl', 'support.constant.property-value.css')
     assertTokenScope(tokenName, '2xs', 'support.constant.property-value.css')
+    assertTokenScope(tokenName, '10xl', 'support.constant.property-value.css')
+    assertTokenScope(tokenName, '12xl', 'support.constant.property-value.css')
     assertNoTokenScope(tokenName, '2', 'constant.numeric.css')
+    assertNoTokenScope(tokenName, '1', 'constant.numeric.css')
+    assertNoTokenScope(tokenName, '10', 'constant.numeric.css')
+    assertNoTokenScope(tokenName, '12', 'constant.numeric.css')
     assertNoTokenScope(tokenName, 'x', 'keyword.other.unit')
     assertNoTokenScope(tokenName, 'x', 'master-css.class.x')
 
@@ -229,11 +234,13 @@ test('core grammar treats x as a unit only before non-letter boundaries', () => 
     assertTokenScope(sizePair, 'x', 'master-css.class.x')
     assertTokenScope(sizePair, 'x', 'keyword.operator.css')
 
-    const mediaTokenName = tokensFor(coreHighlighter, '@media(width:2xl)', 'master-css')
+    const mediaTokenName = tokensFor(coreHighlighter, '@media(width:2xl) font:10@media(width:10xl)', 'master-css')
     assertTokenScope(mediaTokenName, '(', 'punctuation.definition.parameters.begin.bracket.round.css')
     assertNoTokenScope(mediaTokenName, '(', 'variable')
     assertTokenScope(mediaTokenName, '2xl', 'support.constant.property-value.css')
+    assertTokenScope(mediaTokenName, '10xl', 'support.constant.property-value.css')
     assertNoTokenScope(mediaTokenName, '2', 'constant.numeric.css')
+    assertNoTokenScope(mediaTokenName, '1', 'constant.numeric.css')
     assertNoTokenScope(mediaTokenName, 'x', 'keyword.other.unit')
     assertTokenScope(mediaTokenName, ')', 'punctuation.definition.parameters.end.bracket.round.css')
     assertNoTokenScope(mediaTokenName, ')', 'variable')
