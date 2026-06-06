@@ -49,7 +49,7 @@ Whitespace is used in the class attribute of the template to separate different 
 ```
 Is it not very kind to use `\00a0` in markup?
 
-(o) Predefine your [font](/guide/theme#add-fonts) tokens without `\00a0`.
+(o) Predefine your [font](/guide/theme#theme-tokens) tokens without `\00a0`.
 ```css name=index.css
 @theme {
     --font-family-open-sans: Open Sans; /* [!code ++] */
@@ -65,7 +65,7 @@ Apply your custom fonts:
 
 ## Customization
 ### Use custom fonts
-Customize your font tokens by defining [theme tokens](/guide/theme#add-fonts). For example, add `Inter` as the general font and `Fira Code` as the code font.
+Customize your font tokens by defining [theme tokens](/guide/theme#theme-tokens). For example, add `Inter` as the general font and `Fira Code` as the code font.
 ```css name=index.css
 @theme {
     --font-family-sans: "Inter", $font-family-sans-fallback; /* [!code ++] */

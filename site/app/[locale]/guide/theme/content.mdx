@@ -45,11 +45,6 @@ The important part is the graph, not a special file name. Tokens, modes, motion,
 ---
 
 ## Theme tokens
-<span id="variables" />
-<span id="define-theme-tokens" />
-<span id="add-variables" />
-<span id="use-custom-colors" />
-<span id="add-fonts" />
 Theme tokens are native custom properties inside `@theme` blocks. Their prefixes place them in the namespace that Master CSS utilities already understand.
 
 ### Define tokens
@@ -99,7 +94,6 @@ Define the same token key as a preset token when you want to override it. Later 
 ```
 
 ### Screen tokens
-<span id="add-a-screen-size" />
 Responsive breakpoints are theme tokens too. Define `screen` variables in `@theme`, then use them as at-rule suffixes in markup.
 
 ```css name=index.css
@@ -123,9 +117,6 @@ For token strategy and naming discipline, use [Design Tokens](/guide/design-toke
 ---
 
 ## Modes
-<span id="default-mode" />
-<span id="mode-trigger" />
-<span id="mode-triggers" />
 Modes let one token name adapt across light, dark, high-contrast, or product-specific themes.
 
 ### Define mode values
@@ -204,8 +195,6 @@ document.documentElement.style.colorScheme = value
 Named conditions and selector shortcuts belong in the theme when they become shared product vocabulary. Use them to keep repeated media queries, support checks, container queries, and selectors out of markup.
 
 ### At tokens
-<span id="at-tokens" />
-<span id="define-an-at-token" />
 Native CSS cannot store full `@media`, `@supports`, or `@container` rules in CSS variables. Master CSS uses `@custom-at` to name those reusable conditions.
 
 ```css name=index.css
@@ -248,8 +237,6 @@ Inside managed definitions and native style rules, use `@at` blocks instead of p
 `@at` accepts custom at tokens, screen tokens such as `md`, mode names such as `dark`, and raw Master CSS at syntax such as `<sm`.
 
 ### Selector tokens
-<span id="selector-tokens" />
-<span id="define-a-selector-token" />
 Selector tokens name selectors that repeat across markup or CSS-defined styles. Define them with `@custom-selector`.
 
 ```css name=index.css
@@ -293,7 +280,6 @@ Selector token names must start with `:` or `::`. Names that look like condition
 ---
 
 ## Motion
-<span id="animations" />
 Motion belongs in the theme when timing, easing, and keyframes are shared by more than one surface.
 
 ```css name=index.css
@@ -329,9 +315,6 @@ Keyframes are emitted outside cascade layers, while animation utilities still ge
 ---
 
 ## Project settings
-<span id="baseunit" />
-<span id="root-size" />
-<span id="scope" />
 Most theme work is tokens, but a few root settings shape every generated rule. Keep those settings in `@master` and change them only when the project has a clear convention.
 
 ```css name=index.css
