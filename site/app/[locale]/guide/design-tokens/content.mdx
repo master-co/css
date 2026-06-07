@@ -149,6 +149,8 @@ Contextual token shorthand removes redundant namespace prefixes from values. The
 | `animation-duration:fast` | `animation-duration:duration-fast` | Animation duration resolves duration tokens. |
 | <code>transition:opacity&#124;fast&#124;smooth</code> | <code>transition:opacity&#124;duration-fast&#124;easing-smooth</code> | Transition shorthand resolves duration and easing tokens. |
 
+The namespace can come from an explicit utility namespace, such as `spacing` for padding and gap utilities, or from the utility name itself. For example, `animation-duration:fast` can resolve `--animation-duration-fast` because `animation-duration` is a utility name. See [How namespaces are resolved](/guide/theme#how-namespaces-are-resolved) for the resolution rules and current default namespace sources.
+
 Use the longer form only when it improves clarity in a syntax lesson, or when you are intentionally showing how variable namespaces map to generated CSS.
 
 ---

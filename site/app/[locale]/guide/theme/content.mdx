@@ -1,3 +1,5 @@
+import VariableNamespaceSources from './components/VariableNamespaceSources'
+
 ## Overview [sr-only]
 Your theme is the shared design vocabulary for a Master CSS project. It defines the values your markup reaches for every day: color roles, spacing, type, radius, shadows, motion, breakpoints, container sizes, mode-specific values, named conditions, and shared selector aliases.
 
@@ -64,6 +66,34 @@ Theme tokens are native custom properties inside `@theme` blocks. Their prefixes
     --container-md: 448;
 }
 ```
+
+### How namespaces are resolved
+A theme token name has the shape `--<namespace>-<key>`. Master CSS resolves the namespace by longest prefix, so `--color-line-lightest` belongs to `color-line`, not `color`.
+
+Namespaces come from three places:
+
+* `breakpoint` is built in because viewport query suffixes such as `@md` need to resolve `--breakpoint-md`.
+* Utilities can declare shared namespaces. For example, border and outline color utilities search `color-line` before `color`, while spacing utilities search `spacing`.
+* Each non-static, non-function utility name is also a namespace. This is why `--animation-duration-fast`, `--line-height-body`, and `--tab-size-code` can be used as `animation-duration:fast`, `line-height:body`, and `tab-size:code`.
+
+Function utilities do not become namespaces by name. Tokens such as `--blur-sm`, `--drop-shadow-soft`, and `--perspective-near` are ordinary custom properties unless a utility explicitly owns that namespace.
+
+```css name=index.css
+@theme {
+    --animation-duration-fast: 120ms;
+    --line-height-body: 1.6;
+    --tab-size-code: 4;
+}
+```
+
+```html
+<pre class="animation-duration:fast line-height:body tab-size:code">...</pre>
+```
+
+### Default namespace sources
+The default theme vocabulary is utility-owned. This table lists the built-in condition namespace and the namespaces currently declared by default utilities. Utility-name namespaces follow the utility list itself, so any non-static, non-function utility name such as `font-size`, `animation-duration`, `line-height`, or `tab-size` can also be used as a token namespace.
+
+<VariableNamespaceSources />
 
 ### Use contextual tokens
 The same short token can resolve differently by context. `primary` is a color in `bg:primary`, `card` is spacing in `p:card`, radius in `r:card`, and shadow in `shadow:card`.
