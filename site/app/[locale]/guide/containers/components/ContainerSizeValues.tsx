@@ -10,18 +10,20 @@ export default () => {
             <table>
                 <thead>
                     <tr>
-                        <th className="w:0">Token</th>
                         <th className="w:0">Value</th>
-                        <th>Example CSS</th>
+                        <th className="w:0">Variable</th>
+                        <th className="w:0">Size</th>
+                        <th>Example utility</th>
                     </tr>
                 </thead>
                 <tbody>
                     {
                         containerVariableEntries.map(([name, value]) => (
                             <tr key={name}>
-                                <th className="white-space:nowrap"><InlineCode>{`container-${name}`}</InlineCode></th>
+                                <th className="white-space:nowrap"><InlineCode>{name}</InlineCode></th>
+                                <td className="white-space:nowrap"><InlineCode>{`--container-${name}`}</InlineCode></td>
                                 <td className="white-space:nowrap"><InlineCode>{formatValue(value)}</InlineCode></td>
-                                <td><InlineCode lang="css">{`{ max-width: ${formatRem(value)} }`}</InlineCode></td>
+                                <td><InlineCode>{`max-w:${name}`}</InlineCode></td>
                             </tr>
                         ))
                     }

@@ -6,7 +6,7 @@
 <!-- @MARK @xs @sm @md -->
 <div class="grid-cols:2 grid-cols:3@xs grid-cols:4@sm grid-cols:5@md …">…</div>
 ```
-Master CSS allows for the conditional application of styles at different viewport and container sizes. Viewport queries use [breakpoint tokens](/guide/breakpoints-and-containers), while container queries use container size tokens from the same guide.
+Master CSS allows for the conditional application of styles at different viewport and container sizes. Viewport queries use [breakpoint tokens](/guide/breakpoints), while container queries use [container size tokens](/guide/containers).
 
 ---
 
@@ -16,7 +16,7 @@ CSS Media Queries allow styles to be applied based on the *size of the viewport*
 These breakpoints enable developers to change layouts, typography, spacing, and more to ensure an optimal user experience across devices.
 
 ### Using responsive breakpoints
-The syntax is `@<breakpoint>`, where `<breakpoint>` can be any configured [breakpoint token](/guide/breakpoints-and-containers), such as `xs`, `sm`, `md`, `lg`, etc.
+The syntax is `@<breakpoint>`, where `<breakpoint>` can be any configured [breakpoint token](/guide/breakpoints), such as `xs`, `sm`, `md`, `lg`, etc.
 ```html
 <!-- @MARK @xs @sm @md -->
 <div class="grid-cols:2 grid-cols:3@xs grid-cols:4@sm grid-cols:5@md …">…</div>
@@ -76,7 +76,7 @@ The `container` class is a utility class that applies the `container-type: inlin
         {['container', 'flex-col@container(<=2xs)']}
     </Class2CSS>
 </details>
-Container queries use the container scale from [Breakpoints and Containers](/guide/breakpoints-and-containers), which can use different values from viewport breakpoints.
+Container queries use the [container scale](/guide/containers), which can use different values from viewport breakpoints.
 
 ### Querying container ranges
 Use [comparison](/guide/conditional-queries#comparison-operators) and [logical](/guide/conditional-queries#logical-operators) operators to create more complex container range queries.

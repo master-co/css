@@ -3,7 +3,8 @@ CSS layout is built from native primitives. [CSS Grid](https://developer.mozilla
 
 In Master CSS, those decisions stay close to the markup and share the same foundations as the rest of the interface:
 
-* [Breakpoints and containers](/guide/breakpoints-and-containers) define when layout changes.
+* [Breakpoints](/guide/breakpoints) define when page-level layout changes.
+* [Containers](/guide/containers) define component-level changes and shared width caps.
 * [Spacing](/guide/spacing) defines gutters, margins, and section rhythm.
 * [Sizing](/guide/sizing) defines wrappers, fixed regions, fluid regions, and constraints.
 * Grid and Flex utilities express the actual composition.
@@ -51,7 +52,7 @@ These decisions are separate on purpose. A page can keep the same maximum width 
 ---
 
 ## Start with a page container
-The container defines the live area for the layout. Use `w:full` so the wrapper can shrink, `max-w:*` so it aligns with the [container size scale](/guide/breakpoints-and-containers), `mx:auto` to center it, and horizontal padding from the [spacing scale](/guide/spacing) for the outer margin.
+The container defines the live area for the layout. Use `w:full` so the wrapper can shrink, `max-w:*` so it aligns with the [container size scale](/guide/containers), `mx:auto` to center it, and horizontal padding from the [spacing scale](/guide/spacing) for the outer margin.
 
 ```html
 <!-- @MARK w:full --><!-- @MARK max-w:7xl --><!-- @MARK mx:auto --><!-- @MARK px:md --><!-- @MARK px:xl@md -->

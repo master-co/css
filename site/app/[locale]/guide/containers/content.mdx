@@ -1,0 +1,152 @@
+## Overview [sr-only]
+Containers define the size scale for reusable layout surfaces. In Master CSS, the container namespace has two related jobs:
+
+* Provide contextual size values such as `max-w:md`, `w:3xl`, `size:lg`, and `flex-basis:sm`.
+* Provide thresholds for `@container(<name>)` queries, so components can respond to the space they actually receive.
+
+Use [breakpoints](/guide/breakpoints) for viewport-level page changes. Use containers for component-level adaptation and shared width caps.
+
+<ContainerVariables />
+
+---
+
+## Define container variables
+Container variables belong in the theme layer and use the `--container-*` namespace.
+
+```css name=index.css
+@theme {
+    --container-sm: 384;
+    --container-md: 448;
+    --container-7xl: 1280;
+}
+```
+
+The same token can drive a width cap and a container query. That keeps component dimensions and responsive thresholds from drifting apart.
+
+---
+
+## Use container values in sizing utilities
+Sizing utilities that read from the container namespace use contextual shorthand. Write `max-w:md`; do not repeat the namespace inside the value.
+
+```html
+<!-- @MARK w:full --><!-- @MARK max-w:5xl --><!-- @MARK mx:auto -->
+<main class="w:full max-w:5xl mx:auto">
+    ...
+</main>
+
+<!-- @MARK flex-basis:md -->
+<aside class="flex-basis:md flex-shrink:0">...</aside>
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['w:full', 'max-w:5xl', 'mx:auto', 'flex-basis:md']}
+    </Class2CSS>
+</details>
+
+The shorthand is contextual: `md` can mean a container value inside `max-w:md`, and a breakpoint threshold inside `@md`. The utility or variant decides which namespace is active.
+
+<ContainerSizeValues />
+
+---
+
+## Create a query container
+Add `container` to the element whose inline size should be observed. Then apply `@container(<size>)` variants to descendants.
+
+```html
+<section class="container">
+    <!-- @MARK grid-cols:2@container(md) -->
+    <article class="grid-cols:1 grid-cols:2@container(md) gap:lg">
+        ...
+    </article>
+</section>
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['container', 'grid-cols:1', 'grid-cols:2@container(md)', 'gap:lg']}
+    </Class2CSS>
+</details>
+
+Container queries make components portable. The same card can be stacked in a sidebar and split into columns in a wide content region without knowing the viewport width.
+
+---
+
+## Container query scale
+Container query variants use the same `--container-*` variables as sizing utilities.
+
+<ContainerQueries />
+
+This is different from viewport breakpoints on purpose. A component threshold is usually smaller than a page threshold. For example, `@container(md)` can represent a comfortable card width, while `@md` represents a desktop page shell.
+
+---
+
+## Query container ranges
+Use [comparison](/guide/conditional-queries#comparison-operators) and [logical](/guide/conditional-queries#logical-operators) operators when a component needs a bounded range.
+
+```html
+<!-- @MARK hidden@container(sm&<=md) -->
+<div class="hidden@container(sm&<=md)">...</div>
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['hidden@container(sm&<=md)']}
+    </Class2CSS>
+</details>
+
+Prefer named container tokens for repeated component states. Use raw container query values only when the threshold belongs to one local component and is unlikely to become part of the shared design language.
+
+---
+
+## Use named containers
+Use named containers when a descendant should query a specific ancestor instead of the nearest container.
+
+```html
+<!-- @MARK container:card/inline-size -->
+<section class="container:card/inline-size">
+    <!-- @MARK @card(3xs) -->
+    <article class="grid-cols:2@card(3xs)">...</article>
+</section>
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['container:card/inline-size', 'grid-cols:2@card(3xs)']}
+    </Class2CSS>
+</details>
+
+Named containers are useful in nested layouts, but do not add names everywhere. The default nearest-container behavior is simpler and easier to move between compositions.
+
+---
+
+## Choose caps or queries
+Container size values and container queries are related, but they solve different problems.
+
+| Need | Use | Example |
+| --- | --- | --- |
+| Cap a page wrapper | Container value | `w:full max-w:7xl mx:auto` |
+| Cap a content measure | Local or container value | `max-w:72ch` or `max-w:5xl` |
+| Adapt a reusable component | Container query | `grid-cols:2@container(md)` |
+| Coordinate nested responsive regions | Named container | `grid-cols:2@card(3xs)` |
+| Change the whole page shell | Breakpoint | `grid-cols:12@md` |
+
+(x) A reusable card depends on the viewport, so it changes at the wrong time inside narrow parents.
+
+```html
+<article class="grid-cols:2@md">...</article>
+```
+
+(o) The card depends on the space it receives.
+
+```html
+<section class="container">
+    <article class="grid-cols:2@container(md)">...</article>
+</section>
+```
+
+(i) If a layout rule describes the whole page, use [breakpoints](/guide/breakpoints). If it describes a reusable component or a wrapper width, use containers.

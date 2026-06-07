@@ -1,0 +1,151 @@
+## Overview [sr-only]
+Breakpoints are viewport thresholds. They answer one question: when the available page width changes, which product-level decisions should change with it?
+
+Use breakpoint variants for navigation modes, app shells, page grids, typography shifts, and density changes that should follow the viewport. Use [containers](/guide/containers) when a reusable component should respond to the size of its parent instead.
+
+Master CSS defines breakpoint variables in the theme layer. The variant syntax is `@<name>`, so `@md` reads from `--breakpoint-md`.
+
+<BreakpointVariables />
+
+---
+
+## Define breakpoint variables
+Breakpoint variables belong in your project CSS entry. Keep them product-wide and stable; they are part of the layout language shared by docs, components, designers, and tests.
+
+```css name=index.css
+@theme {
+    --breakpoint-sm: 768;
+    --breakpoint-md: 1024;
+    --breakpoint-lg: 1280;
+}
+```
+
+The values are unitless numbers interpreted as pixels and emitted as rem-based media queries. That keeps generated CSS aligned with the root font size while keeping the theme readable.
+
+---
+
+## Use breakpoint variants
+Append `@<breakpoint>` to a utility when that declaration should start at a viewport threshold.
+
+```html
+<!-- @MARK font:2xl --><!-- @MARK font:3xl@md -->
+<h1 class="font:2xl font:3xl@md">Build for the current viewport</h1>
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['font:2xl', 'font:3xl@md']}
+    </Class2CSS>
+</details>
+
+Unqualified classes are the base state. Breakpoint variants layer changes on top, which makes the default mental model mobile-first without forcing every product to design only for phones.
+
+---
+
+## Breakpoint scale
+Use the scale as design vocabulary, not as device names. A token such as `md` should mean "the medium page layout starts here", not "iPad" or "desktop".
+
+<BreakpointQueries />
+
+The exact values can differ by product. The important part is that the tokens stay semantically consistent: smaller tokens unlock compact layout changes, larger tokens unlock wider page structures.
+
+---
+
+## Plan changes around decisions
+A breakpoint should exist because something meaningful changes. Avoid adding thresholds only because a popular device width exists.
+
+| Decision | Good breakpoint use | Better handled elsewhere |
+| --- | --- | --- |
+| Navigation | Switch from bottom tabs to top navigation | A single card changing layout inside a sidebar |
+| App shell | Add a persistent sidebar at `@md` | Button padding that only belongs to one component |
+| Page grid | Move from 4 columns to 8 or 12 columns | A gallery that depends on its rendered container |
+| Typography | Increase heading scale when line length and hierarchy need it | Local text measure such as `max-w:72ch` |
+| Density | Increase section rhythm and outer margins | Hard-coded spacing values repeated in markup |
+
+```html
+<!-- @MARK grid-cols:4 --><!-- @MARK grid-cols:8@sm --><!-- @MARK grid-cols:12@md -->
+<section class="grid-cols:4 grid-cols:8@sm grid-cols:12@md gap:md gap:lg@md">
+    ...
+</section>
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['grid-cols:4', 'grid-cols:8@sm', 'grid-cols:12@md', 'gap:md', 'gap:lg@md']}
+    </Class2CSS>
+</details>
+
+---
+
+## Query viewport ranges
+Use [comparison](/guide/conditional-queries#comparison-operators) and [logical](/guide/conditional-queries#logical-operators) operators when a style belongs to a range instead of every larger viewport.
+
+```html
+<!-- @MARK hidden@sm&<=md -->
+<aside class="hidden@sm&<=md">...</aside>
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['hidden@sm&<=md']}
+    </Class2CSS>
+</details>
+
+Ranges should be rare. If a rule appears at one size, disappears, and returns later, check whether the component is really responding to its container or whether the layout hierarchy should change.
+
+---
+
+## Pair with container width caps
+Viewport breakpoints decide when the page changes. Container size values decide how wide a wrapper may grow. Keep those roles separate.
+
+```html
+<!-- @MARK max-w:4xl@sm --><!-- @MARK max-w:5xl@md --><!-- @MARK max-w:7xl@lg -->
+<main class="w:full max-w:4xl@sm max-w:5xl@md max-w:7xl@lg mx:auto px:md px:xl@md">
+    ...
+</main>
+```
+
+Here `@sm`, `@md`, and `@lg` come from the breakpoint namespace. The `4xl`, `5xl`, and `7xl` width values come from the [container namespace](/guide/containers).
+
+---
+
+## Prefer stable breakpoint habits
+(x) Breakpoints are named after devices.
+
+```css
+@theme {
+    --breakpoint-iphone: 390;
+    --breakpoint-ipad: 820;
+}
+```
+
+(o) Breakpoints are named after layout thresholds.
+
+```css
+@theme {
+    --breakpoint-xs: 640;
+    --breakpoint-sm: 768;
+    --breakpoint-md: 1024;
+}
+```
+
+(x) A reusable card responds to the viewport, so it breaks when placed in a narrow sidebar.
+
+```html
+<article class="grid-cols:2@md">...</article>
+```
+
+(o) Page structure uses breakpoints, while reusable components use container queries.
+
+```html
+<main class="grid-cols:12@md">
+    <section class="container">
+        <article class="grid-cols:2@container(md)">...</article>
+    </section>
+</main>
+```
+
+Use breakpoints sparingly, name them for layout meaning, and keep component-local responsiveness in [containers](/guide/containers).

@@ -1,7 +1,7 @@
 import { generateAt, parseAt } from '@master/css/utils'
 import css from '~/site/common/theme-css'
 import InlineCode from '~/internal/components/InlineCode'
-import { containerVariableEntries } from '~/site/utils/container-variables'
+import { breakpointVariableEntries } from '~/site/utils/breakpoint-variables'
 
 const formatValue = (value: number) => `${value}px / ${value / 16}rem`
 
@@ -11,18 +11,18 @@ export default () => {
             <table>
                 <thead>
                     <tr>
-                        <th className="w:0">Token</th>
+                        <th className="w:0">Variant</th>
                         <th className="w:0">Value</th>
-                        <th>CSS</th>
+                        <th>Generated query</th>
                     </tr>
                 </thead>
                 <tbody>
                     {
-                        containerVariableEntries.map(([name, value]) => (
+                        breakpointVariableEntries.map(([name, value]) => (
                             <tr key={name}>
-                                <th className="white-space:nowrap"><InlineCode>{`@container(${name})`}</InlineCode></th>
+                                <th className="white-space:nowrap"><InlineCode>{`@${name}`}</InlineCode></th>
                                 <td className="white-space:nowrap"><InlineCode>{formatValue(value)}</InlineCode></td>
-                                <td><InlineCode lang="css">{generateAt(parseAt(`@container(${name})`, css))}</InlineCode></td>
+                                <td><InlineCode lang="css">{generateAt(parseAt('@' + name, css))}</InlineCode></td>
                             </tr>
                         ))
                     }
