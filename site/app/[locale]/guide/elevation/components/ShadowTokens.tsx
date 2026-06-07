@@ -1,4 +1,5 @@
 import { getThemeVariables } from '~/site/utils/theme-variables'
+import InlineCode from '~/internal/components/InlineCode'
 
 const shadowApplications: Record<string, string> = {
     xs: 'Subtle separation, small controls',
@@ -19,7 +20,7 @@ export default () => {
                 <table>
                     <thead>
                         <tr>
-                            <th>Token</th>
+                            <th>Variable</th>
                             <th>Value</th>
                             <th>Application</th>
                         </tr>
@@ -28,8 +29,8 @@ export default () => {
                         {
                             shadowEntries.map(([key, value]) => (
                                 <tr key={key}>
-                                    <th>{key}</th>
-                                    <td><code>{value}</code></td>
+                                    <td><InlineCode className="white-space:nowrap">{`--shadow-${key}`}</InlineCode></td>
+                                    <td><InlineCode>{value}</InlineCode></td>
                                     <td>{shadowApplications[key]}</td>
                                 </tr>
                             ))
