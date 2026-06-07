@@ -122,9 +122,9 @@ For Layout System and similar foundation layout demos:
 For Design Foundations token overview tables:
 
 - When a foundation guide introduces a numeric theme variable scale, include a theme variable overview near the top before usage sections.
-- Follow the spacing guide pattern: read values from `site/utils/theme-variables` or a narrow derived helper, then render `Variable`, `Value`, and `(REM)` columns.
-- Add a `Representation` column only when the table is the primary visual explanation of the scale and the visualization stays compact, such as spacing gaps. Omit it when a nearby demo already displays the full scale visually, such as the Corner Radius guide, or when the visualization makes the table too wide, such as screen size bars.
+- For new or optimized foundation token overview tables, read values from `site/utils/theme-variables` or a narrow derived helper, then render `Variable`, `Value`, and `(REM)` columns.
 - Show the full CSS custom property name, such as `--spacing-md`, `--border-radius-lg`, or `--screen-md`; show the raw configured number in `Value`; and show the rem conversion using the site root size.
+- Add a `Description` column only when short token usage guidance improves scanability. Keep descriptions concise and do not use them to duplicate adjacent prose or demos.
 - Use `ThemeNumberVariableTable` from `site/components` for numeric spacing, radius, and screen scales unless a guide needs a more specialized table.
 - Keep these tables data-driven. Do not hard-code preset token rows in guide copy when they can be read from the theme config.
 - Use generated CSS examples separately from the theme variable overview. The overview teaches configured tokens; `<Class2CSS>` teaches emitted utility CSS.

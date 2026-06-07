@@ -1,21 +1,20 @@
-import type { CSSProperties } from 'react'
 import InlineCode from '~/internal/components/InlineCode'
 import { getThemeNumberVariableEntries } from '~/site/utils/theme-variables'
 
-type Representation = 'spacing' | 'radius' | 'screen'
-
 interface ThemeNumberVariableTableProps {
     namespace: string
-    representation?: Representation
     variablePrefix?: string
+    descriptions?: Record<string, string>
+    representation?: 'spacing'
 }
 
 const formatRem = (value: number) => `${Number((value / 16).toFixed(4))}rem`
 
 export default function ThemeNumberVariableTable(props: ThemeNumberVariableTableProps) {
-    const { namespace, representation, variablePrefix = namespace } = props
+    const { namespace, variablePrefix = namespace, descriptions, representation } = props
     const entries = getThemeNumberVariableEntries(namespace)
-    const largestValue = Math.max(...entries.map(([, value]) => value))
+    const hasDescriptions = descriptions && entries.some(([key]) => descriptions[key])
+    const hasSpacingRepresentation = representation === 'spacing'
 
     return (
         <figure>
@@ -26,7 +25,8 @@ export default function ThemeNumberVariableTable(props: ThemeNumberVariableTable
                             <th>Variable</th>
                             <th>Value</th>
                             <th>(REM)</th>
-                            {representation && <th>Representation</th>}
+                            {hasSpacingRepresentation && <th>Representation</th>}
+                            {hasDescriptions && <th>Description</th>}
                         </tr>
                     </thead>
                     <tbody>
@@ -36,7 +36,8 @@ export default function ThemeNumberVariableTable(props: ThemeNumberVariableTable
                                     <th><InlineCode>{`--${variablePrefix}-${key}`}</InlineCode></th>
                                     <td><InlineCode>{`${value}`}</InlineCode></td>
                                     <td>{formatRem(value)}</td>
-                                    {representation && <td>{renderRepresentation(representation, value, index, entries.length, largestValue)}</td>}
+                                    {hasSpacingRepresentation && <td>{renderSpacingRepresentation(value, index, entries.length)}</td>}
+                                    {hasDescriptions && <td>{descriptions?.[key]}</td>}
                                 </tr>
                             ))
                         }
@@ -47,31 +48,10 @@ export default function ThemeNumberVariableTable(props: ThemeNumberVariableTable
     )
 }
 
-function renderRepresentation(representation: Representation, value: number, index: number, count: number, largestValue: number) {
-    if (representation === 'spacing') {
-        return (
-            <div className="inline-flex bg:stripe-pink outline:1|lighter outline-offset:-1 v:middle w:fit" style={{ gap: formatRem(value) }}>
-                {Array.from({ length: count + 2 - index }, (_, index) => <div key={index} className="inline-block size:1.5em bg:base"></div>)}
-            </div>
-        )
-    }
-
-    if (representation === 'radius') {
-        return (
-            <div
-                className="inline-block size:2.5em bg:primary/.12 outline:1|primary/.25 outline-offset:-1 v:middle"
-                style={{ borderRadius: formatRem(value) }}
-            ></div>
-        )
-    }
-
-    const widthStyle: CSSProperties = {
-        width: `${Math.max(12, value / largestValue * 100)}%`
-    }
-
+function renderSpacingRepresentation(value: number, index: number, count: number) {
     return (
-        <div className="w:full max-w:48x bg:stripe-pink outline:1|lighter outline-offset:-1 p:1">
-            <div className="h:1.5em bg:primary/.28 outline:1|primary/.25 outline-offset:-1" style={widthStyle}></div>
+        <div className="inline-flex bg:stripe-pink outline:1|lighter outline-offset:-1 v:middle w:fit" style={{ gap: formatRem(value) }}>
+            {Array.from({ length: count + 2 - index }, (_, index) => <div key={index} className="inline-block size:1.5em bg:base"></div>)}
         </div>
     )
 }
