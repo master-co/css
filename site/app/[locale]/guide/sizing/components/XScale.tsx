@@ -1,4 +1,5 @@
 import ExpandContent from '~/internal/components/ExpandContent'
+import InlineCode from '~/internal/components/InlineCode'
 
 export default () => {
     return (
@@ -23,7 +24,7 @@ export default () => {
                                 }))
                                     .map((row, index) => (
                                         <tr key={index}>
-                                            <th>{row.token}</th>
+                                            <th><InlineCode>{row.token}</InlineCode></th>
                                             <td>{row.px}</td>
                                             <td>{row.value}</td>
                                             <td>

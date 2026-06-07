@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
     title: 'Sizing',
-    description: 'Use width, height, size, min, max, fractions, breakpoint variants, container queries, and fluid CSS functions to control layout dimensions.',
+    description: 'Plan preferred sizes, constraints, fluid dimensions, container caps, and responsive sizing rules for stable layouts.',
     category: 'Design Foundations',
     fileURL: import.meta.url
 })
