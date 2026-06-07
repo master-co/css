@@ -285,19 +285,6 @@ When a dimension becomes part of the product language, add a named container var
 
 Use descriptive names such as `sidebar`, `measure`, `panel`, or `media` instead of numeric keys. Numeric keys are easy to confuse with raw values such as `w:1` or `w:2`.
 
-If the value is a local CSS variable instead of a sizing token, reference it explicitly.
-
-```css name=index.css
-@theme {
-    --sidebar-width: 280;
-}
-```
-
-```html
-<!-- @MARK w:$sidebar-width -->
-<aside class="w:$sidebar-width">...</aside>
-```
-
 ---
 
 ## Avoid brittle sizing
