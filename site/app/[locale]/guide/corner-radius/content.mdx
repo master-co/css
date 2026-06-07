@@ -1,36 +1,101 @@
+import Overview from './components/Overview'
 import BorderRadiusBasicUsage from '../../reference/border-radius/components/BasicUsage.mdx'
 import CreatePillButton from '../../reference/border-radius/components/CreatePillButton.mdx'
 import CreateIconButton from '../../reference/border-radius/components/CreateIconButton.mdx'
 
 ## Overview [sr-only]
-The border radius system defines the curvature of UI elements' corners, helping establish a consistent visual language across components.
+Corner radius controls the curvature of surfaces, controls, media, and badges. Master CSS maps the default radius scale to `border-radius` variables, so repeated UI shapes use stable tokens instead of raw pixel values.
+
+<Overview />
+
+Use radius tokens to answer what kind of shape the element needs:
+
+* `r:xs` to `r:md` keep inputs, compact buttons, tables, and dense cards crisp.
+* `r:lg` to `r:2xl` suit standard cards, panels, dialogs, and media frames.
+* `r:3xl` and `r:4xl` are expressive values for banners, illustrations, and large feature surfaces.
+* `rounded` and `round` are semantic shortcuts for pill and circular shapes.
+
+```html
+<!-- @MARK r:md --><!-- @MARK r:lg --><!-- @MARK rounded --><!-- @MARK round -->
+<input class="r:md" />
+<article class="r:lg">...</article>
+<span class="rounded">Beta</span>
+<img class="round" alt="" />
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['r:md', 'r:lg', 'rounded', 'round']}
+    </Class2CSS>
+</details>
+
 <BorderRadiusBasicUsage />
-Each radius token — from `r:xs` to `r:4xl` — represents a progressively larger corner rounding. These are designed to support various use cases:
 
-* `r:xs` to `r:md` are ideal for subtle rounding in input fields, buttons, and cards.
-* `r:lg` to `r:4xl` suit more expressive UI elements such as modals, banners, or illustrations.
+---
 
-For semantic shortcuts:
+## Choose radius by role
+Use the smallest radius that communicates the intended surface. Radius should reinforce hierarchy instead of becoming decoration.
 
-* `rounded` applies a full border radius along the horizontal/vertical axis, commonly used for tags, buttons, or badges.
-* `round` applies a full (pill or circle) border radius, commonly used for avatars, badges, or circular buttons.
+| Role | Prefer | Use for |
+| --- | --- | --- |
+| Dense control | `r:xs`, `r:sm`, `r:md` | Inputs, buttons, table cells, menus |
+| Standard surface | `r:lg`, `r:xl`, `r:2xl` | Cards, modals, popovers, image frames |
+| Expressive surface | `r:3xl`, `r:4xl` | Hero panels, illustrations, large media |
+| Pill shape | `rounded` | Tags, segmented controls, pill buttons |
+| Circle shape | `round` | Avatars, icon buttons, indicators |
 
-By standardizing radius values, the system ensures visual harmony, simplifies design decisions, and promotes scalable theming across products.
+Use the same token for surfaces that should feel related. For example, a card, its image, and its nested action group can share `r:lg` or step down one level for nested elements.
 
 ---
 
 ## Namespace for corner radius
-The corner radius system is defined in the `variables.border-radius` namespace. This namespace includes a set of utility [theme tokens](/guide/theme#theme-tokens) that can be used to apply corner radius styles to elements.
+Corner radius tokens are defined with `--border-radius-*` variables. Radius utilities search this namespace, so `r:lg`, `rt:lg`, and `border-radius:lg` all resolve `--border-radius-lg` without requiring the `border-radius-` prefix in markup.
 
 The following rules share the same namespace:
 
-* `border-radius` for the default border radius
-* `border-top-left-radius` for the top left corner
-* `border-top-right-radius` for the top right corner
-* `border-bottom-left-radius` for the bottom left corner
-* `border-bottom-right-radius` for the bottom right corner
+* `border-radius` for all corners
+* `border-top-left-radius` and `border-top-right-radius`
+* `border-bottom-left-radius` and `border-bottom-right-radius`
+* axis and corner shorthands such as `rt:*`, `rb:*`, `rl:*`, and `rr:*`
 
-See the [border radius](/reference/border-radius) reference for more details on how to add custom corner radius tokens.
+```css name=index.css
+@theme {
+    --border-radius-card: 12;
+    --border-radius-control: 6;
+}
+```
+
+```html
+<!-- @MARK r:card --><!-- @MARK r:control -->
+<article class="r:card">...</article>
+<button class="r:control">Save</button>
+```
+
+See the [border radius](/reference/border-radius) reference for every radius utility and corner shorthand.
+
+---
+
+## Avoid numeric token keys
+(x) Numeric token names are hard to distinguish from raw values.
+
+```css name=index.css
+@theme {
+    --border-radius-1: 4;
+    --border-radius-2: 8;
+}
+```
+
+(o) Name tokens by scale or role.
+
+```css name=index.css
+@theme {
+    --border-radius-sm: 4;
+    --border-radius-card: 12;
+}
+```
+
+Use raw values such as `r:1` or `r:2x` only when the guide is teaching value syntax or the element has a local measured requirement.
 
 ---
 

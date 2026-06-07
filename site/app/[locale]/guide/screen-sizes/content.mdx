@@ -1,12 +1,33 @@
 ## Using screens [sr-only]
-The `screen` namespace is the single source for these sizes. In the project CSS entry, define screen tokens with declarations such as `--screen-md: 768;`. Each token creates a responsive breakpoint such as `@md`, a value token such as `screen-md`, and a container query size such as `@container(md)`.
+Screen size tokens define the responsive thresholds used by page layout, component layout, and width constraints. The `screen` namespace is the single source for these sizes: each `--screen-*` variable can be used as a viewport breakpoint, a size value, and a container query threshold.
+
 <Overview />
-Master CSS includes 11 predefined screen sizes from `4xs` to `4xl`; you can customize them with `screen` variables in [`@theme`](/guide/theme#screen-tokens).
+
+Master CSS includes 11 predefined screen sizes from `4xs` to `4xl`. Define or override them in the project CSS entry when your product has a different responsive scale.
+
+```css name=index.css
+@theme {
+    --screen-md: 1024;
+    --screen-lg: 1280;
+}
+```
+
+For example, `md` becomes the shared token for these forms:
+
+```html
+<!-- @MARK @md -->
+<div class="font:3xl@md">...</div>
+<!-- @MARK screen-md -->
+<div class="max-w:screen-md">...</div>
+<!-- @MARK @container(md) -->
+<div class="hidden@container(md)">...</div>
+```
 
 ---
 
 ## Viewport breakpoints
-Use `@<name>` to apply styles when the viewport reaches a configured screen size.
+Use `@<name>` to apply styles when the viewport reaches a configured screen size. Viewport breakpoints are best for page-level decisions such as navigation mode, shell layout, and major content columns.
+
 <ResponsiveBreakpoints />
 
 ```html
@@ -24,7 +45,8 @@ Use `@<name>` to apply styles when the viewport reaches a configured screen size
 ---
 
 ## Screen size variables
-Use `screen-<name>` anywhere a size value can reference the screen namespace.
+Use `screen-<name>` anywhere a size value can reference the screen namespace. This keeps wrappers, reading widths, and panel caps aligned with the same scale that drives breakpoints.
+
 <ScreenVariables />
 
 ```html
@@ -42,7 +64,8 @@ Use `screen-<name>` anywhere a size value can reference the screen namespace.
 ---
 
 ## Container query sizes
-Use `@container(<name>)` to apply styles when the nearest container reaches a configured screen size.
+Use `@container(<name>)` to apply styles when the nearest container reaches a configured screen size. Container query sizes are best for reusable components that may appear in a sidebar, modal, split pane, or full-width page.
+
 <ContainerQuerySizes />
 
 ```html
@@ -58,3 +81,28 @@ Use `@container(<name>)` to apply styles when the nearest container reaches a co
         {['container', 'grid-cols:1', 'grid-cols:2@container(md)']}
     </Class2CSS>
 </details>
+
+---
+
+## Choose viewport or container
+Use viewport breakpoints when the whole page changes. Use container queries when a component should adapt to the space it actually receives.
+
+| Decision | Prefer | Example |
+| --- | --- | --- |
+| Page shell changes | `@md`, `@lg` | Sidebar appears, top nav changes, page grid expands |
+| Wrapper width | `screen-md`, `screen-lg` | `max-w:screen-lg mx:auto` |
+| Reusable component layout | `@container(md)` | Card changes from stacked to horizontal inside any parent |
+
+(x) A reusable card responds to the viewport even inside a narrow parent.
+
+```html
+<article class="grid-cols:1 grid-cols:2@md gap:lg">...</article>
+```
+
+(o) The card responds to its own container.
+
+```html
+<section class="container">
+    <article class="grid-cols:1 grid-cols:2@container(md) gap:lg">...</article>
+</section>
+```

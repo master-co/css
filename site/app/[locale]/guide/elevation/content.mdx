@@ -80,7 +80,7 @@ Use the scale by surface role:
 ---
 
 ## Namespace for elevation
-Elevation tokens are defined in `variables.shadow`. The `box-shadow` rule references this namespace, so both `shadow:<token>` and `box-shadow:<token>` resolve the same values.
+Elevation tokens are defined with `--shadow-*` variables. The `box-shadow` rule references the shadow namespace, so both `shadow:<token>` and `box-shadow:<token>` resolve the same values.
 
 ```css name=index.css
 @theme {

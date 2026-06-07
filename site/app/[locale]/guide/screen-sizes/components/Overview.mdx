@@ -1,15 +1,3 @@
-```css name=index.css
-@theme {
-    --screen-md: 1024; /* [!code highlight] */
-    --screen-lg: 1280; /* [!code highlight] */
-}
-```
-For example, `md` becomes the shared token for the following forms:
-```html
-<!-- @MARK @md -->
-<div class="font:3xl@md">…</div>
-<!-- @MARK screen-md -->
-<div class="max-w:screen-md">…</div>
-<!-- @MARK @container(md) -->
-<div class="hidden@container(md)">…</div>
-```
+import ThemeNumberVariableTable from '~/site/components/ThemeNumberVariableTable'
+
+<ThemeNumberVariableTable namespace="screen" representation="screen" />

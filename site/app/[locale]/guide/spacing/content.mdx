@@ -1,19 +1,20 @@
 import XScale from '../sizing/components/XScale'
 
 ## Overview [sr-only]
-This spacing scale ranges from `4xs` to `5xl`, allowing fine-tuned control over both compact and expansive layouts.
+Spacing controls the rhythm inside components, between related elements, and across page sections. Master CSS maps the default spacing scale to `spacing` variables, so padding, margin, gap, and inset can share the same design language.
+
 <Overview />
-Spacing is a fundamental part of layout design. It ensures visual consistency, rhythm, and alignment across components and sections.
 
-- `4xs ~ 2xs` Used for micro spacing like between icons, tags, or inline controls.
-- `xs ~ sm` Suitable for spacing between form fields, list items, or small content blocks.
-- `md` The default spacing for most UI components.
-- `lg ~ xl` For separating grouped content or larger components.
-- `2xl ~ 5xl` Ideal for layout gutters, section spacing, or hero areas.
+Use the scale by relationship:
 
-For example, use `gap:md` for a grid layout:
+* `4xs` to `2xs` for micro spacing between icons, tags, compact controls, and inline text.
+* `xs` to `sm` for form fields, list rows, toolbar controls, and tight component groups.
+* `md` as the default component rhythm.
+* `lg` to `xl` for card padding, grouped content, and larger component separation.
+* `2xl` to `5xl` for layout gutters, section spacing, and large editorial rhythm.
+
 <Demo>
-    <div className="grid-cols:5 gap:md bg:pink/.1 r:md">
+    <div className="grid-cols:2 grid-cols:5@sm gap:md bg:pink/.1 r:md p:md w:full">
         <div className='app-box'>1</div>
         <div className='app-box'>2</div>
         <div className='app-box'>3</div>
@@ -26,41 +27,59 @@ For example, use `gap:md` for a grid layout:
         <div className='app-box'>10</div>
     </div>
 </Demo>
+
 ```html
-<!-- @MARK gap:md -->
-<div class="grid-cols:4 gap:md">
+<!-- @MARK gap:md --><!-- @MARK p:md -->
+<div class="grid-cols:4 gap:md p:md">
     <div>1</div>
     <div>2</div>
     ...
 </div>
 ```
 
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['grid-cols:4', 'gap:md', 'p:md']}
+    </Class2CSS>
+</details>
+
 ---
 
 ## Namespace for spacing
-The `spacing` variable namespace is shared across related rules:
+The `spacing` variable namespace is shared across padding, margin, gap, inset, scroll spacing, and similar layout rules.
+
 <SpacingHeirs />
-It allows you to declare spacing without `spacing-` prefix, making it easier to write with spacing-related rules.
+
+This lets spacing-related utilities use `md`, `lg`, or project token names without the `spacing-` prefix.
 
 ```css name=index.css
 @theme {
-    --spacing-sm: 12; /* [!code highlight] */
-    --spacing-md: 16; /* [!code highlight] */
-    --spacing-lg: 24; /* [!code highlight] */
+    --spacing-sm: 12;
+    --spacing-md: 16;
+    --spacing-lg: 24;
+    --spacing-section: 96;
 }
 ```
+
 Apply the custom spacing tokens in your markup:
+
 ```html
-<!-- @MARK mt:md --><!-- @MARK p:sm --><!-- @MARK gap:lg -->
-<div class="mt:md p:sm gap:lg">…</div>
+<!-- @MARK mt:md --><!-- @MARK p:sm --><!-- @MARK gap:lg --><!-- @MARK py:section -->
+<section class="py:section">
+    <div class="mt:md p:sm gap:lg">...</div>
+</section>
 ```
 
 ---
 
 ## Using spacing multiplier
-The spacing system is grounded on a consistent and scalable design token foundation. It uses a [base unit](/guide/theme#project-settings) of **4 pixels**, which acts as the smallest scalable measurement across your interface.
+The `x` suffix multiplies the configured [base unit](/guide/theme#project-settings), which defaults to **4 pixels**. Use it for measured geometry that should stay aligned with the spacing grid but does not need a named token.
+
 <XScale />
+
 Use the `x` suffix to indicate a multiplier of the base unit.
+
 ```html
 <!-- @MARK 1x -->
 <div class="m:1x"></div>       <!--  4px, margin: 0.25rem -->
@@ -71,13 +90,13 @@ Use the `x` suffix to indicate a multiplier of the base unit.
 <!-- @MARK 3x -->
 <div class="gap:3x"></div>     <!-- 12px, gap: 0.75rem -->
 ```
-The `x` suffix helps differentiate these scale-based tokens from unitless raw values, improving clarity and avoiding conflicts with system-generated class names.
+
+For product surfaces, prefer named spacing tokens such as `sm`, `md`, and `lg`. Use `x` values for measured local geometry, such as icon size, avatar size, skeleton blocks, or a component-specific fixed width.
 
 ---
 
 ## Unitless values
-
-In some cases, pixel-accurate control is necessary. Master CSS allows raw unitless values such as `0`, `1`, `2`, ..., for low-level precision. These bypass the base unit system:
+Raw unitless values such as `0`, `1`, and `2` are low-level pixel values. They bypass the base unit system and are useful for resets, hairline adjustments, and exact pixel alignment.
 
 ```html
 <!-- @MARK m:0 -->
@@ -88,13 +107,14 @@ In some cases, pixel-accurate control is necessary. Master CSS allows raw unitle
 <div class="w:2">2px, width: 0.125rem</div>
 ```
 
-(!) Avoid mixing `x`-based tokens and unitless values arbitrarily in design systems. Prefer `sm` `x` tokens for layout spacing, and unitless values only for micro-adjustments or pixel-grid alignment.
+(!) Avoid mixing named spacing tokens, `x` multipliers, and unitless values arbitrarily. Prefer named tokens for layout rhythm, `x` values for measured local geometry, and unitless values only for resets or pixel-grid adjustments.
 
 ---
 
 ## Common mistakes
 ### Do not use numeric keys as tokens
 (x) Avoid defining spacing tokens with numeric keys.
+
 ```css name=index.css
 @theme {
     --spacing-1: 4; /* [!code --] */
@@ -102,9 +122,17 @@ In some cases, pixel-accurate control is necessary. Master CSS allows raw unitle
 }
 ```
 
-This approach creates ambiguity. These values can be misinterpreted as unitless pixel values, conflicting with the [unit-sensing system](/guide/style-declarations#unit-sensing), which intelligently detects whether a value should be interpreted as pixels, rems, or a variable reference.
+Numeric keys create ambiguity with [unit sensing](/guide/style-declarations#unit-sensing), because `p:1` reads as a low-level value while `p:sm` reads as a spacing token.
 
-(i) Always use **descriptive keys** for clarity and scalability, such as `sm`, `md`, `lg`, etc.
+(o) Use descriptive scale or role keys.
+
+```css name=index.css
+@theme {
+    --spacing-sm: 12;
+    --spacing-card: 20;
+    --spacing-section: 96;
+}
+```
 
 ---
 
@@ -112,9 +140,7 @@ This approach creates ambiguity. These values can be misinterpreted as unitless 
 
 Master CSS provides a unified system for defining spacing:
 
-* Use the `x` multiplier to scale from the base unit.
-* Define semantic variables like `md` for shared meanings across teams.
-* Use raw unitless values sparingly and only when precision is necessary.
-* Avoid numerical keys to prevent conflicts with the system’s value resolution logic.
-
-By adopting this structured spacing approach, your design will be more **consistent**, **maintainable**, and **collaborative**.
+* Use named spacing tokens for shared rhythm.
+* Use `x` multipliers for measured local geometry.
+* Use raw unitless values sparingly for resets and exact pixel adjustments.
+* Avoid numeric token keys so markup stays clear.

@@ -63,7 +63,7 @@ Guides should teach in this order:
 
 Keep reduced-motion handling and other progressive hardening after the primary example unless the guide is specifically about accessibility.
 
-For guide layout, visual design, responsive behavior, and token choices, use the existing `Foundations` category under `site/app/[locale]/guide` as the source of truth. Do not duplicate or enumerate those guide pages here; discover the relevant current pages from metadata or generated category data when needed.
+For guide layout, visual design, responsive behavior, and token choices, use the existing `Design Foundations` category under `site/app/[locale]/guide` as the source of truth. Do not duplicate or enumerate those guide pages here; discover the relevant current pages from metadata or generated category data when needed.
 
 ## Example Code
 
@@ -119,9 +119,18 @@ For Layout System and similar foundation layout demos:
 - Use abstract boxes only for low-level anatomy such as explaining columns, gutters, line placement, or track sizing where real UI would obscure the concept.
 - Keep layout examples token-aligned: `screen-*` for wrappers, spacing tokens for gutters and margins, Grid for page regions, Flexbox for one-axis component layout, and `min-w:0` where flexible content can overflow.
 
+For Design Foundations token overview tables:
+
+- When a foundation guide introduces a numeric theme variable scale, include a theme variable overview near the top before usage sections.
+- Follow the spacing guide pattern: read values from `site/utils/theme-variables` or a narrow derived helper, then render `Variable`, `Value`, `(REM)`, and `Representation` columns.
+- Show the full CSS custom property name, such as `--spacing-md`, `--border-radius-lg`, or `--screen-md`; show the raw configured number in `Value`; show the rem conversion using the site root size; and use a compact visual representation of the measured value.
+- Use `ThemeNumberVariableTable` from `site/components` for numeric spacing, radius, and screen scales unless a guide needs a more specialized table.
+- Keep these tables data-driven. Do not hard-code preset token rows in guide copy when they can be read from the theme config.
+- Use generated CSS examples separately from the theme variable overview. The overview teaches configured tokens; `<Class2CSS>` teaches emitted utility CSS.
+
 ## Design References
 
-Before changing guide demo layout, spacing, sizing, color, radius, typography, or responsive behavior, inspect the relevant `Foundations` guide pages and follow their current patterns.
+Before changing guide demo layout, spacing, sizing, color, radius, typography, or responsive behavior, inspect the relevant `Design Foundations` guide pages and follow their current patterns.
 
 Follow the public [Design Tokens](/guide/design-tokens) policy when writing site code, demos, and examples:
 

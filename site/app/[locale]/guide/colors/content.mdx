@@ -1,9 +1,10 @@
 ## Using colors [sr-only]
-Master CSS provides a vibrant and precisely designed P3-compatible color palette that works seamlessly across brands or can be tailored to your unique identity.
+Master CSS provides a P3-compatible color palette, semantic color roles, and mode-aware variables. Use role tokens such as `bg:base`, `bg:surface`, `fg:strong`, and `fg:neutral` for product surfaces; use palette tokens when the design intentionally needs a brand, status, or swatch color.
 
 ### Default color palette [sr-only]
 <ColorPalette />
-The hues of each color in the preset palette range from 0, 5, ..., to 100, and you can choose a color as the main color of your brand or use them directly in the template.
+Each preset color family ranges from `0`, `5`, `10`, and then by tens through `100`. Choose a palette step directly for swatches, illustrations, and intentional brand or status accents.
+
 ```html
 <!-- @MARK bg:blue-5 --><!-- @MARK fg:blue-60 -->
 <div class="bg:blue-5 fg:blue-60">…</div>
@@ -14,24 +15,33 @@ You can adapt the default color palette to your brand's primary color by definin
 ```css name=index.css
 @theme {
     --color-primary: #4f46e5; /* [!code highlight] */
-    --color-primary-5: #eef2ff; /* [!code highlight] */
+    --color-primary-10: #eef2ff; /* [!code highlight] */
     --color-primary-60: #4f46e5; /* [!code highlight] */
 }
 ```
 Apply them using the color-related syntax:
 ```html
-<!-- @MARK bg:primary-5 --><!-- @MARK fg:primary-60 -->
-<div class="bg:primary-5 fg:primary-60">…</div>
+<!-- @MARK bg:primary-10 --><!-- @MARK fg:primary-60 -->
+<div class="bg:primary-10 fg:primary-60">…</div>
 ```
 See [theme color tokens](/guide/theme#theme-tokens) for more details on how to add custom colors.
 
 ### With variable modes
-You can also use [variable modes to define colors](#add-colors-based-on-modes) for different themes, such as light and dark modes.
+Use [variable modes](/guide/theme#modes) to define color roles for light and dark modes. Keep mode-specific color decisions in theme variables when the same role repeats across the product.
+
+(x) Markup owns the light and dark color choice.
+
 ```html
-<div class="fg:white@dark fg:black@light"><!-- [!code --] -->
-<div class="fg:neutral">
+<div class="fg:white@dark fg:black@light">...</div>
 ```
-As your styles grow, arbitrarily applying `@dark` or `@light` in template markup can make it difficult to maintain consistency in your design system's color tokens.
+
+(o) The theme owns the mode-specific role.
+
+```html
+<div class="fg:neutral">...</div>
+```
+
+Use conditional color classes when a one-off interaction genuinely differs by mode. For shared text, surface, line, brand, and status color, prefer a named token that can resolve differently per mode.
 
 ---
 
@@ -70,7 +80,7 @@ As your styles grow, arbitrarily applying `@dark` or `@light` in template markup
 | <Bg className="bg:base" />`base`                  | background for page, modal                                                |
 | <Bg className="bg:invert" />`invert`              | inverted color of the background                                          |
 
-By default, theme modes [drive](/guide/theme#modes) base color variables meticulously adjusted in light and dark modes.
+By default, theme modes [drive](/guide/theme#modes) base color variables for light and dark surfaces.
 <Demo $py={0} $px={0}>
     <DemoLight>
         <div className="bg:yellow aspect:2/1 size:full|12x r:sm"></div>
@@ -137,7 +147,7 @@ Apply the custom color:
 | <Aa className="fg:red" />`text-red`               | bold, energetic, attention-grabbing                                       |
 </ExpandContent>
 
-By default, theme modes [drive](/guide/theme#modes) text variables are meticulously adjusted in light and dark modes.
+By default, theme modes [drive](/guide/theme#modes) text variables for light and dark foreground contrast.
 <Demo $py={0} $px={0}>
     <DemoLight>
         <div className="fg:yellow font:heavy font:9xl">M</div>
@@ -168,7 +178,7 @@ See the [color](/reference/color#use-custom-text-colors) reference for more deta
 | <Bg className="outline:lighter" />`line-lighter`       | alpha, dotted, td                                                                |
 | <Bg className="outline:lightest" />`line-lightest`     | alpha, layout, navbar, sidebar                                                   |
 
-By default, theme modes [drive](/guide/theme#modes) line variables are meticulously adjusted in light and dark modes.
+By default, theme modes [drive](/guide/theme#modes) line variables for light and dark separators.
 
 <Demo $py={0} $px={0}>
     <DemoLight>
