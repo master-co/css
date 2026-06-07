@@ -4,7 +4,6 @@ export default () => {
     return (
         <ThemeNumberVariableTable
             namespace="border-radius"
-            representation="radius"
         />
     )
 }

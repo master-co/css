@@ -6,7 +6,7 @@ type Representation = 'spacing' | 'radius' | 'screen'
 
 interface ThemeNumberVariableTableProps {
     namespace: string
-    representation: Representation
+    representation?: Representation
     variablePrefix?: string
 }
 
@@ -26,7 +26,7 @@ export default function ThemeNumberVariableTable(props: ThemeNumberVariableTable
                             <th>Variable</th>
                             <th>Value</th>
                             <th>(REM)</th>
-                            <th>Representation</th>
+                            {representation && <th>Representation</th>}
                         </tr>
                     </thead>
                     <tbody>
@@ -36,7 +36,7 @@ export default function ThemeNumberVariableTable(props: ThemeNumberVariableTable
                                     <th><InlineCode>{`--${variablePrefix}-${key}`}</InlineCode></th>
                                     <td><InlineCode>{`${value}`}</InlineCode></td>
                                     <td>{formatRem(value)}</td>
-                                    <td>{renderRepresentation(representation, value, index, entries.length, largestValue)}</td>
+                                    {representation && <td>{renderRepresentation(representation, value, index, entries.length, largestValue)}</td>}
                                 </tr>
                             ))
                         }
