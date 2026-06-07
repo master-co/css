@@ -2,7 +2,7 @@ import type CSSLanguageService from '../core'
 import type { TextDocument } from 'vscode-languageserver-textdocument'
 import type { SemanticTokens } from 'vscode-languageserver-protocol'
 import { SEMANTIC_TOKEN_MODIFIERS, SEMANTIC_TOKEN_TYPES } from '../common'
-import { UtilityType, type ValueComponent } from '@master/css'
+import { UtilityType, VALUE_UNITS, type ValueComponent } from '@master/css'
 
 type SemanticTokenType = typeof SEMANTIC_TOKEN_TYPES[number]
 type SemanticTokenModifier = typeof SEMANTIC_TOKEN_MODIFIERS[number]
@@ -68,7 +68,22 @@ function pushKey(tokens: SemanticTokenItem[], start: number, keyToken?: string) 
     }
 }
 
-function pushValueComponent(tokens: SemanticTokenItem[], classStart: number, valueStart: number, valueText: string, component: ValueComponent) {
+function pushStringValue(tokens: SemanticTokenItem[], valueStart: number, valueText: string, splitSeparators = true) {
+    if (!splitSeparators || !valueText.includes('/')) {
+        pushToken(tokens, valueStart, valueText.length, 'string')
+        return
+    }
+    let segmentStart = 0
+    for (let i = 0; i < valueText.length; i++) {
+        if (valueText[i] !== '/') continue
+        pushToken(tokens, valueStart + segmentStart, i - segmentStart, 'string')
+        pushToken(tokens, valueStart + i, 1, 'operator')
+        segmentStart = i + 1
+    }
+    pushToken(tokens, valueStart + segmentStart, valueText.length - segmentStart, 'string')
+}
+
+function pushValueComponent(tokens: SemanticTokenItem[], classStart: number, valueStart: number, valueText: string, component: ValueComponent, splitStringSeparators = true) {
     switch (component.type) {
         case 'variable': {
             const alphaStart = valueText.lastIndexOf('/')
@@ -103,7 +118,7 @@ function pushValueComponent(tokens: SemanticTokenItem[], classStart: number, val
                     if (!childToken) continue
                     const childIndex = valueText.indexOf(childToken, childSearchStart)
                     if (childIndex < 0) continue
-                    pushValueComponent(tokens, classStart, valueStart + childIndex, childToken, child)
+                    pushValueComponent(tokens, classStart, valueStart + childIndex, childToken, child, false)
                     childSearchStart = childIndex + childToken.length
                 }
             }
@@ -113,7 +128,7 @@ function pushValueComponent(tokens: SemanticTokenItem[], classStart: number, val
             pushToken(tokens, valueStart, valueText.length, 'operator')
             break
         default:
-            pushToken(tokens, valueStart, valueText.length, 'string')
+            pushStringValue(tokens, valueStart, valueText, splitStringSeparators)
     }
 }
 
@@ -136,6 +151,78 @@ function pushValue(tokens: SemanticTokenItem[], classStart: number, token: strin
     }
     if (!valueComponents?.length) {
         pushToken(tokens, classStart + valueStart, valueText.length, 'string')
+    }
+}
+
+function isNumericAtValue(value: string) {
+    const match = /^([+-]?(?:\d+\.\d+|\.\d+|\d+))([A-Za-z%]+)?$/.exec(value)
+    if (!match) return false
+    return !match[2] || VALUE_UNITS.includes(match[2])
+}
+
+function startsAtFeatureOperator(value: string) {
+    return value[0] === ':'
+        || value.startsWith('>=')
+        || value.startsWith('<=')
+        || value[0] === '>'
+        || value[0] === '<'
+        || value[0] === '='
+}
+
+function pushAtWord(tokens: SemanticTokenItem[], start: number, value: string, next: string) {
+    const type = startsAtFeatureOperator(next)
+        ? 'property'
+        : isNumericAtValue(value)
+            ? 'number'
+            : 'string'
+    pushToken(tokens, start, value.length, type)
+}
+
+function pushAtState(tokens: SemanticTokenItem[], classStart: number, token: string, atStart: number, atEnd: number) {
+    const atText = token.slice(atStart, atEnd)
+    if (!/[()&<>=!,]/.test(atText)) {
+        pushToken(tokens, classStart + atStart, atEnd - atStart, 'keyword')
+        return
+    }
+
+    let i = atStart
+    const keyword = token.slice(i, atEnd).match(/^@[A-Za-z0-9-]+/)
+    if (keyword) {
+        pushToken(tokens, classStart + i, keyword[0].length, 'keyword')
+        i += keyword[0].length
+    } else if (token[i] === '@') {
+        pushToken(tokens, classStart + i, 1, 'keyword')
+        i++
+    }
+
+    while (i < atEnd) {
+        const twoChars = token.slice(i, i + 2)
+        if (twoChars === '>=' || twoChars === '<=') {
+            pushToken(tokens, classStart + i, 2, 'operator')
+            i += 2
+            continue
+        }
+
+        const char = token[i]
+        if (char === '(' || char === ')' || char === '&' || char === ',' || char === '!' || char === '>' || char === '<' || char === '=' || char === ':') {
+            pushToken(tokens, classStart + i, 1, 'operator')
+            i++
+            continue
+        }
+
+        if (/\s/.test(char)) {
+            i++
+            continue
+        }
+
+        const word = token.slice(i, atEnd).match(/^[#A-Za-z0-9_.%-]+/)
+        if (word) {
+            const next = token.slice(i + word[0].length, i + word[0].length + 2)
+            pushAtWord(tokens, classStart + i, word[0], next)
+            i += word[0].length
+        } else {
+            i++
+        }
     }
 }
 
@@ -177,7 +264,7 @@ function pushState(tokens: SemanticTokenItem[], classStart: number, token: strin
         } else if (char === '@') {
             const nextAt = token.indexOf('@', i + 1)
             const end = nextAt >= 0 ? nextAt : token.length
-            pushToken(tokens, classStart + i, end - i, 'keyword')
+            pushAtState(tokens, classStart, token, i, end)
             i = end
         } else if (char === ':') {
             const colonLength = token[i + 1] === ':' ? 2 : 1

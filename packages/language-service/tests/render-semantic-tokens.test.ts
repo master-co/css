@@ -144,6 +144,46 @@ test.concurrent('renders semantic tokens for CSS-like values', () => {
     ]))
 })
 
+test.concurrent('renders semantic tokens for container queries and slash-separated string values', () => {
+    const { tokens } = renderTokens(
+        '<div className="hidden@container(sm&<=md) container:card/inline-size grid-cols:2@card(3xs) bg:center/cover bg:url(/hero.jpg) hidden@media(pointer:coarse) hidden@h>=sm&h<lg"></div>',
+        'html'
+    )
+
+    expect(tokens).toEqual(expect.arrayContaining([
+        { text: 'hidden', type: 'class', modifiers: [] },
+        { text: '@container', type: 'keyword', modifiers: [] },
+        { text: '(', type: 'operator', modifiers: [] },
+        { text: 'sm', type: 'string', modifiers: [] },
+        { text: '&', type: 'operator', modifiers: [] },
+        { text: '<=', type: 'operator', modifiers: [] },
+        { text: 'md', type: 'string', modifiers: [] },
+        { text: ')', type: 'operator', modifiers: [] },
+        { text: 'container', type: 'property', modifiers: [] },
+        { text: 'card', type: 'string', modifiers: [] },
+        { text: '/', type: 'operator', modifiers: [] },
+        { text: 'inline-size', type: 'string', modifiers: [] },
+        { text: 'grid-cols', type: 'property', modifiers: [] },
+        { text: '2', type: 'number', modifiers: [] },
+        { text: '@card', type: 'keyword', modifiers: [] },
+        { text: '3xs', type: 'string', modifiers: [] },
+        { text: 'bg', type: 'property', modifiers: [] },
+        { text: 'center', type: 'string', modifiers: [] },
+        { text: 'cover', type: 'string', modifiers: [] },
+        { text: 'url', type: 'function', modifiers: [] },
+        { text: '/hero.jpg', type: 'string', modifiers: [] },
+        { text: '@media', type: 'keyword', modifiers: [] },
+        { text: 'pointer', type: 'property', modifiers: [] },
+        { text: 'coarse', type: 'string', modifiers: [] },
+        { text: '@h', type: 'keyword', modifiers: [] },
+        { text: '>=', type: 'operator', modifiers: [] },
+        { text: 'h', type: 'property', modifiers: [] },
+        { text: '<', type: 'operator', modifiers: [] },
+        { text: 'lg', type: 'string', modifiers: [] }
+    ]))
+    expect(tokens.filter(({ text, type }) => text === '/' && type === 'operator')).toHaveLength(2)
+})
+
 test.concurrent('returns no semantic tokens when disabled', () => {
     const doc = createDoc('tsx', '<div className="fg:red"></div>')
     const languageService = new CSSLanguageService({

@@ -50,6 +50,14 @@ function assertNoTokenScope(tokens, content, scope) {
     )
 }
 
+function assertTokenContainingScope(tokens, content, scope) {
+    assert.ok(
+        tokens.some((token) => token.content.includes(content) && scopesOf(token).includes(scope)),
+        `Expected a token containing ${JSON.stringify(content)} to include ${scope}. Actual tokens:\n` +
+        tokens.map((token) => `${JSON.stringify(token.content)} ${scopesOf(token).join(' ')}`).join('\n')
+    )
+}
+
 function assertTrimmedTokenScope(tokens, content, scope) {
     assert.ok(
         tokens.some((token) => token.content.trim() === content && scopesOf(token).includes(scope)),
@@ -212,6 +220,49 @@ test('core grammar highlights plain variable references as value tokens', () => 
     assertTokenScope(tokens, '/', 'keyword.operator.css')
     assertTokenScope(tokens, '.5', 'constant.numeric.css')
     assertNoTokenScope(tokens, '50', 'constant.numeric.css')
+})
+
+test('core grammar highlights query operators and slash-separated string values', () => {
+    const containerRange = tokensFor(coreHighlighter, 'hidden@container(sm&<=md)', 'master-css')
+    assertTokenScope(containerRange, '@container', 'keyword.control.at-rule')
+    assertTokenScope(containerRange, '(', 'punctuation.definition.parameters.begin.bracket.round.css')
+    assertTokenScope(containerRange, 'sm', 'support.constant.property-value.css')
+    assertTokenContainingScope(containerRange, '&', 'keyword.operator.css')
+    assertTokenContainingScope(containerRange, '<=', 'keyword.operator.css')
+    assertTokenScope(containerRange, 'md', 'support.constant.property-value.css')
+    assertTokenScope(containerRange, ')', 'punctuation.definition.parameters.end.bracket.round.css')
+
+    const namedContainer = tokensFor(coreHighlighter, 'grid-cols:2@card(3xs)', 'master-css')
+    assertTokenScope(namedContainer, 'grid-cols', 'support.type.property-name.css')
+    assertTokenScope(namedContainer, '2', 'constant.numeric.css')
+    assertTokenScope(namedContainer, '@card', 'keyword.control.at-rule')
+    assertTokenScope(namedContainer, '3xs', 'support.constant.property-value.css')
+
+    const containerShorthand = tokensFor(coreHighlighter, 'container:card/inline-size', 'master-css')
+    assertTokenScope(containerShorthand, 'container', 'support.type.property-name.css')
+    assertTokenScope(containerShorthand, 'card', 'support.constant.property-value.css')
+    assertTokenScope(containerShorthand, '/', 'keyword.operator.css')
+    assertTokenScope(containerShorthand, 'inline-size', 'support.constant.property-value.css')
+
+    const stringSlash = tokensFor(coreHighlighter, 'bg:center/cover', 'master-css')
+    assertTokenScope(stringSlash, 'center', 'support.constant.property-value.css')
+    assertTokenScope(stringSlash, '/', 'keyword.operator.css')
+    assertTokenScope(stringSlash, 'cover', 'support.constant.property-value.css')
+})
+
+test('core grammar keeps value separators after functions without splitting strings', () => {
+    const background = tokensFor(coreHighlighter, 'bg:black|url(\'/images/wallpaper.jpg\')|no-repeat|top|left/cover', 'master-css')
+    assert.equal(
+        background.filter((token) => token.content === '|' && scopesOf(token).includes('keyword.operator.css')).length,
+        4
+    )
+    assertTokenScope(background, '/', 'keyword.operator.css')
+    assertTokenScope(background, 'cover', 'support.constant.property-value.css')
+    assertTokenScope(background, '\'/images/wallpaper.jpg\'', 'string.quoted.single.html')
+
+    const content = tokensFor(coreHighlighter, 'content:\'a|b\'', 'master-css')
+    assertTokenScope(content, '\'a|b\'', 'string.quoted.single.html')
+    assertNoTokenScope(content, '|', 'keyword.operator.css')
 })
 
 test('core grammar separates x units from scale value tokens', () => {
