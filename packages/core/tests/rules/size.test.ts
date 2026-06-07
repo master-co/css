@@ -4,7 +4,7 @@ test.concurrent('size', () => {
     expect(createCSSWithTheme().create('size:4x')?.declarations).toStrictEqual({ width: '1rem', height: '1rem' })
     expect(createCSSWithTheme().create('size:16|32')?.declarations).toStrictEqual({ width: '1rem', height: '2rem' })
     expect(createCSSWithTheme().create('size:$(w)|$(h)')?.declarations).toStrictEqual({ width: 'var(--w)', height: 'var(--h)' })
-    expect(createCSSWithTheme().create('size:container-md')?.declarations).toStrictEqual({ width: 'calc(var(--container-md) / 16 * 1rem)', height: 'calc(var(--container-md) / 16 * 1rem)' })
+    expect(createCSSWithTheme().create('size:md')?.declarations).toStrictEqual({ width: 'calc(var(--container-md) / 16 * 1rem)', height: 'calc(var(--container-md) / 16 * 1rem)' })
     expect(createCSSWithTheme({ variables: [{ key: 'w', value: 16 }, { key: 'h', value: 16 }] }).create('size:$(w)|$(h)')?.declarations).toStrictEqual({ width: 'calc(var(--w) / 16 * 1rem)', height: 'calc(var(--h) / 16 * 1rem)' })
 
     expect(createCSSWithTheme().create('size:16|calc(min(30,50)-25)')?.declarations).toStrictEqual({ width: '1rem', height: 'calc(min(30, 50) / 16 * 1rem - 1.5625rem)' })

@@ -53,14 +53,14 @@ Use one-axis rules when width and height are independent. Use pair rules when an
 | Set both maximum axes | `max:<size>` | `max-width`, `max-height` |
 
 ```html
-<!-- @MARK w:80x --><!-- @MARK h:48x --><!-- @MARK min:10x --><!-- @MARK max-w:container-md -->
-<aside class="w:80x h:48x min:10x max-w:container-md">...</aside>
+<!-- @MARK w:80x --><!-- @MARK h:48x --><!-- @MARK min:10x --><!-- @MARK max-w:md -->
+<aside class="w:80x h:48x min:10x max-w:md">...</aside>
 ```
 
 <details>
     <summary>Generated CSS</summary>
     <Class2CSS>
-        {['w:80x', 'h:48x', 'min:10x', 'max-w:container-md']}
+        {['w:80x', 'h:48x', 'min:10x', 'max-w:md']}
     </Class2CSS>
 </details>
 
@@ -127,14 +127,14 @@ Sizing values can use shared keywords, configured container variables, fractions
 | Value form | Example | Use for |
 | --- | --- | --- |
 | Keyword | `w:full`, `w:fit`, `w:min`, `w:max` | Content-sized or parent-sized elements |
-| Container variable | `max-w:container-5xl` | Page wrappers and responsive reading widths |
+| Container variable | `max-w:5xl` | Page wrappers and responsive reading widths |
 | Fraction | `w:1/2`, `h:3/4` | Percent-based columns or proportional children |
 | Native unit | `h:100dvh`, `w:72ch` | Viewport- or text-relative sizing |
 | Function | `w:clamp(16rem,50vw,40rem)` | Fluid bounds without custom CSS |
 
 ```html
-<!-- @MARK w:full --><!-- @MARK max-w:container-5xl -->
-<main class="w:full max-w:container-5xl">...</main>
+<!-- @MARK w:full --><!-- @MARK max-w:5xl -->
+<main class="w:full max-w:5xl">...</main>
 
 <!-- @MARK w:1/2 --><!-- @MARK h:100dvh -->
 <aside class="w:1/2 h:100dvh">...</aside>
@@ -146,7 +146,7 @@ Sizing values can use shared keywords, configured container variables, fractions
 <details>
     <summary>Generated CSS</summary>
     <Class2CSS>
-        {['w:full', 'max-w:container-5xl', 'w:1/2', 'h:100dvh', 'w:clamp(16rem,50vw,40rem)']}
+        {['w:full', 'max-w:5xl', 'w:1/2', 'h:100dvh', 'w:clamp(16rem,50vw,40rem)']}
     </Class2CSS>
 </details>
 
@@ -184,7 +184,7 @@ Most page and component layouts should be flexible first, then constrained. A co
     </Class2CSS>
 </details>
 
-Use `max-w:container-*` for wrappers that should align with your [container size scale](/guide/breakpoints-and-containers), and use local `x` values when a component has its own measured maximum.
+Use `max-w:*` for wrappers that should align with your [container size scale](/guide/breakpoints-and-containers), and use local `x` values when a component has its own measured maximum.
 
 ---
 
@@ -192,8 +192,8 @@ Use `max-w:container-*` for wrappers that should align with your [container size
 Sizing rules can use the same [selectors](/guide/state-selectors), [viewport breakpoints](/guide/responsive-design#based-on-viewport-breakpoints), and [container queries](/guide/responsive-design#based-on-container-sizes) as other Master CSS rules.
 
 ```html
-<!-- @MARK w:full --><!-- @MARK w:1/2@sm --><!-- @MARK max-w:container-7xl@lg -->
-<div class="w:full w:1/2@sm max-w:container-7xl@lg">...</div>
+<!-- @MARK w:full --><!-- @MARK w:1/2@sm --><!-- @MARK max-w:7xl@lg -->
+<div class="w:full w:1/2@sm max-w:7xl@lg">...</div>
 
 <div class="container">
     <!-- @MARK size:10x@container(md) -->
@@ -204,7 +204,7 @@ Sizing rules can use the same [selectors](/guide/state-selectors), [viewport bre
 <details>
     <summary>Generated CSS</summary>
     <Class2CSS>
-        {['w:full', 'w:1/2@sm', 'max-w:container-7xl@lg', 'container', 'size:8x', 'size:10x@container(md)']}
+        {['w:full', 'w:1/2@sm', 'max-w:7xl@lg', 'container', 'size:8x', 'size:10x@container(md)']}
     </Class2CSS>
 </details>
 
@@ -235,7 +235,7 @@ For repeated product dimensions, add named variables in the project CSS entry an
 ---
 
 ## Common patterns
-* Page wrapper: `w:full max-w:container-7xl`
+* Page wrapper: `w:full max-w:7xl`
 * Reading measure: `w:full max-w:72ch`
 * Square avatar: `size:10x round`
 * Icon button: `size:9x grid place-content:center`

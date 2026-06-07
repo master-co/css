@@ -117,7 +117,7 @@ For Layout System and similar foundation layout demos:
 - Use `<ResizeZone>` with `<IFrame>` for the primary responsive demo when the lesson depends on viewport width, matching the responsive-design guide pattern. Keep the iframe page under `site/app/[locale]/examples/<slug>/`.
 - Pair each practical demo with a reduced code sample that exposes the layout strategy, not every decorative class. Highlight containers, column counts, spans, gutters, breakpoint variants, and container-query variants.
 - Use abstract boxes only for low-level anatomy such as explaining columns, gutters, line placement, or track sizing where real UI would obscure the concept.
-- Keep layout examples token-aligned: `container-*` for wrappers, spacing tokens for gutters and margins, Grid for page regions, Flexbox for one-axis component layout, and `min-w:0` where flexible content can overflow.
+- Keep layout examples token-aligned: container-scale shorthand such as `max-w:7xl` for wrappers, spacing tokens for gutters and margins, Grid for page regions, Flexbox for one-axis component layout, and `min-w:0` where flexible content can overflow.
 
 For Design Foundations token overview tables:
 

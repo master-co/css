@@ -84,7 +84,7 @@ export default function getValueCompletionItems(css: MasterCSS = createCSS(), ru
                 const completionItem = generateVariableCompletionItem(variable, { scoped: true })
                 if (completionItem) {
                     completionItem.label = variableName
-                    completionItem.sortText = SCOPED_VARIABLE_PRIORITY + variableName
+                    completionItem.sortText = SCOPED_VARIABLE_PRIORITY + (completionItem.sortText || variableName)
                     completionItem.detail = '(scope) ' + completionItem.detail
                     completionItems.push(completionItem)
                 }

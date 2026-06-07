@@ -83,8 +83,8 @@ test.concurrent('negative variables', () => {
 test.concurrent('negative container variables', () => {
     expectLayers(
         {
-            utilities: '.w\\:-container-md{width:calc(var(---container-md) / 16 * 1rem)}'
+            utilities: '.w\\:-md{width:calc(var(---container-md) / 16 * 1rem)}'
         },
-        'w:-container-md'
+        'w:-md'
     )
 })

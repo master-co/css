@@ -5,8 +5,8 @@
 ### Cap a fluid element
 Use `max-w:*` to let an element shrink with its container while preventing it from growing too wide.
 ```html
-<!-- @MARK w:full --><!-- @MARK max-w:container-5xl --><!-- @MARK mx:auto -->
-<main class="w:full max-w:container-5xl mx:auto">
+<!-- @MARK w:full --><!-- @MARK max-w:5xl --><!-- @MARK mx:auto -->
+<main class="w:full max-w:5xl mx:auto">
     ...
 </main>
 ```
@@ -14,7 +14,7 @@ Use `max-w:*` to let an element shrink with its container while preventing it fr
 <details>
     <summary>Generated CSS</summary>
     <Class2CSS>
-        {['w:full', 'max-w:container-5xl', 'mx:auto']}
+        {['w:full', 'max-w:5xl', 'mx:auto']}
     </Class2CSS>
 </details>
 
@@ -35,10 +35,10 @@ Use `max-w:full` to prevent replaced elements such as images or videos from over
 ```
 
 ### Use viewport and container caps
-Use `max-vw` when an element should never exceed the viewport width. Use `max-w:container-*` when the cap should follow the configured container scale.
+Use `max-vw` when an element should never exceed the viewport width. Use `max-w:*` when the cap should follow the configured container scale.
 ```html
-<!-- @MARK max-vw --><!-- @MARK max-w:container-7xl@lg -->
-<section class="max-vw max-w:container-7xl@lg">
+<!-- @MARK max-vw --><!-- @MARK max-w:7xl@lg -->
+<section class="max-vw max-w:7xl@lg">
     ...
 </section>
 ```
@@ -46,7 +46,7 @@ Use `max-vw` when an element should never exceed the viewport width. Use `max-w:
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="max-w:full max-w:container-4xl@sm max-w:72ch@print">...</div>
+<div class="max-w:full max-w:4xl@sm max-w:72ch@print">...</div>
 ```
 
 Pair `max-w:*` with `w:full` for wrappers that should be fluid until they hit the cap.

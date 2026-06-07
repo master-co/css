@@ -37,7 +37,7 @@ Use the most meaningful token available for the design decision you are making.
 1. Prefer role tokens when the value carries product meaning, such as `bg:base`, `bg:surface`, `fg:strong`, `fg:neutral`, line colors like `lightest` in border context, or project roles like `primary`.
 2. Prefer scale tokens when the value belongs to a foundation scale, such as `p:md`, `gap:lg`, `font:2xl` for font-size-only, `text:2xl` for a complete type treatment, `r:xl`, `shadow:md`, `animation-duration:fast`, or `animation-timing-function:smooth`.
 3. Prefer contextual shorthand when a utility already knows the token namespace, such as `b:1|lightest` instead of `b:1|line-lightest`.
-4. Use structural values when the value describes layout behavior rather than visual styling, such as `w:full`, `w:1/2`, `max-w:container-5xl`, `h:100dvh`, `@md`, or `@container(md)`.
+4. Use structural values when the value describes layout behavior rather than visual styling, such as `w:full`, `w:1/2`, `max-w:5xl`, `h:100dvh`, `@md`, or `@container(md)`.
 5. Use low-level values only when no token represents the decision, when the value is local and measured, or when the guide is teaching the syntax itself.
 6. If the same low-level value appears in more than one product surface, promote it to a named token instead of repeating it.
 
@@ -73,8 +73,8 @@ Foundation tokens are the shared vocabulary for the most common UI decisions.
 | Elevation | `shadow:xs`, `shadow:sm`, `shadow:md`, `shadow:lg` | Raw multi-part `box-shadow` values in markup |
 | Motion | `animation-duration:fast`, `transition-duration:fast`, `animation-timing-function:smooth`, `transition-timing-function:crisp` | Repeated `150ms`, `300ms`, or custom cubic-bezier values |
 | Breakpoints | `@md`, `@lg` | Repeated viewport queries such as `@media(768px)` |
-| Container sizes | `max-w:container-md`, `@container(md)` | Repeated component or wrapper widths such as `@container(448px)` |
-| Sizing | `w:full`, `w:fit`, `max-w:container-7xl`, `size:*` for measured elements | Fixed widths in page layout when a fluid or container token fits |
+| Container sizes | `max-w:md`, `@container(md)` | Repeated component or wrapper widths such as `@container(448px)` |
+| Sizing | `w:full`, `w:fit`, `max-w:7xl`, `size:*` for measured elements | Fixed widths in page layout when a fluid or container token fits |
 
 Use the foundation guides for the exact scale and behavior:
 
@@ -173,10 +173,10 @@ The `x` suffix is still useful for measured dimensions, especially icons, avatar
 
 ```html
 <button class="size:10x round">...</button>
-<aside class="w:80x max-w:container-md">...</aside>
+<aside class="w:80x max-w:md">...</aside>
 ```
 
-For page layout, prefer fluid and constrained values first: `w:full`, fractions, `max-w:container-*`, container queries, and CSS functions when a fluid bound is the design requirement.
+For page layout, prefer fluid and constrained values first: `w:full`, fractions, `max-w:*`, container queries, and CSS functions when a fluid bound is the design requirement.
 
 ---
 

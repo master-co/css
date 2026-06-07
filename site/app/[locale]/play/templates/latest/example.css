@@ -18,7 +18,7 @@
     }
 
     .card {
-        @compose "fg:neutral m:auto max-w:container-md mt:lg_:where(p,ul) my:sm_:where(li) outline:1|lightest r:lg shadow:lg text:md_:where(p,li)";
+        @compose "fg:neutral m:auto max-w:md mt:lg_:where(p,ul) my:sm_:where(li) outline:1|lightest r:lg shadow:lg text:md_:where(p,li)";
         background-color: var(--color-card);
     }
 

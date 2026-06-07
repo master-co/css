@@ -8,14 +8,14 @@ Use `w:*` to set the CSS `width` property. Values can come from the sizing scale
 <!-- @MARK w:64x -->
 <aside class="w:64x">...</aside>
 
-<!-- @MARK w:full --><!-- @MARK max-w:container-5xl -->
-<main class="w:full max-w:container-5xl">...</main>
+<!-- @MARK w:full --><!-- @MARK max-w:5xl -->
+<main class="w:full max-w:5xl">...</main>
 ```
 
 <details>
     <summary>Generated CSS</summary>
     <Class2CSS>
-        {['w:64x', 'w:full', 'max-w:container-5xl']}
+        {['w:64x', 'w:full', 'max-w:5xl']}
     </Class2CSS>
 </details>
 
@@ -40,10 +40,10 @@ Use `w:fit`, `w:min`, and `w:max` when the element should size itself from its c
 ```
 
 ### Use container widths for wrappers
-`w:container-*` uses configured container size variables. In page layout, it is usually paired with `max-w:container-*` or `w:full` so the wrapper can shrink on smaller containers.
+`w:*` uses configured container size variables. In page layout, it is usually paired with `max-w:*` or `w:full` so the wrapper can shrink on smaller containers.
 ```html
-<!-- @MARK w:full --><!-- @MARK max-w:container-7xl --><!-- @MARK mx:auto -->
-<main class="w:full max-w:container-7xl mx:auto">
+<!-- @MARK w:full --><!-- @MARK max-w:7xl --><!-- @MARK mx:auto -->
+<main class="w:full max-w:7xl mx:auto">
     ...
 </main>
 ```

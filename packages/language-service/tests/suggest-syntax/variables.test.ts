@@ -59,45 +59,47 @@ import { hint } from './test'
 
 describe.concurrent('sorting', () => {
     test.concurrent('positive container', () => {
+        const containerLabels = new Set(['3xs', '2xs', 'xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl', '4xl', '5xl', '6xl', '7xl'])
         expect(
-            hint('w:container-')
-                ?.filter(({ label }) => label.startsWith('container-'))
+            hint('w:')
+                ?.filter(({ label }) => containerLabels.has(label))
                 ?.map(({ label }) => label)
         ).toEqual([
-            'container-3xs',
-            'container-2xs',
-            'container-xs',
-            'container-sm',
-            'container-md',
-            'container-lg',
-            'container-xl',
-            'container-2xl',
-            'container-3xl',
-            'container-4xl',
-            'container-5xl',
-            'container-6xl',
-            'container-7xl',
+            '3xs',
+            '2xs',
+            'xs',
+            'sm',
+            'md',
+            'lg',
+            'xl',
+            '2xl',
+            '3xl',
+            '4xl',
+            '5xl',
+            '6xl',
+            '7xl',
         ])
     })
     test.concurrent('negative container', () => {
+        const containerLabels = new Set(['-3xs', '-2xs', '-xs', '-sm', '-md', '-lg', '-xl', '-2xl', '-3xl', '-4xl', '-5xl', '-6xl', '-7xl'])
         expect(
-            hint('w:-container-')
-                ?.filter(({ label }) => label.startsWith('-container-'))
+            hint('w:-')
+                ?.filter(({ label }) => containerLabels.has(label))
                 ?.map(({ label }) => label)
         ).toEqual([
-            '-container-3xs',
-            '-container-2xs',
-            '-container-xs',
-            '-container-sm',
-            '-container-md',
-            '-container-lg',
-            '-container-xl',
-            '-container-2xl',
-            '-container-3xl',
-            '-container-4xl',
-            '-container-5xl',
-            '-container-6xl',
-            '-container-7xl',
+            '-3xs',
+            '-2xs',
+            '-xs',
+            '-sm',
+            '-md',
+            '-lg',
+            '-xl',
+            '-2xl',
+            '-3xl',
+            '-4xl',
+            '-5xl',
+            '-6xl',
+            '-7xl',
         ])
     })
 })

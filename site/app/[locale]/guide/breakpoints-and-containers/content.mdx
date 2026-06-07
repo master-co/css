@@ -20,8 +20,8 @@ For example, `md` can exist in both scales while keeping different meanings:
 <div class="font:3xl@md">...</div>
 <!-- @MARK @container(md) -->
 <div class="hidden@container(md)">...</div>
-<!-- @MARK container-md -->
-<div class="max-w:container-md">...</div>
+<!-- @MARK max-w:md -->
+<div class="max-w:md">...</div>
 ```
 
 ---
@@ -46,19 +46,19 @@ Use `@<name>` to apply styles when the viewport reaches a configured breakpoint.
 ---
 
 ## Container size variables
-Use `container-<name>` anywhere a size value should come from the container namespace. This keeps wrappers, reading widths, panel caps, and reusable component dimensions aligned with the same scale that drives container queries.
+Use contextual size values such as `max-w:md`, `w:3xl`, or `flex-basis:lg` when a utility reads from the container namespace. This keeps wrappers, reading widths, panel caps, and reusable component dimensions aligned with the same scale that drives container queries.
 
 <ContainerVariables />
 
 ```html
-<!-- @MARK container-md -->
-<div class="max-w:container-md w:full">…</div>
+<!-- @MARK max-w:md -->
+<div class="max-w:md w:full">…</div>
 ```
 
 <details>
     <summary>Generated CSS</summary>
     <Class2CSS>
-        {['max-w:container-md', 'w:full']}
+        {['max-w:md', 'w:full']}
     </Class2CSS>
 </details>
 
@@ -91,7 +91,7 @@ Use viewport breakpoints when the whole page changes. Use container queries when
 | Decision | Prefer | Example |
 | --- | --- | --- |
 | Page shell changes | `@md`, `@lg` | Sidebar appears, top nav changes, page grid expands |
-| Wrapper width | `container-4xl`, `container-7xl` | `max-w:container-7xl mx:auto` |
+| Wrapper width | `max-w:4xl`, `max-w:7xl` | `max-w:7xl mx:auto` |
 | Reusable component layout | `@container(md)` | Card changes from stacked to horizontal inside any parent |
 
 (x) A reusable card responds to the viewport even inside a narrow parent.
