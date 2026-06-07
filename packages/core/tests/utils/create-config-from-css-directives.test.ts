@@ -102,7 +102,7 @@ describe.concurrent('createConfigFromCSSDirectives', () => {
         }))).toThrow('Unknown @at token: chrisma')
     })
 
-    it('resolves raw variable names through core namespaces by longest prefix', () => {
+    it('resolves raw variable names through derived namespaces by longest prefix', () => {
         const result = createConfigFromCSSDirectives(directiveResult({
             config: {
                 variables: [
@@ -117,6 +117,26 @@ describe.concurrent('createConfigFromCSSDirectives', () => {
             { namespace: 'color-line', key: 'lightest', value: '#eee' },
             { namespace: 'color-text', key: 'strong', value: '#111' },
             { namespace: 'color', key: 'blue-50', value: '#00f' }
+        ])
+    })
+
+    it('does not resolve removed standalone namespaces from raw variable names', () => {
+        const result = createConfigFromCSSDirectives(directiveResult({
+            config: {
+                variables: [
+                    { name: 'blur-sm', value: 8 },
+                    { name: 'drop-shadow-soft', value: '0 2px 8px #000' },
+                    { name: 'perspective-near', value: 800 },
+                    { name: 'shadow-inset-sm', value: 'inset 0 1px 2px #000' }
+                ]
+            }
+        }))
+
+        expect(result.config.variables).toEqual([
+            { key: 'blur-sm', value: 8 },
+            { key: 'drop-shadow-soft', value: '0 2px 8px #000' },
+            { key: 'perspective-near', value: 800 },
+            { namespace: 'shadow', key: 'inset-sm', value: 'inset 0 1px 2px #000' }
         ])
     })
 

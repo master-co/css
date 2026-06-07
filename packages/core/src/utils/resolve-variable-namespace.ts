@@ -1,15 +1,19 @@
-import variableNamespaces from '../variable-namespaces'
 import utilities from '../utilities'
 import UtilityType from 'shared/utility-type'
 
-const implicitVariableNamespaces = utilities
+const builtInNamespaces = ['breakpoint']
+
+const explicitNamespaces = utilities.flatMap((utility) => utility.namespaces ?? [])
+
+const implicitNamespaces = utilities
     .filter((utility) => utility.type !== UtilityType.Static && !utility.name.endsWith('()'))
     .map((utility) => utility.name)
 
 const namespaces = [
     ...new Set([
-        ...variableNamespaces,
-        ...implicitVariableNamespaces,
+        ...builtInNamespaces,
+        ...explicitNamespaces,
+        ...implicitNamespaces,
     ])
 ].sort((a, b) => b.length - a.length)
 
