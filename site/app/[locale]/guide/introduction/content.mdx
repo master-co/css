@@ -87,13 +87,13 @@ It can attach [state selectors](/guide/state-selectors) and [selector tokens](/g
 It can also attach [responsive](/guide/responsive-design) and [conditional](/guide/conditional-queries) rules:
 
 ```html
-<!-- Set width to 800px when screen width is at least 1024px -->
+<!-- Set width to 800px when viewport width is at least 1024px -->
 <div class="width:800@>=1024">
 
-<!-- Use a configured screen token -->
+<!-- Use a configured breakpoint token -->
 <div class="width:800@sm">
 
-<!-- Position at 1px when screen width is >= xs and < lg -->
+<!-- Position at 1px when viewport width is >= xs and < lg -->
 <div class="top:1@xs&<lg">
 
 <!-- Set background to gray-20 in dark mode -->
@@ -144,7 +144,7 @@ mt:9x r:lg flex fg:slate-70 bg:slate-20:hover bg:slate-30@sm
 ### Predictable authoring
 Master CSS also gives teams guardrails for class syntax. [Code linting](/guide/code-linting) can catch invalid classes, enforce consistent class order, reject unknown classes, detect collisions, and validate classes inside JavaScript utilities such as `clsx()`.
 
-<Image className="aspect:2/1 r:lg max-w:screen-xs w:full" src={require('~/site/public/syntax-error-checks.webp').default} alt="Syntax error checks" unoptimized />
+<Image className="aspect:2/1 r:lg max-w:container-3xl w:full" src={require('~/site/public/syntax-error-checks.webp').default} alt="Syntax error checks" unoptimized />
 
 (x) <span className="text:error">Invalid value for `font` property.</span>
 ```html
@@ -172,7 +172,7 @@ The project CSS entry is the primary configuration source. Tokens are native cus
 ```css name=index.css
 @theme {
     --color-primary: #4f46e5;
-    --screen-md: 768;
+    --breakpoint-md: 768;
 }
 
 @custom-at motion-safe @media (prefers-reduced-motion: no-preference);
@@ -240,9 +240,9 @@ According to HTTP Archive [CSS Bytes](https://httparchive.org/reports/page-weigh
 Master CSS generates optimized CSS directly. Integrations can pre-render, statically render, or hydrate CSS without depending on a PostCSS, Autoprefixer, or CSS minifier pipeline.
 
 ### The foundation for design systems
-Master CSS provides a rich [theme layer](/guide/theme) for scalable design systems. Use [design tokens](/guide/design-tokens) for color, spacing, typography, radius, elevation, and motion; use [screen sizes](/guide/screen-sizes), [sizing](/guide/sizing), and the [layout system](/guide/layout-system) to keep page structure aligned with those foundations.
+Master CSS provides a rich [theme layer](/guide/theme) for scalable design systems. Use [design tokens](/guide/design-tokens) for color, spacing, typography, radius, elevation, and motion; use [breakpoints and containers](/guide/breakpoints-and-containers), [sizing](/guide/sizing), and the [layout system](/guide/layout-system) to keep page structure aligned with those foundations.
 
-The important habit is to abstract only when the abstraction carries product meaning. A `primary` color, a `screen-md` breakpoint, or a `btn` component can communicate a shared design decision. A one-off homepage flourish usually belongs directly in markup until the pattern proves itself.
+The important habit is to abstract only when the abstraction carries product meaning. A `primary` color, a `breakpoint-md` breakpoint, or a `btn` component can communicate a shared design decision. A one-off homepage flourish usually belongs directly in markup until the pattern proves itself.
 
 ### Predictable cascade layers
 The default `@master/css/base.css` stylesheet declares the cascade layer order once:

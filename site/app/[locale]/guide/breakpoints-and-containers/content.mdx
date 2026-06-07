@@ -1,32 +1,33 @@
-## Using screens [sr-only]
-Screen size tokens define the responsive thresholds used by page layout, component layout, and width constraints. The `screen` namespace is the single source for these sizes: each `--screen-*` variable can be used as a viewport breakpoint, a size value, and a container query threshold.
+## Using breakpoints and containers [sr-only]
+Responsive layout uses two size scales. `--breakpoint-*` variables define viewport thresholds for page-level changes. `--container-*` variables define container query thresholds and reusable width caps for content and components.
 
 <Overview />
 
-Master CSS includes 11 predefined screen sizes from `4xs` to `4xl`. Define or override them in the project CSS entry when your product has a different responsive scale.
+Master CSS includes predefined breakpoint sizes from `4xs` to `4xl` and container sizes from `3xs` to `7xl`. Define or override them in the project CSS entry when your product has a different responsive scale.
 
 ```css name=index.css
 @theme {
-    --screen-md: 1024;
-    --screen-lg: 1280;
+    --breakpoint-md: 1024;
+    --container-md: 448;
+    --container-4xl: 896;
 }
 ```
 
-For example, `md` becomes the shared token for these forms:
+For example, `md` can exist in both scales while keeping different meanings:
 
 ```html
 <!-- @MARK @md -->
 <div class="font:3xl@md">...</div>
-<!-- @MARK screen-md -->
-<div class="max-w:screen-md">...</div>
 <!-- @MARK @container(md) -->
 <div class="hidden@container(md)">...</div>
+<!-- @MARK container-md -->
+<div class="max-w:container-md">...</div>
 ```
 
 ---
 
 ## Viewport breakpoints
-Use `@<name>` to apply styles when the viewport reaches a configured screen size. Viewport breakpoints are best for page-level decisions such as navigation mode, shell layout, and major content columns.
+Use `@<name>` to apply styles when the viewport reaches a configured breakpoint. Viewport breakpoints are best for page-level decisions such as navigation mode, shell layout, and major content columns.
 
 <ResponsiveBreakpoints />
 
@@ -44,27 +45,27 @@ Use `@<name>` to apply styles when the viewport reaches a configured screen size
 
 ---
 
-## Screen size variables
-Use `screen-<name>` anywhere a size value can reference the screen namespace. This keeps wrappers, reading widths, and panel caps aligned with the same scale that drives breakpoints.
+## Container size variables
+Use `container-<name>` anywhere a size value should come from the container namespace. This keeps wrappers, reading widths, panel caps, and reusable component dimensions aligned with the same scale that drives container queries.
 
-<ScreenVariables />
+<ContainerVariables />
 
 ```html
-<!-- @MARK screen-md -->
-<div class="max-w:screen-md w:full">…</div>
+<!-- @MARK container-md -->
+<div class="max-w:container-md w:full">…</div>
 ```
 
 <details>
     <summary>Generated CSS</summary>
     <Class2CSS>
-        {['max-w:screen-md', 'w:full']}
+        {['max-w:container-md', 'w:full']}
     </Class2CSS>
 </details>
 
 ---
 
 ## Container query sizes
-Use `@container(<name>)` to apply styles when the nearest container reaches a configured screen size. Container query sizes are best for reusable components that may appear in a sidebar, modal, split pane, or full-width page.
+Use `@container(<name>)` to apply styles when the nearest container reaches a configured container size. Container query sizes are best for reusable components that may appear in a sidebar, modal, split pane, or full-width page.
 
 <ContainerQuerySizes />
 
@@ -90,7 +91,7 @@ Use viewport breakpoints when the whole page changes. Use container queries when
 | Decision | Prefer | Example |
 | --- | --- | --- |
 | Page shell changes | `@md`, `@lg` | Sidebar appears, top nav changes, page grid expands |
-| Wrapper width | `screen-md`, `screen-lg` | `max-w:screen-lg mx:auto` |
+| Wrapper width | `container-4xl`, `container-7xl` | `max-w:container-7xl mx:auto` |
 | Reusable component layout | `@container(md)` | Card changes from stacked to horizontal inside any parent |
 
 (x) A reusable card responds to the viewport even inside a narrow parent.

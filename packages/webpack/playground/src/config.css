@@ -15,7 +15,7 @@
     --radius-card: 18;
     --radius-pill: 999;
     --spacing-card: 24;
-    --screen-md: 48;
+    --breakpoint-md: 48;
 }
 
 @theme dark {

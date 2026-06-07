@@ -4,7 +4,7 @@ import type { Settings } from '../../src'
 
 const settings = {
     config: {
-        variables: [{ namespace: 'screen', key: 'sm', value: 768 }],
+        variables: [{ namespace: 'breakpoint', key: 'sm', value: 768 }],
         animations: {
             fade: {
                 from: { opacity: 0 },

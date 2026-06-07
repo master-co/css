@@ -65,7 +65,10 @@ export default function parseAt(token: string, css: MasterCSS, isRaw = true) {
                     nodes.push(newNode)
                     return
                 }
-                const definedAtRule = css.atRules.get(raw)
+                const definedAtRule = id === 'container'
+                    ? css.containerAtRules.get(raw)
+                    || (css.breakpointAtRules.has(raw) ? undefined : css.atRules.get(raw))
+                    : css.atRules.get(raw)
                 if (!id && !firstToken) {
                     firstToken = raw
                     if (AT_IDENTIFIERS.includes(firstToken)) {

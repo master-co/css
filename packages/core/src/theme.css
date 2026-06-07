@@ -13,18 +13,33 @@
     --max: max-content;
     --min: min-content;
 
-    /* Screens */
-    --screen-4xs: 360;
-    --screen-3xs: 480;
-    --screen-2xs: 600;
-    --screen-xs: 768;
-    --screen-sm: 834;
-    --screen-md: 1024;
-    --screen-lg: 1280;
-    --screen-xl: 1440;
-    --screen-2xl: 1600;
-    --screen-3xl: 1920;
-    --screen-4xl: 2560;
+    /* Breakpoints */
+    --breakpoint-4xs: 360;
+    --breakpoint-3xs: 480;
+    --breakpoint-2xs: 600;
+    --breakpoint-xs: 768;
+    --breakpoint-sm: 834;
+    --breakpoint-md: 1024;
+    --breakpoint-lg: 1280;
+    --breakpoint-xl: 1440;
+    --breakpoint-2xl: 1600;
+    --breakpoint-3xl: 1920;
+    --breakpoint-4xl: 2560;
+
+    /* Containers */
+    --container-3xs: 256;
+    --container-2xs: 288;
+    --container-xs: 320;
+    --container-sm: 384;
+    --container-md: 448;
+    --container-lg: 512;
+    --container-xl: 576;
+    --container-2xl: 672;
+    --container-3xl: 768;
+    --container-4xl: 896;
+    --container-5xl: 1024;
+    --container-6xl: 1152;
+    --container-7xl: 1280;
 
     /* Font families */
     --font-family-sans: "Inter", $font-family-sans-fallback;

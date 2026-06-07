@@ -10,11 +10,11 @@ function getVariable(namespace, key) {
 
 export default function Page() {
     const color = getVariable('color', 'e2e')
-    const screen = getVariable('screen', 'fixture')
+    const breakpoint = getVariable('breakpoint', 'fixture')
 
     return (
-        <main data-color={color} data-screen={screen}>
-            {color}:{screen}
+        <main data-color={color} data-breakpoint={breakpoint}>
+            {color}:{breakpoint}
         </main>
     )
 }

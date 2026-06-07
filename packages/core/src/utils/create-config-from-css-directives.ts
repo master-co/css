@@ -83,6 +83,7 @@ type StyleAtRuleFeature = [string, number, number]
 const STYLE_AT_FEATURE_REGEX = /\(\s*(width|height|resolution)\s*(>=|<=|>|<)\s*(-?(?:\d+(?:\.\d+)?|\.\d+))([a-z%]*)\s*\)/g
 const MEDIA_MODE_NAMES = new Set(['light', 'dark'])
 const DEFAULT_MODE_NONE = 'none'
+const CONDITION_VARIABLE_NAMESPACES = new Set(['breakpoint', 'container'])
 
 function isCSSDirectiveResult(input: ConfigInput): input is CSSDirectiveResult {
     return 'config' in input
@@ -116,9 +117,19 @@ function collectModeNames(config: Config) {
     return modes
 }
 
-function collectScreenNames(config: Config) {
+function isConditionVariableNamespace(namespace: string | undefined) {
+    return namespace !== undefined && CONDITION_VARIABLE_NAMESPACES.has(namespace)
+}
+
+function assertConditionVariableIsGlobal(namespace: string | undefined, key: string, mode: string | undefined) {
+    if (mode && isConditionVariableNamespace(namespace)) {
+        throw new Error(`${namespace![0].toUpperCase()}${namespace!.slice(1)} variables cannot be mode-specific: ${namespace}-${key}@${mode}`)
+    }
+}
+
+function collectBreakpointNames(config: Config) {
     return new Set((config.variables || [])
-        .filter((variable) => variable.namespace === 'screen')
+        .filter((variable) => variable.namespace === 'breakpoint')
         .map((variable) => variable.key)
     )
 }
@@ -164,6 +175,7 @@ function addMode(config: Config, mode: string) {
 
 function resolveInputVariable(variable: InputVariableDefinition): VariableDefinition {
     if ('key' in variable && variable.key !== undefined) {
+        assertConditionVariableIsGlobal(variable.namespace, variable.key, variable.mode)
         return {
             ...(variable.namespace ? { namespace: variable.namespace } : {}),
             key: variable.key,
@@ -174,9 +186,7 @@ function resolveInputVariable(variable: InputVariableDefinition): VariableDefini
 
     const directiveVariable = variable as CSSDirectiveVariableDefinition
     const resolved = resolveVariableNamespace(directiveVariable.name)
-    if (directiveVariable.mode && resolved.namespace === 'screen') {
-        throw new Error(`Screen variables cannot be mode-specific: screen-${resolved.key}@${directiveVariable.mode}`)
-    }
+    assertConditionVariableIsGlobal(resolved.namespace, resolved.key, directiveVariable.mode)
     return {
         ...(resolved.namespace ? { namespace: resolved.namespace } : {}),
         key: resolved.key,
@@ -234,17 +244,17 @@ function createSemanticConfig(config: Config, options: CreateConfigFromCSSDirect
 function validateTokenConflicts(config: Config, options: CreateConfigFromCSSDirectivesOptions) {
     const mergedConfig = createSemanticConfig(config, options)
     const modes = collectModeNames(mergedConfig)
-    const screens = collectScreenNames(mergedConfig)
+    const breakpoints = collectBreakpointNames(mergedConfig)
 
     for (const mode of collectModeNames(config)) {
-        if (screens.has(mode)) {
-            throw new Error(`Mode "${mode}" conflicts with screen variable "--screen-${mode}"`)
+        if (breakpoints.has(mode)) {
+            throw new Error(`Mode "${mode}" conflicts with breakpoint variable "--breakpoint-${mode}"`)
         }
     }
 
-    for (const screen of collectScreenNames(config)) {
-        if (modes.has(screen)) {
-            throw new Error(`Screen variable "--screen-${screen}" conflicts with mode "${screen}"`)
+    for (const breakpoint of collectBreakpointNames(config)) {
+        if (modes.has(breakpoint)) {
+            throw new Error(`Breakpoint variable "--breakpoint-${breakpoint}" conflicts with mode "${breakpoint}"`)
         }
     }
 
@@ -254,8 +264,8 @@ function validateTokenConflicts(config: Config, options: CreateConfigFromCSSDire
         if (modes.has(token)) {
             throw new Error(`@custom-at "${token}" conflicts with mode "${token}"`)
         }
-        if (screens.has(token)) {
-            throw new Error(`@custom-at "${token}" conflicts with screen variable "--screen-${token}"`)
+        if (breakpoints.has(token)) {
+            throw new Error(`@custom-at "${token}" conflicts with breakpoint variable "--breakpoint-${token}"`)
         }
     }
 }
@@ -419,7 +429,7 @@ function resolveMasterAtRuleReference(token: string, css: MasterCSS) {
             : { atRules: [`@media (prefers-color-scheme:${token})`] }
     }
 
-    if (isBareAtRuleReference(token) && !css.atRules.has(token) && !collectScreenNames(css.config).has(token)) {
+    if (isBareAtRuleReference(token) && !css.atRules.has(token)) {
         throw new Error(`Unknown @at token: ${token}`)
     }
 

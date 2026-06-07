@@ -46,7 +46,7 @@ describe('ConfigVirtualModulePlugin', () => {
         expect(config).toMatchObject({
             variables: [
                 { namespace: 'color', key: 'primary', value: '#123' },
-                { namespace: 'screen', key: 'md', value: 48 }
+                { namespace: 'breakpoint', key: 'md', value: 48 }
             ],
             utilities: expect.arrayContaining([
                 expect.objectContaining({

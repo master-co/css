@@ -115,17 +115,17 @@ For Layout System and similar foundation layout demos:
 
 - Prefer one polished, practical UI composition over abstract placeholder grids when the guide is teaching product layout decisions. Good examples include app shells, dashboards, content with sidebars, media objects, card galleries, and editorial regions.
 - Use `<ResizeZone>` with `<IFrame>` for the primary responsive demo when the lesson depends on viewport width, matching the responsive-design guide pattern. Keep the iframe page under `site/app/[locale]/examples/<slug>/`.
-- Pair each practical demo with a reduced code sample that exposes the layout strategy, not every decorative class. Highlight containers, column counts, spans, gutters, screen-size variants, and container-query variants.
+- Pair each practical demo with a reduced code sample that exposes the layout strategy, not every decorative class. Highlight containers, column counts, spans, gutters, breakpoint variants, and container-query variants.
 - Use abstract boxes only for low-level anatomy such as explaining columns, gutters, line placement, or track sizing where real UI would obscure the concept.
-- Keep layout examples token-aligned: `screen-*` for wrappers, spacing tokens for gutters and margins, Grid for page regions, Flexbox for one-axis component layout, and `min-w:0` where flexible content can overflow.
+- Keep layout examples token-aligned: `container-*` for wrappers, spacing tokens for gutters and margins, Grid for page regions, Flexbox for one-axis component layout, and `min-w:0` where flexible content can overflow.
 
 For Design Foundations token overview tables:
 
 - When a foundation guide introduces a numeric theme variable scale, include a theme variable overview near the top before usage sections.
 - For new or optimized foundation token overview tables, read values from `site/utils/theme-variables` or a narrow derived helper, then render `Variable`, `Value`, and `(REM)` columns.
-- Show the full CSS custom property name, such as `--spacing-md`, `--border-radius-lg`, or `--screen-md`; show the raw configured number in `Value`; and show the rem conversion using the site root size.
+- Show the full CSS custom property name, such as `--spacing-md`, `--border-radius-lg`, `--breakpoint-md`, or `--container-md`; show the raw configured number in `Value`; and show the rem conversion using the site root size.
 - Add a `Description` column only when short token usage guidance improves scanability. Keep descriptions concise and do not use them to duplicate adjacent prose or demos.
-- Use `ThemeNumberVariableTable` from `site/components` for numeric spacing, radius, and screen scales unless a guide needs a more specialized table.
+- Use `ThemeNumberVariableTable` from `site/components` for numeric spacing, radius, breakpoint, and container scales unless a guide needs a more specialized table.
 - Keep these tables data-driven. Do not hard-code preset token rows in guide copy when they can be read from the theme config.
 - Use generated CSS examples separately from the theme variable overview. The overview teaches configured tokens; `<Class2CSS>` teaches emitted utility CSS.
 

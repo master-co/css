@@ -132,7 +132,7 @@ test('loads package entry theme config from CSS imports', async () => {
             .filter((dependency) => dependency.startsWith(dirname(packageEntry!)))
         expect(packageDependencies.length).toBeGreaterThan(1)
         expect(result.config.variables).toContainEqual({
-            namespace: 'screen',
+            namespace: 'breakpoint',
             key: 'sm',
             value: 834
         })

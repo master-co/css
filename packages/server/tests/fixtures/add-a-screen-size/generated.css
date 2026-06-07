@@ -1,1 +1,0 @@
-@layer theme{:root{--screen-desktop:1280}}@layer utilities{.mx\:auto{margin-left:auto;margin-right:auto}.max-w\:screen-desktop{max-width:calc(var(--screen-desktop) / 16 * 1rem)}}

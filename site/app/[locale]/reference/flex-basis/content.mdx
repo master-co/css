@@ -26,6 +26,13 @@ Use `flex-basis:full`, `flex-basis:fit`, or `flex-basis:max` when the basis shou
 <section class="flex-basis:full">...</section>
 ```
 
+### Use container basis values
+Use `flex-basis:container-*` when flex item sizing should align with the shared container scale.
+```html
+<!-- @MARK flex-basis:container-md -->
+<aside class="flex-basis:container-md flex-shrink:0">...</aside>
+```
+
 ### Prefer shorthand for complete flex behavior
 If the item needs grow, shrink, and basis at the same time, use [flex](/reference/flex).
 ```html

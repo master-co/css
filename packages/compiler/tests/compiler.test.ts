@@ -50,7 +50,7 @@ describe.concurrent('@master/css-compiler', () => {
 
             @theme {
                 --color-primary: #123;
-                --screen-md: 768;
+                --breakpoint-md: 768;
             }
 
             @theme dark {
@@ -76,7 +76,7 @@ describe.concurrent('@master/css-compiler', () => {
             important: true,
             variables: [
                 { name: 'color-primary', value: '#123' },
-                { name: 'screen-md', value: 768 },
+                { name: 'breakpoint-md', value: 768 },
                 { name: 'color-primary', value: '#456', mode: 'dark' },
                 { name: 'color-primary', value: '#ff0', mode: 'chrisma' }
             ],
@@ -154,7 +154,7 @@ describe.concurrent('@master/css-compiler', () => {
             }
 
             @theme {
-                --screen-md: 768;
+                --breakpoint-md: 768;
             }
 
             @layer components {
@@ -712,7 +712,7 @@ describe.concurrent('@master/css-compiler', () => {
 
         expect(result.dependencies).toContain(coreTheme)
         expect(result.config.variables).toContainEqual({
-            namespace: 'screen',
+            namespace: 'breakpoint',
             key: 'sm',
             value: 834
         })
@@ -783,7 +783,7 @@ describe.concurrent('@master/css-compiler', () => {
             expect(packageEntry).toBeTruthy()
             expect(result.dependencies).toContain(packageEntry)
             expect(result.config.variables).toContainEqual({
-                namespace: 'screen',
+                namespace: 'breakpoint',
                 key: 'sm',
                 value: 834
             })

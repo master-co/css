@@ -49,7 +49,7 @@ export default async function Page(props: any) {
 
     return <>
         <main className='px:5x pt:12x pt:15x@sm'>
-            <div className="mx:auto my:18x max-w:screen-md prose my:30x@sm">
+            <div className="mx:auto my:18x max-w:container-5xl prose my:30x@sm">
                 <div className='bl:1|lighter bt:1|lighter grid-cols:1 grid-cols:2@sm grid-cols:3@md'>
                     {pages
                         .map((page: any, index: number) => {

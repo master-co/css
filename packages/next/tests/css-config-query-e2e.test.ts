@@ -36,6 +36,6 @@ describe('css config query e2e', () => {
         const html = readFileSync(join(fixtureDir, '.next/server/app/index.html'), 'utf-8')
 
         expect(html).toContain('data-color="#4b6fff"')
-        expect(html).toContain('data-screen="1234"')
+        expect(html).toContain('data-breakpoint="1234"')
     }, 120000)
 })

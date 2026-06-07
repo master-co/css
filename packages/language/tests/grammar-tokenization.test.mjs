@@ -440,7 +440,7 @@ test('CSS injection highlights compose and at directives inside native style rul
 
         @theme {
             --color-primary: #4f46e5;
-            --screen-md: 768;
+            --breakpoint-md: 768;
         }
 
         @custom-at motion-safe @media (prefers-reduced-motion: no-preference);

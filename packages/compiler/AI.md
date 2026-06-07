@@ -26,7 +26,7 @@
 
 - `@master { root-size: 16; }`
 - `@master { important: on; }` and `@master { important: off; }`
-- `@theme { --color-primary: #123; --screen-md: 768; }`
+- `@theme { --color-primary: #123; --breakpoint-md: 768; }`
 - `@theme dark { --color-primary: #456; }`
 - The compiler records mode declarations as written. Core adapters decide which modes are defaults.
 - `@custom-at motion-safe @media (prefers-reduced-motion: no-preference);`

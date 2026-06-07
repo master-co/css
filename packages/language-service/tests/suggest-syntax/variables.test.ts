@@ -58,42 +58,46 @@ import { hint } from './test'
 // })
 
 describe.concurrent('sorting', () => {
-    test.concurrent('positive screen', () => {
+    test.concurrent('positive container', () => {
         expect(
-            hint('w:screen-')
-                ?.filter(({ label }) => label.startsWith('screen-'))
+            hint('w:container-')
+                ?.filter(({ label }) => label.startsWith('container-'))
                 ?.map(({ label }) => label)
         ).toEqual([
-            'screen-4xs',
-            'screen-3xs',
-            'screen-2xs',
-            'screen-xs',
-            'screen-sm',
-            'screen-md',
-            'screen-lg',
-            'screen-xl',
-            'screen-2xl',
-            'screen-3xl',
-            'screen-4xl',
+            'container-3xs',
+            'container-2xs',
+            'container-xs',
+            'container-sm',
+            'container-md',
+            'container-lg',
+            'container-xl',
+            'container-2xl',
+            'container-3xl',
+            'container-4xl',
+            'container-5xl',
+            'container-6xl',
+            'container-7xl',
         ])
     })
-    test.concurrent('negative screen', () => {
+    test.concurrent('negative container', () => {
         expect(
-            hint('w:-screen-')
-                ?.filter(({ label }) => label.startsWith('-screen-'))
+            hint('w:-container-')
+                ?.filter(({ label }) => label.startsWith('-container-'))
                 ?.map(({ label }) => label)
         ).toEqual([
-            '-screen-4xs',
-            '-screen-3xs',
-            '-screen-2xs',
-            '-screen-xs',
-            '-screen-sm',
-            '-screen-md',
-            '-screen-lg',
-            '-screen-xl',
-            '-screen-2xl',
-            '-screen-3xl',
-            '-screen-4xl',
+            '-container-3xs',
+            '-container-2xs',
+            '-container-xs',
+            '-container-sm',
+            '-container-md',
+            '-container-lg',
+            '-container-xl',
+            '-container-2xl',
+            '-container-3xl',
+            '-container-4xl',
+            '-container-5xl',
+            '-container-6xl',
+            '-container-7xl',
         ])
     })
 })

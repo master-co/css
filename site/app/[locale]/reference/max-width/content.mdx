@@ -5,8 +5,8 @@
 ### Cap a fluid element
 Use `max-w:*` to let an element shrink with its container while preventing it from growing too wide.
 ```html
-<!-- @MARK w:full --><!-- @MARK max-w:screen-md --><!-- @MARK mx:auto -->
-<main class="w:full max-w:screen-md mx:auto">
+<!-- @MARK w:full --><!-- @MARK max-w:container-5xl --><!-- @MARK mx:auto -->
+<main class="w:full max-w:container-5xl mx:auto">
     ...
 </main>
 ```
@@ -14,12 +14,12 @@ Use `max-w:*` to let an element shrink with its container while preventing it fr
 <details>
     <summary>Generated CSS</summary>
     <Class2CSS>
-        {['w:full', 'max-w:screen-md', 'mx:auto']}
+        {['w:full', 'max-w:container-5xl', 'mx:auto']}
     </Class2CSS>
 </details>
 
 ### Set a readable measure
-Use text-relative units when the maximum width is based on reading comfort instead of the screen scale.
+Use text-relative units when the maximum width is based on reading comfort instead of the container scale.
 ```html
 <!-- @MARK max-w:72ch -->
 <article class="w:full max-w:72ch">
@@ -34,11 +34,11 @@ Use `max-w:full` to prevent replaced elements such as images or videos from over
 <img class="max-w:full h:auto" src="..." alt="" />
 ```
 
-### Use viewport and screen caps
-Use `max-vw` when an element should never exceed the viewport width. Use `max-w:screen-*` when the cap should follow the configured screen scale.
+### Use viewport and container caps
+Use `max-vw` when an element should never exceed the viewport width. Use `max-w:container-*` when the cap should follow the configured container scale.
 ```html
-<!-- @MARK max-vw --><!-- @MARK max-w:screen-lg@lg -->
-<section class="max-vw max-w:screen-lg@lg">
+<!-- @MARK max-vw --><!-- @MARK max-w:container-7xl@lg -->
+<section class="max-vw max-w:container-7xl@lg">
     ...
 </section>
 ```
@@ -46,7 +46,7 @@ Use `max-vw` when an element should never exceed the viewport width. Use `max-w:
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="max-w:full max-w:screen-sm@sm max-w:72ch@print">...</div>
+<div class="max-w:full max-w:container-4xl@sm max-w:72ch@print">...</div>
 ```
 
 Pair `max-w:*` with `w:full` for wrappers that should be fluid until they hit the cap.

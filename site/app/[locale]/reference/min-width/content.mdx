@@ -33,8 +33,8 @@ In flex and grid layouts, `min-w:0` is often the fix for text or media that refu
 ### Combine with width and max-width
 Use `min-w:*` as a lower bound, then let `w:*` or `max-w:*` describe the preferred or upper size.
 ```html
-<!-- @MARK w:1/2 --><!-- @MARK min-w:40x --><!-- @MARK max-w:screen-sm -->
-<aside class="w:1/2 min-w:40x max-w:screen-sm">
+<!-- @MARK w:1/2 --><!-- @MARK min-w:40x --><!-- @MARK max-w:container-4xl -->
+<aside class="w:1/2 min-w:40x max-w:container-4xl">
     ...
 </aside>
 ```

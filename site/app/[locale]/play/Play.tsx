@@ -16,7 +16,7 @@ import Resizable from 'internal/components/Resizable'
 import { useThemeMode } from '@master/theme-mode.react'
 import Header from 'internal/components/Header'
 import HeaderNav from 'internal/components/HeaderNav'
-import { screenVariableValues } from '~/site/utils/screen-variables'
+import { breakpointVariableValues } from '~/site/utils/breakpoint-variables'
 import { getThemeVariables } from '~/site/utils/theme-variables'
 import clsx from 'clsx'
 import Link from 'internal/components/Link'
@@ -307,7 +307,7 @@ export default function Play({ shareId }: PlayProps = {}) {
      */
     useEffect(() => {
         const onResize = () => {
-            if (window.innerWidth >= screenVariableValues.md) {
+            if (window.innerWidth >= breakpointVariableValues.md) {
                 if (tab === 'Preview' || tab === 'Generated CSS') {
                     pushShallowURL('tab', files[0].title)
                 }

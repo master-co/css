@@ -77,7 +77,7 @@ You can also combine a selector and a query in one class.
 ---
 
 ## Common at tokens
-At tokens are named conditions. Some are built in, while screen tokens and mode tokens come from your project configuration.
+At tokens are named conditions. Some are built in, while breakpoint tokens and mode tokens come from your project configuration.
 
 | Token                         | CSS                                                       |
 |-------------------------------|-----------------------------------------------------------|
@@ -96,7 +96,7 @@ At tokens are named conditions. Some are built in, while screen tokens and mode 
 | `@portrait`                   | `css @media (orientation: portrait)`                      |
 
 ### `sm`, `md`, `lg`, and more
-Use `@sm`, `@md`, `@lg`, and other screen size tokens to apply styles based on viewport width. A plain breakpoint token means "at or above this width."
+Use `@sm`, `@md`, `@lg`, and other breakpoint tokens to apply styles based on viewport width. A plain breakpoint token means "at or above this width."
 ```html
 <!-- @MARK @sm -->
 <div class="hidden@sm">
@@ -107,7 +107,7 @@ Use `@sm`, `@md`, `@lg`, and other screen size tokens to apply styles based on v
         {['hidden@sm']}
     </Class2CSS>
 </details>
-See [responsive design](/guide/responsive-design) and [screen sizes](/guide/screen-sizes) for the full breakpoint model.
+See [responsive design](/guide/responsive-design) and [breakpoints and containers](/guide/breakpoints-and-containers) for the full breakpoint model.
 
 ### `light`, `dark`, and custom modes
 Mode names also become at tokens. `@dark` and `@light` are available by default, and custom modes are added when you define them in the project CSS entry.
@@ -260,12 +260,12 @@ Use `@<container>(<size>)` to target a named container.
         {['container:sidebar', 'hidden@sidebar(sm)']}
     </Class2CSS>
 </details>
-When a suffix name is not a screen token, mode token, or custom at token, Master CSS treats it as a named container query.
+When a suffix name is not a breakpoint token, mode token, or custom at token, Master CSS treats it as a named container query.
 
 ---
 
 ## Comparison operators
-Comparison operators turn screen and container tokens into ranges.
+Comparison operators turn breakpoint and container tokens into ranges.
 
 | Operator           | Meaning                       | Description                                                                |
 |--------------------|-------------------------------|----------------------------------------------------------------------------|

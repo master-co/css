@@ -115,8 +115,8 @@ Not just media queries but feature queries and [more](/guide/theme#at-tokens).
 ---
 
 ## Configuration
-### Add screens
-Define responsive breakpoints using theme [screen tokens](/guide/theme#screen-tokens).
+### Add breakpoints
+Define responsive breakpoints using theme [breakpoint tokens](/guide/theme#breakpoint-and-container-tokens).
 ```js name=tailwind.config.js
 /** @type {import('tailwindcss').Config} */
 module.exports = {
@@ -133,14 +133,14 @@ module.exports = {
 ```
 ```css name=index.css
 @theme {
-    --screen-sm: 640;
-    --screen-md: 768;
-    --screen-lg: 1024;
-    --screen-xl: 1280;
-    --screen-2xl: 1536;
+    --breakpoint-sm: 640;
+    --breakpoint-md: 768;
+    --breakpoint-lg: 1024;
+    --breakpoint-xl: 1280;
+    --breakpoint-2xl: 1536;
 }
 ```
-(x) No longer need redundant screen options.
+(x) No longer need redundant breakpoint range options.
 ```js name=tailwind.config.js
 module.exports = {
     theme: {

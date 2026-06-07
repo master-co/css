@@ -6,11 +6,13 @@ test.concurrent('exports canonical Master CSS variable namespaces', () => {
     expect(variableNamespaces).toEqual([
         'animation',
         'aspect-ratio',
+        'breakpoint',
         'blur',
         'border-radius',
         'color',
         'color-line',
         'color-text',
+        'container',
         'drop-shadow',
         'duration',
         'easing',
@@ -26,7 +28,6 @@ test.concurrent('exports canonical Master CSS variable namespaces', () => {
         'outline-style',
         'outline-width',
         'perspective',
-        'screen',
         'shadow',
         'shadow-inset',
         'spacing',
@@ -79,9 +80,14 @@ test.concurrent('resolves Master CSS namespaces', () => {
         namespace: 'shadow-inset',
         key: 'sm'
     })
-    expect(resolveVariableNamespace('--screen-md')).toEqual({
-        name: 'screen-md',
-        namespace: 'screen',
+    expect(resolveVariableNamespace('--breakpoint-md')).toEqual({
+        name: 'breakpoint-md',
+        namespace: 'breakpoint',
+        key: 'md'
+    })
+    expect(resolveVariableNamespace('--container-md')).toEqual({
+        name: 'container-md',
+        namespace: 'container',
         key: 'md'
     })
     expect(resolveVariableNamespace('--tab-size-github')).toEqual({

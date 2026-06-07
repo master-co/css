@@ -81,10 +81,10 @@ export const cases = {
                 { raw: 'h>160', name: 'height', type: 'number', value: 10, unit: 'rem', operator: '>' },
             ]
         }],
-        ['sidebar(sm)', '@container sidebar (width>=52.125rem)', {
+        ['sidebar(sm)', '@container sidebar (width>=24rem)', {
             id: 'container', nodes: [
                 { raw: 'sidebar', value: 'sidebar', type: 'string' },
-                { raw: 'sm', name: 'width', type: 'number', value: 52.125, unit: 'rem', operator: '>=' },
+                { raw: 'sm', name: 'width', type: 'number', value: 24, unit: 'rem', operator: '>=' },
             ]
         }],
     ],
@@ -186,7 +186,34 @@ export const cases = {
                     }
                 ]
             },
-            { variables: [{ namespace: 'screen', key: 'desktop', value: 640 }] }]
+            { variables: [{ namespace: 'breakpoint', key: 'desktop', value: 640 }] }],
+        ['container(desktop)', '@container (width>=40rem)',
+            {
+                id: 'container',
+                nodes: [
+                    {
+                        raw: 'desktop',
+                        type: 'number',
+                        name: 'width',
+                        value: 40,
+                        unit: 'rem',
+                        operator: '>='
+                    }
+                ]
+            },
+            { variables: [{ namespace: 'container', key: 'desktop', value: 640 }] }],
+        ['container(desktop)', '@container desktop',
+            {
+                id: 'container',
+                nodes: [
+                    {
+                        raw: 'desktop',
+                        type: 'string',
+                        value: 'desktop'
+                    }
+                ]
+            },
+            { variables: [{ namespace: 'breakpoint', key: 'desktop', value: 640 }] }]
     ],
     errors: [
         ['@media', '@media', {

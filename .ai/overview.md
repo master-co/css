@@ -54,7 +54,7 @@ Compared with CSS-in-JS:
 - Mode: A conditional variable/style context such as `light` or `dark`.
 - Component: A semantic static utility emitted in the `components` layer.
 - Selector token: A named selector suffix expression.
-- At token: A named `@` suffix expression for media, container, supports, layer, starting-style, and screen conditions.
+- At token: A named `@` suffix expression for media, container, supports, layer, starting-style, and breakpoint conditions.
 
 ## Output Model
 

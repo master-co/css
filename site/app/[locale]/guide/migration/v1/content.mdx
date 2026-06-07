@@ -106,7 +106,7 @@ Apply the style:
 To learn more, check out [component classes](/guide/reusing-styles#component-classes).
 
 ### Merging media queries
-Deprecate extended `breakpoints` and `queries` ​​in favor of screen variables and custom at tokens in the project CSS entry.
+Deprecate extended `breakpoints` and `queries` in favor of breakpoint variables and custom at tokens in the project CSS entry.
 ```js name=config.js
 import { Style } from '@master/css' /* [!code --] */
 
@@ -121,7 +121,7 @@ Style.extend('queries', { /* [!code --] */
 
 ```css name=index.css
 @theme {
-    --screen-laptop: 1024; /* [!code ++] */
+    --breakpoint-laptop: 1024; /* [!code ++] */
 }
 
 @custom-at watch @media (min-width: 38mm) and (max-width: 42mm); /* [!code ++] */

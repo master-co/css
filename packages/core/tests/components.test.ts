@@ -263,7 +263,7 @@ describe('raw declarations', () => {
                 ])
             ],
             variables: [
-                { namespace: 'screen', key: 'sm', value: 640 }
+                { namespace: 'breakpoint', key: 'sm', value: 640 }
             ]
         }).add('btn:hover@sm')
 

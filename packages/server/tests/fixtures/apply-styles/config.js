@@ -1,6 +1,6 @@
 export default {
     variables: [
-        { namespace: 'screen', key: 'sm', value: 834 }
+        { namespace: 'breakpoint', key: 'sm', value: 834 }
     ],
     utilities: [
         { name: 'btn', type: -4, layer: 'components', rules: [

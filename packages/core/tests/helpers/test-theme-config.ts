@@ -208,7 +208,7 @@ const themeConfig: Config = {
         variable(undefined, 'fit', 'fit-content'),
         variable(undefined, 'max', 'max-content'),
         variable(undefined, 'min', 'min-content'),
-        ...variables('screen', {
+        ...variables('breakpoint', {
             '4xs': 360,
             '3xs': 480,
             '2xs': 600,
@@ -220,6 +220,21 @@ const themeConfig: Config = {
             '2xl': 1600,
             '3xl': 1920,
             '4xl': 2560
+        }),
+        ...variables('container', {
+            '3xs': 256,
+            '2xs': 288,
+            xs: 320,
+            sm: 384,
+            md: 448,
+            lg: 512,
+            xl: 576,
+            '2xl': 672,
+            '3xl': 768,
+            '4xl': 896,
+            '5xl': 1024,
+            '6xl': 1152,
+            '7xl': 1280
         }),
         ...variables('font-family', {
             sans: '"Inter", $font-family-sans-fallback',

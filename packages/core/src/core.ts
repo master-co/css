@@ -38,6 +38,8 @@ export default class MasterCSS {
     readonly variables = new Map<string, Variable>()
     readonly modes: string[] = []
     readonly atRules = new Map<string, AtRule>()
+    readonly breakpointAtRules = new Map<string, AtRule>()
+    readonly containerAtRules = new Map<string, AtRule>()
     readonly animations = new Map<string, AnimationDefinitions>()
     readonly preloaded: Required<MasterCSSPreloaded> = {
         variables: {},
@@ -356,10 +358,18 @@ export default class MasterCSS {
 
     resolveAtRules() {
         for (const variable of this.variables.values()) {
-            if (variable.namespace === 'screen' && variable.type === 'number' && variable.value !== undefined && !variable.name.startsWith('-')) {
+            if (variable.namespace === 'breakpoint' && variable.type === 'number' && variable.value !== undefined && !variable.name.startsWith('-')) {
                 const node = this.parseValue(variable.value)
-                this.atRules.set(variable.key, {
+                const atRule = {
                     id: 'media',
+                    nodes: [node as unknown as AtRuleValueNode]
+                } as AtRule
+                this.atRules.set(variable.key, atRule)
+                this.breakpointAtRules.set(variable.key, atRule)
+            } else if (variable.namespace === 'container' && variable.type === 'number' && variable.value !== undefined && !variable.name.startsWith('-')) {
+                const node = this.parseValue(variable.value)
+                this.containerAtRules.set(variable.key, {
+                    id: 'container',
                     nodes: [node as unknown as AtRuleValueNode]
                 })
             }
@@ -387,8 +397,8 @@ export default class MasterCSS {
         const { variables = [], modes = [] } = this.config
         this.modes.push(...modes)
         const createVariable = (definition: VariableDefinition): Variable | undefined => {
-            if (definition.namespace === 'screen' && definition.mode) {
-                throw new Error(`Screen variables cannot be mode-specific: screen-${definition.key}@${definition.mode}`)
+            if ((definition.namespace === 'breakpoint' || definition.namespace === 'container') && definition.mode) {
+                throw new Error(`${definition.namespace[0].toUpperCase()}${definition.namespace.slice(1)} variables cannot be mode-specific: ${definition.namespace}-${definition.key}@${definition.mode}`)
             }
             if (definition.value === false) return
             const namespace = definition.namespace
@@ -629,6 +639,10 @@ export default class MasterCSS {
         this.variables = new Map()
         // @ts-ignore
         this.atRules = new Map()
+        // @ts-ignore
+        this.breakpointAtRules = new Map()
+        // @ts-ignore
+        this.containerAtRules = new Map()
         // @ts-ignore
         this.selectors = new Map()
         // @ts-ignore

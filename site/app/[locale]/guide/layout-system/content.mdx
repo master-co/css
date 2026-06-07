@@ -3,7 +3,7 @@ CSS layout is built from native primitives. [CSS Grid](https://developer.mozilla
 
 In Master CSS, those decisions stay close to the markup and share the same foundations as the rest of the interface:
 
-* [Screen sizes](/guide/screen-sizes) define when layout changes.
+* [Breakpoints and containers](/guide/breakpoints-and-containers) define when layout changes.
 * [Spacing](/guide/spacing) defines gutters, margins, and section rhythm.
 * [Sizing](/guide/sizing) defines wrappers, fixed regions, fluid regions, and constraints.
 * Grid and Flex utilities express the actual composition.
@@ -15,8 +15,8 @@ In Master CSS, those decisions stay close to the markup and share the same found
 </ResizeZone>
 
 ```html
-<!-- @MARK max-w:screen-xs --><!-- @MARK grid-cols:4 --><!-- @MARK grid-cols:8@2xs --><!-- @MARK gap:md@2xs -->
-<main class="w:full max-w:screen-xs mx:auto p:md">
+<!-- @MARK max-w:container-3xl --><!-- @MARK grid-cols:4 --><!-- @MARK grid-cols:8@2xs --><!-- @MARK gap:md@2xs -->
+<main class="w:full max-w:container-3xl mx:auto p:md">
     <section class="grid-cols:4 grid-cols:8@2xs gap:sm gap:md@2xs">
         <header class="grid-col-span:4 grid-col-span:8@2xs">...</header>
         <article class="grid-col-span:4 grid-col-span:4@2xs">...</article>
@@ -29,7 +29,7 @@ In Master CSS, those decisions stay close to the markup and share the same found
 <details>
     <summary>Generated CSS</summary>
     <Class2CSS>
-        {['w:full', 'max-w:screen-xs', 'mx:auto', 'p:md', 'grid-cols:4', 'grid-cols:8@2xs', 'gap:sm', 'gap:md@2xs', 'grid-col-span:4', 'grid-col-span:8@2xs', 'grid-col-span:4@2xs', 'grid-col-span:5@2xs', 'grid-col-span:3@2xs']}
+        {['w:full', 'max-w:container-3xl', 'mx:auto', 'p:md', 'grid-cols:4', 'grid-cols:8@2xs', 'gap:sm', 'gap:md@2xs', 'grid-col-span:4', 'grid-col-span:8@2xs', 'grid-col-span:4@2xs', 'grid-col-span:5@2xs', 'grid-col-span:3@2xs']}
     </Class2CSS>
 </details>
 
@@ -40,7 +40,7 @@ A layout system should answer five questions before individual components start 
 
 | Decision | Master CSS foundation | Typical utilities |
 | --- | --- | --- |
-| Canvas width | Screen sizes and sizing | `w:full`, `max-w:screen-lg`, `mx:auto` |
+| Canvas width | Container sizes and sizing | `w:full`, `max-w:container-7xl`, `mx:auto` |
 | Outer margin | Spacing | `px:md`, `px:xl@md` |
 | Columns | Grid | `grid-cols:4`, `grid-cols:12@md` |
 | Gutters | Spacing | `gap:md`, `gap-x:lg`, `gap-y:xl` |
@@ -51,11 +51,11 @@ These decisions are separate on purpose. A page can keep the same maximum width 
 ---
 
 ## Start with a page container
-The container defines the live area for the layout. Use `w:full` so the wrapper can shrink, `max-w:screen-*` so it aligns with the [screen size scale](/guide/screen-sizes), `mx:auto` to center it, and horizontal padding from the [spacing scale](/guide/spacing) for the outer margin.
+The container defines the live area for the layout. Use `w:full` so the wrapper can shrink, `max-w:container-*` so it aligns with the [container size scale](/guide/breakpoints-and-containers), `mx:auto` to center it, and horizontal padding from the [spacing scale](/guide/spacing) for the outer margin.
 
 ```html
-<!-- @MARK w:full --><!-- @MARK max-w:screen-lg --><!-- @MARK mx:auto --><!-- @MARK px:md --><!-- @MARK px:xl@md -->
-<main class="w:full max-w:screen-lg mx:auto px:md px:xl@md">
+<!-- @MARK w:full --><!-- @MARK max-w:container-7xl --><!-- @MARK mx:auto --><!-- @MARK px:md --><!-- @MARK px:xl@md -->
+<main class="w:full max-w:container-7xl mx:auto px:md px:xl@md">
     ...
 </main>
 ```
@@ -63,13 +63,13 @@ The container defines the live area for the layout. Use `w:full` so the wrapper 
 <details>
     <summary>Generated CSS</summary>
     <Class2CSS>
-        {['w:full', 'max-w:screen-lg', 'mx:auto', 'px:md', 'px:xl@md']}
+        {['w:full', 'max-w:container-7xl', 'mx:auto', 'px:md', 'px:xl@md']}
     </Class2CSS>
 </details>
 
 Use the wrapper for page-level alignment. Use inner grids for content relationships. This keeps outer margins, columns, and card padding from competing with each other.
 
-(i) Use `screen-*` values for layout wrappers that should match breakpoint decisions. Use local `x`, `ch`, or `clamp()` values when the maximum width is based on content measure instead of the responsive scale.
+(i) Use `container-*` values for layout wrappers that should follow the shared container scale. Use local `x`, `ch`, or `clamp()` values when the maximum width is based on content measure instead of the responsive scale.
 
 ---
 
@@ -218,7 +218,7 @@ Use Grid when the parent owns the columns, rows, or area placement. Use Flexbox 
 ## Use container queries for components
 Viewport breakpoints are a good fit for page-level layout. Container queries are a better fit for reusable components because the same component can appear in a narrow sidebar, a modal, or a wide content column.
 
-Add `container` to the component boundary, then use `@container(<screen>)` on descendants.
+Add `container` to the component boundary, then use `@container(<size>)` on descendants.
 
 ```html
 <section class="container">
@@ -265,8 +265,8 @@ Use explicit tracks for app shells, data views, split panes, and content that ha
 ## Common patterns
 ### Page shell
 ```html
-<!-- @MARK max-w:screen-xl --><!-- @MARK px:lg --><!-- @MARK px:2xl@lg -->
-<main class="w:full max-w:screen-xl mx:auto px:lg px:2xl@lg">
+<!-- @MARK max-w:container-7xl --><!-- @MARK px:lg --><!-- @MARK px:2xl@lg -->
+<main class="w:full max-w:container-7xl mx:auto px:lg px:2xl@lg">
     ...
 </main>
 ```
@@ -350,7 +350,7 @@ Use Grid when children need to share a column system. Use Flexbox when children 
 ## Summary
 Build layout systems from stable foundations:
 
-* Use `screen` tokens for breakpoint and wrapper decisions.
+* Use breakpoint tokens for viewport decisions and container tokens for wrapper decisions.
 * Use spacing tokens for gutters, outer margins, and section rhythm.
 * Use `grid-cols:*` and placement utilities for page regions and galleries.
 * Use `flex`, direction, wrapping, and `flex:*` for one-axis component layout.

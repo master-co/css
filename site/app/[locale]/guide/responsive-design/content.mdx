@@ -6,17 +6,17 @@
 <!-- @MARK @xs @sm @md -->
 <div class="grid-cols:2 grid-cols:3@xs grid-cols:4@sm grid-cols:5@md …">…</div>
 ```
-Master CSS allows for the conditional application of styles at different viewport and container sizes. These queries use shared [screen sizes](/guide/screen-sizes), which you can use as viewport breakpoints, screen variables, and container query sizes.
+Master CSS allows for the conditional application of styles at different viewport and container sizes. Viewport queries use [breakpoint tokens](/guide/breakpoints-and-containers), while container queries use container size tokens from the same guide.
 
 ---
 
 ## Based on viewport breakpoints
-CSS Media Queries allow styles to be applied based on the *size of the viewport* rather than individual *elements*. This makes it possible to create responsive layouts that adapt to different screen sizes—such as mobile phones, tablets, and desktops—by defining breakpoints at specific widths.
+CSS Media Queries allow styles to be applied based on the *size of the viewport* rather than individual *elements*. This makes it possible to create responsive layouts that adapt to different viewport widths—such as mobile phones, tablets, and desktops—by defining breakpoints at specific widths.
 
 These breakpoints enable developers to change layouts, typography, spacing, and more to ensure an optimal user experience across devices.
 
 ### Using responsive breakpoints
-The syntax is `@<breakpoint>`, where `<breakpoint>` can be any configured [screen size token](/guide/screen-sizes), such as `xs`, `sm`, `md`, `lg`, etc.
+The syntax is `@<breakpoint>`, where `<breakpoint>` can be any configured [breakpoint token](/guide/breakpoints-and-containers), such as `xs`, `sm`, `md`, `lg`, etc.
 ```html
 <!-- @MARK @xs @sm @md -->
 <div class="grid-cols:2 grid-cols:3@xs grid-cols:4@sm grid-cols:5@md …">…</div>
@@ -36,10 +36,10 @@ Use [comparison](/guide/conditional-queries#comparison-operators) and [logical](
 </details>
 
 ### Creating responsive wrappers
-Fixed element width to a screen size as a responsive wrapper.
+Set fixed maximum widths from the container scale when a wrapper should step through product layout widths.
 ```html
-<!-- @MARK max-w:screen-sm@sm max-w:screen-md@md max-w:screen-lg@lg -->
-<div class="max-w:screen-sm@sm max-w:screen-md@md max-w:screen-lg@lg …">…</div>
+<!-- @MARK max-w:container-4xl@sm max-w:container-5xl@md max-w:container-7xl@lg -->
+<div class="max-w:container-4xl@sm max-w:container-5xl@md max-w:container-7xl@lg …">…</div>
 ```
 
 ---
@@ -76,7 +76,7 @@ The `container` class is a utility class that applies the `container-type: inlin
         {['container', 'flex-col@container(<=2xs)']}
     </Class2CSS>
 </details>
-Container queries and media queries share the same [screen sizes](/guide/screen-sizes).
+Container queries use the container scale from [Breakpoints and Containers](/guide/breakpoints-and-containers), which can use different values from viewport breakpoints.
 
 ### Querying container ranges
 Use [comparison](/guide/conditional-queries#comparison-operators) and [logical](/guide/conditional-queries#logical-operators) operators to create more complex container range queries.
@@ -115,7 +115,7 @@ When it comes to designing and developing responsive web pages, [mobile-first](#
 Also, we propose another flexible strategy － [Syntax-first](#syntax-first).
 
 ### Mobile-first
-The mobile-first strategy is a design and development approach that initially focuses on designing and optimizing for smaller screen sizes, such as mobile phones and tablets, and then gradually expanding to larger screen sizes, including desktop computers.
+The mobile-first strategy is a design and development approach that initially focuses on designing and optimizing for smaller viewports, such as mobile phones and tablets, and then gradually expanding to larger viewports, including desktop computers.
 
 For example, your company is launching a game primarily targeting mobile users with potential future releases for desktop users based on market response; adopting a mobile-first strategy would be ideal at this stage.
 
@@ -144,7 +144,7 @@ Gradually adjust the UI for larger viewports.
 This relies on CSS precedence behavior to override mobile styles with new styles on larger viewports.
 
 ### Desktop-first
-On the other hand, the Desktop-first development strategy initially prioritizes designing and optimizing for larger screen sizes, such as desktop computers and then gradually scaling down to smaller screen sizes, like mobile phones and tablets.
+On the other hand, the Desktop-first development strategy initially prioritizes designing and optimizing for larger viewports, such as desktop computers, and then gradually scaling down to smaller viewports, like mobile phones and tablets.
 
 For example, your company is launching a web drawing software primarily targeting designers with potential future releases for mobile users based on market response; adopting a desktop-first strategy would be ideal at this stage.
 

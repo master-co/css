@@ -159,7 +159,7 @@ describe.concurrent('createConfigFromCSSDirectives', () => {
             config: {
                 modeTrigger: 'class',
                 variables: [
-                    { name: 'screen-sm', value: 640 },
+                    { name: 'breakpoint-sm', value: 640 },
                     { name: 'color-primary', value: '#123' }
                 ],
                 modes: ['dark']
@@ -294,10 +294,18 @@ describe.concurrent('createConfigFromCSSDirectives', () => {
         expect(() => createConfigFromCSSDirectives(directiveResult({
             config: {
                 variables: [
-                    { name: 'screen-md', value: 768, mode: 'compact' }
+                    { name: 'breakpoint-md', value: 768, mode: 'compact' }
                 ]
             }
-        }), { config: createThemeConfig() })).toThrow('Screen variables cannot be mode-specific: screen-md@compact')
+        }), { config: createThemeConfig() })).toThrow('Breakpoint variables cannot be mode-specific: breakpoint-md@compact')
+
+        expect(() => createConfigFromCSSDirectives(directiveResult({
+            config: {
+                variables: [
+                    { name: 'container-md', value: 448, mode: 'compact' }
+                ]
+            }
+        }), { config: createThemeConfig() })).toThrow('Container variables cannot be mode-specific: container-md@compact')
 
         const onWarning = vi.fn()
         const result = createConfigFromCSSDirectives(directiveResult({

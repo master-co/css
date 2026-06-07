@@ -957,6 +957,7 @@ const utilities = [
         aliasGroups: ['flex'],
         unit: 'rem',
         type: UtilityType.Native,
+        namespaces: ['container']
     },
     {
         name: 'flex-wrap',
@@ -993,56 +994,65 @@ const utilities = [
         name: 'width',
         key: 'w',
         unit: 'rem',
-        type: UtilityType.Native
+        type: UtilityType.Native,
+        namespaces: ['container']
     },
     {
         name: 'height',
         key: 'h',
         unit: 'rem',
-        type: UtilityType.Native
+        type: UtilityType.Native,
+        namespaces: ['container']
     },
     {
         name: 'inline-size',
         key: 'is',
         unit: 'rem',
-        type: UtilityType.Native
+        type: UtilityType.Native,
+        namespaces: ['container']
     },
     {
         name: 'block-size',
         key: 'bs',
         unit: 'rem',
-        type: UtilityType.Native
+        type: UtilityType.Native,
+        namespaces: ['container']
     },
     {
         name: 'min-width',
         key: 'min-w',
         unit: 'rem',
-        type: UtilityType.Native
+        type: UtilityType.Native,
+        namespaces: ['container']
     },
     {
         name: 'min-height',
         key: 'min-h',
         unit: 'rem',
-        type: UtilityType.Native
+        type: UtilityType.Native,
+        namespaces: ['container']
     },
     {
         name: 'min-inline-size',
         key: 'min-is',
         unit: 'rem',
-        type: UtilityType.Native
+        type: UtilityType.Native,
+        namespaces: ['container']
     },
     {
         name: 'min-block-size',
         key: 'min-bs',
         unit: 'rem',
-        type: UtilityType.Native
+        type: UtilityType.Native,
+        namespaces: ['container']
     },
     {
         name: 'size',
         type: UtilityType.Shorthand,
         unit: 'rem',
         declarer: 'pair',
-        declarerOptions: ['width', 'height']
+        declarerOptions: ['width', 'height'],
+        namespaces: ['container']
     },
     {
         name: 'min-size',
@@ -1050,7 +1060,8 @@ const utilities = [
         type: UtilityType.Shorthand,
         unit: 'rem',
         declarer: 'pair',
-        declarerOptions: ['min-width', 'min-height']
+        declarerOptions: ['min-width', 'min-height'],
+        namespaces: ['container']
     },
     {
         name: 'max-size',
@@ -1058,7 +1069,8 @@ const utilities = [
         type: UtilityType.Shorthand,
         unit: 'rem',
         declarer: 'pair',
-        declarerOptions: ['max-width', 'max-height']
+        declarerOptions: ['max-width', 'max-height'],
+        namespaces: ['container']
     },
     {
         name: 'box-sizing',
@@ -1092,12 +1104,14 @@ const utilities = [
     {
         name: 'contain-intrinsic-inline-size',
         unit: 'rem',
-        type: UtilityType.Native
+        type: UtilityType.Native,
+        namespaces: ['container']
     },
     {
         name: 'contain-intrinsic-block-size',
         unit: 'rem',
-        type: UtilityType.Native
+        type: UtilityType.Native,
+        namespaces: ['container']
     },
     {
         name: 'content',
@@ -1330,25 +1344,29 @@ const utilities = [
         name: 'max-height',
         key: 'max-h',
         unit: 'rem',
-        type: UtilityType.Native
+        type: UtilityType.Native,
+        namespaces: ['container']
     },
     {
         name: 'max-width',
         key: 'max-w',
         unit: 'rem',
-        type: UtilityType.Native
+        type: UtilityType.Native,
+        namespaces: ['container']
     },
     {
         name: 'max-inline-size',
         key: 'max-is',
         unit: 'rem',
-        type: UtilityType.Native
+        type: UtilityType.Native,
+        namespaces: ['container']
     },
     {
         name: 'max-block-size',
         key: 'max-bs',
         unit: 'rem',
-        type: UtilityType.Native
+        type: UtilityType.Native,
+        namespaces: ['container']
     },
     {
         name: 'opacity',

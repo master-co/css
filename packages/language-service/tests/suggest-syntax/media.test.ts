@@ -1,7 +1,7 @@
 import { test, it, expect, describe } from 'vitest'
 import { hint } from './test'
 
-test.concurrent('screen size', () => expect(hint('hidden@')?.map(({ label }) => label)).toContain('@sm'))
+test.concurrent('breakpoint', () => expect(hint('hidden@')?.map(({ label }) => label)).toContain('@sm'))
 test.concurrent('&', () => expect(hint('hidden@sm&')?.map(({ label }) => label)).toContain('&sm'))
 test.concurrent('&>', () => expect(hint('hidden@sm&>')?.map(({ label }) => label)).toContain('>sm'))
 test.concurrent('&>=', () => expect(hint('hidden@sm&>=')?.map(({ label }) => label)).toContain('>=sm'))

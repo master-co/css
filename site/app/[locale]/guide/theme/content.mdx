@@ -1,5 +1,5 @@
 ## Overview [sr-only]
-Your theme is the shared design vocabulary for a Master CSS project. It defines the values your markup reaches for every day: color roles, spacing, type, radius, shadows, motion, responsive screens, mode-specific values, named conditions, and shared selector aliases.
+Your theme is the shared design vocabulary for a Master CSS project. It defines the values your markup reaches for every day: color roles, spacing, type, radius, shadows, motion, breakpoints, container sizes, mode-specific values, named conditions, and shared selector aliases.
 
 In Master CSS, that vocabulary usually lives in the project CSS entry: `@theme` for tokens and modes, `@master` for project settings, `@custom-at` for named conditions, and `@custom-selector` for selector shortcuts. The file still feels like CSS, while markup keeps using short semantic classes.
 
@@ -12,7 +12,8 @@ In Master CSS, that vocabulary usually lives in the project CSS entry: `@theme` 
     --spacing-card: 24;
     --border-radius-card: 16;
     --shadow-card: 0 16px 40px rgb(15 23 42 / .12);
-    --screen-md: 768;
+    --breakpoint-md: 768;
+    --container-md: 448;
 }
 
 @custom-at motion-safe @media (prefers-reduced-motion: no-preference);
@@ -59,7 +60,8 @@ Theme tokens are native custom properties inside `@theme` blocks. Their prefixes
     --font-family-sans: Inter, ui-sans-serif, system-ui, sans-serif;
     --border-radius-card: 16;
     --shadow-card: 0 16px 40px rgb(15 23 42 / .12);
-    --screen-md: 768;
+    --breakpoint-md: 768;
+    --container-md: 448;
 }
 ```
 
@@ -93,14 +95,18 @@ Define the same token key as a preset token when you want to override it. Later 
 }
 ```
 
-### Screen tokens
-Responsive breakpoints are theme tokens too. Define `screen` variables in `@theme`, then use them as at-rule suffixes in markup.
+### Breakpoint and container tokens
+Responsive thresholds are theme tokens too. Define `breakpoint` variables for viewport at-rule suffixes, and define `container` variables for container query thresholds and width caps.
 
 ```css name=index.css
 @theme {
-    --screen-sm: 640;
-    --screen-md: 768;
-    --screen-lg: 1024;
+    --breakpoint-sm: 640;
+    --breakpoint-md: 768;
+    --breakpoint-lg: 1024;
+
+    --container-sm: 384;
+    --container-md: 448;
+    --container-lg: 512;
 }
 ```
 
@@ -108,11 +114,17 @@ Responsive breakpoints are theme tokens too. Define `screen` variables in `@them
 <div class="grid-cols:1 grid-cols:2@md grid-cols:3@lg gap:md">
     ...
 </div>
+
+<aside class="container max-w:container-lg">
+    <article class="grid-cols:1 grid-cols:2@container(md)">
+        ...
+    </article>
+</aside>
 ```
 
-Keep screen tokens broad and product-wide. Use raw media or container syntax only when the condition belongs to one local component. See [Screen Sizes](/guide/screen-sizes) for the responsive scale.
+Keep breakpoint tokens broad and product-wide. Use container tokens when a reusable component should respond to the space it receives. Use raw media or container syntax only when the condition belongs to one local component. See [Breakpoints and Containers](/guide/breakpoints-and-containers) for the responsive scale.
 
-For token strategy and naming discipline, use [Design Tokens](/guide/design-tokens). For the exact color, spacing, typography, radius, elevation, motion, and screen scales, continue into the foundation guides.
+For token strategy and naming discipline, use [Design Tokens](/guide/design-tokens). For the exact color, spacing, typography, radius, elevation, motion, breakpoint, and container scales, continue into the foundation guides.
 
 ---
 
@@ -234,7 +246,7 @@ Inside managed definitions and native style rules, use `@at` blocks instead of p
 }
 ```
 
-`@at` accepts custom at tokens, screen tokens such as `md`, mode names such as `dark`, and raw Master CSS at syntax such as `<sm`.
+`@at` accepts custom at tokens, breakpoint tokens such as `md`, mode names such as `dark`, and raw Master CSS at syntax such as `<sm`.
 
 ### Selector tokens
 Selector tokens name selectors that repeat across markup or CSS-defined styles. Define them with `@custom-selector`.
@@ -273,7 +285,7 @@ Inside CSS-defined style rules, prefer native nested selectors instead of puttin
 ```
 
 ### Naming rules
-Screen variables automatically create at tokens such as `@md`, and modes automatically create at tokens such as `@dark`. Custom at token names cannot start with `@`, `:`, or `::`, and cannot conflict with screen or mode names.
+Breakpoint variables automatically create at tokens such as `@md`, and modes automatically create at tokens such as `@dark`. Custom at token names cannot start with `@`, `:`, or `::`, and cannot conflict with breakpoint or mode names.
 
 Selector token names must start with `:` or `::`. Names that look like conditions belong in `@custom-at`, not `@custom-selector`.
 

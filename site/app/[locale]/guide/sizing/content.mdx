@@ -1,5 +1,5 @@
 ## Overview [sr-only]
-CSS sizing controls an element's [width](https://developer.mozilla.org/en-US/docs/Web/CSS/width), [height](https://developer.mozilla.org/en-US/docs/Web/CSS/height), and the constraints that keep a layout usable as its content or container changes. Master CSS keeps those decisions close to the markup with compact rules for one axis, both axes, minimums, maximums, fractions, screen sizes, and native CSS functions.
+CSS sizing controls an element's [width](https://developer.mozilla.org/en-US/docs/Web/CSS/width), [height](https://developer.mozilla.org/en-US/docs/Web/CSS/height), and the constraints that keep a layout usable as its content or container changes. Master CSS keeps those decisions close to the markup with compact rules for one axis, both axes, minimums, maximums, fractions, breakpoints and containers, and native CSS functions.
 
 Use sizing rules to answer three layout questions:
 
@@ -53,14 +53,14 @@ Use one-axis rules when width and height are independent. Use pair rules when an
 | Set both maximum axes | `max:<size>` | `max-width`, `max-height` |
 
 ```html
-<!-- @MARK w:80x --><!-- @MARK h:48x --><!-- @MARK min:10x --><!-- @MARK max-w:screen-md -->
-<aside class="w:80x h:48x min:10x max-w:screen-md">...</aside>
+<!-- @MARK w:80x --><!-- @MARK h:48x --><!-- @MARK min:10x --><!-- @MARK max-w:container-md -->
+<aside class="w:80x h:48x min:10x max-w:container-md">...</aside>
 ```
 
 <details>
     <summary>Generated CSS</summary>
     <Class2CSS>
-        {['w:80x', 'h:48x', 'min:10x', 'max-w:screen-md']}
+        {['w:80x', 'h:48x', 'min:10x', 'max-w:container-md']}
     </Class2CSS>
 </details>
 
@@ -84,7 +84,7 @@ The `x` suffix multiplies the configured [base unit](/guide/theme#project-settin
     </Class2CSS>
 </details>
 
-Use this scale for icons, avatars, fixed controls, columns with intentional widths, and skeleton blocks. For fluid page layout, pair it with `w:full`, fractions, `screen-*`, or CSS functions.
+Use this scale for icons, avatars, fixed controls, columns with intentional widths, and skeleton blocks. For fluid page layout, pair it with `w:full`, fractions, `container-*`, or CSS functions.
 
 ---
 
@@ -122,19 +122,19 @@ Use `size:*` for elements that should remain square, such as avatars, swatches, 
 ---
 
 ## Use fluid and keyword sizes
-Sizing values can use shared keywords, configured screen variables, fractions, native CSS units, and CSS functions.
+Sizing values can use shared keywords, configured container variables, fractions, native CSS units, and CSS functions.
 
 | Value form | Example | Use for |
 | --- | --- | --- |
 | Keyword | `w:full`, `w:fit`, `w:min`, `w:max` | Content-sized or parent-sized elements |
-| Screen variable | `max-w:screen-md` | Page wrappers and responsive reading widths |
+| Container variable | `max-w:container-5xl` | Page wrappers and responsive reading widths |
 | Fraction | `w:1/2`, `h:3/4` | Percent-based columns or proportional children |
 | Native unit | `h:100dvh`, `w:72ch` | Viewport- or text-relative sizing |
 | Function | `w:clamp(16rem,50vw,40rem)` | Fluid bounds without custom CSS |
 
 ```html
-<!-- @MARK w:full --><!-- @MARK max-w:screen-md -->
-<main class="w:full max-w:screen-md">...</main>
+<!-- @MARK w:full --><!-- @MARK max-w:container-5xl -->
+<main class="w:full max-w:container-5xl">...</main>
 
 <!-- @MARK w:1/2 --><!-- @MARK h:100dvh -->
 <aside class="w:1/2 h:100dvh">...</aside>
@@ -146,7 +146,7 @@ Sizing values can use shared keywords, configured screen variables, fractions, n
 <details>
     <summary>Generated CSS</summary>
     <Class2CSS>
-        {['w:full', 'max-w:screen-md', 'w:1/2', 'h:100dvh', 'w:clamp(16rem,50vw,40rem)']}
+        {['w:full', 'max-w:container-5xl', 'w:1/2', 'h:100dvh', 'w:clamp(16rem,50vw,40rem)']}
     </Class2CSS>
 </details>
 
@@ -184,7 +184,7 @@ Most page and component layouts should be flexible first, then constrained. A co
     </Class2CSS>
 </details>
 
-Use `max-w:screen-*` for wrappers that should align with your [screen sizes](/guide/screen-sizes), and use local `x` values when a component has its own measured maximum.
+Use `max-w:container-*` for wrappers that should align with your [container size scale](/guide/breakpoints-and-containers), and use local `x` values when a component has its own measured maximum.
 
 ---
 
@@ -192,8 +192,8 @@ Use `max-w:screen-*` for wrappers that should align with your [screen sizes](/gu
 Sizing rules can use the same [selectors](/guide/state-selectors), [viewport breakpoints](/guide/responsive-design#based-on-viewport-breakpoints), and [container queries](/guide/responsive-design#based-on-container-sizes) as other Master CSS rules.
 
 ```html
-<!-- @MARK w:full --><!-- @MARK w:1/2@sm --><!-- @MARK max-w:screen-lg@lg -->
-<div class="w:full w:1/2@sm max-w:screen-lg@lg">...</div>
+<!-- @MARK w:full --><!-- @MARK w:1/2@sm --><!-- @MARK max-w:container-7xl@lg -->
+<div class="w:full w:1/2@sm max-w:container-7xl@lg">...</div>
 
 <div class="container">
     <!-- @MARK size:10x@container(md) -->
@@ -204,7 +204,7 @@ Sizing rules can use the same [selectors](/guide/state-selectors), [viewport bre
 <details>
     <summary>Generated CSS</summary>
     <Class2CSS>
-        {['w:full', 'w:1/2@sm', 'max-w:screen-lg@lg', 'container', 'size:8x', 'size:10x@container(md)']}
+        {['w:full', 'w:1/2@sm', 'max-w:container-7xl@lg', 'container', 'size:8x', 'size:10x@container(md)']}
     </Class2CSS>
 </details>
 
@@ -235,7 +235,7 @@ For repeated product dimensions, add named variables in the project CSS entry an
 ---
 
 ## Common patterns
-* Page wrapper: `w:full max-w:screen-lg`
+* Page wrapper: `w:full max-w:container-7xl`
 * Reading measure: `w:full max-w:72ch`
 * Square avatar: `size:10x round`
 * Icon button: `size:9x grid place-content:center`
