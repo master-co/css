@@ -1,105 +1,179 @@
-## Overview [sr-only]
-Sizing controls the space an element asks for, the bounds it must stay within, and the conditions that can change those dimensions. In CSS this touches [width](https://developer.mozilla.org/en-US/docs/Web/CSS/width), [height](https://developer.mozilla.org/en-US/docs/Web/CSS/height), min and max constraints, percentages, intrinsic keywords, viewport units, container values, and CSS functions.
+import XScale from './components/XScale'
 
-Master CSS keeps those sizing decisions readable in markup. Use `w:*` and `h:*` for one axis, `size:*` for both axes, `min-*` and `max-*` for constraints, and responsive variants when the dimension changes by viewport or container.
+## Overview [sr-only]
+Sizing describes how much space an element should take, how far it can grow, how small it may become, and which boundary should change that decision. In CSS this includes [width](https://developer.mozilla.org/en-US/docs/Web/CSS/width), [height](https://developer.mozilla.org/en-US/docs/Web/CSS/height), min and max constraints, intrinsic keywords, percentages, viewport units, container values, and CSS functions.
+
+Master CSS keeps those decisions close to the element that owns them. Use `w:*` and `h:*` for one axis, `size:*` when both axes intentionally match, `min-*` and `max-*` for constraints, and responsive variants when the size changes by viewport or container.
 
 <Demo>
     <div className="container w:full">
-        <div className="grid-cols:1 grid-cols:2@container(2xs) gap:lg w:full">
-            <div className="bg:surface r:lg p:lg b:1|lightest">
-                <DemoLabel>w:full max-w:64x</DemoLabel>
-                <div className="w:full max-w:64x h:12x bg:primary/.15 b:1|primary/.25 r:lg"></div>
-            </div>
-            <div className="bg:surface r:lg p:lg b:1|lightest">
-                <DemoLabel>size:12x round</DemoLabel>
-                <div className="size:12x round bg:primary/.15 b:1|primary/.25"></div>
-            </div>
+        <div className="grid-cols:1 grid-cols:2@container(2xs) gap:md w:full">
+            <section className="min-w:0 bg:surface r:lg p:lg b:1|lightest">
+                <DemoLabel>Fluid wrapper</DemoLabel>
+                <div className="w:full max-w:64x mx:auto">
+                    <div className="h:10x bg:primary/.15 b:1|primary/.25 r:lg"></div>
+                    <div className="mt:sm h:4x w:3/4 bg:primary/.1 r:sm"></div>
+                </div>
+            </section>
+            <section className="min-w:0 bg:surface r:lg p:lg b:1|lightest">
+                <DemoLabel>Measured object</DemoLabel>
+                <div className="flex items:center gap:md">
+                    <div className="size:12x round bg:primary/.15 b:1|primary/.25"></div>
+                    <div className="min-w:0 flex:1">
+                        <div className="h:4x w:full max-w:28x bg:primary/.16 r:sm"></div>
+                        <div className="mt:xs h:3x w:2/3 bg:primary/.1 r:sm"></div>
+                    </div>
+                </div>
+            </section>
         </div>
     </div>
 </Demo>
 
 ```html
-<!-- @MARK w:full --><!-- @MARK max-w:64x -->
-<section class="w:full max-w:64x">...</section>
+<!-- @MARK w:full --><!-- @MARK max-w:64x --><!-- @MARK mx:auto -->
+<section class="w:full max-w:64x mx:auto">...</section>
 
-<!-- @MARK size:12x -->
-<button class="size:12x round">...</button>
+<!-- @MARK size:12x --><!-- @MARK min-w:0 -->
+<article class="flex gap:md">
+    <img class="size:12x round" src="..." alt="" />
+    <div class="min-w:0">...</div>
+</article>
 ```
 
 <details>
     <summary>Generated CSS</summary>
     <Class2CSS>
-        {['w:full', 'max-w:64x', 'size:12x']}
+        {['w:full', 'max-w:64x', 'mx:auto', 'size:12x', 'min-w:0']}
     </Class2CSS>
 </details>
 
 ---
 
-## Start with the sizing decision
-Sizing rules work best when each class has a clear job: set a preferred size, set a lower bound, set an upper bound, or keep two axes together.
+## Start with the sizing job
+A sizing class should have one clear job. It can set the preferred size, keep the element from collapsing, cap growth, or tie both axes together.
 
-| Decision | Utility | CSS declarations |
+| Job | Use | Example |
 | --- | --- | --- |
-| Preferred width | `w:<size>` | `width` |
-| Preferred height | `h:<size>` | `height` |
-| Same width and height | `size:<size>` | `width`, `height` |
-| Lower width bound | `min-w:<size>` | `min-width` |
-| Lower height bound | `min-h:<size>` | `min-height` |
-| Lower bound on both axes | `min:<size>` | `min-width`, `min-height` |
-| Upper width bound | `max-w:<size>` | `max-width` |
-| Upper height bound | `max-h:<size>` | `max-height` |
-| Upper bound on both axes | `max:<size>` | `max-width`, `max-height` |
+| Set the preferred inline size | `w:*` | `w:full`, `w:72ch`, `w:1/2` |
+| Set the preferred block size | `h:*` | `h:12x`, `h:100dvh`, `h:fit` |
+| Keep both axes equal | `size:*` | `size:10x`, `size:md` |
+| Set a lower bound | `min-w:*`, `min-h:*`, `min:*` | `min-w:0`, `min-h:100dvh` |
+| Set an upper bound | `max-w:*`, `max-h:*`, `max:*` | `max-w:7xl`, `max-h:80dvh` |
 
 ```html
-<!-- @MARK w:80x --><!-- @MARK h:48x --><!-- @MARK min:10x --><!-- @MARK max-w:md -->
-<aside class="w:80x h:48x min:10x max-w:md">...</aside>
+<!-- @MARK w:full --><!-- @MARK max-w:7xl --><!-- @MARK min-h:100dvh -->
+<main class="w:full max-w:7xl min-h:100dvh mx:auto">
+    ...
+</main>
 ```
 
 <details>
     <summary>Generated CSS</summary>
     <Class2CSS>
-        {['w:80x', 'h:48x', 'min:10x', 'max-w:md']}
+        {['w:full', 'max-w:7xl', 'min-h:100dvh', 'mx:auto']}
     </Class2CSS>
 </details>
 
-Use one-axis rules when the element is naturally rectangular. Use pair rules when the element should stay square, or when a minimum or maximum box needs the same value on both axes.
+Use one-axis rules when the element is rectangular by role. Use `size:*`, `min:*`, or `max:*` only when both axes genuinely share the same decision.
 
 ---
 
-## Use the `x` scale for measured UI
-The `x` suffix multiplies the configured [base unit](/guide/theme#project-settings), which defaults to **4px**. It is the direct sizing scale for measured interface pieces.
+## Prefer fluid layout first
+Most layout should start flexible and then add constraints. A wrapper that fills available space and stops at a cap behaves better than one fixed width that only fits one viewport.
+
+```html
+<!-- @MARK w:full --><!-- @MARK max-w:7xl --><!-- @MARK px:md --><!-- @MARK px:xl@md -->
+<main class="w:full max-w:7xl mx:auto px:md px:xl@md">
+    ...
+</main>
+
+<!-- @MARK w:full --><!-- @MARK max-w:72ch -->
+<article class="w:full max-w:72ch">
+    ...
+</article>
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['w:full', 'max-w:7xl', 'mx:auto', 'px:md', 'px:xl@md', 'max-w:72ch']}
+    </Class2CSS>
+</details>
+
+Use `w:full` when the element should follow its parent, fractions such as `w:1/2` for proportional regions, `max-w:*` for caps, and native CSS functions such as `clamp()` when the bound itself should be fluid.
+
+```html
+<!-- @MARK w:full --><!-- @MARK w:1/2@sm -->
+<aside class="w:full w:1/2@sm">...</aside>
+
+<!-- @MARK w:clamp(18rem,50vw,42rem) -->
+<section class="w:clamp(18rem,50vw,42rem)">...</section>
+```
+
+Fractions become percentages. Height percentages still follow native CSS behavior: the parent needs a definite height before `h:full` or `h:1/2` can resolve predictably.
+
+---
+
+## Use container values for shared surfaces
+Sizing utilities read the container namespace contextually. `max-w:5xl`, `w:md`, `size:sm`, `min-w:xs`, and `flex-basis:lg` use `--container-*` values without repeating the namespace in markup.
+
+```html
+<!-- @MARK w:full --><!-- @MARK max-w:5xl -->
+<main class="w:full max-w:5xl mx:auto">
+    ...
+</main>
+
+<!-- @MARK w:md --><!-- @MARK max-w:full -->
+<aside class="w:md max-w:full">...</aside>
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['w:full', 'max-w:5xl', 'mx:auto', 'w:md', 'max-w:full']}
+    </Class2CSS>
+</details>
+
+Use container values for shared layout surfaces: page wrappers, panels, modals, sidebars, drawer widths, and component caps. Use local `ch`, `x`, or CSS functions when the dimension belongs to content measure or one component's private geometry.
+
+For the full container scale and container query behavior, see [containers](/guide/containers).
+
+---
+
+## Use measured sizes for objects
+The `x` suffix multiplies the configured [base unit](/guide/theme#project-settings), which defaults to **4 pixels**. It is useful when the element is a measured object, not a fluid region.
 
 <XScale />
 
 ```html
-<!-- @MARK size:6x -->
-<span class="size:6x">...</span>
+<!-- @MARK size:10x -->
+<img class="size:10x round object:cover" src="..." alt="" />
 
-<!-- @MARK w:16x --><!-- @MARK h:10x -->
-<div class="w:16x h:10x">...</div>
+<!-- @MARK w:36x --><!-- @MARK h:20x -->
+<figure class="w:36x h:20x">...</figure>
 ```
 
 <details>
     <summary>Generated CSS</summary>
     <Class2CSS>
-        {['size:6x', 'w:16x', 'h:10x']}
+        {['size:10x', 'w:36x', 'h:20x']}
     </Class2CSS>
 </details>
 
-Use the `x` scale for icons, avatars, handles, checkboxes, skeleton blocks, fixed media slots, and components with deliberate measured geometry. For page wrappers and fluid regions, prefer `w:full`, fractions, container values, native units, or CSS functions.
+Use measured sizes for icons, avatars, handles, checkboxes, skeleton blocks, media slots, and other pieces with deliberate geometry. For page structure, reach for `w:full`, fractions, container values, viewport units, text units, or `clamp()` first.
 
 ---
 
-## Size one axis or both axes
-Use `size:*` for square UI pieces. Use `w:*` and `h:*` separately when the element has a rectangular role or when each axis answers a different design question.
+## Pair axes deliberately
+`size:*` is not a shorter way to avoid thinking about dimensions. It is the right tool when an element is square by design.
 
 <Demo>
     <div className="flex gap:lg items:center w:full">
-        <div>
+        <div className="flex:0">
             <DemoLabel>size:14x</DemoLabel>
             <div className="size:14x grid place-content:center bg:primary/.15 b:1|primary/.25 r:lg font:medium">A</div>
         </div>
-        <div className="flex:1">
+        <div className="flex:1 min-w:0">
             <DemoLabel>w:full h:14x</DemoLabel>
             <div className="w:full h:14x grid place-content:center bg:primary/.15 b:1|primary/.25 r:lg font:medium">Banner</div>
         </div>
@@ -108,7 +182,7 @@ Use `size:*` for square UI pieces. Use `w:*` and `h:*` separately when the eleme
 
 ```html
 <!-- @MARK size:14x -->
-<img class="size:14x round object:cover" src="..." alt="" />
+<button class="size:14x grid place-content:center">...</button>
 
 <!-- @MARK w:full --><!-- @MARK h:14x -->
 <div class="w:full h:14x">...</div>
@@ -121,77 +195,25 @@ Use `size:*` for square UI pieces. Use `w:*` and `h:*` separately when the eleme
     </Class2CSS>
 </details>
 
-When the element should keep a ratio rather than equal axes, use [aspect ratio](/reference/aspect-ratio) with a width instead of forcing both dimensions.
-
----
-
-## Use fluid values for layout
-Most layout should be flexible first. Use keywords, fractions, viewport units, text-relative units, and CSS functions when the dimension describes behavior rather than a fixed object size.
-
-| Value form | Example | Use for |
-| --- | --- | --- |
-| Keyword | `w:full`, `w:fit`, `w:min`, `w:max` | Parent-sized or intrinsic elements |
-| Fraction | `w:1/2`, `h:3/4` | Proportional columns and split regions |
-| Viewport unit | `min-h:100dvh` | Full-height sections and app shells |
-| Text unit | `max-w:72ch` | Reading measure |
-| Function | `w:clamp(18rem,50vw,42rem)` | Fluid bounds without a named token |
+When an element should keep a non-square ratio, use [aspect ratio](/reference/aspect-ratio) with a width instead of locking both dimensions.
 
 ```html
-<!-- @MARK w:full --><!-- @MARK max-w:72ch -->
-<article class="w:full max-w:72ch">...</article>
-
-<!-- @MARK w:1/2 --><!-- @MARK min-h:100dvh -->
-<aside class="w:1/2 min-h:100dvh">...</aside>
-
-<!-- @MARK w:clamp(18rem,50vw,42rem) -->
-<section class="w:clamp(18rem,50vw,42rem)">...</section>
+<!-- @MARK w:full --><!-- @MARK aspect:16/9 -->
+<video class="w:full aspect:16/9" controls></video>
 ```
-
-<details>
-    <summary>Generated CSS</summary>
-    <Class2CSS>
-        {['w:full', 'max-w:72ch', 'w:1/2', 'min-h:100dvh', 'w:clamp(18rem,50vw,42rem)']}
-    </Class2CSS>
-</details>
-
-Fractions become percentages. Height percentages still follow native CSS behavior: the parent needs a definite height before `h:1/2` or `h:full` can resolve predictably.
 
 ---
 
-## Cap wrappers with container values
-Container size values are the shared scale for page wrappers, panels, modal widths, and component caps. Sizing utilities read that namespace contextually, so write `max-w:5xl`, not a longer namespace-prefixed value.
-
-```html
-<!-- @MARK w:full --><!-- @MARK max-w:7xl --><!-- @MARK mx:auto -->
-<main class="w:full max-w:7xl mx:auto">
-    ...
-</main>
-
-<!-- @MARK w:full --><!-- @MARK max-w:md -->
-<aside class="w:full max-w:md">...</aside>
-```
-
-<details>
-    <summary>Generated CSS</summary>
-    <Class2CSS>
-        {['w:full', 'max-w:7xl', 'mx:auto', 'max-w:md']}
-    </Class2CSS>
-</details>
-
-Use [containers](/guide/containers) when the size belongs to shared responsive surfaces. Use local `x`, `ch`, or `clamp()` values when the size belongs to content measure or one component's local geometry.
-
----
-
-## Constrain flexible children
-Min and max rules are often more important than fixed widths. They let a layout absorb different content sizes without overflowing or becoming unreadable.
+## Constrain instead of forcing
+Min and max rules are often more stable than fixed widths. They let content, containers, and responsive variants negotiate space without overflow.
 
 <Demo>
     <div className="w:full max-w:96x mx:auto bg:surface r:lg b:1|lightest p:lg">
-        <DemoLabel>w:full max-w:96x min-w:0</DemoLabel>
+        <DemoLabel>min-w:0 max-w:96x</DemoLabel>
         <div className="flex gap:md">
-            <div className="size:10x bg:primary/.15 r:lg"></div>
+            <div className="size:10x flex:0 bg:primary/.15 r:lg"></div>
             <div className="min-w:0 flex:1">
-                <div className="font:medium">Shrinkable content</div>
+                <div className="font:medium fg:strong">Shrinkable content</div>
                 <div className="fg:muted text:sm white-space:nowrap overflow:hidden text-overflow:ellipsis">Long text can shrink inside the row without forcing the wrapper wider.</div>
             </div>
         </div>
@@ -199,34 +221,37 @@ Min and max rules are often more important than fixed widths. They let a layout 
 </Demo>
 
 ```html
-<!-- @MARK w:full --><!-- @MARK max-w:96x --><!-- @MARK min-w:0 -->
-<article class="w:full max-w:96x">
-    <div class="min-w:0">...</div>
+<!-- @MARK flex --><!-- @MARK min-w:0 --><!-- @MARK max-w:96x -->
+<article class="flex gap:md max-w:96x">
+    <img class="size:10x flex:0" alt="" />
+    <div class="min-w:0">Long content...</div>
 </article>
 ```
 
 <details>
     <summary>Generated CSS</summary>
     <Class2CSS>
-        {['w:full', 'max-w:96x', 'min-w:0']}
+        {['flex', 'gap:md', 'max-w:96x', 'size:10x', 'flex:0', 'min-w:0']}
     </Class2CSS>
 </details>
 
 In flex and grid layouts, `min-w:0` is the common fix for text or media that refuses to shrink. Without it, intrinsic content can force a row wider than its container even when the parent has a max width.
 
+Use `min-h:*` for baseline regions that may grow, such as app shells, empty states, and hero sections. Use `max-h:*` for scrollable panels, menus, and media regions that must stay inside the viewport.
+
 ---
 
-## Adapt sizing by viewport or container
-Sizing classes can use [breakpoints](/guide/breakpoints), [containers](/guide/containers), selectors, and media queries like any other utility.
+## Adapt at the right boundary
+Sizing classes can use the same [breakpoints](/guide/breakpoints), [containers](/guide/containers), selectors, and media queries as other utilities. Choose the boundary that owns the decision.
 
 ```html
 <!-- @MARK w:full --><!-- @MARK w:1/2@sm --><!-- @MARK max-w:7xl@lg -->
-<div class="w:full w:1/2@sm max-w:7xl@lg">...</div>
+<section class="w:full w:1/2@sm max-w:7xl@lg">...</section>
 
-<div class="container">
-    <!-- @MARK size:10x@container(md) -->
+<!-- @MARK container --><!-- @MARK size:10x@container(md) -->
+<article class="container">
     <button class="size:8x size:10x@container(md)">...</button>
-</div>
+</article>
 ```
 
 <details>
@@ -236,18 +261,18 @@ Sizing classes can use [breakpoints](/guide/breakpoints), [containers](/guide/co
     </Class2CSS>
 </details>
 
-Use viewport breakpoints when the whole page changes. Use container queries when a reusable component should adapt to the space it receives.
+Use viewport breakpoints when the whole page shell changes. Use container queries when a reusable component should adapt to the space it receives in a sidebar, modal, card grid, or main content column.
 
 ---
 
 ## Add product sizing tokens
-When a dimension becomes part of the product language, add a named variable in the project CSS entry. Numeric values use the utility's default unit; explicit units and functions are preserved.
+When a dimension becomes part of the product language, add a named container variable in the project CSS entry. Numeric values use the utility's default unit, while explicit units and functions are preserved.
 
 ```css name=index.css
 @theme {
-    --width-sidebar: 280;
+    --container-sidebar: 280;
     --container-measure: 72ch;
-    --width-panel: clamp(18rem,50vw,42rem);
+    --container-panel: clamp(18rem,50vw,42rem);
 }
 ```
 
@@ -258,7 +283,20 @@ When a dimension becomes part of the product language, add a named variable in t
 <section class="w:panel">...</section>
 ```
 
-Use descriptive names such as `sidebar`, `measure`, `panel`, or `media` instead of numeric variable keys. Numeric keys can be confused with raw unitless values.
+Use descriptive names such as `sidebar`, `measure`, `panel`, or `media` instead of numeric keys. Numeric keys are easy to confuse with raw values such as `w:1` or `w:2`.
+
+If the value is a local CSS variable instead of a sizing token, reference it explicitly.
+
+```css name=index.css
+@theme {
+    --sidebar-width: 280;
+}
+```
+
+```html
+<!-- @MARK w:$sidebar-width -->
+<aside class="w:$sidebar-width">...</aside>
+```
 
 ---
 
@@ -269,25 +307,25 @@ Use descriptive names such as `sidebar`, `measure`, `panel`, or `media` instead 
 <main class="w:320x">...</main>
 ```
 
-(o) The wrapper fills available space and stops at a cap.
+(o) The wrapper fills available space and stops at a shared cap.
 
 ```html
 <main class="w:full max-w:7xl mx:auto">...</main>
 ```
 
-(x) A square component uses separate width and height values that can drift.
+(x) A square component repeats separate width and height values that can drift.
 
 ```html
 <button class="w:10x h:12x">...</button>
 ```
 
-(o) The component uses one size decision.
+(o) The component uses one sizing decision.
 
 ```html
 <button class="size:10x">...</button>
 ```
 
-(x) A flex child has a max width, but its content still forces overflow.
+(x) A flex child has a max width, but its content can still force overflow.
 
 ```html
 <div class="flex">
@@ -310,6 +348,7 @@ Use descriptive names such as `sidebar`, `measure`, `panel`, or `media` instead 
 * Reading measure: `w:full max-w:72ch`
 * Square avatar: `size:10x round object:cover`
 * Icon button: `size:9x grid place-content:center`
+* Fixed media slot: `w:36x h:20x object:cover`
 * Fluid panel: `w:clamp(18rem,50vw,42rem)`
 * Shrinkable flex child: `min-w:0`
 * Full viewport section: `min-h:100dvh`
