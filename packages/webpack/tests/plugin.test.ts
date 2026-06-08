@@ -108,7 +108,7 @@ function makePlugin(options: Record<string, unknown> = {}, cwd = process.cwd()) 
     const plugin = new MasterCSSPlugin({
         config: {} as any,
         include: [],
-        sources: [],
+        required: [],
         ...options,
     } as any, cwd)
     // Block prepare() / startWatch() — they would try to read the cwd.
@@ -195,7 +195,7 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
                 ]
             } as any,
             include: [],
-            sources: [],
+            required: [],
         } as any)
         const { compiler } = makeFakeCompiler()
         ;(compiler as any).webpack = { sources: { RawSource: function NoopSource(this: object) { /* stub */ } } }
@@ -220,7 +220,7 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
     test('resolves virtual:master-css-preloaded to a JS virtual module', async () => {
         const plugin = new MasterCSSPlugin({
             include: [],
-            sources: [],
+            required: [],
         } as any)
         const { compiler } = makeFakeCompiler()
         ;(compiler as any).webpack = { sources: { RawSource: function NoopSource(this: object) { /* stub */ } } }
@@ -468,7 +468,7 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
 
             const plugin = await new MasterCSSPlugin({
                 include: [],
-                sources: [],
+                required: [],
                 verbose: 0
             }, root).init()
 

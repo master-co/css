@@ -43,7 +43,7 @@
             module.exports = (config) => { // [!code ++]
                 config.plugins.push( // [!code ++]
                     new MasterCSSPlugin({ // [!code ++]
-                        sources: ['src/index.html'] // [!code ++]
+                        required: ['src/index.html'] // [!code ++]
                     }) // [!code ++]
                 ) // [!code ++]
                 return config // [!code ++]

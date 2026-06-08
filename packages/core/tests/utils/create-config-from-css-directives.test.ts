@@ -11,6 +11,14 @@ import { createCSSDirectiveAtRuleReference } from 'shared/css-directives'
 function directiveResult(result: Partial<CSSDirectiveResult>): CSSDirectiveResult {
     return {
         config: {},
+        extractionPolicy: {
+            include: [],
+            exclude: [],
+            required: [],
+            safelist: [],
+            blocklist: [],
+            preserveNative: false
+        },
         classNames: [],
         nativeClassNames: [],
         nativeCSS: '',

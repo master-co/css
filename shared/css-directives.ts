@@ -52,6 +52,15 @@ export interface CSSDirectiveConfig {
     modeTrigger?: CSSDirectiveModeTrigger
 }
 
+export interface CSSDirectiveExtractionPolicy {
+    include: string[]
+    exclude: string[]
+    required: string[]
+    safelist: string[]
+    blocklist: (string | RegExp)[]
+    preserveNative: boolean
+}
+
 export interface CSSDirectiveStyleComposeDefinition {
     type: 'compose'
     order: number
@@ -78,6 +87,7 @@ export type CSSDirectiveStyleDefinition =
 
 export interface CSSDirectiveResult {
     config: CSSDirectiveConfig
+    extractionPolicy: CSSDirectiveExtractionPolicy
     classNames: string[]
     nativeClassNames: string[]
     nativeCSS: string

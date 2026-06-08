@@ -27,7 +27,7 @@
             Add a `masterCSS` vite plugin in `vite.config.js`.
 
             - Set `options.mode` to `static`
-            - Add php files to `options.sources`
+            - Add php files to `options.required`
         </StepL>
         <StepR>
             ```js name=vite.config.js
@@ -38,7 +38,7 @@
                 plugins: [
                     masterCSS({ // [!code highlight]
                         mode: 'static', // [!code highlight]
-                        sources: ['resources/views/**/*.php'] // [!code highlight]
+                        required: ['resources/views/**/*.php'] // [!code highlight]
                     }) // [!code highlight]
                 ]
             })

@@ -8,12 +8,12 @@ import {
 
 test.concurrent('collects directive statement and block ranges', () => {
     const source = [
-        '@master source "a;b.css";',
+        '@source "a;b.css";',
         '@theme dark { --color-primary: red; }'
     ].join('\n')
     const ranges = collectCSSDirectiveRanges(source)
 
-    expect(ranges.map((range) => range.name)).toEqual(['master', 'theme'])
+    expect(ranges.map((range) => range.name)).toEqual(['source', 'theme'])
     expect(source.slice(ranges[0].semicolonRange?.start, ranges[0].semicolonRange?.end)).toBe(';')
     expect(source.slice(ranges[0].quotedStringRanges[0].contentRange.start, ranges[0].quotedStringRanges[0].contentRange.end)).toBe('a;b.css')
     expect(source.slice(ranges[1].preludeRange.start, ranges[1].preludeRange.end).trim()).toBe('dark')

@@ -14,7 +14,7 @@ export default {
     },
     plugins: [
         new MasterCSSPlugin({
-            sources: [
+            required: [
                 './index.html',
                 './src/**/*.{js,html}'
             ]

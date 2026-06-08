@@ -23,12 +23,12 @@ test.concurrent('finds top-level CSS imports without splitting quoted semicolons
 })
 
 test.concurrent('finds and removes Master entry directives', () => {
-    const source = '@master;\n@master source "./x.css";\n.a{}'
+    const source = '@master;\n@source "./x.css";\n.a{}'
 
     expect(hasMasterCSSConfigEntrypoint(source)).toBe(true)
-    expect(findMasterDirectiveStatements(source).map((statement) => statement.name)).toEqual(['', 'source'])
+    expect(findMasterDirectiveStatements(source).map((statement) => statement.name)).toEqual([''])
     expect(removeMasterDirectiveStatements(source)).toEqual({
-        code: '\n\n.a{}',
+        code: '\n@source "./x.css";\n.a{}',
         removed: true
     })
 })

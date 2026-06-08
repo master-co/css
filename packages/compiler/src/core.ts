@@ -20,14 +20,29 @@ import type {
 } from 'lightningcss'
 import { decodeCSS, encodeCSS, getCSSTransform, setCSSTransform, type CSSTransform } from './css-transform'
 import {
+    collectStandaloneCSSDirectiveExtractionPolicy,
+    createCSSDirectiveExtractionPolicy,
+    findStandaloneCSSDirectiveStatements,
     findStandaloneMasterDirectiveStatements,
+    mergeCSSDirectiveExtractionPolicy,
+    removeStandaloneCSSDirectives,
     removeStandaloneMasterDirectives,
+    type StandaloneCSSDirectiveStatement,
     type StandaloneMasterDirectiveStatement
 } from './lexer/standalone-master'
 import unquote from './utils/unquote'
 
-export { findStandaloneMasterDirectiveStatements, setCSSTransform }
-export type { CSSTransform, StandaloneMasterDirectiveStatement }
+export {
+    collectStandaloneCSSDirectiveExtractionPolicy,
+    createCSSDirectiveExtractionPolicy,
+    findStandaloneCSSDirectiveStatements,
+    findStandaloneMasterDirectiveStatements,
+    mergeCSSDirectiveExtractionPolicy,
+    removeStandaloneCSSDirectives,
+    removeStandaloneMasterDirectives,
+    setCSSTransform
+}
+export type { CSSTransform, StandaloneCSSDirectiveStatement, StandaloneMasterDirectiveStatement }
 
 export interface CompileCSSOptions {
     config?: unknown
@@ -50,13 +65,17 @@ export interface ResolvedCSSImportGraph {
 
 type ParsedStyleDefinition = CSSDirectiveStyleDefinition
 
-export interface ParsedDirectives extends Pick<CompileCSSResult, 'config' | 'classNames' | 'nativeClassNames' | 'warnings'> {
+export interface ParsedDirectives extends Pick<CompileCSSResult, 'config' | 'extractionPolicy' | 'classNames' | 'nativeClassNames' | 'warnings'> {
     styleDefinitions?: ParsedStyleDefinition[]
     styleOrder?: number
 }
 
 const MASTER_CUSTOM_AT_RULES = {
     master: {
+        prelude: '*',
+        body: 'style-block'
+    },
+    settings: {
         prelude: '*',
         body: 'style-block'
     },
@@ -86,7 +105,7 @@ const MASTER_CUSTOM_AT_RULES = {
     }
 } satisfies CustomAtRules
 
-type MasterSection = 'root'
+type SettingsSection = 'root'
 
 const UTILITY_LAYER_NAMES = new Set<CSSDirectiveLayerName>(['base', 'preset', 'components', 'utilities'])
 const TOP_LEVEL_DEFINITION_LAYER_NAMES = new Set<CSSDirectiveLayerName>(['preset', 'components', 'utilities'])
@@ -645,17 +664,17 @@ function collectDeclarations(block: DeclarationBlock<Declaration>) {
     return declarations
 }
 
-function parseMasterDeclarations(block: DeclarationBlock<Declaration>, config: CSSDirectiveConfig) {
+function parseSettingsDeclarations(block: DeclarationBlock<Declaration>, config: CSSDirectiveConfig) {
     for (const declaration of (block.declarations || []) as Declaration[]) {
         const property = getDeclarationName(declaration)
         const value = formatDeclarationValue(declaration)
         if (!parseMasterOption(config, property, value)) {
-            throw new Error(`Unsupported @master option: ${property}`)
+            throw new Error(`Unsupported @settings option: ${property}`)
         }
     }
     for (const declaration of (block.importantDeclarations || []) as Declaration[]) {
         const property = getDeclarationName(declaration)
-        throw new Error(`@master does not accept !important declarations: ${property}`)
+        throw new Error(`@settings does not accept !important declarations: ${property}`)
     }
 }
 
@@ -1137,10 +1156,10 @@ function getCustomRuleBody(rule: any) {
     return rule.body ?? rule.value?.body
 }
 
-function getMasterSection(rule: any): MasterSection {
+function getSettingsSection(rule: any): SettingsSection {
     const prelude = formatPrelude(getCustomRulePrelude(rule))
     if (!prelude) return 'root'
-    throw new Error(`Unsupported @master section: ${prelude}`)
+    throw new Error(`Unsupported @settings section: ${prelude}`)
 }
 
 function getThemeMode(rule: any) {
@@ -1152,12 +1171,12 @@ function getThemeMode(rule: any) {
     return prelude
 }
 
-function parseMasterStyleRule(rule: any) {
+function parseSettingsStyleRule(rule: any) {
     if (parseManagedStyleDefinitionSelector(rule.value.selectors)) {
-        throw new Error('@master does not accept class definitions')
+        throw new Error('@settings does not accept class definitions')
     }
 
-    throw new Error(`Unsupported @master selector: ${formatSelectors(rule.value.selectors)}`)
+    throw new Error(`Unsupported @settings selector: ${formatSelectors(rule.value.selectors)}`)
 }
 
 function parseManagedLayerBlock(rule: Rule) {
@@ -1175,47 +1194,47 @@ function parseManagedLayerBlock(rule: Rule) {
     }
 }
 
-function parseMasterChildRule(child: Rule, parsed: ParsedDirectives, section: MasterSection) {
+function parseSettingsChildRule(child: Rule, parsed: ParsedDirectives, section: SettingsSection) {
     const managedLayerBlock = parseManagedLayerBlock(child)
     if (managedLayerBlock) {
-        throw new Error('@master does not accept @layer')
+        throw new Error('@settings does not accept @layer')
     }
 
     const masterAtRuleBlock = parseMasterAtRuleBlock(child)
     if (masterAtRuleBlock) {
-        throw new Error('@master does not accept @at')
+        throw new Error('@settings does not accept @at')
     }
 
     const nestedAtRuleChildren = getNestedAtRuleChildren(child)
     if (nestedAtRuleChildren) {
-        throw new Error('@master does not accept nested at-rules')
+        throw new Error('@settings does not accept nested at-rules')
     }
 
     if (child.type === 'nested-declarations') {
-        parseMasterDeclarations(child.value.declarations, parsed.config)
+        parseSettingsDeclarations(child.value.declarations, parsed.config)
         return
     }
     if (child.type === 'keyframes') {
-        throw new Error('@master does not accept @keyframes')
+        throw new Error('@settings does not accept @keyframes')
     }
     if (child.type === 'style') {
-        parseMasterStyleRule(child)
+        parseSettingsStyleRule(child)
         return
     }
     if ((child.type === 'unknown' || child.type === 'custom') && child.value?.name === 'mode') {
-        throw new Error('@master does not accept @mode')
+        throw new Error('@settings does not accept @mode')
     }
-    throw new Error(`Unsupported rule in @master${section === 'root' ? '' : ' ' + section}`)
+    throw new Error(`Unsupported rule in @settings${section === 'root' ? '' : ' ' + section}`)
 }
 
-function parseMasterRule(rule: any, parsed: ParsedDirectives) {
-    const section = getMasterSection(rule)
+function parseSettingsRule(rule: any, parsed: ParsedDirectives) {
+    const section = getSettingsSection(rule)
     const body = getCustomRuleBody(rule)
     if (!Array.isArray(body?.value)) {
-        throw new Error('@master requires a style block')
+        throw new Error('@settings requires a style block')
     }
     for (const child of body.value as Rule[]) {
-        parseMasterChildRule(child, parsed, section)
+        parseSettingsChildRule(child, parsed, section)
     }
 }
 
@@ -1313,8 +1332,10 @@ function parseTopLevelLayerBlock(rule: any, parsed: ParsedDirectives) {
 }
 
 export function compileCSS(source: string, options: CompileCSSOptions = {}): CompileCSSResult {
+    const filename = options.from || 'master.css'
     const parsed: ParsedDirectives = {
         config: {},
+        extractionPolicy: createCSSDirectiveExtractionPolicy(),
         classNames: [],
         nativeClassNames: [],
         warnings: []
@@ -1322,10 +1343,11 @@ export function compileCSS(source: string, options: CompileCSSOptions = {}): Com
     const classFilter = options.classes === undefined
         ? undefined
         : new Set(options.classes)
-    const preprocessedSource = removeStandaloneMasterDirectives(source, options.from || 'master.css')
+    parsed.extractionPolicy = collectStandaloneCSSDirectiveExtractionPolicy(source, filename)
+    const preprocessedSource = removeStandaloneCSSDirectives(source, filename)
     let ruleDepth = 0
     const transformed = getCSSTransform()({
-        filename: options.from || 'master.css',
+        filename,
         code: encodeCSS(preprocessedSource),
         customAtRules: MASTER_CUSTOM_AT_RULES,
         visitor: {
@@ -1373,7 +1395,12 @@ export function compileCSS(source: string, options: CompileCSSOptions = {}): Com
                 if (rule.type === 'custom') {
                     switch (rule.value.name) {
                         case 'master':
-                            parseMasterRule(rule, parsed)
+                            return []
+                        case 'settings':
+                            if (ruleDepth !== 0) {
+                                throw new Error('@settings must be top-level')
+                            }
+                            parseSettingsRule(rule, parsed)
                             return []
                         case 'theme':
                             if (ruleDepth !== 0) {
@@ -1403,15 +1430,16 @@ export function compileCSS(source: string, options: CompileCSSOptions = {}): Com
     })
     let remainingCSS = ''
     if (options.preserveNativeCSS !== false) {
-        const filteredCode = filterNativeCSS(transformed.code, options.from || 'master.css', parsed, classFilter)
+        const filteredCode = filterNativeCSS(transformed.code, filename, parsed, classFilter)
         const remainingCode = classFilter
-            ? pruneEmptyRuleBlocks(filteredCode, options.from || 'master.css')
+            ? pruneEmptyRuleBlocks(filteredCode, filename)
             : filteredCode
         remainingCSS = decodeCSS(remainingCode).trim()
     }
 
     return {
         config: parsed.config,
+        extractionPolicy: parsed.extractionPolicy,
         classNames: parsed.classNames,
         nativeClassNames: parsed.nativeClassNames,
         warnings: parsed.warnings,
@@ -1424,9 +1452,10 @@ export function compileCSS(source: string, options: CompileCSSOptions = {}): Com
 }
 
 export function parseDirectives(source: string, options: CompileCSSOptions = {}) {
-    const { config, classNames, nativeClassNames, warnings, styleDefinitions } = compileCSS(source, options)
+    const { config, extractionPolicy, classNames, nativeClassNames, warnings, styleDefinitions } = compileCSS(source, options)
     return {
         config,
+        extractionPolicy,
         classNames,
         nativeClassNames,
         warnings,

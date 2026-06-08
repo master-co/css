@@ -6,9 +6,10 @@
 
 ## Inputs And Outputs
 
-- Input: CSS containing `@theme`, `@master`, `@custom-at`, `@custom-selector`, top-level managed `@layer preset`, `@layer components`, and `@layer utilities` blocks, condition blocks with `@at`, style rules with `@compose`, and top-level native `@keyframes`.
+- Input: CSS containing `@settings`, `@theme`, `@custom-at`, `@custom-selector`, top-level managed `@layer preset`, `@layer components`, and `@layer utilities` blocks, condition blocks with `@at`, style rules with `@compose`, top-level extraction policy directives, and top-level native `@keyframes`.
 - Output: semantic core `Config`, shared directive data for lower-level consumers, style definitions, native CSS with consumed Master directives removed, native class names, warnings, standalone directive metadata, and CSS import dependencies.
-- CSS config directives such as `@theme`, `@master`, `@custom-at`, and `@custom-selector` are config definitions. Defining a component, utility, variable, token, or animation does not emit CSS by itself; the class still needs to be used or extracted.
+- CSS config directives such as `@settings`, `@theme`, `@custom-at`, and `@custom-selector` are config definitions. Defining a component, utility, variable, token, or animation does not emit CSS by itself; the class still needs to be used or extracted.
+- `@master;` is only a lightweight entry marker. Legacy non-empty `@master` statements and `@master {}` blocks are stripped with no config or extraction effect.
 - `@master;` and `@import "@master/css"` are equivalent user project entry markers. Package CSS files such as `@master/css/index.css` must not contain `@master;`.
 - `compileCSSFile()` resolves CSS `@import` graphs before compiling and returns absolute dependency paths.
 - `compileProjectConfig()` compiles project entry CSS files into the canonical project-level `Config`.
@@ -25,8 +26,8 @@
 
 ## Directive MVP
 
-- `@master { root-size: 16; }`
-- `@master { important: on; }` and `@master { important: off; }`
+- `@settings { root-size: 16; }`
+- `@settings { important: on; }` and `@settings { important: off; }`
 - `@theme { --color-primary: #123; --breakpoint-md: 768; }`
 - `@theme dark { --color-primary: #456; }`
 - The compiler records mode declarations as written. Core adapters decide which modes are defaults.

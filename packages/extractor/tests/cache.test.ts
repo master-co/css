@@ -69,7 +69,7 @@ describe('class exclusion matcher', () => {
         const ex = await new CSSExtractor({
             config: {} as any,
             include: [],
-            excludeClasses: [/^bg:/g]
+            blocklist: [/^bg:/g]
         }).init()
 
         await ex.insert(SOURCE, `<div className="bg:red bg:blue block">hi</div>`)
@@ -79,15 +79,15 @@ describe('class exclusion matcher', () => {
         expect(ex.validClasses.has('block')).toBe(true)
     })
 
-    test('rebuilds when excludeClasses is reassigned', async () => {
+    test('rebuilds when blocklist is reassigned', async () => {
         const ex = await new CSSExtractor({
             config: {} as any,
             include: [],
-            excludeClasses: [/^bg:/]
+            blocklist: [/^bg:/]
         }).init()
 
         await ex.insert('excluded.tsx', `<div className="bg:red block">hi</div>`)
-        ex.options.excludeClasses = []
+        ex.options.blocklist = []
         await ex.insert('included.tsx', `<div className="bg:blue">hi</div>`)
 
         expect(ex.validClasses.has('bg:red')).toBe(false)

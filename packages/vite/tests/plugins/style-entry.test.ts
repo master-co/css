@@ -10,7 +10,7 @@ function makeContext(command: 'serve' | 'build', css = '.fg\\:red{color:red}', i
         config: { command },
         includeGeneratedCSS,
         extractor: {
-            options: { includeClasses: [] },
+            options: { safelist: [] },
             slotCSSRule: SLOT,
             css: { text: css },
             config: {},
@@ -127,7 +127,7 @@ describe('StyleEntryPlugin', () => {
 
         const result = await (plugin as any).transform.call(
             {},
-            '@master { root-size: 16; }\n.card { color: red }',
+            '@settings { root-size: 16; }\n.card { color: red }',
             '/project/src/style.css'
         )
 

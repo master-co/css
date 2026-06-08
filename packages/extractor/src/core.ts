@@ -36,7 +36,7 @@ const builtInAdapters = [
 const sourceMatchOptions = { dot: true }
 
 interface SourceMatchers {
-    sources: Minimatch[]
+    required: Minimatch[]
     include: Minimatch[]
     exclude: Minimatch[]
 }
@@ -99,13 +99,13 @@ export default class CSSExtractor extends EventEmitter {
     private cachedAllowedSourcePaths?: string[]
     /** Precompiled minimatch patterns for per-module allow/exclude checks. */
     private sourceMatchers?: SourceMatchers
-    private sourceMatcherOptions?: Pick<Options, 'sources' | 'include' | 'exclude'>
+    private sourceMatcherOptions?: Pick<Options, 'required' | 'include' | 'exclude'>
     /** Memoized adapter list so per-file extraction does not rebuild it. */
     private sourceAdapters?: SourceAdapter[]
     private sourceAdapterOptions?: Options['adapters']
     /** Pre-split class exclusion matchers for `insert()` hot path. */
     private classExclusionMatcher?: ClassExclusionMatcher
-    private classExclusionOptions?: Options['excludeClasses']
+    private classExclusionOptions?: Options['blocklist']
 
     constructor(
         public customOptions: Options = {},
@@ -203,12 +203,12 @@ export default class CSSExtractor extends EventEmitter {
 
     async prepare() {
         /* 插入指定的固定 class */
-        if (this.options.includeClasses?.length) {
-            for (const eachFixedClass of this.options.includeClasses) {
+        if (this.options.safelist?.length) {
+            for (const eachFixedClass of this.options.safelist) {
                 this.css.add(eachFixedClass)
             }
             if (this.options.verbose) {
-                log.ok`${this.options.includeClasses.length} fixed classes inserted ${this.options.includeClasses}`
+                log.ok`${this.options.safelist.length} fixed classes inserted ${this.options.safelist}`
             }
         }
         await Promise.all([
@@ -338,16 +338,16 @@ export default class CSSExtractor extends EventEmitter {
     }
 
     private getSourceMatchers(): SourceMatchers {
-        const { sources, include, exclude } = this.options
+        const { required, include, exclude } = this.options
         if (
             !this.sourceMatchers ||
-            this.sourceMatcherOptions?.sources !== sources ||
+            this.sourceMatcherOptions?.required !== required ||
             this.sourceMatcherOptions?.include !== include ||
             this.sourceMatcherOptions?.exclude !== exclude
         ) {
-            this.sourceMatcherOptions = { sources, include, exclude }
+            this.sourceMatcherOptions = { required, include, exclude }
             this.sourceMatchers = {
-                sources: createSourceMatchers(sources),
+                required: createSourceMatchers(required),
                 include: createSourceMatchers(include),
                 exclude: createSourceMatchers(exclude)
             }
@@ -356,9 +356,9 @@ export default class CSSExtractor extends EventEmitter {
     }
 
     private getClassExclusionMatcher(): ClassExclusionMatcher {
-        if (!this.classExclusionMatcher || this.classExclusionOptions !== this.options.excludeClasses) {
-            this.classExclusionOptions = this.options.excludeClasses
-            this.classExclusionMatcher = createClassExclusionMatcher(this.options.excludeClasses)
+        if (!this.classExclusionMatcher || this.classExclusionOptions !== this.options.blocklist) {
+            this.classExclusionOptions = this.options.blocklist
+            this.classExclusionMatcher = createClassExclusionMatcher(this.options.blocklist)
         }
         return this.classExclusionMatcher
     }
@@ -409,7 +409,7 @@ export default class CSSExtractor extends EventEmitter {
     async startWatch(options: { emit?: boolean } = { emit: true }) {
         if (this.watching) return
 
-        const sourcePaths = this.options.sources?.length
+        const sourcePaths = this.options.required?.length
             ? this.fixedSourcePaths
             : this.allowedSourcePaths
         if (sourcePaths.length) {
@@ -444,14 +444,14 @@ export default class CSSExtractor extends EventEmitter {
     }
 
     /**
-     * computed from `options.sources`. Memoized — each access used to re-glob
+     * computed from `options.required`. Memoized — each access used to re-glob
      * the filesystem which is expensive on large projects. Cleared on `reset()`.
      */
     get fixedSourcePaths(): string[] {
         if (this.cachedFixedSourcePaths) return this.cachedFixedSourcePaths
-        const { sources } = this.options
-        const computed = sources?.length
-            ? explorePathsSync(sources, { cwd: this.cwd })
+        const { required } = this.options
+        const computed = required?.length
+            ? explorePathsSync(required, { cwd: this.cwd })
                 .filter((eachSourcePath) => !!eachSourcePath)
             : []
         this.cachedFixedSourcePaths = computed
@@ -490,8 +490,8 @@ export default class CSSExtractor extends EventEmitter {
     isSourceAllowed(source: string): boolean {
         if (isStyleModuleRequest(source)) return false
         source = cleanSourceRequest(source)
-        const { include, exclude, sources } = this.getSourceMatchers()
-        if (sources.length && matchesAnySource(source, sources)) {
+        const { include, exclude, required } = this.getSourceMatchers()
+        if (required.length && matchesAnySource(source, required)) {
             return true
         }
         if (include.length && !matchesAnySource(source, include)) {

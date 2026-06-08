@@ -29,6 +29,11 @@ describe.concurrent('@master/css-compiler', () => {
         expect(inspectCSS('@import "@master/css";').hasMasterEntry).toBe(true)
         expect(inspectCSS('@master shake;').hasMasterEntry).toBe(false)
         expect(inspectCSS('@master no-shake;').hasMasterEntry).toBe(false)
+        expect(inspectCSS('@settings { root-size: 16; }').hasMasterEntry).toBe(false)
+        expect(inspectCSS('@source "src/**/*.tsx";').hasMasterEntry).toBe(false)
+        expect(inspectCSS('@safelist "dialog-open";').hasMasterEntry).toBe(false)
+        expect(inspectCSS('@blocklist "debug-*";').hasMasterEntry).toBe(false)
+        expect(inspectCSS('@preserve native;').hasMasterEntry).toBe(false)
         expect(inspectCSS('@import "@master/css/index.css";').hasMasterEntry).toBe(false)
         expect(inspectCSS('@import url("@master/css") layer(master);').hasMasterEntry).toBe(true)
         expect(inspectCSS('@theme { --color-primary: #123; }').hasMasterEntry).toBe(false)
@@ -39,7 +44,7 @@ describe.concurrent('@master/css-compiler', () => {
             @custom-at motion-safe @media (prefers-reduced-motion: no-preference);
             @custom-selector ::scrollbar ::-webkit-scrollbar;
 
-            @master {
+            @settings {
                 root-size: 10;
                 base-unit: 8;
                 default-mode: dark;
@@ -101,12 +106,12 @@ describe.concurrent('@master/css-compiler', () => {
 
     it('converts important on and off declarations into booleans', () => {
         expect(compileCSS(`
-            @master {
+            @settings {
                 important: on;
             }
         `).config.important).toBe(true)
         expect(compileCSS(`
-            @master {
+            @settings {
                 important: off;
             }
         `).config.important).toBe(false)
@@ -114,7 +119,7 @@ describe.concurrent('@master/css-compiler', () => {
 
     it('keeps default-mode none as the disabled default mode', () => {
         const source = `
-            @master {
+            @settings {
                 default-mode: none;
             }
         `
@@ -125,7 +130,7 @@ describe.concurrent('@master/css-compiler', () => {
 
     it('rejects default-mode false', () => {
         expect(() => compileCSS(`
-            @master {
+            @settings {
                 default-mode: false;
             }
         `)).toThrow('default-mode must be a mode name or none')
@@ -149,7 +154,7 @@ describe.concurrent('@master/css-compiler', () => {
 
     it('records style definitions without resolving core utilities', () => {
         const result = compileCSS(`
-            @master {
+            @settings {
                 mode-trigger: class;
             }
 
@@ -408,7 +413,7 @@ describe.concurrent('@master/css-compiler', () => {
 
     it('lowers native @compose and @at after semantic config resolution', () => {
         const result = compileCSSConfig(`
-            @master {
+            @settings {
                 mode-trigger: class;
             }
 
@@ -549,13 +554,14 @@ describe.concurrent('@master/css-compiler', () => {
         ])
     })
 
-    it('ignores standalone extractor directives', () => {
+    it('collects and removes standalone extraction policy directives', () => {
         const result = compileCSS(`
-            @master source './src/**/*.tsx';
-            @master source exclude './src/**/*.test.tsx';
-            @master source force './src/generated.tsx';
-            @master class 'btn text:center';
-            @master class exclude 'legacy-*';
+            @source './src/**/*.tsx';
+            @source not './src/**/*.test.tsx';
+            @source required './src/generated.tsx';
+            @safelist 'btn text:center';
+            @blocklist 'legacy-*';
+            @preserve native;
             @master;
             @master shake;
             @master no-shake;
@@ -566,8 +572,17 @@ describe.concurrent('@master/css-compiler', () => {
         `, { classes: ['card'] })
 
         expect(result.css).toContain('.card')
-        expect(result.css).not.toContain('@master source')
-        expect(result.css).not.toContain('@master class')
+        expect(result.extractionPolicy.include).toEqual(['./src/**/*.tsx'])
+        expect(result.extractionPolicy.exclude).toEqual(['./src/**/*.test.tsx'])
+        expect(result.extractionPolicy.required).toEqual(['./src/generated.tsx'])
+        expect(result.extractionPolicy.safelist).toEqual(['btn', 'text:center'])
+        expect(result.extractionPolicy.blocklist[0]).toBeInstanceOf(RegExp)
+        expect((result.extractionPolicy.blocklist[0] as RegExp).test('legacy-card')).toBe(true)
+        expect(result.extractionPolicy.preserveNative).toBe(true)
+        expect(result.css).not.toContain('@source')
+        expect(result.css).not.toContain('@safelist')
+        expect(result.css).not.toContain('@blocklist')
+        expect(result.css).not.toContain('@preserve')
         expect(result.css).not.toContain('@master;')
         expect(result.css).not.toContain('@master shake')
         expect(result.css).not.toContain('@master no-shake')
@@ -590,7 +605,7 @@ describe.concurrent('@master/css-compiler', () => {
             @custom-selector :interactive :hover;
             @custom-selector :interactive :focus-visible;
 
-            @master {
+            @settings {
                 root-size: 16;
                 root-size: 10;
             }
@@ -806,61 +821,60 @@ describe.concurrent('@master/css-compiler', () => {
         }
     })
 
-    it('rejects style rules in @master', () => {
-        expect(() => compileCSS(`
+    it('removes legacy @master blocks without config effects', () => {
+        const result = compileCSS(`
             @master {
-                body {
-                    margin: 0;
-                }
+                root-size: 10;
             }
-        `)).toThrow('Unsupported @master selector: body')
 
-        expect(() => compileCSS(`
-            @master {
-                .btn {
-                    display: inline-flex;
-                }
+            .card {
+                color: red;
             }
-        `)).toThrow('@master does not accept class definitions')
+        `, { classes: ['card'] })
+
+        expect(result.config.rootSize).toBeUndefined()
+        expect(result.css).toContain('.card')
+        expect(result.css).toContain('color: red')
+        expect(result.css).not.toContain('@master')
     })
 
     it('rejects invalid directive placement and names', () => {
         const unsupportedModeAtRule = '@' + 'mode dark'
         expect(() => process(`
-            @master {
+            @settings {
                 ${unsupportedModeAtRule} {
                     --color-primary: #456;
                 }
             }
-        `)).toThrow('@master does not accept @mode')
+        `)).toThrow('@settings does not accept @mode')
 
         expect(() => process(`
-            @master {
+            @settings {
                 --color-primary: #123;
             }
-        `)).toThrow('Unsupported @master option: --color-primary')
+        `)).toThrow('Unsupported @settings option: --color-primary')
 
         expect(() => process(`
-            @master {
+            @settings {
                 dark {
                     --color-primary: #456;
                 }
             }
-        `)).toThrow('Unsupported @master selector: dark')
+        `)).toThrow('Unsupported @settings selector: dark')
 
         expect(() => process(`
             @compose "block";
         `)).toThrow('@compose requires a style rule')
 
         expect(() => process(`
-            @master {
+            @settings {
                 @layer utilities {
                     .content-auto {
                         display: block;
                     }
                 }
             }
-        `)).toThrow('@master does not accept @layer')
+        `)).toThrow('@settings does not accept @layer')
 
         expect(() => process(`
             @theme {
@@ -905,12 +919,12 @@ describe.concurrent('@master/css-compiler', () => {
         `)).toThrow('@custom-selector names must start with ":" or "::"')
 
         expect(() => process(`
-            @master {
+            @settings {
                 @keyframes fade {
                     from { opacity: 0; }
                 }
             }
-        `)).toThrow('@master does not accept @keyframes')
+        `)).toThrow('@settings does not accept @keyframes')
 
         expect(() => process(`
             @layer utilities {

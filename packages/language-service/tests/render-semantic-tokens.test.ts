@@ -195,7 +195,7 @@ test.concurrent('renders semantic tokens for grouped declarations, strings, unit
 
 test.concurrent('renders semantic tokens for CSS directives', () => {
     const { tokens } = renderTokens(`
-        @master {
+        @settings {
             root-size: 16;
         }
 
@@ -219,7 +219,7 @@ test.concurrent('renders semantic tokens for CSS directives', () => {
         }
     `, 'css')
 
-    expectToken(tokens, '@master', 'keyword', ['directive'])
+    expectToken(tokens, '@settings', 'keyword', ['directive'])
     expectToken(tokens, 'root-size', 'property')
     expectToken(tokens, '@theme', 'keyword', ['directive'])
     expectToken(tokens, 'dark', 'enumMember', ['directive'])
@@ -247,7 +247,11 @@ test.concurrent('renders semantic tokens for CSS directives', () => {
 
 test.concurrent('renders CSS directive ranges with quoted semicolons', () => {
     const { tokens } = renderTokens(`
-        @master source "a;b.css";
+        @source not "a;b.css";
+        @source required "critical.tsx";
+        @safelist "block fg:red";
+        @blocklist "debug-*";
+        @preserve native;
 
         .btn {
             @compose "fg:red";
@@ -256,9 +260,17 @@ test.concurrent('renders CSS directive ranges with quoted semicolons', () => {
         @custom-at quoted @media (x: "a;b");
     `, 'css')
 
-    expectToken(tokens, '@master', 'keyword', ['directive'])
-    expectToken(tokens, 'source', 'property', ['directive'])
+    expectToken(tokens, '@source', 'keyword', ['directive'])
+    expectToken(tokens, 'not', 'modifier', ['directive'])
+    expectToken(tokens, 'required', 'modifier', ['directive'])
     expectToken(tokens, 'a;b.css', 'string', ['quoted'])
+    expectToken(tokens, 'critical.tsx', 'string', ['quoted'])
+    expectToken(tokens, '@safelist', 'keyword', ['directive'])
+    expectToken(tokens, 'block', 'class')
+    expectToken(tokens, '@blocklist', 'keyword', ['directive'])
+    expectToken(tokens, 'debug-*', 'string', ['quoted'])
+    expectToken(tokens, '@preserve', 'keyword', ['directive'])
+    expectToken(tokens, 'native', 'enumMember', ['directive'])
     expectToken(tokens, '@compose', 'keyword', ['directive'])
     expectToken(tokens, 'fg', 'property')
     expectToken(tokens, 'red', 'enumMember')
@@ -267,7 +279,7 @@ test.concurrent('renders CSS directive ranges with quoted semicolons', () => {
     expectToken(tokens, '@media', 'keyword', ['query'])
     expect(tokens.filter(({ text, type, modifiers }) =>
         text === ';' && type === 'operator' && modifiers.includes('directive')
-    )).toHaveLength(3)
+    )).toHaveLength(7)
 })
 
 test.concurrent('renders CSS directives in SCSS-like sources without a CSS parser dependency', () => {

@@ -34,7 +34,7 @@ function makeContext(slot: string, css: string) {
             validClasses: new Set(),
             nativeClassNames: new Set(),
             usedNativeClasses: new Set(),
-            options: { includeClasses: [] },
+            options: { safelist: [] },
             emit: vi.fn(),
         },
     } as any
@@ -211,7 +211,7 @@ describe('StyleEntryBuildPlugin (D1 placeholder-leak warn)', () => {
             }
             ctx.extractor.validClasses = new Set(['btn'])
             ctx.extractor.usedNativeClasses = new Set(['native-card'])
-            ctx.extractor.options.includeClasses = []
+            ctx.extractor.options.safelist = []
             const styleEntryPlugin = StyleEntryPlugin({ mode: 'static' } as any, ctx)
             const plugin = StyleEntryBuildPlugin({} as any, ctx)
             const warn = vi.fn()

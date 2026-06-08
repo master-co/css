@@ -15,7 +15,7 @@ interface LoaderContext {
 }
 
 function hasMasterStyleConfigDirective(source: string) {
-    return source.includes('@master') || source.includes('@theme')
+    return source.includes('@settings') || source.includes('@theme') || source.includes('@master')
 }
 
 async function transformStyleSource(resourcePath: string, source: string, projectDir?: string) {

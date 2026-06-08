@@ -3,7 +3,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import CSSExtractor from '../src/core'
-import { collectExtractorDirectives } from '../src/directives'
+import { collectExtractorDirectives, removeExtractorDirectiveStatements } from '../src/directives'
 import {
     createExtractedCSS,
     registerStyleCSSSource
@@ -20,19 +20,47 @@ describe('extractor CSS directives', () => {
     it('reads directive modifiers outside quoted strings', () => {
         const root = createFixture()
         const directives = collectExtractorDirectives(`
-            @master source './exclude/**/*.tsx';
-            @master source exclude './src/**/*.test.tsx';
-            @master source force './src/force-exclude.tsx';
-            @master class 'not-exclude';
-            @master class exclude 'legacy-*';
+            @source './exclude/**/*.tsx';
+            @source not './src/**/*.test.tsx';
+            @source required './src/force-exclude.tsx';
+            @safelist 'not-exclude';
+            @blocklist 'legacy-*';
+            @preserve native;
         `, join(root, 'app/entry.css'), root)
 
         expect(directives.include).toEqual(['app/exclude/**/*.tsx'])
         expect(directives.exclude).toEqual(['app/src/**/*.test.tsx'])
-        expect(directives.sources).toEqual(['app/src/force-exclude.tsx'])
-        expect(directives.includeClasses).toEqual(['not-exclude'])
-        expect(directives.excludeClasses[0]).toBeInstanceOf(RegExp)
-        expect((directives.excludeClasses[0] as RegExp).test('legacy-card')).toBe(true)
+        expect(directives.required).toEqual(['app/src/force-exclude.tsx'])
+        expect(directives.safelist).toEqual(['not-exclude'])
+        expect(directives.blocklist[0]).toBeInstanceOf(RegExp)
+        expect((directives.blocklist[0] as RegExp).test('legacy-card')).toBe(true)
+        expect(directives.preserveNative).toBe(true)
+    })
+
+    it('removes legacy master directives without extraction effects', () => {
+        const source = `
+            @master source './src/**/*.tsx';
+            @master source exclude './src/**/*.test.tsx';
+            @master source force './src/generated.tsx';
+            @master class 'not-exclude';
+            @master class exclude 'legacy-*';
+            @master no-shake;
+        `
+        const directives = collectExtractorDirectives(source)
+        const result = removeExtractorDirectiveStatements(source)
+
+        expect(directives).toEqual({
+            include: [],
+            exclude: [],
+            required: [],
+            safelist: [],
+            blocklist: [],
+            preserveNative: false
+        })
+        expect(result.removed).toBe(true)
+        expect(result.code).not.toContain('@master source')
+        expect(result.code).not.toContain('@master class')
+        expect(result.code).not.toContain('@master no-shake')
     })
 
     it('loads extractor directives from a managed CSS entry graph', async () => {
@@ -48,11 +76,11 @@ describe('extractor CSS directives', () => {
         const styleCSSSources = new Map()
         await registerStyleCSSSource(extractor, styleCSSSources, join(root, 'app/entry.css'), `
             @master;
-            @master source './**/*.tsx';
-            @master source exclude './**/*.test.tsx';
-            @master source force './forced.test.tsx';
-            @master class 'font:semibold legacy-token';
-            @master class exclude 'legacy-*';
+            @source './**/*.tsx';
+            @source not './**/*.test.tsx';
+            @source required './forced.test.tsx';
+            @safelist 'font:semibold legacy-token';
+            @blocklist 'legacy-*';
         `)
         const css = await createExtractedCSS({
             extractor,
@@ -79,7 +107,7 @@ describe('extractor CSS directives', () => {
         const styleCSSSources = new Map()
         const result = await registerStyleCSSSource(extractor, styleCSSSources, join(root, 'app/a/a.css'), `
             @import "@master/css";
-            @master source './*.tsx';
+            @source './*.tsx';
 
             .card {
                 color: red;
@@ -105,8 +133,8 @@ describe('extractor CSS directives', () => {
     it('merges imported stylesheet class directives into the parent root scope', async () => {
         const root = createFixture()
         writeFileSync(join(root, 'app/shared.css'), `
-            @master class 'shared-card legacy-card';
-            @master class exclude 'legacy-*';
+            @safelist 'shared-card legacy-card';
+            @blocklist 'legacy-*';
 
             .shared-card {
                 color: red;
@@ -136,6 +164,6 @@ describe('extractor CSS directives', () => {
 
         expect(css).toContain('.shared-card')
         expect(css).not.toContain('.legacy-card')
-        expect(css).not.toContain('@master class')
+        expect(css).not.toContain('@safelist')
     })
 })

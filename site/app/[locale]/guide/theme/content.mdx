@@ -194,7 +194,7 @@ Mode-specific `@theme` blocks keep markup semantic while values change by mode.
 Most projects leave light and dark mode behavior system-driven:
 
 ```css name=index.css
-@master {
+@settings {
     default-mode: light;
     mode-trigger: media;
 }
@@ -357,10 +357,10 @@ Keyframes are emitted outside cascade layers, while animation utilities still ge
 ---
 
 ## Project settings
-Most theme work is tokens, but a few root settings shape every generated rule. Keep those settings in `@master` and change them only when the project has a clear convention.
+Most theme work is tokens, but a few root settings shape every generated rule. Keep those settings in `@settings` and change them only when the project has a clear convention.
 
 ```css name=index.css
-@master {
+@settings {
     root-size: 16;
     base-unit: 4;
     scope: #app;

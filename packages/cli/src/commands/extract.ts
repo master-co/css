@@ -105,7 +105,7 @@ export default (program: Command) => program
                 await Promise.all(watchers.splice(0).map((watcher) => watcher.close()))
             }
             const startWatchers = async () => {
-                const sourcePaths = extractor.options.sources?.length
+                const sourcePaths = extractor.options.required?.length
                     ? extractor.fixedSourcePaths
                     : extractor.allowedSourcePaths
                 if (sourcePaths.length) {

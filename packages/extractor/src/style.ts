@@ -341,20 +341,13 @@ export async function createMasterCSSPackageHostSource(
     }
 }
 
-export function removeMasterShakeDirectives(source: string) {
-    return removeMasterStyleDirectives(source)
-}
-
-export function hasMasterShakeDirective(source: string) {
-    return findExtractorDirectiveStatements(source).some((statement) => statement.name === 'shake')
-}
-
 export function hasMasterEntryDirective(source: string) {
     return findExtractorDirectiveStatements(source).some((statement) => statement.name === '')
 }
 
-export function hasMasterNoShakeDirective(source: string) {
-    return findExtractorDirectiveStatements(source).some((statement) => statement.name === 'no-shake')
+export function hasPreserveNativeDirective(source: string) {
+    return findExtractorDirectiveStatements(source)
+        .some((statement) => statement.atRuleName === 'preserve' && statement.modifiers.includes('native'))
 }
 
 export function isMasterStyleSource(source: string) {
@@ -415,12 +408,12 @@ export function getExtractorClasses(extractor: CSSExtractor) {
         ...(extractor.latentClasses || []),
         ...(extractor.validClasses || []),
         ...(extractor.usedNativeClasses || []),
-        ...(extractor.options.includeClasses || [])
-    ])], extractor.options.excludeClasses)
+        ...(extractor.options.safelist || [])
+    ])], extractor.options.blocklist)
 }
 
 function getExtractorOptionClasses(options: ExtractorOptions, projectDir = process.cwd()) {
-    const classes = new Set<string>(options.includeClasses || [])
+    const classes = new Set<string>(options.safelist || [])
     for (const sourcePath of resolveExtractorSourcePaths(options, projectDir)) {
         const absolutePath = resolve(projectDir, sourcePath)
         if (!existsSync(absolutePath)) continue
@@ -428,7 +421,7 @@ function getExtractorOptionClasses(options: ExtractorOptions, projectDir = proce
             classes.add(className)
         }
     }
-    return filterExcludedClasses([...classes], options.excludeClasses)
+    return filterExcludedClasses([...classes], options.blocklist)
 }
 
 function getStyleSourceClasses(
@@ -443,9 +436,9 @@ function getStyleSourceClasses(
         ? getExtractorOptionClasses(scopedOptions, projectDir)
         : [
             ...baseClasses,
-            ...(styleSource.directives.includeClasses || [])
+            ...(styleSource.directives.safelist || [])
         ]
-    return filterExcludedClasses([...new Set(classes)], scopedOptions.excludeClasses)
+    return filterExcludedClasses([...new Set(classes)], scopedOptions.blocklist)
 }
 
 export function refreshExtractorNativeClasses(extractor: CSSExtractor, nativeClassNames: string[]) {
@@ -484,7 +477,7 @@ export async function registerStyleCSSSource(
             dependencies: []
         }
     const masterCSS = hasMasterCSSImport(resolvedSource.source)
-    const shake = !hasMasterNoShakeDirective(detectionSource.source) && isMasterStyleSource(resolvedSource.source)
+    const shake = !collectedDirectives.directives.preserveNative && isMasterStyleSource(resolvedSource.source)
     const sourceWithoutImports = removeStyleCSSImports(resolvedSource.source).code
     const cleanSource = removeMasterStyleDirectives(sourceWithoutImports).code
     const compileOptions = options

@@ -178,7 +178,7 @@ export class MasterCSSPlugin {
             ...(this.extractor.latentClasses || []),
             ...(this.extractor.validClasses || []),
             ...(this.extractor.usedNativeClasses || []),
-            ...(this.options.includeClasses || [])
+            ...(this.options.safelist || [])
         ])]
     }
 

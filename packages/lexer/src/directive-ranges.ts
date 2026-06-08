@@ -12,6 +12,11 @@ export type { CSSStatementEnd, SourceLocation, SourceRange } from './source'
 
 export type CSSDirectiveRangeName =
     | 'master'
+    | 'settings'
+    | 'source'
+    | 'safelist'
+    | 'blocklist'
+    | 'preserve'
     | 'theme'
     | 'custom-at'
     | 'custom-selector'
@@ -45,6 +50,11 @@ export interface CSSDirectiveRuleRange extends SourceRange {
 
 export const CSS_DIRECTIVE_RANGE_NAMES = [
     'master',
+    'settings',
+    'source',
+    'safelist',
+    'blocklist',
+    'preserve',
     'theme',
     'custom-at',
     'custom-selector',

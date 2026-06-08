@@ -9,8 +9,8 @@ const options: Options = {
     output: 'master.css',
     // specify an inline Master CSS config override
     config: undefined,
-    // forcibly specify sources for scanning, not excluded by `options.exclude`
-    sources: [],
+    // forcibly specify required sources for scanning, not excluded by `options.exclude`
+    required: [],
     // specify sources for scanning
     include: ['**/*.{html,htm,js,jsx,mjs,cjs,ts,tsx,mts,cts,svelte,astro,vue,md,mdx,pug,php}'],
     // specify sources to exclude
@@ -46,8 +46,8 @@ const options: Options = {
         '**/node_modules/.cache/**',
         '**/node_modules/.vite/**',
     ],
-    includeClasses: [],
-    excludeClasses: [],
+    safelist: [],
+    blocklist: [],
     adapters: [],
 }
 
@@ -56,11 +56,11 @@ export interface Options {
     config?: Config,
     output?: string,
     path?: string,
-    sources?: FastGlobPattern[]
+    required?: FastGlobPattern[]
     include?: FastGlobPattern[]
     exclude?: FastGlobPattern[]
-    includeClasses?: string[]
-    excludeClasses?: (string | RegExp)[]
+    safelist?: string[]
+    blocklist?: (string | RegExp)[]
     adapters?: SourceAdapter[]
 }
 

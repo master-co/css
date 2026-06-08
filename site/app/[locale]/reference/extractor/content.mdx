@@ -18,7 +18,7 @@ Create an instance of the Master CSS extractor:
 const extractor = new CSSExtractor(options, cwd)
 ```
 
-`cwd` is used to change the directory where [`.config`](#config), [`.include`](#include), [`.exclude`](#exclude) and [`.sources`](#sources) are currently running.
+`cwd` is used to change the directory where [`.config`](#config), [`.include`](#include), [`.exclude`](#exclude) and [`.required`](#required) are currently running.
 
 `CSSExtractor` is the source-scanning engine behind Master CSS Static Rendering, which is usually used by build tools or third-party package authors.
 
@@ -52,38 +52,38 @@ Broadly specify source files/directories to be scanned by Master CSS.
 Broadly exclude source files/directories from scanning by Master CSS.
 <DocProp defaultValue={options.exclude} types={['FastGlobPattern[]']} />
 
-### `options.sources`
+### `options.required`
 Mandatory source files/directories are to be scanned by Master CSS.
-<DocProp defaultValue={options.sources} types={['FastGlobPattern[]']} />
+<DocProp defaultValue={options.required} types={['FastGlobPattern[]']} />
 This option is similar to [`.include`](#include) but not excluded by [`.exclude`](#exclude). Usually, you will use it to specify what is accidentally excluded by [`.exclude`](#exclude) file/directory.
 
-### `options.includeClasses`
+### `options.safelist`
 Generate fixed CSS rules based on the specified class name, regardless of source.
-<DocProp defaultValue={options.includeClasses} types={['string[]']} />
+<DocProp defaultValue={options.safelist} types={['string[]']} />
 Typically you would use it with the following limitations:
 - Class names that do not exist in the source code.
 - Irregular class names.
 - Class names from asynchronous data.
 
-### `options.excludeClasses`
+### `options.blocklist`
 Exclude class names accidentally accepted by the scanning process.
-<DocProp defaultValue={options.excludeClasses} types={['(string | RegExp)[]']} />
+<DocProp defaultValue={options.blocklist} types={['(string | RegExp)[]']} />
 
 ### CSS directives
 Extractor options can also be declared in CSS. When these directives are loaded through the project CSS entry graph, they become global extractor defaults. When they appear in a stylesheet root, they only affect that root.
 
 ```css
-@master source 'src/**/*.{html,js,jsx,ts,tsx,vue,svelte,astro,md,mdx}';
-@master source exclude 'src/**/*.test.tsx';
-@master source force 'src/generated.tsx';
+@source 'src/**/*.{html,js,jsx,ts,tsx,vue,svelte,astro,md,mdx}';
+@source not 'src/**/*.test.tsx';
+@source required 'src/generated.tsx';
 
-@master class 'dialog-open bg:primary@dark';
-@master class exclude 'debug-*';
+@safelist 'dialog-open bg:primary@dark';
+@blocklist 'debug-*';
 ```
 
-`@master source` maps to `options.include`, `@master source exclude` maps to `options.exclude`, `@master source force` maps to `options.sources`, `@master class` maps to `options.includeClasses`, and `@master class exclude` maps to `options.excludeClasses`.
+`@source` maps to `options.include`, `@source not` maps to `options.exclude`, `@source required` maps to `options.required`, `@safelist` maps to `options.safelist`, and `@blocklist` maps to `options.blocklist`.
 
-Bare source globs are resolved from `cwd`. Globs that start with `./` or `../` are resolved relative to the CSS file that declares the directive. `@master class exclude` accepts exact strings and `*` / `?` wildcard patterns.
+Bare source globs are resolved from `cwd`. Globs that start with `./` or `../` are resolved relative to the CSS file that declares the directive. `@blocklist` accepts exact strings and `*` / `?` wildcard patterns.
 
 ### Native CSS shaking
 Prune native CSS class selector rules from a stylesheet by importing `@master/css` in that stylesheet:
@@ -101,7 +101,7 @@ Prune native CSS class selector rules from a stylesheet by importing `@master/cs
 }
 ```
 
-Local relative `.css` imports are expanded, the Master import is replaced by generated CSS, and native class rules are kept only when their class names are found by the extractor. Add `@master no-shake;` to preserve native CSS in a Master-managed root. See [Shaking unused classes](/guide/shaking-unused-classes) for the full model.
+Local relative `.css` imports are expanded, the Master import is replaced by generated CSS, and native class rules are kept only when their class names are found by the extractor. Add `@preserve native;` to preserve native CSS in a Master-managed root. See [Shaking unused classes](/guide/shaking-unused-classes) for the full model.
 
 ### `extractLatentClasses()`
 Extract latent classes from string content.

@@ -14,8 +14,8 @@ import {
 } from '@master/css-lexer'
 
 const CSS_LANGUAGE_IDS = new Set(['css', 'scss', 'less'])
-const MASTER_STANDALONE_NAMES = new Set(['shake', 'no-shake', 'source', 'class'])
-const MASTER_STANDALONE_MODIFIERS = new Set(['exclude', 'force'])
+const SOURCE_MODIFIERS = new Set(['not', 'required'])
+const PRESERVE_PARAMETERS = new Set(['native'])
 
 interface ScanOptions {
     positionOffset?: number
@@ -56,38 +56,51 @@ function pushQuotedString(tokens: HighlightTokenItem[], start: number, end: numb
     }
 }
 
-function tokenizeMasterPrelude(source: string, start: number, end: number, tokens: HighlightTokenItem[], css: MasterCSS) {
+function tokenizeSourcePrelude(source: string, start: number, end: number, tokens: HighlightTokenItem[]) {
     let cursor = skipCSSWhitespace(source, start)
-    const name = readCSSIdent(source, cursor)
-    if (MASTER_STANDALONE_NAMES.has(name.value)) {
-        pushHighlightToken(tokens, name.start, name.value.length, 'property', 'directive.parameter', ['directive'])
-        cursor = name.end
-    }
-
     while (cursor < end) {
         cursor = skipCSSWhitespace(source, cursor)
         const char = source[cursor]
         if (char === '"' || char === '\'') {
             const close = findCSSClosingQuote(source, cursor, char, end)
-            const innerStart = cursor + 1
-            const inner = source.slice(innerStart, close)
-            if (name.value === 'class') {
-                pushQuoteDelimiters(tokens, cursor, close + 1)
-                tokens.push(...collectClassListHighlightTokenItems(css, inner, innerStart))
-            } else {
-                pushQuotedString(tokens, cursor, close + 1)
-            }
+            pushQuotedString(tokens, cursor, close + 1)
             cursor = close + 1
             continue
         }
         if (isCSSIdentStart(char)) {
             const ident = readCSSIdent(source, cursor)
-            if (MASTER_STANDALONE_MODIFIERS.has(ident.value)) {
+            if (SOURCE_MODIFIERS.has(ident.value)) {
                 pushHighlightToken(tokens, ident.start, ident.value.length, 'modifier', 'directive.modifier', ['directive'])
-            } else if (ident.start !== name.start) {
-                pushHighlightToken(tokens, ident.start, ident.value.length, 'enumMember', 'directive.parameter', ['directive'])
             }
             cursor = ident.end
+            continue
+        }
+        cursor++
+    }
+}
+
+function tokenizeClassListPrelude(source: string, start: number, end: number, tokens: HighlightTokenItem[], css: MasterCSS) {
+    for (const stringRange of collectCSSQuotedStringRanges(source, start, end)) {
+        pushQuoteDelimiters(tokens, stringRange.start, stringRange.end)
+        tokens.push(...collectClassListHighlightTokenItems(css, source.slice(stringRange.start + 1, stringRange.end - 1), stringRange.start + 1))
+    }
+}
+
+function tokenizeQuotedStringPrelude(source: string, start: number, end: number, tokens: HighlightTokenItem[]) {
+    for (const stringRange of collectCSSQuotedStringRanges(source, start, end)) {
+        pushQuotedString(tokens, stringRange.start, stringRange.end)
+    }
+}
+
+function tokenizePreservePrelude(source: string, start: number, end: number, tokens: HighlightTokenItem[]) {
+    let cursor = skipCSSWhitespace(source, start)
+    while (cursor < end) {
+        const ident = readCSSIdent(source, cursor)
+        if (ident.value) {
+            if (PRESERVE_PARAMETERS.has(ident.value)) {
+                pushHighlightToken(tokens, ident.start, ident.value.length, 'enumMember', 'directive.parameter', ['directive'])
+            }
+            cursor = skipCSSWhitespace(source, ident.end)
             continue
         }
         cursor++
@@ -166,9 +179,19 @@ function tokenizeDirectiveRule(source: string, directive: CSSDirectiveRuleRange,
     const preludeStart = directive.preludeRange.start
     const preludeEnd = directive.preludeRange.end
     switch (directive.name) {
-        case 'master':
-            tokenizeMasterPrelude(source, preludeStart, preludeEnd, tokens, css)
+        case 'source':
+            tokenizeSourcePrelude(source, preludeStart, preludeEnd, tokens)
             break
+        case 'safelist':
+            tokenizeClassListPrelude(source, preludeStart, preludeEnd, tokens, css)
+            break
+        case 'blocklist':
+            tokenizeQuotedStringPrelude(source, preludeStart, preludeEnd, tokens)
+            break
+        case 'preserve':
+            tokenizePreservePrelude(source, preludeStart, preludeEnd, tokens)
+            break
+        case 'settings':
         case 'theme':
             tokenizeThemePrelude(source, preludeStart, preludeEnd, tokens)
             break
@@ -188,7 +211,7 @@ function tokenizeDirectiveRule(source: string, directive: CSSDirectiveRuleRange,
 
     if (directive.blockRange && directive.blockContentRange) {
         pushHighlightToken(tokens, directive.blockRange.start, 1, 'operator', 'block.brace', ['directive'])
-        if (directive.name === 'master' || directive.name === 'theme') {
+        if (directive.name === 'settings' || directive.name === 'theme') {
             tokenizeDeclarations(source, directive.blockContentRange.start, directive.blockContentRange.end, tokens)
         }
         if (directive.blockCloseRange) {

@@ -18,7 +18,7 @@ it('check the excluded files', async () => {
 
 it('should contain the specific source', async () => {
     const extractor = await new CSSExtractor({
-        sources: ['manual-source.ts'],
+        required: ['manual-source.ts'],
     }, __dirname).init()
     expect(extractor?.fixedSourcePaths).toContain('manual-source.ts')
 })

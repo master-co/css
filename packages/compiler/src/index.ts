@@ -8,7 +8,9 @@ import type { Config } from '@master/css'
 import { toConfigModuleResult, type CSSConfigModuleResult } from '@master/css-integration/config-module'
 import {
     compileCSS,
+    createCSSDirectiveExtractionPolicy,
     findStandaloneMasterDirectiveStatements,
+    mergeCSSDirectiveExtractionPolicy,
     type CompileCSSOptions,
     setCSSTransform,
     type CompileCSSFileOptions,
@@ -294,6 +296,7 @@ export function compileCSSConfigFile(file: string, options: CompileCSSConfigOpti
 export function compileProjectConfig(entries: string[], options: CompileCSSConfigOptions = {}): CompileProjectConfigResult {
     const styleConfigs: Config[] = []
     const dependencies: string[] = []
+    let extractionPolicy = createCSSDirectiveExtractionPolicy()
     const classNames: string[] = []
     const nativeClassNames: string[] = []
     const nativeCSS: string[] = []
@@ -302,6 +305,7 @@ export function compileProjectConfig(entries: string[], options: CompileCSSConfi
     const warnings: string[] = []
     let directives: CompileCSSResult = {
         config: {},
+        extractionPolicy: createCSSDirectiveExtractionPolicy(),
         classNames: [],
         nativeClassNames: [],
         nativeCSS: '',
@@ -316,6 +320,7 @@ export function compileProjectConfig(entries: string[], options: CompileCSSConfi
             preserveNativeCSS: options.preserveNativeCSS ?? false
         })
         directives = result
+        extractionPolicy = mergeCSSDirectiveExtractionPolicy(extractionPolicy, result.extractionPolicy)
         addUnique(dependencies, result.dependencies)
         addUnique(classNames, result.classNames)
         addUnique(nativeClassNames, result.nativeClassNames)
@@ -339,6 +344,7 @@ export function compileProjectConfig(entries: string[], options: CompileCSSConfi
         entries,
         config: entries.length ? extendConfig(...styleConfigs, options.config) : options.config || {},
         dependencies,
+        extractionPolicy,
         classNames,
         nativeClassNames,
         nativeCSS: nativeCSS.join('\n'),

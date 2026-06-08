@@ -61,11 +61,11 @@ The Master import is replaced by generated CSS. It is not emitted as a browser-f
 }
 ```
 
-Use `@master no-shake;` when the stylesheet contains class names that are intentionally invisible to the scanner.
+Use `@preserve native;` when the stylesheet contains class names that are intentionally invisible to the scanner.
 
 ```css name=src/vendor-overrides.css
 @import "@master/css";
-@master no-shake;
+@preserve native;
 
 .cms-card {
     color: red;
@@ -187,7 +187,7 @@ The same imported file can therefore be shaken differently under different roots
 ---
 
 ## Scoped scanning
-By default, a shaken stylesheet uses the global scanner scope. Add `@master source`, `@master source exclude`, `@master source force`, `@master class`, and `@master class exclude` inside the stylesheet graph when that root needs a narrower or wider usage graph.
+By default, a shaken stylesheet uses the global scanner scope. Add `@source`, `@source not`, `@source required`, `@safelist`, and `@blocklist` inside the stylesheet graph when that root needs a narrower or wider usage graph.
 
 ```txt
 app/a/a.css
@@ -201,7 +201,7 @@ app/b/b.css
 
 ```css name=app/a/a.css
 @import "@master/css";
-@master source "./page.tsx";
+@source "./page.tsx";
 @import "../shared.css";
 
 .a-card {
@@ -215,7 +215,7 @@ app/b/b.css
 
 ```css name=app/b/b.css
 @import "@master/css";
-@master source "./page.tsx";
+@source "./page.tsx";
 @import "../shared.css";
 
 .a-card {
@@ -228,8 +228,8 @@ app/b/b.css
 ```
 
 ```css name=app/shared.css
-@master class "shared-card";
-@master class exclude "debug-*";
+@safelist "shared-card";
+@blocklist "debug-*";
 
 .shared-card {
     border: 1px solid rgb(0 0 0 / 12%);
@@ -254,15 +254,15 @@ export default function Page() {
 }
 ```
 
-The `a.css` output keeps `.a-card` and `.shared-card`. The `b.css` output keeps `.b-card` and `.shared-card`. Both roots remove `.debug-outline` because the imported `@master class exclude "debug-*";` directive belongs to each root scope.
+The `a.css` output keeps `.a-card` and `.shared-card`. The `b.css` output keeps `.b-card` and `.shared-card`. Both roots remove `.debug-outline` because the imported `@blocklist "debug-*";` directive belongs to each root scope.
 
-Use `@master source force` when a root must scan a file even though the global or local exclude list would remove it.
+Use `@source required` when a root must scan a file even though the global or local exclude list would remove it.
 
 ```css name=app/a/a.css
 @import "@master/css";
-@master source "./**/*.tsx";
-@master source exclude "./**/*.test.tsx";
-@master source force "./always-scan.test.tsx";
+@source "./**/*.tsx";
+@source not "./**/*.test.tsx";
+@source required "./always-scan.test.tsx";
 ```
 
 ---
@@ -368,7 +368,7 @@ If a native class is used by a bounded external source, include it explicitly so
 
 ```css name=src/dialog.css
 @import "@master/css";
-@master class "dialog-open dialog-closing";
+@safelist "dialog-open dialog-closing";
 
 .dialog-open {
     overflow: hidden;
@@ -385,7 +385,7 @@ Use this for known class contracts. Do not use it as a replacement for putting n
 
 ## Checklist
 - Import `@master/css` from CSS entries that should receive generated Master CSS and native CSS shaking.
-- Add `@master no-shake;` to Master-managed entries whose native CSS must be preserved.
+- Add `@preserve native;` to Master-managed entries whose native CSS must be preserved.
 - Remember that local relative `.css` imports follow the root's shaking decision.
-- Use `@master class` for native classes used by bounded external systems.
-- Keep vendor, CMS, or third-party styles outside Master-managed roots unless their class usage is visible to the scanner or protected with `@master no-shake;`.
+- Use `@safelist` for native classes used by bounded external systems.
+- Keep vendor, CMS, or third-party styles outside Master-managed roots unless their class usage is visible to the scanner or protected with `@preserve native;`.

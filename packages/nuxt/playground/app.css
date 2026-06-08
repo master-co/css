@@ -1,5 +1,5 @@
 @import '@master/css';
-@master source './app.vue';
+@source './app.vue';
 
 @layer components {
     .box {

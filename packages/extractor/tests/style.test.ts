@@ -8,11 +8,10 @@ import {
     createMasterCSSPackageHostSource,
     createExtractedCSS,
     createExtractedCSSResult,
-    hasMasterNoShakeDirective,
-    hasMasterShakeDirective,
+    hasPreserveNativeDirective,
     hasMasterStyleEntrypoint,
     isMasterStyleSource,
-    removeMasterShakeDirectives,
+    removeMasterStyleDirectives,
     registerStyleCSSSource,
     resolveMasterStyleSource,
     resolveStyleCSSImportGraph,
@@ -40,10 +39,11 @@ describe('style CSS extraction helpers', () => {
         expect(result.code).toContain('@import "./other.css";')
     })
 
-    it('detects Master CSS entrypoints and master shake directives separately', () => {
+    it('detects Master CSS entrypoints and preservation directives separately', () => {
         expect(hasMasterStyleEntrypoint('@import "@master/css";')).toBe(true)
         expect(hasMasterStyleEntrypoint('@master;')).toBe(true)
         expect(hasMasterStyleEntrypoint('@master shake;')).toBe(false)
+        expect(hasMasterStyleEntrypoint('@preserve native;')).toBe(false)
         expect(hasMasterStyleEntrypoint('@theme { --color-primary: red; }')).toBe(false)
         expect(hasMasterStyleEntrypoint('@import "./other.css";')).toBe(false)
         expect(isMasterStyleSource('@theme { --color-primary: red; }')).toBe(false)
@@ -59,7 +59,10 @@ describe('style CSS extraction helpers', () => {
         expect(isMasterStyleSource('@master;')).toBe(true)
         expect(isMasterStyleSource('@master shake;')).toBe(false)
         expect(isMasterStyleSource('@master no-shake;')).toBe(false)
+        expect(isMasterStyleSource('@preserve native;')).toBe(false)
         expect(isMasterStyleSource('@import "./other.css";')).toBe(false)
+        expect(hasPreserveNativeDirective('@preserve native;\n.card { color: red; }')).toBe(true)
+        expect(hasPreserveNativeDirective('@master no-shake;\n.card { color: red; }')).toBe(false)
     })
 
     it('resolves Master style sources through the stylesheet import graph', () => {
@@ -110,13 +113,16 @@ describe('style CSS extraction helpers', () => {
     })
 
     it('removes top-level master style directives', () => {
-        const result = removeMasterShakeDirectives([
-            '@master shake;',
+        const result = removeMasterStyleDirectives([
+            '@source "./page.tsx";',
+            '@safelist "card";',
+            '@blocklist "debug-*";',
+            '@preserve native;',
             '@master;',
             '@master no-shake;',
             '',
             '@media (min-width: 768px) {',
-            '    @master shake;',
+            '    @preserve native;',
             '    @master no-shake;',
             '}',
             '',
@@ -124,11 +130,13 @@ describe('style CSS extraction helpers', () => {
         ].join('\n'))
 
         expect(hasMasterStyleEntrypoint('@master;\n.card { color: red; }')).toBe(true)
-        expect(hasMasterShakeDirective('@master shake;\n.card { color: red; }')).toBe(true)
-        expect(hasMasterNoShakeDirective('@master no-shake;\n.card { color: red; }')).toBe(true)
         expect(result.removed).toBe(true)
+        expect(result.code).not.toContain('@source')
+        expect(result.code).not.toContain('@safelist')
+        expect(result.code).not.toContain('@blocklist')
+        expect(result.code).not.toContain('@preserve native;\n@master')
         expect(result.code).not.toContain('@master no-shake;\n\n.card')
-        expect(result.code).toContain('@media (min-width: 768px) {\n    @master shake;\n    @master no-shake;\n}')
+        expect(result.code).toContain('@media (min-width: 768px) {\n    @preserve native;\n    @master no-shake;\n}')
     })
 
     it('treats an empty host source as an intentionally handled Master CSS import', () => {
@@ -345,7 +353,7 @@ describe('style CSS extraction helpers', () => {
         const styleCSSSources = new Map()
         await registerStyleCSSSource(extractor, styleCSSSources, join(root, 'app/globals.css'), `
             @import "@master/css";
-            @master no-shake;
+            @preserve native;
 
             .card {
                 display: grid;
@@ -367,10 +375,10 @@ describe('style CSS extraction helpers', () => {
         expect([...extractor.usedNativeClasses]).toEqual([])
         expect(css).toContain('.card')
         expect(css).toContain('.unused')
-        expect(css).not.toContain('@master no-shake')
+        expect(css).not.toContain('@preserve native')
     })
 
-    it('removes imported master shake directives without making dependencies independent roots', async () => {
+    it('removes imported legacy master directives without making dependencies independent roots', async () => {
         const root = createFixture()
         mkdirSync(join(root, 'app/styles'), { recursive: true })
         writeFileSync(join(root, 'app/styles/btn.css'), `
@@ -392,7 +400,7 @@ describe('style CSS extraction helpers', () => {
         const styleCSSSources = new Map()
         await registerStyleCSSSource(extractor, styleCSSSources, join(root, 'app/globals.css'), `
             @import "@master/css";
-            @master no-shake;
+            @preserve native;
             @import "./styles/btn.css";
         `)
         await extractor.insert(join(root, 'app/page.html'), '<div class="btn-native"></div>')
@@ -407,7 +415,7 @@ describe('style CSS extraction helpers', () => {
         expect(css).toContain('.btn-native')
         expect(css).toContain('.btn-unused')
         expect(css).not.toContain('@master shake')
-        expect(css).not.toContain('@master no-shake')
+        expect(css).not.toContain('@preserve native')
     })
 
     it('can emit shaken native CSS without generated Master CSS', async () => {
