@@ -1,314 +1,39 @@
 import type CSSLanguageService from '../core'
 import type { TextDocument } from 'vscode-languageserver-textdocument'
 import type { SemanticTokens } from 'vscode-languageserver-protocol'
-import { SEMANTIC_TOKEN_MODIFIERS, SEMANTIC_TOKEN_TYPES } from '../common'
-import { UtilityType, VALUE_UNITS, type ValueComponent } from '@master/css'
+import { encodeSemanticTokens } from '../semantic/encode'
+import { toSemanticTokenItems, type HighlightTokenItem } from '../semantic/highlight'
+import { collectCSSHighlightTokenItems } from '../semantic/tokenize-css'
+import { tokenizeClassToken } from '../semantic/tokenize-class'
+import type { SemanticTokenItem } from '../semantic/types'
 
-type SemanticTokenType = typeof SEMANTIC_TOKEN_TYPES[number]
-type SemanticTokenModifier = typeof SEMANTIC_TOKEN_MODIFIERS[number]
+export { encodeSemanticTokens }
+export type { HighlightTokenItem, SemanticTokenItem }
 
-interface SemanticTokenItem {
-    start: number
-    end: number
-    type: SemanticTokenType
-    modifiers?: SemanticTokenModifier[]
+export function collectHighlightTokenItems(this: CSSLanguageService, document: TextDocument, classPositions = this.getClassPositions(document)): HighlightTokenItem[] {
+    const semanticTokens: HighlightTokenItem[] = []
+    for (const classPosition of classPositions) {
+        if (!classPosition.raw) continue
+        semanticTokens.push(...tokenizeClassToken(this.css, classPosition.token, classPosition.range.start))
+    }
+    semanticTokens.push(...collectCSSHighlightTokenItems(document.getText(), this.css, document.languageId))
+    return semanticTokens
 }
 
-const tokenTypeIndex = new Map(SEMANTIC_TOKEN_TYPES.map((type, index) => [type, index]))
-const tokenModifierIndex = new Map(SEMANTIC_TOKEN_MODIFIERS.map((modifier, index) => [modifier, index]))
-
-function modifierBits(modifiers: SemanticTokenModifier[] = []) {
-    let bits = 0
-    for (const modifier of modifiers) {
-        const index = tokenModifierIndex.get(modifier)
-        if (index !== undefined) bits |= 1 << index
-    }
-    return bits
+export function collectSemanticTokenItems(this: CSSLanguageService, document: TextDocument, classPositions = this.getClassPositions(document)): SemanticTokenItem[] {
+    return toSemanticTokenItems(collectHighlightTokenItems.call(this, document, classPositions))
 }
 
-function encodeSemanticTokens(document: TextDocument, tokens: SemanticTokenItem[]): SemanticTokens {
-    const data: number[] = []
-    let previousLine = 0
-    let previousCharacter = 0
-    let previousEnd = -1
-    for (const token of tokens
-        .filter((token) => token.end > token.start)
-        .sort((a, b) => a.start - b.start || a.end - b.end)) {
-        if (token.start < previousEnd) continue
-        const typeIndex = tokenTypeIndex.get(token.type)
-        if (typeIndex === undefined) continue
-        const startPosition = document.positionAt(token.start)
-        const endPosition = document.positionAt(token.end)
-        if (startPosition.line !== endPosition.line) continue
-        data.push(
-            startPosition.line - previousLine,
-            startPosition.line === previousLine ? startPosition.character - previousCharacter : startPosition.character,
-            endPosition.character - startPosition.character,
-            typeIndex,
-            modifierBits(token.modifiers)
-        )
-        previousLine = startPosition.line
-        previousCharacter = startPosition.character
-        previousEnd = token.end
+export function renderSemanticTokensAtPosition(this: CSSLanguageService, document: TextDocument, position: Parameters<CSSLanguageService['getClassPosition']>[1]): SemanticTokens {
+    const classPosition = this.getClassPosition(document, position)
+    if (classPosition) {
+        return encodeSemanticTokens(document, collectSemanticTokenItems.call(this, document, [classPosition]))
     }
-    return { data }
-}
-
-function pushToken(tokens: SemanticTokenItem[], start: number, length: number, type: SemanticTokenType, modifiers?: SemanticTokenModifier[]) {
-    if (length <= 0) return
-    tokens.push({ start, end: start + length, type, modifiers })
-}
-
-function pushKey(tokens: SemanticTokenItem[], start: number, keyToken?: string) {
-    if (!keyToken) return
-    const keyNameLength = keyToken.endsWith(':') ? keyToken.length - 1 : keyToken.length
-    pushToken(tokens, start, keyNameLength, 'property')
-    if (keyToken.endsWith(':')) {
-        pushToken(tokens, start + keyNameLength, 1, 'operator')
-    }
-}
-
-function pushStringValue(tokens: SemanticTokenItem[], valueStart: number, valueText: string, splitSeparators = true) {
-    if (!splitSeparators || !valueText.includes('/')) {
-        pushToken(tokens, valueStart, valueText.length, 'string')
-        return
-    }
-    let segmentStart = 0
-    for (let i = 0; i < valueText.length; i++) {
-        if (valueText[i] !== '/') continue
-        pushToken(tokens, valueStart + segmentStart, i - segmentStart, 'string')
-        pushToken(tokens, valueStart + i, 1, 'operator')
-        segmentStart = i + 1
-    }
-    pushToken(tokens, valueStart + segmentStart, valueText.length - segmentStart, 'string')
-}
-
-function pushValueComponent(tokens: SemanticTokenItem[], classStart: number, valueStart: number, valueText: string, component: ValueComponent, splitStringSeparators = true) {
-    switch (component.type) {
-        case 'variable': {
-            const alphaStart = valueText.lastIndexOf('/')
-            if (component.alpha !== undefined && alphaStart > 0) {
-                pushToken(tokens, valueStart, alphaStart, 'variable')
-                pushToken(tokens, valueStart + alphaStart, 1, 'operator')
-                pushToken(tokens, valueStart + alphaStart + 1, valueText.length - alphaStart - 1, 'number')
-            } else {
-                pushToken(tokens, valueStart, valueText.length, 'variable')
-            }
-            break
-        }
-        case 'number':
-            pushToken(tokens, valueStart, valueText.length, 'number')
-            break
-        case 'function': {
-            const functionStart = valueText.indexOf(component.name)
-            if (component.name && functionStart >= 0) {
-                pushToken(tokens, valueStart + functionStart, component.name.length, 'function')
-            }
-            const openParen = valueText.indexOf('(', functionStart + component.name.length)
-            if (openParen >= 0) {
-                pushToken(tokens, valueStart + openParen, 1, 'operator')
-                const closeParen = valueText.lastIndexOf(')')
-                if (closeParen > openParen) {
-                    pushToken(tokens, valueStart + closeParen, 1, 'operator')
-                }
-                const innerStart = openParen + 1
-                let childSearchStart = innerStart
-                for (const child of component.children) {
-                    const childToken = child.token
-                    if (!childToken) continue
-                    const childIndex = valueText.indexOf(childToken, childSearchStart)
-                    if (childIndex < 0) continue
-                    pushValueComponent(tokens, classStart, valueStart + childIndex, childToken, child, false)
-                    childSearchStart = childIndex + childToken.length
-                }
-            }
-            break
-        }
-        case 'separator':
-            pushToken(tokens, valueStart, valueText.length, 'operator')
-            break
-        default:
-            pushStringValue(tokens, valueStart, valueText, splitStringSeparators)
-    }
-}
-
-function pushValue(tokens: SemanticTokenItem[], classStart: number, token: string, valueStart: number, valueToken?: string, valueComponents?: ValueComponent[]) {
-    if (!valueToken) return
-    const valueText = token.slice(valueStart, valueStart + valueToken.length)
-    if (!valueText) return
-    if (valueComponents?.length === 1) {
-        pushValueComponent(tokens, classStart, classStart + valueStart, valueText, valueComponents[0])
-        return
-    }
-    let searchStart = 0
-    for (const component of valueComponents ?? []) {
-        const componentToken = component.token
-        if (!componentToken) continue
-        const index = valueText.indexOf(componentToken, searchStart)
-        if (index < 0) continue
-        pushValueComponent(tokens, classStart, classStart + valueStart + index, componentToken, component)
-        searchStart = index + componentToken.length
-    }
-    if (!valueComponents?.length) {
-        pushToken(tokens, classStart + valueStart, valueText.length, 'string')
-    }
-}
-
-function isNumericAtValue(value: string) {
-    const match = /^([+-]?(?:\d+\.\d+|\.\d+|\d+))([A-Za-z%]+)?$/.exec(value)
-    if (!match) return false
-    return !match[2] || VALUE_UNITS.includes(match[2])
-}
-
-function startsAtFeatureOperator(value: string) {
-    return value[0] === ':'
-        || value.startsWith('>=')
-        || value.startsWith('<=')
-        || value[0] === '>'
-        || value[0] === '<'
-        || value[0] === '='
-}
-
-function pushAtWord(tokens: SemanticTokenItem[], start: number, value: string, next: string) {
-    const type = startsAtFeatureOperator(next)
-        ? 'property'
-        : isNumericAtValue(value)
-            ? 'number'
-            : 'string'
-    pushToken(tokens, start, value.length, type)
-}
-
-function pushAtState(tokens: SemanticTokenItem[], classStart: number, token: string, atStart: number, atEnd: number) {
-    const atText = token.slice(atStart, atEnd)
-    if (!/[()&<>=!,]/.test(atText)) {
-        pushToken(tokens, classStart + atStart, atEnd - atStart, 'keyword')
-        return
-    }
-
-    let i = atStart
-    const keyword = token.slice(i, atEnd).match(/^@[A-Za-z0-9-]+/)
-    if (keyword) {
-        pushToken(tokens, classStart + i, keyword[0].length, 'keyword')
-        i += keyword[0].length
-    } else if (token[i] === '@') {
-        pushToken(tokens, classStart + i, 1, 'keyword')
-        i++
-    }
-
-    while (i < atEnd) {
-        const twoChars = token.slice(i, i + 2)
-        if (twoChars === '>=' || twoChars === '<=') {
-            pushToken(tokens, classStart + i, 2, 'operator')
-            i += 2
-            continue
-        }
-
-        const char = token[i]
-        if (char === '(' || char === ')' || char === '&' || char === ',' || char === '!' || char === '>' || char === '<' || char === '=' || char === ':') {
-            pushToken(tokens, classStart + i, 1, 'operator')
-            i++
-            continue
-        }
-
-        if (/\s/.test(char)) {
-            i++
-            continue
-        }
-
-        const word = token.slice(i, atEnd).match(/^[#A-Za-z0-9_.%-]+/)
-        if (word) {
-            const next = token.slice(i + word[0].length, i + word[0].length + 2)
-            pushAtWord(tokens, classStart + i, word[0], next)
-            i += word[0].length
-        } else {
-            i++
-        }
-    }
-}
-
-function pushState(tokens: SemanticTokenItem[], classStart: number, token: string, stateStart: number) {
-    for (let i = stateStart; i < token.length;) {
-        const char = token[i]
-        if (char === '!') {
-            pushToken(tokens, classStart + i, 1, 'operator')
-            i++
-        } else if (char === '_' || char === '>' || char === '+' || char === '~') {
-            pushToken(tokens, classStart + i, 1, 'operator')
-            i++
-            const match = token.slice(i).match(/^\*?[A-Za-z][\w-]*/)
-            if (match) {
-                pushToken(tokens, classStart + i, match[0].length, 'type')
-                i += match[0].length
-            }
-        } else if (char === '.' || char === '#') {
-            pushToken(tokens, classStart + i, 1, 'operator')
-            const nameStart = i + 1
-            const match = token.slice(nameStart).match(/^[\w-]+/)
-            if (match) {
-                pushToken(tokens, classStart + nameStart, match[0].length, char === '.' ? 'class' : 'variable')
-                i = nameStart + match[0].length
-            } else {
-                i = nameStart
-            }
-        } else if (char === '(' || char === ',') {
-            pushToken(tokens, classStart + i, 1, 'operator')
-            i++
-            const match = token.slice(i).match(/^\*?[A-Za-z][\w-]*/)
-            if (match) {
-                pushToken(tokens, classStart + i, match[0].length, 'type')
-                i += match[0].length
-            }
-        } else if (char === ')' || char === '[' || char === ']') {
-            pushToken(tokens, classStart + i, 1, 'operator')
-            i++
-        } else if (char === '@') {
-            const nextAt = token.indexOf('@', i + 1)
-            const end = nextAt >= 0 ? nextAt : token.length
-            pushAtState(tokens, classStart, token, i, end)
-            i = end
-        } else if (char === ':') {
-            const colonLength = token[i + 1] === ':' ? 2 : 1
-            pushToken(tokens, classStart + i, colonLength, 'operator')
-            const nameStart = i + colonLength
-            const match = token.slice(nameStart).match(/^[\w-]+/)
-            if (match) {
-                pushToken(tokens, classStart + nameStart, match[0].length, 'modifier')
-                i = nameStart + match[0].length
-            } else {
-                i = nameStart
-            }
-        } else {
-            i++
-        }
-    }
+    return encodeSemanticTokens(document, toSemanticTokenItems(collectCSSHighlightTokenItems(document.getText(), this.css, document.languageId, {
+        positionOffset: document.offsetAt(position)
+    })))
 }
 
 export default function renderSemanticTokens(this: CSSLanguageService, document: TextDocument): SemanticTokens {
-    const semanticTokens: SemanticTokenItem[] = []
-    for (const classPosition of this.getClassPositions(document)) {
-        const { raw, token } = classPosition
-        if (!raw) continue
-        const classStart = classPosition.range.start
-        const rules = this.css.generate(token)
-        const component = rules.find((rule) => rule.type === UtilityType.Static && rule.layerName === 'components')
-        if (component) {
-            const stateStart = raw.length - (component.stateToken?.length ?? 0)
-            pushToken(semanticTokens, classStart, stateStart, 'class', ['declaration'])
-            pushState(semanticTokens, classStart, token, stateStart)
-            continue
-        }
-        const rule = rules[0]
-        if (!rule) continue
-        if (rule.type === UtilityType.Static) {
-            const stateStart = raw.length - (rule.stateToken?.length ?? 0)
-            pushToken(semanticTokens, classStart, stateStart, 'class')
-            pushState(semanticTokens, classStart, token, stateStart)
-            continue
-        }
-        pushKey(semanticTokens, classStart, rule.keyToken)
-        const valueStart = rule.keyToken?.length ?? Math.max(0, token.indexOf(rule.valueToken ?? ''))
-        pushValue(semanticTokens, classStart, token, valueStart, rule.valueToken, rule.valueComponents)
-        pushState(semanticTokens, classStart, token, valueStart + (rule.valueToken?.length ?? 0))
-    }
-    return encodeSemanticTokens(document, semanticTokens)
+    return encodeSemanticTokens(document, collectSemanticTokenItems.call(this, document))
 }

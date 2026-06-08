@@ -2,12 +2,12 @@
 
 ## Responsibility
 
-`@master/css-language-service` provides editor intelligence using core Master CSS knowledge. It finds class positions, returns completions, hover/generated CSS previews, color information, and color presentations.
+`@master/css-language-service` provides editor intelligence using core Master CSS knowledge. It finds class positions, returns completions, hover/generated CSS previews, color information, color presentations, and semantic token classifications.
 
 ## Inputs And Outputs
 
 - Input: `TextDocument`, cursor positions, LSP request context, language service settings, optional config.
-- Output: completion items, hover docs, color info, color presentations.
+- Output: completion items, hover docs, color info, color presentations, semantic tokens.
 
 ## Public APIs
 
@@ -28,7 +28,7 @@
 
 ## Allowed Changes
 
-- Focused completion, hover, color, or class-position fixes.
+- Focused completion, hover, color, semantic token, or class-position fixes.
 - Adding tests for new syntax support.
 
 ## Forbidden Without Explicit Request

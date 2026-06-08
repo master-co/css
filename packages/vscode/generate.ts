@@ -1,7 +1,7 @@
 import editJsonFile from 'edit-json-file'
 import copyOrSymlink from '~/internal/utils/copy-or-symlink'
 import settings from '../language-server/src/settings'
-import { grammars, declaration } from '../language/src'
+import { SEMANTIC_TOKEN_MODIFIERS } from '../language-service/src/common'
 import { dirname, join } from 'node:path'
 import { createRequire } from 'node:module'
 import { fileURLToPath } from 'node:url'
@@ -9,17 +9,58 @@ import { fileURLToPath } from 'node:url'
 const pkg = editJsonFile(fileURLToPath(new URL('./package.json', import.meta.url)), { stringify_width: 4 })
 const require = createRequire(import.meta.url)
 
-pkg.set('contributes.languages', [declaration])
+pkg.unset('contributes.languages')
+pkg.unset('contributes.grammars')
 
-pkg.set('contributes.grammars', grammars.map((grammar) => {
-    const newGrammar: any = {
-        scopeName: grammar.scopeName,
-        path: `./syntaxes/${grammar.scopeName.replace('source.', '')}.json`,
+pkg.set('contributes.semanticTokenModifiers', SEMANTIC_TOKEN_MODIFIERS
+    .filter((modifier) => modifier !== 'declaration' && modifier !== 'defaultLibrary')
+    .map((modifier) => ({
+        id: modifier,
+        description: `Master CSS ${modifier} semantic token modifier.`
+    })))
+
+pkg.set('contributes.semanticTokenScopes', [
+    {
+        scopes: {
+            class: ['entity.other.attribute-name.class.css'],
+            'class.component': ['entity.other.attribute-name.class.css'],
+            'class.declaration': ['entity.other.attribute-name.class.css'],
+            'class.selector': ['entity.other.attribute-name.class.css'],
+            enumMember: ['support.constant.property-value.css'],
+            'enumMember.directive': ['support.constant.property-value.css'],
+            'enumMember.query': ['support.constant.property-value.css'],
+            'enumMember.unit': ['keyword.other.unit'],
+            property: ['support.type.property-name.css'],
+            'property.directive': ['support.type.property-name.css'],
+            'property.query': ['support.type.property-name.css'],
+            variable: ['variable.other.master-css.css', 'variable.css'],
+            'variable.directive': ['variable.parameter.master-css.css'],
+            'variable.selector': ['entity.other.attribute-name.id.css'],
+            function: ['support.function.misc.css'],
+            number: ['constant.numeric.css'],
+            'number.query': ['constant.numeric.css'],
+            string: ['string.quoted.css', 'string.quoted.html'],
+            'string.quoted': ['string.quoted.css', 'string.quoted.html'],
+            keyword: ['keyword.control.at-rule'],
+            'keyword.directive': ['keyword.control.at-rule.master-css.css'],
+            'keyword.query': ['keyword.control.at-rule'],
+            modifier: ['entity.other.attribute-name.pseudo-class.css'],
+            'modifier.directive': ['storage.modifier.master-css.css'],
+            'modifier.pseudoClass': ['entity.other.attribute-name.pseudo-class.css'],
+            'modifier.pseudoElement': ['entity.other.attribute-name.pseudo-element.css'],
+            operator: ['keyword.operator.css'],
+            'operator.directive': ['punctuation.section.property-list.begin.bracket.curly.css'],
+            'operator.important': ['keyword.operator.important.css'],
+            'operator.pseudoClass': ['entity.other.attribute-name.pseudo-class.css'],
+            'operator.pseudoElement': ['entity.other.attribute-name.pseudo-element.css'],
+            'operator.query': ['keyword.operator.css'],
+            'operator.selector': ['keyword.operator.combinator'],
+            'operator.unit': ['keyword.operator.css'],
+            type: ['entity.name.tag.css'],
+            'type.selector': ['entity.name.tag.css']
+        }
     }
-    if (grammar.vscodeEmbeddedLanguages) newGrammar.embeddedLanguages = grammar.vscodeEmbeddedLanguages
-    if (grammar.injectTo) newGrammar.injectTo = grammar.injectTo
-    return newGrammar
-}))
+])
 
 pkg.set('contributes.configuration', {
     title: 'Master CSS',
@@ -76,9 +117,11 @@ pkg.set('contributes.configuration', {
             'type': 'boolean',
             'default': settings.renderSyntaxColors
         },
-        'masterCSS.renderSemanticTokens': {
-            'type': 'boolean',
-            'default': settings.renderSemanticTokens
+        'masterCSS.syntaxHighlighting': {
+            'type': 'string',
+            'enum': ['active', 'always', 'off'],
+            'default': settings.syntaxHighlighting,
+            'description': 'Controls Master CSS syntax highlighting. Active highlights only the utility class at the active editor selection, always highlights all discovered utilities, and off disables syntax highlighting.'
         },
         'masterCSS.workspaces': {
             'type': [
@@ -93,5 +136,4 @@ pkg.set('contributes.configuration', {
 
 pkg.save()
 
-copyOrSymlink(fileURLToPath(new URL('../language/syntaxes', import.meta.url)), fileURLToPath(new URL('./syntaxes', import.meta.url)))
 copyOrSymlink(join(dirname(require.resolve('css-tree/package.json')), 'data'), fileURLToPath(new URL('./data', import.meta.url)))

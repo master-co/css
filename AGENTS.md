@@ -11,7 +11,7 @@ Master CSS is a markup-driven CSS language and framework. Class strings such as 
 - Server-side HTML rendering in `packages/server`
 - Static rendering source scanning in `packages/extractor`
 - Build integrations such as `packages/vite` and `packages/webpack`
-- Editor and lint tooling in `packages/language-service`, `packages/language-server`, `packages/language`, `packages/vscode`, and `packages/eslint-plugin`
+- Editor and lint tooling in `packages/language-service`, `packages/language-server`, `packages/vscode`, and `packages/eslint-plugin`
 
 The layer order is intentionally stable and declared by `packages/core/src/base.css`:
 

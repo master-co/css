@@ -14,6 +14,9 @@ const settings: Settings = {
         "typescript",
         "javascriptreact",
         "typescriptreact",
+        "css",
+        "scss",
+        "less",
         "vue",
         "svelte",
         "rust",
@@ -57,7 +60,7 @@ const settings: Settings = {
     inspectSyntax: true,
     renderSyntaxColors: true,
     editSyntaxColors: true,
-    renderSemanticTokens: true
+    syntaxHighlighting: 'active'
 }
 
 export default settings
@@ -75,5 +78,5 @@ export declare interface Settings {
     inspectSyntax?: boolean
     renderSyntaxColors?: boolean
     editSyntaxColors?: boolean
-    renderSemanticTokens?: boolean
+    syntaxHighlighting?: 'active' | 'always' | 'off'
 }

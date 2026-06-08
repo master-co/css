@@ -2,12 +2,12 @@
 
 ## Responsibility
 
-`@master/css-language-server` wraps the language service in LSP. It initializes workspace folders, loads config files, manages language service lifecycles, and handles completion, hover, document color, and color presentation requests.
+`@master/css-language-server` wraps the language service in LSP. It initializes workspace folders, loads config files, manages language service lifecycles, and handles completion, hover, document color, color presentation, and semantic token requests.
 
 ## Inputs And Outputs
 
 - Input: LSP connection, workspace folders, settings, text documents.
-- Output: LSP capabilities and request responses.
+- Output: LSP capabilities, request responses, and active/full semantic token responses.
 
 ## Public APIs
 
@@ -25,7 +25,7 @@
 
 - Workspace detection fixes.
 - Config reload/restart fixes.
-- Request handler fixes with tests.
+- Request handler and semantic token mode fixes with tests.
 
 ## Forbidden Without Explicit Request
 

@@ -22,8 +22,6 @@
         "@next/mdx": "16.2.4",
         "class-variant": "^2.0.6",
         "monaco-editor": "^0.55.1",
-        "monaco-editor-textmate": "^4.0.0",
-        "monaco-textmate": "^3.0.1",
         "next": "16.2.4",
         "react": "19.2.5",
         "react-dom": "19.2.5",

@@ -7,7 +7,7 @@ import { minimatch } from 'minimatch'
 import inspectSyntax from './features/inspect-syntax'
 import renderSyntaxColors from './features/render-syntax-colors'
 import editSyntaxColors from './features/edit-syntax-colors'
-import renderSemanticTokens from './features/render-semantic-tokens'
+import renderSemanticTokens, { renderSemanticTokensAtPosition } from './features/render-semantic-tokens'
 import suggestSyntax from './features/suggest-syntax'
 import { TextDocument } from 'vscode-languageserver-textdocument'
 import getClassPositions, { ClassPositionCache } from './utils/get-class-positions'
@@ -43,8 +43,13 @@ export default class CSSLanguageService extends EventEmitter {
     }
 
     renderSemanticTokens(...params: Parameters<typeof renderSemanticTokens>) {
-        if (this.settings.renderSemanticTokens && this.isDocumentAccepted(params[0]))
+        if (this.settings.syntaxHighlighting !== 'off' && this.isDocumentAccepted(params[0]))
             return renderSemanticTokens?.call(this, ...params)
+    }
+
+    renderSemanticTokensAtPosition(...params: Parameters<typeof renderSemanticTokensAtPosition>) {
+        if (this.settings.syntaxHighlighting !== 'off' && this.isDocumentAccepted(params[0]))
+            return renderSemanticTokensAtPosition?.call(this, ...params)
     }
 
     suggestSyntax(...params: Parameters<typeof suggestSyntax>) {

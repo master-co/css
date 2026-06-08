@@ -1,11 +1,149 @@
 import path from 'path'
 import { LanguageClient, LanguageClientOptions, ServerOptions, TransportKind } from 'vscode-languageclient/node'
-import { commands, ExtensionContext, ProgressLocation, window, workspace } from 'vscode'
-import { settings } from '@master/css-language-server'
+import { commands, Disposable, EventEmitter, ExtensionContext, languages, Position, ProgressLocation, SemanticTokens, SemanticTokensLegend, TextDocument, window, workspace } from 'vscode'
+import { ACTIVE_SEMANTIC_TOKENS_REQUEST, settings, type Settings } from '@master/css-language-server'
+import { SEMANTIC_TOKENS_LEGEND } from '@master/css-language-service'
+import type { SemanticTokens as LSPSemanticTokens } from 'vscode-languageserver-protocol'
 
 let client: LanguageClient
 
 const disposables: Disposable[] = []
+
+type DocumentSelector = { scheme: string, language: string }[]
+
+function getMasterCSSSettings(): Partial<Settings> {
+    const configuration = workspace.getConfiguration('masterCSS')
+    const result: Partial<Settings> = {}
+    const writableResult = result as Record<string, unknown>
+    for (const optionName in settings) {
+        const value = configuration.get(optionName)
+        if (value !== undefined) {
+            writableResult[optionName] = value
+        }
+    }
+    return result
+}
+
+function getIncludedLanguages() {
+    return getMasterCSSSettings().includedLanguages ?? settings.includedLanguages ?? []
+}
+
+function getSyntaxHighlighting(): NonNullable<Settings['syntaxHighlighting']> {
+    const mode = getMasterCSSSettings().syntaxHighlighting
+    return mode === 'always' || mode === 'off' ? mode : 'active'
+}
+
+function createDocumentSelector(): DocumentSelector {
+    return getIncludedLanguages().flatMap((language) => [
+        { scheme: 'file', language },
+        { scheme: 'untitled', language }
+    ])
+}
+
+function isSelectedDocument(document: TextDocument, documentSelector: DocumentSelector) {
+    return documentSelector.some(({ scheme, language }) => document.uri.scheme === scheme && document.languageId === language)
+}
+
+function createActiveSemanticTokensFeature(client: LanguageClient, clientStarted: Thenable<void>, documentSelector: DocumentSelector) {
+    const changed = new EventEmitter<void>()
+    const legend = new SemanticTokensLegend(
+        SEMANTIC_TOKENS_LEGEND.tokenTypes,
+        SEMANTIC_TOKENS_LEGEND.tokenModifiers
+    )
+    const empty = new SemanticTokens(new Uint32Array())
+    const ownedDisposables: Disposable[] = [changed]
+    let providerDisposable: Disposable | undefined
+    let activeDocumentUri: string | undefined
+    let activeDocumentVersion: number | undefined
+    let activePosition: Position | undefined
+
+    const resetActivePosition = () => {
+        activeDocumentUri = undefined
+        activeDocumentVersion = undefined
+        activePosition = undefined
+    }
+
+    const updateActivePosition = () => {
+        if (getSyntaxHighlighting() !== 'active') {
+            resetActivePosition()
+            changed.fire()
+            return
+        }
+        const editor = window.activeTextEditor
+        if (!editor || !isSelectedDocument(editor.document, documentSelector)) {
+            resetActivePosition()
+            changed.fire()
+            return
+        }
+        activeDocumentUri = editor.document.uri.toString()
+        activeDocumentVersion = editor.document.version
+        activePosition = editor.selection.active
+        changed.fire()
+    }
+
+    const registerProvider = () => {
+        providerDisposable?.dispose()
+        providerDisposable = undefined
+        resetActivePosition()
+        if (getSyntaxHighlighting() !== 'active') {
+            changed.fire()
+            return
+        }
+        providerDisposable = languages.registerDocumentSemanticTokensProvider(documentSelector, {
+            onDidChangeSemanticTokens: changed.event,
+            async provideDocumentSemanticTokens(document, token) {
+                const position = activePosition
+                if (
+                    token.isCancellationRequested
+                    || getSyntaxHighlighting() !== 'active'
+                    || document.uri.toString() !== activeDocumentUri
+                    || document.version !== activeDocumentVersion
+                    || !position
+                ) {
+                    return empty
+                }
+                await clientStarted
+                if (token.isCancellationRequested) return empty
+                try {
+                    const semanticTokens = await client.sendRequest<LSPSemanticTokens>(ACTIVE_SEMANTIC_TOKENS_REQUEST, {
+                        textDocument: {
+                            uri: document.uri.toString()
+                        },
+                        position: {
+                            line: position.line,
+                            character: position.character
+                        }
+                    })
+                    return new SemanticTokens(Uint32Array.from(semanticTokens.data))
+                } catch {
+                    return empty
+                }
+            }
+        }, legend)
+        updateActivePosition()
+    }
+
+    ownedDisposables.push(
+        window.onDidChangeActiveTextEditor(updateActivePosition),
+        window.onDidChangeTextEditorSelection(updateActivePosition),
+        workspace.onDidChangeTextDocument((event) => {
+            if (event.document.uri.toString() === activeDocumentUri) updateActivePosition()
+        }),
+        {
+            dispose: () => providerDisposable?.dispose()
+        }
+    )
+
+    registerProvider()
+
+    return {
+        configure: registerProvider,
+        dispose() {
+            ownedDisposables.forEach((disposable) => disposable.dispose())
+            ownedDisposables.length = 0
+        }
+    }
+}
 
 export function activate(context: ExtensionContext) {
 
@@ -28,19 +166,15 @@ export function activate(context: ExtensionContext) {
         }
     }
 
-    const includedLanguages = workspace.getConfiguration('masterCSS').includedLanguages as string[]
-    const Languages: { scheme: string, language: string }[] = []
-    includedLanguages.forEach((language) => {
-        Languages.push(
-            { scheme: 'file', language },
-            { scheme: 'untitled', language }
-        )
-    })
+    const documentSelector = createDocumentSelector()
 
     // Options to control the language client
     const clientOptions: LanguageClientOptions = {
         // Register the server for documents
-        documentSelector: Languages,
+        documentSelector,
+        initializationOptions: () => ({
+            masterCSS: getMasterCSSSettings()
+        }),
         synchronize: {
             // Notify the server about file changes to '.clientrc files contained in the workspace
             fileEvents: workspace.createFileSystemWatcher('**/.clientrc')
@@ -56,7 +190,8 @@ export function activate(context: ExtensionContext) {
     )
 
     // Start the client. This will also launch the server
-    client.start()
+    const clientStarted = client.start()
+    const activeSemanticTokensFeature = createActiveSemanticTokensFeature(client, clientStarted, documentSelector)
 
     const restart = async (options = {
         title: 'Restarting Master CSS'
@@ -76,22 +211,21 @@ export function activate(context: ExtensionContext) {
     }
 
     context.subscriptions.push(
+        activeSemanticTokensFeature,
         commands.registerCommand('masterCSS.restart', restart),
         client.onRequest('masterCSS/restart', restart),
         workspace.onDidChangeConfiguration(async (event) => {
-            const workspaceFolders = workspace.workspaceFolders ?? []
             const affectedProperties: string[] = []
-            const shouldRestart = workspaceFolders?.some((folder) => {
-                for (const optionName in settings) {
-                    const property = `masterCSS.${optionName}`
-                    if (event.affectsConfiguration(property, folder)) {
-                        affectedProperties.push(property)
-                        return true
-                    }
+            let shouldRestart = false
+            for (const optionName in settings) {
+                const property = `masterCSS.${optionName}`
+                if (event.affectsConfiguration(property)) {
+                    affectedProperties.push(property)
+                    shouldRestart = true
                 }
-                return false
-            })
+            }
             if (shouldRestart) {
+                activeSemanticTokensFeature.configure()
                 window.withProgress({
                     location: ProgressLocation.Notification,
                     title: `Setting "${affectedProperties}"`,
@@ -112,11 +246,6 @@ export function deactivate(): Thenable<void> | undefined {
 }
 
 function unregisterProviders(disposables: Disposable[]) {
-    disposables.forEach(disposable => disposable?.[Symbol.dispose]())
+    disposables.forEach(disposable => disposable.dispose())
     disposables.length = 0
 }
-
-function dedupe(arg0: any[]) {
-    throw new Error('Function not implemented.')
-}
-

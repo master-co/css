@@ -95,13 +95,11 @@ Framework packages wrap those lower layers for Astro, Nuxt, React, Vue, and Svel
 
 ## Tooling Packages
 
-`packages/language-service` uses core config and utilities for completion, hover, and color features.
+`packages/language-service` uses core config and utilities for completion, hover, color features, and semantic token classification.
 
-`packages/language-server` exposes the language service through LSP and manages workspace configs.
+`packages/language-server` exposes the language service through LSP, manages workspace configs, and serves active/full semantic token requests.
 
-`packages/language` owns TextMate/Shiki grammars.
-
-`packages/vscode` packages the VS Code extension and generated grammar/config contributions.
+`packages/vscode` packages the VS Code extension, generated settings, and active semantic token provider. Master CSS no longer ships a TextMate grammar package or `.mcss` language contribution.
 
 `packages/eslint-plugin` scans class locations and uses validator/core for class validation, ordering, and collision detection.
 

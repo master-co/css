@@ -37,6 +37,10 @@ function renderTokens(content: string, ext: Parameters<typeof createDoc>[0] = 't
     }
 }
 
+function expectToken(tokens: { text: string, type: string, modifiers: string[] }[], text: string, type: string, modifiers: string[] = []) {
+    expect(tokens).toContainEqual({ text, type, modifiers })
+}
+
 test.concurrent('renders semantic tokens for class attributes', () => {
     const { tokens } = renderTokens(
         '<div className="fg:brand:hover@sm block block:hover block:state-name hidden_div::before:of(.active) m:4x bg:rgb(0|0|0) w:10::scrollbar btn btn:hover@sm btn_div::before"></div>',
@@ -59,44 +63,27 @@ test.concurrent('renders semantic tokens for class attributes', () => {
         }
     )
 
-    expect(tokens).toEqual(expect.arrayContaining([
-        { text: 'fg', type: 'property', modifiers: [] },
-        { text: ':', type: 'operator', modifiers: [] },
-        { text: 'brand', type: 'variable', modifiers: [] },
-        { text: 'hover', type: 'modifier', modifiers: [] },
-        { text: '@sm', type: 'keyword', modifiers: [] },
-        { text: 'block', type: 'class', modifiers: [] },
-        { text: ':', type: 'operator', modifiers: [] },
-        { text: 'state-name', type: 'modifier', modifiers: [] },
-        { text: 'hidden', type: 'class', modifiers: [] },
-        { text: '_', type: 'operator', modifiers: [] },
-        { text: 'div', type: 'type', modifiers: [] },
-        { text: '::', type: 'operator', modifiers: [] },
-        { text: 'before', type: 'modifier', modifiers: [] },
-        { text: 'of', type: 'modifier', modifiers: [] },
-        { text: '.', type: 'operator', modifiers: [] },
-        { text: 'active', type: 'class', modifiers: [] },
-        { text: '4x', type: 'number', modifiers: [] },
-        { text: 'rgb', type: 'function', modifiers: [] },
-        { text: '::', type: 'operator', modifiers: [] },
-        { text: 'scrollbar', type: 'modifier', modifiers: [] },
-        { text: 'btn', type: 'class', modifiers: ['declaration'] }
-    ]))
-    expect(tokens.filter(({ text, type, modifiers }) => text === 'btn' && type === 'class' && modifiers.includes('declaration'))).toHaveLength(3)
-})
-
-test.concurrent('renders semantic tokens for master-css documents', () => {
-    const { tokens } = renderTokens('fg:brand block', 'mcss', {
-        config: {
-            variables: [{ key: 'brand', value: '#123456' }]
-        }
-    })
-
-    expect(tokens).toEqual(expect.arrayContaining([
-        { text: 'fg', type: 'property', modifiers: [] },
-        { text: 'brand', type: 'variable', modifiers: [] },
-        { text: 'block', type: 'class', modifiers: [] }
-    ]))
+    expectToken(tokens, 'fg', 'property')
+    expectToken(tokens, ':', 'operator')
+    expectToken(tokens, 'brand', 'variable')
+    expectToken(tokens, 'hover', 'modifier', ['pseudoClass'])
+    expectToken(tokens, '@sm', 'keyword', ['query'])
+    expectToken(tokens, 'block', 'class')
+    expectToken(tokens, 'state-name', 'modifier', ['pseudoClass'])
+    expectToken(tokens, 'hidden', 'class')
+    expectToken(tokens, '_', 'operator', ['selector'])
+    expectToken(tokens, 'div', 'type', ['selector'])
+    expectToken(tokens, '::', 'operator', ['pseudoElement', 'selector'])
+    expectToken(tokens, 'before', 'modifier', ['pseudoElement'])
+    expectToken(tokens, 'of', 'modifier', ['pseudoClass'])
+    expectToken(tokens, '.', 'operator', ['selector'])
+    expectToken(tokens, 'active', 'class', ['selector'])
+    expectToken(tokens, '4', 'number')
+    expectToken(tokens, 'x', 'enumMember', ['unit'])
+    expectToken(tokens, 'rgb', 'function')
+    expectToken(tokens, 'scrollbar', 'modifier', ['pseudoElement'])
+    expectToken(tokens, 'btn', 'class', ['declaration', 'component'])
+    expect(tokens.filter(({ text, type, modifiers }) => text === 'btn' && type === 'class' && modifiers.includes('declaration') && modifiers.includes('component'))).toHaveLength(3)
 })
 
 test.concurrent('renders semantic tokens for CSS-like values', () => {
@@ -113,35 +100,33 @@ test.concurrent('renders semantic tokens for CSS-like values', () => {
         }
     )
 
-    expect(tokens).toEqual(expect.arrayContaining([
-        { text: '$size-sm', type: 'variable', modifiers: [] },
-        { text: '$color-blue-50', type: 'variable', modifiers: [] },
-        { text: '/', type: 'operator', modifiers: [] },
-        { text: '.5', type: 'number', modifiers: [] },
-        { text: 'x', type: 'string', modifiers: [] },
-        { text: '::', type: 'operator', modifiers: [] },
-        { text: 'before', type: 'modifier', modifiers: [] },
-        { text: 'rgb', type: 'function', modifiers: [] },
-        { text: '|', type: 'operator', modifiers: [] },
-        { text: '_', type: 'operator', modifiers: [] },
-        { text: 'where', type: 'modifier', modifiers: [] },
-        { text: '(', type: 'operator', modifiers: [] },
-        { text: 'a', type: 'type', modifiers: [] },
-        { text: 'hover', type: 'modifier', modifiers: [] },
-        { text: ')', type: 'operator', modifiers: [] },
-        { text: 'is', type: 'modifier', modifiers: [] },
-        { text: 'code', type: 'type', modifiers: [] },
-        { text: ',', type: 'operator', modifiers: [] },
-        { text: 'pre', type: 'type', modifiers: [] },
-        { text: 'headings', type: 'modifier', modifiers: [] },
-        { text: 'h1', type: 'type', modifiers: [] },
-        { text: 'h2', type: 'type', modifiers: [] },
-        { text: 'h3', type: 'type', modifiers: [] },
-        { text: 'h4', type: 'type', modifiers: [] },
-        { text: 'h5', type: 'type', modifiers: [] },
-        { text: 'h6', type: 'type', modifiers: [] },
-        { text: '@base', type: 'keyword', modifiers: [] }
-    ]))
+    expectToken(tokens, '$size-sm', 'variable')
+    expectToken(tokens, '$color-blue-50', 'variable')
+    expectToken(tokens, '/', 'operator')
+    expectToken(tokens, '.5', 'number')
+    expectToken(tokens, 'x', 'enumMember')
+    expectToken(tokens, '::', 'operator', ['pseudoElement', 'selector'])
+    expectToken(tokens, 'before', 'modifier', ['pseudoElement'])
+    expectToken(tokens, 'rgb', 'function')
+    expectToken(tokens, '|', 'operator')
+    expectToken(tokens, '_', 'operator', ['selector'])
+    expectToken(tokens, 'where', 'modifier', ['pseudoClass'])
+    expectToken(tokens, '(', 'operator', ['selector'])
+    expectToken(tokens, 'a', 'type', ['selector'])
+    expectToken(tokens, 'hover', 'modifier', ['pseudoClass'])
+    expectToken(tokens, ')', 'operator', ['selector'])
+    expectToken(tokens, 'is', 'modifier', ['pseudoClass'])
+    expectToken(tokens, 'code', 'type', ['selector'])
+    expectToken(tokens, ',', 'operator', ['selector'])
+    expectToken(tokens, 'pre', 'type', ['selector'])
+    expectToken(tokens, 'headings', 'modifier', ['pseudoClass'])
+    expectToken(tokens, 'h1', 'type', ['selector'])
+    expectToken(tokens, 'h2', 'type', ['selector'])
+    expectToken(tokens, 'h3', 'type', ['selector'])
+    expectToken(tokens, 'h4', 'type', ['selector'])
+    expectToken(tokens, 'h5', 'type', ['selector'])
+    expectToken(tokens, 'h6', 'type', ['selector'])
+    expectToken(tokens, '@base', 'keyword', ['query'])
 })
 
 test.concurrent('renders semantic tokens for container queries and slash-separated string values', () => {
@@ -150,47 +135,114 @@ test.concurrent('renders semantic tokens for container queries and slash-separat
         'html'
     )
 
-    expect(tokens).toEqual(expect.arrayContaining([
-        { text: 'hidden', type: 'class', modifiers: [] },
-        { text: '@container', type: 'keyword', modifiers: [] },
-        { text: '(', type: 'operator', modifiers: [] },
-        { text: 'sm', type: 'string', modifiers: [] },
-        { text: '&', type: 'operator', modifiers: [] },
-        { text: '<=', type: 'operator', modifiers: [] },
-        { text: 'md', type: 'string', modifiers: [] },
-        { text: ')', type: 'operator', modifiers: [] },
-        { text: 'container', type: 'property', modifiers: [] },
-        { text: 'card', type: 'string', modifiers: [] },
-        { text: '/', type: 'operator', modifiers: [] },
-        { text: 'inline-size', type: 'string', modifiers: [] },
-        { text: 'grid-cols', type: 'property', modifiers: [] },
-        { text: '2', type: 'number', modifiers: [] },
-        { text: '@card', type: 'keyword', modifiers: [] },
-        { text: '3xs', type: 'string', modifiers: [] },
-        { text: 'bg', type: 'property', modifiers: [] },
-        { text: 'center', type: 'string', modifiers: [] },
-        { text: 'cover', type: 'string', modifiers: [] },
-        { text: 'url', type: 'function', modifiers: [] },
-        { text: '/hero.jpg', type: 'string', modifiers: [] },
-        { text: '@media', type: 'keyword', modifiers: [] },
-        { text: 'pointer', type: 'property', modifiers: [] },
-        { text: 'coarse', type: 'string', modifiers: [] },
-        { text: '@h', type: 'keyword', modifiers: [] },
-        { text: '>=', type: 'operator', modifiers: [] },
-        { text: 'h', type: 'property', modifiers: [] },
-        { text: '<', type: 'operator', modifiers: [] },
-        { text: 'lg', type: 'string', modifiers: [] }
-    ]))
+    expectToken(tokens, 'hidden', 'class')
+    expectToken(tokens, '@container', 'keyword', ['query'])
+    expectToken(tokens, '(', 'operator', ['query'])
+    expectToken(tokens, 'sm', 'enumMember', ['query'])
+    expectToken(tokens, '&', 'operator', ['query'])
+    expectToken(tokens, '<=', 'operator', ['query'])
+    expectToken(tokens, 'md', 'enumMember', ['query'])
+    expectToken(tokens, ')', 'operator', ['query'])
+    expectToken(tokens, 'container', 'property')
+    expectToken(tokens, 'card', 'enumMember')
+    expectToken(tokens, '/', 'operator')
+    expectToken(tokens, 'inline-size', 'enumMember')
+    expectToken(tokens, 'grid-cols', 'property')
+    expectToken(tokens, '2', 'number')
+    expectToken(tokens, '@card', 'keyword', ['query'])
+    expectToken(tokens, '3', 'number', ['query'])
+    expectToken(tokens, 'xs', 'enumMember', ['query', 'unit'])
+    expectToken(tokens, 'bg', 'property')
+    expectToken(tokens, 'center', 'enumMember')
+    expectToken(tokens, 'cover', 'enumMember')
+    expectToken(tokens, 'url', 'function')
+    expectToken(tokens, '/hero.jpg', 'string')
+    expectToken(tokens, '@media', 'keyword', ['query'])
+    expectToken(tokens, 'pointer', 'property', ['query'])
+    expectToken(tokens, 'coarse', 'enumMember', ['query'])
+    expectToken(tokens, '@h', 'keyword', ['query'])
+    expectToken(tokens, '>=', 'operator', ['query'])
+    expectToken(tokens, 'sm', 'enumMember', ['query'])
+    expectToken(tokens, 'h', 'property', ['query'])
+    expectToken(tokens, '<', 'operator', ['query'])
+    expectToken(tokens, 'lg', 'enumMember', ['query'])
     expect(tokens.filter(({ text, type }) => text === '/' && type === 'operator')).toHaveLength(2)
 })
 
-test.concurrent('returns no semantic tokens when disabled', () => {
-    const doc = createDoc('tsx', '<div className="fg:red"></div>')
-    const languageService = new CSSLanguageService({
-        renderSemanticTokens: false
-    })
+test.concurrent('renders semantic tokens for grouped declarations, strings, units, and important marks', () => {
+    const { tokens } = renderTokens(
+        '<div class="{fg:red;bg:blue} translate(10x|20px) content:\'a|b\' size:10x20 fg:red!"></div>',
+        'html'
+    )
 
-    expect(languageService.renderSemanticTokens(doc)).toBeUndefined()
+    expectToken(tokens, '{', 'operator')
+    expectToken(tokens, ';', 'operator')
+    expectToken(tokens, '}', 'operator')
+    expectToken(tokens, 'fg', 'property')
+    expectToken(tokens, 'red', 'enumMember')
+    expectToken(tokens, 'bg', 'property')
+    expectToken(tokens, 'blue', 'enumMember')
+    expectToken(tokens, 'translate', 'function')
+    expectToken(tokens, '10', 'number')
+    expectToken(tokens, 'x', 'enumMember', ['unit'])
+    expectToken(tokens, '20', 'number')
+    expectToken(tokens, 'px', 'enumMember', ['unit'])
+    expectToken(tokens, '\'', 'string', ['quoted'])
+    expectToken(tokens, 'a|b', 'string', ['quoted'])
+    expectToken(tokens, 'x', 'operator', ['unit'])
+    expectToken(tokens, '!', 'operator', ['important'])
+})
+
+test.concurrent('renders semantic tokens for CSS directives', () => {
+    const { tokens } = renderTokens(`
+        @master {
+            root-size: 16;
+        }
+
+        @theme dark {
+            --color-primary: $color-blue-60/.8;
+        }
+
+        @custom-at motion-safe @media (prefers-reduced-motion: no-preference);
+        @custom-selector :interactive :is(:hover, :focus-visible);
+
+        @layer components {
+            .btn {
+                @compose "inline-flex fg:primary:hover@md";
+                @at dark {
+                    @compose 'bg:surface';
+                }
+                @at <sm {
+                    @compose "block";
+                }
+            }
+        }
+    `, 'css')
+
+    expectToken(tokens, '@master', 'keyword', ['directive'])
+    expectToken(tokens, 'root-size', 'property')
+    expectToken(tokens, '@theme', 'keyword', ['directive'])
+    expectToken(tokens, 'dark', 'enumMember', ['directive'])
+    expectToken(tokens, '--color-primary', 'variable')
+    expectToken(tokens, '$color-blue-60', 'variable')
+    expectToken(tokens, '.8', 'number')
+    expectToken(tokens, '@custom-at', 'keyword', ['directive'])
+    expectToken(tokens, 'motion-safe', 'variable', ['directive', 'query'])
+    expectToken(tokens, '@media', 'keyword', ['query'])
+    expectToken(tokens, '@custom-selector', 'keyword', ['directive'])
+    expectToken(tokens, 'interactive', 'modifier', ['pseudoClass'])
+    expectToken(tokens, 'btn', 'class', ['selector'])
+    expectToken(tokens, '@compose', 'keyword', ['directive'])
+    expectToken(tokens, 'fg', 'property')
+    expectToken(tokens, 'primary', 'enumMember')
+    expectToken(tokens, 'hover', 'modifier', ['pseudoClass'])
+    expectToken(tokens, '@md', 'keyword', ['query'])
+    expectToken(tokens, '@at', 'keyword', ['directive'])
+    expectToken(tokens, 'surface', 'enumMember')
+    expectToken(tokens, ';', 'operator', ['directive'])
+    expectToken(tokens, '<', 'operator', ['query'])
+    expectToken(tokens, 'sm', 'enumMember', ['query'])
+    expectToken(tokens, 'block', 'class')
 })
 
 test.concurrent('shares class position detection with semantic token spans', () => {
@@ -201,4 +253,39 @@ test.concurrent('shares class position detection with semantic token spans', () 
         'fg:red',
         'block'
     ])
+})
+
+test.concurrent('renders active semantic tokens for the class at a position', () => {
+    const content = '<div className="fg:red block:hover"></div>'
+    const doc = createDoc('tsx', content)
+    const languageService = new CSSLanguageService()
+    const semanticTokens = languageService.renderSemanticTokensAtPosition(doc, doc.positionAt(content.indexOf('block') + 1))
+    const tokens = decodeSemanticTokens(doc, semanticTokens?.data ?? [])
+
+    expectToken(tokens, 'block', 'class')
+    expectToken(tokens, 'hover', 'modifier', ['pseudoClass'])
+    expect(tokens.some(({ text }) => text === 'fg' || text === 'red')).toBe(false)
+})
+
+test.concurrent('renders active semantic tokens for the CSS directive at a position', () => {
+    const content = '@theme dark { --color-primary: $color-blue-60/.8; }\n.btn { color: red; }'
+    const doc = createDoc('css', content)
+    const languageService = new CSSLanguageService()
+    const semanticTokens = languageService.renderSemanticTokensAtPosition(doc, doc.positionAt(content.indexOf('dark') + 1))
+    const tokens = decodeSemanticTokens(doc, semanticTokens?.data ?? [])
+
+    expectToken(tokens, '@theme', 'keyword', ['directive'])
+    expectToken(tokens, 'dark', 'enumMember', ['directive'])
+    expectToken(tokens, '--color-primary', 'variable')
+    expectToken(tokens, '$color-blue-60', 'variable')
+    expect(tokens.some(({ text }) => text === 'btn')).toBe(false)
+})
+
+test.concurrent('skips semantic tokens when syntax highlighting is off', () => {
+    const content = '<div className="fg:red block:hover"></div>'
+    const doc = createDoc('tsx', content)
+    const languageService = new CSSLanguageService({ syntaxHighlighting: 'off' })
+
+    expect(languageService.renderSemanticTokens(doc)).toBeUndefined()
+    expect(languageService.renderSemanticTokensAtPosition(doc, doc.positionAt(content.indexOf('block') + 1))).toBeUndefined()
 })

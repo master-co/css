@@ -2,11 +2,6 @@
     "private": true,
     "type": "module",
     "packageManager": "pnpm@10.33.2",
-    "pnpm": {
-        "overrides": {
-            "@master/css-language": "workspace:^"
-        }
-    },
     "scripts": {
         "submodules": "pnpm dlx tsx submodules",
         "postinstall": "pnpm dlx husky install",
@@ -67,7 +62,6 @@
         "@master/css-configer": "workspace:^",
         "@master/css-extractor": "workspace:^",
         "@master/css-integration": "workspace:^",
-        "@master/css-language": "workspace:^",
         "@master/css-language-server": "workspace:^",
         "@master/css-language-service": "workspace:^",
         "@master/css-runtime": "workspace:^",

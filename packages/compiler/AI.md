@@ -20,7 +20,7 @@
 - Keep directive parsing package-local.
 - Emit shared directive contracts from `shared/css-directives` for low-level consumers, and expose semantic `Config` APIs for config loading.
 - Do not reintroduce PostCSS in this package.
-- If CSS configuration directive syntax is expanded or changed incompatibly, update the TextMate/Shiki highlighting in `packages/language` in the same change when practical.
+- If CSS configuration directive syntax is expanded or changed incompatibly, update any language-service semantic token classification that is affected in the same change when practical.
 
 ## Directive MVP
 

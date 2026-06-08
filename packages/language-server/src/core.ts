@@ -1,4 +1,4 @@
-import { createConnection, TextDocuments, InitializeParams, InitializeResult, WorkspaceFolder, Disposable, Connection, ClientCapabilities, TextDocumentChangeEvent, DidChangeConfigurationParams, HoverParams, CompletionParams, DocumentColorParams, ColorPresentationParams, RemoteConsole, SemanticTokensParams } from 'vscode-languageserver/node.js'
+import { createConnection, TextDocuments, InitializeParams, InitializeResult, WorkspaceFolder, Disposable, Connection, ClientCapabilities, TextDocumentChangeEvent, DidChangeConfigurationParams, HoverParams, CompletionParams, DocumentColorParams, ColorPresentationParams, RemoteConsole, SemanticTokensParams, TextDocumentPositionParams } from 'vscode-languageserver/node.js'
 import { TextDocument } from 'vscode-languageserver-textdocument'
 import path from 'node:path'
 import CSSLanguageService, { Settings as CSSLanguageServiceSettings } from '@master/css-language-service'
@@ -21,6 +21,14 @@ export declare interface Workspace {
     languageService?: CSSLanguageService
     languageServiceSettings: CSSLanguageServiceSettings
     configEntries?: string[]
+}
+
+export const ACTIVE_SEMANTIC_TOKENS_REQUEST = 'masterCSS/renderActiveSemanticTokens'
+
+function getInitializationSettings(initializationOptions: unknown): Settings | undefined {
+    if (!initializationOptions || typeof initializationOptions !== 'object') return
+    const options = initializationOptions as { masterCSS?: Settings } & Settings
+    return options.masterCSS ?? options
 }
 
 export default class CSSLanguageServer {
@@ -46,6 +54,7 @@ export default class CSSLanguageServer {
     ) {
         this.documents = new TextDocuments(TextDocument)
         this.settings = extend(settings, this.customSettings) as Settings
+        this.globalWorkspace.languageServiceSettings = this.settings as CSSLanguageServiceSettings
         this.console = new Proxy(this.connection.console, {
             get: (target, prop: keyof RemoteConsole) => {
                 if (!this.settings?.verbose) return () => { }
@@ -66,6 +75,7 @@ export default class CSSLanguageServer {
             this.connection.onDocumentColor(this.onDocumentColor.bind(this)),
             this.connection.onColorPresentation(this.onColorPresentation.bind(this)),
             this.connection.languages.semanticTokens.on(this.onSemanticTokens.bind(this)),
+            this.connection.onRequest(ACTIVE_SEMANTIC_TOKENS_REQUEST, this.onActiveSemanticTokens.bind(this)),
             this.connection.onInitialize(this.onInitialize.bind(this)),
             this.connection.onInitialized(() => this.init())
         )
@@ -82,13 +92,19 @@ export default class CSSLanguageServer {
 
     onInitialize(params: InitializeParams): InitializeResult {
         this.clientCapabilities = params.capabilities
+        const initializationSettings = getInitializationSettings(params.initializationOptions)
+        if (initializationSettings) {
+            this.customSettings = extend(this.customSettings, initializationSettings) as Settings
+            this.settings = extend(settings, this.customSettings) as Settings
+            this.globalWorkspace.languageServiceSettings = this.settings as CSSLanguageServiceSettings
+        }
         if (params.workspaceFolders?.length) {
             this.workspaceFolders = params.workspaceFolders
         }
         const capabilities = {
             ...SERVER_CAPABILITIES
         }
-        if (this.settings?.renderSemanticTokens === false) {
+        if (this.settings?.syntaxHighlighting !== 'always') {
             delete capabilities.semanticTokensProvider
         }
         return {
@@ -143,6 +159,17 @@ export default class CSSLanguageServer {
         return { data: [] }
     }
 
+    async onActiveSemanticTokens(params: TextDocumentPositionParams) {
+        await this.init()
+        const workspace = this.findClosestWorkspace(params.textDocument.uri)
+        if (workspace?.languageService) {
+            const document = this.documents.get(params.textDocument.uri)
+                ?? workspace.openedTextDocuments.find((document) => document.uri === params.textDocument.uri)
+            if (document) return workspace.languageService.renderSemanticTokensAtPosition(document, params.position) ?? { data: [] }
+        }
+        return { data: [] }
+    }
+
     async onDidOpen(params: TextDocumentChangeEvent<TextDocument>) {
         await this.init()
         const workspace = this.findClosestWorkspace(params.document.uri)
@@ -176,11 +203,13 @@ export default class CSSLanguageServer {
         }
     }
 
-    async onDidChangeConfiguration({ settings }: DidChangeConfigurationParams) {
+    async onDidChangeConfiguration({ settings: changedSettings }: DidChangeConfigurationParams) {
         await this.init()
-        if (settings?.masterCSS) {
-            this.connection.sendNotification('masterCSS/globalSettingsChanged', settings.masterCSS)
-            this.customSettings = settings.masterCSS
+        if (changedSettings?.masterCSS) {
+            this.connection.sendNotification('masterCSS/globalSettingsChanged', changedSettings.masterCSS)
+            this.customSettings = changedSettings.masterCSS
+            this.settings = extend(settings, this.customSettings) as Settings
+            this.globalWorkspace.languageServiceSettings = this.settings as CSSLanguageServiceSettings
             this.refreshSemanticTokens()
             this.connection.sendRequest('masterCSS/restart', {
                 title: 'Updating Master CSS settings',
@@ -274,7 +303,7 @@ export default class CSSLanguageServer {
     }
 
     private refreshSemanticTokens() {
-        if (this.settings?.renderSemanticTokens === false) return
+        if (this.settings?.syntaxHighlighting !== 'always') return
         if (!this.clientCapabilities.workspace?.semanticTokens?.refreshSupport) return
         this.connection.languages.semanticTokens.refresh()
     }

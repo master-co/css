@@ -10,6 +10,7 @@ export const GROUP_TRIGGER_CHARACTER = '{'
 export const DECLARATION_SEPARATOR_TRIGGER_CHARACTER = ';'
 export const SEMANTIC_TOKEN_TYPES = [
     'class',
+    'enumMember',
     'property',
     'variable',
     'function',
@@ -22,7 +23,16 @@ export const SEMANTIC_TOKEN_TYPES = [
 ] as const
 export const SEMANTIC_TOKEN_MODIFIERS = [
     'declaration',
-    'defaultLibrary'
+    'defaultLibrary',
+    'component',
+    'directive',
+    'important',
+    'pseudoClass',
+    'pseudoElement',
+    'query',
+    'quoted',
+    'selector',
+    'unit'
 ] as const
 export const SEMANTIC_TOKENS_LEGEND = {
     tokenTypes: [...SEMANTIC_TOKEN_TYPES],

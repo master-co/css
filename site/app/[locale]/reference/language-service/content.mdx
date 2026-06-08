@@ -19,12 +19,17 @@ const languageService = new CSSLanguageService(customSettings)
 Check out the [source code](https://github.com/master-co/css/blob/rc/packages/language-service/src/core.ts) for arguments and properties.
 
 ### Render semantic tokens
-`renderSemanticTokens()` returns [LSP semantic tokens](https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#textDocument_semanticTokens) for Master CSS class spans discovered in a text document.
+`renderSemanticTokens()` returns [LSP semantic tokens](https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#textDocument_semanticTokens) for Master CSS class spans and CSS directives discovered in a text document.
 ```ts
 const semanticTokens = languageService.renderSemanticTokens(textDocument)
 ```
 
 Semantic tokens are generated with the configured Master CSS engine, so custom variables, components, utilities, modes, and other config-dependent tokens can be classified after the project config is loaded by the caller.
+
+Use `renderSemanticTokensAtPosition()` when a client wants active-only highlighting for the utility class or CSS directive at the current editor position.
+```ts
+const semanticTokens = languageService.renderSemanticTokensAtPosition(textDocument, position)
+```
 
 The default legend is exported for clients that need to decode or register the token types:
 ```js
@@ -149,11 +154,11 @@ Enable syntax inspection.
 Enable syntax color rendering.
 <DocProp defaultValue={JSON.stringify(settings.renderSyntaxColors)} types={['boolean']} />
 
-### `settings.renderSemanticTokens`
-Enable semantic token rendering.
-<DocProp defaultValue={JSON.stringify(settings.renderSemanticTokens)} types={['boolean']} />
+### `settings.syntaxHighlighting`
+Control semantic token highlighting mode.
+<DocProp defaultValue={JSON.stringify(settings.syntaxHighlighting)} types={['"active" | "always" | "off"']} />
 
-Semantic tokens classify Master CSS spans as `class`, `property`, `variable`, `function`, `number`, `string`, `keyword`, `modifier`, or `operator`. Components defined in config are emitted as `class` tokens with the `declaration` modifier.
+`active` highlights only the Master CSS span at the active editor position, `always` highlights all discovered utility classes and CSS directives, and `off` disables syntax highlighting. Semantic tokens classify Master CSS spans as `class`, `enumMember`, `property`, `variable`, `function`, `number`, `string`, `keyword`, `modifier`, `operator`, or `type`. Components defined in config are emitted as `class` tokens with the `declaration` and `component` modifiers; CSS directives, queries, selectors, pseudo states, units, quoted strings, and important markers use dedicated semantic token modifiers.
 
 ### `settings.editSyntaxColors`
 Enable syntax color editing.

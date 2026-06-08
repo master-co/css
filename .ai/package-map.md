@@ -17,9 +17,8 @@
 | `@master/css.react` | `.`, `./runtime-provider` | React runtime registry, provider, and hooks |
 | `@master/css.vue` | `.`, `./runtime-provider`, `./adapter`, `./vite` | Vue runtime registry, provider, and Vue SFC extraction adapter |
 | `@master/css.svelte` | `.`, `./runtime-provider`, `./adapter`, `./vite`, `./hooks.server` | Svelte runtime registry, provider, SvelteKit hook, Vite wrapper, and Svelte source adapter |
-| `@master/css-language` | `.`, `./declaration`, `./grammars` | Grammars and language declaration |
-| `@master/css-language-service` | `.` | Completion, hover, colors |
-| `@master/css-language-server` | `.` | LSP wrapper |
+| `@master/css-language-service` | `.`, `./shiki` | Completion, hover, colors, semantic token classification, and Shiki semantic token decoration helpers |
+| `@master/css-language-server` | `.` | LSP wrapper and active/full semantic token request handling |
 | `master-css-vscode` | `.`, `./server` | VS Code extension |
 | `@master/css-validator` | `.` | CSS validation for generated rules |
 | `@master/eslint-plugin-css` | `.`, `./configs/*` | ESLint plugin |

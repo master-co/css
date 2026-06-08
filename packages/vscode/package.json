@@ -39,7 +39,6 @@
     "files": [
         "dist",
         "data",
-        "syntaxes",
         "LICENSE",
         "icon.png"
     ],
@@ -61,95 +60,6 @@
                 "category": "Master CSS"
             }
         ],
-        "languages": [
-            {
-                "id": "master-css",
-                "aliases": [
-                    "mastercss",
-                    "mcss"
-                ],
-                "extensions": [
-                    ".mcss"
-                ],
-                "configuration": "./syntaxes/language-configuration.json"
-            }
-        ],
-        "grammars": [
-            {
-                "scopeName": "source.master-css",
-                "path": "./syntaxes/master-css.json"
-            },
-            {
-                "scopeName": "source.master-css.injection-class",
-                "path": "./syntaxes/master-css.injection-class.json",
-                "injectTo": [
-                    "source",
-                    "text"
-                ]
-            },
-            {
-                "scopeName": "source.master-css.injection-css",
-                "path": "./syntaxes/master-css.injection-css.json",
-                "embeddedLanguages": {
-                    "meta.embedded.block.master-css.class": "master-css"
-                },
-                "injectTo": [
-                    "source.css",
-                    "source.css.scss"
-                ]
-            },
-            {
-                "scopeName": "source.master-css.injection-react",
-                "path": "./syntaxes/master-css.injection-react.json",
-                "injectTo": [
-                    "source.js.jsx",
-                    "source.ts.tsx",
-                    "source.mdx",
-                    "source.jsx",
-                    "source.tsx"
-                ]
-            },
-            {
-                "scopeName": "source.master-css.injection-vue",
-                "path": "./syntaxes/master-css.injection-vue.json",
-                "injectTo": [
-                    "source.vue"
-                ]
-            },
-            {
-                "scopeName": "source.master-css.injection-js",
-                "path": "./syntaxes/master-css.injection-js.json",
-                "embeddedLanguages": {
-                    "meta.embedded.block.master-css.class": "master-css"
-                },
-                "injectTo": [
-                    "source.js.jsx",
-                    "source.ts.tsx",
-                    "source.mdx",
-                    "source.jsx",
-                    "source.tsx",
-                    "source.js",
-                    "source.ts",
-                    "source.svelte",
-                    "source.vue"
-                ]
-            },
-            {
-                "scopeName": "source.master-css.injection-string",
-                "path": "./syntaxes/master-css.injection-string.json",
-                "injectTo": [
-                    "source.js.jsx",
-                    "source.ts.tsx",
-                    "source.mdx",
-                    "source.jsx",
-                    "source.tsx",
-                    "source.js",
-                    "source.ts",
-                    "source.svelte",
-                    "source.vue"
-                ]
-            }
-        ],
         "configuration": {
             "title": "Master CSS",
             "properties": {
@@ -165,6 +75,9 @@
                         "typescript",
                         "javascriptreact",
                         "typescriptreact",
+                        "css",
+                        "scss",
+                        "less",
                         "vue",
                         "svelte",
                         "rust",
@@ -269,9 +182,15 @@
                     "type": "boolean",
                     "default": true
                 },
-                "masterCSS.renderSemanticTokens": {
-                    "type": "boolean",
-                    "default": true
+                "masterCSS.syntaxHighlighting": {
+                    "type": "string",
+                    "enum": [
+                        "active",
+                        "always",
+                        "off"
+                    ],
+                    "default": "active",
+                    "description": "Controls Master CSS syntax highlighting. Active highlights only the utility class at the active editor selection, always highlights all discovered utilities, and off disables syntax highlighting."
                 },
                 "masterCSS.workspaces": {
                     "type": [
@@ -282,15 +201,170 @@
                     "description": "Configure Master CSS workspaces. The default auto mode detects CSS files with @master; or @import \"@master/css\", and package.json files that declare Master CSS package dependencies."
                 }
             }
-        }
+        },
+        "semanticTokenModifiers": [
+            {
+                "id": "component",
+                "description": "Master CSS component semantic token modifier."
+            },
+            {
+                "id": "directive",
+                "description": "Master CSS directive semantic token modifier."
+            },
+            {
+                "id": "important",
+                "description": "Master CSS important semantic token modifier."
+            },
+            {
+                "id": "pseudoClass",
+                "description": "Master CSS pseudoClass semantic token modifier."
+            },
+            {
+                "id": "pseudoElement",
+                "description": "Master CSS pseudoElement semantic token modifier."
+            },
+            {
+                "id": "query",
+                "description": "Master CSS query semantic token modifier."
+            },
+            {
+                "id": "quoted",
+                "description": "Master CSS quoted semantic token modifier."
+            },
+            {
+                "id": "selector",
+                "description": "Master CSS selector semantic token modifier."
+            },
+            {
+                "id": "unit",
+                "description": "Master CSS unit semantic token modifier."
+            }
+        ],
+        "semanticTokenScopes": [
+            {
+                "scopes": {
+                    "class": [
+                        "entity.other.attribute-name.class.css"
+                    ],
+                    "class.component": [
+                        "entity.other.attribute-name.class.css"
+                    ],
+                    "class.declaration": [
+                        "entity.other.attribute-name.class.css"
+                    ],
+                    "class.selector": [
+                        "entity.other.attribute-name.class.css"
+                    ],
+                    "enumMember": [
+                        "support.constant.property-value.css"
+                    ],
+                    "enumMember.directive": [
+                        "support.constant.property-value.css"
+                    ],
+                    "enumMember.query": [
+                        "support.constant.property-value.css"
+                    ],
+                    "enumMember.unit": [
+                        "keyword.other.unit"
+                    ],
+                    "property": [
+                        "support.type.property-name.css"
+                    ],
+                    "property.directive": [
+                        "support.type.property-name.css"
+                    ],
+                    "property.query": [
+                        "support.type.property-name.css"
+                    ],
+                    "variable": [
+                        "variable.other.master-css.css",
+                        "variable.css"
+                    ],
+                    "variable.directive": [
+                        "variable.parameter.master-css.css"
+                    ],
+                    "variable.selector": [
+                        "entity.other.attribute-name.id.css"
+                    ],
+                    "function": [
+                        "support.function.misc.css"
+                    ],
+                    "number": [
+                        "constant.numeric.css"
+                    ],
+                    "number.query": [
+                        "constant.numeric.css"
+                    ],
+                    "string": [
+                        "string.quoted.css",
+                        "string.quoted.html"
+                    ],
+                    "string.quoted": [
+                        "string.quoted.css",
+                        "string.quoted.html"
+                    ],
+                    "keyword": [
+                        "keyword.control.at-rule"
+                    ],
+                    "keyword.directive": [
+                        "keyword.control.at-rule.master-css.css"
+                    ],
+                    "keyword.query": [
+                        "keyword.control.at-rule"
+                    ],
+                    "modifier": [
+                        "entity.other.attribute-name.pseudo-class.css"
+                    ],
+                    "modifier.directive": [
+                        "storage.modifier.master-css.css"
+                    ],
+                    "modifier.pseudoClass": [
+                        "entity.other.attribute-name.pseudo-class.css"
+                    ],
+                    "modifier.pseudoElement": [
+                        "entity.other.attribute-name.pseudo-element.css"
+                    ],
+                    "operator": [
+                        "keyword.operator.css"
+                    ],
+                    "operator.directive": [
+                        "punctuation.section.property-list.begin.bracket.curly.css"
+                    ],
+                    "operator.important": [
+                        "keyword.operator.important.css"
+                    ],
+                    "operator.pseudoClass": [
+                        "entity.other.attribute-name.pseudo-class.css"
+                    ],
+                    "operator.pseudoElement": [
+                        "entity.other.attribute-name.pseudo-element.css"
+                    ],
+                    "operator.query": [
+                        "keyword.operator.css"
+                    ],
+                    "operator.selector": [
+                        "keyword.operator.combinator"
+                    ],
+                    "operator.unit": [
+                        "keyword.operator.css"
+                    ],
+                    "type": [
+                        "entity.name.tag.css"
+                    ],
+                    "type.selector": [
+                        "entity.name.tag.css"
+                    ]
+                }
+            }
+        ]
     },
     "publishConfig": {
         "access": "public",
         "provenance": true
     },
     "devDependencies": {
-        "@master/css-language": "workspace:^",
         "@master/css-language-server": "workspace:^",
+        "@master/css-language-service": "workspace:^",
         "@types/vscode": "^1.118.0",
         "@vscode/vsce": "^3.9.1",
         "shared": "workspace:^",

@@ -1,13 +1,18 @@
 import CSSLanguageService from './core'
-import { SEMANTIC_TOKEN_MODIFIERS, SEMANTIC_TOKEN_TYPES } from './common'
+import { SEMANTIC_TOKEN_MODIFIERS } from './common'
 import { TextDocument } from 'vscode-languageserver-textdocument'
 import type { Settings } from './settings'
+import { collectHighlightTokenItems } from './features/render-semantic-tokens'
+import type { HighlightTokenItem, HighlightTokenRole } from './semantic/highlight'
+import { collectClassListHighlightTokenItems } from './semantic/tokenize-class'
 
-type SemanticTokenType = typeof SEMANTIC_TOKEN_TYPES[number]
+type SemanticTokenType = HighlightTokenItem['type']
 type SemanticTokenModifier = typeof SEMANTIC_TOKEN_MODIFIERS[number]
 export type MasterCSSShikiSemanticTokenStyleKey = SemanticTokenType | `${SemanticTokenType}.${SemanticTokenModifier}`
+export type MasterCSSShikiHighlightRoleStyleKey = HighlightTokenRole
 export type MasterCSSShikiSemanticTokenStyle = string | Record<string, string>
 export type MasterCSSShikiSemanticTokenStyles = Partial<Record<MasterCSSShikiSemanticTokenStyleKey, MasterCSSShikiSemanticTokenStyle>>
+export type MasterCSSShikiHighlightRoleStyles = Partial<Record<MasterCSSShikiHighlightRoleStyleKey, MasterCSSShikiSemanticTokenStyle>>
 interface ShikiToken {
     content: string
     offset: number
@@ -56,6 +61,7 @@ export interface MasterCSSShikiSemanticDecoration extends Omit<MasterCSSShikiDec
     start: number
     end: number
     type: SemanticTokenType
+    role: HighlightTokenRole
     modifiers: SemanticTokenModifier[]
 }
 
@@ -78,6 +84,12 @@ export interface MasterCSSShikiSemanticTokensOptions {
      * Shiki language id. Defaults to the `lang` passed to Shiki.
      */
     lang?: string
+    /**
+     * Treat the whole source as a whitespace-separated Master CSS class list.
+     * This replaces the old standalone `.mcss` TextMate grammar use case
+     * without contributing a Master CSS language.
+     */
+    classList?: boolean
     /**
      * Class prefix added to every semantic decoration.
      *
@@ -103,9 +115,14 @@ export interface MasterCSSShikiSemanticTokensOptions {
      */
     semanticTokenStyles?: MasterCSSShikiSemanticTokenStyles
     /**
-     * Reuse Shiki's native CSS grammar styles for selector-like semantic tokens
-     * when possible, so Master CSS selectors stay aligned with CSS/SASS without
-     * hardcoded theme colors.
+     * Inline styles applied by CSS-native highlight role. Role styles are the
+     * most precise presentation override and are shared across host languages.
+     */
+    highlightRoleStyles?: MasterCSSShikiHighlightRoleStyles
+    /**
+     * Reuse Shiki's native CSS grammar styles for Master CSS highlight roles
+     * when possible, so markup utilities and directives stay aligned with
+     * CSS/SASS without hardcoded theme colors.
      *
      * @default true
      */
@@ -113,8 +130,6 @@ export interface MasterCSSShikiSemanticTokensOptions {
 }
 
 const shikiLanguageIds: Record<string, string> = {
-    mcss: 'master-css',
-    'master-css': 'master-css',
     html: 'html',
     'angular-html': 'html',
     js: 'javascript',
@@ -175,6 +190,15 @@ function resolveSemanticTokenStyle(
     ].filter((style): style is MasterCSSShikiSemanticTokenStyle => Boolean(style))
     if (!matchedStyles.length) return
     return matchedStyles.map(stringifyStyle).join(';')
+}
+
+function resolveHighlightTokenStyle(
+    item: Pick<HighlightTokenItem, 'role' | 'type' | 'modifiers'>,
+    options: MasterCSSShikiSemanticTokensOptions
+) {
+    const roleStyle = options.highlightRoleStyles?.[item.role]
+    if (roleStyle) return stringifyStyle(roleStyle)
+    return resolveSemanticTokenStyle(item.type, item.modifiers ?? [], options.semanticTokenStyles)
 }
 
 function splitToken(token: ShikiToken, breakpoints: number[]) {
@@ -259,10 +283,16 @@ function applySemanticDecorationToToken(
         }
         const style = parseStyleProperty(properties.style)
         if (style) {
+            for (const key of Object.keys(htmlStyle)) {
+                delete htmlStyle[key]
+            }
             Object.assign(htmlStyle, style)
         } else {
             const syntaxStyle = resolveSyntaxStyle?.(token, decoration, decorations)
             if (syntaxStyle) {
+                for (const key of Object.keys(htmlStyle)) {
+                    delete htmlStyle[key]
+                }
                 Object.assign(htmlStyle, syntaxStyle)
             }
         }
@@ -296,9 +326,21 @@ function findTokenStyle(tokens: ShikiToken[], content: string, offset = 0) {
     }
 }
 
-function isPseudoOperator(token: ShikiToken, decorations: MasterCSSShikiSemanticDecoration[]) {
-    return (token.content === ':' || token.content === '::')
-        && decorations.some((decoration) => decoration.start === token.offset + token.content.length && decoration.type === 'modifier')
+function findTokenStyleContaining(tokens: ShikiToken[], content: string, offset = 0) {
+    let seen = 0
+    for (const token of tokens) {
+        if (!token.content.includes(content)) continue
+        if (seen++ < offset) continue
+        return cloneStyle(token.htmlStyle)
+    }
+}
+
+function findTokenStyleAfter(tokens: ShikiToken[], previousContent: string, content: string) {
+    const previousIndex = tokens.findIndex((token) => token.content === previousContent)
+    if (previousIndex === -1) return findTokenStyle(tokens, content)
+    for (const token of tokens.slice(previousIndex + 1)) {
+        if (token.content === content || token.content.includes(content)) return cloneStyle(token.htmlStyle)
+    }
 }
 
 function createCSSSyntaxStyleResolver(
@@ -308,60 +350,105 @@ function createCSSSyntaxStyleResolver(
     if (options.matchCSSSyntaxStyles === false || typeof context.codeToTokens !== 'function') return
     try {
         const { lang: _lang, decorations: _decorations, transformers: _transformers, ...tokenOptions } = context.options
-        const cssTokens = context.codeToTokens('div>li:hover{color:red}', {
+        const cssTokens = context.codeToTokens('.x,div>li:hover::before{color:red!important;width:1.5rem;background:rgb(0 0 0 / .5);content:"x";transform:translate(10px,20px)}@media(width>=1px){.y{color:var(--token)}}', {
             ...tokenOptions,
             lang: 'css'
         }).tokens.flat()
+        const neutralStyle = findTokenStyle(cssTokens, ';') ?? findTokenStyleContaining(cssTokens, '{') ?? findTokenStyleContaining(cssTokens, '}')
+        const atKeywordStyle = findTokenStyle(cssTokens, '@media')
+        const propertyStyle = findTokenStyle(cssTokens, 'color') ?? findTokenStyle(cssTokens, 'width')
+        const declarationSeparatorStyle = findTokenStyleAfter(cssTokens, 'color', ':')
+        const valueStyle = findTokenStyle(cssTokens, 'red') ?? findTokenStyle(cssTokens, 'block')
+        const importantStyle = findTokenStyleContaining(cssTokens, '!important') ?? atKeywordStyle
+        const numberStyle = findTokenStyle(cssTokens, '1.5') ?? findTokenStyle(cssTokens, '.5') ?? findTokenStyle(cssTokens, '1')
+        const unitStyle = findTokenStyle(cssTokens, 'rem') ?? findTokenStyle(cssTokens, 'px')
+        const functionStyle = findTokenStyle(cssTokens, 'rgb') ?? findTokenStyle(cssTokens, 'translate')
+        const functionPunctuationStyle = findTokenStyleAfter(cssTokens, 'rgb', '(') ?? neutralStyle
+        const valueSeparatorStyle = findTokenStyle(cssTokens, '/') ?? findTokenStyleContaining(cssTokens, ' / ') ?? findTokenStyle(cssTokens, ',') ?? neutralStyle
+        const stringStyle = findTokenStyle(cssTokens, 'x')
+        const stringQuoteStyle = findTokenStyle(cssTokens, '"')
         const typeStyle = findTokenStyle(cssTokens, 'li') ?? findTokenStyle(cssTokens, 'div')
-        const selectorOperatorStyle = findTokenStyle(cssTokens, '>')
-        const pseudoOperatorStyle = findTokenStyle(cssTokens, ':')
-        const modifierStyle = findTokenStyle(cssTokens, 'hover')
+        const classStyle = findTokenStyle(cssTokens, '.x') ?? findTokenStyle(cssTokens, '.y') ?? typeStyle
+        const selectorCombinatorStyle = findTokenStyle(cssTokens, '>') ?? findTokenStyle(cssTokens, ',') ?? neutralStyle
+        const pseudoDelimiterStyle = findTokenStyleAfter(cssTokens, '.x', ':') ?? findTokenStyle(cssTokens, ':')
+        const pseudoNameStyle = findTokenStyle(cssTokens, 'hover')
+        const pseudoElementNameStyle = findTokenStyle(cssTokens, 'before') ?? pseudoNameStyle
+        const queryFeatureStyle = findTokenStyle(cssTokens, 'width') ?? propertyStyle
+        const queryOperatorStyle = findTokenStyle(cssTokens, '>=')
+        const queryNumberStyle = findTokenStyle(cssTokens, '1') ?? numberStyle
+        const queryUnitStyle = findTokenStyle(cssTokens, 'px') ?? unitStyle
+        const variableStyle = findTokenStyleContaining(cssTokens, '--token') ?? propertyStyle
 
-        return (token: ShikiToken, decoration: MasterCSSShikiSemanticDecoration, decorations: MasterCSSShikiSemanticDecoration[]) => {
-            if (decoration.type === 'type') return typeStyle
-            if (decoration.type === 'modifier') return modifierStyle
-            if (decoration.type === 'operator') {
-                if (token.content === '>') return selectorOperatorStyle
-                if (isPseudoOperator(token, decorations)) return pseudoOperatorStyle
-            }
+        const roleStyles: Partial<Record<HighlightTokenRole, Record<string, string> | undefined>> = {
+            'block.brace': neutralStyle,
+            'declaration.property': propertyStyle,
+            'declaration.separator': declarationSeparatorStyle,
+            'declaration.terminator': neutralStyle,
+            'directive.keyword': atKeywordStyle,
+            'directive.modifier': importantStyle,
+            'directive.parameter': variableStyle,
+            'directive.terminator': neutralStyle,
+            'query.keyword': atKeywordStyle,
+            'query.feature': queryFeatureStyle,
+            'query.operator': queryOperatorStyle,
+            'query.punctuation': neutralStyle,
+            'query.value': valueStyle,
+            'query.number': queryNumberStyle,
+            'query.unit': queryUnitStyle,
+            'selector.attribute': typeStyle,
+            'selector.class': classStyle,
+            'selector.combinator': selectorCombinatorStyle,
+            'selector.id': classStyle,
+            'selector.pseudoClass.delimiter': pseudoDelimiterStyle,
+            'selector.pseudoClass.name': pseudoNameStyle,
+            'selector.pseudoElement.delimiter': pseudoDelimiterStyle,
+            'selector.pseudoElement.name': pseudoElementNameStyle,
+            'selector.punctuation': neutralStyle,
+            'selector.type': typeStyle,
+            'theme.variable': variableStyle,
+            'utility.component': classStyle,
+            'utility.static': valueStyle,
+            'value.color': valueStyle,
+            'value.function.name': functionStyle,
+            'value.function.punctuation': functionPunctuationStyle,
+            'value.important': importantStyle,
+            'value.keyword': valueStyle,
+            'value.number': numberStyle,
+            'value.operator': declarationSeparatorStyle,
+            'value.separator': valueSeparatorStyle,
+            'value.string': stringStyle,
+            'value.string.quote': stringQuoteStyle,
+            'value.unit': unitStyle,
+            'value.variable': variableStyle
+        }
+
+        return (_token: ShikiToken, decoration: MasterCSSShikiSemanticDecoration) => {
+            return roleStyles[decoration.role]
         }
     } catch {
         return
     }
 }
 
-function decodeSemanticTokenDecorations(
-    document: TextDocument,
-    data: number[],
+function createSemanticTokenDecorations(
+    tokens: HighlightTokenItem[],
     options: MasterCSSShikiSemanticTokensOptions
 ): MasterCSSShikiSemanticDecoration[] {
     const classPrefix = options.classPrefix ?? 'mcss-semantic'
     const includeDataAttributes = options.dataAttributes ?? true
-    const decorations: MasterCSSShikiSemanticDecoration[] = []
-    let line = 0
-    let character = 0
-    for (let i = 0; i < data.length; i += 5) {
-        const deltaLine = data[i]
-        const deltaStart = data[i + 1]
-        line += deltaLine
-        character = deltaLine === 0 ? character + deltaStart : deltaStart
-        const length = data[i + 2]
-        const type = SEMANTIC_TOKEN_TYPES[data[i + 3]]
-        const modifierBits = data[i + 4]
-        if (!type) continue
-        const modifiers = SEMANTIC_TOKEN_MODIFIERS.filter((_, index) => modifierBits & (1 << index))
-        const start = document.offsetAt({ line, character })
-        const end = document.offsetAt({ line, character: character + length })
+    return tokens.map(({ start, end, type, role, modifiers = [] }) => {
         const classNames = [
             classPrefix,
             `${classPrefix}-${type}`,
+            `${classPrefix}-role-${role.replace(/\./g, '-')}`,
             ...modifiers.map((modifier) => `${classPrefix}-${type}-${modifier}`)
         ]
-        const style = resolveSemanticTokenStyle(type, modifiers, options.semanticTokenStyles)
-        decorations.push({
+        const style = resolveHighlightTokenStyle({ type, role, modifiers }, options)
+        return {
             start,
             end,
             type,
+            role,
             modifiers,
             alwaysWrap: options.alwaysWrap,
             properties: {
@@ -370,24 +457,27 @@ function decodeSemanticTokenDecorations(
                 ...(includeDataAttributes
                     ? {
                         'data-semantic-token-type': type,
-                        'data-semantic-token-modifiers': modifiers.join(' ')
+                        'data-semantic-token-modifiers': modifiers.join(' '),
+                        'data-highlight-role': role
                     }
                     : undefined)
             }
-        })
-    }
-    return decorations
+        }
+    })
 }
 
 export function createMasterCSSShikiSemanticTokenDecorations(
     code: string,
     options: MasterCSSShikiSemanticTokensOptions = {}
 ): MasterCSSShikiSemanticDecoration[] {
-    const document = createShikiDocument(code, options.lang)
+    const document = createShikiDocument(code, options.classList ? 'plaintext' : options.lang)
     if (!document) return []
-    const semanticTokens = createLanguageService(options).renderSemanticTokens(document)
-    if (!semanticTokens?.data.length) return []
-    return decodeSemanticTokenDecorations(document, semanticTokens.data, options)
+    const languageService = createLanguageService(options)
+    const highlightTokens = options.classList
+        ? collectClassListHighlightTokenItems(languageService.css, code)
+        : collectHighlightTokenItems.call(languageService, document)
+    if (!highlightTokens.length) return []
+    return createSemanticTokenDecorations(highlightTokens, options)
 }
 
 export function transformerMasterCSSSemanticTokens(

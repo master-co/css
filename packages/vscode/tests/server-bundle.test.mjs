@@ -9,6 +9,7 @@ const packageDir = resolve(here, '..')
 const distDir = resolve(packageDir, 'dist')
 const serverPath = resolve(distDir, 'server.min.mjs')
 const workspaceDir = resolve(here, 'fixtures', 'bundled-config')
+const packageJSON = JSON.parse(readFileSync(resolve(packageDir, 'package.json'), 'utf8'))
 
 function encode(message) {
     const body = Buffer.from(JSON.stringify(message))
@@ -154,6 +155,21 @@ function createLanguageServer() {
 
 test('build emits the server bundle', () => {
     expect(statSync(serverPath).isFile()).toBe(true)
+})
+
+test('manifest contributes semantic token scopes without TextMate grammars', () => {
+    expect(packageJSON.contributes.languages).toBeUndefined()
+    expect(packageJSON.contributes.grammars).toBeUndefined()
+    expect(packageJSON.contributes.semanticTokenScopes?.[0]?.scopes).toMatchObject({
+        property: ['support.type.property-name.css'],
+        enumMember: ['support.constant.property-value.css'],
+        'keyword.directive': ['keyword.control.at-rule.master-css.css']
+    })
+    expect(packageJSON.contributes.configuration.properties['masterCSS.includedLanguages'].default).toEqual(expect.arrayContaining([
+        'css',
+        'scss',
+        'less'
+    ]))
 })
 
 test('bundled language server loads a CSS workspace entry', async () => {

@@ -612,10 +612,6 @@ export default function getClassPositions(
         return !overlapsCommentRange(start, end, commentRanges)
     }
 
-    if (textDocument.languageId === 'master-css') {
-        return collectClassPositions(text, startIndex, '', includeEmpty, acceptsClassRange)
-    }
-
     if (provider !== 'regex') {
         const oxcClassPositions = getOxcClassPositions(textDocument, settings, options, text, acceptsPosition)
         if (onlyOxc || oxcClassPositions.authoritative) {

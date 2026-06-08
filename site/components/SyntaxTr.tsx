@@ -60,7 +60,7 @@ export default async function SyntaxTr({ value, children }: any) {
     lineElements.splice(0, 1) // remove \n
     lineElements.splice(lineElements.length - 1, 1) // remove }
     const keyHast = await highlightCode(proxyCode, {
-        lang: 'mcss',
+        lang: 'plaintext',
         inline: true,
         transformers: [transformerRestore]
     })
