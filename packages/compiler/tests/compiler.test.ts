@@ -871,14 +871,6 @@ describe.concurrent('@master/css-compiler', () => {
     })
 
     it('rejects invalid directive placement and names', () => {
-        const unsupportedModeAtRule = '@' + 'mode dark'
-        expect(() => process(`
-            @settings {
-                ${unsupportedModeAtRule} {
-                    --color-primary: #456;
-                }
-            }
-        `)).toThrow('@settings does not accept @mode')
 
         expect(() => process(`
             @settings {
@@ -965,5 +957,18 @@ describe.concurrent('@master/css-compiler', () => {
                 }
             }
         `)).toThrow('@keyframes is not allowed inside managed @layer blocks')
+    })
+
+    it('does not treat @mode as a Master CSS directive', () => {
+        const result = process(`
+            @mode dark {
+                .card {
+                    color: red;
+                }
+            }
+        `)
+
+        expect(result).toContain('@mode dark')
+        expect(result).toContain('.card')
     })
 })

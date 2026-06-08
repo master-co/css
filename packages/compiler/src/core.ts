@@ -110,10 +110,6 @@ const MASTER_CUSTOM_AT_RULES = {
         prelude: '*',
         body: 'style-block'
     },
-    mode: {
-        prelude: '*',
-        body: 'style-block'
-    },
     compose: {
         prelude: '<string>',
         body: null
@@ -1322,9 +1318,6 @@ function parseSettingsChildRule(child: Rule, parsed: ParsedDirectives, section: 
         parseSettingsStyleRule(child)
         return
     }
-    if ((child.type === 'unknown' || child.type === 'custom') && child.value?.name === 'mode') {
-        throw new Error('@settings does not accept @mode')
-    }
     throw new Error(`Unsupported rule in @settings${section === 'root' ? '' : ' ' + section}`)
 }
 
@@ -1409,9 +1402,6 @@ function parseTopLevelLayerChildRule(child: Rule, parsed: ParsedDirectives, atRu
     }
     if ((child.type === 'unknown' || child.type === 'custom') && child.value?.name === 'compose') {
         throw createComposePlacementError(parsed)
-    }
-    if ((child.type === 'unknown' || child.type === 'custom') && child.value?.name === 'mode') {
-        throw new Error('Unsupported @mode rule')
     }
     if (isCustomAtDefinition(child)) {
         throw new Error('@custom-at must be top-level')
@@ -1522,8 +1512,6 @@ export function compileCSS(source: string, options: CompileCSSOptions = {}): Com
                             throw new Error('@custom-selector must be top-level')
                         case 'at':
                             throw new Error('@at requires a style rule or nested style rules')
-                        case 'mode':
-                            throw new Error('Unsupported @mode rule')
                     }
                 }
 
