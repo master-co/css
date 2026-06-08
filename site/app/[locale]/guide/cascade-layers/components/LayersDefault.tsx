@@ -23,9 +23,9 @@ export default () => {
                         <td className="white-space:nowrap"><code>{'@layer theme { … }'}</code></td>
                     </tr>
                     <tr>
-                        <th>Preset</th>
-                        <td>Where the styles with <code>@preset</code> are generated.</td>
-                        <td className="white-space:nowrap"><code>{'@layer preset { … }'}</code></td>
+                        <th>Defaults</th>
+                        <td>Where the styles with <code>@default</code> are generated.</td>
+                        <td className="white-space:nowrap"><code>{'@layer defaults { … }'}</code></td>
                     </tr>
                     <tr>
                         <th>Components</th>

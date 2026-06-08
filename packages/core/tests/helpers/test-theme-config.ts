@@ -84,9 +84,9 @@ const themeConfig: Config = {
         motion: '@media(prefers-reduced-motion:no-preference)',
         'reduce-motion': '@media(prefers-reduced-motion:reduce)',
         base: '@layer base',
-        preset: '@layer preset',
-        components: '@layer components',
-        utilities: '@layer utilities',
+        default: '@layer defaults',
+        component: '@layer components',
+        utility: '@layer utilities',
         start: '@starting-style',
         w: '@media (width)',
         h: '@media (height)'

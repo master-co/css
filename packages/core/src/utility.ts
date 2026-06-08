@@ -127,7 +127,7 @@ export class Utility {
         const onlyNode = this.atRules?.layer?.length === 1 && this.atRules.layer[0] as AtRuleValueNode
         if (onlyNode) {
             const layerName = String(onlyNode.value)
-            if (layerName === 'base' || layerName === 'preset' || layerName === 'components' || layerName === 'utilities') {
+            if (layerName === 'base' || layerName === 'defaults' || layerName === 'components' || layerName === 'utilities') {
                 this.layerName = layerName
                 this.explicitLayerName = layerName
                 this.atRules.layer = undefined

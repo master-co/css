@@ -31,7 +31,7 @@ export default class MasterCSS {
     readonly animationsNonLayer = new NonLayer(this)
     readonly baseLayer = new UtilityLayer('base', this)
     readonly themeLayer = new ThemeLayer('theme', this)
-    readonly presetLayer = new UtilityLayer('preset', this)
+    readonly defaultsLayer = new UtilityLayer('defaults', this)
     readonly componentsLayer = new UtilityLayer('components', this)
     readonly utilitiesLayer = new UtilityLayer('utilities', this)
     readonly selectors = new Map<string, SelectorNode[]>()
@@ -54,7 +54,7 @@ export default class MasterCSS {
     get text() {
         return this.rules
             .sort((a, b) => {
-                const order = ['theme', 'base', 'preset', 'components', 'utilities']
+                const order = ['theme', 'base', 'defaults', 'components', 'utilities']
                 const indexA = order.indexOf(a.name) === -1 ? Infinity : order.indexOf(a.name)
                 const indexB = order.indexOf(b.name) === -1 ? Infinity : order.indexOf(b.name)
                 return indexA - indexB
@@ -66,8 +66,8 @@ export default class MasterCSS {
         switch (layerName) {
             case 'base':
                 return this.baseLayer
-            case 'preset':
-                return this.presetLayer
+            case 'defaults':
+                return this.defaultsLayer
             case 'components':
                 return this.componentsLayer
             case 'utilities':
@@ -78,7 +78,7 @@ export default class MasterCSS {
     }
 
     getUtilityLayers() {
-        return [this.baseLayer, this.presetLayer, this.componentsLayer, this.utilitiesLayer]
+        return [this.baseLayer, this.defaultsLayer, this.componentsLayer, this.utilitiesLayer]
     }
 
     resolve(config: Config = this.config) {
@@ -655,7 +655,7 @@ export default class MasterCSS {
         this.arbitraryMatcherUtilities.length = 0
         this.baseLayer.reset()
         this.themeLayer.reset()
-        this.presetLayer.reset()
+        this.defaultsLayer.reset()
         this.componentsLayer.reset()
         this.utilitiesLayer.reset()
         this.animationsNonLayer.reset()

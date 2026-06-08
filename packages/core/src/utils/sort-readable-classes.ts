@@ -37,16 +37,16 @@ export default function sortReadableClasses(classes: string[], css = createCSS()
         ...dedupedComponentRules,
         ...css.utilitiesLayer.rules,
         ...css.baseLayer.rules,
-        ...css.presetLayer.rules,
+        ...css.defaultsLayer.rules,
     ].filter((rule): rule is Utility => rule instanceof Utility)
 
     const baseSet = new Set(css.baseLayer.rules)
-    const presetSet = new Set(css.presetLayer.rules)
+    const defaultsSet = new Set(css.defaultsLayer.rules)
     const componentSet = new Set(css.componentsLayer.rules)
 
     const getGroupIndex = (rule: Utility): number => {
         if (baseSet.has(rule)) return 4
-        if (presetSet.has(rule)) return 5
+        if (defaultsSet.has(rule)) return 5
         if (componentSet.has(rule)) return 0
         if (rule.atRules) return 3
         if (rule.mode) return 2

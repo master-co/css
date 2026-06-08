@@ -9,13 +9,13 @@ test.concurrent('layer at-rules can be used in component utilities', () => {
                 type: UtilityType.Static,
                 layer: 'components',
                 rules: [
-                    { selector: '&', atRules: ['@layer preset'], declarations: { display: 'block' } },
+                    { selector: '&', atRules: ['@layer defaults'], declarations: { display: 'block' } },
                     { selector: '&', atRules: ['@layer base'], declarations: { display: 'inline' } }
                 ]
             }
         ]
     }).add('btn')
 
-    expect(css.componentsLayer.text).toContain('@layer preset{.btn{display:block}}')
+    expect(css.componentsLayer.text).toContain('@layer defaults{.btn{display:block}}')
     expect(css.componentsLayer.text).toContain('@layer base{.btn{display:inline}}')
 })

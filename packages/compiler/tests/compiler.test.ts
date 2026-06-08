@@ -294,6 +294,33 @@ describe.concurrent('@master/css-compiler', () => {
         ])
     })
 
+    it('records static default definitions under @layer defaults', () => {
+        const result = compileCSS(`
+            @layer defaults {
+                .prose {
+                    & p {
+                        font-size: 1rem;
+                    }
+                }
+            }
+        `)
+
+        expect(result.config.utilities).toBeUndefined()
+        expect(stripStyleDefinitionSources(result.styleDefinitions)).toEqual([
+            {
+                type: 'native',
+                name: 'prose',
+                order: 1,
+                selector: '& p',
+                layer: 'defaults',
+                declarations: {
+                    'font-size': '1rem'
+                }
+            }
+        ])
+        expect(result.css).toBe('')
+    })
+
     it('records static utility definitions under @layer utilities', () => {
         const result = compileCSS(`
             @layer utilities {

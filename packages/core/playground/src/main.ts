@@ -7,7 +7,7 @@ console.log(createCSS({
             type: -4,
             layer: 'components',
             rules: [
-                { selector: '&', atRules: ['@layer preset'], declarations: { display: 'block' } }
+                { selector: '&', atRules: ['@layer defaults'], declarations: { display: 'block' } }
             ]
         }
     ]

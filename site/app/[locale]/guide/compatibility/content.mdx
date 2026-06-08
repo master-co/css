@@ -3,10 +3,10 @@ Master CSS is designed to work with modern browser features, existing CSS files,
 
 Static extraction and server rendering generate regular CSS ahead of time. Runtime rendering uses the browser [MutationObserver](https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver) API to detect class changes and generate only the rules used by connected elements.
 
-The default stylesheet uses native [CSS cascade layers](https://developer.mozilla.org/en-US/docs/Web/CSS/@layer) to keep theme, base, preset, components, and utilities predictable:
+The default stylesheet uses native [CSS cascade layers](https://developer.mozilla.org/en-US/docs/Web/CSS/@layer) to keep theme, base, defaults, components, and utilities predictable:
 
 ```css
-@layer theme, base, preset, components, utilities;
+@layer theme, base, defaults, components, utilities;
 ```
 
 That means Master CSS works best in projects that target browsers with cascade layer support. If your project must support older browsers, treat `@layer` support as the main compatibility boundary and test the generated CSS against your browser matrix.
@@ -106,16 +106,16 @@ Selector suffixes can use native CSS selector syntax as long as the browser supp
 ## Third-party styles
 Third-party libraries often ship CSS with their own selector strategy. Put vendor styles in a lower cascade layer when you want Master CSS components and utilities to override them without `!important`.
 
-For example, import Swiper styles into the `preset` layer:
+For example, import Swiper styles into the `defaults` layer:
 
 ```css
 @import 'swiper/css'; /* [!code --] */
 @import 'swiper/css/navigation'; /* [!code --] */
 @import 'swiper/css/pagination'; /* [!code --] */
 
-@import 'swiper/css' layer(preset);
-@import 'swiper/css/navigation' layer(preset);
-@import 'swiper/css/pagination' layer(preset);
+@import 'swiper/css' layer(defaults);
+@import 'swiper/css/navigation' layer(defaults);
+@import 'swiper/css/pagination' layer(defaults);
 ```
 
 (!) Some bundlers may not support `@import ... layer(...)` for package CSS. Check your build tool before relying on layered package imports.
@@ -178,5 +178,5 @@ When a CSS file imports `@master/css`, it becomes a Master-managed stylesheet. K
 - Treat native cascade layers as the main browser compatibility boundary for the default stylesheet.
 - Write standard unprefixed properties and selectors when Master CSS already prefixes them.
 - Use arbitrary properties and native selector suffixes for new platform features.
-- Put third-party CSS in `preset` when you want components and utilities to override it.
+- Put third-party CSS in `defaults` when you want components and utilities to override it.
 - Keep externally injected classes visible to extraction, outside managed roots, or protected from native CSS pruning.

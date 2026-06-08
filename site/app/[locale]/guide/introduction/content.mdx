@@ -248,10 +248,10 @@ The important habit is to abstract only when the abstraction carries product mea
 The default `@master/css/base.css` stylesheet declares the cascade layer order once:
 
 ```css
-@layer theme, base, preset, components, utilities;
+@layer theme, base, defaults, components, utilities;
 ```
 
-Generated CSS emits rules into `theme`, `base`, `preset`, `components`, and `utilities` blocks. `theme` emits variables, `base` normalizes the platform, `preset` holds broad defaults, `components` holds product vocabulary from CSS-defined component classes, and `utilities` holds utility classes. Because `utilities` comes last, local utility decisions can override reusable project styles without reaching for `!important`.
+Generated CSS emits rules into `theme`, `base`, `defaults`, `components`, and `utilities` blocks. `theme` emits variables, `base` normalizes the platform, `defaults` holds broad defaults, `components` holds product vocabulary from CSS-defined component classes, and `utilities` holds utility classes. Because `utilities` comes last, local utility decisions can override reusable project styles without reaching for `!important`.
 
 ---
 

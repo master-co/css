@@ -9,7 +9,7 @@ export const expectLayers = (
         utilities?: string
         base?: string
         animations?: string
-        preset?: string
+        defaults?: string
     },
     className: string | string[],
     config?: Config
@@ -17,7 +17,7 @@ export const expectLayers = (
     const css = createCSSWithTheme(config).add(...(Array.isArray(className) ? className : [className]))
     if (layers.theme) expect(css.themeLayer.text).toContain(`@layer theme{${layers.theme ?? ''}}`)
     if (layers.components) expect(css.componentsLayer.text).toContain(`@layer components{${layers.components ?? ''}}`)
-    if (layers.preset) expect(css.presetLayer.text).toContain(`@layer preset{${layers.preset ?? ''}}`)
+    if (layers.defaults) expect(css.defaultsLayer.text).toContain(`@layer defaults{${layers.defaults ?? ''}}`)
     if (layers.base) expect(css.baseLayer.text).toContain(`@layer base{${layers.base ?? ''}}`)
     if (layers.utilities) expect(css.utilitiesLayer.text).toContain(`@layer utilities{${layers.utilities ?? ''}}`)
     if (layers.animations) expect(css.animationsNonLayer.text).toContain(`${layers.animations ?? ''}`)

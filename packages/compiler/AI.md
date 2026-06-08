@@ -6,7 +6,7 @@
 
 ## Inputs And Outputs
 
-- Input: CSS containing `@settings`, `@theme`, `@custom-at`, `@custom-selector`, top-level managed `@layer preset`, `@layer components`, and `@layer utilities` blocks, condition blocks with `@at`, style rules with `@compose`, top-level extraction policy directives, and top-level native `@keyframes`.
+- Input: CSS containing `@settings`, `@theme`, `@custom-at`, `@custom-selector`, top-level managed `@layer defaults`, `@layer components`, and `@layer utilities` blocks, condition blocks with `@at`, style rules with `@compose`, top-level extraction policy directives, and top-level native `@keyframes`.
 - Output: semantic core `Config`, shared directive data for lower-level consumers, style definitions, native CSS with consumed Master directives removed, native class names, warnings, standalone directive metadata, and CSS import dependencies.
 - CSS config directives such as `@settings`, `@theme`, `@custom-at`, and `@custom-selector` are config definitions. Defining a component, utility, variable, token, or animation does not emit CSS by itself; the class still needs to be used or extracted.
 - `@master;` is only a lightweight entry marker.

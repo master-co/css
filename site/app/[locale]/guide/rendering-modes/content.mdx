@@ -12,7 +12,7 @@ Master CSS integrations choose how generated rules reach the browser. The same p
 | `'pre-render'`            | Renders HTML output and injects the critical CSS required by the rendered class names. This mode is usually owned by SSR/SSG integrations. |
 | `'progressive'`           | Combines pre-rendered first-page CSS with client-side runtime hydration for classes that appear after the initial HTML. |
 
-Every mode uses the same cascade layer model. The default `@master/css/base.css` stylesheet declares `@layer theme, base, preset, components, utilities;`, while generated rules are emitted into layer blocks without redeclaring the global order.
+Every mode uses the same cascade layer model. The default `@master/css/base.css` stylesheet declares `@layer theme, base, defaults, components, utilities;`, while generated rules are emitted into layer blocks without redeclaring the global order.
 
 ---
 

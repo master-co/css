@@ -6,7 +6,7 @@ CSS at-rules such as `@media`, `@supports`, `@container`, `@layer`, and `@starti
 ```text name=master css
 hidden@md
 hidden@print
-hidden@preset
+hidden@default
 hidden@container(xs)
 hidden@sidebar(xs)
 hidden@md&<lg
@@ -82,7 +82,9 @@ At tokens are named conditions. Some are built in, while breakpoint tokens and m
 | Token                         | CSS                                                       |
 |-------------------------------|-----------------------------------------------------------|
 | `@base`                       | `css @layer base`                                         |
-| `@preset`                     | `css @layer preset`                                       |
+| `@default`                    | `css @layer defaults`                                     |
+| `@component`                  | `css @layer components`                                   |
+| `@utility`                    | `css @layer utilities`                                    |
 | `@print`                      | `css @media print`                                        |
 | `@screen`                     | `css @media screen`                                       |
 | `@all`                        | `css @media all`                                          |
@@ -119,20 +121,24 @@ Mode names also become at tokens. `@dark` and `@light` are available by default,
 
 The generated CSS depends on [`mode-trigger`](/guide/theme#choose-a-mode-trigger). A mode can become a media query, a class wrapper, or a shadow host wrapper.
 
-### `base`, `preset`
-Use `@base` and `@preset` to place generated rules in those cascade layers.
+### `base`, `default`, `component`, `utility`
+Use `@base`, `@default`, `@component`, and `@utility` to place generated rules in those cascade layers.
 
-By default, there are two shorthands: `@base` and `@preset`.
+By default, there are four layer shorthands: `@base`, `@default`, `@component`, and `@utility`.
 ```html
 <!-- @MARK @base -->
 <div class="hidden@base">
-<!-- @MARK @preset -->
-<div class="hidden@preset">
+<!-- @MARK @default -->
+<div class="hidden@default">
+<!-- @MARK @component -->
+<div class="hidden@component">
+<!-- @MARK @utility -->
+<div class="hidden@utility">
 ```
 <details>
     <summary>Generated CSS</summary>
     <Class2CSS>
-        {['hidden@base', 'hidden@preset']}
+        {['hidden@base', 'hidden@default', 'hidden@component', 'hidden@utility']}
     </Class2CSS>
 </details>
 You can [create an at token](/guide/theme#at-tokens) to simplify longer conditions.

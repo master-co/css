@@ -16,8 +16,8 @@
     }
 }
 
-@layer preset {
-    .text\:16_p\@preset p {
+@layer defaults {
+    .text\:16_p\@default p {
         font-size: 1rem;
         line-height: calc(1rem + 0.875em)
     }

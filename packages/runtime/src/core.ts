@@ -19,7 +19,7 @@ export default class CSSRuntime extends MasterCSS {
     readonly container: HTMLElement | ShadowRoot
     readonly baseLayer = new RuntimeUtilityLayer('base', this)
     readonly themeLayer = new RuntimeThemeLayer('theme', this)
-    readonly presetLayer = new RuntimeUtilityLayer('preset', this)
+    readonly defaultsLayer = new RuntimeUtilityLayer('defaults', this)
     readonly componentsLayer = new RuntimeUtilityLayer('components', this)
     readonly utilitiesLayer = new RuntimeUtilityLayer('utilities', this)
     readonly classCounts = new Map<string, number>()
@@ -192,8 +192,8 @@ export default class CSSRuntime extends MasterCSS {
                 case 'base':
                     layer = this.baseLayer
                     break
-                case 'preset':
-                    layer = this.presetLayer
+                case 'defaults':
+                    layer = this.defaultsLayer
                     break
                 case 'components':
                     layer = this.componentsLayer

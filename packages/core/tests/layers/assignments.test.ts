@@ -3,19 +3,21 @@ import { UtilityType } from '../../src'
 import { expectLayers } from '../test'
 import createCSSWithTheme from '../helpers/create-css-with-theme'
 
-test.concurrent('base and preset', async () => {
+test.concurrent('base and defaults', async () => {
     expectLayers({ base: '.block\\@base{display:block}' }, 'block@base')
-    expectLayers({ preset: '.block\\@preset{display:block}' }, 'block@preset')
+    expectLayers({ defaults: '.block\\@default{display:block}' }, 'block@default')
+    expectLayers({ components: '.block\\@component{display:block}' }, 'block@component')
+    expectLayers({ utilities: '.block\\@utility{display:block}' }, 'block@utility')
 })
 
 test.concurrent('with breakpoint ', async () => {
     expectLayers({ base: '@media (width>=52.125rem){.block\\@base\\@sm{display:block}}' }, 'block@base@sm')
-    expectLayers({ preset: '@media (width>=52.125rem){.block\\@preset\\@sm{display:block}}' }, 'block@preset@sm')
+    expectLayers({ defaults: '@media (width>=52.125rem){.block\\@default\\@sm{display:block}}' }, 'block@default@sm')
 })
 
 test.concurrent('with selectors', () => {
     expectLayers({ base: '.font\\:12_\\:is\\(code\\,pre\\)\\@base :is(code,pre){font-size:0.75rem}' }, 'font:12_:is(code,pre)@base')
-    expectLayers({ preset: '.font\\:12_\\:is\\(code\\,pre\\)\\@preset :is(code,pre){font-size:0.75rem}' }, 'font:12_:is(code,pre)@preset')
+    expectLayers({ defaults: '.font\\:12_\\:is\\(code\\,pre\\)\\@default :is(code,pre){font-size:0.75rem}' }, 'font:12_:is(code,pre)@default')
 })
 
 test.concurrent('using components', async () => {
@@ -35,5 +37,5 @@ test.concurrent('using components', async () => {
 })
 
 test.concurrent('conflicts', async () => {
-    expectLayers({ utilities: '@layer base.preset{.block\\@base\\@preset{display:block}}' }, 'block@base@preset')
+    expectLayers({ utilities: '@layer base.defaults{.block\\@base\\@default{display:block}}' }, 'block@base@default')
 })

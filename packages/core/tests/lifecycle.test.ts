@@ -11,13 +11,13 @@ test.concurrent('mb:48', ({ task }) => {
     expect(css.utilitiesLayer.text).toBe('')
 })
 
-test.concurrent('mb:48@preset', ({ task }) => {
+test.concurrent('mb:48@default', ({ task }) => {
     css.add(task.name)
-    expect(css.presetLayer.rules.length).toBe(1)
-    expect(css.presetLayer.text).toBe('@layer preset{.mb\\:48\\@preset{margin-bottom:3rem}}')
+    expect(css.defaultsLayer.rules.length).toBe(1)
+    expect(css.defaultsLayer.text).toBe('@layer defaults{.mb\\:48\\@default{margin-bottom:3rem}}')
     css.remove(task.name)
-    expect(css.presetLayer.rules.length).toBe(0)
-    expect(css.presetLayer.text).toBe('')
+    expect(css.defaultsLayer.rules.length).toBe(0)
+    expect(css.defaultsLayer.text).toBe('')
 })
 
 test.concurrent('btn@sm', ({ task }) => {

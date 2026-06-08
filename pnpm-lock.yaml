@@ -801,14 +801,14 @@ importers:
         specifier: ^7.19.0
         version: 7.19.0
       '@master/css':
-        specifier: rc
-        version: 2.0.0-rc.69
+        specifier: workspace:^
+        version: link:../packages/core
       '@master/css-language-service':
         specifier: workspace:^
         version: link:../packages/language-service
       '@master/css.react':
-        specifier: rc
-        version: 2.0.0-rc.69(@types/react@19.2.14)(react@19.2.5)
+        specifier: workspace:^
+        version: link:../packages/react
       '@master/styled.react':
         specifier: ^2.0.6
         version: 2.0.6(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
@@ -5080,25 +5080,6 @@ packages:
 
   '@master/colors@3.0.0':
     resolution: {integrity: sha512-1fqX0gncBTXtaidwCqJmOXgW6n0Ikh8DAFsW9/FKwiSYxrNdE0LlI4I0ozbdFdFRfheTV9MUbReiqeuDnD75aQ==}
-
-  '@master/css-devtools-hook@2.0.0-rc.69':
-    resolution: {integrity: sha512-FVcK38mJiGhepBTi3K0gZt2+N+fEp9U47u6fXFJrjafu1Blakah/bnhfNgF3Stensm6vw/y8BNPErfZg7Mmu/g==}
-
-  '@master/css-runtime@2.0.0-rc.69':
-    resolution: {integrity: sha512-1SUBiSWNbAbHiCOFqRUmAD4MWrwC6AMY7u6BPP8LqWMTcWu/7J7I27qcinnR5tRJvkUnIBjdTmUuWRklL2wCpA==}
-
-  '@master/css.react@2.0.0-rc.69':
-    resolution: {integrity: sha512-q+qeLTn/+z00ecNsTBiF3yuf7hYR3Zm7d8RaZiwhX3sq/E/jwnd1B1boLtd6QwVwfl/pHhmJP4tQdEwg7pHvqA==}
-    peerDependencies:
-      '@types/react': '>=16'
-      react: '>=16'
-
-  '@master/css@2.0.0-rc.69':
-    resolution: {integrity: sha512-HET2rQjk7Q3k5T/ieqgUoxrSp4eE7b0x4b9QPv5Wrz+lTngKFLkrgrQh6oPmMDIcxYlparWD+7NtOLUhNrByMA==}
-    hasBin: true
-
-  '@master/normal.css@3.3.1':
-    resolution: {integrity: sha512-Eu86+6OHCUkOGp9JSSRnwXa0vv+TkchrHK15QbOUeCF3Un6yn868TVtRYc6tmTQTXKo15ITCpHBzV7tkkmVVAg==}
 
   '@master/styled.react@2.0.6':
     resolution: {integrity: sha512-b0MSyz6UZgk2G1FReS72f2Fyn+rHCifadT+hA+4sCU2f4xer5dwF6YwlTM2FmTw7cLA4HHA8RAqkRooUFCUMbg==}
@@ -22526,28 +22507,6 @@ snapshots:
       - supports-color
 
   '@master/colors@3.0.0': {}
-
-  '@master/css-devtools-hook@2.0.0-rc.69': {}
-
-  '@master/css-runtime@2.0.0-rc.69':
-    dependencies:
-      '@master/css': 2.0.0-rc.69
-      '@master/css-devtools-hook': 2.0.0-rc.69
-
-  '@master/css.react@2.0.0-rc.69(@types/react@19.2.14)(react@19.2.5)':
-    dependencies:
-      '@master/css-runtime': 2.0.0-rc.69
-      '@types/react': 19.2.14
-      react: 19.2.5
-
-  '@master/css@2.0.0-rc.69':
-    dependencies:
-      '@master/colors': 3.0.0
-      '@master/normal.css': 3.3.1
-      csstype: 3.2.3
-      json-safe-extend: 3.2.5
-
-  '@master/normal.css@3.3.1': {}
 
   '@master/styled.react@2.0.6(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)':
     dependencies:

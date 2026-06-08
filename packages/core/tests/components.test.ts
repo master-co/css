@@ -3,7 +3,7 @@ import { MasterCSS, UtilityType } from '../src'
 import { extendConfig } from '../src/utils'
 import createCSSWithTheme from './helpers/create-css-with-theme'
 
-function component(name: string, rules: any[], layer: 'base' | 'preset' | 'components' | 'utilities' = 'components') {
+function component(name: string, rules: any[], layer: 'base' | 'defaults' | 'components' | 'utilities' = 'components') {
     return { name, type: UtilityType.Static, layer, rules }
 }
 
@@ -405,12 +405,12 @@ describe('raw declarations', () => {
                         selector: '& :is(p)',
                         declarations: { 'font-size': '1rem' }
                     }
-                ], 'preset')
+                ], 'defaults')
             ]
         }).add('prose')
 
-        expect(css.presetLayer.text).toContain('@layer preset{.prose :is(p){font-size:1rem}}')
+        expect(css.defaultsLayer.text).toContain('@layer defaults{.prose :is(p){font-size:1rem}}')
         expect(css.componentsLayer.text).toBe('')
-        expect(css.text).not.toContain('@layer components{@layer preset')
+        expect(css.text).not.toContain('@layer components{@layer defaults')
     })
 })

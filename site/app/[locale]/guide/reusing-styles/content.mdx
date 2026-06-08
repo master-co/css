@@ -284,7 +284,7 @@ In this example, `size:12x` is generated for `.empty-state::before`, not for `.e
 ### Use native CSS when output should be native
 `@compose` is not limited to component definitions. It can also be used in native style rules. The difference is output ownership:
 
-- `@layer components`, `@layer preset`, and `@layer utilities` create on-demand managed class definitions.
+- `@layer components`, `@layer defaults`, and `@layer utilities` create on-demand managed class definitions.
 - Native style rules lower to ordinary CSS in the stylesheet that contains them.
 
 ```css name=index.css
@@ -417,13 +417,13 @@ Split component definitions only when it helps ownership. Local CSS imports from
 
 ## Rules and summary
 ### Component rules
-- Put component definitions in top-level `@layer components`; use `@layer preset` only when a definition intentionally belongs to the earlier preset layer.
+- Put component definitions in top-level `@layer components`; use `@layer defaults` only when a definition intentionally belongs to the earlier defaults layer.
 - Component selectors must start with a single class selector such as `.btn`, `.card`, or `.field::before`.
 - `@compose` is valid inside managed class definitions and native style rules.
 - Component definitions accept native declarations, `@compose`, nested selectors, native nested at-rules, and `@at` condition blocks.
 - CSS-defined managed classes can compose other CSS-defined managed classes. Circular `@compose` dependencies are invalid.
 - Standard HTML tag selectors such as `body` or `html` are not valid inside managed layer definitions.
-- Utilities still win over components because `@master/css/base.css` declares `@layer theme, base, preset, components, utilities;`.
+- Utilities still win over components because `@master/css/base.css` declares `@layer theme, base, defaults, components, utilities;`.
 
 ### Summary
 - Keep local styling in markup until a pattern proves it should be shared.

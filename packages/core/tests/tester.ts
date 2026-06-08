@@ -25,7 +25,7 @@ export default class CSSTester {
         return this
     }
 
-    priority(layerName: keyof Pick<MasterCSS, 'baseLayer' | 'presetLayer' | 'componentsLayer' | 'utilitiesLayer'>, cases: Record<string, string[] | [string, string[]]>) {
+    priority(layerName: keyof Pick<MasterCSS, 'baseLayer' | 'defaultsLayer' | 'componentsLayer' | 'utilitiesLayer'>, cases: Record<string, string[] | [string, string[]]>) {
         test.concurrent.each(Object.entries(cases))('%s', (_, args) => {
             if (!Array.isArray(args[1])) {
                 const [cls, ...expected] = args
@@ -60,20 +60,20 @@ export default class CSSTester {
         utilities?: string | string[]
         base?: string | string[]
         animations?: string | string[]
-        preset?: string | string[]
+        defaults?: string | string[]
     }>) {
-        test.concurrent.each(Object.entries(cases))('%s', (cls, { theme, components, preset, base, utilities, animations }) => {
+        test.concurrent.each(Object.entries(cases))('%s', (cls, { theme, components, defaults, base, utilities, animations }) => {
             const classes = cls.split(' ')
             const css = this.css.add(...classes)
             theme = Array.isArray(theme) ? theme.join('') : theme
             components = Array.isArray(components) ? components.join('') : components
-            preset = Array.isArray(preset) ? preset.join('') : preset
+            defaults = Array.isArray(defaults) ? defaults.join('') : defaults
             base = Array.isArray(base) ? base.join('') : base
             utilities = Array.isArray(utilities) ? utilities.join('') : utilities
             animations = Array.isArray(animations) ? animations.join('') : animations
             if (theme) expect(css.themeLayer.text).toContain(theme)
             if (components) expect(css.componentsLayer.rules.map(rules => rules.text).join('')).toContain(components)
-            if (preset) expect(css.presetLayer.rules.map(rules => rules.text).join('')).toContain(preset)
+            if (defaults) expect(css.defaultsLayer.rules.map(rules => rules.text).join('')).toContain(defaults)
             if (base) expect(css.baseLayer.rules.map(rules => rules.text).join('')).toContain(base)
             if (utilities) expect(css.utilitiesLayer.rules.map(rules => rules.text).join('')).toContain(utilities)
             if (animations) expect(css.animationsNonLayer.rules.map(rules => rules.text).join('')).toContain(animations)

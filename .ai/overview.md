@@ -63,7 +63,7 @@ The core output uses cascade layers:
 ```txt
 theme
 base
-preset
+defaults
 components
 utilities
 keyframes outside layers
@@ -72,7 +72,7 @@ keyframes outside layers
 The layer statement is declared by `packages/core/src/base.css`:
 
 ```css
-@layer theme, base, preset, components, utilities;
+@layer theme, base, defaults, components, utilities;
 ```
 
-Core-generated CSS emits layer blocks but does not dynamically add or process the layer statement. Utilities should override component project styles, theme variables support modes, preset sits above base, and keyframes are not wrapped in layers.
+Core-generated CSS emits layer blocks but does not dynamically add or process the layer statement. Utilities should override component project styles, theme variables support modes, defaults sit above base, and keyframes are not wrapped in layers.

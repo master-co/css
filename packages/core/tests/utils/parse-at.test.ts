@@ -6,7 +6,7 @@ export const cases = {
     id: [
         ['print', '@media print', { id: 'media', nodes: [{ raw: 'print', value: 'print', type: 'string' }] }],
         ['base', '@layer base', { id: 'layer', nodes: [{ raw: 'base', value: 'base', type: 'string' }] }],
-        ['preset', '@layer preset', { id: 'layer', nodes: [{ raw: 'preset', value: 'preset', type: 'string' }] }],
+        ['default', '@layer defaults', { id: 'layer', nodes: [{ raw: 'default', value: 'defaults', type: 'string' }] }],
         ['!print', '@media not print', {
             id: 'media',
             nodes: [

@@ -727,9 +727,9 @@
 @custom-at reduce-motion @media (prefers-reduced-motion: reduce);
 
 @custom-at base @layer base;
-@custom-at preset @layer preset;
-@custom-at components @layer components;
-@custom-at utilities @layer utilities;
+@custom-at default @layer defaults;
+@custom-at component @layer components;
+@custom-at utility @layer utilities;
 
 @custom-at start @starting-style;
 

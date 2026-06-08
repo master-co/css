@@ -114,8 +114,8 @@ const MASTER_CUSTOM_AT_RULES = {
 
 type SettingsSection = 'root'
 
-const UTILITY_LAYER_NAMES = new Set<CSSDirectiveLayerName>(['base', 'preset', 'components', 'utilities'])
-const TOP_LEVEL_DEFINITION_LAYER_NAMES = new Set<CSSDirectiveLayerName>(['preset', 'components', 'utilities'])
+const UTILITY_LAYER_NAMES = new Set<CSSDirectiveLayerName>(['base', 'defaults', 'components', 'utilities'])
+const TOP_LEVEL_DEFINITION_LAYER_NAMES = new Set<CSSDirectiveLayerName>(['defaults', 'components', 'utilities'])
 
 function createSourceReference(parsed: ParsedDirectives, range: { start: number, end: number }): CSSDirectiveSourceReference {
     return createCSSDirectiveSourceReference(parsed.filename, {
