@@ -53,9 +53,9 @@ export function collectDocumentSemanticTokenItems(this: CSSLanguageService, docu
 
 export function collectActiveHighlightTokenItems(this: CSSLanguageService, document: TextDocument, position: Parameters<CSSLanguageService['getClassPosition']>[1]): HighlightTokenItem[] {
     if (this.settings.embeddedSyntaxHighlighting !== 'off' && !isCSSSemanticTokenDocument(document.languageId)) {
-        const classPosition = this.getClassPosition(document, position)
-        if (classPosition) {
-            return collectEmbeddedHighlightTokenItems.call(this, document, [classPosition])
+        const classPositions = this.getClassContextPositions(document, position)
+        if (classPositions.length) {
+            return collectEmbeddedHighlightTokenItems.call(this, document, classPositions)
         }
     }
     return collectCSSDocumentHighlightTokenItems.call(this, document, {

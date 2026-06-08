@@ -121,7 +121,7 @@ pkg.set('contributes.configuration', {
             'type': 'string',
             'enum': ['active', 'always', 'off'],
             'default': settings.embeddedSyntaxHighlighting,
-            'description': 'Controls embedded Master CSS utility highlighting in markup and scripts. Active highlights only the utility class at the active editor selection, always highlights all discovered embedded utilities, and off disables embedded utility highlighting. Master CSS syntax inside CSS documents is always highlighted.'
+            'description': 'Controls embedded Master CSS utility highlighting in markup and scripts. Active highlights the class context at the active editor selection, always highlights all discovered embedded utilities, and off disables embedded utility highlighting. Master CSS syntax inside CSS documents is always highlighted.'
         },
         'masterCSS.workspaces': {
             'type': [

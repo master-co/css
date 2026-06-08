@@ -34,7 +34,7 @@ withFixture('basic', async (context) => {
         )).toBe(true)
         expect(semanticTokens.data.some((_: number, index: number) =>
             index % 5 === 3 && SEMANTIC_TOKEN_TYPES[semanticTokens.data[index]] === 'property'
-        )).toBe(false)
+        )).toBe(true)
         await context.server.onDidClose({ document: textDocument })
     })
 

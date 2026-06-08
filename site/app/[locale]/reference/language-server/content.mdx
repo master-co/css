@@ -20,7 +20,7 @@ Check out the [source code](https://github.com/master-co/css/blob/rc/packages/la
 ### Semantic tokens
 The language server supports both full-document and active-position semantic tokens.
 
-When `settings.embeddedSyntaxHighlighting` is `always`, the server advertises `semanticTokensProvider` and handles `textDocument/semanticTokens/full` requests for open documents. When the mode is `active`, VS Code uses the `masterCSS/renderActiveSemanticTokens` request to highlight only the embedded Master CSS span at the active editor position. The `off` mode disables embedded utility highlighting. Master CSS syntax inside CSS documents is available through `masterCSS/renderDocumentSemanticTokens` and is always highlighted by the VS Code extension.
+When `settings.embeddedSyntaxHighlighting` is `always`, the server advertises `semanticTokensProvider` and handles `textDocument/semanticTokens/full` requests for open documents. When the mode is `active`, VS Code uses the `masterCSS/renderActiveSemanticTokens` request to highlight the embedded class context at the active editor position. The `off` mode disables embedded utility highlighting. Master CSS syntax inside CSS documents is available through `masterCSS/renderDocumentSemanticTokens` and is always highlighted by the VS Code extension.
 
 Semantic tokens are resolved from the nearest workspace language service. This lets the server highlight config-dependent Master CSS tokens such as custom variables and components after loading the project CSS entry, while also classifying CSS directives such as `@master`, `@theme`, `@custom-at`, `@custom-selector`, `@compose`, and `@at`.
 
@@ -98,4 +98,4 @@ Print all console logs.
 Control embedded semantic token highlighting mode.
 <DocProp defaultValue={JSON.stringify(settings.embeddedSyntaxHighlighting)} types={['"active" | "always" | "off"']} />
 
-Set this to `always` to advertise the standard LSP `semanticTokensProvider`, `active` to use active-position highlighting through the VS Code extension, or `off` to disable embedded utility highlighting. This setting is inherited from the [language service](/reference/language-service#settingsembeddedsyntaxhighlighting).
+Set this to `always` to advertise the standard LSP `semanticTokensProvider`, `active` to use active class-context highlighting through the VS Code extension, or `off` to disable embedded utility highlighting. This setting is inherited from the [language service](/reference/language-service#settingsembeddedsyntaxhighlighting).

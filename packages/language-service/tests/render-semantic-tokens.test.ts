@@ -255,16 +255,45 @@ test.concurrent('shares class position detection with semantic token spans', () 
     ])
 })
 
-test.concurrent('renders active semantic tokens for the class at a position', () => {
+test.concurrent('renders active semantic tokens for the class context at a position', () => {
     const content = '<div className="fg:red block:hover"></div>'
     const doc = createDoc('tsx', content)
     const languageService = new CSSLanguageService()
     const semanticTokens = languageService.renderSemanticTokensAtPosition(doc, doc.positionAt(content.indexOf('block') + 1))
     const tokens = decodeSemanticTokens(doc, semanticTokens?.data ?? [])
 
+    expectToken(tokens, 'fg', 'property')
+    expectToken(tokens, 'red', 'enumMember')
     expectToken(tokens, 'block', 'class')
     expectToken(tokens, 'hover', 'modifier', ['pseudoClass'])
-    expect(tokens.some(({ text }) => text === 'fg' || text === 'red')).toBe(false)
+})
+
+test.concurrent('renders active semantic tokens for a class context when the cursor is on whitespace', () => {
+    const content = '<div className="fg:red block:hover p:md"></div>'
+    const doc = createDoc('tsx', content)
+    const languageService = new CSSLanguageService()
+    const semanticTokens = languageService.renderSemanticTokensAtPosition(doc, doc.positionAt(content.indexOf(' block')))
+    const tokens = decodeSemanticTokens(doc, semanticTokens?.data ?? [])
+
+    expectToken(tokens, 'fg', 'property')
+    expectToken(tokens, 'red', 'enumMember')
+    expectToken(tokens, 'block', 'class')
+    expectToken(tokens, 'hover', 'modifier', ['pseudoClass'])
+    expectToken(tokens, 'p', 'property')
+    expectToken(tokens, 'md', 'enumMember')
+})
+
+test.concurrent('renders active semantic tokens only for the current class string context', () => {
+    const content = 'const x = clsx("fg:red block", condition && "p:md flex")'
+    const doc = createDoc('tsx', content)
+    const languageService = new CSSLanguageService()
+    const semanticTokens = languageService.renderSemanticTokensAtPosition(doc, doc.positionAt(content.indexOf('flex') + 1))
+    const tokens = decodeSemanticTokens(doc, semanticTokens?.data ?? [])
+
+    expectToken(tokens, 'p', 'property')
+    expectToken(tokens, 'md', 'enumMember')
+    expectToken(tokens, 'flex', 'class')
+    expect(tokens.some(({ text }) => text === 'fg' || text === 'red' || text === 'block')).toBe(false)
 })
 
 test.concurrent('skips full embedded semantic tokens in active mode', () => {

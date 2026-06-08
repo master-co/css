@@ -12,12 +12,14 @@ export interface GetClassPositionsOptions {
     includeEmpty?: boolean
     provider?: ClassPositionProvider
     oxcMode?: OxcClassPositionMode
+    positionMatch?: 'token' | 'context'
     cache?: ClassPositionCache
 }
 
 type ClassMatcher = [string, string, string?]
 type ClassPositionProvider = 'all' | 'regex' | 'oxc'
 type OxcClassPositionMode = 'auto' | 'cache-only' | false
+type ClassPositionAccept = (start: number, end: number, contextRange: SourceRange) => boolean
 
 interface CachedOxcClassPositions {
     version: number
@@ -219,7 +221,11 @@ function collectClassPositions(
     classNameStart: number,
     escapeCharacter: string,
     includeEmpty: boolean,
-    accept?: (start: number, end: number) => boolean
+    accept?: ClassPositionAccept,
+    contextRange: SourceRange = {
+        start: classNameStart,
+        end: classNameStart + className.length
+    }
 ) {
     const classPositions: ClassPosition[] = []
     /**
@@ -232,10 +238,11 @@ function collectClassPositions(
         if (!raw && !includeEmpty) continue
         const classStartIndex = classNameStart + eachClassMatch.index
         const classEndIndex = classStartIndex + raw.length
-        if (accept && !accept(classStartIndex, classEndIndex)) continue
+        if (accept && !accept(classStartIndex, classEndIndex, contextRange)) continue
         if (!raw && classStartIndex !== classEndIndex) continue
         classPositions.push({
             range: { start: classStartIndex, end: classEndIndex },
+            contextRange,
             raw,
             token: unescapeClass(raw, escapeCharacter)
         })
@@ -258,11 +265,11 @@ function sortAndDeduplicate(classPositions: ClassPosition[]) {
 function filterClassPositions(
     classPositions: ClassPosition[],
     includeEmpty: boolean,
-    accept?: (start: number, end: number) => boolean
+    accept?: ClassPositionAccept
 ) {
-    return classPositions.filter(({ range, raw }) => {
+    return classPositions.filter(({ range, contextRange, raw }) => {
         if (!raw && !includeEmpty) return false
-        return !accept || accept(range.start, range.end)
+        return !accept || accept(range.start, range.end, contextRange)
     })
 }
 
@@ -376,7 +383,7 @@ function collectOxcStringLiteral(
     source: string,
     node: OxcNode,
     includeEmpty: boolean,
-    accept?: (start: number, end: number) => boolean
+    accept?: ClassPositionAccept
 ) {
     if (typeof node.value !== 'string') return []
     const range = getNodeRange(node)
@@ -391,7 +398,8 @@ function collectOxcStringLiteral(
         classNameStart,
         quote,
         includeEmpty,
-        accept
+        accept,
+        { start: classNameStart, end: classNameEnd }
     )
 }
 
@@ -399,7 +407,7 @@ function collectOxcTemplateLiteral(
     source: string,
     node: OxcNode,
     includeEmpty: boolean,
-    accept?: (start: number, end: number) => boolean
+    accept?: ClassPositionAccept
 ) {
     const classPositions: ClassPosition[] = []
     for (const eachQuasi of node.quasis ?? []) {
@@ -407,12 +415,14 @@ function collectOxcTemplateLiteral(
         const raw = eachQuasi.value?.raw
         if (!range || raw === undefined) continue
         const classNameStart = range[0] + 1
+        const classNameEnd = classNameStart + raw.length
         classPositions.push(...collectClassPositions(
-            source.slice(classNameStart, classNameStart + raw.length),
+            source.slice(classNameStart, classNameEnd),
             classNameStart,
             '`',
             includeEmpty,
-            accept
+            accept,
+            { start: classNameStart, end: classNameEnd }
         ))
     }
     return classPositions
@@ -422,7 +432,7 @@ function collectOxcClassStrings(
     source: string,
     node: unknown,
     includeEmpty: boolean,
-    accept?: (start: number, end: number) => boolean
+    accept?: ClassPositionAccept
 ) {
     const classPositions: ClassPosition[] = []
     const visit = (eachNode: unknown) => {
@@ -555,7 +565,7 @@ function getOxcClassPositions(
     settings: Settings,
     options: GetClassPositionsOptions,
     lookaroundText: string,
-    accept?: (start: number, end: number) => boolean
+    accept?: ClassPositionAccept
 ): OxcClassPositionsResult {
     if (!isJavaScriptDocument(textDocument) || options.oxcMode === false) {
         return { authoritative: false, positions: [] }
@@ -591,6 +601,7 @@ export default function getClassPositions(
     const provider = options.provider ?? 'all'
     const onlyOxc = provider === 'oxc'
     const positionIndex = options.position && textDocument.offsetAt(options.position)
+    const positionMatch = options.positionMatch ?? 'token'
     const lookaroundLines = options.lookaroundLines ?? 100
     const startIndex = options.position
         ? textDocument.offsetAt({ line: options.position.line - lookaroundLines, character: 0 })
@@ -606,14 +617,15 @@ export default function getClassPositions(
         if (positionIndex === undefined) return true
         return start <= positionIndex && positionIndex <= end
     }
-    const acceptsClassRange = (start: number, end: number) => {
-        if (!acceptsPosition(start, end)) return false
+    const acceptsClassRange: ClassPositionAccept = (start, end, contextRange) => {
+        const acceptedRange = positionMatch === 'context' ? contextRange : { start, end }
+        if (!acceptsPosition(acceptedRange.start, acceptedRange.end)) return false
         commentRanges ??= collectCommentRanges(sourceText, textDocument.languageId)
         return !overlapsCommentRange(start, end, commentRanges)
     }
 
     if (provider !== 'regex') {
-        const oxcClassPositions = getOxcClassPositions(textDocument, settings, options, text, acceptsPosition)
+        const oxcClassPositions = getOxcClassPositions(textDocument, settings, options, text, acceptsClassRange)
         if (onlyOxc || oxcClassPositions.authoritative) {
             return sortAndDeduplicate(oxcClassPositions.positions)
         }
@@ -684,7 +696,14 @@ export default function getClassPositions(
     if (stringExpressions.length) {
         resolve(stringExpressions, (eachAttrStart, eachClassPositionEnd, [, pair]) => {
             const eachClassName = sourceText.substring(eachAttrStart, eachClassPositionEnd)
-            classPositions.push(...collectClassPositions(eachClassName, eachAttrStart, pair, includeEmpty, acceptsClassRange))
+            classPositions.push(...collectClassPositions(
+                eachClassName,
+                eachAttrStart,
+                pair,
+                includeEmpty,
+                acceptsClassRange,
+                { start: eachAttrStart, end: eachClassPositionEnd }
+            ))
         })
     }
 
@@ -700,9 +719,11 @@ export default function getClassPositions(
         resolve(assignmentExpressions, (eachAttrStart, eachClassPositionEnd) => {
             const eachClassPositionExpression = sourceText.substring(eachAttrStart, eachClassPositionEnd)
             if (['""', '\'\'', '``'].includes(eachClassPositionExpression)) {
-                if (includeEmpty && acceptsClassRange(eachAttrStart + 1, eachAttrStart + 1)) {
+                const contextRange = { start: eachAttrStart + 1, end: eachAttrStart + 1 }
+                if (includeEmpty && acceptsClassRange(eachAttrStart + 1, eachAttrStart + 1, contextRange)) {
                     classPositions.push({
                         range: { start: eachAttrStart + 1, end: eachAttrStart + 1 },
+                        contextRange,
                         raw: '',
                         token: ''
                     })
@@ -714,21 +735,42 @@ export default function getClassPositions(
                 if (classExpressionMatch.index === undefined) continue
                 const eachClassName = classExpressionMatch[1]
                 const classNameStart = eachAttrStart + classExpressionMatch.index + 1
-                classPositions.push(...collectClassPositions(eachClassName, classNameStart, '"', includeEmpty, acceptsClassRange))
+                classPositions.push(...collectClassPositions(
+                    eachClassName,
+                    classNameStart,
+                    '"',
+                    includeEmpty,
+                    acceptsClassRange,
+                    { start: classNameStart, end: classNameStart + eachClassName.length }
+                ))
             }
 
             for (const classExpressionMatch of eachClassPositionExpression.matchAll(/(?<!\\)'([\s\S]*?)(?<!\\)'/g)) {
                 if (classExpressionMatch.index === undefined) continue
                 const eachClassName = classExpressionMatch[1]
                 const classNameStart = eachAttrStart + classExpressionMatch.index + 1
-                classPositions.push(...collectClassPositions(eachClassName, classNameStart, '\'', includeEmpty, acceptsClassRange))
+                classPositions.push(...collectClassPositions(
+                    eachClassName,
+                    classNameStart,
+                    '\'',
+                    includeEmpty,
+                    acceptsClassRange,
+                    { start: classNameStart, end: classNameStart + eachClassName.length }
+                ))
             }
 
             for (const classExpressionMatch of eachClassPositionExpression.matchAll(/(?<!\\)`([\s\S]*?)(?<!\\)`/g)) {
                 if (classExpressionMatch.index === undefined) continue
                 const eachClassName = classExpressionMatch[1]
                 const classNameStart = eachAttrStart + classExpressionMatch.index + 1
-                classPositions.push(...collectClassPositions(eachClassName, classNameStart, '`', includeEmpty, acceptsClassRange))
+                classPositions.push(...collectClassPositions(
+                    eachClassName,
+                    classNameStart,
+                    '`',
+                    includeEmpty,
+                    acceptsClassRange,
+                    { start: classNameStart, end: classNameStart + eachClassName.length }
+                ))
             }
         })
     }

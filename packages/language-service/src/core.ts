@@ -12,7 +12,12 @@ import suggestSyntax from './features/suggest-syntax'
 import { TextDocument } from 'vscode-languageserver-textdocument'
 import getClassPositions, { ClassPositionCache } from './utils/get-class-positions'
 
-export interface ClassPosition { range: { start: number, end: number }, raw: string, token: string }
+export interface ClassPosition {
+    range: { start: number, end: number }
+    contextRange: { start: number, end: number }
+    raw: string
+    token: string
+}
 
 export default class CSSLanguageService extends EventEmitter {
     css: MasterCSS
@@ -88,6 +93,34 @@ export default class CSSLanguageService extends EventEmitter {
             provider: 'oxc',
             cache: this.classPositionCache
         })[0] ?? regexClassPosition
+    }
+
+    getClassContextPositions(textDocument: TextDocument, position: Position): ClassPosition[] {
+        const cachedOxcClassPositions = getClassPositions(textDocument, this.settings, {
+            position,
+            provider: 'oxc',
+            oxcMode: 'cache-only',
+            positionMatch: 'context',
+            cache: this.classPositionCache
+        })
+        if (cachedOxcClassPositions.length) return cachedOxcClassPositions
+
+        const regexClassPositions = getClassPositions(textDocument, this.settings, {
+            position,
+            provider: 'regex',
+            positionMatch: 'context'
+        })
+        if (regexClassPositions.length && regexClassPositions.every(({ raw }) => !raw.includes('${'))) {
+            return regexClassPositions
+        }
+
+        const oxcClassPositions = getClassPositions(textDocument, this.settings, {
+            position,
+            provider: 'oxc',
+            positionMatch: 'context',
+            cache: this.classPositionCache
+        })
+        return oxcClassPositions.length ? oxcClassPositions : regexClassPositions
     }
 
     isDocumentAccepted(doc: TextDocument): boolean {

@@ -7,7 +7,7 @@ export const expectClassPosition = (target: string, contents: string[], ext: key
     const doc = createDoc(ext, contents.join(''))
     const languageService = new CSSLanguageService(settings)
     const classPosition = languageService.getClassPosition(doc, doc.positionAt(contents[0].length + target.length))
-    expect(classPosition).toEqual({
+    expect(classPosition).toMatchObject({
         range: {
             start: contents[0].length,
             end: contents[0].length + target.length
@@ -18,6 +18,8 @@ export const expectClassPosition = (target: string, contents: string[], ext: key
             .replace(/\\\\'/g, '\'')
             .replace(/\\\\`/g, '`')
     })
+    expect(classPosition?.contextRange.start).toBeLessThanOrEqual(contents[0].length)
+    expect(classPosition?.contextRange.end).toBeGreaterThanOrEqual(contents[0].length + target.length)
     return classPosition
 }
 
