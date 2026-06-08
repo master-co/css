@@ -94,6 +94,18 @@ const MASTER_CUSTOM_AT_RULES = {
         prelude: '*',
         body: 'style-block'
     },
+    defaults: {
+        prelude: null,
+        body: 'style-block'
+    },
+    components: {
+        prelude: null,
+        body: 'style-block'
+    },
+    utilities: {
+        prelude: null,
+        body: 'style-block'
+    },
     'custom-at': {
         prelude: '*',
         body: null
@@ -113,9 +125,13 @@ const MASTER_CUSTOM_AT_RULES = {
 } satisfies CustomAtRules
 
 type SettingsSection = 'root'
+type ManagedDefinitionDirectiveName = 'defaults' | 'components' | 'utilities'
 
-const UTILITY_LAYER_NAMES = new Set<CSSDirectiveLayerName>(['base', 'defaults', 'components', 'utilities'])
-const TOP_LEVEL_DEFINITION_LAYER_NAMES = new Set<CSSDirectiveLayerName>(['defaults', 'components', 'utilities'])
+const MANAGED_DEFINITION_DIRECTIVE_LAYERS = {
+    defaults: 'defaults',
+    components: 'components',
+    utilities: 'utilities'
+} as const satisfies Record<ManagedDefinitionDirectiveName, CSSDirectiveLayerName>
 
 function createSourceReference(parsed: ParsedDirectives, range: { start: number, end: number }): CSSDirectiveSourceReference {
     return createCSSDirectiveSourceReference(parsed.filename, {
@@ -794,6 +810,11 @@ function isCustomSelectorDefinition(rule: Rule) {
     return (rule.type === 'unknown' || rule.type === 'custom') && rule.value?.name === 'custom-selector'
 }
 
+function getManagedDefinitionDirectiveLayer(rule: any): CSSDirectiveLayerName | undefined {
+    if (rule.type !== 'custom' || !rule.value) return
+    return MANAGED_DEFINITION_DIRECTIVE_LAYERS[rule.value.name as ManagedDefinitionDirectiveName]
+}
+
 function parseManagedStyleDefinitionSelector(selectors: Selector[]): StyleSelectorDefinition | undefined {
     const names = selectors.map((selector) => selector[0]?.type === 'class' ? selector[0].name : undefined)
     const name = names[0]
@@ -807,6 +828,19 @@ function parseManagedStyleDefinitionSelector(selectors: Selector[]): StyleSelect
         name,
         selectors: selectorTexts,
         selector: selectorTexts.join(',')
+    }
+}
+
+function parseManagedDefinitionNameSelector(selectors: Selector[]): StyleSelectorDefinition | undefined {
+    if (selectors.length !== 1) return
+    const selector = selectors[0]
+    if (selector.length !== 1) return
+    const node = selector[0] as any
+    if (node?.type !== 'type' || node.namespace) return
+    return {
+        name: node.name,
+        selectors: ['&'],
+        selector: '&'
     }
 }
 
@@ -1048,13 +1082,8 @@ function parseStyleRuleBody(
 }
 
 function parseNestedManagedStyleChildRule(child: Rule, parsed: ParsedDirectives, parentSelectorDefinition: StyleSelectorDefinition, atRules: string[], layer?: CSSDirectiveLayerName) {
-    const managedLayerBlock = parseManagedLayerBlock(child)
-    if (managedLayerBlock) {
-        if (layer) {
-            throw new Error('Nested @layer blocks are not allowed inside managed style definitions')
-        }
-        parseStyleRuleBody(managedLayerBlock.rules, parsed, parentSelectorDefinition, atRules, managedLayerBlock.layer)
-        return
+    if (child.type === 'layer-block') {
+        throw new Error('Nested @layer blocks are not allowed inside managed style definitions')
     }
 
     const masterAtRuleBlock = parseMasterAtRuleBlock(child)
@@ -1097,15 +1126,6 @@ function parseManagedStyleRule(rule: any, parsed: ParsedDirectives, atRules: str
         throw new Error('Managed style definition selector must start with a single class selector')
     }
     selectorDefinition.source ||= createSelectorSourceReference(parsed, rule)
-    parseStyleDefinitionBody(parsed, selectorDefinition, collectDirectiveStyleRule(rule, parsed), atRules, layer)
-}
-
-function parseUtility(rule: any, parsed: ParsedDirectives, atRules: string[] = [], layer: CSSDirectiveLayerName = 'utilities') {
-    const selectorDefinition = parseManagedStyleDefinitionSelector(rule.value.selectors)
-    if (!selectorDefinition) {
-        throw new Error('Utility definition selector must start with a single class selector')
-    }
-    selectorDefinition.source = createSelectorSourceReference(parsed, rule)
     parseStyleDefinitionBody(parsed, selectorDefinition, collectDirectiveStyleRule(rule, parsed), atRules, layer)
 }
 
@@ -1272,24 +1292,8 @@ function parseSettingsStyleRule(rule: any) {
     throw new Error(`Unsupported @settings selector: ${formatSelectors(rule.value.selectors)}`)
 }
 
-function parseManagedLayerBlock(rule: Rule) {
-    if (rule.type !== 'layer-block') return
-    const layerName = (rule.value.name || []).join('.')
-    if (!layerName) {
-        throw new Error('Managed @layer requires a layer name')
-    }
-    if (!UTILITY_LAYER_NAMES.has(layerName as CSSDirectiveLayerName)) {
-        throw new Error(`Unsupported managed @layer: ${layerName}`)
-    }
-    return {
-        layer: layerName as CSSDirectiveLayerName,
-        rules: rule.value.rules as Rule[]
-    }
-}
-
 function parseSettingsChildRule(child: Rule, parsed: ParsedDirectives, section: SettingsSection) {
-    const managedLayerBlock = parseManagedLayerBlock(child)
-    if (managedLayerBlock) {
+    if (child.type === 'layer-block') {
         throw new Error('@settings does not accept @layer')
     }
 
@@ -1357,15 +1361,31 @@ function containsNativeStyleDirective(rule: Rule): boolean {
     return false
 }
 
-function parseTopLevelLayerChildRule(child: Rule, parsed: ParsedDirectives, atRules: string[], layer: CSSDirectiveLayerName) {
-    if (parseManagedLayerBlock(child)) {
-        throw new Error(`Nested @layer blocks are not allowed in top-level @layer ${layer}`)
+function createManagedDefinitionNameError(rule: any) {
+    return new Error(`Managed definition names must be bare identifiers: ${formatSelectors(rule.value.selectors)}`)
+}
+
+function parseManagedDefinitionDirectiveChildRule(
+    child: Rule,
+    parsed: ParsedDirectives,
+    atRules: string[],
+    layer: CSSDirectiveLayerName,
+    directiveName: ManagedDefinitionDirectiveName
+) {
+    if (child.type === 'layer-block') {
+        throw new Error(`Nested @layer blocks are not allowed inside @${directiveName}`)
     }
 
     const masterAtRuleBlock = parseMasterAtRuleBlock(child)
     if (masterAtRuleBlock) {
         for (const nestedChild of masterAtRuleBlock.rules) {
-            parseTopLevelLayerChildRule(nestedChild, parsed, [...atRules, createCSSDirectiveAtRuleReference(masterAtRuleBlock.token)], layer)
+            parseManagedDefinitionDirectiveChildRule(
+                nestedChild,
+                parsed,
+                [...atRules, createCSSDirectiveAtRuleReference(masterAtRuleBlock.token)],
+                layer,
+                directiveName
+            )
         }
         return
     }
@@ -1374,26 +1394,27 @@ function parseTopLevelLayerChildRule(child: Rule, parsed: ParsedDirectives, atRu
     if (nestedAtRuleChildren) {
         const atRule = formatNestedAtRule(child)
         if (!atRule) {
-            throw new Error(`Unsupported nested at-rule in top-level @layer ${layer}`)
+            throw new Error(`Unsupported nested at-rule inside @${directiveName}`)
         }
         for (const nestedChild of nestedAtRuleChildren) {
-            parseTopLevelLayerChildRule(nestedChild, parsed, [...atRules, atRule], layer)
+            parseManagedDefinitionDirectiveChildRule(nestedChild, parsed, [...atRules, atRule], layer, directiveName)
         }
         return
     }
 
     if (child.type === 'nested-declarations') {
-        throw new Error(`Top-level @layer ${layer} only accepts class definitions and nested at-rules`)
+        throw new Error(`@${directiveName} only accepts bare managed names and nested at-rules`)
     }
     if (child.type === 'keyframes') {
-        throw new Error('@keyframes is not allowed inside managed @layer blocks. Move animation definitions to top-level @keyframes.')
+        throw new Error('@keyframes is not allowed inside managed definition directives. Move animation definitions to top-level @keyframes.')
     }
     if (child.type === 'style') {
-        if (layer === 'utilities') {
-            parseUtility(child, parsed, atRules, layer)
-        } else {
-            parseManagedStyleRule(child, parsed, atRules, layer)
+        const selectorDefinition = parseManagedDefinitionNameSelector(child.value.selectors)
+        if (!selectorDefinition) {
+            throw createManagedDefinitionNameError(child)
         }
+        selectorDefinition.source = createSelectorSourceReference(parsed, child)
+        parseStyleDefinitionBody(parsed, selectorDefinition, collectDirectiveStyleRule(child, parsed), atRules, layer)
         return
     }
     if ((child.type === 'unknown' || child.type === 'custom') && child.value?.name === 'compose') {
@@ -1405,16 +1426,18 @@ function parseTopLevelLayerChildRule(child: Rule, parsed: ParsedDirectives, atRu
     if (isCustomSelectorDefinition(child)) {
         throw new Error('@custom-selector must be top-level')
     }
-    throw new Error(`Unsupported rule in top-level @layer ${layer}`)
+    throw new Error(`Unsupported rule inside @${directiveName}`)
 }
 
-function parseTopLevelLayerBlock(rule: any, parsed: ParsedDirectives) {
-    const layerName = (rule.value.name || []).join('.')
-    if (!TOP_LEVEL_DEFINITION_LAYER_NAMES.has(layerName as CSSDirectiveLayerName)) {
-        throw new Error(`Unsupported managed @layer: ${layerName}`)
+function parseManagedDefinitionDirectiveRule(rule: any, parsed: ParsedDirectives) {
+    const layer = getManagedDefinitionDirectiveLayer(rule)
+    if (!layer) return
+    const body = getCustomRuleBody(rule)
+    if (!Array.isArray(body?.value)) {
+        throw new Error(`@${rule.value.name} requires a style block`)
     }
-    for (const child of rule.value.rules as Rule[]) {
-        parseTopLevelLayerChildRule(child, parsed, [], layerName as CSSDirectiveLayerName)
+    for (const child of body.value as Rule[]) {
+        parseManagedDefinitionDirectiveChildRule(child, parsed, [], layer, rule.value.name)
     }
 }
 
@@ -1448,13 +1471,6 @@ export function compileCSS(source: string, options: CompileCSSOptions = {}): Com
                     if (rule.type === 'keyframes') {
                         parseKeyframes(rule, parsed.config)
                         return []
-                    }
-                    if (rule.type === 'layer-block') {
-                        const layerName = (rule.value.name || []).join('.')
-                        if (TOP_LEVEL_DEFINITION_LAYER_NAMES.has(layerName as CSSDirectiveLayerName)) {
-                            parseTopLevelLayerBlock(rule, parsed)
-                            return []
-                        }
                     }
                     if (isCustomAtDefinition(rule)) {
                         parseAtDefinition(rule, parsed)
@@ -1497,6 +1513,14 @@ export function compileCSS(source: string, options: CompileCSSOptions = {}): Com
                                 throw new Error('@theme must be top-level')
                             }
                             parseThemeRule(rule, parsed)
+                            return []
+                        case 'defaults':
+                        case 'components':
+                        case 'utilities':
+                            if (ruleDepth !== 0) {
+                                throw new Error(`@${rule.value.name} must be top-level`)
+                            }
+                            parseManagedDefinitionDirectiveRule(rule, parsed)
                             return []
                         case 'compose':
                             throw createComposePlacementError(parsed)

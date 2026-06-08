@@ -410,8 +410,8 @@ test.concurrent('uses native CSS syntax styles for documentation Master CSS toke
 test.concurrent('uses native CSS punctuation style for Master directive terminators', () => {
     const code = [
         '@custom-at motion-safe @media (prefers-reduced-motion: no-preference);',
-        '@layer components {',
-        '    .card {',
+        '@components {',
+        '    card {',
         '        @compose "p:md r:xl";',
         '        @at <sm {',
         '            @compose "block";',

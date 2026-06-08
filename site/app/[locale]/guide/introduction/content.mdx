@@ -167,7 +167,7 @@ Master CSS is also a standalone CSS framework. It includes the core rule engine,
 </details>
 
 ### CSS-first configuration
-The project CSS entry is the primary configuration source. Tokens are native custom properties, selector shortcuts use `@custom-selector`, conditional shortcuts use `@custom-at`, low-level custom utilities live in `@layer utilities`, semantic component classes live in `@layer components`, and native CSS rules can use `@compose` when they should lower to ordinary stylesheet output.
+The project CSS entry is the primary configuration source. Tokens are native custom properties, selector shortcuts use `@custom-selector`, conditional shortcuts use `@custom-at`, low-level custom utilities live in `@utilities`, semantic component classes live in `@components`, and native CSS rules can use `@compose` when they should lower to ordinary stylesheet output.
 
 ```css name=index.css
 @theme {
@@ -178,8 +178,8 @@ The project CSS entry is the primary configuration source. Tokens are native cus
 @custom-at motion-safe @media (prefers-reduced-motion: no-preference);
 @custom-selector :interactive :is(:hover, :focus-visible);
 
-@layer components {
-    .btn {
+@components {
+    btn {
         @compose "inline-flex ai:center jc:center px:md py:xs r:lg";
         background: var(--color-primary);
 
@@ -198,7 +198,7 @@ The project CSS entry is the primary configuration source. Tokens are native cus
 }
 ```
 
-The `@theme` and `@settings` blocks, top-level custom directives, and managed layers are configuration, not regular stylesheet output. Master CSS compiles them into config, then generates only the classes used in markup, discovered by source scanners, or composed by another CSS-defined style. Native rules such as `.notice` lower to CSS for the stylesheet that contains them.
+The `@theme` and `@settings` blocks, top-level custom directives, and managed definition directives are configuration, not regular stylesheet output. Master CSS compiles them into config, then generates only the classes used in markup, discovered by source scanners, or composed by another CSS-defined style. Native rules such as `.notice` lower to CSS for the stylesheet that contains them.
 
 ### Rendering for different delivery models
 Master CSS provides three main [rendering modes](/guide/rendering-modes):
@@ -295,8 +295,8 @@ Use semantic tokens and components when:
 Assuming the card has become reusable, define it as a [component class](/guide/reusing-styles#component-classes) in the project CSS entry:
 
 ```css name=index.css
-@layer components {
-    .card {
+@components {
+    card {
         @compose "flex transition:transform|fast|smooth overflow:hidden bg:white r:xl";
 
         &:hover {
@@ -304,7 +304,7 @@ Assuming the card has become reusable, define it as a [component class](/guide/r
         }
     }
 
-    .card-image {
+    card-image {
         @compose "object:cover w:35x aspect:16/9";
     }
 

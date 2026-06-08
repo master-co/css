@@ -50,8 +50,8 @@ You can also restrict teams to using [theme](/guide/theme) and [component classe
 ```
 (o) Or create the custom style `btn` using [component classes](/guide/reusing-styles#component-classes) in the project CSS entry.
 ```css name=index.css
-@layer components {
-    .btn {
+@components {
+    btn {
         @compose "inline-flex px:md"; /* [!code highlight] */
     }
 }

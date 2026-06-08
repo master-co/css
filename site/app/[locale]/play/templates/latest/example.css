@@ -6,59 +6,59 @@
     --color-card: $color-gray-80;
 }
 
-@layer utilities {
-    .viewport-center {
+@utilities {
+    viewport-center {
         @compose "flex items-center justify-center min-vh p:lg";
     }
 }
 
-@layer components {
-    .play-stage {
+@components {
+    play-stage {
         @compose "viewport-center";
     }
 
-    .card {
+    card {
         @compose "fg:neutral m:auto max-w:md mt:lg_:where(p,ul) my:sm_:where(li) outline:1|lightest r:lg shadow:lg text:md_:where(p,li)";
         background-color: var(--color-card);
     }
 
-    .card-body {
+    card-body {
         @compose "p:xl p:2xl@sm";
     }
 
-    .card-footer {
+    card-footer {
         @compose "bt:1|dotted|light p:lg p:xl@sm pt:md@sm";
     }
 
-    .card-logotype {
+    card-logotype {
         @compose "mt:md mb:xl mx:auto";
     }
 
-    .feature-list {
+    feature-list {
         @compose "m:0 p:0";
     }
 
-    .feature-item {
+    feature-item {
         @compose "flex fg:strong font:medium";
     }
 
-    .hint {
+    hint {
         @compose "italic mt:0 text:xs";
     }
 
-    .btn {
+    btn {
         @compose "inline-flex items-center justify-center rel b:1|yellow-active bg:yellow fg:yellow-text font:sm font:medium h:48 mt:md px:lg r:sm text:center w:full";
+
+        &:hover .btn-arrow-line {
+            @compose "opacity:1 scale(1)";
+        }
     }
 
-    .btn-icon {
+    btn-icon {
         @compose "abs right:md";
     }
 
-    .btn-arrow-line {
+    btn-arrow-line {
         @compose "transition:opacity|fast|smooth opacity:0 scale(0) transform-origin:5x|center";
-    }
-
-    .btn:hover .btn-arrow-line {
-        @compose "opacity:1 scale(1)";
     }
 }

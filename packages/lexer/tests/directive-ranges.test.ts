@@ -32,6 +32,15 @@ test.concurrent('collects nested Master directive ranges without treating host a
     expect(source.slice(ranges[2].quotedStringRanges[0].contentRange.start, ranges[2].quotedStringRanges[0].contentRange.end)).toBe('hidden')
 })
 
+test.concurrent('collects managed definition directive ranges', () => {
+    const source = '@components { btn { @compose "block"; } }'
+    const ranges = collectCSSDirectiveRanges(source)
+
+    expect(ranges.map((range) => range.name)).toEqual(['components', 'compose'])
+    expect(source.slice(ranges[0].blockRange!.start, ranges[0].blockRange!.start + 1)).toBe('{')
+    expect(source.slice(ranges[1].quotedStringRanges[0].contentRange.start, ranges[1].quotedStringRanges[0].contentRange.end)).toBe('block')
+})
+
 test.concurrent('collects declaration ranges without splitting quoted semicolons', () => {
     const source = '@theme { --content: "a;b"; root-size: 16 }'
     const blockStart = source.indexOf('{') + 1

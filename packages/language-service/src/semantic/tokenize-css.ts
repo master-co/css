@@ -5,7 +5,9 @@ import {
     collectCSSDeclarationRanges,
     collectCSSDirectiveRanges,
     collectCSSQuotedStringRanges,
+    findCSSBlockEnd,
     findCSSClosingQuote,
+    findCSSStatementEnd,
     isCSSIdentStart,
     readCSSIdent,
     skipCSSWhitespace,
@@ -16,6 +18,7 @@ import {
 const CSS_LANGUAGE_IDS = new Set(['css', 'scss', 'less'])
 const SOURCE_MODIFIERS = new Set(['not', 'required'])
 const PRESERVE_PARAMETERS = new Set(['native'])
+const MANAGED_DEFINITION_DIRECTIVES = new Set(['defaults', 'components', 'utilities'])
 
 interface ScanOptions {
     positionOffset?: number
@@ -171,6 +174,50 @@ function tokenizeAtPrelude(source: string, start: number, end: number, tokens: H
     tokens.push(...tokenizeAtQuery(source.slice(cursor, end).replace(/\s*\{$/, ''), cursor))
 }
 
+function tokenizeManagedDefinitionBlock(source: string, start: number, end: number, tokens: HighlightTokenItem[]) {
+    for (let index = start; index < end; index++) {
+        const char = source[index]
+        const next = source[index + 1]
+        if (char === '/' && next === '*') {
+            const close = source.indexOf('*/', index + 2)
+            index = close === -1 ? end : close + 1
+            continue
+        }
+        if (char === '"' || char === '\'') {
+            index = findCSSClosingQuote(source, index, char, end)
+            continue
+        }
+        if (char === '@') {
+            const atName = readCSSIdent(source, index + 1)
+            const statementEnd = findCSSStatementEnd(source, atName.end)
+            if (statementEnd.reason === 'block') {
+                const blockStart = statementEnd.end
+                const blockEnd = findCSSBlockEnd(source, blockStart)
+                if (blockEnd === -1) {
+                    tokenizeManagedDefinitionBlock(source, blockStart + 1, end, tokens)
+                    break
+                }
+                tokenizeManagedDefinitionBlock(source, blockStart + 1, blockEnd, tokens)
+                index = blockEnd
+            } else {
+                index = statementEnd.end - 1
+            }
+            continue
+        }
+        if (isCSSIdentStart(char)) {
+            const ident = readCSSIdent(source, index)
+            const blockStart = skipCSSWhitespace(source, ident.end)
+            if (source[blockStart] === '{') {
+                pushHighlightToken(tokens, ident.start, ident.value.length, 'class', 'selector.class', ['selector'])
+                const blockEnd = findCSSBlockEnd(source, blockStart)
+                index = blockEnd === -1 ? end : blockEnd
+                continue
+            }
+            index = ident.end - 1
+        }
+    }
+}
+
 function tokenizeDirectiveRule(source: string, directive: CSSDirectiveRuleRange, tokens: HighlightTokenItem[], css: MasterCSS, options: ScanOptions) {
     if (!containsPosition(directive, options)) return
 
@@ -213,6 +260,8 @@ function tokenizeDirectiveRule(source: string, directive: CSSDirectiveRuleRange,
         pushHighlightToken(tokens, directive.blockRange.start, 1, 'operator', 'block.brace', ['directive'])
         if (directive.name === 'settings' || directive.name === 'theme') {
             tokenizeDeclarations(source, directive.blockContentRange.start, directive.blockContentRange.end, tokens)
+        } else if (MANAGED_DEFINITION_DIRECTIVES.has(directive.name)) {
+            tokenizeManagedDefinitionBlock(source, directive.blockContentRange.start, directive.blockContentRange.end, tokens)
         }
         if (directive.blockCloseRange) {
             pushHighlightToken(tokens, directive.blockCloseRange.start, 1, 'operator', 'block.brace', ['directive'])

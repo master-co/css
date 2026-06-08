@@ -261,8 +261,8 @@ Inside managed definitions and native style rules, use `@at` blocks instead of p
 ```css name=index.css
 @custom-at motion-safe @media (prefers-reduced-motion: no-preference);
 
-@layer components {
-    .card {
+@components {
+    card {
         @compose "p:md r:xl";
 
         @at motion-safe {
@@ -303,8 +303,8 @@ Inside CSS-defined style rules, prefer native nested selectors instead of puttin
 ```css name=index.css
 @custom-selector :interactive :is(:hover, :focus-visible);
 
-@layer components {
-    .btn {
+@components {
+    btn {
         @compose "inline-flex ai:center jc:center";
 
         &:interactive {
@@ -385,8 +385,8 @@ For the complete settings syntax, see [CSS directives](/reference/directives#set
 The theme should describe shared values and named conditions. Reusable UI patterns can live next to it, but they have a different job.
 
 ```css name=components.css
-@layer components {
-    .btn {
+@components {
+    btn {
         @compose "inline-flex ai:center jc:center gap:xs px:md py:xs r:md font:sm font:medium";
         background: var(--color-primary);
         color: white;

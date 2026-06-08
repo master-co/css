@@ -127,16 +127,16 @@ If your project already uses a preprocessor, keep it at the edge of the workflow
 Then define your application overrides in the `components` layer or use utilities in markup:
 
 ```css name=index.css
-@layer components {
-    .swiper {
+@components {
+    swiper {
         @compose "max-w:4xl";
     }
 
-    .swiper-wrapper {
+    swiper-wrapper {
         @compose "bg:red";
     }
 
-    .swiper-slide {
+    swiper-slide {
         @compose "bg:blue";
     }
 }

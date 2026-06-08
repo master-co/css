@@ -1,7 +1,7 @@
 ## Overview [sr-only]
 Reusable styling starts with a decision, not a file. Keep local choices in markup, move shared values into theme tokens, and define component classes only when a repeated pattern has product meaning.
 
-Writing `.btn` at the top level of a stylesheet creates a normal CSS rule. Writing `.btn` in top-level `@layer components` defines an on-demand component class. Writing `.flow` in top-level `@layer utilities` defines an on-demand utility class. All three can use `@compose` and `@at`, but they serve different ownership needs.
+Writing `.btn` at the top level of a stylesheet creates a normal CSS rule. Writing `btn` inside `@components` defines an on-demand component class. Writing `flow` inside `@utilities` defines an on-demand utility class. All three can use `@compose` and `@at`, but they serve different ownership needs.
 
 ---
 
@@ -39,20 +39,20 @@ When the repeated part is a value, make it a token instead of a class. Tokens ke
 Use [Customizing your theme](/guide/theme) when the reusable part is color, spacing, typography, radius, shadow, motion, breakpoints, container sizes, or mode-specific values.
 
 ### Create custom utilities
-Use top-level `@layer utilities` when your design system needs a reusable primitive that is still lower-level than a product component. Good utility names describe a styling capability, not a UI role.
+Use `@utilities` when your design system needs a reusable primitive that is still lower-level than a product component. Good utility names describe a styling capability, not a UI role.
 
 ```css name=index.css
-@layer utilities {
-    .flow {
+@utilities {
+    flow {
         @compose "grid gap:md";
     }
 
-    .content-auto {
+    content-auto {
         content-visibility: auto;
         contain-intrinsic-size: auto 32rem;
     }
 
-    .print-hidden {
+    print-hidden {
         @at print {
             display: none;
         }
@@ -71,11 +71,11 @@ Custom utility definitions are converted into config and generated only when the
 
 ## Component classes
 ### Define a component class
-Use a component class when a repeated class list becomes a reusable UI pattern. Define components in top-level `@layer components`, put Master CSS classes in `@compose`, and write native declarations directly in the rule.
+Use a component class when a repeated class list becomes a reusable UI pattern. Define components in `@components`, put Master CSS classes in `@compose`, and write native declarations directly in the named block.
 
 ```css name=index.css
-@layer components {
-    .btn {
+@components {
+    btn {
         @compose "inline-flex ai:center jc:center gap:xs px:md py:xs r:lg font:sm font:medium";
         background: var(--color-primary);
         color: white;
@@ -128,8 +128,8 @@ You can still apply component classes alongside conditional utility classes when
 Put selector states in nested selectors and conditional variants in `@at` blocks. This keeps the component definition readable and keeps the markup semantic.
 
 ```css name=index.css
-@layer components {
-    .btn {
+@components {
+    btn {
         @compose "inline-flex ai:center jc:center px:md py:xs r:lg";
         transition: background-color .15s ease, box-shadow .15s ease;
 
@@ -165,30 +165,30 @@ Equivalent markup stays short:
 Avoid hiding every option behind a new component. Give each component class one responsibility, then combine it with tokens, utilities, or smaller component classes.
 
 ```css name=styles/button.css
-@layer components {
-    .btn {
+@components {
+    btn {
         @compose "inline-flex ai:center jc:center";
         font-weight: 600;
         outline-offset: -0.0625rem;
     }
 
-    .btn-xs {
+    btn-xs {
         @compose "r:sm px:xs font:xs h:6x";
     }
 
-    .btn-sm {
+    btn-sm {
         @compose "r:md px:sm font:xs h:8x";
     }
 
-    .btn-md {
+    btn-md {
         @compose "r:md px:md font:sm h:10x";
     }
 
-    .btn-lg {
+    btn-lg {
         @compose "r:lg px:lg font:md h:12x";
     }
 
-    .btn-xl {
+    btn-xl {
         @compose "r:xl px:lg font:md h:14x";
     }
 }
@@ -234,20 +234,20 @@ If one class tries to own size, color, shape, layout, and interaction variants, 
 Create explicit classes for each meaningful part of a repeated structure. Avoid relying on descendant selectors when separate class names make the output easier to trace.
 
 ```css name=index.css
-@layer components {
-    .card {
+@components {
+    card {
         border-radius: 0.5rem;
     }
 
-    .card-header {
+    card-header {
         border-bottom: 0.0625rem solid oklch(0% 0 none);
     }
 
-    .card-content {
+    card-content {
         padding: 1.25rem;
     }
 
-    .card-footer {
+    card-footer {
         border-top: 0.0625rem solid oklch(0% 0 none);
     }
 }
@@ -264,8 +264,8 @@ Create explicit classes for each meaningful part of a repeated structure. Avoid 
 Use nested selectors when the selector is truly part of the component behavior:
 
 ```css name=index.css
-@layer components {
-    .empty-state {
+@components {
+    empty-state {
         @compose "grid ai:center jc:center min-h:64x p:lg text:center";
 
         &::before {
@@ -284,12 +284,12 @@ In this example, `size:12x` is generated for `.empty-state::before`, not for `.e
 ### Use native CSS when output should be native
 `@compose` is not limited to component definitions. It can also be used in native style rules. The difference is output ownership:
 
-- `@layer components`, `@layer defaults`, and `@layer utilities` create on-demand managed class definitions.
+- `@components`, `@defaults`, and `@utilities` create on-demand managed class definitions.
 - Native style rules lower to ordinary CSS in the stylesheet that contains them.
 
 ```css name=index.css
-@layer utilities {
-    .flow {
+@utilities {
+    flow {
         @compose "grid gap:md";
     }
 }
@@ -389,15 +389,17 @@ Split component definitions only when it helps ownership. Local CSS imports from
     --color-text-yellow-contrast: $color-yellow-95;
 }
 
-@layer components {
-    .yellow {
+@components {
+    yellow {
         outline: 0.0625rem var(--color-yellow-ring) solid;
         background-color: var(--color-yellow);
         color: var(--color-text-yellow-contrast);
     }
 
-    .touch-yellow:hover {
-        background-color: var(--color-touch-yellow);
+    touch-yellow {
+        &:hover {
+            background-color: var(--color-touch-yellow);
+        }
     }
 }
 ```
@@ -411,18 +413,19 @@ Split component definitions only when it helps ownership. Local CSS imports from
 <button class="btn btn-md yellow touch-yellow">Submit</button>
 ```
 
-`@theme` and `@settings` blocks, top-level custom directives, top-level managed layers, top-level `@keyframes`, and native style rules with `@compose` or `@at` are consumed by the Master CSS compiler. Ordinary CSS outside those managed targets remains native CSS in your app stylesheet pipeline.
+`@theme` and `@settings` blocks, top-level custom directives, managed definition directives, top-level `@keyframes`, and native style rules with `@compose` or `@at` are consumed by the Master CSS compiler. Ordinary CSS outside those managed targets remains native CSS in your app stylesheet pipeline.
 
 ---
 
 ## Rules and summary
 ### Component rules
-- Put component definitions in top-level `@layer components`; use `@layer defaults` only when a definition intentionally belongs to the earlier defaults layer.
-- Component selectors must start with a single class selector such as `.btn`, `.card`, or `.field::before`.
+- Put component definitions in `@components`; use `@defaults` only when a definition intentionally belongs to the earlier defaults layer.
+- The first level inside `@defaults`, `@components`, and `@utilities` must be a single bare name such as `btn`, `card`, or `field`.
+- Put states and descendants inside the named block, such as `btn { &:hover { ... } }` or `prose { p { ... } }`.
 - `@compose` is valid inside managed class definitions and native style rules.
 - Component definitions accept native declarations, `@compose`, nested selectors, native nested at-rules, and `@at` condition blocks.
 - CSS-defined managed classes can compose other CSS-defined managed classes. Circular `@compose` dependencies are invalid.
-- Standard HTML tag selectors such as `body` or `html` are not valid inside managed layer definitions.
+- Standard HTML tag selectors such as `body` or `html` belong in native CSS; first-level entries inside managed definition directives are always class names.
 - Utilities still win over components because `@master/css/base.css` declares `@layer theme, base, defaults, components, utilities;`.
 
 ### Summary

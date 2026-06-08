@@ -166,8 +166,8 @@ describe.concurrent('@master/css-compiler', () => {
                 --breakpoint-md: 768;
             }
 
-            @layer components {
-                .btn {
+            @components {
+                btn {
                     @compose "inline-flex bg:primary";
                     display: flex;
 
@@ -181,8 +181,10 @@ describe.concurrent('@master/css-compiler', () => {
                 }
 
                 @at md {
-                    .btn:hover {
-                        @compose "underline";
+                    btn {
+                        &:hover {
+                            @compose "underline";
+                        }
                     }
                 }
             }
@@ -251,7 +253,7 @@ describe.concurrent('@master/css-compiler', () => {
     })
 
     it('records @compose directive, class token, and selector source ranges', () => {
-        const source = '@layer components { .btn { @compose "inline-flex bg:primary"; } }'
+        const source = '@components { btn { @compose "inline-flex bg:primary"; } }'
         const result = compileCSS(source)
         const definitions = result.styleDefinitions?.filter((definition) => definition.type === 'compose')
 
@@ -260,18 +262,17 @@ describe.concurrent('@master/css-compiler', () => {
             'bg:primary'
         ])
         expect(source.slice(definitions?.[0].directiveSource?.range.start, definitions?.[0].directiveSource?.range.end)).toBe('@compose "inline-flex bg:primary";')
-        expect(source.slice(definitions?.[0].selectorSource?.range.start, definitions?.[0].selectorSource?.range.end)).toBe('.btn')
+        expect(source.slice(definitions?.[0].selectorSource?.range.start, definitions?.[0].selectorSource?.range.end)).toBe('btn')
     })
 
     it('requires @compose class lists to be quoted', () => {
-        expect(() => compileCSS('@layer components { .btn { @compose block; } }')).toThrow()
+        expect(() => compileCSS('@components { btn { @compose block; } }')).toThrow()
     })
 
     it('combines nested component selector lists from parsed selectors', () => {
         const result = compileCSS(`
-            @layer components {
-                .btn,
-                .btn.primary {
+            @components {
+                btn {
                     &:is(:hover, :focus-visible),
                     &.active {
                         color: red;
@@ -284,7 +285,7 @@ describe.concurrent('@master/css-compiler', () => {
             {
                 type: 'native',
                 order: 1,
-                selector: '&:is(:hover,:focus-visible),&.primary:is(:hover,:focus-visible),&.active,&.primary.active',
+                selector: '&:is(:hover,:focus-visible),&.active',
                 name: 'btn',
                 layer: 'components',
                 declarations: {
@@ -294,11 +295,11 @@ describe.concurrent('@master/css-compiler', () => {
         ])
     })
 
-    it('records static default definitions under @layer defaults', () => {
+    it('records static default definitions under @defaults', () => {
         const result = compileCSS(`
-            @layer defaults {
-                .prose {
-                    & p {
+            @defaults {
+                prose {
+                    p {
                         font-size: 1rem;
                     }
                 }
@@ -321,10 +322,10 @@ describe.concurrent('@master/css-compiler', () => {
         expect(result.css).toBe('')
     })
 
-    it('records static utility definitions under @layer utilities', () => {
+    it('records static utility definitions under @utilities', () => {
         const result = compileCSS(`
-            @layer utilities {
-                .content-auto {
+            @utilities {
+                content-auto {
                     content-visibility: auto;
 
                     @at print {
@@ -361,18 +362,74 @@ describe.concurrent('@master/css-compiler', () => {
         expect(result.css).toBe('')
     })
 
+    it('preserves native nested at-rules inside managed directives', () => {
+        const result = compileCSS(`
+            @components {
+                btn {
+                    @supports (display: grid) {
+                        display: grid;
+                    }
+
+                    @container sidebar (width >= 20rem) {
+                        gap: 1rem;
+                    }
+
+                    @starting-style {
+                        opacity: 0;
+                    }
+                }
+            }
+        `)
+
+        expect(stripStyleDefinitionSources(result.styleDefinitions)).toEqual([
+            {
+                type: 'native',
+                order: 1,
+                selector: '&',
+                name: 'btn',
+                declarations: {
+                    display: 'grid'
+                },
+                atRules: ['@supports (display:grid)'],
+                layer: 'components'
+            },
+            {
+                type: 'native',
+                order: 2,
+                selector: '&',
+                name: 'btn',
+                declarations: {
+                    gap: '1rem'
+                },
+                atRules: ['@container sidebar (width>=20rem)'],
+                layer: 'components'
+            },
+            {
+                type: 'native',
+                order: 3,
+                selector: '&',
+                name: 'btn',
+                declarations: {
+                    opacity: '0'
+                },
+                atRules: ['@starting-style'],
+                layer: 'components'
+            }
+        ])
+    })
+
     it('records static utility definitions without normalizing core default values', () => {
         const result = compileCSS(`
-            @layer utilities {
-                .square {
+            @utilities {
+                square {
                     aspect-ratio: 1/1;
                 }
 
-                .video {
+                video {
                     aspect-ratio: 16/9;
                 }
 
-                .rounded {
+                rounded {
                     border-radius: 1e9em;
                 }
             }
@@ -419,13 +476,13 @@ describe.concurrent('@master/css-compiler', () => {
                 --color-primary: #123;
             }
 
-            @layer utilities {
-                .btn-base {
+            @utilities {
+                btn-base {
                     @compose "inline-flex";
                     align-items: center;
                 }
 
-                .btn {
+                btn {
                     @compose "btn-base bg:primary";
                 }
             }
@@ -452,9 +509,9 @@ describe.concurrent('@master/css-compiler', () => {
         ])
 
         const cycleSource = `
-            @layer utilities {
-                .a { @compose "b"; }
-                .b { @compose "a"; }
+            @utilities {
+                a { @compose "b"; }
+                b { @compose "a"; }
             }
         `
 
@@ -519,8 +576,8 @@ describe.concurrent('@master/css-compiler', () => {
                 }
             }
 
-            @layer components {
-                .btn {
+            @components {
+                btn {
                     @compose "block";
                 }
             }
@@ -541,7 +598,7 @@ describe.concurrent('@master/css-compiler', () => {
         expect(result.css).not.toContain('.btn{display:block}')
     })
 
-    it('only consumes managed layers and keyframes at the stylesheet top level', () => {
+    it('only consumes managed directives and keyframes at the stylesheet top level', () => {
         const result = compileCSS(`
             @media print {
                 @layer components {
@@ -557,9 +614,15 @@ describe.concurrent('@master/css-compiler', () => {
                 }
             }
 
-            @layer components {
-                .btn {
+            @components {
+                btn {
                     @compose "block";
+                }
+            }
+
+            @layer components {
+                .native-card {
+                    color: blue;
                 }
             }
 
@@ -568,7 +631,7 @@ describe.concurrent('@master/css-compiler', () => {
                     opacity: 1;
                 }
             }
-        `, { classes: ['native'] })
+        `, { classes: ['native', 'native-card'] })
 
         expect(stripStyleDefinitionSources(result.styleDefinitions)).toEqual([
             {
@@ -590,9 +653,24 @@ describe.concurrent('@master/css-compiler', () => {
         expect(result.css).toContain('@media print')
         expect(result.css).toContain('@layer components')
         expect(result.css).toContain('.native')
+        expect(result.css).toContain('.native-card')
         expect(result.css).toContain('@keyframes nested-fade')
         expect(result.css).not.toContain('@keyframes fade{')
         expect(result.css).not.toContain('.btn')
+    })
+
+    it('keeps top-level @layer definitions as native CSS', () => {
+        const result = compileCSS(`
+            @layer components {
+                .btn {
+                    display: flex;
+                }
+            }
+        `)
+
+        expect(result.styleDefinitions).toBeUndefined()
+        expect(result.css).toContain('@layer components')
+        expect(result.css).toContain('.btn')
     })
 
     it('can remove native CSS for CSS config loading', () => {
@@ -706,8 +784,8 @@ describe.concurrent('@master/css-compiler', () => {
                 --color-primary: #123;
             }
 
-            @layer components {
-                .btn {
+            @components {
+                btn {
                     color: var(--color-primary);
                 }
             }
@@ -738,8 +816,8 @@ describe.concurrent('@master/css-compiler', () => {
                     box-sizing: border-box;
                 }
 
-                @layer components {
-                    .btn {
+                @components {
+                    btn {
                         font-size: 1rem;
                     }
                 }
@@ -748,8 +826,8 @@ describe.concurrent('@master/css-compiler', () => {
                 @import "@master/css/base.css";
                 @import url("./styles/button.css");
 
-                @layer components {
-                    .btn {
+                @components {
+                    btn {
                         display: block;
                     }
                 }
@@ -831,8 +909,8 @@ describe.concurrent('@master/css-compiler', () => {
                     --color-primary: #123;
                 }
 
-                @layer components {
-                    .btn {
+                @components {
+                    btn {
                         color: var(--color-primary);
                     }
                 }
@@ -909,6 +987,25 @@ describe.concurrent('@master/css-compiler', () => {
         expect(result.css).toContain('.card')
         expect(result.css).toContain('color: red')
         expect(result.css).toContain('@master')
+    })
+
+    it('rejects selector syntax as managed definition names', () => {
+        for (const selector of [
+            'btn:hover',
+            'btn::before',
+            'btn[disabled]',
+            'btn p',
+            '.btn',
+            'btn, card'
+        ]) {
+            expect(() => process(`
+                @components {
+                    ${selector} {
+                        color: red;
+                    }
+                }
+            `)).toThrow('Managed definition names must be bare identifiers')
+        }
     })
 
     it('rejects invalid directive placement and names', () => {
@@ -992,12 +1089,40 @@ describe.concurrent('@master/css-compiler', () => {
         `)).toThrow('@settings does not accept @keyframes')
 
         expect(() => process(`
-            @layer utilities {
+            @utilities {
                 @keyframes fade {
                     from { opacity: 0; }
                 }
             }
-        `)).toThrow('@keyframes is not allowed inside managed @layer blocks')
+        `)).toThrow('@keyframes is not allowed inside managed definition directives')
+
+        expect(() => process(`
+            @components {
+                btn {
+                    @layer utilities {
+                        display: block;
+                    }
+                }
+            }
+        `)).toThrow('Nested @layer blocks are not allowed inside managed style definitions')
+
+        expect(() => process(`
+            @utilities {
+                @custom-at print @media print;
+            }
+        `)).toThrow('@custom-at must be top-level')
+
+        expect(() => process(`
+            @utilities {
+                @custom-selector :interactive :is(:hover, :focus-visible);
+            }
+        `)).toThrow('@custom-selector must be top-level')
+
+        expect(() => process(`
+            @utilities {
+                color: red;
+            }
+        `)).toThrow('@utilities only accepts bare managed names and nested at-rules')
     })
 
     it('does not treat @mode as a Master CSS directive', () => {

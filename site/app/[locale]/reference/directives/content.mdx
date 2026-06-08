@@ -115,8 +115,8 @@ Use `@compose` inside a style rule to lower a quoted Master CSS class list into 
     background: var(--color-surface);
 }
 
-@layer components {
-    .btn {
+@components {
+    btn {
         @compose "inline-flex ai:center jc:center px:md py:xs r:lg";
 
         &:hover {
@@ -138,7 +138,7 @@ Top-level `@compose` is invalid because there is no selector context to receive 
 
 Use `@compose` in these contexts:
 
-- Managed class definitions inside top-level `@layer defaults`, `@layer components`, or `@layer utilities`.
+- Managed class definitions inside `@defaults`, `@components`, or `@utilities`.
 - Native style rules such as `.card { ... }`.
 - Nested selectors and nested native at-rules inside those style rules.
 - CSS Modules and SFC `<style>` blocks handled by build integrations.

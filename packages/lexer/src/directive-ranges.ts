@@ -18,6 +18,9 @@ export type CSSDirectiveRangeName =
     | 'blocklist'
     | 'preserve'
     | 'theme'
+    | 'defaults'
+    | 'components'
+    | 'utilities'
     | 'custom-at'
     | 'custom-selector'
     | 'compose'
@@ -56,6 +59,9 @@ export const CSS_DIRECTIVE_RANGE_NAMES = [
     'blocklist',
     'preserve',
     'theme',
+    'defaults',
+    'components',
+    'utilities',
     'custom-at',
     'custom-selector',
     'compose',

@@ -257,14 +257,14 @@ The CSS entry point is explicit: import `@master/css` from the stylesheet that s
         Each candidate is passed through the Master CSS engine. Valid classes insert rules into the same layers used by runtime and server rendering; invalid candidates are cached and skipped on later scans.
 
         ```css name=index.css
-        @layer components {
-            .btn {
+        @components {
+            btn {
                 @compose "inline-flex px:md";
             }
         }
         ```
 
-        With this config, `btn` is valid because the project defines it, and `text:center` is valid because it is a built-in utility. Configured classes are still on-demand: defining `.btn` does not emit anything until `btn` appears in scanned source or in the scanner's fixed class list.
+        With this config, `btn` is valid because the project defines it, and `text:center` is valid because it is a built-in utility. Configured classes are still on-demand: defining `btn` does not emit anything until `btn` appears in scanned source or in the scanner's fixed class list.
     </Step>
     <Step>
         #### <StepNum />Compose final CSS

@@ -33,14 +33,14 @@ Theme rules are intentionally early: they provide values that later layers consu
 ### Defaults
 Use `defaults` for broad element defaults such as typography inside an article, code styling, or vendor defaults you want to keep below app-level styles.
 
-Rules enter the defaults layer through `@default` syntax or explicit `@layer defaults` definitions. Because defaults sit before `components` and `utilities`, components and utilities can still override it without `!important`.
+Rules enter the defaults layer through `@default` syntax or `@defaults` managed definitions. Because defaults sit before `components` and `utilities`, components and utilities can still override it without `!important`.
 
 ### Components
-Use `components` for project styles that carry product meaning: `.btn`, `.card`, `.field`, `.toolbar`, `.app-shell`. In CSS config, write these managed class definitions in top-level `@layer components`.
+Use `components` for project styles that carry product meaning: `.btn`, `.card`, `.field`, `.toolbar`, `.app-shell`. In CSS config, write these managed class definitions in `@components`.
 
 ```css name=index.css
-@layer components {
-    .btn {
+@components {
+    btn {
         @compose "inline-flex";
         background-color: var(--color-primary);
     }
@@ -50,15 +50,15 @@ Use `components` for project styles that carry product meaning: `.btn`, `.card`,
 The compiler converts these definitions into static `config.utilities` entries with `layer: 'components'`. They remain on-demand: defining `.btn` does not emit CSS until `btn` is used or scanned from source.
 
 ### Utilities
-Use `utilities` for built-in utilities, animation utilities, and custom static utilities written in top-level `@layer utilities`. Custom utilities can use native declarations, `@compose`, nested selectors, and `@at` blocks.
+Use `utilities` for built-in utilities, animation utilities, and custom static utilities written in `@utilities`. Custom utilities can use native declarations, `@compose`, nested selectors, and `@at` blocks.
 
 ```css name=index.css
-@layer utilities {
-    .flow {
+@utilities {
+    flow {
         @compose "grid gap:md";
     }
 
-    .content-auto {
+    content-auto {
         content-visibility: auto;
         contain-intrinsic-size: auto 32rem;
     }
@@ -81,8 +81,8 @@ This example touches every generated layer. The CSS config defines theme variabl
     --color-primary: #ffffff;
 }
 
-@layer components {
-    .btn {
+@components {
+    btn {
         @compose "inline-flex";
         background-color: var(--color-primary);
     }
@@ -218,17 +218,17 @@ Regular CSS outside `@layer` follows the native cascade outside Master CSS's lay
 }
 ```
 
-For managed definitions, prefer the configured forms:
+Native `@layer` is never compiler-managed. For on-demand managed definitions, use the explicit directive forms:
 
 ```css name=index.css
-@layer utilities {
-    .content-auto {
+@utilities {
+    content-auto {
         content-visibility: auto;
     }
 }
 
-@layer components {
-    .card {
+@components {
+    card {
         @compose "block";
         border-radius: .75rem;
     }
