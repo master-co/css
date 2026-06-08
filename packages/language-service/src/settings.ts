@@ -60,7 +60,7 @@ const settings: Settings = {
     inspectSyntax: true,
     renderSyntaxColors: true,
     editSyntaxColors: true,
-    syntaxHighlighting: 'active'
+    embeddedSyntaxHighlighting: 'active'
 }
 
 export default settings
@@ -78,5 +78,5 @@ export declare interface Settings {
     inspectSyntax?: boolean
     renderSyntaxColors?: boolean
     editSyntaxColors?: boolean
-    syntaxHighlighting?: 'active' | 'always' | 'off'
+    embeddedSyntaxHighlighting?: 'active' | 'always' | 'off'
 }

@@ -1,7 +1,7 @@
 import path from 'path'
 import { LanguageClient, LanguageClientOptions, ServerOptions, TransportKind } from 'vscode-languageclient/node'
 import { commands, Disposable, EventEmitter, ExtensionContext, languages, Position, ProgressLocation, SemanticTokens, SemanticTokensLegend, TextDocument, window, workspace } from 'vscode'
-import { ACTIVE_SEMANTIC_TOKENS_REQUEST, settings, type Settings } from '@master/css-language-server'
+import { ACTIVE_SEMANTIC_TOKENS_REQUEST, DOCUMENT_SEMANTIC_TOKENS_REQUEST, settings, type Settings } from '@master/css-language-server'
 import { SEMANTIC_TOKENS_LEGEND } from '@master/css-language-service'
 import type { SemanticTokens as LSPSemanticTokens } from 'vscode-languageserver-protocol'
 
@@ -10,6 +10,8 @@ let client: LanguageClient
 const disposables: Disposable[] = []
 
 type DocumentSelector = { scheme: string, language: string }[]
+
+const CSS_SEMANTIC_TOKEN_LANGUAGE_IDS = new Set(['css', 'scss', 'less'])
 
 function getMasterCSSSettings(): Partial<Settings> {
     const configuration = workspace.getConfiguration('masterCSS')
@@ -28,8 +30,8 @@ function getIncludedLanguages() {
     return getMasterCSSSettings().includedLanguages ?? settings.includedLanguages ?? []
 }
 
-function getSyntaxHighlighting(): NonNullable<Settings['syntaxHighlighting']> {
-    const mode = getMasterCSSSettings().syntaxHighlighting
+function getEmbeddedSyntaxHighlighting(): NonNullable<Settings['embeddedSyntaxHighlighting']> {
+    const mode = getMasterCSSSettings().embeddedSyntaxHighlighting
     return mode === 'always' || mode === 'off' ? mode : 'active'
 }
 
@@ -44,7 +46,11 @@ function isSelectedDocument(document: TextDocument, documentSelector: DocumentSe
     return documentSelector.some(({ scheme, language }) => document.uri.scheme === scheme && document.languageId === language)
 }
 
-function createActiveSemanticTokensFeature(client: LanguageClient, clientStarted: Thenable<void>, documentSelector: DocumentSelector) {
+function isCSSSemanticTokenDocument(document: TextDocument) {
+    return CSS_SEMANTIC_TOKEN_LANGUAGE_IDS.has(document.languageId)
+}
+
+function createSemanticTokensFeature(client: LanguageClient, clientStarted: Thenable<void>, documentSelector: DocumentSelector) {
     const changed = new EventEmitter<void>()
     const legend = new SemanticTokensLegend(
         SEMANTIC_TOKENS_LEGEND.tokenTypes,
@@ -64,13 +70,13 @@ function createActiveSemanticTokensFeature(client: LanguageClient, clientStarted
     }
 
     const updateActivePosition = () => {
-        if (getSyntaxHighlighting() !== 'active') {
+        if (getEmbeddedSyntaxHighlighting() !== 'active') {
             resetActivePosition()
             changed.fire()
             return
         }
         const editor = window.activeTextEditor
-        if (!editor || !isSelectedDocument(editor.document, documentSelector)) {
+        if (!editor || !isSelectedDocument(editor.document, documentSelector) || isCSSSemanticTokenDocument(editor.document)) {
             resetActivePosition()
             changed.fire()
             return
@@ -85,34 +91,43 @@ function createActiveSemanticTokensFeature(client: LanguageClient, clientStarted
         providerDisposable?.dispose()
         providerDisposable = undefined
         resetActivePosition()
-        if (getSyntaxHighlighting() !== 'active') {
+        if (getEmbeddedSyntaxHighlighting() === 'always') {
             changed.fire()
             return
         }
         providerDisposable = languages.registerDocumentSemanticTokensProvider(documentSelector, {
             onDidChangeSemanticTokens: changed.event,
             async provideDocumentSemanticTokens(document, token) {
+                const mode = getEmbeddedSyntaxHighlighting()
+                const cssDocument = isCSSSemanticTokenDocument(document)
                 const position = activePosition
                 if (
                     token.isCancellationRequested
-                    || getSyntaxHighlighting() !== 'active'
-                    || document.uri.toString() !== activeDocumentUri
-                    || document.version !== activeDocumentVersion
-                    || !position
+                    || mode === 'always'
+                    || (!cssDocument && (
+                        mode !== 'active'
+                        || document.uri.toString() !== activeDocumentUri
+                        || document.version !== activeDocumentVersion
+                        || !position
+                    ))
                 ) {
                     return empty
                 }
                 await clientStarted
                 if (token.isCancellationRequested) return empty
                 try {
-                    const semanticTokens = await client.sendRequest<LSPSemanticTokens>(ACTIVE_SEMANTIC_TOKENS_REQUEST, {
+                    const semanticTokens = await client.sendRequest<LSPSemanticTokens>(cssDocument ? DOCUMENT_SEMANTIC_TOKENS_REQUEST : ACTIVE_SEMANTIC_TOKENS_REQUEST, {
                         textDocument: {
                             uri: document.uri.toString()
                         },
-                        position: {
-                            line: position.line,
-                            character: position.character
-                        }
+                        ...(!cssDocument && position
+                            ? {
+                                position: {
+                                    line: position.line,
+                                    character: position.character
+                                }
+                            }
+                            : undefined)
                     })
                     return new SemanticTokens(Uint32Array.from(semanticTokens.data))
                 } catch {
@@ -128,6 +143,7 @@ function createActiveSemanticTokensFeature(client: LanguageClient, clientStarted
         window.onDidChangeTextEditorSelection(updateActivePosition),
         workspace.onDidChangeTextDocument((event) => {
             if (event.document.uri.toString() === activeDocumentUri) updateActivePosition()
+            else if (isCSSSemanticTokenDocument(event.document)) changed.fire()
         }),
         {
             dispose: () => providerDisposable?.dispose()
@@ -191,7 +207,7 @@ export function activate(context: ExtensionContext) {
 
     // Start the client. This will also launch the server
     const clientStarted = client.start()
-    const activeSemanticTokensFeature = createActiveSemanticTokensFeature(client, clientStarted, documentSelector)
+    const semanticTokensFeature = createSemanticTokensFeature(client, clientStarted, documentSelector)
 
     const restart = async (options = {
         title: 'Restarting Master CSS'
@@ -211,7 +227,7 @@ export function activate(context: ExtensionContext) {
     }
 
     context.subscriptions.push(
-        activeSemanticTokensFeature,
+        semanticTokensFeature,
         commands.registerCommand('masterCSS.restart', restart),
         client.onRequest('masterCSS/restart', restart),
         workspace.onDidChangeConfiguration(async (event) => {
@@ -225,7 +241,7 @@ export function activate(context: ExtensionContext) {
                 }
             }
             if (shouldRestart) {
-                activeSemanticTokensFeature.configure()
+                semanticTokensFeature.configure()
                 window.withProgress({
                     location: ProgressLocation.Notification,
                     title: `Setting "${affectedProperties}"`,

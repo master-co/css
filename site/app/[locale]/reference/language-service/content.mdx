@@ -154,11 +154,11 @@ Enable syntax inspection.
 Enable syntax color rendering.
 <DocProp defaultValue={JSON.stringify(settings.renderSyntaxColors)} types={['boolean']} />
 
-### `settings.syntaxHighlighting`
-Control semantic token highlighting mode.
-<DocProp defaultValue={JSON.stringify(settings.syntaxHighlighting)} types={['"active" | "always" | "off"']} />
+### `settings.embeddedSyntaxHighlighting`
+Control embedded semantic token highlighting mode.
+<DocProp defaultValue={JSON.stringify(settings.embeddedSyntaxHighlighting)} types={['"active" | "always" | "off"']} />
 
-`active` highlights only the Master CSS span at the active editor position, `always` highlights all discovered utility classes and CSS directives, and `off` disables syntax highlighting. Semantic tokens classify Master CSS spans as `class`, `enumMember`, `property`, `variable`, `function`, `number`, `string`, `keyword`, `modifier`, `operator`, or `type`. Components defined in config are emitted as `class` tokens with the `declaration` and `component` modifiers; CSS directives, queries, selectors, pseudo states, units, quoted strings, and important markers use dedicated semantic token modifiers.
+`active` highlights only the embedded Master CSS span at the active editor position, `always` highlights all discovered embedded utility classes, and `off` disables embedded utility highlighting. Master CSS syntax inside CSS documents is always highlighted. Semantic tokens classify Master CSS spans as `class`, `enumMember`, `property`, `variable`, `function`, `number`, `string`, `keyword`, `modifier`, `operator`, or `type`. Components defined in config are emitted as `class` tokens with the `declaration` and `component` modifiers; CSS directives, queries, selectors, pseudo states, units, quoted strings, and important markers use dedicated semantic token modifiers.
 
 ### `settings.editSyntaxColors`
 Enable syntax color editing.

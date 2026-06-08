@@ -24,6 +24,7 @@ export declare interface Workspace {
 }
 
 export const ACTIVE_SEMANTIC_TOKENS_REQUEST = 'masterCSS/renderActiveSemanticTokens'
+export const DOCUMENT_SEMANTIC_TOKENS_REQUEST = 'masterCSS/renderDocumentSemanticTokens'
 
 function getInitializationSettings(initializationOptions: unknown): Settings | undefined {
     if (!initializationOptions || typeof initializationOptions !== 'object') return
@@ -75,6 +76,7 @@ export default class CSSLanguageServer {
             this.connection.onDocumentColor(this.onDocumentColor.bind(this)),
             this.connection.onColorPresentation(this.onColorPresentation.bind(this)),
             this.connection.languages.semanticTokens.on(this.onSemanticTokens.bind(this)),
+            this.connection.onRequest(DOCUMENT_SEMANTIC_TOKENS_REQUEST, this.onDocumentSemanticTokens.bind(this)),
             this.connection.onRequest(ACTIVE_SEMANTIC_TOKENS_REQUEST, this.onActiveSemanticTokens.bind(this)),
             this.connection.onInitialize(this.onInitialize.bind(this)),
             this.connection.onInitialized(() => this.init())
@@ -104,7 +106,7 @@ export default class CSSLanguageServer {
         const capabilities = {
             ...SERVER_CAPABILITIES
         }
-        if (this.settings?.syntaxHighlighting !== 'always') {
+        if (this.settings?.embeddedSyntaxHighlighting !== 'always') {
             delete capabilities.semanticTokensProvider
         }
         return {
@@ -157,6 +159,10 @@ export default class CSSLanguageServer {
             if (document) return workspace.languageService.renderSemanticTokens(document) ?? { data: [] }
         }
         return { data: [] }
+    }
+
+    async onDocumentSemanticTokens(params: SemanticTokensParams) {
+        return this.onSemanticTokens(params)
     }
 
     async onActiveSemanticTokens(params: TextDocumentPositionParams) {
@@ -303,7 +309,7 @@ export default class CSSLanguageServer {
     }
 
     private refreshSemanticTokens() {
-        if (this.settings?.syntaxHighlighting !== 'always') return
+        if (this.settings?.embeddedSyntaxHighlighting !== 'always') return
         if (!this.clientCapabilities.workspace?.semanticTokens?.refreshSupport) return
         this.connection.languages.semanticTokens.refresh()
     }

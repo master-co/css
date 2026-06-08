@@ -29,7 +29,7 @@ function decodeSemanticTokens(doc: ReturnType<typeof createDoc>, data: number[])
 
 function renderTokens(content: string, ext: Parameters<typeof createDoc>[0] = 'tsx', settings?: ConstructorParameters<typeof CSSLanguageService>[0]) {
     const doc = createDoc(ext, content)
-    const languageService = new CSSLanguageService(settings)
+    const languageService = new CSSLanguageService({ embeddedSyntaxHighlighting: 'always', ...settings })
     const semanticTokens = languageService.renderSemanticTokens(doc)
     return {
         doc,
@@ -267,6 +267,14 @@ test.concurrent('renders active semantic tokens for the class at a position', ()
     expect(tokens.some(({ text }) => text === 'fg' || text === 'red')).toBe(false)
 })
 
+test.concurrent('skips full embedded semantic tokens in active mode', () => {
+    const content = '<div className="fg:red block:hover"></div>'
+    const doc = createDoc('tsx', content)
+    const languageService = new CSSLanguageService({ embeddedSyntaxHighlighting: 'active' })
+
+    expect(languageService.renderSemanticTokens(doc)).toBeUndefined()
+})
+
 test.concurrent('renders active semantic tokens for the CSS directive at a position', () => {
     const content = '@theme dark { --color-primary: $color-blue-60/.8; }\n.btn { color: red; }'
     const doc = createDoc('css', content)
@@ -281,11 +289,25 @@ test.concurrent('renders active semantic tokens for the CSS directive at a posit
     expect(tokens.some(({ text }) => text === 'btn')).toBe(false)
 })
 
-test.concurrent('skips semantic tokens when syntax highlighting is off', () => {
+test.concurrent('skips embedded semantic tokens when syntax highlighting is off', () => {
     const content = '<div className="fg:red block:hover"></div>'
     const doc = createDoc('tsx', content)
-    const languageService = new CSSLanguageService({ syntaxHighlighting: 'off' })
+    const languageService = new CSSLanguageService({ embeddedSyntaxHighlighting: 'off' })
 
     expect(languageService.renderSemanticTokens(doc)).toBeUndefined()
     expect(languageService.renderSemanticTokensAtPosition(doc, doc.positionAt(content.indexOf('block') + 1))).toBeUndefined()
+})
+
+test.concurrent('renders CSS document semantic tokens when syntax highlighting is off', () => {
+    const content = '@theme dark { --color-primary: $color-blue-60/.8; }\n.btn { color: red; }'
+    const doc = createDoc('css', content)
+    const languageService = new CSSLanguageService({ embeddedSyntaxHighlighting: 'off' })
+    const semanticTokens = languageService.renderSemanticTokens(doc)
+    const tokens = decodeSemanticTokens(doc, semanticTokens?.data ?? [])
+
+    expectToken(tokens, '@theme', 'keyword', ['directive'])
+    expectToken(tokens, 'dark', 'enumMember', ['directive'])
+    expectToken(tokens, '--color-primary', 'variable')
+    expectToken(tokens, '$color-blue-60', 'variable')
+    expectToken(tokens, 'btn', 'class', ['selector'])
 })

@@ -43,12 +43,12 @@ export default class CSSLanguageService extends EventEmitter {
     }
 
     renderSemanticTokens(...params: Parameters<typeof renderSemanticTokens>) {
-        if (this.settings.syntaxHighlighting !== 'off' && this.isDocumentAccepted(params[0]))
+        if (this.isDocumentAccepted(params[0]))
             return renderSemanticTokens?.call(this, ...params)
     }
 
     renderSemanticTokensAtPosition(...params: Parameters<typeof renderSemanticTokensAtPosition>) {
-        if (this.settings.syntaxHighlighting !== 'off' && this.isDocumentAccepted(params[0]))
+        if (this.isDocumentAccepted(params[0]))
             return renderSemanticTokensAtPosition?.call(this, ...params)
     }
 

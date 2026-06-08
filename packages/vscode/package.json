@@ -182,7 +182,7 @@
                     "type": "boolean",
                     "default": true
                 },
-                "masterCSS.syntaxHighlighting": {
+                "masterCSS.embeddedSyntaxHighlighting": {
                     "type": "string",
                     "enum": [
                         "active",
@@ -190,7 +190,7 @@
                         "off"
                     ],
                     "default": "active",
-                    "description": "Controls Master CSS syntax highlighting. Active highlights only the utility class at the active editor selection, always highlights all discovered utilities, and off disables syntax highlighting."
+                    "description": "Controls embedded Master CSS utility highlighting in markup and scripts. Active highlights only the utility class at the active editor selection, always highlights all discovered embedded utilities, and off disables embedded utility highlighting. Master CSS syntax inside CSS documents is always highlighted."
                 },
                 "masterCSS.workspaces": {
                     "type": [

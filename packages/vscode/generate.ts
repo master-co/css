@@ -117,11 +117,11 @@ pkg.set('contributes.configuration', {
             'type': 'boolean',
             'default': settings.renderSyntaxColors
         },
-        'masterCSS.syntaxHighlighting': {
+        'masterCSS.embeddedSyntaxHighlighting': {
             'type': 'string',
             'enum': ['active', 'always', 'off'],
-            'default': settings.syntaxHighlighting,
-            'description': 'Controls Master CSS syntax highlighting. Active highlights only the utility class at the active editor selection, always highlights all discovered utilities, and off disables syntax highlighting.'
+            'default': settings.embeddedSyntaxHighlighting,
+            'description': 'Controls embedded Master CSS utility highlighting in markup and scripts. Active highlights only the utility class at the active editor selection, always highlights all discovered embedded utilities, and off disables embedded utility highlighting. Master CSS syntax inside CSS documents is always highlighted.'
         },
         'masterCSS.workspaces': {
             'type': [
