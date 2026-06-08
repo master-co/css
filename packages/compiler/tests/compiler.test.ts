@@ -3,7 +3,7 @@ import { mkdtempSync, mkdirSync, readFileSync, rmSync, symlinkSync, writeFileSyn
 import { tmpdir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { createCSSDirectiveAtRuleReference } from 'shared/css-directives'
+import { createCSSDirectiveAtRuleReference, CSSDirectiveError } from 'shared/css-directives'
 import {
     compileCSS,
     compileCSSConfig,
@@ -21,6 +21,10 @@ const here = dirname(fileURLToPath(import.meta.url))
 
 function process(css: string, classes?: string[]) {
     return compileCSS(css, { classes }).css
+}
+
+function stripStyleDefinitionSources(definitions: any[] | undefined) {
+    return definitions?.map(({ source: _source, directiveSource: _directiveSource, selectorSource: _selectorSource, ...definition }) => definition)
 }
 
 describe.concurrent('@master/css-compiler', () => {
@@ -185,7 +189,7 @@ describe.concurrent('@master/css-compiler', () => {
         `)
 
         expect(result.classNames).toEqual(['btn'])
-        expect(result.styleDefinitions).toEqual([
+        expect(stripStyleDefinitionSources(result.styleDefinitions)).toEqual([
             {
                 type: 'compose',
                 order: 1,
@@ -246,6 +250,23 @@ describe.concurrent('@master/css-compiler', () => {
         ])
     })
 
+    it('records @compose directive, class token, and selector source ranges', () => {
+        const source = '@layer components { .btn { @compose "inline-flex bg:primary"; } }'
+        const result = compileCSS(source)
+        const definitions = result.styleDefinitions?.filter((definition) => definition.type === 'compose')
+
+        expect(definitions?.map((definition) => source.slice(definition.source?.range.start, definition.source?.range.end))).toEqual([
+            'inline-flex',
+            'bg:primary'
+        ])
+        expect(source.slice(definitions?.[0].directiveSource?.range.start, definitions?.[0].directiveSource?.range.end)).toBe('@compose "inline-flex bg:primary";')
+        expect(source.slice(definitions?.[0].selectorSource?.range.start, definitions?.[0].selectorSource?.range.end)).toBe('.btn')
+    })
+
+    it('requires @compose class lists to be quoted', () => {
+        expect(() => compileCSS('@layer components { .btn { @compose block; } }')).toThrow()
+    })
+
     it('combines nested component selector lists from parsed selectors', () => {
         const result = compileCSS(`
             @layer components {
@@ -259,7 +280,7 @@ describe.concurrent('@master/css-compiler', () => {
             }
         `)
 
-        expect(result.styleDefinitions).toEqual([
+        expect(stripStyleDefinitionSources(result.styleDefinitions)).toEqual([
             {
                 type: 'native',
                 order: 1,
@@ -287,7 +308,7 @@ describe.concurrent('@master/css-compiler', () => {
         `)
 
         expect(result.config.utilities).toBeUndefined()
-        expect(result.styleDefinitions).toEqual([
+        expect(stripStyleDefinitionSources(result.styleDefinitions)).toEqual([
             {
                 type: 'native',
                 name: 'content-auto',
@@ -331,7 +352,7 @@ describe.concurrent('@master/css-compiler', () => {
         `)
 
         expect(result.config.utilities).toBeUndefined()
-        expect(result.styleDefinitions).toEqual([
+        expect(stripStyleDefinitionSources(result.styleDefinitions)).toEqual([
             {
                 type: 'native',
                 order: 1,
@@ -403,12 +424,23 @@ describe.concurrent('@master/css-compiler', () => {
             }
         ])
 
-        expect(() => compileCSSConfig(`
+        const cycleSource = `
             @layer utilities {
                 .a { @compose "b"; }
                 .b { @compose "a"; }
             }
-        `)).toThrow('Circular @compose dependency detected: a -> b -> a')
+        `
+
+        try {
+            compileCSSConfig(cycleSource)
+            throw new Error('Expected circular @compose dependency error.')
+        } catch (error) {
+            expect(error).toBeInstanceOf(CSSDirectiveError)
+            if (!(error instanceof CSSDirectiveError)) throw error
+            expect(error.code).toBe('circular-compose-dependency')
+            expect(error.message).toBe('Circular @compose dependency detected: a -> b -> a')
+            expect(error.related?.map((related) => cycleSource.slice(related.source?.range.start, related.source?.range.end))).toEqual(['b', 'a'])
+        }
     })
 
     it('lowers native @compose and @at after semantic config resolution', () => {
@@ -511,7 +543,7 @@ describe.concurrent('@master/css-compiler', () => {
             }
         `, { classes: ['native'] })
 
-        expect(result.styleDefinitions).toEqual([
+        expect(stripStyleDefinitionSources(result.styleDefinitions)).toEqual([
             {
                 type: 'compose',
                 order: 1,
@@ -688,7 +720,7 @@ describe.concurrent('@master/css-compiler', () => {
 
             expect(result.dependencies).toEqual([entry, button])
             expect(result.config.utilities).toBeUndefined()
-            expect(result.styleDefinitions).toEqual([
+            expect(stripStyleDefinitionSources(result.styleDefinitions)).toEqual([
                 {
                     type: 'native',
                     order: 1,
@@ -821,7 +853,7 @@ describe.concurrent('@master/css-compiler', () => {
         }
     })
 
-    it('removes legacy @master blocks without config effects', () => {
+    it('removes non-entry @master blocks without config effects', () => {
         const result = compileCSS(`
             @master {
                 root-size: 10;

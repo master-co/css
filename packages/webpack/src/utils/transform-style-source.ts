@@ -1,16 +1,21 @@
 import {
     compileStyleCSS,
     createStyleCSSHostSource,
+    hasLocalStyleDirectives,
     isMasterCSSPackageStyleFile,
     isStyleCSSRequest,
     removeMasterStyleDirectives,
-    resolveMasterStyleSource
+    resolveMasterStyleSource,
+    transformLocalStyleCSS
 } from '@master/css-extractor/style'
 import { VIRTUAL_CSS_ID } from '@master/css-integration/style-module'
+import { loadProjectConfig } from '@master/css-configer/load'
+import type { Config } from '@master/css'
 
 interface TransformStyleSourceOptions {
     projectDir?: string
     masterImport?: string
+    config?: Config
 }
 
 function hasMasterStyleConfigDirective(source: string) {
@@ -47,6 +52,22 @@ export async function transformStyleSource(
 
     const resolvedSource = resolveMasterStyleSource(resourcePath, source, projectDir)
     if (!resolvedSource) {
+        if (hasLocalStyleDirectives(source)) {
+            const projectConfig = await loadProjectConfig(projectDir, {
+                config: options.config
+            })
+            const result = await transformLocalStyleCSS(resourcePath, source, {
+                projectDir,
+                config: projectConfig.config
+            })
+            return {
+                code: result.code,
+                dependencies: [...new Set([
+                    ...projectConfig.dependencies,
+                    ...result.dependencies
+                ])]
+            }
+        }
         return { code: source, dependencies }
     }
 

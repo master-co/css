@@ -1,10 +1,13 @@
 import {
+    createCSSDirectiveSourceReference,
     createCSSDirectiveAtRuleReference,
+    CSSDirectiveError,
     type CSSDirectiveAnimationDefinitions,
     type CSSDirectiveConfig,
     type CSSDirectiveDeclarations,
     type CSSDirectiveLayerName,
     type CSSDirectiveResult,
+    type CSSDirectiveSourceReference,
     type CSSDirectiveStyleDefinition,
     type CSSDirectiveVariableValue
 } from 'shared/css-directives'
@@ -19,6 +22,13 @@ import type {
     TokenOrValue
 } from 'lightningcss'
 import { decodeCSS, encodeCSS, getCSSTransform, setCSSTransform, type CSSTransform } from './css-transform'
+import {
+    collectCSSDirectiveRanges,
+    collectMasterCSSClassListTokenRanges,
+    createSourceLocationResolver,
+    findCSSStatementEnd,
+    type CSSDirectiveRuleRange
+} from '@master/css-lexer'
 import {
     collectStandaloneCSSDirectiveExtractionPolicy,
     createCSSDirectiveExtractionPolicy,
@@ -68,6 +78,11 @@ type ParsedStyleDefinition = CSSDirectiveStyleDefinition
 export interface ParsedDirectives extends Pick<CompileCSSResult, 'config' | 'extractionPolicy' | 'classNames' | 'nativeClassNames' | 'warnings'> {
     styleDefinitions?: ParsedStyleDefinition[]
     styleOrder?: number
+    source?: string
+    filename?: string
+    composeRanges?: CSSDirectiveRuleRange[]
+    composeRangeIndex?: number
+    sourceLocationResolver?: ReturnType<typeof createSourceLocationResolver>
 }
 
 const MASTER_CUSTOM_AT_RULES = {
@@ -110,8 +125,34 @@ type SettingsSection = 'root'
 const UTILITY_LAYER_NAMES = new Set<CSSDirectiveLayerName>(['base', 'preset', 'components', 'utilities'])
 const TOP_LEVEL_DEFINITION_LAYER_NAMES = new Set<CSSDirectiveLayerName>(['preset', 'components', 'utilities'])
 
-function normalizeClassNames(classNames: string[]) {
-    return classNames.join(' ').replace(/(?:\n\s*)+/g, ' ').trim().split(' ').filter(Boolean)
+function createSourceReference(parsed: ParsedDirectives, range: { start: number, end: number }): CSSDirectiveSourceReference {
+    return createCSSDirectiveSourceReference(parsed.filename, {
+        start: range.start,
+        end: range.end
+    }, parsed.source)
+}
+
+function trimSourceRangeEnd(source: string, start: number, end: number) {
+    while (end > start && /\s/.test(source[end - 1] || '')) end--
+    return end
+}
+
+function createSelectorSourceReference(parsed: ParsedDirectives, rule: any): CSSDirectiveSourceReference | undefined {
+    const source = parsed.source
+    const loc = rule.value?.loc
+    const resolveLocation = parsed.sourceLocationResolver
+    if (!source || !loc || !resolveLocation) return
+    const start = resolveLocation({
+        line: loc.line,
+        column: loc.column
+    })
+    if (start === -1) return
+    const statementEnd = findCSSStatementEnd(source, start)
+    if (statementEnd.reason !== 'block') return
+    return createSourceReference(parsed, {
+        start,
+        end: trimSourceRangeEnd(source, start, statementEnd.end)
+    })
 }
 
 function parseOnOff(value: string) {
@@ -761,7 +802,7 @@ function isCustomSelectorDefinition(rule: Rule) {
     return (rule.type === 'unknown' || rule.type === 'custom') && rule.value?.name === 'custom-selector'
 }
 
-function parseManagedStyleDefinitionSelector(selectors: Selector[]) {
+function parseManagedStyleDefinitionSelector(selectors: Selector[]): StyleSelectorDefinition | undefined {
     const names = selectors.map((selector) => selector[0]?.type === 'class' ? selector[0].name : undefined)
     const name = names[0]
     if (!name || names.some((eachName) => eachName !== name)) return
@@ -777,10 +818,59 @@ function parseManagedStyleDefinitionSelector(selectors: Selector[]) {
     }
 }
 
-function parseComposeRule(rule: any) {
+interface ParsedComposeClassName {
+    className: string
+    source?: CSSDirectiveSourceReference
+}
+
+interface ParsedComposeRule {
+    classNames: ParsedComposeClassName[]
+    directiveSource?: CSSDirectiveSourceReference
+}
+
+function takeComposeRange(parsed: ParsedDirectives) {
+    const ranges = parsed.composeRanges || []
+    const index = parsed.composeRangeIndex || 0
+    parsed.composeRangeIndex = index + 1
+    return ranges[index]
+}
+
+function parseComposeRule(rule: any, parsed: ParsedDirectives): ParsedComposeRule | undefined {
     if (rule.type === 'custom' && rule.value.name === 'compose') {
-        return unquote(rule.value.prelude.value)
+        const classList = unquote(rule.value.prelude.value)
+        const range = takeComposeRange(parsed)
+        const quotedRange = range?.quotedStringRanges[0]
+        const tokenRanges = quotedRange
+            ? collectMasterCSSClassListTokenRanges(parsed.source?.slice(quotedRange.contentRange.start, quotedRange.contentRange.end) || '')
+            : []
+        const classTokens = collectMasterCSSClassListTokenRanges(classList)
+        return {
+            classNames: classTokens.map((token, index) => {
+                const sourceToken = tokenRanges[index]
+                return {
+                    className: token.token,
+                    ...(sourceToken && quotedRange
+                        ? {
+                            source: createSourceReference(parsed, {
+                                start: quotedRange.contentRange.start + sourceToken.start,
+                                end: quotedRange.contentRange.start + sourceToken.end
+                            })
+                        }
+                        : {})
+                }
+            }),
+            ...(range ? { directiveSource: createSourceReference(parsed, range) } : {})
+        }
     }
+}
+
+function createComposePlacementError(parsed: ParsedDirectives) {
+    const range = takeComposeRange(parsed)
+    return new CSSDirectiveError(
+        'compose-placement',
+        '@compose requires a style rule',
+        range ? createSourceReference(parsed, range) : undefined
+    )
 }
 
 function parseMasterAtRuleBlock(rule: any) {
@@ -819,18 +909,19 @@ type StyleRuleBodyItem =
     }
     | {
         type: 'compose'
-        classNames: string[]
+        classNames: ParsedComposeClassName[]
+        directiveSource?: CSSDirectiveSourceReference
     }
     | {
         type: 'nested'
         rule: Rule
     }
 
-function collectDirectiveStyleRule(rule: any) {
-    return collectDirectiveStyleRuleBody(rule.value.declarations, rule.value.rules)
+function collectDirectiveStyleRule(rule: any, parsed: ParsedDirectives) {
+    return collectDirectiveStyleRuleBody(rule.value.declarations, rule.value.rules, parsed)
 }
 
-function collectDirectiveStyleRuleBody(block: DeclarationBlock<Declaration>, rules: Rule[]) {
+function collectDirectiveStyleRuleBody(block: DeclarationBlock<Declaration>, rules: Rule[], parsed: ParsedDirectives) {
     const items: StyleRuleBodyItem[] = []
     const declarations = collectDeclarations(block)
     if (Object.keys(declarations).length) {
@@ -857,11 +948,12 @@ function collectDirectiveStyleRuleBody(block: DeclarationBlock<Declaration>, rul
             })
             continue
         }
-        const compose = parseComposeRule(child)
+        const compose = parseComposeRule(child, parsed)
         if (compose) {
             items.push({
                 type: 'compose',
-                classNames: [compose]
+                classNames: compose.classNames,
+                ...(compose.directiveSource ? { directiveSource: compose.directiveSource } : {})
             })
             continue
         }
@@ -890,6 +982,7 @@ interface StyleSelectorDefinition {
     name?: string
     selectors: string[]
     selector: string
+    source?: CSSDirectiveSourceReference
 }
 
 const EMPTY_DECLARATION_BLOCK: DeclarationBlock<Declaration> = {
@@ -909,12 +1002,14 @@ function parseStyleDefinitionBody(
 
     for (const item of items) {
         if (item.type === 'compose') {
-            const normalizedClassNames = normalizeClassNames(item.classNames)
-            definitions.push(...normalizedClassNames.map((className) => ({
+            definitions.push(...item.classNames.map(({ className, source }) => ({
                 type: 'compose' as const,
                 order: nextStyleOrder(parsed),
                 className,
                 selector: selectorDefinition.selector,
+                ...(source ? { source } : {}),
+                ...(item.directiveSource ? { directiveSource: item.directiveSource } : {}),
+                ...(selectorDefinition.source ? { selectorSource: selectorDefinition.source } : {}),
                 ...(name ? { name } : {}),
                 ...(atRules.length ? { atRules: [...atRules] } : {}),
                 ...(layer ? { layer } : {})
@@ -928,6 +1023,7 @@ function parseStyleDefinitionBody(
                 type: 'native',
                 order: nextStyleOrder(parsed),
                 selector: selectorDefinition.selector,
+                ...(selectorDefinition.source ? { selectorSource: selectorDefinition.source } : {}),
                 ...(name ? { name } : {}),
                 declarations: item.declarations,
                 ...(atRules.length ? { atRules: [...atRules] } : {}),
@@ -956,7 +1052,7 @@ function parseStyleRuleBody(
     layer?: CSSDirectiveLayerName,
     name = selectorDefinition.name
 ) {
-    parseStyleDefinitionBody(parsed, selectorDefinition, collectDirectiveStyleRuleBody(EMPTY_DECLARATION_BLOCK, rules), atRules, layer, name)
+    parseStyleDefinitionBody(parsed, selectorDefinition, collectDirectiveStyleRuleBody(EMPTY_DECLARATION_BLOCK, rules, parsed), atRules, layer, name)
 }
 
 function parseNestedManagedStyleChildRule(child: Rule, parsed: ParsedDirectives, parentSelectorDefinition: StyleSelectorDefinition, atRules: string[], layer?: CSSDirectiveLayerName) {
@@ -1000,14 +1096,16 @@ function parseManagedStyleRule(rule: any, parsed: ParsedDirectives, atRules: str
             return {
                 name: parentSelectorDefinition.name,
                 selectors,
-                selector: selectors.join(',')
+                selector: selectors.join(','),
+                source: createSelectorSourceReference(parsed, rule) || parentSelectorDefinition.source
             }
         })()
         : parseManagedStyleDefinitionSelector(rule.value.selectors)
     if (!selectorDefinition) {
         throw new Error('Managed style definition selector must start with a single class selector')
     }
-    parseStyleDefinitionBody(parsed, selectorDefinition, collectDirectiveStyleRule(rule), atRules, layer)
+    selectorDefinition.source ||= createSelectorSourceReference(parsed, rule)
+    parseStyleDefinitionBody(parsed, selectorDefinition, collectDirectiveStyleRule(rule, parsed), atRules, layer)
 }
 
 function parseUtility(rule: any, parsed: ParsedDirectives, atRules: string[] = [], layer: CSSDirectiveLayerName = 'utilities') {
@@ -1015,7 +1113,8 @@ function parseUtility(rule: any, parsed: ParsedDirectives, atRules: string[] = [
     if (!selectorDefinition) {
         throw new Error('Utility definition selector must start with a single class selector')
     }
-    parseStyleDefinitionBody(parsed, selectorDefinition, collectDirectiveStyleRule(rule), atRules, layer)
+    selectorDefinition.source = createSelectorSourceReference(parsed, rule)
+    parseStyleDefinitionBody(parsed, selectorDefinition, collectDirectiveStyleRule(rule, parsed), atRules, layer)
 }
 
 function parseNativeSelectorDefinition(selectors: Selector[], parentSelectorDefinition?: StyleSelectorDefinition): StyleSelectorDefinition {
@@ -1035,11 +1134,12 @@ function parseNativeRuleBody(
     parentSelectorDefinition?: StyleSelectorDefinition
 ) {
     for (const child of rules) {
-        const compose = parseComposeRule(child)
+        const compose = parseComposeRule(child, parsed)
         if (compose && parentSelectorDefinition) {
             parseStyleDefinitionBody(parsed, parentSelectorDefinition, [{
                 type: 'compose',
-                classNames: [compose]
+                classNames: compose.classNames,
+                ...(compose.directiveSource ? { directiveSource: compose.directiveSource } : {})
             }], atRules, undefined, undefined)
             continue
         }
@@ -1081,7 +1181,7 @@ function parseNativeRuleBody(
         }
 
         if (compose) {
-            throw new Error('@compose requires a style rule')
+            throw new CSSDirectiveError('compose-placement', '@compose requires a style rule', compose.directiveSource)
         }
 
         if (child.type === 'nested-declarations') {
@@ -1117,7 +1217,8 @@ function parseNestedNativeStyleChildRule(child: Rule, parsed: ParsedDirectives, 
 
 function parseNativeStyleRule(rule: any, parsed: ParsedDirectives, atRules: string[] = [], parentSelectorDefinition?: StyleSelectorDefinition) {
     const selectorDefinition = parseNativeSelectorDefinition(rule.value.selectors, parentSelectorDefinition)
-    parseStyleDefinitionBody(parsed, selectorDefinition, collectDirectiveStyleRule(rule), atRules, undefined, undefined)
+    selectorDefinition.source = createSelectorSourceReference(parsed, rule) || parentSelectorDefinition?.source
+    parseStyleDefinitionBody(parsed, selectorDefinition, collectDirectiveStyleRule(rule, parsed), atRules, undefined, undefined)
 }
 
 function formatKeyframeSelector(selector: KeyframeSelector) {
@@ -1307,7 +1408,7 @@ function parseTopLevelLayerChildRule(child: Rule, parsed: ParsedDirectives, atRu
         return
     }
     if ((child.type === 'unknown' || child.type === 'custom') && child.value?.name === 'compose') {
-        throw new Error('@compose requires a style rule')
+        throw createComposePlacementError(parsed)
     }
     if ((child.type === 'unknown' || child.type === 'custom') && child.value?.name === 'mode') {
         throw new Error('Unsupported @mode rule')
@@ -1338,7 +1439,12 @@ export function compileCSS(source: string, options: CompileCSSOptions = {}): Com
         extractionPolicy: createCSSDirectiveExtractionPolicy(),
         classNames: [],
         nativeClassNames: [],
-        warnings: []
+        warnings: [],
+        source,
+        filename,
+        composeRanges: collectCSSDirectiveRanges(source).filter((range) => range.name === 'compose'),
+        composeRangeIndex: 0,
+        sourceLocationResolver: createSourceLocationResolver(source)
     }
     const classFilter = options.classes === undefined
         ? undefined
@@ -1409,7 +1515,7 @@ export function compileCSS(source: string, options: CompileCSSOptions = {}): Com
                             parseThemeRule(rule, parsed)
                             return []
                         case 'compose':
-                            throw new Error('@compose requires a style rule')
+                            throw createComposePlacementError(parsed)
                         case 'custom-at':
                             throw new Error('@custom-at must be top-level')
                         case 'custom-selector':

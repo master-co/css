@@ -138,9 +138,9 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
                 use: [
                     expect.objectContaining({
                         loader: expect.stringContaining('style-css-loader'),
-                        options: {
+                        options: expect.objectContaining({
                             virtualCSSImportModuleId: expect.stringContaining('master-utilities.css')
-                        }
+                        })
                     })
                 ]
             })
@@ -168,6 +168,53 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
             expect(result.code).toBe('@import "../node_modules/.master-css/master-utilities.css";')
             expect(result.dependencies).toContain(entryPath)
             expect(result.dependencies).toContain(themePath)
+        } finally {
+            rmSync(root, { recursive: true, force: true })
+        }
+    })
+
+    test('locally lowers @compose in CSS Modules without rewriting to the virtual CSS import', async () => {
+        const root = mkdtempSync(path.join(tmpdir(), 'master-css-webpack-local-compose-'))
+        const entryPath = path.join(root, 'app.css')
+        const modulePath = path.join(root, 'Button.module.css')
+        try {
+            writeFileSync(entryPath, [
+                '@master;',
+                '@layer components {',
+                '  .brand { background-color: #123456; }',
+                '}'
+            ].join('\n'))
+
+            const result = await transformStyleSource(modulePath, '.button { @compose "inline-flex brand"; color: white; }', {
+                projectDir: root,
+                masterImport: '../node_modules/.master-css/master-utilities.css'
+            })
+
+            expect(result.code).toContain('.button{')
+            expect(result.code).toContain('display:inline-flex')
+            expect(result.code).toContain('background-color:#123456')
+            expect(result.code).toContain('color:#fff')
+            expect(result.code).not.toContain('@compose')
+            expect(result.code).not.toContain('master-utilities.css')
+            expect(result.dependencies).toContain(entryPath)
+            expect(result.dependencies).toContain(modulePath)
+        } finally {
+            rmSync(root, { recursive: true, force: true })
+        }
+    })
+
+    test('leaves ordinary CSS unchanged in the style loader helper', async () => {
+        const root = mkdtempSync(path.join(tmpdir(), 'master-css-webpack-local-compose-'))
+        const modulePath = path.join(root, 'Button.module.css')
+        try {
+            const source = '.button { color: red; }'
+            const result = await transformStyleSource(modulePath, source, {
+                projectDir: root,
+                masterImport: '../node_modules/.master-css/master-utilities.css'
+            })
+
+            expect(result.code).toBe(source)
+            expect(result.dependencies).toEqual([])
         } finally {
             rmSync(root, { recursive: true, force: true })
         }

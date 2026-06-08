@@ -14,6 +14,7 @@ import { collectAnimationNamesFromDeclaration, extendConfig } from '@master/css/
 import type { Config } from 'shared/css-config'
 import {
     findCSSImportStatements,
+    collectCSSDirectiveRanges,
     hasMasterCSSImport,
     hasMasterCSSConfigEntrypoint,
     isMasterCSSModuleId as isMasterCSSConfigModuleId,
@@ -58,6 +59,13 @@ export interface SassModule {
 export interface CompileStyleCSSOptions extends CompileCSSOptions {
     projectDir?: string
     loadSass?: (projectDir?: string) => SassModule
+}
+
+export interface TransformLocalStyleCSSResult {
+    code: string
+    dependencies: string[]
+    transformed: boolean
+    result?: CompileCSSResult
 }
 
 export type RegisterStyleCSSSourceOptions = CompileStyleCSSOptions
@@ -129,8 +137,29 @@ export function cleanStyleRequest(id: string) {
     return id.replace(/[?#].*$/, '')
 }
 
+function getStyleRequestSearchParams(id: string) {
+    const queryStart = id.indexOf('?')
+    return queryStart === -1 ? new URLSearchParams() : new URLSearchParams(id.slice(queryStart + 1))
+}
+
+function getStyleRequestExtension(id: string) {
+    const cleanExtension = extname(cleanStyleRequest(id))
+    if (cleanExtension === '.css' || cleanExtension === '.scss' || cleanExtension === '.sass') {
+        return cleanExtension
+    }
+    const lang = getStyleRequestSearchParams(id).get('lang')
+    if (lang === 'css' || lang === 'scss' || lang === 'sass') {
+        return '.' + lang
+    }
+    return cleanExtension
+}
+
+function isStyleModuleRequest(source: string) {
+    return getStyleRequestSearchParams(source).get('type') === 'style'
+}
+
 export function isStyleCSSRequest(id: string) {
-    return STYLE_CSS_REQUEST_RE.test(id)
+    return STYLE_CSS_REQUEST_RE.test(id) || (isStyleModuleRequest(id) && ['.css', '.scss', '.sass'].includes(getStyleRequestExtension(id)))
 }
 
 export function replaceStyleCSSImports(source: string, replacement: string) {
@@ -281,6 +310,11 @@ export function removeMasterStyleDirectives(source: string) {
     return removeExtractorDirectiveStatements(source)
 }
 
+export function hasLocalStyleDirectives(source: string) {
+    return collectCSSDirectiveRanges(source)
+        .some((directive) => directive.name === 'compose' || directive.name === 'at')
+}
+
 function isStyleCSSHostImport(importSource: string, masterImport: string) {
     return importSource === masterImport || (masterImport === '@master/css' && normalizeStyleCSSModuleIds().has(importSource))
 }
@@ -356,7 +390,7 @@ export function isMasterStyleSource(source: string) {
 
 export async function preprocessStyleCSS(source: string, id: string, options: CompileStyleCSSOptions = {}) {
     const filename = cleanStyleRequest(id)
-    const extension = extname(filename)
+    const extension = getStyleRequestExtension(id)
     if (extension !== '.scss' && extension !== '.sass') return source
 
     const sass = (options.loadSass || defaultLoadSass)(options.projectDir)
@@ -386,6 +420,38 @@ export async function compileStyleCSS(
         ...result,
         css: finalizedResult.css,
         generatedCSS: finalizedResult.generatedCSS
+    }
+}
+
+export async function compileLocalStyleCSS(
+    id: string,
+    source: string,
+    options: CompileStyleCSSOptions = {}
+): Promise<CompileCSSResult> {
+    return compileStyleCSS(id, source, {
+        ...options,
+        preserveNativeCSS: true
+    })
+}
+
+export async function transformLocalStyleCSS(
+    id: string,
+    source: string,
+    options: CompileStyleCSSOptions = {}
+): Promise<TransformLocalStyleCSSResult> {
+    if (!isStyleCSSRequest(id) || !hasLocalStyleDirectives(source)) {
+        return {
+            code: source,
+            dependencies: [],
+            transformed: false
+        }
+    }
+    const result = await compileLocalStyleCSS(id, source, options)
+    return {
+        code: result.css || result.nativeCSS || '',
+        dependencies: [...new Set([cleanStyleRequest(id), ...(result.dependencies || [])])],
+        transformed: true,
+        result
     }
 }
 

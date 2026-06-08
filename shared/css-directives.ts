@@ -8,6 +8,85 @@ export type CSSDirectiveLayerName = UtilityLayerName
 
 export type CSSDirectiveModeTrigger = NonNullable<Config['modeTrigger']>
 
+export interface CSSDirectiveSourceRange {
+    start: number
+    end: number
+}
+
+export interface CSSDirectiveSourceLocation {
+    line: number
+    column: number
+}
+
+export interface CSSDirectiveSourceReference {
+    file?: string
+    range: CSSDirectiveSourceRange
+    loc?: {
+        start: CSSDirectiveSourceLocation
+        end: CSSDirectiveSourceLocation
+    }
+}
+
+export interface CSSDirectiveRelatedInformation {
+    message: string
+    source?: CSSDirectiveSourceReference
+}
+
+export class CSSDirectiveError extends Error {
+    code: string
+    source?: CSSDirectiveSourceReference
+    related?: CSSDirectiveRelatedInformation[]
+
+    constructor(
+        code: string,
+        message: string,
+        source?: CSSDirectiveSourceReference,
+        related?: CSSDirectiveRelatedInformation[]
+    ) {
+        super(message)
+        this.name = 'CSSDirectiveError'
+        this.code = code
+        this.source = source
+        this.related = related
+    }
+}
+
+function offsetToLocation(source: string, offset: number): CSSDirectiveSourceLocation {
+    let line = 1
+    let column = 1
+    for (let index = 0; index < offset && index < source.length; index++) {
+        if (source[index] === '\n') {
+            line++
+            column = 1
+        } else {
+            column++
+        }
+    }
+    return {
+        line,
+        column
+    }
+}
+
+export function createCSSDirectiveSourceReference(
+    file: string | undefined,
+    range: CSSDirectiveSourceRange,
+    source?: string
+): CSSDirectiveSourceReference {
+    return {
+        ...(file ? { file } : {}),
+        range,
+        ...(source
+            ? {
+                loc: {
+                    start: offsetToLocation(source, range.start),
+                    end: offsetToLocation(source, range.end)
+                }
+            }
+            : {})
+    }
+}
+
 export interface CSSDirectiveVariableDefinition {
     name: string
     value: CSSDirectiveVariableValue
@@ -66,6 +145,9 @@ export interface CSSDirectiveStyleComposeDefinition {
     order: number
     className: string
     selector: string
+    source?: CSSDirectiveSourceReference
+    directiveSource?: CSSDirectiveSourceReference
+    selectorSource?: CSSDirectiveSourceReference
     atRules?: string[]
     layer?: CSSDirectiveLayerName
     name?: string
@@ -76,6 +158,8 @@ export interface CSSDirectiveStyleNativeDefinition {
     order: number
     selector: string
     declarations: CSSDirectiveDeclarations
+    source?: CSSDirectiveSourceReference
+    selectorSource?: CSSDirectiveSourceReference
     atRules?: string[]
     layer?: CSSDirectiveLayerName
     name?: string

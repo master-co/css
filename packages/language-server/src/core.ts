@@ -1,7 +1,8 @@
-import { createConnection, TextDocuments, InitializeParams, InitializeResult, WorkspaceFolder, Disposable, Connection, ClientCapabilities, TextDocumentChangeEvent, DidChangeConfigurationParams, HoverParams, CompletionParams, DocumentColorParams, ColorPresentationParams, RemoteConsole, SemanticTokensParams, TextDocumentPositionParams } from 'vscode-languageserver/node.js'
+import { createConnection, TextDocuments, InitializeParams, InitializeResult, WorkspaceFolder, Disposable, Connection, ClientCapabilities, TextDocumentChangeEvent, DidChangeConfigurationParams, HoverParams, CompletionParams, DocumentColorParams, ColorPresentationParams, RemoteConsole, SemanticTokensParams, TextDocumentPositionParams, DiagnosticSeverity, type Diagnostic, type DiagnosticRelatedInformation, type Range } from 'vscode-languageserver/node.js'
 import { TextDocument } from 'vscode-languageserver-textdocument'
 import path from 'node:path'
 import CSSLanguageService, { Settings as CSSLanguageServiceSettings } from '@master/css-language-service'
+import { compileCSSConfig } from '@master/css-compiler'
 import { Settings } from './settings'
 import {
     findCSSConfigEntryFiles,
@@ -14,6 +15,7 @@ import type { Config } from 'shared/css-config'
 import { SERVER_CAPABILITIES } from '@master/css-language-service'
 import glob from 'fast-glob'
 import { URI } from 'vscode-uri'
+import { CSSDirectiveError, type CSSDirectiveSourceReference } from 'shared/css-directives'
 
 export declare interface Workspace {
     uri: string
@@ -25,6 +27,53 @@ export declare interface Workspace {
 
 export const ACTIVE_SEMANTIC_TOKENS_REQUEST = 'masterCSS/renderActiveSemanticTokens'
 export const DOCUMENT_SEMANTIC_TOKENS_REQUEST = 'masterCSS/renderDocumentSemanticTokens'
+
+const CSS_DIAGNOSTIC_LANGUAGE_IDS = new Set(['css', 'scss', 'less'])
+const SFC_DIAGNOSTIC_LANGUAGE_IDS = new Set(['vue', 'svelte', 'astro'])
+const STYLE_BLOCK_RE = /<style\b([^>]*)>([\s\S]*?)<\/style>/gi
+
+interface CSSDiagnosticSource {
+    source: string
+    offset: number
+}
+
+function isCSSDiagnosticDocument(textDocument: TextDocument) {
+    return CSS_DIAGNOSTIC_LANGUAGE_IDS.has(textDocument.languageId)
+        || SFC_DIAGNOSTIC_LANGUAGE_IDS.has(textDocument.languageId)
+}
+
+function getSFCStyleLanguage(attributes: string) {
+    const match = /\blang\s*=\s*(?:"([^"]+)"|'([^']+)'|([^\s>]+))/i.exec(attributes)
+    return (match?.[1] || match?.[2] || match?.[3] || 'css').toLowerCase()
+}
+
+function getCSSDiagnosticSources(textDocument: TextDocument): CSSDiagnosticSource[] {
+    const text = textDocument.getText()
+    if (CSS_DIAGNOSTIC_LANGUAGE_IDS.has(textDocument.languageId)) {
+        return [{ source: text, offset: 0 }]
+    }
+    if (!SFC_DIAGNOSTIC_LANGUAGE_IDS.has(textDocument.languageId)) return []
+    const sources: CSSDiagnosticSource[] = []
+    STYLE_BLOCK_RE.lastIndex = 0
+    for (const match of text.matchAll(STYLE_BLOCK_RE)) {
+        const styleLanguage = getSFCStyleLanguage(match[1])
+        if (!CSS_DIAGNOSTIC_LANGUAGE_IDS.has(styleLanguage)) continue
+        const source = match[2]
+        const offset = (match.index || 0) + match[0].indexOf(source)
+        sources.push({ source, offset })
+    }
+    return sources
+}
+
+function isCSSDirectiveError(error: unknown): error is CSSDirectiveError {
+    return error instanceof CSSDirectiveError
+        || (
+            !!error
+            && typeof error === 'object'
+            && (error as { name?: unknown }).name === 'CSSDirectiveError'
+            && typeof (error as { code?: unknown }).code === 'string'
+        )
+}
 
 function getInitializationSettings(initializationOptions: unknown): Settings | undefined {
     if (!initializationOptions || typeof initializationOptions !== 'object') return
@@ -68,6 +117,7 @@ export default class CSSLanguageServer {
         this.disposables.push(
             this.documents.onDidSave(this.onDidSave.bind(this)),
             this.documents.onDidOpen(this.onDidOpen.bind(this)),
+            this.documents.onDidChangeContent(this.onDidChangeContent.bind(this)),
             this.documents.onDidClose(this.onDidClose.bind(this)),
             this.documents.listen(this.connection),
             this.connection.onDidChangeConfiguration(this.onDidChangeConfiguration.bind(this)),
@@ -179,11 +229,23 @@ export default class CSSLanguageServer {
     async onDidOpen(params: TextDocumentChangeEvent<TextDocument>) {
         await this.init()
         const workspace = this.findClosestWorkspace(params.document.uri)
-        if (!workspace || workspace.openedTextDocuments.includes(params.document)) return
+        if (!workspace) return
+        if (workspace.openedTextDocuments.includes(params.document)) {
+            this.publishCSSDirectiveDiagnostics(params.document, workspace)
+            return
+        }
         if (!workspace.openedTextDocuments.length) {
             await this.initWorkspaceLanguageService(workspace)
         }
         workspace.openedTextDocuments.push(params.document)
+        this.publishCSSDirectiveDiagnostics(params.document, workspace)
+    }
+
+    async onDidChangeContent(params: TextDocumentChangeEvent<TextDocument>) {
+        await this.init()
+        const workspace = this.findClosestWorkspace(params.document.uri)
+        if (!workspace) return
+        this.publishCSSDirectiveDiagnostics(params.document, workspace)
     }
 
     async onDidClose(params: TextDocumentChangeEvent<TextDocument>) {
@@ -191,6 +253,7 @@ export default class CSSLanguageServer {
         const workspace = this.findClosestWorkspace(params.document.uri)
         if (!workspace) return
         workspace.openedTextDocuments.splice(workspace.openedTextDocuments.indexOf(params.document), 1)
+        this.connection.sendDiagnostics({ uri: params.document.uri, diagnostics: [] })
         if (!workspace.openedTextDocuments.length) {
             this.destroyLanguageService(workspace)
         }
@@ -200,6 +263,7 @@ export default class CSSLanguageServer {
         await this.init()
         const workspace = this.findClosestWorkspace(params.document.uri)
         if (!workspace) return
+        this.publishCSSDirectiveDiagnostics(params.document, workspace)
         const name = path.basename(URI.parse(params.document.uri).fsPath)
         if (name.endsWith('.css')) {
             this.refreshSemanticTokens()
@@ -220,6 +284,11 @@ export default class CSSLanguageServer {
             this.connection.sendRequest('masterCSS/restart', {
                 title: 'Updating Master CSS settings',
             })
+            for (const workspace of [this.globalWorkspace, ...this.workspaces.values()]) {
+                for (const document of workspace.openedTextDocuments) {
+                    this.publishCSSDirectiveDiagnostics(document, workspace)
+                }
+            }
         }
     }
 
@@ -306,6 +375,96 @@ export default class CSSLanguageServer {
         if (foundWorkspace) return foundWorkspace
         this.console.info(`This is an external document ${textDocumentURI} with the global workspace`)
         return this.globalWorkspace
+    }
+
+    private publishCSSDirectiveDiagnostics(textDocument: TextDocument, workspace: Workspace) {
+        if (!isCSSDiagnosticDocument(textDocument)) return
+        const diagnostics: Diagnostic[] = []
+        const documentFile = path.resolve(URI.parse(textDocument.uri).fsPath)
+        const config = workspace.languageService?.settings.config || workspace.languageServiceSettings.config
+
+        for (const { source, offset } of getCSSDiagnosticSources(textDocument)) {
+            try {
+                compileCSSConfig(source, {
+                    from: documentFile,
+                    config
+                })
+            } catch (error) {
+                if (!isCSSDirectiveError(error)) continue
+                const diagnostic = this.createCSSDirectiveDiagnostic(error, textDocument, documentFile, offset)
+                if (diagnostic) diagnostics.push(diagnostic)
+            }
+        }
+
+        this.connection.sendDiagnostics({
+            uri: textDocument.uri,
+            diagnostics
+        })
+    }
+
+    private createCSSDirectiveDiagnostic(
+        error: CSSDirectiveError,
+        textDocument: TextDocument,
+        documentFile: string,
+        sourceOffset: number
+    ): Diagnostic | undefined {
+        if (error.source?.file && path.resolve(error.source.file) !== documentFile) return
+        return {
+            range: this.createCSSDirectiveRange(error.source, textDocument, documentFile, sourceOffset),
+            severity: DiagnosticSeverity.Error,
+            code: error.code,
+            source: 'Master CSS',
+            message: error.message,
+            relatedInformation: this.createCSSDirectiveRelatedInformation(error.related, textDocument, documentFile, sourceOffset)
+        }
+    }
+
+    private createCSSDirectiveRelatedInformation(
+        related: CSSDirectiveError['related'],
+        textDocument: TextDocument,
+        documentFile: string,
+        sourceOffset: number
+    ): DiagnosticRelatedInformation[] | undefined {
+        if (!related?.length) return
+        return related.map(({ message, source }) => ({
+            message,
+            location: {
+                uri: source?.file ? URI.file(source.file).toString() : textDocument.uri,
+                range: this.createCSSDirectiveRange(source, textDocument, documentFile, sourceOffset)
+            }
+        }))
+    }
+
+    private createCSSDirectiveRange(
+        source: CSSDirectiveSourceReference | undefined,
+        textDocument: TextDocument,
+        documentFile: string,
+        sourceOffset: number
+    ): Range {
+        if (source?.file && path.resolve(source.file) !== documentFile) {
+            return source.loc
+                ? {
+                    start: {
+                        line: Math.max(0, source.loc.start.line - 1),
+                        character: Math.max(0, source.loc.start.column - 1)
+                    },
+                    end: {
+                        line: Math.max(0, source.loc.end.line - 1),
+                        character: Math.max(0, source.loc.end.column - 1)
+                    }
+                }
+                : {
+                    start: { line: 0, character: 0 },
+                    end: { line: 0, character: 0 }
+                }
+        }
+
+        const start = Math.max(0, (source?.range.start || 0) + sourceOffset)
+        const end = Math.max(start, (source?.range.end || 0) + sourceOffset)
+        return {
+            start: textDocument.positionAt(start),
+            end: textDocument.positionAt(end)
+        }
     }
 
     private refreshSemanticTokens() {

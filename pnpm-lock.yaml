@@ -1429,6 +1429,9 @@ importers:
       '@master/css':
         specifier: workspace:^
         version: link:../core
+      '@master/css-compiler':
+        specifier: workspace:^
+        version: link:../compiler
       '@master/css-configer':
         specifier: workspace:^
         version: link:../configer
@@ -1447,6 +1450,9 @@ importers:
       nanoid:
         specifier: ^5.1.11
         version: 5.1.11
+      shared:
+        specifier: workspace:^
+        version: link:../../shared
       vscode-languageserver:
         specifier: ^9.0.1
         version: 9.0.1
@@ -1456,10 +1462,6 @@ importers:
       vscode-uri:
         specifier: ^3.1.0
         version: 3.1.0
-    devDependencies:
-      shared:
-        specifier: workspace:^
-        version: link:../../shared
 
   packages/language-service:
     dependencies:

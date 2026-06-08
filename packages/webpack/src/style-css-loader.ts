@@ -1,8 +1,10 @@
 import { dirname, relative } from 'node:path'
 import { transformStyleSource } from './utils/transform-style-source'
+import type { Config } from '@master/css'
 
 interface StyleCSSLoaderOptions {
     virtualCSSImportModuleId?: string
+    config?: Config
 }
 
 interface LoaderContext {
@@ -30,7 +32,8 @@ export default function masterCSSStyleCSSLoader(this: LoaderContext, source: str
     const options = this.getOptions?.() || {}
     transformStyleSource(this.resourcePath, source, {
         projectDir: this.rootContext,
-        masterImport: toCSSImportPath(this.resourcePath, options.virtualCSSImportModuleId)
+        masterImport: toCSSImportPath(this.resourcePath, options.virtualCSSImportModuleId),
+        config: options.config
     })
         .then((result) => {
             for (const dependency of new Set(result.dependencies)) {

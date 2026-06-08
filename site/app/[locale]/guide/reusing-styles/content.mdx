@@ -308,6 +308,55 @@ Use native CSS when the selector is part of a stylesheet surface you already shi
 
 ---
 
+### Use local CSS Modules and SFC styles
+CSS Modules and SFC `<style>` blocks can use `@compose` directly. They do not need `@master;` because they are local composed stylesheets, not project CSS entries.
+
+```css name=Button.module.css
+.button {
+    @compose "inline-flex ai:center jc:center gap:xs px:md h:10x r:lg";
+    background: var(--color-primary);
+    color: white;
+}
+
+.button:hover {
+    @compose "bg:primary/.9";
+}
+```
+
+```tsx name=Button.tsx
+import styles from './Button.module.css'
+
+export function Button() {
+    return <button className={styles.button}>Submit</button>
+}
+```
+
+Master CSS lowers `@compose` to native declarations first. Then CSS Modules rewrites `.button` to its scoped class name.
+
+SFC style blocks use the same model:
+
+```vue name=Card.vue
+<template>
+    <article class="card">
+        <slot />
+    </article>
+</template>
+
+<style scoped>
+.card {
+    @compose "grid gap:md p:lg r:xl shadow:md";
+
+    @at dark {
+        @compose "shadow:none";
+    }
+}
+</style>
+```
+
+Local composed stylesheets share the project CSS entry and plugin inline config as context, so theme tokens, custom at tokens, custom selectors, and managed component classes remain available. Local files do not define global project config, do not insert generated Master CSS, and do not participate as native CSS shaking roots.
+
+---
+
 ### Organize component files
 Split component definitions only when it helps ownership. Local CSS imports from the project CSS entry are compiled into one graph.
 
@@ -362,7 +411,7 @@ Split component definitions only when it helps ownership. Local CSS imports from
 <button class="btn btn-md yellow touch-yellow">Submit</button>
 ```
 
-`@theme` and `@master` config blocks, top-level custom directives, top-level managed layers, top-level `@keyframes`, and native style rules with `@compose` or `@at` are consumed by the Master CSS compiler. Ordinary CSS outside those managed targets remains native CSS in your app stylesheet pipeline.
+`@theme` and `@settings` blocks, top-level custom directives, top-level managed layers, top-level `@keyframes`, and native style rules with `@compose` or `@at` are consumed by the Master CSS compiler. Ordinary CSS outside those managed targets remains native CSS in your app stylesheet pipeline.
 
 ---
 

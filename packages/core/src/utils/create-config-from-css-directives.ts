@@ -1,4 +1,5 @@
 import {
+    CSSDirectiveError,
     readCSSDirectiveAtRuleReference,
     type CSSDirectiveConfig,
     type CSSDirectiveLayerName,
@@ -391,10 +392,14 @@ function combineStyleSelectors(parentSelector: string, childSelector: string) {
     return selectors.join(',')
 }
 
-function createStyleDefinitionsFromCompose(className: string, css: MasterCSS): ComposedStyleDefinition[] {
-    const utilities = css.createAll(className)
+function createStyleDefinitionsFromCompose(definition: Extract<CSSDirectiveStyleDefinition, { type: 'compose' }>, css: MasterCSS): ComposedStyleDefinition[] {
+    const utilities = css.createAll(definition.className)
     if (!utilities.length) {
-        throw new Error(`Invalid @compose class: ${className}`)
+        throw new CSSDirectiveError(
+            'invalid-compose-class',
+            `Invalid @compose class: ${definition.className}`,
+            definition.source || definition.directiveSource
+        )
     }
     return utilities.flatMap((utility) => {
         const selector = getComposedUtilitySelector(utility, css)
@@ -726,6 +731,7 @@ function toUtilityLayerName(layer?: CSSDirectiveLayerName) {
 }
 
 type ManagedStyleDefinition = CSSDirectiveStyleDefinition & { name: string }
+type ManagedComposeStyleDefinition = Extract<CSSDirectiveStyleDefinition, { type: 'compose' }> & { name: string }
 
 function getManagedStyleDefinitionLayer(definition: ManagedStyleDefinition): UtilityLayerName {
     return toUtilityLayerName(definition.layer) || 'components'
@@ -755,7 +761,7 @@ function createMergedStyleDefinitions(
     const buckets = new Map<string, StyleMergeBucket>()
     for (const definition of definitions) {
         if (definition.type === 'compose') {
-            const composedDefinitions = createStyleDefinitionsFromCompose(definition.className, css)
+            const composedDefinitions = createStyleDefinitionsFromCompose(definition, css)
             for (const composedDefinition of composedDefinitions) {
                 const { atRules: composedAtRules, ...composedDefinitionWithoutAtRules } = composedDefinition
                 const selector = combineStyleSelectors(definition.selector, composedDefinition.selector)
@@ -806,6 +812,7 @@ function sortManagedStyleDefinitionKeys(
 ) {
     const names = new Set(keysByName.keys())
     const dependencies = new Map<string, Set<string>>()
+    const dependencyDefinitions = new Map<string, ManagedComposeStyleDefinition>()
     for (const [key, definitions] of groups) {
         const keyDependencies = new Set<string>()
         for (const definition of definitions) {
@@ -814,6 +821,7 @@ function sortManagedStyleDefinitionKeys(
             if (!dependencyName) continue
             for (const dependencyKey of keysByName.get(dependencyName) || []) {
                 keyDependencies.add(dependencyKey)
+                dependencyDefinitions.set(`${key}\0${dependencyKey}`, definition)
             }
         }
         dependencies.set(key, keyDependencies)
@@ -827,10 +835,27 @@ function sortManagedStyleDefinitionKeys(
     function visit(key: string) {
         if (seen.has(key)) return
         if (visiting.has(key)) {
-            const cycle = [...path.slice(path.indexOf(key)), key]
+            const cycleKeys = [...path.slice(path.indexOf(key)), key]
+            const cycle = cycleKeys
                 .map((cycleKey) => splitManagedStyleDefinitionKey(cycleKey).name)
                 .join(' -> ')
-            throw new Error(`Circular @compose dependency detected: ${cycle}`)
+            const related = cycleKeys.slice(0, -1).flatMap((cycleKey, index) => {
+                const nextKey = cycleKeys[index + 1]
+                const definition = dependencyDefinitions.get(`${cycleKey}\0${nextKey}`)
+                const source = definition?.source || definition?.directiveSource
+                return source
+                    ? [{
+                        message: `${splitManagedStyleDefinitionKey(cycleKey).name} composes ${definition.className}`,
+                        source
+                    }]
+                    : []
+            })
+            throw new CSSDirectiveError(
+                'circular-compose-dependency',
+                `Circular @compose dependency detected: ${cycle}`,
+                related[0]?.source,
+                related
+            )
         }
         visiting.add(key)
         path.push(key)

@@ -2,10 +2,14 @@ import {
     compileStyleCSS,
     createMasterCSSPackageHostSource,
     createStyleCSSHostSource,
+    hasLocalStyleDirectives,
     isMasterCSSPackageStyleFile,
     removeMasterStyleDirectives,
-    resolveMasterStyleSource
+    resolveMasterStyleSource,
+    transformLocalStyleCSS
 } from '@master/css-extractor/style'
+import { loadProjectConfig } from '@master/css-configer/load'
+import { getRegisteredOptions } from './options'
 
 interface LoaderContext {
     resourcePath: string
@@ -46,7 +50,24 @@ async function transformStyleSource(resourcePath: string, source: string, projec
         }
     }
 
-    if (!resolvedSource) return { code, dependencies }
+    if (!resolvedSource) {
+        if (hasLocalStyleDirectives(source)) {
+            const registeredOptions = getRegisteredOptions()
+            const projectConfig = await loadProjectConfig(projectDir, {
+                config: registeredOptions?.config
+            })
+            const result = await transformLocalStyleCSS(resourcePath, source, {
+                projectDir,
+                config: projectConfig.config
+            })
+            dependencies.push(...projectConfig.dependencies, ...(result.dependencies || []))
+            return {
+                code: result.code,
+                dependencies
+            }
+        }
+        return { code, dependencies }
+    }
 
     const result = await compileStyleCSS(resourcePath, code, {
         projectDir,

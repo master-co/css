@@ -183,6 +183,9 @@ module.exports = {
 ## Strategies
 ### Alternative to `@apply`
 Use [component classes](/guide/reusing-styles#component-classes) and `@compose` to abstract styles instead of Tailwind's `@apply`.
+
+`@compose` is not an alias for `@apply`. It only accepts a quoted Master CSS class list, and selector states should be written as nested selectors or `@at` blocks instead of Tailwind's unquoted `@apply` syntax.
+
 ```css name=main.css
 @tailwind base;
 @tailwind;

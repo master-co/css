@@ -30,7 +30,7 @@ type TurbopackRuleConfigCollection = TurbopackRules[string]
 const MASTER_CSS_CONFIG_RESOURCE_QUERY = new RegExp(MASTER_CSS_CONFIG_QUERY.slice(1))
 const MASTER_CSS_CONFIG_IMPORT_CONTENT_PATTERN = new RegExp(`\\${MASTER_CSS_CONFIG_QUERY}`)
 const MASTER_CSS_VIRTUAL_CONFIG_PATH_PATTERN = createVirtualDefaultConfigModulePathPattern()
-const MASTER_CSS_STYLE_CONTENT_PATTERN = createMasterCSSConfigEntryPattern()
+const MASTER_CSS_STYLE_CONTENT_PATTERN = new RegExp(`${createMasterCSSConfigEntryPattern().source}|@(compose|at)\\b`)
 const MASTER_CSS_REACT_PACKAGE_NAME = '@master/css.react'
 
 function resolveAdapterPath() {

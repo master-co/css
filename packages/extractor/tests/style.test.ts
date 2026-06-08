@@ -10,12 +10,15 @@ import {
     createExtractedCSSResult,
     hasPreserveNativeDirective,
     hasMasterStyleEntrypoint,
+    hasLocalStyleDirectives,
     isMasterStyleSource,
+    isStyleCSSRequest,
     removeMasterStyleDirectives,
     registerStyleCSSSource,
     resolveMasterStyleSource,
     resolveStyleCSSImportGraph,
-    replaceStyleCSSImports
+    replaceStyleCSSImports,
+    transformLocalStyleCSS
 } from '../src/style'
 
 function createFixture() {
@@ -63,6 +66,51 @@ describe('style CSS extraction helpers', () => {
         expect(isMasterStyleSource('@import "./other.css";')).toBe(false)
         expect(hasPreserveNativeDirective('@preserve native;\n.card { color: red; }')).toBe(true)
         expect(hasPreserveNativeDirective('@master no-shake;\n.card { color: red; }')).toBe(false)
+    })
+
+    it('detects local compose styles without treating them as Master entries', () => {
+        expect(hasLocalStyleDirectives('.card { @compose "block"; }')).toBe(true)
+        expect(hasLocalStyleDirectives('.card { color: red; }')).toBe(false)
+        expect(isStyleCSSRequest('/project/src/Button.module.css')).toBe(true)
+        expect(isStyleCSSRequest('/project/src/Button.vue?vue&type=style&index=0&lang.css')).toBe(true)
+        expect(isMasterStyleSource('.card { @compose "block"; }')).toBe(false)
+    })
+
+    it('locally lowers @compose using the provided project context', async () => {
+        const result = await transformLocalStyleCSS('/project/src/Button.module.css', `
+            .button {
+                @compose "inline-flex brand";
+                color: white;
+            }
+        `, {
+            config: {
+                utilities: [
+                    {
+                        name: 'brand',
+                        type: -4,
+                        layer: 'components',
+                        declarations: {
+                            'background-color': '#123456'
+                        }
+                    }
+                ]
+            }
+        })
+
+        expect(result.transformed).toBe(true)
+        expect(result.code).toContain('.button{')
+        expect(result.code).toContain('display:inline-flex')
+        expect(result.code).toContain('background-color:#123456')
+        expect(result.code).toContain('color:#fff')
+        expect(result.code).not.toContain('@compose')
+    })
+
+    it('leaves ordinary local CSS unchanged', async () => {
+        const source = '.button { color: red; }'
+        const result = await transformLocalStyleCSS('/project/src/Button.module.css', source)
+
+        expect(result.transformed).toBe(false)
+        expect(result.code).toBe(source)
     })
 
     it('resolves Master style sources through the stylesheet import graph', () => {

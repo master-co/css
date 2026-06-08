@@ -12,6 +12,7 @@ import PreRenderMode from './modes/pre-render'
 import ContextPlugin from './plugins/context'
 import ExtractorPlugin from './plugins/extractor'
 import UsageGraphPlugin from './plugins/usage-graph'
+import LocalComposePlugin from './plugins/local-compose'
 import StyleEntryPlugin from './plugins/style-entry'
 import StyleEntryHMRPlugin from './plugins/style-entry-hmr'
 import StyleEntryBuildPlugin from './plugins/style-entry-build'
@@ -39,6 +40,7 @@ export default function masterCSS(options?: PluginOptions): Plugin[] {
         ConfigLoaderPlugin(context),
         ExtractorPlugin(options, context),
         UsageGraphPlugin(options, context),
+        LocalComposePlugin(options, context),
         StyleEntryPlugin(options, context),
         StyleEntryHMRPlugin(options, context),
         StyleEntryBuildPlugin(options, context)

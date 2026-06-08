@@ -5,6 +5,7 @@ import findMatchingPairs from './find-matching-brackets'
 import escapeRegexp from 'lodash.escaperegexp'
 import type { ClassPosition } from '../core'
 import { parseSync, visitorKeys } from 'oxc-parser'
+import { collectCSSDirectiveRanges } from '@master/css-lexer'
 
 export interface GetClassPositionsOptions {
     position?: Position
@@ -374,6 +375,29 @@ function collectCommentRanges(source: string, languageId: string) {
     return ranges.sort((a, b) => a.start - b.start || a.end - b.end)
 }
 
+function collectCSSDirectiveClassPositions(
+    source: string,
+    includeEmpty: boolean,
+    accept?: ClassPositionAccept
+) {
+    const classPositions: ClassPosition[] = []
+    for (const directive of collectCSSDirectiveRanges(source)) {
+        if (directive.name !== 'compose') continue
+        const stringRange = directive.quotedStringRanges[0]
+        if (!stringRange) continue
+        const raw = source.slice(stringRange.contentRange.start, stringRange.contentRange.end)
+        classPositions.push(...collectClassPositions(
+            raw,
+            stringRange.contentRange.start,
+            stringRange.quote,
+            includeEmpty,
+            accept,
+            stringRange.contentRange
+        ))
+    }
+    return classPositions
+}
+
 function overlapsCommentRange(start: number, end: number, commentRanges: SourceRange[]) {
     const normalizedEnd = start === end ? end + 1 : end
     return commentRanges.some((range) => start < range.end && normalizedEnd > range.start)
@@ -623,6 +647,8 @@ export default function getClassPositions(
         commentRanges ??= collectCommentRanges(sourceText, textDocument.languageId)
         return !overlapsCommentRange(start, end, commentRanges)
     }
+
+    classPositions.push(...collectCSSDirectiveClassPositions(sourceText, includeEmpty, acceptsClassRange))
 
     if (provider !== 'regex') {
         const oxcClassPositions = getOxcClassPositions(textDocument, settings, options, text, acceptsClassRange)

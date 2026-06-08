@@ -1,4 +1,4 @@
-import { mkdirSync, mkdtempSync } from 'node:fs'
+import { mkdirSync, mkdtempSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
@@ -62,5 +62,32 @@ describe('Next style CSS loader', () => {
 
         expect(result.content).toBe(source)
         expect(result.dependencies).toEqual([])
+    })
+
+    it('locally lowers @compose in CSS Modules without importing package CSS', async () => {
+        const root = createFixture()
+        writeFileSync(join(root, 'app/globals.css'), `
+            @master;
+
+            @layer components {
+                .brand {
+                    background-color: #123456;
+                }
+            }
+        `)
+        const result = await runStyleCSSLoader(
+            root,
+            join(root, 'app/Button.module.css'),
+            '.button { @compose "inline-flex brand"; color: white; }'
+        )
+
+        expect(result.content).toContain('.button{')
+        expect(result.content).toContain('display:inline-flex')
+        expect(result.content).toContain('background-color:#123456')
+        expect(result.content).toContain('color:#fff')
+        expect(result.content).not.toContain('@compose')
+        expect(result.content).not.toContain('@master/css')
+        expect(result.dependencies).toContain(join(root, 'app/globals.css'))
+        expect(result.dependencies).toContain(join(root, 'app/Button.module.css'))
     })
 })
