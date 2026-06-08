@@ -8,6 +8,7 @@ const here = dirname(fileURLToPath(import.meta.url))
 const packageDir = resolve(here, '..')
 const distDir = resolve(packageDir, 'dist')
 const serverPath = resolve(distDir, 'server.min.mjs')
+const extensionPath = resolve(distDir, 'extension.min.mjs')
 const workspaceDir = resolve(here, 'fixtures', 'bundled-config')
 const packageJSON = JSON.parse(readFileSync(resolve(packageDir, 'package.json'), 'utf8'))
 
@@ -155,6 +156,14 @@ function createLanguageServer() {
 
 test('build emits the server bundle', () => {
     expect(statSync(serverPath).isFile()).toBe(true)
+})
+
+test('extension bundle does not default-import vscode', () => {
+    const source = readFileSync(extensionPath, 'utf8')
+
+    expect(statSync(extensionPath).isFile()).toBe(true)
+    expect(source).not.toMatch(/import\s+[A-Za-z_$][\w$]*\s*,\s*\{[^}]*\}\s*from\s*["']vscode["']/)
+    expect(source).not.toMatch(/import\s+[A-Za-z_$][\w$]*\s*from\s*["']vscode["']/)
 })
 
 test('manifest contributes semantic token scopes without TextMate grammars', () => {

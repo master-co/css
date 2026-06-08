@@ -37,6 +37,13 @@ const config: Config = {
                 externalNativePackages
             ]
         },
+        commonjs: {
+            esmExternals: ['vscode'],
+            extensions: [
+                '.js',
+                '.ts'
+            ]
+        },
         output: {
             inlineDynamicImports: true
         }
