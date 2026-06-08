@@ -70,7 +70,9 @@ Exclude class names accidentally accepted by the scanning process.
 <DocProp defaultValue={options.blocklist} types={['(string | RegExp)[]']} />
 
 ### CSS directives
-Extractor options can also be declared in CSS. When these directives are loaded through the project CSS entry graph, they become global extractor defaults. When they appear in a stylesheet root, they only affect that root.
+Extractor options can also be declared in CSS. For the full stylesheet syntax, see [CSS directives](/reference/directives).
+
+When these directives are loaded through the project CSS entry graph, they become global extractor defaults. When they appear in a stylesheet root, they only affect that root.
 
 ```css
 @source 'src/**/*.{html,js,jsx,ts,tsx,vue,svelte,astro,md,mdx}';

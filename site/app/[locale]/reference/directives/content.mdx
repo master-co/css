@@ -1,0 +1,123 @@
+## Overview [sr-only]
+CSS directives are stylesheet-level Master CSS instructions. They are read by the compiler, extractor, and build integrations before browser-facing CSS is emitted.
+
+Directives do not behave like normal CSS rules. Consumed directives are removed from output CSS, while their effects are applied to generated CSS, source scanning, native CSS shaking, or root engine settings.
+
+```css name=index.css
+@master;
+
+@settings {
+    root-size: 16;
+    base-unit: 4;
+    default-mode: light;
+    mode-trigger: media;
+    scope: #app;
+    important: false;
+}
+
+@source "src/**/*.{html,js,jsx,ts,tsx,vue,svelte,astro,mdx}";
+@source not "src/**/*.test.tsx";
+@source required "src/generated/critical-classes.ts";
+
+@safelist "dialog-open bg:primary@dark";
+@blocklist "debug-*";
+
+@preserve native;
+```
+
+---
+
+## Entry markers
+Entry markers tell integrations where Master CSS should attach generated CSS.
+
+| Directive | Effect |
+|-----------|--------|
+| `@master;` | Marks the stylesheet as a lightweight Master CSS entry and inserts the generated CSS slot without loading the package stylesheet graph. |
+| `@import "@master/css";` | Marks the stylesheet as a full Master CSS entry, loads the package stylesheet graph, and includes the default layer and base stylesheet behavior. |
+
+Use `@master;` when a stylesheet should receive generated CSS but should not import the default `@master/css` stylesheet. Use `@import "@master/css";` for the normal full entry that includes the package stylesheet.
+
+Other directives such as `@settings`, `@source`, `@safelist`, `@blocklist`, and `@preserve` are not entry markers by themselves.
+
+---
+
+## Settings
+Use `@settings` for root engine settings that affect generated CSS.
+
+```css
+@settings {
+    root-size: 16;
+    base-unit: 4;
+    default-mode: light;
+    mode-trigger: media;
+    scope: #app;
+    important: false;
+}
+```
+
+| Setting | Effect |
+|---------|--------|
+| `root-size` | Controls numeric conversion to root-relative units such as `rem`. |
+| `base-unit` | Controls multiplier units such as `1x`, `2x`, and `4x`. |
+| `default-mode` | Sets the default mode name, or `none` when no mode should attach by default. |
+| `mode-trigger` | Selects how modes are emitted, such as `media`, `class`, or `host`. |
+| `scope` | Prefixes generated selectors with a root selector. |
+| `important` | Emits generated declarations with `!important` when enabled. |
+
+For token and mode usage, see [Theme](/guide/theme).
+
+---
+
+## Source boundaries
+Use `@source` directives to describe which files the extractor should scan.
+
+```css
+@source "src/**/*.{html,js,jsx,ts,tsx,vue,svelte,astro,mdx}";
+@source not "src/**/*.test.tsx";
+@source required "src/generated/critical-classes.ts";
+```
+
+| Directive | Maps to | Effect |
+|-----------|---------|--------|
+| `@source "<glob>";` | `include` | Broadly includes files that may contain classes. |
+| `@source not "<glob>";` | `exclude` | Excludes noisy files such as tests, generated output, or vendor code. |
+| `@source required "<glob>";` | `required` | Scans mandatory files even when they would otherwise be excluded. |
+
+Bare source globs are resolved from the extractor `cwd`. Globs that start with `./` or `../` are resolved relative to the CSS file that declares the directive.
+
+For the scanning model, see [Scanning latent classes](/guide/scanning-latent-classes).
+
+---
+
+## Candidate policy
+Use `@safelist` and `@blocklist` for direct class candidate policy.
+
+```css
+@safelist "dialog-open translateY(-5):hover bg:primary@dark";
+@blocklist "debug-*";
+@blocklist "example-token";
+```
+
+`@safelist` adds bounded class candidates that do not exist in scanned source. Safelisted candidates are still validated before CSS is generated.
+
+`@blocklist` removes candidates that broad scanning accepted by accident. CSS `@blocklist` values accept exact strings and wildcard patterns with `*` and `?`.
+
+Use these directives for explicit source-scanning exceptions, not as a replacement for complete class strings in source.
+
+---
+
+## Native CSS preservation
+Use `@preserve native;` when a Master-managed stylesheet contains native CSS class rules that must not be removed by native CSS shaking.
+
+```css
+@import "@master/css";
+@preserve native;
+
+.injected-by-payment-widget {
+    color: blue;
+}
+```
+
+The stylesheet is still processed by Master CSS, but native class selector rules are preserved as written instead of being pruned against detected source usage.
+
+For the full native CSS shaking model, see [Shaking unused classes](/guide/shaking-unused-classes).

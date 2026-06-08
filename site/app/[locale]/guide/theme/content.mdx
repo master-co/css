@@ -3,7 +3,7 @@ import VariableNamespaceSources from './components/VariableNamespaceSources'
 ## Overview [sr-only]
 Your theme is the shared design vocabulary for a Master CSS project. It defines the values your markup reaches for every day: color roles, spacing, type, radius, shadows, motion, breakpoints, container sizes, mode-specific values, named conditions, and shared selector aliases.
 
-In Master CSS, that vocabulary usually lives in the project CSS entry: `@theme` for tokens and modes, `@master` for project settings, `@custom-at` for named conditions, and `@custom-selector` for selector shortcuts. The file still feels like CSS, while markup keeps using short semantic classes.
+In Master CSS, that vocabulary usually lives in the project CSS entry: `@theme` for tokens and modes, `@settings` for project settings, `@custom-at` for named conditions, and `@custom-selector` for selector shortcuts. The file still feels like CSS, while markup keeps using short semantic classes.
 
 ```css name=index.css
 @import '@master/css';
@@ -28,7 +28,7 @@ In Master CSS, that vocabulary usually lives in the project CSS entry: `@theme` 
 </section>
 ```
 
-The `@theme`, `@master`, `@custom-at`, and `@custom-selector` directives are configuration, not regular stylesheet output. Master CSS resolves them first, then generates only the variables, utilities, components, and keyframes that the application actually uses.
+The `@theme`, `@settings`, `@custom-at`, and `@custom-selector` directives are configuration, not regular stylesheet output. Master CSS resolves them first, then generates only the variables, utilities, components, and keyframes that the application actually uses.
 
 ---
 
@@ -376,6 +376,8 @@ Most theme work is tokens, but a few root settings shape every generated rule. K
 ```
 
 You do not need to set these in every project. Treat them as theme-level defaults, not a list of options to fill out.
+
+For the complete settings syntax, see [CSS directives](/reference/directives#settings).
 
 ---
 
