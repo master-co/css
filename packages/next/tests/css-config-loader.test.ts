@@ -112,7 +112,7 @@ describe('css config loader', () => {
         const projectDir = createFixtureDir()
         mkdirSync(join(projectDir, 'app'), { recursive: true })
         const entryPath = join(projectDir, 'app/globals.css')
-        const shakeOnlyPath = join(projectDir, 'app/shake.css')
+        const preserveOnlyPath = join(projectDir, 'app/preserve.css')
         const dependencies: string[] = []
         writeFileSync(entryPath, [
             '@import "@master/css";',
@@ -123,8 +123,8 @@ describe('css config loader', () => {
             '    .btn { color: var(--color-primary); }',
             '}'
         ].join('\n'))
-        writeFileSync(shakeOnlyPath, [
-            '@master shake;',
+        writeFileSync(preserveOnlyPath, [
+            '@preserve native;',
             '@theme {',
             '    --color-ignored: #456;',
             '}'
@@ -142,6 +142,6 @@ describe('css config loader', () => {
         expect(source).toContain('"btn"')
         expect(source).not.toContain('ignored')
         expect(dependencies).toContain(entryPath)
-        expect(dependencies).not.toContain(shakeOnlyPath)
+        expect(dependencies).not.toContain(preserveOnlyPath)
     })
 })

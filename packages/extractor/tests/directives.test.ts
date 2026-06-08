@@ -37,7 +37,7 @@ describe('extractor CSS directives', () => {
         expect(directives.preserveNative).toBe(true)
     })
 
-    it('removes legacy master directives without extraction effects', () => {
+    it('does not collect non-entry @master at-rules as extraction directives', () => {
         const source = `
             @master source './src/**/*.tsx';
             @master source exclude './src/**/*.test.tsx';
@@ -57,10 +57,10 @@ describe('extractor CSS directives', () => {
             blocklist: [],
             preserveNative: false
         })
-        expect(result.removed).toBe(true)
-        expect(result.code).not.toContain('@master source')
-        expect(result.code).not.toContain('@master class')
-        expect(result.code).not.toContain('@master no-shake')
+        expect(result.removed).toBe(false)
+        expect(result.code).toContain('@master source')
+        expect(result.code).toContain('@master class')
+        expect(result.code).toContain('@master no-shake')
     })
 
     it('loads extractor directives from a managed CSS entry graph', async () => {
@@ -95,7 +95,7 @@ describe('extractor CSS directives', () => {
         expect(css).not.toContain('legacy-token')
     })
 
-    it('uses stylesheet-local source directives for a shaken CSS root', async () => {
+    it('uses stylesheet-local source directives for a pruned CSS root', async () => {
         const root = createFixture()
         writeFileSync(join(root, 'app/a/page.tsx'), '<div class="card"></div>')
         writeFileSync(join(root, 'app/b/page.tsx'), '<div class="unused"></div>')

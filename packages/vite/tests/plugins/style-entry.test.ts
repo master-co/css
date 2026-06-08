@@ -47,7 +47,7 @@ describe('StyleEntryPlugin', () => {
         expect(context.virtualCSSPlaceholderEmitted).toBeUndefined()
     })
 
-    test('treats @master/css import stylesheets as managed shaken CSS entries', async () => {
+    test('treats @master/css import stylesheets as managed native CSS pruning entries', async () => {
         const context = makeContext('build')
         const plugin = StyleEntryPlugin({ mode: 'static' } as any, context)
 
@@ -59,7 +59,7 @@ describe('StyleEntryPlugin', () => {
 
         expect(result.code).toBe(SLOT)
         expect(context.styleCSSSources.get('/project/src/style.css')).toMatchObject({
-            shake: true,
+            pruneNativeCSS: true,
             source: expect.stringContaining('.card')
         })
         expect(context.styleCSSSources.get('/project/src/style.css').source).not.toContain('@master/css')
@@ -97,12 +97,12 @@ describe('StyleEntryPlugin', () => {
         expect(result.code).not.toContain('@master/css')
         expect(result.code).not.toContain(SLOT)
         expect(context.styleCSSSources.get('/project/src/style.css')).toMatchObject({
-            shake: true
+            pruneNativeCSS: true
         })
         expect(context.virtualCSSImporters).toEqual(new Set(['/project/src/style.css']))
     })
 
-    test('treats @master stylesheets as managed shaken CSS entries', async () => {
+    test('treats @master stylesheets as managed native CSS pruning entries', async () => {
         const context = makeContext('build')
         const plugin = StyleEntryPlugin({ mode: 'static' } as any, context)
 
@@ -114,7 +114,7 @@ describe('StyleEntryPlugin', () => {
 
         expect(result.code).toBe(SLOT)
         expect(context.styleCSSSources.get('/project/src/style.css')).toMatchObject({
-            shake: true,
+            pruneNativeCSS: true,
             source: expect.stringContaining('.card')
         })
         expect(context.styleCSSSources.get('/project/src/style.css').source).not.toContain('@master;')

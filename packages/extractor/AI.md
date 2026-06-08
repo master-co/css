@@ -43,7 +43,7 @@
 - Watch reset loops.
 - Source allow/exclude matching.
 - Vite/Webpack/Next virtual-module consumers.
-- Stylesheet native CSS merging, shake/source directives, and generated CSS ordering.
+- Stylesheet native CSS merging, pruning/source directives, and generated CSS ordering.
 - Do not add project config discovery, workspace detection, or config loading here; use `@master/css-configer` in the calling CLI/build/tooling package.
 - Do not add independent CSS import graph parsing here; use compiler results and keep extraction-specific decisions local.
 

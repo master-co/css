@@ -481,7 +481,7 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
         }
     })
 
-    test('shakes managed CSS entry native CSS and uses its config', async () => {
+    test('prunes managed CSS entry native CSS and uses its config', async () => {
         const root = mkdtempSync(path.join(tmpdir(), 'master-css-webpack-'))
         try {
             mkdirSync(path.join(root, 'src'), { recursive: true })

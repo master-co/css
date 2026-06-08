@@ -1,7 +1,7 @@
 ## Overview [sr-only]
 CSS directives are Master CSS instructions inside stylesheets. They are read by the compiler, extractor, and build integrations before browser-facing CSS is emitted.
 
-Directives do not behave like normal CSS rules. Consumed directives are removed from output CSS, while their effects are applied to generated CSS, source scanning, native CSS shaking, or root engine settings.
+Directives do not behave like normal CSS rules. Consumed directives are removed from output CSS, while their effects are applied to generated CSS, source scanning, native CSS pruning, or root engine settings.
 
 ```css name=index.css
 @master;
@@ -143,7 +143,7 @@ Use `@compose` in these contexts:
 - Nested selectors and nested native at-rules inside those style rules.
 - CSS Modules and SFC `<style>` blocks handled by build integrations.
 
-Master CSS lowers `@compose` before CSS Modules or framework scoped CSS rewrite selectors. A local stylesheet that contains `@compose` or rule-local `@at` does not need `@master;`, does not import `@master/css`, does not create a generated CSS slot, and does not become a native CSS shaking root.
+Master CSS lowers `@compose` before CSS Modules or framework scoped CSS rewrite selectors. A local stylesheet that contains `@compose` or rule-local `@at` does not need `@master;`, does not import `@master/css`, does not create a generated CSS slot, and does not become a native CSS pruning root.
 
 Composed declarations are merged by Master CSS rule priority. Native declarations follow normal source order: declarations after `@compose` override earlier composed declarations, and a later `@compose` can override earlier native declarations unless the earlier declaration is `!important`.
 
@@ -171,7 +171,7 @@ Use `@at` inside managed definitions or native style rules to share the current 
 ---
 
 ## Native CSS preservation
-Use `@preserve native;` when a Master-managed stylesheet contains native CSS class rules that must not be removed by native CSS shaking.
+Use `@preserve native;` when a Master-managed stylesheet contains native CSS class rules that must not be removed by native CSS pruning.
 
 ```css
 @import "@master/css";
@@ -184,4 +184,4 @@ Use `@preserve native;` when a Master-managed stylesheet contains native CSS cla
 
 The stylesheet is still processed by Master CSS, but native class selector rules are preserved as written instead of being pruned against detected source usage.
 
-For the full native CSS shaking model, see [Shaking unused classes](/guide/shaking-unused-classes).
+For the full native CSS pruning model, see [Native CSS pruning](/guide/native-css-pruning).

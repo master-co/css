@@ -103,15 +103,6 @@ function findMasterDirectiveEnd(source: string, start: number) {
     return statementEnd.reason === 'semicolon' ? statementEnd.end : -1
 }
 
-function parseMasterDirectiveName(statement: string) {
-    const body = statement
-        .replace(/^@master\b/, '')
-        .replace(/;$/, '')
-        .trim()
-    const match = /^([-_a-zA-Z0-9]*)/.exec(body)
-    return match?.[1] || ''
-}
-
 export function findMasterDirectiveStatements(source: string) {
     const statements: MasterCSSDirectiveStatement[] = []
     let quote = ''
@@ -160,10 +151,14 @@ export function findMasterDirectiveStatements(source: string) {
             const end = findMasterDirectiveEnd(source, index)
             if (end === -1) continue
             const statement = source.slice(index, end)
+            if (statement.replace(/^@master\b/, '').replace(/;$/, '').trim()) {
+                index = end - 1
+                continue
+            }
             statements.push({
                 start: index,
                 end,
-                name: parseMasterDirectiveName(statement)
+                name: ''
             })
             index = end - 1
         }

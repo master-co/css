@@ -83,7 +83,7 @@ Important files:
 
 `packages/integration` defines the virtual module and query protocol shared by build and framework integrations. It must stay adapter-neutral: no Vite, Next, Webpack, Runtime, Server, Extractor, Compiler, or Configer dependencies. Node filesystem helpers are isolated under its `./node` subpath.
 
-`packages/extractor` scans source files, validates latent classes, and emits CSS for static output. It consumes `@master/css-lexer` for source-level class candidates and owns extraction-specific stylesheet helpers such as native CSS merging, shake/source directives, and generated CSS composition. Project config discovery and config loading belong in configer or the calling integration.
+`packages/extractor` scans source files, validates latent classes, and emits CSS for static output. It consumes `@master/css-lexer` for source-level class candidates and owns extraction-specific stylesheet helpers such as native CSS merging, native CSS pruning/source directives, and generated CSS composition. Project config discovery and config loading belong in configer or the calling integration.
 
 ## Integration Packages
 

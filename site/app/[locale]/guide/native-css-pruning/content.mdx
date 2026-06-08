@@ -1,13 +1,13 @@
 ## Overview [sr-only]
-Class scanning decides which classes are used. Native CSS shaking uses that usage graph to remove unused native CSS class rules from Master-managed stylesheets.
+Class scanning decides which classes are used. Native CSS pruning uses that usage graph to remove unused native CSS class rules from Master-managed stylesheets.
 
 ```txt
 source usage + @import "@master/css" stylesheet
   -> used native class names
-  -> shaken native CSS
+  -> pruned native CSS
 ```
 
-A stylesheet becomes Master-managed when it imports `@master/css`. Native class selector rules in that stylesheet are shaken by default.
+A stylesheet becomes Master-managed when it imports `@master/css`. Native class selector rules in that stylesheet are pruned by default.
 
 ```css name=src/style.css
 @import "@master/css";
@@ -38,7 +38,7 @@ Use [Scanning latent classes](/guide/scanning-latent-classes) for the source sca
 
 ---
 
-## Default shaking
+## Default pruning
 Import `@master/css` from the CSS entry that should receive generated Master CSS. Ordinary class selector rules in that entry are pruned against detected source classes.
 
 ```css name=src/app.css
@@ -83,7 +83,7 @@ For exact stylesheet directive syntax, see [CSS directives](/reference/directive
 ---
 
 ## Import graph
-When a Master-managed `.css` entry imports local relative `.css` files, those imports are expanded into the same shake graph.
+When a Master-managed `.css` entry imports local relative `.css` files, those imports are expanded into the same pruning graph.
 
 ```css name=src/style.css
 @import "@master/css";
@@ -134,7 +134,7 @@ src/style.css
   -> imports @master/css
   -> imports ./styles/cards.css
   -> imports ./styles/buttons.css
-  -> shaken as one root graph
+  -> pruned as one root graph
 ```
 
 Only local relative `.css` imports are expanded this way. Bare package imports, remote imports, and non-CSS imports stay in the bundler's normal CSS pipeline unless they are one of the Master CSS entry imports.
@@ -142,7 +142,7 @@ Only local relative `.css` imports are expanded this way. Bare package imports, 
 ---
 
 ## Root scope
-Shaking is root-scoped. The stylesheet directly processed by the integration is the root; imported files are dependencies of that root.
+Pruning is root-scoped. The stylesheet directly processed by the integration is the root; imported files are dependencies of that root.
 
 ```txt
 app/a/a.css
@@ -184,12 +184,12 @@ If `app/a/page.tsx` uses `a-page shared-card`, then the `a.css` output keeps `.a
 
 If `app/b/page.tsx` uses `b-page shared-card only-used-in-b`, then the `b.css` output can keep `.b-page`, `.shared-card`, and `.only-used-in-b`.
 
-The same imported file can therefore be shaken differently under different roots. If `shared.css` is also imported directly by JavaScript or by a framework route, then `shared.css` becomes its own root only when that direct import enters the Master CSS pipeline.
+The same imported file can therefore be pruned differently under different roots. If `shared.css` is also imported directly by JavaScript or by a framework route, then `shared.css` becomes its own root only when that direct import enters the Master CSS pipeline.
 
 ---
 
 ## Scoped scanning
-By default, a shaken stylesheet uses the global scanner scope. Add `@source`, `@source not`, `@source required`, `@safelist`, and `@blocklist` inside the stylesheet graph when that root needs a narrower or wider usage graph.
+By default, a pruned stylesheet uses the global scanner scope. Add `@source`, `@source not`, `@source required`, `@safelist`, and `@blocklist` inside the stylesheet graph when that root needs a narrower or wider usage graph.
 
 ```txt
 app/a/a.css
@@ -270,7 +270,7 @@ Use `@source required` when a root must scan a file even though the global or lo
 ---
 
 ## Rule filtering
-Native shaking filters class selector rules by detected usage. A class rule is kept when its selector branch references a class that is used.
+Native CSS pruning filters class selector rules by detected usage. A class rule is kept when its selector branch references a class that is used.
 
 ```css name=src/style.css
 @import "@master/css";
@@ -325,7 +325,7 @@ Rules without class selectors, such as `body`, `html`, `:root`, and keyframes, a
 ---
 
 ## Config references
-Shaken native CSS can reference variables and keyframes from the project CSS entry graph. When a kept native rule uses `var(--*)` or a configured animation name, Master CSS includes the required config output.
+Pruned native CSS can reference variables and keyframes from the project CSS entry graph. When a kept native rule uses `var(--*)` or a configured animation name, Master CSS includes the required config output.
 
 ```css name=index.css
 @theme {
@@ -366,7 +366,7 @@ The kept `.notice` rule pulls in `--color-primary` and `@keyframes fade-in`. `.u
 ---
 
 ## Included classes
-If a native class is used by a bounded external source, include it explicitly so shaking keeps the rule.
+If a native class is used by a bounded external source, include it explicitly so pruning keeps the rule.
 
 ```css name=src/dialog.css
 @import "@master/css";
@@ -386,8 +386,8 @@ Use this for known class contracts. Do not use it as a replacement for putting n
 ---
 
 ## Checklist
-- Import `@master/css` from CSS entries that should receive generated Master CSS and native CSS shaking.
+- Import `@master/css` from CSS entries that should receive generated Master CSS and native CSS pruning.
 - Add `@preserve native;` to Master-managed entries whose native CSS must be preserved.
-- Remember that local relative `.css` imports follow the root's shaking decision.
+- Remember that local relative `.css` imports follow the root's pruning decision.
 - Use `@safelist` for native classes used by bounded external systems.
 - Keep vendor, CMS, or third-party styles outside Master-managed roots unless their class usage is visible to the scanner or protected with `@preserve native;`.

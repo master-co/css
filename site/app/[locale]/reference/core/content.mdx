@@ -20,7 +20,7 @@ The default stylesheet contains:
 @import "./theme.css";
 ```
 
-Use `@import '@master/css/base.css';` when a runtime-only page only needs the base layer declaration and normalization rules. Use the default `@master/css` import from app stylesheets that should receive generated Master CSS and native CSS shaking in static mode.
+Use `@import '@master/css/base.css';` when a runtime-only page only needs the base layer declaration and normalization rules. Use the default `@master/css` import from app stylesheets that should receive generated Master CSS and native CSS pruning in static mode.
 
 ### `MasterCSS`
 The main body of this package is the class `MasterCSS`, which encapsulates the core business of Master CSS.

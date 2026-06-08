@@ -282,6 +282,15 @@ test.concurrent('renders CSS directive ranges with quoted semicolons', () => {
     )).toHaveLength(7)
 })
 
+test.concurrent('does not render non-entry @master at-rules as CSS directives', () => {
+    const { tokens } = renderTokens(`
+        @master shake;
+        @master no-shake;
+    `, 'css')
+
+    expect(tokens).not.toContainEqual({ text: '@master', type: 'keyword', modifiers: ['directive'] })
+})
+
 test.concurrent('renders CSS directives in SCSS-like sources without a CSS parser dependency', () => {
     const { tokens } = renderTokens(`
         $color: red;

@@ -87,7 +87,7 @@ When these directives are loaded through the project CSS entry graph, they becom
 
 Bare source globs are resolved from `cwd`. Globs that start with `./` or `../` are resolved relative to the CSS file that declares the directive. `@blocklist` accepts exact strings and `*` / `?` wildcard patterns.
 
-### Native CSS shaking
+### Native CSS pruning
 Prune native CSS class selector rules from a stylesheet by importing `@master/css` in that stylesheet:
 
 ```css
@@ -103,7 +103,7 @@ Prune native CSS class selector rules from a stylesheet by importing `@master/cs
 }
 ```
 
-Local relative `.css` imports are expanded, the Master import is replaced by generated CSS, and native class rules are kept only when their class names are found by the extractor. Add `@preserve native;` to preserve native CSS in a Master-managed root. See [Shaking unused classes](/guide/shaking-unused-classes) for the full model.
+Local relative `.css` imports are expanded, the Master import is replaced by generated CSS, and native class rules are kept only when their class names are found by the extractor. Add `@preserve native;` to preserve native CSS in a Master-managed root. See [Native CSS pruning](/guide/native-css-pruning) for the full model.
 
 ### `extractLatentClasses()`
 Extract latent classes from string content.

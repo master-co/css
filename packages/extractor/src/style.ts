@@ -86,7 +86,7 @@ export interface CreateExtractedCSSResult {
 
 export interface StyleCSSSource {
     source: string
-    shake: boolean
+    pruneNativeCSS: boolean
     masterCSS: boolean
     directives: ExtractorDirectives
     dependencies: string[]
@@ -543,7 +543,7 @@ export async function registerStyleCSSSource(
             dependencies: []
         }
     const masterCSS = hasMasterCSSImport(resolvedSource.source)
-    const shake = !collectedDirectives.directives.preserveNative && isMasterStyleSource(resolvedSource.source)
+    const pruneNativeCSS = !collectedDirectives.directives.preserveNative && isMasterStyleSource(resolvedSource.source)
     const sourceWithoutImports = removeStyleCSSImports(resolvedSource.source).code
     const cleanSource = removeMasterStyleDirectives(sourceWithoutImports).code
     const compileOptions = options
@@ -560,13 +560,13 @@ export async function registerStyleCSSSource(
     ])]
     styleCSSSources.set(filename, {
         source: cleanSource,
-        shake,
+        pruneNativeCSS,
         masterCSS,
         directives: collectedDirectives.directives,
         dependencies: result.dependencies || [],
         sourceDependencies
     })
-    if (shake) {
+    if (pruneNativeCSS) {
         refreshExtractorNativeClasses(extractor, result.nativeClassNames)
     }
     return result
@@ -742,7 +742,7 @@ export async function createExtractedCSSResult(options: CreateExtractedCSSOption
         Array.from(styleCSSSources || [])
             .map(([id, styleSource]) => compileStyleCSS(id, styleSource.source, {
                 ...compileOptions,
-                classes: styleSource.shake
+                classes: styleSource.pruneNativeCSS
                     ? getStyleSourceClasses(extractor, styleSource, classes, compileOptions.projectDir ?? extractor.cwd)
                     : undefined
             }))

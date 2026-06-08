@@ -595,8 +595,6 @@ describe.concurrent('@master/css-compiler', () => {
             @blocklist 'legacy-*';
             @preserve native;
             @master;
-            @master shake;
-            @master no-shake;
 
             .card {
                 color: red;
@@ -616,13 +614,29 @@ describe.concurrent('@master/css-compiler', () => {
         expect(result.css).not.toContain('@blocklist')
         expect(result.css).not.toContain('@preserve')
         expect(result.css).not.toContain('@master;')
-        expect(result.css).not.toContain('@master shake')
-        expect(result.css).not.toContain('@master no-shake')
+    })
+
+    it('does not consume non-entry @master at-rules', () => {
+        const result = compileCSS(`
+            @master shake;
+            @master no-shake;
+
+            .card {
+                color: red;
+            }
+        `)
+
+        expect(result.extractionPolicy.preserveNative).toBe(false)
+        expect(result.css).toContain('@master shake')
+        expect(result.css).toContain('@master no-shake')
+        expect(result.css).toContain('.card')
     })
 
     it('finds only top-level standalone master directives', () => {
         const statements = findStandaloneMasterDirectiveStatements(`
             @master;
+            @master shake;
+            @master no-shake;
 
             @media print {
                 @master shake;
@@ -853,7 +867,7 @@ describe.concurrent('@master/css-compiler', () => {
         }
     })
 
-    it('removes non-entry @master blocks without config effects', () => {
+    it('preserves non-entry @master blocks as native CSS', () => {
         const result = compileCSS(`
             @master {
                 root-size: 10;
@@ -867,7 +881,7 @@ describe.concurrent('@master/css-compiler', () => {
         expect(result.config.rootSize).toBeUndefined()
         expect(result.css).toContain('.card')
         expect(result.css).toContain('color: red')
-        expect(result.css).not.toContain('@master')
+        expect(result.css).toContain('@master')
     })
 
     it('rejects invalid directive placement and names', () => {

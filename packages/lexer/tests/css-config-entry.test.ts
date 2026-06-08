@@ -32,3 +32,14 @@ test.concurrent('finds and removes Master entry directives', () => {
         removed: true
     })
 })
+
+test.concurrent('ignores non-entry @master at-rules', () => {
+    const source = '@master shake;\n@master no-shake;\n.a{}'
+
+    expect(hasMasterCSSConfigEntrypoint(source)).toBe(false)
+    expect(findMasterDirectiveStatements(source)).toEqual([])
+    expect(removeMasterDirectiveStatements(source)).toEqual({
+        code: source,
+        removed: false
+    })
+})

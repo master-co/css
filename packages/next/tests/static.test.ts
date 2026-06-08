@@ -130,7 +130,7 @@ describe('Next static mode', () => {
         expect(readFileSync(outputPath, 'utf-8')).toContain('--color-primary:red')
     }, 30000)
 
-    it('shakes dev CSS chunks that import @master/css', async () => {
+    it('prunes dev CSS chunks that import @master/css', async () => {
         const root = createFixture()
         writeFileSync(join(root, 'app/page.tsx'), `
             export default function Page() {

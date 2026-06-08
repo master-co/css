@@ -155,7 +155,7 @@ test('loads project-level CSS config entries', async () => {
     try {
         const { entry } = writeCSSFixture(cwd)
         writeFileSync(join(cwd, 'ignored.css'), `
-            @master shake;
+            @preserve native;
             @layer components {
                 .ignored {
                     color: red;
@@ -164,7 +164,7 @@ test('loads project-level CSS config entries', async () => {
         `)
 
         expect(hasMasterCSSConfigEntrypoint('@master;')).toBe(true)
-        expect(hasMasterCSSConfigEntrypoint('@master shake;')).toBe(false)
+        expect(hasMasterCSSConfigEntrypoint('@preserve native;')).toBe(false)
         expect(hasMasterCSSConfigEntrypoint('@import "@master/css/index.css";')).toBe(false)
         await expect(findCSSConfigEntryFiles(cwd)).resolves.toStrictEqual([entry])
 

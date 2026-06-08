@@ -167,11 +167,9 @@ describe('style CSS extraction helpers', () => {
             '@blocklist "debug-*";',
             '@preserve native;',
             '@master;',
-            '@master no-shake;',
             '',
             '@media (min-width: 768px) {',
             '    @preserve native;',
-            '    @master no-shake;',
             '}',
             '',
             '.card { color: red; }'
@@ -183,8 +181,7 @@ describe('style CSS extraction helpers', () => {
         expect(result.code).not.toContain('@safelist')
         expect(result.code).not.toContain('@blocklist')
         expect(result.code).not.toContain('@preserve native;\n@master')
-        expect(result.code).not.toContain('@master no-shake;\n\n.card')
-        expect(result.code).toContain('@media (min-width: 768px) {\n    @preserve native;\n    @master no-shake;\n}')
+        expect(result.code).toContain('@media (min-width: 768px) {\n    @preserve native;\n}')
     })
 
     it('treats an empty host source as an intentionally handled Master CSS import', () => {
@@ -343,7 +340,7 @@ describe('style CSS extraction helpers', () => {
         })
     })
 
-    it('shakes local CSS imports from Master CSS import roots by default', async () => {
+    it('prunes local CSS imports from Master CSS import roots by default', async () => {
         const root = createFixture()
         mkdirSync(join(root, 'app/styles'), { recursive: true })
         writeFileSync(join(root, 'app/styles/btn.css'), `
@@ -391,7 +388,7 @@ describe('style CSS extraction helpers', () => {
         expect(css).not.toContain('@import "./styles/btn.css"')
     })
 
-    it('preserves native CSS when a Master CSS import root opts out of shaking', async () => {
+    it('preserves native CSS when a Master CSS import root opts out of pruning', async () => {
         const root = createFixture()
         const extractor = new CSSExtractor({
             include: []
@@ -426,12 +423,10 @@ describe('style CSS extraction helpers', () => {
         expect(css).not.toContain('@preserve native')
     })
 
-    it('removes imported legacy master directives without making dependencies independent roots', async () => {
+    it('preserves imported native CSS when a root graph opts out of pruning', async () => {
         const root = createFixture()
         mkdirSync(join(root, 'app/styles'), { recursive: true })
         writeFileSync(join(root, 'app/styles/btn.css'), `
-            @master shake;
-
             .btn-native {
                 color: red;
             }
@@ -462,11 +457,10 @@ describe('style CSS extraction helpers', () => {
         expect([...extractor.nativeClassNames]).toEqual([])
         expect(css).toContain('.btn-native')
         expect(css).toContain('.btn-unused')
-        expect(css).not.toContain('@master shake')
         expect(css).not.toContain('@preserve native')
     })
 
-    it('can emit shaken native CSS without generated Master CSS', async () => {
+    it('can emit pruned native CSS without generated Master CSS', async () => {
         const root = createFixture()
         const extractor = new CSSExtractor({
             include: []

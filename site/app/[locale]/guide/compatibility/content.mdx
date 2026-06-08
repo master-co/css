@@ -152,7 +152,7 @@ This keeps vendor defaults below product components and utilities, reducing the 
 ---
 
 ## Existing CSS workflows
-Master CSS can coexist with native CSS, preprocessors, CSS modules, and framework `<style>` blocks. The most predictable setup is to keep one project CSS entry that imports `@master/css`, then let regular CSS files enter that graph through normal imports when they should share the same theme, layer order, extraction context, and native CSS shaking behavior.
+Master CSS can coexist with native CSS, preprocessors, CSS modules, and framework `<style>` blocks. The most predictable setup is to keep one project CSS entry that imports `@master/css`, then let regular CSS files enter that graph through normal imports when they should share the same theme, layer order, extraction context, and native CSS pruning behavior.
 
 Use native CSS variables from your theme when module-scoped or component-scoped CSS needs shared design values:
 
@@ -169,7 +169,7 @@ Use Master CSS classes in markup for styling that should be generated, validated
 <button class="bg:primary r:md px:md h:40">Save</button>
 ```
 
-When a CSS file imports `@master/css`, it becomes a Master-managed stylesheet. Keep vendor, CMS, or externally injected classes outside managed roots unless the class usage is visible to extraction or protected with [`@preserve native`](/guide/shaking-unused-classes#default-shaking).
+When a CSS file imports `@master/css`, it becomes a Master-managed stylesheet. Keep vendor, CMS, or externally injected classes outside managed roots unless the class usage is visible to extraction or protected with [`@preserve native`](/guide/native-css-pruning#default-pruning).
 
 ---
 
@@ -179,4 +179,4 @@ When a CSS file imports `@master/css`, it becomes a Master-managed stylesheet. K
 - Write standard unprefixed properties and selectors when Master CSS already prefixes them.
 - Use arbitrary properties and native selector suffixes for new platform features.
 - Put third-party CSS in `preset` when you want components and utilities to override it.
-- Keep externally injected classes visible to extraction, outside managed roots, or protected from native CSS shaking.
+- Keep externally injected classes visible to extraction, outside managed roots, or protected from native CSS pruning.

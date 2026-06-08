@@ -234,7 +234,7 @@ describe('StyleEntryBuildPlugin (D1 placeholder-leak warn)', () => {
         }
     })
 
-    test('uses the managed CSS entry for config and native CSS shaking', async () => {
+    test('uses the managed CSS entry for config and native CSS pruning', async () => {
         const root = mkdtempSync(path.join(tmpdir(), 'master-css-vite-'))
         try {
             const entryPath = path.join(root, 'app.css')

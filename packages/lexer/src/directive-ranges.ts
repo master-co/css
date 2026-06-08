@@ -238,6 +238,15 @@ export function collectCSSDirectiveRanges(source: string) {
         if (!CSS_DIRECTIVE_RANGE_NAME_SET.has(name.value)) continue
 
         const statementEnd = findCSSStatementEnd(source, name.end)
+        if (
+            name.value === 'master'
+            && (
+                statementEnd.reason !== 'semicolon'
+                || source.slice(name.end, statementEnd.end - 1).trim()
+            )
+        ) {
+            continue
+        }
         const blockStart = statementEnd.reason === 'block' ? statementEnd.end : -1
         const blockEnd = blockStart === -1 ? -1 : findCSSBlockEnd(source, blockStart)
         const end = blockStart === -1

@@ -86,10 +86,6 @@ export interface ParsedDirectives extends Pick<CompileCSSResult, 'config' | 'ext
 }
 
 const MASTER_CUSTOM_AT_RULES = {
-    master: {
-        prelude: '*',
-        body: 'style-block'
-    },
     settings: {
         prelude: '*',
         body: 'style-block'
@@ -1490,8 +1486,6 @@ export function compileCSS(source: string, options: CompileCSSOptions = {}): Com
 
                 if (rule.type === 'custom') {
                     switch (rule.value.name) {
-                        case 'master':
-                            return []
                         case 'settings':
                             if (ruleDepth !== 0) {
                                 throw new Error('@settings must be top-level')

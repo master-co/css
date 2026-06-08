@@ -54,7 +54,7 @@ const nextConfig = await withMasterCSS({
 export default nextConfig
 ```
 
-Static mode uses source-glob scanning as the correctness baseline. A Turbopack CSS loader replaces `@import '@master/css'` with the generated CSS. CSS files that import `@master/css` are treated as native CSS shaking roots by default, so ordinary class selectors are pruned against detected classes; `var(--*)` and animation references can pull matching variables and keyframes from the project CSS entry graph. Add `@preserve native;` when native CSS must be preserved. A scanner loader also scans JavaScript and TypeScript modules as they pass through the build, so imported files such as `app/main.ts` can incrementally feed new classes into the generated CSS.
+Static mode uses source-glob scanning as the correctness baseline. A Turbopack CSS loader replaces `@import '@master/css'` with the generated CSS. CSS files that import `@master/css` are treated as native CSS pruning roots by default, so ordinary class selectors are pruned against detected classes; `var(--*)` and animation references can pull matching variables and keyframes from the project CSS entry graph. Add `@preserve native;` when native CSS must be preserved. A scanner loader also scans JavaScript and TypeScript modules as they pass through the build, so imported files such as `app/main.ts` can incrementally feed new classes into the generated CSS.
 
 ### Client types
 Add `@master/css-integration/client` to a project environment file when TypeScript imports Master CSS virtual modules.

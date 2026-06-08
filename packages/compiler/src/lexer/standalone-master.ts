@@ -155,15 +155,6 @@ function parseAtRuleName(source: string, start: number) {
     return source.slice(start + 1, cursor)
 }
 
-function parseMasterDirectiveName(statement: string) {
-    const body = statement
-        .replace(/^@master\b/, '')
-        .replace(/;$/, '')
-        .trim()
-    const match = /^([-_a-zA-Z0-9]*)/.exec(body)
-    return match?.[1] || ''
-}
-
 function parseStandaloneCSSDirectiveStatement(
     source: string,
     start: number,
@@ -175,7 +166,8 @@ function parseStandaloneCSSDirectiveStatement(
     const prelude = statement
         .replace(new RegExp(`^@${atRuleName}\\b`), '')
         .replace(/;$/, '')
-    const name = atRuleName === 'master' ? parseMasterDirectiveName(statement) : atRuleName
+    if (atRuleName === 'master' && prelude.trim()) return
+    const name = atRuleName === 'master' ? '' : atRuleName
     return {
         start,
         end,
