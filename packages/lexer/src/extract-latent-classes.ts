@@ -1,3 +1,5 @@
+import { MASTER_CSS_VALUE_UNIT_PATTERN } from './units'
+
 /**
  * Extract latent classes from arbitrary source content (HTML, JSX, TS, Vue,
  * Svelte, MDX). Returns an array of candidate class strings; downstream
@@ -57,8 +59,7 @@ const GROUP_BODY = /{(.*)}/
 const KEEP_TOKEN = /(?:\S*\{\S*\})|(?:^[\w\-()]+:\S+)|(?:^\$[\w-]+:\S+)|(?:^[\w-]+\(\S+\))|(?:^[\w-]+)/
 
 // CSS unit suffix used by the `WxH` shorthand recognizer.
-const CSS_UNIT_SUFFIX = '%|cm|mm|q|in|pt|pc|px|em|rem|ex|rex|cap|rcap|ch|rch|ic|ric|lh|rlh|vw|svw|lvw|dvw|vh|svh|lvh|dvh|vi|svi|lvi|dvi|vb|svb|lvb|dvb|vmin|svmin|lvmin|dvmin|vmax|svmax|lvmax|dvmax|cqw|cqh|cqi|cqb|cqmin|cqmax|deg|grad|rad|turn|s|ms|hz|khz|dpi|dpcm|dppx|x|fr|db|st'
-const KEEP_WXH = new RegExp(`^(?:calc\\(.*\\)|\\d+(?:${CSS_UNIT_SUFFIX})?)x(?:calc\\(.*\\)|\\d+(?:${CSS_UNIT_SUFFIX})?)$`)
+const KEEP_WXH = new RegExp(`^(?:calc\\(.*\\)|\\d+(?:${MASTER_CSS_VALUE_UNIT_PATTERN})?)x(?:calc\\(.*\\)|\\d+(?:${MASTER_CSS_VALUE_UNIT_PATTERN})?)$`)
 
 // Reject the token when any of these match. Listed in order of frequency in
 // real codebases, so the loop short-circuits earlier on average.

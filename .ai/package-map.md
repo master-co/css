@@ -5,6 +5,7 @@
 | Package | Entry Points | Responsibility |
 |---|---|---|
 | `@master/css` | `.`, `./index.css`, `./normal.css`, `./*` | Core engine, config, rules, types, utilities, default stylesheet |
+| `@master/css-lexer` | `.` | Dependency-free source ranges, directive/import scanners, Master class lexical tokens, and latent class candidates |
 | `@master/css-compiler` | `.` | Compile Master CSS stylesheet entries into semantic config, directive metadata, and native CSS |
 | `@master/css-runtime` | `.` | Browser runtime, DOM observation, hydration |
 | `@master/css-server` | `.` | HTML render and CSS injection |
@@ -31,7 +32,7 @@
 
 ## Dependency Direction
 
-Do not introduce reverse dependencies from core to compiler, integration contracts, runtime, server, extractor, language service, ESLint, examples, or site. `@master/css-integration` may depend on core public types and must remain below compiler/configer/build integrations. The compiler may depend on core to convert CSS directive results into semantic `Config` values and on integration contracts for generated module result shapes.
+Do not introduce reverse dependencies from core to compiler, integration contracts, runtime, server, extractor, language service, ESLint, examples, or site. `@master/css-lexer` must stay dependency-free from core/compiler/extractor/language-service and should be consumed upward for raw source scanning. `@master/css-integration` may depend on core public types and must remain below compiler/configer/build integrations. The compiler may depend on core to convert CSS directive results into semantic `Config` values and on integration contracts for generated module result shapes.
 
 ## Package Tests
 

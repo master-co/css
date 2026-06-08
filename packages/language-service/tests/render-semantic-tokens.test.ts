@@ -245,6 +245,61 @@ test.concurrent('renders semantic tokens for CSS directives', () => {
     expectToken(tokens, 'block', 'class')
 })
 
+test.concurrent('renders CSS directive ranges with quoted semicolons', () => {
+    const { tokens } = renderTokens(`
+        @master source "a;b.css";
+
+        .btn {
+            @compose "fg:red";
+        }
+
+        @custom-at quoted @media (x: "a;b");
+    `, 'css')
+
+    expectToken(tokens, '@master', 'keyword', ['directive'])
+    expectToken(tokens, 'source', 'property', ['directive'])
+    expectToken(tokens, 'a;b.css', 'string', ['quoted'])
+    expectToken(tokens, '@compose', 'keyword', ['directive'])
+    expectToken(tokens, 'fg', 'property')
+    expectToken(tokens, 'red', 'enumMember')
+    expectToken(tokens, '@custom-at', 'keyword', ['directive'])
+    expectToken(tokens, 'quoted', 'variable', ['directive', 'query'])
+    expectToken(tokens, '@media', 'keyword', ['query'])
+    expect(tokens.filter(({ text, type, modifiers }) =>
+        text === ';' && type === 'operator' && modifiers.includes('directive')
+    )).toHaveLength(3)
+})
+
+test.concurrent('renders CSS directives in SCSS-like sources without a CSS parser dependency', () => {
+    const { tokens } = renderTokens(`
+        $color: red;
+
+        @theme {
+            --color-primary: #123;
+        }
+
+        .btn {
+            @compose "block";
+        }
+    `, 'scss')
+
+    expectToken(tokens, '@theme', 'keyword', ['directive'])
+    expectToken(tokens, '--color-primary', 'variable')
+    expectToken(tokens, '#123', 'enumMember')
+    expectToken(tokens, '@compose', 'keyword', ['directive'])
+    expectToken(tokens, 'block', 'class')
+})
+
+test.concurrent('does not synthesize a closing directive brace for incomplete CSS blocks', () => {
+    const { tokens } = renderTokens('@theme { --color-primary: red;', 'css')
+
+    expectToken(tokens, '@theme', 'keyword', ['directive'])
+    expectToken(tokens, '{', 'operator', ['directive'])
+    expectToken(tokens, '--color-primary', 'variable')
+    expectToken(tokens, 'red', 'enumMember')
+    expect(tokens).not.toContainEqual({ text: ';', type: 'operator', modifiers: ['directive'] })
+})
+
 test.concurrent('shares class position detection with semantic token spans', () => {
     const doc = createDoc('tsx', 'const x = clsx("fg:red", condition && `block`)')
     const languageService = new CSSLanguageService()

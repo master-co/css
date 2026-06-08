@@ -129,6 +129,9 @@ importers:
       '@master/css-language-service':
         specifier: workspace:^
         version: link:packages/language-service
+      '@master/css-lexer':
+        specifier: workspace:^
+        version: link:packages/lexer
       '@master/css-runtime':
         specifier: workspace:^
         version: link:packages/runtime
@@ -1184,6 +1187,9 @@ importers:
       '@master/css-integration':
         specifier: workspace:^
         version: link:../integration
+      '@master/css-lexer':
+        specifier: workspace:^
+        version: link:../lexer
       lightningcss:
         specifier: ^1.32.0
         version: 1.32.0
@@ -1203,6 +1209,9 @@ importers:
       '@master/css-integration':
         specifier: workspace:^
         version: link:../integration
+      '@master/css-lexer':
+        specifier: workspace:^
+        version: link:../lexer
     devDependencies:
       shared:
         specifier: workspace:^
@@ -1213,6 +1222,9 @@ importers:
       '@master/colors':
         specifier: ^3.0.0
         version: 3.0.0
+      '@master/css-lexer':
+        specifier: workspace:^
+        version: link:../lexer
       csstype:
         specifier: ^3.2.3
         version: 3.2.3
@@ -1309,6 +1321,9 @@ importers:
       '@master/css-integration':
         specifier: workspace:^
         version: link:../integration
+      '@master/css-lexer':
+        specifier: workspace:^
+        version: link:../lexer
       '@master/css-validator':
         specifier: workspace:^
         version: link:../validator
@@ -1451,6 +1466,9 @@ importers:
       '@master/css':
         specifier: workspace:^
         version: link:../core
+      '@master/css-lexer':
+        specifier: workspace:^
+        version: link:../lexer
       '@techor/extend':
         specifier: ^3.2.5
         version: 3.2.5
@@ -1515,6 +1533,8 @@ importers:
       vscode-languageserver:
         specifier: ^9.0.1
         version: 9.0.1
+
+  packages/lexer: {}
 
   packages/next:
     dependencies:

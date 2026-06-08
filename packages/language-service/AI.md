@@ -26,6 +26,8 @@
 - `src/utils/get-query-completion-items.ts`
 - `src/utils/regex.ts`
 
+CSS directive highlighting consumes dependency-free source ranges from `@master/css-lexer`, then layers language-service semantic token classification on top. Master class strings consume lexer lexical tokens first, then language-service adds core-backed semantic meaning through `css.generate()`. Do not route CSS directive highlighting through the full compiler pipeline.
+
 ## Allowed Changes
 
 - Focused completion, hover, color, semantic token, or class-position fixes.

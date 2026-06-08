@@ -81,6 +81,7 @@
         "provenance": true
     },
     "dependencies": {
+        "@master/css-lexer": "workspace:^",
         "@master/colors": "^3.0.0",
         "csstype": "^3.2.3",
         "json-safe-extend": "^3.2.5"

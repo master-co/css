@@ -5,6 +5,8 @@
 ```txt
 shared / external data
   ↓
+@master/css-lexer
+  ↓
 @master/css
   ↓
 @master/css-integration
@@ -36,9 +38,9 @@ site
 
 The core package must remain independent from integrations and tooling packages. `@master/css-integration` may depend on core public types, but core must not depend on it. The compiler is the CSS front-end for core: it parses Master CSS stylesheets, resolves CSS import graphs, and uses core adapters to produce semantic `Config` objects and native CSS results.
 
-When a feature creates a package cycle or self-build cycle, extract shared, dependency-free contracts or IR into `shared` first. Keep core independent; packages above core may depend on core for semantic interpretation.
+When a feature creates a package cycle or self-build cycle, extract dependency-free contracts, IR, or lexical source scanners into the lowest owning package first. Use `shared` for type/data contracts and `@master/css-lexer` for raw source/range/token scanning. Keep core independent; packages above core may depend on core for semantic interpretation.
 
-`shared` owns pure Master CSS config contracts and CSS directive result contracts. `@master/css-integration` owns adapter-neutral integration contracts such as `?master-css-config`, `virtual:master-css-config`, `virtual:master-css-preloaded`, `virtual:master-utilities.css`, generated module source helpers, and dependency-light loader/plugin contracts. Neither package should own CSS parsing, import graph expansion, or Master CSS package resolution.
+`shared` owns pure Master CSS config contracts and CSS directive result contracts. `@master/css-lexer` owns dependency-free source scanners: generic ranges, CSS directive ranges, Master CSS config entrypoint statements, Master class lexical display tokens, and latent class candidates. `@master/css-integration` owns adapter-neutral integration contracts such as `?master-css-config`, `virtual:master-css-config`, `virtual:master-css-preloaded`, `virtual:master-utilities.css`, generated module source helpers, and dependency-light loader/plugin contracts. None of these packages should own CSS semantic parsing, import graph expansion, or Master CSS package resolution.
 
 ## Core Package
 
@@ -81,7 +83,7 @@ Important files:
 
 `packages/integration` defines the virtual module and query protocol shared by build and framework integrations. It must stay adapter-neutral: no Vite, Next, Webpack, Runtime, Server, Extractor, Compiler, or Configer dependencies. Node filesystem helpers are isolated under its `./node` subpath.
 
-`packages/extractor` scans source files, extracts latent classes, validates them, and emits CSS for static output. It owns extraction-specific stylesheet helpers such as native CSS merging, shake/source directives, and generated CSS composition, but consumes compiler-provided CSS parsing/config results. Project config discovery and config loading belong in configer or the calling integration.
+`packages/extractor` scans source files, validates latent classes, and emits CSS for static output. It consumes `@master/css-lexer` for source-level class candidates and owns extraction-specific stylesheet helpers such as native CSS merging, shake/source directives, and generated CSS composition. Project config discovery and config loading belong in configer or the calling integration.
 
 ## Integration Packages
 
@@ -95,7 +97,7 @@ Framework packages wrap those lower layers for Astro, Nuxt, React, Vue, and Svel
 
 ## Tooling Packages
 
-`packages/language-service` uses core config and utilities for completion, hover, color features, and semantic token classification.
+`packages/language-service` uses core config and utilities for completion, hover, color features, and semantic token classification. It consumes `@master/css-lexer` for CSS directive ranges and Master class lexical display tokens, then layers core-backed semantic meaning on top.
 
 `packages/language-server` exposes the language service through LSP, manages workspace configs, and serves active/full semantic token requests.
 

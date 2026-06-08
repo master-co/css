@@ -1,4 +1,4 @@
-import escapeRegExp from 'shared/utils/escape-reg-exp'
+import { escapeRegExp, findCSSStatementEnd, isCSSIdentChar } from './source'
 
 export const MASTER_CSS_PACKAGE_MODULE_IDS = ['@master/css'] as const
 
@@ -14,10 +14,6 @@ export interface MasterCSSDirectiveStatement {
     start: number
     end: number
     name: string
-}
-
-function isIdentChar(char: string | undefined) {
-    return Boolean(char && /[-_a-zA-Z0-9]/.test(char))
 }
 
 export function normalizeMasterCSSModuleIds(): Set<string> {
@@ -39,47 +35,8 @@ export function createMasterCSSConfigEntryPattern() {
 }
 
 export function findCSSImportEnd(source: string, start: number) {
-    let quote = ''
-    let comment = false
-    let depth = 0
-    for (let index = start; index < source.length; index++) {
-        const char = source[index]
-        const next = source[index + 1]
-        if (comment) {
-            if (char === '*' && next === '/') {
-                comment = false
-                index++
-            }
-            continue
-        }
-        if (quote) {
-            if (char === '\\') {
-                index++
-            } else if (char === quote) {
-                quote = ''
-            }
-            continue
-        }
-        if (char === '/' && next === '*') {
-            comment = true
-            index++
-            continue
-        }
-        if (char === '"' || char === '\'') {
-            quote = char
-            continue
-        }
-        if (char === '(') {
-            depth++
-            continue
-        }
-        if (char === ')') {
-            depth--
-            continue
-        }
-        if (char === ';' && depth === 0) return index + 1
-    }
-    return -1
+    const statementEnd = findCSSStatementEnd(source, start)
+    return statementEnd.reason === 'semicolon' ? statementEnd.end : -1
 }
 
 export function parseCSSImportSource(statement: string) {
@@ -142,39 +99,8 @@ export function findCSSImportStatements(source: string) {
 }
 
 function findMasterDirectiveEnd(source: string, start: number) {
-    let quote = ''
-    let comment = false
-    for (let index = start; index < source.length; index++) {
-        const char = source[index]
-        const next = source[index + 1]
-        if (comment) {
-            if (char === '*' && next === '/') {
-                comment = false
-                index++
-            }
-            continue
-        }
-        if (quote) {
-            if (char === '\\') {
-                index++
-            } else if (char === quote) {
-                quote = ''
-            }
-            continue
-        }
-        if (char === '/' && next === '*') {
-            comment = true
-            index++
-            continue
-        }
-        if (char === '"' || char === '\'') {
-            quote = char
-            continue
-        }
-        if (char === ';') return index + 1
-        if (char === '{') return -1
-    }
-    return -1
+    const statementEnd = findCSSStatementEnd(source, start)
+    return statementEnd.reason === 'semicolon' ? statementEnd.end : -1
 }
 
 function parseMasterDirectiveName(statement: string) {
@@ -229,7 +155,7 @@ export function findMasterDirectiveStatements(source: string) {
         if (
             depth === 0
             && source.startsWith('@master', index)
-            && !isIdentChar(source[index + '@master'.length])
+            && !isCSSIdentChar(source[index + '@master'.length])
         ) {
             const end = findMasterDirectiveEnd(source, index)
             if (end === -1) continue

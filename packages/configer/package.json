@@ -58,6 +58,7 @@
     },
     "dependencies": {
         "@master/css-compiler": "workspace:^",
-        "@master/css-integration": "workspace:^"
+        "@master/css-integration": "workspace:^",
+        "@master/css-lexer": "workspace:^"
     }
 }

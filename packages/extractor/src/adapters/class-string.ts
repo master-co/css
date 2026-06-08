@@ -1,4 +1,4 @@
-import extractLatentClasses from '../functions/extract-latent-classes'
+import { extractLatentClasses } from '@master/css-lexer'
 
 export function addClassString(
     classes: Set<string>,

@@ -1,6 +1,6 @@
 import { parseSync, visitorKeys } from 'oxc-parser'
 import { addClassString } from './class-string'
-import extractLatentClasses from '../functions/extract-latent-classes'
+import { extractLatentClasses } from '@master/css-lexer'
 import type { SourceAdapter } from './types'
 
 export const OXC_SOURCE_EXT = /\.(?:(?:[cm]?[jt]s)|(?:[jt]sx))(?:\?|$)/

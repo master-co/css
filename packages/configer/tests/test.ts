@@ -127,9 +127,10 @@ test('loads package entry theme config from CSS imports', async () => {
         const result = await loadConfig(entry)
         const packageEntry = resolveMasterCSSPackageEntryFile('@master/css', entry, cwd)
         expect(packageEntry).toBeTruthy()
+        if (!packageEntry) throw new Error('Expected Master CSS package entry')
         expect(result.dependencies).toContain(packageEntry)
         const packageDependencies = result.dependencies
-            .filter((dependency) => dependency.startsWith(dirname(packageEntry!)))
+            .filter((dependency) => dependency.startsWith(dirname(packageEntry)))
         expect(packageDependencies.length).toBeGreaterThan(1)
         expect(result.config.variables).toContainEqual({
             namespace: 'breakpoint',

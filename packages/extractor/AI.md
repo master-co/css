@@ -2,7 +2,7 @@
 
 ## Responsibility
 
-`@master/css-extractor` statically scans source files, extracts possible Master CSS classes, validates them, inserts valid rules into core layers, exports CSS, and provides extraction-specific stylesheet helpers for build integrations. CSS parsing and CSS config compilation should be delegated to `@master/css-compiler`.
+`@master/css-extractor` statically scans source files, validates possible Master CSS classes, inserts valid rules into core layers, exports CSS, and provides extraction-specific stylesheet helpers for build integrations. Raw latent class candidate scanning belongs to `@master/css-lexer`. CSS parsing and CSS config compilation should be delegated to `@master/css-compiler`.
 
 ## Inputs And Outputs
 
@@ -21,7 +21,6 @@
 
 - `src/core.ts`
 - `src/style.ts`
-- `src/functions/extract-latent-classes.ts`
 - `src/options/index.ts`
 
 ## Allowed Changes
@@ -39,7 +38,7 @@
 
 ## Risk Areas
 
-- `extractLatentClasses()` false positives and false negatives.
+- `extractLatentClasses()` false positives and false negatives in `@master/css-lexer`.
 - `invalidClasses` and `validClasses` cache behavior.
 - Watch reset loops.
 - Source allow/exclude matching.

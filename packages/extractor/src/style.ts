@@ -18,8 +18,9 @@ import {
     hasMasterCSSConfigEntrypoint,
     isMasterCSSModuleId as isMasterCSSConfigModuleId,
     normalizeMasterCSSModuleIds,
-    parseCSSImportSource
-} from 'shared/css-config-entry'
+    parseCSSImportSource,
+    extractLatentClasses
+} from '@master/css-lexer'
 import { VIRTUAL_CSS_ID } from '@master/css-integration/style-module'
 import escapeRegExp from 'shared/utils/escape-reg-exp'
 import { createRequire } from 'node:module'
@@ -27,7 +28,6 @@ import { dirname, extname, join, resolve } from 'node:path'
 import { pathToFileURL } from 'node:url'
 import { existsSync, readFileSync } from 'node:fs'
 import type CSSExtractor from './core'
-import extractLatentClasses from './functions/extract-latent-classes'
 import {
     collectExtractorDirectivesFromCSSGraph,
     createExtractorDirectives,

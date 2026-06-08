@@ -19,6 +19,8 @@
             "@master/css-language-server": [ "./node_modules/@master/css-language-server/src" ],
             "@master/css-language-service": [ "./node_modules/@master/css-language-service/src" ],
             "@master/css-language-service/*": [ "./node_modules/@master/css-language-service/src/*" ],
+            "@master/css-lexer": [ "./node_modules/@master/css-lexer/src" ],
+            "@master/css-lexer/*": [ "./node_modules/@master/css-lexer/src/*" ],
             "@master/css-devtools-hook": [ "./node_modules/@master/css-devtools-hook/src" ],
             "@master/css-configer/*": [ "./node_modules/@master/css-configer/src/*" ],
             "@master/css.nuxt": [ "./node_modules/@master/css.nuxt/src/module.ts" ],

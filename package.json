@@ -64,6 +64,7 @@
         "@master/css-integration": "workspace:^",
         "@master/css-language-server": "workspace:^",
         "@master/css-language-service": "workspace:^",
+        "@master/css-lexer": "workspace:^",
         "@master/css-runtime": "workspace:^",
         "@master/css-server": "workspace:^",
         "@master/css-validator": "workspace:^",

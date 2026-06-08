@@ -18,6 +18,7 @@
 - Do not make `@master/css` depend on this package.
 - This package may depend on `@master/css` for semantic config conversion.
 - Keep directive parsing package-local.
+- Consume dependency-free source range helpers from `@master/css-lexer`; compiler-specific semantic directive parsing stays package-local.
 - Emit shared directive contracts from `shared/css-directives` for low-level consumers, and expose semantic `Config` APIs for config loading.
 - Do not reintroduce PostCSS in this package.
 - If CSS configuration directive syntax is expanded or changed incompatibly, update any language-service semantic token classification that is affected in the same change when practical.

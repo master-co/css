@@ -7,5 +7,5 @@ export { HTML_SOURCE_EXT, extractHTMLClasses, htmlAdapter } from './adapters/htm
 export { OXC_SOURCE_EXT, extractOxcClasses, oxcAdapter } from './adapters/oxc'
 
 export { default as options } from './options'
-export { default as extractLatentClasses } from './functions/extract-latent-classes'
+export { extractLatentClasses } from '@master/css-lexer'
 export { default, default as CSSExtractor } from './core'

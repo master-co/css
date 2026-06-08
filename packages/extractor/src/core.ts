@@ -1,7 +1,7 @@
 import { default as defaultOptions, Options } from './options'
 import { createCSS, MasterCSS } from '@master/css'
 import type { Config } from 'shared/css-config'
-import extractLatentClasses from './functions/extract-latent-classes'
+import { extractLatentClasses } from '@master/css-lexer'
 import fs from 'fs'
 import { Minimatch } from 'minimatch'
 import log from '@techor/log'

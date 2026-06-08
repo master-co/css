@@ -85,6 +85,7 @@
         "@master/css": "workspace:^",
         "@master/css-compiler": "workspace:^",
         "@master/css-integration": "workspace:^",
+        "@master/css-lexer": "workspace:^",
         "@master/css-validator": "workspace:^",
         "@techor/extend": "^3.2.5",
         "@techor/glob": "^3.2.5",

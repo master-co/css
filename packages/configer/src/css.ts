@@ -10,7 +10,7 @@ import {
     hasMasterCSSConfigEntrypoint as hasMasterCSSConfigEntrypointFallback,
     isMasterCSSModuleId,
     normalizeMasterCSSModuleIds
-} from 'shared/css-config-entry'
+} from '@master/css-lexer'
 import { stripResourceQuery } from '@master/css-integration/config-module'
 
 const CSS_CONFIG_ENTRY_IGNORED_DIRECTORIES = new Set([
