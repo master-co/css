@@ -13,9 +13,9 @@ const units = {
     reference: {
         categories: [
             'Overview',
-            'Base',
+            'Stylesheet',
             'Syntax',
-            'Package'
+            'Packages'
         ]
     },
     messages: {

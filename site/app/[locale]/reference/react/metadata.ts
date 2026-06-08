@@ -4,7 +4,7 @@ import pkg from '~/packages/react/package.json'
 const metadata = define({
     title: pkg.name,
     description: pkg.description,
-    category: 'Package',
+    category: 'Packages',
     type: 'entity',
     fileURL: import.meta.url,
     package: {
