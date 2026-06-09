@@ -10,8 +10,8 @@ function createFixture() {
     writeFileSync(path.join(root, 'app.css'), `
         @master;
 
-        @layer components {
-            .brand {
+        @components {
+            brand {
                 background-color: #123456;
             }
         }

@@ -180,8 +180,8 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
         try {
             writeFileSync(entryPath, [
                 '@master;',
-                '@layer components {',
-                '  .brand { background-color: #123456; }',
+                '@components {',
+                '  brand { background-color: #123456; }',
                 '}'
             ].join('\n'))
 
@@ -450,7 +450,7 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
         const entryPath = path.join(root, 'app.css')
         const themePath = path.join(root, 'theme.css')
         try {
-            writeFileSync(themePath, '@layer components { .card { color: #123456; } }')
+            writeFileSync(themePath, '@components { card { color: #123456; } }')
             writeFileSync(entryPath, [
                 '@master;',
                 '@import "./theme.css";'
@@ -505,8 +505,8 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
                 '    --color-primary: #123456;',
                 '}',
                 '',
-                '@layer components {',
-                '    .btn {',
+                '@components {',
+                '    btn {',
                 '        display: grid;',
                 '    }',
                 '}'
@@ -531,7 +531,7 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
             expect(css).toContain('.root-native')
             expect(css).not.toContain('.root-unused')
             expect(css).toMatch(/--color-primary:(rgb\(18 52 86\)|#123456)/)
-            expect(css).toContain('.btn{display:grid}')
+            expect(css).toMatch(/\.btn\s*\{\s*display:\s*grid;?\s*\}/)
         } finally {
             rmSync(root, { recursive: true, force: true })
         }
@@ -566,7 +566,7 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
         const configPath = path.join(root, 'app.css')
         const tokenPath = path.join(root, 'theme.css')
         try {
-            writeFileSync(tokenPath, '@layer components { .card { color: #123456; } }')
+            writeFileSync(tokenPath, '@components { card { color: #123456; } }')
             writeFileSync(configPath, '@master;\n@import "./theme.css";')
 
             const plugin = makePlugin({}, root)

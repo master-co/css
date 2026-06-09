@@ -6,8 +6,8 @@
     --breakpoint-md: 48;
 }
 
-@layer components {
-    .btn {
+@components {
+    btn {
         @compose "bg:primary";
         display: inline-flex;
     }

@@ -192,8 +192,8 @@ describe('StyleEntryBuildPlugin (D1 placeholder-leak warn)', () => {
                     color: red;
                 }
 
-                @layer components {
-                    .btn {
+                @components {
+                    btn {
                         display: inline-flex;
                     }
                 }
@@ -250,8 +250,8 @@ describe('StyleEntryBuildPlugin (D1 placeholder-leak warn)', () => {
                     --color-primary: #123456;
                 }
 
-                @layer components {
-                    .btn {
+                @components {
+                    btn {
                         display: grid;
                     }
                 }

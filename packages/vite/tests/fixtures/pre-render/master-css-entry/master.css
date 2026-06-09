@@ -3,8 +3,8 @@
     --breakpoint-md: 768;
 }
 
-@layer components {
-    .card {
+@components {
+    card {
         @compose "bg:brand";
         @at md {
             @compose "font:18";

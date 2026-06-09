@@ -206,9 +206,9 @@ describe('raw declarations', () => {
 
     test('generates component rule declarations with at-rules', () => {
         const css = createCSSWithTheme({
-            atTokens: {
-                sm: 500
-            },
+            variables: [
+                { namespace: 'breakpoint', key: 'sm', value: 500 }
+            ],
             utilities: [
                 component('btn', [
                     { selector: '&', declarations: { 'font-weight': '600' } },
@@ -270,11 +270,16 @@ describe('raw declarations', () => {
         expect(css.componentsLayer.text).toContain('@media (width>=40rem){.btn\\:hover\\@sm:hover{display:block}}')
     })
 
-    test('resolves selector tokens in component selector variants', () => {
+    test('resolves selector variants in component selector variants', () => {
         const css = createCSSWithTheme({
-            selectorTokens: {
-                ':interactive': ':is(:hover,:focus-visible)'
-            },
+            variants: [
+                {
+                    channel: 'selector',
+                    name: 'interactive',
+                    raw: ':interactive',
+                    template: { rules: [{ selector: '&:is(:hover,:focus-visible)' }] }
+                }
+            ],
             utilities: [
                 component('btn', [
                     {
@@ -382,7 +387,7 @@ describe('raw declarations', () => {
         expect(css.componentsLayer.text).toContain('.code-line-add:not(:only-child):before{content:\'+\'!important}')
     })
 
-    test('resolves selector token shorthands in component selectors', () => {
+    test('keeps selector shorthand names native inside component selectors', () => {
         const css = createCSSWithTheme({
             utilities: [
                 component('btn', [
@@ -394,7 +399,7 @@ describe('raw declarations', () => {
             ]
         }).add('btn')
 
-        expect(css.componentsLayer.text).toContain('.btn:only-child{display:block}')
+        expect(css.componentsLayer.text).toContain('.btn:only{display:block}')
     })
 
     test('inserts component definitions into configured top-level layers', () => {

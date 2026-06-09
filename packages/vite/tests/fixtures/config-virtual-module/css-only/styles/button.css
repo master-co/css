@@ -1,5 +1,5 @@
-@layer components {
-    .btn {
+@components {
+    btn {
         font-size: 1rem;
     }
 }

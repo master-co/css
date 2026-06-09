@@ -29,8 +29,8 @@ function writeCSSFixture(cwd: string) {
         @master;
         @import './styles/tokens.css';
 
-        @layer components {
-            .btn {
+        @components {
+            btn {
                 color: var(--color-primary);
                 display: inline-flex;
             }
@@ -115,9 +115,9 @@ test('loads package entry theme config from CSS imports', async () => {
         writeFileSync(entry, `
             @import "@master/css";
 
-            @layer components {
-                .card {
-                    @at sm {
+            @components {
+                card {
+                    @variant sm {
                         color: red;
                     }
                 }
