@@ -7,12 +7,6 @@
 }
 
 @theme {
-    /* Content sizes */
-    full: 100%;
-    fit: fit-content;
-    max: max-content;
-    min: min-content;
-
     /* Breakpoints */
     breakpoint-4xs: 360;
     breakpoint-3xs: 480;
@@ -101,10 +95,6 @@
     border-radius-3xl: 24;
     border-radius-4xl: 32;
 
-    /* Order */
-    order-first: -999999;
-    order-last: 999999;
-
     /* Spacing */
     spacing-4xs: 2;
     spacing-3xs: 4;
@@ -127,15 +117,15 @@
     duration-slower: 500ms;
     duration-slowest: 800ms;
 
-    easing-smooth: cubic-bezier(.4,0,.2,1);
-    easing-soft: cubic-bezier(.33,1,.68,1);
-    easing-crisp: cubic-bezier(.16,1,.3,1);
-    easing-snap: cubic-bezier(.2,0,0,1);
-    easing-accelerate: cubic-bezier(.4,0,1,1);
-    easing-decelerate: cubic-bezier(0,0,.2,1);
-    easing-overshoot: cubic-bezier(.34,1.56,.64,1);
-    easing-rewind: cubic-bezier(.36,0,.66,-.56);
-    easing-spring: cubic-bezier(.68,-.6,.32,1.6);
+    easing-smooth: cubic-bezier(.4, 0, .2, 1);
+    easing-soft: cubic-bezier(.33, 1, .68, 1);
+    easing-crisp: cubic-bezier(.16, 1, .3, 1);
+    easing-snap: cubic-bezier(.2, 0, 0, 1);
+    easing-accelerate: cubic-bezier(.4, 0, 1, 1);
+    easing-decelerate: cubic-bezier(0, 0, .2, 1);
+    easing-overshoot: cubic-bezier(.34, 1.56, .64, 1);
+    easing-rewind: cubic-bezier(.36, 0, .66, -.56);
+    easing-spring: cubic-bezier(.68, -.6, .32, 1.6);
 
     animation-fade: fade 1s infinite;
     animation-flash: flash 1s infinite;
@@ -157,7 +147,6 @@
     shadow-2xl: 0 16px 24px -8px oklch(0% 0 none / .12), 0 32px 64px -16px oklch(0% 0 none / .16);
 
     /* Color aliases */
-    color-current: currentColor;
     color-white: oklch(100% 0 none);
     color-black: oklch(0% 0 none);
 
@@ -716,6 +705,17 @@
     color-text-red: $color-red-30;
 }
 
+/* Inline aliases */
+@theme inline {
+    full: 100%;
+    fit: fit-content;
+    max: max-content;
+    min: min-content;
+    order-first: -999999;
+    order-last: 999999;
+    color-current: currentColor;
+}
+
 /* At tokens */
 @custom-at all @media all;
 @custom-at print @media print;
@@ -767,60 +767,137 @@
 /* Animations */
 @animations {
     @keyframes fade {
-        0% { opacity: 0; }
-        to { opacity: 1; }
+        0% {
+            opacity: 0;
+        }
+
+        to {
+            opacity: 1;
+        }
     }
 
     @keyframes flash {
-        0%, 50%, to { opacity: 1; }
-        25%, 75% { opacity: 0; }
+        0%, 50%, to {
+            opacity: 1;
+        }
+
+        25%, 75% {
+            opacity: 0;
+        }
     }
 
     @keyframes float {
-        0% { transform: none; }
-        50% { transform: translateY(-1.25rem); }
-        to { transform: none; }
+        0% {
+            transform: none;
+        }
+
+        50% {
+            transform: translateY(-1.25rem);
+        }
+
+        to {
+            transform: none;
+        }
     }
 
     @keyframes heart {
-        0% { transform: scale(1); }
-        14% { transform: scale(1.3); }
-        28% { transform: scale(1); }
-        42% { transform: scale(1.3); }
-        70% { transform: scale(1); }
+        0% {
+            transform: scale(1);
+        }
+
+        14% {
+            transform: scale(1.3);
+        }
+
+        28% {
+            transform: scale(1);
+        }
+
+        42% {
+            transform: scale(1.3);
+        }
+
+        70% {
+            transform: scale(1);
+        }
     }
 
     @keyframes jump {
-        0%, to { transform: translateY(-25%); animation-timing-function: cubic-bezier(.8,0,1,1); }
-        50% { transform: translateY(0); animation-timing-function: cubic-bezier(0,0,.2,1); }
+        0%, to {
+            transform: translateY(-25%);
+            animation-timing-function: cubic-bezier(.8, 0, 1, 1);
+        }
+
+        50% {
+            transform: translateY(0);
+            animation-timing-function: cubic-bezier(0, 0, .2, 1);
+        }
     }
 
     @keyframes ping {
-        75%, to { transform: scale(2); opacity: 0; }
+        75%, to {
+            transform: scale(2);
+            opacity: 0;
+        }
     }
 
     @keyframes pulse {
-        0% { transform: none; }
-        50% { transform: scale(1.05); }
-        to { transform: none; }
+        0% {
+            transform: none;
+        }
+
+        50% {
+            transform: scale(1.05);
+        }
+
+        to {
+            transform: none;
+        }
     }
 
     @keyframes rotate {
-        0% { transform: rotate(-360deg); }
-        to { transform: none; }
+        0% {
+            transform: rotate(-360deg);
+        }
+
+        to {
+            transform: none;
+        }
     }
 
     @keyframes shake {
-        0% { transform: none; }
-        6.5% { transform: translateX(-6px) rotateY(-9deg); }
-        18.5% { transform: translateX(5px) rotateY(7deg); }
-        31.5% { transform: translateX(-3px) rotateY(-5deg); }
-        43.5% { transform: translateX(2px) rotateY(3deg); }
-        50% { transform: none; }
+        0% {
+            transform: none;
+        }
+
+        6.5% {
+            transform: translateX(-6px) rotateY(-9deg);
+        }
+
+        18.5% {
+            transform: translateX(5px) rotateY(7deg);
+        }
+
+        31.5% {
+            transform: translateX(-3px) rotateY(-5deg);
+        }
+
+        43.5% {
+            transform: translateX(2px) rotateY(3deg);
+        }
+
+        50% {
+            transform: none;
+        }
     }
 
     @keyframes zoom {
-        0% { transform: scale(0); }
-        to { transform: none; }
+        0% {
+            transform: scale(0);
+        }
+
+        to {
+            transform: none;
+        }
     }
 }
