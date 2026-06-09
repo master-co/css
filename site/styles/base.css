@@ -1,13 +1,13 @@
 @theme light {
-    --color-yellow-ring: $color-black/.1;
-    --color-touch-yellow: $color-yellow-30;
-    --color-text-yellow-contrast: $color-yellow-90;
+    color-yellow-ring: $color-black/.1;
+    color-touch-yellow: $color-yellow-30;
+    color-text-yellow-contrast: $color-yellow-90;
 }
 
 @theme dark {
-    --color-yellow-ring: $color-white/.3;
-    --color-touch-yellow: $color-yellow-40;
-    --color-text-yellow-contrast: $color-yellow-95;
+    color-yellow-ring: $color-white/.3;
+    color-touch-yellow: $color-yellow-40;
+    color-text-yellow-contrast: $color-yellow-95;
 }
 
 @layer components {

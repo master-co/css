@@ -20,7 +20,7 @@ export default () => {
                 <table>
                     <thead>
                         <tr>
-                            <th>Variable</th>
+                            <th>Token</th>
                             <th>Value</th>
                             <th>Application</th>
                         </tr>
@@ -29,7 +29,7 @@ export default () => {
                         {
                             shadowEntries.map(([key, value]) => (
                                 <tr key={key}>
-                                    <td><InlineCode className="white-space:nowrap">{`--shadow-${key}`}</InlineCode></td>
+                                    <td><InlineCode className="white-space:nowrap">{`shadow-${key}`}</InlineCode></td>
                                     <td><InlineCode>{value}</InlineCode></td>
                                     <td>{shadowApplications[key]}</td>
                                 </tr>

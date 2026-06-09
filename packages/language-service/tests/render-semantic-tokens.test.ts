@@ -200,7 +200,7 @@ test.concurrent('renders semantic tokens for CSS directives', () => {
         }
 
         @theme dark {
-            --color-primary: $color-blue-60/.8;
+            color-primary: $color-blue-60/.8;
         }
 
         @custom-at motion-safe @media (prefers-reduced-motion: no-preference);
@@ -223,7 +223,7 @@ test.concurrent('renders semantic tokens for CSS directives', () => {
     expectToken(tokens, 'root-size', 'property')
     expectToken(tokens, '@theme', 'keyword', ['directive'])
     expectToken(tokens, 'dark', 'enumMember', ['directive'])
-    expectToken(tokens, '--color-primary', 'variable')
+    expectToken(tokens, 'color-primary', 'variable')
     expectToken(tokens, '$color-blue-60', 'variable')
     expectToken(tokens, '.8', 'number')
     expectToken(tokens, '@custom-at', 'keyword', ['directive'])
@@ -297,7 +297,7 @@ test.concurrent('renders CSS directives in SCSS-like sources without a CSS parse
         $color: red;
 
         @theme {
-            --color-primary: #123;
+            color-primary: #123;
         }
 
         .btn {
@@ -306,18 +306,18 @@ test.concurrent('renders CSS directives in SCSS-like sources without a CSS parse
     `, 'scss')
 
     expectToken(tokens, '@theme', 'keyword', ['directive'])
-    expectToken(tokens, '--color-primary', 'variable')
+    expectToken(tokens, 'color-primary', 'variable')
     expectToken(tokens, '#123', 'enumMember')
     expectToken(tokens, '@compose', 'keyword', ['directive'])
     expectToken(tokens, 'block', 'class')
 })
 
 test.concurrent('does not synthesize a closing directive brace for incomplete CSS blocks', () => {
-    const { tokens } = renderTokens('@theme { --color-primary: red;', 'css')
+    const { tokens } = renderTokens('@theme { color-primary: red;', 'css')
 
     expectToken(tokens, '@theme', 'keyword', ['directive'])
     expectToken(tokens, '{', 'operator', ['directive'])
-    expectToken(tokens, '--color-primary', 'variable')
+    expectToken(tokens, 'color-primary', 'variable')
     expectToken(tokens, 'red', 'enumMember')
     expect(tokens).not.toContainEqual({ text: ';', type: 'operator', modifiers: ['directive'] })
 })
@@ -382,7 +382,7 @@ test.concurrent('skips full embedded semantic tokens in active mode', () => {
 })
 
 test.concurrent('renders active semantic tokens for the CSS directive at a position', () => {
-    const content = '@theme dark { --color-primary: $color-blue-60/.8; }\n.btn { color: red; }'
+    const content = '@theme dark { color-primary: $color-blue-60/.8; }\n.btn { color: red; }'
     const doc = createDoc('css', content)
     const languageService = new CSSLanguageService()
     const semanticTokens = languageService.renderSemanticTokensAtPosition(doc, doc.positionAt(content.indexOf('dark') + 1))
@@ -390,7 +390,7 @@ test.concurrent('renders active semantic tokens for the CSS directive at a posit
 
     expectToken(tokens, '@theme', 'keyword', ['directive'])
     expectToken(tokens, 'dark', 'enumMember', ['directive'])
-    expectToken(tokens, '--color-primary', 'variable')
+    expectToken(tokens, 'color-primary', 'variable')
     expectToken(tokens, '$color-blue-60', 'variable')
     expect(tokens.some(({ text }) => text === 'btn')).toBe(false)
 })
@@ -405,7 +405,7 @@ test.concurrent('skips embedded semantic tokens when syntax highlighting is off'
 })
 
 test.concurrent('renders CSS document semantic tokens when syntax highlighting is off', () => {
-    const content = '@theme dark { --color-primary: $color-blue-60/.8; }\n.btn { color: red; }'
+    const content = '@theme dark { color-primary: $color-blue-60/.8; }\n.btn { color: red; }'
     const doc = createDoc('css', content)
     const languageService = new CSSLanguageService({ embeddedSyntaxHighlighting: 'off' })
     const semanticTokens = languageService.renderSemanticTokens(doc)
@@ -413,7 +413,7 @@ test.concurrent('renders CSS document semantic tokens when syntax highlighting i
 
     expectToken(tokens, '@theme', 'keyword', ['directive'])
     expectToken(tokens, 'dark', 'enumMember', ['directive'])
-    expectToken(tokens, '--color-primary', 'variable')
+    expectToken(tokens, 'color-primary', 'variable')
     expectToken(tokens, '$color-blue-60', 'variable')
     expectToken(tokens, 'btn', 'class', ['selector'])
 })

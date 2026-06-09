@@ -96,7 +96,7 @@ describe('Next static mode', () => {
             @import "@master/css";
 
             @theme {
-                --color-primary: #ff0000;
+                color-primary: #ff0000;
             }
         `)
         writeFileSync(join(root, 'app/page.tsx'), `
@@ -118,7 +118,7 @@ describe('Next static mode', () => {
             }
 
             @theme {
-                --color-primary: #ff0000;
+                color-primary: #ff0000;
             }
         `
         const replaced = await runStaticCSSLoader(statePath, join(root, 'app/globals.css'), source)
@@ -166,7 +166,7 @@ describe('Next static mode', () => {
 
     it('adds output and managed CSS entry files as CSS loader dependencies for dev updates', async () => {
         const root = createFixture()
-        writeFileSync(join(root, 'theme.css'), '@theme { --color-primary: #00f; }')
+        writeFileSync(join(root, 'theme.css'), '@theme { color-primary: #00f; }')
         writeFileSync(join(root, 'app/globals.css'), `
             @import "@master/css";
             @import "../theme.css";
@@ -197,7 +197,7 @@ describe('Next static mode', () => {
 
         const source = `
             @theme {
-                --color-primary: #00f;
+                color-primary: #00f;
             }
         `
         const replaced = await runStaticCSSLoader(statePath, join(root, 'app/theme.css'), source)

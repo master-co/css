@@ -22,7 +22,7 @@ export default function ThemeNumberVariableTable(props: ThemeNumberVariableTable
                 <table>
                     <thead>
                         <tr>
-                            <th>Variable</th>
+                            <th>Token</th>
                             <th>Value</th>
                             <th>(REM)</th>
                             {hasSpacingRepresentation && <th>Representation</th>}
@@ -33,7 +33,7 @@ export default function ThemeNumberVariableTable(props: ThemeNumberVariableTable
                         {
                             entries.map(([key, value], index) => (
                                 <tr key={key}>
-                                    <th><InlineCode>{`--${variablePrefix}-${key}`}</InlineCode></th>
+                                    <th><InlineCode>{`${variablePrefix}-${key}`}</InlineCode></th>
                                     <td><InlineCode>{`${value}`}</InlineCode></td>
                                     <td>{formatRem(value)}</td>
                                     {hasSpacingRepresentation && <td>{renderSpacingRepresentation(value, index, entries.length)}</td>}

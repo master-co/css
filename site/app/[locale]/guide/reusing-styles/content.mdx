@@ -22,11 +22,11 @@ When the repeated part is a value, make it a token instead of a class. Tokens ke
 
 ```css name=index.css
 @theme {
-    --color-yellow-ring: $color-black/.1;
-    --color-touch-yellow: $color-yellow-30;
-    --color-text-yellow-contrast: $color-yellow-90;
-    --border-radius-control: 8;
-    --spacing-control-x: 16;
+    color-yellow-ring: $color-black/.1;
+    color-touch-yellow: $color-yellow-30;
+    color-text-yellow-contrast: $color-yellow-90;
+    border-radius-control: 8;
+    spacing-control-x: 16;
 }
 ```
 
@@ -378,15 +378,15 @@ Split component definitions only when it helps ownership. Local CSS imports from
 
 ```css name=styles/base.css
 @theme light {
-    --color-yellow-ring: $color-black/.1;
-    --color-touch-yellow: $color-yellow-30;
-    --color-text-yellow-contrast: $color-yellow-90;
+    color-yellow-ring: $color-black/.1;
+    color-touch-yellow: $color-yellow-30;
+    color-text-yellow-contrast: $color-yellow-90;
 }
 
 @theme dark {
-    --color-yellow-ring: $color-white/.3;
-    --color-touch-yellow: $color-yellow-40;
-    --color-text-yellow-contrast: $color-yellow-95;
+    color-yellow-ring: $color-white/.3;
+    color-touch-yellow: $color-yellow-40;
+    color-text-yellow-contrast: $color-yellow-95;
 }
 
 @components {

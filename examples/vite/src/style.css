@@ -5,7 +5,7 @@
 }
 
 @theme {
-    --primary: $(yellow);
+    primary: $(yellow);
 }
 
 :root {

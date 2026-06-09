@@ -45,7 +45,7 @@ export default function VariableNamespaceSources() {
                         {
                             namespaceEntries.map(([namespace, utilityNames]) => (
                                 <tr key={namespace}>
-                                    <th><InlineCode>{`--${namespace}-*`}</InlineCode></th>
+                                    <th><InlineCode>{`${namespace}-*`}</InlineCode></th>
                                     <td>Utility-defined namespace</td>
                                     <td>{renderUtilityNames(utilityNames)}</td>
                                 </tr>

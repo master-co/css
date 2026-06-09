@@ -47,9 +47,9 @@ describe('style CSS extraction helpers', () => {
         expect(hasMasterStyleEntrypoint('@master;')).toBe(true)
         expect(hasMasterStyleEntrypoint('@master shake;')).toBe(false)
         expect(hasMasterStyleEntrypoint('@preserve native;')).toBe(false)
-        expect(hasMasterStyleEntrypoint('@theme { --color-primary: red; }')).toBe(false)
+        expect(hasMasterStyleEntrypoint('@theme { color-primary: red; }')).toBe(false)
         expect(hasMasterStyleEntrypoint('@import "./other.css";')).toBe(false)
-        expect(isMasterStyleSource('@theme { --color-primary: red; }')).toBe(false)
+        expect(isMasterStyleSource('@theme { color-primary: red; }')).toBe(false)
         expect(isMasterStyleSource('@import "@master/css";')).toBe(true)
         expect(isMasterStyleSource(resolveStyleCSSImportGraph(
             join(createFixture(), 'app/globals.css'),
@@ -127,7 +127,7 @@ describe('style CSS extraction helpers', () => {
         expect(result?.dependencies.filter((dependency) => !dependency.startsWith(root)).length).toBeGreaterThan(0)
         expect(resolveMasterStyleSource(
             join(root, 'app/theme.css'),
-            '@theme { --color-primary: red; }',
+            '@theme { color-primary: red; }',
             root
         )).toBeUndefined()
         expect(resolveMasterStyleSource(
@@ -218,8 +218,8 @@ describe('style CSS extraction helpers', () => {
             @import "@master/css";
 
             @theme {
-                --color-primary: #ff0000;
-                --animation-main: scale 1s;
+                color-primary: #ff0000;
+                animation-main: scale 1s;
             }
 
             @keyframes fade {
@@ -262,7 +262,8 @@ describe('style CSS extraction helpers', () => {
         expect(css).toContain('--color-primary:red')
         expect(css).toContain('--color-red')
         expect(css).toContain('@keyframes fade')
-        expect(css).toContain('.btn{display:grid}')
+        expect(css).toContain('.btn')
+        expect(css).toContain('display: grid')
         expect(css).toContain('.block{display:block}')
         expect(css).toContain('.fg\\:red{color:var(--color-red)}')
         expect(css).not.toContain('@master')
@@ -280,8 +281,8 @@ describe('style CSS extraction helpers', () => {
         const styleCSSSources = new Map()
         await registerStyleCSSSource(extractor, styleCSSSources, join(root, 'app/globals.css'), `
             @theme {
-                --animation-main: scale 1s;
-                --color-primary: #ff0000;
+                animation-main: scale 1s;
+                color-primary: #ff0000;
             }
 
             @keyframes fade {

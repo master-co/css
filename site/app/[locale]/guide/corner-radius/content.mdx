@@ -50,7 +50,7 @@ Use the same token for surfaces that should feel related. For example, a card, i
 ---
 
 ## Namespace for corner radius
-Corner radius tokens are defined with `--border-radius-*` variables. Radius utilities search this namespace, so `r:lg`, `rt:lg`, and `border-radius:lg` all resolve `--border-radius-lg` without requiring the `border-radius-` prefix in markup.
+Corner radius tokens are defined with the `border-radius-*` namespace. Radius utilities search this namespace, so `r:lg`, `rt:lg`, and `border-radius:lg` all resolve `border-radius-lg` without requiring the `border-radius-` prefix in markup.
 
 The following rules share the same namespace:
 
@@ -61,8 +61,8 @@ The following rules share the same namespace:
 
 ```css name=index.css
 @theme {
-    --border-radius-card: 12;
-    --border-radius-control: 6;
+    border-radius-card: 12;
+    border-radius-control: 6;
 }
 ```
 
@@ -81,8 +81,8 @@ See the [border radius](/reference/border-radius) reference for every radius uti
 
 ```css name=index.css
 @theme {
-    --border-radius-1: 4;
-    --border-radius-2: 8;
+    border-radius-1: 4;
+    border-radius-2: 8;
 }
 ```
 
@@ -90,8 +90,8 @@ See the [border radius](/reference/border-radius) reference for every radius uti
 
 ```css name=index.css
 @theme {
-    --border-radius-sm: 4;
-    --border-radius-card: 12;
+    border-radius-sm: 4;
+    border-radius-card: 12;
 }
 ```
 

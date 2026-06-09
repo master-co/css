@@ -11,13 +11,13 @@ Use [breakpoints](/guide/breakpoints) for viewport-level page changes. Use conta
 ---
 
 ## Define container variables
-Container variables belong in the theme layer and use the `--container-*` namespace.
+Container tokens belong in the theme layer and use the `container-*` namespace.
 
 ```css name=index.css
 @theme {
-    --container-sm: 384;
-    --container-md: 448;
-    --container-7xl: 1280;
+    container-sm: 384;
+    container-md: 448;
+    container-7xl: 1280;
 }
 ```
 
@@ -75,7 +75,7 @@ Container queries make components portable. The same card can be stacked in a si
 ---
 
 ## Container query scale
-Container query variants use the same `--container-*` variables as sizing utilities.
+Container query variants use the same `container-*` tokens as sizing utilities.
 
 <ContainerQueries />
 

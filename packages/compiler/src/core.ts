@@ -193,8 +193,16 @@ function addThemeMode(config: CSSDirectiveConfig, mode: string) {
     if (!config.modes.includes(mode)) config.modes.push(mode)
 }
 
+function normalizeThemeTokenName(property: string) {
+    const name = property.startsWith('--') ? property.slice(2) : property
+    if (!name) {
+        throw new Error('@theme token name cannot be empty')
+    }
+    return name
+}
+
 function defineThemeVariable(config: CSSDirectiveConfig, property: string, rawValue: string, mode?: string) {
-    const name = property.replace(/^--/, '')
+    const name = normalizeThemeTokenName(property)
     const value = parseVariableValue(rawValue)
     if (mode) {
         addThemeMode(config, mode)
@@ -731,14 +739,11 @@ function parseThemeDeclarations(block: DeclarationBlock<Declaration>, config: CS
     for (const declaration of (block.declarations || []) as Declaration[]) {
         const property = getDeclarationName(declaration)
         const value = formatDeclarationValue(declaration)
-        if (!property.startsWith('--')) {
-            throw new Error(`Unsupported @theme declaration: ${property}`)
-        }
         defineThemeVariable(config, property, value, mode)
     }
     for (const declaration of (block.importantDeclarations || []) as Declaration[]) {
         const property = getDeclarationName(declaration)
-        throw new Error(`@theme does not accept !important declarations: ${property}`)
+        throw new Error(`@theme token declarations cannot be !important: ${property}`)
     }
 }
 
@@ -1341,7 +1346,7 @@ function parseThemeRule(rule: any, parsed: ParsedDirectives) {
     if (mode) addThemeMode(parsed.config, mode)
     for (const child of body.value as Rule[]) {
         if (child.type !== 'nested-declarations') {
-            throw new Error('@theme only accepts custom property declarations')
+            throw new Error('@theme only accepts theme token declarations')
         }
         parseThemeDeclarations(child.value.declarations, parsed.config, mode)
     }

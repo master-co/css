@@ -1,9 +1,9 @@
 @theme light {
-    --color-card: #ffffff;
+    color-card: #ffffff;
 }
 
 @theme dark {
-    --color-card: $color-gray-80;
+    color-card: $color-gray-80;
 }
 
 @utilities {

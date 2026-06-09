@@ -2,8 +2,8 @@
 @import './styles/card.css';
 
 @theme {
-    --foo: 123;
-    --global: #ff00ff;
+    foo: 123;
+    global: #ff00ff;
 }
 
 @components {

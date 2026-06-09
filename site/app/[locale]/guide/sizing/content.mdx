@@ -115,7 +115,7 @@ Fractions become percentages. Height percentages still follow native CSS behavio
 ---
 
 ## Use container values for shared surfaces
-Sizing utilities read the container namespace contextually. `max-w:5xl`, `w:md`, `size:sm`, `min-w:xs`, and `flex-basis:lg` use `--container-*` values without repeating the namespace in markup.
+Sizing utilities read the container namespace contextually. `max-w:5xl`, `w:md`, `size:sm`, `min-w:xs`, and `flex-basis:lg` use `container-*` tokens without repeating the namespace in markup.
 
 ```html
 <!-- @MARK w:full --><!-- @MARK max-w:5xl -->
@@ -270,9 +270,9 @@ When a dimension becomes part of the product language, add a named container var
 
 ```css name=index.css
 @theme {
-    --container-sidebar: 280;
-    --container-measure: 72ch;
-    --container-panel: clamp(18rem,50vw,42rem);
+    container-sidebar: 280;
+    container-measure: 72ch;
+    container-panel: clamp(18rem,50vw,42rem);
 }
 ```
 

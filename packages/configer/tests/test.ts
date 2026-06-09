@@ -22,7 +22,7 @@ function writeCSSFixture(cwd: string) {
     const tokens = join(cwd, 'styles/tokens.css')
     writeFileSync(tokens, `
         @theme {
-            --color-primary: #123;
+            color-primary: #123;
         }
     `)
     writeFileSync(entry, `
@@ -117,7 +117,7 @@ test('loads package entry theme config from CSS imports', async () => {
 
             @components {
                 card {
-                    @variant sm {
+                    @at sm {
                         color: red;
                     }
                 }

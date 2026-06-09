@@ -167,12 +167,12 @@ Master CSS is also a standalone CSS framework. It includes the core rule engine,
 </details>
 
 ### CSS-first configuration
-The project CSS entry is the primary configuration source. Tokens are native custom properties, selector shortcuts use `@custom-selector`, conditional shortcuts use `@custom-at`, low-level custom utilities live in `@utilities`, semantic component classes live in `@components`, and native CSS rules can use `@compose` when they should lower to ordinary stylesheet output.
+The project CSS entry is the primary configuration source. Theme tokens live in `@theme`, selector shortcuts use `@custom-selector`, conditional shortcuts use `@custom-at`, low-level custom utilities live in `@utilities`, semantic component classes live in `@components`, and native CSS rules can use `@compose` when they should lower to ordinary stylesheet output.
 
 ```css name=index.css
 @theme {
-    --color-primary: #4f46e5;
-    --breakpoint-md: 768;
+    color-primary: #4f46e5;
+    breakpoint-md: 768;
 }
 
 @custom-at motion-safe @media (prefers-reduced-motion: no-preference);

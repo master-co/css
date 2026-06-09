@@ -9,13 +9,13 @@ In Master CSS, that vocabulary usually lives in the project CSS entry: `@theme` 
 @import '@master/css';
 
 @theme {
-    --color-primary: #4f46e5;
-    --color-surface: #ffffff;
-    --spacing-card: 24;
-    --border-radius-card: 16;
-    --shadow-card: 0 16px 40px rgb(15 23 42 / .12);
-    --breakpoint-md: 768;
-    --container-md: 448;
+    color-primary: #4f46e5;
+    color-surface: #ffffff;
+    spacing-card: 24;
+    border-radius-card: 16;
+    shadow-card: 0 16px 40px rgb(15 23 42 / .12);
+    breakpoint-md: 768;
+    container-md: 448;
 }
 
 @custom-at motion-safe @media (prefers-reduced-motion: no-preference);
@@ -39,7 +39,7 @@ A project only needs a CSS entry that marks the Master CSS graph. Put theme dire
 @import '@master/css';
 
 @theme {
-    --color-primary: #4f46e5;
+    color-primary: #4f46e5;
 }
 ```
 
@@ -48,41 +48,41 @@ The important part is the graph, not a special file name. Tokens, modes, motion,
 ---
 
 ## Theme tokens
-Theme tokens are native custom properties inside `@theme` blocks. Their prefixes place them in the namespace that Master CSS utilities already understand.
+Theme tokens are declarations inside `@theme` blocks. Write the token name without the CSS custom-property `--` prefix; Master CSS adds `--` when it emits generated CSS custom properties. Token name prefixes place values in the namespace that Master CSS utilities already understand.
 
 ### Define tokens
 ```css name=index.css
 @theme {
-    --content-hash: " #";
-    --color-primary: #4f46e5;
-    --color-primary-soft: rgb(79 70 229 / .16);
-    --color-surface: #ffffff;
-    --color-text-strong: #111827;
-    --spacing-card: 24;
-    --font-family-sans: Inter, ui-sans-serif, system-ui, sans-serif;
-    --border-radius-card: 16;
-    --shadow-card: 0 16px 40px rgb(15 23 42 / .12);
-    --breakpoint-md: 768;
-    --container-md: 448;
+    content-hash: " #";
+    color-primary: #4f46e5;
+    color-primary-soft: rgb(79 70 229 / .16);
+    color-surface: #ffffff;
+    color-text-strong: #111827;
+    spacing-card: 24;
+    font-family-sans: Inter, ui-sans-serif, system-ui, sans-serif;
+    border-radius-card: 16;
+    shadow-card: 0 16px 40px rgb(15 23 42 / .12);
+    breakpoint-md: 768;
+    container-md: 448;
 }
 ```
 
 ### How namespaces are resolved
-A theme token name has the shape `--<namespace>-<key>`. Master CSS resolves the namespace by longest prefix, so `--color-line-lightest` belongs to `color-line`, not `color`.
+A theme token name has the shape `<namespace>-<key>`. Master CSS resolves the namespace by longest prefix, so `color-line-lightest` belongs to `color-line`, not `color`.
 
 Namespaces come from three places:
 
-* `breakpoint` is built in because viewport query suffixes such as `@md` need to resolve `--breakpoint-md`.
+* `breakpoint` is built in because viewport query suffixes such as `@md` need to resolve `breakpoint-md`.
 * Utilities can declare shared namespaces. For example, border and outline color utilities search `color-line` before `color`, while spacing utilities search `spacing`.
-* Each non-static, non-function utility name is also a namespace. This is why `--animation-duration-fast`, `--line-height-body`, and `--tab-size-code` can be used as `animation-duration:fast`, `line-height:body`, and `tab-size:code`.
+* Each non-static, non-function utility name is also a namespace. This is why `animation-duration-fast`, `line-height-body`, and `tab-size-code` can be used as `animation-duration:fast`, `line-height:body`, and `tab-size:code`.
 
-Function utilities do not become namespaces by name. Tokens such as `--blur-sm`, `--drop-shadow-soft`, and `--perspective-near` are ordinary custom properties unless a utility explicitly owns that namespace.
+Function utilities do not become namespaces by name. Tokens such as `blur-sm`, `drop-shadow-soft`, and `perspective-near` are ordinary theme tokens unless a utility explicitly owns that namespace.
 
 ```css name=index.css
 @theme {
-    --animation-duration-fast: 120ms;
-    --line-height-body: 1.6;
-    --tab-size-code: 4;
+    animation-duration-fast: 120ms;
+    line-height-body: 1.6;
+    tab-size-code: 4;
 }
 ```
 
@@ -111,9 +111,9 @@ Use `$` when a token should reference another token.
 
 ```css name=index.css
 @theme {
-    --color-brand: #4f46e5;
-    --color-primary: $color-brand;
-    --color-primary-soft: $color-brand/.16;
+    color-brand: #4f46e5;
+    color-primary: $color-brand;
+    color-primary-soft: $color-brand/.16;
 }
 ```
 
@@ -121,7 +121,7 @@ Define the same token key as a preset token when you want to override it. Later 
 
 ```css name=index.css
 @theme {
-    --color-blue: #4589ff;
+    color-blue: #4589ff;
 }
 ```
 
@@ -130,13 +130,13 @@ Responsive thresholds are theme tokens too. Define `breakpoint` variables for vi
 
 ```css name=index.css
 @theme {
-    --breakpoint-sm: 640;
-    --breakpoint-md: 768;
-    --breakpoint-lg: 1024;
+    breakpoint-sm: 640;
+    breakpoint-md: 768;
+    breakpoint-lg: 1024;
 
-    --container-sm: 384;
-    --container-md: 448;
-    --container-lg: 512;
+    container-sm: 384;
+    container-md: 448;
+    container-lg: 512;
 }
 ```
 
@@ -166,19 +166,19 @@ Mode-specific `@theme` blocks keep markup semantic while values change by mode.
 
 ```css name=index.css
 @theme light {
-    --color-surface: #ffffff;
-    --color-text-strong: #111827;
-    --color-primary: #4f46e5;
+    color-surface: #ffffff;
+    color-text-strong: #111827;
+    color-primary: #4f46e5;
 }
 
 @theme dark {
-    --color-surface: #111827;
-    --color-text-strong: #f9fafb;
-    --color-primary: #818cf8;
+    color-surface: #111827;
+    color-text-strong: #f9fafb;
+    color-primary: #818cf8;
 }
 
 @theme brand {
-    --color-primary: #ff0;
+    color-primary: #ff0;
 }
 ```
 
@@ -326,9 +326,9 @@ Motion belongs in the theme when timing, easing, and keyframes are shared by mor
 
 ```css name=index.css
 @theme {
-    --duration-fast: 150ms;
-    --duration-slow: 300ms;
-    --easing-smooth: cubic-bezier(.4, 0, .2, 1);
+    duration-fast: 150ms;
+    duration-slow: 300ms;
+    easing-smooth: cubic-bezier(.4, 0, .2, 1);
 }
 
 @custom-at motion-safe @media (prefers-reduced-motion: no-preference);

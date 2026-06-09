@@ -30,11 +30,11 @@ const originHTMLText = dedent`
 const originConfigText = `@master;
 
 @theme {
-    --color-primary: $(color-blue);
+    color-primary: $(color-blue);
 }
 
-@layer components {
-    .btn {
+@components {
+    btn {
         background-color: oklch(63.7% 0.237 25.331);
     }
 }

@@ -6,45 +6,45 @@
 }
 
 @theme {
-    --color-primary: #0061ff;
-    --color-base: #fff;
-    --color-ink: #172033;
-    --color-muted: #637083;
-    --color-panel: #f6f8fb;
-    --color-ring: #d9e2ef;
-    --radius-card: 18;
-    --radius-pill: 999;
-    --spacing-card: 24;
-    --breakpoint-md: 768;
+    color-primary: #0061ff;
+    color-base: #fff;
+    color-ink: #172033;
+    color-muted: #637083;
+    color-panel: #f6f8fb;
+    color-ring: #d9e2ef;
+    radius-card: 18;
+    radius-pill: 999;
+    spacing-card: 24;
+    breakpoint-md: 768;
 }
 
 @theme dark {
-    --color-primary: #8fb5ff;
-    --color-base: #111827;
-    --color-ink: #f8fafc;
-    --color-muted: #aab6c7;
-    --color-panel: #182233;
-    --color-ring: #31415a;
+    color-primary: #8fb5ff;
+    color-base: #111827;
+    color-ink: #f8fafc;
+    color-muted: #aab6c7;
+    color-panel: #182233;
+    color-ring: #31415a;
 }
 
 @custom-at motion-safe @media (prefers-reduced-motion: no-preference);
 @custom-selector ::scrollbar ::-webkit-scrollbar;
 
-@layer utilities {
-    .content-auto {
+@utilities {
+    content-auto {
         content-visibility: auto;
         contain-intrinsic-size: auto 28rem;
     }
 }
 
 /* Components */
-@layer components {
-    .page {
+@components {
+    page {
         @compose "grid ai:center jc:center min-h:100vh p:1.25rem bg:panel fg:ink";
         font-family: Inter, ui-sans-serif, system-ui, sans-serif;
     }
 
-    .card {
+    card {
         @compose "grid gap:1rem p:card bg:base r:card max-w:42rem content-auto";
         @at motion-safe {
             @compose "animation:demo-fade-in|.55s";
@@ -53,7 +53,7 @@
         box-shadow: 0 22px 70px rgb(17 24 39 / 12%);
     }
 
-    .live-label {
+    live-label {
         @compose "inline-flex ai:center jc:center h:24 px:.75rem bg:primary r:pill font:12 font:semibold";
         @at motion-safe {
             @compose "animation:demo-pulse|1.4s|infinite";
@@ -64,7 +64,7 @@
         text-transform: uppercase;
     }
 
-    .title {
+    title {
         @compose "m:0 font:40 leading:1 fg:ink";
         @at md {
             @compose "font:56";
@@ -72,11 +72,11 @@
         max-width: 12ch;
     }
 
-    .desc {
+    desc {
         @compose "m:0 font:18 leading:1.7 fg:muted max-w:34rem";
     }
 
-    .btn {
+    btn {
         @compose "inline-flex ai:center jc:center h:44 px:1rem bg:primary r:pill font:semibold";
         border: 0;
         box-shadow: 0 14px 28px rgb(17 34 51 / 18%);

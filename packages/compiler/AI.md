@@ -28,8 +28,8 @@
 
 - `@settings { root-size: 16; }`
 - `@settings { important: on; }` and `@settings { important: off; }`
-- `@theme { --color-primary: #123; --breakpoint-md: 768; }`
-- `@theme dark { --color-primary: #456; }`
+- `@theme { color-primary: #123; breakpoint-md: 768; }`
+- `@theme dark { color-primary: #456; }`
 - The compiler records mode declarations as written. Core adapters decide which modes are defaults.
 - `@custom-at motion-safe @media (prefers-reduced-motion: no-preference);`
 - `@custom-selector ::scrollbar ::-webkit-scrollbar;`

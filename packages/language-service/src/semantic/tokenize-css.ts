@@ -28,11 +28,11 @@ function containsPosition(range: SourceRange, options: ScanOptions) {
     return options.positionOffset === undefined || (range.start <= options.positionOffset && options.positionOffset <= range.end)
 }
 
-function tokenizeDeclarations(source: string, start: number, end: number, tokens: HighlightTokenItem[]) {
+function tokenizeDeclarations(source: string, start: number, end: number, tokens: HighlightTokenItem[], directiveName?: CSSDirectiveRuleRange['name']) {
     for (const declaration of collectCSSDeclarationRanges(source, start, end)) {
         const rawProperty = source.slice(declaration.propertyRange.start, declaration.propertyRange.end)
         const propertyOffset = declaration.propertyRange.start
-        if (rawProperty.startsWith('--')) {
+        if (directiveName === 'theme' || rawProperty.startsWith('--')) {
             pushHighlightToken(tokens, propertyOffset, rawProperty.length, 'variable', 'theme.variable')
         } else {
             pushHighlightToken(tokens, propertyOffset, rawProperty.length, 'property', 'declaration.property')
@@ -259,7 +259,7 @@ function tokenizeDirectiveRule(source: string, directive: CSSDirectiveRuleRange,
     if (directive.blockRange && directive.blockContentRange) {
         pushHighlightToken(tokens, directive.blockRange.start, 1, 'operator', 'block.brace', ['directive'])
         if (directive.name === 'settings' || directive.name === 'theme') {
-            tokenizeDeclarations(source, directive.blockContentRange.start, directive.blockContentRange.end, tokens)
+            tokenizeDeclarations(source, directive.blockContentRange.start, directive.blockContentRange.end, tokens, directive.name)
         } else if (MANAGED_DEFINITION_DIRECTIVES.has(directive.name)) {
             tokenizeManagedDefinitionBlock(source, directive.blockContentRange.start, directive.blockContentRange.end, tokens)
         }

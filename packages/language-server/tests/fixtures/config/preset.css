@@ -1,5 +1,5 @@
-@layer components {
-    .fixture-card {
+@components {
+    fixture-card {
         display: block;
     }
 }

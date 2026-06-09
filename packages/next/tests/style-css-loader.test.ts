@@ -69,8 +69,8 @@ describe('Next style CSS loader', () => {
         writeFileSync(join(root, 'app/globals.css'), `
             @master;
 
-            @layer components {
-                .brand {
+            @components {
+                brand {
                     background-color: #123456;
                 }
             }

@@ -3,6 +3,7 @@ import { mkdtempSync, mkdirSync, readFileSync, rmSync, symlinkSync, writeFileSyn
 import { tmpdir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { createCSS } from '@master/css'
 import { createCSSDirectiveAtRuleReference, CSSDirectiveError } from 'shared/css-directives'
 import {
     compileCSS,
@@ -40,7 +41,7 @@ describe.concurrent('@master/css-compiler', () => {
         expect(inspectCSS('@preserve native;').hasMasterEntry).toBe(false)
         expect(inspectCSS('@import "@master/css/index.css";').hasMasterEntry).toBe(false)
         expect(inspectCSS('@import url("@master/css") layer(master);').hasMasterEntry).toBe(true)
-        expect(inspectCSS('@theme { --color-primary: #123; }').hasMasterEntry).toBe(false)
+        expect(inspectCSS('@theme { color-primary: #123; }').hasMasterEntry).toBe(false)
     })
 
     it('compiles CSS config directives into a CSS directive result', () => {
@@ -58,16 +59,16 @@ describe.concurrent('@master/css-compiler', () => {
             }
 
             @theme {
-                --color-primary: #123;
-                --breakpoint-md: 768;
+                color-primary: #123;
+                breakpoint-md: 768;
             }
 
             @theme dark {
-                --color-primary: #456;
+                color-primary: #456;
             }
 
             @theme chrisma {
-                --color-primary: #ff0;
+                color-primary: #ff0;
             }
 
             @keyframes fade {
@@ -143,9 +144,9 @@ describe.concurrent('@master/css-compiler', () => {
     it('keeps raw variable names for core namespace resolution', () => {
         const result = compileCSS(`
             @theme {
-                --color-line-lightest: #eee;
-                --color-text-strong: #111;
-                --color-blue-50: #00f;
+                color-line-lightest: #eee;
+                color-text-strong: #111;
+                color-blue-50: #00f;
             }
         `)
 
@@ -163,7 +164,7 @@ describe.concurrent('@master/css-compiler', () => {
             }
 
             @theme {
-                --breakpoint-md: 768;
+                breakpoint-md: 768;
             }
 
             @components {
@@ -473,7 +474,7 @@ describe.concurrent('@master/css-compiler', () => {
     it('finalizes @compose in utility definitions and detects cycles', () => {
         const result = compileCSSConfig(`
             @theme {
-                --color-primary: #123;
+                color-primary: #123;
             }
 
             @utilities {
@@ -534,11 +535,11 @@ describe.concurrent('@master/css-compiler', () => {
             }
 
             @theme {
-                --color-primary: #123;
+                color-primary: #123;
             }
 
             @theme dark {
-                --color-primary: #456;
+                color-primary: #456;
             }
 
             .card {
@@ -680,7 +681,7 @@ describe.concurrent('@master/css-compiler', () => {
             }
 
             @theme {
-                --color-primary: #123;
+                color-primary: #123;
             }
         `, { preserveNativeCSS: false })
 
@@ -762,15 +763,16 @@ describe.concurrent('@master/css-compiler', () => {
             }
 
             @theme {
-                --color-primary: #111;
+                color-primary: #111;
                 --color-primary: #222;
+                color-primary: #333;
             }
         `)
 
         expect(result.config).toMatchObject({
             rootSize: 10,
             variables: [
-                { name: 'color-primary', value: '#222' }
+                { name: 'color-primary', value: '#333' }
             ],
             selectorTokens: {
                 ':interactive': ':focus-visible'
@@ -781,7 +783,7 @@ describe.concurrent('@master/css-compiler', () => {
     it('converts compiler results into semantic config at the compiler boundary', () => {
         const source = `
             @theme {
-                --color-primary: #123;
+                color-primary: #123;
             }
 
             @components {
@@ -803,6 +805,16 @@ describe.concurrent('@master/css-compiler', () => {
         expect(resultFromSource.config.utilities).toContainEqual(expect.objectContaining({
             name: 'btn'
         }))
+    })
+
+    it('emits native CSS custom properties for prefixless theme tokens', () => {
+        const result = compileCSSConfig(`
+            @theme {
+                color-primary: #123;
+            }
+        `)
+
+        expect(createCSS(result.config).add('bg:primary').themeLayer.text).toContain('@layer theme{:root{--color-primary:#123}}')
     })
 
     it('compiles CSS files with local relative imports', () => {
@@ -906,7 +918,7 @@ describe.concurrent('@master/css-compiler', () => {
             const theme = join(root, 'styles/theme.css')
             writeFileSync(theme, `
                 @theme {
-                    --color-primary: #123;
+                    color-primary: #123;
                 }
 
                 @components {
@@ -1040,9 +1052,15 @@ describe.concurrent('@master/css-compiler', () => {
 
         expect(() => process(`
             @theme {
-                root-size: 16;
+                --: 16;
             }
-        `)).toThrow('Unsupported @theme declaration: root-size')
+        `)).toThrow('@theme token name cannot be empty')
+
+        expect(() => process(`
+            @theme {
+                color-primary: #123 !important;
+            }
+        `)).toThrow('@theme token declarations cannot be !important: color-primary')
 
         expect(() => process(`
             @theme {
@@ -1050,12 +1068,12 @@ describe.concurrent('@master/css-compiler', () => {
                     color: red;
                 }
             }
-        `)).toThrow('@theme only accepts custom property declarations')
+        `)).toThrow('@theme only accepts theme token declarations')
 
         expect(() => process(`
             @media print {
                 @theme {
-                    --color-primary: #123;
+                    color-primary: #123;
                 }
             }
         `)).toThrow('@theme must be top-level')

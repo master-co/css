@@ -52,7 +52,7 @@ Is it not very kind to use `\00a0` in markup?
 (o) Predefine your [font](/guide/theme#theme-tokens) tokens without `\00a0`.
 ```css name=index.css
 @theme {
-    --font-family-open-sans: Open Sans; /* [!code ++] */
+    font-family-open-sans: Open Sans; /* [!code ++] */
 }
 ```
 Apply your custom fonts:
@@ -68,8 +68,8 @@ Apply your custom fonts:
 Customize your font tokens by defining [theme tokens](/guide/theme#theme-tokens). For example, add `Inter` as the general font and `Fira Code` as the code font.
 ```css name=index.css
 @theme {
-    --font-family-sans: "Inter", $font-family-sans-fallback; /* [!code ++] */
-    --font-family-mono: "Fira Code", $font-family-mono-fallback; /* [!code ++] */
+    font-family-sans: "Inter", $font-family-sans-fallback; /* [!code ++] */
+    font-family-mono: "Fira Code", $font-family-mono-fallback; /* [!code ++] */
 }
 ```
 Apply the defined `font-family` variables. For example, presetting the global fonts in `html <body>`:

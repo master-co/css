@@ -45,13 +45,13 @@ Master CSS maps elevation to the `shadow` namespace. Use tokens such as `shadow:
 ---
 
 ## Define shadow variables
-Elevation tokens live in the theme layer as `--shadow-*` variables. The default scale runs from `xs` to `2xl`; each step increases offset, blur, and opacity while staying practical for application UI.
+Elevation tokens live in the theme layer as `shadow-*` tokens. The default scale runs from `xs` to `2xl`; each step increases offset, blur, and opacity while staying practical for application UI.
 
 ```css name=index.css
 @theme {
-    --shadow-xs: 0 1px 2px oklch(0% 0 none / .08);
-    --shadow-sm: 0 1px 2px oklch(0% 0 none / .06), 0 2px 4px oklch(0% 0 none / .06);
-    --shadow-md: 0 2px 4px -1px oklch(0% 0 none / .08), 0 6px 12px -2px oklch(0% 0 none / .08);
+    shadow-xs: 0 1px 2px oklch(0% 0 none / .08);
+    shadow-sm: 0 1px 2px oklch(0% 0 none / .06), 0 2px 4px oklch(0% 0 none / .06);
+    shadow-md: 0 2px 4px -1px oklch(0% 0 none / .08), 0 6px 12px -2px oklch(0% 0 none / .08);
 }
 ```
 
@@ -60,7 +60,7 @@ Keep the token names size-based. A token such as `shadow:popover` can be useful 
 ---
 
 ## Use shadow tokens
-Use `shadow:<token>` for the common elevation levels. The utility resolves values from the `--shadow-*` variables.
+Use `shadow:<token>` for the common elevation levels. The utility resolves values from the `shadow-*` tokens.
 
 ```html
 <!-- @MARK shadow:sm -->
@@ -150,12 +150,12 @@ Override shadow variables when your product needs softer depth, sharper enterpri
 
 ```css name=index.css
 @theme {
-    --shadow-xs: 0 1px 1px oklch(0% 0 none / .06);
-    --shadow-sm: 0 2px 4px oklch(0% 0 none / .08);
-    --shadow-md: 0 6px 16px oklch(0% 0 none / .10);
-    --shadow-lg: 0 12px 32px oklch(0% 0 none / .12);
-    --shadow-xl: 0 20px 48px oklch(0% 0 none / .14);
-    --shadow-2xl: 0 32px 80px oklch(0% 0 none / .18);
+    shadow-xs: 0 1px 1px oklch(0% 0 none / .06);
+    shadow-sm: 0 2px 4px oklch(0% 0 none / .08);
+    shadow-md: 0 6px 16px oklch(0% 0 none / .10);
+    shadow-lg: 0 12px 32px oklch(0% 0 none / .12);
+    shadow-xl: 0 20px 48px oklch(0% 0 none / .14);
+    shadow-2xl: 0 32px 80px oklch(0% 0 none / .18);
 }
 ```
 
@@ -195,7 +195,7 @@ Promote repeated raw values into the scale. Keep one-off art direction in local 
 
 ```css name=index.css
 @theme {
-    --shadow-popover: 0 4px 8px -2px oklch(0% 0 none / .08), 0 12px 24px -4px oklch(0% 0 none / .10);
+    shadow-popover: 0 4px 8px -2px oklch(0% 0 none / .08), 0 12px 24px -4px oklch(0% 0 none / .10);
 }
 ```
 

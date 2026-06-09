@@ -1,8 +1,8 @@
 @master;
 
 @theme {
-    --color-brand: #123;
-    --breakpoint-md: 768;
+    color-brand: #123;
+    breakpoint-md: 768;
 }
 
 @components {

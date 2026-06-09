@@ -3,7 +3,7 @@ Breakpoints are viewport thresholds. They answer one question: when the availabl
 
 Use breakpoint variants for navigation modes, app shells, page grids, typography shifts, and density changes that should follow the viewport. Use [containers](/guide/containers) when a reusable component should respond to the size of its parent instead.
 
-Master CSS defines breakpoint variables in the theme layer. The variant syntax is `@<name>`, so `@md` reads from `--breakpoint-md`.
+Master CSS defines breakpoint tokens in the theme layer. The variant syntax is `@<name>`, so `@md` reads from `breakpoint-md`.
 
 <BreakpointVariables />
 
@@ -14,9 +14,9 @@ Breakpoint variables belong in your project CSS entry. Keep them product-wide an
 
 ```css name=index.css
 @theme {
-    --breakpoint-sm: 768;
-    --breakpoint-md: 1024;
-    --breakpoint-lg: 1280;
+    breakpoint-sm: 768;
+    breakpoint-md: 1024;
+    breakpoint-lg: 1280;
 }
 ```
 
@@ -117,8 +117,8 @@ Here `@sm`, `@md`, and `@lg` come from the breakpoint namespace. The `4xl`, `5xl
 
 ```css
 @theme {
-    --breakpoint-iphone: 390;
-    --breakpoint-ipad: 820;
+    breakpoint-iphone: 390;
+    breakpoint-ipad: 820;
 }
 ```
 
@@ -126,9 +126,9 @@ Here `@sm`, `@md`, and `@lg` come from the breakpoint namespace. The `4xl`, `5xl
 
 ```css
 @theme {
-    --breakpoint-xs: 640;
-    --breakpoint-sm: 768;
-    --breakpoint-md: 1024;
+    breakpoint-xs: 640;
+    breakpoint-sm: 768;
+    breakpoint-md: 1024;
 }
 ```
 
