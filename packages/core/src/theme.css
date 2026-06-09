@@ -34,6 +34,7 @@
     container-5xl: 1024;
     container-6xl: 1152;
     container-7xl: 1280;
+    container-8xl: 1440;
 
     /* Font families */
     font-family-sans: "Inter", $font-family-sans-fallback;
@@ -458,7 +459,6 @@
     color-red-90: oklch(44.45% 0.1824 29.23);
     color-red-95: oklch(32.59% 0.1337 29.23);
     color-red-100: oklch(28.54% 0.1171 29.23);
-
 }
 
 /* Light mode colors */
