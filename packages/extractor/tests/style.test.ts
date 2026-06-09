@@ -262,6 +262,7 @@ describe('style CSS extraction helpers', () => {
         expect(css).toContain('--color-primary:red')
         expect(css).toContain('--color-red')
         expect(css).toContain('@keyframes fade')
+        expect(css.match(/@keyframes fade/g) || []).toHaveLength(1)
         expect(css).toContain('.btn')
         expect(css).toContain('display: grid')
         expect(css).toContain('.block{display:block}')
@@ -285,25 +286,27 @@ describe('style CSS extraction helpers', () => {
                 color-primary: #ff0000;
             }
 
-            @keyframes fade {
-                from {
-                    opacity: 0;
+            @animations {
+                @keyframes fade {
+                    from {
+                        opacity: 0;
+                    }
+
+                    to {
+                        opacity: 1;
+                    }
                 }
 
-                to {
-                    opacity: 1;
+                @keyframes slide {
+                    to {
+                        transform: translateX(1rem);
+                    }
                 }
-            }
 
-            @keyframes slide {
-                to {
-                    transform: translateX(1rem);
-                }
-            }
-
-            @keyframes scale {
-                to {
-                    transform: scale(1.1);
+                @keyframes scale {
+                    to {
+                        transform: scale(1.1);
+                    }
                 }
             }
 

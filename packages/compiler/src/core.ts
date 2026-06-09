@@ -94,6 +94,10 @@ const MASTER_CUSTOM_AT_RULES = {
         prelude: '*',
         body: 'style-block'
     },
+    animations: {
+        prelude: null,
+        body: 'style-block'
+    },
     defaults: {
         prelude: null,
         body: 'style-block'
@@ -815,6 +819,10 @@ function isCustomSelectorDefinition(rule: Rule) {
     return (rule.type === 'unknown' || rule.type === 'custom') && rule.value?.name === 'custom-selector'
 }
 
+function isAnimationsDefinition(rule: Rule) {
+    return (rule.type === 'unknown' || rule.type === 'custom') && rule.value?.name === 'animations'
+}
+
 function getManagedDefinitionDirectiveLayer(rule: any): CSSDirectiveLayerName | undefined {
     if (rule.type !== 'custom' || !rule.value) return
     return MANAGED_DEFINITION_DIRECTIVE_LAYERS[rule.value.name as ManagedDefinitionDirectiveName]
@@ -1193,8 +1201,12 @@ function parseNativeRuleBody(
             continue
         }
 
+        if (isAnimationsDefinition(child)) {
+            throw new Error('@animations must be top-level')
+        }
+
         if (child.type === 'keyframes') {
-            throw new Error('@keyframes is not allowed inside @at. Move animation definitions to top-level @keyframes.')
+            throw new Error('@keyframes is not allowed inside @at. Move managed animation definitions to top-level @animations.')
         }
 
         if (compose) {
@@ -1266,6 +1278,23 @@ function parseKeyframes(rule: any, config: CSSDirectiveConfig) {
     config.animations[name] = keyframes
 }
 
+function parseAnimationsRule(rule: any, parsed: ParsedDirectives) {
+    const prelude = formatPrelude(getCustomRulePrelude(rule))
+    if (prelude) {
+        throw new Error('@animations does not accept a prelude')
+    }
+    const body = getCustomRuleBody(rule)
+    if (!Array.isArray(body?.value)) {
+        throw new Error('@animations requires a style block')
+    }
+    for (const child of body.value as Rule[]) {
+        if (child.type !== 'keyframes') {
+            throw new Error('@animations only accepts @keyframes definitions')
+        }
+        parseKeyframes(child, parsed.config)
+    }
+}
+
 function getCustomRulePrelude(rule: any) {
     return rule.prelude ?? rule.value?.prelude
 }
@@ -1317,7 +1346,10 @@ function parseSettingsChildRule(child: Rule, parsed: ParsedDirectives, section: 
         return
     }
     if (child.type === 'keyframes') {
-        throw new Error('@settings does not accept @keyframes')
+        throw new Error('@settings does not accept @keyframes. Move managed animation definitions to top-level @animations.')
+    }
+    if (isAnimationsDefinition(child)) {
+        throw new Error('@animations must be top-level')
     }
     if (child.type === 'style') {
         parseSettingsStyleRule(child)
@@ -1411,7 +1443,7 @@ function parseManagedDefinitionDirectiveChildRule(
         throw new Error(`@${directiveName} only accepts bare managed names and nested at-rules`)
     }
     if (child.type === 'keyframes') {
-        throw new Error('@keyframes is not allowed inside managed definition directives. Move animation definitions to top-level @keyframes.')
+        throw new Error('@keyframes is not allowed inside managed definition directives. Move managed animation definitions to top-level @animations.')
     }
     if (child.type === 'style') {
         const selectorDefinition = parseManagedDefinitionNameSelector(child.value.selectors)
@@ -1430,6 +1462,9 @@ function parseManagedDefinitionDirectiveChildRule(
     }
     if (isCustomSelectorDefinition(child)) {
         throw new Error('@custom-selector must be top-level')
+    }
+    if (isAnimationsDefinition(child)) {
+        throw new Error('@animations must be top-level')
     }
     throw new Error(`Unsupported rule inside @${directiveName}`)
 }
@@ -1473,10 +1508,6 @@ export function compileCSS(source: string, options: CompileCSSOptions = {}): Com
         visitor: {
             Rule(rule: any) {
                 if (ruleDepth === 0) {
-                    if (rule.type === 'keyframes') {
-                        parseKeyframes(rule, parsed.config)
-                        return []
-                    }
                     if (isCustomAtDefinition(rule)) {
                         parseAtDefinition(rule, parsed)
                         return []
@@ -1518,6 +1549,12 @@ export function compileCSS(source: string, options: CompileCSSOptions = {}): Com
                                 throw new Error('@theme must be top-level')
                             }
                             parseThemeRule(rule, parsed)
+                            return []
+                        case 'animations':
+                            if (ruleDepth !== 0) {
+                                throw new Error('@animations must be top-level')
+                            }
+                            parseAnimationsRule(rule, parsed)
                             return []
                         case 'defaults':
                         case 'components':

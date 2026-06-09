@@ -41,7 +41,7 @@ Risks:
 project CSS files containing @master; or @import "@master/css"
   -> @master/css-configer discovers project entry files only
   -> @master/css-compiler resolves CSS imports and package style imports
-  -> compiler parses @theme token/mode directives, @master root options, top-level @custom-at/@custom-selector definitions, @defaults/@components/@utilities managed definition directives, and top-level keyframes
+  -> compiler parses @theme token/mode directives, @settings root options, top-level @custom-at/@custom-selector definitions, @animations keyframes, and @defaults/@components/@utilities managed definition directives
   -> compiler converts directive result through the core adapter into Config
   -> build tools / ESLint / language-server receive the same semantic project Config
   -> MasterCSS.resolve() resolves variables, animations, selectors, at-rules, utilities

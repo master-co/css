@@ -1,5 +1,5 @@
 ## Using animations [sr-only]
-[CSS animations](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_animations) interpolate styles over time with [`@keyframes`](https://developer.mozilla.org/en-US/docs/Web/CSS/@keyframes) and animation properties. Master CSS keeps motion close to the element with `animation:` syntax, configured keyframes, shared duration tokens, shared easing tokens, and conditional queries such as `@motion`.
+[CSS animations](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_animations) interpolate styles over time with [`@keyframes`](https://developer.mozilla.org/en-US/docs/Web/CSS/@keyframes) and animation properties. Master CSS keeps motion close to the element with `animation:` syntax, managed `@animations` keyframes, shared duration tokens, shared easing tokens, and conditional queries such as `@motion`.
 
 Master CSS ships common keyframes and emits them only when an animation references them.
 <AnimationTokens />
@@ -18,7 +18,7 @@ Master CSS ships common keyframes and emits them only when an animation referenc
 
 Use motion foundations to answer three questions:
 
-* What should move? Use a configured keyframe such as `fade`, `pulse`, `zoom`, or your own animation name.
+* What should move? Use a managed keyframe such as `fade`, `pulse`, `zoom`, or your own animation name.
 * How long should it take? Use the duration scale from `fastest` to `slowest`.
 * How should it move? Use native timing functions or a custom easing token such as `smooth`, `crisp`, or `overshoot`.
 

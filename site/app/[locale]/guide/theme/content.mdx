@@ -333,15 +333,17 @@ Motion belongs in the theme when timing, easing, and keyframes are shared by mor
 
 @custom-at motion-safe @media (prefers-reduced-motion: no-preference);
 
-@keyframes fade-in {
-    from {
-        opacity: 0;
-        transform: translateY(.25rem);
-    }
+@animations {
+    @keyframes fade-in {
+        from {
+            opacity: 0;
+            transform: translateY(.25rem);
+        }
 
-    to {
-        opacity: 1;
-        transform: translateY(0);
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
 }
 ```

@@ -639,6 +639,24 @@ function collectStyleCSSVariableReferences(nativeCSS: string[]) {
     return references
 }
 
+function collectCSSKeyframeNames(source: string) {
+    const names = new Set<string>()
+    for (const match of source.matchAll(/@keyframes\s+(-?[_a-zA-Z][-_a-zA-Z0-9]*)/g)) {
+        names.add(match[1])
+    }
+    return names
+}
+
+function collectStyleCSSKeyframeNames(nativeCSS: string[]) {
+    const names = new Set<string>()
+    for (const source of nativeCSS) {
+        for (const name of collectCSSKeyframeNames(source)) {
+            names.add(name)
+        }
+    }
+    return names
+}
+
 function insertVariableReferences(css: ReturnType<typeof createCSS>, references: Set<string>) {
     const insert = (name: string, visited = new Set<string>()) => {
         if (visited.has(name)) return
@@ -654,7 +672,7 @@ function insertVariableReferences(css: ReturnType<typeof createCSS>, references:
     }
 }
 
-function collectCSSAnimationReferences(source: string, css: ReturnType<typeof createCSS>) {
+function collectCSSAnimationReferences(source: string, css: ReturnType<typeof createCSS>, ignoredAnimationNames = new Set<string>()) {
     const references = new Set<string>()
     const animationNames = Array.from(css.animations.keys())
     if (!animationNames.length) return references
@@ -664,16 +682,17 @@ function collectCSSAnimationReferences(source: string, css: ReturnType<typeof cr
             variables: css.variables,
             variableNames: collectCSSVariableReferences(match[2])
         })) {
+            if (ignoredAnimationNames.has(name)) continue
             references.add(name)
         }
     }
     return references
 }
 
-function collectNativeCSSAnimationReferences(nativeCSS: string[], css: ReturnType<typeof createCSS>) {
+function collectNativeCSSAnimationReferences(nativeCSS: string[], css: ReturnType<typeof createCSS>, ignoredAnimationNames = new Set<string>()) {
     const references = new Set<string>()
     for (const source of nativeCSS) {
-        for (const reference of collectCSSAnimationReferences(source, css)) {
+        for (const reference of collectCSSAnimationReferences(source, css, ignoredAnimationNames)) {
             references.add(reference)
         }
     }
@@ -702,8 +721,8 @@ function createEmptyExtractedCSSResult(css = ''): CreateExtractedCSSResult {
 
 function createPreloaded(css: ReturnType<typeof createCSS>): Required<MasterCSSPreloaded> {
     const preloaded: Required<MasterCSSPreloaded> = {
-        variables: {},
-        animations: {}
+        variables: { ...css.preloaded.variables },
+        animations: { ...css.preloaded.animations }
     }
     for (const rule of css.themeLayer.rules) {
         if (rule instanceof VariableRule) {
@@ -772,7 +791,13 @@ export async function createExtractedCSSResult(options: CreateExtractedCSSOption
                 .filter(Boolean)
             : [])
     ]
+    const nativeAnimationNames = collectStyleCSSKeyframeNames(nativeCSS)
     const css = createCSS(extendConfig(...styleConfigs, explicitConfig))
+    if (nativeAnimationNames.size) {
+        css.registerPreloaded({
+            animations: Object.fromEntries([...nativeAnimationNames].map((name) => [name, 1]))
+        })
+    }
     if (includeGeneratedCSS) {
         const generatedClasses = new Set(classes)
         for (const styleSource of styleCSSSources?.values() || []) {
@@ -786,7 +811,7 @@ export async function createExtractedCSSResult(options: CreateExtractedCSSOption
         }
     }
     const variableReferences = collectStyleCSSVariableReferences(nativeCSS)
-    const animationReferences = collectNativeCSSAnimationReferences(nativeCSS, css)
+    const animationReferences = collectNativeCSSAnimationReferences(nativeCSS, css, nativeAnimationNames)
     insertVariableReferences(css, variableReferences)
     insertAnimationReferences(css, animationReferences)
     const shouldIncludeMasterCSS = includeGeneratedCSS || variableReferences.size || animationReferences.size
@@ -796,7 +821,7 @@ export async function createExtractedCSSResult(options: CreateExtractedCSSOption
     ].filter(Boolean).join('\n\n')
     return {
         css: cssText,
-        preloaded: shouldIncludeMasterCSS ? createPreloaded(css) : createEmptyExtractedCSSResult().preloaded
+        preloaded: shouldIncludeMasterCSS || nativeAnimationNames.size ? createPreloaded(css) : createEmptyExtractedCSSResult().preloaded
     }
 }
 

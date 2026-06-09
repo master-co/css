@@ -206,6 +206,14 @@ test.concurrent('renders semantic tokens for CSS directives', () => {
         @custom-at motion-safe @media (prefers-reduced-motion: no-preference);
         @custom-selector :interactive :is(:hover, :focus-visible);
 
+        @animations {
+            @keyframes fade {
+                to {
+                    opacity: 1;
+                }
+            }
+        }
+
         @components {
             btn {
                 @compose "inline-flex fg:primary:hover@md";
@@ -231,6 +239,7 @@ test.concurrent('renders semantic tokens for CSS directives', () => {
     expectToken(tokens, '@media', 'keyword', ['query'])
     expectToken(tokens, '@custom-selector', 'keyword', ['directive'])
     expectToken(tokens, 'interactive', 'modifier', ['pseudoClass'])
+    expectToken(tokens, '@animations', 'keyword', ['directive'])
     expectToken(tokens, '@components', 'keyword', ['directive'])
     expectToken(tokens, 'btn', 'class', ['selector'])
     expectToken(tokens, '@compose', 'keyword', ['directive'])

@@ -37,7 +37,7 @@ Entry markers tell integrations where Master CSS should attach generated CSS.
 
 Use `@master;` when a stylesheet should receive generated CSS but should not import the default `@master/css` stylesheet. Use `@import "@master/css";` for the normal full entry that includes the package stylesheet.
 
-Other directives such as `@settings`, `@source`, `@safelist`, `@blocklist`, `@compose`, `@at`, and `@preserve` are not entry markers by themselves.
+Other directives such as `@settings`, `@animations`, `@source`, `@safelist`, `@blocklist`, `@compose`, `@at`, and `@preserve` are not entry markers by themselves.
 
 ---
 
@@ -167,6 +167,27 @@ Use `@at` inside managed definitions or native style rules to share the current 
 ```
 
 `@at` accepts custom at tokens, breakpoint tokens, mode names, and raw Master CSS at syntax such as `<sm`. It is rule-local and is not an entry marker.
+
+---
+
+## Managed animations
+Use `@animations` for keyframes that should become managed animation config and emit only when referenced by `animation:` utilities or native animation declarations.
+
+```css
+@animations {
+    @keyframes fade-in {
+        from {
+            opacity: 0;
+        }
+
+        to {
+            opacity: 1;
+        }
+    }
+}
+```
+
+`@animations` is top-level only and accepts direct `@keyframes` definitions. Ordinary top-level `@keyframes` remain native CSS instead of becoming managed animation config.
 
 ---
 

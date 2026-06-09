@@ -198,7 +198,7 @@ The project CSS entry is the primary configuration source. Theme tokens live in 
 }
 ```
 
-The `@theme` and `@settings` blocks, top-level custom directives, and managed definition directives are configuration, not regular stylesheet output. Master CSS compiles them into config, then generates only the classes used in markup, discovered by source scanners, or composed by another CSS-defined style. Native rules such as `.notice` lower to CSS for the stylesheet that contains them.
+The `@theme`, `@settings`, and `@animations` blocks, top-level custom directives, and managed definition directives are configuration, not regular stylesheet output. Master CSS compiles them into config, then generates only the classes used in markup, discovered by source scanners, or composed by another CSS-defined style. Native rules such as `.notice` lower to CSS for the stylesheet that contains them.
 
 ### Rendering for different delivery models
 Master CSS provides three main [rendering modes](/guide/rendering-modes):

@@ -71,9 +71,11 @@ describe.concurrent('@master/css-compiler', () => {
                 color-primary: #ff0;
             }
 
-            @keyframes fade {
-                from { opacity: 0; }
-                to { opacity: 1; }
+            @animations {
+                @keyframes fade {
+                    from { opacity: 0; }
+                    to { opacity: 1; }
+                }
             }
         `)
 
@@ -107,6 +109,19 @@ describe.concurrent('@master/css-compiler', () => {
         expect(result.css).toBe('')
         expect(result.generatedCSS).toBe('')
         expect(result.warnings).toEqual([])
+    })
+
+    it('keeps top-level @keyframes as native CSS', () => {
+        const result = compileCSS(`
+            @keyframes fade {
+                from { opacity: 0; }
+                to { opacity: 1; }
+            }
+        `)
+
+        expect(result.config.animations).toBeUndefined()
+        expect(result.css).toContain('@keyframes fade')
+        expect(result.css).toContain('opacity: 0')
     })
 
     it('converts important on and off declarations into booleans', () => {
@@ -599,7 +614,7 @@ describe.concurrent('@master/css-compiler', () => {
         expect(result.css).not.toContain('.btn{display:block}')
     })
 
-    it('only consumes managed directives and keyframes at the stylesheet top level', () => {
+    it('only consumes managed directives at the stylesheet top level', () => {
         const result = compileCSS(`
             @media print {
                 @layer components {
@@ -609,6 +624,14 @@ describe.concurrent('@master/css-compiler', () => {
                 }
 
                 @keyframes nested-fade {
+                    to {
+                        opacity: 1;
+                    }
+                }
+            }
+
+            @animations {
+                @keyframes managed-fade {
                     to {
                         opacity: 1;
                     }
@@ -645,7 +668,7 @@ describe.concurrent('@master/css-compiler', () => {
             }
         ])
         expect(result.config.animations).toEqual({
-            fade: {
+            'managed-fade': {
                 to: {
                     opacity: '1'
                 }
@@ -656,7 +679,8 @@ describe.concurrent('@master/css-compiler', () => {
         expect(result.css).toContain('.native')
         expect(result.css).toContain('.native-card')
         expect(result.css).toContain('@keyframes nested-fade')
-        expect(result.css).not.toContain('@keyframes fade{')
+        expect(result.css).toContain('@keyframes fade')
+        expect(result.css).not.toContain('@keyframes managed-fade')
         expect(result.css).not.toContain('.btn')
     })
 
@@ -1097,6 +1121,24 @@ describe.concurrent('@master/css-compiler', () => {
         expect(() => process(`
             @custom-selector headings :is(h1, h2, h3);
         `)).toThrow('@custom-selector names must start with ":" or "::"')
+
+        expect(() => process(`
+            @media print {
+                @animations {
+                    @keyframes fade {
+                        from { opacity: 0; }
+                    }
+                }
+            }
+        `)).toThrow('@animations must be top-level')
+
+        expect(() => process(`
+            @animations {
+                .fade {
+                    opacity: 1;
+                }
+            }
+        `)).toThrow('@animations only accepts @keyframes definitions')
 
         expect(() => process(`
             @settings {

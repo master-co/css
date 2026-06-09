@@ -6,7 +6,7 @@
 
 ## Inputs And Outputs
 
-- Input: CSS containing `@settings`, `@theme`, `@custom-at`, `@custom-selector`, managed `@defaults`, `@components`, and `@utilities` definition directives, condition blocks with `@at`, style rules with `@compose`, top-level extraction policy directives, and top-level native `@keyframes`.
+- Input: CSS containing `@settings`, `@theme`, `@animations`, `@custom-at`, `@custom-selector`, managed `@defaults`, `@components`, and `@utilities` definition directives, condition blocks with `@at`, style rules with `@compose`, top-level extraction policy directives, and top-level native `@keyframes`.
 - Output: semantic core `Config`, shared directive data for lower-level consumers, style definitions, native CSS with consumed Master directives removed, native class names, warnings, standalone directive metadata, and CSS import dependencies.
 - CSS config directives such as `@settings`, `@theme`, `@custom-at`, and `@custom-selector` are config definitions. Defining a component, utility, variable, token, or animation does not emit CSS by itself; the class still needs to be used or extracted.
 - `@master;` is only a lightweight entry marker.
@@ -38,10 +38,11 @@
 - `@utilities { content-auto { content-visibility: auto; } }`
 - `@utilities { print-hidden { @at print { display: none; } } }`
 - `.card { @compose "block"; @at dark { @compose "fg:primary"; } }`
-- `@keyframes fade { from { opacity: 0; } to { opacity: 1; } }`
+- `@animations { @keyframes fade { from { opacity: 0; } to { opacity: 1; } } }`
 - Managed definition directives use first-level bare names, not selectors. Put selector states and descendants in nested selectors inside the named block.
 - `@compose` is allowed in managed class definitions and native style rules, including inside `@at`.
 - Utilities defined in CSS are static utilities only.
+- Top-level native `@keyframes` remain native CSS. Use top-level `@animations` when keyframes should become managed config animations.
 - Native `@layer` blocks are never compiler-managed. Use `@defaults`, `@components`, or `@utilities` for managed definitions, and keep regular CSS selectors in native CSS.
 - The compiler package does not scan unrelated `.css` files for class usage. Pair CSS configs with static mode or pass extracted classes through compiler options when filtering native CSS.
 - CSS/theme/source tests that depend on `.css` files belong here rather than in core tests.

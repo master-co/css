@@ -19,7 +19,7 @@ interface TransformStyleSourceOptions {
 }
 
 function hasMasterStyleConfigDirective(source: string) {
-    return source.includes('@settings') || source.includes('@theme') || source.includes('@master')
+    return source.includes('@settings') || source.includes('@theme') || source.includes('@animations') || source.includes('@master')
 }
 
 export async function transformStyleSource(
