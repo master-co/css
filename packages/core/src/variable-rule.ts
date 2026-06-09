@@ -1,6 +1,6 @@
 import MasterCSS from './core'
 import type { ResolvedVariableValue, Variable } from 'shared/css-syntax'
-import { normalizeVariableValue } from './utils/css-variables'
+import { normalizeVariableValue, replaceCSSVariableReferences } from './utils/css-variables'
 
 export default class VariableRule {
     nodes: VariableRuleNode[] = []
@@ -72,7 +72,18 @@ export class VariableRuleNode {
     }
 
     get declarationValue() {
-        return normalizeVariableValue(this.variable.value).value
+        const resolveInlineReferences = (value: string | number, stack: string[]): string => {
+            return replaceCSSVariableReferences(normalizeVariableValue(value).value, (name) => {
+                const variable = this.css.variables.get(name)
+                if (!variable?.inline || variable.value === undefined) return
+                const stackIndex = stack.indexOf(name)
+                if (stackIndex !== -1) {
+                    throw new Error(`Circular inline variable reference: ${[...stack.slice(stackIndex), name].join(' -> ')}`)
+                }
+                return resolveInlineReferences(variable.value, [...stack, name])
+            })
+        }
+        return resolveInlineReferences(this.variable.value, [this.rule.name])
     }
 
     get declarationText() {

@@ -396,20 +396,41 @@ export default class MasterCSS {
     resolveVariables() {
         const { variables = [], modes = [] } = this.config
         this.modes.push(...modes)
+        const getVariableName = (definition: VariableDefinition) => {
+            return definition.namespace
+                ? `${definition.namespace}${definition.key ? '-' + definition.key : ''}`
+                : definition.key
+        }
+        const inlineVariableNames = new Set<string>()
+        const modeVariableNames = new Map<string, string>()
+        for (const definition of variables) {
+            if (definition.value === false) continue
+            const name = getVariableName(definition)
+            if (definition.inline) inlineVariableNames.add(name)
+            if (definition.mode) modeVariableNames.set(name, definition.mode)
+        }
+        for (const name of inlineVariableNames) {
+            const mode = modeVariableNames.get(name)
+            if (mode) {
+                throw new Error(`Inline theme variables cannot be mode-specific: ${name}@${mode}`)
+            }
+        }
         const createVariable = (definition: VariableDefinition): Variable | undefined => {
+            const namespace = definition.namespace
+            const name = getVariableName(definition)
+            if (definition.inline && definition.mode) {
+                throw new Error(`Inline theme variables cannot be mode-specific: ${name}@${definition.mode}`)
+            }
             if ((definition.namespace === 'breakpoint' || definition.namespace === 'container') && definition.mode) {
                 throw new Error(`${definition.namespace[0].toUpperCase()}${definition.namespace.slice(1)} variables cannot be mode-specific: ${definition.namespace}-${definition.key}@${definition.mode}`)
             }
             if (definition.value === false) return
-            const namespace = definition.namespace
-            const name = namespace
-                ? `${namespace}${definition.key ? '-' + definition.key : ''}`
-                : definition.key
             return {
                 name,
                 key: definition.key,
                 value: Array.isArray(definition.value) ? definition.value.join(',') : definition.value,
-                ...(namespace ? { namespace } : {})
+                ...(namespace ? { namespace } : {}),
+                ...(definition.inline ? { inline: true } : {})
             } as Variable
         }
         const addDependencies = (variable: Variable) => {
@@ -445,7 +466,8 @@ export default class MasterCSS {
                         key: newVariable.key,
                         type,
                         modes: { [mode]: modeVariable },
-                        ...(newVariable.namespace ? { namespace: newVariable.namespace } : {})
+                        ...(newVariable.namespace ? { namespace: newVariable.namespace } : {}),
+                        ...(newVariable.inline ? { inline: true } : {})
                     } as Variable
                     addDependencies(rootVariable)
                     this.variables.set(name, rootVariable)

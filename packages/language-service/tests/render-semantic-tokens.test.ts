@@ -292,6 +292,14 @@ test.concurrent('renders CSS directive ranges with quoted semicolons', () => {
     )).toHaveLength(7)
 })
 
+test.concurrent('renders inline theme modifier semantic tokens', () => {
+    const { tokens } = renderTokens('@theme inline { color-primary: #123; }', 'css')
+
+    expectToken(tokens, '@theme', 'keyword', ['directive'])
+    expectToken(tokens, 'inline', 'modifier', ['directive'])
+    expectToken(tokens, 'color-primary', 'variable')
+})
+
 test.concurrent('does not render non-entry @master at-rules as CSS directives', () => {
     const { tokens } = renderTokens(`
         @master shake;

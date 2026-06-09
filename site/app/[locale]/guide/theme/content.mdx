@@ -125,6 +125,27 @@ Define the same token key as a preset token when you want to override it. Later 
 }
 ```
 
+### Inline tokens
+Use `@theme inline` when a token is only a utility shorthand and should not emit a CSS custom property. Master CSS still matches the token, but generated utilities write the resolved value directly.
+
+```css name=index.css
+@theme inline {
+    color-brand: #4f46e5;
+    spacing-card: 24;
+}
+```
+
+```html
+<article class="bg:brand p:card">...</article>
+```
+
+```css
+.bg\:brand { background-color: #4f46e5; }
+.p\:card { padding: 1.5rem; }
+```
+
+Inline tokens can reference other inline tokens. If an inline token references a regular theme token, Master CSS keeps the regular `var(--*)` reference and emits that regular token when needed. Inline tokens cannot be mode-specific; use normal `@theme light` and `@theme dark` blocks when a value must change by mode.
+
 ### Breakpoint and container tokens
 Responsive thresholds are theme tokens too. Define `breakpoint` variables for viewport at-rule suffixes, and define `container` variables for container query thresholds and width caps.
 

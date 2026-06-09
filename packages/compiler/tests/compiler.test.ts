@@ -172,6 +172,29 @@ describe.concurrent('@master/css-compiler', () => {
         ])
     })
 
+    it('records inline theme tokens and resolves them into semantic config', () => {
+        const directives = compileCSS(`
+            @theme inline {
+                color-primary: #123;
+            }
+        `)
+        const result = compileCSSConfig(`
+            @theme inline {
+                color-primary: #123;
+            }
+        `)
+
+        expect(directives.config.variables).toEqual([
+            { name: 'color-primary', value: '#123', inline: true }
+        ])
+        expect(result.config.variables).toContainEqual({
+            namespace: 'color',
+            key: 'primary',
+            value: '#123',
+            inline: true
+        })
+    })
+
     it('records style definitions without resolving core utilities', () => {
         const result = compileCSS(`
             @settings {
@@ -1079,6 +1102,28 @@ describe.concurrent('@master/css-compiler', () => {
                 --: 16;
             }
         `)).toThrow('@theme token name cannot be empty')
+
+        expect(() => process(`
+            @theme inline dark {
+                color-primary: #123;
+            }
+        `)).toThrow('@theme inline cannot be mode-specific')
+
+        expect(() => process(`
+            @theme dark inline {
+                color-primary: #123;
+            }
+        `)).toThrow('@theme inline cannot be mode-specific')
+
+        expect(() => compileCSSConfig(`
+            @theme inline {
+                color-primary: #123;
+            }
+
+            @theme dark {
+                color-primary: #fff;
+            }
+        `)).toThrow('Inline theme variables cannot be mode-specific: color-primary@dark')
 
         expect(() => process(`
             @theme {

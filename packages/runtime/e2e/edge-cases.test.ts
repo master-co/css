@@ -152,3 +152,25 @@ test('removes shared alias variable dependencies when classes disappear', async 
         nativeAttached: false
     })
 })
+
+test('inlines variables without runtime theme counts', async ({ page }) => {
+    await init(page, '', {
+        variables: [
+            { namespace: 'color', key: 'brand', value: '#123456', inline: true }
+        ]
+    })
+
+    const result = await page.evaluate(async () => {
+        document.body.innerHTML = '<p class="fg:brand"></p>'
+        await new Promise(resolve => setTimeout(resolve, 0))
+        return {
+            text: globalThis.cssRuntime.text,
+            counts: Object.fromEntries(globalThis.cssRuntime.themeLayer.tokenCounts)
+        }
+    })
+
+    expect(result).toEqual({
+        text: '@layer utilities{.fg\\:brand{color:#123456}}',
+        counts: {}
+    })
+})

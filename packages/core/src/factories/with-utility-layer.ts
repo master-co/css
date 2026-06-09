@@ -105,7 +105,7 @@ export default function withUtilityLayer<TBase extends new (...args: any[]) => L
                 if (visited.has(eachVariableName)) return
                 visited.add(eachVariableName)
                 const variable = this.css.variables.get(eachVariableName)
-                if (!variable) return
+                if (!variable || variable.inline) return
                 if (this.css.themeLayer.rules.find(({ name }) => name === eachVariableName) || this.css.isPreloadedVariable(eachVariableName)) {
                     const count = this.css.themeLayer.tokenCounts.get(eachVariableName) || 0
                     this.css.themeLayer.tokenCounts.set(eachVariableName, count + 1)

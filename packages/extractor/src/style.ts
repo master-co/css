@@ -662,7 +662,7 @@ function insertVariableReferences(css: ReturnType<typeof createCSS>, references:
         if (visited.has(name)) return
         visited.add(name)
         const variable = css.variables.get(name)
-        if (!variable) return
+        if (!variable || variable.inline) return
         css.themeLayer.insert(new VariableRule(name, variable, css))
         variable.dependencies?.forEach((dependency) => insert(dependency, visited))
     }

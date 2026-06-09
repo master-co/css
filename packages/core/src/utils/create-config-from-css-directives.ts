@@ -128,6 +128,12 @@ function assertConditionVariableIsGlobal(namespace: string | undefined, key: str
     }
 }
 
+function assertInlineVariableIsGlobal(name: string, inline: boolean | undefined, mode: string | undefined) {
+    if (inline && mode) {
+        throw new Error(`Inline theme variables cannot be mode-specific: ${name}@${mode}`)
+    }
+}
+
 function collectBreakpointNames(config: Config) {
     return new Set((config.variables || [])
         .filter((variable) => variable.namespace === 'breakpoint')
@@ -177,22 +183,29 @@ function addMode(config: Config, mode: string) {
 function resolveInputVariable(variable: InputVariableDefinition): VariableDefinition {
     if ('key' in variable && variable.key !== undefined) {
         assertConditionVariableIsGlobal(variable.namespace, variable.key, variable.mode)
+        const name = variable.namespace
+            ? `${variable.namespace}${variable.key ? '-' + variable.key : ''}`
+            : variable.key
+        assertInlineVariableIsGlobal(name, variable.inline, variable.mode)
         return {
             ...(variable.namespace ? { namespace: variable.namespace } : {}),
             key: variable.key,
             value: variable.value,
-            ...(variable.mode ? { mode: variable.mode } : {})
+            ...(variable.mode ? { mode: variable.mode } : {}),
+            ...(variable.inline ? { inline: true } : {})
         }
     }
 
     const directiveVariable = variable as CSSDirectiveVariableDefinition
     const resolved = resolveVariableNamespace(directiveVariable.name)
     assertConditionVariableIsGlobal(resolved.namespace, resolved.key, directiveVariable.mode)
+    assertInlineVariableIsGlobal(resolved.name, directiveVariable.inline, directiveVariable.mode)
     return {
         ...(resolved.namespace ? { namespace: resolved.namespace } : {}),
         key: resolved.key,
         value: directiveVariable.value,
-        ...(directiveVariable.mode ? { mode: directiveVariable.mode } : {})
+        ...(directiveVariable.mode ? { mode: directiveVariable.mode } : {}),
+        ...(directiveVariable.inline ? { inline: true } : {})
     }
 }
 

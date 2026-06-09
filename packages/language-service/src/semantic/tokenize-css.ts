@@ -18,6 +18,7 @@ import {
 const CSS_LANGUAGE_IDS = new Set(['css', 'scss', 'less'])
 const SOURCE_MODIFIERS = new Set(['not', 'required'])
 const PRESERVE_PARAMETERS = new Set(['native'])
+const THEME_MODIFIERS = new Set(['inline'])
 const MANAGED_DEFINITION_DIRECTIVES = new Set(['defaults', 'components', 'utilities'])
 
 interface ScanOptions {
@@ -111,10 +112,20 @@ function tokenizePreservePrelude(source: string, start: number, end: number, tok
 }
 
 function tokenizeThemePrelude(source: string, start: number, end: number, tokens: HighlightTokenItem[]) {
-    const cursor = skipCSSWhitespace(source, start)
-    if (cursor >= end) return
-    const mode = readCSSIdent(source, cursor)
-    if (mode.value) pushHighlightToken(tokens, mode.start, mode.value.length, 'enumMember', 'directive.parameter', ['directive'])
+    let cursor = skipCSSWhitespace(source, start)
+    while (cursor < end) {
+        const ident = readCSSIdent(source, cursor)
+        if (ident.value) {
+            if (THEME_MODIFIERS.has(ident.value)) {
+                pushHighlightToken(tokens, ident.start, ident.value.length, 'modifier', 'directive.modifier', ['directive'])
+            } else {
+                pushHighlightToken(tokens, ident.start, ident.value.length, 'enumMember', 'directive.parameter', ['directive'])
+            }
+            cursor = skipCSSWhitespace(source, ident.end)
+            continue
+        }
+        cursor++
+    }
 }
 
 function tokenizeCustomAtPrelude(source: string, start: number, end: number, tokens: HighlightTokenItem[]) {

@@ -128,6 +128,30 @@ describe.concurrent('createConfigFromCSSDirectives', () => {
         ])
     })
 
+    it('preserves inline variable flags when resolving raw variable names', () => {
+        const result = createConfigFromCSSDirectives(directiveResult({
+            config: {
+                variables: [
+                    { name: 'color-primary', value: '#123', inline: true }
+                ]
+            }
+        }))
+
+        expect(result.config.variables).toEqual([
+            { namespace: 'color', key: 'primary', value: '#123', inline: true }
+        ])
+    })
+
+    it('rejects mode-specific inline variables', () => {
+        expect(() => createConfigFromCSSDirectives(directiveResult({
+            config: {
+                variables: [
+                    { name: 'color-primary', value: '#123', mode: 'dark', inline: true }
+                ]
+            }
+        }))).toThrow('Inline theme variables cannot be mode-specific: color-primary@dark')
+    })
+
     it('does not resolve removed standalone namespaces from raw variable names', () => {
         const result = createConfigFromCSSDirectives(directiveResult({
             config: {

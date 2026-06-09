@@ -13,6 +13,7 @@ export interface VariableDefinition {
     namespace?: string
     value: VariableValue
     mode?: string
+    inline?: boolean
 }
 
 export type CSSKeyframes<TDeclarations = CSSDeclarations> = Record<'from' | 'to' | string, TDeclarations>

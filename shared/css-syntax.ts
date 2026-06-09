@@ -43,6 +43,7 @@ type VariableCommon = {
     namespace?: string,
     name: string,
     key: string,
+    inline?: boolean,
     modes?: Record<string, ResolvedVariableValue>
     dependencies?: Set<string>
 }

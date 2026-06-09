@@ -8,7 +8,8 @@ export default function collectVariableNames(declarations: PropertiesHyphen, var
         const propertyValue = declarations[propertyName as keyof PropertiesHyphen]
         if (!propertyValue) continue
         for (const match of String(propertyValue).matchAll(CSS_VARIABLE_REFERENCE)) {
-            if (variables.has(match[1])) {
+            const variable = variables.get(match[1])
+            if (variable && !variable.inline) {
                 variableNames.add(match[1])
             }
         }

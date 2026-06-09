@@ -20,7 +20,7 @@ import wrapAtRules from './utils/wrap-at-rules'
 import declarers from './declarers'
 import transformers from './transformers'
 import functionTransformers from './function-transformers'
-import { createCSSVariableReference, createNumberVariableReference } from './utils/css-variables'
+import { createAlphaColorValue, createCSSVariableReference, createNumberVariableReference, normalizeVariableValue, replaceCSSVariableReferences } from './utils/css-variables'
 import collectAnimationNames from './utils/collect-animation-names'
 
 export class Utility {
@@ -293,6 +293,42 @@ export class Utility {
         const { functions } = this.css.config
 
         let currentValue = ''
+        const addVariableName = (variableName: string) => {
+            if (this.variableNames) {
+                this.variableNames.add(variableName)
+            } else {
+                this.variableNames = new Set([variableName])
+            }
+        }
+        const formatResolvedInlineNumber = (value: number) => {
+            const parsedValue = this.parseValue(value, unit)
+            return parsedValue.type === 'number'
+                ? String(parsedValue.value) + (parsedValue.unit || '')
+                : parsedValue.value
+        }
+        const resolveInlineVariable = (variable: Variable, stack: string[] = []): string => {
+            const stackIndex = stack.indexOf(variable.name)
+            if (stackIndex !== -1) {
+                throw new Error(`Circular inline variable reference: ${[...stack.slice(stackIndex), variable.name].join(' -> ')}`)
+            }
+            if (variable.value === undefined) {
+                return createCSSVariableReference(variable.name)
+            }
+            const nextStack = [...stack, variable.name]
+            const value = variable.type === 'number' && typeof variable.value === 'number' && !bypassParsing
+                ? formatResolvedInlineNumber(variable.value)
+                : normalizeVariableValue(variable.value).value
+            return replaceCSSVariableReferences(value, (variableName) => {
+                const dependency = this.css.variables.get(variableName)
+                if (!dependency) return
+                if (dependency.inline) {
+                    return resolveInlineVariable(dependency, nextStack)
+                }
+                if (!bypassVariableNames.includes(variableName)) {
+                    addVariableName(variableName)
+                }
+            })
+        }
         for (const eachValueComponent of valueComponents) {
             switch (eachValueComponent.type) {
                 case 'function':
@@ -327,12 +363,13 @@ export class Utility {
                         }
                         return createCSSVariableReference(eachValueComponent.name, eachValueComponent.alpha, resolveFallback())
                     }
-                    if (variable) {
-                        if (this.variableNames) {
-                            this.variableNames.add(eachValueComponent.name)
-                        } else {
-                            this.variableNames = new Set([eachValueComponent.name])
-                        }
+                    if (variable?.inline) {
+                        const inlineValue = resolveInlineVariable(variable)
+                        currentValue += eachValueComponent.text = eachValueComponent.alpha === undefined
+                            ? inlineValue
+                            : createAlphaColorValue(inlineValue, eachValueComponent.alpha)
+                    } else if (variable) {
+                        addVariableName(eachValueComponent.name)
                         currentValue += eachValueComponent.text = emitVariable(variable)
                     } else {
                         currentValue += eachValueComponent.text = emitVariable()

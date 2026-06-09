@@ -91,6 +91,7 @@ export interface CSSDirectiveVariableDefinition {
     name: string
     value: CSSDirectiveVariableValue
     mode?: string
+    inline?: boolean
     namespace?: string
     key?: string
 }

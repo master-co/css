@@ -205,7 +205,7 @@ function normalizeThemeTokenName(property: string) {
     return name
 }
 
-function defineThemeVariable(config: CSSDirectiveConfig, property: string, rawValue: string, mode?: string) {
+function defineThemeVariable(config: CSSDirectiveConfig, property: string, rawValue: string, mode?: string, inline?: boolean) {
     const name = normalizeThemeTokenName(property)
     const value = parseVariableValue(rawValue)
     if (mode) {
@@ -215,7 +215,8 @@ function defineThemeVariable(config: CSSDirectiveConfig, property: string, rawVa
     const definition = {
         name,
         value,
-        ...(mode ? { mode } : {})
+        ...(mode ? { mode } : {}),
+        ...(inline ? { inline: true } : {})
     }
     const foundIndex = config.variables.findIndex((existing) =>
         existing.name === definition.name
@@ -739,11 +740,11 @@ function parseSettingsDeclarations(block: DeclarationBlock<Declaration>, config:
     }
 }
 
-function parseThemeDeclarations(block: DeclarationBlock<Declaration>, config: CSSDirectiveConfig, mode?: string) {
+function parseThemeDeclarations(block: DeclarationBlock<Declaration>, config: CSSDirectiveConfig, mode?: string, inline?: boolean) {
     for (const declaration of (block.declarations || []) as Declaration[]) {
         const property = getDeclarationName(declaration)
         const value = formatDeclarationValue(declaration)
-        defineThemeVariable(config, property, value, mode)
+        defineThemeVariable(config, property, value, mode, inline)
     }
     for (const declaration of (block.importantDeclarations || []) as Declaration[]) {
         const property = getDeclarationName(declaration)
@@ -1309,13 +1310,20 @@ function getSettingsSection(rule: any): SettingsSection {
     throw new Error(`Unsupported @settings section: ${prelude}`)
 }
 
-function getThemeMode(rule: any) {
+function getThemePrelude(rule: any) {
     const prelude = formatPrelude(getCustomRulePrelude(rule))
-    if (!prelude) return
-    if (/\s/.test(prelude)) {
+    if (!prelude) return {}
+    const parts = prelude.split(/\s+/).filter(Boolean)
+    if (parts.includes('inline')) {
+        if (parts.length > 1) {
+            throw new Error('@theme inline cannot be mode-specific')
+        }
+        return { inline: true }
+    }
+    if (parts.length > 1) {
         throw new Error('@theme mode must be a single token')
     }
-    return prelude
+    return { mode: parts[0] }
 }
 
 function parseSettingsStyleRule(rule: any) {
@@ -1370,7 +1378,7 @@ function parseSettingsRule(rule: any, parsed: ParsedDirectives) {
 }
 
 function parseThemeRule(rule: any, parsed: ParsedDirectives) {
-    const mode = getThemeMode(rule)
+    const { mode, inline } = getThemePrelude(rule)
     const body = getCustomRuleBody(rule)
     if (!Array.isArray(body?.value)) {
         throw new Error('@theme requires a style block')
@@ -1380,7 +1388,7 @@ function parseThemeRule(rule: any, parsed: ParsedDirectives) {
         if (child.type !== 'nested-declarations') {
             throw new Error('@theme only accepts theme token declarations')
         }
-        parseThemeDeclarations(child.value.declarations, parsed.config, mode)
+        parseThemeDeclarations(child.value.declarations, parsed.config, mode, inline)
     }
 }
 

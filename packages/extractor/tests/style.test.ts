@@ -344,6 +344,32 @@ describe('style CSS extraction helpers', () => {
         })
     })
 
+    it('does not preload inline theme tokens', async () => {
+        const root = createFixture()
+        const extractor = new CSSExtractor({
+            include: []
+        }, root)
+        await extractor.init()
+
+        const styleCSSSources = new Map()
+        await registerStyleCSSSource(extractor, styleCSSSources, join(root, 'app/globals.css'), `
+            @theme inline {
+                color-primary: #ff0000;
+            }
+        `)
+        await extractor.insert(join(root, 'app/page.tsx'), '<main class="fg:primary"></main>')
+
+        const result = await createExtractedCSSResult({
+            extractor,
+            styleCSSSources,
+            projectDir: root
+        })
+
+        expect(result.css).toContain('.fg\\:primary{color:red}')
+        expect(result.css).not.toContain('--color-primary')
+        expect(result.preloaded.variables).toEqual({})
+    })
+
     it('prunes local CSS imports from Master CSS import roots by default', async () => {
         const root = createFixture()
         mkdirSync(join(root, 'app/styles'), { recursive: true })

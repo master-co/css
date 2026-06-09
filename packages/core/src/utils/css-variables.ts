@@ -30,6 +30,98 @@ export function collectCSSVariableReferences(value: string) {
     return references
 }
 
+export function replaceCSSVariableReferences(value: string, replacer: (name: string, text: string) => string | undefined) {
+    let result = ''
+    let quote = ''
+
+    for (let i = 0; i < value.length;) {
+        const char = value[i]
+
+        if (quote) {
+            result += char
+            if (char === '\\') {
+                result += value[i + 1] || ''
+                i += 2
+                continue
+            }
+            if (char === quote) quote = ''
+            i++
+            continue
+        }
+
+        if (char === '"' || char === '\'') {
+            quote = char
+            result += char
+            i++
+            continue
+        }
+
+        if (value.startsWith('var(', i)) {
+            let cursor = i + 4
+            while (value[cursor] === ' ') cursor++
+            if (value.slice(cursor, cursor + 2) !== '--') {
+                result += char
+                i++
+                continue
+            }
+            cursor += 2
+            const nameStart = cursor
+            while (/[_a-zA-Z0-9-]/.test(value[cursor] || '')) cursor++
+            const name = value.slice(nameStart, cursor)
+            if (!name) {
+                result += char
+                i++
+                continue
+            }
+
+            let depth = 1
+            let innerQuote = ''
+            let closeIndex = -1
+            for (let j = cursor; j < value.length; j++) {
+                const nextChar = value[j]
+                if (innerQuote) {
+                    if (nextChar === '\\') {
+                        j++
+                        continue
+                    }
+                    if (nextChar === innerQuote) innerQuote = ''
+                    continue
+                }
+                if (nextChar === '"' || nextChar === '\'') {
+                    innerQuote = nextChar
+                    continue
+                }
+                if (nextChar === '(') {
+                    depth++
+                    continue
+                }
+                if (nextChar === ')') {
+                    depth--
+                    if (depth === 0) {
+                        closeIndex = j
+                        break
+                    }
+                }
+            }
+
+            if (closeIndex === -1) {
+                result += value.slice(i)
+                break
+            }
+
+            const text = value.slice(i, closeIndex + 1)
+            result += replacer(name, text) ?? text
+            i = closeIndex + 1
+            continue
+        }
+
+        result += char
+        i++
+    }
+
+    return result
+}
+
 function readAliasName(value: string, start: number) {
     if (value[start + 1] === '(') {
         let i = start + 2
