@@ -49,19 +49,12 @@ Sets a compact default line height, prevents mobile browsers from automatically 
 
 ### Font variables
 ```css
-:root, :host {
-    --font-sans: Inter;
-    --font-sans-fallback: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
-    --font-mono-fallback: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
-    --font-serif-fallback: ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif;
-}
-
 body, :host {
-    font-family: var(--font-sans, ''), var(--font-sans-fallback);
+    font-family: var(--font-family-sans);
 }
 
 code, kbd, samp, pre {
-    font-family: var(--font-mono, ''), var(--font-mono-fallback);
+    font-family: var(--font-family-mono);
 }
 ```
 
