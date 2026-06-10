@@ -1,6 +1,7 @@
 @layer theme, base, defaults, components, utilities;
 
 @layer base {
+
     /* Improve text rendering precision across browsers. */
     * {
         text-rendering: geometricPrecision;
@@ -146,22 +147,14 @@
         border-color: inherit;
     }
 
-    /* Define default font family variables for documents and shadow hosts. */
-    :root, :host {
-        --font-sans: Inter;
-        --font-sans-fallback: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
-        --font-mono-fallback: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
-        --font-serif-fallback: ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif;
-    }
-
     /* Apply the default sans font stack to documents and shadow hosts. */
     body, :host {
-        font-family: var(--font-sans, ''), var(--font-sans-fallback);
+        font-family: var(--font-family-sans);
     }
 
     /* Apply the default monospace font stack to code-related elements. */
     code, kbd, samp, pre {
-        font-family: var(--font-mono, ''), var(--font-mono-fallback);
+        font-family: var(--font-family-mono);
     }
 
     /* remove */
