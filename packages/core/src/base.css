@@ -1,7 +1,6 @@
 @layer theme, base, defaults, components, utilities;
 
 @layer base {
-
     /* Improve text rendering precision across browsers. */
     * {
         text-rendering: geometricPrecision;
