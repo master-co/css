@@ -1,5 +1,5 @@
-@layer components {
-    .btn {
+@components {
+    btn {
         display: inline-flex;
         align-items: center;
         justify-content: center;
@@ -7,7 +7,7 @@
         outline-offset: -0.0625rem;
     }
 
-    .btn-xs {
+    btn-xs {
         border-radius: 0.25rem;
         padding-left: 0.5rem;
         padding-right: 0.5rem;
@@ -15,7 +15,7 @@
         height: 1.5rem;
     }
 
-    .btn-sm {
+    btn-sm {
         border-radius: 0.375rem;
         padding-left: 0.75rem;
         padding-right: 0.75rem;
@@ -23,7 +23,7 @@
         height: 2rem;
     }
 
-    .btn-md {
+    btn-md {
         border-radius: 0.375rem;
         padding-left: 1rem;
         padding-right: 1rem;
@@ -31,7 +31,7 @@
         height: 2.5rem;
     }
 
-    .btn-lg {
+    btn-lg {
         border-radius: 0.5rem;
         padding-left: 1.25rem;
         padding-right: 1.25rem;
@@ -39,7 +39,7 @@
         height: 3rem;
     }
 
-    .btn-xl {
+    btn-xl {
         border-radius: 0.625rem;
         padding-left: 1.5rem;
         padding-right: 1.5rem;

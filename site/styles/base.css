@@ -10,14 +10,16 @@
     color-text-yellow-contrast: $color-yellow-95;
 }
 
-@layer components {
-    .yellow {
+@components {
+    yellow {
         outline: 0.0625rem var(--color-yellow-ring) solid;
         background-color: var(--color-yellow);
         color: var(--color-text-yellow-contrast);
     }
 
-    .touch-yellow:hover {
-        background-color: var(--color-touch-yellow);
+    touch-yellow {
+        &:hover {
+            background-color: var(--color-touch-yellow);
+        }
     }
 }
