@@ -8,32 +8,32 @@ Master CSS maps elevation to the `shadow` namespace. Use tokens such as `shadow:
 <Demo>
     <div className="container w:full">
         <div className="grid-cols:1 grid-cols:2@container(2xs) grid-cols:3@container(md) gap:lg w:full">
-            <div className="bg:base r:lg p:md b:1|lightest shadow:xs">
+            <div className="bg:base r:lg p:md shadow:xs">
                 <DemoLabel>shadow:xs</DemoLabel>
                 <div className="font:medium">Separated</div>
                 <p className="fg:light m:0 mt:xs text:sm">Rows, compact controls</p>
             </div>
-            <div className="bg:base r:lg p:md b:1|lightest shadow:sm">
+            <div className="bg:base r:lg p:md shadow:sm">
                 <DemoLabel>shadow:sm</DemoLabel>
                 <div className="font:medium">Raised</div>
                 <p className="fg:light m:0 mt:xs text:sm">Cards, quiet panels</p>
             </div>
-            <div className="bg:base r:lg p:md b:1|lightest shadow:md">
+            <div className="bg:base r:lg p:md shadow:md">
                 <DemoLabel>shadow:md</DemoLabel>
                 <div className="font:medium">Floating</div>
                 <p className="fg:light m:0 mt:xs text:sm">Hover lift, toolbars</p>
             </div>
-            <div className="bg:base r:lg p:md b:1|lightest shadow:lg">
+            <div className="bg:base r:lg p:md shadow:lg">
                 <DemoLabel>shadow:lg</DemoLabel>
                 <div className="font:medium">Overlay</div>
                 <p className="fg:light m:0 mt:xs text:sm">Dropdowns, popovers</p>
             </div>
-            <div className="bg:base r:lg p:md b:1|lightest shadow:xl">
+            <div className="bg:base r:lg p:md shadow:xl">
                 <DemoLabel>shadow:xl</DemoLabel>
                 <div className="font:medium">Interrupting</div>
                 <p className="fg:light m:0 mt:xs text:sm">Drawers, dialogs</p>
             </div>
-            <div className="bg:base r:lg p:md b:1|lightest shadow:2xl">
+            <div className="bg:base r:lg p:md shadow:2xl">
                 <DemoLabel>shadow:2xl</DemoLabel>
                 <div className="font:medium">Blocking</div>
                 <p className="fg:light m:0 mt:xs text:sm">Modals, spotlight surfaces</p>
@@ -87,8 +87,6 @@ Use `shadow:*` in product markup. Use the more explicit `box-shadow:*` form when
 
 ## Elevation scale
 Choose the lowest token that makes the surface relationship clear. More shadow is not more hierarchy if every surface is elevated.
-
-<ShadowTokens />
 
 | Surface role | Recommended token | Notes |
 | --- | --- | --- |
