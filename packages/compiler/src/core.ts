@@ -453,6 +453,10 @@ function formatBorderRadiusCorner(value: any): string | undefined {
 }
 
 function formatDeclarationValueFallback(declaration: Declaration): string | undefined {
+    if (declaration.property === 'custom') {
+        const value = declaration.value as { value?: TokenOrValue[] }
+        if (Array.isArray(value.value)) return formatTokenOrValues(value.value)
+    }
     if (declaration.property !== 'border-radius') return
     const value = declaration.value as any
     const corners = [

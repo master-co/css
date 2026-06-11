@@ -369,8 +369,24 @@ export async function createMasterCSSPackageHostSource(
         ...options,
         preserveNativeCSS: true
     })
+    const nativeCSS = getNativeCSS(result)
+    const finalizedResult = createConfigFromCSSResult(result, {
+        config: options.config as Config | undefined
+    })
+    const css = createCSS(finalizedResult.config)
+    const nativeAnimationNames = collectStyleCSSKeyframeNames([nativeCSS])
+    if (nativeAnimationNames.size) {
+        css.registerPreloaded({
+            animations: Object.fromEntries([...nativeAnimationNames].map((name) => [name, 1]))
+        })
+    }
+    insertVariableReferences(css, collectCSSVariableReferences(nativeCSS))
+    insertAnimationReferences(css, collectCSSAnimationReferences(nativeCSS, css, nativeAnimationNames))
     return {
-        source: getNativeCSS(result),
+        source: [
+            nativeCSS,
+            css.text
+        ].filter(Boolean).join('\n\n'),
         dependencies: graph.dependencies
     }
 }

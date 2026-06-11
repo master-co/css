@@ -195,6 +195,26 @@ describe.concurrent('@master/css-compiler', () => {
         })
     })
 
+    it('formats custom theme values with CSS variable fallbacks', () => {
+        const result = compileCSSConfig(`
+            @theme {
+                font-mono: "Roboto Mono";
+                font-family-mono: var(--font-mono, ui-monospace), SFMono-Regular;
+            }
+        `)
+
+        expect(result.config.variables).toContainEqual({
+            namespace: 'font',
+            key: 'mono',
+            value: '"Roboto Mono"'
+        })
+        expect(result.config.variables).toContainEqual({
+            namespace: 'font-family',
+            key: 'mono',
+            value: 'var(--font-mono, ui-monospace), SFMono-Regular'
+        })
+    })
+
     it('records style definitions without resolving core utilities', () => {
         const result = compileCSS(`
             @settings {
@@ -928,19 +948,46 @@ describe.concurrent('@master/css-compiler', () => {
 
     it('compiles package CSS files without treating them as project entries', () => {
         const coreIndex = resolve(here, '../../core/src/index.css')
+        const coreBase = resolve(here, '../../core/src/base.css')
         const coreTheme = resolve(here, '../../core/src/theme.css')
+        const coreAnimations = resolve(here, '../../core/src/animations.css')
+        const coreSyntax = resolve(here, '../../core/src/syntax.css')
         const source = readFileSync(coreIndex, 'utf-8')
 
         expect(inspectCSS(source).hasMasterEntry).toBe(false)
 
         const result = compileCSSConfigFile(coreIndex)
 
+        expect(result.dependencies).toContain(coreBase)
         expect(result.dependencies).toContain(coreTheme)
+        expect(result.dependencies).toContain(coreAnimations)
+        expect(result.dependencies).toContain(coreSyntax)
         expect(result.config.variables).toContainEqual({
             namespace: 'breakpoint',
             key: 'sm',
             value: 834
         })
+        expect(result.config.variables).toContainEqual({
+            namespace: 'font',
+            key: 'sans',
+            value: '"Inter"'
+        })
+        const fontFamilySans = result.config.variables?.find((variable) =>
+            variable.namespace === 'font-family' && variable.key === 'sans'
+        )
+        expect(String(fontFamilySans?.value)).toContain('var(--font-sans, ui-sans-serif)')
+        expect(Object.keys(result.config.atTokens || {})).toContain('screen')
+        expect(Object.keys(result.config.selectorTokens || {})).toContain(':first')
+        expect(Object.keys(result.config.animations || {})).toContain('fade')
+
+        const css = createCSS(result.config).add('font:sans')
+        const fontSans = css.utilitiesLayer.rules.find((rule) => rule.name === 'font:sans')
+        const fontFamilySansVariable = css.variables.get('font-family-sans')
+
+        expect(fontSans?.text).toBe('.font\\:sans{font-family:var(--font-family-sans)}')
+        expect(fontFamilySansVariable?.dependencies?.has('font-sans')).toBe(true)
+        expect(css.text).toContain('--font-family-sans:var(--font-sans, ui-sans-serif)')
+        expect(css.text).toContain('--font-sans:"Inter"')
     })
 
     it('detects package CSS files across workspace symlinks', () => {
@@ -951,7 +998,11 @@ describe.concurrent('@master/css-compiler', () => {
             symlinkSync(resolve(here, '../../core'), join(scope, 'css'), 'dir')
 
             expect(isMasterCSSPackageStyleFile(resolve(here, '../../core/src/theme.css'), root)).toBe(true)
+            expect(isMasterCSSPackageStyleFile(resolve(here, '../../core/src/animations.css'), root)).toBe(true)
+            expect(isMasterCSSPackageStyleFile(resolve(here, '../../core/src/syntax.css'), root)).toBe(true)
             expect(isMasterCSSPackageStyleFile(join(root, 'node_modules/@master/css/src/theme.css'), root)).toBe(true)
+            expect(isMasterCSSPackageStyleFile(join(root, 'node_modules/@master/css/src/animations.css'), root)).toBe(true)
+            expect(isMasterCSSPackageStyleFile(join(root, 'node_modules/@master/css/src/syntax.css'), root)).toBe(true)
         } finally {
             rmSync(root, { recursive: true, force: true })
         }
