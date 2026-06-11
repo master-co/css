@@ -37,6 +37,19 @@ Aspect ratio needs at least one axis to be resolved by width, height, or content
 
 If both width and height are fixed, the browser follows those dimensions and the ratio is only a preferred constraint.
 
+### Use aspect tokens
+Define `aspect-*` tokens when a repeated ratio has product or media meaning.
+
+```css name=index.css
+@theme {
+    --aspect-video: 16/9;
+}
+```
+
+```html
+<figure class="w:full aspect:video">...</figure>
+```
+
 ### Choose size for fixed squares
 Use [size](/reference/size) for fixed square UI elements. Use `aspect:*` when at least one axis should remain fluid.
 ```html

@@ -25,10 +25,20 @@ test.concurrent('resolves built-in and utility-derived namespaces', () => {
         namespace: 'animation',
         key: 'fade'
     })
-    expect(resolveVariableNamespace('--aspect-ratio-video')).toEqual({
-        name: 'aspect-ratio-video',
-        namespace: 'aspect-ratio',
+    expect(resolveVariableNamespace('--aspect-video')).toEqual({
+        name: 'aspect-video',
+        namespace: 'aspect',
         key: 'video'
+    })
+    expect(resolveVariableNamespace('--font-feature-tabular')).toEqual({
+        name: 'font-feature-tabular',
+        namespace: 'font-feature',
+        key: 'tabular'
+    })
+    expect(resolveVariableNamespace('--delay-stagger')).toEqual({
+        name: 'delay-stagger',
+        namespace: 'delay',
+        key: 'stagger'
     })
     expect(resolveVariableNamespace('--tracking-wide')).toEqual({
         name: 'tracking-wide',
@@ -80,6 +90,29 @@ test.concurrent('does not resolve removed standalone namespaces', () => {
         name: 'border-radius-lg',
         namespace: 'border',
         key: 'radius-lg'
+    })
+    expect(resolveVariableNamespace('--box-shadow-md')).toEqual({
+        name: 'box-shadow-md',
+        key: 'box-shadow-md'
+    })
+    expect(resolveVariableNamespace('--text-size-lg')).toEqual({
+        name: 'text-size-lg',
+        key: 'text-size-lg'
+    })
+    expect(resolveVariableNamespace('--animation-duration-fast')).toEqual({
+        name: 'animation-duration-fast',
+        namespace: 'animation',
+        key: 'duration-fast'
+    })
+    expect(resolveVariableNamespace('--transition-duration-fast')).toEqual({
+        name: 'transition-duration-fast',
+        namespace: 'transition',
+        key: 'duration-fast'
+    })
+    expect(resolveVariableNamespace('--aspect-ratio-video')).toEqual({
+        name: 'aspect-ratio-video',
+        namespace: 'aspect',
+        key: 'ratio-video'
     })
     expect(resolveVariableNamespace('--blur-sm')).toEqual({
         name: 'blur-sm',

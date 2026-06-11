@@ -5,8 +5,22 @@ test.concurrent('duration tokens', () => {
     expect(createCSSWithTheme().create('~duration:slower')).toBeUndefined()
     expect(createCSSWithTheme().create('animation-duration:fastest')?.declarations).toStrictEqual({ 'animation-duration': 'var(--duration-fastest)' })
     expect(createCSSWithTheme().create('animation-duration:fast')?.declarations).toStrictEqual({ 'animation-duration': 'var(--duration-fast)' })
+    expect(createCSSWithTheme().create('animation-duration:duration-fast')?.declarations).toStrictEqual({ 'animation-duration': 'var(--duration-fast)' })
     expect(createCSSWithTheme().create('animation-duration:slowest')?.declarations).toStrictEqual({ 'animation-duration': 'var(--duration-slowest)' })
     expect(createCSSWithTheme().create('transition-duration:slower')?.declarations).toStrictEqual({ 'transition-duration': 'var(--duration-slower)' })
+})
+
+test.concurrent('duration longhands do not use property namespace variables', () => {
+    const css = createCSSWithTheme({
+        variables: [
+            { namespace: 'duration', key: 'quick', value: '120ms' },
+            { namespace: 'animation-duration', key: 'quick', value: '990ms' },
+            { namespace: 'transition-duration', key: 'quick', value: '880ms' }
+        ]
+    })
+
+    expect(css.create('animation-duration:quick')?.declarations).toStrictEqual({ 'animation-duration': 'var(--duration-quick)' })
+    expect(css.create('transition-duration:quick')?.declarations).toStrictEqual({ 'transition-duration': 'var(--duration-quick)' })
 })
 
 test.concurrent('easing tokens', () => {
@@ -15,6 +29,29 @@ test.concurrent('easing tokens', () => {
     expect(createCSSWithTheme().create('animation-timing-function:smooth')?.declarations).toStrictEqual({ 'animation-timing-function': 'var(--easing-smooth)' })
     expect(createCSSWithTheme().create('animation-timing-function:overshoot')?.declarations).toStrictEqual({ 'animation-timing-function': 'var(--easing-overshoot)' })
     expect(createCSSWithTheme().create('transition-timing-function:crisp')?.declarations).toStrictEqual({ 'transition-timing-function': 'var(--easing-crisp)' })
+})
+
+test.concurrent('timing function longhands do not use property namespace variables', () => {
+    const css = createCSSWithTheme({
+        variables: [
+            { namespace: 'easing', key: 'fluid', value: 'cubic-bezier(.4,0,.2,1)' },
+            { namespace: 'animation-timing-function', key: 'fluid', value: 'steps(2,end)' },
+            { namespace: 'transition-timing-function', key: 'fluid', value: 'steps(3,end)' }
+        ]
+    })
+
+    expect(css.create('animation-timing-function:fluid')?.declarations).toStrictEqual({ 'animation-timing-function': 'var(--easing-fluid)' })
+    expect(css.create('transition-timing-function:fluid')?.declarations).toStrictEqual({ 'transition-timing-function': 'var(--easing-fluid)' })
+})
+
+test.concurrent('delay tokens', () => {
+    const css = createCSSWithTheme({
+        variables: [{ namespace: 'delay', key: 'stagger', value: '80ms' }]
+    })
+
+    expect(css.create('animation-delay:stagger')?.declarations).toStrictEqual({ 'animation-delay': 'var(--delay-stagger)' })
+    expect(css.create('transition-delay:stagger')?.declarations).toStrictEqual({ 'transition-delay': 'var(--delay-stagger)' })
+    expect(css.create('transition-delay:delay-stagger')?.declarations).toStrictEqual({ 'transition-delay': 'var(--delay-stagger)' })
 })
 
 test.concurrent('animation tokens', () => {

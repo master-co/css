@@ -8,7 +8,7 @@ export default {
         { namespace: 'font-size', key: 'md', value: 20 },
         { namespace: 'tracking', key: 'wide', value: .4 },
         { namespace: 'border', key: 'inputborder', value: '2|solid|color-black' },
-        { namespace: 'box-shadow', key: 'x2', value: '0 25px 50px -12px rgb(0 0 0 / 25%)' },
+        { namespace: 'shadow', key: 'x2', value: '0 25px 50px -12px rgb(0 0 0 / 25%)' },
         { namespace: 'inset', key: 'sm', value: 10 },
         { namespace: 'inset', key: 'md', value: 20 },
         { namespace: 'color', key: 'primary', value: '$(color-black)' },

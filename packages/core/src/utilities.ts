@@ -759,7 +759,9 @@ const utilities = [
     {
         name: 'font-feature-settings',
         key: 'font-feature',
-        type: UtilityType.Native
+        type: UtilityType.Native,
+        namespaces: ['font-feature'],
+        implicitNamespace: false
     },
     {
         name: 'color',
@@ -1498,7 +1500,8 @@ const utilities = [
             'letter-spacing': ['clamp(-0.072em, calc((', undefined, ' - 1rem) * -0.048), 0em)',]
         },
         type: UtilityType.Shorthand,
-        namespaces: ['font-size']
+        namespaces: ['font-size'],
+        implicitNamespace: false
     },
     {
         name: 'text-fill-color',
@@ -1550,7 +1553,8 @@ const utilities = [
         subkey: 's',
         unit: 'rem',
         type: UtilityType.Native,
-        namespaces: ['shadow', 'color']
+        namespaces: ['shadow', 'color'],
+        implicitNamespace: false
     },
     {
         name: 'table-layout',
@@ -1710,18 +1714,22 @@ const utilities = [
     {
         name: 'transition-timing-function',
         type: UtilityType.Native,
-        namespaces: ['easing']
+        namespaces: ['easing'],
+        implicitNamespace: false
     },
     {
         name: 'transition-duration',
         type: UtilityType.Native,
         unit: 'ms',
-        namespaces: ['duration']
+        namespaces: ['duration'],
+        implicitNamespace: false
     },
     {
         name: 'transition-delay',
         type: UtilityType.Native,
-        unit: 'ms'
+        unit: 'ms',
+        namespaces: ['delay'],
+        implicitNamespace: false
     },
     {
         name: 'transition',
@@ -1731,7 +1739,9 @@ const utilities = [
     {
         name: 'animation-delay',
         type: UtilityType.Native,
-        unit: 'ms'
+        unit: 'ms',
+        namespaces: ['delay'],
+        implicitNamespace: false
     },
     {
         name: 'animation-direction',
@@ -1741,7 +1751,8 @@ const utilities = [
         name: 'animation-duration',
         type: UtilityType.Native,
         unit: 'ms',
-        namespaces: ['duration']
+        namespaces: ['duration'],
+        implicitNamespace: false
     },
     {
         name: 'animation-fill-mode',
@@ -1763,7 +1774,8 @@ const utilities = [
     {
         name: 'animation-timing-function',
         type: UtilityType.Native,
-        namespaces: ['easing']
+        namespaces: ['easing'],
+        implicitNamespace: false
     },
     {
         name: 'animation',
@@ -2477,7 +2489,9 @@ const utilities = [
     {
         name: 'aspect-ratio',
         key: 'aspect',
-        type: UtilityType.Native
+        type: UtilityType.Native,
+        namespaces: ['aspect'],
+        implicitNamespace: false
     },
     {
         name: 'column-span',

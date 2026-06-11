@@ -1,5 +1,5 @@
 const syntaxes = [
-    ['transition-delay:`milliSeconds`,`…`']
+    ['transition-delay:`delay`,`milliSeconds`,`…`']
 ]
 
 export default syntaxes

@@ -147,9 +147,12 @@ Contextual token shorthand removes redundant namespace prefixes from values. The
 | `leading:md` | `leading:leading-md` | Line-height utilities resolve leading tokens. |
 | `tracking:tight` | `tracking:tracking-tight` | Letter-spacing utilities resolve tracking tokens. |
 | `animation-duration:fast` | `animation-duration:duration-fast` | Animation duration resolves duration tokens. |
+| `transition-delay:short` | `transition-delay:delay-short` | Transition and animation delay utilities resolve delay tokens. |
+| `aspect:video` | `aspect:aspect-video` | Aspect-ratio utilities resolve aspect tokens. |
+| `font-feature:tabular` | `font-feature:font-feature-tabular` | Font feature settings resolve font-feature tokens. |
 | <code>transition:opacity&#124;fast&#124;smooth</code> | <code>transition:opacity&#124;duration-fast&#124;easing-smooth</code> | Transition shorthand resolves duration and easing tokens. |
 
-The namespace can come from an explicit utility namespace, such as `spacing` for padding and gap utilities, or from the utility name itself. For example, `animation-duration:fast` can resolve the `animation-duration-fast` theme token because `animation-duration` is a utility name. See [How namespaces are resolved](/guide/theme#how-namespaces-are-resolved) for the resolution rules and current default namespace sources.
+The namespace can come from an explicit utility namespace, such as `spacing` for padding and gap utilities, or from the utility name itself when the property name is already the clearest token namespace. For example, `transition-delay:short` resolves `delay-short`, while `tab-size:code` can resolve `tab-size-code`. See [How namespaces are resolved](/guide/theme#how-namespaces-are-resolved) for the resolution rules and current default namespace sources.
 
 Use the longer form only when it improves clarity in a syntax lesson, or when you are intentionally showing how variable namespaces map to generated CSS.
 

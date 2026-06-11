@@ -12,3 +12,15 @@ test.concurrent('text', () => {
     expect(createCSSWithTheme().create('text-stroke:current')?.text).toContain('-webkit-text-stroke-color:var(--color-current)')
     expect(createCSSWithTheme().create('text-stroke:transparent')?.text).toContain('-webkit-text-stroke-color:transparent')
 })
+
+test.concurrent('text size uses font-size namespace variables', () => {
+    const text = createCSSWithTheme({
+        variables: [
+            { namespace: 'font-size', key: 'display', value: '1.125rem' },
+            { namespace: 'text-size', key: 'display', value: '6rem' }
+        ]
+    }).create('text:display')?.text
+
+    expect(text).toContain('font-size:var(--font-size-display)')
+    expect(text).not.toContain('--text-size-display')
+})

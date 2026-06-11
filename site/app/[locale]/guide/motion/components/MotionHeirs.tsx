@@ -1,6 +1,6 @@
 import config from '@master/css/config'
 
-const namespaces = ['duration', 'easing']
+const namespaces = ['duration', 'easing', 'delay']
 const utilities = config.utilities || []
 
 export default () =>

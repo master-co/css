@@ -28,6 +28,7 @@ test.concurrent('autofill solid', () => {
     expect(createCSSWithTheme().create('outline:16|black')?.text).toContain('outline:1rem var(--color-black) solid')
     expect(createCSSWithTheme().create('outline:16|black|solid')?.text).toContain('outline:1rem var(--color-black) solid')
     expect(createCSSWithTheme({ variables: [{ key: 'line', value: 'solid' }] }).create('outline:16|black|line')?.text).toContain('outline:1rem var(--color-black) var(--line)')
+    expect(createCSSWithTheme({ variables: [{ namespace: 'outline', key: 'focus', value: '2|solid|black' }] }).create('outline:focus')?.text).toBe('.outline\\:focus{outline:var(--outline-focus)}')
 
     expectLayers(
         {

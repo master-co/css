@@ -10,3 +10,15 @@ test.concurrent('uses shadow variables', () => {
     expect(createCSSWithTheme().create('box-shadow:2xl')?.text).toContain('box-shadow:var(--shadow-2xl)')
     expect(createCSSWithTheme({ variables: [{ namespace: 'shadow', key: 'custom', value: '0 4px 12px black' }] }).create('shadow:custom')?.text).toBe('.shadow\\:custom{box-shadow:var(--shadow-custom)}')
 })
+
+test.concurrent('does not use box-shadow namespace variables', () => {
+    const css = createCSSWithTheme({
+        variables: [
+            { namespace: 'shadow', key: 'panel', value: '0 1px 2px black' },
+            { namespace: 'box-shadow', key: 'panel', value: '0 9px 9px black' }
+        ]
+    })
+
+    expect(css.create('shadow:panel')?.text).toBe('.shadow\\:panel{box-shadow:var(--shadow-panel)}')
+    expect(css.create('box-shadow:panel')?.text).toBe('.box-shadow\\:panel{box-shadow:var(--shadow-panel)}')
+})

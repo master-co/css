@@ -1,5 +1,5 @@
 const syntaxes = [
-    ['animation-delay:`milliSeconds`,`…`']
+    ['animation-delay:`delay`,`milliSeconds`,`…`']
 ]
 
 export default syntaxes

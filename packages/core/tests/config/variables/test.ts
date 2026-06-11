@@ -45,7 +45,7 @@ test.concurrent('rule variables', () => {
     expect(createCSSWithTheme().create('line-height:md')?.text).toBe('.line-height\\:md{line-height:var(--leading-md)}')
     expect(createCSSWithTheme().create('r:lg')?.text).toBe('.r\\:lg{border-radius:calc(var(--radius-lg) / 16 * 1rem)}')
     expect(createCSSWithTheme().create('border-radius:lg')?.text).toBe('.border-radius\\:lg{border-radius:calc(var(--radius-lg) / 16 * 1rem)}')
-    expect(createCSSWithTheme(config).create('shadow:x2')?.text).toBe('.shadow\\:x2{box-shadow:var(--box-shadow-x2)}')
+    expect(createCSSWithTheme(config).create('shadow:x2')?.text).toBe('.shadow\\:x2{box-shadow:var(--shadow-x2)}')
     expect(createCSSWithTheme(config).create('b:inputborder')?.text).toBe('.b\\:inputborder{border:var(--border-inputborder)}')
     expectLayers(
         {

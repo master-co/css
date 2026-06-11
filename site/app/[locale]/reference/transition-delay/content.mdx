@@ -28,6 +28,19 @@ Apply different delays to related elements while keeping the same duration and e
 </div>
 ```
 
+### Use delay tokens
+Define `delay-*` tokens when the same delay appears across several interactions.
+
+```css name=index.css
+@theme {
+    --delay-short: 80ms;
+}
+```
+
+```html
+<button class="transition:opacity|fast|smooth transition-delay:short">...</button>
+```
+
 ### Reset delay at breakpoints
 Remove a delay when the same UI becomes dense or task-focused at a larger viewport.
 ```html
