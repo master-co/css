@@ -7,6 +7,10 @@ export function getThemeVariables(namespace: string): VariableDefinition[] {
     return themeVariables.filter((variable) => variable.namespace === namespace && !variable.mode)
 }
 
+export function getThemeModeVariables(namespace: string, mode: string): VariableDefinition[] {
+    return themeVariables.filter((variable) => variable.namespace === namespace && variable.mode === mode)
+}
+
 export function getThemeNumberVariableEntries(namespace: string) {
     return getThemeVariables(namespace).flatMap(({ key, value }) =>
         typeof value === 'number'

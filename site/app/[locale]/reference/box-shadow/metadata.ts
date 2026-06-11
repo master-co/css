@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
     title: 'box-shadow',
-    description: 'Adding shadow effects around an element.',
+    description: 'Adding light and dark shadow effects around an element.',
     category: 'Syntax',
     type: 'entity',
     canIUseLink: 'https://caniuse.com/?search=box-shadow',

@@ -1,5 +1,3 @@
-import ShadowTokens from './components/ShadowTokens'
-
 ## Overview [sr-only]
 <Overview/>
 
@@ -7,7 +5,7 @@ import ShadowTokens from './components/ShadowTokens'
 
 ## Basic usage
 ### Use shadow tokens
-Use `shadow:*` tokens for common elevation levels.
+Use `shadow:*` tokens for common elevation levels. Preset shadow tokens are defined separately for light and dark modes, so the class name stays the same while the active theme changes the `box-shadow` value.
 ```html
 <!-- @MARK shadow:md -->
 <article class="shadow:md">
@@ -23,7 +21,7 @@ Use `shadow:*` tokens for common elevation levels.
 </details>
 
 ### Use raw values
-Use raw values when a shadow does not belong in the shared scale.
+Use raw values when a shadow does not belong in the shared scale. Raw values are literal; they do not automatically adapt between light and dark modes.
 
 ```html
 <!-- @MARK shadow:0|1|2|black/.12,0|4|8|black/.08 -->
@@ -41,6 +39,23 @@ Use `shadow:inset|...` when the shadow should render inside the element.
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
 <div class="shadow:sm shadow:md:hover shadow:none@print">...</div>
+```
+
+### Customize mode-specific tokens
+Define the same `shadow-*` key in `@theme light` and `@theme dark` when an elevation decision should adapt across modes.
+
+```css name=index.css
+@theme light {
+    shadow-card: 0 2px 4px -2px oklch(0% 0 none / .08), 0 8px 16px -4px oklch(0% 0 none / .10);
+}
+
+@theme dark {
+    shadow-card: 0 0 0 1px oklch(100% 0 none / .07), 0 2px 4px -2px oklch(0% 0 none / .38), 0 8px 16px -4px oklch(0% 0 none / .30);
+}
+```
+
+```html
+<article class="shadow:card">...</article>
 ```
 
 Prefer tokens for product surfaces. Use raw values for one-off art direction, then promote repeated values into the shadow scale.

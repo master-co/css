@@ -10,12 +10,20 @@ In Master CSS, that vocabulary usually lives in the project CSS entry: `@theme` 
 
 @theme {
     color-primary: #4f46e5;
-    color-surface: #ffffff;
     spacing-card: 24;
     border-radius-card: 16;
-    shadow-card: 0 16px 40px rgb(15 23 42 / .12);
     breakpoint-md: 768;
     container-md: 448;
+}
+
+@theme light {
+    color-surface: #ffffff;
+    shadow-card: 0 16px 40px rgb(15 23 42 / .12);
+}
+
+@theme dark {
+    color-surface: #111827;
+    shadow-card: 0 0 0 1px rgb(255 255 255 / .08), 0 16px 40px rgb(0 0 0 / .36);
 }
 
 @custom-at motion-safe @media (prefers-reduced-motion: no-preference);
@@ -61,9 +69,16 @@ Theme tokens are declarations inside `@theme` blocks. Write the token name witho
     spacing-card: 24;
     font-family-sans: Inter, ui-sans-serif, system-ui, sans-serif;
     border-radius-card: 16;
-    shadow-card: 0 16px 40px rgb(15 23 42 / .12);
     breakpoint-md: 768;
     container-md: 448;
+}
+
+@theme light {
+    shadow-card: 0 16px 40px rgb(15 23 42 / .12);
+}
+
+@theme dark {
+    shadow-card: 0 0 0 1px rgb(255 255 255 / .08), 0 16px 40px rgb(0 0 0 / .36);
 }
 ```
 
@@ -96,7 +111,7 @@ The default theme vocabulary is utility-owned. This table lists the built-in con
 <VariableNamespaceSources />
 
 ### Use contextual tokens
-The same short token can resolve differently by context. `primary` is a color in `bg:primary`, `card` is spacing in `p:card`, radius in `r:card`, and shadow in `shadow:card`.
+The same short token can resolve differently by context. `primary` is a color in `bg:primary`, `card` is spacing in `p:card`, radius in `r:card`, and shadow in `shadow:card`. If the shadow token is mode-specific, the same `shadow:card` class follows the active light or dark mode.
 
 ```html
 <!-- @MARK bg:surface --><!-- @MARK p:card --><!-- @MARK r:card --><!-- @MARK font:sans -->
@@ -190,12 +205,14 @@ Mode-specific `@theme` blocks keep markup semantic while values change by mode.
     color-surface: #ffffff;
     color-text-strong: #111827;
     color-primary: #4f46e5;
+    shadow-card: 0 16px 40px rgb(15 23 42 / .12);
 }
 
 @theme dark {
     color-surface: #111827;
     color-text-strong: #f9fafb;
     color-primary: #818cf8;
+    shadow-card: 0 0 0 1px rgb(255 255 255 / .08), 0 16px 40px rgb(0 0 0 / .36);
 }
 
 @theme brand {
@@ -209,7 +226,7 @@ Mode-specific `@theme` blocks keep markup semantic while values change by mode.
 </section>
 ```
 
-`light` and `dark` are always available. Defining another mode adds it to the theme automatically. When a token has mode-specific values, Master CSS emits a CSS custom property in the theme layer and generated utilities reference that property.
+`light` and `dark` are always available. Defining another mode adds it to the theme automatically. When a token has mode-specific values, Master CSS emits a CSS custom property in the theme layer and generated utilities reference that property. This applies to colors, shadows, and any other token namespace that should adapt by mode.
 
 ### Choose a mode trigger
 Most projects leave light and dark mode behavior system-driven:

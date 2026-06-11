@@ -70,7 +70,7 @@ Foundation tokens are the shared vocabulary for the most common UI decisions.
 | Spacing | `p:sm`, `gap:md`, `mt:lg`, `px:xl` | `p:3x`, `gap:1rem`, `mt:12px` |
 | Typography | `font:lg`, `text:lg`, `font:medium`, `leading:md`, `tracking:tight` | `font:18`, `leading:1.4`, `tracking:-0.02em` when a token exists |
 | Corner radius | `r:md`, `r:lg`, `r:2xl`, `rounded`, `round` | `r:2x`, `r:8px` for standard cards and controls |
-| Elevation | `shadow:xs`, `shadow:sm`, `shadow:md`, `shadow:lg` | Raw multi-part `box-shadow` values in markup |
+| Elevation | `shadow:xs`, `shadow:sm`, `shadow:md`, `shadow:lg` with light and dark mode values | Raw multi-part `box-shadow` values in markup |
 | Motion | `animation-duration:fast`, `transition-duration:fast`, `animation-timing-function:smooth`, `transition-timing-function:crisp` | Repeated `150ms`, `300ms`, or custom cubic-bezier values |
 | Breakpoints | `@md`, `@lg` | Repeated viewport queries such as `@media(768px)` |
 | Container sizes | `max-w:md`, `@container(md)` | Repeated component or wrapper widths such as `@container(448px)` |
@@ -238,7 +238,7 @@ Low-level values are not forbidden. They need a clear reason.
 | Local measured geometry | `size:10x`, `w:80x`, `aspect:16/9` | The value belongs to one asset, icon, component, or media frame. |
 | Fluid layout requirement | `w:1/2`, `h:100dvh`, `max-w:72ch`, `w:clamp(...)` | The value describes layout behavior that a token scale should not hide. |
 | One-off content value | `content:"New"`, `grid-cols:3`, `order:first` | The value is semantic content or structural behavior. |
-| Custom system extension | `spacing-card: 24`, `shadow-popover: ...` | The value is being promoted into the design system. |
+| Custom system extension | `spacing-card: 24`, `shadow-popover: ...` in light and dark modes | The value is being promoted into the design system. |
 
 When the reason is not obvious, prefer a token or add a small note in the surrounding docs that explains why the low-level value is intentional.
 
@@ -253,7 +253,14 @@ Create a project token when a value is reused, named in design specs, shared acr
     border-radius-card: 12;
     color-accent: $color-blue-60;
     color-accent-text: $color-white;
+}
+
+@theme light {
     shadow-popover: 0 4px 8px -2px oklch(0% 0 none / .08), 0 12px 24px -4px oklch(0% 0 none / .10);
+}
+
+@theme dark {
+    shadow-popover: 0 0 0 1px oklch(100% 0 none / .08), 0 8px 18px -8px oklch(0% 0 none / .44), 0 18px 40px -12px oklch(0% 0 none / .36);
 }
 ```
 
@@ -275,7 +282,7 @@ Before publishing a page, component, or demo, review the class names against thi
 * Can a role token express this color, text color, surface, or line?
 * Can a spacing token replace this margin, padding, gap, or inset?
 * Can `text:<size>` replace separate font size, line height, and letter spacing classes?
-* Can a radius or shadow token replace this raw radius or shadow?
+* Can a radius or mode-aware shadow token replace this raw radius or shadow?
 * Can a duration or easing token replace this hard-coded timing value?
 * Is this width or height a reusable design decision, or is it local measured geometry?
 * If a low-level value appears more than once, should it become a named token?

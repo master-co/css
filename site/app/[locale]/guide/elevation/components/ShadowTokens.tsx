@@ -1,4 +1,4 @@
-import { getThemeVariables } from '~/site/utils/theme-variables'
+import { getThemeModeVariables } from '~/site/utils/theme-variables'
 import InlineCode from '~/internal/components/InlineCode'
 
 const shadowApplications: Record<string, string> = {
@@ -11,8 +11,12 @@ const shadowApplications: Record<string, string> = {
 }
 
 export default () => {
-    const shadowEntries = getThemeVariables('shadow')
+    const lightShadowEntries = getThemeModeVariables('shadow', 'light')
         .map(({ key, value }) => [key, String(value)] as const)
+    const darkShadowValueByKey = new Map(
+        getThemeModeVariables('shadow', 'dark')
+            .map(({ key, value }) => [key, String(value)] as const)
+    )
 
     return (
         <figure>
@@ -21,16 +25,18 @@ export default () => {
                     <thead>
                         <tr>
                             <th>Token</th>
-                            <th>Value</th>
+                            <th>Light value</th>
+                            <th>Dark value</th>
                             <th>Application</th>
                         </tr>
                     </thead>
                     <tbody>
                         {
-                            shadowEntries.map(([key, value]) => (
+                            lightShadowEntries.map(([key, lightValue]) => (
                                 <tr key={key}>
                                     <td><InlineCode className="white-space:nowrap">{`shadow-${key}`}</InlineCode></td>
-                                    <td><InlineCode>{value}</InlineCode></td>
+                                    <td><InlineCode>{lightValue}</InlineCode></td>
+                                    <td><InlineCode>{darkShadowValueByKey.get(key) || ''}</InlineCode></td>
                                     <td>{shadowApplications[key]}</td>
                                 </tr>
                             ))
