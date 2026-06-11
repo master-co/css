@@ -3,7 +3,7 @@ import { toJsxRuntime } from 'hast-util-to-jsx-runtime'
 import { Fragment, jsxs, jsx } from 'react/jsx-runtime'
 import dedent from 'ts-dedent'
 import { ShikiTransformer } from 'shiki'
-import css from '../common/theme-css'
+import css from '../common/preset-css'
 
 export default async function SyntaxTr({ value, children }: any) {
     value = (Array.isArray(value) ? value[0] : value) as string

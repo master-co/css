@@ -1,5 +1,5 @@
 import { generateAt, parseAt } from '@master/css/utils'
-import css from '~/site/common/theme-css'
+import css from '~/site/common/preset-css'
 import InlineCode from '~/internal/components/InlineCode'
 import { containerVariableEntries } from '~/site/utils/container-variables'
 
