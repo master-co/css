@@ -6,9 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script>
         window.masterCSSConfig = {
-            selectorTokens: {
-                '::both': '::before,::after',
-            },
+            variants: [
+                { name: 'both', raw: '::both', selector: '&::before,&::after' },
+            ],
             utilities: [
                 {
                     name: 'btn',

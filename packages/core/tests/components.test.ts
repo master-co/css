@@ -274,10 +274,9 @@ describe('raw declarations', () => {
         const css = createCSSWithTheme({
             variants: [
                 {
-                    channel: 'selector',
                     name: 'interactive',
                     raw: ':interactive',
-                    template: { rules: [{ selector: '&:is(:hover,:focus-visible)' }] }
+                    selector: '&:is(:hover,:focus-visible)'
                 }
             ],
             utilities: [

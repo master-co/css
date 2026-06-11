@@ -1,4 +1,4 @@
-import type { Config, DefaultModeDefinition, UtilityLayerName, VariableValue } from './css-config.js'
+import type { Config, DefaultModeDefinition, UtilityLayerName, VariableValue, VariantDefinitions } from './css-config.js'
 
 export type CSSDirectiveVariableValue = VariableValue
 
@@ -98,10 +98,6 @@ export interface CSSDirectiveVariableDefinition {
 
 export type CSSDirectiveAnimationDefinitions = Record<string, Record<string, CSSDirectiveDeclarations>>
 
-export type CSSDirectiveAtTokenDefinitions = Record<string, string | number>
-
-export type CSSDirectiveSelectorTokenDefinitions = Record<string, string>
-
 export interface CSSDirectiveUtilityRuleDefinition {
     declarations: CSSDirectiveDeclarations
     atRules?: string[]
@@ -118,8 +114,7 @@ export interface CSSDirectiveUtilityDefinition {
 }
 
 export interface CSSDirectiveConfig {
-    atTokens?: CSSDirectiveAtTokenDefinitions
-    selectorTokens?: CSSDirectiveSelectorTokenDefinitions
+    variants?: VariantDefinitions
     variables?: CSSDirectiveVariableDefinition[]
     utilities?: CSSDirectiveUtilityDefinition[]
     rootSize?: number
@@ -183,14 +178,14 @@ export interface CSSDirectiveResult {
     styleDefinitions?: CSSDirectiveStyleDefinition[]
 }
 
-export const CSS_DIRECTIVE_AT_RULE_REFERENCE_PREFIX = '__master_at__:'
+export const CSS_DIRECTIVE_VARIANT_REFERENCE_PREFIX = '__master_variant__:'
 
-export function createCSSDirectiveAtRuleReference(token: string) {
-    return CSS_DIRECTIVE_AT_RULE_REFERENCE_PREFIX + token
+export function createCSSDirectiveVariantReference(token: string) {
+    return CSS_DIRECTIVE_VARIANT_REFERENCE_PREFIX + token
 }
 
-export function readCSSDirectiveAtRuleReference(atRule: string) {
-    return atRule.startsWith(CSS_DIRECTIVE_AT_RULE_REFERENCE_PREFIX)
-        ? atRule.slice(CSS_DIRECTIVE_AT_RULE_REFERENCE_PREFIX.length)
+export function readCSSDirectiveVariantReference(atRule: string) {
+    return atRule.startsWith(CSS_DIRECTIVE_VARIANT_REFERENCE_PREFIX)
+        ? atRule.slice(CSS_DIRECTIVE_VARIANT_REFERENCE_PREFIX.length)
         : undefined
 }

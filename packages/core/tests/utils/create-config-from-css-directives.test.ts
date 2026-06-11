@@ -6,7 +6,7 @@ import {
     UtilityType,
     type CSSDirectiveResult
 } from '../../src'
-import { createCSSDirectiveAtRuleReference } from 'shared/css-directives'
+import { createCSSDirectiveVariantReference } from 'shared/css-directives'
 
 function directiveResult(result: Partial<CSSDirectiveResult>): CSSDirectiveResult {
     return {
@@ -42,23 +42,17 @@ describe.concurrent('createConfigFromCSSDirectives', () => {
     it('keeps the internal adapter independent from the default config', () => {
         const result = createCSSDirectiveConfig(directiveResult({
             config: {
-                atTokens: {
-                    dark: 'media(prefers-color-scheme:dark)'
-                }
+                variants: [{ name: 'contrast', raw: '@contrast', atRules: ['@media (prefers-contrast:more)'] }]
             }
         }))
 
-        expect(result.config.atTokens).toEqual({
-            dark: 'media(prefers-color-scheme:dark)'
-        })
+        expect(result.config.variants).toEqual([{ name: 'contrast', raw: '@contrast', atRules: ['@media (prefers-contrast:more)'] }])
     })
 
-    it('finalizes self-contained @compose and @at directives without a base config', () => {
+    it('finalizes self-contained @compose and @variant directives without a base config', () => {
         const result = createCSSDirectiveConfig(directiveResult({
             config: {
-                atTokens: {
-                    wide: 'media(width>=64rem)'
-                },
+                variants: [{ name: 'wide', raw: '@wide', atRules: ['@media (width>=64rem)'] }],
                 utilities: [
                     {
                         name: 'inline',
@@ -77,7 +71,7 @@ describe.concurrent('createConfigFromCSSDirectives', () => {
                     name: 'badge',
                     className: 'inline',
                     selector: '&',
-                    atRules: [createCSSDirectiveAtRuleReference('wide')]
+                    atRules: [createCSSDirectiveVariantReference('wide')]
                 }
             ]
         }))
@@ -92,7 +86,7 @@ describe.concurrent('createConfigFromCSSDirectives', () => {
         ])
     })
 
-    it('throws for unknown directive @at references', () => {
+    it('throws for unknown directive @variant references', () => {
         expect(() => createConfigFromCSSDirectives(directiveResult({
             config: {
                 utilities: [
@@ -103,11 +97,11 @@ describe.concurrent('createConfigFromCSSDirectives', () => {
                         declarations: {
                             display: 'block'
                         },
-                        atRules: [createCSSDirectiveAtRuleReference('chrisma')]
+                        atRules: [createCSSDirectiveVariantReference('chrisma')]
                     }
                 ]
             }
-        }))).toThrow('Unknown @at token: chrisma')
+        }))).toThrow('Unknown @variant token: chrisma')
     })
 
     it('resolves raw variable names through derived namespaces by longest prefix', () => {
@@ -178,7 +172,7 @@ describe.concurrent('createConfigFromCSSDirectives', () => {
         ])
     })
 
-    it('converts static directive utilities into core utilities and resolves @at references', () => {
+    it('converts static directive utilities into core utilities and resolves @variant references', () => {
         const result = createConfigFromCSSDirectives(directiveResult({
             config: {
                 utilities: [
@@ -189,7 +183,7 @@ describe.concurrent('createConfigFromCSSDirectives', () => {
                         declarations: {
                             display: 'none'
                         },
-                        atRules: [createCSSDirectiveAtRuleReference('print')]
+                        atRules: [createCSSDirectiveVariantReference('print')]
                     }
                 ]
             }
@@ -282,7 +276,7 @@ describe.concurrent('createConfigFromCSSDirectives', () => {
                     name: 'btn',
                     className: 'block',
                     selector: '& .label',
-                    atRules: [createCSSDirectiveAtRuleReference('sm')]
+                    atRules: [createCSSDirectiveVariantReference('sm')]
                 }
             ]
         }), { config: createThemeConfig() })
@@ -343,11 +337,9 @@ describe.concurrent('createConfigFromCSSDirectives', () => {
     it('reports core token conflicts and media custom-mode warnings', () => {
         expect(() => createConfigFromCSSDirectives(directiveResult({
             config: {
-                atTokens: {
-                    dark: 'media(prefers-color-scheme:dark)'
-                }
+                variants: [{ name: 'dark', raw: '@dark', atRules: ['@media (prefers-color-scheme:dark)'] }]
             }
-        }), { config: createThemeConfig() })).toThrow('@custom-at "dark" conflicts with mode "dark"')
+        }), { config: createThemeConfig() })).toThrow('Variant "dark" conflicts with mode "dark"')
 
         expect(() => createConfigFromCSSDirectives(directiveResult({
             config: {

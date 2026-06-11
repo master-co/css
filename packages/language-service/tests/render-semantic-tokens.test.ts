@@ -203,8 +203,8 @@ test.concurrent('renders semantic tokens for CSS directives', () => {
             --color-primary: $color-blue-60/.8;
         }
 
-        @custom-at motion-safe @media (prefers-reduced-motion: no-preference);
-        @custom-selector :interactive :is(:hover, :focus-visible);
+        @custom-variant motion-safe @media (prefers-reduced-motion: no-preference);
+        @custom-variant interactive (&:is(:hover, :focus-visible));
 
         @animations {
             @keyframes fade {
@@ -217,10 +217,10 @@ test.concurrent('renders semantic tokens for CSS directives', () => {
         @components {
             btn {
                 @compose "inline-flex fg:primary:hover@md";
-                @at dark {
+                @variant dark {
                     @compose 'bg:surface';
                 }
-                @at <sm {
+                @variant <sm {
                     @compose "block";
                 }
             }
@@ -234,11 +234,11 @@ test.concurrent('renders semantic tokens for CSS directives', () => {
     expectToken(tokens, '--color-primary', 'variable')
     expectToken(tokens, '$color-blue-60', 'variable')
     expectToken(tokens, '.8', 'number')
-    expectToken(tokens, '@custom-at', 'keyword', ['directive'])
+    expectToken(tokens, '@custom-variant', 'keyword', ['directive'])
     expectToken(tokens, 'motion-safe', 'variable', ['directive', 'query'])
     expectToken(tokens, '@media', 'keyword', ['query'])
-    expectToken(tokens, '@custom-selector', 'keyword', ['directive'])
-    expectToken(tokens, 'interactive', 'modifier', ['pseudoClass'])
+    expectToken(tokens, 'interactive', 'variable', ['directive', 'query'])
+    expectToken(tokens, 'is', 'modifier', ['pseudoClass'])
     expectToken(tokens, '@animations', 'keyword', ['directive'])
     expectToken(tokens, '@components', 'keyword', ['directive'])
     expectToken(tokens, 'btn', 'class', ['selector'])
@@ -247,7 +247,7 @@ test.concurrent('renders semantic tokens for CSS directives', () => {
     expectToken(tokens, 'primary', 'enumMember')
     expectToken(tokens, 'hover', 'modifier', ['pseudoClass'])
     expectToken(tokens, '@md', 'keyword', ['query'])
-    expectToken(tokens, '@at', 'keyword', ['directive'])
+    expectToken(tokens, '@variant', 'keyword', ['directive'])
     expectToken(tokens, 'surface', 'enumMember')
     expectToken(tokens, ';', 'operator', ['directive'])
     expectToken(tokens, '<', 'operator', ['query'])
@@ -267,7 +267,7 @@ test.concurrent('renders CSS directive ranges with quoted semicolons', () => {
             @compose "fg:red";
         }
 
-        @custom-at quoted @media (x: "a;b");
+        @custom-variant quoted @media (x: "a;b");
     `, 'css')
 
     expectToken(tokens, '@source', 'keyword', ['directive'])
@@ -284,7 +284,7 @@ test.concurrent('renders CSS directive ranges with quoted semicolons', () => {
     expectToken(tokens, '@compose', 'keyword', ['directive'])
     expectToken(tokens, 'fg', 'property')
     expectToken(tokens, 'red', 'enumMember')
-    expectToken(tokens, '@custom-at', 'keyword', ['directive'])
+    expectToken(tokens, '@custom-variant', 'keyword', ['directive'])
     expectToken(tokens, 'quoted', 'variable', ['directive', 'query'])
     expectToken(tokens, '@media', 'keyword', ['query'])
     expect(tokens.filter(({ text, type, modifiers }) =>

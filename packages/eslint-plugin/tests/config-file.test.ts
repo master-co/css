@@ -82,8 +82,8 @@ test('uses project-level CSS config entries from the ESLint workspace', async ()
         writeFileSync(join(cwd, 'index.css'), `
             @master;
 
-            @layer components {
-                .fixture-button {
+            @components {
+                fixture-button {
                     display: inline-flex;
                 }
             }

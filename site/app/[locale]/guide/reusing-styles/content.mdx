@@ -1,7 +1,7 @@
 ## Overview [sr-only]
 Reusable styling starts with a decision, not a file. Keep local choices in markup, move shared values into theme tokens, and define component classes only when a repeated pattern has product meaning.
 
-Writing `.btn` at the top level of a stylesheet creates a normal CSS rule. Writing `btn` inside `@components` defines an on-demand component class. Writing `flow` inside `@utilities` defines an on-demand utility class. All three can use `@compose` and `@at`, but they serve different ownership needs.
+Writing `.btn` at the top level of a stylesheet creates a normal CSS rule. Writing `btn` inside `@components` defines an on-demand component class. Writing `flow` inside `@utilities` defines an on-demand utility class. All three can use `@compose` and `@variant`, but they serve different ownership needs.
 
 ---
 
@@ -53,7 +53,7 @@ Use `@utilities` when your design system needs a reusable primitive that is stil
     }
 
     print-hidden {
-        @at print {
+        @variant print {
             display: none;
         }
     }
@@ -125,7 +125,7 @@ You can still apply component classes alongside conditional utility classes when
 ---
 
 ### Add states and conditions
-Put selector states in nested selectors and conditional variants in `@at` blocks. This keeps the component definition readable and keeps the markup semantic.
+Put selector states in nested selectors and conditional variants in `@variant` blocks. This keeps the component definition readable and keeps the markup semantic.
 
 ```css name=index.css
 @components {
@@ -141,7 +141,7 @@ Put selector states in nested selectors and conditional variants in `@at` blocks
             @compose "outline:2|primary outline-offset:2";
         }
 
-        @at <sm {
+        @variant <sm {
             @compose "block";
         }
     }
@@ -298,7 +298,7 @@ In this example, `size:12x` is generated for `.empty-state::before`, not for `.e
     @compose "flow p:lg r:xl shadow:md";
     background: var(--color-surface);
 
-    @at dark {
+    @variant dark {
         @compose "shadow:none";
     }
 }
@@ -346,14 +346,14 @@ SFC style blocks use the same model:
 .card {
     @compose "grid gap:md p:lg r:xl shadow:md";
 
-    @at dark {
+    @variant dark {
         @compose "shadow:none";
     }
 }
 </style>
 ```
 
-Local composed stylesheets share the project CSS entry and plugin inline config as context, so theme tokens, custom at tokens, custom selectors, and managed component classes remain available. Local files do not define global project config, do not insert generated Master CSS, and do not participate as native CSS pruning roots.
+Local composed stylesheets share the project CSS entry and plugin inline config as context, so theme tokens, custom variants, and managed component classes remain available. Local files do not define global project config, do not insert generated Master CSS, and do not participate as native CSS pruning roots.
 
 ---
 
@@ -413,7 +413,7 @@ Split component definitions only when it helps ownership. Local CSS imports from
 <button class="btn btn-md yellow touch-yellow">Submit</button>
 ```
 
-`@theme`, `@settings`, and `@animations` blocks, top-level custom directives, managed definition directives, and native style rules with `@compose` or `@at` are consumed by the Master CSS compiler. Ordinary CSS outside those managed targets, including top-level native `@keyframes`, remains native CSS in your app stylesheet pipeline.
+`@theme`, `@settings`, and `@animations` blocks, top-level custom directives, managed definition directives, and native style rules with `@compose` or `@variant` are consumed by the Master CSS compiler. Ordinary CSS outside those managed targets, including top-level native `@keyframes`, remains native CSS in your app stylesheet pipeline.
 
 ---
 
@@ -423,7 +423,7 @@ Split component definitions only when it helps ownership. Local CSS imports from
 - The first level inside `@defaults`, `@components`, and `@utilities` must be a single bare name such as `btn`, `card`, or `field`.
 - Put states and descendants inside the named block, such as `btn { &:hover { ... } }` or `prose { p { ... } }`.
 - `@compose` is valid inside managed class definitions and native style rules.
-- Component definitions accept native declarations, `@compose`, nested selectors, native nested at-rules, and `@at` condition blocks.
+- Component definitions accept native declarations, `@compose`, nested selectors, native nested at-rules, and `@variant` condition blocks.
 - CSS-defined managed classes can compose other CSS-defined managed classes. Circular `@compose` dependencies are invalid.
 - Standard HTML tag selectors such as `body` or `html` belong in native CSS; first-level entries inside managed definition directives are always class names.
 - Utilities still win over components because `@master/css/base.css` declares `@layer theme, base, defaults, components, utilities;`.

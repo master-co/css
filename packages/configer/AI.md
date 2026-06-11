@@ -26,7 +26,7 @@ This package resolves Master CSS project-level CSS config entries, workspace roo
 - `loadConfig()` and `loadConfigSync()` only accept CSS resources. JS/TS path config loading is intentionally unsupported.
 - Preserve CSS config dependency reporting for Vite watch/HMR.
 - Use `@master/css-integration/config-module` for `?master-css-config` query helpers and virtual module id helpers.
-- Entry discovery only checks top-level project markers: `@master;` and `@import "@master/css"`. Do not treat imported `@settings`/`@theme` blocks, top-level `@custom-at`/`@custom-selector` directives, or package CSS files as independent project entries.
+- Entry discovery only checks top-level project markers: `@master;` and `@import "@master/css"`. Do not treat imported `@settings`/`@theme` blocks, top-level `@custom-variant` directives, or package CSS files as independent project entries.
 - Do not hardcode package CSS dependency filenames such as `base.css` or `theme.css`; import graph dependencies come from the compiler result.
 
 ## Validation

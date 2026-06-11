@@ -4,7 +4,7 @@ import { tmpdir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { createCSS } from '@master/css'
-import { createCSSDirectiveAtRuleReference, CSSDirectiveError } from 'shared/css-directives'
+import { createCSSDirectiveVariantReference, CSSDirectiveError } from 'shared/css-directives'
 import {
     compileCSS,
     compileCSSConfig,
@@ -46,8 +46,8 @@ describe.concurrent('@master/css-compiler', () => {
 
     it('compiles CSS config directives into a CSS directive result', () => {
         const result = compileCSS(`
-            @custom-at motion-safe @media (prefers-reduced-motion: no-preference);
-            @custom-selector ::scrollbar ::-webkit-scrollbar;
+            @custom-variant motion-safe @media (prefers-reduced-motion: no-preference);
+            @custom-variant scrollbar (&::-webkit-scrollbar);
 
             @settings {
                 root-size: 10;
@@ -93,12 +93,10 @@ describe.concurrent('@master/css-compiler', () => {
                 { name: 'color-primary', value: '#ff0', mode: 'chrisma' }
             ],
             modes: ['dark', 'chrisma'],
-            atTokens: {
-                'motion-safe': 'media(prefers-reduced-motion:no-preference)'
-            },
-            selectorTokens: {
-                '::scrollbar': '::-webkit-scrollbar'
-            },
+            variants: [
+                { name: 'motion-safe', raw: '@motion-safe', atRules: ['@media (prefers-reduced-motion: no-preference)'] },
+                { name: 'scrollbar', raw: '::scrollbar', selector: '&::-webkit-scrollbar' }
+            ],
             animations: {
                 fade: {
                     from: { opacity: '0' },
@@ -230,7 +228,7 @@ describe.concurrent('@master/css-compiler', () => {
                     @compose "inline-flex bg:primary";
                     display: flex;
 
-                    @at dark {
+                    @variant dark {
                         color: white;
                     }
 
@@ -239,7 +237,7 @@ describe.concurrent('@master/css-compiler', () => {
                     }
                 }
 
-                @at md {
+                @variant md {
                     btn {
                         &:hover {
                             @compose "underline";
@@ -283,7 +281,7 @@ describe.concurrent('@master/css-compiler', () => {
                 selector: '&',
                 name: 'btn',
                 layer: 'components',
-                atRules: [createCSSDirectiveAtRuleReference('dark')],
+                atRules: [createCSSDirectiveVariantReference('dark')],
                 declarations: {
                     color: '#fff'
                 }
@@ -306,7 +304,7 @@ describe.concurrent('@master/css-compiler', () => {
                 selector: '&:hover',
                 name: 'btn',
                 layer: 'components',
-                atRules: [createCSSDirectiveAtRuleReference('md')]
+                atRules: [createCSSDirectiveVariantReference('md')]
             }
         ])
     })
@@ -387,7 +385,7 @@ describe.concurrent('@master/css-compiler', () => {
                 content-auto {
                     content-visibility: auto;
 
-                    @at print {
+                    @variant print {
                         display: none;
                     }
                 }
@@ -412,7 +410,7 @@ describe.concurrent('@master/css-compiler', () => {
                 order: 2,
                 selector: '&',
                 layer: 'utilities',
-                atRules: [createCSSDirectiveAtRuleReference('print')],
+                atRules: [createCSSDirectiveVariantReference('print')],
                 declarations: {
                     display: 'none'
                 }
@@ -586,7 +584,7 @@ describe.concurrent('@master/css-compiler', () => {
         }
     })
 
-    it('lowers native @compose and @at after semantic config resolution', () => {
+    it('lowers native @compose and @variant after semantic config resolution', () => {
         const result = compileCSSConfig(`
             @settings {
                 mode-trigger: class;
@@ -603,7 +601,7 @@ describe.concurrent('@master/css-compiler', () => {
             .card {
                 @compose "block bg:primary";
 
-                @at dark {
+                @variant dark {
                     @compose "fg:primary";
                 }
             }
@@ -821,8 +819,8 @@ describe.concurrent('@master/css-compiler', () => {
 
     it('uses the last definition for repeated config values', () => {
         const result = compileCSS(`
-            @custom-selector :interactive :hover;
-            @custom-selector :interactive :focus-visible;
+            @custom-variant interactive (&:hover);
+            @custom-variant interactive (&:focus-visible);
 
             @settings {
                 root-size: 16;
@@ -841,9 +839,9 @@ describe.concurrent('@master/css-compiler', () => {
             variables: [
                 { name: 'color-primary', value: '#333' }
             ],
-            selectorTokens: {
-                ':interactive': ':focus-visible'
-            }
+            variants: [
+                { name: 'interactive', raw: ':interactive', selector: '&:focus-visible' }
+            ]
         })
     })
 
@@ -976,8 +974,8 @@ describe.concurrent('@master/css-compiler', () => {
             variable.namespace === 'font-family' && variable.key === 'sans'
         )
         expect(String(fontFamilySans?.value)).toContain('var(--font-sans, ui-sans-serif)')
-        expect(Object.keys(result.config.atTokens || {})).toContain('screen')
-        expect(Object.keys(result.config.selectorTokens || {})).toContain(':first')
+        expect(result.config.variants).toContainEqual(expect.objectContaining({ raw: '@screen' }))
+        expect(result.config.variants).toContainEqual(expect.objectContaining({ raw: ':first' }))
         expect(Object.keys(result.config.animations || {})).toContain('fade')
 
         const css = createCSS(result.config).add('font:sans')
@@ -1206,23 +1204,23 @@ describe.concurrent('@master/css-compiler', () => {
 
         expect(() => process(`
             @media print {
-                @custom-at motion-safe @media (prefers-reduced-motion: no-preference);
+                @custom-variant motion-safe @media (prefers-reduced-motion: no-preference);
             }
-        `)).toThrow('@custom-at must be top-level')
+        `)).toThrow('@custom-variant must be top-level')
 
         expect(() => process(`
             @media print {
-                @custom-selector :interactive :is(:hover, :focus-visible);
+                @custom-variant interactive (&:is(:hover, :focus-visible));
             }
-        `)).toThrow('@custom-selector must be top-level')
+        `)).toThrow('@custom-variant must be top-level')
 
         expect(() => process(`
-            @custom-at @motion-safe @media (prefers-reduced-motion: no-preference);
-        `)).toThrow('@custom-at names must not start with "@"')
+            @custom-variant @motion-safe @media (prefers-reduced-motion: no-preference);
+        `)).toThrow('@custom-variant names must be bare identifiers: @motion-safe')
 
         expect(() => process(`
-            @custom-selector headings :is(h1, h2, h3);
-        `)).toThrow('@custom-selector names must start with ":" or "::"')
+            @custom-variant headings :is(h1, h2, h3);
+        `)).toThrow('@custom-variant "headings" must use an at-rule or selector template value')
 
         expect(() => process(`
             @media print {
@@ -1270,15 +1268,15 @@ describe.concurrent('@master/css-compiler', () => {
 
         expect(() => process(`
             @utilities {
-                @custom-at print @media print;
+                @custom-variant print @media print;
             }
-        `)).toThrow('@custom-at must be top-level')
+        `)).toThrow('@custom-variant must be top-level')
 
         expect(() => process(`
             @utilities {
-                @custom-selector :interactive :is(:hover, :focus-visible);
+                @custom-variant interactive (&:is(:hover, :focus-visible));
             }
-        `)).toThrow('@custom-selector must be top-level')
+        `)).toThrow('@custom-variant must be top-level')
 
         expect(() => process(`
             @utilities {

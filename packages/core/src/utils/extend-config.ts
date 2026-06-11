@@ -1,15 +1,12 @@
 import extend from 'json-safe-extend'
 import UtilityType from 'shared/utility-type'
-import type { Config, UtilityDefinition, VariableDefinition, VariableDefinitions } from 'shared/css-config'
-import flattenObject from './flatten-object'
+import type { Config, UtilityDefinition, VariableDefinition, VariableDefinitions, VariantDefinition } from 'shared/css-config'
 
 export declare type ExtendedConfig = {
     __extended?: boolean
     variables?: VariableDefinitions
     modes?: string[]
-    atTokens?: Record<string, string | number>
-    selectorTokens?: Record<string, string>
-} & Omit<Config, 'variables' | 'modes' | 'atTokens' | 'selectorTokens'>
+} & Omit<Config, 'variables' | 'modes'>
 
 type ConfigInput = Config | ExtendedConfig | { config: Config | ExtendedConfig } | undefined
 
@@ -29,6 +26,10 @@ function variableSlot(variable: VariableDefinition) {
     ].join('\0')
 }
 
+function variantSlot(variant: VariantDefinition) {
+    return variant.raw
+}
+
 function resolveConfigInput(config: ConfigInput) {
     if (!config) return
     return 'config' in config ? config.config : config
@@ -39,17 +40,18 @@ export default function extendConfig(...configs: ConfigInput[]) {
     const variableMap = new Map<string, VariableDefinition>()
     const modeSet = new Set<string>()
     const utilityMap = new Map<string, UtilityDefinition>()
+    const variantMap = new Map<string, VariantDefinition>()
     let hasVariables = false
     let hasModes = false
     let hasUtilities = false
+    let hasVariants = false
 
     for (const {
         variables,
         modes,
         animations,
-        atTokens,
+        variants,
         utilities,
-        selectorTokens,
         functions,
         ...rest
     } of configs.map(resolveConfigInput).filter(Boolean) as (Config | ExtendedConfig)[]) {
@@ -76,16 +78,22 @@ export default function extendConfig(...configs: ConfigInput[]) {
             }
         }
 
-        // at tokens
-        if (atTokens) {
-            extendedConfig.atTokens ??= {}
-            Object.assign(extendedConfig.atTokens, flattenObject(atTokens))
-        }
-
         // animations
         if (animations) {
             extendedConfig.animations ??= {}
             Object.assign(extendedConfig.animations, animations)
+        }
+
+        // variants
+        if (variants) {
+            hasVariants = true
+            for (const variant of variants) {
+                const slot = variantSlot(variant)
+                if (variantMap.has(slot)) {
+                    variantMap.delete(slot)
+                }
+                variantMap.set(slot, variant)
+            }
         }
 
         // utilities
@@ -98,12 +106,6 @@ export default function extendConfig(...configs: ConfigInput[]) {
                 }
                 utilityMap.set(slot, utility)
             }
-        }
-
-        // selector tokens
-        if (selectorTokens) {
-            extendedConfig.selectorTokens ??= {}
-            Object.assign(extendedConfig.selectorTokens, selectorTokens)
         }
 
         // functions
@@ -119,6 +121,7 @@ export default function extendConfig(...configs: ConfigInput[]) {
     if (hasVariables) extendedConfig.variables = Array.from(variableMap.values())
     if (hasModes) extendedConfig.modes = Array.from(modeSet)
     if (hasUtilities) extendedConfig.utilities = Array.from(utilityMap.values())
+    if (hasVariants) extendedConfig.variants = Array.from(variantMap.values())
 
     return extendedConfig
 }

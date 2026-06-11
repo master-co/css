@@ -7,11 +7,9 @@ test.concurrent('queries', () => {
             utilities: '@media (max-width:42mm) and (min-width:38mm){@supports (backdrop-filter:blur(0px)){.hidden\\@watch\\@supports-backdrop{display:none}}}'
         },
         'hidden@watch@supports-backdrop',
-        { atTokens: {
-                watch: 'media(max-width:42mm)and(min-width:38mm)',
-                supports: {
-                    backdrop: 'supports(backdrop-filter:blur(0px))'
-                }
-            } }
+        { variants: [
+                { name: 'watch', raw: '@watch', atRules: ['@media (max-width:42mm) and (min-width:38mm)'] },
+                { name: 'supports-backdrop', raw: '@supports-backdrop', atRules: ['@supports (backdrop-filter:blur(0px))'] }
+            ] }
     )
 })

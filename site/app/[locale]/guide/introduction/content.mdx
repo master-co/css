@@ -65,7 +65,7 @@ It can express common CSS values without ceremony:
 <div class="block">
 ```
 
-It can attach [state selectors](/guide/state-selectors) and [selector tokens](/guide/theme#selector-tokens) to the same declaration:
+It can attach [state selectors](/guide/state-selectors) and [selector variants](/guide/theme#selector-variants) to the same declaration:
 
 ```html
 <!-- Set a pink background on hover -->
@@ -167,7 +167,7 @@ Master CSS is also a standalone CSS framework. It includes the core rule engine,
 </details>
 
 ### CSS-first configuration
-The project CSS entry is the primary configuration source. Theme tokens live in `@theme`, selector shortcuts use `@custom-selector`, conditional shortcuts use `@custom-at`, low-level custom utilities live in `@utilities`, semantic component classes live in `@components`, and native CSS rules can use `@compose` when they should lower to ordinary stylesheet output.
+The project CSS entry is the primary configuration source. Theme tokens live in `@theme`, reusable selector and conditional variants use `@custom-variant`, low-level custom utilities live in `@utilities`, semantic component classes live in `@components`, and native CSS rules can use `@compose` when they should lower to ordinary stylesheet output.
 
 ```css name=index.css
 @theme {
@@ -175,8 +175,8 @@ The project CSS entry is the primary configuration source. Theme tokens live in 
     --breakpoint-md: 768;
 }
 
-@custom-at motion-safe @media (prefers-reduced-motion: no-preference);
-@custom-selector :interactive :is(:hover, :focus-visible);
+@custom-variant motion-safe @media (prefers-reduced-motion: no-preference);
+@custom-variant interactive (&:is(:hover, :focus-visible));
 
 @components {
     btn {
@@ -192,7 +192,7 @@ The project CSS entry is the primary configuration source. Theme tokens live in 
 .notice {
     @compose "p:md r:lg";
 
-    @at motion-safe {
+    @variant motion-safe {
         @compose "transition:opacity|fast|smooth";
     }
 }

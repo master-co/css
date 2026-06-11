@@ -26,10 +26,10 @@ test.concurrent('collects directive statement and block ranges', () => {
 })
 
 test.concurrent('collects nested Master directive ranges without treating host at-rules as directives', () => {
-    const source = '@layer components { .btn { @compose "block"; @at <sm { @compose "hidden"; } } }'
+    const source = '@layer components { .btn { @compose "block"; @variant <sm { @compose "hidden"; } } }'
     const ranges = collectCSSDirectiveRanges(source)
 
-    expect(ranges.map((range) => range.name)).toEqual(['compose', 'at', 'compose'])
+    expect(ranges.map((range) => range.name)).toEqual(['compose', 'variant', 'compose'])
     expect(source.slice(ranges[1].preludeRange.start, ranges[1].preludeRange.end).trim()).toBe('<sm')
     expect(source.slice(ranges[2].quotedStringRanges[0].contentRange.start, ranges[2].quotedStringRanges[0].contentRange.end)).toBe('hidden')
 })

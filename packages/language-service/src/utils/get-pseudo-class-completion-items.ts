@@ -1,4 +1,4 @@
-import { MasterCSS, createCSS, SelectorTokenDefinitions } from '@master/css'
+import { MasterCSS, createCSS } from '@master/css'
 import { generateCSS } from '@master/css/utils'
 import cssDataProvider from './css-data-provider'
 import { type CompletionItem, CompletionItemKind } from 'vscode-languageserver-protocol'
@@ -55,21 +55,25 @@ export default function getPseudoClassCompletionItems(css: MasterCSS = createCSS
                 sortText,
                 documentation: getCSSDataDocumentation(data, {
                     generatedCSS: generateCSS([syntax + name.slice(1)], css),
-                    docs: '/guide/selector-tokens'
+                    docs: '/guide/theme#selector-variants'
                 }),
                 kind,
                 data
             } as CompletionItem
         })
 
-    const selectors = {
-        ...css.config.selectorTokens,
+    const selectors: Record<string, string> = {
         ':of': ':of',
-    } as SelectorTokenDefinitions
+    }
+    for (const variant of css.config.variants || []) {
+        if ('selector' in variant && variant.raw.startsWith(':') && !variant.raw.startsWith('::')) {
+            selectors[variant.raw] = variant.selector
+        }
+    }
 
     for (const name in selectors) {
         if (name.startsWith('::')) continue
-        const value = selectors[name]
+        const value = selectors[name].replace(/&/g, '')
         const data: IPseudoClassData | undefined = pseudoClassDataList.find((data) => value.startsWith(data.name))
         const label = normalizeFunctionalPseudoClass(name)
         let sortText = label.startsWith(':-')
@@ -80,7 +84,7 @@ export default function getPseudoClassCompletionItems(css: MasterCSS = createCSS
             label,
             documentation: getCSSDataDocumentation(data, {
                 generatedCSS: generateCSS([syntax + label.slice(1)], css),
-                docs: '/guide/selector-tokens'
+                docs: '/guide/theme#selector-variants'
             }),
             sortText,
             kind,

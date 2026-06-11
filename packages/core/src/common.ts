@@ -40,4 +40,8 @@ export const AT_LOGICAL_OPERATORS = {
 export const AT_IDENTIFIERS = ['container', 'starting-style', 'supports', 'media', 'layer']
 export const COMPARISION_OPERATORS = ['>=', '<=', '>', '<', '=']
 export const AT_COMPARABLE_FEATURES = ['width', 'height', 'resolution']
+export const AT_FEATURE_ALIASES = {
+    w: 'width',
+    h: 'height'
+} as const
 export const __UNSORTED__ = '__UNSORTED__'

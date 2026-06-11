@@ -117,7 +117,7 @@ test('loads package entry theme config from CSS imports', async () => {
 
             @components {
                 card {
-                    @at sm {
+                    @variant sm {
                         color: red;
                     }
                 }

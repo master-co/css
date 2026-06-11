@@ -27,8 +27,8 @@
     --color-ring: #31415a;
 }
 
-@custom-at motion-safe @media (prefers-reduced-motion: no-preference);
-@custom-selector ::scrollbar ::-webkit-scrollbar;
+@custom-variant motion-safe @media (prefers-reduced-motion: no-preference);
+@custom-variant scrollbar (&::-webkit-scrollbar);
 
 @utilities {
     content-auto {
@@ -46,7 +46,7 @@
 
     card {
         @compose "grid gap:1rem p:card bg:base r:card max-w:42rem content-auto";
-        @at motion-safe {
+        @variant motion-safe {
             @compose "animation:demo-fade-in|.55s";
         }
         border: 1px solid var(--color-ring);
@@ -55,7 +55,7 @@
 
     live-label {
         @compose "inline-flex ai:center jc:center h:24 px:.75rem bg:primary r:pill font:12 font:semibold";
-        @at motion-safe {
+        @variant motion-safe {
             @compose "animation:demo-pulse|1.4s|infinite";
         }
         color: white;
@@ -66,7 +66,7 @@
 
     title {
         @compose "m:0 font:40 leading:1 fg:ink";
-        @at md {
+        @variant md {
             @compose "font:56";
         }
         max-width: 12ch;

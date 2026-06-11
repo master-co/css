@@ -12,7 +12,6 @@ import parseAt from './utils/parse-at'
 import type { AtIdentifier, UtilityLayerName } from 'shared/css-config'
 import generateAt from './utils/generate-at'
 import parseSelector, { SelectorNode } from './utils/parse-selector'
-import resolveSelectorTokens from './utils/resolve-selector-tokens'
 import generateSelector from './utils/generate-selector'
 import { calcRulePriority, RulePriority } from './utils/compare-rule-priority'
 import collectVariableNames from './utils/collect-variable-names'
@@ -90,7 +89,7 @@ export class Utility {
             this.selectorNodes = parseSelector(suffixSelector, css)
         }
 
-        // 5. atTokens
+        // 5. at variants
         for (let i = 1; i < stateTokens.length; i++) {
             const atToken = stateTokens[i]
             if (css.modes.includes(atToken)) {
@@ -98,14 +97,16 @@ export class Utility {
                 continue
             }
             this.atToken = (this.atToken || '') + '@' + atToken
-            const atRule = parseAt(atToken, css)
-            const targetNodes = this.atRules?.[atRule.id]
-            if (targetNodes) {
-                targetNodes.push(...atRule.nodes)
-            } else {
-                this.atRules = {
-                    ...this.atRules,
-                    [atRule.id]: atRule.nodes
+            const atRules = css.resolveAtVariant(atToken) || [parseAt(atToken, css)]
+            for (const atRule of atRules) {
+                const targetNodes = this.atRules?.[atRule.id]
+                if (targetNodes) {
+                    targetNodes.push(...atRule.nodes)
+                } else {
+                    this.atRules = {
+                        ...this.atRules,
+                        [atRule.id]: atRule.nodes
+                    }
                 }
             }
         }
@@ -124,6 +125,9 @@ export class Utility {
             }
         }
 
+        if (this.atRules?.layer && this.atRules.layer.length > 1) {
+            this.valid = false
+        }
         const onlyNode = this.atRules?.layer?.length === 1 && this.atRules.layer[0] as AtRuleValueNode
         if (onlyNode) {
             const layerName = String(onlyNode.value)
@@ -186,7 +190,7 @@ export class Utility {
                 ...(definition.rules?.map(({ declarations, atRules, selector }) => ({
                     declarations: declarations as PropertiesHyphen,
                     atRules,
-                    selector: selector ? resolveSelectorTokens(selector, css.config.selectorTokens) : selector
+                    selector
                 })) || [])
             ]
             this.declarations = declarationRules[0]?.declarations

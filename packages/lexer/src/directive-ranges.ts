@@ -22,10 +22,9 @@ export type CSSDirectiveRangeName =
     | 'defaults'
     | 'components'
     | 'utilities'
-    | 'custom-at'
-    | 'custom-selector'
+    | 'custom-variant'
     | 'compose'
-    | 'at'
+    | 'variant'
 
 export interface CSSQuotedStringRange extends SourceRange {
     quote: '"' | '\''
@@ -64,10 +63,9 @@ export const CSS_DIRECTIVE_RANGE_NAMES = [
     'defaults',
     'components',
     'utilities',
-    'custom-at',
-    'custom-selector',
+    'custom-variant',
     'compose',
-    'at'
+    'variant'
 ] as const
 
 const CSS_DIRECTIVE_RANGE_NAME_SET = new Set<string>(CSS_DIRECTIVE_RANGE_NAMES)

@@ -128,7 +128,7 @@ function tokenizeThemePrelude(source: string, start: number, end: number, tokens
     }
 }
 
-function tokenizeCustomAtPrelude(source: string, start: number, end: number, tokens: HighlightTokenItem[]) {
+function tokenizeCustomVariantPrelude(source: string, start: number, end: number, tokens: HighlightTokenItem[]) {
     let cursor = skipCSSWhitespace(source, start)
     const token = readCSSIdent(source, cursor)
     if (token.value) {
@@ -138,6 +138,11 @@ function tokenizeCustomAtPrelude(source: string, start: number, end: number, tok
     const at = source.indexOf('@', cursor)
     if (at !== -1 && at < end) {
         tokens.push(...tokenizeAtQuery(source.slice(at, end).replace(/;$/, ''), at))
+        return
+    }
+    const selectorStart = source.indexOf('(', cursor)
+    if (selectorStart !== -1 && selectorStart < end) {
+        tokenizeSelectorPrelude(source, selectorStart, end, tokens)
     }
 }
 
@@ -179,7 +184,7 @@ function tokenizeComposePrelude(source: string, start: number, end: number, toke
     }
 }
 
-function tokenizeAtPrelude(source: string, start: number, end: number, tokens: HighlightTokenItem[]) {
+function tokenizeVariantPrelude(source: string, start: number, end: number, tokens: HighlightTokenItem[]) {
     const cursor = skipCSSWhitespace(source, start)
     if (cursor >= end) return
     tokens.push(...tokenizeAtQuery(source.slice(cursor, end).replace(/\s*\{$/, ''), cursor))
@@ -253,17 +258,14 @@ function tokenizeDirectiveRule(source: string, directive: CSSDirectiveRuleRange,
         case 'theme':
             tokenizeThemePrelude(source, preludeStart, preludeEnd, tokens)
             break
-        case 'custom-at':
-            tokenizeCustomAtPrelude(source, preludeStart, preludeEnd, tokens)
-            break
-        case 'custom-selector':
-            tokenizeSelectorPrelude(source, preludeStart, preludeEnd, tokens)
+        case 'custom-variant':
+            tokenizeCustomVariantPrelude(source, preludeStart, preludeEnd, tokens)
             break
         case 'compose':
             tokenizeComposePrelude(source, preludeStart, preludeEnd, tokens, css)
             break
-        case 'at':
-            tokenizeAtPrelude(source, preludeStart, preludeEnd, tokens)
+        case 'variant':
+            tokenizeVariantPrelude(source, preludeStart, preludeEnd, tokens)
             break
     }
 

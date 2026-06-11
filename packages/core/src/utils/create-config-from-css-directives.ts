@@ -1,6 +1,6 @@
 import {
     CSSDirectiveError,
-    readCSSDirectiveAtRuleReference,
+    readCSSDirectiveVariantReference,
     type CSSDirectiveConfig,
     type CSSDirectiveLayerName,
     type CSSDirectiveResult,
@@ -19,7 +19,8 @@ import type {
     UtilityDefinition,
     UtilityLayerName,
     UtilityRuleDefinition,
-    VariableDefinition
+    VariableDefinition,
+    VariantDefinition
 } from 'shared/css-config'
 import type { Utility } from '../utility'
 import compareRulePriority from './compare-rule-priority'
@@ -28,7 +29,6 @@ import generateAt from './generate-at'
 import generateSelector from './generate-selector'
 import parseAt from './parse-at'
 import resolveVariableNamespace from './resolve-variable-namespace'
-import resolveSelectorTokens from './resolve-selector-tokens'
 import wrapAtRules from './wrap-at-rules'
 
 export interface CreateConfigFromCSSDirectivesOptions {
@@ -175,6 +175,13 @@ function cloneUtility(definition: InputUtilityDefinition): UtilityDefinition {
     return utility
 }
 
+function cloneVariant(definition: VariantDefinition): VariantDefinition {
+    return {
+        ...definition,
+        ...('atRules' in definition ? { atRules: [...definition.atRules] } : {})
+    } as VariantDefinition
+}
+
 function addMode(config: Config, mode: string) {
     config.modes ??= []
     if (!config.modes.includes(mode)) config.modes.push(mode)
@@ -235,8 +242,7 @@ function normalizeConfig(input: ConfigInput = {}) {
     if (inputConfig.modeTrigger !== undefined) config.modeTrigger = inputConfig.modeTrigger
     if (inputConfig.scope !== undefined) config.scope = inputConfig.scope
     if (inputConfig.important !== undefined) config.important = inputConfig.important
-    if (inputConfig.atTokens) config.atTokens = { ...inputConfig.atTokens }
-    if (inputConfig.selectorTokens) config.selectorTokens = { ...inputConfig.selectorTokens }
+    if (inputConfig.variants?.length) config.variants = inputConfig.variants.map(cloneVariant)
     if (inputConfig.animations) config.animations = { ...inputConfig.animations }
     if (inputConfig.utilities?.length) config.utilities = inputConfig.utilities.map(cloneUtility)
     if ('functions' in inputConfig && inputConfig.functions) config.functions = { ...inputConfig.functions }
@@ -272,14 +278,15 @@ function validateTokenConflicts(config: Config, options: CreateConfigFromCSSDire
         }
     }
 
-    const atTokens = config.atTokens
-    if (!atTokens) return
-    for (const token of Object.keys(atTokens)) {
+    const variantNames = (config.variants || [])
+        .filter((variant) => variant.raw.startsWith('@'))
+        .map((variant) => variant.raw.slice(1))
+    for (const token of variantNames) {
         if (modes.has(token)) {
-            throw new Error(`@custom-at "${token}" conflicts with mode "${token}"`)
+            throw new Error(`Variant "${token}" conflicts with mode "${token}"`)
         }
         if (breakpoints.has(token)) {
-            throw new Error(`@custom-at "${token}" conflicts with breakpoint variable "--breakpoint-${token}"`)
+            throw new Error(`Variant "${token}" conflicts with breakpoint variable "--breakpoint-${token}"`)
         }
     }
 }
@@ -435,11 +442,11 @@ function combineSelectorWrapper(selector: string, wrapper: string) {
     return wrapper.replace(/&/g, selector)
 }
 
-function isBareAtRuleReference(token: string) {
+function isBareVariantReference(token: string) {
     return /^-?[_a-zA-Z][-_a-zA-Z0-9]*$/.test(token)
 }
 
-function resolveMasterAtRuleReference(token: string, css: MasterCSS) {
+function resolveMasterVariantReference(token: string, css: MasterCSS) {
     if (css.modes.includes(token)) {
         const modeSelector = css.getModeSelector(token)
         return modeSelector
@@ -447,8 +454,15 @@ function resolveMasterAtRuleReference(token: string, css: MasterCSS) {
             : { atRules: [`@media (prefers-color-scheme:${token})`] }
     }
 
-    if (isBareAtRuleReference(token) && !css.atRules.has(token)) {
-        throw new Error(`Unknown @at token: ${token}`)
+    const variantAtRules = css.resolveAtVariant(token)
+    if (variantAtRules?.length) {
+        return {
+            atRules: variantAtRules.map(generateAt)
+        }
+    }
+
+    if (isBareVariantReference(token) && !css.atRules.has(token)) {
+        throw new Error(`Unknown @variant token: ${token}`)
     }
 
     return {
@@ -463,12 +477,12 @@ function resolveConfiguredAtRules(atRules: string[] | undefined, css: MasterCSS,
     let resolvedSelector = selector
 
     for (const atRule of atRules) {
-        const token = readCSSDirectiveAtRuleReference(atRule)
+        const token = readCSSDirectiveVariantReference(atRule)
         if (!token) {
             resolvedAtRules.push(atRule)
             continue
         }
-        const resolved = resolveMasterAtRuleReference(token, css)
+        const resolved = resolveMasterVariantReference(token, css)
         if (resolved.selector) {
             resolvedSelector = combineSelectorWrapper(resolvedSelector, resolved.selector)
         }
@@ -501,7 +515,7 @@ function finalizeUtilityDefinitions(config: Config, css: MasterCSS) {
     if (!utilities?.length) return
 
     for (const definition of utilities) {
-        if (definition.atRules?.some(readCSSDirectiveAtRuleReference)) {
+        if (definition.atRules?.some(readCSSDirectiveVariantReference)) {
             const resolved = resolveConfiguredAtRules(definition.atRules, css)
             delete definition.atRules
             if (definition.declarations) {
@@ -525,12 +539,6 @@ function finalizeUtilityDefinitions(config: Config, css: MasterCSS) {
             }
         })
     }
-}
-
-function resolveStyleSelector(selector: string, css: MasterCSS) {
-    return css.config.selectorTokens
-        ? resolveSelectorTokens(selector, css.config.selectorTokens)
-        : selector
 }
 
 function getStyleMergeBucketKey(selector: string, atRules: string[] | undefined, layer: UtilityLayerName | undefined) {
@@ -782,7 +790,7 @@ function createMergedStyleDefinitions(
                     ...(definition.atRules || []),
                     ...(composedAtRules || [])
                 ], css, selector)
-                pushStyleMergeEvent(buckets, resolveStyleSelector(resolved.selector, css), resolved.atRules, targetLayer || composedDefinitionWithoutAtRules.layer, {
+                pushStyleMergeEvent(buckets, resolved.selector, resolved.atRules, targetLayer || composedDefinitionWithoutAtRules.layer, {
                     type: 'compose',
                     order: definition.order,
                     utility: composedDefinitionWithoutAtRules.utility,
@@ -791,7 +799,7 @@ function createMergedStyleDefinitions(
             }
         } else {
             const resolved = resolveConfiguredAtRules(definition.atRules, css, definition.selector)
-            pushStyleMergeEvent(buckets, resolveStyleSelector(resolved.selector, css), resolved.atRules, targetLayer || toUtilityLayerName(definition.layer), {
+            pushStyleMergeEvent(buckets, resolved.selector, resolved.atRules, targetLayer || toUtilityLayerName(definition.layer), {
                 type: 'native',
                 order: definition.order,
                 declarations: definition.declarations

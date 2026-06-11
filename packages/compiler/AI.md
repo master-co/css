@@ -6,9 +6,9 @@
 
 ## Inputs And Outputs
 
-- Input: CSS containing `@settings`, `@theme`, `@animations`, `@custom-at`, `@custom-selector`, managed `@defaults`, `@components`, and `@utilities` definition directives, condition blocks with `@at`, style rules with `@compose`, top-level extraction policy directives, and top-level native `@keyframes`.
+- Input: CSS containing `@settings`, `@theme`, `@animations`, `@custom-variant`, managed `@defaults`, `@components`, and `@utilities` definition directives, condition blocks with `@variant`, style rules with `@compose`, top-level extraction policy directives, and top-level native `@keyframes`.
 - Output: semantic core `Config`, shared directive data for lower-level consumers, style definitions, native CSS with consumed Master directives removed, native class names, warnings, standalone directive metadata, and CSS import dependencies.
-- CSS config directives such as `@settings`, `@theme`, `@custom-at`, and `@custom-selector` are config definitions. Defining a component, utility, variable, token, or animation does not emit CSS by itself; the class still needs to be used or extracted.
+- CSS config directives such as `@settings`, `@theme`, and `@custom-variant` are config definitions. Defining a component, utility, variable, variant, or animation does not emit CSS by itself; the class still needs to be used or extracted.
 - `@master;` is only a lightweight entry marker.
 - `@master;` and `@import "@master/css"` are equivalent user project entry markers. Package CSS files such as `@master/css/index.css` must not contain `@master;`.
 - `compileCSSFile()` resolves CSS `@import` graphs before compiling and returns absolute dependency paths.
@@ -31,16 +31,16 @@
 - `@theme { --color-primary: #123; --breakpoint-md: 768; }`
 - `@theme dark { --color-primary: #456; }`
 - The compiler records mode declarations as written. Core adapters decide which modes are defaults.
-- `@custom-at motion-safe @media (prefers-reduced-motion: no-preference);`
-- `@custom-selector ::scrollbar ::-webkit-scrollbar;`
+- `@custom-variant motion-safe @media (prefers-reduced-motion: no-preference);`
+- `@custom-variant scrollbar (&::-webkit-scrollbar);`
 - `@components { btn { @compose "inline-flex"; display: inline-flex; } }`
-- `@components { btn { @at dark { @compose "bg:neutral-90"; } } }`
+- `@components { btn { @variant dark { @compose "bg:neutral-90"; } } }`
 - `@utilities { content-auto { content-visibility: auto; } }`
-- `@utilities { print-hidden { @at print { display: none; } } }`
-- `.card { @compose "block"; @at dark { @compose "fg:primary"; } }`
+- `@utilities { print-hidden { @variant print { display: none; } } }`
+- `.card { @compose "block"; @variant dark { @compose "fg:primary"; } }`
 - `@animations { @keyframes fade { from { opacity: 0; } to { opacity: 1; } } }`
 - Managed definition directives use first-level bare names, not selectors. Put selector states and descendants in nested selectors inside the named block.
-- `@compose` is allowed in managed class definitions and native style rules, including inside `@at`.
+- `@compose` is allowed in managed class definitions and native style rules, including inside `@variant`.
 - Utilities defined in CSS are static utilities only.
 - Top-level native `@keyframes` remain native CSS. Use top-level `@animations` when keyframes should become managed config animations.
 - Native `@layer` blocks are never compiler-managed. Use `@defaults`, `@components`, or `@utilities` for managed definitions, and keep regular CSS selectors in native CSS.

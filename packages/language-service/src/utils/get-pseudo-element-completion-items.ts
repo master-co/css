@@ -1,4 +1,4 @@
-import { MasterCSS, createCSS } from '@master/css'
+import { MasterCSS, createCSS, type SelectorVariantDefinition } from '@master/css'
 import { generateCSS } from '@master/css/utils'
 import cssDataProvider from './css-data-provider'
 import { type CompletionItem, CompletionItemKind } from 'vscode-languageserver-protocol'
@@ -23,17 +23,18 @@ export default function getPseudoElementCompletionItems(css: MasterCSS = createC
                 sortText,
                 documentation: getCSSDataDocumentation(data, {
                     generatedCSS: generateCSS([syntax + name.slice(2)], css),
-                    docs: '/guide/selector-tokens'
+                    docs: '/guide/theme#selector-variants'
                 }),
                 kind,
                 data
             } as CompletionItem
         })
 
-    const selectorTokens = css.config.selectorTokens || {}
-    for (const selectorName in selectorTokens) {
-        if (!selectorName.startsWith('::')) continue
-        const selectorValue = selectorTokens[selectorName]
+    const selectorVariants = (css.config.variants || [])
+        .filter((variant): variant is SelectorVariantDefinition => 'selector' in variant && variant.raw.startsWith('::'))
+    for (const variant of selectorVariants) {
+        const selectorName = variant.raw
+        const selectorValue = variant.selector.replace(/&/g, '')
         const name = selectorName.endsWith('(') ? selectorName + ')' : selectorName
         const value = typeof selectorValue === 'string'
             ? selectorValue.endsWith('(') ? selectorValue + ')' : selectorValue
@@ -48,7 +49,7 @@ export default function getPseudoElementCompletionItems(css: MasterCSS = createC
             label: name,
             documentation: getCSSDataDocumentation(data, {
                 generatedCSS: generateCSS([syntax + name.slice(2)], css),
-                docs: '/guide/selector-tokens'
+                docs: '/guide/theme#selector-variants'
             }),
             sortText,
             kind,

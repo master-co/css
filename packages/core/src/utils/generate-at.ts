@@ -10,6 +10,10 @@ export default function generateAt(atRule: AtRule): string {
                     ? '(' + body + ')'
                     : body
             } else {
+                if (comp.type === 'boolean') {
+                    current = `(${comp.name})`
+                    return current
+                }
                 const value = comp.type === 'number'
                     ? String(comp.value) + (comp.unit || '')
                     : comp.value

@@ -77,8 +77,8 @@ it.concurrent('checks media order', () => {
         { name: 'hidden@tablet&<desktop' },
         { name: '{flex-row}@2xs&<xs' }
     ]
-    expect(createCSSWithTheme({ atTokens: {
-            tablet: 391,
-            desktop: 1025,
-        } }).add(...shuffle([...input])).utilitiesLayer.rules).toMatchObject(output)
+    expect(createCSSWithTheme({ variants: [
+            { name: 'tablet', raw: '@tablet', atRules: ['@media (width>=391)'] },
+            { name: 'desktop', raw: '@desktop', atRules: ['@media (width>=1025)'] }
+        ] }).add(...shuffle([...input])).utilitiesLayer.rules).toMatchObject(output)
 })

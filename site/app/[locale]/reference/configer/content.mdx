@@ -7,7 +7,7 @@
 
 It discovers project CSS entries and Master CSS workspace roots, then delegates CSS parsing, import graph resolution, and semantic config compilation to `@master/css-compiler`. The extractor stays focused on class/source scanning; callers pass it the compiled config and source directives.
 
-Project entry discovery only treats CSS files with top-level `@master;` or `@import '@master/css'` as entries. Imported `@settings`, `@theme`, `@custom-at`, and `@custom-selector` directives participate in the entry graph, but they are not independent project entries. JavaScript/TypeScript config files are intentionally unsupported.
+Project entry discovery only treats CSS files with top-level `@master;` or `@import '@master/css'` as entries. Imported `@settings`, `@theme`, `@custom-variant`, and `@custom-variant` directives participate in the entry graph, but they are not independent project entries. JavaScript/TypeScript config files are intentionally unsupported.
 
 ---
 

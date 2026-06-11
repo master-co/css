@@ -1,6 +1,6 @@
 import {
     createCSSDirectiveSourceReference,
-    createCSSDirectiveAtRuleReference,
+    createCSSDirectiveVariantReference,
     CSSDirectiveError,
     type CSSDirectiveAnimationDefinitions,
     type CSSDirectiveConfig,
@@ -110,15 +110,11 @@ const MASTER_CUSTOM_AT_RULES = {
         prelude: null,
         body: 'style-block'
     },
-    'custom-at': {
+    'custom-variant': {
         prelude: '*',
         body: null
     },
-    'custom-selector': {
-        prelude: '*',
-        body: null
-    },
-    at: {
+    variant: {
         prelude: '*',
         body: 'style-block'
     },
@@ -759,72 +755,73 @@ function parseThemeDeclarations(block: DeclarationBlock<Declaration>, config: CS
     }
 }
 
-function normalizeAtValue(value: string) {
-    const trimmed = value.trim().replace(/\s*([:<>]=?|=)\s*/g, '$1')
-    const rawAtRule = /^@(media|supports|container|layer|starting-style)\b\s*(.*)$/.exec(trimmed)
-    if (!rawAtRule) return trimmed
-
-    const [, type, body] = rawAtRule
-    if (type === 'starting-style') {
-        if (body.trim()) throw new Error('@starting-style at token does not accept a value')
-        return 'starting-style'
-    }
-    if (type === 'container') {
-        return `${type}${body ? ' ' + body.trim() : ''}`.trim()
-    }
-    if (type === 'layer') {
-        return body.trim().startsWith('(') ? `layer${body.trim()}` : `layer(${body.trim()})`
-    }
-    if (type === 'media') {
-        const mediaBody = body.trim()
-        return mediaBody.startsWith('(') ? `media${mediaBody}` : `media ${mediaBody}`
-    }
-    if (!body.trim().startsWith('(')) {
-        throw new Error('@supports at token value must use a parenthesized condition')
-    }
-    return `${type}${body.trim()}`
+function parseVariantPrelude(prelude: string) {
+    return /^(\S+)\s+(.+)$/.exec(prelude)
+        || /^([^(]+)(\(.*\))$/.exec(prelude)
 }
 
-function parseAtDefinition(rule: any, parsed: ParsedDirectives) {
-    const match = /^(\S+)\s+(.+)$/.exec(formatPrelude(rule.value.prelude))
+function unwrapSelectorVariantValue(value: string) {
+    const trimmed = value.trim()
+    return trimmed.startsWith('(') && trimmed.endsWith(')')
+        ? trimmed.slice(1, -1).trim()
+        : undefined
+}
+
+function defineVariant(config: CSSDirectiveConfig, variant: NonNullable<CSSDirectiveConfig['variants']>[number]) {
+    config.variants ??= []
+    const foundIndex = config.variants.findIndex((existing) => existing.raw === variant.raw)
+    if (foundIndex !== -1) config.variants.splice(foundIndex, 1)
+    config.variants.push(variant)
+}
+
+function parseVariantDefinition(rule: any, parsed: ParsedDirectives) {
+    const match = parseVariantPrelude(formatPrelude(rule.value.prelude))
     if (!match) {
-        throw new Error('@custom-at requires a token name and at-rule value')
+        throw new Error('@custom-variant requires a variant name and value')
     }
 
-    const [, token, value] = match
-    if (token.startsWith('@')) {
-        throw new Error(`@custom-at names must not start with "@": ${token}`)
+    const [, name, rawValue] = match
+    const value = rawValue.trim()
+    if (!name || name.startsWith('@') || name.startsWith(':')) {
+        throw new Error(`@custom-variant names must be bare identifiers: ${name}`)
     }
-    if (token.startsWith(':')) {
-        throw new Error(`@custom-at names cannot be selector tokens: ${token}`)
+
+    const selector = unwrapSelectorVariantValue(value)
+    if (selector !== undefined) {
+        if (!selector.includes('&')) {
+            throw new Error(`@custom-variant "${name}" selector value must include "&"`)
+        }
+        defineVariant(parsed.config, {
+            name,
+            raw: `${selector.includes('&::') ? '::' : ':'}${name}` as `:${string}` | `::${string}`,
+            selector
+        })
+        return
     }
-    if (!value.trim().startsWith('@')) {
-        throw new Error(`@custom-at "${token}" must use an explicit at-rule value`)
+
+    if (!value.startsWith('@')) {
+        throw new Error(`@custom-variant "${name}" must use an at-rule or selector template value`)
     }
-    parsed.config.atTokens ??= {}
-    parsed.config.atTokens[token] = normalizeAtValue(value)
+
+    const layerMatch = /^@layer\s+([a-zA-Z0-9_-]+)\s*$/.exec(value)
+    if (layerMatch?.[1] === 'base' || layerMatch?.[1] === 'defaults' || layerMatch?.[1] === 'components' || layerMatch?.[1] === 'utilities') {
+        defineVariant(parsed.config, {
+            name,
+            raw: `@${name}`,
+            layer: layerMatch[1]
+        })
+        return
+    }
+
+    defineVariant(parsed.config, {
+        name,
+        raw: `@${name}`,
+        atRules: [value]
+    })
 }
 
-function parseSelectorDefinition(rule: any, parsed: ParsedDirectives) {
-    const match = /^(\S+)\s+(.+)$/.exec(formatPrelude(rule.value.prelude))
-    if (!match) {
-        throw new Error('@custom-selector requires a selector token name and selector value')
-    }
-
-    const [, token, value] = match
-    if (!token.startsWith(':')) {
-        throw new Error(`@custom-selector names must start with ":" or "::": ${token}`)
-    }
-    parsed.config.selectorTokens ??= {}
-    parsed.config.selectorTokens[token] = value.trim()
-}
-
-function isCustomAtDefinition(rule: Rule) {
-    return (rule.type === 'unknown' || rule.type === 'custom') && rule.value?.name === 'custom-at'
-}
-
-function isCustomSelectorDefinition(rule: Rule) {
-    return (rule.type === 'unknown' || rule.type === 'custom') && rule.value?.name === 'custom-selector'
+function isCustomVariantDefinition(rule: Rule) {
+    return (rule.type === 'unknown' || rule.type === 'custom') && rule.value?.name === 'custom-variant'
 }
 
 function isAnimationsDefinition(rule: Rule) {
@@ -920,18 +917,18 @@ function createComposePlacementError(parsed: ParsedDirectives) {
     )
 }
 
-function parseMasterAtRuleBlock(rule: any) {
-    if ((rule.type !== 'custom' && rule.type !== 'unknown') || rule.value?.name !== 'at') return
+function parseMasterVariantBlock(rule: any) {
+    if ((rule.type !== 'custom' && rule.type !== 'unknown') || rule.value?.name !== 'variant') return
     const token = formatPrelude(rule.value.prelude)
     if (!token) {
-        throw new Error('@at requires a Master CSS at token')
+        throw new Error('@variant requires a Master CSS variant')
     }
     if (token.startsWith('@')) {
-        throw new Error('@at accepts Master CSS at tokens without the leading "@"')
+        throw new Error('@variant accepts Master CSS variants without the leading "@"')
     }
     const rules = rule.value.body?.value
     if (!Array.isArray(rules)) {
-        throw new Error('@at requires a style block')
+        throw new Error('@variant requires a style block')
     }
     return {
         token,
@@ -946,7 +943,7 @@ function isNestedStyleRule(rule: Rule) {
         || rule.type === 'container'
         || rule.type === 'starting-style'
         || rule.type === 'layer-block'
-        || Boolean(parseMasterAtRuleBlock(rule))
+        || Boolean(parseMasterVariantBlock(rule))
 }
 
 type StyleRuleBodyItem =
@@ -1107,9 +1104,9 @@ function parseNestedManagedStyleChildRule(child: Rule, parsed: ParsedDirectives,
         throw new Error('Nested @layer blocks are not allowed inside managed style definitions')
     }
 
-    const masterAtRuleBlock = parseMasterAtRuleBlock(child)
-    if (masterAtRuleBlock) {
-        parseStyleRuleBody(masterAtRuleBlock.rules, parsed, parentSelectorDefinition, [...atRules, createCSSDirectiveAtRuleReference(masterAtRuleBlock.token)], layer)
+    const masterVariantBlock = parseMasterVariantBlock(child)
+    if (masterVariantBlock) {
+        parseStyleRuleBody(masterVariantBlock.rules, parsed, parentSelectorDefinition, [...atRules, createCSSDirectiveVariantReference(masterVariantBlock.token)], layer)
         return
     }
 
@@ -1188,9 +1185,9 @@ function parseNativeRuleBody(
             continue
         }
 
-        const masterAtRuleBlock = parseMasterAtRuleBlock(child)
-        if (masterAtRuleBlock) {
-            parseNativeRuleBody(masterAtRuleBlock.rules, parsed, [...atRules, createCSSDirectiveAtRuleReference(masterAtRuleBlock.token)], parentSelectorDefinition)
+        const masterVariantBlock = parseMasterVariantBlock(child)
+        if (masterVariantBlock) {
+            parseNativeRuleBody(masterVariantBlock.rules, parsed, [...atRules, createCSSDirectiveVariantReference(masterVariantBlock.token)], parentSelectorDefinition)
             continue
         }
 
@@ -1214,7 +1211,7 @@ function parseNativeRuleBody(
         }
 
         if (child.type === 'keyframes') {
-            throw new Error('@keyframes is not allowed inside @at. Move managed animation definitions to top-level @animations.')
+            throw new Error('@keyframes is not allowed inside @variant. Move managed animation definitions to top-level @animations.')
         }
 
         if (compose) {
@@ -1222,15 +1219,15 @@ function parseNativeRuleBody(
         }
 
         if (child.type === 'nested-declarations') {
-            throw new Error('Native @at blocks only accept style rules, declarations, @compose, and nested at-rules')
+            throw new Error('Native @variant blocks only accept style rules, declarations, @compose, and nested at-rules')
         }
     }
 }
 
 function parseNestedNativeStyleChildRule(child: Rule, parsed: ParsedDirectives, parentSelectorDefinition: StyleSelectorDefinition, atRules: string[]) {
-    const masterAtRuleBlock = parseMasterAtRuleBlock(child)
-    if (masterAtRuleBlock) {
-        parseNativeRuleBody(masterAtRuleBlock.rules, parsed, [...atRules, createCSSDirectiveAtRuleReference(masterAtRuleBlock.token)], parentSelectorDefinition)
+    const masterVariantBlock = parseMasterVariantBlock(child)
+    if (masterVariantBlock) {
+        parseNativeRuleBody(masterVariantBlock.rules, parsed, [...atRules, createCSSDirectiveVariantReference(masterVariantBlock.token)], parentSelectorDefinition)
         return
     }
 
@@ -1346,9 +1343,9 @@ function parseSettingsChildRule(child: Rule, parsed: ParsedDirectives, section: 
         throw new Error('@settings does not accept @layer')
     }
 
-    const masterAtRuleBlock = parseMasterAtRuleBlock(child)
-    if (masterAtRuleBlock) {
-        throw new Error('@settings does not accept @at')
+    const masterVariantBlock = parseMasterVariantBlock(child)
+    if (masterVariantBlock) {
+        throw new Error('@settings does not accept @variant')
     }
 
     const nestedAtRuleChildren = getNestedAtRuleChildren(child)
@@ -1428,13 +1425,13 @@ function parseManagedDefinitionDirectiveChildRule(
         throw new Error(`Nested @layer blocks are not allowed inside @${directiveName}`)
     }
 
-    const masterAtRuleBlock = parseMasterAtRuleBlock(child)
-    if (masterAtRuleBlock) {
-        for (const nestedChild of masterAtRuleBlock.rules) {
+    const masterVariantBlock = parseMasterVariantBlock(child)
+    if (masterVariantBlock) {
+        for (const nestedChild of masterVariantBlock.rules) {
             parseManagedDefinitionDirectiveChildRule(
                 nestedChild,
                 parsed,
-                [...atRules, createCSSDirectiveAtRuleReference(masterAtRuleBlock.token)],
+                [...atRules, createCSSDirectiveVariantReference(masterVariantBlock.token)],
                 layer,
                 directiveName
             )
@@ -1472,11 +1469,8 @@ function parseManagedDefinitionDirectiveChildRule(
     if ((child.type === 'unknown' || child.type === 'custom') && child.value?.name === 'compose') {
         throw createComposePlacementError(parsed)
     }
-    if (isCustomAtDefinition(child)) {
-        throw new Error('@custom-at must be top-level')
-    }
-    if (isCustomSelectorDefinition(child)) {
-        throw new Error('@custom-selector must be top-level')
+    if (isCustomVariantDefinition(child)) {
+        throw new Error('@custom-variant must be top-level')
     }
     if (isAnimationsDefinition(child)) {
         throw new Error('@animations must be top-level')
@@ -1523,17 +1517,13 @@ export function compileCSS(source: string, options: CompileCSSOptions = {}): Com
         visitor: {
             Rule(rule: any) {
                 if (ruleDepth === 0) {
-                    if (isCustomAtDefinition(rule)) {
-                        parseAtDefinition(rule, parsed)
+                    if (isCustomVariantDefinition(rule)) {
+                        parseVariantDefinition(rule, parsed)
                         return []
                     }
-                    if (isCustomSelectorDefinition(rule)) {
-                        parseSelectorDefinition(rule, parsed)
-                        return []
-                    }
-                    const masterAtRuleBlock = parseMasterAtRuleBlock(rule)
-                    if (masterAtRuleBlock) {
-                        parseNativeRuleBody(masterAtRuleBlock.rules, parsed, [createCSSDirectiveAtRuleReference(masterAtRuleBlock.token)])
+                    const masterVariantBlock = parseMasterVariantBlock(rule)
+                    if (masterVariantBlock) {
+                        parseNativeRuleBody(masterVariantBlock.rules, parsed, [createCSSDirectiveVariantReference(masterVariantBlock.token)])
                         return []
                     }
                     const nestedAtRuleChildren = getNestedAtRuleChildren(rule)
@@ -1581,12 +1571,10 @@ export function compileCSS(source: string, options: CompileCSSOptions = {}): Com
                             return []
                         case 'compose':
                             throw createComposePlacementError(parsed)
-                        case 'custom-at':
-                            throw new Error('@custom-at must be top-level')
-                        case 'custom-selector':
-                            throw new Error('@custom-selector must be top-level')
-                        case 'at':
-                            throw new Error('@at requires a style rule or nested style rules')
+                        case 'custom-variant':
+                            throw new Error('@custom-variant must be top-level')
+                        case 'variant':
+                            throw new Error('@variant requires a style rule or nested style rules')
                     }
                 }
 

@@ -1,5 +1,5 @@
 import { test, expect, describe } from 'vitest'
-import { UtilityType } from '../src'
+import { UtilityType, type Config } from '../src'
 import createCSSWithTheme from './helpers/create-css-with-theme'
 function component(name: string, rules: any[]) {
     return { name, type: UtilityType.Static, layer: 'components' as const, rules }
@@ -63,9 +63,9 @@ test.concurrent('component selector variant', () => {
 })
 
 describe('group selector', () => {
-    const config = { selectorTokens: {
-            '::both': '::before,::after',
-        }, utilities: [component('btn', [
+    const config: Config = { variants: [
+            { name: 'both', raw: '::both', selector: '&::before,&::after' }
+        ], utilities: [component('btn', [
             { selector: '&::before,&::after', declarations: { display: 'block' } }
         ])] }
     test.concurrent('utilities', () => {

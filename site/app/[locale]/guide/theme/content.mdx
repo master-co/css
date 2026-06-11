@@ -3,7 +3,7 @@ import VariableNamespaceSources from './components/VariableNamespaceSources'
 ## Overview [sr-only]
 Your theme is the shared design vocabulary for a Master CSS project. It defines the values your markup reaches for every day: color roles, spacing, type, radius, shadows, motion, breakpoints, container sizes, mode-specific values, named conditions, and shared selector aliases.
 
-In Master CSS, that vocabulary usually lives in the project CSS entry: `@theme` for tokens and modes, `@settings` for project settings, `@custom-at` for named conditions, and `@custom-selector` for selector shortcuts. The file still feels like CSS, while markup keeps using short semantic classes.
+In Master CSS, that vocabulary usually lives in the project CSS entry: `@theme` for tokens and modes, `@settings` for project settings, and `@custom-variant` for reusable condition and selector variants. The file still feels like CSS, while markup keeps using short semantic classes.
 
 ```css name=index.css
 @import '@master/css';
@@ -26,8 +26,8 @@ In Master CSS, that vocabulary usually lives in the project CSS entry: `@theme` 
     --shadow-card: 0 0 0 1px rgb(255 255 255 / .08), 0 16px 40px rgb(0 0 0 / .36);
 }
 
-@custom-at motion-safe @media (prefers-reduced-motion: no-preference);
-@custom-selector :interactive :is(:hover, :focus-visible);
+@custom-variant motion-safe @media (prefers-reduced-motion: no-preference);
+@custom-variant interactive (&:is(:hover, :focus-visible));
 ```
 
 ```html
@@ -36,7 +36,7 @@ In Master CSS, that vocabulary usually lives in the project CSS entry: `@theme` 
 </section>
 ```
 
-The `@theme`, `@settings`, `@custom-at`, and `@custom-selector` directives are configuration, not regular stylesheet output. Master CSS resolves them first, then generates only the variables, utilities, components, and keyframes that the application actually uses.
+The `@theme`, `@settings`, and `@custom-variant` directives are configuration, not regular stylesheet output. Master CSS resolves them first, then generates only the variables, utilities, components, and keyframes that the application actually uses.
 
 ---
 
@@ -278,14 +278,14 @@ document.documentElement.style.colorScheme = value
 ## Named conditions and selectors
 Named conditions and selector shortcuts belong in the theme when they become shared product vocabulary. Use them to keep repeated media queries, support checks, container queries, and selectors out of markup.
 
-### At tokens
-Native CSS cannot store full `@media`, `@supports`, or `@container` rules in CSS variables. Master CSS uses `@custom-at` to name those reusable conditions.
+### At variants
+Native CSS cannot store full `@media`, `@supports`, or `@container` rules in CSS variables. Master CSS uses `@custom-variant` to name those reusable conditions.
 
 ```css name=index.css
-@custom-at motion-safe @media (prefers-reduced-motion: no-preference);
-@custom-at supports-backdrop @supports (backdrop-filter: blur(0));
-@custom-at card-wide @container card (width >= 42rem);
-@custom-at start @starting-style;
+@custom-variant motion-safe @media (prefers-reduced-motion: no-preference);
+@custom-variant supports-backdrop @supports (backdrop-filter: blur(0));
+@custom-variant card-wide @container card (width >= 42rem);
+@custom-variant start @starting-style;
 ```
 
 The token name is written without a leading `@` in the definition. Use the token as an `@` suffix in markup:
@@ -297,39 +297,39 @@ The token name is written without a leading `@` in the definition. Use the token
 </div>
 ```
 
-### At tokens in CSS rules
-Inside managed definitions and native style rules, use `@at` blocks instead of putting conditional suffixes inside `@compose`.
+### At variants in CSS rules
+Inside managed definitions and native style rules, use `@variant` blocks instead of putting conditional suffixes inside `@compose`.
 
 ```css name=index.css
-@custom-at motion-safe @media (prefers-reduced-motion: no-preference);
+@custom-variant motion-safe @media (prefers-reduced-motion: no-preference);
 
 @components {
     card {
         @compose "p:md r:xl";
 
-        @at motion-safe {
+        @variant motion-safe {
             @compose "animation:fade-in|fast";
         }
 
-        @at <sm {
+        @variant <sm {
             @compose "block";
         }
     }
 }
 ```
 
-`@at` accepts custom at tokens, breakpoint tokens such as `md`, mode names such as `dark`, and raw Master CSS at syntax such as `<sm`.
+`@variant` accepts custom condition variants, breakpoint tokens such as `md`, mode names such as `dark`, and raw Master CSS at syntax such as `<sm`.
 
-### Selector tokens
-Selector tokens name selectors that repeat across markup or CSS-defined styles. Define them with `@custom-selector`.
+### Selector variants
+Selector variants name selectors that repeat across markup or CSS-defined styles. Define them with `@custom-variant`.
 
 ```css name=index.css
-@custom-selector :headings :is(h1, h2, h3, h4, h5, h6);
-@custom-selector :interactive :is(:hover, :focus-visible);
-@custom-selector ::scrollbar ::-webkit-scrollbar;
+@custom-variant headings (&:is(h1, h2, h3, h4, h5, h6));
+@custom-variant interactive (&:is(:hover, :focus-visible));
+@custom-variant scrollbar (&::-webkit-scrollbar);
 ```
 
-Use selector tokens anywhere Master CSS accepts a selector suffix:
+Use selector variants anywhere Master CSS accepts a selector suffix:
 
 ```html
 <!-- @MARK :headings --><!-- @MARK :interactive --><!-- @MARK ::scrollbar -->
@@ -339,11 +339,11 @@ Use selector tokens anywhere Master CSS accepts a selector suffix:
 </article>
 ```
 
-### Selector tokens in CSS rules
+### Selector variants in CSS rules
 Inside CSS-defined style rules, prefer native nested selectors instead of putting selector suffixes inside `@compose`.
 
 ```css name=index.css
-@custom-selector :interactive :is(:hover, :focus-visible);
+@custom-variant interactive (&:is(:hover, :focus-visible));
 
 @components {
     btn {
@@ -357,9 +357,9 @@ Inside CSS-defined style rules, prefer native nested selectors instead of puttin
 ```
 
 ### Naming rules
-Breakpoint variables automatically create at tokens such as `@md`, and modes automatically create at tokens such as `@dark`. Custom at token names cannot start with `@`, `:`, or `::`, and cannot conflict with breakpoint or mode names.
+Breakpoint variables automatically create at variants such as `@md`, and modes automatically create at variants such as `@dark`. Custom at token names cannot start with `@`, `:`, or `::`, and cannot conflict with breakpoint or mode names.
 
-Selector token names must start with `:` or `::`. Names that look like conditions belong in `@custom-at`, not `@custom-selector`.
+Selector variants use `:` or `::` in class suffixes, while conditional variants use `@`. Both are defined with `@custom-variant`.
 
 ---
 
@@ -374,7 +374,7 @@ Motion belongs in the theme when timing, easing, and keyframes are shared by mor
     --easing-smooth: cubic-bezier(.4, 0, .2, 1);
 }
 
-@custom-at motion-safe @media (prefers-reduced-motion: no-preference);
+@custom-variant motion-safe @media (prefers-reduced-motion: no-preference);
 
 @animations {
     @keyframes fade-in {

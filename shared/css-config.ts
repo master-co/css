@@ -18,14 +18,33 @@ export interface VariableDefinition {
 
 export type CSSKeyframes<TDeclarations = CSSDeclarations> = Record<'from' | 'to' | string, TDeclarations>
 export type AnimationDefinitions<TDeclarations = CSSDeclarations> = Record<string, CSSKeyframes<TDeclarations>>
-export type SelectorTokenDefinitions = Record<string, string>
 export type AtIdentifier = typeof CSS_AT_IDENTIFIERS[number]
-export type AtTokenDefinition = number | string
 export type UtilityLayerName = 'base' | 'defaults' | 'components' | 'utilities'
 
-export interface AtTokenDefinitions {
-    [key: string]: AtTokenDefinition | AtTokenDefinitions;
+export type SelectorVariantDefinition = {
+    name: string
+    raw: `:${string}` | `::${string}`
+    selector: string
 }
+
+export type AtRuleVariantDefinition = {
+    name: string
+    raw: `@${string}`
+    atRules: string[]
+}
+
+export type LayerVariantDefinition = {
+    name: string
+    raw: `@${string}`
+    layer: UtilityLayerName
+}
+
+export type VariantDefinition =
+    | SelectorVariantDefinition
+    | AtRuleVariantDefinition
+    | LayerVariantDefinition
+
+export type VariantDefinitions = VariantDefinition[]
 
 export interface UtilityRuleDefinition<TDeclarations = CSSDeclarations> {
     declarations: TDeclarations
@@ -85,8 +104,7 @@ export interface Config<
     TFunctionTransformerName extends string = string,
     TDeclarations = CSSDeclarations
 > {
-    atTokens?: AtTokenDefinitions
-    selectorTokens?: SelectorTokenDefinitions
+    variants?: VariantDefinitions
     variables?: VariableDefinitions
     utilities?: UtilityDefinitions<TDeclarerName, TTransformerName, TDeclarations>
     rootSize?: number

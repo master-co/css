@@ -38,6 +38,7 @@ export default class MasterCSS {
     readonly variables = new Map<string, Variable>()
     readonly modes: string[] = []
     readonly atRules = new Map<string, AtRule>()
+    readonly variantAtRules = new Map<string, AtRule[]>()
     readonly breakpointAtRules = new Map<string, AtRule>()
     readonly containerAtRules = new Map<string, AtRule>()
     readonly animations = new Map<string, AnimationDefinitions>()
@@ -86,8 +87,8 @@ export default class MasterCSS {
         this.config = config || {}
         this.resolveVariables()
         this.resolveAnimations()
-        this.resolveSelectors()
         this.resolveAtRules()
+        this.resolveVariants()
         this.resolveUtilities()
     }
 
@@ -346,17 +347,6 @@ export default class MasterCSS {
 
     }
 
-    resolveSelectors() {
-        const { selectorTokens } = this.config
-        if (selectorTokens) {
-            for (const token in selectorTokens) {
-                const value = selectorTokens[token]
-                const nodes = parseSelector(value, this, false)
-                this.selectors.set(token, nodes)
-            }
-        }
-    }
-
     resolveAtRules() {
         for (const variable of this.variables.values()) {
             if (variable.namespace === 'breakpoint' && variable.type === 'number' && variable.value !== undefined && !variable.name.startsWith('-')) {
@@ -375,23 +365,42 @@ export default class MasterCSS {
                 })
             }
         }
+    }
 
-        const { atTokens } = this.config
-        if (atTokens) {
-            for (const token in atTokens) {
-                const value = atTokens[token]
-                if (typeof value === 'number') {
-                    const node = this.parseValue(value)
-                    this.atRules.set(token, {
-                        id: 'media',
-                        nodes: [node as unknown as AtRuleValueNode]
-                    })
-                } else {
-                    const atRule = parseAt(value, this, false)
-                    this.atRules.set(token, atRule)
-                }
+    resolveVariants() {
+        const { variants } = this.config
+        if (!variants) return
+
+        for (const variant of variants) {
+            if ('selector' in variant) {
+                const selector = variant.selector.trim()
+                const bodylessSelector = selector.includes('&')
+                    ? selector.replace(/&/g, '')
+                    : selector
+                this.selectors.set(variant.raw, parseSelector(bodylessSelector, this, false))
+                continue
+            }
+
+            const token = variant.raw.slice(1)
+            const atRules = 'layer' in variant
+                ? [{
+                    id: 'layer',
+                    nodes: [{
+                        type: 'string',
+                        value: variant.layer
+                    } as AtRuleValueNode]
+                } as AtRule]
+                : variant.atRules.map((atRule) => parseAt(atRule, this, false))
+
+            if (atRules.length) {
+                this.variantAtRules.set(token, atRules)
+                this.atRules.set(token, atRules[0])
             }
         }
+    }
+
+    resolveAtVariant(token: string) {
+        return this.variantAtRules.get(token)
     }
 
     resolveVariables() {
@@ -662,6 +671,8 @@ export default class MasterCSS {
         this.variables = new Map()
         // @ts-ignore
         this.atRules = new Map()
+        // @ts-ignore
+        this.variantAtRules = new Map()
         // @ts-ignore
         this.breakpointAtRules = new Map()
         // @ts-ignore

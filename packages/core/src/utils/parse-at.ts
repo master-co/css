@@ -1,4 +1,4 @@
-import { AT_COMPARABLE_FEATURES, AT_COMPARISON_OPERATORS, AT_IDENTIFIERS, AT_LOGICAL_OPERATORS } from '../common'
+import { AT_COMPARABLE_FEATURES, AT_COMPARISON_OPERATORS, AT_FEATURE_ALIASES, AT_IDENTIFIERS, AT_LOGICAL_OPERATORS } from '../common'
 import type MasterCSS from '../core'
 import type { AtIdentifier } from 'shared/css-config'
 import parsePair from './parse-pair'
@@ -10,6 +10,7 @@ export type AtRule = {
     id: AtIdentifier
     nodes: AtRuleNode[]
 }
+export declare type AtRuleBooleanNode = { raw?: string, name: string, type: 'boolean' }
 export declare type AtRuleNumberNode = { raw?: string, name: string, type: 'number', value: number, unit?: string, operator?: string }
 export declare type AtRuleStringNode = { raw?: string, name: string, type: 'string', value: string }
 export declare type AtRuleValueNode = AtRuleNumberNode | AtRuleStringNode
@@ -17,7 +18,15 @@ export interface AtRuleComparisonOperatorNode { type: 'comparison', raw?: string
 export interface AtRuleLogicalOperatorNode { type: 'logical', raw?: string, value: string }
 export type AtRuleOperatorNode = AtRuleComparisonOperatorNode | AtRuleLogicalOperatorNode
 export interface AtRuleGroupNode { type?: 'group', raw?: string, children: AtRuleNode[] }
-export type AtRuleNode = AtRuleValueNode | AtRuleComparisonOperatorNode | AtRuleLogicalOperatorNode | AtRuleGroupNode
+export type AtRuleNode = AtRuleBooleanNode | AtRuleValueNode | AtRuleComparisonOperatorNode | AtRuleLogicalOperatorNode | AtRuleGroupNode
+
+function resolveAtFeatureName(value: string) {
+    return AT_FEATURE_ALIASES[value as keyof typeof AT_FEATURE_ALIASES] || value
+}
+
+function isAtFeatureName(value: string) {
+    return AT_COMPARABLE_FEATURES.includes(resolveAtFeatureName(value))
+}
 
 export default function parseAt(token: string, css: MasterCSS, isRaw = true) {
     let id: AtIdentifier | undefined
@@ -37,7 +46,7 @@ export default function parseAt(token: string, css: MasterCSS, isRaw = true) {
                     nodes.pop()
                     prev = nodes[nodes.length - 1]
                     if (prev?.type === 'string') {
-                        node.name = prev.value
+                        node.name = resolveAtFeatureName(prev.value)
                         if (node.raw && prev.raw) {
                             node.raw = prev.raw + node.raw
                         }
@@ -53,7 +62,7 @@ export default function parseAt(token: string, css: MasterCSS, isRaw = true) {
             nodes.push(node)
         }
         raws
-            .forEach((raw) => {
+            .forEach((raw, rawIndex) => {
                 if (AT_COMPARISON_OPERATORS.includes(raw)) {
                     const newNode = { type: 'comparison', value: raw } as AtRuleComparisonOperatorNode
                     if (isRaw) newNode.raw = raw
@@ -76,7 +85,7 @@ export default function parseAt(token: string, css: MasterCSS, isRaw = true) {
                         return
                     } else if (definedAtRule) {
                         id = definedAtRule.id
-                    } else if (AT_COMPARABLE_FEATURES.includes(firstToken)) {
+                    } else if (isAtFeatureName(firstToken)) {
                         id = 'media'
                     } else if (firstToken.charAt(0).match(/[a-zA-Z-]/)) {
                         id = 'container'
@@ -96,14 +105,28 @@ export default function parseAt(token: string, css: MasterCSS, isRaw = true) {
                 } else {
                     const [splitedNameOrValue, splitedValue] = splitCharOutsideQuotes(raw, ':')
                     if (splitedValue) {
-                        node.name = splitedNameOrValue
+                        node.name = resolveAtFeatureName(splitedNameOrValue)
                         node.value = splitedValue
                     } else {
-                        node.value = splitedNameOrValue
+                        node.value = resolveAtFeatureName(splitedNameOrValue)
                     }
                     if (id === 'container' || id === 'media') {
-                        const { token, ...newNode } = parseValue(node.value, 'rem', css.config.rootSize)
-                        Object.assign(node, newNode)
+                        const featureValue = String(node.value)
+                        if (!splitedValue && isAtFeatureName(featureValue)) {
+                            if (AT_COMPARISON_OPERATORS.includes(raws[rawIndex + 1])) {
+                                addNode(node)
+                            } else {
+                                addNode({
+                                    type: 'boolean',
+                                    name: featureValue,
+                                    ...(isRaw && { raw })
+                                })
+                            }
+                            return
+                        } else {
+                            const { token, ...newNode } = parseValue(node.value, 'rem', css.config.rootSize)
+                            Object.assign(node, newNode)
+                        }
                     }
                     addNode(node)
                 }

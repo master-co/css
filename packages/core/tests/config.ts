@@ -58,17 +58,15 @@ export default {
         { name: 'hide-text', type: -4, declarations: { 'font-size': '0px' } },
         { name: 'zero', type: -4, declarations: { 'font-size': '0px', height: '0px' } }
     ],
-    selectorTokens: {
-        custom: 'div>:first+button',
-        'custom-1': 'div'
-    },
-    atTokens: {
-        tablet: 768,
-        laptop: 1024,
-        desktop: 1280,
-        'custom-1': 2500,
-        watch: 'media(width<=42mm)and(width>=38mm)',
-        'device-watch': 'media(width<=42mm)and(width>=38mm)',
-    },
+    variants: [
+        { name: 'custom', raw: ':custom', selector: '&div>:first+button' },
+        { name: 'custom-1', raw: ':custom-1', selector: '&div' },
+        { name: 'tablet', raw: '@tablet', atRules: ['@media (width>=768)'] },
+        { name: 'laptop', raw: '@laptop', atRules: ['@media (width>=1024)'] },
+        { name: 'desktop', raw: '@desktop', atRules: ['@media (width>=1280)'] },
+        { name: 'custom-1', raw: '@custom-1', atRules: ['@media (width>=2500)'] },
+        { name: 'watch', raw: '@watch', atRules: ['@media (width<=42mm) and (width>=38mm)'] },
+        { name: 'device-watch', raw: '@device-watch', atRules: ['@media (width<=42mm) and (width>=38mm)'] }
+    ],
     rootSize: 16,
 } as any

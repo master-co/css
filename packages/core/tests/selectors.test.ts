@@ -7,8 +7,8 @@ test.concurrent('hidden:hover', ({ task }) => {
 })
 
 test.concurrent('selectors', () => {
-    expect(createCSSWithTheme(config).create('hidden>custom')?.text).toBe('.hidden\\>custom>div>:first-child+button{display:none}')
-    expect(createCSSWithTheme(config).create('hidden~custom-1')?.text).toBe('.hidden\\~custom-1~div{display:none}')
+    expect(createCSSWithTheme(config).create('hidden>:custom')?.text).toBe('.hidden\\>\\:custom>div>:first-child+button{display:none}')
+    expect(createCSSWithTheme(config).create('hidden~:custom-1')?.text).toBe('.hidden\\~\\:custom-1~div{display:none}')
     expect(createCSSWithTheme(config).create('hidden::slider-thumb')?.text).toBe('.hidden\\:\\:slider-thumb::-webkit-slider-thumb{display:none}')
     expect(createCSSWithTheme().create('bg:#000:hover_.feature__tab-title')?.text).toBe('.bg\\:\\#000\\:hover_\\.feature__tab-title:hover .feature__tab-title{background-color:#000}')
 })

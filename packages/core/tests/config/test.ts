@@ -44,9 +44,7 @@ test.concurrent('viewports', () => {
             utilities: '@media (width>=31.25rem){.hidden\\@xss{display:none}}'
         },
         'hidden@xss',
-        { atTokens: {
-                'xss': 500
-            } }
+        { variants: [{ name: 'xss', raw: '@xss', atRules: ['@media (width>=500)'] }] }
     )
 })
 
@@ -71,9 +69,7 @@ test.concurrent('at', () => {
             utilities: '@media (width>=37.5rem){.f\\:12\\@min-600{font-size:0.75rem}}'
         },
         'f:12@min-600',
-        { atTokens: {
-                'min-600': '@media(width>=600)'
-            } }
+        { variants: [{ name: 'min-600', raw: '@min-600', atRules: ['@media(width>=600)'] }] }
     )
 })
 

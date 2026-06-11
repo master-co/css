@@ -1,13 +1,19 @@
 import utilities from '../utilities'
 import UtilityType from 'shared/utility-type'
+import type { UtilityDefinition } from 'shared/css-config'
 
-const builtInNamespaces = ['breakpoint']
+const builtInNamespaces: string[] = ['breakpoint']
+const utilityDefinitions: UtilityDefinition[] = utilities
 
-const explicitNamespaces = utilities.flatMap((utility) => utility.namespaces ?? [])
+const explicitNamespaces: string[] = []
+const implicitNamespaces: string[] = []
 
-const implicitNamespaces = utilities
-    .filter((utility) => utility.type !== UtilityType.Static && !utility.name.endsWith('()') && utility.implicitNamespace !== false)
-    .map((utility) => utility.name)
+for (const utility of utilityDefinitions) {
+    explicitNamespaces.push(...(utility.namespaces ?? []))
+    if (utility.type !== UtilityType.Static && !utility.name.endsWith('()') && utility.implicitNamespace !== false) {
+        implicitNamespaces.push(utility.name)
+    }
+}
 
 const namespaces = [
     ...new Set([

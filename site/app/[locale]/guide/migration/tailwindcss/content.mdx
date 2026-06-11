@@ -161,7 +161,7 @@ module.exports = {
 ```
 
 ### Add media queries
-Using [at tokens](/guide/theme#at-tokens) to define media queries, feature queries, and even container queries.
+Using [at variants](/guide/theme#at-tokens) to define media queries, feature queries, and even container queries.
 ```js name=tailwind.config.js
 /** @type {import('tailwindcss').Config} */
 module.exports = {
@@ -175,7 +175,7 @@ module.exports = {
 }
 ```
 ```css name=index.css
-@custom-at tall @media (min-height: 800px);
+@custom-variant tall @media (min-height: 800px);
 ```
 
 ---
@@ -184,7 +184,7 @@ module.exports = {
 ### Alternative to `@apply`
 Use [component classes](/guide/reusing-styles#component-classes) and `@compose` to abstract styles instead of Tailwind's `@apply`.
 
-`@compose` is not an alias for `@apply`. It only accepts a quoted Master CSS class list, and selector states should be written as nested selectors or `@at` blocks instead of Tailwind's unquoted `@apply` syntax.
+`@compose` is not an alias for `@apply`. It only accepts a quoted Master CSS class list, and selector states should be written as nested selectors or `@variant` blocks instead of Tailwind's unquoted `@apply` syntax.
 
 ```css name=main.css
 @tailwind base;

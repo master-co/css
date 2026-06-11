@@ -37,5 +37,6 @@ test.concurrent('using components', async () => {
 })
 
 test.concurrent('conflicts', async () => {
-    expectLayers({ base: '@layer defaults{.block\\@base\\@default{display:block}}' }, 'block@base@default')
+    const css = createCSSWithTheme().add('block@base@default')
+    expect(css.text).not.toContain('block\\@base\\@default')
 })
