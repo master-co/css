@@ -10,13 +10,13 @@
     font-family-serif: var(--font-serif, ui-serif), Georgia, Cambria, 'Times New Roman', Times, serif;
 
     /* Typography */
-    letter-spacing-tightest: -0.072em;
-    letter-spacing-tighter: -0.04em;
-    letter-spacing-tight: -0.02em;
-    letter-spacing-normal: 0;
-    letter-spacing-wide: 0.02em;
-    letter-spacing-wider: 0.04em;
-    letter-spacing-widest: 0.12em;
+    tracking-tightest: -0.072em;
+    tracking-tighter: -0.04em;
+    tracking-tight: -0.02em;
+    tracking-normal: 0;
+    tracking-wide: 0.02em;
+    tracking-wider: 0.04em;
+    tracking-widest: 0.12em;
 
     line-height-xs: 1.2;
     line-height-sm: 1.4;

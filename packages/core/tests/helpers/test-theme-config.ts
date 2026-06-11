@@ -244,7 +244,7 @@ const themeConfig: Config = {
             'serif-fallback': 'ui-serif, Georgia, serif',
             'mono-fallback': 'ui-monospace, SFMono-Regular, monospace'
         }),
-        ...variables('letter-spacing', {
+        ...variables('tracking', {
             tightest: '-0.072em',
             tighter: '-0.04em',
             tight: '-0.02em',

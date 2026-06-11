@@ -39,8 +39,8 @@ it.concurrent('uses with var function', () => {
 test.concurrent('rule variables', () => {
     expect(createCSSWithTheme(config).create('font:sm')?.text).toBe('.font\\:sm{font-size:calc(var(--font-size-sm) / 16 * 1rem)}')
     expect(createCSSWithTheme(config).create('font-size:sm')?.text).toBe('.font-size\\:sm{font-size:calc(var(--font-size-sm) / 16 * 1rem)}')
-    expect(createCSSWithTheme(config).create('tracking:wide')?.text).toBe('.tracking\\:wide{letter-spacing:calc(var(--letter-spacing-wide) / 16 * 1em)}')
-    expect(createCSSWithTheme(config).create('letter-spacing:wide')?.text).toBe('.letter-spacing\\:wide{letter-spacing:calc(var(--letter-spacing-wide) / 16 * 1em)}')
+    expect(createCSSWithTheme(config).create('tracking:wide')?.text).toBe('.tracking\\:wide{letter-spacing:calc(var(--tracking-wide) / 16 * 1em)}')
+    expect(createCSSWithTheme(config).create('letter-spacing:wide')?.text).toBe('.letter-spacing\\:wide{letter-spacing:calc(var(--tracking-wide) / 16 * 1em)}')
     expect(createCSSWithTheme(config).create('shadow:x2')?.text).toBe('.shadow\\:x2{box-shadow:var(--box-shadow-x2)}')
     expect(createCSSWithTheme(config).create('b:inputborder')?.text).toBe('.b\\:inputborder{border:var(--border-inputborder)}')
     expectLayers(
@@ -59,6 +59,24 @@ test.concurrent('rule variables', () => {
     )
     expect(createCSSWithTheme({ variables: [{ namespace: 'border', key: 'input', value: '1|solid|test-70' }, { namespace: 'test', key: '70', value: '#000' }] }).create('b:input')?.text).toBe('.b\\:input{border:var(--border-input)}')
     expect(createCSSWithTheme({ variables: [{ key: 'zero', value: 0 }] }).create('box-shadow:0|0|$(zero)|2|black')?.text).toContain('box-shadow:0rem 0rem calc(var(--zero) / 16 * 1rem) 0.125rem var(--color-black)')
+})
+
+test.concurrent('letter-spacing utilities resolve tracking namespace variables', () => {
+    const css = createCSSWithTheme({
+        variables: [{ namespace: 'tracking', key: 'tight', value: '-0.02em' }]
+    })
+
+    expect(css.create('tracking:tight')?.text).toBe('.tracking\\:tight{letter-spacing:var(--tracking-tight)}')
+    expect(css.create('letter-spacing:tight')?.text).toBe('.letter-spacing\\:tight{letter-spacing:var(--tracking-tight)}')
+})
+
+test.concurrent('letter-spacing utilities keep letter-spacing namespace fallback', () => {
+    const css = createCSSWithTheme({
+        variables: [{ namespace: 'letter-spacing', key: 'wide', value: '0.02em' }]
+    })
+
+    expect(css.create('tracking:wide')?.text).toBe('.tracking\\:wide{letter-spacing:var(--letter-spacing-wide)}')
+    expect(css.create('letter-spacing:wide')?.text).toBe('.letter-spacing\\:wide{letter-spacing:var(--letter-spacing-wide)}')
 })
 
 test.concurrent('matches overlapping utility namespaces by longest prefix', () => {

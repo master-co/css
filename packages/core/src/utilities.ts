@@ -1134,7 +1134,8 @@ const utilities = [
         key: 'tracking',
         subkey: 'ls',
         type: UtilityType.Native,
-        unit: 'em'
+        unit: 'em',
+        namespaces: ['tracking']
     },
     {
         name: 'line-height',

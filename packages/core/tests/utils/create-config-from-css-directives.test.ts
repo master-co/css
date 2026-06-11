@@ -116,7 +116,8 @@ describe.concurrent('createConfigFromCSSDirectives', () => {
                 variables: [
                     { name: 'color-line-lightest', value: '#eee' },
                     { name: 'color-text-strong', value: '#111' },
-                    { name: 'color-blue-50', value: '#00f' }
+                    { name: 'color-blue-50', value: '#00f' },
+                    { name: 'tracking-tight', value: '-0.02em' }
                 ]
             }
         }))
@@ -124,7 +125,8 @@ describe.concurrent('createConfigFromCSSDirectives', () => {
         expect(result.config.variables).toEqual([
             { namespace: 'color-line', key: 'lightest', value: '#eee' },
             { namespace: 'color-text', key: 'strong', value: '#111' },
-            { namespace: 'color', key: 'blue-50', value: '#00f' }
+            { namespace: 'color', key: 'blue-50', value: '#00f' },
+            { namespace: 'tracking', key: 'tight', value: '-0.02em' }
         ])
     })
 

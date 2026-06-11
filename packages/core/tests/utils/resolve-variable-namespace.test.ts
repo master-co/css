@@ -30,6 +30,11 @@ test.concurrent('resolves built-in and utility-derived namespaces', () => {
         namespace: 'aspect-ratio',
         key: 'video'
     })
+    expect(resolveVariableNamespace('--tracking-wide')).toEqual({
+        name: 'tracking-wide',
+        namespace: 'tracking',
+        key: 'wide'
+    })
     expect(resolveVariableNamespace('--letter-spacing-wide')).toEqual({
         name: 'letter-spacing-wide',
         namespace: 'letter-spacing',
