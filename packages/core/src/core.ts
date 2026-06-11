@@ -227,6 +227,7 @@ export default class MasterCSS {
                     kind,
                     key: originalKey,
                     namespaces,
+                    implicitNamespace,
                 } = def
 
                 const keys: string[] = []
@@ -257,7 +258,7 @@ export default class MasterCSS {
                 }
 
                 // 1. Auto variable binding
-                addNamespace(id)
+                if (implicitNamespace !== false) addNamespace(id)
 
                 // 2. Rule-defined variable namespaces
                 if (namespaces) {

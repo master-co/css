@@ -117,7 +117,9 @@ describe.concurrent('createConfigFromCSSDirectives', () => {
                     { name: 'color-line-lightest', value: '#eee' },
                     { name: 'color-text-strong', value: '#111' },
                     { name: 'color-blue-50', value: '#00f' },
-                    { name: 'tracking-tight', value: '-0.02em' }
+                    { name: 'tracking-tight', value: '-0.02em' },
+                    { name: 'leading-body', value: 1.6 },
+                    { name: 'radius-card', value: 12 }
                 ]
             }
         }))
@@ -126,7 +128,9 @@ describe.concurrent('createConfigFromCSSDirectives', () => {
             { namespace: 'color-line', key: 'lightest', value: '#eee' },
             { namespace: 'color-text', key: 'strong', value: '#111' },
             { namespace: 'color', key: 'blue-50', value: '#00f' },
-            { namespace: 'tracking', key: 'tight', value: '-0.02em' }
+            { namespace: 'tracking', key: 'tight', value: '-0.02em' },
+            { namespace: 'leading', key: 'body', value: 1.6 },
+            { namespace: 'radius', key: 'card', value: 12 }
         ])
     })
 

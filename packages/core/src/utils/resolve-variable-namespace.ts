@@ -6,7 +6,7 @@ const builtInNamespaces = ['breakpoint']
 const explicitNamespaces = utilities.flatMap((utility) => utility.namespaces ?? [])
 
 const implicitNamespaces = utilities
-    .filter((utility) => utility.type !== UtilityType.Static && !utility.name.endsWith('()'))
+    .filter((utility) => utility.type !== UtilityType.Static && !utility.name.endsWith('()') && utility.implicitNamespace !== false)
     .map((utility) => utility.name)
 
 const namespaces = [

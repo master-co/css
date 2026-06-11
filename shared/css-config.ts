@@ -48,6 +48,7 @@ export interface UtilityDefinition<
     values?: string[]
     kind?: 'number' | 'color' | 'image'
     namespaces?: string[]
+    implicitNamespace?: boolean
     separators?: string[]
     unit?: any
     declarations?: TDeclarations | string[]

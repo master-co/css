@@ -35,15 +35,15 @@ test.concurrent('resolves built-in and utility-derived namespaces', () => {
         namespace: 'tracking',
         key: 'wide'
     })
-    expect(resolveVariableNamespace('--letter-spacing-wide')).toEqual({
-        name: 'letter-spacing-wide',
-        namespace: 'letter-spacing',
-        key: 'wide'
-    })
-    expect(resolveVariableNamespace('--line-height-tight')).toEqual({
-        name: 'line-height-tight',
-        namespace: 'line-height',
+    expect(resolveVariableNamespace('--leading-tight')).toEqual({
+        name: 'leading-tight',
+        namespace: 'leading',
         key: 'tight'
+    })
+    expect(resolveVariableNamespace('--radius-lg')).toEqual({
+        name: 'radius-lg',
+        namespace: 'radius',
+        key: 'lg'
     })
     expect(resolveVariableNamespace('--breakpoint-md')).toEqual({
         name: 'breakpoint-md',
@@ -68,6 +68,19 @@ test.concurrent('resolves built-in and utility-derived namespaces', () => {
 })
 
 test.concurrent('does not resolve removed standalone namespaces', () => {
+    expect(resolveVariableNamespace('--letter-spacing-wide')).toEqual({
+        name: 'letter-spacing-wide',
+        key: 'letter-spacing-wide'
+    })
+    expect(resolveVariableNamespace('--line-height-tight')).toEqual({
+        name: 'line-height-tight',
+        key: 'line-height-tight'
+    })
+    expect(resolveVariableNamespace('--border-radius-lg')).toEqual({
+        name: 'border-radius-lg',
+        namespace: 'border',
+        key: 'radius-lg'
+    })
     expect(resolveVariableNamespace('--blur-sm')).toEqual({
         name: 'blur-sm',
         key: 'blur-sm'

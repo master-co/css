@@ -3,8 +3,11 @@ import createCSSWithTheme from '../helpers/create-css-with-theme'
 it.concurrent('validates border-radius rules', () => {
     expect(createCSSWithTheme().create('r:16')?.text).toContain('border-radius:1rem')
     expect(createCSSWithTheme().create('border-radius:1rem')?.text).toContain('border-radius:1rem')
+    expect(createCSSWithTheme().create('r:lg')?.text).toBe('.r\\:lg{border-radius:calc(var(--radius-lg) / 16 * 1rem)}')
+    expect(createCSSWithTheme().create('border-radius:lg')?.text).toBe('.border-radius\\:lg{border-radius:calc(var(--radius-lg) / 16 * 1rem)}')
 
     expect(createCSSWithTheme().create('rtl:16')?.text).toContain('border-top-left-radius:1rem')
+    expect(createCSSWithTheme().create('rtl:lg')?.text).toBe('.rtl\\:lg{border-top-left-radius:calc(var(--radius-lg) / 16 * 1rem)}')
     expect(createCSSWithTheme().create('rtr:16')?.text).toContain('border-top-right-radius:1rem')
 
     expect(createCSSWithTheme().create('rbl:16')?.text).toContain('border-bottom-left-radius:1rem')

@@ -1135,13 +1135,16 @@ const utilities = [
         subkey: 'ls',
         type: UtilityType.Native,
         unit: 'em',
-        namespaces: ['tracking']
+        namespaces: ['tracking'],
+        implicitNamespace: false
     },
     {
         name: 'line-height',
         key: 'leading',
         subkey: 'line-h',
-        type: UtilityType.Native
+        type: UtilityType.Native,
+        namespaces: ['leading'],
+        implicitNamespace: false
     },
     {
         name: 'object-fit',
@@ -1837,28 +1840,32 @@ const utilities = [
         key: 'rtl',
         unit: 'rem',
         type: UtilityType.Native,
-        namespaces: ['border-radius']
+        namespaces: ['radius'],
+        implicitNamespace: false
     },
     {
         name: 'border-top-right-radius',
         key: 'rtr',
         unit: 'rem',
         type: UtilityType.Native,
-        namespaces: ['border-radius']
+        namespaces: ['radius'],
+        implicitNamespace: false
     },
     {
         name: 'border-bottom-left-radius',
         key: 'rbl',
         unit: 'rem',
         type: UtilityType.Native,
-        namespaces: ['border-radius']
+        namespaces: ['radius'],
+        implicitNamespace: false
     },
     {
         name: 'border-bottom-right-radius',
         key: 'rbr',
         unit: 'rem',
         type: UtilityType.Native,
-        namespaces: ['border-radius']
+        namespaces: ['radius'],
+        implicitNamespace: false
     },
     {
         name: 'border-top-radius',
@@ -1866,7 +1873,8 @@ const utilities = [
         unit: 'rem',
         type: UtilityType.Shorthand,
         declarations: ['border-top-left-radius', 'border-top-right-radius'],
-        namespaces: ['border-radius']
+        namespaces: ['radius'],
+        implicitNamespace: false
     },
     {
         name: 'border-bottom-radius',
@@ -1874,7 +1882,8 @@ const utilities = [
         unit: 'rem',
         type: UtilityType.Shorthand,
         declarations: ['border-bottom-left-radius', 'border-bottom-right-radius'],
-        namespaces: ['border-radius']
+        namespaces: ['radius'],
+        implicitNamespace: false
     },
     {
         name: 'border-left-radius',
@@ -1882,7 +1891,8 @@ const utilities = [
         unit: 'rem',
         type: UtilityType.Shorthand,
         declarations: ['border-top-left-radius', 'border-bottom-left-radius'],
-        namespaces: ['border-radius']
+        namespaces: ['radius'],
+        implicitNamespace: false
     },
     {
         name: 'border-right-radius',
@@ -1890,13 +1900,16 @@ const utilities = [
         unit: 'rem',
         type: UtilityType.Shorthand,
         declarations: ['border-top-right-radius', 'border-bottom-right-radius'],
-        namespaces: ['border-radius']
+        namespaces: ['radius'],
+        implicitNamespace: false
     },
     {
         name: 'border-radius',
         key: 'r',
         unit: 'rem',
-        type: UtilityType.NativeShorthand
+        type: UtilityType.NativeShorthand,
+        namespaces: ['radius'],
+        implicitNamespace: false
     },
     {
         name: 'border-top-style',
@@ -2136,13 +2149,13 @@ const utilities = [
     {
         name: 'border-block', unit: 'rem', type: UtilityType.NativeShorthand, transformer: 'auto-fill-solid', namespaces: ['color-line', 'color'] },
     {
-        name: 'border-start-start-radius', unit: 'rem', type: UtilityType.Native, namespaces: ['border-radius'] },
+        name: 'border-start-start-radius', unit: 'rem', type: UtilityType.Native, namespaces: ['radius'], implicitNamespace: false },
     {
-        name: 'border-start-end-radius', unit: 'rem', type: UtilityType.Native, namespaces: ['border-radius'] },
+        name: 'border-start-end-radius', unit: 'rem', type: UtilityType.Native, namespaces: ['radius'], implicitNamespace: false },
     {
-        name: 'border-end-start-radius', unit: 'rem', type: UtilityType.Native, namespaces: ['border-radius'] },
+        name: 'border-end-start-radius', unit: 'rem', type: UtilityType.Native, namespaces: ['radius'], implicitNamespace: false },
     {
-        name: 'border-end-end-radius', unit: 'rem', type: UtilityType.Native, namespaces: ['border-radius'] },
+        name: 'border-end-end-radius', unit: 'rem', type: UtilityType.Native, namespaces: ['radius'], implicitNamespace: false },
     {
         name: 'background-attachment',
         aliasGroups: ['bg'],

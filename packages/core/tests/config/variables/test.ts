@@ -41,6 +41,10 @@ test.concurrent('rule variables', () => {
     expect(createCSSWithTheme(config).create('font-size:sm')?.text).toBe('.font-size\\:sm{font-size:calc(var(--font-size-sm) / 16 * 1rem)}')
     expect(createCSSWithTheme(config).create('tracking:wide')?.text).toBe('.tracking\\:wide{letter-spacing:calc(var(--tracking-wide) / 16 * 1em)}')
     expect(createCSSWithTheme(config).create('letter-spacing:wide')?.text).toBe('.letter-spacing\\:wide{letter-spacing:calc(var(--tracking-wide) / 16 * 1em)}')
+    expect(createCSSWithTheme().create('leading:md')?.text).toBe('.leading\\:md{line-height:var(--leading-md)}')
+    expect(createCSSWithTheme().create('line-height:md')?.text).toBe('.line-height\\:md{line-height:var(--leading-md)}')
+    expect(createCSSWithTheme().create('r:lg')?.text).toBe('.r\\:lg{border-radius:calc(var(--radius-lg) / 16 * 1rem)}')
+    expect(createCSSWithTheme().create('border-radius:lg')?.text).toBe('.border-radius\\:lg{border-radius:calc(var(--radius-lg) / 16 * 1rem)}')
     expect(createCSSWithTheme(config).create('shadow:x2')?.text).toBe('.shadow\\:x2{box-shadow:var(--box-shadow-x2)}')
     expect(createCSSWithTheme(config).create('b:inputborder')?.text).toBe('.b\\:inputborder{border:var(--border-inputborder)}')
     expectLayers(
@@ -68,15 +72,6 @@ test.concurrent('letter-spacing utilities resolve tracking namespace variables',
 
     expect(css.create('tracking:tight')?.text).toBe('.tracking\\:tight{letter-spacing:var(--tracking-tight)}')
     expect(css.create('letter-spacing:tight')?.text).toBe('.letter-spacing\\:tight{letter-spacing:var(--tracking-tight)}')
-})
-
-test.concurrent('letter-spacing utilities keep letter-spacing namespace fallback', () => {
-    const css = createCSSWithTheme({
-        variables: [{ namespace: 'letter-spacing', key: 'wide', value: '0.02em' }]
-    })
-
-    expect(css.create('tracking:wide')?.text).toBe('.tracking\\:wide{letter-spacing:var(--letter-spacing-wide)}')
-    expect(css.create('letter-spacing:wide')?.text).toBe('.letter-spacing\\:wide{letter-spacing:var(--letter-spacing-wide)}')
 })
 
 test.concurrent('matches overlapping utility namespaces by longest prefix', () => {

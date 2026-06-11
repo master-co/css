@@ -253,7 +253,7 @@ const themeConfig: Config = {
             wider: '0.04em',
             widest: '0.12em'
         }),
-        ...variables('line-height', {
+        ...variables('leading', {
             xs: 1.2,
             sm: 1.4,
             md: 1.6,
@@ -289,7 +289,7 @@ const themeConfig: Config = {
             '9xl': 96,
             '10xl': 128
         }),
-        ...variables('border-radius', {
+        ...variables('radius', {
             xs: 2,
             sm: 4,
             md: 6,

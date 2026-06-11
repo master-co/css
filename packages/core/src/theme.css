@@ -18,11 +18,11 @@
     tracking-wider: 0.04em;
     tracking-widest: 0.12em;
 
-    line-height-xs: 1.2;
-    line-height-sm: 1.4;
-    line-height-md: 1.6;
-    line-height-lg: 1.8;
-    line-height-xl: 2;
+    leading-xs: 1.2;
+    leading-sm: 1.4;
+    leading-md: 1.6;
+    leading-lg: 1.8;
+    leading-xl: 2;
 
     font-weight-thin: 100;
     font-weight-extralight: 200;
@@ -52,14 +52,14 @@
     font-size-10xl: 128;
 
     /* Radii */
-    border-radius-xs: 2;
-    border-radius-sm: 4;
-    border-radius-md: 6;
-    border-radius-lg: 8;
-    border-radius-xl: 12;
-    border-radius-2xl: 16;
-    border-radius-3xl: 24;
-    border-radius-4xl: 32;
+    radius-xs: 2;
+    radius-sm: 4;
+    radius-md: 6;
+    radius-lg: 8;
+    radius-xl: 12;
+    radius-2xl: 16;
+    radius-3xl: 24;
+    radius-4xl: 32;
 
     /* Spacing */
     spacing-4xs: 2;

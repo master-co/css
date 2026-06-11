@@ -142,9 +142,9 @@ Contextual token shorthand removes redundant namespace prefixes from values. The
 | <code>b:1&#124;lightest</code> | <code>b:1&#124;line-lightest</code> | Border shorthands resolve line color tokens. |
 | <code>outline:1&#124;lightest</code> | <code>outline:1&#124;line-lightest</code> | Outline shorthands resolve line color tokens. |
 | `p:md`, `gap:lg` | `p:spacing-md`, `gap:spacing-lg` | Spacing utilities resolve spacing tokens. |
-| `r:lg`, `rt:md` | `r:border-radius-lg`, `rt:border-radius-md` | Radius utilities resolve corner radius tokens. |
+| `r:lg`, `rt:md` | `r:radius-lg`, `rt:radius-md` | Radius utilities resolve corner radius tokens. |
 | `shadow:md` | `shadow:shadow-md` | Shadow utilities resolve elevation tokens. |
-| `leading:md` | `leading:line-height-md` | Line-height utilities resolve leading tokens. |
+| `leading:md` | `leading:leading-md` | Line-height utilities resolve leading tokens. |
 | `tracking:tight` | `tracking:tracking-tight` | Letter-spacing utilities resolve tracking tokens. |
 | `animation-duration:fast` | `animation-duration:duration-fast` | Animation duration resolves duration tokens. |
 | <code>transition:opacity&#124;fast&#124;smooth</code> | <code>transition:opacity&#124;duration-fast&#124;easing-smooth</code> | Transition shorthand resolves duration and easing tokens. |
@@ -250,7 +250,7 @@ Create a project token when a value is reused, named in design specs, shared acr
 ```css name=index.css
 @theme {
     spacing-card: 24;
-    border-radius-card: 12;
+    radius-card: 12;
     color-accent: $color-blue-60;
     color-accent-text: $color-white;
 }
@@ -272,7 +272,7 @@ Use the new tokens from markup:
 </article>
 ```
 
-Choose descriptive keys. Avoid numeric token names such as `spacing-1` or `border-radius-2`, because numeric keys can be confused with unitless values in class syntax. Prefer names that communicate role, scale, or component intent.
+Choose descriptive keys. Avoid numeric token names such as `spacing-1` or `radius-2`, because numeric keys can be confused with unitless values in class syntax. Prefer names that communicate role, scale, or component intent.
 
 ---
 

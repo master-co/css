@@ -25,11 +25,11 @@ test.concurrent('number with themes', () => {
     // 無單位屬性不需要 calc
     expectLayers(
         {
-            utilities: '.line-height\\:x1{line-height:var(--line-height-x1)}',
-            theme: ':root{--line-height-x1:16}.light{--line-height-x1:48}.dark{--line-height-x1:32}'
+            utilities: '.line-height\\:x1{line-height:var(--leading-x1)}',
+            theme: ':root{--leading-x1:16}.light{--leading-x1:48}.dark{--leading-x1:32}'
         },
         'line-height:x1',
-        { variables: [{ namespace: 'line-height', key: 'x1', value: 16 }, { namespace: 'line-height', key: 'x1', value: 48, mode: 'light' }, { namespace: 'line-height', key: 'x1', value: 32, mode: 'dark' }], modes: ['light', 'dark'], modeTrigger: 'class' }
+        { variables: [{ namespace: 'leading', key: 'x1', value: 16 }, { namespace: 'leading', key: 'x1', value: 48, mode: 'light' }, { namespace: 'leading', key: 'x1', value: 32, mode: 'dark' }], modes: ['light', 'dark'], modeTrigger: 'class' }
     )
 })
 
