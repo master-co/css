@@ -56,7 +56,7 @@ describe('css config import loader', () => {
         const resourcePath = join(appDir, 'config.ts')
         const dependencies: string[] = []
         mkdirSync(appDir, { recursive: true })
-        writeFileSync(configPath, '@theme { color-primary: #123; }')
+        writeFileSync(configPath, '@theme { --color-primary: #123; }')
         writeFileSync(resourcePath, '')
 
         const source = await runConfigImportLoader({
@@ -86,7 +86,7 @@ describe('css config import loader', () => {
                 './theme.css': './theme.css'
             }
         }))
-        writeFileSync(join(packageDir, 'theme.css'), '@theme { color-package: #456; }')
+        writeFileSync(join(packageDir, 'theme.css'), '@theme { --color-package: #456; }')
 
         const source = await runConfigImportLoader({
             source: 'import themeConfig from "@fixture/tokens/theme.css?master-css-config"\nexport default themeConfig',

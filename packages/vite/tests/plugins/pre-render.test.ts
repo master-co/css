@@ -61,7 +61,7 @@ describe('PreRenderPlugin', () => {
                 '@import "./theme.css";',
                 '',
                 '@theme {',
-                '    color-brand: #123;',
+                '    --color-brand: #123;',
                 '}'
             ].join('\n'))
 

@@ -14,9 +14,9 @@ Each preset color family ranges from `0`, `5`, `10`, and then by tens through `1
 You can adapt the default color palette to your brand's primary color by defining color variables in the project CSS entry.
 ```css name=index.css
 @theme {
-    color-primary: #4f46e5; /* [!code highlight] */
-    color-primary-10: #eef2ff; /* [!code highlight] */
-    color-primary-60: #4f46e5; /* [!code highlight] */
+    --color-primary: #4f46e5; /* [!code highlight] */
+    --color-primary-10: #eef2ff; /* [!code highlight] */
+    --color-primary-60: #4f46e5; /* [!code highlight] */
 }
 ```
 Apply them using the color-related syntax:
@@ -102,7 +102,7 @@ By default, theme modes [drive](/guide/theme#modes) base color variables for lig
 Add a primitive color to the base variables group.
 ```css name=index.css
 @theme {
-    color-primary: #000; /* [!code ++] */
+    --color-primary: #000; /* [!code ++] */
 }
 ```
 Apply the custom color:

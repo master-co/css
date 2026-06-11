@@ -312,8 +312,8 @@ test.concurrent('uses native CSS syntax styles for documentation Master CSS toke
     }
     const cssCode = [
         '@theme {',
-        '  color-primary: #4f46e5;',
-        '  spacing-card: 24;',
+        '  --color-primary: #4f46e5;',
+        '  --spacing-card: 24;',
         '}'
     ].join('\n')
     const cssOptions: MasterCSSShikiCodeToHastOptions = {
@@ -390,7 +390,7 @@ test.concurrent('uses native CSS syntax styles for documentation Master CSS toke
             className: 'mcss-semantic mcss-semantic-keyword mcss-semantic-role-directive-keyword mcss-semantic-keyword-directive'
         },
         {
-            content: 'color-primary',
+            content: '--color-primary',
             htmlStyle: { color: 'variable' },
             className: 'mcss-semantic mcss-semantic-variable mcss-semantic-role-theme-variable'
         },

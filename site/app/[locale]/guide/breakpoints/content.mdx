@@ -14,9 +14,9 @@ Breakpoint variables belong in your project CSS entry. Keep them product-wide an
 
 ```css name=index.css
 @theme {
-    breakpoint-sm: 768;
-    breakpoint-md: 1024;
-    breakpoint-lg: 1280;
+    --breakpoint-sm: 768;
+    --breakpoint-md: 1024;
+    --breakpoint-lg: 1280;
 }
 ```
 
@@ -117,8 +117,8 @@ Here `@sm`, `@md`, and `@lg` come from the breakpoint namespace. The `4xl`, `5xl
 
 ```css
 @theme {
-    breakpoint-iphone: 390;
-    breakpoint-ipad: 820;
+    --breakpoint-iphone: 390;
+    --breakpoint-ipad: 820;
 }
 ```
 
@@ -126,9 +126,9 @@ Here `@sm`, `@md`, and `@lg` come from the breakpoint namespace. The `4xl`, `5xl
 
 ```css
 @theme {
-    breakpoint-xs: 640;
-    breakpoint-sm: 768;
-    breakpoint-md: 1024;
+    --breakpoint-xs: 640;
+    --breakpoint-sm: 768;
+    --breakpoint-md: 1024;
 }
 ```
 

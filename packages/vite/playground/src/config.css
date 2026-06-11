@@ -6,25 +6,25 @@
 }
 
 @theme {
-    color-primary: #0061ff;
-    color-base: #fff;
-    color-ink: #172033;
-    color-muted: #637083;
-    color-panel: #f6f8fb;
-    color-ring: #d9e2ef;
-    radius-card: 18;
-    radius-pill: 999;
-    spacing-card: 24;
-    breakpoint-md: 768;
+    --color-primary: #0061ff;
+    --color-base: #fff;
+    --color-ink: #172033;
+    --color-muted: #637083;
+    --color-panel: #f6f8fb;
+    --color-ring: #d9e2ef;
+    --radius-card: 18;
+    --radius-pill: 999;
+    --spacing-card: 24;
+    --breakpoint-md: 768;
 }
 
 @theme dark {
-    color-primary: #8fb5ff;
-    color-base: #111827;
-    color-ink: #f8fafc;
-    color-muted: #aab6c7;
-    color-panel: #182233;
-    color-ring: #31415a;
+    --color-primary: #8fb5ff;
+    --color-base: #111827;
+    --color-ink: #f8fafc;
+    --color-muted: #aab6c7;
+    --color-panel: #182233;
+    --color-ring: #31415a;
 }
 
 @custom-at motion-safe @media (prefers-reduced-motion: no-preference);

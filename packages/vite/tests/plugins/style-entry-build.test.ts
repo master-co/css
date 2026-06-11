@@ -247,7 +247,7 @@ describe('StyleEntryBuildPlugin (D1 placeholder-leak warn)', () => {
                 }
 
                 @theme {
-                    color-primary: #123456;
+                    --color-primary: #123456;
                 }
 
                 @components {

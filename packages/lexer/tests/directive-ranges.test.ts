@@ -9,7 +9,7 @@ import {
 test.concurrent('collects directive statement and block ranges', () => {
     const source = [
         '@source "a;b.css";',
-        '@theme dark { color-primary: red; }',
+        '@theme dark { --color-primary: red; }',
         '@animations { @keyframes fade { to { opacity: 1; } } }'
     ].join('\n')
     const ranges = collectCSSDirectiveRanges(source)
@@ -44,19 +44,19 @@ test.concurrent('collects managed definition directive ranges', () => {
 })
 
 test.concurrent('collects declaration ranges without splitting quoted semicolons', () => {
-    const source = '@theme { content: "a;b"; root-size: 16 }'
+    const source = '@theme { --content: "a;b"; --root-size: 16 }'
     const blockStart = source.indexOf('{') + 1
     const blockEnd = source.lastIndexOf('}')
     const declarations = collectCSSDeclarationRanges(source, blockStart, blockEnd)
 
     expect(declarations.map((declaration) => source.slice(declaration.propertyRange.start, declaration.propertyRange.end))).toEqual([
-        'content',
-        'root-size'
+        '--content',
+        '--root-size'
     ])
     expect(source.slice(declarations[0].valueRange.start, declarations[0].valueRange.end)).toBe('"a;b"')
     expect(declarations[0].terminatorRange).toEqual({
-        start: source.indexOf('; root-size'),
-        end: source.indexOf('; root-size') + 1
+        start: source.indexOf('; --root-size'),
+        end: source.indexOf('; --root-size') + 1
     })
 })
 

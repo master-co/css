@@ -1,5 +1,5 @@
 @master;
 
 @theme {
-    custom: #ff0000;
+    --custom: #ff0000;
 }

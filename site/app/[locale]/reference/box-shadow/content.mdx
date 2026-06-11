@@ -46,11 +46,11 @@ Define the same `shadow-*` key in `@theme light` and `@theme dark` when an eleva
 
 ```css name=index.css
 @theme light {
-    shadow-card: 0 2px 4px -2px oklch(0% 0 none / .08), 0 8px 16px -4px oklch(0% 0 none / .10);
+    --shadow-card: 0 2px 4px -2px oklch(0% 0 none / .08), 0 8px 16px -4px oklch(0% 0 none / .10);
 }
 
 @theme dark {
-    shadow-card: 0 0 0 1px oklch(100% 0 none / .07), 0 2px 4px -2px oklch(0% 0 none / .38), 0 8px 16px -4px oklch(0% 0 none / .30);
+    --shadow-card: 0 0 0 1px oklch(100% 0 none / .07), 0 2px 4px -2px oklch(0% 0 none / .38), 0 8px 16px -4px oklch(0% 0 none / .30);
 }
 ```
 

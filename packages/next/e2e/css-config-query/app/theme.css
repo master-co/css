@@ -1,4 +1,4 @@
 @theme {
-    color-e2e: #4b6fff;
-    breakpoint-fixture: 1234;
+    --color-e2e: #4b6fff;
+    --breakpoint-fixture: 1234;
 }

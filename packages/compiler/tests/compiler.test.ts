@@ -41,7 +41,7 @@ describe.concurrent('@master/css-compiler', () => {
         expect(inspectCSS('@preserve native;').hasMasterEntry).toBe(false)
         expect(inspectCSS('@import "@master/css/index.css";').hasMasterEntry).toBe(false)
         expect(inspectCSS('@import url("@master/css") layer(master);').hasMasterEntry).toBe(true)
-        expect(inspectCSS('@theme { color-primary: #123; }').hasMasterEntry).toBe(false)
+        expect(inspectCSS('@theme { --color-primary: #123; }').hasMasterEntry).toBe(false)
     })
 
     it('compiles CSS config directives into a CSS directive result', () => {
@@ -59,16 +59,16 @@ describe.concurrent('@master/css-compiler', () => {
             }
 
             @theme {
-                color-primary: #123;
-                breakpoint-md: 768;
+                --color-primary: #123;
+                --breakpoint-md: 768;
             }
 
             @theme dark {
-                color-primary: #456;
+                --color-primary: #456;
             }
 
             @theme chrisma {
-                color-primary: #ff0;
+                --color-primary: #ff0;
             }
 
             @animations {
@@ -159,9 +159,9 @@ describe.concurrent('@master/css-compiler', () => {
     it('keeps raw variable names for core namespace resolution', () => {
         const result = compileCSS(`
             @theme {
-                color-line-lightest: #eee;
-                color-text-strong: #111;
-                color-blue-50: #00f;
+                --color-line-lightest: #eee;
+                --color-text-strong: #111;
+                --color-blue-50: #00f;
             }
         `)
 
@@ -175,12 +175,12 @@ describe.concurrent('@master/css-compiler', () => {
     it('records inline theme tokens and resolves them into semantic config', () => {
         const directives = compileCSS(`
             @theme inline {
-                color-primary: #123;
+                --color-primary: #123;
             }
         `)
         const result = compileCSSConfig(`
             @theme inline {
-                color-primary: #123;
+                --color-primary: #123;
             }
         `)
 
@@ -198,8 +198,8 @@ describe.concurrent('@master/css-compiler', () => {
     it('formats custom theme values with CSS variable fallbacks', () => {
         const result = compileCSSConfig(`
             @theme {
-                font-mono: "Roboto Mono";
-                font-family-mono: var(--font-mono, ui-monospace), SFMono-Regular;
+                --font-mono: "Roboto Mono";
+                --font-family-mono: var(--font-mono, ui-monospace), SFMono-Regular;
             }
         `)
 
@@ -222,7 +222,7 @@ describe.concurrent('@master/css-compiler', () => {
             }
 
             @theme {
-                breakpoint-md: 768;
+                --breakpoint-md: 768;
             }
 
             @components {
@@ -532,7 +532,7 @@ describe.concurrent('@master/css-compiler', () => {
     it('finalizes @compose in utility definitions and detects cycles', () => {
         const result = compileCSSConfig(`
             @theme {
-                color-primary: #123;
+                --color-primary: #123;
             }
 
             @utilities {
@@ -593,11 +593,11 @@ describe.concurrent('@master/css-compiler', () => {
             }
 
             @theme {
-                color-primary: #123;
+                --color-primary: #123;
             }
 
             @theme dark {
-                color-primary: #456;
+                --color-primary: #456;
             }
 
             .card {
@@ -748,7 +748,7 @@ describe.concurrent('@master/css-compiler', () => {
             }
 
             @theme {
-                color-primary: #123;
+                --color-primary: #123;
             }
         `, { preserveNativeCSS: false })
 
@@ -830,9 +830,9 @@ describe.concurrent('@master/css-compiler', () => {
             }
 
             @theme {
-                color-primary: #111;
+                --color-primary: #111;
                 --color-primary: #222;
-                color-primary: #333;
+                --color-primary: #333;
             }
         `)
 
@@ -850,7 +850,7 @@ describe.concurrent('@master/css-compiler', () => {
     it('converts compiler results into semantic config at the compiler boundary', () => {
         const source = `
             @theme {
-                color-primary: #123;
+                --color-primary: #123;
             }
 
             @components {
@@ -874,10 +874,10 @@ describe.concurrent('@master/css-compiler', () => {
         }))
     })
 
-    it('emits native CSS custom properties for prefixless theme tokens', () => {
+    it('emits native CSS custom properties for theme tokens', () => {
         const result = compileCSSConfig(`
             @theme {
-                color-primary: #123;
+                --color-primary: #123;
             }
         `)
 
@@ -1016,7 +1016,7 @@ describe.concurrent('@master/css-compiler', () => {
             const theme = join(root, 'styles/theme.css')
             writeFileSync(theme, `
                 @theme {
-                    color-primary: #123;
+                    --color-primary: #123;
                 }
 
                 @components {
@@ -1155,30 +1155,36 @@ describe.concurrent('@master/css-compiler', () => {
         `)).toThrow('@theme token name cannot be empty')
 
         expect(() => process(`
-            @theme inline dark {
+            @theme {
                 color-primary: #123;
+            }
+        `)).toThrow('@theme token declarations must be CSS custom properties: color-primary')
+
+        expect(() => process(`
+            @theme inline dark {
+                --color-primary: #123;
             }
         `)).toThrow('@theme inline cannot be mode-specific')
 
         expect(() => process(`
             @theme dark inline {
-                color-primary: #123;
+                --color-primary: #123;
             }
         `)).toThrow('@theme inline cannot be mode-specific')
 
         expect(() => compileCSSConfig(`
             @theme inline {
-                color-primary: #123;
+                --color-primary: #123;
             }
 
             @theme dark {
-                color-primary: #fff;
+                --color-primary: #fff;
             }
         `)).toThrow('Inline theme variables cannot be mode-specific: color-primary@dark')
 
         expect(() => process(`
             @theme {
-                color-primary: #123 !important;
+                --color-primary: #123 !important;
             }
         `)).toThrow('@theme token declarations cannot be !important: color-primary')
 
@@ -1193,7 +1199,7 @@ describe.concurrent('@master/css-compiler', () => {
         expect(() => process(`
             @media print {
                 @theme {
-                    color-primary: #123;
+                    --color-primary: #123;
                 }
             }
         `)).toThrow('@theme must be top-level')

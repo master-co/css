@@ -1,8 +1,8 @@
 @import './styles/button.css';
 
 @theme {
-    color-primary: #123;
-    breakpoint-md: 48;
+    --color-primary: #123;
+    --breakpoint-md: 48;
 }
 
 @components {

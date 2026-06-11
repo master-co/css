@@ -53,13 +53,13 @@ Use the same token names across modes:
 
 ```css name=index.css
 @theme light {
-    shadow-sm: 0 1px 2px -1px oklch(0% 0 none / .06), 0 3px 6px -2px oklch(0% 0 none / .08);
-    shadow-lg: 0 4px 8px -4px oklch(0% 0 none / .08), 0 16px 32px -8px oklch(0% 0 none / .12);
+    --shadow-sm: 0 1px 2px -1px oklch(0% 0 none / .06), 0 3px 6px -2px oklch(0% 0 none / .08);
+    --shadow-lg: 0 4px 8px -4px oklch(0% 0 none / .08), 0 16px 32px -8px oklch(0% 0 none / .12);
 }
 
 @theme dark {
-    shadow-sm: 0 0 0 1px oklch(100% 0 none / .06), 0 1px 2px -1px oklch(0% 0 none / .34), 0 3px 6px -2px oklch(0% 0 none / .26);
-    shadow-lg: 0 0 0 1px oklch(100% 0 none / .08), 0 4px 8px -4px oklch(0% 0 none / .42), 0 16px 32px -8px oklch(0% 0 none / .34);
+    --shadow-sm: 0 0 0 1px oklch(100% 0 none / .06), 0 1px 2px -1px oklch(0% 0 none / .34), 0 3px 6px -2px oklch(0% 0 none / .26);
+    --shadow-lg: 0 0 0 1px oklch(100% 0 none / .08), 0 4px 8px -4px oklch(0% 0 none / .42), 0 16px 32px -8px oklch(0% 0 none / .34);
 }
 ```
 
@@ -156,13 +156,13 @@ Override shadow variables when your product needs softer depth, sharper enterpri
 
 ```css name=index.css
 @theme light {
-    shadow-sm: 0 2px 4px -2px oklch(0% 0 none / .08), 0 8px 20px -6px oklch(0% 0 none / .12);
-    shadow-lg: 0 10px 20px -8px oklch(0% 0 none / .12), 0 24px 56px -16px oklch(0% 0 none / .16);
+    --shadow-sm: 0 2px 4px -2px oklch(0% 0 none / .08), 0 8px 20px -6px oklch(0% 0 none / .12);
+    --shadow-lg: 0 10px 20px -8px oklch(0% 0 none / .12), 0 24px 56px -16px oklch(0% 0 none / .16);
 }
 
 @theme dark {
-    shadow-sm: 0 0 0 1px oklch(100% 0 none / .06), 0 2px 8px -4px oklch(0% 0 none / .36);
-    shadow-lg: 0 0 0 1px oklch(100% 0 none / .09), 0 12px 28px -10px oklch(0% 0 none / .48), 0 28px 64px -18px oklch(0% 0 none / .40);
+    --shadow-sm: 0 0 0 1px oklch(100% 0 none / .06), 0 2px 8px -4px oklch(0% 0 none / .36);
+    --shadow-lg: 0 0 0 1px oklch(100% 0 none / .09), 0 12px 28px -10px oklch(0% 0 none / .48), 0 28px 64px -18px oklch(0% 0 none / .40);
 }
 ```
 
@@ -202,11 +202,11 @@ Promote repeated raw values into the scale. Keep one-off art direction in local 
 
 ```css name=index.css
 @theme light {
-    shadow-popover: 0 4px 8px -2px oklch(0% 0 none / .08), 0 12px 24px -4px oklch(0% 0 none / .10);
+    --shadow-popover: 0 4px 8px -2px oklch(0% 0 none / .08), 0 12px 24px -4px oklch(0% 0 none / .10);
 }
 
 @theme dark {
-    shadow-popover: 0 0 0 1px oklch(100% 0 none / .08), 0 8px 18px -8px oklch(0% 0 none / .44), 0 18px 40px -12px oklch(0% 0 none / .36);
+    --shadow-popover: 0 0 0 1px oklch(100% 0 none / .08), 0 8px 18px -8px oklch(0% 0 none / .44), 0 18px 40px -12px oklch(0% 0 none / .36);
 }
 ```
 

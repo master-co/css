@@ -21,7 +21,7 @@ describe('PreloadedVirtualModulePlugin', () => {
             const styleCSSSources = new Map()
             await registerStyleCSSSource(extractor, styleCSSSources, join(root, 'app/globals.css'), `
                 @theme {
-                    color-primary: #ff0000;
+                    --color-primary: #ff0000;
                 }
 
                 @keyframes fade {

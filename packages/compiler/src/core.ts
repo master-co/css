@@ -198,7 +198,10 @@ function addThemeMode(config: CSSDirectiveConfig, mode: string) {
 }
 
 function normalizeThemeTokenName(property: string) {
-    const name = property.startsWith('--') ? property.slice(2) : property
+    if (!property.startsWith('--')) {
+        throw new Error(`@theme token declarations must be CSS custom properties: ${property}`)
+    }
+    const name = property.slice(2)
     if (!name) {
         throw new Error('@theme token name cannot be empty')
     }
@@ -751,7 +754,7 @@ function parseThemeDeclarations(block: DeclarationBlock<Declaration>, config: CS
         defineThemeVariable(config, property, value, mode, inline)
     }
     for (const declaration of (block.importantDeclarations || []) as Declaration[]) {
-        const property = getDeclarationName(declaration)
+        const property = normalizeThemeTokenName(getDeclarationName(declaration))
         throw new Error(`@theme token declarations cannot be !important: ${property}`)
     }
 }

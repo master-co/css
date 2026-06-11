@@ -22,7 +22,7 @@ function writeCSSFixture(cwd: string) {
     const tokens = join(cwd, 'styles/tokens.css')
     writeFileSync(tokens, `
         @theme {
-            color-primary: #123;
+            --color-primary: #123;
         }
     `)
     writeFileSync(entry, `

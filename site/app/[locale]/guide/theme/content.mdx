@@ -9,21 +9,21 @@ In Master CSS, that vocabulary usually lives in the project CSS entry: `@theme` 
 @import '@master/css';
 
 @theme {
-    color-primary: #4f46e5;
-    spacing-card: 24;
-    radius-card: 16;
-    breakpoint-md: 768;
-    container-md: 448;
+    --color-primary: #4f46e5;
+    --spacing-card: 24;
+    --radius-card: 16;
+    --breakpoint-md: 768;
+    --container-md: 448;
 }
 
 @theme light {
-    color-surface: #ffffff;
-    shadow-card: 0 16px 40px rgb(15 23 42 / .12);
+    --color-surface: #ffffff;
+    --shadow-card: 0 16px 40px rgb(15 23 42 / .12);
 }
 
 @theme dark {
-    color-surface: #111827;
-    shadow-card: 0 0 0 1px rgb(255 255 255 / .08), 0 16px 40px rgb(0 0 0 / .36);
+    --color-surface: #111827;
+    --shadow-card: 0 0 0 1px rgb(255 255 255 / .08), 0 16px 40px rgb(0 0 0 / .36);
 }
 
 @custom-at motion-safe @media (prefers-reduced-motion: no-preference);
@@ -47,7 +47,7 @@ A project only needs a CSS entry that marks the Master CSS graph. Put theme dire
 @import '@master/css';
 
 @theme {
-    color-primary: #4f46e5;
+    --color-primary: #4f46e5;
 }
 ```
 
@@ -56,29 +56,29 @@ The important part is the graph, not a special file name. Tokens, modes, motion,
 ---
 
 ## Theme tokens
-Theme tokens are declarations inside `@theme` blocks. Write the token name without the CSS custom-property `--` prefix; Master CSS adds `--` when it emits generated CSS custom properties. Token name prefixes place values in the namespace that Master CSS utilities already understand.
+Theme tokens are CSS custom property declarations inside `@theme` blocks. Write the full token name with the leading `--`; Master CSS uses the name after `--` for namespace resolution and emits the same custom property when generated CSS needs the token. Token name prefixes place values in the namespace that Master CSS utilities already understand.
 
 ### Define tokens
 ```css name=index.css
 @theme {
-    content-hash: " #";
-    color-primary: #4f46e5;
-    color-primary-soft: rgb(79 70 229 / .16);
-    color-surface: #ffffff;
-    color-text-strong: #111827;
-    spacing-card: 24;
-    font-family-sans: Inter, ui-sans-serif, system-ui, sans-serif;
-    radius-card: 16;
-    breakpoint-md: 768;
-    container-md: 448;
+    --content-hash: " #";
+    --color-primary: #4f46e5;
+    --color-primary-soft: rgb(79 70 229 / .16);
+    --color-surface: #ffffff;
+    --color-text-strong: #111827;
+    --spacing-card: 24;
+    --font-family-sans: Inter, ui-sans-serif, system-ui, sans-serif;
+    --radius-card: 16;
+    --breakpoint-md: 768;
+    --container-md: 448;
 }
 
 @theme light {
-    shadow-card: 0 16px 40px rgb(15 23 42 / .12);
+    --shadow-card: 0 16px 40px rgb(15 23 42 / .12);
 }
 
 @theme dark {
-    shadow-card: 0 0 0 1px rgb(255 255 255 / .08), 0 16px 40px rgb(0 0 0 / .36);
+    --shadow-card: 0 0 0 1px rgb(255 255 255 / .08), 0 16px 40px rgb(0 0 0 / .36);
 }
 ```
 
@@ -95,9 +95,9 @@ Function utilities do not become namespaces by name. Tokens such as `blur-sm`, `
 
 ```css name=index.css
 @theme {
-    animation-duration-fast: 120ms;
-    leading-body: 1.6;
-    tab-size-code: 4;
+    --animation-duration-fast: 120ms;
+    --leading-body: 1.6;
+    --tab-size-code: 4;
 }
 ```
 
@@ -126,9 +126,9 @@ Use `$` when a token should reference another token.
 
 ```css name=index.css
 @theme {
-    color-brand: #4f46e5;
-    color-primary: $color-brand;
-    color-primary-soft: $color-brand/.16;
+    --color-brand: #4f46e5;
+    --color-primary: $color-brand;
+    --color-primary-soft: $color-brand/.16;
 }
 ```
 
@@ -136,7 +136,7 @@ Define the same token key as a preset token when you want to override it. Later 
 
 ```css name=index.css
 @theme {
-    color-blue: #4589ff;
+    --color-blue: #4589ff;
 }
 ```
 
@@ -145,8 +145,8 @@ Use `@theme inline` when a token is only a utility shorthand and should not emit
 
 ```css name=index.css
 @theme inline {
-    color-brand: #4f46e5;
-    spacing-card: 24;
+    --color-brand: #4f46e5;
+    --spacing-card: 24;
 }
 ```
 
@@ -166,13 +166,13 @@ Responsive thresholds are theme tokens too. Define `breakpoint` variables for vi
 
 ```css name=index.css
 @theme {
-    breakpoint-sm: 640;
-    breakpoint-md: 768;
-    breakpoint-lg: 1024;
+    --breakpoint-sm: 640;
+    --breakpoint-md: 768;
+    --breakpoint-lg: 1024;
 
-    container-sm: 384;
-    container-md: 448;
-    container-lg: 512;
+    --container-sm: 384;
+    --container-md: 448;
+    --container-lg: 512;
 }
 ```
 
@@ -202,21 +202,21 @@ Mode-specific `@theme` blocks keep markup semantic while values change by mode.
 
 ```css name=index.css
 @theme light {
-    color-surface: #ffffff;
-    color-text-strong: #111827;
-    color-primary: #4f46e5;
-    shadow-card: 0 16px 40px rgb(15 23 42 / .12);
+    --color-surface: #ffffff;
+    --color-text-strong: #111827;
+    --color-primary: #4f46e5;
+    --shadow-card: 0 16px 40px rgb(15 23 42 / .12);
 }
 
 @theme dark {
-    color-surface: #111827;
-    color-text-strong: #f9fafb;
-    color-primary: #818cf8;
-    shadow-card: 0 0 0 1px rgb(255 255 255 / .08), 0 16px 40px rgb(0 0 0 / .36);
+    --color-surface: #111827;
+    --color-text-strong: #f9fafb;
+    --color-primary: #818cf8;
+    --shadow-card: 0 0 0 1px rgb(255 255 255 / .08), 0 16px 40px rgb(0 0 0 / .36);
 }
 
 @theme brand {
-    color-primary: #ff0;
+    --color-primary: #ff0;
 }
 ```
 
@@ -364,9 +364,9 @@ Motion belongs in the theme when timing, easing, and keyframes are shared by mor
 
 ```css name=index.css
 @theme {
-    duration-fast: 150ms;
-    duration-slow: 300ms;
-    easing-smooth: cubic-bezier(.4, 0, .2, 1);
+    --duration-fast: 150ms;
+    --duration-slow: 300ms;
+    --easing-smooth: cubic-bezier(.4, 0, .2, 1);
 }
 
 @custom-at motion-safe @media (prefers-reduced-motion: no-preference);

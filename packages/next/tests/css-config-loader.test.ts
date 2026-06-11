@@ -48,7 +48,7 @@ describe('css config loader', () => {
         const configPath = join(projectDir, 'index.css')
         const dependencies: string[] = []
         mkdirSync(projectDir, { recursive: true })
-        writeFileSync(configPath, '@theme { color-primary: #123; }')
+        writeFileSync(configPath, '@theme { --color-primary: #123; }')
 
         const source = await runConfigLoader({
             resourcePath: configPath,
@@ -67,7 +67,7 @@ describe('css config loader', () => {
         mkdirSync(projectDir, { recursive: true })
         writeFileSync(configPath, [
             '@theme {',
-            '    color-primary: #123;',
+            '    --color-primary: #123;',
             '}',
             '@components {',
             '    btn {',
@@ -117,7 +117,7 @@ describe('css config loader', () => {
         writeFileSync(entryPath, [
             '@import "@master/css";',
             '@theme {',
-            '    color-primary: #123;',
+            '    --color-primary: #123;',
             '}',
             '@components {',
             '    btn { color: var(--color-primary); }',
@@ -126,7 +126,7 @@ describe('css config loader', () => {
         writeFileSync(preserveOnlyPath, [
             '@preserve native;',
             '@theme {',
-            '    color-ignored: #456;',
+            '    --color-ignored: #456;',
             '}'
         ].join('\n'))
 

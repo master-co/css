@@ -100,11 +100,11 @@ This lets animation and transition use the same motion language without writing 
 
 ```css name=index.css
 @theme {
-    duration-fast: 150ms;
-    duration-slow: 300ms;
-    duration-slower: 500ms;
-    easing-smooth: cubic-bezier(.4,0,.2,1);
-    easing-crisp: cubic-bezier(.16,1,.3,1);
+    --duration-fast: 150ms;
+    --duration-slow: 300ms;
+    --duration-slower: 500ms;
+    --easing-smooth: cubic-bezier(.4,0,.2,1);
+    --easing-crisp: cubic-bezier(.16,1,.3,1);
 }
 ```
 
@@ -185,11 +185,11 @@ Override motion tokens in the project CSS entry when your product needs a differ
 
 ```css name=index.css
 @theme {
-    duration-fast: 120ms;
-    duration-slow: 280ms;
-    duration-slowest: 700ms;
-    easing-smooth: cubic-bezier(.4,0,.2,1);
-    easing-crisp: cubic-bezier(.2,0,0,1);
+    --duration-fast: 120ms;
+    --duration-slow: 280ms;
+    --duration-slowest: 700ms;
+    --easing-smooth: cubic-bezier(.4,0,.2,1);
+    --easing-crisp: cubic-bezier(.2,0,0,1);
 }
 ```
 

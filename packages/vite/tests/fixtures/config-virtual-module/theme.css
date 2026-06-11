@@ -1,9 +1,9 @@
 @import './styles/theme-components.css';
 
 @theme {
-    color-accent: #456;
+    --color-accent: #456;
 }
 
 @theme dark {
-    color-accent: #789;
+    --color-accent: #789;
 }
