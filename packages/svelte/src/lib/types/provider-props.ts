@@ -1,8 +1,7 @@
-import type { Config } from '@master/css'
-import type { MasterCSSPreloaded } from '@master/css/preloaded'
+import type { MasterCSSPlan, MasterCSSPreloaded } from '@master/css-runtime'
 
 export interface CSSRuntimeProviderProps {
-    config?: Config
+    plan?: MasterCSSPlan
     preloaded?: MasterCSSPreloaded
     root?: Document | ShadowRoot | null
 }

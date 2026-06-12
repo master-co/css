@@ -1,4 +1,4 @@
-import { withUtilityLayer } from '@master/css'
+import withUtilityLayer from '@master/css-engine/factories/with-utility-layer'
 import RuntimeLayer from './layer'
 
 const RuntimeUtilityLayer = withUtilityLayer(RuntimeLayer)

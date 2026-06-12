@@ -1,6 +1,7 @@
 import type { ModuleNode, Plugin, ViteDevServer } from 'vite'
 import type { PluginContext } from '../core'
 import { toResolvedMasterCSSConfigId } from '@master/css-integration/config-module'
+import { toResolvedMasterCSSPlanId } from '@master/css-integration/plan-module'
 import { loadConfigModule } from '@master/css-configer/load'
 import { isCSSConfigRequest } from '@master/css-configer/css'
 import { createMasterCSSConfigLoaderPlugin } from '@master/css-integration/config-loader-plugin'
@@ -47,10 +48,15 @@ export default function ConfigLoaderPlugin(context: PluginContext): Plugin {
                 if (dependencies.includes(file)) queryConfigPaths.add(configPath)
             }
             for (const configPath of queryConfigPaths) {
-                const queryModule = server.moduleGraph.getModuleById(toResolvedMasterCSSConfigId(configPath))
-                if (!queryModule) continue
-                handled = true
-                needsFullReload ||= invalidateConfigModule(queryModule, server)
+                for (const queryId of [
+                    toResolvedMasterCSSConfigId(configPath),
+                    toResolvedMasterCSSPlanId(configPath)
+                ]) {
+                    const queryModule = server.moduleGraph.getModuleById(queryId)
+                    if (!queryModule) continue
+                    handled = true
+                    needsFullReload ||= invalidateConfigModule(queryModule, server)
+                }
             }
             if (needsFullReload) {
                 server.ws.send({

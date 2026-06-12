@@ -5,6 +5,10 @@ import {
     toVirtualDefaultConfigModulePath
 } from './config-module'
 import {
+    EMPTY_PLAN_MODULE,
+    toVirtualDefaultPlanModulePath
+} from './plan-module'
+import {
     EMPTY_PRELOADED_MODULE,
     toVirtualPreloadedModulePath
 } from './preloaded-module'
@@ -19,6 +23,10 @@ export function ensureVirtualModuleFile(file: string, source: string) {
 
 export function ensureVirtualConfigModulePath(projectDir = process.cwd()) {
     return ensureVirtualModuleFile(toVirtualDefaultConfigModulePath(projectDir), EMPTY_CONFIG_MODULE)
+}
+
+export function ensureVirtualPlanModulePath(projectDir = process.cwd()) {
+    return ensureVirtualModuleFile(toVirtualDefaultPlanModulePath(projectDir), EMPTY_PLAN_MODULE)
 }
 
 export function ensureVirtualPreloadedModulePath(projectDir = process.cwd()) {

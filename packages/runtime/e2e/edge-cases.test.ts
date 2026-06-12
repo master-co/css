@@ -99,7 +99,8 @@ test('progressive hydration keeps usable classes when prerendered CSS has unknow
 test('removes shared alias variable dependencies when classes disappear', async ({ page }) => {
     await init(page, '', {
         variables: [
-            { key: 'brand', value: '$color-white' }
+            { key: 'surface', value: '#ffffff' },
+            { key: 'brand', value: '$surface' }
         ]
     })
 
@@ -114,10 +115,10 @@ test('removes shared alias variable dependencies when classes disappear', async 
         }
     })
     expect(initial).toEqual({
-        text: '@layer theme{:root{--brand:var(--color-white);--color-white:oklch(100% 0 none)}}',
+        text: '@layer theme{:root{--brand:var(--surface);--surface:#ffffff}}',
         counts: {
             brand: 2,
-            'color-white': 2
+            surface: 2
         }
     })
 
@@ -130,10 +131,10 @@ test('removes shared alias variable dependencies when classes disappear', async 
         }
     })
     expect(afterOneRemoval).toEqual({
-        text: '@layer theme{:root{--brand:var(--color-white);--color-white:oklch(100% 0 none)}}',
+        text: '@layer theme{:root{--brand:var(--surface);--surface:#ffffff}}',
         counts: {
             brand: 1,
-            'color-white': 1
+            surface: 1
         }
     })
 

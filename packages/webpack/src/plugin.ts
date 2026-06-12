@@ -4,6 +4,10 @@ import {
     toConfigModule,
     toVirtualDefaultConfigModulePath
 } from '@master/css-integration/config-module'
+import {
+    toPlanModule,
+    toVirtualDefaultPlanModulePath
+} from '@master/css-integration/plan-module'
 import { loadProjectConfig } from '@master/css-configer/load'
 import {
     cleanStyleRequest,
@@ -42,6 +46,7 @@ export interface MasterCSSWebpackContext {
     compilerContext: string
     virtualCSSImportModuleId: string
     virtualConfigModuleId: string
+    virtualPlanModuleId: string
     virtualPreloadedModuleId: string
     virtualModule?: VirtualModulesPlugin
     on(...args: Parameters<CSSExtractor['on']>): unknown
@@ -55,6 +60,7 @@ export interface MasterCSSWebpackContext {
     getDefaultConfigDependencyPaths(): string[]
     setModuleContent(modulePath: string, moduleContent: unknown): void
     createDefaultConfigModule(): Promise<string>
+    createDefaultPlanModule(): Promise<string>
     createPreloadedModule(): Promise<string>
     processModuleContents(
         entries: [string, string][],
@@ -62,6 +68,7 @@ export interface MasterCSSWebpackContext {
     ): Promise<void>
     writeGeneratedCSSModule(): Promise<void>
     writeDefaultConfigModule(): Promise<void>
+    writeDefaultPlanModule(): Promise<void>
     writePreloadedModule(): Promise<void>
     replayModuleContents(): Promise<void>
     queueResetReplay(): Promise<unknown>
@@ -169,6 +176,14 @@ export class MasterCSSPlugin {
         return toConfigModule(result.config)
     }
 
+    private async createDefaultPlanModule() {
+        const result = await loadProjectConfig(this.cwd, {
+            config: this.customOptions.config
+        })
+        this.defaultConfigDependencies = result.dependencies
+        return toPlanModule(result.plan)
+    }
+
     private getDefaultConfigDependencyPaths() {
         return this.defaultConfigDependencies
     }
@@ -256,6 +271,7 @@ export class MasterCSSPlugin {
             compilerContext,
             virtualCSSImportModuleId: toVirtualCSSModulePath(compilerContext),
             virtualConfigModuleId: toVirtualDefaultConfigModulePath(compilerContext),
+            virtualPlanModuleId: toVirtualDefaultPlanModulePath(compilerContext),
             virtualPreloadedModuleId: toVirtualPreloadedModulePath(compilerContext),
             on: (...args) => this.on(...args),
             init: (customOptions = this.customOptions) => this.init(customOptions),
@@ -272,6 +288,7 @@ export class MasterCSSPlugin {
                 this.moduleContentByPath[modulePath] = moduleContent
             },
             createDefaultConfigModule: () => this.createDefaultConfigModule(),
+            createDefaultPlanModule: () => this.createDefaultPlanModule(),
             createPreloadedModule: () => this.createPreloadedModule(),
             processModuleContents: (entries, isGeneratedCSSModulePath) => this.processModuleContents(entries, isGeneratedCSSModulePath),
             writeGeneratedCSSModule: async () => {
@@ -286,6 +303,10 @@ export class MasterCSSPlugin {
             writeDefaultConfigModule: async () => {
                 if (!context.virtualModule || !context.virtualConfigModuleId) return
                 context.virtualModule.writeModule(context.virtualConfigModuleId, await this.createDefaultConfigModule())
+            },
+            writeDefaultPlanModule: async () => {
+                if (!context.virtualModule || !context.virtualPlanModuleId) return
+                context.virtualModule.writeModule(context.virtualPlanModuleId, await this.createDefaultPlanModule())
             },
             writePreloadedModule: async () => {
                 if (!context.virtualModule || !context.virtualPreloadedModuleId) return

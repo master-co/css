@@ -1,8 +1,9 @@
 'use client'
 
-import { CSSRuntime, initCSSRuntime, resolveRuntimeConfig } from '@master/css-runtime'
+import { CSSRuntime, initCSSRuntime, resolveRuntimePlan } from '@master/css-runtime'
 import { createContext, useContext, useRef, useState } from 'react'
 import type { CSSRuntimeProviderProps } from './types/provider-props'
+import type { MasterCSSPlan } from '@master/css-runtime'
 // fix: ReferenceError: React is not defined
 import React from 'react'
 import useIsomorphicLayoutEffect from './uses/useIsomorphicLayoutEffect'
@@ -10,6 +11,7 @@ import { useUpdateEffect } from './uses/useUpdateEffect'
 
 export const CSSRuntimeContext = createContext<CSSRuntime | undefined>(undefined)
 export const useCSSRuntime = () => useContext(CSSRuntimeContext)
+const DEFAULT_PLAN: MasterCSSPlan = { version: 1 }
 
 export function CSSRuntimeProvider(props: CSSRuntimeProviderProps) {
     const cssRuntime = useRef<CSSRuntime>(undefined)
@@ -18,7 +20,7 @@ export function CSSRuntimeProvider(props: CSSRuntimeProviderProps) {
     /** onMounted */
     useIsomorphicLayoutEffect(() => {
         cssRuntime.current = initCSSRuntime({
-            config: props.config,
+            plan: props.plan || DEFAULT_PLAN,
             root: props.root ?? document,
             preloaded: props.preloaded
         })
@@ -30,12 +32,12 @@ export function CSSRuntimeProvider(props: CSSRuntimeProviderProps) {
         }
     }, [])
 
-    /** on config change */
+    /** on plan change */
     useUpdateEffect(() => {
         if (cssRuntime.current) {
-            cssRuntime.current.refresh(resolveRuntimeConfig(props.config))
+            cssRuntime.current.refresh(resolveRuntimePlan(props.plan || DEFAULT_PLAN))
         }
-    }, [props.config])
+    }, [props.plan])
 
     /** on root change */
     useUpdateEffect(() => {
@@ -43,7 +45,7 @@ export function CSSRuntimeProvider(props: CSSRuntimeProviderProps) {
             cssRuntime.current.destroy()
             cssRuntime.current = undefined
             cssRuntime.current = initCSSRuntime({
-                config: props.config,
+                plan: props.plan || DEFAULT_PLAN,
                 root: props.root ?? document,
                 preloaded: props.preloaded
             })

@@ -1,10 +1,11 @@
 <script setup lang="ts">
     import { CSSRuntimeProvider } from '../src/runtime-provider'
     import { ref, onMounted } from 'vue'
-    import type { Config } from '@master/css'
+    import type { MasterCSSPlan } from '@master/css-runtime'
     import RuntimeConsumer from './RuntimeConsumer.vue'
 
-    const config = ref<Config>({
+    const plan = ref<MasterCSSPlan>({
+        version: 1,
         utilities: [
             {
                 name: 'btn',
@@ -30,9 +31,9 @@
 </script>
 
 <template>
-    <CSSRuntimeProvider :root="root" :config="config">
+    <CSSRuntimeProvider :root="root" :plan="plan">
         <RuntimeConsumer />
-        <button id="config-btn" class="btn" @click="config = {}"></button>
+        <button id="config-btn" class="btn" @click="plan = { version: 1 }"></button>
         <button id="root-btn" @click="root = shadowRoot"></button>
         <div id="container" :ref="el => containerRef = el"></div>
     </CSSRuntimeProvider>

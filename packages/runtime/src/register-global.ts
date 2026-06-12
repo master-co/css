@@ -1,13 +1,12 @@
 import { installHook } from '@master/css-devtools-hook'
-import type { Config } from 'shared/css-config'
+import type { MasterCSSPlan } from 'shared/master-css-plan'
 import type Core from './core'
 import startDebuggers from './debuggers'
 
 declare global {
     var CSSRuntime: typeof Core
     var cssRuntime: Core
-    var masterCSSConfig: Config
-    var masterCSSConfigs: Config[]
+    var masterCSSPlan: MasterCSSPlan | undefined
 }
 
 export default function registerGlobal(CSSRuntime: typeof Core) {

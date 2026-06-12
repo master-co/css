@@ -117,6 +117,9 @@ importers:
       '@master/css-devtools-hook':
         specifier: workspace:^
         version: link:packages/devtools-hook
+      '@master/css-engine':
+        specifier: workspace:^
+        version: link:packages/engine
       '@master/css-extractor':
         specifier: workspace:^
         version: link:packages/extractor
@@ -1245,6 +1248,25 @@ importers:
         specifier: workspace:^
         version: link:../../shared
 
+  packages/engine:
+    dependencies:
+      '@master/colors':
+        specifier: ^3.0.0
+        version: 3.0.0
+      '@master/css-lexer':
+        specifier: workspace:^
+        version: link:../lexer
+      csstype:
+        specifier: ^3.2.3
+        version: 3.2.3
+      json-safe-extend:
+        specifier: ^3.2.5
+        version: 3.2.5
+    devDependencies:
+      shared:
+        specifier: workspace:^
+        version: link:../../shared
+
   packages/eslint-config:
     dependencies:
       '@master/eslint-plugin-css':
@@ -1419,6 +1441,9 @@ importers:
       '@master/css':
         specifier: workspace:^
         version: link:../core
+      '@master/css-engine':
+        specifier: workspace:^
+        version: link:../engine
     devDependencies:
       shared:
         specifier: workspace:^
@@ -1678,13 +1703,19 @@ importers:
 
   packages/runtime:
     dependencies:
-      '@master/css':
-        specifier: workspace:^
-        version: link:../core
       '@master/css-devtools-hook':
         specifier: workspace:^
         version: link:../devtools-hook
+      '@master/css-engine':
+        specifier: workspace:^
+        version: link:../engine
     devDependencies:
+      '@master/css':
+        specifier: workspace:^
+        version: link:../core
+      '@master/css-compiler':
+        specifier: workspace:^
+        version: link:../compiler
       '@master/css-integration':
         specifier: workspace:^
         version: link:../integration

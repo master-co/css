@@ -6,6 +6,7 @@ import {
     compileProjectConfigModule
 } from '@master/css-compiler'
 import type { Config } from 'shared/css-config'
+import type { MasterCSSPlan } from 'shared/master-css-plan'
 import {
     type CSSConfigModuleResult,
     stripResourceQuery
@@ -25,7 +26,9 @@ export type {
     LoadProjectConfigResult
 } from './options'
 
-export type ConfigModuleResult = CSSConfigModuleResult<Config>
+export type ConfigModuleResult = CSSConfigModuleResult<Config> & {
+    plan: MasterCSSPlan
+}
 
 export async function loadConfig(path: string, options: LoadConfigOptions = {}): Promise<LoadConfigResult> {
     if (extname(stripResourceQuery(path)) === '.css') {

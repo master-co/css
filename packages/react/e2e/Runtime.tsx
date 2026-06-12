@@ -1,9 +1,10 @@
 import { CSSRuntimeProvider } from '../src/runtime-provider'
 import { useState, useEffect, useRef } from 'react'
-import type { Config } from '@master/css'
+import type { MasterCSSPlan } from '@master/css-runtime'
 
 export default function Runtime() {
-    const [config, setConfig] = useState<Config>({
+    const [plan, setPlan] = useState<MasterCSSPlan>({
+        version: 1,
         utilities: [
             {
                 name: 'btn',
@@ -31,8 +32,8 @@ export default function Runtime() {
         }
     }, [containerRef])
 
-    return <CSSRuntimeProvider root={root} config={config}>
-        <button id="config-btn" className="btn" onClick={() => setConfig({})}></button>
+    return <CSSRuntimeProvider root={root} plan={plan}>
+        <button id="config-btn" className="btn" onClick={() => setPlan({ version: 1 })}></button>
         <button id="root-btn" onClick={() => setRoot(shadowRoot)}></button>
         <div id="container" ref={containerRef}></div>
     </CSSRuntimeProvider>

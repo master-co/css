@@ -1,10 +1,9 @@
 import CSSRuntime from './core'
-import type { Config } from '@master/css'
-import type { MasterCSSPreloaded } from '@master/css/preloaded'
-import { resolveRuntimeConfig } from './config'
+import type { MasterCSSPlan } from 'shared/master-css-plan'
+import type { MasterCSSPreloaded } from '@master/css-engine/preloaded'
 
 export interface CSSRuntimeInitOptions {
-    config?: Config
+    plan?: MasterCSSPlan
     root?: Document | ShadowRoot
     autoObserve?: boolean
     preloaded?: MasterCSSPreloaded
@@ -17,7 +16,7 @@ export interface CSSRuntimeInitOptions {
  */
 export default function initCSSRuntime(options: CSSRuntimeInitOptions = {}): CSSRuntime {
     const {
-        config,
+        plan = { version: 1 },
         root = document,
         autoObserve = true,
         preloaded
@@ -27,7 +26,7 @@ export default function initCSSRuntime(options: CSSRuntimeInitOptions = {}): CSS
         cssRuntime.registerPreloaded(preloaded)
         return cssRuntime
     }
-    cssRuntime = new CSSRuntime(root, resolveRuntimeConfig(config), preloaded)
+    cssRuntime = new CSSRuntime(root, plan, preloaded)
     if (autoObserve) cssRuntime.observe()
     return cssRuntime
 }

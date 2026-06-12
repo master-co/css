@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import config from 'virtual:master-css-config'
+import plan from 'virtual:master-css-plan'
 import preloaded from 'virtual:master-css-preloaded'
 import CSSRuntimeProvider from './CSSRuntimeProvider.vue'
 
@@ -9,7 +9,7 @@ defineOptions({
 </script>
 
 <template>
-    <CSSRuntimeProvider :config="config" :preloaded="preloaded">
+    <CSSRuntimeProvider :plan="plan" :preloaded="preloaded">
         <slot />
     </CSSRuntimeProvider>
 </template>

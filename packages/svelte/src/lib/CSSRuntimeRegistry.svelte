@@ -1,9 +1,9 @@
 <script lang="ts">
-    import config from 'virtual:master-css-config';
+    import plan from 'virtual:master-css-plan';
     import preloaded from 'virtual:master-css-preloaded';
     import CSSRuntimeProvider from './CSSRuntimeProvider.svelte';
 </script>
 
-<CSSRuntimeProvider {config} {preloaded}>
+<CSSRuntimeProvider {plan} {preloaded}>
     <slot />
 </CSSRuntimeProvider>

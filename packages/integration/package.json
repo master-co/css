@@ -52,6 +52,11 @@
             "import": "./dist/config-module.mjs",
             "default": "./dist/config-module.mjs"
         },
+        "./plan-module": {
+            "types": "./dist/plan-module.d.ts",
+            "import": "./dist/plan-module.mjs",
+            "default": "./dist/plan-module.mjs"
+        },
         "./style-module": {
             "types": "./dist/style-module.d.ts",
             "import": "./dist/style-module.mjs",
@@ -87,7 +92,8 @@
         "provenance": true
     },
     "dependencies": {
-        "@master/css": "workspace:^"
+        "@master/css": "workspace:^",
+        "@master/css-engine": "workspace:^"
     },
     "devDependencies": {
         "shared": "workspace:^"

@@ -2,7 +2,8 @@ import type { ModuleNode, Plugin, ViteDevServer } from 'vite'
 import { PluginContext } from '../core'
 import { loadProjectConfig } from '@master/css-configer/load'
 import { toConfigModule } from '@master/css-integration/config-module'
-import { RESOLVED_VIRTUAL_CONFIG_ID, VIRTUAL_CONFIG_ID } from '../common'
+import { toPlanModule } from '@master/css-integration/plan-module'
+import { RESOLVED_VIRTUAL_CONFIG_ID, RESOLVED_VIRTUAL_PLAN_ID, VIRTUAL_CONFIG_ID, VIRTUAL_PLAN_ID } from '../common'
 import { PluginOptions } from '../options'
 
 function invalidateConfigModule(module: ModuleNode | undefined, server: ViteDevServer): boolean {
@@ -32,7 +33,7 @@ export default function ConfigVirtualModulePlugin(
         for (const dependency of result.dependencies) {
             pluginContext.addWatchFile?.(dependency)
         }
-        return toConfigModule(result.config)
+        return result
     }
     return {
         name: 'master-css:virtual-module:config',
@@ -42,10 +43,14 @@ export default function ConfigVirtualModulePlugin(
         },
         async resolveId(id) {
             if (id === VIRTUAL_CONFIG_ID) return RESOLVED_VIRTUAL_CONFIG_ID
+            if (id === VIRTUAL_PLAN_ID) return RESOLVED_VIRTUAL_PLAN_ID
         },
         async load(id) {
             if (id === RESOLVED_VIRTUAL_CONFIG_ID) {
-                return await loadDefaultConfig(this)
+                return toConfigModule((await loadDefaultConfig(this)).config)
+            }
+            if (id === RESOLVED_VIRTUAL_PLAN_ID) {
+                return toPlanModule((await loadDefaultConfig(this)).plan)
             }
         },
         async handleHotUpdate({ file, server }) {
@@ -55,6 +60,10 @@ export default function ConfigVirtualModulePlugin(
                 handled = true
                 needsFullReload ||= invalidateConfigModule(
                     server.moduleGraph.getModuleById(RESOLVED_VIRTUAL_CONFIG_ID),
+                    server
+                )
+                needsFullReload ||= invalidateConfigModule(
+                    server.moduleGraph.getModuleById(RESOLVED_VIRTUAL_PLAN_ID),
                     server
                 )
             }

@@ -3,6 +3,12 @@ import {
     stripMasterCSSConfigQuery,
     toVirtualCSSConfigModulePath
 } from '@master/css-integration/config-module'
+import {
+    MASTER_CSS_PLAN_QUERY,
+    stripMasterCSSPlanQuery,
+    toPlanModule,
+    toVirtualCSSPlanModulePath
+} from '@master/css-integration/plan-module'
 import { loadConfigModule } from '@master/css-configer/load'
 import type { Compiler } from 'webpack'
 import type { MasterCSSWebpackContext, WebpackSubPlugin } from '../plugin'
@@ -14,12 +20,16 @@ export default function ConfigLoaderPlugin(context: MasterCSSWebpackContext): We
             compiler.hooks.normalModuleFactory.tap(context.name, (normalModuleFactory) => {
                 normalModuleFactory.hooks.beforeResolve.tapAsync(context.name, (resolveData, callback) => {
                     const request = resolveData.request
-                    if (!request.endsWith(MASTER_CSS_CONFIG_QUERY)) {
+                    const isConfigRequest = request.endsWith(MASTER_CSS_CONFIG_QUERY)
+                    const isPlanRequest = request.endsWith(MASTER_CSS_PLAN_QUERY)
+                    if (!isConfigRequest && !isPlanRequest) {
                         callback()
                         return
                     }
 
-                    const sourceRequest = stripMasterCSSConfigQuery(request)
+                    const sourceRequest = isPlanRequest
+                        ? stripMasterCSSPlanQuery(request)
+                        : stripMasterCSSConfigQuery(request)
                     const resolver = normalModuleFactory.getResolver('normal')
                     resolver.resolve(
                         resolveData.contextInfo,
@@ -40,13 +50,18 @@ export default function ConfigLoaderPlugin(context: MasterCSSWebpackContext): We
                                     callback(new TypeError('Master CSS config queries only support CSS entry files.'))
                                     return
                                 }
-                                const virtualCSSConfigModuleId = toVirtualCSSConfigModulePath(context.compilerContext, resolvedPath)
                                 const result = await loadConfigModule(resolvedPath)
-                                context.virtualModule?.writeModule(virtualCSSConfigModuleId, result.code)
+                                const virtualModuleId = isPlanRequest
+                                    ? toVirtualCSSPlanModulePath(context.compilerContext, resolvedPath)
+                                    : toVirtualCSSConfigModulePath(context.compilerContext, resolvedPath)
+                                context.virtualModule?.writeModule(
+                                    virtualModuleId,
+                                    isPlanRequest ? toPlanModule(result.plan) : result.code
+                                )
                                 for (const dependency of result.dependencies) {
                                     resolveData.fileDependencies.add(dependency)
                                 }
-                                resolveData.request = virtualCSSConfigModuleId
+                                resolveData.request = virtualModuleId
                                 callback()
                             } catch (error) {
                                 callback(error as Error)

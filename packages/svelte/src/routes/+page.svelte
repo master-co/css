@@ -1,9 +1,10 @@
 <script lang="ts">
-    import type { Config } from "@master/css";
+    import type { MasterCSSPlan } from "@master/css-runtime";
     import { CSSRuntimeProvider } from "../lib/runtime-provider.js";
 
     let containerRef = $state<HTMLDivElement>();
-    let config = $state<Config>({
+    let plan = $state<MasterCSSPlan>({
+        version: 1,
         utilities: [
             {
                 name: "btn",
@@ -41,12 +42,12 @@
 {/if}
 
 {#if !destroy}
-    <CSSRuntimeProvider {config} {root}>
+    <CSSRuntimeProvider {plan} {root}>
         <button onclick={() => (destroy = true)}>DESTROY</button>
         <button
             id="config-btn"
             class="btn bg:blue-50"
-            onclick={() => (config = {})}>CONFIG</button
+            onclick={() => (plan = { version: 1 })}>CONFIG</button
         >
         <button
             id="root-btn"

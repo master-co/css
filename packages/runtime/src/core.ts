@@ -1,7 +1,9 @@
-import { MasterCSS, VariableRule, AnimationRule } from '@master/css'
-import defaultConfig from '@master/css/config'
-import type { Config, UtilityLayerName } from '@master/css'
-import type { MasterCSSPreloaded } from '@master/css/preloaded'
+import MasterCSS from '@master/css-engine/core'
+import VariableRule from '@master/css-engine/variable-rule'
+import AnimationRule from '@master/css-engine/animation-rule'
+import type { UtilityLayerName } from 'shared/css-config'
+import type { MasterCSSPlan } from 'shared/master-css-plan'
+import type { MasterCSSPreloaded } from '@master/css-engine/preloaded'
 import registerGlobal from './register-global'
 import { HydrateResult } from './types'
 import RuntimeLayer from './layer'
@@ -30,10 +32,10 @@ export default class CSSRuntime extends MasterCSS {
 
     constructor(
         public root: Document | ShadowRoot = document,
-        config: Config = defaultConfig,
+        plan: MasterCSSPlan = { version: 1 },
         preloaded?: MasterCSSPreloaded
     ) {
-        super(config, preloaded)
+        super(plan, preloaded)
         // Do not use instanceof here, because it will not work
         const rootConstructorName = root?.constructor.name
         if (rootConstructorName === 'HTMLDocument' || rootConstructorName === 'Document') {
@@ -281,7 +283,7 @@ export default class CSSRuntime extends MasterCSS {
         // @ts-ignore
         this.observing = false
         this.reset()
-        this.resolve()
+        this.loadPlan(this.plan)
         this.classCounts.clear()
         this.classTracker.reset()
         if (!this.progressive) {
@@ -292,21 +294,21 @@ export default class CSSRuntime extends MasterCSS {
         return this
     }
 
-    refresh(config: Config = this.config) {
+    refresh(plan: MasterCSSPlan = this.plan) {
         if (!this.observing || !this.style!.sheet) return this
         const cssRules = this.style!.sheet.cssRules
         for (let i = cssRules.length - 1; i >= 0; i--) {
             this.style!.sheet.deleteRule(i)
         }
-        super.refresh(config)
+        super.refresh(plan)
         /**
-         * 拿當前所有的 classNames 按照最新的 colors, config.utilities 匹配並生成新的 style
+         * Recreate rules from the current class names against the latest plan.
          * 所以 refresh 過後 rules 可能會變多也可能會變少
          */
         this.classCounts.forEach((_, className) => {
             this.add(className)
         })
-        globalThis.__MASTER_CSS_DEVTOOLS_HOOK__?.emit('runtime:refreshed', { cssRuntime: this, config })
+        globalThis.__MASTER_CSS_DEVTOOLS_HOOK__?.emit('runtime:refreshed', { cssRuntime: this, plan })
         return this
     }
 

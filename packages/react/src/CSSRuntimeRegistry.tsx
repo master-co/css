@@ -1,6 +1,6 @@
 'use client'
 
-import config from 'virtual:master-css-config'
+import plan from 'virtual:master-css-plan'
 import preloaded from 'virtual:master-css-preloaded'
 import { CSSRuntimeProvider } from './CSSRuntimeProvider'
 // fix: ReferenceError: React is not defined
@@ -12,7 +12,7 @@ export interface CSSRuntimeRegistryProps {
 
 export function CSSRuntimeRegistry(props: CSSRuntimeRegistryProps) {
     return (
-        <CSSRuntimeProvider config={config} preloaded={preloaded}>
+        <CSSRuntimeProvider plan={plan} preloaded={preloaded}>
             {props.children}
         </CSSRuntimeProvider>
     )

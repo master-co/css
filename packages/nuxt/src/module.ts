@@ -1,7 +1,7 @@
 import { defineNuxtModule, addServerPlugin, createResolver, addPlugin } from '@nuxt/kit'
 import { name } from '../package.json'
 import masterCSS from '@master/css.vue/vite'
-import { VIRTUAL_CONFIG_ID } from '@master/css-integration/config-module'
+import { toPlanModule, VIRTUAL_PLAN_ID } from '@master/css-integration/plan-module'
 import { loadProjectConfigModule } from '@master/css-configer/load'
 import type { Plugin } from 'vite'
 import defaultOptions, { type ModuleOptions } from './options'
@@ -32,7 +32,7 @@ export default defineNuxtModule<ModuleOptions>({
             })
             addNitroWatchDependencies(config, result.dependencies)
             config.virtual ??= {}
-            config.virtual[VIRTUAL_CONFIG_ID] = result.code
+            config.virtual[VIRTUAL_PLAN_ID] = toPlanModule(result.plan)
         })
         const addCSSVitePlugin = (mode = options.mode) => {
             nuxt.hook('vite:extendConfig', (viteConfig) => {

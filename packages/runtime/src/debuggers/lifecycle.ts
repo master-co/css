@@ -21,8 +21,8 @@ export default function registerLifecycleDebugger() {
         }
     })
 
-    hook.on('runtime:refreshed', ({ cssRuntime, config }) => {
-        log.debug('refreshed', cssRuntime, config)
+    hook.on('runtime:refreshed', ({ cssRuntime, plan }) => {
+        log.debug('refreshed', cssRuntime, plan)
     })
 
     hook.on('runtime:disconnected', ({ cssRuntime }) => {

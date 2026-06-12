@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import { shallowRef, provide, onMounted, onUnmounted, watch } from 'vue'
-import { initCSSRuntime, resolveRuntimeConfig } from '@master/css-runtime'
-import type { CSSRuntime } from '@master/css-runtime'
+import { initCSSRuntime, resolveRuntimePlan } from '@master/css-runtime'
+import type { CSSRuntime, MasterCSSPlan } from '@master/css-runtime'
 import { CSS_RUNTIME_INJECTION_KEY } from './use-css-runtime'
 import type { CSSRuntimeProviderProps } from './types/provider-props'
 
 const props = defineProps<CSSRuntimeProviderProps>()
 
 const cssRuntime = shallowRef<CSSRuntime | undefined>(undefined)
+const DEFAULT_PLAN: MasterCSSPlan = { version: 1 }
 
 function getRoot() {
     return props.root ?? document
@@ -15,7 +16,7 @@ function getRoot() {
 
 function initRuntime() {
     cssRuntime.value = initCSSRuntime({
-        config: props.config,
+        plan: props.plan || DEFAULT_PLAN,
         root: getRoot(),
         preloaded: props.preloaded
     })
@@ -32,9 +33,9 @@ onMounted(() => {
 
 onUnmounted(destroyRuntime)
 
-watch(() => props.config, () => {
+watch(() => props.plan, () => {
     if (cssRuntime.value) {
-        cssRuntime.value.refresh(resolveRuntimeConfig(props.config))
+        cssRuntime.value.refresh(resolveRuntimePlan(props.plan || DEFAULT_PLAN))
     }
 })
 

@@ -1,15 +1,15 @@
-import type { Config } from '@master/css'
-import type { MasterCSSPreloaded } from '@master/css/preloaded'
+import type { MasterCSSPlan } from 'shared/master-css-plan'
+import type { MasterCSSPreloaded } from '@master/css-engine/preloaded'
 import CSSRuntime from './core'
 import initCSSRuntime from './init'
 
 type CSSRuntimeHostConstructor = new (...args: any[]) => HTMLElement
-type CSSRuntimeConfig = Config | ((host: HTMLElement) => Config | undefined)
+type CSSRuntimePlan = MasterCSSPlan | ((host: HTMLElement) => MasterCSSPlan)
 type CSSRuntimeRoot = ShadowRoot | ((host: HTMLElement) => ShadowRoot | null | undefined)
 type CSSRuntimePreloaded = MasterCSSPreloaded | ((host: HTMLElement) => MasterCSSPreloaded | undefined)
 
 export interface CSSRuntimeOptions {
-    config?: CSSRuntimeConfig
+    plan: CSSRuntimePlan
     root?: CSSRuntimeRoot
     autoObserve?: boolean
     preloaded?: CSSRuntimePreloaded
@@ -17,8 +17,8 @@ export interface CSSRuntimeOptions {
 
 export type CSSRuntimeDecoratorOptions = CSSRuntimeOptions
 
-function resolveConfig(host: HTMLElement, config: CSSRuntimeConfig | undefined): Config | undefined {
-    return typeof config === 'function' ? config(host) : config
+function resolvePlan(host: HTMLElement, plan: CSSRuntimePlan): MasterCSSPlan {
+    return typeof plan === 'function' ? plan(host) : plan
 }
 
 function resolveRoot(host: HTMLElement, root: CSSRuntimeRoot | undefined): ShadowRoot | null | undefined {
@@ -31,7 +31,7 @@ function resolvePreloaded(host: HTMLElement, preloaded: CSSRuntimePreloaded | un
     return typeof preloaded === 'function' ? preloaded(host) : preloaded
 }
 
-export default function cssRuntime(options: CSSRuntimeOptions = {}): <T extends CSSRuntimeHostConstructor>(target: T) => T {
+export default function cssRuntime(options: CSSRuntimeOptions): <T extends CSSRuntimeHostConstructor>(target: T) => T {
     return function <T extends CSSRuntimeHostConstructor>(target: T): T {
         const connectedCallback = target.prototype.connectedCallback as (() => void) | undefined
         const disconnectedCallback = target.prototype.disconnectedCallback as (() => void) | undefined
@@ -46,7 +46,7 @@ export default function cssRuntime(options: CSSRuntimeOptions = {}): <T extends 
                     throw new Error('`@cssRuntime()` requires a shadow root. Provide `options.root` or create a shadow root before `connectedCallback()` finishes.')
                 }
                 this.cssRuntime = initCSSRuntime({
-                    config: resolveConfig(this, options.config),
+                    plan: resolvePlan(this, options.plan),
                     root,
                     autoObserve: options.autoObserve,
                     preloaded: resolvePreloaded(this, options.preloaded)

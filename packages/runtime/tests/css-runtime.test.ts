@@ -1,20 +1,21 @@
 import { cssRuntime } from '../src'
-import type { Config } from '@master/css'
 import type { CSSRuntime } from '../src'
+import type { MasterCSSPlan } from 'shared/master-css-plan'
+
+const plan = { version: 1 } satisfies MasterCSSPlan
 
 class RuntimeElement extends HTMLElement {
     cssRuntime?: CSSRuntime
 
     connectedCallback() {
         const runtime: CSSRuntime | undefined = this.cssRuntime
-        runtime?.refresh({})
+        runtime?.refresh(plan)
     }
 }
 
-cssRuntime()(RuntimeElement)
-cssRuntime({ config: { variables: [] } satisfies Config })(RuntimeElement)
+cssRuntime({ plan })(RuntimeElement)
 cssRuntime({
-    config: {} satisfies Config,
+    plan,
     root: (host) => host.shadowRoot,
     autoObserve: false,
     preloaded: {

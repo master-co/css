@@ -1,5 +1,6 @@
 import path from 'node:path'
 import type { Config } from '@master/css'
+import type { MasterCSSPlan } from 'shared/master-css-plan'
 
 export const VIRTUAL_CONFIG_ID = 'virtual:master-css-config'
 export const MASTER_CSS_CONFIG_QUERY = '?master-css-config'
@@ -10,6 +11,7 @@ export const EMPTY_CONFIG_MODULE = 'export default {};'
 
 export interface CSSConfigLoadResult<TConfig extends object = Config> {
     config: TConfig
+    plan?: MasterCSSPlan
     dependencies: string[]
     classNames?: string[]
     nativeClassNames?: string[]

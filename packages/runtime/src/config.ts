@@ -1,7 +1,5 @@
-import defaultConfig from '@master/css/config'
-import { extendConfig } from '@master/css/utils'
-import type { Config } from 'shared/css-config'
+import type { MasterCSSPlan } from 'shared/master-css-plan'
 
-export function resolveRuntimeConfig(config?: Config) {
-    return extendConfig(defaultConfig, config)
+export function resolveRuntimePlan(plan: MasterCSSPlan) {
+    return plan
 }

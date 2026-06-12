@@ -1,16 +1,4 @@
 import initCSSRuntime from './init'
-import themeConfig from '@master/css/index.css?master-css-config'
-import { extendConfig } from '@master/css/utils'
+import themePlan from '@master/css/index.css?master-css-plan'
 
-const windowConfigs = window.masterCSSConfigs
-const windowConfig = window.masterCSSConfig
-const configs = []
-
-if (windowConfigs) configs.push(...windowConfigs)
-if (windowConfig) configs.push(windowConfig)
-
-if (configs.length) {
-    initCSSRuntime({ config: extendConfig(themeConfig, ...configs) })
-} else {
-    initCSSRuntime({ config: themeConfig })
-}
+initCSSRuntime({ plan: window.masterCSSPlan || themePlan })

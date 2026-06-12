@@ -8,6 +8,12 @@ import {
     stripMasterCSSConfigQuery,
     toVirtualCSSConfigModulePath
 } from '@master/css-integration/config-module'
+import {
+    isMasterCSSPlanRequest,
+    stripMasterCSSPlanQuery,
+    toPlanModule,
+    toVirtualCSSPlanModulePath
+} from '@master/css-integration/plan-module'
 
 const MASTER_CSS_CONFIG_IMPORT_PATTERN = /(\bimport\s+(?:[^'"]*?\s+from\s*)?|\bexport\s+[^'"]*?\s+from\s*|\bimport\s*\(\s*)(['"])([^'"]+)\2/g
 
@@ -58,16 +64,18 @@ function resolveRequest(context: LoaderContext, request: string) {
     })
 }
 
-function writeCSSConfigModule(context: LoaderContext, configPath: string) {
+function writeCSSConfigModule(context: LoaderContext, configPath: string, plan?: boolean) {
     if (!isCSSConfigRequest(configPath)) {
         throw new TypeError('Master CSS config queries only support CSS entry files.')
     }
 
     const projectDir = context.getOptions?.().projectDir || context.rootContext || process.cwd()
-    const virtualConfigPath = toVirtualCSSConfigModulePath(projectDir, configPath)
+    const virtualConfigPath = plan
+        ? toVirtualCSSPlanModulePath(projectDir, configPath)
+        : toVirtualCSSConfigModulePath(projectDir, configPath)
     const result = loadConfigModuleSync(configPath)
     mkdirSync(dirname(virtualConfigPath), { recursive: true })
-    writeFileSync(virtualConfigPath, result.code)
+    writeFileSync(virtualConfigPath, plan ? toPlanModule(result.plan) : result.code)
     for (const dependency of result.dependencies) {
         context.addDependency?.(dependency)
     }
@@ -81,12 +89,17 @@ async function transformConfigImports(context: LoaderContext, source: string) {
 
     for (const match of source.matchAll(MASTER_CSS_CONFIG_IMPORT_PATTERN)) {
         const [fullMatch, prefix, quote, request] = match
-        if (!isMasterCSSConfigRequest(request)) continue
+        const isConfigRequest = isMasterCSSConfigRequest(request)
+        const isPlanRequest = isMasterCSSPlanRequest(request)
+        if (!isConfigRequest && !isPlanRequest) continue
         if (match.index === undefined) continue
 
         matched = true
-        const configPath = await resolveRequest(context, stripMasterCSSConfigQuery(request))
-        const virtualConfigPath = writeCSSConfigModule(context, configPath)
+        const configPath = await resolveRequest(context, isPlanRequest
+            ? stripMasterCSSPlanQuery(request)
+            : stripMasterCSSConfigQuery(request)
+        )
+        const virtualConfigPath = writeCSSConfigModule(context, configPath, isPlanRequest)
         result += source.slice(lastIndex, match.index)
         result += `${prefix}${quote}${toModuleSpecifier(context.resourcePath, virtualConfigPath)}${quote}`
         lastIndex = match.index + fullMatch.length

@@ -1,0 +1,221 @@
+@layer theme, base, defaults, components, utilities;
+
+@layer base {
+    /* Improve text rendering precision across browsers. */
+    * {
+        text-rendering: geometricPrecision;
+    }
+
+    /* Normalize body text metrics and font smoothing. */
+    body {
+        line-height: 1.2;
+        text-size-adjust: 100%;
+        -webkit-text-size-adjust: 100%;
+        -moz-text-size-adjust: 100%;
+        -ms-text-size-adjust: 100%;
+        -moz-osx-font-smoothing: grayscale;
+        -webkit-font-smoothing: antialiased;
+    }
+
+    /* Remove touch delay from common interactive elements. */
+    a, button {
+        touch-action: manipulation;
+    }
+
+    /* Prevent accidental text selection on button-like controls. */
+    [role=button], summary,
+    button, [type=button] {
+        -webkit-user-select: none;
+        user-select: none;
+    }
+
+    /* Use border-box sizing for all elements and pseudo-elements. */
+    *, ::before, ::after {
+        box-sizing: border-box;
+    }
+
+    /* Normalize tab width for readable preformatted text. */
+    body {
+        -moz-tab-size: 4;
+        tab-size: 4;
+    }
+
+    /* Make embedded media responsive and block-level by default. */
+    img, svg, video, canvas, audio, iframe, embed, object {
+        max-width: 100%;
+        display: block;
+    }
+
+    /* consistent */
+
+    /* Keep the root viewport height consistent on modern and WebKit browsers. */
+    html, body {
+        height: 100dvh;
+        height: -webkit-fill-available;
+        height: -moz-available;
+    }
+
+    /* Ensure abbreviated text with titles has a consistent underline style. */
+    abbr[title] {
+        text-decoration: underline dotted;
+    }
+
+    /* Keep bold text semantically stronger than surrounding text. */
+    b, strong {
+        font-weight: bolder;
+    }
+
+    /* Normalize monospace-related element sizing. */
+    pre,
+    code,
+    kbd,
+    samp {
+        font-size: 1em;
+    }
+
+    /* Remove Firefox inner focus padding and border from controls. */
+    ::-moz-focus-inner {
+        border-style: none;
+        padding: 0;
+    }
+
+    /* Remove Firefox invalid field shadows. */
+    :-moz-ui-invalid {
+        box-shadow: none;
+    }
+
+    /* Align progress elements consistently with surrounding text. */
+    progress {
+        vertical-align: baseline;
+    }
+
+    /* Normalize search input appearance and outline offset. */
+    [type="search"] {
+        appearance: textfield;
+        outline-offset: -2px;
+    }
+
+    /* Keep WebKit number input spin buttons at their native height. */
+    ::-webkit-inner-spin-button, ::-webkit-outer-spin-button {
+        height: auto;
+    }
+
+    /* Remove WebKit search input decoration. */
+    ::-webkit-search-decoration {
+        -webkit-appearance: none;
+    }
+
+    /* Normalize WebKit file upload button appearance and font. */
+    ::-webkit-file-upload-button {
+        -webkit-appearance: button;
+        font: inherit;
+    }
+
+    /* Normalize horizontal rule size and color inheritance. */
+    hr {
+        height: 0;
+        color: inherit;
+    }
+
+    /* Normalize small text sizing. */
+    small {
+        font-size: 80%;
+    }
+
+    /* Normalize superscript and subscript sizing and positioning context. */
+    sub, sup {
+        font-size: 75%;
+        line-height: 0;
+        position: relative;
+        vertical-align: baseline;
+    }
+
+    /* Position subscripts consistently below the baseline. */
+    sub {
+        bottom: -0.25em;
+    }
+
+    /* Position superscripts consistently above the baseline. */
+    sup {
+        top: -0.5em;
+    }
+
+    /* Normalize table indentation and border color inheritance. */
+    table {
+        text-indent: 0;
+        border-color: inherit;
+    }
+
+    /* Apply the default sans font stack to documents and shadow hosts. */
+    body, :host {
+        font-family: var(--font-family-sans);
+    }
+
+    /* Apply the default monospace font stack to code-related elements. */
+    code, kbd, samp, pre {
+        font-family: var(--font-family-mono);
+    }
+
+    /* remove */
+
+    /* Remove default link color and underline styles. */
+    a {
+        color: inherit;
+        text-decoration: none;
+    }
+
+    /* Reset form control typography, spacing, color, and background. */
+    button, input, optgroup, select, textarea {
+        font: inherit;
+        font-feature-settings: inherit;
+        font-variation-settings: inherit;
+        font-size: 100%;
+        margin: 0;
+        padding: 0;
+        color: inherit;
+        background-color: transparent;
+    }
+
+    /* Remove default borders while keeping solid border style as the baseline. */
+    *, ::before, ::after {
+        border-width: 0;
+        border-style: solid;
+    }
+
+    /* Remove default margins from common block and text elements. */
+    body, blockquote, dl, dd, hr, figure, p, pre, h1, h2, h3, h4, h5, h6 {
+        margin: 0;
+    }
+
+    /* Remove default padding from table cells and form grouping elements. */
+    td, legend, fieldset {
+        padding: 0;
+    }
+
+    /* Remove default list spacing. */
+    ul, ol {
+        margin: 0;
+        padding: 0;
+    }
+
+    /* Remove mobile tap highlight color. */
+    body {
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    /* Remove unordered list markers. */
+    ul {
+        list-style: none;
+    }
+
+    /* Reset heading typography to inherit from surrounding text. */
+    h1, h2, h3, h4, h5, h6 {
+        font-size: inherit;
+        font-weight: inherit;
+    }
+
+    /* Hide elements marked with the hidden attribute. */
+    [hidden] {
+        display: none;
+    }
+}

@@ -4,6 +4,10 @@ import { dirname, extname, isAbsolute, resolve } from 'node:path'
 import { transform } from 'lightningcss'
 import { extendConfig } from '@master/css/utils'
 import type { Config } from '@master/css'
+import {
+    createMasterCSSPlan,
+    type MasterCSSPlan
+} from 'shared/master-css-plan'
 import { toConfigModuleResult, type CSSConfigModuleResult } from '@master/css-integration/config-module'
 import resolveCSSDirectiveConfig from './resolve-css-directive-config'
 import {
@@ -63,6 +67,7 @@ export type CompileCSSConfigSourceOptions = Omit<CompileCSSOptions, 'config'> & 
 
 export interface CompileCSSConfigResult extends Omit<CompileCSSResult, 'config'> {
     config: Config
+    plan: MasterCSSPlan
     directives: CompileCSSResult
 }
 
@@ -71,6 +76,7 @@ export interface CompileProjectConfigResult extends CompileCSSConfigResult {
 }
 
 export type CompileCSSConfigModuleResult = CSSConfigModuleResult<Config> & {
+    plan: MasterCSSPlan
     directives: CompileCSSResult
 }
 
@@ -271,6 +277,7 @@ function toCompileCSSConfigResult(
     return {
         ...result,
         config: adapterResult.config,
+        plan: createMasterCSSPlan(adapterResult.config),
         warnings: adapterResult.warnings,
         generatedCSS,
         css,
@@ -345,9 +352,11 @@ export function compileProjectConfig(entries: string[], options: CompileCSSConfi
         styleConfigs.push(adapterResult.config)
         addUnique(warnings, adapterResult.warnings)
     }
+    const finalConfig = entries.length ? extendConfig(...styleConfigs, options.config) : options.config || {}
     return {
         entries,
-        config: entries.length ? extendConfig(...styleConfigs, options.config) : options.config || {},
+        config: finalConfig,
+        plan: createMasterCSSPlan(finalConfig),
         dependencies,
         extractionPolicy,
         classNames,
