@@ -10,9 +10,13 @@ import {
     type CSSDirectiveVariableDefinition
 } from 'shared/css-directives'
 import type { PropertiesHyphen } from 'csstype'
-import { AT_IDENTIFIERS } from '../common'
-import createCSS from '../create'
-import type MasterCSS from '../core'
+import coreConfig from '@master/css/config'
+import {
+    AT_IDENTIFIERS,
+    createCSS,
+    type MasterCSS,
+    type Utility
+} from '@master/css'
 import UtilityType from 'shared/utility-type'
 import type {
     Config,
@@ -22,22 +26,24 @@ import type {
     VariableDefinition,
     VariantDefinition
 } from 'shared/css-config'
-import type { Utility } from '../utility'
-import compareRulePriority from './compare-rule-priority'
-import extendConfig from './extend-config'
-import generateAt from './generate-at'
-import generateSelector from './generate-selector'
-import parseAt from './parse-at'
-import parseSelector from './parse-selector'
-import resolveVariableNamespace from './resolve-variable-namespace'
-import wrapAtRules from './wrap-at-rules'
+import {
+    compareRulePriority,
+    extendConfig,
+    generateAt,
+    generateSelector,
+    parseAt,
+    parseSelector,
+    resolveVariableNamespace
+} from '@master/css/utils'
+import { combineStyleSelectors } from './utils/selectors'
+import wrapAtRules from './utils/wrap-at-rules'
 
-export interface CreateConfigFromCSSDirectivesOptions {
+export interface ResolveCSSDirectiveConfigOptions {
     config?: Config
     onWarning?: (warning: string) => void
 }
 
-export interface CSSDirectiveConfigResult {
+export interface CSSDirectiveConfigResolution {
     config: Config
     warnings: string[]
     generatedCSS: string
@@ -103,7 +109,7 @@ function getDirectiveStyleDefinitions(input: CSSDirectiveInput) {
     return isCSSDirectiveResult(input) ? input.styleDefinitions : undefined
 }
 
-function warn(warnings: string[], options: CreateConfigFromCSSDirectivesOptions, message: string) {
+function warn(warnings: string[], options: ResolveCSSDirectiveConfigOptions, message: string) {
     warnings.push(message)
     options.onWarning?.(message)
 }
@@ -268,11 +274,11 @@ function normalizeConfig(input: ConfigInput = {}) {
     return config
 }
 
-function createSemanticConfig(config: Config, options: CreateConfigFromCSSDirectivesOptions) {
+function createSemanticConfig(config: Config, options: ResolveCSSDirectiveConfigOptions) {
     return extendConfig(options.config, config)
 }
 
-function validateTokenConflicts(config: Config, options: CreateConfigFromCSSDirectivesOptions) {
+function validateTokenConflicts(config: Config, options: ResolveCSSDirectiveConfigOptions) {
     const mergedConfig = createSemanticConfig(config, options)
     const modes = collectModeNames(mergedConfig)
     const breakpoints = collectBreakpointNames(mergedConfig)
@@ -306,7 +312,7 @@ function validateTokenConflicts(config: Config, options: CreateConfigFromCSSDire
     }
 }
 
-function warnUnsupportedMediaModes(config: Config, options: CreateConfigFromCSSDirectivesOptions, warnings: string[]) {
+function warnUnsupportedMediaModes(config: Config, options: ResolveCSSDirectiveConfigOptions, warnings: string[]) {
     const mergedConfig = createSemanticConfig(config, options)
     if (mergedConfig.modeTrigger !== 'media') return
 
@@ -322,7 +328,7 @@ function warnUnsupportedMediaModes(config: Config, options: CreateConfigFromCSSD
     warn(warnings, options, `Custom ${subject} ${modeList} will not work with mode-trigger: media. Browsers only support light and dark prefers-color-scheme values; use mode-trigger: class or host for custom modes.`)
 }
 
-function createDirectiveCSS(config: Config, options: CreateConfigFromCSSDirectivesOptions) {
+function createDirectiveCSS(config: Config, options: ResolveCSSDirectiveConfigOptions) {
     return createCSS(createSemanticConfig(config, options))
 }
 
@@ -369,67 +375,6 @@ function cloneDeclarations(declarations: PropertiesHyphen, important?: boolean) 
             : value as any
     }
     return result
-}
-
-function splitSelectorList(selectorText: string) {
-    const selectors: string[] = []
-    let current = ''
-    let depth = 0
-    let quote = ''
-
-    for (let index = 0; index < selectorText.length; index++) {
-        const char = selectorText[index]
-        if (quote) {
-            current += char
-            if (char === '\\') {
-                current += selectorText[++index] || ''
-            } else if (char === quote) {
-                quote = ''
-            }
-            continue
-        }
-        if (char === '"' || char === '\'') {
-            quote = char
-            current += char
-            continue
-        }
-        if (char === '(' || char === '[') {
-            depth++
-            current += char
-            continue
-        }
-        if (char === ')' || char === ']') {
-            depth--
-            current += char
-            continue
-        }
-        if (char === ',' && depth === 0) {
-            selectors.push(current.trim())
-            current = ''
-            continue
-        }
-        current += char
-    }
-
-    if (current.trim()) selectors.push(current.trim())
-    return selectors
-}
-
-function combineStyleSelectors(parentSelector: string, childSelector: string) {
-    const parentSelectors = splitSelectorList(parentSelector)
-    const childSelectors = splitSelectorList(childSelector)
-    const selectors: string[] = []
-
-    for (const child of childSelectors) {
-        for (const parent of parentSelectors) {
-            selectors.push(child.includes('&')
-                ? child.replace(/&/g, parent)
-                : `${parent} ${child}`
-            )
-        }
-    }
-
-    return selectors.join(',')
 }
 
 function createStyleDefinitionsFromCompose(definition: Extract<CSSDirectiveStyleDefinition, { type: 'compose' }>, css: MasterCSS): ComposedStyleDefinition[] {
@@ -1086,7 +1031,7 @@ function finalizeStyleDefinitions(
     config: Config,
     styleDefinitions: CSSDirectiveStyleDefinition[] | undefined,
     css: MasterCSS,
-    options: CreateConfigFromCSSDirectivesOptions
+    options: ResolveCSSDirectiveConfigOptions
 ) {
     if (!styleDefinitions?.length) return ''
 
@@ -1129,7 +1074,7 @@ function finalizeStyleDefinitions(
     return renderStyleDefinitions(createMergedStyleDefinitions(nativeDefinitions, css))
 }
 
-export default function createConfigFromCSSDirectives(input: CSSDirectiveInput, options: CreateConfigFromCSSDirectivesOptions = {}): CSSDirectiveConfigResult {
+function resolveCSSDirectiveConfigInput(input: CSSDirectiveInput, options: ResolveCSSDirectiveConfigOptions = {}): CSSDirectiveConfigResolution {
     const config = normalizeConfig(getDirectiveConfig(input))
     const warnings = isCSSDirectiveResult(input) ? [...input.warnings] : []
 
@@ -1146,4 +1091,11 @@ export default function createConfigFromCSSDirectives(input: CSSDirectiveInput, 
         warnings,
         generatedCSS
     }
+}
+
+export default function resolveCSSDirectiveConfig(input: CSSDirectiveInput, options: ResolveCSSDirectiveConfigOptions = {}): CSSDirectiveConfigResolution {
+    return resolveCSSDirectiveConfigInput(input, {
+        ...options,
+        config: extendConfig(coreConfig, options.config)
+    })
 }

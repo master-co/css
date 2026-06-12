@@ -40,6 +40,7 @@ import {
     type StandaloneCSSDirectiveStatement,
     type StandaloneMasterDirectiveStatement
 } from './lexer/standalone-master'
+import { combineSelectorLists } from './utils/selectors'
 import unquote from './utils/unquote'
 
 export {
@@ -1092,18 +1093,7 @@ function collectDirectiveStyleRuleBody(block: DeclarationBlock<Declaration>, rul
 
 function combineStyleSelectorLists(parentSelectors: string[], childSelectorAST: Selector[]) {
     const childSelectors = childSelectorAST.map((selector) => formatSelectors([selector]))
-    const selectors: string[] = []
-
-    for (const child of childSelectors) {
-        for (const parent of parentSelectors) {
-            selectors.push(child.includes('&')
-                ? child.replace(/&/g, parent)
-                : `${parent} ${child}`
-            )
-        }
-    }
-
-    return selectors
+    return combineSelectorLists(parentSelectors, childSelectors)
 }
 
 interface StyleSelectorDefinition {

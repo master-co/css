@@ -2,10 +2,10 @@ import { existsSync, readFileSync, realpathSync } from 'node:fs'
 import { createRequire } from 'node:module'
 import { dirname, extname, isAbsolute, resolve } from 'node:path'
 import { transform } from 'lightningcss'
-import createConfigFromCSSDirectives from '@master/css/create-config-from-css-directives'
 import { extendConfig } from '@master/css/utils'
 import type { Config } from '@master/css'
 import { toConfigModuleResult, type CSSConfigModuleResult } from '@master/css-integration/config-module'
+import resolveCSSDirectiveConfig from './resolve-css-directive-config'
 import {
     compileCSS,
     createCSSDirectiveExtractionPolicy,
@@ -25,6 +25,11 @@ import {
 } from './lexer/imports'
 
 export * from './core'
+export { default as resolveCSSDirectiveConfig } from './resolve-css-directive-config'
+export type {
+    CSSDirectiveConfigResolution,
+    ResolveCSSDirectiveConfigOptions
+} from './resolve-css-directive-config'
 
 setCSSTransform(transform)
 
@@ -254,7 +259,7 @@ function toCompileCSSConfigResult(
     result: CompileCSSResult,
     options: CompileCSSConfigSourceOptions = {}
 ): CompileCSSConfigResult {
-    const adapterResult = createConfigFromCSSDirectives(result, {
+    const adapterResult = resolveCSSDirectiveConfig(result, {
         config: options.config,
         onWarning: options.onWarning
     })
@@ -325,7 +330,7 @@ export function compileProjectConfig(entries: string[], options: CompileCSSConfi
         addUnique(classNames, result.classNames)
         addUnique(nativeClassNames, result.nativeClassNames)
         addUnique(warnings, result.warnings)
-        const adapterResult = createConfigFromCSSDirectives(result, {
+        const adapterResult = resolveCSSDirectiveConfig(result, {
             config: extendConfig(...styleConfigs, options.config),
             onWarning: options.onWarning
         })

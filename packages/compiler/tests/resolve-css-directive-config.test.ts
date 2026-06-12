@@ -1,12 +1,40 @@
 import { describe, expect, it, vi } from 'vitest'
-import createCSSDirectiveConfig from '../../src/utils/create-config-from-css-directives'
-import createConfigFromCSSDirectives from '../../src/create-config-from-css-directives'
-import createCSSWithTheme, { createThemeConfig } from '../helpers/create-css-with-theme'
 import {
+    createCSS,
     UtilityType,
+    type Config
+} from '@master/css'
+import { extendConfig } from '@master/css/utils'
+import {
+    createCSSDirectiveVariantReference,
     type CSSDirectiveResult
-} from '../../src'
-import { createCSSDirectiveVariantReference } from 'shared/css-directives'
+} from 'shared/css-directives'
+import { resolveCSSDirectiveConfig } from '../src'
+
+const themeConfig: Config = {
+    rootSize: 16,
+    baseUnit: 4,
+    defaultMode: 'light',
+    modeTrigger: 'media',
+    modes: ['light', 'dark'],
+    variants: [
+        { token: '@print', branches: [{ atRules: ['@media print'] }] }
+    ],
+    variables: [
+        { namespace: 'breakpoint', key: 'sm', value: 640 },
+        { namespace: 'font-size', key: 'sm', value: 14 },
+        { namespace: 'color', key: 'primary', value: '#123' },
+        { namespace: 'color', key: 'green', value: '#0f0' }
+    ]
+}
+
+function createThemeConfig(config?: Config) {
+    return extendConfig(themeConfig, config)
+}
+
+function createCSSWithTheme(config?: Config) {
+    return createCSS(createThemeConfig(config))
+}
 
 function directiveResult(result: Partial<CSSDirectiveResult>): CSSDirectiveResult {
     return {
@@ -30,7 +58,7 @@ function directiveResult(result: Partial<CSSDirectiveResult>): CSSDirectiveResul
     }
 }
 
-function getUtility(result: ReturnType<typeof createConfigFromCSSDirectives>, name: string, layer = 'components') {
+function getUtility(result: ReturnType<typeof resolveCSSDirectiveConfig>, name: string, layer = 'components') {
     return result.config.utilities?.find((definition) =>
         definition.name === name
         && definition.type === UtilityType.Static
@@ -38,9 +66,9 @@ function getUtility(result: ReturnType<typeof createConfigFromCSSDirectives>, na
     )
 }
 
-describe.concurrent('createConfigFromCSSDirectives', () => {
-    it('keeps the internal adapter independent from the default config', () => {
-        const result = createCSSDirectiveConfig(directiveResult({
+describe.concurrent('resolveCSSDirectiveConfig', () => {
+    it('keeps the resolved config independent from the default config', () => {
+        const result = resolveCSSDirectiveConfig(directiveResult({
             config: {
                 variants: [{ token: '@contrast', branches: [{ atRules: ['@media (prefers-contrast:more)'] }] }]
             }
@@ -50,7 +78,7 @@ describe.concurrent('createConfigFromCSSDirectives', () => {
     })
 
     it('finalizes self-contained @compose and @variant directives without a base config', () => {
-        const result = createCSSDirectiveConfig(directiveResult({
+        const result = resolveCSSDirectiveConfig(directiveResult({
             config: {
                 variants: [{ token: '@wide', branches: [{ atRules: ['@media (width>=64rem)'] }] }],
                 utilities: [
@@ -87,7 +115,7 @@ describe.concurrent('createConfigFromCSSDirectives', () => {
     })
 
     it('throws for unknown directive @variant references', () => {
-        expect(() => createConfigFromCSSDirectives(directiveResult({
+        expect(() => resolveCSSDirectiveConfig(directiveResult({
             config: {
                 utilities: [
                     {
@@ -105,7 +133,7 @@ describe.concurrent('createConfigFromCSSDirectives', () => {
     })
 
     it('throws when variant tokens conflict with condition namespaces', () => {
-        expect(() => createConfigFromCSSDirectives(directiveResult({
+        expect(() => resolveCSSDirectiveConfig(directiveResult({
             config: {
                 variables: [{ name: 'container-card', value: 320 }],
                 variants: [{ token: '@card', branches: [{ atRules: ['@media (width>=20rem)'] }] }]
@@ -114,7 +142,7 @@ describe.concurrent('createConfigFromCSSDirectives', () => {
     })
 
     it('resolves raw variable names through derived namespaces by longest prefix', () => {
-        const result = createConfigFromCSSDirectives(directiveResult({
+        const result = resolveCSSDirectiveConfig(directiveResult({
             config: {
                 variables: [
                     { name: 'color-line-lightest', value: '#eee' },
@@ -138,7 +166,7 @@ describe.concurrent('createConfigFromCSSDirectives', () => {
     })
 
     it('preserves inline variable flags when resolving raw variable names', () => {
-        const result = createConfigFromCSSDirectives(directiveResult({
+        const result = resolveCSSDirectiveConfig(directiveResult({
             config: {
                 variables: [
                     { name: 'color-primary', value: '#123', inline: true }
@@ -152,7 +180,7 @@ describe.concurrent('createConfigFromCSSDirectives', () => {
     })
 
     it('rejects mode-specific inline variables', () => {
-        expect(() => createConfigFromCSSDirectives(directiveResult({
+        expect(() => resolveCSSDirectiveConfig(directiveResult({
             config: {
                 variables: [
                     { name: 'color-primary', value: '#123', mode: 'dark', inline: true }
@@ -162,7 +190,7 @@ describe.concurrent('createConfigFromCSSDirectives', () => {
     })
 
     it('does not resolve removed standalone namespaces from raw variable names', () => {
-        const result = createConfigFromCSSDirectives(directiveResult({
+        const result = resolveCSSDirectiveConfig(directiveResult({
             config: {
                 variables: [
                     { name: 'blur-sm', value: 8 },
@@ -182,7 +210,7 @@ describe.concurrent('createConfigFromCSSDirectives', () => {
     })
 
     it('converts static directive utilities into core utilities and resolves @variant references', () => {
-        const result = createConfigFromCSSDirectives(directiveResult({
+        const result = resolveCSSDirectiveConfig(directiveResult({
             config: {
                 utilities: [
                     {
@@ -216,7 +244,7 @@ describe.concurrent('createConfigFromCSSDirectives', () => {
     })
 
     it('finalizes style definitions with core compose, mode, selector, and at-rule behavior', () => {
-        const result = createConfigFromCSSDirectives(directiveResult({
+        const result = resolveCSSDirectiveConfig(directiveResult({
             config: {
                 modeTrigger: 'class',
                 variables: [
@@ -344,13 +372,13 @@ describe.concurrent('createConfigFromCSSDirectives', () => {
     })
 
     it('reports core token conflicts and media custom-mode warnings', () => {
-        expect(() => createConfigFromCSSDirectives(directiveResult({
+        expect(() => resolveCSSDirectiveConfig(directiveResult({
             config: {
                 variants: [{ token: '@dark', branches: [{ atRules: ['@media (prefers-color-scheme:dark)'] }] }]
             }
         }), { config: createThemeConfig() })).toThrow('Variant "dark" conflicts with mode "dark"')
 
-        expect(() => createConfigFromCSSDirectives(directiveResult({
+        expect(() => resolveCSSDirectiveConfig(directiveResult({
             config: {
                 variables: [
                     { name: 'breakpoint-md', value: 768, mode: 'compact' }
@@ -358,7 +386,7 @@ describe.concurrent('createConfigFromCSSDirectives', () => {
             }
         }), { config: createThemeConfig() })).toThrow('Breakpoint variables cannot be mode-specific: breakpoint-md@compact')
 
-        expect(() => createConfigFromCSSDirectives(directiveResult({
+        expect(() => resolveCSSDirectiveConfig(directiveResult({
             config: {
                 variables: [
                     { name: 'container-md', value: 448, mode: 'compact' }
@@ -367,7 +395,7 @@ describe.concurrent('createConfigFromCSSDirectives', () => {
         }), { config: createThemeConfig() })).toThrow('Container variables cannot be mode-specific: container-md@compact')
 
         const onWarning = vi.fn()
-        const result = createConfigFromCSSDirectives(directiveResult({
+        const result = resolveCSSDirectiveConfig(directiveResult({
             config: {
                 modes: ['chrisma']
             }
