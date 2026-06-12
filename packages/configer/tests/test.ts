@@ -3,9 +3,9 @@ import { loadPlan, loadPlanModule, loadProjectPlan } from '../src/load'
 import { loadPlanModuleSync, loadPlanSync, loadProjectPlanSync } from '../src/load-sync'
 import { MASTER_CSS_PLAN_QUERY } from '@master/css-integration/plan-module'
 import {
-    findCSSConfigEntryFiles,
+    findCSSPlanEntryFiles,
     findMasterCSSWorkspaceDirectories,
-    hasMasterCSSConfigEntrypoint,
+    hasMasterCSSPlanEntrypoint,
     resolveMasterCSSPackageEntryFile
 } from '../src/css'
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
@@ -13,7 +13,7 @@ import { join } from 'node:path'
 import { tmpdir } from 'node:os'
 
 function createFixture() {
-    return mkdtempSync(join(tmpdir(), 'master-css-configer-'))
+    return mkdtempSync(join(tmpdir(), 'master-css-planer-'))
 }
 
 function writeCSSFixture(cwd: string) {
@@ -95,7 +95,7 @@ test('loads CSS plan resources synchronously', () => {
     }
 })
 
-test('loads package entry theme plan from CSS imports', async () => {
+test('loads package entry preset plan from CSS imports', async () => {
     const cwd = createFixture()
     try {
         const entry = join(cwd, 'index.css')
@@ -146,10 +146,10 @@ test('loads project-level CSS plan entries', async () => {
             }
         `)
 
-        expect(hasMasterCSSConfigEntrypoint('@master;')).toBe(true)
-        expect(hasMasterCSSConfigEntrypoint('@preserve native;')).toBe(false)
-        expect(hasMasterCSSConfigEntrypoint('@import "@master/css/index.css";')).toBe(false)
-        await expect(findCSSConfigEntryFiles(cwd)).resolves.toStrictEqual([entry])
+        expect(hasMasterCSSPlanEntrypoint('@master;')).toBe(true)
+        expect(hasMasterCSSPlanEntrypoint('@preserve native;')).toBe(false)
+        expect(hasMasterCSSPlanEntrypoint('@import "@master/css/index.css";')).toBe(false)
+        await expect(findCSSPlanEntryFiles(cwd)).resolves.toStrictEqual([entry])
 
         const result = await loadProjectPlan(cwd)
         const syncResult = loadProjectPlanSync(cwd)

@@ -1,5 +1,5 @@
-import type { Config, VariableDefinition } from 'shared/css-config'
 import toColorValue from '../utils/to-color-value'
+import type { VariableData, VariableDataDefinition } from '../types/variable-data'
 
 export interface GetCollectionVariablesOptions {
     varCollId: string
@@ -65,7 +65,7 @@ export default async function getCollectionVariables(options: GetCollectionVaria
         delete modes[defaultModeName]
     }
 
-    const toVariableDefinitions = (source: Record<string, any>, mode?: string): VariableDefinition[] =>
+    const toVariableDefinitions = (source: Record<string, any>, mode?: string): VariableDataDefinition[] =>
         Object.values(source).map(({ group, key, value }) => ({
             ...(group ? { namespace: group } : {}),
             key,
@@ -73,17 +73,17 @@ export default async function getCollectionVariables(options: GetCollectionVaria
             ...(mode ? { mode } : {})
         }))
 
-    let config: Config = {}
+    let variableData: VariableData = {}
     const modeNames = Object.keys(modes)
     const variableDefinitions = [
         ...(variables ? toVariableDefinitions(variables) : []),
         ...modeNames.flatMap((modeName) => toVariableDefinitions(modes[modeName], modeName))
     ]
     if (variableDefinitions.length) {
-        config.variables = variableDefinitions
+        variableData.variables = variableDefinitions
     }
     if (modeNames.length > 0) {
-        config.modes = modeNames
+        variableData.modes = modeNames
     }
-    return config
+    return variableData
 }

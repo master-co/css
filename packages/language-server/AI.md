@@ -2,7 +2,7 @@
 
 ## Responsibility
 
-`@master/css-language-server` wraps the language service in LSP. It initializes workspace folders, loads config files, manages language service lifecycles, and handles completion, hover, document color, color presentation, and semantic token requests.
+`@master/css-language-server` wraps the language service in LSP. It initializes workspace folders, loads plan entry files, manages language service lifecycles, and handles completion, hover, document color, color presentation, and semantic token requests.
 
 ## Inputs And Outputs
 
@@ -24,21 +24,21 @@
 ## Allowed Changes
 
 - Workspace detection fixes.
-- Config reload/restart fixes.
+- Plan reload/restart fixes.
 - Request handler and semantic token mode fixes with tests.
 
 ## Forbidden Without Explicit Request
 
 - Advertising new LSP capabilities without implementing and testing them.
-- Changing config-loading semantics casually.
+- Changing plan-loading semantics casually.
 - Creating server-side dependencies on editor-specific extension code.
 
 ## Risk Areas
 
-- `workspaces: 'auto'` discovery from config files and package dependencies.
+- `workspaces: 'auto'` discovery from plan entry files and package dependencies.
 - Closest workspace selection.
-- Config loading with `@master/css-configer`.
-- Restart behavior after config/settings saves.
+- Plan loading with `@master/css-configer`.
+- Restart behavior after plan/settings saves.
 
 ## Required Tests
 
@@ -56,11 +56,11 @@ Use or extend:
 
 ## Good Changes
 
-- Add a monorepo fixture for config-file or package-dependency workspace resolution.
-- Fix config reload and test restart behavior.
+- Add a monorepo fixture for plan-entry or package-dependency workspace resolution.
+- Fix plan reload and test restart behavior.
 
 ## Dangerous Changes
 
 - Treating external documents as belonging to the wrong workspace.
-- Loading config from an unintended directory.
+- Loading a plan from an unintended directory.
 - Adding diagnostics without client/server capability updates.

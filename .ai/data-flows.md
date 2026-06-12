@@ -6,12 +6,12 @@
 class string
   -> MasterCSS.add()
   -> generate()
-  -> match configured static utilities, including components-layer project styles
+  -> match compiled utilities, including components-layer project styles
   -> create()
-  -> match() against variable, value, key, arbitrary matchers
+  -> match() against variable, value, key, arbitrary plan matchers
   -> new Utility()
   -> parse values, functions, variables, selectors, modes, at-rules
-  -> declarations/declarers/transformers
+  -> declaration/value opcodes
   -> calcRulePriority()
   -> UtilityLayer.insert()
   -> insert referenced variables and animations
@@ -20,13 +20,12 @@ class string
 
 Main files:
 
-- `packages/core/src/core.ts`
-- `packages/core/src/utility.ts`
-- `packages/core/src/factories/with-utility-layer.ts`
-- `packages/core/src/utils/compare-rule-priority.ts`
-- `packages/core/src/utils/parse-at.ts`
-- `packages/core/src/utils/parse-selector.ts`
-- `packages/core/src/utils/generate-selector.ts`
+- `packages/engine/src/core.ts`
+- `packages/engine/src/utility.ts`
+- `packages/engine/src/utils/compare-rule-priority.ts`
+- `packages/engine/src/utils/parse-at.ts`
+- `packages/engine/src/utils/parse-selector.ts`
+- `packages/engine/src/utils/generate-selector.ts`
 
 Risks:
 
@@ -35,38 +34,37 @@ Risks:
 - Priority changes can alter cascade outcomes without changing declarations.
 - Selector/at-rule parsing changes affect runtime, server, extractor, language service, and ESLint.
 
-## Config To Resolved Config
+## CSS Authoring To Plan
 
 ```txt
 project CSS files containing @master; or @import "@master/css"
   -> @master/css-configer discovers project entry files only
   -> @master/css-compiler resolves CSS imports and package style imports
   -> compiler parses @theme token/mode directives, @settings root options, top-level @custom-variant definitions, @animations keyframes, and @defaults/@components/@utilities managed definition directives
-  -> compiler converts directive result through the core adapter into Config
-  -> build tools / ESLint / language-server receive the same semantic project Config
-  -> MasterCSS.resolve() resolves variables, animations, selectors, at-rules, utilities
+  -> compiler lowers directive result into MasterCSSPlan
+  -> build tools / ESLint / language-server receive the same semantic project plan
+  -> MasterCSS executes plan variables, animations, selectors, at-rules, utilities
 ```
 
 Main files:
 
 - `packages/configer/src/css.ts`
 - `packages/configer/src/load.ts`
-- `packages/integration/src/config-module.ts`
+- `packages/integration/src/plan-module.ts`
 - `packages/compiler/src/index.ts`
-- `packages/core/src/utils/extend-config.ts`
-- `packages/core/src/utils/flatten-meta-object.ts`
-- `packages/core/src/utils/flatten-object.ts`
-- `packages/core/src/core.ts`
+- `packages/compiler/src/master-css-plan.ts`
+- `packages/compiler/src/lower-css-directives.ts`
+- `packages/engine/src/core.ts`
 
 Risks:
 
 - Entry detection must only use project-level markers: `@master;` and `@import "@master/css"`.
 - Package CSS such as `@master/css/index.css` must not contain or imply a project entry marker.
-- Configer must not implement CSS import graph or CSS config directive parsing.
-- Extend order and flattening affect all config consumers.
+- Configer must not implement CSS import graph or CSS plan directive parsing.
+- Plan lowering order affects all plan consumers.
 - Variable aliases and modes affect inlining vs CSS custom property output.
 - Static utility layer assignment affects semantic class output and cascade behavior.
-- `?master-css-config` query ids, virtual module ids, and generated JavaScript module source helpers are integration protocol and belong in `@master/css-integration`, not configer.
+- `?master-css-plan` query ids, virtual module ids, and generated JavaScript module source helpers are integration protocol and belong in `@master/css-integration`, not configer.
 
 ## Build-Time Extraction
 
@@ -76,7 +74,7 @@ source globs / Vite modules / Webpack modules
   -> build tool / CLI registers managed CSS entries discovered by configer
   -> extractLatentClasses()
   -> compile managed CSS through @master/css-compiler
-  -> merge style config returned by compiler with explicit Config options
+  -> combine style plan returned by compiler with explicit plan options
   -> generateValidRules()
   -> insert valid rules into layers
   -> export css.text / virtual CSS module
@@ -103,7 +101,7 @@ Risks:
 
 ```txt
 document or shadow root
-  -> initCSSRuntime({ config, preloaded, root, autoObserve })
+  -> initCSSRuntime({ plan, preloaded, root, autoObserve })
   -> CSSRuntime.observe()
   -> register preloaded variable/keyframe counts
   -> find or create style#master
@@ -123,7 +121,7 @@ Main files:
 Risks:
 
 - Hydration must reconstruct virtual rules from native CSS rules.
-- Native CSSRule order must match core layer priority.
+- Native CSSRule order must match engine layer priority.
 - Class count bugs can leak or remove active rules.
 
 ## Language Service
@@ -132,7 +130,7 @@ Risks:
 TextDocument + cursor
   -> CSSLanguageService.getClassPosition()
   -> suggestSyntax / inspectSyntax / renderSyntaxColors / editSyntaxColors
-  -> query core utilities, variables, selectors, at-rules, generated CSS
+  -> query engine utilities, variables, selectors, at-rules, generated CSS
   -> LSP response through language-server
 ```
 

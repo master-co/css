@@ -16,7 +16,7 @@ The same syntax can express declarations, selectors, states, media queries, cont
 
 Master CSS is not just a utility preset. It is a CSS language engine plus framework packages:
 
-- Core rule generation and config resolution
+- Plan-driven rule generation
 - Runtime rendering in the browser
 - Server pre-rendering
 - Static extraction
@@ -37,7 +37,7 @@ Compared with Tailwind:
 - Syntax is closer to CSS declarations, such as `font:24`, `fg:red`, `bg:blue:hover@sm`.
 - Selectors and at-rules are first-class syntax suffixes.
 - Runtime and progressive rendering are supported in addition to static rendering.
-- Config defines utilities, variables, variants, functions, modes, and animations. Reusable component classes are static utilities in the `components` layer.
+- CSS-first plan entries define utilities, variables, variants, functions, modes, and animations. Reusable component classes are static utilities in the `components` layer.
 
 Compared with CSS-in-JS:
 
@@ -49,8 +49,8 @@ Compared with CSS-in-JS:
 
 - Rule: An emitted CSS rule-like object with text and a key.
 - Utility: A parsed Master CSS class that maps to CSS declarations, selectors, at-rules, mode, priority, and layer.
-- Static utility: A fixed class from `config.utilities`, such as `block` or `hidden`.
-- Variable: A config token that can be inlined or emitted as a CSS custom property.
+- Static utility: A fixed class from the compiled plan, such as `block` or `hidden`.
+- Variable: A plan token that can be inlined or emitted as a CSS custom property.
 - Mode: A conditional variable/style context such as `light` or `dark`.
 - Component: A semantic static utility emitted in the `components` layer.
 - Selector token: A named selector suffix expression.

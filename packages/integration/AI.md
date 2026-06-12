@@ -9,7 +9,7 @@
 - Keep this package dependency-light and adapter-neutral.
 - This package may depend on `@master/css` for public types.
 - Do not depend on Vite, Next, Webpack, Nuxt, Astro, Extractor, Runtime, Server, Configer, or Compiler.
-- Do not implement project config discovery, CSS import graph resolution, extraction, runtime hydration, or framework lifecycle behavior here.
+- Do not implement project plan discovery, CSS import graph resolution, extraction, runtime hydration, or framework lifecycle behavior here.
 - Node filesystem helpers belong in `./node`; browser-safe helpers must not import `node:*`.
 
 ## Public APIs
@@ -19,7 +19,7 @@
 - `./plan-module`
 - `./style-module`
 - `./preloaded-module`
-- `./config-loader-plugin`
+- `./plan-loader-plugin`
 - `./runtime`
 - `./node`
 

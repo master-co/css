@@ -122,7 +122,7 @@ export interface CSSDirectiveUtilityDefinition {
     rules?: CSSDirectiveUtilityRuleDefinition[]
 }
 
-export interface CSSDirectiveConfig {
+export interface CSSDirectivePlanInput {
     variants?: CSSDirectiveVariantDefinitions
     variables?: CSSDirectiveVariableDefinition[]
     utilities?: CSSDirectiveUtilityDefinition[]
@@ -175,7 +175,7 @@ export type CSSDirectiveStyleDefinition =
     | CSSDirectiveStyleNativeDefinition
 
 export interface CSSDirectiveResult {
-    config: CSSDirectiveConfig
+    planInput: CSSDirectivePlanInput
     extractionPolicy: CSSDirectiveExtractionPolicy
     classNames: string[]
     nativeClassNames: string[]

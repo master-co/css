@@ -14,7 +14,7 @@ This package provides a Nuxt module that wires Master CSS into Vite, Nitro, clie
 
 ## Risks
 
-- SSR and Nitro virtual config aliases.
+- SSR and Nitro virtual plan aliases.
 - Nuxt inline styles behavior in static mode.
 - Client/server mode differences.
 - Generated `.output` fixture content should not be changed casually.

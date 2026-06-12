@@ -1,6 +1,6 @@
 import UtilityType from 'shared/utility-type'
 import type {
-    CSSDirectiveConfig,
+    CSSDirectivePlanInput as SharedCSSDirectivePlanInput,
     CSSDirectiveUtilityDefinition,
     CSSDirectiveUtilityRuleDefinition,
     CSSDirectiveVariableDefinition
@@ -30,7 +30,7 @@ import {
     parseSelector
 } from '@master/css-engine/compiler'
 
-export type CSSDirectivePlanInput = CSSDirectiveConfig
+export type CSSDirectivePlanInput = SharedCSSDirectivePlanInput
 
 export interface CreateMasterCSSPlanOptions {
     basePlan?: MasterCSSPlan
@@ -449,7 +449,7 @@ function createVariableNamespaces(plan: MasterCSSPlan) {
     return Object.keys(variableNamespaces).length ? variableNamespaces : undefined
 }
 
-function compileAnimations(input: CSSDirectiveConfig['animations']): MasterCSSPlanAnimations | undefined {
+function compileAnimations(input: CSSDirectivePlanInput['animations']): MasterCSSPlanAnimations | undefined {
     return input ? clone(input) as MasterCSSPlanAnimations : undefined
 }
 

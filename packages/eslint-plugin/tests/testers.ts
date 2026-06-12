@@ -1,7 +1,7 @@
 import { RuleTester, RuleTesterConfig } from '@typescript-eslint/rule-tester'
 import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
-import { createThemePlan } from './helpers/create-theme-plan'
+import { createPresetPlan } from './helpers/create-preset-plan'
 import type { MasterCSSPlan } from '@master/css'
 
 const configs = {
@@ -18,7 +18,7 @@ const configs = {
     }
 } satisfies Record<string, RuleTesterConfig>
 
-function withThemeConfig(config: RuleTesterConfig): RuleTesterConfig {
+function withPresetPlan(config: RuleTesterConfig): RuleTesterConfig {
     const settings = config.settings as Record<string, any> | undefined
     const masterCSSSettings = settings?.['@master/css'] || {}
     const planOption = masterCSSSettings.plan as Partial<MasterCSSPlan> | undefined
@@ -28,16 +28,16 @@ function withThemeConfig(config: RuleTesterConfig): RuleTesterConfig {
             ...settings,
             '@master/css': {
                 ...masterCSSSettings,
-                plan: createThemePlan(planOption)
+                plan: createPresetPlan(planOption)
             }
         }
     }
 }
 
-export const jsxTester = new RuleTester(withThemeConfig(configs.jsx))
+export const jsxTester = new RuleTester(withPresetPlan(configs.jsx))
 
 export const createTester = (config: RuleTesterConfig, lang: keyof typeof configs = 'jsx') => {
-    return new RuleTester(withThemeConfig({
+    return new RuleTester(withPresetPlan({
         ...configs[lang],
         ...config
     }))

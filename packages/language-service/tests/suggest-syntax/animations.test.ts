@@ -1,10 +1,10 @@
 import { test, it, expect, describe } from 'vitest'
 import { hint } from './test'
 import type { Settings } from '../../src'
-import { createThemePlan } from '../helpers/create-theme-plan'
+import { createPresetPlan } from '../helpers/create-preset-plan'
 
 const settings = {
-    plan: createThemePlan({
+    plan: createPresetPlan({
         variables: [{ namespace: 'breakpoint', key: 'sm', value: 768 }],
         animations: {
             fade: {

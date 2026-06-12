@@ -62,10 +62,10 @@
             "import": "./dist/preloaded-module.mjs",
             "default": "./dist/preloaded-module.mjs"
         },
-        "./config-loader-plugin": {
-            "types": "./dist/config-loader-plugin.d.ts",
-            "import": "./dist/config-loader-plugin.mjs",
-            "default": "./dist/config-loader-plugin.mjs"
+        "./plan-loader-plugin": {
+            "types": "./dist/plan-loader-plugin.d.ts",
+            "import": "./dist/plan-loader-plugin.mjs",
+            "default": "./dist/plan-loader-plugin.mjs"
         },
         "./runtime": {
             "types": "./dist/runtime.d.ts",

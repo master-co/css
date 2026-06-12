@@ -128,7 +128,7 @@ export default function parseAt(token: string, css: MasterCSS, isRaw = true) {
                             }
                             return
                         } else {
-                            const { token, ...newNode } = parseValue(node.value, 'rem', css.config.rootSize)
+                            const { token, ...newNode } = parseValue(node.value, 'rem', css.settings.rootSize)
                             Object.assign(node, newNode)
                         }
                     }

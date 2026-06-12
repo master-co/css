@@ -2,12 +2,12 @@
 
 ## Responsibility
 
-`@master/css-extractor` statically scans source files, validates possible Master CSS classes, inserts valid rules into core layers, exports CSS, and provides extraction-specific stylesheet helpers for build integrations. Raw latent class candidate scanning belongs to `@master/css-lexer`. CSS parsing and CSS config compilation should be delegated to `@master/css-compiler`.
+`@master/css-extractor` statically scans source files, validates possible Master CSS classes, inserts valid rules into core layers, exports CSS, and provides extraction-specific stylesheet helpers for build integrations. Raw latent class candidate scanning belongs to `@master/css-lexer`. CSS parsing and CSS plan compilation should be delegated to `@master/css-compiler`.
 
 ## Inputs And Outputs
 
-- Input: extractor options, source globs, source text, resolved Master CSS config, stylesheet sources that import the Master CSS virtual module, and compiler-produced CSS metadata.
-- Output: `css.text`, exported CSS file, valid/invalid/latent class caches, compiled native CSS, stylesheet-local Master CSS config, watch events.
+- Input: extractor options, source globs, source text, resolved Master CSS plan, stylesheet sources that import the Master CSS virtual module, and compiler-produced CSS metadata.
+- Output: `css.text`, exported CSS file, valid/invalid/latent class caches, compiled native CSS, stylesheet-local Master CSS plan, watch events.
 
 ## Public APIs
 
@@ -26,7 +26,7 @@
 ## Allowed Changes
 
 - Focused extraction heuristic fixes.
-- Watch/config reset fixes.
+- Watch/plan reset fixes.
 - Option handling fixes with tests.
 - Shared stylesheet extraction behavior used by Vite, Webpack, and Next integrations.
 
@@ -44,7 +44,7 @@
 - Source allow/exclude matching.
 - Vite/Webpack/Next virtual-module consumers.
 - Stylesheet native CSS merging, pruning/source directives, and generated CSS ordering.
-- Do not add project config discovery, workspace detection, or config loading here; use `@master/css-configer` in the calling CLI/build/tooling package.
+- Do not add project plan discovery, workspace detection, or plan loading here; use `@master/css-configer` in the calling CLI/build/tooling package.
 - Do not add independent CSS import graph parsing here; use compiler results and keep extraction-specific decisions local.
 
 ## Required Tests

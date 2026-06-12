@@ -1,12 +1,12 @@
 import rule from '../src/rules/class-order'
 import { createTester } from './testers'
-import { createThemePlan } from './helpers/create-theme-plan'
+import { createPresetPlan } from './helpers/create-preset-plan'
 
 createTester({
     settings: {
         '@master/css': {
             classAttributes: ['test', 'className', 'class'],
-            plan: createThemePlan({
+            plan: createPresetPlan({
                 utilities: [
                     {
                         name: 'zDialog',

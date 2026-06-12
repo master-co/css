@@ -12,7 +12,7 @@
 - Static mode must not rely on `nextConfig.webpack` or `@master/css.webpack`.
 - Static mode uses `CSSExtractor` as the source of static rendering behavior.
 - `CSSRuntimeRegistry` is imported from `@master/css.react`; do not alias it to generated App Router files.
-- Turbopack JS config-import rules must stay guarded by `content: /master-css-config/` so unrelated client modules keep their native Next client boundary handling.
+- Turbopack JS plan-import rules must stay guarded by `content: /master-css-plan/` so unrelated client modules keep their native Next client boundary handling.
 
 ## Public APIs
 

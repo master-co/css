@@ -14,13 +14,13 @@ export default class VariableRule {
         if (hasDefaultValue) {
             this.nodes.push(new VariableRuleNode(this, variable as ResolvedVariableValue, css))
         }
-        if (variable.modes && this.css.config.modeTrigger) {
+        if (variable.modes && this.css.settings.modeTrigger) {
             for (const mode in variable.modes) {
                 const modeVariable = variable.modes[mode]
                 const variableRule = new VariableRuleNode(this, modeVariable, css, mode)
                 const isDefaultMode = hasDefaultValue
                     ? false
-                    : this.css.config.defaultMode !== 'none' && this.css.config.defaultMode === mode
+                    : this.css.settings.defaultMode !== 'none' && this.css.settings.defaultMode === mode
                 variableRule.isDefaultMode = isDefaultMode
                 if (isDefaultMode) {
                     this.nodes.unshift(variableRule)
@@ -54,7 +54,7 @@ export class VariableRuleNode {
     get selectorText(): string {
         const isDefaultMode = this.isDefaultMode
         if (this.mode) {
-            switch (this.css.config.modeTrigger) {
+            switch (this.css.settings.modeTrigger) {
                 case 'host':
                     return `:host(.${this.mode})${isDefaultMode ? ',:host' : ''}`
                 case 'class':
@@ -91,14 +91,14 @@ export class VariableRuleNode {
     }
 
     get mediaText() {
-        return this.css.config.modeTrigger === 'media' && this.mode
+        return this.css.settings.modeTrigger === 'media' && this.mode
             ? `@media (prefers-color-scheme:${this.mode})`
             : ''
     }
 
     get text(): string {
         let text = `${this.selectorText}{${this.declarationText}}`
-        if (this.css.config.modeTrigger === 'media' && this.mode) {
+        if (this.css.settings.modeTrigger === 'media' && this.mode) {
             text = `@media (prefers-color-scheme:${this.mode}){${text}}`
         }
         return text

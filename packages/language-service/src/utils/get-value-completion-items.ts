@@ -77,7 +77,12 @@ export default function getValueCompletionItems(css: MasterCSS = createDefaultCS
          * Scoped variables
          * @example box: + content -> box-sizing:content
          */
-        if (eachDefinedUtility.key === ruleKey || eachDefinedUtility.subkey === ruleKey || eachDefinedUtility.aliasGroups?.includes(ruleKey)) {
+        if (
+            eachDefinedUtility.key === ruleKey
+            || eachDefinedUtility.subkey === ruleKey
+            || eachDefinedUtility.keys?.includes(ruleKey)
+            || eachDefinedUtility.aliasGroups?.includes(ruleKey)
+        ) {
             eachDefinedUtility.variables?.forEach((variable, variableName) => {
                 if (completionItems.find(({ label }) => label === variableName)) return
                 const completionItem = generateVariableCompletionItem(variable, { scoped: true })

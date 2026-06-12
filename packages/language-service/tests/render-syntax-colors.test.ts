@@ -3,12 +3,12 @@ import { test, it, expect, describe } from 'vitest'
 import CSSLanguageService from '../src/core'
 import getRange from '../src/utils/get-range'
 import createDoc from '../src/utils/create-doc'
-import { createThemePlan } from './helpers/create-theme-plan'
+import { createPresetPlan } from './helpers/create-preset-plan'
 
 function createLanguageService(settings: ConstructorParameters<typeof CSSLanguageService>[0] = {}) {
     return new CSSLanguageService({
         ...settings,
-        plan: createThemePlan(settings.plan)
+        plan: createPresetPlan(settings.plan)
     })
 }
 
@@ -129,7 +129,7 @@ test.concurrent('custom variable', async () => {
     const content = `export default () => <div className='fg:${target}!'></div>`
     const doc = createDoc('tsx', content)
     const languageService = createLanguageService({
-        plan: createThemePlan({
+        plan: createPresetPlan({
             variables: [{ namespace: 'color', key: 'custom', value: '#333333' }]
         })
     })
@@ -144,7 +144,7 @@ test.concurrent('custom variable/alpha', async () => {
     const content = `export default () => <div className='fg:${target}!'></div>`
     const doc = createDoc('tsx', content)
     const languageService = createLanguageService({
-        plan: createThemePlan({
+        plan: createPresetPlan({
             variables: [{ namespace: 'color', key: 'custom', value: '#333333' }]
         })
     })

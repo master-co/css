@@ -15,8 +15,8 @@ import {
     findCSSImportStatements,
     collectCSSDirectiveRanges,
     hasMasterCSSImport,
-    hasMasterCSSConfigEntrypoint,
-    isMasterCSSModuleId as isMasterCSSConfigModuleId,
+    hasMasterCSSPlanEntrypoint,
+    isMasterCSSModuleId as isMasterCSSPlanModuleId,
     normalizeMasterCSSModuleIds,
     parseCSSImportSource,
     extractLatentClasses
@@ -210,7 +210,7 @@ function resolveStyleCSSImportGraphFile(
     for (const importStatement of imports) {
         output += source.slice(index, importStatement.start)
         const importSource = parseCSSImportSource(importStatement.statement)
-        const packageGraph = options.expandMasterCSSPackage !== false && importSource && isMasterCSSConfigModuleId(importSource)
+        const packageGraph = options.expandMasterCSSPackage !== false && importSource && isMasterCSSPlanModuleId(importSource)
             ? resolveMasterCSSPackageImportGraph(projectDir)
             : undefined
         if (packageGraph) {
@@ -275,7 +275,7 @@ export function hasDefaultStyleCSSImport(source: string) {
 }
 
 export function hasMasterStyleEntrypoint(source: string) {
-    return hasMasterCSSConfigEntrypoint(source)
+    return hasMasterCSSPlanEntrypoint(source)
 }
 
 export function resolveMasterStyleSource(
@@ -299,7 +299,7 @@ export function resolveMasterStyleSource(
 }
 
 export function isMasterCSSModuleId(id: string) {
-    return isMasterCSSConfigModuleId(id)
+    return isMasterCSSPlanModuleId(id)
 }
 
 export function isMasterCSSPackageStyleFile(id: string, projectDir?: string) {
@@ -480,8 +480,8 @@ export function getNativeCSS(result: { css?: string, generatedCSS?: string, nati
     return css
 }
 
-function hasCompiledStyleConfig(result: CompileCSSResult) {
-    return Object.keys(result.config).length || Boolean(result.styleDefinitions?.length)
+function hasCompiledStylePlanInput(result: CompileCSSResult) {
+    return Boolean(Object.keys(result.planInput || {}).length || result.styleDefinitions?.length)
 }
 
 export function getExtractorClasses(extractor: CSSExtractor) {
@@ -624,7 +624,7 @@ export async function createStyleCSSPlan(options: CreateStyleCSSPlanOptions = {}
     let plan: MasterCSSPlan | undefined = compileOptions.basePlan
     let hasStylePlan = false
     for (const result of styleResults) {
-        if (!hasCompiledStyleConfig(result)) continue
+        if (!hasCompiledStylePlanInput(result)) continue
         const finalizedResult = createPlanFromCSSResult(result, {
             ...compileOptions,
             basePlan: plan
@@ -791,7 +791,7 @@ export async function createExtractedCSSResult(options: CreateExtractedCSSOption
     let mergedPlan = compileOptions.basePlan ?? explicitPlan ?? extractor.css.plan
     const finalizedStyleResults = new Map<CompileCSSResult, ReturnType<typeof createPlanFromCSSResult>>()
     for (const result of styleResults) {
-        if (!hasCompiledStyleConfig(result)) continue
+        if (!hasCompiledStylePlanInput(result)) continue
         const finalizedResult = createPlanFromCSSResult(result, {
             ...compileOptions,
             basePlan: mergedPlan

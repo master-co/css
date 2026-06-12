@@ -9,7 +9,7 @@
         "test": "vitest"
     },
     "license": "MIT",
-    "description": "Master CSS config resolution and loading utilities.",
+    "description": "Master CSS plan discovery and loading utilities.",
     "author": "Aoyue Design LLC.",
     "funding": "https://rc.css.master.co/sponsor",
     "homepage": "https://css.master.co",
@@ -22,7 +22,7 @@
         "directory": "packages/configer"
     },
     "keywords": [
-        "config",
+        "plan",
         "configer",
         "css",
         "mastercss"

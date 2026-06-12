@@ -6,9 +6,9 @@ import {
     type MasterCSSShikiCodeToHastOptions
 } from '../src/shiki'
 import type { Settings } from '../src/settings'
-import { createThemePlan } from './helpers/create-theme-plan'
+import { createPresetPlan } from './helpers/create-preset-plan'
 
-const plan: Settings['plan'] = createThemePlan({
+const plan: Settings['plan'] = createPresetPlan({
     variables: [{ key: 'brand', value: '#123456' }],
     utilities: [
         {

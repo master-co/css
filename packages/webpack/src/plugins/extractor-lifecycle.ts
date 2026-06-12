@@ -17,7 +17,7 @@ export default function ExtractorLifecyclePlugin(context: MasterCSSWebpackContex
                     console.error('[master-css.webpack] generated CSS module update failed:', error)
                 })
             })
-            context.on('configChange', () => {
+            context.on('planChange', () => {
                 context.writeDefaultPlanModule().catch((error: unknown) => {
                     console.error('[master-css.webpack] plan module update failed:', error)
                 })

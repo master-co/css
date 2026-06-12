@@ -6,14 +6,14 @@ import {
     resolveMasterCSSPackageEntryFile
 } from '@master/css-compiler'
 import {
-    createMasterCSSConfigEntryPattern,
-    hasMasterCSSConfigEntrypoint as hasMasterCSSConfigEntrypointFallback,
+    createMasterCSSPlanEntryPattern,
+    hasMasterCSSPlanEntrypoint as hasMasterCSSPlanEntrypointFallback,
     isMasterCSSModuleId,
     normalizeMasterCSSModuleIds
 } from '@master/css-lexer'
 import { stripResourceQuery } from '@master/css-integration/plan-module'
 
-const CSS_CONFIG_ENTRY_IGNORED_DIRECTORIES = new Set([
+const CSS_PLAN_ENTRY_IGNORED_DIRECTORIES = new Set([
     'node_modules',
     'dist',
     'out',
@@ -33,41 +33,41 @@ const PACKAGE_JSON_DEPENDENCY_FIELDS = [
 
 type PackageJSON = Partial<Record<typeof PACKAGE_JSON_DEPENDENCY_FIELDS[number], unknown>>
 
-export function cleanCSSConfigRequest(id: string) {
+export function cleanCSSPlanRequest(id: string) {
     return stripResourceQuery(id)
 }
 
-export function isCSSConfigRequest(id: string) {
-    return extname(cleanCSSConfigRequest(id)) === '.css'
+export function isCSSPlanRequest(id: string) {
+    return extname(cleanCSSPlanRequest(id)) === '.css'
 }
 
 export {
-    createMasterCSSConfigEntryPattern,
+    createMasterCSSPlanEntryPattern,
     isMasterCSSModuleId,
     normalizeMasterCSSModuleIds,
     resolveMasterCSSPackageEntryFile
 }
 
-export function hasMasterCSSConfigEntrypoint(source: string) {
+export function hasMasterCSSPlanEntrypoint(source: string) {
     try {
         return inspectCSS(source).hasMasterEntry
     } catch {
-        return hasMasterCSSConfigEntrypointFallback(source)
+        return hasMasterCSSPlanEntrypointFallback(source)
     }
 }
 
-async function collectCSSConfigEntryFiles(directory: string, entries: string[]) {
+async function collectCSSPlanEntryFiles(directory: string, entries: string[]) {
     try {
         for (const dirent of await readdir(directory, { withFileTypes: true })) {
             const file = join(directory, dirent.name)
             if (dirent.isDirectory()) {
-                if (CSS_CONFIG_ENTRY_IGNORED_DIRECTORIES.has(dirent.name)) continue
-                await collectCSSConfigEntryFiles(file, entries)
+                if (CSS_PLAN_ENTRY_IGNORED_DIRECTORIES.has(dirent.name)) continue
+                await collectCSSPlanEntryFiles(file, entries)
                 continue
             }
             if (!dirent.isFile() || extname(dirent.name) !== '.css') continue
             try {
-                if (hasMasterCSSConfigEntrypoint(await readFile(file, 'utf8'))) {
+                if (hasMasterCSSPlanEntrypoint(await readFile(file, 'utf8'))) {
                     entries.push(file)
                 }
             } catch {
@@ -79,18 +79,18 @@ async function collectCSSConfigEntryFiles(directory: string, entries: string[]) 
     }
 }
 
-function collectCSSConfigEntryFilesSync(directory: string, entries: string[]) {
+function collectCSSPlanEntryFilesSync(directory: string, entries: string[]) {
     try {
         for (const dirent of readdirSync(directory, { withFileTypes: true })) {
             const file = join(directory, dirent.name)
             if (dirent.isDirectory()) {
-                if (CSS_CONFIG_ENTRY_IGNORED_DIRECTORIES.has(dirent.name)) continue
-                collectCSSConfigEntryFilesSync(file, entries)
+                if (CSS_PLAN_ENTRY_IGNORED_DIRECTORIES.has(dirent.name)) continue
+                collectCSSPlanEntryFilesSync(file, entries)
                 continue
             }
             if (!dirent.isFile() || extname(dirent.name) !== '.css') continue
             try {
-                if (hasMasterCSSConfigEntrypoint(readFileSync(file, 'utf8'))) {
+                if (hasMasterCSSPlanEntrypoint(readFileSync(file, 'utf8'))) {
                     entries.push(file)
                 }
             } catch {
@@ -102,24 +102,24 @@ function collectCSSConfigEntryFilesSync(directory: string, entries: string[]) {
     }
 }
 
-export async function findCSSConfigEntryFiles(projectDir = process.cwd()) {
+export async function findCSSPlanEntryFiles(projectDir = process.cwd()) {
     const entries: string[] = []
-    await collectCSSConfigEntryFiles(resolve(projectDir), entries)
+    await collectCSSPlanEntryFiles(resolve(projectDir), entries)
     return entries.sort()
 }
 
-export function findCSSConfigEntryFilesSync(projectDir = process.cwd()) {
+export function findCSSPlanEntryFilesSync(projectDir = process.cwd()) {
     const entries: string[] = []
-    collectCSSConfigEntryFilesSync(resolve(projectDir), entries)
+    collectCSSPlanEntryFilesSync(resolve(projectDir), entries)
     return entries.sort()
 }
 
-export async function findCSSConfigEntryFile(projectDir = process.cwd()) {
-    return (await findCSSConfigEntryFiles(projectDir))[0]
+export async function findCSSPlanEntryFile(projectDir = process.cwd()) {
+    return (await findCSSPlanEntryFiles(projectDir))[0]
 }
 
-export function findCSSConfigEntryFileSync(projectDir = process.cwd()) {
-    return findCSSConfigEntryFilesSync(projectDir)[0]
+export function findCSSPlanEntryFileSync(projectDir = process.cwd()) {
+    return findCSSPlanEntryFilesSync(projectDir)[0]
 }
 
 function isMasterCSSDependencyName(dependency: string) {
@@ -139,7 +139,7 @@ async function collectMasterCSSPackageWorkspaceDirectories(directory: string, di
         for (const dirent of await readdir(directory, { withFileTypes: true })) {
             const file = join(directory, dirent.name)
             if (dirent.isDirectory()) {
-                if (CSS_CONFIG_ENTRY_IGNORED_DIRECTORIES.has(dirent.name)) continue
+                if (CSS_PLAN_ENTRY_IGNORED_DIRECTORIES.has(dirent.name)) continue
                 await collectMasterCSSPackageWorkspaceDirectories(file, directories)
                 continue
             }
@@ -162,7 +162,7 @@ function collectMasterCSSPackageWorkspaceDirectoriesSync(directory: string, dire
         for (const dirent of readdirSync(directory, { withFileTypes: true })) {
             const file = join(directory, dirent.name)
             if (dirent.isDirectory()) {
-                if (CSS_CONFIG_ENTRY_IGNORED_DIRECTORIES.has(dirent.name)) continue
+                if (CSS_PLAN_ENTRY_IGNORED_DIRECTORIES.has(dirent.name)) continue
                 collectMasterCSSPackageWorkspaceDirectoriesSync(file, directories)
                 continue
             }
@@ -203,7 +203,7 @@ export async function findMasterCSSWorkspaceDirectories(rootDir = process.cwd())
     for (const directory of packageDirectories) {
         directories.add(directory)
     }
-    for (const entry of await findCSSConfigEntryFiles(root)) {
+    for (const entry of await findCSSPlanEntryFiles(root)) {
         directories.add(resolveWorkspaceDirectoryForEntry(entry, packageDirectories))
     }
     return [...directories].sort()
@@ -217,7 +217,7 @@ export function findMasterCSSWorkspaceDirectoriesSync(rootDir = process.cwd()) {
     for (const directory of packageDirectories) {
         directories.add(directory)
     }
-    for (const entry of findCSSConfigEntryFilesSync(root)) {
+    for (const entry of findCSSPlanEntryFilesSync(root)) {
         directories.add(resolveWorkspaceDirectoryForEntry(entry, packageDirectories))
     }
     return [...directories].sort()

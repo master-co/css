@@ -2,10 +2,10 @@ import { test, it, expect, describe } from 'vitest'
 import dedent from 'ts-dedent'
 import { hint } from './test'
 import { Settings } from '../../src'
-import { createThemePlan } from '../helpers/create-theme-plan'
+import { createPresetPlan } from '../helpers/create-preset-plan'
 
 const settings: Settings = {
-    plan: createThemePlan({
+    plan: createPresetPlan({
         utilities: [
             {
                 name: 'btn',

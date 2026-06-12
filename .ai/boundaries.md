@@ -21,7 +21,7 @@ These require source tracing, focused tests, and clear explanation:
 - Selector generation
 - At-rule parsing/generation
 - Variable and mode resolution
-- Config extension and flattening
+- Plan lowering and execution
 - Runtime hydration
 - Native stylesheet insertion/deletion
 - Static extraction heuristics

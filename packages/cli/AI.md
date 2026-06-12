@@ -6,7 +6,7 @@
 
 ## Inputs And Outputs
 
-- Input: command-line args, source globs, config paths, extractor options.
+- Input: command-line args, source globs, plan entry paths, extractor options.
 - Output: generated CSS to stdout or file, rendered HTML files, logs.
 
 ## Public APIs
@@ -41,7 +41,7 @@
 
 - `extract --watch` event lifecycle.
 - `render` writing HTML files.
-- Config path loading.
+- Plan path loading.
 - Cross-platform glob behavior.
 
 ## Required Tests
@@ -66,4 +66,3 @@ Use or extend:
 
 - Duplicating extractor logic in CLI.
 - Writing generated CSS when `--no-export` is set.
-

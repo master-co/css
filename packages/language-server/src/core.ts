@@ -5,7 +5,7 @@ import CSSLanguageService, { Settings as CSSLanguageServiceSettings } from '@mas
 import { compileCSSPlan } from '@master/css-compiler'
 import { Settings } from './settings'
 import {
-    findCSSConfigEntryFiles,
+    findCSSPlanEntryFiles,
     findMasterCSSWorkspaceDirectories
 } from '@master/css-configer/css'
 import { loadProjectPlan } from '@master/css-configer/load'
@@ -328,7 +328,7 @@ export default class CSSLanguageServer {
                 uri: workspaceURI,
                 openedTextDocuments: [],
                 languageServiceSettings,
-                planEntries: await findCSSConfigEntryFiles(workspaceDir)
+                planEntries: await findCSSPlanEntryFiles(workspaceDir)
             })
         }
     }

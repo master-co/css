@@ -1,7 +1,7 @@
 import {
     CSSDirectiveError,
     readCSSDirectiveVariantReference,
-    type CSSDirectiveConfig,
+    type CSSDirectivePlanInput,
     type CSSDirectiveLayerName,
     type CSSDirectiveResult,
     type CSSDirectiveStyleDefinition,
@@ -31,13 +31,13 @@ export interface LowerCSSDirectivesOptions {
 }
 
 export interface LowerCSSDirectivesResult {
-    input: CSSDirectiveConfig
+    input: CSSDirectivePlanInput
     plan: MasterCSSPlan
     warnings: string[]
     generatedCSS: string
 }
 
-type CSSDirectiveInput = CSSDirectiveResult | CSSDirectiveConfig
+type CSSDirectivePlanInputSource = CSSDirectiveResult | CSSDirectivePlanInput
 type InputUtilityDefinition = CSSDirectiveUtilityDefinition
 type InputVariableDefinition = CSSDirectiveVariableDefinition
 
@@ -80,15 +80,15 @@ const MEDIA_MODE_NAMES = new Set(['light', 'dark'])
 const DEFAULT_MODE_NONE = 'none'
 const CONDITION_VARIABLE_NAMESPACES = new Set(['breakpoint', 'container'])
 
-function isCSSDirectiveResult(input: CSSDirectiveInput): input is CSSDirectiveResult {
-    return 'config' in input
+function isCSSDirectiveResult(input: CSSDirectivePlanInputSource): input is CSSDirectiveResult {
+    return 'planInput' in input
 }
 
-function getDirectiveInput(input: CSSDirectiveInput) {
-    return isCSSDirectiveResult(input) ? input.config : input
+function getDirectiveInput(input: CSSDirectivePlanInputSource) {
+    return isCSSDirectiveResult(input) ? input.planInput : input
 }
 
-function getStyleDefinitions(input: CSSDirectiveInput) {
+function getStyleDefinitions(input: CSSDirectivePlanInputSource) {
     return isCSSDirectiveResult(input) ? input.styleDefinitions : undefined
 }
 
@@ -97,7 +97,7 @@ function warn(warnings: string[], options: LowerCSSDirectivesOptions, message: s
     options.onWarning?.(message)
 }
 
-function isNamedDefaultMode(defaultMode: CSSDirectiveConfig['defaultMode']): defaultMode is string {
+function isNamedDefaultMode(defaultMode: CSSDirectivePlanInput['defaultMode']): defaultMode is string {
     return typeof defaultMode === 'string' && defaultMode !== DEFAULT_MODE_NONE
 }
 
@@ -145,7 +145,7 @@ function variableSlot(variable: CSSDirectiveVariableDefinition) {
     ].join('\0')
 }
 
-function addVariable(input: CSSDirectiveConfig, variable: InputVariableDefinition) {
+function addVariable(input: CSSDirectivePlanInput, variable: InputVariableDefinition) {
     const definition = normalizeVariable(variable)
     if (definition.mode) {
         input.modes ??= []
@@ -175,9 +175,9 @@ function cloneUtility(definition: InputUtilityDefinition): CSSDirectiveUtilityDe
     }
 }
 
-function normalizeDirectiveInput(input: CSSDirectiveInput = {}): CSSDirectiveConfig {
+function normalizeDirectiveInput(input: CSSDirectivePlanInputSource = {}): CSSDirectivePlanInput {
     const source = getDirectiveInput(input)
-    const normalized: CSSDirectiveConfig = {}
+    const normalized: CSSDirectivePlanInput = {}
     if (source.rootSize !== undefined) normalized.rootSize = source.rootSize
     if (source.baseUnit !== undefined) normalized.baseUnit = source.baseUnit
     if (source.defaultMode !== undefined) normalized.defaultMode = source.defaultMode
@@ -204,13 +204,13 @@ function normalizeDirectiveInput(input: CSSDirectiveInput = {}): CSSDirectiveCon
     return normalized
 }
 
-function collectModeNames(input: CSSDirectiveConfig) {
+function collectModeNames(input: CSSDirectivePlanInput) {
     const modes = new Set(input.modes || [])
     if (isNamedDefaultMode(input.defaultMode)) modes.add(input.defaultMode)
     return modes
 }
 
-function collectVariablesByNamespace(input: CSSDirectiveConfig, namespace: string) {
+function collectVariablesByNamespace(input: CSSDirectivePlanInput, namespace: string) {
     return new Set((input.variables || [])
         .map(resolveVariableNamespace)
         .filter((variable) => variable.namespace === namespace)
@@ -219,7 +219,7 @@ function collectVariablesByNamespace(input: CSSDirectiveConfig, namespace: strin
     )
 }
 
-function validateTokenConflicts(input: CSSDirectiveConfig) {
+function validateTokenConflicts(input: CSSDirectivePlanInput) {
     const modes = collectModeNames(input)
     const breakpoints = collectVariablesByNamespace(input, 'breakpoint')
     const containers = collectVariablesByNamespace(input, 'container')
@@ -252,7 +252,7 @@ function validateTokenConflicts(input: CSSDirectiveConfig) {
     }
 }
 
-function warnUnsupportedMediaModes(input: CSSDirectiveConfig, options: LowerCSSDirectivesOptions, warnings: string[]) {
+function warnUnsupportedMediaModes(input: CSSDirectivePlanInput, options: LowerCSSDirectivesOptions, warnings: string[]) {
     if (input.modeTrigger !== 'media') return
 
     const customModes = new Set((input.modes || []).filter((mode) => !MEDIA_MODE_NAMES.has(mode)))
@@ -266,7 +266,7 @@ function warnUnsupportedMediaModes(input: CSSDirectiveConfig, options: LowerCSSD
     warn(warnings, options, `Custom ${subject} ${modeList} will not work with mode-trigger: media. Browsers only support light and dark prefers-color-scheme values; use mode-trigger: class or host for custom modes.`)
 }
 
-function createCSS(input: CSSDirectiveConfig, options: LowerCSSDirectivesOptions) {
+function createCSS(input: CSSDirectivePlanInput, options: LowerCSSDirectivesOptions) {
     return createCompilerCSS(createMasterCSSPlan(input, {
         basePlan: options.basePlan
     }))
@@ -294,7 +294,7 @@ function getComposedUtilitySelector(utility: GeneratedRule, css: MasterCSS) {
     if (utility.selectorTemplate) {
         selector = utility.selectorTemplate.replace(/&/g, selector)
     }
-    if (utility.mode && css.config.modeTrigger !== 'media') {
+    if (utility.mode && css.settings.modeTrigger !== 'media') {
         const modeSelector = css.getModeSelector(utility.mode)
         if (modeSelector) selector = `${modeSelector} ${selector}`
     }
@@ -563,7 +563,7 @@ function ensureUtilityRules(definition: CSSDirectiveUtilityDefinition) {
     })
 }
 
-function finalizeUtilityDefinitions(input: CSSDirectiveConfig, css: MasterCSS) {
+function finalizeUtilityDefinitions(input: CSSDirectivePlanInput, css: MasterCSS) {
     const utilities = input.utilities
     if (!utilities?.length) return
 
@@ -780,7 +780,7 @@ function createMergedStyleDefinitions(definitions: CSSDirectiveStyleDefinition[]
         }
     }
 
-    const rootSize = css.config.rootSize || 16
+    const rootSize = css.settings.rootSize || 16
     return [...buckets.values()]
         .sort((a, b) => compareStyleMergeBuckets(a, b, rootSize))
         .flatMap((bucket) => {
@@ -900,7 +900,7 @@ function renderStyleDefinitions(definitions: MergedStyleDefinition[]) {
     }).join('')
 }
 
-function getStaticUtilityDefinition(input: CSSDirectiveConfig, name: string, layer: CSSDirectiveLayerName) {
+function getStaticUtilityDefinition(input: CSSDirectivePlanInput, name: string, layer: CSSDirectiveLayerName) {
     input.utilities ??= []
     const existing = input.utilities.find((utility) =>
         utility.name === name
@@ -936,7 +936,7 @@ function pushStaticUtilityStyleRule(definition: CSSDirectiveUtilityDefinition, s
 }
 
 function finalizeStyleDefinitions(
-    input: CSSDirectiveConfig,
+    input: CSSDirectivePlanInput,
     styleDefinitions: CSSDirectiveStyleDefinition[] | undefined,
     css: MasterCSS,
     options: LowerCSSDirectivesOptions
@@ -982,7 +982,7 @@ function finalizeStyleDefinitions(
     return renderStyleDefinitions(createMergedStyleDefinitions(nativeDefinitions, css))
 }
 
-export default function lowerCSSDirectives(input: CSSDirectiveInput, options: LowerCSSDirectivesOptions = {}): LowerCSSDirectivesResult {
+export default function lowerCSSDirectives(input: CSSDirectivePlanInputSource, options: LowerCSSDirectivesOptions = {}): LowerCSSDirectivesResult {
     const directiveInput = normalizeDirectiveInput(input)
     const warnings = isCSSDirectiveResult(input) ? [...input.warnings] : []
 

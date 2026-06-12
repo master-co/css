@@ -3,7 +3,7 @@ export { default as cssRuntime } from './css-runtime'
 export { default as initCSSRuntime } from './init'
 export type { CSSRuntimeInitOptions } from './init'
 export { default as RuntimeUtilityLayer } from './utility-layer'
-export { resolveRuntimePlan } from './config'
+export { resolveRuntimePlan } from './plan'
 
 export type * from './types'
 export type { CSSRuntimeDecoratorOptions, CSSRuntimeOptions } from './css-runtime'

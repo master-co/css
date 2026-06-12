@@ -27,18 +27,22 @@ The main body of this package is the class `MasterCSS`, which encapsulates the c
 ```js
 import { MasterCSS, createCSS } from '@master/css'
 
-const css = createCSS(config)
-const customCSS = new MasterCSS(config)
+const css = createCSS(plan)
+const customCSS = new MasterCSS(plan)
 ```
 <DocFn>
     {[
-        { name: 'config?', type: 'Config', defaultValue: 'undefined' },
+        { name: 'plan', type: 'MasterCSSPlan' },
     ]}
 </DocFn>
 
-### `css.config`
-The `css.config` property is the resolved config used by the engine. `new MasterCSS(config)` uses the provided config directly; `createCSS(config)` extends the default config with the provided config.
-<DocProp types={['Config']} />
+### `css.plan`
+The `css.plan` property is the compiled MasterCSSPlan executed by the engine. `new MasterCSS(plan)` and `createCSS(plan)` require a complete plan.
+<DocProp types={['MasterCSSPlan']} />
+
+### `css.settings`
+The `css.settings` property is the resolved settings section from the active plan.
+<DocProp types={['MasterCSSPlanSettings']} />
 
 ### `css.text`
 This `css.text` getter returns the result of joining the text of all CSS rules.
@@ -69,15 +73,15 @@ css.delete('text:center', ...)
 ```
 
 ### `css.refresh()`
-Refresh the Master CSS with the configuration.
+Refresh the Master CSS with a compiled plan.
 <DocFn>
     {[
-        { name: 'config?', type: 'Config', defaultValue: 'this.config' },
+        { name: 'plan?', type: 'MasterCSSPlan', defaultValue: 'this.plan' },
         { name: 'return', type: 'this' },
     ]}
 </DocFn>
 ```ts
-css.refresh(config)
+css.refresh(plan)
 ```
 
 ### `css.reset()`

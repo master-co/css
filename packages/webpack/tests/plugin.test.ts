@@ -284,7 +284,7 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
     })
 
     test('resolves ?master-css-plan imports to per-file JS virtual modules', async () => {
-        const fixturePath = path.resolve(__dirname, 'fixtures/config-virtual-module/theme.css')
+        const fixturePath = path.resolve(__dirname, 'fixtures/plan-virtual-module/theme.css')
         const plugin = makePlugin()
         const { compiler } = makeFakeCompiler()
         ;(compiler as any).webpack = { sources: { RawSource: function NoopSource(this: object) { /* stub */ } } }
@@ -421,7 +421,7 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
     })
 
     test('adds managed CSS entry files as virtual plan dependencies', async () => {
-        const root = path.resolve(__dirname, 'fixtures/config-virtual-module/css-only')
+        const root = path.resolve(__dirname, 'fixtures/plan-virtual-module/css-only')
         const plugin = makePlugin({}, root)
         const { compiler } = makeFakeCompiler({ context: root })
         ;(compiler as any).webpack = { sources: { RawSource: function NoopSource(this: object) { /* stub */ } } }
@@ -534,7 +534,7 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
     })
 
     test('resets extractor when the default CSS plan changes in watch mode', async () => {
-        const root = path.resolve(__dirname, 'fixtures/config-virtual-module/css-only')
+        const root = path.resolve(__dirname, 'fixtures/plan-virtual-module/css-only')
         const configPath = path.join(root, 'app.css')
         const plugin = makePlugin({}, root)
         ;(plugin as any).defaultPlanDependencies = [configPath]
@@ -590,7 +590,7 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
     })
 
     test('does not reset extractor when a non-plan file changes in watch mode', async () => {
-        const root = path.resolve(__dirname, 'fixtures/config-virtual-module/css-only')
+        const root = path.resolve(__dirname, 'fixtures/plan-virtual-module/css-only')
         const plugin = makePlugin({}, root)
         ;(plugin as any).defaultPlanDependencies = [path.join(root, 'app.css')]
         const reset = vi.fn(async function (this: MasterCSSPlugin) {

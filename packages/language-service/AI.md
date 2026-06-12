@@ -2,11 +2,11 @@
 
 ## Responsibility
 
-`@master/css-language-service` provides editor intelligence using core Master CSS knowledge. It finds class positions, returns completions, hover/generated CSS previews, color information, color presentations, and semantic token classifications.
+`@master/css-language-service` provides editor intelligence using plan-driven Master CSS knowledge. It finds class positions, returns completions, hover/generated CSS previews, color information, color presentations, and semantic token classifications.
 
 ## Inputs And Outputs
 
-- Input: `TextDocument`, cursor positions, LSP request context, language service settings, optional config.
+- Input: `TextDocument`, cursor positions, LSP request context, language service settings, optional MasterCSSPlan.
 - Output: completion items, hover docs, color info, color presentations, semantic tokens.
 
 ## Public APIs
@@ -26,7 +26,7 @@
 - `src/utils/get-query-completion-items.ts`
 - `src/utils/regex.ts`
 
-CSS directive highlighting consumes dependency-free source ranges from `@master/css-lexer`, then layers language-service semantic token classification on top. Master class strings consume lexer lexical tokens first, then language-service adds core-backed semantic meaning through `css.generate()`. Do not route CSS directive highlighting through the full compiler pipeline.
+CSS directive highlighting consumes dependency-free source ranges from `@master/css-lexer`, then layers language-service semantic token classification on top. Master class strings consume lexer lexical tokens first, then language-service adds engine-backed semantic meaning through `css.generate()`. Do not route CSS directive highlighting through the full compiler pipeline.
 
 ## Allowed Changes
 
@@ -35,7 +35,7 @@ CSS directive highlighting consumes dependency-free source ranges from `@master/
 
 ## Forbidden Without Explicit Request
 
-- Changing core syntax behavior here.
+- Changing engine syntax behavior here.
 - Adding diagnostics here without coordinating language-server capabilities.
 - Broad regex rewrites without framework-specific tests.
 
@@ -71,4 +71,4 @@ Use or extend:
 
 - Assuming all class strings are HTML attributes.
 - Returning completions outside accepted documents.
-- Making completions inconsistent with core rule matching.
+- Making completions inconsistent with engine rule matching.

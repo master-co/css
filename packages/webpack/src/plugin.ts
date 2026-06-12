@@ -24,9 +24,9 @@ import { readFileSync } from 'node:fs'
 import { normalizePath } from './utils/path'
 import ExtractorLifecyclePlugin from './plugins/extractor-lifecycle'
 import VirtualModuleRegistryPlugin from './plugins/virtual-modules'
-import ConfigVirtualModulePlugin from './plugins/config-virtual-module'
+import PlanVirtualModulePlugin from './plugins/plan-virtual-module'
 import VirtualCSSImportPlugin from './plugins/virtual-css-import'
-import ConfigLoaderPlugin from './plugins/config-loader'
+import PlanLoaderPlugin from './plugins/plan-loader'
 import UsageGraphPlugin from './plugins/usage-graph'
 import StyleEntryPlugin from './plugins/style-entry'
 
@@ -322,9 +322,9 @@ export class MasterCSSPlugin {
         return [
             ExtractorLifecyclePlugin(context),
             VirtualModuleRegistryPlugin(context),
-            ConfigVirtualModulePlugin(context),
+            PlanVirtualModulePlugin(context),
             VirtualCSSImportPlugin(context),
-            ConfigLoaderPlugin(context),
+            PlanLoaderPlugin(context),
             StyleEntryPlugin(context),
             UsageGraphPlugin(context)
         ]

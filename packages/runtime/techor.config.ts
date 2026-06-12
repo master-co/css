@@ -1,5 +1,5 @@
 import type { Config } from 'techor'
-import { createMasterCSSPlanLoaderPlugin } from '../integration/src/config-loader-plugin'
+import { createMasterCSSPlanLoaderPlugin } from '../integration/src/plan-loader-plugin'
 
 const config: Config = {
     build: {

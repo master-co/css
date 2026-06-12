@@ -16,7 +16,7 @@ interface TransformStyleSourceOptions {
     masterImport?: string
 }
 
-function hasMasterStyleConfigDirective(source: string) {
+function hasMasterStylePlanDirective(source: string) {
     return source.includes('@settings') || source.includes('@theme') || source.includes('@animations') || source.includes('@master')
 }
 
@@ -32,7 +32,7 @@ export async function transformStyleSource(
     }
     if (isMasterCSSPackageStyleFile(resourcePath, projectDir)) {
         const cleanSource = removeMasterStyleDirectives(source).code
-        if (!hasMasterStyleConfigDirective(cleanSource)) {
+        if (!hasMasterStylePlanDirective(cleanSource)) {
             return {
                 code: cleanSource,
                 dependencies

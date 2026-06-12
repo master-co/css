@@ -55,7 +55,7 @@ export type CompileCSSPlanSourceOptions = CompileCSSOptions & {
     basePlan?: MasterCSSPlan
 }
 
-export interface CompileCSSPlanResult extends Omit<CompileCSSResult, 'config'> {
+export interface CompileCSSPlanResult extends Omit<CompileCSSResult, 'planInput'> {
     plan: MasterCSSPlan
     directives: CompileCSSResult
 }
@@ -157,7 +157,7 @@ function resolveCSSImportGraphFile(
         throw new Error(`Circular CSS import: ${[...stack, absoluteFile].join(' -> ')}`)
     }
     if (!existsSync(absoluteFile)) {
-        throw new Error(`CSS config file not found: ${absoluteFile}`)
+        throw new Error(`CSS plan entry file not found: ${absoluteFile}`)
     }
     if (!dependencySet.has(absoluteFile)) {
         dependencySet.add(absoluteFile)
@@ -254,7 +254,7 @@ function toCompileCSSPlanResult(
     result: CompileCSSResult,
     options: CompileCSSPlanSourceOptions = {}
 ): CompileCSSPlanResult {
-    const { config: _directiveConfig, ...directiveData } = result
+    const { planInput: _directivePlanInput, ...directiveData } = result
     const lowerResult = lowerCSSDirectives(result, {
         basePlan: options.basePlan,
         onWarning: options.onWarning
@@ -304,7 +304,7 @@ export function compileProjectPlan(entries: string[], options: CompileCSSPlanOpt
     const generatedCSS: string[] = []
     const warnings: string[] = []
     let directives: CompileCSSResult = {
-        config: {},
+        planInput: {},
         extractionPolicy: createCSSDirectiveExtractionPolicy(),
         classNames: [],
         nativeClassNames: [],

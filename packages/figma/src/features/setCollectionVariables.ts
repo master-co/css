@@ -1,19 +1,19 @@
 import parseColorValue from '../utils/parse-color-value'
-import type { Config } from 'shared/css-config'
 import getVariableCollections from './getVariableCollections'
 import notify from '../utils/notify'
+import type { VariableData } from '../types/variable-data'
 
 const COLOR_VALUE_REGEX = /(?:#|(?:color|color-contrast|color-mix|hwb|lab|lch|oklab|oklch|rgb|rgba|hsl|hsla|light-dark)\(.*\)|(?:\$colors)(?![a-zA-Z0-9-]))/
 
 export interface SetCollectionVariablesOptions {
     varCollId?: string
     newVarCollName: string
-    configJSON: Config
+    variableData: VariableData
 }
 
 export default async function setCollectionVariables(options: SetCollectionVariablesOptions) {
-    if (!options.configJSON.variables && !options.configJSON.modes) {
-        figma.notify('No variables or modes found in config', { error: true })
+    if (!options.variableData.variables && !options.variableData.modes) {
+        figma.notify('No variables or modes found in variable data', { error: true })
         return
     }
     let collection: VariableCollection | null | undefined
@@ -42,7 +42,7 @@ export default async function setCollectionVariables(options: SetCollectionVaria
         .filter(v => v.variableCollectionId === collection.id)
         .map(v => [v.name, v]))
 
-    const allModes = { default: options.configJSON.variables, ...options.configJSON.modes }
+    const allModes = { default: options.variableData.variables, ...options.variableData.modes }
     for (const [modeName, variables] of Object.entries(allModes)) {
         let modeId = modeName === 'default' ? collection.defaultModeId : modeIdByName[modeName.toLowerCase()]
         if (!modeId) {

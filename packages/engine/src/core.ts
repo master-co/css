@@ -126,13 +126,36 @@ function matchesValueSegmentPolicy(value: string, matcher: MasterCSSPlanUtilityM
         || !hasTopLevelValueSeparator(value)
 }
 
+function pushUnique(target: string[], values: string[]) {
+    for (const value of values) {
+        if (!target.includes(value)) target.push(value)
+    }
+}
+
+function deriveUtilityMetadata(utility: CompiledUtility) {
+    const keys = utility.keys ? [...utility.keys] : []
+    const aliasGroups = utility.aliasGroups ? [...utility.aliasGroups] : []
+
+    for (const matcher of utility.matchers) {
+        if (matcher.type === 'key') {
+            pushUnique(keys, matcher.keys)
+        } else if (matcher.type === 'variable' || matcher.type === 'value') {
+            pushUnique(aliasGroups, matcher.keys)
+        }
+    }
+
+    if (keys.length && !utility.keys) utility.keys = keys
+    if (aliasGroups.length && !utility.aliasGroups) utility.aliasGroups = aliasGroups
+    if (!utility.key) utility.key = keys[0] || aliasGroups[0]
+}
+
 export default class MasterCSS {
     readonly definedUtilities: CompiledUtility[] = []
     protected readonly variableMatcherUtilities: CompiledUtility[] = []
     protected readonly valueMatcherUtilities: CompiledUtility[] = []
     protected readonly keyMatcherUtilities: CompiledUtility[] = []
     protected readonly arbitraryMatcherUtilities: CompiledUtility[] = []
-    readonly config!: EngineSettings
+    readonly settings!: EngineSettings
     readonly rules: (Layer | Rule)[] = []
     readonly classUtilities = new Map<string, Utility[]>()
     readonly animationsNonLayer = new NonLayer(this)
@@ -200,7 +223,7 @@ export default class MasterCSS {
 
     private loadResolvedPlan() {
         // @ts-expect-error read-only
-        this.config = {
+        this.settings = {
             ...DEFAULT_SETTINGS,
             ...(this.plan.settings || {}),
             modes: this.plan.settings?.modes ? [...this.plan.settings.modes] : [...DEFAULT_SETTINGS.modes],
@@ -266,7 +289,7 @@ export default class MasterCSS {
 
     private loadVariables() {
         const { variables = [] } = this.plan
-        const { modes = [] } = this.config
+        const { modes = [] } = this.settings
         this.modes.push(...modes)
         for (const definition of variables) {
             if (!definition.name || !definition.type || definition.value === false) continue
@@ -364,6 +387,7 @@ export default class MasterCSS {
                 }
             }
 
+            deriveUtilityMetadata(definedUtility)
             this.definedUtilities.push(definedUtility)
         }
         this.loadUtilityBuckets(this.plan.utilityBuckets)
@@ -374,7 +398,7 @@ export default class MasterCSS {
     }
 
     parseValue(token: string | number, unit = 'rem') {
-        return parseValue(token, unit, this.config.rootSize)
+        return parseValue(token, unit, this.settings.rootSize)
     }
 
     /**
@@ -550,7 +574,7 @@ export default class MasterCSS {
             const modeSelector = this.getModeSelector(eachField)
             if (
                 i === 0 && (eachField === modeSelector) ||
-                (i === 0 || i === 1) && (eachField === this.config.scope)
+                (i === 0 || i === 1) && (eachField === this.settings.scope)
             ) continue
             if (eachField.startsWith('.')) {
                 const eachFieldName = eachField.slice(1)
@@ -650,7 +674,7 @@ export default class MasterCSS {
     }
 
     getModeSelector(modeName: string) {
-        switch (this.config.modeTrigger) {
+        switch (this.settings.modeTrigger) {
             case 'class':
                 return '.' + modeName
             case 'host':

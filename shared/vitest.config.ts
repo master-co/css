@@ -1,5 +1,5 @@
 import type { ViteUserConfig } from 'vitest/config'
-import { createMasterCSSPlanLoaderPlugin } from '../packages/integration/src/config-loader-plugin'
+import { createMasterCSSPlanLoaderPlugin } from '../packages/integration/src/plan-loader-plugin'
 
 const config: ViteUserConfig = {
     plugins: [

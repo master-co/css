@@ -1,14 +1,14 @@
-import themeConfig from './theme-config'
+import presetPlan from './preset-plan'
 import type { MasterCSSPlanVariable } from '@master/css'
 
-const themeVariables = themeConfig.variables || []
+const presetVariables = presetPlan.variables || []
 
 export function getThemeVariables(namespace: string): MasterCSSPlanVariable[] {
-    return themeVariables.filter((variable) => variable.namespace === namespace && variable.value !== undefined)
+    return presetVariables.filter((variable) => variable.namespace === namespace && variable.value !== undefined)
 }
 
 export function getThemeModeVariables(namespace: string, mode: string): MasterCSSPlanVariable[] {
-    return themeVariables.flatMap((variable) => {
+    return presetVariables.flatMap((variable) => {
         const modeVariable = variable.namespace === namespace && variable.modes?.[mode]
         return modeVariable
             ? [{

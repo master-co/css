@@ -74,7 +74,7 @@ export default class CSSExtractor extends EventEmitter {
     watchers: FSWatcher[] = []
     initialized = false
     initializing?: Promise<this>
-    configDependencies: string[] = []
+    planDependencies: string[] = []
     extractorDirectives: ExtractorDirectives = createExtractorDirectives()
 
     /**
@@ -134,7 +134,7 @@ export default class CSSExtractor extends EventEmitter {
             log``
         }
         this.extractorDirectives = createExtractorDirectives()
-        this.configDependencies = []
+        this.planDependencies = []
         this.sourceMatchers = undefined
         this.sourceMatcherOptions = undefined
         this.sourceAdapters = undefined
@@ -158,7 +158,7 @@ export default class CSSExtractor extends EventEmitter {
         this.usedNativeClasses.clear()
         this.contentHashes.clear()
         this.validRulesCache.clear()
-        this.configDependencies = []
+        this.planDependencies = []
         this.extractorDirectives = createExtractorDirectives()
         this.cachedFixedSourcePaths = undefined
         this.cachedAllowedSourcePaths = undefined
@@ -185,7 +185,7 @@ export default class CSSExtractor extends EventEmitter {
         this.usedNativeClasses.clear()
         this.contentHashes.clear()
         this.validRulesCache.clear()
-        this.configDependencies = []
+        this.planDependencies = []
         this.extractorDirectives = createExtractorDirectives()
         this.cachedFixedSourcePaths = undefined
         this.cachedAllowedSourcePaths = undefined
@@ -274,7 +274,7 @@ export default class CSSExtractor extends EventEmitter {
         // Single-pass filter (was three sequential `.filter` chains, each
         // allocating a new array). Track native CSS classes separately, then
         // skip generated-rule candidates already known invalid / already
-        // known valid / explicitly excluded by user config.
+        // known valid / explicitly excluded by blocklist options.
         const latentClasses: string[] = []
         const nativeClasses: string[] = []
         for (const eachLatentClass of allLatent) {
@@ -416,17 +416,17 @@ export default class CSSExtractor extends EventEmitter {
             await this.watchSource(sourcePaths)
         }
 
-        if (this.configDependencies.length) {
-            await this.watch('add change unlink', this.configDependencies, async (configDependency) => {
+        if (this.planDependencies.length) {
+            await this.watch('add change unlink', this.planDependencies, async (planDependency) => {
                 if (this.options.verbose) {
                     log``
-                    const changedConfigPath = path.isAbsolute(configDependency)
-                        ? path.relative(this.cwd, configDependency)
-                        : configDependency
-                    log`[change] **${changedConfigPath}**`
+                    const changedPlanPath = path.isAbsolute(planDependency)
+                        ? path.relative(this.cwd, planDependency)
+                        : planDependency
+                    log`[change] **${changedPlanPath}**`
                 }
                 await this.reset()
-                this.emit('configChange')
+                this.emit('planChange')
             })
         }
         this.watching = true

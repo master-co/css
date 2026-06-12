@@ -16,7 +16,7 @@ export default function getClassCompletionItems(css: MasterCSS = createDefaultCS
             completionItems.push({
                 label: utilityName,
                 kind: CompletionItemKind.Value,
-                documentation: getCSSDataDocumentation(data, {
+                documentation: getCSSDataDocumentation(isComponent ? undefined : data, {
                     generatedCSS: generateCSS([utilityName], css),
                     docs: isComponent ? '/guide/components' : docs
                 }),

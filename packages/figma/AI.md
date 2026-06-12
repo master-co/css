@@ -18,7 +18,7 @@ This package implements a Figma plugin for importing and exporting Master CSS va
 - Figma API shape and async behavior.
 - Color conversion precision and color spaces.
 - Variable alias handling is limited.
-- Import/export must preserve config structure.
+- Import/export must preserve variable data structure.
 
 ## Rules
 
@@ -33,4 +33,3 @@ pnpm --filter @master/css.figma test
 pnpm --filter @master/css.figma build
 pnpm --filter @master/css.figma type-check
 ```
-

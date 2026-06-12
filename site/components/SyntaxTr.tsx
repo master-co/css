@@ -21,7 +21,7 @@ export default async function SyntaxTr({ value, children }: any) {
         return _value
             .replace(/100000000/g, '<size>')
             .replace(/#12345678/g, '<color>')
-            .replace(/6250000/g, '<size>/' + css.config.rootSize)
+            .replace(/6250000/g, '<size>/' + css.settings.rootSize)
             .replace(/1234567/g, '<n>')
             .replace(/7654321/g, '<d>')
             .replace(/16.12902045785642/g, '<n/d>*100')

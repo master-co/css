@@ -261,7 +261,7 @@ export class Utility {
         if (stateBranch.valid === false) this.valid = false
         this.variantBranchKey = stateBranch.key
 
-        if (this.mode && css.config.modeTrigger === 'media') {
+        if (this.mode && css.settings.modeTrigger === 'media') {
             const atComp = {
                 name: 'prefers-color-scheme',
                 value: this.mode
@@ -487,7 +487,7 @@ export class Utility {
             for (const propertyName in ruleDeclarations) {
                 let propertyValue = String(ruleDeclarations[propertyName])
                 const important = 'important' in rule && rule.important
-                if ((important || rule.css.config.important) && !propertyValue.endsWith('!important')) {
+                if ((important || rule.css.settings.important) && !propertyValue.endsWith('!important')) {
                     propertyValue += '!important'
                 }
                 declarations[propertyName] = propertyValue
@@ -709,7 +709,7 @@ export class Utility {
             const propertyValue = declarations[propertyName as keyof PropertiesHyphen]
             const propertyText = propertyName + ':' + String(propertyValue)
             propertiesText.push(
-                propertyText + (((this.important || this.css.config.important) && !propertyText.endsWith('!important')) ? '!important' : '')
+                propertyText + (((this.important || this.css.settings.important) && !propertyText.endsWith('!important')) ? '!important' : '')
             )
         }
         let text = this.createSelectorText(selector) + '{' + propertiesText.join(';') + '}'
@@ -728,8 +728,8 @@ export class Utility {
 
     createSelectorText(selector?: string) {
         let pre = ''
-        if (this.css.config.scope) {
-            pre = this.css.config.scope + ' ' + pre
+        if (this.css.settings.scope) {
+            pre = this.css.settings.scope + ' ' + pre
         }
         if (this.mode) {
             const modeSelector = this.css.getModeSelector(this.mode)
@@ -752,7 +752,7 @@ export class Utility {
     }
 
     resolveValue = (valueComponents: ValueComponent[], unit: string, bypassVariableNames: string[], bypassParsing: boolean) => {
-        const { functions } = this.css.config
+        const { functions } = this.css.settings
 
         let currentValue = ''
         const addVariableName = (variableName: string) => {
@@ -821,7 +821,7 @@ export class Utility {
                     }
                     const emitVariable = (variable?: Variable) => {
                         if (variable?.type === 'number' && eachValueComponent.alpha === undefined && !bypassParsing) {
-                            return createNumberVariableReference(variable, unit, this.css.config.rootSize)
+                            return createNumberVariableReference(variable, unit, this.css.settings.rootSize)
                         }
                         return createCSSVariableReference(eachValueComponent.name, eachValueComponent.alpha, resolveFallback())
                     }
@@ -911,7 +911,7 @@ export class Utility {
             if (this.registeredUtility.unit === 'rem' || this.registeredUtility.unit === 'em') {
                 unitValueComponents.push(
                     { type: 'separator', value: '/', text: ' / ', token: '/' },
-                    { type: 'number', value: this.css.config.rootSize as number, token: String(this.css.config.rootSize) }
+                    { type: 'number', value: this.css.settings.rootSize as number, token: String(this.css.settings.rootSize) }
                 )
             }
             unitValueComponents.push(
@@ -976,7 +976,7 @@ export class Utility {
                     if (!isVarFunction) {
                         const result = BASE_UNIT_REGEX.exec(current)
                         if (result) {
-                            current = (+result[1] * (this.css.config.baseUnit ?? 1)).toString()
+                            current = (+result[1] * (this.css.settings.baseUnit ?? 1)).toString()
                         }
                     }
 
@@ -1040,7 +1040,7 @@ export class Utility {
                 if (this.registeredUtility.unit === 'rem' || this.registeredUtility.unit === 'em') {
                     currentValueComponents.push(
                         { type: 'separator', value: '/', text: ' / ', token: '/' },
-                        { type: 'number', value: this.css.config.rootSize as number, token: String(this.css.config.rootSize) }
+                        { type: 'number', value: this.css.settings.rootSize as number, token: String(this.css.settings.rootSize) }
                     )
                 }
                 currentValueComponents.push(
@@ -1082,7 +1082,7 @@ export class Utility {
                         && nestedFunctionName !== 'calc'
                         && (
                             nestedIsVarFunction
-                            || Object.prototype.hasOwnProperty.call(this.css.config.functions || {}, nestedFunctionName)
+                            || Object.prototype.hasOwnProperty.call(this.css.settings.functions || {}, nestedFunctionName)
                         ),
                         bypassParsing || nestedIsVarFunction || unitChecking && currentHasUnit,
                         unitChecking,
@@ -1221,7 +1221,7 @@ export class Utility {
                     if (!isVarFunction) {
                         const result = BASE_UNIT_REGEX.exec(currentValue)
                         if (result) {
-                            currentValue = String(+result[1] * (this.css.config.baseUnit ?? 1))
+                            currentValue = String(+result[1] * (this.css.settings.baseUnit ?? 1))
                         }
                     }
                     if (bypassParsing) {
@@ -1263,7 +1263,7 @@ export class Utility {
                 const newValueComponent: ValueComponent[][0] = { type: 'function', name: functionName, symbol: val, children: [], token: '' }
                 currentValueComponents.push(newValueComponent)
                 currentValue = ''
-                const functionDefinition = val === '(' ? this.css.config.functions?.[functionName] : undefined
+                const functionDefinition = val === '(' ? this.css.settings.functions?.[functionName] : undefined
                 i = this.parseValues(
                     newValueComponent.children,
                     ++i,
@@ -1312,7 +1312,7 @@ export class Utility {
     }
 
     parseValue(token: string | number, unit = this.registeredUtility.unit) {
-        const parsed = parseValue(token, unit, this.css.config.rootSize)
+        const parsed = parseValue(token, unit, this.css.settings.rootSize)
         // exclude like `aspect:1/2` from being parsed as 50%
         if (this.registeredUtility.unit && parsed.type === 'string') {
             // 1/2 → 50%

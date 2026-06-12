@@ -15,7 +15,7 @@ import {
     type LoadProjectPlanOptions,
     type LoadProjectPlanResult
 } from './options'
-import { findCSSConfigEntryFilesSync } from './css'
+import { findCSSPlanEntryFilesSync } from './css'
 
 export type {
     LoadPlanOptions,
@@ -48,7 +48,7 @@ export function loadPlanModuleSync(path: string, options: LoadPlanOptions = {}):
 }
 
 export function loadProjectPlanSync(projectDir = process.cwd(), options: LoadProjectPlanOptions = {}): LoadProjectPlanResult {
-    const entries = options.entries ?? findCSSConfigEntryFilesSync(projectDir)
+    const entries = options.entries ?? findCSSPlanEntryFilesSync(projectDir)
     return compileProjectPlan(entries, {
         ...withDefaultPlan(options),
         root: projectDir
@@ -56,7 +56,7 @@ export function loadProjectPlanSync(projectDir = process.cwd(), options: LoadPro
 }
 
 export function loadProjectPlanModuleSync(projectDir = process.cwd(), options: LoadProjectPlanOptions = {}) {
-    const entries = options.entries ?? findCSSConfigEntryFilesSync(projectDir)
+    const entries = options.entries ?? findCSSPlanEntryFilesSync(projectDir)
     return compileProjectPlanModule(entries, {
         ...withDefaultPlan(options),
         root: projectDir

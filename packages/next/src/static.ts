@@ -10,7 +10,7 @@ import {
     registerStyleCSSSource,
     type StyleCSSSources
 } from '@master/css-extractor/style'
-import { findCSSConfigEntryFiles } from '@master/css-configer/css'
+import { findCSSPlanEntryFiles } from '@master/css-configer/css'
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { existsSync, readFileSync } from 'node:fs'
 import { dirname, relative, resolve } from 'node:path'
@@ -104,7 +104,7 @@ async function createStaticCSS(projectDir: string, session: StaticSession) {
 }
 
 async function registerStyleCSSEntries(projectDir: string, session: StaticSession) {
-    for (const entry of await findCSSConfigEntryFiles(projectDir)) {
+    for (const entry of await findCSSPlanEntryFiles(projectDir)) {
         await registerStyleCSSSource(session.extractor, session.styleCSSSources, entry, await readFile(entry, 'utf8'), {
             projectDir
         })

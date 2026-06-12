@@ -1,4 +1,4 @@
-import type { UtilityDefinition, UtilityLayerName } from './css-config.js'
+import type { MasterCSSPlanUtility, MasterCSSPlanUtilityLayerName } from './master-css-plan.js'
 
 export type ValueComponent = StringValueComponent | NumberValueComponent | FunctionValueComponent | VariableValueComponent | SeparatorValueComponent
 
@@ -20,10 +20,10 @@ export interface DefinedUtility {
     }
     variables?: Map<string, Variable>
     order: number
-    definition: UtilityDefinition
+    definition: MasterCSSPlanUtility
 }
 
-export type ExplicitUtilityLayerName = UtilityLayerName
+export type ExplicitUtilityLayerName = MasterCSSPlanUtilityLayerName
 
 export type MediaFeatureComponent = {
     type: string

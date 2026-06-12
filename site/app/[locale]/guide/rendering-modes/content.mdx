@@ -227,16 +227,16 @@ The [CSS runtime](#runtime-rendering) then takes over to detect any changes in d
 ---
 
 ## Static Rendering
-Static rendering is a zero-runtime rendering mode where the build scans source files, finds complete Master CSS class strings, validates them against the configured engine, and writes the resulting CSS before deployment.
+Static rendering is a zero-runtime rendering mode where the build scans source files, finds complete Master CSS class strings, validates them with the active engine plan, and writes the resulting CSS before deployment.
 
-The source scanner does not observe the DOM and does not execute application code. Its input is source text, CSS entries, scanner options, and the compiled [theme configuration](/guide/theme). Its output is a CSS asset that the browser loads like any other stylesheet.
+The source scanner does not observe the DOM and does not execute application code. Its input is source text, CSS entries, scanner options, and the compiled project plan. Its output is a CSS asset that the browser loads like any other stylesheet.
 
 The CSS entry point is explicit: import `@master/css` from the stylesheet that should receive generated Master CSS. In static mode, integrations replace that import with generated CSS and treat the same stylesheet as a native CSS pruning root.
 
 <StepSection>
     <Step>
         #### <StepNum />Load the scanning context
-        The integration creates a source scanner with source directives, optional fixed classes, and the project CSS entry graph. In watch mode, config and source changes reset or update this context.
+        The integration creates a source scanner with source directives, optional fixed classes, and the project CSS entry graph. In watch mode, plan and source changes reset or update this context.
 
         ```css name=index.css
         @master;

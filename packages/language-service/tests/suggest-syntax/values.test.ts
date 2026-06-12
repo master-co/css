@@ -18,7 +18,7 @@ describe.concurrent('ambiguous', () => {
 
 describe.concurrent('detail and documentation', () => {
     test.concurrent('font:', () => expect(hint('font:')?.find(({ label }) => label === 'sans')).toEqual({
-        detail: '(scope) \"Inter\", $font-family-sans-fallback',
+        detail: '(scope) var(--font-sans, ui-sans-serif), system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, \"Helvetica Neue\", Arial, \"Noto Sans\", sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"',
         kind: CompletionItemKind.Value,
         label: 'sans',
         sortText: 'aaaasans',
@@ -28,8 +28,8 @@ describe.concurrent('detail and documentation', () => {
                     \`\`\`css
                     @layer theme {
                       :root {
-                        --font-family-sans: "Inter", var(--font-family-sans-fallback);
-                        --font-family-sans-fallback: ui-sans-serif, system-ui, sans-serif
+                        --font-family-sans: var(--font-sans, ui-sans-serif), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+                        --font-sans: "Inter"
                       }
                     }
                     @layer utilities {
@@ -115,7 +115,6 @@ describe.concurrent('sorting', () => {
                 ?.filter(({ label }) => label.startsWith('yellow'))
                 ?.map(({ label }) => label)
         ).toEqual([
-            'yellow',
             'yellow-0',
             'yellow-5',
             'yellow-10',
@@ -128,7 +127,10 @@ describe.concurrent('sorting', () => {
             'yellow-80',
             'yellow-90',
             'yellow-95',
-            'yellow-100'
+            'yellow-100',
+            'yellow',
+            'yellow-active',
+            'yellow-text'
         ])
     })
 })

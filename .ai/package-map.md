@@ -4,9 +4,11 @@
 
 | Package | Entry Points | Responsibility |
 |---|---|---|
-| `@master/css` | `.`, `./index.css`, `./normal.css`, `./*` | Core engine, config, rules, types, utilities, default stylesheet |
+| `@master/css` | `.`, `./index.css`, `./base.css`, `./theme.css` | Public facade over engine API, plan types, default preset plan, and preset stylesheet entries |
+| `@master/css-engine` | `.`, `./compiler` | Browser-safe MasterCSSPlan executor, class semantics, rule generation, layers, variable and animation lifecycle |
+| `@master/css-preset` | `.`, `./index.css`, `./base.css`, `./theme.css` | Default preset CSS source and generated default plan |
 | `@master/css-lexer` | `.` | Dependency-free source ranges, directive/import scanners, Master class lexical tokens, and latent class candidates |
-| `@master/css-compiler` | `.` | Compile Master CSS stylesheet entries into semantic config, directive metadata, and native CSS |
+| `@master/css-compiler` | `.` | Compile Master CSS stylesheet entries into MasterCSSPlan values, directive metadata, and native CSS |
 | `@master/css-runtime` | `.` | Browser runtime, DOM observation, hydration |
 | `@master/css-server` | `.` | HTML render and CSS injection |
 | `@master/css-extractor` | `.`, `./options`, `./style` | Static class extraction, CSS output, and extraction-specific stylesheet helpers |
@@ -25,14 +27,14 @@
 | `@master/eslint-plugin-css` | `.`, `./configs/*` | ESLint plugin |
 | `@master/eslint-config-css` | `.` | ESLint config wrapper |
 | `@master/css-cli` | `mcss`, `mastercss` | Extract and render CLI |
-| `@master/css-configer` | `./css`, `./load`, `./load-sync` | Resolve project CSS config entries, workspace roots, explicit CSS config resources, and project config module source |
-| `@master/css-integration` | `.`, `./client`, `./module`, `./config-module`, `./style-module`, `./preloaded-module`, `./config-loader-plugin`, `./runtime`, `./node` | Adapter-neutral integration contracts, virtual module ids, generated module source helpers, runtime injection source, and client ambient module declarations |
+| `@master/css-configer` | `./css`, `./load`, `./load-sync` | Resolve project CSS plan entries, workspace roots, explicit CSS plan resources, and project plan module source |
+| `@master/css-integration` | `.`, `./client`, `./module`, `./plan-module`, `./style-module`, `./preloaded-module`, `./plan-loader-plugin`, `./runtime`, `./node` | Adapter-neutral integration contracts, virtual module ids, generated module source helpers, runtime injection source, and client ambient module declarations |
 | `@master/css-devtools-hook` | `.` | Runtime event hook |
 | `@master/css.figma` | plugin bundle | Figma variable import/export |
 
 ## Dependency Direction
 
-Do not introduce reverse dependencies from core to compiler, integration contracts, runtime, server, extractor, language service, ESLint, examples, or site. `@master/css-lexer` must stay dependency-free from core/compiler/extractor/language-service and should be consumed upward for raw source scanning. `@master/css-integration` may depend on core public types and must remain below compiler/configer/build integrations. The compiler may depend on core to convert CSS directive results into semantic `Config` values and on integration contracts for generated module result shapes.
+Do not introduce reverse dependencies from engine to compiler, integration contracts, runtime, server, extractor, language service, ESLint, examples, or site. `@master/css-lexer` must stay dependency-free from engine/compiler/extractor/language-service and should be consumed upward for raw source scanning. `@master/css-integration` may depend on shared plan types and must remain below compiler/configer/build integrations. The compiler may depend on the plan-driven engine for class semantics and must not recreate a public Config contract.
 
 ## Package Tests
 

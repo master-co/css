@@ -6,7 +6,7 @@
 
 ## Inputs And Outputs
 
-- Input: HTML string and optional config.
+- Input: HTML string and optional MasterCSSPlan.
 - Output: rendered HTML, optional `MasterCSS` instance, extracted classes, parsed DOM nodes, style/head/html elements.
 
 ## Public APIs
@@ -30,7 +30,7 @@
 
 ## Forbidden Without Explicit Request
 
-- Changing core CSS generation behavior here.
+- Changing engine CSS generation behavior here.
 - Changing `style#master` identity casually.
 - Replacing parser/serializer without a clear reason.
 

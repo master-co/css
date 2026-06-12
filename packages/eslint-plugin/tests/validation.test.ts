@@ -1,7 +1,7 @@
 import rule from '../src/rules/class-validation'
 import { RuleTester } from '@typescript-eslint/rule-tester'
 import { createTester, jsxTester } from './testers'
-import { createThemePlan } from './helpers/create-theme-plan'
+import { createPresetPlan } from './helpers/create-preset-plan'
 
 jsxTester.run('invalid', rule, {
     valid: [
@@ -61,7 +61,7 @@ jsxTester.run('invalid', rule, {
 createTester({
     settings: {
         '@master/css': {
-            plan: createThemePlan({
+            plan: createPresetPlan({
                 utilities: [
                     {
                         name: 'btn',

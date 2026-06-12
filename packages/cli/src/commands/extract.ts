@@ -6,7 +6,7 @@ import {
     registerStyleCSSSource,
     type StyleCSSSources
 } from '@master/css-extractor/style'
-import { findCSSConfigEntryFiles } from '@master/css-configer/css'
+import { findCSSPlanEntryFiles } from '@master/css-configer/css'
 import log from '@techor/log'
 import bytes from 'bytes'
 import chokidar, { type FSWatcher } from 'chokidar'
@@ -15,12 +15,12 @@ import path from 'node:path'
 
 async function registerManagedCSSEntries(extractor: CSSExtractor, styleCSSSources: StyleCSSSources) {
     styleCSSSources.clear()
-    for (const entry of await findCSSConfigEntryFiles(extractor.cwd)) {
+    for (const entry of await findCSSPlanEntryFiles(extractor.cwd)) {
         await registerStyleCSSSource(extractor, styleCSSSources, entry, fs.readFileSync(entry, 'utf8'), {
             projectDir: extractor.cwd
         })
     }
-    extractor.configDependencies = [...new Set(
+    extractor.planDependencies = [...new Set(
         Array.from(styleCSSSources.values()).flatMap((source) => source.dependencies)
     )]
 }
@@ -122,17 +122,17 @@ export default (program: Command) => program
                     watchers.push(sourceWatcher)
                     await new Promise<void>((resolve) => sourceWatcher.once('ready', resolve))
                 }
-                if (extractor.configDependencies.length) {
-                    const configWatcher = chokidar.watch(extractor.configDependencies, {
+                if (extractor.planDependencies.length) {
+                    const planWatcher = chokidar.watch(extractor.planDependencies, {
                         ignoreInitial: true
                     })
-                    const handleConfigChange = async (configDependency: string) => {
+                    const handlePlanChange = async (planDependency: string) => {
                         if (restarting) return
                         restarting = true
                         try {
                             if (extractor.options.verbose) {
                                 log``
-                                log`[change] **${formatWatchedPath(extractor.cwd, configDependency)}**`
+                                log`[change] **${formatWatchedPath(extractor.cwd, planDependency)}**`
                             }
                             await closeWatchers()
                             await extractor.reset()
@@ -141,22 +141,22 @@ export default (program: Command) => program
                             log``
                             log.t`Restart watching source changes`
                             await startWatchers()
-                            extractor.emit('configChange')
+                            extractor.emit('planChange')
                         } finally {
                             restarting = false
                         }
                     }
-                    configWatcher.on('add', (configDependency) => {
-                        void handleConfigChange(configDependency)
+                    planWatcher.on('add', (planDependency) => {
+                        void handlePlanChange(planDependency)
                     })
-                    configWatcher.on('change', (configDependency) => {
-                        void handleConfigChange(configDependency)
+                    planWatcher.on('change', (planDependency) => {
+                        void handlePlanChange(planDependency)
                     })
-                    configWatcher.on('unlink', (configDependency) => {
-                        void handleConfigChange(configDependency)
+                    planWatcher.on('unlink', (planDependency) => {
+                        void handlePlanChange(planDependency)
                     })
-                    watchers.push(configWatcher)
-                    await new Promise<void>((resolve) => configWatcher.once('ready', resolve))
+                    watchers.push(planWatcher)
+                    await new Promise<void>((resolve) => planWatcher.once('ready', resolve))
                 }
             }
             process.once('SIGTERM', () => {

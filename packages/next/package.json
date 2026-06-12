@@ -5,7 +5,7 @@
         "build": "techor build \"src/**/*.ts\" --formats esm",
         "dev": "pnpm build --watch",
         "dev:build": "pnpm --dir playground build",
-        "e2e": "vitest run tests/css-config-query-e2e.test.ts",
+        "e2e": "vitest run tests/css-plan-query-e2e.test.ts",
         "lint": "eslint",
         "type-check": "tsc --noEmit",
         "test": "vitest"

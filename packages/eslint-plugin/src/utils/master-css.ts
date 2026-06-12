@@ -1,4 +1,4 @@
-import { createCSS, defaultPlan, type MasterCSS, type MasterCSSPlan } from '@master/css'
+import { compareRulePriority, createCSS, defaultPlan, type MasterCSS, type MasterCSSPlan } from '@master/css'
 
 export type { MasterCSS, MasterCSSPlan }
 export { createCSS, defaultPlan }
@@ -6,6 +6,8 @@ export { createCSS, defaultPlan }
 export const CLASS_ATTRIBUTES = ['class', 'className']
 export const CLASS_DECLARATIONS: string[] = []
 export const CLASS_FUNCTIONS = ['clsx', 'cva', 'ctl', 'cv', 'class', 'classnames', 'classVariant', 'styled(?:\\s+)?(?:\\.\\w+)?', 'classList(?:\\s+)?\\.(?:add|remove|toggle|replace)']
+
+const LAYER_ORDER = ['theme', 'base', 'defaults', 'components', 'utilities']
 
 function stable(value: unknown): string {
     if (!value || typeof value !== 'object') return JSON.stringify(value)
@@ -17,22 +19,37 @@ function stable(value: unknown): string {
 }
 
 export function equalDeclarations(a: unknown, b: unknown) {
-    return stable(a) === stable(b)
+    if (!a || !b || typeof a !== 'object' || typeof b !== 'object') return stable(a) === stable(b)
+    const aKeys = Object.keys(a).sort()
+    const bKeys = Object.keys(b).sort()
+    return stable(aKeys) === stable(bKeys)
 }
 
-export function equalVariants(a: { selectorText?: string, atRules?: unknown, layerName?: string }, b: { selectorText?: string, atRules?: unknown, layerName?: string }) {
-    return a.selectorText === b.selectorText
+export function equalVariants(
+    a: { selectorText?: string, atRules?: unknown, layerName?: string, variantBranchKey?: string },
+    b: { selectorText?: string, atRules?: unknown, layerName?: string, variantBranchKey?: string }
+) {
+    const branchA = a.variantBranchKey
+    const branchB = b.variantBranchKey
+    return (branchA !== undefined || branchB !== undefined ? branchA === branchB : a.selectorText === b.selectorText)
         && a.layerName === b.layerName
         && stable(a.atRules) === stable(b.atRules)
 }
 
+function getLayerOrder(layerName?: string) {
+    const index = LAYER_ORDER.indexOf(layerName || 'utilities')
+    return index === -1 ? LAYER_ORDER.length : index
+}
+
 export function sortReadableClasses(classNames: string[], css: MasterCSS) {
-    return [...classNames].sort((a, b) => {
+    return [...new Set(classNames)].sort((a, b) => {
         const ruleA = css.generate(a)[0]
         const ruleB = css.generate(b)[0]
         if (!ruleA && !ruleB) return a.localeCompare(b)
         if (!ruleA) return 1
         if (!ruleB) return -1
-        return Number(ruleA.priority) - Number(ruleB.priority) || a.localeCompare(b)
+        const layerCmp = getLayerOrder(ruleA.layerName) - getLayerOrder(ruleB.layerName)
+        if (layerCmp !== 0) return layerCmp
+        return compareRulePriority(ruleA, ruleB) || a.localeCompare(b)
     })
 }

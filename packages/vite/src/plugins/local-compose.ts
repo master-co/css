@@ -17,7 +17,7 @@ function invalidateModule(module: ModuleNode | undefined, server: ViteDevServer)
 
 export default function LocalComposePlugin(options: PluginOptions, context: PluginContext): Plugin {
     let projectPlan: Awaited<ReturnType<typeof loadProjectPlan>> | undefined
-    let projectConfigDependencies: string[] = []
+    let projectPlanDependencies: string[] = []
     const localComposeModules = new Set<string>()
 
     const addServerAllow = (paths: string[]) => {
@@ -31,7 +31,7 @@ export default function LocalComposePlugin(options: PluginOptions, context: Plug
     const loadComposeContext = async (pluginContext: { addWatchFile?: (id: string) => void }) => {
         if (projectPlan) return projectPlan
         projectPlan = await loadProjectPlan(context.config?.root)
-        projectConfigDependencies = projectPlan.dependencies
+        projectPlanDependencies = projectPlan.dependencies
         addServerAllow(projectPlan.dependencies)
         for (const dependency of projectPlan.dependencies) {
             pluginContext.addWatchFile?.(dependency)
@@ -44,7 +44,7 @@ export default function LocalComposePlugin(options: PluginOptions, context: Plug
         enforce: 'pre',
         async buildStart() {
             projectPlan = undefined
-            projectConfigDependencies = []
+            projectPlanDependencies = []
         },
         async transform(code, id) {
             if (id.startsWith('\0')) return
@@ -68,9 +68,9 @@ export default function LocalComposePlugin(options: PluginOptions, context: Plug
             }
         },
         async handleHotUpdate({ file, server }) {
-            if (!projectConfigDependencies.includes(file)) return
+            if (!projectPlanDependencies.includes(file)) return
             projectPlan = undefined
-            projectConfigDependencies = []
+            projectPlanDependencies = []
             let handled = false
             let needsFullReload = false
             for (const moduleId of localComposeModules) {

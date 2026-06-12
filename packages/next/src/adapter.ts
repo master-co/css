@@ -3,7 +3,7 @@ import { dirname, extname, join, resolve } from 'node:path'
 import { render } from '@master/css-server'
 import type { NextAdapter } from 'next'
 import { getRegisteredOptions, resolveOptions, type Options } from './options'
-import { resolveMasterCSSBuildConfig } from './style-config'
+import { resolveMasterCSSBuildPlan } from './style-plan'
 
 type BuildCompleteContext = Parameters<NonNullable<NextAdapter['onBuildComplete']>>[0]
 type BuildOutputs = BuildCompleteContext['outputs']
@@ -94,17 +94,17 @@ export async function renderNextBuildOutputs(ctx: BuildCompleteContext, rawOptio
     const options = resolveOptions(rawOptions)
     if (options.mode === null) return []
 
-    const baseBuildConfig = await resolveMasterCSSBuildConfig(ctx.projectDir)
+    const baseBuildPlan = await resolveMasterCSSBuildPlan(ctx.projectDir)
     const htmlOutputs = collectHTMLBuildOutputs(ctx.outputs)
     const renderedOutputs: RenderedOutput[] = []
 
     for (const output of htmlOutputs) {
         const sourceHTML = await readFile(output.filePath, 'utf-8')
-        const rendered = render(sourceHTML, baseBuildConfig.plan)
-        const buildConfig = await resolveMasterCSSBuildConfig(ctx.projectDir, rendered.classes)
+        const rendered = render(sourceHTML, baseBuildPlan.plan)
+        const buildPlan = await resolveMasterCSSBuildPlan(ctx.projectDir, rendered.classes)
         const generatedCSS = rendered.css?.classUtilities.size ? rendered.css.text : ''
         const cssText = [
-            buildConfig.nativeCSS,
+            buildPlan.nativeCSS,
             generatedCSS
         ].filter(Boolean).join('\n\n')
         const renderedHTML = cssText

@@ -126,7 +126,7 @@ For Design Foundations token overview tables:
 - Show the full theme token name, such as `--spacing-md`, `--border-radius-lg`, `--breakpoint-md`, or `--container-md`; show the raw configured number in `Value`; and show the rem conversion using the site root size.
 - Add a `Description` column only when short token usage guidance improves scanability. Keep descriptions concise and do not use them to duplicate adjacent prose or demos.
 - Use `ThemeNumberVariableTable` from `site/components` for numeric spacing, radius, breakpoint, and container scales unless a guide needs a more specialized table.
-- Keep these tables data-driven. Do not hard-code preset token rows in guide copy when they can be read from the theme config.
+- Keep these tables data-driven. Do not hard-code preset token rows in guide copy when they can be read from the preset plan.
 - Use generated CSS examples separately from the theme variable overview. The overview teaches configured tokens; `<Class2CSS>` teaches emitted utility CSS.
 
 ## Design References

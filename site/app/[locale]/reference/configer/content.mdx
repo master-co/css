@@ -58,13 +58,13 @@ Use `@master/css-configer/css` when tooling needs the same project entry and wor
 
 ```ts
 import {
-    findCSSConfigEntryFiles,
+    findCSSPlanEntryFiles,
     findMasterCSSWorkspaceDirectories,
-    hasMasterCSSConfigEntrypoint,
+    hasMasterCSSPlanEntrypoint,
 } from '@master/css-configer/css'
 ```
 
-`findCSSConfigEntryFiles(projectDir)` searches CSS files for entry markers. `findMasterCSSWorkspaceDirectories(rootDir)` creates workspace roots from discovered CSS entries and `package.json` files that declare Master CSS package dependencies.
+`findCSSPlanEntryFiles(projectDir)` searches CSS files for entry markers. `findMasterCSSWorkspaceDirectories(rootDir)` creates workspace roots from discovered CSS entries and `package.json` files that declare Master CSS package dependencies.
 
 ---
 

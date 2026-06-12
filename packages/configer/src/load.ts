@@ -15,7 +15,7 @@ import {
     type LoadProjectPlanOptions,
     type LoadProjectPlanResult
 } from './options'
-import { findCSSConfigEntryFiles } from './css'
+import { findCSSPlanEntryFiles } from './css'
 
 export type {
     LoadPlanOptions,
@@ -48,7 +48,7 @@ export async function loadPlanModule(path: string, options: LoadPlanOptions = {}
 }
 
 export async function loadProjectPlan(projectDir = process.cwd(), options: LoadProjectPlanOptions = {}): Promise<LoadProjectPlanResult> {
-    const entries = options.entries ?? await findCSSConfigEntryFiles(projectDir)
+    const entries = options.entries ?? await findCSSPlanEntryFiles(projectDir)
     return compileProjectPlan(entries, {
         ...withDefaultPlan(options),
         root: projectDir
@@ -56,7 +56,7 @@ export async function loadProjectPlan(projectDir = process.cwd(), options: LoadP
 }
 
 export async function loadProjectPlanModule(projectDir = process.cwd(), options: LoadProjectPlanOptions = {}) {
-    const entries = options.entries ?? await findCSSConfigEntryFiles(projectDir)
+    const entries = options.entries ?? await findCSSPlanEntryFiles(projectDir)
     return compileProjectPlanModule(entries, {
         ...withDefaultPlan(options),
         root: projectDir

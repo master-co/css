@@ -8,13 +8,13 @@ Run the smallest meaningful package-scoped validation first. Broaden to root tes
 
 | Change | Required Validation |
 |---|---|
-| Parser/value parsing | `pnpm --filter @master/css test`; add focused parser/rule tests |
-| Selector parsing/generation | Core selector tests; generated CSS tests |
-| At-rule parsing/generation | Core at-rule tests; ordering tests if priority changes |
-| Syntax rule definitions | Core rule test for emitted declarations and text |
-| Rule priority/cascade | Core priority/layer tests and fixture review |
-| Variables/tokens/modes | Core variable/config tests; server/runtime fixtures if output or hydration changes |
-| Config extension/flattening | Core `extend-config` and config tests |
+| Parser/value parsing | `pnpm --filter @master/css-engine test`; add focused parser/rule tests |
+| Selector parsing/generation | Engine selector tests; generated CSS tests |
+| At-rule parsing/generation | Engine at-rule tests; ordering tests if priority changes |
+| Syntax rule definitions | Engine rule test for emitted declarations and text |
+| Rule priority/cascade | Engine priority/layer tests and fixture review |
+| Variables/tokens/modes | Compiler plan lowering and engine variable tests; server/runtime fixtures if output or hydration changes |
+| Plan lowering/execution | Compiler plan lowering tests and engine parity tests |
 | Server rendering | `pnpm --filter @master/css-server test` |
 | Static extraction | `pnpm --filter @master/css-extractor test`; add extraction false positive/negative cases |
 | Runtime/hydration | `pnpm --filter @master/css-runtime e2e` |
@@ -39,9 +39,9 @@ Only update snapshots or `generated.css` fixtures when:
 
 Prefer tests that cover the smallest behavior:
 
-- Core syntax output: `packages/core/tests/rules` or nearby package test
-- Parser utility behavior: `packages/core/tests/utils`
-- Config behavior: `packages/core/tests/config`
+- Engine syntax output: `packages/engine/tests`
+- Parser utility behavior: `packages/engine/tests`
+- Plan lowering behavior: `packages/compiler/tests` or `packages/preset/tests`
 - Server output: `packages/server/tests/fixtures`
 - Runtime hydration: `packages/runtime/e2e/progressive`
 - Extractor source scanning: `packages/extractor/tests`

@@ -3,7 +3,7 @@ import {
     createCSSDirectiveVariantReference,
     CSSDirectiveError,
     type CSSDirectiveAnimationDefinitions,
-    type CSSDirectiveConfig,
+    type CSSDirectivePlanInput,
     type CSSDirectiveDeclarations,
     type CSSDirectiveLayerName,
     type CSSDirectiveResult,
@@ -75,7 +75,7 @@ export interface ResolvedCSSImportGraph {
 
 type ParsedStyleDefinition = CSSDirectiveStyleDefinition
 
-export interface ParsedDirectives extends Pick<CompileCSSResult, 'config' | 'extractionPolicy' | 'classNames' | 'nativeClassNames' | 'warnings'> {
+export interface ParsedDirectives extends Pick<CompileCSSResult, 'planInput' | 'extractionPolicy' | 'classNames' | 'nativeClassNames' | 'warnings'> {
     styleDefinitions?: ParsedStyleDefinition[]
     styleOrder?: number
     source?: string
@@ -172,7 +172,7 @@ function parseOnOff(value: string) {
     if (value === 'off') return false
 }
 
-function parseDefaultMode(value: string): CSSDirectiveConfig['defaultMode'] {
+function parseDefaultMode(value: string): CSSDirectivePlanInput['defaultMode'] {
     if (value === 'false') throw new Error('default-mode must be a mode name or none')
     return value
 }
@@ -192,9 +192,9 @@ function parseVariableValue(value: string): CSSDirectiveVariableValue {
     return numberValue === undefined ? trimmed : numberValue
 }
 
-function addThemeMode(config: CSSDirectiveConfig, mode: string) {
-    config.modes ??= []
-    if (!config.modes.includes(mode)) config.modes.push(mode)
+function addThemeMode(planInput: CSSDirectivePlanInput, mode: string) {
+    planInput.modes ??= []
+    if (!planInput.modes.includes(mode)) planInput.modes.push(mode)
 }
 
 function normalizeThemeTokenName(property: string) {
@@ -208,65 +208,65 @@ function normalizeThemeTokenName(property: string) {
     return name
 }
 
-function defineThemeVariable(config: CSSDirectiveConfig, property: string, rawValue: string, mode?: string, inline?: boolean) {
+function defineThemeVariable(planInput: CSSDirectivePlanInput, property: string, rawValue: string, mode?: string, inline?: boolean) {
     const name = normalizeThemeTokenName(property)
     const value = parseVariableValue(rawValue)
     if (mode) {
-        addThemeMode(config, mode)
+        addThemeMode(planInput, mode)
     }
-    config.variables ??= []
+    planInput.variables ??= []
     const definition = {
         name,
         value,
         ...(mode ? { mode } : {}),
         ...(inline ? { inline: true } : {})
     }
-    const foundIndex = config.variables.findIndex((existing) =>
+    const foundIndex = planInput.variables.findIndex((existing) =>
         existing.name === definition.name
         && existing.mode === definition.mode
     )
     if (foundIndex !== -1) {
-        config.variables.splice(foundIndex, 1)
+        planInput.variables.splice(foundIndex, 1)
     }
-    config.variables.push(definition)
+    planInput.variables.push(definition)
 }
 
-function parseMasterOption(config: CSSDirectiveConfig, property: string, value: string) {
+function parseMasterOption(planInput: CSSDirectivePlanInput, property: string, value: string) {
     switch (property) {
         case 'root-size': {
             const rootSize = parseNumber(value)
             if (rootSize === undefined) throw new Error('root-size must be a number')
-            config.rootSize = rootSize
+            planInput.rootSize = rootSize
             return true
         }
         case 'base-unit': {
             const baseUnit = parseNumber(value)
             if (baseUnit === undefined) throw new Error('base-unit must be a number')
-            config.baseUnit = baseUnit
+            planInput.baseUnit = baseUnit
             return true
         }
         case 'default-mode':
-            config.defaultMode = parseDefaultMode(value)
+            planInput.defaultMode = parseDefaultMode(value)
             return true
         case 'mode-trigger':
             if (value !== 'class' && value !== 'media' && value !== 'host') {
                 throw new Error('mode-trigger must be class, media, or host')
             }
-            config.modeTrigger = value
+            planInput.modeTrigger = value
             return true
         case 'important': {
             const important = parseOnOff(value)
             if (important === undefined) throw new Error('important must be on or off')
-            config.important = important
+            planInput.important = important
             return true
         }
         case 'modes':
             for (const mode of parseList(value)) {
-                addThemeMode(config, mode)
+                addThemeMode(planInput, mode)
             }
             return true
         case 'scope':
-            config.scope = value
+            planInput.scope = value
             return true
         default:
             return false
@@ -733,11 +733,11 @@ function collectDeclarations(block: DeclarationBlock<Declaration>) {
     return declarations
 }
 
-function parseSettingsDeclarations(block: DeclarationBlock<Declaration>, config: CSSDirectiveConfig) {
+function parseSettingsDeclarations(block: DeclarationBlock<Declaration>, planInput: CSSDirectivePlanInput) {
     for (const declaration of (block.declarations || []) as Declaration[]) {
         const property = getDeclarationName(declaration)
         const value = formatDeclarationValue(declaration)
-        if (!parseMasterOption(config, property, value)) {
+        if (!parseMasterOption(planInput, property, value)) {
             throw new Error(`Unsupported @settings option: ${property}`)
         }
     }
@@ -747,11 +747,11 @@ function parseSettingsDeclarations(block: DeclarationBlock<Declaration>, config:
     }
 }
 
-function parseThemeDeclarations(block: DeclarationBlock<Declaration>, config: CSSDirectiveConfig, mode?: string, inline?: boolean) {
+function parseThemeDeclarations(block: DeclarationBlock<Declaration>, planInput: CSSDirectivePlanInput, mode?: string, inline?: boolean) {
     for (const declaration of (block.declarations || []) as Declaration[]) {
         const property = getDeclarationName(declaration)
         const value = formatDeclarationValue(declaration)
-        defineThemeVariable(config, property, value, mode, inline)
+        defineThemeVariable(planInput, property, value, mode, inline)
     }
     for (const declaration of (block.importantDeclarations || []) as Declaration[]) {
         const property = normalizeThemeTokenName(getDeclarationName(declaration))
@@ -764,15 +764,15 @@ function parseCustomVariantPrelude(prelude: string) {
     const tokenMatch = /^(:{1,2}[-_a-zA-Z][-_a-zA-Z0-9]*|@[-_a-zA-Z][-_a-zA-Z0-9]*)$/.exec(trimmed)
     if (!tokenMatch) return
     return {
-        token: tokenMatch[1] as NonNullable<CSSDirectiveConfig['variants']>[number]['token']
+        token: tokenMatch[1] as NonNullable<CSSDirectivePlanInput['variants']>[number]['token']
     }
 }
 
-function defineVariant(config: CSSDirectiveConfig, variant: NonNullable<CSSDirectiveConfig['variants']>[number]) {
-    config.variants ??= []
-    const foundIndex = config.variants.findIndex((existing) => existing.token === variant.token)
-    if (foundIndex !== -1) config.variants.splice(foundIndex, 1)
-    config.variants.push(variant)
+function defineVariant(planInput: CSSDirectivePlanInput, variant: NonNullable<CSSDirectivePlanInput['variants']>[number]) {
+    planInput.variants ??= []
+    const foundIndex = planInput.variants.findIndex((existing) => existing.token === variant.token)
+    if (foundIndex !== -1) planInput.variants.splice(foundIndex, 1)
+    planInput.variants.push(variant)
 }
 
 function isSlotRule(rule: Rule) {
@@ -809,8 +809,8 @@ function collectVariantTemplateBranches(
     rules: Rule[],
     token: string,
     path: { selectors: string[], atRules: string[], layer?: CSSDirectiveLayerName } = { selectors: [], atRules: [] }
-): NonNullable<CSSDirectiveConfig['variants']>[number]['branches'] {
-    const branches: NonNullable<CSSDirectiveConfig['variants']>[number]['branches'] = []
+): NonNullable<CSSDirectivePlanInput['variants']>[number]['branches'] {
+    const branches: NonNullable<CSSDirectivePlanInput['variants']>[number]['branches'] = []
     for (const child of rules) {
         if (isSlotRule(child)) {
             branches.push(createVariantTemplateBranch(path))
@@ -895,7 +895,7 @@ function parseVariantDefinition(rule: any, parsed: ParsedDirectives) {
         if (!branches.length) {
             throw new Error(`@custom-variant ${token} requires @slot`)
         }
-        defineVariant(parsed.config, { token, branches })
+        defineVariant(parsed.planInput, { token, branches })
         return
     }
 
@@ -1346,7 +1346,7 @@ function formatKeyframeSelector(selector: KeyframeSelector) {
     }
 }
 
-function parseKeyframes(rule: any, config: CSSDirectiveConfig) {
+function parseKeyframes(rule: any, planInput: CSSDirectivePlanInput) {
     const name = rule.value.name.value
     if (!name) {
         throw new Error('@keyframes requires a name')
@@ -1358,8 +1358,8 @@ function parseKeyframes(rule: any, config: CSSDirectiveConfig) {
             keyframes[selector] = declarations
         }
     }
-    config.animations ??= {}
-    config.animations[name] = keyframes
+    planInput.animations ??= {}
+    planInput.animations[name] = keyframes
 }
 
 function parseAnimationsRule(rule: any, parsed: ParsedDirectives) {
@@ -1375,7 +1375,7 @@ function parseAnimationsRule(rule: any, parsed: ParsedDirectives) {
         if (child.type !== 'keyframes') {
             throw new Error('@animations only accepts @keyframes definitions')
         }
-        parseKeyframes(child, parsed.config)
+        parseKeyframes(child, parsed.planInput)
     }
 }
 
@@ -1433,7 +1433,7 @@ function parseSettingsChildRule(child: Rule, parsed: ParsedDirectives, section: 
     }
 
     if (child.type === 'nested-declarations') {
-        parseSettingsDeclarations(child.value.declarations, parsed.config)
+        parseSettingsDeclarations(child.value.declarations, parsed.planInput)
         return
     }
     if (child.type === 'keyframes') {
@@ -1466,12 +1466,12 @@ function parseThemeRule(rule: any, parsed: ParsedDirectives) {
     if (!Array.isArray(body?.value)) {
         throw new Error('@theme requires a style block')
     }
-    if (mode) addThemeMode(parsed.config, mode)
+    if (mode) addThemeMode(parsed.planInput, mode)
     for (const child of body.value as Rule[]) {
         if (child.type !== 'nested-declarations') {
             throw new Error('@theme only accepts theme token declarations')
         }
-        parseThemeDeclarations(child.value.declarations, parsed.config, mode, inline)
+        parseThemeDeclarations(child.value.declarations, parsed.planInput, mode, inline)
     }
 }
 
@@ -1572,7 +1572,7 @@ function parseManagedDefinitionDirectiveRule(rule: any, parsed: ParsedDirectives
 export function compileCSS(source: string, options: CompileCSSOptions = {}): CompileCSSResult {
     const filename = options.from || 'master.css'
     const parsed: ParsedDirectives = {
-        config: {},
+        planInput: {},
         extractionPolicy: createCSSDirectiveExtractionPolicy(),
         classNames: [],
         nativeClassNames: [],
@@ -1674,7 +1674,7 @@ export function compileCSS(source: string, options: CompileCSSOptions = {}): Com
     }
 
     return {
-        config: parsed.config,
+        planInput: parsed.planInput,
         extractionPolicy: parsed.extractionPolicy,
         classNames: parsed.classNames,
         nativeClassNames: parsed.nativeClassNames,
@@ -1688,9 +1688,9 @@ export function compileCSS(source: string, options: CompileCSSOptions = {}): Com
 }
 
 export function parseDirectives(source: string, options: CompileCSSOptions = {}) {
-    const { config, extractionPolicy, classNames, nativeClassNames, warnings, styleDefinitions } = compileCSS(source, options)
+    const { planInput, extractionPolicy, classNames, nativeClassNames, warnings, styleDefinitions } = compileCSS(source, options)
     return {
-        config,
+        planInput,
         extractionPolicy,
         classNames,
         nativeClassNames,

@@ -7,7 +7,7 @@ import { PluginOptions } from '../options'
 
 export default function PreRenderPlugin(options: PluginOptions, context: PluginContext): Plugin {
     let cssPlan: MasterCSSPlan | undefined = undefined
-    let cssConfigDependencies: string[] = []
+    let cssPlanDependencies: string[] = []
     let enabled = true
     const addServerAllow = (paths: string[]) => {
         const allow = context.config?.server.fs.allow
@@ -19,9 +19,9 @@ export default function PreRenderPlugin(options: PluginOptions, context: PluginC
     const loadCSSPlan = async (pluginContext?: { addWatchFile?: (id: string) => void }) => {
         const result = await loadProjectPlan(context.config?.root)
         cssPlan = result.plan
-        cssConfigDependencies = result.dependencies
-        addServerAllow(cssConfigDependencies)
-        for (const dependency of cssConfigDependencies) {
+        cssPlanDependencies = result.dependencies
+        addServerAllow(cssPlanDependencies)
+        for (const dependency of cssPlanDependencies) {
             pluginContext?.addWatchFile?.(dependency)
         }
     }
@@ -44,7 +44,7 @@ export default function PreRenderPlugin(options: PluginOptions, context: PluginC
             await loadCSSPlan(this)
         },
         async handleHotUpdate({ file }) {
-            if (!enabled || !cssConfigDependencies.includes(file)) return
+            if (!enabled || !cssPlanDependencies.includes(file)) return
             await loadCSSPlan()
         },
         transformIndexHtml(html) {

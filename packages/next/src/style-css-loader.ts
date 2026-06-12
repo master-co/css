@@ -17,7 +17,7 @@ interface LoaderContext {
     addDependency?: (file: string) => void
 }
 
-function hasMasterStyleConfigDirective(source: string) {
+function hasMasterStylePlanDirective(source: string) {
     return source.includes('@settings') || source.includes('@theme') || source.includes('@animations') || source.includes('@master')
 }
 
@@ -35,7 +35,7 @@ async function transformStyleSource(resourcePath: string, source: string, projec
 
     if (isMasterCSSPackageStyleFile(resourcePath, projectDir)) {
         code = removeMasterStyleDirectives(code).code
-        if (!hasMasterStyleConfigDirective(code)) {
+        if (!hasMasterStylePlanDirective(code)) {
             return { code, dependencies }
         }
         const result = await compileStyleCSS(resourcePath, code, {

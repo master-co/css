@@ -5,7 +5,7 @@ import notify from './utils/notify'
 import post from './utils/post'
 import postAndWaitForMessage from './utils/post-and-wait-for-message'
 import usePluginMessage from './hooks/use-plugin-message'
-import type { Config } from 'shared/css-config'
+import type { VariableData } from './types/variable-data'
 
 interface VariableCollection {
     id: string
@@ -25,7 +25,7 @@ const DEFAULT_INPUTED_VAR_COLLECTION_NAME = 'My Collection'
 function ImportVariables() {
     const [varCollections, setVarCollections] = useState<VariableCollection[]>([])
     const [selectedVarColl, setSelectedVarColl] = useState<VariableCollection | null>(null)
-    const [configJSONStr, setConfigJSONStr] = useState<string | null>(null)
+    const [variableDataJSONStr, setVariableDataJSONStr] = useState<string | null>(null)
     const [newVarCollName, setNewCollName] = useState('')
     const [isProcessing, setIsProcessing] = useState(false)
 
@@ -44,21 +44,21 @@ function ImportVariables() {
         if (isProcessing) return
         setIsProcessing(true)
         try {
-            let configJSON: Config
-            if (configJSONStr?.trim()) {
+            let variableData: VariableData
+            if (variableDataJSONStr?.trim()) {
                 try {
-                    configJSON = JSON.parse(configJSONStr)
+                    variableData = JSON.parse(variableDataJSONStr)
                 } catch (e) {
                     notify('Invalid JSON format', { error: true })
                     return
                 }
             } else {
-                configJSON = JSON.parse(DEFAULT_INPUTED_VAR_JSON_STR)
+                variableData = JSON.parse(DEFAULT_INPUTED_VAR_JSON_STR)
             }
             await postAndWaitForMessage('setCollectionVariables', {
                 varCollId: selectedVarColl?.id,
                 newVarCollName: newVarCollName || DEFAULT_INPUTED_VAR_COLLECTION_NAME,
-                configJSON,
+                variableData,
             })
             notify('Import succeeded')
         } catch (err: any) {
@@ -73,8 +73,8 @@ function ImportVariables() {
             <div className="panel-rows">
                 <textarea
                     id="var-input-json"
-                    value={configJSONStr ?? ''}
-                    onChange={(e) => setConfigJSONStr(e.target.value)}
+                    value={variableDataJSONStr ?? ''}
+                    onChange={(e) => setVariableDataJSONStr(e.target.value)}
                     placeholder={DEFAULT_INPUTED_VAR_JSON_STR}
                     rows={7}
                 ></textarea>

@@ -2,8 +2,8 @@ import type CSSExtractor from '@master/css-extractor'
 import type { MasterCSSPreloaded } from '@master/css'
 import type { StyleCSSSources } from '@master/css-extractor/style'
 import type { Plugin, ResolvedConfig } from 'vite'
-import ConfigLoaderPlugin from './plugins/config-loader'
-import ConfigVirtualModulePlugin from './plugins/config-virtual-module'
+import PlanLoaderPlugin from './plugins/plan-loader'
+import PlanVirtualModulePlugin from './plugins/plan-virtual-module'
 import PreloadedVirtualModulePlugin from './plugins/preloaded-virtual-module'
 import StaticMode from './modes/static'
 import RuntimeMode from './modes/runtime'
@@ -35,9 +35,9 @@ export default function masterCSS(options?: PluginOptions): Plugin[] {
     } as PluginContext
     const plugins: Plugin[] = [
         ContextPlugin(options, context),
-        ConfigVirtualModulePlugin(options, context),
+        PlanVirtualModulePlugin(options, context),
         PreloadedVirtualModulePlugin(context),
-        ConfigLoaderPlugin(context),
+        PlanLoaderPlugin(context),
         ExtractorPlugin(options, context),
         UsageGraphPlugin(options, context),
         LocalComposePlugin(options, context),
