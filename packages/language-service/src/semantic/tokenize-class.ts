@@ -23,7 +23,7 @@ export function tokenizeAtQuery(queryText: string, queryStart: number): Highligh
     return toHighlightTokenItems(tokenizeMasterCSSAtQuery(queryText, queryStart))
 }
 
-function tokenizeState(token: string, stateStart: number, offset: number): HighlightTokenItem[] {
+export function tokenizeState(token: string, stateStart: number, offset: number): HighlightTokenItem[] {
     return toHighlightTokenItems(tokenizeMasterCSSState(token, stateStart, offset))
 }
 

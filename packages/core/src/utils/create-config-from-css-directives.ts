@@ -28,6 +28,7 @@ import extendConfig from './extend-config'
 import generateAt from './generate-at'
 import generateSelector from './generate-selector'
 import parseAt from './parse-at'
+import parseSelector from './parse-selector'
 import resolveVariableNamespace from './resolve-variable-namespace'
 import wrapAtRules from './wrap-at-rules'
 
@@ -473,11 +474,25 @@ type ResolvedVariantReferenceBranch = {
     layer?: UtilityLayerName
 }
 
-function resolveMasterVariantReference(token: string, css: MasterCSS): ResolvedVariantReferenceBranch[] {
-    if (!token.startsWith(':') && !token.startsWith('@')) {
-        throw new Error(`@variant requires a full variant token: ${token}`)
+function mergeResolvedVariantReferenceBranch(
+    branch: ResolvedVariantReferenceBranch,
+    resolved: ResolvedVariantReferenceBranch,
+    token: string
+): ResolvedVariantReferenceBranch {
+    const nextLayer = resolved.layer || branch.layer
+    if (branch.layer && resolved.layer && branch.layer !== resolved.layer) {
+        throw new Error(`@variant ${token} cannot assign multiple layers`)
     }
+    return {
+        selector: resolved.selector
+            ? combineSelectorWrapper(branch.selector || '&', resolved.selector)
+            : branch.selector,
+        atRules: [...(branch.atRules || []), ...(resolved.atRules || [])],
+        ...(nextLayer ? { layer: nextLayer } : {})
+    }
+}
 
+function cloneConfiguredVariantBranches(token: string, css: MasterCSS): ResolvedVariantReferenceBranch[] | undefined {
     const configuredVariant = css.resolveVariant(token as any)
     if (configuredVariant) {
         return configuredVariant.map((branch) => ({
@@ -486,11 +501,99 @@ function resolveMasterVariantReference(token: string, css: MasterCSS): ResolvedV
             ...(branch.layer ? { layer: branch.layer } : {})
         }))
     }
+}
 
-    if (token.startsWith(':')) {
-        throw new Error(`Unknown @variant token: ${token}`)
+function findClosingParen(value: string, start: number) {
+    let depth = 0
+    let quote = ''
+    for (let index = start; index < value.length; index++) {
+        const char = value[index]
+        if (quote) {
+            if (char === '\\') {
+                index++
+            } else if (char === quote) {
+                quote = ''
+            }
+            continue
+        }
+        if (char === '"' || char === '\'') {
+            quote = char
+            continue
+        }
+        if (char === '(') depth++
+        if (char === ')') {
+            depth--
+            if (depth === 0) return index
+        }
+    }
+    return -1
+}
+
+function resolveSelectorVariantStack(selectorStack: string, css: MasterCSS, token: string): ResolvedVariantReferenceBranch[] {
+    let branches: ResolvedVariantReferenceBranch[] = [{}]
+    const selectorVariantTokens = [...css.variants.keys()]
+        .filter((variantToken) => variantToken.startsWith(':'))
+        .sort((a, b) => b.length - a.length)
+
+    let index = 0
+    let raw = ''
+    const flushRaw = () => {
+        if (!raw) return
+        const selector = generateSelector(parseSelector(raw, css), '&')
+        branches = branches.map((branch) => mergeResolvedVariantReferenceBranch(branch, { selector }, token))
+        raw = ''
     }
 
+    while (index < selectorStack.length) {
+        const matchedToken = selectorVariantTokens.find((variantToken) => {
+            if (!selectorStack.startsWith(variantToken, index)) return false
+            const next = selectorStack[index + variantToken.length]
+            return next === undefined || next === '(' || !/[-_a-zA-Z0-9]/.test(next)
+        })
+
+        if (!matchedToken) {
+            raw += selectorStack[index++]
+            continue
+        }
+
+        const configuredBranches = cloneConfiguredVariantBranches(matchedToken, css)
+        if (!configuredBranches) {
+            raw += selectorStack[index++]
+            continue
+        }
+
+        flushRaw()
+        index += matchedToken.length
+        let suffix = ''
+        if (selectorStack[index] === '(') {
+            const end = findClosingParen(selectorStack, index)
+            if (end !== -1) {
+                suffix = selectorStack.slice(index, end + 1)
+                index = end + 1
+            }
+        }
+
+        branches = branches.flatMap((branch) =>
+            configuredBranches.map((configuredBranch) => {
+                const selector = configuredBranch.selector && suffix
+                    ? configuredBranch.selector + suffix
+                    : configuredBranch.selector
+                return mergeResolvedVariantReferenceBranch(
+                    branch,
+                    { ...configuredBranch, ...(selector ? { selector } : {}) },
+                    token
+                )
+            })
+        )
+    }
+
+    flushRaw()
+    return branches
+}
+
+function resolveAtVariantReference(token: string, css: MasterCSS): ResolvedVariantReferenceBranch[] {
+    const configuredVariant = cloneConfiguredVariantBranches(token, css)
+    if (configuredVariant) return configuredVariant
     const atToken = token.slice(1)
     if (css.modes.includes(atToken)) {
         const modeSelector = css.getModeSelector(atToken)
@@ -504,6 +607,27 @@ function resolveMasterVariantReference(token: string, css: MasterCSS): ResolvedV
     }
 
     return [{ atRules: [generateAt(parseAt(atToken, css))] }]
+}
+
+function resolveMasterVariantReference(token: string, css: MasterCSS): ResolvedVariantReferenceBranch[] {
+    if (!token.startsWith(':') && !token.startsWith('@')) {
+        throw new Error(`@variant requires a full variant token: ${token}`)
+    }
+
+    const [selectorStack = '', ...conditionStacks] = token.split('@')
+    let branches = selectorStack
+        ? resolveSelectorVariantStack(selectorStack, css, token)
+        : [{}]
+
+    for (const conditionStack of conditionStacks) {
+        if (!conditionStack) continue
+        const resolvedBranches = resolveAtVariantReference(`@${conditionStack}`, css)
+        branches = branches.flatMap((branch) =>
+            resolvedBranches.map((resolved) => mergeResolvedVariantReferenceBranch(branch, resolved, token))
+        )
+    }
+
+    return branches
 }
 
 function resolveConfiguredBranches(atRules: string[] | undefined, css: MasterCSS, selector = '&', layer?: UtilityLayerName): ResolvedStyleBranch[] {

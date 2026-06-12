@@ -630,6 +630,81 @@ describe.concurrent('@master/css-compiler', () => {
         expect(result.css).toBe(result.generatedCSS)
     })
 
+    it('lowers @variant selector stacks like class suffix states', () => {
+        const stackResult = compileCSSConfig(`
+            @settings {
+                mode-trigger: class;
+            }
+
+            @theme {
+                --breakpoint-sm: 640;
+            }
+
+            @custom-variant ::scrollbar-thumb {
+                &::-webkit-scrollbar-thumb {
+                    @slot;
+                }
+            }
+
+            @custom-variant :interactive {
+                &:hover {
+                    @slot;
+                }
+
+                &:focus-visible {
+                    @slot;
+                }
+            }
+
+            .scrollbar {
+                @variant :hover {
+                    color: black;
+                }
+
+                @variant ::scrollbar-thumb:hover {
+                    color: red;
+                }
+
+                @variant :hover@dark {
+                    color: white;
+                }
+
+                @variant @dark@sm {
+                    color: blue;
+                }
+
+                @variant :interactive:active {
+                    color: green;
+                }
+            }
+        `)
+
+        expect(stackResult.generatedCSS).toContain('.scrollbar:hover{color:#000}')
+        expect(stackResult.generatedCSS).toContain('.scrollbar::-webkit-scrollbar-thumb:hover{color:red}')
+        expect(stackResult.generatedCSS).toContain('.dark .scrollbar:hover{color:#fff}')
+        expect(stackResult.generatedCSS).toContain('@media (width>=40rem){.dark .scrollbar{color:#00f}}')
+        expect(stackResult.generatedCSS).toContain('.scrollbar:hover:active{color:green}')
+        expect(stackResult.generatedCSS).toContain('.scrollbar:focus-visible:active{color:green}')
+
+        const nestedResult = compileCSSConfig(`
+            @custom-variant ::scrollbar-thumb {
+                &::-webkit-scrollbar-thumb {
+                    @slot;
+                }
+            }
+
+            .scrollbar {
+                @variant ::scrollbar-thumb {
+                    @variant :hover {
+                        color: red;
+                    }
+                }
+            }
+        `)
+
+        expect(nestedResult.generatedCSS).toBe('.scrollbar::-webkit-scrollbar-thumb:hover{color:red}')
+    })
+
     it('keeps and filters native class rules outside Master CSS directives', () => {
         const result = compileCSS(`
             body {

@@ -223,6 +223,9 @@ test.concurrent('renders semantic tokens for CSS directives', () => {
                 @variant @<sm {
                     @compose "block";
                 }
+                @variant ::scrollbar-thumb:hover@dark {
+                    @compose "fg:primary";
+                }
             }
         }
     `, 'css')
@@ -251,6 +254,9 @@ test.concurrent('renders semantic tokens for CSS directives', () => {
     expectToken(tokens, '<', 'operator', ['query'])
     expectToken(tokens, 'sm', 'enumMember', ['query'])
     expectToken(tokens, 'block', 'class')
+    expectToken(tokens, 'scrollbar-thumb', 'modifier', ['pseudoElement'])
+    expectToken(tokens, 'hover', 'modifier', ['pseudoClass'])
+    expectToken(tokens, '@dark', 'keyword', ['query'])
 })
 
 test.concurrent('renders CSS directive ranges with quoted semicolons', () => {

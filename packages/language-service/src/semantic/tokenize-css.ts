@@ -1,5 +1,5 @@
 import { pushHighlightToken, toSemanticTokenItems, type HighlightTokenItem } from './highlight'
-import { collectClassListHighlightTokenItems, tokenizeAtQuery, tokenizeUtilityValue } from './tokenize-class'
+import { collectClassListHighlightTokenItems, tokenizeAtQuery, tokenizeState, tokenizeUtilityValue } from './tokenize-class'
 import type { MasterCSS } from '@master/css'
 import {
     collectCSSDeclarationRanges,
@@ -197,7 +197,8 @@ function tokenizeComposePrelude(source: string, start: number, end: number, toke
 function tokenizeVariantPrelude(source: string, start: number, end: number, tokens: HighlightTokenItem[]) {
     const cursor = skipCSSWhitespace(source, start)
     if (cursor >= end) return
-    tokens.push(...tokenizeAtQuery(source.slice(cursor, end).replace(/\s*\{$/, ''), cursor))
+    const token = source.slice(cursor, end).replace(/\s*\{$/, '').trim()
+    tokens.push(...tokenizeState(token, 0, cursor))
 }
 
 function tokenizeManagedDefinitionBlock(source: string, start: number, end: number, tokens: HighlightTokenItem[]) {

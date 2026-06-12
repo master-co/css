@@ -1005,7 +1005,7 @@ function parseMasterVariantBlock(rule: any) {
     if (!token) {
         throw new Error('@variant requires a Master CSS variant')
     }
-    if (!/^:{1,2}[-_a-zA-Z][-_a-zA-Z0-9]*$/.test(token) && !/^@\S+$/.test(token)) {
+    if (!/^(?::{1,2}[^\s:]\S*|@\S+)$/.test(token)) {
         throw new Error('@variant requires a full variant token')
     }
     const rules = rule.value.body?.value
