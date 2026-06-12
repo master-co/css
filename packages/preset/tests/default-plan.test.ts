@@ -3,7 +3,10 @@ import { dirname, resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { compileCSSPlanFile } from '@master/css-compiler'
 import { createCSS } from '@master/css-engine'
+import { createDefaultPlan } from '../scripts/generate-default-plan'
 import defaultPlan from '../src/default-plan'
+import functions from '../src/functions'
+import sourceUtilities from '../src/utilities'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
@@ -21,6 +24,19 @@ function stripRaw<T>(value: T): T {
 }
 
 describe('@master/css-preset defaultPlan', () => {
+    it('matches the readable preset sources', () => {
+        const { plan: cssPlan } = compileCSSPlanFile(resolve(__dirname, '../src/index.css'))
+        const plan = createDefaultPlan(cssPlan)
+        const utilities = plan.utilities || []
+
+        expect(sourceUtilities).toHaveLength(510)
+        expect(Object.keys(functions)).toHaveLength(49)
+        expect(utilities).toHaveLength(510)
+        expect(utilities[0]?.order).toBe(utilities.length - 1)
+        expect(utilities[utilities.length - 1]?.order).toBe(0)
+        expect(plan).toEqual(defaultPlan)
+    })
+
     it('matches the CSS-authored preset plan facets', () => {
         const { plan } = compileCSSPlanFile(resolve(__dirname, '../src/index.css'))
         const compiledPlan = plan

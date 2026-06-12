@@ -2,22 +2,83 @@ import { writeFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { compileCSSPlanFile } from '@master/css-compiler'
+import functions from '../src/functions'
+import { settings, variableNamespaceRefs } from '../src/settings'
+import sourceUtilities from '../src/utilities'
 import type {
     MasterCSSPlan,
+    MasterCSSPlanFunctions,
+    MasterCSSPlanUtility,
+    MasterCSSPlanUtilityBuckets,
     MasterCSSPlanVariable,
     MasterCSSPlanVariableAliasSet
 } from 'shared/master-css-plan'
-import defaultPlan from '../src/default-plan'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const packageRoot = resolve(__dirname, '..')
 const sourceFile = resolve(packageRoot, 'src/index.css')
 const outputFile = resolve(packageRoot, 'src/default-plan.ts')
-const { plan: cssPlan } = compileCSSPlanFile(sourceFile)
-const variableNamespaceRefs = new Set([
-    ...Object.keys(defaultPlan.variableNamespaces || {}),
-    ...(defaultPlan.utilities || []).flatMap((utility) => utility.variableAliasRefs || [])
-])
+
+function clone<T>(value: T): T {
+    return JSON.parse(JSON.stringify(value)) as T
+}
+
+function createUtilities(): MasterCSSPlanUtility[] {
+    return sourceUtilities
+        .map((utility, order) => {
+            const { id, name, type, ...rest } = clone(utility)
+            return {
+                id,
+                name,
+                type,
+                order,
+                ...rest
+            } as MasterCSSPlanUtility
+        })
+        .reverse()
+}
+
+function addBucketIndex(bucket: number[] | undefined, index: number) {
+    if (bucket?.includes(index)) return bucket
+    const nextBucket = bucket || []
+    nextBucket.push(index)
+    return nextBucket
+}
+
+function createUtilityBuckets(utilities: MasterCSSPlanUtility[] | undefined): MasterCSSPlanUtilityBuckets | undefined {
+    const buckets: MasterCSSPlanUtilityBuckets = {}
+    utilities?.forEach((utility, index) => {
+        for (const matcher of utility.matchers) {
+            switch (matcher.type) {
+                case 'variable':
+                    if (utility.variableAliases?.length || utility.variableAliasSet !== undefined || utility.variableAliasRefs?.length) {
+                        buckets.variable = addBucketIndex(buckets.variable, index)
+                    }
+                    break
+                case 'value':
+                    if (utility.values?.length || utility.kind) buckets.value = addBucketIndex(buckets.value, index)
+                    break
+                case 'key':
+                    buckets.key = addBucketIndex(buckets.key, index)
+                    break
+                default:
+                    buckets.arbitrary = addBucketIndex(buckets.arbitrary, index)
+                    break
+            }
+        }
+    })
+    return Object.keys(buckets).length ? buckets : undefined
+}
+
+function collectVariableNamespaceRefs(utilities: MasterCSSPlanUtility[]) {
+    const refs = new Set<string>(variableNamespaceRefs)
+    for (const utility of utilities) {
+        for (const ref of utility.variableAliasRefs || []) {
+            refs.add(ref)
+        }
+    }
+    return refs
+}
 
 function getVariableKeyByNamespace(variableName: string, namespace: string) {
     const negative = variableName.startsWith('-')
@@ -27,9 +88,9 @@ function getVariableKeyByNamespace(variableName: string, namespace: string) {
     return negative ? '-' + key : key
 }
 
-function createVariableNamespaces(variables: MasterCSSPlanVariable[] = []) {
+function createVariableNamespaces(variables: MasterCSSPlanVariable[] = [], refs: Iterable<string>) {
     const variableNamespaces: Record<string, MasterCSSPlanVariableAliasSet> = {}
-    for (const ref of variableNamespaceRefs) {
+    for (const ref of refs) {
         const namespace = ref.slice(1)
         const aliases: MasterCSSPlanVariableAliasSet = []
         const usedKeys = new Set<string>()
@@ -45,22 +106,28 @@ function createVariableNamespaces(variables: MasterCSSPlanVariable[] = []) {
     return Object.keys(variableNamespaces).length ? variableNamespaces : undefined
 }
 
-const plan: MasterCSSPlan = {
-    version: 1,
-    settings: { ...defaultPlan.settings, ...cssPlan.settings },
-    variables: cssPlan.variables,
-    animations: cssPlan.animations,
-    variants: cssPlan.variants,
-    atRules: cssPlan.atRules,
-    breakpointAtRules: cssPlan.breakpointAtRules,
-    containerAtRules: cssPlan.containerAtRules,
-    selectors: cssPlan.selectors,
-    variableNamespaces: createVariableNamespaces(cssPlan.variables),
-    variableAliasSets: defaultPlan.variableAliasSets,
-    utilities: defaultPlan.utilities,
-    utilityBuckets: defaultPlan.utilityBuckets,
-    functions: defaultPlan.functions,
-    ...(defaultPlan.debug != null ? { debug: defaultPlan.debug } : {})
+export function createDefaultPlan(cssPlan: MasterCSSPlan): MasterCSSPlan {
+    const utilities = createUtilities()
+    return {
+        version: 1,
+        settings: { ...settings, ...cssPlan.settings },
+        variables: cssPlan.variables,
+        animations: cssPlan.animations,
+        variants: cssPlan.variants,
+        atRules: cssPlan.atRules,
+        breakpointAtRules: cssPlan.breakpointAtRules,
+        containerAtRules: cssPlan.containerAtRules,
+        selectors: cssPlan.selectors,
+        variableNamespaces: createVariableNamespaces(cssPlan.variables, collectVariableNamespaceRefs(utilities)),
+        variableAliasSets: null as unknown as MasterCSSPlan['variableAliasSets'],
+        utilities,
+        utilityBuckets: createUtilityBuckets(utilities),
+        functions: clone(functions) as MasterCSSPlanFunctions
+    }
+}
+
+export function createDefaultPlanFromSourceFile(file = sourceFile) {
+    return createDefaultPlan(compileCSSPlanFile(file).plan)
 }
 type PlanUtility = NonNullable<MasterCSSPlan['utilities']>[number]
 
@@ -94,14 +161,22 @@ function stringifyPlan(plan: MasterCSSPlan) {
         : plan)
 }
 
-const code = [
-    '// @ts-nocheck',
-    "import type { MasterCSSPlan } from 'shared/master-css-plan'",
-    '',
-    `const defaultPlan: MasterCSSPlan = ${stringifyPlan(plan)}`,
-    '',
-    'export default defaultPlan',
-    ''
-].join('\n')
+export function createDefaultPlanModule(plan: MasterCSSPlan) {
+    return [
+        '// @ts-nocheck',
+        "import type { MasterCSSPlan } from 'shared/master-css-plan'",
+        '',
+        `const defaultPlan: MasterCSSPlan = ${stringifyPlan(plan)}`,
+        '',
+        'export default defaultPlan',
+        ''
+    ].join('\n')
+}
 
-writeFileSync(outputFile, code)
+export function writeDefaultPlan(file = outputFile) {
+    writeFileSync(file, createDefaultPlanModule(createDefaultPlanFromSourceFile()))
+}
+
+if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+    writeDefaultPlan()
+}
