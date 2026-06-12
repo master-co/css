@@ -4,11 +4,10 @@ import { dirname, extname, isAbsolute, resolve } from 'node:path'
 import { transform } from 'lightningcss'
 import { extendConfig } from '@master/css/utils'
 import type { Config } from '@master/css'
-import {
-    createMasterCSSPlan,
-    type MasterCSSPlan
-} from 'shared/master-css-plan'
+import type { MasterCSSPlan } from 'shared/master-css-plan'
 import { toConfigModuleResult, type CSSConfigModuleResult } from '@master/css-integration/config-module'
+import { toPlanModuleResult, type CSSPlanModuleResult } from '@master/css-integration/plan-module'
+import { createMasterCSSPlan } from './master-css-plan'
 import resolveCSSDirectiveConfig from './resolve-css-directive-config'
 import {
     compileCSS,
@@ -29,6 +28,7 @@ import {
 } from './lexer/imports'
 
 export * from './core'
+export { createMasterCSSPlan } from './master-css-plan'
 export { default as resolveCSSDirectiveConfig } from './resolve-css-directive-config'
 export type {
     CSSDirectiveConfigResolution,
@@ -77,6 +77,11 @@ export interface CompileProjectConfigResult extends CompileCSSConfigResult {
 
 export type CompileCSSConfigModuleResult = CSSConfigModuleResult<Config> & {
     plan: MasterCSSPlan
+    directives: CompileCSSResult
+}
+
+export type CompileCSSPlanModuleResult = CSSPlanModuleResult & {
+    config: Config
     directives: CompileCSSResult
 }
 
@@ -297,6 +302,8 @@ export function compileCSSConfig(source: string, options: CompileCSSConfigSource
     return toCompileCSSConfigResult(result, options)
 }
 
+export const compileCSSPlan = compileCSSConfig
+
 export function compileCSSConfigFile(file: string, options: CompileCSSConfigOptions = {}): CompileCSSConfigResult {
     const result = compileCSSFile(file, {
         ...options,
@@ -304,6 +311,8 @@ export function compileCSSConfigFile(file: string, options: CompileCSSConfigOpti
     })
     return toCompileCSSConfigResult(result, options)
 }
+
+export const compileCSSPlanFile = compileCSSConfigFile
 
 export function compileProjectConfig(entries: string[], options: CompileCSSConfigOptions = {}): CompileProjectConfigResult {
     const styleConfigs: Config[] = []
@@ -369,10 +378,20 @@ export function compileProjectConfig(entries: string[], options: CompileCSSConfi
     }
 }
 
+export const compileProjectPlan = compileProjectConfig
+
 export function compileCSSConfigModule(file: string, options: CompileCSSConfigOptions = {}): CompileCSSConfigModuleResult {
     return toConfigModuleResult(compileCSSConfigFile(file, options))
 }
 
+export function compileCSSPlanModule(file: string, options: CompileCSSConfigOptions = {}): CompileCSSPlanModuleResult {
+    return toPlanModuleResult(compileCSSConfigFile(file, options))
+}
+
 export function compileProjectConfigModule(entries: string[], options: CompileCSSConfigOptions = {}) {
     return toConfigModuleResult(compileProjectConfig(entries, options))
+}
+
+export function compileProjectPlanModule(entries: string[], options: CompileCSSConfigOptions = {}) {
+    return toPlanModuleResult(compileProjectConfig(entries, options))
 }

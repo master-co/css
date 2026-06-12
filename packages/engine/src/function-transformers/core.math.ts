@@ -84,7 +84,7 @@ export default function coreMath(this: Utility, value: string, bypassVariableNam
         let childHasUnit: boolean | undefined = undefined
         let current = ''
         const clear = (separator: string, prefix = '', suffix = '') => {
-            if (childHasUnit === false && separator !== ' ' && this.definition.unit) {
+            if (childHasUnit === false && separator !== ' ' && this.registeredUtility.unit) {
                 childHasUnit = undefined
                 if (!unitChecking) {
                     pushUnitValueComponents()
@@ -156,7 +156,7 @@ export default function coreMath(this: Utility, value: string, bypassVariableNam
             bypassParsing = false
         }
         const pushUnitValueComponents = () => {
-            if (this.definition.unit === 'rem' || this.definition.unit === 'em') {
+            if (this.registeredUtility.unit === 'rem' || this.registeredUtility.unit === 'em') {
                 currentValueComponents.push(
                     { type: 'separator', value: '/', text: ' / ', token: '/' },
                     { type: 'number', value: this.css.config.rootSize as number, token: String(this.css.config.rootSize) }
@@ -164,7 +164,7 @@ export default function coreMath(this: Utility, value: string, bypassVariableNam
             }
             currentValueComponents.push(
                 { type: 'separator', value: '*', text: ' * ', token: '*' },
-                { type: 'number', value: 1, unit: this.definition.unit, token: this.definition.unit }
+                { type: 'number', value: 1, unit: this.registeredUtility.unit, token: this.registeredUtility.unit || '' }
             )
         }
         const handleUnitChecking = () => {
@@ -240,13 +240,13 @@ export default function coreMath(this: Utility, value: string, bypassVariableNam
                         }
                         break
                     case '*':
-                        if (this.definition.unit) {
+                        if (this.registeredUtility.unit) {
                             unitChecking = true
                         }
                         clear(char, ' ', ' ')
                         break
                     case '/':
-                        if (this.definition.unit) {
+                        if (this.registeredUtility.unit) {
                             unitChecking = true
                         }
                         clear(char, ' ', ' ')
@@ -263,7 +263,7 @@ export default function coreMath(this: Utility, value: string, bypassVariableNam
     }
     anaylzeDeeply(valueComponents, false, false, false, false)
 
-    let resolvedValue = this.resolveValue(valueComponents, this.definition.unit, bypassVariableNames, true)
+    let resolvedValue = this.resolveValue(valueComponents, this.registeredUtility.unit || '', bypassVariableNames, true)
     if (data?.wrapArguments) {
         resolvedValue = wrapCalcArguments(resolvedValue)
     }

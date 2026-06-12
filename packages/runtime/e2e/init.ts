@@ -1,8 +1,7 @@
 import { Page } from '@playwright/test'
-import { compileCSSConfigFile } from '@master/css-compiler'
+import { compileCSSConfigFile, createMasterCSSPlan } from '@master/css-compiler'
 import { extendConfig } from '@master/css/utils'
 import type { Config } from 'shared/css-config'
-import { createMasterCSSPlan } from 'shared/master-css-plan'
 import { dirname, resolve } from 'path'
 import { fileURLToPath } from 'url'
 

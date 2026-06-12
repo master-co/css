@@ -7,6 +7,10 @@ const config: ViteUserConfig = {
             async loadConfigModule(...args) {
                 const { compileCSSConfigModule } = await import('../packages/compiler/src')
                 return compileCSSConfigModule(...args)
+            },
+            async loadPlanModule(...args) {
+                const { compileCSSPlanModule } = await import('../packages/compiler/src')
+                return compileCSSPlanModule(...args)
             }
         })
     ],

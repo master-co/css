@@ -14,10 +14,12 @@ describe('@master/css-integration/client', () => {
 
         try {
             const cssPackageDir = path.join(root, 'node_modules/@master/css')
+            const enginePackageDir = path.join(root, 'node_modules/@master/css-engine')
             const integrationPackageDir = path.join(root, 'node_modules/@master/css-integration')
             const sourceDir = path.join(root, 'src')
 
             mkdirSync(cssPackageDir, { recursive: true })
+            mkdirSync(enginePackageDir, { recursive: true })
             mkdirSync(integrationPackageDir, { recursive: true })
             mkdirSync(sourceDir, { recursive: true })
 
@@ -45,6 +47,22 @@ describe('@master/css-integration/client', () => {
                 'export interface MasterCSSPreloaded { variables?: Record<string, number>; animations?: Record<string, number> }\n'
             )
             writeFileSync(
+                path.join(enginePackageDir, 'package.json'),
+                JSON.stringify({
+                    name: '@master/css-engine',
+                    types: './index.d.ts',
+                    exports: {
+                        '.': {
+                            types: './index.d.ts'
+                        }
+                    }
+                })
+            )
+            writeFileSync(
+                path.join(enginePackageDir, 'index.d.ts'),
+                'export interface MasterCSSPlan { version: 1 }\n'
+            )
+            writeFileSync(
                 path.join(integrationPackageDir, 'package.json'),
                 JSON.stringify({
                     name: '@master/css-integration',
@@ -67,12 +85,16 @@ describe('@master/css-integration/client', () => {
 import type { Config } from '@master/css'
 import 'virtual:master-utilities.css'
 import virtualConfig from 'virtual:master-css-config'
+import virtualPlan from 'virtual:master-css-plan'
 import virtualPreloaded from 'virtual:master-css-preloaded'
 import localConfig from './app.css?master-css-config'
+import localPlan from './app.css?master-css-plan'
 
 virtualConfig satisfies Config
+virtualPlan satisfies import('@master/css-engine').MasterCSSPlan
 virtualPreloaded satisfies import('@master/css/preloaded').MasterCSSPreloaded
 localConfig satisfies Config
+localPlan satisfies import('@master/css-engine').MasterCSSPlan
 `.trimStart()
             )
             writeFileSync(

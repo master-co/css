@@ -1,7 +1,7 @@
 import MasterCSS from './core'
-import type { AnimationDefinitions } from 'shared/css-config'
 import collectVariableNames from './utils/collect-variable-names'
 import type { PropertiesHyphen } from 'csstype'
+import type { MasterCSSPlanAnimations } from 'shared/master-css-plan'
 
 export default class AnimationRule {
     native?: CSSKeyframeRule
@@ -9,7 +9,7 @@ export default class AnimationRule {
 
     constructor(
         public readonly name: string,
-        public readonly keyframes: AnimationDefinitions,
+        public readonly keyframes: MasterCSSPlanAnimations[string],
         public readonly css: MasterCSS,
     ) {
         for (const declarations of Object.values(keyframes)) {

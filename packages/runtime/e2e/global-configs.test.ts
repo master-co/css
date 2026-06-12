@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test'
-import { createMasterCSSPlan } from 'shared/master-css-plan'
+import { createMasterCSSPlan } from '@master/css-compiler'
 import init from './init'
 
 test('uses bundled theme plan when no global plan is provided', async ({ page }) => {

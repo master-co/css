@@ -8,6 +8,7 @@ import {
     VIRTUAL_CONFIG_ID,
     VIRTUAL_CSS_ID,
     VIRTUAL_PRELOADED_ID,
+    VIRTUAL_PLAN_ID,
     createVirtualDefaultConfigModulePathPattern,
     fromResolvedMasterCSSConfigId,
     normalizePreloaded,
@@ -54,8 +55,8 @@ describe('@master/css-integration module helpers', () => {
     })
 
     it('builds shared runtime injection source', () => {
-        expect(CSS_RUNTIME_INJECTION).toContain(`import masterCSSConfig from '${VIRTUAL_CONFIG_ID}';`)
+        expect(CSS_RUNTIME_INJECTION).toContain(`import masterCSSPlan from '${VIRTUAL_PLAN_ID}';`)
         expect(CSS_RUNTIME_INJECTION).toContain(`import masterCSSPreloaded from '${VIRTUAL_PRELOADED_ID}';`)
-        expect(CSS_RUNTIME_INJECTION).toContain('initCSSRuntime({ config: masterCSSConfig, preloaded: masterCSSPreloaded });')
+        expect(CSS_RUNTIME_INJECTION).toContain('initCSSRuntime({ plan: masterCSSPlan, preloaded: masterCSSPreloaded });')
     })
 })

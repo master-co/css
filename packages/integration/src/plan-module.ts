@@ -35,8 +35,82 @@ export function stripMasterCSSPlanQuery(id: string) {
         : id
 }
 
+function compactUtilityRule(rule: { declarations: unknown, atRules?: string[], selector?: string }) {
+    return [
+        rule.declarations,
+        ...(rule.atRules?.length || rule.selector ? [rule.atRules] : []),
+        ...(rule.selector ? [rule.selector] : [])
+    ]
+}
+
+function compactEmit(utility: NonNullable<MasterCSSPlan['utilities']>[number]) {
+    const emit = utility.emit
+    switch (emit.type) {
+        case 'property':
+            return emit.property === utility.name ? undefined : ['r', emit.property]
+        case 'static':
+            return ['s', emit.rules.map(compactUtilityRule)]
+        case 'declarations':
+            return ['d', emit.declarations]
+        case 'template':
+            return ['t', emit.declarations]
+        case 'pair':
+            return ['p', emit.properties]
+        case 'group':
+            return ['g']
+        case 'css-variable-assignment':
+            return ['v']
+    }
+}
+
+function compactUtility(utility: NonNullable<MasterCSSPlan['utilities']>[number]) {
+    const meta: Record<string, unknown> = {}
+    if (utility.layer) meta.l = utility.layer
+    if (utility.key && !(utility.name.endsWith('()') && utility.key === utility.name)) meta.k = utility.key
+    if (utility.subkey) meta.s = utility.subkey
+    if (utility.aliasGroups?.length) meta.a = utility.aliasGroups
+    if (utility.values?.length) meta.v = utility.values
+    if (utility.kind) meta.m = utility.kind
+    if (utility.namespaces?.length) meta.n = utility.namespaces
+    if (utility.implicitNamespace !== undefined) meta.i = utility.implicitNamespace
+    if (utility.separators?.length && !(utility.separators.length === 1 && utility.separators[0] === ',')) meta.r = utility.separators
+    if (utility.unit) meta.u = utility.unit
+    if (utility.includeAnimations) meta.A = true
+    if (utility.atRules?.length) meta.R = utility.atRules
+    if (utility.transform) meta.T = utility.transform
+    const emit = compactEmit(utility)
+    return [
+        utility.name,
+        utility.type,
+        ...(emit || Object.keys(meta).length ? [emit] : []),
+        ...(Object.keys(meta).length ? [meta] : [])
+    ]
+}
+
+function compactVariable(variable: NonNullable<MasterCSSPlan['variables']>[number]) {
+    return [
+        variable.key,
+        variable.value,
+        ...(variable.namespace || variable.mode || variable.inline ? [variable.namespace] : []),
+        ...(variable.mode || variable.inline ? [variable.mode] : []),
+        ...(variable.inline ? [true] : [])
+    ]
+}
+
+function compactMasterCSSPlan(plan: MasterCSSPlan) {
+    return {
+        ...plan,
+        __compact: 1,
+        ...(plan.variables?.length ? { variables: plan.variables.map(compactVariable) } : {}),
+        ...(plan.utilities?.length ? { utilities: plan.utilities.map(compactUtility) } : {})
+    }
+}
+
 export function toPlanModule(plan: MasterCSSPlan) {
-    return `export default ${JSON.stringify(plan)};`
+    return [
+        `import { decodeMasterCSSPlan } from '@master/css-engine/plan-codec';`,
+        `export default decodeMasterCSSPlan(${JSON.stringify(compactMasterCSSPlan(plan))});`
+    ].join('\n')
 }
 
 export function toPlanModuleResult<T extends CSSPlanLoadResult>(result: T): T & { code: string } {

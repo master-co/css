@@ -32,7 +32,7 @@ export default class CSSRuntime extends MasterCSS {
 
     constructor(
         public root: Document | ShadowRoot = document,
-        plan: MasterCSSPlan = { version: 1 },
+        plan: MasterCSSPlan = globalThis.cssRuntime?.plan || { version: 1 },
         preloaded?: MasterCSSPreloaded
     ) {
         super(plan, preloaded)

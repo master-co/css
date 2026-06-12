@@ -5,34 +5,34 @@ import UtilityType, { type UtilityType as UtilityTypeValue } from 'shared/utilit
 import { type PropertiesHyphen } from 'csstype'
 import { VALUE_DELIMITERS, BASE_UNIT_REGEX, AT_IDENTIFIERS } from './common'
 import Layer from './layer'
-import type { NumberValueComponent, DefinedUtility, ValueComponent, VariableValueComponent, Variable } from 'shared/css-syntax'
+import type { NumberValueComponent, ValueComponent, VariableValueComponent, Variable, StringValueComponent } from 'shared/css-syntax'
 import { AtRuleNode, AtRuleStringNode, AtRuleValueNode, } from './utils/parse-at'
 import parseValue from './utils/parse-value'
 import parseAt from './utils/parse-at'
-import type { AtIdentifier, UtilityLayerName, VariantBranchDefinition, VariantToken } from 'shared/css-config'
+import type { AtIdentifier } from 'shared/css-config'
+import type { MasterCSSPlanUtilityLayerName, MasterCSSPlanVariantBranch, MasterCSSPlanVariantToken } from 'shared/master-css-plan'
+import type { CompiledUtility } from './core'
 import generateAt from './utils/generate-at'
 import parseSelector, { SelectorNode } from './utils/parse-selector'
 import generateSelector from './utils/generate-selector'
 import { calcRulePriority, RulePriority } from './utils/compare-rule-priority'
 import collectVariableNames from './utils/collect-variable-names'
 import wrapAtRules from './utils/wrap-at-rules'
-import declarers from './declarers'
-import transformers from './transformers'
-import functionTransformers from './function-transformers'
 import { createAlphaColorValue, createCSSVariableReference, createNumberVariableReference, normalizeVariableValue, replaceCSSVariableReferences } from './utils/css-variables'
 import collectAnimationNames from './utils/collect-animation-names'
+import { BORDER_STYLE_VALUES } from './common'
 
 type UtilityStateBranch = {
     selectorTemplate?: string
     selectorNodes?: SelectorNode[]
     atRules?: Partial<Record<AtIdentifier, AtRuleNode[]>>
-    layer?: UtilityLayerName
+    layer?: MasterCSSPlanUtilityLayerName
     mode?: string
     key: string
     valid?: boolean
 }
 
-function isVariantToken(value: string): value is VariantToken {
+function isVariantToken(value: string): value is MasterCSSPlanVariantToken {
     return /^:{1,2}[-_a-zA-Z][-_a-zA-Z0-9]*$/.test(value) || /^@[-_a-zA-Z][-_a-zA-Z0-9]*$/.test(value)
 }
 
@@ -60,7 +60,7 @@ function mergeAtRuleNodeMap(
     return merged
 }
 
-function mergeBranch(base: UtilityStateBranch, branch: VariantBranchDefinition, css: MasterCSS, key: string): UtilityStateBranch {
+function mergeBranch(base: UtilityStateBranch, branch: MasterCSSPlanVariantBranch, css: MasterCSS, key: string): UtilityStateBranch {
     let atRules = cloneAtRules(base.atRules)
     for (const atRule of branch.atRules || []) {
         const parsed = parseAt(atRule, css)
@@ -103,6 +103,64 @@ function findClosingParen(value: string, start: number) {
     return -1
 }
 
+interface CoreMathData {
+    name?: string
+    wrapArguments?: boolean
+}
+
+function splitTopLevelArguments(value: string) {
+    const parts: string[] = []
+    let depth = 0
+    let start = 0
+    for (let i = 0; i < value.length; i++) {
+        const char = value[i]
+        if (char === '(') {
+            depth++
+        } else if (char === ')') {
+            depth--
+        } else if (char === ',' && depth === 0) {
+            parts.push(value.slice(start, i), char)
+            start = i + 1
+        }
+    }
+    parts.push(value.slice(start))
+    return parts
+}
+
+function hasTopLevelOperator(value: string) {
+    let depth = 0
+    for (let i = 0; i < value.length; i++) {
+        const char = value[i]
+        if (char === '(') {
+            depth++
+        } else if (char === ')') {
+            depth--
+        } else if (depth === 0 && (char === '+' || char === '-' || char === '*' || char === '/')) {
+            let previousIndex = i - 1
+            while (value[previousIndex] === ' ') previousIndex--
+            const previousChar = value[previousIndex]
+            if ((char === '+' || char === '-') && (!previousChar || previousChar === '(' || previousChar === ',' || previousChar === ' ')) {
+                continue
+            }
+            return true
+        }
+    }
+    return false
+}
+
+function wrapCalcArguments(value: string) {
+    return splitTopLevelArguments(value).map((part) => {
+        if (part === ',') return part
+        const trimmed = part.trim()
+        if (!trimmed || /^(?:calc|clamp|min|max|var)\(/.test(trimmed) || !hasTopLevelOperator(trimmed)) {
+            return part
+        }
+        const leadingWhitespace = part.match(/^\s*/)![0]
+        const trailingWhitespace = part.match(/\s*$/)![0]
+        return `${leadingWhitespace}calc(${trimmed})${trailingWhitespace}`
+    }).join('')
+}
+
 export class Utility {
     native?: CSSRule
     nodes?: UtilityRuleNode[]
@@ -112,8 +170,8 @@ export class Utility {
     readonly declarations?: PropertiesHyphen
     readonly declarationRules?: { declarations: PropertiesHyphen, atRules?: string[], selector?: string }[]
     readonly layer!: Layer
-    readonly layerName: UtilityLayerName
-    explicitLayerName?: UtilityLayerName
+    readonly layerName: MasterCSSPlanUtilityLayerName
+    explicitLayerName?: MasterCSSPlanUtilityLayerName
     readonly valid: boolean = true
     animationNames?: Set<string>
     variableNames?: Set<string>
@@ -124,17 +182,23 @@ export class Utility {
     constructor(
         public readonly name: string,
         public css: MasterCSS,
-        public readonly registeredUtility: DefinedUtility,
+        public readonly registeredUtility: CompiledUtility,
         public fixedClass?: string,
         mode?: string,
         branchIndex = 0
     ) {
         this.branchIndex = branchIndex
         this.mode = mode as string
-        this.layerName = registeredUtility.definition.layer || 'utilities'
-        Object.assign(this, registeredUtility)
-        const { id, definition } = registeredUtility
-        const { declarer, declarerOptions, transformer, transformerOptions, type, unit } = definition
+        this.layerName = registeredUtility.layer || 'utilities'
+        const {
+            name: _registeredName,
+            key: _key,
+            layer: _layer,
+            atRules: _sourceAtRules,
+            ...runtimeUtility
+        } = registeredUtility
+        Object.assign(this, runtimeUtility)
+        const { id, type, unit } = registeredUtility
         this.type = type!
 
         // 1. value / selectorToken
@@ -154,8 +218,8 @@ export class Utility {
                 valueToken = name.slice(indexOfColon + 1)
             }
             this.valueComponents = []
-            const parsedValueIndex = this.parseValues(this.valueComponents, 0, valueToken, unit, '', undefined, false,
-                definition.includeAnimations ? Array.from(this.css.animations.keys()) : []
+            const parsedValueIndex = this.parseValues(this.valueComponents, 0, valueToken, unit || '', '', undefined, false,
+                registeredUtility.includeAnimations ? Array.from(this.css.animations.keys()) : []
             )
             this.valueToken = valueToken.slice(0, parsedValueIndex)
             stateToken = valueToken.slice(parsedValueIndex)
@@ -221,57 +285,21 @@ export class Utility {
         // 7. value
         let newValue: string
         if (this.valueComponents) {
-            if (transformer) {
-                const transform = (transformers as Record<string, any>)[transformer]
-                this.valueComponents = transform.call(this, this.valueComponents, transformerOptions)
-            }
-            newValue = this.resolveValue(this.valueComponents, unit, [], false)
-            if (definition.declarations) {
-                const declarations: any = {}
-                if (Array.isArray(definition.declarations)) {
-                    for (const property of definition.declarations) {
-                        declarations[property] = newValue
-                    }
-                } else {
-                    for (const propertyName in definition.declarations) {
-                        const propertyValue = definition.declarations[propertyName as keyof PropertiesHyphen]
-                        declarations[propertyName] = propertyValue === undefined
-                            ? newValue
-                            : Array.isArray(propertyValue)
-                                ? propertyValue.map((v) => v === undefined ? newValue : v).join('')
-                                : propertyValue
-                    }
-                }
-                this.declarations = declarations
-                if (definition.atRules?.length) {
-                    this.declarationRules = [{ declarations, atRules: definition.atRules }]
-                }
-            } else if (declarer) {
-                const declare = (declarers as Record<string, any>)[declarer]
-                const declarations = declare.call(this, newValue, this.valueComponents, declarerOptions) as PropertiesHyphen | undefined
-                this.declarations = declarations
-                if (declarations && definition.atRules?.length) {
-                    this.declarationRules = [{ declarations, atRules: definition.atRules }]
-                }
-            } else if (id) {
-                this.declarations = {
-                    [id]: newValue
-                }
-                if (definition.atRules?.length) {
-                    this.declarationRules = [{ declarations: this.declarations, atRules: definition.atRules }]
-                }
+            this.valueComponents = this.applyTransform(this.valueComponents)
+            newValue = this.resolveValue(this.valueComponents, unit || '', [], false)
+            const declarations = this.emitDynamicDeclarations(newValue)
+            this.declarations = declarations
+            if (declarations && registeredUtility.atRules?.length) {
+                this.declarationRules = [{ declarations, atRules: registeredUtility.atRules }]
             }
         } else {
-            const declarationRules = [
-                ...(definition.declarations
-                    ? [{ declarations: definition.declarations as PropertiesHyphen, atRules: definition.atRules, selector: undefined }]
-                    : []),
-                ...(definition.rules?.map(({ declarations, atRules, selector }) => ({
+            const declarationRules = registeredUtility.emit.type === 'static'
+                ? registeredUtility.emit.rules.map(({ declarations, atRules, selector }) => ({
                     declarations: declarations as PropertiesHyphen,
                     atRules,
                     selector
-                })) || [])
-            ]
+                }))
+                : []
             this.declarations = declarationRules[0]?.declarations
             if (declarationRules.length > 1 || declarationRules.some(({ atRules, selector }) => atRules?.length || selector)) {
                 this.declarationRules = declarationRules
@@ -318,6 +346,221 @@ export class Utility {
         }
     }
 
+    applyTransform(valueComponents: ValueComponent[]) {
+        switch (this.registeredUtility.transform) {
+            case 'auto-fill-solid':
+                return this.transformAutoFillSolid(valueComponents)
+            case 'animation-token':
+                return this.transformAnimationToken(valueComponents)
+            default:
+                return valueComponents
+        }
+    }
+
+    transformAutoFillSolid(valueComponents: ValueComponent[]) {
+        if (valueComponents.length < 2) return valueComponents
+        let styleIncluded = false
+        let varIncluded = false
+        for (const valueComponent of valueComponents) {
+            if (
+                valueComponent.type === 'string' && BORDER_STYLE_VALUES.includes(valueComponent.value)
+                || valueComponent.type === 'variable' && BORDER_STYLE_VALUES.includes(String(valueComponent.variable?.value))
+            ) {
+                styleIncluded = true
+            }
+            if (valueComponent.type === 'function' && valueComponent.name === 'var') {
+                varIncluded = true
+            }
+        }
+        if (!styleIncluded && !varIncluded) {
+            valueComponents.push(
+                { type: 'separator', value: ' ', token: '|' },
+                { type: 'string', value: 'solid', token: 'solid' }
+            )
+        }
+        return valueComponents
+    }
+
+    transformAnimationToken(valueComponents: ValueComponent[]) {
+        if (valueComponents.length !== 1) {
+            return valueComponents.map((valueComponent) => {
+                if (
+                    valueComponent.type === 'variable'
+                    && valueComponent.variable?.namespace === 'animation'
+                    && valueComponent.token[0] !== '$'
+                ) {
+                    return {
+                        type: 'string',
+                        value: valueComponent.variable.key,
+                        token: valueComponent.token
+                    } satisfies ValueComponent
+                }
+                return valueComponent
+            })
+        }
+
+        const [valueComponent] = valueComponents
+        if (valueComponent.type !== 'string') return valueComponents
+
+        const variableName = 'animation-' + valueComponent.value
+        const variable = this.css.variables.get(variableName)
+        if (!variable) return valueComponents
+
+        return [{
+            type: 'variable',
+            name: variableName,
+            variable,
+            token: valueComponent.token
+        } satisfies VariableValueComponent]
+    }
+
+    emitDynamicDeclarations(newValue: string): PropertiesHyphen | undefined {
+        const emit = this.registeredUtility.emit
+        switch (emit.type) {
+            case 'declarations': {
+                const declarations: Record<string, string> = {}
+                for (const property of emit.declarations) {
+                    declarations[property] = newValue
+                }
+                return declarations as PropertiesHyphen
+            }
+            case 'template': {
+                const declarations: Record<string, string | number> = {}
+                for (const propertyName in emit.declarations) {
+                    const propertyValue = emit.declarations[propertyName as keyof PropertiesHyphen]
+                    declarations[propertyName] = propertyValue === undefined
+                        ? newValue
+                        : Array.isArray(propertyValue)
+                            ? propertyValue.map((value) => value === undefined ? newValue : value).join('')
+                            : propertyValue
+                }
+                return declarations as PropertiesHyphen
+            }
+            case 'pair': {
+                const [x, y] = emit.properties
+                const length = this.valueComponents.length
+                return {
+                    [x]: length === 1 ? this.valueComponents[0].text : this.valueComponents[0].text,
+                    [y]: length === 1 ? this.valueComponents[0].text : this.valueComponents[2].text
+                } as PropertiesHyphen
+            }
+            case 'css-variable-assignment':
+                return {
+                    ['--' + this.keyToken.slice(1, -1)]: newValue
+                } as PropertiesHyphen
+            case 'group':
+                return this.emitGroupDeclarations(newValue)
+            case 'property':
+                return {
+                    [emit.property]: newValue
+                } as PropertiesHyphen
+            case 'static':
+                return
+        }
+    }
+
+    emitGroupDeclarations(value: string): PropertiesHyphen {
+        const declarations: Record<string, unknown> = {}
+        const addProp = (propertyName: string) => {
+            const indexOfColon = propertyName.indexOf(':')
+            if (indexOfColon !== -1) {
+                const propName = propertyName.slice(0, indexOfColon)
+                declarations[propName] = propertyName.slice(indexOfColon + 1).replace(/\|/g, ' ')
+            }
+        }
+        const handleRule = (rule: Utility) => {
+            const ruleDeclarations = rule.declarations as Record<string, unknown>
+            for (const propertyName in ruleDeclarations) {
+                let propertyValue = String(ruleDeclarations[propertyName])
+                const important = 'important' in rule && rule.important
+                if ((important || rule.css.config.important) && !propertyValue.endsWith('!important')) {
+                    propertyValue += '!important'
+                }
+                declarations[propertyName] = propertyValue
+            }
+
+            if (rule.animationNames) {
+                if (!this.animationNames) this.animationNames = new Set()
+                for (const eachKeyframeName of rule.animationNames) {
+                    this.animationNames.add(eachKeyframeName)
+                }
+            }
+
+            if (rule.variableNames) {
+                if (this.variableNames) {
+                    for (const eachVariableName of rule.variableNames) {
+                        this.variableNames.add(eachVariableName)
+                    }
+                } else {
+                    this.variableNames = new Set(rule.variableNames)
+                }
+            }
+        }
+
+        const names: string[] = []
+        let currentName = ''
+        const addName = () => {
+            if (currentName) {
+                names.push(currentName.replace(/ /g, '|'))
+                currentName = ''
+            }
+        }
+
+        let i = 1;
+        (function analyze(end: string) {
+            for (; i < value.length; i++) {
+                const char = value[i]
+
+                if (!end) {
+                    if (char === ';') {
+                        addName()
+                        continue
+                    }
+                    if (char === '}') {
+                        break
+                    }
+                }
+
+                currentName += char
+
+                if (end === char) {
+                    if (end === '\'' || end === '"') {
+                        let count = 0
+                        for (let j = currentName.length - 2; ; j--) {
+                            if (currentName[j] !== '\\') {
+                                break
+                            }
+                            count++
+                        }
+                        if (count % 2) {
+                            continue
+                        }
+                    }
+
+                    break
+                } else if (char in VALUE_DELIMITERS && (end !== '\'' && end !== '"')) {
+                    i++
+                    analyze(VALUE_DELIMITERS[char as keyof typeof VALUE_DELIMITERS])
+                }
+            }
+        })('')
+
+        addName()
+
+        for (const eachName of names) {
+            const rules = this.css.generate(eachName, this.mode)
+            if (rules.length) {
+                for (const eachRule of rules) {
+                    handleRule(eachRule)
+                }
+            } else {
+                addProp(eachName)
+            }
+        }
+
+        return declarations as PropertiesHyphen
+    }
+
     resolveStateBranches(stateToken: string): UtilityStateBranch[] {
         const [selectorToken = '', ...conditionTokens] = stateToken.split('@')
         let branches: UtilityStateBranch[] = [{ key: '' }]
@@ -334,7 +577,7 @@ export class Utility {
             }
 
             this.atToken = (this.atToken || '') + '@' + conditionToken
-            const variantToken = `@${conditionToken}` as VariantToken
+            const variantToken = `@${conditionToken}` as MasterCSSPlanVariantToken
             const variantBranches = this.css.resolveVariant(variantToken)
             if (variantBranches) {
                 branches = branches.flatMap((branch) =>
@@ -529,12 +772,10 @@ export class Utility {
             switch (eachValueComponent.type) {
                 case 'function':
                     const functionDefinition = functions && functions[eachValueComponent.name]
-                    const fnTransformer = functionDefinition?.transformer
-                    if (fnTransformer && !eachValueComponent.bypassTransform) {
+                    const functionOp = functionDefinition?.op
+                    if (functionOp && !eachValueComponent.bypassTransform) {
                         const resolvedValue = this.resolveValue(eachValueComponent.children, functionDefinition.unit ?? unit, bypassVariableNames, bypassParsing || eachValueComponent.name === 'calc')
-                        let result: any
-                        const fnTransform = (functionTransformers as Record<string, any>)[fnTransformer]
-                        result = fnTransform.call(this, resolvedValue, bypassVariableNames, functionDefinition.transformerOptions)
+                        const result = this.applyFunctionOp(functionOp, resolvedValue, bypassVariableNames, functionDefinition.options)
                         currentValue += eachValueComponent.token = eachValueComponent.text = typeof result === 'string'
                             ? result
                             : this.resolveValue(result, functionDefinition?.unit ?? unit, bypassVariableNames, bypassParsing)
@@ -585,6 +826,242 @@ export class Utility {
         return currentValue
     }
 
+    applyFunctionOp(op: string, value: string, bypassVariableNames: string[], options?: unknown) {
+        switch (op) {
+            case 'core.variable':
+                return this.resolveVariableFunction(value)
+            case 'core.math':
+                return this.resolveMathFunction(value, bypassVariableNames, options as CoreMathData | undefined)
+            default:
+                return value
+        }
+    }
+
+    resolveVariableFunction(value: string): ValueComponent[] {
+        let name: string
+        let fallback!: string
+        const firstCommaIndex = value.indexOf(',')
+        if (firstCommaIndex !== -1) {
+            name = value.slice(0, firstCommaIndex)
+            fallback = value.slice(firstCommaIndex + 1)
+        } else {
+            name = value
+        }
+        return [{ type: 'variable', name, fallback, token: value }]
+    }
+
+    resolveMathFunction(value: string, bypassVariableNames: string[], data?: CoreMathData) {
+        const functionName = data?.name ?? 'calc'
+        const valueComponents: ValueComponent[] = []
+        let i = 0
+
+        const anaylzeDeeply = (
+            currentValueComponents: ValueComponent[],
+            bypassHandlingSeparator: boolean,
+            parentBypassParsing: boolean,
+            parentUnitChecking: boolean,
+            isVarFunction: boolean
+        ) => {
+            const isChildHandler = valueComponents !== currentValueComponents
+            const unparsedValueComponents: StringValueComponent[] = []
+            let bypassParsing = false
+            let hasUnit = false
+            let currentHasUnit = false
+            let unitChecking = false
+            let childHasUnit: boolean | undefined = undefined
+            let current = ''
+            const clear = (separator: string, prefix = '', suffix = '') => {
+                if (childHasUnit === false && separator !== ' ' && this.registeredUtility.unit) {
+                    childHasUnit = undefined
+                    if (!unitChecking) {
+                        pushUnitValueComponents()
+                    }
+                }
+
+                if (current) {
+                    if (!isVarFunction) {
+                        const result = BASE_UNIT_REGEX.exec(current)
+                        if (result) {
+                            current = (+result[1] * (this.css.config.baseUnit ?? 1)).toString()
+                        }
+                    }
+
+                    if (!bypassParsing && !parentBypassParsing) {
+                        const valueComponent = { ...this.parseValue(current), token: current }
+                        if (
+                            !hasUnit
+                            && isNaN(+current)
+                            && valueComponent.type === 'number'
+                        ) {
+                            hasUnit = true
+                        }
+
+                        if (unitChecking) {
+                            if (isNaN(+current)) {
+                                if (valueComponent.type === 'number') {
+                                    currentValueComponents.push(valueComponent)
+                                    currentHasUnit = true
+                                } else {
+                                    currentValueComponents.push(valueComponent)
+                                }
+                            } else {
+                                currentValueComponents.push({ type: 'number', value: +current, token: current })
+                            }
+                        } else {
+                            if (isChildHandler) {
+                                const newValueComponent = { type: 'string', value: current, token: current } as const
+                                unparsedValueComponents.push(newValueComponent)
+                                currentValueComponents.push(newValueComponent)
+                            } else {
+                                currentValueComponents.push(valueComponent)
+                            }
+                        }
+                    } else {
+                        currentValueComponents.push({ type: 'string', value: current, token: current })
+                    }
+
+                    current = ''
+                }
+
+                if (separator) {
+                    if (separator === '+' || separator === '-') {
+                        handleUnitChecking()
+                    }
+
+                    if (prefix && value[i - 1] === ' ') {
+                        prefix = ''
+                    }
+                    if (suffix && value[i + 1] === ' ') {
+                        suffix = ''
+                    }
+                    if (bypassHandlingSeparator) {
+                        currentValueComponents.push({ type: 'separator', value: separator, text: separator, token: separator })
+                    } else {
+                        currentValueComponents.push({ type: 'separator', value: separator, text: prefix + separator + suffix, token: separator })
+                    }
+                }
+                bypassParsing = false
+            }
+            const pushUnitValueComponents = () => {
+                if (this.registeredUtility.unit === 'rem' || this.registeredUtility.unit === 'em') {
+                    currentValueComponents.push(
+                        { type: 'separator', value: '/', text: ' / ', token: '/' },
+                        { type: 'number', value: this.css.config.rootSize as number, token: String(this.css.config.rootSize) }
+                    )
+                }
+                currentValueComponents.push(
+                    { type: 'separator', value: '*', text: ' * ', token: '*' },
+                    { type: 'number', value: 1, unit: this.registeredUtility.unit, token: this.registeredUtility.unit || '' }
+                )
+            }
+            const handleUnitChecking = () => {
+                if (unitChecking && !currentHasUnit && !parentUnitChecking && (!isChildHandler || hasUnit)) {
+                    pushUnitValueComponents()
+                }
+                unitChecking = false
+                currentHasUnit = false
+            }
+
+            for (; i < value.length; i++) {
+                const char = value[i]
+                if (char === '(') {
+                    const symbolResult = /^([+-])/.exec(current)
+                    if (symbolResult) {
+                        currentValueComponents.push({ type: 'string', value: symbolResult[1], token: symbolResult[1] })
+                    }
+                    const nestedFunctionName = symbolResult ? current.slice(1) : current
+                    const newValueComponent: ValueComponent = {
+                        type: 'function',
+                        name: nestedFunctionName,
+                        symbol: char,
+                        children: [],
+                        bypassTransform: nestedFunctionName === 'calc',
+                        token: current
+                    }
+                    currentValueComponents.push(newValueComponent)
+                    current = ''
+                    i++
+                    const nestedIsVarFunction = nestedFunctionName === '$' || nestedFunctionName === 'var'
+                    childHasUnit = anaylzeDeeply(
+                        newValueComponent.children,
+                        nestedFunctionName !== ''
+                        && nestedFunctionName !== 'calc'
+                        && (
+                            nestedIsVarFunction
+                            || Object.prototype.hasOwnProperty.call(this.css.config.functions || {}, nestedFunctionName)
+                        ),
+                        bypassParsing || nestedIsVarFunction || unitChecking && currentHasUnit,
+                        unitChecking,
+                        nestedIsVarFunction
+                    ) || nestedFunctionName === 'var'
+                    if (!childHasUnit && nestedFunctionName === '$') {
+                        const variableType = this.css.variables.get((newValueComponent.children[0] as StringValueComponent).value)?.type
+                        childHasUnit = !variableType || variableType === 'string'
+                    }
+                    if (childHasUnit) {
+                        hasUnit = true
+                        currentHasUnit = true
+                    }
+                } else if (char === ')') {
+                    clear('')
+                    if (hasUnit) {
+                        for (const eachUnparsedValueComponent of unparsedValueComponents) {
+                            Object.assign(eachUnparsedValueComponent, this.parseValue(eachUnparsedValueComponent.value))
+                        }
+                    }
+                    return hasUnit
+                } else if (char === ',') {
+                    clear(char, '', ' ')
+                } else if (char === ' ') {
+                    clear(char)
+                } else {
+                    const previousChar = value[i - 1]
+                    switch (char) {
+                        case '+':
+                            if (!current && previousChar !== ')') {
+                                current += char
+                            } else {
+                                clear(char, ' ', ' ')
+                            }
+                            break
+                        case '-':
+                            if (!current && previousChar !== ')') {
+                                current += char
+                            } else {
+                                clear(char, ' ', ' ')
+                            }
+                            break
+                        case '*':
+                            if (this.registeredUtility.unit) {
+                                unitChecking = true
+                            }
+                            clear(char, ' ', ' ')
+                            break
+                        case '/':
+                            if (this.registeredUtility.unit) {
+                                unitChecking = true
+                            }
+                            clear(char, ' ', ' ')
+                            bypassParsing = true
+                            break
+                        default:
+                            current += char
+                            break
+                    }
+                }
+            }
+            clear('')
+            handleUnitChecking()
+        }
+        anaylzeDeeply(valueComponents, false, false, false, false)
+
+        let resolvedValue = this.resolveValue(valueComponents, this.registeredUtility.unit || '', bypassVariableNames, true)
+        if (data?.wrapArguments) {
+            resolvedValue = wrapCalcArguments(resolvedValue)
+        }
+        return functionName + '(' + resolvedValue + ')'
+    }
+
     parseValues = (
         currentValueComponents: ValueComponent[],
         i: number,
@@ -604,8 +1081,8 @@ export class Utility {
         const checkIsString = (value: string) => value === '\'' || value === '"'
         const isString = checkIsString(endSymbol)
         const separators = [',']
-        if (this.definition.separators?.length) {
-            separators.push(...this.definition.separators)
+        if (this.registeredUtility.separators?.length) {
+            separators.push(...this.registeredUtility.separators)
         }
 
         let currentValue = ''
@@ -739,10 +1216,10 @@ export class Utility {
         return i
     }
 
-    parseValue(token: string | number, unit = this.definition.unit) {
+    parseValue(token: string | number, unit = this.registeredUtility.unit) {
         const parsed = parseValue(token, unit, this.css.config.rootSize)
         // exclude like `aspect:1/2` from being parsed as 50%
-        if (this.definition.unit && parsed.type === 'string') {
+        if (this.registeredUtility.unit && parsed.type === 'string') {
             // 1/2 → 50%
             if (/^\d+\/\d+$/.test(parsed.value)) {
                 const [numerator, denominator] = parsed.value.split('/').map(Number)
@@ -777,7 +1254,7 @@ export class UtilityRuleNode {
     }
 }
 
-export interface Utility extends DefinedUtility {
+export interface Utility extends Omit<CompiledUtility, 'name' | 'layer' | 'atRules'> {
     token: string
     selectorNodes?: SelectorNode[]
     important: boolean
