@@ -52,7 +52,7 @@
     },
     "dependencies": {
         "@master/css": "workspace:^",
-        "@master/css-configer": "workspace:^",
+        "@master/css-plan": "workspace:^",
         "@master/css-extractor": "workspace:^",
         "@master/css-integration": "workspace:^",
         "@techor/log": "^3.2.5",

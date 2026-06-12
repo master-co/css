@@ -111,9 +111,6 @@ importers:
       '@master/css-cli':
         specifier: workspace:^
         version: link:packages/cli
-      '@master/css-configer':
-        specifier: workspace:^
-        version: link:packages/configer
       '@master/css-devtools-hook':
         specifier: workspace:^
         version: link:packages/devtools-hook
@@ -135,6 +132,9 @@ importers:
       '@master/css-lexer':
         specifier: workspace:^
         version: link:packages/lexer
+      '@master/css-plan':
+        specifier: workspace:^
+        version: link:packages/plan
       '@master/css-preset':
         specifier: workspace:^
         version: link:packages/preset
@@ -1138,12 +1138,12 @@ importers:
       '@master/css':
         specifier: workspace:^
         version: link:../core
-      '@master/css-configer':
-        specifier: workspace:^
-        version: link:../configer
       '@master/css-extractor':
         specifier: workspace:^
         version: link:../extractor
+      '@master/css-plan':
+        specifier: workspace:^
+        version: link:../plan
       '@master/css-server':
         specifier: workspace:^
         version: link:../server
@@ -1207,25 +1207,6 @@ importers:
         specifier: workspace:^
         version: link:../../shared
 
-  packages/configer:
-    dependencies:
-      '@master/css-compiler':
-        specifier: workspace:^
-        version: link:../compiler
-      '@master/css-integration':
-        specifier: workspace:^
-        version: link:../integration
-      '@master/css-lexer':
-        specifier: workspace:^
-        version: link:../lexer
-      '@master/css-preset':
-        specifier: workspace:^
-        version: link:../preset
-    devDependencies:
-      shared:
-        specifier: workspace:^
-        version: link:../../shared
-
   packages/core:
     dependencies:
       '@master/css-engine':
@@ -1282,9 +1263,9 @@ importers:
       '@master/css':
         specifier: workspace:^
         version: link:../core
-      '@master/css-configer':
+      '@master/css-plan':
         specifier: workspace:^
-        version: link:../configer
+        version: link:../plan
       '@master/css-validator':
         specifier: workspace:^
         version: link:../validator
@@ -1451,12 +1432,12 @@ importers:
       '@master/css-compiler':
         specifier: workspace:^
         version: link:../compiler
-      '@master/css-configer':
-        specifier: workspace:^
-        version: link:../configer
       '@master/css-language-service':
         specifier: workspace:^
         version: link:../language-service
+      '@master/css-plan':
+        specifier: workspace:^
+        version: link:../plan
       '@techor/extend':
         specifier: ^3.2.5
         version: 3.2.5
@@ -1562,15 +1543,15 @@ importers:
       '@master/css':
         specifier: workspace:^
         version: link:../core
-      '@master/css-configer':
-        specifier: workspace:^
-        version: link:../configer
       '@master/css-extractor':
         specifier: workspace:^
         version: link:../extractor
       '@master/css-integration':
         specifier: workspace:^
         version: link:../integration
+      '@master/css-plan':
+        specifier: workspace:^
+        version: link:../plan
       '@master/css-server':
         specifier: workspace:^
         version: link:../server
@@ -1584,12 +1565,12 @@ importers:
 
   packages/nuxt:
     dependencies:
-      '@master/css-configer':
-        specifier: workspace:^
-        version: link:../configer
       '@master/css-integration':
         specifier: workspace:^
         version: link:../integration
+      '@master/css-plan':
+        specifier: workspace:^
+        version: link:../plan
       '@master/css-server':
         specifier: workspace:^
         version: link:../server
@@ -1657,6 +1638,25 @@ importers:
       vue:
         specifier: ^3.5.33
         version: 3.5.33(typescript@6.0.3)
+
+  packages/plan:
+    dependencies:
+      '@master/css-compiler':
+        specifier: workspace:^
+        version: link:../compiler
+      '@master/css-integration':
+        specifier: workspace:^
+        version: link:../integration
+      '@master/css-lexer':
+        specifier: workspace:^
+        version: link:../lexer
+      '@master/css-preset':
+        specifier: workspace:^
+        version: link:../preset
+    devDependencies:
+      shared:
+        specifier: workspace:^
+        version: link:../../shared
 
   packages/preset:
     dependencies:
@@ -1852,15 +1852,15 @@ importers:
       '@master/css':
         specifier: workspace:^
         version: link:../core
-      '@master/css-configer':
-        specifier: workspace:^
-        version: link:../configer
       '@master/css-extractor':
         specifier: workspace:^
         version: link:../extractor
       '@master/css-integration':
         specifier: workspace:^
         version: link:../integration
+      '@master/css-plan':
+        specifier: workspace:^
+        version: link:../plan
       '@master/css-runtime':
         specifier: workspace:^
         version: link:../runtime
@@ -1978,15 +1978,15 @@ importers:
       '@master/css':
         specifier: workspace:^
         version: link:../core
-      '@master/css-configer':
-        specifier: workspace:^
-        version: link:../configer
       '@master/css-extractor':
         specifier: workspace:^
         version: link:../extractor
       '@master/css-integration':
         specifier: workspace:^
         version: link:../integration
+      '@master/css-plan':
+        specifier: workspace:^
+        version: link:../plan
       '@techor/log':
         specifier: ^3.2.5
         version: 3.2.5

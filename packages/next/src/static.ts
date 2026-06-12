@@ -10,7 +10,7 @@ import {
     registerStyleCSSSource,
     type StyleCSSSources
 } from '@master/css-extractor/style'
-import { findCSSPlanEntryFiles } from '@master/css-configer/css'
+import { findCSSPlanEntryFiles } from '@master/css-plan/css'
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { existsSync, readFileSync } from 'node:fs'
 import { dirname, relative, resolve } from 'node:path'

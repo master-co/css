@@ -4,10 +4,10 @@ import {
     toPlanModule,
     toVirtualCSSPlanModulePath
 } from '@master/css-integration/plan-module'
-import { loadPlanModule } from '@master/css-configer/load'
+import { loadPlanModule } from '@master/css-plan/load'
 import type { Compiler } from 'webpack'
 import type { MasterCSSWebpackContext, WebpackSubPlugin } from '../plugin'
-import { isCSSPlanRequest } from '@master/css-configer/css'
+import { isCSSPlanRequest } from '@master/css-plan/css'
 
 export default function PlanLoaderPlugin(context: MasterCSSWebpackContext): WebpackSubPlugin {
     return {

@@ -27,14 +27,14 @@
 | `@master/eslint-plugin-css` | `.`, `./configs/*` | ESLint plugin |
 | `@master/eslint-config-css` | `.` | ESLint config wrapper |
 | `@master/css-cli` | `mcss`, `mastercss` | Extract and render CLI |
-| `@master/css-configer` | `./css`, `./load`, `./load-sync` | Resolve project CSS plan entries, workspace roots, explicit CSS plan resources, and project plan module source |
+| `@master/css-plan` | `./css`, `./load`, `./load-sync` | Resolve project CSS plan entries, workspace roots, explicit CSS plan resources, and project plan module source |
 | `@master/css-integration` | `.`, `./client`, `./module`, `./plan-module`, `./style-module`, `./preloaded-module`, `./plan-loader-plugin`, `./runtime`, `./node` | Adapter-neutral integration contracts, virtual module ids, generated module source helpers, runtime injection source, and client ambient module declarations |
 | `@master/css-devtools-hook` | `.` | Runtime event hook |
 | `@master/css.figma` | plugin bundle | Figma variable import/export |
 
 ## Dependency Direction
 
-Do not introduce reverse dependencies from engine to compiler, integration contracts, runtime, server, extractor, language service, ESLint, examples, or site. `@master/css-lexer` must stay dependency-free from engine/compiler/extractor/language-service and should be consumed upward for raw source scanning. `@master/css-integration` may depend on shared plan types and must remain below compiler/configer/build integrations. The compiler may depend on the plan-driven engine for class semantics and must not recreate a public Config contract.
+Do not introduce reverse dependencies from engine to compiler, integration contracts, runtime, server, extractor, language service, ESLint, examples, or site. `@master/css-lexer` must stay dependency-free from engine/compiler/extractor/language-service and should be consumed upward for raw source scanning. `@master/css-integration` may depend on shared plan types and must remain below compiler/plan/build integrations. The compiler may depend on the plan-driven engine for class semantics and must not recreate a public Config contract.
 
 ## Package Tests
 

@@ -44,7 +44,7 @@
 - Source allow/exclude matching.
 - Vite/Webpack/Next virtual-module consumers.
 - Stylesheet native CSS merging, pruning/source directives, and generated CSS ordering.
-- Do not add project plan discovery, workspace detection, or plan loading here; use `@master/css-configer` in the calling CLI/build/tooling package.
+- Do not add project plan discovery, workspace detection, or plan loading here; use `@master/css-plan` in the calling CLI/build/tooling package.
 - Do not add independent CSS import graph parsing here; use compiler results and keep extraction-specific decisions local.
 
 ## Required Tests

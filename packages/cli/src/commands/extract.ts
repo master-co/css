@@ -6,7 +6,7 @@ import {
     registerStyleCSSSource,
     type StyleCSSSources
 } from '@master/css-extractor/style'
-import { findCSSPlanEntryFiles } from '@master/css-configer/css'
+import { findCSSPlanEntryFiles } from '@master/css-plan/css'
 import log from '@techor/log'
 import bytes from 'bytes'
 import chokidar, { type FSWatcher } from 'chokidar'

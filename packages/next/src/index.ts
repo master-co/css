@@ -1,7 +1,7 @@
 import { fileURLToPath } from 'node:url'
 import { relative } from 'node:path'
 import type { NextConfig } from 'next'
-import { createMasterCSSPlanEntryPattern } from '@master/css-configer/css'
+import { createMasterCSSPlanEntryPattern } from '@master/css-plan/css'
 import {
     MASTER_CSS_PLAN_QUERY,
     VIRTUAL_PLAN_ID,

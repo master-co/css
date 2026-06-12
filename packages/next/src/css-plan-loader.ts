@@ -1,6 +1,6 @@
-import { loadPlanModuleSync } from '@master/css-configer/load-sync'
-import { loadProjectPlanModule } from '@master/css-configer/load'
-import { isCSSPlanRequest } from '@master/css-configer/css'
+import { loadPlanModuleSync } from '@master/css-plan/load-sync'
+import { loadProjectPlanModule } from '@master/css-plan/load'
+import { isCSSPlanRequest } from '@master/css-plan/css'
 
 interface LoaderContext {
     resourcePath: string

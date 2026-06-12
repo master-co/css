@@ -5,19 +5,26 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script>
-        window.masterCSSConfig = {
+        window.masterCSSPlan = {
+            version: 1,
             variants: [
                 { token: '::both', branches: [{ selector: '&::before,&::after' }] },
             ],
             utilities: [
                 {
+                    id: 'btn',
                     name: 'btn',
                     type: -4,
+                    order: 0,
                     layer: 'components',
-                    rules: [
-                        { selector: '&::before,&::after', declarations: { display: 'block' } },
-                        { selector: '&', declarations: { 'background-color': 'oklch(0% 0 none)' } }
-                    ]
+                    emit: {
+                        type: 'static',
+                        rules: [
+                            { selector: '&::before,&::after', declarations: { display: 'block' } },
+                            { selector: '&', declarations: { 'background-color': 'oklch(0% 0 none)' } }
+                        ]
+                    },
+                    matchers: [{ type: 'static', name: 'btn' }]
                 }
             ]
         }

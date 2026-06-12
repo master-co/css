@@ -219,11 +219,11 @@ test('bundled language server loads a CSS workspace entry', async () => {
 
         await server.waitForNotification((message) =>
             message.method === 'window/logMessage'
-            && message.params?.message?.includes('Initialized workspace (with config entry)')
+            && message.params?.message?.includes('Initialized workspace (with plan entry)')
         )
 
         expect(server.stderr().includes('Cannot find module')).toBe(false)
-        expect(JSON.stringify(server.notifications()).includes('Failed to load config')).toBe(false)
+        expect(JSON.stringify(server.notifications()).includes('Failed to load plan')).toBe(false)
     } finally {
         await server.dispose()
     }

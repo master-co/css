@@ -50,7 +50,7 @@
         "provenance": true
     },
     "dependencies": {
-        "@master/css-configer": "workspace:^",
+        "@master/css-plan": "workspace:^",
         "@master/css-integration": "workspace:^",
         "@master/css-server": "workspace:^",
         "@master/css.vite": "workspace:^",

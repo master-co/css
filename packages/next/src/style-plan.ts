@@ -1,6 +1,6 @@
 import CSSExtractor from '@master/css-extractor'
-import { loadProjectPlan } from '@master/css-configer/load'
-import { findCSSPlanEntryFiles } from '@master/css-configer/css'
+import { loadProjectPlan } from '@master/css-plan/load'
+import { findCSSPlanEntryFiles } from '@master/css-plan/css'
 import {
     createExtractedCSS,
     registerStyleCSSSource,

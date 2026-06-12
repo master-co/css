@@ -1,8 +1,8 @@
 import { mkdirSync, writeFileSync } from 'node:fs'
 import { createRequire } from 'node:module'
 import { dirname, isAbsolute, relative, resolve } from 'node:path'
-import { isCSSPlanRequest } from '@master/css-configer/css'
-import { loadPlanModuleSync } from '@master/css-configer/load-sync'
+import { isCSSPlanRequest } from '@master/css-plan/css'
+import { loadPlanModuleSync } from '@master/css-plan/load-sync'
 import {
     isMasterCSSPlanRequest,
     stripMasterCSSPlanQuery,

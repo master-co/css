@@ -2,7 +2,7 @@ import { defineNuxtModule, addServerPlugin, createResolver, addPlugin } from '@n
 import { name } from '../package.json'
 import masterCSS from '@master/css.vue/vite'
 import { toPlanModule, VIRTUAL_PLAN_ID } from '@master/css-integration/plan-module'
-import { loadProjectPlanModule } from '@master/css-configer/load'
+import { loadProjectPlanModule } from '@master/css-plan/load'
 import type { Plugin } from 'vite'
 import defaultOptions, { type ModuleOptions } from './options'
 

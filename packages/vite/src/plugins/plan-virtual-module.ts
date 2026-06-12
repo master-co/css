@@ -1,6 +1,6 @@
 import type { ModuleNode, Plugin, ViteDevServer } from 'vite'
 import { PluginContext } from '../core'
-import { loadProjectPlan } from '@master/css-configer/load'
+import { loadProjectPlan } from '@master/css-plan/load'
 import { toPlanModule } from '@master/css-integration/plan-module'
 import { RESOLVED_VIRTUAL_PLAN_ID, VIRTUAL_PLAN_ID } from '../common'
 import { PluginOptions } from '../options'

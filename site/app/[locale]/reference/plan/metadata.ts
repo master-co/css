@@ -1,5 +1,5 @@
 import define from 'internal/utils/metadata'
-import pkg from '~/packages/configer/package.json'
+import pkg from '~/packages/plan/package.json'
 
 const metadata = define({
     title: pkg.name,

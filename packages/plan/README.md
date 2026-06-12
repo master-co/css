@@ -20,11 +20,11 @@
             <img alt="NPM Version" src="https://img.shields.io/github/v/release/master-co/css?include_prereleases&color=f6f7f8&label=&style=for-the-badge&logo=github">
         </picture>
     </a>
-    <a aria-label="NPM Package" href="https://www.npmjs.com/package/@master/css-configer">
+    <a aria-label="NPM Package" href="https://www.npmjs.com/package/@master/css-plan">
         <picture>
-            <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/npm/dm/@master/css-configer?color=212022&label=%20&logo=npm&style=for-the-badge">
-            <source media="(prefers-color-scheme: light)" srcset="https://img.shields.io/npm/dm/@master/css-configer?color=f6f7f8&label=%20&logo=npm&style=for-the-badge">
-            <img alt="NPM package ( download / month )" src="https://img.shields.io/npm/dm/@master/css-configer?color=f6f7f8&label=%20&logo=npm&style=for-the-badge">
+            <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/npm/dm/@master/css-plan?color=212022&label=%20&logo=npm&style=for-the-badge">
+            <source media="(prefers-color-scheme: light)" srcset="https://img.shields.io/npm/dm/@master/css-plan?color=f6f7f8&label=%20&logo=npm&style=for-the-badge">
+            <img alt="NPM package ( download / month )" src="https://img.shields.io/npm/dm/@master/css-plan?color=f6f7f8&label=%20&logo=npm&style=for-the-badge">
         </picture>
     </a>
     <a aria-label="Discord Community" href="https://discord.gg/sZNKpAAAw6">
@@ -54,15 +54,15 @@
 
 ## Installation
 ```bash
-npm install @master/css-configer
+npm install @master/css-plan
 ```
 
 ## Usage
 CSS plan resources are compiled through the Master CSS compiler. Local CSS imports are reported as dependencies.
 
 ```ts
-import { loadPlan, loadPlanModule } from '@master/css-configer/load'
-import { loadPlanSync, loadPlanModuleSync } from '@master/css-configer/load-sync'
+import { loadPlan, loadPlanModule } from '@master/css-plan/load'
+import { loadPlanSync, loadPlanModuleSync } from '@master/css-plan/load-sync'
 import { MASTER_CSS_PLAN_QUERY } from '@master/css-integration/plan-module'
 
 const result = await loadPlan('./src/index.css')

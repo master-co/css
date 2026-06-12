@@ -9,7 +9,7 @@ import {
     transformLocalStyleCSS
 } from '@master/css-extractor/style'
 import { VIRTUAL_CSS_ID } from '@master/css-integration/style-module'
-import { loadProjectPlan } from '@master/css-configer/load'
+import { loadProjectPlan } from '@master/css-plan/load'
 
 interface TransformStyleSourceOptions {
     projectDir?: string

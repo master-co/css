@@ -37,7 +37,7 @@
 
 - `workspaces: 'auto'` discovery from plan entry files and package dependencies.
 - Closest workspace selection.
-- Plan loading with `@master/css-configer`.
+- Plan loading with `@master/css-plan`.
 - Restart behavior after plan/settings saves.
 
 ## Required Tests

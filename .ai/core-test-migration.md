@@ -53,11 +53,11 @@ Plan IR behavior findings:
 | `packages/core/tests/config/colors/hsl.test.ts` | compiler | rewritten-css-first | HSL color lowering is covered by CSS-first color/mode tests in `packages/compiler/tests/css-first-core-migration.test.ts`. |
 | `packages/core/tests/config/colors/test.ts` | engine | helper-replaced | Old Config helper replaced by plan-based engine helpers. |
 | `packages/core/tests/config/default-mode.test.ts` | compiler | rewritten-css-first | `default-mode`, `mode-trigger`, and mode variable emission are covered as CSS-first settings in `packages/compiler/tests/css-first-core-migration.test.ts`. |
-| `packages/core/tests/config/extend-config/master-1-1.css.js` | compiler/configer | dropped-removed-api | JS Config compatibility path is removed; replace intent with CSS-first import/basePlan tests. |
-| `packages/core/tests/config/extend-config/master-1-2.css.js` | compiler/configer | dropped-removed-api | JS Config compatibility path is removed; replace intent with CSS-first import/basePlan tests. |
-| `packages/core/tests/config/extend-config/master-1.css.js` | compiler/configer | dropped-removed-api | JS Config compatibility path is removed; replace intent with CSS-first import/basePlan tests. |
-| `packages/core/tests/config/extend-config/master-2.css.js` | compiler/configer | dropped-removed-api | JS Config compatibility path is removed; replace intent with CSS-first import/basePlan tests. |
-| `packages/core/tests/config/extend-config/master-css.js` | compiler/configer | dropped-removed-api | JS Config compatibility path is removed; replace intent with CSS-first import/basePlan tests. |
+| `packages/core/tests/config/extend-config/master-1-1.css.js` | compiler/plan | dropped-removed-api | JS Config compatibility path is removed; replace intent with CSS-first import/basePlan tests. |
+| `packages/core/tests/config/extend-config/master-1-2.css.js` | compiler/plan | dropped-removed-api | JS Config compatibility path is removed; replace intent with CSS-first import/basePlan tests. |
+| `packages/core/tests/config/extend-config/master-1.css.js` | compiler/plan | dropped-removed-api | JS Config compatibility path is removed; replace intent with CSS-first import/basePlan tests. |
+| `packages/core/tests/config/extend-config/master-2.css.js` | compiler/plan | dropped-removed-api | JS Config compatibility path is removed; replace intent with CSS-first import/basePlan tests. |
+| `packages/core/tests/config/extend-config/master-css.js` | compiler/plan | dropped-removed-api | JS Config compatibility path is removed; replace intent with CSS-first import/basePlan tests. |
 | `packages/core/tests/config/extend-config/test.ts` | engine | helper-replaced | Old Config helper replaced by plan-based engine helpers. |
 | `packages/core/tests/config/functions/$.test.ts` | engine/compiler | rewritten-css-first | Master `$()` function behavior is covered through CSS-first number variable tests and engine value VM parity. |
 | `packages/core/tests/config/functions/calc.test.ts` | engine/compiler | rewritten-css-first | `calc()` behavior is covered by engine value VM parity and CSS-first compiler migration tests, including number variable unit conversion. |
@@ -170,11 +170,11 @@ Plan IR behavior findings:
 | `packages/core/tests/utils/equal-declarations.test.ts` | engine | helper-replaced | Internal equality helpers are no longer public facade API; declaration behavior is asserted through generated CSS output parity. |
 | `packages/core/tests/utils/equal-selectors.test.ts` | engine | helper-replaced | Internal equality helpers are no longer public facade API; selector behavior is asserted through generated selector and runtime CSS output parity. |
 | `packages/core/tests/utils/equal-variants.test.ts` | engine/compiler | helper-replaced | Internal equality helpers are no longer public facade API; variant lowering/application is covered by compiler and engine tests. |
-| `packages/core/tests/utils/extend-config.test.ts` | compiler/configer | dropped-removed-api | JS Config compatibility path is removed; replace intent with CSS-first import/basePlan tests. |
+| `packages/core/tests/utils/extend-config.test.ts` | compiler/plan | dropped-removed-api | JS Config compatibility path is removed; replace intent with CSS-first import/basePlan tests. |
 | `packages/core/tests/utils/generate-at.test.ts` | engine | covered-representative | Covered by `packages/engine/tests/parser-parity.test.ts` for compiled at-rule parse/generate semantics. |
 | `packages/core/tests/utils/generate-selector.test.ts` | engine | covered-representative | Covered by `packages/engine/tests/parser-parity.test.ts` for compiled selector parse/generate semantics. |
 | `packages/core/tests/utils/meta-object.test.ts` | compiler | helper-replaced | Old Config meta-object helpers are not part of the Plan public contract; CSS-first lowering tests cover the remaining semantic use cases. |
-| `packages/core/tests/utils/minify-extended-config.test.ts` | compiler/configer | dropped-removed-api | JS Config compatibility path is removed; replace intent with CSS-first import/basePlan tests. |
+| `packages/core/tests/utils/minify-extended-config.test.ts` | compiler/plan | dropped-removed-api | JS Config compatibility path is removed; replace intent with CSS-first import/basePlan tests. |
 | `packages/core/tests/utils/parse-at.test.ts` | engine | covered-representative | Covered by `packages/engine/tests/parser-parity.test.ts` and compiled at-rule aliases in preset tests. |
 | `packages/core/tests/utils/parse-selector.test.ts` | engine | covered-representative | Covered by `packages/engine/tests/parser-parity.test.ts`, including functional pseudo-class arguments. |
 | `packages/core/tests/utils/parse-value.test.ts` | engine | covered-representative | Covered through engine value VM parity for color, number, separator, `$()`, `calc()`, and function utilities. |

@@ -8,7 +8,7 @@ import {
     resolveMasterStyleSource,
     transformLocalStyleCSS
 } from '@master/css-extractor/style'
-import { loadProjectPlan } from '@master/css-configer/load'
+import { loadProjectPlan } from '@master/css-plan/load'
 
 interface LoaderContext {
     resourcePath: string

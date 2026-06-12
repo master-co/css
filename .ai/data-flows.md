@@ -38,7 +38,7 @@ Risks:
 
 ```txt
 project CSS files containing @master; or @import "@master/css"
-  -> @master/css-configer discovers project entry files only
+  -> @master/css-plan discovers project entry files only
   -> @master/css-compiler resolves CSS imports and package style imports
   -> compiler parses @theme token/mode directives, @settings root options, top-level @custom-variant definitions, @animations keyframes, and @defaults/@components/@utilities managed definition directives
   -> compiler lowers directive result into MasterCSSPlan
@@ -48,8 +48,8 @@ project CSS files containing @master; or @import "@master/css"
 
 Main files:
 
-- `packages/configer/src/css.ts`
-- `packages/configer/src/load.ts`
+- `packages/plan/src/css.ts`
+- `packages/plan/src/load.ts`
 - `packages/integration/src/plan-module.ts`
 - `packages/compiler/src/index.ts`
 - `packages/compiler/src/master-css-plan.ts`
@@ -60,18 +60,18 @@ Risks:
 
 - Entry detection must only use project-level markers: `@master;` and `@import "@master/css"`.
 - Package CSS such as `@master/css/index.css` must not contain or imply a project entry marker.
-- Configer must not implement CSS import graph or CSS plan directive parsing.
+- `@master/css-plan` must not implement CSS import graph or CSS plan directive parsing.
 - Plan lowering order affects all plan consumers.
 - Variable aliases and modes affect inlining vs CSS custom property output.
 - Static utility layer assignment affects semantic class output and cascade behavior.
-- `?master-css-plan` query ids, virtual module ids, and generated JavaScript module source helpers are integration protocol and belong in `@master/css-integration`, not configer.
+- `?master-css-plan` query ids, virtual module ids, and generated JavaScript module source helpers are integration protocol and belong in `@master/css-integration`, not `@master/css-plan`.
 
 ## Build-Time Extraction
 
 ```txt
 source globs / Vite modules / Webpack modules
   -> CSSExtractor.init()
-  -> build tool / CLI registers managed CSS entries discovered by configer
+  -> build tool / CLI registers managed CSS entries discovered by @master/css-plan
   -> extractLatentClasses()
   -> compile managed CSS through @master/css-compiler
   -> combine style plan returned by compiler with explicit plan options

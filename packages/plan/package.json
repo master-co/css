@@ -1,5 +1,5 @@
 {
-    "name": "@master/css-configer",
+    "name": "@master/css-plan",
     "type": "module",
     "scripts": {
         "build": "techor build \"src/**/*.ts\" --formats esm",
@@ -19,11 +19,11 @@
     "repository": {
         "type": "git",
         "url": "https://github.com/master-co/css.git",
-        "directory": "packages/configer"
+        "directory": "packages/plan"
     },
     "keywords": [
         "plan",
-        "configer",
+        "loader",
         "css",
         "mastercss"
     ],

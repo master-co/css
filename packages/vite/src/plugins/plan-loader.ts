@@ -1,8 +1,8 @@
 import type { ModuleNode, Plugin, ViteDevServer } from 'vite'
 import type { PluginContext } from '../core'
 import { toResolvedMasterCSSPlanId } from '@master/css-integration/plan-module'
-import { loadPlanModule } from '@master/css-configer/load'
-import { isCSSPlanRequest } from '@master/css-configer/css'
+import { loadPlanModule } from '@master/css-plan/load'
+import { isCSSPlanRequest } from '@master/css-plan/css'
 import { createMasterCSSPlanLoaderPlugin } from '@master/css-integration/plan-loader-plugin'
 
 function invalidatePlanModule(module: ModuleNode | undefined, server: ViteDevServer): boolean {

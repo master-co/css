@@ -2,7 +2,7 @@ import type { Plugin } from 'vite'
 import { PluginContext } from '../core'
 import { render } from '@master/css-server'
 import type { MasterCSSPlan } from '@master/css'
-import { loadProjectPlan } from '@master/css-configer/load'
+import { loadProjectPlan } from '@master/css-plan/load'
 import { PluginOptions } from '../options'
 
 export default function PreRenderPlugin(options: PluginOptions, context: PluginContext): Plugin {

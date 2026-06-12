@@ -1,5 +1,5 @@
 import type { ModuleNode, Plugin, ViteDevServer } from 'vite'
-import { loadProjectPlan } from '@master/css-configer/load'
+import { loadProjectPlan } from '@master/css-plan/load'
 import {
     hasLocalStyleDirectives,
     isStyleCSSRequest,

@@ -7,8 +7,8 @@ import { Settings } from './settings'
 import {
     findCSSPlanEntryFiles,
     findMasterCSSWorkspaceDirectories
-} from '@master/css-configer/css'
-import { loadProjectPlan } from '@master/css-configer/load'
+} from '@master/css-plan/css'
+import { loadProjectPlan } from '@master/css-plan/load'
 import extend from '@techor/extend'
 import settings from './settings'
 import type { MasterCSSPlan } from '@master/css'

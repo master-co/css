@@ -39,7 +39,7 @@
     },
     "dependencies": {
         "@master/css": "workspace:^",
-        "@master/css-configer": "workspace:^",
+        "@master/css-plan": "workspace:^",
         "@master/css-extractor": "workspace:^",
         "@master/css-server": "workspace:^",
         "@techor/extend": "^3.2.5",

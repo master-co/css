@@ -4,7 +4,7 @@ import {
     toPlanModule,
     toVirtualDefaultPlanModulePath
 } from '@master/css-integration/plan-module'
-import { loadProjectPlan } from '@master/css-configer/load'
+import { loadProjectPlan } from '@master/css-plan/load'
 import {
     cleanStyleRequest,
     createExtractedCSSResult,

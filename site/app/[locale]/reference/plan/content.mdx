@@ -1,9 +1,9 @@
 ## Installation [sr-only]
 ```bash action=install
-@master/css-configer@rc
+@master/css-plan@rc
 ```
 
-`@master/css-configer` is the shared project plan boundary for CLI commands, ESLint, language tooling, and build integrations such as Vite, Next.js, Webpack, and Nuxt.
+`@master/css-plan` is the shared project plan boundary for CLI commands, ESLint, language tooling, and build integrations such as Vite, Next.js, Webpack, and Nuxt.
 
 It discovers project CSS entries and Master CSS workspace roots, then delegates CSS parsing, import graph resolution, and plan compilation to `@master/css-compiler`. The extractor stays focused on class/source scanning; callers pass it the compiled plan and source directives.
 
@@ -15,7 +15,7 @@ Project entry discovery only treats CSS files with top-level `@master;` or `@imp
 Use `loadProjectPlan()` when a tool should load the canonical project-level plan for a directory.
 
 ```ts
-import { loadProjectPlan, loadProjectPlanModule } from '@master/css-configer/load'
+import { loadProjectPlan, loadProjectPlanModule } from '@master/css-plan/load'
 
 const result = await loadProjectPlan('/project')
 const moduleResult = await loadProjectPlanModule('/project')
@@ -24,7 +24,7 @@ const moduleResult = await loadProjectPlanModule('/project')
 `loadProjectPlan()` discovers project CSS entries unless explicit `entries` are passed. It returns the compiled plan and dependency list. `loadProjectPlanModule()` returns JavaScript module code for virtual modules and loader output.
 
 ```ts
-import { loadProjectPlanSync, loadProjectPlanModuleSync } from '@master/css-configer/load-sync'
+import { loadProjectPlanSync, loadProjectPlanModuleSync } from '@master/css-plan/load-sync'
 
 const result = loadProjectPlanSync('/project')
 const moduleResult = loadProjectPlanModuleSync('/project')
@@ -36,7 +36,7 @@ const moduleResult = loadProjectPlanModuleSync('/project')
 Use `loadPlan()` when the CSS resource path is already known and should be compiled directly.
 
 ```ts
-import { loadPlan, loadPlanModule } from '@master/css-configer/load'
+import { loadPlan, loadPlanModule } from '@master/css-plan/load'
 
 const result = await loadPlan('/project/src/index.css')
 const moduleResult = await loadPlanModule('/project/src/index.css')
@@ -45,7 +45,7 @@ const moduleResult = await loadPlanModule('/project/src/index.css')
 `loadPlan()` and `loadPlanModule()` only accept CSS resources. They do not search the workspace and do not load JavaScript or TypeScript config files.
 
 ```ts
-import { loadPlanSync, loadPlanModuleSync } from '@master/css-configer/load-sync'
+import { loadPlanSync, loadPlanModuleSync } from '@master/css-plan/load-sync'
 
 const result = loadPlanSync('/project/src/index.css')
 const moduleResult = loadPlanModuleSync('/project/src/index.css')
@@ -54,14 +54,14 @@ const moduleResult = loadPlanModuleSync('/project/src/index.css')
 ---
 
 ## Discover entries and workspaces
-Use `@master/css-configer/css` when tooling needs the same project entry and workspace discovery rules without loading a plan.
+Use `@master/css-plan/css` when tooling needs the same project entry and workspace discovery rules without loading a plan.
 
 ```ts
 import {
     findCSSPlanEntryFiles,
     findMasterCSSWorkspaceDirectories,
     hasMasterCSSPlanEntrypoint,
-} from '@master/css-configer/css'
+} from '@master/css-plan/css'
 ```
 
 `findCSSPlanEntryFiles(projectDir)` searches CSS files for entry markers. `findMasterCSSWorkspaceDirectories(rootDir)` creates workspace roots from discovered CSS entries and `package.json` files that declare Master CSS package dependencies.
@@ -69,7 +69,7 @@ import {
 ---
 
 ## Plan modules
-The module utilities define the plan import contract used by official integrations. They live in `@master/css-integration`; configer owns loading and discovery.
+The module utilities define the plan import contract used by official integrations. They live in `@master/css-integration`; `@master/css-plan` owns loading and discovery.
 
 ```ts
 import {

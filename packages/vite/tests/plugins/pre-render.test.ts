@@ -15,7 +15,7 @@ async function resolveConfigHooks(plugins: any[], config: any) {
 }
 
 describe('PreRenderPlugin', () => {
-    it('renders HTML classes with the managed CSS config entry', async () => {
+    it('renders HTML classes with the managed CSS plan entry', async () => {
         const plugins = masterCSS({
             mode: 'pre-render',
         })

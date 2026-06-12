@@ -12,7 +12,7 @@ shared / external data
 @master/css-integration
   ↓
 @master/css-compiler
-@master/css-configer
+@master/css-plan
   ↓
 @master/css-validator
 @master/css-server
@@ -79,11 +79,11 @@ Important files:
 
 `packages/compiler` is the canonical CSS source compiler. It parses CSS-authored Master plan directives and native CSS, resolves CSS import graphs, detects project CSS entry markers (`@master;` and `@import "@master/css"`), parses standalone extraction directives, and lowers directive results into `MasterCSSPlan` values. `@master;` and `@import "@master/css"` are user project entry markers; package CSS files such as `@master/css/index.css` must not contain `@master;`.
 
-`packages/configer` resolves Master CSS project plan entries, workspace roots, explicit CSS plan resources, and project plan module source. It delegates CSS parsing, CSS import graph resolution, and plan compilation to `@master/css-compiler`. ESLint, language tooling, CLI, and build integrations should consume configer for project-level plans instead of rediscovering entries locally.
+`packages/plan` resolves Master CSS project plan entries, workspace roots, explicit CSS plan resources, and project plan module source. It delegates CSS parsing, CSS import graph resolution, and plan compilation to `@master/css-compiler`. ESLint, language tooling, CLI, and build integrations should consume `@master/css-plan` for project-level plans instead of rediscovering entries locally.
 
-`packages/integration` defines the virtual module and query protocol shared by build and framework integrations. It must stay adapter-neutral: no Vite, Next, Webpack, Runtime, Server, Extractor, Compiler, or Configer dependencies. Node filesystem helpers are isolated under its `./node` subpath.
+`packages/integration` defines the virtual module and query protocol shared by build and framework integrations. It must stay adapter-neutral: no Vite, Next, Webpack, Runtime, Server, Extractor, Compiler, or Plan dependencies. Node filesystem helpers are isolated under its `./node` subpath.
 
-`packages/extractor` scans source files, validates latent classes, and emits CSS for static output. It consumes `@master/css-lexer` for source-level class candidates and owns extraction-specific stylesheet helpers such as native CSS merging, native CSS pruning/source directives, and generated CSS composition. Project plan discovery and plan loading belong in configer or the calling integration.
+`packages/extractor` scans source files, validates latent classes, and emits CSS for static output. It consumes `@master/css-lexer` for source-level class candidates and owns extraction-specific stylesheet helpers such as native CSS merging, native CSS pruning/source directives, and generated CSS composition. Project plan discovery and plan loading belong in `@master/css-plan` or the calling integration.
 
 ## Integration Packages
 
