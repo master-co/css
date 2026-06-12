@@ -1,4 +1,5 @@
 import type { PropertiesHyphen } from 'csstype'
+import type { AtIdentifier } from './css-config.js'
 import type { UtilityType } from './utility-type.js'
 
 export type MasterCSSPlanUtilityLayerName = 'base' | 'defaults' | 'components' | 'utilities'
@@ -12,6 +13,55 @@ export type MasterCSSPlanFunctionOp = 'core.math' | 'core.variable'
 export type MasterCSSPlanCSSDeclarationPrimitive = string | number | undefined
 export type MasterCSSPlanCSSDeclarations = PropertiesHyphen | Record<string, MasterCSSPlanCSSDeclarationPrimitive | MasterCSSPlanCSSDeclarationPrimitive[]>
 export type MasterCSSPlanVariableValue = number | string | false | (number | string)[]
+export type MasterCSSPlanVariableType = 'number' | 'string'
+
+export type MasterCSSPlanAtRuleBooleanNode = { raw?: string, name: string, type: 'boolean' }
+export type MasterCSSPlanAtRuleNumberNode = { raw?: string, name: string, type: 'number', value: number, unit?: string, operator?: string }
+export type MasterCSSPlanAtRuleStringNode = { raw?: string, name: string, type: 'string', value: string }
+export type MasterCSSPlanAtRuleValueNode = MasterCSSPlanAtRuleNumberNode | MasterCSSPlanAtRuleStringNode
+export interface MasterCSSPlanAtRuleComparisonOperatorNode { type: 'comparison', raw?: string, value: string }
+export interface MasterCSSPlanAtRuleLogicalOperatorNode { type: 'logical', raw?: string, value: string }
+export type MasterCSSPlanAtRuleOperatorNode = MasterCSSPlanAtRuleComparisonOperatorNode | MasterCSSPlanAtRuleLogicalOperatorNode
+export interface MasterCSSPlanAtRuleGroupNode { type?: 'group', raw?: string, children: MasterCSSPlanAtRuleNode[] }
+export type MasterCSSPlanAtRuleNode =
+    | MasterCSSPlanAtRuleBooleanNode
+    | MasterCSSPlanAtRuleValueNode
+    | MasterCSSPlanAtRuleComparisonOperatorNode
+    | MasterCSSPlanAtRuleLogicalOperatorNode
+    | MasterCSSPlanAtRuleGroupNode
+
+export interface MasterCSSPlanAtRule {
+    id: AtIdentifier
+    nodes: MasterCSSPlanAtRuleNode[]
+}
+
+export type MasterCSSPlanAtRules = Record<string, MasterCSSPlanAtRule>
+
+export type MasterCSSPlanSelectorLiteralNode = {
+    type?: 'attribute' | 'pseudo-class' | 'pseudo-element' | 'class' | 'universal' | 'id'
+    raw?: string
+    value?: string
+    children?: MasterCSSPlanSelectorNode[]
+}
+
+export type MasterCSSPlanSelectorSeparatorNode = {
+    type: 'separator'
+    raw?: string
+    value: string
+}
+
+export type MasterCSSPlanSelectorCombinatorNode = {
+    type: 'combinator'
+    raw?: string
+    value: string
+}
+
+export type MasterCSSPlanSelectorNode =
+    | MasterCSSPlanSelectorLiteralNode
+    | MasterCSSPlanSelectorCombinatorNode
+    | MasterCSSPlanSelectorSeparatorNode
+
+export type MasterCSSPlanSelectors = Record<string, MasterCSSPlanSelectorNode[]>
 
 export interface MasterCSSPlanSettings {
     rootSize?: number
@@ -24,9 +74,13 @@ export interface MasterCSSPlanSettings {
 }
 
 export interface MasterCSSPlanVariable {
+    name?: string
     key: string
     namespace?: string
-    value: MasterCSSPlanVariableValue
+    type?: MasterCSSPlanVariableType
+    value?: MasterCSSPlanVariableValue
+    modes?: Record<string, { type: MasterCSSPlanVariableType, value: number | string }>
+    dependencies?: string[]
     mode?: string
     inline?: boolean
 }
@@ -38,7 +92,9 @@ export type MasterCSSPlanAnimations<TDeclarations = MasterCSSPlanCSSDeclarations
 
 export interface MasterCSSPlanVariantBranch {
     selector?: string
+    selectorNodes?: MasterCSSPlanSelectorNode[]
     atRules?: string[]
+    atRuleNodes?: MasterCSSPlanAtRule[]
     layer?: MasterCSSPlanUtilityLayerName
 }
 
@@ -65,6 +121,16 @@ export type MasterCSSPlanUtilityMatcher =
     | { type: 'function-prefix'; name: string }
     | { type: 'group' }
     | { type: 'css-variable-assignment' }
+
+export interface MasterCSSPlanUtilityBuckets {
+    variable?: number[]
+    value?: number[]
+    key?: number[]
+    arbitrary?: number[]
+}
+
+export type MasterCSSPlanVariableAlias = [key: string, name: string]
+export type MasterCSSPlanVariableAliasSet = MasterCSSPlanVariableAlias[]
 
 export type MasterCSSPlanUtilityEmit =
     | { type: 'declarations'; declarations: string[] }
@@ -100,6 +166,9 @@ export interface MasterCSSPlanUtility {
     includeAnimations?: boolean
     atRules?: string[]
     transform?: MasterCSSPlanTransformOp
+    variableAliases?: MasterCSSPlanVariableAliasSet
+    variableAliasSet?: number
+    variableAliasRefs?: string[]
     emit: MasterCSSPlanUtilityEmit
     matchers: MasterCSSPlanUtilityMatcher[]
     debug?: Record<string, unknown>
@@ -113,8 +182,14 @@ export interface MasterCSSPlan {
     variables?: MasterCSSPlanVariables
     animations?: MasterCSSPlanAnimations
     variants?: MasterCSSPlanVariants
-    atRules?: Record<string, string>
+    atRules?: MasterCSSPlanAtRules
+    breakpointAtRules?: MasterCSSPlanAtRules
+    containerAtRules?: MasterCSSPlanAtRules
+    selectors?: MasterCSSPlanSelectors
+    variableNamespaces?: Record<string, MasterCSSPlanVariableAliasSet>
+    variableAliasSets?: MasterCSSPlanVariableAliasSet[]
     utilities?: MasterCSSPlanUtilities
+    utilityBuckets?: MasterCSSPlanUtilityBuckets
     functions?: MasterCSSPlanFunctions
     debug?: Record<string, unknown>
 }

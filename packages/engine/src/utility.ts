@@ -6,7 +6,7 @@ import { type PropertiesHyphen } from 'csstype'
 import { VALUE_DELIMITERS, BASE_UNIT_REGEX, AT_IDENTIFIERS } from './common'
 import Layer from './layer'
 import type { NumberValueComponent, ValueComponent, VariableValueComponent, Variable, StringValueComponent } from 'shared/css-syntax'
-import { AtRuleNode, AtRuleStringNode, AtRuleValueNode, } from './utils/parse-at'
+import { AtRule, AtRuleNode, AtRuleStringNode, AtRuleValueNode, } from './utils/parse-at'
 import parseValue from './utils/parse-value'
 import parseAt from './utils/parse-at'
 import type { AtIdentifier } from 'shared/css-config'
@@ -62,9 +62,24 @@ function mergeAtRuleNodeMap(
 
 function mergeBranch(base: UtilityStateBranch, branch: MasterCSSPlanVariantBranch, css: MasterCSS, key: string): UtilityStateBranch {
     let atRules = cloneAtRules(base.atRules)
-    for (const atRule of branch.atRules || []) {
-        const parsed = parseAt(atRule, css)
-        atRules = mergeAtRuleNodeMap(atRules, parsed as { id: AtIdentifier, nodes: AtRuleNode[] })
+    for (const atRule of branch.atRuleNodes || []) {
+        atRules = mergeAtRuleNodeMap(atRules, atRule as AtRule)
+    }
+    if (!branch.atRuleNodes?.length) {
+        for (const atRule of branch.atRules || []) {
+            const parsed = parseAt(atRule, css)
+            atRules = mergeAtRuleNodeMap(atRules, parsed as { id: AtIdentifier, nodes: AtRuleNode[] })
+        }
+    }
+    if (branch.selectorNodes?.length && !branch.selector) {
+        return {
+            ...base,
+            key: base.key + key,
+            selectorNodes: branch.selectorNodes as SelectorNode[],
+            ...(atRules ? { atRules } : {}),
+            ...(branch.layer || base.layer ? { layer: branch.layer || base.layer } : {}),
+            valid: base.valid !== false && !(base.layer && branch.layer && base.layer !== branch.layer)
+        }
     }
     const layer = branch.layer || base.layer
     return {

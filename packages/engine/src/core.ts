@@ -7,22 +7,20 @@ import ThemeLayer from './theme-layer'
 import UtilityLayer from './utility-layer'
 import NonLayer from './non-layer'
 import type { Variable } from 'shared/css-syntax'
-import { AtRule, AtRuleValueNode } from './utils/parse-at'
-import type { AtIdentifier } from 'shared/css-config'
-import parseAt from './utils/parse-at'
+import { AtRule } from './utils/parse-at'
 import parseValue from './utils/parse-value'
-import parseSelector, { SelectorNode } from './utils/parse-selector'
-import { normalizeVariableValue } from './utils/css-variables'
+import type { SelectorNode } from './utils/parse-selector'
 import type { MasterCSSPreloaded } from './preloaded'
 import type {
     MasterCSSPlan,
+    MasterCSSPlanAtRules,
     MasterCSSPlanAnimations,
     MasterCSSPlanFunctions,
     MasterCSSPlanSettings,
     MasterCSSPlanUtility,
+    MasterCSSPlanUtilityBuckets,
     MasterCSSPlanUtilityLayerName,
     MasterCSSPlanUtilityMatcher,
-    MasterCSSPlanVariable,
     MasterCSSPlanVariantBranch,
     MasterCSSPlanVariantToken
 } from 'shared/master-css-plan'
@@ -154,10 +152,10 @@ export default class MasterCSS {
     loadPlan(plan: MasterCSSPlan) {
         // @ts-expect-error read-only
         this.plan = plan
-        this.resolve()
+        this.loadResolvedPlan()
     }
 
-    private resolve() {
+    private loadResolvedPlan() {
         // @ts-expect-error read-only
         this.config = {
             ...DEFAULT_SETTINGS,
@@ -165,11 +163,11 @@ export default class MasterCSS {
             modes: this.plan.settings?.modes ? [...this.plan.settings.modes] : [...DEFAULT_SETTINGS.modes],
             ...(this.plan.functions ? { functions: this.plan.functions } : {})
         }
-        this.resolveVariables()
-        this.resolveAnimations()
-        this.resolveAtRules()
-        this.resolveVariants()
-        this.resolveUtilities()
+        this.loadVariables()
+        this.loadAnimations()
+        this.loadAtRuleAliases()
+        this.loadVariantAliases()
+        this.loadUtilities()
     }
 
     private applyPreloadedCounts(preloaded: MasterCSSPreloaded) {
@@ -204,7 +202,7 @@ export default class MasterCSS {
         return Boolean(this.preloaded.animations[name])
     }
 
-    resolveAnimations() {
+    private loadAnimations() {
         const { animations } = this.plan
         if (animations) {
             for (const animationName in animations) {
@@ -223,40 +221,85 @@ export default class MasterCSS {
 
     }
 
-    resolveUtilities() {
+    private loadVariables() {
+        const { variables = [] } = this.plan
+        const { modes = [] } = this.config
+        this.modes.push(...modes)
+        for (const definition of variables) {
+            if (!definition.name || !definition.type || definition.value === false) continue
+            this.variables.set(definition.name, {
+                name: definition.name,
+                key: definition.key,
+                type: definition.type,
+                ...(definition.namespace ? { namespace: definition.namespace } : {}),
+                ...(definition.value !== undefined ? {
+                    value: Array.isArray(definition.value) ? definition.value.join(',') : definition.value
+                } : {}),
+                ...(definition.modes ? { modes: { ...definition.modes } } : {}),
+                ...(definition.dependencies?.length ? { dependencies: new Set(definition.dependencies) } : {}),
+                ...(definition.inline ? { inline: true } : {})
+            } as Variable)
+        }
+    }
+
+    private loadAtRuleMap(target: Map<string, AtRule>, atRules: MasterCSSPlanAtRules | undefined) {
+        if (!atRules) return
+        for (const [name, atRule] of Object.entries(atRules)) {
+            target.set(name, {
+                id: atRule.id,
+                nodes: atRule.nodes
+            } as AtRule)
+        }
+    }
+
+    private loadAtRuleAliases() {
+        this.loadAtRuleMap(this.atRules, this.plan.atRules)
+        this.loadAtRuleMap(this.breakpointAtRules, this.plan.breakpointAtRules)
+        this.loadAtRuleMap(this.containerAtRules, this.plan.containerAtRules)
+    }
+
+    private loadVariantAliases() {
+        if (this.plan.selectors) {
+            for (const [name, nodes] of Object.entries(this.plan.selectors)) {
+                this.selectors.set(name, nodes as SelectorNode[])
+            }
+        }
+
+        const { variants } = this.plan
+        if (!variants) return
+
+        for (const variant of variants) {
+            this.variants.set(variant.token, variant.branches.map((branch) => ({
+                ...branch,
+                ...(branch.selectorNodes?.length ? { selectorNodes: branch.selectorNodes as SelectorNode[] } : {}),
+                ...(branch.atRules?.length ? { atRules: [...branch.atRules] } : {}),
+                ...(branch.atRuleNodes?.length ? { atRuleNodes: branch.atRuleNodes.map((atRule) => ({
+                    id: atRule.id,
+                    nodes: atRule.nodes
+                } as AtRule)) } : {})
+            })))
+        }
+    }
+
+    private loadBucket(target: CompiledUtility[], indexes: number[] | undefined) {
+        if (!indexes) return
+        for (const index of indexes) {
+            const utility = this.definedUtilities[index]
+            if (utility) target.push(utility)
+        }
+    }
+
+    private loadUtilityBuckets(buckets: MasterCSSPlanUtilityBuckets | undefined) {
+        this.loadBucket(this.variableMatcherUtilities, buckets?.variable)
+        this.loadBucket(this.valueMatcherUtilities, buckets?.value)
+        this.loadBucket(this.keyMatcherUtilities, buckets?.key)
+        this.loadBucket(this.arbitraryMatcherUtilities, buckets?.arbitrary)
+    }
+
+    private loadUtilities() {
         const { utilities } = this.plan
 
         if (!utilities) return
-
-        const variablesByNamespace = new Map<string, [string, Variable][]>()
-        const getVariableKeyByNamespace = (variableName: string, namespace: string) => {
-            const negative = variableName.startsWith('-')
-            const positiveName = negative ? variableName.slice(1) : variableName
-            if (positiveName !== namespace && !positiveName.startsWith(namespace + '-')) return
-            const variableKey = positiveName === namespace
-                ? ''
-                : positiveName.slice(namespace.length + 1)
-            return negative ? '-' + variableKey : variableKey
-        }
-        const addVariableAliasToNamespace = (namespace: string, variableKey: string, variable: Variable) => {
-            const namespaceVariables = variablesByNamespace.get(namespace)
-            if (namespaceVariables) {
-                namespaceVariables.push([variableKey, variable])
-            } else {
-                variablesByNamespace.set(namespace, [[variableKey, variable]])
-            }
-        }
-        const addVariableToNamespace = (namespace: string, variable: Variable) => {
-            const variableKey = getVariableKeyByNamespace(variable.name, namespace)
-            if (variableKey !== undefined) addVariableAliasToNamespace(namespace, variableKey, variable)
-        }
-        for (const variable of this.variables.values()) {
-            const namespaces = new Set<string>()
-            if (variable.namespace) namespaces.add(variable.namespace)
-            for (const namespace of namespaces) {
-                addVariableToNamespace(namespace, variable)
-            }
-        }
 
         for (const utility of utilities) {
             const definedUtility = {
@@ -264,244 +307,27 @@ export default class MasterCSS {
                 matchers: utility.matchers.map((matcher) => ({ ...matcher }))
             } as CompiledUtility
 
-            const addVariable = (variableKey: string, variable: Variable) => {
-                if (definedUtility.variables?.has(variableKey)) return
-                if (definedUtility.variables) {
-                    definedUtility.variables.set(variableKey, variable)
-                } else {
-                    definedUtility.variables = new Map([[variableKey, variable]])
+            const variableAliases = [
+                ...(utility.variableAliases || []),
+                ...(utility.variableAliasSet !== undefined ? this.plan.variableAliasSets?.[utility.variableAliasSet] || [] : []),
+                ...(utility.variableAliasRefs || []).flatMap((ref) => this.plan.variableNamespaces?.[ref] || [])
+            ]
+            if (variableAliases.length) {
+                definedUtility.variables = new Map()
+                for (const [variableKey, variableName] of variableAliases) {
+                    if (definedUtility.variables.has(variableKey)) continue
+                    const variable = this.variables.get(variableName)
+                    if (variable) definedUtility.variables.set(variableKey, variable)
                 }
             }
-            const addNamespace = (namespace: string) => {
-                for (const [variableKey, variable] of variablesByNamespace.get(namespace) || []) {
-                    addVariable(variableKey, variable)
-                }
-            }
-            const addMatchedNamespaces = (namespaces: string[]) => {
-                const sortedNamespaces = [...new Set(namespaces)]
-                    .sort((a, b) => b.length - a.length)
-                for (const variable of this.variables.values()) {
-                    for (const namespace of sortedNamespaces) {
-                        const variableKey = getVariableKeyByNamespace(variable.name, namespace)
-                        if (variableKey !== undefined) addVariable(variableKey, variable)
-                    }
-                }
-            }
-
-            if (definedUtility.implicitNamespace !== false) addNamespace(definedUtility.name)
-            if (definedUtility.namespaces) addMatchedNamespaces(definedUtility.namespaces)
 
             this.definedUtilities.push(definedUtility)
-
-            for (const matcher of definedUtility.matchers) {
-                switch (matcher.type) {
-                    case 'variable':
-                        if (definedUtility.variables?.size) this.variableMatcherUtilities.push(definedUtility)
-                        break
-                    case 'value':
-                        if (definedUtility.values?.length || definedUtility.kind) this.valueMatcherUtilities.push(definedUtility)
-                        break
-                    case 'key':
-                        this.keyMatcherUtilities.push(definedUtility)
-                        break
-                    default:
-                        this.arbitraryMatcherUtilities.push(definedUtility)
-                        break
-                }
-            }
         }
-
-    }
-
-    resolveAtRules() {
-        for (const variable of this.variables.values()) {
-            if (variable.namespace === 'breakpoint' && variable.type === 'number' && variable.value !== undefined && !variable.name.startsWith('-')) {
-                const node = this.parseValue(variable.value)
-                const atRule = {
-                    id: 'media',
-                    nodes: [node as unknown as AtRuleValueNode]
-                } as AtRule
-                this.atRules.set(variable.key, atRule)
-                this.breakpointAtRules.set(variable.key, atRule)
-            } else if (variable.namespace === 'container' && variable.type === 'number' && variable.value !== undefined && !variable.name.startsWith('-')) {
-                const node = this.parseValue(variable.value)
-                this.containerAtRules.set(variable.key, {
-                    id: 'container',
-                    nodes: [node as unknown as AtRuleValueNode]
-                })
-            }
-        }
-    }
-
-    resolveVariants() {
-        const { variants } = this.plan
-        if (!variants) return
-
-        for (const variant of variants) {
-            if (!/^(?::{1,2}.+|@.+)$/.test(variant.token)) {
-                throw new Error(`Invalid variant token: ${variant.token}`)
-            }
-
-            if (variant.token.startsWith('@')) {
-                const name = variant.token.slice(1)
-                if (/^[\w-]+$/.test(name)) {
-                    if (this.modes.includes(name)) {
-                        throw new Error(`Variant "${name}" conflicts with mode "${name}"`)
-                    }
-                    if (this.breakpointAtRules.has(name)) {
-                        throw new Error(`Variant "${name}" conflicts with breakpoint variable "--breakpoint-${name}"`)
-                    }
-                    if (this.containerAtRules.has(name)) {
-                        throw new Error(`Variant "${name}" conflicts with container variable "--container-${name}"`)
-                    }
-                }
-            }
-
-            for (const branch of variant.branches) {
-                if (branch.selector && !branch.selector.includes('&')) {
-                    throw new Error(`Variant "${variant.token}" selector branch must include "&"`)
-                }
-            }
-
-            this.variants.set(variant.token, variant.branches.map((branch) => ({
-                ...branch,
-                ...(branch.atRules?.length ? { atRules: [...branch.atRules] } : {})
-            })))
-
-            if (variant.token.startsWith(':') && variant.branches.length === 1) {
-                const selector = variant.branches[0].selector?.trim()
-                if (selector) {
-                    const bodylessSelector = selector.includes('&')
-                        ? selector.replace(/&/g, '')
-                        : selector
-                    this.selectors.set(variant.token, parseSelector(bodylessSelector, this, false))
-                }
-            } else if (variant.token.startsWith('@') && variant.branches.length === 1) {
-                const branch = variant.branches[0]
-                if (branch.layer) {
-                    this.atRules.set(variant.token.slice(1), {
-                        id: 'layer',
-                        nodes: [{
-                            type: 'string',
-                            value: branch.layer
-                        } as AtRuleValueNode]
-                    })
-                } else if (branch.atRules?.[0]) {
-                    this.atRules.set(variant.token.slice(1), parseAt(branch.atRules[0], this, false))
-                }
-            }
-        }
+        this.loadUtilityBuckets(this.plan.utilityBuckets)
     }
 
     resolveVariant(token: MasterCSSPlanVariantToken) {
         return this.variants.get(token)
-    }
-
-    resolveVariables() {
-        const { variables = [] } = this.plan
-        const { modes = [] } = this.config
-        this.modes.push(...modes)
-        const getVariableName = (definition: MasterCSSPlanVariable) => {
-            return definition.namespace
-                ? `${definition.namespace}${definition.key ? '-' + definition.key : ''}`
-                : definition.key
-        }
-        const inlineVariableNames = new Set<string>()
-        const modeVariableNames = new Map<string, string>()
-        for (const definition of variables) {
-            if (definition.value === false) continue
-            const name = getVariableName(definition)
-            if (definition.inline) inlineVariableNames.add(name)
-            if (definition.mode) modeVariableNames.set(name, definition.mode)
-        }
-        for (const name of inlineVariableNames) {
-            const mode = modeVariableNames.get(name)
-            if (mode) {
-                throw new Error(`Inline theme variables cannot be mode-specific: ${name}@${mode}`)
-            }
-        }
-        const createVariable = (definition: MasterCSSPlanVariable): Variable | undefined => {
-            const namespace = definition.namespace
-            const name = getVariableName(definition)
-            if (definition.inline && definition.mode) {
-                throw new Error(`Inline theme variables cannot be mode-specific: ${name}@${definition.mode}`)
-            }
-            if ((definition.namespace === 'breakpoint' || definition.namespace === 'container') && definition.mode) {
-                throw new Error(`${definition.namespace[0].toUpperCase()}${definition.namespace.slice(1)} variables cannot be mode-specific: ${definition.namespace}-${definition.key}@${definition.mode}`)
-            }
-            if (definition.value === false) return
-            return {
-                name,
-                key: definition.key,
-                value: Array.isArray(definition.value) ? definition.value.join(',') : definition.value,
-                ...(namespace ? { namespace } : {}),
-                ...(definition.inline ? { inline: true } : {})
-            } as Variable
-        }
-        const addDependencies = (variable: Variable) => {
-            const add = (value: string | number | undefined) => {
-                if (value === undefined) return
-                for (const dependency of normalizeVariableValue(value).dependencies) {
-                    if (dependency !== variable.name) {
-                        variable.dependencies?.add(dependency) ?? (variable.dependencies = new Set([dependency]))
-                    }
-                }
-            }
-            add(variable.value)
-            for (const modeVariable of Object.values(variable.modes || {})) {
-                add(modeVariable.value)
-            }
-        }
-        const addVariable = (name: string, variable: Variable, mode?: string) => {
-            const type = typeof variable.value === 'number' ? 'number' : 'string'
-            const newVariable = { ...variable, type } as Variable
-            if (mode) {
-                const foundVariable = this.variables.get(name)
-                const modeVariable = {
-                    type,
-                    value: newVariable.value
-                } as NonNullable<Variable['modes']>[string]
-                if (foundVariable) {
-                    if (!foundVariable.modes) foundVariable.modes = {}
-                    foundVariable.modes[mode] = modeVariable
-                    addDependencies(foundVariable)
-                } else {
-                    const rootVariable = {
-                        name: newVariable.name,
-                        key: newVariable.key,
-                        type,
-                        modes: { [mode]: modeVariable },
-                        ...(newVariable.namespace ? { namespace: newVariable.namespace } : {}),
-                        ...(newVariable.inline ? { inline: true } : {})
-                    } as Variable
-                    addDependencies(rootVariable)
-                    this.variables.set(name, rootVariable)
-                }
-            } else {
-                const foundVariable = this.variables.get(name)
-                if (foundVariable?.modes && !newVariable.modes) {
-                    newVariable.modes = foundVariable.modes
-                }
-                addDependencies(newVariable)
-                this.variables.set(name, newVariable)
-            }
-        }
-        const resolveVariable = (variable: Variable, mode?: string) => {
-            if (typeof variable.value === 'number') {
-                addVariable(variable.name, { ...variable, type: 'number' } as Variable, mode)
-                addVariable('-' + variable.name, { ...variable, type: 'number', name: '-' + variable.name, key: '-' + variable.key, value: variable.value * -1 } as Variable, mode)
-            } else {
-                addVariable(variable.name, { ...variable, type: 'string' } as Variable, mode)
-            }
-        }
-
-        for (const definition of variables) {
-            const variable = createVariable(definition)
-            if (variable) {
-                resolveVariable(variable, definition.mode)
-            }
-        }
-
     }
 
     parseValue(token: string | number, unit = 'rem') {
