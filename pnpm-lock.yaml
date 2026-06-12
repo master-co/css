@@ -135,6 +135,9 @@ importers:
       '@master/css-lexer':
         specifier: workspace:^
         version: link:packages/lexer
+      '@master/css-preset':
+        specifier: workspace:^
+        version: link:packages/preset
       '@master/css-runtime':
         specifier: workspace:^
         version: link:packages/runtime
@@ -1664,6 +1667,22 @@ importers:
         specifier: ^3.5.33
         version: 3.5.33(typescript@6.0.3)
 
+  packages/preset:
+    dependencies:
+      '@master/css-engine':
+        specifier: workspace:^
+        version: link:../engine
+    devDependencies:
+      '@master/css-compiler':
+        specifier: workspace:^
+        version: link:../compiler
+      shared:
+        specifier: workspace:^
+        version: link:../../shared
+      tsx:
+        specifier: ^4.21.0
+        version: 4.21.0
+
   packages/react:
     dependencies:
       '@master/css':
@@ -1709,6 +1728,9 @@ importers:
       '@master/css-engine':
         specifier: workspace:^
         version: link:../engine
+      '@master/css-preset':
+        specifier: workspace:^
+        version: link:../preset
     devDependencies:
       '@master/css':
         specifier: workspace:^

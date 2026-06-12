@@ -7,7 +7,7 @@ import { fileURLToPath } from 'url'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
-const defaultPlanEntry = resolve(__dirname, '../../core/src/index.css')
+const defaultPlanEntry = resolve(__dirname, '../../preset/src/index.css')
 const defaultPlanConfig = compileCSSConfigFile(defaultPlanEntry).config
 
 export default async function init(page: Page, text?: string, config?: Config) {

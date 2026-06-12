@@ -1,4 +1,4 @@
 import initCSSRuntime from './init'
-import themePlan from '@master/css/index.css?master-css-plan'
+import defaultPlan from '@master/css-preset/default-plan'
 
-initCSSRuntime({ plan: window.masterCSSPlan || themePlan })
+initCSSRuntime({ plan: window.masterCSSPlan || defaultPlan })

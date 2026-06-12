@@ -57,6 +57,7 @@
     },
     "dependencies": {
         "@master/css-engine": "workspace:^",
+        "@master/css-preset": "workspace:^",
         "@master/css-devtools-hook": "workspace:^"
     },
     "devDependencies": {
