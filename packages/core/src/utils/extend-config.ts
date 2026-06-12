@@ -27,7 +27,7 @@ function variableSlot(variable: VariableDefinition) {
 }
 
 function variantSlot(variant: VariantDefinition) {
-    return variant.raw
+    return variant.token
 }
 
 function resolveConfigInput(config: ConfigInput) {

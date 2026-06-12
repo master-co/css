@@ -141,6 +141,13 @@ function collectBreakpointNames(config: Config) {
     )
 }
 
+function collectContainerNames(config: Config) {
+    return new Set((config.variables || [])
+        .filter((variable) => variable.namespace === 'container')
+        .map((variable) => variable.key)
+    )
+}
+
 function cloneUtilityRule(rule: CSSDirectiveUtilityRuleDefinition | UtilityRuleDefinition): UtilityRuleDefinition {
     return {
         declarations: { ...rule.declarations },
@@ -178,7 +185,10 @@ function cloneUtility(definition: InputUtilityDefinition): UtilityDefinition {
 function cloneVariant(definition: VariantDefinition): VariantDefinition {
     return {
         ...definition,
-        ...('atRules' in definition ? { atRules: [...definition.atRules] } : {})
+        branches: definition.branches.map((branch) => ({
+            ...branch,
+            ...(branch.atRules?.length ? { atRules: [...branch.atRules] } : {})
+        }))
     } as VariantDefinition
 }
 
@@ -265,6 +275,7 @@ function validateTokenConflicts(config: Config, options: CreateConfigFromCSSDire
     const mergedConfig = createSemanticConfig(config, options)
     const modes = collectModeNames(mergedConfig)
     const breakpoints = collectBreakpointNames(mergedConfig)
+    const containers = collectContainerNames(mergedConfig)
 
     for (const mode of collectModeNames(config)) {
         if (breakpoints.has(mode)) {
@@ -279,14 +290,17 @@ function validateTokenConflicts(config: Config, options: CreateConfigFromCSSDire
     }
 
     const variantNames = (config.variants || [])
-        .filter((variant) => variant.raw.startsWith('@'))
-        .map((variant) => variant.raw.slice(1))
+        .filter((variant) => variant.token.startsWith('@'))
+        .map((variant) => variant.token.slice(1))
     for (const token of variantNames) {
         if (modes.has(token)) {
             throw new Error(`Variant "${token}" conflicts with mode "${token}"`)
         }
         if (breakpoints.has(token)) {
             throw new Error(`Variant "${token}" conflicts with breakpoint variable "--breakpoint-${token}"`)
+        }
+        if (containers.has(token)) {
+            throw new Error(`Variant "${token}" conflicts with container variable "--container-${token}"`)
         }
     }
 }
@@ -329,9 +343,14 @@ function getComposedUtilityLayer(utility: Utility) {
 }
 
 function getComposedUtilitySelector(utility: Utility, css: MasterCSS) {
-    let selector = utility.selectorNodes
+    let selector = utility.selectorTemplate
+        ? '&'
+        : utility.selectorNodes
         ? generateSelector(utility.selectorNodes, '&')
         : '&'
+    if (utility.selectorTemplate) {
+        selector = utility.selectorTemplate.replace(/&/g, selector)
+    }
     if (utility.mode && css.config.modeTrigger !== 'media') {
         const modeSelector = css.getModeSelector(utility.mode)
         if (modeSelector) selector = `${modeSelector} ${selector}`
@@ -442,59 +461,88 @@ function combineSelectorWrapper(selector: string, wrapper: string) {
     return wrapper.replace(/&/g, selector)
 }
 
-function isBareVariantReference(token: string) {
-    return /^-?[_a-zA-Z][-_a-zA-Z0-9]*$/.test(token)
+type ResolvedStyleBranch = {
+    selector: string
+    atRules?: string[]
+    layer?: UtilityLayerName
 }
 
-function resolveMasterVariantReference(token: string, css: MasterCSS) {
-    if (css.modes.includes(token)) {
-        const modeSelector = css.getModeSelector(token)
-        return modeSelector
-            ? { selector: `${modeSelector} &` }
-            : { atRules: [`@media (prefers-color-scheme:${token})`] }
+type ResolvedVariantReferenceBranch = {
+    selector?: string
+    atRules?: string[]
+    layer?: UtilityLayerName
+}
+
+function resolveMasterVariantReference(token: string, css: MasterCSS): ResolvedVariantReferenceBranch[] {
+    if (!token.startsWith(':') && !token.startsWith('@')) {
+        throw new Error(`@variant requires a full variant token: ${token}`)
     }
 
-    const variantAtRules = css.resolveAtVariant(token)
-    if (variantAtRules?.length) {
-        return {
-            atRules: variantAtRules.map(generateAt)
-        }
+    const configuredVariant = css.resolveVariant(token as any)
+    if (configuredVariant) {
+        return configuredVariant.map((branch) => ({
+            ...(branch.selector ? { selector: branch.selector } : {}),
+            ...(branch.atRules?.length ? { atRules: [...branch.atRules] } : {}),
+            ...(branch.layer ? { layer: branch.layer } : {})
+        }))
     }
 
-    if (isBareVariantReference(token) && !css.atRules.has(token)) {
+    if (token.startsWith(':')) {
         throw new Error(`Unknown @variant token: ${token}`)
     }
 
-    return {
-        atRules: [generateAt(parseAt(token, css))]
+    const atToken = token.slice(1)
+    if (css.modes.includes(atToken)) {
+        const modeSelector = css.getModeSelector(atToken)
+        return modeSelector
+            ? [{ selector: `${modeSelector} &` }]
+            : [{ atRules: [`@media (prefers-color-scheme:${atToken})`] }]
     }
+
+    if (/^-?[_a-zA-Z][-_a-zA-Z0-9]*$/.test(atToken) && !css.atRules.has(atToken)) {
+        throw new Error(`Unknown @variant token: ${token}`)
+    }
+
+    return [{ atRules: [generateAt(parseAt(atToken, css))] }]
 }
 
-function resolveConfiguredAtRules(atRules: string[] | undefined, css: MasterCSS, selector = '&') {
-    if (!atRules?.length) return { selector, atRules: undefined }
-
-    const resolvedAtRules: string[] = []
-    let resolvedSelector = selector
+function resolveConfiguredBranches(atRules: string[] | undefined, css: MasterCSS, selector = '&', layer?: UtilityLayerName): ResolvedStyleBranch[] {
+    let branches: ResolvedStyleBranch[] = [{ selector, ...(layer ? { layer } : {}) }]
+    if (!atRules?.length) return branches
 
     for (const atRule of atRules) {
         const token = readCSSDirectiveVariantReference(atRule)
         if (!token) {
-            resolvedAtRules.push(atRule)
+            branches = branches.map((branch) => ({
+                ...branch,
+                atRules: [...(branch.atRules || []), atRule]
+            }))
             continue
         }
-        const resolved = resolveMasterVariantReference(token, css)
-        if (resolved.selector) {
-            resolvedSelector = combineSelectorWrapper(resolvedSelector, resolved.selector)
-        }
-        if (resolved.atRules?.length) {
-            resolvedAtRules.push(...resolved.atRules)
-        }
+
+        const resolvedBranches = resolveMasterVariantReference(token, css)
+        branches = branches.flatMap((branch) =>
+            resolvedBranches.map((resolved) => {
+                const nextLayer = resolved.layer || branch.layer
+                if (branch.layer && resolved.layer && branch.layer !== resolved.layer) {
+                    throw new Error(`@variant ${token} cannot assign multiple layers`)
+                }
+                return {
+                    selector: resolved.selector
+                        ? combineSelectorWrapper(branch.selector, resolved.selector)
+                        : branch.selector,
+                    atRules: [...(branch.atRules || []), ...(resolved.atRules || [])],
+                    ...(nextLayer ? { layer: nextLayer } : {})
+                }
+            })
+        )
     }
 
-    return {
-        selector: resolvedSelector,
-        atRules: resolvedAtRules.length ? resolvedAtRules : undefined
-    }
+    return branches.map((branch) => ({
+        selector: branch.selector,
+        ...(branch.atRules?.length ? { atRules: branch.atRules } : {}),
+        ...(branch.layer ? { layer: branch.layer } : {})
+    }))
 }
 
 function ensureUtilityRules(definition: UtilityDefinition) {
@@ -516,27 +564,29 @@ function finalizeUtilityDefinitions(config: Config, css: MasterCSS) {
 
     for (const definition of utilities) {
         if (definition.atRules?.some(readCSSDirectiveVariantReference)) {
-            const resolved = resolveConfiguredAtRules(definition.atRules, css)
+            const resolvedBranches = resolveConfiguredBranches(definition.atRules, css)
             delete definition.atRules
             if (definition.declarations) {
                 definition.rules ??= []
-                definition.rules.push({
-                    declarations: definition.declarations as PropertiesHyphen,
-                    ...(resolved.selector !== '&' ? { selector: resolved.selector } : {}),
-                    ...(resolved.atRules?.length ? { atRules: resolved.atRules } : {})
-                })
+                for (const resolved of resolvedBranches) {
+                    definition.rules.push({
+                        declarations: definition.declarations as PropertiesHyphen,
+                        ...(resolved.selector !== '&' ? { selector: resolved.selector } : {}),
+                        ...(resolved.atRules?.length ? { atRules: resolved.atRules } : {})
+                    })
+                }
                 delete definition.declarations
             }
         }
 
         if (!definition.rules?.length) continue
-        definition.rules = definition.rules.map((rule) => {
-            const resolved = resolveConfiguredAtRules(rule.atRules, css, rule.selector || '&')
-            return {
+        definition.rules = definition.rules.flatMap((rule) => {
+            const resolvedBranches = resolveConfiguredBranches(rule.atRules, css, rule.selector || '&')
+            return resolvedBranches.map((resolved) => ({
                 declarations: rule.declarations,
                 ...(resolved.selector !== '&' ? { selector: resolved.selector } : {}),
                 ...(resolved.atRules?.length ? { atRules: resolved.atRules } : {})
-            }
+            }))
         })
     }
 }
@@ -786,24 +836,28 @@ function createMergedStyleDefinitions(
             for (const composedDefinition of composedDefinitions) {
                 const { atRules: composedAtRules, ...composedDefinitionWithoutAtRules } = composedDefinition
                 const selector = combineStyleSelectors(definition.selector, composedDefinition.selector)
-                const resolved = resolveConfiguredAtRules([
+                const resolvedBranches = resolveConfiguredBranches([
                     ...(definition.atRules || []),
                     ...(composedAtRules || [])
-                ], css, selector)
-                pushStyleMergeEvent(buckets, resolved.selector, resolved.atRules, targetLayer || composedDefinitionWithoutAtRules.layer, {
-                    type: 'compose',
-                    order: definition.order,
-                    utility: composedDefinitionWithoutAtRules.utility,
-                    declarations: composedDefinitionWithoutAtRules.declarations
-                })
+                ], css, selector, targetLayer || composedDefinitionWithoutAtRules.layer)
+                for (const resolved of resolvedBranches) {
+                    pushStyleMergeEvent(buckets, resolved.selector, resolved.atRules, resolved.layer, {
+                        type: 'compose',
+                        order: definition.order,
+                        utility: composedDefinitionWithoutAtRules.utility,
+                        declarations: composedDefinitionWithoutAtRules.declarations
+                    })
+                }
             }
         } else {
-            const resolved = resolveConfiguredAtRules(definition.atRules, css, definition.selector)
-            pushStyleMergeEvent(buckets, resolved.selector, resolved.atRules, targetLayer || toUtilityLayerName(definition.layer), {
-                type: 'native',
-                order: definition.order,
-                declarations: definition.declarations
-            })
+            const resolvedBranches = resolveConfiguredBranches(definition.atRules, css, definition.selector, targetLayer || toUtilityLayerName(definition.layer))
+            for (const resolved of resolvedBranches) {
+                pushStyleMergeEvent(buckets, resolved.selector, resolved.atRules, resolved.layer, {
+                    type: 'native',
+                    order: definition.order,
+                    declarations: definition.declarations
+                })
+            }
         }
     }
 

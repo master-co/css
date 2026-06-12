@@ -1,4 +1,4 @@
-import { MasterCSS, createCSS, type SelectorVariantDefinition } from '@master/css'
+import { MasterCSS, createCSS } from '@master/css'
 import { generateCSS } from '@master/css/utils'
 import cssDataProvider from './css-data-provider'
 import { type CompletionItem, CompletionItemKind } from 'vscode-languageserver-protocol'
@@ -31,9 +31,10 @@ export default function getPseudoElementCompletionItems(css: MasterCSS = createC
         })
 
     const selectorVariants = (css.config.variants || [])
-        .filter((variant): variant is SelectorVariantDefinition => 'selector' in variant && variant.raw.startsWith('::'))
+        .map((variant) => ({ token: variant.token, selector: variant.branches.find((branch) => branch.selector)?.selector }))
+        .filter((variant): variant is { token: `::${string}`, selector: string } => Boolean(variant.selector) && variant.token.startsWith('::'))
     for (const variant of selectorVariants) {
-        const selectorName = variant.raw
+        const selectorName = variant.token
         const selectorValue = variant.selector.replace(/&/g, '')
         const name = selectorName.endsWith('(') ? selectorName + ')' : selectorName
         const value = typeof selectorValue === 'string'

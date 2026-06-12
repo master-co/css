@@ -9,7 +9,7 @@ import type { NumberValueComponent, DefinedUtility, ValueComponent, VariableValu
 import { AtRuleNode, AtRuleStringNode, AtRuleValueNode, } from './utils/parse-at'
 import parseValue from './utils/parse-value'
 import parseAt from './utils/parse-at'
-import type { AtIdentifier, UtilityLayerName } from 'shared/css-config'
+import type { AtIdentifier, UtilityLayerName, VariantBranchDefinition, VariantToken } from 'shared/css-config'
 import generateAt from './utils/generate-at'
 import parseSelector, { SelectorNode } from './utils/parse-selector'
 import generateSelector from './utils/generate-selector'
@@ -22,6 +22,87 @@ import functionTransformers from './function-transformers'
 import { createAlphaColorValue, createCSSVariableReference, createNumberVariableReference, normalizeVariableValue, replaceCSSVariableReferences } from './utils/css-variables'
 import collectAnimationNames from './utils/collect-animation-names'
 
+type UtilityStateBranch = {
+    selectorTemplate?: string
+    selectorNodes?: SelectorNode[]
+    atRules?: Partial<Record<AtIdentifier, AtRuleNode[]>>
+    layer?: UtilityLayerName
+    mode?: string
+    key: string
+    valid?: boolean
+}
+
+function isVariantToken(value: string): value is VariantToken {
+    return /^:{1,2}[-_a-zA-Z][-_a-zA-Z0-9]*$/.test(value) || /^@[-_a-zA-Z][-_a-zA-Z0-9]*$/.test(value)
+}
+
+function composeSelectorTemplate(current: string | undefined, next: string | undefined) {
+    if (!next || next === '&') return current
+    return next.replace(/&/g, current || '&')
+}
+
+function cloneAtRules(atRules?: Partial<Record<AtIdentifier, AtRuleNode[]>>) {
+    if (!atRules) return
+    const cloned: Partial<Record<AtIdentifier, AtRuleNode[]>> = {}
+    for (const id of AT_IDENTIFIERS) {
+        const nodes = atRules[id]
+        if (nodes?.length) cloned[id] = [...nodes]
+    }
+    return cloned
+}
+
+function mergeAtRuleNodeMap(
+    current: Partial<Record<AtIdentifier, AtRuleNode[]>> | undefined,
+    atRule: { id: AtIdentifier, nodes: AtRuleNode[] }
+) {
+    const merged = cloneAtRules(current) || {}
+    merged[atRule.id] = [...(merged[atRule.id] || []), ...atRule.nodes]
+    return merged
+}
+
+function mergeBranch(base: UtilityStateBranch, branch: VariantBranchDefinition, css: MasterCSS, key: string): UtilityStateBranch {
+    let atRules = cloneAtRules(base.atRules)
+    for (const atRule of branch.atRules || []) {
+        const parsed = parseAt(atRule, css)
+        atRules = mergeAtRuleNodeMap(atRules, parsed as { id: AtIdentifier, nodes: AtRuleNode[] })
+    }
+    const layer = branch.layer || base.layer
+    return {
+        ...base,
+        key: base.key + key,
+        selectorTemplate: composeSelectorTemplate(base.selectorTemplate, branch.selector),
+        ...(atRules ? { atRules } : {}),
+        ...(layer ? { layer } : {}),
+        valid: base.valid !== false && !(base.layer && branch.layer && base.layer !== branch.layer)
+    }
+}
+
+function findClosingParen(value: string, start: number) {
+    let depth = 0
+    let quote = ''
+    for (let index = start; index < value.length; index++) {
+        const char = value[index]
+        if (quote) {
+            if (char === '\\') {
+                index++
+            } else if (char === quote) {
+                quote = ''
+            }
+            continue
+        }
+        if (char === '"' || char === '\'') {
+            quote = char
+            continue
+        }
+        if (char === '(') depth++
+        if (char === ')') {
+            depth--
+            if (depth === 0) return index
+        }
+    }
+    return -1
+}
+
 export class Utility {
     native?: CSSRule
     nodes?: UtilityRuleNode[]
@@ -30,19 +111,25 @@ export class Utility {
     readonly type: UtilityTypeValue = UtilityType.Normal
     readonly declarations?: PropertiesHyphen
     readonly declarationRules?: { declarations: PropertiesHyphen, atRules?: string[], selector?: string }[]
-    readonly layer: Layer
+    readonly layer!: Layer
     readonly layerName: UtilityLayerName
     explicitLayerName?: UtilityLayerName
     readonly valid: boolean = true
     animationNames?: Set<string>
     variableNames?: Set<string>
+    readonly branchIndex?: number
+    readonly branchCount: number = 1
+    readonly selectorTemplate?: string
+    variantBranchKey?: string
     constructor(
         public readonly name: string,
         public css: MasterCSS,
         public readonly registeredUtility: DefinedUtility,
         public fixedClass?: string,
-        mode?: string
+        mode?: string,
+        branchIndex = 0
     ) {
+        this.branchIndex = branchIndex
         this.mode = mode as string
         this.layerName = registeredUtility.definition.layer || 'utilities'
         Object.assign(this, registeredUtility)
@@ -82,34 +169,19 @@ export class Utility {
 
         this.stateToken = stateToken
 
-        // 4. suffix selector
-        const stateTokens = stateToken.split('@')
-        const suffixSelector = stateTokens[0]
-        if (suffixSelector) {
-            this.selectorNodes = parseSelector(suffixSelector, css)
+        const stateBranches = this.resolveStateBranches(stateToken)
+        this.branchCount = stateBranches.length
+        const stateBranch = stateBranches[branchIndex]
+        if (!stateBranch) {
+            this.valid = false
+            return
         }
-
-        // 5. at variants
-        for (let i = 1; i < stateTokens.length; i++) {
-            const atToken = stateTokens[i]
-            if (css.modes.includes(atToken)) {
-                this.mode = atToken
-                continue
-            }
-            this.atToken = (this.atToken || '') + '@' + atToken
-            const atRules = css.resolveAtVariant(atToken) || [parseAt(atToken, css)]
-            for (const atRule of atRules) {
-                const targetNodes = this.atRules?.[atRule.id]
-                if (targetNodes) {
-                    targetNodes.push(...atRule.nodes)
-                } else {
-                    this.atRules = {
-                        ...this.atRules,
-                        [atRule.id]: atRule.nodes
-                    }
-                }
-            }
-        }
+        if (stateBranch.mode) this.mode = stateBranch.mode
+        if (stateBranch.selectorNodes?.length) this.selectorNodes = stateBranch.selectorNodes
+        if (stateBranch.selectorTemplate) this.selectorTemplate = stateBranch.selectorTemplate
+        if (stateBranch.atRules) this.atRules = stateBranch.atRules
+        if (stateBranch.valid === false) this.valid = false
+        this.variantBranchKey = stateBranch.key
 
         if (this.mode && css.config.modeTrigger === 'media') {
             const atComp = {
@@ -127,6 +199,13 @@ export class Utility {
 
         if (this.atRules?.layer && this.atRules.layer.length > 1) {
             this.valid = false
+        }
+        if (stateBranch.layer) {
+            if (this.explicitLayerName && this.explicitLayerName !== stateBranch.layer) {
+                this.valid = false
+            }
+            this.layerName = stateBranch.layer
+            this.explicitLayerName = stateBranch.layer
         }
         const onlyNode = this.atRules?.layer?.length === 1 && this.atRules.layer[0] as AtRuleValueNode
         if (onlyNode) {
@@ -239,6 +318,114 @@ export class Utility {
         }
     }
 
+    resolveStateBranches(stateToken: string): UtilityStateBranch[] {
+        const [selectorToken = '', ...conditionTokens] = stateToken.split('@')
+        let branches: UtilityStateBranch[] = [{ key: '' }]
+        branches = this.applySelectorTokenBranches(branches, selectorToken)
+
+        for (const conditionToken of conditionTokens) {
+            if (this.css.modes.includes(conditionToken)) {
+                branches = branches.map((branch) => ({
+                    ...branch,
+                    mode: conditionToken,
+                    key: branch.key + '@' + conditionToken
+                }))
+                continue
+            }
+
+            this.atToken = (this.atToken || '') + '@' + conditionToken
+            const variantToken = `@${conditionToken}` as VariantToken
+            const variantBranches = this.css.resolveVariant(variantToken)
+            if (variantBranches) {
+                branches = branches.flatMap((branch) =>
+                    variantBranches.map((variantBranch, index) =>
+                        mergeBranch(branch, variantBranch, this.css, `${variantToken}#${index}`)
+                    )
+                )
+                continue
+            }
+
+            const atRule = parseAt(conditionToken, this.css)
+            branches = branches.map((branch) => ({
+                ...branch,
+                key: branch.key + '@' + conditionToken,
+                atRules: mergeAtRuleNodeMap(branch.atRules, atRule as { id: AtIdentifier, nodes: AtRuleNode[] })
+            }))
+        }
+
+        return branches.length ? branches : [{ key: '' }]
+    }
+
+    applySelectorTokenBranches(branches: UtilityStateBranch[], selectorToken: string): UtilityStateBranch[] {
+        if (!selectorToken) return branches
+
+        const selectorVariantTokens = [...this.css.variants.keys()]
+            .filter((token) => token.startsWith(':'))
+            .sort((a, b) => b.length - a.length)
+        let index = 0
+        let raw = ''
+        const flushRaw = () => {
+            if (!raw) return
+            const rawSelector = generateSelector(parseSelector(raw, this.css), '&')
+            branches = branches.map((branch) => ({
+                ...branch,
+                key: branch.key + raw,
+                selectorTemplate: composeSelectorTemplate(branch.selectorTemplate, rawSelector),
+                selectorNodes: parseSelector((branch.selectorTemplate
+                    ? composeSelectorTemplate(branch.selectorTemplate, rawSelector)?.replace(/&/g, '') || ''
+                    : raw), this.css)
+            }))
+            raw = ''
+        }
+
+        while (index < selectorToken.length) {
+            const matchedToken = selectorVariantTokens.find((token) => {
+                if (!selectorToken.startsWith(token, index)) return false
+                const next = selectorToken[index + token.length]
+                return next === undefined || next === '(' || !/[-_a-zA-Z0-9]/.test(next)
+            })
+            if (!matchedToken || !isVariantToken(matchedToken)) {
+                raw += selectorToken[index++]
+                continue
+            }
+
+            const variantBranches = this.css.resolveVariant(matchedToken)
+            if (!variantBranches) {
+                raw += selectorToken[index++]
+                continue
+            }
+
+            flushRaw()
+            index += matchedToken.length
+            let suffix = ''
+            if (selectorToken[index] === '(') {
+                const end = findClosingParen(selectorToken, index)
+                if (end !== -1) {
+                    suffix = selectorToken.slice(index, end + 1)
+                    index = end + 1
+                }
+            }
+            branches = branches.flatMap((branch) =>
+                variantBranches.map((variantBranch, branchIndex) => {
+                    const selector = variantBranch.selector && suffix
+                        ? variantBranch.selector + suffix
+                        : variantBranch.selector
+                    const merged = mergeBranch(branch, { ...variantBranch, ...(selector ? { selector } : {}) }, this.css, `${matchedToken}#${branchIndex}${suffix}`)
+                    const selectorTemplate = merged.selectorTemplate
+                    return {
+                        ...merged,
+                        ...(selectorTemplate
+                            ? { selectorNodes: parseSelector(selectorTemplate.replace(/&/g, ''), this.css) }
+                            : {})
+                    }
+                })
+            )
+        }
+
+        flushRaw()
+        return branches
+    }
+
     get text() {
         if (!this.valid) return ''
         if (this.nodes) {
@@ -285,9 +472,14 @@ export class Utility {
             }
         }
         const body = pre + '.' + cssEscape(this.fixedClass ?? this.name)
-        const base = this.selectorNodes
-            ? generateSelector(this.selectorNodes, body)
-            : body
+        let base = this.selectorTemplate
+            ? body
+            : this.selectorNodes
+                ? generateSelector(this.selectorNodes, body)
+                : body
+        if (this.selectorTemplate) {
+            base = this.selectorTemplate.replace(/&/g, base)
+        }
         return selector
             ? selector.replace(/&/g, base)
             : base
@@ -566,7 +758,7 @@ export class Utility {
     }
 
     get key(): string {
-        return (this.fixedClass ? this.fixedClass + ' ' : '') + this.name
+        return (this.fixedClass ? this.fixedClass + ' ' : '') + this.name + (this.variantBranchKey ? '\0' + this.variantBranchKey : '')
     }
 }
 

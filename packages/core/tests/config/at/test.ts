@@ -8,8 +8,8 @@ test.concurrent('queries', () => {
         },
         'hidden@watch@supports-backdrop',
         { variants: [
-                { name: 'watch', raw: '@watch', atRules: ['@media (max-width:42mm) and (min-width:38mm)'] },
-                { name: 'supports-backdrop', raw: '@supports-backdrop', atRules: ['@supports (backdrop-filter:blur(0px))'] }
+                { token: '@watch', branches: [{ atRules: ['@media (max-width:42mm) and (min-width:38mm)'] }] },
+                { token: '@supports-backdrop', branches: [{ atRules: ['@supports (backdrop-filter:blur(0px))'] }] }
             ] }
     )
 })

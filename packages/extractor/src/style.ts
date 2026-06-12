@@ -312,7 +312,7 @@ export function removeMasterStyleDirectives(source: string) {
 
 export function hasLocalStyleDirectives(source: string) {
     return collectCSSDirectiveRanges(source)
-        .some((directive) => directive.name === 'compose' || directive.name === 'at')
+        .some((directive) => directive.name === 'compose' || directive.name === 'variant')
 }
 
 function isStyleCSSHostImport(importSource: string, masterImport: string) {

@@ -157,7 +157,7 @@ export const cases = {
                 ]
             },
         ],
-            { variants: [{ name: 'headings', raw: ':headings', selector: '&:is(h1,h2,h3)' }] }
+            { variants: [{ token: ':headings', branches: [{ selector: '&:is(h1,h2,h3)' }] }] }
         ],
         [':combo', ':is(h1,h2)+div', [
             {
@@ -177,7 +177,7 @@ export const cases = {
                 raw: ':combo'
             },
         ],
-            { variants: [{ name: 'combo', raw: ':combo', selector: '&:is(h1,h2)+div' }] }
+            { variants: [{ token: ':combo', branches: [{ selector: '&:is(h1,h2)+div' }] }] }
         ],
         // unsupported: static utility selector + selector token
         // ['>span::both', '.btn>span::before,.btn>span::after', [
@@ -192,7 +192,7 @@ export const cases = {
         //     }
         // ],
         //     {
-        //         variants: [{ name: 'both', raw: '::both', selector: '&::before,&::after' }],
+        //         variants: [{ token: '::both', branches: [{ selector: '&::before,&::after' }] }],
         //         utilities: [
         //             { name: 'btn', type: -4, layer: 'components', rules: [{ selector: '&::before,&::after', declarations: { display: 'block' } }] }
         //         ]

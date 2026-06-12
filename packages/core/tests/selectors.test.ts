@@ -13,6 +13,22 @@ test.concurrent('selectors', () => {
     expect(createCSSWithTheme().create('bg:#000:hover_.feature__tab-title')?.text).toBe('.bg\\:\\#000\\:hover_\\.feature__tab-title:hover .feature__tab-title{background-color:#000}')
 })
 
+test.concurrent('multi-branch selector variants', () => {
+    const css = createCSSWithTheme({
+        variants: [
+            {
+                token: ':hocus',
+                branches: [
+                    { selector: '&:hover' },
+                    { selector: '&:focus-visible' }
+                ]
+            }
+        ]
+    }).add('hidden:hocus')
+
+    expect(css.utilitiesLayer.text).toBe('@layer utilities{.hidden\\:hocus:hover{display:none}.hidden\\:hocus:focus-visible{display:none}}')
+})
+
 test.concurrent('shorthands', () => {
     expect(createCSSWithTheme().create('hidden:first')?.text).toBe('.hidden\\:first:first-child{display:none}')
     expect(createCSSWithTheme().create('hidden:last')?.text).toBe('.hidden\\:last:last-child{display:none}')

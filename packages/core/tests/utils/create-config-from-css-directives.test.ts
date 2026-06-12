@@ -42,17 +42,17 @@ describe.concurrent('createConfigFromCSSDirectives', () => {
     it('keeps the internal adapter independent from the default config', () => {
         const result = createCSSDirectiveConfig(directiveResult({
             config: {
-                variants: [{ name: 'contrast', raw: '@contrast', atRules: ['@media (prefers-contrast:more)'] }]
+                variants: [{ token: '@contrast', branches: [{ atRules: ['@media (prefers-contrast:more)'] }] }]
             }
         }))
 
-        expect(result.config.variants).toEqual([{ name: 'contrast', raw: '@contrast', atRules: ['@media (prefers-contrast:more)'] }])
+        expect(result.config.variants).toEqual([{ token: '@contrast', branches: [{ atRules: ['@media (prefers-contrast:more)'] }] }])
     })
 
     it('finalizes self-contained @compose and @variant directives without a base config', () => {
         const result = createCSSDirectiveConfig(directiveResult({
             config: {
-                variants: [{ name: 'wide', raw: '@wide', atRules: ['@media (width>=64rem)'] }],
+                variants: [{ token: '@wide', branches: [{ atRules: ['@media (width>=64rem)'] }] }],
                 utilities: [
                     {
                         name: 'inline',
@@ -71,7 +71,7 @@ describe.concurrent('createConfigFromCSSDirectives', () => {
                     name: 'badge',
                     className: 'inline',
                     selector: '&',
-                    atRules: [createCSSDirectiveVariantReference('wide')]
+                    atRules: [createCSSDirectiveVariantReference('@wide')]
                 }
             ]
         }))
@@ -97,11 +97,20 @@ describe.concurrent('createConfigFromCSSDirectives', () => {
                         declarations: {
                             display: 'block'
                         },
-                        atRules: [createCSSDirectiveVariantReference('chrisma')]
+                        atRules: [createCSSDirectiveVariantReference('@chrisma')]
                     }
                 ]
             }
-        }))).toThrow('Unknown @variant token: chrisma')
+        }))).toThrow('Unknown @variant token: @chrisma')
+    })
+
+    it('throws when variant tokens conflict with condition namespaces', () => {
+        expect(() => createConfigFromCSSDirectives(directiveResult({
+            config: {
+                variables: [{ name: 'container-card', value: 320 }],
+                variants: [{ token: '@card', branches: [{ atRules: ['@media (width>=20rem)'] }] }]
+            }
+        }))).toThrow('Variant "card" conflicts with container variable "--container-card"')
     })
 
     it('resolves raw variable names through derived namespaces by longest prefix', () => {
@@ -183,7 +192,7 @@ describe.concurrent('createConfigFromCSSDirectives', () => {
                         declarations: {
                             display: 'none'
                         },
-                        atRules: [createCSSDirectiveVariantReference('print')]
+                        atRules: [createCSSDirectiveVariantReference('@print')]
                     }
                 ]
             }
@@ -276,7 +285,7 @@ describe.concurrent('createConfigFromCSSDirectives', () => {
                     name: 'btn',
                     className: 'block',
                     selector: '& .label',
-                    atRules: [createCSSDirectiveVariantReference('sm')]
+                    atRules: [createCSSDirectiveVariantReference('@sm')]
                 }
             ]
         }), { config: createThemeConfig() })
@@ -337,7 +346,7 @@ describe.concurrent('createConfigFromCSSDirectives', () => {
     it('reports core token conflicts and media custom-mode warnings', () => {
         expect(() => createConfigFromCSSDirectives(directiveResult({
             config: {
-                variants: [{ name: 'dark', raw: '@dark', atRules: ['@media (prefers-color-scheme:dark)'] }]
+                variants: [{ token: '@dark', branches: [{ atRules: ['@media (prefers-color-scheme:dark)'] }] }]
             }
         }), { config: createThemeConfig() })).toThrow('Variant "dark" conflicts with mode "dark"')
 

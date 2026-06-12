@@ -59,14 +59,14 @@ export default {
         { name: 'zero', type: -4, declarations: { 'font-size': '0px', height: '0px' } }
     ],
     variants: [
-        { name: 'custom', raw: ':custom', selector: '&div>:first+button' },
-        { name: 'custom-1', raw: ':custom-1', selector: '&div' },
-        { name: 'tablet', raw: '@tablet', atRules: ['@media (width>=768)'] },
-        { name: 'laptop', raw: '@laptop', atRules: ['@media (width>=1024)'] },
-        { name: 'desktop', raw: '@desktop', atRules: ['@media (width>=1280)'] },
-        { name: 'custom-1', raw: '@custom-1', atRules: ['@media (width>=2500)'] },
-        { name: 'watch', raw: '@watch', atRules: ['@media (width<=42mm) and (width>=38mm)'] },
-        { name: 'device-watch', raw: '@device-watch', atRules: ['@media (width<=42mm) and (width>=38mm)'] }
+        { token: ':custom', branches: [{ selector: '&div>:first-child+button' }] },
+        { token: ':custom-1', branches: [{ selector: '&div' }] },
+        { token: '@tablet', branches: [{ atRules: ['@media (width>=768)'] }] },
+        { token: '@laptop', branches: [{ atRules: ['@media (width>=1024)'] }] },
+        { token: '@desktop', branches: [{ atRules: ['@media (width>=1280)'] }] },
+        { token: '@custom-1', branches: [{ atRules: ['@media (width>=2500)'] }] },
+        { token: '@watch', branches: [{ atRules: ['@media (width<=42mm) and (width>=38mm)'] }] },
+        { token: '@device-watch', branches: [{ atRules: ['@media (width<=42mm) and (width>=38mm)'] }] }
     ],
     rootSize: 16,
 } as any

@@ -274,9 +274,8 @@ describe('raw declarations', () => {
         const css = createCSSWithTheme({
             variants: [
                 {
-                    name: 'interactive',
-                    raw: ':interactive',
-                    selector: '&:is(:hover,:focus-visible)'
+                    token: ':interactive',
+                    branches: [{ selector: '&:is(:hover,:focus-visible)' }]
                 }
             ],
             utilities: [

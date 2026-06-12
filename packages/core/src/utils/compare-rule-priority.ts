@@ -13,6 +13,7 @@ export type RulePriority = {
 const selectorPriority: Record<string, number> = {
     hover: 1,
     focus: 2,
+    'focus-visible': 2,
     active: 3,
     disabled: 4,
 }

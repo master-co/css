@@ -175,15 +175,15 @@ The project CSS entry is the primary configuration source. Theme tokens live in 
     --breakpoint-md: 768;
 }
 
-@custom-variant motion-safe @media (prefers-reduced-motion: no-preference);
-@custom-variant interactive (&:is(:hover, :focus-visible));
+@custom-variant @motion-safe { @media (prefers-reduced-motion: no-preference) { @slot; } }
+@custom-variant :interactive { &:is(:hover, :focus-visible) { @slot; } }
 
 @components {
     btn {
         @compose "inline-flex ai:center jc:center px:md py:xs r:lg";
         background: var(--color-primary);
 
-        &:interactive {
+        @variant :interactive {
             @compose "outline:2|primary outline-offset:2";
         }
     }
@@ -192,7 +192,7 @@ The project CSS entry is the primary configuration source. Theme tokens live in 
 .notice {
     @compose "p:md r:lg";
 
-    @variant motion-safe {
+    @variant @motion-safe {
         @compose "transition:opacity|fast|smooth";
     }
 }

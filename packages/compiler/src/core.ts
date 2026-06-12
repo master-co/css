@@ -112,11 +112,15 @@ const MASTER_CUSTOM_AT_RULES = {
     },
     'custom-variant': {
         prelude: '*',
-        body: null
+        body: 'style-block'
     },
     variant: {
         prelude: '*',
         body: 'style-block'
+    },
+    slot: {
+        prelude: null,
+        body: null
     },
     compose: {
         prelude: '<string>',
@@ -755,69 +759,147 @@ function parseThemeDeclarations(block: DeclarationBlock<Declaration>, config: CS
     }
 }
 
-function parseVariantPrelude(prelude: string) {
-    return /^(\S+)\s+(.+)$/.exec(prelude)
-        || /^([^(]+)(\(.*\))$/.exec(prelude)
-}
-
-function unwrapSelectorVariantValue(value: string) {
-    const trimmed = value.trim()
-    return trimmed.startsWith('(') && trimmed.endsWith(')')
-        ? trimmed.slice(1, -1).trim()
-        : undefined
+function parseCustomVariantPrelude(prelude: string) {
+    const trimmed = prelude.trim()
+    const tokenMatch = /^(:{1,2}[-_a-zA-Z][-_a-zA-Z0-9]*|@[-_a-zA-Z][-_a-zA-Z0-9]*)$/.exec(trimmed)
+    if (!tokenMatch) return
+    return {
+        token: tokenMatch[1] as NonNullable<CSSDirectiveConfig['variants']>[number]['token']
+    }
 }
 
 function defineVariant(config: CSSDirectiveConfig, variant: NonNullable<CSSDirectiveConfig['variants']>[number]) {
     config.variants ??= []
-    const foundIndex = config.variants.findIndex((existing) => existing.raw === variant.raw)
+    const foundIndex = config.variants.findIndex((existing) => existing.token === variant.token)
     if (foundIndex !== -1) config.variants.splice(foundIndex, 1)
     config.variants.push(variant)
 }
 
-function parseVariantDefinition(rule: any, parsed: ParsedDirectives) {
-    const match = parseVariantPrelude(formatPrelude(rule.value.prelude))
-    if (!match) {
-        throw new Error('@custom-variant requires a variant name and value')
-    }
+function isSlotRule(rule: Rule) {
+    return (rule.type === 'unknown' || rule.type === 'custom') && rule.value?.name === 'slot'
+}
 
-    const [, name, rawValue] = match
-    const value = rawValue.trim()
-    if (!name || name.startsWith('@') || name.startsWith(':')) {
-        throw new Error(`@custom-variant names must be bare identifiers: ${name}`)
+function assertNotSlotRule(rule: Rule) {
+    if (isSlotRule(rule)) {
+        throw new Error('@slot can only be used inside @custom-variant')
     }
+}
 
-    const selector = unwrapSelectorVariantValue(value)
-    if (selector !== undefined) {
-        if (!selector.includes('&')) {
-            throw new Error(`@custom-variant "${name}" selector value must include "&"`)
+function assertNoVariantTemplateDeclarations(rule: any, token: string) {
+    const declarations = collectDeclarations(rule.value.declarations)
+    if (Object.keys(declarations).length) {
+        throw new Error(`@custom-variant ${token} does not accept declarations`)
+    }
+}
+
+function createVariantTemplateBranch(path: {
+    selectors: string[]
+    atRules: string[]
+    layer?: CSSDirectiveLayerName
+}) {
+    const selector = path.selectors.reduce((current, selectorTemplate) => selectorTemplate.replace(/&/g, current), '&')
+    return {
+        ...(selector !== '&' ? { selector } : {}),
+        ...(path.atRules.length ? { atRules: [...path.atRules] } : {}),
+        ...(path.layer ? { layer: path.layer } : {})
+    }
+}
+
+function collectVariantTemplateBranches(
+    rules: Rule[],
+    token: string,
+    path: { selectors: string[], atRules: string[], layer?: CSSDirectiveLayerName } = { selectors: [], atRules: [] }
+): NonNullable<CSSDirectiveConfig['variants']>[number]['branches'] {
+    const branches: NonNullable<CSSDirectiveConfig['variants']>[number]['branches'] = []
+    for (const child of rules) {
+        if (isSlotRule(child)) {
+            branches.push(createVariantTemplateBranch(path))
+            continue
         }
-        defineVariant(parsed.config, {
-            name,
-            raw: `${selector.includes('&::') ? '::' : ':'}${name}` as `:${string}` | `::${string}`,
-            selector
-        })
+        if (isCustomVariantDefinition(child)) {
+            throw new Error('@custom-variant cannot be nested inside @custom-variant')
+        }
+        if (parseMasterVariantBlock(child)) {
+            throw new Error('@variant cannot be used inside @custom-variant')
+        }
+        if (isAnimationsDefinition(child)) {
+            throw new Error('@animations cannot be used inside @custom-variant')
+        }
+        if (child.type === 'keyframes') {
+            throw new Error('@keyframes cannot be used inside @custom-variant')
+        }
+        if (child.type === 'style') {
+            const selectors = (child as any).value.selectors.map((selector: Selector) => formatSelectors([selector]))
+            for (const selector of selectors) {
+                if (!selector.includes('&')) {
+                    throw new Error(`@custom-variant ${token} selector value must include "&"`)
+                }
+            }
+            assertNoVariantTemplateDeclarations(child, token)
+            for (const selector of selectors) {
+                branches.push(...collectVariantTemplateBranches((child as any).value.rules, token, {
+                    ...path,
+                    selectors: [...path.selectors, selector]
+                }))
+            }
+            continue
+        }
+        if (child.type === 'layer-block') {
+            const layer = formatNestedAtRule(child)?.replace(/^@layer\s+/, '').trim() as CSSDirectiveLayerName | undefined
+            if (layer !== 'base' && layer !== 'defaults' && layer !== 'components' && layer !== 'utilities') {
+                throw new Error(`@custom-variant ${token} only accepts Master CSS layers`)
+            }
+            if (path.layer && path.layer !== layer) {
+                throw new Error(`@custom-variant ${token} cannot assign multiple layers`)
+            }
+            branches.push(...collectVariantTemplateBranches((child as any).value.rules, token, {
+                ...path,
+                layer
+            }))
+            continue
+        }
+        const nestedAtRuleChildren = getNestedAtRuleChildren(child)
+        if (nestedAtRuleChildren) {
+            const atRule = formatNestedAtRule(child)
+            if (!atRule) {
+                throw new Error(`Unsupported nested at-rule in @custom-variant ${token}`)
+            }
+            branches.push(...collectVariantTemplateBranches(nestedAtRuleChildren, token, {
+                ...path,
+                atRules: [...path.atRules, atRule]
+            }))
+            continue
+        }
+        if (child.type === 'nested-declarations') {
+            const declarations = collectDeclarations((child as any).value.declarations)
+            if (Object.keys(declarations).length) {
+                throw new Error(`@custom-variant ${token} does not accept declarations`)
+            }
+            continue
+        }
+        throw new Error(`Unsupported rule inside @custom-variant ${token}`)
+    }
+    return branches
+}
+
+function parseVariantDefinition(rule: any, parsed: ParsedDirectives) {
+    const prelude = parseCustomVariantPrelude(formatPrelude(rule.value.prelude))
+    if (!prelude) {
+        throw new Error('@custom-variant requires a full variant token')
+    }
+
+    const { token } = prelude
+    const bodyRules = rule.value.body?.value as Rule[] | undefined
+    if (bodyRules?.length) {
+        const branches = collectVariantTemplateBranches(bodyRules, token)
+        if (!branches.length) {
+            throw new Error(`@custom-variant ${token} requires @slot`)
+        }
+        defineVariant(parsed.config, { token, branches })
         return
     }
 
-    if (!value.startsWith('@')) {
-        throw new Error(`@custom-variant "${name}" must use an at-rule or selector template value`)
-    }
-
-    const layerMatch = /^@layer\s+([a-zA-Z0-9_-]+)\s*$/.exec(value)
-    if (layerMatch?.[1] === 'base' || layerMatch?.[1] === 'defaults' || layerMatch?.[1] === 'components' || layerMatch?.[1] === 'utilities') {
-        defineVariant(parsed.config, {
-            name,
-            raw: `@${name}`,
-            layer: layerMatch[1]
-        })
-        return
-    }
-
-    defineVariant(parsed.config, {
-        name,
-        raw: `@${name}`,
-        atRules: [value]
-    })
+    throw new Error(`@custom-variant ${token} requires a block body`)
 }
 
 function isCustomVariantDefinition(rule: Rule) {
@@ -923,8 +1005,8 @@ function parseMasterVariantBlock(rule: any) {
     if (!token) {
         throw new Error('@variant requires a Master CSS variant')
     }
-    if (token.startsWith('@')) {
-        throw new Error('@variant accepts Master CSS variants without the leading "@"')
+    if (!/^:{1,2}[-_a-zA-Z][-_a-zA-Z0-9]*$/.test(token) && !/^@\S+$/.test(token)) {
+        throw new Error('@variant requires a full variant token')
     }
     const rules = rule.value.body?.value
     if (!Array.isArray(rules)) {
@@ -975,6 +1057,8 @@ function collectDirectiveStyleRuleBody(block: DeclarationBlock<Declaration>, rul
         })
     }
     for (const child of rules) {
+        assertNotSlotRule(child)
+
         if (child.type === 'nested-declarations') {
             const nestedDeclarations = collectDeclarations(child.value.declarations)
             if (Object.keys(nestedDeclarations).length) {
@@ -1100,6 +1184,8 @@ function parseStyleRuleBody(
 }
 
 function parseNestedManagedStyleChildRule(child: Rule, parsed: ParsedDirectives, parentSelectorDefinition: StyleSelectorDefinition, atRules: string[], layer?: CSSDirectiveLayerName) {
+    assertNotSlotRule(child)
+
     if (child.type === 'layer-block') {
         throw new Error('Nested @layer blocks are not allowed inside managed style definitions')
     }
@@ -1164,6 +1250,8 @@ function parseNativeRuleBody(
     parentSelectorDefinition?: StyleSelectorDefinition
 ) {
     for (const child of rules) {
+        assertNotSlotRule(child)
+
         const compose = parseComposeRule(child, parsed)
         if (compose && parentSelectorDefinition) {
             parseStyleDefinitionBody(parsed, parentSelectorDefinition, [{
@@ -1225,6 +1313,8 @@ function parseNativeRuleBody(
 }
 
 function parseNestedNativeStyleChildRule(child: Rule, parsed: ParsedDirectives, parentSelectorDefinition: StyleSelectorDefinition, atRules: string[]) {
+    assertNotSlotRule(child)
+
     const masterVariantBlock = parseMasterVariantBlock(child)
     if (masterVariantBlock) {
         parseNativeRuleBody(masterVariantBlock.rules, parsed, [...atRules, createCSSDirectiveVariantReference(masterVariantBlock.token)], parentSelectorDefinition)
@@ -1397,7 +1487,7 @@ function parseThemeRule(rule: any, parsed: ParsedDirectives) {
 }
 
 function containsNativeStyleDirective(rule: Rule): boolean {
-    if ((rule.type === 'unknown' || rule.type === 'custom') && (rule.value?.name === 'compose' || rule.value?.name === 'at')) {
+    if ((rule.type === 'unknown' || rule.type === 'custom') && (rule.value?.name === 'compose' || rule.value?.name === 'variant' || rule.value?.name === 'slot')) {
         return true
     }
     if (rule.type === 'style') {

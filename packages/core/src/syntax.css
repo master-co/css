@@ -1,42 +1,42 @@
-@custom-variant all @media all;
-@custom-variant print @media print;
-@custom-variant screen @media screen;
-@custom-variant speech @media speech;
-@custom-variant landscape @media (orientation: landscape);
-@custom-variant portrait @media (orientation: portrait);
-@custom-variant motion @media (prefers-reduced-motion: no-preference);
-@custom-variant reduce-motion @media (prefers-reduced-motion: reduce);
+@custom-variant @all { @media all { @slot; } }
+@custom-variant @print { @media print { @slot; } }
+@custom-variant @screen { @media screen { @slot; } }
+@custom-variant @speech { @media speech { @slot; } }
+@custom-variant @landscape { @media (orientation: landscape) { @slot; } }
+@custom-variant @portrait { @media (orientation: portrait) { @slot; } }
+@custom-variant @motion { @media (prefers-reduced-motion: no-preference) { @slot; } }
+@custom-variant @reduce-motion { @media (prefers-reduced-motion: reduce) { @slot; } }
 
-@custom-variant base @layer base;
-@custom-variant default @layer defaults;
-@custom-variant component @layer components;
-@custom-variant utility @layer utilities;
+@custom-variant @base { @layer base { @slot; } }
+@custom-variant @default { @layer defaults { @slot; } }
+@custom-variant @component { @layer components { @slot; } }
+@custom-variant @utility { @layer utilities { @slot; } }
 
-@custom-variant start @starting-style;
+@custom-variant @start { @starting-style { @slot; } }
 
-@custom-variant first (&:first-child);
-@custom-variant last (&:last-child);
-@custom-variant nth-last (&:nth-last-child);
-@custom-variant even (&:nth-child(2n));
-@custom-variant odd (&:nth-child(odd));
-@custom-variant nth (&:nth-child);
-@custom-variant only (&:only-child);
-@custom-variant rtl (&:dir(rtl));
-@custom-variant ltr (&:dir(ltr));
+@custom-variant :first { &:first-child { @slot; } }
+@custom-variant :last { &:last-child { @slot; } }
+@custom-variant :nth-last { &:nth-last-child { @slot; } }
+@custom-variant :even { &:nth-child(2n) { @slot; } }
+@custom-variant :odd { &:nth-child(odd) { @slot; } }
+@custom-variant :nth { &:nth-child { @slot; } }
+@custom-variant :only { &:only-child { @slot; } }
+@custom-variant :rtl { &:dir(rtl) { @slot; } }
+@custom-variant :ltr { &:dir(ltr) { @slot; } }
 
-@custom-variant scrollbar (&::-webkit-scrollbar);
-@custom-variant scrollbar-button (&::-webkit-scrollbar-button);
-@custom-variant scrollbar-thumb (&::-webkit-scrollbar-thumb);
-@custom-variant scrollbar-track (&::-webkit-scrollbar-track);
-@custom-variant scrollbar-track-piece (&::-webkit-scrollbar-track-piece);
-@custom-variant scrollbar-corner (&::-webkit-scrollbar-corner);
-@custom-variant slider-thumb (&::-webkit-slider-thumb);
-@custom-variant slider-runnable-track (&::-webkit-slider-runnable-track);
-@custom-variant resizer (&::-webkit-resizer);
-@custom-variant progress (&::-webkit-progress);
+@custom-variant ::scrollbar { &::-webkit-scrollbar { @slot; } }
+@custom-variant ::scrollbar-button { &::-webkit-scrollbar-button { @slot; } }
+@custom-variant ::scrollbar-thumb { &::-webkit-scrollbar-thumb { @slot; } }
+@custom-variant ::scrollbar-track { &::-webkit-scrollbar-track { @slot; } }
+@custom-variant ::scrollbar-track-piece { &::-webkit-scrollbar-track-piece { @slot; } }
+@custom-variant ::scrollbar-corner { &::-webkit-scrollbar-corner { @slot; } }
+@custom-variant ::slider-thumb { &::-webkit-slider-thumb { @slot; } }
+@custom-variant ::slider-runnable-track { &::-webkit-slider-runnable-track { @slot; } }
+@custom-variant ::resizer { &::-webkit-resizer { @slot; } }
+@custom-variant ::progress { &::-webkit-progress { @slot; } }
 
-@custom-variant vt (&::view-transition);
-@custom-variant vt-group (&::view-transition-group);
-@custom-variant vt-image-pair (&::view-transition-image-pair);
-@custom-variant vt-old (&::view-transition-old);
-@custom-variant vt-new (&::view-transition-new);
+@custom-variant ::vt { &::view-transition { @slot; } }
+@custom-variant ::vt-group { &::view-transition-group { @slot; } }
+@custom-variant ::vt-image-pair { &::view-transition-image-pair { @slot; } }
+@custom-variant ::vt-old { &::view-transition-old { @slot; } }
+@custom-variant ::vt-new { &::view-transition-new { @slot; } }

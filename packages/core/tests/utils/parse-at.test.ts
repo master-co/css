@@ -131,7 +131,7 @@ export const cases = {
                     }
                 ]
             },
-            { variants: [{ name: 'supports-backdrop', raw: '@supports-backdrop', atRules: ['@supports (backdrop-filter:blur(0px))'] }] }
+            { variants: [{ token: '@supports-backdrop', branches: [{ atRules: ['@supports (backdrop-filter:blur(0px))'] }] }] }
         ],
         ['custom', '@media (width>=42mm) and (width<=80mm)',
             {
@@ -147,7 +147,7 @@ export const cases = {
                     }
                 ]
             },
-            { variants: [{ name: 'custom', raw: '@custom', atRules: ['@media (width>=42mm) and (width<=80mm)'] }] }],
+            { variants: [{ token: '@custom', branches: [{ atRules: ['@media (width>=42mm) and (width<=80mm)'] }] }] }],
         ['custom', '@media (width>=37.5rem)',
             {
                 id: 'media',
@@ -162,7 +162,7 @@ export const cases = {
                     }
                 ]
             },
-            { variants: [{ name: 'custom', raw: '@custom', atRules: ['@media(width>=600)'] }] }],
+            { variants: [{ token: '@custom', branches: [{ atRules: ['@media(width>=600)'] }] }] }],
 
         ['desktop', '@media (width>=40rem)',
             {

@@ -46,8 +46,8 @@ describe.concurrent('@master/css-compiler', () => {
 
     it('compiles CSS config directives into a CSS directive result', () => {
         const result = compileCSS(`
-            @custom-variant motion-safe @media (prefers-reduced-motion: no-preference);
-            @custom-variant scrollbar (&::-webkit-scrollbar);
+            @custom-variant @motion-safe { @media (prefers-reduced-motion: no-preference) { @slot; } }
+            @custom-variant ::scrollbar { &::-webkit-scrollbar { @slot; } }
 
             @settings {
                 root-size: 10;
@@ -94,8 +94,8 @@ describe.concurrent('@master/css-compiler', () => {
             ],
             modes: ['dark', 'chrisma'],
             variants: [
-                { name: 'motion-safe', raw: '@motion-safe', atRules: ['@media (prefers-reduced-motion: no-preference)'] },
-                { name: 'scrollbar', raw: '::scrollbar', selector: '&::-webkit-scrollbar' }
+                { token: '@motion-safe', branches: [{ atRules: ['@media (prefers-reduced-motion:no-preference)'] }] },
+                { token: '::scrollbar', branches: [{ selector: '&::-webkit-scrollbar' }] }
             ],
             animations: {
                 fade: {
@@ -228,7 +228,7 @@ describe.concurrent('@master/css-compiler', () => {
                     @compose "inline-flex bg:primary";
                     display: flex;
 
-                    @variant dark {
+                    @variant @dark {
                         color: white;
                     }
 
@@ -237,7 +237,7 @@ describe.concurrent('@master/css-compiler', () => {
                     }
                 }
 
-                @variant md {
+                @variant @md {
                     btn {
                         &:hover {
                             @compose "underline";
@@ -281,7 +281,7 @@ describe.concurrent('@master/css-compiler', () => {
                 selector: '&',
                 name: 'btn',
                 layer: 'components',
-                atRules: [createCSSDirectiveVariantReference('dark')],
+                atRules: [createCSSDirectiveVariantReference('@dark')],
                 declarations: {
                     color: '#fff'
                 }
@@ -304,7 +304,7 @@ describe.concurrent('@master/css-compiler', () => {
                 selector: '&:hover',
                 name: 'btn',
                 layer: 'components',
-                atRules: [createCSSDirectiveVariantReference('md')]
+                atRules: [createCSSDirectiveVariantReference('@md')]
             }
         ])
     })
@@ -385,7 +385,7 @@ describe.concurrent('@master/css-compiler', () => {
                 content-auto {
                     content-visibility: auto;
 
-                    @variant print {
+                    @variant @print {
                         display: none;
                     }
                 }
@@ -410,7 +410,7 @@ describe.concurrent('@master/css-compiler', () => {
                 order: 2,
                 selector: '&',
                 layer: 'utilities',
-                atRules: [createCSSDirectiveVariantReference('print')],
+                atRules: [createCSSDirectiveVariantReference('@print')],
                 declarations: {
                     display: 'none'
                 }
@@ -601,7 +601,7 @@ describe.concurrent('@master/css-compiler', () => {
             .card {
                 @compose "block bg:primary";
 
-                @variant dark {
+                @variant @dark {
                     @compose "fg:primary";
                 }
             }
@@ -609,6 +609,24 @@ describe.concurrent('@master/css-compiler', () => {
 
         expect(result.nativeCSS).toBe('')
         expect(result.generatedCSS).toBe('.card{display:block;background-color:var(--color-primary)}.dark .card{color:var(--color-primary)}')
+        expect(result.css).toBe(result.generatedCSS)
+    })
+
+    it('lowers native @variant declarations without @compose', () => {
+        const result = compileCSSConfig(`
+            @settings {
+                mode-trigger: class;
+            }
+
+            .card {
+                @variant @dark {
+                    color: red;
+                }
+            }
+        `)
+
+        expect(result.nativeCSS).toBe('')
+        expect(result.generatedCSS).toBe('.dark .card{color:red}')
         expect(result.css).toBe(result.generatedCSS)
     })
 
@@ -819,8 +837,8 @@ describe.concurrent('@master/css-compiler', () => {
 
     it('uses the last definition for repeated config values', () => {
         const result = compileCSS(`
-            @custom-variant interactive (&:hover);
-            @custom-variant interactive (&:focus-visible);
+            @custom-variant :interactive { &:hover { @slot; } }
+            @custom-variant :interactive { &:focus-visible { @slot; } }
 
             @settings {
                 root-size: 16;
@@ -840,9 +858,35 @@ describe.concurrent('@master/css-compiler', () => {
                 { name: 'color-primary', value: '#333' }
             ],
             variants: [
-                { name: 'interactive', raw: ':interactive', selector: '&:focus-visible' }
+                { token: ':interactive', branches: [{ selector: '&:focus-visible' }] }
             ]
         })
+    })
+
+    it('parses @custom-variant block templates with @slot branches', () => {
+        const result = compileCSS(`
+            @custom-variant :hocus {
+                &:hover {
+                    @slot;
+                }
+
+                @media (hover: hover) {
+                    &:focus-visible {
+                        @slot;
+                    }
+                }
+            }
+        `)
+
+        expect(result.config.variants).toEqual([
+            {
+                token: ':hocus',
+                branches: [
+                    { selector: '&:hover' },
+                    { selector: '&:focus-visible', atRules: ['@media (hover:hover)'] }
+                ]
+            }
+        ])
     })
 
     it('converts compiler results into semantic config at the compiler boundary', () => {
@@ -974,8 +1018,8 @@ describe.concurrent('@master/css-compiler', () => {
             variable.namespace === 'font-family' && variable.key === 'sans'
         )
         expect(String(fontFamilySans?.value)).toContain('var(--font-sans, ui-sans-serif)')
-        expect(result.config.variants).toContainEqual(expect.objectContaining({ raw: '@screen' }))
-        expect(result.config.variants).toContainEqual(expect.objectContaining({ raw: ':first' }))
+        expect(result.config.variants).toContainEqual(expect.objectContaining({ token: '@screen' }))
+        expect(result.config.variants).toContainEqual(expect.objectContaining({ token: ':first' }))
         expect(Object.keys(result.config.animations || {})).toContain('fade')
 
         const css = createCSS(result.config).add('font:sans')
@@ -1204,23 +1248,49 @@ describe.concurrent('@master/css-compiler', () => {
 
         expect(() => process(`
             @media print {
-                @custom-variant motion-safe @media (prefers-reduced-motion: no-preference);
+                @custom-variant @motion-safe { @media (prefers-reduced-motion: no-preference) { @slot; } }
             }
         `)).toThrow('@custom-variant must be top-level')
 
         expect(() => process(`
             @media print {
-                @custom-variant interactive (&:is(:hover, :focus-visible));
+                @custom-variant :interactive { &:is(:hover, :focus-visible) { @slot; } }
             }
         `)).toThrow('@custom-variant must be top-level')
 
         expect(() => process(`
-            @custom-variant @motion-safe @media (prefers-reduced-motion: no-preference);
-        `)).toThrow('@custom-variant names must be bare identifiers: @motion-safe')
+            @custom-variant motion-safe {
+                @media (prefers-reduced-motion: no-preference) {
+                    @slot;
+                }
+            }
+        `)).toThrow('@custom-variant requires a full variant token')
 
         expect(() => process(`
-            @custom-variant headings :is(h1, h2, h3);
-        `)).toThrow('@custom-variant "headings" must use an at-rule or selector template value')
+            @custom-variant :headings :is(h1, h2, h3) {
+                & {
+                    @slot;
+                }
+            }
+        `)).toThrow('@custom-variant requires a full variant token')
+
+        expect(() => process(`
+            @custom-variant :headings { }
+        `)).toThrow('@custom-variant :headings requires a block body')
+
+        expect(() => process(`
+            .card {
+                @slot;
+            }
+        `)).toThrow('@slot can only be used inside @custom-variant')
+
+        expect(() => process(`
+            @components {
+                card {
+                    @slot;
+                }
+            }
+        `)).toThrow('@slot can only be used inside @custom-variant')
 
         expect(() => process(`
             @media print {
@@ -1268,13 +1338,13 @@ describe.concurrent('@master/css-compiler', () => {
 
         expect(() => process(`
             @utilities {
-                @custom-variant print @media print;
+                @custom-variant @print { @media print { @slot; } }
             }
         `)).toThrow('@custom-variant must be top-level')
 
         expect(() => process(`
             @utilities {
-                @custom-variant interactive (&:is(:hover, :focus-visible));
+                @custom-variant :interactive { &:is(:hover, :focus-visible) { @slot; } }
             }
         `)).toThrow('@custom-variant must be top-level')
 

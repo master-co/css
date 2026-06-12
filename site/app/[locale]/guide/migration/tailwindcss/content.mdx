@@ -175,7 +175,11 @@ module.exports = {
 }
 ```
 ```css name=index.css
-@custom-variant tall @media (min-height: 800px);
+@custom-variant @tall {
+    @media (min-height: 800px) {
+        @slot;
+    }
+}
 ```
 
 ---

@@ -66,8 +66,9 @@ export default function getPseudoClassCompletionItems(css: MasterCSS = createCSS
         ':of': ':of',
     }
     for (const variant of css.config.variants || []) {
-        if ('selector' in variant && variant.raw.startsWith(':') && !variant.raw.startsWith('::')) {
-            selectors[variant.raw] = variant.selector
+        const selector = variant.branches.find((branch) => branch.selector)?.selector
+        if (selector && variant.token.startsWith(':') && !variant.token.startsWith('::')) {
+            selectors[variant.token] = selector
         }
     }
 

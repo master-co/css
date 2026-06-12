@@ -130,10 +130,20 @@ function tokenizeThemePrelude(source: string, start: number, end: number, tokens
 
 function tokenizeCustomVariantPrelude(source: string, start: number, end: number, tokens: HighlightTokenItem[]) {
     let cursor = skipCSSWhitespace(source, start)
-    const token = readCSSIdent(source, cursor)
-    if (token.value) {
-        pushHighlightToken(tokens, token.start, token.value.length, 'variable', 'directive.parameter', ['directive', 'query'])
-        cursor = token.end
+    if (source[cursor] === ':') {
+        const colonLength = source[cursor + 1] === ':' ? 2 : 1
+        pushHighlightToken(tokens, cursor, colonLength, 'operator', 'directive.parameter', ['directive', 'query'])
+        const token = readCSSIdent(source, cursor + colonLength)
+        if (token.value) {
+            pushHighlightToken(tokens, token.start, token.value.length, 'variable', 'directive.parameter', ['directive', 'query'])
+            cursor = token.end
+        }
+    } else {
+        const token = readCSSIdent(source, cursor)
+        if (token.value) {
+            pushHighlightToken(tokens, token.start, token.value.length, 'variable', 'directive.parameter', ['directive', 'query'])
+            cursor = token.end
+        }
     }
     const at = source.indexOf('@', cursor)
     if (at !== -1 && at < end) {

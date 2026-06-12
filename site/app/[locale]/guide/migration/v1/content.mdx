@@ -124,7 +124,11 @@ Style.extend('queries', { /* [!code --] */
     --breakpoint-laptop: 1024; /* [!code ++] */
 }
 
-@custom-variant watch @media (min-width: 38mm) and (max-width: 42mm); /* [!code ++] */
+@custom-variant @watch { /* [!code ++] */
+    @media (min-width: 38mm) and (max-width: 42mm) { /* [!code ++] */
+        @slot; /* [!code ++] */
+    } /* [!code ++] */
+} /* [!code ++] */
 ```
 To learn more, check out [at variants](/guide/theme#at-tokens).
 

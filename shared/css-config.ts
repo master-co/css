@@ -21,28 +21,18 @@ export type AnimationDefinitions<TDeclarations = CSSDeclarations> = Record<strin
 export type AtIdentifier = typeof CSS_AT_IDENTIFIERS[number]
 export type UtilityLayerName = 'base' | 'defaults' | 'components' | 'utilities'
 
-export type SelectorVariantDefinition = {
-    name: string
-    raw: `:${string}` | `::${string}`
-    selector: string
+export type VariantToken = `:${string}` | `::${string}` | `@${string}`
+
+export interface VariantBranchDefinition {
+    selector?: string
+    atRules?: string[]
+    layer?: UtilityLayerName
 }
 
-export type AtRuleVariantDefinition = {
-    name: string
-    raw: `@${string}`
-    atRules: string[]
+export interface VariantDefinition {
+    token: VariantToken
+    branches: VariantBranchDefinition[]
 }
-
-export type LayerVariantDefinition = {
-    name: string
-    raw: `@${string}`
-    layer: UtilityLayerName
-}
-
-export type VariantDefinition =
-    | SelectorVariantDefinition
-    | AtRuleVariantDefinition
-    | LayerVariantDefinition
 
 export type VariantDefinitions = VariantDefinition[]
 

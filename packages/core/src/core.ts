@@ -10,7 +10,7 @@ import UtilityLayer from './utility-layer'
 import NonLayer from './non-layer'
 import type { DefinedUtility, Variable } from 'shared/css-syntax'
 import { AtRule, AtRuleValueNode } from './utils/parse-at'
-import type { AnimationDefinitions, Config, UtilityDefinition, UtilityLayerName, VariableDefinition } from 'shared/css-config'
+import type { AnimationDefinitions, Config, UtilityDefinition, UtilityLayerName, VariableDefinition, VariantBranchDefinition, VariantToken } from 'shared/css-config'
 import registerGlobal from './register-global'
 import parseAt from './utils/parse-at'
 import parseValue from './utils/parse-value'
@@ -38,7 +38,7 @@ export default class MasterCSS {
     readonly variables = new Map<string, Variable>()
     readonly modes: string[] = []
     readonly atRules = new Map<string, AtRule>()
-    readonly variantAtRules = new Map<string, AtRule[]>()
+    readonly variants = new Map<VariantToken, VariantBranchDefinition[]>()
     readonly breakpointAtRules = new Map<string, AtRule>()
     readonly containerAtRules = new Map<string, AtRule>()
     readonly animations = new Map<string, AnimationDefinitions>()
@@ -372,35 +372,63 @@ export default class MasterCSS {
         if (!variants) return
 
         for (const variant of variants) {
-            if ('selector' in variant) {
-                const selector = variant.selector.trim()
-                const bodylessSelector = selector.includes('&')
-                    ? selector.replace(/&/g, '')
-                    : selector
-                this.selectors.set(variant.raw, parseSelector(bodylessSelector, this, false))
-                continue
+            if (!/^(?::{1,2}.+|@.+)$/.test(variant.token)) {
+                throw new Error(`Invalid variant token: ${variant.token}`)
             }
 
-            const token = variant.raw.slice(1)
-            const atRules = 'layer' in variant
-                ? [{
-                    id: 'layer',
-                    nodes: [{
-                        type: 'string',
-                        value: variant.layer
-                    } as AtRuleValueNode]
-                } as AtRule]
-                : variant.atRules.map((atRule) => parseAt(atRule, this, false))
+            if (variant.token.startsWith('@')) {
+                const name = variant.token.slice(1)
+                if (/^[\w-]+$/.test(name)) {
+                    if (this.modes.includes(name)) {
+                        throw new Error(`Variant "${name}" conflicts with mode "${name}"`)
+                    }
+                    if (this.breakpointAtRules.has(name)) {
+                        throw new Error(`Variant "${name}" conflicts with breakpoint variable "--breakpoint-${name}"`)
+                    }
+                    if (this.containerAtRules.has(name)) {
+                        throw new Error(`Variant "${name}" conflicts with container variable "--container-${name}"`)
+                    }
+                }
+            }
 
-            if (atRules.length) {
-                this.variantAtRules.set(token, atRules)
-                this.atRules.set(token, atRules[0])
+            for (const branch of variant.branches) {
+                if (branch.selector && !branch.selector.includes('&')) {
+                    throw new Error(`Variant "${variant.token}" selector branch must include "&"`)
+                }
+            }
+
+            this.variants.set(variant.token, variant.branches.map((branch) => ({
+                ...branch,
+                ...(branch.atRules?.length ? { atRules: [...branch.atRules] } : {})
+            })))
+
+            if (variant.token.startsWith(':') && variant.branches.length === 1) {
+                const selector = variant.branches[0].selector?.trim()
+                if (selector) {
+                    const bodylessSelector = selector.includes('&')
+                        ? selector.replace(/&/g, '')
+                        : selector
+                    this.selectors.set(variant.token, parseSelector(bodylessSelector, this, false))
+                }
+            } else if (variant.token.startsWith('@') && variant.branches.length === 1) {
+                const branch = variant.branches[0]
+                if (branch.layer) {
+                    this.atRules.set(variant.token.slice(1), {
+                        id: 'layer',
+                        nodes: [{
+                            type: 'string',
+                            value: branch.layer
+                        } as AtRuleValueNode]
+                    })
+                } else if (branch.atRules?.[0]) {
+                    this.atRules.set(variant.token.slice(1), parseAt(branch.atRules[0], this, false))
+                }
             }
         }
     }
 
-    resolveAtVariant(token: string) {
-        return this.variantAtRules.get(token)
+    resolveVariant(token: VariantToken) {
+        return this.variants.get(token)
     }
 
     resolveVariables() {
@@ -600,21 +628,27 @@ export default class MasterCSS {
         const utilities: Utility[] = []
         for (const registeredUtility of this.matchAll(className)) {
             const utility = this.createWithDefinition(className, registeredUtility, fixedClass, mode)
-            if (utility && utility.valid) utilities.push(utility)
+            if (utility && utility.valid) {
+                utilities.push(utility)
+                for (let branchIndex = 1; branchIndex < utility.branchCount; branchIndex++) {
+                    const branchUtility = this.createWithDefinition(className, registeredUtility, fixedClass, mode, branchIndex)
+                    if (branchUtility?.valid) utilities.push(branchUtility)
+                }
+            }
         }
         return utilities
     }
 
-    createWithDefinition(className: string, registeredUtility: DefinedUtility, fixedClass?: string, mode?: string): Utility | undefined {
-        const key = (fixedClass ? fixedClass + ' ' : '') + className
+    createWithDefinition(className: string, registeredUtility: DefinedUtility, fixedClass?: string, mode?: string, branchIndex = 0): Utility | undefined {
+        const candidate = new Utility(className, this, registeredUtility, fixedClass, mode, branchIndex)
         for (const layer of this.getUtilityLayers()) {
-            const rule = layer.get(key)
+            const rule = layer.get(candidate.key)
             const utility = rule instanceof Utility && rule.registeredUtility === registeredUtility
                 ? rule
                 : undefined
             if (utility) return utility
         }
-        return new Utility(className, this, registeredUtility, fixedClass, mode)
+        return candidate
     }
 
     /**
@@ -672,7 +706,7 @@ export default class MasterCSS {
         // @ts-ignore
         this.atRules = new Map()
         // @ts-ignore
-        this.variantAtRules = new Map()
+        this.variants = new Map()
         // @ts-ignore
         this.breakpointAtRules = new Map()
         // @ts-ignore

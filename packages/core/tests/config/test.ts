@@ -44,8 +44,22 @@ test.concurrent('viewports', () => {
             utilities: '@media (width>=31.25rem){.hidden\\@xss{display:none}}'
         },
         'hidden@xss',
-        { variants: [{ name: 'xss', raw: '@xss', atRules: ['@media (width>=500)'] }] }
+        { variants: [{ token: '@xss', branches: [{ atRules: ['@media (width>=500)'] }] }] }
     )
+})
+
+test.concurrent('variant tokens share mode and condition namespaces', () => {
+    expect(() => createCSS({ variants: [{ token: '@dark', branches: [{ atRules: ['@media (color)'] }] }] }))
+        .toThrow('Variant "dark" conflicts with mode "dark"')
+    expect(() => createCSS({
+        variables: [{ namespace: 'container', key: 'card', value: 320 }],
+        variants: [{ token: '@card', branches: [{ atRules: ['@media (width>=20rem)'] }] }]
+    })).toThrow('Variant "card" conflicts with container variable "--container-card"')
+})
+
+test.concurrent('selector variant branches require explicit caller slot', () => {
+    expect(() => createCSS({ variants: [{ token: ':child', branches: [{ selector: ' .child' }] }] }))
+        .toThrow('Variant ":child" selector branch must include "&"')
 })
 
 test.concurrent('colors', () => {
@@ -69,7 +83,7 @@ test.concurrent('at', () => {
             utilities: '@media (width>=37.5rem){.f\\:12\\@min-600{font-size:0.75rem}}'
         },
         'f:12@min-600',
-        { variants: [{ name: 'min-600', raw: '@min-600', atRules: ['@media(width>=600)'] }] }
+        { variants: [{ token: '@min-600', branches: [{ atRules: ['@media(width>=600)'] }] }] }
     )
 })
 

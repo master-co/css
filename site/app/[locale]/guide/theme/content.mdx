@@ -26,8 +26,8 @@ In Master CSS, that vocabulary usually lives in the project CSS entry: `@theme` 
     --shadow-card: 0 0 0 1px rgb(255 255 255 / .08), 0 16px 40px rgb(0 0 0 / .36);
 }
 
-@custom-variant motion-safe @media (prefers-reduced-motion: no-preference);
-@custom-variant interactive (&:is(:hover, :focus-visible));
+@custom-variant @motion-safe { @media (prefers-reduced-motion: no-preference) { @slot; } }
+@custom-variant :interactive { &:is(:hover, :focus-visible) { @slot; } }
 ```
 
 ```html
@@ -282,13 +282,13 @@ Named conditions and selector shortcuts belong in the theme when they become sha
 Native CSS cannot store full `@media`, `@supports`, or `@container` rules in CSS variables. Master CSS uses `@custom-variant` to name those reusable conditions.
 
 ```css name=index.css
-@custom-variant motion-safe @media (prefers-reduced-motion: no-preference);
-@custom-variant supports-backdrop @supports (backdrop-filter: blur(0));
-@custom-variant card-wide @container card (width >= 42rem);
-@custom-variant start @starting-style;
+@custom-variant @motion-safe { @media (prefers-reduced-motion: no-preference) { @slot; } }
+@custom-variant @supports-backdrop { @supports (backdrop-filter: blur(0)) { @slot; } }
+@custom-variant @card-wide { @container card (width >= 42rem) { @slot; } }
+@custom-variant @start { @starting-style { @slot; } }
 ```
 
-The token name is written without a leading `@` in the definition. Use the token as an `@` suffix in markup:
+The token is written with the same leading `@` in the definition and in CSS `@variant` blocks. In markup, use the token name as an `@` suffix:
 
 ```html
 <!-- @MARK @motion-safe --><!-- @MARK @supports-backdrop -->
@@ -301,32 +301,32 @@ The token name is written without a leading `@` in the definition. Use the token
 Inside managed definitions and native style rules, use `@variant` blocks instead of putting conditional suffixes inside `@compose`.
 
 ```css name=index.css
-@custom-variant motion-safe @media (prefers-reduced-motion: no-preference);
+@custom-variant @motion-safe { @media (prefers-reduced-motion: no-preference) { @slot; } }
 
 @components {
     card {
         @compose "p:md r:xl";
 
-        @variant motion-safe {
+        @variant @motion-safe {
             @compose "animation:fade-in|fast";
         }
 
-        @variant <sm {
+        @variant @<sm {
             @compose "block";
         }
     }
 }
 ```
 
-`@variant` accepts custom condition variants, breakpoint tokens such as `md`, mode names such as `dark`, and raw Master CSS at syntax such as `<sm`.
+`@variant` accepts custom condition variants, breakpoint tokens such as `@md`, mode names such as `@dark`, and raw Master CSS at syntax such as `@<sm`.
 
 ### Selector variants
 Selector variants name selectors that repeat across markup or CSS-defined styles. Define them with `@custom-variant`.
 
 ```css name=index.css
-@custom-variant headings (&:is(h1, h2, h3, h4, h5, h6));
-@custom-variant interactive (&:is(:hover, :focus-visible));
-@custom-variant scrollbar (&::-webkit-scrollbar);
+@custom-variant :headings { &:is(h1, h2, h3, h4, h5, h6) { @slot; } }
+@custom-variant :interactive { &:is(:hover, :focus-visible) { @slot; } }
+@custom-variant ::scrollbar { &::-webkit-scrollbar { @slot; } }
 ```
 
 Use selector variants anywhere Master CSS accepts a selector suffix:
@@ -340,16 +340,16 @@ Use selector variants anywhere Master CSS accepts a selector suffix:
 ```
 
 ### Selector variants in CSS rules
-Inside CSS-defined style rules, prefer native nested selectors instead of putting selector suffixes inside `@compose`.
+Inside CSS-defined style rules, use `@variant` to apply selector variants instead of putting selector suffixes inside `@compose`.
 
 ```css name=index.css
-@custom-variant interactive (&:is(:hover, :focus-visible));
+@custom-variant :interactive { &:is(:hover, :focus-visible) { @slot; } }
 
 @components {
     btn {
         @compose "inline-flex ai:center jc:center";
 
-        &:interactive {
+        @variant :interactive {
             @compose "fg:primary";
         }
     }
@@ -374,7 +374,7 @@ Motion belongs in the theme when timing, easing, and keyframes are shared by mor
     --easing-smooth: cubic-bezier(.4, 0, .2, 1);
 }
 
-@custom-variant motion-safe @media (prefers-reduced-motion: no-preference);
+@custom-variant @motion-safe { @media (prefers-reduced-motion: no-preference) { @slot; } }
 
 @animations {
     @keyframes fade-in {

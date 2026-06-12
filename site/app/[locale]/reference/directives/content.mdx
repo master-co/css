@@ -156,11 +156,11 @@ Use `@variant` inside managed definitions or native style rules to share the cur
 .notice {
     @compose "p:md r:lg";
 
-    @variant dark {
+    @variant @dark {
         @compose "bg:surface fg:strong";
     }
 
-    @variant <sm {
+    @variant @<sm {
         @compose "p:sm";
     }
 }

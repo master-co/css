@@ -64,7 +64,7 @@ test.concurrent('component selector variant', () => {
 
 describe('group selector', () => {
     const config: Config = { variants: [
-            { name: 'both', raw: '::both', selector: '&::before,&::after' }
+            { token: '::both', branches: [{ selector: '&::before,&::after' }] }
         ], utilities: [component('btn', [
             { selector: '&::before,&::after', declarations: { display: 'block' } }
         ])] }
