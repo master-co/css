@@ -9,8 +9,7 @@ import type { NumberValueComponent, ValueComponent, VariableValueComponent, Vari
 import { AtRule, AtRuleNode, AtRuleStringNode, AtRuleValueNode, } from './utils/parse-at'
 import parseValue from './utils/parse-value'
 import parseAt from './utils/parse-at'
-import type { AtIdentifier } from 'shared/css-config'
-import type { MasterCSSPlanUtilityLayerName, MasterCSSPlanVariantBranch, MasterCSSPlanVariantToken } from 'shared/master-css-plan'
+import type { MasterCSSPlanAtIdentifier, MasterCSSPlanUtilityLayerName, MasterCSSPlanVariantBranch, MasterCSSPlanVariantToken } from 'shared/master-css-plan'
 import type { CompiledUtility } from './core'
 import generateAt from './utils/generate-at'
 import parseSelector, { SelectorNode } from './utils/parse-selector'
@@ -25,7 +24,7 @@ import { BORDER_STYLE_VALUES } from './common'
 type UtilityStateBranch = {
     selectorTemplate?: string
     selectorNodes?: SelectorNode[]
-    atRules?: Partial<Record<AtIdentifier, AtRuleNode[]>>
+    atRules?: Partial<Record<MasterCSSPlanAtIdentifier, AtRuleNode[]>>
     layer?: MasterCSSPlanUtilityLayerName
     mode?: string
     key: string
@@ -41,9 +40,9 @@ function composeSelectorTemplate(current: string | undefined, next: string | und
     return next.replace(/&/g, current || '&')
 }
 
-function cloneAtRules(atRules?: Partial<Record<AtIdentifier, AtRuleNode[]>>) {
+function cloneAtRules(atRules?: Partial<Record<MasterCSSPlanAtIdentifier, AtRuleNode[]>>) {
     if (!atRules) return
-    const cloned: Partial<Record<AtIdentifier, AtRuleNode[]>> = {}
+    const cloned: Partial<Record<MasterCSSPlanAtIdentifier, AtRuleNode[]>> = {}
     for (const id of AT_IDENTIFIERS) {
         const nodes = atRules[id]
         if (nodes?.length) cloned[id] = [...nodes]
@@ -52,8 +51,8 @@ function cloneAtRules(atRules?: Partial<Record<AtIdentifier, AtRuleNode[]>>) {
 }
 
 function mergeAtRuleNodeMap(
-    current: Partial<Record<AtIdentifier, AtRuleNode[]>> | undefined,
-    atRule: { id: AtIdentifier, nodes: AtRuleNode[] }
+    current: Partial<Record<MasterCSSPlanAtIdentifier, AtRuleNode[]>> | undefined,
+    atRule: { id: MasterCSSPlanAtIdentifier, nodes: AtRuleNode[] }
 ) {
     const merged = cloneAtRules(current) || {}
     merged[atRule.id] = [...(merged[atRule.id] || []), ...atRule.nodes]
@@ -68,7 +67,7 @@ function mergeBranch(base: UtilityStateBranch, branch: MasterCSSPlanVariantBranc
     if (!branch.atRuleNodes?.length) {
         for (const atRule of branch.atRules || []) {
             const parsed = parseAt(atRule, css)
-            atRules = mergeAtRuleNodeMap(atRules, parsed as { id: AtIdentifier, nodes: AtRuleNode[] })
+            atRules = mergeAtRuleNodeMap(atRules, parsed as { id: MasterCSSPlanAtIdentifier, nodes: AtRuleNode[] })
         }
     }
     if (branch.selectorNodes?.length && !branch.selector) {
@@ -179,7 +178,7 @@ function wrapCalcArguments(value: string) {
 export class Utility {
     native?: CSSRule
     nodes?: UtilityRuleNode[]
-    readonly atRules?: Partial<Record<AtIdentifier, AtRuleNode[]>>
+    readonly atRules?: Partial<Record<MasterCSSPlanAtIdentifier, AtRuleNode[]>>
     readonly priority!: RulePriority
     readonly type: UtilityTypeValue = UtilityType.Normal
     readonly declarations?: PropertiesHyphen
@@ -443,10 +442,10 @@ export class Utility {
                 const declarations: Record<string, string | number> = {}
                 for (const propertyName in emit.declarations) {
                     const propertyValue = emit.declarations[propertyName as keyof PropertiesHyphen]
-                    declarations[propertyName] = propertyValue === undefined
+                    declarations[propertyName] = propertyValue == null
                         ? newValue
                         : Array.isArray(propertyValue)
-                            ? propertyValue.map((value) => value === undefined ? newValue : value).join('')
+                            ? propertyValue.map((value) => value == null ? newValue : value).join('')
                             : propertyValue
                 }
                 return declarations as PropertiesHyphen
@@ -607,7 +606,7 @@ export class Utility {
             branches = branches.map((branch) => ({
                 ...branch,
                 key: branch.key + '@' + conditionToken,
-                atRules: mergeAtRuleNodeMap(branch.atRules, atRule as { id: AtIdentifier, nodes: AtRuleNode[] })
+                atRules: mergeAtRuleNodeMap(branch.atRules, atRule as { id: MasterCSSPlanAtIdentifier, nodes: AtRuleNode[] })
             }))
         }
 
@@ -637,6 +636,15 @@ export class Utility {
         }
 
         while (index < selectorToken.length) {
+            if (selectorToken[index] === '(') {
+                const end = findClosingParen(selectorToken, index)
+                if (end !== -1) {
+                    raw += selectorToken.slice(index, end + 1)
+                    index = end + 1
+                    continue
+                }
+            }
+
             const matchedToken = selectorVariantTokens.find((token) => {
                 if (!selectorToken.startsWith(token, index)) return false
                 const next = selectorToken[index + token.length]
@@ -789,7 +797,9 @@ export class Utility {
                     const functionDefinition = functions && functions[eachValueComponent.name]
                     const functionOp = functionDefinition?.op
                     if (functionOp && !eachValueComponent.bypassTransform) {
-                        const resolvedValue = this.resolveValue(eachValueComponent.children, functionDefinition.unit ?? unit, bypassVariableNames, bypassParsing || eachValueComponent.name === 'calc')
+                        const resolvedValue = functionOp === 'core.math'
+                            ? this.stringifyValueComponents(eachValueComponent.children)
+                            : this.resolveValue(eachValueComponent.children, functionDefinition.unit ?? unit, bypassVariableNames, bypassParsing || eachValueComponent.name === 'calc')
                         const result = this.applyFunctionOp(functionOp, resolvedValue, bypassVariableNames, functionDefinition.options)
                         currentValue += eachValueComponent.token = eachValueComponent.text = typeof result === 'string'
                             ? result
@@ -841,6 +851,33 @@ export class Utility {
         return currentValue
     }
 
+    stringifyValueComponents(valueComponents: ValueComponent[]) {
+        let text = ''
+        for (const component of valueComponents) {
+            switch (component.type) {
+                case 'function':
+                    text += component.name
+                        + component.symbol
+                        + this.stringifyValueComponents(component.children)
+                        + VALUE_DELIMITERS[component.symbol as keyof typeof VALUE_DELIMITERS]
+                    break
+                case 'separator':
+                    text += component.value
+                    break
+                case 'variable':
+                    text += component.token || '$' + component.name
+                    break
+                case 'number':
+                    text += component.token || String(component.value) + (component.unit || '')
+                    break
+                default:
+                    text += component.token || component.value
+                    break
+            }
+        }
+        return text
+    }
+
     applyFunctionOp(op: string, value: string, bypassVariableNames: string[], options?: unknown) {
         switch (op) {
             case 'core.variable':
@@ -869,6 +906,48 @@ export class Utility {
         const functionName = data?.name ?? 'calc'
         const valueComponents: ValueComponent[] = []
         let i = 0
+        const createUnitValueComponents = (): ValueComponent[] => {
+            const unitValueComponents: ValueComponent[] = []
+            if (this.registeredUtility.unit === 'rem' || this.registeredUtility.unit === 'em') {
+                unitValueComponents.push(
+                    { type: 'separator', value: '/', text: ' / ', token: '/' },
+                    { type: 'number', value: this.css.config.rootSize as number, token: String(this.css.config.rootSize) }
+                )
+            }
+            unitValueComponents.push(
+                { type: 'separator', value: '*', text: ' * ', token: '*' },
+                { type: 'number', value: 1, unit: this.registeredUtility.unit, token: this.registeredUtility.unit || '' }
+            )
+            return unitValueComponents
+        }
+        const getSeparatorValue = (component: ValueComponent | undefined) =>
+            component?.type === 'separator' ? component.value : undefined
+        const getVariableFunctionName = (component: ValueComponent) => {
+            if (component.type !== 'function' || component.name !== '$') return
+            const value = this.stringifyValueComponents(component.children)
+            const commaIndex = value.indexOf(',')
+            return commaIndex === -1 ? value : value.slice(0, commaIndex)
+        }
+        const appendUnitConversionAfterNumericVariables = (components: ValueComponent[]) => {
+            for (let index = 0; index < components.length; index++) {
+                const component = components[index]
+                if (component.type === 'function') {
+                    appendUnitConversionAfterNumericVariables(component.children)
+                }
+                const variableName = getVariableFunctionName(component)
+                if (!variableName) continue
+                if (this.css.variables.get(variableName)?.type !== 'number') continue
+                if (!this.registeredUtility.unit) continue
+
+                const previousSeparator = getSeparatorValue(components[index - 1])
+                const nextSeparator = getSeparatorValue(components[index + 1])
+                if (previousSeparator === '*' || previousSeparator === '/' || nextSeparator === '*' || nextSeparator === '/') continue
+                if (nextSeparator === '/' && components[index + 2]?.type === 'number') continue
+
+                components.splice(index + 1, 0, ...createUnitValueComponents())
+                index += this.registeredUtility.unit === 'rem' || this.registeredUtility.unit === 'em' ? 4 : 2
+            }
+        }
 
         const anaylzeDeeply = (
             currentValueComponents: ValueComponent[],
@@ -1069,6 +1148,7 @@ export class Utility {
             handleUnitChecking()
         }
         anaylzeDeeply(valueComponents, false, false, false, false)
+        appendUnitConversionAfterNumericVariables(valueComponents)
 
         let resolvedValue = this.resolveValue(valueComponents, this.registeredUtility.unit || '', bypassVariableNames, true)
         if (data?.wrapArguments) {

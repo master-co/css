@@ -6,13 +6,13 @@
 
 ## Inputs And Outputs
 
-- Input: `Document` or `ShadowRoot`, optional config, optional preloaded variable/keyframe counts, connected DOM classes, mutation records, pre-rendered CSS rules.
+- Input: `Document` or `ShadowRoot`, required `MasterCSSPlan`, optional preloaded variable/keyframe counts, connected DOM classes, mutation records, pre-rendered CSS rules.
 - Output: live `style#master` stylesheet, runtime layer state, hydrated virtual rules, devtools events.
 
 ## Public APIs
 
 - `CSSRuntime`
-- `initCSSRuntime({ config, root, autoObserve, preloaded })`
+- `initCSSRuntime({ plan, root, autoObserve, preloaded })`
 - `RuntimeUtilityLayer`
 - runtime types
 

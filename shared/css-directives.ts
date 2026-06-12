@@ -1,12 +1,21 @@
-import type { Config, DefaultModeDefinition, UtilityLayerName, VariableValue, VariantDefinitions } from './css-config.js'
+import type {
+    MasterCSSPlanDefaultMode,
+    MasterCSSPlanModeTrigger,
+    MasterCSSPlanUtilityLayerName,
+    MasterCSSPlanVariant
+} from './master-css-plan.js'
 
-export type CSSDirectiveVariableValue = VariableValue
+export type CSSDirectiveVariableValue = number | string | false | (number | string)[]
 
 export type CSSDirectiveDeclarations = Record<string, string>
 
-export type CSSDirectiveLayerName = UtilityLayerName
+export type CSSDirectiveLayerName = MasterCSSPlanUtilityLayerName
 
-export type CSSDirectiveModeTrigger = NonNullable<Config['modeTrigger']>
+export type CSSDirectiveModeTrigger = MasterCSSPlanModeTrigger
+
+export type CSSDirectiveDefaultMode = MasterCSSPlanDefaultMode
+
+export type CSSDirectiveVariantDefinitions = Pick<MasterCSSPlanVariant, 'token' | 'branches'>[]
 
 export interface CSSDirectiveSourceRange {
     start: number
@@ -88,7 +97,7 @@ export function createCSSDirectiveSourceReference(
 }
 
 export interface CSSDirectiveVariableDefinition {
-    name: string
+    name?: string
     value: CSSDirectiveVariableValue
     mode?: string
     inline?: boolean
@@ -114,12 +123,12 @@ export interface CSSDirectiveUtilityDefinition {
 }
 
 export interface CSSDirectiveConfig {
-    variants?: VariantDefinitions
+    variants?: CSSDirectiveVariantDefinitions
     variables?: CSSDirectiveVariableDefinition[]
     utilities?: CSSDirectiveUtilityDefinition[]
     rootSize?: number
     baseUnit?: number
-    defaultMode?: DefaultModeDefinition
+    defaultMode?: CSSDirectiveDefaultMode
     scope?: string
     important?: boolean
     animations?: CSSDirectiveAnimationDefinitions

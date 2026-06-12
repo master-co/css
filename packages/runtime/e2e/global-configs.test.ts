@@ -1,5 +1,4 @@
 import { test, expect } from '@playwright/test'
-import { createMasterCSSPlan } from '@master/css-compiler'
 import init from './init'
 
 test('uses bundled theme plan when no global plan is provided', async ({ page }) => {
@@ -11,11 +10,12 @@ test('uses bundled theme plan when no global plan is provided', async ({ page })
 })
 
 test('uses the single global plan as a complete override', async ({ page }) => {
-    const plan = createMasterCSSPlan({
+    const plan = {
+        version: 1,
         variables: [
-            { key: 'primary', value: '#000000' }
+            { name: 'primary', key: 'primary', type: 'string', value: '#000000' }
         ]
-    })
+    } as const
     await page.evaluate(({ plan }) => {
         globalThis.masterCSSPlan = plan
     }, { plan })

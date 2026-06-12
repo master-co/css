@@ -89,8 +89,8 @@ describe('extractor CSS directives', () => {
         })
 
         expect(css).toContain('.block{display:block}')
-        expect(css).toContain('.fg\\:red{color:red}')
-        expect(css).toContain('.font\\:semibold{font:semibold}')
+        expect(css).toContain('.fg\\:red{color:var(--color-red)}')
+        expect(css).toContain('.font\\:semibold{font-weight:var(--font-weight-semibold)}')
         expect(css).not.toContain('.text\\:center')
         expect(css).not.toContain('legacy-token')
     })

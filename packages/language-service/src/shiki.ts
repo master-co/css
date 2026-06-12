@@ -77,9 +77,9 @@ export interface MasterCSSShikiSemanticTokensOptions {
      */
     settings?: Settings
     /**
-     * Convenience shortcut for `settings.config`.
+     * Convenience shortcut for `settings.plan`.
      */
-    config?: Settings['config']
+    plan?: Settings['plan']
     /**
      * Shiki language id. Defaults to the `lang` passed to Shiki.
      */
@@ -167,7 +167,7 @@ function createLanguageService(options: MasterCSSShikiSemanticTokensOptions) {
     if (options.languageService) return options.languageService
     return new CSSLanguageService({
         ...options.settings,
-        config: options.config ?? options.settings?.config
+        plan: options.plan ?? options.settings?.plan
     })
 }
 

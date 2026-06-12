@@ -1,9 +1,8 @@
 import { RuleTester, RuleTesterConfig } from '@typescript-eslint/rule-tester'
 import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
-import { extendConfig } from '@master/css/utils'
-import type { Config } from 'shared/css-config'
-import themeConfig from '../../core/tests/helpers/test-theme-config'
+import { createThemePlan } from './helpers/create-theme-plan'
+import type { MasterCSSPlan } from '@master/css'
 
 const configs = {
     jsx: {
@@ -22,14 +21,14 @@ const configs = {
 function withThemeConfig(config: RuleTesterConfig): RuleTesterConfig {
     const settings = config.settings as Record<string, any> | undefined
     const masterCSSSettings = settings?.['@master/css'] || {}
-    const configOption = masterCSSSettings.config as Config | undefined
+    const planOption = masterCSSSettings.plan as Partial<MasterCSSPlan> | undefined
     return {
         ...config,
         settings: {
             ...settings,
             '@master/css': {
                 ...masterCSSSettings,
-                config: configOption ? extendConfig(themeConfig, configOption) : themeConfig
+                plan: createThemePlan(planOption)
             }
         }
     }

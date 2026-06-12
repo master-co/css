@@ -1,15 +1,13 @@
-import { createCSS, type MasterCSS } from '@master/css'
+import { createCSS, type MasterCSS, type MasterCSSPlan } from '@master/css'
 import { parseHTML } from '@master/css-server'
 import type { Handle } from '@sveltejs/kit'
-
-type CSSConfig = Parameters<typeof createCSS>[0]
 
 const HEAD_CLOSE_TAG = '</head>'
 const HEAD_CLOSE_TAIL_LENGTH = HEAD_CLOSE_TAG.length - 1
 const MASTER_STYLE_PATTERN = /<style\b(?=[^>]*\bid=(["'])master\1)[^>]*>[\s\S]*?<\/style>/i
 
 export interface MasterCSSSvelteHandleOptions {
-    config?: CSSConfig
+    plan: MasterCSSPlan
 }
 
 export interface MasterCSSChunkRenderer {
@@ -42,8 +40,8 @@ export function injectMasterStyle(html: string, cssText: string) {
     return html.slice(0, headCloseIndex) + style + html.slice(headCloseIndex)
 }
 
-export function createMasterCSSChunkRenderer(config?: CSSConfig): MasterCSSChunkRenderer {
-    const css = createCSS(config)
+export function createMasterCSSChunkRenderer(plan: MasterCSSPlan): MasterCSSChunkRenderer {
+    const css = createCSS(plan)
     let injected = false
     let carry = ''
 
@@ -74,9 +72,9 @@ export function createMasterCSSChunkRenderer(config?: CSSConfig): MasterCSSChunk
     }
 }
 
-export function createMasterCSSHandle(options: MasterCSSSvelteHandleOptions = {}): Handle {
+export function createMasterCSSHandle(options: MasterCSSSvelteHandleOptions): Handle {
     return async ({ event, resolve }) => {
-        const renderer = createMasterCSSChunkRenderer(options.config)
+        const renderer = createMasterCSSChunkRenderer(options.plan)
         return await resolve(event, {
             transformPageChunk: ({ html, done }) => renderer.transform(html, done)
         })

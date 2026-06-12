@@ -1,61 +1,64 @@
 import { extname } from 'node:path'
 import {
-    compileCSSConfigFile,
-    compileCSSConfigModule,
-    compileProjectConfig,
-    compileProjectConfigModule
+    compileCSSPlanFile,
+    compileCSSPlanModule,
+    compileProjectPlan,
+    compileProjectPlanModule
 } from '@master/css-compiler'
-import type { Config } from 'shared/css-config'
-import type { MasterCSSPlan } from 'shared/master-css-plan'
 import {
-    type CSSConfigModuleResult,
     stripResourceQuery
-} from '@master/css-integration/config-module'
+} from '@master/css-integration/plan-module'
+import defaultPlan from '@master/css-preset/default-plan'
 import {
-    type LoadConfigOptions,
-    type LoadConfigResult,
-    type LoadProjectConfigOptions,
-    type LoadProjectConfigResult
+    type LoadPlanOptions,
+    type LoadPlanResult,
+    type LoadProjectPlanOptions,
+    type LoadProjectPlanResult
 } from './options'
 import { findCSSConfigEntryFilesSync } from './css'
 
 export type {
-    LoadConfigOptions,
-    LoadConfigResult,
-    LoadProjectConfigOptions,
-    LoadProjectConfigResult
+    LoadPlanOptions,
+    LoadPlanResult,
+    LoadProjectPlanOptions,
+    LoadProjectPlanResult
 } from './options'
 
-export type ConfigModuleResult = CSSConfigModuleResult<Config> & {
-    plan: MasterCSSPlan
-}
+export type PlanModuleResult = ReturnType<typeof compileCSSPlanModule>
 
-export function loadConfigSync(path: string, options: LoadConfigOptions = {}): LoadConfigResult {
-    if (extname(stripResourceQuery(path)) === '.css') {
-        return compileCSSConfigFile(stripResourceQuery(path), options)
-    }
-    throw new TypeError('Master CSS config modules can only be loaded from CSS files.')
-}
-
-export function loadConfigModuleSync(path: string, options: LoadConfigOptions = {}): ConfigModuleResult {
-    if (extname(stripResourceQuery(path)) === '.css') {
-        return compileCSSConfigModule(stripResourceQuery(path), options)
-    }
-    throw new TypeError('Master CSS config modules can only be loaded from CSS files.')
-}
-
-export function loadProjectConfigSync(projectDir = process.cwd(), options: LoadProjectConfigOptions = {}): LoadProjectConfigResult {
-    const entries = options.entries ?? findCSSConfigEntryFilesSync(projectDir)
-    return compileProjectConfig(entries, {
+function withDefaultPlan<T extends LoadPlanOptions>(options: T): T {
+    return {
         ...options,
+        basePlan: options.basePlan ?? defaultPlan
+    }
+}
+
+export function loadPlanSync(path: string, options: LoadPlanOptions = {}): LoadPlanResult {
+    if (extname(stripResourceQuery(path)) === '.css') {
+        return compileCSSPlanFile(stripResourceQuery(path), withDefaultPlan(options))
+    }
+    throw new TypeError('Master CSS plans can only be loaded from CSS files.')
+}
+
+export function loadPlanModuleSync(path: string, options: LoadPlanOptions = {}): PlanModuleResult {
+    if (extname(stripResourceQuery(path)) === '.css') {
+        return compileCSSPlanModule(stripResourceQuery(path), withDefaultPlan(options))
+    }
+    throw new TypeError('Master CSS plan modules can only be loaded from CSS files.')
+}
+
+export function loadProjectPlanSync(projectDir = process.cwd(), options: LoadProjectPlanOptions = {}): LoadProjectPlanResult {
+    const entries = options.entries ?? findCSSConfigEntryFilesSync(projectDir)
+    return compileProjectPlan(entries, {
+        ...withDefaultPlan(options),
         root: projectDir
     })
 }
 
-export function loadProjectConfigModuleSync(projectDir = process.cwd(), options: LoadProjectConfigOptions = {}) {
+export function loadProjectPlanModuleSync(projectDir = process.cwd(), options: LoadProjectPlanOptions = {}) {
     const entries = options.entries ?? findCSSConfigEntryFilesSync(projectDir)
-    return compileProjectConfigModule(entries, {
-        ...options,
+    return compileProjectPlanModule(entries, {
+        ...withDefaultPlan(options),
         root: projectDir
     })
 }

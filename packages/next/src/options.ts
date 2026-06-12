@@ -1,4 +1,3 @@
-import type { Config } from '@master/css'
 import type { Options as ExtractorOptions } from '@master/css-extractor'
 
 export type Mode = 'pre-render' | 'static' | null
@@ -6,13 +5,9 @@ export type Mode = 'pre-render' | 'static' | null
 export interface Options {
     /**
      * Next.js integration mode.
-     * Set to `null` to skip rendering modes while keeping the CSS config loaders.
+     * Set to `null` to skip rendering modes while keeping the CSS plan loaders.
      */
     mode?: Mode
-    /**
-     * Inline Master CSS config override.
-     */
-    config?: Config
     /**
      * Extractor options for static rendering mode.
      */
@@ -30,7 +25,6 @@ export interface Options {
 
 export interface ResolvedOptions {
     mode: Mode
-    config?: Config
     extractorOptions: ExtractorOptions
     manifest: boolean | string
     debug: boolean
@@ -43,7 +37,6 @@ declare global {
 export function resolveOptions(options: Options = {}): ResolvedOptions {
     return {
         mode: options.mode ?? 'pre-render',
-        config: options.config,
         extractorOptions: options.extractorOptions ?? {},
         manifest: options.manifest ?? false,
         debug: options.debug ?? false

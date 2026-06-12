@@ -1,12 +1,12 @@
-import config from '@master/css/config'
 import InlineCode from '~/internal/components/InlineCode'
+import { getUtilityVariableNamespaces, planUtilities } from '~/site/utils/plan-utilities'
 
-const utilities = config.utilities || []
+const utilities = planUtilities
 const MAX_VISIBLE_UTILITIES = 8
 
 const namespaceEntries = Array
     .from(utilities.reduce((entries, utility) => {
-        for (const namespace of utility.namespaces || []) {
+        for (const namespace of getUtilityVariableNamespaces(utility)) {
             const utilityNames = entries.get(namespace)
             if (utilityNames) {
                 utilityNames.push(utility.name)

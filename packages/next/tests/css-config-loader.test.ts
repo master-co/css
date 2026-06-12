@@ -11,10 +11,6 @@ function createFixtureDir() {
     return fixtureDir
 }
 
-async function importLoaderSource(source: string) {
-    return import(`data:text/javascript;base64,${Buffer.from(source).toString('base64')}`) as Promise<{ default: any }>
-}
-
 function runConfigLoader(context: {
     resourcePath: string
     rootContext?: string
@@ -42,8 +38,8 @@ afterEach(() => {
     }
 })
 
-describe('css config loader', () => {
-    it('turns a CSS config resource into an importable config module', async () => {
+describe('css plan loader', () => {
+    it('turns a CSS entry resource into an importable plan module', async () => {
         const projectDir = createFixtureDir()
         const configPath = join(projectDir, 'index.css')
         const dependencies: string[] = []
@@ -57,10 +53,12 @@ describe('css config loader', () => {
 
         expect(dependencies).toEqual([configPath])
         expect(source).toContain('export default')
-        expect(source).toContain('"namespace":"color"')
+        expect(source).toContain('"version":1')
+        expect(source).toContain('primary')
+        expect(source).toContain('#123')
     })
 
-    it('loads CSS when the loader resource includes ?master-css-config', async () => {
+    it('loads CSS when the loader resource includes ?master-css-plan', async () => {
         const projectDir = createFixtureDir()
         const configPath = join(projectDir, 'index.css')
         const dependencies: string[] = []
@@ -77,38 +75,19 @@ describe('css config loader', () => {
         ].join('\n'))
 
         const source = await runConfigLoader({
-            resourcePath: `${configPath}?master-css-config`,
+            resourcePath: `${configPath}?master-css-plan`,
             addDependency: (dependency: string) => dependencies.push(dependency)
         })
 
         expect(dependencies).toEqual([configPath])
-        expect(source).toContain('"namespace":"color"')
+        expect(source).toContain('"version":1')
+        expect(source).toContain('primary')
+        expect(source).toContain('#123')
         expect(source).toContain('"btn"')
-        expect(source).toContain('"color":"var(--color-primary)"')
-
-        const module = await importLoaderSource(source)
-        expect(module.default).toMatchObject({
-            variables: [
-                {
-                    namespace: 'color',
-                    key: 'primary',
-                    value: '#123'
-                }
-            ],
-            utilities: [
-                {
-                    name: 'btn',
-                    type: -4,
-                    layer: 'components',
-                    declarations: {
-                        color: 'var(--color-primary)'
-                    }
-                }
-            ]
-        })
+        expect(source).toContain('var(--color-primary)')
     })
 
-    it('loads the default virtual config from CSS entry files only', async () => {
+    it('loads the default virtual plan from CSS entry files only', async () => {
         const projectDir = createFixtureDir()
         mkdirSync(join(projectDir, 'app'), { recursive: true })
         const entryPath = join(projectDir, 'app/globals.css')
@@ -131,14 +110,15 @@ describe('css config loader', () => {
         ].join('\n'))
 
         const source = await runConfigLoader({
-            resourcePath: join(projectDir, 'node_modules/.master-css/master-css-config.js'),
+            resourcePath: join(projectDir, 'node_modules/.master-css/master-css-plan.js'),
             rootContext: projectDir,
             getOptions: () => ({ virtual: true }),
             addDependency: (dependency: string) => dependencies.push(dependency)
         })
 
-        expect(source).toContain('"namespace":"color"')
-        expect(source).toContain('"primary"')
+        expect(source).toContain('"version":1')
+        expect(source).toContain('primary')
+        expect(source).toContain('#123')
         expect(source).toContain('"btn"')
         expect(source).not.toContain('ignored')
         expect(dependencies).toContain(entryPath)

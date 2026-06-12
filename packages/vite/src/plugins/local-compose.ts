@@ -1,5 +1,5 @@
 import type { ModuleNode, Plugin, ViteDevServer } from 'vite'
-import { loadProjectConfig } from '@master/css-configer/load'
+import { loadProjectPlan } from '@master/css-configer/load'
 import {
     hasLocalStyleDirectives,
     isStyleCSSRequest,
@@ -16,7 +16,7 @@ function invalidateModule(module: ModuleNode | undefined, server: ViteDevServer)
 }
 
 export default function LocalComposePlugin(options: PluginOptions, context: PluginContext): Plugin {
-    let projectConfig: Awaited<ReturnType<typeof loadProjectConfig>> | undefined
+    let projectPlan: Awaited<ReturnType<typeof loadProjectPlan>> | undefined
     let projectConfigDependencies: string[] = []
     const localComposeModules = new Set<string>()
 
@@ -29,23 +29,21 @@ export default function LocalComposePlugin(options: PluginOptions, context: Plug
     }
 
     const loadComposeContext = async (pluginContext: { addWatchFile?: (id: string) => void }) => {
-        if (projectConfig) return projectConfig
-        projectConfig = await loadProjectConfig(context.config?.root, {
-            config: options.config
-        })
-        projectConfigDependencies = projectConfig.dependencies
-        addServerAllow(projectConfig.dependencies)
-        for (const dependency of projectConfig.dependencies) {
+        if (projectPlan) return projectPlan
+        projectPlan = await loadProjectPlan(context.config?.root)
+        projectConfigDependencies = projectPlan.dependencies
+        addServerAllow(projectPlan.dependencies)
+        for (const dependency of projectPlan.dependencies) {
             pluginContext.addWatchFile?.(dependency)
         }
-        return projectConfig
+        return projectPlan
     }
 
     return {
         name: 'master-css:local-compose',
         enforce: 'pre',
         async buildStart() {
-            projectConfig = undefined
+            projectPlan = undefined
             projectConfigDependencies = []
         },
         async transform(code, id) {
@@ -54,10 +52,10 @@ export default function LocalComposePlugin(options: PluginOptions, context: Plug
             if (!hasLocalStyleDirectives(code)) return
             if (resolveMasterStyleSource(id, code, context.config?.root)) return
 
-            const config = await loadComposeContext(this)
+            const planResult = await loadComposeContext(this)
             const result = await transformLocalStyleCSS(id, code, {
-                projectDir: context.config?.root,
-                config: config.config
+                basePlan: planResult.plan,
+                projectDir: context.config?.root
             })
             if (!result.transformed) return
             localComposeModules.add(id)
@@ -71,7 +69,7 @@ export default function LocalComposePlugin(options: PluginOptions, context: Plug
         },
         async handleHotUpdate({ file, server }) {
             if (!projectConfigDependencies.includes(file)) return
-            projectConfig = undefined
+            projectPlan = undefined
             projectConfigDependencies = []
             let handled = false
             let needsFullReload = false

@@ -4,8 +4,9 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { expect, test } from 'vitest'
 import plugin from '../src'
+import { createThemePlan } from './helpers/create-theme-plan'
 
-test('uses explicit Master CSS config objects from ESLint settings', async () => {
+test('uses explicit Master CSS plan objects from ESLint settings', async () => {
     const cwd = mkdtempSync(join(tmpdir(), 'master-css-eslint-'))
 
     try {
@@ -31,7 +32,7 @@ test('uses explicit Master CSS config objects from ESLint settings', async () =>
                     },
                     settings: {
                         '@master/css': {
-                            config: {
+                            plan: createThemePlan({
                                 utilities: [
                                     {
                                         name: 'fixture-card',
@@ -50,7 +51,7 @@ test('uses explicit Master CSS config objects from ESLint settings', async () =>
                                         ]
                                     }
                                 ]
-                            }
+                            })
                         }
                     },
                     rules: {
@@ -75,7 +76,7 @@ test('uses explicit Master CSS config objects from ESLint settings', async () =>
     }
 })
 
-test('uses project-level CSS config entries from the ESLint workspace', async () => {
+test('uses project-level CSS plan entries from the ESLint workspace', async () => {
     const cwd = mkdtempSync(join(tmpdir(), 'master-css-eslint-'))
 
     try {

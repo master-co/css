@@ -2,7 +2,7 @@ import { defineNuxtModule, addServerPlugin, createResolver, addPlugin } from '@n
 import { name } from '../package.json'
 import masterCSS from '@master/css.vue/vite'
 import { toPlanModule, VIRTUAL_PLAN_ID } from '@master/css-integration/plan-module'
-import { loadProjectConfigModule } from '@master/css-configer/load'
+import { loadProjectPlanModule } from '@master/css-configer/load'
 import type { Plugin } from 'vite'
 import defaultOptions, { type ModuleOptions } from './options'
 
@@ -27,9 +27,7 @@ export default defineNuxtModule<ModuleOptions>({
         if (!nuxt.options.ssr || nuxt.options._prepare) return
         const { resolve } = createResolver(import.meta.url)
         nuxt.hook('nitro:config', async (config) => {
-            const result = await loadProjectConfigModule(nuxt.options.rootDir, {
-                config: options.config
-            })
+            const result = await loadProjectPlanModule(nuxt.options.rootDir)
             addNitroWatchDependencies(config, result.dependencies)
             config.virtual ??= {}
             config.virtual[VIRTUAL_PLAN_ID] = toPlanModule(result.plan)
@@ -60,7 +58,7 @@ export default defineNuxtModule<ModuleOptions>({
         switch (options.mode) {
             case 'pre-render':
             case 'progressive':
-                // Fix: Package import specifier "virtual:master-css-config" is not defined in package
+                // Fix: Package import specifier "virtual:master-css-plan" is not defined in package
                 nuxt.options.build.transpile.push(resolve('./runtime/css-server'))
                 addServerPlugin(resolve('./runtime/css-server'))
                 break

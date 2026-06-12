@@ -1,8 +1,8 @@
-import { MasterCSS, createCSS } from '@master/css'
+import { MasterCSS, createDefaultCSS } from '../master-css'
 import { type CompletionItem, CompletionItemKind } from 'vscode-languageserver-protocol'
 import sortCompletionItems from './sort-completion-items'
 
-export default function getColorCompletionItems(css: MasterCSS = createCSS()): CompletionItem[] {
+export default function getColorCompletionItems(css: MasterCSS = createDefaultCSS()): CompletionItem[] {
     const completionItems: CompletionItem[] = []
     css.variables.forEach((eachVariable, eachVariableName) => {
         if (eachVariable.namespace?.startsWith('color')) {

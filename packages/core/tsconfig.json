@@ -4,9 +4,7 @@
         "outDir": "dist"
     },
     "include": [
-        "master-css-config.d.ts",
         "src/**/*.ts",
-        "tests/**/*.test.ts",
-        "tests/**/test.ts"
+        "tests/**/*.test.ts"
     ]
 }

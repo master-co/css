@@ -1,0 +1,31 @@
+@settings {
+    mode-trigger: media;
+    modes: light dark;
+}
+
+@theme {
+    --color-black: oklch(0% 0 none);
+}
+
+@theme {
+    --color-white: oklch(100% 0 none);
+}
+
+@theme light {
+    --color-invert: $color-black;
+}
+
+@theme dark {
+    --color-invert: $color-white;
+}
+
+@components {
+    btn {
+        &:focus {
+        outline: 0.125rem var(--color-invert) solid;
+        }
+        &:focus {
+        outline-offset: 0.125rem;
+        }
+    }
+}

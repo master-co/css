@@ -1,6 +1,5 @@
 import type { Config, VariableDefinition } from 'shared/css-config'
 import toColorValue from '../utils/to-color-value'
-// import minifyExtendedConfig from '@master/css/utils/minify-extended-config'
 
 export interface GetCollectionVariablesOptions {
     varCollId: string

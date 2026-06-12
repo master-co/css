@@ -40,7 +40,7 @@ describe('@master/css-integration/client', () => {
             )
             writeFileSync(
                 path.join(cssPackageDir, 'index.d.ts'),
-                'export interface Config { variables?: unknown[] }\nexport type * from \'./preloaded\'\n'
+                'export type * from \'./preloaded\'\n'
             )
             writeFileSync(
                 path.join(cssPackageDir, 'preloaded.d.ts'),
@@ -60,7 +60,11 @@ describe('@master/css-integration/client', () => {
             )
             writeFileSync(
                 path.join(enginePackageDir, 'index.d.ts'),
-                'export interface MasterCSSPlan { version: 1 }\n'
+                [
+                    'export interface MasterCSSPlan { version: 1 }',
+                    'export interface MasterCSSPreloaded { variables?: Record<string, number>; animations?: Record<string, number> }',
+                    ''
+                ].join('\n')
             )
             writeFileSync(
                 path.join(integrationPackageDir, 'package.json'),
@@ -82,18 +86,13 @@ describe('@master/css-integration/client', () => {
                 `
 /// <reference types="@master/css-integration/client" />
 
-import type { Config } from '@master/css'
 import 'virtual:master-utilities.css'
-import virtualConfig from 'virtual:master-css-config'
 import virtualPlan from 'virtual:master-css-plan'
 import virtualPreloaded from 'virtual:master-css-preloaded'
-import localConfig from './app.css?master-css-config'
 import localPlan from './app.css?master-css-plan'
 
-virtualConfig satisfies Config
 virtualPlan satisfies import('@master/css-engine').MasterCSSPlan
 virtualPreloaded satisfies import('@master/css/preloaded').MasterCSSPreloaded
-localConfig satisfies Config
 localPlan satisfies import('@master/css-engine').MasterCSSPlan
 `.trimStart()
             )

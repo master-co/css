@@ -1,7 +1,6 @@
 import { type CompletionItem, CompletionItemKind } from 'vscode-languageserver-protocol'
 import cssDataProvider from './css-data-provider'
-import { MasterCSS, createCSS, UtilityType, Variable } from '@master/css'
-import { generateCSS, isCoreRule } from '@master/css/utils'
+import { MasterCSS, createDefaultCSS, UtilityType, type Variable, generateCSS, isCoreRule } from '../master-css'
 import { getCSSDataDocumentation } from './get-css-data-documentation'
 import sortCompletionItems from './sort-completion-items'
 import type { IValueData } from 'vscode-css-languageservice'
@@ -12,10 +11,10 @@ const NATIVE_PRIORITY = 'ccccc'
 const GLOBAL_VARIABLE_PRIORITY = 'zzzz'
 const NATIVE_UTILITY_TYPES = new Set<number>([UtilityType.Native, UtilityType.NativeShorthand])
 
-export default function getValueCompletionItems(css: MasterCSS = createCSS(), ruleKey: string): CompletionItem[] {
+export default function getValueCompletionItems(css: MasterCSS = createDefaultCSS(), ruleKey: string): CompletionItem[] {
     const nativeProperties = cssDataProvider.provideProperties()
     const completionItems: CompletionItem[] = []
-    const nativeKey = css.definedUtilities.find(({ keys }) => keys.includes(ruleKey))?.id
+    const nativeKey = css.definedUtilities.find(({ keys }) => keys?.includes(ruleKey))?.id
     const nativePropertyData = nativeProperties.find(({ name }) => name === nativeKey)
     const generateVariableCompletionItem = (variable: Variable, { scoped } = { scoped: false }): CompletionItem | undefined => {
         const eachNativePropertyData = nativeProperties.find((x: { name: string }) => x.name === variable.namespace) || nativePropertyData
@@ -57,7 +56,7 @@ export default function getValueCompletionItems(css: MasterCSS = createCSS(), ru
                     value: valueToken + '\n\n' + documentation?.value
                 }
                 completionItem.kind = CompletionItemKind.Color
-                completionItem.sortText = 'color-' + variable.name.replace(/(.+?)-(\d+)/, (match, prefix, num) =>
+                completionItem.sortText = 'color-' + variable.name.replace(/(.+?)-(\d+)/, (match: string, prefix: string, num: string) =>
                     prefix + num.padStart(10, '0'))
             }
         } else if (variable.type === 'number') {
@@ -78,7 +77,7 @@ export default function getValueCompletionItems(css: MasterCSS = createCSS(), ru
          * Scoped variables
          * @example box: + content -> box-sizing:content
          */
-        if (eachDefinedUtility.definition.key === ruleKey || eachDefinedUtility.definition.subkey === ruleKey || eachDefinedUtility.definition.aliasGroups?.includes(ruleKey)) {
+        if (eachDefinedUtility.key === ruleKey || eachDefinedUtility.subkey === ruleKey || eachDefinedUtility.aliasGroups?.includes(ruleKey)) {
             eachDefinedUtility.variables?.forEach((variable, variableName) => {
                 if (completionItems.find(({ label }) => label === variableName)) return
                 const completionItem = generateVariableCompletionItem(variable, { scoped: true })
@@ -94,9 +93,9 @@ export default function getValueCompletionItems(css: MasterCSS = createCSS(), ru
         /**
          * @example animation:fade
          */
-        if (eachDefinedUtility.keys.includes(ruleKey) && eachDefinedUtility.definition.includeAnimations) {
+        if (eachDefinedUtility.keys?.includes(ruleKey) && eachDefinedUtility.includeAnimations) {
             css.animations.forEach((_, animationName) => {
-                const isNative = eachDefinedUtility.definition.type !== undefined && NATIVE_UTILITY_TYPES.has(eachDefinedUtility.definition.type)
+                const isNative = eachDefinedUtility.type !== undefined && NATIVE_UTILITY_TYPES.has(eachDefinedUtility.type)
                 completionItems.push({
                     label: animationName,
                     kind: CompletionItemKind.Value,
@@ -114,12 +113,12 @@ export default function getValueCompletionItems(css: MasterCSS = createCSS(), ru
          * @example text: -> center, left, right, justify
          * @example t: -> center, left, right, justify
          */
-        if (eachDefinedUtility.definition.aliasGroups?.includes(ruleKey) && eachDefinedUtility.definition.values?.length) {
+        if (eachDefinedUtility.aliasGroups?.includes(ruleKey) && eachDefinedUtility.values?.length) {
             const nativePropertyData = nativeProperties.find((x: { name: string }) => x.name === eachDefinedUtility.id)
-            for (const value of eachDefinedUtility.definition.values) {
+            for (const value of eachDefinedUtility.values) {
                 if (typeof value !== 'string') continue
                 const nativeValueData = nativePropertyData?.values?.find((x: { name: string }) => x.name === value)
-                const isNative = eachDefinedUtility.definition.type !== undefined && NATIVE_UTILITY_TYPES.has(eachDefinedUtility.definition.type)
+                const isNative = eachDefinedUtility.type !== undefined && NATIVE_UTILITY_TYPES.has(eachDefinedUtility.type)
                 completionItems.push({
                     label: value,
                     kind: CompletionItemKind.Value,

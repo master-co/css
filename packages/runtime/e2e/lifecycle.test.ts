@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test'
+import { defaultPlan } from '@master/css'
 import initCSSRuntime from '../src/init'
 import init from './init'
 
@@ -72,6 +73,25 @@ test('insert static utility with multiple native rules into existing layer', asy
     expect(consoleErrors.find((message) => message.includes('insertRule'))).toBeUndefined()
 })
 
+test('inserts functional pseudo-class selector variants into native CSSOM', async ({ page }) => {
+    const consoleErrors: string[] = []
+    page.on('console', (message) => {
+        if (message.type() === 'error') consoleErrors.push(message.text())
+    })
+    await page.evaluate(() => {
+        document.body.innerHTML = '<div class="pb:8x:not(:last) text:center_td:not(:first)"></div>'
+    })
+    await init(page)
+
+    expect(await page.evaluate(() => Array.from(globalThis.cssRuntime.utilitiesLayer.native?.cssRules || [])
+        .map((cssRule) => cssRule.cssText)
+    )).toEqual([
+        '.pb\\:8x\\:not\\(\\:last\\):not(:last-child) { padding-bottom: 2rem; }',
+        '.text\\:center_td\\:not\\(\\:first\\) td:not(:first-child) { text-align: center; }'
+    ])
+    expect(consoleErrors.find((message) => message.includes('insertRule'))).toBeUndefined()
+})
+
 test('refresh clears stale native keyframes', async ({ page }) => {
     await init(page)
     await page.evaluate(() => {
@@ -93,8 +113,9 @@ test('refresh clears stale native keyframes', async ({ page }) => {
 
 test('registers preloaded counts on an existing runtime', () => {
     const root = { host: {} } as unknown as ShadowRoot
-    const cssRuntime = initCSSRuntime({ root, autoObserve: false })
+    const cssRuntime = initCSSRuntime({ plan: defaultPlan, root, autoObserve: false })
     const returnedCSSRuntime = initCSSRuntime({
+        plan: defaultPlan,
         root,
         autoObserve: false,
         preloaded: {

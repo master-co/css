@@ -70,15 +70,15 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 }
 ```
 
-Use the provider subpath when you need to pass a custom config or root:
+Use the provider subpath when you need to pass a custom plan or root:
 
 ```tsx
 import { CSSRuntimeProvider } from '@master/css.react/runtime-provider'
-import config from './theme.css?master-css-config'
+import plan from './theme.css?master-css-plan'
 
 export default function Layout({ children }: { children: React.ReactNode }) {
     return (
-        <CSSRuntimeProvider config={config}>
+        <CSSRuntimeProvider plan={plan}>
             {children}
         </CSSRuntimeProvider>
     )

@@ -1,5 +1,5 @@
 import { type ServerCapabilities, TextDocumentSyncKind } from 'vscode-languageserver-protocol'
-import { AT_SIGN, DELIMITER_SIGN, QUERY_COMPARISON_OPERATORS, QUERY_LOGICAL_OPERATORS, SELECTOR_SIGNS, SEPARATOR_SIGN } from '@master/css'
+import { AT_SIGN, DELIMITER_SIGN, QUERY_COMPARISON_OPERATORS, QUERY_LOGICAL_OPERATORS, SELECTOR_SIGNS, SEPARATOR_SIGN } from './master-css'
 
 export const INVOKED_TRIGGER_CHARACTERS = ['"', ' ', '\'']
 export const VALUE_TRIGGER_CHARACTERS = [SEPARATOR_SIGN, DELIMITER_SIGN]

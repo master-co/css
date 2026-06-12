@@ -1,22 +1,39 @@
-import { it, test, expect, describe } from 'vitest'
-import { readFileSync } from 'fs'
+import { existsSync, readFileSync, readdirSync } from 'node:fs'
+import { dirname, join } from 'node:path'
+import { fileURLToPath } from 'node:url'
+import { describe, expect, test } from 'vitest'
+import { compileCSSPlanFile } from '@master/css-compiler'
+import { defaultPlan } from '@master/css'
 import { render } from '../src'
-import { dirname, join, resolve } from 'path'
-import fg from 'fast-glob'
 
-test.each(fg.sync('./fixtures/**/template.html', { cwd: __dirname }))('%s', async (templatePath) => {
-    const templateDirname = dirname(templatePath)
-    const generatedCSSFilename = join(__dirname, templateDirname, 'generated.css')
-    const configFilename = join(__dirname, templateDirname, 'config.js')
-    let config
-    try {
-        config = (await import(configFilename)).default
-    } catch (e) { }
-    expect(
-        render(
-            readFileSync(join(__dirname, templatePath)).toString(),
-            config
-        ).css?.text
-    )
-        .toBe(readFileSync(generatedCSSFilename).toString())
+const __dirname = dirname(fileURLToPath(import.meta.url))
+const fixturesDirectory = join(__dirname, 'fixtures')
+
+function collectFixtureNames() {
+    return readdirSync(fixturesDirectory)
+        .filter((name) => {
+            const directory = join(fixturesDirectory, name)
+            return existsSync(join(directory, 'template.html'))
+                && existsSync(join(directory, 'generated.css'))
+        })
+        .sort()
+}
+
+function loadFixturePlan(fixtureDirectory: string) {
+    const planSource = join(fixtureDirectory, 'plan.css')
+    if (!existsSync(planSource)) return defaultPlan
+    return compileCSSPlanFile(planSource, {
+        basePlan: defaultPlan
+    }).plan
+}
+
+describe.concurrent('server fixture CSS parity', () => {
+    test.each(collectFixtureNames())('%s', (fixtureName) => {
+        const fixtureDirectory = join(fixturesDirectory, fixtureName)
+        const plan = loadFixturePlan(fixtureDirectory)
+        const html = readFileSync(join(fixtureDirectory, 'template.html'), 'utf-8')
+        const expectedCSS = readFileSync(join(fixtureDirectory, 'generated.css'), 'utf-8')
+
+        expect(render(html, plan).css?.text).toBe(expectedCSS)
+    })
 })

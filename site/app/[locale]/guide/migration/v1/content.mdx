@@ -8,11 +8,11 @@ The Master CSS Runtime has been separated from the `@master/css` package and is 
 ```js
 import { init } from '@master/css'; /* [!code --] */
 import { initCSSRuntime } from '@master/css-runtime' /* [!code ++] */
-import config from 'virtual:master-css-config' /* [!code ++] */
+import plan from 'virtual:master-css-plan' /* [!code ++] */
 import preloaded from 'virtual:master-css-preloaded' /* [!code ++] */
 
 init() /* [!code --] */
-initCSSRuntime({ config, preloaded }) /* [!code ++] */
+initCSSRuntime({ plan, preloaded }) /* [!code ++] */
 ```
 To fully step in, check out the [General Installation](/guide/installation/general) documentation.
 

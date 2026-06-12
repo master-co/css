@@ -18,7 +18,7 @@
 import { describe, test, expect, vi } from 'vitest'
 import { SyncHook, AsyncSeriesHook } from 'tapable'
 import MasterCSSPlugin from '../src'
-import { VIRTUAL_CONFIG_ID, MASTER_CSS_CONFIG_QUERY } from '@master/css-integration/config-module'
+import { VIRTUAL_PLAN_ID, MASTER_CSS_PLAN_QUERY } from '@master/css-integration/plan-module'
 import { VIRTUAL_CSS_ID } from '@master/css-integration/style-module'
 import { VIRTUAL_PRELOADED_ID } from '@master/css-integration/preloaded-module'
 import { transformStyleSource } from '../src/utils/transform-style-source'
@@ -106,7 +106,6 @@ function makeModule(resourcePath: string, source: string) {
 // constructor + init() so `this.options` is populated correctly.
 function makePlugin(options: Record<string, unknown> = {}, cwd = process.cwd()) {
     const plugin = new MasterCSSPlugin({
-        config: {} as any,
         include: [],
         required: [],
         ...options,
@@ -234,13 +233,8 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
         expect(result.code).toContain(':root')
     })
 
-    test('resolves virtual:master-css-config to a JS virtual module', async () => {
+    test('resolves virtual:master-css-plan to a JS virtual module', async () => {
         const plugin = new MasterCSSPlugin({
-            config: {
-                variables: [
-                    { namespace: 'color', key: 'primary', value: '#123' }
-                ]
-            } as any,
             include: [],
             required: [],
         } as any)
@@ -251,7 +245,7 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
         const normalModuleFactory = makeNormalModuleFactory()
         compiler.hooks.normalModuleFactory.call(normalModuleFactory)
         const resolveData = {
-            request: VIRTUAL_CONFIG_ID,
+            request: VIRTUAL_PLAN_ID,
             context: process.cwd(),
             contextInfo: {},
             fileDependencies: new Set<string>()
@@ -259,9 +253,9 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
 
         await resolveBefore(normalModuleFactory, resolveData)
 
-        expect(resolveData.request).toContain(path.join('node_modules', '.master-css', 'master-css-config.js'))
+        expect(resolveData.request).toContain(path.join('node_modules', '.master-css', 'master-css-plan.js'))
         expect((compiler.inputFileSystem._writeVirtualFile as any).mock.calls.at(-1)?.[2])
-            .toContain('"key":"primary","value":"#123"')
+            .toContain('"version":1')
     })
 
     test('resolves virtual:master-css-preloaded to a JS virtual module', async () => {
@@ -289,7 +283,7 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
             .toBe('export default {"variables":{},"animations":{}};')
     })
 
-    test('resolves ?master-css-config imports to per-file JS virtual modules', async () => {
+    test('resolves ?master-css-plan imports to per-file JS virtual modules', async () => {
         const fixturePath = path.resolve(__dirname, 'fixtures/config-virtual-module/theme.css')
         const plugin = makePlugin()
         const { compiler } = makeFakeCompiler()
@@ -299,7 +293,7 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
         const normalModuleFactory = makeNormalModuleFactory(fixturePath)
         compiler.hooks.normalModuleFactory.call(normalModuleFactory)
         const resolveData = {
-            request: './theme.css' + MASTER_CSS_CONFIG_QUERY,
+            request: './theme.css' + MASTER_CSS_PLAN_QUERY,
             context: path.dirname(fixturePath),
             contextInfo: {},
             fileDependencies: new Set<string>()
@@ -308,10 +302,12 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
         await resolveBefore(normalModuleFactory, resolveData)
 
         expect(resolveData.request).toContain(path.join('node_modules', '.master-css'))
-        expect(resolveData.request).toContain('.js')
+        expect(resolveData.request).toContain('.plan.js')
         expect(resolveData.fileDependencies.has(fixturePath)).toBe(true)
         expect((compiler.inputFileSystem._writeVirtualFile as any).mock.calls.at(-1)?.[2])
-            .toContain('"key":"accent","value":"#456"')
+            .toContain('accent')
+        expect((compiler.inputFileSystem._writeVirtualFile as any).mock.calls.at(-1)?.[2])
+            .toContain('#456')
     })
 
     test('resolves virtual CSS module imports to the generated CSS virtual module', async () => {
@@ -424,7 +420,7 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
         expect(resolveData.request).toBe('@master/css')
     })
 
-    test('adds managed CSS entry files as virtual config dependencies', async () => {
+    test('adds managed CSS entry files as virtual plan dependencies', async () => {
         const root = path.resolve(__dirname, 'fixtures/config-virtual-module/css-only')
         const plugin = makePlugin({}, root)
         const { compiler } = makeFakeCompiler({ context: root })
@@ -434,7 +430,7 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
         const normalModuleFactory = makeNormalModuleFactory()
         compiler.hooks.normalModuleFactory.call(normalModuleFactory)
         const resolveData = {
-            request: VIRTUAL_CONFIG_ID,
+            request: VIRTUAL_PLAN_ID,
             context: root,
             contextInfo: {},
             fileDependencies: new Set<string>()
@@ -445,7 +441,7 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
         expect(resolveData.fileDependencies.has(path.join(root, 'app.css'))).toBe(true)
     })
 
-    test('adds managed CSS import graph as virtual config dependencies', async () => {
+    test('adds managed CSS import graph as virtual plan dependencies', async () => {
         const root = mkdtempSync(path.join(tmpdir(), 'master-css-webpack-config-'))
         const entryPath = path.join(root, 'app.css')
         const themePath = path.join(root, 'theme.css')
@@ -464,7 +460,7 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
             const normalModuleFactory = makeNormalModuleFactory()
             compiler.hooks.normalModuleFactory.call(normalModuleFactory)
             const resolveData = {
-                request: VIRTUAL_CONFIG_ID,
+                request: VIRTUAL_PLAN_ID,
                 context: root,
                 contextInfo: {},
                 fileDependencies: new Set<string>()
@@ -537,11 +533,11 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
         }
     })
 
-    test('resets extractor when the default CSS config changes in watch mode', async () => {
+    test('resets extractor when the default CSS plan changes in watch mode', async () => {
         const root = path.resolve(__dirname, 'fixtures/config-virtual-module/css-only')
         const configPath = path.join(root, 'app.css')
         const plugin = makePlugin({}, root)
-        ;(plugin as any).defaultConfigDependencies = [configPath]
+        ;(plugin as any).defaultPlanDependencies = [configPath]
         const reset = vi.fn(async function (this: MasterCSSPlugin) {
             this.emit('reset')
             return this
@@ -570,7 +566,7 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
             writeFileSync(configPath, '@master;\n@import "./theme.css";')
 
             const plugin = makePlugin({}, root)
-            ;(plugin as any).defaultConfigDependencies = [configPath, tokenPath]
+            ;(plugin as any).defaultPlanDependencies = [configPath, tokenPath]
             const reset = vi.fn(async function (this: MasterCSSPlugin) {
                 this.emit('reset')
                 return this
@@ -593,10 +589,10 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
         }
     })
 
-    test('does not reset extractor when a non-config file changes in watch mode', async () => {
+    test('does not reset extractor when a non-plan file changes in watch mode', async () => {
         const root = path.resolve(__dirname, 'fixtures/config-virtual-module/css-only')
         const plugin = makePlugin({}, root)
-        ;(plugin as any).defaultConfigDependencies = [path.join(root, 'app.css')]
+        ;(plugin as any).defaultPlanDependencies = [path.join(root, 'app.css')]
         const reset = vi.fn(async function (this: MasterCSSPlugin) {
             this.emit('reset')
             return this
@@ -742,7 +738,7 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
         plugin.apply(compiler as any)
         compiler.hooks.thisCompilation.call(compilation as any)
 
-        compilation.hooks.succeedModule.call(makeModule('node_modules/.master-css/master-css-config.js', 'export default {}'))
+        compilation.hooks.succeedModule.call(makeModule('node_modules/.master-css/master-css-plan.js', 'export default {}'))
         compilation.hooks.succeedModule.call(makeModule('/real.tsx', 'real'))
 
         await new Promise<void>((res, rej) =>

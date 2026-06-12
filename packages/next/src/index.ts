@@ -3,11 +3,6 @@ import { relative } from 'node:path'
 import type { NextConfig } from 'next'
 import { createMasterCSSConfigEntryPattern } from '@master/css-configer/css'
 import {
-    MASTER_CSS_CONFIG_QUERY,
-    VIRTUAL_CONFIG_ID,
-    createVirtualDefaultConfigModulePathPattern,
-} from '@master/css-integration/config-module'
-import {
     MASTER_CSS_PLAN_QUERY,
     VIRTUAL_PLAN_ID,
     createVirtualDefaultPlanModulePathPattern,
@@ -17,7 +12,6 @@ import {
     VIRTUAL_PRELOADED_ID,
 } from '@master/css-integration/preloaded-module'
 import {
-    ensureVirtualConfigModulePath,
     ensureVirtualPlanModulePath,
     ensureVirtualPreloadedModulePath
 } from '@master/css-integration/node'
@@ -33,14 +27,8 @@ type WebpackConfig = Parameters<NonNullable<NextConfig['webpack']>>[0]
 type WebpackContext = Parameters<NonNullable<NextConfig['webpack']>>[1]
 type TurbopackRules = NonNullable<NonNullable<NextConfig['turbopack']>['rules']>
 type TurbopackRuleConfigCollection = TurbopackRules[string]
-const MASTER_CSS_CONFIG_RESOURCE_QUERY = new RegExp(MASTER_CSS_CONFIG_QUERY.slice(1))
 const MASTER_CSS_PLAN_RESOURCE_QUERY = new RegExp(MASTER_CSS_PLAN_QUERY.slice(1))
-const MASTER_CSS_CONFIG_OR_PLAN_RESOURCE_QUERIES = [
-    MASTER_CSS_CONFIG_RESOURCE_QUERY,
-    MASTER_CSS_PLAN_RESOURCE_QUERY
-]
-const MASTER_CSS_CONFIG_IMPORT_CONTENT_PATTERN = new RegExp(`\\${MASTER_CSS_CONFIG_QUERY}|\\${MASTER_CSS_PLAN_QUERY}`)
-const MASTER_CSS_VIRTUAL_CONFIG_PATH_PATTERN = createVirtualDefaultConfigModulePathPattern()
+const MASTER_CSS_PLAN_IMPORT_CONTENT_PATTERN = new RegExp(`\\${MASTER_CSS_PLAN_QUERY}`)
 const MASTER_CSS_VIRTUAL_PLAN_PATH_PATTERN = createVirtualDefaultPlanModulePathPattern()
 const MASTER_CSS_STYLE_CONTENT_PATTERN = new RegExp(`${createMasterCSSConfigEntryPattern().source}|@(compose|at)\\b`)
 const MASTER_CSS_REACT_PACKAGE_NAME = '@master/css.react'
@@ -71,10 +59,6 @@ function resolveStaticCSSLoaderPath() {
 
 function resolveEmptyCSSPath() {
     return fileURLToPath(new URL('../empty.css', import.meta.url))
-}
-
-function ensureVirtualConfigPath(projectDir = process.cwd()) {
-    return ensureVirtualConfigModulePath(projectDir)
 }
 
 function ensureVirtualPlanPath(projectDir = process.cwd()) {
@@ -111,14 +95,13 @@ function applyMasterCSSWebpackConfig(
     cssConfigLoaderPath: string,
     styleCSSLoaderPath: string,
     virtualCSSPath: string,
-    virtualConfigPath: string,
     virtualPlanPath: string,
     virtualPreloadedPath: string
 ) {
     config.module ??= {}
     config.module.rules ??= []
     config.module.rules.push({
-        test: MASTER_CSS_VIRTUAL_CONFIG_PATH_PATTERN,
+        test: MASTER_CSS_VIRTUAL_PLAN_PATH_PATTERN,
         type: 'javascript/auto',
         use: [
             {
@@ -130,20 +113,7 @@ function applyMasterCSSWebpackConfig(
         ]
     })
     config.module.rules.push({
-        test: MASTER_CSS_VIRTUAL_PLAN_PATH_PATTERN,
-        type: 'javascript/auto',
-        use: [
-            {
-                loader: cssConfigLoaderPath,
-                options: {
-                    virtual: true,
-                    plan: true
-                }
-            }
-        ]
-    })
-    config.module.rules.push({
-        resourceQuery: MASTER_CSS_CONFIG_RESOURCE_QUERY,
+        resourceQuery: MASTER_CSS_PLAN_RESOURCE_QUERY,
         type: 'javascript/auto',
         use: [
             {
@@ -152,21 +122,11 @@ function applyMasterCSSWebpackConfig(
         ]
     })
     config.module.rules.push({
-        resourceQuery: MASTER_CSS_PLAN_RESOURCE_QUERY,
-        type: 'javascript/auto',
-        use: [
-            {
-                loader: cssConfigLoaderPath,
-                options: {
-                    plan: true
-                }
-            }
-        ]
-    })
-    config.module.rules.push({
         test: /\.(css|scss|sass)$/,
         resourceQuery: {
-            not: MASTER_CSS_CONFIG_OR_PLAN_RESOURCE_QUERIES
+            not: [
+                MASTER_CSS_PLAN_RESOURCE_QUERY
+            ]
         },
         use: [
             {
@@ -178,7 +138,6 @@ function applyMasterCSSWebpackConfig(
     config.resolve.alias = {
         ...(config.resolve.alias || {}),
         [VIRTUAL_CSS_ID]: virtualCSSPath,
-        [VIRTUAL_CONFIG_ID]: virtualConfigPath,
         [VIRTUAL_PLAN_ID]: virtualPlanPath,
         [VIRTUAL_PRELOADED_ID]: virtualPreloadedPath
     }
@@ -191,7 +150,6 @@ function applyMasterCSSTurbopackConfig(
     cssConfigImportLoaderPath: string,
     styleCSSLoaderPath: string,
     virtualCSSPath: string,
-    virtualConfigPath: string,
     virtualPlanPath: string,
     virtualPreloadedPath: string,
     projectDir: string,
@@ -200,9 +158,9 @@ function applyMasterCSSTurbopackConfig(
     const rules = nextConfig.turbopack?.rules || {}
     const configRules = rules['*']
     const configImportSourceRules = createCSSConfigImportSourceRules(cssConfigImportLoaderPath, projectDir)
-    const masterCSSVirtualConfigRule = {
+    const masterCSSVirtualPlanRule = {
         condition: {
-            path: MASTER_CSS_VIRTUAL_CONFIG_PATH_PATTERN
+            path: MASTER_CSS_VIRTUAL_PLAN_PATH_PATTERN
         },
         loaders: [
             {
@@ -215,33 +173,6 @@ function applyMasterCSSTurbopackConfig(
         type: 'ecmascript' as const,
         as: '*.js'
     }
-    const masterCSSVirtualPlanRule = {
-        condition: {
-            path: MASTER_CSS_VIRTUAL_PLAN_PATH_PATTERN
-        },
-        loaders: [
-            {
-                loader: cssConfigLoaderPath,
-                options: {
-                    virtual: true,
-                    plan: true
-                }
-            }
-        ],
-        type: 'ecmascript' as const,
-        as: '*.js'
-    }
-    const masterCSSConfigRule = {
-        condition: {
-            all: [
-                { path: /\.css$/ },
-                { query: MASTER_CSS_CONFIG_RESOURCE_QUERY }
-            ]
-        },
-        loaders: [cssConfigLoaderPath],
-        type: 'ecmascript' as const,
-        as: '*.js'
-    }
     const masterCSSPlanRule = {
         condition: {
             all: [
@@ -249,14 +180,7 @@ function applyMasterCSSTurbopackConfig(
                 { query: MASTER_CSS_PLAN_RESOURCE_QUERY }
             ]
         },
-        loaders: [
-            {
-                loader: cssConfigLoaderPath,
-                options: {
-                    plan: true
-                }
-            }
-        ],
+        loaders: [cssConfigLoaderPath],
         type: 'ecmascript' as const,
         as: '*.js'
     }
@@ -265,7 +189,6 @@ function applyMasterCSSTurbopackConfig(
             all: [
                 { path: /\.(css|scss|sass)$/ },
                 { content: MASTER_CSS_STYLE_CONTENT_PATTERN },
-                { not: { query: MASTER_CSS_CONFIG_RESOURCE_QUERY } },
                 { not: { query: MASTER_CSS_PLAN_RESOURCE_QUERY } }
             ]
         },
@@ -278,7 +201,6 @@ function applyMasterCSSTurbopackConfig(
         resolveAlias: {
             ...nextConfig.turbopack?.resolveAlias,
             [VIRTUAL_CSS_ID]: virtualCSSPath,
-            [VIRTUAL_CONFIG_ID]: virtualConfigPath,
             [VIRTUAL_PLAN_ID]: virtualPlanPath,
             [VIRTUAL_PRELOADED_ID]: virtualPreloadedPath
         },
@@ -292,9 +214,7 @@ function applyMasterCSSTurbopackConfig(
                 ]
             ])),
             '*': [
-                masterCSSVirtualConfigRule,
                 masterCSSVirtualPlanRule,
-                masterCSSConfigRule,
                 masterCSSPlanRule,
                 ...(includeStyleRule ? [masterCSSStyleRule] : []),
                 ...toRuleArray(configRules)
@@ -333,7 +253,7 @@ function createCSSConfigImportSourceRules(cssConfigImportLoaderPath: string, pro
         condition: {
             all: [
                 { not: 'foreign' as const },
-                { content: MASTER_CSS_CONFIG_IMPORT_CONTENT_PATTERN }
+                { content: MASTER_CSS_PLAN_IMPORT_CONTENT_PATTERN }
             ]
         },
         type,
@@ -349,13 +269,12 @@ function applyMasterCSSStaticTurbopackConfig(
     staticLoaderPath: string,
     staticCSSLoaderPath: string,
     virtualCSSPath: string,
-    virtualConfigPath: string,
     virtualPlanPath: string,
     virtualPreloadedPath: string,
     projectDir: string,
     statePath: string
 ) {
-    const turbopackConfig = applyMasterCSSTurbopackConfig(nextConfig, cssConfigLoaderPath, cssConfigImportLoaderPath, styleCSSLoaderPath, virtualCSSPath, virtualConfigPath, virtualPlanPath, virtualPreloadedPath, projectDir, false)
+    const turbopackConfig = applyMasterCSSTurbopackConfig(nextConfig, cssConfigLoaderPath, cssConfigImportLoaderPath, styleCSSLoaderPath, virtualCSSPath, virtualPlanPath, virtualPreloadedPath, projectDir, false)
     const rules = turbopackConfig.rules || {}
     const starRules = toRuleArray(rules['*'])
     const staticLoader = {
@@ -383,7 +302,6 @@ function applyMasterCSSStaticTurbopackConfig(
                 { not: 'foreign' as const },
                 { path: /\.(css|scss|sass)$/ },
                 { content: createMasterCSSConfigEntryPattern() },
-                { not: { query: MASTER_CSS_CONFIG_RESOURCE_QUERY } },
                 { not: { query: MASTER_CSS_PLAN_RESOURCE_QUERY } }
             ]
         },
@@ -418,8 +336,6 @@ function createConfigWithCSSConfigLoader<T extends NextConfig>(
     cssConfigImportLoaderPath: string,
     styleCSSLoaderPath: string,
     virtualCSSPath: string,
-    webpackVirtualConfigPath: string,
-    turbopackVirtualConfigPath: string,
     webpackVirtualPlanPath: string,
     turbopackVirtualPlanPath: string,
     webpackVirtualPreloadedPath: string,
@@ -429,10 +345,10 @@ function createConfigWithCSSConfigLoader<T extends NextConfig>(
     const userWebpack = nextConfig.webpack
     return {
         ...nextConfig,
-        turbopack: applyMasterCSSTurbopackConfig(nextConfig, cssConfigLoaderPath, cssConfigImportLoaderPath, styleCSSLoaderPath, virtualCSSPath, turbopackVirtualConfigPath, turbopackVirtualPlanPath, turbopackVirtualPreloadedPath, projectDir),
+        turbopack: applyMasterCSSTurbopackConfig(nextConfig, cssConfigLoaderPath, cssConfigImportLoaderPath, styleCSSLoaderPath, virtualCSSPath, turbopackVirtualPlanPath, turbopackVirtualPreloadedPath, projectDir),
         webpack(config: WebpackConfig, context: WebpackContext) {
             const resolvedConfig = userWebpack ? userWebpack(config, context) || config : config
-            return applyMasterCSSWebpackConfig(resolvedConfig, cssConfigLoaderPath, styleCSSLoaderPath, virtualCSSPath, webpackVirtualConfigPath, webpackVirtualPlanPath, webpackVirtualPreloadedPath)
+            return applyMasterCSSWebpackConfig(resolvedConfig, cssConfigLoaderPath, styleCSSLoaderPath, virtualCSSPath, webpackVirtualPlanPath, webpackVirtualPreloadedPath)
         }
     } as T
 }
@@ -447,10 +363,8 @@ export function withMasterCSS<T extends NextConfig>(nextConfig: T = {} as T, opt
     const cssConfigLoaderPath = resolveCSSConfigLoaderPath()
     const cssConfigImportLoaderPath = resolveCSSConfigImportLoaderPath()
     const styleCSSLoaderPath = resolveStyleCSSLoaderPath()
-    const virtualConfigPath = ensureVirtualConfigPath(projectDir)
     const virtualPlanPath = ensureVirtualPlanPath(projectDir)
     const virtualPreloadedPath = ensureVirtualPreloadedPath(projectDir)
-    const turbopackVirtualConfigPath = toTurbopackProjectPath(virtualConfigPath, projectDir)
     const turbopackVirtualPlanPath = toTurbopackProjectPath(virtualPlanPath, projectDir)
     const turbopackVirtualPreloadedPath = toTurbopackProjectPath(virtualPreloadedPath, projectDir)
     registerOptions(options)
@@ -473,7 +387,6 @@ export function withMasterCSS<T extends NextConfig>(nextConfig: T = {} as T, opt
                     resolveStaticLoaderPath(),
                     resolveStaticCSSLoaderPath(),
                     turbopackVirtualCSSPath,
-                    turbopackVirtualConfigPath,
                     turbopackVirtualPlanPath,
                     turbopackVirtualPreloadedPath,
                     setup.projectDir,
@@ -489,8 +402,6 @@ export function withMasterCSS<T extends NextConfig>(nextConfig: T = {} as T, opt
         cssConfigImportLoaderPath,
         styleCSSLoaderPath,
         resolveEmptyCSSPath(),
-        virtualConfigPath,
-        turbopackVirtualConfigPath,
         virtualPlanPath,
         turbopackVirtualPlanPath,
         virtualPreloadedPath,

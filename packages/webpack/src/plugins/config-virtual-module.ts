@@ -1,4 +1,3 @@
-import { VIRTUAL_CONFIG_ID } from '@master/css-integration/config-module'
 import { VIRTUAL_PLAN_ID } from '@master/css-integration/plan-module'
 import { VIRTUAL_PRELOADED_ID } from '@master/css-integration/preloaded-module'
 import type { Compiler } from 'webpack'
@@ -24,7 +23,7 @@ export default function ConfigVirtualModulePlugin(context: MasterCSSWebpackConte
                         context.createDefaultPlanModule()
                             .then((moduleContent) => {
                                 context.virtualModule?.writeModule(context.virtualPlanModuleId, moduleContent)
-                                for (const dependency of context.getDefaultConfigDependencyPaths()) {
+                                for (const dependency of context.getDefaultPlanDependencyPaths()) {
                                     resolveData.fileDependencies.add(dependency)
                                 }
                                 resolveData.request = context.virtualPlanModuleId
@@ -34,21 +33,7 @@ export default function ConfigVirtualModulePlugin(context: MasterCSSWebpackConte
                         return
                     }
 
-                    if (resolveData.request !== VIRTUAL_CONFIG_ID) {
-                        callback()
-                        return
-                    }
-
-                    context.createDefaultConfigModule()
-                        .then((moduleContent) => {
-                            context.virtualModule?.writeModule(context.virtualConfigModuleId, moduleContent)
-                            for (const dependency of context.getDefaultConfigDependencyPaths()) {
-                                resolveData.fileDependencies.add(dependency)
-                            }
-                            resolveData.request = context.virtualConfigModuleId
-                            callback()
-                        })
-                        .catch((error: Error) => callback(error))
+                    callback()
                 })
             })
         }

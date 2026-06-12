@@ -1,1 +1,1 @@
-@layer components{.card{border-radius:0.5rem}.card-content{padding:1.25rem}.card-footer{border-top:0.0625rem solid oklch(0% 0 none)}.card-header{border-bottom:0.0625rem solid oklch(0% 0 none)}}
+@layer components{.card{border-radius:.5rem}.card-content{padding:1.25rem}.card-footer{border-top:.0625rem solid oklch(0% 0 none)}.card-header{border-bottom:.0625rem solid oklch(0% 0 none)}}

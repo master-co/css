@@ -1,10 +1,9 @@
 import type { ModuleNode, Plugin, ViteDevServer } from 'vite'
 import type { PluginContext } from '../core'
-import { toResolvedMasterCSSConfigId } from '@master/css-integration/config-module'
 import { toResolvedMasterCSSPlanId } from '@master/css-integration/plan-module'
-import { loadConfigModule } from '@master/css-configer/load'
+import { loadPlanModule } from '@master/css-configer/load'
 import { isCSSConfigRequest } from '@master/css-configer/css'
-import { createMasterCSSConfigLoaderPlugin } from '@master/css-integration/config-loader-plugin'
+import { createMasterCSSPlanLoaderPlugin } from '@master/css-integration/config-loader-plugin'
 
 function invalidateConfigModule(module: ModuleNode | undefined, server: ViteDevServer): boolean {
     if (!module) return false
@@ -25,17 +24,17 @@ export default function ConfigLoaderPlugin(context: PluginContext): Plugin {
         cssConfigDependencies.set(configPath, dependencies)
         addServerAllow(dependencies)
     }
-    const plugin = createMasterCSSConfigLoaderPlugin({
+    const plugin = createMasterCSSPlanLoaderPlugin({
         cwd: context.config?.root,
         resolveUnresolved: false,
-        async loadConfigModule(configPath) {
+        async loadPlanModule(configPath) {
             if (!isCSSConfigRequest(configPath)) {
-                throw new TypeError('Master CSS config queries only support CSS entry files.')
+                throw new TypeError('Master CSS plan queries only support CSS entry files.')
             }
-            return loadConfigModule(configPath)
+            return loadPlanModule(configPath)
         },
-        onLoadConfigModule({ configPath, result }) {
-            watchConfigDependencies(configPath, result.dependencies)
+        onLoadPlanModule({ planPath, result }) {
+            watchConfigDependencies(planPath, result.dependencies)
         }
     })
     return {
@@ -48,15 +47,10 @@ export default function ConfigLoaderPlugin(context: PluginContext): Plugin {
                 if (dependencies.includes(file)) queryConfigPaths.add(configPath)
             }
             for (const configPath of queryConfigPaths) {
-                for (const queryId of [
-                    toResolvedMasterCSSConfigId(configPath),
-                    toResolvedMasterCSSPlanId(configPath)
-                ]) {
-                    const queryModule = server.moduleGraph.getModuleById(queryId)
-                    if (!queryModule) continue
-                    handled = true
-                    needsFullReload ||= invalidateConfigModule(queryModule, server)
-                }
+                const queryModule = server.moduleGraph.getModuleById(toResolvedMasterCSSPlanId(configPath))
+                if (!queryModule) continue
+                handled = true
+                needsFullReload ||= invalidateConfigModule(queryModule, server)
             }
             if (needsFullReload) {
                 server.ws.send({

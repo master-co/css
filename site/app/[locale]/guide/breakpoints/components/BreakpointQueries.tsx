@@ -1,7 +1,7 @@
-import { generateAt, parseAt } from '@master/css/utils'
 import css from '~/site/common/preset-css'
 import InlineCode from '~/internal/components/InlineCode'
 import { breakpointVariableEntries } from '~/site/utils/breakpoint-variables'
+import generatePlanAt from '~/site/utils/generate-plan-at'
 
 const formatValue = (value: number) => `${value}px / ${value / 16}rem`
 
@@ -22,7 +22,7 @@ export default () => {
                             <tr key={name}>
                                 <th className="white-space:nowrap"><InlineCode>{`@${name}`}</InlineCode></th>
                                 <td className="white-space:nowrap"><InlineCode>{formatValue(value)}</InlineCode></td>
-                                <td><InlineCode lang="css">{generateAt(parseAt('@' + name, css))}</InlineCode></td>
+                                <td><InlineCode lang="css">{generatePlanAt(css.breakpointAtRules.get(name))}</InlineCode></td>
                             </tr>
                         ))
                     }

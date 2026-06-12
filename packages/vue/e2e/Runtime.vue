@@ -2,18 +2,25 @@
     import { CSSRuntimeProvider } from '../src/runtime-provider'
     import { ref, onMounted } from 'vue'
     import type { MasterCSSPlan } from '@master/css-runtime'
+    import { defaultPlan } from '@master/css'
     import RuntimeConsumer from './RuntimeConsumer.vue'
 
     const plan = ref<MasterCSSPlan>({
         version: 1,
         utilities: [
             {
+                id: 'btn',
                 name: 'btn',
                 type: -4,
+                order: 0,
                 layer: 'components',
-                rules: [
-                    { selector: '&', declarations: { border: '0.125rem var(--color-red) solid' } }
-                ]
+                emit: {
+                    type: 'static',
+                    rules: [
+                        { selector: '&', declarations: { border: '0.125rem var(--color-red) solid' } }
+                    ]
+                },
+                matchers: [{ type: 'static', name: 'btn' }]
             }
         ]
     })
@@ -33,7 +40,7 @@
 <template>
     <CSSRuntimeProvider :root="root" :plan="plan">
         <RuntimeConsumer />
-        <button id="config-btn" class="btn" @click="plan = { version: 1 }"></button>
+        <button id="config-btn" class="btn" @click="plan = defaultPlan"></button>
         <button id="root-btn" @click="root = shadowRoot"></button>
         <div id="container" :ref="el => containerRef = el"></div>
     </CSSRuntimeProvider>

@@ -1,5 +1,3 @@
-import { Config } from '@master/css'
-
 export default {
     variables: [
         { key: 'primary', value: '#000000', mode: 'light' },
@@ -17,4 +15,4 @@ export default {
             ]
         }
     ]
-} satisfies Config
+}

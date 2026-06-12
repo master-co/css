@@ -2,16 +2,16 @@ import { createConnection, TextDocuments, InitializeParams, InitializeResult, Wo
 import { TextDocument } from 'vscode-languageserver-textdocument'
 import path from 'node:path'
 import CSSLanguageService, { Settings as CSSLanguageServiceSettings } from '@master/css-language-service'
-import { compileCSSConfig } from '@master/css-compiler'
+import { compileCSSPlan } from '@master/css-compiler'
 import { Settings } from './settings'
 import {
     findCSSConfigEntryFiles,
     findMasterCSSWorkspaceDirectories
 } from '@master/css-configer/css'
-import { loadProjectConfig } from '@master/css-configer/load'
+import { loadProjectPlan } from '@master/css-configer/load'
 import extend from '@techor/extend'
 import settings from './settings'
-import type { Config } from 'shared/css-config'
+import type { MasterCSSPlan } from '@master/css'
 import { SERVER_CAPABILITIES } from '@master/css-language-service'
 import glob from 'fast-glob'
 import { URI } from 'vscode-uri'
@@ -22,7 +22,7 @@ export declare interface Workspace {
     openedTextDocuments: TextDocument[]
     languageService?: CSSLanguageService
     languageServiceSettings: CSSLanguageServiceSettings
-    configEntries?: string[]
+    planEntries?: string[]
 }
 
 export const ACTIVE_SEMANTIC_TOKENS_REQUEST = 'masterCSS/renderActiveSemanticTokens'
@@ -328,35 +328,33 @@ export default class CSSLanguageServer {
                 uri: workspaceURI,
                 openedTextDocuments: [],
                 languageServiceSettings,
-                configEntries: await findCSSConfigEntryFiles(workspaceDir)
+                planEntries: await findCSSConfigEntryFiles(workspaceDir)
             })
         }
     }
 
     async initWorkspaceLanguageService(workspace: Workspace) {
-        let workspaceConfig: Config | undefined
+        let workspacePlan: MasterCSSPlan | undefined
         if (workspace !== this.globalWorkspace) {
             try {
-                workspaceConfig = await this.loadWorkspaceConfig(workspace)
+                workspacePlan = await this.loadWorkspacePlan(workspace)
             } catch (e: any) {
-                this.console.info(`Failed to load config from ${workspace.uri}`)
+                this.console.info(`Failed to load plan from ${workspace.uri}`)
                 this.console.error(e instanceof Error ? e.stack : e.toString())
             }
-            if (workspaceConfig) {
-                this.console.info(`Initialized workspace ${workspace.configEntries?.length ? '(with config entry)' : '(with config)'} ${workspace.uri}`)
+            if (workspacePlan) {
+                this.console.info(`Initialized workspace ${workspace.planEntries?.length ? '(with plan entry)' : '(with plan)'} ${workspace.uri}`)
             } else {
                 this.console.info(`Initialized workspace ${workspace.uri}`)
             }
         }
-        workspace.languageService = new CSSLanguageService({ ...workspace.languageServiceSettings, config: workspaceConfig })
+        workspace.languageService = new CSSLanguageService({ ...workspace.languageServiceSettings, plan: workspacePlan })
     }
 
-    private async loadWorkspaceConfig(workspace: Workspace) {
+    private async loadWorkspacePlan(workspace: Workspace) {
         const cwd = workspace.uri ? URI.parse(workspace.uri).fsPath : process.cwd()
-        const result = await loadProjectConfig(cwd, {
-            config: workspace.languageServiceSettings.config
-        })
-        return result.entries.length ? result.config : workspace.languageServiceSettings.config
+        const result = await loadProjectPlan(cwd)
+        return result.entries.length ? result.plan : workspace.languageServiceSettings.plan
     }
 
     destroyLanguageService(workspace: Workspace) {
@@ -381,13 +379,10 @@ export default class CSSLanguageServer {
         if (!isCSSDiagnosticDocument(textDocument)) return
         const diagnostics: Diagnostic[] = []
         const documentFile = path.resolve(URI.parse(textDocument.uri).fsPath)
-        const config = workspace.languageService?.settings.config || workspace.languageServiceSettings.config
-
         for (const { source, offset } of getCSSDiagnosticSources(textDocument)) {
             try {
-                compileCSSConfig(source, {
-                    from: documentFile,
-                    config
+                compileCSSPlan(source, {
+                    from: documentFile
                 })
             } catch (error) {
                 if (!isCSSDirectiveError(error)) continue

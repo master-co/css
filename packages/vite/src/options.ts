@@ -1,10 +1,8 @@
 import type { Options as ExtractorOptions } from '@master/css-extractor'
-import type { Config } from '@master/css'
 
 /* The default options */
 const options: PluginOptions = {
     mode: 'runtime',
-    config: undefined,
     injectRuntime: true,
     avoidFOUC: true,
 }
@@ -27,11 +25,6 @@ export interface PluginOptions {
      * Extractor options for class usage scanning.
      */
     extractor?: ExtractorOptions
-
-    /**
-     * Inline Master CSS config override.
-     */
-    config?: Config
 
     /**
      * Whether to include Master CSS’s runtime engine through Vite's HTML transform.

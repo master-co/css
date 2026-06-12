@@ -1,8 +1,9 @@
 import parseColorValue from '../utils/parse-color-value'
 import type { Config } from 'shared/css-config'
-import { COLOR_VALUE_REGEX } from '@master/css/common'
 import getVariableCollections from './getVariableCollections'
 import notify from '../utils/notify'
+
+const COLOR_VALUE_REGEX = /(?:#|(?:color|color-contrast|color-mix|hwb|lab|lch|oklab|oklch|rgb|rgba|hsl|hsla|light-dark)\(.*\)|(?:\$colors)(?![a-zA-Z0-9-]))/
 
 export interface SetCollectionVariablesOptions {
     varCollId?: string

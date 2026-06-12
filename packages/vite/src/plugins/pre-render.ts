@@ -1,12 +1,12 @@
 import type { Plugin } from 'vite'
 import { PluginContext } from '../core'
 import { render } from '@master/css-server'
-import type { Config } from '@master/css'
-import { loadProjectConfig } from '@master/css-configer/load'
+import type { MasterCSSPlan } from '@master/css'
+import { loadProjectPlan } from '@master/css-configer/load'
 import { PluginOptions } from '../options'
 
 export default function PreRenderPlugin(options: PluginOptions, context: PluginContext): Plugin {
-    let cssConfig: Config | undefined = undefined
+    let cssPlan: MasterCSSPlan | undefined = undefined
     let cssConfigDependencies: string[] = []
     let enabled = true
     const addServerAllow = (paths: string[]) => {
@@ -16,11 +16,9 @@ export default function PreRenderPlugin(options: PluginOptions, context: PluginC
             if (!allow.includes(path)) allow.push(path)
         }
     }
-    const loadCSSConfig = async (pluginContext?: { addWatchFile?: (id: string) => void }) => {
-        const result = await loadProjectConfig(context.config?.root, {
-            config: options.config
-        })
-        cssConfig = result.config
+    const loadCSSPlan = async (pluginContext?: { addWatchFile?: (id: string) => void }) => {
+        const result = await loadProjectPlan(context.config?.root)
+        cssPlan = result.plan
         cssConfigDependencies = result.dependencies
         addServerAllow(cssConfigDependencies)
         for (const dependency of cssConfigDependencies) {
@@ -39,27 +37,27 @@ export default function PreRenderPlugin(options: PluginOptions, context: PluginC
                 }
                 return
             }
-            await loadCSSConfig()
+            await loadCSSPlan()
         },
         async buildStart() {
             if (!enabled) return
-            await loadCSSConfig(this)
+            await loadCSSPlan(this)
         },
         async handleHotUpdate({ file }) {
             if (!enabled || !cssConfigDependencies.includes(file)) return
-            await loadCSSConfig()
+            await loadCSSPlan()
         },
         transformIndexHtml(html) {
             if (!enabled) return
             return {
-                html: render(html, cssConfig).html,
+                html: render(html, cssPlan!).html,
                 tags: [],
             }
         },
         transform(code, id) {
             if (!enabled) return
             if (id.endsWith('.html')) {
-                const { html } = render(code, cssConfig)
+                const { html } = render(code, cssPlan!)
                 return {
                     code: html,
                     map: null,

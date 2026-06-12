@@ -2,101 +2,24 @@
 
 ## Responsibility
 
-`@master/css` is the core engine. It resolves config, matches class syntax, creates `Utility` objects, resolves values/variables/functions/selectors/at-rules/modes, inserts rules into cascade layers, and emits CSS text. Pure config contracts live in `shared/css-config`; core re-exports and interprets them.
+`@master/css` is the public facade. It re-exports the plan-driven engine API and the default preset plan/CSS entrypoints. It must not own Config resolution, utility matcher construction, declarers, transformers, or runtime authoring adapters.
 
 ## Inputs And Outputs
 
-- Input: `Config`, class names, selector text.
-- Output: `MasterCSS` state, utility objects, layer state, CSS text.
-- Core tests must use TypeScript `Config` fixtures directly. Tests that need to parse `.css`, `theme.css`, `index.css`, `@settings`, `@theme`, `@master;`, or CSS import graphs belong in `@master/css-compiler`.
+- Input: `MasterCSSPlan` for engine APIs, CSS files for CSS-first authoring.
+- Output: `MasterCSS` engine instances, generated rules, CSS text, and preset CSS subpaths.
 
 ## Public APIs
 
-The package exports core classes, config, types, factories, and utilities from `src/index.ts`. Treat changes to exports as public API changes.
-
-Important public symbols include:
+The root export should stay narrow:
 
 - `MasterCSS`
-- `createCSS`
-- `Utility`
-- `UtilityType`
-- `Layer`, `UtilityLayer`, `NonLayer`
-- `VariableRule`, `AnimationRule`
-- config and config sections
-- parser/generator utilities
-- config and syntax types
+- `createCSS(plan, preloaded?)`
+- `MasterCSSPlan` and runtime-safe engine types
+- `defaultPlan`
 
-## Core Files
+Do not re-export `Config`, `UtilityDefinition`, `extendConfig`, old utility classes as public API, or `@master/css/config` / `@master/css/utils` subpaths.
 
-- `src/core.ts`
-- `src/utility.ts`
-- `src/factories/with-utility-layer.ts`
-- `src/utilities.ts`
-- `src/functions.ts`
-- `src/utils/compare-rule-priority.ts`
-- `src/utils/parse-at.ts`
-- `src/utils/generate-at.ts`
-- `src/utils/parse-selector.ts`
-- `src/utils/generate-selector.ts`
-- `src/utils/extend-config.ts`
-- `src/utils/parse-value.ts`
+## Tests
 
-## Allowed Changes
-
-- Focused bug fixes with tests.
-- New utility coverage.
-- New utilities when behavior is clear and documented by tests.
-- Refactors that preserve generated CSS output.
-
-## Forbidden Without Explicit Request
-
-- Changing package exports casually.
-- Changing layer order.
-- Broad rewrites of parser, matcher, or priority code.
-- Removing validation coverage.
-- Updating snapshots/fixtures without explaining the output change.
-
-## Risk Areas
-
-- Utility matching order in `MasterCSS.match()`.
-- `Utility.parseValues()` and `resolveValue()`.
-- Variable alias and mode resolution.
-- Selector and at-rule parsing.
-- `compare-rule-priority.ts`.
-- Component expansion and fixed-class output.
-- `src/utilities.ts`, because small matcher/type changes can affect many classes.
-
-## Required Tests
-
-Use focused tests first:
-
-```sh
-pnpm --filter @master/css test
-pnpm --filter @master/css type-check
-pnpm --filter @master/css build
-```
-
-Add or update tests in:
-
-- `tests/rules`
-- `tests/utils`
-- `tests/config`
-- `tests/layers`
-- `tests/rule-priority.test.ts`
-- `tests/render.test.ts`
-- `tests/__snapshots__` only for intentional snapshot changes
-
-## Good Changes
-
-- Add a regression test for a class that parses incorrectly.
-- Fix a specific selector generation bug and test the exact selector.
-- Add a missing variable resolution case with expected CSS output.
-
-## Dangerous Changes
-
-- Reordering `AT_IDENTIFIERS`.
-- Changing `UtilityType` values.
-- Changing layer names or the `base.css` layer statement.
-- Making extraction/runtime-specific assumptions in core.
-- Importing build-tool virtual modules from package CSS files; integrations own generated utility injection.
-- Loading CSS config resources from core tests.
+Core tests should only verify facade wiring. CSS output parity belongs in `@master/css-engine`; CSS directive and preset lowering belongs in `@master/css-compiler` or `@master/css-preset`.

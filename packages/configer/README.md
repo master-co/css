@@ -10,7 +10,7 @@
         </picture>
     </a>
 </p>
-<p align="center">Utilities for loading and serializing Master CSS config CSS resources</p>
+<p align="center">Utilities for loading and serializing Master CSS plan CSS resources</p>
 
 <p align="center">
     <a aria-label="GitHub release (latest by date including pre-releases)" href="https://github.com/master-co/css/releases">
@@ -58,18 +58,18 @@ npm install @master/css-configer
 ```
 
 ## Usage
-CSS config resources are compiled through the Master CSS compiler. Local CSS imports are reported as dependencies.
+CSS plan resources are compiled through the Master CSS compiler. Local CSS imports are reported as dependencies.
 
 ```ts
-import { loadConfig, loadConfigModule } from '@master/css-configer/load'
-import { loadConfigSync, loadConfigModuleSync } from '@master/css-configer/load-sync'
-import { MASTER_CSS_CONFIG_QUERY } from '@master/css-integration/config-module'
+import { loadPlan, loadPlanModule } from '@master/css-configer/load'
+import { loadPlanSync, loadPlanModuleSync } from '@master/css-configer/load-sync'
+import { MASTER_CSS_PLAN_QUERY } from '@master/css-integration/plan-module'
 
-const result = await loadConfig('./src/index.css')
-const config = result.config
+const result = await loadPlan('./src/index.css')
+const plan = result.plan
 ```
 
 ```ts
-const moduleResult = await loadConfigModule('./src/index.css' + MASTER_CSS_CONFIG_QUERY)
+const moduleResult = await loadPlanModule('./src/index.css' + MASTER_CSS_PLAN_QUERY)
 const source = moduleResult.code
 ```

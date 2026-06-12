@@ -1,17 +1,16 @@
 import { type CompletionItem, CompletionItemKind } from 'vscode-languageserver-protocol'
-import { UtilityType, MasterCSS, createCSS } from '@master/css'
-import { generateCSS, isCoreRule } from '@master/css/utils'
+import { UtilityType, MasterCSS, createDefaultCSS, generateCSS, isCoreRule } from '../master-css'
 import { getCSSDataDocumentation } from './get-css-data-documentation'
 import sortCompletionItems from './sort-completion-items'
 import getUtilityInfo from './get-utility-info'
 import cssDataProvider from './css-data-provider'
 
-export default function getClassCompletionItems(css: MasterCSS = createCSS()): CompletionItem[] {
+export default function getClassCompletionItems(css: MasterCSS = createDefaultCSS()): CompletionItem[] {
     const completionItems: CompletionItem[] = []
     const addedKeys = new Set<string>()
     for (const eachDefinedUtility of css.definedUtilities) {
-        if (eachDefinedUtility.definition.type === UtilityType.Static) {
-            const isComponent = eachDefinedUtility.definition.layer === 'components'
+        if (eachDefinedUtility.type === UtilityType.Static) {
+            const isComponent = eachDefinedUtility.layer === 'components'
             const { data, detail, docs } = getUtilityInfo(eachDefinedUtility, css)
             const utilityName = eachDefinedUtility.id.slice(1)
             completionItems.push({
@@ -34,7 +33,7 @@ export default function getClassCompletionItems(css: MasterCSS = createCSS()): C
                 detail: nativeCSSPropertyData?.syntax,
             }
 
-            eachDefinedUtility.keys.forEach(key => {
+            eachDefinedUtility.keys?.forEach(key => {
                 addedKeys.delete(key)
                 completionItems.push({
                     ...eachCompletionItem,
@@ -47,8 +46,8 @@ export default function getClassCompletionItems(css: MasterCSS = createCSS()): C
                 })
             })
 
-            if (eachDefinedUtility.definition?.aliasGroups?.length) {
-                for (const aliasGroup of eachDefinedUtility.definition.aliasGroups) {
+            if (eachDefinedUtility.aliasGroups?.length) {
+                for (const aliasGroup of eachDefinedUtility.aliasGroups) {
                     if (addedKeys.has(aliasGroup)) {
                         continue
                     }

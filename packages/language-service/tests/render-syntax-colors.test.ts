@@ -3,12 +3,12 @@ import { test, it, expect, describe } from 'vitest'
 import CSSLanguageService from '../src/core'
 import getRange from '../src/utils/get-range'
 import createDoc from '../src/utils/create-doc'
-import { createThemeConfig } from '../../core/tests/helpers/create-css-with-theme'
+import { createThemePlan } from './helpers/create-theme-plan'
 
 function createLanguageService(settings: ConstructorParameters<typeof CSSLanguageService>[0] = {}) {
     return new CSSLanguageService({
         ...settings,
-        config: createThemeConfig(settings.config)
+        plan: createThemePlan(settings.plan)
     })
 }
 
@@ -129,9 +129,9 @@ test.concurrent('custom variable', async () => {
     const content = `export default () => <div className='fg:${target}!'></div>`
     const doc = createDoc('tsx', content)
     const languageService = createLanguageService({
-        config: {
+        plan: createThemePlan({
             variables: [{ namespace: 'color', key: 'custom', value: '#333333' }]
-        }
+        })
     })
     expect(await languageService.renderSyntaxColors(doc)).toStrictEqual([{
         color: { red: .2, green: .2, blue: .2, alpha: 1 },
@@ -144,9 +144,9 @@ test.concurrent('custom variable/alpha', async () => {
     const content = `export default () => <div className='fg:${target}!'></div>`
     const doc = createDoc('tsx', content)
     const languageService = createLanguageService({
-        config: {
+        plan: createThemePlan({
             variables: [{ namespace: 'color', key: 'custom', value: '#333333' }]
-        }
+        })
     })
     expect(await languageService.renderSyntaxColors(doc)).toStrictEqual([{
         color: { red: 0.2, green: 0.2, blue: 0.2, alpha: 0.5 },

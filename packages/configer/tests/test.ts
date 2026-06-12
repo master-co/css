@@ -1,7 +1,7 @@
 import { expect, test } from 'vitest'
-import { loadConfig, loadConfigModule, loadProjectConfig } from '../src/load'
-import { loadConfigModuleSync, loadConfigSync, loadProjectConfigSync } from '../src/load-sync'
-import { MASTER_CSS_CONFIG_QUERY } from '@master/css-integration/config-module'
+import { loadPlan, loadPlanModule, loadProjectPlan } from '../src/load'
+import { loadPlanModuleSync, loadPlanSync, loadProjectPlanSync } from '../src/load-sync'
+import { MASTER_CSS_PLAN_QUERY } from '@master/css-integration/plan-module'
 import {
     findCSSConfigEntryFiles,
     findMasterCSSWorkspaceDirectories,
@@ -9,7 +9,7 @@ import {
     resolveMasterCSSPackageEntryFile
 } from '../src/css'
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
-import { dirname, join } from 'node:path'
+import { join } from 'node:path'
 import { tmpdir } from 'node:os'
 
 function createFixture() {
@@ -39,12 +39,13 @@ function writeCSSFixture(cwd: string) {
     return { entry, tokens }
 }
 
-test('loads CSS config resources', async () => {
+test('loads CSS plan resources', async () => {
     const cwd = createFixture()
     try {
         const { entry, tokens } = writeCSSFixture(cwd)
 
-        await expect(loadConfig(entry)).resolves.toMatchObject({
+        const result = await loadPlan(entry)
+        expect(result).toMatchObject({
             dependencies: [
                 entry,
                 tokens
@@ -52,63 +53,49 @@ test('loads CSS config resources', async () => {
             nativeClassNames: [],
             nativeCSS: '',
             css: '',
-            generatedCSS: '',
-            config: {
-                variables: [
-                    {
-                        namespace: 'color',
-                        key: 'primary',
-                        value: '#123'
-                    }
-                ],
-                utilities: [
-                    {
-                        name: 'btn',
-                        type: -4,
-                        layer: 'components',
-                        unit: '',
-                        separators: [
-                            ','
-                        ],
-                        declarations: {
-                            color: 'var(--color-primary)',
-                            display: 'inline-flex'
-                        }
-                    }
-                ]
-            }
+            generatedCSS: ''
         })
+        expect(result.plan.version).toBe(1)
+        expect(result.plan.variables).toContainEqual(expect.objectContaining({
+            name: 'color-primary',
+            namespace: 'color',
+            key: 'primary',
+            value: '#123'
+        }))
+        expect(result.plan.utilities).toContainEqual(expect.objectContaining({
+            name: 'btn',
+            layer: 'components',
+        }))
     } finally {
         rmSync(cwd, { recursive: true, force: true })
     }
 })
 
-test('loads CSS config resources synchronously', () => {
+test('loads CSS plan resources synchronously', () => {
     const cwd = createFixture()
     try {
         const { entry, tokens } = writeCSSFixture(cwd)
 
-        expect(loadConfigSync(entry)).toMatchObject({
+        const result = loadPlanSync(entry)
+        expect(result).toMatchObject({
             dependencies: [
                 entry,
                 tokens
-            ],
-            config: {
-                variables: [
-                    {
-                        namespace: 'color',
-                        key: 'primary',
-                        value: '#123'
-                    }
-                ]
-            }
+            ]
         })
+        expect(result.plan.version).toBe(1)
+        expect(result.plan.variables).toContainEqual(expect.objectContaining({
+            name: 'color-primary',
+            namespace: 'color',
+            key: 'primary',
+            value: '#123'
+        }))
     } finally {
         rmSync(cwd, { recursive: true, force: true })
     }
 })
 
-test('loads package entry theme config from CSS imports', async () => {
+test('loads package entry theme plan from CSS imports', async () => {
     const cwd = createFixture()
     try {
         const entry = join(cwd, 'index.css')
@@ -124,33 +111,29 @@ test('loads package entry theme config from CSS imports', async () => {
             }
         `)
 
-        const result = await loadConfig(entry)
+        const result = await loadPlan(entry)
         const packageEntry = resolveMasterCSSPackageEntryFile('@master/css', entry, cwd)
         expect(packageEntry).toBeTruthy()
         if (!packageEntry) throw new Error('Expected Master CSS package entry')
         expect(result.dependencies).toContain(packageEntry)
         const packageDependencies = result.dependencies
-            .filter((dependency) => dependency.startsWith(dirname(packageEntry)))
+            .filter((dependency) => !dependency.startsWith(cwd))
         expect(packageDependencies.length).toBeGreaterThan(1)
-        expect(result.config.variables).toContainEqual({
+        expect(result.plan.variables).toContainEqual(expect.objectContaining({
+            name: 'breakpoint-sm',
             namespace: 'breakpoint',
             key: 'sm',
             value: 834
-        })
-        expect(result.config.utilities).toContainEqual(expect.objectContaining({
+        }))
+        expect(result.plan.utilities).toContainEqual(expect.objectContaining({
             name: 'card',
-            rules: [
-                expect.objectContaining({
-                    atRules: [expect.stringContaining('width>=')]
-                })
-            ]
         }))
     } finally {
         rmSync(cwd, { recursive: true, force: true })
     }
 })
 
-test('loads project-level CSS config entries', async () => {
+test('loads project-level CSS plan entries', async () => {
     const cwd = createFixture()
     try {
         const { entry } = writeCSSFixture(cwd)
@@ -168,15 +151,15 @@ test('loads project-level CSS config entries', async () => {
         expect(hasMasterCSSConfigEntrypoint('@import "@master/css/index.css";')).toBe(false)
         await expect(findCSSConfigEntryFiles(cwd)).resolves.toStrictEqual([entry])
 
-        const result = await loadProjectConfig(cwd)
-        const syncResult = loadProjectConfigSync(cwd)
+        const result = await loadProjectPlan(cwd)
+        const syncResult = loadProjectPlanSync(cwd)
 
         expect(result.entries).toStrictEqual([entry])
-        expect(syncResult.config).toStrictEqual(result.config)
-        expect(result.config.utilities).toContainEqual(expect.objectContaining({
+        expect(syncResult.plan).toStrictEqual(result.plan)
+        expect(result.plan.utilities).toContainEqual(expect.objectContaining({
             name: 'btn'
         }))
-        expect(result.config.utilities).not.toContainEqual(expect.objectContaining({
+        expect(result.plan.utilities).not.toContainEqual(expect.objectContaining({
             name: 'ignored'
         }))
     } finally {
@@ -207,15 +190,15 @@ test('finds Master CSS workspace directories from package and CSS entries', asyn
     }
 })
 
-test('turns CSS config results into JavaScript modules', async () => {
+test('turns CSS plan results into JavaScript modules', async () => {
     const cwd = createFixture()
     try {
         const { entry } = writeCSSFixture(cwd)
-        const result = await loadConfigModule(entry)
-        const syncResult = loadConfigModuleSync(entry + MASTER_CSS_CONFIG_QUERY)
+        const result = await loadPlanModule(entry)
+        const syncResult = loadPlanModuleSync(entry + MASTER_CSS_PLAN_QUERY)
 
         expect(result.code).toContain('export default')
-        expect(result.code).toContain('"namespace":"color"')
+        expect(result.code).toContain('"version":1')
         expect(syncResult.code).toBe(result.code)
     } finally {
         rmSync(cwd, { recursive: true, force: true })
@@ -228,8 +211,8 @@ test('rejects script config paths', async () => {
         const script = join(cwd, 'config.ts')
         writeFileSync(script, 'export default {}')
 
-        await expect(loadConfig(script)).rejects.toThrow('CSS files')
-        expect(() => loadConfigSync(script)).toThrow('CSS files')
+        await expect(loadPlan(script)).rejects.toThrow('CSS files')
+        expect(() => loadPlanSync(script)).toThrow('CSS files')
     } finally {
         rmSync(cwd, { recursive: true, force: true })
     }

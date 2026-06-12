@@ -1,9 +1,9 @@
 'use client'
 
 import { CSSRuntime, initCSSRuntime, resolveRuntimePlan } from '@master/css-runtime'
+import { defaultPlan } from '@master/css'
 import { createContext, useContext, useRef, useState } from 'react'
 import type { CSSRuntimeProviderProps } from './types/provider-props'
-import type { MasterCSSPlan } from '@master/css-runtime'
 // fix: ReferenceError: React is not defined
 import React from 'react'
 import useIsomorphicLayoutEffect from './uses/useIsomorphicLayoutEffect'
@@ -11,7 +11,6 @@ import { useUpdateEffect } from './uses/useUpdateEffect'
 
 export const CSSRuntimeContext = createContext<CSSRuntime | undefined>(undefined)
 export const useCSSRuntime = () => useContext(CSSRuntimeContext)
-const DEFAULT_PLAN: MasterCSSPlan = { version: 1 }
 
 export function CSSRuntimeProvider(props: CSSRuntimeProviderProps) {
     const cssRuntime = useRef<CSSRuntime>(undefined)
@@ -20,7 +19,7 @@ export function CSSRuntimeProvider(props: CSSRuntimeProviderProps) {
     /** onMounted */
     useIsomorphicLayoutEffect(() => {
         cssRuntime.current = initCSSRuntime({
-            plan: props.plan || DEFAULT_PLAN,
+            plan: props.plan || defaultPlan,
             root: props.root ?? document,
             preloaded: props.preloaded
         })
@@ -35,7 +34,7 @@ export function CSSRuntimeProvider(props: CSSRuntimeProviderProps) {
     /** on plan change */
     useUpdateEffect(() => {
         if (cssRuntime.current) {
-            cssRuntime.current.refresh(resolveRuntimePlan(props.plan || DEFAULT_PLAN))
+            cssRuntime.current.refresh(resolveRuntimePlan(props.plan || defaultPlan))
         }
     }, [props.plan])
 
@@ -45,7 +44,7 @@ export function CSSRuntimeProvider(props: CSSRuntimeProviderProps) {
             cssRuntime.current.destroy()
             cssRuntime.current = undefined
             cssRuntime.current = initCSSRuntime({
-                plan: props.plan || DEFAULT_PLAN,
+                plan: props.plan || defaultPlan,
                 root: props.root ?? document,
                 preloaded: props.preloaded
             })

@@ -1,16 +1,16 @@
 import CSSExtractor from '@master/css-extractor'
-import { loadProjectConfig } from '@master/css-configer/load'
+import { loadProjectPlan } from '@master/css-configer/load'
 import { findCSSConfigEntryFiles } from '@master/css-configer/css'
 import {
     createExtractedCSS,
     registerStyleCSSSource,
     type StyleCSSSources
 } from '@master/css-extractor/style'
-import type { Config } from '@master/css'
+import type { MasterCSSPlan } from '@master/css'
 import { readFile } from 'node:fs/promises'
 
 export interface MasterCSSBuildConfig {
-    config: Config
+    plan: MasterCSSPlan
     nativeCSS: string
     dependencies: string[]
     styleSources: string[]
@@ -18,12 +18,12 @@ export interface MasterCSSBuildConfig {
 
 export async function resolveMasterCSSBuildConfig(
     projectDir: string,
-    configOption?: Config,
     classes?: string[]
 ): Promise<MasterCSSBuildConfig> {
+    const result = await loadProjectPlan(projectDir)
     const extractor = new CSSExtractor({
         include: [],
-        config: configOption
+        plan: result.plan
     }, projectDir)
     const styleCSSSources: StyleCSSSources = new Map()
     await extractor.init()
@@ -32,14 +32,11 @@ export async function resolveMasterCSSBuildConfig(
             projectDir
         })
     }
-    const result = await loadProjectConfig(projectDir, {
-        config: configOption
-    })
     const nativeCSS = classes?.length
         ? await createExtractedCSS({
             extractor,
             styleCSSSources,
-            config: configOption,
+            plan: result.plan,
             projectDir,
             classes,
             includeGeneratedCSS: false
@@ -47,7 +44,7 @@ export async function resolveMasterCSSBuildConfig(
         : ''
 
     return {
-        config: result.config,
+        plan: result.plan,
         nativeCSS,
         dependencies: [...new Set([
             ...result.dependencies,

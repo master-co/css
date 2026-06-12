@@ -2,13 +2,9 @@ import { existsSync, readFileSync, realpathSync } from 'node:fs'
 import { createRequire } from 'node:module'
 import { dirname, extname, isAbsolute, resolve } from 'node:path'
 import { transform } from 'lightningcss'
-import { extendConfig } from '@master/css/utils'
-import type { Config } from '@master/css'
 import type { MasterCSSPlan } from 'shared/master-css-plan'
-import { toConfigModuleResult, type CSSConfigModuleResult } from '@master/css-integration/config-module'
-import { toPlanModuleResult, type CSSPlanModuleResult } from '@master/css-integration/plan-module'
 import { createMasterCSSPlan } from './master-css-plan'
-import resolveCSSDirectiveConfig from './resolve-css-directive-config'
+import lowerCSSDirectives from './lower-css-directives'
 import {
     compileCSS,
     createCSSDirectiveExtractionPolicy,
@@ -28,17 +24,12 @@ import {
 } from './lexer/imports'
 
 export * from './core'
-export { createMasterCSSPlan } from './master-css-plan'
-export { default as resolveCSSDirectiveConfig } from './resolve-css-directive-config'
-export type {
-    CSSDirectiveConfigResolution,
-    ResolveCSSDirectiveConfigOptions
-} from './resolve-css-directive-config'
 
 setCSSTransform(transform)
 
 const require = createRequire(import.meta.url)
 const MASTER_CSS_PACKAGE_ID = '@master/css'
+const MASTER_CSS_PACKAGE_IDS = new Set([MASTER_CSS_PACKAGE_ID, '@master/css-preset'])
 
 interface CSSPackageJSON {
     name?: unknown
@@ -57,31 +48,24 @@ export interface ResolveCSSImportGraphOptions {
     expandPackageImports?: boolean
 }
 
-export type CompileCSSConfigOptions = Omit<CompileCSSFileOptions, 'config'> & {
-    config?: Config
+export type CompileCSSPlanOptions = CompileCSSFileOptions & {
+    basePlan?: MasterCSSPlan
+}
+export type CompileCSSPlanSourceOptions = CompileCSSOptions & {
+    basePlan?: MasterCSSPlan
 }
 
-export type CompileCSSConfigSourceOptions = Omit<CompileCSSOptions, 'config'> & {
-    config?: Config
-}
-
-export interface CompileCSSConfigResult extends Omit<CompileCSSResult, 'config'> {
-    config: Config
+export interface CompileCSSPlanResult extends Omit<CompileCSSResult, 'config'> {
     plan: MasterCSSPlan
     directives: CompileCSSResult
 }
 
-export interface CompileProjectConfigResult extends CompileCSSConfigResult {
+export interface CompileProjectPlanResult extends CompileCSSPlanResult {
     entries: string[]
 }
 
-export type CompileCSSConfigModuleResult = CSSConfigModuleResult<Config> & {
-    plan: MasterCSSPlan
-    directives: CompileCSSResult
-}
-
-export type CompileCSSPlanModuleResult = CSSPlanModuleResult & {
-    config: Config
+export type CompileCSSPlanModuleResult = CompileCSSPlanResult & {
+    code: string
     directives: CompileCSSResult
 }
 
@@ -130,21 +114,21 @@ function createProjectRequire(fromFile: string, projectDir?: string) {
 }
 
 export function resolveMasterCSSPackageEntryFile(importSource: string, fromFile = process.cwd(), projectDir?: string) {
-    if (importSource !== MASTER_CSS_PACKAGE_ID) return
+    if (!MASTER_CSS_PACKAGE_IDS.has(importSource)) return
     const resolver = createProjectRequire(fromFile, projectDir)
     let packageEntryFile: string
     try {
-        packageEntryFile = resolver.resolve(MASTER_CSS_PACKAGE_ID)
+        packageEntryFile = resolver.resolve(importSource)
     } catch {
-        packageEntryFile = require.resolve(MASTER_CSS_PACKAGE_ID)
+        packageEntryFile = require.resolve(importSource)
     }
-    const packageRoot = findPackageRoot(packageEntryFile, MASTER_CSS_PACKAGE_ID)
+    const packageRoot = findPackageRoot(packageEntryFile, importSource)
     if (!packageRoot) return
     const styleEntry = getPackageStyleEntry(packageRoot.packageJSON)
     if (!styleEntry) return
     const styleFile = resolve(packageRoot.directory, styleEntry)
     if (!existsSync(styleFile)) {
-        throw new Error(`${MASTER_CSS_PACKAGE_ID} CSS style entry was not found: ${styleFile}`)
+        throw new Error(`${importSource} CSS style entry was not found: ${styleFile}`)
     }
     return styleFile
 }
@@ -266,56 +250,51 @@ function addUnique<T>(target: T[], values: Iterable<T> | undefined) {
     }
 }
 
-function toCompileCSSConfigResult(
+function toCompileCSSPlanResult(
     result: CompileCSSResult,
-    options: CompileCSSConfigSourceOptions = {}
-): CompileCSSConfigResult {
-    const adapterResult = resolveCSSDirectiveConfig(result, {
-        config: options.config,
+    options: CompileCSSPlanSourceOptions = {}
+): CompileCSSPlanResult {
+    const { config: _directiveConfig, ...directiveData } = result
+    const lowerResult = lowerCSSDirectives(result, {
+        basePlan: options.basePlan,
         onWarning: options.onWarning
     })
-    const generatedCSS = adapterResult.generatedCSS || ''
+    const generatedCSS = lowerResult.generatedCSS || ''
     const css = [
         result.nativeCSS,
         generatedCSS
     ].filter(Boolean).join('\n')
     return {
-        ...result,
-        config: adapterResult.config,
-        plan: createMasterCSSPlan(adapterResult.config),
-        warnings: adapterResult.warnings,
+        ...directiveData,
+        plan: lowerResult.plan,
+        warnings: lowerResult.warnings,
         generatedCSS,
         css,
         directives: result
     }
 }
 
-export function createConfigFromCSSResult(
+export function createPlanFromCSSResult(
     result: CompileCSSResult,
-    options: CompileCSSConfigSourceOptions = {}
+    options: CompileCSSPlanSourceOptions = {}
 ) {
-    return toCompileCSSConfigResult(result, options)
+    return toCompileCSSPlanResult(result, options)
 }
 
-export function compileCSSConfig(source: string, options: CompileCSSConfigSourceOptions = {}): CompileCSSConfigResult {
+export function compileCSSPlan(source: string, options: CompileCSSPlanSourceOptions = {}): CompileCSSPlanResult {
     const result = compileCSS(source, options)
-    return toCompileCSSConfigResult(result, options)
+    return toCompileCSSPlanResult(result, options)
 }
 
-export const compileCSSPlan = compileCSSConfig
-
-export function compileCSSConfigFile(file: string, options: CompileCSSConfigOptions = {}): CompileCSSConfigResult {
+export function compileCSSPlanFile(file: string, options: CompileCSSPlanOptions = {}): CompileCSSPlanResult {
     const result = compileCSSFile(file, {
         ...options,
         preserveNativeCSS: options.preserveNativeCSS ?? false
     })
-    return toCompileCSSConfigResult(result, options)
+    return toCompileCSSPlanResult(result, options)
 }
 
-export const compileCSSPlanFile = compileCSSConfigFile
-
-export function compileProjectConfig(entries: string[], options: CompileCSSConfigOptions = {}): CompileProjectConfigResult {
-    const styleConfigs: Config[] = []
+export function compileProjectPlan(entries: string[], options: CompileCSSPlanOptions = {}): CompileProjectPlanResult {
     const dependencies: string[] = []
     let extractionPolicy = createCSSDirectiveExtractionPolicy()
     const classNames: string[] = []
@@ -335,6 +314,7 @@ export function compileProjectConfig(entries: string[], options: CompileCSSConfi
         warnings: [],
         dependencies: []
     }
+    let plan: MasterCSSPlan | undefined = options.basePlan
     for (const entry of entries) {
         const result = compileCSSFile(entry, {
             ...options,
@@ -346,11 +326,12 @@ export function compileProjectConfig(entries: string[], options: CompileCSSConfi
         addUnique(classNames, result.classNames)
         addUnique(nativeClassNames, result.nativeClassNames)
         addUnique(warnings, result.warnings)
-        const adapterResult = resolveCSSDirectiveConfig(result, {
-            config: extendConfig(...styleConfigs, options.config),
+        const lowerResult = lowerCSSDirectives(result, {
+            basePlan: plan,
             onWarning: options.onWarning
         })
-        const entryGeneratedCSS = adapterResult.generatedCSS || ''
+        plan = lowerResult.plan
+        const entryGeneratedCSS = lowerResult.generatedCSS || ''
         if (result.nativeCSS) nativeCSS.push(result.nativeCSS)
         if (entryGeneratedCSS) generatedCSS.push(entryGeneratedCSS)
         const entryCSS = [
@@ -358,14 +339,11 @@ export function compileProjectConfig(entries: string[], options: CompileCSSConfi
             entryGeneratedCSS
         ].filter(Boolean).join('\n')
         if (entryCSS) css.push(entryCSS)
-        styleConfigs.push(adapterResult.config)
-        addUnique(warnings, adapterResult.warnings)
+        addUnique(warnings, lowerResult.warnings)
     }
-    const finalConfig = entries.length ? extendConfig(...styleConfigs, options.config) : options.config || {}
     return {
         entries,
-        config: finalConfig,
-        plan: createMasterCSSPlan(finalConfig),
+        plan: plan || createMasterCSSPlan(),
         dependencies,
         extractionPolicy,
         classNames,
@@ -378,20 +356,53 @@ export function compileProjectConfig(entries: string[], options: CompileCSSConfi
     }
 }
 
-export const compileProjectPlan = compileProjectConfig
+type PlanUtility = NonNullable<MasterCSSPlan['utilities']>[number]
 
-export function compileCSSConfigModule(file: string, options: CompileCSSConfigOptions = {}): CompileCSSConfigModuleResult {
-    return toConfigModuleResult(compileCSSConfigFile(file, options))
+function normalizeTemplateDeclarations(declarations: Record<string, unknown>) {
+    const normalized: Record<string, unknown> = {}
+    for (const propertyName in declarations) {
+        const value = declarations[propertyName]
+        normalized[propertyName] = Array.isArray(value)
+            ? value.map((part) => part === undefined ? null : part)
+            : value === undefined
+                ? null
+                : value
+    }
+    return normalized
 }
 
-export function compileCSSPlanModule(file: string, options: CompileCSSConfigOptions = {}): CompileCSSPlanModuleResult {
-    return toPlanModuleResult(compileCSSConfigFile(file, options))
+function normalizeUtilityForJSON(utility: PlanUtility): PlanUtility {
+    if (utility.emit.type !== 'template') return utility
+    return {
+        ...utility,
+        emit: {
+            ...utility.emit,
+            declarations: normalizeTemplateDeclarations(utility.emit.declarations as Record<string, unknown>)
+        }
+    }
 }
 
-export function compileProjectConfigModule(entries: string[], options: CompileCSSConfigOptions = {}) {
-    return toConfigModuleResult(compileProjectConfig(entries, options))
+function stringifyPlan(plan: MasterCSSPlan) {
+    return JSON.stringify(plan.utilities?.length
+        ? { ...plan, utilities: plan.utilities.map(normalizeUtilityForJSON) }
+        : plan)
 }
 
-export function compileProjectPlanModule(entries: string[], options: CompileCSSConfigOptions = {}) {
-    return toPlanModuleResult(compileProjectConfig(entries, options))
+function toPlanModule(plan: MasterCSSPlan) {
+    return `export default ${stringifyPlan(plan)};`
+}
+
+function toPlanModuleResult<T extends { plan: MasterCSSPlan }>(result: T): T & { code: string } {
+    return {
+        ...result,
+        code: toPlanModule(result.plan)
+    }
+}
+
+export function compileCSSPlanModule(file: string, options: CompileCSSPlanOptions = {}): CompileCSSPlanModuleResult {
+    return toPlanModuleResult(compileCSSPlanFile(file, options))
+}
+
+export function compileProjectPlanModule(entries: string[], options: CompileCSSPlanOptions = {}) {
+    return toPlanModuleResult(compileProjectPlan(entries, options))
 }

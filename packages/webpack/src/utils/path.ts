@@ -1,8 +1,8 @@
-import { VIRTUAL_CONFIG_DIR } from '@master/css-integration/config-module'
+import { VIRTUAL_MODULE_DIR } from '@master/css-integration/plan-module'
 import path from 'node:path'
 
-export function isVirtualConfigModulePath(modulePath: string) {
-    return modulePath.replace(/\\/g, '/').includes(`${VIRTUAL_CONFIG_DIR}/`)
+export function isVirtualPlanModulePath(modulePath: string) {
+    return modulePath.replace(/\\/g, '/').includes(`${VIRTUAL_MODULE_DIR}/`)
 }
 
 export function normalizePath(filePath: string) {

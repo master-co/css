@@ -46,6 +46,12 @@ const DEFAULT_SETTINGS: EngineSettings = {
     modes: ['light', 'dark']
 }
 
+function assertMasterCSSPlan(plan: MasterCSSPlan): asserts plan is MasterCSSPlan {
+    if (!plan || plan.version !== 1) {
+        throw new TypeError('Unsupported MasterCSSPlan version. Expected version 1.')
+    }
+}
+
 function isNameBoundary(char: string | undefined) {
     return char === undefined || !/[a-zA-Z0-9-]/.test(char)
 }
@@ -82,6 +88,42 @@ function matchesCSSVariableAssignment(className: string) {
 
 function matchesKnownFunction(value: string, names: string[]) {
     return names.some((name) => value.startsWith(name + '('))
+}
+
+function hasTopLevelValueSeparator(value: string) {
+    let depth = 0
+    let quote = ''
+    for (let index = 0; index < value.length; index++) {
+        const char = value[index]
+        if (quote) {
+            if (char === '\\') {
+                index++
+            } else if (char === quote) {
+                quote = ''
+            }
+            continue
+        }
+        if (char === '"' || char === '\'') {
+            quote = char
+            continue
+        }
+        if (char === '(' || char === '[' || char === '{') {
+            depth++
+            continue
+        }
+        if (char === ')' || char === ']' || char === '}') {
+            if (depth > 0) depth--
+            continue
+        }
+        if (char === '|' && depth === 0) return true
+    }
+    return false
+}
+
+function matchesValueSegmentPolicy(value: string, matcher: MasterCSSPlanUtilityMatcher) {
+    return (matcher.type !== 'variable' && matcher.type !== 'value')
+        || matcher.segments === 'multiple'
+        || !hasTopLevelValueSeparator(value)
 }
 
 export default class MasterCSS {
@@ -150,6 +192,7 @@ export default class MasterCSS {
     }
 
     loadPlan(plan: MasterCSSPlan) {
+        assertMasterCSSPlan(plan)
         // @ts-expect-error read-only
         this.plan = plan
         this.loadResolvedPlan()
@@ -348,6 +391,7 @@ export default class MasterCSS {
             case 'variable': {
                 const value = getKeyedValue(className, matcher.keys)
                 if (value === undefined || !utility.variables?.size) return false
+                if (!matchesValueSegmentPolicy(value, matcher)) return false
                 for (const variableKey of utility.variables.keys()) {
                     if (value.startsWith(variableKey) && isNameBoundary(value[variableKey.length])) return true
                 }
@@ -356,6 +400,7 @@ export default class MasterCSS {
             case 'value': {
                 const value = getKeyedValue(className, matcher.keys)
                 if (value === undefined) return false
+                if (!matchesValueSegmentPolicy(value, matcher)) return false
                 for (const token of utility.values || []) {
                     if (value.startsWith(token) && isWordBoundary(value[token.length])) return true
                 }

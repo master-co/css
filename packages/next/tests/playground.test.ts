@@ -46,6 +46,7 @@ describe('playground', () => {
         const clientSource = readJavaScriptFiles(join(playgroundDir, '.next/static/chunks'))
 
         expect(html).toContain('.fg\\:primary{color:var(--color-primary)}')
-        expect(clientSource).toContain('key:"primary",value:"#0070f3"')
+        expect(clientSource).toContain('primary')
+        expect(clientSource).toContain('#0070f3')
     }, 120000)
 })

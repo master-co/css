@@ -1,6 +1,4 @@
-import Layer from '@master/css-engine/layer'
-import { Rule } from '@master/css-engine/rule'
-import VariableRule from '@master/css-engine/variable-rule'
+import { Layer, Rule, VariableRule } from '@master/css-engine'
 import findNativeCSSRuleIndex from 'shared/utils/find-native-css-rule-index'
 import CSSRuntime from './core'
 

@@ -1,6 +1,6 @@
 import { default as defaultOptions, Options } from './options'
-import { createCSS, MasterCSS } from '@master/css'
-import type { Config } from 'shared/css-config'
+import { createCSS, defaultPlan, MasterCSS } from '@master/css'
+import type { MasterCSSPlan } from 'shared/master-css-plan'
 import { extractLatentClasses } from '@master/css-lexer'
 import fs from 'fs'
 import { Minimatch } from 'minimatch'
@@ -142,8 +142,8 @@ export default class CSSExtractor extends EventEmitter {
         this.classExclusionMatcher = undefined
         this.classExclusionOptions = undefined
         this.nativeClassNames = new Set()
-        this.css = createCSS(this.options.config)
-        this.emit('init', this.options, this.config)
+        this.css = createCSS(this.options.plan || defaultPlan)
+        this.emit('init', this.options, this.plan)
         this.initialized = true
         return this
     }
@@ -504,10 +504,10 @@ export default class CSSExtractor extends EventEmitter {
     }
 
     /**
-     * computed from `options.config`
+     * computed from `options.plan`
      */
-    get config(): Config {
-        return this.css.config
+    get plan(): MasterCSSPlan {
+        return this.css.plan
     }
 
     get slotCSSRule(): string {

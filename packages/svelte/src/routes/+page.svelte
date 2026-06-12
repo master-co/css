@@ -1,5 +1,6 @@
 <script lang="ts">
     import type { MasterCSSPlan } from "@master/css-runtime";
+    import { defaultPlan } from "@master/css";
     import { CSSRuntimeProvider } from "../lib/runtime-provider.js";
 
     let containerRef = $state<HTMLDivElement>();
@@ -7,12 +8,18 @@
         version: 1,
         utilities: [
             {
+                id: "btn",
                 name: "btn",
                 type: -4,
+                order: 0,
                 layer: "components",
-                rules: [
-                    { selector: "&", declarations: { border: "0.125rem var(--color-red) solid" } },
-                ],
+                emit: {
+                    type: "static",
+                    rules: [
+                        { selector: "&", declarations: { border: "0.125rem var(--color-red) solid" } },
+                    ],
+                },
+                matchers: [{ type: "static", name: "btn" }],
             },
         ],
     });
@@ -47,7 +54,7 @@
         <button
             id="config-btn"
             class="btn bg:blue-50"
-            onclick={() => (plan = { version: 1 })}>CONFIG</button
+            onclick={() => (plan = defaultPlan)}>CONFIG</button
         >
         <button
             id="root-btn"

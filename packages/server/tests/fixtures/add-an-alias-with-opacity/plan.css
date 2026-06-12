@@ -1,0 +1,11 @@
+@theme {
+    --color-black: oklch(0% 0 none);
+}
+
+@theme {
+    --color-primary: $color-black/.5;
+}
+
+@theme {
+    --color-secondary: $color-primary/.5;
+}

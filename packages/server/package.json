@@ -57,6 +57,7 @@
         "htmlparser2": "^12.0.0"
     },
     "devDependencies": {
+        "@master/css-compiler": "workspace:^",
         "shared": "workspace:^"
     }
 }

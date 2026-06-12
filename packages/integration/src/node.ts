@@ -1,10 +1,6 @@
 import { existsSync, mkdirSync, writeFileSync } from 'node:fs'
 import { dirname } from 'node:path'
 import {
-    EMPTY_CONFIG_MODULE,
-    toVirtualDefaultConfigModulePath
-} from './config-module'
-import {
     EMPTY_PLAN_MODULE,
     toVirtualDefaultPlanModulePath
 } from './plan-module'
@@ -19,10 +15,6 @@ export function ensureVirtualModuleFile(file: string, source: string) {
         writeFileSync(file, source)
     }
     return file
-}
-
-export function ensureVirtualConfigModulePath(projectDir = process.cwd()) {
-    return ensureVirtualModuleFile(toVirtualDefaultConfigModulePath(projectDir), EMPTY_CONFIG_MODULE)
 }
 
 export function ensureVirtualPlanModulePath(projectDir = process.cwd()) {

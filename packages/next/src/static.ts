@@ -1,6 +1,5 @@
 import CSSExtractor, { type Options as ExtractorOptions } from '@master/css-extractor'
 import defaultExtractorOptions from '@master/css-extractor/options'
-import type { Config } from '@master/css'
 import {
     createStyleCSSHostSource,
     createExtractedCSS as createExtractorStaticCSS,
@@ -28,7 +27,6 @@ export interface StaticState {
     outputPath: string
     scanLogPath: string
     options: {
-        config?: Config
         extractorOptions: ExtractorOptions
         debug: boolean
     }
@@ -63,7 +61,6 @@ function resolveExtractorOptions(options: ResolvedOptions): ExtractorOptions {
     ]
     return {
         ...options.extractorOptions,
-        config: options.extractorOptions.config ?? options.config,
         exclude: [...new Set(exclude)],
         output: DEFAULT_STATIC_OUTPUT,
         verbose: options.extractorOptions.verbose ?? (options.debug ? 1 : 0)
@@ -87,7 +84,6 @@ export async function transformStaticStyleSource(statePath: string, resourcePath
     }
     const options = resolveOptions({
         mode: 'static',
-        config: state.options.config,
         extractorOptions: state.options.extractorOptions,
         debug: state.options.debug
     })
@@ -195,7 +191,6 @@ export async function writeStaticState(
         outputPath,
         scanLogPath,
         options: {
-            config: options.config,
             extractorOptions: resolveExtractorOptions(options),
             debug: options.debug
         }
@@ -217,7 +212,6 @@ export async function addStaticCSSDependencies(statePath: string, addDependency?
     const state = readStaticState(statePath)
     const options = resolveOptions({
         mode: 'static',
-        config: state.options.config,
         extractorOptions: state.options.extractorOptions,
         debug: state.options.debug
     })
@@ -284,7 +278,6 @@ export async function scanStaticModule(statePath: string, resourcePath: string, 
     const state = readStaticState(statePath)
     const options = resolveOptions({
         mode: 'static',
-        config: state.options.config,
         extractorOptions: state.options.extractorOptions,
         debug: state.options.debug
     })

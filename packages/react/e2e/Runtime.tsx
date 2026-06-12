@@ -1,18 +1,25 @@
 import { CSSRuntimeProvider } from '../src/runtime-provider'
 import { useState, useEffect, useRef } from 'react'
 import type { MasterCSSPlan } from '@master/css-runtime'
+import { defaultPlan } from '@master/css'
 
 export default function Runtime() {
     const [plan, setPlan] = useState<MasterCSSPlan>({
         version: 1,
         utilities: [
             {
+                id: 'btn',
                 name: 'btn',
                 type: -4,
+                order: 0,
                 layer: 'components',
-                rules: [
-                    { selector: '&', declarations: { border: '0.125rem solid oklch(63.7% 0.237 25.331)' } }
-                ]
+                emit: {
+                    type: 'static',
+                    rules: [
+                        { selector: '&', declarations: { border: '0.125rem solid oklch(63.7% 0.237 25.331)' } }
+                    ]
+                },
+                matchers: [{ type: 'static', name: 'btn' }]
             }
         ]
     })
@@ -33,7 +40,7 @@ export default function Runtime() {
     }, [containerRef])
 
     return <CSSRuntimeProvider root={root} plan={plan}>
-        <button id="config-btn" className="btn" onClick={() => setPlan({ version: 1 })}></button>
+        <button id="config-btn" className="btn" onClick={() => setPlan(defaultPlan)}></button>
         <button id="root-btn" onClick={() => setRoot(shadowRoot)}></button>
         <div id="container" ref={containerRef}></div>
     </CSSRuntimeProvider>

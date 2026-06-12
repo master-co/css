@@ -1,6 +1,7 @@
 import { describe, expect, test } from 'vitest'
 import StyleEntryPlugin from '../../src/plugins/style-entry'
 import { VIRTUAL_CSS_ID } from '@master/css-integration/style-module'
+import { defaultPlan } from '@master/css'
 
 const SLOT = '#master-css-slot{--slot:0}'
 const RESOLVED_VIRTUAL_CSS_ID = '\0' + VIRTUAL_CSS_ID
@@ -12,7 +13,7 @@ function makeContext(command: 'serve' | 'build', css = '.fg\\:red{color:red}', i
         extractor: {
             options: { safelist: [] },
             slotCSSRule: SLOT,
-            css: { text: css },
+            css: { text: css, plan: defaultPlan },
             config: {},
             latentClasses: new Set(['fg:red']),
             validClasses: new Set(),

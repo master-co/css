@@ -3,6 +3,7 @@ import { expect, test } from 'vitest'
 import CSSLanguageService from '../src/core'
 import createDoc from '../src/utils/create-doc'
 import { SEMANTIC_TOKEN_MODIFIERS, SEMANTIC_TOKEN_TYPES } from '../src'
+import { createThemePlan } from './helpers/create-theme-plan'
 
 function decodeSemanticTokens(doc: ReturnType<typeof createDoc>, data: number[]) {
     const tokens: { text: string, type: string, modifiers: string[] }[] = []
@@ -46,7 +47,7 @@ test.concurrent('renders semantic tokens for class attributes', () => {
         '<div className="fg:brand:hover@sm block block:hover block:state-name hidden_div::before:of(.active) m:4x bg:rgb(0|0|0) w:10::scrollbar btn btn:hover@sm btn_div::before"></div>',
         'tsx',
         {
-            config: {
+            plan: createThemePlan({
                 variables: [{ key: 'brand', value: '#123456' }],
                 utilities: [
                     {
@@ -59,7 +60,7 @@ test.concurrent('renders semantic tokens for class attributes', () => {
                         ]
                     }
                 ]
-            }
+            })
         }
     )
 
@@ -91,12 +92,12 @@ test.concurrent('renders semantic tokens for CSS-like values', () => {
         '<div className="h:$size-sm fg:$color-blue-50/.5 content:x::before bg:rgb(0|0|0) fg:red_:where(a:hover) font:mono_:is(code,pre)@base font:semibold_:headings font:semibold_:is(h1,h2,h3,h4,h5,h6)"></div>',
         'tsx',
         {
-            config: {
+            plan: createThemePlan({
                 variables: [
                     { key: 'size-sm', value: 16 },
                     { namespace: 'color', key: 'blue-50', value: 'oklch(60% 0.2 250)' }
                 ]
-            }
+            })
         }
     )
 

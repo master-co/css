@@ -68,16 +68,16 @@ import { CSSRuntimeRegistry } from '@master/css.vue'
 </template>
 ```
 
-Use the provider subpath when you need to pass a custom config or root:
+Use the provider subpath when you need to pass a custom plan or root:
 
 ```vue
 <script setup lang="ts">
 import { CSSRuntimeProvider } from '@master/css.vue/runtime-provider'
-import config from './app.css?master-css-config'
+import plan from './app.css?master-css-plan'
 </script>
 
 <template>
-    <CSSRuntimeProvider :config="config">
+    <CSSRuntimeProvider :plan="plan">
         <slot />
     </CSSRuntimeProvider>
 </template>

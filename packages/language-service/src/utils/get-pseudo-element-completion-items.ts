@@ -1,5 +1,4 @@
-import { MasterCSS, createCSS } from '@master/css'
-import { generateCSS } from '@master/css/utils'
+import { MasterCSS, createDefaultCSS, generateCSS } from '../master-css'
 import cssDataProvider from './css-data-provider'
 import { type CompletionItem, CompletionItemKind } from 'vscode-languageserver-protocol'
 import sortCompletionItems from './sort-completion-items'
@@ -8,7 +7,7 @@ import { IPseudoElementData } from 'vscode-css-languageservice'
 
 const kind = CompletionItemKind.Function
 
-export default function getPseudoElementCompletionItems(css: MasterCSS = createCSS(), syntax: string): CompletionItem[] {
+export default function getPseudoElementCompletionItems(css: MasterCSS = createDefaultCSS(), syntax: string): CompletionItem[] {
     const pseudoElementDataList = cssDataProvider.providePseudoElements()
     const completionItems = pseudoElementDataList
         .map((data) => {
@@ -30,7 +29,7 @@ export default function getPseudoElementCompletionItems(css: MasterCSS = createC
             } as CompletionItem
         })
 
-    const selectorVariants = (css.config.variants || [])
+    const selectorVariants = (css.plan.variants || [])
         .map((variant) => ({ token: variant.token, selector: variant.branches.find((branch) => branch.selector)?.selector }))
         .filter((variant): variant is { token: `::${string}`, selector: string } => Boolean(variant.selector) && variant.token.startsWith('::'))
     for (const variant of selectorVariants) {

@@ -1,4 +1,4 @@
-import { createCSS } from '@master/css'
+import { createCSS, defaultPlan } from '@master/css'
 import validateCSS from './validate-css'
 
 /**
@@ -7,7 +7,7 @@ import validateCSS from './validate-css'
  */
 export default function generateValidRules(
     syntax: string,
-    css = createCSS()
+    css = createCSS(defaultPlan)
 ) {
     const rules = css.generate(syntax)
     if (rules.length) {

@@ -11,7 +11,7 @@ function createFixtureDir() {
     return fixtureDir
 }
 
-function readVirtualConfigSource(projectDir: string) {
+function readVirtualPlanSource(projectDir: string) {
     const configDir = join(projectDir, 'node_modules/.master-css')
     const [filename] = readdirSync(configDir).filter((entry) => entry.endsWith('.js'))
     return readFileSync(join(configDir, filename), 'utf-8')
@@ -48,8 +48,8 @@ afterEach(() => {
     }
 })
 
-describe('css config import loader', () => {
-    it('rewrites relative CSS config query imports from TypeScript modules to generated JS config modules', async () => {
+describe('css plan import loader', () => {
+    it('rewrites relative CSS plan query imports from TypeScript modules to generated JS plan modules', async () => {
         const projectDir = createFixtureDir()
         const appDir = join(projectDir, 'app')
         const configPath = join(appDir, 'theme.css')
@@ -60,18 +60,20 @@ describe('css config import loader', () => {
         writeFileSync(resourcePath, '')
 
         const source = await runConfigImportLoader({
-            source: 'import themeConfig from "./theme.css?master-css-config"\nexport default themeConfig',
+            source: 'import themePlan from "./theme.css?master-css-plan"\nexport default themePlan',
             resourcePath,
             projectDir,
             addDependency: (dependency) => dependencies.push(dependency)
         })
 
-        expect(source).toContain('import themeConfig from "../node_modules/.master-css/')
+        expect(source).toContain('import themePlan from "../node_modules/.master-css/')
         expect(dependencies).toEqual([configPath])
-        expect(readVirtualConfigSource(projectDir)).toContain('"namespace":"color"')
+        expect(readVirtualPlanSource(projectDir)).toContain('"version":1')
+        expect(readVirtualPlanSource(projectDir)).toContain('primary')
+        expect(readVirtualPlanSource(projectDir)).toContain('#123')
     })
 
-    it('resolves package CSS config query imports without package-specific rules', async () => {
+    it('resolves package CSS plan query imports without package-specific rules', async () => {
         const projectDir = createFixtureDir()
         const appDir = join(projectDir, 'app')
         const packageDir = join(projectDir, 'node_modules/@fixture/tokens')
@@ -89,13 +91,14 @@ describe('css config import loader', () => {
         writeFileSync(join(packageDir, 'theme.css'), '@theme { --color-package: #456; }')
 
         const source = await runConfigImportLoader({
-            source: 'import themeConfig from "@fixture/tokens/theme.css?master-css-config"\nexport default themeConfig',
+            source: 'import themePlan from "@fixture/tokens/theme.css?master-css-plan"\nexport default themePlan',
             resourcePath,
             projectDir
         })
 
-        expect(source).toContain('import themeConfig from "../node_modules/.master-css/')
-        expect(readVirtualConfigSource(projectDir)).toContain('"package"')
+        expect(source).toContain('import themePlan from "../node_modules/.master-css/')
+        expect(readVirtualPlanSource(projectDir)).toContain('package')
+        expect(readVirtualPlanSource(projectDir)).toContain('#456')
     })
 
     it('leaves non-import strings and unrelated imports unchanged', async () => {
@@ -106,16 +109,16 @@ describe('css config import loader', () => {
 
         await expect(runConfigImportLoader({
             source: [
-                'import config from "virtual:master-css-config"',
-                'const request = "./theme.css?master-css-config"',
-                'export default config'
+                'import plan from "virtual:master-css-plan"',
+                'const request = "./theme.css?master-css-plan"',
+                'export default plan'
             ].join('\n'),
             resourcePath,
             projectDir
         })).resolves.toBe([
-            'import config from "virtual:master-css-config"',
-            'const request = "./theme.css?master-css-config"',
-            'export default config'
+            'import plan from "virtual:master-css-plan"',
+            'const request = "./theme.css?master-css-plan"',
+            'export default plan'
         ].join('\n'))
     })
 })

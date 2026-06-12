@@ -1,7 +1,7 @@
-import config from '@master/css/config'
+import { planUtilities, getUtilityVariableNamespaces } from '~/site/utils/plan-utilities'
 
 const namespaces = ['duration', 'easing', 'delay']
-const utilities = config.utilities || []
+const utilities = planUtilities
 
 export default () =>
     <figure>
@@ -17,7 +17,7 @@ export default () =>
                     {
                         namespaces.map((namespace) => {
                             const utilityNames = utilities
-                                .filter((utility) => utility.namespaces?.includes(namespace))
+                                .filter((utility) => getUtilityVariableNamespaces(utility).includes(namespace))
                                 .map(({ name }) => name)
 
                             return (

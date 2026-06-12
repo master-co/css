@@ -16,8 +16,7 @@ export default function StyleEntryPlugin(context: MasterCSSWebpackContext): Webp
                     {
                         loader: resolveStyleCSSLoaderPath(),
                         options: {
-                            virtualCSSImportModuleId: context.virtualCSSImportModuleId,
-                            config: context.getOptions().config
+                            virtualCSSImportModuleId: context.virtualCSSImportModuleId
                         }
                     }
                 ]

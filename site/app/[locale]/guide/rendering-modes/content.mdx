@@ -7,7 +7,7 @@ Master CSS integrations choose how generated rules reach the browser. The same p
 
 | Mode                      | Description                                                                                                                                           |
 |---------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `'runtime'`               | Starts `CSSRuntime` in the browser, observes connected elements, and generates rules as class names appear. Vite can inject the runtime and default config module automatically. |
+| `'runtime'`               | Starts `CSSRuntime` in the browser, observes connected elements, and generates rules as class names appear. Vite can inject the runtime and default plan module automatically. |
 | `'static'`                | Scans source files, replaces `@import '@master/css'` in managed CSS entries, prunes native CSS, and generates CSS from the project CSS entry graph. |
 | `'pre-render'`            | Renders HTML output and injects the critical CSS required by the rendered class names. This mode is usually owned by SSR/SSG integrations. |
 | `'progressive'`           | Combines pre-rendered first-page CSS with client-side runtime hydration for classes that appear after the initial HTML. |
@@ -146,14 +146,14 @@ const sheet = document.querySelector('style[id="master"]').sheet
 console.log(sheet.cssRules)
 ```
 
-When runtime code needs project tokens, modes, or component definitions, load the compiled runtime inputs from the integration. `virtual:master-css-config` resolves the canonical project-level config discovered from the CSS entry, and `virtual:master-css-preloaded` records variables and keyframes that the entry already emitted.
+When runtime code needs project tokens, modes, or component definitions, load the compiled runtime inputs from the integration. `virtual:master-css-plan` resolves the canonical project-level plan discovered from the CSS entry, and `virtual:master-css-preloaded` records variables and keyframes that the entry already emitted.
 
 ```js
 import { initCSSRuntime } from '@master/css-runtime'
-import config from 'virtual:master-css-config'
+import plan from 'virtual:master-css-plan'
 import preloaded from 'virtual:master-css-preloaded'
 
-initCSSRuntime({ config, preloaded })
+initCSSRuntime({ plan, preloaded })
 ```
 
 ---
@@ -185,7 +185,7 @@ For example, the following HTML:
 Render the HTML:
 ```ts name=server.ts
 import { render } from '@master/css-server'
-import config from 'virtual:master-css-config'
+import plan from 'virtual:master-css-plan'
 
 const indexHTML = readFileSync('./index.html', 'utf-8')
 

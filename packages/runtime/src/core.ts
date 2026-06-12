@@ -1,9 +1,6 @@
-import MasterCSS from '@master/css-engine/core'
-import VariableRule from '@master/css-engine/variable-rule'
-import AnimationRule from '@master/css-engine/animation-rule'
-import type { UtilityLayerName } from 'shared/css-config'
-import type { MasterCSSPlan } from 'shared/master-css-plan'
-import type { MasterCSSPreloaded } from '@master/css-engine/preloaded'
+import { MasterCSS, VariableRule, AnimationRule } from '@master/css-engine'
+import type { MasterCSSPlan, MasterCSSPlanUtilityLayerName } from 'shared/master-css-plan'
+import type { MasterCSSPreloaded } from '@master/css-engine'
 import registerGlobal from './register-global'
 import { HydrateResult } from './types'
 import RuntimeLayer from './layer'
@@ -32,7 +29,7 @@ export default class CSSRuntime extends MasterCSS {
 
     constructor(
         public root: Document | ShadowRoot = document,
-        plan: MasterCSSPlan = globalThis.cssRuntime?.plan || { version: 1 },
+        plan: MasterCSSPlan,
         preloaded?: MasterCSSPreloaded
     ) {
         super(plan, preloaded)
@@ -221,7 +218,7 @@ export default class CSSRuntime extends MasterCSS {
                     console.error(`Cannot get the selector text from \`${eachNativeLayerRule.cssText}\`. (${layer.name}) (https://rc.css.master.co/messages/hydration-errors)`)
                     continue
                 }
-                const createdUtilities = this.createFromSelectorText(selectorText, layer.name as UtilityLayerName)
+                const createdUtilities = this.createFromSelectorText(selectorText, layer.name as MasterCSSPlanUtilityLayerName)
                 if (createdUtilities) {
                     for (const createdUtility of createdUtilities) {
                         layer.rules.push(createdUtility)

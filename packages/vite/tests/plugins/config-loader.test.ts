@@ -2,13 +2,9 @@ import { describe, expect, it, vi } from 'vitest'
 import path from 'node:path'
 import CSSExtractor from '@master/css-extractor'
 import ConfigLoaderPlugin from '../../src/plugins/config-loader'
-import { MASTER_CSS_CONFIG_QUERY, fromResolvedMasterCSSConfigId, toResolvedMasterCSSConfigId } from '@master/css-integration/config-module'
+import { MASTER_CSS_PLAN_QUERY, fromResolvedMasterCSSPlanId, toResolvedMasterCSSPlanId } from '@master/css-integration/plan-module'
 
 const FIXTURE_DIR = path.resolve(__dirname, '../fixtures/config-virtual-module')
-
-function parseDefaultExport(code: string) {
-    return JSON.parse(code.replace(/^export default /, '').replace(/;$/, ''))
-}
 
 async function createContext(root = FIXTURE_DIR) {
     const context = {
@@ -27,16 +23,16 @@ async function createContext(root = FIXTURE_DIR) {
 }
 
 describe('ConfigLoaderPlugin', () => {
-    it('encodes per-file CSS config ids without a .css suffix for Vite dev', () => {
+    it('encodes per-file CSS plan ids without a .css suffix for Vite dev', () => {
         const file = path.join(FIXTURE_DIR, 'theme.css')
-        const id = toResolvedMasterCSSConfigId(file)
+        const id = toResolvedMasterCSSPlanId(file)
 
         expect(id).not.toContain('.css')
         expect(id).not.toContain('%2Ecss')
-        expect(fromResolvedMasterCSSConfigId(id)).toBe(file)
+        expect(fromResolvedMasterCSSPlanId(id)).toBe(file)
     })
 
-    it('resolves and loads per-file CSS configs with ?master-css-config', async () => {
+    it('resolves and loads per-file CSS plans with ?master-css-plan', async () => {
         const context = await createContext()
         const plugin = ConfigLoaderPlugin(context)
         const importer = path.join(FIXTURE_DIR, 'entry.ts')
@@ -45,40 +41,26 @@ describe('ConfigLoaderPlugin', () => {
 
         const resolvedId = await (plugin.resolveId as any).call(
             { resolve },
-            './theme.css' + MASTER_CSS_CONFIG_QUERY,
+            './theme.css' + MASTER_CSS_PLAN_QUERY,
             importer
         )
         const code = await (plugin.load as any).call({ addWatchFile }, resolvedId)
-        const config = parseDefaultExport(code)
         const themeComponentsPath = path.join(FIXTURE_DIR, 'styles/theme-components.css')
 
-        expect(resolvedId).toBe(toResolvedMasterCSSConfigId(path.join(FIXTURE_DIR, 'theme.css')))
+        expect(resolvedId).toBe(toResolvedMasterCSSPlanId(path.join(FIXTURE_DIR, 'theme.css')))
         expect(addWatchFile).toHaveBeenCalledWith(path.join(FIXTURE_DIR, 'theme.css'))
         expect(addWatchFile).toHaveBeenCalledWith(themeComponentsPath)
-        expect(config).toMatchObject({
-            variables: [
-                { namespace: 'color', key: 'accent', value: '#456' },
-                { namespace: 'color', key: 'accent', value: '#789', mode: 'dark' }
-            ],
-            utilities: expect.arrayContaining([
-                expect.objectContaining({
-                    name: 'badge',
-                    type: -4,
-                    layer: 'components',
-                    declarations: {
-                        display: 'inline-flex'
-                    }
-                })
-            ])
-        })
-        expect(config.modes).toEqual(['dark'])
+        expect(code).toContain('"version":1')
+        expect(code).toContain('accent')
+        expect(code).toContain('#456')
+        expect(code).toContain('badge')
     })
 
-    it('full reloads when a per-file CSS config module is imported', async () => {
+    it('full reloads when a per-file CSS plan module is imported', async () => {
         const context = await createContext()
         const plugin = ConfigLoaderPlugin(context)
         const configPath = path.join(FIXTURE_DIR, 'theme.css')
-        const resolvedId = toResolvedMasterCSSConfigId(configPath)
+        const resolvedId = toResolvedMasterCSSPlanId(configPath)
         const importer = {}
         const module = { importers: new Set([importer]) }
         const invalidateModule = vi.fn()

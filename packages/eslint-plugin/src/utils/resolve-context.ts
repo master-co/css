@@ -1,15 +1,14 @@
 import type { RuleContext } from '@typescript-eslint/utils/ts-eslint'
 import settings, { Settings } from '../settings'
-import { MasterCSS, createCSS } from '@master/css'
+import { MasterCSS, MasterCSSPlan, createCSS, defaultPlan } from './master-css'
 import { findMasterCSSWorkspaceDirectoriesSync } from '@master/css-configer/css'
-import { loadProjectConfigSync } from '@master/css-configer/load-sync'
-import type { Config } from 'shared/css-config'
+import { loadProjectPlanSync } from '@master/css-configer/load-sync'
 import path from 'node:path'
 import { existsSync } from 'node:fs'
 
 declare interface CSSCache {
     cwd: string
-    config?: Config,
+    plan?: MasterCSSPlan,
     css: MasterCSS,
 }
 
@@ -46,24 +45,24 @@ function resolveWorkspaceDirectory(context: RuleContext<any, any[]>, filename: s
     return closestDirectory || cwd
 }
 
-function resolveConfig(workspaceDir: string, config?: Config) {
-    const result = loadProjectConfigSync(workspaceDir, { config })
-    return result.entries.length ? result.config : config
+function resolvePlan(workspaceDir: string, plan?: MasterCSSPlan) {
+    const result = loadProjectPlanSync(workspaceDir)
+    return result.entries.length ? result.plan : plan
 }
 
 export default function resolveContext(context: RuleContext<any, any[]>) {
     const resolvedSettings = Object.assign({}, settings, context.settings?.['@master/css'])
     const filename = getContextFilename(context)
     const workspaceDir = filename ? resolveWorkspaceDirectory(context, filename) : context.cwd || process.cwd()
-    let css = cssCaches.find(cache => cache.config === resolvedSettings.config &&
+    let css = cssCaches.find(cache => cache.plan === resolvedSettings.plan &&
         cache.cwd === workspaceDir)?.css
 
     if (!css) {
-        const config = filename
-            ? resolveConfig(workspaceDir, resolvedSettings.config)
-            : resolvedSettings.config
-        css = createCSS(config)
-        cssCaches.push({ cwd: workspaceDir, config: resolvedSettings.config, css })
+        const plan = filename
+            ? resolvePlan(workspaceDir, resolvedSettings.plan)
+            : resolvedSettings.plan
+        css = createCSS(plan || defaultPlan)
+        cssCaches.push({ cwd: workspaceDir, plan: resolvedSettings.plan, css })
     }
 
     return {

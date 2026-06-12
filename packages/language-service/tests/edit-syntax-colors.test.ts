@@ -2,14 +2,14 @@ import { test, it, expect, describe } from 'vitest'
 import CSSLanguageService from '../src/core'
 import createDoc from '../src/utils/create-doc'
 import { ColorInformation, ColorPresentation } from 'vscode-languageserver-protocol'
-import { createThemeConfig } from '../../core/tests/helpers/create-css-with-theme'
+import { createThemePlan } from './helpers/create-theme-plan'
 
 const expectEditedColors = async ({ before, after }: { before: string, after: string }) => {
     const beforeContent = `export default () => <div className='fg:${before}'></div>`
     const afterContent = `export default () => <div className='fg:${after}'></div>`
     const beforeDoc = createDoc('tsx', beforeContent)
     const afterDoc = createDoc('tsx', afterContent)
-    const languageService = new CSSLanguageService({ config: createThemeConfig() })
+    const languageService = new CSSLanguageService({ plan: createThemePlan() })
     const beforeColorInformation = (await languageService.renderSyntaxColors(beforeDoc))?.[0] as ColorInformation
     const afterColorInformation = (await languageService.renderSyntaxColors(afterDoc))?.[0] as ColorInformation
     expect(await languageService.editSyntaxColors(beforeDoc, afterColorInformation.color, beforeColorInformation.range))

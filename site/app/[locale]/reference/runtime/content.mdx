@@ -5,10 +5,10 @@
 To import and initialize the runtime engine in the entry file, such as `main.js`:
 ```js name=main.js
 import { initCSSRuntime } from '@master/css-runtime'
-import config from 'virtual:master-css-config'
+import plan from 'virtual:master-css-plan'
 import preloaded from 'virtual:master-css-preloaded'
 
-initCSSRuntime({ config, preloaded })
+initCSSRuntime({ plan, preloaded })
 ```
 
 ---
@@ -18,10 +18,11 @@ initCSSRuntime({ config, preloaded })
 The `Runtime` extends the [`MasterCSS`](/reference/core#mastercss) and only works in the browser environment.
 ```ts
 import CSSRuntime from '@master/css-runtime'
+import plan from 'virtual:master-css-plan'
 
-const cssRuntime = new CSSRuntime(document, config)
+const cssRuntime = new CSSRuntime(document, plan)
 ```
-`CSSRuntime` uses the provided config directly. Use `initCSSRuntime({ config })` when the runtime should extend the default config with a project config and reuse an existing runtime for the same root.
+`CSSRuntime` uses the provided plan directly. Use `initCSSRuntime({ plan })` when the runtime should reuse an existing runtime for the same root.
 
 ### `CSSRuntime.instances`
 Runtime instances keyed by `Document` or `ShadowRoot`.
@@ -56,10 +57,10 @@ Cancel the previous `.observe()` of `js this.root`.
 </DocFn>
 
 ### `cssRuntime.refresh()`
-Refresh the Master Runtime CSS with the resolved configuration.
+Refresh the Master Runtime CSS with a complete `MasterCSSPlan`.
 <DocFn>
     {[
-        { name: 'config?', type: 'Config', defaultValue: 'this.config' },
+        { name: 'plan?', type: 'MasterCSSPlan', defaultValue: 'this.plan' },
         { name: 'return', type: 'this' },
     ]}
 </DocFn>
@@ -93,11 +94,11 @@ Initializes the Master CSS runtime rendering engine.
 </DocFn>
 ```ts
 import { initCSSRuntime } from '@master/css-runtime'
-import config from 'virtual:master-css-config'
+import plan from 'virtual:master-css-plan'
 import preloaded from 'virtual:master-css-preloaded'
 
 const css = initCSSRuntime({
-    config,
+    plan,
     preloaded,
     root: document,
     autoObserve: true
@@ -105,27 +106,29 @@ const css = initCSSRuntime({
 ```
 Equivalent to:
 ```ts
-import CSSRuntime, { resolveRuntimeConfig } from '@master/css-runtime'
+import CSSRuntime from '@master/css-runtime'
+import plan from 'virtual:master-css-plan'
 
-const cssRuntime = new CSSRuntime(document, resolveRuntimeConfig()).observe()
+const cssRuntime = new CSSRuntime(document, plan).observe()
 ```
 
 If a runtime already exists for the same root, `initCSSRuntime()` returns that instance instead of creating a second observer.
 
 `preloaded` tells the runtime which variables and keyframes were already emitted by the project CSS entry, so future dynamic classes can reuse them without inserting duplicate global CSS.
 
-### `resolveRuntimeConfig()`
-Merges the default Master CSS config with a project config before runtime refresh or initialization.
+### `resolveRuntimePlan()`
+Returns the complete `MasterCSSPlan` passed to runtime refresh or initialization.
 <DocFn>
     {[
-        { name: 'config?', type: 'Config', defaultValue: 'undefined' },
-        { name: 'return', type: 'Config' },
+        { name: 'plan', type: 'MasterCSSPlan' },
+        { name: 'return', type: 'MasterCSSPlan' },
     ]}
 </DocFn>
 ```ts
-import { resolveRuntimeConfig } from '@master/css-runtime'
+import { resolveRuntimePlan } from '@master/css-runtime'
+import plan from 'virtual:master-css-plan'
 
-cssRuntime.refresh(resolveRuntimeConfig(config))
+cssRuntime.refresh(resolveRuntimePlan(plan))
 ```
 
-React, Vue, and Svelte runtime providers use this helper when their `config` prop changes, so provider refreshes keep built-in utilities and project config together.
+React, Vue, and Svelte runtime providers use this helper when their `plan` prop changes.

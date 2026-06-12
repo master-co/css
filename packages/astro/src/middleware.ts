@@ -1,6 +1,6 @@
 import { createMasterCSSMiddleware } from './server'
 
 // @ts-expect-error virtual module
-import config from 'virtual:master-css-config'
+import plan from 'virtual:master-css-plan'
 
-export const onRequest = createMasterCSSMiddleware(config)
+export const onRequest = createMasterCSSMiddleware(plan)

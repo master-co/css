@@ -17,10 +17,10 @@ This package provides a React runtime registry, provider, and hook around `@mast
 ## Risks
 
 - Client-only runtime initialization.
-- `CSSRuntimeRegistry` depends on `virtual:master-css-config` and must only be exposed through integration-aware entry points.
-- `src/runtime-provider.tsx` must remain free of `virtual:master-css-config` imports for users that provide config manually.
+- `CSSRuntimeRegistry` depends on `virtual:master-css-plan` and must only be exposed through integration-aware entry points.
+- `src/runtime-provider.tsx` must remain free of `virtual:master-css-plan` imports for users that provide a plan manually.
 - Cleanup on unmount.
-- Refreshing runtime when config changes.
+- Refreshing runtime when plan changes.
 - Destroy/recreate behavior when root changes.
 
 ## Rules

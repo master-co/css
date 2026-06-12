@@ -89,15 +89,15 @@ export { default as handle } from '@master/css.svelte/hooks.server'
 </CSSRuntimeRegistry>
 ```
 
-Use the provider subpath when you need to pass a custom config or root:
+Use the provider subpath when you need to pass a custom plan or root:
 
 ```svelte
 <script lang="ts">
     import { CSSRuntimeProvider } from '@master/css.svelte/runtime-provider'
-    import config from './app.css?master-css-config'
+    import plan from './app.css?master-css-plan'
 </script>
 
-<CSSRuntimeProvider {config}>
+<CSSRuntimeProvider {plan}>
     <slot />
 </CSSRuntimeProvider>
 ```

@@ -64,7 +64,6 @@ describe('built-in source adapters', () => {
             extract: () => ['block']
         }
         const extractor = await new CSSExtractor({
-            config: {},
             include: [],
             adapters: [adapter]
         }).init()

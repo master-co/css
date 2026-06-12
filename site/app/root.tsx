@@ -4,7 +4,6 @@ import RootLayout from 'internal/layouts/root'
 import i18n from '~/internal/common/i18n.config.mjs'
 import app from '~/site/app'
 import redirects from '~/site/redirects.mjs'
-import cssConfig from 'virtual:master-css-config'
 
 export default function RootClient(props: {
     children: React.ReactNode,
@@ -14,6 +13,6 @@ export default function RootClient(props: {
     hidden?: boolean,
 }) {
     return (
-        <RootLayout {...props} app={app} cssConfig={cssConfig} redirects={redirects} />
+        <RootLayout {...props} app={app} redirects={redirects} />
     )
 }

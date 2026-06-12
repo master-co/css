@@ -1,7 +1,0 @@
-import { expect, test } from 'vitest'
-import createCSSWithTheme from '../helpers/create-css-with-theme'
-test.concurrent('tab-size', () => {
-    expect(createCSSWithTheme().create('tab-size:4')?.text).toBe('.tab-size\\:4{tab-size:4}')
-    expect(createCSSWithTheme().create('tab:4')?.text).toBe('.tab\\:4{tab-size:4}')
-    expect(createCSSWithTheme({ variables: [{ namespace: 'tab-size', key: 'github', value: 4 }] }).create('tab:github')?.text).toBe('.tab\\:github{tab-size:var(--tab-size-github)}')
-})

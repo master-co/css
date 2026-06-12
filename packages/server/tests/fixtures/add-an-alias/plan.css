@@ -1,0 +1,7 @@
+@theme {
+    --color-white: oklch(100% 0 none);
+}
+
+@theme {
+    --secondary: $color-white;
+}

@@ -1,1 +1,1 @@
-@layer theme{@media (prefers-color-scheme:light){:root{--color-primary:#000000}}@media (prefers-color-scheme:dark){:root{--color-primary:#ffffff}}}@layer utilities{.bg\:primary{background-color:var(--color-primary)}}
+@layer theme{@media (prefers-color-scheme:light){:root{--color-primary:#000}}@media (prefers-color-scheme:dark){:root{--color-primary:#fff}}}@layer utilities{.bg\:primary{background-color:var(--color-primary)}}

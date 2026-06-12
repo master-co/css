@@ -1,15 +1,10 @@
 import {
-    MASTER_CSS_CONFIG_QUERY,
-    stripMasterCSSConfigQuery,
-    toVirtualCSSConfigModulePath
-} from '@master/css-integration/config-module'
-import {
     MASTER_CSS_PLAN_QUERY,
     stripMasterCSSPlanQuery,
     toPlanModule,
     toVirtualCSSPlanModulePath
 } from '@master/css-integration/plan-module'
-import { loadConfigModule } from '@master/css-configer/load'
+import { loadPlanModule } from '@master/css-configer/load'
 import type { Compiler } from 'webpack'
 import type { MasterCSSWebpackContext, WebpackSubPlugin } from '../plugin'
 import { isCSSConfigRequest } from '@master/css-configer/css'
@@ -20,16 +15,13 @@ export default function ConfigLoaderPlugin(context: MasterCSSWebpackContext): We
             compiler.hooks.normalModuleFactory.tap(context.name, (normalModuleFactory) => {
                 normalModuleFactory.hooks.beforeResolve.tapAsync(context.name, (resolveData, callback) => {
                     const request = resolveData.request
-                    const isConfigRequest = request.endsWith(MASTER_CSS_CONFIG_QUERY)
                     const isPlanRequest = request.endsWith(MASTER_CSS_PLAN_QUERY)
-                    if (!isConfigRequest && !isPlanRequest) {
+                    if (!isPlanRequest) {
                         callback()
                         return
                     }
 
-                    const sourceRequest = isPlanRequest
-                        ? stripMasterCSSPlanQuery(request)
-                        : stripMasterCSSConfigQuery(request)
+                    const sourceRequest = stripMasterCSSPlanQuery(request)
                     const resolver = normalModuleFactory.getResolver('normal')
                     resolver.resolve(
                         resolveData.contextInfo,
@@ -47,16 +39,14 @@ export default function ConfigLoaderPlugin(context: MasterCSSWebpackContext): We
                             }
                             try {
                                 if (!isCSSConfigRequest(resolvedPath)) {
-                                    callback(new TypeError('Master CSS config queries only support CSS entry files.'))
+                                    callback(new TypeError('Master CSS plan queries only support CSS entry files.'))
                                     return
                                 }
-                                const result = await loadConfigModule(resolvedPath)
-                                const virtualModuleId = isPlanRequest
-                                    ? toVirtualCSSPlanModulePath(context.compilerContext, resolvedPath)
-                                    : toVirtualCSSConfigModulePath(context.compilerContext, resolvedPath)
+                                const result = await loadPlanModule(resolvedPath)
+                                const virtualModuleId = toVirtualCSSPlanModulePath(context.compilerContext, resolvedPath)
                                 context.virtualModule?.writeModule(
                                     virtualModuleId,
-                                    isPlanRequest ? toPlanModule(result.plan) : result.code
+                                    toPlanModule(result.plan)
                                 )
                                 for (const dependency of result.dependencies) {
                                     resolveData.fileDependencies.add(dependency)

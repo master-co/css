@@ -6,8 +6,9 @@ import {
     type MasterCSSShikiCodeToHastOptions
 } from '../src/shiki'
 import type { Settings } from '../src/settings'
+import { createThemePlan } from './helpers/create-theme-plan'
 
-const config: Settings['config'] = {
+const plan: Settings['plan'] = createThemePlan({
     variables: [{ key: 'brand', value: '#123456' }],
     utilities: [
         {
@@ -19,7 +20,7 @@ const config: Settings['config'] = {
             ]
         }
     ]
-}
+})
 
 function syntaxToken(content: string, color: string) {
     return {
@@ -94,7 +95,7 @@ test.concurrent('creates Shiki decorations from Master CSS semantic tokens', () 
     const code = '<div className="fg:brand:hover@sm block btn btn:hover@sm btn_div::before"></div>'
     const decorations = createMasterCSSShikiSemanticTokenDecorations(code, {
         lang: 'tsx',
-        config
+        plan
     })
     const tokens = decorations.map((decoration) => ({
         text: code.slice(decoration.start, decoration.end),
@@ -155,7 +156,7 @@ test.concurrent('creates Shiki decorations for raw Master CSS class lists', () =
     const decorations = createMasterCSSShikiSemanticTokenDecorations(code, {
         lang: 'mcss',
         classList: true,
-        config
+        plan
     })
     const tokens = decorations.map((decoration) => ({
         text: code.slice(decoration.start, decoration.end),
@@ -189,7 +190,7 @@ test.concurrent('applies semantic token styles by type and modifier', () => {
     const code = '<div class="block block:hover btn:hover"></div>'
     const decorations = createMasterCSSShikiSemanticTokenDecorations(code, {
         lang: 'html',
-        config,
+        plan,
         semanticTokenStyles: {
             class: {
                 color: 'var(--mcss-semantic-class)',
@@ -222,7 +223,7 @@ test.concurrent('applies semantic decorations in the Shiki tokens hook', () => {
         ]
     }
     const transformer = transformerMasterCSSSemanticTokens({
-        config,
+        plan,
         classPrefix: 'master-css-token',
         dataAttributes: false,
         semanticTokenStyles: {

@@ -8,8 +8,7 @@ import {
     resolveMasterStyleSource,
     transformLocalStyleCSS
 } from '@master/css-extractor/style'
-import { loadProjectConfig } from '@master/css-configer/load'
-import { getRegisteredOptions } from './options'
+import { loadProjectPlan } from '@master/css-configer/load'
 
 interface LoaderContext {
     resourcePath: string
@@ -52,15 +51,12 @@ async function transformStyleSource(resourcePath: string, source: string, projec
 
     if (!resolvedSource) {
         if (hasLocalStyleDirectives(source)) {
-            const registeredOptions = getRegisteredOptions()
-            const projectConfig = await loadProjectConfig(projectDir, {
-                config: registeredOptions?.config
-            })
+            const projectPlan = await loadProjectPlan(projectDir)
             const result = await transformLocalStyleCSS(resourcePath, source, {
-                projectDir,
-                config: projectConfig.config
+                basePlan: projectPlan.plan,
+                projectDir
             })
-            dependencies.push(...projectConfig.dependencies, ...(result.dependencies || []))
+            dependencies.push(...projectPlan.dependencies, ...(result.dependencies || []))
             return {
                 code: result.code,
                 dependencies

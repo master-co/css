@@ -11,7 +11,7 @@ import {
     isMasterCSSModuleId,
     normalizeMasterCSSModuleIds
 } from '@master/css-lexer'
-import { stripResourceQuery } from '@master/css-integration/config-module'
+import { stripResourceQuery } from '@master/css-integration/plan-module'
 
 const CSS_CONFIG_ENTRY_IGNORED_DIRECTORIES = new Set([
     'node_modules',

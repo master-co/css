@@ -16,9 +16,9 @@ This package provides a Vue runtime provider around `@master/css-runtime`.
 
 - Provider/injection timing.
 - Runtime cleanup.
-- Config and root watchers.
-- `CSSRuntimeRegistry` depends on `virtual:master-css-config` and should remain the quick-start integration entry.
-- `src/runtime-provider.ts` must remain free of `virtual:master-css-config` imports for users that provide config manually.
+- Plan and root watchers.
+- `CSSRuntimeRegistry` depends on `virtual:master-css-plan` and should remain the quick-start integration entry.
+- `src/runtime-provider.ts` must remain free of `virtual:master-css-plan` imports for users that provide a plan manually.
 
 ## Rules
 

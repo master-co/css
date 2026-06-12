@@ -1,10 +1,10 @@
-import { createCSS, DefinedUtility } from '@master/css'
+import { type CompiledUtility, createDefaultCSS, getStaticUtilityDeclarations } from '../master-css'
 import cssDataProvider from './css-data-provider'
 import type { IPropertyData } from 'vscode-css-languageservice'
 
-export default function getUtilityInfo(utility: DefinedUtility, css = createCSS()) {
+export default function getUtilityInfo(utility: CompiledUtility, css = createDefaultCSS()) {
     const nativeProperties = cssDataProvider.provideProperties()
-    const declarations = utility.definition.declarations
+    const declarations = getStaticUtilityDeclarations(utility)
     const propsLength = Object.keys(declarations || {}).length
     const propName = Object.keys(declarations || {})[0] as keyof typeof declarations
     const propValue = declarations?.[propName]

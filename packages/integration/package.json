@@ -47,11 +47,6 @@
             "import": "./dist/module.mjs",
             "default": "./dist/module.mjs"
         },
-        "./config-module": {
-            "types": "./dist/config-module.d.ts",
-            "import": "./dist/config-module.mjs",
-            "default": "./dist/config-module.mjs"
-        },
         "./plan-module": {
             "types": "./dist/plan-module.d.ts",
             "import": "./dist/plan-module.mjs",

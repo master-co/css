@@ -1,5 +1,5 @@
-import { MasterCSS, createCSS } from '@master/css'
-import type { Config } from 'shared/css-config'
+import { MasterCSS, createCSS, defaultPlan } from '@master/css'
+import type { MasterCSSPlan } from 'shared/master-css-plan'
 import parseHTML from './parse-html'
 import { Element, Text, ChildNode } from 'domhandler'
 import serialize from 'dom-serializer'
@@ -7,9 +7,9 @@ import serialize from 'dom-serializer'
 /**
  * Renders the page-required and sorted CSS text from HTML and injected it back into HTML
  * @param html
- * @param config
+ * @param plan
  */
-export default function render(html: string, config?: Config): {
+export default function render(html: string, plan: MasterCSSPlan = defaultPlan): {
     html: string,
     css?: MasterCSS,
     classes: string[],
@@ -29,7 +29,7 @@ export default function render(html: string, config?: Config): {
         headElement,
         styleElement
     }
-    const css = createCSS(config)
+    const css = createCSS(plan)
     classes.forEach(eachClass => css.add(eachClass))
     if (styleElement) {
         styleElement.childNodes = [new Text(css.text)]

@@ -1,5 +1,5 @@
 import { render } from '@master/css-server'
-import type { Config } from '@master/css'
+import type { MasterCSSPlan } from '@master/css'
 import type { MiddlewareHandler } from 'astro'
 
 const BODYLESS_STATUSES = new Set([204, 205, 304])
@@ -18,15 +18,15 @@ export function createResponse(response: Response, body: BodyInit | null) {
     })
 }
 
-export async function renderResponse(response: Response, config?: Config) {
+export async function renderResponse(response: Response, plan: MasterCSSPlan) {
     if (BODYLESS_STATUSES.has(response.status) || !isHTMLResponse(response)) {
         return response
     }
-    return createResponse(response, render(await response.text(), config).html)
+    return createResponse(response, render(await response.text(), plan).html)
 }
 
-export function createMasterCSSMiddleware(config?: Config): MiddlewareHandler {
+export function createMasterCSSMiddleware(plan: MasterCSSPlan): MiddlewareHandler {
     return async (_context, next) => {
-        return await renderResponse(await next(), config)
+        return await renderResponse(await next(), plan)
     }
 }

@@ -1,13 +1,13 @@
 import { Fragment } from 'react'
-import config from '@master/css/config'
+import { planUtilities, utilityUsesVariableNamespace } from '~/site/utils/plan-utilities'
 
-const utilities = config.utilities || []
+const utilities = planUtilities
 
 export default () =>
     <p>
         {
             utilities
-                .filter((utility) => utility.namespaces?.find((variable) => variable.includes('spacing')))
+                .filter((utility) => utilityUsesVariableNamespace(utility, 'spacing'))
                 .map((utility, index, arr) =>
                     <Fragment key={utility.name}>
                         <code>{utility.name}</code>

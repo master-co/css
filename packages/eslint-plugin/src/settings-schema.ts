@@ -16,7 +16,7 @@ const settingsSchema: JSONSchema4 = {
             items: { type: 'string', minLength: 0 },
             uniqueItems: true,
         },
-        config: {
+        plan: {
             type: 'object',
         }
     },

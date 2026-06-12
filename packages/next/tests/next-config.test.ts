@@ -4,7 +4,6 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import withMasterCSS from '../src'
 import { getRegisteredOptions } from '../src/options'
-import { VIRTUAL_CONFIG_ID } from '@master/css-integration/config-module'
 import { VIRTUAL_PLAN_ID } from '@master/css-integration/plan-module'
 import { VIRTUAL_CSS_ID } from '@master/css-integration/style-module'
 import { VIRTUAL_PRELOADED_ID } from '@master/css-integration/preloaded-module'
@@ -18,7 +17,7 @@ describe('withMasterCSS', () => {
         expect(getRegisteredOptions()).toEqual({ manifest: 'master-css.json' })
     })
 
-    it('adds a CSS config webpack loader', () => {
+    it('adds a CSS plan webpack loader', () => {
         const nextConfig = withMasterCSS({}) as any
         const webpackConfig = { module: { rules: [] } }
         const resolvedConfig = nextConfig.webpack(webpackConfig as any, {} as any)
@@ -36,28 +35,23 @@ describe('withMasterCSS', () => {
                 ]
             }),
             expect.objectContaining({
-                resourceQuery: /master-css-config/,
-                type: 'javascript/auto'
-            }),
-            expect.objectContaining({
                 resourceQuery: /master-css-plan/,
                 type: 'javascript/auto'
             }),
             expect.objectContaining({
                 test: /\.(css|scss|sass)$/,
                 resourceQuery: {
-                    not: [/master-css-config/, /master-css-plan/]
+                    not: [/master-css-plan/]
                 }
             })
         ]))
-        expect(resolvedConfig.resolve.alias[VIRTUAL_CONFIG_ID]).toContain(join('node_modules', '.master-css', 'master-css-config.js'))
         expect(resolvedConfig.resolve.alias[VIRTUAL_PLAN_ID]).toContain(join('node_modules', '.master-css', 'master-css-plan.js'))
         expect(resolvedConfig.resolve.alias[VIRTUAL_PRELOADED_ID]).toContain(join('node_modules', '.master-css', 'master-css-preloaded.js'))
         expect(resolvedConfig.resolve.alias['@master/css.react']).toBeUndefined()
         expect(resolvedConfig.resolve.alias['@master/css.react$']).toBeUndefined()
     })
 
-    it('adds a CSS config Turbopack loader', () => {
+    it('adds a CSS plan Turbopack loader', () => {
         const nextConfig = withMasterCSS({
             turbopack: {
                 rules: {
@@ -88,16 +82,6 @@ describe('withMasterCSS', () => {
                     condition: {
                         all: [
                             { path: /\.css$/ },
-                            { query: /master-css-config/ }
-                        ]
-                    },
-                    type: 'ecmascript',
-                    as: '*.js'
-                }),
-                expect.objectContaining({
-                    condition: {
-                        all: [
-                            { path: /\.css$/ },
                             { query: /master-css-plan/ }
                         ]
                     },
@@ -109,7 +93,6 @@ describe('withMasterCSS', () => {
                         all: [
                             { path: /\.(css|scss|sass)$/ },
                             { content: expect.any(RegExp) },
-                            { not: { query: /master-css-config/ } },
                             { not: { query: /master-css-plan/ } }
                         ]
                     },
@@ -165,14 +148,13 @@ describe('withMasterCSS', () => {
                 type: 'asset'
             }
         })
-        expect((nextConfig as any).turbopack.resolveAlias[VIRTUAL_CONFIG_ID]).toContain(join('node_modules', '.master-css', 'master-css-config.js'))
         expect((nextConfig as any).turbopack.resolveAlias[VIRTUAL_PLAN_ID]).toContain(join('node_modules', '.master-css', 'master-css-plan.js'))
         expect((nextConfig as any).turbopack.resolveAlias[VIRTUAL_PRELOADED_ID]).toContain(join('node_modules', '.master-css', 'master-css-preloaded.js'))
         expect((nextConfig as any).turbopack.resolveAlias['@master/css.react']).toBeUndefined()
         expect((nextConfig as any).transpilePackages).toContain('@master/css.react')
     })
 
-    it('adds CSS config loaders without the adapter when mode is null', () => {
+    it('adds CSS plan loaders without the adapter when mode is null', () => {
         const nextConfig = { reactStrictMode: true }
         const resolvedConfig = withMasterCSS(nextConfig, { mode: null }) as any
 
@@ -183,16 +165,6 @@ describe('withMasterCSS', () => {
                 expect.objectContaining({
                     condition: {
                         path: expect.any(RegExp)
-                    },
-                    type: 'ecmascript',
-                    as: '*.js'
-                }),
-                expect.objectContaining({
-                    condition: {
-                        all: [
-                            { path: /\.css$/ },
-                            { query: /master-css-config/ }
-                        ]
                     },
                     type: 'ecmascript',
                     as: '*.js'
@@ -212,7 +184,6 @@ describe('withMasterCSS', () => {
                         all: [
                             { path: /\.(css|scss|sass)$/ },
                             { content: expect.any(RegExp) },
-                            { not: { query: /master-css-config/ } },
                             { not: { query: /master-css-plan/ } }
                         ]
                     },
@@ -271,9 +242,6 @@ describe('withMasterCSS', () => {
                 type: 'javascript/auto'
             }),
             expect.objectContaining({
-                resourceQuery: /master-css-config/
-            }),
-            expect.objectContaining({
                 resourceQuery: /master-css-plan/
             }),
             expect.objectContaining({
@@ -296,7 +264,6 @@ describe('withMasterCSS', () => {
 
             expect(nextConfig.webpack).toBeUndefined()
             expect(nextConfig.turbopack.resolveAlias[VIRTUAL_CSS_ID]).toBe('./.master/next.css')
-            expect(nextConfig.turbopack.resolveAlias[VIRTUAL_CONFIG_ID]).toContain(join('node_modules', '.master-css', 'master-css-config.js'))
             expect(nextConfig.turbopack.resolveAlias[VIRTUAL_PLAN_ID]).toContain(join('node_modules', '.master-css', 'master-css-plan.js'))
             expect(nextConfig.turbopack.resolveAlias[VIRTUAL_PRELOADED_ID]).toContain(join('node_modules', '.master-css', 'master-css-preloaded.js'))
             expect(nextConfig.turbopack.rules['*']).toEqual(expect.arrayContaining([
@@ -320,14 +287,6 @@ describe('withMasterCSS', () => {
                     condition: {
                         all: [
                             { path: /\.css$/ },
-                            { query: /master-css-config/ }
-                        ]
-                    }
-                }),
-                expect.objectContaining({
-                    condition: {
-                        all: [
-                            { path: /\.css$/ },
                             { query: /master-css-plan/ }
                         ]
                     }
@@ -337,7 +296,6 @@ describe('withMasterCSS', () => {
                         all: expect.arrayContaining([
                             { path: expect.any(RegExp) },
                             { content: expect.any(RegExp) },
-                            { not: { query: /master-css-config/ } },
                             { not: { query: /master-css-plan/ } }
                         ])
                     }),

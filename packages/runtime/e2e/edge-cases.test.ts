@@ -50,7 +50,7 @@ test('shadow roots maintain isolated runtime state and style nodes', async ({ pa
         shadow.innerHTML = '<p class="block"></p>'
         document.body.append(host)
 
-        const shadowRuntime = new globalThis.CSSRuntime(shadow).observe()
+        const shadowRuntime = new globalThis.CSSRuntime(shadow, globalThis.cssRuntime.plan).observe()
 
         return {
             documentCounts: Object.fromEntries(globalThis.cssRuntime.classCounts),

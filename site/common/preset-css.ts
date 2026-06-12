@@ -1,10 +1,9 @@
-import { createCSS } from '@master/css'
-import presetConfig from '@master/css/index.css?master-css-config'
+import { createCSS, defaultPlan } from '@master/css'
 
-const presetCSS = createCSS(presetConfig)
+const presetCSS = createCSS(defaultPlan)
 
 export const createPresetCSS = () => {
-    return createCSS(presetConfig)
+    return createCSS(defaultPlan)
 }
 
 export default presetCSS

@@ -1,11 +1,12 @@
 import rule from '../src/rules/class-order'
 import { createTester } from './testers'
+import { createThemePlan } from './helpers/create-theme-plan'
 
 createTester({
     settings: {
         '@master/css': {
             classAttributes: ['test', 'className', 'class'],
-            config: {
+            plan: createThemePlan({
                 utilities: [
                     {
                         name: 'zDialog',
@@ -16,7 +17,7 @@ createTester({
                         ]
                     }
                 ],
-            },
+            }),
         },
     },
 }).run('class order', rule, {

@@ -1,5 +1,5 @@
-import type { Utility } from '@master/css-engine/utility'
+import type { GeneratedRule } from '@master/css-engine'
 
 export interface HydrateResult {
-    allUtilities: Utility[]
+    allUtilities: GeneratedRule[]
 }

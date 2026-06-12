@@ -9,13 +9,11 @@ import {
     transformLocalStyleCSS
 } from '@master/css-extractor/style'
 import { VIRTUAL_CSS_ID } from '@master/css-integration/style-module'
-import { loadProjectConfig } from '@master/css-configer/load'
-import type { Config } from '@master/css'
+import { loadProjectPlan } from '@master/css-configer/load'
 
 interface TransformStyleSourceOptions {
     projectDir?: string
     masterImport?: string
-    config?: Config
 }
 
 function hasMasterStyleConfigDirective(source: string) {
@@ -53,17 +51,15 @@ export async function transformStyleSource(
     const resolvedSource = resolveMasterStyleSource(resourcePath, source, projectDir)
     if (!resolvedSource) {
         if (hasLocalStyleDirectives(source)) {
-            const projectConfig = await loadProjectConfig(projectDir, {
-                config: options.config
-            })
+            const projectPlan = await loadProjectPlan(projectDir)
             const result = await transformLocalStyleCSS(resourcePath, source, {
-                projectDir,
-                config: projectConfig.config
+                basePlan: projectPlan.plan,
+                projectDir
             })
             return {
                 code: result.code,
                 dependencies: [...new Set([
-                    ...projectConfig.dependencies,
+                    ...projectPlan.dependencies,
                     ...result.dependencies
                 ])]
             }

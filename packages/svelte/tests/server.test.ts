@@ -3,10 +3,11 @@ import {
     createMasterCSSChunkRenderer,
     injectMasterStyle
 } from '../src/lib/server.js'
+import { defaultPlan } from '@master/css'
 
 describe('Svelte server hook renderer', () => {
     test('injects collected CSS when the head closes', () => {
-        const renderer = createMasterCSSChunkRenderer()
+        const renderer = createMasterCSSChunkRenderer(defaultPlan)
 
         const html = [
             renderer.transform('<html><head><meta class="block">'),
@@ -20,7 +21,7 @@ describe('Svelte server hook renderer', () => {
     })
 
     test('keeps streaming after early injection and leaves later classes to hydration', () => {
-        const renderer = createMasterCSSChunkRenderer()
+        const renderer = createMasterCSSChunkRenderer(defaultPlan)
 
         const html = [
             renderer.transform('<html><head><meta class="block"></head>'),

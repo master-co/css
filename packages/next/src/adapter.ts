@@ -94,14 +94,14 @@ export async function renderNextBuildOutputs(ctx: BuildCompleteContext, rawOptio
     const options = resolveOptions(rawOptions)
     if (options.mode === null) return []
 
-    const baseBuildConfig = await resolveMasterCSSBuildConfig(ctx.projectDir, options.config)
+    const baseBuildConfig = await resolveMasterCSSBuildConfig(ctx.projectDir)
     const htmlOutputs = collectHTMLBuildOutputs(ctx.outputs)
     const renderedOutputs: RenderedOutput[] = []
 
     for (const output of htmlOutputs) {
         const sourceHTML = await readFile(output.filePath, 'utf-8')
-        const rendered = render(sourceHTML, baseBuildConfig.config)
-        const buildConfig = await resolveMasterCSSBuildConfig(ctx.projectDir, options.config, rendered.classes)
+        const rendered = render(sourceHTML, baseBuildConfig.plan)
+        const buildConfig = await resolveMasterCSSBuildConfig(ctx.projectDir, rendered.classes)
         const generatedCSS = rendered.css?.classUtilities.size ? rendered.css.text : ''
         const cssText = [
             buildConfig.nativeCSS,

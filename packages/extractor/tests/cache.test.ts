@@ -6,7 +6,7 @@ const CONTENT = `<div className="bg:white fg:black m:8">hi</div>`
 
 describe('content-hash cache (Phase A optimisation)', () => {
     test('insert(source, content) returns false on identical re-call', async () => {
-        const ex = await new CSSExtractor({ config: {} as any, include: [] }).init()
+        const ex = await new CSSExtractor({ include: [] }).init()
         const first = await ex.insert(SOURCE, CONTENT)
         const second = await ex.insert(SOURCE, CONTENT)
         expect(first).toBe(true)
@@ -14,7 +14,7 @@ describe('content-hash cache (Phase A optimisation)', () => {
     })
 
     test('cache key is per-source — same content from a different source still inserts', async () => {
-        const ex = await new CSSExtractor({ config: {} as any, include: [] }).init()
+        const ex = await new CSSExtractor({ include: [] }).init()
         const a = await ex.insert('a.tsx', CONTENT)
         const b = await ex.insert('b.tsx', CONTENT)
         expect(a).toBe(true)
@@ -27,7 +27,7 @@ describe('content-hash cache (Phase A optimisation)', () => {
     })
 
     test('cache invalidates on content change', async () => {
-        const ex = await new CSSExtractor({ config: {} as any, include: [] }).init()
+        const ex = await new CSSExtractor({ include: [] }).init()
         const v1 = await ex.insert(SOURCE, `<div class="bg:red">a</div>`)
         const v2 = await ex.insert(SOURCE, `<div class="bg:blue">b</div>`)
         expect(v1).toBe(true)
@@ -35,7 +35,7 @@ describe('content-hash cache (Phase A optimisation)', () => {
     })
 
     test('reset() clears the content-hash cache', async () => {
-        const ex = await new CSSExtractor({ config: {} as any, include: [] }).init()
+        const ex = await new CSSExtractor({ include: [] }).init()
         await ex.insert(SOURCE, CONTENT)
         await ex.reset()
         // After reset, the hash for SOURCE is gone, so the same content
@@ -47,7 +47,7 @@ describe('content-hash cache (Phase A optimisation)', () => {
 
 describe('valid-rules memo (Phase A optimisation)', () => {
     test('same class across many files is processed once', async () => {
-        const ex = await new CSSExtractor({ config: {} as any, include: [] }).init()
+        const ex = await new CSSExtractor({ include: [] }).init()
         // First file with the class — populates validClasses + the rules cache.
         await ex.insert('a.tsx', `<div className="bg:white">a</div>`)
         expect(ex.validClasses.has('bg:white')).toBe(true)
@@ -67,7 +67,6 @@ describe('valid-rules memo (Phase A optimisation)', () => {
 describe('class exclusion matcher', () => {
     test('resets stateful regular expressions while filtering repeated classes', async () => {
         const ex = await new CSSExtractor({
-            config: {} as any,
             include: [],
             blocklist: [/^bg:/g]
         }).init()
@@ -81,7 +80,6 @@ describe('class exclusion matcher', () => {
 
     test('rebuilds when blocklist is reassigned', async () => {
         const ex = await new CSSExtractor({
-            config: {} as any,
             include: [],
             blocklist: [/^bg:/]
         }).init()
@@ -98,7 +96,6 @@ describe('class exclusion matcher', () => {
 describe('source matcher cache', () => {
     test('rebuilds when include is reassigned', async () => {
         const ex = await new CSSExtractor({
-            config: {} as any,
             include: ['**/*.html']
         }).init()
 
@@ -110,14 +107,14 @@ describe('source matcher cache', () => {
     })
 
     test('normalizes Vite query suffixes before matching source paths', async () => {
-        const ex = await new CSSExtractor({ config: {} as any }).init()
+        const ex = await new CSSExtractor({}).init()
 
         expect(ex.isSourceAllowed('component.tsx?import')).toBe(true)
         expect(ex.isSourceAllowed('content.md?raw')).toBe(true)
     })
 
     test('rejects non-source extensions with Vite query suffixes', async () => {
-        const ex = await new CSSExtractor({ config: {} as any }).init()
+        const ex = await new CSSExtractor({}).init()
 
         expect(ex.isSourceAllowed('data.json?import')).toBe(false)
         expect(ex.isSourceAllowed('icon.svg?url')).toBe(false)
@@ -125,7 +122,7 @@ describe('source matcher cache', () => {
     })
 
     test('rejects framework style module requests', async () => {
-        const ex = await new CSSExtractor({ config: {} as any }).init()
+        const ex = await new CSSExtractor({}).init()
 
         expect(ex.isSourceAllowed('App.vue?vue&type=script')).toBe(true)
         expect(ex.isSourceAllowed('App.vue?vue&type=style&index=0&lang.css')).toBe(false)

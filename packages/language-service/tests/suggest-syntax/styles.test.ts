@@ -2,9 +2,10 @@ import { test, it, expect, describe } from 'vitest'
 import dedent from 'ts-dedent'
 import { hint } from './test'
 import { Settings } from '../../src'
+import { createThemePlan } from '../helpers/create-theme-plan'
 
 const settings: Settings = {
-    config: {
+    plan: createThemePlan({
         utilities: [
             {
                 name: 'btn',
@@ -15,7 +16,7 @@ const settings: Settings = {
                 ]
             }
         ]
-    }
+    })
 }
 it.concurrent('info', () => expect(hint('b', settings)?.find(({ label }) => label === 'btn')).toMatchObject({
     detail: 'component',

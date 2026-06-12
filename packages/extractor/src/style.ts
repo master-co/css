@@ -1,6 +1,6 @@
 import {
     compileCSS,
-    createConfigFromCSSResult,
+    createPlanFromCSSResult,
     type CompileCSSOptions,
     type CompileCSSResult
 } from '@master/css-compiler'
@@ -8,10 +8,9 @@ import {
     isMasterCSSPackageStyleFile as isMasterCSSCompilerPackageStyleFile,
     resolveMasterCSSPackageImportGraph
 } from '@master/css-compiler'
-import { AnimationRule, createCSS, VariableRule } from '@master/css'
-import type { MasterCSSPreloaded } from '@master/css'
-import { collectAnimationNamesFromDeclaration, extendConfig } from '@master/css/utils'
-import type { Config } from 'shared/css-config'
+import { AnimationRule, createCSS, VariableRule, type MasterCSSPreloaded } from '@master/css'
+import { collectAnimationNamesFromDeclaration } from '@master/css-engine'
+import type { MasterCSSPlan } from 'shared/master-css-plan'
 import {
     findCSSImportStatements,
     collectCSSDirectiveRanges,
@@ -57,6 +56,7 @@ export interface SassModule {
 }
 
 export interface CompileStyleCSSOptions extends CompileCSSOptions {
+    basePlan?: MasterCSSPlan
     projectDir?: string
     loadSass?: (projectDir?: string) => SassModule
 }
@@ -73,7 +73,7 @@ export type RegisterStyleCSSSourceOptions = CompileStyleCSSOptions
 export interface CreateExtractedCSSOptions extends CompileStyleCSSOptions {
     extractor: CSSExtractor
     styleCSSSources?: StyleCSSSources
-    config?: Config
+    plan?: MasterCSSPlan
     includeGeneratedCSS?: boolean
     includeNativeCSS?: boolean
     includeMasterBaseCSS?: boolean
@@ -370,10 +370,8 @@ export async function createMasterCSSPackageHostSource(
         preserveNativeCSS: true
     })
     const nativeCSS = getNativeCSS(result)
-    const finalizedResult = createConfigFromCSSResult(result, {
-        config: options.config as Config | undefined
-    })
-    const css = createCSS(finalizedResult.config)
+    const finalizedResult = createPlanFromCSSResult(result, options)
+    const css = createCSS(finalizedResult.plan)
     const nativeAnimationNames = collectStyleCSSKeyframeNames([nativeCSS])
     if (nativeAnimationNames.size) {
         css.registerPreloaded({
@@ -423,14 +421,15 @@ export async function compileStyleCSS(
     source: string,
     options: CompileStyleCSSOptions = {}
 ): Promise<CompileCSSResult> {
-    const { projectDir: _projectDir, loadSass: _loadSass, ...compileOptions } = options
+    const { projectDir: _projectDir, loadSass: _loadSass, basePlan, ...compileOptions } = options
     const css = await preprocessStyleCSS(source, id, options)
     const result = compileCSS(css, {
         ...compileOptions,
         from: cleanStyleRequest(id)
     })
-    const finalizedResult = createConfigFromCSSResult(result, {
-        config: compileOptions.config as Config | undefined
+    const finalizedResult = createPlanFromCSSResult(result, {
+        ...compileOptions,
+        basePlan
     })
     return {
         ...result,
@@ -588,9 +587,8 @@ export async function registerStyleCSSSource(
     return result
 }
 
-export interface CreateStyleCSSConfigOptions extends CompileStyleCSSOptions {
+export interface CreateStyleCSSPlanOptions extends CompileStyleCSSOptions {
     styleCSSSources?: StyleCSSSources
-    config?: Config
 }
 
 function hasMasterCSSPackageSource(styleCSSSources?: StyleCSSSources) {
@@ -606,10 +604,9 @@ async function compileMasterCSSPackage(projectDir: string | undefined, options: 
     }
 }
 
-export async function createStyleCSSConfig(options: CreateStyleCSSConfigOptions = {}) {
+export async function createStyleCSSPlan(options: CreateStyleCSSPlanOptions = {}) {
     const {
         styleCSSSources,
-        config,
         ...compileOptions
     } = options
     const entries = Array.from(styleCSSSources || [])
@@ -620,19 +617,23 @@ export async function createStyleCSSConfig(options: CreateStyleCSSConfigOptions 
             : []),
         ...entries.map(([id, styleSource]) => compileStyleCSS(id, styleSource.source, compileOptions))
     ])
-    const styleConfigs: Config[] = []
-    for (const result of styleResults) {
-        if (!hasCompiledStyleConfig(result)) continue
-        styleConfigs.push(createConfigFromCSSResult(result, {
-            config: extendConfig(...styleConfigs, config)
-        }).config)
-    }
     const dependencies = [
         ...entries.flatMap(([, styleSource]) => styleSource.dependencies),
         ...styleResults.flatMap((result) => result.dependencies || [])
     ]
+    let plan: MasterCSSPlan | undefined = compileOptions.basePlan
+    let hasStylePlan = false
+    for (const result of styleResults) {
+        if (!hasCompiledStyleConfig(result)) continue
+        const finalizedResult = createPlanFromCSSResult(result, {
+            ...compileOptions,
+            basePlan: plan
+        })
+        plan = finalizedResult.plan
+        hasStylePlan = true
+    }
     return {
-        config: extendConfig(...styleConfigs, config),
+        plan: hasStylePlan ? plan : undefined,
         dependencies: [...new Set(dependencies)]
     }
 }
@@ -757,7 +758,7 @@ export async function createExtractedCSSResult(options: CreateExtractedCSSOption
     const {
         extractor,
         styleCSSSources,
-        config: configOption,
+        plan: planOption,
         includeGeneratedCSS = true,
         includeNativeCSS = true,
         includeMasterBaseCSS = true,
@@ -765,7 +766,7 @@ export async function createExtractedCSSResult(options: CreateExtractedCSSOption
     } = options
     const classes = compileOptions.classes ?? getExtractorClasses(extractor)
 
-    if (!configOption && !compileOptions.classes && !styleCSSSources?.size) {
+    if (!planOption && !compileOptions.classes && !styleCSSSources?.size) {
         return createEmptyExtractedCSSResult(includeGeneratedCSS ? extractor.css.text : '')
     }
 
@@ -786,16 +787,17 @@ export async function createExtractedCSSResult(options: CreateExtractedCSSOption
         ...(masterCSSResult ? [masterCSSResult] : []),
         ...entryStyleResults
     ]
-    const explicitConfig = configOption ?? extractor.customOptions?.config
-    const styleConfigs: Config[] = []
-    const finalizedStyleResults = new Map<CompileCSSResult, ReturnType<typeof createConfigFromCSSResult>>()
+    const explicitPlan = planOption ?? extractor.customOptions?.plan
+    let mergedPlan = compileOptions.basePlan ?? explicitPlan ?? extractor.css.plan
+    const finalizedStyleResults = new Map<CompileCSSResult, ReturnType<typeof createPlanFromCSSResult>>()
     for (const result of styleResults) {
         if (!hasCompiledStyleConfig(result)) continue
-        const finalizedResult = createConfigFromCSSResult(result, {
-            config: extendConfig(...styleConfigs, explicitConfig)
+        const finalizedResult = createPlanFromCSSResult(result, {
+            ...compileOptions,
+            basePlan: mergedPlan
         })
+        mergedPlan = finalizedResult.plan
         finalizedStyleResults.set(result, finalizedResult)
-        styleConfigs.push(finalizedResult.config)
     }
     const nativeCSS = [
         ...(includeGeneratedCSS && includeMasterBaseCSS && masterCSSResult
@@ -808,7 +810,7 @@ export async function createExtractedCSSResult(options: CreateExtractedCSSOption
             : [])
     ]
     const nativeAnimationNames = collectStyleCSSKeyframeNames(nativeCSS)
-    const css = createCSS(extendConfig(...styleConfigs, explicitConfig))
+    const css = createCSS(mergedPlan)
     if (nativeAnimationNames.size) {
         css.registerPreloaded({
             animations: Object.fromEntries([...nativeAnimationNames].map((name) => [name, 1]))

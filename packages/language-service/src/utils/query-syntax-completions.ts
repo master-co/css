@@ -1,16 +1,14 @@
 import { CompletionItemKind, type CompletionItem } from 'vscode-languageserver-protocol'
 import getPseudoClassCompletionItems from './get-pseudo-class-completion-items'
 import getPseudoElementCompletionItems from './get-pseudo-element-completion-items'
-import { AT_SIGN, MasterCSS, createCSS, QUERY_COMPARISON_OPERATORS, QUERY_LOGICAL_OPERATORS } from '@master/css'
-import { generateCSS } from '@master/css/utils'
+import { AT_SIGN, MasterCSS, createDefaultCSS, QUERY_COMPARISON_OPERATORS, QUERY_LOGICAL_OPERATORS, SELECTOR_SIGNS, generateCSS } from '../master-css'
 import { GROUP_TRIGGER_CHARACTER, SELECTOR_TRIGGER_CHARACTERS } from '../common'
 import getClassCompletionItems from './get-class-completion-items'
-import { SELECTOR_SIGNS } from '@master/css'
 import getValueCompletionItems from './get-value-completion-items'
 import getQueryCompletionItems from './get-query-completion-items'
 import { getCSSDataDocumentation } from './get-css-data-documentation'
 
-export default function querySyntaxCompletions(q = '', css: MasterCSS = createCSS()) {
+export default function querySyntaxCompletions(q = '', css: MasterCSS = createDefaultCSS()) {
     const fields = q.split(' ')
     let field = fields[fields.length - 1]
     const triggerCharacter = q.charAt(q.length - 1)
@@ -38,10 +36,10 @@ export default function querySyntaxCompletions(q = '', css: MasterCSS = createCS
     const selectorInvokedRegex = new RegExp(`[${SELECTOR_SIGNS.join('')}](?=(?:[^'"]|'[^']*'|"[^"]*")*$)`)
     const key = keyMatch ? keyMatch[0].slice(0, firstColonIndex) : undefined
     const componentNames = css.definedUtilities
-        .filter(({ definition }) => definition.type === -4 && definition.layer === 'components')
+        .filter(({ type, layer }) => type === -4 && layer === 'components')
         .map(({ id }) => id.startsWith('.') ? id.slice(1) : id)
     const utilityNames = css.definedUtilities
-        .filter(({ definition }) => definition.type === -4)
+        .filter(({ type }) => type === -4)
         .map(({ id }) => id.startsWith('.') ? id.slice(1) : id)
     const isStyle = !!componentNames.find((eachStyleName) => new RegExp(`^${eachStyleName}(?:\\b|_)`).test(field))
     const isUtility = !!utilityNames.find((eachUtilityName) => new RegExp(`^${eachUtilityName}(?:\\b|_)`).test(field))

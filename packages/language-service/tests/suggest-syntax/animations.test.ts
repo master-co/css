@@ -1,9 +1,10 @@
 import { test, it, expect, describe } from 'vitest'
 import { hint } from './test'
 import type { Settings } from '../../src'
+import { createThemePlan } from '../helpers/create-theme-plan'
 
 const settings = {
-    config: {
+    plan: createThemePlan({
         variables: [{ namespace: 'breakpoint', key: 'sm', value: 768 }],
         animations: {
             fade: {
@@ -11,7 +12,7 @@ const settings = {
                 to: { opacity: 1 }
             }
         }
-    }
+    })
 } satisfies Settings
 
 test.concurrent('@', () => expect(hint('@', settings)?.map(({ label }) => label)).not.toContain('fade|1s'))

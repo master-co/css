@@ -2,7 +2,7 @@
 
 ## Responsibility
 
-`@master/css-integration` owns the adapter-neutral contracts shared by official build and framework integrations: virtual module ids, `?master-css-config` request helpers, generated config/preloaded module source helpers, runtime injection source, and ambient client module declarations.
+`@master/css-integration` owns the adapter-neutral contracts shared by official build and framework integrations: virtual module ids, `?master-css-plan` request helpers, generated plan/preloaded module source helpers, runtime injection source, and ambient client module declarations.
 
 ## Boundaries
 
@@ -16,7 +16,7 @@
 
 - `./client`
 - `./module`
-- `./config-module`
+- `./plan-module`
 - `./style-module`
 - `./preloaded-module`
 - `./config-loader-plugin`

@@ -18,13 +18,13 @@ export default function ExtractorLifecyclePlugin(context: MasterCSSWebpackContex
                 })
             })
             context.on('configChange', () => {
-                context.writeDefaultConfigModule().catch((error: unknown) => {
-                    console.error('[master-css.webpack] config module update failed:', error)
+                context.writeDefaultPlanModule().catch((error: unknown) => {
+                    console.error('[master-css.webpack] plan module update failed:', error)
                 })
             })
             context.on('reset', () => {
-                context.writeDefaultConfigModule().catch((error: unknown) => {
-                    console.error('[master-css.webpack] config module update failed:', error)
+                context.writeDefaultPlanModule().catch((error: unknown) => {
+                    console.error('[master-css.webpack] plan module update failed:', error)
                 })
                 void context.queueResetReplay()
             })
@@ -40,8 +40,8 @@ export default function ExtractorLifecyclePlugin(context: MasterCSSWebpackContex
             compiler.hooks.watchRun.tapPromise(context.name, async (watchingCompiler) => {
                 await context.init()
                 const modifiedFiles = (watchingCompiler as Compiler & { modifiedFiles?: ReadonlySet<string> }).modifiedFiles
-                const defaultConfigDependencies = context.getDefaultConfigDependencyPaths()
-                if (defaultConfigDependencies.some((dependency) => hasModifiedFile(modifiedFiles, dependency))) {
+                const defaultPlanDependencies = context.getDefaultPlanDependencyPaths()
+                if (defaultPlanDependencies.some((dependency) => hasModifiedFile(modifiedFiles, dependency))) {
                     await context.reset(context.getOptions())
                     await context.waitForResetReplay()
                 }

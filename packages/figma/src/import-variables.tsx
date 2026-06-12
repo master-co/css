@@ -5,7 +5,7 @@ import notify from './utils/notify'
 import post from './utils/post'
 import postAndWaitForMessage from './utils/post-and-wait-for-message'
 import usePluginMessage from './hooks/use-plugin-message'
-import { Config } from '@master/css'
+import type { Config } from 'shared/css-config'
 
 interface VariableCollection {
     id: string

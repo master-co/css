@@ -1,6 +1,6 @@
 import path from 'node:path'
-import type { MasterCSSPreloaded } from '@master/css/preloaded'
-import { VIRTUAL_CONFIG_DIR } from './config-module'
+import type { MasterCSSPreloaded } from '@master/css-engine'
+import { VIRTUAL_MODULE_DIR } from './plan-module'
 
 export type { MasterCSSPreloaded }
 
@@ -20,5 +20,5 @@ export function toPreloadedModule(preloaded: MasterCSSPreloaded) {
 }
 
 export function toVirtualPreloadedModulePath(context: string) {
-    return path.join(context, VIRTUAL_CONFIG_DIR, VIRTUAL_PRELOADED_FILE)
+    return path.join(context, VIRTUAL_MODULE_DIR, VIRTUAL_PRELOADED_FILE)
 }

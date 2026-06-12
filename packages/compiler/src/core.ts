@@ -56,7 +56,6 @@ export {
 export type { CSSTransform, StandaloneCSSDirectiveStatement, StandaloneMasterDirectiveStatement }
 
 export interface CompileCSSOptions {
-    config?: unknown
     classes?: string[]
     from?: string
     preserveNativeCSS?: boolean

@@ -1,9 +1,12 @@
 import { it, test, expect } from 'vitest'
 import { render } from '../src'
+import { defaultPlan } from '@master/css'
 
 it('should not encode entities', () => {
     expect(render(
-        '<span class="token punctuation">&lt;</span>div<span class="token punctuation">&gt;</span>').html
+        '<span class="token punctuation">&lt;</span>div<span class="token punctuation">&gt;</span>',
+        defaultPlan
+    ).html
     ).toContain(
         '<span class="token punctuation">&lt;</span>div<span class="token punctuation">&gt;</span>'
     )
@@ -11,7 +14,8 @@ it('should not encode entities', () => {
 
 test('>', () => {
     expect(render(
-        `<div class="mt:0&gt;div"></div>`
+        `<div class="mt:0&gt;div"></div>`,
+        defaultPlan
     ).html).toEqual([
         '<style id="master">@layer utilities{.mt\\:0\\>div>div{margin-top:0rem}}</style>',
         `<div class="mt:0&gt;div"></div>`
@@ -20,7 +24,8 @@ test('>', () => {
 
 test('\'', () => {
     expect(render(
-        `<div class="font-feature:'salt'"></div>`
+        `<div class="font-feature:'salt'"></div>`,
+        defaultPlan
     ).html).toEqual([
         `<style id="master">@layer utilities{.font-feature\\:\\'salt\\'{font-feature-settings:'salt'}}</style>`,
         `<div class="font-feature:'salt'"></div>`

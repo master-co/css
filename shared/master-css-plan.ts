@@ -1,7 +1,7 @@
 import type { PropertiesHyphen } from 'csstype'
-import type { AtIdentifier } from './css-config.js'
 import type { UtilityType } from './utility-type.js'
 
+export type MasterCSSPlanAtIdentifier = 'container' | 'starting-style' | 'supports' | 'media' | 'layer'
 export type MasterCSSPlanUtilityLayerName = 'base' | 'defaults' | 'components' | 'utilities'
 export type MasterCSSPlanDefaultMode = 'light' | 'dark' | 'none' | string
 export type MasterCSSPlanModeTrigger = 'class' | 'media' | 'host'
@@ -9,15 +9,17 @@ export type MasterCSSPlanVariantToken = `:${string}` | `::${string}` | `@${strin
 export type MasterCSSPlanUtilityKind = 'number' | 'color' | 'image'
 export type MasterCSSPlanTransformOp = 'auto-fill-solid' | 'animation-token'
 export type MasterCSSPlanFunctionOp = 'core.math' | 'core.variable'
+/** Defaults to single for variable/value matchers; multiple is an explicit opt-in. */
+export type MasterCSSPlanUtilityMatcherValueSegments = 'single' | 'multiple'
 
-export type MasterCSSPlanCSSDeclarationPrimitive = string | number | undefined
+export type MasterCSSPlanCSSDeclarationPrimitive = string | number | null
 export type MasterCSSPlanCSSDeclarations = PropertiesHyphen | Record<string, MasterCSSPlanCSSDeclarationPrimitive | MasterCSSPlanCSSDeclarationPrimitive[]>
 export type MasterCSSPlanVariableValue = number | string | false | (number | string)[]
 export type MasterCSSPlanVariableType = 'number' | 'string'
 
 export type MasterCSSPlanAtRuleBooleanNode = { raw?: string, name: string, type: 'boolean' }
-export type MasterCSSPlanAtRuleNumberNode = { raw?: string, name: string, type: 'number', value: number, unit?: string, operator?: string }
-export type MasterCSSPlanAtRuleStringNode = { raw?: string, name: string, type: 'string', value: string }
+export type MasterCSSPlanAtRuleNumberNode = { raw?: string, name?: string, type: 'number', value: number, unit?: string, operator?: string }
+export type MasterCSSPlanAtRuleStringNode = { raw?: string, name?: string, type: 'string', value: string }
 export type MasterCSSPlanAtRuleValueNode = MasterCSSPlanAtRuleNumberNode | MasterCSSPlanAtRuleStringNode
 export interface MasterCSSPlanAtRuleComparisonOperatorNode { type: 'comparison', raw?: string, value: string }
 export interface MasterCSSPlanAtRuleLogicalOperatorNode { type: 'logical', raw?: string, value: string }
@@ -31,7 +33,7 @@ export type MasterCSSPlanAtRuleNode =
     | MasterCSSPlanAtRuleGroupNode
 
 export interface MasterCSSPlanAtRule {
-    id: AtIdentifier
+    id: MasterCSSPlanAtIdentifier
     nodes: MasterCSSPlanAtRuleNode[]
 }
 
@@ -116,8 +118,8 @@ export type MasterCSSPlanFunctions = Record<string, MasterCSSPlanFunction>
 export type MasterCSSPlanUtilityMatcher =
     | { type: 'static'; name: string }
     | { type: 'key'; keys: string[] }
-    | { type: 'variable'; keys: string[] }
-    | { type: 'value'; keys: string[] }
+    | { type: 'variable'; keys: string[]; segments?: MasterCSSPlanUtilityMatcherValueSegments }
+    | { type: 'value'; keys: string[]; segments?: MasterCSSPlanUtilityMatcherValueSegments }
     | { type: 'function-prefix'; name: string }
     | { type: 'group' }
     | { type: 'css-variable-assignment' }
@@ -177,6 +179,11 @@ export interface MasterCSSPlanUtility {
 export type MasterCSSPlanUtilities = MasterCSSPlanUtility[]
 
 export interface MasterCSSPlan {
+    /**
+     * MasterCSSPlan IR schema/codec version.
+     * This is not a legacy Config compatibility marker; engines must reject
+     * unsupported plan versions instead of migrating authoring APIs at runtime.
+     */
     version: 1
     settings?: MasterCSSPlanSettings
     variables?: MasterCSSPlanVariables

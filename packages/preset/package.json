@@ -38,6 +38,7 @@
     "style": "./src/index.css",
     "exports": {
         ".": {
+            "style": "./src/index.css",
             "types": "./dist/index.d.ts",
             "import": "./dist/index.mjs",
             "default": "./dist/index.mjs"

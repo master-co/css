@@ -2,39 +2,38 @@ import { describe, expect, it } from 'vitest'
 import path from 'node:path'
 import {
     CSS_RUNTIME_INJECTION,
-    EMPTY_CONFIG_MODULE,
+    EMPTY_PLAN_MODULE,
     EMPTY_PRELOADED_MODULE,
-    MASTER_CSS_CONFIG_QUERY,
-    VIRTUAL_CONFIG_ID,
+    MASTER_CSS_PLAN_QUERY,
     VIRTUAL_CSS_ID,
     VIRTUAL_PRELOADED_ID,
     VIRTUAL_PLAN_ID,
-    createVirtualDefaultConfigModulePathPattern,
-    fromResolvedMasterCSSConfigId,
+    createVirtualDefaultPlanModulePathPattern,
+    fromResolvedMasterCSSPlanId,
     normalizePreloaded,
-    stripMasterCSSConfigQuery,
+    stripMasterCSSPlanQuery,
     stripResourceQuery,
-    toConfigModule,
+    toPlanModule,
     toPreloadedModule,
-    toResolvedMasterCSSConfigId,
-    toVirtualCSSConfigModulePath,
+    toResolvedMasterCSSPlanId,
+    toVirtualCSSPlanModulePath,
     toVirtualCSSModulePath,
-    toVirtualDefaultConfigModulePath,
+    toVirtualDefaultPlanModulePath,
     toVirtualPreloadedModulePath
 } from '../src/module'
 
 describe('@master/css-integration module helpers', () => {
     it('defines Master CSS virtual module ids', () => {
-        expect(VIRTUAL_CONFIG_ID).toBe('virtual:master-css-config')
+        expect(VIRTUAL_PLAN_ID).toBe('virtual:master-css-plan')
         expect(VIRTUAL_CSS_ID).toBe('virtual:master-utilities.css')
         expect(VIRTUAL_PRELOADED_ID).toBe('virtual:master-css-preloaded')
-        expect(MASTER_CSS_CONFIG_QUERY).toBe('?master-css-config')
+        expect(MASTER_CSS_PLAN_QUERY).toBe('?master-css-plan')
     })
 
-    it('serializes config and preloaded modules', () => {
-        expect(EMPTY_CONFIG_MODULE).toBe('export default {};')
+    it('serializes plan and preloaded modules', () => {
+        expect(EMPTY_PLAN_MODULE).toBe('export default { version: 1 };')
         expect(EMPTY_PRELOADED_MODULE).toBe('export default { variables: {}, animations: {} };')
-        expect(toConfigModule({ config: true })).toBe('export default {"config":true};')
+        expect(toPlanModule({ version: 1 })).toBe('export default {"version":1};')
         expect(toPreloadedModule({ variables: { color: 1 } })).toBe('export default {"variables":{"color":1},"animations":{}};')
         expect(normalizePreloaded()).toEqual({ variables: {}, animations: {} })
     })
@@ -42,16 +41,16 @@ describe('@master/css-integration module helpers', () => {
     it('encodes resolved and filesystem virtual module paths', () => {
         const root = path.resolve('/project')
         const file = path.join(root, 'src/theme.css')
-        const id = toResolvedMasterCSSConfigId(file)
+        const id = toResolvedMasterCSSPlanId(file)
 
-        expect(fromResolvedMasterCSSConfigId(id)).toBe(file)
-        expect(stripMasterCSSConfigQuery('./theme.css?master-css-config')).toBe('./theme.css')
-        expect(stripResourceQuery('./theme.css?master-css-config')).toBe('./theme.css')
-        expect(toVirtualDefaultConfigModulePath(root)).toBe(path.join(root, 'node_modules/.master-css/master-css-config.js'))
-        expect(toVirtualCSSConfigModulePath(root, file)).toMatch(/node_modules[/\\]\.master-css[/\\].+\.js$/)
+        expect(fromResolvedMasterCSSPlanId(id)).toBe(file)
+        expect(stripMasterCSSPlanQuery('./theme.css?master-css-plan')).toBe('./theme.css')
+        expect(stripResourceQuery('./theme.css?master-css-plan')).toBe('./theme.css')
+        expect(toVirtualDefaultPlanModulePath(root)).toBe(path.join(root, 'node_modules/.master-css/master-css-plan.js'))
+        expect(toVirtualCSSPlanModulePath(root, file)).toMatch(/node_modules[/\\]\.master-css[/\\].+\.plan\.js$/)
         expect(toVirtualCSSModulePath(root)).toBe(path.join(root, 'node_modules/.master-css/master-utilities.css'))
         expect(toVirtualPreloadedModulePath(root)).toBe(path.join(root, 'node_modules/.master-css/master-css-preloaded.js'))
-        expect(createVirtualDefaultConfigModulePathPattern().test(toVirtualDefaultConfigModulePath(root))).toBe(true)
+        expect(createVirtualDefaultPlanModulePathPattern().test(toVirtualDefaultPlanModulePath(root))).toBe(true)
     })
 
     it('builds shared runtime injection source', () => {

@@ -1,30 +1,21 @@
-import coreConfig from '@master/css/config'
-import { MasterCSS } from '@master/css'
-import { extendConfig, parseAt, parseSelector } from '@master/css/utils'
 import UtilityType from 'shared/utility-type'
-import type { Variable } from 'shared/css-syntax'
 import type {
-    AnimationDefinitions,
-    Config,
-    FunctionDefinitions,
-    UtilityDefinition,
-    UtilityDefinitions,
-    UtilityRuleDefinition
-} from 'shared/css-config'
+    CSSDirectiveConfig,
+    CSSDirectiveUtilityDefinition,
+    CSSDirectiveUtilityRuleDefinition,
+    CSSDirectiveVariableDefinition
+} from 'shared/css-directives'
 import type {
     MasterCSSPlan,
     MasterCSSPlanAnimations,
     MasterCSSPlanAtRule,
     MasterCSSPlanAtRuleNode,
     MasterCSSPlanAtRules,
-    MasterCSSPlanFunctionOp,
-    MasterCSSPlanFunctions,
-    MasterCSSPlanSelectors,
+    MasterCSSPlanCSSDeclarations,
     MasterCSSPlanSelectorNode,
+    MasterCSSPlanSelectors,
     MasterCSSPlanUtility,
     MasterCSSPlanUtilityBuckets,
-    MasterCSSPlanUtilityEmit,
-    MasterCSSPlanUtilityMatcher,
     MasterCSSPlanUtilityRule,
     MasterCSSPlanVariable,
     MasterCSSPlanVariableAliasSet,
@@ -33,358 +24,228 @@ import type {
     MasterCSSPlanVariantBranch,
     MasterCSSPlanVariants
 } from 'shared/master-css-plan'
+import {
+    createCompilerCSS,
+    parseAt,
+    parseSelector
+} from '@master/css-engine/compiler'
 
-type SemanticCSS = InstanceType<typeof MasterCSS>
+export type CSSDirectivePlanInput = CSSDirectiveConfig
 
-function naturalCompare(a: string, b: string) {
-    return a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' })
+export interface CreateMasterCSSPlanOptions {
+    basePlan?: MasterCSSPlan
 }
 
-function cloneDeclarations<T>(declarations: T): T {
-    return Array.isArray(declarations)
-        ? [...declarations] as T
-        : { ...(declarations as object) } as T
-}
+const VARIABLE_NAMESPACES = [
+    'font-family',
+    'font-weight',
+    'font-size',
+    'border-radius',
+    'border-width',
+    'border-style',
+    'border-color',
+    'color-line',
+    'color-text',
+    'breakpoint',
+    'container',
+    'animation',
+    'duration',
+    'tracking',
+    'leading',
+    'spacing',
+    'padding',
+    'margin',
+    'height',
+    'width',
+    'inset',
+    'border',
+    'radius',
+    'shadow',
+    'easing',
+    'order',
+    'color',
+    'font'
+].sort((a, b) => b.length - a.length)
 
-function cloneRule(rule: UtilityRuleDefinition): MasterCSSPlanUtilityRule {
-    return {
-        declarations: cloneDeclarations(rule.declarations),
-        ...(rule.atRules?.length ? { atRules: [...rule.atRules] } : {}),
-        ...(rule.selector ? { selector: rule.selector } : {})
-    }
-}
-
-function compileFunctions(functions: FunctionDefinitions | undefined): MasterCSSPlanFunctions | undefined {
-    if (!functions) return
-    const compiled: MasterCSSPlanFunctions = {}
-    for (const [name, definition] of Object.entries(functions)) {
-        compiled[name] = {
-            ...(definition.unit !== undefined ? { unit: definition.unit } : {}),
-            ...(definition.transformer ? { op: definition.transformer as MasterCSSPlanFunctionOp } : {}),
-            ...(definition.transformerOptions !== undefined ? { options: definition.transformerOptions } : {})
+function clone<T>(value: T): T {
+    if (Array.isArray(value)) return value.map((item) => clone(item)) as T
+    if (value && typeof value === 'object') {
+        const result: Record<string, unknown> = {}
+        for (const key in value as Record<string, unknown>) {
+            result[key] = clone((value as Record<string, unknown>)[key])
         }
+        return result as T
     }
-    return compiled
+    return value
 }
 
-function compileEmit(definition: UtilityDefinition): MasterCSSPlanUtilityEmit {
-    if (definition.declarer === 'pair') {
+function normalizeZero<T>(value: T): T {
+    return Object.is(value, -0) ? 0 as T : value
+}
+
+function resolveVariableName(variable: CSSDirectiveVariableDefinition) {
+    const explicitName = variable.name?.replace(/^--/, '')
+    if (variable.namespace || variable.key !== undefined) {
+        const key = variable.key ?? explicitName ?? ''
+        const name = variable.namespace
+            ? `${variable.namespace}${key ? '-' + key : ''}`
+            : key
         return {
-            type: 'pair',
-            properties: definition.declarerOptions as [string, string]
+            name,
+            key,
+            ...(variable.namespace ? { namespace: variable.namespace } : {})
         }
     }
-    if (definition.declarer === 'core.group') {
-        return { type: 'group' }
+    const name = explicitName || ''
+    const namespace = VARIABLE_NAMESPACES.find((eachNamespace) => name.startsWith(eachNamespace + '-'))
+    return namespace
+        ? {
+            name,
+            namespace,
+            key: name.slice(namespace.length + 1)
+        }
+        : {
+            name,
+            key: name
+        }
+}
+
+function getVariableType(value: MasterCSSPlanVariable['value']): NonNullable<MasterCSSPlanVariable['type']> {
+    return typeof value === 'number' ? 'number' : 'string'
+}
+
+function collectVariableDependencies(value: unknown, dependencies = new Set<string>()) {
+    if (typeof value !== 'string') return dependencies
+    for (const match of value.matchAll(/\$(-?[_a-zA-Z0-9-]+)/g)) {
+        dependencies.add(match[1])
     }
-    if (definition.declarer === 'core.variable') {
-        return { type: 'css-variable-assignment' }
+    for (const match of value.matchAll(/var\(\s*--(-?[_a-zA-Z0-9-]+)/g)) {
+        dependencies.add(match[1])
     }
-    if (definition.declarer) {
-        throw new Error(`Unsupported MasterCSSPlan declarer opcode: ${definition.declarer}`)
+    return dependencies
+}
+
+function variableSlot(variable: Pick<MasterCSSPlanVariable, 'name' | 'namespace' | 'key'>) {
+    return variable.name || `${variable.namespace || ''}\0${variable.key}`
+}
+
+function pushVariable(target: MasterCSSPlanVariables, variable: MasterCSSPlanVariable) {
+    const slot = variableSlot(variable)
+    const existing = target.find((eachVariable) => variableSlot(eachVariable) === slot)
+    if (existing) {
+        Object.assign(existing, variable)
+    } else {
+        target.push(variable)
     }
-    if (definition.type === UtilityType.Static) {
-        const rules: MasterCSSPlanUtilityRule[] = []
-        if (definition.declarations) {
-            rules.push({
-                declarations: cloneDeclarations(definition.declarations) as MasterCSSPlanUtilityRule['declarations'],
-                ...(definition.atRules?.length ? { atRules: [...definition.atRules] } : {})
+}
+
+function compileVariables(input: CSSDirectiveVariableDefinition[] | undefined): MasterCSSPlanVariables | undefined {
+    if (!input?.length) return
+    const variables: MasterCSSPlanVariables = []
+    const byName = new Map<string, MasterCSSPlanVariable>()
+
+    for (const definition of input) {
+        const resolved = resolveVariableName(definition)
+        if (!resolved.name) continue
+        const value = normalizeZero(definition.value) as MasterCSSPlanVariable['value']
+        const type = getVariableType(value)
+        const dependencies = collectVariableDependencies(value)
+
+        if (definition.mode) {
+            let target = byName.get(resolved.name)
+            if (!target) {
+                target = {
+                    name: resolved.name,
+                    key: resolved.key,
+                    ...(resolved.namespace ? { namespace: resolved.namespace } : {}),
+                    type,
+                    modes: {}
+                }
+                byName.set(resolved.name, target)
+                pushVariable(variables, target)
+            }
+            target.modes ??= {}
+            target.modes[definition.mode] = { type, value: value as string | number }
+            if (dependencies.size) {
+                const next = new Set([...(target.dependencies || []), ...dependencies])
+                target.dependencies = [...next]
+            }
+            continue
+        }
+
+        const variable: MasterCSSPlanVariable = {
+            name: resolved.name,
+            key: resolved.key,
+            ...(resolved.namespace ? { namespace: resolved.namespace } : {}),
+            type,
+            value,
+            ...(dependencies.size ? { dependencies: [...dependencies] } : {}),
+            ...(definition.inline ? { inline: true } : {})
+        }
+        byName.set(resolved.name, variable)
+        pushVariable(variables, variable)
+
+        if (typeof value === 'number' && !resolved.key.startsWith('-')) {
+            const negativeName = resolved.namespace
+                ? `-${resolved.namespace}-${resolved.key}`
+                : '-' + resolved.key
+            pushVariable(variables, {
+                name: negativeName,
+                key: '-' + resolved.key,
+                ...(resolved.namespace ? { namespace: resolved.namespace } : {}),
+                type: 'number',
+                value: normalizeZero(-value),
+                ...(definition.inline ? { inline: true } : {})
             })
         }
-        if (definition.rules?.length) {
-            rules.push(...definition.rules.map(cloneRule))
-        }
-        return { type: 'static', rules }
     }
-    if (definition.declarations) {
-        return Array.isArray(definition.declarations)
-            ? { type: 'declarations', declarations: [...definition.declarations] }
-            : { type: 'template', declarations: cloneDeclarations(definition.declarations) }
-    }
-    return { type: 'property', property: definition.name }
+
+    return variables.length ? variables : undefined
 }
 
-function compileMatchers(definition: UtilityDefinition, keys: string[]): MasterCSSPlanUtilityMatcher[] {
-    const matchers: MasterCSSPlanUtilityMatcher[] = []
-    if (definition.type === UtilityType.Static) {
-        matchers.push({
-            type: 'static',
-            name: definition.name.startsWith('.') ? definition.name.slice(1) : definition.name
-        })
-        return matchers
-    }
-
-    const matcher = definition.matcher
-    if (matcher) {
-        if (definition.name === 'group') {
-            matchers.push({ type: 'group' })
-            return matchers
-        }
-        if (definition.name === 'variable') {
-            matchers.push({ type: 'css-variable-assignment' })
-            return matchers
-        }
-        throw new Error(`Unsupported MasterCSSPlan matcher opcode for utility: ${definition.name}`)
-    }
-
-    if (definition.name.endsWith('()')) {
-        matchers.push({ type: 'function-prefix', name: definition.name.slice(0, -2) })
-        return matchers
-    }
-
-    if (definition.aliasGroups?.length) {
-        matchers.push(
-            { type: 'variable', keys: [...definition.aliasGroups] },
-            { type: 'value', keys: [...definition.aliasGroups] }
-        )
-    }
-    if (keys.length) {
-        matchers.push({ type: 'key', keys: [...keys] })
-    }
-    return matchers
-}
-
-function getVariableKeyByNamespace(variableName: string, namespace: string) {
-    const negative = variableName.startsWith('-')
-    const positiveName = negative ? variableName.slice(1) : variableName
-    if (positiveName !== namespace && !positiveName.startsWith(namespace + '-')) return
-    const variableKey = positiveName === namespace
-        ? ''
-        : positiveName.slice(namespace.length + 1)
-    return negative ? '-' + variableKey : variableKey
-}
-
-const EXACT_VARIABLE_NAMESPACE_PREFIX = '='
-const MATCHED_VARIABLE_NAMESPACE_PREFIX = '~'
-
-function createExactVariableNamespaceAliases(variables: MasterCSSPlanVariables | undefined) {
-    const variablesByNamespace = new Map<string, MasterCSSPlanVariableAliasSet>()
-    if (!variables) return variablesByNamespace
-    for (const variable of variables) {
-        if (!variable.name || !variable.namespace) continue
-        const variableKey = getVariableKeyByNamespace(variable.name, variable.namespace)
-        if (variableKey === undefined) continue
-        const namespaceVariables = variablesByNamespace.get(variable.namespace)
-        if (namespaceVariables) {
-            namespaceVariables.push([variableKey, variable.name])
-        } else {
-            variablesByNamespace.set(variable.namespace, [[variableKey, variable.name]])
-        }
-    }
-    return variablesByNamespace
-}
-
-function createMatchedVariableNamespaceAliases(namespace: string, variables: MasterCSSPlanVariables | undefined) {
-    const aliases: MasterCSSPlanVariableAliasSet = []
-    if (!variables?.length) return
-    const usedKeys = new Set<string>()
-    for (const variable of variables) {
-        if (!variable.name) continue
-        const variableKey = getVariableKeyByNamespace(variable.name, namespace)
-        if (variableKey !== undefined && !usedKeys.has(variableKey)) {
-            usedKeys.add(variableKey)
-            aliases.push([variableKey, variable.name])
-        }
-    }
-    return aliases.length ? aliases : undefined
-}
-
-function createVariableNamespaces(utilities: UtilityDefinitions | undefined, variables: MasterCSSPlanVariables | undefined) {
-    if (!variables?.length) return
-    const variableNamespaces: Record<string, MasterCSSPlanVariableAliasSet> = {}
-    for (const [namespace, aliases] of createExactVariableNamespaceAliases(variables)) {
-        if (aliases.length) variableNamespaces[EXACT_VARIABLE_NAMESPACE_PREFIX + namespace] = aliases
-    }
-    const matchedNamespaces = new Set<string>()
-    for (const utility of utilities || []) {
-        for (const namespace of utility.namespaces || []) {
-            matchedNamespaces.add(namespace)
-        }
-    }
-    for (const namespace of matchedNamespaces) {
-        const aliases = createMatchedVariableNamespaceAliases(namespace, variables)
-        if (aliases?.length) variableNamespaces[MATCHED_VARIABLE_NAMESPACE_PREFIX + namespace] = aliases
-    }
-    return Object.keys(variableNamespaces).length ? variableNamespaces : undefined
-}
-
-function compileVariableAliasRefs(
-    utility: Pick<MasterCSSPlanUtility, 'name' | 'namespaces' | 'implicitNamespace'>,
-    variableNamespaces: Record<string, MasterCSSPlanVariableAliasSet> | undefined
-) {
-    if (!variableNamespaces) return
-    const refs: string[] = []
-    const addRef = (ref: string) => {
-        if (variableNamespaces[ref]?.length && !refs.includes(ref)) refs.push(ref)
-    }
-    if (utility.implicitNamespace !== false) addRef(EXACT_VARIABLE_NAMESPACE_PREFIX + utility.name)
-    if (utility.namespaces?.length) {
-        for (const namespace of [...new Set(utility.namespaces)].sort((a, b) => b.length - a.length)) {
-            addRef(MATCHED_VARIABLE_NAMESPACE_PREFIX + namespace)
-        }
-    }
-    return refs.length ? refs : undefined
-}
-
-function createCompiledUtility(
-    definition: UtilityDefinition,
-    order: number,
-    variableNamespaces?: Record<string, MasterCSSPlanVariableAliasSet>
-): MasterCSSPlanUtility {
-    const type = definition.type ?? UtilityType.Normal
-    const keys: string[] = []
-    let key = definition.key
-
-    if (definition.name.endsWith('()')) {
-        key ??= definition.name
-    } else if (type === UtilityType.NativeShorthand || type === UtilityType.Native) {
-        key ??= definition.name
-        keys.push(definition.name)
-    }
-
-    if (!definition.matcher && type !== UtilityType.Static) {
-        if (!key && !definition.subkey) {
-            keys.push(definition.name)
-        } else {
-            if (key && !keys.includes(key)) keys.push(key)
-            if (definition.subkey) keys.push(definition.subkey)
-            if (type === UtilityType.Shorthand) keys.push(definition.name)
-        }
-    }
-
-    const staticName = definition.name.startsWith('.') ? definition.name.slice(1) : definition.name
-    const id = type === UtilityType.Static ? '.' + staticName : definition.name
-    const utility: MasterCSSPlanUtility = {
-        id,
-        name: definition.name,
-        type,
-        order,
-        ...(definition.layer ? { layer: definition.layer } : {}),
-        ...(key ? { key } : {}),
-        ...(definition.subkey ? { subkey: definition.subkey } : {}),
-        ...(keys.length ? { keys } : {}),
-        ...(definition.aliasGroups?.length ? { aliasGroups: [...definition.aliasGroups] } : {}),
-        ...(definition.values?.length ? { values: [...definition.values] } : {}),
-        ...(definition.kind ? { kind: definition.kind } : {}),
-        ...(definition.namespaces?.length ? { namespaces: [...definition.namespaces] } : {}),
-        ...(definition.implicitNamespace !== undefined ? { implicitNamespace: definition.implicitNamespace } : {}),
-        separators: definition.separators?.length ? [...definition.separators] : [','],
-        unit: definition.unit ?? '',
-        ...(definition.includeAnimations ? { includeAnimations: true } : {}),
-        ...(definition.atRules?.length ? { atRules: [...definition.atRules] } : {}),
-        ...(definition.transformer ? { transform: definition.transformer as MasterCSSPlanUtility['transform'] } : {}),
-        emit: compileEmit({ ...definition, type }),
-        matchers: compileMatchers({ ...definition, type }, keys)
-    }
-    if (type !== UtilityType.Static) {
-        const variableAliasRefs = compileVariableAliasRefs(utility, variableNamespaces)
-        if (variableAliasRefs?.length) utility.variableAliasRefs = variableAliasRefs
-    }
-    return utility
-}
-
-function addBucketIndex(bucket: number[] | undefined, index: number) {
-    if (bucket?.includes(index)) return bucket
-    const nextBucket = bucket || []
-    nextBucket.push(index)
-    return nextBucket
-}
-
-function compileUtilityBuckets(utilities: MasterCSSPlanUtility[]) {
-    const buckets: MasterCSSPlanUtilityBuckets = {}
-    utilities.forEach((utility, index) => {
-        for (const matcher of utility.matchers) {
-            switch (matcher.type) {
-                case 'variable':
-                    if (utility.variableAliases?.length || utility.variableAliasSet !== undefined || utility.variableAliasRefs?.length) {
-                        buckets.variable = addBucketIndex(buckets.variable, index)
-                    }
-                    break
-                case 'value':
-                    if (utility.values?.length || utility.kind) buckets.value = addBucketIndex(buckets.value, index)
-                    break
-                case 'key':
-                    buckets.key = addBucketIndex(buckets.key, index)
-                    break
-                default:
-                    buckets.arbitrary = addBucketIndex(buckets.arbitrary, index)
-                    break
-            }
-        }
-    })
-    return Object.keys(buckets).length ? buckets : undefined
-}
-
-function internUtilityVariableAliases(utilities: MasterCSSPlanUtility[]) {
-    const variableAliasSets: MasterCSSPlanVariableAliasSet[] = []
-    const indexes = new Map<string, number>()
-    for (const utility of utilities) {
-        if (!utility.variableAliases?.length) continue
-        const key = JSON.stringify(utility.variableAliases)
-        let index = indexes.get(key)
-        if (index === undefined) {
-            index = variableAliasSets.length
-            indexes.set(key, index)
-            variableAliasSets.push(utility.variableAliases)
-        }
-        utility.variableAliasSet = index
-        delete utility.variableAliases
-    }
-    return variableAliasSets.length ? variableAliasSets : undefined
-}
-
-function compileUtilities(utilities: UtilityDefinitions | undefined, variables?: MasterCSSPlanVariables) {
-    if (!utilities?.length) return {}
-    const entries = utilities.map((definition) => ({ ...definition }))
-    const length = entries.length
-    const variableNamespaces = createVariableNamespaces(entries, variables)
-    const compiledUtilities = entries
-        .sort((a, b) => {
-            if (a.type !== b.type) {
-                return (b.type || 0) - (a.type || 0)
-            }
-            if (a.kind !== b.kind) {
-                if (!a.kind) return 1
-                if (!b.kind) return -1
-                const kindOrder = ['color', 'number', 'image']
-                const aKindIndex = kindOrder.indexOf(a.kind)
-                const bKindIndex = kindOrder.indexOf(b.kind)
-                if (aKindIndex !== bKindIndex) {
-                    return aKindIndex - bKindIndex
-                }
-            }
-            return naturalCompare(b.name, a.name)
-        })
-        .map((definition, index) => createCompiledUtility(definition, length - 1 - index, variableNamespaces))
-    const variableAliasSets = internUtilityVariableAliases(compiledUtilities)
+function createVariableAtRule(variable: MasterCSSPlanVariable, id: 'media' | 'container', rootSize: number): MasterCSSPlanAtRule | undefined {
+    if (typeof variable.value !== 'number' || variable.key.startsWith('-')) return
     return {
-        utilities: compiledUtilities,
-        utilityBuckets: compileUtilityBuckets(compiledUtilities),
-        variableAliasSets,
-        variableNamespaces
+        id,
+        nodes: [{
+            type: 'number',
+            value: variable.value / rootSize,
+            unit: 'rem'
+        }]
     }
 }
 
-function cloneAnimations(animations: AnimationDefinitions | undefined): AnimationDefinitions | undefined {
-    if (!animations) return
-    const cloned: AnimationDefinitions = {}
-    for (const [name, keyframes] of Object.entries(animations)) {
-        cloned[name] = {}
-        for (const [keyframe, declarations] of Object.entries(keyframes)) {
-            cloned[name][keyframe] = cloneDeclarations(declarations)
+function compileAtRules(variables: MasterCSSPlanVariables | undefined, rootSize: number) {
+    const atRules: MasterCSSPlanAtRules = {}
+    const breakpointAtRules: MasterCSSPlanAtRules = {}
+    const containerAtRules: MasterCSSPlanAtRules = {}
+
+    for (const variable of variables || []) {
+        if (variable.namespace === 'breakpoint') {
+            const atRule = createVariableAtRule(variable, 'media', rootSize)
+            if (atRule) {
+                atRules[variable.key] = atRule
+                breakpointAtRules[variable.key] = atRule
+            }
+        } else if (variable.namespace === 'container') {
+            const atRule = createVariableAtRule(variable, 'container', rootSize)
+            if (atRule) {
+                containerAtRules[variable.key] = atRule
+            }
         }
     }
-    return cloned
+
+    return {
+        atRules: Object.keys(atRules).length ? atRules : undefined,
+        breakpointAtRules: Object.keys(breakpointAtRules).length ? breakpointAtRules : undefined,
+        containerAtRules: Object.keys(containerAtRules).length ? containerAtRules : undefined
+    }
 }
 
 function cloneAtRuleNode(node: MasterCSSPlanAtRuleNode): MasterCSSPlanAtRuleNode {
-    if ('children' in node) {
-        return {
-            ...node,
-            children: node.children.map(cloneAtRuleNode)
-        }
-    }
-    return { ...node }
+    return 'children' in node
+        ? { ...node, children: node.children.map(cloneAtRuleNode) }
+        : { ...node }
 }
 
 function cloneAtRule(atRule: MasterCSSPlanAtRule): MasterCSSPlanAtRule {
@@ -394,67 +255,13 @@ function cloneAtRule(atRule: MasterCSSPlanAtRule): MasterCSSPlanAtRule {
     }
 }
 
-function compileAtRules(atRules: SemanticCSS['atRules']): MasterCSSPlanAtRules | undefined {
-    if (!atRules.size) return
-    const compiled: MasterCSSPlanAtRules = {}
-    for (const [name, atRule] of atRules) {
-        compiled[name] = cloneAtRule(atRule as MasterCSSPlanAtRule)
-    }
-    return compiled
-}
-
 function cloneSelectorNode(node: MasterCSSPlanSelectorNode): MasterCSSPlanSelectorNode {
-    if ('children' in node && node.children?.length) {
-        return {
-            ...node,
-            children: node.children.map(cloneSelectorNode)
-        }
-    }
-    return { ...node }
+    return 'children' in node && node.children?.length
+        ? { ...node, children: node.children.map(cloneSelectorNode) }
+        : { ...node }
 }
 
-function compileSelectors(selectors: SemanticCSS['selectors']): MasterCSSPlanSelectors | undefined {
-    if (!selectors.size) return
-    const compiled: MasterCSSPlanSelectors = {}
-    for (const [name, nodes] of selectors) {
-        compiled[name] = nodes.map((node) => cloneSelectorNode(node as MasterCSSPlanSelectorNode))
-    }
-    return compiled
-}
-
-function compileVariable(variable: Variable): MasterCSSPlanVariable {
-    const modes: MasterCSSPlanVariable['modes'] | undefined = variable.modes
-        ? Object.fromEntries(
-            Object.entries(variable.modes).map(([mode, modeVariable]) => [
-                mode,
-                {
-                    type: modeVariable.type,
-                    value: Object.is(modeVariable.value, -0) ? 0 : modeVariable.value
-                }
-            ])
-        )
-        : undefined
-    const dependencies = variable.dependencies?.size
-        ? [...variable.dependencies]
-        : undefined
-    return {
-        name: variable.name,
-        key: variable.key,
-        ...(variable.namespace ? { namespace: variable.namespace } : {}),
-        type: variable.type,
-        ...(variable.value !== undefined ? { value: Object.is(variable.value, -0) ? 0 : variable.value } : {}),
-        ...(modes ? { modes } : {}),
-        ...(dependencies?.length ? { dependencies } : {}),
-        ...(variable.inline ? { inline: true } : {})
-    }
-}
-
-function compileVariables(variables: SemanticCSS['variables']): MasterCSSPlanVariables | undefined {
-    if (!variables.size) return
-    return [...variables.values()].map(compileVariable)
-}
-
-function compileVariantBranch(branch: MasterCSSPlanVariantBranch, css: SemanticCSS): MasterCSSPlanVariantBranch {
+function compileVariantBranch(branch: MasterCSSPlanVariantBranch, css: ReturnType<typeof createCompilerCSS>): MasterCSSPlanVariantBranch {
     const selector = branch.selector?.trim()
     const bodylessSelector = selector
         ? selector.includes('&')
@@ -479,51 +286,291 @@ function compileVariantBranch(branch: MasterCSSPlanVariantBranch, css: SemanticC
     }
 }
 
-function compileVariants(variants: SemanticCSS['variants'], css: SemanticCSS): MasterCSSPlanVariants | undefined {
-    if (!variants.size) return
-    const compiled: MasterCSSPlanVariant[] = []
-    for (const [token, branches] of variants) {
-        compiled.push({
-            token,
-            branches: branches.map((branch) => compileVariantBranch(branch as MasterCSSPlanVariantBranch, css))
+function compileVariants(input: MasterCSSPlanVariants | undefined, basePlan: MasterCSSPlan): {
+    variants?: MasterCSSPlanVariants
+    selectors?: MasterCSSPlanSelectors
+    atRules?: MasterCSSPlanAtRules
+} {
+    if (!input?.length) return {}
+    const css = createCompilerCSS(basePlan)
+    const variants: MasterCSSPlanVariant[] = []
+    const selectors: MasterCSSPlanSelectors = {}
+    const atRules: MasterCSSPlanAtRules = {}
+    for (const variant of input) {
+        const branches = variant.branches.map((branch) => compileVariantBranch(branch, css))
+        variants.push({
+            token: variant.token,
+            branches
         })
+        if (variant.token.startsWith(':')) {
+            const firstSelectorNodes = branches.find((branch) => branch.selectorNodes?.length)?.selectorNodes
+            if (firstSelectorNodes?.length) selectors[variant.token] = firstSelectorNodes.map(cloneSelectorNode)
+        }
+        if (variant.token.startsWith('@')) {
+            const firstAtRule = branches.find((branch) => branch.atRuleNodes?.length)?.atRuleNodes?.[0]
+            if (firstAtRule) {
+                atRules[variant.token.slice(1)] = cloneAtRule(firstAtRule)
+            } else {
+                const firstLayer = branches.find((branch) => branch.layer)?.layer
+                if (firstLayer) {
+                    atRules[variant.token.slice(1)] = {
+                        id: 'layer',
+                        nodes: [{
+                            type: 'string',
+                            value: firstLayer
+                        }]
+                    }
+                }
+            }
+        }
     }
-    return compiled
+    return {
+        variants,
+        ...(Object.keys(selectors).length ? { selectors } : {}),
+        ...(Object.keys(atRules).length ? { atRules } : {})
+    }
 }
 
-export function createMasterCSSPlan(config: Config = {}): MasterCSSPlan {
-    const resolved = extendConfig(coreConfig, config)
-    const semanticCSS = new MasterCSS(resolved)
-    const variables = compileVariables(semanticCSS.variables)
-    const { utilities, utilityBuckets, variableAliasSets, variableNamespaces } = compileUtilities(resolved.utilities, variables)
-    const animations = cloneAnimations(resolved.animations) as MasterCSSPlanAnimations | undefined
-    const variants = compileVariants(semanticCSS.variants, semanticCSS)
-    const atRules = compileAtRules(semanticCSS.atRules)
-    const breakpointAtRules = compileAtRules(semanticCSS.breakpointAtRules)
-    const containerAtRules = compileAtRules(semanticCSS.containerAtRules)
-    const selectors = compileSelectors(semanticCSS.selectors)
+function cloneDeclarations<T extends MasterCSSPlanCSSDeclarations>(declarations: T): T {
+    return Array.isArray(declarations)
+        ? [...declarations] as unknown as T
+        : { ...(declarations as object) } as T
+}
+
+function compileUtilityRule(rule: CSSDirectiveUtilityRuleDefinition): MasterCSSPlanUtilityRule {
     return {
-        version: 1,
-        settings: {
-            ...(resolved.rootSize !== undefined ? { rootSize: resolved.rootSize } : {}),
-            ...(resolved.baseUnit !== undefined ? { baseUnit: resolved.baseUnit } : {}),
-            ...(resolved.defaultMode !== undefined ? { defaultMode: resolved.defaultMode } : {}),
-            ...(resolved.scope !== undefined ? { scope: resolved.scope } : {}),
-            ...(resolved.important !== undefined ? { important: resolved.important } : {}),
-            ...(resolved.modeTrigger !== undefined ? { modeTrigger: resolved.modeTrigger } : {}),
-            ...(resolved.modes?.length ? { modes: [...resolved.modes] } : {})
+        declarations: cloneDeclarations(rule.declarations),
+        ...(rule.atRules?.length ? { atRules: [...rule.atRules] } : {}),
+        ...(rule.selector && rule.selector !== '&' ? { selector: rule.selector } : {})
+    }
+}
+
+function compileUtility(definition: CSSDirectiveUtilityDefinition, order: number): MasterCSSPlanUtility {
+    const name = definition.name.startsWith('.') ? definition.name.slice(1) : definition.name
+    const rules: MasterCSSPlanUtilityRule[] = []
+    if (definition.declarations) {
+        rules.push({
+            declarations: cloneDeclarations(definition.declarations),
+            ...(definition.atRules?.length ? { atRules: [...definition.atRules] } : {})
+        })
+    }
+    if (definition.rules?.length) {
+        rules.push(...definition.rules.map(compileUtilityRule))
+    }
+    return {
+        id: '.' + name,
+        name,
+        type: UtilityType.Static,
+        order,
+        layer: definition.layer || 'utilities',
+        emit: {
+            type: 'static',
+            rules
         },
+        matchers: [{
+            type: 'static',
+            name
+        }]
+    }
+}
+
+function compileUtilities(input: CSSDirectiveUtilityDefinition[] | undefined): MasterCSSPlanUtility[] | undefined {
+    if (!input?.length) return
+    return input.map((definition, index) => compileUtility(definition, index))
+}
+
+function addBucketIndex(bucket: number[] | undefined, index: number) {
+    if (bucket?.includes(index)) return bucket
+    const nextBucket = bucket || []
+    nextBucket.push(index)
+    return nextBucket
+}
+
+function compileUtilityBuckets(utilities: MasterCSSPlanUtility[] | undefined): MasterCSSPlanUtilityBuckets | undefined {
+    const buckets: MasterCSSPlanUtilityBuckets = {}
+    utilities?.forEach((utility, index) => {
+        for (const matcher of utility.matchers) {
+            switch (matcher.type) {
+                case 'variable':
+                    if (utility.variableAliases?.length || utility.variableAliasSet !== undefined || utility.variableAliasRefs?.length) {
+                        buckets.variable = addBucketIndex(buckets.variable, index)
+                    }
+                    break
+                case 'value':
+                    if (utility.values?.length || utility.kind) buckets.value = addBucketIndex(buckets.value, index)
+                    break
+                case 'key':
+                    buckets.key = addBucketIndex(buckets.key, index)
+                    break
+                default:
+                    buckets.arbitrary = addBucketIndex(buckets.arbitrary, index)
+                    break
+            }
+        }
+    })
+    return Object.keys(buckets).length ? buckets : undefined
+}
+
+function getVariableKeyByNamespace(variableName: string, namespace: string) {
+    const negative = variableName.startsWith('-')
+    const positiveName = negative ? variableName.slice(1) : variableName
+    if (positiveName !== namespace && !positiveName.startsWith(namespace + '-')) return
+    const key = positiveName === namespace ? '' : positiveName.slice(namespace.length + 1)
+    return negative ? '-' + key : key
+}
+
+function createVariableNamespaces(plan: MasterCSSPlan) {
+    const namespaces = new Set<string>()
+    for (const variable of plan.variables || []) {
+        if (variable.namespace) namespaces.add(variable.namespace)
+    }
+    for (const utility of plan.utilities || []) {
+        for (const ref of utility.variableAliasRefs || []) {
+            if (ref[0] === '~' || ref[0] === '=') namespaces.add(ref.slice(1))
+        }
+    }
+
+    const variableNamespaces: Record<string, MasterCSSPlanVariableAliasSet> = {}
+    for (const namespace of namespaces) {
+        const aliases: MasterCSSPlanVariableAliasSet = []
+        const usedKeys = new Set<string>()
+        for (const variable of plan.variables || []) {
+            if (!variable.name) continue
+            const key = getVariableKeyByNamespace(variable.name, namespace)
+            if (key === undefined || usedKeys.has(key)) continue
+            usedKeys.add(key)
+            aliases.push([key, variable.name])
+        }
+        if (aliases.length) {
+            variableNamespaces['=' + namespace] = aliases
+            variableNamespaces['~' + namespace] = aliases
+        }
+    }
+    return Object.keys(variableNamespaces).length ? variableNamespaces : undefined
+}
+
+function compileAnimations(input: CSSDirectiveConfig['animations']): MasterCSSPlanAnimations | undefined {
+    return input ? clone(input) as MasterCSSPlanAnimations : undefined
+}
+
+function mergeBy<T>(base: T[] | undefined, next: T[] | undefined, getKey: (value: T) => string | undefined) {
+    const merged = [...(base || []).map((value) => clone(value))]
+    for (const value of next || []) {
+        const key = getKey(value)
+        const index = key === undefined ? -1 : merged.findIndex((existing) => getKey(existing) === key)
+        if (index === -1) {
+            merged.push(clone(value))
+        } else {
+            merged[index] = clone(value)
+        }
+    }
+    return merged.length ? merged : undefined
+}
+
+function mergeRecords<T>(base: Record<string, T> | undefined, next: Record<string, T> | undefined) {
+    return Object.keys(base || {}).length || Object.keys(next || {}).length
+        ? { ...(base ? clone(base) : {}), ...(next ? clone(next) : {}) }
+        : undefined
+}
+
+function utilityKeys(utility: MasterCSSPlanUtility) {
+    const keys = new Set([utility.id, utility.name].filter(Boolean))
+    for (const matcher of utility.matchers || []) {
+        if (matcher.type === 'key') {
+            matcher.keys.forEach((key) => keys.add(key))
+        }
+    }
+    return keys
+}
+
+function addVariableAliasRef(utility: MasterCSSPlanUtility, ref: string) {
+    utility.variableAliasRefs ??= []
+    if (!utility.variableAliasRefs.includes(ref)) utility.variableAliasRefs.push(ref)
+}
+
+function addOwnNamespaceVariableRefs(plan: MasterCSSPlan) {
+    const namespaces = new Set<string>()
+    for (const variable of plan.variables || []) {
+        if (variable.namespace) namespaces.add(variable.namespace)
+    }
+    if (!namespaces.size) return
+
+    for (const utility of plan.utilities || []) {
+        const keys = utilityKeys(utility)
+        for (const namespace of namespaces) {
+            if (keys.has(namespace)) addVariableAliasRef(utility, '=' + namespace)
+        }
+    }
+}
+
+function mergePlan(basePlan: MasterCSSPlan | undefined, fragment: MasterCSSPlan): MasterCSSPlan {
+    if (!basePlan) {
+        const plan = clone(fragment)
+        addOwnNamespaceVariableRefs(plan)
+        plan.utilityBuckets = compileUtilityBuckets(plan.utilities)
+        plan.variableNamespaces = createVariableNamespaces(plan)
+        return plan
+    }
+
+    const plan: MasterCSSPlan = {
+        version: 1,
+        settings: { ...(basePlan.settings || {}), ...(fragment.settings || {}) },
+        variables: mergeBy(basePlan.variables, fragment.variables, (variable) => variable.name),
+        animations: mergeRecords(basePlan.animations, fragment.animations),
+        variants: mergeBy(basePlan.variants, fragment.variants, (variant) => variant.token),
+        atRules: mergeRecords(basePlan.atRules, fragment.atRules),
+        breakpointAtRules: mergeRecords(basePlan.breakpointAtRules, fragment.breakpointAtRules),
+        containerAtRules: mergeRecords(basePlan.containerAtRules, fragment.containerAtRules),
+        selectors: mergeRecords(basePlan.selectors, fragment.selectors),
+        variableAliasSets: basePlan.variableAliasSets ? clone(basePlan.variableAliasSets) : undefined,
+        utilities: mergeBy(basePlan.utilities, fragment.utilities, (utility) => `${utility.id}\0${utility.layer || ''}`),
+        functions: mergeRecords(basePlan.functions, fragment.functions),
+        debug: mergeRecords(basePlan.debug, fragment.debug)
+    }
+    addOwnNamespaceVariableRefs(plan)
+    plan.utilityBuckets = compileUtilityBuckets(plan.utilities)
+    plan.variableNamespaces = createVariableNamespaces(plan)
+    return Object.fromEntries(Object.entries(plan).filter(([, value]) =>
+        value !== undefined
+        && (!Array.isArray(value) || value.length)
+        && (typeof value !== 'object' || Array.isArray(value) || Object.keys(value).length)
+    )) as MasterCSSPlan
+}
+
+export function createMasterCSSPlan(input: CSSDirectivePlanInput = {}, options: CreateMasterCSSPlanOptions = {}): MasterCSSPlan {
+    const rootSize = input.rootSize ?? options.basePlan?.settings?.rootSize ?? 16
+    const variables = compileVariables(input.variables)
+    const { atRules, breakpointAtRules, containerAtRules } = compileAtRules(variables, rootSize)
+    const settings = {
+        ...(input.rootSize !== undefined ? { rootSize: input.rootSize } : {}),
+        ...(input.baseUnit !== undefined ? { baseUnit: input.baseUnit } : {}),
+        ...(input.defaultMode !== undefined ? { defaultMode: input.defaultMode } : {}),
+        ...(input.scope !== undefined ? { scope: input.scope } : {}),
+        ...(input.important !== undefined ? { important: input.important } : {}),
+        ...(input.modeTrigger !== undefined ? { modeTrigger: input.modeTrigger } : {}),
+        ...(input.modes?.length ? { modes: [...input.modes] } : {})
+    }
+    const variantBasePlan = mergePlan(options.basePlan, {
+        version: 1,
+        ...(Object.keys(settings).length ? { settings } : {}),
         ...(variables?.length ? { variables } : {}),
-        ...(animations ? { animations } : {}),
-        ...(variants?.length ? { variants } : {}),
         ...(atRules ? { atRules } : {}),
+        ...(breakpointAtRules ? { breakpointAtRules } : {}),
+        ...(containerAtRules ? { containerAtRules } : {})
+    })
+    const { variants, selectors, atRules: variantAtRules } = compileVariants(input.variants as MasterCSSPlanVariants | undefined, variantBasePlan)
+    const utilities = compileUtilities(input.utilities)
+    const fragment: MasterCSSPlan = {
+        version: 1,
+        ...(Object.keys(settings).length ? { settings } : {}),
+        ...(variables?.length ? { variables } : {}),
+        ...(compileAnimations(input.animations) ? { animations: compileAnimations(input.animations) } : {}),
+        ...(variants?.length ? { variants } : {}),
+        ...((atRules || variantAtRules) ? { atRules: mergeRecords(atRules, variantAtRules) } : {}),
         ...(breakpointAtRules ? { breakpointAtRules } : {}),
         ...(containerAtRules ? { containerAtRules } : {}),
         ...(selectors ? { selectors } : {}),
-        ...(variableNamespaces ? { variableNamespaces } : {}),
-        ...(variableAliasSets?.length ? { variableAliasSets } : {}),
-        ...(utilities?.length ? { utilities } : {}),
-        ...(utilityBuckets ? { utilityBuckets } : {}),
-        ...(resolved.functions ? { functions: compileFunctions(resolved.functions) } : {})
+        ...(utilities?.length ? { utilities } : {})
     }
+    return mergePlan(options.basePlan, fragment)
 }

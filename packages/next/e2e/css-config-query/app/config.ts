@@ -1,3 +1,3 @@
-import config from './theme.css?master-css-config'
+import config from './theme.css?master-css-plan'
 
 export default config

@@ -3,6 +3,7 @@ import { mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { test, expect } from 'vitest'
+import { compileCSSPlan } from '@master/css-compiler'
 
 test('uses default config without implicit config file discovery', async () => {
     const extractor = await new CSSExtractor({}, __dirname).init()
@@ -15,28 +16,19 @@ test('reject string extractor options', async () => {
         .toThrow('CSSExtractor options must be an object.')
 })
 
-test('uses explicit config objects', async () => {
-    const extractor = await new CSSExtractor({
-        config: {
-            utilities: [
-                {
-                    name: 'blue-btn',
-                    type: -4,
-                    layer: 'components',
-                    rules: [
-                        { selector: '&', declarations: { 'background-color': 'oklch(63.7% 0.237 25.331)' } }
-                    ]
-                },
-                {
-                    name: 'btn',
-                    type: -4,
-                    layer: 'components',
-                    rules: [
-                        { selector: '&', declarations: { 'background-color': 'oklch(55.1% 0.027 264.364)' } }
-                    ]
-                }
-            ]
+test('uses explicit compiled plans', async () => {
+    const { plan } = compileCSSPlan(`
+        @components {
+            blue-btn {
+                background-color: oklch(63.7% 0.237 25.331);
+            }
+            btn {
+                background-color: oklch(55.1% 0.027 264.364);
+            }
         }
+    `)
+    const extractor = await new CSSExtractor({
+        plan
     }, __dirname).init()
     expect(
         extractor.extract('test.tsx',

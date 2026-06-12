@@ -2,20 +2,14 @@ import { mkdirSync, writeFileSync } from 'node:fs'
 import { createRequire } from 'node:module'
 import { dirname, isAbsolute, relative, resolve } from 'node:path'
 import { isCSSConfigRequest } from '@master/css-configer/css'
-import { loadConfigModuleSync } from '@master/css-configer/load-sync'
-import {
-    isMasterCSSConfigRequest,
-    stripMasterCSSConfigQuery,
-    toVirtualCSSConfigModulePath
-} from '@master/css-integration/config-module'
+import { loadPlanModuleSync } from '@master/css-configer/load-sync'
 import {
     isMasterCSSPlanRequest,
     stripMasterCSSPlanQuery,
-    toPlanModule,
     toVirtualCSSPlanModulePath
 } from '@master/css-integration/plan-module'
 
-const MASTER_CSS_CONFIG_IMPORT_PATTERN = /(\bimport\s+(?:[^'"]*?\s+from\s*)?|\bexport\s+[^'"]*?\s+from\s*|\bimport\s*\(\s*)(['"])([^'"]+)\2/g
+const MASTER_CSS_PLAN_IMPORT_PATTERN = /(\bimport\s+(?:[^'"]*?\s+from\s*)?|\bexport\s+[^'"]*?\s+from\s*|\bimport\s*\(\s*)(['"])([^'"]+)\2/g
 
 interface LoaderContext {
     resourcePath: string
@@ -64,44 +58,37 @@ function resolveRequest(context: LoaderContext, request: string) {
     })
 }
 
-function writeCSSConfigModule(context: LoaderContext, configPath: string, plan?: boolean) {
-    if (!isCSSConfigRequest(configPath)) {
-        throw new TypeError('Master CSS config queries only support CSS entry files.')
+function writeCSSPlanModule(context: LoaderContext, planPath: string) {
+    if (!isCSSConfigRequest(planPath)) {
+        throw new TypeError('Master CSS plan queries only support CSS entry files.')
     }
 
     const projectDir = context.getOptions?.().projectDir || context.rootContext || process.cwd()
-    const virtualConfigPath = plan
-        ? toVirtualCSSPlanModulePath(projectDir, configPath)
-        : toVirtualCSSConfigModulePath(projectDir, configPath)
-    const result = loadConfigModuleSync(configPath)
-    mkdirSync(dirname(virtualConfigPath), { recursive: true })
-    writeFileSync(virtualConfigPath, plan ? toPlanModule(result.plan) : result.code)
+    const virtualPlanPath = toVirtualCSSPlanModulePath(projectDir, planPath)
+    const result = loadPlanModuleSync(planPath)
+    mkdirSync(dirname(virtualPlanPath), { recursive: true })
+    writeFileSync(virtualPlanPath, result.code)
     for (const dependency of result.dependencies) {
         context.addDependency?.(dependency)
     }
-    return virtualConfigPath
+    return virtualPlanPath
 }
 
-async function transformConfigImports(context: LoaderContext, source: string) {
+async function transformPlanImports(context: LoaderContext, source: string) {
     let result = ''
     let lastIndex = 0
     let matched = false
 
-    for (const match of source.matchAll(MASTER_CSS_CONFIG_IMPORT_PATTERN)) {
+    for (const match of source.matchAll(MASTER_CSS_PLAN_IMPORT_PATTERN)) {
         const [fullMatch, prefix, quote, request] = match
-        const isConfigRequest = isMasterCSSConfigRequest(request)
-        const isPlanRequest = isMasterCSSPlanRequest(request)
-        if (!isConfigRequest && !isPlanRequest) continue
+        if (!isMasterCSSPlanRequest(request)) continue
         if (match.index === undefined) continue
 
         matched = true
-        const configPath = await resolveRequest(context, isPlanRequest
-            ? stripMasterCSSPlanQuery(request)
-            : stripMasterCSSConfigQuery(request)
-        )
-        const virtualConfigPath = writeCSSConfigModule(context, configPath, isPlanRequest)
+        const planPath = await resolveRequest(context, stripMasterCSSPlanQuery(request))
+        const virtualPlanPath = writeCSSPlanModule(context, planPath)
         result += source.slice(lastIndex, match.index)
-        result += `${prefix}${quote}${toModuleSpecifier(context.resourcePath, virtualConfigPath)}${quote}`
+        result += `${prefix}${quote}${toModuleSpecifier(context.resourcePath, virtualPlanPath)}${quote}`
         lastIndex = match.index + fullMatch.length
     }
 
@@ -112,10 +99,10 @@ async function transformConfigImports(context: LoaderContext, source: string) {
 export default function masterCSSConfigImportLoader(this: LoaderContext, source: string) {
     const callback = this.async?.()
     if (!callback) {
-        throw new Error('[@master/css.next] CSS config import loader requires an async loader context.')
+        throw new Error('[@master/css.next] CSS plan import loader requires an async loader context.')
     }
 
-    transformConfigImports(this, source)
+    transformPlanImports(this, source)
         .then((code) => callback(null, code))
         .catch((error: Error) => callback(error))
 }

@@ -1,4 +1,4 @@
-import { UtilityType, type MasterCSS } from '@master/css'
+import { UtilityType, type MasterCSS } from '../master-css'
 import {
     collectMasterCSSClassListTokenRanges,
     tokenizeMasterCSSAtQuery,

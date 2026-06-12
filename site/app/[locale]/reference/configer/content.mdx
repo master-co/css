@@ -3,58 +3,58 @@
 @master/css-configer@rc
 ```
 
-`@master/css-configer` is the shared project config boundary for CLI commands, ESLint, language tooling, and build integrations such as Vite, Next.js, Webpack, and Nuxt.
+`@master/css-configer` is the shared project plan boundary for CLI commands, ESLint, language tooling, and build integrations such as Vite, Next.js, Webpack, and Nuxt.
 
-It discovers project CSS entries and Master CSS workspace roots, then delegates CSS parsing, import graph resolution, and semantic config compilation to `@master/css-compiler`. The extractor stays focused on class/source scanning; callers pass it the compiled config and source directives.
+It discovers project CSS entries and Master CSS workspace roots, then delegates CSS parsing, import graph resolution, and plan compilation to `@master/css-compiler`. The extractor stays focused on class/source scanning; callers pass it the compiled plan and source directives.
 
 Project entry discovery only treats CSS files with top-level `@master;` or `@import '@master/css'` as entries. Imported `@settings`, `@theme`, `@custom-variant`, and `@custom-variant` directives participate in the entry graph, but they are not independent project entries. JavaScript/TypeScript config files are intentionally unsupported.
 
 ---
 
-## Load project config
-Use `loadProjectConfig()` when a tool should load the canonical project-level config for a directory.
+## Load project plan
+Use `loadProjectPlan()` when a tool should load the canonical project-level plan for a directory.
 
 ```ts
-import { loadProjectConfig, loadProjectConfigModule } from '@master/css-configer/load'
+import { loadProjectPlan, loadProjectPlanModule } from '@master/css-configer/load'
 
-const result = await loadProjectConfig('/project')
-const moduleResult = await loadProjectConfigModule('/project')
+const result = await loadProjectPlan('/project')
+const moduleResult = await loadProjectPlanModule('/project')
 ```
 
-`loadProjectConfig()` discovers project CSS entries unless explicit `entries` are passed. It returns the compiled config and dependency list. `loadProjectConfigModule()` returns JavaScript module code for virtual modules and loader output.
+`loadProjectPlan()` discovers project CSS entries unless explicit `entries` are passed. It returns the compiled plan and dependency list. `loadProjectPlanModule()` returns JavaScript module code for virtual modules and loader output.
 
 ```ts
-import { loadProjectConfigSync, loadProjectConfigModuleSync } from '@master/css-configer/load-sync'
+import { loadProjectPlanSync, loadProjectPlanModuleSync } from '@master/css-configer/load-sync'
 
-const result = loadProjectConfigSync('/project')
-const moduleResult = loadProjectConfigModuleSync('/project')
+const result = loadProjectPlanSync('/project')
+const moduleResult = loadProjectPlanModuleSync('/project')
 ```
 
 ---
 
 ## Load explicit CSS resources
-Use `loadConfig()` when the CSS resource path is already known and should be compiled directly.
+Use `loadPlan()` when the CSS resource path is already known and should be compiled directly.
 
 ```ts
-import { loadConfig, loadConfigModule } from '@master/css-configer/load'
+import { loadPlan, loadPlanModule } from '@master/css-configer/load'
 
-const result = await loadConfig('/project/src/index.css')
-const moduleResult = await loadConfigModule('/project/src/index.css')
+const result = await loadPlan('/project/src/index.css')
+const moduleResult = await loadPlanModule('/project/src/index.css')
 ```
 
-`loadConfig()` and `loadConfigModule()` only accept CSS resources. They do not search the workspace and do not load JavaScript or TypeScript config files.
+`loadPlan()` and `loadPlanModule()` only accept CSS resources. They do not search the workspace and do not load JavaScript or TypeScript config files.
 
 ```ts
-import { loadConfigSync, loadConfigModuleSync } from '@master/css-configer/load-sync'
+import { loadPlanSync, loadPlanModuleSync } from '@master/css-configer/load-sync'
 
-const result = loadConfigSync('/project/src/index.css')
-const moduleResult = loadConfigModuleSync('/project/src/index.css')
+const result = loadPlanSync('/project/src/index.css')
+const moduleResult = loadPlanModuleSync('/project/src/index.css')
 ```
 
 ---
 
 ## Discover entries and workspaces
-Use `@master/css-configer/css` when tooling needs the same project entry and workspace discovery rules without loading config.
+Use `@master/css-configer/css` when tooling needs the same project entry and workspace discovery rules without loading a plan.
 
 ```ts
 import {
@@ -68,27 +68,27 @@ import {
 
 ---
 
-## Config modules
-The module utilities define the config import contract used by official integrations. They live in `@master/css-integration`; configer owns loading and discovery.
+## Plan modules
+The module utilities define the plan import contract used by official integrations. They live in `@master/css-integration`; configer owns loading and discovery.
 
 ```ts
 import {
-    MASTER_CSS_CONFIG_QUERY,
-    VIRTUAL_CONFIG_ID,
-    toConfigModule,
-    toVirtualDefaultConfigModulePath,
-    toVirtualCSSConfigModulePath,
-} from '@master/css-integration/config-module'
+    MASTER_CSS_PLAN_QUERY,
+    VIRTUAL_PLAN_ID,
+    toPlanModule,
+    toVirtualDefaultPlanModulePath,
+    toVirtualCSSPlanModulePath,
+} from '@master/css-integration/plan-module'
 ```
 
 | API | Purpose |
 | --- | --- |
-| `VIRTUAL_CONFIG_ID` | The default config module id, `virtual:master-css-config`. |
+| `VIRTUAL_PLAN_ID` | The default plan module id, `virtual:master-css-plan`. |
 | `VIRTUAL_PRELOADED_ID` | The default preloaded module id, `virtual:master-css-preloaded`. |
-| `MASTER_CSS_CONFIG_QUERY` | The query suffix, `?master-css-config`, used to compile one explicit CSS resource. |
-| `toConfigModule(config)` | Serializes a config object into an ESM default export. |
+| `MASTER_CSS_PLAN_QUERY` | The query suffix, `?master-css-plan`, used to compile one explicit CSS resource. |
+| `toPlanModule(plan)` | Serializes a plan object into an ESM default export. |
 | `toPreloadedModule(preloaded)` | Serializes preloaded variable and animation counts into an ESM default export. |
-| `toVirtualDefaultConfigModulePath(context)` | Creates the virtual path for the default config module. |
-| `toVirtualCSSConfigModulePath(context, file)` | Creates a virtual path for one explicit queried CSS resource. |
+| `toVirtualDefaultPlanModulePath(context)` | Creates the virtual path for the default plan module. |
+| `toVirtualCSSPlanModulePath(context, file)` | Creates a virtual path for one explicit queried CSS resource. |
 
-Use `virtual:master-css-config` and `virtual:master-css-preloaded` when application code should receive the integration's canonical project-level runtime inputs. Use `./index.css?master-css-config` only when the code intentionally compiles one explicit CSS resource through the active integration.
+Use `virtual:master-css-plan` and `virtual:master-css-preloaded` when application code should receive the integration's canonical project-level runtime inputs. Use `./index.css?master-css-plan` only when the code intentionally compiles one explicit CSS resource through the active integration.

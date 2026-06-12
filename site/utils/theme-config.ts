@@ -1,3 +1,3 @@
-import themeConfig from '@master/css/index.css?master-css-config'
+import { defaultPlan as themeConfig } from '@master/css'
 
 export default themeConfig

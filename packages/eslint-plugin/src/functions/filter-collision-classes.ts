@@ -1,6 +1,6 @@
 import { generateValidRules } from '@master/css-validator'
 import { MasterCSS } from '@master/css'
-import { equalVariants, equalDeclarations } from '@master/css/utils'
+import { equalVariants, equalDeclarations } from '../utils/master-css'
 
 export default function filterCollisionClasses(classNames: string[], css: MasterCSS): Record<string, string[]> {
     const validRules = classNames

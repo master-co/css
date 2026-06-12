@@ -2,6 +2,8 @@ import { mkdirSync, mkdtempSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
+import { defaultPlan } from '@master/css'
+import { compileCSSPlan } from '@master/css-compiler'
 import CSSExtractor from '../src/core'
 import {
     createStyleCSSHostSource,
@@ -79,30 +81,21 @@ describe('style CSS extraction helpers', () => {
     })
 
     it('locally lowers @compose using the provided project context', async () => {
+        const { plan } = compileCSSPlan('@utilities { brand { color: #fff; } }', {
+            basePlan: defaultPlan
+        })
         const result = await transformLocalStyleCSS('/project/src/Button.module.css', `
             .button {
                 @compose "inline-flex brand";
                 color: white;
             }
         `, {
-            config: {
-                utilities: [
-                    {
-                        name: 'brand',
-                        type: -4,
-                        layer: 'components',
-                        declarations: {
-                            'background-color': '#123456'
-                        }
-                    }
-                ]
-            }
+            basePlan: plan
         })
 
         expect(result.transformed).toBe(true)
         expect(result.code).toContain('.button{')
         expect(result.code).toContain('display:inline-flex')
-        expect(result.code).toContain('background-color:#123456')
         expect(result.code).toContain('color:#fff')
         expect(result.code).not.toContain('@compose')
     })

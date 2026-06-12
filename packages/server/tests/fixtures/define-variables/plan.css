@@ -1,0 +1,15 @@
+@theme {
+    --full: 100%;
+}
+
+@theme {
+    --spacing-md: 20;
+}
+
+@theme {
+    --color-black: #000;
+}
+
+@theme {
+    --color-primary: $color-black;
+}

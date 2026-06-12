@@ -54,10 +54,10 @@
             "import": "./dist/index.mjs",
             "default": "./dist/index.mjs"
         },
-        "./*": {
-            "types": "./dist/*.d.ts",
-            "import": "./dist/*.mjs",
-            "default": "./dist/*.mjs"
+        "./compiler": {
+            "types": "./dist/compiler.d.ts",
+            "import": "./dist/compiler.mjs",
+            "default": "./dist/compiler.mjs"
         }
     },
     "files": [
@@ -69,9 +69,7 @@
     },
     "dependencies": {
         "@master/css-lexer": "workspace:^",
-        "@master/colors": "^3.0.0",
-        "csstype": "^3.2.3",
-        "json-safe-extend": "^3.2.5"
+        "csstype": "^3.2.3"
     },
     "devDependencies": {
         "shared": "workspace:^"

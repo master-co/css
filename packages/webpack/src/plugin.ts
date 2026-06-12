@@ -1,14 +1,10 @@
 import { CSSExtractor, type Options } from '@master/css-extractor'
 import type { MasterCSSPreloaded } from '@master/css'
 import {
-    toConfigModule,
-    toVirtualDefaultConfigModulePath
-} from '@master/css-integration/config-module'
-import {
     toPlanModule,
     toVirtualDefaultPlanModulePath
 } from '@master/css-integration/plan-module'
-import { loadProjectConfig } from '@master/css-configer/load'
+import { loadProjectPlan } from '@master/css-configer/load'
 import {
     cleanStyleRequest,
     createExtractedCSSResult,
@@ -45,7 +41,6 @@ export interface MasterCSSWebpackContext {
     cwd: string
     compilerContext: string
     virtualCSSImportModuleId: string
-    virtualConfigModuleId: string
     virtualPlanModuleId: string
     virtualPreloadedModuleId: string
     virtualModule?: VirtualModulesPlugin
@@ -57,9 +52,8 @@ export interface MasterCSSWebpackContext {
     getOptions(): Options
     getPluginInitialized(): boolean
     setPluginInitialized(pluginInitialized: boolean): void
-    getDefaultConfigDependencyPaths(): string[]
+    getDefaultPlanDependencyPaths(): string[]
     setModuleContent(modulePath: string, moduleContent: unknown): void
-    createDefaultConfigModule(): Promise<string>
     createDefaultPlanModule(): Promise<string>
     createPreloadedModule(): Promise<string>
     processModuleContents(
@@ -67,7 +61,6 @@ export interface MasterCSSWebpackContext {
         isGeneratedCSSModulePath: (modulePath: string) => boolean
     ): Promise<void>
     writeGeneratedCSSModule(): Promise<void>
-    writeDefaultConfigModule(): Promise<void>
     writeDefaultPlanModule(): Promise<void>
     writePreloadedModule(): Promise<void>
     replayModuleContents(): Promise<void>
@@ -81,7 +74,7 @@ export class MasterCSSPlugin {
     readonly extractor: CSSExtractor
     pluginInitialized = false
     moduleContentByPath: Record<string, unknown> = {}
-    defaultConfigDependencies: string[] = []
+    defaultPlanDependencies: string[] = []
     preloaded: MasterCSSPreloaded = {}
     resetReplayChain: Promise<unknown> = Promise.resolve()
     styleCSSSources: StyleCSSSources = new Map()
@@ -109,8 +102,8 @@ export class MasterCSSPlugin {
         return this.extractor.css
     }
 
-    get config() {
-        return this.extractor.config
+    get plan() {
+        return this.extractor.plan
     }
 
     get slotCSSRule() {
@@ -168,24 +161,18 @@ export class MasterCSSPlugin {
         return this.extractor.insert(source, content)
     }
 
-    private async createDefaultConfigModule() {
-        const result = await loadProjectConfig(this.cwd, {
-            config: this.customOptions.config
-        })
-        this.defaultConfigDependencies = result.dependencies
-        return toConfigModule(result.config)
-    }
-
     private async createDefaultPlanModule() {
-        const result = await loadProjectConfig(this.cwd, {
-            config: this.customOptions.config
-        })
-        this.defaultConfigDependencies = result.dependencies
+        const result = await loadProjectPlan(this.cwd)
+        this.extractor.customOptions = {
+            ...this.extractor.customOptions,
+            plan: result.plan
+        }
+        this.defaultPlanDependencies = result.dependencies
         return toPlanModule(result.plan)
     }
 
-    private getDefaultConfigDependencyPaths() {
-        return this.defaultConfigDependencies
+    private getDefaultPlanDependencyPaths() {
+        return this.defaultPlanDependencies
     }
 
     private getExtractorClasses() {
@@ -270,7 +257,6 @@ export class MasterCSSPlugin {
             cwd: this.cwd,
             compilerContext,
             virtualCSSImportModuleId: toVirtualCSSModulePath(compilerContext),
-            virtualConfigModuleId: toVirtualDefaultConfigModulePath(compilerContext),
             virtualPlanModuleId: toVirtualDefaultPlanModulePath(compilerContext),
             virtualPreloadedModuleId: toVirtualPreloadedModulePath(compilerContext),
             on: (...args) => this.on(...args),
@@ -283,11 +269,10 @@ export class MasterCSSPlugin {
             setPluginInitialized: (pluginInitialized) => {
                 this.pluginInitialized = pluginInitialized
             },
-            getDefaultConfigDependencyPaths: () => this.getDefaultConfigDependencyPaths(),
+            getDefaultPlanDependencyPaths: () => this.getDefaultPlanDependencyPaths(),
             setModuleContent: (modulePath, moduleContent) => {
                 this.moduleContentByPath[modulePath] = moduleContent
             },
-            createDefaultConfigModule: () => this.createDefaultConfigModule(),
             createDefaultPlanModule: () => this.createDefaultPlanModule(),
             createPreloadedModule: () => this.createPreloadedModule(),
             processModuleContents: (entries, isGeneratedCSSModulePath) => this.processModuleContents(entries, isGeneratedCSSModulePath),
@@ -299,10 +284,6 @@ export class MasterCSSPlugin {
                 })
                 context.virtualModule.writeModule(context.virtualCSSImportModuleId, result.css)
                 await context.writePreloadedModule()
-            },
-            writeDefaultConfigModule: async () => {
-                if (!context.virtualModule || !context.virtualConfigModuleId) return
-                context.virtualModule.writeModule(context.virtualConfigModuleId, await this.createDefaultConfigModule())
             },
             writeDefaultPlanModule: async () => {
                 if (!context.virtualModule || !context.virtualPlanModuleId) return

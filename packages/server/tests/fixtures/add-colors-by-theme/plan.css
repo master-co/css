@@ -1,0 +1,16 @@
+@settings {
+    mode-trigger: media;
+    modes: light dark;
+}
+
+@theme {
+    --color-primary: #ff0000;
+}
+
+@theme light {
+    --color-primary: #000000;
+}
+
+@theme dark {
+    --color-primary: #ffffff;
+}

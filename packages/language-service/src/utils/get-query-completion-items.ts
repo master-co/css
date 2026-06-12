@@ -1,11 +1,10 @@
-import { AT_SIGN, MasterCSS, createCSS, QUERY_COMPARISON_OPERATORS, QUERY_LOGICAL_OPERATORS } from '@master/css'
-import { type AtRule, generateAt, generateCSS, getSingleAtNumberRuleNode, parseAt } from '@master/css/utils'
+import { AT_SIGN, MasterCSS, createDefaultCSS, QUERY_COMPARISON_OPERATORS, QUERY_LOGICAL_OPERATORS, type AtRule, generateAt, generateCSS, getSingleAtNumberRuleNode, parseAt } from '../master-css'
 import { CompletionItem, CompletionItemKind } from 'vscode-languageserver-protocol'
 import sortCompletionItems from './sort-completion-items'
 import { getCSSDataDocumentation } from './get-css-data-documentation'
 import cssDataProvider from './css-data-provider'
 
-export default function getQueryCompletionItems(css: MasterCSS = createCSS(), triggerCharacter = AT_SIGN, syntax: string): CompletionItem[] {
+export default function getQueryCompletionItems(css: MasterCSS = createDefaultCSS(), triggerCharacter = AT_SIGN, syntax: string): CompletionItem[] {
     const atDataList = cssDataProvider.provideAtDirectives()
     const completionItems: CompletionItem[] = []
     if (!QUERY_COMPARISON_OPERATORS.includes(triggerCharacter)) {

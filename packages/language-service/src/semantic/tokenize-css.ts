@@ -1,6 +1,6 @@
 import { pushHighlightToken, toSemanticTokenItems, type HighlightTokenItem } from './highlight'
 import { collectClassListHighlightTokenItems, tokenizeAtQuery, tokenizeState, tokenizeUtilityValue } from './tokenize-class'
-import type { MasterCSS } from '@master/css'
+import type { MasterCSS } from '../master-css'
 import {
     collectCSSDeclarationRanges,
     collectCSSDirectiveRanges,

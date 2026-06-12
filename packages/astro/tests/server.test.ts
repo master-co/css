@@ -1,9 +1,10 @@
 import { describe, expect, it, vi } from 'vitest'
 import { createMasterCSSMiddleware, renderResponse } from '../src/server'
+import { defaultPlan } from '@master/css'
 
 describe('Astro server middleware', () => {
     it('renders Master CSS into HTML responses', async () => {
-        const middleware = createMasterCSSMiddleware()
+        const middleware = createMasterCSSMiddleware(defaultPlan)
         const response = await middleware({} as never, vi.fn(async () => {
             return new Response(
                 '<html><head></head><body><div class="block"></div></body></html>',
@@ -30,7 +31,7 @@ describe('Astro server middleware', () => {
             }
         })
 
-        expect(await renderResponse(response)).toBe(response)
+        expect(await renderResponse(response, defaultPlan)).toBe(response)
         expect(await response.text()).toBe('{"ok":true}')
     })
 
@@ -42,6 +43,6 @@ describe('Astro server middleware', () => {
             status: 304
         })
 
-        expect(await renderResponse(response)).toBe(response)
+        expect(await renderResponse(response, defaultPlan)).toBe(response)
     })
 })

@@ -1187,15 +1187,15 @@ importers:
 
   packages/compiler:
     dependencies:
-      '@master/css':
+      '@master/css-engine':
         specifier: workspace:^
-        version: link:../core
-      '@master/css-integration':
-        specifier: workspace:^
-        version: link:../integration
+        version: link:../engine
       '@master/css-lexer':
         specifier: workspace:^
         version: link:../lexer
+      csstype:
+        specifier: ^3.2.3
+        version: 3.2.3
       lightningcss:
         specifier: ^1.32.0
         version: 1.32.0
@@ -1218,6 +1218,9 @@ importers:
       '@master/css-lexer':
         specifier: workspace:^
         version: link:../lexer
+      '@master/css-preset':
+        specifier: workspace:^
+        version: link:../preset
     devDependencies:
       shared:
         specifier: workspace:^
@@ -1225,18 +1228,12 @@ importers:
 
   packages/core:
     dependencies:
-      '@master/colors':
-        specifier: ^3.0.0
-        version: 3.0.0
-      '@master/css-lexer':
+      '@master/css-engine':
         specifier: workspace:^
-        version: link:../lexer
-      csstype:
-        specifier: ^3.2.3
-        version: 3.2.3
-      json-safe-extend:
-        specifier: ^3.2.5
-        version: 3.2.5
+        version: link:../engine
+      '@master/css-preset':
+        specifier: workspace:^
+        version: link:../preset
     devDependencies:
       shared:
         specifier: workspace:^
@@ -1253,18 +1250,12 @@ importers:
 
   packages/engine:
     dependencies:
-      '@master/colors':
-        specifier: ^3.0.0
-        version: 3.0.0
       '@master/css-lexer':
         specifier: workspace:^
         version: link:../lexer
       csstype:
         specifier: ^3.2.3
         version: 3.2.3
-      json-safe-extend:
-        specifier: ^3.2.5
-        version: 3.2.5
     devDependencies:
       shared:
         specifier: workspace:^
@@ -1529,6 +1520,9 @@ importers:
       pex-color:
         specifier: ^2.3.0
         version: 2.3.0
+      shared:
+        specifier: workspace:^
+        version: link:../../shared
       vscode-css-languageservice:
         specifier: ^6.3.10
         version: 6.3.10
@@ -1557,9 +1551,6 @@ importers:
       '@types/vscode':
         specifier: ^1.118.0
         version: 1.118.0
-      shared:
-        specifier: workspace:^
-        version: link:../../shared
       vscode-languageserver:
         specifier: ^9.0.1
         version: 9.0.1
@@ -1763,6 +1754,9 @@ importers:
         specifier: ^12.0.0
         version: 12.0.0
     devDependencies:
+      '@master/css-compiler':
+        specifier: workspace:^
+        version: link:../compiler
       shared:
         specifier: workspace:^
         version: link:../../shared
@@ -13623,9 +13617,6 @@ packages:
   json-parse-even-better-errors@5.0.0:
     resolution: {integrity: sha512-ZF1nxZ28VhQouRWhUcVlUIN3qwSgPuswK05s/HIaoetAoE/9tngVmCHjSxmSQPav1nd+lPtTL0YZ/2AFdR/iYQ==}
     engines: {node: ^20.17.0 || >=22.9.0}
-
-  json-safe-extend@3.2.5:
-    resolution: {integrity: sha512-QeYf9bPGbWj+gci8YfZ05FEamC1Y7zAFvlwVtQB4Gg2Wxxc4pCnPhme5JprrrRuu/lQtICsV/YOshkzEm7yzEg==}
 
   json-schema-to-typescript-lite@15.0.0:
     resolution: {integrity: sha512-5mMORSQm9oTLyjM4mWnyNBi2T042Fhg1/0gCIB6X8U/LVpM2A+Nmj2yEyArqVouDmFThDxpEXcnTgSrjkGJRFA==}
@@ -33184,8 +33175,6 @@ snapshots:
   json-parse-even-better-errors@4.0.0: {}
 
   json-parse-even-better-errors@5.0.0: {}
-
-  json-safe-extend@3.2.5: {}
 
   json-schema-to-typescript-lite@15.0.0:
     dependencies:

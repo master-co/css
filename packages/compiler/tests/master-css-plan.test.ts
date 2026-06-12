@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { createMasterCSSPlan } from '../src'
+import { createMasterCSSPlan } from '../src/master-css-plan'
 
 describe.concurrent('createMasterCSSPlan', () => {
     it('lowers variables into resolved records with modes, dependencies, and negative aliases', () => {
@@ -89,33 +89,34 @@ describe.concurrent('createMasterCSSPlan', () => {
             ])
     })
 
-    it('lowers utility variable aliases and matcher buckets', () => {
+    it('lowers CSS-defined static utilities and matcher buckets', () => {
         const plan = createMasterCSSPlan({
-            variables: [
-                { namespace: 'spacing', key: 'card', value: 12 }
-            ],
             utilities: [
                 {
-                    name: 'card-gap',
-                    key: 'cg',
-                    aliasGroups: ['cg'],
-                    namespaces: ['spacing'],
-                    unit: 'rem'
+                    name: 'card',
+                    layer: 'components',
+                    declarations: {
+                        display: 'grid',
+                        color: 'var(--color-primary)'
+                    }
                 }
             ]
         })
-        const index = plan.utilities?.findIndex((utility) => utility.name === 'card-gap') ?? -1
+        const index = plan.utilities?.findIndex((utility) => utility.name === 'card') ?? -1
         const utility = plan.utilities?.[index]
-        const variableAliases = [
-            ...(utility?.variableAliases || []),
-            ...(utility?.variableAliasSet !== undefined ? plan.variableAliasSets?.[utility.variableAliasSet] || [] : []),
-            ...(utility?.variableAliasRefs || []).flatMap((ref) => plan.variableNamespaces?.[ref] || [])
-        ]
 
         expect(index).toBeGreaterThanOrEqual(0)
-        expect(variableAliases).toContainEqual(['card', 'spacing-card'])
-        expect(utility?.matchers).toContainEqual({ type: 'key', keys: ['cg'] })
-        expect(plan.utilityBuckets?.variable).toContain(index)
-        expect(plan.utilityBuckets?.key).toContain(index)
+        expect(utility?.layer).toBe('components')
+        expect(utility?.emit).toEqual({
+            type: 'static',
+            rules: [{
+                declarations: {
+                    display: 'grid',
+                    color: 'var(--color-primary)'
+                }
+            }]
+        })
+        expect(utility?.matchers).toContainEqual({ type: 'static', name: 'card' })
+        expect(plan.utilityBuckets?.arbitrary).toContain(index)
     })
 })

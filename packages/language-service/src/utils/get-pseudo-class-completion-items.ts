@@ -1,5 +1,4 @@
-import { MasterCSS, createCSS } from '@master/css'
-import { generateCSS } from '@master/css/utils'
+import { MasterCSS, createDefaultCSS, generateCSS } from '../master-css'
 import cssDataProvider from './css-data-provider'
 import { type CompletionItem, CompletionItemKind } from 'vscode-languageserver-protocol'
 import sortCompletionItems from './sort-completion-items'
@@ -35,7 +34,7 @@ function normalizeFunctionalPseudoClass(name: string): string {
     return functionalPseudoClassNames.has(name) ? name + '()' : name
 }
 
-export default function getPseudoClassCompletionItems(css: MasterCSS = createCSS(), syntax: string): CompletionItem[] {
+export default function getPseudoClassCompletionItems(css: MasterCSS = createDefaultCSS(), syntax: string): CompletionItem[] {
     const pseudoClassDataList = cssDataProvider.providePseudoClasses()
         .filter((data) => {
             // exclude @page pseudo-classes
@@ -65,7 +64,7 @@ export default function getPseudoClassCompletionItems(css: MasterCSS = createCSS
     const selectors: Record<string, string> = {
         ':of': ':of',
     }
-    for (const variant of css.config.variants || []) {
+    for (const variant of css.plan.variants || []) {
         const selector = variant.branches.find((branch) => branch.selector)?.selector
         if (selector && variant.token.startsWith(':') && !variant.token.startsWith('::')) {
             selectors[variant.token] = selector

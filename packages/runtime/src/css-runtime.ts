@@ -1,5 +1,5 @@
 import type { MasterCSSPlan } from 'shared/master-css-plan'
-import type { MasterCSSPreloaded } from '@master/css-engine/preloaded'
+import type { MasterCSSPreloaded } from '@master/css-engine'
 import CSSRuntime from './core'
 import initCSSRuntime from './init'
 

@@ -1,17 +1,269 @@
 import { Page } from '@playwright/test'
-import { compileCSSConfigFile, createMasterCSSPlan } from '@master/css-compiler'
-import { extendConfig } from '@master/css/utils'
-import type { Config } from 'shared/css-config'
+import { defaultPlan, type MasterCSSPlan } from '@master/css'
 import { dirname, resolve } from 'path'
 import { fileURLToPath } from 'url'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
-const defaultPlanEntry = resolve(__dirname, '../../preset/src/index.css')
-const defaultPlanConfig = compileCSSConfigFile(defaultPlanEntry).config
 
-export default async function init(page: Page, text?: string, config?: Config) {
-    const plan = config ? createMasterCSSPlan(extendConfig(defaultPlanConfig, config)) : undefined
+type RuntimePlanUtilityInput = Partial<NonNullable<MasterCSSPlan['utilities']>[number]> & {
+    declarations?: Record<string, string | number>
+    rules?: { selector?: string, declarations: Record<string, string | number> }[]
+}
+
+type RuntimePlanVariableInput = NonNullable<MasterCSSPlan['variables']>[number]
+type RuntimePlanVariable = NonNullable<MasterCSSPlan['variables']>[number]
+
+type RuntimePlanInput = Partial<Omit<MasterCSSPlan, 'utilities'>> & {
+    rootSize?: number
+    baseUnit?: number
+    defaultMode?: string
+    modeTrigger?: NonNullable<MasterCSSPlan['settings']>['modeTrigger']
+    modes?: string[]
+    variables?: RuntimePlanVariableInput[]
+    utilities?: RuntimePlanUtilityInput[]
+}
+
+function getDefaultVariableName(key: string, namespace?: string) {
+    const negative = key.startsWith('-')
+    const positiveKey = negative ? key.slice(1) : key
+    const name = namespace
+        ? `${namespace}${positiveKey ? '-' + positiveKey : ''}`
+        : positiveKey
+    return negative ? '-' + name : name
+}
+
+function getVariableKeyByNamespace(variableName: string, namespace: string) {
+    const negative = variableName.startsWith('-')
+    const positiveName = negative ? variableName.slice(1) : variableName
+    if (positiveName !== namespace && !positiveName.startsWith(namespace + '-')) return
+    const variableKey = positiveName === namespace
+        ? ''
+        : positiveName.slice(namespace.length + 1)
+    return negative ? '-' + variableKey : variableKey
+}
+
+function normalizeVariableValue(value: RuntimePlanVariable['value'] | undefined) {
+    if (typeof value !== 'string') {
+        return { value, dependencies: undefined }
+    }
+    const dependencies = new Set<string>()
+    const normalized = value
+        .replace(/\|/g, ' ')
+        .replace(/\$\(([-_a-zA-Z0-9]+)\)|\$([-_a-zA-Z0-9]+)/g, (_text, wrapped: string | undefined, plain: string | undefined) => {
+            const name = wrapped || plain
+            dependencies.add(name)
+            return `var(--${name})`
+        })
+    return {
+        value: normalized,
+        dependencies: dependencies.size ? [...dependencies] : undefined
+    }
+}
+
+function inferVariableType(value: RuntimePlanVariable['value'] | undefined, modes?: RuntimePlanVariable['modes']) {
+    if (typeof value === 'number') return 'number'
+    const firstMode = modes && Object.values(modes)[0]
+    return firstMode?.type || 'string'
+}
+
+function normalizeVariable(variable: RuntimePlanVariableInput): RuntimePlanVariable {
+    const value = variable.value
+    const name = variable.name || getDefaultVariableName(variable.key, variable.namespace)
+    const normalizedValue = normalizeVariableValue(value)
+    return {
+        ...variable,
+        name,
+        type: variable.type || inferVariableType(value, variable.modes),
+        ...(normalizedValue.value !== undefined ? { value: normalizedValue.value } : {}),
+        ...(normalizedValue.dependencies?.length ? {
+            dependencies: [...new Set([...(variable.dependencies || []), ...normalizedValue.dependencies])]
+        } : variable.dependencies?.length ? { dependencies: [...variable.dependencies] } : {})
+    }
+}
+
+function createRuntimeVariables(defaultVariables: RuntimePlanVariable[], inputVariables: RuntimePlanVariableInput[] | undefined) {
+    const variables = new Map<string, RuntimePlanVariable>()
+    for (const variable of defaultVariables) {
+        if (!variable.name) continue
+        variables.set(variable.name, {
+            ...variable,
+            ...(variable.modes ? { modes: { ...variable.modes } } : {}),
+            ...(variable.dependencies?.length ? { dependencies: [...variable.dependencies] } : {})
+        })
+    }
+
+    for (const inputVariable of inputVariables || []) {
+        const normalized = normalizeVariable(inputVariable)
+        const current = variables.get(normalized.name!) || {
+            name: normalized.name,
+            key: normalized.key,
+            ...(normalized.namespace ? { namespace: normalized.namespace } : {}),
+            type: normalized.type
+        }
+        if (normalized.mode) {
+            current.modes = {
+                ...(current.modes || {}),
+                [normalized.mode]: {
+                    type: normalized.type!,
+                    value: normalized.value as string | number
+                }
+            }
+        } else {
+            Object.assign(current, {
+                key: normalized.key,
+                ...(normalized.namespace ? { namespace: normalized.namespace } : {}),
+                type: normalized.type,
+                ...(normalized.value !== undefined ? { value: normalized.value } : {}),
+                ...(normalized.dependencies?.length ? { dependencies: normalized.dependencies } : {}),
+                ...(normalized.inline ? { inline: true } : {})
+            })
+        }
+        variables.set(normalized.name!, current)
+    }
+
+    return [...variables.values()]
+}
+
+function addVariableAlias(
+    variableNamespaces: NonNullable<MasterCSSPlan['variableNamespaces']>,
+    ref: string,
+    key: string,
+    name: string
+) {
+    const aliases = variableNamespaces[ref] || (variableNamespaces[ref] = [])
+    if (!aliases.some(([aliasKey, aliasName]) => aliasKey === key && aliasName === name)) {
+        aliases.push([key, name])
+    }
+}
+
+function createRuntimeVariableNamespaces(
+    defaultNamespaces: MasterCSSPlan['variableNamespaces'],
+    variables: RuntimePlanVariable[]
+) {
+    const variableNamespaces: NonNullable<MasterCSSPlan['variableNamespaces']> = {}
+    for (const [ref, aliases] of Object.entries(defaultNamespaces || {})) {
+        variableNamespaces[ref] = aliases.map(([key, name]) => [key, name])
+    }
+
+    for (const variable of variables) {
+        if (!variable.name) continue
+        const key = variable.namespace
+            ? getVariableKeyByNamespace(variable.name, variable.namespace) ?? variable.key
+            : variable.key
+        if (variable.namespace) {
+            addVariableAlias(variableNamespaces, `=${variable.namespace}`, key, variable.name)
+            addVariableAlias(variableNamespaces, `~${variable.namespace}`, key, variable.name)
+        } else {
+            addVariableAlias(variableNamespaces, '~color', key, variable.name)
+        }
+    }
+    return Object.keys(variableNamespaces).length ? variableNamespaces : undefined
+}
+
+function normalizeUtility(utility: RuntimePlanUtilityInput, order: number): NonNullable<MasterCSSPlan['utilities']>[number] {
+    if (utility.emit && utility.matchers) return utility as NonNullable<MasterCSSPlan['utilities']>[number]
+    const name = utility.name || utility.id || ''
+    const isStatic = utility.type === -4 || utility.type === undefined
+    return {
+        id: utility.id || (isStatic ? `.${name}` : name),
+        name,
+        type: utility.type ?? -4,
+        order: utility.order ?? order,
+        layer: utility.layer,
+        emit: {
+            type: 'static',
+            rules: utility.rules || [
+                {
+                    selector: '&',
+                    declarations: utility.declarations || {}
+                }
+            ]
+        },
+        matchers: [{ type: 'static', name }]
+    }
+}
+
+function addBucketIndex(bucket: number[] | undefined, index: number) {
+    if (bucket?.includes(index)) return bucket
+    const nextBucket = bucket || []
+    nextBucket.push(index)
+    return nextBucket
+}
+
+function createRuntimeUtilityBuckets(
+    defaultBuckets: MasterCSSPlan['utilityBuckets'],
+    utilities: NonNullable<MasterCSSPlan['utilities']>,
+    startIndex: number
+) {
+    const utilityBuckets: NonNullable<MasterCSSPlan['utilityBuckets']> = {
+        ...(defaultBuckets?.variable?.length ? { variable: [...defaultBuckets.variable] } : {}),
+        ...(defaultBuckets?.value?.length ? { value: [...defaultBuckets.value] } : {}),
+        ...(defaultBuckets?.key?.length ? { key: [...defaultBuckets.key] } : {}),
+        ...(defaultBuckets?.arbitrary?.length ? { arbitrary: [...defaultBuckets.arbitrary] } : {})
+    }
+    utilities.forEach((utility, relativeIndex) => {
+        const index = startIndex + relativeIndex
+        for (const matcher of utility.matchers) {
+            switch (matcher.type) {
+                case 'variable':
+                    if (utility.variableAliases?.length || utility.variableAliasSet !== undefined || utility.variableAliasRefs?.length) {
+                        utilityBuckets.variable = addBucketIndex(utilityBuckets.variable, index)
+                    }
+                    break
+                case 'value':
+                    if (utility.values?.length || utility.kind) utilityBuckets.value = addBucketIndex(utilityBuckets.value, index)
+                    break
+                case 'key':
+                    utilityBuckets.key = addBucketIndex(utilityBuckets.key, index)
+                    break
+                default:
+                    utilityBuckets.arbitrary = addBucketIndex(utilityBuckets.arbitrary, index)
+                    break
+            }
+        }
+    })
+    return Object.keys(utilityBuckets).length ? utilityBuckets : undefined
+}
+
+function createRuntimePlan(plan: RuntimePlanInput) {
+    const defaultUtilities = defaultPlan.utilities || []
+    const { rootSize, baseUnit, defaultMode, modeTrigger, modes, ...rest } = plan
+    const variables = createRuntimeVariables(defaultPlan.variables || [], rest.variables)
+    const customUtilities = (rest.utilities || []).map((utility, index) => normalizeUtility(utility, defaultUtilities.length + index))
+    return {
+        ...defaultPlan,
+        ...rest,
+        version: 1,
+        settings: {
+            ...defaultPlan.settings,
+            ...rest.settings,
+            ...(rootSize !== undefined ? { rootSize } : {}),
+            ...(baseUnit !== undefined ? { baseUnit } : {}),
+            ...(defaultMode !== undefined ? { defaultMode } : {}),
+            ...(modeTrigger !== undefined ? { modeTrigger } : {}),
+            ...(modes !== undefined ? { modes } : {})
+        },
+        variables,
+        animations: {
+            ...(defaultPlan.animations || {}),
+            ...(rest.animations || {})
+        },
+        variants: [
+            ...(defaultPlan.variants || []),
+            ...(rest.variants || [])
+        ],
+        variableNamespaces: createRuntimeVariableNamespaces(defaultPlan.variableNamespaces, variables),
+        utilities: [
+            ...defaultUtilities,
+            ...customUtilities
+        ],
+        utilityBuckets: createRuntimeUtilityBuckets(defaultPlan.utilityBuckets, customUtilities, defaultUtilities.length)
+    } satisfies MasterCSSPlan
+}
+
+export default async function init(page: Page, text?: string, planInput?: RuntimePlanInput) {
+    const plan = planInput ? createRuntimePlan(planInput) : undefined
     await page.evaluate(({ plan, text }) => {
         if (plan) window.masterCSSPlan = plan
         if (text) {
