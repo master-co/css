@@ -36,36 +36,7 @@ export interface CreateMasterCSSPlanOptions {
     basePlan?: MasterCSSPlan
 }
 
-const BUILT_IN_VARIABLE_NAMESPACES = [
-    'font-family',
-    'font-weight',
-    'font-size',
-    'border-radius',
-    'border-width',
-    'border-style',
-    'border-color',
-    'color-line',
-    'color-text',
-    'breakpoint',
-    'container',
-    'animation',
-    'duration',
-    'tracking',
-    'leading',
-    'spacing',
-    'padding',
-    'margin',
-    'height',
-    'width',
-    'inset',
-    'border',
-    'radius',
-    'shadow',
-    'easing',
-    'order',
-    'color',
-    'font'
-].sort((a, b) => b.length - a.length)
+const CONDITION_VARIABLE_NAMESPACES = ['breakpoint', 'container']
 
 export interface ResolvedCSSDirectiveVariableName {
     name: string
@@ -125,7 +96,7 @@ function addUtilityVariableNamespaces(namespaces: Set<string>, utilities: (Parti
 }
 
 function collectVariableNamespaces(input: CSSDirectivePlanInput = {}, options: CreateMasterCSSPlanOptions = {}) {
-    const namespaces = new Set(BUILT_IN_VARIABLE_NAMESPACES)
+    const namespaces = new Set<string>(CONDITION_VARIABLE_NAMESPACES)
     for (const variable of options.basePlan?.variables || []) {
         addVariableNamespace(namespaces, variable.namespace)
     }

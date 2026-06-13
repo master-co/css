@@ -1,9 +1,8 @@
 import { fileURLToPath } from 'node:url'
 import { dirname, resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
-import { compileCSSPlanFile } from '@master/css-compiler'
 import { createCSS } from '@master/css-engine'
-import { createDefaultPlan } from '../scripts/generate-default-plan'
+import { createDefaultPlanFromSourceFile } from '../scripts/generate-default-plan'
 import defaultPlan from '../src/default-plan'
 import functions from '../src/functions'
 import sourceUtilities from '../src/utilities'
@@ -25,8 +24,7 @@ function stripRaw<T>(value: T): T {
 
 describe('@master/css-preset defaultPlan', () => {
     it('matches the readable preset sources', () => {
-        const { plan: cssPlan } = compileCSSPlanFile(resolve(__dirname, '../src/index.css'))
-        const plan = createDefaultPlan(cssPlan)
+        const plan = createDefaultPlanFromSourceFile(resolve(__dirname, '../src/index.css'))
         const utilities = plan.utilities || []
 
         expect(sourceUtilities).toHaveLength(510)
@@ -38,8 +36,7 @@ describe('@master/css-preset defaultPlan', () => {
     })
 
     it('matches the CSS-authored preset plan facets', () => {
-        const { plan } = compileCSSPlanFile(resolve(__dirname, '../src/index.css'))
-        const compiledPlan = plan
+        const compiledPlan = createDefaultPlanFromSourceFile(resolve(__dirname, '../src/index.css'))
         expect(compiledPlan.variables).toEqual(defaultPlan.variables)
         expect(compiledPlan.animations).toEqual(defaultPlan.animations)
         expect(stripRaw(compiledPlan.variants)).toEqual(stripRaw(defaultPlan.variants))

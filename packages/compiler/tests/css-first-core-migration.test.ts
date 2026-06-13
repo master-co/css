@@ -226,6 +226,10 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
             @theme {
                 --background-stripe: 0 / 7.5px 7.5px linear-gradient(red, blue);
                 --box-shadow-panel: 0 1px 2px #000;
+                --spacing-card: 24;
+                --leading-body: 1.7;
+                --color-line-brand: #abcdef;
+                --color-brand: #123456;
                 --color-primary: #123456;
             }
 
@@ -246,10 +250,32 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
             namespace: 'box-shadow',
             key: 'panel'
         }))
+        expect(plan.variables).toContainEqual(expect.objectContaining({
+            name: 'spacing-card',
+            namespace: 'spacing',
+            key: 'card'
+        }))
+        expect(plan.variables).toContainEqual(expect.objectContaining({
+            name: 'leading-body',
+            namespace: 'leading',
+            key: 'body'
+        }))
+        expect(plan.variables).toContainEqual(expect.objectContaining({
+            name: 'color-line-brand',
+            namespace: 'color-line',
+            key: 'brand'
+        }))
 
         const css = createCSS(plan)
         expect(css.create('bg:stripe')?.text).toBe('.bg\\:stripe{background:var(--background-stripe)}')
         expect(css.create('s:panel')?.text).toBe('.s\\:panel{box-shadow:var(--box-shadow-panel)}')
+        expect(css.create('p:card')?.text).toBe('.p\\:card{padding:calc(var(--spacing-card) / 16 * 1rem)}')
+        expect(css.create('gap:card')?.text).toBe('.gap\\:card{gap:calc(var(--spacing-card) / 16 * 1rem)}')
+        expect(css.create('m:card')?.text).toBe('.m\\:card{margin:calc(var(--spacing-card) / 16 * 1rem)}')
+        expect(css.create('leading:body')?.text).toBe('.leading\\:body{line-height:var(--leading-body)}')
+        expect(css.create('line-height:body')?.text).toBe('.line-height\\:body{line-height:var(--leading-body)}')
+        expect(css.create('b:brand')?.text).toBe('.b\\:brand{border-color:var(--color-line-brand)}')
+        expect(css.create('bg:brand')?.text).toBe('.bg\\:brand{background-color:var(--color-brand)}')
         expect(css.create('bg:primary')?.text).toBe('.bg\\:primary{background-color:var(--color-primary)}')
         expect(css.create('shadow:sm')?.text).toBe('.shadow\\:sm{box-shadow:var(--shadow-sm)}')
 

@@ -2,8 +2,9 @@ import { writeFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { compileCSSPlanFile } from '@master/css-compiler'
+import UtilityType from 'shared/utility-type'
 import functions from '../src/functions'
-import { settings, variableNamespaceRefs } from '../src/settings'
+import { settings } from '../src/settings'
 import sourceUtilities from '../src/utilities'
 import type {
     MasterCSSPlan,
@@ -18,6 +19,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url))
 const packageRoot = resolve(__dirname, '..')
 const sourceFile = resolve(packageRoot, 'src/index.css')
 const outputFile = resolve(packageRoot, 'src/default-plan.ts')
+const CONDITION_VARIABLE_NAMESPACES = ['breakpoint', 'container']
 
 function clone<T>(value: T): T {
     return JSON.parse(JSON.stringify(value)) as T
@@ -70,14 +72,43 @@ function createUtilityBuckets(utilities: MasterCSSPlanUtility[] | undefined): Ma
     return Object.keys(buckets).length ? buckets : undefined
 }
 
-function collectVariableNamespaceRefs(utilities: MasterCSSPlanUtility[]) {
-    const refs = new Set<string>(variableNamespaceRefs)
+function addVariableAliasRef(refs: Set<string>, ref: unknown) {
+    if (typeof ref === 'string' && (ref[0] === '=' || ref[0] === '~') && ref.length > 1) {
+        refs.add(ref)
+        if (ref[0] === '~') refs.add('=' + ref.slice(1))
+    }
+}
+
+function addExactVariableAliasRef(refs: Set<string>, namespace: unknown) {
+    if (typeof namespace === 'string' && namespace) refs.add('=' + namespace)
+}
+
+function addImplicitUtilityAliasRef(refs: Set<string>, value: unknown) {
+    if (typeof value !== 'string' || !value || value[0] === '.' || value.includes('()')) return
+    addExactVariableAliasRef(refs, value)
+}
+
+function collectVariableAliasRefs(utilities: MasterCSSPlanUtility[]) {
+    const refs = new Set<string>()
+    for (const namespace of CONDITION_VARIABLE_NAMESPACES) {
+        addExactVariableAliasRef(refs, namespace)
+    }
     for (const utility of utilities) {
+        for (const namespace of utility.namespaces || []) {
+            addExactVariableAliasRef(refs, namespace)
+        }
         for (const ref of utility.variableAliasRefs || []) {
-            refs.add(ref)
+            addVariableAliasRef(refs, ref)
+        }
+        if (
+            utility.implicitNamespace !== false
+            && (utility.type === UtilityType.Native || utility.type === UtilityType.NativeShorthand)
+        ) {
+            addImplicitUtilityAliasRef(refs, utility.id)
+            addImplicitUtilityAliasRef(refs, utility.name)
         }
     }
-    return refs
+    return [...refs].sort((a, b) => b.length - a.length || a.localeCompare(b))
 }
 
 function getVariableKeyByNamespace(variableName: string, namespace: string) {
@@ -118,7 +149,7 @@ export function createDefaultPlan(cssPlan: MasterCSSPlan): MasterCSSPlan {
         breakpointAtRules: cssPlan.breakpointAtRules,
         containerAtRules: cssPlan.containerAtRules,
         selectors: cssPlan.selectors,
-        variableNamespaces: createVariableNamespaces(cssPlan.variables, collectVariableNamespaceRefs(utilities)),
+        variableNamespaces: createVariableNamespaces(cssPlan.variables, collectVariableAliasRefs(utilities)),
         variableAliasSets: null as unknown as MasterCSSPlan['variableAliasSets'],
         utilities,
         utilityBuckets: createUtilityBuckets(utilities),
@@ -127,7 +158,14 @@ export function createDefaultPlan(cssPlan: MasterCSSPlan): MasterCSSPlan {
 }
 
 export function createDefaultPlanFromSourceFile(file = sourceFile) {
-    return createDefaultPlan(compileCSSPlanFile(file).plan)
+    const utilities = createUtilities()
+    return createDefaultPlan(compileCSSPlanFile(file, {
+        basePlan: {
+            version: 1,
+            utilities,
+            utilityBuckets: createUtilityBuckets(utilities)
+        }
+    }).plan)
 }
 type PlanUtility = NonNullable<MasterCSSPlan['utilities']>[number]
 
