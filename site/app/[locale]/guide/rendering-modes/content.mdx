@@ -156,16 +156,18 @@ import preloaded from 'virtual:master-css-preloaded'
 initCSSRuntime({ plan, preloaded })
 ```
 
+The plan tells the runtime how to interpret project-specific tokens, modes, components, utilities, and variants. The `preloaded` object is narrower: it only records variables and keyframes that the build already emitted from the CSS entry output. Dynamic classes can still be generated later, but shared global CSS is not duplicated when those classes reference an already-loaded variable or animation.
+
 ---
 
 ## Progressive Rendering
 Master CSS Progressive Rendering works by pre-rendering critical CSS on the server and injecting them into the page HTML.
-On the client, the [CSS runtime](#runtime-rendering) hydrates these rules into a virtual stylesheet, initializing a lifecycle-aware system that can respond to class name changes in real-time.
+On the client, the [CSS runtime](#runtime-rendering) hydrates these rules into a virtual stylesheet, initializing a lifecycle-aware system that can respond to class name changes in real-time. Progressive hydration depends on two pieces of HTML: `style#master` contains the pre-rendered CSS, and `script#master-css-runtime-manifest` describes the generated rules that style block contains.
 <figure>
     <ModeImg src="/master-css-progressive-rendering.svg" alt='Master CSS Progressive Rendering' />
     <figcaption>Server-side pre-rendering and client-side hydration process</figcaption>
 </figure>
-This enables fast page loads, minimal CSS output, and dynamic style injection/removal with full consistency.
+This enables fast page loads, minimal CSS output, and dynamic style injection/removal with full consistency. If the runtime manifest is missing, invalid, or no longer matches `style#master`, the runtime discards the pre-rendered runtime state and rebuilds the stylesheet from the connected DOM classes.
 
 ### Pre-rendering — SSG, SSR
 
@@ -184,14 +186,15 @@ For example, the following HTML:
 ```
 Render the HTML:
 ```ts name=server.ts
+import { readFileSync } from 'node:fs'
 import { render } from '@master/css-server'
 import plan from 'virtual:master-css-plan'
 
 const indexHTML = readFileSync('./index.html', 'utf-8')
 
-const { html } = render(indexHTML, config)
+const { html } = render(indexHTML, plan, { runtimeManifest: 'inject' })
 ```
-The server renderer parses the HTML and generates the internal style sheet:
+The server renderer parses the HTML and generates the internal style sheet plus a runtime manifest:
 ```html
 <!DOCTYPE html>
 <html lang="en">
@@ -204,6 +207,7 @@ The server renderer parses the HTML and generates the internal style sheet:
             font-size: 2.5rem /* [!code ++] */
         } /* [!code ++] */
     </style> <!-- [!code ++] -->
+    <script type="application/json" id="master-css-runtime-manifest">...</script> <!-- [!code ++] -->
 </head>
 <body>
     <!-- @MARK font:5xl -->
@@ -220,7 +224,9 @@ Master CSS Hydration is the process that restores the server-side (or build time
     <ModeImg src="/master-css-hydration.svg" alt='Master CSS Hydration' />
     <figcaption>Master CSS Hydration — Creates virtual rules from DOM style sheet</figcaption>
 </figure>
-Once hydrated, Master CSS can efficiently detect new or removed class names and update styles accordingly, without needing to reparse or regenerate previously defined rules.
+The runtime reads `script#master-css-runtime-manifest` when `initCSSRuntime()` starts. Each manifest rule stores the class name, layer, priority, selector text, generated CSS text, and any referenced variables or animations. During hydration, the runtime compares that IR with the native rules already present in `style#master`. When they match, it attaches those native CSS rules to runtime-managed rule objects instead of regenerating them.
+
+Once hydrated, Master CSS can efficiently detect new or removed class names and update styles accordingly, without needing to reparse or regenerate previously defined rules. Classes that were not present in the initial HTML are still generated at runtime, and classes removed after hydration can be removed from the managed stylesheet when their usage count reaches zero.
 
 The [CSS runtime](#runtime-rendering) then takes over to detect any changes in dynamic class names.
 
@@ -338,6 +344,55 @@ const className = error ? 'bg:red' : 'bg:green'
 ```
 
 For the full source scanning model, see [Scanning latent classes](/guide/scanning-latent-classes). For native CSS pruning, see [Native CSS pruning](/guide/native-css-pruning).
+
+---
+
+## Shared rendering pipeline
+Rendering modes change delivery, not the authoring model. The source of truth is the project CSS entry graph. A stylesheet becomes part of that graph when it contains a top-level `@master;` marker or imports `@master/css`. Use `@master;` when the file only needs to declare plan input, and use `@import '@master/css'` when the stylesheet should also receive generated CSS in static builds.
+
+```css name=index.css
+@import '@master/css';
+
+@settings {
+    root-size: 16;
+}
+
+@theme {
+    --color-primary: #4f46e5;
+    --breakpoint-md: 768;
+}
+
+@animations {
+    @keyframes fade-in {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+}
+
+@custom-variant @motion-safe {
+    @media (prefers-reduced-motion: no-preference) {
+        @slot;
+    }
+}
+
+@components {
+    btn {
+        @compose "inline-flex ai:center px:md py:xs r:md";
+        background: var(--color-primary);
+    }
+}
+```
+
+These CSS-first directives are configuration inputs. The compiler lowers tokens, settings, variants, components, utilities, animations, and native composed rules into a `MasterCSSPlan`. Runtime rendering, static rendering, server rendering, language tooling, linting, and framework integrations all consume that same IR, so class syntax and cascade behavior stay consistent even when CSS is delivered differently.
+
+| Artifact | Produced by | Used by | Purpose |
+| --- | --- | --- | --- |
+| CSS entry graph | Project stylesheets with `@master;` or `@import '@master/css'` | Compiler, integrations, static renderer | Authoring source for tokens, settings, variants, managed styles, source directives, and native CSS roots. |
+| `MasterCSSPlan` | `@master/css-compiler` and `@master/css-plan` | Engine, runtime, server renderer, extractor, linting, language tooling | Shared IR that describes how class names become sorted CSS rules. |
+| `virtual:master-css-plan` | Official build integrations | Application runtime code and framework providers | ESM module for the canonical project-level plan discovered from the CSS entry graph. |
+| `virtual:master-css-preloaded` | Static and build integrations | Runtime code | Counts variables and keyframes already emitted by the CSS entry output, so runtime rendering does not insert duplicate global CSS. |
+| Runtime manifest | Server rendering and progressive integrations | Runtime hydration | JSON rule IR with `version: 1`, used to map `style#master` back into runtime-managed rule objects. |
+| Next build manifest | `@master/css.next` when `manifest` is enabled | Build analysis and reporting | Route/output report for rendered files; it is separate from the runtime hydration manifest. |
 
 ---
 
