@@ -36,7 +36,7 @@ export interface CreateMasterCSSPlanOptions {
     basePlan?: MasterCSSPlan
 }
 
-const VARIABLE_NAMESPACES = [
+const BUILT_IN_VARIABLE_NAMESPACES = [
     'font-family',
     'font-weight',
     'font-size',
@@ -67,6 +67,14 @@ const VARIABLE_NAMESPACES = [
     'font'
 ].sort((a, b) => b.length - a.length)
 
+export interface ResolvedCSSDirectiveVariableName {
+    name: string
+    key: string
+    namespace?: string
+}
+
+export type CSSDirectiveVariableNameResolver = (variable: CSSDirectiveVariableDefinition) => ResolvedCSSDirectiveVariableName
+
 function clone<T>(value: T): T {
     if (Array.isArray(value)) return value.map((item) => clone(item)) as T
     if (value && typeof value === 'object') {
@@ -83,7 +91,56 @@ function normalizeZero<T>(value: T): T {
     return Object.is(value, -0) ? 0 as T : value
 }
 
-function resolveVariableName(variable: CSSDirectiveVariableDefinition) {
+function addVariableNamespace(namespaces: Set<string>, namespace: unknown) {
+    if (typeof namespace === 'string' && namespace) namespaces.add(namespace)
+}
+
+function addVariableAliasRefNamespace(namespaces: Set<string>, ref: unknown) {
+    if (typeof ref === 'string' && (ref[0] === '=' || ref[0] === '~')) {
+        addVariableNamespace(namespaces, ref.slice(1))
+    }
+}
+
+function addImplicitUtilityNamespace(namespaces: Set<string>, value: unknown) {
+    if (typeof value !== 'string' || !value || value[0] === '.' || value.includes('()')) return
+    addVariableNamespace(namespaces, value)
+}
+
+function addUtilityVariableNamespaces(namespaces: Set<string>, utilities: (Partial<MasterCSSPlanUtility> | CSSDirectiveUtilityDefinition)[] | undefined) {
+    for (const utility of utilities || []) {
+        for (const namespace of (utility as Partial<MasterCSSPlanUtility>).namespaces || []) {
+            addVariableNamespace(namespaces, namespace)
+        }
+        for (const ref of (utility as Partial<MasterCSSPlanUtility>).variableAliasRefs || []) {
+            addVariableAliasRefNamespace(namespaces, ref)
+        }
+        if (
+            (utility as Partial<MasterCSSPlanUtility>).implicitNamespace !== false
+            && (utility.type === UtilityType.Native || utility.type === UtilityType.NativeShorthand)
+        ) {
+            addImplicitUtilityNamespace(namespaces, (utility as Partial<MasterCSSPlanUtility>).id)
+            addImplicitUtilityNamespace(namespaces, utility.name)
+        }
+    }
+}
+
+function collectVariableNamespaces(input: CSSDirectivePlanInput = {}, options: CreateMasterCSSPlanOptions = {}) {
+    const namespaces = new Set(BUILT_IN_VARIABLE_NAMESPACES)
+    for (const variable of options.basePlan?.variables || []) {
+        addVariableNamespace(namespaces, variable.namespace)
+    }
+    for (const variable of input.variables || []) {
+        addVariableNamespace(namespaces, variable.namespace)
+    }
+    for (const ref of Object.keys(options.basePlan?.variableNamespaces || {})) {
+        addVariableAliasRefNamespace(namespaces, ref)
+    }
+    addUtilityVariableNamespaces(namespaces, options.basePlan?.utilities)
+    addUtilityVariableNamespaces(namespaces, input.utilities)
+    return [...namespaces].sort((a, b) => b.length - a.length || a.localeCompare(b))
+}
+
+function resolveVariableName(variable: CSSDirectiveVariableDefinition, namespaces: string[]): ResolvedCSSDirectiveVariableName {
     const explicitName = variable.name?.replace(/^--/, '')
     if (variable.namespace || variable.key !== undefined) {
         const key = variable.key ?? explicitName ?? ''
@@ -97,7 +154,7 @@ function resolveVariableName(variable: CSSDirectiveVariableDefinition) {
         }
     }
     const name = explicitName || ''
-    const namespace = VARIABLE_NAMESPACES.find((eachNamespace) => name.startsWith(eachNamespace + '-'))
+    const namespace = namespaces.find((eachNamespace) => name.startsWith(eachNamespace + '-'))
     return namespace
         ? {
             name,
@@ -108,6 +165,11 @@ function resolveVariableName(variable: CSSDirectiveVariableDefinition) {
             name,
             key: name
         }
+}
+
+export function createVariableNameResolver(input: CSSDirectivePlanInput = {}, options: CreateMasterCSSPlanOptions = {}): CSSDirectiveVariableNameResolver {
+    const namespaces = collectVariableNamespaces(input, options)
+    return (variable) => resolveVariableName(variable, namespaces)
 }
 
 function getVariableType(value: MasterCSSPlanVariable['value']): NonNullable<MasterCSSPlanVariable['type']> {
@@ -139,7 +201,10 @@ function pushVariable(target: MasterCSSPlanVariables, variable: MasterCSSPlanVar
     }
 }
 
-function compileVariables(input: CSSDirectiveVariableDefinition[] | undefined): MasterCSSPlanVariables | undefined {
+function compileVariables(
+    input: CSSDirectiveVariableDefinition[] | undefined,
+    resolveVariableName: CSSDirectiveVariableNameResolver
+): MasterCSSPlanVariables | undefined {
     if (!input?.length) return
     const variables: MasterCSSPlanVariables = []
     const byName = new Map<string, MasterCSSPlanVariable>()
@@ -539,7 +604,8 @@ function mergePlan(basePlan: MasterCSSPlan | undefined, fragment: MasterCSSPlan)
 
 export function createMasterCSSPlan(input: CSSDirectivePlanInput = {}, options: CreateMasterCSSPlanOptions = {}): MasterCSSPlan {
     const rootSize = input.rootSize ?? options.basePlan?.settings?.rootSize ?? 16
-    const variables = compileVariables(input.variables)
+    const resolveVariableName = createVariableNameResolver(input, options)
+    const variables = compileVariables(input.variables, resolveVariableName)
     const { atRules, breakpointAtRules, containerAtRules } = compileAtRules(variables, rootSize)
     const settings = {
         ...(input.rootSize !== undefined ? { rootSize: input.rootSize } : {}),

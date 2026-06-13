@@ -21,7 +21,7 @@ import {
     type MasterCSS
 } from '@master/css-engine/compiler'
 import type { MasterCSSPlan, MasterCSSPlanUtilityLayerName } from 'shared/master-css-plan'
-import { createMasterCSSPlan } from './master-css-plan'
+import { createMasterCSSPlan, createVariableNameResolver, type CSSDirectiveVariableNameResolver } from './master-css-plan'
 import { combineStyleSelectors } from './utils/selectors'
 import wrapAtRules from './utils/wrap-at-rules'
 
@@ -101,26 +101,8 @@ function isNamedDefaultMode(defaultMode: CSSDirectivePlanInput['defaultMode']): 
     return typeof defaultMode === 'string' && defaultMode !== DEFAULT_MODE_NONE
 }
 
-function resolveVariableNamespace(variable: InputVariableDefinition) {
-    if (variable.namespace || variable.key !== undefined) {
-        const key = variable.key ?? variable.name
-        return {
-            name: variable.namespace ? `${variable.namespace}${key ? '-' + key : ''}` : key,
-            namespace: variable.namespace,
-            key
-        }
-    }
-    const plan = createMasterCSSPlan({ variables: [variable] })
-    const resolved = plan.variables?.find((eachVariable) => eachVariable.name && !eachVariable.name.startsWith('-'))
-    return {
-        name: resolved?.name || variable.name,
-        namespace: resolved?.namespace,
-        key: resolved?.key || variable.name
-    }
-}
-
-function normalizeVariable(variable: InputVariableDefinition): CSSDirectiveVariableDefinition {
-    const resolved = resolveVariableNamespace(variable)
+function normalizeVariable(variable: InputVariableDefinition, resolveVariableName: CSSDirectiveVariableNameResolver): CSSDirectiveVariableDefinition {
+    const resolved = resolveVariableName(variable)
     if (variable.mode && resolved.namespace && CONDITION_VARIABLE_NAMESPACES.has(resolved.namespace)) {
         throw new Error(`${resolved.namespace[0].toUpperCase()}${resolved.namespace.slice(1)} variables cannot be mode-specific: ${resolved.namespace}-${resolved.key}@${variable.mode}`)
     }
@@ -145,8 +127,8 @@ function variableSlot(variable: CSSDirectiveVariableDefinition) {
     ].join('\0')
 }
 
-function addVariable(input: CSSDirectivePlanInput, variable: InputVariableDefinition) {
-    const definition = normalizeVariable(variable)
+function addVariable(input: CSSDirectivePlanInput, variable: InputVariableDefinition, resolveVariableName: CSSDirectiveVariableNameResolver) {
+    const definition = normalizeVariable(variable, resolveVariableName)
     if (definition.mode) {
         input.modes ??= []
         if (!input.modes.includes(definition.mode)) input.modes.push(definition.mode)
@@ -175,8 +157,9 @@ function cloneUtility(definition: InputUtilityDefinition): CSSDirectiveUtilityDe
     }
 }
 
-function normalizeDirectiveInput(input: CSSDirectivePlanInputSource = {}): CSSDirectivePlanInput {
+function normalizeDirectiveInput(input: CSSDirectivePlanInputSource = {}, options: LowerCSSDirectivesOptions = {}): CSSDirectivePlanInput {
     const source = getDirectiveInput(input)
+    const resolveVariableName = createVariableNameResolver(source, { basePlan: options.basePlan })
     const normalized: CSSDirectivePlanInput = {}
     if (source.rootSize !== undefined) normalized.rootSize = source.rootSize
     if (source.baseUnit !== undefined) normalized.baseUnit = source.baseUnit
@@ -199,7 +182,7 @@ function normalizeDirectiveInput(input: CSSDirectivePlanInputSource = {}): CSSDi
         if (!normalized.modes.includes(mode)) normalized.modes.push(mode)
     }
     for (const variable of source.variables || []) {
-        addVariable(normalized, variable)
+        addVariable(normalized, variable, resolveVariableName)
     }
     return normalized
 }
@@ -210,19 +193,19 @@ function collectModeNames(input: CSSDirectivePlanInput) {
     return modes
 }
 
-function collectVariablesByNamespace(input: CSSDirectivePlanInput, namespace: string) {
+function collectVariablesByNamespace(input: CSSDirectivePlanInput, namespace: string, resolveVariableName: CSSDirectiveVariableNameResolver) {
     return new Set((input.variables || [])
-        .map(resolveVariableNamespace)
+        .map(resolveVariableName)
         .filter((variable) => variable.namespace === namespace)
         .map((variable) => variable.key)
         .filter((key): key is string => Boolean(key))
     )
 }
 
-function validateTokenConflicts(input: CSSDirectivePlanInput) {
+function validateTokenConflicts(input: CSSDirectivePlanInput, resolveVariableName: CSSDirectiveVariableNameResolver) {
     const modes = collectModeNames(input)
-    const breakpoints = collectVariablesByNamespace(input, 'breakpoint')
-    const containers = collectVariablesByNamespace(input, 'container')
+    const breakpoints = collectVariablesByNamespace(input, 'breakpoint', resolveVariableName)
+    const containers = collectVariablesByNamespace(input, 'container', resolveVariableName)
 
     for (const mode of modes) {
         if (breakpoints.has(mode)) {
@@ -343,13 +326,13 @@ function combineSelectorWrapper(selector: string, wrapper: string) {
     return wrapper.replace(/&/g, selector)
 }
 
-type ResolvedStyleBranch = {
+interface ResolvedStyleBranch {
     selector: string
     atRules?: string[]
     layer?: MasterCSSPlanUtilityLayerName
 }
 
-type ResolvedVariantReferenceBranch = {
+interface ResolvedVariantReferenceBranch {
     selector?: string
     atRules?: string[]
     layer?: MasterCSSPlanUtilityLayerName
@@ -968,7 +951,8 @@ function finalizeStyleDefinitions(
     }
 
     for (const key of sortManagedStyleDefinitionKeys(managedGroups, keysByName)) {
-        const definitions = managedGroups.get(key)!
+        const definitions = managedGroups.get(key)
+        if (!definitions) continue
         const { name, layer } = splitManagedStyleDefinitionKey(key)
         const mergedDefinitions = createMergedStyleDefinitions(definitions, css, layer)
         for (const definition of mergedDefinitions) {
@@ -983,10 +967,11 @@ function finalizeStyleDefinitions(
 }
 
 export default function lowerCSSDirectives(input: CSSDirectivePlanInputSource, options: LowerCSSDirectivesOptions = {}): LowerCSSDirectivesResult {
-    const directiveInput = normalizeDirectiveInput(input)
+    const directiveInput = normalizeDirectiveInput(input, options)
+    const resolveVariableName = createVariableNameResolver(directiveInput, { basePlan: options.basePlan })
     const warnings = isCSSDirectiveResult(input) ? [...input.warnings] : []
 
-    validateTokenConflicts(directiveInput)
+    validateTokenConflicts(directiveInput, resolveVariableName)
     warnUnsupportedMediaModes(directiveInput, options, warnings)
 
     const css = createCSS(directiveInput, options)

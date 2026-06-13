@@ -221,6 +221,43 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
         expect(css.utilitiesLayer.text).toContain('.bg\\:alias{background-color:var(--color-alias)}')
     })
 
+    test('resolves utility-owned theme namespaces before lowering composed definitions', () => {
+        const { plan } = compileCSSPlan(`
+            @theme {
+                --background-stripe: 0 / 7.5px 7.5px linear-gradient(red, blue);
+                --box-shadow-panel: 0 1px 2px #000;
+                --color-primary: #123456;
+            }
+
+            @defaults {
+                demo {
+                    @compose "bg:stripe";
+                }
+            }
+        `, { basePlan: defaultPlan })
+
+        expect(plan.variables).toContainEqual(expect.objectContaining({
+            name: 'background-stripe',
+            namespace: 'background',
+            key: 'stripe'
+        }))
+        expect(plan.variables).toContainEqual(expect.objectContaining({
+            name: 'box-shadow-panel',
+            namespace: 'box-shadow',
+            key: 'panel'
+        }))
+
+        const css = createCSS(plan)
+        expect(css.create('bg:stripe')?.text).toBe('.bg\\:stripe{background:var(--background-stripe)}')
+        expect(css.create('s:panel')?.text).toBe('.s\\:panel{box-shadow:var(--box-shadow-panel)}')
+        expect(css.create('bg:primary')?.text).toBe('.bg\\:primary{background-color:var(--color-primary)}')
+        expect(css.create('shadow:sm')?.text).toBe('.shadow\\:sm{box-shadow:var(--shadow-sm)}')
+
+        css.add('demo')
+        expect(css.defaultsLayer.text).toContain('.demo{background:var(--background-stripe)}')
+        expect(css.themeLayer.text).toContain('--background-stripe:0 / 7.5px 7.5px linear-gradient(red, blue)')
+    })
+
     test('executes CSS-first number variables and value functions through engine semantics', () => {
         const { plan } = compileCSSPlan(`
             @settings {
