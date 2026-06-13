@@ -1,0 +1,189 @@
+import { describe, expect, test } from 'vitest'
+import { createCSS } from '../src'
+import defaultPlan from '@master/css-preset/default-plan'
+import {
+    clonePlan,
+    createCSSWithStaticUtilities,
+    createDefaultCSS,
+    createPlanWithStaticUtilities,
+    expectLayerText
+} from './helpers/css-tester'
+
+describe.concurrent('migrated cascade and layer parity', () => {
+    test('keeps on-demand insertion lifecycle for utilities variables and static components', () => {
+        const css = createDefaultCSS()
+
+        expect(css.text).toBe('')
+        css.add('text:center')
+        expect(css.text).toContain('@layer utilities{.text\\:center{text-align:center}}')
+        css.remove('text:center')
+        expect(css.text).toBe('')
+
+        const componentCSS = createCSSWithStaticUtilities([
+            {
+                name: 'btn',
+                rules: [{ declarations: { display: 'block' } }]
+            }
+        ])
+
+        componentCSS.add('text:center', 'font:bold')
+        expect(componentCSS.text).toContain('@layer theme{:root{--font-weight-bold:700}}')
+        expect(componentCSS.text).toContain('@layer utilities{.font\\:bold{font-weight:var(--font-weight-bold)}.text\\:center{text-align:center}}')
+        componentCSS.add('btn')
+        expect(componentCSS.text).toContain('@layer components{.btn{display:block}}')
+        componentCSS.remove('text:center', 'font:bold', 'btn')
+        expect(componentCSS.text).toBe('')
+    })
+
+    test('prevents duplicate insertion and preserves preloaded variable and animation counts', () => {
+        const css = createDefaultCSS()
+        css.add('text:center', 'text:center')
+        expect(css.utilitiesLayer.rules).toHaveLength(1)
+
+        const preloadedVariableCSS = createCSS(defaultPlan, {
+            variables: {
+                'color-red-60': 1
+            }
+        })
+        preloadedVariableCSS.add('bg:red-60')
+        expect(preloadedVariableCSS.text).toBe('@layer utilities{.bg\\:red-60{background-color:var(--color-red-60)}}')
+        expect(Object.fromEntries(preloadedVariableCSS.themeLayer.tokenCounts)).toMatchObject({
+            'color-red-60': 2
+        })
+        preloadedVariableCSS.remove('bg:red-60')
+        expect(preloadedVariableCSS.text).toBe('')
+        expect(Object.fromEntries(preloadedVariableCSS.themeLayer.tokenCounts)).toMatchObject({
+            'color-red-60': 1
+        })
+
+        const preloadedAnimationCSS = createCSS(defaultPlan, {
+            animations: {
+                fade: 1
+            }
+        })
+        preloadedAnimationCSS.add('animation:fade|.3s')
+        expect(preloadedAnimationCSS.text).toBe('@layer utilities{.animation\\:fade\\|\\.3s{animation:fade 0.3s}}')
+        expect(Object.fromEntries(preloadedAnimationCSS.animationsNonLayer.tokenCounts)).toEqual({
+            fade: 2
+        })
+        preloadedAnimationCSS.remove('animation:fade|.3s')
+        expect(preloadedAnimationCSS.text).toBe('')
+        expect(Object.fromEntries(preloadedAnimationCSS.animationsNonLayer.tokenCounts)).toEqual({
+            fade: 1
+        })
+    })
+
+    test('emits referenced keyframes outside cascade layers', () => {
+        const css = createDefaultCSS()
+
+        css.add('animation:fade|.3s')
+        expect(css.text).toBe([
+            '@layer utilities{.animation\\:fade\\|\\.3s{animation:fade 0.3s}}',
+            '@keyframes fade{0%{opacity:0}to{opacity:1}}'
+        ].join(''))
+    })
+
+    test('routes explicit layer variants and rejects conflicting layer variants', () => {
+        expectLayerText(createDefaultCSS(), 'block@base', 'baseLayer', '.block\\@base{display:block}')
+        expectLayerText(createDefaultCSS(), 'block@default', 'defaultsLayer', '.block\\@default{display:block}')
+        expectLayerText(createDefaultCSS(), 'block@component', 'componentsLayer', '.block\\@component{display:block}')
+        expectLayerText(createDefaultCSS(), 'block@utility', 'utilitiesLayer', '.block\\@utility{display:block}')
+        expectLayerText(createDefaultCSS(), 'block@base@sm', 'baseLayer', '@media (width>=52.125rem){.block\\@base\\@sm{display:block}}')
+        expectLayerText(createDefaultCSS(), 'block@default@sm', 'defaultsLayer', '@media (width>=52.125rem){.block\\@default\\@sm{display:block}}')
+        expectLayerText(createDefaultCSS(), 'font:12_:is(code,pre)@base', 'baseLayer', '.font\\:12_\\:is\\(code\\,pre\\)\\@base :is(code,pre){font-size:0.75rem}')
+        expectLayerText(createDefaultCSS(), 'font:12_:is(code,pre)@default', 'defaultsLayer', '.font\\:12_\\:is\\(code\\,pre\\)\\@default :is(code,pre){font-size:0.75rem}')
+
+        const conflicted = createDefaultCSS().add('block@base@default')
+        expect(conflicted.text).not.toContain('block\\@base\\@default')
+    })
+
+    test('keeps at-rules authored on static component rules within the component layer', () => {
+        const css = createCSS(createPlanWithStaticUtilities([
+            {
+                name: 'btn',
+                rules: [
+                    { selector: '&', atRules: ['@layer base'], declarations: { display: 'block' } }
+                ]
+            }
+        ]))
+
+        css.add('btn')
+        expect(css.componentsLayer.text).toContain('@layer base{.btn{display:block}}')
+    })
+
+    test('keeps deterministic rule order independent of insertion order', () => {
+        const inputs = [
+            [
+                'px:0', 'pl:0', 'pr:0', 'p:0', 'pt:0', 'pb:0', 'py:0',
+                'mx:0', 'ml:0', 'mr:0', 'm:0', 'mt:0', 'mb:0', 'my:0',
+                'font:12', 'font:medium', 'text:center', 'fixed', 'block', 'round', 'b:0'
+            ],
+            [
+                'b:0', 'round', 'block', 'fixed', 'text:center', 'font:medium', 'font:12',
+                'my:0', 'mb:0', 'mt:0', 'm:0', 'mr:0', 'ml:0', 'mx:0',
+                'py:0', 'pb:0', 'pt:0', 'p:0', 'pr:0', 'pl:0', 'px:0'
+            ]
+        ]
+        const expected = [
+            'block', 'fixed', 'round', 'b:0', 'm:0', 'p:0', 'mx:0', 'my:0', 'px:0', 'py:0',
+            'font:12', 'font:medium', 'mb:0', 'ml:0', 'mr:0', 'mt:0', 'pb:0', 'pl:0', 'pr:0', 'pt:0',
+            'text:center'
+        ]
+
+        for (const input of inputs) {
+            const css = createDefaultCSS()
+            css.add(...input)
+            expect(css.utilitiesLayer.rules.map(({ name }) => name)).toEqual(expected)
+        }
+    })
+
+    test('keeps declaration and media priority order', () => {
+        const css = createDefaultCSS()
+        css.add('font:12', 'font:32@md', 'font:24@sm', 'm:32', 'block', 'px:16', 'bg:blue-60:hover', 'round', 'mb:48')
+        expect(css.utilitiesLayer.rules.map(({ name }) => name)).toEqual([
+            'block',
+            'round',
+            'm:32',
+            'px:16',
+            'font:12',
+            'mb:48',
+            'bg:blue-60:hover',
+            'font:24@sm',
+            'font:32@md'
+        ])
+
+        const tabletAtRule = { id: 'media' as const, nodes: [{ type: 'number' as const, value: 391 / 16, unit: 'rem' }] }
+        const desktopAtRule = { id: 'media' as const, nodes: [{ type: 'number' as const, value: 1025 / 16, unit: 'rem' }] }
+        const plan = clonePlan()
+        plan.atRules = { ...(plan.atRules || {}), tablet: tabletAtRule, desktop: desktopAtRule }
+        plan.breakpointAtRules = { ...(plan.breakpointAtRules || {}), tablet: tabletAtRule, desktop: desktopAtRule }
+        const mediaCSS = createCSS(plan)
+        mediaCSS.add('min-w:206', '{flex-row}@xs', 'jc:flex-end@xs', 'hidden@tablet&<desktop', '{flex-row}@2xs&<xs')
+        expect(mediaCSS.utilitiesLayer.rules.map(({ name }) => name)).toEqual([
+            'min-w:206',
+            '{flex-row}@xs',
+            'jc:flex-end@xs',
+            'hidden@tablet&<desktop',
+            '{flex-row}@2xs&<xs'
+        ])
+    })
+
+    test('keeps static component utility priority stable', () => {
+        const css = createCSSWithStaticUtilities([
+            {
+                name: 'btn-primary',
+                rules: [
+                    { selector: '&', declarations: { 'background-color': 'oklch(63.7% 0.237 25.331)' } },
+                    { selector: '&:hover', declarations: { 'background-color': 'oklch(63.7% 0.237 25.331)' } },
+                    { selector: '&:disabled', declarations: { 'background-color': 'oklch(63.7% 0.237 25.331)' } }
+                ]
+            }
+        ])
+
+        css.add('btn-primary')
+        expect(css.componentsLayer.rules.map(({ name }) => name)).toEqual(['btn-primary'])
+        expect(css.componentsLayer.text).toContain('.btn-primary{background-color:oklch(63.7% 0.237 25.331)}')
+        expect(css.componentsLayer.text).toContain('.btn-primary:hover{background-color:oklch(63.7% 0.237 25.331)}')
+        expect(css.componentsLayer.text).toContain('.btn-primary:disabled{background-color:oklch(63.7% 0.237 25.331)}')
+    })
+})

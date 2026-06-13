@@ -15,6 +15,7 @@ Status values:
 Current executable coverage anchors:
 
 - Engine exact rule parity: `packages/engine/tests/rules-migration-parity.test.ts` migrates the mechanically portable default-rule assertions from old `packages/core/tests/rules/**`.
+- Engine focused exact parity: `packages/engine/tests/parser-boundary-parity.test.ts`, `packages/engine/tests/cascade-layer-parity.test.ts`, `packages/engine/tests/issue-regressions.test.ts`, and `packages/engine/tests/complex-utilities-parity.test.ts`.
 - Engine representative parity: `packages/engine/tests/core-parity.test.ts`, `packages/engine/tests/master-css-plan.test.ts`, and `packages/engine/tests/parser-parity.test.ts`.
 - Compiler CSS-first lowering: `packages/compiler/tests/master-css-plan.test.ts` and `packages/compiler/tests/css-first-core-migration.test.ts`.
 - Preset source/default plan: `packages/preset/tests/default-plan.test.ts` and `packages/preset/tests/design-tokens.test.ts`.
@@ -23,7 +24,7 @@ Current executable coverage anchors:
 Current audit summary:
 
 - Deleted old core test files: 140.
-- Status distribution: 38 `covered-exact`, 64 `covered-representative`, 14 `rewritten-css-first`, 17 `helper-replaced`, 7 `dropped-removed-api`.
+- Status distribution: 63 `covered-exact`, 39 `covered-representative`, 14 `rewritten-css-first`, 17 `helper-replaced`, 7 `dropped-removed-api`.
 - Rule assertions now exactly covered by engine migration parity: 33 old rule test files, 235 assertions.
 - No deleted old core test file is left without an owner and disposition.
 - `covered-representative` rows are deliberately scoped to legacy files whose exact assertions are either covered by the generated rule parity suite or whose former helper/API surface is no longer public.
@@ -37,7 +38,8 @@ Plan IR behavior findings:
 - Fixed: `calc()` math lowering now keeps Master CSS `$()` number variables visible to the value VM long enough to apply the old contextual unit conversion, e.g. `w:calc(-2+$(spacing-md))`.
 - Fixed: CSS-first variable namespace lowering adds own-namespace alias refs to matching built-in utilities, so authored variables such as `--width-11x` are addressable by `w:-11x` through Plan IR instead of browser-side namespace guessing.
 - Fixed: ESLint readable class sorting restores the old pre-priority grouping of unqualified, selector, mode, and at-rule utilities, then static-vs-dynamic utilities, so issue #377 hover visibility chains no longer autofix into a different order.
-- Restored: engine migration parity now includes representative group utilities, pair utilities, explicit layer routing, selector-text recovery, preloaded animation counts, and historical issue regressions for touch-action, View Transitions, individual transforms, logical borders, clamp math, and grouped `|` declarations.
+- Fixed: preset `font` native shorthand variable aliases prefer `font-family-*` over legacy `font-*` aliases for family keys, and `font-feature-settings` now restores `font-feature-*` variable aliases through Plan IR.
+- Restored: focused engine exact parity now covers parser boundaries, selector variants, selector-text recovery, rule/media priority, explicit layer routing, on-demand insertion/refcounts, keyframes outside layers, historical issues 147/215/265/321/332/346/358/363, grouped utilities, pair size/max/min utilities, transition syntax, and font family/feature/weight behavior.
 - Restored: compiled parser parity now covers the old parse-at and parse-selector case tables at generated CSS-text level, including logical at operators, comparison aliases, container aliases, `:of()`, attributes, universal selectors, grouped selectors, and custom at-rule aliases.
 - Preserved: `@theme inline` aliases in `packages/preset/src/theme.css` lower to inline Plan records, so `current`, `black`, `white`, `full`, `fit`, `max`, and `min` emit raw values instead of `var(...)`.
 - Documented divergence: if the project later wants old `var(...)` output for inline aliases, the source-of-truth decision belongs in preset/compiler lowering, not in engine matcher fallback.
@@ -73,7 +75,7 @@ Plan IR behavior findings:
 | `packages/core/tests/config/variables/number.test.ts` | compiler/engine | rewritten-css-first | Number variables, negative aliases, mode values, and unit conversion are covered by CSS-first compiler tests and engine value VM parity. |
 | `packages/core/tests/config/variables/spacing.test.ts` | preset/compiler | rewritten-css-first | Default spacing tokens are covered by preset tests; authored spacing variables are covered by CSS-first compiler tests. |
 | `packages/core/tests/config/variables/test.ts` | engine | helper-replaced | Old Config helper replaced by plan-based engine helpers. |
-| `packages/core/tests/create-from-selector-text.test.ts` | engine | covered-representative | Class-to-rule semantics belong to plan-driven engine tests; representative coverage restored now, full case migration remains tracked. |
+| `packages/core/tests/create-from-selector-text.test.ts` | engine | covered-exact | Exact selector-text recovery cases migrated to `packages/engine/tests/parser-boundary-parity.test.ts`, including modes, scoped selectors, grouped selectors, and static components. |
 | `packages/core/tests/css.ts` | engine | helper-replaced | Old Config helper replaced by plan-based engine helpers. |
 | `packages/core/tests/design-system.test.ts` | preset | covered-representative | Default preset token and registry intent covered in preset tests; expand per token family as needed. |
 | `packages/core/tests/design-tokens/animations.test.ts` | preset | covered-representative | Default preset token and registry intent covered in preset tests; expand per token family as needed. |
@@ -83,25 +85,25 @@ Plan IR behavior findings:
 | `packages/core/tests/exceptions.test.ts` | engine | covered-representative | Class-to-rule semantics belong to plan-driven engine tests; representative coverage restored now, full case migration remains tracked. |
 | `packages/core/tests/helpers/create-css-with-theme.ts` | engine/compiler | helper-replaced | Replaced by Plan-based `packages/engine/tests/helpers/css-tester.ts` and CSS-first compiler fixtures. |
 | `packages/core/tests/helpers/test-theme-config.ts` | engine/compiler | helper-replaced | Replaced by defaultPlan and local CSS-first fixtures; no JS Config helper remains public. |
-| `packages/core/tests/issues/147.test.ts` | engine | covered-representative | Class-to-rule semantics belong to plan-driven engine tests; representative coverage restored now, full case migration remains tracked. |
-| `packages/core/tests/issues/215.test.ts` | engine | covered-representative | Class-to-rule semantics belong to plan-driven engine tests; representative coverage restored now, full case migration remains tracked. |
-| `packages/core/tests/issues/265.test.ts` | engine | covered-representative | Class-to-rule semantics belong to plan-driven engine tests; representative coverage restored now, full case migration remains tracked. |
-| `packages/core/tests/issues/321.test.ts` | engine | covered-representative | Class-to-rule semantics belong to plan-driven engine tests; representative coverage restored now, full case migration remains tracked. |
-| `packages/core/tests/issues/332.test.ts` | engine | covered-representative | Class-to-rule semantics belong to plan-driven engine tests; representative coverage restored now, full case migration remains tracked. |
-| `packages/core/tests/issues/346.test.ts` | engine | covered-representative | Class-to-rule semantics belong to plan-driven engine tests; representative coverage restored now, full case migration remains tracked. |
-| `packages/core/tests/issues/358.test.ts` | engine | covered-representative | Class-to-rule semantics belong to plan-driven engine tests; representative coverage restored now, full case migration remains tracked. |
-| `packages/core/tests/issues/363.test.ts` | engine | covered-representative | Class-to-rule semantics belong to plan-driven engine tests; representative coverage restored now, full case migration remains tracked. |
+| `packages/core/tests/issues/147.test.ts` | engine/compiler | covered-exact | Exact issue coverage restored in `packages/engine/tests/issue-regressions.test.ts`; compiler CSS-first color-function lowering cases added in `packages/compiler/tests/css-first-core-migration.test.ts`. |
+| `packages/core/tests/issues/215.test.ts` | engine | covered-exact | Exact touch-action shorthand cases migrated to `packages/engine/tests/issue-regressions.test.ts`. |
+| `packages/core/tests/issues/265.test.ts` | engine | covered-exact | Exact View Transitions API utilities and pseudo-element aliases migrated to `packages/engine/tests/issue-regressions.test.ts`. |
+| `packages/core/tests/issues/321.test.ts` | engine | covered-exact | Exact individual transform and legacy transform function cases migrated to `packages/engine/tests/issue-regressions.test.ts`. |
+| `packages/core/tests/issues/332.test.ts` | engine | covered-exact | Exact logical border and logical corner radius cases migrated to `packages/engine/tests/issue-regressions.test.ts`. |
+| `packages/core/tests/issues/346.test.ts` | engine/compiler | covered-exact | Exact Plan variable color-function and color-mix dependency cases restored in engine; compiler CSS-first color-function lowering cases added without restoring old JS Config raw-string compatibility. |
+| `packages/core/tests/issues/358.test.ts` | engine | covered-exact | Exact clamp arithmetic normalization cases migrated to `packages/engine/tests/issue-regressions.test.ts`. |
+| `packages/core/tests/issues/363.test.ts` | engine | covered-exact | Exact grouped pipe-separator declaration cases migrated to `packages/engine/tests/issue-regressions.test.ts`. |
 | `packages/core/tests/issues/377.test.ts` | engine/tooling | covered-exact | Issue regression restored in ESLint class-order tests; readable sorting now preserves the old visibility-chain order. |
 | `packages/core/tests/keyframes/index.html` | runtime/engine | covered-representative | Browser fixture intent is covered by runtime e2e and engine animation ref-count tests; the static HTML fixture is not restored under the facade package. |
-| `packages/core/tests/layers/assignments.test.ts` | engine | covered-representative | Class-to-rule semantics belong to plan-driven engine tests; representative coverage restored now, full case migration remains tracked. |
-| `packages/core/tests/layers/keyframes.test.ts` | engine | covered-representative | Class-to-rule semantics belong to plan-driven engine tests; representative coverage restored now, full case migration remains tracked. |
-| `packages/core/tests/layers/on-demand.test.ts` | engine | covered-representative | Class-to-rule semantics belong to plan-driven engine tests; representative coverage restored now, full case migration remains tracked. |
+| `packages/core/tests/layers/assignments.test.ts` | engine | covered-exact | Exact explicit layer routing and conflicting layer variant cases migrated to `packages/engine/tests/cascade-layer-parity.test.ts`. |
+| `packages/core/tests/layers/keyframes.test.ts` | engine | covered-exact | Exact keyframe emission and preloaded animation refcount cases migrated to `packages/engine/tests/cascade-layer-parity.test.ts`. |
+| `packages/core/tests/layers/on-demand.test.ts` | engine | covered-exact | Exact on-demand insertion/removal lifecycle and preloaded variable refcount cases migrated to `packages/engine/tests/cascade-layer-parity.test.ts`. |
 | `packages/core/tests/lifecycle.test.ts` | engine | covered-representative | Class-to-rule semantics belong to plan-driven engine tests; representative coverage restored now, full case migration remains tracked. |
 | `packages/core/tests/properties.test.ts` | engine | covered-representative | Class-to-rule semantics belong to plan-driven engine tests; representative coverage restored now, full case migration remains tracked. |
 | `packages/core/tests/render.test.ts` | engine | covered-representative | Class-to-rule semantics belong to plan-driven engine tests; representative coverage restored now, full case migration remains tracked. |
-| `packages/core/tests/rule-priority.test.ts` | engine | covered-representative | Class-to-rule semantics belong to plan-driven engine tests; representative coverage restored now, full case migration remains tracked. |
+| `packages/core/tests/rule-priority.test.ts` | engine | covered-exact | Exact declaration, media, and static component priority cases migrated to `packages/engine/tests/cascade-layer-parity.test.ts`. |
 | `packages/core/tests/rule.test.ts` | engine | covered-representative | Class-to-rule semantics belong to plan-driven engine tests; representative coverage restored now, full case migration remains tracked. |
-| `packages/core/tests/rules-order.test.ts` | engine | covered-representative | Class-to-rule semantics belong to plan-driven engine tests; representative coverage restored now, full case migration remains tracked. |
+| `packages/core/tests/rules-order.test.ts` | engine | covered-exact | Exact deterministic insertion-order independence cases migrated to `packages/engine/tests/cascade-layer-parity.test.ts`. |
 | `packages/core/tests/rules/accent.test.ts` | engine | covered-exact | Exact default-rule assertions migrated to `packages/engine/tests/rules-migration-parity.test.ts`. Dynamic utility execution belongs to engine; representative old rules covered by core-parity tests. |
 | `packages/core/tests/rules/animation-direction.test.ts` | engine | covered-representative | Dynamic utility execution belongs to engine; representative old rules covered by core-parity tests. |
 | `packages/core/tests/rules/animation-fill-mode.test.ts` | engine | covered-representative | Dynamic utility execution belongs to engine; representative old rules covered by core-parity tests. |
@@ -127,15 +129,15 @@ Plan IR behavior findings:
 | `packages/core/tests/rules/filter.test.ts` | engine | covered-representative | Dynamic utility execution belongs to engine; representative old rules covered by core-parity tests. |
 | `packages/core/tests/rules/flex-basis.test.ts` | engine | covered-representative | Dynamic utility execution belongs to engine; representative old rules covered by core-parity tests. |
 | `packages/core/tests/rules/flex.test.ts` | engine | covered-representative | Dynamic utility execution belongs to engine; representative old rules covered by core-parity tests. |
-| `packages/core/tests/rules/font-family.test.ts` | engine | covered-representative | Dynamic utility execution belongs to engine; representative old rules covered by core-parity tests. |
-| `packages/core/tests/rules/font-feature-settings.test.ts` | engine | covered-representative | Dynamic utility execution belongs to engine; representative old rules covered by core-parity tests. |
+| `packages/core/tests/rules/font-family.test.ts` | engine | covered-exact | Exact family alias cases migrated to `packages/engine/tests/complex-utilities-parity.test.ts`. |
+| `packages/core/tests/rules/font-feature-settings.test.ts` | engine/preset | covered-exact | Exact raw feature list and `font-feature-*` variable alias cases migrated to `packages/engine/tests/complex-utilities-parity.test.ts`; preset Plan alias restored. |
 | `packages/core/tests/rules/font-size.test.ts` | engine | covered-exact | Exact default-rule assertions migrated to `packages/engine/tests/rules-migration-parity.test.ts`. Dynamic utility execution belongs to engine; representative old rules covered by core-parity tests. |
-| `packages/core/tests/rules/font-weight.test.ts` | engine | covered-representative | Dynamic utility execution belongs to engine; representative old rules covered by core-parity tests. |
-| `packages/core/tests/rules/font.test.ts` | engine | covered-representative | Dynamic utility execution belongs to engine; representative old rules covered by core-parity tests. |
+| `packages/core/tests/rules/font-weight.test.ts` | engine | covered-exact | Exact keyword and tokenized font-weight cases migrated to `packages/engine/tests/complex-utilities-parity.test.ts`. |
+| `packages/core/tests/rules/font.test.ts` | engine/preset | covered-exact | Exact font shorthand cases migrated to `packages/engine/tests/complex-utilities-parity.test.ts`; preset Plan alias order restored so `font:italic\|1.2rem\|sans` resolves to `--font-family-sans`. |
 | `packages/core/tests/rules/gap.test.ts` | engine | covered-exact | Exact default-rule assertions migrated to `packages/engine/tests/rules-migration-parity.test.ts`. Dynamic utility execution belongs to engine; representative old rules covered by core-parity tests. |
-| `packages/core/tests/rules/grid-column.test.ts` | engine | covered-representative | Dynamic utility execution belongs to engine; representative old rules covered by core-parity tests. |
-| `packages/core/tests/rules/group.test.ts` | engine | covered-representative | Dynamic utility execution belongs to engine; representative old rules covered by core-parity tests, including grouped generated utilities, quoted separators, invalid group syntax, and global important propagation. |
-| `packages/core/tests/rules/inset.test.ts` | engine | covered-representative | Dynamic utility execution belongs to engine; representative old rules covered by core-parity tests. |
+| `packages/core/tests/rules/grid-column.test.ts` | engine | covered-exact | Exact grid-column span aliases migrated to `packages/engine/tests/complex-utilities-parity.test.ts`. |
+| `packages/core/tests/rules/group.test.ts` | engine | covered-exact | Exact grouped generated utilities, quoted separators, invalid group recovery, gradients, and global important propagation migrated to `packages/engine/tests/complex-utilities-parity.test.ts`. |
+| `packages/core/tests/rules/inset.test.ts` | engine | covered-exact | Exact inset side utilities, complex right value parsing, and priority order migrated to `packages/engine/tests/complex-utilities-parity.test.ts`. |
 | `packages/core/tests/rules/letter-spacing.test.ts` | engine | covered-representative | Dynamic utility execution belongs to engine; representative old rules covered by core-parity tests. |
 | `packages/core/tests/rules/line-height.test.ts` | engine | covered-representative | Dynamic utility execution belongs to engine; representative old rules covered by core-parity tests. |
 | `packages/core/tests/rules/logical-properties.test.ts` | engine | covered-exact | Exact default-rule assertions migrated to `packages/engine/tests/rules-migration-parity.test.ts`. Dynamic utility execution belongs to engine; representative old rules covered by core-parity tests. |
@@ -149,7 +151,7 @@ Plan IR behavior findings:
 | `packages/core/tests/rules/scroll-margin.test.ts` | engine | covered-exact | Exact default-rule assertions migrated to `packages/engine/tests/rules-migration-parity.test.ts`. Dynamic utility execution belongs to engine; representative old rules covered by core-parity tests. |
 | `packages/core/tests/rules/scroll-padding.test.ts` | engine | covered-exact | Exact default-rule assertions migrated to `packages/engine/tests/rules-migration-parity.test.ts`. Dynamic utility execution belongs to engine; representative old rules covered by core-parity tests. |
 | `packages/core/tests/rules/scroll-snap-type.test.ts` | engine | covered-exact | Exact default-rule assertions migrated to `packages/engine/tests/rules-migration-parity.test.ts`. Dynamic utility execution belongs to engine; representative old rules covered by core-parity tests. |
-| `packages/core/tests/rules/size.test.ts` | engine | covered-representative | Dynamic utility execution belongs to engine; representative old rules covered by core-parity tests. |
+| `packages/core/tests/rules/size.test.ts` | engine | covered-exact | Exact size/max/min pair utility parsing migrated to `packages/engine/tests/complex-utilities-parity.test.ts`, including variable and nested math inputs. |
 | `packages/core/tests/rules/stroke.test.ts` | engine | covered-exact | Exact default-rule assertions migrated to `packages/engine/tests/rules-migration-parity.test.ts`. Dynamic utility execution belongs to engine; representative old rules covered by core-parity tests. |
 | `packages/core/tests/rules/svg-colors.test.ts` | engine | covered-representative | Dynamic utility execution belongs to engine; representative old rules covered by core-parity tests. |
 | `packages/core/tests/rules/tab-size.test.ts` | engine | covered-representative | Dynamic utility execution belongs to engine; representative old rules covered by core-parity tests. |
@@ -161,11 +163,11 @@ Plan IR behavior findings:
 | `packages/core/tests/rules/text-wrap.test.ts` | engine | covered-exact | Exact default-rule assertions migrated to `packages/engine/tests/rules-migration-parity.test.ts`. Dynamic utility execution belongs to engine; representative old rules covered by core-parity tests. |
 | `packages/core/tests/rules/text.test.ts` | engine | covered-exact | Exact default-rule assertions migrated to `packages/engine/tests/rules-migration-parity.test.ts`. Dynamic utility execution belongs to engine; representative old rules covered by core-parity tests. |
 | `packages/core/tests/rules/transform.test.ts` | engine | covered-exact | Exact default-rule assertions migrated to `packages/engine/tests/rules-migration-parity.test.ts`. Dynamic utility execution belongs to engine; representative old rules covered by core-parity tests. |
-| `packages/core/tests/rules/transition.test.ts` | engine | covered-representative | Dynamic utility execution belongs to engine; representative old rules covered by core-parity tests. |
+| `packages/core/tests/rules/transition.test.ts` | engine | covered-exact | Exact transition multi-value syntax and removed shorthand-prefix rejection migrated to `packages/engine/tests/complex-utilities-parity.test.ts`. |
 | `packages/core/tests/rules/width.test.ts` | engine | covered-exact | Exact default-rule assertions migrated to `packages/engine/tests/rules-migration-parity.test.ts`. Dynamic utility execution belongs to engine; representative old rules covered by core-parity tests. |
 | `packages/core/tests/rules/writing-mode.test.ts` | engine | covered-exact | Exact default-rule assertions migrated to `packages/engine/tests/rules-migration-parity.test.ts`. Dynamic utility execution belongs to engine; representative old rules covered by core-parity tests. |
 | `packages/core/tests/rules/zoom.test.ts` | engine | covered-representative | Dynamic utility execution belongs to engine; representative old rules covered by core-parity tests. |
-| `packages/core/tests/selectors.test.ts` | engine | covered-representative | Class-to-rule semantics belong to plan-driven engine tests; representative coverage restored now, full case migration remains tracked. |
+| `packages/core/tests/selectors.test.ts` | engine | covered-exact | Exact selector variant aliases, pseudo shorthands, descendants, and multi-branch selector behavior migrated to `packages/engine/tests/parser-boundary-parity.test.ts`. |
 | `packages/core/tests/semantics.test.ts` | engine | covered-representative | Class-to-rule semantics belong to plan-driven engine tests; representative coverage restored now, full case migration remains tracked. |
 | `packages/core/tests/test.ts` | engine | helper-replaced | Old Config helper replaced by plan-based engine helpers. |
 | `packages/core/tests/tester.ts` | engine | helper-replaced | Old Config helper replaced by plan-based engine helpers. |
@@ -180,7 +182,7 @@ Plan IR behavior findings:
 | `packages/core/tests/utils/minify-extended-config.test.ts` | compiler/plan | dropped-removed-api | JS Config compatibility path is removed; replace intent with CSS-first import/basePlan tests. |
 | `packages/core/tests/utils/parse-at.test.ts` | engine | covered-exact | Covered by `packages/engine/tests/parser-parity.test.ts`, including logical operators, comparisons, feature aliases, container aliases, custom at-rule aliases, and generate-at output. |
 | `packages/core/tests/utils/parse-selector.test.ts` | engine | covered-exact | Covered by `packages/engine/tests/parser-parity.test.ts`, including `:of()`, functional pseudo-class arguments, attributes, universal selectors, grouped selectors, and generate-selector output. |
-| `packages/core/tests/utils/parse-value.test.ts` | engine | covered-representative | Covered through engine value VM parity for color, number, separator, `$()`, `calc()`, and function utilities. |
+| `packages/core/tests/utils/parse-value.test.ts` | engine | covered-exact | Exact primitive parse-value boundary cases migrated to `packages/engine/tests/parser-boundary-parity.test.ts`; broader value VM parity remains covered by engine tests. |
 | `packages/core/tests/utils/resolve-variable-namespace.test.ts` | compiler | rewritten-css-first | Namespace resolution now belongs to compiler lowering; covered by CSS-first number variable tests such as `--width-11x` -> `w:-11x`. |
 | `packages/core/tests/utils/sort-readable-classes.test.ts` | engine/tooling | covered-representative | Public sorting helper is gone from facade; priority/order behavior is covered by engine rule order tests and tooling class-order tests. |
 | `packages/core/tests/variables-and-modes.test.ts` | engine | covered-representative | Class-to-rule semantics belong to plan-driven engine tests; representative coverage restored now, full case migration remains tracked. |

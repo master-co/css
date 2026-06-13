@@ -3470,8 +3470,8 @@ const utilities = [
         "name": "font",
         "type": UtilityType.NativeShorthand,
         "variableAliasRefs": [
-            "=font",
             "~font-family",
+            "=font",
             "~font-weight",
             "~font-size"
         ],
@@ -6960,6 +6960,9 @@ const utilities = [
         "id": "font-feature-settings",
         "name": "font-feature-settings",
         "type": UtilityType.Native,
+        "variableAliasRefs": [
+            "=font-feature"
+        ],
         "emit": {
             "type": "property",
             "property": "font-feature-settings"

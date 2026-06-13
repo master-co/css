@@ -366,20 +366,47 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
     test('normalizes CSS color functions and preserves alpha alias dependencies through CSS-first lowering', () => {
         const { plan } = compileCSSPlan(`
             @theme {
+                --color-rgb: rgb(0 128 255);
                 --color-hsl-modern: hsl(210 100% 50%);
                 --color-hsl-legacy: hsl(210, 100%, 50%);
+                --color-hwb: hwb(210 30% 20%);
+                --color-lab: lab(50% 40 -30);
+                --color-lch: lch(50% 60 200);
+                --color-oklab-demo: oklab(0.5 0.1 -0.05);
                 --color-oklch-primary: oklch(0.5 0.15 240);
                 --color-display-p3: color(display-p3 0.2 0.4 0.8);
+                --color-color-srgb: color(srgb 0.2 0.4 0.8);
+                --color-color-rec2020: color(rec2020 0.2 0.4 0.8);
                 --color-soft: $color-oklch-primary/.3;
                 --color-mix-demo: color-mix(in oklch, red, blue);
             }
         `, { basePlan: defaultPlan })
         const css = createCSS(plan)
 
-        css.add('bg:hsl-modern', 'bg:hsl-legacy', 'bg:display-p3', 'bg:soft', 'bg:mix-demo')
+        css.add(
+            'bg:rgb',
+            'bg:hsl-modern',
+            'bg:hsl-legacy',
+            'bg:hwb',
+            'bg:lab',
+            'bg:lch',
+            'bg:oklab-demo',
+            'bg:display-p3',
+            'bg:color-srgb',
+            'bg:color-rec2020',
+            'bg:soft',
+            'bg:mix-demo'
+        )
+        expect(css.themeLayer.text).toContain('--color-rgb:#0080ff')
         expect(css.themeLayer.text).toContain('--color-hsl-modern:#0080ff')
         expect(css.themeLayer.text).toContain('--color-hsl-legacy:#0080ff')
+        expect(css.themeLayer.text).toContain('--color-hwb:#4d8ccc')
+        expect(css.themeLayer.text).toContain('--color-lab:lab(50% 40 -30)')
+        expect(css.themeLayer.text).toContain('--color-lch:lch(50% 60 200)')
+        expect(css.themeLayer.text).toContain('--color-oklab-demo:oklab(50% .1 -.05)')
         expect(css.themeLayer.text).toContain('--color-display-p3:color(display-p3 .2 .4 .8)')
+        expect(css.themeLayer.text).toContain('--color-color-srgb:color(srgb .2 .4 .8)')
+        expect(css.themeLayer.text).toContain('--color-color-rec2020:color(rec2020 .2 .4 .8)')
         expect(css.themeLayer.text).toContain('--color-soft:color-mix(in oklab,var(--color-oklch-primary) 30%,transparent)')
         expect(css.themeLayer.text).toContain('--color-oklch-primary:oklch(50% .15 240)')
         expect(css.themeLayer.text).toContain('--color-mix-demo:oklch(')
