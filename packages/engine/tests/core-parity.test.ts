@@ -3,6 +3,7 @@ import { createCSS } from '../src'
 import {
     createCSSWithStaticUtilities,
     createDefaultCSS,
+    clonePlan,
     createPlanWithStaticUtilities,
     expectClassText,
     expectLayerText
@@ -103,6 +104,95 @@ describe.concurrent('default plan utility parity', () => {
         expect(css.create('text:center_td:not(:first)')?.text)
             .toBe('.text\\:center_td\\:not\\(\\:first\\) td:not(:first-child){text-align:center}')
     })
+
+    test('preserves migrated representative default utility cases', () => {
+        const css = createDefaultCSS()
+
+        expectClassText(css, 'animation-direction:normal', 'animation-direction:normal')
+        expect(css.create('@direction:normal')).toBeUndefined()
+        expect(css.create('flex@sm')?.text)
+            .toBe('@media (width>=52.125rem){.flex\\@sm{display:flex}}')
+        expectClassText(css, 'grid-col-span:2', 'grid-column:span 2/span 2')
+        expectClassText(css, 'grid-column-span:2', 'grid-column:span 2/span 2')
+        expectClassText(css, 'top:20', 'top:1.25rem')
+        expectClassText(css, 'bottom:10', 'bottom:0.625rem')
+        expectClassText(css, 'right:max(0,calc(50%-725))', 'right:max(0rem,calc(50% - 45.3125rem))')
+        expectClassText(css, 'max-w:3xs', 'max-width:calc(var(--container-3xs) / 16 * 1rem)')
+        expectClassText(css, 'max-w:16px', 'max-width:16px')
+        expect(css.create('size:16|32')?.declarations).toStrictEqual({ width: '1rem', height: '2rem' })
+        expect(css.create('max:16|32')?.declarations).toStrictEqual({ 'max-width': '1rem', 'max-height': '2rem' })
+        expect(css.create('min:16|32')?.declarations).toStrictEqual({ 'min-width': '1rem', 'min-height': '2rem' })
+        expect(css.create('size:min(10,calc(25-10))|10')?.declarations)
+            .toStrictEqual({ width: 'min(0.625rem,calc(1.5625rem - 0.625rem))', height: '0.625rem' })
+    })
+
+    test('keeps pair utilities using variable functions without and with known number variables', () => {
+        const css = createDefaultCSS()
+        expect(css.create('size:$(w)|$(h)')?.declarations).toStrictEqual({ width: 'var(--w)', height: 'var(--h)' })
+        expect(css.create('max:$(w)|$(h)')?.declarations).toStrictEqual({ 'max-width': 'var(--w)', 'max-height': 'var(--h)' })
+        expect(css.create('min:$(w)|$(h)')?.declarations).toStrictEqual({ 'min-width': 'var(--w)', 'min-height': 'var(--h)' })
+
+        const plan = clonePlan()
+        plan.variables = [
+            ...(plan.variables || []),
+            { name: 'w', key: 'w', type: 'number', value: 16 },
+            { name: 'h', key: 'h', type: 'number', value: 16 }
+        ]
+        const numericCSS = createCSS(plan)
+        expect(numericCSS.create('size:$(w)|$(h)')?.declarations)
+            .toStrictEqual({ width: 'calc(var(--w) / 16 * 1rem)', height: 'calc(var(--h) / 16 * 1rem)' })
+    })
+
+    test('keeps grouped declaration parsing and nested generated utilities', () => {
+        const css = createDefaultCSS()
+
+        expect(css.create('{color:black!;bb:2|solid}')?.declarations)
+            .toStrictEqual({ color: 'oklch(0% 0 none)!important', 'border-bottom': '0.125rem solid' })
+        expect(css.create('{pt:calc(2.5em+60);mt:-60}_:where(h1,h2,h3,h4,h5,h6)')?.declarations)
+            .toStrictEqual({ 'padding-top': 'calc(2.5em + 3.75rem)', 'margin-top': '-3.75rem' })
+        expect(css.create('{line-height:calc(32-16);font-size:calc(32-16)}')?.declarations)
+            .toStrictEqual({ 'line-height': 'calc(32 - 16)', 'font-size': 'calc(2rem - 1rem)' })
+        expect(css.create('{m:32;leading:1.5}')?.declarations)
+            .toStrictEqual({ margin: '2rem', 'line-height': '1.5' })
+        expect(css.create('{form}')?.text).toBe('')
+        expect(css.create('{form;block}')?.declarations).toStrictEqual({ display: 'block' })
+    })
+
+    test('keeps grouped declarations important when configured globally', () => {
+        const plan = clonePlan()
+        plan.settings = {
+            ...(plan.settings || {}),
+            important: true
+        }
+
+        expect(createCSS(plan).create('{color:black!;bb:2|solid}')?.declarations)
+            .toStrictEqual({ color: 'oklch(0% 0 none)!important', 'border-bottom': '0.125rem solid!important' })
+        expect(createCSS(plan).create('{color:black!;bb:2|solid}')?.text)
+            .toContain('border-bottom:0.125rem solid!important')
+    })
+
+    test('keeps migrated issue regressions for modern utility syntax', () => {
+        const css = createDefaultCSS()
+
+        expectClassText(css, 'touch:none', 'touch-action:none')
+        expectClassText(css, 'touch-action:none', 'touch-action:none')
+        expectClassText(css, 'view-transition-name:hero', 'view-transition-name:hero')
+        expectClassText(css, 'vt-name:hero', 'view-transition-name:hero')
+        expect(css.create('opacity:0.5::view-transition-old(hero)')?.text)
+            .toContain('::view-transition-old(hero)')
+        expect(css.create('opacity:1::vt-new(hero)')?.text)
+            .toContain('::view-transition-new(hero)')
+        expectClassText(css, 'translate:16|24', 'translate:1rem 1.5rem')
+        expectClassText(css, 'scale:1.5|2', 'scale:1.5 2')
+        expectClassText(css, 'rotate:45deg', 'rotate:45deg')
+        expectClassText(css, 'translate(16,16)', 'transform:translate(1rem,1rem)')
+        expectClassText(css, 'border-inline-start-width:2', 'border-inline-start-width:0.125rem')
+        expectClassText(css, 'border-start-start-radius:8', 'border-start-start-radius:0.5rem')
+        expect(css.create('font-size:clamp(1.5rem,2vw+1rem,2.25rem)')?.text)
+            .toMatch(/font-size:clamp\(1\.5rem,\s*calc\(2vw \+ 1rem\),\s*2\.25rem\)/)
+        expect(css.create('{paint-order:stroke|fill|markers}')?.text)
+            .toContain('paint-order:stroke fill markers')
+    })
 })
 
 describe.concurrent('plan-driven layer and lifecycle parity', () => {
@@ -141,6 +231,26 @@ describe.concurrent('plan-driven layer and lifecycle parity', () => {
         })
     })
 
+    test('does not duplicate preloaded animations', () => {
+        const css = createCSS(defaultPlan, {
+            animations: {
+                fade: 1
+            }
+        })
+
+        css.add('animation:fade|.3s')
+        expect(css.text).toBe('@layer utilities{.animation\\:fade\\|\\.3s{animation:fade 0.3s}}')
+        expect(Object.fromEntries(css.animationsNonLayer.tokenCounts)).toEqual({
+            fade: 2
+        })
+
+        css.remove('animation:fade|.3s')
+        expect(css.text).toBe('')
+        expect(Object.fromEntries(css.animationsNonLayer.tokenCounts)).toEqual({
+            fade: 1
+        })
+    })
+
     test('executes static component utilities from plan records', () => {
         const css = createCSSWithStaticUtilities([
             {
@@ -171,5 +281,74 @@ describe.concurrent('plan-driven layer and lifecycle parity', () => {
         expect(css.defaultsLayer.text).toContain('@layer defaults{.prose :is(p){font-size:1rem}}')
         expect(css.componentsLayer.text).toBe('')
         expect(css.text).not.toContain('@layer components{@layer defaults')
+    })
+
+    test('keeps explicit layer variants routed to the requested layer', () => {
+        expectLayerText(createDefaultCSS(), 'block@base', 'baseLayer', '.block\\@base{display:block}')
+        expectLayerText(createDefaultCSS(), 'block@default', 'defaultsLayer', '.block\\@default{display:block}')
+        expectLayerText(createDefaultCSS(), 'block@component', 'componentsLayer', '.block\\@component{display:block}')
+        expectLayerText(createDefaultCSS(), 'block@utility', 'utilitiesLayer', '.block\\@utility{display:block}')
+        expectLayerText(createDefaultCSS(), 'font:12_:is(code,pre)@base', 'baseLayer', '.font\\:12_\\:is\\(code\\,pre\\)\\@base :is(code,pre){font-size:0.75rem}')
+    })
+
+    test('keeps deterministic rule ordering independent of insertion order', () => {
+        const css = createDefaultCSS()
+        css.add(
+            'px:0', 'pl:0', 'pr:0', 'p:0', 'pt:0', 'pb:0', 'py:0',
+            'mx:0', 'ml:0', 'mr:0', 'm:0', 'mt:0', 'mb:0', 'my:0',
+            'font:12', 'font:medium', 'text:center', 'fixed', 'block', 'round', 'b:0'
+        )
+
+        expect(css.utilitiesLayer.rules.map(({ name }) => name)).toEqual([
+            'block',
+            'fixed',
+            'round',
+            'b:0',
+            'm:0',
+            'p:0',
+            'mx:0',
+            'my:0',
+            'px:0',
+            'py:0',
+            'font:12',
+            'font:medium',
+            'mb:0',
+            'ml:0',
+            'mr:0',
+            'mt:0',
+            'pb:0',
+            'pl:0',
+            'pr:0',
+            'pt:0',
+            'text:center'
+        ])
+    })
+
+    test('recovers generated utilities from selector text', () => {
+        const css = createDefaultCSS()
+
+        expect(css.createFromSelectorText('.font\\:heavy')?.[0]).toMatchObject({ name: 'font:heavy' })
+        expect(css.createFromSelectorText('.hidden\\_button\\[disabled\\] button[disabled]')?.[0])
+            .toMatchObject({ name: 'hidden_button[disabled]' })
+        expect(css.createFromSelectorText('.ml\\:-50\\_\\:where\\(\\.code\\,\\.codeTabs\\,\\.demo\\)\\@\\<md')?.[0])
+            .toMatchObject({ name: 'ml:-50_:where(.code,.codeTabs,.demo)@<md' })
+        expect(css.createFromSelectorText('.active .hidden\\:within\\(\\.active\\)')?.[0])
+            .toMatchObject({ name: 'hidden:within(.active)' })
+        expect(css.createFromSelectorText('.dark .active .hidden\\:within\\(\\.active\\)\\@dark')?.[0])
+            .toMatchObject({ name: 'hidden:within(.active)@dark' })
+
+        const scopedPlan = clonePlan()
+        scopedPlan.settings = {
+            ...(scopedPlan.settings || {}),
+            scope: '#app',
+            modeTrigger: 'class',
+            modes: ['dark']
+        }
+        const scopedCSS = createCSS(scopedPlan)
+        const rule = scopedCSS.create('block:hover@dark')
+        expect(rule?.selectorText).toBe('.dark #app .block\\:hover\\@dark:hover')
+        expect(scopedCSS.createFromSelectorText(rule!.selectorText)?.[0]).toMatchObject({
+            name: 'block:hover@dark'
+        })
     })
 })

@@ -31,8 +31,25 @@ function getWorkspaceDirectories(cwd: string) {
     return directories
 }
 
+function findNearestPackageDirectory(filename: string) {
+    let directory = path.dirname(filename)
+    const root = path.parse(directory).root
+    while (directory !== root) {
+        if (existsSync(path.join(directory, 'package.json'))) return directory
+        directory = path.dirname(directory)
+    }
+    return path.dirname(filename)
+}
+
+function resolveSearchDirectory(context: RuleContext<any, any[]>, filename: string) {
+    const cwd = path.resolve(context.cwd || process.cwd())
+    const root = path.parse(cwd).root
+    if (cwd !== root && (filename === cwd || filename.startsWith(cwd + path.sep))) return cwd
+    return findNearestPackageDirectory(filename)
+}
+
 function resolveWorkspaceDirectory(context: RuleContext<any, any[]>, filename: string) {
-    const cwd = context.cwd || process.cwd()
+    const cwd = resolveSearchDirectory(context, filename)
     let closestDirectory: string | undefined
     for (const directory of getWorkspaceDirectories(cwd)) {
         if (

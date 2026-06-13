@@ -8,6 +8,7 @@ export const CLASS_DECLARATIONS: string[] = []
 export const CLASS_FUNCTIONS = ['clsx', 'cva', 'ctl', 'cv', 'class', 'classnames', 'classVariant', 'styled(?:\\s+)?(?:\\.\\w+)?', 'classList(?:\\s+)?\\.(?:add|remove|toggle|replace)']
 
 const LAYER_ORDER = ['theme', 'base', 'defaults', 'components', 'utilities']
+const STATIC_UTILITY_TYPE = -4
 
 function stable(value: unknown): string {
     if (!value || typeof value !== 'object') return JSON.stringify(value)
@@ -41,6 +42,19 @@ function getLayerOrder(layerName?: string) {
     return index === -1 ? LAYER_ORDER.length : index
 }
 
+function getReadableGroupOrder(rule: { atRules?: unknown, mode?: unknown, selectorNodes?: unknown[] }) {
+    if (rule.atRules) return 3
+    if (rule.mode) return 2
+    if (rule.selectorNodes?.length) return 1
+    return 0
+}
+
+function getReadableTypeOrder(rule: { fixedClass?: string, type?: number }) {
+    if (rule.fixedClass) return 0
+    if (rule.type === STATIC_UTILITY_TYPE) return 1
+    return 2
+}
+
 export function sortReadableClasses(classNames: string[], css: MasterCSS) {
     return [...new Set(classNames)].sort((a, b) => {
         const ruleA = css.generate(a)[0]
@@ -50,6 +64,10 @@ export function sortReadableClasses(classNames: string[], css: MasterCSS) {
         if (!ruleB) return -1
         const layerCmp = getLayerOrder(ruleA.layerName) - getLayerOrder(ruleB.layerName)
         if (layerCmp !== 0) return layerCmp
+        const groupCmp = getReadableGroupOrder(ruleA) - getReadableGroupOrder(ruleB)
+        if (groupCmp !== 0) return groupCmp
+        const typeCmp = getReadableTypeOrder(ruleA) - getReadableTypeOrder(ruleB)
+        if (typeCmp !== 0) return typeCmp
         return compareRulePriority(ruleA, ruleB) || a.localeCompare(b)
     })
 }

@@ -323,4 +323,66 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
         expect(css.themeLayer.text).toContain('.light{--spacing-x1:48;--leading-x1:48}')
         expect(css.themeLayer.text).toContain('.dark{--spacing-x1:32;--leading-x1:32}')
     })
+
+    test('lowers inline theme variables without emitting their own theme rules', () => {
+        const { plan } = compileCSSPlan(`
+            @theme inline {
+                --color-primary: #123;
+                --spacing-card: 16;
+                --color-brand: $color-primary;
+            }
+
+            @theme {
+                --color-regular: #456;
+                --color-inline-regular: $color-regular;
+            }
+        `, { basePlan: defaultPlan })
+        const css = createCSS(plan)
+
+        css.add('bg:primary', 'fg:brand', 'm:card', 'fg:inline-regular')
+        expect(css.utilitiesLayer.text).toContain('.bg\\:primary{background-color:#123}')
+        expect(css.utilitiesLayer.text).toContain('.fg\\:brand{color:#123}')
+        expect(css.utilitiesLayer.text).toContain('.m\\:card{margin:1rem}')
+        expect(css.utilitiesLayer.text).toContain('.fg\\:inline-regular{color:var(--color-inline-regular)}')
+        expect(css.themeLayer.text).toContain(':root{--color-inline-regular:var(--color-regular);--color-regular:#456}')
+        expect(css.themeLayer.text).not.toContain('--color-primary:#123')
+        expect(css.themeLayer.text).not.toContain('--spacing-card:16')
+    })
+
+    test('rejects mode-specific inline theme variables in CSS source', () => {
+        expect(() => compileCSSPlan(`
+            @theme dark inline {
+                --color-primary: #123;
+            }
+        `, { basePlan: defaultPlan })).toThrow('@theme inline cannot be mode-specific')
+
+        expect(() => compileCSSPlan(`
+            @theme inline dark {
+                --color-primary: #123;
+            }
+        `, { basePlan: defaultPlan })).toThrow('@theme inline cannot be mode-specific')
+    })
+
+    test('normalizes CSS color functions and preserves alpha alias dependencies through CSS-first lowering', () => {
+        const { plan } = compileCSSPlan(`
+            @theme {
+                --color-hsl-modern: hsl(210 100% 50%);
+                --color-hsl-legacy: hsl(210, 100%, 50%);
+                --color-oklch-primary: oklch(0.5 0.15 240);
+                --color-display-p3: color(display-p3 0.2 0.4 0.8);
+                --color-soft: $color-oklch-primary/.3;
+                --color-mix-demo: color-mix(in oklch, red, blue);
+            }
+        `, { basePlan: defaultPlan })
+        const css = createCSS(plan)
+
+        css.add('bg:hsl-modern', 'bg:hsl-legacy', 'bg:display-p3', 'bg:soft', 'bg:mix-demo')
+        expect(css.themeLayer.text).toContain('--color-hsl-modern:#0080ff')
+        expect(css.themeLayer.text).toContain('--color-hsl-legacy:#0080ff')
+        expect(css.themeLayer.text).toContain('--color-display-p3:color(display-p3 .2 .4 .8)')
+        expect(css.themeLayer.text).toContain('--color-soft:color-mix(in oklab,var(--color-oklch-primary) 30%,transparent)')
+        expect(css.themeLayer.text).toContain('--color-oklch-primary:oklch(50% .15 240)')
+        expect(css.themeLayer.text).toContain('--color-mix-demo:oklch(')
+        expect(css.utilitiesLayer.text).toContain('.bg\\:soft{background-color:var(--color-soft)}')
+    })
 })

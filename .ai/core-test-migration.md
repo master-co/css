@@ -23,7 +23,7 @@ Current executable coverage anchors:
 Current audit summary:
 
 - Deleted old core test files: 140.
-- Status distribution: 33 `covered-exact`, 69 `covered-representative`, 14 `rewritten-css-first`, 17 `helper-replaced`, 7 `dropped-removed-api`.
+- Status distribution: 38 `covered-exact`, 64 `covered-representative`, 14 `rewritten-css-first`, 17 `helper-replaced`, 7 `dropped-removed-api`.
 - Rule assertions now exactly covered by engine migration parity: 33 old rule test files, 235 assertions.
 - No deleted old core test file is left without an owner and disposition.
 - `covered-representative` rows are deliberately scoped to legacy files whose exact assertions are either covered by the generated rule parity suite or whose former helper/API surface is no longer public.
@@ -36,6 +36,9 @@ Plan IR behavior findings:
 - Fixed: functional pseudo-class selector arguments are no longer expanded by the variant scanner before selector parsing. This restores valid CSSOM insertion for classes such as `pb:8x:not(:last)`.
 - Fixed: `calc()` math lowering now keeps Master CSS `$()` number variables visible to the value VM long enough to apply the old contextual unit conversion, e.g. `w:calc(-2+$(spacing-md))`.
 - Fixed: CSS-first variable namespace lowering adds own-namespace alias refs to matching built-in utilities, so authored variables such as `--width-11x` are addressable by `w:-11x` through Plan IR instead of browser-side namespace guessing.
+- Fixed: ESLint readable class sorting restores the old pre-priority grouping of unqualified, selector, mode, and at-rule utilities, then static-vs-dynamic utilities, so issue #377 hover visibility chains no longer autofix into a different order.
+- Restored: engine migration parity now includes representative group utilities, pair utilities, explicit layer routing, selector-text recovery, preloaded animation counts, and historical issue regressions for touch-action, View Transitions, individual transforms, logical borders, clamp math, and grouped `|` declarations.
+- Restored: compiled parser parity now covers the old parse-at and parse-selector case tables at generated CSS-text level, including logical at operators, comparison aliases, container aliases, `:of()`, attributes, universal selectors, grouped selectors, and custom at-rule aliases.
 - Preserved: `@theme inline` aliases in `packages/preset/src/theme.css` lower to inline Plan records, so `current`, `black`, `white`, `full`, `fit`, `max`, and `min` emit raw values instead of `var(...)`.
 - Documented divergence: if the project later wants old `var(...)` output for inline aliases, the source-of-truth decision belongs in preset/compiler lowering, not in engine matcher fallback.
 
@@ -88,7 +91,7 @@ Plan IR behavior findings:
 | `packages/core/tests/issues/346.test.ts` | engine | covered-representative | Class-to-rule semantics belong to plan-driven engine tests; representative coverage restored now, full case migration remains tracked. |
 | `packages/core/tests/issues/358.test.ts` | engine | covered-representative | Class-to-rule semantics belong to plan-driven engine tests; representative coverage restored now, full case migration remains tracked. |
 | `packages/core/tests/issues/363.test.ts` | engine | covered-representative | Class-to-rule semantics belong to plan-driven engine tests; representative coverage restored now, full case migration remains tracked. |
-| `packages/core/tests/issues/377.test.ts` | engine | covered-representative | Class-to-rule semantics belong to plan-driven engine tests; representative coverage restored now, full case migration remains tracked. |
+| `packages/core/tests/issues/377.test.ts` | engine/tooling | covered-exact | Issue regression restored in ESLint class-order tests; readable sorting now preserves the old visibility-chain order. |
 | `packages/core/tests/keyframes/index.html` | runtime/engine | covered-representative | Browser fixture intent is covered by runtime e2e and engine animation ref-count tests; the static HTML fixture is not restored under the facade package. |
 | `packages/core/tests/layers/assignments.test.ts` | engine | covered-representative | Class-to-rule semantics belong to plan-driven engine tests; representative coverage restored now, full case migration remains tracked. |
 | `packages/core/tests/layers/keyframes.test.ts` | engine | covered-representative | Class-to-rule semantics belong to plan-driven engine tests; representative coverage restored now, full case migration remains tracked. |
@@ -131,7 +134,7 @@ Plan IR behavior findings:
 | `packages/core/tests/rules/font.test.ts` | engine | covered-representative | Dynamic utility execution belongs to engine; representative old rules covered by core-parity tests. |
 | `packages/core/tests/rules/gap.test.ts` | engine | covered-exact | Exact default-rule assertions migrated to `packages/engine/tests/rules-migration-parity.test.ts`. Dynamic utility execution belongs to engine; representative old rules covered by core-parity tests. |
 | `packages/core/tests/rules/grid-column.test.ts` | engine | covered-representative | Dynamic utility execution belongs to engine; representative old rules covered by core-parity tests. |
-| `packages/core/tests/rules/group.test.ts` | engine | covered-representative | Dynamic utility execution belongs to engine; representative old rules covered by core-parity tests. |
+| `packages/core/tests/rules/group.test.ts` | engine | covered-representative | Dynamic utility execution belongs to engine; representative old rules covered by core-parity tests, including grouped generated utilities, quoted separators, invalid group syntax, and global important propagation. |
 | `packages/core/tests/rules/inset.test.ts` | engine | covered-representative | Dynamic utility execution belongs to engine; representative old rules covered by core-parity tests. |
 | `packages/core/tests/rules/letter-spacing.test.ts` | engine | covered-representative | Dynamic utility execution belongs to engine; representative old rules covered by core-parity tests. |
 | `packages/core/tests/rules/line-height.test.ts` | engine | covered-representative | Dynamic utility execution belongs to engine; representative old rules covered by core-parity tests. |
@@ -171,12 +174,12 @@ Plan IR behavior findings:
 | `packages/core/tests/utils/equal-selectors.test.ts` | engine | helper-replaced | Internal equality helpers are no longer public facade API; selector behavior is asserted through generated selector and runtime CSS output parity. |
 | `packages/core/tests/utils/equal-variants.test.ts` | engine/compiler | helper-replaced | Internal equality helpers are no longer public facade API; variant lowering/application is covered by compiler and engine tests. |
 | `packages/core/tests/utils/extend-config.test.ts` | compiler/plan | dropped-removed-api | JS Config compatibility path is removed; replace intent with CSS-first import/basePlan tests. |
-| `packages/core/tests/utils/generate-at.test.ts` | engine | covered-representative | Covered by `packages/engine/tests/parser-parity.test.ts` for compiled at-rule parse/generate semantics. |
-| `packages/core/tests/utils/generate-selector.test.ts` | engine | covered-representative | Covered by `packages/engine/tests/parser-parity.test.ts` for compiled selector parse/generate semantics. |
+| `packages/core/tests/utils/generate-at.test.ts` | engine | covered-exact | Covered by `packages/engine/tests/parser-parity.test.ts` for compiled at-rule parse/generate semantics. |
+| `packages/core/tests/utils/generate-selector.test.ts` | engine | covered-exact | Covered by `packages/engine/tests/parser-parity.test.ts` for compiled selector parse/generate semantics. |
 | `packages/core/tests/utils/meta-object.test.ts` | compiler | helper-replaced | Old Config meta-object helpers are not part of the Plan public contract; CSS-first lowering tests cover the remaining semantic use cases. |
 | `packages/core/tests/utils/minify-extended-config.test.ts` | compiler/plan | dropped-removed-api | JS Config compatibility path is removed; replace intent with CSS-first import/basePlan tests. |
-| `packages/core/tests/utils/parse-at.test.ts` | engine | covered-representative | Covered by `packages/engine/tests/parser-parity.test.ts` and compiled at-rule aliases in preset tests. |
-| `packages/core/tests/utils/parse-selector.test.ts` | engine | covered-representative | Covered by `packages/engine/tests/parser-parity.test.ts`, including functional pseudo-class arguments. |
+| `packages/core/tests/utils/parse-at.test.ts` | engine | covered-exact | Covered by `packages/engine/tests/parser-parity.test.ts`, including logical operators, comparisons, feature aliases, container aliases, custom at-rule aliases, and generate-at output. |
+| `packages/core/tests/utils/parse-selector.test.ts` | engine | covered-exact | Covered by `packages/engine/tests/parser-parity.test.ts`, including `:of()`, functional pseudo-class arguments, attributes, universal selectors, grouped selectors, and generate-selector output. |
 | `packages/core/tests/utils/parse-value.test.ts` | engine | covered-representative | Covered through engine value VM parity for color, number, separator, `$()`, `calc()`, and function utilities. |
 | `packages/core/tests/utils/resolve-variable-namespace.test.ts` | compiler | rewritten-css-first | Namespace resolution now belongs to compiler lowering; covered by CSS-first number variable tests such as `--width-11x` -> `w:-11x`. |
 | `packages/core/tests/utils/sort-readable-classes.test.ts` | engine/tooling | covered-representative | Public sorting helper is gone from facade; priority/order behavior is covered by engine rule order tests and tooling class-order tests. |
