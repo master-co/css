@@ -22,7 +22,7 @@ export async function renderResponse(response: Response, plan: MasterCSSPlan) {
     if (BODYLESS_STATUSES.has(response.status) || !isHTMLResponse(response)) {
         return response
     }
-    return createResponse(response, render(await response.text(), plan).html)
+    return createResponse(response, render(await response.text(), plan, { runtimeManifest: 'inject' }).html)
 }
 
 export function createMasterCSSMiddleware(plan: MasterCSSPlan): MiddlewareHandler {

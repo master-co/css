@@ -1,5 +1,6 @@
 import type { MasterCSSPlan } from 'shared/master-css-plan'
 import type { MasterCSSPreloaded } from '@master/css-engine'
+import type { MasterCSSRuntimeManifest } from 'shared/master-css-runtime-manifest'
 import CSSRuntime from './core'
 import initCSSRuntime from './init'
 
@@ -7,12 +8,14 @@ type CSSRuntimeHostConstructor = new (...args: any[]) => HTMLElement
 type CSSRuntimePlan = MasterCSSPlan | ((host: HTMLElement) => MasterCSSPlan)
 type CSSRuntimeRoot = ShadowRoot | ((host: HTMLElement) => ShadowRoot | null | undefined)
 type CSSRuntimePreloaded = MasterCSSPreloaded | ((host: HTMLElement) => MasterCSSPreloaded | undefined)
+type CSSRuntimeManifest = MasterCSSRuntimeManifest | ((host: HTMLElement) => MasterCSSRuntimeManifest | undefined)
 
 export interface CSSRuntimeOptions {
     plan: CSSRuntimePlan
     root?: CSSRuntimeRoot
     autoObserve?: boolean
     preloaded?: CSSRuntimePreloaded
+    manifest?: CSSRuntimeManifest
 }
 
 export type CSSRuntimeDecoratorOptions = CSSRuntimeOptions
@@ -29,6 +32,10 @@ function resolveRoot(host: HTMLElement, root: CSSRuntimeRoot | undefined): Shado
 
 function resolvePreloaded(host: HTMLElement, preloaded: CSSRuntimePreloaded | undefined): MasterCSSPreloaded | undefined {
     return typeof preloaded === 'function' ? preloaded(host) : preloaded
+}
+
+function resolveManifest(host: HTMLElement, manifest: CSSRuntimeManifest | undefined): MasterCSSRuntimeManifest | undefined {
+    return typeof manifest === 'function' ? manifest(host) : manifest
 }
 
 export default function cssRuntime(options: CSSRuntimeOptions): <T extends CSSRuntimeHostConstructor>(target: T) => T {
@@ -49,7 +56,8 @@ export default function cssRuntime(options: CSSRuntimeOptions): <T extends CSSRu
                     plan: resolvePlan(this, options.plan),
                     root,
                     autoObserve: options.autoObserve,
-                    preloaded: resolvePreloaded(this, options.preloaded)
+                    preloaded: resolvePreloaded(this, options.preloaded),
+                    manifest: resolveManifest(this, options.manifest)
                 })
             }
 

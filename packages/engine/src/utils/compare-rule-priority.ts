@@ -9,6 +9,10 @@ export type RulePriority = {
     selector: number
 }
 
+type ComparableRule = Pick<Utility, 'priority' | 'type' | 'key'> & Partial<Pick<Utility, 'atRules' | 'mode' | 'selectorNodes'>> & {
+    sortTier?: number
+}
+
 // ✅ Pseudo-class priority (lower = weaker)
 const selectorPriority: Record<string, number> = {
     hover: 1,
@@ -119,20 +123,21 @@ function compareFeatureTuples(
     return 0
 }
 
-// ✅ Compare function
-export default function compareRulePriority(a: Utility, b: Utility): number {
-    const getTier = (rule: Utility): number => {
-        const hasSelector = rule.selectorNodes?.length
-        const hasAtRules = !!rule.atRules
-        const hasMode = !!rule.mode
-        if (hasAtRules) return 3
-        if (hasMode) return 2
-        if (hasSelector) return 1
-        return 0
-    }
+export function getRuleSortTier(rule: Partial<Pick<Utility, 'atRules' | 'mode' | 'selectorNodes'>> & { sortTier?: number }): number {
+    if (typeof rule.sortTier === 'number') return rule.sortTier
+    const hasSelector = rule.selectorNodes?.length
+    const hasAtRules = !!rule.atRules
+    const hasMode = !!rule.mode
+    if (hasAtRules) return 3
+    if (hasMode) return 2
+    if (hasSelector) return 1
+    return 0
+}
 
-    const aTier = getTier(a)
-    const bTier = getTier(b)
+// ✅ Compare function
+export default function compareRulePriority(a: ComparableRule, b: ComparableRule): number {
+    const aTier = getRuleSortTier(a)
+    const bTier = getRuleSortTier(b)
 
     if (aTier !== bTier) return aTier - bTier
 

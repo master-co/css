@@ -12,7 +12,7 @@ test('components', async ({ page }) => {
     const generatedCSS = readFileSync(resolve(__dirname, 'generated.css'), 'utf-8')
     const prerenderHTML = readFileSync(resolve(__dirname, 'prerender.html'), 'utf-8')
     await page.evaluate((html) => document.body.innerHTML = html, prerenderHTML)
-    await init(page, generatedCSS, plan)
+    await init(page, generatedCSS, plan, 'auto')
     expect(await page.evaluate(() => globalThis.cssRuntime.componentsLayer.native?.cssRules.length)).toEqual(2)
     expect((await page.evaluate(() => globalThis.cssRuntime.rules)).map(({ name }) => name)).toEqual(['theme', 'components'])
     expect(await page.evaluate(() => globalThis.cssRuntime.componentsLayer.rules.find((rule) => rule.name === 'btn')?.text))

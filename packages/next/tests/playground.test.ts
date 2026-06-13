@@ -3,6 +3,7 @@ import { readdirSync, readFileSync, statSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vitest'
+import { MASTER_CSS_RUNTIME_MANIFEST_SCRIPT_ID } from 'shared/master-css-runtime-manifest'
 
 const packageDir = dirname(fileURLToPath(new URL('../package.json', import.meta.url)))
 const playgroundDir = join(packageDir, 'playground')
@@ -46,6 +47,8 @@ describe('playground', () => {
         const clientSource = readJavaScriptFiles(join(playgroundDir, '.next/static/chunks'))
 
         expect(html).toContain('.fg\\:primary{color:var(--color-primary)}')
+        expect(html).toContain(`id="${MASTER_CSS_RUNTIME_MANIFEST_SCRIPT_ID}"`)
+        expect(html.match(new RegExp(`id="${MASTER_CSS_RUNTIME_MANIFEST_SCRIPT_ID}"`, 'g'))?.length).toBe(1)
         expect(clientSource).toContain('primary')
         expect(clientSource).toContain('#0070f3')
     }, 120000)

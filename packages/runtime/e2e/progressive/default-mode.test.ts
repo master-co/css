@@ -2,7 +2,10 @@ import { test, expect } from '@playwright/test'
 import init from '../init'
 
 test('prerender', async ({ page }) => {
-    const text = '@layer theme{:root{--color-foo:rgb(0 0 0)}.light{--color-foo:rgb(255 255 255)}.dark{--color-foo:rgb(100 100 100)}}'
+    const text = '@layer theme{:root{--color-foo:rgb(0 0 0)}.light{--color-foo:rgb(255 255 255)}.dark{--color-foo:rgb(100 100 100)}}@layer utilities{.fg\\:foo{color:var(--color-foo)}}'
+    await page.evaluate(() => {
+        document.body.innerHTML = '<div class="fg:foo"></div>'
+    })
     await init(page, text, {
         modeTrigger: 'class',
         variables: [
@@ -11,6 +14,6 @@ test('prerender', async ({ page }) => {
             { namespace: 'color', key: 'foo', value: 'rgb(100 100 100)', mode: 'dark' }
         ],
         modes: ['light', 'dark']
-    })
-    expect(await page.evaluate(() => globalThis.cssRuntime.themeLayer.text)).toEqual(text)
+    }, 'auto')
+    expect(await page.evaluate(() => globalThis.cssRuntime.text)).toEqual(text)
 })

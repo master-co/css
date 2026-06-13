@@ -1,7 +1,10 @@
 import { AnimationRule, compareRulePriority, Rule, VariableRule, type GeneratedRule } from '@master/css-engine'
 import RuntimeLayer from './layer'
+import type HydratedGeneratedRule from './generated-rule'
 
-function findUtilityInsertIndex(rules: (GeneratedRule | Rule)[], utility: GeneratedRule) {
+type RuntimeGeneratedRule = GeneratedRule | HydratedGeneratedRule
+
+function findUtilityInsertIndex(rules: (RuntimeGeneratedRule | Rule)[], utility: RuntimeGeneratedRule) {
     let low = 0
     let high = rules.length
 
@@ -21,7 +24,7 @@ function findUtilityInsertIndex(rules: (GeneratedRule | Rule)[], utility: Genera
     return low
 }
 
-function findUtilityInsertIndexLinear(rules: (GeneratedRule | Rule)[], utility: GeneratedRule) {
+function findUtilityInsertIndexLinear(rules: (RuntimeGeneratedRule | Rule)[], utility: RuntimeGeneratedRule) {
     for (let i = 0; i < rules.length; i++) {
         const rule = rules[i]
         if (!('priority' in rule)) continue
@@ -33,9 +36,9 @@ function findUtilityInsertIndexLinear(rules: (GeneratedRule | Rule)[], utility: 
 }
 
 export default class RuntimeUtilityLayer extends RuntimeLayer {
-    rules: (GeneratedRule | Rule)[] = []
+    rules: (RuntimeGeneratedRule | Rule)[] = []
 
-    insert(utility: GeneratedRule | Rule) {
+    insert(utility: RuntimeGeneratedRule | Rule) {
         if (this.get(utility.key)) return
         if ('valid' in utility && !utility.valid) return
         let index = this.rules.length
@@ -50,7 +53,7 @@ export default class RuntimeUtilityLayer extends RuntimeLayer {
     }
 
     delete(key: string) {
-        const utility = super.delete(key) as GeneratedRule | Rule | undefined
+        const utility = super.delete(key) as RuntimeGeneratedRule | Rule | undefined
         if (!utility) return
         const deleteLayerToken = (layerToken: string, layer: RuntimeLayer | typeof this.css.animationsNonLayer, visited = new Set<string>()) => {
             if (visited.has(layerToken)) return
@@ -86,7 +89,7 @@ export default class RuntimeUtilityLayer extends RuntimeLayer {
         return utility
     }
 
-    insertVariables(utility: GeneratedRule | Rule) {
+    insertVariables(utility: RuntimeGeneratedRule | Rule) {
         if (!('variableNames' in utility)) return
         const insertVariable = (eachVariableName: string, visited = new Set<string>()) => {
             if (visited.has(eachVariableName)) return
@@ -106,12 +109,14 @@ export default class RuntimeUtilityLayer extends RuntimeLayer {
         utility.variableNames?.forEach((eachVariableName) => insertVariable(eachVariableName))
     }
 
-    insertAnimations(utility: GeneratedRule | Rule) {
+    insertAnimations(utility: RuntimeGeneratedRule | Rule) {
         if (!('animationNames' in utility)) return
         utility.animationNames?.forEach((eachAnimationName) => {
-            if (this.css.animationsNonLayer.rules.find(({ name }) => name === eachAnimationName) || this.css.isPreloadedAnimation(eachAnimationName)) {
+            const animationRule = this.css.animationsNonLayer.rules.find(({ name }) => name === eachAnimationName)
+            if (animationRule || this.css.isPreloadedAnimation(eachAnimationName)) {
                 const count = this.css.animationsNonLayer.tokenCounts.get(eachAnimationName) || 0
                 this.css.animationsNonLayer.tokenCounts.set(eachAnimationName, count + 1)
+                if (animationRule) this.insertVariables(animationRule)
             } else {
                 const keyframes = this.css.animations.get(eachAnimationName)
                 if (!keyframes) return

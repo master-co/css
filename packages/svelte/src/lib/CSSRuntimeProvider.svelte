@@ -9,6 +9,7 @@
 
     export let plan: CSSRuntimeProviderProps['plan'] = undefined;
     export let preloaded: CSSRuntimeProviderProps['preloaded'] = undefined;
+    export let manifest: CSSRuntimeProviderProps['manifest'] = undefined;
     export let root: CSSRuntimeProviderProps['root'] = undefined;
 
     const cssRuntime = writable<CSSRuntime | undefined>(undefined);
@@ -18,7 +19,7 @@
 
     onMount(() => {
         mounted = true;
-        cssRuntime.set(initCSSRuntime({ plan: plan || defaultPlan, root: getRoot(), preloaded }));
+        cssRuntime.set(initCSSRuntime({ plan: plan || defaultPlan, root: getRoot(), preloaded, manifest }));
         return () => {
             mounted = false;
             const currentCSSRuntime = get(cssRuntime);
@@ -39,7 +40,7 @@
         const nextRoot = getRoot();
         if (currentCSSRuntime && currentCSSRuntime.root !== nextRoot) {
             currentCSSRuntime.destroy();
-            cssRuntime.set(initCSSRuntime({ plan: plan || defaultPlan, root: nextRoot, preloaded }));
+            cssRuntime.set(initCSSRuntime({ plan: plan || defaultPlan, root: nextRoot, preloaded, manifest }));
         }
     }
 

@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest'
 import { createMasterCSSMiddleware, renderResponse } from '../src/server'
 import { defaultPlan } from '@master/css'
+import { MASTER_CSS_RUNTIME_MANIFEST_SCRIPT_ID } from 'shared/master-css-runtime-manifest'
 
 describe('Astro server middleware', () => {
     it('renders Master CSS into HTML responses', async () => {
@@ -21,6 +22,8 @@ describe('Astro server middleware', () => {
 
         expect(response.headers.get('content-length')).toBeNull()
         expect(html).toContain('<style id="master">')
+        expect(html).toContain(`id="${MASTER_CSS_RUNTIME_MANIFEST_SCRIPT_ID}"`)
+        expect(html.match(new RegExp(`id="${MASTER_CSS_RUNTIME_MANIFEST_SCRIPT_ID}"`, 'g'))?.length).toBe(1)
         expect(html).toContain('.block{display:block}')
     })
 

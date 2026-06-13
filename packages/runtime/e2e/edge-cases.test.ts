@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test'
+import { createCSS, createRuntimeManifest, defaultPlan } from '@master/css'
 import init from './init'
 
 test('disconnect clears counts and observe rescans the current DOM', async ({ page }) => {
@@ -72,10 +73,10 @@ test('shadow roots maintain isolated runtime state and style nodes', async ({ pa
     })
 })
 
-test('progressive hydration keeps usable classes when prerendered CSS has unknown rules', async ({ page }) => {
-    const consoleErrors: string[] = []
+test('progressive hydration without a manifest rebuilds with runtime CSS', async ({ page }) => {
+    const consoleWarnings: string[] = []
     page.on('console', (message) => {
-        if (message.type() === 'error') consoleErrors.push(message.text())
+        if (message.type() === 'warning') consoleWarnings.push(message.text())
     })
 
     await page.evaluate(() => {
@@ -84,16 +85,91 @@ test('progressive hydration keeps usable classes when prerendered CSS has unknow
     await init(page, '@layer utilities{.unknown{color:red}}')
 
     const result = await page.evaluate(() => ({
+        progressive: globalThis.cssRuntime.progressive,
         ruleNames: globalThis.cssRuntime.utilitiesLayer.rules.map(({ name }) => name),
         nativeRules: Array.from(globalThis.cssRuntime.utilitiesLayer.native?.cssRules || []).map((rule) => rule.cssText),
         text: globalThis.cssRuntime.text
     }))
 
-    expect(consoleErrors.some((message) => message.includes('Cannot recognize') && message.includes('unknown'))).toBe(true)
+    expect(consoleWarnings.some((message) => message.includes('runtime manifest'))).toBe(true)
+    expect(result.progressive).toBe(false)
     expect(result.ruleNames).toEqual(['block'])
-    expect(result.nativeRules.some((text) => text.includes('.unknown'))).toBe(true)
+    expect(result.nativeRules.some((text) => text.includes('.unknown'))).toBe(false)
     expect(result.nativeRules.some((text) => text.includes('.block'))).toBe(true)
-    expect(result.text).toContain('.block{display:block}')
+    expect(result.text).toBe('@layer utilities{.block{display:block}}')
+})
+
+test('progressive hydration with a mismatched manifest rebuilds with runtime CSS', async ({ page }) => {
+    const css = createCSS(defaultPlan)
+    css.add('fg:red-60', 'bg:red-60')
+    const manifest = createRuntimeManifest(css)
+    const prerenderedCSS = createCSS(defaultPlan)
+    prerenderedCSS.add('fg:red-60')
+    const consoleWarnings: string[] = []
+    page.on('console', (message) => {
+        if (message.type() === 'warning') consoleWarnings.push(message.text())
+    })
+
+    await page.evaluate(() => {
+        document.body.innerHTML = '<p class="fg:red-60"></p>'
+    })
+    await init(page, prerenderedCSS.text, undefined, manifest)
+
+    const result = await page.evaluate(() => ({
+        progressive: globalThis.cssRuntime.progressive,
+        text: globalThis.cssRuntime.text,
+        utilityRules: globalThis.cssRuntime.utilitiesLayer.rules.map(({ name }) => name)
+    }))
+
+    expect(consoleWarnings.some((message) => message.includes('runtime manifest'))).toBe(true)
+    expect(result.progressive).toBe(false)
+    expect(result.utilityRules).toEqual(['fg:red-60'])
+    expect(result.text).toContain('.fg\\:red-60')
+    expect(result.text).not.toContain('.bg\\:red-60')
+})
+
+test('progressive hydration uses runtime manifest and removes hydrated classes', async ({ page }) => {
+    const css = createCSS(defaultPlan)
+    css.add('fg:red-60')
+    const manifest = createRuntimeManifest(css)
+
+    await page.evaluate(() => {
+        document.body.innerHTML = '<p id="target" class="fg:red-60"></p>'
+    })
+    await init(page, css.text, undefined, manifest)
+
+    const hydrated = await page.evaluate(() => {
+        const rule = globalThis.cssRuntime.utilitiesLayer.rules.find((eachRule) => eachRule.name === 'fg:red-60') as any
+        return {
+            hasClassUtility: globalThis.cssRuntime.classUtilities.has('fg:red-60'),
+            hasRegisteredUtility: Boolean(rule?.registeredUtility),
+            counts: Object.fromEntries(globalThis.cssRuntime.themeLayer.tokenCounts),
+            utilityRules: globalThis.cssRuntime.utilitiesLayer.rules.map(({ name }) => name)
+        }
+    })
+    expect(hydrated).toEqual({
+        hasClassUtility: true,
+        hasRegisteredUtility: false,
+        counts: {
+            'color-red-60': 1
+        },
+        utilityRules: ['fg:red-60']
+    })
+
+    const removed = await page.evaluate(async () => {
+        document.getElementById('target')?.classList.remove('fg:red-60')
+        await new Promise(resolve => setTimeout(resolve, 0))
+        return {
+            text: globalThis.cssRuntime.text,
+            counts: Object.fromEntries(globalThis.cssRuntime.themeLayer.tokenCounts),
+            utilityRules: globalThis.cssRuntime.utilitiesLayer.rules.map(({ name }) => name)
+        }
+    })
+    expect(removed).toEqual({
+        text: '',
+        counts: {},
+        utilityRules: []
+    })
 })
 
 test('removes shared alias variable dependencies when classes disappear', async ({ page }) => {

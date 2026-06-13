@@ -83,11 +83,23 @@ async function writeManifest(ctx: BuildCompleteContext, files: RenderedOutput[],
     await writeFile(manifestPath, JSON.stringify(data, null, 2))
 }
 
-function replaceMasterStyleText(html: string, cssText: string) {
-    return html.replace(
-        /(<style\b(?=[^>]*\bid=(["'])master\2)[^>]*>)([\s\S]*?)(<\/style>)/,
-        (_match, open: string, _quote: string, _content: string, close: string) => open + cssText + close
-    )
+function createMasterStyleText(cssText: string) {
+    return `<style id="master">${cssText}</style>`
+}
+
+function upsertMasterStyleText(html: string, cssText: string) {
+    const stylePattern = /(<style\b(?=[^>]*\bid=(["'])master\2)[^>]*>)([\s\S]*?)(<\/style>)/
+    if (stylePattern.test(html)) {
+        return html.replace(
+            stylePattern,
+            (_match, open: string, _quote: string, _content: string, close: string) => open + cssText + close
+        )
+    }
+    const headCloseIndex = html.search(/<\/head\s*>/i)
+    const styleText = createMasterStyleText(cssText)
+    return headCloseIndex === -1
+        ? styleText + html
+        : html.slice(0, headCloseIndex) + styleText + html.slice(headCloseIndex)
 }
 
 export async function renderNextBuildOutputs(ctx: BuildCompleteContext, rawOptions: Options = getRegisteredOptions() ?? {}) {
@@ -100,7 +112,7 @@ export async function renderNextBuildOutputs(ctx: BuildCompleteContext, rawOptio
 
     for (const output of htmlOutputs) {
         const sourceHTML = await readFile(output.filePath, 'utf-8')
-        const rendered = render(sourceHTML, baseBuildPlan.plan)
+        const rendered = render(sourceHTML, baseBuildPlan.plan, { runtimeManifest: 'inject' })
         const buildPlan = await resolveMasterCSSBuildPlan(ctx.projectDir, rendered.classes)
         const generatedCSS = rendered.css?.classUtilities.size ? rendered.css.text : ''
         const cssText = [
@@ -108,7 +120,7 @@ export async function renderNextBuildOutputs(ctx: BuildCompleteContext, rawOptio
             generatedCSS
         ].filter(Boolean).join('\n\n')
         const renderedHTML = cssText
-            ? replaceMasterStyleText(rendered.html, cssText)
+            ? upsertMasterStyleText(rendered.html, cssText)
             : sourceHTML
         const didRender = renderedHTML !== sourceHTML
 

@@ -3,6 +3,7 @@ import path from 'node:path'
 import { mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import masterCSS from '../../src'
+import { MASTER_CSS_RUNTIME_MANIFEST_SCRIPT_ID } from 'shared/master-css-runtime-manifest'
 
 const FIXTURE_DIR = path.resolve(__dirname, '../fixtures/pre-render/master-css-entry')
 
@@ -44,6 +45,10 @@ describe('PreRenderPlugin', () => {
         expect(html).toContain('@layer components{.card{background-color:var(--color-brand);border-color:#456}')
         expect(html).toContain('@media (width>=48rem){.card{font-size:1.125rem}}')
         expect(html).toContain('@layer utilities{.p\\:2{padding:0.125rem}}')
+        expect(html).toContain(`id="${MASTER_CSS_RUNTIME_MANIFEST_SCRIPT_ID}"`)
+        expect(html.match(new RegExp(`id="${MASTER_CSS_RUNTIME_MANIFEST_SCRIPT_ID}"`, 'g'))?.length).toBe(1)
+        expect(html).toContain('"className":"card"')
+        expect(html).toContain('"className":"p:2"')
     })
 
     it('reloads CSS entry dependencies for pre-rendered HTML', async () => {

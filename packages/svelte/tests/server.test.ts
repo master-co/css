@@ -4,6 +4,11 @@ import {
     injectMasterStyle
 } from '../src/lib/server.js'
 import { defaultPlan } from '@master/css'
+import { MASTER_CSS_RUNTIME_MANIFEST_SCRIPT_ID } from 'shared/master-css-runtime-manifest'
+
+function countManifestScripts(html: string) {
+    return html.match(new RegExp(`id="${MASTER_CSS_RUNTIME_MANIFEST_SCRIPT_ID}"`, 'g'))?.length ?? 0
+}
 
 describe('Svelte server hook renderer', () => {
     test('injects collected CSS when the head closes', () => {
@@ -15,9 +20,13 @@ describe('Svelte server hook renderer', () => {
         ].join('')
 
         expect(html).toContain('<style id="master">')
+        expect(html).toContain(`id="${MASTER_CSS_RUNTIME_MANIFEST_SCRIPT_ID}"`)
+        expect(html).toContain('"className":"block"')
+        expect(html).toContain('"className":"fg:red"')
+        expect(countManifestScripts(html)).toBe(1)
         expect(html).toContain('.block')
         expect(html).toContain('.fg\\:red')
-        expect(html).toContain('</style></head>')
+        expect(html).toContain('</script></head>')
     })
 
     test('keeps streaming after early injection and leaves later classes to hydration', () => {
@@ -36,5 +45,17 @@ describe('Svelte server hook renderer', () => {
     test('replaces an existing master style in the current chunk', () => {
         expect(injectMasterStyle('<head><style id="master"></style></head>', '.block{}'))
             .toBe('<head><style id="master">.block{}</style></head>')
+    })
+
+    test('replaces an existing runtime manifest in the current chunk', () => {
+        const html = injectMasterStyle(
+            `<head><style id="master"></style><script type="application/json" id="${MASTER_CSS_RUNTIME_MANIFEST_SCRIPT_ID}">{"version":1,"rules":[]}</script></head>`,
+            '.block{}',
+            `<script type="application/json" id="${MASTER_CSS_RUNTIME_MANIFEST_SCRIPT_ID}">{"version":1,"rules":[{"className":"block"}]}</script>`
+        )
+
+        expect(html).not.toContain('"rules":[]')
+        expect(html).toContain('"className":"block"')
+        expect(countManifestScripts(html)).toBe(1)
     })
 })

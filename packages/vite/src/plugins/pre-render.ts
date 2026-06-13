@@ -49,17 +49,20 @@ export default function PreRenderPlugin(options: PluginOptions, context: PluginC
         },
         transformIndexHtml(html) {
             if (!enabled) return
+            if (!cssPlan) return
+            const rendered = render(html, cssPlan, { runtimeManifest: 'inject' })
             return {
-                html: render(html, cssPlan!).html,
+                html: rendered.html,
                 tags: [],
             }
         },
         transform(code, id) {
             if (!enabled) return
             if (id.endsWith('.html')) {
-                const { html } = render(code, cssPlan!)
+                if (!cssPlan) return null
+                const rendered = render(code, cssPlan, { runtimeManifest: 'inject' })
                 return {
-                    code: html,
+                    code: rendered.html,
                     map: null,
                 }
             }

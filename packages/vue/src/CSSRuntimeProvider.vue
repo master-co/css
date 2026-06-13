@@ -18,7 +18,8 @@ function initRuntime() {
     cssRuntime.value = initCSSRuntime({
         plan: props.plan || defaultPlan,
         root: getRoot(),
-        preloaded: props.preloaded
+        preloaded: props.preloaded,
+        manifest: props.manifest
     })
 }
 

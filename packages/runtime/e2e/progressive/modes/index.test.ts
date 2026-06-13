@@ -12,7 +12,7 @@ test('selectors', async ({ page, browserName }) => {
     const generatedCSS = readFileSync(resolve(__dirname, 'generated.css'), 'utf-8')
     const prerenderHTML = readFileSync(resolve(__dirname, 'prerender.html'), 'utf-8')
     await page.evaluate((html) => document.body.innerHTML = html, prerenderHTML)
-    await init(page, generatedCSS, plan)
+    await init(page, generatedCSS, plan, 'auto')
     expect((await page.evaluate(() => cssRuntime.rules)).map(({ name }) => name)).toEqual(['utilities'])
     expect(await page.evaluate(() => cssRuntime.utilitiesLayer.rules.find((rule) => rule.name === 'hidden@light')?.text))
         .toBe('.light .hidden\\@light{display:none}')

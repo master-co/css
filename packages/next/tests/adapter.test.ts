@@ -4,6 +4,7 @@ import { join } from 'node:path'
 import { afterEach, describe, expect, it } from 'vitest'
 import { renderNextBuildOutputs } from '../src/adapter'
 import type { NextAdapter } from 'next'
+import { MASTER_CSS_RUNTIME_MANIFEST_SCRIPT_ID } from 'shared/master-css-runtime-manifest'
 
 type BuildCompleteContext = Parameters<NonNullable<NextAdapter['onBuildComplete']>>[0]
 
@@ -73,6 +74,10 @@ function createBuildContext(projectDir: string, htmlFile: string): BuildComplete
     } as unknown as BuildCompleteContext
 }
 
+function countManifestScripts(html: string) {
+    return html.match(new RegExp(`id="${MASTER_CSS_RUNTIME_MANIFEST_SCRIPT_ID}"`, 'g'))?.length ?? 0
+}
+
 afterEach(() => {
     if (fixtureDir) {
         rmSync(fixtureDir, { recursive: true, force: true })
@@ -98,6 +103,10 @@ describe('renderNextBuildOutputs', () => {
         expect(outputs[0].classes).toEqual(['font:40', 'fg:red'])
         expect(outputs[0].rendered).toBe(true)
         expect(html).toContain('<style id="master">')
+        expect(html).toContain(`id="${MASTER_CSS_RUNTIME_MANIFEST_SCRIPT_ID}"`)
+        expect(html).toContain('"className":"font:40"')
+        expect(html).toContain('"className":"fg:red"')
+        expect(countManifestScripts(html)).toBe(1)
         expect(html).toContain('.font\\:40')
         expect(html).toContain('.fg\\:red')
         expect(existsSync(join(distDir, 'master-css-manifest.json'))).toBe(true)
@@ -117,6 +126,7 @@ describe('renderNextBuildOutputs', () => {
         expect(outputs[0].classes).toEqual(['next-error-h1'])
         expect(outputs[0].cssBytes).toBe(0)
         expect(outputs[0].rendered).toBe(false)
+        expect(html).not.toContain(MASTER_CSS_RUNTIME_MANIFEST_SCRIPT_ID)
         expect(html).toBe(sourceHTML)
     })
 

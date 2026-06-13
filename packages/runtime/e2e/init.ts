@@ -1,5 +1,9 @@
 import { Page } from '@playwright/test'
-import { defaultPlan, type MasterCSSPlan } from '@master/css'
+import { createCSS, createRuntimeManifest, defaultPlan, type MasterCSSPlan } from '@master/css'
+import {
+    MASTER_CSS_RUNTIME_MANIFEST_SCRIPT_ID,
+    type MasterCSSRuntimeManifest
+} from 'shared/master-css-runtime-manifest'
 import { dirname, resolve } from 'path'
 import { fileURLToPath } from 'url'
 
@@ -262,9 +266,30 @@ function createRuntimePlan(plan: RuntimePlanInput) {
     } satisfies MasterCSSPlan
 }
 
-export default async function init(page: Page, text?: string, planInput?: RuntimePlanInput) {
+async function createRuntimeManifestForPage(page: Page, plan: MasterCSSPlan) {
+    const classNames = await page.evaluate(() => {
+        const classNames = new Set<string>()
+        for (const element of document.querySelectorAll('[class]')) {
+            element.classList.forEach((className) => classNames.add(className))
+        }
+        return [...classNames]
+    })
+    const css = createCSS(plan)
+    css.add(...classNames)
+    return createRuntimeManifest(css)
+}
+
+export default async function init(
+    page: Page,
+    text?: string,
+    planInput?: RuntimePlanInput,
+    manifest?: MasterCSSRuntimeManifest | 'auto'
+) {
     const plan = planInput ? createRuntimePlan(planInput) : undefined
-    await page.evaluate(({ plan, text }) => {
+    const runtimeManifest = manifest === 'auto'
+        ? await createRuntimeManifestForPage(page, plan || defaultPlan)
+        : manifest
+    await page.evaluate(({ manifest, plan, text, manifestScriptId }) => {
         if (plan) window.masterCSSPlan = plan
         if (text) {
             const style = document.createElement('style')
@@ -272,6 +297,13 @@ export default async function init(page: Page, text?: string, planInput?: Runtim
             style.textContent = text
             document.head.appendChild(style)
         }
-    }, { plan, text })
+        if (manifest) {
+            const script = document.createElement('script')
+            script.type = 'application/json'
+            script.id = manifestScriptId
+            script.textContent = JSON.stringify(manifest)
+            document.head.appendChild(script)
+        }
+    }, { manifest: runtimeManifest, plan, text, manifestScriptId: MASTER_CSS_RUNTIME_MANIFEST_SCRIPT_ID })
     await page.addScriptTag({ path: resolve(__dirname, '../dist/global.min.js') })
 }

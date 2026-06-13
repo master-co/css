@@ -1,10 +1,18 @@
-import { createCSS, type MasterCSS, type MasterCSSPlan } from '@master/css'
+import { createCSS, createRuntimeManifest, type MasterCSS, type MasterCSSPlan } from '@master/css'
 import { parseHTML } from '@master/css-server'
+import {
+    createMasterCSSRuntimeManifestScript,
+    MASTER_CSS_RUNTIME_MANIFEST_SCRIPT_ID
+} from 'shared/master-css-runtime-manifest'
 import type { Handle } from '@sveltejs/kit'
 
 const HEAD_CLOSE_TAG = '</head>'
 const HEAD_CLOSE_TAIL_LENGTH = HEAD_CLOSE_TAG.length - 1
 const MASTER_STYLE_PATTERN = /<style\b(?=[^>]*\bid=(["'])master\1)[^>]*>[\s\S]*?<\/style>/i
+const MASTER_RUNTIME_MANIFEST_PATTERN = new RegExp(
+    `<script\\b(?=[^>]*\\bid=(["'])${MASTER_CSS_RUNTIME_MANIFEST_SCRIPT_ID}\\1)[^>]*>[\\s\\S]*?<\\/script>`,
+    'i'
+)
 
 export interface MasterCSSSvelteHandleOptions {
     plan: MasterCSSPlan
@@ -23,21 +31,39 @@ function createMasterStyle(cssText: string) {
     return `<style id="master">${cssText}</style>`
 }
 
+function createMasterRuntimeManifest(css: MasterCSS) {
+    const manifest = createRuntimeManifest(css)
+    return manifest.rules.length ? createMasterCSSRuntimeManifestScript(manifest) : ''
+}
+
 export function collectMasterCSSClasses(css: MasterCSS, html: string) {
     for (const className of parseHTML(html).classes) {
         css.add(className)
     }
 }
 
-export function injectMasterStyle(html: string, cssText: string) {
-    if (!cssText) return html
-    const style = createMasterStyle(cssText)
-    if (MASTER_STYLE_PATTERN.test(html)) {
-        return html.replace(MASTER_STYLE_PATTERN, () => style)
+function injectMasterRuntimeManifest(html: string, scriptText: string) {
+    if (!scriptText) return html
+    if (MASTER_RUNTIME_MANIFEST_PATTERN.test(html)) {
+        return html.replace(MASTER_RUNTIME_MANIFEST_PATTERN, () => scriptText)
     }
     const headCloseIndex = findHeadCloseIndex(html)
     if (headCloseIndex === -1) return html
-    return html.slice(0, headCloseIndex) + style + html.slice(headCloseIndex)
+    return html.slice(0, headCloseIndex) + scriptText + html.slice(headCloseIndex)
+}
+
+export function injectMasterStyle(html: string, cssText: string, manifestScriptText = '') {
+    if (!cssText) return html
+    const style = createMasterStyle(cssText)
+    let nextHTML: string
+    if (MASTER_STYLE_PATTERN.test(html)) {
+        nextHTML = html.replace(MASTER_STYLE_PATTERN, () => style)
+    } else {
+        const headCloseIndex = findHeadCloseIndex(html)
+        if (headCloseIndex === -1) return html
+        nextHTML = html.slice(0, headCloseIndex) + style + html.slice(headCloseIndex)
+    }
+    return injectMasterRuntimeManifest(nextHTML, manifestScriptText)
 }
 
 export function createMasterCSSChunkRenderer(plan: MasterCSSPlan): MasterCSSChunkRenderer {
@@ -55,7 +81,7 @@ export function createMasterCSSChunkRenderer(plan: MasterCSSPlan): MasterCSSChun
 
             collectMasterCSSClasses(css, nextHTML)
 
-            const transformedHTML = injectMasterStyle(nextHTML, css.text)
+            const transformedHTML = injectMasterStyle(nextHTML, css.text, createMasterRuntimeManifest(css))
             const hasHeadClose = findHeadCloseIndex(nextHTML) !== -1
             if (transformedHTML !== nextHTML || hasHeadClose) {
                 injected = true

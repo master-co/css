@@ -9,4 +9,8 @@ export type * from './types'
 export type { CSSRuntimeDecoratorOptions, CSSRuntimeOptions } from './css-runtime'
 export type { MasterCSSPreloaded } from '@master/css-engine'
 export type { MasterCSSPlan } from 'shared/master-css-plan'
+export type {
+    MasterCSSGeneratedRuleIR,
+    MasterCSSRuntimeManifest
+} from 'shared/master-css-runtime-manifest'
 export * from './utility-layer'

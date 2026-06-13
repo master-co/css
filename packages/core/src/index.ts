@@ -9,17 +9,20 @@ export {
     Rule,
     VariableRule,
     AnimationRule,
-    compareRulePriority
+    compareRulePriority,
+    createRuntimeManifest
 } from '@master/css-engine'
 export type {
     CompiledUtility,
     GeneratedRule,
+    MasterCSSGeneratedRuleIR,
     MasterCSSPlan,
     MasterCSSPlanSettings,
     MasterCSSPlanUtility,
     MasterCSSPlanUtilityLayerName,
     MasterCSSPlanVariant,
     MasterCSSPlanVariable,
-    MasterCSSPreloaded
+    MasterCSSPreloaded,
+    MasterCSSRuntimeManifest
 } from '@master/css-engine'
 export { defaultPlan } from '@master/css-preset'

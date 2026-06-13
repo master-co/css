@@ -21,7 +21,8 @@ export function CSSRuntimeProvider(props: CSSRuntimeProviderProps) {
         cssRuntime.current = initCSSRuntime({
             plan: props.plan || defaultPlan,
             root: props.root ?? document,
-            preloaded: props.preloaded
+            preloaded: props.preloaded,
+            manifest: props.manifest
         })
         setRuntime(cssRuntime.current)
         return () => {
@@ -46,7 +47,8 @@ export function CSSRuntimeProvider(props: CSSRuntimeProviderProps) {
             cssRuntime.current = initCSSRuntime({
                 plan: props.plan || defaultPlan,
                 root: props.root ?? document,
-                preloaded: props.preloaded
+                preloaded: props.preloaded,
+                manifest: props.manifest
             })
             setRuntime(cssRuntime.current)
         }
