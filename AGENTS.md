@@ -6,30 +6,30 @@ This is the canonical instruction file for AI agents working in this repository.
 
 Master CSS is a markup-driven CSS language and framework. Class strings such as `fg:red:hover@sm` are parsed into real CSS rules, sorted into cascade layers, and emitted through one of several workflows:
 
-- Core generation in `packages/core`
+- Plan-driven rule generation in `packages/engine`, re-exported by the public `packages/core` facade
 - Browser runtime rendering and hydration in `packages/runtime`
 - Server-side HTML rendering in `packages/server`
 - Static rendering source scanning in `packages/extractor`
 - Build integrations such as `packages/vite` and `packages/webpack`
 - Editor and lint tooling in `packages/language-service`, `packages/language-server`, `packages/vscode`, and `packages/eslint-plugin`
 
-The layer order is intentionally stable and declared by `packages/core/src/base.css`:
+The layer order is intentionally stable and declared by `packages/preset/src/base.css`, then exposed through `@master/css/base.css`:
 
 ```txt
-@layer theme, base, preset, components, utilities;
+@layer theme, base, defaults, components, utilities;
 ```
 
-Generated rules are emitted into `theme`, `base`, `preset`, `components`, and `utilities` layer blocks without dynamically adding the layer statement. Keyframes are emitted outside layers. Any CSS output difference must be intentional, explainable, and covered by tests.
+Generated rules are emitted into `theme`, `base`, `defaults`, `components`, and `utilities` layer blocks without dynamically adding the layer statement. Keyframes are emitted outside layers. Any CSS output difference must be intentional, explainable, and covered by tests.
 
 ## Before Editing
 
 1. Identify the affected package and read its `package.json`.
 2. Read the package-local `AI.md` if one exists.
 3. Read existing source and tests before designing a change.
-4. Trace whether the change affects CSS output, public APIs, config resolution, runtime behavior, extraction, linting, or language tooling.
+4. Trace whether the change affects CSS output, public APIs, plan loading or compilation, runtime behavior, extraction, linting, or language tooling.
 5. Prefer the smallest focused change that matches existing patterns.
 
-Do not start by inventing a new abstraction. This repo already has established helpers for parsing, config resolution, rule matching, validation, and insertion.
+Do not start by inventing a new abstraction. This repo already has established helpers for parsing, plan loading, rule matching, validation, and insertion.
 
 ## Refactor Compatibility Policy
 
@@ -52,28 +52,30 @@ Preserve dependency direction:
 ```txt
 shared / external data
   -> @master/css-lexer source scanning
-  -> @master/css core / @master/css-compiler directive parsing
+  -> @master/css-engine / @master/css-preset / @master/css-integration
+  -> @master/css-compiler directive parsing / @master/css-plan loading
   -> validator / server / extractor / runtime / language-service
   -> build plugins / CLI / ESLint / language-server
   -> framework integrations / VS Code / examples / site
 ```
 
-Do not make core depend on integrations, runtime, server, extractor, language service, ESLint, or examples.
+Do not make engine depend on compiler, integrations, runtime, server, extractor, language service, ESLint, or examples. `@master/css` is a facade over engine and preset exports; keep behavior in the owning lower package.
 
-When package cycles or self-build cycles appear, prefer extracting dependency-free contracts, IR, and type-only schemas into `shared`, or dependency-free lexical scanners into `@master/css-lexer`, then adapt at the owning package boundary. Keep core-specific behavior in `@master/css` adapters and re-export shared contracts from the main package entry when they are part of the public boundary.
+When package cycles or self-build cycles appear, prefer extracting dependency-free contracts, IR, and type-only schemas into `shared`, or dependency-free lexical scanners into `@master/css-lexer`, then adapt at the owning package boundary. Keep engine-specific behavior in `@master/css-engine` and re-export shared contracts from the `@master/css` facade only when they are part of the public boundary.
 
 ## High-Risk Areas
 
 Modify these only with focused tests and a clear reason:
 
-- `packages/core/src/core.ts`
-- `packages/core/src/utility.ts`
-- `packages/core/src/utilities.ts`
-- `packages/core/src/utils/compare-rule-priority.ts`
-- `packages/core/src/utils/parse-at.ts`
-- `packages/core/src/utils/parse-selector.ts`
-- `packages/core/src/utils/generate-selector.ts`
-- `packages/core/src/utils/extend-config.ts`
+- `packages/engine/src/core.ts`
+- `packages/engine/src/utility.ts`
+- `packages/preset/src/utilities.ts`
+- `packages/engine/src/utils/compare-rule-priority.ts`
+- `packages/engine/src/utils/parse-at.ts`
+- `packages/engine/src/utils/parse-selector.ts`
+- `packages/engine/src/utils/generate-selector.ts`
+- `packages/compiler/src/lower-css-directives.ts`
+- `packages/compiler/src/master-css-plan.ts`
 - `packages/runtime/src/core.ts`
 - `packages/runtime/src/layer.ts`
 - `packages/lexer/src/extract-latent-classes.ts`
@@ -109,7 +111,7 @@ Type(Target): Summary
 
 Any CSS output change must be reviewed as a behavior change. Explain:
 
-- Which classes/configs changed output
+- Which classes/plans changed output
 - Why the old output was wrong or incomplete
 - Which tests or fixtures prove the new output
 - Whether runtime hydration, static rendering, language service, ESLint, docs, or examples are affected
@@ -171,7 +173,7 @@ When reviewing a PR, prioritize findings first:
 - CSS output changes
 - Public API changes
 - Missing tests
-- Priority/cascade/variable/config/runtime/extraction risks
+- Priority/cascade/variable/plan/runtime/extraction risks
 - Unrelated files
 
 If no issues are found, say so and mention any remaining test gaps or residual risk.

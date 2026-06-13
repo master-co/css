@@ -1,7 +1,7 @@
 ## Overview [sr-only]
 Design tokens are named decisions in your design system. They give shared meaning to color, spacing, typography, corner radius, elevation, motion, and responsive breakpoints, so the same class names produce consistent interfaces across product surfaces.
 
-Master CSS includes a set of preset foundation tokens, and each project can extend or override them in the project CSS entry. Use a token-first approach: choose the configured token that communicates intent before reaching for low-level values such as `6x`, `1rem`, `24px`, raw colors, or raw shadows.
+Master CSS includes a set of preset foundation tokens, and each project can extend or override them in the project CSS entry. Use a token-first approach: choose the theme token that communicates intent before reaching for low-level values such as `6x`, `1rem`, `24px`, raw colors, or raw shadows.
 
 <Demo>
     <div className="container w:full">
@@ -49,7 +49,7 @@ Use the most meaningful token available for the design decision you are making.
 </article>
 ```
 
-(o) Visual decisions use configured tokens.
+(o) Visual decisions use theme tokens.
 
 ```html
 <article class="p:lg r:lg bg:base shadow:sm font:md">
@@ -227,7 +227,7 @@ Motion tokens keep timing and easing consistent across transitions and animation
 <button class="transition:opacity|fast|smooth">...</button>
 ```
 
-Native CSS values such as `linear`, `ease-in-out`, `steps()`, and `cubic-bezier()` are valid when the exact timing function is part of the lesson or when no configured easing token expresses the interaction. For ordinary UI transitions, prefer `transition-duration:*` and `transition-timing-function:*`.
+Native CSS values such as `linear`, `ease-in-out`, `steps()`, and `cubic-bezier()` are valid when the exact timing function is part of the lesson or when no easing theme token expresses the interaction. For ordinary UI transitions, prefer `transition-duration:*` and `transition-timing-function:*`.
 
 ---
 

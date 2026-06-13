@@ -126,7 +126,7 @@ This is the mode that best represents the Master CSS rendering model: render wha
 
 `@master/css.vite` is not just a wrapper around an import. It participates in the Vite pipeline:
 
-- resolves the Master CSS config as a virtual module;
+- resolves the compiled MasterCSSPlan as a virtual module;
 - detects common Vite entry modules;
 - keeps the default stylesheet as an explicit `@import "@master/css"` in app CSS;
 - injects the runtime where runtime behavior is enabled;

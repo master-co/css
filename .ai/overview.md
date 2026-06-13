@@ -69,10 +69,10 @@ utilities
 keyframes outside layers
 ```
 
-The layer statement is declared by `packages/core/src/base.css`:
+The layer statement is declared by `packages/preset/src/base.css` and exposed through the `@master/css/base.css` facade entry:
 
 ```css
 @layer theme, base, defaults, components, utilities;
 ```
 
-Core-generated CSS emits layer blocks but does not dynamically add or process the layer statement. Utilities should override component project styles, theme variables support modes, defaults sit above base, and keyframes are not wrapped in layers.
+Engine-generated CSS emits layer blocks but does not dynamically add or process the layer statement. Utilities should override component project styles, theme variables support modes, defaults sit above base, and keyframes are not wrapped in layers.

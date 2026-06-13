@@ -2,7 +2,7 @@
 
 ## Responsibility
 
-`@master/css-compiler` is the canonical CSS source compiler for Master CSS. It parses Master CSS stylesheet directives and native CSS, resolves CSS import graphs, detects project entry markers, parses standalone extraction directives, and uses `@master/css` core adapters to produce `MasterCSSPlan` values.
+`@master/css-compiler` is the canonical CSS source compiler for Master CSS. It parses Master CSS stylesheet directives and native CSS, resolves CSS import graphs, detects project entry markers, parses standalone extraction directives, and uses `@master/css-engine/compiler` helpers to produce `MasterCSSPlan` values.
 
 ## Inputs And Outputs
 
@@ -30,7 +30,7 @@
 - `@settings { important: on; }` and `@settings { important: off; }`
 - `@theme { --color-primary: #123; --breakpoint-md: 768; }`
 - `@theme dark { --color-primary: #456; }`
-- The compiler records mode declarations as written. Core adapters decide which modes are defaults.
+- The compiler records mode declarations as written. Plan settings and engine execution decide which modes are defaults.
 - `@custom-variant @motion-safe { @media (prefers-reduced-motion: no-preference) { @slot; } }`
 - `@custom-variant ::scrollbar { &::-webkit-scrollbar { @slot; } }`
 - `@components { btn { @compose "inline-flex"; display: inline-flex; } }`

@@ -2,7 +2,7 @@
 
 ## Responsibility
 
-`@master/css-extractor` statically scans source files, validates possible Master CSS classes, inserts valid rules into core layers, exports CSS, and provides extraction-specific stylesheet helpers for build integrations. Raw latent class candidate scanning belongs to `@master/css-lexer`. CSS parsing and CSS plan compilation should be delegated to `@master/css-compiler`.
+`@master/css-extractor` statically scans source files, validates possible Master CSS classes, inserts valid rules through the plan-driven engine layers, exports CSS, and provides extraction-specific stylesheet helpers for build integrations. Raw latent class candidate scanning belongs to `@master/css-lexer`. CSS parsing and CSS plan compilation should be delegated to `@master/css-compiler`.
 
 ## Inputs And Outputs
 

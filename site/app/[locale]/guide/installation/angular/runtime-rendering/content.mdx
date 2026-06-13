@@ -26,7 +26,7 @@
         </StepL>
         <StepR>
             ```bash action=install
-            @master/css-runtime@rc
+            @master/css@rc @master/css-runtime@rc
             ```
         </StepR>
     </Step>
@@ -39,9 +39,10 @@
             ```ts name=src/main.ts
                import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
                import { AppModule } from './app/app.module';
+               import { defaultPlan } from '@master/css'; // [!code ++]
                import { initCSSRuntime } from '@master/css-runtime'; // [!code ++]
 
-               initCSSRuntime(); // [!code ++]
+               initCSSRuntime({ plan: defaultPlan }); // [!code ++]
 
                platformBrowserDynamic().bootstrapModule(AppModule)
                    .catch(err => console.error(err));

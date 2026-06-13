@@ -222,6 +222,9 @@ importers:
       '@angular/ssr':
         specifier: ^21.2.9
         version: 21.2.9(6b622fa1ae73e80c7db9f9c278490816)
+      '@master/css':
+        specifier: workspace:^
+        version: link:../../packages/core
       '@master/css-runtime':
         specifier: workspace:^
         version: link:../../packages/runtime

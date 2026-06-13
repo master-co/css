@@ -24,7 +24,7 @@ When `settings.embeddedSyntaxHighlighting` is `always`, the server advertises `s
 
 Semantic tokens are resolved from the nearest workspace language service. This lets the server highlight plan-dependent Master CSS tokens such as custom variables and components after loading the project CSS entry, while also classifying CSS directives such as `@master`, `@settings`, `@theme`, `@custom-variant`, `@custom-variant`, `@compose`, and `@variant`.
 
-When configuration or Master CSS settings change in `always` mode, the server requests a semantic token refresh from clients that support `workspace/semanticTokens/refresh`.
+When the project plan or Master CSS settings change in `always` mode, the server requests a semantic token refresh from clients that support `workspace/semanticTokens/refresh`.
 
 ---
 

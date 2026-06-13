@@ -34,8 +34,9 @@ export default () => <CodeTabs>{[
             <link rel="modulepreload" href="https://cdn.master.co/css-runtime@rc/+esm">
             <link rel="stylesheet" href="https://cdn.master.co/css@rc/base.css">
             <script type="module">
+                import { defaultPlan } from 'https://cdn.master.co/css@rc/+esm'
                 import { initCSSRuntime } from 'https://cdn.master.co/css-runtime@rc/+esm'
-                initCSSRuntime()
+                initCSSRuntime({ plan: defaultPlan })
             </script>
         </head>
         <body>
@@ -56,12 +57,9 @@ export default () => <CodeTabs>{[
             <link rel="modulepreload" href="https://esm.sh/@master/css-runtime@rc">
             <link rel="stylesheet" href="https://esm.sh/@master/css@rc/base.css?css">
             <script type="module">
+                import { defaultPlan } from 'https://esm.sh/@master/css@rc'
                 import { initCSSRuntime } from 'https://esm.sh/@master/css-runtime@rc'
-                initCSSRuntime({
-                    variables: [
-                        { key: 'primary', value: '#000000' }
-                    ]
-                })
+                initCSSRuntime({ plan: defaultPlan })
             </script>
         </head>
         <body>

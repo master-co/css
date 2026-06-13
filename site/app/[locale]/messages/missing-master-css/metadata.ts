@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
     title: 'Missing Master CSS entry',
-    description: 'The integration could not find a project CSS entry for Master CSS config, editor tooling, and build integration behavior.',
+    description: 'The integration could not find a project CSS entry for the shared MasterCSSPlan, editor tooling, and build integration behavior.',
     category: 'Warnings',
     fileURL: import.meta.url
 })

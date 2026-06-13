@@ -18,7 +18,7 @@
         </StepL>
         <StepR>
             ```bash action=install
-            @master/css-runtime@rc @master/css-server@rc
+            @master/css@rc @master/css-runtime@rc @master/css-server@rc
             ```
         </StepR>
     </Step>
@@ -31,9 +31,10 @@
             ```ts name=src/main.ts
             import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
             import { AppModule } from './app/app.module';
+            import { defaultPlan } from '@master/css'; // [!code ++]
             import { initCSSRuntime } from '@master/css-runtime'; // [!code ++]
 
-            initCSSRuntime(); // [!code ++]
+            initCSSRuntime({ plan: defaultPlan }); // [!code ++]
 
             platformBrowserDynamic().bootstrapModule(AppModule)
                 .catch(err => console.error(err));
@@ -65,10 +66,11 @@
     <Step $row>
         <StepL>
             ### <StepNum />Set up CSS pre-rendering
-            All CSS rules are pre-rendered and injected into HTML on the server side or at build time. This manual example renders with the default config.
+            All CSS rules are pre-rendered and injected into HTML on the server side or at build time. This manual example renders with the default preset plan.
         </StepL>
         <StepR>
             ```ts name=server.ts
+            import { defaultPlan } from '@master/css'; // [!code ++]
             import { render } from '@master/css-server'; // [!code ++]
             …
             export function app() {
@@ -80,7 +82,7 @@
                         (error: Error, html: string) => { // [!code ++]
                             error // [!code ++]
                                 ? console.error(error) // [!code ++]
-                                : res.send(render(html).html) // [!code ++]
+                                : res.send(render(html, defaultPlan).html) // [!code ++]
                         } // [!code ++]
                     ) // [!code ++]
                 }); // [!code ++]

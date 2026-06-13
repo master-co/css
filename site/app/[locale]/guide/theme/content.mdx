@@ -36,7 +36,7 @@ In Master CSS, that vocabulary usually lives in the project CSS entry: `@theme` 
 </section>
 ```
 
-The `@theme`, `@settings`, and `@custom-variant` directives are configuration, not regular stylesheet output. Master CSS resolves them first, then generates only the variables, utilities, components, and keyframes that the application actually uses.
+The `@theme`, `@settings`, and `@custom-variant` directives are plan inputs, not regular stylesheet output. Master CSS resolves them first, then generates only the variables, utilities, components, and keyframes that the application actually uses.
 
 ---
 
@@ -459,17 +459,17 @@ The default entry imports focused public files. Use `@master/css/theme.css` for 
 ### `theme.css`
 
 <ExpandContent>
-    <Code lang="css" name="theme.css">{require('../../../../../packages/core/src/theme.css?raw')}</Code>
+    <Code lang="css" name="theme.css">{require('../../../../../packages/preset/src/theme.css?raw')}</Code>
 </ExpandContent>
 
 ### `animations.css`
 
 <ExpandContent>
-    <Code lang="css" name="animations.css">{require('../../../../../packages/core/src/animations.css?raw')}</Code>
+    <Code lang="css" name="animations.css">{require('../../../../../packages/preset/src/animations.css?raw')}</Code>
 </ExpandContent>
 
 ### `syntax.css`
 
 <ExpandContent>
-    <Code lang="css" name="syntax.css">{require('../../../../../packages/core/src/syntax.css?raw')}</Code>
+    <Code lang="css" name="syntax.css">{require('../../../../../packages/preset/src/syntax.css?raw')}</Code>
 </ExpandContent>

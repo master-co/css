@@ -26,7 +26,7 @@ Use `base` for low-level resets and normalization. This layer should make the br
 Rules enter the base layer through `@base` syntax or regular CSS written inside `@layer base`.
 
 ### Theme
-Use `theme` for generated CSS custom properties. Variables defined in `@theme` or `config.variables` are emitted here only when a generated rule references them.
+Use `theme` for generated CSS custom properties. Tokens defined in `@theme` are emitted here only when a generated rule references them.
 
 Theme rules are intentionally early: they provide values that later layers consume, but they should not compete with layout, color, or component declarations directly.
 
@@ -36,7 +36,7 @@ Use `defaults` for broad element defaults such as typography inside an article, 
 Rules enter the defaults layer through `@default` syntax or `@defaults` managed definitions. Because defaults sit before `components` and `utilities`, components and utilities can still override it without `!important`.
 
 ### Components
-Use `components` for project styles that carry product meaning: `.btn`, `.card`, `.field`, `.toolbar`, `.app-shell`. In CSS config, write these managed class definitions in `@components`.
+Use `components` for project styles that carry product meaning: `.btn`, `.card`, `.field`, `.toolbar`, `.app-shell`. In project CSS, write these managed class definitions in `@components`.
 
 ```css name=index.css
 @components {
@@ -47,7 +47,7 @@ Use `components` for project styles that carry product meaning: `.btn`, `.card`,
 }
 ```
 
-The compiler converts these definitions into static `config.utilities` entries with `layer: 'components'`. They remain on-demand: defining `.btn` does not emit CSS until `btn` is used or scanned from source.
+The compiler converts these definitions into static plan utilities with `layer: 'components'`. They remain on-demand: defining `.btn` does not emit CSS until `btn` is used or scanned from source.
 
 ### Utilities
 Use `utilities` for built-in utilities, animation utilities, and custom static utilities written in `@utilities`. Custom utilities can use native declarations, `@compose`, nested selectors, and `@variant` blocks.
@@ -70,7 +70,7 @@ Utilities is the final layer, so utility classes can intentionally override comp
 ---
 
 ## A complete flow
-This example touches every generated layer. The CSS config defines theme variables and a component, while the markup uses base, defaults, and utilities.
+This example touches every generated layer. The project CSS entry defines theme variables and a component, while the markup uses base, defaults, and utilities.
 
 ```css name=index.css
 @theme light {

@@ -24,7 +24,7 @@ Check out the [source code](https://github.com/master-co/css/blob/rc/packages/la
 const semanticTokens = languageService.renderSemanticTokens(textDocument)
 ```
 
-Semantic tokens are generated with the configured Master CSS engine, so custom variables, components, utilities, modes, and other plan-dependent tokens can be classified after the project plan is loaded by the caller.
+Semantic tokens are generated with the project plan and Master CSS engine, so custom variables, components, utilities, modes, and other plan-dependent tokens can be classified after the project plan is loaded by the caller.
 
 Use `renderSemanticTokensAtPosition()` when a client wants active-only highlighting for the embedded class context or CSS directive at the current editor position.
 ```ts
@@ -158,7 +158,7 @@ Enable syntax color rendering.
 Control embedded semantic token highlighting mode.
 <DocProp defaultValue={JSON.stringify(settings.embeddedSyntaxHighlighting)} types={['"active" | "always" | "off"']} />
 
-`active` highlights the embedded class context at the active editor position, `always` highlights all discovered embedded utility classes, and `off` disables embedded utility highlighting. Master CSS syntax inside CSS documents is always highlighted. Semantic tokens classify Master CSS spans as `class`, `enumMember`, `property`, `variable`, `function`, `number`, `string`, `keyword`, `modifier`, `operator`, or `type`. Components defined in config are emitted as `class` tokens with the `declaration` and `component` modifiers; CSS directives, queries, selectors, pseudo states, units, quoted strings, and important markers use dedicated semantic token modifiers.
+`active` highlights the embedded class context at the active editor position, `always` highlights all discovered embedded utility classes, and `off` disables embedded utility highlighting. Master CSS syntax inside CSS documents is always highlighted. Semantic tokens classify Master CSS spans as `class`, `enumMember`, `property`, `variable`, `function`, `number`, `string`, `keyword`, `modifier`, `operator`, or `type`. Components defined in the project plan are emitted as `class` tokens with the `declaration` and `component` modifiers; CSS directives, queries, selectors, pseudo states, units, quoted strings, and important markers use dedicated semantic token modifiers.
 
 ### `settings.editSyntaxColors`
 Enable syntax color editing.

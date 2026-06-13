@@ -270,7 +270,7 @@ The CSS entry point is explicit: import `@master/css` from the stylesheet that s
         }
         ```
 
-        With this config, `btn` is valid because the project defines it, and `text:center` is valid because it is a built-in utility. Configured classes are still on-demand: defining `btn` does not emit anything until `btn` appears in scanned source or in the scanner's fixed class list.
+        With this project plan, `btn` is valid because the project defines it, and `text:center` is valid because it is a built-in utility. Plan-defined classes are still on-demand: defining `btn` does not emit anything until `btn` appears in scanned source or in the scanner's fixed class list.
     </Step>
     <Step>
         #### <StepNum />Compose final CSS
@@ -306,7 +306,7 @@ Use one `@import '@master/css'` entry for each generated stylesheet root. That i
 ### Native CSS entries
 Regular CSS outside Master CSS directives remains native CSS. When a stylesheet imports `@master/css`, integrations treat that stylesheet as a pruning root by default and prune class selectors against detected source classes.
 
-Those native rules can also pull matching config variables referenced by `var(--*)` and managed `@animations` keyframes referenced by animation declarations. Add `@preserve native;` when native CSS must be preserved.
+Those native rules can also pull matching theme variables referenced by `var(--*)` and managed `@animations` keyframes referenced by animation declarations. Add `@preserve native;` when native CSS must be preserved.
 
 ```css name=src/style.css
 @import '@master/css';
@@ -383,7 +383,7 @@ Rendering modes change delivery, not the authoring model. The source of truth is
 }
 ```
 
-These CSS-first directives are configuration inputs. The compiler lowers tokens, settings, variants, components, utilities, animations, and native composed rules into a `MasterCSSPlan`. Runtime rendering, static rendering, server rendering, language tooling, linting, and framework integrations all consume that same IR, so class syntax and cascade behavior stay consistent even when CSS is delivered differently.
+These CSS-first directives are plan inputs. The compiler lowers tokens, settings, variants, components, utilities, animations, and native composed rules into a `MasterCSSPlan`. Runtime rendering, static rendering, server rendering, language tooling, linting, and framework integrations all consume that same IR, so class syntax and cascade behavior stay consistent even when CSS is delivered differently.
 
 | Artifact | Produced by | Used by | Purpose |
 | --- | --- | --- | --- |
