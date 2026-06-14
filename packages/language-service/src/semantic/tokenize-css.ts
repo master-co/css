@@ -18,7 +18,7 @@ import {
 const CSS_LANGUAGE_IDS = new Set(['css', 'scss', 'less'])
 const SOURCE_MODIFIERS = new Set(['not', 'required'])
 const PRESERVE_PARAMETERS = new Set(['native'])
-const THEME_MODIFIERS = new Set(['inline'])
+const THEME_MODIFIERS = new Set(['inline', 'static'])
 const MANAGED_DEFINITION_DIRECTIVES = new Set(['defaults', 'components', 'utilities'])
 
 interface ScanOptions {

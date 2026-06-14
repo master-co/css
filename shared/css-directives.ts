@@ -101,11 +101,14 @@ export interface CSSDirectiveVariableDefinition {
     value: CSSDirectiveVariableValue
     mode?: string
     inline?: boolean
+    static?: boolean
     namespace?: string
     key?: string
 }
 
 export type CSSDirectiveAnimationDefinitions = Record<string, Record<string, CSSDirectiveDeclarations>>
+
+export type CSSDirectiveAnimationOptions = Record<string, { static?: boolean }>
 
 export interface CSSDirectiveUtilityRuleDefinition {
     declarations: CSSDirectiveDeclarations
@@ -132,6 +135,7 @@ export interface CSSDirectivePlanInput {
     scope?: string
     important?: boolean
     animations?: CSSDirectiveAnimationDefinitions
+    animationOptions?: CSSDirectiveAnimationOptions
     modes?: string[]
     modeTrigger?: CSSDirectiveModeTrigger
 }

@@ -111,6 +111,77 @@ test('refresh clears stale native keyframes', async ({ page }) => {
     )).toEqual(['fade', 'flash'])
 })
 
+test('observes static theme variables and keyframes without class references', async ({ page }) => {
+    await init(page, undefined, {
+        variables: [
+            {
+                name: 'color-static',
+                key: 'static',
+                namespace: 'color',
+                type: 'string',
+                value: '#123',
+                static: true
+            }
+        ],
+        animations: {
+            'static-fade': {
+                to: {
+                    opacity: '1'
+                }
+            }
+        },
+        animationOptions: {
+            'static-fade': {
+                static: true
+            }
+        }
+    })
+
+    const cssRules = await page.evaluate(() => Array.from(globalThis.cssRuntime.style!.sheet!.cssRules)
+        .map((cssRule) => cssRule.cssText)
+    )
+    expect(cssRules.some((cssRule) => cssRule.includes('--color-static'))).toBe(true)
+    expect(cssRules.some((cssRule) => cssRule.includes('@keyframes static-fade'))).toBe(true)
+})
+
+test('hydrates progressive static theme variables and keyframes', async ({ page }) => {
+    await page.evaluate(() => {
+        document.body.innerHTML = '<div class="block"></div>'
+    })
+    await init(page, [
+        '@layer theme{:root{--color-static:#123}}',
+        '@layer utilities{.block{display:block}}',
+        '@keyframes static-fade{to{opacity:1}}'
+    ].join(''), {
+        variables: [
+            {
+                name: 'color-static',
+                key: 'static',
+                namespace: 'color',
+                type: 'string',
+                value: '#123',
+                static: true
+            }
+        ],
+        animations: {
+            'static-fade': {
+                to: {
+                    opacity: '1'
+                }
+            }
+        },
+        animationOptions: {
+            'static-fade': {
+                static: true
+            }
+        }
+    }, 'auto')
+
+    expect(await page.evaluate(() => globalThis.cssRuntime.progressive)).toBe(true)
+    expect(await page.evaluate(() => globalThis.cssRuntime.themeLayer.rules.map((rule) => rule.name))).toEqual(['color-static'])
+    expect(await page.evaluate(() => globalThis.cssRuntime.animationsNonLayer.rules.map((rule) => rule.name))).toEqual(['static-fade'])
+})
+
 test('registers preloaded counts on an existing runtime', () => {
     const root = { host: {} } as unknown as ShadowRoot
     const cssRuntime = initCSSRuntime({ plan: defaultPlan, root, autoObserve: false })

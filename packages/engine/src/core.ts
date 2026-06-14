@@ -6,6 +6,8 @@ import Layer from './layer'
 import ThemeLayer from './theme-layer'
 import UtilityLayer from './utility-layer'
 import NonLayer from './non-layer'
+import VariableRule from './variable-rule'
+import AnimationRule from './animation-rule'
 import type { Variable } from 'shared/css-syntax'
 import { AtRule } from './utils/parse-at'
 import parseValue from './utils/parse-value'
@@ -172,6 +174,8 @@ export default class MasterCSS {
     readonly breakpointAtRules = new Map<string, AtRule>()
     readonly containerAtRules = new Map<string, AtRule>()
     readonly animations = new Map<string, MasterCSSPlanAnimations[string]>()
+    protected readonly staticVariableTokens = new Set<string>()
+    protected readonly staticAnimationTokens = new Set<string>()
     readonly preloaded: Required<MasterCSSPreloaded> = {
         variables: {},
         animations: {}
@@ -182,6 +186,9 @@ export default class MasterCSS {
     constructor(plan: MasterCSSPlan, preloaded?: MasterCSSPreloaded) {
         this.loadPlan(plan)
         this.registerPreloaded(preloaded)
+        if (new.target === MasterCSS) {
+            this.insertStaticResources()
+        }
     }
 
     get text() {
@@ -236,7 +243,7 @@ export default class MasterCSS {
         this.loadUtilities()
     }
 
-    private applyPreloadedCounts(preloaded: MasterCSSPreloaded) {
+    protected applyPreloadedCounts(preloaded: MasterCSSPreloaded) {
         for (const [name, count] of Object.entries(preloaded.variables || {})) {
             if (!count) continue
             this.themeLayer.tokenCounts.set(name, (this.themeLayer.tokenCounts.get(name) || 0) + count)
@@ -266,6 +273,57 @@ export default class MasterCSS {
 
     isPreloadedAnimation(name: string) {
         return Boolean(this.preloaded.animations[name])
+    }
+
+    protected insertStaticVariable(name: string, visited = new Set<string>()) {
+        if (visited.has(name)) return
+        visited.add(name)
+        const variable = this.variables.get(name)
+        if (!variable || variable.inline) return
+
+        if (!this.staticVariableTokens.has(name)) {
+            if (!this.isPreloadedVariable(name)) {
+                if (!this.themeLayer.get(name)) {
+                    this.themeLayer.insert(new VariableRule(name, variable, this))
+                }
+                const count = this.themeLayer.tokenCounts.get(name) || 0
+                this.themeLayer.tokenCounts.set(name, count + 1)
+            }
+            this.staticVariableTokens.add(name)
+        }
+
+        variable.dependencies?.forEach((dependency) => this.insertStaticVariable(dependency, visited))
+    }
+
+    protected insertStaticAnimation(name: string) {
+        if (this.staticAnimationTokens.has(name)) return
+        const keyframes = this.animations.get(name)
+        if (!keyframes) return
+
+        let rule = this.animationsNonLayer.rules.find((eachRule) => eachRule.name === name) as AnimationRule | undefined
+        if (!this.isPreloadedAnimation(name)) {
+            if (!rule) {
+                rule = new AnimationRule(name, keyframes, this)
+                this.animationsNonLayer.insert(rule)
+            }
+            const count = this.animationsNonLayer.tokenCounts.get(name) || 0
+            this.animationsNonLayer.tokenCounts.set(name, count + 1)
+        } else if (!rule) {
+            rule = new AnimationRule(name, keyframes, this)
+        }
+
+        this.staticAnimationTokens.add(name)
+        rule.variableNames?.forEach((variableName) => this.insertStaticVariable(variableName))
+    }
+
+    insertStaticResources() {
+        for (const [name, variable] of this.variables) {
+            if (variable.static) this.insertStaticVariable(name)
+        }
+        for (const name of this.animations.keys()) {
+            if (this.plan.animationOptions?.[name]?.static) this.insertStaticAnimation(name)
+        }
+        return this
     }
 
     private loadAnimations() {
@@ -303,7 +361,8 @@ export default class MasterCSS {
                 } : {}),
                 ...(definition.modes ? { modes: { ...definition.modes } } : {}),
                 ...(definition.dependencies?.length ? { dependencies: new Set(definition.dependencies) } : {}),
-                ...(definition.inline ? { inline: true } : {})
+                ...(definition.inline ? { inline: true } : {}),
+                ...(definition.static ? { static: true } : {})
             } as Variable)
         }
     }
@@ -606,6 +665,7 @@ export default class MasterCSS {
         this.reset()
         this.loadPlan(plan)
         this.applyPreloadedCounts(this.preloaded)
+        this.insertStaticResources()
         return this
     }
 
@@ -632,6 +692,8 @@ export default class MasterCSS {
         this.valueMatcherUtilities.length = 0
         this.keyMatcherUtilities.length = 0
         this.arbitraryMatcherUtilities.length = 0
+        this.staticVariableTokens.clear()
+        this.staticAnimationTokens.clear()
         this.baseLayer.reset()
         this.themeLayer.reset()
         this.defaultsLayer.reset()

@@ -85,12 +85,14 @@ export interface MasterCSSPlanVariable {
     dependencies?: string[]
     mode?: string
     inline?: boolean
+    static?: boolean
 }
 
 export type MasterCSSPlanVariables = MasterCSSPlanVariable[]
 
 export type MasterCSSPlanKeyframes<TDeclarations = MasterCSSPlanCSSDeclarations> = Record<'from' | 'to' | string, TDeclarations>
 export type MasterCSSPlanAnimations<TDeclarations = MasterCSSPlanCSSDeclarations> = Record<string, MasterCSSPlanKeyframes<TDeclarations>>
+export type MasterCSSPlanAnimationOptions = Record<string, { static?: boolean }>
 
 export interface MasterCSSPlanVariantBranch {
     selector?: string
@@ -188,6 +190,7 @@ export interface MasterCSSPlan {
     settings?: MasterCSSPlanSettings
     variables?: MasterCSSPlanVariables
     animations?: MasterCSSPlanAnimations
+    animationOptions?: MasterCSSPlanAnimationOptions
     variants?: MasterCSSPlanVariants
     atRules?: MasterCSSPlanAtRules
     breakpointAtRules?: MasterCSSPlanAtRules

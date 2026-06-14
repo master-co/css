@@ -832,7 +832,7 @@ export async function createExtractedCSSResult(options: CreateExtractedCSSOption
     const animationReferences = collectNativeCSSAnimationReferences(nativeCSS, css, nativeAnimationNames)
     insertVariableReferences(css, variableReferences)
     insertAnimationReferences(css, animationReferences)
-    const shouldIncludeMasterCSS = includeGeneratedCSS || variableReferences.size || animationReferences.size
+    const shouldIncludeMasterCSS = includeGeneratedCSS || variableReferences.size || animationReferences.size || Boolean(css.text)
     const cssText = [
         ...nativeCSS,
         shouldIncludeMasterCSS ? css.text : ''

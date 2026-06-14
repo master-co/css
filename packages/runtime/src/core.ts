@@ -43,6 +43,7 @@ export default class CSSRuntime extends MasterCSS {
             this.host = (this.root as ShadowRoot).host
         }
         globalThis.CSSRuntime.instances.set(this.root, this)
+        this.applyPreloadedCounts(this.preloaded)
         __MASTER_CSS_DEVTOOLS_HOOK__?.emit('runtime:created', { cssRuntime: this })
     }
 
@@ -64,6 +65,7 @@ export default class CSSRuntime extends MasterCSS {
         this.style = null
         this.progressive = false
         this.createRuntimeStyle()
+        this.insertStaticResources()
         connectedNames.forEach(cls => this.add(cls))
     }
 
@@ -108,6 +110,7 @@ export default class CSSRuntime extends MasterCSS {
             }
         } else {
             this.createRuntimeStyle()
+            this.insertStaticResources()
             connectedNames.forEach(cls => this.add(cls))
         }
 
@@ -219,6 +222,9 @@ export default class CSSRuntime extends MasterCSS {
                 animationRule.variableNames?.forEach((variableName) => collectVariable(variableName))
             })
         }
+        for (const [variableName, variable] of this.variables) {
+            if (variable.static) collectVariable(variableName)
+        }
         return variableNames
     }
 
@@ -227,7 +233,26 @@ export default class CSSRuntime extends MasterCSS {
         for (const rule of this.manifest?.rules || []) {
             rule.animationNames?.forEach((animationName) => animationNames.add(animationName))
         }
+        for (const animationName of this.animations.keys()) {
+            if (this.plan.animationOptions?.[animationName]?.static) animationNames.add(animationName)
+        }
         return animationNames
+    }
+
+    private nativeThemeLayerHasOnlyPreloadedVariables(nativeThemeLayer: CSSLayerBlockRule | undefined) {
+        if (!nativeThemeLayer) return false
+        let found = false
+        for (const nativeRule of nativeThemeLayer.cssRules) {
+            const styleRule = this.themeLayer.getStyleRule(nativeRule)
+            if (!styleRule) return false
+            for (let index = 0; index < styleRule.style.length; index++) {
+                const propertyName = styleRule.style.item(index)
+                if (!propertyName.startsWith('--')) return false
+                found = true
+                if (!this.isPreloadedVariable(propertyName.slice(2))) return false
+            }
+        }
+        return found
     }
 
     private hydrateManifestVariables(nativeThemeLayer: CSSLayerBlockRule | undefined) {
@@ -242,7 +267,9 @@ export default class CSSRuntime extends MasterCSS {
             .filter((rule): rule is VariableRule => Boolean(rule))
         const expectedRuleCount = variableRules.reduce((count, rule) => count + rule.nodes.length, 0)
         const nativeRuleCount = nativeThemeLayer?.cssRules.length || 0
-        if (expectedRuleCount !== nativeRuleCount) return false
+        if (expectedRuleCount !== nativeRuleCount) {
+            return !variableRules.length && this.nativeThemeLayerHasOnlyPreloadedVariables(nativeThemeLayer)
+        }
         if (!variableRules.length) return true
         if (!nativeThemeLayer) return false
 
@@ -267,7 +294,10 @@ export default class CSSRuntime extends MasterCSS {
         const animationNames = this.collectManifestAnimationNames()
         const hydratedAnimationNames = new Set<string>()
         for (const animationName of animationNames) {
-            if (this.isPreloadedAnimation(animationName)) continue
+            if (this.isPreloadedAnimation(animationName)) {
+                if (nativeKeyframesRules.has(animationName)) hydratedAnimationNames.add(animationName)
+                continue
+            }
             const keyframes = this.animations.get(animationName)
             if (!keyframes) continue
             const nativeRule = nativeKeyframesRules.get(animationName)

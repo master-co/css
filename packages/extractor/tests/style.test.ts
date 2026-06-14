@@ -366,6 +366,46 @@ describe('style CSS extraction helpers', () => {
         expect(result.preloaded.variables).toEqual({})
     })
 
+    it('emits static theme tokens and keyframes without class references', async () => {
+        const root = createFixture()
+        const extractor = new CSSExtractor({
+            include: []
+        }, root)
+        await extractor.init()
+
+        const styleCSSSources = new Map()
+        await registerStyleCSSSource(extractor, styleCSSSources, join(root, 'app/globals.css'), `
+            @theme static {
+                --color-primary: #ff0000;
+
+                @keyframes static-fade {
+                    to {
+                        opacity: 1;
+                    }
+                }
+            }
+        `)
+
+        const result = await createExtractedCSSResult({
+            extractor,
+            styleCSSSources,
+            projectDir: root,
+            includeGeneratedCSS: false
+        })
+
+        expect(result.css).toContain('@layer theme')
+        expect(result.css).toContain('--color-primary:red')
+        expect(result.css).toContain('@keyframes static-fade')
+        expect(result.preloaded).toEqual({
+            variables: {
+                'color-primary': 1
+            },
+            animations: {
+                'static-fade': 1
+            }
+        })
+    })
+
     it('prunes local CSS imports from Master CSS import roots by default', async () => {
         const root = createFixture()
         mkdirSync(join(root, 'app/styles'), { recursive: true })

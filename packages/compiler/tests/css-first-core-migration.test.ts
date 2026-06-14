@@ -352,6 +352,98 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
         expect(css.themeLayer.text).not.toContain('--spacing-card:16')
     })
 
+    test('lowers static theme variables and keyframes into initial resources', () => {
+        const { plan } = compileCSSPlan(`
+            @settings {
+                mode-trigger: class;
+                modes: light dark;
+            }
+
+            @theme static {
+                --color-primary: #123;
+
+                @keyframes fade {
+                    to {
+                        opacity: 1;
+                    }
+                }
+            }
+
+            @theme dark static {
+                --color-primary: #456;
+            }
+
+            @theme static light {
+                --color-secondary: #789;
+            }
+        `, { basePlan: defaultPlan })
+        const css = createCSS(plan)
+
+        expect(plan.variables).toContainEqual(expect.objectContaining({
+            name: 'color-primary',
+            static: true,
+            value: '#123',
+            modes: {
+                dark: {
+                    type: 'string',
+                    value: '#456'
+                }
+            }
+        }))
+        expect(plan.variables).toContainEqual(expect.objectContaining({
+            name: 'color-secondary',
+            static: true,
+            modes: {
+                light: {
+                    type: 'string',
+                    value: '#789'
+                }
+            }
+        }))
+        expect(plan.animationOptions?.fade).toEqual({ static: true })
+        expect(css.text).toContain('@layer theme{')
+        expect(css.text).toContain(':root{--color-primary:#123}')
+        expect(css.text).toContain('.dark{--color-primary:#456}')
+        expect(css.text).toContain('.light,:root{--color-secondary:#789}')
+        expect(css.text).toContain('@keyframes fade{to{opacity:1}}')
+    })
+
+    test('rejects invalid static theme modifier combinations', () => {
+        expect(() => compileCSSPlan(`
+            @theme inline static {
+                --color-primary: #123;
+            }
+        `, { basePlan: defaultPlan })).toThrow('@theme inline and static cannot be combined')
+
+        expect(() => compileCSSPlan(`
+            @theme static inline {
+                --color-primary: #123;
+            }
+        `, { basePlan: defaultPlan })).toThrow('@theme inline and static cannot be combined')
+
+        expect(() => compileCSSPlan(`
+            @theme static static {
+                --color-primary: #123;
+            }
+        `, { basePlan: defaultPlan })).toThrow('@theme static modifier cannot be repeated')
+
+        expect(() => compileCSSPlan(`
+            @theme dark light static {
+                --color-primary: #123;
+            }
+        `, { basePlan: defaultPlan })).toThrow('@theme mode must be a single token')
+
+        expect(() => compileCSSPlan(`
+            @theme static dark {
+                @keyframes fade {
+                    to {
+                        opacity: 1;
+                    }
+                }
+            }
+        `, { basePlan: defaultPlan })).toThrow('@theme keyframes cannot be mode-specific or inline')
+    })
+
     test('rejects mode-specific inline theme variables in CSS source', () => {
         expect(() => compileCSSPlan(`
             @theme dark inline {

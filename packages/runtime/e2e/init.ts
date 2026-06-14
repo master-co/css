@@ -120,7 +120,8 @@ function createRuntimeVariables(defaultVariables: RuntimePlanVariable[], inputVa
                 type: normalized.type,
                 ...(normalized.value !== undefined ? { value: normalized.value } : {}),
                 ...(normalized.dependencies?.length ? { dependencies: normalized.dependencies } : {}),
-                ...(normalized.inline ? { inline: true } : {})
+                ...(normalized.inline ? { inline: true } : {}),
+                ...(normalized.static ? { static: true } : {})
             })
         }
         variables.set(normalized.name!, current)

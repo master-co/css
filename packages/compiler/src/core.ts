@@ -204,7 +204,7 @@ function normalizeThemeTokenName(property: string) {
     return name
 }
 
-function defineThemeVariable(planInput: CSSDirectivePlanInput, property: string, rawValue: string, mode?: string, inline?: boolean) {
+function defineThemeVariable(planInput: CSSDirectivePlanInput, property: string, rawValue: string, mode?: string, inline?: boolean, isStatic?: boolean) {
     const name = normalizeThemeTokenName(property)
     const value = parseVariableValue(rawValue)
     if (mode) {
@@ -215,7 +215,8 @@ function defineThemeVariable(planInput: CSSDirectivePlanInput, property: string,
         name,
         value,
         ...(mode ? { mode } : {}),
-        ...(inline ? { inline: true } : {})
+        ...(inline ? { inline: true } : {}),
+        ...(isStatic ? { static: true } : {})
     }
     const foundIndex = planInput.variables.findIndex((existing) =>
         existing.name === definition.name
@@ -743,11 +744,11 @@ function parseSettingsDeclarations(block: DeclarationBlock<Declaration>, planInp
     }
 }
 
-function parseThemeDeclarations(block: DeclarationBlock<Declaration>, planInput: CSSDirectivePlanInput, mode?: string, inline?: boolean) {
+function parseThemeDeclarations(block: DeclarationBlock<Declaration>, planInput: CSSDirectivePlanInput, mode?: string, inline?: boolean, isStatic?: boolean) {
     for (const declaration of (block.declarations || []) as Declaration[]) {
         const property = getDeclarationName(declaration)
         const value = formatDeclarationValue(declaration)
-        defineThemeVariable(planInput, property, value, mode, inline)
+        defineThemeVariable(planInput, property, value, mode, inline, isStatic)
     }
     for (const declaration of (block.importantDeclarations || []) as Declaration[]) {
         const property = normalizeThemeTokenName(getDeclarationName(declaration))
@@ -1331,7 +1332,7 @@ function formatKeyframeSelector(selector: KeyframeSelector) {
     }
 }
 
-function parseKeyframes(rule: any, planInput: CSSDirectivePlanInput) {
+function parseKeyframes(rule: any, planInput: CSSDirectivePlanInput, isStatic?: boolean) {
     const name = rule.value.name.value
     if (!name) {
         throw new Error('@keyframes requires a name')
@@ -1345,6 +1346,10 @@ function parseKeyframes(rule: any, planInput: CSSDirectivePlanInput) {
     }
     planInput.animations ??= {}
     planInput.animations[name] = keyframes
+    if (isStatic) {
+        planInput.animationOptions ??= {}
+        planInput.animationOptions[name] = { static: true }
+    }
 }
 
 function getCustomRulePrelude(rule: any) {
@@ -1365,16 +1370,36 @@ function getThemePrelude(rule: any) {
     const prelude = formatPrelude(getCustomRulePrelude(rule))
     if (!prelude) return {}
     const parts = prelude.split(/\s+/).filter(Boolean)
-    if (parts.includes('inline')) {
-        if (parts.length > 1) {
-            throw new Error('@theme inline cannot be mode-specific')
+    let mode: string | undefined
+    let inline = false
+    let isStatic = false
+    for (const part of parts) {
+        if (part === 'inline' || part === 'static') {
+            if (part === 'inline') {
+                if (inline) throw new Error('@theme inline modifier cannot be repeated')
+                inline = true
+            } else {
+                if (isStatic) throw new Error('@theme static modifier cannot be repeated')
+                isStatic = true
+            }
+            continue
         }
-        return { inline: true }
+        if (mode) {
+            throw new Error('@theme mode must be a single token')
+        }
+        mode = part
     }
-    if (parts.length > 1) {
-        throw new Error('@theme mode must be a single token')
+    if (inline && isStatic) {
+        throw new Error('@theme inline and static cannot be combined')
     }
-    return { mode: parts[0] }
+    if (inline && mode) {
+        throw new Error('@theme inline cannot be mode-specific')
+    }
+    return {
+        ...(mode ? { mode } : {}),
+        ...(inline ? { inline: true } : {}),
+        ...(isStatic ? { static: true } : {})
+    }
 }
 
 function parseSettingsStyleRule(rule: any) {
@@ -1426,7 +1451,7 @@ function parseSettingsRule(rule: any, parsed: ParsedDirectives) {
 }
 
 function parseThemeRule(rule: any, parsed: ParsedDirectives) {
-    const { mode, inline } = getThemePrelude(rule)
+    const { mode, inline, static: isStatic } = getThemePrelude(rule)
     const body = getCustomRuleBody(rule)
     if (!Array.isArray(body?.value)) {
         throw new Error('@theme requires a style block')
@@ -1434,14 +1459,14 @@ function parseThemeRule(rule: any, parsed: ParsedDirectives) {
     if (mode) addThemeMode(parsed.planInput, mode)
     for (const child of body.value as Rule[]) {
         if (child.type === 'nested-declarations') {
-            parseThemeDeclarations(child.value.declarations, parsed.planInput, mode, inline)
+            parseThemeDeclarations(child.value.declarations, parsed.planInput, mode, inline, isStatic)
             continue
         }
         if (child.type === 'keyframes') {
             if (mode || inline) {
                 throw new Error('@theme keyframes cannot be mode-specific or inline')
             }
-            parseKeyframes(child, parsed.planInput)
+            parseKeyframes(child, parsed.planInput, isStatic)
             continue
         }
         throw new Error('@theme only accepts theme token declarations and @keyframes definitions')

@@ -44,6 +44,7 @@ type VariableCommon = {
     name: string,
     key: string,
     inline?: boolean,
+    static?: boolean,
     modes?: Record<string, ResolvedVariableValue>
     dependencies?: Set<string>
 }

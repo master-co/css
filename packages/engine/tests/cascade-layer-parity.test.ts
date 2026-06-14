@@ -6,6 +6,7 @@ import {
     createCSSWithStaticUtilities,
     createDefaultCSS,
     createPlanWithStaticUtilities,
+    createPlanWithVariables,
     expectLayerText
 } from './helpers/css-tester'
 
@@ -71,6 +72,117 @@ describe.concurrent('migrated cascade and layer parity', () => {
         expect(Object.fromEntries(preloadedAnimationCSS.animationsNonLayer.tokenCounts)).toEqual({
             fade: 1
         })
+    })
+
+    test('emits static variables, dependencies, aliases, and keyframes without class references', () => {
+        const plan = createPlanWithVariables([
+            {
+                name: 'color-static-alias',
+                key: 'static-alias',
+                namespace: 'color',
+                type: 'string',
+                value: 'var(--color-static-base)',
+                dependencies: ['color-static-base'],
+                static: true
+            },
+            {
+                name: 'color-static-base',
+                key: 'static-base',
+                namespace: 'color',
+                type: 'string',
+                value: '#123'
+            },
+            {
+                name: 'spacing-card',
+                key: 'card',
+                namespace: 'spacing',
+                type: 'number',
+                value: 16,
+                static: true
+            },
+            {
+                name: '-spacing-card',
+                key: '-card',
+                namespace: 'spacing',
+                type: 'number',
+                value: -16,
+                static: true
+            }
+        ])
+        plan.animations = {
+            ...(plan.animations || {}),
+            'static-fade': {
+                to: {
+                    color: 'var(--color-static-base)'
+                }
+            }
+        }
+        plan.animationOptions = {
+            'static-fade': {
+                static: true
+            }
+        }
+        const css = createCSS(plan)
+
+        expect(css.text).toContain('@layer theme{')
+        expect(css.text).toContain('--color-static-alias:var(--color-static-base)')
+        expect(css.text).toContain('--color-static-base:#123')
+        expect(css.text).toContain('--spacing-card:16')
+        expect(css.text).toContain('---spacing-card:-16')
+        expect(css.text).toContain('@keyframes static-fade{to{color:var(--color-static-base)}}')
+
+        css.add('fg:static-alias')
+        expect(Object.fromEntries(css.themeLayer.tokenCounts)).toMatchObject({
+            'color-static-alias': 2,
+            'color-static-base': 2
+        })
+        css.remove('fg:static-alias')
+        expect(css.text).toContain('--color-static-alias:var(--color-static-base)')
+        expect(css.text).toContain('--color-static-base:#123')
+        expect(Object.fromEntries(css.themeLayer.tokenCounts)).toMatchObject({
+            'color-static-alias': 1,
+            'color-static-base': 1
+        })
+    })
+
+    test('does not duplicate preloaded static variables and keyframes', () => {
+        const plan = createPlanWithVariables([
+            {
+                name: 'color-static-simple',
+                key: 'static-simple',
+                namespace: 'color',
+                type: 'string',
+                value: '#123',
+                static: true
+            }
+        ])
+        plan.animations = {
+            ...(plan.animations || {}),
+            'static-spin': {
+                to: {
+                    opacity: '1'
+                }
+            }
+        }
+        plan.animationOptions = {
+            'static-spin': {
+                static: true
+            }
+        }
+        const css = createCSS(plan, {
+            variables: {
+                'color-static-simple': 1
+            },
+            animations: {
+                'static-spin': 1
+            }
+        })
+
+        expect(css.text).toBe('')
+        css.add('fg:static-simple')
+        expect(css.text).toBe('@layer utilities{.fg\\:static-simple{color:var(--color-static-simple)}}')
+        css.remove('fg:static-simple')
+        expect(css.text).toBe('')
     })
 
     test('emits referenced keyframes outside cascade layers', () => {

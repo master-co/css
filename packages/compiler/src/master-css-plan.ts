@@ -195,11 +195,13 @@ function compileVariables(
                     key: resolved.key,
                     ...(resolved.namespace ? { namespace: resolved.namespace } : {}),
                     type,
-                    modes: {}
+                    modes: {},
+                    ...(definition.static ? { static: true } : {})
                 }
                 byName.set(resolved.name, target)
                 pushVariable(variables, target)
             }
+            if (definition.static) target.static = true
             target.modes ??= {}
             target.modes[definition.mode] = { type, value: value as string | number }
             if (dependencies.size) {
@@ -216,7 +218,8 @@ function compileVariables(
             type,
             value,
             ...(dependencies.size ? { dependencies: [...dependencies] } : {}),
-            ...(definition.inline ? { inline: true } : {})
+            ...(definition.inline ? { inline: true } : {}),
+            ...(definition.static ? { static: true } : {})
         }
         byName.set(resolved.name, variable)
         pushVariable(variables, variable)
@@ -231,7 +234,8 @@ function compileVariables(
                 ...(resolved.namespace ? { namespace: resolved.namespace } : {}),
                 type: 'number',
                 value: normalizeZero(-value),
-                ...(definition.inline ? { inline: true } : {})
+                ...(definition.inline ? { inline: true } : {}),
+                ...(definition.static ? { static: true } : {})
             })
         }
     }
@@ -489,6 +493,10 @@ function compileAnimations(input: CSSDirectivePlanInput['animations']): MasterCS
     return input ? clone(input) as MasterCSSPlanAnimations : undefined
 }
 
+function compileAnimationOptions(input: CSSDirectivePlanInput['animationOptions']): MasterCSSPlan['animationOptions'] | undefined {
+    return input ? clone(input) as MasterCSSPlan['animationOptions'] : undefined
+}
+
 function mergeBy<T>(base: T[] | undefined, next: T[] | undefined, getKey: (value: T) => string | undefined) {
     const merged = [...(base || []).map((value) => clone(value))]
     for (const value of next || []) {
@@ -507,6 +515,21 @@ function mergeRecords<T>(base: Record<string, T> | undefined, next: Record<strin
     return Object.keys(base || {}).length || Object.keys(next || {}).length
         ? { ...(base ? clone(base) : {}), ...(next ? clone(next) : {}) }
         : undefined
+}
+
+function mergeAnimationOptions(
+    base: MasterCSSPlan['animationOptions'],
+    next: MasterCSSPlan['animationOptions'],
+    animations: MasterCSSPlan['animations']
+) {
+    const merged = mergeRecords(base, next)
+    if (!merged) return
+    for (const animationName of Object.keys(animations || {})) {
+        if (!next?.[animationName]) {
+            delete merged[animationName]
+        }
+    }
+    return Object.keys(merged).length ? merged : undefined
 }
 
 function utilityKeys(utility: MasterCSSPlanUtility) {
@@ -553,6 +576,7 @@ function mergePlan(basePlan: MasterCSSPlan | undefined, fragment: MasterCSSPlan)
         settings: { ...(basePlan.settings || {}), ...(fragment.settings || {}) },
         variables: mergeBy(basePlan.variables, fragment.variables, (variable) => variable.name),
         animations: mergeRecords(basePlan.animations, fragment.animations),
+        animationOptions: mergeAnimationOptions(basePlan.animationOptions, fragment.animationOptions, fragment.animations),
         variants: mergeBy(basePlan.variants, fragment.variants, (variant) => variant.token),
         atRules: mergeRecords(basePlan.atRules, fragment.atRules),
         breakpointAtRules: mergeRecords(basePlan.breakpointAtRules, fragment.breakpointAtRules),
@@ -597,11 +621,14 @@ export function createMasterCSSPlan(input: CSSDirectivePlanInput = {}, options: 
     })
     const { variants, selectors, atRules: variantAtRules } = compileVariants(input.variants as MasterCSSPlanVariants | undefined, variantBasePlan)
     const utilities = compileUtilities(input.utilities)
+    const animations = compileAnimations(input.animations)
+    const animationOptions = compileAnimationOptions(input.animationOptions)
     const fragment: MasterCSSPlan = {
         version: 1,
         ...(Object.keys(settings).length ? { settings } : {}),
         ...(variables?.length ? { variables } : {}),
-        ...(compileAnimations(input.animations) ? { animations: compileAnimations(input.animations) } : {}),
+        ...(animations ? { animations } : {}),
+        ...(animationOptions ? { animationOptions } : {}),
         ...(variants?.length ? { variants } : {}),
         ...((atRules || variantAtRules) ? { atRules: mergeRecords(atRules, variantAtRules) } : {}),
         ...(breakpointAtRules ? { breakpointAtRules } : {}),

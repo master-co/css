@@ -109,13 +109,17 @@ function normalizeVariable(variable: InputVariableDefinition, resolveVariableNam
     if (variable.inline && variable.mode) {
         throw new Error(`Inline theme variables cannot be mode-specific: ${resolved.name}@${variable.mode}`)
     }
+    if (variable.inline && variable.static) {
+        throw new Error(`Inline and static theme variables cannot be combined: ${resolved.name}`)
+    }
     return {
         name: resolved.name,
         ...(resolved.namespace ? { namespace: resolved.namespace } : {}),
         key: resolved.key,
         value: variable.value,
         ...(variable.mode ? { mode: variable.mode } : {}),
-        ...(variable.inline ? { inline: true } : {})
+        ...(variable.inline ? { inline: true } : {}),
+        ...(variable.static ? { static: true } : {})
     }
 }
 
@@ -175,6 +179,7 @@ function normalizeDirectiveInput(input: CSSDirectivePlanInputSource = {}, option
         }))
     }))
     if (source.animations) normalized.animations = { ...source.animations }
+    if (source.animationOptions) normalized.animationOptions = { ...source.animationOptions }
     if (source.utilities?.length) normalized.utilities = source.utilities.map(cloneUtility)
 
     for (const mode of source.modes || []) {

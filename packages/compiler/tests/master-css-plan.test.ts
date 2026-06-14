@@ -5,9 +5,9 @@ describe.concurrent('createMasterCSSPlan', () => {
     it('lowers variables into resolved records with modes, dependencies, and negative aliases', () => {
         const plan = createMasterCSSPlan({
             variables: [
-                { namespace: 'spacing', key: 'card', value: 12 },
+                { namespace: 'spacing', key: 'card', value: 12, static: true },
                 { namespace: 'color', key: 'brand', value: '$color-blue-50' },
-                { namespace: 'color', key: 'brand', value: '#123', mode: 'dark' }
+                { namespace: 'color', key: 'brand', value: '#123', mode: 'dark', static: true }
             ]
         })
 
@@ -16,14 +16,16 @@ describe.concurrent('createMasterCSSPlan', () => {
             key: 'card',
             namespace: 'spacing',
             type: 'number',
-            value: 12
+            value: 12,
+            static: true
         }))
         expect(plan.variables).toContainEqual(expect.objectContaining({
             name: '-spacing-card',
             key: '-card',
             namespace: 'spacing',
             type: 'number',
-            value: -12
+            value: -12,
+            static: true
         }))
         expect(plan.variables).toContainEqual(expect.objectContaining({
             name: 'color-brand',
@@ -37,8 +39,28 @@ describe.concurrent('createMasterCSSPlan', () => {
                     value: '#123'
                 }
             },
-            dependencies: expect.arrayContaining(['color-blue-50'])
+            dependencies: expect.arrayContaining(['color-blue-50']),
+            static: true
         }))
+    })
+
+    it('lowers static animation options', () => {
+        const plan = createMasterCSSPlan({
+            animations: {
+                fade: {
+                    to: {
+                        opacity: '1'
+                    }
+                }
+            },
+            animationOptions: {
+                fade: {
+                    static: true
+                }
+            }
+        })
+
+        expect(plan.animationOptions?.fade).toEqual({ static: true })
     })
 
     it('lowers breakpoint and container aliases into at-rule node maps', () => {

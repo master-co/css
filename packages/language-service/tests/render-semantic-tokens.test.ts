@@ -326,6 +326,14 @@ test.concurrent('renders inline theme modifier semantic tokens', () => {
     expectToken(tokens, '--color-primary', 'variable')
 })
 
+test.concurrent('renders static theme modifier semantic tokens', () => {
+    const { tokens } = renderTokens('@theme static { --color-primary: #123; }', 'css')
+
+    expectToken(tokens, '@theme', 'keyword', ['directive'])
+    expectToken(tokens, 'static', 'modifier', ['directive'])
+    expectToken(tokens, '--color-primary', 'variable')
+})
+
 test.concurrent('does not render non-entry @master at-rules as CSS directives', () => {
     const { tokens } = renderTokens(`
         @master shake;
