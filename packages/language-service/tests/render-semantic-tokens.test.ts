@@ -196,6 +196,8 @@ test.concurrent('renders semantic tokens for grouped declarations, strings, unit
 
 test.concurrent('renders semantic tokens for CSS directives', () => {
     const { tokens } = renderTokens(`
+        @master;
+
         @settings {
             root-size: 16;
         }
@@ -215,6 +217,12 @@ test.concurrent('renders semantic tokens for CSS directives', () => {
             }
         }
 
+        @defaults {
+            reset {
+                @compose "block";
+            }
+        }
+
         @components {
             btn {
                 @compose "inline-flex fg:primary:hover@md";
@@ -229,8 +237,15 @@ test.concurrent('renders semantic tokens for CSS directives', () => {
                 }
             }
         }
+
+        @utilities {
+            content-auto {
+                @compose "block";
+            }
+        }
     `, 'css')
 
+    expectToken(tokens, '@master', 'keyword', ['directive'])
     expectToken(tokens, '@settings', 'keyword', ['directive'])
     expectToken(tokens, 'root-size', 'property')
     expectToken(tokens, '@theme', 'keyword', ['directive'])
@@ -240,8 +255,11 @@ test.concurrent('renders semantic tokens for CSS directives', () => {
     expectToken(tokens, '.8', 'number')
     expectToken(tokens, '@custom-variant', 'keyword', ['directive'])
     expectToken(tokens, '@motion-safe', 'keyword', ['query'])
+    expectToken(tokens, '@slot', 'keyword', ['directive'])
     expectToken(tokens, 'interactive', 'variable', ['directive', 'query'])
     expectToken(tokens, '@animations', 'keyword', ['directive'])
+    expectToken(tokens, '@defaults', 'keyword', ['directive'])
+    expectToken(tokens, 'reset', 'class', ['selector'])
     expectToken(tokens, '@components', 'keyword', ['directive'])
     expectToken(tokens, 'btn', 'class', ['selector'])
     expectToken(tokens, '@compose', 'keyword', ['directive'])
@@ -258,6 +276,8 @@ test.concurrent('renders semantic tokens for CSS directives', () => {
     expectToken(tokens, 'scrollbar-thumb', 'modifier', ['pseudoElement'])
     expectToken(tokens, 'hover', 'modifier', ['pseudoClass'])
     expectToken(tokens, '@dark', 'keyword', ['query'])
+    expectToken(tokens, '@utilities', 'keyword', ['directive'])
+    expectToken(tokens, 'content-auto', 'class', ['selector'])
 })
 
 test.concurrent('renders CSS directive ranges with quoted semicolons', () => {
@@ -291,9 +311,10 @@ test.concurrent('renders CSS directive ranges with quoted semicolons', () => {
     expectToken(tokens, 'red', 'enumMember')
     expectToken(tokens, '@custom-variant', 'keyword', ['directive'])
     expectToken(tokens, '@quoted', 'keyword', ['query'])
+    expectToken(tokens, '@slot', 'keyword', ['directive'])
     expect(tokens.filter(({ text, type, modifiers }) =>
         text === ';' && type === 'operator' && modifiers.includes('directive')
-    )).toHaveLength(6)
+    )).toHaveLength(7)
 })
 
 test.concurrent('renders inline theme modifier semantic tokens', () => {

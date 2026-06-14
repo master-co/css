@@ -34,6 +34,15 @@ test.concurrent('collects nested Master directive ranges without treating host a
     expect(source.slice(ranges[2].quotedStringRanges[0].contentRange.start, ranges[2].quotedStringRanges[0].contentRange.end)).toBe('hidden')
 })
 
+test.concurrent('collects slot directive ranges inside custom variants', () => {
+    const source = '@custom-variant @motion-safe { @media (prefers-reduced-motion: no-preference) { @slot; } }'
+    const ranges = collectCSSDirectiveRanges(source)
+
+    expect(ranges.map((range) => range.name)).toEqual(['custom-variant', 'slot'])
+    expect(source.slice(ranges[1].keywordRange.start, ranges[1].keywordRange.end)).toBe('@slot')
+    expect(source.slice(ranges[1].semicolonRange!.start, ranges[1].semicolonRange!.end)).toBe(';')
+})
+
 test.concurrent('collects managed definition directive ranges', () => {
     const source = '@components { btn { @compose "block"; } }'
     const ranges = collectCSSDirectiveRanges(source)
