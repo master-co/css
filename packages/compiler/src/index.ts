@@ -3,15 +3,19 @@ import { createRequire } from 'node:module'
 import { dirname, extname, isAbsolute, resolve } from 'node:path'
 import { transform } from 'lightningcss'
 import type { MasterCSSPlan } from 'shared/master-css-plan'
+import type { CSSDirectiveReference } from 'shared/css-directives'
 import { createMasterCSSPlan } from './master-css-plan'
 import lowerCSSDirectives from './lower-css-directives'
 import {
     compileCSS,
     createCSSDirectiveExtractionPolicy,
+    findCSSReferenceStatements,
     findStandaloneMasterDirectiveStatements,
     mergeCSSDirectiveExtractionPolicy,
+    removeCSSReferenceStatements,
     type CompileCSSOptions,
     setCSSTransform,
+    type CSSReferenceStatement,
     type CompileCSSFileOptions,
     type CompileCSSResult,
     type ResolvedCSSImportGraph
@@ -46,6 +50,7 @@ export interface InspectCSSResult {
 export interface ResolveCSSImportGraphOptions {
     projectDir?: string
     expandPackageImports?: boolean
+    onReference?: (reference: CSSReferenceStatement, fromFile: string) => void
 }
 
 export type CompileCSSPlanOptions = CompileCSSFileOptions & {
@@ -53,6 +58,11 @@ export type CompileCSSPlanOptions = CompileCSSFileOptions & {
 }
 export type CompileCSSPlanSourceOptions = CompileCSSOptions & {
     basePlan?: MasterCSSPlan
+    root?: string
+}
+
+type CompileCSSPlanInternalOptions = CompileCSSPlanSourceOptions & {
+    referenceStack?: string[]
 }
 
 export interface CompileCSSPlanResult extends Omit<CompileCSSResult, 'planInput'> {
@@ -165,10 +175,15 @@ function resolveCSSImportGraphFile(
     }
 
     const source = readFileSync(absoluteFile, 'utf-8')
-    const imports = findCSSImportStatements(source, absoluteFile)
-    if (!imports.length) return source
+    const references = findCSSReferenceStatements(source, absoluteFile)
+    for (const reference of references) {
+        options.onReference?.(reference, absoluteFile)
+    }
+    const sourceWithoutReferences = removeCSSReferenceStatements(source, absoluteFile)
+    const imports = findCSSImportStatements(sourceWithoutReferences, absoluteFile)
+    if (!imports.length) return sourceWithoutReferences
 
-    return replaceCSSImportStatements(source, absoluteFile, (importStatement: CSSImportStatement): string | undefined => {
+    return replaceCSSImportStatements(sourceWithoutReferences, absoluteFile, (importStatement: CSSImportStatement): string | undefined => {
         const importSource = importStatement.source
         const packageFile = options.expandPackageImports !== false
             ? resolveMasterCSSPackageEntryFile(importSource, absoluteFile, options.projectDir)
@@ -182,10 +197,18 @@ function resolveCSSImportGraphFile(
 
 export function resolveCSSImportGraph(file: string, options: ResolveCSSImportGraphOptions = {}): ResolvedCSSImportGraph {
     const dependencies: string[] = []
-    const source = resolveCSSImportGraphFile(file, dependencies, new Set(), [], options)
+    const references: CSSReferenceStatement[] = []
+    const source = resolveCSSImportGraphFile(file, dependencies, new Set(), [], {
+        ...options,
+        onReference(reference, fromFile) {
+            references.push(reference)
+            options.onReference?.(reference, fromFile)
+        }
+    })
     return {
         source,
-        dependencies
+        dependencies,
+        ...(references.length ? { references } : {})
     }
 }
 
@@ -239,7 +262,8 @@ export function compileCSSFile(file: string, options: CompileCSSFileOptions = {}
     })
     return {
         ...result,
-        dependencies: graph.dependencies
+        dependencies: graph.dependencies,
+        ...(graph.references?.length ? { references: graph.references } : {})
     }
 }
 
@@ -250,15 +274,74 @@ function addUnique<T>(target: T[], values: Iterable<T> | undefined) {
     }
 }
 
+function resolveCSSReferenceFile(reference: CSSDirectiveReference, options: CompileCSSPlanSourceOptions = {}) {
+    const fromFile = reference.file
+        ? isAbsolute(reference.file)
+            ? reference.file
+            : resolve(options.root || '', reference.file)
+        : resolve(options.root || process.cwd(), 'master.css')
+    const packageFile = resolveMasterCSSPackageEntryFile(reference.source, fromFile, options.root)
+    if (packageFile) return packageFile
+    if (isExpandableImportSource(reference.source)) return resolve(dirname(fromFile), reference.source)
+    throw new Error(`@reference only supports relative CSS files or Master CSS package entries: ${reference.source}`)
+}
+
+function normalizeReferenceStack(stack: string[] | undefined) {
+    return (stack || []).map((file) => resolveComparablePath(file))
+}
+
+function resolveCSSReferenceContext(
+    references: CSSDirectiveReference[] | undefined,
+    options: CompileCSSPlanInternalOptions = {}
+) {
+    const dependencies: string[] = []
+    const warnings: string[] = []
+    let plan = options.basePlan
+    let hasReferences = false
+
+    for (const reference of references || []) {
+        const referenceFile = resolveCSSReferenceFile(reference, options)
+        const comparableReferenceFile = resolveComparablePath(referenceFile)
+        const stack = normalizeReferenceStack(options.referenceStack)
+        if (stack.includes(comparableReferenceFile)) {
+            throw new Error(`Circular CSS reference: ${[...(options.referenceStack || []), referenceFile].join(' -> ')}`)
+        }
+        const result = compileCSSPlanFileInternal(referenceFile, {
+            ...options,
+            basePlan: plan,
+            preserveNativeCSS: false,
+            referenceStack: options.referenceStack
+        })
+        hasReferences = true
+        plan = result.plan
+        addUnique(dependencies, result.dependencies)
+        addUnique(warnings, result.warnings)
+    }
+
+    return {
+        dependencies,
+        warnings,
+        ...(hasReferences ? { plan } : {})
+    }
+}
+
 function toCompileCSSPlanResult(
     result: CompileCSSResult,
-    options: CompileCSSPlanSourceOptions = {}
+    options: CompileCSSPlanInternalOptions = {}
 ): CompileCSSPlanResult {
     const { planInput: _directivePlanInput, ...directiveData } = result
+    const referenceContext = resolveCSSReferenceContext(result.references, options)
     const lowerResult = lowerCSSDirectives(result, {
         basePlan: options.basePlan,
+        resolutionPlan: referenceContext.plan,
         onWarning: options.onWarning
     })
+    const dependencies: string[] = []
+    const warnings: string[] = []
+    addUnique(dependencies, result.dependencies)
+    addUnique(dependencies, referenceContext.dependencies)
+    addUnique(warnings, referenceContext.warnings)
+    addUnique(warnings, lowerResult.warnings)
     const generatedCSS = lowerResult.generatedCSS || ''
     const css = [
         result.nativeCSS,
@@ -266,8 +349,9 @@ function toCompileCSSPlanResult(
     ].filter(Boolean).join('\n')
     return {
         ...directiveData,
+        dependencies,
         plan: lowerResult.plan,
-        warnings: lowerResult.warnings,
+        warnings,
         generatedCSS,
         css,
         directives: result
@@ -282,16 +366,38 @@ export function createPlanFromCSSResult(
 }
 
 export function compileCSSPlan(source: string, options: CompileCSSPlanSourceOptions = {}): CompileCSSPlanResult {
-    const result = compileCSS(source, options)
-    return toCompileCSSPlanResult(result, options)
+    const from = options.from ? stripRequest(options.from) : undefined
+    const fromFile = from ? isAbsolute(from) ? from : resolve(options.root || '', from) : undefined
+    const result = compileCSS(source, {
+        ...options,
+        ...(fromFile ? { from: fromFile } : {})
+    })
+    return toCompileCSSPlanResult(result, {
+        ...options,
+        ...(fromFile
+            ? {
+                from: fromFile,
+                referenceStack: [...((options as CompileCSSPlanInternalOptions).referenceStack || []), fromFile]
+            }
+            : {})
+    })
 }
 
-export function compileCSSPlanFile(file: string, options: CompileCSSPlanOptions = {}): CompileCSSPlanResult {
+function compileCSSPlanFileInternal(file: string, options: CompileCSSPlanInternalOptions = {}): CompileCSSPlanResult {
+    const absoluteFile = isAbsolute(file) ? file : resolve(options.root || '', file)
     const result = compileCSSFile(file, {
         ...options,
         preserveNativeCSS: options.preserveNativeCSS ?? false
     })
-    return toCompileCSSPlanResult(result, options)
+    return toCompileCSSPlanResult(result, {
+        ...options,
+        from: absoluteFile,
+        referenceStack: [...(options.referenceStack || []), absoluteFile]
+    })
+}
+
+export function compileCSSPlanFile(file: string, options: CompileCSSPlanOptions = {}): CompileCSSPlanResult {
+    return compileCSSPlanFileInternal(file, options)
 }
 
 export function compileProjectPlan(entries: string[], options: CompileCSSPlanOptions = {}): CompileProjectPlanResult {
@@ -326,20 +432,19 @@ export function compileProjectPlan(entries: string[], options: CompileCSSPlanOpt
         addUnique(classNames, result.classNames)
         addUnique(nativeClassNames, result.nativeClassNames)
         addUnique(warnings, result.warnings)
-        const lowerResult = lowerCSSDirectives(result, {
+        const planResult = toCompileCSSPlanResult(result, {
+            ...options,
             basePlan: plan,
-            onWarning: options.onWarning
+            from: entry,
+            referenceStack: [isAbsolute(entry) ? entry : resolve(options.root || '', entry)]
         })
-        plan = lowerResult.plan
-        const entryGeneratedCSS = lowerResult.generatedCSS || ''
+        plan = planResult.plan
+        addUnique(dependencies, planResult.dependencies)
+        addUnique(warnings, planResult.warnings)
+        const entryGeneratedCSS = planResult.generatedCSS || ''
         if (result.nativeCSS) nativeCSS.push(result.nativeCSS)
         if (entryGeneratedCSS) generatedCSS.push(entryGeneratedCSS)
-        const entryCSS = [
-            result.nativeCSS,
-            entryGeneratedCSS
-        ].filter(Boolean).join('\n')
-        if (entryCSS) css.push(entryCSS)
-        addUnique(warnings, lowerResult.warnings)
+        if (planResult.css) css.push(planResult.css)
     }
     return {
         entries,

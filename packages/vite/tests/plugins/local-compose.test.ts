@@ -97,4 +97,28 @@ describe('LocalComposePlugin', () => {
             rmSync(root, { recursive: true, force: true })
         }
     })
+
+    test('lowers explicit @reference styles and watches the reference file', async () => {
+        const root = createFixture()
+        try {
+            const themePath = path.join(root, 'src/theme.css')
+            writeFileSync(themePath, '@components { brand { color: #123456; } }')
+            const context = createContext(root)
+            const plugin = LocalComposePlugin({} as any, context)
+            const addWatchFile = vi.fn()
+
+            const result = await (plugin as any).transform.call(
+                { addWatchFile },
+                '@reference "./theme.css"; .button { @compose "brand"; }',
+                path.join(root, 'src/Button.module.css')
+            )
+
+            expect(result.code).toContain('.button{color:#123456}')
+            expect(result.code).not.toContain('@reference')
+            expect(result.code).not.toContain('master-css-slot')
+            expect(addWatchFile).toHaveBeenCalledWith(themePath)
+        } finally {
+            rmSync(root, { recursive: true, force: true })
+        }
+    })
 })

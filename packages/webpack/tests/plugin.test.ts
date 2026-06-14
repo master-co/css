@@ -202,6 +202,28 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
         }
     })
 
+    test('locally lowers explicit @reference CSS Modules and reports reference dependencies', async () => {
+        const root = mkdtempSync(path.join(tmpdir(), 'master-css-webpack-reference-'))
+        const modulePath = path.join(root, 'Button.module.css')
+        const tokenPath = path.join(root, 'tokens.css')
+        try {
+            writeFileSync(tokenPath, '@components { brand { color: #123456; } }')
+
+            const result = await transformStyleSource(modulePath, '@reference "./tokens.css"; .button { @compose "brand"; }', {
+                projectDir: root,
+                masterImport: '../node_modules/.master-css/master-utilities.css'
+            })
+
+            expect(result.code).toContain('.button{color:#123456}')
+            expect(result.code).not.toContain('@reference')
+            expect(result.code).not.toContain('master-utilities.css')
+            expect(result.dependencies).toContain(modulePath)
+            expect(result.dependencies).toContain(tokenPath)
+        } finally {
+            rmSync(root, { recursive: true, force: true })
+        }
+    })
+
     test('leaves ordinary CSS unchanged in the style loader helper', async () => {
         const root = mkdtempSync(path.join(tmpdir(), 'master-css-webpack-local-compose-'))
         const modulePath = path.join(root, 'Button.module.css')

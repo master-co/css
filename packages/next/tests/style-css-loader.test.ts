@@ -90,4 +90,22 @@ describe('Next style CSS loader', () => {
         expect(result.dependencies).toContain(join(root, 'app/globals.css'))
         expect(result.dependencies).toContain(join(root, 'app/Button.module.css'))
     })
+
+    it('locally lowers explicit @reference CSS Modules without importing package CSS', async () => {
+        const root = createFixture()
+        const tokenPath = join(root, 'app/tokens.css')
+        const modulePath = join(root, 'app/Button.module.css')
+        writeFileSync(tokenPath, '@components { brand { color: #123456; } }')
+        const result = await runStyleCSSLoader(
+            root,
+            modulePath,
+            '@reference "./tokens.css"; .button { @compose "brand"; }'
+        )
+
+        expect(result.content).toContain('.button{color:#123456}')
+        expect(result.content).not.toContain('@reference')
+        expect(result.content).not.toContain('@master/css')
+        expect(result.dependencies).toContain(modulePath)
+        expect(result.dependencies).toContain(tokenPath)
+    })
 })

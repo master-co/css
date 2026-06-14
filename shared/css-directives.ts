@@ -149,6 +149,11 @@ export interface CSSDirectiveExtractionPolicy {
     preserveNative: boolean
 }
 
+export interface CSSDirectiveReference {
+    source: string
+    file?: string
+}
+
 export interface CSSDirectiveStyleComposeDefinition {
     type: 'compose'
     order: number
@@ -188,6 +193,7 @@ export interface CSSDirectiveResult {
     generatedCSS: string
     warnings: string[]
     dependencies: string[]
+    references?: CSSDirectiveReference[]
     styleDefinitions?: CSSDirectiveStyleDefinition[]
 }
 

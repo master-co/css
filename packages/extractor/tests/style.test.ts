@@ -100,6 +100,51 @@ describe('style CSS extraction helpers', () => {
         expect(result.code).not.toContain('@compose')
     })
 
+    it('locally lowers explicit @reference styles without emitting referenced CSS', async () => {
+        const root = createFixture()
+        const tokenPath = join(root, 'app/tokens.css')
+        const modulePath = join(root, 'app/Button.module.css')
+        writeFileSync(tokenPath, [
+            '@components {',
+            '  brand { background-color: #123456; }',
+            '}',
+            '.referenced-native { color: red; }'
+        ].join('\n'))
+
+        const result = await transformLocalStyleCSS(modulePath, `
+            @reference "./tokens.css";
+
+            .button {
+                @compose "brand";
+            }
+        `, {
+            projectDir: root
+        })
+
+        expect(result.transformed).toBe(true)
+        expect(result.code).toContain('.button{background-color:#123456}')
+        expect(result.code).not.toContain('@reference')
+        expect(result.code).not.toContain('referenced-native')
+        expect(result.dependencies).toContain(modulePath)
+        expect(result.dependencies).toContain(tokenPath)
+    })
+
+    it('strips reference-only local styles and still reports dependencies', async () => {
+        const root = createFixture()
+        const tokenPath = join(root, 'app/tokens.css')
+        const modulePath = join(root, 'app/Empty.module.css')
+        writeFileSync(tokenPath, '@components { brand { display: block; } }')
+
+        const result = await transformLocalStyleCSS(modulePath, '@reference "./tokens.css";', {
+            projectDir: root
+        })
+
+        expect(result.transformed).toBe(true)
+        expect(result.code).toBe('')
+        expect(result.dependencies).toContain(modulePath)
+        expect(result.dependencies).toContain(tokenPath)
+    })
+
     it('leaves ordinary local CSS unchanged', async () => {
         const source = '.button { color: red; }'
         const result = await transformLocalStyleCSS('/project/src/Button.module.css', source)

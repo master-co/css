@@ -6,6 +6,7 @@ import {
     type CSSDirectivePlanInput,
     type CSSDirectiveDeclarations,
     type CSSDirectiveLayerName,
+    type CSSDirectiveReference,
     type CSSDirectiveResult,
     type CSSDirectiveSourceReference,
     type CSSDirectiveStyleDefinition,
@@ -27,6 +28,7 @@ import {
     collectMasterCSSClassListTokenRanges,
     createSourceLocationResolver,
     findCSSStatementEnd,
+    removeSourceRanges,
     type CSSDirectiveRuleRange
 } from '@master/css-lexer'
 import {
@@ -71,6 +73,7 @@ export type CompileCSSResult = CSSDirectiveResult
 export interface ResolvedCSSImportGraph {
     source: string
     dependencies: string[]
+    references?: CSSDirectiveReference[]
 }
 
 type ParsedStyleDefinition = CSSDirectiveStyleDefinition
@@ -121,6 +124,10 @@ const MASTER_CUSTOM_AT_RULES = {
     compose: {
         prelude: '<string>',
         body: null
+    },
+    reference: {
+        prelude: '<string>',
+        body: null
     }
 } satisfies CustomAtRules
 
@@ -133,11 +140,60 @@ const MANAGED_DEFINITION_DIRECTIVE_LAYERS = {
     utilities: 'utilities'
 } as const satisfies Record<ManagedDefinitionDirectiveName, CSSDirectiveLayerName>
 
+export interface CSSReferenceStatement extends CSSDirectiveReference {
+    start: number
+    end: number
+    statement: string
+}
+
 function createSourceReference(parsed: ParsedDirectives, range: { start: number, end: number }): CSSDirectiveSourceReference {
     return createCSSDirectiveSourceReference(parsed.filename, {
         start: range.start,
         end: range.end
     }, parsed.source)
+}
+
+function decodeCSSQuotedString(source: string) {
+    return source.replace(/\\([\s\S])/g, '$1')
+}
+
+export function findCSSReferenceStatements(source: string, filename = 'master.css') {
+    const statements: CSSReferenceStatement[] = []
+    for (const range of collectCSSDirectiveRanges(source)) {
+        if (range.name !== 'reference') continue
+        if (range.depth !== 0) {
+            throw new Error('@reference must be top-level')
+        }
+        if (range.blockRange) {
+            throw new Error('@reference requires a statement')
+        }
+        if (!range.semicolonRange) {
+            throw new Error('@reference requires a semicolon')
+        }
+        if (range.quotedStringRanges.length !== 1) {
+            throw new Error('@reference requires one quoted CSS resource')
+        }
+        const prelude = source.slice(range.preludeRange.start, range.preludeRange.end).trim()
+        const quoted = source.slice(range.quotedStringRanges[0].start, range.quotedStringRanges[0].end)
+        if (prelude !== quoted) {
+            throw new Error('@reference only accepts one quoted CSS resource')
+        }
+        statements.push({
+            start: range.start,
+            end: range.end,
+            statement: source.slice(range.start, range.end),
+            source: decodeCSSQuotedString(source.slice(
+                range.quotedStringRanges[0].contentRange.start,
+                range.quotedStringRanges[0].contentRange.end
+            )),
+            file: filename
+        })
+    }
+    return statements
+}
+
+export function removeCSSReferenceStatements(source: string, filename = 'master.css') {
+    return removeSourceRanges(source, findCSSReferenceStatements(source, filename))
 }
 
 function trimSourceRangeEnd(source: string, start: number, end: number) {
@@ -1566,6 +1622,8 @@ function parseManagedDefinitionDirectiveRule(rule: any, parsed: ParsedDirectives
 
 export function compileCSS(source: string, options: CompileCSSOptions = {}): CompileCSSResult {
     const filename = options.from || 'master.css'
+    const references = findCSSReferenceStatements(source, filename)
+    const sourceWithoutReferences = removeSourceRanges(source, references)
     const parsed: ParsedDirectives = {
         planInput: {},
         extractionPolicy: createCSSDirectiveExtractionPolicy(),
@@ -1581,8 +1639,8 @@ export function compileCSS(source: string, options: CompileCSSOptions = {}): Com
     const classFilter = options.classes === undefined
         ? undefined
         : new Set(options.classes)
-    parsed.extractionPolicy = collectStandaloneCSSDirectiveExtractionPolicy(source, filename)
-    const preprocessedSource = removeStandaloneCSSDirectives(source, filename)
+    parsed.extractionPolicy = collectStandaloneCSSDirectiveExtractionPolicy(sourceWithoutReferences, filename)
+    const preprocessedSource = removeStandaloneCSSDirectives(sourceWithoutReferences, filename)
     let ruleDepth = 0
     const transformed = getCSSTransform()({
         filename,
@@ -1643,6 +1701,8 @@ export function compileCSS(source: string, options: CompileCSSOptions = {}): Com
                             throw new Error('@custom-variant must be top-level')
                         case 'variant':
                             throw new Error('@variant requires a style rule or nested style rules')
+                        case 'reference':
+                            throw new Error('@reference must be top-level')
                     }
                 }
 
@@ -1672,6 +1732,7 @@ export function compileCSS(source: string, options: CompileCSSOptions = {}): Com
         css: remainingCSS,
         generatedCSS: '',
         dependencies: [],
+        ...(references.length ? { references } : {}),
         ...(parsed.styleDefinitions ? { styleDefinitions: parsed.styleDefinitions } : {})
     }
 }

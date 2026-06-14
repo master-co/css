@@ -23,6 +23,20 @@ test.concurrent('collects directive statement and block ranges', () => {
     expect(source.slice(ranges[1].blockCloseRange!.start, ranges[1].blockCloseRange!.end)).toBe('}')
 })
 
+test.concurrent('collects reference directive ranges', () => {
+    const source = [
+        '@reference "./a;b.css";',
+        '@layer components { .btn { @reference "./nested.css"; } }'
+    ].join('\n')
+    const ranges = collectCSSDirectiveRanges(source)
+
+    expect(ranges.map((range) => range.name)).toEqual(['reference', 'reference'])
+    expect(ranges[0].depth).toBe(0)
+    expect(ranges[1].depth).toBe(2)
+    expect(source.slice(ranges[0].semicolonRange?.start, ranges[0].semicolonRange?.end)).toBe(';')
+    expect(source.slice(ranges[0].quotedStringRanges[0].contentRange.start, ranges[0].quotedStringRanges[0].contentRange.end)).toBe('./a;b.css')
+})
+
 test.concurrent('collects nested Master directive ranges without treating host at-rules as directives', () => {
     const source = '@layer components { .btn { @compose "block"; @variant @<sm { @compose "hidden"; } } }'
     const ranges = collectCSSDirectiveRanges(source)

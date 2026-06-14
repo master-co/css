@@ -27,6 +27,7 @@ import wrapAtRules from './utils/wrap-at-rules'
 
 export interface LowerCSSDirectivesOptions {
     basePlan?: MasterCSSPlan
+    resolutionPlan?: MasterCSSPlan
     onWarning?: (warning: string) => void
 }
 
@@ -90,6 +91,10 @@ function getDirectiveInput(input: CSSDirectivePlanInputSource) {
 
 function getStyleDefinitions(input: CSSDirectivePlanInputSource) {
     return isCSSDirectiveResult(input) ? input.styleDefinitions : undefined
+}
+
+function getResolutionPlan(options: LowerCSSDirectivesOptions) {
+    return options.resolutionPlan || options.basePlan
 }
 
 function warn(warnings: string[], options: LowerCSSDirectivesOptions, message: string) {
@@ -163,7 +168,7 @@ function cloneUtility(definition: InputUtilityDefinition): CSSDirectiveUtilityDe
 
 function normalizeDirectiveInput(input: CSSDirectivePlanInputSource = {}, options: LowerCSSDirectivesOptions = {}): CSSDirectivePlanInput {
     const source = getDirectiveInput(input)
-    const resolveVariableName = createVariableNameResolver(source, { basePlan: options.basePlan })
+    const resolveVariableName = createVariableNameResolver(source, { basePlan: getResolutionPlan(options) })
     const normalized: CSSDirectivePlanInput = {}
     if (source.rootSize !== undefined) normalized.rootSize = source.rootSize
     if (source.baseUnit !== undefined) normalized.baseUnit = source.baseUnit
@@ -256,7 +261,7 @@ function warnUnsupportedMediaModes(input: CSSDirectivePlanInput, options: LowerC
 
 function createCSS(input: CSSDirectivePlanInput, options: LowerCSSDirectivesOptions) {
     return createCompilerCSS(createMasterCSSPlan(input, {
-        basePlan: options.basePlan
+        basePlan: getResolutionPlan(options)
     }))
 }
 
@@ -964,7 +969,7 @@ function finalizeStyleDefinitions(
             const utilityDefinition = getStaticUtilityDefinition(input, name, layer)
             pushStaticUtilityStyleRule(utilityDefinition, definition)
         }
-        css.refresh(createMasterCSSPlan(input, { basePlan: options.basePlan }))
+        css.refresh(createMasterCSSPlan(input, { basePlan: getResolutionPlan(options) }))
     }
 
     if (!nativeDefinitions.length) return ''
@@ -973,7 +978,7 @@ function finalizeStyleDefinitions(
 
 export default function lowerCSSDirectives(input: CSSDirectivePlanInputSource, options: LowerCSSDirectivesOptions = {}): LowerCSSDirectivesResult {
     const directiveInput = normalizeDirectiveInput(input, options)
-    const resolveVariableName = createVariableNameResolver(directiveInput, { basePlan: options.basePlan })
+    const resolveVariableName = createVariableNameResolver(directiveInput, { basePlan: getResolutionPlan(options) })
     const warnings = isCSSDirectiveResult(input) ? [...input.warnings] : []
 
     validateTokenConflicts(directiveInput, resolveVariableName)
@@ -981,7 +986,7 @@ export default function lowerCSSDirectives(input: CSSDirectivePlanInputSource, o
 
     const css = createCSS(directiveInput, options)
     finalizeUtilityDefinitions(directiveInput, css)
-    css.refresh(createMasterCSSPlan(directiveInput, { basePlan: options.basePlan }))
+    css.refresh(createMasterCSSPlan(directiveInput, { basePlan: getResolutionPlan(options) }))
     const generatedCSS = finalizeStyleDefinitions(directiveInput, getStyleDefinitions(input), css, options)
     const plan = createMasterCSSPlan(directiveInput, { basePlan: options.basePlan })
 

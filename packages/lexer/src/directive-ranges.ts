@@ -17,6 +17,7 @@ export type CSSDirectiveRangeName =
     | 'safelist'
     | 'blocklist'
     | 'preserve'
+    | 'reference'
     | 'theme'
     | 'defaults'
     | 'components'
@@ -58,6 +59,7 @@ export const CSS_DIRECTIVE_RANGE_NAMES = [
     'safelist',
     'blocklist',
     'preserve',
+    'reference',
     'theme',
     'defaults',
     'components',

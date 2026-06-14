@@ -312,7 +312,7 @@ export function removeMasterStyleDirectives(source: string) {
 
 export function hasLocalStyleDirectives(source: string) {
     return collectCSSDirectiveRanges(source)
-        .some((directive) => directive.name === 'compose' || directive.name === 'variant')
+        .some((directive) => directive.name === 'compose' || directive.name === 'variant' || directive.name === 'reference')
 }
 
 function isStyleCSSHostImport(importSource: string, masterImport: string) {
@@ -421,18 +421,23 @@ export async function compileStyleCSS(
     source: string,
     options: CompileStyleCSSOptions = {}
 ): Promise<CompileCSSResult> {
-    const { projectDir: _projectDir, loadSass: _loadSass, basePlan, ...compileOptions } = options
+    const { projectDir, loadSass: _loadSass, basePlan, ...compileOptions } = options
+    const filename = cleanStyleRequest(id)
     const css = await preprocessStyleCSS(source, id, options)
     const result = compileCSS(css, {
         ...compileOptions,
-        from: cleanStyleRequest(id)
+        from: filename
     })
     const finalizedResult = createPlanFromCSSResult(result, {
         ...compileOptions,
-        basePlan
+        basePlan,
+        root: projectDir,
+        from: filename
     })
     return {
         ...result,
+        dependencies: finalizedResult.dependencies,
+        warnings: finalizedResult.warnings,
         css: finalizedResult.css,
         generatedCSS: finalizedResult.generatedCSS
     }
@@ -570,6 +575,7 @@ export async function registerStyleCSSSource(
     result.dependencies = [...new Set([
         ...resolvedSource.dependencies,
         ...detectionSource.dependencies,
+        ...(result.dependencies || []),
         ...collectedDirectives.dependencies,
         ...sourceDependencies
     ])]

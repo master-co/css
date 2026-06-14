@@ -197,6 +197,7 @@ test.concurrent('renders semantic tokens for grouped declarations, strings, unit
 test.concurrent('renders semantic tokens for CSS directives', () => {
     const { tokens } = renderTokens(`
         @master;
+        @reference "./tokens.css";
 
         @settings {
             root-size: 16;
@@ -246,6 +247,8 @@ test.concurrent('renders semantic tokens for CSS directives', () => {
     `, 'css')
 
     expectToken(tokens, '@master', 'keyword', ['directive'])
+    expectToken(tokens, '@reference', 'keyword', ['directive'])
+    expectToken(tokens, './tokens.css', 'string', ['quoted'])
     expectToken(tokens, '@settings', 'keyword', ['directive'])
     expectToken(tokens, 'root-size', 'property')
     expectToken(tokens, '@theme', 'keyword', ['directive'])
@@ -291,6 +294,7 @@ test.concurrent('renders CSS directive ranges with quoted semicolons', () => {
     const { tokens } = renderTokens(`
         @source not "a;b.css";
         @source required "critical.tsx";
+        @reference "./a;b.css";
         @safelist "block fg:red";
         @blocklist "debug-*";
         @preserve native;
@@ -307,6 +311,7 @@ test.concurrent('renders CSS directive ranges with quoted semicolons', () => {
     expectToken(tokens, 'required', 'modifier', ['directive'])
     expectToken(tokens, 'a;b.css', 'string', ['quoted'])
     expectToken(tokens, 'critical.tsx', 'string', ['quoted'])
+    expectToken(tokens, './a;b.css', 'string', ['quoted'])
     expectToken(tokens, '@safelist', 'keyword', ['directive'])
     expectToken(tokens, 'block', 'class')
     expectToken(tokens, '@blocklist', 'keyword', ['directive'])
@@ -321,7 +326,7 @@ test.concurrent('renders CSS directive ranges with quoted semicolons', () => {
     expectToken(tokens, '@slot', 'keyword', ['directive'])
     expect(tokens.filter(({ text, type, modifiers }) =>
         text === ';' && type === 'operator' && modifiers.includes('directive')
-    )).toHaveLength(7)
+    )).toHaveLength(8)
 })
 
 test.concurrent('renders custom variant block semantic tokens for nested at-rules and selectors', () => {

@@ -327,6 +327,7 @@ function tokenizeDirectiveRule(source: string, directive: CSSDirectiveRuleRange,
             tokenizeClassListPrelude(source, preludeStart, preludeEnd, tokens, css)
             break
         case 'blocklist':
+        case 'reference':
             tokenizeQuotedStringPrelude(source, preludeStart, preludeEnd, tokens)
             break
         case 'preserve':
