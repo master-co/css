@@ -51,7 +51,7 @@
         "./index.css": "./src/index.css",
         "./base.css": "./src/base.css",
         "./theme.css": "./src/theme.css",
-        "./syntax.css": "./src/syntax.css"
+        "./variants.css": "./src/variants.css"
     },
     "files": [
         "dist",

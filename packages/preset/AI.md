@@ -7,11 +7,11 @@
 ## Inputs And Outputs
 
 - Input: preset CSS source files, source utility definitions, default settings, and generated-plan script inputs.
-- Output: `defaultPlan`, `index.css`, `base.css`, `theme.css`, and `syntax.css`.
+- Output: `defaultPlan`, `index.css`, `base.css`, `theme.css`, and `variants.css`.
 
 ## Boundaries
 
-- Keep default token, utility, managed keyframe, syntax-variant, and layer-statement source here.
+- Keep default token, utility, managed keyframe, variant, and layer-statement source here.
 - Do not put engine execution behavior, project plan discovery, or build integration behavior here.
 - Regenerate `src/default-plan.ts` only when the source preset intentionally changes.
 - The layer statement lives in `src/base.css` and must stay `@layer theme, base, defaults, components, utilities;`.
