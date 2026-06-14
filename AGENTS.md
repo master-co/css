@@ -165,6 +165,8 @@ Use `.ai/` for AI-facing architecture and governance docs:
 
 Use package-local `AI.md` files for package-specific constraints. Keep public user docs in the existing `site/` documentation system unless maintainers request a root `docs/` directory.
 
+Directive syntax, semantics, lowering behavior, extraction behavior, or directive refactors must update `site/app/[locale]/reference/directives/content.mdx` in the same change. Treat `/reference/directives` as the canonical user-facing directive reference; do not leave directive behavior documented only in tests, implementation notes, package `AI.md`, or changelog text.
+
 ## Review Defaults
 
 When reviewing a PR, prioritize findings first:
