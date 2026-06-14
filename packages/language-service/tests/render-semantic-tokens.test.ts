@@ -255,8 +255,14 @@ test.concurrent('renders semantic tokens for CSS directives', () => {
     expectToken(tokens, '.8', 'number')
     expectToken(tokens, '@custom-variant', 'keyword', ['directive'])
     expectToken(tokens, '@motion-safe', 'keyword', ['query'])
+    expectToken(tokens, '@media', 'keyword', ['query'])
+    expectToken(tokens, 'prefers-reduced-motion', 'property', ['query'])
+    expectToken(tokens, 'no-preference', 'enumMember', ['query'])
     expectToken(tokens, '@slot', 'keyword', ['directive'])
     expectToken(tokens, 'interactive', 'variable', ['directive', 'query'])
+    expectToken(tokens, '&', 'operator', ['selector'])
+    expectToken(tokens, 'is', 'modifier', ['pseudoClass'])
+    expectToken(tokens, 'focus-visible', 'modifier', ['pseudoClass'])
     expect(tokens).not.toContainEqual({ text: '@' + 'animations', type: 'keyword', modifiers: ['directive'] })
     expect(tokens).not.toContainEqual({ text: 'opacity', type: 'variable', modifiers: [] })
     expectToken(tokens, '@defaults', 'keyword', ['directive'])
@@ -316,6 +322,50 @@ test.concurrent('renders CSS directive ranges with quoted semicolons', () => {
     expect(tokens.filter(({ text, type, modifiers }) =>
         text === ';' && type === 'operator' && modifiers.includes('directive')
     )).toHaveLength(7)
+})
+
+test.concurrent('renders custom variant block semantic tokens for nested at-rules and selectors', () => {
+    const { tokens } = renderTokens(`
+        @custom-variant @supports-backdrop {
+            @supports (backdrop-filter: blur(0)) {
+                @slot;
+            }
+        }
+        @custom-variant @card-wide {
+            @container card (width >= 42rem) {
+                @slot;
+            }
+        }
+        @custom-variant @component {
+            @layer components {
+                @slot;
+            }
+        }
+        @custom-variant @start {
+            @starting-style {
+                @slot;
+            }
+        }
+        @custom-variant ::scrollbar {
+            &::-webkit-scrollbar:is(.active, #thumb) {
+                @slot;
+            }
+        }
+    `, 'css')
+
+    expectToken(tokens, '@supports', 'keyword', ['query'])
+    expectToken(tokens, 'backdrop-filter', 'property', ['query'])
+    expectToken(tokens, '@container', 'keyword', ['query'])
+    expectToken(tokens, '42', 'number', ['query'])
+    expectToken(tokens, 'rem', 'enumMember', ['query', 'unit'])
+    expectToken(tokens, '@layer', 'keyword', ['query'])
+    expectToken(tokens, 'components', 'enumMember', ['query'])
+    expectToken(tokens, '@starting-style', 'keyword', ['query'])
+    expectToken(tokens, 'scrollbar', 'variable', ['directive', 'query'])
+    expectToken(tokens, '::', 'operator', ['pseudoElement', 'selector'])
+    expectToken(tokens, '-webkit-scrollbar', 'modifier', ['pseudoElement'])
+    expectToken(tokens, 'active', 'class', ['selector'])
+    expectToken(tokens, 'thumb', 'variable', ['selector'])
 })
 
 test.concurrent('renders inline theme modifier semantic tokens', () => {
@@ -444,6 +494,32 @@ test.concurrent('renders active semantic tokens for the CSS directive at a posit
     expectToken(tokens, '--color-primary', 'variable')
     expectToken(tokens, '$color-blue-60', 'variable')
     expect(tokens.some(({ text }) => text === 'btn')).toBe(false)
+})
+
+test.concurrent('renders active semantic tokens for custom variant blocks', () => {
+    const content = [
+        '@custom-variant @motion-safe {',
+        '    @media (prefers-reduced-motion: no-preference) {',
+        '        @slot;',
+        '    }',
+        '}',
+        '@custom-variant :interactive {',
+        '    &:is(:hover, :focus-visible) {',
+        '        @slot;',
+        '    }',
+        '}'
+    ].join('\n')
+    const doc = createDoc('css', content)
+    const languageService = new CSSLanguageService()
+    const semanticTokens = languageService.renderSemanticTokensAtPosition(doc, doc.positionAt(content.indexOf('prefers-reduced-motion') + 1))
+    const tokens = decodeSemanticTokens(doc, semanticTokens?.data ?? [])
+
+    expectToken(tokens, '@custom-variant', 'keyword', ['directive'])
+    expectToken(tokens, '@motion-safe', 'keyword', ['query'])
+    expectToken(tokens, '@media', 'keyword', ['query'])
+    expectToken(tokens, 'prefers-reduced-motion', 'property', ['query'])
+    expectToken(tokens, '@slot', 'keyword', ['directive'])
+    expect(tokens.some(({ text }) => text === 'interactive')).toBe(false)
 })
 
 test.concurrent('skips embedded semantic tokens when syntax highlighting is off', () => {

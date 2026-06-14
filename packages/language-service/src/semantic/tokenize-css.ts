@@ -159,6 +159,16 @@ function tokenizeCustomVariantPrelude(source: string, start: number, end: number
 function tokenizeSelectorPrelude(source: string, start: number, end: number, tokens: HighlightTokenItem[]) {
     for (let i = start; i < end;) {
         const char = source[i]
+        const next = source[i + 1]
+        if (char === '/' && next === '*') {
+            const close = source.indexOf('*/', i + 2)
+            i = close === -1 ? end : close + 2
+            continue
+        }
+        if (char === '"' || char === '\'') {
+            i = findCSSClosingQuote(source, i, char, end) + 1
+            continue
+        }
         if (char === ':') {
             const colonLength = source[i + 1] === ':' ? 2 : 1
             const modifier = colonLength === 2 ? 'pseudoElement' : 'pseudoClass'
@@ -175,7 +185,13 @@ function tokenizeSelectorPrelude(source: string, start: number, end: number, tok
             pushHighlightToken(tokens, ident.start, ident.value.length, 'class', 'selector.class', ['selector'])
             i = ident.end
             continue
-        } else if (char === '(' || char === ')' || char === ',' || char === '>' || char === '+' || char === '~') {
+        } else if (char === '#' && isCSSIdentStart(source[i + 1])) {
+            const ident = readCSSIdent(source, i + 1)
+            pushHighlightToken(tokens, i, 1, 'operator', 'selector.id', ['selector'])
+            pushHighlightToken(tokens, ident.start, ident.value.length, 'variable', 'selector.id', ['selector'])
+            i = ident.end
+            continue
+        } else if (char === '&' || char === '(' || char === ')' || char === '[' || char === ']' || char === ',' || char === '>' || char === '+' || char === '~') {
             pushHighlightToken(tokens, i, 1, 'operator', char === ',' || char === '>' || char === '+' || char === '~' ? 'selector.combinator' : 'selector.punctuation', ['selector'])
         } else if (isCSSIdentStart(char)) {
             const ident = readCSSIdent(source, i)
@@ -184,6 +200,57 @@ function tokenizeSelectorPrelude(source: string, start: number, end: number, tok
             continue
         }
         i++
+    }
+}
+
+function tokenizeCustomVariantBlock(source: string, start: number, end: number, tokens: HighlightTokenItem[]) {
+    for (let cursor = start; cursor < end;) {
+        cursor = skipCSSWhitespace(source, cursor)
+        if (cursor >= end) break
+
+        const char = source[cursor]
+        const next = source[cursor + 1]
+        if (char === '/' && next === '*') {
+            const close = source.indexOf('*/', cursor + 2)
+            cursor = close === -1 ? end : close + 2
+            continue
+        }
+        if (char === '"' || char === '\'') {
+            cursor = findCSSClosingQuote(source, cursor, char, end) + 1
+            continue
+        }
+
+        const statementEnd = findCSSStatementEnd(source, cursor)
+        if (statementEnd.end > end) break
+
+        if (char === '@') {
+            const atName = readCSSIdent(source, cursor + 1)
+            if (atName.value === 'slot') {
+                pushHighlightToken(tokens, cursor, atName.end - cursor, 'keyword', 'directive.keyword', ['directive'])
+                if (statementEnd.reason === 'semicolon' && statementEnd.delimiterRange && statementEnd.delimiterRange.start < end) {
+                    pushHighlightToken(tokens, statementEnd.delimiterRange.start, 1, 'operator', 'directive.terminator', ['directive'])
+                }
+            } else {
+                const preludeEnd = Math.min(statementEnd.reason === 'semicolon' ? statementEnd.end - 1 : statementEnd.end, end)
+                tokens.push(...tokenizeAtQuery(source.slice(cursor, preludeEnd), cursor))
+            }
+        } else if (statementEnd.reason === 'block') {
+            tokenizeSelectorPrelude(source, cursor, Math.min(statementEnd.end, end), tokens)
+        }
+
+        if (statementEnd.reason !== 'block' || !statementEnd.delimiterRange || statementEnd.delimiterRange.start >= end) {
+            cursor = Math.max(cursor + 1, Math.min(statementEnd.end, end))
+            continue
+        }
+
+        const blockStart = statementEnd.delimiterRange.start
+        const blockEnd = findCSSBlockEnd(source, blockStart)
+        pushHighlightToken(tokens, blockStart, 1, 'operator', 'block.brace')
+        tokenizeCustomVariantBlock(source, blockStart + 1, blockEnd === -1 ? end : Math.min(blockEnd, end), tokens)
+        if (blockEnd !== -1 && blockEnd < end) {
+            pushHighlightToken(tokens, blockEnd, 1, 'operator', 'block.brace')
+        }
+        cursor = blockEnd === -1 ? end : blockEnd + 1
     }
 }
 
@@ -284,6 +351,8 @@ function tokenizeDirectiveRule(source: string, directive: CSSDirectiveRuleRange,
         pushHighlightToken(tokens, directive.blockRange.start, 1, 'operator', 'block.brace', ['directive'])
         if (directive.name === 'settings' || directive.name === 'theme') {
             tokenizeDeclarations(source, directive.blockContentRange.start, directive.blockContentRange.end, tokens, directive.name)
+        } else if (directive.name === 'custom-variant') {
+            tokenizeCustomVariantBlock(source, directive.blockContentRange.start, directive.blockContentRange.end, tokens)
         } else if (MANAGED_DEFINITION_DIRECTIVES.has(directive.name)) {
             tokenizeManagedDefinitionBlock(source, directive.blockContentRange.start, directive.blockContentRange.end, tokens)
         }
