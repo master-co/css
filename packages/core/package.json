@@ -61,7 +61,6 @@
         "./index.css": "./src/index.css",
         "./base.css": "./src/base.css",
         "./theme.css": "./src/theme.css",
-        "./animations.css": "./src/animations.css",
         "./syntax.css": "./src/syntax.css"
     },
     "files": [
