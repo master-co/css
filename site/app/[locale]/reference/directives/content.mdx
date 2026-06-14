@@ -30,18 +30,26 @@ Directives do not behave like normal CSS rules. Consumed directives are removed 
 ## Entry markers
 Entry markers tell integrations where Master CSS should attach generated CSS.
 
-| Directive | Effect |
-|-----------|--------|
-| `@master;` | Marks the stylesheet as a lightweight Master CSS entry and inserts the generated CSS slot without loading the package stylesheet graph. |
-| `@import "@master/css";` | Marks the stylesheet as a full Master CSS entry, loads the package stylesheet graph, and includes the default layer and base stylesheet behavior. |
+### `@master`
+Marks the stylesheet as a lightweight Master CSS entry and inserts the generated CSS slot without loading the package stylesheet graph. Use it when a stylesheet should receive generated CSS but should not import the default `@master/css` stylesheet.
 
-Use `@master;` when a stylesheet should receive generated CSS but should not import the default `@master/css` stylesheet. Use `@import "@master/css";` for the normal full entry that includes the package stylesheet.
+```css
+@master;
+```
 
-Other directives such as `@settings`, `@theme`, `@source`, `@safelist`, `@blocklist`, `@compose`, `@variant`, and `@preserve` are not entry markers by themselves.
+### `@import "@master/css"`
+Marks the stylesheet as a full Master CSS entry, loads the package stylesheet graph, and includes the default layer and base stylesheet behavior. This is the normal entry marker for app stylesheets.
+
+```css
+@import "@master/css";
+```
+
+Other directive families such as `@settings`, `@theme`, `@custom-variant`, `@defaults`, `@components`, `@utilities`, `@source`, `@safelist`, `@blocklist`, `@compose`, `@variant`, and `@preserve native` are not entry markers by themselves.
 
 ---
 
-## Settings
+## Project settings
+### `@settings`
 Use `@settings` for root engine settings that affect generated CSS.
 
 ```css
@@ -68,20 +76,143 @@ For token and mode usage, see [Theme](/guide/theme).
 
 ---
 
+## Theme and variants
+Theme directives define project tokens, modes, animations, and reusable variant names. They are plan inputs, not regular stylesheet output.
+
+### `@theme`
+Defines theme tokens and managed keyframes. Token names keep their leading `--`; Master CSS uses the name after `--` for namespace resolution.
+
+```css
+@theme {
+    --color-primary: #4f46e5;
+    --spacing-card: 24;
+
+    @keyframes fade-in {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+}
+```
+
+### `@theme <mode>`
+Defines mode-specific token values. Mode blocks can override regular theme tokens and add new mode names.
+
+```css
+@theme dark {
+    --color-surface: #111827;
+    --shadow-card: 0 16px 40px rgb(0 0 0 / .36);
+}
+```
+
+### `@theme inline`
+Defines utility shorthands that are written directly into generated declarations instead of emitting CSS custom properties. Inline tokens cannot be mode-specific.
+
+```css
+@theme inline {
+    --color-brand: #4f46e5;
+    --spacing-card: 24;
+}
+```
+
+### `@theme static`
+Emits the token or managed keyframes as initial CSS resources instead of waiting for a matching class to use them. `inline` and `static` cannot be combined.
+
+```css
+@theme static {
+    --color-primary: #4f46e5;
+
+    @keyframes fade-in {
+        to { opacity: 1; }
+    }
+}
+```
+
+### `@custom-variant`
+Defines reusable condition variants and selector variants. Use condition variants as `@` suffixes, such as `animation:fade-in@motion-safe`, and selector variants as selector suffixes, such as `fg:primary:interactive`.
+
+```css
+@custom-variant @motion-safe {
+    @media (prefers-reduced-motion: no-preference) {
+        @slot;
+    }
+}
+
+@custom-variant :interactive {
+    &:is(:hover, :focus-visible) {
+        @slot;
+    }
+}
+```
+
+For token, mode, and custom variant strategy, see [Theme](/guide/theme).
+
+---
+
+## Managed definitions
+Managed definition directives create generated classes in the matching cascade layer. The first level inside each block is a bare class name, not a selector.
+
+### `@defaults`
+Defines managed classes in the `defaults` layer.
+
+```css
+@defaults {
+    prose {
+        @compose "fg:neutral leading:lg";
+    }
+}
+```
+
+### `@components`
+Defines managed component classes in the `components` layer.
+
+```css
+@components {
+    btn {
+        @compose "inline-flex ai:center jc:center";
+    }
+}
+```
+
+### `@utilities`
+Defines managed custom utility classes in the `utilities` layer. Utilities still win over components because `@master/css/base.css` declares `@layer theme, base, defaults, components, utilities;`.
+
+```css
+@utilities {
+    content-auto {
+        content-visibility: auto;
+    }
+}
+```
+
+Managed definitions accept native declarations, `@compose`, nested selectors, native nested at-rules, and `@variant` condition blocks.
+
+For abstraction guidance, see [Reusing styles](/guide/reusing-styles).
+
+---
+
 ## Source boundaries
 Use `@source` directives to describe which files the extractor should scan.
 
+### `@source`
+Maps to extractor `include` and broadly includes files that may contain classes.
+
 ```css
 @source "src/**/*.{html,js,jsx,ts,tsx,vue,svelte,astro,mdx}";
-@source not "src/**/*.test.tsx";
-@source required "src/generated/critical-classes.ts";
 ```
 
-| Directive | Maps to | Effect |
-|-----------|---------|--------|
-| `@source "<glob>";` | `include` | Broadly includes files that may contain classes. |
-| `@source not "<glob>";` | `exclude` | Excludes noisy files such as tests, generated output, or vendor code. |
-| `@source required "<glob>";` | `required` | Scans mandatory files even when they would otherwise be excluded. |
+### `@source not`
+Maps to extractor `exclude` and removes noisy files such as tests, generated output, or vendor code.
+
+```css
+@source not "src/**/*.test.tsx";
+```
+
+### `@source required`
+Maps to extractor `required` and scans mandatory files even when they would otherwise be excluded.
+
+```css
+@source required "src/generated/critical-classes.ts";
+```
 
 Bare source globs are resolved from the extractor `cwd`. Globs that start with `./` or `../` are resolved relative to the CSS file that declares the directive.
 
@@ -92,21 +223,27 @@ For the scanning model, see [Scanning latent classes](/guide/scanning-latent-cla
 ## Candidate policy
 Use `@safelist` and `@blocklist` for direct class candidate policy.
 
+### `@safelist`
+`@safelist` adds bounded class candidates that do not exist in scanned source. Safelisted candidates are still validated before CSS is generated.
+
 ```css
 @safelist "dialog-open translateY(-5):hover bg:primary@dark";
+```
+
+### `@blocklist`
+`@blocklist` removes candidates that broad scanning accepted by accident. CSS `@blocklist` values accept exact strings and wildcard patterns with `*` and `?`.
+
+```css
 @blocklist "debug-*";
 @blocklist "example-token";
 ```
-
-`@safelist` adds bounded class candidates that do not exist in scanned source. Safelisted candidates are still validated before CSS is generated.
-
-`@blocklist` removes candidates that broad scanning accepted by accident. CSS `@blocklist` values accept exact strings and wildcard patterns with `*` and `?`.
 
 Use these directives for explicit source-scanning exceptions, not as a replacement for complete class strings in source.
 
 ---
 
-## Composition
+## Rule-local composition
+### `@compose`
 Use `@compose` inside a style rule to lower a quoted Master CSS class list into native declarations for the current selector.
 
 ```css
@@ -150,6 +287,7 @@ Composed declarations are merged by Master CSS rule priority. Native declaration
 ---
 
 ## Conditional blocks
+### `@variant`
 Use `@variant` inside managed definitions or native style rules to share the current selector under a Master CSS condition.
 
 ```css
@@ -171,6 +309,7 @@ Use `@variant` inside managed definitions or native style rules to share the cur
 ---
 
 ## Native CSS preservation
+### `@preserve native`
 Use `@preserve native;` when a Master-managed stylesheet contains native CSS class rules that must not be removed by native CSS pruning.
 
 ```css
