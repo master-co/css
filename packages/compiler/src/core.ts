@@ -94,10 +94,6 @@ const MASTER_CUSTOM_AT_RULES = {
         prelude: '*',
         body: 'style-block'
     },
-    animations: {
-        prelude: null,
-        body: 'style-block'
-    },
     defaults: {
         prelude: null,
         body: 'style-block'
@@ -822,9 +818,6 @@ function collectVariantTemplateBranches(
         if (parseMasterVariantBlock(child)) {
             throw new Error('@variant cannot be used inside @custom-variant')
         }
-        if (isAnimationsDefinition(child)) {
-            throw new Error('@animations cannot be used inside @custom-variant')
-        }
         if (child.type === 'keyframes') {
             throw new Error('@keyframes cannot be used inside @custom-variant')
         }
@@ -904,10 +897,6 @@ function parseVariantDefinition(rule: any, parsed: ParsedDirectives) {
 
 function isCustomVariantDefinition(rule: Rule) {
     return (rule.type === 'unknown' || rule.type === 'custom') && rule.value?.name === 'custom-variant'
-}
-
-function isAnimationsDefinition(rule: Rule) {
-    return (rule.type === 'unknown' || rule.type === 'custom') && rule.value?.name === 'animations'
 }
 
 function getManagedDefinitionDirectiveLayer(rule: any): CSSDirectiveLayerName | undefined {
@@ -1283,12 +1272,8 @@ function parseNativeRuleBody(
             continue
         }
 
-        if (isAnimationsDefinition(child)) {
-            throw new Error('@animations must be top-level')
-        }
-
         if (child.type === 'keyframes') {
-            throw new Error('@keyframes is not allowed inside @variant. Move managed animation definitions to top-level @animations.')
+            throw new Error('@keyframes is not allowed inside @variant. Move managed animation definitions to top-level @theme.')
         }
 
         if (compose) {
@@ -1362,23 +1347,6 @@ function parseKeyframes(rule: any, planInput: CSSDirectivePlanInput) {
     planInput.animations[name] = keyframes
 }
 
-function parseAnimationsRule(rule: any, parsed: ParsedDirectives) {
-    const prelude = formatPrelude(getCustomRulePrelude(rule))
-    if (prelude) {
-        throw new Error('@animations does not accept a prelude')
-    }
-    const body = getCustomRuleBody(rule)
-    if (!Array.isArray(body?.value)) {
-        throw new Error('@animations requires a style block')
-    }
-    for (const child of body.value as Rule[]) {
-        if (child.type !== 'keyframes') {
-            throw new Error('@animations only accepts @keyframes definitions')
-        }
-        parseKeyframes(child, parsed.planInput)
-    }
-}
-
 function getCustomRulePrelude(rule: any) {
     return rule.prelude ?? rule.value?.prelude
 }
@@ -1437,10 +1405,7 @@ function parseSettingsChildRule(child: Rule, parsed: ParsedDirectives, section: 
         return
     }
     if (child.type === 'keyframes') {
-        throw new Error('@settings does not accept @keyframes. Move managed animation definitions to top-level @animations.')
-    }
-    if (isAnimationsDefinition(child)) {
-        throw new Error('@animations must be top-level')
+        throw new Error('@settings does not accept @keyframes. Move managed animation definitions to top-level @theme.')
     }
     if (child.type === 'style') {
         parseSettingsStyleRule(child)
@@ -1468,10 +1433,18 @@ function parseThemeRule(rule: any, parsed: ParsedDirectives) {
     }
     if (mode) addThemeMode(parsed.planInput, mode)
     for (const child of body.value as Rule[]) {
-        if (child.type !== 'nested-declarations') {
-            throw new Error('@theme only accepts theme token declarations')
+        if (child.type === 'nested-declarations') {
+            parseThemeDeclarations(child.value.declarations, parsed.planInput, mode, inline)
+            continue
         }
-        parseThemeDeclarations(child.value.declarations, parsed.planInput, mode, inline)
+        if (child.type === 'keyframes') {
+            if (mode || inline) {
+                throw new Error('@theme keyframes cannot be mode-specific or inline')
+            }
+            parseKeyframes(child, parsed.planInput)
+            continue
+        }
+        throw new Error('@theme only accepts theme token declarations and @keyframes definitions')
     }
 }
 
@@ -1534,7 +1507,7 @@ function parseManagedDefinitionDirectiveChildRule(
         throw new Error(`@${directiveName} only accepts bare managed names and nested at-rules`)
     }
     if (child.type === 'keyframes') {
-        throw new Error('@keyframes is not allowed inside managed definition directives. Move managed animation definitions to top-level @animations.')
+        throw new Error('@keyframes is not allowed inside managed definition directives. Move managed animation definitions to top-level @theme.')
     }
     if (child.type === 'style') {
         const selectorDefinition = parseManagedDefinitionNameSelector(child.value.selectors)
@@ -1550,9 +1523,6 @@ function parseManagedDefinitionDirectiveChildRule(
     }
     if (isCustomVariantDefinition(child)) {
         throw new Error('@custom-variant must be top-level')
-    }
-    if (isAnimationsDefinition(child)) {
-        throw new Error('@animations must be top-level')
     }
     throw new Error(`Unsupported rule inside @${directiveName}`)
 }
@@ -1633,12 +1603,6 @@ export function compileCSS(source: string, options: CompileCSSOptions = {}): Com
                                 throw new Error('@theme must be top-level')
                             }
                             parseThemeRule(rule, parsed)
-                            return []
-                        case 'animations':
-                            if (ruleDepth !== 0) {
-                                throw new Error('@animations must be top-level')
-                            }
-                            parseAnimationsRule(rule, parsed)
                             return []
                         case 'defaults':
                         case 'components':

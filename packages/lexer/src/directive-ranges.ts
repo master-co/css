@@ -18,7 +18,6 @@ export type CSSDirectiveRangeName =
     | 'blocklist'
     | 'preserve'
     | 'theme'
-    | 'animations'
     | 'defaults'
     | 'components'
     | 'utilities'
@@ -60,7 +59,6 @@ export const CSS_DIRECTIVE_RANGE_NAMES = [
     'blocklist',
     'preserve',
     'theme',
-    'animations',
     'defaults',
     'components',
     'utilities',
@@ -112,6 +110,7 @@ export function collectCSSDeclarationRanges(source: string, start: number, end: 
     let quote = ''
     let comment = false
     let depth = 0
+    let blockDepth = 0
     let propertyStart = -1
     let colon = -1
 
@@ -179,6 +178,19 @@ export function collectCSSDeclarationRanges(source: string, start: number, end: 
             depth = Math.max(0, depth - 1)
             continue
         }
+        if (char === '{') {
+            propertyStart = -1
+            colon = -1
+            blockDepth++
+            continue
+        }
+        if (char === '}') {
+            propertyStart = -1
+            colon = -1
+            blockDepth = Math.max(0, blockDepth - 1)
+            continue
+        }
+        if (blockDepth !== 0) continue
         if (depth !== 0) continue
         if (propertyStart === -1 && isCSSIdentStart(char)) {
             propertyStart = index
@@ -189,9 +201,6 @@ export function collectCSSDeclarationRanges(source: string, start: number, end: 
         }
         if (char === ';') {
             flushDeclaration(index, { start: index, end: index + 1 })
-            propertyStart = -1
-            colon = -1
-        } else if (char === '{' || char === '}') {
             propertyStart = -1
             colon = -1
         }

@@ -306,7 +306,7 @@ Use one `@import '@master/css'` entry for each generated stylesheet root. That i
 ### Native CSS entries
 Regular CSS outside Master CSS directives remains native CSS. When a stylesheet imports `@master/css`, integrations treat that stylesheet as a pruning root by default and prune class selectors against detected source classes.
 
-Those native rules can also pull matching theme variables referenced by `var(--*)` and managed `@animations` keyframes referenced by animation declarations. Add `@preserve native;` when native CSS must be preserved.
+Those native rules can also pull matching theme variables referenced by `var(--*)` and managed `@theme` keyframes referenced by animation declarations. Add `@preserve native;` when native CSS must be preserved.
 
 ```css name=src/style.css
 @import '@master/css';
@@ -360,9 +360,7 @@ Rendering modes change delivery, not the authoring model. The source of truth is
 @theme {
     --color-primary: #4f46e5;
     --breakpoint-md: 768;
-}
 
-@animations {
     @keyframes fade-in {
         from { opacity: 0; }
         to { opacity: 1; }
@@ -383,7 +381,7 @@ Rendering modes change delivery, not the authoring model. The source of truth is
 }
 ```
 
-These CSS-first directives are plan inputs. The compiler lowers tokens, settings, variants, components, utilities, animations, and native composed rules into a `MasterCSSPlan`. Runtime rendering, static rendering, server rendering, language tooling, linting, and framework integrations all consume that same IR, so class syntax and cascade behavior stay consistent even when CSS is delivered differently.
+These CSS-first directives are plan inputs. The compiler lowers tokens, managed keyframes, settings, variants, components, utilities, and native composed rules into a `MasterCSSPlan`. Runtime rendering, static rendering, server rendering, language tooling, linting, and framework integrations all consume that same IR, so class syntax and cascade behavior stay consistent even when CSS is delivered differently.
 
 | Artifact | Produced by | Used by | Purpose |
 | --- | --- | --- | --- |

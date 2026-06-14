@@ -206,16 +206,16 @@ test.concurrent('renders semantic tokens for CSS directives', () => {
             --color-primary: $color-blue-60/.8;
         }
 
-        @custom-variant @motion-safe { @media (prefers-reduced-motion: no-preference) { @slot; } }
-        @custom-variant :interactive { &:is(:hover, :focus-visible) { @slot; } }
-
-        @animations {
+        @theme {
             @keyframes fade {
                 to {
                     opacity: 1;
                 }
             }
         }
+
+        @custom-variant @motion-safe { @media (prefers-reduced-motion: no-preference) { @slot; } }
+        @custom-variant :interactive { &:is(:hover, :focus-visible) { @slot; } }
 
         @defaults {
             reset {
@@ -257,7 +257,8 @@ test.concurrent('renders semantic tokens for CSS directives', () => {
     expectToken(tokens, '@motion-safe', 'keyword', ['query'])
     expectToken(tokens, '@slot', 'keyword', ['directive'])
     expectToken(tokens, 'interactive', 'variable', ['directive', 'query'])
-    expectToken(tokens, '@animations', 'keyword', ['directive'])
+    expect(tokens).not.toContainEqual({ text: '@' + 'animations', type: 'keyword', modifiers: ['directive'] })
+    expect(tokens).not.toContainEqual({ text: 'opacity', type: 'variable', modifiers: [] })
     expectToken(tokens, '@defaults', 'keyword', ['directive'])
     expectToken(tokens, 'reset', 'class', ['selector'])
     expectToken(tokens, '@components', 'keyword', ['directive'])

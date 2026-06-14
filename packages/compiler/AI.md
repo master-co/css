@@ -6,7 +6,7 @@
 
 ## Inputs And Outputs
 
-- Input: CSS containing `@settings`, `@theme`, `@animations`, `@custom-variant`, managed `@defaults`, `@components`, and `@utilities` definition directives, condition blocks with `@variant`, style rules with `@compose`, top-level extraction policy directives, and top-level native `@keyframes`.
+- Input: CSS containing `@settings`, `@theme`, `@custom-variant`, managed `@defaults`, `@components`, and `@utilities` definition directives, condition blocks with `@variant`, style rules with `@compose`, top-level extraction policy directives, and top-level native `@keyframes`.
 - Output: `MasterCSSPlan`, shared directive data for lower-level consumers, style definitions, native CSS with consumed Master directives removed, native class names, warnings, standalone directive metadata, and CSS import dependencies.
 - CSS plan directives such as `@settings`, `@theme`, and `@custom-variant` define plan input. Defining a component, utility, variable, variant, or animation does not emit CSS by itself; the class still needs to be used or extracted.
 - `@master;` is only a lightweight entry marker.
@@ -28,7 +28,7 @@
 
 - `@settings { root-size: 16; }`
 - `@settings { important: on; }` and `@settings { important: off; }`
-- `@theme { --color-primary: #123; --breakpoint-md: 768; }`
+- `@theme { --color-primary: #123; --breakpoint-md: 768; @keyframes fade { from { opacity: 0; } to { opacity: 1; } } }`
 - `@theme dark { --color-primary: #456; }`
 - The compiler records mode declarations as written. Plan settings and engine execution decide which modes are defaults.
 - `@custom-variant @motion-safe { @media (prefers-reduced-motion: no-preference) { @slot; } }`
@@ -38,11 +38,10 @@
 - `@utilities { content-auto { content-visibility: auto; } }`
 - `@utilities { print-hidden { @variant @print { display: none; } } }`
 - `.card { @compose "block"; @variant @dark { @compose "fg:primary"; } }`
-- `@animations { @keyframes fade { from { opacity: 0; } to { opacity: 1; } } }`
 - Managed definition directives use first-level bare names, not selectors. Put selector states and descendants in nested selectors inside the named block.
 - `@compose` is allowed in managed class definitions and native style rules, including inside `@variant`.
 - Utilities defined in CSS are static utilities only.
-- Top-level native `@keyframes` remain native CSS. Use top-level `@animations` when keyframes should become managed plan animations.
+- Top-level native `@keyframes` remain native CSS. Put direct `@keyframes` inside a top-level non-mode, non-inline `@theme` block when keyframes should become managed plan animations.
 - Native `@layer` blocks are never compiler-managed. Use `@defaults`, `@components`, or `@utilities` for managed definitions, and keep regular CSS selectors in native CSS.
 - The compiler package does not scan unrelated `.css` files for class usage. Pair CSS plan entries with static mode or pass extracted classes through compiler options when filtering native CSS.
 - CSS/theme/source tests that depend on `.css` files belong here rather than in core tests.

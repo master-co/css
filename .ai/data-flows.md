@@ -40,7 +40,7 @@ Risks:
 project CSS files containing @master; or @import "@master/css"
   -> @master/css-plan discovers project entry files only
   -> @master/css-compiler resolves CSS imports and package style imports
-  -> compiler parses @theme token/mode directives, @settings root options, top-level @custom-variant definitions, @animations keyframes, and @defaults/@components/@utilities managed definition directives
+  -> compiler parses @theme token/mode/keyframe directives, @settings root options, top-level @custom-variant definitions, and @defaults/@components/@utilities managed definition directives
   -> compiler lowers directive result into MasterCSSPlan
   -> build tools / ESLint / language-server receive the same semantic project plan
   -> MasterCSS executes plan variables, animations, selectors, at-rules, utilities

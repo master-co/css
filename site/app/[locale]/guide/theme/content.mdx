@@ -372,11 +372,7 @@ Motion belongs in the theme when timing, easing, and keyframes are shared by mor
     --duration-slow: 300ms;
     --delay-short: 80ms;
     --easing-smooth: cubic-bezier(.4, 0, .2, 1);
-}
 
-@custom-variant @motion-safe { @media (prefers-reduced-motion: no-preference) { @slot; } }
-
-@animations {
     @keyframes fade-in {
         from {
             opacity: 0;
@@ -389,6 +385,8 @@ Motion belongs in the theme when timing, easing, and keyframes are shared by mor
         }
     }
 }
+
+@custom-variant @motion-safe { @media (prefers-reduced-motion: no-preference) { @slot; } }
 ```
 
 ```html

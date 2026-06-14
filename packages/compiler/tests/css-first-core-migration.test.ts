@@ -120,9 +120,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
         const { plan } = compileCSSPlan(`
             @theme {
                 --color-primary: #ff0;
-            }
 
-            @animations {
                 @keyframes fade {
                     to {
                         background: var(--color-primary);
@@ -140,6 +138,11 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
         })
         const css = createCSS(plan)
 
+        expect(plan.animations?.fade).toEqual({
+            to: {
+                background: 'var(--color-primary)'
+            }
+        })
         css.add('btn')
         expect(css.themeLayer.text).toContain(':root{--color-primary:#ff0}')
         expect(css.animationsNonLayer.text).toContain('@keyframes fade{to{background:var(--color-primary)}}')
@@ -361,6 +364,28 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
                 --color-primary: #123;
             }
         `, { basePlan: defaultPlan })).toThrow('@theme inline cannot be mode-specific')
+    })
+
+    test('rejects mode-specific and inline managed keyframes in theme blocks', () => {
+        expect(() => compileCSSPlan(`
+            @theme dark {
+                @keyframes fade {
+                    to {
+                        opacity: 1;
+                    }
+                }
+            }
+        `, { basePlan: defaultPlan })).toThrow('@theme keyframes cannot be mode-specific or inline')
+
+        expect(() => compileCSSPlan(`
+            @theme inline {
+                @keyframes fade {
+                    to {
+                        opacity: 1;
+                    }
+                }
+            }
+        `, { basePlan: defaultPlan })).toThrow('@theme keyframes cannot be mode-specific or inline')
     })
 
     test('normalizes CSS color functions and preserves alpha alias dependencies through CSS-first lowering', () => {

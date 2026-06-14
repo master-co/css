@@ -17,7 +17,7 @@ interface TransformStyleSourceOptions {
 }
 
 function hasMasterStylePlanDirective(source: string) {
-    return source.includes('@settings') || source.includes('@theme') || source.includes('@animations') || source.includes('@master')
+    return source.includes('@settings') || source.includes('@theme') || source.includes('@master')
 }
 
 export async function transformStyleSource(

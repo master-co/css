@@ -282,9 +282,7 @@ describe('style CSS extraction helpers', () => {
             @theme {
                 --animation-main: scale 1s;
                 --color-primary: #ff0000;
-            }
 
-            @animations {
                 @keyframes fade {
                     from {
                         opacity: 0;

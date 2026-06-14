@@ -18,7 +18,7 @@ interface LoaderContext {
 }
 
 function hasMasterStylePlanDirective(source: string) {
-    return source.includes('@settings') || source.includes('@theme') || source.includes('@animations') || source.includes('@master')
+    return source.includes('@settings') || source.includes('@theme') || source.includes('@master')
 }
 
 async function transformStyleSource(resourcePath: string, source: string, projectDir?: string) {
