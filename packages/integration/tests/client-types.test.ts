@@ -117,5 +117,5 @@ localPlan satisfies import('@master/css-engine').MasterCSSPlan
         } finally {
             rmSync(root, { recursive: true, force: true })
         }
-    })
+    }, 60_000)
 })

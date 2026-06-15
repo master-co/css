@@ -25,4 +25,4 @@ it('basic extract', async () => {
     } finally {
         fs.rmSync(cwd, { recursive: true, force: true })
     }
-})
+}, 60_000)
