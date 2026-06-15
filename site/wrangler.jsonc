@@ -21,6 +21,12 @@
     "images": {
         "binding": "IMAGES"
     },
+    "kv_namespaces": [
+        {
+            "binding": "PLAY_SHARES",
+            "id": "d1211ca89fed447c9fa17966091faea8"
+        }
+    ],
     "routes": [
         {
             "pattern": "css.master.co/*",
@@ -30,13 +36,15 @@
     "vars": {
         "NEXT_PUBLIC_HOST": "css.master.co",
         "NEXT_PUBLIC_URL": "https://css.master.co",
-        "NEXT_PUBLIC_PLAY_API_URL": "https://css.master.co/api/play"
+        "PLAY_SHARE_TTL_SECONDS": "2592000",
+        "PLAY_ALLOWED_ORIGINS": "https://css.master.co,http://localhost:3000,http://127.0.0.1:3000,http://localhost:8787,http://127.0.0.1:8787,https://localhost:8787,https://127.0.0.1:8787"
     },
     "previews": {
         "vars": {
             "NEXT_PUBLIC_HOST": "rc.css.master.co",
             "NEXT_PUBLIC_URL": "https://rc.css.master.co",
-            "NEXT_PUBLIC_PLAY_API_URL": "https://css.master.co/api/play"
+            "PLAY_SHARE_TTL_SECONDS": "2592000",
+            "PLAY_ALLOWED_ORIGINS": "https://rc.css.master.co,http://localhost:3000,http://127.0.0.1:3000,http://localhost:8787,http://127.0.0.1:8787,https://localhost:8787,https://127.0.0.1:8787"
         }
     }
 }

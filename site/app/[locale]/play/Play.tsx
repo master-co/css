@@ -62,7 +62,7 @@ const editorHTMLOptions: any = {
 }
 
 const template = templates[0]
-const playShareApiURL = (process.env.NEXT_PUBLIC_PLAY_API_URL || '/api/play').replace(/\/+$/, '')
+const playShareApiURL = '/api/play'
 let compilerPromise: Promise<typeof import('@master/css-compiler/browser')> | undefined
 let playHighlighterPromise: ReturnType<typeof createHighlighter> | undefined
 // shikiToMonaco installs global Monaco providers and patches setTheme without

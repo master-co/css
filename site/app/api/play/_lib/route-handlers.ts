@@ -1,10 +1,12 @@
-interface KVNamespace {
+import { getCloudflareContext } from '@opennextjs/cloudflare'
+
+interface PlayKVNamespace {
     get(key: string): Promise<string | null>
     put(key: string, value: string, options?: { expirationTtl?: number }): Promise<void>
 }
 
-interface Env {
-    PLAY_SHARES: KVNamespace
+export interface PlayEnv {
+    PLAY_SHARES?: PlayKVNamespace
     PLAY_ALLOWED_ORIGINS?: string
     PLAY_SHARE_TTL_SECONDS?: string
 }
@@ -16,39 +18,62 @@ interface PlayShareFile {
     content?: string
 }
 
-const apiPrefix = '/api/play'
+interface PlayShareRouteProps {
+    params: Promise<{ id?: string }> | { id?: string }
+}
+
 const shareKeyPrefix = 'share:'
 const maxPayloadBytes = 256 * 1024
 const maxFiles = 8
+const defaultShareTtlSeconds = 60 * 60 * 24 * 30
+const shareIdPattern = /^[A-Za-z0-9_-]{8,48}$/
 const validLanguages = new Set(['html', 'javascript', 'css', 'plaintext'])
+const defaultAllowedOrigins = [
+    'https://css.master.co',
+    'https://rc.css.master.co',
+    'http://localhost:3000',
+    'http://127.0.0.1:3000',
+    'http://localhost:8787',
+    'http://127.0.0.1:8787',
+    'https://localhost:8787',
+    'https://127.0.0.1:8787'
+]
 
-export default {
-    async fetch(request: Request, env: Env) {
-        const url = new URL(request.url)
-        const pathname = url.pathname.replace(/\/+$/, '') || '/'
-
-        if (request.method === 'OPTIONS') {
-            return new Response(null, { status: 204, headers: corsHeaders(request, env) })
-        }
-
-        if (request.method === 'GET' && pathname === `${apiPrefix}/health`) {
-            return json({ ok: true }, request, env)
-        }
-
-        if (request.method === 'POST' && pathname === `${apiPrefix}/shares`) {
-            return createShare(request, env)
-        }
-
-        const shareMatch = pathname.match(/^\/api\/play\/shares\/([A-Za-z0-9_-]{8,48})$/)
-        if (request.method === 'GET' && shareMatch) {
-            return getShare(shareMatch[1], request, env)
-        }
-
-        return json({ error: 'Not found' }, request, env, 404)
-    }
+export async function OPTIONS(request: Request) {
+    return handlePlayOptions(request, await getPlayEnv())
 }
 
-async function createShare(request: Request, env: Env) {
+export async function GET_HEALTH(request: Request) {
+    return getPlayHealth(request, await getPlayEnv())
+}
+
+export async function POST_SHARES(request: Request) {
+    return createPlayShare(request, await getPlayEnv())
+}
+
+export async function GET_SHARE(request: Request, props: PlayShareRouteProps) {
+    const env = await getPlayEnv()
+    const { id = '' } = await props.params
+    if (!shareIdPattern.test(id)) {
+        return json({ error: 'Not found' }, request, env, 404)
+    }
+    return getPlayShare(id, request, env)
+}
+
+export function handlePlayOptions(request: Request, env: PlayEnv = {}) {
+    return new Response(null, { status: 204, headers: corsHeaders(request, env) })
+}
+
+export function getPlayHealth(request: Request, env: PlayEnv = {}) {
+    return json({ ok: true }, request, env)
+}
+
+export async function createPlayShare(request: Request, env: PlayEnv) {
+    const store = env.PLAY_SHARES
+    if (!store) {
+        return json({ error: 'Play shares storage is not configured' }, request, env, 500)
+    }
+
     if (!isAllowedOrigin(request, env)) {
         return json({ error: 'Origin not allowed' }, request, env, 403)
     }
@@ -85,15 +110,20 @@ async function createShare(request: Request, env: Env) {
         return json({ error: 'Share payload is too large' }, request, env, 413)
     }
 
-    const id = await createUniqueShareId(env)
+    const id = await createUniqueShareId(store)
     const expirationTtl = getExpirationTtl(env)
-    await env.PLAY_SHARES.put(shareKeyPrefix + id, record, expirationTtl ? { expirationTtl } : undefined)
+    await store.put(shareKeyPrefix + id, record, expirationTtl ? { expirationTtl } : undefined)
 
     return json({ id }, request, env, 201)
 }
 
-async function getShare(id: string, request: Request, env: Env) {
-    const value = await env.PLAY_SHARES.get(shareKeyPrefix + id)
+export async function getPlayShare(id: string, request: Request, env: PlayEnv) {
+    const store = env.PLAY_SHARES
+    if (!store) {
+        return json({ error: 'Play shares storage is not configured' }, request, env, 500)
+    }
+
+    const value = await store.get(shareKeyPrefix + id)
     if (!value) {
         return json({ error: 'Share not found' }, request, env, 404)
     }
@@ -105,6 +135,11 @@ async function getShare(id: string, request: Request, env: Env) {
             'cache-control': 'public, max-age=60'
         }
     })
+}
+
+async function getPlayEnv(): Promise<PlayEnv> {
+    const { env } = await getCloudflareContext({ async: true })
+    return env as PlayEnv
 }
 
 function validateFiles(body: unknown): { value: PlayShareFile[] } | { error: string } {
@@ -144,10 +179,10 @@ function normalizeString(value: unknown, maxLength: number) {
     return value.slice(0, maxLength)
 }
 
-async function createUniqueShareId(env: Env) {
+async function createUniqueShareId(store: PlayKVNamespace) {
     for (let attempt = 0; attempt < 3; attempt++) {
         const id = createShareId()
-        if (!await env.PLAY_SHARES.get(shareKeyPrefix + id)) {
+        if (!await store.get(shareKeyPrefix + id)) {
             return id
         }
     }
@@ -163,12 +198,12 @@ function createShareId() {
     return btoa(value).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')
 }
 
-function getExpirationTtl(env: Env) {
+function getExpirationTtl(env: PlayEnv) {
     const value = Number(env.PLAY_SHARE_TTL_SECONDS)
-    return Number.isFinite(value) && value > 0 ? Math.floor(value) : undefined
+    return Number.isFinite(value) && value > 0 ? Math.floor(value) : defaultShareTtlSeconds
 }
 
-function json(value: unknown, request: Request, env: Env, status = 200) {
+function json(value: unknown, request: Request, env: PlayEnv, status = 200) {
     return new Response(JSON.stringify(value), {
         status,
         headers: {
@@ -179,7 +214,7 @@ function json(value: unknown, request: Request, env: Env, status = 200) {
     })
 }
 
-function corsHeaders(request: Request, env: Env) {
+function corsHeaders(request: Request, env: PlayEnv) {
     const origin = request.headers.get('origin')
     const allowedOrigin = getAllowedOrigin(origin, env)
     return {
@@ -190,18 +225,31 @@ function corsHeaders(request: Request, env: Env) {
     }
 }
 
-function isAllowedOrigin(request: Request, env: Env) {
+function isAllowedOrigin(request: Request, env: PlayEnv) {
     const origin = request.headers.get('origin')
     return !origin || Boolean(getAllowedOrigin(origin, env))
 }
 
-function getAllowedOrigin(origin: string | null, env: Env) {
+function getAllowedOrigin(origin: string | null, env: PlayEnv) {
     if (!origin) return '*'
-    const allowedOrigins = (env.PLAY_ALLOWED_ORIGINS || 'https://css.master.co')
+    const normalizedOrigin = normalizeOrigin(origin)
+    if (!normalizedOrigin) return ''
+    const allowedOrigins = (env.PLAY_ALLOWED_ORIGINS || defaultAllowedOrigins.join(','))
         .split(',')
         .map((value) => value.trim())
         .filter(Boolean)
 
-    if (allowedOrigins.includes('*')) return origin
-    return allowedOrigins.includes(origin) ? origin : ''
+    if (allowedOrigins.includes('*')) return normalizedOrigin
+    return allowedOrigins.some((allowedOrigin) => normalizeOrigin(allowedOrigin) === normalizedOrigin)
+        ? normalizedOrigin
+        : ''
+}
+
+function normalizeOrigin(origin: string | null) {
+    if (!origin) return ''
+    try {
+        return new URL(origin).origin
+    } catch {
+        return ''
+    }
 }

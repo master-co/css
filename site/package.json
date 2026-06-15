@@ -15,6 +15,7 @@
         "preview:cloudflare-workers": "pnpm build:cloudflare-workers && opennextjs-cloudflare preview",
         "deploy:cloudflare-workers": "pnpm build:cloudflare-workers && opennextjs-cloudflare deploy",
         "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts",
+        "test:play": "tsx --test app/api/play/_lib/route-handlers.test.ts",
         "test:llms": "tsx --test scripts/generate-llms-txt.test.ts",
         "start": "next start",
         "lint": "next lint",
