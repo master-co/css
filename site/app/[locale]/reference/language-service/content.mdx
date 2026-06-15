@@ -37,6 +37,19 @@ import { SEMANTIC_TOKENS_LEGEND } from '@master/css-language-service'
 ```
 <DocProp defaultValue={SEMANTIC_TOKENS_LEGEND} types={['SemanticTokensLegend']} />
 
+### Browser semantic tokens
+Use the browser subpath when a web editor needs Master CSS semantic tokens without the Node-oriented `CSSLanguageService` class.
+```ts
+import {
+    SEMANTIC_TOKENS_LEGEND,
+    renderBrowserSemanticTokens
+} from '@master/css-language-service/browser'
+
+const semanticTokens = renderBrowserSemanticTokens(source, 'html', { plan })
+```
+
+The browser helper supports CSS documents and quoted `class` or `className` attributes in HTML. It returns encoded semantic token data that can be passed to editors such as Monaco together with `SEMANTIC_TOKENS_LEGEND`.
+
 ---
 
 ## API Reference

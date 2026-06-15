@@ -59,6 +59,11 @@
             "types": "./dist/shiki.d.ts",
             "import": "./dist/shiki.mjs",
             "default": "./dist/shiki.mjs"
+        },
+        "./browser": {
+            "types": "./dist/browser.d.ts",
+            "import": "./dist/browser.mjs",
+            "default": "./dist/browser.mjs"
         }
     },
     "files": [

@@ -27,6 +27,8 @@ import HeaderContent from 'internal/components/HeaderContent'
 import createHighlighter, { themes } from 'internal/utils/create-highlighter'
 import { useApp } from 'internal/contexts/app'
 import { shikiToMonaco } from '@shikijs/monaco'
+import { defaultPlan, type MasterCSSPlan } from '@master/css'
+import { renderBrowserSemanticTokens, SEMANTIC_TOKENS_LEGEND } from '@master/css-language-service/browser'
 
 if (typeof window !== 'undefined') {
     loader.config({
@@ -52,7 +54,8 @@ const editorOptions: editor.IStandaloneEditorConstructionOptions = {
     overviewRulerLanes: 0,
     lineHeight: 22,
     fontSize: 13,
-    fontFamily: typeof monoFallbackFont === 'string' ? monoFallbackFont : 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace'
+    fontFamily: typeof monoFallbackFont === 'string' ? monoFallbackFont : 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
+    'semanticHighlighting.enabled': true
 }
 
 const editorHTMLOptions: any = {
@@ -63,14 +66,14 @@ const editorHTMLOptions: any = {
 
 const template = templates[0]
 const playShareApiURL = '/api/play'
-let compilerPromise: Promise<typeof import('@master/css-compiler/browser')> | undefined
+let compilerPromise: Promise<typeof import('./compile-play-css')> | undefined
 let playHighlighterPromise: ReturnType<typeof createHighlighter> | undefined
 // shikiToMonaco installs global Monaco providers and patches setTheme without
 // returning disposables. Keep one highlighter alive for those closures.
 const shikiMonacoRegistrations = new WeakMap<Monaco, Promise<void>>()
 
 function loadCompiler() {
-    compilerPromise ??= import('@master/css-compiler/browser')
+    compilerPromise ??= import('./compile-play-css')
     return compilerPromise
 }
 
@@ -256,9 +259,12 @@ export default function Play({ shareId }: PlayProps = {}) {
     const previewIframeRef = useRef<HTMLIFrameElement>(null)
     const filesRef = useRef<PlayFile[]>(template.files)
     const compiledCSSRef = useRef('')
+    const compiledPlanRef = useRef<MasterCSSPlan>(defaultPlan)
     const compileTicketRef = useRef(0)
     const skipNextShareLoadRef = useRef('')
     const copiedTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+    const semanticTokenListenersRef = useRef(new Set<() => void>())
+    const semanticProviderDisposablesRef = useRef<{ dispose(): void }[]>([])
     const [files, setFiles] = useState<PlayFile[]>(template.files)
     const [currentShareId, setCurrentShareId] = useState(shareId || pathShareId)
     const [baselineFilesText, setBaselineFilesText] = useState(() => stringifyFiles(template.files))
@@ -302,24 +308,42 @@ export default function Play({ shareId }: PlayProps = {}) {
         setCurrentShareId(shareId || pathShareId)
     }, [pathShareId, shareId])
 
-    /**
-     * Avoid keeping mobile-only Preview or Generated CSS tabs selected when resizing up.
-     */
-    useEffect(() => {
-        const onResize = () => {
-            if (window.innerWidth >= breakpointVariableValues.md) {
-                if (tab === 'Preview' || tab === 'Generated CSS') {
-                    pushShallowURL('tab', files[0].title)
-                }
-            } else {
-                pushShallowURL('preview', '')
+    const normalizeURLState = useCallback(() => {
+        const validLayouts = new Set(['2', '3', '4', '5'])
+        const validPreviews = new Set(['responsive', 'css'])
+        const validTabs = new Set([
+            ...files.map((file) => file.title).filter(Boolean),
+            'Generated CSS',
+            'Preview'
+        ])
+        if (layout && !validLayouts.has(layout)) {
+            pushShallowURL('layout', '')
+            return
+        }
+        if (preview && !validPreviews.has(preview)) {
+            pushShallowURL('preview', '')
+            return
+        }
+        if (!validTabs.has(tab)) {
+            pushShallowURL('tab', '')
+            return
+        }
+        if (window.innerWidth >= breakpointVariableValues.md) {
+            if (tab === 'Preview' || tab === 'Generated CSS') {
+                pushShallowURL('tab', '')
             }
+        } else if (preview) {
+            pushShallowURL('preview', '')
         }
-        window.addEventListener('resize', onResize, { passive: true })
+    }, [files, layout, preview, pushShallowURL, tab])
+
+    useEffect(() => {
+        normalizeURLState()
+        window.addEventListener('resize', normalizeURLState, { passive: true })
         return () => {
-            window.removeEventListener('resize', onResize)
+            window.removeEventListener('resize', normalizeURLState)
         }
-    }, [tab, files, pushShallowURL])
+    }, [normalizeURLState])
 
     const postPreviewUpdate = useCallback((html: string, css: string) => {
         previewIframeRef.current?.contentWindow?.postMessage({
@@ -331,6 +355,10 @@ export default function Play({ shareId }: PlayProps = {}) {
         }, window.location.origin)
     }, [])
 
+    const emitSemanticTokenChange = useCallback(() => {
+        semanticTokenListenersRef.current.forEach((listener) => listener())
+    }, [])
+
     const compileAndPreview = useCallback(async (nextFiles = filesRef.current) => {
         const ticket = ++compileTicketRef.current
         const html = getFileContent(nextFiles, 'HTML')
@@ -340,19 +368,18 @@ export default function Play({ shareId }: PlayProps = {}) {
         setCompiling(true)
 
         try {
-            const { compileCSS } = await loadCompiler()
-            const result = await compileCSS(sourceCSS, {
-                classes,
-                from: 'playground.css'
-            })
+            const { compilePlayCSS } = await loadCompiler()
+            const result = await compilePlayCSS(sourceCSS, classes)
             if (ticket !== compileTicketRef.current) return
 
             const cssText = result.css
             compiledCSSRef.current = cssText
+            compiledPlanRef.current = result.plan
             setGeneratedCSSText(cssText ? beautifyCSS(cssText) : '')
             setGeneratedCSSSize(formatCSSSize(cssText))
             setCompileWarnings(result.warnings)
             setPreviewErrorEvent(null)
+            emitSemanticTokenChange()
             postPreviewUpdate(html, cssText)
         } catch (error) {
             if (ticket !== compileTicketRef.current) return
@@ -368,7 +395,7 @@ export default function Play({ shareId }: PlayProps = {}) {
                 setCompiling(false)
             }
         }
-    }, [postPreviewUpdate])
+    }, [emitSemanticTokenChange, postPreviewUpdate])
 
     const hotUpdatePreviewByFiles = useDebouncedCallback((nextFiles: PlayFile[]) => {
         void compileAndPreview(nextFiles)
@@ -439,10 +466,15 @@ export default function Play({ shareId }: PlayProps = {}) {
     }, [postPreviewUpdate])
 
     useEffect(() => {
+        const semanticTokenListeners = semanticTokenListenersRef.current
+        const semanticProviderDisposables = semanticProviderDisposablesRef.current
         return () => {
             if (copiedTimeoutRef.current) {
                 clearTimeout(copiedTimeoutRef.current)
             }
+            semanticProviderDisposables.forEach((disposable) => disposable.dispose())
+            semanticProviderDisposables.length = 0
+            semanticTokenListeners.clear()
         }
     }, [])
 
@@ -459,13 +491,45 @@ export default function Play({ shareId }: PlayProps = {}) {
         }
     }, [shareable])
 
+    const registerMasterCSSSemanticTokens = useCallback((monaco: Monaco) => {
+        if (semanticProviderDisposablesRef.current.length) return
+
+        const provider = {
+            onDidChange: (listener: () => void) => {
+                semanticTokenListenersRef.current.add(listener)
+                return {
+                    dispose() {
+                        semanticTokenListenersRef.current.delete(listener)
+                    }
+                }
+            },
+            getLegend() {
+                return SEMANTIC_TOKENS_LEGEND
+            },
+            provideDocumentSemanticTokens(model: editor.ITextModel) {
+                return renderBrowserSemanticTokens(model.getValue(), model.getLanguageId(), {
+                    plan: compiledPlanRef.current
+                }) || { data: new Uint32Array() }
+            },
+            releaseDocumentSemanticTokens() {
+                // Monaco requires this method even when no result ids are used.
+            }
+        }
+
+        semanticProviderDisposablesRef.current.push(
+            monaco.languages.registerDocumentSemanticTokensProvider('html', provider),
+            monaco.languages.registerDocumentSemanticTokensProvider('css', provider)
+        )
+    }, [])
+
     const registerShiki = useCallback(async (monaco: Monaco) => {
         monaco.languages.html.htmlDefaults.setOptions(editorHTMLOptions)
         await registerMonacoShiki(monaco)
+        registerMasterCSSSemanticTokens(monaco)
         setTimeout(() => {
             monaco.editor.setTheme(getTheme())
         })
-    }, [getTheme])
+    }, [getTheme, registerMasterCSSSemanticTokens])
 
     const editorOnMount = useCallback(async (_editor: editor.IStandaloneCodeEditor, monaco: Monaco) => {
         await registerShiki(monaco)
@@ -629,7 +693,7 @@ export default function Play({ shareId }: PlayProps = {}) {
             </Header >
             <div
                 className={clsx(
-                    'flex full flex:1 overflow:hidden bg:transparent_:is(.monaco-editor,.monaco-editor-background,.monaco-editor_.margin) flex-col!@<sm',
+                    'flex full flex:1 overflow:hidden bg:transparent_:is(.monaco-editor,.monaco-editor-background,.monaco-editor_.margin) flex-col!@<md',
                     {
                         'flex-row': !layout,
                         'flex-row-reverse': layout === '2',
@@ -667,7 +731,7 @@ export default function Play({ shareId }: PlayProps = {}) {
                         <Tab onClick={() => pushShallowURL('tab', 'Generated CSS')} size="sm" className="hidden@md" active={tab === 'Generated CSS'}>
                             Generated CSS
                         </Tab>
-                        <Tab onClick={() => pushShallowURL('tab', 'Preview')} className="hidden@sm" size="sm" active={tab === 'Preview'}>
+                        <Tab onClick={() => pushShallowURL('tab', 'Preview')} className="hidden@md" size="sm" active={tab === 'Preview'}>
                             Preview
                         </Tab>
                     </Tabs>
@@ -746,7 +810,7 @@ export default function Play({ shareId }: PlayProps = {}) {
                         {previewErrorEvent &&
                             <div className="abs full inset:0 p:12x fg:red bg:red-5@light bg:red-95@dark">
                                 <h2 className="font:20">Error at line {previewErrorEvent.lineno === 1 ? 1 : previewErrorEvent.lineno - 1}</h2>
-                                <div className="p:15|20 r:5 my:20 font:14 font:medium bg:black/.2@dark bg:red-90@light white-space:pre-wrap">
+                                <div className="p:15|20 r:5 my:20 font:14 font:medium white-space:pre-wrap bg:black/.2@dark bg:red-90@light">
                                     {previewErrorEvent.message}
                                 </div>
                                 <div className="font:12">{previewErrorEvent.datetime.toLocaleTimeString()} {previewErrorEvent.datetime.toDateString()}, {previewErrorEvent.filename}</div>

@@ -1,3 +1,7 @@
+@settings {
+    mode-trigger: class;
+}
+
 @theme light {
     --color-card: #ffffff;
 }
