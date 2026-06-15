@@ -4,6 +4,8 @@
 
 Run the smallest meaningful package-scoped validation first. Broaden to root tests when a change crosses package boundaries, affects public APIs, or changes CSS output.
 
+Package lint is mandatory for every changed workspace package that defines a package-local `lint` script. For multi-package changes, run lint once per affected package with `pnpm --filter <package> lint`; if an affected package has no package-local lint script, report that explicitly.
+
 ## Change-Type Matrix
 
 | Change | Required Validation |

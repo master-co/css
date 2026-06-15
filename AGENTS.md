@@ -120,6 +120,8 @@ Any CSS output change must be reviewed as a behavior change. Explain:
 
 Use scoped validation first, then broaden based on risk.
 
+When a change touches files inside a workspace package, run that package's `lint` script if it exists in the package-local `package.json`. For changes spanning multiple packages, run lint for every affected package that defines `lint`. If an affected package has no package-local lint script, state that explicitly in the final response.
+
 Common commands:
 
 ```sh
