@@ -22,4 +22,4 @@ Then deploy:
 pnpm dlx wrangler deploy --config workers/master-css-play/wrangler.toml
 ```
 
-The Worker route is configured for `https://css.master.co/api/play/*` and the KV binding uses the existing `master` namespace.
+The Worker route is configured for `https://css.master.co/api/play/*`, and `https://rc.css.master.co` is allowed to call it. The KV binding uses the existing `master` namespace.

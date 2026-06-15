@@ -9,7 +9,7 @@ routes = [
 ]
 
 [vars]
-PLAY_ALLOWED_ORIGINS = "https://css.master.co,http://localhost:3000,http://127.0.0.1:3000"
+PLAY_ALLOWED_ORIGINS = "https://css.master.co,https://rc.css.master.co,http://localhost:3000,http://127.0.0.1:3000"
 
 [[kv_namespaces]]
 binding = "PLAY_SHARES"

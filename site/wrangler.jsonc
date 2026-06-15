@@ -31,5 +31,12 @@
         "NEXT_PUBLIC_HOST": "css.master.co",
         "NEXT_PUBLIC_URL": "https://css.master.co",
         "NEXT_PUBLIC_PLAY_API_URL": "https://css.master.co/api/play"
+    },
+    "previews": {
+        "vars": {
+            "NEXT_PUBLIC_HOST": "rc.css.master.co",
+            "NEXT_PUBLIC_URL": "https://rc.css.master.co",
+            "NEXT_PUBLIC_PLAY_API_URL": "https://css.master.co/api/play"
+        }
     }
 }
