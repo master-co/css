@@ -1,6 +1,6 @@
 {
     "$schema": "node_modules/wrangler/config-schema.json",
-    "name": "master-css-site",
+    "name": "master-css-site-rc",
     "main": ".open-next/worker.js",
     "compatibility_date": "2026-06-11",
     "compatibility_flags": [
@@ -15,7 +15,7 @@
     "services": [
         {
             "binding": "WORKER_SELF_REFERENCE",
-            "service": "master-css-site"
+            "service": "master-css-site-rc"
         }
     ],
     "images": {
@@ -29,22 +29,14 @@
     ],
     "routes": [
         {
-            "pattern": "css.master.co/*",
+            "pattern": "rc.css.master.co/*",
             "zone_name": "master.co"
         }
     ],
     "vars": {
-        "NEXT_PUBLIC_HOST": "css.master.co",
-        "NEXT_PUBLIC_URL": "https://css.master.co",
+        "NEXT_PUBLIC_HOST": "rc.css.master.co",
+        "NEXT_PUBLIC_URL": "https://rc.css.master.co",
         "PLAY_SHARE_TTL_SECONDS": "2592000",
-        "PLAY_ALLOWED_ORIGINS": "https://css.master.co,http://localhost:3000,http://127.0.0.1:3000,http://localhost:8787,http://127.0.0.1:8787,https://localhost:8787,https://127.0.0.1:8787"
-    },
-    "previews": {
-        "vars": {
-            "NEXT_PUBLIC_HOST": "rc.css.master.co",
-            "NEXT_PUBLIC_URL": "https://rc.css.master.co",
-            "PLAY_SHARE_TTL_SECONDS": "2592000",
-            "PLAY_ALLOWED_ORIGINS": "https://rc.css.master.co,http://localhost:3000,http://127.0.0.1:3000,http://localhost:8787,http://127.0.0.1:8787,https://localhost:8787,https://127.0.0.1:8787"
-        }
+        "PLAY_ALLOWED_ORIGINS": "https://rc.css.master.co,http://localhost:3000,http://127.0.0.1:3000,http://localhost:8787,http://127.0.0.1:8787,https://localhost:8787,https://127.0.0.1:8787"
     }
 }
