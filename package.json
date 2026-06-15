@@ -9,7 +9,7 @@
         "build:examples": "cross-env NODE_OPTIONS=--max-old-space-size=16384 pnpm --filter \"./examples/*\" --parallel build",
         "check": "pnpm run commit-check && pnpm run build && pnpm --filter \"./packages/*\" --parallel run \"/^(test|lint|type-check)/\"",
         "test": "cross-env NODE_OPTIONS=--max-old-space-size=16384 pnpm --filter \"./packages/*\" --parallel test",
-        "e2e": "cross-env NODE_OPTIONS=--max-old-space-size=16384 pnpm --filter \"./packages/*\" --parallel e2e",
+        "e2e": "cross-env NODE_OPTIONS=--max-old-space-size=16384 pnpm --filter \"./packages/*\" --workspace-concurrency=1 e2e",
         "lint": "cross-env NODE_OPTIONS=--max-old-space-size=16384 pnpm --filter \"./packages/*\" --parallel lint",
         "type-check": "cross-env NODE_OPTIONS=--max-old-space-size=16384 pnpm --filter \"./packages/*\" --parallel type-check",
         "commit-check": "commitlint --from=HEAD~1 --verbose"
@@ -23,7 +23,7 @@
     },
     "dependencies": {
         "@eslint/compat": "^2.1.0",
-        "@playwright/test": "^1.60.0",
+        "@playwright/test": "1.61.0",
         "@swc-node/jest": "^1.9.1",
         "@techor/fs": "^3.2.5",
         "@techor/glob": "^3.2.5",

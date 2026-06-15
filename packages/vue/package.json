@@ -82,8 +82,8 @@
         "@techor/extend": "^3.2.5"
     },
     "devDependencies": {
-        "@playwright/experimental-ct-vue": "^1.59.1",
-        "@playwright/test": "^1.59.1",
+        "@playwright/experimental-ct-vue": "1.61.0",
+        "@playwright/test": "1.61.0",
         "@vitejs/plugin-vue": "^6.0.6",
         "@vue/eslint-config-typescript": "^14.7.0",
         "@vue/server-renderer": "^3.5.33",

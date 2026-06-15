@@ -45,8 +45,9 @@ describe('StyleEntryPlugin Vite build integration', () => {
             const assetsDir = join(root, 'dist/assets')
             const cssFile = readdirSync(assetsDir).find((file) => file.endsWith('.css'))
             expect(cssFile).toBeTruthy()
+            if (!cssFile) throw new Error('Expected Vite build to emit a CSS asset.')
 
-            const css = readFileSync(join(assetsDir, cssFile!), 'utf8')
+            const css = readFileSync(join(assetsDir, cssFile), 'utf8')
             expect(css).toContain('.fake-font')
             expect(css).toContain('.block{display:block}')
             expect(css.indexOf('.fake-font')).toBeLessThan(css.indexOf('.block{display:block}'))

@@ -64,7 +64,7 @@
         "@master/css": "workspace:^",
         "@master/css-compiler": "workspace:^",
         "@master/css-integration": "workspace:^",
-        "@playwright/test": "^1.59.1",
+        "@playwright/test": "1.61.0",
         "shared": "workspace:^"
     }
 }

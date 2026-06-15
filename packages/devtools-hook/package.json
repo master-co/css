@@ -41,6 +41,7 @@
     "exports": {
         ".": {
             "types": "./dist/index.d.ts",
+            "browser": "./dist/index.mjs",
             "import": "./dist/index.mjs",
             "default": "./dist/index.mjs"
         }
@@ -53,7 +54,7 @@
         "provenance": true
     },
     "devDependencies": {
-        "@playwright/test": "^1.59.1",
+        "@playwright/test": "1.61.0",
         "shared": "workspace:^"
     }
 }
