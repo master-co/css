@@ -9,7 +9,7 @@ const metadata = define({
         { name: 'BenSeage' }
     ],
     vercelOG: true,
-    date: '2026-05-15T08:00:00.000Z',
+    date: '2026-06-15T08:00:00.000Z',
     fileURL: import.meta.url
 })
 
