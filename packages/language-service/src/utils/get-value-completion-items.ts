@@ -11,23 +11,35 @@ const NATIVE_PRIORITY = 'ccccc'
 const GLOBAL_VARIABLE_PRIORITY = 'zzzz'
 const NATIVE_UTILITY_TYPES = new Set<number>([UtilityType.Native, UtilityType.NativeShorthand])
 
-export default function getValueCompletionItems(css: MasterCSS = createDefaultCSS(), ruleKey: string): CompletionItem[] {
+interface GenerateVariableCompletionItemOptions {
+    appliedValue?: string
+    label?: string
+    negative?: boolean
+    scoped?: boolean
+}
+
+export default function getValueCompletionItems(css: MasterCSS = createDefaultCSS(), ruleKey: string, valuePrefix = ''): CompletionItem[] {
     const nativeProperties = cssDataProvider.provideProperties()
     const completionItems: CompletionItem[] = []
     const nativeKey = css.definedUtilities.find(({ keys }) => keys?.includes(ruleKey))?.id
     const nativePropertyData = nativeProperties.find(({ name }) => name === nativeKey)
-    const generateVariableCompletionItem = (variable: Variable, { scoped } = { scoped: false }): CompletionItem | undefined => {
+    const generateVariableCompletionItem = (variable: Variable, {
+        appliedValue,
+        label,
+        negative,
+        scoped
+    }: GenerateVariableCompletionItemOptions = {}): CompletionItem | undefined => {
         const eachNativePropertyData = nativeProperties.find((x: { name: string }) => x.name === variable.namespace) || nativePropertyData
-        const appliedValue = scoped ? variable.key : variable.name
+        const valueToken = appliedValue ?? (scoped ? variable.key : variable.name)
         const documentation = getCSSDataDocumentation(eachNativePropertyData, {
-            generatedCSS: generateCSS([ruleKey + ':' + appliedValue], css),
+            generatedCSS: generateCSS([ruleKey + ':' + valueToken], css),
             docs: '/reference/' + (eachNativePropertyData?.name || 'variables')
         })
         const completionItem: CompletionItem = {
-            label: variable.name,
+            label: label ?? variable.name,
             kind: CompletionItemKind.Value
         }
-        const conflicted = completionItems.find(({ label }) => label === variable.name)
+        const conflicted = completionItems.find(({ label }) => label === completionItem.label)
         if (conflicted) {
             completionItem.label = '$(' + completionItem.label + ')'
             completionItem.documentation = getCSSDataDocumentation(eachNativePropertyData, {
@@ -36,7 +48,7 @@ export default function getValueCompletionItems(css: MasterCSS = createDefaultCS
             })
         } else {
             completionItem.documentation = getCSSDataDocumentation(eachNativePropertyData, {
-                generatedCSS: generateCSS([ruleKey + ':' + appliedValue], css),
+                generatedCSS: generateCSS([ruleKey + ':' + valueToken], css),
                 docs: '/reference/' + (eachNativePropertyData?.name || 'variables')
             })
         }
@@ -63,9 +75,10 @@ export default function getValueCompletionItems(css: MasterCSS = createDefaultCS
             if (variable.name.startsWith('-') && eachNativePropertyData?.syntax?.includes('absolute')) return
             completionItem.detail = String(variable.name)
             const value = typeof variable.value === 'number' ? variable.value : 0
-            completionItem.sortText = (variable.namespace || '') + (value >= 0
-                ? String(value).padStart(10, '0')
-                : '-' + String(Math.abs(value)).padStart(10, '0'))
+            const sortValue = negative ? -Math.abs(value) : value
+            completionItem.sortText = (variable.namespace || '') + (sortValue >= 0
+                ? String(sortValue).padStart(10, '0')
+                : '-' + String(Math.abs(sortValue)).padStart(10, '0'))
         } else {
             completionItem.detail = String(variable.value || variable.name)
         }
@@ -91,6 +104,25 @@ export default function getValueCompletionItems(css: MasterCSS = createDefaultCS
                     completionItem.sortText = SCOPED_VARIABLE_PRIORITY + (completionItem.sortText || variableName)
                     completionItem.detail = '(scope) ' + completionItem.detail
                     completionItems.push(completionItem)
+                }
+                const negativeVariableName = '-' + variableName
+                if (
+                    valuePrefix.startsWith('-')
+                    && variableName[0] !== '-'
+                    && variable.type === 'number'
+                    && !completionItems.find(({ label }) => label === negativeVariableName)
+                ) {
+                    const negativeCompletionItem = generateVariableCompletionItem(variable, {
+                        appliedValue: negativeVariableName,
+                        label: negativeVariableName,
+                        negative: true,
+                        scoped: true
+                    })
+                    if (negativeCompletionItem) {
+                        negativeCompletionItem.sortText = SCOPED_VARIABLE_PRIORITY + (negativeCompletionItem.sortText || negativeVariableName)
+                        negativeCompletionItem.detail = '(scope) ' + negativeCompletionItem.detail
+                        completionItems.push(negativeCompletionItem)
+                    }
                 }
             })
         }

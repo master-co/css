@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { createMasterCSSPlan } from '../src/master-css-plan'
 
 describe.concurrent('createMasterCSSPlan', () => {
-    it('lowers variables into resolved records with modes, dependencies, and negative aliases', () => {
+    it('lowers variables into resolved records with modes and dependencies without synthetic negative aliases', () => {
         const plan = createMasterCSSPlan({
             variables: [
                 { namespace: 'spacing', key: 'card', value: 12, static: true },
@@ -19,14 +19,7 @@ describe.concurrent('createMasterCSSPlan', () => {
             value: 12,
             static: true
         }))
-        expect(plan.variables).toContainEqual(expect.objectContaining({
-            name: '-spacing-card',
-            key: '-card',
-            namespace: 'spacing',
-            type: 'number',
-            value: -12,
-            static: true
-        }))
+        expect(plan.variables?.some((variable) => variable.name === '-spacing-card')).toBe(false)
         expect(plan.variables).toContainEqual(expect.objectContaining({
             name: 'color-brand',
             key: 'brand',
@@ -42,6 +35,25 @@ describe.concurrent('createMasterCSSPlan', () => {
             dependencies: expect.arrayContaining(['color-blue-50']),
             static: true
         }))
+    })
+
+    it('preserves explicitly authored negative variables', () => {
+        const plan = createMasterCSSPlan({
+            variables: [
+                { namespace: 'spacing', key: '-card', value: -12, static: true }
+            ]
+        })
+
+        expect(plan.variables).toEqual([
+            expect.objectContaining({
+                name: 'spacing--card',
+                key: '-card',
+                namespace: 'spacing',
+                type: 'number',
+                value: -12,
+                static: true
+            })
+        ])
     })
 
     it('lowers static animation options', () => {

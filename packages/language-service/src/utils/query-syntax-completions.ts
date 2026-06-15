@@ -51,7 +51,7 @@ export default function querySyntaxCompletions(q = '', css: MasterCSS = createDe
 
         if (!atInvoked && !selectorInvokedRegex.test(field.slice(firstColonIndex + 1))) {
             if (key && firstColonIndex !== -1) {
-                return getValueCompletionItems(css, key)
+                return getValueCompletionItems(css, key, field.slice(firstColonIndex + 1))
             }
         }
     }

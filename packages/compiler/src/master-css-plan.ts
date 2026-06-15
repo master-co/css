@@ -223,21 +223,6 @@ function compileVariables(
         }
         byName.set(resolved.name, variable)
         pushVariable(variables, variable)
-
-        if (typeof value === 'number' && !resolved.key.startsWith('-')) {
-            const negativeName = resolved.namespace
-                ? `-${resolved.namespace}-${resolved.key}`
-                : '-' + resolved.key
-            pushVariable(variables, {
-                name: negativeName,
-                key: '-' + resolved.key,
-                ...(resolved.namespace ? { namespace: resolved.namespace } : {}),
-                type: 'number',
-                value: normalizeZero(-value),
-                ...(definition.inline ? { inline: true } : {}),
-                ...(definition.static ? { static: true } : {})
-            })
-        }
     }
 
     return variables.length ? variables : undefined

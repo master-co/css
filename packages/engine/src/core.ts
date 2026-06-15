@@ -475,8 +475,15 @@ export default class MasterCSS {
                 const value = getKeyedValue(className, matcher.keys)
                 if (value === undefined || !utility.variables?.size) return false
                 if (!matchesValueSegmentPolicy(value, matcher)) return false
-                for (const variableKey of utility.variables.keys()) {
+                for (const [variableKey, variable] of utility.variables) {
                     if (value.startsWith(variableKey) && isNameBoundary(value[variableKey.length])) return true
+                    const negativeVariableKey = '-' + variableKey
+                    if (
+                        variableKey[0] !== '-'
+                        && variable.type === 'number'
+                        && value.startsWith(negativeVariableKey)
+                        && isNameBoundary(value[negativeVariableKey.length])
+                    ) return true
                 }
                 return false
             }

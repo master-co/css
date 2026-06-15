@@ -17,7 +17,7 @@ import generateSelector from './utils/generate-selector'
 import { calcRulePriority, RulePriority } from './utils/compare-rule-priority'
 import collectVariableNames from './utils/collect-variable-names'
 import wrapAtRules from './utils/wrap-at-rules'
-import { createAlphaColorValue, createCSSVariableReference, createNumberVariableReference, normalizeVariableValue, replaceCSSVariableReferences } from './utils/css-variables'
+import { createAlphaColorValue, createCSSVariableReference, createNegativeNumberVariableReference, createNumberVariableReference, normalizeVariableValue, replaceCSSVariableReferences } from './utils/css-variables'
 import collectAnimationNames from './utils/collect-animation-names'
 import { BORDER_STYLE_VALUES } from './common'
 
@@ -29,6 +29,12 @@ type UtilityStateBranch = {
     mode?: string
     key: string
     valid?: boolean
+}
+
+type ResolvedVariableAlias = {
+    name: string
+    variable: Variable
+    negative?: boolean
 }
 
 function isVariantToken(value: string): value is MasterCSSPlanVariantToken {
@@ -357,6 +363,27 @@ export class Utility {
                     new UtilityRuleNode(this, declarations, atRules, selector)
                 )
             }
+        }
+    }
+
+    resolveVariableAlias(variableName: string): ResolvedVariableAlias | undefined {
+        const variable = this.variables?.get(variableName) || this.css.variables.get(variableName)
+        if (variable) {
+            return {
+                name: variable.name ?? variableName,
+                variable
+            }
+        }
+
+        if (variableName[0] !== '-') return
+        const positiveVariableName = variableName.slice(1)
+        const positiveVariable = this.variables?.get(positiveVariableName) || this.css.variables.get(positiveVariableName)
+        if (positiveVariable?.type !== 'number') return
+
+        return {
+            name: positiveVariable.name ?? positiveVariableName,
+            variable: positiveVariable,
+            negative: true
         }
     }
 
@@ -791,6 +818,7 @@ export class Utility {
                 }
             })
         }
+        const negateResolvedValue = (value: string) => `calc(${value} * -1)`
         for (const eachValueComponent of valueComponents) {
             switch (eachValueComponent.type) {
                 case 'function':
@@ -812,7 +840,10 @@ export class Utility {
                     }
                     break
                 case 'variable':
-                    const variable = this.css.variables.get(eachValueComponent.name)
+                    const resolvedVariableAlias = this.resolveVariableAlias(eachValueComponent.name)
+                    const variable = resolvedVariableAlias?.variable
+                    const variableName = resolvedVariableAlias?.name ?? eachValueComponent.name
+                    const negative = eachValueComponent.negative || resolvedVariableAlias?.negative
                     const resolveFallback = () => {
                         if (!eachValueComponent.fallback) return
                         const fallbackComponents: ValueComponent[] = []
@@ -820,18 +851,25 @@ export class Utility {
                         return this.resolveValue(fallbackComponents, unit, bypassVariableNames, bypassParsing)
                     }
                     const emitVariable = (variable?: Variable) => {
-                        if (variable?.type === 'number' && eachValueComponent.alpha === undefined && !bypassParsing) {
-                            return createNumberVariableReference(variable, unit, this.css.settings.rootSize)
+                        if (variable?.type === 'number' && eachValueComponent.alpha === undefined) {
+                            if (negative) {
+                                return bypassParsing
+                                    ? negateResolvedValue(createCSSVariableReference(variable.name))
+                                    : createNegativeNumberVariableReference(variable, unit, this.css.settings.rootSize)
+                            }
+                            if (!bypassParsing) {
+                                return createNumberVariableReference(variable, unit, this.css.settings.rootSize)
+                            }
                         }
-                        return createCSSVariableReference(eachValueComponent.name, eachValueComponent.alpha, resolveFallback())
+                        return createCSSVariableReference(variableName, eachValueComponent.alpha, resolveFallback())
                     }
                     if (variable?.inline) {
                         const inlineValue = resolveInlineVariable(variable)
                         currentValue += eachValueComponent.text = eachValueComponent.alpha === undefined
-                            ? inlineValue
+                            ? negative ? negateResolvedValue(inlineValue) : inlineValue
                             : createAlphaColorValue(inlineValue, eachValueComponent.alpha)
                     } else if (variable) {
-                        addVariableName(eachValueComponent.name)
+                        addVariableName(variableName)
                         currentValue += eachValueComponent.text = emitVariable(variable)
                     } else {
                         currentValue += eachValueComponent.text = emitVariable()
@@ -936,7 +974,7 @@ export class Utility {
                 }
                 const variableName = getVariableFunctionName(component)
                 if (!variableName) continue
-                if (this.css.variables.get(variableName)?.type !== 'number') continue
+                if (this.resolveVariableAlias(variableName)?.variable.type !== 'number') continue
                 if (!this.registeredUtility.unit) continue
 
                 const previousSeparator = getSeparatorValue(components[index - 1])
@@ -1089,7 +1127,7 @@ export class Utility {
                         nestedIsVarFunction
                     ) || nestedFunctionName === 'var'
                     if (!childHasUnit && nestedFunctionName === '$') {
-                        const variableType = this.css.variables.get((newValueComponent.children[0] as StringValueComponent).value)?.type
+                        const variableType = this.resolveVariableAlias((newValueComponent.children[0] as StringValueComponent).value)?.variable.type
                         childHasUnit = !variableType || variableType === 'string'
                     }
                     if (childHasUnit) {
@@ -1185,19 +1223,19 @@ export class Utility {
             if (currentValue) {
                 let handled = false
                 if (!isVarFunction || currentValueComponents.length) {
-                    const pushVariable = (variableName: string, alpha?: string, token = currentValue) => {
+                    const pushVariable = (variableName: string, alpha?: string, token = currentValue, negative?: boolean) => {
                         const valueComponent: VariableValueComponent = { type: 'variable', name: variableName, variable: this.css.variables.get(variableName), token }
                         if (alpha) valueComponent.alpha = Number(alpha)
+                        if (negative) valueComponent.negative = true
                         currentValueComponents.push(valueComponent)
                     }
                     const handleVariable = (variableName: string, alpha?: string) => {
-                        const globalVariableValue = this.css.variables.get(variableName)
-                        const variable = this.variables?.get(variableName) || globalVariableValue
-                        if (variable) {
-                            const name = variable.name ?? variableName
+                        const resolvedVariableAlias = this.resolveVariableAlias(variableName)
+                        if (resolvedVariableAlias && (!resolvedVariableAlias.negative || alpha === undefined)) {
+                            const { name, negative } = resolvedVariableAlias
                             if (!bypassVariableNames.includes(name)) {
                                 handled = true
-                                pushVariable(name, alpha)
+                                pushVariable(name, alpha, currentValue, negative)
                             }
                         }
                     }

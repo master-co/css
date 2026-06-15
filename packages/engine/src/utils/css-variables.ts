@@ -22,6 +22,15 @@ export function createNumberVariableReference(variable: Variable, unit: string, 
     return `calc(${reference} * 1${unit})`
 }
 
+export function createNegativeNumberVariableReference(variable: Variable, unit: string, rootSize = 16) {
+    const reference = createCSSVariableReference(variable.name)
+    if (!unit) return `calc(${reference} * -1)`
+    if (unit === 'rem' || unit === 'em') {
+        return `calc(${reference} / ${rootSize} * -1${unit})`
+    }
+    return `calc(${reference} * -1${unit})`
+}
+
 export function collectCSSVariableReferences(value: string) {
     const references = new Set<string>()
     for (const match of value.matchAll(CSS_VARIABLE_REFERENCE)) {

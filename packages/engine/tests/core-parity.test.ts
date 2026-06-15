@@ -89,9 +89,22 @@ describe.concurrent('default plan utility parity', () => {
         expectClassText(css, 'text:2xl', 'font-size:calc(var(--font-size-2xl) / 16 * 1rem)')
     })
 
+    test('resolves negative numeric aliases without synthetic variables', () => {
+        const css = createDefaultCSS()
+
+        expectClassText(css, 'm:-md', 'margin:calc(var(--spacing-md) / 16 * -1rem)')
+        expectClassText(css, 'mt:-md', 'margin-top:calc(var(--spacing-md) / 16 * -1rem)')
+        expectClassText(css, 'translate:-md', 'translate:calc(var(--spacing-md) / 16 * -1rem)')
+        expectClassText(css, 'w:-sm', 'width:calc(var(--container-sm) / 16 * -1rem)')
+        expect(css.create('m:-md')?.variableNames).toEqual(new Set(['spacing-md']))
+        expect(css.create('fg:-black')?.text).not.toContain('var(--color-black)')
+    })
+
     test('uses compiled breakpoint aliases from the default plan', () => {
         expect(createDefaultCSS().create('block@sm&<md')?.text)
             .toContain('@media (width>=52.125rem) and (width<64rem)')
+        expect(createDefaultCSS().create('block@<md')?.text)
+            .toContain('@media (width<64rem)')
     })
 
     test('keeps functional pseudo-class selector arguments intact', () => {
