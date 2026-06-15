@@ -122,28 +122,18 @@ export async function renderNextBuildOutputs(ctx: BuildCompleteContext, rawOptio
     const baseBuildPlan = await buildPlanResolver.resolve()
     const htmlOutputs = collectHTMLBuildOutputs(ctx.outputs)
     const renderedHTMLOutputs: RenderedHTMLBuildOutput[] = []
-    const allClasses = new Set<string>()
     const renderedOutputs: RenderedOutput[] = []
 
     for (const output of htmlOutputs) {
         const sourceHTML = await readFile(output.filePath, 'utf-8')
         const rendered = render(sourceHTML, baseBuildPlan.plan, { runtimeManifest: 'inject' })
-        rendered.classes.forEach((className) => allClasses.add(className))
         renderedHTMLOutputs.push({ output, sourceHTML, rendered })
     }
 
-    const nativeCSS = allClasses.size
-        ? (await buildPlanResolver.resolve([...allClasses])).nativeCSS
-        : ''
-
     for (const { output, sourceHTML, rendered } of renderedHTMLOutputs) {
         const generatedCSS = rendered.css?.classUtilities.size ? rendered.css.text : ''
-        const cssText = [
-            rendered.classes.length ? nativeCSS : '',
-            generatedCSS
-        ].filter(Boolean).join('\n\n')
-        const renderedHTML = cssText
-            ? upsertMasterStyleText(rendered.html, cssText)
+        const renderedHTML = generatedCSS
+            ? upsertMasterStyleText(rendered.html, generatedCSS)
             : sourceHTML
         const didRender = renderedHTML !== sourceHTML
 
@@ -156,7 +146,7 @@ export async function renderNextBuildOutputs(ctx: BuildCompleteContext, rawOptio
             pathname: output.pathname,
             source: output.source,
             classes: rendered.classes,
-            cssBytes: Buffer.byteLength(cssText),
+            cssBytes: Buffer.byteLength(generatedCSS),
             rendered: didRender
         })
     }

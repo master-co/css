@@ -172,6 +172,78 @@ test('progressive hydration uses runtime manifest and removes hydrated classes',
     })
 })
 
+test('progressive hydration matches bucketed theme variables', async ({ page }) => {
+    const css = createCSS(defaultPlan)
+    css.add('fg:red-60', 'bg:blue-60')
+    const manifest = createRuntimeManifest(css)
+    const consoleWarnings: string[] = []
+    page.on('console', (message) => {
+        if (message.type() === 'warning') consoleWarnings.push(message.text())
+    })
+
+    await page.evaluate(() => {
+        document.body.innerHTML = '<p class="fg:red-60 bg:blue-60"></p>'
+    })
+    await init(page, css.text, undefined, manifest)
+
+    const result = await page.evaluate(() => ({
+        progressive: globalThis.cssRuntime.progressive,
+        counts: Object.fromEntries(globalThis.cssRuntime.themeLayer.tokenCounts),
+        nativeThemeRuleCount: globalThis.cssRuntime.themeLayer.native?.cssRules.length,
+        text: globalThis.cssRuntime.text
+    }))
+
+    expect(consoleWarnings.some((message) => message.includes('runtime manifest'))).toBe(false)
+    expect(result.progressive).toBe(true)
+    expect(result.counts).toEqual({
+        'color-red-60': 1,
+        'color-blue-60': 1
+    })
+    expect(result.nativeThemeRuleCount).toBe(1)
+    expect(result.text).toContain('--color-red-60')
+    expect(result.text).toContain('--color-blue-60')
+})
+
+test('progressive hydration matches theme variable buckets by key', async ({ page }) => {
+    const consoleWarnings: string[] = []
+    page.on('console', (message) => {
+        if (message.type() === 'warning') consoleWarnings.push(message.text())
+    })
+
+    await page.evaluate(() => {
+        document.body.innerHTML = '<p class="fg:primary"></p>'
+    })
+    await init(
+        page,
+        '@layer theme{.dark{--color-primary:#ffffff}.light,:root{--color-primary:#000000}}@layer utilities{.fg\\:primary{color:var(--color-primary)}}',
+        {
+            variables: [
+                { namespace: 'color', key: 'primary', value: '#000000', mode: 'light' },
+                { namespace: 'color', key: 'primary', value: '#ffffff', mode: 'dark' }
+            ],
+            modes: ['light', 'dark'],
+            modeTrigger: 'class'
+        },
+        'auto'
+    )
+
+    const result = await page.evaluate(() => ({
+        progressive: globalThis.cssRuntime.progressive,
+        counts: Object.fromEntries(globalThis.cssRuntime.themeLayer.tokenCounts),
+        nativeThemeRuleCount: globalThis.cssRuntime.themeLayer.native?.cssRules.length,
+        text: globalThis.cssRuntime.text
+    }))
+
+    expect(consoleWarnings.some((message) => message.includes('runtime manifest'))).toBe(false)
+    expect(result.progressive).toBe(true)
+    expect(result.counts).toEqual({
+        'color-primary': 1
+    })
+    expect(result.nativeThemeRuleCount).toBe(2)
+    expect(result.text).toContain('.light,:root{--color-primary:#000000}')
+    expect(result.text).toContain('.dark{--color-primary:#ffffff}')
+})
+
 test('removes shared alias variable dependencies when classes disappear', async ({ page }) => {
     await init(page, '', {
         variables: [

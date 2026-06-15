@@ -255,6 +255,42 @@ export default class CSSRuntime extends MasterCSS {
         return found
     }
 
+    private getVariableRuleBuckets(variableRules: VariableRule[]) {
+        const buckets = new Map<string, {
+            mediaText: string
+            selectorText: string
+            nodes: Array<VariableRule['nodes'][number]>
+        }>()
+        for (const rule of variableRules) {
+            for (const node of rule.nodes) {
+                const key = this.themeLayer.getBucketKey(node.mediaText, node.selectorText)
+                let bucket = buckets.get(key)
+                if (!bucket) {
+                    bucket = {
+                        mediaText: node.mediaText,
+                        selectorText: node.selectorText,
+                        nodes: []
+                    }
+                    buckets.set(key, bucket)
+                }
+                bucket.nodes.push(node)
+            }
+        }
+        return Array.from(buckets.values())
+    }
+
+    private getNativeThemeRuleBucketKey(nativeRule: CSSRule) {
+        const styleRule = this.themeLayer.getStyleRule(nativeRule)
+        if (!styleRule) return
+        const mediaText = nativeRule instanceof CSSMediaRule
+            ? `@media ${nativeRule.conditionText}`
+            : ''
+        return {
+            key: this.themeLayer.getBucketKey(mediaText, styleRule.selectorText),
+            styleRule
+        }
+    }
+
     private hydrateManifestVariables(nativeThemeLayer: CSSLayerBlockRule | undefined) {
         const variableRules = [...this.collectManifestVariableNames()]
             .filter((variableName) => !this.isPreloadedVariable(variableName))
@@ -265,24 +301,29 @@ export default class CSSRuntime extends MasterCSS {
                     : undefined
             })
             .filter((rule): rule is VariableRule => Boolean(rule))
-        const expectedRuleCount = variableRules.reduce((count, rule) => count + rule.nodes.length, 0)
+        const expectedBuckets = this.getVariableRuleBuckets(variableRules)
         const nativeRuleCount = nativeThemeLayer?.cssRules.length || 0
-        if (expectedRuleCount !== nativeRuleCount) {
+        if (expectedBuckets.length !== nativeRuleCount) {
             return !variableRules.length && this.nativeThemeLayerHasOnlyPreloadedVariables(nativeThemeLayer)
         }
         if (!variableRules.length) return true
         if (!nativeThemeLayer) return false
 
         this.themeLayer.native = nativeThemeLayer
-        let nativeIndex = 0
-        for (const variableRule of variableRules) {
-            for (const node of variableRule.nodes) {
-                const nativeRule = nativeThemeLayer.cssRules.item(nativeIndex++)
-                if (!nativeRule) return false
-                node.native = nativeRule
-            }
-            this.themeLayer.rules.push(variableRule)
+        const nativeBuckets = new Map<string, CSSStyleRule>()
+        for (const nativeRule of nativeThemeLayer.cssRules) {
+            const nativeBucket = this.getNativeThemeRuleBucketKey(nativeRule)
+            if (!nativeBucket || nativeBuckets.has(nativeBucket.key)) return false
+            nativeBuckets.set(nativeBucket.key, nativeBucket.styleRule)
         }
+        for (const bucket of expectedBuckets) {
+            const nativeStyleRule = nativeBuckets.get(this.themeLayer.getBucketKey(bucket.mediaText, bucket.selectorText))
+            if (!nativeStyleRule) return false
+            for (const node of bucket.nodes) {
+                node.native = nativeStyleRule
+            }
+        }
+        this.themeLayer.rules.push(...variableRules)
         this.themeLayer.syncNativeBuckets()
         if (this.themeLayer.rules.length && !this.rules.includes(this.themeLayer)) {
             this.rules.push(this.themeLayer)

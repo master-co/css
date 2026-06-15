@@ -78,6 +78,10 @@ function countManifestScripts(html: string) {
     return html.match(new RegExp(`id="${MASTER_CSS_RUNTIME_MANIFEST_SCRIPT_ID}"`, 'g'))?.length ?? 0
 }
 
+function readMasterStyle(html: string) {
+    return html.match(/<style id="master">([\s\S]*?)<\/style>/)?.[1] ?? ''
+}
+
 afterEach(() => {
     if (fixtureDir) {
         rmSync(fixtureDir, { recursive: true, force: true })
@@ -130,10 +134,11 @@ describe('renderNextBuildOutputs', () => {
         expect(html).toBe(sourceHTML)
     })
 
-    it('uses the managed CSS entry config and native CSS only', async () => {
+    it('does not inline native-only managed CSS entry output', async () => {
         const projectDir = createFixtureDir()
         const distDir = join(projectDir, '.next')
         const htmlFile = join(distDir, 'server/app/index.html')
+        const sourceHTML = '<!doctype html><html><head></head><body><button class="btn native-used root-native">Button</button></body></html>'
         mkdirSync(join(distDir, 'server/app'), { recursive: true })
         mkdirSync(join(projectDir, 'src'), { recursive: true })
         writeFileSync(join(projectDir, 'src/styles.scss'), [
@@ -170,19 +175,44 @@ describe('renderNextBuildOutputs', () => {
             '    }',
             '}'
         ].join('\n'))
-        writeFileSync(htmlFile, '<!doctype html><html><head></head><body><button class="btn native-used root-native">Button</button></body></html>')
+        writeFileSync(htmlFile, sourceHTML)
 
         const outputs = await renderNextBuildOutputs(createBuildContext(projectDir, htmlFile))
         const html = readFileSync(htmlFile, 'utf-8')
 
+        expect(outputs[0].rendered).toBe(false)
+        expect(outputs[0].cssBytes).toBe(0)
+        expect(html).toBe(sourceHTML)
+        expect(html).not.toContain('<style id="master">')
+        expect(html).not.toContain('data-master-css')
+        expect(html).not.toContain(MASTER_CSS_RUNTIME_MANIFEST_SCRIPT_ID)
+    })
+
+    it('keeps only generated CSS in style#master when native CSS is also present', async () => {
+        const projectDir = createFixtureDir()
+        const distDir = join(projectDir, '.next')
+        const htmlFile = join(distDir, 'server/app/index.html')
+        mkdirSync(join(distDir, 'server/app'), { recursive: true })
+        writeFileSync(join(projectDir, 'app.css'), [
+            '@master;',
+            '',
+            '.root-native {',
+            '    color: #789;',
+            '}'
+        ].join('\n'))
+        writeFileSync(htmlFile, '<!doctype html><html><head></head><body><h1 class="root-native fg:red">Hello</h1></body></html>')
+
+        const outputs = await renderNextBuildOutputs(createBuildContext(projectDir, htmlFile))
+        const html = readFileSync(htmlFile, 'utf-8')
+        const masterStyle = readMasterStyle(html)
+
         expect(outputs[0].rendered).toBe(true)
-        expect(html).not.toContain('.native-used')
-        expect(html).not.toContain('.native-unused')
-        expect(html).toContain('.root-native')
-        expect(html).not.toContain('.root-unused')
-        expect(html).toContain('.btn')
-        expect(html).toContain('display: grid')
-        expect(html).not.toContain('display: inline-flex')
+        expect(masterStyle).toContain('.fg\\:red')
+        expect(masterStyle).not.toContain('.root-native')
+        expect(html).not.toContain('data-master-css')
+        expect(html).toContain(`id="${MASTER_CSS_RUNTIME_MANIFEST_SCRIPT_ID}"`)
+        expect(html).toContain('"className":"fg:red"')
+        expect(html).not.toContain('"className":"root-native"')
     })
 })
 
