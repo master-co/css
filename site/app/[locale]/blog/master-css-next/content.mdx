@@ -49,19 +49,7 @@ The result is a page that can arrive from the server already carrying the CSS ne
 ---
 
 ## Adapter integration
-
-The previous Next.js setup relied on a separate render command after `next build`:
-
-```json
-{
-    "scripts": {
-        "build:css": "mcss render \".next/**/*.html\"" // [!code --]
-    }
-}
-```
-
-That worked, but it lived outside the framework contract. The new adapter is registered in `next.config.mjs`, and Next.js calls it when the full build output is available:
-
+The new adapter is registered in `next.config.mjs`, and Next.js calls it when the full build output is available:
 ```js name=next.config.mjs
 import { withMasterCSS } from '@master/css.next'
 
