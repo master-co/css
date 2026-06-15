@@ -259,7 +259,7 @@ export default class CSSRuntime extends MasterCSS {
         const buckets = new Map<string, {
             mediaText: string
             selectorText: string
-            nodes: Array<VariableRule['nodes'][number]>
+            nodes: VariableRule['nodes'][number][]
         }>()
         for (const rule of variableRules) {
             for (const node of rule.nodes) {

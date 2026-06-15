@@ -8,6 +8,11 @@ import { VIRTUAL_PLAN_ID } from '@master/css-integration/plan-module'
 import { VIRTUAL_CSS_ID } from '@master/css-integration/style-module'
 import { VIRTUAL_PRELOADED_ID } from '@master/css-integration/preloaded-module'
 
+const toPosixPath = (value: string) => value.replace(/\\/g, '/')
+const virtualPlanProjectPath = 'node_modules/.master-css/master-css-plan.js'
+const virtualPreloadedProjectPath = 'node_modules/.master-css/master-css-preloaded.js'
+const composedAdapterProjectPath = 'node_modules/.master-css/master-css-next-adapter.mjs'
+
 describe('withMasterCSS', () => {
     it('sets the Next adapter path and registers options', () => {
         const nextConfig = withMasterCSS({ reactStrictMode: true }, { manifest: 'master-css.json' })
@@ -148,8 +153,8 @@ describe('withMasterCSS', () => {
                 type: 'asset'
             }
         })
-        expect((nextConfig as any).turbopack.resolveAlias[VIRTUAL_PLAN_ID]).toContain(join('node_modules', '.master-css', 'master-css-plan.js'))
-        expect((nextConfig as any).turbopack.resolveAlias[VIRTUAL_PRELOADED_ID]).toContain(join('node_modules', '.master-css', 'master-css-preloaded.js'))
+        expect((nextConfig as any).turbopack.resolveAlias[VIRTUAL_PLAN_ID]).toContain(virtualPlanProjectPath)
+        expect((nextConfig as any).turbopack.resolveAlias[VIRTUAL_PRELOADED_ID]).toContain(virtualPreloadedProjectPath)
         expect((nextConfig as any).turbopack.resolveAlias['@master/css.react']).toBeUndefined()
         expect((nextConfig as any).transpilePackages).toContain('@master/css.react')
     })
@@ -262,7 +267,7 @@ describe('withMasterCSS', () => {
             }) as any
             const adapterSource = readFileSync(nextConfig.adapterPath, 'utf-8')
 
-            expect(nextConfig.adapterPath).toContain('node_modules/.master-css/master-css-next-adapter.mjs')
+            expect(toPosixPath(nextConfig.adapterPath)).toContain(composedAdapterProjectPath)
             expect(adapterSource).toContain('createComposedAdapter(createAdapter(), loadExternalAdapter')
             expect(adapterSource).toContain('const externalAdapterPath = "./external-adapter.mjs"')
             expect(adapterSource).toContain('const adapterOrder = "external-first"')
@@ -281,7 +286,7 @@ describe('withMasterCSS', () => {
             const nextConfig = withMasterCSS({}) as any
             const adapterSource = readFileSync(nextConfig.adapterPath, 'utf-8')
 
-            expect(nextConfig.adapterPath).toContain('node_modules/.master-css/master-css-next-adapter.mjs')
+            expect(toPosixPath(nextConfig.adapterPath)).toContain(composedAdapterProjectPath)
             expect(adapterSource).toContain('const externalAdapterPath = "./env-adapter.mjs"')
             expect(adapterSource).toContain('const adapterOrder = "master-first"')
         } finally {
@@ -308,8 +313,8 @@ describe('withMasterCSS', () => {
 
             expect(nextConfig.webpack).toBeUndefined()
             expect(nextConfig.turbopack.resolveAlias[VIRTUAL_CSS_ID]).toBe('./.master/next.css')
-            expect(nextConfig.turbopack.resolveAlias[VIRTUAL_PLAN_ID]).toContain(join('node_modules', '.master-css', 'master-css-plan.js'))
-            expect(nextConfig.turbopack.resolveAlias[VIRTUAL_PRELOADED_ID]).toContain(join('node_modules', '.master-css', 'master-css-preloaded.js'))
+            expect(nextConfig.turbopack.resolveAlias[VIRTUAL_PLAN_ID]).toContain(virtualPlanProjectPath)
+            expect(nextConfig.turbopack.resolveAlias[VIRTUAL_PRELOADED_ID]).toContain(virtualPreloadedProjectPath)
             expect(nextConfig.turbopack.rules['*']).toEqual(expect.arrayContaining([
                 expect.objectContaining({
                     condition: {

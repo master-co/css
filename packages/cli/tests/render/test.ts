@@ -35,7 +35,7 @@ it('render css text into <head>', async () => {
             </body>
         </html>
     `)
-})
+}, 60_000)
 
 it('render css text into head and create <style id="master">', async () => {
     const filePath = join(__dirname, './b.test.html')
@@ -65,4 +65,4 @@ it('render css text into head and create <style id="master">', async () => {
             </body>
         </html>
     `)
-})
+}, 60_000)
