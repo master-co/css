@@ -2,11 +2,13 @@ import { readFile, writeFile, mkdir } from 'node:fs/promises'
 import { dirname, extname, join, resolve } from 'node:path'
 import { render } from '@master/css-server'
 import type { NextAdapter } from 'next'
-import { getRegisteredOptions, resolveOptions, type Options } from './options'
+import { getRegisteredOptions, resolveOptions, type AdapterOrder, type Options } from './options'
 import { resolveMasterCSSBuildPlan } from './style-plan'
 
 type BuildCompleteContext = Parameters<NonNullable<NextAdapter['onBuildComplete']>>[0]
 type BuildOutputs = BuildCompleteContext['outputs']
+type AdapterModule = NextAdapter | { default?: NextAdapter }
+type AdapterLoader = AdapterModule | (() => AdapterModule | Promise<AdapterModule>)
 
 interface HTMLBuildOutput {
     filePath: string
@@ -28,6 +30,10 @@ export interface RenderManifest {
     nextVersion: string
     buildId: string
     files: RenderedOutput[]
+}
+
+export interface ComposedAdapterOptions {
+    order?: AdapterOrder
 }
 
 function isHTMLFile(filePath: string | undefined): filePath is string {
@@ -153,6 +159,34 @@ export function createAdapter(options?: Options): NextAdapter {
         name: '@master/css.next',
         async onBuildComplete(ctx) {
             await renderNextBuildOutputs(ctx, options ?? getRegisteredOptions() ?? {})
+        }
+    }
+}
+
+async function resolveAdapter(adapter: AdapterLoader) {
+    const loadedAdapter = typeof adapter === 'function'
+        ? await adapter()
+        : adapter
+    return ('default' in loadedAdapter && loadedAdapter.default)
+        ? loadedAdapter.default
+        : loadedAdapter as NextAdapter
+}
+
+export function createComposedAdapter(
+    masterAdapter: NextAdapter,
+    externalAdapter: AdapterLoader,
+    { order = 'master-first' }: ComposedAdapterOptions = {}
+): NextAdapter {
+    return {
+        name: '@master/css.next+adapter',
+        async onBuildComplete(ctx) {
+            const resolvedExternalAdapter = await resolveAdapter(externalAdapter)
+            const adapters = order === 'master-first'
+                ? [masterAdapter, resolvedExternalAdapter]
+                : [resolvedExternalAdapter, masterAdapter]
+            for (const adapter of adapters) {
+                await adapter.onBuildComplete?.(ctx)
+            }
         }
     }
 }

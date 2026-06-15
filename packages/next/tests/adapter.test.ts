@@ -2,7 +2,7 @@ import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, describe, expect, it } from 'vitest'
-import { renderNextBuildOutputs } from '../src/adapter'
+import { createComposedAdapter, renderNextBuildOutputs } from '../src/adapter'
 import type { NextAdapter } from 'next'
 import { MASTER_CSS_RUNTIME_MANIFEST_SCRIPT_ID } from 'shared/master-css-runtime-manifest'
 
@@ -183,5 +183,54 @@ describe('renderNextBuildOutputs', () => {
         expect(html).toContain('.btn')
         expect(html).toContain('display: grid')
         expect(html).not.toContain('display: inline-flex')
+    })
+})
+
+describe('createComposedAdapter', () => {
+    it('runs the Master CSS adapter before the external adapter by default', async () => {
+        const calls: string[] = []
+        const adapter = createComposedAdapter(
+            {
+                name: 'master',
+                async onBuildComplete() {
+                    calls.push('master')
+                }
+            },
+            async () => ({
+                default: {
+                    name: 'external',
+                    async onBuildComplete() {
+                        calls.push('external')
+                    }
+                }
+            })
+        )
+
+        await adapter.onBuildComplete?.({} as BuildCompleteContext)
+
+        expect(calls).toEqual(['master', 'external'])
+    })
+
+    it('can run the external adapter before the Master CSS adapter', async () => {
+        const calls: string[] = []
+        const adapter = createComposedAdapter(
+            {
+                name: 'master',
+                async onBuildComplete() {
+                    calls.push('master')
+                }
+            },
+            {
+                name: 'external',
+                async onBuildComplete() {
+                    calls.push('external')
+                }
+            },
+            { order: 'external-first' }
+        )
+
+        await adapter.onBuildComplete?.({} as BuildCompleteContext)
+
+        expect(calls).toEqual(['external', 'master'])
     })
 })

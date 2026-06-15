@@ -1,6 +1,7 @@
 import type { Options as ExtractorOptions } from '@master/css-extractor'
 
 export type Mode = 'pre-render' | 'static' | null
+export type AdapterOrder = 'master-first' | 'external-first'
 
 export interface Options {
     /**
@@ -21,6 +22,10 @@ export interface Options {
      * Log rendered output details during `next build`.
      */
     debug?: boolean
+    /**
+     * Adapter execution order when composing with another Next adapter.
+     */
+    adapterOrder?: AdapterOrder
 }
 
 export interface ResolvedOptions {
@@ -28,6 +33,7 @@ export interface ResolvedOptions {
     extractorOptions: ExtractorOptions
     manifest: boolean | string
     debug: boolean
+    adapterOrder: AdapterOrder
 }
 
 declare global {
@@ -39,7 +45,8 @@ export function resolveOptions(options: Options = {}): ResolvedOptions {
         mode: options.mode ?? 'pre-render',
         extractorOptions: options.extractorOptions ?? {},
         manifest: options.manifest ?? false,
-        debug: options.debug ?? false
+        debug: options.debug ?? false,
+        adapterOrder: options.adapterOrder ?? 'master-first'
     }
 }
 

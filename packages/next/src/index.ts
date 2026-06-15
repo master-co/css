@@ -1,5 +1,6 @@
-import { fileURLToPath } from 'node:url'
-import { relative } from 'node:path'
+import { fileURLToPath, pathToFileURL } from 'node:url'
+import { dirname, relative, resolve } from 'node:path'
+import { mkdirSync, writeFileSync } from 'node:fs'
 import type { NextConfig } from 'next'
 import { createMasterCSSPlanEntryPattern } from '@master/css-plan/css'
 import {
@@ -32,9 +33,14 @@ const MASTER_CSS_PLAN_IMPORT_CONTENT_PATTERN = new RegExp(`\\${MASTER_CSS_PLAN_Q
 const MASTER_CSS_VIRTUAL_PLAN_PATH_PATTERN = createVirtualDefaultPlanModulePathPattern()
 const MASTER_CSS_STYLE_CONTENT_PATTERN = new RegExp(`${createMasterCSSPlanEntryPattern().source}|@(compose|at)\\b`)
 const MASTER_CSS_REACT_PACKAGE_NAME = '@master/css.react'
+const COMPOSED_ADAPTER_FILE = 'master-css-next-adapter.mjs'
 
 function resolveAdapterPath() {
     return fileURLToPath(new URL('./adapter.mjs', import.meta.url))
+}
+
+function resolveComposedAdapterPath(projectDir = process.cwd()) {
+    return resolve(projectDir, 'node_modules/.master-css', COMPOSED_ADAPTER_FILE)
 }
 
 function resolveCSSPlanLoaderPath() {
@@ -59,6 +65,36 @@ function resolveStaticCSSLoaderPath() {
 
 function resolveEmptyCSSPath() {
     return fileURLToPath(new URL('../empty.css', import.meta.url))
+}
+
+function createComposedAdapterSource(masterAdapterPath: string, externalAdapterPath: string, adapterOrder: string) {
+    return [
+        `import { createRequire } from 'node:module'`,
+        `import { pathToFileURL } from 'node:url'`,
+        `import { createAdapter, createComposedAdapter } from ${JSON.stringify(pathToFileURL(masterAdapterPath).href)}`,
+        ``,
+        `const require = createRequire(import.meta.url)`,
+        `const externalAdapterPath = ${JSON.stringify(externalAdapterPath)}`,
+        `const adapterOrder = ${JSON.stringify(adapterOrder)}`,
+        ``,
+        `async function loadExternalAdapter() {`,
+        `    const resolvedAdapterPath = require.resolve(externalAdapterPath)`,
+        `    return import(pathToFileURL(resolvedAdapterPath).href)`,
+        `}`,
+        ``,
+        `export default createComposedAdapter(createAdapter(), loadExternalAdapter, { order: adapterOrder })`,
+        ``
+    ].join('\n')
+}
+
+function ensureComposedAdapterPath(projectDir: string, masterAdapterPath: string, externalAdapterPath: string, adapterOrder: string) {
+    const composedAdapterPath = resolveComposedAdapterPath(projectDir)
+    mkdirSync(dirname(composedAdapterPath), { recursive: true })
+    writeFileSync(
+        composedAdapterPath,
+        createComposedAdapterSource(masterAdapterPath, externalAdapterPath, adapterOrder)
+    )
+    return composedAdapterPath
 }
 
 function ensureVirtualPlanPath(projectDir = process.cwd()) {
@@ -412,18 +448,26 @@ export function withMasterCSS<T extends NextConfig>(nextConfig: T = {} as T, opt
     if (options.mode === null) return nextConfigWithCSSPlanLoader
 
     const adapterPath = resolveAdapterPath()
-    const existingAdapterPath = nextConfig.adapterPath
-    if (existingAdapterPath && existingAdapterPath !== adapterPath) {
-        throw new Error('[@master/css.next] Next.js only supports one adapterPath. Remove the existing adapterPath or create a custom adapter that composes both adapters.')
-    }
+    const composedAdapterPath = resolveComposedAdapterPath(projectDir)
+    const configuredAdapterPath = nextConfig.adapterPath
+    const externalAdapterPath = configuredAdapterPath && configuredAdapterPath !== adapterPath && configuredAdapterPath !== composedAdapterPath
+        ? configuredAdapterPath
+        : process.env.NEXT_ADAPTER_PATH && process.env.NEXT_ADAPTER_PATH !== adapterPath && process.env.NEXT_ADAPTER_PATH !== composedAdapterPath
+            ? process.env.NEXT_ADAPTER_PATH
+            : undefined
+    const nextAdapterPath = configuredAdapterPath === composedAdapterPath
+        ? configuredAdapterPath
+        : externalAdapterPath
+            ? ensureComposedAdapterPath(projectDir, adapterPath, externalAdapterPath, resolvedOptions.adapterOrder)
+            : adapterPath
 
     return {
         ...nextConfigWithCSSPlanLoader,
-        adapterPath
+        adapterPath: nextAdapterPath
     } as WithAdapterPath<T>
 }
 
 export type { Options } from './options'
-export { createAdapter, renderNextBuildOutputs } from './adapter'
+export { createAdapter, createComposedAdapter, renderNextBuildOutputs } from './adapter'
 
 export default withMasterCSS

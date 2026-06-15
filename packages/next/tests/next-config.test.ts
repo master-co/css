@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { mkdirSync, mkdtempSync, writeFileSync } from 'node:fs'
+import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import withMasterCSS from '../src'
@@ -248,6 +248,50 @@ describe('withMasterCSS', () => {
                 test: /\.(css|scss|sass)$/
             })
         ]))
+    })
+
+    it('composes an existing Next adapter path with the Master CSS adapter', () => {
+        const cwd = process.cwd()
+        const root = mkdtempSync(join(tmpdir(), 'master-css-next-composed-config-'))
+        try {
+            process.chdir(root)
+            const nextConfig = withMasterCSS({
+                adapterPath: './external-adapter.mjs'
+            }, {
+                adapterOrder: 'external-first'
+            }) as any
+            const adapterSource = readFileSync(nextConfig.adapterPath, 'utf-8')
+
+            expect(nextConfig.adapterPath).toBe(join(root, 'node_modules/.master-css/master-css-next-adapter.mjs'))
+            expect(adapterSource).toContain('createComposedAdapter(createAdapter(), loadExternalAdapter')
+            expect(adapterSource).toContain('const externalAdapterPath = "./external-adapter.mjs"')
+            expect(adapterSource).toContain('const adapterOrder = "external-first"')
+        } finally {
+            process.chdir(cwd)
+        }
+    })
+
+    it('composes NEXT_ADAPTER_PATH when no adapter path is configured', () => {
+        const cwd = process.cwd()
+        const root = mkdtempSync(join(tmpdir(), 'master-css-next-env-adapter-'))
+        const originalAdapterPath = process.env.NEXT_ADAPTER_PATH
+        try {
+            process.chdir(root)
+            process.env.NEXT_ADAPTER_PATH = './env-adapter.mjs'
+            const nextConfig = withMasterCSS({}) as any
+            const adapterSource = readFileSync(nextConfig.adapterPath, 'utf-8')
+
+            expect(nextConfig.adapterPath).toBe(join(root, 'node_modules/.master-css/master-css-next-adapter.mjs'))
+            expect(adapterSource).toContain('const externalAdapterPath = "./env-adapter.mjs"')
+            expect(adapterSource).toContain('const adapterOrder = "master-first"')
+        } finally {
+            if (originalAdapterPath === undefined) {
+                delete process.env.NEXT_ADAPTER_PATH
+            } else {
+                process.env.NEXT_ADAPTER_PATH = originalAdapterPath
+            }
+            process.chdir(cwd)
+        }
     })
 
     it('sets up static mode with Turbopack rules without adding a webpack callback', async () => {
