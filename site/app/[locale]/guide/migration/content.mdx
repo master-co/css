@@ -1,16 +1,77 @@
-import brands from 'internal/data/brands'
+## Overview [sr-only]
+Migrating a real product to Master CSS is rarely a one-to-one syntax rewrite. The safest path is to let a local AI coding agent inspect the actual project, make small focused changes, and validate each batch against the project’s own checks.
+
+Use this guide with Codex, Claude, or another coding agent that can read and edit your local repository. The prompt below gives the agent enough direction to choose the right Master CSS setup, convert styles where it improves the codebase, and leave existing CSS alone when conversion would make the result harder to maintain.
 
 ---
 
-## Guides
-<IconButtons url="/guide/migration">
-    {[
-        brands['v1'],
-        brands['tailwindcss'],
-        brands['styled-components'],
-        brands['bootstrap'],
-        brands['emotion'],
-        brands['css'],
-        brands['sass'],
-    ]}
-</IconButtons>
+## Why use an AI coding agent
+CSS migration depends on project context. A static checklist cannot reliably know which files contain product styles, which classes come from a third-party package, which values are design tokens, or which custom CSS is clearer than a generated utility class.
+
+A local coding agent can inspect the framework, package manager, build setup, templates, components, CSS entry files, and test commands before changing code. That makes migration more practical than following a separate guide for every previous styling library.
+
+Treat the agent as a careful pair programmer, not an automatic converter. Ask it to explain changes, work in small batches, and keep each diff reviewable.
+
+---
+
+## Before you start
+- Start from a clean git working tree, or commit your current work first.
+- Identify the existing styling systems, such as global CSS, CSS modules, Tailwind CSS, styled components, Sass, framework style blocks, or component-library CSS.
+- Decide which [rendering mode](/guide/rendering-modes) fits the project: static rendering, runtime rendering, or progressive rendering.
+- Find the CSS file your app already loads. This is usually where `@import '@master/css';` should enter the project.
+- Keep the old styling system in place until the migrated screens build, run, and visually match the previous UI.
+
+---
+
+## Migration prompt
+Paste this into your local coding agent from the project root:
+
+```text name=prompt
+You are migrating this project to Master CSS.
+
+Use the official Master CSS documentation and repository as references:
+- Documentation: https://rc.css.master.co
+- Repository: https://github.com/master-co/css
+
+Prefer the documentation for public syntax, setup, and recommended usage. Use the repository when you need to verify package names, integration examples, source behavior, or current project conventions. Do not invent Master CSS classes, APIs, directives, or package names.
+
+First inspect the repository and identify:
+- the framework, build tool, package manager, and current styling systems
+- the app CSS entry point and component/template files that contain styles
+- any design tokens, theme variables, CSS modules, utility classes, styled components, preprocessors, or third-party stylesheets
+- the available formatter, lint, type-check, test, and build commands
+
+Then migrate incrementally:
+1. Install and configure the appropriate Master CSS package or integration.
+2. Import `@master/css` from the project CSS entry.
+3. Choose the rendering mode that matches this project: static rendering, runtime rendering, or progressive rendering.
+4. Convert repeated visual styles into Master CSS classes in markup where that improves clarity.
+5. Move shared design values into `@theme` tokens.
+6. Use `@components` and `@compose` for reusable component classes only when markup classes would become hard to maintain.
+7. Keep vendor CSS, generated CSS, complex animation CSS, and hard-to-read one-off CSS in regular CSS unless converting it improves maintainability.
+8. Remove the old styling dependency only after the migrated screens build and match the previous UI.
+
+Work in small batches. After each focused batch, show me the changed files, explain the reasoning, and run the project’s formatter, type check, tests, and build if available. Call out anything that needs manual review, especially visual differences, removed CSS, changed tokens, or unsupported syntax.
+```
+
+---
+
+## Review the result
+Review the migration as code and as UI.
+
+- Inspect the diff before accepting each batch.
+- Run the formatter, type check, tests, and production build available in the project.
+- Compare important screens in the browser, including responsive states and dark mode if the app supports them.
+- Keep regular CSS for vendor styles, generated output, hard-to-read one-off declarations, complex animations, and anything external code controls.
+- Remove old styling dependencies only after the converted paths no longer rely on them.
+
+---
+
+## Useful references
+- [Installation](/guide/installation) for adding Master CSS to a project.
+- [Rendering modes](/guide/rendering-modes) for choosing static, runtime, or progressive rendering.
+- [Style declarations](/guide/style-declarations) for class syntax.
+- [Customizing your theme](/guide/theme) for `@theme`, tokens, modes, and custom variants.
+- [Reusing styles](/guide/reusing-styles) for deciding between utilities, theme tokens, and component classes.
+- [Code linting](/guide/code-linting) for validating Master CSS classes in source code.
+- [Language Service](/guide/language-service) for editor highlighting and completion.

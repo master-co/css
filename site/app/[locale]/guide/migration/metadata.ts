@@ -4,7 +4,7 @@ const metadata = define({
     title: {
         absolute: 'Migrating to Master CSS'
     },
-    description: 'Migrate your CSS technology to Master CSS and learn the differences and benefits.',
+    description: 'Use an AI coding agent to migrate an existing project to Master CSS with official docs, repository references, and a review workflow.',
     category: 'Getting Started',
     other: {
         subject: 'Migration'
