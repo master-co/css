@@ -41,10 +41,45 @@ Progressive Rendering moves that first CSS pass into the build:
 1. Next.js renders static and pre-rendered HTML during `next build`.
 2. `@master/css.next` receives those build outputs through the Adapter API.
 3. The adapter runs the Master CSS server renderer against each HTML document.
-4. The generated CSS is injected into the document as `<style id="master">`.
-5. The runtime engine continues after hydration for client-only state, late UI, and dynamic classes.
+4. The generated CSS is injected as `<style id="master">`, and a runtime manifest is injected as `<script type="application/json" id="master-css-runtime-manifest">`.
+5. The runtime reads that manifest during hydration and attaches the existing CSS rules to runtime-managed rule objects instead of regenerating them.
 
-The result is a page that can arrive from the server already carrying the CSS needed for its first render, while still keeping the runtime behavior that makes Master CSS practical in interactive applications.
+The result is a page that can arrive from the server already carrying the CSS needed for its first render, while still keeping the runtime behavior that makes Master CSS practical in interactive applications. If the runtime manifest is missing, invalid, or no longer matches `style#master`, the runtime safely rebuilds its stylesheet from the connected DOM classes.
+
+### Runtime manifest hydration
+
+Progressive Rendering is not only a critical CSS optimization. It is also a resumable runtime handoff.
+
+`style#master` gives the browser the CSS it needs to paint immediately. `script#master-css-runtime-manifest` gives the Master CSS runtime a compact JSON rule IR, currently `version: 1`, that describes the generated rules inside that style block. Each manifest rule can include the class name, layer, priority, selector text, generated CSS text, and any referenced variables or animations.
+
+That distinction matters because the runtime needs to keep managing the page after hydration. A client component may mount later, a class may change in response to state, or a route transition may reveal UI that did not exist in the first HTML document. The manifest lets the runtime adopt the already-rendered rules as its starting point, then continue from there without duplicating the CSS that the build already wrote.
+
+For a minimal page:
+
+```tsx name=app/page.tsx
+export default function Page() {
+    return <h1 className="font:48">Hello</h1>
+}
+```
+
+Progressive Rendering produces HTML shaped like this:
+
+```html
+<!doctype html>
+<html>
+<head>
+    <style id="master">@layer utilities{.font\:48{font-size:3rem}}</style>
+    <script type="application/json" id="master-css-runtime-manifest">{"version":1,"rules":[{"className":"font:48","key":"font:48","layer":"utilities","type":-1,"sortTier":0,"priority":{"selector":0},"text":".font\\:48{font-size:3rem}","selectorText":".font\\:48"}]}</script>
+</head>
+<body>
+    <h1 class="font:48">Hello</h1>
+</body>
+</html>
+```
+
+The browser can paint the heading from `style#master` before the runtime does any work. When the runtime starts, it reads the manifest, maps the native CSS rule back to `font:48`, and continues handling later dynamic classes from the same managed stylesheet.
+
+This runtime hydration manifest is separate from the `manifest` option in `@master/css.next`. When enabled, the Next adapter option writes `.next/master-css-manifest.json` as a build report for rendered files; it is not the JSON script used to hydrate `style#master` in the browser.
 
 ---
 
