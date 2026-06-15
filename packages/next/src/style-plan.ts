@@ -16,10 +16,11 @@ export interface MasterCSSBuildPlan {
     styleSources: string[]
 }
 
-export async function resolveMasterCSSBuildPlan(
-    projectDir: string,
-    classes?: string[]
-): Promise<MasterCSSBuildPlan> {
+export interface MasterCSSBuildPlanResolver {
+    resolve: (classes?: string[]) => Promise<MasterCSSBuildPlan>
+}
+
+export async function createMasterCSSBuildPlanResolver(projectDir: string): Promise<MasterCSSBuildPlanResolver> {
     const result = await loadProjectPlan(projectDir)
     const extractor = new CSSExtractor({
         include: [],
@@ -29,27 +30,42 @@ export async function resolveMasterCSSBuildPlan(
     await extractor.init()
     for (const entry of await findCSSPlanEntryFiles(projectDir)) {
         await registerStyleCSSSource(extractor, styleCSSSources, entry, await readFile(entry, 'utf8'), {
+            basePlan: result.plan,
             projectDir
         })
     }
-    const nativeCSS = classes?.length
-        ? await createExtractedCSS({
-            extractor,
-            styleCSSSources,
-            plan: result.plan,
-            projectDir,
-            classes,
-            includeGeneratedCSS: false
-        })
-        : ''
 
     return {
-        plan: result.plan,
-        nativeCSS,
-        dependencies: [...new Set([
-            ...result.dependencies,
-            ...Array.from(styleCSSSources.values()).flatMap((source) => source.dependencies)
-        ])],
-        styleSources: Array.from(styleCSSSources.keys())
+        async resolve(classes?: string[]) {
+            const nativeCSS = classes?.length
+                ? await createExtractedCSS({
+                    extractor,
+                    styleCSSSources,
+                    basePlan: result.plan,
+                    plan: result.plan,
+                    projectDir,
+                    classes,
+                    includeGeneratedCSS: false
+                })
+                : ''
+
+            return {
+                plan: result.plan,
+                nativeCSS,
+                dependencies: [...new Set([
+                    ...result.dependencies,
+                    ...Array.from(styleCSSSources.values()).flatMap((source) => source.dependencies)
+                ])],
+                styleSources: Array.from(styleCSSSources.keys())
+            }
+        }
     }
+}
+
+export async function resolveMasterCSSBuildPlan(
+    projectDir: string,
+    classes?: string[]
+): Promise<MasterCSSBuildPlan> {
+    const resolver = await createMasterCSSBuildPlanResolver(projectDir)
+    return resolver.resolve(classes)
 }

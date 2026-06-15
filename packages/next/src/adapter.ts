@@ -3,7 +3,7 @@ import { dirname, extname, join, resolve } from 'node:path'
 import { render } from '@master/css-server'
 import type { NextAdapter } from 'next'
 import { getRegisteredOptions, resolveOptions, type AdapterOrder, type Options } from './options'
-import { resolveMasterCSSBuildPlan } from './style-plan'
+import { createMasterCSSBuildPlanResolver } from './style-plan'
 
 type BuildCompleteContext = Parameters<NonNullable<NextAdapter['onBuildComplete']>>[0]
 type BuildOutputs = BuildCompleteContext['outputs']
@@ -14,6 +14,12 @@ interface HTMLBuildOutput {
     filePath: string
     pathname: string
     source: 'static' | 'prerender-fallback'
+}
+
+interface RenderedHTMLBuildOutput {
+    output: HTMLBuildOutput
+    sourceHTML: string
+    rendered: ReturnType<typeof render>
 }
 
 export interface RenderedOutput {
@@ -112,17 +118,28 @@ export async function renderNextBuildOutputs(ctx: BuildCompleteContext, rawOptio
     const options = resolveOptions(rawOptions)
     if (options.mode === null) return []
 
-    const baseBuildPlan = await resolveMasterCSSBuildPlan(ctx.projectDir)
+    const buildPlanResolver = await createMasterCSSBuildPlanResolver(ctx.projectDir)
+    const baseBuildPlan = await buildPlanResolver.resolve()
     const htmlOutputs = collectHTMLBuildOutputs(ctx.outputs)
+    const renderedHTMLOutputs: RenderedHTMLBuildOutput[] = []
+    const allClasses = new Set<string>()
     const renderedOutputs: RenderedOutput[] = []
 
     for (const output of htmlOutputs) {
         const sourceHTML = await readFile(output.filePath, 'utf-8')
         const rendered = render(sourceHTML, baseBuildPlan.plan, { runtimeManifest: 'inject' })
-        const buildPlan = await resolveMasterCSSBuildPlan(ctx.projectDir, rendered.classes)
+        rendered.classes.forEach((className) => allClasses.add(className))
+        renderedHTMLOutputs.push({ output, sourceHTML, rendered })
+    }
+
+    const nativeCSS = allClasses.size
+        ? (await buildPlanResolver.resolve([...allClasses])).nativeCSS
+        : ''
+
+    for (const { output, sourceHTML, rendered } of renderedHTMLOutputs) {
         const generatedCSS = rendered.css?.classUtilities.size ? rendered.css.text : ''
         const cssText = [
-            buildPlan.nativeCSS,
+            rendered.classes.length ? nativeCSS : '',
             generatedCSS
         ].filter(Boolean).join('\n\n')
         const renderedHTML = cssText

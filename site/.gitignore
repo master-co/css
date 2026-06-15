@@ -17,10 +17,14 @@
 
 # next.js
 /.next/
+/.open-next/
 /out/
 
 # production
 /build
+
+# cloudflare
+/.wrangler/
 
 # misc
 .DS_Store

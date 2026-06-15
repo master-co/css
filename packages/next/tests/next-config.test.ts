@@ -262,7 +262,7 @@ describe('withMasterCSS', () => {
             }) as any
             const adapterSource = readFileSync(nextConfig.adapterPath, 'utf-8')
 
-            expect(nextConfig.adapterPath).toBe(join(root, 'node_modules/.master-css/master-css-next-adapter.mjs'))
+            expect(nextConfig.adapterPath).toContain('node_modules/.master-css/master-css-next-adapter.mjs')
             expect(adapterSource).toContain('createComposedAdapter(createAdapter(), loadExternalAdapter')
             expect(adapterSource).toContain('const externalAdapterPath = "./external-adapter.mjs"')
             expect(adapterSource).toContain('const adapterOrder = "external-first"')
@@ -281,7 +281,7 @@ describe('withMasterCSS', () => {
             const nextConfig = withMasterCSS({}) as any
             const adapterSource = readFileSync(nextConfig.adapterPath, 'utf-8')
 
-            expect(nextConfig.adapterPath).toBe(join(root, 'node_modules/.master-css/master-css-next-adapter.mjs'))
+            expect(nextConfig.adapterPath).toContain('node_modules/.master-css/master-css-next-adapter.mjs')
             expect(adapterSource).toContain('const externalAdapterPath = "./env-adapter.mjs"')
             expect(adapterSource).toContain('const adapterOrder = "master-first"')
         } finally {

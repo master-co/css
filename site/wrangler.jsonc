@@ -1,0 +1,36 @@
+{
+    "$schema": "node_modules/wrangler/config-schema.json",
+    "name": "master-css-site",
+    "main": ".open-next/worker.js",
+    "compatibility_date": "2026-06-11",
+    "compatibility_flags": [
+        "nodejs_compat",
+        "global_fetch_strictly_public"
+    ],
+    "account_id": "337580da126498c38a54d4d5cd2024c8",
+    "assets": {
+        "directory": ".open-next/assets",
+        "binding": "ASSETS"
+    },
+    "services": [
+        {
+            "binding": "WORKER_SELF_REFERENCE",
+            "service": "master-css-site"
+        }
+    ],
+    "images": {
+        "binding": "IMAGES"
+    },
+    "routes": [
+        {
+            "pattern": "css.master.co/*",
+            "zone_name": "master.co"
+        }
+    ],
+    "vars": {
+        "NEXT_PUBLIC_DEPLOY_TARGET": "cloudflare-workers",
+        "NEXT_PUBLIC_HOST": "css.master.co",
+        "NEXT_PUBLIC_URL": "https://css.master.co",
+        "NEXT_PUBLIC_PLAY_API_URL": "https://css.master.co/api/play"
+    }
+}
