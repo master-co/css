@@ -236,7 +236,7 @@ describe('style CSS extraction helpers', () => {
     })
 
     it('keeps native imports before generated host CSS', () => {
-        const result = createStyleCSSHostSource([
+        const masterFirst = createStyleCSSHostSource([
             '@import "@master/css";',
             '@import "@fontsource/fira-mono";',
             '',
@@ -244,8 +244,33 @@ describe('style CSS extraction helpers', () => {
         ].join('\n'), {
             masterSource: '#master-css-slot{--slot:0}'
         })
+        const masterLast = createStyleCSSHostSource([
+            '@import "@fontsource/fira-mono";',
+            '@import "@master/css";',
+            '',
+            '.card { color: red; }'
+        ].join('\n'), {
+            masterSource: '#master-css-slot{--slot:0}'
+        })
 
-        expect(result).toBe('@import "@fontsource/fira-mono";\n#master-css-slot{--slot:0}')
+        expect(masterFirst).toBe('@import "@fontsource/fira-mono";\n#master-css-slot{--slot:0}')
+        expect(masterLast).toBe('@import "@fontsource/fira-mono";\n#master-css-slot{--slot:0}')
+    })
+
+    it('preserves native import modifiers before generated host CSS', () => {
+        const result = createStyleCSSHostSource([
+            '@import url("@fontsource/fira-mono") layer(fonts) screen;',
+            '@import "normalize.css" layer(reset);',
+            '@import "@master/css";'
+        ].join('\n'), {
+            masterSource: '#master-css-slot{--slot:0}'
+        })
+
+        expect(result).toBe([
+            '@import url("@fontsource/fira-mono") layer(fonts) screen;',
+            '@import "normalize.css" layer(reset);',
+            '#master-css-slot{--slot:0}'
+        ].join('\n'))
     })
 
     it('uses the managed CSS entry config and native CSS sources', async () => {
@@ -312,6 +337,35 @@ describe('style CSS extraction helpers', () => {
         expect(css).toContain('.fg\\:red{color:var(--color-red)}')
         expect(css).not.toContain('@master')
         expect(css).not.toContain('virtual:master-utilities.css')
+        expect(css).not.toContain('@master/css')
+    })
+
+    it('keeps non-expandable native imports out of generated managed CSS', async () => {
+        const root = createFixture()
+        const extractor = new CSSExtractor({
+            include: []
+        }, root)
+        await extractor.init()
+
+        const styleCSSSources = new Map()
+        await registerStyleCSSSource(extractor, styleCSSSources, join(root, 'app/globals.css'), [
+            '@import "@master/css";',
+            '@import "@fontsource/fira-mono";',
+            '',
+            '.card {',
+            '    color: red;',
+            '}'
+        ].join('\n'))
+        await extractor.insert(join(root, 'app/page.html'), '<div class="card"></div>')
+
+        const css = await createExtractedCSS({
+            extractor,
+            styleCSSSources,
+            projectDir: root
+        })
+
+        expect(css).toContain('.card')
+        expect(css).not.toContain('@fontsource/fira-mono')
         expect(css).not.toContain('@master/css')
     })
 

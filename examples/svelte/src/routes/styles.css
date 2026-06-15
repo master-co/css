@@ -1,5 +1,5 @@
-@import '@fontsource/fira-mono';
 @import '@master/css';
+@import '@fontsource/fira-mono';
 
 :root {
 	--font-body: Arial, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu,

@@ -30,6 +30,8 @@ In static mode, import the generated stylesheet from a source stylesheet.
 
 Source stylesheets that import `@master/css` are treated as native CSS pruning roots by default. Ordinary CSS outside Master CSS directives is pruned against detected classes, and the import inserts generated Master CSS. Add `@preserve native;` when native CSS must be preserved. If the same stylesheet contains `@settings`, `@theme`, `@custom-variant`, or `@custom-variant` plan directives, that stylesheet can also serve as the project CSS entry because `@import '@master/css'` is an entry marker.
 
+`@import '@master/css'` may appear anywhere inside the top-level CSS import block. The Vite integration keeps ordinary CSS imports before generated Master CSS, but the Master CSS import still needs to come before normal style rules.
+
 ### Runtime input imports
 The plugin exposes canonical project-level runtime input modules:
 

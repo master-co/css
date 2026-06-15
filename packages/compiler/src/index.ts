@@ -183,7 +183,8 @@ function resolveCSSImportGraphFile(
     const imports = findCSSImportStatements(sourceWithoutReferences, absoluteFile)
     if (!imports.length) return sourceWithoutReferences
 
-    return replaceCSSImportStatements(sourceWithoutReferences, absoluteFile, (importStatement: CSSImportStatement): string | undefined => {
+    const preservedImports: string[] = []
+    const resolvedSource = replaceCSSImportStatements(sourceWithoutReferences, absoluteFile, (importStatement: CSSImportStatement): string | undefined => {
         const importSource = importStatement.source
         const packageFile = options.expandPackageImports !== false
             ? resolveMasterCSSPackageEntryFile(importSource, absoluteFile, options.projectDir)
@@ -192,7 +193,17 @@ function resolveCSSImportGraphFile(
             const importedFile = packageFile || resolve(dirname(absoluteFile), importSource)
             return resolveCSSImportGraphFile(importedFile, dependencies, dependencySet, [...stack, absoluteFile], options)
         }
+        preservedImports.push(importStatement.statement.trim())
+        return ''
     })
+    if (!preservedImports.length) return resolvedSource
+
+    const firstImportStart = imports[0].start
+    const afterImports = resolvedSource.slice(firstImportStart)
+    return resolvedSource.slice(0, firstImportStart)
+        + preservedImports.join('\n')
+        + (afterImports ? '\n' : '')
+        + afterImports
 }
 
 export function resolveCSSImportGraph(file: string, options: ResolveCSSImportGraphOptions = {}): ResolvedCSSImportGraph {

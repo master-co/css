@@ -115,4 +115,32 @@ describe('CSS @reference', () => {
             rmSync(root, { recursive: true, force: true })
         }
     })
+
+    test('keeps ordinary package imports before expanded Master CSS entries', () => {
+        const root = createFixture()
+        try {
+            const entryPath = join(root, 'src/app.css')
+            writeFileSync(entryPath, [
+                '@import "@master/css";',
+                '@import "fake-font/index.css";',
+                '',
+                '@theme {',
+                '    --color-primary: #123456;',
+                '}'
+            ].join('\n'))
+
+            const result = compileProjectPlan([entryPath])
+
+            expect(result.dependencies).toContain(entryPath)
+            expect(result.css).not.toContain('@import "fake-font/index.css"')
+            expect(result.plan.variables).toEqual(expect.arrayContaining([
+                expect.objectContaining({
+                    name: 'color-primary',
+                    value: '#123456'
+                })
+            ]))
+        } finally {
+            rmSync(root, { recursive: true, force: true })
+        }
+    })
 })

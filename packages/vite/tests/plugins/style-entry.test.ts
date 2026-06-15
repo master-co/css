@@ -68,6 +68,25 @@ describe('StyleEntryPlugin', () => {
         expect(context.virtualCSSPlaceholderEmitted).toBe(true)
     })
 
+    test('build transform keeps native imports before the slot when @master/css comes first', async () => {
+        const context = makeContext('build')
+        const plugin = StyleEntryPlugin({ mode: 'static' } as any, context)
+
+        const result = await (plugin as any).transform.call(
+            {},
+            '@import "@master/css";\n@import "@fontsource/fira-mono";\n.card{color:red}',
+            '/project/src/style.css'
+        )
+
+        expect(result.code).toBe('@import "@fontsource/fira-mono";\n' + SLOT)
+        expect(context.styleCSSSources.get('/project/src/style.css')).toMatchObject({
+            pruneNativeCSS: true,
+            source: expect.stringContaining('.card')
+        })
+        expect(context.styleCSSSources.get('/project/src/style.css').source).not.toContain('@master/css')
+        expect(context.virtualCSSPlaceholderEmitted).toBe(true)
+    })
+
     test('serve transform emits current CSS and reloads the managed stylesheet for HMR', async () => {
         const context = makeContext('serve')
         const plugin = StyleEntryPlugin({ mode: 'static' } as any, context)
@@ -80,6 +99,24 @@ describe('StyleEntryPlugin', () => {
 
         expect(result.code).toContain('.fg\\:red')
         expect(result.code).not.toBe(SLOT)
+        expect(context.virtualCSSImporters).toEqual(new Set(['/project/src/style.css']))
+        expect(context.virtualCSSPlaceholderEmitted).toBeUndefined()
+    })
+
+    test('serve transform keeps native imports before generated CSS when @master/css comes first', async () => {
+        const context = makeContext('serve')
+        const plugin = StyleEntryPlugin({ mode: 'static' } as any, context)
+
+        const result = await (plugin as any).transform.call(
+            {},
+            '@import "@master/css";\n@import "@fontsource/fira-mono";\n.card{color:red}',
+            '/project/src/style.css'
+        )
+
+        expect(result.code).toContain('.fg\\:red')
+        expect(result.code).not.toContain('@master/css')
+        expect(result.code.indexOf('@import "@fontsource/fira-mono";')).toBe(0)
+        expect(result.code.match(/@fontsource\/fira-mono/g)).toHaveLength(1)
         expect(context.virtualCSSImporters).toEqual(new Set(['/project/src/style.css']))
         expect(context.virtualCSSPlaceholderEmitted).toBeUndefined()
     })
@@ -100,6 +137,23 @@ describe('StyleEntryPlugin', () => {
         expect(context.styleCSSSources.get('/project/src/style.css')).toMatchObject({
             pruneNativeCSS: true
         })
+        expect(context.virtualCSSImporters).toEqual(new Set(['/project/src/style.css']))
+    })
+
+    test('non-generated modes preserve native imports when consuming empty Master entries', async () => {
+        const context = makeContext('serve', '', false)
+        context.extractor.latentClasses = new Set()
+        const plugin = StyleEntryPlugin({ mode: 'progressive' } as any, context)
+
+        const result = await (plugin as any).transform.call(
+            {},
+            '@import "@master/css";\n@import "@fontsource/fira-mono";',
+            '/project/src/style.css'
+        )
+
+        expect(result.code).toBe('@import "@fontsource/fira-mono";')
+        expect(result.code).not.toContain('@master/css')
+        expect(result.code).not.toContain(SLOT)
         expect(context.virtualCSSImporters).toEqual(new Set(['/project/src/style.css']))
     })
 

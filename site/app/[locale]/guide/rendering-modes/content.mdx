@@ -303,6 +303,8 @@ In static mode, import the generated stylesheet from the stylesheet your framewo
 
 Use one `@import '@master/css'` entry for each generated stylesheet root. That import is also the insertion point for generated Master CSS, default base styles, theme variables, and utilities required by detected classes.
 
+`@import '@master/css'` may be placed anywhere inside the top-level CSS import block. Ordinary CSS imports in that block are still emitted before generated Master CSS; keep the Master CSS import before normal style rules.
+
 ### Native CSS entries
 Regular CSS outside Master CSS directives remains native CSS. When a stylesheet imports `@master/css`, integrations treat that stylesheet as a pruning root by default and prune class selectors against detected source classes.
 

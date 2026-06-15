@@ -266,6 +266,18 @@ export function removeStyleCSSImports(source: string) {
     return replaceStyleCSSImports(source, '')
 }
 
+function removeCSSImportStatements(source: string) {
+    const imports = findImportStatements(source)
+    if (!imports.length) return source
+    let code = ''
+    let index = 0
+    for (const importStatement of imports) {
+        code += source.slice(index, importStatement.start)
+        index = importStatement.end
+    }
+    return code + source.slice(index)
+}
+
 export function hasStyleCSSImport(source: string) {
     return removeStyleCSSImports(source).replaced
 }
@@ -564,7 +576,7 @@ export async function registerStyleCSSSource(
         }
     const masterCSS = hasMasterCSSImport(resolvedSource.source)
     const pruneNativeCSS = !collectedDirectives.directives.preserveNative && isMasterStyleSource(resolvedSource.source)
-    const sourceWithoutImports = removeStyleCSSImports(resolvedSource.source).code
+    const sourceWithoutImports = removeCSSImportStatements(resolvedSource.source)
     const cleanSource = removeMasterStyleDirectives(sourceWithoutImports).code
     const compileOptions = options
     const result = await compileStyleCSS(filename, cleanSource, compileOptions)
