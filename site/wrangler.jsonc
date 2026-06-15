@@ -28,7 +28,6 @@
         }
     ],
     "vars": {
-        "NEXT_PUBLIC_DEPLOY_TARGET": "cloudflare-workers",
         "NEXT_PUBLIC_HOST": "css.master.co",
         "NEXT_PUBLIC_URL": "https://css.master.co",
         "NEXT_PUBLIC_PLAY_API_URL": "https://css.master.co/api/play"

@@ -7,7 +7,7 @@
         "dev": "pnpm build:next-adapter && pnpm prepare-app && next dev --turbo",
         "build": "pnpm prepare-app && pnpm build:llms && pnpm build:repo && pnpm build:next",
         "build:cloudflare-next": "pnpm prepare-app && pnpm build:llms && pnpm build:repo && pnpm build:next",
-        "build:cloudflare-workers": "cross-env NEXT_PUBLIC_DEPLOY_TARGET=cloudflare-workers opennextjs-cloudflare build --skipWranglerConfigCheck",
+        "build:cloudflare-workers": "opennextjs-cloudflare build --skipWranglerConfigCheck",
         "build:repo": "cd ../ && pnpm build && cd site",
         "build:next-adapter": "cd ../ && pnpm --filter @master/css.next... build && cd site",
         "build:next": "cross-env NODE_OPTIONS=--max-old-space-size=16384 next build --turbo",
