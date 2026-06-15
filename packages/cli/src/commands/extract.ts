@@ -47,6 +47,12 @@ function formatWatchedPath(cwd: string, file: string) {
     return path.isAbsolute(file) ? path.relative(cwd, file) : file
 }
 
+async function waitForWatcherReady(watcher: FSWatcher) {
+    await new Promise<void>((resolve) => watcher.once('ready', resolve))
+    // Let chokidar finish registering native watchers before callers mutate files.
+    await new Promise((resolve) => setTimeout(resolve, 0))
+}
+
 export default (program: Command) => program
     .command('extract')
     .argument('[source paths]', 'The glob pattern path to extract sources')
@@ -120,7 +126,7 @@ export default (program: Command) => program
                         void extractor.insertFile(source).then(queueWrite)
                     })
                     watchers.push(sourceWatcher)
-                    await new Promise<void>((resolve) => sourceWatcher.once('ready', resolve))
+                    await waitForWatcherReady(sourceWatcher)
                 }
                 if (extractor.planDependencies.length) {
                     const planWatcher = chokidar.watch(extractor.planDependencies, {
@@ -156,7 +162,7 @@ export default (program: Command) => program
                         void handlePlanChange(planDependency)
                     })
                     watchers.push(planWatcher)
-                    await new Promise<void>((resolve) => planWatcher.once('ready', resolve))
+                    await waitForWatcherReady(planWatcher)
                 }
             }
             process.once('SIGTERM', () => {
