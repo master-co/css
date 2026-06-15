@@ -5,6 +5,6 @@ export default defineConfig({
     ...config,
     test: {
         ...config.test,
-        testTimeout: 60000
+        testTimeout: 60_000
     }
 })

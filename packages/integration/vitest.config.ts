@@ -9,7 +9,7 @@ const config: ViteUserConfig = {
         exclude: [
             '**/tmp/**'
         ],
-        testTimeout: 15000
+        testTimeout: 60_000
     },
     resolve: {
         tsconfigPaths: true

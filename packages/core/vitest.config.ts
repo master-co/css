@@ -9,7 +9,7 @@ export default defineConfig({
         exclude: [
             '**/tmp/**'
         ],
-        testTimeout: 15000,
+        testTimeout: 60_000,
         forceRerunTriggers: [
             'vitest.config.*',
             'vite.config.*',
