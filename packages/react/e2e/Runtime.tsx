@@ -8,7 +8,7 @@ export default function Runtime() {
         version: 1,
         utilities: [
             {
-                id: 'btn',
+                id: '.btn',
                 name: 'btn',
                 type: -4,
                 order: 0,
@@ -21,7 +21,10 @@ export default function Runtime() {
                 },
                 matchers: [{ type: 'static', name: 'btn' }]
             }
-        ]
+        ],
+        utilityBuckets: {
+            arbitrary: [0]
+        }
     })
     const [root, setRoot] = useState<ShadowRoot>()
     const containerRef = useRef<HTMLDivElement>(null)

@@ -26,6 +26,6 @@ jobs:
               env:
                   GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
             - run: pnpm install
-            - run: pnpm exec playwright install --with-deps
+            - run: pnpm --filter @master/css-devtools-hook exec playwright install --with-deps
             - run: pnpm run build
             - run: pnpm e2e

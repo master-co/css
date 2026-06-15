@@ -3,8 +3,10 @@ import vue from 'eslint-plugin-vue'
 import vueTS from '@vue/eslint-config-typescript'
 import playwright from 'eslint-plugin-playwright'
 
+const commonWithoutTypeScript = common.filter((config) => !config.plugins?.['@typescript-eslint'])
+
 export default [
-    ...common,
+    ...commonWithoutTypeScript,
     ...vue.configs['flat/essential'],
     ...vueTS(),
     {

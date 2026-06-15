@@ -4,12 +4,24 @@ import createDoc from '../../src/utils/create-doc'
 import { Settings } from '../../src/settings'
 import { createPresetPlan } from '../helpers/create-preset-plan'
 
+const defaultPresetPlan = createPresetPlan()
+const presetPlanByInput = new WeakMap<object, ReturnType<typeof createPresetPlan>>()
+
+function getPresetPlan(plan: Settings['plan']) {
+    if (!plan) return defaultPresetPlan
+    const cachedPlan = presetPlanByInput.get(plan)
+    if (cachedPlan) return cachedPlan
+    const presetPlan = createPresetPlan(plan)
+    presetPlanByInput.set(plan, presetPlan)
+    return presetPlan
+}
+
 export const hint = (target: string, settings: Settings = {}) => {
     const contents = [`<div class="`, target, `"></div>`]
     const doc = createDoc('html', contents.join(''))
     const languageService = new CSSLanguageService({
         ...settings,
-        plan: createPresetPlan(settings.plan)
+        plan: getPresetPlan(settings.plan)
     })
     return languageService.suggestSyntax(doc, doc.positionAt(contents[0].length + target.length), {
         triggerKind: 2,

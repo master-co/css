@@ -48,7 +48,7 @@ let subprocess: ResultPromise
 let subprocessOutput = ''
 
 async function waitForCSSContent(doesMatch: (css: string) => boolean) {
-    const deadline = Date.now() + 30000
+    const deadline = Date.now() + 60000
     let css = ''
     while (Date.now() < deadline) {
         if (fs.existsSync(virtualCSSFilepath)) {

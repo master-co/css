@@ -138,9 +138,9 @@ export default (program: Command) => program
                             await extractor.reset()
                             await prepareExtractor(extractor, styleCSSSources)
                             await queueWrite()
+                            await startWatchers()
                             log``
                             log.t`Restart watching source changes`
-                            await startWatchers()
                             extractor.emit('planChange')
                         } finally {
                             restarting = false

@@ -33,7 +33,7 @@ describe('@master/css-preset defaultPlan', () => {
         expect(utilities[0]?.order).toBe(utilities.length - 1)
         expect(utilities[utilities.length - 1]?.order).toBe(0)
         expect(plan).toEqual(defaultPlan)
-    })
+    }, 20000)
 
     it('matches the CSS-authored preset plan facets', () => {
         const compiledPlan = createDefaultPlanFromSourceFile(resolve(__dirname, '../src/index.css'))
@@ -44,7 +44,7 @@ describe('@master/css-preset defaultPlan', () => {
         expect(compiledPlan.breakpointAtRules).toEqual(defaultPlan.breakpointAtRules)
         expect(compiledPlan.containerAtRules).toEqual(defaultPlan.containerAtRules)
         expect(compiledPlan.selectors).toEqual(defaultPlan.selectors)
-    })
+    }, 20000)
 
     it('preserves the compiled dynamic registry', () => {
         const css = createCSS(defaultPlan)

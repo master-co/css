@@ -5,5 +5,5 @@
 }
 
 @theme {
-    primary: $(yellow);
+    --color-primary: $color-yellow;
 }

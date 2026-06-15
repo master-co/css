@@ -23,7 +23,7 @@ export default defineConfig({
         trace: 'on-first-retry',
 
         /* Port to use for Playwright component endpoint. */
-        ctPort: 3100,
+        ctPort: 3101,
     },
     /* Configure projects for major browsers */
     projects: process.env.CI

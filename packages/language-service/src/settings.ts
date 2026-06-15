@@ -1,4 +1,3 @@
-/* eslint-disable quotes */
 import { CLASS_ATTRIBUTES, CLASS_FUNCTIONS, CLASS_DECLARATIONS } from './master-css'
 import type { MasterCSSPlan } from '@master/css'
 

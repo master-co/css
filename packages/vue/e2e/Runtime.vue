@@ -9,7 +9,7 @@
         version: 1,
         utilities: [
             {
-                id: 'btn',
+                id: '.btn',
                 name: 'btn',
                 type: -4,
                 order: 0,
@@ -22,7 +22,10 @@
                 },
                 matchers: [{ type: 'static', name: 'btn' }]
             }
-        ]
+        ],
+        utilityBuckets: {
+            arbitrary: [0]
+        }
     })
     const root = ref()
     const containerRef = ref()
