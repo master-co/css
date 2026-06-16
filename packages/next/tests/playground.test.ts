@@ -1,17 +1,16 @@
-import { execFileSync } from 'node:child_process'
 import { readdirSync, readFileSync, statSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vitest'
 import { MASTER_CSS_RUNTIME_MANIFEST_SCRIPT_ID } from 'shared/master-css-runtime-manifest'
-import pnpmCommand from './helpers/pnpm-command'
+import execPnpmSync from './helpers/pnpm-command'
 
 const packageDir = dirname(fileURLToPath(new URL('../package.json', import.meta.url)))
 const playgroundDir = join(packageDir, 'playground')
 
 function buildPlayground() {
     try {
-        execFileSync(pnpmCommand, ['--dir', playgroundDir, 'build'], {
+        execPnpmSync(['--dir', playgroundDir, 'build'], {
             cwd: packageDir,
             encoding: 'utf-8',
             env: {

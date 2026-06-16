@@ -1,3 +1,5 @@
-const pnpmCommand = process.platform === 'win32' ? 'pnpm.cmd' : 'pnpm'
+import { execFileSync, type ExecFileSyncOptionsWithStringEncoding } from 'node:child_process'
 
-export default pnpmCommand
+export default function execPnpmSync(args: string[], options: ExecFileSyncOptionsWithStringEncoding) {
+    execFileSync('pnpm', args, process.platform === 'win32' ? { ...options, shell: true } : options)
+}
