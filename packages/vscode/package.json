@@ -9,9 +9,9 @@
         "type-check": "tsc --noEmit",
         "lint": "eslint",
         "vscode:package": "vsce package --no-dependencies --follow-symlinks",
-        "vscode:publish": "vsce publish --no-dependencies --follow-symlinks --pre-release"
+        "vscode:publish": "vsce publish --no-dependencies --follow-symlinks"
     },
-    "version": "2.0.16",
+    "version": "2.0.18",
     "description": "Master CSS for Visual Studio Code",
     "displayName": "Master CSS",
     "author": "Aoyue Design LLC.",
@@ -26,7 +26,7 @@
         "directory": "packages/vscode"
     },
     "engines": {
-        "vscode": "^1.98.0"
+        "vscode": "^1.120.0"
     },
     "activationEvents": [
         "onStartupFinished"
@@ -365,10 +365,10 @@
     "devDependencies": {
         "@master/css-language-server": "workspace:^",
         "@master/css-language-service": "workspace:^",
-        "@types/vscode": "^1.118.0",
-        "@vscode/vsce": "^3.9.1",
+        "@types/vscode": "^1.120.0",
+        "@vscode/vsce": "^3.9.2",
         "shared": "workspace:^",
-        "vscode-languageclient": "^9.0.1"
+        "vscode-languageclient": "^10.0.0"
     },
     "peerDependencies": {
         "lightningcss": "^1.32.0",
