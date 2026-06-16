@@ -413,9 +413,9 @@ test.concurrent('uses native CSS punctuation style for Master directive terminat
         '@custom-variant @motion-safe { @media (prefers-reduced-motion: no-preference) { @slot; } }',
         '@components {',
         '    card {',
-        '        @compose "p:md r:xl";',
+        '        @compose p:md r:xl;',
         '        @variant @<sm {',
-        '            @compose "block";',
+        '            @compose block;',
         '        }',
         '    }',
         '}'

@@ -265,7 +265,7 @@ The CSS entry point is explicit: import `@master/css` from the stylesheet that s
         ```css name=index.css
         @components {
             btn {
-                @compose "inline-flex px:md";
+                @compose inline-flex px:md;
             }
         }
         ```
@@ -377,7 +377,7 @@ Rendering modes change delivery, not the authoring model. The source of truth is
 
 @components {
     btn {
-        @compose "inline-flex ai:center px:md py:xs r:md";
+        @compose inline-flex ai:center px:md py:xs r:md;
         background: var(--color-primary);
     }
 }

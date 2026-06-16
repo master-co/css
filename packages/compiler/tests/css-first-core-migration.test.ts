@@ -238,7 +238,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
 
             @defaults {
                 demo {
-                    @compose "bg:stripe";
+                    @compose bg:stripe;
                 }
             }
         `, { basePlan: defaultPlan })
@@ -285,6 +285,62 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
         css.add('demo')
         expect(css.defaultsLayer.text).toContain('.demo{background:var(--background-stripe)}')
         expect(css.themeLayer.text).toContain('--background-stripe:0 / 7.5px 7.5px linear-gradient(red, blue)')
+    })
+
+    test('lowers unquoted compose class lists from raw source', () => {
+        const result = compileCSSPlan(`
+            @theme {
+                --color-primary: #123456;
+            }
+
+            @components {
+                card {
+                    @compose inline-flex bg:primary/.9 translateY(-5);
+                }
+            }
+
+            .list {
+                @compose text:center>li;
+            }
+        `, { basePlan: defaultPlan })
+        const css = createCSS(result.plan)
+
+        css.add('card')
+
+        expect(result.directives.styleDefinitions).toEqual(expect.arrayContaining([
+            expect.objectContaining({
+                type: 'compose',
+                className: 'bg:primary/.9'
+            }),
+            expect.objectContaining({
+                type: 'compose',
+                className: 'translateY(-5)'
+            }),
+            expect.objectContaining({
+                type: 'compose',
+                className: 'text:center>li'
+            })
+        ]))
+        expect(css.text).toContain('.card')
+        expect(css.text).toContain('display:inline-flex')
+        expect(css.text).toContain('background-color:color-mix(in oklab,var(--color-primary) 90%,transparent)')
+        expect(result.css).toContain('.list>li{text-align:center}')
+    })
+
+    test('rejects quoted and grouped compose class lists', () => {
+        const expectComposeError = (source: string, code: string) => {
+            let error: unknown
+            try {
+                compileCSSPlan(source, { basePlan: defaultPlan })
+            } catch (caught) {
+                error = caught
+            }
+            expect(error).toMatchObject({ code })
+        }
+
+        expectComposeError('.card { @compose "block"; }', 'compose-quoted-syntax')
+        expectComposeError('.card { @compose content:\'-\'; }', 'compose-quoted-syntax')
+        expectComposeError('.card { @compose {text:center;block}>li; }', 'compose-group-syntax')
     })
 
     test('executes CSS-first number variables and value functions through engine semantics', () => {

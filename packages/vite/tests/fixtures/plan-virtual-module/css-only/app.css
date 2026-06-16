@@ -8,7 +8,7 @@
 
 @components {
     btn {
-        @compose "bg:primary";
+        @compose bg:primary;
         display: inline-flex;
     }
 }

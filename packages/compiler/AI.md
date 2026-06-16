@@ -34,11 +34,11 @@
 - The compiler records mode declarations as written. Plan settings and engine execution decide which modes are defaults.
 - `@custom-variant @motion-safe { @media (prefers-reduced-motion: no-preference) { @slot; } }`
 - `@custom-variant ::scrollbar { &::-webkit-scrollbar { @slot; } }`
-- `@components { btn { @compose "inline-flex"; display: inline-flex; } }`
-- `@components { btn { @variant @dark { @compose "bg:neutral-90"; } } }`
+- `@components { btn { @compose inline-flex; display: inline-flex; } }`
+- `@components { btn { @variant @dark { @compose bg:neutral-90; } } }`
 - `@utilities { content-auto { content-visibility: auto; } }`
 - `@utilities { print-hidden { @variant @print { display: none; } } }`
-- `.card { @compose "block"; @variant @dark { @compose "fg:primary"; } }`
+- `.card { @compose block; @variant @dark { @compose fg:primary; } }`
 - Managed definition directives use first-level bare names, not selectors. Put selector states and descendants in nested selectors inside the named block.
 - `@compose` is allowed in managed class definitions and native style rules, including inside `@variant`.
 - Utilities defined in CSS are static utilities only.

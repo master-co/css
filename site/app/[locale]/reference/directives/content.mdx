@@ -58,10 +58,10 @@ Use `@reference` to load another Master CSS stylesheet as compile-time context w
 @reference "../app.css";
 
 .button {
-    @compose "btn";
+    @compose btn;
 
     @variant @dark {
-        @compose "bg:surface";
+        @compose bg:surface;
     }
 }
 ```
@@ -77,7 +77,7 @@ Referenced stylesheets can define `@settings`, `@theme`, `@custom-variant`, `@de
 
 @components {
     btn {
-        @compose "inline-flex ai:center px:md h:10x r:lg";
+        @compose inline-flex ai:center px:md h:10x r:lg;
     }
 }
 ```
@@ -205,7 +205,7 @@ Defines managed classes in the `defaults` layer.
 ```css
 @defaults {
     prose {
-        @compose "fg:text leading:lg";
+        @compose fg:text leading:lg;
     }
 }
 ```
@@ -216,7 +216,7 @@ Defines managed component classes in the `components` layer.
 ```css
 @components {
     btn {
-        @compose "inline-flex ai:center jc:center";
+        @compose inline-flex ai:center jc:center;
     }
 }
 ```
@@ -292,30 +292,39 @@ Use these directives for explicit source-scanning exceptions, not as a replaceme
 
 ## Rule-local composition
 ### `@compose`
-Use `@compose` inside a style rule to lower a quoted Master CSS class list into native declarations for the current selector.
+Use `@compose` inside a style rule to lower an unquoted Master CSS class list into native declarations for the current selector.
 
 ```css
 .card {
-    @compose "grid gap:md p:lg r:xl shadow:md";
+    @compose grid gap:md p:lg r:xl shadow:md;
     background: var(--color-surface);
 }
 
 @components {
     btn {
-        @compose "inline-flex ai:center jc:center px:md py:xs r:lg";
+        @compose inline-flex ai:center jc:center px:md py:xs r:lg;
 
         &:hover {
-            @compose "bg:primary/.9";
+            @compose bg:primary/.9;
         }
     }
 }
 ```
 
-`@compose` accepts only quoted class lists:
+`@compose` accepts only unquoted class lists:
 
 ```css
 .card {
-    @compose "p:md r:lg";
+    @compose p:md r:lg;
+}
+```
+
+Do not put quotes, grouped class syntax, or class tokens that need CSS quoted strings inside `@compose`. Use ordinary CSS declarations for declaration-like values, and use nested selectors or `@variant` blocks for grouped selector behavior:
+
+```css
+.empty-state::before {
+    @compose block size:12x r:full;
+    content: '';
 }
 ```
 
@@ -340,14 +349,14 @@ Use `@variant` inside managed definitions or native style rules to share the cur
 
 ```css
 .notice {
-    @compose "p:md r:lg";
+    @compose p:md r:lg;
 
     @variant @dark {
-        @compose "bg:surface fg:strong";
+        @compose bg:surface fg:strong;
     }
 
     @variant @<sm {
-        @compose "p:sm";
+        @compose p:sm;
     }
 }
 ```

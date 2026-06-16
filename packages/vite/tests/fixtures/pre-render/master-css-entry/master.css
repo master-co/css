@@ -5,9 +5,9 @@
 
 @components {
     card {
-        @compose "bg:brand";
+        @compose bg:brand;
         @variant @md {
-            @compose "font:18";
+            @compose font:18;
         }
         border-color: #456;
     }

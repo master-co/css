@@ -41,7 +41,7 @@ Use `components` for project styles that carry product meaning: `.btn`, `.card`,
 ```css name=index.css
 @components {
     btn {
-        @compose "inline-flex";
+        @compose inline-flex;
         background-color: var(--color-primary);
     }
 }
@@ -55,7 +55,7 @@ Use `utilities` for built-in utilities, animation utilities, and custom static u
 ```css name=index.css
 @utilities {
     flow {
-        @compose "grid gap:md";
+        @compose grid gap:md;
     }
 
     content-auto {
@@ -83,7 +83,7 @@ This example touches every generated layer. The project CSS entry defines theme 
 
 @components {
     btn {
-        @compose "inline-flex";
+        @compose inline-flex;
         background-color: var(--color-primary);
     }
 }
@@ -229,7 +229,7 @@ Native `@layer` is never compiler-managed. For on-demand managed definitions, us
 
 @components {
     card {
-        @compose "block";
+        @compose block;
         border-radius: .75rem;
     }
 }
@@ -239,10 +239,10 @@ Native style rules can still compose Master CSS utilities when the rule should r
 
 ```css name=app.css
 .card {
-    @compose "block p:md";
+    @compose block p:md;
 
     @variant @dark {
-        @compose "bg:neutral-90";
+        @compose bg:neutral-90;
     }
 }
 ```

@@ -309,14 +309,14 @@ Inside managed definitions and native style rules, use `@variant` blocks instead
 
 @components {
     card {
-        @compose "p:md r:xl";
+        @compose p:md r:xl;
 
         @variant @motion-safe {
-            @compose "animation:fade-in|fast";
+            @compose animation:fade-in|fast;
         }
 
         @variant @<sm {
-            @compose "block";
+            @compose block;
         }
     }
 }
@@ -351,10 +351,10 @@ Inside CSS-defined style rules, use `@variant` to apply selector variants instea
 
 @components {
     btn {
-        @compose "inline-flex ai:center jc:center";
+        @compose inline-flex ai:center jc:center;
 
         @variant :interactive {
-            @compose "fg:link";
+            @compose fg:link;
         }
     }
 }
@@ -434,12 +434,12 @@ The theme should describe shared values and named conditions. Reusable UI patter
 ```css name=components.css
 @components {
     btn {
-        @compose "inline-flex ai:center jc:center gap:xs px:md py:xs r:md font:sm font:medium";
+        @compose inline-flex ai:center jc:center gap:xs px:md py:xs r:md font:sm font:medium;
         background: var(--color-accent);
         color: var(--color-accent-text);
 
         &:disabled {
-            @compose "opacity:.55 pointer-events:none";
+            @compose opacity:.55 pointer-events:none;
         }
     }
 }

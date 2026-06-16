@@ -71,13 +71,13 @@ describe('style CSS extraction helpers', () => {
     })
 
     it('detects local compose styles without treating them as Master entries', () => {
-        expect(hasLocalStyleDirectives('.card { @compose "block"; }')).toBe(true)
+        expect(hasLocalStyleDirectives('.card { @compose block; }')).toBe(true)
         expect(hasLocalStyleDirectives('.card { @variant @dark { color: red; } }')).toBe(true)
         expect(hasLocalStyleDirectives('.card { @slot; }')).toBe(false)
         expect(hasLocalStyleDirectives('.card { color: red; }')).toBe(false)
         expect(isStyleCSSRequest('/project/src/Button.module.css')).toBe(true)
         expect(isStyleCSSRequest('/project/src/Button.vue?vue&type=style&index=0&lang.css')).toBe(true)
-        expect(isMasterStyleSource('.card { @compose "block"; }')).toBe(false)
+        expect(isMasterStyleSource('.card { @compose block; }')).toBe(false)
     })
 
     it('locally lowers @compose using the provided project context', async () => {
@@ -86,7 +86,7 @@ describe('style CSS extraction helpers', () => {
         })
         const result = await transformLocalStyleCSS('/project/src/Button.module.css', `
             .button {
-                @compose "inline-flex brand";
+                @compose inline-flex brand;
                 color: white;
             }
         `, {
@@ -115,7 +115,7 @@ describe('style CSS extraction helpers', () => {
             @reference "./tokens.css";
 
             .button {
-                @compose "brand";
+                @compose brand;
             }
         `, {
             projectDir: root

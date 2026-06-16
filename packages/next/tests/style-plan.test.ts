@@ -27,7 +27,7 @@ describe('resolveMasterCSSBuildPlan', () => {
             '@import "@master/css";',
             '',
             '.hidden-card {',
-            '    @compose "hidden";',
+            '    @compose hidden;',
             '}'
         ].join('\n'))
 

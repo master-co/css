@@ -184,7 +184,7 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
                 '}'
             ].join('\n'))
 
-            const result = await transformStyleSource(modulePath, '.button { @compose "inline-flex brand"; color: white; }', {
+            const result = await transformStyleSource(modulePath, '.button { @compose inline-flex brand; color: white; }', {
                 projectDir: root,
                 masterImport: '../node_modules/.master-css/master-utilities.css'
             })
@@ -209,7 +209,7 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
         try {
             writeFileSync(tokenPath, '@components { brand { color: #123456; } }')
 
-            const result = await transformStyleSource(modulePath, '@reference "./tokens.css"; .button { @compose "brand"; }', {
+            const result = await transformStyleSource(modulePath, '@reference "./tokens.css"; .button { @compose brand; }', {
                 projectDir: root,
                 masterImport: '../node_modules/.master-css/master-utilities.css'
             })

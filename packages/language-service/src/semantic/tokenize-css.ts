@@ -255,10 +255,15 @@ function tokenizeCustomVariantBlock(source: string, start: number, end: number, 
 }
 
 function tokenizeComposePrelude(source: string, start: number, end: number, tokens: HighlightTokenItem[], css: MasterCSS) {
-    for (const stringRange of collectCSSQuotedStringRanges(source, start, end)) {
-        pushQuoteDelimiters(tokens, stringRange.start, stringRange.end)
-        tokens.push(...collectClassListHighlightTokenItems(css, source.slice(stringRange.start + 1, stringRange.end - 1), stringRange.start + 1))
+    if (collectCSSQuotedStringRanges(source, start, end).length) {
+        tokenizeQuotedStringPrelude(source, start, end, tokens)
+        return
     }
+    const classListStart = skipCSSWhitespace(source, start)
+    let classListEnd = end
+    while (classListEnd > classListStart && /\s/.test(source[classListEnd - 1] || '')) classListEnd--
+    if (classListEnd <= classListStart) return
+    tokens.push(...collectClassListHighlightTokenItems(css, source.slice(classListStart, classListEnd), classListStart))
 }
 
 function tokenizeVariantPrelude(source: string, start: number, end: number, tokens: HighlightTokenItem[]) {

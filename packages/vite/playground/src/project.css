@@ -40,23 +40,23 @@
 /* Components */
 @components {
     page {
-        @compose "grid ai:center jc:center min-h:100vh p:1.25rem bg:panel fg:ink";
+        @compose grid ai:center jc:center min-h:100vh p:1.25rem bg:panel fg:ink;
         font-family: Inter, ui-sans-serif, system-ui, sans-serif;
     }
 
     card {
-        @compose "grid gap:1rem p:card bg:surface r:card max-w:42rem content-auto";
+        @compose grid gap:1rem p:card bg:surface r:card max-w:42rem content-auto;
         @variant @motion-safe {
-            @compose "animation:demo-fade-in|.55s";
+            @compose animation:demo-fade-in|.55s;
         }
         border: 1px solid var(--color-ring);
         box-shadow: 0 22px 70px rgb(17 24 39 / 12%);
     }
 
     live-label {
-        @compose "inline-flex ai:center jc:center h:24 px:.75rem bg:primary r:pill font:12 font:semibold";
+        @compose inline-flex ai:center jc:center h:24 px:.75rem bg:primary r:pill font:12 font:semibold;
         @variant @motion-safe {
-            @compose "animation:demo-pulse|1.4s|infinite";
+            @compose animation:demo-pulse|1.4s|infinite;
         }
         color: white;
         justify-self: start;
@@ -65,19 +65,19 @@
     }
 
     title {
-        @compose "m:0 font:40 leading:1 fg:ink";
+        @compose m:0 font:40 leading:1 fg:ink;
         @variant @md {
-            @compose "font:56";
+            @compose font:56;
         }
         max-width: 12ch;
     }
 
     desc {
-        @compose "m:0 font:18 leading:1.7 fg:muted max-w:34rem";
+        @compose m:0 font:18 leading:1.7 fg:muted max-w:34rem;
     }
 
     btn {
-        @compose "inline-flex ai:center jc:center h:44 px:1rem bg:primary r:pill font:semibold";
+        @compose inline-flex ai:center jc:center h:44 px:1rem bg:primary r:pill font:semibold;
         border: 0;
         box-shadow: 0 14px 28px rgb(17 34 51 / 18%);
         color: white;

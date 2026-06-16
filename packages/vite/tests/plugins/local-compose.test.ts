@@ -43,7 +43,7 @@ describe('LocalComposePlugin', () => {
 
             const result = await (plugin as any).transform.call(
                 { addWatchFile },
-                '.button { @compose "inline-flex brand"; color: white; }',
+                '.button { @compose inline-flex brand; color: white; }',
                 path.join(root, 'src/Button.module.css')
             )
 
@@ -72,7 +72,7 @@ describe('LocalComposePlugin', () => {
             )).toBeUndefined()
             expect(await (plugin as any).transform.call(
                 {},
-                '@master; .button { @compose "block"; }',
+                '@master; .button { @compose block; }',
                 path.join(root, 'src/app.css')
             )).toBeUndefined()
         } finally {
@@ -88,7 +88,7 @@ describe('LocalComposePlugin', () => {
 
             const result = await (plugin as any).transform.call(
                 { addWatchFile: vi.fn() },
-                '.button { @compose "block"; }',
+                '.button { @compose block; }',
                 path.join(root, 'src/Button.vue') + '?vue&type=style&index=0&lang.css'
             )
 
@@ -109,7 +109,7 @@ describe('LocalComposePlugin', () => {
 
             const result = await (plugin as any).transform.call(
                 { addWatchFile },
-                '@reference "./theme.css"; .button { @compose "brand"; }',
+                '@reference "./theme.css"; .button { @compose brand; }',
                 path.join(root, 'src/Button.module.css')
             )
 

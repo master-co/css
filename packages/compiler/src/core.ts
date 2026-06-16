@@ -43,7 +43,6 @@ import {
     type StandaloneMasterDirectiveStatement
 } from './lexer/standalone-master'
 import { combineSelectorLists } from './utils/selectors'
-import unquote from './utils/unquote'
 
 export {
     collectStandaloneCSSDirectiveExtractionPolicy,
@@ -122,7 +121,7 @@ const MASTER_CUSTOM_AT_RULES = {
         body: null
     },
     compose: {
-        prelude: '<string>',
+        prelude: '*',
         body: null
     },
     reference: {
@@ -1007,30 +1006,78 @@ function takeComposeRange(parsed: ParsedDirectives) {
     return ranges[index]
 }
 
+function trimSourceRange(source: string, range: { start: number, end: number }) {
+    let start = range.start
+    let end = range.end
+    while (start < end && /\s/.test(source[start] || '')) start++
+    while (end > start && /\s/.test(source[end - 1] || '')) end--
+    return { start, end }
+}
+
+function createComposeQuotedSyntaxError(parsed: ParsedDirectives, range: { start: number, end: number }) {
+    return new CSSDirectiveError(
+        'compose-quoted-syntax',
+        '@compose only accepts unquoted class lists',
+        createSourceReference(parsed, range)
+    )
+}
+
+function createComposeGroupSyntaxError(parsed: ParsedDirectives, range: { start: number, end: number }) {
+    return new CSSDirectiveError(
+        'compose-group-syntax',
+        '@compose does not accept group syntax',
+        createSourceReference(parsed, range)
+    )
+}
+
+function validateComposeRange(parsed: ParsedDirectives, range: CSSDirectiveRuleRange) {
+    const source = parsed.source || ''
+    if (range.blockRange) {
+        throw createComposeGroupSyntaxError(parsed, range.blockRange)
+    }
+    if (range.quotedStringRanges.length) {
+        throw createComposeQuotedSyntaxError(parsed, range.quotedStringRanges[0])
+    }
+    const contentRange = trimSourceRange(source, range.preludeRange)
+    const classList = source.slice(contentRange.start, contentRange.end)
+    for (const token of collectMasterCSSClassListTokenRanges(classList)) {
+        if (token.token.startsWith('{')) {
+            throw createComposeGroupSyntaxError(parsed, {
+                start: contentRange.start + token.start,
+                end: contentRange.start + token.end
+            })
+        }
+    }
+}
+
+function validateComposeRanges(parsed: ParsedDirectives) {
+    for (const range of parsed.composeRanges || []) {
+        validateComposeRange(parsed, range)
+    }
+}
+
 function parseComposeRule(rule: any, parsed: ParsedDirectives): ParsedComposeRule | undefined {
     if (rule.type === 'custom' && rule.value.name === 'compose') {
-        const classList = unquote(rule.value.prelude.value)
         const range = takeComposeRange(parsed)
-        const quotedRange = range?.quotedStringRanges[0]
-        const tokenRanges = quotedRange
-            ? collectMasterCSSClassListTokenRanges(parsed.source?.slice(quotedRange.contentRange.start, quotedRange.contentRange.end) || '')
-            : []
+        const contentRange = range && parsed.source
+            ? trimSourceRange(parsed.source, range.preludeRange)
+            : undefined
+        const classList = contentRange && parsed.source
+            ? parsed.source.slice(contentRange.start, contentRange.end)
+            : formatPrelude(rule.value.prelude)
         const classTokens = collectMasterCSSClassListTokenRanges(classList)
         return {
-            classNames: classTokens.map((token, index) => {
-                const sourceToken = tokenRanges[index]
-                return {
-                    className: token.token,
-                    ...(sourceToken && quotedRange
-                        ? {
-                            source: createSourceReference(parsed, {
-                                start: quotedRange.contentRange.start + sourceToken.start,
-                                end: quotedRange.contentRange.start + sourceToken.end
-                            })
-                        }
-                        : {})
-                }
-            }),
+            classNames: classTokens.map((token) => ({
+                className: token.token,
+                ...(contentRange
+                    ? {
+                        source: createSourceReference(parsed, {
+                            start: contentRange.start + token.start,
+                            end: contentRange.start + token.end
+                        })
+                    }
+                    : {})
+            })),
             ...(range ? { directiveSource: createSourceReference(parsed, range) } : {})
         }
     }
@@ -1640,6 +1687,7 @@ export function compileCSS(source: string, options: CompileCSSOptions = {}): Com
         ? undefined
         : new Set(options.classes)
     parsed.extractionPolicy = collectStandaloneCSSDirectiveExtractionPolicy(sourceWithoutReferences, filename)
+    validateComposeRanges(parsed)
     const preprocessedSource = removeStandaloneCSSDirectives(sourceWithoutReferences, filename)
     let ruleDepth = 0
     const transformed = getCSSTransform()({

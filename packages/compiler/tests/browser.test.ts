@@ -7,7 +7,7 @@ test.concurrent('browser compileCSSPlan lowers directives with a base plan', asy
     const result = await compileCSSPlan(`
         @components {
             btn {
-                @compose "flex";
+                @compose flex;
                 color: red;
             }
         }

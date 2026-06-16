@@ -34,7 +34,7 @@ For project-aware tokens, create a CSS entry that contains `@master;` or `@impor
 }
 
 .button {
-    @compose "inline-flex items:center gap:2x fg:primary";
+    @compose inline-flex items:center gap:2x fg:primary;
 }
 ```
 

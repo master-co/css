@@ -41,10 +41,10 @@ describe('CSS @reference', () => {
                 @reference "../tokens.css";
 
                 .button {
-                    @compose "brand";
+                    @compose brand;
 
                     @variant @wide {
-                        @compose "brand";
+                        @compose brand;
                     }
                 }
             `)
@@ -79,7 +79,7 @@ describe('CSS @reference', () => {
                 }
 
                 .button {
-                    @compose "brand";
+                    @compose brand;
                 }
             `)
 
@@ -100,7 +100,7 @@ describe('CSS @reference', () => {
             writeFileSync(aPath, [
                 '@master;',
                 '@reference "./b.css";',
-                '.a { @compose "b"; }'
+                '.a { @compose b; }'
             ].join('\n'))
             writeFileSync(bPath, '@components { b { display: block; } }')
 

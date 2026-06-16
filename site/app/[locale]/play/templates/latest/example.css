@@ -12,57 +12,57 @@
 
 @utilities {
     viewport-center {
-        @compose "flex items-center justify-center min-vh p:lg";
+        @compose flex items-center justify-center min-vh p:lg;
     }
 }
 
 @components {
     play-stage {
-        @compose "viewport-center";
+        @compose viewport-center;
     }
 
     card {
-        @compose "fg:text m:auto max-w:md mt:lg_:where(p,ul) my:sm_:where(li) outline:1|subtle r:lg shadow:lg text:md_:where(p,li)";
+        @compose fg:text m:auto max-w:md mt:lg_:where(p,ul) my:sm_:where(li) outline:1|subtle r:lg shadow:lg text:md_:where(p,li);
         background-color: var(--color-card);
     }
 
     card-body {
-        @compose "p:xl p:2xl@sm";
+        @compose p:xl p:2xl@sm;
     }
 
     card-footer {
-        @compose "bt:1|dotted|line p:lg p:xl@sm pt:md@sm";
+        @compose bt:1|dotted|line p:lg p:xl@sm pt:md@sm;
     }
 
     card-logotype {
-        @compose "mt:md mb:xl mx:auto";
+        @compose mt:md mb:xl mx:auto;
     }
 
     feature-list {
-        @compose "m:0 p:0";
+        @compose m:0 p:0;
     }
 
     feature-item {
-        @compose "flex fg:strong font:medium";
+        @compose flex fg:strong font:medium;
     }
 
     hint {
-        @compose "italic mt:0 text:xs";
+        @compose italic mt:0 text:xs;
     }
 
     btn {
-        @compose "inline-flex items-center justify-center rel b:1|accent-line bg:accent fg:accent-text font:sm font:medium h:48 mt:md px:lg r:sm text:center w:full";
+        @compose inline-flex items-center justify-center rel b:1|accent-line bg:accent fg:accent-text font:sm font:medium h:48 mt:md px:lg r:sm text:center w:full;
 
         &:hover .btn-arrow-line {
-            @compose "opacity:1 scale(1)";
+            @compose opacity:1 scale(1);
         }
     }
 
     btn-icon {
-        @compose "abs right:md";
+        @compose abs right:md;
     }
 
     btn-arrow-line {
-        @compose "transition:opacity|fast|smooth opacity:0 scale(0) transform-origin:5x|center";
+        @compose transition:opacity|fast|smooth opacity:0 scale(0) transform-origin:5x|center;
     }
 }

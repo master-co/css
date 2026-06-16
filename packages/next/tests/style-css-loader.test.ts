@@ -78,7 +78,7 @@ describe('Next style CSS loader', () => {
         const result = await runStyleCSSLoader(
             root,
             join(root, 'app/Button.module.css'),
-            '.button { @compose "inline-flex brand"; color: white; }'
+            '.button { @compose inline-flex brand; color: white; }'
         )
 
         expect(result.content).toContain('.button{')
@@ -99,7 +99,7 @@ describe('Next style CSS loader', () => {
         const result = await runStyleCSSLoader(
             root,
             modulePath,
-            '@reference "./tokens.css"; .button { @compose "brand"; }'
+            '@reference "./tokens.css"; .button { @compose brand; }'
         )
 
         expect(result.content).toContain('.button{color:#123456}')

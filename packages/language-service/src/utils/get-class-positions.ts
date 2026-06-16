@@ -383,16 +383,19 @@ function collectCSSDirectiveClassPositions(
     const classPositions: ClassPosition[] = []
     for (const directive of collectCSSDirectiveRanges(source)) {
         if (directive.name !== 'compose') continue
-        const stringRange = directive.quotedStringRanges[0]
-        if (!stringRange) continue
-        const raw = source.slice(stringRange.contentRange.start, stringRange.contentRange.end)
+        if (directive.blockRange || directive.quotedStringRanges.length) continue
+        let start = directive.preludeRange.start
+        let end = directive.preludeRange.end
+        while (start < end && /\s/.test(source[start] || '')) start++
+        while (end > start && /\s/.test(source[end - 1] || '')) end--
+        const raw = source.slice(start, end)
         classPositions.push(...collectClassPositions(
             raw,
-            stringRange.contentRange.start,
-            stringRange.quote,
+            start,
+            '',
             includeEmpty,
             accept,
-            stringRange.contentRange
+            { start, end }
         ))
     }
     return classPositions

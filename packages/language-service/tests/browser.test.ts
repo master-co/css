@@ -50,7 +50,7 @@ test.concurrent('collects browser semantic tokens for CSS directives', () => {
 
         @components {
             btn {
-                @compose "block";
+                @compose block;
             }
         }
     `

@@ -44,7 +44,7 @@ Use `@utilities` when your design system needs a reusable primitive that is stil
 ```css name=index.css
 @utilities {
     flow {
-        @compose "grid gap:md";
+        @compose grid gap:md;
     }
 
     content-auto {
@@ -76,7 +76,7 @@ Use a component class when a repeated class list becomes a reusable UI pattern. 
 ```css name=index.css
 @components {
     btn {
-        @compose "inline-flex ai:center jc:center gap:xs px:md py:xs r:lg font:sm font:medium";
+        @compose inline-flex ai:center jc:center gap:xs px:md py:xs r:lg font:sm font:medium;
         background: var(--color-primary);
         color: white;
     }
@@ -130,19 +130,19 @@ Put selector states in nested selectors and conditional variants in `@variant` b
 ```css name=index.css
 @components {
     btn {
-        @compose "inline-flex ai:center jc:center px:md py:xs r:lg";
+        @compose inline-flex ai:center jc:center px:md py:xs r:lg;
         transition: background-color .15s ease, box-shadow .15s ease;
 
         &:hover {
-            @compose "bg:primary/.9";
+            @compose bg:primary/.9;
         }
 
         &:focus-visible {
-            @compose "outline:2|primary outline-offset:2";
+            @compose outline:2|primary outline-offset:2;
         }
 
         @variant @<sm {
-            @compose "block";
+            @compose block;
         }
     }
 }
@@ -167,29 +167,29 @@ Avoid hiding every option behind a new component. Give each component class one 
 ```css name=styles/button.css
 @components {
     btn {
-        @compose "inline-flex ai:center jc:center";
+        @compose inline-flex ai:center jc:center;
         font-weight: 600;
         outline-offset: -0.0625rem;
     }
 
     btn-xs {
-        @compose "r:sm px:xs font:xs h:6x";
+        @compose r:sm px:xs font:xs h:6x;
     }
 
     btn-sm {
-        @compose "r:md px:sm font:xs h:8x";
+        @compose r:md px:sm font:xs h:8x;
     }
 
     btn-md {
-        @compose "r:md px:md font:sm h:10x";
+        @compose r:md px:md font:sm h:10x;
     }
 
     btn-lg {
-        @compose "r:lg px:lg font:md h:12x";
+        @compose r:lg px:lg font:md h:12x;
     }
 
     btn-xl {
-        @compose "r:xl px:lg font:md h:14x";
+        @compose r:xl px:lg font:md h:14x;
     }
 }
 ```
@@ -266,10 +266,11 @@ Use nested selectors when the selector is truly part of the component behavior:
 ```css name=index.css
 @components {
     empty-state {
-        @compose "grid ai:center jc:center min-h:64x p:lg text:center";
+        @compose grid ai:center jc:center min-h:64x p:lg text:center;
 
         &::before {
-            @compose "{content:'';block;size:12x;r:full}";
+            @compose block size:12x r:full;
+            content: '';
             background: color-mix(in oklab, currentColor 12%, transparent);
         }
     }
@@ -290,16 +291,16 @@ In this example, `size:12x` is generated for `.empty-state::before`, not for `.e
 ```css name=index.css
 @utilities {
     flow {
-        @compose "grid gap:md";
+        @compose grid gap:md;
     }
 }
 
 .marketing-card {
-    @compose "flow p:lg r:xl shadow:md";
+    @compose flow p:lg r:xl shadow:md;
     background: var(--color-surface);
 
     @variant @dark {
-        @compose "shadow:none";
+        @compose shadow:none;
     }
 }
 ```
@@ -313,13 +314,13 @@ CSS Modules and SFC `<style>` blocks can use `@compose` directly. They do not ne
 
 ```css name=Button.module.css
 .button {
-    @compose "inline-flex ai:center jc:center gap:xs px:md h:10x r:lg";
+    @compose inline-flex ai:center jc:center gap:xs px:md h:10x r:lg;
     background: var(--color-primary);
     color: white;
 }
 
 .button:hover {
-    @compose "bg:primary/.9";
+    @compose bg:primary/.9;
 }
 ```
 
@@ -344,10 +345,10 @@ SFC style blocks use the same model:
 
 <style scoped>
 .card {
-    @compose "grid gap:md p:lg r:xl shadow:md";
+    @compose grid gap:md p:lg r:xl shadow:md;
 
     @variant @dark {
-        @compose "shadow:none";
+        @compose shadow:none;
     }
 }
 </style>

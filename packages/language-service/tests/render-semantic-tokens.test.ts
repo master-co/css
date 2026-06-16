@@ -220,28 +220,28 @@ test.concurrent('renders semantic tokens for CSS directives', () => {
 
         @defaults {
             reset {
-                @compose "block";
+                @compose block;
             }
         }
 
         @components {
             btn {
-                @compose "inline-flex fg:primary:hover@md";
+                @compose inline-flex fg:primary:hover@md;
                 @variant @dark {
-                    @compose 'bg:surface';
+                    @compose bg:surface;
                 }
                 @variant @<sm {
-                    @compose "block";
+                    @compose block;
                 }
                 @variant ::scrollbar-thumb:hover@dark {
-                    @compose "fg:primary";
+                    @compose fg:primary;
                 }
             }
         }
 
         @utilities {
             content-auto {
-                @compose "block";
+                @compose block;
             }
         }
     `, 'css')
@@ -300,7 +300,7 @@ test.concurrent('renders CSS directive ranges with quoted semicolons', () => {
         @preserve native;
 
         .btn {
-            @compose "fg:red";
+            @compose fg:red;
         }
 
         @custom-variant @quoted { @media (x: "a;b") { @slot; } }
@@ -327,6 +327,15 @@ test.concurrent('renders CSS directive ranges with quoted semicolons', () => {
     expect(tokens.filter(({ text, type, modifiers }) =>
         text === ';' && type === 'operator' && modifiers.includes('directive')
     )).toHaveLength(8)
+})
+
+test.concurrent('does not tokenize quoted compose preludes as class lists', () => {
+    const { tokens } = renderTokens('.btn { @compose "block fg:red"; }', 'css')
+
+    expectToken(tokens, '@compose', 'keyword', ['directive'])
+    expectToken(tokens, 'block fg:red', 'string', ['quoted'])
+    expect(tokens).not.toContainEqual({ text: 'block', type: 'class', modifiers: [] })
+    expect(tokens).not.toContainEqual({ text: 'fg', type: 'property', modifiers: [] })
 })
 
 test.concurrent('renders custom variant block semantic tokens for nested at-rules and selectors', () => {
@@ -407,7 +416,7 @@ test.concurrent('renders CSS directives in SCSS-like sources without a CSS parse
         }
 
         .btn {
-            @compose "block";
+            @compose block;
         }
     `, 'scss')
 

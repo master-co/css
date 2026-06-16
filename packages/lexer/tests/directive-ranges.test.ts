@@ -38,12 +38,12 @@ test.concurrent('collects reference directive ranges', () => {
 })
 
 test.concurrent('collects nested Master directive ranges without treating host at-rules as directives', () => {
-    const source = '@layer components { .btn { @compose "block"; @variant @<sm { @compose "hidden"; } } }'
+    const source = '@layer components { .btn { @compose block; @variant @<sm { @compose hidden; } } }'
     const ranges = collectCSSDirectiveRanges(source)
 
     expect(ranges.map((range) => range.name)).toEqual(['compose', 'variant', 'compose'])
     expect(source.slice(ranges[1].preludeRange.start, ranges[1].preludeRange.end).trim()).toBe('@<sm')
-    expect(source.slice(ranges[2].quotedStringRanges[0].contentRange.start, ranges[2].quotedStringRanges[0].contentRange.end)).toBe('hidden')
+    expect(source.slice(ranges[2].preludeRange.start, ranges[2].preludeRange.end).trim()).toBe('hidden')
 })
 
 test.concurrent('collects slot directive ranges inside custom variants', () => {
@@ -56,12 +56,12 @@ test.concurrent('collects slot directive ranges inside custom variants', () => {
 })
 
 test.concurrent('collects managed definition directive ranges', () => {
-    const source = '@components { btn { @compose "block"; } }'
+    const source = '@components { btn { @compose block; } }'
     const ranges = collectCSSDirectiveRanges(source)
 
     expect(ranges.map((range) => range.name)).toEqual(['components', 'compose'])
     expect(source.slice(ranges[0].blockRange!.start, ranges[0].blockRange!.start + 1)).toBe('{')
-    expect(source.slice(ranges[1].quotedStringRanges[0].contentRange.start, ranges[1].quotedStringRanges[0].contentRange.end)).toBe('block')
+    expect(source.slice(ranges[1].preludeRange.start, ranges[1].preludeRange.end).trim()).toBe('block')
 })
 
 test.concurrent('collects declaration ranges without splitting quoted semicolons', () => {
