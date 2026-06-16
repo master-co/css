@@ -38,10 +38,10 @@
         "@master/css-integration": "workspace:^",
         "@master/css.next": "workspace:^",
         "@opennextjs/cloudflare": "1.19.0",
-        "@shikijs/monaco": "^4.0.2",
-        "eslint": "^10.3.0",
+        "@shikijs/monaco": "^4.2.0",
+        "eslint": "^10.5.0",
         "internal": "workspace:^",
-        "tsx": "^4.21.0",
+        "tsx": "^4.22.4",
         "typescript": "^6.0.3",
         "wrangler": "4.100.0"
     }

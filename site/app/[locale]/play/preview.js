@@ -12,6 +12,18 @@ const syncRoot = () => {
     document.documentElement.setAttribute('style', parent.document.documentElement.getAttribute('style') || '')
 }
 
+const observeRoot = () => {
+    const parentRoot = parent.document.documentElement
+    if (!parentRoot?.nodeType) return
+
+    const ParentMutationObserver = parent.MutationObserver || MutationObserver
+    const observer = new ParentMutationObserver(syncRoot)
+    observer.observe(parentRoot, {
+        attributes: true,
+        attributeFilter: ['class', 'style']
+    })
+}
+
 const renderHTML = (content) => {
     htmlContent = content
     document.body.innerHTML = htmlContent
@@ -22,12 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
     parent.postMessage({ type: 'previewReady' }, targetOrigin)
 })
 
-const observer = new MutationObserver(syncRoot)
-
-observer.observe(parent.document.documentElement, {
-    attributes: true,
-    attributeFilter: ['class', 'style']
-})
+observeRoot()
 
 window.addEventListener('message', function (event) {
     if (event.origin !== targetOrigin) { return }

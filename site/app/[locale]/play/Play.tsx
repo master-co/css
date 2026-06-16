@@ -26,7 +26,7 @@ import { useTranslation } from 'internal/contexts/i18n'
 import HeaderContent from 'internal/components/HeaderContent'
 import createHighlighter, { themes } from 'internal/utils/create-highlighter'
 import { useApp } from 'internal/contexts/app'
-import { shikiToMonaco } from '@shikijs/monaco'
+import { shikiToMonaco, textmateThemeToMonacoTheme } from '@shikijs/monaco'
 import { defaultPlan, type MasterCSSPlan } from '@master/css'
 import { renderBrowserSemanticTokens, SEMANTIC_TOKENS_LEGEND } from '@master/css-language-service/browser'
 
@@ -66,11 +66,15 @@ const editorHTMLOptions: any = {
 
 const template = templates[0]
 const playShareApiURL = '/api/play'
+const playMonacoLanguageIds = ['html', 'css']
+const playMonacoLanguageIdSet = new Set(playMonacoLanguageIds)
+type PlayHighlighter = Awaited<ReturnType<typeof createHighlighter>>
 let compilerPromise: Promise<typeof import('./compile-play-css')> | undefined
-let playHighlighterPromise: ReturnType<typeof createHighlighter> | undefined
+let playHighlighterPromise: Promise<PlayHighlighter> | undefined
 // shikiToMonaco installs global Monaco providers and patches setTheme without
 // returning disposables. Keep one highlighter alive for those closures.
-const shikiMonacoRegistrations = new WeakMap<Monaco, Promise<void>>()
+const shikiMonacoRegistrations = new WeakMap<Monaco, Promise<PlayHighlighter>>()
+const shikiMonacoLanguageRefreshes = new WeakSet<Monaco>()
 
 function loadCompiler() {
     compilerPromise ??= import('./compile-play-css')
@@ -82,15 +86,127 @@ function loadPlayHighlighter() {
     return playHighlighterPromise
 }
 
+function getThemeRuleForeground(theme: editor.IStandaloneThemeData, candidates: string[], fallback?: string) {
+    const rules = [...theme.rules].reverse()
+    for (const candidate of candidates) {
+        const foreground = rules.find((rule) => rule.token === candidate && rule.foreground)?.foreground
+        if (foreground) return foreground
+    }
+    for (const candidate of candidates) {
+        const foreground = rules.find((rule) => rule.foreground && rule.token.includes(candidate))?.foreground
+        if (foreground) return foreground
+    }
+    return fallback?.replace(/^#/, '')
+}
+
+function createMasterCSSSemanticTokenRules(theme: editor.IStandaloneThemeData): editor.ITokenThemeRule[] {
+    const fallback = theme.colors['editor.foreground']?.replace(/^#/, '') || '212121'
+    const string = getThemeRuleForeground(theme, ['string'], fallback)
+    const value = getThemeRuleForeground(theme, ['entity.name.tag', 'string.quoted'], string)
+    const property = getThemeRuleForeground(theme, ['meta.property-name', 'support.type.property-name', 'constant.numeric'], fallback)
+    const keyword = getThemeRuleForeground(theme, ['keyword'], property)
+    const variable = getThemeRuleForeground(theme, ['variable', 'meta.property-name', 'support.variable'], property)
+    const fn = getThemeRuleForeground(theme, ['support.function', 'entity.name.function', 'entity.other.attribute-name'], variable)
+    const selector = getThemeRuleForeground(theme, ['entity.name.class', 'entity.other.attribute-name', 'entity.name.type.class'], fn)
+    const operator = getThemeRuleForeground(theme, ['keyword.operator', 'punctuation.separator'], fallback)
+    const normal = 'normal'
+
+    return [
+        { token: 'class', foreground: value, fontStyle: normal },
+        { token: 'class.declaration', foreground: selector, fontStyle: normal },
+        { token: 'class.component', foreground: selector, fontStyle: normal },
+        { token: 'class.declaration.component', foreground: selector, fontStyle: normal },
+        { token: 'enumMember', foreground: value, fontStyle: normal },
+        { token: 'enumMember.directive', foreground: variable, fontStyle: normal },
+        { token: 'function', foreground: fn, fontStyle: normal },
+        { token: 'keyword', foreground: keyword, fontStyle: normal },
+        { token: 'keyword.directive', foreground: keyword, fontStyle: normal },
+        { token: 'keyword.query', foreground: keyword, fontStyle: normal },
+        { token: 'modifier', foreground: selector, fontStyle: normal },
+        { token: 'modifier.directive', foreground: keyword, fontStyle: normal },
+        { token: 'modifier.pseudoClass', foreground: selector, fontStyle: normal },
+        { token: 'modifier.pseudoElement', foreground: selector, fontStyle: normal },
+        { token: 'number', foreground: property, fontStyle: normal },
+        { token: 'number.unit', foreground: property, fontStyle: normal },
+        { token: 'operator', foreground: operator, fontStyle: normal },
+        { token: 'operator.directive', foreground: operator, fontStyle: normal },
+        { token: 'operator.important', foreground: keyword, fontStyle: normal },
+        { token: 'operator.query', foreground: operator, fontStyle: normal },
+        { token: 'operator.selector', foreground: operator, fontStyle: normal },
+        { token: 'property', foreground: property, fontStyle: normal },
+        { token: 'string', foreground: string, fontStyle: normal },
+        { token: 'string.quoted', foreground: string, fontStyle: normal },
+        { token: 'type', foreground: value, fontStyle: normal },
+        { token: 'type.selector', foreground: value, fontStyle: normal },
+        { token: 'variable', foreground: variable, fontStyle: normal },
+        { token: 'variable.selector', foreground: selector, fontStyle: normal }
+    ]
+}
+
+function defineMasterCSSMonacoThemes(highlighter: Awaited<ReturnType<typeof createHighlighter>>, monaco: Monaco) {
+    for (const themeName of highlighter.getLoadedThemes()) {
+        const theme = textmateThemeToMonacoTheme(highlighter.getTheme(themeName)) as unknown as editor.IStandaloneThemeData
+        monaco.editor.defineTheme(themeName, {
+            ...theme,
+            rules: [
+                ...theme.rules,
+                ...createMasterCSSSemanticTokenRules(theme)
+            ]
+        })
+    }
+}
+
+function registerPlayMonacoLanguages(monaco: Monaco) {
+    const registeredLanguageIds = new Set(monaco.languages.getLanguages().map((language: { id: string }) => language.id))
+    for (const id of playMonacoLanguageIds) {
+        if (!registeredLanguageIds.has(id)) {
+            monaco.languages.register({ id })
+        }
+    }
+}
+
+function preparePlayMonaco(monaco: Monaco) {
+    registerPlayMonacoLanguages(monaco)
+    monaco.languages.html.htmlDefaults.setOptions(editorHTMLOptions)
+}
+
+function installMonacoShiki(highlighter: PlayHighlighter, monaco: Monaco) {
+    registerPlayMonacoLanguages(monaco)
+    shikiToMonaco(highlighter, monaco)
+    defineMasterCSSMonacoThemes(highlighter, monaco)
+}
+
 async function registerMonacoShiki(monaco: Monaco) {
     let registration = shikiMonacoRegistrations.get(monaco)
     if (!registration) {
         registration = loadPlayHighlighter().then((highlighter) => {
-            shikiToMonaco(highlighter, monaco)
+            installMonacoShiki(highlighter, monaco)
+            return highlighter
         })
         shikiMonacoRegistrations.set(monaco, registration)
     }
-    await registration
+    return await registration
+}
+
+function refreshMonacoHighlighting(monaco: Monaco) {
+    for (const model of monaco.editor.getModels()) {
+        const languageId = model.getLanguageId()
+        if (playMonacoLanguageIdSet.has(languageId)) {
+            monaco.editor.setModelLanguage(model, languageId)
+        }
+    }
+}
+
+function scheduleMonacoShikiLanguageRefresh(highlighter: PlayHighlighter, monaco: Monaco, getThemeName: () => string) {
+    if (shikiMonacoLanguageRefreshes.has(monaco)) return
+    shikiMonacoLanguageRefreshes.add(monaco)
+    setTimeout(() => {
+        // Monaco's bundled language contributions can attach after the first
+        // editor mount and replace the Shiki token provider.
+        installMonacoShiki(highlighter, monaco)
+        refreshMonacoHighlighting(monaco)
+        monaco.editor.setTheme(getThemeName())
+    }, 250)
 }
 
 function getFileContent(files: PlayFile[], title: string) {
@@ -523,9 +639,11 @@ export default function Play({ shareId }: PlayProps = {}) {
     }, [])
 
     const registerShiki = useCallback(async (monaco: Monaco) => {
-        monaco.languages.html.htmlDefaults.setOptions(editorHTMLOptions)
-        await registerMonacoShiki(monaco)
+        preparePlayMonaco(monaco)
+        const highlighter = await registerMonacoShiki(monaco)
         registerMasterCSSSemanticTokens(monaco)
+        refreshMonacoHighlighting(monaco)
+        scheduleMonacoShikiLanguageRefresh(highlighter, monaco, getTheme)
         setTimeout(() => {
             monaco.editor.setTheme(getTheme())
         })
@@ -747,6 +865,7 @@ export default function Play({ shareId }: PlayProps = {}) {
                             value={tabFile.content}
                             defaultLanguage={tabFile.language}
                             path={tabFile.id}
+                            beforeMount={registerShiki}
                             options={{
                                 ...editorOptions,
                                 readOnly: tabFile.readOnly
@@ -801,6 +920,7 @@ export default function Play({ shareId }: PlayProps = {}) {
                                 value={generatedCSSText}
                                 language="css"
                                 beforeMount={registerShiki}
+                                onMount={editorOnMount}
                                 options={{
                                     ...editorOptions,
                                     readOnly: true
