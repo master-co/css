@@ -18,6 +18,20 @@ interface GenerateVariableCompletionItemOptions {
     scoped?: boolean
 }
 
+function getNumericSortValue(variable: Variable, rootSize: number) {
+    if (variable.numeric) {
+        switch (variable.numeric.unit) {
+            case 'rem':
+                return variable.numeric.value * rootSize
+            case undefined:
+            case '':
+            case 'px':
+                return variable.numeric.value
+        }
+    }
+    return typeof variable.value === 'number' ? variable.value : 0
+}
+
 export default function getValueCompletionItems(css: MasterCSS = createDefaultCSS(), ruleKey: string, valuePrefix = ''): CompletionItem[] {
     const nativeProperties = cssDataProvider.provideProperties()
     const completionItems: CompletionItem[] = []
@@ -74,7 +88,7 @@ export default function getValueCompletionItems(css: MasterCSS = createDefaultCS
         } else if (variable.type === 'number') {
             if (variable.name.startsWith('-') && eachNativePropertyData?.syntax?.includes('absolute')) return
             completionItem.detail = String(variable.name)
-            const value = typeof variable.value === 'number' ? variable.value : 0
+            const value = getNumericSortValue(variable, css.settings.rootSize)
             const sortValue = negative ? -Math.abs(value) : value
             completionItem.sortText = (variable.namespace || '') + (sortValue >= 0
                 ? String(sortValue).padStart(10, '0')

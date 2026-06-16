@@ -2,6 +2,7 @@ import { test, it, expect, describe } from 'vitest'
 import dedent from 'ts-dedent'
 import { hint } from './test'
 import { CompletionItemKind } from 'vscode-languageserver-protocol'
+import { createPresetPlan } from '../helpers/create-preset-plan'
 
 test.todo('convert any color spaces to RGB and hint correctly')
 
@@ -127,7 +128,10 @@ describe('sorting', () => {
             'yellow-80',
             'yellow-90',
             'yellow-95',
-            'yellow-100'
+            'yellow-100',
+            'yellow',
+            'yellow-hover',
+            'yellow-pressed'
         ])
     })
 
@@ -140,6 +144,48 @@ describe('sorting', () => {
             'strong',
             'text'
         ]))
+    })
+
+    test('unitful numeric variables', () => {
+        const labels = new Set(['test-tiny', 'test-small', 'test-medium'])
+        expect(
+            hint('w:', {
+                plan: createPresetPlan({
+                    variables: [
+                        {
+                            name: 'container-test-medium',
+                            namespace: 'container',
+                            key: 'test-medium',
+                            type: 'number',
+                            value: '2rem',
+                            numeric: { value: 2, unit: 'rem' }
+                        },
+                        {
+                            name: 'container-test-tiny',
+                            namespace: 'container',
+                            key: 'test-tiny',
+                            type: 'number',
+                            value: '8px',
+                            numeric: { value: 8, unit: 'px' }
+                        },
+                        {
+                            name: 'container-test-small',
+                            namespace: 'container',
+                            key: 'test-small',
+                            type: 'number',
+                            value: '1rem',
+                            numeric: { value: 1, unit: 'rem' }
+                        }
+                    ]
+                })
+            })
+                ?.filter(({ label }) => labels.has(label))
+                ?.map(({ label }) => label)
+        ).toEqual([
+            'test-tiny',
+            'test-small',
+            'test-medium'
+        ])
     })
 })
 

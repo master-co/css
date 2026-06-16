@@ -123,8 +123,14 @@ test('loads package entry preset plan from CSS imports', async () => {
             name: 'breakpoint-sm',
             namespace: 'breakpoint',
             key: 'sm',
-            value: 834
+            type: 'number',
+            value: '52.125rem',
+            numeric: { value: 52.125, unit: 'rem' }
         }))
+        expect(result.plan.breakpointAtRules?.sm).toMatchObject({
+            id: 'media',
+            nodes: [expect.objectContaining({ type: 'number', value: 52.125, unit: 'rem' })]
+        })
         expect(result.plan.utilities).toContainEqual(expect.objectContaining({
             name: 'card',
         }))

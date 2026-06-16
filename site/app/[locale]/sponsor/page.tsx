@@ -13,93 +13,114 @@ import { default as openCollectiveToken } from 'internal/tokens/open-collective'
 export const dynamic = 'force-static'
 export const revalidate = false
 
+const OPEN_COLLECTIVE_QUERY = `{
+    account(slug: "master-co") {
+        members(role: BACKER) {
+            totalCount
+            nodes {
+                updatedAt
+                role
+                tier {
+                    name
+                    slug
+                }
+                account {
+                    name
+                    slug
+                    imageUrl
+                    description
+                    website
+                    twitterHandle
+                    githubHandle
+                    legalName
+                    longDescription
+                    backgroundImageUrl
+                    currency
+                    expensePolicy
+                }
+            }
+        }
+    }
+}`
+
+const GITHUB_SPONSORS_QUERY = `{
+    organization(login: "master-co") {
+        sponsorshipsAsMaintainer(first: 100) {
+            nodes {
+                tierSelectedAt
+                tier {
+                    name
+                    description
+                }
+                sponsor {
+                    name
+                    login
+                    avatarUrl
+                    websiteUrl
+                    twitterUsername
+                    url
+                    bio
+                    company
+                    email
+                    location
+                    projectsResourcePath
+                    projectsUrl
+                    resourcePath
+                }
+            }
+        }
+    }
+}`
+
+async function readSponsorResponse(response: Response, source: string) {
+    if (response.ok) return await response.json()
+    console.error(`${source} sponsor request failed: ${response.status} ${await response.text()}`)
+}
+
+async function getOpenCollectiveMembers() {
+    if (!openCollectiveToken) return []
+    try {
+        const response = await fetch(`https://api.opencollective.com/graphql/v2/${openCollectiveToken}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ query: OPEN_COLLECTIVE_QUERY }),
+        })
+        return (await readSponsorResponse(response, 'Open Collective'))?.data?.account?.members?.nodes ?? []
+    } catch (error) {
+        console.error('Open Collective sponsor request failed:', error)
+        return []
+    }
+}
+
+async function getGitHubSponsorMembers() {
+    const githubToken = process.env.GITHUB_SPONSORS_TOKEN || process.env.GITHUB_TOKEN
+    if (!githubToken) return []
+    try {
+        const response = await fetch('https://api.github.com/graphql', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `bearer ${githubToken}`
+            },
+            body: JSON.stringify({ query: GITHUB_SPONSORS_QUERY })
+        })
+        return (await readSponsorResponse(response, 'GitHub'))?.data?.organization?.sponsorshipsAsMaintainer?.nodes ?? []
+    } catch (error) {
+        console.error('GitHub sponsor request failed:', error)
+        return []
+    }
+}
+
 export async function generateMetadata(props: any, parent: any) {
     return await generate(metadata, props, dictionaries, parent)
 }
 
 export default async function Page(props: any): Promise<React.ReactNode> {
     const getSponsor = async () => {
-        const openCollectiveRes = await (await fetch(`https://api.opencollective.com/graphql/v2/${openCollectiveToken}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                query: `{
-                            account(slug: "master-co") {
-                                members(role: BACKER) {
-                                    totalCount
-                                    nodes {
-                                        updatedAt
-                                        role
-                                        tier {
-                                            name
-                                            slug
-                                        }
-                                        account {
-                                            name
-                                            slug
-                                            imageUrl
-                                            description
-                                            website
-                                            twitterHandle
-                                            githubHandle
-                                            legalName
-                                            longDescription
-                                            backgroundImageUrl
-                                            currency
-                                            expensePolicy
-                                        }
-                                    }
-                                }
-                            }
-                        }`
-            }),
-        })).json()
-
-        const openCollectiveMembers = openCollectiveRes?.data?.account?.members?.nodes ?? []
-
-        const githubToken = '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'
-        const githubSponsorRes = await (await fetch(
-            'https://api.github.com/graphql',
-            {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `bearer ${githubToken}`
-                },
-                body: JSON.stringify({
-                    query: `{
-                        organization(login: "master-co") {
-                            sponsorshipsAsMaintainer(first: 100) {
-                                nodes {
-                                    tierSelectedAt
-                                    tier {
-                                        name
-                                        description
-                                    }
-                                    sponsor {
-                                        name
-                                        login
-                                        avatarUrl
-                                        websiteUrl
-                                        twitterUsername
-                                        url
-                                        bio
-                                        company
-                                        email
-                                        location
-                                        projectsResourcePath
-                                        projectsUrl
-                                        resourcePath
-                                    }
-                                }
-                            }
-                        }
-                    }`
-                })
-            }
-        )).json()
-
-        const githubSponsorMembers = githubSponsorRes?.data?.organization?.sponsorshipsAsMaintainer?.nodes ?? []
+        const [openCollectiveMembers, githubSponsorMembers] = await Promise.all([
+            getOpenCollectiveMembers(),
+            getGitHubSponsorMembers()
+        ])
 
         const sponsors: any[] = []
 
