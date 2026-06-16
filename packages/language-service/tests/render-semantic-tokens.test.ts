@@ -227,7 +227,7 @@ test.concurrent('renders semantic tokens for CSS directives', () => {
         @components {
             btn {
                 @compose inline-flex fg:primary:hover@md;
-                @variant @dark {
+                @dark {
                     @compose bg:surface;
                 }
                 @variant @<sm {
@@ -277,6 +277,7 @@ test.concurrent('renders semantic tokens for CSS directives', () => {
     expectToken(tokens, 'primary', 'enumMember')
     expectToken(tokens, 'hover', 'modifier', ['pseudoClass'])
     expectToken(tokens, '@md', 'keyword', ['query'])
+    expectToken(tokens, '@dark', 'keyword', ['directive'])
     expectToken(tokens, '@variant', 'keyword', ['directive'])
     expectToken(tokens, 'surface', 'enumMember')
     expectToken(tokens, ';', 'operator', ['directive'])

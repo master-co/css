@@ -60,7 +60,7 @@ Use `@reference` to load another Master CSS stylesheet as compile-time context w
 .button {
     @compose btn;
 
-    @variant @dark {
+    @dark {
         @compose bg:surface;
     }
 }
@@ -351,7 +351,7 @@ Use `@variant` inside managed definitions or native style rules to share the cur
 .notice {
     @compose p:md r:lg;
 
-    @variant @dark {
+    @dark {
         @compose bg:surface fg:strong;
     }
 
@@ -361,7 +361,7 @@ Use `@variant` inside managed definitions or native style rules to share the cur
 }
 ```
 
-`@variant` accepts custom condition variants, breakpoint tokens, mode names, and raw Master CSS at syntax such as `<sm`. It is rule-local and is not an entry marker.
+Use `@dark` and `@light` as shorthands for the default mode conditions. Use `@variant` for custom condition variants, custom modes such as `@variant @chrisma`, breakpoint tokens, and raw Master CSS at syntax such as `<sm`. These blocks are rule-local compiler directives, not native CSS at-rules or entry markers.
 
 ---
 

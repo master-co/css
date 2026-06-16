@@ -116,6 +116,14 @@ const MASTER_CUSTOM_AT_RULES = {
         prelude: '*',
         body: 'style-block'
     },
+    dark: {
+        prelude: null,
+        body: 'style-block'
+    },
+    light: {
+        prelude: null,
+        body: 'style-block'
+    },
     slot: {
         prelude: null,
         body: null
@@ -138,6 +146,10 @@ const MANAGED_DEFINITION_DIRECTIVE_LAYERS = {
     components: 'components',
     utilities: 'utilities'
 } as const satisfies Record<ManagedDefinitionDirectiveName, CSSDirectiveLayerName>
+const MASTER_VARIANT_SHORTHAND_TOKENS = {
+    dark: '@dark',
+    light: '@light'
+} as const
 
 export interface CSSReferenceStatement extends CSSDirectiveReference {
     start: number
@@ -1092,9 +1104,19 @@ function createComposePlacementError(parsed: ParsedDirectives) {
     )
 }
 
+function getMasterVariantShorthandToken(name: string | undefined) {
+    return name && MASTER_VARIANT_SHORTHAND_TOKENS[name as keyof typeof MASTER_VARIANT_SHORTHAND_TOKENS]
+}
+
 function parseMasterVariantBlock(rule: any) {
-    if ((rule.type !== 'custom' && rule.type !== 'unknown') || rule.value?.name !== 'variant') return
-    const token = formatPrelude(rule.value.prelude)
+    if (rule.type !== 'custom' && rule.type !== 'unknown') return
+    const shorthandToken = getMasterVariantShorthandToken(rule.value?.name)
+    if (!shorthandToken && rule.value?.name !== 'variant') return
+    const prelude = formatPrelude(rule.value.prelude)
+    if (shorthandToken && prelude) {
+        throw new Error(`@${rule.value.name} does not accept a prelude`)
+    }
+    const token = shorthandToken || prelude
     if (!token) {
         throw new Error('@variant requires a Master CSS variant')
     }
@@ -1577,7 +1599,7 @@ function parseThemeRule(rule: any, parsed: ParsedDirectives) {
 }
 
 function containsNativeStyleDirective(rule: Rule): boolean {
-    if ((rule.type === 'unknown' || rule.type === 'custom') && (rule.value?.name === 'compose' || rule.value?.name === 'variant' || rule.value?.name === 'slot')) {
+    if ((rule.type === 'unknown' || rule.type === 'custom') && (rule.value?.name === 'compose' || rule.value?.name === 'variant' || rule.value?.name === 'slot' || getMasterVariantShorthandToken(rule.value?.name))) {
         return true
     }
     if (rule.type === 'style') {

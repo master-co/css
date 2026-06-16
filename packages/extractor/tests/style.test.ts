@@ -72,7 +72,8 @@ describe('style CSS extraction helpers', () => {
 
     it('detects local compose styles without treating them as Master entries', () => {
         expect(hasLocalStyleDirectives('.card { @compose block; }')).toBe(true)
-        expect(hasLocalStyleDirectives('.card { @variant @dark { color: red; } }')).toBe(true)
+        expect(hasLocalStyleDirectives('.card { @variant @print { color: red; } }')).toBe(true)
+        expect(hasLocalStyleDirectives('.card { @dark { color: red; } }')).toBe(true)
         expect(hasLocalStyleDirectives('.card { @slot; }')).toBe(false)
         expect(hasLocalStyleDirectives('.card { color: red; }')).toBe(false)
         expect(isStyleCSSRequest('/project/src/Button.module.css')).toBe(true)

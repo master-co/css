@@ -297,7 +297,7 @@ In this example, `size:12x` is generated for `.empty-state::before`, not for `.e
     @compose flow p:lg r:xl shadow:md;
     background: var(--color-surface);
 
-    @variant @dark {
+    @dark {
         @compose shadow:none;
     }
 }
@@ -345,7 +345,7 @@ SFC style blocks use the same model:
 .card {
     @compose grid gap:md p:lg r:xl shadow:md;
 
-    @variant @dark {
+    @dark {
         @compose shadow:none;
     }
 }

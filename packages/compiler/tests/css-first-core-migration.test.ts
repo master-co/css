@@ -90,6 +90,113 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
         expect(css.utilitiesLayer.text).toContain('.m\\:card{margin:calc(var(--spacing-card) / 16 * 1rem)}')
     })
 
+    test('lowers dark and light shorthand variant blocks like explicit variant blocks', () => {
+        const settings = `
+            @settings {
+                mode-trigger: class;
+                modes: light dark chrisma;
+            }
+        `
+        const explicit = compileCSSPlan(`
+            ${settings}
+
+            @components {
+                panel {
+                    @variant @dark {
+                        color: white;
+                    }
+
+                    @variant @light {
+                        color: black;
+                    }
+                }
+            }
+
+            .card {
+                @variant @dark {
+                    @compose block;
+                    color: white;
+                }
+            }
+
+            @variant @light {
+                .banner {
+                    @compose hidden;
+                }
+            }
+        `, { basePlan: defaultPlan })
+        const shorthand = compileCSSPlan(`
+            ${settings}
+
+            @components {
+                panel {
+                    @dark {
+                        color: white;
+                    }
+
+                    @light {
+                        color: black;
+                    }
+                }
+            }
+
+            .card {
+                @dark {
+                    @compose block;
+                    color: white;
+                }
+            }
+
+            @light {
+                .banner {
+                    @compose hidden;
+                }
+            }
+        `, { basePlan: defaultPlan })
+
+        const explicitCSS = createCSS(explicit.plan).add('panel')
+        const shorthandCSS = createCSS(shorthand.plan).add('panel')
+
+        expect(shorthand.css).toBe(explicit.css)
+        expect(shorthandCSS.componentsLayer.text).toBe(explicitCSS.componentsLayer.text)
+        expect(shorthand.css).toContain('.dark .card{display:block;color:#fff}')
+        expect(shorthand.css).toContain('.light .banner{display:none}')
+        expect(shorthandCSS.componentsLayer.text).toContain('.dark .panel{color:#fff}')
+        expect(shorthandCSS.componentsLayer.text).toContain('.light .panel{color:#000}')
+    })
+
+    test('keeps custom modes explicit behind @variant', () => {
+        const customMode = compileCSSPlan(`
+            @settings {
+                mode-trigger: class;
+                modes: light dark chrisma;
+            }
+
+            .card {
+                @variant @chrisma {
+                    color: green;
+                }
+            }
+        `, { basePlan: defaultPlan })
+
+        expect(customMode.css).toContain('.chrisma .card{color:green}')
+        const bareAtRule = compileCSSPlan(`
+            @settings {
+                mode-trigger: class;
+                modes: light dark chrisma;
+            }
+
+            .card {
+                @chrisma {
+                    color: green;
+                }
+            }
+        `, { basePlan: defaultPlan })
+
+        expect(bareAtRule.css).toContain('@chrisma')
+        expect(bareAtRule.css).not.toContain('.chrisma .card')
+    })
+
     test('replaces old JS merging intent with ordered CSS imports through basePlan lowering', () => {
         const first = compileCSSPlan(`
             @components {

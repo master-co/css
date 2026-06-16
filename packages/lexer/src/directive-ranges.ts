@@ -70,7 +70,11 @@ export const CSS_DIRECTIVE_RANGE_NAMES = [
     'slot'
 ] as const
 
-const CSS_DIRECTIVE_RANGE_NAME_SET = new Set<string>(CSS_DIRECTIVE_RANGE_NAMES)
+const CSS_DIRECTIVE_VARIANT_SHORTHAND_NAME_SET = new Set<string>(['dark', 'light'])
+const CSS_DIRECTIVE_SOURCE_NAME_SET = new Set<string>([
+    ...CSS_DIRECTIVE_RANGE_NAMES,
+    ...CSS_DIRECTIVE_VARIANT_SHORTHAND_NAME_SET
+])
 
 export function collectCSSQuotedStringRanges(source: string, start = 0, end = source.length) {
     const ranges: CSSQuotedStringRange[] = []
@@ -254,7 +258,7 @@ export function collectCSSDirectiveRanges(source: string) {
         if (char !== '@') continue
 
         const name = readCSSIdent(source, index + 1)
-        if (!CSS_DIRECTIVE_RANGE_NAME_SET.has(name.value)) continue
+        if (!CSS_DIRECTIVE_SOURCE_NAME_SET.has(name.value)) continue
 
         const statementEnd = findCSSStatementEnd(source, name.end)
         if (
@@ -284,7 +288,7 @@ export function collectCSSDirectiveRanges(source: string) {
         ranges.push({
             start: index,
             end,
-            name: name.value as CSSDirectiveRangeName,
+            name: (CSS_DIRECTIVE_VARIANT_SHORTHAND_NAME_SET.has(name.value) ? 'variant' : name.value) as CSSDirectiveRangeName,
             keywordRange: {
                 start: index,
                 end: name.end

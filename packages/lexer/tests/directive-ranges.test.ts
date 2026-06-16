@@ -46,6 +46,16 @@ test.concurrent('collects nested Master directive ranges without treating host a
     expect(source.slice(ranges[2].preludeRange.start, ranges[2].preludeRange.end).trim()).toBe('hidden')
 })
 
+test.concurrent('collects dark and light shorthand ranges as variant directives', () => {
+    const source = '.card { @dark { @compose fg:white; } @light { color: black; } }'
+    const ranges = collectCSSDirectiveRanges(source)
+
+    expect(ranges.map((range) => range.name)).toEqual(['variant', 'compose', 'variant'])
+    expect(source.slice(ranges[0].keywordRange.start, ranges[0].keywordRange.end)).toBe('@dark')
+    expect(source.slice(ranges[0].preludeRange.start, ranges[0].preludeRange.end).trim()).toBe('')
+    expect(source.slice(ranges[2].keywordRange.start, ranges[2].keywordRange.end)).toBe('@light')
+})
+
 test.concurrent('collects slot directive ranges inside custom variants', () => {
     const source = '@custom-variant @motion-safe { @media (prefers-reduced-motion: no-preference) { @slot; } }'
     const ranges = collectCSSDirectiveRanges(source)
