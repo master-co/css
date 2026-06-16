@@ -3,13 +3,14 @@ import { readFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vitest'
+import pnpmCommand from './helpers/pnpm-command'
 
 const packageDir = dirname(fileURLToPath(new URL('../package.json', import.meta.url)))
 const fixtureDir = join(packageDir, 'e2e/css-plan-query')
 
 function buildFixture() {
     try {
-        execFileSync('pnpm', ['--dir', fixtureDir, 'build'], {
+        execFileSync(pnpmCommand, ['--dir', fixtureDir, 'build'], {
             cwd: packageDir,
             encoding: 'utf-8',
             env: {
