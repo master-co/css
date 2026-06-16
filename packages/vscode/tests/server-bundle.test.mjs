@@ -1,8 +1,11 @@
 import { spawn } from 'node:child_process'
 import { readFileSync, statSync } from 'node:fs'
-import { dirname, resolve } from 'node:path'
+import { mkdtemp, rm } from 'node:fs/promises'
+import { tmpdir } from 'node:os'
+import { dirname, join, resolve } from 'node:path'
 import { pathToFileURL, fileURLToPath } from 'node:url'
 import { expect, test } from 'vitest'
+import { createStagedExtension, getCurrentTarget, getRuntimePackagesForTarget } from '../scripts/package-targets.mjs'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const packageDir = resolve(here, '..')
@@ -20,9 +23,9 @@ function encode(message) {
     ])
 }
 
-function createLanguageServer() {
-    const child = spawn(process.execPath, [serverPath, '--stdio'], {
-        cwd: packageDir,
+function createLanguageServer(options = {}) {
+    const child = spawn(process.execPath, [options.serverPath ?? serverPath, '--stdio'], {
+        cwd: options.cwd ?? packageDir,
         stdio: ['pipe', 'pipe', 'pipe']
     })
     let nextId = 1
@@ -154,6 +157,15 @@ function createLanguageServer() {
     }
 }
 
+async function withStagedExtension(callback) {
+    const stagingRoot = await mkdtemp(join(tmpdir(), 'master-css-vscode-test-'))
+    try {
+        return await callback(await createStagedExtension(getCurrentTarget(), { stagingRoot }))
+    } finally {
+        await rm(stagingRoot, { recursive: true, force: true })
+    }
+}
+
 test('build emits the server bundle', () => {
     expect(statSync(serverPath).isFile()).toBe(true)
 })
@@ -164,6 +176,28 @@ test('extension bundle does not default-import vscode', () => {
     expect(statSync(extensionPath).isFile()).toBe(true)
     expect(source).not.toMatch(/import\s+[A-Za-z_$][\w$]*\s*,\s*\{[^}]*\}\s*from\s*["']vscode["']/)
     expect(source).not.toMatch(/import\s+[A-Za-z_$][\w$]*\s*from\s*["']vscode["']/)
+})
+
+test('server bundle keeps expected native runtime imports external', () => {
+    const source = readFileSync(serverPath, 'utf8')
+    const imports = [...source.matchAll(/\bfrom\s*["']([^"']+)["']/g)].map((match) => match[1])
+    const nativeRuntimeImports = imports.filter((specifier) =>
+        /^(?:lightningcss(?:-.+)?|oxc-(?:parser|resolver|transform)|@oxc-(?:parser|resolver|transform)\/)/.test(specifier)
+    )
+
+    expect(nativeRuntimeImports.sort()).toEqual(['lightningcss', 'oxc-parser'])
+})
+
+test('staged extension includes native runtime packages for the current target', async () => {
+    await withStagedExtension(({ stagingDir, files }) => {
+        const runtimePackages = getRuntimePackagesForTarget(getCurrentTarget())
+
+        for (const runtimePackage of runtimePackages) {
+            const packagePath = join(stagingDir, 'dist', 'node_modules', ...runtimePackage.split('/'))
+            expect(statSync(packagePath).isDirectory(), runtimePackage).toBe(true)
+            expect(files).toContain(`dist/node_modules/${runtimePackage}/**`)
+        }
+    })
 })
 
 test('manifest contributes semantic token scopes without TextMate grammars', () => {
@@ -181,50 +215,57 @@ test('manifest contributes semantic token scopes without TextMate grammars', () 
     ]))
 })
 
-test('bundled language server loads a CSS workspace entry', async () => {
-    const server = createLanguageServer()
+test('staged language server loads a CSS workspace entry', async () => {
     const workspaceUri = pathToFileURL(workspaceDir).toString()
     const documentUri = pathToFileURL(resolve(workspaceDir, 'index.html')).toString()
 
-    try {
-        await server.request('initialize', {
-            processId: null,
-            rootUri: workspaceUri,
-            capabilities: {
-                textDocument: {
-                    hover: {
-                        contentFormat: ['markdown', 'plaintext']
+    await withStagedExtension(async ({ stagingDir }) => {
+        const server = createLanguageServer({
+            cwd: stagingDir,
+            serverPath: resolve(stagingDir, 'dist', 'server.min.mjs')
+        })
+
+        try {
+            await server.request('initialize', {
+                processId: null,
+                rootUri: workspaceUri,
+                capabilities: {
+                    textDocument: {
+                        hover: {
+                            contentFormat: ['markdown', 'plaintext']
+                        }
+                    },
+                    workspace: {
+                        workspaceFolders: true
                     }
                 },
-                workspace: {
-                    workspaceFolders: true
+                workspaceFolders: [
+                    {
+                        uri: workspaceUri,
+                        name: 'bundled-config'
+                    }
+                ]
+            })
+            server.notify('initialized', {})
+            server.notify('textDocument/didOpen', {
+                textDocument: {
+                    uri: documentUri,
+                    languageId: 'html',
+                    version: 1,
+                    text: readFileSync(resolve(workspaceDir, 'index.html'), 'utf8')
                 }
-            },
-            workspaceFolders: [
-                {
-                    uri: workspaceUri,
-                    name: 'bundled-config'
-                }
-            ]
-        })
-        server.notify('initialized', {})
-        server.notify('textDocument/didOpen', {
-            textDocument: {
-                uri: documentUri,
-                languageId: 'html',
-                version: 1,
-                text: readFileSync(resolve(workspaceDir, 'index.html'), 'utf8')
-            }
-        })
+            })
 
-        await server.waitForNotification((message) =>
-            message.method === 'window/logMessage'
-            && message.params?.message?.includes('Initialized workspace (with plan entry)')
-        )
+            await server.waitForNotification((message) =>
+                message.method === 'window/logMessage'
+                && message.params?.message?.includes('Initialized workspace (with plan entry)')
+            )
 
-        expect(server.stderr().includes('Cannot find module')).toBe(false)
-        expect(JSON.stringify(server.notifications()).includes('Failed to load plan')).toBe(false)
-    } finally {
-        await server.dispose()
-    }
+            expect(server.stderr()).not.toContain('Cannot find module')
+            expect(server.stderr()).not.toContain('Cannot find package')
+            expect(JSON.stringify(server.notifications())).not.toContain('Failed to load plan')
+        } finally {
+            await server.dispose()
+        }
+    })
 })

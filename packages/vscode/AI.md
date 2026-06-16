@@ -10,6 +10,7 @@ This package builds the VS Code extension. It starts the language server, contri
 - `src/server.min.ts`
 - `generate.ts`
 - `package.json`
+- `scripts/package-targets.mjs`
 
 ## Risks
 
@@ -17,14 +18,17 @@ This package builds the VS Code extension. It starts the language server, contri
 - Setting defaults should stay in sync with `@master/css-language-server`.
 - The extension intentionally does not contribute a Master CSS TextMate grammar or `.mcss` language. Markup highlighting is semantic-token based.
 - Extension package changes affect published VS Code behavior.
-- Native loader packages such as Oxc and Lightning CSS must stay as runtime peer dependencies. Do not let Rollup bundle their top-level packages, generated `binding-*` packages, JSON manifests, or `.node` binaries; otherwise VS Code builds can fail while parsing native assets or the server can fail at runtime.
+- Native loader packages such as Oxc and Lightning CSS must stay external to Rollup. Do not let Rollup bundle their top-level packages, generated `binding-*` packages, JSON manifests, or `.node` binaries; otherwise VS Code builds can fail while parsing native assets or the server can fail at runtime.
+- Marketplace packages are target-specific VSIX files. `scripts/package-targets.mjs` stages each target with the exact `lightningcss`, `detect-libc`, `oxc-parser`, `@oxc-project/types`, target `lightningcss-*`, and target `@oxc-parser/binding-*` runtime packages under `dist/node_modules` before calling `vsce --no-dependencies`.
+- Keep native runtime packages under `dist/node_modules` in the staged extension. VSCE ignores root `node_modules/**` when dependency detection is disabled, while Node resolves bare imports from `dist/server.min.mjs` through `dist/node_modules`.
+- Do not publish a generic VSIX that lacks `node_modules`; the server bundle imports native runtime packages at startup.
 
 ## Rules
 
 - Prefer editing source settings, then regenerate.
 - Do not manually drift generated contributions from source packages.
 - Do not change publisher, package name, activation, or exports casually.
-- Keep `packages/vscode/techor.config.ts` externalization in sync with native runtime peer dependencies declared in `package.json`.
+- Keep `packages/vscode/techor.config.ts` externalization in sync with native runtime packages copied by `scripts/package-targets.mjs`.
 
 ## Validation
 
@@ -33,4 +37,5 @@ pnpm --filter master-css-vscode build
 pnpm --filter master-css-vscode test
 pnpm --filter master-css-vscode type-check
 pnpm --filter master-css-vscode lint
+pnpm --filter master-css-vscode vscode:package -- --target darwin-arm64
 ```

@@ -8,8 +8,8 @@
         "test": "pnpm build && vitest",
         "type-check": "tsc --noEmit",
         "lint": "eslint",
-        "vscode:package": "vsce package --no-dependencies --follow-symlinks",
-        "vscode:publish": "vsce publish --no-dependencies --follow-symlinks"
+        "vscode:package": "node scripts/package-targets.mjs package",
+        "vscode:publish": "node scripts/package-targets.mjs publish"
     },
     "version": "2.0.18",
     "description": "Master CSS for Visual Studio Code",
