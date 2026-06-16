@@ -7,6 +7,7 @@ const rootSize = presetPlan.settings?.rootSize || 16
 export interface ThemeNumericVariableEntry {
     key: string
     value: string
+    unit?: string
     px: number
     rem: number
 }
@@ -48,6 +49,10 @@ function getNumericRemValue(variable: MasterCSSPlanVariable) {
     }
 }
 
+function getNumericUnit(variable: MasterCSSPlanVariable) {
+    return variable.numeric?.unit
+}
+
 export function getThemeNumericVariableEntries(namespace: string): ThemeNumericVariableEntry[] {
     return getThemeVariables(namespace).flatMap((variable) => {
         const rem = getNumericRemValue(variable)
@@ -55,6 +60,7 @@ export function getThemeNumericVariableEntries(namespace: string): ThemeNumericV
         return [{
             key: variable.key,
             value: String(variable.value),
+            ...(getNumericUnit(variable) ? { unit: getNumericUnit(variable) } : {}),
             px: rem * rootSize,
             rem
         }]

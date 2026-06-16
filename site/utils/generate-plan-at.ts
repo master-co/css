@@ -14,7 +14,10 @@ function generateNodes(nodes: PlanAtRuleNode[], id: PlanAtRule['id']): string {
         const value = node.type === 'number'
             ? `${node.value}${node.unit || ''}`
             : node.value
-        if ('name' in node) {
+        if (node.type === 'number' && !node.name && (id === 'media' || id === 'container')) {
+            return `(width${node.operator || '>='}${value})`
+        }
+        if ('name' in node && node.name) {
             return 'operator' in node
                 ? `(${node.name}${node.operator}${value})`
                 : `(${node.name}:${value})`

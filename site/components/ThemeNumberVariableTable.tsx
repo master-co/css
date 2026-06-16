@@ -9,12 +9,14 @@ interface ThemeNumberVariableTableProps {
 }
 
 const formatRem = (value: number) => `${Number(value.toFixed(4))}rem`
+const formatPx = (value: number) => `${Number(value.toFixed(4))}px`
 
 export default function ThemeNumberVariableTable(props: ThemeNumberVariableTableProps) {
     const { namespace, variablePrefix = namespace, descriptions, representation } = props
     const entries = getThemeNumericVariableEntries(namespace)
     const hasDescriptions = descriptions && entries.some(({ key }) => descriptions[key])
     const hasSpacingRepresentation = representation === 'spacing'
+    const referenceUnit = entries.every(({ unit }) => unit === 'rem') ? 'px' : 'rem'
 
     return (
         <figure>
@@ -24,7 +26,7 @@ export default function ThemeNumberVariableTable(props: ThemeNumberVariableTable
                         <tr>
                             <th>Token</th>
                             <th>Value</th>
-                            <th>REM</th>
+                            <th>{referenceUnit.toUpperCase()}</th>
                             {hasSpacingRepresentation && <th>Representation</th>}
                             {hasDescriptions && <th>Description</th>}
                         </tr>
@@ -35,7 +37,7 @@ export default function ThemeNumberVariableTable(props: ThemeNumberVariableTable
                                 <tr key={entry.key}>
                                     <th><InlineCode>{`--${variablePrefix}-${entry.key}`}</InlineCode></th>
                                     <td><InlineCode>{entry.value}</InlineCode></td>
-                                    <td>{formatRem(entry.rem)}</td>
+                                    <td>{referenceUnit === 'px' ? formatPx(entry.px) : formatRem(entry.rem)}</td>
                                     {hasSpacingRepresentation && <td>{renderSpacingRepresentation(entry.value, index, entries.length)}</td>}
                                     {hasDescriptions && <td>{descriptions?.[entry.key]}</td>}
                                 </tr>
