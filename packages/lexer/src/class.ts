@@ -416,12 +416,22 @@ function pushAtWord(tokens: MasterCSSLexicalTokenItem[], start: number, value: s
     }
 }
 
+function startsNamedQueryRange(value: string) {
+    return value[0] === '&' || value[0] === ','
+}
+
 export function tokenizeMasterCSSAtQuery(queryText: string, queryStart: number): MasterCSSLexicalTokenItem[] {
     const tokens: MasterCSSLexicalTokenItem[] = []
     let i = 0
     const keyword = queryText.match(/^@[A-Za-z0-9-]+/)
     if (keyword) {
-        pushMasterCSSLexicalToken(tokens, queryStart, keyword[0].length, 'keyword', 'query.keyword', ['query'])
+        const [keywordText] = keyword
+        if (startsNamedQueryRange(queryText.slice(keywordText.length))) {
+            pushMasterCSSLexicalToken(tokens, queryStart, 1, 'keyword', 'query.keyword', ['query'])
+            pushQueryNumberOrValue(tokens, queryStart + 1, keywordText.slice(1))
+        } else {
+            pushMasterCSSLexicalToken(tokens, queryStart, keywordText.length, 'keyword', 'query.keyword', ['query'])
+        }
         i += keyword[0].length
     } else if (queryText[i] === '@') {
         pushMasterCSSLexicalToken(tokens, queryStart, 1, 'keyword', 'query.keyword', ['query'])

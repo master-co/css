@@ -52,6 +52,17 @@ test.concurrent('tokenizes at queries and selector state', () => {
     ])
 })
 
+test.concurrent('tokenizes named query ranges with matching endpoint values', () => {
+    const source = '@sm&<=md'
+    expect(texts(source, tokenizeMasterCSSAtQuery(source, 0))).toEqual([
+        { text: '@', type: 'keyword', role: 'query.keyword', modifiers: ['query'] },
+        { text: 'sm', type: 'enumMember', role: 'query.value', modifiers: ['query'] },
+        { text: '&', type: 'operator', role: 'query.operator', modifiers: ['query'] },
+        { text: '<=', type: 'operator', role: 'query.operator', modifiers: ['query'] },
+        { text: 'md', type: 'enumMember', role: 'query.value', modifiers: ['query'] }
+    ])
+})
+
 test.concurrent('tokenizes grouped class shell without parsing class semantics', () => {
     const source = '{fg:red;bg:blue}'
     const tokens = tokenizeMasterCSSGroupedClassToken(source, 0, (token, offset) => [
