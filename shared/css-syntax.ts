@@ -1,4 +1,4 @@
-import type { MasterCSSPlanUtility, MasterCSSPlanUtilityLayerName } from './master-css-plan.js'
+import type { MasterCSSPlanUtility, MasterCSSPlanUtilityLayerName, MasterCSSPlanVariableNumericValue } from './master-css-plan.js'
 
 export type ValueComponent = StringValueComponent | NumberValueComponent | FunctionValueComponent | VariableValueComponent | SeparatorValueComponent
 
@@ -50,10 +50,11 @@ type VariableCommon = {
 }
 
 export type StringVariable = { type: 'string', value: string | number }
-export type NumberVariable = { type: 'number', value: number }
+export type NumberVariable = { type: 'number', value: number | string, numeric?: MasterCSSPlanVariableNumericValue }
 export type ResolvedVariableValue = StringVariable | NumberVariable
 
 export type Variable = VariableCommon & {
     type: ResolvedVariableValue['type']
     value?: ResolvedVariableValue['value']
+    numeric?: MasterCSSPlanVariableNumericValue
 }

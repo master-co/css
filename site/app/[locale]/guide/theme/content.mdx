@@ -10,10 +10,10 @@ In Master CSS, that vocabulary usually lives in the project CSS entry: `@theme` 
 
 @theme {
     --color-primary: #4f46e5;
-    --spacing-card: 24;
-    --radius-card: 16;
-    --breakpoint-md: 768;
-    --container-md: 448;
+    --spacing-card: 1.5rem;
+    --radius-card: 1rem;
+    --breakpoint-md: 48rem;
+    --container-md: 28rem;
 }
 
 @theme light {
@@ -66,11 +66,11 @@ Theme tokens are CSS custom property declarations inside `@theme` blocks. Write 
     --color-primary-soft: rgb(79 70 229 / .16);
     --color-surface: #ffffff;
     --color-text-strong: #111827;
-    --spacing-card: 24;
+    --spacing-card: 1.5rem;
     --font-family-sans: Inter, ui-sans-serif, system-ui, sans-serif;
-    --radius-card: 16;
-    --breakpoint-md: 768;
-    --container-md: 448;
+    --radius-card: 1rem;
+    --breakpoint-md: 48rem;
+    --container-md: 28rem;
 }
 
 @theme light {
@@ -150,7 +150,7 @@ Use `@theme inline` when a token is only a utility shorthand and should not emit
 ```css name=index.css
 @theme inline {
     --color-brand: #4f46e5;
-    --spacing-card: 24;
+    --spacing-card: 1.5rem;
 }
 ```
 
@@ -170,13 +170,13 @@ Responsive thresholds are theme tokens too. Define `breakpoint` variables for vi
 
 ```css name=index.css
 @theme {
-    --breakpoint-sm: 640;
-    --breakpoint-md: 768;
-    --breakpoint-lg: 1024;
+    --breakpoint-sm: 40rem;
+    --breakpoint-md: 48rem;
+    --breakpoint-lg: 64rem;
 
-    --container-sm: 384;
-    --container-md: 448;
-    --container-lg: 512;
+    --container-sm: 24rem;
+    --container-md: 28rem;
+    --container-lg: 32rem;
 }
 ```
 

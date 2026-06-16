@@ -2,6 +2,7 @@ import { describe, expect, test } from 'vitest'
 import { createCSS } from '../src'
 import {
     createCSSWithStaticUtilities,
+    createCSSWithVariables,
     createDefaultCSS,
     clonePlan,
     createPlanWithStaticUtilities,
@@ -79,25 +80,38 @@ describe.concurrent('default plan utility parity', () => {
         const css = createDefaultCSS()
 
         expectClassText(css, 'w:calc(var(--h)|/|var(--w)*100%)', 'width:calc(var(--h) / var(--w) * 100%)')
-        expectClassText(css, 'w:calc(-2+$(spacing-md))', 'width:calc(-0.125rem + var(--spacing-md) / 16 * 1rem)')
-        expectClassText(css, 'w:calc(-$(spacing-md)-2)', 'width:calc(-var(--spacing-md) / 16 * 1rem - 0.125rem)')
+        expectClassText(css, 'w:calc(-2+$(spacing-md))', 'width:calc(-0.125rem + var(--spacing-md))')
+        expectClassText(css, 'w:calc(-$(spacing-md)-2)', 'width:calc(-var(--spacing-md) - 0.125rem)')
         expectClassText(css, 'w:calc(-1*($(spacing-md)*2)*3-2)', 'width:calc(-1 * (var(--spacing-md) * 2) * 3 - 0.125rem)')
         expectClassText(css, 'font-weight:$(font-weight-thin)', 'font-weight:var(--font-weight-thin)')
         expectClassText(css, 'fg:$color-white/.5', 'color:color-mix(in oklab,oklch(100% 0 none) 50%,transparent)')
         expectClassText(css, 'grid-cols:3', 'grid-template-columns:repeat(3,minmax(0,1fr))')
         expectClassText(css, 'lines:3', '-webkit-line-clamp:3')
-        expectClassText(css, 'text:2xl', 'font-size:calc(var(--font-size-2xl) / 16 * 1rem)')
+        expectClassText(css, 'text:2xl', 'font-size:var(--font-size-2xl)')
     })
 
     test('resolves negative numeric aliases without synthetic variables', () => {
         const css = createDefaultCSS()
 
-        expectClassText(css, 'm:-md', 'margin:calc(var(--spacing-md) / 16 * -1rem)')
-        expectClassText(css, 'mt:-md', 'margin-top:calc(var(--spacing-md) / 16 * -1rem)')
-        expectClassText(css, 'translate:-md', 'translate:calc(var(--spacing-md) / 16 * -1rem)')
-        expectClassText(css, 'w:-sm', 'width:calc(var(--container-sm) / 16 * -1rem)')
+        expectClassText(css, 'm:-md', 'margin:calc(var(--spacing-md) * -1)')
+        expectClassText(css, 'mt:-md', 'margin-top:calc(var(--spacing-md) * -1)')
+        expectClassText(css, 'translate:-md', 'translate:calc(var(--spacing-md) * -1)')
+        expectClassText(css, 'w:-sm', 'width:calc(var(--container-sm) * -1)')
         expect(css.create('m:-md')?.variableNames).toEqual(new Set(['spacing-md']))
         expect(css.create('fg:-black')?.text).not.toContain('var(--color-black)')
+    })
+
+    test('keeps unitful numeric variables from receiving a second unit conversion', () => {
+        const css = createCSSWithVariables([
+            { name: 'spacing-card', namespace: 'spacing', key: 'card', type: 'number', value: '1.5rem', numeric: { value: 1.5, unit: 'rem' } },
+            { name: 'container-card', namespace: 'container', key: 'card', type: 'number', value: '32rem', numeric: { value: 32, unit: 'rem' } }
+        ])
+
+        expectClassText(css, 'm:card', 'margin:var(--spacing-card)')
+        expectClassText(css, 'm:-card', 'margin:calc(var(--spacing-card) * -1)')
+        expectClassText(css, 'w:card', 'width:var(--container-card)')
+        expectClassText(css, 'w:calc($(spacing-card)+2)', 'width:calc(var(--spacing-card) + 0.125rem)')
+        expect(css.create('m:card')?.variableNames).toEqual(new Set(['spacing-card']))
     })
 
     test('uses compiled breakpoint aliases from the default plan', () => {
@@ -130,7 +144,7 @@ describe.concurrent('default plan utility parity', () => {
         expectClassText(css, 'top:20', 'top:1.25rem')
         expectClassText(css, 'bottom:10', 'bottom:0.625rem')
         expectClassText(css, 'right:max(0,calc(50%-725))', 'right:max(0rem,calc(50% - 45.3125rem))')
-        expectClassText(css, 'max-w:3xs', 'max-width:calc(var(--container-3xs) / 16 * 1rem)')
+        expectClassText(css, 'max-w:3xs', 'max-width:var(--container-3xs)')
         expectClassText(css, 'max-w:16px', 'max-width:16px')
         expect(css.create('size:16|32')?.declarations).toStrictEqual({ width: '1rem', height: '2rem' })
         expect(css.create('max:16|32')?.declarations).toStrictEqual({ 'max-width': '1rem', 'max-height': '2rem' })

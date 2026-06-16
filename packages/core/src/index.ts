@@ -22,6 +22,7 @@ export type {
     MasterCSSPlanUtilityLayerName,
     MasterCSSPlanVariant,
     MasterCSSPlanVariable,
+    MasterCSSPlanVariableNumericValue,
     MasterCSSPreloaded,
     MasterCSSRuntimeManifest
 } from '@master/css-engine'

@@ -327,6 +327,42 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
         expect(css.themeLayer.text).toContain('.dark{--spacing-x1:32;--leading-x1:32}')
     })
 
+    test('executes CSS-first unitful numeric variables without double conversion', () => {
+        const { plan } = compileCSSPlan(`
+            @theme {
+                --spacing-card: 1.5rem;
+                --radius-card: 8px;
+                --breakpoint-card: 48rem;
+                --container-panel: 512px;
+                --shadow-card: 1rem;
+            }
+        `, { basePlan: defaultPlan })
+        const css = createCSS(plan)
+
+        expect(plan.variables).toContainEqual(expect.objectContaining({
+            name: 'spacing-card',
+            type: 'number',
+            value: '1.5rem',
+            numeric: { value: 1.5, unit: 'rem' }
+        }))
+        expect(plan.variables?.find((variable) => variable.name === 'shadow-card')).toMatchObject({
+            type: 'string',
+            value: '1rem'
+        })
+        expect(plan.breakpointAtRules?.card).toMatchObject({
+            id: 'media',
+            nodes: [expect.objectContaining({ value: 48, unit: 'rem' })]
+        })
+        expect(plan.containerAtRules?.panel).toMatchObject({
+            id: 'container',
+            nodes: [expect.objectContaining({ value: 32, unit: 'rem' })]
+        })
+        expect(css.create('m:card')?.text).toBe('.m\\:card{margin:var(--spacing-card)}')
+        expect(css.create('m:-card')?.text).toBe('.m\\:-card{margin:calc(var(--spacing-card) * -1)}')
+        expect(css.create('r:card')?.text).toBe('.r\\:card{border-radius:var(--radius-card)}')
+        expect(css.create('block@card')?.text).toContain('@media (width>=48rem)')
+    })
+
     test('lowers inline theme variables without emitting their own theme rules', () => {
         const { plan } = compileCSSPlan(`
             @theme inline {

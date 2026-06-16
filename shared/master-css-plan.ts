@@ -16,6 +16,10 @@ export type MasterCSSPlanCSSDeclarationPrimitive = string | number | null
 export type MasterCSSPlanCSSDeclarations = PropertiesHyphen | Record<string, MasterCSSPlanCSSDeclarationPrimitive | MasterCSSPlanCSSDeclarationPrimitive[]>
 export type MasterCSSPlanVariableValue = number | string | false | (number | string)[]
 export type MasterCSSPlanVariableType = 'number' | 'string'
+export interface MasterCSSPlanVariableNumericValue {
+    value: number
+    unit?: string
+}
 
 export type MasterCSSPlanAtRuleBooleanNode = { raw?: string, name: string, type: 'boolean' }
 export type MasterCSSPlanAtRuleNumberNode = { raw?: string, name?: string, type: 'number', value: number, unit?: string, operator?: string }
@@ -81,7 +85,8 @@ export interface MasterCSSPlanVariable {
     namespace?: string
     type?: MasterCSSPlanVariableType
     value?: MasterCSSPlanVariableValue
-    modes?: Record<string, { type: MasterCSSPlanVariableType, value: number | string }>
+    numeric?: MasterCSSPlanVariableNumericValue
+    modes?: Record<string, { type: MasterCSSPlanVariableType, value: number | string, numeric?: MasterCSSPlanVariableNumericValue }>
     dependencies?: string[]
     mode?: string
     inline?: boolean

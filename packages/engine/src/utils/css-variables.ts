@@ -13,8 +13,13 @@ export function createAlphaColorValue(value: string, alpha: number) {
     return `color-mix(in oklab,${value} ${Number(alpha) * 100}%,transparent)`
 }
 
+export function hasNumericVariableUnit(variable: Variable | undefined) {
+    return variable?.type === 'number' && Boolean(variable.numeric?.unit)
+}
+
 export function createNumberVariableReference(variable: Variable, unit: string, rootSize = 16) {
     const reference = createCSSVariableReference(variable.name)
+    if (hasNumericVariableUnit(variable)) return reference
     if (!unit) return reference
     if (unit === 'rem' || unit === 'em') {
         return `calc(${reference} / ${rootSize} * 1${unit})`
@@ -24,6 +29,7 @@ export function createNumberVariableReference(variable: Variable, unit: string, 
 
 export function createNegativeNumberVariableReference(variable: Variable, unit: string, rootSize = 16) {
     const reference = createCSSVariableReference(variable.name)
+    if (hasNumericVariableUnit(variable)) return `calc(${reference} * -1)`
     if (!unit) return `calc(${reference} * -1)`
     if (unit === 'rem' || unit === 'em') {
         return `calc(${reference} / ${rootSize} * -1${unit})`

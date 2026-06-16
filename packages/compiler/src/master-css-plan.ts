@@ -17,6 +17,7 @@ import type {
     MasterCSSPlanUtility,
     MasterCSSPlanUtilityBuckets,
     MasterCSSPlanUtilityRule,
+    MasterCSSPlanVariableNumericValue,
     MasterCSSPlanVariable,
     MasterCSSPlanVariableAliasSet,
     MasterCSSPlanVariables,
@@ -37,6 +38,8 @@ export interface CreateMasterCSSPlanOptions {
 }
 
 const CONDITION_VARIABLE_NAMESPACES = ['breakpoint', 'container']
+const NUMERIC_THEME_NAMESPACES = new Set(['font-size', 'radius', 'spacing', 'breakpoint', 'container'])
+const UNITFUL_NUMERIC_TOKEN = /^([+-]?(?:\d+(?:\.\d+)?|\.\d+))(px|rem)?$/
 
 export interface ResolvedCSSDirectiveVariableName {
     name: string
@@ -147,6 +150,23 @@ function getVariableType(value: MasterCSSPlanVariable['value']): NonNullable<Mas
     return typeof value === 'number' ? 'number' : 'string'
 }
 
+function getVariableNumericValue(
+    value: MasterCSSPlanVariable['value'],
+    namespace: string | undefined
+): MasterCSSPlanVariableNumericValue | undefined {
+    if (!namespace || !NUMERIC_THEME_NAMESPACES.has(namespace)) return
+    if (typeof value === 'number') {
+        return { value }
+    }
+    if (typeof value !== 'string') return
+    const match = UNITFUL_NUMERIC_TOKEN.exec(value.trim())
+    if (!match) return
+    return {
+        value: Number(match[1]),
+        ...(match[2] ? { unit: match[2] } : {})
+    }
+}
+
 function collectVariableDependencies(value: unknown, dependencies = new Set<string>()) {
     if (typeof value !== 'string') return dependencies
     for (const match of value.matchAll(/\$(-?[_a-zA-Z0-9-]+)/g)) {
@@ -184,7 +204,8 @@ function compileVariables(
         const resolved = resolveVariableName(definition)
         if (!resolved.name) continue
         const value = normalizeZero(definition.value) as MasterCSSPlanVariable['value']
-        const type = getVariableType(value)
+        const numeric = getVariableNumericValue(value, resolved.namespace)
+        const type = numeric ? 'number' : getVariableType(value)
         const dependencies = collectVariableDependencies(value)
 
         if (definition.mode) {
@@ -203,7 +224,11 @@ function compileVariables(
             }
             if (definition.static) target.static = true
             target.modes ??= {}
-            target.modes[definition.mode] = { type, value: value as string | number }
+            target.modes[definition.mode] = {
+                type,
+                value: value as string | number,
+                ...(numeric ? { numeric } : {})
+            }
             if (dependencies.size) {
                 const next = new Set([...(target.dependencies || []), ...dependencies])
                 target.dependencies = [...next]
@@ -217,6 +242,7 @@ function compileVariables(
             ...(resolved.namespace ? { namespace: resolved.namespace } : {}),
             type,
             value,
+            ...(numeric ? { numeric } : {}),
             ...(dependencies.size ? { dependencies: [...dependencies] } : {}),
             ...(definition.inline ? { inline: true } : {}),
             ...(definition.static ? { static: true } : {})
@@ -228,13 +254,30 @@ function compileVariables(
     return variables.length ? variables : undefined
 }
 
+function normalizeNumericAtRuleValue(variable: MasterCSSPlanVariable, rootSize: number) {
+    if (variable.key.startsWith('-')) return
+    const numeric = variable.numeric || (typeof variable.value === 'number' ? { value: variable.value } : undefined)
+    if (!numeric) return
+    switch (numeric.unit) {
+        case undefined:
+        case '':
+        case 'px':
+            return numeric.value / rootSize
+        case 'rem':
+            return numeric.value
+        default:
+            return
+    }
+}
+
 function createVariableAtRule(variable: MasterCSSPlanVariable, id: 'media' | 'container', rootSize: number): MasterCSSPlanAtRule | undefined {
-    if (typeof variable.value !== 'number' || variable.key.startsWith('-')) return
+    const value = normalizeNumericAtRuleValue(variable, rootSize)
+    if (value === undefined) return
     return {
         id,
         nodes: [{
             type: 'number',
-            value: variable.value / rootSize,
+            value,
             unit: 'rem'
         }]
     }

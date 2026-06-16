@@ -17,25 +17,36 @@ describe.concurrent('@master/css-preset design token parity', () => {
             namespace: 'font-size',
             key: '2xl',
             type: 'number',
-            value: 24
+            value: '1.5rem',
+            numeric: { value: 1.5, unit: 'rem' }
+        })
+        expect(findVariable('radius-lg')).toMatchObject({
+            namespace: 'radius',
+            key: 'lg',
+            type: 'number',
+            value: '.5rem',
+            numeric: { value: 0.5, unit: 'rem' }
         })
         expect(findVariable('spacing-md')).toMatchObject({
             namespace: 'spacing',
             key: 'md',
             type: 'number',
-            value: 16
+            value: '1rem',
+            numeric: { value: 1, unit: 'rem' }
         })
         expect(findVariable('breakpoint-sm')).toMatchObject({
             namespace: 'breakpoint',
             key: 'sm',
             type: 'number',
-            value: 834
+            value: '52.125rem',
+            numeric: { value: 52.125, unit: 'rem' }
         })
         expect(findVariable('container-sm')).toMatchObject({
             namespace: 'container',
             key: 'sm',
             type: 'number',
-            value: 384
+            value: '24rem',
+            numeric: { value: 24, unit: 'rem' }
         })
         expect(findVariable('animation-fade')).toMatchObject({
             namespace: 'animation',
@@ -66,9 +77,10 @@ describe.concurrent('@master/css-preset design token parity', () => {
         const css = createCSS(defaultPlan)
 
         expect(css.create('font:sans')?.text).toContain('font-family:var(--font-family-sans)')
-        expect(css.create('text:2xl')?.text).toContain('font-size:calc(var(--font-size-2xl) / 16 * 1rem)')
-        expect(css.create('m:md')?.text).toContain('margin:calc(var(--spacing-md) / 16 * 1rem)')
-        expect(css.create('w:sm')?.text).toContain('width:calc(var(--container-sm) / 16 * 1rem)')
+        expect(css.create('text:2xl')?.text).toContain('font-size:var(--font-size-2xl)')
+        expect(css.create('m:md')?.text).toContain('margin:var(--spacing-md)')
+        expect(css.create('r:lg')?.text).toContain('border-radius:var(--radius-lg)')
+        expect(css.create('w:sm')?.text).toContain('width:var(--container-sm)')
         expect(css.create('animation:fade')?.text).toContain('animation:var(--animation-fade)')
         expect(css.text).not.toContain('null')
     })

@@ -359,6 +359,7 @@ export default class MasterCSS {
                 ...(definition.value !== undefined ? {
                     value: Array.isArray(definition.value) ? definition.value.join(',') : definition.value
                 } : {}),
+                ...(definition.numeric ? { numeric: { ...definition.numeric } } : {}),
                 ...(definition.modes ? { modes: { ...definition.modes } } : {}),
                 ...(definition.dependencies?.length ? { dependencies: new Set(definition.dependencies) } : {}),
                 ...(definition.inline ? { inline: true } : {}),

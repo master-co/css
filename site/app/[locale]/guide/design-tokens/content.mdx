@@ -241,7 +241,7 @@ Low-level values are not forbidden. They need a clear reason.
 | Local measured geometry | `size:10x`, `w:80x`, `aspect:16/9` | The value belongs to one asset, icon, component, or media frame. |
 | Fluid layout requirement | `w:1/2`, `h:100dvh`, `max-w:72ch`, `w:clamp(...)` | The value describes layout behavior that a token scale should not hide. |
 | One-off content value | `content:"New"`, `grid-cols:3`, `order:first` | The value is semantic content or structural behavior. |
-| Custom system extension | `--spacing-card: 24`, `--shadow-popover: ...` in light and dark modes | The value is being promoted into the design system. |
+| Custom system extension | `--spacing-card: 1.5rem`, `--shadow-popover: ...` in light and dark modes | The value is being promoted into the design system. |
 
 When the reason is not obvious, prefer a token or add a small note in the surrounding docs that explains why the low-level value is intentional.
 
@@ -252,8 +252,8 @@ Create a project token when a value is reused, named in design specs, shared acr
 
 ```css name=index.css
 @theme {
-    --spacing-card: 24;
-    --radius-card: 12;
+    --spacing-card: 1.5rem;
+    --radius-card: 0.75rem;
     --color-accent: $color-blue-60;
     --color-accent-text: $color-white;
 }

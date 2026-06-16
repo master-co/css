@@ -1,5 +1,5 @@
 import InlineCode from '~/internal/components/InlineCode'
-import { getThemeNumberVariableEntries } from '~/site/utils/theme-variables'
+import { getThemeNumericVariableEntries } from '~/site/utils/theme-variables'
 
 interface ThemeNumberVariableTableProps {
     namespace: string
@@ -8,12 +8,12 @@ interface ThemeNumberVariableTableProps {
     representation?: 'spacing'
 }
 
-const formatRem = (value: number) => `${Number((value / 16).toFixed(4))}rem`
+const formatRem = (value: number) => `${Number(value.toFixed(4))}rem`
 
 export default function ThemeNumberVariableTable(props: ThemeNumberVariableTableProps) {
     const { namespace, variablePrefix = namespace, descriptions, representation } = props
-    const entries = getThemeNumberVariableEntries(namespace)
-    const hasDescriptions = descriptions && entries.some(([key]) => descriptions[key])
+    const entries = getThemeNumericVariableEntries(namespace)
+    const hasDescriptions = descriptions && entries.some(({ key }) => descriptions[key])
     const hasSpacingRepresentation = representation === 'spacing'
 
     return (
@@ -24,20 +24,20 @@ export default function ThemeNumberVariableTable(props: ThemeNumberVariableTable
                         <tr>
                             <th>Token</th>
                             <th>Value</th>
-                            <th>(REM)</th>
+                            <th>REM</th>
                             {hasSpacingRepresentation && <th>Representation</th>}
                             {hasDescriptions && <th>Description</th>}
                         </tr>
                     </thead>
                     <tbody>
                         {
-                            entries.map(([key, value], index) => (
-                                <tr key={key}>
-                                    <th><InlineCode>{`${variablePrefix}-${key}`}</InlineCode></th>
-                                    <td><InlineCode>{`${value}`}</InlineCode></td>
-                                    <td>{formatRem(value)}</td>
-                                    {hasSpacingRepresentation && <td>{renderSpacingRepresentation(value, index, entries.length)}</td>}
-                                    {hasDescriptions && <td>{descriptions?.[key]}</td>}
+                            entries.map((entry, index) => (
+                                <tr key={entry.key}>
+                                    <th><InlineCode>{`--${variablePrefix}-${entry.key}`}</InlineCode></th>
+                                    <td><InlineCode>{entry.value}</InlineCode></td>
+                                    <td>{formatRem(entry.rem)}</td>
+                                    {hasSpacingRepresentation && <td>{renderSpacingRepresentation(entry.value, index, entries.length)}</td>}
+                                    {hasDescriptions && <td>{descriptions?.[entry.key]}</td>}
                                 </tr>
                             ))
                         }
@@ -48,9 +48,9 @@ export default function ThemeNumberVariableTable(props: ThemeNumberVariableTable
     )
 }
 
-function renderSpacingRepresentation(value: number, index: number, count: number) {
+function renderSpacingRepresentation(value: string, index: number, count: number) {
     return (
-        <div className="inline-flex bg:stripe-pink outline:1|lighter outline-offset:-1 v:middle w:fit" style={{ gap: formatRem(value) }}>
+        <div className="inline-flex bg:stripe-pink outline:1|lighter outline-offset:-1 v:middle w:fit" style={{ gap: value }}>
             {Array.from({ length: count + 2 - index }, (_, index) => <div key={index} className="inline-block size:1.5em bg:base"></div>)}
         </div>
     )

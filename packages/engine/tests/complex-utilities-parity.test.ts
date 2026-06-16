@@ -87,8 +87,8 @@ describe.concurrent('migrated complex utility parity', () => {
         expect(css.create('size:16|32')?.declarations).toStrictEqual({ width: '1rem', height: '2rem' })
         expect(css.create('size:$(w)|$(h)')?.declarations).toStrictEqual({ width: 'var(--w)', height: 'var(--h)' })
         expect(css.create('size:md')?.declarations).toStrictEqual({
-            width: 'calc(var(--container-md) / 16 * 1rem)',
-            height: 'calc(var(--container-md) / 16 * 1rem)'
+            width: 'var(--container-md)',
+            height: 'var(--container-md)'
         })
         expect(css.create('size:16|calc(min(30,50)-25)')?.declarations)
             .toStrictEqual({ width: '1rem', height: 'calc(min(30, 50) / 16 * 1rem - 1.5625rem)' })

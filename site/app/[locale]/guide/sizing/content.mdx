@@ -266,11 +266,11 @@ Use viewport breakpoints when the whole page shell changes. Use container querie
 ---
 
 ## Add product sizing tokens
-When a dimension becomes part of the product language, add a named container variable in the project CSS entry. Numeric values use the utility's default unit, while explicit units and functions are preserved.
+When a dimension becomes part of the product language, add a named container variable in the project CSS entry. Use explicit CSS lengths for fixed values; functions are preserved.
 
 ```css name=index.css
 @theme {
-    --container-sidebar: 280;
+    --container-sidebar: 17.5rem;
     --container-measure: 72ch;
     --container-panel: clamp(18rem,50vw,42rem);
 }

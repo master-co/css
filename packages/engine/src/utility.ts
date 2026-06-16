@@ -17,7 +17,7 @@ import generateSelector from './utils/generate-selector'
 import { calcRulePriority, RulePriority } from './utils/compare-rule-priority'
 import collectVariableNames from './utils/collect-variable-names'
 import wrapAtRules from './utils/wrap-at-rules'
-import { createAlphaColorValue, createCSSVariableReference, createNegativeNumberVariableReference, createNumberVariableReference, normalizeVariableValue, replaceCSSVariableReferences } from './utils/css-variables'
+import { createAlphaColorValue, createCSSVariableReference, createNegativeNumberVariableReference, createNumberVariableReference, hasNumericVariableUnit, normalizeVariableValue, replaceCSSVariableReferences } from './utils/css-variables'
 import collectAnimationNames from './utils/collect-animation-names'
 import { BORDER_STYLE_VALUES } from './common'
 
@@ -974,7 +974,8 @@ export class Utility {
                 }
                 const variableName = getVariableFunctionName(component)
                 if (!variableName) continue
-                if (this.resolveVariableAlias(variableName)?.variable.type !== 'number') continue
+                const variable = this.resolveVariableAlias(variableName)?.variable
+                if (variable?.type !== 'number' || hasNumericVariableUnit(variable)) continue
                 if (!this.registeredUtility.unit) continue
 
                 const previousSeparator = getSeparatorValue(components[index - 1])
@@ -1127,8 +1128,8 @@ export class Utility {
                         nestedIsVarFunction
                     ) || nestedFunctionName === 'var'
                     if (!childHasUnit && nestedFunctionName === '$') {
-                        const variableType = this.resolveVariableAlias((newValueComponent.children[0] as StringValueComponent).value)?.variable.type
-                        childHasUnit = !variableType || variableType === 'string'
+                        const variable = this.resolveVariableAlias((newValueComponent.children[0] as StringValueComponent).value)?.variable
+                        childHasUnit = !variable || variable.type === 'string' || hasNumericVariableUnit(variable)
                     }
                     if (childHasUnit) {
                         hasUnit = true

@@ -14,13 +14,13 @@ Breakpoint variables belong in your project CSS entry. Keep them product-wide an
 
 ```css name=index.css
 @theme {
-    --breakpoint-sm: 768;
-    --breakpoint-md: 1024;
-    --breakpoint-lg: 1280;
+    --breakpoint-sm: 48rem;
+    --breakpoint-md: 64rem;
+    --breakpoint-lg: 80rem;
 }
 ```
 
-The values are unitless numbers interpreted as pixels and emitted as rem-based media queries. That keeps generated CSS aligned with the root font size while keeping the theme readable.
+Use CSS length values for breakpoint tokens; `rem` keeps thresholds aligned with the root font size. Unitless numbers are still accepted and interpreted on the 16px scale for existing projects.
 
 ---
 
@@ -117,8 +117,8 @@ Here `@sm`, `@md`, and `@lg` come from the breakpoint namespace. The `4xl`, `5xl
 
 ```css
 @theme {
-    --breakpoint-iphone: 390;
-    --breakpoint-ipad: 820;
+    --breakpoint-iphone: 24.375rem;
+    --breakpoint-ipad: 51.25rem;
 }
 ```
 
@@ -126,9 +126,9 @@ Here `@sm`, `@md`, and `@lg` come from the breakpoint namespace. The `4xl`, `5xl
 
 ```css
 @theme {
-    --breakpoint-xs: 640;
-    --breakpoint-sm: 768;
-    --breakpoint-md: 1024;
+    --breakpoint-xs: 40rem;
+    --breakpoint-sm: 48rem;
+    --breakpoint-md: 64rem;
 }
 ```
 

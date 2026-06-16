@@ -55,10 +55,10 @@ This lets spacing-related utilities use `md`, `lg`, or project token names witho
 
 ```css name=index.css
 @theme {
-    --spacing-sm: 12;
-    --spacing-md: 16;
-    --spacing-lg: 24;
-    --spacing-section: 96;
+    --spacing-sm: 0.75rem;
+    --spacing-md: 1rem;
+    --spacing-lg: 1.5rem;
+    --spacing-section: 6rem;
 }
 ```
 
@@ -117,8 +117,8 @@ Raw unitless values such as `0`, `1`, and `2` are low-level pixel values. They b
 
 ```css name=index.css
 @theme {
-    --spacing-1: 4; /* [!code --] */
-    --spacing-2: 8; /* [!code --] */
+    --spacing-1: 0.25rem; /* [!code --] */
+    --spacing-2: 0.5rem; /* [!code --] */
 }
 ```
 
@@ -128,9 +128,9 @@ Numeric keys create ambiguity with [unit sensing](/guide/style-declarations#unit
 
 ```css name=index.css
 @theme {
-    --spacing-sm: 12;
-    --spacing-card: 20;
-    --spacing-section: 96;
+    --spacing-sm: 0.75rem;
+    --spacing-card: 1.25rem;
+    --spacing-section: 6rem;
 }
 ```
 

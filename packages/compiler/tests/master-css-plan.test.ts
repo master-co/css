@@ -97,6 +97,43 @@ describe.concurrent('createMasterCSSPlan', () => {
         })
     })
 
+    it('keeps unitful numeric theme tokens comparable', () => {
+        const plan = createMasterCSSPlan({
+            variables: [
+                { namespace: 'spacing', key: 'card', value: '1.5rem' },
+                { namespace: 'radius', key: 'card', value: '8px' },
+                { namespace: 'breakpoint', key: 'card', value: '48rem' },
+                { namespace: 'container', key: 'panel', value: '512px' },
+                { namespace: 'shadow', key: 'card', value: '1rem' }
+            ]
+        })
+
+        expect(plan.variables).toContainEqual(expect.objectContaining({
+            name: 'spacing-card',
+            type: 'number',
+            value: '1.5rem',
+            numeric: { value: 1.5, unit: 'rem' }
+        }))
+        expect(plan.variables).toContainEqual(expect.objectContaining({
+            name: 'radius-card',
+            type: 'number',
+            value: '8px',
+            numeric: { value: 8, unit: 'px' }
+        }))
+        expect(plan.variables?.find((variable) => variable.name === 'shadow-card')).toMatchObject({
+            type: 'string',
+            value: '1rem'
+        })
+        expect(plan.breakpointAtRules?.card).toMatchObject({
+            id: 'media',
+            nodes: [expect.objectContaining({ type: 'number', value: 48, unit: 'rem' })]
+        })
+        expect(plan.containerAtRules?.panel).toMatchObject({
+            id: 'container',
+            nodes: [expect.objectContaining({ type: 'number', value: 32, unit: 'rem' })]
+        })
+    })
+
     it('lowers variants into compiled selector and at-rule branches', () => {
         const plan = createMasterCSSPlan({
             variants: [
