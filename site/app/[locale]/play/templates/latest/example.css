@@ -2,6 +2,11 @@
     mode-trigger: class;
 }
 
+@theme {
+    --color-accent: $color-yellow;
+    --color-on-accent: $color-on-yellow;
+}
+
 @theme light {
     --color-card: #ffffff;
 }
@@ -22,7 +27,7 @@
     }
 
     card {
-        @compose fg:text m:auto max-w:md mt:lg_:where(p,ul) my:sm_:where(li) outline:1|subtle r:lg shadow:lg text:md_:where(p,li);
+        @compose fg:text m:auto max-w:md mt:lg_:where(p,ul) my:sm_:where(li) outline:1|subtle r:lg shadow:lg text:sm_:where(p,li);
         background-color: var(--color-card);
     }
 
@@ -51,10 +56,11 @@
     }
 
     btn {
-        @compose inline-flex items-center justify-center rel b:1|accent-line bg:accent fg:on-accent font:sm font:medium h:48 mt:md px:lg r:sm text:center w:full;
+        @compose inline-flex items-center justify-center rel b:1|line bg:accent fg:on-accent font:sm font:medium h:48 mt:md px:lg r:sm text:center w:full;
 
         &:hover .btn-arrow-line {
-            @compose opacity:1 scale(1);
+            @compose scale(1);
+            opacity: 1;
         }
     }
 

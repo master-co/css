@@ -26,7 +26,7 @@ function AuthorAvatarStack({ children }: { children: any[] }) {
                 return (
                     <Image
                         key={author.name}
-                        className={clsx('round object:cover outline:2|base', {
+                        className={clsx('round object:cover outline:2|canvas', {
                             'ml:-1x': index > 0
                         })}
                         src={author.image}

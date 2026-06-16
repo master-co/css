@@ -4,7 +4,7 @@
     "type": "module",
     "scripts": {
         "prepare-app": "tsx --env-file=.env ./prepare",
-        "dev": "pnpm build:next-adapter && pnpm prepare-app && next dev --turbo",
+        "dev": "rm -rf .next && pnpm build:next-adapter && pnpm prepare-app && next dev --turbo",
         "build": "pnpm prepare-app && pnpm build:llms && pnpm build:repo && pnpm build:next",
         "build:cloudflare-next": "pnpm prepare-app && pnpm build:llms && pnpm build:repo && pnpm build:next",
         "build:cloudflare-workers": "opennextjs-cloudflare build --skipWranglerConfigCheck",
