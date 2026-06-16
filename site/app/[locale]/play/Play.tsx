@@ -68,6 +68,7 @@ const template = templates[0]
 const playShareApiURL = '/api/play'
 const playMonacoLanguageIds = ['html', 'css']
 const playMonacoLanguageIdSet = new Set(playMonacoLanguageIds)
+const playCSSDiagnosticClearDelays = [250, 1000]
 type PlayHighlighter = Awaited<ReturnType<typeof createHighlighter>>
 let compilerPromise: Promise<typeof import('./compile-play-css')> | undefined
 let playHighlighterPromise: Promise<PlayHighlighter> | undefined
@@ -168,6 +169,31 @@ function registerPlayMonacoLanguages(monaco: Monaco) {
 function preparePlayMonaco(monaco: Monaco) {
     registerPlayMonacoLanguages(monaco)
     monaco.languages.html.htmlDefaults.setOptions(editorHTMLOptions)
+    // Master CSS directives are valid in Play, but Monaco's CSS grammar reports them as native CSS errors.
+    monaco.languages.css.cssDefaults.setOptions({
+        ...monaco.languages.css.cssDefaults.options,
+        validate: false
+    })
+    monaco.languages.css.cssDefaults.setModeConfiguration({
+        ...monaco.languages.css.cssDefaults.modeConfiguration,
+        diagnostics: false
+    })
+    scheduleClearPlayCSSDiagnostics(monaco)
+}
+
+function clearPlayCSSDiagnostics(monaco: Monaco) {
+    for (const model of monaco.editor.getModels()) {
+        if (model.getLanguageId() === 'css') {
+            monaco.editor.setModelMarkers(model, 'css', [])
+        }
+    }
+}
+
+function scheduleClearPlayCSSDiagnostics(monaco: Monaco) {
+    clearPlayCSSDiagnostics(monaco)
+    for (const delay of playCSSDiagnosticClearDelays) {
+        setTimeout(() => clearPlayCSSDiagnostics(monaco), delay)
+    }
 }
 
 function installMonacoShiki(highlighter: PlayHighlighter, monaco: Monaco) {
@@ -195,6 +221,7 @@ function refreshMonacoHighlighting(monaco: Monaco) {
             monaco.editor.setModelLanguage(model, languageId)
         }
     }
+    scheduleClearPlayCSSDiagnostics(monaco)
 }
 
 function scheduleMonacoShikiLanguageRefresh(highlighter: PlayHighlighter, monaco: Monaco, getThemeName: () => string) {
@@ -206,6 +233,7 @@ function scheduleMonacoShikiLanguageRefresh(highlighter: PlayHighlighter, monaco
         installMonacoShiki(highlighter, monaco)
         refreshMonacoHighlighting(monaco)
         monaco.editor.setTheme(getThemeName())
+        scheduleClearPlayCSSDiagnostics(monaco)
     }, 250)
 }
 
