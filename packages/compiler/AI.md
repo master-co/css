@@ -28,8 +28,9 @@
 
 - `@settings { root-size: 16; }`
 - `@settings { important: on; }` and `@settings { important: off; }`
-- `@theme { --color-primary: #123; --breakpoint-md: 768; @keyframes fade { from { opacity: 0; } to { opacity: 1; } } }`
+- `@theme { --color-primary: #123; --breakpoint-md: 48rem; @keyframes fade { from { opacity: 0; } to { opacity: 1; } } }`
 - `@theme dark { --color-primary: #456; }`
+- Unitless numeric `font-size`, `radius`, `spacing`, `breakpoint`, and `container` tokens remain supported for existing projects, but new docs and examples should prefer explicit CSS lengths such as `rem`.
 - The compiler records mode declarations as written. Plan settings and engine execution decide which modes are defaults.
 - `@custom-variant @motion-safe { @media (prefers-reduced-motion: no-preference) { @slot; } }`
 - `@custom-variant ::scrollbar { &::-webkit-scrollbar { @slot; } }`

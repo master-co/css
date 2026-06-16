@@ -1,9 +1,11 @@
 import css from '~/site/common/preset-css'
 import InlineCode from '~/internal/components/InlineCode'
-import { containerVariableEntries } from '~/site/utils/container-variables'
+import { getThemeNumericVariableEntries, type ThemeNumericVariableEntry } from '~/site/utils/theme-variables'
 import generatePlanAt from '~/site/utils/generate-plan-at'
 
-const formatValue = (value: number) => `${value}px / ${value / 16}rem`
+const containerVariableEntries = getThemeNumericVariableEntries('container')
+const formatLength = (value: number, unit: string) => `${Number(value.toFixed(4))}${unit}`
+const formatValue = (entry: ThemeNumericVariableEntry) => `${formatLength(entry.px, 'px')} / ${formatLength(entry.rem, 'rem')}`
 
 export default () => {
     return (
@@ -18,11 +20,11 @@ export default () => {
                 </thead>
                 <tbody>
                     {
-                        containerVariableEntries.map(([name, value]) => (
-                            <tr key={name}>
-                                <th className="white-space:nowrap"><InlineCode>{`@container(${name})`}</InlineCode></th>
-                                <td className="white-space:nowrap"><InlineCode>{formatValue(value)}</InlineCode></td>
-                                <td><InlineCode lang="css">{generatePlanAt(css.containerAtRules.get(name))}</InlineCode></td>
+                        containerVariableEntries.map((entry) => (
+                            <tr key={entry.key}>
+                                <th className="white-space:nowrap"><InlineCode>{`@container(${entry.key})`}</InlineCode></th>
+                                <td className="white-space:nowrap"><InlineCode>{formatValue(entry)}</InlineCode></td>
+                                <td><InlineCode lang="css">{generatePlanAt(css.containerAtRules.get(entry.key))}</InlineCode></td>
                             </tr>
                         ))
                     }

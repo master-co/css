@@ -1,8 +1,9 @@
 import InlineCode from '~/internal/components/InlineCode'
-import { containerVariableEntries } from '~/site/utils/container-variables'
+import { getThemeNumericVariableEntries, type ThemeNumericVariableEntry } from '~/site/utils/theme-variables'
 
-const formatRem = (value: number) => `${value / 16}rem`
-const formatValue = (value: number) => `${value}px / ${formatRem(value)}`
+const containerVariableEntries = getThemeNumericVariableEntries('container')
+const formatLength = (value: number, unit: string) => `${Number(value.toFixed(4))}${unit}`
+const formatValue = (entry: ThemeNumericVariableEntry) => `${formatLength(entry.px, 'px')} / ${formatLength(entry.rem, 'rem')}`
 
 export default () => {
     return (
@@ -18,12 +19,12 @@ export default () => {
                 </thead>
                 <tbody>
                     {
-                        containerVariableEntries.map(([name, value]) => (
-                            <tr key={name}>
-                                <th className="white-space:nowrap"><InlineCode>{name}</InlineCode></th>
-                                <td className="white-space:nowrap"><InlineCode>{`container-${name}`}</InlineCode></td>
-                                <td className="white-space:nowrap"><InlineCode>{formatValue(value)}</InlineCode></td>
-                                <td><InlineCode>{`max-w:${name}`}</InlineCode></td>
+                        containerVariableEntries.map((entry) => (
+                            <tr key={entry.key}>
+                                <th className="white-space:nowrap"><InlineCode>{entry.key}</InlineCode></th>
+                                <td className="white-space:nowrap"><InlineCode>{`container-${entry.key}`}</InlineCode></td>
+                                <td className="white-space:nowrap"><InlineCode>{formatValue(entry)}</InlineCode></td>
+                                <td><InlineCode>{`max-w:${entry.key}`}</InlineCode></td>
                             </tr>
                         ))
                     }

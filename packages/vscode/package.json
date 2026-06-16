@@ -11,7 +11,7 @@
         "vscode:package": "node scripts/package-targets.mjs package",
         "vscode:publish": "node scripts/package-targets.mjs publish"
     },
-    "version": "2.0.18",
+    "version": "2.0.19",
     "description": "Master CSS for Visual Studio Code",
     "displayName": "Master CSS",
     "author": "Aoyue Design LLC.",
