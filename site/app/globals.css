@@ -1,4 +1,4 @@
 @import '@master/css';
-@import '../../internal/theme.css';
+@import '../../internal/styles/main.css';
 @import '../styles/base.css';
 @import '../styles/btn.css';
