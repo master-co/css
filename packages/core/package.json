@@ -61,7 +61,8 @@
         "./index.css": "./src/index.css",
         "./base.css": "./src/base.css",
         "./theme.css": "./src/theme.css",
-        "./variants.css": "./src/variants.css"
+        "./variants.css": "./src/variants.css",
+        "./utilities.css": "./src/utilities.css"
     },
     "files": [
         "dist",

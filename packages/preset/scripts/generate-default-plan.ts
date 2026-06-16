@@ -25,7 +25,7 @@ function clone<T>(value: T): T {
     return JSON.parse(JSON.stringify(value)) as T
 }
 
-function createUtilities(): MasterCSSPlanUtility[] {
+function createSourceUtilities(): MasterCSSPlanUtility[] {
     return sourceUtilities
         .map((utility, order) => {
             const { id, name, type, ...rest } = clone(utility)
@@ -38,6 +38,13 @@ function createUtilities(): MasterCSSPlanUtility[] {
             } as MasterCSSPlanUtility
         })
         .reverse()
+}
+
+function normalizeUtilityOrders(utilities: MasterCSSPlanUtility[] = []): MasterCSSPlanUtility[] {
+    return utilities.map((utility, index) => ({
+        ...clone(utility),
+        order: utilities.length - index - 1
+    }))
 }
 
 function addBucketIndex(bucket: number[] | undefined, index: number) {
@@ -138,7 +145,7 @@ function createVariableNamespaces(variables: MasterCSSPlanVariable[] = [], refs:
 }
 
 export function createDefaultPlan(cssPlan: MasterCSSPlan): MasterCSSPlan {
-    const utilities = createUtilities()
+    const utilities = normalizeUtilityOrders(cssPlan.utilities || createSourceUtilities())
     return {
         version: 1,
         settings: { ...settings, ...cssPlan.settings },
@@ -158,7 +165,7 @@ export function createDefaultPlan(cssPlan: MasterCSSPlan): MasterCSSPlan {
 }
 
 export function createDefaultPlanFromSourceFile(file = sourceFile) {
-    const utilities = createUtilities()
+    const utilities = createSourceUtilities()
     return createDefaultPlan(compileCSSPlanFile(file, {
         basePlan: {
             version: 1,

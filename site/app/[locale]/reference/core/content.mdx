@@ -18,9 +18,11 @@ The default stylesheet contains:
 ```css
 @import "./base.css";
 @import "./theme.css";
+@import "./variants.css";
+@import "./utilities.css";
 ```
 
-Use `@import '@master/css/base.css';` when a runtime-only page only needs the base layer declaration and normalization rules. Use the default `@master/css` import from app stylesheets that should receive generated Master CSS and native CSS pruning in static mode.
+Use `@import '@master/css/base.css';` when a runtime-only page only needs the base layer declaration and normalization rules. Use `@master/css/theme.css`, `@master/css/variants.css`, or `@master/css/utilities.css` when an integration needs only one preset source facet. Use the default `@master/css` import from app stylesheets that should receive generated Master CSS and native CSS pruning in static mode.
 
 ### `MasterCSS`
 The main body of this package is the class `MasterCSS`, which encapsulates the core business of Master CSS.

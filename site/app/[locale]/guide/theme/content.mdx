@@ -456,7 +456,7 @@ Use [Reusing Styles](/guide/reusing-styles) for abstraction strategy, [component
 ## Default source
 Master CSS ships its complete default CSS entry as `@master/css/index.css`. Read it as source, not as a required project template: copy only the tokens or settings you intentionally want to override.
 
-The default entry imports focused public files. Use `@master/css/theme.css` for theme tokens and managed keyframes, and `@master/css/variants.css` for preset variants when you need a smaller entry.
+The default entry imports focused public files. Use `@master/css/theme.css` for theme tokens and managed keyframes, `@master/css/variants.css` for preset variants, and `@master/css/utilities.css` for preset static utilities when you need a smaller entry.
 
 ### `theme.css`
 
@@ -468,4 +468,10 @@ The default entry imports focused public files. Use `@master/css/theme.css` for 
 
 <ExpandContent>
     <Code lang="css" name="variants.css">{require('../../../../../packages/preset/src/variants.css?raw')}</Code>
+</ExpandContent>
+
+### `utilities.css`
+
+<ExpandContent>
+    <Code lang="css" name="utilities.css">{require('../../../../../packages/preset/src/utilities.css?raw')}</Code>
 </ExpandContent>

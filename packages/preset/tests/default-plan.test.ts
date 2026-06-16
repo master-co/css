@@ -2,6 +2,7 @@ import { fileURLToPath } from 'node:url'
 import { dirname, resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { createCSS } from '@master/css-engine'
+import UtilityType from 'shared/utility-type'
 import { createDefaultPlanFromSourceFile } from '../scripts/generate-default-plan'
 import defaultPlan from '../src/default-plan'
 import functions from '../src/functions'
@@ -27,7 +28,8 @@ describe('@master/css-preset defaultPlan', () => {
         const plan = createDefaultPlanFromSourceFile(resolve(__dirname, '../src/index.css'))
         const utilities = plan.utilities || []
 
-        expect(sourceUtilities).toHaveLength(510)
+        expect(sourceUtilities).toHaveLength(370)
+        expect(sourceUtilities.some((utility) => Number(utility.type) === UtilityType.Static)).toBe(false)
         expect(Object.keys(functions)).toHaveLength(49)
         expect(utilities).toHaveLength(510)
         expect(utilities[0]?.order).toBe(utilities.length - 1)
@@ -46,7 +48,7 @@ describe('@master/css-preset defaultPlan', () => {
         expect(compiledPlan.selectors).toEqual(defaultPlan.selectors)
     }, 20000)
 
-    it('preserves the compiled dynamic registry', () => {
+    it('preserves the compiled default registry', () => {
         const css = createCSS(defaultPlan)
         const text = [
             css.create('inline-flex')?.text,
@@ -62,6 +64,18 @@ describe('@master/css-preset defaultPlan', () => {
         expect(text).toContain('grid-template-columns:repeat(3,minmax(0,1fr))')
         expect(text).toContain('-webkit-line-clamp:3')
         expect(text).not.toContain('null')
+    })
+
+    it('executes CSS-authored static utilities', () => {
+        const css = createCSS(defaultPlan)
+
+        expect(css.create('block')?.text).toBe('.block{display:block}')
+        expect(css.create('bottom')?.text).toBe('.bottom{bottom:0}')
+        expect(css.create('center')?.text).toBe('.center{left:0;right:0;margin-left:auto;margin-right:auto}')
+        expect(css.create('rounded')?.text).toBe('.rounded{border-radius:1e9em}')
+        expect(css.create('font-antialiased')?.text).toBe('.font-antialiased{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}')
+        expect(css.create('sr-only')?.text).toContain('position:absolute')
+        expect(css.create('sr-only')?.text).toContain('clip:rect(0,0,0,0)')
     })
 
     it('keeps compiled utility registry indexes stable and addressable', () => {

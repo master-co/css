@@ -1,0 +1,581 @@
+@utilities {
+    abs {
+        position: absolute;
+    }
+
+    bg-clip-border {
+        background-clip: border-box;
+    }
+
+    bg-clip-content {
+        background-clip: content-box;
+    }
+
+    bg-clip-padding {
+        background-clip: padding-box;
+    }
+
+    bg-clip-text {
+        background-clip: text;
+    }
+
+    bg-origin-border {
+        background-origin: border-box;
+    }
+
+    bg-origin-content {
+        background-origin: content-box;
+    }
+
+    bg-origin-padding {
+        background-origin: padding-box;
+    }
+
+    block {
+        display: block;
+    }
+
+    bottom {
+        bottom: 0;
+    }
+
+    box-border {
+        box-sizing: border-box;
+    }
+
+    box-content {
+        box-sizing: content-box;
+    }
+
+    break-spaces {
+        white-space: break-spaces;
+    }
+
+    break-word {
+        word-break: break-word;
+    }
+
+    capitalize {
+        text-transform: capitalize;
+    }
+
+    center {
+        left: 0;
+        right: 0;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    clip-border {
+        clip-path: border-box;
+    }
+
+    clip-content {
+        clip-path: content-box;
+    }
+
+    clip-fill {
+        clip-path: fill-box;
+    }
+
+    clip-margin {
+        clip-path: margin-box;
+    }
+
+    clip-none {
+        clip-path: none;
+    }
+
+    clip-padding {
+        clip-path: padding-box;
+    }
+
+    clip-stroke {
+        clip-path: stroke-box;
+    }
+
+    clip-view {
+        clip-path: view-box;
+    }
+
+    container {
+        container-type: inline-size;
+    }
+
+    content-around {
+        align-content: space-around;
+    }
+
+    content-baseline {
+        align-content: baseline;
+    }
+
+    content-between {
+        align-content: space-between;
+    }
+
+    content-center {
+        align-content: center;
+    }
+
+    content-end {
+        align-content: end;
+    }
+
+    content-evenly {
+        align-content: space-evenly;
+    }
+
+    content-flex-end {
+        align-content: flex-end;
+    }
+
+    content-flex-start {
+        align-content: flex-start;
+    }
+
+    content-normal {
+        align-content: normal;
+    }
+
+    content-start {
+        align-content: start;
+    }
+
+    content-stretch {
+        align-content: stretch;
+    }
+
+    contents {
+        display: contents;
+    }
+
+    fit {
+        width: fit-content;
+        height: fit-content;
+    }
+
+    fixed {
+        position: fixed;
+    }
+
+    flex {
+        display: flex;
+    }
+
+    flex-col {
+        flex-direction: column;
+    }
+
+    flex-col-reverse {
+        flex-direction: column-reverse;
+    }
+
+    flex-row {
+        flex-direction: row;
+    }
+
+    flex-row-reverse {
+        flex-direction: row-reverse;
+    }
+
+    flow-root {
+        display: flow-root;
+    }
+
+    font-antialiased {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    font-subpixel-antialiased {
+        -webkit-font-smoothing: auto;
+        -moz-osx-font-smoothing: auto;
+    }
+
+    full {
+        width: 100%;
+        height: 100%;
+    }
+
+    gradient-text {
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    grid {
+        display: grid;
+    }
+
+    hidden {
+        display: none;
+    }
+
+    inline {
+        display: inline;
+    }
+
+    inline-block {
+        display: inline-block;
+    }
+
+    inline-flex {
+        display: inline-flex;
+    }
+
+    inline-grid {
+        display: inline-grid;
+    }
+
+    inline-table {
+        display: inline-table;
+    }
+
+    invisible {
+        visibility: hidden;
+    }
+
+    isolate {
+        isolation: isolate;
+    }
+
+    italic {
+        font-style: italic;
+    }
+
+    items-baseline {
+        align-items: baseline;
+    }
+
+    items-center {
+        align-items: center;
+    }
+
+    items-end {
+        align-items: end;
+    }
+
+    items-flex-end {
+        align-items: flex-end;
+    }
+
+    items-flex-start {
+        align-items: flex-start;
+    }
+
+    items-normal {
+        align-items: normal;
+    }
+
+    items-self-end {
+        align-items: self-end;
+    }
+
+    items-self-start {
+        align-items: self-start;
+    }
+
+    items-start {
+        align-items: start;
+    }
+
+    items-stretch {
+        align-items: stretch;
+    }
+
+    justify-around {
+        justify-content: space-around;
+    }
+
+    justify-between {
+        justify-content: space-between;
+    }
+
+    justify-center {
+        justify-content: center;
+    }
+
+    justify-end {
+        justify-content: end;
+    }
+
+    justify-evenly {
+        justify-content: space-evenly;
+    }
+
+    justify-flex-end {
+        justify-content: flex-end;
+    }
+
+    justify-flex-start {
+        justify-content: flex-start;
+    }
+
+    justify-left {
+        justify-content: left;
+    }
+
+    justify-normal {
+        justify-content: normal;
+    }
+
+    justify-right {
+        justify-content: right;
+    }
+
+    justify-start {
+        justify-content: start;
+    }
+
+    justify-stretch {
+        justify-content: stretch;
+    }
+
+    left {
+        left: 0;
+    }
+
+    list-item {
+        display: list-item;
+    }
+
+    lowercase {
+        text-transform: lowercase;
+    }
+
+    max-vh {
+        max-height: 100vh;
+    }
+
+    max-vw {
+        max-width: 100vw;
+    }
+
+    middle {
+        top: 0;
+        bottom: 0;
+        margin-top: auto;
+        margin-bottom: auto;
+    }
+
+    min-vh {
+        min-height: 100vh;
+    }
+
+    min-vw {
+        min-width: 100vw;
+    }
+
+    oblique {
+        font-style: oblique;
+    }
+
+    overflow {
+        overflow: visible;
+    }
+
+    rel {
+        position: relative;
+    }
+
+    right {
+        right: 0;
+    }
+
+    round {
+        border-radius: 50%;
+        aspect-ratio: 1/1;
+    }
+
+    rounded {
+        border-radius: 1e9em;
+    }
+
+    self-anchor-center {
+        align-self: anchor-center;
+    }
+
+    self-auto {
+        align-self: auto;
+    }
+
+    self-baseline {
+        align-self: baseline;
+    }
+
+    self-center {
+        align-self: center;
+    }
+
+    self-end {
+        align-self: end;
+    }
+
+    self-flex-end {
+        align-self: flex-end;
+    }
+
+    self-flex-start {
+        align-self: flex-start;
+    }
+
+    self-normal {
+        align-self: normal;
+    }
+
+    self-self-end {
+        align-self: self-end;
+    }
+
+    self-self-start {
+        align-self: self-start;
+    }
+
+    self-start {
+        align-self: start;
+    }
+
+    self-stretch {
+        align-self: stretch;
+    }
+
+    shape-border {
+        shape-outside: border-box;
+    }
+
+    shape-content {
+        shape-outside: content-box;
+    }
+
+    shape-margin {
+        shape-outside: margin-box;
+    }
+
+    shape-none {
+        shape-outside: none;
+    }
+
+    shape-padding {
+        shape-outside: padding-box;
+    }
+
+    square {
+        aspect-ratio: 1/1;
+    }
+
+    sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0,0,0,0);
+        white-space: nowrap;
+        border-width: 0;
+    }
+
+    static {
+        position: static;
+    }
+
+    sticky {
+        position: sticky;
+    }
+
+    table {
+        display: table;
+    }
+
+    table-caption {
+        display: table-caption;
+    }
+
+    table-cell {
+        display: table-cell;
+    }
+
+    table-column {
+        display: table-column;
+    }
+
+    table-column-group {
+        display: table-column-group;
+    }
+
+    table-footer-group {
+        display: table-footer-group;
+    }
+
+    table-header-group {
+        display: table-header-group;
+    }
+
+    table-row {
+        display: table-row;
+    }
+
+    table-row-group {
+        display: table-row-group;
+    }
+
+    top {
+        top: 0;
+    }
+
+    transform-border {
+        transform-box: border-box;
+    }
+
+    transform-content {
+        transform-box: content-box;
+    }
+
+    transform-fill {
+        transform-box: fill-box;
+    }
+
+    transform-stroke {
+        transform-box: stroke-box;
+    }
+
+    transform-view {
+        transform-box: view-box;
+    }
+
+    untouchable {
+        pointer-events: none;
+    }
+
+    uppercase {
+        text-transform: uppercase;
+    }
+
+    vh {
+        height: 100vh;
+    }
+
+    video {
+        aspect-ratio: 16/9;
+    }
+
+    visible {
+        visibility: visible;
+    }
+
+    vw {
+        width: 100vw;
+    }
+
+    wrap-anywhere {
+        overflow-wrap: anywhere;
+    }
+
+    wrap-break-word {
+        overflow-wrap: break-word;
+    }
+
+    wrap-normal {
+        overflow-wrap: normal;
+    }
+}

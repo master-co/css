@@ -4,9 +4,9 @@
 
 | Package | Entry Points | Responsibility |
 |---|---|---|
-| `@master/css` | `.`, `./index.css`, `./base.css`, `./theme.css` | Public facade over engine API, plan types, default preset plan, and preset stylesheet entries |
+| `@master/css` | `.`, `./index.css`, `./base.css`, `./theme.css`, `./variants.css`, `./utilities.css` | Public facade over engine API, plan types, default preset plan, and preset stylesheet entries |
 | `@master/css-engine` | `.`, `./compiler` | Browser-safe MasterCSSPlan executor, class semantics, rule generation, layers, variable and animation lifecycle |
-| `@master/css-preset` | `.`, `./index.css`, `./base.css`, `./theme.css` | Default preset CSS source and generated default plan |
+| `@master/css-preset` | `.`, `./index.css`, `./base.css`, `./theme.css`, `./variants.css`, `./utilities.css` | Default preset CSS source and generated default plan |
 | `@master/css-lexer` | `.` | Dependency-free source ranges, directive/import scanners, Master class lexical tokens, and latent class candidates |
 | `@master/css-compiler` | `.` | Compile Master CSS stylesheet entries into MasterCSSPlan values, directive metadata, and native CSS |
 | `@master/css-runtime` | `.` | Browser runtime, DOM observation, hydration |

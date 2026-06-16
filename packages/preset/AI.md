@@ -7,7 +7,7 @@
 ## Inputs And Outputs
 
 - Input: preset CSS source files, source utility definitions, default settings, and generated-plan script inputs.
-- Output: `defaultPlan`, `index.css`, `base.css`, `theme.css`, and `variants.css`.
+- Output: `defaultPlan`, `index.css`, `base.css`, `theme.css`, `variants.css`, and `utilities.css`.
 
 ## Boundaries
 
