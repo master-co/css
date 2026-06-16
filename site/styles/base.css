@@ -1,13 +1,21 @@
+@theme light {
+    --color-yellow-line: $color-black/.1;
+}
+
+@theme dark {
+    --color-yellow-line: $color-white/.3;
+}
+
 @components {
-    accent {
-        outline: 0.0625rem var(--color-accent-line) solid;
-        background-color: var(--color-accent);
-        color: var(--color-accent-text);
+    yellow {
+        outline: 0.0625rem var(--color-yellow-line) solid;
+        background-color: var(--color-yellow);
+        color: var(--color-on-yellow);
     }
 
-    touch-accent {
+    touch-yellow {
         &:hover {
-            background-color: var(--color-accent-hover);
+            background-color: var(--color-yellow-hover);
         }
     }
 }

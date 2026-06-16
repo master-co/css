@@ -69,14 +69,34 @@ describe.concurrent('@master/css-preset design token parity', () => {
         })
     })
 
-    test('publishes product role tokens instead of legacy color aliases', () => {
+    test('publishes palette aliases and product role tokens without legacy names', () => {
         expect(findVariable('color-canvas')).toMatchObject({
             namespace: 'color',
             key: 'canvas',
             modes: expect.objectContaining({
                 light: expect.objectContaining({ value: '$color-neutral-0' }),
-                dark: expect.objectContaining({ value: '$color-neutral-100' })
+                dark: expect.objectContaining({ value: '$color-gray-100' })
             })
+        })
+        expect(findVariable('color-blue')).toMatchObject({
+            namespace: 'color',
+            key: 'blue'
+        })
+        expect(findVariable('color-blue-hover')).toMatchObject({
+            namespace: 'color',
+            key: 'blue-hover'
+        })
+        expect(findVariable('color-blue-pressed')).toMatchObject({
+            namespace: 'color',
+            key: 'blue-pressed'
+        })
+        expect(findVariable('color-on-blue')).toMatchObject({
+            namespace: 'color',
+            key: 'on-blue'
+        })
+        expect(findVariable('color-text-blue')).toMatchObject({
+            namespace: 'color-text',
+            key: 'blue'
         })
         expect(findVariable('color-text-muted')).toMatchObject({
             namespace: 'color-text',
@@ -99,8 +119,8 @@ describe.concurrent('@master/css-preset design token parity', () => {
             key: 'card'
         })
 
-        expect(findVariable('color-red')).toBeUndefined()
         expect(findVariable('color-blue-active')).toBeUndefined()
+        expect(findVariable('color-blue-text')).toBeUndefined()
         expect(findVariable('color-text-lightest')).toBeUndefined()
         expect(findVariable('color-line-lightest')).toBeUndefined()
         expect(findVariable('color-grey-50')).toBeUndefined()
@@ -135,6 +155,8 @@ describe.concurrent('@master/css-preset design token parity', () => {
         expect(css.create('r:lg')?.text).toContain('border-radius:var(--radius-lg)')
         expect(css.create('r:card')?.text).toContain('border-radius:var(--radius-card)')
         expect(css.create('fg:muted')?.text).toContain('color:var(--color-text-muted)')
+        expect(css.create('fg:on-blue')?.text).toContain('color:var(--color-on-blue)')
+        expect(css.create('bg:blue-hover')?.text).toContain('background-color:var(--color-blue-hover)')
         expect(css.create('bg:accent')?.text).toContain('background-color:var(--color-accent)')
         expect(css.create('b:subtle')?.text).toContain('border-color:var(--color-line-subtle)')
         expect(css.create('shadow:card')?.text).toContain('box-shadow:var(--shadow-card)')

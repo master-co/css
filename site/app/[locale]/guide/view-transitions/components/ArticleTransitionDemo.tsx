@@ -117,7 +117,7 @@ export default function ArticleTransitionDemo() {
                                     {article.description}
                                 </p>
                                 <button
-                                    className="btn btn-sm accent touch-accent mt:lg align-self:start"
+                                    className="btn btn-sm yellow touch-yellow mt:lg align-self:start"
                                     onClick={() => transition(() => setSelectedId(article.id))}
                                     type="button"
                                 >

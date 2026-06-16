@@ -51,7 +51,7 @@
     }
 
     btn {
-        @compose inline-flex items-center justify-center rel b:1|accent-line bg:accent fg:accent-text font:sm font:medium h:48 mt:md px:lg r:sm text:center w:full;
+        @compose inline-flex items-center justify-center rel b:1|accent-line bg:accent fg:on-accent font:sm font:medium h:48 mt:md px:lg r:sm text:center w:full;
 
         &:hover .btn-arrow-line {
             @compose opacity:1 scale(1);

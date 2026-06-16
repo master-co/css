@@ -22,16 +22,14 @@ When the repeated part is a value, make it a token instead of a class. Tokens ke
 
 ```css name=index.css
 @theme {
-    --color-accent-line: $color-black/.1;
-    --color-accent-hover: $color-blue-60;
-    --color-accent-text: $color-white;
+    --color-yellow-line: $color-black/.1;
     --radius-control: 0.5rem;
     --spacing-control-x: 1rem;
 }
 ```
 
 ```html
-<button class="px:control-x r:control bg:accent fg:accent-text">
+<button class="px:control-x r:control bg:yellow fg:on-yellow">
     Submit
 </button>
 ```
@@ -208,11 +206,11 @@ Avoid hiding every option behind a new component. Give each component class one 
 ```
 
 <Demo className="gap:xl">
-    <button className="btn btn-xs accent touch-accent">Submit</button>
-    <button className="btn btn-sm accent touch-accent">Submit</button>
-    <button className="btn btn-md accent touch-accent">Submit</button>
-    <button className="btn btn-lg accent touch-accent">Submit</button>
-    <button className="btn btn-xl accent touch-accent">Submit</button>
+    <button className="btn btn-xs yellow touch-yellow">Submit</button>
+    <button className="btn btn-sm yellow touch-yellow">Submit</button>
+    <button className="btn btn-md yellow touch-yellow">Submit</button>
+    <button className="btn btn-lg yellow touch-yellow">Submit</button>
+    <button className="btn btn-xl yellow touch-yellow">Submit</button>
 </Demo>
 
 Round the same button with a separate class instead of duplicating every size:
@@ -223,7 +221,7 @@ Round the same button with a separate class instead of duplicating every size:
 ```
 
 <Demo>
-    <button className="btn btn-md rounded accent touch-accent">Submit</button>
+    <button className="btn btn-md rounded yellow touch-yellow">Submit</button>
 </Demo>
 
 If one class tries to own size, color, shape, layout, and interaction variants, overrides become fragile. Smaller classes compose better with utilities and rarely need `!important`.
@@ -379,39 +377,35 @@ Split component definitions only when it helps ownership. Local CSS imports from
 
 ```css name=styles/base.css
 @theme light {
-    --color-accent-line: $color-black/.1;
-    --color-accent-hover: $color-blue-60;
-    --color-accent-text: $color-white;
+    --color-yellow-line: $color-black/.1;
 }
 
 @theme dark {
-    --color-accent-line: $color-white/.3;
-    --color-accent-hover: $color-blue-50;
-    --color-accent-text: $color-white;
+    --color-yellow-line: $color-white/.3;
 }
 
 @components {
-    accent {
-        outline: 0.0625rem var(--color-accent-line) solid;
-        background-color: var(--color-accent);
-        color: var(--color-accent-text);
+    yellow {
+        outline: 0.0625rem var(--color-yellow-line) solid;
+        background-color: var(--color-yellow);
+        color: var(--color-on-yellow);
     }
 
-    touch-accent {
+    touch-yellow {
         &:hover {
-            background-color: var(--color-accent-hover);
+            background-color: var(--color-yellow-hover);
         }
     }
 }
 ```
 
 <Demo className="gap:xl">
-    <button className="btn btn-md accent touch-accent">Submit</button>
+    <button className="btn btn-md yellow touch-yellow">Submit</button>
 </Demo>
 
 ```html
-<!-- @MARK accent touch-accent -->
-<button class="btn btn-md accent touch-accent">Submit</button>
+<!-- @MARK yellow touch-yellow -->
+<button class="btn btn-md yellow touch-yellow">Submit</button>
 ```
 
 `@theme`, `@settings`, top-level custom directives, managed definition directives, and native style rules with `@compose` or `@variant` are consumed by the Master CSS compiler. Ordinary CSS outside those managed targets, including top-level native `@keyframes`, remains native CSS in your app stylesheet pipeline.

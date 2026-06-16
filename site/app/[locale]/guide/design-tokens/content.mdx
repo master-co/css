@@ -255,7 +255,7 @@ Create a project token when a value is reused, named in design specs, shared acr
     --spacing-card: 1.5rem;
     --radius-card: 0.75rem;
     --color-accent: $color-blue-60;
-    --color-accent-text: $color-white;
+    --color-on-accent: $color-white;
 }
 
 @theme light {
@@ -270,7 +270,7 @@ Create a project token when a value is reused, named in design specs, shared acr
 Use the new tokens from markup:
 
 ```html
-<article class="p:card r:card bg:accent fg:accent-text shadow:popover">
+<article class="p:card r:card bg:accent fg:on-accent shadow:popover">
     ...
 </article>
 ```

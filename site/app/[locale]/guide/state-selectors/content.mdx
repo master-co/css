@@ -212,11 +212,11 @@ Use interaction pseudo-classes to give controls feedback as people hover, press,
 
 (click) Try clicking the button to see states change
 <Demo>
-    <button className="bg:accent bg:accent-hover:hover bg:accent-active:active px:md h:10x font:sm font:medium fg:white r:sm inline-flex align-items:center">Submit</button>
+    <button className="bg:accent bg:accent-hover:hover bg:accent-pressed:active px:md h:10x font:sm font:medium fg:on-accent r:sm inline-flex align-items:center">Submit</button>
 </Demo>
 ```html
 <!-- @MARK :hover --><!-- @MARK :active -->
-<button class="bg:accent bg:accent-hover:hover bg:accent-active:active">Submit</button>
+<button class="bg:accent fg:on-accent bg:accent-hover:hover bg:accent-pressed:active">Submit</button>
 ```
 
 Use `:focus-visible` for keyboard focus rings when you want to avoid showing the focus style after every pointer click.

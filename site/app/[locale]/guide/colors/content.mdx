@@ -1,5 +1,5 @@
 ## Using colors [sr-only]
-Master CSS provides a P3-compatible color palette, semantic product roles, and mode-aware variables. Use role tokens such as `bg:canvas`, `bg:surface`, `fg:strong`, `fg:muted`, and `b:subtle` for product surfaces; use palette steps when a design intentionally needs a swatch, illustration, or one-off brand color.
+Master CSS provides a P3-compatible color palette, hue aliases, semantic product roles, and mode-aware variables. Use palette tokens such as `bg:blue-60` for direct swatches, hue aliases such as `bg:blue` for common color choices, `fg:on-blue` for text on colored backgrounds, and role tokens such as `bg:surface` or `fg:muted` for product UI.
 
 ### Default color palette [sr-only]
 <ColorPalette />
@@ -45,6 +45,71 @@ Use conditional color classes when a one-off interaction genuinely differs by mo
 
 ---
 
+## Primitive colors
+<ExpandContent>
+| Normal | Hover | Pressed | Text on color |
+|--------|-------|---------|---------------|
+| <Bg className="bg:stone" />`stone` | <Bg className="bg:stone-hover" />`stone-hover` | <Bg className="bg:stone-pressed" />`stone-pressed` | <Aa className="fg:on-stone" />`on-stone` |
+| <Bg className="bg:gray" />`gray` | <Bg className="bg:gray-hover" />`gray-hover` | <Bg className="bg:gray-pressed" />`gray-pressed` | <Aa className="fg:on-gray" />`on-gray` |
+| <Bg className="bg:neutral" />`neutral` | <Bg className="bg:neutral-hover" />`neutral-hover` | <Bg className="bg:neutral-pressed" />`neutral-pressed` | <Aa className="fg:on-neutral" />`on-neutral` |
+| <Bg className="bg:slate" />`slate` | <Bg className="bg:slate-hover" />`slate-hover` | <Bg className="bg:slate-pressed" />`slate-pressed` | <Aa className="fg:on-slate" />`on-slate` |
+| <Bg className="bg:brown" />`brown` | <Bg className="bg:brown-hover" />`brown-hover` | <Bg className="bg:brown-pressed" />`brown-pressed` | <Aa className="fg:on-brown" />`on-brown` |
+| <Bg className="bg:orange" />`orange` | <Bg className="bg:orange-hover" />`orange-hover` | <Bg className="bg:orange-pressed" />`orange-pressed` | <Aa className="fg:on-orange" />`on-orange` |
+| <Bg className="bg:amber" />`amber` | <Bg className="bg:amber-hover" />`amber-hover` | <Bg className="bg:amber-pressed" />`amber-pressed` | <Aa className="fg:on-amber" />`on-amber` |
+| <Bg className="bg:yellow" />`yellow` | <Bg className="bg:yellow-hover" />`yellow-hover` | <Bg className="bg:yellow-pressed" />`yellow-pressed` | <Aa className="fg:on-yellow" />`on-yellow` |
+| <Bg className="bg:lime" />`lime` | <Bg className="bg:lime-hover" />`lime-hover` | <Bg className="bg:lime-pressed" />`lime-pressed` | <Aa className="fg:on-lime" />`on-lime` |
+| <Bg className="bg:green" />`green` | <Bg className="bg:green-hover" />`green-hover` | <Bg className="bg:green-pressed" />`green-pressed` | <Aa className="fg:on-green" />`on-green` |
+| <Bg className="bg:beryl" />`beryl` | <Bg className="bg:beryl-hover" />`beryl-hover` | <Bg className="bg:beryl-pressed" />`beryl-pressed` | <Aa className="fg:on-beryl" />`on-beryl` |
+| <Bg className="bg:teal" />`teal` | <Bg className="bg:teal-hover" />`teal-hover` | <Bg className="bg:teal-pressed" />`teal-pressed` | <Aa className="fg:on-teal" />`on-teal` |
+| <Bg className="bg:cyan" />`cyan` | <Bg className="bg:cyan-hover" />`cyan-hover` | <Bg className="bg:cyan-pressed" />`cyan-pressed` | <Aa className="fg:on-cyan" />`on-cyan` |
+| <Bg className="bg:sky" />`sky` | <Bg className="bg:sky-hover" />`sky-hover` | <Bg className="bg:sky-pressed" />`sky-pressed` | <Aa className="fg:on-sky" />`on-sky` |
+| <Bg className="bg:blue" />`blue` | <Bg className="bg:blue-hover" />`blue-hover` | <Bg className="bg:blue-pressed" />`blue-pressed` | <Aa className="fg:on-blue" />`on-blue` |
+| <Bg className="bg:indigo" />`indigo` | <Bg className="bg:indigo-hover" />`indigo-hover` | <Bg className="bg:indigo-pressed" />`indigo-pressed` | <Aa className="fg:on-indigo" />`on-indigo` |
+| <Bg className="bg:violet" />`violet` | <Bg className="bg:violet-hover" />`violet-hover` | <Bg className="bg:violet-pressed" />`violet-pressed` | <Aa className="fg:on-violet" />`on-violet` |
+| <Bg className="bg:purple" />`purple` | <Bg className="bg:purple-hover" />`purple-hover` | <Bg className="bg:purple-pressed" />`purple-pressed` | <Aa className="fg:on-purple" />`on-purple` |
+| <Bg className="bg:fuchsia" />`fuchsia` | <Bg className="bg:fuchsia-hover" />`fuchsia-hover` | <Bg className="bg:fuchsia-pressed" />`fuchsia-pressed` | <Aa className="fg:on-fuchsia" />`on-fuchsia` |
+| <Bg className="bg:pink" />`pink` | <Bg className="bg:pink-hover" />`pink-hover` | <Bg className="bg:pink-pressed" />`pink-pressed` | <Aa className="fg:on-pink" />`on-pink` |
+| <Bg className="bg:crimson" />`crimson` | <Bg className="bg:crimson-hover" />`crimson-hover` | <Bg className="bg:crimson-pressed" />`crimson-pressed` | <Aa className="fg:on-crimson" />`on-crimson` |
+| <Bg className="bg:red" />`red` | <Bg className="bg:red-hover" />`red-hover` | <Bg className="bg:red-pressed" />`red-pressed` | <Aa className="fg:on-red" />`on-red` |
+</ExpandContent>
+
+By default, theme modes [drive](/guide/theme#modes) drive aliases for light and dark color choices.
+<Demo $py={0} $px={0}>
+    <DemoLight>
+        <div className="bg:yellow fg:on-yellow aspect:2/1 size:full|12x r:sm grid place-content:center font:heavy">Aa</div>
+    </DemoLight>
+    <DemoDark>
+        <div className="bg:yellow fg:on-yellow aspect:2/1 size:full|12x r:sm grid place-content:center font:heavy">Aa</div>
+    </DemoDark>
+</Demo>
+```html
+<div class="light">
+    <!-- @MARK bg:yellow --><!-- @MARK fg:on-yellow -->
+    <div class="bg:yellow fg:on-yellow"></div>
+</div>
+<div class="dark">
+    <!-- @MARK bg:yellow --><!-- @MARK fg:on-yellow -->
+    <div class="bg:yellow fg:on-yellow"></div>
+</div>
+```
+Add a project hue alias when your product has a named brand decision.
+```css name=index.css
+@theme {
+    --color-brand: #4f46e5; /* [!code ++] */
+    --color-brand-hover: #4338ca; /* [!code ++] */
+    --color-brand-pressed: #3730a3; /* [!code ++] */
+    --color-brand-surface: #eef2ff; /* [!code ++] */
+    --color-on-brand: #ffffff; /* [!code ++] */
+}
+```
+Apply the custom color:
+```html
+<!-- @MARK bg:brand --><!-- @MARK fg:on-brand -->
+<button class="bg:brand fg:on-brand"></button>
+```
+
+---
+
 ## Color roles
 | Role | Example | Use |
 |------|---------|-----|
@@ -55,38 +120,7 @@ Use conditional color classes when a one-off interaction genuinely differs by mo
 | `surface-overlay` | <Bg className="bg:surface-overlay" /> | Popovers, dialogs, and floating layers |
 | `surface-inverse` | <Bg className="bg:surface-inverse" /> | High-contrast inverted surfaces |
 
-By default, theme modes [drive](/guide/theme#modes) these role variables for light and dark surfaces.
-<Demo $py={0} $px={0}>
-    <DemoLight>
-        <div className="bg:surface-raised b:1|subtle aspect:2/1 size:full|12x r:sm shadow:card"></div>
-    </DemoLight>
-    <DemoDark>
-        <div className="bg:surface-raised b:1|subtle aspect:2/1 size:full|12x r:sm shadow:card"></div>
-    </DemoDark>
-</Demo>
-```html
-<div class="light">
-    <!-- @MARK bg:surface-raised --><!-- @MARK b:1|subtle -->
-    <div class="bg:surface-raised b:1|subtle"></div>
-</div>
-<div class="dark">
-    <!-- @MARK bg:surface-raised --><!-- @MARK b:1|subtle -->
-    <div class="bg:surface-raised b:1|subtle"></div>
-</div>
-```
-Add a project color role when your product has a named brand decision.
-```css name=index.css
-@theme {
-    --color-brand: #4f46e5; /* [!code ++] */
-    --color-brand-surface: #eef2ff; /* [!code ++] */
-    --color-brand-text: #ffffff; /* [!code ++] */
-}
-```
-Apply the custom color:
-```html
-<!-- @MARK bg:brand --><!-- @MARK fg:brand-text -->
-<button class="bg:brand fg:brand-text"></button>
-```
+Semantic roles are still useful for product UI. Use them when the color represents a role instead of a specific hue.
 
 ---
 
@@ -112,20 +146,20 @@ Apply the custom color:
 By default, theme modes [drive](/guide/theme#modes) text variables for light and dark foreground contrast.
 <Demo $py={0} $px={0}>
     <DemoLight>
-        <div className="fg:accent font:heavy font:9xl">M</div>
+        <div className="fg:yellow font:heavy font:9xl">M</div>
     </DemoLight>
     <DemoDark>
-        <div className="fg:accent font:heavy font:9xl">M</div>
+        <div className="fg:yellow font:heavy font:9xl">M</div>
     </DemoDark>
 </Demo>
 ```html
 <div class="light">
-    <!-- @MARK fg:accent -->
-    <span class="fg:accent">M</span>
+    <!-- @MARK fg:yellow -->
+    <span class="fg:yellow">M</span>
 </div>
 <div class="dark">
-    <!-- @MARK fg:accent -->
-    <span class="fg:accent">M</span>
+    <!-- @MARK fg:yellow -->
+    <span class="fg:yellow">M</span>
 </div>
 ```
 See the [color](/reference/color#use-custom-text-colors) reference for more details on how to add custom text colors.

@@ -10,7 +10,7 @@ In Master CSS, that vocabulary usually lives in the project CSS entry: `@theme` 
 
 @theme {
     --color-accent: #4f46e5;
-    --color-accent-text: #ffffff;
+    --color-on-accent: #ffffff;
     --spacing-card: 1.5rem;
     --radius-card: 1rem;
     --breakpoint-md: 48rem;
@@ -33,7 +33,7 @@ In Master CSS, that vocabulary usually lives in the project CSS entry: `@theme` 
 
 ```html
 <section class="bg:surface fg:strong p:card r:card shadow:card grid-cols:2@md">
-    <button class="bg:accent fg:accent-text px:md py:xs r:md bg:accent-hover:interactive">Save</button>
+    <button class="bg:accent fg:on-accent px:md py:xs r:md bg:accent-hover:interactive">Save</button>
 </section>
 ```
 
@@ -211,7 +211,7 @@ Mode-specific `@theme` blocks keep markup semantic while values change by mode.
     --color-surface: #ffffff;
     --color-text-strong: #111827;
     --color-accent: #4f46e5;
-    --color-accent-text: #ffffff;
+    --color-on-accent: #ffffff;
     --shadow-card: 0 16px 40px rgb(15 23 42 / .12);
 }
 
@@ -219,7 +219,7 @@ Mode-specific `@theme` blocks keep markup semantic while values change by mode.
     --color-surface: #111827;
     --color-text-strong: #f9fafb;
     --color-accent: #818cf8;
-    --color-accent-text: #111827;
+    --color-on-accent: #111827;
     --shadow-card: 0 0 0 1px rgb(255 255 255 / .08), 0 16px 40px rgb(0 0 0 / .36);
 }
 
@@ -230,7 +230,7 @@ Mode-specific `@theme` blocks keep markup semantic while values change by mode.
 
 ```html
 <section class="bg:surface fg:strong">
-    <button class="bg:accent fg:accent-text">Save</button>
+    <button class="bg:accent fg:on-accent">Save</button>
 </section>
 ```
 
@@ -436,7 +436,7 @@ The theme should describe shared values and named conditions. Reusable UI patter
     btn {
         @compose inline-flex ai:center jc:center gap:xs px:md py:xs r:md font:sm font:medium;
         background: var(--color-accent);
-        color: var(--color-accent-text);
+        color: var(--color-on-accent);
 
         &:disabled {
             @compose opacity:.55 pointer-events:none;
