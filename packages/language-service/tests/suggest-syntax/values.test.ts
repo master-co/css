@@ -127,11 +127,19 @@ describe('sorting', () => {
             'yellow-80',
             'yellow-90',
             'yellow-95',
-            'yellow-100',
-            'yellow',
-            'yellow-active',
-            'yellow-text'
+            'yellow-100'
         ])
+    })
+
+    test('color roles', () => {
+        expect(hint('fg:')?.map(({ label }) => label)).toEqual(expect.arrayContaining([
+            'accent',
+            'danger',
+            'link',
+            'muted',
+            'strong',
+            'text'
+        ]))
     })
 })
 

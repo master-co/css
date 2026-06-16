@@ -22,7 +22,6 @@
         "type-check": "tsc --noEmit"
     },
     "dependencies": {
-        "@master/colors": "^3.0.0",
         "@master/css-compiler": "workspace:^",
         "@monaco-editor/react": "^4.7.0",
         "@next/mdx": "16.2.4",

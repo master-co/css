@@ -1,11 +1,11 @@
 const syntaxes = [
     ['font-weight:`weight`'],
     'font-weight:normal',
-    'font:lighter',
+    'font:muted',
     'font:bolder',
     'font:thin',
     'font:extralight',
-    'font:light',
+    'font:line',
     'font:regular',
     'font:medium',
     'font:semibold',

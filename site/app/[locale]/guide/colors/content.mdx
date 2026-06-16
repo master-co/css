@@ -1,5 +1,5 @@
 ## Using colors [sr-only]
-Master CSS provides a P3-compatible color palette, semantic color roles, and mode-aware variables. Use role tokens such as `bg:base`, `bg:surface`, `fg:strong`, and `fg:neutral` for product surfaces; use palette tokens when the design intentionally needs a brand, status, or swatch color.
+Master CSS provides a P3-compatible color palette, semantic product roles, and mode-aware variables. Use role tokens such as `bg:canvas`, `bg:surface`, `fg:strong`, `fg:muted`, and `b:subtle` for product surfaces; use palette steps when a design intentionally needs a swatch, illustration, or one-off brand color.
 
 ### Default color palette [sr-only]
 <ColorPalette />
@@ -11,18 +11,18 @@ Each preset color family ranges from `0`, `5`, `10`, and then by tens through `1
 ```
 
 ### Adapting default colors
-You can adapt the default color palette to your brand's primary color by defining color variables in the project CSS entry.
+You can adapt the default color palette to your brand color by defining color variables in the project CSS entry.
 ```css name=index.css
 @theme {
-    --color-primary: #4f46e5; /* [!code highlight] */
-    --color-primary-10: #eef2ff; /* [!code highlight] */
-    --color-primary-60: #4f46e5; /* [!code highlight] */
+    --color-brand: #4f46e5; /* [!code highlight] */
+    --color-brand-10: #eef2ff; /* [!code highlight] */
+    --color-brand-60: #4f46e5; /* [!code highlight] */
 }
 ```
 Apply them using the color-related syntax:
 ```html
-<!-- @MARK bg:primary-10 --><!-- @MARK fg:primary-60 -->
-<div class="bg:primary-10 fg:primary-60">…</div>
+<!-- @MARK bg:brand-10 --><!-- @MARK fg:brand-60 -->
+<div class="bg:brand-10 fg:brand-60">…</div>
 ```
 See [theme color tokens](/guide/theme#theme-tokens) for more details on how to add custom colors.
 
@@ -38,77 +38,54 @@ Use [variable modes](/guide/theme#modes) to define color roles for light and dar
 (o) The theme owns the mode-specific role.
 
 ```html
-<div class="fg:neutral">...</div>
+<div class="fg:text">...</div>
 ```
 
 Use conditional color classes when a one-off interaction genuinely differs by mode. For shared text, surface, line, brand, and status color, prefer a named token that can resolve differently per mode.
 
 ---
 
-## Primitive colors
-<ExpandContent>
-| Normal                                             | Active                                           | Text on Color                                         |
-|----------------------------------------------------|--------------------------------------------------|-------------------------------------------------------|
-| <Bg className="bg:stone" />`stone`                  | <Bg className="bg:stone-active" />`stone-active`    | <Aa className="fg:stone-text" />`stone-text`            |
-| <Bg className="bg:gray" />`gray`                  | <Bg className="bg:gray-active" />`gray-active`    | <Aa className="fg:gray-text" />`gray-text`            |
-| <Bg className="bg:grey" />`grey`                | <Bg className="bg:grey-active" />`grey-active`  | <Aa className="fg:grey-text" />`grey-text`          |
-| <Bg className="bg:slate" />`slate`                | <Bg className="bg:slate-active" />`slate-active`  | <Aa className="fg:slate-text" />`slate-text`          |
-| <Bg className="bg:brown" />`brown`                | <Bg className="bg:brown-active" />`brown-active`  | <Aa className="fg:brown-text" />`brown-text`          |
-| <Bg className="bg:orange" />`orange`              | <Bg className="bg:orange-active" />`orange-active`| <Aa className="fg:orange-text" />`orange-text`        |
-| <Bg className="bg:amber" />`amber`                | <Bg className="bg:amber-active" />`amber-active`  | <Aa className="fg:amber-text" />`amber-text`          |
-| <Bg className="bg:yellow" />`yellow`              | <Bg className="bg:yellow-active" />`yellow-active`| <Aa className="fg:yellow-text" />`yellow-text`        |
-| <Bg className="bg:lime" />`lime`                  | <Bg className="bg:lime-active" />`lime-active`    | <Aa className="fg:lime-text" />`lime-text`            |
-| <Bg className="bg:green" />`green`                | <Bg className="bg:green-active" />`green-active`  | <Aa className="fg:green-text" />`green-text`          |
-| <Bg className="bg:beryl" />`beryl`                | <Bg className="bg:beryl-active" />`beryl-active`  | <Aa className="fg:beryl-text" />`beryl-text`          |
-| <Bg className="bg:teal" />`teal`                  | <Bg className="bg:teal-active" />`teal-active`    | <Aa className="fg:teal-text" />`teal-text`            |
-| <Bg className="bg:cyan" />`cyan`                  | <Bg className="bg:cyan-active" />`cyan-active`    | <Aa className="fg:cyan-text" />`cyan-text`            |
-| <Bg className="bg:sky" />`sky`                    | <Bg className="bg:sky-active" />`sky-active`      | <Aa className="fg:sky-text" />`sky-text`              |
-| <Bg className="bg:blue" />`blue`                  | <Bg className="bg:blue-active" />`blue-active`    | <Aa className="fg:blue-text" />`blue-text`            |
-| <Bg className="bg:indigo" />`indigo`              | <Bg className="bg:indigo-active" />`indigo-active`| <Aa className="fg:indigo-text" />`indigo-text`        |
-| <Bg className="bg:violet" />`violet`              | <Bg className="bg:violet-active" />`violet-active`| <Aa className="fg:violet-text" />`violet-text`        |
-| <Bg className="bg:purple" />`purple`              | <Bg className="bg:purple-active" />`purple-active`| <Aa className="fg:purple-text" />`purple-text`        |
-| <Bg className="bg:fuchsia" />`fuchsia`            | <Bg className="bg:fuchsia-active" />`fuchsia-active`| <Aa className="fg:fuchsia-text" />`fuchsia-text`      |
-| <Bg className="bg:pink" />`pink`                  | <Bg className="bg:pink-active" />`pink-active`    | <Aa className="fg:pink-text" />`pink-text`            |
-| <Bg className="bg:crimson" />`crimson`            | <Bg className="bg:crimson-active" />`crimson-active`| <Aa className="fg:crimson-text" />`crimson-text`      |
-| <Bg className="bg:red" />`red`                    | <Bg className="bg:red-active" />`red-active`      | <Aa className="fg:red-text" />`red-text`              |
-</ExpandContent>
+## Color roles
+| Role | Example | Use |
+|------|---------|-----|
+| `canvas` | <Bg className="bg:canvas" /> | Page and application background |
+| `surface` | <Bg className="bg:surface" /> | Cards, panels, controls, and plain containers |
+| `surface-muted` | <Bg className="bg:surface-muted" /> | Recessed or secondary surfaces |
+| `surface-raised` | <Bg className="bg:surface-raised" /> | Elevated cards and sticky regions |
+| `surface-overlay` | <Bg className="bg:surface-overlay" /> | Popovers, dialogs, and floating layers |
+| `surface-inverse` | <Bg className="bg:surface-inverse" /> | High-contrast inverted surfaces |
 
-| Token                                             | Keywords                                                                  |
-|---------------------------------------------------|---------------------------------------------------------------------------|
-| <Bg className="bg:white" />`white`              |                                                                           |
-| <Bg className="bg:black" />`black`              |                                                                           |
-| <Bg className="bg:base" />`base`                  | background for page, modal                                                |
-| <Bg className="bg:invert" />`invert`              | inverted color of the background                                          |
-
-By default, theme modes [drive](/guide/theme#modes) base color variables for light and dark surfaces.
+By default, theme modes [drive](/guide/theme#modes) these role variables for light and dark surfaces.
 <Demo $py={0} $px={0}>
     <DemoLight>
-        <div className="bg:yellow aspect:2/1 size:full|12x r:sm"></div>
+        <div className="bg:surface-raised b:1|subtle aspect:2/1 size:full|12x r:sm shadow:card"></div>
     </DemoLight>
     <DemoDark>
-        <div className="bg:yellow aspect:2/1 size:full|12x r:sm"></div>
+        <div className="bg:surface-raised b:1|subtle aspect:2/1 size:full|12x r:sm shadow:card"></div>
     </DemoDark>
 </Demo>
 ```html
 <div class="light">
-    <!-- @MARK yellow -->
-    <div class="bg:yellow"></div>
+    <!-- @MARK bg:surface-raised --><!-- @MARK b:1|subtle -->
+    <div class="bg:surface-raised b:1|subtle"></div>
 </div>
 <div class="dark">
-    <!-- @MARK yellow -->
-    <div class="bg:yellow"></div>
+    <!-- @MARK bg:surface-raised --><!-- @MARK b:1|subtle -->
+    <div class="bg:surface-raised b:1|subtle"></div>
 </div>
 ```
-Add a primitive color to the base variables group.
+Add a project color role when your product has a named brand decision.
 ```css name=index.css
 @theme {
-    --color-primary: #000; /* [!code ++] */
+    --color-brand: #4f46e5; /* [!code ++] */
+    --color-brand-surface: #eef2ff; /* [!code ++] */
+    --color-brand-text: #ffffff; /* [!code ++] */
 }
 ```
 Apply the custom color:
 ```html
-<!-- @MARK primary -->
-<p class="bg:primary"></p>
+<!-- @MARK bg:brand --><!-- @MARK fg:brand-text -->
+<button class="bg:brand fg:brand-text"></button>
 ```
 
 ---
@@ -117,53 +94,38 @@ Apply the custom color:
 <ExpandContent>
 | Token                                             | Descriptions                                                              |
 |---------------------------------------------------|---------------------------------------------------------------------------|
-| <Aa className="fg:strong" />`text-strong`         | page titles, subheadings, emphasized fields                               |
-| <Aa className="fg:neutral" />`text-neutral`       | body text, descriptions, and general content                              |
-| <Aa className="fg:light" />`text-light`           | light color, icons                                                        |
-| <Aa className="fg:lighter" />`text-lighter`       | lighter color, icons                                                      |
-| <Aa className="fg:lightest" />`text-lightest`     | dim color, placeholder, disabled text                                     |
-| <Aa className="fg:invert" />`text-invert`         | inverted color of the foreground                                          |
-| <Aa className="fg:stone" />`text-stone`           | earthy, soft contrast, organic tone                                       |
-| <Aa className="fg:gray" />`text-gray`             | neutral, subtle, muted                                                    |
-| <Aa className="fg:grey" />`text-grey`             | neutral, subtle, muted                                                    |
-| <Aa className="fg:slate" />`text-slate`           | cool, calm, sophisticated                                                 |
-| <Aa className="fg:brown" />`text-brown`           | earthy, warm, rustic                                                      |
-| <Aa className="fg:orange" />`text-orange`         | vibrant, energetic, lively                                                |
-| <Aa className="fg:amber" />`text-amber`           | warm, glowing, radiant                                                    |
-| <Aa className="fg:yellow" />`text-yellow`         | cheerful, sunny, bright                                                   |
-| <Aa className="fg:lime" />`text-lime`             | fresh, lively, zesty                                                      |
-| <Aa className="fg:green" />`text-green`           | nature, growth, harmony                                                   |
-| <Aa className="fg:beryl" />`text-beryl`           | calm, soothing, tranquil                                                  |
-| <Aa className="fg:teal" />`text-teal`             | sophisticated, elegant, refined                                           |
-| <Aa className="fg:cyan" />`text-cyan`             | modern, futuristic, technological                                         |
-| <Aa className="fg:sky" />`text-sky`               | peaceful, serene, tranquil                                                |
-| <Aa className="fg:blue" />`text-blue`             | calm, trustworthy, reliable                                               |
-| <Aa className="fg:indigo" />`text-indigo`         | mysterious, deep, spiritual                                               |
-| <Aa className="fg:violet" />`text-violet`         | creative, imaginative, magical                                            |
-| <Aa className="fg:purple" />`text-purple`         | royal, luxurious, majestic                                                |
-| <Aa className="fg:fuchsia" />`text-fuchsia`       | vibrant, bold, playful                                                    |
-| <Aa className="fg:pink" />`text-pink`             | feminine, romantic, delicate                                              |
-| <Aa className="fg:crimson" />`text-crimson`       | passionate, intense, powerful                                             |
-| <Aa className="fg:red" />`text-red`               | bold, energetic, attention-grabbing                                       |
+| <Aa className="fg:strong" />`strong` | Titles, headings, and emphasized fields |
+| <Aa className="fg:text" />`text` | Body text and default content |
+| <Aa className="fg:muted" />`muted` | Secondary labels, descriptions, and icons |
+| <Aa className="fg:subtle" />`subtle` | Tertiary text and low-emphasis metadata |
+| <Aa className="fg:disabled" />`disabled` | Disabled text and unavailable controls |
+| <Aa className="fg:placeholder" />`placeholder` | Input placeholders |
+| <Aa className="fg:inverse" />`inverse` | Text on inverse surfaces |
+| <Aa className="fg:link" />`link` | Links |
+| <Aa className="fg:accent" />`accent` | Accent text |
+| <Aa className="fg:success" />`success` | Success messages |
+| <Aa className="fg:warning" />`warning` | Warnings |
+| <Aa className="fg:danger" />`danger` | Errors and destructive actions |
+| <Aa className="fg:info" />`info` | Informational messages |
 </ExpandContent>
 
 By default, theme modes [drive](/guide/theme#modes) text variables for light and dark foreground contrast.
 <Demo $py={0} $px={0}>
     <DemoLight>
-        <div className="fg:yellow font:heavy font:9xl">M</div>
+        <div className="fg:accent font:heavy font:9xl">M</div>
     </DemoLight>
     <DemoDark>
-        <div className="fg:yellow font:heavy font:9xl">M</div>
+        <div className="fg:accent font:heavy font:9xl">M</div>
     </DemoDark>
 </Demo>
 ```html
 <div class="light">
-    <!-- @MARK yellow -->
-    <span class="fg:yellow">M</span>
+    <!-- @MARK fg:accent -->
+    <span class="fg:accent">M</span>
 </div>
 <div class="dark">
-    <!-- @MARK yellow -->
-    <span class="fg:yellow">M</span>
+    <!-- @MARK fg:accent -->
+    <span class="fg:accent">M</span>
 </div>
 ```
 See the [color](/reference/color#use-custom-text-colors) reference for more details on how to add custom text colors.
@@ -173,29 +135,31 @@ See the [color](/reference/color#use-custom-text-colors) reference for more deta
 ## Line colors
 | Token                                                   | Descriptions                                                              |
 |---------------------------------------------------------|---------------------------------------------------------------------------|
-| <Bg className="outline:neutral" />`line-neutral`       |                                                                           |
-| <Bg className="outline:light" />`line-light`           | alpha, divider                                                                   |
-| <Bg className="outline:lighter" />`line-lighter`       | alpha, dotted, td                                                                |
-| <Bg className="outline:lightest" />`line-lightest`     | alpha, layout, navbar, sidebar                                                   |
+| <Bg className="outline:line" />`line` | Default borders and separators |
+| <Bg className="outline:strong" />`strong` | High-contrast borders |
+| <Bg className="outline:muted" />`muted` | Quiet borders inside dense UI |
+| <Bg className="outline:subtle" />`subtle` | Dividers, layout chrome, and soft outlines |
+| <Bg className="outline:accent" />`accent` | Accent borders |
+| <Bg className="outline:danger" />`danger` | Error borders |
 
 By default, theme modes [drive](/guide/theme#modes) line variables for light and dark separators.
 
 <Demo $py={0} $px={0}>
     <DemoLight>
-        <div className="b:3x|neutral size:24x"></div>
+        <div className="b:3x|line size:24x"></div>
     </DemoLight>
     <DemoDark>
-        <div className="b:3x|neutral size:24x"></div>
+        <div className="b:3x|line size:24x"></div>
     </DemoDark>
 </Demo>
 ```html
 <div class="light">
-    <!-- @MARK b:3x|neutral -->
-    <div class="b:3x|neutral size:24x"></div>
+    <!-- @MARK b:3x|line -->
+    <div class="b:3x|line size:24x"></div>
 </div>
 <div class="dark">
-    <!-- @MARK b:3x|neutral -->
-    <div class="b:3x|neutral size:24x"></div>
+    <!-- @MARK b:3x|line -->
+    <div class="b:3x|line size:24x"></div>
 </div>
 ```
 See the [border color](/reference/border-color#use-custom-border-colors) reference for more details on how to add custom border colors.

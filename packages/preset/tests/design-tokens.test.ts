@@ -34,6 +34,20 @@ describe.concurrent('@master/css-preset design token parity', () => {
             value: '1rem',
             numeric: { value: 1, unit: 'rem' }
         })
+        expect(findVariable('spacing-card')).toMatchObject({
+            namespace: 'spacing',
+            key: 'card',
+            type: 'number',
+            value: '1.5rem',
+            numeric: { value: 1.5, unit: 'rem' }
+        })
+        expect(findVariable('radius-card')).toMatchObject({
+            namespace: 'radius',
+            key: 'card',
+            type: 'number',
+            value: '.75rem',
+            numeric: { value: 0.75, unit: 'rem' }
+        })
         expect(findVariable('breakpoint-sm')).toMatchObject({
             namespace: 'breakpoint',
             key: 'sm',
@@ -53,6 +67,44 @@ describe.concurrent('@master/css-preset design token parity', () => {
             key: 'fade',
             type: 'string'
         })
+    })
+
+    test('publishes product role tokens instead of legacy color aliases', () => {
+        expect(findVariable('color-canvas')).toMatchObject({
+            namespace: 'color',
+            key: 'canvas',
+            modes: expect.objectContaining({
+                light: expect.objectContaining({ value: '$color-neutral-0' }),
+                dark: expect.objectContaining({ value: '$color-neutral-100' })
+            })
+        })
+        expect(findVariable('color-text-muted')).toMatchObject({
+            namespace: 'color-text',
+            key: 'muted'
+        })
+        expect(findVariable('color-line-subtle')).toMatchObject({
+            namespace: 'color-line',
+            key: 'subtle'
+        })
+        expect(findVariable('color-accent')).toMatchObject({
+            namespace: 'color',
+            key: 'accent'
+        })
+        expect(findVariable('color-success-surface')).toMatchObject({
+            namespace: 'color',
+            key: 'success-surface'
+        })
+        expect(findVariable('shadow-card')).toMatchObject({
+            namespace: 'shadow',
+            key: 'card'
+        })
+
+        expect(findVariable('color-red')).toBeUndefined()
+        expect(findVariable('color-blue-active')).toBeUndefined()
+        expect(findVariable('color-text-lightest')).toBeUndefined()
+        expect(findVariable('color-line-lightest')).toBeUndefined()
+        expect(findVariable('color-grey-50')).toBeUndefined()
+        expect(findVariable('color-neutral-50')).toBeDefined()
     })
 
     test('precomputes default breakpoint and container at-rule aliases', () => {
@@ -79,7 +131,13 @@ describe.concurrent('@master/css-preset design token parity', () => {
         expect(css.create('font:sans')?.text).toContain('font-family:var(--font-family-sans)')
         expect(css.create('text:2xl')?.text).toContain('font-size:var(--font-size-2xl)')
         expect(css.create('m:md')?.text).toContain('margin:var(--spacing-md)')
+        expect(css.create('p:card')?.text).toContain('padding:var(--spacing-card)')
         expect(css.create('r:lg')?.text).toContain('border-radius:var(--radius-lg)')
+        expect(css.create('r:card')?.text).toContain('border-radius:var(--radius-card)')
+        expect(css.create('fg:muted')?.text).toContain('color:var(--color-text-muted)')
+        expect(css.create('bg:accent')?.text).toContain('background-color:var(--color-accent)')
+        expect(css.create('b:subtle')?.text).toContain('border-color:var(--color-line-subtle)')
+        expect(css.create('shadow:card')?.text).toContain('box-shadow:var(--shadow-card)')
         expect(css.create('w:sm')?.text).toContain('width:var(--container-sm)')
         expect(css.create('animation:fade')?.text).toContain('animation:var(--animation-fade)')
         expect(css.text).not.toContain('null')

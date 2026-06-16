@@ -6,19 +6,19 @@
 ## Basic usage
 ### With opacity
 Add the suffix `/alpha` to change the opacity of any color.
-<Basic className="bg:pink/.15" />
+<Basic className="bg:accent-surface" />
 
 Use `bg:*` for semantic surface tokens, theme colors, and one-off colors.
 ```html
-<!-- @MARK bg:surface --><!-- @MARK bg:blue/.12 -->
+<!-- @MARK bg:surface --><!-- @MARK bg:accent/.12 -->
 <section class="bg:surface">...</section>
-<span class="bg:blue/.12">Badge</span>
+<span class="bg:accent/.12">Badge</span>
 ```
 
 <details>
     <summary>Generated CSS</summary>
     <Class2CSS>
-        {['bg:surface', 'bg:blue/.12']}
+        {['bg:surface', 'bg:accent/.12']}
     </Class2CSS>
 </details>
 

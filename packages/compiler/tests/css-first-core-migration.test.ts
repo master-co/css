@@ -159,11 +159,11 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
             }
 
             @theme light {
-                --color-invert: #000;
+                --color-emphasis: #000;
             }
 
             @theme dark {
-                --color-invert: #fff;
+                --color-emphasis: #fff;
             }
         `
 
@@ -173,9 +173,9 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
             }
 
             ${base}
-        `, { basePlan: defaultPlan }).plan).add('bg:invert')
-        expect(lightDefault.themeLayer.text).toContain('.light,:root{--color-invert:#000}')
-        expect(lightDefault.themeLayer.text).toContain('.dark{--color-invert:#fff}')
+        `, { basePlan: defaultPlan }).plan).add('bg:emphasis')
+        expect(lightDefault.themeLayer.text).toContain('.light,:root{--color-emphasis:#000}')
+        expect(lightDefault.themeLayer.text).toContain('.dark{--color-emphasis:#fff}')
 
         const noDefault = createCSS(compileCSSPlan(`
             @settings {
@@ -183,9 +183,9 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
             }
 
             ${base}
-        `, { basePlan: defaultPlan }).plan).add('bg:invert')
-        expect(noDefault.themeLayer.text).toContain('.light{--color-invert:#000}')
-        expect(noDefault.themeLayer.text).not.toContain('.light,:root{--color-invert')
+        `, { basePlan: defaultPlan }).plan).add('bg:emphasis')
+        expect(noDefault.themeLayer.text).toContain('.light{--color-emphasis:#000}')
+        expect(noDefault.themeLayer.text).not.toContain('.light,:root{--color-emphasis')
     })
 
     test('lowers color variables, mode values, aliases, and alpha references', () => {

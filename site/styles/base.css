@@ -1,25 +1,13 @@
-@theme light {
-    --color-yellow-ring: $color-black/.1;
-    --color-touch-yellow: $color-yellow-30;
-    --color-text-yellow-contrast: $color-yellow-90;
-}
-
-@theme dark {
-    --color-yellow-ring: $color-white/.3;
-    --color-touch-yellow: $color-yellow-40;
-    --color-text-yellow-contrast: $color-yellow-95;
-}
-
 @components {
-    yellow {
-        outline: 0.0625rem var(--color-yellow-ring) solid;
-        background-color: var(--color-yellow);
-        color: var(--color-text-yellow-contrast);
+    accent {
+        outline: 0.0625rem var(--color-accent-line) solid;
+        background-color: var(--color-accent);
+        color: var(--color-accent-text);
     }
 
-    touch-yellow {
+    touch-accent {
         &:hover {
-            background-color: var(--color-touch-yellow);
+            background-color: var(--color-accent-hover);
         }
     }
 }

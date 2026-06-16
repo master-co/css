@@ -55,7 +55,7 @@ export default function BackerTiers() {
                     {eachBackerTier.amount && (
                         <div className="text:14 font:bold">
                             {eachBackerTier.amount}
-                            <span className="text:12 fg:neutral font:regular ml:5">
+                            <span className="text:12 fg:text font:regular ml:5">
                                 / {eachBackerTier.one ? 'one-time' : 'month'}
                             </span>
                         </div>

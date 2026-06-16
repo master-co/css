@@ -40,7 +40,7 @@ const articles = [
         date: 'May 9, 2026',
         description: 'How shared element motion helps a page change feel intentional without adding visual noise.',
         image: articleStudioImage,
-        imageAlt: 'Snowy mountain valley with yellow tents',
+        imageAlt: 'Snowy mountain valley with accent tents',
         imageTransition: 'vt-name:article-studio-image',
         titleTransition: 'vt-name:article-studio-title',
         dateTransition: 'vt-name:article-studio-date',
@@ -107,17 +107,17 @@ export default function ArticleTransitionDemo() {
                                 src={article.image}
                             />
                             <div className="p:lg flex flex-col flex:1">
-                                <time className={clsx(article.dateTransition, sharedTransitionClassName, 'block fg:neutral text:xs mb:xs')}>
+                                <time className={clsx(article.dateTransition, sharedTransitionClassName, 'block fg:text text:xs mb:xs')}>
                                     {article.date}
                                 </time>
                                 <h3 className={clsx(article.titleTransition, sharedTransitionClassName, 'text:lg leading:sm font:semibold m:0')}>
                                     {article.title}
                                 </h3>
-                                <p className="fg:neutral text:sm m:0 mt:sm">
+                                <p className="fg:text text:sm m:0 mt:sm">
                                     {article.description}
                                 </p>
                                 <button
-                                    className="btn btn-sm yellow touch-yellow mt:lg align-self:start"
+                                    className="btn btn-sm accent touch-accent mt:lg align-self:start"
                                     onClick={() => transition(() => setSelectedId(article.id))}
                                     type="button"
                                 >
@@ -138,13 +138,13 @@ export default function ArticleTransitionDemo() {
                         src={selectedArticle.image}
                     />
                     <div className="p:lg p:xl@container(4xs)">
-                        <time className={clsx(selectedArticle.dateTransition, sharedTransitionClassName, 'block fg:neutral text:sm mb:sm')}>
+                        <time className={clsx(selectedArticle.dateTransition, sharedTransitionClassName, 'block fg:text text:sm mb:sm')}>
                             {selectedArticle.date}
                         </time>
                         <h3 className={clsx(selectedArticle.titleTransition, sharedTransitionClassName, 'text:2xl text:3xl@container(4xs) font:semibold m:0')}>
                             {selectedArticle.title}
                         </h3>
-                        <p className="fg:neutral text:md m:0 mt:md">
+                        <p className="fg:text text:md m:0 mt:md">
                             {selectedArticle.description} The image, title, and date keep the same transition names in both layouts, so the browser can move each snapshot into its new position while the rest of the interface cross-fades around it.
                         </p>
                         <button

@@ -348,7 +348,7 @@ function ShareIcon({ className }: { className?: string }) {
     return (
         <svg className={className} xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" strokeWidth="1.3" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
             <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-            <path className="fill:text-lightest/.2" d="M8 9h-1a2 2 0 0 0 -2 2v8a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-8a2 2 0 0 0 -2 -2h-1"></path>
+            <path className="fill:text-disabled/.2" d="M8 9h-1a2 2 0 0 0 -2 2v8a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-8a2 2 0 0 0 -2 -2h-1"></path>
             <path d="M12 14v-11"></path>
             <path d="M9 6l3 -3l3 3"></path>
         </svg>
@@ -737,17 +737,17 @@ export default function Play({ shareId }: PlayProps = {}) {
                         <button className={clsx('hidden@<md', sharing ? 'app-header-nav' : 'app-header-icon')} onClick={shareCurrentFiles} disabled={sharing} aria-label={shareButtonTitle} title={shareButtonTitle}>
                             {copied && !shareable && !sharing
                                 ? <CheckIcon className="stroke:accent" />
-                                : <ShareIcon className={clsx('stroke:current', sharing && 'opacity:.5', shareError && 'stroke:red')} />
+                                : <ShareIcon className={clsx('stroke:current', sharing && 'opacity:.5', shareError && 'stroke:danger')} />
                             }
                             {sharing && <span className="ml:10">{$('Sharing ...')}</span>}
                         </button>}
                     <span className='hidden'>{shareError}</span>
-                    {(shareable || copied) && <div className='mx:4x bg:line-light h:1em w:1 hidden@<md'></div>}
+                    {(shareable || copied) && <div className='mx:4x bg:line h:1em w:1 hidden@<md'></div>}
                     <button className="app-header-icon hidden@<md" onClick={() => pushShallowURL('layout', layout ? '' : '2')}>
                         <svg className={clsx({ 'stroke:accent': !layout || layout === '2' })} xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" strokeWidth="1.2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
                             <path className={clsx(
                                 'transition:transform|.2s',
-                                (!layout || layout === '2') ? 'fill:accent/.15' : 'fill:text-lightest/.2',
+                                (!layout || layout === '2') ? 'fill:accent/.15' : 'fill:text-disabled/.2',
                                 { 'translate(12,4)': !layout }
                             )} stroke="none" d="M1,0H8A0,0,0,0,1,8,0V16a0,0,0,0,1,0,0H0a0,0,0,0,1,0,0V1A1,1,0,0,1,1,0Z" transform='translate(4 4)' />
                             <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
@@ -759,7 +759,7 @@ export default function Play({ shareId }: PlayProps = {}) {
                         <svg className={clsx({ 'stroke:accent': layout === '3' || layout === '4' }, 'rotate(90)')} xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" strokeWidth="1.2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
                             <path className={clsx(
                                 'transition:transform|.2s',
-                                (layout === '3' || layout === '4') ? 'fill:accent/.15' : 'fill:text-lightest/.2',
+                                (layout === '3' || layout === '4') ? 'fill:accent/.15' : 'fill:text-disabled/.2',
                                 { 'translate(12,4)': layout === '3' }
                             )} stroke="none" d="M1,0H8A0,0,0,0,1,8,0V16a0,0,0,0,1,0,0H0a0,0,0,0,1,0,0V1A1,1,0,0,1,1,0Z" transform='translate(4 4)' />
                             <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
@@ -772,31 +772,31 @@ export default function Play({ shareId }: PlayProps = {}) {
                             <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
                             <path d="M4 4m0 2a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2z"></path>
                             <path d="M4 9l16 0"></path>
-                            <rect className={layout === '5' ? 'fill:accent/.15' : 'fill:text-lightest/.2'} width="16" height="11" stroke='none' transform="translate(4 9)" />
+                            <rect className={layout === '5' ? 'fill:accent/.15' : 'fill:text-disabled/.2'} width="16" height="11" stroke='none' transform="translate(4 9)" />
                         </svg>
                     </button>
                     <span className='hidden'>{layout}</span>
-                    <div className='mx:4x bg:line-light h:1em w:1 hidden@<md'></div>
+                    <div className='mx:4x bg:line h:1em w:1 hidden@<md'></div>
                     <button className="app-header-icon hidden@<md" onClick={() => pushShallowURL('preview', '')}>
                         <IconDeviceDesktop width="22" height="22" className={clsx(
                             'stroke:1.3',
-                            !preview ? 'fill:accent/.15 stroke:accent' : 'fill:text-lightest/.2 stroke:current'
+                            !preview ? 'fill:accent/.15 stroke:accent' : 'fill:text-disabled/.2 stroke:current'
                         )} />
                     </button>
                     <button className="app-header-icon hidden@<md" onClick={() => pushShallowURL('preview', 'responsive')}>
                         <IconDeviceMobile width="22" height="22" className={clsx(
                             'stroke:1.3',
-                            responsive ? 'fill:accent/.15 stroke:accent' : 'fill:text-lightest/.2 stroke:current'
+                            responsive ? 'fill:accent/.15 stroke:accent' : 'fill:text-disabled/.2 stroke:current'
                         )} />
                     </button>
                     <button className="app-header-icon hidden@<md" onClick={() => pushShallowURL('preview', 'css')}>
                         <IconBrandCss3 width="22" height="22" className={clsx(
                             'stroke:1.3',
-                            preview === 'css' ? 'fill:accent/.15 stroke:accent' : 'fill:text-lightest/.2 stroke:current'
+                            preview === 'css' ? 'fill:accent/.15 stroke:accent' : 'fill:text-disabled/.2 stroke:current'
                         )} />
                     </button>
                     <span className='hidden'>{preview}</span>
-                    <div className='mx:4x bg:line-light h:1em w:1 hidden@<md'></div>
+                    <div className='mx:4x bg:line h:1em w:1 hidden@<md'></div>
                     <LanguageButton className="app-header-icon hidden@<md" />
                     <ThemeButton className="app-header-icon mr:-12 hidden@<md"
                         onChange={(theme: string) => {
@@ -830,10 +830,10 @@ export default function Play({ shareId }: PlayProps = {}) {
                         layout === '5' && 'hidden!@md',
                         {
                             'full!@<md': tab !== 'Preview',
-                            'br:1|lighter': !layout,
-                            'bl:1|lighter': layout === '2',
-                            'bb:1|lighter': layout === '3',
-                            'bt:1|lighter': layout === '4'
+                            'br:1|muted': !layout,
+                            'bl:1|muted': layout === '2',
+                            'bb:1|muted': layout === '3',
+                            'bt:1|muted': layout === '4'
                         }
                     )}
                     width={tab === 'Preview' ? '' : width}
@@ -894,8 +894,8 @@ export default function Play({ shareId }: PlayProps = {}) {
                         overlay={false}
                         originX={'center'}
                         showHandler={responsive ? [false, true, true] : false}
-                        className={clsx('full outline:1|line-light.resizing', {
-                            'outline:1|line-lighter max-h:100% max-w:100%': responsive
+                        className={clsx('full outline:1|line.resizing', {
+                            'outline:1|line-muted max-h:100% max-w:100%': responsive
                         })}
                         showHeight={true}
                     >
@@ -909,9 +909,9 @@ export default function Play({ shareId }: PlayProps = {}) {
                             onLoad={() => postPreviewUpdate(getFileContent(filesRef.current, 'HTML'), compiledCSSRef.current)}
                         />
                         <div className={clsx('flex flex-col h:full', { 'hidden!': preview !== 'css' })}>
-                            <div className='flex bb:1|lightest flex:0|0|auto px:5x align-items:center font:12 h:48 justify-content:space-between px:10x@sm'>
+                            <div className='flex bb:1|subtle flex:0|0|auto px:5x align-items:center font:12 h:48 justify-content:space-between px:10x@sm'>
                                 <div>{compiling ? 'Compiling CSS' : 'Generated CSS'}</div>
-                                <div className="fg:light">{compileWarnings.length ? `${compileWarnings.length} warnings` : generatedCSSSize}</div>
+                                <div className="fg:muted">{compileWarnings.length ? `${compileWarnings.length} warnings` : generatedCSSSize}</div>
                             </div>
                             <Editor
                                 height="100%"
@@ -928,7 +928,7 @@ export default function Play({ shareId }: PlayProps = {}) {
                             />
                         </div>
                         {previewErrorEvent &&
-                            <div className="abs full inset:0 p:12x fg:red bg:red-5@light bg:red-95@dark">
+                            <div className="abs full inset:0 p:12x fg:danger bg:red-5@light bg:red-95@dark">
                                 <h2 className="font:20">Error at line {previewErrorEvent.lineno === 1 ? 1 : previewErrorEvent.lineno - 1}</h2>
                                 <div className="p:15|20 r:5 my:20 font:14 font:medium white-space:pre-wrap bg:black/.2@dark bg:red-90@light">
                                     {previewErrorEvent.message}

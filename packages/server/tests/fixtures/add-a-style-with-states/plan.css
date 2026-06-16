@@ -12,17 +12,17 @@
 }
 
 @theme light {
-    --color-invert: $color-black;
+    --color-focus: $color-black;
 }
 
 @theme dark {
-    --color-invert: $color-white;
+    --color-focus: $color-white;
 }
 
 @components {
     btn {
         &:focus {
-        outline: 0.125rem var(--color-invert) solid;
+        outline: 0.125rem var(--color-focus) solid;
         }
         &:focus {
         outline-offset: 0.125rem;

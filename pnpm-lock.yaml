@@ -2002,9 +2002,6 @@ importers:
 
   site:
     dependencies:
-      '@master/colors':
-        specifier: ^3.0.0
-        version: 3.0.0
       '@master/css-compiler':
         specifier: workspace:^
         version: link:../packages/compiler
@@ -5831,9 +5828,6 @@ packages:
     resolution: {integrity: sha512-uwPAhccfFJlsfCxMYTwOdVfOz3xqyj8xYL3zJj8f0pb30tLohnnFPhLuqp4/qoEz8sNxe4SESZedcBojRefIzg==}
     engines: {node: '>=18'}
     hasBin: true
-
-  '@master/colors@3.0.0':
-    resolution: {integrity: sha512-1fqX0gncBTXtaidwCqJmOXgW6n0Ikh8DAFsW9/FKwiSYxrNdE0LlI4I0ozbdFdFRfheTV9MUbReiqeuDnD75aQ==}
 
   '@master/styled.react@2.0.6':
     resolution: {integrity: sha512-b0MSyz6UZgk2G1FReS72f2Fyn+rHCifadT+hA+4sCU2f4xer5dwF6YwlTM2FmTw7cLA4HHA8RAqkRooUFCUMbg==}
@@ -24736,8 +24730,6 @@ snapshots:
     transitivePeerDependencies:
       - encoding
       - supports-color
-
-  '@master/colors@3.0.0': {}
 
   '@master/styled.react@2.0.6(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)':
     dependencies:

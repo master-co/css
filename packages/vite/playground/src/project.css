@@ -7,7 +7,7 @@
 
 @theme {
     --color-primary: #0061ff;
-    --color-base: #fff;
+    --color-surface: #fff;
     --color-ink: #172033;
     --color-muted: #637083;
     --color-panel: #f6f8fb;
@@ -20,7 +20,7 @@
 
 @theme dark {
     --color-primary: #8fb5ff;
-    --color-base: #111827;
+    --color-surface: #111827;
     --color-ink: #f8fafc;
     --color-muted: #aab6c7;
     --color-panel: #182233;
@@ -45,7 +45,7 @@
     }
 
     card {
-        @compose "grid gap:1rem p:card bg:base r:card max-w:42rem content-auto";
+        @compose "grid gap:1rem p:card bg:surface r:card max-w:42rem content-auto";
         @variant @motion-safe {
             @compose "animation:demo-fade-in|.55s";
         }

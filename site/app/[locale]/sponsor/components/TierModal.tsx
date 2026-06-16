@@ -13,14 +13,14 @@ export default function TierModal({ tierState }: { tierState: [any, Dispatch<any
                 {selectedTier.amount && (
                     <div className="text:14 fg:strong font:bold">
                         {selectedTier.amount}
-                        <span className="text:12 fg:neutral font:regular ml:5">
+                        <span className="text:12 fg:text font:regular ml:5">
                             / {selectedTier.one ? 'one-time' : 'month'}
                         </span>
                     </div>
                 )}
             </div>
         </div>
-        <div className="bt:1|solid|lightest px:25 text:12 mb:5 pt:15">
+        <div className="bt:1|solid|subtle px:25 text:12 mb:5 pt:15">
             Choose a platform
         </div>
         <Link href={selectedTier.openCollectiveUrl} className="flex gap:12 text-decoration:none! px:25 align-items:center font:medium min-h:48">

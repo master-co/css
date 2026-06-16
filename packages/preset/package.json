@@ -2,7 +2,7 @@
     "name": "@master/css-preset",
     "type": "module",
     "scripts": {
-        "build": "techor build \"src/**/*.ts\" --formats esm",
+        "build": "pnpm generate && techor build \"src/**/*.ts\" --formats esm",
         "dev": "pnpm build --watch",
         "generate": "tsx scripts/generate-default-plan.ts",
         "lint": "eslint",

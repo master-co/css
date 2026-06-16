@@ -16,7 +16,7 @@ That means Master CSS works best in projects that target browsers with cascade l
 ## Browser support
 The Master CSS engine does not polyfill every CSS feature. It generates CSS from the classes you use, so browser support is usually determined by the final CSS property, value, selector, at-rule, or platform feature in that output.
 
-For example, `bg:red` depends on normal `background-color` support, while `backdrop-filter:blur(16)` depends on `backdrop-filter` support. Modern features should be checked in [Can I use](https://caniuse.com/) or MDN before relying on them in production.
+For example, `bg:danger` depends on normal `background-color` support, while `backdrop-filter:blur(16)` depends on `backdrop-filter` support. Modern features should be checked in [Can I use](https://caniuse.com/) or MDN before relying on them in production.
 
 Use this rule of thumb:
 
@@ -133,18 +133,18 @@ Then define your application overrides in the `components` layer or use utilitie
     }
 
     swiper-wrapper {
-        @compose "bg:red";
+        @compose "bg:danger";
     }
 
     swiper-slide {
-        @compose "bg:blue";
+        @compose "bg:accent";
     }
 }
 ```
 
 ```html
-<!-- @MARK bg:blue -->
-<div class="swiper-slide bg:blue">Slide 1</div>
+<!-- @MARK bg:accent -->
+<div class="swiper-slide bg:accent">Slide 1</div>
 ```
 
 This keeps vendor defaults below product components and utilities, reducing the need for forceful overrides.

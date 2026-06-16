@@ -9,7 +9,7 @@ export default ({ className }: any) => {
     return (
         <>
             <Demo>
-                <IconRotateClockwise className="size:12x stroke:.5 stroke:text-lightest" strokeDasharray={1.5} />
+                <IconRotateClockwise className="size:12x stroke:.5 stroke:text-disabled" strokeDasharray={1.5} />
                 <IconRotateClockwise className={clsx(className, 'app-icon-primary size:12x stroke:.5')} />
             </Demo>
             <Code lang="html">{`

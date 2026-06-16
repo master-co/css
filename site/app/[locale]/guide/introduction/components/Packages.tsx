@@ -38,11 +38,6 @@ const developerToolPackages = [
 
 const solutionPackages: PackageMetadata[] = [
     {
-        name: '@master/colors',
-        description: 'A precision-crafted P3 color system designed for modern UIs',
-        repository: { url: 'https://github.com/master-co/colors.git' }
-    },
-    {
         name: 'theme-mode',
         description: 'A lightweight utility for switching CSS theme modes',
         repository: { url: 'https://github.com/master-co/theme-mode.git' }

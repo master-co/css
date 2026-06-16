@@ -12,7 +12,7 @@ export default async function Layout({ children }: {
     children: React.ReactNode
 }) {
     return (
-        <Body className="bg:base">
+        <Body className="bg:canvas">
             <DocHeader contained />
             <DocWrapper>
                 {children}

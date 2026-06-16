@@ -174,7 +174,7 @@ Use Grid when the parent owns the columns, rows, or area placement. Use Flexbox 
 | Two-axis alignment | One-axis distribution |
 
 <Demo>
-    <article className="container w:full flex flex-col flex-row@container(2xs) gap:md bg:surface b:1|lightest shadow:xs r:lg p:md">
+    <article className="container w:full flex flex-col flex-row@container(2xs) gap:md bg:surface b:1|subtle shadow:xs r:lg p:md">
         <div className="grid place-content:center w:full w:36x@container(2xs) aspect:4/3 flex:0@container(2xs) bg:primary/.12 r:md">
             <div className="grid-cols:3 gap:2xs w:20x">
                 <div className="h:5x bg:primary/.25 r:sm"></div>
@@ -188,10 +188,10 @@ Use Grid when the parent owns the columns, rows, or area placement. Use Flexbox 
         <div className="min-w:0 flex:1">
             <DemoLabel>Flex media object</DemoLabel>
             <div className="font:semibold fg:strong">Quarterly planning</div>
-            <p className="m:0 mt:xs text:sm fg:neutral">The image keeps a measured basis while the content expands, shrinks, and wraps around the available inline space.</p>
+            <p className="m:0 mt:xs text:sm fg:text">The image keeps a measured basis while the content expands, shrinks, and wraps around the available inline space.</p>
             <div className="flex flex:wrap gap:xs mt:md">
                 <span className="px:xs py:2xs r:sm bg:primary/.12 fg:primary text:xs">Roadmap</span>
-                <span className="px:xs py:2xs r:sm bg:green/.12 fg:green text:xs">Ready</span>
+                <span className="px:xs py:2xs r:sm bg:success/.12 fg:success text:xs">Ready</span>
             </div>
         </div>
     </article>

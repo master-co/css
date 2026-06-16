@@ -9,7 +9,8 @@ In Master CSS, that vocabulary usually lives in the project CSS entry: `@theme` 
 @import '@master/css';
 
 @theme {
-    --color-primary: #4f46e5;
+    --color-accent: #4f46e5;
+    --color-accent-text: #ffffff;
     --spacing-card: 1.5rem;
     --radius-card: 1rem;
     --breakpoint-md: 48rem;
@@ -32,7 +33,7 @@ In Master CSS, that vocabulary usually lives in the project CSS entry: `@theme` 
 
 ```html
 <section class="bg:surface fg:strong p:card r:card shadow:card grid-cols:2@md">
-    <button class="bg:primary fg:white px:md py:xs r:md fg:primary:interactive">Save</button>
+    <button class="bg:accent fg:accent-text px:md py:xs r:md bg:accent-hover:interactive">Save</button>
 </section>
 ```
 
@@ -47,7 +48,7 @@ A project only needs a CSS entry that marks the Master CSS graph. Put theme dire
 @import '@master/css';
 
 @theme {
-    --color-primary: #4f46e5;
+    --color-accent: #4f46e5;
 }
 ```
 
@@ -62,8 +63,8 @@ Theme tokens are CSS custom property declarations inside `@theme` blocks. Write 
 ```css name=index.css
 @theme {
     --content-hash: " #";
-    --color-primary: #4f46e5;
-    --color-primary-soft: rgb(79 70 229 / .16);
+    --color-accent: #4f46e5;
+    --color-accent-surface: rgb(79 70 229 / .16);
     --color-surface: #ffffff;
     --color-text-strong: #111827;
     --spacing-card: 1.5rem;
@@ -83,7 +84,7 @@ Theme tokens are CSS custom property declarations inside `@theme` blocks. Write 
 ```
 
 ### How namespaces are resolved
-A theme token name has the shape `<namespace>-<key>`. Master CSS resolves the namespace by longest prefix, so `color-line-lightest` belongs to `color-line`, not `color`.
+A theme token name has the shape `<namespace>-<key>`. Master CSS resolves the namespace by longest prefix, so `color-line-subtle` belongs to `color-line`, not `color`.
 
 Namespaces come from these sources:
 
@@ -115,13 +116,13 @@ The default theme vocabulary is utility-owned. This table lists the built-in con
 <VariableNamespaceSources />
 
 ### Use contextual tokens
-The same short token can resolve differently by context. `primary` is a color in `bg:primary`, `card` is spacing in `p:card`, radius in `r:card`, and shadow in `shadow:card`. If the shadow token is mode-specific, the same `shadow:card` class follows the active light or dark mode.
+The same short token can resolve differently by context. `accent` is a color in `bg:accent`, `card` is spacing in `p:card`, radius in `r:card`, and shadow in `shadow:card`. If the shadow token is mode-specific, the same `shadow:card` class follows the active light or dark mode.
 
 ```html
 <!-- @MARK bg:surface --><!-- @MARK p:card --><!-- @MARK r:card --><!-- @MARK font:sans -->
 <article class="bg:surface fg:strong p:card r:card shadow:card font:sans">
     <h2 class="font:sans">Dashboard</h2>
-    <a class="fg:primary" href="/settings">Settings</a>
+    <a class="fg:link" href="/settings">Settings</a>
 </article>
 ```
 
@@ -131,8 +132,8 @@ Use `$` when a token should reference another token.
 ```css name=index.css
 @theme {
     --color-brand: #4f46e5;
-    --color-primary: $color-brand;
-    --color-primary-soft: $color-brand/.16;
+    --color-accent: $color-brand;
+    --color-accent-surface: $color-brand/.16;
 }
 ```
 
@@ -140,7 +141,7 @@ Define the same token key as a preset token when you want to override it. Later 
 
 ```css name=index.css
 @theme {
-    --color-blue: #4589ff;
+    --color-accent: #4589ff;
 }
 ```
 
@@ -209,25 +210,27 @@ Mode-specific `@theme` blocks keep markup semantic while values change by mode.
 @theme light {
     --color-surface: #ffffff;
     --color-text-strong: #111827;
-    --color-primary: #4f46e5;
+    --color-accent: #4f46e5;
+    --color-accent-text: #ffffff;
     --shadow-card: 0 16px 40px rgb(15 23 42 / .12);
 }
 
 @theme dark {
     --color-surface: #111827;
     --color-text-strong: #f9fafb;
-    --color-primary: #818cf8;
+    --color-accent: #818cf8;
+    --color-accent-text: #111827;
     --shadow-card: 0 0 0 1px rgb(255 255 255 / .08), 0 16px 40px rgb(0 0 0 / .36);
 }
 
 @theme brand {
-    --color-primary: #ff0;
+    --color-accent: #ff0;
 }
 ```
 
 ```html
 <section class="bg:surface fg:strong">
-    <button class="bg:primary fg:white">Save</button>
+    <button class="bg:accent fg:accent-text">Save</button>
 </section>
 ```
 
@@ -335,7 +338,7 @@ Use selector variants anywhere Master CSS accepts a selector suffix:
 ```html
 <!-- @MARK :headings --><!-- @MARK :interactive --><!-- @MARK ::scrollbar -->
 <article class="font:semibold_:headings">
-    <button class="fg:primary:interactive">Save</button>
+    <button class="fg:link:interactive">Save</button>
     <div class="w:.5rem::scrollbar">...</div>
 </article>
 ```
@@ -351,7 +354,7 @@ Inside CSS-defined style rules, use `@variant` to apply selector variants instea
         @compose "inline-flex ai:center jc:center";
 
         @variant :interactive {
-            @compose "fg:primary";
+            @compose "fg:link";
         }
     }
 }
@@ -432,8 +435,8 @@ The theme should describe shared values and named conditions. Reusable UI patter
 @components {
     btn {
         @compose "inline-flex ai:center jc:center gap:xs px:md py:xs r:md font:sm font:medium";
-        background: var(--color-primary);
-        color: white;
+        background: var(--color-accent);
+        color: var(--color-accent-text);
 
         &:disabled {
             @compose "opacity:.55 pointer-events:none";

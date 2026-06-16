@@ -4,7 +4,7 @@
 ## Examples
 ### With opacity
 Add the suffix `/alpha` to change the opacity of any color.
-<Basic className="fg:blue/.15" />
+<Basic className="fg:accent/.15" />
 
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
@@ -29,11 +29,11 @@ Apply the custom color:
 ```
 Apply the defined `text-*` variables using the inherited rules <TextHeirs />.
 ```html
-<!-- @MARK fg:neutral -->
+<!-- @MARK fg:text -->
 <html class="light">
-    <body class="fg:neutral"></body> <!-- [!code highlight] -->
-    <body class="fg:text-neutral">equals</body>
-    <body class="fg:$text-neutral">equals</body>
+    <body class="fg:text"></body> <!-- [!code highlight] -->
+    <body class="fg:text">equals</body>
+    <body class="fg:$text">equals</body>
 </html>
 ```
 (x) We set the [foreground color](/reference/color) of elements using `fg:color` rather than the [text-specific](/reference/text-fill-color) `text:color`.
@@ -42,8 +42,8 @@ Apply the defined `text-*` variables using the inherited rules <TextHeirs />.
 ```
 Besides inheriting the above rules, you can use `text-*` to access global text color variables in other syntax.
 ```html
-<!-- @MARK stroke:text-light -->
-<svg class="stroke:text-light"></svg>
+<!-- @MARK stroke:text-muted -->
+<svg class="stroke:text-muted"></svg>
 ```
 To escape inherited text colors, use `$color-blue` to apply `variables.blue` instead of `variables.text.blue`.
 ```html

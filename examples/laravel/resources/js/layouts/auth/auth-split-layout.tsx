@@ -23,7 +23,7 @@ export default function AuthSplitLayout({ children, title, description }: PropsW
                     <div className="relative z-20 mt-auto">
                         <blockquote className="space-y-2">
                             <p className="text-lg">&ldquo;{quote.message}&rdquo;</p>
-                            <footer className="text-sm text-neutral-300">{quote.author}</footer>
+                            <footer className="text-sm text-300">{quote.author}</footer>
                         </blockquote>
                     </div>
                 )}

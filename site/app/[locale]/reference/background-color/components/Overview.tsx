@@ -5,7 +5,7 @@ import SyntaxPreview from './SyntaxPreview'
 import Bg from 'internal/components/Bg'
 
 export default () => {
-    const previewSyntax = 'bg:yellow'
+    const previewSyntax = 'bg:accent'
     return (
         <>
             <SyntaxTable>

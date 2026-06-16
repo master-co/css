@@ -11,7 +11,7 @@ export async function generateStaticParams() {
 
 export default function Layout({ children }: { children: React.ReactNode }) {
     return (
-        <Body className="bg:base">
+        <Body className="bg:canvas">
             <DocHeader contained />
             <DocWrapper>
                 <DocSidebar pageCategories={pageCategories} />

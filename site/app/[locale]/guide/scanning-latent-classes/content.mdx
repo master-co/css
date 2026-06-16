@@ -66,7 +66,7 @@ Scanning is intentionally broad. The scanner looks through markup, JSX, strings,
 ```tsx name=src/Button.tsx
 const toneClasses = {
     neutral: 'bg:surface fg:body',
-    danger: 'bg:red fg:white'
+    danger: 'bg:danger fg:white'
 }
 
 export function Button({ danger }: { danger?: boolean }) {
@@ -83,7 +83,7 @@ The scanner can see all complete class strings in this file:
 ```txt
 bg:surface
 fg:body
-bg:red
+bg:danger
 fg:white
 btn
 r:md
@@ -105,7 +105,7 @@ Words such as `function`, `return`, `No`, `invoices`, and `found` may be discove
 ## Validation
 After candidate scanning, Master CSS validates each class against the active plan. A candidate can be accepted in three common ways:
 
-- It is a built-in utility, such as `block`, `fg:red`, or `grid-cols:3`.
+- It is a built-in utility, such as `block`, `fg:danger`, or `grid-cols:3`.
 - It is defined by your project CSS entry and compiled into the plan.
 - It matches a native class collected from a stylesheet that imports [`@master/css`](/guide/native-css-pruning).
 
@@ -147,12 +147,12 @@ Static rendering works when the complete class string exists in source. It canno
 const className = 'bg:' + (error ? 'red' : 'green')
 ```
 
-The complete strings `bg:red` and `bg:green` do not exist in source, so static rendering cannot reliably generate either rule.
+The complete strings `bg:danger` and `bg:success` do not exist in source, so static rendering cannot reliably generate either rule.
 
 (o) Write complete class names.
 
 ```tsx
-const className = error ? 'bg:red' : 'bg:green'
+const className = error ? 'bg:danger' : 'bg:success'
 ```
 
 For component variants, map dynamic inputs to complete class lists.
@@ -169,8 +169,8 @@ function Badge({ tone }: { tone: 'red' | 'green' | 'gray' }) {
 
 ```tsx
 const toneClasses = {
-    danger: 'bg:red fg:white',
-    success: 'bg:green fg:white',
+    danger: 'bg:danger fg:white',
+    success: 'bg:success fg:white',
     neutral: 'bg:gray-10 fg:gray-90'
 }
 

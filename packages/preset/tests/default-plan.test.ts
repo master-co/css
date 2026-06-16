@@ -51,14 +51,14 @@ describe('@master/css-preset defaultPlan', () => {
         const text = [
             css.create('inline-flex')?.text,
             css.create('gradient(#000,#fff)')?.text,
-            css.create('bg:red')?.text,
+            css.create('bg:accent')?.text,
             css.create('grid-cols:3')?.text,
             css.create('lines:3')?.text,
             css.create('text:2xl')?.text
         ].join('')
         expect(text).toContain('display:inline-flex')
         expect(text).toContain('background-image:linear-gradient(#000,#fff)')
-        expect(text).toContain('background-color:var(--color-red)')
+        expect(text).toContain('background-color:var(--color-accent)')
         expect(text).toContain('grid-template-columns:repeat(3,minmax(0,1fr))')
         expect(text).toContain('-webkit-line-clamp:3')
         expect(text).not.toContain('null')
