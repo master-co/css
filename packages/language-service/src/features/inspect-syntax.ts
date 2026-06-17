@@ -1,7 +1,7 @@
 import type { Hover, HoverParams, Range } from 'vscode-languageserver-protocol'
 import type CSSLanguageService from '../core'
 import type { TextDocument } from 'vscode-languageserver-textdocument'
-import { getCSSDataDocumentation } from '../utils/get-css-data-documentation'
+import createCSSMarkdownDocumentation from '../utils/create-css-markdown-documentation'
 import { UtilityType, generateCSS } from '../master-css'
 
 export default function inspectSyntax(this: CSSLanguageService, document: TextDocument, position: HoverParams['position']): Hover | undefined {
@@ -15,9 +15,7 @@ export default function inspectSyntax(this: CSSLanguageService, document: TextDo
     const utilities = this.css.generate(token)
     const component = utilities.find((utility) => utility.type === UtilityType.Static && utility.layerName === 'components')
     if (component) {
-        const documentation = getCSSDataDocumentation({
-            generatedCSS: generateCSS([token], this.css)
-        })
+        const documentation = createCSSMarkdownDocumentation(generateCSS([token], this.css))
         if (documentation) {
             return {
                 contents: {
@@ -30,9 +28,7 @@ export default function inspectSyntax(this: CSSLanguageService, document: TextDo
         const utility = utilities[0]
         if (utility) {
             if (utility.type === UtilityType.Static) {
-                const documentation = getCSSDataDocumentation({
-                    generatedCSS: generateCSS([token], this.css)
-                })
+                const documentation = createCSSMarkdownDocumentation(generateCSS([token], this.css))
                 if (documentation) {
                     return {
                         contents: documentation,
@@ -40,9 +36,7 @@ export default function inspectSyntax(this: CSSLanguageService, document: TextDo
                     }
                 }
             } else {
-                const documentation = getCSSDataDocumentation({
-                    generatedCSS: generateCSS([token], this.css)
-                })
+                const documentation = createCSSMarkdownDocumentation(generateCSS([token], this.css))
                 if (documentation) {
                     return {
                         contents: documentation,

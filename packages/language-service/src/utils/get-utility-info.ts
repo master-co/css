@@ -1,8 +1,6 @@
-import { type CompiledUtility, createDefaultCSS, getStaticUtilityDeclarations } from '../master-css'
-import cssDataProvider from './css-data-provider'
+import { type CompiledUtility, getStaticUtilityDeclarations } from '../master-css'
 
-export default function getUtilityInfo(utility: CompiledUtility, css = createDefaultCSS()) {
-    const nativeProperties = cssDataProvider.provideProperties()
+export default function getUtilityInfo(utility: CompiledUtility) {
     const declarations = getStaticUtilityDeclarations(utility)
     const propsLength = Object.keys(declarations || {}).length
     const propName = Object.keys(declarations || {})[0] as keyof typeof declarations
@@ -12,15 +10,7 @@ export default function getUtilityInfo(utility: CompiledUtility, css = createDef
      * Remaps to native CSS properties when only one property is declared
      * */
     if (propsLength === 1) {
-        const nativeCSSPropertyData = nativeProperties.find(({ name }) => name === propName)
-        const nativeCSSValueData = nativeCSSPropertyData?.values?.find(({ name }) =>
-            name === propValue
-            // fix like inline-grid not found
-            || name.replace(/^-(ms|moz)-/, '') === propValue
-        )
-        if (nativeCSSValueData) {
-            detail = `${propName}: ${propValue}`
-        }
+        detail = `${propName}: ${propValue}`
     }
     return {
         detail

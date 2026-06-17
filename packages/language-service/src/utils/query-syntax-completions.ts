@@ -6,7 +6,7 @@ import { GROUP_TRIGGER_CHARACTER, SELECTOR_TRIGGER_CHARACTERS } from '../common'
 import getClassCompletionItems from './get-class-completion-items'
 import getValueCompletionItems from './get-value-completion-items'
 import getQueryCompletionItems from './get-query-completion-items'
-import { getCSSDataDocumentation } from './get-css-data-documentation'
+import createCSSMarkdownDocumentation from './create-css-markdown-documentation'
 
 export default function querySyntaxCompletions(q = '', css: MasterCSS = createDefaultCSS()) {
     const fields = q.split(' ')
@@ -89,9 +89,7 @@ export default function querySyntaxCompletions(q = '', css: MasterCSS = createDe
                 completionItems.push({
                     label: '.<class>',
                     insertText: '.',
-                    documentation: getCSSDataDocumentation({
-                        generatedCSS: generateCSS([field + '.class'], css)
-                    }),
+                    documentation: createCSSMarkdownDocumentation(generateCSS([field + '.class'], css)),
                     kind: CompletionItemKind.Class
                 })
             }

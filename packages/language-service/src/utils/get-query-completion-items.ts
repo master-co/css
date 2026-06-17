@@ -1,7 +1,7 @@
 import { AT_SIGN, MasterCSS, createDefaultCSS, QUERY_COMPARISON_OPERATORS, QUERY_LOGICAL_OPERATORS, type AtRule, generateAt, generateCSS, getSingleAtNumberRuleNode, parseAt } from '../master-css'
 import { CompletionItem, CompletionItemKind } from 'vscode-languageserver-protocol'
 import sortCompletionItems from './sort-completion-items'
-import { getCSSDataDocumentation } from './get-css-data-documentation'
+import createCSSMarkdownDocumentation from './create-css-markdown-documentation'
 
 export default function getQueryCompletionItems(css: MasterCSS = createDefaultCSS(), triggerCharacter = AT_SIGN, syntax: string): CompletionItem[] {
     const completionItems: CompletionItem[] = []
@@ -14,9 +14,7 @@ export default function getQueryCompletionItems(css: MasterCSS = createDefaultCS
                         filterText: name + '()',
                         insertText: name + '()',
                         sortText: name + '()',
-                        documentation: getCSSDataDocumentation({
-                            generatedCSS: generateCSS([syntax + name + '()'], css)
-                        }),
+                        documentation: createCSSMarkdownDocumentation(generateCSS([syntax + name + '()'], css)),
                     }
                 )
             })
@@ -37,9 +35,7 @@ export default function getQueryCompletionItems(css: MasterCSS = createDefaultCS
                 insertText: token,
                 detail: text,
                 kind: CompletionItemKind.Keyword,
-                documentation: getCSSDataDocumentation({
-                    generatedCSS: generateCSS([syntax + token], css)
-                }),
+                documentation: createCSSMarkdownDocumentation(generateCSS([syntax + token], css)),
             })
             return true
         }
@@ -49,9 +45,7 @@ export default function getQueryCompletionItems(css: MasterCSS = createDefaultCS
         const completionItem: Omit<CompletionItem, 'label'> = {
             filterText: token,
             insertText: token,
-            documentation: getCSSDataDocumentation({
-                generatedCSS: generateCSS([syntax + token], css)
-            })
+            documentation: createCSSMarkdownDocumentation(generateCSS([syntax + token], css))
         }
         if ([AT_SIGN, ...QUERY_LOGICAL_OPERATORS].includes(triggerCharacter)) {
             if (handleNumberNodes(atRule, token)) return
@@ -63,9 +57,7 @@ export default function getQueryCompletionItems(css: MasterCSS = createDefaultCS
                     detail: text,
                     sortText: CompletionItemKind.Keyword + token,
                     kind: CompletionItemKind.Keyword,
-                    documentation: getCSSDataDocumentation({
-                        generatedCSS: generateCSS([syntax + token], css)
-                    }),
+                    documentation: createCSSMarkdownDocumentation(generateCSS([syntax + token], css)),
                 }
             )
         } else if (QUERY_COMPARISON_OPERATORS.includes(triggerCharacter)) {

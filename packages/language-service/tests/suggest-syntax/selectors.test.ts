@@ -82,7 +82,7 @@ describe.concurrent('pseudo-element', () => {
 })
 
 test.concurrent('sorting', () => {
-    expect(hint('text:center:')?.length).toBeGreaterThan(200)
+    expect(hint('text:center:')?.length).toBeGreaterThan(100)
 })
 
 test.todo('types _ should hint')

@@ -1,8 +1,8 @@
 import { type CompletionItem, CompletionItemKind } from 'vscode-languageserver-protocol'
-import cssDataProvider from './css-data-provider'
 import { MasterCSS, createDefaultCSS, UtilityType, type Variable, generateCSS } from '../master-css'
-import { getCSSDataDocumentation } from './get-css-data-documentation'
+import createCSSMarkdownDocumentation from './create-css-markdown-documentation'
 import sortCompletionItems from './sort-completion-items'
+import { getMdnPropertySyntax, getMdnPropertyValueNames } from './mdn-css-data'
 
 const SCOPED_VARIABLE_PRIORITY = 'aaaa'
 const AMBIGUOUS_PRIORITY = 'bbbb'
@@ -32,21 +32,18 @@ function getNumericSortValue(variable: Variable, rootSize: number) {
 }
 
 export default function getValueCompletionItems(css: MasterCSS = createDefaultCSS(), ruleKey: string, valuePrefix = ''): CompletionItem[] {
-    const nativeProperties = cssDataProvider.provideProperties()
     const completionItems: CompletionItem[] = []
     const nativeKey = css.definedUtilities.find(({ keys }) => keys?.includes(ruleKey))?.id
-    const nativePropertyData = nativeProperties.find(({ name }) => name === nativeKey)
+    const nativePropertyValues = getMdnPropertyValueNames(nativeKey)
     const generateVariableCompletionItem = (variable: Variable, {
         appliedValue,
         label,
         negative,
         scoped
     }: GenerateVariableCompletionItemOptions = {}): CompletionItem | undefined => {
-        const eachNativePropertyData = nativeProperties.find((x: { name: string }) => x.name === variable.namespace) || nativePropertyData
+        const nativePropertySyntax = getMdnPropertySyntax(variable.namespace) || getMdnPropertySyntax(nativeKey)
         const valueToken = appliedValue ?? (scoped ? variable.key : variable.name)
-        const documentation = getCSSDataDocumentation({
-            generatedCSS: generateCSS([ruleKey + ':' + valueToken], css)
-        })
+        const documentation = createCSSMarkdownDocumentation(generateCSS([ruleKey + ':' + valueToken], css))
         const completionItem: CompletionItem = {
             label: label ?? variable.name,
             kind: CompletionItemKind.Value
@@ -54,13 +51,9 @@ export default function getValueCompletionItems(css: MasterCSS = createDefaultCS
         const conflicted = completionItems.find(({ label }) => label === completionItem.label)
         if (conflicted) {
             completionItem.label = '$(' + completionItem.label + ')'
-            completionItem.documentation = getCSSDataDocumentation({
-                generatedCSS: generateCSS([ruleKey + ':' + completionItem.label], css)
-            })
+            completionItem.documentation = createCSSMarkdownDocumentation(generateCSS([ruleKey + ':' + completionItem.label], css))
         } else {
-            completionItem.documentation = getCSSDataDocumentation({
-                generatedCSS: generateCSS([ruleKey + ':' + valueToken], css)
-            })
+            completionItem.documentation = createCSSMarkdownDocumentation(generateCSS([ruleKey + ':' + valueToken], css))
         }
         if (variable.namespace?.startsWith('color')) {
             if (Object.keys(variable.modes || {}).length) {
@@ -82,7 +75,7 @@ export default function getValueCompletionItems(css: MasterCSS = createDefaultCS
                     prefix + num.padStart(10, '0'))
             }
         } else if (variable.type === 'number') {
-            if (variable.name.startsWith('-') && eachNativePropertyData?.syntax?.includes('absolute')) return
+            if (variable.name.startsWith('-') && nativePropertySyntax?.includes('absolute')) return
             completionItem.detail = String(variable.name)
             const value = getNumericSortValue(variable, css.settings.rootSize)
             const sortValue = negative ? -Math.abs(value) : value
@@ -146,9 +139,7 @@ export default function getValueCompletionItems(css: MasterCSS = createDefaultCS
                 completionItems.push({
                     label: animationName,
                     kind: CompletionItemKind.Value,
-                    documentation: getCSSDataDocumentation({
-                        generatedCSS: generateCSS([ruleKey + ':' + animationName], css)
-                    }),
+                    documentation: createCSSMarkdownDocumentation(generateCSS([ruleKey + ':' + animationName], css)),
                     detail: isNative ? eachDefinedUtility.id + ': ' + animationName : animationName
                 })
             })
@@ -167,9 +158,7 @@ export default function getValueCompletionItems(css: MasterCSS = createDefaultCS
                     label: value,
                     kind: CompletionItemKind.Value,
                     sortText: AMBIGUOUS_PRIORITY + value,
-                    documentation: getCSSDataDocumentation({
-                        generatedCSS: generateCSS([ruleKey + ':' + value], css)
-                    }),
+                    documentation: createCSSMarkdownDocumentation(generateCSS([ruleKey + ':' + value], css)),
                     detail: isNative ? eachDefinedUtility.id + ': ' + value : value
                 })
             }
@@ -180,24 +169,22 @@ export default function getValueCompletionItems(css: MasterCSS = createDefaultCS
      * Native values
      */
     if (nativeKey) {
-        nativePropertyData?.values
-            ?.forEach(value => {
-                if (completionItems.find(x => x.label === value.name)
+        nativePropertyValues
+            .forEach(value => {
+                if (completionItems.find(x => x.label === value)
                     // should ignore 100, 200 ... 900
-                    || nativePropertyData.name === 'font' && typeof +value.name === 'number'
+                    || nativeKey === 'font' && typeof +value === 'number'
                     // should ignore blanks
-                    || value.name.includes(' ')
+                    || value.includes(' ')
                 ) return
                 completionItems.push({
-                    label: value.name,
+                    label: value,
                     kind: CompletionItemKind.Value,
-                    sortText: NATIVE_PRIORITY + (value.name.startsWith('-')
-                        ? 'zz' + value.name.slice(1)
-                        : value.name),
-                    documentation: getCSSDataDocumentation({
-                        generatedCSS: generateCSS([ruleKey + ':' + value.name], css)
-                    }),
-                    detail: nativeKey + ': ' + value.name
+                    sortText: NATIVE_PRIORITY + (value.startsWith('-')
+                        ? 'zz' + value.slice(1)
+                        : value),
+                    documentation: createCSSMarkdownDocumentation(generateCSS([ruleKey + ':' + value], css)),
+                    detail: nativeKey + ': ' + value
                 })
             })
     }

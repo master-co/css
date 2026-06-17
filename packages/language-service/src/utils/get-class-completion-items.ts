@@ -1,6 +1,6 @@
 import { type CompletionItem, CompletionItemKind } from 'vscode-languageserver-protocol'
 import { UtilityType, MasterCSS, createDefaultCSS, generateCSS } from '../master-css'
-import { getCSSDataDocumentation } from './get-css-data-documentation'
+import createCSSMarkdownDocumentation from './create-css-markdown-documentation'
 import sortCompletionItems from './sort-completion-items'
 import getUtilityInfo from './get-utility-info'
 
@@ -10,14 +10,12 @@ export default function getClassCompletionItems(css: MasterCSS = createDefaultCS
     for (const eachDefinedUtility of css.definedUtilities) {
         if (eachDefinedUtility.type === UtilityType.Static) {
             const isComponent = eachDefinedUtility.layer === 'components'
-            const { detail } = getUtilityInfo(eachDefinedUtility, css)
+            const { detail } = getUtilityInfo(eachDefinedUtility)
             const utilityName = eachDefinedUtility.id.slice(1)
             completionItems.push({
                 label: utilityName,
                 kind: CompletionItemKind.Value,
-                documentation: getCSSDataDocumentation({
-                    generatedCSS: generateCSS([utilityName], css)
-                }),
+                documentation: createCSSMarkdownDocumentation(generateCSS([utilityName], css)),
                 detail: isComponent ? 'component' : detail
             })
         } else {
