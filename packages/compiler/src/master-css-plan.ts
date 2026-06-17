@@ -19,7 +19,6 @@ import type {
     MasterCSSPlanUtilityRule,
     MasterCSSPlanVariableNumericValue,
     MasterCSSPlanVariable,
-    MasterCSSPlanVariableAliasSet,
     MasterCSSPlanVariables,
     MasterCSSPlanVariant,
     MasterCSSPlanVariantBranch,
@@ -105,9 +104,6 @@ function collectVariableNamespaces(input: CSSDirectivePlanInput = {}, options: C
     }
     for (const variable of input.variables || []) {
         addVariableNamespace(namespaces, variable.namespace)
-    }
-    for (const ref of Object.keys(options.basePlan?.variableNamespaces || {})) {
-        addVariableAliasRefNamespace(namespaces, ref)
     }
     addUtilityVariableNamespaces(namespaces, options.basePlan?.utilities)
     addUtilityVariableNamespaces(namespaces, input.utilities)
@@ -460,7 +456,7 @@ function compileUtilityBuckets(utilities: MasterCSSPlanUtility[] | undefined): M
         for (const matcher of utility.matchers) {
             switch (matcher.type) {
                 case 'variable':
-                    if (utility.variableAliases?.length || utility.variableAliasSet !== undefined || utility.variableAliasRefs?.length) {
+                    if (utility.variableAliases?.length || utility.variableAliasRefs?.length) {
                         buckets.variable = addBucketIndex(buckets.variable, index)
                     }
                     break
@@ -477,44 +473,6 @@ function compileUtilityBuckets(utilities: MasterCSSPlanUtility[] | undefined): M
         }
     })
     return Object.keys(buckets).length ? buckets : undefined
-}
-
-function getVariableKeyByNamespace(variableName: string, namespace: string) {
-    const negative = variableName.startsWith('-')
-    const positiveName = negative ? variableName.slice(1) : variableName
-    if (positiveName !== namespace && !positiveName.startsWith(namespace + '-')) return
-    const key = positiveName === namespace ? '' : positiveName.slice(namespace.length + 1)
-    return negative ? '-' + key : key
-}
-
-function createVariableNamespaces(plan: MasterCSSPlan) {
-    const namespaces = new Set<string>()
-    for (const variable of plan.variables || []) {
-        if (variable.namespace) namespaces.add(variable.namespace)
-    }
-    for (const utility of plan.utilities || []) {
-        for (const ref of utility.variableAliasRefs || []) {
-            if (ref[0] === '~' || ref[0] === '=') namespaces.add(ref.slice(1))
-        }
-    }
-
-    const variableNamespaces: Record<string, MasterCSSPlanVariableAliasSet> = {}
-    for (const namespace of namespaces) {
-        const aliases: MasterCSSPlanVariableAliasSet = []
-        const usedKeys = new Set<string>()
-        for (const variable of plan.variables || []) {
-            if (!variable.name) continue
-            const key = getVariableKeyByNamespace(variable.name, namespace)
-            if (key === undefined || usedKeys.has(key)) continue
-            usedKeys.add(key)
-            aliases.push([key, variable.name])
-        }
-        if (aliases.length) {
-            variableNamespaces['=' + namespace] = aliases
-            variableNamespaces['~' + namespace] = aliases
-        }
-    }
-    return Object.keys(variableNamespaces).length ? variableNamespaces : undefined
 }
 
 function compileAnimations(input: CSSDirectivePlanInput['animations']): MasterCSSPlanAnimations | undefined {
@@ -595,12 +553,11 @@ function mergePlan(basePlan: MasterCSSPlan | undefined, fragment: MasterCSSPlan)
         const plan = clone(fragment)
         addOwnNamespaceVariableRefs(plan)
         plan.utilityBuckets = compileUtilityBuckets(plan.utilities)
-        plan.variableNamespaces = createVariableNamespaces(plan)
         return plan
     }
 
     const plan: MasterCSSPlan = {
-        version: 1,
+        version: 2,
         settings: { ...(basePlan.settings || {}), ...(fragment.settings || {}) },
         variables: mergeBy(basePlan.variables, fragment.variables, (variable) => variable.name),
         animations: mergeRecords(basePlan.animations, fragment.animations),
@@ -610,14 +567,12 @@ function mergePlan(basePlan: MasterCSSPlan | undefined, fragment: MasterCSSPlan)
         breakpointAtRules: mergeRecords(basePlan.breakpointAtRules, fragment.breakpointAtRules),
         containerAtRules: mergeRecords(basePlan.containerAtRules, fragment.containerAtRules),
         selectors: mergeRecords(basePlan.selectors, fragment.selectors),
-        variableAliasSets: basePlan.variableAliasSets ? clone(basePlan.variableAliasSets) : undefined,
         utilities: mergeBy(basePlan.utilities, fragment.utilities, (utility) => `${utility.id}\0${utility.layer || ''}`),
         functions: mergeRecords(basePlan.functions, fragment.functions),
         debug: mergeRecords(basePlan.debug, fragment.debug)
     }
     addOwnNamespaceVariableRefs(plan)
     plan.utilityBuckets = compileUtilityBuckets(plan.utilities)
-    plan.variableNamespaces = createVariableNamespaces(plan)
     return Object.fromEntries(Object.entries(plan).filter(([, value]) =>
         value !== undefined
         && (!Array.isArray(value) || value.length)
@@ -640,7 +595,7 @@ export function createMasterCSSPlan(input: CSSDirectivePlanInput = {}, options: 
         ...(input.modes?.length ? { modes: [...input.modes] } : {})
     }
     const variantBasePlan = mergePlan(options.basePlan, {
-        version: 1,
+        version: 2,
         ...(Object.keys(settings).length ? { settings } : {}),
         ...(variables?.length ? { variables } : {}),
         ...(atRules ? { atRules } : {}),
@@ -652,7 +607,7 @@ export function createMasterCSSPlan(input: CSSDirectivePlanInput = {}, options: 
     const animations = compileAnimations(input.animations)
     const animationOptions = compileAnimationOptions(input.animationOptions)
     const fragment: MasterCSSPlan = {
-        version: 1,
+        version: 2,
         ...(Object.keys(settings).length ? { settings } : {}),
         ...(variables?.length ? { variables } : {}),
         ...(animations ? { animations } : {}),

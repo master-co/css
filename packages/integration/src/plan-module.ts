@@ -11,7 +11,7 @@ export const RESOLVED_MASTER_CSS_PLAN_QUERY_PREFIX = '\0master-css-plan:'
 export const VIRTUAL_MODULE_DIR = 'node_modules/.master-css'
 export const VIRTUAL_PLAN_FILE = PLAN_MODULE_FILE
 export const VIRTUAL_PLAN_ASSET_FILE = PLAN_ASSET_FILE
-export const EMPTY_PLAN_JSON = '{"version":1}'
+export const EMPTY_PLAN_JSON = '{"version":2}'
 
 export interface CSSPlanLoadResult {
     plan: MasterCSSPlan

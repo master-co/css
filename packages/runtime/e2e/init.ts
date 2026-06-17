@@ -41,16 +41,6 @@ function getDefaultVariableName(key: string, namespace?: string) {
     return negative ? '-' + name : name
 }
 
-function getVariableKeyByNamespace(variableName: string, namespace: string) {
-    const negative = variableName.startsWith('-')
-    const positiveName = negative ? variableName.slice(1) : variableName
-    if (positiveName !== namespace && !positiveName.startsWith(namespace + '-')) return
-    const variableKey = positiveName === namespace
-        ? ''
-        : positiveName.slice(namespace.length + 1)
-    return negative ? '-' + variableKey : variableKey
-}
-
 function normalizeVariableValue(value: RuntimePlanVariable['value'] | undefined) {
     if (typeof value !== 'string') {
         return { value, dependencies: undefined }
@@ -134,42 +124,6 @@ function createRuntimeVariables(defaultVariables: RuntimePlanVariable[], inputVa
     return [...variables.values()]
 }
 
-function addVariableAlias(
-    variableNamespaces: NonNullable<MasterCSSPlan['variableNamespaces']>,
-    ref: string,
-    key: string,
-    name: string
-) {
-    const aliases = variableNamespaces[ref] || (variableNamespaces[ref] = [])
-    if (!aliases.some(([aliasKey, aliasName]) => aliasKey === key && aliasName === name)) {
-        aliases.push([key, name])
-    }
-}
-
-function createRuntimeVariableNamespaces(
-    defaultNamespaces: MasterCSSPlan['variableNamespaces'],
-    variables: RuntimePlanVariable[]
-) {
-    const variableNamespaces: NonNullable<MasterCSSPlan['variableNamespaces']> = {}
-    for (const [ref, aliases] of Object.entries(defaultNamespaces || {})) {
-        variableNamespaces[ref] = aliases.map(([key, name]) => [key, name])
-    }
-
-    for (const variable of variables) {
-        if (!variable.name) continue
-        const key = variable.namespace
-            ? getVariableKeyByNamespace(variable.name, variable.namespace) ?? variable.key
-            : variable.key
-        if (variable.namespace) {
-            addVariableAlias(variableNamespaces, `=${variable.namespace}`, key, variable.name)
-            addVariableAlias(variableNamespaces, `~${variable.namespace}`, key, variable.name)
-        } else {
-            addVariableAlias(variableNamespaces, '~color', key, variable.name)
-        }
-    }
-    return Object.keys(variableNamespaces).length ? variableNamespaces : undefined
-}
-
 function normalizeUtility(utility: RuntimePlanUtilityInput, order: number): NonNullable<MasterCSSPlan['utilities']>[number] {
     if (utility.emit && utility.matchers) return utility as NonNullable<MasterCSSPlan['utilities']>[number]
     const name = utility.name || utility.id || ''
@@ -216,7 +170,7 @@ function createRuntimeUtilityBuckets(
         for (const matcher of utility.matchers) {
             switch (matcher.type) {
                 case 'variable':
-                    if (utility.variableAliases?.length || utility.variableAliasSet !== undefined || utility.variableAliasRefs?.length) {
+                    if (utility.variableAliases?.length || utility.variableAliasRefs?.length) {
                         utilityBuckets.variable = addBucketIndex(utilityBuckets.variable, index)
                     }
                     break
@@ -243,7 +197,7 @@ function createRuntimePlan(plan: RuntimePlanInput) {
     return {
         ...defaultPlan,
         ...rest,
-        version: 1,
+        version: 2,
         settings: {
             ...defaultPlan.settings,
             ...rest.settings,
@@ -262,7 +216,6 @@ function createRuntimePlan(plan: RuntimePlanInput) {
             ...(defaultPlan.variants || []),
             ...(rest.variants || [])
         ],
-        variableNamespaces: createRuntimeVariableNamespaces(defaultPlan.variableNamespaces, variables),
         utilities: [
             ...defaultUtilities,
             ...customUtilities

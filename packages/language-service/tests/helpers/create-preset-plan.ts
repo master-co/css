@@ -89,27 +89,12 @@ function addUtilityBucketIndexes(
 }
 
 export function createPresetPlan(plan: PresetPlanInput = {}): MasterCSSPlan {
-    if (plan.version === 1) return plan as MasterCSSPlan
+    if (plan.version === 2) return plan as MasterCSSPlan
     const defaultUtilities = defaultPlan.utilities || []
     const utilities = (plan.utilities || []).map((utility, index) => normalizeUtility(utility as PlanUtilityDraft, defaultUtilities.length + index))
     const utilityBuckets = cloneUtilityBuckets()
     addUtilityBucketIndexes(utilityBuckets, utilities, defaultUtilities.length)
     const variables = (plan.variables || []).map(normalizeVariable)
-    const variableNamespaces: NonNullable<MasterCSSPlan['variableNamespaces']> = Object.fromEntries(
-        Object.entries(defaultPlan.variableNamespaces || {}).map(([name, aliases]) => [name, aliases.map((alias) => [...alias])])
-    )
-    for (const [name, aliases] of Object.entries(plan.variableNamespaces || {})) {
-        variableNamespaces[name] = aliases.map((alias) => [...alias])
-    }
-    for (const variable of variables) {
-        if (!variable.name || !variable.namespace) continue
-        for (const namespace of [`=${variable.namespace}`, `~${variable.namespace}`]) {
-            variableNamespaces[namespace] ??= []
-            if (!variableNamespaces[namespace].some(([key]) => key === variable.key)) {
-                variableNamespaces[namespace].push([variable.key, variable.name])
-            }
-        }
-    }
     return {
         ...defaultPlan,
         ...plan,
@@ -121,7 +106,6 @@ export function createPresetPlan(plan: PresetPlanInput = {}): MasterCSSPlan {
             ...(defaultPlan.variables || []),
             ...variables
         ],
-        variableNamespaces,
         animations: {
             ...(defaultPlan.animations || {}),
             ...(plan.animations || {})

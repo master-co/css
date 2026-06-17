@@ -52,8 +52,8 @@ describe('css plan loader', () => {
         })
 
         expect(dependencies).toEqual([planPath])
-        expect(source).toContain('"version":1')
-        expect(JSON.parse(source).version).toBe(1)
+        expect(source).toContain('"version":2')
+        expect(JSON.parse(source).version).toBe(2)
         expect(source).toContain('primary')
         expect(source).toContain('#123')
     })
@@ -69,7 +69,7 @@ describe('css plan loader', () => {
             getOptions: () => ({ module: true })
         })
 
-        expect(source).toMatch(/^export default \{"version":1/)
+        expect(source).toMatch(/^export default \{"version":2/)
         expect(source).toContain('primary')
         expect(source).toContain('#123')
     })
@@ -117,7 +117,7 @@ describe('css plan loader', () => {
         })
 
         expect(dependencies).toEqual([planPath])
-        expect(source).toContain('"version":1')
+        expect(source).toContain('"version":2')
         expect(source).toContain('primary')
         expect(source).toContain('#123')
         expect(source).toContain('"btn"')
@@ -153,7 +153,7 @@ describe('css plan loader', () => {
             addDependency: (dependency: string) => dependencies.push(dependency)
         })
 
-        expect(source).toContain('"version":1')
+        expect(source).toContain('"version":2')
         expect(source).toContain('primary')
         expect(source).toContain('#123')
         expect(source).toContain('"btn"')

@@ -176,7 +176,6 @@ export interface MasterCSSPlanUtility {
     atRules?: string[]
     transform?: MasterCSSPlanTransformOp
     variableAliases?: MasterCSSPlanVariableAliasSet
-    variableAliasSet?: number
     variableAliasRefs?: string[]
     emit: MasterCSSPlanUtilityEmit
     matchers: MasterCSSPlanUtilityMatcher[]
@@ -191,7 +190,7 @@ export interface MasterCSSPlan {
      * This is not a legacy Config compatibility marker; engines must reject
      * unsupported plan versions instead of migrating authoring APIs at runtime.
      */
-    version: 1
+    version: 2
     settings?: MasterCSSPlanSettings
     variables?: MasterCSSPlanVariables
     animations?: MasterCSSPlanAnimations
@@ -201,8 +200,6 @@ export interface MasterCSSPlan {
     breakpointAtRules?: MasterCSSPlanAtRules
     containerAtRules?: MasterCSSPlanAtRules
     selectors?: MasterCSSPlanSelectors
-    variableNamespaces?: Record<string, MasterCSSPlanVariableAliasSet>
-    variableAliasSets?: MasterCSSPlanVariableAliasSet[]
     utilities?: MasterCSSPlanUtilities
     utilityBuckets?: MasterCSSPlanUtilityBuckets
     functions?: MasterCSSPlanFunctions

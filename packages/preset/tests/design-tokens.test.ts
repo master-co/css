@@ -313,9 +313,8 @@ describe.concurrent('@master/css-preset design token parity', () => {
 
     test('does not publish synthetic negative number tokens', () => {
         expect(defaultPlan.variables?.filter((variable) => variable.type === 'number' && variable.name?.startsWith('-'))).toEqual([])
-        expect(defaultPlan.variableNamespaces?.['=breakpoint']?.some(([key]) => key.startsWith('-'))).toBe(false)
-        expect(defaultPlan.variableNamespaces?.['=container']?.some(([key]) => key.startsWith('-'))).toBe(false)
-        expect(defaultPlan.variableNamespaces?.['=spacing']?.some(([key]) => key.startsWith('-'))).toBe(false)
+        expect(Object.hasOwn(defaultPlan, 'variableNamespaces')).toBe(false)
+        expect(Object.hasOwn(defaultPlan, 'variableAliasSets')).toBe(false)
     })
 
     test('executes built-in registry records without authoring config', () => {

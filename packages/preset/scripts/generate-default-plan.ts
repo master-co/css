@@ -11,17 +11,13 @@ import type {
     MasterCSSPlan,
     MasterCSSPlanFunctions,
     MasterCSSPlanUtility,
-    MasterCSSPlanUtilityBuckets,
-    MasterCSSPlanVariable,
-    MasterCSSPlanVariableAliasSet
+    MasterCSSPlanUtilityBuckets
 } from 'shared/master-css-plan'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const packageRoot = resolve(__dirname, '..')
 const sourceFile = resolve(packageRoot, 'src/index.css')
 const outputFile = resolve(packageRoot, 'src/default-plan.json')
-const CONDITION_VARIABLE_NAMESPACES = ['breakpoint', 'container']
-
 function clone<T>(value: T): T {
     return JSON.parse(JSON.stringify(value)) as T
 }
@@ -61,7 +57,7 @@ function createUtilityBuckets(utilities: MasterCSSPlanUtility[] | undefined): Ma
         for (const matcher of utility.matchers) {
             switch (matcher.type) {
                 case 'variable':
-                    if (utility.variableAliases?.length || utility.variableAliasSet !== undefined || utility.variableAliasRefs?.length) {
+                    if (utility.variableAliases?.length || utility.variableAliasRefs?.length) {
                         buckets.variable = addBucketIndex(buckets.variable, index)
                     }
                     break
@@ -80,75 +76,10 @@ function createUtilityBuckets(utilities: MasterCSSPlanUtility[] | undefined): Ma
     return Object.keys(buckets).length ? buckets : undefined
 }
 
-function addVariableAliasRef(refs: Set<string>, ref: unknown) {
-    if (typeof ref === 'string' && (ref[0] === '=' || ref[0] === '~') && ref.length > 1) {
-        refs.add(ref)
-        if (ref[0] === '~') refs.add('=' + ref.slice(1))
-    }
-}
-
-function addExactVariableAliasRef(refs: Set<string>, namespace: unknown) {
-    if (typeof namespace === 'string' && namespace) refs.add('=' + namespace)
-}
-
-function addImplicitUtilityAliasRef(refs: Set<string>, value: unknown) {
-    if (typeof value !== 'string' || !value || value[0] === '.' || value.includes('()')) return
-    addExactVariableAliasRef(refs, value)
-}
-
-function collectVariableAliasRefs(utilities: MasterCSSPlanUtility[]) {
-    const refs = new Set<string>()
-    for (const namespace of CONDITION_VARIABLE_NAMESPACES) {
-        addExactVariableAliasRef(refs, namespace)
-    }
-    for (const utility of utilities) {
-        for (const namespace of utility.namespaces || []) {
-            addExactVariableAliasRef(refs, namespace)
-        }
-        for (const ref of utility.variableAliasRefs || []) {
-            addVariableAliasRef(refs, ref)
-        }
-        if (
-            utility.implicitNamespace !== false
-            && (utility.type === UtilityType.Native || utility.type === UtilityType.NativeShorthand)
-        ) {
-            addImplicitUtilityAliasRef(refs, utility.id)
-            addImplicitUtilityAliasRef(refs, utility.name)
-        }
-    }
-    return [...refs].sort((a, b) => b.length - a.length || a.localeCompare(b))
-}
-
-function getVariableKeyByNamespace(variableName: string, namespace: string) {
-    const negative = variableName.startsWith('-')
-    const positiveName = negative ? variableName.slice(1) : variableName
-    if (positiveName !== namespace && !positiveName.startsWith(namespace + '-')) return
-    const key = positiveName === namespace ? '' : positiveName.slice(namespace.length + 1)
-    return negative ? '-' + key : key
-}
-
-function createVariableNamespaces(variables: MasterCSSPlanVariable[] = [], refs: Iterable<string>) {
-    const variableNamespaces: Record<string, MasterCSSPlanVariableAliasSet> = {}
-    for (const ref of refs) {
-        const namespace = ref.slice(1)
-        const aliases: MasterCSSPlanVariableAliasSet = []
-        const usedKeys = new Set<string>()
-        for (const variable of variables) {
-            if (!variable.name) continue
-            const key = getVariableKeyByNamespace(variable.name, namespace)
-            if (key === undefined || usedKeys.has(key)) continue
-            usedKeys.add(key)
-            aliases.push([key, variable.name])
-        }
-        if (aliases.length) variableNamespaces[ref] = aliases
-    }
-    return Object.keys(variableNamespaces).length ? variableNamespaces : undefined
-}
-
 export function createDefaultPlan(cssPlan: MasterCSSPlan): MasterCSSPlan {
     const utilities = normalizeUtilityOrders(cssPlan.utilities || createSourceUtilities())
     return {
-        version: 1,
+        version: 2,
         settings: { ...settings, ...cssPlan.settings },
         variables: cssPlan.variables,
         animations: cssPlan.animations,
@@ -157,8 +88,6 @@ export function createDefaultPlan(cssPlan: MasterCSSPlan): MasterCSSPlan {
         breakpointAtRules: cssPlan.breakpointAtRules,
         containerAtRules: cssPlan.containerAtRules,
         selectors: cssPlan.selectors,
-        variableNamespaces: createVariableNamespaces(cssPlan.variables, collectVariableAliasRefs(utilities)),
-        variableAliasSets: null as unknown as MasterCSSPlan['variableAliasSets'],
         utilities,
         utilityBuckets: createUtilityBuckets(utilities),
         functions: clone(functions) as MasterCSSPlanFunctions
@@ -169,7 +98,7 @@ export function createDefaultPlanFromSourceFile(file = sourceFile) {
     const utilities = createSourceUtilities()
     return createDefaultPlan(compileCSSPlanFile(file, {
         basePlan: {
-            version: 1,
+            version: 2,
             utilities,
             utilityBuckets: createUtilityBuckets(utilities)
         }

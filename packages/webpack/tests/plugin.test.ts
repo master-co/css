@@ -281,7 +281,7 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
         expect((compiler.inputFileSystem._writeVirtualFile as any).mock.calls.at(-1)?.[2])
             .not.toContain('font-weight-bold')
         expect([...(plugin as any).planJSONAssets.values()].at(-1))
-            .toContain('"version":1')
+            .toContain('"version":2')
     })
 
     test('resolves virtual:master-css-preloaded to a JS virtual module', async () => {

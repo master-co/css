@@ -7,7 +7,7 @@ import createRuntimeManifest from '../src/runtime-manifest'
 describe.concurrent('MasterCSSPlan execution', () => {
     it('executes pre-bucketed utility and variable aliases without config-style resolution', () => {
         const plan: MasterCSSPlan = {
-            version: 1,
+            version: 2,
             settings: {
                 rootSize: 16,
                 modes: []
@@ -48,13 +48,96 @@ describe.concurrent('MasterCSSPlan execution', () => {
             .toBe('.m\\:card{margin:calc(var(--spacing-card) / 16 * 1rem)}')
     })
 
+    it('resolves variable alias refs during plan loading without serialized namespaces', () => {
+        const plan: MasterCSSPlan = {
+            version: 2,
+            settings: {
+                rootSize: 16,
+                modes: []
+            },
+            variables: [
+                { name: 'spacing-card', key: 'card', namespace: 'spacing', type: 'number', value: 16 },
+                { name: 'color-muted', key: 'muted', namespace: 'color', type: 'string', value: '#888888' },
+                { name: 'color-text-muted', key: 'muted', namespace: 'color-text', type: 'string', value: '#777777' },
+                { name: 'color-line-muted', key: 'muted', namespace: 'color-line', type: 'string', value: '#666666' },
+                { name: 'radius-card', key: 'card', namespace: 'radius', type: 'number', value: 12 }
+            ],
+            utilities: [
+                {
+                    id: 'margin',
+                    name: 'margin',
+                    type: UtilityType.NativeShorthand,
+                    order: 0,
+                    key: 'm',
+                    keys: ['m'],
+                    unit: 'rem',
+                    variableAliasRefs: ['~spacing'],
+                    emit: { type: 'property', property: 'margin' },
+                    matchers: [{ type: 'variable', keys: ['m'] }]
+                },
+                {
+                    id: 'color',
+                    name: 'color',
+                    type: UtilityType.Native,
+                    order: 1,
+                    key: 'fg',
+                    keys: ['fg'],
+                    variableAliasRefs: ['~color-text', '~color'],
+                    emit: { type: 'property', property: 'color' },
+                    matchers: [{ type: 'variable', keys: ['fg'] }]
+                },
+                {
+                    id: 'border-color',
+                    name: 'border-color',
+                    type: UtilityType.Native,
+                    order: 2,
+                    key: 'border',
+                    keys: ['border'],
+                    variableAliasRefs: ['~color-line', '~color'],
+                    emit: { type: 'property', property: 'border-color' },
+                    matchers: [{ type: 'variable', keys: ['border'] }]
+                },
+                {
+                    id: 'border-radius',
+                    name: 'border-radius',
+                    type: UtilityType.Native,
+                    order: 3,
+                    key: 'r',
+                    keys: ['r'],
+                    unit: 'rem',
+                    variableAliasRefs: ['~radius'],
+                    emit: { type: 'property', property: 'border-radius' },
+                    matchers: [{ type: 'variable', keys: ['r'] }]
+                }
+            ],
+            utilityBuckets: {
+                variable: [0, 1, 2, 3]
+            }
+        }
+        const css = createCSS(plan)
+
+        expect(css.create('m:card')?.text)
+            .toBe('.m\\:card{margin:calc(var(--spacing-card) / 16 * 1rem)}')
+        expect(css.create('fg:muted')?.text)
+            .toBe('.fg\\:muted{color:var(--color-text-muted)}')
+        expect(css.create('border:muted')?.text)
+            .toBe('.border\\:muted{border-color:var(--color-line-muted)}')
+        expect(css.create('r:card')?.text)
+            .toBe('.r\\:card{border-radius:calc(var(--radius-card) / 16 * 1rem)}')
+    })
+
+    it('rejects v1 plans instead of compatibility-loading them', () => {
+        expect(() => createCSS({ version: 1 } as unknown as MasterCSSPlan))
+            .toThrow('Unsupported MasterCSSPlan version. Expected version 2.')
+    })
+
     it('uses compiled at-rule aliases from the plan', () => {
         const cardAtRule = {
             id: 'media',
             nodes: [{ type: 'number', name: 'width', operator: '>=', value: 48, unit: 'rem' }]
         } satisfies NonNullable<MasterCSSPlan['atRules']>[string]
         const plan: MasterCSSPlan = {
-            version: 1,
+            version: 2,
             settings: {
                 rootSize: 16,
                 modes: []
@@ -89,7 +172,7 @@ describe.concurrent('MasterCSSPlan execution', () => {
 
     it('serializes generated runtime manifest rules in layer order', () => {
         const plan: MasterCSSPlan = {
-            version: 1,
+            version: 2,
             settings: {
                 rootSize: 16,
                 modes: []

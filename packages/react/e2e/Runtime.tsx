@@ -7,7 +7,7 @@ const defaultPlan = defaultPlanJSON as unknown as MasterCSSPlan
 
 export default function Runtime() {
     const [plan, setPlan] = useState<MasterCSSPlan>({
-        version: 1,
+        version: 2,
         utilities: [
             {
                 id: '.btn',

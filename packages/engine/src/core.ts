@@ -23,6 +23,7 @@ import type {
     MasterCSSPlanUtilityBuckets,
     MasterCSSPlanUtilityLayerName,
     MasterCSSPlanUtilityMatcher,
+    MasterCSSPlanVariableAliasSet,
     MasterCSSPlanVariantBranch,
     MasterCSSPlanVariantToken
 } from 'shared/master-css-plan'
@@ -49,8 +50,8 @@ const DEFAULT_SETTINGS: EngineSettings = {
 }
 
 function assertMasterCSSPlan(plan: MasterCSSPlan): asserts plan is MasterCSSPlan {
-    if (!plan || plan.version !== 1) {
-        throw new TypeError('Unsupported MasterCSSPlan version. Expected version 1.')
+    if (!plan || plan.version !== 2) {
+        throw new TypeError('Unsupported MasterCSSPlan version. Expected version 2.')
     }
 }
 
@@ -149,6 +150,14 @@ function deriveUtilityMetadata(utility: CompiledUtility) {
     if (keys.length && !utility.keys) utility.keys = keys
     if (aliasGroups.length && !utility.aliasGroups) utility.aliasGroups = aliasGroups
     if (!utility.key) utility.key = keys[0] || aliasGroups[0]
+}
+
+function getVariableKeyByNamespace(variableName: string, namespace: string) {
+    const negative = variableName.startsWith('-')
+    const positiveName = negative ? variableName.slice(1) : variableName
+    if (positiveName !== namespace && !positiveName.startsWith(namespace + '-')) return
+    const key = positiveName === namespace ? '' : positiveName.slice(namespace.length + 1)
+    return negative ? '-' + key : key
 }
 
 export default class MasterCSS {
@@ -426,6 +435,25 @@ export default class MasterCSS {
         const { utilities } = this.plan
 
         if (!utilities) return
+        const aliasRefCache = new Map<string, MasterCSSPlanVariableAliasSet>()
+        const resolveAliasRef = (ref: string): MasterCSSPlanVariableAliasSet => {
+            const cached = aliasRefCache.get(ref)
+            if (cached) return cached
+
+            const namespace = ref[0] === '=' || ref[0] === '~' ? ref.slice(1) : ''
+            const aliases: MasterCSSPlanVariableAliasSet = []
+            const usedKeys = new Set<string>()
+            if (namespace) {
+                for (const variable of this.variables.values()) {
+                    const key = getVariableKeyByNamespace(variable.name, namespace)
+                    if (key === undefined || usedKeys.has(key)) continue
+                    usedKeys.add(key)
+                    aliases.push([key, variable.name])
+                }
+            }
+            aliasRefCache.set(ref, aliases)
+            return aliases
+        }
 
         for (const utility of utilities) {
             const definedUtility = {
@@ -435,8 +463,7 @@ export default class MasterCSS {
 
             const variableAliases = [
                 ...(utility.variableAliases || []),
-                ...(utility.variableAliasSet !== undefined ? this.plan.variableAliasSets?.[utility.variableAliasSet] || [] : []),
-                ...(utility.variableAliasRefs || []).flatMap((ref) => this.plan.variableNamespaces?.[ref] || [])
+                ...(utility.variableAliasRefs || []).flatMap(resolveAliasRef)
             ]
             if (variableAliases.length) {
                 definedUtility.variables = new Map()

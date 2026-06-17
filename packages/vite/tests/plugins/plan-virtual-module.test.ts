@@ -43,7 +43,7 @@ describe('PlanVirtualModulePlugin', () => {
         expect(viteConfig.server.fs.allow).toContain(planEntryPath)
         expect(viteConfig.server.fs.allow).toContain(buttonPlanPath)
         expect(code).toContain('export default ')
-        expect(code).toContain('"version":1')
+        expect(code).toContain('"version":2')
     })
 
     it('emits the default plan as an external JSON asset in production build', async () => {
@@ -58,7 +58,7 @@ describe('PlanVirtualModulePlugin', () => {
         expect(emitFile).toHaveBeenCalledWith(expect.objectContaining({
             type: 'asset',
             name: 'master-css-plan.json',
-            source: expect.stringContaining('"version":1')
+            source: expect.stringContaining('"version":2')
         }))
         expect(code).toContain('const masterCSSPlanURL = import.meta.ROLLUP_FILE_URL_master_css_plan_ref;')
         expect(code).toContain('await fetch(masterCSSPlanURL)')

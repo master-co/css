@@ -28,27 +28,12 @@ export function createDefaultCSS() {
     return createCSS(defaultPlan)
 }
 
-function addVariableNamespaceAlias(plan: MasterCSSPlan, ref: string, variable: MasterCSSPlanVariable) {
-    if (!variable.name) return
-    plan.variableNamespaces ??= {}
-    const aliases = plan.variableNamespaces[ref] || (plan.variableNamespaces[ref] = [])
-    if (!aliases.some(([key]) => key === variable.key)) {
-        aliases.push([variable.key, variable.name])
-    }
-}
-
 export function createPlanWithVariables(variables: MasterCSSPlanVariable[], basePlan = defaultPlan): MasterCSSPlan {
     const plan = clonePlan(basePlan)
     plan.variables = [
         ...(plan.variables || []),
         ...variables
     ]
-
-    for (const variable of variables) {
-        if (!variable.namespace) continue
-        addVariableNamespaceAlias(plan, '=' + variable.namespace, variable)
-        addVariableNamespaceAlias(plan, '~' + variable.namespace, variable)
-    }
 
     return plan
 }
