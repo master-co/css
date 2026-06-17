@@ -1,4 +1,4 @@
-import { existsSync, mkdirSync, writeFileSync } from 'node:fs'
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname } from 'node:path'
 import {
     EMPTY_PLAN_JSON,
@@ -12,9 +12,12 @@ import {
 
 export function ensureVirtualModuleFile(file: string, source: string) {
     mkdirSync(dirname(file), { recursive: true })
-    if (!existsSync(file)) {
-        writeFileSync(file, source)
+    try {
+        if (readFileSync(file, 'utf8') === source) return file
+    } catch {
+        // Create the file below when it does not exist or cannot be read.
     }
+    writeFileSync(file, source)
     return file
 }
 
