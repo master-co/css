@@ -12,6 +12,11 @@ interface LoaderContext {
 
 interface MasterCSSPlanLoaderOptions {
     virtual?: boolean
+    module?: boolean
+}
+
+function toLoaderResult(json: string, asModule?: boolean) {
+    return asModule ? `export default ${json}` : json
 }
 
 async function loadVirtualPlanJSON(context: LoaderContext) {
@@ -45,6 +50,6 @@ export default function masterCSSPlanLoader(this: LoaderContext) {
         ? loadVirtualPlanJSON(this)
         : Promise.resolve(loadCSSPlanJSON(this))
     result
-        .then((code) => callback(null, code))
+        .then((json) => callback(null, toLoaderResult(json, options.module)))
         .catch((error: Error) => callback(error))
 }

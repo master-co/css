@@ -58,6 +58,22 @@ describe('css plan loader', () => {
         expect(source).toContain('#123')
     })
 
+    it('wraps the plan JSON as an ECMAScript module when requested', async () => {
+        const projectDir = createFixtureDir()
+        const planPath = join(projectDir, 'index.css')
+        mkdirSync(projectDir, { recursive: true })
+        writeFileSync(planPath, '@theme { --color-primary: #123; }')
+
+        const source = await runPlanLoader({
+            resourcePath: planPath,
+            getOptions: () => ({ module: true })
+        })
+
+        expect(source).toMatch(/^export default \{"version":1/)
+        expect(source).toContain('primary')
+        expect(source).toContain('#123')
+    })
+
     it('loads CSS when the loader resource includes ?master-css-plan', async () => {
         const projectDir = createFixtureDir()
         const planPath = join(projectDir, 'index.css')

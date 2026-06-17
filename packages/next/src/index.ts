@@ -202,12 +202,13 @@ function applyMasterCSSTurbopackConfig(
             {
                 loader: cssPlanLoaderPath,
                 options: {
-                    virtual: true
+                    virtual: true,
+                    module: true
                 }
             }
         ],
-        type: 'json' as never,
-        as: '*.json'
+        type: 'ecmascript' as const,
+        as: '*.js'
     }
     const masterCSSPlanRule = {
         condition: {
@@ -216,9 +217,16 @@ function applyMasterCSSTurbopackConfig(
                 { query: MASTER_CSS_PLAN_RESOURCE_QUERY }
             ]
         },
-        loaders: [cssPlanLoaderPath],
-        type: 'json' as never,
-        as: '*.json'
+        loaders: [
+            {
+                loader: cssPlanLoaderPath,
+                options: {
+                    module: true
+                }
+            }
+        ],
+        type: 'ecmascript' as const,
+        as: '*.js'
     }
     const masterCSSStyleRule = {
         condition: {

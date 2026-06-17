@@ -76,12 +76,13 @@ describe('withMasterCSS', () => {
                     loaders: [
                         expect.objectContaining({
                             options: {
-                                virtual: true
+                                virtual: true,
+                                module: true
                             }
                         })
                     ],
-                    type: 'json',
-                    as: '*.json'
+                    type: 'ecmascript',
+                    as: '*.js'
                 }),
                 expect.objectContaining({
                     condition: {
@@ -90,8 +91,15 @@ describe('withMasterCSS', () => {
                             { query: /master-css-plan/ }
                         ]
                     },
-                    type: 'json',
-                    as: '*.json'
+                    loaders: [
+                        expect.objectContaining({
+                            options: {
+                                module: true
+                            }
+                        })
+                    ],
+                    type: 'ecmascript',
+                    as: '*.js'
                 }),
                 expect.objectContaining({
                     condition: {
@@ -171,8 +179,8 @@ describe('withMasterCSS', () => {
                     condition: {
                         path: expect.any(RegExp)
                     },
-                    type: 'json',
-                    as: '*.json'
+                    type: 'ecmascript',
+                    as: '*.js'
                 }),
                 expect.objectContaining({
                     condition: {
@@ -181,8 +189,8 @@ describe('withMasterCSS', () => {
                             { query: /master-css-plan/ }
                         ]
                     },
-                    type: 'json',
-                    as: '*.json'
+                    type: 'ecmascript',
+                    as: '*.js'
                 }),
                 expect.objectContaining({
                     condition: {
@@ -321,8 +329,8 @@ describe('withMasterCSS', () => {
                     condition: {
                         path: expect.any(RegExp)
                     },
-                    type: 'json',
-                    as: '*.json'
+                    type: 'ecmascript',
+                    as: '*.js'
                 }),
                 expect.objectContaining({
                     loaders: [
