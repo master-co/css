@@ -71,7 +71,7 @@ export default class RuntimeThemeLayer extends ThemeLayer {
         const text = mediaText
             ? `${mediaText}{${selectorText}{}}`
             : `${selectorText}{}`
-        const insertedIndex = this.native.insertRule(text, this.native.cssRules.length)
+        const insertedIndex = this.native.insertRule(text, this.getNativeBucketInsertIndex(mediaText, selectorText))
         const nativeRule = this.native.cssRules.item(insertedIndex)
         if (!nativeRule) return
         const styleRule = this.getStyleRule(nativeRule)
@@ -85,6 +85,25 @@ export default class RuntimeThemeLayer extends ThemeLayer {
         }
         this.nativeBuckets.set(key, newBucket)
         return newBucket
+    }
+
+    getNativeBucketInsertIndex(mediaText: string, selectorText: string) {
+        if (!this.native) return 0
+        const bucket = { mediaText, selectorText }
+        for (let index = 0; index < this.native.cssRules.length; index++) {
+            const nativeRule = this.native.cssRules.item(index)
+            if (!nativeRule) continue
+            const styleRule = this.getStyleRule(nativeRule)
+            if (!styleRule) continue
+            const nativeMediaText = nativeRule instanceof CSSMediaRule ? `@media ${nativeRule.conditionText}` : ''
+            if (this.shouldInsertBucketBefore(bucket, {
+                mediaText: nativeMediaText,
+                selectorText: styleRule.selectorText
+            })) {
+                return index
+            }
+        }
+        return this.native.cssRules.length
     }
 
     insert(rule: VariableRule, index = this.rules.length) {

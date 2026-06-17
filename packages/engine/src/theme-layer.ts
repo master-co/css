@@ -5,6 +5,7 @@ import VariableRule, { VariableRuleNode } from './variable-rule'
 export interface VariableRuleBucket {
     mediaText: string
     selectorText: string
+    order: number
     nodes: VariableRuleNode[]
 }
 
@@ -18,6 +19,23 @@ export default class ThemeLayer extends Layer {
         super(name, css)
     }
 
+    protected getBucketRank(bucket: Pick<VariableRuleBucket, 'mediaText' | 'selectorText'>) {
+        if (bucket.mediaText) return 2
+        const selectors = bucket.selectorText.split(',').map((selector) => selector.trim())
+        return selectors.includes(':root') || selectors.includes(':host') ? 0 : 1
+    }
+
+    protected compareBuckets(a: VariableRuleBucket, b: VariableRuleBucket) {
+        return this.getBucketRank(a) - this.getBucketRank(b) || a.order - b.order
+    }
+
+    protected shouldInsertBucketBefore(
+        bucket: Pick<VariableRuleBucket, 'mediaText' | 'selectorText'>,
+        existingBucket: Pick<VariableRuleBucket, 'mediaText' | 'selectorText'>
+    ) {
+        return this.getBucketRank(bucket) < this.getBucketRank(existingBucket)
+    }
+
     getBuckets() {
         const buckets = new Map<string, VariableRuleBucket>()
         for (const rule of this.rules) {
@@ -28,6 +46,7 @@ export default class ThemeLayer extends Layer {
                     bucket = {
                         mediaText: node.mediaText,
                         selectorText: node.selectorText,
+                        order: buckets.size,
                         nodes: []
                     }
                     buckets.set(key, bucket)
@@ -35,7 +54,7 @@ export default class ThemeLayer extends Layer {
                 bucket.nodes.push(node)
             }
         }
-        return Array.from(buckets.values())
+        return Array.from(buckets.values()).sort((a, b) => this.compareBuckets(a, b))
     }
 
     getBucketText(bucket: VariableRuleBucket) {
