@@ -15,19 +15,19 @@ Project entry discovery only treats CSS files with top-level `@master;` or `@imp
 Use `loadProjectPlan()` when a tool should load the canonical project-level plan for a directory.
 
 ```ts
-import { loadProjectPlan, loadProjectPlanModule } from '@master/css-plan/load'
+import { loadProjectPlan, loadProjectPlanJSON } from '@master/css-plan/load'
 
 const result = await loadProjectPlan('/project')
-const moduleResult = await loadProjectPlanModule('/project')
+const jsonResult = await loadProjectPlanJSON('/project')
 ```
 
-`loadProjectPlan()` discovers project CSS entries unless explicit `entries` are passed. It returns the compiled plan and dependency list. `loadProjectPlanModule()` returns JavaScript module code for virtual modules and loader output.
+`loadProjectPlan()` discovers project CSS entries unless explicit `entries` are passed. It returns the compiled plan and dependency list. `loadProjectPlanJSON()` returns JSON source for virtual JSON modules and loader output.
 
 ```ts
-import { loadProjectPlanSync, loadProjectPlanModuleSync } from '@master/css-plan/load-sync'
+import { loadProjectPlanSync, loadProjectPlanJSONSync } from '@master/css-plan/load-sync'
 
 const result = loadProjectPlanSync('/project')
-const moduleResult = loadProjectPlanModuleSync('/project')
+const jsonResult = loadProjectPlanJSONSync('/project')
 ```
 
 ---
@@ -36,19 +36,19 @@ const moduleResult = loadProjectPlanModuleSync('/project')
 Use `loadPlan()` when the CSS resource path is already known and should be compiled directly.
 
 ```ts
-import { loadPlan, loadPlanModule } from '@master/css-plan/load'
+import { loadPlan, loadPlanJSON } from '@master/css-plan/load'
 
 const result = await loadPlan('/project/src/index.css')
-const moduleResult = await loadPlanModule('/project/src/index.css')
+const jsonResult = await loadPlanJSON('/project/src/index.css')
 ```
 
-`loadPlan()` and `loadPlanModule()` only accept CSS resources. They do not search the workspace and do not load JavaScript or TypeScript config files.
+`loadPlan()` and `loadPlanJSON()` only accept CSS resources. They do not search the workspace and do not load JavaScript or TypeScript config files.
 
 ```ts
-import { loadPlanSync, loadPlanModuleSync } from '@master/css-plan/load-sync'
+import { loadPlanSync, loadPlanJSONSync } from '@master/css-plan/load-sync'
 
 const result = loadPlanSync('/project/src/index.css')
-const moduleResult = loadPlanModuleSync('/project/src/index.css')
+const jsonResult = loadPlanJSONSync('/project/src/index.css')
 ```
 
 ---
@@ -75,7 +75,7 @@ The module utilities define the plan import contract used by official integratio
 import {
     MASTER_CSS_PLAN_QUERY,
     VIRTUAL_PLAN_ID,
-    toPlanModule,
+    toPlanJSON,
     toVirtualDefaultPlanModulePath,
     toVirtualCSSPlanModulePath,
 } from '@master/css-integration/plan-module'
@@ -83,12 +83,12 @@ import {
 
 | API | Purpose |
 | --- | --- |
-| `VIRTUAL_PLAN_ID` | The default plan module id, `virtual:master-css-plan`. |
+| `VIRTUAL_PLAN_ID` | The default plan JSON module id, `virtual:master-css-plan.json`. |
 | `VIRTUAL_PRELOADED_ID` | The default preloaded module id, `virtual:master-css-preloaded`. |
 | `MASTER_CSS_PLAN_QUERY` | The query suffix, `?master-css-plan`, used to compile one explicit CSS resource. |
-| `toPlanModule(plan)` | Serializes a plan object into an ESM default export. |
+| `toPlanJSON(plan)` | Serializes a plan object into normalized JSON source. |
 | `toPreloadedModule(preloaded)` | Serializes preloaded variable and animation counts into an ESM default export. |
 | `toVirtualDefaultPlanModulePath(context)` | Creates the virtual path for the default plan module. |
 | `toVirtualCSSPlanModulePath(context, file)` | Creates a virtual path for one explicit queried CSS resource. |
 
-Use `virtual:master-css-plan` and `virtual:master-css-preloaded` when application code should receive the integration's canonical project-level runtime inputs. Use `./index.css?master-css-plan` only when the code intentionally compiles one explicit CSS resource through the active integration.
+Use `virtual:master-css-plan.json` and `virtual:master-css-preloaded` when application code should receive the integration's canonical project-level runtime inputs. Use `./index.css?master-css-plan` only when the code intentionally compiles one explicit CSS resource through the active integration.

@@ -1,14 +1,15 @@
 import path from 'node:path'
 import type { MasterCSSPlan } from 'shared/master-css-plan'
+import { stringifyMasterCSSPlanJSON } from 'shared/master-css-plan-json'
 
 export type { MasterCSSPlan }
 
-export const VIRTUAL_PLAN_ID = 'virtual:master-css-plan'
+export const VIRTUAL_PLAN_ID = 'virtual:master-css-plan.json'
 export const MASTER_CSS_PLAN_QUERY = '?master-css-plan'
 export const RESOLVED_MASTER_CSS_PLAN_QUERY_PREFIX = '\0master-css-plan:'
 export const VIRTUAL_MODULE_DIR = 'node_modules/.master-css'
-export const VIRTUAL_PLAN_FILE = 'master-css-plan.js'
-export const EMPTY_PLAN_MODULE = 'export default { version: 1 };'
+export const VIRTUAL_PLAN_FILE = 'master-css-plan.json'
+export const EMPTY_PLAN_JSON = '{"version":1}'
 
 export interface CSSPlanLoadResult {
     plan: MasterCSSPlan
@@ -21,8 +22,8 @@ export interface CSSPlanLoadResult {
     warnings?: string[]
 }
 
-export type CSSPlanModuleResult = CSSPlanLoadResult & {
-    code: string
+export type CSSPlanJSONResult = CSSPlanLoadResult & {
+    json: string
 }
 
 export function isMasterCSSPlanRequest(id: string) {
@@ -39,46 +40,14 @@ export function stripResourceQuery(resourcePath: string) {
     return resourcePath.replace(/[?#].*$/, '')
 }
 
-type PlanUtility = NonNullable<MasterCSSPlan['utilities']>[number]
-
-function normalizeTemplateDeclarations(declarations: Record<string, unknown>) {
-    const normalized: Record<string, unknown> = {}
-    for (const propertyName in declarations) {
-        const value = declarations[propertyName]
-        normalized[propertyName] = Array.isArray(value)
-            ? value.map((part) => part === undefined ? null : part)
-            : value === undefined
-                ? null
-                : value
-    }
-    return normalized
+export function toPlanJSON(plan: MasterCSSPlan) {
+    return stringifyMasterCSSPlanJSON(plan)
 }
 
-function normalizeUtilityForJSON(utility: PlanUtility): PlanUtility {
-    if (utility.emit.type !== 'template') return utility
-    return {
-        ...utility,
-        emit: {
-            ...utility.emit,
-            declarations: normalizeTemplateDeclarations(utility.emit.declarations as Record<string, unknown>)
-        }
-    }
-}
-
-function stringifyPlan(plan: MasterCSSPlan) {
-    return JSON.stringify(plan.utilities?.length
-        ? { ...plan, utilities: plan.utilities.map(normalizeUtilityForJSON) }
-        : plan)
-}
-
-export function toPlanModule(plan: MasterCSSPlan) {
-    return `export default ${stringifyPlan(plan)};`
-}
-
-export function toPlanModuleResult<T extends CSSPlanLoadResult>(result: T): T & { code: string } {
+export function toPlanJSONResult<T extends CSSPlanLoadResult>(result: T): T & { json: string } {
     return {
         ...result,
-        code: toPlanModule(result.plan)
+        json: toPlanJSON(result.plan)
     }
 }
 
@@ -101,7 +70,7 @@ function encodeVirtualFilename(id: string) {
 }
 
 export function toVirtualCSSPlanModulePath(context: string, file: string) {
-    return path.join(context, VIRTUAL_MODULE_DIR, `${encodeVirtualFilename(file)}.plan.js`)
+    return path.join(context, VIRTUAL_MODULE_DIR, `${encodeVirtualFilename(file)}.plan.json`)
 }
 
 function escapeRegExp(source: string) {

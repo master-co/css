@@ -2,7 +2,7 @@ import { mkdirSync, writeFileSync } from 'node:fs'
 import { createRequire } from 'node:module'
 import { dirname, isAbsolute, relative, resolve } from 'node:path'
 import { isCSSPlanRequest } from '@master/css-plan/css'
-import { loadPlanModuleSync } from '@master/css-plan/load-sync'
+import { loadPlanJSONSync } from '@master/css-plan/load-sync'
 import {
     isMasterCSSPlanRequest,
     stripMasterCSSPlanQuery,
@@ -65,9 +65,9 @@ function writeCSSPlanModule(context: LoaderContext, planPath: string) {
 
     const projectDir = context.getOptions?.().projectDir || context.rootContext || process.cwd()
     const virtualPlanPath = toVirtualCSSPlanModulePath(projectDir, planPath)
-    const result = loadPlanModuleSync(planPath)
+    const result = loadPlanJSONSync(planPath)
     mkdirSync(dirname(virtualPlanPath), { recursive: true })
-    writeFileSync(virtualPlanPath, result.code)
+    writeFileSync(virtualPlanPath, result.json)
     for (const dependency of result.dependencies) {
         context.addDependency?.(dependency)
     }

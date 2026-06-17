@@ -39,7 +39,7 @@ afterEach(() => {
 })
 
 describe('css plan loader', () => {
-    it('turns a CSS entry resource into an importable plan module', async () => {
+    it('turns a CSS entry resource into an importable plan JSON asset', async () => {
         const projectDir = createFixtureDir()
         const planPath = join(projectDir, 'index.css')
         const dependencies: string[] = []
@@ -52,8 +52,8 @@ describe('css plan loader', () => {
         })
 
         expect(dependencies).toEqual([planPath])
-        expect(source).toContain('export default')
         expect(source).toContain('"version":1')
+        expect(JSON.parse(source).version).toBe(1)
         expect(source).toContain('primary')
         expect(source).toContain('#123')
     })
@@ -110,7 +110,7 @@ describe('css plan loader', () => {
         ].join('\n'))
 
         const source = await runPlanLoader({
-            resourcePath: join(projectDir, 'node_modules/.master-css/master-css-plan.js'),
+            resourcePath: join(projectDir, 'node_modules/.master-css/master-css-plan.json'),
             rootContext: projectDir,
             getOptions: () => ({ virtual: true }),
             addDependency: (dependency: string) => dependencies.push(dependency)

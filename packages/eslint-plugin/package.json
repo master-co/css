@@ -54,6 +54,7 @@
     "dependencies": {
         "@master/css": "workspace:^",
         "@master/css-plan": "workspace:^",
+        "@master/css-preset": "workspace:^",
         "@master/css-validator": "workspace:^",
         "@typescript-eslint/utils": "^8.59.1",
         "typescript-eslint": "^8.59.1"

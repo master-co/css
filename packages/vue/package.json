@@ -82,6 +82,7 @@
         "@techor/extend": "^3.2.5"
     },
     "devDependencies": {
+        "@master/css-preset": "workspace:^",
         "@playwright/experimental-ct-vue": "1.61.0",
         "@playwright/test": "1.61.0",
         "@vitejs/plugin-vue": "^6.0.6",

@@ -2,7 +2,8 @@ import { mkdirSync, mkdtempSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
-import { defaultPlan } from '@master/css'
+import defaultPlanJSON from '@master/css-preset/default-plan.json' with { type: 'json' }
+import type { MasterCSSPlan } from 'shared/master-css-plan'
 import { compileCSSPlan } from '@master/css-compiler'
 import CSSExtractor from '../src/core'
 import {
@@ -22,6 +23,8 @@ import {
     replaceStyleCSSImports,
     transformLocalStyleCSS
 } from '../src/style'
+
+const defaultPlan = defaultPlanJSON as unknown as MasterCSSPlan
 
 function createFixture() {
     const root = mkdtempSync(join(tmpdir(), 'master-css-extractor-style-'))

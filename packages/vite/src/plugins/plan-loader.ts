@@ -1,7 +1,7 @@
 import type { ModuleNode, Plugin, ViteDevServer } from 'vite'
 import type { PluginContext } from '../core'
 import { toResolvedMasterCSSPlanId } from '@master/css-integration/plan-module'
-import { loadPlanModule } from '@master/css-plan/load'
+import { loadPlanJSON } from '@master/css-plan/load'
 import { isCSSPlanRequest } from '@master/css-plan/css'
 import { createMasterCSSPlanLoaderPlugin } from '@master/css-integration/plan-loader-plugin'
 
@@ -27,13 +27,13 @@ export default function PlanLoaderPlugin(context: PluginContext): Plugin {
     const plugin = createMasterCSSPlanLoaderPlugin({
         cwd: context.config?.root,
         resolveUnresolved: false,
-        async loadPlanModule(planPath) {
+        async loadPlanJSON(planPath) {
             if (!isCSSPlanRequest(planPath)) {
                 throw new TypeError('Master CSS plan queries only support CSS entry files.')
             }
-            return loadPlanModule(planPath)
+            return loadPlanJSON(planPath)
         },
-        onLoadPlanModule({ planPath, result }) {
+        onLoadPlanJSON({ planPath, result }) {
             watchPlanDependencies(planPath, result.dependencies)
         }
     })

@@ -76,6 +76,7 @@
         "@master/css.vite": "workspace:^"
     },
     "devDependencies": {
+        "@master/css-preset": "workspace:^",
         "shared": "workspace:^"
     }
 }

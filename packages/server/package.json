@@ -52,6 +52,7 @@
     },
     "dependencies": {
         "@master/css": "workspace:^",
+        "@master/css-preset": "workspace:^",
         "dom-serializer": "^3.0.0",
         "domhandler": "^6.0.1",
         "htmlparser2": "^12.0.0"

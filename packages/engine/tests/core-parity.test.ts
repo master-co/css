@@ -9,7 +9,10 @@ import {
     expectClassText,
     expectLayerText
 } from './helpers/css-tester'
-import defaultPlan from '@master/css-preset/default-plan'
+import defaultPlanJSON from '@master/css-preset/default-plan.json' with { type: 'json' }
+import type { MasterCSSPlan } from 'shared/master-css-plan'
+
+const defaultPlan = defaultPlanJSON as unknown as MasterCSSPlan
 
 describe.concurrent('default plan utility parity', () => {
     test('generates representative background utilities', () => {

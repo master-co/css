@@ -2,12 +2,11 @@
     import { onMount, setContext } from 'svelte';
     import { writable, get } from 'svelte/store';
     import { initCSSRuntime, resolveRuntimePlan } from '@master/css-runtime';
-    import { defaultPlan } from '@master/css';
     import type { CSSRuntime } from '@master/css-runtime';
     import { CSS_RUNTIME_CONTEXT_KEY } from './get-css-runtime.js';
     import type { CSSRuntimeProviderProps } from './types/provider-props.js';
 
-    export let plan: CSSRuntimeProviderProps['plan'] = undefined;
+    export let plan: CSSRuntimeProviderProps['plan'];
     export let preloaded: CSSRuntimeProviderProps['preloaded'] = undefined;
     export let manifest: CSSRuntimeProviderProps['manifest'] = undefined;
     export let root: CSSRuntimeProviderProps['root'] = undefined;
@@ -19,7 +18,7 @@
 
     onMount(() => {
         mounted = true;
-        cssRuntime.set(initCSSRuntime({ plan: plan || defaultPlan, root: getRoot(), preloaded, manifest }));
+        cssRuntime.set(initCSSRuntime({ plan, root: getRoot(), preloaded, manifest }));
         return () => {
             mounted = false;
             const currentCSSRuntime = get(cssRuntime);
@@ -31,7 +30,7 @@
     $: {
         const currentCSSRuntime = get(cssRuntime);
         if (currentCSSRuntime) {
-            currentCSSRuntime.refresh(resolveRuntimePlan(plan || defaultPlan));
+            currentCSSRuntime.refresh(resolveRuntimePlan(plan));
         }
     }
 
@@ -40,7 +39,7 @@
         const nextRoot = getRoot();
         if (currentCSSRuntime && currentCSSRuntime.root !== nextRoot) {
             currentCSSRuntime.destroy();
-            cssRuntime.set(initCSSRuntime({ plan: plan || defaultPlan, root: nextRoot, preloaded, manifest }));
+            cssRuntime.set(initCSSRuntime({ plan, root: nextRoot, preloaded, manifest }));
         }
     }
 

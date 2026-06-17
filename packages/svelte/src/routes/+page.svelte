@@ -1,7 +1,9 @@
 <script lang="ts">
     import type { MasterCSSPlan } from "@master/css-runtime";
-    import { defaultPlan } from "@master/css";
+    import defaultPlanJSON from "@master/css-preset/default-plan.json" with { type: "json" };
     import { CSSRuntimeProvider } from "../lib/runtime-provider.js";
+
+    const defaultPlan = defaultPlanJSON as unknown as MasterCSSPlan;
 
     let containerRef = $state<HTMLDivElement>();
     let plan = $state<MasterCSSPlan>({

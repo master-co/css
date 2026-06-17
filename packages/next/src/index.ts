@@ -138,7 +138,7 @@ function applyMasterCSSWebpackConfig(
     config.module.rules ??= []
     config.module.rules.push({
         test: MASTER_CSS_VIRTUAL_PLAN_PATH_PATTERN,
-        type: 'javascript/auto',
+        type: 'json',
         use: [
             {
                 loader: cssPlanLoaderPath,
@@ -150,7 +150,7 @@ function applyMasterCSSWebpackConfig(
     })
     config.module.rules.push({
         resourceQuery: MASTER_CSS_PLAN_RESOURCE_QUERY,
-        type: 'javascript/auto',
+        type: 'json',
         use: [
             {
                 loader: cssPlanLoaderPath
@@ -206,8 +206,8 @@ function applyMasterCSSTurbopackConfig(
                 }
             }
         ],
-        type: 'ecmascript' as const,
-        as: '*.js'
+        type: 'json' as never,
+        as: '*.json'
     }
     const masterCSSPlanRule = {
         condition: {
@@ -217,8 +217,8 @@ function applyMasterCSSTurbopackConfig(
             ]
         },
         loaders: [cssPlanLoaderPath],
-        type: 'ecmascript' as const,
-        as: '*.js'
+        type: 'json' as never,
+        as: '*.json'
     }
     const masterCSSStyleRule = {
         condition: {

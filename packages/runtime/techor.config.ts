@@ -6,9 +6,9 @@ const config: Config = {
         input: {
             plugins: [
                 createMasterCSSPlanLoaderPlugin({
-                    async loadPlanModule(...args) {
-                        const { compileCSSPlanModule } = await import('../compiler/src')
-                        return compileCSSPlanModule(...args)
+                    async loadPlanJSON(...args) {
+                        const { compileCSSPlanJSON } = await import('../compiler/src')
+                        return compileCSSPlanJSON(...args)
                     }
                 })
             ]

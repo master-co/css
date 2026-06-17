@@ -2,6 +2,7 @@ import { writeFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { compileCSSPlanFile } from '@master/css-compiler'
+import { stringifyMasterCSSPlanJSON } from 'shared/master-css-plan-json'
 import UtilityType from 'shared/utility-type'
 import functions from '../src/functions'
 import { settings } from '../src/settings'
@@ -18,7 +19,7 @@ import type {
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const packageRoot = resolve(__dirname, '..')
 const sourceFile = resolve(packageRoot, 'src/index.css')
-const outputFile = resolve(packageRoot, 'src/default-plan.ts')
+const outputFile = resolve(packageRoot, 'src/default-plan.json')
 const CONDITION_VARIABLE_NAMESPACES = ['breakpoint', 'container']
 
 function clone<T>(value: T): T {
@@ -174,52 +175,13 @@ export function createDefaultPlanFromSourceFile(file = sourceFile) {
         }
     }).plan)
 }
-type PlanUtility = NonNullable<MasterCSSPlan['utilities']>[number]
 
-function normalizeTemplateDeclarations(declarations: Record<string, unknown>) {
-    const normalized: Record<string, unknown> = {}
-    for (const propertyName in declarations) {
-        const value = declarations[propertyName]
-        normalized[propertyName] = Array.isArray(value)
-            ? value.map((part) => part === undefined ? null : part)
-            : value === undefined
-                ? null
-                : value
-    }
-    return normalized
-}
-
-function normalizeUtilityForJSON(utility: PlanUtility): PlanUtility {
-    if (utility.emit.type !== 'template') return utility
-    return {
-        ...utility,
-        emit: {
-            ...utility.emit,
-            declarations: normalizeTemplateDeclarations(utility.emit.declarations as Record<string, unknown>)
-        }
-    }
-}
-
-function stringifyPlan(plan: MasterCSSPlan) {
-    return JSON.stringify(plan.utilities?.length
-        ? { ...plan, utilities: plan.utilities.map(normalizeUtilityForJSON) }
-        : plan)
-}
-
-export function createDefaultPlanModule(plan: MasterCSSPlan) {
-    return [
-        '// @ts-nocheck',
-        "import type { MasterCSSPlan } from 'shared/master-css-plan'",
-        '',
-        `const defaultPlan: MasterCSSPlan = ${stringifyPlan(plan)}`,
-        '',
-        'export default defaultPlan',
-        ''
-    ].join('\n')
+export function createDefaultPlanJSON(plan: MasterCSSPlan) {
+    return stringifyMasterCSSPlanJSON(plan)
 }
 
 export function writeDefaultPlan(file = outputFile) {
-    writeFileSync(file, createDefaultPlanModule(createDefaultPlanFromSourceFile()))
+    writeFileSync(file, createDefaultPlanJSON(createDefaultPlanFromSourceFile()))
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {

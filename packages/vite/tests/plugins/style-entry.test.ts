@@ -1,10 +1,12 @@
 import { describe, expect, test } from 'vitest'
 import StyleEntryPlugin from '../../src/plugins/style-entry'
 import { VIRTUAL_CSS_ID } from '@master/css-integration/style-module'
-import { defaultPlan } from '@master/css'
+import defaultPlanJSON from '@master/css-preset/default-plan.json' with { type: 'json' }
+import type { MasterCSSPlan } from 'shared/master-css-plan'
 
 const SLOT = '#master-css-slot{--slot:0}'
 const RESOLVED_VIRTUAL_CSS_ID = '\0' + VIRTUAL_CSS_ID
+const defaultPlan = defaultPlanJSON as unknown as MasterCSSPlan
 
 function makeContext(command: 'serve' | 'build', css = '.fg\\:red{color:red}', includeGeneratedCSS = true) {
     return {

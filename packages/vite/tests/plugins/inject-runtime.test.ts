@@ -16,7 +16,7 @@ describe('InjectRuntimePlugin', () => {
             injectTo: 'head-prepend'
         })
         expect(result.tags[0].children).toContain('/*__MASTER_CSS_RUNTIME_INJECTED__*/')
-        expect(result.tags[0].children).toContain(`import masterCSSPlan from 'virtual:master-css-plan';`)
+        expect(result.tags[0].children).toContain(`import masterCSSPlan from 'virtual:master-css-plan.json';`)
         expect(result.tags[0].children).toContain(`import masterCSSPreloaded from 'virtual:master-css-preloaded';`)
         expect(result.tags[0].children).toContain('initCSSRuntime({ plan: masterCSSPlan, preloaded: masterCSSPreloaded });')
     })

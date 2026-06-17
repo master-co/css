@@ -1,14 +1,18 @@
 import { Page } from '@playwright/test'
-import { createCSS, createRuntimeManifest, defaultPlan, type MasterCSSPlan } from '@master/css'
+import { createCSS, createRuntimeManifest, type MasterCSSPlan } from '@master/css'
+import defaultPlanJSON from '@master/css-preset/default-plan.json' with { type: 'json' }
 import {
     MASTER_CSS_RUNTIME_MANIFEST_SCRIPT_ID,
     type MasterCSSRuntimeManifest
 } from 'shared/master-css-runtime-manifest'
 import { dirname, resolve } from 'path'
 import { fileURLToPath } from 'url'
+import { readFileSync } from 'node:fs'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
+const RUNTIME_ASSET_BASE_URL = 'http://master-css-runtime.test'
+const defaultPlan = defaultPlanJSON as unknown as MasterCSSPlan
 
 type RuntimePlanUtilityInput = Partial<NonNullable<MasterCSSPlan['utilities']>[number]> & {
     declarations?: Record<string, string | number>
@@ -280,6 +284,21 @@ async function createRuntimeManifestForPage(page: Page, plan: MasterCSSPlan) {
     return createRuntimeManifest(css)
 }
 
+async function routeRuntimeAssets(page: Page) {
+    await page.route(`${RUNTIME_ASSET_BASE_URL}/global.min.js`, (route) => {
+        route.fulfill({
+            contentType: 'text/javascript',
+            body: readFileSync(resolve(__dirname, '../dist/global.min.js'), 'utf8')
+        })
+    })
+    await page.route(`${RUNTIME_ASSET_BASE_URL}/default-plan.json`, (route) => {
+        route.fulfill({
+            contentType: 'application/json',
+            body: readFileSync(resolve(__dirname, '../dist/default-plan.json'), 'utf8')
+        })
+    })
+}
+
 export default async function init(
     page: Page,
     text?: string,
@@ -306,5 +325,7 @@ export default async function init(
             document.head.appendChild(script)
         }
     }, { manifest: runtimeManifest, plan, text, manifestScriptId: MASTER_CSS_RUNTIME_MANIFEST_SCRIPT_ID })
-    await page.addScriptTag({ path: resolve(__dirname, '../dist/global.min.js') })
+    await routeRuntimeAssets(page)
+    await page.addScriptTag({ type: 'module', url: `${RUNTIME_ASSET_BASE_URL}/global.min.js` })
+    await page.waitForFunction(() => !!globalThis.cssRuntime)
 }

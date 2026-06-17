@@ -13,7 +13,7 @@ function createFixtureDir() {
 
 function readVirtualPlanSource(projectDir: string) {
     const planDir = join(projectDir, 'node_modules/.master-css')
-    const [filename] = readdirSync(planDir).filter((entry) => entry.endsWith('.js'))
+    const [filename] = readdirSync(planDir).filter((entry) => entry.endsWith('.json'))
     return readFileSync(join(planDir, filename), 'utf-8')
 }
 
@@ -109,14 +109,14 @@ describe('css plan import loader', () => {
 
         await expect(runPlanImportLoader({
             source: [
-                'import plan from "virtual:master-css-plan"',
+                'import plan from "virtual:master-css-plan.json"',
                 'const request = "./theme.css?master-css-plan"',
                 'export default plan'
             ].join('\n'),
             resourcePath,
             projectDir
         })).resolves.toBe([
-            'import plan from "virtual:master-css-plan"',
+            'import plan from "virtual:master-css-plan.json"',
             'const request = "./theme.css?master-css-plan"',
             'export default plan'
         ].join('\n'))

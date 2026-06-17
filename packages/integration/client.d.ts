@@ -8,7 +8,7 @@ declare module '*?master-css-plan' {
 declare module 'virtual:master-utilities.css' {
 }
 
-declare module 'virtual:master-css-plan' {
+declare module 'virtual:master-css-plan.json' {
     import type { MasterCSSPlan } from '@master/css-engine'
 
     const plan: MasterCSSPlan

@@ -1,8 +1,8 @@
 import { defineNuxtModule, addServerPlugin, createResolver, addPlugin } from '@nuxt/kit'
 import { name } from '../package.json'
 import masterCSS from '@master/css.vue/vite'
-import { toPlanModule, VIRTUAL_PLAN_ID } from '@master/css-integration/plan-module'
-import { loadProjectPlanModule } from '@master/css-plan/load'
+import { VIRTUAL_PLAN_ID } from '@master/css-integration/plan-module'
+import { loadProjectPlanJSON } from '@master/css-plan/load'
 import type { Plugin } from 'vite'
 import defaultOptions, { type ModuleOptions } from './options'
 
@@ -27,10 +27,11 @@ export default defineNuxtModule<ModuleOptions>({
         if (!nuxt.options.ssr || nuxt.options._prepare) return
         const { resolve } = createResolver(import.meta.url)
         nuxt.hook('nitro:config', async (config) => {
-            const result = await loadProjectPlanModule(nuxt.options.rootDir)
+            const result = await loadProjectPlanJSON(nuxt.options.rootDir)
             addNitroWatchDependencies(config, result.dependencies)
             config.virtual ??= {}
-            config.virtual[VIRTUAL_PLAN_ID] = toPlanModule(result.plan)
+            // Nitro virtual entries are JavaScript source hooks, so wrap the JSON asset for server runtime imports.
+            config.virtual[VIRTUAL_PLAN_ID] = `export default ${result.json}`
         })
         const addCSSVitePlugin = (mode = options.mode) => {
             nuxt.hook('vite:extendConfig', (viteConfig) => {
@@ -58,7 +59,7 @@ export default defineNuxtModule<ModuleOptions>({
         switch (options.mode) {
             case 'pre-render':
             case 'progressive':
-                // Fix: Package import specifier "virtual:master-css-plan" is not defined in package
+                // Fix: Package import specifier "virtual:master-css-plan.json" is not defined in package
                 nuxt.options.build.transpile.push(resolve('./runtime/css-server'))
                 addServerPlugin(resolve('./runtime/css-server'))
                 break

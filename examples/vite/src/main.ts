@@ -1,6 +1,6 @@
 import './style.css'
 import { setupCounter } from './counter'
-// import plan from 'virtual:master-css-plan'
+// import plan from 'virtual:master-css-plan.json'
 
 // console.log('plan', plan)
 

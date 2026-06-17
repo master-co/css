@@ -28,7 +28,7 @@ export default function App({ children }) {
 }
 ```
 
-The registry loads `virtual:master-css-plan` and `virtual:master-css-preloaded` internally, so use it when the official integration should load the project-level plan discovered from the CSS entry and the matching preloaded global CSS state.
+The registry loads `virtual:master-css-plan.json` and `virtual:master-css-preloaded` internally, so use it when the official integration should load the project-level plan discovered from the CSS entry and the matching preloaded global CSS state.
 
 ### `<CSSRuntimeProvider>`
 The `CSSRuntimeProvider` initializes a `CSSRuntime` instance and manages it according to changes in plan or root element.

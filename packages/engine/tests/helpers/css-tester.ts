@@ -8,7 +8,9 @@ import type {
     MasterCSSPlanUtilityRule
 } from 'shared/master-css-plan'
 import { createCSS, type MasterCSS } from '../../src'
-import defaultPlan from '@master/css-preset/default-plan'
+import defaultPlanJSON from '@master/css-preset/default-plan.json' with { type: 'json' }
+
+const defaultPlan = defaultPlanJSON as unknown as MasterCSSPlan
 
 export type StaticRuleInput = MasterCSSPlanUtilityRule<MasterCSSPlanCSSDeclarations>
 

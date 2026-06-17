@@ -22,7 +22,9 @@
         "type-check": "tsc --noEmit"
     },
     "dependencies": {
+        "@master/css": "workspace:^",
         "@master/css-compiler": "workspace:^",
+        "@master/css-preset": "workspace:^",
         "@monaco-editor/react": "^4.7.0",
         "@next/mdx": "16.2.4",
         "class-variant": "^2.0.6",

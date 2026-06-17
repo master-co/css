@@ -1,7 +1,10 @@
 import { test, expect } from '@playwright/test'
-import { defaultPlan } from '@master/css'
+import defaultPlanJSON from '@master/css-preset/default-plan.json' with { type: 'json' }
+import type { MasterCSSPlan } from 'shared/master-css-plan'
 import initCSSRuntime from '../src/init'
 import init from './init'
+
+const defaultPlan = defaultPlanJSON as unknown as MasterCSSPlan
 
 test('destroy on progressive', async ({ page }) => {
     await init(page, '@layer utilities{}')

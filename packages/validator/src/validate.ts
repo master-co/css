@@ -1,5 +1,6 @@
 import { type SyntaxError } from './types/syntax-error'
-import { createCSS, defaultPlan } from '@master/css'
+import { createCSS } from '@master/css'
+import defaultPlan from './default-plan'
 import validateCSS from './validate-css'
 
 /**

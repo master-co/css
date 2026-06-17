@@ -61,8 +61,8 @@ npm install @master/css-plan
 CSS plan resources are compiled through the Master CSS compiler. Local CSS imports are reported as dependencies.
 
 ```ts
-import { loadPlan, loadPlanModule } from '@master/css-plan/load'
-import { loadPlanSync, loadPlanModuleSync } from '@master/css-plan/load-sync'
+import { loadPlan, loadPlanJSON } from '@master/css-plan/load'
+import { loadPlanSync, loadPlanJSONSync } from '@master/css-plan/load-sync'
 import { MASTER_CSS_PLAN_QUERY } from '@master/css-integration/plan-module'
 
 const result = await loadPlan('./src/index.css')
@@ -70,6 +70,6 @@ const plan = result.plan
 ```
 
 ```ts
-const moduleResult = await loadPlanModule('./src/index.css' + MASTER_CSS_PLAN_QUERY)
-const source = moduleResult.code
+const jsonResult = await loadPlanJSON('./src/index.css' + MASTER_CSS_PLAN_QUERY)
+const source = jsonResult.json
 ```

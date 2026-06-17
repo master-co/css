@@ -26,4 +26,3 @@ export type {
     MasterCSSPreloaded,
     MasterCSSRuntimeManifest
 } from '@master/css-engine'
-export { defaultPlan } from '@master/css-preset'

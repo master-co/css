@@ -31,7 +31,7 @@
             ```ts name=src/main.ts
             import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
             import { AppModule } from './app/app.module';
-            import { defaultPlan } from '@master/css'; // [!code ++]
+            import defaultPlan from '@master/css-preset/default-plan.json' with { type: 'json' }; // [!code ++]
             import { initCSSRuntime } from '@master/css-runtime'; // [!code ++]
 
             initCSSRuntime({ plan: defaultPlan }); // [!code ++]
@@ -70,7 +70,7 @@
         </StepL>
         <StepR>
             ```ts name=server.ts
-            import { defaultPlan } from '@master/css'; // [!code ++]
+            import defaultPlan from '@master/css-preset/default-plan.json' with { type: 'json' }; // [!code ++]
             import { render } from '@master/css-server'; // [!code ++]
             …
             export function app() {

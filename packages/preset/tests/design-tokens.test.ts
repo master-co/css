@@ -1,6 +1,9 @@
 import { describe, expect, test } from 'vitest'
 import { createCSS } from '@master/css-engine'
-import defaultPlan from '../src/default-plan'
+import defaultPlanJSON from '../src/default-plan.json' with { type: 'json' }
+import type { MasterCSSPlan } from 'shared/master-css-plan'
+
+const defaultPlan = defaultPlanJSON as unknown as MasterCSSPlan
 
 function findVariable(name: string) {
     return defaultPlan.variables?.find((variable) => variable.name === name)

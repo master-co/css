@@ -5,7 +5,7 @@ import {
     stripMasterCSSPlanQuery,
     stripResourceQuery,
     toResolvedMasterCSSPlanId,
-    type CSSPlanModuleResult
+    type CSSPlanJSONResult
 } from './plan-module'
 
 type MaybePromise<T> = T | Promise<T>
@@ -17,10 +17,10 @@ export interface MasterCSSPlanLoaderPluginContext {
 export interface MasterCSSPlanLoaderPluginOptions {
     cwd?: string
     resolveUnresolved?: boolean
-    loadPlanModule: (path: string) => MaybePromise<CSSPlanModuleResult>
-    onLoadPlanModule?: (payload: {
+    loadPlanJSON: (path: string) => MaybePromise<CSSPlanJSONResult>
+    onLoadPlanJSON?: (payload: {
         planPath: string
-        result: CSSPlanModuleResult
+        result: CSSPlanJSONResult
         pluginContext: MasterCSSPlanLoaderPluginContext
     }) => void
 }
@@ -48,16 +48,16 @@ export function createMasterCSSPlanLoaderPlugin(options: MasterCSSPlanLoaderPlug
         async load(this: MasterCSSPlanLoaderPluginContext, id: string) {
             const planPath = fromResolvedMasterCSSPlanId(id)
             if (!planPath) return
-            const result = await options.loadPlanModule(planPath)
+            const result = await options.loadPlanJSON(planPath)
             for (const dependency of result.dependencies) {
                 this.addWatchFile?.(dependency)
             }
-            options.onLoadPlanModule?.({
+            options.onLoadPlanJSON?.({
                 planPath,
                 result,
                 pluginContext: this
             })
-            return result.code
+            return result.json
         }
     }
 }

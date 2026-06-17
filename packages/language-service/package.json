@@ -2,7 +2,7 @@
     "name": "@master/css-language-service",
     "type": "module",
     "scripts": {
-        "build": "techor build \"src/**/*.ts\" --formats esm",
+        "build": "techor build \"src/**/*.ts\" --formats esm && node scripts/restore-json-import-attributes.mjs",
         "dev": "pnpm build --watch",
         "type-check": "tsc --noEmit",
         "lint": "eslint",
@@ -19,6 +19,7 @@
     "dependencies": {
         "@master/css": "workspace:^",
         "@master/css-lexer": "workspace:^",
+        "@master/css-preset": "workspace:^",
         "shared": "workspace:^",
         "@techor/extend": "^3.2.5",
         "color-convert": "^3.1.3",

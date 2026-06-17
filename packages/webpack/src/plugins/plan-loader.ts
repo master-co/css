@@ -1,10 +1,9 @@
 import {
     MASTER_CSS_PLAN_QUERY,
     stripMasterCSSPlanQuery,
-    toPlanModule,
     toVirtualCSSPlanModulePath
 } from '@master/css-integration/plan-module'
-import { loadPlanModule } from '@master/css-plan/load'
+import { loadPlanJSON } from '@master/css-plan/load'
 import type { Compiler } from 'webpack'
 import type { MasterCSSWebpackContext, WebpackSubPlugin } from '../plugin'
 import { isCSSPlanRequest } from '@master/css-plan/css'
@@ -42,11 +41,11 @@ export default function PlanLoaderPlugin(context: MasterCSSWebpackContext): Webp
                                     callback(new TypeError('Master CSS plan queries only support CSS entry files.'))
                                     return
                                 }
-                                const result = await loadPlanModule(resolvedPath)
+                                const result = await loadPlanJSON(resolvedPath)
                                 const virtualModuleId = toVirtualCSSPlanModulePath(context.compilerContext, resolvedPath)
                                 context.virtualModule?.writeModule(
                                     virtualModuleId,
-                                    toPlanModule(result.plan)
+                                    result.json
                                 )
                                 for (const dependency of result.dependencies) {
                                     resolveData.fileDependencies.add(dependency)

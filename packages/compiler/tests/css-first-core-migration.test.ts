@@ -1,7 +1,10 @@
 import { describe, expect, test } from 'vitest'
 import { createCSS } from '@master/css-engine'
 import { compileCSSPlan } from '../src'
-import defaultPlan from '@master/css-preset/default-plan'
+import defaultPlanJSON from '@master/css-preset/default-plan.json' with { type: 'json' }
+import type { MasterCSSPlan } from 'shared/master-css-plan'
+
+const defaultPlan = defaultPlanJSON as unknown as MasterCSSPlan
 
 describe.concurrent('CSS-first lowering for migrated core tests', () => {
     test('lowers theme variables, modes, static components, utilities, and variants into one plan', () => {

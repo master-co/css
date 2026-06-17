@@ -1,9 +1,11 @@
-import { createCSS, defaultPlan, type CompiledUtility, type MasterCSS } from '@master/css'
+import { createCSS, type CompiledUtility, type MasterCSS } from '@master/css'
+import defaultPlanJSON from '@master/css-preset/default-plan.json' with { type: 'json' }
 import UtilityType from 'shared/utility-type'
 import type { ValueComponent, Variable } from 'shared/css-syntax'
-import type { MasterCSSPlanAtRuleNode } from 'shared/master-css-plan'
+import type { MasterCSSPlan, MasterCSSPlanAtRuleNode } from 'shared/master-css-plan'
 
 export type { CompiledUtility, MasterCSS, ValueComponent, Variable }
+const defaultPlan = defaultPlanJSON as unknown as MasterCSSPlan
 export { createCSS, defaultPlan, UtilityType }
 
 export const SELECTOR_SIGNS = [':', '_', '>', '+', '~']

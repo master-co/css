@@ -1,6 +1,9 @@
-import { compareRulePriority, createCSS, defaultPlan, type MasterCSS, type MasterCSSPlan } from '@master/css'
+import { compareRulePriority, createCSS, type MasterCSS, type MasterCSSPlan } from '@master/css'
+import { createRequire } from 'node:module'
 
 export type { MasterCSS, MasterCSSPlan }
+const require = createRequire(import.meta.url)
+const defaultPlan = require('@master/css-preset/default-plan.json') as MasterCSSPlan
 export { createCSS, defaultPlan }
 
 export const CLASS_ATTRIBUTES = ['class', 'className']

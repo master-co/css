@@ -1,6 +1,6 @@
 import { expect, test } from 'vitest'
-import { loadPlan, loadPlanModule, loadProjectPlan } from '../src/load'
-import { loadPlanModuleSync, loadPlanSync, loadProjectPlanSync } from '../src/load-sync'
+import { loadPlan, loadPlanJSON, loadProjectPlan } from '../src/load'
+import { loadPlanJSONSync, loadPlanSync, loadProjectPlanSync } from '../src/load-sync'
 import { MASTER_CSS_PLAN_QUERY } from '@master/css-integration/plan-module'
 import {
     findCSSPlanEntryFiles,
@@ -196,16 +196,16 @@ test('finds Master CSS workspace directories from package and CSS entries', asyn
     }
 })
 
-test('turns CSS plan results into JavaScript modules', async () => {
+test('turns CSS plan results into JSON sources', async () => {
     const cwd = createFixture()
     try {
         const { entry } = writeCSSFixture(cwd)
-        const result = await loadPlanModule(entry)
-        const syncResult = loadPlanModuleSync(entry + MASTER_CSS_PLAN_QUERY)
+        const result = await loadPlanJSON(entry)
+        const syncResult = loadPlanJSONSync(entry + MASTER_CSS_PLAN_QUERY)
 
-        expect(result.code).toContain('export default')
-        expect(result.code).toContain('"version":1')
-        expect(syncResult.code).toBe(result.code)
+        expect(result.json).toContain('"version":1')
+        expect(JSON.parse(result.json).version).toBe(1)
+        expect(syncResult.json).toBe(result.json)
     } finally {
         rmSync(cwd, { recursive: true, force: true })
     }

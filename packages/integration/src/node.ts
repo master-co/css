@@ -1,7 +1,7 @@
 import { existsSync, mkdirSync, writeFileSync } from 'node:fs'
 import { dirname } from 'node:path'
 import {
-    EMPTY_PLAN_MODULE,
+    EMPTY_PLAN_JSON,
     toVirtualDefaultPlanModulePath
 } from './plan-module'
 import {
@@ -18,7 +18,7 @@ export function ensureVirtualModuleFile(file: string, source: string) {
 }
 
 export function ensureVirtualPlanModulePath(projectDir = process.cwd()) {
-    return ensureVirtualModuleFile(toVirtualDefaultPlanModulePath(projectDir), EMPTY_PLAN_MODULE)
+    return ensureVirtualModuleFile(toVirtualDefaultPlanModulePath(projectDir), EMPTY_PLAN_JSON)
 }
 
 export function ensureVirtualPreloadedModulePath(projectDir = process.cwd()) {

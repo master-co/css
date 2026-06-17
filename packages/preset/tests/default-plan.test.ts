@@ -4,10 +4,12 @@ import { describe, expect, it } from 'vitest'
 import { createCSS } from '@master/css-engine'
 import UtilityType from 'shared/utility-type'
 import { createDefaultPlanFromSourceFile } from '../scripts/generate-default-plan'
-import defaultPlan from '../src/default-plan'
+import defaultPlanJSON from '../src/default-plan.json' with { type: 'json' }
+import type { MasterCSSPlan } from 'shared/master-css-plan'
 import functions from '../src/functions'
 import sourceUtilities from '../src/utilities'
 
+const defaultPlan = defaultPlanJSON as unknown as MasterCSSPlan
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
 function stripRaw<T>(value: T): T {

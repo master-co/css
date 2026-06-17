@@ -40,7 +40,7 @@ The engine package must remain independent from integrations and tooling package
 
 When a feature creates a package cycle or self-build cycle, extract dependency-free contracts, IR, or lexical source scanners into the lowest owning package first. Use `shared` for type/data contracts and `@master/css-lexer` for raw source/range/token scanning. Keep engine independent; packages above engine may depend on engine for plan-driven semantic interpretation.
 
-`shared` owns MasterCSSPlan contracts and CSS directive result contracts. `@master/css-lexer` owns dependency-free source scanners: generic ranges, CSS directive ranges, Master CSS plan entrypoint statements, Master class lexical display tokens, and latent class candidates. `@master/css-integration` owns adapter-neutral integration contracts such as `?master-css-plan`, `virtual:master-css-plan`, `virtual:master-css-preloaded`, `virtual:master-utilities.css`, generated module source helpers, and dependency-light loader/plugin contracts. None of these packages should own CSS semantic parsing, import graph expansion, or Master CSS package resolution.
+`shared` owns MasterCSSPlan contracts, plan JSON normalization helpers, and CSS directive result contracts. `@master/css-lexer` owns dependency-free source scanners: generic ranges, CSS directive ranges, Master CSS plan entrypoint statements, Master class lexical display tokens, and latent class candidates. `@master/css-integration` owns adapter-neutral integration contracts such as `?master-css-plan`, `virtual:master-css-plan.json`, `virtual:master-css-preloaded`, `virtual:master-utilities.css`, generated JSON/preloaded source helpers, and dependency-light loader/plugin contracts. None of these packages should own CSS semantic parsing, import graph expansion, or Master CSS package resolution.
 
 ## Engine, Preset, And Facade Packages
 
@@ -68,7 +68,7 @@ Important files:
 - `packages/engine/src/utils/parse-at.ts`
 - `packages/engine/src/utils/parse-selector.ts`
 - `packages/engine/src/utils/generate-selector.ts`
-- `packages/preset/src/default-plan.ts`
+- `packages/preset/src/default-plan.json`
 - `packages/core/src/index.ts`
 
 ## Rendering Packages

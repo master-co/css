@@ -50,6 +50,7 @@
     },
     "dependencies": {
         "@master/css": "workspace:^",
+        "@master/css-preset": "workspace:^",
         "css-tree": "^3.2.1"
     },
     "devDependencies": {

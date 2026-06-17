@@ -1,7 +1,10 @@
 import { expect, test } from 'vitest'
 import { createCSS } from '@master/css-engine'
-import defaultPlan from '@master/css-preset/default-plan'
+import defaultPlanJSON from '@master/css-preset/default-plan.json' with { type: 'json' }
 import { compileCSSPlan } from '../src/browser'
+import type { MasterCSSPlan } from 'shared/master-css-plan'
+
+const defaultPlan = defaultPlanJSON as unknown as MasterCSSPlan
 
 test.concurrent('browser compileCSSPlan lowers directives with a base plan', async () => {
     const result = await compileCSSPlan(`

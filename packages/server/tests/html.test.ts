@@ -1,7 +1,10 @@
 import { it, expect } from 'vitest'
 import { render } from '../src'
-import { defaultPlan } from '@master/css'
+import defaultPlanJSON from '@master/css-preset/default-plan.json' with { type: 'json' }
 import { MASTER_CSS_RUNTIME_MANIFEST_SCRIPT_ID } from 'shared/master-css-runtime-manifest'
+import type { MasterCSSPlan } from 'shared/master-css-plan'
+
+const defaultPlan = defaultPlanJSON as unknown as MasterCSSPlan
 
 function countManifestScripts(html: string) {
     return html.match(new RegExp(`id="${MASTER_CSS_RUNTIME_MANIFEST_SCRIPT_ID}"`, 'g'))?.length ?? 0

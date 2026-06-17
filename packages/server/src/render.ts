@@ -1,4 +1,4 @@
-import { MasterCSS, createCSS, createRuntimeManifest, defaultPlan } from '@master/css'
+import { MasterCSS, createCSS, createRuntimeManifest } from '@master/css'
 import type { MasterCSSPlan } from 'shared/master-css-plan'
 import {
     MASTER_CSS_RUNTIME_MANIFEST_SCRIPT_ID,
@@ -6,6 +6,7 @@ import {
     type MasterCSSRuntimeManifest
 } from 'shared/master-css-runtime-manifest'
 import parseHTML from './parse-html'
+import getDefaultPlan from './default-plan'
 import { Element, Text, ChildNode } from 'domhandler'
 import serialize from 'dom-serializer'
 
@@ -120,7 +121,7 @@ function injectRuntimeManifest(
  */
 export default function render(
     html: string,
-    plan: MasterCSSPlan = defaultPlan,
+    plan?: MasterCSSPlan,
     options: RenderOptions = {}
 ): RenderResult {
     const context = parseHTML(html)
@@ -134,7 +135,7 @@ export default function render(
         headElement,
         styleElement
     }
-    const css = createCSS(plan)
+    const css = createCSS(plan || getDefaultPlan())
     classes.forEach(eachClass => css.add(eachClass))
     const manifest = options.runtimeManifest === false
         ? undefined

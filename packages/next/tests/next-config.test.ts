@@ -9,7 +9,7 @@ import { VIRTUAL_CSS_ID } from '@master/css-integration/style-module'
 import { VIRTUAL_PRELOADED_ID } from '@master/css-integration/preloaded-module'
 
 const toPosixPath = (value: string) => value.replace(/\\/g, '/')
-const virtualPlanProjectPath = 'node_modules/.master-css/master-css-plan.js'
+const virtualPlanProjectPath = 'node_modules/.master-css/master-css-plan.json'
 const virtualPreloadedProjectPath = 'node_modules/.master-css/master-css-preloaded.js'
 const composedAdapterProjectPath = 'node_modules/.master-css/master-css-next-adapter.mjs'
 
@@ -30,7 +30,7 @@ describe('withMasterCSS', () => {
         expect(resolvedConfig.module.rules).toEqual(expect.arrayContaining([
             expect.objectContaining({
                 test: expect.any(RegExp),
-                type: 'javascript/auto',
+                type: 'json',
                 use: [
                     expect.objectContaining({
                         options: {
@@ -41,7 +41,7 @@ describe('withMasterCSS', () => {
             }),
             expect.objectContaining({
                 resourceQuery: /master-css-plan/,
-                type: 'javascript/auto'
+                type: 'json'
             }),
             expect.objectContaining({
                 test: /\.(css|scss|sass)$/,
@@ -50,7 +50,7 @@ describe('withMasterCSS', () => {
                 }
             })
         ]))
-        expect(resolvedConfig.resolve.alias[VIRTUAL_PLAN_ID]).toContain(join('node_modules', '.master-css', 'master-css-plan.js'))
+        expect(resolvedConfig.resolve.alias[VIRTUAL_PLAN_ID]).toContain(join('node_modules', '.master-css', 'master-css-plan.json'))
         expect(resolvedConfig.resolve.alias[VIRTUAL_PRELOADED_ID]).toContain(join('node_modules', '.master-css', 'master-css-preloaded.js'))
         expect(resolvedConfig.resolve.alias['@master/css.react']).toBeUndefined()
         expect(resolvedConfig.resolve.alias['@master/css.react$']).toBeUndefined()
@@ -80,8 +80,8 @@ describe('withMasterCSS', () => {
                             }
                         })
                     ],
-                    type: 'ecmascript',
-                    as: '*.js'
+                    type: 'json',
+                    as: '*.json'
                 }),
                 expect.objectContaining({
                     condition: {
@@ -90,8 +90,8 @@ describe('withMasterCSS', () => {
                             { query: /master-css-plan/ }
                         ]
                     },
-                    type: 'ecmascript',
-                    as: '*.js'
+                    type: 'json',
+                    as: '*.json'
                 }),
                 expect.objectContaining({
                     condition: {
@@ -171,8 +171,8 @@ describe('withMasterCSS', () => {
                     condition: {
                         path: expect.any(RegExp)
                     },
-                    type: 'ecmascript',
-                    as: '*.js'
+                    type: 'json',
+                    as: '*.json'
                 }),
                 expect.objectContaining({
                     condition: {
@@ -181,8 +181,8 @@ describe('withMasterCSS', () => {
                             { query: /master-css-plan/ }
                         ]
                     },
-                    type: 'ecmascript',
-                    as: '*.js'
+                    type: 'json',
+                    as: '*.json'
                 }),
                 expect.objectContaining({
                     condition: {
@@ -244,10 +244,11 @@ describe('withMasterCSS', () => {
         expect(resolvedConfig.webpack({ module: { rules: [] } }, {}).module.rules).toEqual(expect.arrayContaining([
             expect.objectContaining({
                 test: expect.any(RegExp),
-                type: 'javascript/auto'
+                type: 'json'
             }),
             expect.objectContaining({
-                resourceQuery: /master-css-plan/
+                resourceQuery: /master-css-plan/,
+                type: 'json'
             }),
             expect.objectContaining({
                 test: /\.(css|scss|sass)$/
@@ -320,8 +321,8 @@ describe('withMasterCSS', () => {
                     condition: {
                         path: expect.any(RegExp)
                     },
-                    type: 'ecmascript',
-                    as: '*.js'
+                    type: 'json',
+                    as: '*.json'
                 }),
                 expect.objectContaining({
                     loaders: [

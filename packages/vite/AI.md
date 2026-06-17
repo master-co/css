@@ -13,7 +13,7 @@
 
 - The extractor lifecycle is shared by every mode. It collects class usage and supports native CSS pruning regardless of whether the mode emits generated utilities.
 - `static` mode differs by setting `includeGeneratedCSS`; the style entry pipeline is not static-only.
-- `virtual:master-css-plan` is the project-level MasterCSSPlan API. It must not manage stylesheet output or extractor usage.
+- `virtual:master-css-plan.json` is the project-level MasterCSSPlan API. It must not manage stylesheet output or extractor usage.
 - `virtual:master-css-preloaded` is derived from the managed CSS entry output and must only describe generated variables/keyframes that runtime should treat as already present.
 - The style entry plugin only handles CSS files that Vite imports. Do not scan the workspace here to discover unimported CSS plan entries.
 - Each file in `src/plugins` should define one plugin and default-export it.

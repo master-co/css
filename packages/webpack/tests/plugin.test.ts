@@ -255,7 +255,7 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
         expect(result.code).toContain(':root')
     })
 
-    test('resolves virtual:master-css-plan to a JS virtual module', async () => {
+    test('resolves virtual:master-css-plan.json to a JSON virtual asset', async () => {
         const plugin = new MasterCSSPlugin({
             include: [],
             required: [],
@@ -275,7 +275,7 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
 
         await resolveBefore(normalModuleFactory, resolveData)
 
-        expect(resolveData.request).toContain(path.join('node_modules', '.master-css', 'master-css-plan.js'))
+        expect(resolveData.request).toContain(path.join('node_modules', '.master-css', 'master-css-plan.json'))
         expect((compiler.inputFileSystem._writeVirtualFile as any).mock.calls.at(-1)?.[2])
             .toContain('"version":1')
     })
@@ -305,7 +305,7 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
             .toBe('export default {"variables":{},"animations":{}};')
     })
 
-    test('resolves ?master-css-plan imports to per-file JS virtual modules', async () => {
+    test('resolves ?master-css-plan imports to per-file JSON virtual assets', async () => {
         const fixturePath = path.resolve(__dirname, 'fixtures/plan-virtual-module/theme.css')
         const plugin = makePlugin()
         const { compiler } = makeFakeCompiler()
@@ -324,7 +324,7 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
         await resolveBefore(normalModuleFactory, resolveData)
 
         expect(resolveData.request).toContain(path.join('node_modules', '.master-css'))
-        expect(resolveData.request).toContain('.plan.js')
+        expect(resolveData.request).toContain('.plan.json')
         expect(resolveData.fileDependencies.has(fixturePath)).toBe(true)
         expect((compiler.inputFileSystem._writeVirtualFile as any).mock.calls.at(-1)?.[2])
             .toContain('accent')
@@ -760,7 +760,7 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
         plugin.apply(compiler as any)
         compiler.hooks.thisCompilation.call(compilation as any)
 
-        compilation.hooks.succeedModule.call(makeModule('node_modules/.master-css/master-css-plan.js', 'export default {}'))
+        compilation.hooks.succeedModule.call(makeModule('node_modules/.master-css/master-css-plan.json', '{}'))
         compilation.hooks.succeedModule.call(makeModule('/real.tsx', 'real'))
 
         await new Promise<void>((res, rej) =>

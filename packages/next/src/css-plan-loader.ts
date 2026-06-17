@@ -1,5 +1,5 @@
-import { loadPlanModuleSync } from '@master/css-plan/load-sync'
-import { loadProjectPlanModule } from '@master/css-plan/load'
+import { loadPlanJSONSync } from '@master/css-plan/load-sync'
+import { loadProjectPlanJSON } from '@master/css-plan/load'
 import { isCSSPlanRequest } from '@master/css-plan/css'
 
 interface LoaderContext {
@@ -14,25 +14,25 @@ interface MasterCSSPlanLoaderOptions {
     virtual?: boolean
 }
 
-async function loadVirtualPlanModule(context: LoaderContext) {
+async function loadVirtualPlanJSON(context: LoaderContext) {
     const projectDir = context.rootContext || process.cwd()
-    const result = await loadProjectPlanModule(projectDir)
+    const result = await loadProjectPlanJSON(projectDir)
     for (const dependency of result.dependencies) {
         context.addDependency?.(dependency)
     }
-    return result.code
+    return result.json
 }
 
-function loadCSSPlanModule(context: LoaderContext) {
+function loadCSSPlanJSON(context: LoaderContext) {
     const resourcePath = context.resourcePath
     if (!isCSSPlanRequest(resourcePath)) {
         throw new TypeError('Master CSS plan queries only support CSS entry files.')
     }
-    const result = loadPlanModuleSync(resourcePath)
+    const result = loadPlanJSONSync(resourcePath)
     for (const dependency of result.dependencies) {
         context.addDependency?.(dependency)
     }
-    return result.code
+    return result.json
 }
 
 export default function masterCSSPlanLoader(this: LoaderContext) {
@@ -42,8 +42,8 @@ export default function masterCSSPlanLoader(this: LoaderContext) {
     }
     const options = this.getOptions?.() || {}
     const result = options.virtual
-        ? loadVirtualPlanModule(this)
-        : Promise.resolve(loadCSSPlanModule(this))
+        ? loadVirtualPlanJSON(this)
+        : Promise.resolve(loadCSSPlanJSON(this))
     result
         .then((code) => callback(null, code))
         .catch((error: Error) => callback(error))

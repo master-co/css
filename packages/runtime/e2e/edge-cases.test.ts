@@ -1,6 +1,10 @@
 import { test, expect } from '@playwright/test'
-import { createCSS, createRuntimeManifest, defaultPlan } from '@master/css'
+import { createCSS, createRuntimeManifest } from '@master/css'
+import defaultPlanJSON from '@master/css-preset/default-plan.json' with { type: 'json' }
+import type { MasterCSSPlan } from 'shared/master-css-plan'
 import init from './init'
+
+const defaultPlan = defaultPlanJSON as unknown as MasterCSSPlan
 
 test('disconnect clears counts and observe rescans the current DOM', async ({ page }) => {
     await init(page)

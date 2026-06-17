@@ -130,8 +130,12 @@ describe('sorting', () => {
             'yellow-95',
             'yellow-100',
             'yellow',
+            'yellow-focus',
             'yellow-hover',
-            'yellow-pressed'
+            'yellow-line',
+            'yellow-pressed',
+            'yellow-selection',
+            'yellow-surface'
         ])
     })
 

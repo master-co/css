@@ -1,7 +1,9 @@
 import { CSSRuntimeProvider } from '../src/runtime-provider'
 import { useState, useEffect, useRef } from 'react'
 import type { MasterCSSPlan } from '@master/css-runtime'
-import { defaultPlan } from '@master/css'
+import defaultPlanJSON from '@master/css-preset/default-plan.json' with { type: 'json' }
+
+const defaultPlan = defaultPlanJSON as unknown as MasterCSSPlan
 
 export default function Runtime() {
     const [plan, setPlan] = useState<MasterCSSPlan>({

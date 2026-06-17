@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import path from 'node:path'
 import {
     CSS_RUNTIME_INJECTION,
-    EMPTY_PLAN_MODULE,
+    EMPTY_PLAN_JSON,
     EMPTY_PRELOADED_MODULE,
     MASTER_CSS_PLAN_QUERY,
     VIRTUAL_CSS_ID,
@@ -13,7 +13,7 @@ import {
     normalizePreloaded,
     stripMasterCSSPlanQuery,
     stripResourceQuery,
-    toPlanModule,
+    toPlanJSON,
     toPreloadedModule,
     toResolvedMasterCSSPlanId,
     toVirtualCSSPlanModulePath,
@@ -24,16 +24,16 @@ import {
 
 describe('@master/css-integration module helpers', () => {
     it('defines Master CSS virtual module ids', () => {
-        expect(VIRTUAL_PLAN_ID).toBe('virtual:master-css-plan')
+        expect(VIRTUAL_PLAN_ID).toBe('virtual:master-css-plan.json')
         expect(VIRTUAL_CSS_ID).toBe('virtual:master-utilities.css')
         expect(VIRTUAL_PRELOADED_ID).toBe('virtual:master-css-preloaded')
         expect(MASTER_CSS_PLAN_QUERY).toBe('?master-css-plan')
     })
 
     it('serializes plan and preloaded modules', () => {
-        expect(EMPTY_PLAN_MODULE).toBe('export default { version: 1 };')
+        expect(EMPTY_PLAN_JSON).toBe('{"version":1}')
         expect(EMPTY_PRELOADED_MODULE).toBe('export default { variables: {}, animations: {} };')
-        expect(toPlanModule({ version: 1 })).toBe('export default {"version":1};')
+        expect(toPlanJSON({ version: 1 })).toBe('{"version":1}')
         expect(toPreloadedModule({ variables: { color: 1 } })).toBe('export default {"variables":{"color":1},"animations":{}};')
         expect(normalizePreloaded()).toEqual({ variables: {}, animations: {} })
     })
@@ -46,8 +46,8 @@ describe('@master/css-integration module helpers', () => {
         expect(fromResolvedMasterCSSPlanId(id)).toBe(file)
         expect(stripMasterCSSPlanQuery('./theme.css?master-css-plan')).toBe('./theme.css')
         expect(stripResourceQuery('./theme.css?master-css-plan')).toBe('./theme.css')
-        expect(toVirtualDefaultPlanModulePath(root)).toBe(path.join(root, 'node_modules/.master-css/master-css-plan.js'))
-        expect(toVirtualCSSPlanModulePath(root, file)).toMatch(/node_modules[/\\]\.master-css[/\\].+\.plan\.js$/)
+        expect(toVirtualDefaultPlanModulePath(root)).toBe(path.join(root, 'node_modules/.master-css/master-css-plan.json'))
+        expect(toVirtualCSSPlanModulePath(root, file)).toMatch(/node_modules[/\\]\.master-css[/\\].+\.plan\.json$/)
         expect(toVirtualCSSModulePath(root)).toBe(path.join(root, 'node_modules/.master-css/master-utilities.css'))
         expect(toVirtualPreloadedModulePath(root)).toBe(path.join(root, 'node_modules/.master-css/master-css-preloaded.js'))
         expect(createVirtualDefaultPlanModulePathPattern().test(toVirtualDefaultPlanModulePath(root))).toBe(true)

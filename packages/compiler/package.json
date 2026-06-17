@@ -60,6 +60,7 @@
         "lightningcss-wasm": "^1.32.0"
     },
     "devDependencies": {
+        "@master/css-preset": "workspace:^",
         "shared": "workspace:^"
     }
 }

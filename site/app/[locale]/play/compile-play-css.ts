@@ -1,6 +1,9 @@
-import { AnimationRule, VariableRule, createCSS, defaultPlan, type MasterCSSPlan } from '@master/css'
+import { AnimationRule, VariableRule, createCSS, type MasterCSSPlan } from '@master/css'
+import defaultPlanJSON from '@master/css-preset/default-plan.json' with { type: 'json' }
 import { compileCSSPlan, type CompileCSSPlanResult } from '@master/css-compiler/browser'
 import { collectAnimationNamesFromDeclaration } from '@master/css-engine'
+
+const defaultPlan = defaultPlanJSON as unknown as MasterCSSPlan
 
 export interface CompilePlayCSSResult {
     css: string

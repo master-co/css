@@ -1,7 +1,7 @@
 import { CSSExtractor, type Options } from '@master/css-extractor'
 import type { MasterCSSPreloaded } from '@master/css'
 import {
-    toPlanModule,
+    toPlanJSON,
     toVirtualDefaultPlanModulePath
 } from '@master/css-integration/plan-module'
 import { loadProjectPlan } from '@master/css-plan/load'
@@ -168,7 +168,7 @@ export class MasterCSSPlugin {
             plan: result.plan
         }
         this.defaultPlanDependencies = result.dependencies
-        return toPlanModule(result.plan)
+        return toPlanJSON(result.plan)
     }
 
     private getDefaultPlanDependencyPaths() {

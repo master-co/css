@@ -1,5 +1,16 @@
 import type { Config } from 'techor'
 
+const presetDefaultPlanJSON = {
+    name: 'preset-default-plan-json',
+    transform(code: string, id: string) {
+        if (!id.endsWith('/packages/preset/src/default-plan.json')) return
+        return {
+            code: `export default ${code};`,
+            map: null
+        }
+    }
+} as const
+
 const externalNativePackages = {
     name: 'external-native-packages',
     resolveId: {
@@ -34,6 +45,7 @@ const config: Config = {
         esmShim: false,
         input: {
             plugins: [
+                presetDefaultPlanJSON,
                 externalNativePackages
             ]
         },

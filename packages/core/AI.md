@@ -2,7 +2,7 @@
 
 ## Responsibility
 
-`@master/css` is the public facade. It re-exports the plan-driven engine API and the default preset plan/CSS entrypoints. It must not own Config resolution, utility matcher construction, declarers, transformers, or runtime authoring adapters.
+`@master/css` is the public facade. It re-exports the plan-driven engine API and the default preset CSS entrypoints. It must not own Config resolution, utility matcher construction, declarers, transformers, preset plan data, or runtime authoring adapters.
 
 ## Inputs And Outputs
 
@@ -16,7 +16,6 @@ The root export should stay narrow:
 - `MasterCSS`
 - `createCSS(plan, preloaded?)`
 - `MasterCSSPlan` and runtime-safe engine types
-- `defaultPlan`
 
 Do not re-export `Config`, `UtilityDefinition`, `extendConfig`, old utility classes as public API, or `@master/css/config` / `@master/css/utils` subpaths.
 

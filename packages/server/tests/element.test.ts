@@ -1,6 +1,9 @@
 import { it, test, expect } from 'vitest'
 import { render } from '../src'
-import { defaultPlan } from '@master/css'
+import defaultPlanJSON from '@master/css-preset/default-plan.json' with { type: 'json' }
+import type { MasterCSSPlan } from 'shared/master-css-plan'
+
+const defaultPlan = defaultPlanJSON as unknown as MasterCSSPlan
 
 it('render elements', () => {
     expect(render([

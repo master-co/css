@@ -2,7 +2,7 @@
     "name": "@master/css-preset",
     "type": "module",
     "scripts": {
-        "build": "pnpm generate && techor build \"src/**/*.ts\" --formats esm",
+        "build": "pnpm generate && techor build \"src/**/!(*.d).ts\" --formats esm",
         "dev": "pnpm build --watch",
         "generate": "tsx scripts/generate-default-plan.ts",
         "lint": "eslint",
@@ -43,10 +43,10 @@
             "import": "./dist/index.mjs",
             "default": "./dist/index.mjs"
         },
-        "./default-plan": {
-            "types": "./dist/default-plan.d.ts",
-            "import": "./dist/default-plan.mjs",
-            "default": "./dist/default-plan.mjs"
+        "./default-plan.json": {
+            "types": "./src/default-plan.json.d.ts",
+            "import": "./src/default-plan.json",
+            "default": "./src/default-plan.json"
         },
         "./index.css": "./src/index.css",
         "./base.css": "./src/base.css",
@@ -56,7 +56,9 @@
     },
     "files": [
         "dist",
-        "src/*.css"
+        "src/*.css",
+        "src/default-plan.json",
+        "src/default-plan.json.d.ts"
     ],
     "publishConfig": {
         "access": "public",

@@ -1,6 +1,7 @@
 import { describe, expect, test } from 'vitest'
 import { createCSS } from '../src'
-import defaultPlan from '@master/css-preset/default-plan'
+import defaultPlanJSON from '@master/css-preset/default-plan.json' with { type: 'json' }
+import type { MasterCSSPlan } from 'shared/master-css-plan'
 import {
     clonePlan,
     createCSSWithStaticUtilities,
@@ -9,6 +10,8 @@ import {
     createPlanWithVariables,
     expectLayerText
 } from './helpers/css-tester'
+
+const defaultPlan = defaultPlanJSON as unknown as MasterCSSPlan
 
 describe.concurrent('migrated cascade and layer parity', () => {
     test('keeps on-demand insertion lifecycle for utilities variables and static components', () => {

@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://esm.sh/@master/css@rc/index.css?css">
     <link rel="modulepreload" href="https://esm.sh/@master/css-runtime@rc/+esm">
     <script type="module">
-        import { defaultPlan } from 'https://esm.sh/@master/css@rc/+esm'
+        import defaultPlan from 'https://esm.sh/@master/css-preset@rc/default-plan.json' with { type: 'json' }
         import { initCSSRuntime } from 'https://esm.sh/@master/css-runtime@rc/+esm'
         initCSSRuntime({ plan: defaultPlan })
     </script>

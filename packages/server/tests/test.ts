@@ -3,9 +3,11 @@ import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { describe, expect, test } from 'vitest'
 import { compileCSSPlanFile } from '@master/css-compiler'
-import { defaultPlan } from '@master/css'
+import defaultPlanJSON from '@master/css-preset/default-plan.json' with { type: 'json' }
+import type { MasterCSSPlan } from 'shared/master-css-plan'
 import { render } from '../src'
 
+const defaultPlan = defaultPlanJSON as unknown as MasterCSSPlan
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const fixturesDirectory = join(__dirname, 'fixtures')
 

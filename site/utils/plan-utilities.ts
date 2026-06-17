@@ -1,4 +1,5 @@
-import { defaultPlan, type MasterCSSPlanUtility } from '@master/css'
+import type { MasterCSSPlanUtility } from '@master/css'
+import defaultPlan from '@master/css-preset/default-plan.json' with { type: 'json' }
 
 export const planUtilities = defaultPlan.utilities || []
 

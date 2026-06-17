@@ -1,7 +1,6 @@
 'use client'
 
 import { CSSRuntime, initCSSRuntime, resolveRuntimePlan } from '@master/css-runtime'
-import { defaultPlan } from '@master/css'
 import { createContext, useContext, useRef, useState } from 'react'
 import type { CSSRuntimeProviderProps } from './types/provider-props'
 // fix: ReferenceError: React is not defined
@@ -19,7 +18,7 @@ export function CSSRuntimeProvider(props: CSSRuntimeProviderProps) {
     /** onMounted */
     useIsomorphicLayoutEffect(() => {
         cssRuntime.current = initCSSRuntime({
-            plan: props.plan || defaultPlan,
+            plan: props.plan,
             root: props.root ?? document,
             preloaded: props.preloaded,
             manifest: props.manifest
@@ -35,7 +34,7 @@ export function CSSRuntimeProvider(props: CSSRuntimeProviderProps) {
     /** on plan change */
     useUpdateEffect(() => {
         if (cssRuntime.current) {
-            cssRuntime.current.refresh(resolveRuntimePlan(props.plan || defaultPlan))
+            cssRuntime.current.refresh(resolveRuntimePlan(props.plan))
         }
     }, [props.plan])
 
@@ -45,7 +44,7 @@ export function CSSRuntimeProvider(props: CSSRuntimeProviderProps) {
             cssRuntime.current.destroy()
             cssRuntime.current = undefined
             cssRuntime.current = initCSSRuntime({
-                plan: props.plan || defaultPlan,
+                plan: props.plan,
                 root: props.root ?? document,
                 preloaded: props.preloaded,
                 manifest: props.manifest

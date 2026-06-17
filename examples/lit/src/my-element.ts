@@ -4,7 +4,7 @@ import masterLogo from './assets/master.svg'
 import litLogo from './assets/lit.svg'
 import { cssRuntime } from '@master/css-runtime'
 import type { CSSRuntime } from '@master/css-runtime'
-import plan from 'virtual:master-css-plan'
+import plan from 'virtual:master-css-plan.json'
 import preloaded from 'virtual:master-css-preloaded'
 
 /**

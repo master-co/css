@@ -4,9 +4,9 @@ import { createMasterCSSPlanLoaderPlugin } from '../packages/integration/src/pla
 const config: ViteUserConfig = {
     plugins: [
         createMasterCSSPlanLoaderPlugin({
-            async loadPlanModule(...args) {
-                const { compileCSSPlanModule } = await import('../packages/compiler/src')
-                return compileCSSPlanModule(...args)
+            async loadPlanJSON(...args) {
+                const { compileCSSPlanJSON } = await import('../packages/compiler/src')
+                return compileCSSPlanJSON(...args)
             }
         })
     ],

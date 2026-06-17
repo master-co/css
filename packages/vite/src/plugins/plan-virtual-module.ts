@@ -1,7 +1,7 @@
 import type { ModuleNode, Plugin, ViteDevServer } from 'vite'
 import { PluginContext } from '../core'
 import { loadProjectPlan } from '@master/css-plan/load'
-import { toPlanModule } from '@master/css-integration/plan-module'
+import { toPlanJSON } from '@master/css-integration/plan-module'
 import { RESOLVED_VIRTUAL_PLAN_ID, VIRTUAL_PLAN_ID } from '../common'
 import { PluginOptions } from '../options'
 
@@ -43,7 +43,7 @@ export default function PlanVirtualModulePlugin(
         },
         async load(id) {
             if (id === RESOLVED_VIRTUAL_PLAN_ID) {
-                return toPlanModule((await loadDefaultPlan(this)).plan)
+                return toPlanJSON((await loadDefaultPlan(this)).plan)
             }
         },
         async handleHotUpdate({ file, server }) {

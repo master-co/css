@@ -27,8 +27,11 @@ import HeaderContent from 'internal/components/HeaderContent'
 import createHighlighter, { themes } from 'internal/utils/create-highlighter'
 import { useApp } from 'internal/contexts/app'
 import { shikiToMonaco, textmateThemeToMonacoTheme } from '@shikijs/monaco'
-import { defaultPlan, type MasterCSSPlan } from '@master/css'
+import type { MasterCSSPlan } from '@master/css'
+import defaultPlanJSON from '@master/css-preset/default-plan.json' with { type: 'json' }
 import { renderBrowserSemanticTokens, SEMANTIC_TOKENS_LEGEND } from '@master/css-language-service/browser'
+
+const defaultPlan = defaultPlanJSON as unknown as MasterCSSPlan
 
 if (typeof window !== 'undefined') {
     loader.config({

@@ -3,6 +3,7 @@ import { createRequire } from 'node:module'
 import { dirname, extname, isAbsolute, resolve } from 'node:path'
 import { transform } from 'lightningcss'
 import type { MasterCSSPlan } from 'shared/master-css-plan'
+import { stringifyMasterCSSPlanJSON } from 'shared/master-css-plan-json'
 import type { CSSDirectiveReference } from 'shared/css-directives'
 import { createMasterCSSPlan } from './master-css-plan'
 import lowerCSSDirectives from './lower-css-directives'
@@ -74,8 +75,8 @@ export interface CompileProjectPlanResult extends CompileCSSPlanResult {
     entries: string[]
 }
 
-export type CompileCSSPlanModuleResult = CompileCSSPlanResult & {
-    code: string
+export type CompileCSSPlanJSONResult = CompileCSSPlanResult & {
+    json: string
     directives: CompileCSSResult
 }
 
@@ -472,53 +473,17 @@ export function compileProjectPlan(entries: string[], options: CompileCSSPlanOpt
     }
 }
 
-type PlanUtility = NonNullable<MasterCSSPlan['utilities']>[number]
-
-function normalizeTemplateDeclarations(declarations: Record<string, unknown>) {
-    const normalized: Record<string, unknown> = {}
-    for (const propertyName in declarations) {
-        const value = declarations[propertyName]
-        normalized[propertyName] = Array.isArray(value)
-            ? value.map((part) => part === undefined ? null : part)
-            : value === undefined
-                ? null
-                : value
-    }
-    return normalized
-}
-
-function normalizeUtilityForJSON(utility: PlanUtility): PlanUtility {
-    if (utility.emit.type !== 'template') return utility
-    return {
-        ...utility,
-        emit: {
-            ...utility.emit,
-            declarations: normalizeTemplateDeclarations(utility.emit.declarations as Record<string, unknown>)
-        }
-    }
-}
-
-function stringifyPlan(plan: MasterCSSPlan) {
-    return JSON.stringify(plan.utilities?.length
-        ? { ...plan, utilities: plan.utilities.map(normalizeUtilityForJSON) }
-        : plan)
-}
-
-function toPlanModule(plan: MasterCSSPlan) {
-    return `export default ${stringifyPlan(plan)};`
-}
-
-function toPlanModuleResult<T extends { plan: MasterCSSPlan }>(result: T): T & { code: string } {
+function toPlanJSONResult<T extends { plan: MasterCSSPlan }>(result: T): T & { json: string } {
     return {
         ...result,
-        code: toPlanModule(result.plan)
+        json: stringifyMasterCSSPlanJSON(result.plan)
     }
 }
 
-export function compileCSSPlanModule(file: string, options: CompileCSSPlanOptions = {}): CompileCSSPlanModuleResult {
-    return toPlanModuleResult(compileCSSPlanFile(file, options))
+export function compileCSSPlanJSON(file: string, options: CompileCSSPlanOptions = {}): CompileCSSPlanJSONResult {
+    return toPlanJSONResult(compileCSSPlanFile(file, options))
 }
 
-export function compileProjectPlanModule(entries: string[], options: CompileCSSPlanOptions = {}) {
-    return toPlanModuleResult(compileProjectPlan(entries, options))
+export function compileProjectPlanJSON(entries: string[], options: CompileCSSPlanOptions = {}) {
+    return toPlanJSONResult(compileProjectPlan(entries, options))
 }

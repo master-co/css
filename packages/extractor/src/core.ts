@@ -1,6 +1,7 @@
 import { default as defaultOptions, Options } from './options'
-import { createCSS, defaultPlan, MasterCSS } from '@master/css'
+import { createCSS, MasterCSS } from '@master/css'
 import type { MasterCSSPlan } from 'shared/master-css-plan'
+import { createRequire } from 'node:module'
 import { extractLatentClasses } from '@master/css-lexer'
 import fs from 'fs'
 import { Minimatch } from 'minimatch'
@@ -34,6 +35,8 @@ const builtInAdapters = [
 ]
 
 const sourceMatchOptions = { dot: true }
+const require = createRequire(import.meta.url)
+const defaultPlan = require('@master/css-preset/default-plan.json') as MasterCSSPlan
 
 interface SourceMatchers {
     required: Minimatch[]

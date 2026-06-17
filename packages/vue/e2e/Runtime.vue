@@ -2,8 +2,10 @@
     import { CSSRuntimeProvider } from '../src/runtime-provider'
     import { ref, onMounted } from 'vue'
     import type { MasterCSSPlan } from '@master/css-runtime'
-    import { defaultPlan } from '@master/css'
+    import defaultPlanJSON from '@master/css-preset/default-plan.json' with { type: 'json' }
     import RuntimeConsumer from './RuntimeConsumer.vue'
+
+    const defaultPlan = defaultPlanJSON as unknown as MasterCSSPlan
 
     const plan = ref<MasterCSSPlan>({
         version: 1,

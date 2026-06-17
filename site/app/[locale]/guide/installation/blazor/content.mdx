@@ -66,7 +66,7 @@
         </StepL>
         <StepR>
             ```bash action=install
-            @master/css@rc @master/css-runtime@rc
+            @master/css@rc @master/css-preset@rc @master/css-runtime@rc
             ```
         </StepR>
     </Step>
@@ -78,7 +78,7 @@
         <StepR>
             ```js name=npm_packages/src/index.js
             …
-            import { defaultPlan } from '@master/css'; // [!code highlight]
+            import defaultPlan from '@master/css-preset/default-plan.json' with { type: 'json' }; // [!code highlight]
             import { initCSSRuntime } from '@master/css-runtime'; // [!code highlight]
 
             initCSSRuntime({ plan: defaultPlan }) // [!code highlight]
