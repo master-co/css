@@ -1199,6 +1199,9 @@ importers:
       '@master/css-lexer':
         specifier: workspace:^
         version: link:../lexer
+      css-tree:
+        specifier: ^3.2.1
+        version: 3.2.1
       csstype:
         specifier: ^3.2.3
         version: 3.2.3
@@ -1212,6 +1215,9 @@ importers:
       '@master/css-preset':
         specifier: workspace:^
         version: link:../preset
+      '@types/css-tree':
+        specifier: ^2.3.11
+        version: 2.3.11
       shared:
         specifier: workspace:^
         version: link:../../shared

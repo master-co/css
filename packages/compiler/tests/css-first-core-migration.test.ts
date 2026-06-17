@@ -405,7 +405,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
 
             @components {
                 card {
-                    @compose inline-flex bg:primary/.9 translateY(-5);
+                    @compose inline-flex bg:primary/.9 opacity:.7 translateY(-5);
                 }
             }
 
@@ -428,12 +428,17 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
             }),
             expect.objectContaining({
                 type: 'compose',
+                className: 'opacity:.7'
+            }),
+            expect.objectContaining({
+                type: 'compose',
                 className: 'text:center>li'
             })
         ]))
         expect(css.text).toContain('.card')
         expect(css.text).toContain('display:inline-flex')
         expect(css.text).toContain('background-color:color-mix(in oklab,var(--color-primary) 90%,transparent)')
+        expect(css.text).toContain('opacity:0.7')
         expect(result.css).toContain('.list>li{text-align:center}')
     })
 

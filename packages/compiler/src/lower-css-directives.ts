@@ -24,6 +24,7 @@ import type { MasterCSSPlan, MasterCSSPlanUtilityLayerName } from 'shared/master
 import { createMasterCSSPlan, createVariableNameResolver, type CSSDirectiveVariableNameResolver } from './master-css-plan'
 import { combineStyleSelectors } from './utils/selectors'
 import wrapAtRules from './utils/wrap-at-rules'
+import { cssTreeNativeDeclarationMatcher } from './native-declaration'
 
 export interface LowerCSSDirectivesOptions {
     basePlan?: MasterCSSPlan
@@ -262,7 +263,9 @@ function warnUnsupportedMediaModes(input: CSSDirectivePlanInput, options: LowerC
 function createCSS(input: CSSDirectivePlanInput, options: LowerCSSDirectivesOptions) {
     return createCompilerCSS(createMasterCSSPlan(input, {
         basePlan: getResolutionPlan(options)
-    }))
+    }), undefined, {
+        nativeDeclarationMatcher: cssTreeNativeDeclarationMatcher
+    })
 }
 
 function getUtilityAtRuleDefinitions(utility: GeneratedRule) {

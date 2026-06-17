@@ -8,13 +8,14 @@ import compareRulePriority from './utils/compare-rule-priority'
 import type { Utility } from './utility'
 import type { MasterCSSPlan } from 'shared/master-css-plan'
 import type { MasterCSSPreloaded } from './preloaded'
+import type { MasterCSSOptions } from './core'
 
 export { MasterCSS, createCSS, compareRulePriority, generateAt, generateSelector, parseAt, parseSelector }
 export type { Utility as GeneratedRule }
 export type * from 'shared/master-css-plan'
 
-export function createCompilerCSS(plan: MasterCSSPlan, preloaded?: MasterCSSPreloaded) {
-    return createCSS(plan, preloaded)
+export function createCompilerCSS(plan: MasterCSSPlan, preloaded?: MasterCSSPreloaded, options?: MasterCSSOptions) {
+    return createCSS(plan, preloaded, options)
 }
 
 export function expandClassName(plan: MasterCSSPlan, className: string, mode?: string) {

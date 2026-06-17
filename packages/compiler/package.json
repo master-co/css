@@ -55,12 +55,14 @@
     "dependencies": {
         "@master/css-engine": "workspace:^",
         "@master/css-lexer": "workspace:^",
+        "css-tree": "^3.2.1",
         "csstype": "^3.2.3",
         "lightningcss": "^1.32.0",
         "lightningcss-wasm": "^1.32.0"
     },
     "devDependencies": {
         "@master/css-preset": "workspace:^",
+        "@types/css-tree": "^2.3.11",
         "shared": "workspace:^"
     }
 }
