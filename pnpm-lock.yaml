@@ -2062,6 +2062,9 @@ importers:
       '@master/css-preset':
         specifier: workspace:^
         version: link:../packages/preset
+      '@master/css-validator':
+        specifier: workspace:^
+        version: link:../packages/validator
       '@monaco-editor/react':
         specifier: ^4.7.0
         version: 4.7.0(monaco-editor@0.55.1)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)

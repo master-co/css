@@ -18,6 +18,8 @@ The Master CSS engine does not polyfill every CSS feature. It generates CSS from
 
 For example, `bg:danger` depends on normal `background-color` support, while `backdrop-filter:blur(16)` depends on `backdrop-filter` support. Modern features should be checked in [Can I use](https://caniuse.com/) or MDN before relying on them in production.
 
+Property-like classes can also fall back to native CSS declarations. In the browser runtime, Master CSS validates those declarations with `CSS.supports(property, value)`. Static, server, extraction, compiler, validator, and linting workflows use a CSS syntax matcher so invalid declarations such as `display:banana` do not emit CSS.
+
 Use this rule of thumb:
 
 - If the browser supports the generated CSS, Master CSS can use it.
@@ -60,31 +62,75 @@ Use the Master CSS selector shorthand when one exists:
 ---
 
 ## New CSS features
-Master CSS does not need to know every future CSS feature before you can try it. Use arbitrary properties for new declarations and native selector syntax for new selectors.
+Master CSS does not need a built-in utility for every platform feature before you can try it. It recognizes many explicit CSS declarations directly, while still preserving Master CSS utilities, tokens, and shorthands when they exist.
 
-### New properties
-Use arbitrary property declarations when a property is not yet part of the built-in utility map:
+### Native declarations
+Write a property-like class when the declaration is already valid CSS:
 
 ```html
-<!-- @MARK {new-property:value} -->
-<div class="{new-property:value}">…</div>
+<!-- @MARK float:left --><!-- @MARK field-sizing:content --><!-- @MARK view-transition-name:card -->
+<article class="float:left field-sizing:content view-transition-name:card">…</article>
+```
+
+<details open>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['float:left', 'field-sizing:content', 'view-transition-name:card']}
+    </Class2CSS>
+</details>
+
+Custom properties can use the same direct declaration form:
+
+```html
+<!-- @MARK --card-gap:1rem -->
+<section class="--card-gap:1rem">…</section>
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['--card-gap:1rem']}
+    </Class2CSS>
+</details>
+
+### Master CSS syntax first
+Native fallback is intentionally lower priority than Master CSS semantics. Aliases, token resolution, unit conversion, transform helpers, and shorthand utilities continue to use the Master CSS matcher before a native declaration is considered.
+
+```html
+<!-- @MARK d:block --><!-- @MARK margin:16 --><!-- @MARK bg:red-60 -->
+<div class="d:block margin:16 bg:red-60">…</div>
+```
+
+<details>
+    <summary>Generated CSS</summary>
+    <Class2CSS>
+        {['d:block', 'margin:16', 'bg:red-60']}
+    </Class2CSS>
+</details>
+
+This preserves the expected syntax model:
+
+- `d:block` uses the `d` alias and emits `display:block`.
+- `margin:16` keeps Master CSS unit conversion and emits `margin:1rem`.
+- `bg:red-60` resolves the theme token and emits `background-color:var(--color-red-60)`.
+- `display:banana` and `float:banana` are rejected instead of emitted as raw CSS.
+
+### Arbitrary properties
+Use arbitrary property declarations as an escape hatch when you need raw CSS that should not go through the normal declaration matcher, or when an experimental feature is valid in your target browser before static tooling recognizes its grammar:
+
+```html
+<!-- @MARK {new-platform-property:value} -->
+<div class="{new-platform-property:value}">…</div>
 ```
 
 <details>
     <summary>Generated CSS</summary>
     ```css
-    .\{new-property\:value\} {
-        new-property: value
+    .\{new-platform-property\:value\} {
+        new-platform-property: value
     }
     ```
 </details>
-
-Once the property is supported by Master CSS core utilities, you can use the normal declaration syntax:
-
-```html
-<!-- @MARK new-property:value -->
-<div class="new-property:value">…</div>
-```
 
 ### New selectors
 Selector suffixes can use native CSS selector syntax as long as the browser supports the selector.
@@ -177,6 +223,8 @@ When a CSS file imports `@master/css`, it becomes a Master-managed stylesheet. K
 - Check browser support for the generated CSS feature, not just the Master CSS class.
 - Treat native cascade layers as the main browser compatibility boundary for the default stylesheet.
 - Write standard unprefixed properties and selectors when Master CSS already prefixes them.
-- Use arbitrary properties and native selector suffixes for new platform features.
+- Use native declaration syntax for valid CSS declarations, and arbitrary properties only when you need an explicit raw escape hatch.
+- Keep Master CSS aliases, tokens, unit conversion, and shorthands ahead of native declaration fallback.
+- Expect browser runtime validation and static validation to occasionally differ for the newest CSS grammar; test experimental declarations in the rendering mode you ship.
 - Put third-party CSS in `defaults` when you want components and utilities to override it.
 - Keep externally injected classes visible to extraction, outside managed roots, or protected from native CSS pruning.

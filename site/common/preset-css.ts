@@ -1,12 +1,12 @@
-import { createCSS } from '@master/css'
+import { createCSSWithNativeDeclarations } from '@master/css-validator'
 import type { MasterCSSPlan } from '@master/css'
 import defaultPlanJSON from '@master/css-preset/default-plan.json' with { type: 'json' }
 
 const defaultPlan = defaultPlanJSON as unknown as MasterCSSPlan
-const presetCSS = createCSS(defaultPlan)
+const presetCSS = createCSSWithNativeDeclarations(defaultPlan)
 
 export const createPresetCSS = () => {
-    return createCSS(defaultPlan)
+    return createCSSWithNativeDeclarations(defaultPlan)
 }
 
 export default presetCSS
