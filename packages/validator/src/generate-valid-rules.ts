@@ -1,6 +1,6 @@
-import { createCSS } from '@master/css'
 import defaultPlan from './default-plan'
 import validateCSS from './validate-css'
+import { createCSSWithNativeDeclarations } from './native-declaration'
 
 /**
  * @argument syntax A potential Master CSS syntactic class
@@ -8,7 +8,7 @@ import validateCSS from './validate-css'
  */
 export default function generateValidRules(
     syntax: string,
-    css = createCSS(defaultPlan)
+    css = createCSSWithNativeDeclarations(defaultPlan)
 ) {
     const rules = css.generate(syntax)
     if (rules.length) {

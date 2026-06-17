@@ -1,7 +1,7 @@
 import { type SyntaxError } from './types/syntax-error'
-import { createCSS } from '@master/css'
 import defaultPlan from './default-plan'
 import validateCSS from './validate-css'
+import { createCSSWithNativeDeclarations } from './native-declaration'
 
 /**
  * @description Report errors for a given class. For pure validity, use the more performant `isClassValid()`.
@@ -10,7 +10,7 @@ import validateCSS from './validate-css'
  */
 export default function validate(
     syntax: string,
-    css = createCSS(defaultPlan)
+    css = createCSSWithNativeDeclarations(defaultPlan)
 ): {
     matched: boolean,
     errors: SyntaxError[]

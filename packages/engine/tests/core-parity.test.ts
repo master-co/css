@@ -11,6 +11,7 @@ import {
 } from './helpers/css-tester'
 import defaultPlanJSON from '@master/css-preset/default-plan.json' with { type: 'json' }
 import type { MasterCSSPlan } from 'shared/master-css-plan'
+import UtilityType from 'shared/utility-type'
 
 const defaultPlan = defaultPlanJSON as unknown as MasterCSSPlan
 
@@ -222,6 +223,37 @@ describe.concurrent('default plan utility parity', () => {
             .toMatch(/font-size:clamp\(1\.5rem,\s*calc\(2vw \+ 1rem\),\s*2\.25rem\)/)
         expect(css.create('{paint-order:stroke|fill|markers}')?.text)
             .toContain('paint-order:stroke fill markers')
+    })
+
+    test('uses injected native declaration matcher after plan misses and validates pure native aliases', () => {
+        const css = createCSS(defaultPlan, undefined, {
+            nativeDeclarationMatcher: ({ property, value }) =>
+                property === 'float' && value === 'left'
+                || property === 'display' && value === 'block'
+                || property === 'field-sizing' && value === 'content'
+        })
+
+        expect(css.create('float:left')?.text).toBe('.float\\:left{float:left}')
+        expect(css.create('field-sizing:content:hover')?.text).toBe('.field-sizing\\:content\\:hover:hover{field-sizing:content}')
+        expect(css.create('display:block')?.text).toBe('.display\\:block{display:block}')
+        expect(css.create('d:block')?.text).toBe('.d\\:block{display:block}')
+        expect(css.create('float:banana')).toBeUndefined()
+        expect(css.create('display:banana')).toBeUndefined()
+        expect(css.create('d:banana')).toBeUndefined()
+        expect(css.create('made-up:left')).toBeUndefined()
+    })
+
+    test('classifies fallback native shorthand declarations for priority sorting', () => {
+        const css = createCSS(defaultPlan, undefined, {
+            nativeDeclarationMatcher: ({ property }) => property === 'margin' || property === 'margin-left'
+        })
+
+        expect(css.create('margin:1rem')?.type).toBe(UtilityType.NativeShorthand)
+        expect(css.create('margin-left:2rem')?.type).toBe(UtilityType.Native)
+
+        css.add('mx:32', 'margin:1rem')
+        expect(css.utilitiesLayer.rules.map(({ name }) => name))
+            .toEqual(['margin:1rem', 'mx:32'])
     })
 })
 

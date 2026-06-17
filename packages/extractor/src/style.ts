@@ -8,8 +8,9 @@ import {
     isMasterCSSPackageStyleFile as isMasterCSSCompilerPackageStyleFile,
     resolveMasterCSSPackageImportGraph
 } from '@master/css-compiler'
-import { AnimationRule, createCSS, VariableRule, type MasterCSSPreloaded } from '@master/css'
+import { AnimationRule, VariableRule, type MasterCSSPreloaded } from '@master/css'
 import { collectAnimationNamesFromDeclaration } from '@master/css-engine'
+import { createCSSWithNativeDeclarations } from '@master/css-validator'
 import type { MasterCSSPlan } from 'shared/master-css-plan'
 import {
     findCSSImportStatements,
@@ -383,7 +384,7 @@ export async function createMasterCSSPackageHostSource(
     })
     const nativeCSS = getNativeCSS(result)
     const finalizedResult = createPlanFromCSSResult(result, options)
-    const css = createCSS(finalizedResult.plan)
+    const css = createCSSWithNativeDeclarations(finalizedResult.plan)
     const nativeAnimationNames = collectStyleCSSKeyframeNames([nativeCSS])
     if (nativeAnimationNames.size) {
         css.registerPreloaded({
@@ -692,7 +693,7 @@ function collectStyleCSSKeyframeNames(nativeCSS: string[]) {
     return names
 }
 
-function insertVariableReferences(css: ReturnType<typeof createCSS>, references: Set<string>) {
+function insertVariableReferences(css: ReturnType<typeof createCSSWithNativeDeclarations>, references: Set<string>) {
     const insert = (name: string, visited = new Set<string>()) => {
         if (visited.has(name)) return
         visited.add(name)
@@ -707,7 +708,7 @@ function insertVariableReferences(css: ReturnType<typeof createCSS>, references:
     }
 }
 
-function collectCSSAnimationReferences(source: string, css: ReturnType<typeof createCSS>, ignoredAnimationNames = new Set<string>()) {
+function collectCSSAnimationReferences(source: string, css: ReturnType<typeof createCSSWithNativeDeclarations>, ignoredAnimationNames = new Set<string>()) {
     const references = new Set<string>()
     const animationNames = Array.from(css.animations.keys())
     if (!animationNames.length) return references
@@ -724,7 +725,7 @@ function collectCSSAnimationReferences(source: string, css: ReturnType<typeof cr
     return references
 }
 
-function collectNativeCSSAnimationReferences(nativeCSS: string[], css: ReturnType<typeof createCSS>, ignoredAnimationNames = new Set<string>()) {
+function collectNativeCSSAnimationReferences(nativeCSS: string[], css: ReturnType<typeof createCSSWithNativeDeclarations>, ignoredAnimationNames = new Set<string>()) {
     const references = new Set<string>()
     for (const source of nativeCSS) {
         for (const reference of collectCSSAnimationReferences(source, css, ignoredAnimationNames)) {
@@ -734,7 +735,7 @@ function collectNativeCSSAnimationReferences(nativeCSS: string[], css: ReturnTyp
     return references
 }
 
-function insertAnimationReferences(css: ReturnType<typeof createCSS>, references: Set<string>) {
+function insertAnimationReferences(css: ReturnType<typeof createCSSWithNativeDeclarations>, references: Set<string>) {
     for (const name of references) {
         const keyframes = css.animations.get(name)
         if (!keyframes) continue
@@ -754,7 +755,7 @@ function createEmptyExtractedCSSResult(css = ''): CreateExtractedCSSResult {
     }
 }
 
-function createPreloaded(css: ReturnType<typeof createCSS>): Required<MasterCSSPreloaded> {
+function createPreloaded(css: ReturnType<typeof createCSSWithNativeDeclarations>): Required<MasterCSSPreloaded> {
     const preloaded: Required<MasterCSSPreloaded> = {
         variables: { ...css.preloaded.variables },
         animations: { ...css.preloaded.animations }
@@ -828,7 +829,7 @@ export async function createExtractedCSSResult(options: CreateExtractedCSSOption
             : [])
     ]
     const nativeAnimationNames = collectStyleCSSKeyframeNames(nativeCSS)
-    const css = createCSS(mergedPlan)
+    const css = createCSSWithNativeDeclarations(mergedPlan)
     if (nativeAnimationNames.size) {
         css.registerPreloaded({
             animations: Object.fromEntries([...nativeAnimationNames].map((name) => [name, 1]))

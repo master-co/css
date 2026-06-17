@@ -1,4 +1,5 @@
-import { compareRulePriority, createCSS, type MasterCSS, type MasterCSSPlan } from '@master/css'
+import { compareRulePriority, type MasterCSS, type MasterCSSPlan } from '@master/css'
+import { createCSSWithNativeDeclarations as createCSS } from '@master/css-validator'
 import { createRequire } from 'node:module'
 
 export type { MasterCSS, MasterCSSPlan }

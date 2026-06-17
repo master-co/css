@@ -9,10 +9,12 @@ import NonLayer from './non-layer'
 import VariableRule from './variable-rule'
 import AnimationRule from './animation-rule'
 import type { Variable } from 'shared/css-syntax'
+import UtilityType from 'shared/utility-type'
 import { AtRule } from './utils/parse-at'
 import parseValue from './utils/parse-value'
 import type { SelectorNode } from './utils/parse-selector'
 import type { MasterCSSPreloaded } from './preloaded'
+import { isNativeCSSShorthandProperty } from 'shared/native-css-shorthand'
 import type {
     MasterCSSPlan,
     MasterCSSPlanAtRules,
@@ -30,6 +32,17 @@ import type {
 
 export type CompiledUtility = MasterCSSPlanUtility & {
     variables?: Map<string, Variable>
+}
+
+export interface NativeCSSDeclaration {
+    property: string
+    value: string
+}
+
+export type NativeCSSDeclarationMatcher = (declaration: NativeCSSDeclaration) => boolean
+
+export interface MasterCSSOptions {
+    nativeDeclarationMatcher?: NativeCSSDeclarationMatcher
 }
 
 type EngineSettings = MasterCSSPlanSettings & {
@@ -189,10 +202,16 @@ export default class MasterCSS {
         variables: {},
         animations: {}
     }
+    protected readonly nativeDeclarationMatches = new Map<string, boolean>()
+    protected readonly nativeDeclarationUtilities = new Map<string, CompiledUtility>()
 
     readonly plan!: MasterCSSPlan
 
-    constructor(plan: MasterCSSPlan, preloaded?: MasterCSSPreloaded) {
+    constructor(
+        plan: MasterCSSPlan,
+        preloaded?: MasterCSSPreloaded,
+        protected readonly options: MasterCSSOptions = {}
+    ) {
         this.loadPlan(plan)
         this.registerPreloaded(preloaded)
         if (new.target === MasterCSS) {
@@ -551,6 +570,10 @@ export default class MasterCSS {
         )
     }
 
+    private matchesStaticUtilityDefinition(utility: CompiledUtility) {
+        return utility.matchers.some((matcher) => matcher.type === 'static')
+    }
+
     match(className: string): CompiledUtility | undefined {
         for (const eachUtility of this.variableMatcherUtilities) {
             if (this.matchesUtility(className, eachUtility, 'variable')) return eachUtility
@@ -610,6 +633,94 @@ export default class MasterCSS {
         return staticUtilities
     }
 
+    private parseNativeDeclarationProperty(className: string) {
+        const indexOfColon = className.indexOf(':')
+        if (indexOfColon <= 0) return
+
+        const property = className.slice(0, indexOfColon)
+        if (!/^(?:--[-_a-zA-Z0-9]+|-?[_a-zA-Z][-_a-zA-Z0-9]*)$/.test(property)) return
+
+        return property
+    }
+
+    private getNativeDeclarationUtility(property: string): CompiledUtility {
+        const cached = this.nativeDeclarationUtilities.get(property)
+        if (cached) return cached
+
+        const utility = {
+            id: property,
+            name: property,
+            type: isNativeCSSShorthandProperty(property)
+                ? UtilityType.NativeShorthand
+                : UtilityType.Native,
+            order: 0,
+            emit: {
+                type: 'property',
+                property
+            },
+            matchers: [{
+                type: 'key',
+                keys: [property]
+            }]
+        } satisfies CompiledUtility
+
+        this.nativeDeclarationUtilities.set(property, utility)
+        return utility
+    }
+
+    private matchNativeDeclaration(declaration: NativeCSSDeclaration) {
+        if (declaration.property.startsWith('--')) return true
+        const matcher = this.options.nativeDeclarationMatcher
+        if (!matcher) return false
+        const cacheKey = declaration.property + '\0' + declaration.value
+        const cached = this.nativeDeclarationMatches.get(cacheKey)
+        if (cached !== undefined) return cached
+        const matched = matcher(declaration)
+        this.nativeDeclarationMatches.set(cacheKey, matched)
+        return matched
+    }
+
+    private isNativeDeclarationUtility(utility: Utility) {
+        const entries = Object.entries(utility.declarations || {})
+        if (entries.length !== 1) return false
+        const [[property, value]] = entries
+        return this.matchNativeDeclaration({
+            property,
+            value: String(value)
+        })
+    }
+
+    private shouldValidateNativeDeclarationUtility(utility: CompiledUtility) {
+        if (!this.options.nativeDeclarationMatcher) return false
+        return (utility.type === UtilityType.Native || utility.type === UtilityType.NativeShorthand)
+            && utility.emit.type === 'property'
+            && !utility.unit
+            && !utility.variableAliasRefs?.length
+            && !utility.variableAliases?.length
+            && !utility.transform
+            && !utility.kind
+            && !utility.includeAnimations
+            && !utility.atRules?.length
+            && utility.matchers.every((matcher) => matcher.type === 'key')
+    }
+
+    private createNativeDeclarationFallback(className: string, fixedClass?: string, mode?: string): Utility[] {
+        if (!this.options.nativeDeclarationMatcher) return []
+        const property = this.parseNativeDeclarationProperty(className)
+        if (!property) return []
+
+        const registeredUtility = this.getNativeDeclarationUtility(property)
+        const utility = this.createWithDefinition(className, registeredUtility, fixedClass, mode)
+        if (!utility?.valid || !this.isNativeDeclarationUtility(utility)) return []
+
+        const utilities = [utility]
+        for (let branchIndex = 1; branchIndex < utility.branchCount; branchIndex++) {
+            const branchUtility = this.createWithDefinition(className, registeredUtility, fixedClass, mode, branchIndex)
+            if (branchUtility?.valid && this.isNativeDeclarationUtility(branchUtility)) utilities.push(branchUtility)
+        }
+        return utilities
+    }
+
     /**
      * Generate utilities from class name
      * @param className
@@ -626,12 +737,23 @@ export default class MasterCSS {
      */
     create(className: string, fixedClass?: string, mode?: string): Utility | undefined {
         const registeredUtility = this.match(className)
+        if (registeredUtility && this.matchesStaticUtilityDefinition(registeredUtility)) {
+            const nativeUtilities = this.createNativeDeclarationFallback(className, fixedClass, mode)
+            if (nativeUtilities.length) return nativeUtilities[0]
+        }
         if (registeredUtility) return this.createWithDefinition(className, registeredUtility, fixedClass, mode)
+        return this.createNativeDeclarationFallback(className, fixedClass, mode)[0]
     }
 
     createAll(className: string, fixedClass?: string, mode?: string): Utility[] {
+        const registeredUtilities = this.matchAll(className)
+        if (registeredUtilities.length && registeredUtilities.every((utility) => this.matchesStaticUtilityDefinition(utility))) {
+            const nativeUtilities = this.createNativeDeclarationFallback(className, fixedClass, mode)
+            if (nativeUtilities.length) return nativeUtilities
+        }
+
         const utilities: Utility[] = []
-        for (const registeredUtility of this.matchAll(className)) {
+        for (const registeredUtility of registeredUtilities) {
             const utility = this.createWithDefinition(className, registeredUtility, fixedClass, mode)
             if (utility && utility.valid) {
                 utilities.push(utility)
@@ -641,11 +763,16 @@ export default class MasterCSS {
                 }
             }
         }
-        return utilities
+        return utilities.length ? utilities : this.createNativeDeclarationFallback(className, fixedClass, mode)
     }
 
     createWithDefinition(className: string, registeredUtility: CompiledUtility, fixedClass?: string, mode?: string, branchIndex = 0): Utility | undefined {
         const candidate = new Utility(className, this, registeredUtility, fixedClass, mode, branchIndex)
+        if (
+            candidate.valid
+            && this.shouldValidateNativeDeclarationUtility(registeredUtility)
+            && !this.isNativeDeclarationUtility(candidate)
+        ) return
         for (const layer of this.getUtilityLayers()) {
             const rule = layer.get(candidate.key)
             const utility = rule instanceof Utility && rule.registeredUtility === registeredUtility

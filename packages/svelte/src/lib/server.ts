@@ -1,5 +1,5 @@
-import { createCSS, createRuntimeManifest, type MasterCSS, type MasterCSSPlan } from '@master/css'
-import { parseHTML } from '@master/css-server'
+import { createRuntimeManifest, type MasterCSS, type MasterCSSPlan } from '@master/css'
+import { createServerCSS, parseHTML } from '@master/css-server'
 import {
     createMasterCSSRuntimeManifestScript,
     MASTER_CSS_RUNTIME_MANIFEST_SCRIPT_ID
@@ -67,7 +67,7 @@ export function injectMasterStyle(html: string, cssText: string, manifestScriptT
 }
 
 export function createMasterCSSChunkRenderer(plan: MasterCSSPlan): MasterCSSChunkRenderer {
-    const css = createCSS(plan)
+    const css = createServerCSS(plan)
     let injected = false
     let carry = ''
 

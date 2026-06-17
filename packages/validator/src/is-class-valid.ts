@@ -1,6 +1,6 @@
-import { createCSS } from '@master/css'
 import defaultPlan from './default-plan'
 import validateCSS from './validate-css'
+import { createCSSWithNativeDeclarations } from './native-declaration'
 
 /**
  * Validates that the string is valid Master CSS class syntax.
@@ -9,7 +9,7 @@ import validateCSS from './validate-css'
  */
 export default function isClassValid(
     syntax: string,
-    css = createCSS(defaultPlan)
+    css = createCSSWithNativeDeclarations(defaultPlan)
 ): boolean {
     const rules = css.generate(syntax)
     if (rules.length) {

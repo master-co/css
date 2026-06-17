@@ -31,6 +31,24 @@ it('create rules by class', () => {
     expect(generateValidRules('text:cente')).toHaveLength(0)
 })
 
+it('validates native CSS declarations through css-tree fallback', () => {
+    expect(generateValidRules('float:left')[0]?.text).toBe('.float\\:left{float:left}')
+    expect(generateValidRules('display:block')[0]?.text).toBe('.display\\:block{display:block}')
+    expect(generateValidRules('d:block')[0]?.text).toBe('.d\\:block{display:block}')
+    expect(generateValidRules('field-sizing:content')[0]?.text).toBe('.field-sizing\\:content{field-sizing:content}')
+    expect(generateValidRules('transition-behavior:allow-discrete')[0]?.text)
+        .toBe('.transition-behavior\\:allow-discrete{transition-behavior:allow-discrete}')
+    expect(generateValidRules('view-transition-name:hero')[0]?.text)
+        .toBe('.view-transition-name\\:hero{view-transition-name:hero}')
+    expect(generateValidRules('color:oklch(63.7%|0.237|25.331)')[0]?.text)
+        .toBe('.color\\:oklch\\(63\\.7\\%\\|0\\.237\\|25\\.331\\){color:oklch(63.7% 0.237 25.331)}')
+
+    expect(generateValidRules('made-up:left')).toHaveLength(0)
+    expect(generateValidRules('float:banana')).toHaveLength(0)
+    expect(generateValidRules('display:banana')).toHaveLength(0)
+    expect(generateValidRules('d:banana')).toHaveLength(0)
+})
+
 it('fairly irregular classes can be ignored very well', () => {
     expect(generateValidRules('shadow:rgba(45,43,37,0.05)|0|-1|0|0|inset,rgba(15,14,12,')).toHaveLength(0)
 })

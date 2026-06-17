@@ -1,5 +1,5 @@
 import { default as defaultOptions, Options } from './options'
-import { createCSS, MasterCSS } from '@master/css'
+import { MasterCSS } from '@master/css'
 import type { MasterCSSPlan } from 'shared/master-css-plan'
 import { createRequire } from 'node:module'
 import { extractLatentClasses } from '@master/css-lexer'
@@ -7,7 +7,7 @@ import fs from 'fs'
 import { Minimatch } from 'minimatch'
 import log from '@techor/log'
 import extend from '@techor/extend'
-import { generateValidRules } from '@master/css-validator'
+import { createCSSWithNativeDeclarations, generateValidRules } from '@master/css-validator'
 import chokidar, { type ChokidarOptions, type FSWatcher } from 'chokidar'
 import { EventEmitter } from 'node:events'
 import { createHash } from 'node:crypto'
@@ -145,7 +145,7 @@ export default class CSSExtractor extends EventEmitter {
         this.classExclusionMatcher = undefined
         this.classExclusionOptions = undefined
         this.nativeClassNames = new Set()
-        this.css = createCSS(this.options.plan || defaultPlan)
+        this.css = createCSSWithNativeDeclarations(this.options.plan || defaultPlan)
         this.emit('init', this.options, this.plan)
         this.initialized = true
         return this

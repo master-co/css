@@ -1,15 +1,20 @@
 Syntax: <code><span className="token value mcss language-mcss"><span className="token mcss"><span className="token Mgroup"><span className="token Mbracket">{'{'}</span><span className="token Mkey">property</span><span className="token Mvalueroot"><span className="token Mcolon">:</span><span className="token Mvalue"><span className="token Mnumber_unit">value</span></span></span></span><span className="token Mbracket">{'}'}</span></span></span></code>
 
-Use arbitrary properties when you need a native CSS declaration that does not have a built-in utility yet. Wrap the declaration in `{}` so Master CSS treats it like a CSS property/value pair.
+Supported native CSS declarations can be written directly as `property:value`, even when they are not listed as built-in utilities.
+Use arbitrary properties when you need to force a raw CSS property/value pair or group declarations inside one class.
 ```html
-<!-- @MARK {block-size:5rem} -->
-<div class="{block-size:5rem}">
+<!-- @MARK float:left --><!-- @MARK {block-size:5rem} -->
+<div class="float:left {block-size:5rem}">
 ```
 Generated CSS:
 ```css
+.float\:left {
+    float: left;
+}
+
 .\{block-size\:5rem\} {
     block-size: 5rem;
 }
 ```
 
-Prefer built-in utilities when they exist, because they can include token resolution, unit conversion, sorting, and validation behavior. Arbitrary properties are the escape hatch for platform features, experiments, and one-off declarations.
+Prefer built-in utilities when they exist, because they can include token resolution, unit conversion, aliases, sorting, and shorthand behavior. Arbitrary properties are the escape hatch for raw declarations and one-off declaration groups.

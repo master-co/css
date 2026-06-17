@@ -143,36 +143,6 @@ const utilities = [
         ]
     },
     {
-        "id": "border-block-style",
-        "name": "border-block-style",
-        "type": UtilityType.NativeShorthand,
-        "values": [
-            "none",
-            "auto",
-            "hidden",
-            "dotted",
-            "dashed",
-            "solid",
-            "double",
-            "groove",
-            "ridge",
-            "inset",
-            "outset"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "border-block-style"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "border-block-style"
-                ]
-            }
-        ]
-    },
-    {
         "id": "border-bottom",
         "name": "border-bottom",
         "type": UtilityType.NativeShorthand,
@@ -192,23 +162,6 @@ const utilities = [
                 "keys": [
                     "border-bottom",
                     "bb"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "border-image",
-        "name": "border-image",
-        "type": UtilityType.NativeShorthand,
-        "emit": {
-            "type": "property",
-            "property": "border-image"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "border-image"
                 ]
             }
         ]
@@ -278,36 +231,6 @@ const utilities = [
                 "type": "key",
                 "keys": [
                     "border-inline-start"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "border-inline-style",
-        "name": "border-inline-style",
-        "type": UtilityType.NativeShorthand,
-        "values": [
-            "none",
-            "auto",
-            "hidden",
-            "dotted",
-            "dashed",
-            "solid",
-            "double",
-            "groove",
-            "ridge",
-            "inset",
-            "outset"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "border-inline-style"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "border-inline-style"
                 ]
             }
         ]
@@ -489,23 +412,6 @@ const utilities = [
         ]
     },
     {
-        "id": "flex",
-        "name": "flex",
-        "type": UtilityType.NativeShorthand,
-        "emit": {
-            "type": "property",
-            "property": "flex"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "flex"
-                ]
-            }
-        ]
-    },
-    {
         "id": "font",
         "name": "font",
         "type": UtilityType.NativeShorthand,
@@ -582,40 +488,6 @@ const utilities = [
         ]
     },
     {
-        "id": "grid",
-        "name": "grid",
-        "type": UtilityType.NativeShorthand,
-        "emit": {
-            "type": "property",
-            "property": "grid"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "grid"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "grid-area",
-        "name": "grid-area",
-        "type": UtilityType.NativeShorthand,
-        "emit": {
-            "type": "property",
-            "property": "grid-area"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "grid-area"
-                ]
-            }
-        ]
-    },
-    {
         "id": "grid-column",
         "name": "grid-column",
         "type": UtilityType.NativeShorthand,
@@ -629,40 +501,6 @@ const utilities = [
                 "keys": [
                     "grid-column",
                     "grid-col"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "grid-row",
-        "name": "grid-row",
-        "type": UtilityType.NativeShorthand,
-        "emit": {
-            "type": "property",
-            "property": "grid-row"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "grid-row"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "grid-template",
-        "name": "grid-template",
-        "type": UtilityType.NativeShorthand,
-        "emit": {
-            "type": "property",
-            "property": "grid-template"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "grid-template"
                 ]
             }
         ]
@@ -728,23 +566,6 @@ const utilities = [
                 "keys": [
                     "inset-inline",
                     "ii"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "list-style",
-        "name": "list-style",
-        "type": UtilityType.NativeShorthand,
-        "emit": {
-            "type": "property",
-            "property": "list-style"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "list-style"
                 ]
             }
         ]
@@ -838,40 +659,6 @@ const utilities = [
         ]
     },
     {
-        "id": "overflow",
-        "name": "overflow",
-        "type": UtilityType.NativeShorthand,
-        "emit": {
-            "type": "property",
-            "property": "overflow"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "overflow"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "overscroll-behavior",
-        "name": "overscroll-behavior",
-        "type": UtilityType.NativeShorthand,
-        "emit": {
-            "type": "property",
-            "property": "overscroll-behavior"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "overscroll-behavior"
-                ]
-            }
-        ]
-    },
-    {
         "id": "padding",
         "name": "padding",
         "type": UtilityType.NativeShorthand,
@@ -932,57 +719,6 @@ const utilities = [
                 "keys": [
                     "padding-inline",
                     "pi"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "place-content",
-        "name": "place-content",
-        "type": UtilityType.NativeShorthand,
-        "emit": {
-            "type": "property",
-            "property": "place-content"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "place-content"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "place-items",
-        "name": "place-items",
-        "type": UtilityType.NativeShorthand,
-        "emit": {
-            "type": "property",
-            "property": "place-items"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "place-items"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "place-self",
-        "name": "place-self",
-        "type": UtilityType.NativeShorthand,
-        "emit": {
-            "type": "property",
-            "property": "place-self"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "place-self"
                 ]
             }
         ]
@@ -2252,23 +1988,6 @@ const utilities = [
         ]
     },
     {
-        "id": "animation-direction",
-        "name": "animation-direction",
-        "type": UtilityType.Native,
-        "emit": {
-            "type": "property",
-            "property": "animation-direction"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "animation-direction"
-                ]
-            }
-        ]
-    },
-    {
         "id": "animation-duration",
         "name": "animation-duration",
         "type": UtilityType.Native,
@@ -2285,40 +2004,6 @@ const utilities = [
                 "type": "key",
                 "keys": [
                     "animation-duration"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "animation-fill-mode",
-        "name": "animation-fill-mode",
-        "type": UtilityType.Native,
-        "emit": {
-            "type": "property",
-            "property": "animation-fill-mode"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "animation-fill-mode"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "animation-iteration-count",
-        "name": "animation-iteration-count",
-        "type": UtilityType.Native,
-        "emit": {
-            "type": "property",
-            "property": "animation-iteration-count"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "animation-iteration-count"
                 ]
             }
         ]
@@ -2342,23 +2027,6 @@ const utilities = [
         ]
     },
     {
-        "id": "animation-play-state",
-        "name": "animation-play-state",
-        "type": UtilityType.Native,
-        "emit": {
-            "type": "property",
-            "property": "animation-play-state"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "animation-play-state"
-                ]
-            }
-        ]
-    },
-    {
         "id": "animation-timing-function",
         "name": "animation-timing-function",
         "type": UtilityType.Native,
@@ -2374,23 +2042,6 @@ const utilities = [
                 "type": "key",
                 "keys": [
                     "animation-timing-function"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "appearance",
-        "name": "appearance",
-        "type": UtilityType.Native,
-        "emit": {
-            "type": "property",
-            "property": "appearance"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "appearance"
                 ]
             }
         ]
@@ -2622,66 +2273,6 @@ const utilities = [
         ]
     },
     {
-        "id": "border-block-end-style",
-        "name": "border-block-end-style",
-        "type": UtilityType.Native,
-        "values": [
-            "none",
-            "auto",
-            "hidden",
-            "dotted",
-            "dashed",
-            "solid",
-            "double",
-            "groove",
-            "ridge",
-            "inset",
-            "outset"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "border-block-end-style"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "border-block-end-style"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "border-block-start-style",
-        "name": "border-block-start-style",
-        "type": UtilityType.Native,
-        "values": [
-            "none",
-            "auto",
-            "hidden",
-            "dotted",
-            "dashed",
-            "solid",
-            "double",
-            "groove",
-            "ridge",
-            "inset",
-            "outset"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "border-block-start-style"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "border-block-start-style"
-                ]
-            }
-        ]
-    },
-    {
         "id": "border-bottom-left-radius",
         "name": "border-bottom-left-radius",
         "type": UtilityType.Native,
@@ -2906,66 +2497,6 @@ const utilities = [
                 "type": "key",
                 "keys": [
                     "border-image-slice"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "border-inline-end-style",
-        "name": "border-inline-end-style",
-        "type": UtilityType.Native,
-        "values": [
-            "none",
-            "auto",
-            "hidden",
-            "dotted",
-            "dashed",
-            "solid",
-            "double",
-            "groove",
-            "ridge",
-            "inset",
-            "outset"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "border-inline-end-style"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "border-inline-end-style"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "border-inline-start-style",
-        "name": "border-inline-start-style",
-        "type": UtilityType.Native,
-        "values": [
-            "none",
-            "auto",
-            "hidden",
-            "dotted",
-            "dashed",
-            "solid",
-            "double",
-            "groove",
-            "ridge",
-            "inset",
-            "outset"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "border-inline-start-style"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "border-inline-start-style"
                 ]
             }
         ]
@@ -3305,57 +2836,6 @@ const utilities = [
         ]
     },
     {
-        "id": "break-after",
-        "name": "break-after",
-        "type": UtilityType.Native,
-        "emit": {
-            "type": "property",
-            "property": "break-after"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "break-after"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "break-before",
-        "name": "break-before",
-        "type": UtilityType.Native,
-        "emit": {
-            "type": "property",
-            "property": "break-before"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "break-before"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "break-inside",
-        "name": "break-inside",
-        "type": UtilityType.Native,
-        "emit": {
-            "type": "property",
-            "property": "break-inside"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "break-inside"
-                ]
-            }
-        ]
-    },
-    {
         "id": "caret-color",
         "name": "caret-color",
         "type": UtilityType.Native,
@@ -3373,23 +2853,6 @@ const utilities = [
                 "keys": [
                     "caret-color",
                     "caret"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "clear",
-        "name": "clear",
-        "type": UtilityType.Native,
-        "emit": {
-            "type": "property",
-            "property": "clear"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "clear"
                 ]
             }
         ]
@@ -3476,23 +2939,6 @@ const utilities = [
         ]
     },
     {
-        "id": "contain",
-        "name": "contain",
-        "type": UtilityType.Native,
-        "emit": {
-            "type": "property",
-            "property": "contain"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "contain"
-                ]
-            }
-        ]
-    },
-    {
         "id": "contain-intrinsic-block-size",
         "name": "contain-intrinsic-block-size",
         "type": UtilityType.Native,
@@ -3535,23 +2981,6 @@ const utilities = [
         ]
     },
     {
-        "id": "container-name",
-        "name": "container-name",
-        "type": UtilityType.Native,
-        "emit": {
-            "type": "property",
-            "property": "container-name"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "container-name"
-                ]
-            }
-        ]
-    },
-    {
         "id": "container-type",
         "name": "container-type",
         "type": UtilityType.Native,
@@ -3581,91 +3010,6 @@ const utilities = [
                 "type": "key",
                 "keys": [
                     "container-type"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "content",
-        "name": "content",
-        "type": UtilityType.Native,
-        "emit": {
-            "type": "property",
-            "property": "content"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "content"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "counter-increment",
-        "name": "counter-increment",
-        "type": UtilityType.Native,
-        "emit": {
-            "type": "property",
-            "property": "counter-increment"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "counter-increment"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "counter-reset",
-        "name": "counter-reset",
-        "type": UtilityType.Native,
-        "emit": {
-            "type": "property",
-            "property": "counter-reset"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "counter-reset"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "counter-set",
-        "name": "counter-set",
-        "type": UtilityType.Native,
-        "emit": {
-            "type": "property",
-            "property": "counter-set"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "counter-set"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "cursor",
-        "name": "cursor",
-        "type": UtilityType.Native,
-        "emit": {
-            "type": "property",
-            "property": "cursor"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "cursor"
                 ]
             }
         ]
@@ -3706,23 +3050,6 @@ const utilities = [
                 "type": "key",
                 "keys": [
                     "cy"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "direction",
-        "name": "direction",
-        "type": UtilityType.Native,
-        "emit": {
-            "type": "property",
-            "property": "direction"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "direction"
                 ]
             }
         ]
@@ -3946,23 +3273,6 @@ const utilities = [
         ]
     },
     {
-        "id": "float",
-        "name": "float",
-        "type": UtilityType.Native,
-        "emit": {
-            "type": "property",
-            "property": "float"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "float"
-                ]
-            }
-        ]
-    },
-    {
         "id": "font-family",
         "name": "font-family",
         "type": UtilityType.Native,
@@ -4013,23 +3323,6 @@ const utilities = [
                 "keys": [
                     "font-feature-settings",
                     "font-feature"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "font-smooth",
-        "name": "font-smooth",
-        "type": UtilityType.Native,
-        "emit": {
-            "type": "property",
-            "property": "font-smooth"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "font-smooth"
                 ]
             }
         ]
@@ -4186,23 +3479,6 @@ const utilities = [
         ]
     },
     {
-        "id": "grid-auto-rows",
-        "name": "grid-auto-rows",
-        "type": UtilityType.Native,
-        "emit": {
-            "type": "property",
-            "property": "grid-auto-rows"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "grid-auto-rows"
-                ]
-            }
-        ]
-    },
-    {
         "id": "grid-column-end",
         "name": "grid-column-end",
         "type": UtilityType.Native,
@@ -4234,57 +3510,6 @@ const utilities = [
                 "keys": [
                     "grid-column-start",
                     "grid-col-start"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "grid-row-end",
-        "name": "grid-row-end",
-        "type": UtilityType.Native,
-        "emit": {
-            "type": "property",
-            "property": "grid-row-end"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "grid-row-end"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "grid-row-start",
-        "name": "grid-row-start",
-        "type": UtilityType.Native,
-        "emit": {
-            "type": "property",
-            "property": "grid-row-start"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "grid-row-start"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "grid-template-areas",
-        "name": "grid-template-areas",
-        "type": UtilityType.Native,
-        "emit": {
-            "type": "property",
-            "property": "grid-template-areas"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "grid-template-areas"
                 ]
             }
         ]
@@ -4344,23 +3569,6 @@ const utilities = [
                 "keys": [
                     "height",
                     "h"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "hyphens",
-        "name": "hyphens",
-        "type": UtilityType.Native,
-        "emit": {
-            "type": "property",
-            "property": "hyphens"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "hyphens"
                 ]
             }
         ]
@@ -4471,23 +3679,6 @@ const utilities = [
                 "keys": [
                     "inset-inline-start",
                     "iis"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "isolation",
-        "name": "isolation",
-        "type": UtilityType.Native,
-        "emit": {
-            "type": "property",
-            "property": "isolation"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "isolation"
                 ]
             }
         ]
@@ -5144,23 +4335,6 @@ const utilities = [
         ]
     },
     {
-        "id": "opacity",
-        "name": "opacity",
-        "type": UtilityType.Native,
-        "emit": {
-            "type": "property",
-            "property": "opacity"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "opacity"
-                ]
-            }
-        ]
-    },
-    {
         "id": "order",
         "name": "order",
         "type": UtilityType.Native,
@@ -5240,159 +4414,6 @@ const utilities = [
                 "type": "key",
                 "keys": [
                     "outline-style"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "overflow-block",
-        "name": "overflow-block",
-        "type": UtilityType.Native,
-        "emit": {
-            "type": "property",
-            "property": "overflow-block"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "overflow-block"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "overflow-inline",
-        "name": "overflow-inline",
-        "type": UtilityType.Native,
-        "emit": {
-            "type": "property",
-            "property": "overflow-inline"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "overflow-inline"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "overflow-wrap",
-        "name": "overflow-wrap",
-        "type": UtilityType.Native,
-        "emit": {
-            "type": "property",
-            "property": "overflow-wrap"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "overflow-wrap"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "overflow-x",
-        "name": "overflow-x",
-        "type": UtilityType.Native,
-        "emit": {
-            "type": "property",
-            "property": "overflow-x"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "overflow-x"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "overflow-y",
-        "name": "overflow-y",
-        "type": UtilityType.Native,
-        "emit": {
-            "type": "property",
-            "property": "overflow-y"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "overflow-y"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "overscroll-behavior-block",
-        "name": "overscroll-behavior-block",
-        "type": UtilityType.Native,
-        "emit": {
-            "type": "property",
-            "property": "overscroll-behavior-block"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "overscroll-behavior-block"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "overscroll-behavior-inline",
-        "name": "overscroll-behavior-inline",
-        "type": UtilityType.Native,
-        "emit": {
-            "type": "property",
-            "property": "overscroll-behavior-inline"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "overscroll-behavior-inline"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "overscroll-behavior-x",
-        "name": "overscroll-behavior-x",
-        "type": UtilityType.Native,
-        "emit": {
-            "type": "property",
-            "property": "overscroll-behavior-x"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "overscroll-behavior-x"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "overscroll-behavior-y",
-        "name": "overscroll-behavior-y",
-        "type": UtilityType.Native,
-        "emit": {
-            "type": "property",
-            "property": "overscroll-behavior-y"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "overscroll-behavior-y"
                 ]
             }
         ]
@@ -5574,74 +4595,6 @@ const utilities = [
         ]
     },
     {
-        "id": "pointer-events",
-        "name": "pointer-events",
-        "type": UtilityType.Native,
-        "emit": {
-            "type": "property",
-            "property": "pointer-events"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "pointer-events"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "position",
-        "name": "position",
-        "type": UtilityType.Native,
-        "emit": {
-            "type": "property",
-            "property": "position"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "position"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "quotes",
-        "name": "quotes",
-        "type": UtilityType.Native,
-        "emit": {
-            "type": "property",
-            "property": "quotes"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "quotes"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "resize",
-        "name": "resize",
-        "type": UtilityType.Native,
-        "emit": {
-            "type": "property",
-            "property": "resize"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "resize"
-                ]
-            }
-        ]
-    },
-    {
         "id": "right",
         "name": "right",
         "type": UtilityType.Native,
@@ -5698,74 +4651,6 @@ const utilities = [
                 "keys": [
                     "row-gap",
                     "gap-y"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "rx",
-        "name": "rx",
-        "type": UtilityType.Native,
-        "emit": {
-            "type": "property",
-            "property": "rx"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "rx"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "ry",
-        "name": "ry",
-        "type": UtilityType.Native,
-        "emit": {
-            "type": "property",
-            "property": "ry"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "ry"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "scale",
-        "name": "scale",
-        "type": UtilityType.Native,
-        "emit": {
-            "type": "property",
-            "property": "scale"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "scale"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "scroll-behavior",
-        "name": "scroll-behavior",
-        "type": UtilityType.Native,
-        "emit": {
-            "type": "property",
-            "property": "scroll-behavior"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "scroll-behavior"
                 ]
             }
         ]
@@ -6050,23 +4935,6 @@ const utilities = [
         ]
     },
     {
-        "id": "shape-image-threshold",
-        "name": "shape-image-threshold",
-        "type": UtilityType.Native,
-        "emit": {
-            "type": "property",
-            "property": "shape-image-threshold"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "shape-image-threshold"
-                ]
-            }
-        ]
-    },
-    {
         "id": "shape-outside",
         "name": "shape-outside",
         "type": UtilityType.Native,
@@ -6106,23 +4974,6 @@ const utilities = [
         ]
     },
     {
-        "id": "stroke-dasharray",
-        "name": "stroke-dasharray",
-        "type": UtilityType.Native,
-        "emit": {
-            "type": "property",
-            "property": "stroke-dasharray"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "stroke-dasharray"
-                ]
-            }
-        ]
-    },
-    {
         "id": "stroke-dashoffset",
         "name": "stroke-dashoffset",
         "type": UtilityType.Native,
@@ -6156,23 +5007,6 @@ const utilities = [
                 "keys": [
                     "tab-size",
                     "tab"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "table-layout",
-        "name": "table-layout",
-        "type": UtilityType.Native,
-        "emit": {
-            "type": "property",
-            "property": "table-layout"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "table-layout"
                 ]
             }
         ]
@@ -6719,23 +5553,6 @@ const utilities = [
         ]
     },
     {
-        "id": "transition-property",
-        "name": "transition-property",
-        "type": UtilityType.Native,
-        "emit": {
-            "type": "property",
-            "property": "transition-property"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "transition-property"
-                ]
-            }
-        ]
-    },
-    {
         "id": "transition-timing-function",
         "name": "transition-timing-function",
         "type": UtilityType.Native,
@@ -6872,40 +5689,6 @@ const utilities = [
         ]
     },
     {
-        "id": "visibility",
-        "name": "visibility",
-        "type": UtilityType.Native,
-        "emit": {
-            "type": "property",
-            "property": "visibility"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "visibility"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "white-space",
-        "name": "white-space",
-        "type": UtilityType.Native,
-        "emit": {
-            "type": "property",
-            "property": "white-space"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "white-space"
-                ]
-            }
-        ]
-    },
-    {
         "id": "width",
         "name": "width",
         "type": UtilityType.Native,
@@ -6923,40 +5706,6 @@ const utilities = [
                 "keys": [
                     "width",
                     "w"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "will-change",
-        "name": "will-change",
-        "type": UtilityType.Native,
-        "emit": {
-            "type": "property",
-            "property": "will-change"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "will-change"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "word-break",
-        "name": "word-break",
-        "type": UtilityType.Native,
-        "emit": {
-            "type": "property",
-            "property": "word-break"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "word-break"
                 ]
             }
         ]
@@ -7051,23 +5800,6 @@ const utilities = [
                 "keys": [
                     "z-index",
                     "z"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "zoom",
-        "name": "zoom",
-        "type": UtilityType.Native,
-        "emit": {
-            "type": "property",
-            "property": "zoom"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "zoom"
                 ]
             }
         ]
@@ -8115,236 +6847,6 @@ const utilities = [
         ]
     },
     {
-        "id": "backface-visibility",
-        "name": "backface-visibility",
-        "type": UtilityType.Native,
-        "values": [
-            "visible",
-            "hidden"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "backface-visibility"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "backface-visibility"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "caption-side",
-        "name": "caption-side",
-        "type": UtilityType.Native,
-        "values": [
-            "top",
-            "bottom"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "caption-side"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "caption-side"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "color-scheme",
-        "name": "color-scheme",
-        "type": UtilityType.Native,
-        "values": [
-            "normal",
-            "dark",
-            "light"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "color-scheme"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "color-scheme"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "field-sizing",
-        "name": "field-sizing",
-        "type": UtilityType.Native,
-        "values": [
-            "content",
-            "fixed"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "field-sizing"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "field-sizing"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "font-stretch",
-        "name": "font-stretch",
-        "type": UtilityType.Native,
-        "values": [
-            "normal",
-            "ultra-condensed",
-            "extra-condensed",
-            "condensed",
-            "semi-condensed",
-            "semi-expanded",
-            "expanded",
-            "extra-expanded",
-            "ultra-expanded"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "font-stretch"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "font-stretch"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "forced-color-adjust",
-        "name": "forced-color-adjust",
-        "type": UtilityType.Native,
-        "values": [
-            "none",
-            "auto"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "forced-color-adjust"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "forced-color-adjust"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "mask-clip",
-        "name": "mask-clip",
-        "type": UtilityType.Native,
-        "values": [
-            "border-box",
-            "padding-box",
-            "content-box",
-            "fill-box",
-            "stroke-box",
-            "view-box",
-            "no-clip"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "mask-clip"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "mask-clip"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "mask-composite",
-        "name": "mask-composite",
-        "type": UtilityType.Native,
-        "values": [
-            "add",
-            "subtract",
-            "intersect",
-            "exclude"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "mask-composite"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "mask-composite"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "mask-mode",
-        "name": "mask-mode",
-        "type": UtilityType.Native,
-        "values": [
-            "alpha",
-            "luminance",
-            "match-source"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "mask-mode"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "mask-mode"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "mask-origin",
-        "name": "mask-origin",
-        "type": UtilityType.Native,
-        "values": [
-            "border-box",
-            "padding-box",
-            "content-box",
-            "fill-box",
-            "stroke-box",
-            "view-box"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "mask-origin"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "mask-origin"
-                ]
-            }
-        ]
-    },
-    {
         "id": "mask-position",
         "name": "mask-position",
         "type": UtilityType.Native,
@@ -8365,31 +6867,6 @@ const utilities = [
                 "type": "key",
                 "keys": [
                     "mask-position"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "mask-repeat",
-        "name": "mask-repeat",
-        "type": UtilityType.Native,
-        "values": [
-            "repeat",
-            "no-repeat",
-            "repeat-x",
-            "repeat-y",
-            "round",
-            "space"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "mask-repeat"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "mask-repeat"
                 ]
             }
         ]
@@ -8416,27 +6893,6 @@ const utilities = [
                 "type": "key",
                 "keys": [
                     "mask-size"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "mask-type",
-        "name": "mask-type",
-        "type": UtilityType.Native,
-        "values": [
-            "alpha",
-            "luminance"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "mask-type"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "mask-type"
                 ]
             }
         ]
@@ -8744,70 +7200,6 @@ const utilities = [
                 "keys": [
                     "scroll-padding-inline-start",
                     "scroll-ps"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "scrollbar-gutter",
-        "name": "scrollbar-gutter",
-        "type": UtilityType.Native,
-        "values": [
-            "auto",
-            "stable"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "scrollbar-gutter"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "scrollbar-gutter"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "scrollbar-width",
-        "name": "scrollbar-width",
-        "type": UtilityType.Native,
-        "values": [
-            "auto",
-            "thin",
-            "none"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "scrollbar-width"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "scrollbar-width"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "transition-behavior",
-        "name": "transition-behavior",
-        "type": UtilityType.Native,
-        "values": [
-            "normal",
-            "allow-discrete"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "transition-behavior"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "transition-behavior"
                 ]
             }
         ]

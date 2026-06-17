@@ -1771,6 +1771,9 @@ importers:
       '@master/css-preset':
         specifier: workspace:^
         version: link:../preset
+      '@master/css-validator':
+        specifier: workspace:^
+        version: link:../validator
       dom-serializer:
         specifier: ^3.0.0
         version: 3.1.1

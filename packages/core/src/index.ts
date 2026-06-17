@@ -16,6 +16,7 @@ export type {
     CompiledUtility,
     GeneratedRule,
     MasterCSSGeneratedRuleIR,
+    MasterCSSOptions,
     MasterCSSPlan,
     MasterCSSPlanSettings,
     MasterCSSPlanUtility,
@@ -24,5 +25,7 @@ export type {
     MasterCSSPlanVariable,
     MasterCSSPlanVariableNumericValue,
     MasterCSSPreloaded,
-    MasterCSSRuntimeManifest
+    MasterCSSRuntimeManifest,
+    NativeCSSDeclaration,
+    NativeCSSDeclarationMatcher
 } from '@master/css-engine'

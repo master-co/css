@@ -32,7 +32,7 @@ export default function validateCSS(text: string, parseOptions = {
 }
 
 
-function isTargetError(error: SyntaxError | null) {
+export function isTargetError(error: SyntaxError | null) {
     if (!error) {
         return null
     }

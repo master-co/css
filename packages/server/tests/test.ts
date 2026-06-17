@@ -39,3 +39,13 @@ describe.concurrent('server fixture CSS parity', () => {
         expect(render(html, plan).css?.text).toBe(expectedCSS)
     })
 })
+
+test('renders native CSS declarations through css-tree fallback', () => {
+    const html = '<div class="float:left field-sizing:content display:banana made-up:left"></div>'
+    const result = render(html, defaultPlan)
+
+    expect(result.css?.text).toContain('.float\\:left{float:left}')
+    expect(result.css?.text).toContain('.field-sizing\\:content{field-sizing:content}')
+    expect(result.css?.text).not.toContain('display\\:banana')
+    expect(result.css?.text).not.toContain('made-up\\:left')
+})

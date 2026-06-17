@@ -8,6 +8,7 @@ import RuntimeUtilityLayer, { RuntimeUtilityLayerInstance } from './utility-laye
 import RuntimeThemeLayer from './theme-layer'
 import RuntimeClassTracker from './class-tracker'
 import HydratedGeneratedRule from './generated-rule'
+import { browserNativeDeclarationMatcher } from './native-declaration'
 
 export default class CSSRuntime extends MasterCSS {
     static instances = new WeakMap<Document | ShadowRoot, CSSRuntime>()
@@ -31,7 +32,9 @@ export default class CSSRuntime extends MasterCSS {
         preloaded?: MasterCSSPreloaded,
         public manifest?: MasterCSSRuntimeManifest
     ) {
-        super(plan, preloaded)
+        super(plan, preloaded, {
+            nativeDeclarationMatcher: browserNativeDeclarationMatcher
+        })
         // Do not use instanceof here, because it will not work
         const rootConstructorName = root?.constructor.name
         if (rootConstructorName === 'HTMLDocument' || rootConstructorName === 'Document') {

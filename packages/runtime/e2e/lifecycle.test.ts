@@ -147,6 +147,46 @@ test('observes static theme variables and keyframes without class references', a
     expect(cssRules.some((cssRule) => cssRule.includes('@keyframes static-fade'))).toBe(true)
 })
 
+test('generates browser native declarations through CSS.supports fallback', async ({ page }) => {
+    await page.evaluate(() => {
+        document.body.innerHTML = [
+            '<div class="float:left display:block field-sizing:content transition-behavior:allow-discrete color:oklch(63.7%|0.237|25.331)"></div>',
+            '<div class="made-up:left float:banana display:banana"></div>'
+        ].join('')
+    })
+    await init(page)
+
+    const result = await page.evaluate(() => ({
+        supports: {
+            fieldSizing: CSS.supports('field-sizing', 'content'),
+            transitionBehavior: CSS.supports('transition-behavior', 'allow-discrete')
+        },
+        classUtilities: [...globalThis.cssRuntime.classUtilities.keys()],
+        cssRules: Array.from(globalThis.cssRuntime.utilitiesLayer.native?.cssRules || [])
+            .map((cssRule) => cssRule.cssText)
+    }))
+
+    expect(result.classUtilities).toContain('float:left')
+    expect(result.classUtilities).toContain('display:block')
+    expect(result.classUtilities).toContain('color:oklch(63.7%|0.237|25.331)')
+    expect(result.cssRules.some((cssRule) => cssRule.includes('float: left'))).toBe(true)
+    expect(result.cssRules.some((cssRule) => cssRule.includes('display: block'))).toBe(true)
+    expect(result.cssRules.some((cssRule) => cssRule.includes('oklch'))).toBe(true)
+
+    if (result.supports.fieldSizing) {
+        expect(result.classUtilities).toContain('field-sizing:content')
+        expect(result.cssRules.some((cssRule) => cssRule.includes('field-sizing: content'))).toBe(true)
+    }
+    if (result.supports.transitionBehavior) {
+        expect(result.classUtilities).toContain('transition-behavior:allow-discrete')
+        expect(result.cssRules.some((cssRule) => cssRule.includes('transition-behavior: allow-discrete'))).toBe(true)
+    }
+
+    expect(result.classUtilities).not.toContain('made-up:left')
+    expect(result.classUtilities).not.toContain('float:banana')
+    expect(result.classUtilities).not.toContain('display:banana')
+})
+
 test('hydrates progressive static theme variables and keyframes', async ({ page }) => {
     await page.evaluate(() => {
         document.body.innerHTML = '<div class="block"></div>'
