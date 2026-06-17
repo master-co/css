@@ -1,9 +1,8 @@
 import { type CompletionItem, CompletionItemKind } from 'vscode-languageserver-protocol'
 import cssDataProvider from './css-data-provider'
-import { MasterCSS, createDefaultCSS, UtilityType, type Variable, generateCSS, isCoreRule } from '../master-css'
+import { MasterCSS, createDefaultCSS, UtilityType, type Variable, generateCSS } from '../master-css'
 import { getCSSDataDocumentation } from './get-css-data-documentation'
 import sortCompletionItems from './sort-completion-items'
-import type { IValueData } from 'vscode-css-languageservice'
 
 const SCOPED_VARIABLE_PRIORITY = 'aaaa'
 const AMBIGUOUS_PRIORITY = 'bbbb'
@@ -45,9 +44,8 @@ export default function getValueCompletionItems(css: MasterCSS = createDefaultCS
     }: GenerateVariableCompletionItemOptions = {}): CompletionItem | undefined => {
         const eachNativePropertyData = nativeProperties.find((x: { name: string }) => x.name === variable.namespace) || nativePropertyData
         const valueToken = appliedValue ?? (scoped ? variable.key : variable.name)
-        const documentation = getCSSDataDocumentation(eachNativePropertyData, {
-            generatedCSS: generateCSS([ruleKey + ':' + valueToken], css),
-            docs: '/reference/' + (eachNativePropertyData?.name || 'variables')
+        const documentation = getCSSDataDocumentation({
+            generatedCSS: generateCSS([ruleKey + ':' + valueToken], css)
         })
         const completionItem: CompletionItem = {
             label: label ?? variable.name,
@@ -56,14 +54,12 @@ export default function getValueCompletionItems(css: MasterCSS = createDefaultCS
         const conflicted = completionItems.find(({ label }) => label === completionItem.label)
         if (conflicted) {
             completionItem.label = '$(' + completionItem.label + ')'
-            completionItem.documentation = getCSSDataDocumentation(eachNativePropertyData, {
-                generatedCSS: generateCSS([ruleKey + ':' + completionItem.label], css),
-                docs: '/reference/' + (eachNativePropertyData?.name || 'variables')
+            completionItem.documentation = getCSSDataDocumentation({
+                generatedCSS: generateCSS([ruleKey + ':' + completionItem.label], css)
             })
         } else {
-            completionItem.documentation = getCSSDataDocumentation(eachNativePropertyData, {
-                generatedCSS: generateCSS([ruleKey + ':' + valueToken], css),
-                docs: '/reference/' + (eachNativePropertyData?.name || 'variables')
+            completionItem.documentation = getCSSDataDocumentation({
+                generatedCSS: generateCSS([ruleKey + ':' + valueToken], css)
             })
         }
         if (variable.namespace?.startsWith('color')) {
@@ -150,9 +146,8 @@ export default function getValueCompletionItems(css: MasterCSS = createDefaultCS
                 completionItems.push({
                     label: animationName,
                     kind: CompletionItemKind.Value,
-                    documentation: getCSSDataDocumentation(undefined, {
-                        generatedCSS: generateCSS([ruleKey + ':' + animationName], css),
-                        docs: '/reference/' + isCoreRule(eachDefinedUtility.id) && eachDefinedUtility.id
+                    documentation: getCSSDataDocumentation({
+                        generatedCSS: generateCSS([ruleKey + ':' + animationName], css)
                     }),
                     detail: isNative ? eachDefinedUtility.id + ': ' + animationName : animationName
                 })
@@ -165,22 +160,15 @@ export default function getValueCompletionItems(css: MasterCSS = createDefaultCS
          * @example t: -> center, left, right, justify
          */
         if (eachDefinedUtility.aliasGroups?.includes(ruleKey) && eachDefinedUtility.values?.length) {
-            const nativePropertyData = nativeProperties.find((x: { name: string }) => x.name === eachDefinedUtility.id)
             for (const value of eachDefinedUtility.values) {
                 if (typeof value !== 'string') continue
-                const nativeValueData = nativePropertyData?.values?.find((x: { name: string }) => x.name === value)
                 const isNative = eachDefinedUtility.type !== undefined && NATIVE_UTILITY_TYPES.has(eachDefinedUtility.type)
                 completionItems.push({
                     label: value,
                     kind: CompletionItemKind.Value,
                     sortText: AMBIGUOUS_PRIORITY + value,
                     documentation: getCSSDataDocumentation({
-                        ...(nativeValueData || {} as IValueData),
-                        // use nativePropertyData.reference because nativeValueData does not have references
-                        references: nativePropertyData?.references
-                    }, {
-                        generatedCSS: generateCSS([ruleKey + ':' + value], css),
-                        docs: '/reference/' + isCoreRule(eachDefinedUtility.id) && eachDefinedUtility.id
+                        generatedCSS: generateCSS([ruleKey + ':' + value], css)
                     }),
                     detail: isNative ? eachDefinedUtility.id + ': ' + value : value
                 })
@@ -207,12 +195,7 @@ export default function getValueCompletionItems(css: MasterCSS = createDefaultCS
                         ? 'zz' + value.name.slice(1)
                         : value.name),
                     documentation: getCSSDataDocumentation({
-                        ...value,
-                        // use nativePropertyData.reference because nativeValueData does not have references
-                        references: nativePropertyData?.references
-                    }, {
-                        generatedCSS: generateCSS([ruleKey + ':' + value.name], css),
-                        docs: '/reference/' + nativeKey
+                        generatedCSS: generateCSS([ruleKey + ':' + value.name], css)
                     }),
                     detail: nativeKey + ': ' + value.name
                 })

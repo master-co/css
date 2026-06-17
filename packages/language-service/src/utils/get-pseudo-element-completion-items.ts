@@ -20,12 +20,10 @@ export default function getPseudoElementCompletionItems(css: MasterCSS = createD
             return {
                 label: name,
                 sortText,
-                documentation: getCSSDataDocumentation(data, {
-                    generatedCSS: generateCSS([syntax + name.slice(2)], css),
-                    docs: '/guide/theme#selector-variants'
+                documentation: getCSSDataDocumentation({
+                    generatedCSS: generateCSS([syntax + name.slice(2)], css)
                 }),
-                kind,
-                data
+                kind
             } as CompletionItem
         })
 
@@ -47,14 +45,12 @@ export default function getPseudoElementCompletionItems(css: MasterCSS = createD
         if (sortText.endsWith('()')) sortText = 'z' + sortText
         const completionItem: CompletionItem = {
             label: name,
-            documentation: getCSSDataDocumentation(data, {
-                generatedCSS: generateCSS([syntax + name.slice(2)], css),
-                docs: '/guide/theme#selector-variants'
+            documentation: getCSSDataDocumentation({
+                generatedCSS: generateCSS([syntax + name.slice(2)], css)
             }),
             sortText,
             kind,
-            detail: String(value),
-            data
+            detail: String(value)
         }
         completionItems.push(completionItem)
     }

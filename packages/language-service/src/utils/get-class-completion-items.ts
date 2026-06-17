@@ -1,9 +1,8 @@
 import { type CompletionItem, CompletionItemKind } from 'vscode-languageserver-protocol'
-import { UtilityType, MasterCSS, createDefaultCSS, generateCSS, isCoreRule } from '../master-css'
+import { UtilityType, MasterCSS, createDefaultCSS, generateCSS } from '../master-css'
 import { getCSSDataDocumentation } from './get-css-data-documentation'
 import sortCompletionItems from './sort-completion-items'
 import getUtilityInfo from './get-utility-info'
-import cssDataProvider from './css-data-provider'
 
 export default function getClassCompletionItems(css: MasterCSS = createDefaultCSS()): CompletionItem[] {
     const completionItems: CompletionItem[] = []
@@ -11,26 +10,19 @@ export default function getClassCompletionItems(css: MasterCSS = createDefaultCS
     for (const eachDefinedUtility of css.definedUtilities) {
         if (eachDefinedUtility.type === UtilityType.Static) {
             const isComponent = eachDefinedUtility.layer === 'components'
-            const { data, detail, docs } = getUtilityInfo(eachDefinedUtility, css)
+            const { detail } = getUtilityInfo(eachDefinedUtility, css)
             const utilityName = eachDefinedUtility.id.slice(1)
             completionItems.push({
                 label: utilityName,
                 kind: CompletionItemKind.Value,
-                documentation: getCSSDataDocumentation(isComponent ? undefined : data, {
-                    generatedCSS: generateCSS([utilityName], css),
-                    docs: isComponent ? '/guide/components' : docs
+                documentation: getCSSDataDocumentation({
+                    generatedCSS: generateCSS([utilityName], css)
                 }),
                 detail: isComponent ? 'component' : detail
             })
         } else {
-            const nativeProperties = cssDataProvider.provideProperties()
-            const nativeCSSPropertyData = nativeProperties.find(({ name }) => name === eachDefinedUtility.id)
             const eachCompletionItem = {
                 kind: CompletionItemKind.Property,
-                documentation: getCSSDataDocumentation(nativeCSSPropertyData, {
-                    docs: '/reference/' + isCoreRule(eachDefinedUtility.id) && eachDefinedUtility.id
-                }),
-                detail: nativeCSSPropertyData?.syntax,
             }
 
             eachDefinedUtility.keys?.forEach(key => {

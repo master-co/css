@@ -89,9 +89,8 @@ export default function querySyntaxCompletions(q = '', css: MasterCSS = createDe
                 completionItems.push({
                     label: '.<class>',
                     insertText: '.',
-                    documentation: getCSSDataDocumentation(undefined, {
-                        generatedCSS: generateCSS([field + '.class'], css),
-                        docs: '/guide/theme#selector-variants'
+                    documentation: getCSSDataDocumentation({
+                        generatedCSS: generateCSS([field + '.class'], css)
                     }),
                     kind: CompletionItemKind.Class
                 })
