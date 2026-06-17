@@ -8115,6 +8115,704 @@ const utilities = [
         ]
     },
     {
+        "id": "backface-visibility",
+        "name": "backface-visibility",
+        "type": UtilityType.Native,
+        "values": [
+            "visible",
+            "hidden"
+        ],
+        "emit": {
+            "type": "property",
+            "property": "backface-visibility"
+        },
+        "matchers": [
+            {
+                "type": "key",
+                "keys": [
+                    "backface-visibility"
+                ]
+            }
+        ]
+    },
+    {
+        "id": "caption-side",
+        "name": "caption-side",
+        "type": UtilityType.Native,
+        "values": [
+            "top",
+            "bottom"
+        ],
+        "emit": {
+            "type": "property",
+            "property": "caption-side"
+        },
+        "matchers": [
+            {
+                "type": "key",
+                "keys": [
+                    "caption-side"
+                ]
+            }
+        ]
+    },
+    {
+        "id": "color-scheme",
+        "name": "color-scheme",
+        "type": UtilityType.Native,
+        "values": [
+            "normal",
+            "dark",
+            "light"
+        ],
+        "emit": {
+            "type": "property",
+            "property": "color-scheme"
+        },
+        "matchers": [
+            {
+                "type": "key",
+                "keys": [
+                    "color-scheme"
+                ]
+            }
+        ]
+    },
+    {
+        "id": "field-sizing",
+        "name": "field-sizing",
+        "type": UtilityType.Native,
+        "values": [
+            "content",
+            "fixed"
+        ],
+        "emit": {
+            "type": "property",
+            "property": "field-sizing"
+        },
+        "matchers": [
+            {
+                "type": "key",
+                "keys": [
+                    "field-sizing"
+                ]
+            }
+        ]
+    },
+    {
+        "id": "font-stretch",
+        "name": "font-stretch",
+        "type": UtilityType.Native,
+        "values": [
+            "normal",
+            "ultra-condensed",
+            "extra-condensed",
+            "condensed",
+            "semi-condensed",
+            "semi-expanded",
+            "expanded",
+            "extra-expanded",
+            "ultra-expanded"
+        ],
+        "emit": {
+            "type": "property",
+            "property": "font-stretch"
+        },
+        "matchers": [
+            {
+                "type": "key",
+                "keys": [
+                    "font-stretch"
+                ]
+            }
+        ]
+    },
+    {
+        "id": "forced-color-adjust",
+        "name": "forced-color-adjust",
+        "type": UtilityType.Native,
+        "values": [
+            "none",
+            "auto"
+        ],
+        "emit": {
+            "type": "property",
+            "property": "forced-color-adjust"
+        },
+        "matchers": [
+            {
+                "type": "key",
+                "keys": [
+                    "forced-color-adjust"
+                ]
+            }
+        ]
+    },
+    {
+        "id": "mask-clip",
+        "name": "mask-clip",
+        "type": UtilityType.Native,
+        "values": [
+            "border-box",
+            "padding-box",
+            "content-box",
+            "fill-box",
+            "stroke-box",
+            "view-box",
+            "no-clip"
+        ],
+        "emit": {
+            "type": "property",
+            "property": "mask-clip"
+        },
+        "matchers": [
+            {
+                "type": "key",
+                "keys": [
+                    "mask-clip"
+                ]
+            }
+        ]
+    },
+    {
+        "id": "mask-composite",
+        "name": "mask-composite",
+        "type": UtilityType.Native,
+        "values": [
+            "add",
+            "subtract",
+            "intersect",
+            "exclude"
+        ],
+        "emit": {
+            "type": "property",
+            "property": "mask-composite"
+        },
+        "matchers": [
+            {
+                "type": "key",
+                "keys": [
+                    "mask-composite"
+                ]
+            }
+        ]
+    },
+    {
+        "id": "mask-mode",
+        "name": "mask-mode",
+        "type": UtilityType.Native,
+        "values": [
+            "alpha",
+            "luminance",
+            "match-source"
+        ],
+        "emit": {
+            "type": "property",
+            "property": "mask-mode"
+        },
+        "matchers": [
+            {
+                "type": "key",
+                "keys": [
+                    "mask-mode"
+                ]
+            }
+        ]
+    },
+    {
+        "id": "mask-origin",
+        "name": "mask-origin",
+        "type": UtilityType.Native,
+        "values": [
+            "border-box",
+            "padding-box",
+            "content-box",
+            "fill-box",
+            "stroke-box",
+            "view-box"
+        ],
+        "emit": {
+            "type": "property",
+            "property": "mask-origin"
+        },
+        "matchers": [
+            {
+                "type": "key",
+                "keys": [
+                    "mask-origin"
+                ]
+            }
+        ]
+    },
+    {
+        "id": "mask-position",
+        "name": "mask-position",
+        "type": UtilityType.Native,
+        "values": [
+            "top",
+            "bottom",
+            "right",
+            "left",
+            "center"
+        ],
+        "unit": "px",
+        "emit": {
+            "type": "property",
+            "property": "mask-position"
+        },
+        "matchers": [
+            {
+                "type": "key",
+                "keys": [
+                    "mask-position"
+                ]
+            }
+        ]
+    },
+    {
+        "id": "mask-repeat",
+        "name": "mask-repeat",
+        "type": UtilityType.Native,
+        "values": [
+            "repeat",
+            "no-repeat",
+            "repeat-x",
+            "repeat-y",
+            "round",
+            "space"
+        ],
+        "emit": {
+            "type": "property",
+            "property": "mask-repeat"
+        },
+        "matchers": [
+            {
+                "type": "key",
+                "keys": [
+                    "mask-repeat"
+                ]
+            }
+        ]
+    },
+    {
+        "id": "mask-size",
+        "name": "mask-size",
+        "type": UtilityType.Native,
+        "values": [
+            "auto",
+            "cover",
+            "contain"
+        ],
+        "unit": "rem",
+        "variableAliasRefs": [
+            "~container"
+        ],
+        "emit": {
+            "type": "property",
+            "property": "mask-size"
+        },
+        "matchers": [
+            {
+                "type": "key",
+                "keys": [
+                    "mask-size"
+                ]
+            }
+        ]
+    },
+    {
+        "id": "mask-type",
+        "name": "mask-type",
+        "type": UtilityType.Native,
+        "values": [
+            "alpha",
+            "luminance"
+        ],
+        "emit": {
+            "type": "property",
+            "property": "mask-type"
+        },
+        "matchers": [
+            {
+                "type": "key",
+                "keys": [
+                    "mask-type"
+                ]
+            }
+        ]
+    },
+    {
+        "id": "perspective",
+        "name": "perspective",
+        "type": UtilityType.Native,
+        "values": [
+            "none"
+        ],
+        "unit": "rem",
+        "emit": {
+            "type": "property",
+            "property": "perspective"
+        },
+        "matchers": [
+            {
+                "type": "key",
+                "keys": [
+                    "perspective"
+                ]
+            }
+        ]
+    },
+    {
+        "id": "perspective-origin",
+        "name": "perspective-origin",
+        "type": UtilityType.Native,
+        "values": [
+            "top",
+            "bottom",
+            "right",
+            "left",
+            "center"
+        ],
+        "kind": "number",
+        "unit": "px",
+        "emit": {
+            "type": "property",
+            "property": "perspective-origin"
+        },
+        "matchers": [
+            {
+                "type": "key",
+                "keys": [
+                    "perspective-origin"
+                ]
+            }
+        ]
+    },
+    {
+        "id": "scroll-margin-block",
+        "name": "scroll-margin-block",
+        "type": UtilityType.Native,
+        "unit": "rem",
+        "variableAliasRefs": [
+            "~spacing"
+        ],
+        "emit": {
+            "type": "property",
+            "property": "scroll-margin-block"
+        },
+        "matchers": [
+            {
+                "type": "key",
+                "keys": [
+                    "scroll-margin-block"
+                ]
+            }
+        ]
+    },
+    {
+        "id": "scroll-margin-block-end",
+        "name": "scroll-margin-block-end",
+        "type": UtilityType.Native,
+        "unit": "rem",
+        "variableAliasRefs": [
+            "~spacing"
+        ],
+        "emit": {
+            "type": "property",
+            "property": "scroll-margin-block-end"
+        },
+        "matchers": [
+            {
+                "type": "key",
+                "keys": [
+                    "scroll-margin-block-end",
+                    "scroll-mbe"
+                ]
+            }
+        ]
+    },
+    {
+        "id": "scroll-margin-block-start",
+        "name": "scroll-margin-block-start",
+        "type": UtilityType.Native,
+        "unit": "rem",
+        "variableAliasRefs": [
+            "~spacing"
+        ],
+        "emit": {
+            "type": "property",
+            "property": "scroll-margin-block-start"
+        },
+        "matchers": [
+            {
+                "type": "key",
+                "keys": [
+                    "scroll-margin-block-start",
+                    "scroll-mbs"
+                ]
+            }
+        ]
+    },
+    {
+        "id": "scroll-margin-inline",
+        "name": "scroll-margin-inline",
+        "type": UtilityType.Native,
+        "unit": "rem",
+        "variableAliasRefs": [
+            "~spacing"
+        ],
+        "emit": {
+            "type": "property",
+            "property": "scroll-margin-inline"
+        },
+        "matchers": [
+            {
+                "type": "key",
+                "keys": [
+                    "scroll-margin-inline"
+                ]
+            }
+        ]
+    },
+    {
+        "id": "scroll-margin-inline-end",
+        "name": "scroll-margin-inline-end",
+        "type": UtilityType.Native,
+        "unit": "rem",
+        "variableAliasRefs": [
+            "~spacing"
+        ],
+        "emit": {
+            "type": "property",
+            "property": "scroll-margin-inline-end"
+        },
+        "matchers": [
+            {
+                "type": "key",
+                "keys": [
+                    "scroll-margin-inline-end",
+                    "scroll-me"
+                ]
+            }
+        ]
+    },
+    {
+        "id": "scroll-margin-inline-start",
+        "name": "scroll-margin-inline-start",
+        "type": UtilityType.Native,
+        "unit": "rem",
+        "variableAliasRefs": [
+            "~spacing"
+        ],
+        "emit": {
+            "type": "property",
+            "property": "scroll-margin-inline-start"
+        },
+        "matchers": [
+            {
+                "type": "key",
+                "keys": [
+                    "scroll-margin-inline-start",
+                    "scroll-ms"
+                ]
+            }
+        ]
+    },
+    {
+        "id": "scroll-padding-block",
+        "name": "scroll-padding-block",
+        "type": UtilityType.Native,
+        "unit": "rem",
+        "variableAliasRefs": [
+            "~spacing"
+        ],
+        "emit": {
+            "type": "property",
+            "property": "scroll-padding-block"
+        },
+        "matchers": [
+            {
+                "type": "key",
+                "keys": [
+                    "scroll-padding-block"
+                ]
+            }
+        ]
+    },
+    {
+        "id": "scroll-padding-block-end",
+        "name": "scroll-padding-block-end",
+        "type": UtilityType.Native,
+        "unit": "rem",
+        "variableAliasRefs": [
+            "~spacing"
+        ],
+        "emit": {
+            "type": "property",
+            "property": "scroll-padding-block-end"
+        },
+        "matchers": [
+            {
+                "type": "key",
+                "keys": [
+                    "scroll-padding-block-end",
+                    "scroll-pbe"
+                ]
+            }
+        ]
+    },
+    {
+        "id": "scroll-padding-block-start",
+        "name": "scroll-padding-block-start",
+        "type": UtilityType.Native,
+        "unit": "rem",
+        "variableAliasRefs": [
+            "~spacing"
+        ],
+        "emit": {
+            "type": "property",
+            "property": "scroll-padding-block-start"
+        },
+        "matchers": [
+            {
+                "type": "key",
+                "keys": [
+                    "scroll-padding-block-start",
+                    "scroll-pbs"
+                ]
+            }
+        ]
+    },
+    {
+        "id": "scroll-padding-inline",
+        "name": "scroll-padding-inline",
+        "type": UtilityType.Native,
+        "unit": "rem",
+        "variableAliasRefs": [
+            "~spacing"
+        ],
+        "emit": {
+            "type": "property",
+            "property": "scroll-padding-inline"
+        },
+        "matchers": [
+            {
+                "type": "key",
+                "keys": [
+                    "scroll-padding-inline"
+                ]
+            }
+        ]
+    },
+    {
+        "id": "scroll-padding-inline-end",
+        "name": "scroll-padding-inline-end",
+        "type": UtilityType.Native,
+        "unit": "rem",
+        "variableAliasRefs": [
+            "~spacing"
+        ],
+        "emit": {
+            "type": "property",
+            "property": "scroll-padding-inline-end"
+        },
+        "matchers": [
+            {
+                "type": "key",
+                "keys": [
+                    "scroll-padding-inline-end",
+                    "scroll-pe"
+                ]
+            }
+        ]
+    },
+    {
+        "id": "scroll-padding-inline-start",
+        "name": "scroll-padding-inline-start",
+        "type": UtilityType.Native,
+        "unit": "rem",
+        "variableAliasRefs": [
+            "~spacing"
+        ],
+        "emit": {
+            "type": "property",
+            "property": "scroll-padding-inline-start"
+        },
+        "matchers": [
+            {
+                "type": "key",
+                "keys": [
+                    "scroll-padding-inline-start",
+                    "scroll-ps"
+                ]
+            }
+        ]
+    },
+    {
+        "id": "scrollbar-gutter",
+        "name": "scrollbar-gutter",
+        "type": UtilityType.Native,
+        "values": [
+            "auto",
+            "stable"
+        ],
+        "emit": {
+            "type": "property",
+            "property": "scrollbar-gutter"
+        },
+        "matchers": [
+            {
+                "type": "key",
+                "keys": [
+                    "scrollbar-gutter"
+                ]
+            }
+        ]
+    },
+    {
+        "id": "scrollbar-width",
+        "name": "scrollbar-width",
+        "type": UtilityType.Native,
+        "values": [
+            "auto",
+            "thin",
+            "none"
+        ],
+        "emit": {
+            "type": "property",
+            "property": "scrollbar-width"
+        },
+        "matchers": [
+            {
+                "type": "key",
+                "keys": [
+                    "scrollbar-width"
+                ]
+            }
+        ]
+    },
+    {
+        "id": "transition-behavior",
+        "name": "transition-behavior",
+        "type": UtilityType.Native,
+        "values": [
+            "normal",
+            "allow-discrete"
+        ],
+        "emit": {
+            "type": "property",
+            "property": "transition-behavior"
+        },
+        "matchers": [
+            {
+                "type": "key",
+                "keys": [
+                    "transition-behavior"
+                ]
+            }
+        ]
+    },
+    {
         "id": "blur()",
         "name": "blur()",
         "type": UtilityType.Normal,

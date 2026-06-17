@@ -28,10 +28,10 @@ describe('@master/css-preset defaultPlan', () => {
         const plan = createDefaultPlanFromSourceFile(resolve(__dirname, '../src/index.css'))
         const utilities = plan.utilities || []
 
-        expect(sourceUtilities).toHaveLength(370)
+        expect(sourceUtilities).toHaveLength(401)
         expect(sourceUtilities.some((utility) => Number(utility.type) === UtilityType.Static)).toBe(false)
         expect(Object.keys(functions)).toHaveLength(49)
-        expect(utilities).toHaveLength(510)
+        expect(utilities).toHaveLength(541)
         expect(utilities[0]?.order).toBe(utilities.length - 1)
         expect(utilities[utilities.length - 1]?.order).toBe(0)
         expect(plan).toEqual(defaultPlan)
@@ -76,6 +76,28 @@ describe('@master/css-preset defaultPlan', () => {
         expect(css.create('font-antialiased')?.text).toBe('.font-antialiased{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}')
         expect(css.create('sr-only')?.text).toContain('position:absolute')
         expect(css.create('sr-only')?.text).toContain('clip:rect(0,0,0,0)')
+    })
+
+    it('executes native utilities added for CSS property coverage', () => {
+        const css = createCSS(defaultPlan)
+
+        expect(css.create('color-scheme:light|dark')?.text).toBe('.color-scheme\\:light\\|dark{color-scheme:light dark}')
+        expect(css.create('field-sizing:content')?.text).toBe('.field-sizing\\:content{field-sizing:content}')
+        expect(css.create('caption-side:top')?.text).toBe('.caption-side\\:top{caption-side:top}')
+        expect(css.create('forced-color-adjust:none')?.text).toBe('.forced-color-adjust\\:none{forced-color-adjust:none}')
+        expect(css.create('scrollbar-width:thin')?.text).toBe('.scrollbar-width\\:thin{scrollbar-width:thin}')
+        expect(css.create('scrollbar-gutter:stable|both-edges')?.text).toBe('.scrollbar-gutter\\:stable\\|both-edges{scrollbar-gutter:stable both-edges}')
+        expect(css.create('transition-behavior:allow-discrete')?.text).toBe('.transition-behavior\\:allow-discrete{transition-behavior:allow-discrete}')
+        expect(css.create('backface-visibility:hidden')?.text).toBe('.backface-visibility\\:hidden{backface-visibility:hidden}')
+        expect(css.create('perspective:none')?.text).toBe('.perspective\\:none{perspective:none}')
+        expect(css.create('perspective-origin:100%|0')?.text).toBe('.perspective-origin\\:100\\%\\|0{perspective-origin:100% 0px}')
+        expect(css.create('font-stretch:condensed')?.text).toBe('.font-stretch\\:condensed{font-stretch:condensed}')
+        expect(css.create('mask-position:left|top')?.text).toBe('.mask-position\\:left\\|top{mask-position:left top}')
+        expect(css.create('mask-clip:border-box')?.text).toBe('.mask-clip\\:border-box{mask-clip:border-box}')
+        expect(css.create('mask-composite:add')?.text).toBe('.mask-composite\\:add{mask-composite:add}')
+        expect(css.create('mask-type:alpha')?.text).toBe('.mask-type\\:alpha{mask-type:alpha}')
+        expect(css.create('scroll-ms:1px')?.text).toBe('.scroll-ms\\:1px{scroll-margin-inline-start:1px}')
+        expect(css.create('scroll-pbe:1px')?.text).toBe('.scroll-pbe\\:1px{scroll-padding-block-end:1px}')
     })
 
     it('keeps compiled utility registry indexes stable and addressable', () => {
