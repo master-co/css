@@ -243,6 +243,33 @@ describe.concurrent('default plan utility parity', () => {
         expect(css.create('made-up:left')).toBeUndefined()
     })
 
+    test('uses native declaration fast path without bypassing aliases and smart utilities', () => {
+        const calls: string[] = []
+        const css = createCSS(defaultPlan, undefined, {
+            nativeDeclarationMatcher: ({ property, value }) => {
+                calls.push(property + ':' + value)
+                return true
+            }
+        })
+
+        expect(css.create('float:left')?.text).toBe('.float\\:left{float:left}')
+        expect(css.create('opacity:.7')?.text).toBe('.opacity\\:\\.7{opacity:0.7}')
+        expect(css.create('display:block')?.text).toBe('.display\\:block{display:block}')
+        expect(css.generate('view-transition-name:hero')[0]?.text).toBe('.view-transition-name\\:hero{view-transition-name:hero}')
+        expect(css.create('d:block')?.text).toBe('.d\\:block{display:block}')
+        expect(css.create('margin:16')?.text).toBe('.margin\\:16{margin:1rem}')
+        expect(css.create('m:16')?.text).toBe('.m\\:16{margin:1rem}')
+        expect(css.create('font:16')?.text).toBe('.font\\:16{font-size:1rem}')
+        expect(css.create('bg:red-60')?.text).toBe('.bg\\:red-60{background-color:var(--color-red-60)}')
+
+        expect(calls).toEqual([
+            'float:left',
+            'opacity:0.7',
+            'display:block',
+            'view-transition-name:hero'
+        ])
+    })
+
     test('classifies fallback native shorthand declarations for priority sorting', () => {
         const css = createCSS(defaultPlan, undefined, {
             nativeDeclarationMatcher: ({ property }) => property === 'margin' || property === 'margin-left'

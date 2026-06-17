@@ -165,6 +165,21 @@ function deriveUtilityMetadata(utility: CompiledUtility) {
     if (!utility.key) utility.key = keys[0] || aliasGroups[0]
 }
 
+function isPureNativeDeclarationUtilityDefinition(
+    utility: CompiledUtility
+): utility is CompiledUtility & { emit: { type: 'property', property: string } } {
+    return (utility.type === UtilityType.Native || utility.type === UtilityType.NativeShorthand)
+        && utility.emit.type === 'property'
+        && !utility.unit
+        && !utility.variableAliasRefs?.length
+        && !utility.variableAliases?.length
+        && !utility.transform
+        && !utility.kind
+        && !utility.values?.length
+        && !utility.includeAnimations
+        && !utility.atRules?.length
+}
+
 function getVariableKeyByNamespace(variableName: string, namespace: string) {
     const negative = variableName.startsWith('-')
     const positiveName = negative ? variableName.slice(1) : variableName
@@ -202,6 +217,7 @@ export default class MasterCSS {
         variables: {},
         animations: {}
     }
+    protected readonly nativeDeclarationFastPathBlockedProperties = new Set<string>()
     protected readonly nativeDeclarationMatches = new Map<string, boolean>()
     protected readonly nativeDeclarationUtilities = new Map<string, CompiledUtility>()
 
@@ -450,6 +466,17 @@ export default class MasterCSS {
         this.loadBucket(this.arbitraryMatcherUtilities, buckets?.arbitrary)
     }
 
+    private registerNativeDeclarationFastPathPolicy(utility: CompiledUtility) {
+        const isPureNativeDeclaration = isPureNativeDeclarationUtilityDefinition(utility)
+        for (const matcher of utility.matchers) {
+            if (matcher.type !== 'key' && matcher.type !== 'value' && matcher.type !== 'variable') continue
+            for (const key of matcher.keys) {
+                if (isPureNativeDeclaration && key === utility.emit.property) continue
+                this.nativeDeclarationFastPathBlockedProperties.add(key)
+            }
+        }
+    }
+
     private loadUtilities() {
         const { utilities } = this.plan
 
@@ -494,6 +521,7 @@ export default class MasterCSS {
             }
 
             deriveUtilityMetadata(definedUtility)
+            this.registerNativeDeclarationFastPathPolicy(definedUtility)
             this.definedUtilities.push(definedUtility)
         }
         this.loadUtilityBuckets(this.plan.utilityBuckets)
@@ -692,15 +720,7 @@ export default class MasterCSS {
 
     private shouldValidateNativeDeclarationUtility(utility: CompiledUtility) {
         if (!this.options.nativeDeclarationMatcher) return false
-        return (utility.type === UtilityType.Native || utility.type === UtilityType.NativeShorthand)
-            && utility.emit.type === 'property'
-            && !utility.unit
-            && !utility.variableAliasRefs?.length
-            && !utility.variableAliases?.length
-            && !utility.transform
-            && !utility.kind
-            && !utility.includeAnimations
-            && !utility.atRules?.length
+        return isPureNativeDeclarationUtilityDefinition(utility)
             && utility.matchers.every((matcher) => matcher.type === 'key')
     }
 
@@ -721,6 +741,13 @@ export default class MasterCSS {
         return utilities
     }
 
+    private createNativeDeclarationFastPath(className: string, fixedClass?: string, mode?: string): Utility[] {
+        const property = this.parseNativeDeclarationProperty(className)
+        if (!property) return []
+        if (!property.startsWith('--') && this.nativeDeclarationFastPathBlockedProperties.has(property)) return []
+        return this.createNativeDeclarationFallback(className, fixedClass, mode)
+    }
+
     /**
      * Generate utilities from class name
      * @param className
@@ -736,6 +763,9 @@ export default class MasterCSS {
      * @returns Utility
      */
     create(className: string, fixedClass?: string, mode?: string): Utility | undefined {
+        const fastPathNativeUtilities = this.createNativeDeclarationFastPath(className, fixedClass, mode)
+        if (fastPathNativeUtilities.length) return fastPathNativeUtilities[0]
+
         const registeredUtility = this.match(className)
         if (registeredUtility && this.matchesStaticUtilityDefinition(registeredUtility)) {
             const nativeUtilities = this.createNativeDeclarationFallback(className, fixedClass, mode)
@@ -746,6 +776,9 @@ export default class MasterCSS {
     }
 
     createAll(className: string, fixedClass?: string, mode?: string): Utility[] {
+        const fastPathNativeUtilities = this.createNativeDeclarationFastPath(className, fixedClass, mode)
+        if (fastPathNativeUtilities.length) return fastPathNativeUtilities
+
         const registeredUtilities = this.matchAll(className)
         if (registeredUtilities.length && registeredUtilities.every((utility) => this.matchesStaticUtilityDefinition(utility))) {
             const nativeUtilities = this.createNativeDeclarationFallback(className, fixedClass, mode)
@@ -856,6 +889,7 @@ export default class MasterCSS {
         this.arbitraryMatcherUtilities.length = 0
         this.staticVariableTokens.clear()
         this.staticAnimationTokens.clear()
+        this.nativeDeclarationFastPathBlockedProperties.clear()
         this.baseLayer.reset()
         this.themeLayer.reset()
         this.defaultsLayer.reset()
