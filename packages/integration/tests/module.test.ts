@@ -16,6 +16,7 @@ import {
     toPlanJSON,
     toPreloadedModule,
     toResolvedMasterCSSPlanId,
+    toUniversalPlanFacadeModule,
     toVirtualCSSPlanModulePath,
     toVirtualCSSModulePath,
     toVirtualDefaultPlanModulePath,
@@ -57,5 +58,13 @@ describe('@master/css-integration module helpers', () => {
         expect(CSS_RUNTIME_INJECTION).toContain(`import masterCSSPlan from '${VIRTUAL_PLAN_ID}';`)
         expect(CSS_RUNTIME_INJECTION).toContain(`import masterCSSPreloaded from '${VIRTUAL_PRELOADED_ID}';`)
         expect(CSS_RUNTIME_INJECTION).toContain('initCSSRuntime({ plan: masterCSSPlan, preloaded: masterCSSPreloaded });')
+    })
+
+    it('builds a universal plan facade that resolves Next production and dev assets', () => {
+        const source = toUniversalPlanFacadeModule('new URL("./master-css-plan.json", import.meta.url)')
+
+        expect(source).toContain(`join(process.cwd(), '.next', value.slice('/_next/'.length))`)
+        expect(source).toContain(`join(process.cwd(), '.next/dev', value.slice('/_next/'.length))`)
+        expect(source).toContain('for (const file of files)')
     })
 })
