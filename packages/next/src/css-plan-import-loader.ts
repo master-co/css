@@ -6,8 +6,10 @@ import { loadPlanJSONSync } from '@master/css-plan/load-sync'
 import {
     isMasterCSSPlanRequest,
     stripMasterCSSPlanQuery,
+    toVirtualCSSPlanAssetPath,
     toVirtualCSSPlanModulePath
 } from '@master/css-integration/plan-module'
+import { toUniversalPlanFacadeModule } from '@master/css-integration/plan-facade'
 
 const MASTER_CSS_PLAN_IMPORT_PATTERN = /(\bimport\s+(?:[^'"]*?\s+from\s*)?|\bexport\s+[^'"]*?\s+from\s*|\bimport\s*\(\s*)(['"])([^'"]+)\2/g
 
@@ -65,9 +67,16 @@ function writeCSSPlanModule(context: LoaderContext, planPath: string) {
 
     const projectDir = context.getOptions?.().projectDir || context.rootContext || process.cwd()
     const virtualPlanPath = toVirtualCSSPlanModulePath(projectDir, planPath)
+    const virtualPlanAssetPath = toVirtualCSSPlanAssetPath(projectDir, planPath)
     const result = loadPlanJSONSync(planPath)
     mkdirSync(dirname(virtualPlanPath), { recursive: true })
-    writeFileSync(virtualPlanPath, result.json)
+    writeFileSync(virtualPlanAssetPath, result.json)
+    writeFileSync(
+        virtualPlanPath,
+        toUniversalPlanFacadeModule(
+            `new URL(${JSON.stringify(toModuleSpecifier(virtualPlanPath, virtualPlanAssetPath))}, import.meta.url)`
+        )
+    )
     for (const dependency of result.dependencies) {
         context.addDependency?.(dependency)
     }

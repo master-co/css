@@ -146,11 +146,11 @@ const sheet = document.querySelector('style[id="master"]').sheet
 console.log(sheet.cssRules)
 ```
 
-When runtime code needs project tokens, modes, or component definitions, load the compiled runtime inputs from the integration. `virtual:master-css-plan.json` resolves the canonical project-level plan discovered from the CSS entry, and `virtual:master-css-preloaded` records variables and keyframes that the entry already emitted.
+When runtime code needs project tokens, modes, or component definitions, load the compiled runtime inputs from the integration. `virtual:master-css-plan` resolves the canonical project-level plan discovered from the CSS entry, and `virtual:master-css-preloaded` records variables and keyframes that the entry already emitted.
 
 ```js
 import { initCSSRuntime } from '@master/css-runtime'
-import plan from 'virtual:master-css-plan.json'
+import plan from 'virtual:master-css-plan'
 import preloaded from 'virtual:master-css-preloaded'
 
 initCSSRuntime({ plan, preloaded })
@@ -188,7 +188,7 @@ Render the HTML:
 ```ts name=server.ts
 import { readFileSync } from 'node:fs'
 import { render } from '@master/css-server'
-import plan from 'virtual:master-css-plan.json'
+import plan from 'virtual:master-css-plan'
 
 const indexHTML = readFileSync('./index.html', 'utf-8')
 
@@ -389,7 +389,7 @@ These CSS-first directives are plan inputs. The compiler lowers tokens, managed 
 | --- | --- | --- | --- |
 | CSS entry graph | Project stylesheets with `@master;` or `@import '@master/css'` | Compiler, integrations, static renderer | Authoring source for tokens, settings, variants, managed styles, source directives, and native CSS roots. |
 | `MasterCSSPlan` | `@master/css-compiler` and `@master/css-plan` | Engine, runtime, server renderer, extractor, linting, language tooling | Shared IR that describes how class names become sorted CSS rules. |
-| `virtual:master-css-plan.json` | Official build integrations | Application runtime code and framework providers | ESM module for the canonical project-level plan discovered from the CSS entry graph. |
+| `virtual:master-css-plan` | Official build integrations | Application runtime code and framework providers | ESM module for the canonical project-level plan discovered from the CSS entry graph. |
 | `virtual:master-css-preloaded` | Static and build integrations | Runtime code | Counts variables and keyframes already emitted by the CSS entry output, so runtime rendering does not insert duplicate global CSS. |
 | Runtime manifest | Server rendering and progressive integrations | Runtime hydration | JSON rule IR with `version: 1`, used to map `style#master` back into runtime-managed rule objects. |
 | Next build manifest | `@master/css.next` when `manifest` is enabled | Build analysis and reporting | Route/output report for rendered files; it is separate from the runtime hydration manifest. |

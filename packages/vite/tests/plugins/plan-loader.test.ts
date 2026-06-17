@@ -10,6 +10,10 @@ async function createContext(root = FIXTURE_DIR) {
     const context = {
         config: {
             root,
+            command: 'serve',
+            build: {
+                ssr: false
+            },
             server: {
                 fs: {
                     allow: []
@@ -54,6 +58,32 @@ describe('PlanLoaderPlugin', () => {
         expect(code).toContain('accent')
         expect(code).toContain('#456')
         expect(code).toContain('badge')
+    })
+
+    it('emits per-file CSS plans as external JSON assets in production build', async () => {
+        const context = await createContext()
+        context.config.command = 'build'
+        const plugin = PlanLoaderPlugin(context)
+        const importer = path.join(FIXTURE_DIR, 'entry.ts')
+        const addWatchFile = vi.fn()
+        const emitFile = vi.fn(() => 'master_css_query_plan_ref')
+        const resolve = vi.fn(async (id: string) => ({ id: path.resolve(FIXTURE_DIR, id) }))
+
+        const resolvedId = await (plugin.resolveId as any).call(
+            { resolve },
+            './theme.css' + MASTER_CSS_PLAN_QUERY,
+            importer
+        )
+        const code = await (plugin.load as any).call({ addWatchFile, emitFile }, resolvedId)
+
+        expect(emitFile).toHaveBeenCalledWith(expect.objectContaining({
+            type: 'asset',
+            name: 'master-css-plan.json',
+            source: expect.stringContaining('#456')
+        }))
+        expect(code).toContain('const masterCSSPlanURL = import.meta.ROLLUP_FILE_URL_master_css_query_plan_ref;')
+        expect(code).toContain('await fetch(masterCSSPlanURL)')
+        expect(code).not.toContain('#456')
     })
 
     it('full reloads when a per-file CSS plan module is imported', async () => {

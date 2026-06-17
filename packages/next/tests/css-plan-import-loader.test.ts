@@ -17,6 +17,12 @@ function readVirtualPlanSource(projectDir: string) {
     return readFileSync(join(planDir, filename), 'utf-8')
 }
 
+function readVirtualPlanModule(projectDir: string) {
+    const planDir = join(projectDir, 'node_modules/.master-css')
+    const [filename] = readdirSync(planDir).filter((entry) => entry.endsWith('.plan.js'))
+    return readFileSync(join(planDir, filename), 'utf-8')
+}
+
 function runPlanImportLoader(context: {
     source: string
     resourcePath: string
@@ -67,7 +73,10 @@ describe('css plan import loader', () => {
         })
 
         expect(source).toContain('import presetPlan from "../node_modules/.master-css/')
+        expect(source).toContain('.plan.js"')
         expect(dependencies).toEqual([planPath])
+        expect(readVirtualPlanModule(projectDir)).toContain('new URL("./')
+        expect(readVirtualPlanModule(projectDir)).not.toContain('#123')
         expect(readVirtualPlanSource(projectDir)).toContain('"version":1')
         expect(readVirtualPlanSource(projectDir)).toContain('primary')
         expect(readVirtualPlanSource(projectDir)).toContain('#123')
@@ -97,6 +106,8 @@ describe('css plan import loader', () => {
         })
 
         expect(source).toContain('import presetPlan from "../node_modules/.master-css/')
+        expect(source).toContain('.plan.js"')
+        expect(readVirtualPlanModule(projectDir)).not.toContain('#456')
         expect(readVirtualPlanSource(projectDir)).toContain('package')
         expect(readVirtualPlanSource(projectDir)).toContain('#456')
     })
@@ -109,14 +120,14 @@ describe('css plan import loader', () => {
 
         await expect(runPlanImportLoader({
             source: [
-                'import plan from "virtual:master-css-plan.json"',
+                'import plan from "virtual:master-css-plan"',
                 'const request = "./theme.css?master-css-plan"',
                 'export default plan'
             ].join('\n'),
             resourcePath,
             projectDir
         })).resolves.toBe([
-            'import plan from "virtual:master-css-plan.json"',
+            'import plan from "virtual:master-css-plan"',
             'const request = "./theme.css?master-css-plan"',
             'export default plan'
         ].join('\n'))

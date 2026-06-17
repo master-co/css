@@ -54,7 +54,7 @@
     <Step $row>
         <StepL>
             ### <StepNum />Add client types
-            Add the Vite client types and Master CSS integration client types before importing `virtual:master-css-plan.json` from TypeScript.
+            Add the Vite client types and Master CSS integration client types before importing `virtual:master-css-plan` from TypeScript.
         </StepL>
         <StepR>
             ```ts name=src/vite-env.d.ts
@@ -74,7 +74,7 @@
             import { customElement } from 'lit/decorators.js'
             import { cssRuntime } from '@master/css-runtime' // [!code highlight]
             import type { CSSRuntime } from '@master/css-runtime' // [!code highlight]
-            import plan from 'virtual:master-css-plan.json' // [!code highlight]
+            import plan from 'virtual:master-css-plan' // [!code highlight]
             import preloaded from 'virtual:master-css-preloaded' // [!code highlight]
 
             @customElement('my-element')

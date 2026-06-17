@@ -1,5 +1,5 @@
-import { readFileSync } from 'node:fs'
-import { dirname, join } from 'node:path'
+import { readdirSync, readFileSync } from 'node:fs'
+import { dirname, join, sep } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vitest'
 import execPnpmSync from './helpers/pnpm-command'
@@ -29,13 +29,41 @@ function buildFixture() {
     }
 }
 
+function collectOutputFiles(dir: string, matches: (filePath: string) => boolean): string[] {
+    const files: string[] = []
+    for (const entry of readdirSync(dir, { withFileTypes: true })) {
+        const filePath = join(dir, entry.name)
+        if (entry.isDirectory()) {
+            files.push(...collectOutputFiles(filePath, matches))
+        } else if (entry.isFile() && matches(filePath)) {
+            files.push(filePath)
+        }
+    }
+    return files
+}
+
+function isStaticMediaJSONFile(filePath: string) {
+    const parts = filePath.split(sep)
+    return filePath.endsWith('.json') && parts.includes('static') && parts.includes('media')
+}
+
 describe('css plan query e2e', () => {
     it('builds a clean Next project that imports an explicit CSS plan resource', () => {
         buildFixture()
 
+        const nextDir = join(fixtureDir, '.next')
         const html = readFileSync(join(fixtureDir, '.next/server/app/index.html'), 'utf-8')
+        const planJSONFiles = collectOutputFiles(nextDir, isStaticMediaJSONFile)
+        const planJSONContents = planJSONFiles.map((filePath) => readFileSync(filePath, 'utf-8'))
+        const jsBundleContents = collectOutputFiles(nextDir, (filePath) => filePath.endsWith('.js'))
+            .map((filePath) => readFileSync(filePath, 'utf-8'))
+            .join('\n')
 
         expect(html).toContain('data-color="#4b6fff"')
         expect(html).toContain('data-breakpoint="1234"')
+        expect(planJSONFiles.length).toBeGreaterThan(0)
+        expect(planJSONContents.some((contents) => contents.includes('font-weight-bold'))).toBe(true)
+        expect(planJSONContents.some((contents) => contents.includes('"color-e2e"'))).toBe(true)
+        expect(jsBundleContents).not.toContain('font-weight-bold')
     }, 120000)
 })

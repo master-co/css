@@ -31,7 +31,7 @@ import { CSSRuntimeRegistry } from '@master/css.vue'
 </template>
 ```
 
-The registry loads `virtual:master-css-plan.json` and `virtual:master-css-preloaded` internally, so use it when the official integration should load the project-level plan discovered from the CSS entry and the matching preloaded global CSS state.
+The registry loads `virtual:master-css-plan` and `virtual:master-css-preloaded` internally, so use it when the official integration should load the project-level plan discovered from the CSS entry and the matching preloaded global CSS state.
 
 ### `<CSSRuntimeProvider>`
 The provider initializes a `CSSRuntime` for `document` by default, refreshes it when `plan` changes, recreates it when `root` changes, and destroys it on unmount.

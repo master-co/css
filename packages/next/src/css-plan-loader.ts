@@ -1,6 +1,14 @@
+import { mkdirSync, writeFileSync } from 'node:fs'
+import { dirname, relative, resolve } from 'node:path'
 import { loadPlanJSONSync } from '@master/css-plan/load-sync'
 import { loadProjectPlanJSON } from '@master/css-plan/load'
 import { isCSSPlanRequest } from '@master/css-plan/css'
+import { stripResourceQuery } from '@master/css-integration/plan-module'
+import {
+    toHashedPlanAssetFileName,
+    toInlinePlanModule,
+    toUniversalPlanFacadeModule
+} from '@master/css-integration/plan-facade'
 
 interface LoaderContext {
     resourcePath: string
@@ -13,10 +21,28 @@ interface LoaderContext {
 interface MasterCSSPlanLoaderOptions {
     virtual?: boolean
     module?: boolean
+    external?: boolean
 }
 
-function toLoaderResult(json: string, asModule?: boolean) {
-    return asModule ? `export default ${json}` : json
+function toModuleSpecifier(from: string, to: string) {
+    const specifier = relative(dirname(from), to).replace(/\\/g, '/')
+    return specifier.startsWith('../') ? specifier : `./${specifier}`
+}
+
+function toLoaderResult(context: LoaderContext, json: string, options: MasterCSSPlanLoaderOptions) {
+    if (!options.module) return json
+    if (!options.external) return toInlinePlanModule(json)
+
+    const projectDir = context.rootContext || process.cwd()
+    const resourcePath = stripResourceQuery(context.resourcePath)
+    const assetFileName = toHashedPlanAssetFileName(json)
+    const assetPath = resolve(projectDir, 'node_modules/.master-css', assetFileName)
+    mkdirSync(dirname(assetPath), { recursive: true })
+    writeFileSync(assetPath, json)
+
+    return toUniversalPlanFacadeModule(
+        `new URL(${JSON.stringify(toModuleSpecifier(resourcePath, assetPath))}, import.meta.url)`
+    )
 }
 
 async function loadVirtualPlanJSON(context: LoaderContext) {
@@ -50,6 +76,6 @@ export default function masterCSSPlanLoader(this: LoaderContext) {
         ? loadVirtualPlanJSON(this)
         : Promise.resolve(loadCSSPlanJSON(this))
     result
-        .then((json) => callback(null, toLoaderResult(json, options.module)))
+        .then((json) => callback(null, toLoaderResult(this, json, options)))
         .catch((error: Error) => callback(error))
 }

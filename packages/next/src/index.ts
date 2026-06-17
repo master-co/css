@@ -138,22 +138,26 @@ function applyMasterCSSWebpackConfig(
     config.module.rules ??= []
     config.module.rules.push({
         test: MASTER_CSS_VIRTUAL_PLAN_PATH_PATTERN,
-        type: 'json',
         use: [
             {
                 loader: cssPlanLoaderPath,
                 options: {
-                    virtual: true
+                    virtual: true,
+                    module: true,
+                    external: true
                 }
             }
         ]
     })
     config.module.rules.push({
         resourceQuery: MASTER_CSS_PLAN_RESOURCE_QUERY,
-        type: 'json',
         use: [
             {
-                loader: cssPlanLoaderPath
+                loader: cssPlanLoaderPath,
+                options: {
+                    module: true,
+                    external: true
+                }
             }
         ]
     })
@@ -203,12 +207,12 @@ function applyMasterCSSTurbopackConfig(
                 loader: cssPlanLoaderPath,
                 options: {
                     virtual: true,
-                    module: true
+                    module: true,
+                    external: true
                 }
             }
         ],
-        type: 'ecmascript' as const,
-        as: '*.js'
+        type: 'ecmascript' as const
     }
     const masterCSSPlanRule = {
         condition: {
@@ -221,7 +225,8 @@ function applyMasterCSSTurbopackConfig(
             {
                 loader: cssPlanLoaderPath,
                 options: {
-                    module: true
+                    module: true,
+                    external: true
                 }
             }
         ],

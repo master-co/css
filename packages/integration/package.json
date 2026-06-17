@@ -52,6 +52,11 @@
             "import": "./dist/plan-module.mjs",
             "default": "./dist/plan-module.mjs"
         },
+        "./plan-facade": {
+            "types": "./dist/plan-facade.d.ts",
+            "import": "./dist/plan-facade.mjs",
+            "default": "./dist/plan-facade.mjs"
+        },
         "./style-module": {
             "types": "./dist/style-module.d.ts",
             "import": "./dist/style-module.mjs",

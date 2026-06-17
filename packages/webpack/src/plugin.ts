@@ -4,6 +4,10 @@ import {
     toPlanJSON,
     toVirtualDefaultPlanModulePath
 } from '@master/css-integration/plan-module'
+import {
+    toBrowserPlanFacadeModule,
+    toHashedPlanAssetFileName
+} from '@master/css-integration/plan-facade'
 import { loadProjectPlan } from '@master/css-plan/load'
 import {
     cleanStyleRequest,
@@ -25,6 +29,7 @@ import { normalizePath } from './utils/path'
 import ExtractorLifecyclePlugin from './plugins/extractor-lifecycle'
 import VirtualModuleRegistryPlugin from './plugins/virtual-modules'
 import PlanVirtualModulePlugin from './plugins/plan-virtual-module'
+import PlanJSONAssetsPlugin from './plugins/plan-json-assets'
 import VirtualCSSImportPlugin from './plugins/virtual-css-import'
 import PlanLoaderPlugin from './plugins/plan-loader'
 import UsageGraphPlugin from './plugins/usage-graph'
@@ -54,6 +59,8 @@ export interface MasterCSSWebpackContext {
     setPluginInitialized(pluginInitialized: boolean): void
     getDefaultPlanDependencyPaths(): string[]
     setModuleContent(modulePath: string, moduleContent: unknown): void
+    setPlanJSONAsset(assetFileName: string, json: string): void
+    getPlanJSONAssets(): [string, string][]
     createDefaultPlanModule(): Promise<string>
     createPreloadedModule(): Promise<string>
     processModuleContents(
@@ -74,6 +81,7 @@ export class MasterCSSPlugin {
     readonly extractor: CSSExtractor
     pluginInitialized = false
     moduleContentByPath: Record<string, unknown> = {}
+    planJSONAssets = new Map<string, string>()
     defaultPlanDependencies: string[] = []
     preloaded: MasterCSSPreloaded = {}
     resetReplayChain: Promise<unknown> = Promise.resolve()
@@ -168,7 +176,10 @@ export class MasterCSSPlugin {
             plan: result.plan
         }
         this.defaultPlanDependencies = result.dependencies
-        return toPlanJSON(result.plan)
+        const json = toPlanJSON(result.plan)
+        const assetFileName = toHashedPlanAssetFileName(json)
+        this.planJSONAssets.set(assetFileName, json)
+        return toBrowserPlanFacadeModule(`__webpack_public_path__ + ${JSON.stringify(assetFileName)}`)
     }
 
     private getDefaultPlanDependencyPaths() {
@@ -273,6 +284,10 @@ export class MasterCSSPlugin {
             setModuleContent: (modulePath, moduleContent) => {
                 this.moduleContentByPath[modulePath] = moduleContent
             },
+            setPlanJSONAsset: (assetFileName, json) => {
+                this.planJSONAssets.set(assetFileName, json)
+            },
+            getPlanJSONAssets: () => [...this.planJSONAssets],
             createDefaultPlanModule: () => this.createDefaultPlanModule(),
             createPreloadedModule: () => this.createPreloadedModule(),
             processModuleContents: (entries, isGeneratedCSSModulePath) => this.processModuleContents(entries, isGeneratedCSSModulePath),
@@ -323,6 +338,7 @@ export class MasterCSSPlugin {
             ExtractorLifecyclePlugin(context),
             VirtualModuleRegistryPlugin(context),
             PlanVirtualModulePlugin(context),
+            PlanJSONAssetsPlugin(context),
             VirtualCSSImportPlugin(context),
             PlanLoaderPlugin(context),
             StyleEntryPlugin(context),

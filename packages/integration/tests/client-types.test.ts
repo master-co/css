@@ -87,7 +87,7 @@ describe('@master/css-integration/client', () => {
 /// <reference types="@master/css-integration/client" />
 
 import 'virtual:master-utilities.css'
-import virtualPlan from 'virtual:master-css-plan.json'
+import virtualPlan from 'virtual:master-css-plan'
 import virtualPreloaded from 'virtual:master-css-preloaded'
 import localPlan from './app.css?master-css-plan'
 

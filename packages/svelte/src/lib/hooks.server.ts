@@ -1,6 +1,6 @@
 /// <reference types="@master/css-integration/client" />
 
-import plan from 'virtual:master-css-plan.json'
+import plan from 'virtual:master-css-plan'
 import { createMasterCSSHandle } from './server.js'
 
 export {

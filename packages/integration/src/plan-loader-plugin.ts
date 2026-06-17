@@ -7,17 +7,24 @@ import {
     toResolvedMasterCSSPlanId,
     type CSSPlanJSONResult
 } from './plan-module'
+import { toInlinePlanModule } from './plan-facade'
 
 type MaybePromise<T> = T | Promise<T>
 
 export interface MasterCSSPlanLoaderPluginContext {
     addWatchFile?: (id: string) => void
+    emitFile?: (asset: { type: 'asset', name: string, source: string }) => string
 }
 
 export interface MasterCSSPlanLoaderPluginOptions {
     cwd?: string
     resolveUnresolved?: boolean
     loadPlanJSON: (path: string) => MaybePromise<CSSPlanJSONResult>
+    toPlanModule?: (payload: {
+        planPath: string
+        result: CSSPlanJSONResult
+        pluginContext: MasterCSSPlanLoaderPluginContext
+    }) => MaybePromise<string>
     onLoadPlanJSON?: (payload: {
         planPath: string
         result: CSSPlanJSONResult
@@ -57,7 +64,9 @@ export function createMasterCSSPlanLoaderPlugin(options: MasterCSSPlanLoaderPlug
                 result,
                 pluginContext: this
             })
-            return result.json
+            return options.toPlanModule
+                ? options.toPlanModule({ planPath, result, pluginContext: this })
+                : toInlinePlanModule(result.json)
         }
     }
 }

@@ -10,6 +10,10 @@ const FIXTURE_DIR = path.resolve(__dirname, '../fixtures/plan-virtual-module')
 function createResolvedConfig(root = FIXTURE_DIR) {
     return {
         root,
+        command: 'serve',
+        build: {
+            ssr: false
+        },
         server: {
             fs: {
                 allow: []
@@ -38,7 +42,27 @@ describe('PlanVirtualModulePlugin', () => {
 
         expect(viteConfig.server.fs.allow).toContain(planEntryPath)
         expect(viteConfig.server.fs.allow).toContain(buttonPlanPath)
+        expect(code).toContain('export default ')
         expect(code).toContain('"version":1')
+    })
+
+    it('emits the default plan as an external JSON asset in production build', async () => {
+        const root = path.join(FIXTURE_DIR, 'css-only')
+        const { context } = createContext(root)
+        context.config.command = 'build'
+        const plugin = PlanVirtualModulePlugin({}, context)
+        const emitFile = vi.fn(() => 'master_css_plan_ref')
+
+        const code = await (plugin.load as any).call({ emitFile }, RESOLVED_VIRTUAL_PLAN_ID)
+
+        expect(emitFile).toHaveBeenCalledWith(expect.objectContaining({
+            type: 'asset',
+            name: 'master-css-plan.json',
+            source: expect.stringContaining('"version":1')
+        }))
+        expect(code).toContain('const masterCSSPlanURL = import.meta.ROLLUP_FILE_URL_master_css_plan_ref;')
+        expect(code).toContain('await fetch(masterCSSPlanURL)')
+        expect(code).not.toContain('font-weight-bold')
     })
 
     it('handles unimported CSS plan changes through CSS HMR only', async () => {

@@ -1,7 +1,11 @@
 import { defineNuxtModule, addServerPlugin, createResolver, addPlugin } from '@nuxt/kit'
+import { mkdirSync, writeFileSync } from 'node:fs'
+import { dirname, resolve as resolvePath } from 'node:path'
+import { pathToFileURL } from 'node:url'
 import { name } from '../package.json'
 import masterCSS from '@master/css.vue/vite'
 import { VIRTUAL_PLAN_ID } from '@master/css-integration/plan-module'
+import { toHashedPlanAssetFileName, toNodePlanFacadeModule } from '@master/css-integration/plan-facade'
 import { loadProjectPlanJSON } from '@master/css-plan/load'
 import type { Plugin } from 'vite'
 import defaultOptions, { type ModuleOptions } from './options'
@@ -29,9 +33,17 @@ export default defineNuxtModule<ModuleOptions>({
         nuxt.hook('nitro:config', async (config) => {
             const result = await loadProjectPlanJSON(nuxt.options.rootDir)
             addNitroWatchDependencies(config, result.dependencies)
+            const planAssetPath = resolvePath(
+                nuxt.options.rootDir,
+                'node_modules/.master-css',
+                toHashedPlanAssetFileName(result.json)
+            )
+            mkdirSync(dirname(planAssetPath), { recursive: true })
+            writeFileSync(planAssetPath, result.json)
             config.virtual ??= {}
-            // Nitro virtual entries are JavaScript source hooks, so wrap the JSON asset for server runtime imports.
-            config.virtual[VIRTUAL_PLAN_ID] = `export default ${result.json}`
+            config.virtual[VIRTUAL_PLAN_ID] = toNodePlanFacadeModule(
+                `new URL(${JSON.stringify(pathToFileURL(planAssetPath).href)})`
+            )
         })
         const addCSSVitePlugin = (mode = options.mode) => {
             nuxt.hook('vite:extendConfig', (viteConfig) => {
@@ -59,7 +71,7 @@ export default defineNuxtModule<ModuleOptions>({
         switch (options.mode) {
             case 'pre-render':
             case 'progressive':
-                // Fix: Package import specifier "virtual:master-css-plan.json" is not defined in package
+                // Fix: Package import specifier "virtual:master-css-plan" is not defined in package
                 nuxt.options.build.transpile.push(resolve('./runtime/css-server'))
                 addServerPlugin(resolve('./runtime/css-server'))
                 break

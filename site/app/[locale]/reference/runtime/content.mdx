@@ -5,7 +5,7 @@
 To import and initialize the runtime engine in the entry file, such as `main.js`:
 ```js name=main.js
 import { initCSSRuntime } from '@master/css-runtime'
-import plan from 'virtual:master-css-plan.json'
+import plan from 'virtual:master-css-plan'
 import preloaded from 'virtual:master-css-preloaded'
 
 initCSSRuntime({ plan, preloaded })
@@ -18,7 +18,7 @@ initCSSRuntime({ plan, preloaded })
 The `Runtime` extends the [`MasterCSS`](/reference/core#mastercss) and only works in the browser environment.
 ```ts
 import CSSRuntime from '@master/css-runtime'
-import plan from 'virtual:master-css-plan.json'
+import plan from 'virtual:master-css-plan'
 
 const cssRuntime = new CSSRuntime(document, plan)
 ```
@@ -94,7 +94,7 @@ Initializes the Master CSS runtime rendering engine.
 </DocFn>
 ```ts
 import { initCSSRuntime } from '@master/css-runtime'
-import plan from 'virtual:master-css-plan.json'
+import plan from 'virtual:master-css-plan'
 import preloaded from 'virtual:master-css-preloaded'
 
 const css = initCSSRuntime({
@@ -107,7 +107,7 @@ const css = initCSSRuntime({
 Equivalent to:
 ```ts
 import CSSRuntime from '@master/css-runtime'
-import plan from 'virtual:master-css-plan.json'
+import plan from 'virtual:master-css-plan'
 
 const cssRuntime = new CSSRuntime(document, plan).observe()
 ```
@@ -126,7 +126,7 @@ Returns the complete `MasterCSSPlan` passed to runtime refresh or initialization
 </DocFn>
 ```ts
 import { resolveRuntimePlan } from '@master/css-runtime'
-import plan from 'virtual:master-css-plan.json'
+import plan from 'virtual:master-css-plan'
 
 cssRuntime.refresh(resolveRuntimePlan(plan))
 ```

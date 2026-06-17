@@ -2,6 +2,12 @@ import type { ModuleNode, Plugin, ViteDevServer } from 'vite'
 import { PluginContext } from '../core'
 import { loadProjectPlan } from '@master/css-plan/load'
 import { toPlanJSON } from '@master/css-integration/plan-module'
+import {
+    PLAN_ASSET_FILE,
+    toBrowserPlanFacadeModule,
+    toInlinePlanModule,
+    toNodePlanFacadeModule
+} from '@master/css-integration/plan-facade'
 import { RESOLVED_VIRTUAL_PLAN_ID, VIRTUAL_PLAN_ID } from '../common'
 import { PluginOptions } from '../options'
 
@@ -9,6 +15,31 @@ function invalidatePlanModule(module: ModuleNode | undefined, server: ViteDevSer
     if (!module) return false
     server.moduleGraph.invalidateModule(module)
     return module.importers.size > 0
+}
+
+function isProductionBuild(context: PluginContext) {
+    return context.config?.command === 'build'
+}
+
+function isServerBuild(context: PluginContext) {
+    return Boolean(context.config?.build.ssr)
+}
+
+function createPlanModule(
+    context: PluginContext,
+    pluginContext: { emitFile?: (asset: { type: 'asset', name: string, source: string }) => string },
+    json: string
+) {
+    if (!isProductionBuild(context) || !pluginContext.emitFile) return toInlinePlanModule(json)
+    const referenceId = pluginContext.emitFile({
+        type: 'asset',
+        name: PLAN_ASSET_FILE,
+        source: json
+    })
+    const urlExpression = `import.meta.ROLLUP_FILE_URL_${referenceId}`
+    return isServerBuild(context)
+        ? toNodePlanFacadeModule(urlExpression)
+        : toBrowserPlanFacadeModule(urlExpression)
 }
 
 export default function PlanVirtualModulePlugin(
@@ -43,7 +74,7 @@ export default function PlanVirtualModulePlugin(
         },
         async load(id) {
             if (id === RESOLVED_VIRTUAL_PLAN_ID) {
-                return toPlanJSON((await loadDefaultPlan(this)).plan)
+                return createPlanModule(context, this, toPlanJSON((await loadDefaultPlan(this)).plan))
             }
         },
         async handleHotUpdate({ file, server }) {

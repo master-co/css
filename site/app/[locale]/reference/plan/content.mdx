@@ -83,7 +83,7 @@ import {
 
 | API | Purpose |
 | --- | --- |
-| `VIRTUAL_PLAN_ID` | The default plan JSON module id, `virtual:master-css-plan.json`. |
+| `VIRTUAL_PLAN_ID` | The default plan JS facade module id, `virtual:master-css-plan`. |
 | `VIRTUAL_PRELOADED_ID` | The default preloaded module id, `virtual:master-css-preloaded`. |
 | `MASTER_CSS_PLAN_QUERY` | The query suffix, `?master-css-plan`, used to compile one explicit CSS resource. |
 | `toPlanJSON(plan)` | Serializes a plan object into normalized JSON source. |
@@ -91,4 +91,4 @@ import {
 | `toVirtualDefaultPlanModulePath(context)` | Creates the virtual path for the default plan module. |
 | `toVirtualCSSPlanModulePath(context, file)` | Creates a virtual path for one explicit queried CSS resource. |
 
-Use `virtual:master-css-plan.json` and `virtual:master-css-preloaded` when application code should receive the integration's canonical project-level runtime inputs. Use `./index.css?master-css-plan` only when the code intentionally compiles one explicit CSS resource through the active integration.
+Use `virtual:master-css-plan` and `virtual:master-css-preloaded` when application code should receive the integration's canonical project-level runtime inputs. Use `./index.css?master-css-plan` only when the code intentionally compiles one explicit CSS resource through the active integration.

@@ -4,6 +4,7 @@ import {
     EMPTY_PLAN_JSON,
     toVirtualDefaultPlanModulePath
 } from './plan-module'
+import { toInlinePlanModule } from './plan-facade'
 import {
     EMPTY_PRELOADED_MODULE,
     toVirtualPreloadedModulePath
@@ -18,7 +19,7 @@ export function ensureVirtualModuleFile(file: string, source: string) {
 }
 
 export function ensureVirtualPlanModulePath(projectDir = process.cwd()) {
-    return ensureVirtualModuleFile(toVirtualDefaultPlanModulePath(projectDir), EMPTY_PLAN_JSON)
+    return ensureVirtualModuleFile(toVirtualDefaultPlanModulePath(projectDir), toInlinePlanModule(EMPTY_PLAN_JSON))
 }
 
 export function ensureVirtualPreloadedModulePath(projectDir = process.cwd()) {

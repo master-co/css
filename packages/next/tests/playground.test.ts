@@ -30,26 +30,38 @@ function buildPlayground() {
     }
 }
 
-function readJavaScriptFiles(dir: string): string {
+function readOutputFiles(dir: string, matches: (path: string) => boolean): string {
     return readdirSync(dir).map((entry) => {
         const path = join(dir, entry)
-        if (statSync(path).isDirectory()) return readJavaScriptFiles(path)
-        return path.endsWith('.js') ? readFileSync(path, 'utf-8') : ''
+        if (statSync(path).isDirectory()) return readOutputFiles(path, matches)
+        return matches(path) ? readFileSync(path, 'utf-8') : ''
     }).join('\n')
+}
+
+function readJavaScriptFiles(dir: string): string {
+    return readOutputFiles(dir, (path) => path.endsWith('.js'))
+}
+
+function readJSONFiles(dir: string): string {
+    return readOutputFiles(dir, (path) => path.endsWith('.json'))
 }
 
 describe('playground', () => {
     it('imports the global CSS entry as a Next config module', () => {
         buildPlayground()
 
-        const htmlPath = join(playgroundDir, '.next/server/app/index.html')
+        const nextDir = join(playgroundDir, '.next')
+        const htmlPath = join(nextDir, 'server/app/index.html')
         const html = readFileSync(htmlPath, 'utf-8')
-        const clientSource = readJavaScriptFiles(join(playgroundDir, '.next/static/chunks'))
+        const clientSource = readJavaScriptFiles(join(nextDir, 'static/chunks'))
+        const planJSONSource = readJSONFiles(join(nextDir, 'static/media'))
 
         expect(html).toContain('.fg\\:primary{color:var(--color-primary)}')
         expect(html).toContain(`id="${MASTER_CSS_RUNTIME_MANIFEST_SCRIPT_ID}"`)
         expect(html.match(new RegExp(`id="${MASTER_CSS_RUNTIME_MANIFEST_SCRIPT_ID}"`, 'g'))?.length).toBe(1)
-        expect(clientSource).toContain('primary')
-        expect(clientSource).toContain('#0070f3')
+        expect(clientSource).not.toContain('font-weight-bold')
+        expect(clientSource).not.toContain('#0070f3')
+        expect(planJSONSource).toContain('font-weight-bold')
+        expect(planJSONSource).toContain('#0070f3')
     }, 120000)
 })

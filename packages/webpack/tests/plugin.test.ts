@@ -255,7 +255,7 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
         expect(result.code).toContain(':root')
     })
 
-    test('resolves virtual:master-css-plan.json to a JSON virtual asset', async () => {
+    test('resolves virtual:master-css-plan to a JS facade and external JSON asset', async () => {
         const plugin = new MasterCSSPlugin({
             include: [],
             required: [],
@@ -275,8 +275,12 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
 
         await resolveBefore(normalModuleFactory, resolveData)
 
-        expect(resolveData.request).toContain(path.join('node_modules', '.master-css', 'master-css-plan.json'))
+        expect(resolveData.request).toContain(path.join('node_modules', '.master-css', 'master-css-plan.js'))
         expect((compiler.inputFileSystem._writeVirtualFile as any).mock.calls.at(-1)?.[2])
+            .toContain('await fetch(masterCSSPlanURL)')
+        expect((compiler.inputFileSystem._writeVirtualFile as any).mock.calls.at(-1)?.[2])
+            .not.toContain('font-weight-bold')
+        expect([...(plugin as any).planJSONAssets.values()].at(-1))
             .toContain('"version":1')
     })
 
@@ -305,7 +309,7 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
             .toBe('export default {"variables":{},"animations":{}};')
     })
 
-    test('resolves ?master-css-plan imports to per-file JSON virtual assets', async () => {
+    test('resolves ?master-css-plan imports to per-file JS facades and external JSON assets', async () => {
         const fixturePath = path.resolve(__dirname, 'fixtures/plan-virtual-module/theme.css')
         const plugin = makePlugin()
         const { compiler } = makeFakeCompiler()
@@ -324,11 +328,15 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
         await resolveBefore(normalModuleFactory, resolveData)
 
         expect(resolveData.request).toContain(path.join('node_modules', '.master-css'))
-        expect(resolveData.request).toContain('.plan.json')
+        expect(resolveData.request).toContain('.plan.js')
         expect(resolveData.fileDependencies.has(fixturePath)).toBe(true)
         expect((compiler.inputFileSystem._writeVirtualFile as any).mock.calls.at(-1)?.[2])
-            .toContain('accent')
+            .toContain('await fetch(masterCSSPlanURL)')
         expect((compiler.inputFileSystem._writeVirtualFile as any).mock.calls.at(-1)?.[2])
+            .not.toContain('#456')
+        expect([...(plugin as any).planJSONAssets.values()].at(-1))
+            .toContain('accent')
+        expect([...(plugin as any).planJSONAssets.values()].at(-1))
             .toContain('#456')
     })
 
@@ -493,6 +501,8 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
             expect(resolveData.fileDependencies.has(entryPath)).toBe(true)
             expect(resolveData.fileDependencies.has(themePath)).toBe(true)
             expect((compiler.inputFileSystem._writeVirtualFile as any).mock.calls.at(-1)?.[2])
+                .not.toContain('"color":"#123456"')
+            expect([...(plugin as any).planJSONAssets.values()].at(-1))
                 .toContain('"color":"#123456"')
         } finally {
             rmSync(root, { recursive: true, force: true })
@@ -760,7 +770,7 @@ describe('MasterCSSPlugin (C1 race fix)', () => {
         plugin.apply(compiler as any)
         compiler.hooks.thisCompilation.call(compilation as any)
 
-        compilation.hooks.succeedModule.call(makeModule('node_modules/.master-css/master-css-plan.json', '{}'))
+        compilation.hooks.succeedModule.call(makeModule('node_modules/.master-css/master-css-plan.js', '{}'))
         compilation.hooks.succeedModule.call(makeModule('/real.tsx', 'real'))
 
         await new Promise<void>((res, rej) =>

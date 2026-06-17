@@ -3,6 +3,10 @@ import {
     stripMasterCSSPlanQuery,
     toVirtualCSSPlanModulePath
 } from '@master/css-integration/plan-module'
+import {
+    toBrowserPlanFacadeModule,
+    toHashedPlanAssetFileName
+} from '@master/css-integration/plan-facade'
 import { loadPlanJSON } from '@master/css-plan/load'
 import type { Compiler } from 'webpack'
 import type { MasterCSSWebpackContext, WebpackSubPlugin } from '../plugin'
@@ -42,10 +46,12 @@ export default function PlanLoaderPlugin(context: MasterCSSWebpackContext): Webp
                                     return
                                 }
                                 const result = await loadPlanJSON(resolvedPath)
+                                const assetFileName = toHashedPlanAssetFileName(result.json)
                                 const virtualModuleId = toVirtualCSSPlanModulePath(context.compilerContext, resolvedPath)
+                                context.setPlanJSONAsset(assetFileName, result.json)
                                 context.virtualModule?.writeModule(
                                     virtualModuleId,
-                                    result.json
+                                    toBrowserPlanFacadeModule(`__webpack_public_path__ + ${JSON.stringify(assetFileName)}`)
                                 )
                                 for (const dependency of result.dependencies) {
                                     resolveData.fileDependencies.add(dependency)

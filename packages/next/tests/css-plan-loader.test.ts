@@ -1,4 +1,4 @@
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+import { mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, describe, expect, it } from 'vitest'
@@ -74,6 +74,27 @@ describe('css plan loader', () => {
         expect(source).toContain('#123')
     })
 
+    it('wraps the plan JSON as an external JSON facade when requested', async () => {
+        const projectDir = createFixtureDir()
+        const planPath = join(projectDir, 'index.css')
+        mkdirSync(projectDir, { recursive: true })
+        writeFileSync(planPath, '@theme { --color-primary: #123; }')
+
+        const source = await runPlanLoader({
+            resourcePath: planPath,
+            rootContext: projectDir,
+            getOptions: () => ({ module: true, external: true })
+        })
+        const assetDir = join(projectDir, 'node_modules/.master-css')
+        const assetFile = readdirSync(assetDir).find((file) => file.endsWith('.json'))
+
+        expect(source).toContain('new URL("./node_modules/.master-css/')
+        expect(source).toContain('loadMasterCSSPlanFromFetch')
+        expect(source).not.toContain('#123')
+        expect(assetFile).toBeTruthy()
+        expect(readFileSync(join(assetDir, assetFile || ''), 'utf8')).toContain('#123')
+    })
+
     it('loads CSS when the loader resource includes ?master-css-plan', async () => {
         const projectDir = createFixtureDir()
         const planPath = join(projectDir, 'index.css')
@@ -126,7 +147,7 @@ describe('css plan loader', () => {
         ].join('\n'))
 
         const source = await runPlanLoader({
-            resourcePath: join(projectDir, 'node_modules/.master-css/master-css-plan.json'),
+            resourcePath: join(projectDir, 'node_modules/.master-css/master-css-plan.js'),
             rootContext: projectDir,
             getOptions: () => ({ virtual: true }),
             addDependency: (dependency: string) => dependencies.push(dependency)

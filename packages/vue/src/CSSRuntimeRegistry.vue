@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import plan from 'virtual:master-css-plan.json'
+import plan from 'virtual:master-css-plan'
 import preloaded from 'virtual:master-css-preloaded'
 import CSSRuntimeProvider from './CSSRuntimeProvider.vue'
 
