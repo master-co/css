@@ -28,7 +28,7 @@ export default function TierModal({ tierState }: { tierState: [any, Dispatch<any
             Open Collective
         </Link>
         <Link href={selectedTier.githubSponsorUrl} className="flex gap:12 text-decoration:none! px:25 align-items:center font:medium min-h:48">
-            <Image src="/images/github-sponsors.svg" alt="github-sponsors" width="24" height="24" className="scale(1.2)" />
+            <Image src="/images/github-sponsors.svg" alt="github-sponsors" width="24" height="24" className="transform:scale(1.2)" />
             Github Sponsors
         </Link>
     </Modal>

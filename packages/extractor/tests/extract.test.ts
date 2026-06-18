@@ -7,7 +7,7 @@ it('extract latent classes from js raw', () => {
 
         const counterElement = document.querySelector<HTMLButtonElement>('#counter')
         const syntax = 'block'
-        counterElement?.classList.add('transition:transform|.3s', 'translateY(-5):hover', syntax)
+        counterElement?.classList.add('transition:transform|.3s', 'transform:translateY(-5):hover', syntax)
 
         setupCounter(counterElement!)
     `
@@ -19,7 +19,7 @@ it('extract latent classes from js raw', () => {
             'syntax',
             'block',
             'transition:transform|.3s',
-            'translateY(-5):hover',
+            'transform:translateY(-5):hover',
             'setupCounter(counterElement!)',
         ])
 })
@@ -38,7 +38,7 @@ test('basic js object', () => {
 })
 
 test('basic html', () => {
-    expect(extractLatentClasses(`<div class="f:16 blur(2px) animation:shake|1s|infinite>li"></div>`)).toEqual(['f:16', 'blur(2px)', 'animation:shake|1s|infinite>li'])
+    expect(extractLatentClasses(`<div class="f:16 filter:blur(2px) animation:shake|1s|infinite>li"></div>`)).toEqual(['f:16', 'filter:blur(2px)', 'animation:shake|1s|infinite>li'])
 })
 
 test('utility sign and symbol key syntax is not extracted', () => {

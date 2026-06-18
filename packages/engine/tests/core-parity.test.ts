@@ -29,7 +29,7 @@ describe.concurrent('default plan utility parity', () => {
         expectClassText(css, 'bg:line', 'background-color:var(--color-line)')
         expectClassText(css, 'bg-clip-border', 'background-clip:border-box')
         expectClassText(css, 'bg:url("#test")', 'background-image:url("#test")')
-        expectClassText(css, 'gradient(45deg,#f3ec78,#af4261)', 'background-image:linear-gradient(45deg,#f3ec78,#af4261)')
+        expectClassText(css, 'bg:linear-gradient(45deg,#f3ec78,#af4261)', 'background-image:linear-gradient(45deg,#f3ec78,#af4261)')
     })
 
     test('keeps gradient color token functions as resolved color values', () => {
@@ -260,13 +260,35 @@ describe.concurrent('default plan utility parity', () => {
         expectClassText(css, 'translate:16|24', 'translate:1rem 1.5rem')
         expectClassText(css, 'scale:1.5|2', 'scale:1.5 2')
         expectClassText(css, 'rotate:45deg', 'rotate:45deg')
-        expectClassText(css, 'translate(16,16)', 'transform:translate(1rem,1rem)')
+        expectClassText(css, 'transform:translate(16,16)', 'transform:translate(1rem,1rem)')
         expectClassText(css, 'border-inline-start-width:2', 'border-inline-start-width:0.125rem')
         expectClassText(css, 'border-start-start-radius:8', 'border-start-start-radius:0.5rem')
         expect(css.create('font-size:clamp(1.5rem,2vw+1rem,2.25rem)')?.text)
             .toMatch(/font-size:clamp\(1\.5rem,\s*calc\(2vw \+ 1rem\),\s*2\.25rem\)/)
         expect(css.create('{paint-order:stroke|fill|markers}')?.text)
             .toContain('paint-order:stroke fill markers')
+    })
+
+    test('does not support bare function utilities', () => {
+        const css = createDefaultCSS()
+
+        for (const className of [
+            'scale(1.1)',
+            'rotate(45deg)',
+            'translate(16,16)',
+            'blur(4)',
+            'drop-shadow(0|2|4|black/.2)',
+            'gradient(45deg,#f3ec78,#af4261)'
+        ]) {
+            expect(css.create(className), className).toBeUndefined()
+        }
+
+        expectClassText(css, 'transform:scale(1.1)', 'transform:scale(1.1)')
+        expectClassText(css, 'transform:rotate(45deg)', 'transform:rotate(45deg)')
+        expectClassText(css, 'transform:translate(16,16)', 'transform:translate(1rem,1rem)')
+        expectClassText(css, 'filter:blur(4)', 'filter:blur(0.25rem)')
+        expectClassText(css, 'filter:drop-shadow(0|2|4|black/.2)', 'filter:drop-shadow(0rem 0.125rem 0.25rem color-mix(in oklab,oklch(0% 0 none) 20%,transparent))')
+        expectClassText(css, 'bg:linear-gradient(45deg,#f3ec78,#af4261)', 'background-image:linear-gradient(45deg,#f3ec78,#af4261)')
     })
 
     test('uses injected native declaration matcher after plan misses and rejects removed aliases', () => {

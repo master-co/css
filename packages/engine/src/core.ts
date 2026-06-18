@@ -644,8 +644,6 @@ export default class MasterCSS {
             }
             case 'pattern':
                 return matcher.values.some((value) => matchesStaticUtility(className, matcher.prefix + value))
-            case 'function-prefix':
-                return className.startsWith(matcher.name + '(')
             case 'group':
                 return className[0] === '{' && className.includes('}')
             case 'css-variable-assignment':

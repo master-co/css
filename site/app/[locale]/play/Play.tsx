@@ -779,7 +779,7 @@ export default function Play({ shareId }: PlayProps = {}) {
                             <path className={clsx(
                                 'transition:transform|.2s',
                                 (!layout || layout === '2') ? 'fill:accent/.15' : 'fill:text-disabled/.2',
-                                { 'translate(12,4)': !layout }
+                                { 'transform:translate(12,4)': !layout }
                             )} stroke="none" d="M1,0H8A0,0,0,0,1,8,0V16a0,0,0,0,1,0,0H0a0,0,0,0,1,0,0V1A1,1,0,0,1,1,0Z" transform='translate(4 4)' />
                             <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
                             <path d="M4 4m0 2a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2z"></path>
@@ -787,11 +787,11 @@ export default function Play({ shareId }: PlayProps = {}) {
                         </svg>
                     </button>
                     <button className="app-header-icon hidden@<md" onClick={() => pushShallowURL('layout', layout === '3' ? '4' : '3')}>
-                        <svg className={clsx({ 'stroke:accent': layout === '3' || layout === '4' }, 'rotate(90)')} xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" strokeWidth="1.2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
+                        <svg className={clsx({ 'stroke:accent': layout === '3' || layout === '4' }, 'rotate:90')} xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" strokeWidth="1.2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
                             <path className={clsx(
                                 'transition:transform|.2s',
                                 (layout === '3' || layout === '4') ? 'fill:accent/.15' : 'fill:text-disabled/.2',
-                                { 'translate(12,4)': layout === '3' }
+                                { 'transform:translate(12,4)': layout === '3' }
                             )} stroke="none" d="M1,0H8A0,0,0,0,1,8,0V16a0,0,0,0,1,0,0H0a0,0,0,0,1,0,0V1A1,1,0,0,1,1,0Z" transform='translate(4 4)' />
                             <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
                             <path d="M4 4m0 2a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2z"></path>

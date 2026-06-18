@@ -59,7 +59,7 @@
         @compose inline-flex items-center justify-center rel b:1|line bg:accent fg:on-accent font:sm font:medium h:48 mt:md px:lg r:sm text-center w:full;
 
         &:hover .btn-arrow-line {
-            @compose scale(1);
+            @compose transform:scale(1);
             opacity: 1;
         }
     }
@@ -69,6 +69,6 @@
     }
 
     btn-arrow-line {
-        @compose transition:opacity|fast|smooth opacity:0 scale(0) transform-origin:5x|center;
+        @compose transition:opacity|fast|smooth opacity:0 transform:scale(0) transform-origin:5x|center;
     }
 }

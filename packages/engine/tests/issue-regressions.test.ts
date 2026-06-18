@@ -82,7 +82,7 @@ describe.concurrent('migrated issue regressions', () => {
         }
     })
 
-    test('issue #321: individual transforms and legacy transform functions', () => {
+    test('issue #321: individual transforms replace legacy transform function utilities', () => {
         const css = createDefaultCSS()
 
         expect(css.create('translate:16')?.text).toContain('translate:1rem')
@@ -90,8 +90,11 @@ describe.concurrent('migrated issue regressions', () => {
         expect(css.create('scale:1.5')?.text).toContain('scale:1.5')
         expect(css.create('scale:1.5|2')?.text).toContain('scale:1.5 2')
         expect(css.create('rotate:45deg')?.text).toContain('rotate:45deg')
-        expect(css.create('translate(16,16)')?.text).toContain('transform:translate(1rem,1rem)')
-        expect(css.create('rotate(45deg)')?.text).toContain('transform:rotate(45deg)')
+        expect(css.create('transform:translate(16,16)')?.text).toContain('transform:translate(1rem,1rem)')
+        expect(css.create('transform:rotate(45deg)')?.text).toContain('transform:rotate(45deg)')
+        expect(css.create('translate(16,16)')).toBeUndefined()
+        expect(css.create('rotate(45deg)')).toBeUndefined()
+        expect(css.create('scale(1.5)')).toBeUndefined()
     })
 
     test('issue #332: logical borders and logical corner radii', () => {

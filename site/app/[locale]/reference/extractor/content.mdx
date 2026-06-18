@@ -121,7 +121,7 @@ const content: string = `
 
     const counterElement = document.querySelector<HTMLButtonElement>('#counter')
     const syntax = 'block'
-    counterElement?.classList.add('transition:transform|.3s', 'translateY(-5):hover', syntax)
+    counterElement?.classList.add('transition:transform|.3s', 'transform:translateY(-5):hover', syntax)
 
     setupCounter(counterElement!)
 `
@@ -135,7 +135,7 @@ Result:
     'syntax',
     'block',
     'transition:transform|.3s',
-    'translateY(-5):hover',
+    'transform:translateY(-5):hover',
     'setupCounter(counterElement!)'
 ]
 ```

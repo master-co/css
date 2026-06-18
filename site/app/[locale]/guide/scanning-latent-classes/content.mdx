@@ -225,7 +225,7 @@ Use `@safelist` for bounded classes that do not exist in scanned source. Common 
 
 ```css name=index.css
 @master;
-@safelist 'dialog-open translateY(-5):hover bg:primary@dark';
+@safelist 'dialog-open transform:translateY(-5):hover bg:primary@dark';
 ```
 
 `@safelist` does not bypass validation. The class still needs to be a valid Master CSS class, a project-defined class from the compiled plan, or a known native class from a pruned stylesheet.

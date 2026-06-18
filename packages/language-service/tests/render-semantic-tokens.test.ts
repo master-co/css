@@ -172,7 +172,7 @@ test.concurrent('renders semantic tokens for container queries and slash-separat
 
 test.concurrent('renders semantic tokens for grouped declarations, strings, units, and important marks', () => {
     const { tokens } = renderTokens(
-        '<div class="{fg:red;bg:blue} translate(10x|20px) content:\'a|b\' size:10x20 fg:red!"></div>',
+        '<div class="{fg:red;bg:blue} transform:translate(10x|20px) content:\'a|b\' size:10x20 fg:red!"></div>',
         'html'
     )
 
@@ -183,6 +183,7 @@ test.concurrent('renders semantic tokens for grouped declarations, strings, unit
     expectToken(tokens, 'red', 'enumMember')
     expectToken(tokens, 'bg', 'property')
     expectToken(tokens, 'blue', 'enumMember')
+    expectToken(tokens, 'transform', 'property')
     expectToken(tokens, 'translate', 'function')
     expectToken(tokens, '10', 'number')
     expectToken(tokens, 'x', 'enumMember', ['unit'])

@@ -56,7 +56,7 @@ It can express common CSS values without ceremony:
 <div class="bg:blue-60/.5">
 
 <!-- Scale the element to 1.5x -->
-<div class="scale(1.5)">
+<div class="transform:scale(1.5)">
 
 <!-- Transition transform for .3s with ease timing -->
 <div class="transition:transform|.3s|ease">
@@ -300,7 +300,7 @@ Assuming the card has become reusable, define it as a [component class](/guide/r
         @compose flex transition:transform|fast|smooth overflow:hidden bg:white r:xl;
 
         &:hover {
-            @compose translateY(-5);
+            @compose transform:translateY(-5);
         }
     }
 

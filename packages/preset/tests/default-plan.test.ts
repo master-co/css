@@ -122,12 +122,13 @@ describe('@master/css-preset defaultPlan', () => {
         const plan = createDefaultPlanFromSourceFile(resolve(__dirname, '../src/index.css'))
         const utilities = plan.utilities || []
 
-        expect(sourceUtilities).toHaveLength(177)
+        expect(sourceUtilities).toHaveLength(145)
         expect(sourceUtilities.some((utility) => Number(utility.type) === UtilityType.Static)).toBe(false)
         expect(Object.keys(functions)).toHaveLength(49)
-        expect(utilities).toHaveLength(367)
+        expect(utilities).toHaveLength(335)
         expect(utilities[0]?.order).toBe(utilities.length - 1)
         expect(utilities[utilities.length - 1]?.order).toBe(0)
+        expect(utilities.some((utility) => utility.matchers.some((matcher) => (matcher as { type: string }).type === 'function-prefix'))).toBe(false)
         expect(plan).toEqual(defaultPlan)
     }, 20000)
 
@@ -146,7 +147,7 @@ describe('@master/css-preset defaultPlan', () => {
         const css = createCSS(defaultPlan)
         const text = [
             css.create('inline-flex')?.text,
-            css.create('gradient(#000,#fff)')?.text,
+            css.create('bg:linear-gradient(#000,#fff)')?.text,
             css.create('bg:accent')?.text,
             css.create('grid-cols:3')?.text,
             css.create('lines:3')?.text,
@@ -158,6 +159,7 @@ describe('@master/css-preset defaultPlan', () => {
         expect(text).toContain('grid-template-columns:repeat(3,minmax(0,1fr))')
         expect(text).toContain('-webkit-line-clamp:3')
         expect(text).not.toContain('null')
+        expect(css.create('gradient(#000,#fff)')).toBeUndefined()
     })
 
     it('executes CSS-authored static and enum pattern utilities', () => {

@@ -1,10 +1,10 @@
 export const code1 =`
     <!-- @MARK 30deg --><!-- @MARK 200ms -->
-    <p class="rotate(30deg) animation-duration:200ms">
+    <p class="rotate:30deg animation-duration:200ms">
 `
 export const code2 =`
     <!-- @MARK 30 --><!-- @MARK 200 -->
-    <p class="rotate(30) animation-duration:200">
+    <p class="rotate:30 animation-duration:200">
 `
 
 Some properties have an obvious default unit. Master CSS can infer that unit from the property instead of requiring you to type it every time.
@@ -17,6 +17,6 @@ Some properties have an obvious default unit. Master CSS can infer that unit fro
     {code2}
 </Code>
 
-When a rotation transform is written without a unit, it is interpreted as `deg` instead of invalid `px`.
+When a rotation value is written without a unit, it is interpreted as `deg` instead of invalid `px`.
 
 Similarly, time properties without units are interpreted as `ms`. You can still write explicit values such as `.2s` when seconds read better.

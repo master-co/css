@@ -109,7 +109,7 @@ test.concurrent('box-shadow', async () => {
 test.concurrent('gradient', async () => {
     const target1 = 'black'
     const target2 = 'white'
-    const content = `export default () => <div className='gradient(${target1},${target2})'></div>`
+    const content = `export default () => <div className='bg:linear-gradient(${target1},${target2})'></div>`
     const doc = createDoc('tsx', content)
     const languageService = createLanguageService()
     expect(await languageService.renderSyntaxColors(doc)).toStrictEqual([

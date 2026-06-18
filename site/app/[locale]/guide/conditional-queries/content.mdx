@@ -175,8 +175,8 @@ Use `@landscape` or `@portrait` to apply styles based on device orientation.
 (click) Try opening the popover target to see the zoom in effect.
 <StartingStyleExample />
 ```html
-<!-- @MARK scale(0)@start -->
-<div id="target" popover="auto" class="transition:transform|slow|smooth scale(0)@start">
+<!-- @MARK transform:scale(0)@start -->
+<div id="target" popover="auto" class="transition:transform|slow|smooth transform:scale(0)@start">
     ...
     <button popovertarget="target" popovertargetaction="hide">Close</button>
 </div>
@@ -185,7 +185,7 @@ Use `@landscape` or `@portrait` to apply styles based on device orientation.
 <details>
     <summary>Generated CSS</summary>
     <Class2CSS>
-        {['transition:transform|slow|smooth', 'scale(0)@starting-style']}
+        {['transition:transform|slow|smooth', 'transform:scale(0)@starting-style']}
     </Class2CSS>
 </details>
 

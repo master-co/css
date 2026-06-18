@@ -29,7 +29,7 @@ const migratedRuleExpectations = [
             ["bg:line", "background-color:var(--color-line)"],
             ["bg-clip-border", "background-clip:border-box"],
             ["bg:url('#test')", "background-image:url('#test')"],
-            ["gradient(45deg,#f3ec78,#af4261)", "background-image:linear-gradient(45deg,#f3ec78,#af4261)"],
+            ["bg:linear-gradient(45deg,#f3ec78,#af4261)", "background-image:linear-gradient(45deg,#f3ec78,#af4261)"],
         ]
     },
     {

@@ -137,7 +137,6 @@ export type MasterCSSPlanUtilityMatcher =
     | { type: 'key'; keys: string[] }
     | { type: 'variable'; keys: string[]; segments?: MasterCSSPlanUtilityMatcherValueSegments }
     | { type: 'value'; keys: string[]; segments?: MasterCSSPlanUtilityMatcherValueSegments }
-    | { type: 'function-prefix'; name: string }
     | { type: 'group' }
     | { type: 'css-variable-assignment' }
 
