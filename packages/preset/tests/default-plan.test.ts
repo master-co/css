@@ -8,6 +8,7 @@ import defaultPlanJSON from '../src/default-plan.json' with { type: 'json' }
 import type { MasterCSSPlan } from 'shared/master-css-plan'
 import functions from '../src/functions'
 import keyAliases from '../src/key-aliases'
+import nativeValueNamespaces from '../src/native-value-namespaces'
 import sourceUtilities from '../src/utilities'
 
 const defaultPlan = defaultPlanJSON as unknown as MasterCSSPlan
@@ -97,6 +98,13 @@ const removedAliases = [
     'writing'
 ]
 
+const competitiveNativeValueUtilities = [
+    'container',
+    'font',
+    'stroke',
+    'transform'
+]
+
 function collectMatcherKeys(plan: MasterCSSPlan) {
     const keys = new Set<string>()
     for (const utility of plan.utilities || []) {
@@ -114,10 +122,10 @@ describe('@master/css-preset defaultPlan', () => {
         const plan = createDefaultPlanFromSourceFile(resolve(__dirname, '../src/index.css'))
         const utilities = plan.utilities || []
 
-        expect(sourceUtilities).toHaveLength(286)
+        expect(sourceUtilities).toHaveLength(181)
         expect(sourceUtilities.some((utility) => Number(utility.type) === UtilityType.Static)).toBe(false)
         expect(Object.keys(functions)).toHaveLength(49)
-        expect(utilities).toHaveLength(426)
+        expect(utilities).toHaveLength(321)
         expect(utilities[0]?.order).toBe(utilities.length - 1)
         expect(utilities[utilities.length - 1]?.order).toBe(0)
         expect(plan).toEqual(defaultPlan)
@@ -166,6 +174,11 @@ describe('@master/css-preset defaultPlan', () => {
 
     it('prunes pure native coverage and keeps Master CSS native DX utilities', () => {
         const css = createCSS(defaultPlan)
+        const nativeCSS = createCSS(defaultPlan, undefined, {
+            nativeDeclarationMatcher: ({ property }) => property === 'perspective-origin'
+                || property === 'scroll-margin-inline-start'
+                || property === 'scroll-padding-block-end'
+        })
 
         expect(css.create('float:left')).toBeUndefined()
         expect(css.create('field-sizing:content')).toBeUndefined()
@@ -176,9 +189,27 @@ describe('@master/css-preset defaultPlan', () => {
         expect(css.create('d:block')).toBeUndefined()
         expect(css.create('view-transition-name:hero')).toBeUndefined()
         expect(css.create('vt-name:hero')).toBeUndefined()
-        expect(css.create('perspective-origin:100%|0')?.text).toBe('.perspective-origin\\:100\\%\\|0{perspective-origin:100% 0px}')
-        expect(css.create('scroll-ms:1px')?.text).toBe('.scroll-ms\\:1px{scroll-margin-inline-start:1px}')
-        expect(css.create('scroll-pbe:1px')?.text).toBe('.scroll-pbe\\:1px{scroll-padding-block-end:1px}')
+        expect(nativeCSS.create('perspective-origin:100%|0')?.text).toBe('.perspective-origin\\:100\\%\\|0{perspective-origin:100% 0px}')
+        expect(nativeCSS.create('scroll-ms:1px')?.text).toBe('.scroll-ms\\:1px{scroll-margin-inline-start:1px}')
+        expect(nativeCSS.create('scroll-pbe:1px')?.text).toBe('.scroll-pbe\\:1px{scroll-padding-block-end:1px}')
+    })
+
+    it('moves native value namespace utilities out of matcher definitions', () => {
+        const matcherKeys = collectMatcherKeys(defaultPlan)
+        const utilityIds = new Set((defaultPlan.utilities || []).map((utility) => utility.id))
+        const nativeValueNamespaceProperties = nativeValueNamespaces.flatMap(({ properties }) => properties)
+
+        expect(defaultPlan.nativeValueNamespaces).toEqual(nativeValueNamespaces)
+        expect(new Set(nativeValueNamespaceProperties).size).toBe(nativeValueNamespaceProperties.length)
+        expect(nativeValueNamespaceProperties).toHaveLength(105)
+        for (const property of nativeValueNamespaceProperties) {
+            expect(utilityIds.has(property), property).toBe(false)
+            expect(matcherKeys.has(property), property).toBe(false)
+        }
+        for (const utility of competitiveNativeValueUtilities) {
+            expect(utilityIds.has(utility), utility).toBe(true)
+            expect(matcherKeys.has(utility), utility).toBe(true)
+        }
     })
 
     it('keeps curated key aliases out of utility matcher keys', () => {

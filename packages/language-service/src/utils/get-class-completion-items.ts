@@ -59,6 +59,12 @@ export default function getClassCompletionItems(css: MasterCSS = createDefaultCS
         addPropertyCompletionItem(key, canonicalKey)
     }
 
+    for (const namespace of css.plan.nativeValueNamespaces || []) {
+        for (const property of namespace.properties) {
+            addPropertyCompletionItem(property)
+        }
+    }
+
     addedKeys.forEach(aliasGroup => {
         /**
          * Ambiguous keys are added to the completion list

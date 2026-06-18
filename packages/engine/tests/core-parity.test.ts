@@ -58,6 +58,29 @@ describe.concurrent('default plan utility parity', () => {
             .toEqual(['m:0', 'mx:0', 'my:0', 'mb:0', 'ml:0', 'mr:0', 'mt:0'])
     })
 
+    test('resolves native value namespaces with aliases tokens and validation', () => {
+        const css = createCSS(defaultPlan, undefined, {
+            nativeDeclarationMatcher: ({ property, value }) =>
+                property === 'width' && (value === '1rem' || value === 'var(--container-sm)')
+                || property === 'margin' && value === '1rem'
+                || property === 'margin-top' && value === '1rem'
+                || property === 'padding' && value === '1rem'
+                || property === 'gap' && value === '1rem'
+                || property === 'border-radius' && value === 'var(--radius-md)'
+        })
+
+        expect(css.create('width:16')?.text).toBe('.width\\:16{width:1rem}')
+        expect(css.create('w:16')?.text).toBe('.w\\:16{width:1rem}')
+        expect(css.create('width:sm')?.text).toBe('.width\\:sm{width:var(--container-sm)}')
+        expect(css.create('w:sm')?.text).toBe('.w\\:sm{width:var(--container-sm)}')
+        expect(css.create('margin:16')?.text).toBe('.margin\\:16{margin:1rem}')
+        expect(css.create('mt:16')?.text).toBe('.mt\\:16{margin-top:1rem}')
+        expect(css.create('padding:16')?.text).toBe('.padding\\:16{padding:1rem}')
+        expect(css.create('gap:16')?.text).toBe('.gap\\:16{gap:1rem}')
+        expect(css.create('r:md')?.text).toBe('.r\\:md{border-radius:var(--radius-md)}')
+        expect(css.create('width:block')).toBeUndefined()
+    })
+
     test('preserves radius side and corner aliases through key aliases', () => {
         const css = createDefaultCSS()
 
@@ -303,11 +326,15 @@ describe.concurrent('default plan utility parity', () => {
             'opacity:0.7',
             'display:block',
             'view-transition-name:hero',
-            'z-index:10'
+            'z-index:10',
+            'margin:1rem',
+            'margin-top:1rem',
+            'scroll-margin-block-start:0.25rem',
+            'color:var(--color-red-60)'
         ])
     })
 
-    test('classifies fallback native shorthand declarations for priority sorting', () => {
+    test('classifies native shorthand declarations for priority sorting', () => {
         const css = createCSS(defaultPlan, undefined, {
             nativeDeclarationMatcher: ({ property }) => property === 'margin' || property === 'margin-left'
         })

@@ -123,6 +123,14 @@ export interface MasterCSSPlanFunction {
 export type MasterCSSPlanFunctions = Record<string, MasterCSSPlanFunction>
 export type MasterCSSPlanKeyAliases = Record<string, string>
 
+export interface MasterCSSPlanNativeValueNamespace {
+    properties: string[]
+    variableAliasRefs: string[]
+    unit?: string
+}
+
+export type MasterCSSPlanNativeValueNamespaces = MasterCSSPlanNativeValueNamespace[]
+
 export type MasterCSSPlanUtilityMatcher =
     | { type: 'static'; name: string }
     | { type: 'key'; keys: string[] }
@@ -205,5 +213,6 @@ export interface MasterCSSPlan {
     utilityBuckets?: MasterCSSPlanUtilityBuckets
     functions?: MasterCSSPlanFunctions
     keyAliases?: MasterCSSPlanKeyAliases
+    nativeValueNamespaces?: MasterCSSPlanNativeValueNamespaces
     debug?: Record<string, unknown>
 }

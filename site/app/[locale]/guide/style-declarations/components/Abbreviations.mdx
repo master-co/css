@@ -21,6 +21,8 @@ Property names can still be long after you learn the syntax. Master CSS keeps a 
 
 Use full property names for rare CSS properties. Valid native declarations can be written directly without waiting for a built-in abbreviation.
 
+Retained abbreviations canonicalize to full property keys, so the same token and unit behavior works whether you write `w:32` or `width:32`.
+
 export const code3 = `
     <!-- @MARK width:32 --><!-- @MARK height:32 --><!-- @MARK border-radius:5 --><!-- @MARK z-index:10 --><!-- @MARK margin-top:1 --><!-- @MARK margin-bottom:1 --><!-- @MARK padding-left:1 --><!-- @MARK padding-right:1 -->
     <div class="width:32 height:32 border-radius:5 z-index:10 margin-top:1 margin-bottom:1 padding-left:1 padding-right:1">

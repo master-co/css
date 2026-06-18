@@ -19,6 +19,8 @@ export type {
     MasterCSSOptions,
     MasterCSSPlan,
     MasterCSSPlanKeyAliases,
+    MasterCSSPlanNativeValueNamespace,
+    MasterCSSPlanNativeValueNamespaces,
     MasterCSSPlanSettings,
     MasterCSSPlanUtility,
     MasterCSSPlanUtilityLayerName,

@@ -31,6 +31,14 @@ function getNumericSortValue(variable: Variable, rootSize: number) {
     return typeof variable.value === 'number' ? variable.value : 0
 }
 
+function getVariableKeyByNamespace(variableName: string, namespace: string) {
+    const negative = variableName.startsWith('-')
+    const positiveName = negative ? variableName.slice(1) : variableName
+    if (positiveName !== namespace && !positiveName.startsWith(namespace + '-')) return
+    const key = positiveName === namespace ? '' : positiveName.slice(namespace.length + 1)
+    return negative ? '-' + key : key
+}
+
 export default function getValueCompletionItems(css: MasterCSS = createDefaultCSS(), ruleKey: string, valuePrefix = ''): CompletionItem[] {
     const completionItems: CompletionItem[] = []
     const canonicalRuleKey = css.plan.keyAliases?.[ruleKey] || ruleKey
@@ -89,6 +97,35 @@ export default function getValueCompletionItems(css: MasterCSS = createDefaultCS
         }
         return completionItem
     }
+    const addScopedVariableCompletionItem = (variable: Variable, variableName: string) => {
+        if (completionItems.find(({ label }) => label === variableName)) return
+        const completionItem = generateVariableCompletionItem(variable, { scoped: true })
+        if (completionItem) {
+            completionItem.label = variableName
+            completionItem.sortText = SCOPED_VARIABLE_PRIORITY + (completionItem.sortText || variableName)
+            completionItem.detail = '(scope) ' + completionItem.detail
+            completionItems.push(completionItem)
+        }
+        const negativeVariableName = '-' + variableName
+        if (
+            valuePrefix.startsWith('-')
+            && variableName[0] !== '-'
+            && variable.type === 'number'
+            && !completionItems.find(({ label }) => label === negativeVariableName)
+        ) {
+            const negativeCompletionItem = generateVariableCompletionItem(variable, {
+                appliedValue: negativeVariableName,
+                label: negativeVariableName,
+                negative: true,
+                scoped: true
+            })
+            if (negativeCompletionItem) {
+                negativeCompletionItem.sortText = SCOPED_VARIABLE_PRIORITY + (negativeCompletionItem.sortText || negativeVariableName)
+                negativeCompletionItem.detail = '(scope) ' + negativeCompletionItem.detail
+                completionItems.push(negativeCompletionItem)
+            }
+        }
+    }
 
     for (const eachDefinedUtility of css.definedUtilities) {
         /**
@@ -102,33 +139,7 @@ export default function getValueCompletionItems(css: MasterCSS = createDefaultCS
             || eachDefinedUtility.aliasGroups?.includes(canonicalRuleKey)
         ) {
             eachDefinedUtility.variables?.forEach((variable, variableName) => {
-                if (completionItems.find(({ label }) => label === variableName)) return
-                const completionItem = generateVariableCompletionItem(variable, { scoped: true })
-                if (completionItem) {
-                    completionItem.label = variableName
-                    completionItem.sortText = SCOPED_VARIABLE_PRIORITY + (completionItem.sortText || variableName)
-                    completionItem.detail = '(scope) ' + completionItem.detail
-                    completionItems.push(completionItem)
-                }
-                const negativeVariableName = '-' + variableName
-                if (
-                    valuePrefix.startsWith('-')
-                    && variableName[0] !== '-'
-                    && variable.type === 'number'
-                    && !completionItems.find(({ label }) => label === negativeVariableName)
-                ) {
-                    const negativeCompletionItem = generateVariableCompletionItem(variable, {
-                        appliedValue: negativeVariableName,
-                        label: negativeVariableName,
-                        negative: true,
-                        scoped: true
-                    })
-                    if (negativeCompletionItem) {
-                        negativeCompletionItem.sortText = SCOPED_VARIABLE_PRIORITY + (negativeCompletionItem.sortText || negativeVariableName)
-                        negativeCompletionItem.detail = '(scope) ' + negativeCompletionItem.detail
-                        completionItems.push(negativeCompletionItem)
-                    }
-                }
+                addScopedVariableCompletionItem(variable, variableName)
             })
         }
 
@@ -164,6 +175,21 @@ export default function getValueCompletionItems(css: MasterCSS = createDefaultCS
                     detail: isNative ? eachDefinedUtility.id + ': ' + value : value
                 })
             }
+        }
+    }
+
+    for (const namespace of css.plan.nativeValueNamespaces || []) {
+        if (!namespace.properties.includes(canonicalRuleKey)) continue
+        const usedKeys = new Set<string>()
+        for (const ref of namespace.variableAliasRefs || []) {
+            const variableNamespace = ref[0] === '=' || ref[0] === '~' ? ref.slice(1) : ''
+            if (!variableNamespace) continue
+            css.variables.forEach((variable) => {
+                const variableName = getVariableKeyByNamespace(variable.name, variableNamespace)
+                if (variableName === undefined || usedKeys.has(variableName)) return
+                usedKeys.add(variableName)
+                addScopedVariableCompletionItem(variable, variableName)
+            })
         }
     }
 

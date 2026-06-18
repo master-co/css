@@ -259,27 +259,7 @@ const utilities = [
             }
         ]
     },
-    {
-        "id": "border-radius",
-        "name": "border-radius",
-        "type": UtilityType.NativeShorthand,
-        "unit": "rem",
-        "variableAliasRefs": [
-            "~radius"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "border-radius"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "border-radius"
-                ]
-            }
-        ]
-    },
+
     {
         "id": "border-right",
         "name": "border-right",
@@ -444,27 +424,7 @@ const utilities = [
             }
         ]
     },
-    {
-        "id": "gap",
-        "name": "gap",
-        "type": UtilityType.NativeShorthand,
-        "unit": "rem",
-        "variableAliasRefs": [
-            "~spacing"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "gap"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "gap"
-                ]
-            }
-        ]
-    },
+
     {
         "id": "grid-column",
         "name": "grid-column",
@@ -483,132 +443,12 @@ const utilities = [
             }
         ]
     },
-    {
-        "id": "inset",
-        "name": "inset",
-        "type": UtilityType.NativeShorthand,
-        "unit": "rem",
-        "variableAliasRefs": [
-            "~spacing"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "inset"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "inset"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "inset-block",
-        "name": "inset-block",
-        "type": UtilityType.NativeShorthand,
-        "unit": "rem",
-        "variableAliasRefs": [
-            "~spacing"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "inset-block"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "inset-block"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "inset-inline",
-        "name": "inset-inline",
-        "type": UtilityType.NativeShorthand,
-        "unit": "rem",
-        "variableAliasRefs": [
-            "~spacing"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "inset-inline"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "inset-inline"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "margin",
-        "name": "margin",
-        "type": UtilityType.NativeShorthand,
-        "unit": "rem",
-        "variableAliasRefs": [
-            "~spacing"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "margin"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "margin"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "margin-block",
-        "name": "margin-block",
-        "type": UtilityType.NativeShorthand,
-        "unit": "rem",
-        "variableAliasRefs": [
-            "~spacing"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "margin-block"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "margin-block"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "margin-inline",
-        "name": "margin-inline",
-        "type": UtilityType.NativeShorthand,
-        "unit": "rem",
-        "variableAliasRefs": [
-            "~spacing"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "margin-inline"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "margin-inline"
-                ]
-            }
-        ]
-    },
+
+
+
+
+
+
     {
         "id": "outline",
         "name": "outline",
@@ -632,111 +472,11 @@ const utilities = [
             }
         ]
     },
-    {
-        "id": "padding",
-        "name": "padding",
-        "type": UtilityType.NativeShorthand,
-        "unit": "rem",
-        "variableAliasRefs": [
-            "~spacing"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "padding"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "padding"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "padding-block",
-        "name": "padding-block",
-        "type": UtilityType.NativeShorthand,
-        "unit": "rem",
-        "variableAliasRefs": [
-            "~spacing"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "padding-block"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "padding-block"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "padding-inline",
-        "name": "padding-inline",
-        "type": UtilityType.NativeShorthand,
-        "unit": "rem",
-        "variableAliasRefs": [
-            "~spacing"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "padding-inline"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "padding-inline"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "scroll-margin",
-        "name": "scroll-margin",
-        "type": UtilityType.NativeShorthand,
-        "unit": "rem",
-        "variableAliasRefs": [
-            "~spacing"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "scroll-margin"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "scroll-margin"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "scroll-padding",
-        "name": "scroll-padding",
-        "type": UtilityType.NativeShorthand,
-        "unit": "rem",
-        "variableAliasRefs": [
-            "~spacing"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "scroll-padding"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "scroll-padding"
-                ]
-            }
-        ]
-    },
+
+
+
+
+
     {
         "id": "text-decoration",
         "name": "text-decoration",
@@ -814,27 +554,7 @@ const utilities = [
             }
         ]
     },
-    {
-        "id": "transition",
-        "name": "transition",
-        "type": UtilityType.NativeShorthand,
-        "variableAliasRefs": [
-            "~duration",
-            "~easing"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "transition"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "transition"
-                ]
-            }
-        ]
-    },
+
     {
         "id": "border-block-width",
         "name": "border-block-width",
@@ -1844,26 +1564,7 @@ const utilities = [
             }
         ]
     },
-    {
-        "id": "accent-color",
-        "name": "accent-color",
-        "type": UtilityType.Native,
-        "variableAliasRefs": [
-            "~color"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "accent-color"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "accent-color"
-                ]
-            }
-        ]
-    },
+
     {
         "id": "animation-delay",
         "name": "animation-delay",
@@ -1882,27 +1583,7 @@ const utilities = [
             }
         ]
     },
-    {
-        "id": "animation-duration",
-        "name": "animation-duration",
-        "type": UtilityType.Native,
-        "unit": "ms",
-        "variableAliasRefs": [
-            "~duration"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "animation-duration"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "animation-duration"
-                ]
-            }
-        ]
-    },
+
     {
         "id": "animation-name",
         "name": "animation-name",
@@ -1921,26 +1602,7 @@ const utilities = [
             }
         ]
     },
-    {
-        "id": "animation-timing-function",
-        "name": "animation-timing-function",
-        "type": UtilityType.Native,
-        "variableAliasRefs": [
-            "~easing"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "animation-timing-function"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "animation-timing-function"
-                ]
-            }
-        ]
-    },
+
     {
         "id": "backdrop-filter",
         "name": "backdrop-filter",
@@ -2072,69 +1734,9 @@ const utilities = [
             }
         ]
     },
-    {
-        "id": "block-size",
-        "name": "block-size",
-        "type": UtilityType.Native,
-        "unit": "rem",
-        "variableAliasRefs": [
-            "~container"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "block-size"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "block-size"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "border-bottom-left-radius",
-        "name": "border-bottom-left-radius",
-        "type": UtilityType.Native,
-        "unit": "rem",
-        "variableAliasRefs": [
-            "~radius"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "border-bottom-left-radius"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "border-bottom-left-radius"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "border-bottom-right-radius",
-        "name": "border-bottom-right-radius",
-        "type": UtilityType.Native,
-        "unit": "rem",
-        "variableAliasRefs": [
-            "~radius"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "border-bottom-right-radius"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "border-bottom-right-radius"
-                ]
-            }
-        ]
-    },
+
+
+
     {
         "id": "border-bottom-style",
         "name": "border-bottom-style",
@@ -2214,48 +1816,8 @@ const utilities = [
             }
         ]
     },
-    {
-        "id": "border-end-end-radius",
-        "name": "border-end-end-radius",
-        "type": UtilityType.Native,
-        "unit": "rem",
-        "variableAliasRefs": [
-            "~radius"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "border-end-end-radius"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "border-end-end-radius"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "border-end-start-radius",
-        "name": "border-end-start-radius",
-        "type": UtilityType.Native,
-        "unit": "rem",
-        "variableAliasRefs": [
-            "~radius"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "border-end-start-radius"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "border-end-start-radius"
-                ]
-            }
-        ]
-    },
+
+
     {
         "id": "border-image-repeat",
         "name": "border-image-repeat",
@@ -2379,111 +1941,11 @@ const utilities = [
             }
         ]
     },
-    {
-        "id": "border-spacing",
-        "name": "border-spacing",
-        "type": UtilityType.Native,
-        "unit": "rem",
-        "variableAliasRefs": [
-            "~spacing"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "border-spacing"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "border-spacing"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "border-start-end-radius",
-        "name": "border-start-end-radius",
-        "type": UtilityType.Native,
-        "unit": "rem",
-        "variableAliasRefs": [
-            "~radius"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "border-start-end-radius"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "border-start-end-radius"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "border-start-start-radius",
-        "name": "border-start-start-radius",
-        "type": UtilityType.Native,
-        "unit": "rem",
-        "variableAliasRefs": [
-            "~radius"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "border-start-start-radius"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "border-start-start-radius"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "border-top-left-radius",
-        "name": "border-top-left-radius",
-        "type": UtilityType.Native,
-        "unit": "rem",
-        "variableAliasRefs": [
-            "~radius"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "border-top-left-radius"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "border-top-left-radius"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "border-top-right-radius",
-        "name": "border-top-right-radius",
-        "type": UtilityType.Native,
-        "unit": "rem",
-        "variableAliasRefs": [
-            "~radius"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "border-top-right-radius"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "border-top-right-radius"
-                ]
-            }
-        ]
-    },
+
+
+
+
+
     {
         "id": "border-top-style",
         "name": "border-top-style",
@@ -2528,27 +1990,7 @@ const utilities = [
             }
         ]
     },
-    {
-        "id": "bottom",
-        "name": "bottom",
-        "type": UtilityType.Native,
-        "unit": "rem",
-        "variableAliasRefs": [
-            "~spacing"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "bottom"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "bottom"
-                ]
-            }
-        ]
-    },
+
     {
         "id": "box-decoration-break",
         "name": "box-decoration-break",
@@ -2569,134 +2011,12 @@ const utilities = [
             }
         ]
     },
-    {
-        "id": "box-shadow",
-        "name": "box-shadow",
-        "type": UtilityType.Native,
-        "unit": "rem",
-        "variableAliasRefs": [
-            "~shadow",
-            "~color"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "box-shadow"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "box-shadow"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "caret-color",
-        "name": "caret-color",
-        "type": UtilityType.Native,
-        "variableAliasRefs": [
-            "~color-text",
-            "~color"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "caret-color"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "caret-color"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "color",
-        "name": "color",
-        "type": UtilityType.Native,
-        "variableAliasRefs": [
-            "=color",
-            "~color-text",
-            "~color"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "color"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "color"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "column-gap",
-        "name": "column-gap",
-        "type": UtilityType.Native,
-        "unit": "rem",
-        "variableAliasRefs": [
-            "~spacing"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "column-gap"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "column-gap"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "contain-intrinsic-block-size",
-        "name": "contain-intrinsic-block-size",
-        "type": UtilityType.Native,
-        "unit": "rem",
-        "variableAliasRefs": [
-            "~container"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "contain-intrinsic-block-size"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "contain-intrinsic-block-size"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "contain-intrinsic-inline-size",
-        "name": "contain-intrinsic-inline-size",
-        "type": UtilityType.Native,
-        "unit": "rem",
-        "variableAliasRefs": [
-            "~container"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "contain-intrinsic-inline-size"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "contain-intrinsic-inline-size"
-                ]
-            }
-        ]
-    },
+
+
+
+
+
+
     {
         "id": "container-type",
         "name": "container-type",
@@ -2731,86 +2051,10 @@ const utilities = [
             }
         ]
     },
-    {
-        "id": "cx",
-        "name": "cx",
-        "type": UtilityType.Native,
-        "variableAliasRefs": [
-            "~spacing"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "cx"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "cx"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "cy",
-        "name": "cy",
-        "type": UtilityType.Native,
-        "variableAliasRefs": [
-            "~spacing"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "cy"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "cy"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "fill",
-        "name": "fill",
-        "type": UtilityType.Native,
-        "variableAliasRefs": [
-            "~color"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "fill"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "fill"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "filter",
-        "name": "filter",
-        "type": UtilityType.Native,
-        "variableAliasRefs": [
-            "~color"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "filter"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "filter"
-                ]
-            }
-        ]
-    },
+
+
+
+
     {
         "id": "flex-basis",
         "name": "flex-basis",
@@ -2945,26 +2189,7 @@ const utilities = [
             }
         ]
     },
-    {
-        "id": "font-feature-settings",
-        "name": "font-feature-settings",
-        "type": UtilityType.Native,
-        "variableAliasRefs": [
-            "=font-feature"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "font-feature-settings"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "font-feature-settings"
-                ]
-            }
-        ]
-    },
+
     {
         "id": "font-style",
         "name": "font-style",
@@ -3146,194 +2371,15 @@ const utilities = [
             }
         ]
     },
-    {
-        "id": "height",
-        "name": "height",
-        "type": UtilityType.Native,
-        "unit": "rem",
-        "variableAliasRefs": [
-            "~container"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "height"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "height"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "inline-size",
-        "name": "inline-size",
-        "type": UtilityType.Native,
-        "unit": "rem",
-        "variableAliasRefs": [
-            "~container"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "inline-size"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "inline-size"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "inset-block-end",
-        "name": "inset-block-end",
-        "type": UtilityType.Native,
-        "unit": "rem",
-        "variableAliasRefs": [
-            "~spacing"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "inset-block-end"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "inset-block-end"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "inset-block-start",
-        "name": "inset-block-start",
-        "type": UtilityType.Native,
-        "unit": "rem",
-        "variableAliasRefs": [
-            "~spacing"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "inset-block-start"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "inset-block-start"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "inset-inline-end",
-        "name": "inset-inline-end",
-        "type": UtilityType.Native,
-        "unit": "rem",
-        "variableAliasRefs": [
-            "~spacing"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "inset-inline-end"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "inset-inline-end"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "inset-inline-start",
-        "name": "inset-inline-start",
-        "type": UtilityType.Native,
-        "unit": "rem",
-        "variableAliasRefs": [
-            "~spacing"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "inset-inline-start"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "inset-inline-start"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "left",
-        "name": "left",
-        "type": UtilityType.Native,
-        "unit": "rem",
-        "variableAliasRefs": [
-            "~spacing"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "left"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "left"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "letter-spacing",
-        "name": "letter-spacing",
-        "type": UtilityType.Native,
-        "unit": "em",
-        "variableAliasRefs": [
-            "~tracking"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "letter-spacing"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "letter-spacing"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "line-height",
-        "name": "line-height",
-        "type": UtilityType.Native,
-        "variableAliasRefs": [
-            "~leading"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "line-height"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "line-height"
-                ]
-            }
-        ]
-    },
+
+
+
+
+
+
+
+
+
     {
         "id": "list-style-position",
         "name": "list-style-position",
@@ -3400,174 +2446,14 @@ const utilities = [
             }
         ]
     },
-    {
-        "id": "margin-block-end",
-        "name": "margin-block-end",
-        "type": UtilityType.Native,
-        "unit": "rem",
-        "variableAliasRefs": [
-            "~spacing"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "margin-block-end"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "margin-block-end"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "margin-block-start",
-        "name": "margin-block-start",
-        "type": UtilityType.Native,
-        "unit": "rem",
-        "variableAliasRefs": [
-            "~spacing"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "margin-block-start"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "margin-block-start"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "margin-bottom",
-        "name": "margin-bottom",
-        "type": UtilityType.Native,
-        "unit": "rem",
-        "variableAliasRefs": [
-            "~spacing"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "margin-bottom"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "margin-bottom"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "margin-inline-end",
-        "name": "margin-inline-end",
-        "type": UtilityType.Native,
-        "unit": "rem",
-        "variableAliasRefs": [
-            "~spacing"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "margin-inline-end"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "margin-inline-end"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "margin-inline-start",
-        "name": "margin-inline-start",
-        "type": UtilityType.Native,
-        "unit": "rem",
-        "variableAliasRefs": [
-            "~spacing"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "margin-inline-start"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "margin-inline-start"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "margin-left",
-        "name": "margin-left",
-        "type": UtilityType.Native,
-        "unit": "rem",
-        "variableAliasRefs": [
-            "~spacing"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "margin-left"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "margin-left"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "margin-right",
-        "name": "margin-right",
-        "type": UtilityType.Native,
-        "unit": "rem",
-        "variableAliasRefs": [
-            "~spacing"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "margin-right"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "margin-right"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "margin-top",
-        "name": "margin-top",
-        "type": UtilityType.Native,
-        "unit": "rem",
-        "variableAliasRefs": [
-            "~spacing"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "margin-top"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "margin-top"
-                ]
-            }
-        ]
-    },
+
+
+
+
+
+
+
+
     {
         "id": "mask-image",
         "name": "mask-image",
@@ -3588,174 +2474,14 @@ const utilities = [
             }
         ]
     },
-    {
-        "id": "max-block-size",
-        "name": "max-block-size",
-        "type": UtilityType.Native,
-        "unit": "rem",
-        "variableAliasRefs": [
-            "~container"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "max-block-size"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "max-block-size"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "max-height",
-        "name": "max-height",
-        "type": UtilityType.Native,
-        "unit": "rem",
-        "variableAliasRefs": [
-            "~container"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "max-height"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "max-height"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "max-inline-size",
-        "name": "max-inline-size",
-        "type": UtilityType.Native,
-        "unit": "rem",
-        "variableAliasRefs": [
-            "~container"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "max-inline-size"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "max-inline-size"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "max-width",
-        "name": "max-width",
-        "type": UtilityType.Native,
-        "unit": "rem",
-        "variableAliasRefs": [
-            "~container"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "max-width"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "max-width"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "min-block-size",
-        "name": "min-block-size",
-        "type": UtilityType.Native,
-        "unit": "rem",
-        "variableAliasRefs": [
-            "~container"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "min-block-size"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "min-block-size"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "min-height",
-        "name": "min-height",
-        "type": UtilityType.Native,
-        "unit": "rem",
-        "variableAliasRefs": [
-            "~container"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "min-height"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "min-height"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "min-inline-size",
-        "name": "min-inline-size",
-        "type": UtilityType.Native,
-        "unit": "rem",
-        "variableAliasRefs": [
-            "~container"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "min-inline-size"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "min-inline-size"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "min-width",
-        "name": "min-width",
-        "type": UtilityType.Native,
-        "unit": "rem",
-        "variableAliasRefs": [
-            "~container"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "min-width"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "min-width"
-                ]
-            }
-        ]
-    },
+
+
+
+
+
+
+
+
     {
         "id": "object-fit",
         "name": "object-fit",
@@ -3827,47 +2553,8 @@ const utilities = [
             }
         ]
     },
-    {
-        "id": "order",
-        "name": "order",
-        "type": UtilityType.Native,
-        "variableAliasRefs": [
-            "=order"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "order"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "order"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "outline-offset",
-        "name": "outline-offset",
-        "type": UtilityType.Native,
-        "unit": "rem",
-        "variableAliasRefs": [
-            "~spacing"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "outline-offset"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "outline-offset"
-                ]
-            }
-        ]
-    },
+
+
     {
         "id": "outline-style",
         "name": "outline-style",
@@ -3910,195 +2597,15 @@ const utilities = [
             }
         ]
     },
-    {
-        "id": "padding-block-end",
-        "name": "padding-block-end",
-        "type": UtilityType.Native,
-        "unit": "rem",
-        "variableAliasRefs": [
-            "~spacing"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "padding-block-end"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "padding-block-end"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "padding-block-start",
-        "name": "padding-block-start",
-        "type": UtilityType.Native,
-        "unit": "rem",
-        "variableAliasRefs": [
-            "~spacing"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "padding-block-start"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "padding-block-start"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "padding-bottom",
-        "name": "padding-bottom",
-        "type": UtilityType.Native,
-        "unit": "rem",
-        "variableAliasRefs": [
-            "~spacing"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "padding-bottom"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "padding-bottom"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "padding-inline-end",
-        "name": "padding-inline-end",
-        "type": UtilityType.Native,
-        "unit": "rem",
-        "variableAliasRefs": [
-            "~spacing"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "padding-inline-end"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "padding-inline-end"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "padding-inline-start",
-        "name": "padding-inline-start",
-        "type": UtilityType.Native,
-        "unit": "rem",
-        "variableAliasRefs": [
-            "~spacing"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "padding-inline-start"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "padding-inline-start"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "padding-left",
-        "name": "padding-left",
-        "type": UtilityType.Native,
-        "unit": "rem",
-        "variableAliasRefs": [
-            "~spacing"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "padding-left"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "padding-left"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "padding-right",
-        "name": "padding-right",
-        "type": UtilityType.Native,
-        "unit": "rem",
-        "variableAliasRefs": [
-            "~spacing"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "padding-right"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "padding-right"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "padding-top",
-        "name": "padding-top",
-        "type": UtilityType.Native,
-        "unit": "rem",
-        "variableAliasRefs": [
-            "~spacing"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "padding-top"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "padding-top"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "right",
-        "name": "right",
-        "type": UtilityType.Native,
-        "unit": "rem",
-        "variableAliasRefs": [
-            "~spacing"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "right"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "right"
-                ]
-            }
-        ]
-    },
+
+
+
+
+
+
+
+
+
     {
         "id": "rotate",
         "name": "rotate",
@@ -4117,195 +2624,15 @@ const utilities = [
             }
         ]
     },
-    {
-        "id": "row-gap",
-        "name": "row-gap",
-        "type": UtilityType.Native,
-        "unit": "rem",
-        "variableAliasRefs": [
-            "~spacing"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "row-gap"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "row-gap"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "scroll-margin-bottom",
-        "name": "scroll-margin-bottom",
-        "type": UtilityType.Native,
-        "unit": "rem",
-        "variableAliasRefs": [
-            "~spacing"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "scroll-margin-bottom"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "scroll-margin-bottom"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "scroll-margin-left",
-        "name": "scroll-margin-left",
-        "type": UtilityType.Native,
-        "unit": "rem",
-        "variableAliasRefs": [
-            "~spacing"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "scroll-margin-left"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "scroll-margin-left"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "scroll-margin-right",
-        "name": "scroll-margin-right",
-        "type": UtilityType.Native,
-        "unit": "rem",
-        "variableAliasRefs": [
-            "~spacing"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "scroll-margin-right"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "scroll-margin-right"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "scroll-margin-top",
-        "name": "scroll-margin-top",
-        "type": UtilityType.Native,
-        "unit": "rem",
-        "variableAliasRefs": [
-            "~spacing"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "scroll-margin-top"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "scroll-margin-top"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "scroll-padding-bottom",
-        "name": "scroll-padding-bottom",
-        "type": UtilityType.Native,
-        "unit": "rem",
-        "variableAliasRefs": [
-            "~spacing"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "scroll-padding-bottom"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "scroll-padding-bottom"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "scroll-padding-left",
-        "name": "scroll-padding-left",
-        "type": UtilityType.Native,
-        "unit": "rem",
-        "variableAliasRefs": [
-            "~spacing"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "scroll-padding-left"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "scroll-padding-left"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "scroll-padding-right",
-        "name": "scroll-padding-right",
-        "type": UtilityType.Native,
-        "unit": "rem",
-        "variableAliasRefs": [
-            "~spacing"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "scroll-padding-right"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "scroll-padding-right"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "scroll-padding-top",
-        "name": "scroll-padding-top",
-        "type": UtilityType.Native,
-        "unit": "rem",
-        "variableAliasRefs": [
-            "~spacing"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "scroll-padding-top"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "scroll-padding-top"
-                ]
-            }
-        ]
-    },
+
+
+
+
+
+
+
+
+
     {
         "id": "scroll-snap-align",
         "name": "scroll-snap-align",
@@ -4430,26 +2757,7 @@ const utilities = [
             }
         ]
     },
-    {
-        "id": "stroke-dashoffset",
-        "name": "stroke-dashoffset",
-        "type": UtilityType.Native,
-        "variableAliasRefs": [
-            "~spacing"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "stroke-dashoffset"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "stroke-dashoffset"
-                ]
-            }
-        ]
-    },
+
     {
         "id": "text-align",
         "name": "text-align",
@@ -4678,27 +2986,7 @@ const utilities = [
             }
         ]
     },
-    {
-        "id": "text-shadow",
-        "name": "text-shadow",
-        "type": UtilityType.Native,
-        "unit": "rem",
-        "variableAliasRefs": [
-            "~color"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "text-shadow"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "text-shadow"
-                ]
-            }
-        ]
-    },
+
     {
         "id": "text-stroke",
         "name": "text-stroke",
@@ -4821,27 +3109,7 @@ const utilities = [
             }
         ]
     },
-    {
-        "id": "top",
-        "name": "top",
-        "type": UtilityType.Native,
-        "unit": "rem",
-        "variableAliasRefs": [
-            "~spacing"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "top"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "top"
-                ]
-            }
-        ]
-    },
+
     {
         "id": "transform",
         "name": "transform",
@@ -4913,68 +3181,9 @@ const utilities = [
             }
         ]
     },
-    {
-        "id": "transition-duration",
-        "name": "transition-duration",
-        "type": UtilityType.Native,
-        "unit": "ms",
-        "variableAliasRefs": [
-            "~duration"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "transition-duration"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "transition-duration"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "transition-timing-function",
-        "name": "transition-timing-function",
-        "type": UtilityType.Native,
-        "variableAliasRefs": [
-            "~easing"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "transition-timing-function"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "transition-timing-function"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "translate",
-        "name": "translate",
-        "type": UtilityType.Native,
-        "unit": "rem",
-        "variableAliasRefs": [
-            "~spacing"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "translate"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "translate"
-                ]
-            }
-        ]
-    },
+
+
+
     {
         "id": "user-drag",
         "name": "user-drag",
@@ -5015,27 +3224,7 @@ const utilities = [
             }
         ]
     },
-    {
-        "id": "width",
-        "name": "width",
-        "type": UtilityType.Native,
-        "unit": "rem",
-        "variableAliasRefs": [
-            "~container"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "width"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "width"
-                ]
-            }
-        ]
-    },
+
     {
         "id": "word-spacing",
         "name": "word-spacing",
@@ -5054,46 +3243,8 @@ const utilities = [
             }
         ]
     },
-    {
-        "id": "x",
-        "name": "x",
-        "type": UtilityType.Native,
-        "variableAliasRefs": [
-            "~spacing"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "x"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "x"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "y",
-        "name": "y",
-        "type": UtilityType.Native,
-        "variableAliasRefs": [
-            "~spacing"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "y"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "y"
-                ]
-            }
-        ]
-    },
+
+
     {
         "id": "background-image",
         "name": "background-image",
@@ -6230,258 +4381,18 @@ const utilities = [
             }
         ]
     },
-    {
-        "id": "scroll-margin-block",
-        "name": "scroll-margin-block",
-        "type": UtilityType.Native,
-        "unit": "rem",
-        "variableAliasRefs": [
-            "~spacing"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "scroll-margin-block"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "scroll-margin-block"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "scroll-margin-block-end",
-        "name": "scroll-margin-block-end",
-        "type": UtilityType.Native,
-        "unit": "rem",
-        "variableAliasRefs": [
-            "~spacing"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "scroll-margin-block-end"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "scroll-margin-block-end"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "scroll-margin-block-start",
-        "name": "scroll-margin-block-start",
-        "type": UtilityType.Native,
-        "unit": "rem",
-        "variableAliasRefs": [
-            "~spacing"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "scroll-margin-block-start"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "scroll-margin-block-start"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "scroll-margin-inline",
-        "name": "scroll-margin-inline",
-        "type": UtilityType.Native,
-        "unit": "rem",
-        "variableAliasRefs": [
-            "~spacing"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "scroll-margin-inline"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "scroll-margin-inline"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "scroll-margin-inline-end",
-        "name": "scroll-margin-inline-end",
-        "type": UtilityType.Native,
-        "unit": "rem",
-        "variableAliasRefs": [
-            "~spacing"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "scroll-margin-inline-end"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "scroll-margin-inline-end"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "scroll-margin-inline-start",
-        "name": "scroll-margin-inline-start",
-        "type": UtilityType.Native,
-        "unit": "rem",
-        "variableAliasRefs": [
-            "~spacing"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "scroll-margin-inline-start"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "scroll-margin-inline-start"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "scroll-padding-block",
-        "name": "scroll-padding-block",
-        "type": UtilityType.Native,
-        "unit": "rem",
-        "variableAliasRefs": [
-            "~spacing"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "scroll-padding-block"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "scroll-padding-block"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "scroll-padding-block-end",
-        "name": "scroll-padding-block-end",
-        "type": UtilityType.Native,
-        "unit": "rem",
-        "variableAliasRefs": [
-            "~spacing"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "scroll-padding-block-end"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "scroll-padding-block-end"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "scroll-padding-block-start",
-        "name": "scroll-padding-block-start",
-        "type": UtilityType.Native,
-        "unit": "rem",
-        "variableAliasRefs": [
-            "~spacing"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "scroll-padding-block-start"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "scroll-padding-block-start"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "scroll-padding-inline",
-        "name": "scroll-padding-inline",
-        "type": UtilityType.Native,
-        "unit": "rem",
-        "variableAliasRefs": [
-            "~spacing"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "scroll-padding-inline"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "scroll-padding-inline"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "scroll-padding-inline-end",
-        "name": "scroll-padding-inline-end",
-        "type": UtilityType.Native,
-        "unit": "rem",
-        "variableAliasRefs": [
-            "~spacing"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "scroll-padding-inline-end"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "scroll-padding-inline-end"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "scroll-padding-inline-start",
-        "name": "scroll-padding-inline-start",
-        "type": UtilityType.Native,
-        "unit": "rem",
-        "variableAliasRefs": [
-            "~spacing"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "scroll-padding-inline-start"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "scroll-padding-inline-start"
-                ]
-            }
-        ]
-    },
+
+
+
+
+
+
+
+
+
+
+
+
     {
         "id": "blur()",
         "name": "blur()",

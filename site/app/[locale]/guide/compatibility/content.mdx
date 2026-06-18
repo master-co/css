@@ -18,7 +18,7 @@ The Master CSS engine does not polyfill every CSS feature. It generates CSS from
 
 For example, `bg:danger` depends on normal `background-color` support, while `backdrop-filter:blur(16)` depends on `backdrop-filter` support. Modern features should be checked in [Can I use](https://caniuse.com/) or MDN before relying on them in production.
 
-Property-like classes can also fall back to native CSS declarations. In the browser runtime, Master CSS validates those declarations with `CSS.supports(property, value)`. Static, server, extraction, compiler, validator, and linting workflows use a CSS syntax matcher so invalid declarations such as `display:banana` do not emit CSS.
+Property-like classes can also fall back to native CSS declarations. In the browser runtime, Master CSS validates those declarations with `CSS.supports(property, value)`. Static, server, extraction, compiler, validator, and linting workflows use a CSS syntax matcher so invalid declarations such as `display:banana` do not emit CSS. High-frequency native properties such as spacing, sizing, radius, color, and timing still keep curated Master CSS token and unit behavior before this native validation step.
 
 Use this rule of thumb:
 
@@ -94,7 +94,7 @@ Custom properties can use the same direct declaration form:
 </details>
 
 ### Master CSS syntax first
-Native fallback is intentionally lower priority than Master CSS semantics. Curated aliases, token resolution, unit conversion, transform helpers, and shorthand utilities continue to use the Master CSS matcher before a native declaration is considered.
+Native fallback is intentionally lower priority than Master CSS semantics. Curated aliases, token resolution, unit conversion, transform helpers, and shorthand utilities continue to use Master CSS semantics before a plain native declaration is considered.
 
 ```html
 <!-- @MARK mt:16 --><!-- @MARK margin:16 --><!-- @MARK bg:red-60 -->
@@ -111,8 +111,9 @@ Native fallback is intentionally lower priority than Master CSS semantics. Curat
 This preserves the expected syntax model:
 
 - `mt:16` uses a curated alias and emits `margin-top:1rem`.
-- `margin:16` keeps Master CSS unit conversion and emits `margin:1rem`.
+- `margin:16` keeps Master CSS unit conversion on the native property and emits `margin:1rem`.
 - `bg:red-60` resolves the theme token and emits `background-color:var(--color-red-60)`.
+- Rare native properties without Master CSS token behavior should use valid CSS values directly, such as `float:left` or `view-transition-name:card`.
 - `display:banana` and `float:banana` are rejected instead of emitted as raw CSS.
 
 ### Arbitrary properties

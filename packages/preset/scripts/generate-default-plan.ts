@@ -6,6 +6,7 @@ import { stringifyMasterCSSPlanJSON } from 'shared/master-css-plan-json'
 import UtilityType from 'shared/utility-type'
 import functions from '../src/functions'
 import keyAliases from '../src/key-aliases'
+import nativeValueNamespaces from '../src/native-value-namespaces'
 import { settings } from '../src/settings'
 import sourceUtilities from '../src/utilities'
 import type {
@@ -92,7 +93,8 @@ export function createDefaultPlan(cssPlan: MasterCSSPlan): MasterCSSPlan {
         utilities,
         utilityBuckets: createUtilityBuckets(utilities),
         functions: clone(functions) as MasterCSSPlanFunctions,
-        keyAliases: clone(keyAliases)
+        keyAliases: clone(keyAliases),
+        nativeValueNamespaces: clone(nativeValueNamespaces)
     }
 }
 
@@ -102,7 +104,8 @@ export function createDefaultPlanFromSourceFile(file = sourceFile) {
         basePlan: {
             version: 2,
             utilities,
-            utilityBuckets: createUtilityBuckets(utilities)
+            utilityBuckets: createUtilityBuckets(utilities),
+            nativeValueNamespaces: clone(nativeValueNamespaces)
         }
     }).plan)
 }

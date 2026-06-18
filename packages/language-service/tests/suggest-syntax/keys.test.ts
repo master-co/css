@@ -13,6 +13,7 @@ it.concurrent('removed ~ key values', () => expect(hint('~duration:')).toEqual([
 test.concurrent('f', () => expect(hint('f')?.map(({ label }) => label)).toContain('font-size:'))
 test.concurrent('retained key alias', () => expect(hint('m')?.map(({ label }) => label)).toContain('mt:'))
 test.concurrent('retained radius key alias', () => expect(hint('rt')?.map(({ label }) => label)).toContain('rt:'))
+test.concurrent('native value namespace property', () => expect(hint('wid')?.map(({ label }) => label)).toContain('width:'))
 test.concurrent('removed key alias', () => expect(hint('d')?.map(({ label }) => label)).not.toContain('d:'))
 
 describe.concurrent('ambiguous', () => {

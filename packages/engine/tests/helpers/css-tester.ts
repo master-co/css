@@ -128,6 +128,11 @@ const nativeFallbackProperties = new Set([
     'z-index',
     'zoom'
 ])
+for (const namespace of defaultPlan.nativeValueNamespaces || []) {
+    for (const property of namespace.properties) {
+        nativeFallbackProperties.add(property)
+    }
+}
 
 export type StaticRuleInput = MasterCSSPlanUtilityRule<MasterCSSPlanCSSDeclarations>
 

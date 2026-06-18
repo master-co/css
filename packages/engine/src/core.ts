@@ -21,6 +21,7 @@ import type {
     MasterCSSPlanAnimations,
     MasterCSSPlanFunctions,
     MasterCSSPlanKeyAliases,
+    MasterCSSPlanNativeValueNamespace,
     MasterCSSPlanSettings,
     MasterCSSPlanUtility,
     MasterCSSPlanUtilityBuckets,
@@ -221,6 +222,7 @@ export default class MasterCSS {
     protected readonly nativeDeclarationFastPathBlockedProperties = new Set<string>()
     protected readonly nativeDeclarationMatches = new Map<string, boolean>()
     protected readonly nativeDeclarationUtilities = new Map<string, CompiledUtility>()
+    protected readonly nativeValueNamespaceUtilities = new Map<string, CompiledUtility>()
     protected readonly keyAliases = new Map<string, string>()
 
     readonly plan!: MasterCSSPlan
@@ -287,7 +289,9 @@ export default class MasterCSS {
         this.loadAnimations()
         this.loadAtRuleAliases()
         this.loadVariantAliases()
-        this.loadUtilities()
+        const resolveAliasRef = this.createVariableAliasRefResolver()
+        this.loadNativeValueNamespaces(resolveAliasRef)
+        this.loadUtilities(resolveAliasRef)
     }
 
     private loadKeyAliases(aliases: MasterCSSPlanKeyAliases | undefined) {
@@ -489,12 +493,9 @@ export default class MasterCSS {
         }
     }
 
-    private loadUtilities() {
-        const { utilities } = this.plan
-
-        if (!utilities) return
+    private createVariableAliasRefResolver() {
         const aliasRefCache = new Map<string, MasterCSSPlanVariableAliasSet>()
-        const resolveAliasRef = (ref: string): MasterCSSPlanVariableAliasSet => {
+        return (ref: string): MasterCSSPlanVariableAliasSet => {
             const cached = aliasRefCache.get(ref)
             if (cached) return cached
 
@@ -512,27 +513,79 @@ export default class MasterCSS {
             aliasRefCache.set(ref, aliases)
             return aliases
         }
+    }
+
+    private compileUtilityDefinition(
+        utility: MasterCSSPlanUtility,
+        resolveAliasRef: (ref: string) => MasterCSSPlanVariableAliasSet
+    ): CompiledUtility {
+        const definedUtility = {
+            ...utility,
+            matchers: utility.matchers.map((matcher) => ({ ...matcher }))
+        } as CompiledUtility
+
+        const variableAliases = [
+            ...(utility.variableAliases || []),
+            ...(utility.variableAliasRefs || []).flatMap(resolveAliasRef)
+        ]
+        if (variableAliases.length) {
+            definedUtility.variables = new Map()
+            for (const [variableKey, variableName] of variableAliases) {
+                if (definedUtility.variables.has(variableKey)) continue
+                const variable = this.variables.get(variableName)
+                if (variable) definedUtility.variables.set(variableKey, variable)
+            }
+        }
+
+        deriveUtilityMetadata(definedUtility)
+        return definedUtility
+    }
+
+    private createNativeValueNamespaceUtility(
+        property: string,
+        namespace: Pick<MasterCSSPlanNativeValueNamespace, 'unit' | 'variableAliasRefs'>
+    ): MasterCSSPlanUtility {
+        return {
+            id: property,
+            name: property,
+            type: isNativeCSSShorthandProperty(property)
+                ? UtilityType.NativeShorthand
+                : UtilityType.Native,
+            order: 0,
+            ...(namespace.unit ? { unit: namespace.unit } : {}),
+            variableAliasRefs: [...namespace.variableAliasRefs],
+            emit: {
+                type: 'property',
+                property
+            },
+            matchers: [{
+                type: 'key',
+                keys: [property]
+            }]
+        }
+    }
+
+    private loadNativeValueNamespaces(resolveAliasRef: (ref: string) => MasterCSSPlanVariableAliasSet) {
+        for (const namespace of this.plan.nativeValueNamespaces || []) {
+            if (!namespace.properties?.length || !namespace.variableAliasRefs?.length) continue
+            for (const property of namespace.properties) {
+                if (!property || this.nativeValueNamespaceUtilities.has(property)) continue
+                const utility = this.compileUtilityDefinition(
+                    this.createNativeValueNamespaceUtility(property, namespace),
+                    resolveAliasRef
+                )
+                this.nativeValueNamespaceUtilities.set(property, utility)
+            }
+        }
+    }
+
+    private loadUtilities(resolveAliasRef: (ref: string) => MasterCSSPlanVariableAliasSet) {
+        const { utilities } = this.plan
+
+        if (!utilities) return
 
         for (const utility of utilities) {
-            const definedUtility = {
-                ...utility,
-                matchers: utility.matchers.map((matcher) => ({ ...matcher }))
-            } as CompiledUtility
-
-            const variableAliases = [
-                ...(utility.variableAliases || []),
-                ...(utility.variableAliasRefs || []).flatMap(resolveAliasRef)
-            ]
-            if (variableAliases.length) {
-                definedUtility.variables = new Map()
-                for (const [variableKey, variableName] of variableAliases) {
-                    if (definedUtility.variables.has(variableKey)) continue
-                    const variable = this.variables.get(variableName)
-                    if (variable) definedUtility.variables.set(variableKey, variable)
-                }
-            }
-
-            deriveUtilityMetadata(definedUtility)
+            const definedUtility = this.compileUtilityDefinition(utility, resolveAliasRef)
             this.registerNativeDeclarationFastPathPolicy(definedUtility)
             this.definedUtilities.push(definedUtility)
         }
@@ -779,6 +832,36 @@ export default class MasterCSS {
         return utilities
     }
 
+    private createNativeValueNamespaceFallback(className: string, fixedClass?: string, mode?: string, sourceClassName = className): Utility[] {
+        const property = this.parseNativeDeclarationProperty(className)
+        if (!property) return []
+
+        const registeredUtility = this.nativeValueNamespaceUtilities.get(property)
+        if (!registeredUtility) return []
+
+        const utility = this.createWithDefinition(sourceClassName, registeredUtility, fixedClass, mode)
+        if (!utility?.valid || this.options.nativeDeclarationMatcher && !this.isNativeDeclarationUtility(utility)) return []
+
+        const utilities = [utility]
+        for (let branchIndex = 1; branchIndex < utility.branchCount; branchIndex++) {
+            const branchUtility = this.createWithDefinition(sourceClassName, registeredUtility, fixedClass, mode, branchIndex)
+            if (
+                branchUtility?.valid
+                && (!this.options.nativeDeclarationMatcher || this.isNativeDeclarationUtility(branchUtility))
+            ) {
+                utilities.push(branchUtility)
+            }
+        }
+        return utilities
+    }
+
+    private createNativeValueNamespaceFastPath(className: string, fixedClass?: string, mode?: string, sourceClassName = className): Utility[] {
+        const property = this.parseNativeDeclarationProperty(className)
+        if (!property) return []
+        if (this.nativeDeclarationFastPathBlockedProperties.has(property)) return []
+        return this.createNativeValueNamespaceFallback(className, fixedClass, mode, sourceClassName)
+    }
+
     private createNativeDeclarationFastPath(className: string, fixedClass?: string, mode?: string, sourceClassName = className): Utility[] {
         const property = this.parseNativeDeclarationProperty(className)
         if (!property) return []
@@ -805,16 +888,25 @@ export default class MasterCSS {
         const canonicalClass = this.canonicalizeClassName(className, fixedClass)
         className = canonicalClass.className
         fixedClass = canonicalClass.fixedClass
+        const fastPathNativeValueNamespaceUtilities = this.createNativeValueNamespaceFastPath(className, fixedClass, mode, sourceClassName)
+        if (fastPathNativeValueNamespaceUtilities.length) return fastPathNativeValueNamespaceUtilities[0]
+
         const fastPathNativeUtilities = this.createNativeDeclarationFastPath(className, fixedClass, mode, sourceClassName)
         if (fastPathNativeUtilities.length) return fastPathNativeUtilities[0]
 
         const registeredUtility = this.matchResolvedClassName(className)
         if (registeredUtility && this.matchesStaticUtilityDefinition(registeredUtility)) {
+            const nativeValueNamespaceUtilities = this.createNativeValueNamespaceFallback(className, fixedClass, mode, sourceClassName)
+            if (nativeValueNamespaceUtilities.length) return nativeValueNamespaceUtilities[0]
+
             const nativeUtilities = this.createNativeDeclarationFallback(className, fixedClass, mode, sourceClassName)
             if (nativeUtilities.length) return nativeUtilities[0]
         }
         if (registeredUtility) return this.createWithDefinition(sourceClassName, registeredUtility, fixedClass, mode)
-        return this.createNativeDeclarationFallback(className, fixedClass, mode, sourceClassName)[0]
+        return (
+            this.createNativeValueNamespaceFallback(className, fixedClass, mode, sourceClassName)[0]
+            || this.createNativeDeclarationFallback(className, fixedClass, mode, sourceClassName)[0]
+        )
     }
 
     createAll(className: string, fixedClass?: string, mode?: string): Utility[] {
@@ -822,11 +914,17 @@ export default class MasterCSS {
         const canonicalClass = this.canonicalizeClassName(className, fixedClass)
         className = canonicalClass.className
         fixedClass = canonicalClass.fixedClass
+        const fastPathNativeValueNamespaceUtilities = this.createNativeValueNamespaceFastPath(className, fixedClass, mode, sourceClassName)
+        if (fastPathNativeValueNamespaceUtilities.length) return fastPathNativeValueNamespaceUtilities
+
         const fastPathNativeUtilities = this.createNativeDeclarationFastPath(className, fixedClass, mode, sourceClassName)
         if (fastPathNativeUtilities.length) return fastPathNativeUtilities
 
         const registeredUtilities = this.matchAllResolvedClassName(className)
         if (registeredUtilities.length && registeredUtilities.every((utility) => this.matchesStaticUtilityDefinition(utility))) {
+            const nativeValueNamespaceUtilities = this.createNativeValueNamespaceFallback(className, fixedClass, mode, sourceClassName)
+            if (nativeValueNamespaceUtilities.length) return nativeValueNamespaceUtilities
+
             const nativeUtilities = this.createNativeDeclarationFallback(className, fixedClass, mode, sourceClassName)
             if (nativeUtilities.length) return nativeUtilities
         }
@@ -842,7 +940,11 @@ export default class MasterCSS {
                 }
             }
         }
-        return utilities.length ? utilities : this.createNativeDeclarationFallback(className, fixedClass, mode, sourceClassName)
+        if (utilities.length) return utilities
+        const nativeValueNamespaceUtilities = this.createNativeValueNamespaceFallback(className, fixedClass, mode, sourceClassName)
+        return nativeValueNamespaceUtilities.length
+            ? nativeValueNamespaceUtilities
+            : this.createNativeDeclarationFallback(className, fixedClass, mode, sourceClassName)
     }
 
     createWithDefinition(className: string, registeredUtility: CompiledUtility, fixedClass?: string, mode?: string, branchIndex = 0): Utility | undefined {
@@ -936,6 +1038,7 @@ export default class MasterCSS {
         this.staticVariableTokens.clear()
         this.staticAnimationTokens.clear()
         this.keyAliases.clear()
+        this.nativeValueNamespaceUtilities.clear()
         this.nativeDeclarationFastPathBlockedProperties.clear()
         this.baseLayer.reset()
         this.themeLayer.reset()

@@ -81,6 +81,11 @@ describe('key aliases', () => {
     test('radius alias values use canonical radius utility', () => {
         expect(hint('rtr:')?.map(({ label }) => label)).toContain('md')
     })
+
+    test('native value namespace alias values use canonical property namespace', () => {
+        expect(hint('w:')?.map(({ label }) => label)).toContain('sm')
+        expect(hint('width:')?.map(({ label }) => label)).toContain('sm')
+    })
 })
 
 describe('sorting', () => {
