@@ -1268,6 +1268,7 @@
 
 /* Inline aliases */
 @theme inline {
+    --px: 1px;
     --full: 100%;
 
     --fit: fit-content;
