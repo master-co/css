@@ -134,7 +134,7 @@ describe.concurrent('migrated complex utility parity', () => {
         expect(css.create('font:italic|1.2rem|sans')?.text)
             .toBe('.font\\:italic\\|1\\.2rem\\|sans{font:italic 1.2rem var(--font-family-sans)}')
         expect(css.create('font:sans')?.text).toBe('.font\\:sans{font-family:var(--font-family-sans)}')
-        expect(css.create('font:bolder')?.text).toBe('.font\\:bolder{font-weight:bolder}')
+        expect(css.create('font-bolder')?.text).toBe('.font-bolder{font-weight:bolder}')
         expect(css.create('font:thin')?.text).toBe('.font\\:thin{font-weight:var(--font-weight-thin)}')
         expect(css.create('font-feature-settings:\'cv02\',\'cv03\',\'cv04\',\'cv11\'')?.text)
             .toBe('.font-feature-settings\\:\\\'cv02\\\'\\,\\\'cv03\\\'\\,\\\'cv04\\\'\\,\\\'cv11\\\'{font-feature-settings:\'cv02\',\'cv03\',\'cv04\',\'cv11\'}')

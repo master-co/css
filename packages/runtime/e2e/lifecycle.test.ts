@@ -9,7 +9,7 @@ const defaultPlan = defaultPlanJSON as unknown as MasterCSSPlan
 test('destroy on progressive', async ({ page }) => {
     await init(page, '@layer utilities{}')
     await page.evaluate(() => {
-        document.body.classList.add('text:center')
+        document.body.classList.add('text-center')
     })
     expect(await page.evaluate(() => globalThis.cssRuntime.utilitiesLayer.rules.length)).toBe(1)
     expect(await page.evaluate(() => Array.from(globalThis.cssRuntime.style?.sheet?.cssRules || [])
@@ -82,15 +82,15 @@ test('inserts functional pseudo-class selector variants into native CSSOM', asyn
         if (message.type() === 'error') consoleErrors.push(message.text())
     })
     await page.evaluate(() => {
-        document.body.innerHTML = '<div class="pb:8x:not(:last) text:center_td:not(:first)"></div>'
+        document.body.innerHTML = '<div class="pb:8x:not(:last) text-center_td:not(:first)"></div>'
     })
     await init(page)
 
     expect(await page.evaluate(() => Array.from(globalThis.cssRuntime.utilitiesLayer.native?.cssRules || [])
         .map((cssRule) => cssRule.cssText)
     )).toEqual([
-        '.pb\\:8x\\:not\\(\\:last\\):not(:last-child) { padding-bottom: 2rem; }',
-        '.text\\:center_td\\:not\\(\\:first\\) td:not(:first-child) { text-align: center; }'
+        '.text-center_td\\:not\\(\\:first\\) td:not(:first-child) { text-align: center; }',
+        '.pb\\:8x\\:not\\(\\:last\\):not(:last-child) { padding-bottom: 2rem; }'
     ])
     expect(consoleErrors.find((message) => message.includes('insertRule'))).toBeUndefined()
 })

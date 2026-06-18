@@ -175,7 +175,6 @@ export interface MasterCSSPlanUtility {
     subkey?: string
     keys?: string[]
     aliasGroups?: string[]
-    values?: string[]
     kind?: MasterCSSPlanUtilityKind
     namespaces?: string[]
     implicitNamespace?: boolean

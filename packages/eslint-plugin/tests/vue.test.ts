@@ -3,7 +3,7 @@ import { jsxTester } from './testers'
 
 jsxTester.run('vue class order', rule, {
     valid: [
-        { code: `<div class="m:8 p:8 bg:black f:24 fg:white">Simple, basic</div>` },
+        { code: `<div class="m:8 p:8 bg:black fg:white font:24">Simple, basic</div>` },
         {
             code: `<template><div :class="[condition && 'm:8 p:8', , null, false]">Sparse array</div></template>`,
             filename: 'test.vue',
@@ -14,8 +14,8 @@ jsxTester.run('vue class order', rule, {
     ],
     invalid: [
         {
-            code: `<template><div class="m:8 bg:black p:8 f:24 fg:white">Enhancing readability</div></template>`,
-            output: `<template><div class="m:8 p:8 bg:black f:24 fg:white">Enhancing readability</div></template>`,
+            code: `<template><div class="m:8 bg:black p:8 fg:white font:24">Enhancing readability</div></template>`,
+            output: `<template><div class="m:8 p:8 bg:black fg:white font:24">Enhancing readability</div></template>`,
             errors: [{ messageId: 'invalidClassOrder' }],
             filename: 'test.vue',
             languageOptions: {
@@ -23,8 +23,8 @@ jsxTester.run('vue class order', rule, {
             }
         },
         {
-            code: `<template><div class="m:8 bg:black p:8 f:24 fg:white">Classnames will be ordered</div></template>`,
-            output: `<template><div class="m:8 p:8 bg:black f:24 fg:white">Classnames will be ordered</div></template>`,
+            code: `<template><div class="m:8 bg:black p:8 fg:white font:24">Classnames will be ordered</div></template>`,
+            output: `<template><div class="m:8 p:8 bg:black fg:white font:24">Classnames will be ordered</div></template>`,
             errors: [{ messageId: 'invalidClassOrder' }],
             filename: 'test.vue',
             languageOptions: {
@@ -32,8 +32,8 @@ jsxTester.run('vue class order', rule, {
             }
         },
         {
-            code: `<template><div :class="['m:8 bg:black p:8 f:24 fg:white']">Enhancing readability 2</div></template>`,
-            output: `<template><div :class="['m:8 p:8 bg:black f:24 fg:white']">Enhancing readability 2</div></template>`,
+            code: `<template><div :class="['m:8 bg:black p:8 fg:white font:24']">Enhancing readability 2</div></template>`,
+            output: `<template><div :class="['m:8 p:8 bg:black fg:white font:24']">Enhancing readability 2</div></template>`,
             errors: [{ messageId: 'invalidClassOrder' }],
             filename: 'test.vue',
             languageOptions: {
@@ -41,8 +41,8 @@ jsxTester.run('vue class order', rule, {
             }
         },
         {
-            code: `<template><div v-bind:class="{'m:8 bg:black p:8 f:24 fg:white': true}">:)...</div></template>`,
-            output: `<template><div v-bind:class="{'m:8 p:8 bg:black f:24 fg:white': true}">:)...</div></template>`,
+            code: `<template><div v-bind:class="{'m:8 bg:black p:8 fg:white font:24': true}">:)...</div></template>`,
+            output: `<template><div v-bind:class="{'m:8 p:8 bg:black fg:white font:24': true}">:)...</div></template>`,
             errors: [{ messageId: 'invalidClassOrder' }],
             filename: 'test.vue',
             languageOptions: {
@@ -50,8 +50,8 @@ jsxTester.run('vue class order', rule, {
             }
         },
         {
-            code: `<template><div :class="ctl(\`m:8 bg:black p:8 f:24 fg:white\`)" /></template>`,
-            output: `<template><div :class="ctl(\`m:8 p:8 bg:black f:24 fg:white\`)" /></template>`,
+            code: `<template><div :class="ctl(\`m:8 bg:black p:8 fg:white font:24\`)" /></template>`,
+            output: `<template><div :class="ctl(\`m:8 p:8 bg:black fg:white font:24\`)" /></template>`,
             errors: [{ messageId: 'invalidClassOrder' }],
             filename: 'test.vue',
             languageOptions: {
@@ -119,13 +119,13 @@ jsxTester.run('vue class order', rule, {
             code: `<template>
                         <input   type="password"
                             placeholder="..."
-                            class="bg:black p:8 f:24 fg:white m:8"
+                            class="bg:black p:8 fg:white font:24 m:8"
                             @blur.prevent="" />
                         </template>`,
             output: `<template>
                         <input   type="password"
                             placeholder="..."
-                            class="m:8 p:8 bg:black f:24 fg:white"
+                            class="m:8 p:8 bg:black fg:white font:24"
                             @blur.prevent="" />
                         </template>`,
             errors: [

@@ -120,9 +120,9 @@ it('change config file utilities and reset process', async () => {
 }, 120000)
 
 it('change html file class attr and update', async () => {
-    fs.writeFileSync(HTMLFilepath, originHTMLText.replace('hmr-test', 'text:underline'))
-    const fileCSSText = await waitForCSSContent((css) => css.includes(cssEscape('text:underline')))
-    expect(fileCSSText).toContain(cssEscape('text:underline'))
+    fs.writeFileSync(HTMLFilepath, originHTMLText.replace('hmr-test', 'underline'))
+    const fileCSSText = await waitForCSSContent((css) => css.includes(cssEscape('underline')))
+    expect(fileCSSText).toContain(cssEscape('underline'))
 }, 120000)
 
 afterAll(async () => {

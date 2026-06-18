@@ -4,7 +4,7 @@ import CSSExtractor from '../src'
 test('syntax', async () => {
     const extractor = await new CSSExtractor({ required: ['syntax.html'], include: [] }, __dirname).init()
     const testClasses = [
-        '{fg:blue-40/.5;font:32;p:16;w:full;text:center}>li:hover@md',
+        '{fg:blue-40/.5;font:32;p:16;w:full;text-center}>li:hover@md',
         'w:calc(+100%-1.25rem)',
         'p:10|20|30|40',
         'm:20|30',
@@ -25,9 +25,9 @@ test('syntax', async () => {
         'bg:blue:hover@media(any-hover:hover)',
         'bg:gray-1@supports(backdrop-filter:none)',
         'font:24:hover@sm',
-        'text:center:hover@sm',
+        'text-center:hover@sm',
         'fg:sky-60/.5:hover@sm',
-        '{p:10|20|30|40;text:center;fg:sky-60/.5}:hover@sm',
+        '{p:10|20|30|40;text-center;fg:sky-60/.5}:hover@sm',
         'width:34:active:not([disabled])+svg>rect',
         'cursor:no-drop[disabled]+svg',
         'translateX(20px)',
@@ -58,7 +58,7 @@ test('syntax', async () => {
         'm:10|20',
         'bg:blue-60',
         'outline:3|solid|red:hover',
-        'text:center@sm',
+        'text-center@sm',
         'opacity:.5',
         '.sidebar:hover_{opacity:.75}',
         '.navitem:hover_{bg:black/.75}'

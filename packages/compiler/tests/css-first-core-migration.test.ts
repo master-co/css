@@ -348,7 +348,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
 
             @defaults {
                 demo {
-                    @compose bg:stripe;
+                    @compose background:stripe;
                 }
             }
         `, { basePlan: defaultPlan })
@@ -380,7 +380,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
         }))
 
         const css = createCSS(plan)
-        expect(css.create('bg:stripe')?.text).toBe('.bg\\:stripe{background:var(--background-stripe)}')
+        expect(css.create('background:stripe')?.text).toBe('.background\\:stripe{background:var(--background-stripe)}')
         expect(css.create('shadow:panel')?.text).toBe('.shadow\\:panel{box-shadow:var(--box-shadow-panel)}')
         expect(css.create('p:card')?.text).toBe('.p\\:card{padding:calc(var(--spacing-card) / 16 * 1rem)}')
         expect(css.create('gap:card')?.text).toBe('.gap\\:card{gap:calc(var(--spacing-card) / 16 * 1rem)}')
@@ -410,7 +410,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
             }
 
             .list {
-                @compose text:center>li;
+                @compose text-center>li;
             }
         `, { basePlan: defaultPlan })
         const css = createCSS(result.plan)
@@ -432,7 +432,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
             }),
             expect.objectContaining({
                 type: 'compose',
-                className: 'text:center>li'
+                className: 'text-center>li'
             })
         ]))
         expect(css.text).toContain('.card')
@@ -455,7 +455,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
 
         expectComposeError('.card { @compose "block"; }', 'compose-quoted-syntax')
         expectComposeError('.card { @compose content:\'-\'; }', 'compose-quoted-syntax')
-        expectComposeError('.card { @compose {text:center;block}>li; }', 'compose-group-syntax')
+        expectComposeError('.card { @compose {text-center;block}>li; }', 'compose-group-syntax')
     })
 
     test('executes CSS-first number variables and value functions through engine semantics', () => {

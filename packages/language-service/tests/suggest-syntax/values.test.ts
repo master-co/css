@@ -9,12 +9,16 @@ test.todo('convert any color spaces to RGB and hint correctly')
 it('should ignore values containing blanks', () => expect(hint('font-family:')?.map(({ label }) => label)).not.toContain('Arial, Helvetica, sans-serif'))
 it('types | delimiter', () => expect(hint('b:1|')?.map(({ label }) => label)).toContain('solid'))
 it('types , separator', () => expect(hint('shadow:1|1|2|black,')?.map(({ label }) => label)).toContain('inset'))
-it('ends with @ and not to hint values', () => expect(hint('text:center@')?.map(({ label }) => label)).not.toContain('center'))
-it('ends with : and not to hint values', () => expect(hint('text:center:')?.map(({ label }) => label)).not.toContain('center'))
+it('ends with @ and not to hint values', () => expect(hint('text-center@')?.map(({ label }) => label)).not.toContain('center'))
+it('ends with : and not to hint values', () => expect(hint('text-center:')?.map(({ label }) => label)).not.toContain('center'))
 
 describe('ambiguous', () => {
-    test('text:capitalize', () => expect(hint('text:')?.map(({ label }) => label)).toContain('capitalize'))
-    test('text:center', () => expect(hint('text:')?.map(({ label }) => label)).toContain('center'))
+    test('removed fixed text aliases', () => {
+        const labels = hint('text:')?.map(({ label }) => label)
+
+        expect(labels).not.toContain('capitalize')
+        expect(labels).not.toContain('center')
+    })
 })
 
 describe('detail and documentation', () => {

@@ -7,11 +7,11 @@ const defaultPlan = defaultPlanJSON as unknown as MasterCSSPlan
 
 it('render elements', () => {
     expect(render([
-        '<div class="text:center"></div>',
+        '<div class="text-center"></div>',
         '<div class="bg:white"></div>'
     ].join(''), defaultPlan).html).toEqual([
-        '<style id="master">@layer utilities{.bg\\:white{background-color:oklch(100% 0 none)}.text\\:center{text-align:center}}</style>',
-        '<div class="text:center"></div>',
+        '<style id="master">@layer utilities{.text-center{text-align:center}.bg\\:white{background-color:oklch(100% 0 none)}}</style>',
+        '<div class="text-center"></div>',
         '<div class="bg:white"></div>'
     ].join(''))
 })

@@ -19,7 +19,7 @@ it('render css text into <head>', async () => {
                 <style></style>
             </head>
             <body>
-                <h1 class="text:center ml:0>:is(a,button):first font:32">Hello World</h1>
+                <h1 class="text-center ml:0>:is(a,button):first font:32">Hello World</h1>
             </body>
         </html>
     `)
@@ -29,9 +29,9 @@ it('render css text into <head>', async () => {
             <head>
                 <link rel="styleSheet">
                 <style></style>
-            <style id="master">@layer utilities{.font\\:32{font-size:2rem}.text\\:center{text-align:center}.ml\\:0\\>\\:is\\(a\\,button\\)\\:first>:is(a,button):first-child{margin-left:0rem}}</style></head>
+            <style id="master">@layer utilities{.text-center{text-align:center}.font\\:32{font-size:2rem}.ml\\:0\\>\\:is\\(a\\,button\\)\\:first>:is(a,button):first-child{margin-left:0rem}}</style></head>
             <body>
-                <h1 class="text:center ml:0>:is(a,button):first font:32">Hello World</h1>
+                <h1 class="text-center ml:0>:is(a,button):first font:32">Hello World</h1>
             </body>
         </html>
     `)

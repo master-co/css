@@ -122,10 +122,10 @@ describe('@master/css-preset defaultPlan', () => {
         const plan = createDefaultPlanFromSourceFile(resolve(__dirname, '../src/index.css'))
         const utilities = plan.utilities || []
 
-        expect(sourceUtilities).toHaveLength(181)
+        expect(sourceUtilities).toHaveLength(177)
         expect(sourceUtilities.some((utility) => Number(utility.type) === UtilityType.Static)).toBe(false)
         expect(Object.keys(functions)).toHaveLength(49)
-        expect(utilities).toHaveLength(321)
+        expect(utilities).toHaveLength(448)
         expect(utilities[0]?.order).toBe(utilities.length - 1)
         expect(utilities[utilities.length - 1]?.order).toBe(0)
         expect(plan).toEqual(defaultPlan)
@@ -168,8 +168,34 @@ describe('@master/css-preset defaultPlan', () => {
         expect(css.create('center')?.text).toBe('.center{left:0;right:0;margin-left:auto;margin-right:auto}')
         expect(css.create('rounded')?.text).toBe('.rounded{border-radius:1e9em}')
         expect(css.create('font-antialiased')?.text).toBe('.font-antialiased{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}')
+        expect(css.create('text-center')?.text).toBe('.text-center{text-align:center}')
+        expect(css.create('bg-cover')?.text).toBe('.bg-cover{background-size:cover}')
+        expect(css.create('object-cover')?.text).toBe('.object-cover{object-fit:cover}')
+        expect(css.create('b-solid')?.text).toBe('.b-solid{border-style:solid}')
+        expect(css.create('bl-solid')?.text).toBe('.bl-solid{border-left-style:solid}')
         expect(css.create('sr-only')?.text).toContain('position:absolute')
         expect(css.create('sr-only')?.text).toContain('clip:rect(0,0,0,0)')
+    })
+
+    it('removes fixed keyword value aliases while preserving raw ambiguous matches', () => {
+        const css = createCSS(defaultPlan)
+
+        expect(css.create('text:center')).toBeUndefined()
+        expect(css.create('bg:cover')).toBeUndefined()
+        expect(css.create('object:cover')).toBeUndefined()
+        expect(css.create('border-solid')).toBeUndefined()
+        expect(css.create('border-l-solid')).toBeUndefined()
+        expect(css.create('bg:#fff')?.text).toBe('.bg\\:\\#fff{background-color:#fff}')
+        expect(css.create('b:1')?.text).toBe('.b\\:1{border-width:0.0625rem}')
+        expect(css.create('font:16')?.text).toBe('.font\\:16{font-size:1rem}')
+        expect(css.create('text:2xl')?.text).toContain('font-size:var(--font-size-2xl)')
+
+        for (const utility of defaultPlan.utilities || []) {
+            expect('values' in utility, utility.id).toBe(false)
+        }
+        for (const index of defaultPlan.utilityBuckets?.value || []) {
+            expect(defaultPlan.utilities?.[index]?.kind, defaultPlan.utilities?.[index]?.id).toBeDefined()
+        }
     })
 
     it('prunes pure native coverage and keeps Master CSS native DX utilities', () => {
@@ -201,7 +227,7 @@ describe('@master/css-preset defaultPlan', () => {
 
         expect(defaultPlan.nativeValueNamespaces).toEqual(nativeValueNamespaces)
         expect(new Set(nativeValueNamespaceProperties).size).toBe(nativeValueNamespaceProperties.length)
-        expect(nativeValueNamespaceProperties).toHaveLength(105)
+        expect(nativeValueNamespaceProperties).toHaveLength(109)
         for (const property of nativeValueNamespaceProperties) {
             expect(utilityIds.has(property), property).toBe(false)
             expect(matcherKeys.has(property), property).toBe(false)

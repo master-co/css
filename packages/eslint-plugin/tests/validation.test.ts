@@ -6,7 +6,7 @@ import { createPresetPlan } from './helpers/create-preset-plan'
 jsxTester.run('invalid', rule, {
     valid: [
         {
-            code: `<div class="bg:black f:24 fg:white m:8 p:8">Simple, basic</div>`,
+            code: `<div class="bg:black fg:white font:24 m:8 p:8">Simple, basic</div>`,
         },
         {
             code: `<div class={\`f:\${ fontSize }px\`}>TemplateLiteral</div>`,
@@ -17,7 +17,7 @@ jsxTester.run('invalid', rule, {
     ],
     invalid: [
         {
-            code: `<div class="bg:black m:mistake rrr">Simple, basic</div>`,
+            code: `<div class="bg:black text-align:cente rrr">Simple, basic</div>`,
             errors: [
                 { messageId: 'invalidClass' },
                 { messageId: 'disallowUnknownClass' }
@@ -29,7 +29,7 @@ jsxTester.run('invalid', rule, {
             ] as any
         },
         {
-            code: `<div class="bg:black m:mistake rrr">Simple, basic</div>`,
+            code: `<div class="bg:black text-align:cente rrr">Simple, basic</div>`,
             errors: [
                 { messageId: 'invalidClass' },
             ]
@@ -79,7 +79,7 @@ createTester({
     valid: [],
     invalid: [
         {
-            code: `<div class="btn rrr bg:black m:mistake">Simple, basic</div>`,
+            code: `<div class="btn rrr bg:black text-align:cente">Simple, basic</div>`,
             errors: [
                 { messageId: 'disallowUnknownClass' },
                 { messageId: 'invalidClass' }

@@ -70,8 +70,8 @@ export default function querySyntaxCompletions(q = '', css: MasterCSS = createDe
         if (field.endsWith('::')) {
             /**
              * Consider trigger characters and fix insertText.
-             * @incorrect class="text:center::" -> class="text:center::::after"
-             * @correct class="text:center::" -> class="text:center::after"
+             * @incorrect class="text-center::" -> class="text-center::::after"
+             * @correct class="text-center::" -> class="text-center::after"
              */
             pseudoElementCompletionItems.forEach((completionItem) => completionItem.insertText = completionItem.label.slice(2))
             return pseudoElementCompletionItems
@@ -80,8 +80,8 @@ export default function querySyntaxCompletions(q = '', css: MasterCSS = createDe
             completionItems.push(...pseudoElementCompletionItems)
             /**
              * Consider trigger characters and fix insertText.
-             * @incorrect class="text:center:" -> class="text:center::active"
-             * @correct class="text:center:" -> class="text:center:active"
+             * @incorrect class="text-center:" -> class="text-center::active"
+             * @correct class="text-center:" -> class="text-center:active"
              */
             if (triggerCharacter === ':') {
                 completionItems.forEach((completionItem) => completionItem.insertText = completionItem.label.slice(1))

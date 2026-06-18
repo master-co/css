@@ -3,8 +3,8 @@ import dedent from 'ts-dedent'
 import { hint } from './test'
 
 describe.concurrent('pseudo-class', () => {
-    test.concurrent(':', () => expect(hint('text:center:')?.map(({ label }) => label)).toContain(':active'))
-    test.concurrent('two', () => expect(hint('text:center:hover:')?.map(({ label }) => label)).toContain(':active'))
+    test.concurrent(':', () => expect(hint('text-center:')?.map(({ label }) => label)).toContain(':active'))
+    test.concurrent('two', () => expect(hint('text-center:hover:')?.map(({ label }) => label)).toContain(':active'))
     test.concurrent('utility', () => expect(hint('block:')?.map(({ label }) => label)).toContain(':active'))
     test.concurrent('functional labels', () => {
         const labels = hint('block:')?.map(({ label }) => label)
@@ -31,9 +31,9 @@ describe.concurrent('pseudo-class', () => {
             ':where()'
         ]))
     })
-    it.concurrent('should take into account trigger character :', () => expect(hint('text:center:')?.find(({ label }) => label === ':active')).toMatchObject({ insertText: 'active' }))
-    it.concurrent('should insert functional pseudo-class text without the trigger character', () => expect(hint('text:center:')?.find(({ label }) => label === ':not()')).toMatchObject({ insertText: 'not()' }))
-    it.concurrent('should take into account trigger character +', () => expect(hint('text:center+')?.find(({ label }) => label === ':active')?.insertText).toBeUndefined())
+    it.concurrent('should take into account trigger character :', () => expect(hint('text-center:')?.find(({ label }) => label === ':active')).toMatchObject({ insertText: 'active' }))
+    it.concurrent('should insert functional pseudo-class text without the trigger character', () => expect(hint('text-center:')?.find(({ label }) => label === ':not()')).toMatchObject({ insertText: 'not()' }))
+    it.concurrent('should take into account trigger character +', () => expect(hint('text-center+')?.find(({ label }) => label === ':active')?.insertText).toBeUndefined())
     test.concurrent('info', () => expect(hint('block:')?.find(({ label }) => label === ':first')).toEqual({
         'detail': ':first-child',
         'documentation': {
@@ -56,12 +56,12 @@ describe.concurrent('pseudo-class', () => {
 })
 
 describe.concurrent('pseudo-element', () => {
-    test.concurrent('::', () => expect(hint('text:center::')?.map(({ label }) => label)).toContain('::after'))
-    test.concurrent('two', () => expect(hint('text:center::after::')?.map(({ label }) => label)).toContain('::after'))
+    test.concurrent('::', () => expect(hint('text-center::')?.map(({ label }) => label)).toContain('::after'))
+    test.concurrent('two', () => expect(hint('text-center::after::')?.map(({ label }) => label)).toContain('::after'))
     test.concurrent('utility', () => expect(hint('block::')?.map(({ label }) => label)).toContain('::after'))
-    it.concurrent('should take into account trigger character :', () => expect(hint('text:center:')?.find(({ label }) => label === '::after')).toMatchObject({ insertText: ':after' }))
-    it.concurrent('should take into account trigger character ::', () => expect(hint('text:center::')?.find(({ label }) => label === '::after')).toMatchObject({ insertText: 'after' }))
-    it.concurrent('should take into account trigger character +', () => expect(hint('text:center+')?.find(({ label }) => label === '::after')?.insertText).toBeUndefined())
+    it.concurrent('should take into account trigger character :', () => expect(hint('text-center:')?.find(({ label }) => label === '::after')).toMatchObject({ insertText: ':after' }))
+    it.concurrent('should take into account trigger character ::', () => expect(hint('text-center::')?.find(({ label }) => label === '::after')).toMatchObject({ insertText: 'after' }))
+    it.concurrent('should take into account trigger character +', () => expect(hint('text-center+')?.find(({ label }) => label === '::after')?.insertText).toBeUndefined())
     test.concurrent('info', () => expect(hint('block::')?.find(({ label }) => label === '::placeholder')).toEqual({
         'documentation': {
             'kind': 'markdown',
@@ -82,7 +82,7 @@ describe.concurrent('pseudo-element', () => {
 })
 
 test.concurrent('sorting', () => {
-    expect(hint('text:center:')?.length).toBeGreaterThan(100)
+    expect(hint('text-center:')?.length).toBeGreaterThan(100)
 })
 
 test.todo('types _ should hint')

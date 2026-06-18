@@ -66,7 +66,7 @@ describe('extractor CSS directives', () => {
     it('loads extractor directives from a managed CSS entry graph', async () => {
         const root = createFixture()
         writeFileSync(join(root, 'app/page.tsx'), '<div class="block"></div>')
-        writeFileSync(join(root, 'app/skip.test.tsx'), '<div class="text:center"></div>')
+        writeFileSync(join(root, 'app/skip.test.tsx'), '<div class="text-center"></div>')
         writeFileSync(join(root, 'app/forced.test.tsx'), '<div class="fg:red"></div>')
 
         const extractor = new CSSExtractor({

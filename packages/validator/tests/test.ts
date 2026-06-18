@@ -11,14 +11,14 @@ it('validate an invalid CSS property value', () => {
 })
 
 it('validate valid classes', () => {
-    expectClassWithoutErrors('text:center')
+    expectClassWithoutErrors('text-center')
     expectClassWithoutErrors('font:12@media(print)')
     expectClassWithoutErrors('mt:$(top)')
     expectClassWithoutErrors('right:max(0px,calc(50%-45.3125rem))')
     expectClassWithoutErrors('{text-wrap:pretty}')
     expectClassWithoutErrors('{content:\'\';block}::after@light')
     expect(validate('bg:light-dark(#333b3c,#efefec)').errors).toEqual([])
-    expectClassValid('text:center')
+    expectClassValid('text-center')
     expectClassValid('font:12@media(print)')
     expectClassValid('mt:$(top)')
     expectClassValid('right:max(0px,calc(50%-45.3125rem))')
@@ -27,14 +27,13 @@ it('validate valid classes', () => {
 })
 
 it('create rules by class', () => {
-    expect(generateValidRules('text:center')).toHaveLength(1)
+    expect(generateValidRules('text-center')).toHaveLength(1)
     expect(generateValidRules('text:cente')).toHaveLength(0)
 })
 
 it('validates native CSS declarations through css-tree fallback', () => {
     expect(generateValidRules('float:left')[0]?.text).toBe('.float\\:left{float:left}')
     expect(generateValidRules('display:block')[0]?.text).toBe('.display\\:block{display:block}')
-    expect(generateValidRules('d:block')[0]?.text).toBe('.d\\:block{display:block}')
     expect(generateValidRules('field-sizing:content')[0]?.text).toBe('.field-sizing\\:content{field-sizing:content}')
     expect(generateValidRules('transition-behavior:allow-discrete')[0]?.text)
         .toBe('.transition-behavior\\:allow-discrete{transition-behavior:allow-discrete}')

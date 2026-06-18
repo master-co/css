@@ -27,10 +27,10 @@ test('>', () => {
 
 test('\'', () => {
     expect(render(
-        `<div class="font-feature:'salt'"></div>`,
+        `<div class="font-feature-settings:'salt'"></div>`,
         defaultPlan
     ).html).toEqual([
-        `<style id="master">@layer utilities{.font-feature\\:\\'salt\\'{font-feature-settings:'salt'}}</style>`,
-        `<div class="font-feature:'salt'"></div>`
+        `<style id="master">@layer utilities{.font-feature-settings\\:\\'salt\\'{font-feature-settings:'salt'}}</style>`,
+        `<div class="font-feature-settings:'salt'"></div>`
     ].join(''))
 })

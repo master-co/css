@@ -13,11 +13,11 @@ test.concurrent('mixed class assignment formats', () => {
     const contents = [dedent`
         <div
         class:list={[
-            "text:center",
+            "text-center",
             { hidden: true },
             ["block fg:blue"],
             {
-                "text:center `, target, dedent`": false,
+                "text-center `, target, dedent`": false,
                 },
             ]}
         >

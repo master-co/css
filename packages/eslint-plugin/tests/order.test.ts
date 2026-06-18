@@ -22,7 +22,7 @@ createTester({
     },
 }).run('class order', rule, {
     valid: [
-        { code: `<div class="m:8 p:8 bg:black f:24 fg:white">Simple, basic</div>` },
+        { code: `<div class="m:8 p:8 bg:black fg:white font:24">Simple, basic</div>` },
         { code: `<div class="mt:20 card">Traditional class + syntax</div>` },
         {
             code: '<div className={ctl(`${live && \'bg:blue-10 bg:purple-40@dark r:5@sm\'} p:10 w:full`)}>ctl + exp</div>',
@@ -33,7 +33,7 @@ createTester({
         {
             code: '<div className={ctl(`${live && \'bg: black@dark white\'} p:10 w:full`)}>Space trim issue</div>',
         },
-        { code: `<div class='m:8 p:8 bg:black f:24 fg:white'>Simple quotes</div>` },
+        { code: `<div class='m:8 p:8 bg:black fg:white font:24'>Simple quotes</div>` },
         { code: `<div class="p:8 ">Extra space at the end</div>` },
         { code: `<div class="p:5 px:6 px:3@sm py:2@md p:4@lg">'p', then 'py' then 'px'</div>` },
         {
@@ -73,7 +73,7 @@ createTester({
                                 priority={true}
                                 alt="hello world"
                             />
-                            <h1 className="abs animation:flash|3s|infinite inset:0 m:auto blend:overlay fg:white font:7vw font:heavy height:fit text:center font:40@xs">
+                            <h1 className="abs text-center animation:flash|3s|infinite inset:0 m:auto fg:white font:7vw font:heavy height:fit font:40@xs blend:overlay">
                                 Hello, World!
                             </h1>
                         </div>
@@ -85,14 +85,14 @@ createTester({
             code: `<div class="h:full w:full flex-col:hover_:where(.promotions)@md hidden:hover_:where(.hidden-on-hover)@md hidden!:not(:hover)_:where(.visible-on-hover)@md hidden!_:where(.visible-on-hover)@<md {abs;z:10;h:auto}:hover@md">Issue #377 hover visibility chain</div>`,
         },
         {
-            code: `<button class="flex gap:8 px:0 ai:center w:full fg:#2B88FD:not(:disabled) fg:#999:disabled">Issue #377 disabled colors</button>`,
+            code: `<button class="flex items-center gap:8 px:0 w:full fg:#2B88FD:not(:disabled) fg:#999:disabled">Issue #377 disabled colors</button>`,
         },
         { code: `<div class="font:error mt:0 mt:0@sm a c d hello:world">Error class</div>` },
     ],
     invalid: [
         {
-            code: `<div class="f:24 fg:white m:8 p:8 bg:black">Classnames will be ordered</div>`,
-            output: `<div class="m:8 p:8 bg:black f:24 fg:white">Classnames will be ordered</div>`,
+            code: `<div class="font:24 fg:white m:8 p:8 bg:black">Classnames will be ordered</div>`,
+            output: `<div class="m:8 p:8 bg:black fg:white font:24">Classnames will be ordered</div>`,
             errors: [{ messageId: 'invalidClassOrder' }],
         },
         {

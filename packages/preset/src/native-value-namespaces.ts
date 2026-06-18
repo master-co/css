@@ -172,6 +172,26 @@ const nativeValueNamespaces = [
     {
         properties: ['order'],
         variableAliasRefs: ['=order']
+    },
+    {
+        properties: ['mask-position'],
+        variableAliasRefs: ['=mask-position'],
+        unit: 'px'
+    },
+    {
+        properties: ['mask-size'],
+        variableAliasRefs: ['~container', '=mask-size'],
+        unit: 'rem'
+    },
+    {
+        properties: ['perspective'],
+        variableAliasRefs: ['=perspective'],
+        unit: 'rem'
+    },
+    {
+        properties: ['perspective-origin'],
+        variableAliasRefs: ['=perspective-origin'],
+        unit: 'px'
     }
 ] satisfies MasterCSSPlanNativeValueNamespaces
 

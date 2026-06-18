@@ -116,12 +116,12 @@ describe.concurrent('default plan utility parity', () => {
         expectClassText(css, 'bl:1|solid|muted', 'border-left:0.0625rem solid var(--color-line-muted)')
     })
 
-    test('keeps border single-value aliases on color width and style utilities', () => {
+    test('keeps border single-value aliases on color and width utilities with static style utilities', () => {
         const css = createDefaultCSS()
 
         expectClassText(css, 'bl:muted', 'border-left-color:var(--color-line-muted)')
         expectClassText(css, 'bl:1', 'border-left-width:0.0625rem')
-        expectClassText(css, 'bl:solid', 'border-left-style:solid')
+        expectClassText(css, 'bl-solid', 'border-left-style:solid')
     })
 
     test('executes compiled value functions and complex utilities', () => {
@@ -176,8 +176,8 @@ describe.concurrent('default plan utility parity', () => {
             .toBe('.pb\\:8x\\:not\\(\\:last\\):not(:last-child){padding-bottom:2rem}')
         expect(css.create('bg:blue-20:hover:not(.active)')?.text)
             .toBe('.bg\\:blue-20\\:hover\\:not\\(\\.active\\):hover:not(.active){background-color:var(--color-blue-20)}')
-        expect(css.create('text:center_td:not(:first)')?.text)
-            .toBe('.text\\:center_td\\:not\\(\\:first\\) td:not(:first-child){text-align:center}')
+        expect(css.create('text-center_td:not(:first)')?.text)
+            .toBe('.text-center_td\\:not\\(\\:first\\) td:not(:first-child){text-align:center}')
     })
 
     test('preserves migrated representative default utility cases', () => {
@@ -353,14 +353,14 @@ describe.concurrent('plan-driven layer and lifecycle parity', () => {
         const css = createDefaultCSS()
 
         expect(css.text).toBe('')
-        css.add('text:center')
-        expect(css.text).toContain('@layer utilities{.text\\:center{text-align:center}}')
+        css.add('text-center')
+        expect(css.text).toContain('@layer utilities{.text-center{text-align:center}}')
     })
 
     test('prevents duplicate insertion', () => {
         const css = createDefaultCSS()
 
-        css.add('text:center', 'text:center')
+        css.add('text-center', 'text-center')
         expect(css.utilitiesLayer.rules).toHaveLength(1)
     })
 
@@ -449,13 +449,14 @@ describe.concurrent('plan-driven layer and lifecycle parity', () => {
         css.add(
             'px:0', 'pl:0', 'pr:0', 'p:0', 'pt:0', 'pb:0', 'py:0',
             'mx:0', 'ml:0', 'mr:0', 'm:0', 'mt:0', 'mb:0', 'my:0',
-            'font:12', 'font:medium', 'text:center', 'fixed', 'block', 'round', 'b:0'
+            'font:12', 'font:medium', 'text-center', 'fixed', 'block', 'round', 'b:0'
         )
 
         expect(css.utilitiesLayer.rules.map(({ name }) => name)).toEqual([
             'block',
             'fixed',
             'round',
+            'text-center',
             'b:0',
             'm:0',
             'p:0',
@@ -472,8 +473,7 @@ describe.concurrent('plan-driven layer and lifecycle parity', () => {
             'pb:0',
             'pl:0',
             'pr:0',
-            'pt:0',
-            'text:center'
+            'pt:0'
         ])
     })
 

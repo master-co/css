@@ -5,7 +5,6 @@ import sortCompletionItems from './sort-completion-items'
 import { getMdnPropertySyntax, getMdnPropertyValueNames } from './mdn-css-data'
 
 const SCOPED_VARIABLE_PRIORITY = 'aaaa'
-const AMBIGUOUS_PRIORITY = 'bbbb'
 const NATIVE_PRIORITY = 'ccccc'
 const GLOBAL_VARIABLE_PRIORITY = 'zzzz'
 const NATIVE_UTILITY_TYPES = new Set<number>([UtilityType.Native, UtilityType.NativeShorthand])
@@ -158,24 +157,6 @@ export default function getValueCompletionItems(css: MasterCSS = createDefaultCS
             })
         }
 
-        /**
-         * Ambiguous values
-         * @example text: -> center, left, right, justify
-         * @example t: -> center, left, right, justify
-         */
-        if (eachDefinedUtility.aliasGroups?.includes(canonicalRuleKey) && eachDefinedUtility.values?.length) {
-            for (const value of eachDefinedUtility.values) {
-                if (typeof value !== 'string') continue
-                const isNative = eachDefinedUtility.type !== undefined && NATIVE_UTILITY_TYPES.has(eachDefinedUtility.type)
-                completionItems.push({
-                    label: value,
-                    kind: CompletionItemKind.Value,
-                    sortText: AMBIGUOUS_PRIORITY + value,
-                    documentation: createCSSMarkdownDocumentation(generateCSS([ruleKey + ':' + value], css)),
-                    detail: isNative ? eachDefinedUtility.id + ': ' + value : value
-                })
-            }
-        }
     }
 
     for (const namespace of css.plan.nativeValueNamespaces || []) {

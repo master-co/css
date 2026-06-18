@@ -175,7 +175,7 @@ function createRuntimeUtilityBuckets(
                     }
                     break
                 case 'value':
-                    if (utility.values?.length || utility.kind) utilityBuckets.value = addBucketIndex(utilityBuckets.value, index)
+                    if (utility.kind) utilityBuckets.value = addBucketIndex(utilityBuckets.value, index)
                     break
                 case 'key':
                     utilityBuckets.key = addBucketIndex(utilityBuckets.key, index)

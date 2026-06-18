@@ -64,24 +64,20 @@ const migratedRuleExpectations = [
     {
         source: "packages/core/tests/rules/border-style.test.ts",
         cases: [
-            ["b:solid", "border-style:solid"],
-            ["border:solid", "border-style:solid"],
+            ["b-solid", "border-style:solid"],
             ["border-style:solid", "border-style:solid"],
-            ["bb:solid", "border-bottom-style:solid"],
-            ["border-bottom:solid", "border-bottom-style:solid"],
+            ["bb-solid", "border-bottom-style:solid"],
             ["border-bottom-style:solid", "border-bottom-style:solid"],
-            ["bt:solid", "border-top-style:solid"],
-            ["border-top:solid", "border-top-style:solid"],
+            ["bt-solid", "border-top-style:solid"],
             ["border-top-style:solid", "border-top-style:solid"],
-            ["bl:solid", "border-left-style:solid"],
-            ["border-left:solid", "border-left-style:solid"],
+            ["bl-solid", "border-left-style:solid"],
             ["border-left-style:solid", "border-left-style:solid"],
-            ["br:solid", "border-right-style:solid"],
-            ["border-right:solid", "border-right-style:solid"],
+            ["br-solid", "border-right-style:solid"],
             ["border-right-style:solid", "border-right-style:solid"],
-            ["bx:solid", "border-left-style:solid;border-right-style:solid"],
-            ["border-x:solid", "border-left-style:solid;border-right-style:solid"],
+            ["bx-solid", "border-left-style:solid;border-right-style:solid"],
             ["border-x-style:solid", "border-left-style:solid;border-right-style:solid"],
+            ["by-solid", "border-top-style:solid;border-bottom-style:solid"],
+            ["border-y-style:solid", "border-top-style:solid;border-bottom-style:solid"],
             ["border:solid|1", "border:solid 0.0625rem"],
         ]
     },
@@ -114,16 +110,14 @@ const migratedRuleExpectations = [
         cases: [
             ["border:transparent", "border-color:transparent"],
             ["border:1", "border-width:0.0625rem"],
-            ["border:solid", "border-style:solid"],
+            ["b-solid", "border-style:solid"],
             ["border:1rem|solid", "border:1rem solid"],
-            ["border:none", "border-style:none"],
-            ["border:auto", "border-style:auto"],
+            ["b-none", "border-style:none"],
             ["border:unset", "border:unset"],
             ["border:inherit", "border:inherit"],
             ["border:initial", "border:initial"],
             ["border:revert", "border:revert"],
             ["border:revert-layer", "border:revert-layer"],
-            ["border:auto|1", "border:auto 0.0625rem"],
             ["border:calc(100%-20)|solid", "border:calc(100% - 1.25rem) solid"],
             ["b:16|solid", "border:1rem solid"],
             ["border:16|solid", "border:1rem solid"],
@@ -253,10 +247,10 @@ const migratedRuleExpectations = [
             ["outline:line", "outline-color:var(--color-line)"],
             ["outline:$line", "outline-color:var(--color-line)"],
             ["outline:1", "outline-width:0.0625rem"],
-            ["outline:solid", "outline-style:solid"],
+            ["outline-solid", "outline-style:solid"],
             ["outline:1rem|solid", "outline:1rem solid"],
-            ["outline:none", "outline-style:none"],
-            ["outline:auto", "outline-style:auto"],
+            ["outline-none", "outline-style:none"],
+            ["outline-auto", "outline-style:auto"],
             ["outline:unset", "outline:unset"],
             ["outline:inherit", "outline:inherit"],
             ["outline:initial", "outline:initial"],
@@ -323,7 +317,7 @@ const migratedRuleExpectations = [
     {
         source: "packages/core/tests/rules/scroll-snap-type.test.ts",
         cases: [
-            ["scroll-snap:x", "scroll-snap-type:x"],
+            ["snap-x", "scroll-snap-type:x"],
             ["scroll-snap-type:x", "scroll-snap-type:x"],
             ["scroll-snap-type:x|mandatory", "scroll-snap-type:x mandatory"],
         ]
@@ -337,26 +331,25 @@ const migratedRuleExpectations = [
     {
         source: "packages/core/tests/rules/text-overflow.test.ts",
         cases: [
-            ["text:clip", "text-overflow:clip"],
+            ["text-clip", "text-overflow:clip"],
             ["text-overflow:clip", "text-overflow:clip"],
-            ["text:ellipsis", "text-overflow:ellipsis"],
+            ["text-ellipsis", "text-overflow:ellipsis"],
             ["text-overflow:ellipsis", "text-overflow:ellipsis"],
         ]
     },
     {
         source: "packages/core/tests/rules/text-stroke-width.test.ts",
         cases: [
-            ["text-stroke:thin", "-webkit-text-stroke-width:thin"],
             ["text-stroke-width:thin", "text-stroke-width:thin"],
         ]
     },
     {
         source: "packages/core/tests/rules/text-wrap.test.ts",
         cases: [
-            ["text:wrap", ".text\\:wrap{text-wrap:wrap}"],
-            ["text:nowrap", ".text\\:nowrap{text-wrap:nowrap}"],
-            ["text:balance", ".text\\:balance{text-wrap:balance}"],
-            ["text:pretty", ".text\\:pretty{text-wrap:pretty}"],
+            ["text-wrap", ".text-wrap{text-wrap:wrap}"],
+            ["text-nowrap", ".text-nowrap{text-wrap:nowrap}"],
+            ["text-balance", ".text-balance{text-wrap:balance}"],
+            ["text-pretty", ".text-pretty{text-wrap:pretty}"],
         ]
     },
     {

@@ -64,7 +64,7 @@ function createUtilityBuckets(utilities: MasterCSSPlanUtility[] | undefined): Ma
                     }
                     break
                 case 'value':
-                    if (utility.values?.length || utility.kind) buckets.value = addBucketIndex(buckets.value, index)
+                    if (utility.kind) buckets.value = addBucketIndex(buckets.value, index)
                     break
                 case 'key':
                     buckets.key = addBucketIndex(buckets.key, index)

@@ -6,7 +6,7 @@ jsxTester.run('class matching react', rule, {
         { code: '<h1 className={"bg:black"}>Welcome {name}</h1>' }
     ],
     invalid: [
-        { code: '<h1 className={"bg:error"}>Welcome {name}</h1>', errors: [{ messageId: 'invalidClass' }] },
+        { code: '<h1 className={"text-align:cente"}>Welcome {name}</h1>', errors: [{ messageId: 'invalidClass' }] },
         {
             code: `
                 import React from 'react'

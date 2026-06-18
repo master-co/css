@@ -132,7 +132,7 @@ test.concurrent('renders semantic tokens for CSS-like values', () => {
 
 test.concurrent('renders semantic tokens for container queries and slash-separated string values', () => {
     const { tokens } = renderTokens(
-        '<div className="hidden@container(sm&<=md) container:card/inline-size grid-cols:2@card(3xs) bg:center/cover bg:url(/hero.jpg) hidden@media(pointer:coarse) hidden@h>=sm&h<lg"></div>',
+        '<div className="hidden@container(sm&<=md) container:card/inline-size grid-cols:2@card(3xs) bg-center bg-cover bg:url(/hero.jpg) hidden@media(pointer:coarse) hidden@h>=sm&h<lg"></div>',
         'html'
     )
 
@@ -153,9 +153,9 @@ test.concurrent('renders semantic tokens for container queries and slash-separat
     expectToken(tokens, '@card', 'keyword', ['query'])
     expectToken(tokens, '3', 'number', ['query'])
     expectToken(tokens, 'xs', 'enumMember', ['query', 'unit'])
+    expectToken(tokens, 'bg-center', 'class')
+    expectToken(tokens, 'bg-cover', 'class')
     expectToken(tokens, 'bg', 'property')
-    expectToken(tokens, 'center', 'enumMember')
-    expectToken(tokens, 'cover', 'enumMember')
     expectToken(tokens, 'url', 'function')
     expectToken(tokens, '/hero.jpg', 'string')
     expectToken(tokens, '@media', 'keyword', ['query'])
@@ -167,7 +167,7 @@ test.concurrent('renders semantic tokens for container queries and slash-separat
     expectToken(tokens, 'h', 'property', ['query'])
     expectToken(tokens, '<', 'operator', ['query'])
     expectToken(tokens, 'lg', 'enumMember', ['query'])
-    expect(tokens.filter(({ text, type }) => text === '/' && type === 'operator')).toHaveLength(2)
+    expect(tokens.filter(({ text, type }) => text === '/' && type === 'operator')).toHaveLength(1)
 })
 
 test.concurrent('renders semantic tokens for grouped declarations, strings, units, and important marks', () => {

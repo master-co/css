@@ -43,8 +43,7 @@ const utilities = [
             {
                 "type": "key",
                 "keys": [
-                    "background",
-                    "bg"
+                    "background"
                 ]
             }
         ]
@@ -259,7 +258,6 @@ const utilities = [
             }
         ]
     },
-
     {
         "id": "border-right",
         "name": "border-right",
@@ -288,19 +286,6 @@ const utilities = [
         "id": "border-style",
         "name": "border-style",
         "type": UtilityType.NativeShorthand,
-        "values": [
-            "none",
-            "auto",
-            "hidden",
-            "dotted",
-            "dashed",
-            "solid",
-            "double",
-            "groove",
-            "ridge",
-            "inset",
-            "outset"
-        ],
         "emit": {
             "type": "property",
             "property": "border-style"
@@ -308,13 +293,6 @@ const utilities = [
         "matchers": [
             {
                 "type": "variable",
-                "keys": [
-                    "b",
-                    "border"
-                ]
-            },
-            {
-                "type": "value",
                 "keys": [
                     "b",
                     "border"
@@ -411,12 +389,6 @@ const utilities = [
                 ]
             },
             {
-                "type": "value",
-                "keys": [
-                    "font"
-                ]
-            },
-            {
                 "type": "key",
                 "keys": [
                     "font-variant"
@@ -424,7 +396,6 @@ const utilities = [
             }
         ]
     },
-
     {
         "id": "grid-column",
         "name": "grid-column",
@@ -443,12 +414,6 @@ const utilities = [
             }
         ]
     },
-
-
-
-
-
-
     {
         "id": "outline",
         "name": "outline",
@@ -472,20 +437,10 @@ const utilities = [
             }
         ]
     },
-
-
-
-
-
     {
         "id": "text-decoration",
         "name": "text-decoration",
         "type": UtilityType.NativeShorthand,
-        "values": [
-            "underline",
-            "overline",
-            "line-through"
-        ],
         "unit": "rem",
         "variableAliasRefs": [
             "~color-text",
@@ -506,12 +461,6 @@ const utilities = [
                 ]
             },
             {
-                "type": "value",
-                "keys": [
-                    "text"
-                ]
-            },
-            {
                 "type": "key",
                 "keys": [
                     "text-decoration"
@@ -523,12 +472,6 @@ const utilities = [
         "id": "text-wrap",
         "name": "text-wrap",
         "type": UtilityType.NativeShorthand,
-        "values": [
-            "wrap",
-            "nowrap",
-            "balance",
-            "pretty"
-        ],
         "emit": {
             "type": "property",
             "property": "text-wrap"
@@ -541,12 +484,6 @@ const utilities = [
                 ]
             },
             {
-                "type": "value",
-                "keys": [
-                    "text"
-                ]
-            },
-            {
                 "type": "key",
                 "keys": [
                     "text-wrap"
@@ -554,7 +491,6 @@ const utilities = [
             }
         ]
     },
-
     {
         "id": "border-block-width",
         "name": "border-block-width",
@@ -833,19 +769,6 @@ const utilities = [
         "id": "border-x-style",
         "name": "border-x-style",
         "type": UtilityType.Shorthand,
-        "values": [
-            "none",
-            "auto",
-            "hidden",
-            "dotted",
-            "dashed",
-            "solid",
-            "double",
-            "groove",
-            "ridge",
-            "inset",
-            "outset"
-        ],
         "emit": {
             "type": "declarations",
             "declarations": [
@@ -856,13 +779,6 @@ const utilities = [
         "matchers": [
             {
                 "type": "variable",
-                "keys": [
-                    "bx",
-                    "border-x"
-                ]
-            },
-            {
-                "type": "value",
                 "keys": [
                     "bx",
                     "border-x"
@@ -907,19 +823,6 @@ const utilities = [
         "id": "border-y-style",
         "name": "border-y-style",
         "type": UtilityType.Shorthand,
-        "values": [
-            "none",
-            "auto",
-            "hidden",
-            "dotted",
-            "dashed",
-            "solid",
-            "double",
-            "groove",
-            "ridge",
-            "inset",
-            "outset"
-        ],
         "emit": {
             "type": "declarations",
             "declarations": [
@@ -930,13 +833,6 @@ const utilities = [
         "matchers": [
             {
                 "type": "variable",
-                "keys": [
-                    "by",
-                    "border-y"
-                ]
-            },
-            {
-                "type": "value",
                 "keys": [
                     "by",
                     "border-y"
@@ -1564,7 +1460,6 @@ const utilities = [
             }
         ]
     },
-
     {
         "id": "animation-delay",
         "name": "animation-delay",
@@ -1583,7 +1478,6 @@ const utilities = [
             }
         ]
     },
-
     {
         "id": "animation-name",
         "name": "animation-name",
@@ -1602,7 +1496,6 @@ const utilities = [
             }
         ]
     },
-
     {
         "id": "backdrop-filter",
         "name": "backdrop-filter",
@@ -1630,11 +1523,6 @@ const utilities = [
         "id": "background-attachment",
         "name": "background-attachment",
         "type": UtilityType.Native,
-        "values": [
-            "fixed",
-            "local",
-            "scroll"
-        ],
         "emit": {
             "type": "property",
             "property": "background-attachment"
@@ -1642,12 +1530,6 @@ const utilities = [
         "matchers": [
             {
                 "type": "variable",
-                "keys": [
-                    "bg"
-                ]
-            },
-            {
-                "type": "value",
                 "keys": [
                     "bg"
                 ]
@@ -1664,13 +1546,6 @@ const utilities = [
         "id": "background-position",
         "name": "background-position",
         "type": UtilityType.Native,
-        "values": [
-            "top",
-            "bottom",
-            "right",
-            "left",
-            "center"
-        ],
         "unit": "px",
         "emit": {
             "type": "property",
@@ -1679,12 +1554,6 @@ const utilities = [
         "matchers": [
             {
                 "type": "variable",
-                "keys": [
-                    "bg"
-                ]
-            },
-            {
-                "type": "value",
                 "keys": [
                     "bg"
                 ]
@@ -1701,14 +1570,6 @@ const utilities = [
         "id": "background-repeat",
         "name": "background-repeat",
         "type": UtilityType.Native,
-        "values": [
-            "space",
-            "round",
-            "repeat",
-            "no-repeat",
-            "repeat-x",
-            "repeat-y"
-        ],
         "emit": {
             "type": "property",
             "property": "background-repeat"
@@ -1721,12 +1582,6 @@ const utilities = [
                 ]
             },
             {
-                "type": "value",
-                "keys": [
-                    "bg"
-                ]
-            },
-            {
                 "type": "key",
                 "keys": [
                     "background-repeat"
@@ -1734,26 +1589,10 @@ const utilities = [
             }
         ]
     },
-
-
-
     {
         "id": "border-bottom-style",
         "name": "border-bottom-style",
         "type": UtilityType.Native,
-        "values": [
-            "none",
-            "auto",
-            "hidden",
-            "dotted",
-            "dashed",
-            "solid",
-            "double",
-            "groove",
-            "ridge",
-            "inset",
-            "outset"
-        ],
         "emit": {
             "type": "property",
             "property": "border-bottom-style"
@@ -1761,13 +1600,6 @@ const utilities = [
         "matchers": [
             {
                 "type": "variable",
-                "keys": [
-                    "bb",
-                    "border-bottom"
-                ]
-            },
-            {
-                "type": "value",
                 "keys": [
                     "bb",
                     "border-bottom"
@@ -1785,10 +1617,6 @@ const utilities = [
         "id": "border-collapse",
         "name": "border-collapse",
         "type": UtilityType.Native,
-        "values": [
-            "collapse",
-            "separate"
-        ],
         "emit": {
             "type": "property",
             "property": "border-collapse"
@@ -1802,13 +1630,6 @@ const utilities = [
                 ]
             },
             {
-                "type": "value",
-                "keys": [
-                    "b",
-                    "border"
-                ]
-            },
-            {
                 "type": "key",
                 "keys": [
                     "border-collapse"
@@ -1816,18 +1637,10 @@ const utilities = [
             }
         ]
     },
-
-
     {
         "id": "border-image-repeat",
         "name": "border-image-repeat",
         "type": UtilityType.Native,
-        "values": [
-            "stretch",
-            "repeat",
-            "round",
-            "space"
-        ],
         "emit": {
             "type": "property",
             "property": "border-image-repeat"
@@ -1835,12 +1648,6 @@ const utilities = [
         "matchers": [
             {
                 "type": "variable",
-                "keys": [
-                    "border-image"
-                ]
-            },
-            {
-                "type": "value",
                 "keys": [
                     "border-image"
                 ]
@@ -1857,19 +1664,6 @@ const utilities = [
         "id": "border-left-style",
         "name": "border-left-style",
         "type": UtilityType.Native,
-        "values": [
-            "none",
-            "auto",
-            "hidden",
-            "dotted",
-            "dashed",
-            "solid",
-            "double",
-            "groove",
-            "ridge",
-            "inset",
-            "outset"
-        ],
         "emit": {
             "type": "property",
             "property": "border-left-style"
@@ -1877,13 +1671,6 @@ const utilities = [
         "matchers": [
             {
                 "type": "variable",
-                "keys": [
-                    "bl",
-                    "border-left"
-                ]
-            },
-            {
-                "type": "value",
                 "keys": [
                     "bl",
                     "border-left"
@@ -1901,19 +1688,6 @@ const utilities = [
         "id": "border-right-style",
         "name": "border-right-style",
         "type": UtilityType.Native,
-        "values": [
-            "none",
-            "auto",
-            "hidden",
-            "dotted",
-            "dashed",
-            "solid",
-            "double",
-            "groove",
-            "ridge",
-            "inset",
-            "outset"
-        ],
         "emit": {
             "type": "property",
             "property": "border-right-style"
@@ -1927,13 +1701,6 @@ const utilities = [
                 ]
             },
             {
-                "type": "value",
-                "keys": [
-                    "br",
-                    "border-right"
-                ]
-            },
-            {
                 "type": "key",
                 "keys": [
                     "border-right-style"
@@ -1941,28 +1708,10 @@ const utilities = [
             }
         ]
     },
-
-
-
-
-
     {
         "id": "border-top-style",
         "name": "border-top-style",
         "type": UtilityType.Native,
-        "values": [
-            "none",
-            "auto",
-            "hidden",
-            "dotted",
-            "dashed",
-            "solid",
-            "double",
-            "groove",
-            "ridge",
-            "inset",
-            "outset"
-        ],
         "emit": {
             "type": "property",
             "property": "border-top-style"
@@ -1976,13 +1725,6 @@ const utilities = [
                 ]
             },
             {
-                "type": "value",
-                "keys": [
-                    "bt",
-                    "border-top"
-                ]
-            },
-            {
                 "type": "key",
                 "keys": [
                     "border-top-style"
@@ -1990,7 +1732,6 @@ const utilities = [
             }
         ]
     },
-
     {
         "id": "box-decoration-break",
         "name": "box-decoration-break",
@@ -2011,21 +1752,10 @@ const utilities = [
             }
         ]
     },
-
-
-
-
-
-
     {
         "id": "container-type",
         "name": "container-type",
         "type": UtilityType.Native,
-        "values": [
-            "size",
-            "inline-size",
-            "scroll-state"
-        ],
         "emit": {
             "type": "property",
             "property": "container-type"
@@ -2038,12 +1768,6 @@ const utilities = [
                 ]
             },
             {
-                "type": "value",
-                "keys": [
-                    "container"
-                ]
-            },
-            {
                 "type": "key",
                 "keys": [
                     "container-type"
@@ -2051,10 +1775,6 @@ const utilities = [
             }
         ]
     },
-
-
-
-
     {
         "id": "flex-basis",
         "name": "flex-basis",
@@ -2075,12 +1795,6 @@ const utilities = [
                 ]
             },
             {
-                "type": "value",
-                "keys": [
-                    "flex"
-                ]
-            },
-            {
                 "type": "key",
                 "keys": [
                     "flex-basis"
@@ -2092,12 +1806,6 @@ const utilities = [
         "id": "flex-direction",
         "name": "flex-direction",
         "type": UtilityType.Native,
-        "values": [
-            "row",
-            "row-reverse",
-            "column",
-            "column-reverse"
-        ],
         "emit": {
             "type": "property",
             "property": "flex-direction"
@@ -2105,12 +1813,6 @@ const utilities = [
         "matchers": [
             {
                 "type": "variable",
-                "keys": [
-                    "flex"
-                ]
-            },
-            {
-                "type": "value",
                 "keys": [
                     "flex"
                 ]
@@ -2127,11 +1829,6 @@ const utilities = [
         "id": "flex-wrap",
         "name": "flex-wrap",
         "type": UtilityType.Native,
-        "values": [
-            "wrap",
-            "nowrap",
-            "wrap-reverse"
-        ],
         "emit": {
             "type": "property",
             "property": "flex-wrap"
@@ -2139,12 +1836,6 @@ const utilities = [
         "matchers": [
             {
                 "type": "variable",
-                "keys": [
-                    "flex"
-                ]
-            },
-            {
-                "type": "value",
                 "keys": [
                     "flex"
                 ]
@@ -2176,12 +1867,6 @@ const utilities = [
                 ]
             },
             {
-                "type": "value",
-                "keys": [
-                    "font"
-                ]
-            },
-            {
                 "type": "key",
                 "keys": [
                     "font-family"
@@ -2189,16 +1874,10 @@ const utilities = [
             }
         ]
     },
-
     {
         "id": "font-style",
         "name": "font-style",
         "type": UtilityType.Native,
-        "values": [
-            "normal",
-            "italic",
-            "oblique"
-        ],
         "unit": "deg",
         "emit": {
             "type": "property",
@@ -2207,12 +1886,6 @@ const utilities = [
         "matchers": [
             {
                 "type": "variable",
-                "keys": [
-                    "font"
-                ]
-            },
-            {
-                "type": "value",
                 "keys": [
                     "font"
                 ]
@@ -2229,16 +1902,6 @@ const utilities = [
         "id": "font-variant-numeric",
         "name": "font-variant-numeric",
         "type": UtilityType.Native,
-        "values": [
-            "ordinal",
-            "slashed-zero",
-            "lining-nums",
-            "oldstyle-nums",
-            "proportional-nums",
-            "tabular-nums",
-            "diagonal-fractions",
-            "stacked-fractions"
-        ],
         "emit": {
             "type": "property",
             "property": "font-variant-numeric"
@@ -2246,12 +1909,6 @@ const utilities = [
         "matchers": [
             {
                 "type": "variable",
-                "keys": [
-                    "font"
-                ]
-            },
-            {
-                "type": "value",
                 "keys": [
                     "font"
                 ]
@@ -2268,9 +1925,6 @@ const utilities = [
         "id": "font-weight",
         "name": "font-weight",
         "type": UtilityType.Native,
-        "values": [
-            "bolder"
-        ],
         "variableAliasRefs": [
             "=font-weight"
         ],
@@ -2281,12 +1935,6 @@ const utilities = [
         "matchers": [
             {
                 "type": "variable",
-                "keys": [
-                    "font"
-                ]
-            },
-            {
-                "type": "value",
                 "keys": [
                     "font"
                 ]
@@ -2371,23 +2019,10 @@ const utilities = [
             }
         ]
     },
-
-
-
-
-
-
-
-
-
     {
         "id": "list-style-position",
         "name": "list-style-position",
         "type": UtilityType.Native,
-        "values": [
-            "inside",
-            "outside"
-        ],
         "emit": {
             "type": "property",
             "property": "list-style-position"
@@ -2395,12 +2030,6 @@ const utilities = [
         "matchers": [
             {
                 "type": "variable",
-                "keys": [
-                    "list-style"
-                ]
-            },
-            {
-                "type": "value",
                 "keys": [
                     "list-style"
                 ]
@@ -2417,10 +2046,6 @@ const utilities = [
         "id": "list-style-type",
         "name": "list-style-type",
         "type": UtilityType.Native,
-        "values": [
-            "disc",
-            "decimal"
-        ],
         "emit": {
             "type": "property",
             "property": "list-style-type"
@@ -2433,12 +2058,6 @@ const utilities = [
                 ]
             },
             {
-                "type": "value",
-                "keys": [
-                    "list-style"
-                ]
-            },
-            {
                 "type": "key",
                 "keys": [
                     "list-style-type"
@@ -2446,14 +2065,6 @@ const utilities = [
             }
         ]
     },
-
-
-
-
-
-
-
-
     {
         "id": "mask-image",
         "name": "mask-image",
@@ -2474,24 +2085,10 @@ const utilities = [
             }
         ]
     },
-
-
-
-
-
-
-
-
     {
         "id": "object-fit",
         "name": "object-fit",
         "type": UtilityType.Native,
-        "values": [
-            "contain",
-            "cover",
-            "fill",
-            "scale-down"
-        ],
         "emit": {
             "type": "property",
             "property": "object-fit"
@@ -2499,12 +2096,6 @@ const utilities = [
         "matchers": [
             {
                 "type": "variable",
-                "keys": [
-                    "object"
-                ]
-            },
-            {
-                "type": "value",
                 "keys": [
                     "object"
                 ]
@@ -2521,13 +2112,6 @@ const utilities = [
         "id": "object-position",
         "name": "object-position",
         "type": UtilityType.Native,
-        "values": [
-            "top",
-            "bottom",
-            "right",
-            "left",
-            "center"
-        ],
         "emit": {
             "type": "property",
             "property": "object-position"
@@ -2540,12 +2124,6 @@ const utilities = [
                 ]
             },
             {
-                "type": "value",
-                "keys": [
-                    "object"
-                ]
-            },
-            {
                 "type": "key",
                 "keys": [
                     "object-position"
@@ -2553,25 +2131,10 @@ const utilities = [
             }
         ]
     },
-
-
     {
         "id": "outline-style",
         "name": "outline-style",
         "type": UtilityType.Native,
-        "values": [
-            "none",
-            "auto",
-            "hidden",
-            "dotted",
-            "dashed",
-            "solid",
-            "double",
-            "groove",
-            "ridge",
-            "inset",
-            "outset"
-        ],
         "emit": {
             "type": "property",
             "property": "outline-style"
@@ -2584,12 +2147,6 @@ const utilities = [
                 ]
             },
             {
-                "type": "value",
-                "keys": [
-                    "outline"
-                ]
-            },
-            {
                 "type": "key",
                 "keys": [
                     "outline-style"
@@ -2597,15 +2154,6 @@ const utilities = [
             }
         ]
     },
-
-
-
-
-
-
-
-
-
     {
         "id": "rotate",
         "name": "rotate",
@@ -2624,24 +2172,10 @@ const utilities = [
             }
         ]
     },
-
-
-
-
-
-
-
-
-
     {
         "id": "scroll-snap-align",
         "name": "scroll-snap-align",
         "type": UtilityType.Native,
-        "values": [
-            "start",
-            "end",
-            "center"
-        ],
         "emit": {
             "type": "property",
             "property": "scroll-snap-align"
@@ -2649,12 +2183,6 @@ const utilities = [
         "matchers": [
             {
                 "type": "variable",
-                "keys": [
-                    "scroll-snap"
-                ]
-            },
-            {
-                "type": "value",
                 "keys": [
                     "scroll-snap"
                 ]
@@ -2671,10 +2199,6 @@ const utilities = [
         "id": "scroll-snap-stop",
         "name": "scroll-snap-stop",
         "type": UtilityType.Native,
-        "values": [
-            "normal",
-            "always"
-        ],
         "emit": {
             "type": "property",
             "property": "scroll-snap-stop"
@@ -2682,12 +2206,6 @@ const utilities = [
         "matchers": [
             {
                 "type": "variable",
-                "keys": [
-                    "scroll-snap"
-                ]
-            },
-            {
-                "type": "value",
                 "keys": [
                     "scroll-snap"
                 ]
@@ -2704,13 +2222,6 @@ const utilities = [
         "id": "scroll-snap-type",
         "name": "scroll-snap-type",
         "type": UtilityType.Native,
-        "values": [
-            "x",
-            "y",
-            "block",
-            "inline",
-            "both"
-        ],
         "emit": {
             "type": "property",
             "property": "scroll-snap-type"
@@ -2718,12 +2229,6 @@ const utilities = [
         "matchers": [
             {
                 "type": "variable",
-                "keys": [
-                    "scroll-snap"
-                ]
-            },
-            {
-                "type": "value",
                 "keys": [
                     "scroll-snap"
                 ]
@@ -2757,19 +2262,10 @@ const utilities = [
             }
         ]
     },
-
     {
         "id": "text-align",
         "name": "text-align",
         "type": UtilityType.Native,
-        "values": [
-            "justify",
-            "center",
-            "left",
-            "right",
-            "start",
-            "end"
-        ],
         "emit": {
             "type": "property",
             "property": "text-align"
@@ -2777,12 +2273,6 @@ const utilities = [
         "matchers": [
             {
                 "type": "variable",
-                "keys": [
-                    "text"
-                ]
-            },
-            {
-                "type": "value",
                 "keys": [
                     "text"
                 ]
@@ -2799,11 +2289,6 @@ const utilities = [
         "id": "text-decoration-line",
         "name": "text-decoration-line",
         "type": UtilityType.Native,
-        "values": [
-            "underline",
-            "overline",
-            "line-through"
-        ],
         "emit": {
             "type": "property",
             "property": "text-decoration-line"
@@ -2811,12 +2296,6 @@ const utilities = [
         "matchers": [
             {
                 "type": "variable",
-                "keys": [
-                    "text-decoration"
-                ]
-            },
-            {
-                "type": "value",
                 "keys": [
                     "text-decoration"
                 ]
@@ -2833,13 +2312,6 @@ const utilities = [
         "id": "text-decoration-style",
         "name": "text-decoration-style",
         "type": UtilityType.Native,
-        "values": [
-            "solid",
-            "double",
-            "dotted",
-            "dashed",
-            "wavy"
-        ],
         "emit": {
             "type": "property",
             "property": "text-decoration-style"
@@ -2847,12 +2319,6 @@ const utilities = [
         "matchers": [
             {
                 "type": "variable",
-                "keys": [
-                    "text-decoration"
-                ]
-            },
-            {
-                "type": "value",
                 "keys": [
                     "text-decoration"
                 ]
@@ -2887,13 +2353,6 @@ const utilities = [
         "id": "text-orientation",
         "name": "text-orientation",
         "type": UtilityType.Native,
-        "values": [
-            "mixed",
-            "upright",
-            "sideways-right",
-            "sideways",
-            "use-glyph-orientation"
-        ],
         "emit": {
             "type": "property",
             "property": "text-orientation"
@@ -2901,12 +2360,6 @@ const utilities = [
         "matchers": [
             {
                 "type": "variable",
-                "keys": [
-                    "text"
-                ]
-            },
-            {
-                "type": "value",
                 "keys": [
                     "text"
                 ]
@@ -2923,10 +2376,6 @@ const utilities = [
         "id": "text-overflow",
         "name": "text-overflow",
         "type": UtilityType.Native,
-        "values": [
-            "ellipsis",
-            "clip"
-        ],
         "emit": {
             "type": "property",
             "property": "text-overflow"
@@ -2934,12 +2383,6 @@ const utilities = [
         "matchers": [
             {
                 "type": "variable",
-                "keys": [
-                    "text"
-                ]
-            },
-            {
-                "type": "value",
                 "keys": [
                     "text"
                 ]
@@ -2956,11 +2399,6 @@ const utilities = [
         "id": "text-rendering",
         "name": "text-rendering",
         "type": UtilityType.Native,
-        "values": [
-            "optimizeSpeed",
-            "optimizeLegibility",
-            "geometricPrecision"
-        ],
         "emit": {
             "type": "property",
             "property": "text-rendering"
@@ -2973,12 +2411,6 @@ const utilities = [
                 ]
             },
             {
-                "type": "value",
-                "keys": [
-                    "text"
-                ]
-            },
-            {
                 "type": "key",
                 "keys": [
                     "text-rendering"
@@ -2986,7 +2418,6 @@ const utilities = [
             }
         ]
     },
-
     {
         "id": "text-stroke",
         "name": "text-stroke",
@@ -3011,11 +2442,6 @@ const utilities = [
         "id": "text-transform",
         "name": "text-transform",
         "type": UtilityType.Native,
-        "values": [
-            "uppercase",
-            "lowercase",
-            "capitalize"
-        ],
         "emit": {
             "type": "property",
             "property": "text-transform"
@@ -3023,12 +2449,6 @@ const utilities = [
         "matchers": [
             {
                 "type": "variable",
-                "keys": [
-                    "text"
-                ]
-            },
-            {
-                "type": "value",
                 "keys": [
                     "text"
                 ]
@@ -3061,12 +2481,6 @@ const utilities = [
                 ]
             },
             {
-                "type": "value",
-                "keys": [
-                    "text-underline"
-                ]
-            },
-            {
                 "type": "key",
                 "keys": [
                     "text-underline-offset"
@@ -3078,12 +2492,6 @@ const utilities = [
         "id": "text-underline-position",
         "name": "text-underline-position",
         "type": UtilityType.Native,
-        "values": [
-            "front-font",
-            "under",
-            "left",
-            "right"
-        ],
         "emit": {
             "type": "property",
             "property": "text-underline-position"
@@ -3096,12 +2504,6 @@ const utilities = [
                 ]
             },
             {
-                "type": "value",
-                "keys": [
-                    "text-underline"
-                ]
-            },
-            {
                 "type": "key",
                 "keys": [
                     "text-underline-position"
@@ -3109,7 +2511,6 @@ const utilities = [
             }
         ]
     },
-
     {
         "id": "transform",
         "name": "transform",
@@ -3134,10 +2535,6 @@ const utilities = [
         "id": "transform-style",
         "name": "transform-style",
         "type": UtilityType.Native,
-        "values": [
-            "flat",
-            "preserve-3d"
-        ],
         "emit": {
             "type": "property",
             "property": "transform-style"
@@ -3145,12 +2542,6 @@ const utilities = [
         "matchers": [
             {
                 "type": "variable",
-                "keys": [
-                    "transform"
-                ]
-            },
-            {
-                "type": "value",
                 "keys": [
                     "transform"
                 ]
@@ -3181,9 +2572,6 @@ const utilities = [
             }
         ]
     },
-
-
-
     {
         "id": "user-drag",
         "name": "user-drag",
@@ -3224,7 +2612,6 @@ const utilities = [
             }
         ]
     },
-
     {
         "id": "word-spacing",
         "name": "word-spacing",
@@ -3243,8 +2630,6 @@ const utilities = [
             }
         ]
     },
-
-
     {
         "id": "background-image",
         "name": "background-image",
@@ -3342,11 +2727,6 @@ const utilities = [
         "id": "background-size",
         "name": "background-size",
         "type": UtilityType.Native,
-        "values": [
-            "auto",
-            "cover",
-            "contain"
-        ],
         "kind": "number",
         "unit": "rem",
         "emit": {
@@ -3480,9 +2860,6 @@ const utilities = [
         "id": "border-image-width",
         "name": "border-image-width",
         "type": UtilityType.Native,
-        "values": [
-            "auto"
-        ],
         "kind": "number",
         "unit": "rem",
         "emit": {
@@ -3685,11 +3062,6 @@ const utilities = [
         "id": "outline-width",
         "name": "outline-width",
         "type": UtilityType.Native,
-        "values": [
-            "medium",
-            "thick",
-            "thin"
-        ],
         "kind": "number",
         "unit": "rem",
         "emit": {
@@ -3773,9 +3145,6 @@ const utilities = [
         "id": "text-decoration-thickness",
         "name": "text-decoration-thickness",
         "type": UtilityType.Native,
-        "values": [
-            "from-font"
-        ],
         "kind": "number",
         "unit": "em",
         "emit": {
@@ -3807,11 +3176,6 @@ const utilities = [
         "id": "text-stroke-width",
         "name": "text-stroke-width",
         "type": UtilityType.Native,
-        "values": [
-            "thin",
-            "medium",
-            "thick"
-        ],
         "kind": "number",
         "unit": "rem",
         "emit": {
@@ -3845,13 +3209,6 @@ const utilities = [
         "id": "transform-origin",
         "name": "transform-origin",
         "type": UtilityType.Native,
-        "values": [
-            "top",
-            "bottom",
-            "right",
-            "left",
-            "center"
-        ],
         "kind": "number",
         "unit": "px",
         "emit": {
@@ -4283,116 +3640,6 @@ const utilities = [
             }
         ]
     },
-    {
-        "id": "mask-position",
-        "name": "mask-position",
-        "type": UtilityType.Native,
-        "values": [
-            "top",
-            "bottom",
-            "right",
-            "left",
-            "center"
-        ],
-        "unit": "px",
-        "emit": {
-            "type": "property",
-            "property": "mask-position"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "mask-position"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "mask-size",
-        "name": "mask-size",
-        "type": UtilityType.Native,
-        "values": [
-            "auto",
-            "cover",
-            "contain"
-        ],
-        "unit": "rem",
-        "variableAliasRefs": [
-            "~container"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "mask-size"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "mask-size"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "perspective",
-        "name": "perspective",
-        "type": UtilityType.Native,
-        "values": [
-            "none"
-        ],
-        "unit": "rem",
-        "emit": {
-            "type": "property",
-            "property": "perspective"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "perspective"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "perspective-origin",
-        "name": "perspective-origin",
-        "type": UtilityType.Native,
-        "values": [
-            "top",
-            "bottom",
-            "right",
-            "left",
-            "center"
-        ],
-        "kind": "number",
-        "unit": "px",
-        "emit": {
-            "type": "property",
-            "property": "perspective-origin"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "perspective-origin"
-                ]
-            }
-        ]
-    },
-
-
-
-
-
-
-
-
-
-
-
-
     {
         "id": "blur()",
         "name": "blur()",

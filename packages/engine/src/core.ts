@@ -74,10 +74,6 @@ function isNameBoundary(char: string | undefined) {
     return char === undefined || !/[a-zA-Z0-9-]/.test(char)
 }
 
-function isWordBoundary(char: string | undefined) {
-    return char === undefined || char === '_' || !/[a-zA-Z0-9]/.test(char)
-}
-
 function getKeyedValue(className: string, keys: string[]) {
     for (const key of keys) {
         const prefix = key + ':'
@@ -177,7 +173,6 @@ function isPureNativeDeclarationUtilityDefinition(
         && !utility.variableAliases?.length
         && !utility.transform
         && !utility.kind
-        && !utility.values?.length
         && !utility.includeAnimations
         && !utility.atRules?.length
 }
@@ -631,9 +626,6 @@ export default class MasterCSS {
                 const value = getKeyedValue(className, matcher.keys)
                 if (value === undefined) return false
                 if (!matchesValueSegmentPolicy(value, matcher)) return false
-                for (const token of utility.values || []) {
-                    if (value.startsWith(token) && isWordBoundary(value[token.length])) return true
-                }
                 switch (utility.kind) {
                     case 'color':
                         return value[0] === '#'
@@ -717,8 +709,8 @@ export default class MasterCSS {
         }
 
         /**
-         * 2. value (ambiguous.key * ambiguous.values)
-         * @example bg:current box-content font:12
+         * 2. value (ambiguous key with raw color/number/image)
+         * @example bg:#fff font:12
          */
         for (const eachUtility of this.valueMatcherUtilities) {
             if (this.matchesUtility(className, eachUtility, 'value')) return [eachUtility]

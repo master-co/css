@@ -6,7 +6,7 @@ import init from '../../e2e/init'
 test('383', async ({ page }) => {
     await page.evaluate(() => {
         document.body.innerHTML = `
-            <div class="text:center"></div>
+            <div class="text-center"></div>
         `
     })
     await init(page)

@@ -258,7 +258,7 @@ test('removes shared alias variable dependencies when classes disappear', async 
 
     const initial = await page.evaluate(async () => {
         const el = document.createElement('p')
-        el.classList.add('fg:brand', 'bg:brand')
+        el.classList.add('fg:brand', 'color:brand')
         document.body.append(el)
         await new Promise(resolve => setTimeout(resolve, 0))
         return {
@@ -291,7 +291,7 @@ test('removes shared alias variable dependencies when classes disappear', async 
     })
 
     const afterAllRemoved = await page.evaluate(async () => {
-        document.querySelector('p')?.classList.remove('bg:brand')
+        document.querySelector('p')?.classList.remove('color:brand')
         await new Promise(resolve => setTimeout(resolve, 0))
         return {
             text: globalThis.cssRuntime.themeLayer.text,

@@ -50,9 +50,9 @@ test('expects the variable output', async ({ page }) => {
         p?.classList.add(
             'bg:second',
             'b:third',
-            '{outline:fourth;accent:fifth}',
+            '{outline:fourth;accent-color:fifth}',
             'fg:second',
-            'accent:sixth'
+            'accent-color:sixth'
         )
         await new Promise(resolve => setTimeout(resolve, 0))
         return globalThis.cssRuntime.text
@@ -68,7 +68,7 @@ test('expects the variable output', async ({ page }) => {
     expect(text).toMatch(/\.light\{[^}]*--color-fourth:#000000[^}]*\}/)
     expect(text).toMatch(/\.dark\{[^}]*--color-fifth:#022222[^}]*\}/)
     expect(text).toMatch(/\.light,:root\{[^}]*--color-fifth:#033333[^}]*\}/)
-    expect(text).toContain('.\\{outline\\:fourth\\;accent\\:fifth\\}{outline-color:var(--color-fourth);accent-color:var(--color-fifth)}')
+    expect(text).toContain('.\\{outline\\:fourth\\;accent-color\\:fifth\\}{outline-color:var(--color-fourth);accent-color:var(--color-fifth)}')
     expect(text).toContain('.fg\\:second{color:var(--color-second)}')
     expect(text).toMatch(/\.light,:root\{[^}]*--color-sixth:#666666[^}]*\}/)
 
@@ -89,7 +89,7 @@ test('expects the variable output', async ({ page }) => {
     expect(text).not.toMatch(/\.light\{[^}]*--color-third:#777777[^}]*\}/)
 
     text = await page.evaluate(async () => {
-        document.getElementById('mp')?.classList.remove('{outline:fourth;accent:fifth}')
+        document.getElementById('mp')?.classList.remove('{outline:fourth;accent-color:fifth}')
         await new Promise(resolve => setTimeout(resolve, 0))
         return globalThis.cssRuntime.text
     })
@@ -117,7 +117,7 @@ test('expects the variable output', async ({ page }) => {
     expect(text).not.toMatch(/\.light, :root\{[^}]*--color-first:#333333[^}]*\}/)
 
     text = await page.evaluate(async () => {
-        document.getElementById('mp')?.classList.remove('accent:sixth')
+        document.getElementById('mp')?.classList.remove('accent-color:sixth')
         await new Promise(resolve => setTimeout(resolve, 0))
         return globalThis.cssRuntime.text
     })

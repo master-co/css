@@ -2,11 +2,11 @@ import rule from '../src/rules/class-order'
 import { jsxTester } from './testers'
 
 jsxTester.run('svelte class order', rule, {
-    valid: [{ code: `<div class="m:8 p:8 bg:black f:24 fg:white">Simple, basic</div>` }],
+    valid: [{ code: `<div class="m:8 p:8 bg:black fg:white font:24">Simple, basic</div>` }],
     invalid: [
         {
-            code: `<div class="m:8 bg:black p:8 f:24 fg:white">Enhancing readability</div>`,
-            output: `<div class="m:8 p:8 bg:black f:24 fg:white">Enhancing readability</div>`,
+            code: `<div class="m:8 bg:black p:8 fg:white font:24">Enhancing readability</div>`,
+            output: `<div class="m:8 p:8 bg:black fg:white font:24">Enhancing readability</div>`,
             errors: [{ messageId: 'invalidClassOrder' }],
             filename: 'test.svelte',
             languageOptions: {

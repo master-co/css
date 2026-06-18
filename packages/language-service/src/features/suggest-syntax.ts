@@ -20,7 +20,7 @@ export default function suggestSyntax(this: CSSLanguageService,
             ? ''
             /**
              * Get the front field of the class according to the cursor.
-             * @example <div class="text:center:hover@sm"></div>
+             * @example <div class="text-center:hover@sm"></div>
              *                          ^ types: and cursor is here -> text:
              * */
             : document.getText({

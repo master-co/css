@@ -10,7 +10,7 @@ jsxTester.run('class order', rule, {
                         m:8
                         bg:black
                         p:8
-                        f:24
+                        font:24
                         fg:white
                     ">
                         :)
@@ -20,8 +20,8 @@ jsxTester.run('class order', rule, {
                         m:8
                         p:8
                         bg:black
-                        f:24
                         fg:white
+                        font:24
                     ">
                         :)
                     </div>`,

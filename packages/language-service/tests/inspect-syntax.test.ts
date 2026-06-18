@@ -14,15 +14,15 @@ export const inspect = (target: string, settings: Settings = {}) => {
     return languageService.inspectSyntax(doc, range?.start as Position)
 }
 
-test.concurrent('text:center', async () => {
-    const target = 'text:center'
+test.concurrent('text-center', async () => {
+    const target = 'text-center'
     const hover = inspect(target)
     expect(hover?.contents).toEqual({
         'kind': 'markdown',
         'value': dedent`
             \`\`\`css
             @layer utilities {
-              .text\\:center {
+              .text-center {
                 text-align: center
               }
             }

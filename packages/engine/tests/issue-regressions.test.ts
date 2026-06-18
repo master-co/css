@@ -193,7 +193,7 @@ describe.concurrent('migrated issue regressions', () => {
         expect(css.create('{paint-order:stroke}')?.text).toContain('paint-order:stroke')
         expect(css.create('{paint-order:stroke|fill|markers}')?.text).toContain('paint-order:stroke fill markers')
 
-        const rule = css.create('bg:white|red')
+        const rule = css.create('background:white|red')
         expect(rule?.text).toBeTruthy()
         const declarationStart = rule!.text.indexOf('{')
         expect(rule!.text.slice(declarationStart)).not.toContain('|')
