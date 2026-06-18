@@ -3,15 +3,15 @@ import CollisionRule from '../src/rules/class-collision'
 import { jsxTester } from './testers'
 
 jsxTester.run('mdx class order', OrderRule, {
-    valid: [{ code: `<div class="bg:black fg:white font:24 m:8 p:8">Simple, basic</div>` }],
+    valid: [{ code: `<div class="m:2x p:2x bg:black fg:white font:1.5rem">Simple, basic</div>` }],
     invalid: [
         {
             code: `
             # Test
-            <div class="m:8 bg:black p:8 fg:white font:24">Simple</div>`,
+            <div class="m:2x bg:black p:2x fg:white font:1.5rem">Simple</div>`,
             output: `
             # Test
-            <div class="bg:black fg:white font:24 m:8 p:8">Simple</div>`,
+            <div class="m:2x p:2x bg:black fg:white font:1.5rem">Simple</div>`,
             errors: [{ messageId: 'invalidClassOrder' }],
             filename: 'test.mdx',
             languageOptions: {

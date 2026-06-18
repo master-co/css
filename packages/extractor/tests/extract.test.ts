@@ -27,18 +27,18 @@ it('extract latent classes from js raw', () => {
 test('basic js object', () => {
     expect(extractLatentClasses(`
     const test = {
-        'f:24': true
+        'font:1.5rem': true
     }
     `)).toEqual([
         'const',
         'test',
-        'f:24',
+        'font:1.5rem',
         'true',
     ])
 })
 
 test('basic html', () => {
-    expect(extractLatentClasses(`<div class="f:16 filter:blur(2px) animation:shake|1s|infinite>li"></div>`)).toEqual(['f:16', 'filter:blur(2px)', 'animation:shake|1s|infinite>li'])
+    expect(extractLatentClasses(`<div class="font:1rem filter:blur(2px) animation:shake|1s|infinite>li"></div>`)).toEqual(['font:1rem', 'filter:blur(2px)', 'animation:shake|1s|infinite>li'])
 })
 
 test('utility sign and symbol key syntax is not extracted', () => {
@@ -64,7 +64,7 @@ test('comment', () => {
     expect(extractLatentClasses(`<!-- comment -->
     /* bg:black */
     /*
-        f:16
+        font:1rem
     */
     `)).toEqual([])
 })
@@ -86,35 +86,35 @@ test('=', () => {
 test('media', () => {
     expect(extractLatentClasses(`
     bg:black@xl
-    font:24@media(min-width:1024px)
-    font:16@<789
-    font:16@<=789
-    font:16@>=789
-    font:16@>789
+    font:1.5rem@media(min-width:1024px)
+    font:1rem@<789
+    font:1rem@<=789
+    font:1rem@>=789
+    font:1rem@>789
     `)).toEqual([
         'bg:black@xl',
-        'font:24@media(min-width:1024px)',
-        'font:16@<789',
-        'font:16@<=789',
-        'font:16@>=789',
-        'font:16@>789',
+        'font:1.5rem@media(min-width:1024px)',
+        'font:1rem@<789',
+        'font:1rem@<=789',
+        'font:1rem@>=789',
+        'font:1rem@>789',
     ])
 })
 
 test('wxh', () => {
     expect(extractLatentClasses(`
-        min:40|80
-        min:calc(100vw-60)xcalc(100vh-100px)
-        calc(100vw-60)x20rem
+        min:10x|20x
+        min:calc(100vw-3.75rem)xcalc(100vh-100px)
+        calc(100vw-3.75rem)x20rem
         15pxxcalc(100vh-100px)
-        calc(100vw-60)xcalc(100vh-100px)
+        calc(100vw-3.75rem)xcalc(100vh-100px)
         class="logo"
     `)).toEqual([
-        'min:40|80',
-        'min:calc(100vw-60)xcalc(100vh-100px)',
-        'calc(100vw-60)x20rem',
+        'min:10x|20x',
+        'min:calc(100vw-3.75rem)xcalc(100vh-100px)',
+        'calc(100vw-3.75rem)x20rem',
         '15pxxcalc(100vh-100px)',
-        'calc(100vw-60)xcalc(100vh-100px)',
+        'calc(100vw-3.75rem)xcalc(100vh-100px)',
         'logo'
     ])
 })
@@ -126,13 +126,13 @@ test('group', () => {
     {data_0}
     {}
     {/if}
-    {bg:black;f:16}_div@dark
+    {bg:black;font:1rem}_div@dark
     .something{bg:white}
     `))
         .toEqual([
             '{form}',
             '{data_0}',
-            '{bg:black;f:16}_div@dark',
+            '{bg:black;font:1rem}_div@dark',
             '.something{bg:white}',
         ])
 })

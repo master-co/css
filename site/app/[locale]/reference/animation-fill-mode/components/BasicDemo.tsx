@@ -22,7 +22,7 @@ export default function BasicDemo({ className }: any) {
                 </div>
                 <div>
                     <div className='font:10px text-center'>origin</div>
-                    <IconCar className={clsx(className, 'size:12x mb:-48 mr:-48 stroke:.5 stroke:text-disabled')} />
+                    <IconCar className={clsx(className, 'size:12x mb:-12x mr:-12x stroke:.5 stroke:text-disabled')} />
                     <IconCar className={clsx(className, 'app-icon-primary size:12x animation-delay:1s! stroke:.5', targetClassName)} />
                 </div>
                 <div>

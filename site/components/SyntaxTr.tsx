@@ -42,7 +42,7 @@ export default async function SyntaxTr({ value, children }: any) {
                     const newValue = restore(child.value)
                     if (child.value !== newValue) {
                         child.value = newValue
-                        element.properties.class = 'fg:muted italic mr:2:not(:last)'
+                        element.properties.class = 'fg:muted italic mr:0.125rem:not(:last)'
                     }
                 }
             })

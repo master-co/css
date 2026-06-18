@@ -6,7 +6,7 @@ export default function Componennt() {
             block
             text-center
             fg:blue
-            font:16
+            font:1rem
         `}></div>
     )
 }

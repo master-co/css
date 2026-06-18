@@ -7,7 +7,7 @@ export default ({ className }: any) => {
             <div className='flex:0'>
                 <span className={clsx(
                     className,
-                    'bg:linear-gradient(90deg,#FAD961|0%,#F76B1C|100%) pi:3x fg:white font:32px font:extrabold tracking:-.25'
+                    'bg:linear-gradient(90deg,#FAD961|0%,#F76B1C|100%) pi:3x fg:white font:32px font:extrabold tracking:-.25px'
                 )}>
                     Box Decoration Break
                 </span>

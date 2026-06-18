@@ -44,7 +44,7 @@ function expectToken(tokens: { text: string, type: string, modifiers: string[] }
 
 test.concurrent('renders semantic tokens for class attributes', () => {
     const { tokens } = renderTokens(
-        '<div className="fg:brand:hover@sm block block:hover block:state-name hidden_div::before:of(.active) m:4x bg:rgb(0|0|0) w:10::scrollbar btn btn:hover@sm btn_div::before"></div>',
+        '<div className="fg:brand:hover@sm block block:hover block:state-name hidden_div::before:of(.active) m:4x bg:rgb(0|0|0) w:0.625rem::scrollbar btn btn:hover@sm btn_div::before"></div>',
         'tsx',
         {
             plan: createPresetPlan({
@@ -171,7 +171,7 @@ test.concurrent('renders semantic tokens for container queries and slash-separat
 
 test.concurrent('renders semantic tokens for grouped declarations, strings, units, and important marks', () => {
     const { tokens } = renderTokens(
-        '<div class="{fg:red;bg:blue} transform:translate(10x|20px) content:\'a|b\' size:10x20 fg:red!"></div>',
+        '<div class="{fg:red;bg:blue} transform:translate(10x|20px) content:\'a|b\' size:10x|20px fg:red!"></div>',
         'html'
     )
 
@@ -190,7 +190,7 @@ test.concurrent('renders semantic tokens for grouped declarations, strings, unit
     expectToken(tokens, 'px', 'enumMember', ['unit'])
     expectToken(tokens, '\'', 'string', ['quoted'])
     expectToken(tokens, 'a|b', 'string', ['quoted'])
-    expectToken(tokens, 'x', 'operator', ['unit'])
+    expectToken(tokens, 'x', 'enumMember', ['unit'])
     expectToken(tokens, '!', 'operator', ['important'])
 })
 

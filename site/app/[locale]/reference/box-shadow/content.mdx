@@ -24,15 +24,15 @@ Use `shadow:*` tokens for common elevation levels. Preset shadow tokens are defi
 Use raw values when a shadow does not belong in the shared scale. Raw values are literal; they do not automatically adapt between light and dark modes.
 
 ```html
-<!-- @MARK shadow:0|1|2|black/.12,0|4|8|black/.08 -->
-<div class="shadow:0|1|2|black/.12,0|4|8|black/.08">...</div>
+<!-- @MARK shadow:0|1px|2px|black/.12,0|4px|8px|black/.08 -->
+<div class="shadow:0|1px|2px|black/.12,0|4px|8px|black/.08">...</div>
 ```
 
 ### Use inset shadows
 Use `shadow:inset|...` when the shadow should render inside the element.
 ```html
-<!-- @MARK shadow:inset|0|1|2|black/.12 -->
-<div class="shadow:inset|0|1|2|black/.12">...</div>
+<!-- @MARK shadow:inset|0|1px|2px|black/.12 -->
+<div class="shadow:inset|0|1px|2px|black/.12">...</div>
 ```
 
 ### Apply conditionally

@@ -5,22 +5,22 @@
 ### Apply filter functions
 Use `filter:*` with functions such as `blur(...)`, `brightness(...)`, and `drop-shadow(...)` to apply CSS filters.
 ```html
-<!-- @MARK filter:blur(4) --><!-- @MARK filter:brightness(.8) -->
-<img class="filter:blur(4) filter:brightness(.8)" src="..." alt="" />
+<!-- @MARK filter:blur(4px) --><!-- @MARK filter:brightness(.8) -->
+<img class="filter:blur(4px) filter:brightness(.8)" src="..." alt="" />
 ```
 
 <details>
     <summary>Generated CSS</summary>
     <Class2CSS>
-        {['filter:blur(4)', 'filter:brightness(.8)']}
+        {['filter:blur(4px)', 'filter:brightness(.8)']}
     </Class2CSS>
 </details>
 
 ### Use drop shadow for transparent images
 Use `filter:drop-shadow(...)` when the shadow should follow the alpha shape of an image or SVG.
 ```html
-<!-- @MARK filter:drop-shadow(0|2|4|black/.2) -->
-<img class="filter:drop-shadow(0|2|4|black/.2)" src="..." alt="" />
+<!-- @MARK filter:drop-shadow(0|2px|4px|black/.2) -->
+<img class="filter:drop-shadow(0|2px|4px|black/.2)" src="..." alt="" />
 ```
 
 Use [box-shadow](/reference/box-shadow) for the element box instead.
@@ -35,7 +35,7 @@ Use `filter:none` to remove filters at a breakpoint or state.
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="filter:none filter:blur(4):hover filter:none@print">...</div>
+<div class="filter:none filter:blur(4px):hover filter:none@print">...</div>
 ```
 
 Filters can be expensive on large areas; use them where the visual benefit is clear.

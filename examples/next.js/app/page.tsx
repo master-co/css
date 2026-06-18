@@ -44,7 +44,7 @@ export default function Home() {
                     <Image src="/thirteen.svg" alt="13" width={40} height={31} priority />
                 </div>
                 <Image
-                    className={'rel ml:80 mr:5 block@media(prefers-color-scheme:dark)'}
+                    className={'rel ml:20x mr:0.313rem block@media(prefers-color-scheme:dark)'}
                     src="/css-logotype@dark.svg"
                     alt="Master CSS Logo"
                     width={380}
@@ -53,7 +53,7 @@ export default function Home() {
                     hidden
                 />
                 <Image
-                    className={'rel ml:80 mr:5 block@media(prefers-color-scheme:light)'}
+                    className={'rel ml:20x mr:0.313rem block@media(prefers-color-scheme:light)'}
                     src="/css-logotype@light.svg"
                     alt="Master CSS Logo"
                     width={380}

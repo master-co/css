@@ -714,7 +714,7 @@ export default class MasterCSS {
 
         /**
          * 2. value (ambiguous key with raw color/number/image)
-         * @example bg:#fff font:12
+         * @example bg:#fff font:.75rem
          */
         for (const eachUtility of this.valueMatcherUtilities) {
             if (this.matchesUtility(className, eachUtility, 'value')) return [eachUtility]

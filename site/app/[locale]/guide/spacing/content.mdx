@@ -95,19 +95,19 @@ For product surfaces, prefer named spacing tokens such as `sm`, `md`, and `lg`. 
 
 ---
 
-## Unitless values
-Raw unitless values such as `0`, `1`, and `2` are low-level pixel values. They bypass the base unit system and are useful for resets, hairline adjustments, and exact pixel alignment.
+## Exact pixel values
+Use `0` for resets, the `px` alias for 1px hairlines, and explicit `px` units when a value needs exact pixel geometry. Bare numbers are emitted as written, so `p:1` becomes `padding: 1` and is not a valid CSS length.
 
 ```html
 <!-- @MARK m:0 -->
 <div class="m:0">0px, margin: 0rem</div>
-<!-- @MARK p:1 -->
-<div class="p:1">1px, padding: 0.0625rem</div>
+<!-- @MARK p:px -->
+<div class="p:px">1px, padding: 1px</div>
 <!-- @MARK w:2px -->
 <div class="w:2px">2px, width: 0.125rem</div>
 ```
 
-(!) Avoid mixing named spacing tokens, `x` multipliers, and unitless values arbitrarily. Prefer named tokens for layout rhythm, `x` values for measured local geometry, and unitless values only for resets or pixel-grid adjustments.
+(!) Avoid mixing named spacing tokens, `x` multipliers, and exact pixel values arbitrarily. Prefer named tokens for layout rhythm, `x` values for measured local geometry, and `px` values only for hairlines or exact pixel adjustments.
 
 ---
 
@@ -122,7 +122,7 @@ Raw unitless values such as `0`, `1`, and `2` are low-level pixel values. They b
 }
 ```
 
-Numeric keys create ambiguity with [unit sensing](/guide/style-declarations#unit-sensing), because `p:1` reads as a low-level value while `p:sm` reads as a spacing token.
+Numeric keys are easy to confuse with low-level CSS values. Prefer semantic token keys like `sm` or `card`, then use `p:px` for a 1px value or `p:1x` for the default 4px base unit.
 
 (o) Use descriptive scale or role keys.
 
@@ -142,5 +142,5 @@ Master CSS provides a unified system for defining spacing:
 
 * Use named spacing tokens for shared rhythm.
 * Use `x` multipliers for measured local geometry.
-* Use raw unitless values sparingly for resets and exact pixel adjustments.
+* Use `0`, `px`, or explicit pixel units for resets and exact pixel adjustments.
 * Avoid numeric token keys so markup stays clear.

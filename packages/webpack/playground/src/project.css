@@ -40,7 +40,7 @@
 /* Components */
 @components {
     page {
-        @compose grid ai:center jc:center min-h:100vh p:1.25rem bg:panel fg:ink;
+        @compose grid items-center justify-center min-h:100vh p:1.25rem bg:panel fg:ink;
         font-family: Inter, ui-sans-serif, system-ui, sans-serif;
     }
 
@@ -54,7 +54,7 @@
     }
 
     live-label {
-        @compose inline-flex ai:center jc:center h:24 pi:.75rem bg:primary r:pill font:12 font:semibold;
+        @compose inline-flex items-center justify-center h:6x pi:.75rem bg:primary r:pill font:.75rem font:semibold;
         @variant @motion-safe {
             @compose animation:demo-pulse|1.4s|infinite;
         }
@@ -65,19 +65,19 @@
     }
 
     title {
-        @compose m:0 font:40 leading:1 fg:ink;
+        @compose m:0 font:2.5rem leading:1 fg:ink;
         @variant @md {
-            @compose font:56;
+            @compose font:3.5rem;
         }
         max-width: 12ch;
     }
 
     desc {
-        @compose m:0 font:18 leading:1.7 fg:muted max-w:34rem;
+        @compose m:0 font:1.125rem leading:1.7 fg:muted max-w:34rem;
     }
 
     btn {
-        @compose inline-flex ai:center jc:center h:44 pi:1rem bg:primary r:pill font:semibold;
+        @compose inline-flex items-center justify-center h:11x pi:1rem bg:primary r:pill font:semibold;
         border: 0;
         box-shadow: 0 14px 28px rgb(17 34 51 / 18%);
         color: white;

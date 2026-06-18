@@ -3,9 +3,9 @@ import { jsxTester } from './testers'
 
 jsxTester.run('vue class order', rule, {
     valid: [
-        { code: `<div class="bg:black fg:white font:24 m:8 p:8">Simple, basic</div>` },
+        { code: `<div class="m:2x p:2x bg:black fg:white font:1.5rem">Simple, basic</div>` },
         {
-            code: `<template><div :class="[condition && 'm:8 p:8', , null, false]">Sparse array</div></template>`,
+            code: `<template><div :class="[condition && 'm:2x p:2x', , null, false]">Sparse array</div></template>`,
             filename: 'test.vue',
             languageOptions: {
                 parser: await import('vue-eslint-parser')
@@ -14,8 +14,8 @@ jsxTester.run('vue class order', rule, {
     ],
     invalid: [
         {
-            code: `<template><div class="m:8 bg:black p:8 fg:white font:24">Enhancing readability</div></template>`,
-            output: `<template><div class="bg:black fg:white font:24 m:8 p:8">Enhancing readability</div></template>`,
+            code: `<template><div class="m:2x bg:black p:2x fg:white font:1.5rem">Enhancing readability</div></template>`,
+            output: `<template><div class="m:2x p:2x bg:black fg:white font:1.5rem">Enhancing readability</div></template>`,
             errors: [{ messageId: 'invalidClassOrder' }],
             filename: 'test.vue',
             languageOptions: {
@@ -23,8 +23,8 @@ jsxTester.run('vue class order', rule, {
             }
         },
         {
-            code: `<template><div class="m:8 bg:black p:8 fg:white font:24">Classnames will be ordered</div></template>`,
-            output: `<template><div class="bg:black fg:white font:24 m:8 p:8">Classnames will be ordered</div></template>`,
+            code: `<template><div class="m:2x bg:black p:2x fg:white font:1.5rem">Classnames will be ordered</div></template>`,
+            output: `<template><div class="m:2x p:2x bg:black fg:white font:1.5rem">Classnames will be ordered</div></template>`,
             errors: [{ messageId: 'invalidClassOrder' }],
             filename: 'test.vue',
             languageOptions: {
@@ -32,8 +32,8 @@ jsxTester.run('vue class order', rule, {
             }
         },
         {
-            code: `<template><div :class="['m:8 bg:black p:8 fg:white font:24']">Enhancing readability 2</div></template>`,
-            output: `<template><div :class="['bg:black fg:white font:24 m:8 p:8']">Enhancing readability 2</div></template>`,
+            code: `<template><div :class="['m:2x bg:black p:2x fg:white font:1.5rem']">Enhancing readability 2</div></template>`,
+            output: `<template><div :class="['m:2x p:2x bg:black fg:white font:1.5rem']">Enhancing readability 2</div></template>`,
             errors: [{ messageId: 'invalidClassOrder' }],
             filename: 'test.vue',
             languageOptions: {
@@ -41,8 +41,8 @@ jsxTester.run('vue class order', rule, {
             }
         },
         {
-            code: `<template><div v-bind:class="{'m:8 bg:black p:8 fg:white font:24': true}">:)...</div></template>`,
-            output: `<template><div v-bind:class="{'bg:black fg:white font:24 m:8 p:8': true}">:)...</div></template>`,
+            code: `<template><div v-bind:class="{'m:2x bg:black p:2x fg:white font:1.5rem': true}">:)...</div></template>`,
+            output: `<template><div v-bind:class="{'m:2x p:2x bg:black fg:white font:1.5rem': true}">:)...</div></template>`,
             errors: [{ messageId: 'invalidClassOrder' }],
             filename: 'test.vue',
             languageOptions: {
@@ -50,8 +50,8 @@ jsxTester.run('vue class order', rule, {
             }
         },
         {
-            code: `<template><div :class="ctl(\`m:8 bg:black p:8 fg:white font:24\`)" /></template>`,
-            output: `<template><div :class="ctl(\`bg:black fg:white font:24 m:8 p:8\`)" /></template>`,
+            code: `<template><div :class="ctl(\`m:2x bg:black p:2x fg:white font:1.5rem\`)" /></template>`,
+            output: `<template><div :class="ctl(\`m:2x p:2x bg:black fg:white font:1.5rem\`)" /></template>`,
             errors: [{ messageId: 'invalidClassOrder' }],
             filename: 'test.vue',
             languageOptions: {
@@ -62,7 +62,7 @@ jsxTester.run('vue class order', rule, {
             code: `
                     <template>
                         <div v-bind="data" :class="[
-                        'transition py:1.5 font:medium',
+                        'transition py:px font:medium',
                         {
                             'fg:white': variant === 'white',
                             'fg:blue-50 fg:blue-40:hover b:blue-50': variant === 'primary',
@@ -73,7 +73,7 @@ jsxTester.run('vue class order', rule, {
             output: `
                     <template>
                         <div v-bind="data" :class="[
-                        'font:medium py:1.5 transition',
+                        'py:px font:medium transition',
                         {
                             'fg:white': variant === 'white',
                             'b:blue-50 fg:blue-50 fg:blue-40:hover': variant === 'primary',
@@ -119,13 +119,13 @@ jsxTester.run('vue class order', rule, {
             code: `<template>
                         <input   type="password"
                             placeholder="..."
-                            class="bg:black p:8 fg:white font:24 m:8"
+                            class="bg:black p:2x fg:white font:1.5rem m:2x"
                             @blur.prevent="" />
                         </template>`,
             output: `<template>
                         <input   type="password"
                             placeholder="..."
-                            class="bg:black fg:white font:24 m:8 p:8"
+                            class="m:2x p:2x bg:black fg:white font:1.5rem"
                             @blur.prevent="" />
                         </template>`,
             errors: [

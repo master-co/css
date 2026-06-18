@@ -33,7 +33,7 @@ export default async function renderSyntaxColors(this: CSSLanguageService, docum
                 const resolveValueComponent = (valueComponent: ValueComponent) => {
                     if (valueComponent.text === undefined) return  // text is always existing, just for type
                     const startOffset = instanceStartIndex + keyTokenLength + currentLength
-                    // TODO: check number mt:30
+                    // TODO: check number mt:1.875rem
                     const valueComponentTokenLength = valueComponent.token.length
                     let color: Color | undefined
                     switch (valueComponent.type) {

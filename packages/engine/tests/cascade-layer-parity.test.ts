@@ -205,8 +205,8 @@ describe.concurrent('migrated cascade and layer parity', () => {
         expectLayerText(createDefaultCSS(), 'block@utility', 'utilitiesLayer', '.block\\@utility{display:block}')
         expectLayerText(createDefaultCSS(), 'block@base@sm', 'baseLayer', '@media (width>=52.125rem){.block\\@base\\@sm{display:block}}')
         expectLayerText(createDefaultCSS(), 'block@default@sm', 'defaultsLayer', '@media (width>=52.125rem){.block\\@default\\@sm{display:block}}')
-        expectLayerText(createDefaultCSS(), 'font:12_:is(code,pre)@base', 'baseLayer', '.font\\:12_\\:is\\(code\\,pre\\)\\@base :is(code,pre){font-size:12}')
-        expectLayerText(createDefaultCSS(), 'font:12_:is(code,pre)@default', 'defaultsLayer', '.font\\:12_\\:is\\(code\\,pre\\)\\@default :is(code,pre){font-size:12}')
+        expectLayerText(createDefaultCSS(), 'font:.75rem_:is(code,pre)@base', 'baseLayer', '.font\\:\\.75rem_\\:is\\(code\\,pre\\)\\@base :is(code,pre){font-size:0.75rem}')
+        expectLayerText(createDefaultCSS(), 'font:.75rem_:is(code,pre)@default', 'defaultsLayer', '.font\\:\\.75rem_\\:is\\(code\\,pre\\)\\@default :is(code,pre){font-size:0.75rem}')
 
         const conflicted = createDefaultCSS().add('block@base@default')
         expect(conflicted.text).not.toContain('block\\@base\\@default')
@@ -231,17 +231,17 @@ describe.concurrent('migrated cascade and layer parity', () => {
             [
                 'pi:0', 'pl:0', 'pr:0', 'p:0', 'pt:0', 'pb:0', 'padding-block:0',
                 'mi:0', 'ml:0', 'mr:0', 'm:0', 'mt:0', 'mb:0', 'margin-block:0',
-                'font:12', 'font:medium', 'text-center', 'fixed', 'block', 'round', 'b:0'
+                'font:.75rem', 'font:medium', 'text-center', 'fixed', 'block', 'round', 'b:0'
             ],
             [
-                'b:0', 'round', 'block', 'fixed', 'text-center', 'font:medium', 'font:12',
+                'b:0', 'round', 'block', 'fixed', 'text-center', 'font:medium', 'font:.75rem',
                 'margin-block:0', 'mb:0', 'mt:0', 'm:0', 'mr:0', 'ml:0', 'mi:0',
                 'padding-block:0', 'pb:0', 'pt:0', 'p:0', 'pr:0', 'pl:0', 'pi:0'
             ]
         ]
         const expected = [
             'block', 'fixed', 'round', 'b:0', 'm:0', 'margin-block:0', 'mi:0', 'p:0', 'padding-block:0', 'pi:0',
-            'font:12', 'font:medium', 'mb:0', 'ml:0', 'mr:0', 'mt:0', 'pb:0', 'pl:0', 'pr:0', 'pt:0',
+            'font:.75rem', 'font:medium', 'mb:0', 'ml:0', 'mr:0', 'mt:0', 'pb:0', 'pl:0', 'pr:0', 'pt:0',
             'text-center'
         ]
 
@@ -254,17 +254,17 @@ describe.concurrent('migrated cascade and layer parity', () => {
 
     test('keeps declaration and media priority order', () => {
         const css = createDefaultCSS()
-        css.add('font:12', 'font:32@md', 'font:24@sm', 'm:32', 'block', 'pi:16', 'bg:blue-60:hover', 'round', 'mb:48')
+        css.add('font:.75rem', 'font:2rem@md', 'font:1.5rem@sm', 'm:8x', 'block', 'pi:4x', 'bg:blue-60:hover', 'round', 'mb:12x')
         expect(css.utilitiesLayer.rules.map(({ name }) => name)).toEqual([
             'block',
             'round',
-            'm:32',
-            'pi:16',
-            'font:12',
-            'mb:48',
+            'm:8x',
+            'pi:4x',
+            'font:.75rem',
+            'mb:12x',
             'bg:blue-60:hover',
-            'font:24@sm',
-            'font:32@md'
+            'font:1.5rem@sm',
+            'font:2rem@md'
         ])
 
         const tabletAtRule = { id: 'media' as const, nodes: [{ type: 'number' as const, value: 391 / 16, unit: 'rem' }] }
@@ -275,9 +275,9 @@ describe.concurrent('migrated cascade and layer parity', () => {
         const mediaCSS = createCSS(plan, undefined, {
             nativeDeclarationMatcher: ({ property }) => property === 'justify-content' || property === 'min-width'
         })
-        mediaCSS.add('min-w:206', '{flex-row}@xs', 'justify-content:flex-end@xs', 'hidden@tablet&<desktop', '{flex-row}@2xs&<xs')
+        mediaCSS.add('min-w:12.875rem', '{flex-row}@xs', 'justify-content:flex-end@xs', 'hidden@tablet&<desktop', '{flex-row}@2xs&<xs')
         expect(mediaCSS.utilitiesLayer.rules.map(({ name }) => name)).toEqual([
-            'min-w:206',
+            'min-w:12.875rem',
             '{flex-row}@xs',
             'justify-content:flex-end@xs',
             'hidden@tablet&<desktop',

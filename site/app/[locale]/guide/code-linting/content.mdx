@@ -67,26 +67,26 @@ The class you added may collide with existing classes due to human error or havi
 (i) With the [class collision rule](/reference/eslint#class-collision), you'll no longer collide with existing classes.
 <Image className="aspect-ratio:2/1 r:lg max-w:3xl w:full" src={require('~/site/public/class-collision-detection.webp').default} alt="Class collision detection" unoptimized />
 
-(!) <span className="text:warning">"m:10" applies the same CSS declarations as "m:20".</span><br/><span className="text:warning">"m:20" applies the same CSS declarations as "m:10".</span>
+(!) <span className="text:warning">"m:0.625rem" applies the same CSS declarations as "m:5x".</span><br/><span className="text:warning">"m:5x" applies the same CSS declarations as "m:0.625rem".</span>
 ```html
-<!-- @MARK m:10 m:20 -->
-<div class="m:10 m:20">…</div>
+<!-- @MARK m:0.625rem m:5x -->
+<div class="m:0.625rem m:5x">…</div>
 ```
 (o) Fix this @master/css/class-collision problem by removing other colliding classes.
 ```html
-<div class="m:10">…</div>
+<div class="m:0.625rem">…</div>
 ```
 It can also detect whether declarations with the same selector and media query state collide!
 
-(!) <span className="text:warning">"m:40@sm" applies the same CSS declarations as "m:50@sm".</span><br/><span className="text:warning">"m:50@sm" applies the same CSS declarations as "m:40@sm".</span>
+(!) <span className="text:warning">"m:10x@sm" applies the same CSS declarations as "m:3.125rem@sm".</span><br/><span className="text:warning">"m:3.125rem@sm" applies the same CSS declarations as "m:10x@sm".</span>
 ```html
-<!-- @MARK m:40@sm m:50@sm -->
-<div class="m:40@sm m:50@sm">…</div>
+<!-- @MARK m:10x@sm m:3.125rem@sm -->
+<div class="m:10x@sm m:3.125rem@sm">…</div>
 ```
 (o) Fix this @master/css/class-collision problem by removing other colliding classes.
 ```html
-<!-- @MARK m:50@sm -->
-<div class="m:50@sm">…</div>
+<!-- @MARK m:3.125rem@sm -->
+<div class="m:3.125rem@sm">…</div>
 ```
 
 ### Supports JS utilities

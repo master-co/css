@@ -85,7 +85,7 @@ export default function DonationModal() {
         }
     }, [searchParams])
 
-    return donationOrder && <Modal backdropClick={() => setDonationOrder(null)} contentClass="max-w:320px p:80|30|30|30">
+    return donationOrder && <Modal backdropClick={() => setDonationOrder(null)} contentClass="max-w:320px p:20x|1.875rem|1.875rem|1.875rem">
         <div className="abs round inset:0 mi:auto bg:surface h:128px transform:translateY(-50%) w:128px">
             <Image className="rel round mi:auto object-contain top:2px" width="124" height="124" src={donationOrder.avatar} alt="sponsor" />
         </div>

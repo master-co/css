@@ -97,21 +97,21 @@ Custom properties can use the same direct declaration form:
 Native fallback is intentionally lower priority than Master CSS semantics. Curated aliases, token resolution, unit conversion, transform helpers, and shorthand utilities continue to use Master CSS semantics before a plain native declaration is considered.
 
 ```html
-<!-- @MARK mt:16 --><!-- @MARK margin:16 --><!-- @MARK bg:red-60 -->
-<div class="mt:16 margin:16 bg:red-60">…</div>
+<!-- @MARK mt:4x --><!-- @MARK margin:1rem --><!-- @MARK bg:red-60 -->
+<div class="mt:4x margin:1rem bg:red-60">…</div>
 ```
 
 <details>
     <summary>Generated CSS</summary>
     <Class2CSS>
-        {['mt:16', 'margin:16', 'bg:red-60']}
+        {['mt:4x', 'margin:1rem', 'bg:red-60']}
     </Class2CSS>
 </details>
 
 This preserves the expected syntax model:
 
-- `mt:16` uses a curated alias and emits `margin-top:16`.
-- `margin:16` writes the native property value as-is and emits `margin:16`.
+- `mt:4x` uses a curated alias and emits `margin-top:1rem`.
+- `margin:1rem` writes the native property value as-is and emits `margin:1rem`.
 - `bg:red-60` resolves the theme token and emits `background-color:var(--color-red-60)`.
 - Rare native properties without Master CSS token behavior should use valid CSS values directly, such as `float:left` or `view-transition-name:card`.
 - `display:banana` and `float:banana` are rejected instead of emitted as raw CSS.

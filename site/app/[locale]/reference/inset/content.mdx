@@ -12,7 +12,7 @@ Use `inset:*` on positioned elements to set `top`, `right`, `bottom`, and `left`
 ```html
 <!-- @MARK inset:20px -->
 <div>
-    <div class="rel inset:20px">inset:20</div>
+    <div class="rel inset:20px">inset:5x</div>
 </div>
 ```
 
@@ -43,5 +43,5 @@ Use side utilities such as `top:*`, `right:*`, `bottom:*`, and `left:*` when onl
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="inset:10:hover inset:20px@sm inset:0@print">...</div>
+<div class="inset:0.625rem:hover inset:20px@sm inset:0@print">...</div>
 ```

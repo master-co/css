@@ -5,7 +5,7 @@ jsxTester.run('collision', rule, {
     valid: [
         { code: `<div class="m:10px m:30px:hover m:40px@dark">Simple, basic</div>` },
         { code: `<div class="a c d hello:world font:error mt:0 mt:0@sm">Error class</div>` },
-        { code: `<div class="block m:32 font:12 mb:48"></div>` }
+        { code: `<div class="block m:8x font:.75rem mb:12x"></div>` }
     ],
     invalid: [
         {

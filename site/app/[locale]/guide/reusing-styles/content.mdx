@@ -136,7 +136,7 @@ Put selector states in nested selectors and conditional variants in `@variant` b
         }
 
         &:focus-visible {
-            @compose outline:2px|primary outline-offset:2;
+            @compose outline:2px|primary outline-offset:0.125rem;
         }
 
         @variant @<sm {
@@ -154,7 +154,7 @@ Equivalent markup stays short:
 
 (click) Try clicking the button to see the outline effect
 <Demo>
-    <button className="justify-center items-center inline-flex bg:surface-inverse fg:inverse font:sm font:medium h:10x pi:md r:lg outline:2px|focus:focus outline-offset:2:focus">Submit</button>
+    <button className="justify-center items-center inline-flex bg:surface-inverse fg:inverse font:sm font:medium h:10x pi:md r:lg outline:2px|focus:focus outline-offset:0.125rem:focus">Submit</button>
 </Demo>
 
 ---

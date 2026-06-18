@@ -16,7 +16,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
 
             @theme {
                 --color-primary: #000;
-                --spacing-card: 16;
+                --spacing-card: 1rem;
             }
 
             @theme dark {
@@ -68,7 +68,8 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
             name: 'spacing-card',
             namespace: 'spacing',
             type: 'number',
-            value: 16
+            value: '1rem',
+            numeric: { value: 1, unit: 'rem' }
         }))
         expect(plan.variants?.find((variant) => variant.token === ':interactive')?.branches[0].selectorNodes)
             .toEqual(expect.arrayContaining([
@@ -83,7 +84,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
 
         const css = createCSS(plan)
         css.add('btn', 'btn:interactive', 'content-auto', 'm:card')
-        expect(css.themeLayer.text).toContain(':root{--color-primary:#000;--spacing-card:16}')
+        expect(css.themeLayer.text).toContain(':root{--color-primary:#000;--spacing-card:1rem}')
         expect(css.themeLayer.text).toContain('.dark{--color-primary:#fff}')
         expect(css.componentsLayer.text).toContain('.btn{display:inline-flex;color:var(--color-primary)}')
         expect(css.componentsLayer.text).toContain('@media print{.btn{display:none}}')
@@ -181,7 +182,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
         expect(css.create('font:sm')?.text).toBe('.font\\:sm{font-size:var(--font-size-sm)}')
         expect(css.create('font:sans')?.text).toBe('.font\\:sans{font-family:var(--font-family-sans)}')
         expect(css.create('font:bold')?.text).toBe('.font\\:bold{font-weight:var(--font-weight-bold)}')
-        expect(css.create('font:16')?.text).toBe('.font\\:16{font-size:16}')
+        expect(css.create('font:1rem')?.text).toBe('.font\\:1rem{font-size:1rem}')
         expect(css.create('bg:red')?.text).toBe('.bg\\:red{background-color:var(--color-red)}')
         expect(css.create('bg:#fff')?.text).toBe('.bg\\:\\#fff{background-color:#fff}')
         expect(css.create('grid-cols:3')?.text).toBe('.grid-cols\\:3{display:grid;grid-template-columns:repeat(3, minmax(0, 1fr))}')
@@ -538,7 +539,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
             @theme {
                 --background-stripe: 0 / 7.5px 7.5px linear-gradient(red, blue);
                 --box-shadow-panel: 0 1px 2px #000;
-                --spacing-card: 24;
+                --spacing-card: 1.5rem;
                 --leading-body: 1.7;
                 --color-line-brand: #abcdef;
                 --color-brand: #123456;
@@ -666,19 +667,19 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
             }
 
             @theme {
-                --spacing-x1: 16;
-                --width-11x: 60;
-                --leading-x1: 16;
+                --spacing-x1: 1rem;
+                --container-custom: 15rem;
+                --leading-x1: 1.5;
             }
 
             @theme light {
-                --spacing-x1: 48;
-                --leading-x1: 48;
+                --spacing-x1: 3rem;
+                --leading-x1: 3;
             }
 
             @theme dark {
-                --spacing-x1: 32;
-                --leading-x1: 32;
+                --spacing-x1: 2rem;
+                --leading-x1: 2;
             }
         `, { basePlan: defaultPlan })
         const css = createCSS(plan)
@@ -686,16 +687,16 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
         expect(css.create('m:x1')?.text).toBe('.m\\:x1{margin:var(--spacing-x1)}')
         expect(css.create('m:$(spacing-x1)')?.text).toBe('.m\\:\\$\\(spacing-x1\\){margin:var(--spacing-x1)}')
         expect(css.create('line-height:x1')?.text).toBe('.line-height\\:x1{line-height:var(--leading-x1)}')
-        expect(css.create('w:-11x')?.text).toBe('.w\\:-11x{width:calc(var(--width-11x) * -1)}')
-        expect(css.create('w:calc(-2+$(spacing-x1))')?.text).toBe('.w\\:calc\\(-2\\+\\$\\(spacing-x1\\)\\){width:calc(-2 + var(--spacing-x1))}')
+        expect(css.create('w:-custom')?.text).toBe('.w\\:-custom{width:calc(var(--container-custom) * -1)}')
+        expect(css.create('w:calc(-2px+$(spacing-x1))')?.text).toBe('.w\\:calc\\(-2px\\+\\$\\(spacing-x1\\)\\){width:calc(-2px + var(--spacing-x1))}')
 
         css.add('m:x1', 'm:-x1', 'line-height:x1')
         expect(css.themeLayer.text).toContain(':root{')
-        expect(css.themeLayer.text).toContain('--spacing-x1:16')
+        expect(css.themeLayer.text).toContain('--spacing-x1:1rem')
         expect(css.themeLayer.text).not.toContain('---spacing-x1')
-        expect(css.themeLayer.text).toContain('--leading-x1:16')
-        expect(css.themeLayer.text).toContain('.light{--spacing-x1:48;--leading-x1:48}')
-        expect(css.themeLayer.text).toContain('.dark{--spacing-x1:32;--leading-x1:32}')
+        expect(css.themeLayer.text).toContain('--leading-x1:1.5')
+        expect(css.themeLayer.text).toContain('.light{--spacing-x1:3rem;--leading-x1:3}')
+        expect(css.themeLayer.text).toContain('.dark{--spacing-x1:2rem;--leading-x1:2}')
     })
 
     test('executes CSS-first unitful numeric variables without double conversion', () => {
@@ -738,7 +739,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
         const { plan } = compileCSSPlan(`
             @theme inline {
                 --color-primary: #123;
-                --spacing-card: 16;
+                --spacing-card: 1rem;
                 --color-brand: $color-primary;
             }
 
@@ -752,11 +753,11 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
         css.add('bg:primary', 'fg:brand', 'm:card', 'fg:inline-regular')
         expect(css.utilitiesLayer.text).toContain('.bg\\:primary{background-color:#123}')
         expect(css.utilitiesLayer.text).toContain('.fg\\:brand{color:#123}')
-        expect(css.utilitiesLayer.text).toContain('.m\\:card{margin:16}')
+        expect(css.utilitiesLayer.text).toContain('.m\\:card{margin:1rem}')
         expect(css.utilitiesLayer.text).toContain('.fg\\:inline-regular{color:var(--color-inline-regular)}')
         expect(css.themeLayer.text).toContain(':root{--color-inline-regular:var(--color-regular);--color-regular:#456}')
         expect(css.themeLayer.text).not.toContain('--color-primary:#123')
-        expect(css.themeLayer.text).not.toContain('--spacing-card:16')
+        expect(css.themeLayer.text).not.toContain('--spacing-card:1rem')
     })
 
     test('lowers static theme variables and keyframes into initial resources', () => {

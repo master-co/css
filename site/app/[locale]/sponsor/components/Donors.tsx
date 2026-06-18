@@ -5,7 +5,7 @@ import Link from 'internal/components/Link'
 export default function Donors({ sponsorTiers, sponsorsOfLevel }: any) {
     return sponsorTiers.map((eachSponsorTier: any) => (
         <Fragment key={eachSponsorTier.name}>
-            <div className="flex align-items:center gap:10 mt:12x mb:5x">
+            <div className="flex align-items:center gap:0.625rem mt:12x mb:5x">
                 <h2 id={eachSponsorTier.name} className="capitalize m:0!">
                     {eachSponsorTier.name}
                 </h2>

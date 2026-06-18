@@ -32,7 +32,7 @@ export const revalidate = false
 export default async function Page(props: any) {
     return (
         <>
-            <div className="gap:15 p:40 grid-cols:2 grid-cols:3@2xs grid-cols:4@sm grid-cols:5@md">
+            <div className="gap:0.938rem p:10x grid-cols:2 grid-cols:3@2xs grid-cols:4@sm grid-cols:5@md">
                 <Image
                     className="full r:5px grid-col-span:2 grid-row-span:2 aspect-ratio:2/1 object-cover"
                     src={mountain1.src}

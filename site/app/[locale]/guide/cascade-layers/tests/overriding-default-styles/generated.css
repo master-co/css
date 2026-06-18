@@ -1,1 +1,1 @@
-@layer defaults{.text\:16_p\@default p{font-size:1rem;line-height:calc(1rem + 0.875em)}}@layer utilities{.text\:24{font-size:1.5rem;line-height:calc(1.5rem + 0.875em)}}
+@layer defaults{.text\:1rem_p\@default p{font-size:1rem;line-height:max(1.8em - max(0rem, 1rem - 1rem) * 1.12, 1rem);letter-spacing:clamp(-0.072em, calc((1rem - 1rem) * -0.048), 0em)}}@layer utilities{.text\:1\.5rem{font-size:1.5rem;line-height:max(1.8em - max(0rem, 1.5rem - 1rem) * 1.12, 1.5rem);letter-spacing:clamp(-0.072em, calc((1.5rem - 1rem) * -0.048), 0em)}}

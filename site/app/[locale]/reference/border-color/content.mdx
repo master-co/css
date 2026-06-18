@@ -6,7 +6,7 @@
 Use `border-color:*` when only the border color should change.
 ```html
 <!-- @MARK border-color:primary -->
-<div class="b:1|solid border-color:primary">
+<div class="b:px|solid border-color:primary">
     Primary border
 </div>
 ```
@@ -22,7 +22,7 @@ Use `border-color:*` when only the border color should change.
 Use side aliases when only one edge should change.
 ```html
 <!-- @MARK bt:transparent -->
-<div class="b:1|solid|line bt:transparent">
+<div class="b:px|solid|line bt:transparent">
     No top border color
 </div>
 ```
@@ -31,7 +31,7 @@ Use side aliases when only one edge should change.
 Use `border-color:currentColor` when the border should track the foreground color.
 ```html
 <!-- @MARK border-color:currentColor -->
-<button class="fg:primary b:1|solid border-color:currentColor">
+<button class="fg:primary b:px|solid border-color:currentColor">
     Current color
 </button>
 ```
@@ -58,5 +58,5 @@ Add a color to the theme color namespace.
 ```
 Apply the defined token to a border color.
 ```html
-<div class="b:1|solid border-color:line-accent"></div>
+<div class="b:px|solid border-color:line-accent"></div>
 ```

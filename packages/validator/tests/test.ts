@@ -12,14 +12,14 @@ it('validate an invalid CSS property value', () => {
 
 it('validate valid classes', () => {
     expectClassWithoutErrors('text-center')
-    expectClassWithoutErrors('font:12@media(print)')
+    expectClassWithoutErrors('font:.75rem@media(print)')
     expectClassWithoutErrors('mt:$(top)')
     expectClassWithoutErrors('right:max(0px,calc(50%-45.3125rem))')
     expectClassWithoutErrors('{text-wrap:pretty}')
     expectClassWithoutErrors('{content:\'\';block}::after@light')
     expect(validate('bg:light-dark(#333b3c,#efefec)').errors).toEqual([])
     expectClassValid('text-center')
-    expectClassValid('font:12@media(print)')
+    expectClassValid('font:.75rem@media(print)')
     expectClassValid('mt:$(top)')
     expectClassValid('right:max(0px,calc(50%-45.3125rem))')
     expectClassValid('{text-wrap:pretty}')

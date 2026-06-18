@@ -218,8 +218,8 @@ describe.concurrent('MasterCSSPlan execution', () => {
             }
         }
 
-        expect(createCSS(plan).create('m:16@card')?.text)
-            .toBe('@media (width>=48rem){.m\\:16\\@card{margin:16}}')
+        expect(createCSS(plan).create('m:1rem@card')?.text)
+            .toBe('@media (width>=48rem){.m\\:1rem\\@card{margin:1rem}}')
     })
 
     it('serializes generated runtime manifest rules in layer order', () => {

@@ -3,7 +3,7 @@ export default function Home() {
         <main className="min-h:100vh p:10x bg:surface fg:strong font:sans">
             <section className="max-w:720px mi:auto">
                 <p className="text:14px fg:primary mb:2x">Next.js Adapter API</p>
-                <h1 className="font:48px font:heavy tracking:-1">Master CSS pre-rendered by Next build</h1>
+                <h1 className="font:48px font:heavy tracking:-1px">Master CSS pre-rendered by Next build</h1>
                 <p className="font:20px line-height:1.5 mt:4x fg:slate">
                     This page is statically rendered by Next.js, then processed by the Master CSS adapter.
                 </p>

@@ -6,16 +6,16 @@
 Use `border-image` to set the source, slice, optional width, outset, and repeat behavior in one declaration. Keep a regular border width and style as a fallback.
 <Demo $py={0}>
     <DemoPanel>
-        <div className="b:16|solid|transparent border-image:linear-gradient(45deg,dodgerblue,hotpink)|30 p:10x r:8px bg:white bg:gray-95@dark">
+        <div className="b:16px|solid|transparent border-image:linear-gradient(45deg,dodgerblue,hotpink)|30 p:10x r:8px bg:white bg:gray-95@dark">
             <div className="fg:strong font:18px font-weight:560">Gradient border image</div>
             <p className="fg:muted font:14px margin-block:4x">The image is sliced and painted into the border area.</p>
         </div>
     </DemoPanel>
 </Demo>
 ```html
-<!-- @MARK b:16|solid|transparent -->
+<!-- @MARK b:16px|solid|transparent -->
 <!-- @MARK border-image:linear-gradient(45deg,dodgerblue,hotpink)|30 -->
-<div class="b:16|solid|transparent border-image:linear-gradient(45deg,dodgerblue,hotpink)|30">
+<div class="b:16px|solid|transparent border-image:linear-gradient(45deg,dodgerblue,hotpink)|30">
     Gradient border image
 </div>
 ```
@@ -24,7 +24,7 @@ Use `border-image` to set the source, slice, optional width, outset, and repeat 
 The shorthand can also include border image width after `/` and repeat behavior after `|`.
 ```html
 <!-- @MARK border-image:linear-gradient(45deg,dodgerblue,hotpink)|30/16|round -->
-<div class="b:16|solid|transparent border-image:linear-gradient(45deg,dodgerblue,hotpink)|30/16|round">
+<div class="b:16px|solid|transparent border-image:linear-gradient(45deg,dodgerblue,hotpink)|30/16|round">
     Rounded repeat border image
 </div>
 ```

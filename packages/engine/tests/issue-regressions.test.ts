@@ -85,14 +85,14 @@ describe.concurrent('migrated issue regressions', () => {
     test('issue #321: individual transforms replace legacy transform function utilities', () => {
         const css = createDefaultCSS()
 
-        expect(css.create('translate:16')?.text).toContain('translate:16')
-        expect(css.create('translate:16|24')?.text).toContain('translate:16 24')
+        expect(css.create('translate:16px')?.text).toContain('translate:16px')
+        expect(css.create('translate:16px|24px')?.text).toContain('translate:16px 24px')
         expect(css.create('scale:1.5')?.text).toContain('scale:1.5')
         expect(css.create('scale:1.5|2')?.text).toContain('scale:1.5 2')
         expect(css.create('rotate:45deg')?.text).toContain('rotate:45deg')
-        expect(css.create('transform:translate(16,16)')?.text).toContain('transform:translate(16,16)')
+        expect(css.create('transform:translate(16px,16px)')?.text).toContain('transform:translate(16px,16px)')
         expect(css.create('transform:rotate(45deg)')?.text).toContain('transform:rotate(45deg)')
-        expect(css.create('translate(16,16)')).toBeUndefined()
+        expect(css.create('translate(16px,16px)')).toBeUndefined()
         expect(css.create('rotate(45deg)')).toBeUndefined()
         expect(css.create('scale(1.5)')).toBeUndefined()
     })
@@ -110,14 +110,14 @@ describe.concurrent('migrated issue regressions', () => {
             ['border-inline-end-style:solid', 'border-inline-end-style:solid'],
             ['border-block-start-style:dotted', 'border-block-start-style:dotted'],
             ['border-block-end-style:none', 'border-block-end-style:none'],
-            ['border-inline-start-width:2', 'border-inline-start-width:2'],
-            ['border-block-end-width:1', 'border-block-end-width:1'],
-            ['border-inline-start:1', 'border-inline-start:'],
-            ['border-inline-end:1', 'border-inline-end:'],
-            ['border-block-start:1', 'border-block-start:'],
-            ['border-block-end:1', 'border-block-end:'],
-            ['border-inline:1', 'border-inline:'],
-            ['border-block:1', 'border-block:'],
+            ['border-inline-start-width:2px', 'border-inline-start-width:2px'],
+            ['border-block-end-width:px', 'border-block-end-width:1px'],
+            ['border-inline-start:px|solid', 'border-inline-start:'],
+            ['border-inline-end:px|solid', 'border-inline-end:'],
+            ['border-block-start:px|solid', 'border-block-start:'],
+            ['border-block-end:px|solid', 'border-block-end:'],
+            ['border-inline:px|solid', 'border-inline:'],
+            ['border-block:px|solid', 'border-block:'],
             ['border-start-start-radius:8', 'border-start-start-radius:8'],
             ['border-start-end-radius:8', 'border-start-end-radius:8'],
             ['border-end-start-radius:8', 'border-end-start-radius:8'],

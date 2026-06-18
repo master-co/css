@@ -21,13 +21,13 @@ it('extract latent classes from html', () => {
                             <img src="/vite.svg" class="logo" alt="Vite logo" />
                         </a>
                         <a href="https://css.master.co" target="_blank">
-                            <img src="/master.svg" class="logo size:172" alt="Master logo" />
+                            <img src="/master.svg" class="logo size:43x" alt="Master logo" />
                         </a>
                     </div>
                     <h1
-                        class="font:sans tracking:-.25 fg:white@dark font:heavy">
+                        class="font:sans tracking:-.25px fg:white@dark font:heavy">
                         <span class="gradient-text bg:linear-gradient(120deg,#bd34fe|30%,#41d1ff)">Vite</span>
-                        <span class="fg:slate-70 mi:10 font:medium">+</span>
+                        <span class="fg:slate-70 mi:0.625rem font:medium">+</span>
                         <span>Master CSS</span>
                     </h1>
                     <div class="card">
@@ -63,16 +63,16 @@ it('extract latent classes from html', () => {
             '_blank',
             'logo',
             'Vite',
-            'size:172',
+            'size:43x',
             'Master',
             'font:sans',
-            'tracking:-.25',
+            'tracking:-.25px',
             'fg:white@dark',
             'font:heavy',
             'gradient-text',
             'bg:linear-gradient(120deg,#bd34fe|30%,#41d1ff)',
             'fg:slate-70',
-            'mi:10',
+            'mi:0.625rem',
             'font:medium',
             'card',
             'counter',

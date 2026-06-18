@@ -8,17 +8,17 @@ Master CSS keeps those decisions close to the element that owns them. Use `w:*` 
 <Demo>
     <div className="container w:full">
         <div className="grid-cols:1 grid-cols:2@container(2xs) gap:md w:full">
-            <section className="min-w:0 bg:surface r:lg p:lg b:1|subtle">
+            <section className="min-w:0 bg:surface r:lg p:lg b:px|subtle">
                 <DemoLabel>Fluid wrapper</DemoLabel>
                 <div className="w:full max-w:64x mi:auto">
-                    <div className="h:10x bg:primary/.15 b:1|primary/.25 r:lg"></div>
+                    <div className="h:10x bg:primary/.15 b:px|primary/.25 r:lg"></div>
                     <div className="mt:sm h:4x w:3/4 bg:primary/.1 r:sm"></div>
                 </div>
             </section>
-            <section className="min-w:0 bg:surface r:lg p:lg b:1|subtle">
+            <section className="min-w:0 bg:surface r:lg p:lg b:px|subtle">
                 <DemoLabel>Measured object</DemoLabel>
                 <div className="flex items:center gap:md">
-                    <div className="size:12x round bg:primary/.15 b:1|primary/.25"></div>
+                    <div className="size:12x round bg:primary/.15 b:px|primary/.25"></div>
                     <div className="min-w:0 flex:1">
                         <div className="h:4x w:full max-w:28x bg:primary/.16 r:sm"></div>
                         <div className="mt:xs h:3x w:2/3 bg:primary/.1 r:sm"></div>
@@ -171,11 +171,11 @@ Use measured sizes for icons, avatars, handles, checkboxes, skeleton blocks, med
     <div className="flex gap:lg items:center w:full">
         <div className="flex:0">
             <DemoLabel>size:14x</DemoLabel>
-            <div className="size:14x grid place-content:center bg:primary/.15 b:1|primary/.25 r:lg font:medium">A</div>
+            <div className="size:14x grid place-content:center bg:primary/.15 b:px|primary/.25 r:lg font:medium">A</div>
         </div>
         <div className="flex:1 min-w:0">
             <DemoLabel>w:full h:14x</DemoLabel>
-            <div className="w:full h:14x grid place-content:center bg:primary/.15 b:1|primary/.25 r:lg font:medium">Banner</div>
+            <div className="w:full h:14x grid place-content:center bg:primary/.15 b:px|primary/.25 r:lg font:medium">Banner</div>
         </div>
     </div>
 </Demo>
@@ -208,7 +208,7 @@ When an element should keep a non-square ratio, use [aspect ratio](/reference/as
 Min and max rules are often more stable than fixed widths. They let content, containers, and responsive variants negotiate space without overflow.
 
 <Demo>
-    <div className="w:full max-w:96x mi:auto bg:surface r:lg b:1|subtle p:lg">
+    <div className="w:full max-w:96x mi:auto bg:surface r:lg b:px|subtle p:lg">
         <DemoLabel>min-w:0 max-w:96x</DemoLabel>
         <div className="flex gap:md">
             <div className="size:10x flex:0 bg:primary/.15 r:lg"></div>

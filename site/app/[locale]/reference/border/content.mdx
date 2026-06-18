@@ -5,8 +5,8 @@
 ### Set width, style, and color together
 Use `b:<size>|<style>|<color>` for the native border shorthand.
 ```html
-<!-- @MARK b:1|solid|line -->
-<div class="b:1|solid|line">
+<!-- @MARK b:px|solid|line -->
+<div class="b:px|solid|line">
     ...
 </div>
 ```
@@ -14,29 +14,29 @@ Use `b:<size>|<style>|<color>` for the native border shorthand.
 <details>
     <summary>Generated CSS</summary>
     <Class2CSS>
-        {['b:1|solid|line']}
+        {['b:px|solid|line']}
     </Class2CSS>
 </details>
 
 ### Set one side or one axis
 Use `bt`, `br`, `bb`, and `bl` for one side. Use `bx` and `by` for logical axes.
 ```html
-<!-- @MARK bt:1px|solid|line --><!-- @MARK bx:1|solid|line -->
+<!-- @MARK bt:1px|solid|line --><!-- @MARK bx:px|solid|line -->
 <header class="bb:1px|solid|line">...</header>
-<section class="bx:1|solid|line">...</section>
+<section class="bx:px|solid|line">...</section>
 ```
 
 ### Use focused border utilities
 Use [border-width](/reference/border-width), [border-style](/reference/border-style), and [border-color](/reference/border-color) when only one part of the border should change.
 ```html
-<!-- @MARK b:1 --><!-- @MARK b-solid -->
-<div class="b:1 b-solid">...</div>
+<!-- @MARK b:px --><!-- @MARK b-solid -->
+<div class="b:px b-solid">...</div>
 ```
 
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="b:1|solid|line b:1|solid|primary:hover b:0@print">...</div>
+<div class="b:px|solid|line b:px|solid|primary:hover b:0@print">...</div>
 ```
 
 The border shorthand resets border width, style, and color for the targeted side or axis.

@@ -756,7 +756,7 @@ export default function Play({ shareId }: PlayProps = {}) {
                     <Link href={'/'}>
                         {<app.Logotype width={168} height={20} />}
                     </Link>
-                    <div className='app-header-nav rel gap:5 font:medium ml:auto ml:30@md'>
+                    <div className='app-header-nav rel gap:0.313rem font:medium ml:auto ml:1.875rem@md'>
                         v{template.version}
                     </div>
                     {app.navs?.map(({ fullName, Icon, ...eachLink }: any, index) =>
@@ -770,7 +770,7 @@ export default function Play({ shareId }: PlayProps = {}) {
                                 ? <CheckIcon className="stroke:accent" />
                                 : <ShareIcon className={clsx('stroke:current', sharing && 'opacity:.5', shareError && 'stroke:danger')} />
                             }
-                            {sharing && <span className="ml:10">{$('Sharing ...')}</span>}
+                            {sharing && <span className="ml:0.625rem">{$('Sharing ...')}</span>}
                         </button>}
                     <span className='hidden'>{shareError}</span>
                     {(shareable || copied) && <div className='mi:4x bg:line h:1em w:1px hidden@<md'></div>}
@@ -829,7 +829,7 @@ export default function Play({ shareId }: PlayProps = {}) {
                     <span className='hidden'>{preview}</span>
                     <div className='mi:4x bg:line h:1em w:1px hidden@<md'></div>
                     <LanguageButton className="app-header-icon hidden@<md" />
-                    <ThemeButton className="app-header-icon mr:-12 hidden@<md"
+                    <ThemeButton className="app-header-icon mr:-3x hidden@<md"
                         onChange={(theme: string) => {
                             previewIframeRef.current?.contentWindow?.postMessage({
                                 type: 'preview:theme',
@@ -837,7 +837,7 @@ export default function Play({ shareId }: PlayProps = {}) {
                             }, window.location.origin)
                         }}
                     />
-                    <DocMenuButton className="app-header-icon mr:-12 hidden@md" />
+                    <DocMenuButton className="app-header-icon mr:-3x hidden@md" />
                 </HeaderContent>
             </Header >
             <div
@@ -911,9 +911,9 @@ export default function Play({ shareId }: PlayProps = {}) {
                     </div>
                 </Resizable>
                 <div className={clsx('rel flex:1|1|auto overflow:hidden bg:canvas', {
-                    'flex p:32 justify-content:center': responsive,
-                    'pt:64': responsive && layout !== '3',
-                    'pb:64': responsive && layout === '3',
+                    'flex p:8x justify-content:center': responsive,
+                    'pt:16x': responsive && layout !== '3',
+                    'pb:16x': responsive && layout === '3',
                     'hidden@<md': tab !== 'Preview'
                 })}>
                     <Resizable
@@ -961,7 +961,7 @@ export default function Play({ shareId }: PlayProps = {}) {
                         {previewErrorEvent &&
                             <div className="abs full inset:0 p:12x fg:danger bg:red-5@light bg:red-95@dark">
                                 <h2 className="font:20px">Error at line {previewErrorEvent.lineno === 1 ? 1 : previewErrorEvent.lineno - 1}</h2>
-                                <div className="p:15|20 r:5px margin-block:20 font:14px font:medium white-space:pre-wrap bg:black/.2@dark bg:red-90@light">
+                                <div className="p:0.938rem|5x r:5px margin-block:5x font:14px font:medium white-space:pre-wrap bg:black/.2@dark bg:red-90@light">
                                     {previewErrorEvent.message}
                                 </div>
                                 <div className="font:12px">{previewErrorEvent.datetime.toLocaleTimeString()} {previewErrorEvent.datetime.toDateString()}, {previewErrorEvent.filename}</div>

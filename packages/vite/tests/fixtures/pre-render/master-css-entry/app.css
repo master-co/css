@@ -9,7 +9,7 @@
     card {
         @compose bg:brand;
         @variant @md {
-            @compose font:18;
+            @compose font:1.125rem;
         }
         border-color: #456;
     }

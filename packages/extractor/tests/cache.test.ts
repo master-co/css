@@ -2,7 +2,7 @@ import CSSExtractor from '../src'
 import { describe, test, expect } from 'vitest'
 
 const SOURCE = 'foo.tsx'
-const CONTENT = `<div className="bg:white fg:black m:8">hi</div>`
+const CONTENT = `<div className="bg:white fg:black m:2x">hi</div>`
 
 describe('content-hash cache (Phase A optimisation)', () => {
     test('insert(source, content) returns false on identical re-call', async () => {

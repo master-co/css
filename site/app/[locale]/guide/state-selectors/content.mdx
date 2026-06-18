@@ -256,11 +256,11 @@ Use form validation pseudo-classes to reflect native validity without writing Ja
 
 (type) Try typing `co` as a valid email address
 <Demo>
-    <input type="email" className="b:danger:invalid b:success:valid b:1|subtle outline:0 h:12x font:sm pi:md bg:panel r:md max-w:75x" defaultValue="aron@master." />
+    <input type="email" className="b:danger:invalid b:success:valid b:px|subtle outline:0 h:12x font:sm pi:md bg:panel r:md max-w:75x" defaultValue="aron@master." />
 </Demo>
 ```html
 <!-- @MARK :invalid --><!-- @MARK :invalid -->
-<input class="b:danger:invalid b:success:valid b:1|solid …" type="email" />
+<input class="b:danger:invalid b:success:valid b:px|solid …" type="email" />
 ```
 
 ### `:disabled`
@@ -273,7 +273,7 @@ Use `:disabled` for controls that cannot be interacted with.
 ### `:checked`, `:indeterminate`
 Use `:checked` and `:indeterminate` for checkboxes, radio buttons, switches, and custom controls backed by native inputs.
 <Demo>
-    <input type="checkbox" className="appearance:none bg:accent:checked b:1|line r:sm size:5x" defaultChecked />
+    <input type="checkbox" className="appearance:none bg:accent:checked b:px|line r:sm size:5x" defaultChecked />
 </Demo>
 ```html
 <!-- @MARK :checked -->
@@ -368,7 +368,7 @@ Style scrollbars with `::scrollbar`, `::scrollbar-thumb`, `::scrollbar-track`, `
 
 (hover) Try scrolling horizontally and interact with the scroll bar
 <Demo $py={0} $px={0}>
-    <div className="size:6::scrollbar bg:neutral-50/.2::scrollbar-thumb overflow-x:auto p:xl">
+    <div className="size:0.375rem::scrollbar bg:neutral-50/.2::scrollbar-thumb overflow-x:auto p:xl">
         <div className='flex w:max'>
             {animals.map((animal) =>
                 <div key={animal.name}>
@@ -380,7 +380,7 @@ Style scrollbars with `::scrollbar`, `::scrollbar-thumb`, `::scrollbar-track`, `
 </Demo>
 ```html
 <!-- @MARK scrollbar --><!-- @MARK ::scrollbar-thumb -->
-<div class="size:6::scrollbar bg:neutral-50/.2::scrollbar-thumb overflow-x:auto …">
+<div class="size:0.375rem::scrollbar bg:neutral-50/.2::scrollbar-thumb overflow-x:auto …">
 ```
 
 ---

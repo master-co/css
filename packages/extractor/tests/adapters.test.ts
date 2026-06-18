@@ -10,19 +10,19 @@ describe('built-in source adapters', () => {
     test('extracts static classes from JavaScript and TypeScript syntax with Oxc', () => {
         expect(extractOxcClasses('component.tsx', `
             const classes = 'block mi:auto'
-            const active = clsx('fg:red', { 'p:16': ok })
+            const active = clsx('fg:red', { 'p:4x': ok })
             element.classList.add('flex')
             export function App() {
-                return <div className="hidden m:8" />
+                return <div className="hidden m:2x" />
             }
         `)).toEqual([
             'block',
             'mi:auto',
             'fg:red',
-            'p:16',
+            'p:4x',
             'flex',
             'hidden',
-            'm:8'
+            'm:2x'
         ])
     })
 
@@ -44,14 +44,14 @@ describe('built-in source adapters', () => {
         expect(extractHTMLClasses('index.html', `
             <div class="block mi:auto"></div>
             <script>
-                element.classList.add('fg:red', 'p:16')
+                element.classList.add('fg:red', 'p:4x')
                 const classes = 'flex hidden'
             </script>
         `)).toEqual([
             'block',
             'mi:auto',
             'fg:red',
-            'p:16',
+            'p:4x',
             'flex',
             'hidden'
         ])

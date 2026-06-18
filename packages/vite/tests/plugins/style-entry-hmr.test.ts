@@ -81,7 +81,7 @@ describe('StyleEntryHMRPlugin (C3+C4 race fixes)', () => {
         ;(plugin as any).buildStart.call({})
 
         // Drive a transformIndexHtml first so the second arm of handleReset has work to do
-        await (plugin as any).transformIndexHtml.handler.call({}, '<html class="p:4"></html>', { filename: '/index.html' })
+        await (plugin as any).transformIndexHtml.handler.call({}, '<html class="p:1x"></html>', { filename: '/index.html' })
 
         const updateSendCallsBefore = server.ws.send.mock.calls.length
         extractor.emit('reset')
