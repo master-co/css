@@ -3,16 +3,16 @@
 
 ## Examples
 ### Set a custom ratio
-Use `aspect:<ratio>` to reserve a proportional box before media or content finishes loading.
+Use `aspect-ratio:<ratio>` to reserve a proportional box before media or content finishes loading.
 ```html
-<!-- @MARK aspect:4/3 --><!-- @MARK w:full -->
-<img class="w:full aspect:4/3 object:cover" src="..." alt="" />
+<!-- @MARK aspect-ratio:4/3 --><!-- @MARK w:full -->
+<img class="w:full aspect-ratio:4/3 object:cover" src="..." alt="" />
 ```
 
 <details>
     <summary>Generated CSS</summary>
     <Class2CSS>
-        {['aspect:4/3', 'w:full']}
+        {['aspect-ratio:4/3', 'w:full']}
     </Class2CSS>
 </details>
 
@@ -29,29 +29,22 @@ Use `square` for `1 / 1` and `video` for a common widescreen media frame.
 ### Pair with one explicit axis
 Aspect ratio needs at least one axis to be resolved by width, height, or content. The common pattern is a fluid width with an aspect ratio.
 ```html
-<!-- @MARK w:full --><!-- @MARK max-w:4xl --><!-- @MARK aspect:16/9 -->
-<figure class="w:full max-w:4xl aspect:16/9">
+<!-- @MARK w:full --><!-- @MARK max-w:4xl --><!-- @MARK aspect-ratio:16/9 -->
+<figure class="w:full max-w:4xl aspect-ratio:16/9">
     ...
 </figure>
 ```
 
 If both width and height are fixed, the browser follows those dimensions and the ratio is only a preferred constraint.
 
-### Use aspect tokens
-Define `aspect-*` tokens when a repeated ratio has product or media meaning.
-
-```css name=index.css
-@theme {
-    --aspect-video: 16/9;
-}
-```
-
+### Use the video shortcut
+Use `video` when you need the common `16 / 9` media frame.
 ```html
-<figure class="w:full aspect:video">...</figure>
+<figure class="w:full video">...</figure>
 ```
 
 ### Choose size for fixed squares
-Use [size](/reference/size) for fixed square UI elements. Use `aspect:*` when at least one axis should remain fluid.
+Use [size](/reference/size) for fixed square UI elements. Use `aspect-ratio:*` when at least one axis should remain fluid.
 ```html
 <!-- @MARK size:10x -->
 <button class="size:10x round">...</button>
@@ -60,7 +53,7 @@ Use [size](/reference/size) for fixed square UI elements. Use `aspect:*` when at
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="aspect:1/1 aspect:4/3@sm aspect:16/9@dark aspect:auto@print">...</div>
+<div class="aspect-ratio:1/1 aspect-ratio:4/3@sm aspect-ratio:16/9@dark aspect-ratio:auto@print">...</div>
 ```
 
 Use `object:cover` or `object:contain` on replaced media when the content should adapt inside the reserved ratio.

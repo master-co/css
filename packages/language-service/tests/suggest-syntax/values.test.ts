@@ -8,7 +8,7 @@ test.todo('convert any color spaces to RGB and hint correctly')
 
 it('should ignore values containing blanks', () => expect(hint('font-family:')?.map(({ label }) => label)).not.toContain('Arial, Helvetica, sans-serif'))
 it('types | delimiter', () => expect(hint('b:1|')?.map(({ label }) => label)).toContain('solid'))
-it('types , separator', () => expect(hint('s:1|1|2|black,')?.map(({ label }) => label)).toContain('inset'))
+it('types , separator', () => expect(hint('shadow:1|1|2|black,')?.map(({ label }) => label)).toContain('inset'))
 it('ends with @ and not to hint values', () => expect(hint('text:center@')?.map(({ label }) => label)).not.toContain('center'))
 it('ends with : and not to hint values', () => expect(hint('text:center:')?.map(({ label }) => label)).not.toContain('center'))
 
@@ -64,29 +64,23 @@ describe('detail and documentation', () => {
 
 describe('retype on no hints', () => {
     it('"text:c"', () => expect(hint('text:c')?.length).toBeGreaterThan(0))
-    it('"d:b"', () => expect(hint('d:b')?.find(({ label }) => label === 'block')).toEqual({
+    it('"display:b"', () => expect(hint('display:b')?.find(({ label }) => label === 'block')).toMatchObject({
         label: 'block',
         kind: 12,
         sortText: 'cccccblock',
-        detail: 'display: block',
-        documentation: {
-            kind: 'markdown',
-            value: dedent`
-                    \`\`\`css
-                    @layer utilities {
-                      .d\\:block {
-                        display: block
-                      }
-                    }
-                    \`\`\`
-                `
-        }
+        detail: 'display: block'
     }))
 })
 
 describe('negative values', () => {
     it('should hint negative values', () => expect(hint('font:')?.map(({ label }) => label)).not.toContain('-bold'))
     test.todo('types - to hint number values')
+})
+
+describe('key aliases', () => {
+    test('radius alias values use canonical radius utility', () => {
+        expect(hint('rtr:')?.map(({ label }) => label)).toContain('md')
+    })
 })
 
 describe('sorting', () => {

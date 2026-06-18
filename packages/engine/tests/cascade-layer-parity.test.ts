@@ -272,12 +272,14 @@ describe.concurrent('migrated cascade and layer parity', () => {
         const plan = clonePlan()
         plan.atRules = { ...(plan.atRules || {}), tablet: tabletAtRule, desktop: desktopAtRule }
         plan.breakpointAtRules = { ...(plan.breakpointAtRules || {}), tablet: tabletAtRule, desktop: desktopAtRule }
-        const mediaCSS = createCSS(plan)
-        mediaCSS.add('min-w:206', '{flex-row}@xs', 'jc:flex-end@xs', 'hidden@tablet&<desktop', '{flex-row}@2xs&<xs')
+        const mediaCSS = createCSS(plan, undefined, {
+            nativeDeclarationMatcher: ({ property }) => property === 'justify-content'
+        })
+        mediaCSS.add('min-w:206', '{flex-row}@xs', 'justify-content:flex-end@xs', 'hidden@tablet&<desktop', '{flex-row}@2xs&<xs')
         expect(mediaCSS.utilitiesLayer.rules.map(({ name }) => name)).toEqual([
             'min-w:206',
             '{flex-row}@xs',
-            'jc:flex-end@xs',
+            'justify-content:flex-end@xs',
             'hidden@tablet&<desktop',
             '{flex-row}@2xs&<xs'
         ])

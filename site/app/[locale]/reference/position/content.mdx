@@ -57,7 +57,7 @@ Use `abs` to remove an element from the normal document flow and position it rel
 ### Positioning elements as fixed
 Use `fixed` to remove an element from the normal document flow and position it relative to the viewport.
 <Demo>
-    <div className="box ai:initial! jc:initial! p:8|20_li p:10|0! r:10 w:full max-w:340@sm max-h:250 overflow:auto">
+    <div className="box align-items:initial! justify-content:initial! p:8|20_li p:10|0! r:10 w:full max-w:340@sm max-h:250 overflow:auto">
         <input className="fixed z:1 bg:gray-23 bg:gray-18:focus fg:gray-40::placeholder outline:0 font:14 w:300 mx:10 p:12 leading:1 r:5" placeholder="Search for chats and messages" type="search" />
         <ul className="list-style:none mt:10 pl:0 w:full">
             {users.map((user, index) =>
@@ -71,7 +71,7 @@ Use `fixed` to remove an element from the normal document flow and position it r
                             <div className="text:14 font:medium fg:gray-88@dark capitalize">{user.name}</div>
                             <div className="font:12 fg:slate-54 fg:gray-44@dark ml:8">{user.time}</div>
                         </div>
-                        <p className="text:13 m:0 t:left">{user.message}</p>
+                        <p className="text:13 m:0 text:left">{user.message}</p>
                     </div>
                 </li>
             )}
@@ -116,7 +116,7 @@ Use `sticky` to position an element based on scroll position. It behaves like a 
                             <div className="text:14 font:medium fg:gray-88@dark capitalize">{user.name}</div>
                             <div className="font:12 fg:slate-54 fg:gray-44@dark ml:8">{user.time}</div>
                         </div>
-                        <p className="text:13 m:0 t:left">{user.message}</p>
+                        <p className="text:13 m:0 text:left">{user.message}</p>
                     </div>
                 </li>
             )}

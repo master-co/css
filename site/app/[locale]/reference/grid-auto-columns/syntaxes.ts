@@ -1,9 +1,9 @@
 const syntaxes = [
-    ['grid-auto-cols:`value`'],
-    ['grid-auto-cols:minmax(`min`,`max`)'],
-    'grid-auto-cols:auto',
-    'grid-auto-cols:min-content',
-    'grid-auto-cols:max-content',
+    ['grid-auto-columns:`value`'],
+    ['grid-auto-columns:minmax(`min`,`max`)'],
+    'grid-auto-columns:auto',
+    'grid-auto-columns:min-content',
+    'grid-auto-columns:max-content',
 ]
 
 export default syntaxes

@@ -5,6 +5,7 @@ import { compileCSSPlanFile } from '@master/css-compiler'
 import { stringifyMasterCSSPlanJSON } from 'shared/master-css-plan-json'
 import UtilityType from 'shared/utility-type'
 import functions from '../src/functions'
+import keyAliases from '../src/key-aliases'
 import { settings } from '../src/settings'
 import sourceUtilities from '../src/utilities'
 import type {
@@ -90,7 +91,8 @@ export function createDefaultPlan(cssPlan: MasterCSSPlan): MasterCSSPlan {
         selectors: cssPlan.selectors,
         utilities,
         utilityBuckets: createUtilityBuckets(utilities),
-        functions: clone(functions) as MasterCSSPlanFunctions
+        functions: clone(functions) as MasterCSSPlanFunctions,
+        keyAliases: clone(keyAliases)
     }
 }
 

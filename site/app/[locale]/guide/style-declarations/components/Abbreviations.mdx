@@ -3,23 +3,23 @@ export const code1 = `
     <p class="font-size:1rem margin-top:32 justify-content:center">
 `
 export const code2 = `
-    <!-- @MARK f:16 --><!-- @MARK mt:32 --><!-- @MARK jc:center -->
-    <p class="f:16 mt:32 jc:center">
+    <!-- @MARK font:16 --><!-- @MARK mt:32 --><!-- @MARK justify-content:center -->
+    <p class="font:16 mt:32 justify-content:center">
 `
 
-Syntax: <code><span className="token value mcss language-mcss"><span className="token mcss"><span className="token Mkey">property-name</span><span className="token Mvalueroot"><span className="token Mcolon">:</span><span className="token Mvalue"><span className="token Mnumber_unit"><span className="token Mnumber">value</span></span></span></span></span></span></code> -> <code><span className="token value mcss language-mcss"><span className="token mcss"><span className="token Mkey">pn</span><span className="token Mvalueroot"><span className="token Mcolon">:</span><span className="token Mvalue"><span className="token Mnumber_unit"><span className="token Mnumber">value</span></span></span></span></span></span></code>
+Syntax: <code><span className="token value mcss language-mcss"><span className="token mcss"><span className="token Mkey">property-name</span><span className="token Mvalueroot"><span className="token Mcolon">:</span><span className="token Mvalue"><span className="token Mnumber_unit"><span className="token Mnumber">value</span></span></span></span></span></span></code> -> <code><span className="token value mcss language-mcss"><span className="token mcss"><span className="token Mkey">alias</span><span className="token Mvalueroot"><span className="token Mcolon">:</span><span className="token Mvalue"><span className="token Mnumber_unit"><span className="token Mnumber">value</span></span></span></span></span></span></code>
 
-Property names can still be long after you learn the syntax. Abbreviations are optional, but they are useful for common layout and spacing properties.
+Property names can still be long after you learn the syntax. Master CSS keeps a small curated set of abbreviations for common geometry, spacing, color, and typography patterns.
 <Code lang="html">
     {code1}
 </Code>
 
-(o) Use the first letter for an abbreviation. <Dropped p1={code1} p2={code2} target="class" />
+(o) Use an abbreviation only when it is part of the curated set. <Dropped p1={code1} p2={code2} target="class" />
 <Code lang="html">
     {code2}
 </Code>
 
-Use abbreviations when they are common enough to read at a glance. Prefer full property names for rare properties or when a shortcut would surprise other people on the project.
+Use full property names for rare CSS properties. Valid native declarations can be written directly without waiting for a built-in abbreviation.
 
 export const code3 = `
     <!-- @MARK width:32 --><!-- @MARK height:32 --><!-- @MARK border-radius:5 --><!-- @MARK z-index:10 --><!-- @MARK margin-top:1 --><!-- @MARK margin-bottom:1 --><!-- @MARK padding-left:1 --><!-- @MARK padding-right:1 -->
@@ -56,6 +56,7 @@ export const code6 = `
 - Coordinates: `x` axis, `y` axis, `z` axis.
 - Spacing: `m` margin, `p` padding.
 - Directions: `t` top, `b` bottom, `l` left, `r` right, usually after a spacing prefix like `mt`, `pb`, or `pr`.
+- Radius sides and corners: `rt`, `rb`, `rl`, `rr`, `rtl`, `rtr`, `rbl`, and `rbr`.
 
 (o) Use `mcss size:w|h` to simplify it further! <Dropped p1={code3} p2={code6} target="class" />
 <Code lang="html">

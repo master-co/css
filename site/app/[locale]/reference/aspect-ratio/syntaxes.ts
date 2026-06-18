@@ -1,5 +1,5 @@
 const syntaxes = [
-    ['aspect:`ratio`,`aspect`'],
+    ['aspect-ratio:`ratio`,`aspect`'],
     'square',
     'video'
 ]

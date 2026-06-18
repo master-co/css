@@ -275,8 +275,7 @@ const utilities = [
             {
                 "type": "key",
                 "keys": [
-                    "border-radius",
-                    "r"
+                    "border-radius"
                 ]
             }
         ]
@@ -374,24 +373,6 @@ const utilities = [
         ]
     },
     {
-        "id": "columns",
-        "name": "columns",
-        "type": UtilityType.NativeShorthand,
-        "emit": {
-            "type": "property",
-            "property": "columns"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "columns",
-                    "cols"
-                ]
-            }
-        ]
-    },
-    {
         "id": "container",
         "name": "container",
         "type": UtilityType.NativeShorthand,
@@ -429,8 +410,7 @@ const utilities = [
             {
                 "type": "key",
                 "keys": [
-                    "font",
-                    "f"
+                    "font"
                 ]
             }
         ]
@@ -447,15 +427,13 @@ const utilities = [
             {
                 "type": "variable",
                 "keys": [
-                    "font",
-                    "f"
+                    "font"
                 ]
             },
             {
                 "type": "value",
                 "keys": [
-                    "font",
-                    "f"
+                    "font"
                 ]
             },
             {
@@ -542,8 +520,7 @@ const utilities = [
             {
                 "type": "key",
                 "keys": [
-                    "inset-block",
-                    "ib"
+                    "inset-block"
                 ]
             }
         ]
@@ -564,8 +541,7 @@ const utilities = [
             {
                 "type": "key",
                 "keys": [
-                    "inset-inline",
-                    "ii"
+                    "inset-inline"
                 ]
             }
         ]
@@ -586,8 +562,7 @@ const utilities = [
             {
                 "type": "key",
                 "keys": [
-                    "margin",
-                    "m"
+                    "margin"
                 ]
             }
         ]
@@ -629,8 +604,7 @@ const utilities = [
             {
                 "type": "key",
                 "keys": [
-                    "margin-inline",
-                    "mi"
+                    "margin-inline"
                 ]
             }
         ]
@@ -674,8 +648,7 @@ const utilities = [
             {
                 "type": "key",
                 "keys": [
-                    "padding",
-                    "p"
+                    "padding"
                 ]
             }
         ]
@@ -717,8 +690,7 @@ const utilities = [
             {
                 "type": "key",
                 "keys": [
-                    "padding-inline",
-                    "pi"
+                    "padding-inline"
                 ]
             }
         ]
@@ -739,8 +711,7 @@ const utilities = [
             {
                 "type": "key",
                 "keys": [
-                    "scroll-margin",
-                    "scroll-m"
+                    "scroll-margin"
                 ]
             }
         ]
@@ -761,8 +732,7 @@ const utilities = [
             {
                 "type": "key",
                 "keys": [
-                    "scroll-padding",
-                    "scroll-p"
+                    "scroll-padding"
                 ]
             }
         ]
@@ -792,15 +762,13 @@ const utilities = [
             {
                 "type": "variable",
                 "keys": [
-                    "text",
-                    "t"
+                    "text"
                 ]
             },
             {
                 "type": "value",
                 "keys": [
-                    "text",
-                    "t"
+                    "text"
                 ]
             },
             {
@@ -829,15 +797,13 @@ const utilities = [
             {
                 "type": "variable",
                 "keys": [
-                    "text",
-                    "t"
+                    "text"
                 ]
             },
             {
                 "type": "value",
                 "keys": [
-                    "text",
-                    "t"
+                    "text"
                 ]
             },
             {
@@ -1039,7 +1005,6 @@ const utilities = [
             {
                 "type": "key",
                 "keys": [
-                    "rb",
                     "border-bottom-radius"
                 ]
             }
@@ -1064,7 +1029,6 @@ const utilities = [
             {
                 "type": "key",
                 "keys": [
-                    "rl",
                     "border-left-radius"
                 ]
             }
@@ -1089,7 +1053,6 @@ const utilities = [
             {
                 "type": "key",
                 "keys": [
-                    "rr",
                     "border-right-radius"
                 ]
             }
@@ -1114,7 +1077,6 @@ const utilities = [
             {
                 "type": "key",
                 "keys": [
-                    "rt",
                     "border-top-radius"
                 ]
             }
@@ -1399,7 +1361,6 @@ const utilities = [
             {
                 "type": "key",
                 "keys": [
-                    "mx",
                     "margin-x",
                     "margin-x"
                 ]
@@ -1425,7 +1386,6 @@ const utilities = [
             {
                 "type": "key",
                 "keys": [
-                    "my",
                     "margin-y"
                 ]
             }
@@ -1450,7 +1410,6 @@ const utilities = [
             {
                 "type": "key",
                 "keys": [
-                    "max",
                     "max-size"
                 ]
             }
@@ -1475,7 +1434,6 @@ const utilities = [
             {
                 "type": "key",
                 "keys": [
-                    "min",
                     "min-size"
                 ]
             }
@@ -1500,7 +1458,6 @@ const utilities = [
             {
                 "type": "key",
                 "keys": [
-                    "px",
                     "padding-x"
                 ]
             }
@@ -1525,7 +1482,6 @@ const utilities = [
             {
                 "type": "key",
                 "keys": [
-                    "py",
                     "padding-y"
                 ]
             }
@@ -1550,7 +1506,6 @@ const utilities = [
             {
                 "type": "key",
                 "keys": [
-                    "scroll-mx",
                     "scroll-margin-x"
                 ]
             }
@@ -1575,7 +1530,6 @@ const utilities = [
             {
                 "type": "key",
                 "keys": [
-                    "scroll-my",
                     "scroll-margin-y"
                 ]
             }
@@ -1600,7 +1554,6 @@ const utilities = [
             {
                 "type": "key",
                 "keys": [
-                    "scroll-px",
                     "scroll-padding-x"
                 ]
             }
@@ -1625,7 +1578,6 @@ const utilities = [
             {
                 "type": "key",
                 "keys": [
-                    "scroll-py",
                     "scroll-padding-y"
                 ]
             }
@@ -1797,15 +1749,13 @@ const utilities = [
             {
                 "type": "variable",
                 "keys": [
-                    "text",
-                    "t"
+                    "text"
                 ]
             },
             {
                 "type": "value",
                 "keys": [
-                    "text",
-                    "t"
+                    "text"
                 ]
             },
             {
@@ -1909,62 +1859,7 @@ const utilities = [
             {
                 "type": "key",
                 "keys": [
-                    "accent-color",
-                    "accent"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "align-content",
-        "name": "align-content",
-        "type": UtilityType.Native,
-        "emit": {
-            "type": "property",
-            "property": "align-content"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "align-content",
-                    "ac"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "align-items",
-        "name": "align-items",
-        "type": UtilityType.Native,
-        "emit": {
-            "type": "property",
-            "property": "align-items"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "align-items",
-                    "ai"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "align-self",
-        "name": "align-self",
-        "type": UtilityType.Native,
-        "emit": {
-            "type": "property",
-            "property": "align-self"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "align-self",
-                    "as"
+                    "accent-color"
                 ]
             }
         ]
@@ -2047,24 +1942,6 @@ const utilities = [
         ]
     },
     {
-        "id": "aspect-ratio",
-        "name": "aspect-ratio",
-        "type": UtilityType.Native,
-        "emit": {
-            "type": "property",
-            "property": "aspect-ratio"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "aspect-ratio",
-                    "aspect"
-                ]
-            }
-        ]
-    },
-    {
         "id": "backdrop-filter",
         "name": "backdrop-filter",
         "type": UtilityType.Native,
@@ -2082,8 +1959,7 @@ const utilities = [
             {
                 "type": "key",
                 "keys": [
-                    "backdrop-filter",
-                    "bd"
+                    "backdrop-filter"
                 ]
             }
         ]
@@ -2118,60 +1994,6 @@ const utilities = [
                 "type": "key",
                 "keys": [
                     "background-attachment"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "background-blend-mode",
-        "name": "background-blend-mode",
-        "type": UtilityType.Native,
-        "emit": {
-            "type": "property",
-            "property": "background-blend-mode"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "background-blend-mode",
-                    "bg-blend"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "background-clip",
-        "name": "background-clip",
-        "type": UtilityType.Native,
-        "emit": {
-            "type": "property",
-            "property": "background-clip"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "background-clip",
-                    "bg-clip"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "background-origin",
-        "name": "background-origin",
-        "type": UtilityType.Native,
-        "emit": {
-            "type": "property",
-            "property": "background-origin"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "background-origin",
-                    "bg-origin"
                 ]
             }
         ]
@@ -2266,8 +2088,7 @@ const utilities = [
             {
                 "type": "key",
                 "keys": [
-                    "block-size",
-                    "bs"
+                    "block-size"
                 ]
             }
         ]
@@ -2288,8 +2109,7 @@ const utilities = [
             {
                 "type": "key",
                 "keys": [
-                    "border-bottom-left-radius",
-                    "rbl"
+                    "border-bottom-left-radius"
                 ]
             }
         ]
@@ -2310,8 +2130,7 @@ const utilities = [
             {
                 "type": "key",
                 "keys": [
-                    "border-bottom-right-radius",
-                    "rbr"
+                    "border-bottom-right-radius"
                 ]
             }
         ]
@@ -2468,35 +2287,6 @@ const utilities = [
                 "type": "key",
                 "keys": [
                     "border-image-repeat"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "border-image-slice",
-        "name": "border-image-slice",
-        "type": UtilityType.Native,
-        "emit": {
-            "type": "property",
-            "property": "border-image-slice"
-        },
-        "matchers": [
-            {
-                "type": "variable",
-                "keys": [
-                    "border-image"
-                ]
-            },
-            {
-                "type": "value",
-                "keys": [
-                    "border-image"
-                ]
-            },
-            {
-                "type": "key",
-                "keys": [
-                    "border-image-slice"
                 ]
             }
         ]
@@ -2668,8 +2458,7 @@ const utilities = [
             {
                 "type": "key",
                 "keys": [
-                    "border-top-left-radius",
-                    "rtl"
+                    "border-top-left-radius"
                 ]
             }
         ]
@@ -2690,8 +2479,7 @@ const utilities = [
             {
                 "type": "key",
                 "keys": [
-                    "border-top-right-radius",
-                    "rtr"
+                    "border-top-right-radius"
                 ]
             }
         ]
@@ -2776,8 +2564,7 @@ const utilities = [
             {
                 "type": "key",
                 "keys": [
-                    "box-decoration-break",
-                    "box-decoration"
+                    "box-decoration-break"
                 ]
             }
         ]
@@ -2799,38 +2586,7 @@ const utilities = [
             {
                 "type": "key",
                 "keys": [
-                    "box-shadow",
-                    "shadow",
-                    "s"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "box-sizing",
-        "name": "box-sizing",
-        "type": UtilityType.Native,
-        "emit": {
-            "type": "property",
-            "property": "box-sizing"
-        },
-        "matchers": [
-            {
-                "type": "variable",
-                "keys": [
-                    "box"
-                ]
-            },
-            {
-                "type": "value",
-                "keys": [
-                    "box"
-                ]
-            },
-            {
-                "type": "key",
-                "keys": [
-                    "box-sizing"
+                    "box-shadow"
                 ]
             }
         ]
@@ -2851,26 +2607,7 @@ const utilities = [
             {
                 "type": "key",
                 "keys": [
-                    "caret-color",
-                    "caret"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "clip-path",
-        "name": "clip-path",
-        "type": UtilityType.Native,
-        "emit": {
-            "type": "property",
-            "property": "clip-path"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "clip-path",
-                    "clip"
+                    "caret-color"
                 ]
             }
         ]
@@ -2892,8 +2629,7 @@ const utilities = [
             {
                 "type": "key",
                 "keys": [
-                    "color",
-                    "fg"
+                    "color"
                 ]
             }
         ]
@@ -2914,26 +2650,7 @@ const utilities = [
             {
                 "type": "key",
                 "keys": [
-                    "column-gap",
-                    "gap-x"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "column-span",
-        "name": "column-span",
-        "type": UtilityType.Native,
-        "emit": {
-            "type": "property",
-            "property": "column-span"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "column-span",
-                    "col-span"
+                    "column-gap"
                 ]
             }
         ]
@@ -3055,24 +2772,6 @@ const utilities = [
         ]
     },
     {
-        "id": "display",
-        "name": "display",
-        "type": UtilityType.Native,
-        "emit": {
-            "type": "property",
-            "property": "display"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "display",
-                    "d"
-                ]
-            }
-        ]
-    },
-    {
         "id": "fill",
         "name": "fill",
         "type": UtilityType.Native,
@@ -3181,64 +2880,6 @@ const utilities = [
         ]
     },
     {
-        "id": "flex-grow",
-        "name": "flex-grow",
-        "type": UtilityType.Native,
-        "emit": {
-            "type": "property",
-            "property": "flex-grow"
-        },
-        "matchers": [
-            {
-                "type": "variable",
-                "keys": [
-                    "flex"
-                ]
-            },
-            {
-                "type": "value",
-                "keys": [
-                    "flex"
-                ]
-            },
-            {
-                "type": "key",
-                "keys": [
-                    "flex-grow"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "flex-shrink",
-        "name": "flex-shrink",
-        "type": UtilityType.Native,
-        "emit": {
-            "type": "property",
-            "property": "flex-shrink"
-        },
-        "matchers": [
-            {
-                "type": "variable",
-                "keys": [
-                    "flex"
-                ]
-            },
-            {
-                "type": "value",
-                "keys": [
-                    "flex"
-                ]
-            },
-            {
-                "type": "key",
-                "keys": [
-                    "flex-shrink"
-                ]
-            }
-        ]
-    },
-    {
         "id": "flex-wrap",
         "name": "flex-wrap",
         "type": UtilityType.Native,
@@ -3287,15 +2928,13 @@ const utilities = [
             {
                 "type": "variable",
                 "keys": [
-                    "font",
-                    "f"
+                    "font"
                 ]
             },
             {
                 "type": "value",
                 "keys": [
-                    "font",
-                    "f"
+                    "font"
                 ]
             },
             {
@@ -3321,8 +2960,7 @@ const utilities = [
             {
                 "type": "key",
                 "keys": [
-                    "font-feature-settings",
-                    "font-feature"
+                    "font-feature-settings"
                 ]
             }
         ]
@@ -3345,15 +2983,13 @@ const utilities = [
             {
                 "type": "variable",
                 "keys": [
-                    "font",
-                    "f"
+                    "font"
                 ]
             },
             {
                 "type": "value",
                 "keys": [
-                    "font",
-                    "f"
+                    "font"
                 ]
             },
             {
@@ -3386,15 +3022,13 @@ const utilities = [
             {
                 "type": "variable",
                 "keys": [
-                    "font",
-                    "f"
+                    "font"
                 ]
             },
             {
                 "type": "value",
                 "keys": [
-                    "font",
-                    "f"
+                    "font"
                 ]
             },
             {
@@ -3423,57 +3057,19 @@ const utilities = [
             {
                 "type": "variable",
                 "keys": [
-                    "font",
-                    "f"
+                    "font"
                 ]
             },
             {
                 "type": "value",
                 "keys": [
-                    "font",
-                    "f"
+                    "font"
                 ]
             },
             {
                 "type": "key",
                 "keys": [
                     "font-weight"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "grid-auto-columns",
-        "name": "grid-auto-columns",
-        "type": UtilityType.Native,
-        "emit": {
-            "type": "property",
-            "property": "grid-auto-columns"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "grid-auto-columns",
-                    "grid-auto-cols"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "grid-auto-flow",
-        "name": "grid-auto-flow",
-        "type": UtilityType.Native,
-        "emit": {
-            "type": "property",
-            "property": "grid-auto-flow"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "grid-auto-flow",
-                    "grid-flow"
                 ]
             }
         ]
@@ -3527,8 +3123,7 @@ const utilities = [
             {
                 "type": "key",
                 "keys": [
-                    "grid-template-columns",
-                    "grid-template-cols"
+                    "grid-template-columns"
                 ]
             }
         ]
@@ -3567,8 +3162,7 @@ const utilities = [
             {
                 "type": "key",
                 "keys": [
-                    "height",
-                    "h"
+                    "height"
                 ]
             }
         ]
@@ -3589,8 +3183,7 @@ const utilities = [
             {
                 "type": "key",
                 "keys": [
-                    "inline-size",
-                    "is"
+                    "inline-size"
                 ]
             }
         ]
@@ -3611,8 +3204,7 @@ const utilities = [
             {
                 "type": "key",
                 "keys": [
-                    "inset-block-end",
-                    "ibe"
+                    "inset-block-end"
                 ]
             }
         ]
@@ -3633,8 +3225,7 @@ const utilities = [
             {
                 "type": "key",
                 "keys": [
-                    "inset-block-start",
-                    "ibs"
+                    "inset-block-start"
                 ]
             }
         ]
@@ -3655,8 +3246,7 @@ const utilities = [
             {
                 "type": "key",
                 "keys": [
-                    "inset-inline-end",
-                    "iie"
+                    "inset-inline-end"
                 ]
             }
         ]
@@ -3677,62 +3267,7 @@ const utilities = [
             {
                 "type": "key",
                 "keys": [
-                    "inset-inline-start",
-                    "iis"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "justify-content",
-        "name": "justify-content",
-        "type": UtilityType.Native,
-        "emit": {
-            "type": "property",
-            "property": "justify-content"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "justify-content",
-                    "jc"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "justify-items",
-        "name": "justify-items",
-        "type": UtilityType.Native,
-        "emit": {
-            "type": "property",
-            "property": "justify-items"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "justify-items",
-                    "ji"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "justify-self",
-        "name": "justify-self",
-        "type": UtilityType.Native,
-        "emit": {
-            "type": "property",
-            "property": "justify-self"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "justify-self",
-                    "js"
+                    "inset-inline-start"
                 ]
             }
         ]
@@ -3774,9 +3309,7 @@ const utilities = [
             {
                 "type": "key",
                 "keys": [
-                    "letter-spacing",
-                    "tracking",
-                    "ls"
+                    "letter-spacing"
                 ]
             }
         ]
@@ -3796,9 +3329,7 @@ const utilities = [
             {
                 "type": "key",
                 "keys": [
-                    "line-height",
-                    "leading",
-                    "line-h"
+                    "line-height"
                 ]
             }
         ]
@@ -3885,8 +3416,7 @@ const utilities = [
             {
                 "type": "key",
                 "keys": [
-                    "margin-block-end",
-                    "mbe"
+                    "margin-block-end"
                 ]
             }
         ]
@@ -3907,8 +3437,7 @@ const utilities = [
             {
                 "type": "key",
                 "keys": [
-                    "margin-block-start",
-                    "mbs"
+                    "margin-block-start"
                 ]
             }
         ]
@@ -3929,8 +3458,7 @@ const utilities = [
             {
                 "type": "key",
                 "keys": [
-                    "margin-bottom",
-                    "mb"
+                    "margin-bottom"
                 ]
             }
         ]
@@ -3951,8 +3479,7 @@ const utilities = [
             {
                 "type": "key",
                 "keys": [
-                    "margin-inline-end",
-                    "mie"
+                    "margin-inline-end"
                 ]
             }
         ]
@@ -3973,8 +3500,7 @@ const utilities = [
             {
                 "type": "key",
                 "keys": [
-                    "margin-inline-start",
-                    "mis"
+                    "margin-inline-start"
                 ]
             }
         ]
@@ -3995,8 +3521,7 @@ const utilities = [
             {
                 "type": "key",
                 "keys": [
-                    "margin-left",
-                    "ml"
+                    "margin-left"
                 ]
             }
         ]
@@ -4017,8 +3542,7 @@ const utilities = [
             {
                 "type": "key",
                 "keys": [
-                    "margin-right",
-                    "mr"
+                    "margin-right"
                 ]
             }
         ]
@@ -4039,8 +3563,7 @@ const utilities = [
             {
                 "type": "key",
                 "keys": [
-                    "margin-top",
-                    "mt"
+                    "margin-top"
                 ]
             }
         ]
@@ -4081,8 +3604,7 @@ const utilities = [
             {
                 "type": "key",
                 "keys": [
-                    "max-block-size",
-                    "max-bs"
+                    "max-block-size"
                 ]
             }
         ]
@@ -4103,8 +3625,7 @@ const utilities = [
             {
                 "type": "key",
                 "keys": [
-                    "max-height",
-                    "max-h"
+                    "max-height"
                 ]
             }
         ]
@@ -4125,8 +3646,7 @@ const utilities = [
             {
                 "type": "key",
                 "keys": [
-                    "max-inline-size",
-                    "max-is"
+                    "max-inline-size"
                 ]
             }
         ]
@@ -4147,8 +3667,7 @@ const utilities = [
             {
                 "type": "key",
                 "keys": [
-                    "max-width",
-                    "max-w"
+                    "max-width"
                 ]
             }
         ]
@@ -4169,8 +3688,7 @@ const utilities = [
             {
                 "type": "key",
                 "keys": [
-                    "min-block-size",
-                    "min-bs"
+                    "min-block-size"
                 ]
             }
         ]
@@ -4191,8 +3709,7 @@ const utilities = [
             {
                 "type": "key",
                 "keys": [
-                    "min-height",
-                    "min-h"
+                    "min-height"
                 ]
             }
         ]
@@ -4213,8 +3730,7 @@ const utilities = [
             {
                 "type": "key",
                 "keys": [
-                    "min-inline-size",
-                    "min-is"
+                    "min-inline-size"
                 ]
             }
         ]
@@ -4235,26 +3751,7 @@ const utilities = [
             {
                 "type": "key",
                 "keys": [
-                    "min-width",
-                    "min-w"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "mix-blend-mode",
-        "name": "mix-blend-mode",
-        "type": UtilityType.Native,
-        "emit": {
-            "type": "property",
-            "property": "mix-blend-mode"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "mix-blend-mode",
-                    "blend"
+                    "min-width"
                 ]
             }
         ]
@@ -4277,15 +3774,13 @@ const utilities = [
             {
                 "type": "variable",
                 "keys": [
-                    "object",
-                    "obj"
+                    "object"
                 ]
             },
             {
                 "type": "value",
                 "keys": [
-                    "object",
-                    "obj"
+                    "object"
                 ]
             },
             {
@@ -4315,15 +3810,13 @@ const utilities = [
             {
                 "type": "variable",
                 "keys": [
-                    "object",
-                    "obj"
+                    "object"
                 ]
             },
             {
                 "type": "value",
                 "keys": [
-                    "object",
-                    "obj"
+                    "object"
                 ]
             },
             {
@@ -4349,8 +3842,7 @@ const utilities = [
             {
                 "type": "key",
                 "keys": [
-                    "order",
-                    "o"
+                    "order"
                 ]
             }
         ]
@@ -4434,8 +3926,7 @@ const utilities = [
             {
                 "type": "key",
                 "keys": [
-                    "padding-block-end",
-                    "pbe"
+                    "padding-block-end"
                 ]
             }
         ]
@@ -4456,8 +3947,7 @@ const utilities = [
             {
                 "type": "key",
                 "keys": [
-                    "padding-block-start",
-                    "pbs"
+                    "padding-block-start"
                 ]
             }
         ]
@@ -4478,8 +3968,7 @@ const utilities = [
             {
                 "type": "key",
                 "keys": [
-                    "padding-bottom",
-                    "pb"
+                    "padding-bottom"
                 ]
             }
         ]
@@ -4500,8 +3989,7 @@ const utilities = [
             {
                 "type": "key",
                 "keys": [
-                    "padding-inline-end",
-                    "pie"
+                    "padding-inline-end"
                 ]
             }
         ]
@@ -4522,8 +4010,7 @@ const utilities = [
             {
                 "type": "key",
                 "keys": [
-                    "padding-inline-start",
-                    "pis"
+                    "padding-inline-start"
                 ]
             }
         ]
@@ -4544,8 +4031,7 @@ const utilities = [
             {
                 "type": "key",
                 "keys": [
-                    "padding-left",
-                    "pl"
+                    "padding-left"
                 ]
             }
         ]
@@ -4566,8 +4052,7 @@ const utilities = [
             {
                 "type": "key",
                 "keys": [
-                    "padding-right",
-                    "pr"
+                    "padding-right"
                 ]
             }
         ]
@@ -4588,8 +4073,7 @@ const utilities = [
             {
                 "type": "key",
                 "keys": [
-                    "padding-top",
-                    "pt"
+                    "padding-top"
                 ]
             }
         ]
@@ -4649,8 +4133,7 @@ const utilities = [
             {
                 "type": "key",
                 "keys": [
-                    "row-gap",
-                    "gap-y"
+                    "row-gap"
                 ]
             }
         ]
@@ -4671,8 +4154,7 @@ const utilities = [
             {
                 "type": "key",
                 "keys": [
-                    "scroll-margin-bottom",
-                    "scroll-mb"
+                    "scroll-margin-bottom"
                 ]
             }
         ]
@@ -4693,8 +4175,7 @@ const utilities = [
             {
                 "type": "key",
                 "keys": [
-                    "scroll-margin-left",
-                    "scroll-ml"
+                    "scroll-margin-left"
                 ]
             }
         ]
@@ -4715,8 +4196,7 @@ const utilities = [
             {
                 "type": "key",
                 "keys": [
-                    "scroll-margin-right",
-                    "scroll-mr"
+                    "scroll-margin-right"
                 ]
             }
         ]
@@ -4737,8 +4217,7 @@ const utilities = [
             {
                 "type": "key",
                 "keys": [
-                    "scroll-margin-top",
-                    "scroll-mt"
+                    "scroll-margin-top"
                 ]
             }
         ]
@@ -4759,8 +4238,7 @@ const utilities = [
             {
                 "type": "key",
                 "keys": [
-                    "scroll-padding-bottom",
-                    "scroll-pb"
+                    "scroll-padding-bottom"
                 ]
             }
         ]
@@ -4781,8 +4259,7 @@ const utilities = [
             {
                 "type": "key",
                 "keys": [
-                    "scroll-padding-left",
-                    "scroll-pl"
+                    "scroll-padding-left"
                 ]
             }
         ]
@@ -4803,8 +4280,7 @@ const utilities = [
             {
                 "type": "key",
                 "keys": [
-                    "scroll-padding-right",
-                    "scroll-pr"
+                    "scroll-padding-right"
                 ]
             }
         ]
@@ -4825,8 +4301,7 @@ const utilities = [
             {
                 "type": "key",
                 "keys": [
-                    "scroll-padding-top",
-                    "scroll-pt"
+                    "scroll-padding-top"
                 ]
             }
         ]
@@ -4935,24 +4410,6 @@ const utilities = [
         ]
     },
     {
-        "id": "shape-outside",
-        "name": "shape-outside",
-        "type": UtilityType.Native,
-        "emit": {
-            "type": "property",
-            "property": "shape-outside"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "shape-outside",
-                    "shape"
-                ]
-            }
-        ]
-    },
-    {
         "id": "stroke",
         "name": "stroke",
         "type": UtilityType.Native,
@@ -4994,24 +4451,6 @@ const utilities = [
         ]
     },
     {
-        "id": "tab-size",
-        "name": "tab-size",
-        "type": UtilityType.Native,
-        "emit": {
-            "type": "property",
-            "property": "tab-size"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "tab-size",
-                    "tab"
-                ]
-            }
-        ]
-    },
-    {
         "id": "text-align",
         "name": "text-align",
         "type": UtilityType.Native,
@@ -5031,15 +4470,13 @@ const utilities = [
             {
                 "type": "variable",
                 "keys": [
-                    "text",
-                    "t"
+                    "text"
                 ]
             },
             {
                 "type": "value",
                 "keys": [
-                    "text",
-                    "t"
+                    "text"
                 ]
             },
             {
@@ -5157,15 +4594,13 @@ const utilities = [
             {
                 "type": "variable",
                 "keys": [
-                    "text",
-                    "t"
+                    "text"
                 ]
             },
             {
                 "type": "value",
                 "keys": [
-                    "text",
-                    "t"
+                    "text"
                 ]
             },
             {
@@ -5192,15 +4627,13 @@ const utilities = [
             {
                 "type": "variable",
                 "keys": [
-                    "text",
-                    "t"
+                    "text"
                 ]
             },
             {
                 "type": "value",
                 "keys": [
-                    "text",
-                    "t"
+                    "text"
                 ]
             },
             {
@@ -5228,15 +4661,13 @@ const utilities = [
             {
                 "type": "variable",
                 "keys": [
-                    "text",
-                    "t"
+                    "text"
                 ]
             },
             {
                 "type": "value",
                 "keys": [
-                    "text",
-                    "t"
+                    "text"
                 ]
             },
             {
@@ -5305,15 +4736,13 @@ const utilities = [
             {
                 "type": "variable",
                 "keys": [
-                    "text",
-                    "t"
+                    "text"
                 ]
             },
             {
                 "type": "value",
                 "keys": [
-                    "text",
-                    "t"
+                    "text"
                 ]
             },
             {
@@ -5414,24 +4843,6 @@ const utilities = [
         ]
     },
     {
-        "id": "touch-action",
-        "name": "touch-action",
-        "type": UtilityType.Native,
-        "emit": {
-            "type": "property",
-            "property": "touch-action"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "touch-action",
-                    "touch"
-                ]
-            }
-        ]
-    },
-    {
         "id": "transform",
         "name": "transform",
         "type": UtilityType.Native,
@@ -5447,35 +4858,6 @@ const utilities = [
                 "type": "key",
                 "keys": [
                     "transform"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "transform-box",
-        "name": "transform-box",
-        "type": UtilityType.Native,
-        "emit": {
-            "type": "property",
-            "property": "transform-box"
-        },
-        "matchers": [
-            {
-                "type": "variable",
-                "keys": [
-                    "transform"
-                ]
-            },
-            {
-                "type": "value",
-                "keys": [
-                    "transform"
-                ]
-            },
-            {
-                "type": "key",
-                "keys": [
-                    "transform-box"
                 ]
             }
         ]
@@ -5634,61 +5016,6 @@ const utilities = [
         ]
     },
     {
-        "id": "vertical-align",
-        "name": "vertical-align",
-        "type": UtilityType.Native,
-        "emit": {
-            "type": "property",
-            "property": "vertical-align"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "vertical-align",
-                    "v",
-                    "vertical"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "view-transition-class",
-        "name": "view-transition-class",
-        "type": UtilityType.Native,
-        "emit": {
-            "type": "property",
-            "property": "view-transition-class"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "view-transition-class",
-                    "vt-class"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "view-transition-name",
-        "name": "view-transition-name",
-        "type": UtilityType.Native,
-        "emit": {
-            "type": "property",
-            "property": "view-transition-name"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "view-transition-name",
-                    "vt-name"
-                ]
-            }
-        ]
-    },
-    {
         "id": "width",
         "name": "width",
         "type": UtilityType.Native,
@@ -5704,8 +5031,7 @@ const utilities = [
             {
                 "type": "key",
                 "keys": [
-                    "width",
-                    "w"
+                    "width"
                 ]
             }
         ]
@@ -5724,24 +5050,6 @@ const utilities = [
                 "type": "key",
                 "keys": [
                     "word-spacing"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "writing-mode",
-        "name": "writing-mode",
-        "type": UtilityType.Native,
-        "emit": {
-            "type": "property",
-            "property": "writing-mode"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "writing-mode",
-                    "writing"
                 ]
             }
         ]
@@ -5782,24 +5090,6 @@ const utilities = [
                 "type": "key",
                 "keys": [
                     "y"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "z-index",
-        "name": "z-index",
-        "type": UtilityType.Native,
-        "emit": {
-            "type": "property",
-            "property": "z-index"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "z-index",
-                    "z"
                 ]
             }
         ]
@@ -6223,15 +5513,13 @@ const utilities = [
             {
                 "type": "variable",
                 "keys": [
-                    "font",
-                    "f"
+                    "font"
                 ]
             },
             {
                 "type": "value",
                 "keys": [
-                    "font",
-                    "f"
+                    "font"
                 ]
             },
             {
@@ -6792,15 +6080,13 @@ const utilities = [
             {
                 "type": "variable",
                 "keys": [
-                    "text",
-                    "t"
+                    "text"
                 ]
             },
             {
                 "type": "value",
                 "keys": [
-                    "text",
-                    "t"
+                    "text"
                 ]
             },
             {
@@ -6981,8 +6267,7 @@ const utilities = [
             {
                 "type": "key",
                 "keys": [
-                    "scroll-margin-block-end",
-                    "scroll-mbe"
+                    "scroll-margin-block-end"
                 ]
             }
         ]
@@ -7003,8 +6288,7 @@ const utilities = [
             {
                 "type": "key",
                 "keys": [
-                    "scroll-margin-block-start",
-                    "scroll-mbs"
+                    "scroll-margin-block-start"
                 ]
             }
         ]
@@ -7046,8 +6330,7 @@ const utilities = [
             {
                 "type": "key",
                 "keys": [
-                    "scroll-margin-inline-end",
-                    "scroll-me"
+                    "scroll-margin-inline-end"
                 ]
             }
         ]
@@ -7068,8 +6351,7 @@ const utilities = [
             {
                 "type": "key",
                 "keys": [
-                    "scroll-margin-inline-start",
-                    "scroll-ms"
+                    "scroll-margin-inline-start"
                 ]
             }
         ]
@@ -7111,8 +6393,7 @@ const utilities = [
             {
                 "type": "key",
                 "keys": [
-                    "scroll-padding-block-end",
-                    "scroll-pbe"
+                    "scroll-padding-block-end"
                 ]
             }
         ]
@@ -7133,8 +6414,7 @@ const utilities = [
             {
                 "type": "key",
                 "keys": [
-                    "scroll-padding-block-start",
-                    "scroll-pbs"
+                    "scroll-padding-block-start"
                 ]
             }
         ]
@@ -7176,8 +6456,7 @@ const utilities = [
             {
                 "type": "key",
                 "keys": [
-                    "scroll-padding-inline-end",
-                    "scroll-pe"
+                    "scroll-padding-inline-end"
                 ]
             }
         ]
@@ -7198,8 +6477,7 @@ const utilities = [
             {
                 "type": "key",
                 "keys": [
-                    "scroll-padding-inline-start",
-                    "scroll-ps"
+                    "scroll-padding-inline-start"
                 ]
             }
         ]

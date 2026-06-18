@@ -6,7 +6,7 @@
 Use `shape-margin:*` with floated shapes so inline content does not sit directly on the shape boundary.
 ```html
 <!-- @MARK shape-margin:1rem -->
-<img class="float:left shape:circle(50%) shape-margin:1rem" src="/images/avatar.jpg" alt="Avatar">
+<img class="float:left shape-outside:circle(50%) shape-margin:1rem" src="/images/avatar.jpg" alt="Avatar">
 ```
 
 <details>
@@ -20,13 +20,13 @@ Use `shape-margin:*` with floated shapes so inline content does not sit directly
 Use a larger shape margin when the floated media is visually heavy or the text column is narrow.
 ```html
 <!-- @MARK shape-margin:2rem -->
-<img class="float:left shape:circle(50%) shape-margin:2rem" src="/images/photo.jpg" alt="Photo">
+<img class="float:left shape-outside:circle(50%) shape-margin:2rem" src="/images/photo.jpg" alt="Photo">
 ```
 
 ### Pair with shape outside
-`shape-margin:*` only has an effect when the element participates in shape layout, usually with `float:*` and `shape:*`.
+`shape-margin:*` only has an effect when the element participates in shape layout, usually with `float:*` and `shape-outside:*`.
 ```html
-<img class="float:left shape:circle(50%) shape-margin:1rem" src="/images/avatar.jpg" alt="">
+<img class="float:left shape-outside:circle(50%) shape-margin:1rem" src="/images/avatar.jpg" alt="">
 ```
 
 ### Apply conditionally

@@ -11,9 +11,11 @@ it.concurrent('starts with ~', () => expect(hint('~')).toEqual([]))
 it.concurrent('starts with ~d', () => expect(hint('~d')).toEqual([]))
 it.concurrent('removed ~ key values', () => expect(hint('~duration:')).toEqual([]))
 test.concurrent('f', () => expect(hint('f')?.map(({ label }) => label)).toContain('font-size:'))
-test.concurrent('d', () => expect(hint('d')?.map(({ label }) => label)).toContain('display:'))
+test.concurrent('retained key alias', () => expect(hint('m')?.map(({ label }) => label)).toContain('mt:'))
+test.concurrent('retained radius key alias', () => expect(hint('rt')?.map(({ label }) => label)).toContain('rt:'))
+test.concurrent('removed key alias', () => expect(hint('d')?.map(({ label }) => label)).not.toContain('d:'))
 
 describe.concurrent('ambiguous', () => {
-    test.concurrent('t', () => expect(hint('t')?.map(({ label }) => label)).toContain('t:'))
     test.concurrent('t', () => expect(hint('t')?.map(({ label }) => label)).toContain('text:'))
+    test.concurrent('removed t alias', () => expect(hint('t')?.map(({ label }) => label)).not.toContain('t:'))
 })

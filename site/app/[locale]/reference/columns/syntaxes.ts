@@ -1,5 +1,5 @@
 const syntaxes = [
-    ['cols:`value`']
+    ['columns:`value`']
 ]
 
 export default syntaxes

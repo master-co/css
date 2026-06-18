@@ -381,7 +381,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
 
         const css = createCSS(plan)
         expect(css.create('bg:stripe')?.text).toBe('.bg\\:stripe{background:var(--background-stripe)}')
-        expect(css.create('s:panel')?.text).toBe('.s\\:panel{box-shadow:var(--box-shadow-panel)}')
+        expect(css.create('shadow:panel')?.text).toBe('.shadow\\:panel{box-shadow:var(--box-shadow-panel)}')
         expect(css.create('p:card')?.text).toBe('.p\\:card{padding:calc(var(--spacing-card) / 16 * 1rem)}')
         expect(css.create('gap:card')?.text).toBe('.gap\\:card{gap:calc(var(--spacing-card) / 16 * 1rem)}')
         expect(css.create('m:card')?.text).toBe('.m\\:card{margin:calc(var(--spacing-card) / 16 * 1rem)}')

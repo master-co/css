@@ -18,6 +18,7 @@ export type {
     MasterCSSGeneratedRuleIR,
     MasterCSSOptions,
     MasterCSSPlan,
+    MasterCSSPlanKeyAliases,
     MasterCSSPlanSettings,
     MasterCSSPlanUtility,
     MasterCSSPlanUtilityLayerName,

@@ -89,8 +89,8 @@ export default function DonationModal() {
         <div className="abs round inset:0 mx:auto bg:surface h:128 translateY(-50%) w:128">
             <Image className="rel round mx:auto object:contain top:2" width="124" height="124" src={donationOrder.avatar} alt="sponsor" />
         </div>
-        <div className="font:24 font:bold t:center">{donationOrder.name || 'Unknown'}</div>
-        <p className="t:center">Thanks for your donation 🥳</p>
+        <div className="font:24 font:bold text:center">{donationOrder.name || 'Unknown'}</div>
+        <p className="text:center">Thanks for your donation 🥳</p>
 
         <ul>
             {donationOrder.tier && (

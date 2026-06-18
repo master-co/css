@@ -5,12 +5,12 @@ const syntaxes = [
     'shape-content',
     'shape-border',
     'shape-padding',
-    ['shape:inset(`…`)'],
-    ['shape:circle(`…`)'],
-    ['shape:ellipse(`…`)'],
-    ['shape:polygon(`…`)'],
-    ['shape:url(`…`)'],
-    ['shape:linear-gradient(`…`)'],
+    ['shape-outside:inset(`…`)'],
+    ['shape-outside:circle(`…`)'],
+    ['shape-outside:ellipse(`…`)'],
+    ['shape-outside:polygon(`…`)'],
+    ['shape-outside:url(`…`)'],
+    ['shape-outside:linear-gradient(`…`)'],
 ]
 
 export default syntaxes

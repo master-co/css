@@ -62,7 +62,7 @@ export default async function Page(props: any) {
                                             <div className='text:12 fg:muted'> <TimeAgo timestamp={page.date} /></div>
                                         </div>
                                         <div className='text:pretty my:-1x font:20 leading:1.4'>{page.title}</div>
-                                        {/* <Image src="/images/gold-pattern.jpg"  className="r:5 aspect:16/9 h:auto" width={480} height={270} alt={page.title} /> */}
+                                        {/* <Image src="/images/gold-pattern.jpg"  className="r:5 aspect-ratio:16/9 h:auto" width={480} height={270} alt={page.title} /> */}
                                         <div className='text:pretty text:12 fg:text mt:auto'>{page.description}</div>
                                         <AuthorAvatarStack>{page.authors}</AuthorAvatarStack>
                                     </Link>

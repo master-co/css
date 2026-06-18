@@ -7,10 +7,22 @@ import { createDefaultPlanFromSourceFile } from '../scripts/generate-default-pla
 import defaultPlanJSON from '../src/default-plan.json' with { type: 'json' }
 import type { MasterCSSPlan } from 'shared/master-css-plan'
 import functions from '../src/functions'
+import keyAliases from '../src/key-aliases'
 import sourceUtilities from '../src/utilities'
 
 const defaultPlan = defaultPlanJSON as unknown as MasterCSSPlan
 const __dirname = dirname(fileURLToPath(import.meta.url))
+
+const retainedRadiusKeyAliases = {
+    rb: 'border-bottom-radius',
+    rbl: 'border-bottom-left-radius',
+    rbr: 'border-bottom-right-radius',
+    rl: 'border-left-radius',
+    rr: 'border-right-radius',
+    rt: 'border-top-radius',
+    rtl: 'border-top-left-radius',
+    rtr: 'border-top-right-radius'
+}
 
 function stripRaw<T>(value: T): T {
     if (Array.isArray(value)) return value.map(stripRaw) as T
@@ -25,15 +37,87 @@ function stripRaw<T>(value: T): T {
     return value
 }
 
+const retainedMatcherAliases = new Set([
+    'b',
+    'bb',
+    'bg',
+    'bl',
+    'br',
+    'bt',
+    'bx',
+    'by',
+    'font',
+    'grid-col',
+    'grid-col-end',
+    'grid-col-span',
+    'grid-col-start',
+    'grid-cols',
+    'lines',
+    'text'
+])
+
+const removedAliases = [
+    'ac',
+    'accent',
+    'ai',
+    'as',
+    'aspect',
+    'bd',
+    'bg-blend',
+    'bg-clip',
+    'bg-origin',
+    'blend',
+    'box-decoration',
+    'caret',
+    'clip',
+    'col-span',
+    'cols',
+    'd',
+    'f',
+    'font-feature',
+    'grid-auto-cols',
+    'grid-flow',
+    'grid-template-cols',
+    'jc',
+    'ji',
+    'js',
+    'line-h',
+    'ls',
+    'o',
+    'obj',
+    's',
+    'shape',
+    'tab',
+    't',
+    'touch',
+    'v',
+    'vertical',
+    'vt-class',
+    'vt-name',
+    'writing'
+]
+
+function collectMatcherKeys(plan: MasterCSSPlan) {
+    const keys = new Set<string>()
+    for (const utility of plan.utilities || []) {
+        for (const matcher of utility.matchers || []) {
+            if ('keys' in matcher) {
+                matcher.keys.forEach((key) => keys.add(key))
+            }
+        }
+    }
+    return keys
+}
+
 describe('@master/css-preset defaultPlan', () => {
     it('matches the readable preset sources', () => {
         const plan = createDefaultPlanFromSourceFile(resolve(__dirname, '../src/index.css'))
         const utilities = plan.utilities || []
 
-        expect(sourceUtilities).toHaveLength(316)
+        expect(sourceUtilities).toHaveLength(286)
         expect(sourceUtilities.some((utility) => Number(utility.type) === UtilityType.Static)).toBe(false)
         expect(Object.keys(functions)).toHaveLength(49)
-        expect(utilities).toHaveLength(456)
+        expect(utilities).toHaveLength(426)
         expect(utilities[0]?.order).toBe(utilities.length - 1)
         expect(utilities[utilities.length - 1]?.order).toBe(0)
         expect(plan).toEqual(defaultPlan)
@@ -88,13 +172,30 @@ describe('@master/css-preset defaultPlan', () => {
         expect(css.create('caption-side:top')).toBeUndefined()
         expect(css.create('scrollbar-width:thin')).toBeUndefined()
         expect(css.create('transition-behavior:allow-discrete')).toBeUndefined()
-        expect(css.create('display:block')?.text).toBe('.display\\:block{display:block}')
-        expect(css.create('d:block')?.text).toBe('.d\\:block{display:block}')
-        expect(css.create('view-transition-name:hero')?.text).toBe('.view-transition-name\\:hero{view-transition-name:hero}')
-        expect(css.create('vt-name:hero')?.text).toBe('.vt-name\\:hero{view-transition-name:hero}')
+        expect(css.create('display:block')).toBeUndefined()
+        expect(css.create('d:block')).toBeUndefined()
+        expect(css.create('view-transition-name:hero')).toBeUndefined()
+        expect(css.create('vt-name:hero')).toBeUndefined()
         expect(css.create('perspective-origin:100%|0')?.text).toBe('.perspective-origin\\:100\\%\\|0{perspective-origin:100% 0px}')
         expect(css.create('scroll-ms:1px')?.text).toBe('.scroll-ms\\:1px{scroll-margin-inline-start:1px}')
         expect(css.create('scroll-pbe:1px')?.text).toBe('.scroll-pbe\\:1px{scroll-padding-block-end:1px}')
+    })
+
+    it('keeps curated key aliases out of utility matcher keys', () => {
+        const matcherKeys = collectMatcherKeys(defaultPlan)
+
+        expect(defaultPlan.keyAliases).toEqual(keyAliases)
+        expect(defaultPlan.keyAliases).toMatchObject(retainedRadiusKeyAliases)
+        for (const alias of Object.keys(keyAliases)) {
+            expect(matcherKeys.has(alias), alias).toBe(false)
+        }
+        for (const alias of retainedMatcherAliases) {
+            expect(matcherKeys.has(alias), alias).toBe(true)
+        }
+        for (const alias of removedAliases) {
+            expect(defaultPlan.keyAliases?.[alias], alias).toBeUndefined()
+            expect(matcherKeys.has(alias), alias).toBe(false)
+        }
     })
 
     it('keeps compiled utility registry indexes stable and addressable', () => {

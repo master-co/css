@@ -1,5 +1,6 @@
 import type {
     MasterCSSPlanDefaultMode,
+    MasterCSSPlanKeyAliases,
     MasterCSSPlanModeTrigger,
     MasterCSSPlanUtilityLayerName,
     MasterCSSPlanVariant
@@ -138,6 +139,7 @@ export interface CSSDirectivePlanInput {
     animationOptions?: CSSDirectiveAnimationOptions
     modes?: string[]
     modeTrigger?: CSSDirectiveModeTrigger
+    keyAliases?: MasterCSSPlanKeyAliases
 }
 
 export interface CSSDirectiveExtractionPolicy {

@@ -1,10 +1,10 @@
 const syntaxes = [
     ['object-position:`position`'],
-    'obj:top',
-    'obj:bottom',
-    'obj:left',
-    'obj:right',
-    'obj:center',
+    'object:top',
+    'object:bottom',
+    'object:left',
+    'object:right',
+    'object:center',
 ]
 
 export default syntaxes

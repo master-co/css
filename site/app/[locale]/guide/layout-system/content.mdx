@@ -175,7 +175,7 @@ Use Grid when the parent owns the columns, rows, or area placement. Use Flexbox 
 
 <Demo>
     <article className="container w:full flex flex-col flex-row@container(2xs) gap:md bg:surface b:1|subtle shadow:xs r:lg p:md">
-        <div className="grid place-content:center w:full w:36x@container(2xs) aspect:4/3 flex:0@container(2xs) bg:primary/.12 r:md">
+        <div className="grid place-content:center w:full w:36x@container(2xs) aspect-ratio:4/3 flex:0@container(2xs) bg:primary/.12 r:md">
             <div className="grid-cols:3 gap:2xs w:20x">
                 <div className="h:5x bg:primary/.25 r:sm"></div>
                 <div className="h:5x bg:primary/.35 r:sm"></div>
@@ -242,11 +242,11 @@ Use viewport breakpoints for global decisions such as page shell, navigation mod
 ---
 
 ## Add explicit tracks only when needed
-`grid-cols:*` is best for equal columns. Use `grid-template-cols:*` when the layout needs fixed, intrinsic, or mixed tracks.
+`grid-cols:*` is best for equal columns. Use `grid-template-columns:*` when the layout needs fixed, intrinsic, or mixed tracks.
 
 ```html
-<!-- @MARK grid --><!-- @MARK grid-template-cols:18x|minmax(0,1fr) --><!-- @MARK gap:md -->
-<section class="grid grid-template-cols:18x|minmax(0,1fr) gap:md">
+<!-- @MARK grid --><!-- @MARK grid-template-columns:18x|minmax(0,1fr) --><!-- @MARK gap:md -->
+<section class="grid grid-template-columns:18x|minmax(0,1fr) gap:md">
     <nav>...</nav>
     <main class="min-w:0">...</main>
 </section>
@@ -255,7 +255,7 @@ Use viewport breakpoints for global decisions such as page shell, navigation mod
 <details>
     <summary>Generated CSS</summary>
     <Class2CSS>
-        {['grid', 'grid-template-cols:18x|minmax(0,1fr)', 'gap:md', 'min-w:0']}
+        {['grid', 'grid-template-columns:18x|minmax(0,1fr)', 'gap:md', 'min-w:0']}
     </Class2CSS>
 </details>
 

@@ -27,7 +27,7 @@ const views = [
         id: 'product',
         title: 'Product detail',
         eyebrow: 'Named snapshot',
-        body: 'The panel and title have stable vt-name values, so they transition apart from the root snapshot.',
+        body: 'The panel and title have stable view-transition-name values, so they transition apart from the root snapshot.',
         accent: 'bg:info',
         tint: 'bg:info/.14'
     },
@@ -95,11 +95,11 @@ export default function ViewTransitionDemo() {
                 </div>
                 <section className={clsx(
                     'app-panel rel overflow:hidden p:lg p:xl@container(4xs)',
-                    'flex flex-col vt-name:panel',
+                    'flex flex-col view-transition-name:panel',
                     active.tint
                 )}>
                     <p className="text:xs font:medium fg:text m:0">{active.eyebrow}</p>
-                    <h3 className="text:2xl text:3xl@container(4xs) font:semibold m:0 mt:sm vt-name:title">
+                    <h3 className="text:2xl text:3xl@container(4xs) font:semibold m:0 mt:sm view-transition-name:title">
                         {active.title}
                     </h3>
                     <div className={clsx('h:1x w:2em rounded mt:md opacity:.8', active.accent)} />

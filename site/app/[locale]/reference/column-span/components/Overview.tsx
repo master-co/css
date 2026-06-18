@@ -4,7 +4,7 @@ import SyntaxTr from '~/site/components/SyntaxTr'
 import SyntaxPreview from './SyntaxPreview'
 
 export default () => {
-    const previewSyntax = 'col-span:all'
+    const previewSyntax = 'column-span:all'
     return (
         <>
             <SyntaxTable>

@@ -121,6 +121,7 @@ export interface MasterCSSPlanFunction {
 }
 
 export type MasterCSSPlanFunctions = Record<string, MasterCSSPlanFunction>
+export type MasterCSSPlanKeyAliases = Record<string, string>
 
 export type MasterCSSPlanUtilityMatcher =
     | { type: 'static'; name: string }
@@ -203,5 +204,6 @@ export interface MasterCSSPlan {
     utilities?: MasterCSSPlanUtilities
     utilityBuckets?: MasterCSSPlanUtilityBuckets
     functions?: MasterCSSPlanFunctions
+    keyAliases?: MasterCSSPlanKeyAliases
     debug?: Record<string, unknown>
 }

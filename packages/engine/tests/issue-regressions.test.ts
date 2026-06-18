@@ -36,25 +36,25 @@ describe.concurrent('migrated issue regressions', () => {
         })
     })
 
-    test('issue #215: touch shorthand maps to touch-action', () => {
+    test('issue #215: touch-action native declarations replace the removed touch shorthand', () => {
         const css = createDefaultCSS()
         const cases = [
-            ['touch:auto', 'touch-action:auto'],
-            ['touch:none', 'touch-action:none'],
-            ['touch:pan-x', 'touch-action:pan-x'],
-            ['touch:pan-y', 'touch-action:pan-y'],
-            ['touch:pan-left', 'touch-action:pan-left'],
-            ['touch:pan-right', 'touch-action:pan-right'],
-            ['touch:pan-up', 'touch-action:pan-up'],
-            ['touch:pan-down', 'touch-action:pan-down'],
-            ['touch:pinch-zoom', 'touch-action:pinch-zoom'],
-            ['touch:manipulation', 'touch-action:manipulation'],
+            ['touch-action:auto', 'touch-action:auto'],
+            ['touch-action:none', 'touch-action:none'],
+            ['touch-action:pan-x', 'touch-action:pan-x'],
+            ['touch-action:pan-y', 'touch-action:pan-y'],
+            ['touch-action:pan-left', 'touch-action:pan-left'],
+            ['touch-action:pan-right', 'touch-action:pan-right'],
+            ['touch-action:pan-up', 'touch-action:pan-up'],
+            ['touch-action:pan-down', 'touch-action:pan-down'],
+            ['touch-action:pinch-zoom', 'touch-action:pinch-zoom'],
             ['touch-action:none', 'touch-action:none']
         ] as const
 
         for (const [className, expected] of cases) {
             expect(css.create(className)?.text).toContain(expected)
         }
+        expect(css.create('touch:none')).toBeUndefined()
     })
 
     test('issue #265: View Transitions API declarations and pseudo-elements', () => {
@@ -62,8 +62,8 @@ describe.concurrent('migrated issue regressions', () => {
 
         expect(css.create('view-transition-name:hero')?.text).toContain('view-transition-name:hero')
         expect(css.create('view-transition-class:product-card')?.text).toContain('view-transition-class:product-card')
-        expect(css.create('vt-name:hero')?.text).toContain('view-transition-name:hero')
-        expect(css.create('vt-class:product-card')?.text).toContain('view-transition-class:product-card')
+        expect(css.create('vt-name:hero')).toBeUndefined()
+        expect(css.create('vt-class:product-card')).toBeUndefined()
         expect(css.create('view-transition-name:none')?.text).toContain('view-transition-name:none')
         expect(css.create('opacity:0::view-transition')?.text).toContain('::view-transition{opacity:0}')
         expect(css.create('opacity:0.5::view-transition-old(hero)')?.text).toContain('::view-transition-old(hero)')

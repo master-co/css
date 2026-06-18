@@ -5,7 +5,7 @@ const migratedRuleExpectations = [
     {
         source: "packages/core/tests/rules/accent.test.ts",
         cases: [
-            ["accent:transparent", "accent-color:transparent"],
+            ["accent-color:transparent", "accent-color:transparent"],
         ]
     },
     {
@@ -17,7 +17,7 @@ const migratedRuleExpectations = [
     {
         source: "packages/core/tests/rules/background-clip.test.ts",
         cases: [
-            ["bg-clip:text", "background-clip:text"],
+            ["background-clip:text", "background-clip:text"],
         ]
     },
     {
@@ -51,14 +51,14 @@ const migratedRuleExpectations = [
         cases: [
             ["r:16", "border-radius:1rem"],
             ["border-radius:1rem", "border-radius:1rem"],
-            ["rtl:16", "border-top-left-radius:1rem"],
-            ["rtr:16", "border-top-right-radius:1rem"],
-            ["rbl:16", "border-bottom-left-radius:1rem"],
-            ["rbr:16", "border-bottom-right-radius:1rem"],
-            ["rt:16", "border-top-left-radius:1rem;border-top-right-radius:1rem"],
-            ["rb:16", "border-bottom-left-radius:1rem;border-bottom-right-radius:1rem"],
-            ["rl:16", "border-top-left-radius:1rem;border-bottom-left-radius:1rem"],
-            ["rr:16", "border-top-right-radius:1rem;border-bottom-right-radius:1rem"],
+            ["border-top-left-radius:16", "border-top-left-radius:1rem"],
+            ["border-top-right-radius:16", "border-top-right-radius:1rem"],
+            ["border-bottom-left-radius:16", "border-bottom-left-radius:1rem"],
+            ["border-bottom-right-radius:16", "border-bottom-right-radius:1rem"],
+            ["border-top-radius:16", "border-top-left-radius:1rem;border-top-right-radius:1rem"],
+            ["border-bottom-radius:16", "border-bottom-left-radius:1rem;border-bottom-right-radius:1rem"],
+            ["border-left-radius:16", "border-top-left-radius:1rem;border-bottom-left-radius:1rem"],
+            ["border-right-radius:16", "border-top-right-radius:1rem;border-bottom-right-radius:1rem"],
         ]
     },
     {
@@ -159,7 +159,7 @@ const migratedRuleExpectations = [
     {
         source: "packages/core/tests/rules/caret.test.ts",
         cases: [
-            ["caret:transparent", "caret-color:transparent"],
+            ["caret-color:transparent", "caret-color:transparent"],
         ]
     },
     {
@@ -399,7 +399,7 @@ const migratedRuleExpectations = [
     {
         source: "packages/core/tests/rules/writing-mode.test.ts",
         cases: [
-            ["writing:rl", "writing-mode:rl"],
+            ["writing-mode:rl", "writing-mode:rl"],
         ]
     },
 ] as const

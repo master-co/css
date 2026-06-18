@@ -9,7 +9,7 @@ import brands from 'internal/data/brands'
 In practice, you pay less attention to the order of classes, and as the number of classes increases, the template markup becomes less readable.
 
 (i) With the [class order rule](/reference/eslint#class-order), you can enforce a consistent and fixed order for classes.
-<Image className="aspect:2/1 r:lg max-w:3xl w:full" src={require('~/site/public/consistent-class-order.webp').default} alt="Consistent class order" unoptimized />
+<Image className="aspect-ratio:2/1 r:lg max-w:3xl w:full" src={require('~/site/public/consistent-class-order.webp').default} alt="Consistent class order" unoptimized />
 
 (!) <span className="text:warning">No consistent class order followed.</span>
 ```html
@@ -24,7 +24,7 @@ In practice, you pay less attention to the order of classes, and as the number o
 In the past, you added utility classes to your templates unsafely, lacking the capability to verify their validity or legality directly within the source code.
 
 (i) With the [class validation rule](/reference/eslint#class-order), you can check the validity of classes early as you write them.
-<Image className="aspect:2/1 r:lg max-w:3xl w:full" src={require('~/site/public/syntax-error-checks.webp').default} alt="Syntax error checks" unoptimized />
+<Image className="aspect-ratio:2/1 r:lg max-w:3xl w:full" src={require('~/site/public/syntax-error-checks.webp').default} alt="Syntax error checks" unoptimized />
 
 (x) <span className="text:error">Invalid value for \`font\` property.</span>
 ```html
@@ -37,7 +37,7 @@ This is helpful if you make a typo or are unfamiliar with Master CSS syntax!
 You can also restrict teams to using [theme](/guide/theme) and [component classes](/guide/reusing-styles#component-classes) instead of defining classes through traditional `html <style>` or CSS files.
 
 (i) Based on syntax error checking, you can [disallow unknown classes](/reference/eslint#class-validation).
-<Image className="aspect:2/1 r:lg max-w:3xl w:full" src={require('~/site/public/disallow-unknown-class.webp').default} alt="Disallow unknown classes" unoptimized />
+<Image className="aspect-ratio:2/1 r:lg max-w:3xl w:full" src={require('~/site/public/disallow-unknown-class.webp').default} alt="Disallow unknown classes" unoptimized />
 
 (x) <span className="text:error">"btn" is not a valid or known class.</span>
 ```html
@@ -65,7 +65,7 @@ Archive and see the changes.
 The class you added may collide with existing classes due to human error or having the same declarations as a third-party custom syntax.
 
 (i) With the [class collision rule](/reference/eslint#class-collision), you'll no longer collide with existing classes.
-<Image className="aspect:2/1 r:lg max-w:3xl w:full" src={require('~/site/public/class-collision-detection.webp').default} alt="Class collision detection" unoptimized />
+<Image className="aspect-ratio:2/1 r:lg max-w:3xl w:full" src={require('~/site/public/class-collision-detection.webp').default} alt="Class collision detection" unoptimized />
 
 (!) <span className="text:warning">"m:10" applies the same CSS declarations as "m:20".</span><br/><span className="text:warning">"m:20" applies the same CSS declarations as "m:10".</span>
 ```html
@@ -93,7 +93,7 @@ It can also detect whether declarations with the same selector and media query s
 You may be using [clsx](https://github.com/lukeed/clsx) or [class variant](https://github.com/master-co/styled) to conditionally apply classes, but unfortunately, they're just pure strings in JavaScript.
 
 (i) You can make arguments of JavaScript [callees](/reference/eslint#calleematching) have Master CSS code linting.
-<Image className="aspect:2/1 r:lg max-w:3xl w:full" src={require('~/site/public/supports-js-utilities.webp').default} alt="Supports JS utilities" unoptimized />
+<Image className="aspect-ratio:2/1 r:lg max-w:3xl w:full" src={require('~/site/public/supports-js-utilities.webp').default} alt="Supports JS utilities" unoptimized />
 
 (x) <span className="text:error">Invalid value for `display` property.</span>
 ```tsx

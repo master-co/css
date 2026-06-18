@@ -28,11 +28,19 @@ Use `r:*` to apply a border radius token or size directly.
 </details>
 
 ### Round only one side
-Use side and corner aliases when only part of the element should be rounded.
+Use side shorthands or CSS corner properties when only part of the element should be rounded.
 ```html
 <!-- @MARK rt:md -->
 <div class="rt:md">
     Rounded top
+</div>
+```
+
+Use `rt`, `rb`, `rl`, and `rr` for side radius shorthands. Use `rtl`, `rtr`, `rbl`, and `rbr` for individual corners.
+```html
+<!-- @MARK rtr:md --><!-- @MARK rbl:sm -->
+<div class="rtr:md rbl:sm">
+    Rounded corners
 </div>
 ```
 

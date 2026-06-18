@@ -33,7 +33,9 @@ function getNumericSortValue(variable: Variable, rootSize: number) {
 
 export default function getValueCompletionItems(css: MasterCSS = createDefaultCSS(), ruleKey: string, valuePrefix = ''): CompletionItem[] {
     const completionItems: CompletionItem[] = []
-    const nativeKey = css.definedUtilities.find(({ keys }) => keys?.includes(ruleKey))?.id
+    const canonicalRuleKey = css.plan.keyAliases?.[ruleKey] || ruleKey
+    const nativeUtilityKey = css.definedUtilities.find(({ keys }) => keys?.includes(canonicalRuleKey))?.id
+    const nativeKey = nativeUtilityKey || (getMdnPropertySyntax(canonicalRuleKey) ? canonicalRuleKey : undefined)
     const nativePropertyValues = getMdnPropertyValueNames(nativeKey)
     const generateVariableCompletionItem = (variable: Variable, {
         appliedValue,
@@ -94,10 +96,10 @@ export default function getValueCompletionItems(css: MasterCSS = createDefaultCS
          * @example box: + content -> box-sizing:content
          */
         if (
-            eachDefinedUtility.key === ruleKey
-            || eachDefinedUtility.subkey === ruleKey
-            || eachDefinedUtility.keys?.includes(ruleKey)
-            || eachDefinedUtility.aliasGroups?.includes(ruleKey)
+            eachDefinedUtility.key === canonicalRuleKey
+            || eachDefinedUtility.subkey === canonicalRuleKey
+            || eachDefinedUtility.keys?.includes(canonicalRuleKey)
+            || eachDefinedUtility.aliasGroups?.includes(canonicalRuleKey)
         ) {
             eachDefinedUtility.variables?.forEach((variable, variableName) => {
                 if (completionItems.find(({ label }) => label === variableName)) return
@@ -133,7 +135,7 @@ export default function getValueCompletionItems(css: MasterCSS = createDefaultCS
         /**
          * @example animation:fade
          */
-        if (eachDefinedUtility.keys?.includes(ruleKey) && eachDefinedUtility.includeAnimations) {
+        if (eachDefinedUtility.keys?.includes(canonicalRuleKey) && eachDefinedUtility.includeAnimations) {
             css.animations.forEach((_, animationName) => {
                 const isNative = eachDefinedUtility.type !== undefined && NATIVE_UTILITY_TYPES.has(eachDefinedUtility.type)
                 completionItems.push({
@@ -150,7 +152,7 @@ export default function getValueCompletionItems(css: MasterCSS = createDefaultCS
          * @example text: -> center, left, right, justify
          * @example t: -> center, left, right, justify
          */
-        if (eachDefinedUtility.aliasGroups?.includes(ruleKey) && eachDefinedUtility.values?.length) {
+        if (eachDefinedUtility.aliasGroups?.includes(canonicalRuleKey) && eachDefinedUtility.values?.length) {
             for (const value of eachDefinedUtility.values) {
                 if (typeof value !== 'string') continue
                 const isNative = eachDefinedUtility.type !== undefined && NATIVE_UTILITY_TYPES.has(eachDefinedUtility.type)

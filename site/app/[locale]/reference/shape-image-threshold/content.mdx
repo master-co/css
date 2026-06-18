@@ -6,7 +6,7 @@
 Use `shape-image-threshold:*` with image-based shapes to decide which pixels participate in the shape.
 ```html
 <!-- @MARK shape-image-threshold:.5 -->
-<img class="float:left shape:url(/mask.png) shape-image-threshold:.5" src="/images/photo.jpg" alt="Photo">
+<img class="float:left shape-outside:url(/mask.png) shape-image-threshold:.5" src="/images/photo.jpg" alt="Photo">
 ```
 
 <details>
@@ -24,9 +24,9 @@ Lower thresholds include more semi-transparent pixels in the text wrap shape.
 ```
 
 ### Use with image shapes
-This property only matters for shapes that use an image source, such as `shape:url(*)` or gradient-based shapes.
+This property only matters for shapes that use an image source, such as `shape-outside:url(*)` or gradient-based shapes.
 ```html
-<img class="float:left shape:url(/mask.png) shape-image-threshold:.5" src="/images/photo.jpg" alt="">
+<img class="float:left shape-outside:url(/mask.png) shape-image-threshold:.5" src="/images/photo.jpg" alt="">
 ```
 
 ### Apply conditionally

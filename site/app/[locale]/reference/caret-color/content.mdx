@@ -3,36 +3,36 @@
 
 ## Examples
 ### Set the text caret color
-Use `caret:*` to change the insertion caret color in inputs and editable text.
+Use `caret-color:*` to change the insertion caret color in inputs and editable text.
 <InteractingIndicator>Focus on input to see the cursor color</InteractingIndicator>
 
 <Demo class="py:0">
-    <input type="text" className="p:5|10 caret:pink-70 transition:caret-color|.3s outline:none bg:white b:2px|solid|gray-83 b:2px|solid|pink-70:focus r:8" />
+    <input type="text" className="p:5|10 caret-color:pink-70 transition:caret-color|.3s outline:none bg:white b:2px|solid|gray-83 b:2px|solid|pink-70:focus r:8" />
 </Demo>
 ```html
-<!-- @MARK caret:pink-70 -->
-<input type="text" class="caret:pink-70">
+<!-- @MARK caret-color:pink-70 -->
+<input type="text" class="caret-color:pink-70">
 ```
 
 <details>
     <summary>Generated CSS</summary>
     <Class2CSS>
-        {['caret:pink-70']}
+        {['caret-color:pink-70']}
     </Class2CSS>
 </details>
 
 ### Use the current text color
-Use `caret:current` when the caret should follow the foreground color.
+Use `caret-color:current` when the caret should follow the foreground color.
 ```html
-<!-- @MARK caret:current -->
-<input class="fg:primary caret:current" value="Editable value">
+<!-- @MARK caret-color:current -->
+<input class="fg:primary caret-color:current" value="Editable value">
 ```
 
 ### Hide the caret intentionally
-Use `caret:transparent` only for custom editing surfaces that draw their own caret.
+Use `caret-color:transparent` only for custom editing surfaces that draw their own caret.
 ```html
-<!-- @MARK caret:transparent -->
-<div contenteditable="true" class="caret:transparent">
+<!-- @MARK caret-color:transparent -->
+<div contenteditable="true" class="caret-color:transparent">
     Custom editor
 </div>
 ```
@@ -40,5 +40,5 @@ Use `caret:transparent` only for custom editing surfaces that draw their own car
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<input class="caret:primary:focus caret:current@sm caret:current@print">
+<input class="caret-color:primary:focus caret-color:current@sm caret-color:current@print">
 ```

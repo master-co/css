@@ -46,7 +46,7 @@ import aron from '~/site/public/images/authors/aron.jpg'
 ### Flex
 Use `flex` to create a block-level flex container.
 <Demo>
-    <div className="flex gap:12 ai:center bg:float p:8|20 r:10">
+    <div className="flex gap:12 align-items:center bg:float p:8|20 r:10">
         <Image src={aron} alt="avatar" className="object:cover round h:auto" width="64" height="64" />
         <div>
             <div className="text:14 font:medium font:gray-88@dark capitalize">aron</div>
@@ -55,7 +55,7 @@ Use `flex` to create a block-level flex container.
     </div>
 </Demo>
 ```html
-<div class="flex gap:12 ai:center">
+<div class="flex gap:12 align-items:center">
     <img src="...">
     <div>
         <div>aron</div>
@@ -71,8 +71,8 @@ Use `inline-flex` to create an inline-level flex container.
         <p className="font:16 leading:1.75rem">
             Inline flex is useful when an inline phrase needs aligned children.
             The element still participates in text flow while its contents use flex alignment.
-            <span className="inline-flex! ai:baseline! mx:12 box b:0 bg:slate-95!@light p:0! overflow:hidden">
-                <Image src={aron} alt="avatar" className="object:cover h:auto as:end" width="24" height="24" />
+            <span className="inline-flex! align-items:baseline! mx:12 box b:0 bg:slate-95!@light p:0! overflow:hidden">
+                <Image src={aron} alt="avatar" className="object:cover h:auto align-self:end" width="24" height="24" />
                 <span className="text:14 font:medium font:gray-88@dark capitalize px:10">aron</span>
             </span>
             This keeps the badge baseline-aligned with the surrounding sentence.
@@ -82,7 +82,7 @@ Use `inline-flex` to create an inline-level flex container.
 ```html
 <div>
     Inline flex keeps this badge in the text flow.
-    <div class="inline-flex ai:baseline mx:12">
+    <div class="inline-flex align-items:baseline mx:12">
         <img src="...">
         <div>Aron</div>
     </div>
@@ -94,7 +94,7 @@ Use `inline-flex` to create an inline-level flex container.
 Use `grid` to create a block-level grid container.
 <Demo>
     <div className="w:full">
-        <div className="grid grid-template-cols:repeat(2,auto) gap:12">
+        <div className="grid grid-template-columns:repeat(2,auto) gap:12">
             <div className="box">01</div>
             <div className="box">02</div>
             <div className="box">03</div>
@@ -103,7 +103,7 @@ Use `grid` to create a block-level grid container.
     </div>
 </Demo>
 ```html
-<div class="grid grid-template-cols:repeat(2,auto) gap:12">
+<div class="grid grid-template-columns:repeat(2,auto) gap:12">
     <div>01</div>
     <div>02</div>
     <div>03</div>
@@ -115,13 +115,13 @@ Use `grid` to create a block-level grid container.
 Use `inline-grid` to create a inline-level grid container.
 <Demo>
     <div className="flex gap:12 w:full">
-        <div className="inline-grid grid-template-cols:repeat(2,auto) gap:12">
+        <div className="inline-grid grid-template-columns:repeat(2,auto) gap:12">
             <div className="box">01</div>
             <div className="box">02</div>
             <div className="box">03</div>
             <div className="box">04</div>
         </div>
-        <div className="inline-grid grid-template-cols:repeat(2,auto) gap:12">
+        <div className="inline-grid grid-template-columns:repeat(2,auto) gap:12">
             <div className="box">01</div>
             <div className="box">02</div>
             <div className="box">03</div>
@@ -130,13 +130,13 @@ Use `inline-grid` to create a inline-level grid container.
     </div>
 </Demo>
 ```html
-<div class="inline-grid grid-template-cols:repeat(2,auto) gap:12">
+<div class="inline-grid grid-template-columns:repeat(2,auto) gap:12">
     <div>01</div>
     <div>02</div>
     <div>03</div>
     <div>04</div>
 </div>
-<div class="inline-grid grid-template-cols:repeat(2,auto) gap:12">
+<div class="inline-grid grid-template-columns:repeat(2,auto) gap:12">
     <div>01</div>
     <div>02</div>
     <div>03</div>
@@ -148,36 +148,36 @@ Use `inline-grid` to create a inline-level grid container.
 Use `table`, `table-row`, `table-column`, `table-cell`, `table-caption`, `table-row-group`, `table-column-group`, `table-header-group`, and `table-footer-group` to create elements that behave like their respective table elements.
 <Demo>
     <div className="table w:80% b:1|solid|slate-90 r:10 overflow:hidden p:20|30_:where(div)">
-        <div className="table-caption t:center f:bold">Orders</div>
-        <div className="table-header-group bg:slate-92 f:bold">
+        <div className="table-caption text:center font:bold">Orders</div>
+        <div className="table-header-group bg:slate-92 font:bold">
             <div className="table-row">
                 <div className="table-cell">Product</div>
-                <div className="table-cell t:center">Qty</div>
-                <div className="table-cell t:center">Price</div>
+                <div className="table-cell text:center">Qty</div>
+                <div className="table-cell text:center">Price</div>
             </div>
         </div>
         <div className="table-row-group bg:slate-99 bb:1|solid|slate-90_:where(div)">
             <div className="table-row">
                 <div className="table-cell">Milk</div>
-                <div className="table-cell t:center">2</div>
-                <div className="table-cell t:center">10.00</div>
+                <div className="table-cell text:center">2</div>
+                <div className="table-cell text:center">10.00</div>
             </div>
             <div className="table-row">
                 <div className="table-cell">Cola</div>
-                <div className="table-cell t:center">3</div>
-                <div className="table-cell t:center">12.00</div>
+                <div className="table-cell text:center">3</div>
+                <div className="table-cell text:center">12.00</div>
             </div>
             <div className="table-row">
                 <div className="table-cell">Juice</div>
-                <div className="table-cell t:center">5</div>
-                <div className="table-cell t:center">18.00</div>
+                <div className="table-cell text:center">5</div>
+                <div className="table-cell text:center">18.00</div>
             </div>
         </div>
-        <div className="table-footer-group bg:slate-92 f:bold">
+        <div className="table-footer-group bg:slate-92 font:bold">
             <div className="table-row">
                 <div className="table-cell">Total</div>
-                <div className="table-cell t:center">10</div>
-                <div className="table-cell t:center">40.00</div>
+                <div className="table-cell text:center">10</div>
+                <div className="table-cell text:center">40.00</div>
             </div>
         </div>
     </div>
@@ -212,8 +212,8 @@ Use `table`, `table-row`, `table-column`, `table-cell`, `table-caption`, `table-
     <div class="table-footer-group bg:slate-92">
         <div class="table-row">
             <div class="table-cell">Total</div>
-            <div class="table-cell t:center">10</div>
-            <div class="table-cell t:center">40.00</div>
+            <div class="table-cell text:center">10</div>
+            <div class="table-cell text:center">40.00</div>
         </div>
     </div>
 </div>

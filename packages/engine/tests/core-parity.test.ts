@@ -58,6 +58,27 @@ describe.concurrent('default plan utility parity', () => {
             .toEqual(['m:0', 'mx:0', 'my:0', 'mb:0', 'ml:0', 'mr:0', 'mt:0'])
     })
 
+    test('preserves radius side and corner aliases through key aliases', () => {
+        const css = createDefaultCSS()
+
+        expect(css.create('rt:16')?.text)
+            .toBe('.rt\\:16{border-top-left-radius:1rem;border-top-right-radius:1rem}')
+        expect(css.create('rb:16')?.text)
+            .toBe('.rb\\:16{border-bottom-left-radius:1rem;border-bottom-right-radius:1rem}')
+        expect(css.create('rl:16')?.text)
+            .toBe('.rl\\:16{border-top-left-radius:1rem;border-bottom-left-radius:1rem}')
+        expect(css.create('rr:16')?.text)
+            .toBe('.rr\\:16{border-top-right-radius:1rem;border-bottom-right-radius:1rem}')
+        expect(css.create('rtl:md')?.text)
+            .toBe('.rtl\\:md{border-top-left-radius:var(--radius-md)}')
+        expect(css.create('rtr:md')?.text)
+            .toBe('.rtr\\:md{border-top-right-radius:var(--radius-md)}')
+        expect(css.create('rbl:md')?.text)
+            .toBe('.rbl\\:md{border-bottom-left-radius:var(--radius-md)}')
+        expect(css.create('rbr:md')?.text)
+            .toBe('.rbr\\:md{border-bottom-right-radius:var(--radius-md)}')
+    })
+
     test('preserves border shorthand matching across value separators', () => {
         const css = createDefaultCSS()
 
@@ -205,10 +226,10 @@ describe.concurrent('default plan utility parity', () => {
     test('keeps migrated issue regressions for modern utility syntax', () => {
         const css = createDefaultCSS()
 
-        expectClassText(css, 'touch:none', 'touch-action:none')
         expectClassText(css, 'touch-action:none', 'touch-action:none')
         expectClassText(css, 'view-transition-name:hero', 'view-transition-name:hero')
-        expectClassText(css, 'vt-name:hero', 'view-transition-name:hero')
+        expect(css.create('touch:none')).toBeUndefined()
+        expect(css.create('vt-name:hero')).toBeUndefined()
         expect(css.create('opacity:0.5::view-transition-old(hero)')?.text)
             .toContain('::view-transition-old(hero)')
         expect(css.create('opacity:1::vt-new(hero)')?.text)
@@ -225,21 +246,33 @@ describe.concurrent('default plan utility parity', () => {
             .toContain('paint-order:stroke fill markers')
     })
 
-    test('uses injected native declaration matcher after plan misses and validates pure native aliases', () => {
+    test('uses injected native declaration matcher after plan misses and rejects removed aliases', () => {
         const css = createCSS(defaultPlan, undefined, {
             nativeDeclarationMatcher: ({ property, value }) =>
                 property === 'float' && value === 'left'
                 || property === 'display' && value === 'block'
                 || property === 'field-sizing' && value === 'content'
+                || property === 'align-items' && value === 'center'
+                || property === 'mix-blend-mode' && value === 'multiply'
+                || property === 'columns' && value === '2'
+                || property === 'view-transition-name' && value === 'hero'
         })
 
         expect(css.create('float:left')?.text).toBe('.float\\:left{float:left}')
         expect(css.create('field-sizing:content:hover')?.text).toBe('.field-sizing\\:content\\:hover:hover{field-sizing:content}')
         expect(css.create('display:block')?.text).toBe('.display\\:block{display:block}')
-        expect(css.create('d:block')?.text).toBe('.d\\:block{display:block}')
+        expect(css.create('align-items:center')?.text).toBe('.align-items\\:center{align-items:center}')
+        expect(css.create('mix-blend-mode:multiply')?.text).toBe('.mix-blend-mode\\:multiply{mix-blend-mode:multiply}')
+        expect(css.create('columns:2')?.text).toBe('.columns\\:2{columns:2}')
+        expect(css.create('view-transition-name:hero')?.text).toBe('.view-transition-name\\:hero{view-transition-name:hero}')
         expect(css.create('float:banana')).toBeUndefined()
         expect(css.create('display:banana')).toBeUndefined()
         expect(css.create('d:banana')).toBeUndefined()
+        expect(css.create('d:block')).toBeUndefined()
+        expect(css.create('ai:center')).toBeUndefined()
+        expect(css.create('blend:multiply')).toBeUndefined()
+        expect(css.create('cols:2')).toBeUndefined()
+        expect(css.create('vt-name:hero')).toBeUndefined()
         expect(css.create('made-up:left')).toBeUndefined()
     })
 
@@ -256,17 +289,21 @@ describe.concurrent('default plan utility parity', () => {
         expect(css.create('opacity:.7')?.text).toBe('.opacity\\:\\.7{opacity:0.7}')
         expect(css.create('display:block')?.text).toBe('.display\\:block{display:block}')
         expect(css.generate('view-transition-name:hero')[0]?.text).toBe('.view-transition-name\\:hero{view-transition-name:hero}')
-        expect(css.create('d:block')?.text).toBe('.d\\:block{display:block}')
+        expect(css.create('z:10')?.text).toBe('.z\\:10{z-index:10}')
         expect(css.create('margin:16')?.text).toBe('.margin\\:16{margin:1rem}')
         expect(css.create('m:16')?.text).toBe('.m\\:16{margin:1rem}')
+        expect(css.create('mt:16')?.text).toBe('.mt\\:16{margin-top:1rem}')
+        expect(css.create('scroll-mbs:4')?.text).toBe('.scroll-mbs\\:4{scroll-margin-block-start:0.25rem}')
         expect(css.create('font:16')?.text).toBe('.font\\:16{font-size:1rem}')
+        expect(css.create('fg:red-60')?.text).toBe('.fg\\:red-60{color:var(--color-red-60)}')
         expect(css.create('bg:red-60')?.text).toBe('.bg\\:red-60{background-color:var(--color-red-60)}')
 
         expect(calls).toEqual([
             'float:left',
             'opacity:0.7',
             'display:block',
-            'view-transition-name:hero'
+            'view-transition-name:hero',
+            'z-index:10'
         ])
     })
 

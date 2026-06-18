@@ -7,6 +7,26 @@ import getUtilityInfo from './get-utility-info'
 export default function getClassCompletionItems(css: MasterCSS = createDefaultCSS()): CompletionItem[] {
     const completionItems: CompletionItem[] = []
     const addedKeys = new Set<string>()
+    const addedCompletionLabels = new Set<string>()
+    const propertyCompletionItem = {
+        kind: CompletionItemKind.Property,
+        command: {
+            title: 'triggerSuggest',
+            command: 'editor.action.triggerSuggest'
+        }
+    }
+    const addPropertyCompletionItem = (key: string, detail?: string) => {
+        const label = key + ':'
+        if (addedCompletionLabels.has(label)) return
+        addedCompletionLabels.add(label)
+        completionItems.push({
+            ...propertyCompletionItem,
+            ...(detail ? { detail } : {}),
+            label,
+            sortText: key
+        })
+    }
+
     for (const eachDefinedUtility of css.definedUtilities) {
         if (eachDefinedUtility.type === UtilityType.Static) {
             const isComponent = eachDefinedUtility.layer === 'components'
@@ -19,21 +39,9 @@ export default function getClassCompletionItems(css: MasterCSS = createDefaultCS
                 detail: isComponent ? 'component' : detail
             })
         } else {
-            const eachCompletionItem = {
-                kind: CompletionItemKind.Property,
-            }
-
             eachDefinedUtility.keys?.forEach(key => {
                 addedKeys.delete(key)
-                completionItems.push({
-                    ...eachCompletionItem,
-                    label: key + ':',
-                    sortText: key,
-                    command: {
-                        title: 'triggerSuggest',
-                        command: 'editor.action.triggerSuggest'
-                    }
-                })
+                addPropertyCompletionItem(key)
             })
 
             if (eachDefinedUtility.aliasGroups?.length) {
@@ -47,20 +55,21 @@ export default function getClassCompletionItems(css: MasterCSS = createDefaultCS
         }
     }
 
+    for (const [key, canonicalKey] of Object.entries(css.plan.keyAliases || {})) {
+        addPropertyCompletionItem(key, canonicalKey)
+    }
+
     addedKeys.forEach(aliasGroup => {
         /**
          * Ambiguous keys are added to the completion list
          * @example text: t:
          */
+        if (addedCompletionLabels.has(aliasGroup + ':')) return
         completionItems.push({
-            kind: CompletionItemKind.Property,
+            ...propertyCompletionItem,
             detail: 'ambiguous key',
             label: aliasGroup + ':',
-            sortText: aliasGroup,
-            command: {
-                title: 'triggerSuggest',
-                command: 'editor.action.triggerSuggest'
-            }
+            sortText: aliasGroup
         })
     })
 

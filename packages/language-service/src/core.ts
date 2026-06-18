@@ -1,4 +1,4 @@
-import { MasterCSS, createCSS, defaultPlan } from './master-css'
+import { MasterCSS, createCSS, defaultPlan, matchesLanguageServiceNativeDeclaration } from './master-css'
 import extend from '@techor/extend'
 import EventEmitter from 'node:events'
 import type { Position } from 'vscode-languageserver-protocol'
@@ -29,7 +29,9 @@ export default class CSSLanguageService extends EventEmitter {
     ) {
         super()
         this.settings = extend(settings, customSettings)
-        this.css = createCSS(this.settings.plan || defaultPlan)
+        this.css = createCSS(this.settings.plan || defaultPlan, undefined, {
+            nativeDeclarationMatcher: matchesLanguageServiceNativeDeclaration
+        })
     }
 
     inspectSyntax(...params: Parameters<typeof inspectSyntax>) {

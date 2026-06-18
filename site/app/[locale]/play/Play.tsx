@@ -911,7 +911,7 @@ export default function Play({ shareId }: PlayProps = {}) {
                     </div>
                 </Resizable>
                 <div className={clsx('rel flex:1|1|auto overflow:hidden bg:canvas', {
-                    'flex p:32 jc:center': responsive,
+                    'flex p:32 justify-content:center': responsive,
                     'pt:64': responsive && layout !== '3',
                     'pb:64': responsive && layout === '3',
                     'hidden@<md': tab !== 'Preview'

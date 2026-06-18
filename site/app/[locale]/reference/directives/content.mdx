@@ -77,7 +77,7 @@ Referenced stylesheets can define `@settings`, `@theme`, `@custom-variant`, `@de
 
 @components {
     btn {
-        @compose inline-flex ai:center px:md h:10x r:lg;
+        @compose inline-flex align-items:center px:md h:10x r:lg;
     }
 }
 ```
@@ -216,7 +216,7 @@ Defines managed component classes in the `components` layer.
 ```css
 @components {
     btn {
-        @compose inline-flex ai:center jc:center;
+        @compose inline-flex align-items:center justify-content:center;
     }
 }
 ```
@@ -302,7 +302,7 @@ Use `@compose` inside a style rule to lower an unquoted Master CSS class list in
 
 @components {
     btn {
-        @compose inline-flex ai:center jc:center px:md py:xs r:lg;
+        @compose inline-flex align-items:center justify-content:center px:md py:xs r:lg;
 
         &:hover {
             @compose bg:primary/.9;

@@ -1,14 +1,14 @@
 const syntaxes = [
-    ['writing:`mode`'],
-    'writing:horizontal-tb',
-    'writing:vertical-rl',
-    'writing:vertical-lr',
-    'writing:lr',
-    'writing:lr-tb',
-    'writing:rl',
-    'writing:rl-tb',
-    'writing:tb',
-    'writing:tb-rl',
+    ['writing-mode:`mode`'],
+    'writing-mode:horizontal-tb',
+    'writing-mode:vertical-rl',
+    'writing-mode:vertical-lr',
+    'writing-mode:lr',
+    'writing-mode:lr-tb',
+    'writing-mode:rl',
+    'writing-mode:rl-tb',
+    'writing-mode:tb',
+    'writing-mode:tb-rl',
 ]
 
 export default syntaxes

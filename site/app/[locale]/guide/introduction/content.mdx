@@ -46,7 +46,7 @@ It can begin with native CSS wording, then become shorter as the meaning becomes
 <div class="text:center">
 
 <!-- Abbreviation -->
-<div class="t:center">
+<div class="text:center">
 ```
 
 It can express common CSS values without ceremony:
@@ -144,7 +144,7 @@ mt:9x r:lg flex fg:slate-70 bg:slate-20:hover bg:slate-30@sm
 ### Predictable authoring
 Master CSS also gives teams guardrails for class syntax. [Code linting](/guide/code-linting) can catch invalid classes, enforce consistent class order, reject unknown classes, detect collisions, and validate classes inside JavaScript utilities such as `clsx()`.
 
-<Image className="aspect:2/1 r:lg max-w:3xl w:full" src={require('~/site/public/syntax-error-checks.webp').default} alt="Syntax error checks" unoptimized />
+<Image className="aspect-ratio:2/1 r:lg max-w:3xl w:full" src={require('~/site/public/syntax-error-checks.webp').default} alt="Syntax error checks" unoptimized />
 
 (x) <span className="text:error">Invalid value for `font` property.</span>
 ```html
@@ -180,7 +180,7 @@ The project CSS entry is the primary plan source. Theme tokens live in `@theme`,
 
 @components {
     btn {
-        @compose inline-flex ai:center jc:center px:md py:xs r:lg;
+        @compose inline-flex align-items:center justify-content:center px:md py:xs r:lg;
         background: var(--color-primary);
 
         @variant :interactive {
@@ -305,7 +305,7 @@ Assuming the card has become reusable, define it as a [component class](/guide/r
     }
 
     card-image {
-        @compose object:cover w:35x aspect:16/9;
+        @compose object:cover w:35x aspect-ratio:16/9;
     }
 
     .card-content {

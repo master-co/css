@@ -20,6 +20,7 @@ import type {
     MasterCSSPlanAtRules,
     MasterCSSPlanAnimations,
     MasterCSSPlanFunctions,
+    MasterCSSPlanKeyAliases,
     MasterCSSPlanSettings,
     MasterCSSPlanUtility,
     MasterCSSPlanUtilityBuckets,
@@ -220,6 +221,7 @@ export default class MasterCSS {
     protected readonly nativeDeclarationFastPathBlockedProperties = new Set<string>()
     protected readonly nativeDeclarationMatches = new Map<string, boolean>()
     protected readonly nativeDeclarationUtilities = new Map<string, CompiledUtility>()
+    protected readonly keyAliases = new Map<string, string>()
 
     readonly plan!: MasterCSSPlan
 
@@ -280,11 +282,21 @@ export default class MasterCSS {
             modes: this.plan.settings?.modes ? [...this.plan.settings.modes] : [...DEFAULT_SETTINGS.modes],
             ...(this.plan.functions ? { functions: this.plan.functions } : {})
         }
+        this.loadKeyAliases(this.plan.keyAliases)
         this.loadVariables()
         this.loadAnimations()
         this.loadAtRuleAliases()
         this.loadVariantAliases()
         this.loadUtilities()
+    }
+
+    private loadKeyAliases(aliases: MasterCSSPlanKeyAliases | undefined) {
+        if (!aliases) return
+        for (const [key, property] of Object.entries(aliases)) {
+            if (key && property && key !== property) {
+                this.keyAliases.set(key, property)
+            }
+        }
     }
 
     protected applyPreloadedCounts(preloaded: MasterCSSPreloaded) {
@@ -602,7 +614,25 @@ export default class MasterCSS {
         return utility.matchers.some((matcher) => matcher.type === 'static')
     }
 
-    match(className: string): CompiledUtility | undefined {
+    private canonicalizeClassName(className: string, fixedClass?: string) {
+        if (className[0] === '{') return { className, fixedClass }
+
+        const indexOfColon = className.indexOf(':')
+        if (indexOfColon <= 0) return { className, fixedClass }
+
+        const key = className.slice(0, indexOfColon)
+        if (key.startsWith('--')) return { className, fixedClass }
+
+        const canonicalKey = this.keyAliases.get(key)
+        if (!canonicalKey) return { className, fixedClass }
+
+        return {
+            className: canonicalKey + className.slice(indexOfColon),
+            fixedClass
+        }
+    }
+
+    private matchResolvedClassName(className: string): CompiledUtility | undefined {
         for (const eachUtility of this.variableMatcherUtilities) {
             if (this.matchesUtility(className, eachUtility, 'variable')) return eachUtility
         }
@@ -620,7 +650,11 @@ export default class MasterCSS {
         }
     }
 
-    matchAll(className: string): CompiledUtility[] {
+    match(className: string): CompiledUtility | undefined {
+        return this.matchResolvedClassName(this.canonicalizeClassName(className).className)
+    }
+
+    private matchAllResolvedClassName(className: string): CompiledUtility[] {
         /**
          * 1. variable
          * @example fg:primary bg:blue
@@ -659,6 +693,10 @@ export default class MasterCSS {
             return [eachUtility]
         }
         return staticUtilities
+    }
+
+    matchAll(className: string): CompiledUtility[] {
+        return this.matchAllResolvedClassName(this.canonicalizeClassName(className).className)
     }
 
     private parseNativeDeclarationProperty(className: string) {
@@ -724,28 +762,28 @@ export default class MasterCSS {
             && utility.matchers.every((matcher) => matcher.type === 'key')
     }
 
-    private createNativeDeclarationFallback(className: string, fixedClass?: string, mode?: string): Utility[] {
+    private createNativeDeclarationFallback(className: string, fixedClass?: string, mode?: string, sourceClassName = className): Utility[] {
         if (!this.options.nativeDeclarationMatcher) return []
         const property = this.parseNativeDeclarationProperty(className)
         if (!property) return []
 
         const registeredUtility = this.getNativeDeclarationUtility(property)
-        const utility = this.createWithDefinition(className, registeredUtility, fixedClass, mode)
+        const utility = this.createWithDefinition(sourceClassName, registeredUtility, fixedClass, mode)
         if (!utility?.valid || !this.isNativeDeclarationUtility(utility)) return []
 
         const utilities = [utility]
         for (let branchIndex = 1; branchIndex < utility.branchCount; branchIndex++) {
-            const branchUtility = this.createWithDefinition(className, registeredUtility, fixedClass, mode, branchIndex)
+            const branchUtility = this.createWithDefinition(sourceClassName, registeredUtility, fixedClass, mode, branchIndex)
             if (branchUtility?.valid && this.isNativeDeclarationUtility(branchUtility)) utilities.push(branchUtility)
         }
         return utilities
     }
 
-    private createNativeDeclarationFastPath(className: string, fixedClass?: string, mode?: string): Utility[] {
+    private createNativeDeclarationFastPath(className: string, fixedClass?: string, mode?: string, sourceClassName = className): Utility[] {
         const property = this.parseNativeDeclarationProperty(className)
         if (!property) return []
         if (!property.startsWith('--') && this.nativeDeclarationFastPathBlockedProperties.has(property)) return []
-        return this.createNativeDeclarationFallback(className, fixedClass, mode)
+        return this.createNativeDeclarationFallback(className, fixedClass, mode, sourceClassName)
     }
 
     /**
@@ -763,40 +801,48 @@ export default class MasterCSS {
      * @returns Utility
      */
     create(className: string, fixedClass?: string, mode?: string): Utility | undefined {
-        const fastPathNativeUtilities = this.createNativeDeclarationFastPath(className, fixedClass, mode)
+        const sourceClassName = className
+        const canonicalClass = this.canonicalizeClassName(className, fixedClass)
+        className = canonicalClass.className
+        fixedClass = canonicalClass.fixedClass
+        const fastPathNativeUtilities = this.createNativeDeclarationFastPath(className, fixedClass, mode, sourceClassName)
         if (fastPathNativeUtilities.length) return fastPathNativeUtilities[0]
 
-        const registeredUtility = this.match(className)
+        const registeredUtility = this.matchResolvedClassName(className)
         if (registeredUtility && this.matchesStaticUtilityDefinition(registeredUtility)) {
-            const nativeUtilities = this.createNativeDeclarationFallback(className, fixedClass, mode)
+            const nativeUtilities = this.createNativeDeclarationFallback(className, fixedClass, mode, sourceClassName)
             if (nativeUtilities.length) return nativeUtilities[0]
         }
-        if (registeredUtility) return this.createWithDefinition(className, registeredUtility, fixedClass, mode)
-        return this.createNativeDeclarationFallback(className, fixedClass, mode)[0]
+        if (registeredUtility) return this.createWithDefinition(sourceClassName, registeredUtility, fixedClass, mode)
+        return this.createNativeDeclarationFallback(className, fixedClass, mode, sourceClassName)[0]
     }
 
     createAll(className: string, fixedClass?: string, mode?: string): Utility[] {
-        const fastPathNativeUtilities = this.createNativeDeclarationFastPath(className, fixedClass, mode)
+        const sourceClassName = className
+        const canonicalClass = this.canonicalizeClassName(className, fixedClass)
+        className = canonicalClass.className
+        fixedClass = canonicalClass.fixedClass
+        const fastPathNativeUtilities = this.createNativeDeclarationFastPath(className, fixedClass, mode, sourceClassName)
         if (fastPathNativeUtilities.length) return fastPathNativeUtilities
 
-        const registeredUtilities = this.matchAll(className)
+        const registeredUtilities = this.matchAllResolvedClassName(className)
         if (registeredUtilities.length && registeredUtilities.every((utility) => this.matchesStaticUtilityDefinition(utility))) {
-            const nativeUtilities = this.createNativeDeclarationFallback(className, fixedClass, mode)
+            const nativeUtilities = this.createNativeDeclarationFallback(className, fixedClass, mode, sourceClassName)
             if (nativeUtilities.length) return nativeUtilities
         }
 
         const utilities: Utility[] = []
         for (const registeredUtility of registeredUtilities) {
-            const utility = this.createWithDefinition(className, registeredUtility, fixedClass, mode)
+            const utility = this.createWithDefinition(sourceClassName, registeredUtility, fixedClass, mode)
             if (utility && utility.valid) {
                 utilities.push(utility)
                 for (let branchIndex = 1; branchIndex < utility.branchCount; branchIndex++) {
-                    const branchUtility = this.createWithDefinition(className, registeredUtility, fixedClass, mode, branchIndex)
+                    const branchUtility = this.createWithDefinition(sourceClassName, registeredUtility, fixedClass, mode, branchIndex)
                     if (branchUtility?.valid) utilities.push(branchUtility)
                 }
             }
         }
-        return utilities.length ? utilities : this.createNativeDeclarationFallback(className, fixedClass, mode)
+        return utilities.length ? utilities : this.createNativeDeclarationFallback(className, fixedClass, mode, sourceClassName)
     }
 
     createWithDefinition(className: string, registeredUtility: CompiledUtility, fixedClass?: string, mode?: string, branchIndex = 0): Utility | undefined {
@@ -889,6 +935,7 @@ export default class MasterCSS {
         this.arbitraryMatcherUtilities.length = 0
         this.staticVariableTokens.clear()
         this.staticAnimationTokens.clear()
+        this.keyAliases.clear()
         this.nativeDeclarationFastPathBlockedProperties.clear()
         this.baseLayer.reset()
         this.themeLayer.reset()

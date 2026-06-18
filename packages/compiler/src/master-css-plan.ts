@@ -569,6 +569,7 @@ function mergePlan(basePlan: MasterCSSPlan | undefined, fragment: MasterCSSPlan)
         selectors: mergeRecords(basePlan.selectors, fragment.selectors),
         utilities: mergeBy(basePlan.utilities, fragment.utilities, (utility) => `${utility.id}\0${utility.layer || ''}`),
         functions: mergeRecords(basePlan.functions, fragment.functions),
+        keyAliases: mergeRecords(basePlan.keyAliases, fragment.keyAliases),
         debug: mergeRecords(basePlan.debug, fragment.debug)
     }
     addOwnNamespaceVariableRefs(plan)
@@ -617,7 +618,8 @@ export function createMasterCSSPlan(input: CSSDirectivePlanInput = {}, options: 
         ...(breakpointAtRules ? { breakpointAtRules } : {}),
         ...(containerAtRules ? { containerAtRules } : {}),
         ...(selectors ? { selectors } : {}),
-        ...(utilities?.length ? { utilities } : {})
+        ...(utilities?.length ? { utilities } : {}),
+        ...(input.keyAliases ? { keyAliases: input.keyAliases } : {})
     }
     return mergePlan(options.basePlan, fragment)
 }

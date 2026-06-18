@@ -90,7 +90,7 @@ Namespaces come from these sources:
 
 * `breakpoint` is built in because viewport query suffixes such as `@md` need to resolve `breakpoint-md`.
 * Utilities can declare shared namespaces. For example, border and outline color utilities search `color-line` before `color`, while spacing utilities search `spacing`.
-* Some non-static, non-function utility names are also namespaces when the property name is already the clearest token namespace. This is why `tab-size-code` can be used as `tab-size:code`.
+* Some non-static, non-function utility names are also namespaces when the property name is already the clearest token namespace. This is why `tab-size-code` can be used as `tab-size:4`.
 * Semantic utilities can opt out of the utility-name namespace when a clearer foundation namespace owns the token contract. Animation and transition durations use `duration-*`, delays use `delay-*`, aspect ratios use `aspect-*`, font feature settings use `font-feature-*`, and shadows use `shadow-*`.
 
 Function utilities do not become namespaces by name. Tokens such as `blur-sm`, `drop-shadow-soft`, and `perspective-near` are ordinary theme tokens unless a utility explicitly owns that namespace.
@@ -107,7 +107,7 @@ Function utilities do not become namespaces by name. Tokens such as `blur-sm`, `
 ```
 
 ```html
-<pre class="animation-duration:fast transition-delay:short aspect:video font-feature:tabular leading:body tab-size:code">...</pre>
+<pre class="animation-duration:fast transition-delay:short video font-feature-settings:tabular leading:body tab-size:4">...</pre>
 ```
 
 ### Default namespace sources
@@ -351,7 +351,7 @@ Inside CSS-defined style rules, use `@variant` to apply selector variants instea
 
 @components {
     btn {
-        @compose inline-flex ai:center jc:center;
+        @compose inline-flex align-items:center justify-content:center;
 
         @variant :interactive {
             @compose fg:link;
@@ -434,7 +434,7 @@ The theme should describe shared values and named conditions. Reusable UI patter
 ```css name=components.css
 @components {
     btn {
-        @compose inline-flex ai:center jc:center gap:xs px:md py:xs r:md font:sm font:medium;
+        @compose inline-flex align-items:center justify-content:center gap:xs px:md py:xs r:md font:sm font:medium;
         background: var(--color-accent);
         color: var(--color-on-accent);
 

@@ -8,12 +8,12 @@ const syntaxes = [
     'clip-fill',
     'clip-stroke',
     'clip-view',
-    ['clip:inset(`…`)'],
-    ['clip:circle(`…`)'],
-    ['clip:ellipse(`…`)'],
-    ['clip:polygon(`…`)'],
-    ['clip:path(`…`)'],
-    ['clip:url(`…`)'],
+    ['clip-path:inset(`…`)'],
+    ['clip-path:circle(`…`)'],
+    ['clip-path:ellipse(`…`)'],
+    ['clip-path:polygon(`…`)'],
+    ['clip-path:path(`…`)'],
+    ['clip-path:url(`…`)'],
 ]
 
 export default syntaxes

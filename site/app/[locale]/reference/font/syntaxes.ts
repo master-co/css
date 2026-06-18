@@ -1,7 +1,7 @@
 const syntaxes = [
     [
         'font:`style`|`variant`|`…`',
-        'f:`style`|`variant`|`…`',
+        'font:`style`|`variant`|`…`',
     ],
     'font:caption',
     'font:icon',

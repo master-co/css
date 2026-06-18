@@ -94,23 +94,23 @@ Custom properties can use the same direct declaration form:
 </details>
 
 ### Master CSS syntax first
-Native fallback is intentionally lower priority than Master CSS semantics. Aliases, token resolution, unit conversion, transform helpers, and shorthand utilities continue to use the Master CSS matcher before a native declaration is considered.
+Native fallback is intentionally lower priority than Master CSS semantics. Curated aliases, token resolution, unit conversion, transform helpers, and shorthand utilities continue to use the Master CSS matcher before a native declaration is considered.
 
 ```html
-<!-- @MARK d:block --><!-- @MARK margin:16 --><!-- @MARK bg:red-60 -->
-<div class="d:block margin:16 bg:red-60">…</div>
+<!-- @MARK mt:16 --><!-- @MARK margin:16 --><!-- @MARK bg:red-60 -->
+<div class="mt:16 margin:16 bg:red-60">…</div>
 ```
 
 <details>
     <summary>Generated CSS</summary>
     <Class2CSS>
-        {['d:block', 'margin:16', 'bg:red-60']}
+        {['mt:16', 'margin:16', 'bg:red-60']}
     </Class2CSS>
 </details>
 
 This preserves the expected syntax model:
 
-- `d:block` uses the `d` alias and emits `display:block`.
+- `mt:16` uses a curated alias and emits `margin-top:1rem`.
 - `margin:16` keeps Master CSS unit conversion and emits `margin:1rem`.
 - `bg:red-60` resolves the theme token and emits `background-color:var(--color-red-60)`.
 - `display:banana` and `float:banana` are rejected instead of emitted as raw CSS.
@@ -224,7 +224,7 @@ When a CSS file imports `@master/css`, it becomes a Master-managed stylesheet. K
 - Treat native cascade layers as the main browser compatibility boundary for the default stylesheet.
 - Write standard unprefixed properties and selectors when Master CSS already prefixes them.
 - Use native declaration syntax for valid CSS declarations, and arbitrary properties only when you need an explicit raw escape hatch.
-- Keep Master CSS aliases, tokens, unit conversion, and shorthands ahead of native declaration fallback.
+- Keep curated Master CSS aliases, tokens, unit conversion, and shorthands ahead of native declaration fallback.
 - Expect browser runtime validation and static validation to occasionally differ for the newest CSS grammar; test experimental declarations in the rendering mode you ship.
 - Put third-party CSS in `defaults` when you want components and utilities to override it.
 - Keep externally injected classes visible to extraction, outside managed roots, or protected from native CSS pruning.

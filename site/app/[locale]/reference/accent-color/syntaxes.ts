@@ -1,7 +1,7 @@
 const syntaxes = [
-    ['accent:`color`'],
-    'accent:current',
-    'accent:transparent'
+    ['accent-color:`color`'],
+    'accent-color:current',
+    'accent-color:transparent'
 ]
 
 export default syntaxes

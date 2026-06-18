@@ -1,7 +1,7 @@
 const syntaxes = [
-    ['caret:`color`'],
-    'caret:current',
-    'caret:transparent'
+    ['caret-color:`color`'],
+    'caret-color:current',
+    'caret-color:transparent'
 ]
 
 export default syntaxes

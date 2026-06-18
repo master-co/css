@@ -3,10 +3,10 @@
 
 ## Examples
 ### Span across all columns
-Use `col-span:all` for headings, pull quotes, or media that should break out of a multi-column flow.
+Use `column-span:all` for headings, pull quotes, or media that should break out of a multi-column flow.
 ```html
-<!-- @MARK col-span:all -->
-<h2 class="col-span:all">
+<!-- @MARK column-span:all -->
+<h2 class="column-span:all">
     Section heading
 </h2>
 ```
@@ -14,15 +14,15 @@ Use `col-span:all` for headings, pull quotes, or media that should break out of 
 <details>
     <summary>Generated CSS</summary>
     <Class2CSS>
-        {['col-span:all']}
+        {['column-span:all']}
     </Class2CSS>
 </details>
 
 ### Does not span multiple columns
-Use `col-span:none` to keep an element inside the current column.
+Use `column-span:none` to keep an element inside the current column.
 ```html
-<!-- @MARK col-span:none -->
-<p class="col-span:none">
+<!-- @MARK column-span:none -->
+<p class="column-span:none">
     Regular column content
 </p>
 ```
@@ -31,7 +31,7 @@ Use `col-span:none` to keep an element inside the current column.
 Column spanning only matters in a multi-column formatting context.
 ```html
 <article class="columns:3">
-    <h2 class="col-span:all">Report</h2>
+    <h2 class="column-span:all">Report</h2>
     <p>Column content</p>
 </article>
 ```
@@ -39,5 +39,5 @@ Column spanning only matters in a multi-column formatting context.
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<h2 class="col-span:none col-span:all@sm col-span:all@print">...</h2>
+<h2 class="column-span:none column-span:all@sm column-span:all@print">...</h2>
 ```

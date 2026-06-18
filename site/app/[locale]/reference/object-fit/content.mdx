@@ -3,24 +3,24 @@
 
 ## Examples
 ### Cover a fixed frame
-Use `obj:cover` when media should fill its frame while preserving its aspect ratio.
+Use `object:cover` when media should fill its frame while preserving its aspect ratio.
 ```html
-<!-- @MARK obj:cover -->
-<img class="w:full aspect:16/9 obj:cover" src="/images/cover.jpg" alt="Cover">
+<!-- @MARK object:cover -->
+<img class="w:full aspect-ratio:16/9 object:cover" src="/images/cover.jpg" alt="Cover">
 ```
 
 <details>
     <summary>Generated CSS</summary>
     <Class2CSS>
-        {['obj:cover']}
+        {['object:cover']}
     </Class2CSS>
 </details>
 
 ### Contain the full media
-Use `obj:contain` when the full image or video must remain visible inside the frame.
+Use `object:contain` when the full image or video must remain visible inside the frame.
 ```html
-<!-- @MARK obj:contain -->
-<img class="w:full aspect:1/1 obj:contain" src="/images/logo.png" alt="Logo">
+<!-- @MARK object:contain -->
+<img class="w:full aspect-ratio:1/1 object:contain" src="/images/logo.png" alt="Logo">
 ```
 
 ### Disable object fitting
@@ -33,5 +33,5 @@ Use `object-fit:none` when the media should render at its intrinsic size within 
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<img class="obj:cover:hover obj:contain@sm object-fit:none@print" src="/images/photo.jpg" alt="">
+<img class="object:cover:hover object:contain@sm object-fit:none@print" src="/images/photo.jpg" alt="">
 ```

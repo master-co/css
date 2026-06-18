@@ -3,10 +3,15 @@ import defaultPlanJSON from '@master/css-preset/default-plan.json' with { type: 
 import UtilityType from 'shared/utility-type'
 import type { ValueComponent, Variable } from 'shared/css-syntax'
 import type { MasterCSSPlan, MasterCSSPlanAtRuleNode } from 'shared/master-css-plan'
+import { getMdnPropertySyntax } from './utils/mdn-css-data'
 
 export type { CompiledUtility, MasterCSS, ValueComponent, Variable }
 const defaultPlan = defaultPlanJSON as unknown as MasterCSSPlan
 export { createCSS, defaultPlan, UtilityType }
+
+export function matchesLanguageServiceNativeDeclaration({ property }: { property: string }) {
+    return property.startsWith('--') || Boolean(getMdnPropertySyntax(property))
+}
 
 export const SELECTOR_SIGNS = [':', '_', '>', '+', '~']
 export const QUERY_COMPARISON_OPERATORS = ['>', '<', '=']
@@ -24,11 +29,15 @@ export interface AtRule {
 }
 
 export function createDefaultCSS() {
-    return createCSS(defaultPlan)
+    return createCSS(defaultPlan, undefined, {
+        nativeDeclarationMatcher: matchesLanguageServiceNativeDeclaration
+    })
 }
 
 export function generateCSS(classNames: string[], css: MasterCSS = createDefaultCSS()) {
-    const previewCSS = createCSS(css.plan)
+    const previewCSS = createCSS(css.plan, undefined, {
+        nativeDeclarationMatcher: matchesLanguageServiceNativeDeclaration
+    })
     for (const className of classNames) {
         previewCSS.add(className)
     }

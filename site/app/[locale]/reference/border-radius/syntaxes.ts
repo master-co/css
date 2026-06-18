@@ -15,10 +15,18 @@ const syntaxes = [
     ['rb:`size`'],
     ['rl:`size`'],
     ['rr:`size`'],
-    ['rtl:`size`', 'rlt:`size`'],
-    ['rtr:`size`', 'rrt:`size`'],
-    ['rbl:`size`', 'rlb:`size`'],
-    ['rbr:`size`', 'rrb:`size`'],
+    ['rtl:`size`'],
+    ['rtr:`size`'],
+    ['rbl:`size`'],
+    ['rbr:`size`'],
+    ['border-top-radius:`size`'],
+    ['border-bottom-radius:`size`'],
+    ['border-left-radius:`size`'],
+    ['border-right-radius:`size`'],
+    ['border-top-left-radius:`size`'],
+    ['border-top-right-radius:`size`'],
+    ['border-bottom-left-radius:`size`'],
+    ['border-bottom-right-radius:`size`'],
 ]
 
 export default syntaxes

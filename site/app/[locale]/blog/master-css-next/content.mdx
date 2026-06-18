@@ -226,7 +226,7 @@ This mode is intentionally source-scanned. It works best when complete class str
 
 The useful comparison is not that source scanning is radically different. In static mode, Master CSS and Tailwind CSS have a similar constraint: the scanner needs complete class names that are visible in source.
 
-[Tailwind detects classes by scanning source files as plain text](https://tailwindcss.com/docs/detecting-classes-in-source-files), then generates CSS for the utilities it can detect. Master CSS Static Rendering for Next.js follows the same general shape: scan source, generate CSS, and let the build load that generated stylesheet.
+[Tailwind detects classes by scanning source files as plain text](https://tailwindcss.com/docs/detecting-classes-in-source-files), then generates CSS for the utilities it can detect. Master CSS Static Rendering for Next.js follows the same general shape-outside: scan source, generate CSS, and let the build load that generated stylesheet.
 
 The larger difference is Progressive Rendering.
 
@@ -281,7 +281,7 @@ If another integration already owns Next.js `adapterPath`, use runtime mode unti
 
 The important change is not just that the setup is shorter. It is that Master CSS now integrates with the same public build contract Next.js is using to support adapters across platforms.
 
-That gives the integration a better long-term shape:
+That gives the integration a better long-term shape-outside:
 
 - it is tied to a typed Next.js output contract;
 - it runs when all static and pre-rendered outputs are known;

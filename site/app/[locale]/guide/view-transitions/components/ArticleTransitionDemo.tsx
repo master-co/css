@@ -20,7 +20,7 @@ const rootTransitionClassName = [
     'animation-timing-function:smooth::vt-group(.article)',
 ].join(' ')
 
-const sharedTransitionClassName = 'vt-class:article'
+const sharedTransitionClassName = 'view-transition-class:article'
 
 const articles = [
     {
@@ -30,9 +30,9 @@ const articles = [
         description: 'A practical pattern for moving readers from a dense article feed into a focused story view.',
         image: articleAuroraImage,
         imageAlt: 'Green mountain ridge with a winding road',
-        imageTransition: 'vt-name:article-image',
-        titleTransition: 'vt-name:article-title',
-        dateTransition: 'vt-name:article-date',
+        imageTransition: 'view-transition-name:article-image',
+        titleTransition: 'view-transition-name:article-title',
+        dateTransition: 'view-transition-name:article-date',
     },
     {
         id: 'studio',
@@ -41,9 +41,9 @@ const articles = [
         description: 'How shared element motion helps a page change feel intentional without adding visual noise.',
         image: articleStudioImage,
         imageAlt: 'Snowy mountain valley with accent tents',
-        imageTransition: 'vt-name:article-studio-image',
-        titleTransition: 'vt-name:article-studio-title',
-        dateTransition: 'vt-name:article-studio-date',
+        imageTransition: 'view-transition-name:article-studio-image',
+        titleTransition: 'view-transition-name:article-studio-title',
+        dateTransition: 'view-transition-name:article-studio-date',
     },
     {
         id: 'coast',
@@ -52,9 +52,9 @@ const articles = [
         description: 'Use named snapshots to connect source cards with their destination layouts.',
         image: articleCoastImage,
         imageAlt: 'Forest valley with cliffs reflected in a river',
-        imageTransition: 'vt-name:article-coast-image',
-        titleTransition: 'vt-name:article-coast-title',
-        dateTransition: 'vt-name:article-coast-date',
+        imageTransition: 'view-transition-name:article-coast-image',
+        titleTransition: 'view-transition-name:article-coast-title',
+        dateTransition: 'view-transition-name:article-coast-date',
     },
     {
         id: 'grid',
@@ -63,9 +63,9 @@ const articles = [
         description: 'Plan transitions around the real content container so they still work on phones.',
         image: articleGridImage,
         imageAlt: 'City skyline at sunset',
-        imageTransition: 'vt-name:article-grid-image',
-        titleTransition: 'vt-name:article-grid-title',
-        dateTransition: 'vt-name:article-grid-date',
+        imageTransition: 'view-transition-name:article-grid-image',
+        titleTransition: 'view-transition-name:article-grid-title',
+        dateTransition: 'view-transition-name:article-grid-date',
     }
 ]
 
@@ -101,7 +101,7 @@ export default function ArticleTransitionDemo() {
                         <article className="app-panel overflow:hidden p:0 flex flex-col" key={article.id}>
                             <Image
                                 alt={article.imageAlt}
-                                className={clsx(article.imageTransition, sharedTransitionClassName, 'aspect:16/10 h:auto object:cover w:full')}
+                                className={clsx(article.imageTransition, sharedTransitionClassName, 'aspect-ratio:16/10 h:auto object:cover w:full')}
                                 placeholder="blur"
                                 sizes="(min-width: 480px) 50vw, 100vw"
                                 src={article.image}
@@ -132,7 +132,7 @@ export default function ArticleTransitionDemo() {
                 <article className="app-panel overflow:hidden p:0 w:full">
                     <Image
                         alt={selectedArticle.imageAlt}
-                        className={clsx(selectedArticle.imageTransition, sharedTransitionClassName, 'aspect:16/10 h:auto object:cover w:full')}
+                        className={clsx(selectedArticle.imageTransition, sharedTransitionClassName, 'aspect-ratio:16/10 h:auto object:cover w:full')}
                         placeholder="blur"
                         sizes="100vw"
                         src={selectedArticle.image}
