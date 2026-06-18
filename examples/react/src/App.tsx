@@ -14,7 +14,7 @@ function App() {
                     <img src={reactLogo} className="logo react" alt="React logo" />
                 </a>
             </div>
-            <h1 className="fg:white@dark font:heavy font:sans tracking:-.25px">
+            <h1 className="fg:white@dark font:heavy font:sans tracking:tight">
                 <span>Master CSS</span> <span className="fg:#00D8FF">React</span>
             </h1>
             <div className="card">
