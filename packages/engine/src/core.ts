@@ -190,6 +190,7 @@ export default class MasterCSS {
     protected readonly variableMatcherUtilities: CompiledUtility[] = []
     protected readonly valueMatcherUtilities: CompiledUtility[] = []
     protected readonly keyMatcherUtilities: CompiledUtility[] = []
+    protected readonly patternMatcherUtilities: CompiledUtility[] = []
     protected readonly arbitraryMatcherUtilities: CompiledUtility[] = []
     readonly settings!: EngineSettings
     readonly rules: (Layer | Rule)[] = []
@@ -474,6 +475,7 @@ export default class MasterCSS {
         this.loadBucket(this.variableMatcherUtilities, buckets?.variable)
         this.loadBucket(this.valueMatcherUtilities, buckets?.value)
         this.loadBucket(this.keyMatcherUtilities, buckets?.key)
+        this.loadBucket(this.patternMatcherUtilities, buckets?.pattern)
         this.loadBucket(this.arbitraryMatcherUtilities, buckets?.arbitrary)
     }
 
@@ -640,6 +642,8 @@ export default class MasterCSS {
                         return false
                 }
             }
+            case 'pattern':
+                return matcher.values.some((value) => matchesStaticUtility(className, matcher.prefix + value))
             case 'function-prefix':
                 return className.startsWith(matcher.name + '(')
             case 'group':
@@ -693,6 +697,10 @@ export default class MasterCSS {
         for (const eachUtility of this.arbitraryMatcherUtilities) {
             if (this.matchesUtility(className, eachUtility)) return eachUtility
         }
+
+        for (const eachUtility of this.patternMatcherUtilities) {
+            if (this.matchesUtility(className, eachUtility, 'pattern')) return eachUtility
+        }
     }
 
     match(className: string): CompiledUtility | undefined {
@@ -737,7 +745,16 @@ export default class MasterCSS {
             }
             return [eachUtility]
         }
-        return staticUtilities
+        if (staticUtilities.length) return staticUtilities
+
+        /**
+         * 5. enum pattern
+         * @example text-center bg-cover
+         */
+        for (const eachUtility of this.patternMatcherUtilities) {
+            if (this.matchesUtility(className, eachUtility, 'pattern')) return [eachUtility]
+        }
+        return []
     }
 
     matchAll(className: string): CompiledUtility[] {
@@ -1026,6 +1043,7 @@ export default class MasterCSS {
         this.variableMatcherUtilities.length = 0
         this.valueMatcherUtilities.length = 0
         this.keyMatcherUtilities.length = 0
+        this.patternMatcherUtilities.length = 0
         this.arbitraryMatcherUtilities.length = 0
         this.staticVariableTokens.clear()
         this.staticAnimationTokens.clear()

@@ -118,10 +118,16 @@ export interface CSSDirectiveUtilityRuleDefinition {
     selector?: string
 }
 
+export interface CSSDirectiveUtilityPatternDefinition {
+    prefix: string
+    values: string[]
+}
+
 export interface CSSDirectiveUtilityDefinition {
     name: string
-    type?: 'static'
+    type?: 'static' | 'pattern'
     layer?: CSSDirectiveLayerName
+    pattern?: CSSDirectiveUtilityPatternDefinition
     declarations?: CSSDirectiveDeclarations
     atRules?: string[]
     rules?: CSSDirectiveUtilityRuleDefinition[]

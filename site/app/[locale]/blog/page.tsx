@@ -26,7 +26,7 @@ function AuthorAvatarStack({ children }: { children: any[] }) {
                 return (
                     <Image
                         key={author.name}
-                        className={clsx('round object:cover outline:2|canvas', {
+                        className={clsx('round object-cover outline:2|canvas', {
                             'ml:-1x': index > 0
                         })}
                         src={author.image}
@@ -61,9 +61,9 @@ export default async function Page(props: any) {
                                             <div className='text:12 fg:accent'>{formattedDate}</div>
                                             <div className='text:12 fg:muted'> <TimeAgo timestamp={page.date} /></div>
                                         </div>
-                                        <div className='text:pretty my:-1x font:20 leading:1.4'>{page.title}</div>
+                                        <div className='text-pretty my:-1x font:20 leading:1.4'>{page.title}</div>
                                         {/* <Image src="/images/gold-pattern.jpg"  className="r:5 aspect-ratio:16/9 h:auto" width={480} height={270} alt={page.title} /> */}
-                                        <div className='text:pretty text:12 fg:text mt:auto'>{page.description}</div>
+                                        <div className='text-pretty text:12 fg:text mt:auto'>{page.description}</div>
                                         <AuthorAvatarStack>{page.authors}</AuthorAvatarStack>
                                     </Link>
                                 </div>

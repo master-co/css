@@ -47,14 +47,14 @@ The following continuous DOM manipulation takes you to understand the behavior o
         #### <StepNum />Insert an element with a Master CSS class name into the DOM
         ```js
         const h1 = document.createElement('h1')
-        // @MARK text:center
-        h1.className = 'text:center'
+        // @MARK text-center
+        h1.className = 'text-center'
         ```
         A new node `html <h1>` is inserted into the DOM tree:
         ```html
-        <h1 class="text:center">Hello World</h1> <!-- [!code ++] -->
+        <h1 class="text-center">Hello World</h1> <!-- [!code ++] -->
         ```
-        The runtime engine observes a new node with the class `text:center` and generates the corresponding CSS rule:
+        The runtime engine observes a new node with the class `text-center` and generates the corresponding CSS rule:
         ```css
         .text\:center { /* [!code ++] */
             text-align: center /* [!code ++] */
@@ -70,7 +70,7 @@ The following continuous DOM manipulation takes you to understand the behavior o
         Add class name `font:6xl` to `html <h1>`
         ```html
         <!-- @MARK font:6xl -->
-        <h1 class="text:center font:6xl">Hello World</h1>
+        <h1 class="text-center font:6xl">Hello World</h1>
         ```
         The runtime engine observes that `html <h1>` adds the new class name `font:6xl` and generates the corresponding CSS rules:
         ```css
@@ -86,14 +86,14 @@ The following continuous DOM manipulation takes you to understand the behavior o
     <Step>
         #### <StepNum />Remove the Master CSS class name from the connected element
         ```js
-        // @MARK text:center
-        h1.classList.remove('text:center')
+        // @MARK text-center
+        h1.classList.remove('text-center')
         ```
-        Remove class name `text:center` from `html <h1>`
+        Remove class name `text-center` from `html <h1>`
         ```html
-        <h1 class="text:center font:6xl">Hello World</h1>
+        <h1 class="text-center font:6xl">Hello World</h1>
         ```
-        The runtime engine observes that the class name `text:center` is removed from `html <h1>` and removes the corresponding CSS rule:
+        The runtime engine observes that the class name `text-center` is removed from `html <h1>` and removes the corresponding CSS rule:
         ```css
         .font\:6xl {
             font-size: 3rem
@@ -254,8 +254,8 @@ The CSS entry point is explicit: import `@master/css` from the stylesheet that s
         Source files such as `.html`, `.js`, `.jsx`, `.ts`, `.tsx`, `.vue`, `.svelte`, `.astro`, `.md`, and `.mdx` are scanned as text. The scanner collects candidate class strings from markup and string literals, then filters obvious non-class tokens before validation.
 
         ```html name=src/index.html
-        <!-- @MARK btn text:center -->
-        <button class="btn text:center">Save</button>
+        <!-- @MARK btn text-center -->
+        <button class="btn text-center">Save</button>
         ```
     </Step>
     <Step>
@@ -270,7 +270,7 @@ The CSS entry point is explicit: import `@master/css` from the stylesheet that s
         }
         ```
 
-        With this project plan, `btn` is valid because the project defines it, and `text:center` is valid because it is a built-in utility. Plan-defined classes are still on-demand: defining `btn` does not emit anything until `btn` appears in scanned source or in the scanner's fixed class list.
+        With this project plan, `btn` is valid because the project defines it, and `text-center` is valid because it is a built-in utility. Plan-defined classes are still on-demand: defining `btn` does not emit anything until `btn` appears in scanned source or in the scanner's fixed class list.
     </Step>
     <Step>
         #### <StepNum />Compose final CSS

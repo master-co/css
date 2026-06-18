@@ -3,10 +3,10 @@
 
 ## Examples
 ### Balance short headings
-Use `text:balance` for headings, cards, and callouts where balanced line lengths are more important than fitting as much text as possible on each line.
+Use `text-balance` for headings, cards, and callouts where balanced line lengths are more important than fitting as much text as possible on each line.
 ```html
-<!-- @MARK text:balance -->
-<h1 class="text:balance">
+<!-- @MARK text-balance -->
+<h1 class="text-balance">
     Build interfaces that stay readable across narrow and wide containers
 </h1>
 ```
@@ -14,24 +14,24 @@ Use `text:balance` for headings, cards, and callouts where balanced line lengths
 <details>
     <summary>Generated CSS</summary>
     <Class2CSS>
-        {['text:balance']}
+        {['text-balance']}
     </Class2CSS>
 </details>
 
 ### Prefer pretty wrapping for prose
-Use `text:pretty` for paragraphs where the browser should avoid awkward last lines when it can.
+Use `text-pretty` for paragraphs where the browser should avoid awkward last lines when it can.
 ```html
-<!-- @MARK text:pretty -->
-<p class="text:pretty">
+<!-- @MARK text-pretty -->
+<p class="text-pretty">
     Master CSS keeps text wrapping decisions in markup while still using native CSS behavior.
 </p>
 ```
 
 ### Prevent wrapping
-Use `text:nowrap` when a label, tab, or inline control must stay on one line.
+Use `text-nowrap` when a label, tab, or inline control must stay on one line.
 ```html
-<!-- @MARK text:nowrap --><!-- @MARK overflow:hidden --><!-- @MARK text:ellipsis -->
-<span class="text:nowrap overflow:hidden text:ellipsis">
+<!-- @MARK text-nowrap --><!-- @MARK overflow:hidden --><!-- @MARK text-ellipsis -->
+<span class="text-nowrap overflow:hidden text-ellipsis">
     Very long file name
 </span>
 ```
@@ -41,7 +41,7 @@ Only use no-wrap when the container has an overflow strategy. Otherwise the text
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="text:wrap text:balance@sm text:pretty@lg text:wrap@print">...</div>
+<div class="text-wrap text-balance@sm text-pretty@lg text-wrap@print">...</div>
 ```
 
 Use [white-space](/reference/white-space) when the requirement is preserving spaces or line breaks.

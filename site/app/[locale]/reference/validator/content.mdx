@@ -21,7 +21,7 @@ Validates that the string is valid Master CSS syntactic class.
 ```ts
 import { isClassValid } from '@master/css-validator'
 
-isClassValid('text:center')
+isClassValid('text-center')
 // => true
 
 isClassValid('love:css')
@@ -40,7 +40,7 @@ Validate syntax validity and create Master CSS rules.
 ```ts
 import { generateValidRules } from '@master/css-validator'
 
-generateValidRules('text:center')
+generateValidRules('text-center')
 // => [{...}]
 
 generateValidRules('love:css')
@@ -59,7 +59,7 @@ Validate and report errors for the given syntax.
 ```ts
 import { validate } from '@master/css-validator'
 
-validate('text:center')
+validate('text-center')
 // => []
 
 validate('love:css')

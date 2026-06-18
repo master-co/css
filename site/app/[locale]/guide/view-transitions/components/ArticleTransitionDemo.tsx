@@ -101,7 +101,7 @@ export default function ArticleTransitionDemo() {
                         <article className="app-panel overflow:hidden p:0 flex flex-col" key={article.id}>
                             <Image
                                 alt={article.imageAlt}
-                                className={clsx(article.imageTransition, sharedTransitionClassName, 'aspect-ratio:16/10 h:auto object:cover w:full')}
+                                className={clsx(article.imageTransition, sharedTransitionClassName, 'aspect-ratio:16/10 h:auto object-cover w:full')}
                                 placeholder="blur"
                                 sizes="(min-width: 480px) 50vw, 100vw"
                                 src={article.image}
@@ -132,7 +132,7 @@ export default function ArticleTransitionDemo() {
                 <article className="app-panel overflow:hidden p:0 w:full">
                     <Image
                         alt={selectedArticle.imageAlt}
-                        className={clsx(selectedArticle.imageTransition, sharedTransitionClassName, 'aspect-ratio:16/10 h:auto object:cover w:full')}
+                        className={clsx(selectedArticle.imageTransition, sharedTransitionClassName, 'aspect-ratio:16/10 h:auto object-cover w:full')}
                         placeholder="blur"
                         sizes="100vw"
                         src={selectedArticle.image}

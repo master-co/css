@@ -1,5 +1,6 @@
 import type { Rule } from 'lightningcss'
 import { encodeCSS, getCSSTransform } from '../css-transform'
+import { maskManagedPatternEntryNames } from '../core'
 import { createSourceLocationResolver, findAtRuleStatementEnd, removeSourceRanges, replaceSourceRanges } from './source'
 
 export interface CSSImportStatement {
@@ -12,10 +13,11 @@ export interface CSSImportStatement {
 
 export function findCSSImportStatements(source: string, filename = 'master.css') {
     const statements: CSSImportStatement[] = []
-    const resolveLocation = createSourceLocationResolver(source)
+    const maskedSource = maskManagedPatternEntryNames(source)
+    const resolveLocation = createSourceLocationResolver(maskedSource)
     getCSSTransform()({
         filename,
-        code: encodeCSS(source),
+        code: encodeCSS(maskedSource),
         visitor: {
             Rule: {
                 import(rule) {

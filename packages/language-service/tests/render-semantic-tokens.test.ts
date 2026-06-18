@@ -243,6 +243,10 @@ test.concurrent('renders semantic tokens for CSS directives', () => {
             content-auto {
                 @compose block;
             }
+
+            text-<left,center,right> {
+                text-align: --value();
+            }
         }
     `, 'css')
 
@@ -289,6 +293,10 @@ test.concurrent('renders semantic tokens for CSS directives', () => {
     expectToken(tokens, '@dark', 'keyword', ['query'])
     expectToken(tokens, '@utilities', 'keyword', ['directive'])
     expectToken(tokens, 'content-auto', 'class', ['selector'])
+    expectToken(tokens, 'text-', 'class', ['selector'])
+    expectToken(tokens, 'left', 'enumMember', ['selector'])
+    expectToken(tokens, 'center', 'enumMember', ['selector'])
+    expectToken(tokens, 'right', 'enumMember', ['selector'])
 })
 
 test.concurrent('renders CSS directive ranges with quoted semicolons', () => {

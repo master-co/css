@@ -7,25 +7,25 @@ Master CSS is a markup-driven CSS language and framework. It lets you write CSS 
 
 Think of each class as a small CSS statement:
 
-- Start with the declaration you want, such as `fg:accent`, `font:3xl`, or `text:center`.
+- Start with the declaration you want, such as `fg:accent`, `font:3xl`, or `text-center`.
 - Add a selector state when the style should react, such as `:hover`.
 - Add a conditional query when the style should be scoped, such as `@sm` or `@dark`.
 
 ```html
 <!-- @MARK fg:accent --><!-- @MARK :hover --><!-- @MARK @sm -->
-<h1 class="fg:accent fg:danger:hover font:3xl font:5xl@sm font:heavy m:2xl text:center">
+<h1 class="fg:accent fg:danger:hover font:3xl font:5xl@sm font:heavy m:2xl text-center">
     Hello World
 </h1>
 ```
 
 <Demo $py={0}>
-    <h1 className="fg:accent fg:danger:hover font:3xl font:5xl@sm font:heavy m:2xl text:center">Hello World</h1>
+    <h1 className="fg:accent fg:danger:hover font:3xl font:5xl@sm font:heavy m:2xl text-center">Hello World</h1>
 </Demo>
 
 <details>
     <summary>Generated CSS</summary>
     <Class2CSS>
-        {'fg:accent fg:danger:hover font:3xl font:5xl@sm font:heavy m:2xl text:center'}
+        {'fg:accent fg:danger:hover font:3xl font:5xl@sm font:heavy m:2xl text-center'}
     </Class2CSS>
 </details>
 
@@ -43,10 +43,10 @@ It can begin with native CSS wording, then become shorter as the meaning becomes
 <div class="text-align:center">
 
 <!-- Context-aware shorthand -->
-<div class="text:center">
+<div class="text-center">
 
 <!-- Abbreviation -->
-<div class="text:center">
+<div class="text-center">
 ```
 
 It can express common CSS values without ceremony:
@@ -305,7 +305,7 @@ Assuming the card has become reusable, define it as a [component class](/guide/r
     }
 
     card-image {
-        @compose object:cover w:35x aspect-ratio:16/9;
+        @compose object-cover w:35x aspect-ratio:16/9;
     }
 
     .card-content {
@@ -365,8 +365,8 @@ When the viewport is at least `80rem`, both media queries match. Because the `64
 
 (o) Let Master CSS generate the correct priority order.
 ```html
-<!-- @MARK text:right@md text:center@lg -->
-<h1 class="text:right@md text:center@lg">
+<!-- @MARK text-right@md text-center@lg -->
+<h1 class="text-right@md text-center@lg">
 ```
 
 No matter how you order the classes in markup, Master CSS emits the media rules in the order that matches the intended cascade:

@@ -133,6 +133,7 @@ export type MasterCSSPlanNativeValueNamespaces = MasterCSSPlanNativeValueNamespa
 
 export type MasterCSSPlanUtilityMatcher =
     | { type: 'static'; name: string }
+    | { type: 'pattern'; prefix: string; values: string[] }
     | { type: 'key'; keys: string[] }
     | { type: 'variable'; keys: string[]; segments?: MasterCSSPlanUtilityMatcherValueSegments }
     | { type: 'value'; keys: string[]; segments?: MasterCSSPlanUtilityMatcherValueSegments }
@@ -144,6 +145,7 @@ export interface MasterCSSPlanUtilityBuckets {
     variable?: number[]
     value?: number[]
     key?: number[]
+    pattern?: number[]
     arbitrary?: number[]
 }
 

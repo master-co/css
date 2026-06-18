@@ -163,6 +163,7 @@ function createRuntimeUtilityBuckets(
         ...(defaultBuckets?.variable?.length ? { variable: [...defaultBuckets.variable] } : {}),
         ...(defaultBuckets?.value?.length ? { value: [...defaultBuckets.value] } : {}),
         ...(defaultBuckets?.key?.length ? { key: [...defaultBuckets.key] } : {}),
+        ...(defaultBuckets?.pattern?.length ? { pattern: [...defaultBuckets.pattern] } : {}),
         ...(defaultBuckets?.arbitrary?.length ? { arbitrary: [...defaultBuckets.arbitrary] } : {})
     }
     utilities.forEach((utility, relativeIndex) => {
@@ -179,6 +180,9 @@ function createRuntimeUtilityBuckets(
                     break
                 case 'key':
                     utilityBuckets.key = addBucketIndex(utilityBuckets.key, index)
+                    break
+                case 'pattern':
+                    utilityBuckets.pattern = addBucketIndex(utilityBuckets.pattern, index)
                     break
                 default:
                     utilityBuckets.arbitrary = addBucketIndex(utilityBuckets.arbitrary, index)

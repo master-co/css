@@ -11,7 +11,7 @@ export async function generateStaticParams() {
 
 export default function Page() {
     return (
-        <Body className="bg:cover bg:linear-gradient(ground,base|100vh,base) bg:no-repeat">
+        <Body className="bg-cover bg:linear-gradient(ground,base|100vh,base) bg-no-repeat">
             <DocHeader stickable />
         </Body>
     );

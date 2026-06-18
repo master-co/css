@@ -2,6 +2,7 @@ import UtilityType from 'shared/utility-type'
 import type {
     CSSDirectivePlanInput as SharedCSSDirectivePlanInput,
     CSSDirectiveUtilityDefinition,
+    CSSDirectiveUtilityPatternDefinition,
     CSSDirectiveUtilityRuleDefinition,
     CSSDirectiveVariableDefinition
 } from 'shared/css-directives'
@@ -11,6 +12,7 @@ import type {
     MasterCSSPlanAtRule,
     MasterCSSPlanAtRuleNode,
     MasterCSSPlanAtRules,
+    MasterCSSPlanCSSDeclarationPrimitive,
     MasterCSSPlanCSSDeclarations,
     MasterCSSPlanNativeValueNamespace,
     MasterCSSPlanNativeValueNamespaces,
@@ -19,6 +21,7 @@ import type {
     MasterCSSPlanUtility,
     MasterCSSPlanUtilityBuckets,
     MasterCSSPlanUtilityRule,
+    MasterCSSPlanUtilityMatcher,
     MasterCSSPlanVariableNumericValue,
     MasterCSSPlanVariable,
     MasterCSSPlanVariables,
@@ -416,7 +419,16 @@ function cloneDeclarations<T extends MasterCSSPlanCSSDeclarations>(declarations:
         : { ...(declarations as object) } as T
 }
 
+function assertNoValuePlaceholder(declarations: CSSDirectiveUtilityRuleDefinition['declarations']) {
+    for (const property in declarations) {
+        if (declarations[property].includes('--value')) {
+            throw new Error('--value() is only supported inside managed enum pattern declarations')
+        }
+    }
+}
+
 function compileUtilityRule(rule: CSSDirectiveUtilityRuleDefinition): MasterCSSPlanUtilityRule {
+    assertNoValuePlaceholder(rule.declarations)
     return {
         declarations: cloneDeclarations(rule.declarations),
         ...(rule.atRules?.length ? { atRules: [...rule.atRules] } : {}),
@@ -424,10 +436,91 @@ function compileUtilityRule(rule: CSSDirectiveUtilityRuleDefinition): MasterCSSP
     }
 }
 
+const VALUE_PLACEHOLDER_FUNCTION = '--value()'
+const VALUE_PLACEHOLDER_CALL = /--value\s*\(([^)]*)\)/g
+
+function compilePatternDeclarationValue(value: string): MasterCSSPlanCSSDeclarationPrimitive | MasterCSSPlanCSSDeclarationPrimitive[] {
+    if (!value.includes('--value')) return value
+
+    const parts: (string | null)[] = []
+    let lastIndex = 0
+    let matched = false
+    VALUE_PLACEHOLDER_CALL.lastIndex = 0
+    for (const match of value.matchAll(VALUE_PLACEHOLDER_CALL)) {
+        matched = true
+        if (match[1].trim()) {
+            throw new Error('--value() does not accept arguments')
+        }
+        if (match.index > lastIndex) parts.push(value.slice(lastIndex, match.index))
+        parts.push(null)
+        lastIndex = match.index + match[0].length
+    }
+
+    if (!matched || value.slice(lastIndex).includes('--value')) {
+        throw new Error('--value() must be called as --value()')
+    }
+
+    if (lastIndex < value.length) parts.push(value.slice(lastIndex))
+    return value === VALUE_PLACEHOLDER_FUNCTION ? null : parts
+}
+
+function compilePatternDeclarations(declarations: CSSDirectiveUtilityRuleDefinition['declarations']): MasterCSSPlanCSSDeclarations {
+    const compiled: Record<string, MasterCSSPlanCSSDeclarationPrimitive | MasterCSSPlanCSSDeclarationPrimitive[]> = {}
+    for (const property in declarations) {
+        compiled[property] = compilePatternDeclarationValue(declarations[property])
+    }
+    return compiled
+}
+
+function compilePatternUtilityRule(rule: CSSDirectiveUtilityRuleDefinition): MasterCSSPlanUtilityRule {
+    return {
+        declarations: compilePatternDeclarations(rule.declarations),
+        ...(rule.atRules?.length ? { atRules: [...rule.atRules] } : {}),
+        ...(rule.selector && rule.selector !== '&' ? { selector: rule.selector } : {})
+    }
+}
+
+function getPatternMatcher(pattern: CSSDirectiveUtilityPatternDefinition): MasterCSSPlanUtilityMatcher {
+    return {
+        type: 'pattern',
+        prefix: pattern.prefix,
+        values: [...pattern.values]
+    }
+}
+
 function compileUtility(definition: CSSDirectiveUtilityDefinition, order: number): MasterCSSPlanUtility {
+    if (definition.type === 'pattern') {
+        if (!definition.pattern) {
+            throw new Error('Managed enum pattern definition is missing a pattern')
+        }
+        const rules: MasterCSSPlanUtilityRule[] = []
+        if (definition.declarations) {
+            rules.push({
+                declarations: compilePatternDeclarations(definition.declarations),
+                ...(definition.atRules?.length ? { atRules: [...definition.atRules] } : {})
+            })
+        }
+        if (definition.rules?.length) {
+            rules.push(...definition.rules.map(compilePatternUtilityRule))
+        }
+        return {
+            id: definition.name,
+            name: definition.name,
+            type: UtilityType.Normal,
+            order,
+            layer: definition.layer || 'utilities',
+            emit: {
+                type: 'static',
+                rules
+            },
+            matchers: [getPatternMatcher(definition.pattern)]
+        }
+    }
+
     const name = definition.name.startsWith('.') ? definition.name.slice(1) : definition.name
     const rules: MasterCSSPlanUtilityRule[] = []
     if (definition.declarations) {
+        assertNoValuePlaceholder(definition.declarations)
         rules.push({
             declarations: cloneDeclarations(definition.declarations),
             ...(definition.atRules?.length ? { atRules: [...definition.atRules] } : {})
@@ -480,6 +573,9 @@ function compileUtilityBuckets(utilities: MasterCSSPlanUtility[] | undefined): M
                     break
                 case 'key':
                     buckets.key = addBucketIndex(buckets.key, index)
+                    break
+                case 'pattern':
+                    buckets.pattern = addBucketIndex(buckets.pattern, index)
                     break
                 default:
                     buckets.arbitrary = addBucketIndex(buckets.arbitrary, index)

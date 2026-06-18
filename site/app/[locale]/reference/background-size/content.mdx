@@ -3,10 +3,10 @@
 
 ## Examples
 ### Cover a frame
-Use `bg:cover` when the background image should fill the element and may be cropped.
+Use `bg-cover` when the background image should fill the element and may be cropped.
 ```html
-<!-- @MARK bg:url(/hero.jpg) --><!-- @MARK bg:cover -->
-<section class="bg:url(/hero.jpg) bg:cover">
+<!-- @MARK bg:url(/hero.jpg) --><!-- @MARK bg-cover -->
+<section class="bg:url(/hero.jpg) bg-cover">
     ...
 </section>
 ```
@@ -14,15 +14,15 @@ Use `bg:cover` when the background image should fill the element and may be crop
 <details>
     <summary>Generated CSS</summary>
     <Class2CSS>
-        {['bg:url(/hero.jpg)', 'bg:cover']}
+        {['bg:url(/hero.jpg)', 'bg-cover']}
     </Class2CSS>
 </details>
 
 ### Contain an image
-Use `bg:contain` when the entire background image should remain visible.
+Use `bg-contain` when the entire background image should remain visible.
 ```html
-<!-- @MARK bg:contain --><!-- @MARK bg:no-repeat -->
-<div class="bg:contain bg:no-repeat">...</div>
+<!-- @MARK bg-contain --><!-- @MARK bg-no-repeat -->
+<div class="bg-contain bg-no-repeat">...</div>
 ```
 
 ### Use measured sizes
@@ -35,7 +35,7 @@ Use `background-size:*` for measured or multi-layer sizes.
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="bg:contain bg:cover@sm bg:auto@print">...</div>
+<div class="bg-contain bg-cover@sm bg-auto@print">...</div>
 ```
 
 Pair size with [background-position](/reference/background-position) to control the crop.

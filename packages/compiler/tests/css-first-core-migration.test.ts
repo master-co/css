@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest'
 import { createCSS } from '@master/css-engine'
-import { compileCSSPlan } from '../src'
+import { compileCSS, compileCSSPlan } from '../src'
 import defaultPlanJSON from '@master/css-preset/default-plan.json' with { type: 'json' }
 import type { MasterCSSPlan } from 'shared/master-css-plan'
 
@@ -91,6 +91,110 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
         expect(css.componentsLayer.text).toContain('.btn\\:interactive:is(:hover,:focus-visible){display:inline-flex;color:var(--color-primary)}')
         expect(css.utilitiesLayer.text).toContain('.content-auto{content-visibility:auto}')
         expect(css.utilitiesLayer.text).toContain('.m\\:card{margin:calc(var(--spacing-card) / 16 * 1rem)}')
+    })
+
+    test('lowers managed enum patterns without replacing static utility precedence', () => {
+        const { plan } = compileCSSPlan(`
+            @utilities {
+                text-<left,right,center> {
+                    text-align: --value();
+                }
+
+                n-<1,2> {
+                    margin: calc(--value() * 1px);
+                }
+
+                text-center {
+                    text-align: start;
+                }
+            }
+
+            @components {
+                badge-<success,danger> {
+                    color: --value();
+                }
+            }
+        `, {
+            basePlan: defaultPlan
+        })
+
+        expect(plan.utilityBuckets?.pattern?.length).toBeGreaterThan(0)
+        expect(plan.utilities?.find((utility) => utility.id === 'text-<left,right,center>')).toMatchObject({
+            matchers: [{
+                type: 'pattern',
+                prefix: 'text-',
+                values: ['left', 'right', 'center']
+            }]
+        })
+
+        const css = createCSS(plan)
+        expect(css.create('text-left')?.text).toBe('.text-left{text-align:left}')
+        expect(css.create('n-2')?.text).toBe('.n-2{margin:calc(2 * 1px)}')
+        expect(css.create('text-center')?.text).toBe('.text-center{text-align:start}')
+        expect(css.create('badge-success')?.text).toBe('.badge-success{color:success}')
+        expect(css.create('badge-success')?.layerName).toBe('components')
+    })
+
+    test('rejects unsupported managed enum pattern syntax', () => {
+        expect(() => compileCSSPlan(`
+            @utilities {
+                x-<> {
+                    color: --value();
+                }
+            }
+        `, { basePlan: defaultPlan })).toThrow('Managed enum pattern cannot be empty')
+
+        expect(() => compileCSSPlan(`
+            @utilities {
+                x-<a> {
+                    color: --value();
+                }
+            }
+        `, { basePlan: defaultPlan })).toThrow('Managed definitions only support enum patterns like text-<left,right>')
+
+        expect(() => compileCSSPlan(`
+            @utilities {
+                x-<a><b> {
+                    color: --value();
+                }
+            }
+        `, { basePlan: defaultPlan })).toThrow('Managed enum pattern must contain exactly one <...> segment')
+
+        expect(() => compileCSSPlan(`
+            @utilities {
+                font-<font-size> {
+                    font-size: --value();
+                }
+            }
+        `, { basePlan: defaultPlan })).toThrow('Managed definitions only support enum patterns like text-<left,right>')
+
+        expect(() => compileCSSPlan(`
+            @utilities {
+                x-<a,b> {
+                    color: --value(rem);
+                }
+            }
+        `, { basePlan: defaultPlan })).toThrow('--value() does not accept arguments')
+
+        expect(() => compileCSSPlan(`
+            @utilities {
+                text-center {
+                    text-align: --value();
+                }
+            }
+        `, { basePlan: defaultPlan })).toThrow('--value() is only supported inside managed enum pattern declarations')
+    })
+
+    test('does not consume @utility as a Master CSS directive', () => {
+        const result = compileCSS(`
+            @utility text-<left,right> {
+                text-align: --value();
+            }
+        `, {
+            preserveNativeCSS: false
+        })
+
+        expect(result.planInput.utilities).toBeUndefined()
     })
 
     test('lowers dark and light shorthand variant blocks like explicit variant blocks', () => {

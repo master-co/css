@@ -20,7 +20,7 @@ export default function Donors({ sponsorTiers, sponsorsOfLevel }: any) {
                             key={'sponsor-' + i}
                             alt={'sponsor-' + i}
                             src={eachSponsor.avatarUrl}
-                            className={`max-h: full object:contain${eachSponsorTier.height}`}
+                            className={`max-h: full object-contain${eachSponsorTier.height}`}
                         />
                     ))}
                 <Link className="app-object app-object-interactive full aspect-ratio:1/1 flex-col r:5" href="#become-a-sponsor">

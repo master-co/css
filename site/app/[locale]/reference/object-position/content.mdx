@@ -3,35 +3,35 @@
 
 ## Examples
 ### Center cropped media
-Use `object:center` to keep the center of an image visible when `object:cover` crops the edges.
+Use `object-center` to keep the center of an image visible when `object-cover` crops the edges.
 ```html
-<!-- @MARK object:center -->
-<img class="aspect-ratio:16/9 object:cover object:center" src="/images/photo.jpg" alt="Photo">
+<!-- @MARK object-center -->
+<img class="aspect-ratio:16/9 object-cover object-center" src="/images/photo.jpg" alt="Photo">
 ```
 
 <details>
     <summary>Generated CSS</summary>
     <Class2CSS>
-        {['object:center']}
+        {['object-center']}
     </Class2CSS>
 </details>
 
 ### Pin the top of an image
-Use `object:top` for portraits or screenshots where the important content is near the top.
+Use `object-top` for portraits or screenshots where the important content is near the top.
 ```html
-<!-- @MARK object:top -->
-<img class="aspect-ratio:4/3 object:cover object:top" src="/images/portrait.jpg" alt="Portrait">
+<!-- @MARK object-top -->
+<img class="aspect-ratio:4/3 object-cover object-top" src="/images/portrait.jpg" alt="Portrait">
 ```
 
 ### Use precise positions
 Use `object-position:*|*` when the focal point needs a custom x and y position.
 ```html
 <!-- @MARK object-position:50%|25% -->
-<img class="object:cover object-position:50%|25%" src="/images/scene.jpg" alt="Scene">
+<img class="object-cover object-position:50%|25%" src="/images/scene.jpg" alt="Scene">
 ```
 
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<img class="object:center:hover object:top@sm object-position:50%|50%@print" src="/images/photo.jpg" alt="">
+<img class="object-center:hover object-top@sm object-position:50%|50%@print" src="/images/photo.jpg" alt="">
 ```

@@ -4,7 +4,7 @@ import SyntaxTr from '~/site/components/SyntaxTr'
 import SyntaxPreview from './SyntaxPreview'
 
 export default () => {
-    const previewSyntax = 'text:left'
+    const previewSyntax = 'text-left'
     return (
         <>
             <SyntaxTable>

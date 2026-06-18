@@ -73,6 +73,13 @@ export function tokenizeClassToken(css: MasterCSS, token: string, offset: number
         return tokens
     }
 
+    if (rule.registeredUtility.matchers.some((matcher) => matcher.type === 'pattern')) {
+        const stateStart = token.length - (rule.stateToken?.length ?? 0)
+        pushHighlightToken(tokens, offset, stateStart, 'class', 'utility.static')
+        tokens.push(...tokenizeState(token, stateStart, offset))
+        return tokens
+    }
+
     tokenizeKey(tokens, token, offset, rule.keyToken)
     const valueStart = rule.keyToken?.length ?? Math.max(0, token.indexOf(rule.valueToken ?? ''))
     if (rule.valueToken) {

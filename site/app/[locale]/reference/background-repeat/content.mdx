@@ -3,10 +3,10 @@
 
 ## Examples
 ### Disable tiling
-Use `bg:no-repeat` when a background image should render once.
+Use `bg-no-repeat` when a background image should render once.
 ```html
-<!-- @MARK bg:url(/hero.jpg) --><!-- @MARK bg:no-repeat -->
-<section class="bg:url(/hero.jpg) bg:no-repeat">
+<!-- @MARK bg:url(/hero.jpg) --><!-- @MARK bg-no-repeat -->
+<section class="bg:url(/hero.jpg) bg-no-repeat">
     ...
 </section>
 ```
@@ -14,15 +14,15 @@ Use `bg:no-repeat` when a background image should render once.
 <details>
     <summary>Generated CSS</summary>
     <Class2CSS>
-        {['bg:url(/hero.jpg)', 'bg:no-repeat']}
+        {['bg:url(/hero.jpg)', 'bg-no-repeat']}
     </Class2CSS>
 </details>
 
 ### Repeat on one axis
-Use `bg:repeat-x` or `bg:repeat-y` for stripes, dividers, and patterned backgrounds.
+Use `bg-repeat-x` or `bg-repeat-y` for stripes, dividers, and patterned backgrounds.
 ```html
-<!-- @MARK bg:repeat-x -->
-<div class="bg:repeat-x">...</div>
+<!-- @MARK bg-repeat-x -->
+<div class="bg-repeat-x">...</div>
 ```
 
 Use `background-repeat:*` for values that do not have a shortcut.
@@ -30,7 +30,7 @@ Use `background-repeat:*` for values that do not have a shortcut.
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="bg:no-repeat bg:repeat@sm bg:no-repeat@print">...</div>
+<div class="bg-no-repeat bg-repeat@sm bg-no-repeat@print">...</div>
 ```
 
-Most photographic backgrounds should use `bg:no-repeat`; repeating is mainly for patterns.
+Most photographic backgrounds should use `bg-no-repeat`; repeating is mainly for patterns.

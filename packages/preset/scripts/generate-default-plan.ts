@@ -1,7 +1,6 @@
 import { writeFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { compileCSSPlanFile } from '@master/css-compiler'
 import { stringifyMasterCSSPlanJSON } from 'shared/master-css-plan-json'
 import UtilityType from 'shared/utility-type'
 import functions from '../src/functions'
@@ -20,6 +19,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url))
 const packageRoot = resolve(__dirname, '..')
 const sourceFile = resolve(packageRoot, 'src/index.css')
 const outputFile = resolve(packageRoot, 'src/default-plan.json')
+const { compileCSSPlanFile } = await import(new URL('../../compiler/src/index.ts', import.meta.url).href) as typeof import('@master/css-compiler')
 function clone<T>(value: T): T {
     return JSON.parse(JSON.stringify(value)) as T
 }
@@ -68,6 +68,9 @@ function createUtilityBuckets(utilities: MasterCSSPlanUtility[] | undefined): Ma
                     break
                 case 'key':
                     buckets.key = addBucketIndex(buckets.key, index)
+                    break
+                case 'pattern':
+                    buckets.pattern = addBucketIndex(buckets.pattern, index)
                     break
                 default:
                     buckets.arbitrary = addBucketIndex(buckets.arbitrary, index)

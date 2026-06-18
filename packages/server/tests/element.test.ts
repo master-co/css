@@ -10,7 +10,7 @@ it('render elements', () => {
         '<div class="text-center"></div>',
         '<div class="bg:white"></div>'
     ].join(''), defaultPlan).html).toEqual([
-        '<style id="master">@layer utilities{.text-center{text-align:center}.bg\\:white{background-color:oklch(100% 0 none)}}</style>',
+        '<style id="master">@layer utilities{.bg\\:white{background-color:oklch(100% 0 none)}.text-center{text-align:center}}</style>',
         '<div class="text-center"></div>',
         '<div class="bg:white"></div>'
     ].join(''))

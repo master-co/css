@@ -14,7 +14,7 @@ export default function SponsorTiers() {
         {sponsorTiers.map((eachSponsorTier) => (
             <button key={eachSponsorTier.name} className="app-object app-object-interactive gap:20 p:25|30 r:5 flex-col@<lg" onClick={() => setSelectedTier(eachSponsorTier)}>
                 <div className="font:48">{eachSponsorTier.icon}</div>
-                <div className='flex:1 text:left'>
+                <div className='flex:1 text-left'>
                     <div className="text:16 fg:strong font:medium uppercase::first-letter">{eachSponsorTier.name}</div>
                     {eachSponsorTier.amount && (
                         <div className="text:14 font:bold">

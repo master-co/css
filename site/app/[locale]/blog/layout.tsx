@@ -11,7 +11,7 @@ export default async function Layout({ children }: {
     children: React.ReactNode
 }) {
     return (
-        <Body className="bg:cover bg:linear-gradient(ground,base|100vh,base) bg:no-repeat">
+        <Body className="bg-cover bg:linear-gradient(ground,base|100vh,base) bg-no-repeat">
             <DocHeader stickable />
             {children}
         </Body>

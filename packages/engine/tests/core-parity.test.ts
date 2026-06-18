@@ -456,7 +456,6 @@ describe.concurrent('plan-driven layer and lifecycle parity', () => {
             'block',
             'fixed',
             'round',
-            'text-center',
             'b:0',
             'm:0',
             'p:0',
@@ -473,7 +472,8 @@ describe.concurrent('plan-driven layer and lifecycle parity', () => {
             'pb:0',
             'pl:0',
             'pr:0',
-            'pt:0'
+            'pt:0',
+            'text-center'
         ])
     })
 

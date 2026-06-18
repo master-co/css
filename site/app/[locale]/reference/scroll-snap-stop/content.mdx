@@ -3,10 +3,10 @@
 
 ## Examples
 ### Force a snap stop
-Use `scroll-snap-stop:always` on an important snap item when fast scrolling should not skip over it.
+Use `snap-always` on an important snap item when fast scrolling should not skip over it.
 ```html
-<!-- @MARK scroll-snap-stop:always -->
-<section class="scroll-snap:start scroll-snap-stop:always">
+<!-- @MARK snap-always -->
+<section class="snap-start snap-always">
     Required step
 </section>
 ```
@@ -14,15 +14,15 @@ Use `scroll-snap-stop:always` on an important snap item when fast scrolling shou
 <details>
     <summary>Generated CSS</summary>
     <Class2CSS>
-        {['scroll-snap-stop:always']}
+        {['snap-always']}
     </Class2CSS>
 </details>
 
 ### Keep normal scroll momentum
-Use `scroll-snap-stop:normal` for ordinary items where the browser can skip a snap point during fast scrolling.
+Use `snap-normal` for ordinary items where the browser can skip a snap point during fast scrolling.
 ```html
-<!-- @MARK scroll-snap-stop:normal -->
-<section class="scroll-snap:start scroll-snap-stop:normal">
+<!-- @MARK snap-normal -->
+<section class="snap-start snap-normal">
     Optional step
 </section>
 ```
@@ -30,7 +30,7 @@ Use `scroll-snap-stop:normal` for ordinary items where the browser can skip a sn
 ### Use sparingly
 Reserve `always` for onboarding steps, paged experiences, or essential panels. Too many forced stops can make scroll feel heavy.
 ```html
-<section class="scroll-snap:start scroll-snap-stop:always">
+<section class="snap-start snap-always">
     Confirm details
 </section>
 ```
@@ -38,5 +38,5 @@ Reserve `always` for onboarding steps, paged experiences, or essential panels. T
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<section class="scroll-snap-stop:normal scroll-snap-stop:always@sm scroll-snap-stop:normal@print">...</section>
+<section class="snap-normal snap-always@sm snap-normal@print">...</section>
 ```

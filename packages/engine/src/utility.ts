@@ -9,7 +9,7 @@ import type { NumberValueComponent, ValueComponent, VariableValueComponent, Vari
 import { AtRule, AtRuleNode, AtRuleStringNode, AtRuleValueNode, } from './utils/parse-at'
 import parseValue from './utils/parse-value'
 import parseAt from './utils/parse-at'
-import type { MasterCSSPlanAtIdentifier, MasterCSSPlanUtilityLayerName, MasterCSSPlanVariantBranch, MasterCSSPlanVariantToken } from 'shared/master-css-plan'
+import type { MasterCSSPlanAtIdentifier, MasterCSSPlanUtilityLayerName, MasterCSSPlanUtilityMatcher, MasterCSSPlanVariantBranch, MasterCSSPlanVariantToken } from 'shared/master-css-plan'
 import type { CompiledUtility } from './core'
 import generateAt from './utils/generate-at'
 import parseSelector, { SelectorNode } from './utils/parse-selector'
@@ -39,6 +39,33 @@ type ResolvedVariableAlias = {
 
 function isVariantToken(value: string): value is MasterCSSPlanVariantToken {
     return /^:{1,2}[-_a-zA-Z][-_a-zA-Z0-9]*$/.test(value) || /^@[-_a-zA-Z][-_a-zA-Z0-9]*$/.test(value)
+}
+
+function matchesPatternUtilityName(className: string, name: string) {
+    if (!className.startsWith(name)) return false
+    const next = className[name.length]
+    return next === undefined || next === '!' || next === '*' || next === '>' || next === '+'
+        || next === '~' || next === ':' || next === '[' || next === '@' || next === '_' || next === '.'
+}
+
+function getPatternUtilityMatch(className: string, matcher: MasterCSSPlanUtilityMatcher) {
+    if (matcher.type !== 'pattern') return
+    for (const value of matcher.values) {
+        const name = matcher.prefix + value
+        if (matchesPatternUtilityName(className, name)) {
+            return {
+                value,
+                length: name.length
+            }
+        }
+    }
+}
+
+function getUtilityPatternMatch(className: string, utility: CompiledUtility) {
+    for (const matcher of utility.matchers) {
+        const match = getPatternUtilityMatch(className, matcher)
+        if (match) return match
+    }
 }
 
 function composeSelectorTemplate(current: string | undefined, next: string | undefined) {
@@ -222,13 +249,18 @@ export class Utility {
         this.type = type!
 
         // 1. value / selectorToken
-        let stateToken: string
+        let stateToken = ''
 
         if (this.type === UtilityType.Static) {
             stateToken = name.slice(id.length - 1)
         } else {
             let valueToken: string | undefined
-            if (id.endsWith('()')) {
+            const patternMatch = getUtilityPatternMatch(name, registeredUtility)
+            if (patternMatch) {
+                valueToken = patternMatch.value
+                stateToken = name.slice(patternMatch.length)
+                this.keyToken = name.slice(0, patternMatch.length - patternMatch.value.length)
+            } else if (id.endsWith('()')) {
                 valueToken = name
             } else if (id === 'group') {
                 valueToken = name
@@ -242,7 +274,11 @@ export class Utility {
                 registeredUtility.includeAnimations ? Array.from(this.css.animations.keys()) : []
             )
             this.valueToken = valueToken.slice(0, parsedValueIndex)
-            stateToken = valueToken.slice(parsedValueIndex)
+            if (!patternMatch) {
+                stateToken = valueToken.slice(parsedValueIndex)
+            } else if (parsedValueIndex !== valueToken.length) {
+                stateToken = valueToken.slice(parsedValueIndex) + stateToken
+            }
         }
 
         // 2. !important
@@ -307,10 +343,21 @@ export class Utility {
         if (this.valueComponents) {
             this.valueComponents = this.applyTransform(this.valueComponents)
             newValue = this.resolveValue(this.valueComponents, unit || '', [], false)
-            const declarations = this.emitDynamicDeclarations(newValue)
-            this.declarations = declarations
-            if (declarations && registeredUtility.atRules?.length) {
-                this.declarationRules = [{ declarations, atRules: registeredUtility.atRules }]
+            const dynamicDeclarationRules = this.emitDynamicDeclarationRules(newValue)
+            if (dynamicDeclarationRules) {
+                this.declarations = dynamicDeclarationRules[0]?.declarations
+                if (
+                    dynamicDeclarationRules.length > 1
+                    || dynamicDeclarationRules.some(({ atRules, selector }) => atRules?.length || selector)
+                ) {
+                    this.declarationRules = dynamicDeclarationRules
+                }
+            } else {
+                const declarations = this.emitDynamicDeclarations(newValue)
+                this.declarations = declarations
+                if (declarations && registeredUtility.atRules?.length) {
+                    this.declarationRules = [{ declarations, atRules: registeredUtility.atRules }]
+                }
             }
         } else {
             const declarationRules = registeredUtility.emit.type === 'static'
@@ -453,6 +500,34 @@ export class Utility {
             variable,
             token: valueComponent.token
         } satisfies VariableValueComponent]
+    }
+
+    resolveDynamicDeclarationValue(value: string | number | null | (string | number | null)[], newValue: string) {
+        if (value === null) return newValue
+        return Array.isArray(value)
+            ? value.map((eachValue) => eachValue === null ? newValue : eachValue).join('')
+            : value
+    }
+
+    resolveDynamicDeclarations(declarations: PropertiesHyphen, newValue: string) {
+        const resolved: Record<string, string | number> = {}
+        for (const propertyName in declarations) {
+            resolved[propertyName] = this.resolveDynamicDeclarationValue(
+                declarations[propertyName as keyof PropertiesHyphen] as string | number | null | (string | number | null)[],
+                newValue
+            )
+        }
+        return resolved as PropertiesHyphen
+    }
+
+    emitDynamicDeclarationRules(newValue: string) {
+        const emit = this.registeredUtility.emit
+        if (emit.type !== 'static') return
+        return emit.rules.map(({ declarations, atRules, selector }) => ({
+            declarations: this.resolveDynamicDeclarations(declarations as PropertiesHyphen, newValue),
+            atRules,
+            selector
+        }))
     }
 
     emitDynamicDeclarations(newValue: string): PropertiesHyphen | undefined {

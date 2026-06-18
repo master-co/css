@@ -222,17 +222,37 @@ Defines managed component classes in the `components` layer.
 ```
 
 ### `@utilities`
-Defines managed custom utility classes in the `utilities` layer. Utilities still win over components because `@master/css/base.css` declares `@layer theme, base, defaults, components, utilities;`.
+Defines managed utility classes in the `utilities` layer. Utilities still win over components because `@master/css/base.css` declares `@layer theme, base, defaults, components, utilities;`.
 
 ```css
 @utilities {
     content-auto {
         content-visibility: auto;
     }
+
+    text-<left,center,right,start,end,justify> {
+        text-align: --value();
+    }
+
+    bg-<cover,contain,auto> {
+        background-size: --value();
+    }
 }
 ```
 
-Managed definitions accept native declarations, `@compose`, nested selectors, native nested at-rules, and `@variant` condition blocks.
+Managed definitions accept native declarations, `@compose`, nested selectors, native nested at-rules, and `@variant` condition blocks. Entry names can be static bare identifiers like `content-auto` or enum patterns like `text-<left,center,right>`.
+
+Enum patterns require exactly one `<...>` segment with at least two comma-separated values. They do not define theme namespace patterns, so token and shorthand classes keep using the colon value pipeline:
+
+```txt
+font:sm
+font:16
+m:sm|md
+m:sm|-md
+bg:#fff
+```
+
+`--value()` accepts no arguments and is only valid inside managed enum pattern declarations.
 
 For abstraction guidance, see [Reusing styles](/guide/reusing-styles).
 

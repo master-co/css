@@ -76,6 +76,10 @@ function addUtilityBucketIndexes(
                     buckets.key ??= []
                     if (!buckets.key.includes(utilityIndex)) buckets.key.push(utilityIndex)
                     break
+                case 'pattern':
+                    buckets.pattern ??= []
+                    if (!buckets.pattern.includes(utilityIndex)) buckets.pattern.push(utilityIndex)
+                    break
                 default:
                     buckets.arbitrary ??= []
                     if (!buckets.arbitrary.includes(utilityIndex)) buckets.arbitrary.push(utilityIndex)

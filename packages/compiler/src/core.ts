@@ -10,6 +10,7 @@ import {
     type CSSDirectiveResult,
     type CSSDirectiveSourceReference,
     type CSSDirectiveStyleDefinition,
+    type CSSDirectiveUtilityDefinition,
     type CSSDirectiveVariableValue
 } from 'shared/css-directives'
 import type {
@@ -27,8 +28,12 @@ import {
     collectCSSDirectiveRanges,
     collectMasterCSSClassListTokenRanges,
     createSourceLocationResolver,
+    findCSSBlockEnd,
+    findCSSClosingQuote,
     findCSSStatementEnd,
+    replaceSourceRanges,
     removeSourceRanges,
+    skipCSSWhitespace,
     type CSSDirectiveRuleRange
 } from '@master/css-lexer'
 import {
@@ -1598,6 +1603,213 @@ function parseThemeRule(rule: any, parsed: ParsedDirectives) {
     }
 }
 
+function parseManagedEnumPatternName(source: string) {
+    const pattern = source.trim()
+    if (!pattern) {
+        throw new Error('Managed enum pattern requires a name')
+    }
+
+    const segments = [...pattern.matchAll(/<([^<>]*)>/g)]
+    if (segments.length !== 1) {
+        throw new Error('Managed enum pattern must contain exactly one <...> segment')
+    }
+
+    const [segment] = segments
+    const segmentStart = segment.index
+    const segmentEnd = segmentStart + segment[0].length
+    if (pattern.slice(0, segmentStart).includes('<') || pattern.slice(segmentEnd).includes('>')) {
+        throw new Error('Managed enum pattern must contain exactly one <...> segment')
+    }
+
+    const prefix = pattern.slice(0, segmentStart)
+    const suffix = pattern.slice(segmentEnd)
+    if (!prefix || suffix) {
+        throw new Error('Managed enum pattern must use a prefix before <...> and no suffix')
+    }
+
+    const rawValues = segment[1].trim()
+    if (!rawValues) {
+        throw new Error('Managed enum pattern cannot be empty')
+    }
+    if (!rawValues.includes(',')) {
+        throw new Error('Managed definitions only support enum patterns like text-<left,right>')
+    }
+
+    const values = rawValues.split(',').map((value) => value.trim())
+    if (values.length < 2 || values.some((value) => !value)) {
+        throw new Error('Managed enum pattern requires at least two values')
+    }
+    for (const value of values) {
+        if (!/^-?[_a-zA-Z0-9][-_a-zA-Z0-9]*$/.test(value)) {
+            throw new Error(`Invalid managed enum value: ${value}`)
+        }
+    }
+
+    return {
+        name: pattern,
+        pattern: {
+            prefix,
+            values
+        }
+    }
+}
+
+function parseManagedEnumPatternNameIfNeeded(source: string) {
+    return source.includes('<') || source.includes('>')
+        ? parseManagedEnumPatternName(source)
+        : undefined
+}
+
+function ensureUtilityDefinitionRules(definition: CSSDirectiveUtilityDefinition) {
+    if (!definition.declarations) return
+    const declarations = definition.declarations
+    delete definition.declarations
+    const atRules = definition.atRules
+    delete definition.atRules
+    definition.rules ??= []
+    definition.rules.push({
+        declarations,
+        ...(atRules?.length ? { atRules: [...atRules] } : {})
+    })
+}
+
+function pushUtilityDefinitionRule(
+    definition: CSSDirectiveUtilityDefinition,
+    declarations: Record<string, string>,
+    selector = '&',
+    atRules: string[] = []
+) {
+    if (!Object.keys(declarations).length) return
+    const rule = {
+        declarations,
+        ...(selector !== '&' ? { selector } : {}),
+        ...(atRules.length ? { atRules: [...atRules] } : {})
+    }
+    if (!definition.declarations && !definition.rules?.length && !rule.selector && !rule.atRules) {
+        definition.declarations = declarations
+        return
+    }
+    ensureUtilityDefinitionRules(definition)
+    definition.rules ??= []
+    definition.rules.push(rule)
+}
+
+function parseManagedPatternStyleDefinitionBody(
+    parsed: ParsedDirectives,
+    definition: CSSDirectiveUtilityDefinition,
+    items: StyleRuleBodyItem[],
+    directiveName: ManagedDefinitionDirectiveName,
+    selectors: string[] = ['&'],
+    atRules: string[] = []
+) {
+    for (const item of items) {
+        if (item.type === 'declarations') {
+            for (const selector of selectors) {
+                pushUtilityDefinitionRule(definition, item.declarations, selector, atRules)
+            }
+            continue
+        }
+
+        if (item.type === 'compose') {
+            throw new CSSDirectiveError('compose-placement', `@compose is not supported inside managed enum pattern definitions`, item.directiveSource)
+        }
+
+        parseManagedPatternChildRule(item.rule, parsed, definition, directiveName, selectors, atRules)
+    }
+}
+
+function parseManagedPatternChildRule(
+    child: Rule,
+    parsed: ParsedDirectives,
+    definition: CSSDirectiveUtilityDefinition,
+    directiveName: ManagedDefinitionDirectiveName,
+    selectors: string[] = ['&'],
+    atRules: string[] = []
+) {
+    if (child.type === 'layer-block') {
+        throw new Error(`Nested @layer blocks are not allowed inside @${directiveName}`)
+    }
+
+    assertNotSlotRule(child)
+
+    const masterVariantBlock = parseMasterVariantBlock(child)
+    if (masterVariantBlock) {
+        parseManagedPatternStyleDefinitionBody(
+            parsed,
+            definition,
+            collectDirectiveStyleRuleBody(EMPTY_DECLARATION_BLOCK, masterVariantBlock.rules, parsed),
+            directiveName,
+            selectors,
+            [...atRules, createCSSDirectiveVariantReference(masterVariantBlock.token)]
+        )
+        return
+    }
+
+    const nestedAtRuleChildren = getNestedAtRuleChildren(child)
+    if (nestedAtRuleChildren) {
+        const atRule = formatNestedAtRule(child)
+        if (!atRule) {
+            throw new Error(`Unsupported nested at-rule inside @${directiveName}`)
+        }
+        parseManagedPatternStyleDefinitionBody(
+            parsed,
+            definition,
+            collectDirectiveStyleRuleBody(EMPTY_DECLARATION_BLOCK, nestedAtRuleChildren, parsed),
+            directiveName,
+            selectors,
+            [...atRules, atRule]
+        )
+        return
+    }
+
+    if (child.type === 'style') {
+        parseManagedPatternStyleDefinitionBody(
+            parsed,
+            definition,
+            collectDirectiveStyleRule(child, parsed),
+            directiveName,
+            combineStyleSelectorLists(selectors, child.value.selectors),
+            atRules
+        )
+        return
+    }
+
+    const compose = parseComposeRule(child, parsed)
+    if (compose) {
+        throw new CSSDirectiveError('compose-placement', `@compose is not supported inside managed enum pattern definitions`, compose.directiveSource)
+    }
+    if (child.type === 'keyframes') {
+        throw new Error(`@keyframes is not allowed inside @${directiveName}. Move managed animation definitions to top-level @theme.`)
+    }
+    throw new Error(`Managed enum pattern definitions only accept declarations, nested selectors, and nested at-rules`)
+}
+
+function parseManagedPatternDefinitionRule(
+    child: any,
+    parsed: ParsedDirectives,
+    parsedPattern: ReturnType<typeof parseManagedEnumPatternName>,
+    atRules: string[],
+    layer: CSSDirectiveLayerName,
+    directiveName: ManagedDefinitionDirectiveName
+) {
+    const definition: CSSDirectiveUtilityDefinition = {
+        name: parsedPattern.name,
+        type: 'pattern',
+        layer,
+        pattern: parsedPattern.pattern
+    }
+    parseManagedPatternStyleDefinitionBody(
+        parsed,
+        definition,
+        collectDirectiveStyleRule(child, parsed),
+        directiveName,
+        ['&'],
+        atRules
+    )
+    parsed.planInput.utilities ??= []
+    parsed.planInput.utilities.push(definition)
+}
+
 function containsNativeStyleDirective(rule: Rule): boolean {
     if ((rule.type === 'unknown' || rule.type === 'custom') && (rule.value?.name === 'compose' || rule.value?.name === 'variant' || rule.value?.name === 'slot' || getMasterVariantShorthandToken(rule.value?.name))) {
         return true
@@ -1660,11 +1872,20 @@ function parseManagedDefinitionDirectiveChildRule(
         throw new Error('@keyframes is not allowed inside managed definition directives. Move managed animation definitions to top-level @theme.')
     }
     if (child.type === 'style') {
+        const selectorSource = createSelectorSourceReference(parsed, child)
+        const selectorText = selectorSource && parsed.source
+            ? parsed.source.slice(selectorSource.range.start, selectorSource.range.end).trim()
+            : ''
+        const parsedPattern = parseManagedEnumPatternNameIfNeeded(selectorText)
         const selectorDefinition = parseManagedDefinitionNameSelector(child.value.selectors)
         if (!selectorDefinition) {
             throw createManagedDefinitionNameError(child)
         }
-        selectorDefinition.source = createSelectorSourceReference(parsed, child)
+        if (parsedPattern) {
+            parseManagedPatternDefinitionRule(child, parsed, parsedPattern, atRules, layer, directiveName)
+            return
+        }
+        selectorDefinition.source = selectorSource
         parseStyleDefinitionBody(parsed, selectorDefinition, collectDirectiveStyleRule(child, parsed), atRules, layer)
         return
     }
@@ -1689,6 +1910,99 @@ function parseManagedDefinitionDirectiveRule(rule: any, parsed: ParsedDirectives
     }
 }
 
+function isManagedDefinitionDirectiveRange(range: CSSDirectiveRuleRange) {
+    return range.depth === 0
+        && (range.name === 'defaults' || range.name === 'components' || range.name === 'utilities')
+        && range.blockContentRange
+}
+
+function skipCSSWhitespaceAndComments(source: string, index: number, end: number) {
+    while (index < end) {
+        index = skipCSSWhitespace(source, index)
+        if (source[index] === '/' && source[index + 1] === '*') {
+            const close = source.indexOf('*/', index + 2)
+            index = close === -1 ? end : close + 2
+            continue
+        }
+        break
+    }
+    return index
+}
+
+function createManagedPatternNameMask(length: number) {
+    return 'm' + '_'.repeat(Math.max(0, length - 1))
+}
+
+function collectManagedPatternEntryNameMasks(
+    source: string,
+    start: number,
+    end: number,
+    replacements: ({ start: number, end: number, replacement: string })[]
+) {
+    let index = start
+    while (index < end) {
+        index = skipCSSWhitespaceAndComments(source, index, end)
+        if (index >= end) break
+
+        const char = source[index]
+        if (char === '"' || char === '\'') {
+            index = findCSSClosingQuote(source, index, char, end) + 1
+            continue
+        }
+
+        const statementEnd = findCSSStatementEnd(source, index)
+        if (char === '@') {
+            if (statementEnd.reason === 'block' && statementEnd.delimiterRange) {
+                const blockEnd = findCSSBlockEnd(source, statementEnd.delimiterRange.start)
+                collectManagedPatternEntryNameMasks(
+                    source,
+                    statementEnd.delimiterRange.start + 1,
+                    blockEnd === -1 ? end : Math.min(blockEnd, end),
+                    replacements
+                )
+                index = blockEnd === -1 ? end : blockEnd + 1
+                continue
+            }
+            index = Math.max(index + 1, statementEnd.end)
+            continue
+        }
+
+        if (statementEnd.reason === 'block' && statementEnd.delimiterRange) {
+            const entryNameRange = trimSourceRange(source, {
+                start: index,
+                end: statementEnd.delimiterRange.start
+            })
+            const entryName = source.slice(entryNameRange.start, entryNameRange.end)
+            if (parseManagedEnumPatternNameIfNeeded(entryName)) {
+                replacements.push({
+                    ...entryNameRange,
+                    replacement: createManagedPatternNameMask(entryNameRange.end - entryNameRange.start)
+                })
+            }
+            const blockEnd = findCSSBlockEnd(source, statementEnd.delimiterRange.start)
+            index = blockEnd === -1 ? end : blockEnd + 1
+            continue
+        }
+
+        index = Math.max(index + 1, statementEnd.end)
+    }
+}
+
+export function maskManagedPatternEntryNames(source: string) {
+    const replacements: ({ start: number, end: number, replacement: string })[] = []
+    for (const range of collectCSSDirectiveRanges(source)) {
+        if (!isManagedDefinitionDirectiveRange(range)) continue
+        if (!range.blockContentRange) continue
+        collectManagedPatternEntryNameMasks(
+            source,
+            range.blockContentRange.start,
+            range.blockContentRange.end,
+            replacements
+        )
+    }
+    return replaceSourceRanges(source, replacements)
+}
+
 export function compileCSS(source: string, options: CompileCSSOptions = {}): CompileCSSResult {
     const filename = options.from || 'master.css'
     const references = findCSSReferenceStatements(source, filename)
@@ -1710,7 +2024,7 @@ export function compileCSS(source: string, options: CompileCSSOptions = {}): Com
         : new Set(options.classes)
     parsed.extractionPolicy = collectStandaloneCSSDirectiveExtractionPolicy(sourceWithoutReferences, filename)
     validateComposeRanges(parsed)
-    const preprocessedSource = removeStandaloneCSSDirectives(sourceWithoutReferences, filename)
+    const preprocessedSource = maskManagedPatternEntryNames(removeStandaloneCSSDirectives(sourceWithoutReferences, filename))
     let ruleDepth = 0
     const transformed = getCSSTransform()({
         filename,

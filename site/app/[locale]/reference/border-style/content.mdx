@@ -3,10 +3,10 @@
 
 ## Examples
 ### Set border style
-Use `b:*` with a style keyword to set `border-style`.
+Use `b-solid`, `b-dashed`, and related short style utilities to set `border-style`.
 ```html
-<!-- @MARK b:solid -->
-<div class="b:1 b:solid">
+<!-- @MARK b-solid -->
+<div class="b:1 b-solid">
     ...
 </div>
 ```
@@ -14,28 +14,28 @@ Use `b:*` with a style keyword to set `border-style`.
 <details>
     <summary>Generated CSS</summary>
     <Class2CSS>
-        {['b:solid']}
+        {['b-solid']}
     </Class2CSS>
 </details>
 
 ### Use dashed or dotted borders
-Use `b:dashed` or `b:dotted` for separators, drop zones, and placeholder states.
+Use `b-dashed` or `b-dotted` for separators, drop zones, and placeholder states.
 ```html
-<!-- @MARK b:dashed -->
-<div class="b:1 b:dashed">Upload files</div>
+<!-- @MARK b-dashed -->
+<div class="b:1 b-dashed">Upload files</div>
 ```
 
 ### Remove border style
-Use `b:none` when a border rule should no longer render.
+Use `b-none` when a border rule should no longer render.
 ```html
-<!-- @MARK b:none -->
-<button class="b:none">...</button>
+<!-- @MARK b-none -->
+<button class="b-none">...</button>
 ```
 
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="b:solid b:dashed:hover b:none@print">...</div>
+<div class="b-solid b-dashed:hover b-none@print">...</div>
 ```
 
-Use side aliases such as `bt:solid` when only one side should change style.
+Use side aliases such as `bt-solid` when only one side should change style.

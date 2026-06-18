@@ -3,18 +3,18 @@
 
 ## Examples
 ### Snap on the horizontal axis
-Use `scroll-snap:x` on a horizontal scroll container. Add snap alignment to the children.
+Use `snap-x` on a horizontal scroll container. Add snap alignment to the children.
 ```html
-<!-- @MARK scroll-snap:x -->
-<div class="overflow-x:auto scroll-snap:x">
-    <article class="scroll-snap:start">One</article>
+<!-- @MARK snap-x -->
+<div class="overflow-x:auto snap-x">
+    <article class="snap-start">One</article>
 </div>
 ```
 
 <details>
     <summary>Generated CSS</summary>
     <Class2CSS>
-        {['scroll-snap:x']}
+        {['snap-x']}
     </Class2CSS>
 </details>
 
@@ -23,7 +23,7 @@ Use `scroll-snap-type:*|mandatory` when the container must settle on a snap poin
 ```html
 <!-- @MARK scroll-snap-type:y|mandatory -->
 <div class="overflow-y:auto scroll-snap-type:y|mandatory">
-    <section class="scroll-snap:start">Step</section>
+    <section class="snap-start">Step</section>
 </div>
 ```
 
@@ -39,5 +39,5 @@ Use `proximity` when snapping should help alignment without taking over every sc
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="scroll-snap:x scroll-snap-type:y|mandatory@sm scroll-snap-type:none@print">...</div>
+<div class="snap-x scroll-snap-type:y|mandatory@sm scroll-snap-type:none@print">...</div>
 ```

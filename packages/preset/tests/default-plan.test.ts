@@ -125,7 +125,7 @@ describe('@master/css-preset defaultPlan', () => {
         expect(sourceUtilities).toHaveLength(177)
         expect(sourceUtilities.some((utility) => Number(utility.type) === UtilityType.Static)).toBe(false)
         expect(Object.keys(functions)).toHaveLength(49)
-        expect(utilities).toHaveLength(448)
+        expect(utilities).toHaveLength(367)
         expect(utilities[0]?.order).toBe(utilities.length - 1)
         expect(utilities[utilities.length - 1]?.order).toBe(0)
         expect(plan).toEqual(defaultPlan)
@@ -160,7 +160,7 @@ describe('@master/css-preset defaultPlan', () => {
         expect(text).not.toContain('null')
     })
 
-    it('executes CSS-authored static utilities', () => {
+    it('executes CSS-authored static and enum pattern utilities', () => {
         const css = createCSS(defaultPlan)
 
         expect(css.create('block')?.text).toBe('.block{display:block}')
@@ -172,9 +172,24 @@ describe('@master/css-preset defaultPlan', () => {
         expect(css.create('bg-cover')?.text).toBe('.bg-cover{background-size:cover}')
         expect(css.create('object-cover')?.text).toBe('.object-cover{object-fit:cover}')
         expect(css.create('b-solid')?.text).toBe('.b-solid{border-style:solid}')
+        expect(css.create('b-groove')?.text).toBe('.b-groove{border-style:groove}')
         expect(css.create('bl-solid')?.text).toBe('.bl-solid{border-left-style:solid}')
+        expect(css.create('bl-outset')?.text).toBe('.bl-outset{border-left-style:outset}')
+        expect(css.create('font-sm')).toBeUndefined()
+        expect(css.create('m-md')).toBeUndefined()
         expect(css.create('sr-only')?.text).toContain('position:absolute')
         expect(css.create('sr-only')?.text).toContain('clip:rect(0,0,0,0)')
+
+        expect(defaultPlan.utilityBuckets?.pattern?.length).toBeGreaterThan(0)
+        expect(defaultPlan.utilities?.some((utility) => utility.id === '.text-center')).toBe(false)
+        expect(defaultPlan.utilities?.find((utility) => utility.id === 'text-<left,center,right,start,end,justify>'))
+            .toMatchObject({
+                matchers: [{
+                    type: 'pattern',
+                    prefix: 'text-',
+                    values: ['left', 'center', 'right', 'start', 'end', 'justify']
+                }]
+            })
     })
 
     it('removes fixed keyword value aliases while preserving raw ambiguous matches', () => {
@@ -187,7 +202,10 @@ describe('@master/css-preset defaultPlan', () => {
         expect(css.create('border-l-solid')).toBeUndefined()
         expect(css.create('bg:#fff')?.text).toBe('.bg\\:\\#fff{background-color:#fff}')
         expect(css.create('b:1')?.text).toBe('.b\\:1{border-width:0.0625rem}')
+        expect(css.create('font:sm')?.text).toBe('.font\\:sm{font-size:var(--font-size-sm)}')
         expect(css.create('font:16')?.text).toBe('.font\\:16{font-size:1rem}')
+        expect(css.create('m:sm|md')?.text).toBe('.m\\:sm\\|md{margin:var(--spacing-sm) var(--spacing-md)}')
+        expect(css.create('m:sm|-md')?.text).toBe('.m\\:sm\\|-md{margin:var(--spacing-sm) calc(var(--spacing-md) * -1)}')
         expect(css.create('text:2xl')?.text).toContain('font-size:var(--font-size-2xl)')
 
         for (const utility of defaultPlan.utilities || []) {

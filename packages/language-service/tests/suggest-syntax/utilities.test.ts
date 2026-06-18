@@ -8,8 +8,11 @@ it.concurrent('hints semantic static utilities', () => {
     expect(hint('bg-c')?.find(({ label }) => label === 'bg-cover')).toMatchObject({ label: 'bg-cover' })
     expect(hint('object-c')?.find(({ label }) => label === 'object-cover')).toMatchObject({ label: 'object-cover' })
     expect(hint('b-d')?.find(({ label }) => label === 'b-dashed')).toMatchObject({ label: 'b-dashed' })
+    expect(hint('b-g')?.find(({ label }) => label === 'b-groove')).toMatchObject({ label: 'b-groove' })
     expect(hint('bl-s')?.find(({ label }) => label === 'bl-solid')).toMatchObject({ label: 'bl-solid' })
     expect(hint('border-d')?.find(({ label }) => label === 'border-dashed')).toBeUndefined()
+    expect(hint('font-s')?.find(({ label }) => label === 'font-sm')).toBeUndefined()
+    expect(hint('m-m')?.find(({ label }) => label === 'm-md')).toBeUndefined()
 })
 test.concurrent('info', () => expect(hint('b')?.find(({ label }) => label === 'block')).toMatchObject({
     detail: 'display: block',

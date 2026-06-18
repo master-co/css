@@ -87,10 +87,10 @@ export default function DonationModal() {
 
     return donationOrder && <Modal backdropClick={() => setDonationOrder(null)} contentClass="max-w:320 p:80|30|30|30">
         <div className="abs round inset:0 mx:auto bg:surface h:128 translateY(-50%) w:128">
-            <Image className="rel round mx:auto object:contain top:2" width="124" height="124" src={donationOrder.avatar} alt="sponsor" />
+            <Image className="rel round mx:auto object-contain top:2" width="124" height="124" src={donationOrder.avatar} alt="sponsor" />
         </div>
-        <div className="font:24 font:bold text:center">{donationOrder.name || 'Unknown'}</div>
-        <p className="text:center">Thanks for your donation 🥳</p>
+        <div className="font:24 font:bold text-center">{donationOrder.name || 'Unknown'}</div>
+        <p className="text-center">Thanks for your donation 🥳</p>
 
         <ul>
             {donationOrder.tier && (

@@ -160,7 +160,8 @@ function cloneUtilityRule(rule: CSSDirectiveUtilityRuleDefinition): CSSDirective
 function cloneUtility(definition: InputUtilityDefinition): CSSDirectiveUtilityDefinition {
     return {
         ...definition,
-        type: 'static',
+        type: definition.type || 'static',
+        ...(definition.pattern ? { pattern: { prefix: definition.pattern.prefix, values: [...definition.pattern.values] } } : {}),
         ...(definition.declarations ? { declarations: { ...definition.declarations } } : {}),
         ...(definition.atRules?.length ? { atRules: [...definition.atRules] } : {}),
         ...(definition.rules?.length ? { rules: definition.rules.map(cloneUtilityRule) } : {})

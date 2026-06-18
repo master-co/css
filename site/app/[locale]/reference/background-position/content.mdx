@@ -3,10 +3,10 @@
 
 ## Examples
 ### Position a background image
-Use `bg:center`, `bg:top`, `bg:right`, `bg:bottom`, or `bg:left` to set `background-position`.
+Use `bg-center`, `bg-top`, `bg-right`, `bg-bottom`, or `bg-left` to set `background-position`.
 ```html
-<!-- @MARK bg:url(/hero.jpg) --><!-- @MARK bg:center -->
-<section class="bg:url(/hero.jpg) bg:center bg:cover">
+<!-- @MARK bg:url(/hero.jpg) --><!-- @MARK bg-center -->
+<section class="bg:url(/hero.jpg) bg-center bg-cover">
     ...
 </section>
 ```
@@ -14,7 +14,7 @@ Use `bg:center`, `bg:top`, `bg:right`, `bg:bottom`, or `bg:left` to set `backgro
 <details>
     <summary>Generated CSS</summary>
     <Class2CSS>
-        {['bg:url(/hero.jpg)', 'bg:center']}
+        {['bg:url(/hero.jpg)', 'bg-center']}
     </Class2CSS>
 </details>
 
@@ -28,7 +28,7 @@ Use `background-position:*` when you need two-value or measured positions.
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="bg:center bg:top@sm bg:center@print">...</div>
+<div class="bg-center bg-top@sm bg-center@print">...</div>
 ```
 
-Position changes are most visible when the image is larger than the background area or when `bg:cover` crops the image.
+Position changes are most visible when the image is larger than the background area or when `bg-cover` crops the image.

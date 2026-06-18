@@ -3,17 +3,17 @@
 
 ## Examples
 ### Clip overflowing inline text
-Use `text:clip` when overflowing inline content should be cut off without an ellipsis.
+Use `text-clip` when overflowing inline content should be cut off without an ellipsis.
 ```html
-<!-- @MARK text:clip -->
-<span class="text:clip">Long label</span>
+<!-- @MARK text-clip -->
+<span class="text-clip">Long label</span>
 ```
 
 ### Show an ellipsis
-Use `text:ellipsis` with `overflow:hidden`, `white-space:nowrap`, and a constrained width.
+Use `text-ellipsis` with `overflow:hidden`, `white-space:nowrap`, and a constrained width.
 ```html
-<!-- @MARK w:40x --><!-- @MARK overflow:hidden --><!-- @MARK white-space:nowrap --><!-- @MARK text:ellipsis -->
-<span class="w:40x overflow:hidden white-space:nowrap text:ellipsis">
+<!-- @MARK w:40x --><!-- @MARK overflow:hidden --><!-- @MARK white-space:nowrap --><!-- @MARK text-ellipsis -->
+<span class="w:40x overflow:hidden white-space:nowrap text-ellipsis">
     quarterly-roadmap-final-version.pdf
 </span>
 ```
@@ -21,7 +21,7 @@ Use `text:ellipsis` with `overflow:hidden`, `white-space:nowrap`, and a constrai
 <details>
     <summary>Generated CSS</summary>
     <Class2CSS>
-        {['w:40x', 'overflow:hidden', 'white-space:nowrap', 'text:ellipsis']}
+        {['w:40x', 'overflow:hidden', 'white-space:nowrap', 'text-ellipsis']}
     </Class2CSS>
 </details>
 
@@ -30,10 +30,10 @@ Use `text:ellipsis` with `overflow:hidden`, `white-space:nowrap`, and a constrai
 ### Use in flex rows
 In flex or grid children, add `min-w:0` to the shrinking text region so the ellipsis can actually engage.
 ```html
-<!-- @MARK flex --><!-- @MARK min-w:0 --><!-- @MARK text:ellipsis -->
+<!-- @MARK flex --><!-- @MARK min-w:0 --><!-- @MARK text-ellipsis -->
 <div class="flex gap:sm">
     <span class="flex:0">File</span>
-    <span class="min-w:0 overflow:hidden white-space:nowrap text:ellipsis">
+    <span class="min-w:0 overflow:hidden white-space:nowrap text-ellipsis">
         quarterly-roadmap-final-version.pdf
     </span>
 </div>
@@ -42,7 +42,7 @@ In flex or grid children, add `min-w:0` to the shrinking text region so the elli
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="text:clip text:ellipsis@sm text:clip@print">...</div>
+<div class="text-clip text-ellipsis@sm text-clip@print">...</div>
 ```
 
 Use [line-clamp](/reference/line-clamp) for multi-line truncation.

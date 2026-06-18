@@ -73,7 +73,7 @@ createTester({
                                 priority={true}
                                 alt="hello world"
                             />
-                            <h1 className="abs text-center animation:flash|3s|infinite inset:0 m:auto fg:white font:7vw font:heavy height:fit font:40@xs blend:overlay">
+                            <h1 className="abs animation:flash|3s|infinite inset:0 m:auto fg:white font:7vw font:heavy height:fit text-center font:40@xs blend:overlay">
                                 Hello, World!
                             </h1>
                         </div>

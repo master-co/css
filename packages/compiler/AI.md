@@ -37,11 +37,12 @@
 - `@components { btn { @compose inline-flex; display: inline-flex; } }`
 - `@components { btn { @dark { @compose bg:neutral-90; } } }`
 - `@utilities { content-auto { content-visibility: auto; } }`
+- `@utilities { text-<left,center,right> { text-align: --value(); } }`
 - `@utilities { print-hidden { @variant @print { display: none; } } }`
 - `.card { @compose block; @dark { @compose fg:primary; } }`
 - Managed definition directives use first-level bare names, not selectors. Put selector states and descendants in nested selectors inside the named block.
 - `@compose` is allowed in managed class definitions and native style rules, including inside `@variant`.
-- Utilities defined in CSS are static utilities only.
+- Utilities defined in CSS can be static bare-name utilities or managed enum pattern utilities.
 - Top-level native `@keyframes` remain native CSS. Put direct `@keyframes` inside a top-level non-mode, non-inline `@theme` block when keyframes should become managed plan animations.
 - Native `@layer` blocks are never compiler-managed. Use `@defaults`, `@components`, or `@utilities` for managed definitions, and keep regular CSS selectors in native CSS.
 - The compiler package does not scan unrelated `.css` files for class usage. Pair CSS plan entries with static mode or pass extracted classes through compiler options when filtering native CSS.

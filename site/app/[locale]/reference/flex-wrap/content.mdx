@@ -3,10 +3,10 @@
 
 ## Examples
 ### Allow items to wrap
-Use `flex:wrap` when flex items should move onto additional lines instead of shrinking indefinitely.
+Use `flex-wrap` when flex items should move onto additional lines instead of shrinking indefinitely.
 ```html
-<!-- @MARK flex --><!-- @MARK flex:wrap --><!-- @MARK gap:sm -->
-<div class="flex flex:wrap gap:sm">
+<!-- @MARK flex --><!-- @MARK flex-wrap --><!-- @MARK gap:sm -->
+<div class="flex flex-wrap gap:sm">
     ...
 </div>
 ```
@@ -14,30 +14,30 @@ Use `flex:wrap` when flex items should move onto additional lines instead of shr
 <details>
     <summary>Generated CSS</summary>
     <Class2CSS>
-        {['flex', 'flex:wrap', 'gap:sm']}
+        {['flex', 'flex-wrap', 'gap:sm']}
     </Class2CSS>
 </details>
 
 ### Keep items on one line
-Use `flex:nowrap` for toolbars, segmented controls, and rows where wrapping would break the interaction.
+Use `flex-nowrap` for toolbars, segmented controls, and rows where wrapping would break the interaction.
 ```html
-<!-- @MARK flex:nowrap --><!-- @MARK overflow-x:auto -->
-<div class="flex flex:nowrap overflow-x:auto">
+<!-- @MARK flex-nowrap --><!-- @MARK overflow-x:auto -->
+<div class="flex flex-nowrap overflow-x:auto">
     ...
 </div>
 ```
 
 ### Reverse wrap direction
-Use `flex:wrap-reverse` when new lines should stack in the opposite cross-axis direction.
+Use `flex-wrap-reverse` when new lines should stack in the opposite cross-axis direction.
 ```html
-<!-- @MARK flex:wrap-reverse -->
-<div class="flex flex:wrap-reverse">...</div>
+<!-- @MARK flex-wrap-reverse -->
+<div class="flex flex-wrap-reverse">...</div>
 ```
 
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="flex:nowrap flex:wrap@sm flex:nowrap@print">...</div>
+<div class="flex-nowrap flex-wrap@sm flex-nowrap@print">...</div>
 ```
 
 Use `gap-y:*` as well as `gap-x:*` when wrapped rows need vertical spacing.

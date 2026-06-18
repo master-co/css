@@ -34,7 +34,7 @@ export default async function Page(props: any) {
         <>
             <div className="gap:15 p:40 grid-cols:2 grid-cols:3@2xs grid-cols:4@sm grid-cols:5@md">
                 <Image
-                    className="full r:5 grid-col-span:2 grid-row-span:2 aspect-ratio:2/1 object:cover"
+                    className="full r:5 grid-col-span:2 grid-row-span:2 aspect-ratio:2/1 object-cover"
                     src={mountain1.src}
                     blurDataURL={mountain1.blurDataURL}
                     placeholder='blur'
@@ -45,7 +45,7 @@ export default async function Page(props: any) {
                 {mountains.map((mountain) => (
                     <Image
                         key={mountain.src}
-                        className="r:5 aspect-ratio:2/1 h:auto object:cover w:full"
+                        className="r:5 aspect-ratio:2/1 h:auto object-cover w:full"
                         src={mountain.src}
                         blurDataURL={mountain.blurDataURL}
                         placeholder='blur'

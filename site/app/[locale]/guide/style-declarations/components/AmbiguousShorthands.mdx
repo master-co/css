@@ -3,8 +3,8 @@ export const code1 = `
     <p class="text-align:center font-size:1rem font-weight:bold border-style:solid">
 `
 export const code2 = `
-    <!-- @MARK text:center --><!-- @MARK font:16 --><!-- @MARK font:bold --><!-- @MARK border:solid -->
-    <p class="text:center font:16 font:bold border:solid">
+    <!-- @MARK text-center --><!-- @MARK font:16 --><!-- @MARK font:bold --><!-- @MARK b-solid -->
+    <p class="text-center font:16 font:bold b-solid">
 `
 
 Syntax: <code><span className="token value mcss language-mcss"><span className="token mcss"><span className="token Mkey">property-name</span><span className="token Mvalueroot"><span className="token Mcolon">:</span><span className="token Mvalue"><span className="token Mnumber_unit"><span className="token Mnumber">value</span></span></span></span></span></span></code> -> <code><span className="token value mcss language-mcss"><span className="token mcss"><span className="token Mkey">property</span><span className="token Mvalueroot"><span className="token Mcolon">:</span><span className="token Mvalue"><span className="token Mnumber_unit"><span className="token Mnumber">value</span></span></span></span></span></span></code>
@@ -21,10 +21,10 @@ Native CSS shorthands usually combine several longhand properties. Master CSS al
 
 From the example above:
 
-- `mcss text:center` resolves to `mcss text-align:center` because `center` is a text alignment value.
+- `mcss text-center` is the semantic utility for `mcss text-align:center`.
 - `mcss font:16` resolves to `mcss font-size:1rem` because numeric font values are treated as font sizes.
 - `mcss font:bold` resolves to `mcss font-weight:bold` because `bold` is a font weight value.
-- `mcss border:solid` resolves to `mcss border-style:solid` because `solid` is a border style value.
+- `mcss b-solid` is the semantic utility for `mcss border-style:solid`.
 
 This keeps classes short while still generating explicit CSS properties. It also avoids accidental resets from native shorthand behavior, where omitted subproperties can be reset to their initial values.
 

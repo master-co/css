@@ -14,7 +14,7 @@ export default function Backers({ backers }: any) {
             const className = `rel block round aspect-ratio:1/1 content:''::after`
             const Avatar = () =>
                 <>
-                    <Image src={eachBacker.avatarUrl} alt="avatar" className="full round object:cover" width="64" height="64" />
+                    <Image src={eachBacker.avatarUrl} alt="avatar" className="full round object-cover" width="64" height="64" />
                     <div className="abs round p:2 bg:surface bottom:-3 h:22 right:-3 w:22">
                         <Image src={'/images/' + toSlug(eachBacker.from) + '.svg'} alt="source" width="18" height="18" />
                     </div>

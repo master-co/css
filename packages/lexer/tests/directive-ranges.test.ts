@@ -74,6 +74,13 @@ test.concurrent('collects managed definition directive ranges', () => {
     expect(source.slice(ranges[1].preludeRange.start, ranges[1].preludeRange.end).trim()).toBe('block')
 })
 
+test.concurrent('does not collect @utility as a Master CSS directive', () => {
+    const source = '@utility text-<left,center,right> { text-align: --value(); }'
+    const ranges = collectCSSDirectiveRanges(source)
+
+    expect(ranges).toEqual([])
+})
+
 test.concurrent('collects declaration ranges without splitting quoted semicolons', () => {
     const source = '@theme { --content: "a;b"; --root-size: 16 }'
     const blockStart = source.indexOf('{') + 1

@@ -26,19 +26,30 @@ export default function getClassCompletionItems(css: MasterCSS = createDefaultCS
             sortText: key
         })
     }
+    const addStaticLikeCompletionItem = (label: string, detail?: string) => {
+        if (addedCompletionLabels.has(label)) return
+        addedCompletionLabels.add(label)
+        completionItems.push({
+            label,
+            kind: CompletionItemKind.Value,
+            documentation: createCSSMarkdownDocumentation(generateCSS([label], css)),
+            ...(detail ? { detail } : {})
+        })
+    }
 
     for (const eachDefinedUtility of css.definedUtilities) {
         if (eachDefinedUtility.type === UtilityType.Static) {
             const isComponent = eachDefinedUtility.layer === 'components'
             const { detail } = getUtilityInfo(eachDefinedUtility)
             const utilityName = eachDefinedUtility.id.slice(1)
-            completionItems.push({
-                label: utilityName,
-                kind: CompletionItemKind.Value,
-                documentation: createCSSMarkdownDocumentation(generateCSS([utilityName], css)),
-                detail: isComponent ? 'component' : detail
-            })
+            addStaticLikeCompletionItem(utilityName, isComponent ? 'component' : detail)
         } else {
+            for (const matcher of eachDefinedUtility.matchers) {
+                if (matcher.type !== 'pattern') continue
+                for (const value of matcher.values) {
+                    addStaticLikeCompletionItem(matcher.prefix + value)
+                }
+            }
             eachDefinedUtility.keys?.forEach(key => {
                 addedKeys.delete(key)
                 addPropertyCompletionItem(key)

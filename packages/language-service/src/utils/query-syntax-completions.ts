@@ -41,6 +41,12 @@ export default function querySyntaxCompletions(q = '', css: MasterCSS = createDe
     const utilityNames = css.definedUtilities
         .filter(({ type }) => type === -4)
         .map(({ id }) => id.startsWith('.') ? id.slice(1) : id)
+    for (const utility of css.definedUtilities) {
+        for (const matcher of utility.matchers) {
+            if (matcher.type !== 'pattern') continue
+            utilityNames.push(...matcher.values.map((value) => matcher.prefix + value))
+        }
+    }
     const isStyle = !!componentNames.find((eachStyleName) => new RegExp(`^${eachStyleName}(?:\\b|_)`).test(field))
     const isUtility = !!utilityNames.find((eachUtilityName) => new RegExp(`^${eachUtilityName}(?:\\b|_)`).test(field))
     // check by utilities and components

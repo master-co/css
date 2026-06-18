@@ -273,6 +273,39 @@ function tokenizeVariantPrelude(source: string, start: number, end: number, toke
     tokens.push(...tokenizeState(token, 0, cursor))
 }
 
+function tokenizeManagedPatternName(source: string, start: number, end: number, tokens: HighlightTokenItem[]) {
+    const pattern = source.slice(start, end)
+    const open = pattern.indexOf('<')
+    const close = pattern.lastIndexOf('>')
+    if (open === -1 || close === -1 || close < open) {
+        tokenizeSelectorPrelude(source, start, end, tokens)
+        return
+    }
+    const prefixStart = skipCSSWhitespace(source, start)
+    const openOffset = start + open
+    if (openOffset > prefixStart) {
+        pushHighlightToken(tokens, prefixStart, openOffset - prefixStart, 'class', 'selector.class', ['selector'])
+    }
+    pushHighlightToken(tokens, openOffset, 1, 'operator', 'selector.punctuation', ['selector'])
+    for (let cursor = openOffset + 1; cursor < start + close;) {
+        cursor = skipCSSWhitespace(source, cursor)
+        const char = source[cursor]
+        if (char === ',') {
+            pushHighlightToken(tokens, cursor, 1, 'operator', 'selector.punctuation', ['selector'])
+            cursor++
+            continue
+        }
+        const ident = readCSSIdent(source, cursor)
+        if (ident.value) {
+            pushHighlightToken(tokens, ident.start, ident.value.length, 'enumMember', 'selector.class', ['selector'])
+            cursor = ident.end
+            continue
+        }
+        cursor++
+    }
+    pushHighlightToken(tokens, start + close, 1, 'operator', 'selector.punctuation', ['selector'])
+}
+
 function tokenizeManagedDefinitionBlock(source: string, start: number, end: number, tokens: HighlightTokenItem[]) {
     for (let index = start; index < end; index++) {
         const char = source[index]
@@ -305,10 +338,25 @@ function tokenizeManagedDefinitionBlock(source: string, start: number, end: numb
         }
         if (isCSSIdentStart(char)) {
             const ident = readCSSIdent(source, index)
-            const blockStart = skipCSSWhitespace(source, ident.end)
-            if (source[blockStart] === '{') {
-                pushHighlightToken(tokens, ident.start, ident.value.length, 'class', 'selector.class', ['selector'])
+            const statementEnd = findCSSStatementEnd(source, index)
+            const blockStart = statementEnd.reason === 'block' ? statementEnd.delimiterRange?.start : -1
+            if (blockStart !== undefined && blockStart !== -1) {
+                let nameEnd = blockStart
+                while (nameEnd > ident.start && /\s/.test(source[nameEnd - 1] || '')) nameEnd--
+                const name = source.slice(ident.start, nameEnd)
+                if (name.includes('<') || name.includes('>')) {
+                    tokenizeManagedPatternName(source, ident.start, nameEnd, tokens)
+                } else {
+                    pushHighlightToken(tokens, ident.start, ident.value.length, 'class', 'selector.class', ['selector'])
+                }
                 const blockEnd = findCSSBlockEnd(source, blockStart)
+                index = blockEnd === -1 ? end : blockEnd
+                continue
+            }
+            const blockStartAfterIdent = skipCSSWhitespace(source, ident.end)
+            if (source[blockStartAfterIdent] === '{') {
+                pushHighlightToken(tokens, ident.start, ident.value.length, 'class', 'selector.class', ['selector'])
+                const blockEnd = findCSSBlockEnd(source, blockStartAfterIdent)
                 index = blockEnd === -1 ? end : blockEnd
                 continue
             }

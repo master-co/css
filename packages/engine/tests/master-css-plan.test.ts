@@ -5,6 +5,62 @@ import createCSS from '../src/create'
 import createRuntimeManifest from '../src/runtime-manifest'
 
 describe.concurrent('MasterCSSPlan execution', () => {
+    it('executes enum pattern utilities after exact static utilities', () => {
+        const plan: MasterCSSPlan = {
+            version: 2,
+            settings: {
+                modes: []
+            },
+            utilities: [
+                {
+                    id: 'text-<left,center>',
+                    name: 'text-<left,center>',
+                    type: UtilityType.Normal,
+                    order: 0,
+                    emit: {
+                        type: 'static',
+                        rules: [{
+                            declarations: {
+                                'text-align': null
+                            }
+                        }]
+                    },
+                    matchers: [{
+                        type: 'pattern',
+                        prefix: 'text-',
+                        values: ['left', 'center']
+                    }]
+                },
+                {
+                    id: '.text-center',
+                    name: 'text-center',
+                    type: UtilityType.Static,
+                    order: 1,
+                    emit: {
+                        type: 'static',
+                        rules: [{
+                            declarations: {
+                                'text-align': 'start'
+                            }
+                        }]
+                    },
+                    matchers: [{
+                        type: 'static',
+                        name: 'text-center'
+                    }]
+                }
+            ],
+            utilityBuckets: {
+                pattern: [0],
+                arbitrary: [1]
+            }
+        }
+        const css = createCSS(plan)
+
+        expect(css.create('text-left')?.text).toBe('.text-left{text-align:left}')
+        expect(css.create('text-center')?.text).toBe('.text-center{text-align:start}')
+    })
+
     it('executes pre-bucketed utility and variable aliases without config-style resolution', () => {
         const plan: MasterCSSPlan = {
             version: 2,
