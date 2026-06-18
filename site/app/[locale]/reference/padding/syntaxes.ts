@@ -4,8 +4,9 @@ const syntaxes = [
     ['pl:`size`'],
     ['pr:`size`'],
     ['p:`size`'],
-    ['px:`size`'],
+    ['pi:`size`'],
     ['py:`size`'],
+    ['padding-block:`size`'],
 ]
 
 export default syntaxes

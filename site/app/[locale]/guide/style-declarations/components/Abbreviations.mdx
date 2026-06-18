@@ -1,10 +1,10 @@
 export const code1 = `
-    <!-- @MARK font-size:1rem --><!-- @MARK margin-top:32 --><!-- @MARK justify-content:center -->
-    <p class="font-size:1rem margin-top:32 justify-content:center">
+    <!-- @MARK font-size:1rem --><!-- @MARK margin-top:32px --><!-- @MARK justify-content:center -->
+    <p class="font-size:1rem margin-top:32px justify-content:center">
 `
 export const code2 = `
-    <!-- @MARK font:16 --><!-- @MARK mt:32 --><!-- @MARK justify-content:center -->
-    <p class="font:16 mt:32 justify-content:center">
+    <!-- @MARK font:16px --><!-- @MARK mt:32px --><!-- @MARK justify-content:center -->
+    <p class="font:16px mt:32px justify-content:center">
 `
 
 Syntax: <code><span className="token value mcss language-mcss"><span className="token mcss"><span className="token Mkey">property-name</span><span className="token Mvalueroot"><span className="token Mcolon">:</span><span className="token Mvalue"><span className="token Mnumber_unit"><span className="token Mnumber">value</span></span></span></span></span></span></code> -> <code><span className="token value mcss language-mcss"><span className="token mcss"><span className="token Mkey">alias</span><span className="token Mvalueroot"><span className="token Mcolon">:</span><span className="token Mvalue"><span className="token Mnumber_unit"><span className="token Mnumber">value</span></span></span></span></span></span></code>
@@ -21,23 +21,23 @@ Property names can still be long after you learn the syntax. Master CSS keeps a 
 
 Use full property names for rare CSS properties. Valid native declarations can be written directly without waiting for a built-in abbreviation.
 
-Retained abbreviations canonicalize to full property keys, so the same token and unit behavior works whether you write `w:32` or `width:32`.
+Retained abbreviations canonicalize to full property keys, so the same token and unit behavior works whether you write `w:32px` or `width:32px`.
 
 export const code3 = `
-    <!-- @MARK width:32 --><!-- @MARK height:32 --><!-- @MARK border-radius:5 --><!-- @MARK z-index:10 --><!-- @MARK margin-top:1 --><!-- @MARK margin-bottom:1 --><!-- @MARK padding-left:1 --><!-- @MARK padding-right:1 -->
-    <div class="width:32 height:32 border-radius:5 z-index:10 margin-top:1 margin-bottom:1 padding-left:1 padding-right:1">
+    <!-- @MARK width:32px --><!-- @MARK height:32px --><!-- @MARK border-radius:5px --><!-- @MARK z-index:10 --><!-- @MARK margin-top:1px --><!-- @MARK margin-bottom:1px --><!-- @MARK padding-left:1px --><!-- @MARK padding-right:1px -->
+    <div class="width:32px height:32px border-radius:5px z-index:10 margin-top:1px margin-bottom:1px padding-left:1px padding-right:1px">
 `
 export const code4 = `
-    <!-- @MARK w:32 --><!-- @MARK h:32 --><!-- @MARK r:5 --><!-- @MARK z:10 --><!-- @MARK mt:1 --><!-- @MARK mb:1 --><!-- @MARK pl:1 --><!-- @MARK pr:1 -->
-    <div class="w:32 h:32 r:5 z:10 mt:1 mb:1 pl:1 pr:1">
+    <!-- @MARK w:32px --><!-- @MARK h:32px --><!-- @MARK r:5px --><!-- @MARK z:10 --><!-- @MARK mt:1px --><!-- @MARK mb:1px --><!-- @MARK pl:1px --><!-- @MARK pr:1px -->
+    <div class="w:32px h:32px r:5px z:10 mt:1px mb:1px pl:1px pr:1px">
 `
 export const code5 = `
-    <!-- @MARK my:1 --><!-- @MARK px:1 -->
-    <div class="w:32 h:32 r:5 z:10 my:1 px:1">
+    <!-- @MARK my:1px --><!-- @MARK px:1px -->
+    <div class="w:32px h:32px r:5px z:10 my:1px px:1px">
 `
 export const code6 = `
-    <!-- @MARK size:32 -->
-    <div class="size:32 r:5 z:10 my:1 px:1">
+    <!-- @MARK size:32px -->
+    <div class="size:32px r:5px z:10 my:1px px:1px">
 `
 
 <Code lang="html">
@@ -49,7 +49,7 @@ export const code6 = `
     {code4}
 </Code>
 
-(o) Use `x` and `y` to express paired directions. <Dropped p1={code3} p2={code5} target="class" />
+(o) Use logical aliases when available, and full logical properties when there is no key alias. <Dropped p1={code3} p2={code5} target="class" />
 <Code lang="html">
     {code5}
 </Code>

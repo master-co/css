@@ -12,7 +12,6 @@ const plan = createPresetPlan({
     utilities: [
         {
             name: 'btn',
-            type: -4,
             layer: 'components',
             rules: [
                 { selector: '&', declarations: { display: 'block' } }

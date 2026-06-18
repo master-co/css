@@ -70,7 +70,7 @@ export default function ViewTransitionDemo() {
     return (
         <Demo className="container w:full">
             <span aria-hidden className={clsx(rootTransitionClassName, 'hidden')} />
-            <div className="grid grid-cols:1 grid-cols:2@container(4xs) gap:lg w:full">
+            <div className="grid grid-cols:1 grid-cols:2@container(3xs) gap:lg w:full">
                 <div className="grid grid-cols:1 gap:sm">
                     {views.map((view) => {
                         const activeButton = view.id === activeId
@@ -80,7 +80,7 @@ export default function ViewTransitionDemo() {
                                 className={clsx(
                                     'app-panel text-left p:md cursor:pointer min-h:18x',
                                     'b:1|line r:md',
-                                    activeButton ? 'bg:surface outline:2|accent' : 'bg:surface:hover'
+                                    activeButton ? 'bg:surface outline:2px|accent' : 'bg:surface:hover'
                                 )}
                                 key={view.id}
                                 onClick={() => selectView(view.id)}
@@ -94,12 +94,12 @@ export default function ViewTransitionDemo() {
                     })}
                 </div>
                 <section className={clsx(
-                    'app-panel rel overflow:hidden p:lg p:xl@container(4xs)',
+                    'app-panel rel overflow:hidden p:lg p:xl@container(3xs)',
                     'flex flex-col view-transition-name:panel',
                     active.tint
                 )}>
                     <p className="text:xs font:medium fg:text m:0">{active.eyebrow}</p>
-                    <h3 className="text:2xl text:3xl@container(4xs) font:semibold m:0 mt:sm view-transition-name:title">
+                    <h3 className="text:2xl text:3xl@container(3xs) font:semibold m:0 mt:sm view-transition-name:title">
                         {active.title}
                     </h3>
                     <div className={clsx('h:1x w:2em rounded mt:md opacity:.8', active.accent)} />

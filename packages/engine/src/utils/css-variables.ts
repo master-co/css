@@ -18,23 +18,17 @@ export function hasNumericVariableUnit(variable: Variable | undefined) {
 }
 
 export function createNumberVariableReference(variable: Variable, unit: string, rootSize = 16) {
-    const reference = createCSSVariableReference(variable.name)
-    if (hasNumericVariableUnit(variable)) return reference
-    if (!unit) return reference
-    if (unit === 'rem' || unit === 'em') {
-        return `calc(${reference} / ${rootSize} * 1${unit})`
-    }
-    return `calc(${reference} * 1${unit})`
+    void unit
+    void rootSize
+    return createCSSVariableReference(variable.name)
 }
 
 export function createNegativeNumberVariableReference(variable: Variable, unit: string, rootSize = 16) {
     const reference = createCSSVariableReference(variable.name)
-    if (hasNumericVariableUnit(variable)) return `calc(${reference} * -1)`
-    if (!unit) return `calc(${reference} * -1)`
-    if (unit === 'rem' || unit === 'em') {
-        return `calc(${reference} / ${rootSize} * -1${unit})`
-    }
-    return `calc(${reference} * -1${unit})`
+    void variable
+    void unit
+    void rootSize
+    return `calc(${reference} * -1)`
 }
 
 export function collectCSSVariableReferences(value: string) {

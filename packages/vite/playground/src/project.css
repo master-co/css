@@ -54,7 +54,7 @@
     }
 
     live-label {
-        @compose inline-flex ai:center jc:center h:24 px:.75rem bg:primary r:pill font:12 font:semibold;
+        @compose inline-flex ai:center jc:center h:24 pi:.75rem bg:primary r:pill font:12 font:semibold;
         @variant @motion-safe {
             @compose animation:demo-pulse|1.4s|infinite;
         }
@@ -77,7 +77,7 @@
     }
 
     btn {
-        @compose inline-flex ai:center jc:center h:44 px:1rem bg:primary r:pill font:semibold;
+        @compose inline-flex ai:center jc:center h:44 pi:1rem bg:primary r:pill font:semibold;
         border: 0;
         box-shadow: 0 14px 28px rgb(17 34 51 / 18%);
         color: white;

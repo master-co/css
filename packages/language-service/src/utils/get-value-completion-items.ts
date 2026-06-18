@@ -1,5 +1,5 @@
 import { type CompletionItem, CompletionItemKind } from 'vscode-languageserver-protocol'
-import { MasterCSS, createDefaultCSS, UtilityType, type Variable, generateCSS } from '../master-css'
+import { MasterCSS, createDefaultCSS, type Variable, generateCSS } from '../master-css'
 import createCSSMarkdownDocumentation from './create-css-markdown-documentation'
 import sortCompletionItems from './sort-completion-items'
 import { getMdnPropertySyntax, getMdnPropertyValueNames } from './mdn-css-data'
@@ -7,7 +7,7 @@ import { getMdnPropertySyntax, getMdnPropertyValueNames } from './mdn-css-data'
 const SCOPED_VARIABLE_PRIORITY = 'aaaa'
 const NATIVE_PRIORITY = 'ccccc'
 const GLOBAL_VARIABLE_PRIORITY = 'zzzz'
-const NATIVE_UTILITY_TYPES = new Set<number>([UtilityType.Native, UtilityType.NativeShorthand])
+const ANIMATION_REFERENCE_PROPERTIES = new Set(['animation', 'animation-name'])
 
 interface GenerateVariableCompletionItemOptions {
     appliedValue?: string
@@ -36,6 +36,32 @@ function getVariableKeyByNamespace(variableName: string, namespace: string) {
     if (positiveName !== namespace && !positiveName.startsWith(namespace + '-')) return
     const key = positiveName === namespace ? '' : positiveName.slice(namespace.length + 1)
     return negative ? '-' + key : key
+}
+
+function utilityMayReferenceAnimations(utility: MasterCSS['definedUtilities'][number]) {
+    const emit = utility.emit
+    switch (emit.type) {
+        case 'declarations':
+            return emit.declarations.some((property) => ANIMATION_REFERENCE_PROPERTIES.has(property))
+        case 'property':
+            return ANIMATION_REFERENCE_PROPERTIES.has(emit.property)
+        case 'pair':
+            return emit.properties.some((property) => ANIMATION_REFERENCE_PROPERTIES.has(property))
+        case 'template':
+            return Object.keys(emit.declarations).some((property) => ANIMATION_REFERENCE_PROPERTIES.has(property))
+        case 'static':
+            return emit.rules.some((rule) =>
+                Object.keys(rule.declarations).some((property) => ANIMATION_REFERENCE_PROPERTIES.has(property))
+            )
+        default:
+            return false
+    }
+}
+
+function isPureNativePropertyUtility(utility: MasterCSS['definedUtilities'][number]) {
+    return utility.emit.type === 'property'
+        && utility.id === utility.emit.property
+        && utility.name === utility.emit.property
 }
 
 export default function getValueCompletionItems(css: MasterCSS = createDefaultCSS(), ruleKey: string, valuePrefix = ''): CompletionItem[] {
@@ -145,9 +171,9 @@ export default function getValueCompletionItems(css: MasterCSS = createDefaultCS
         /**
          * @example animation:fade
          */
-        if (eachDefinedUtility.keys?.includes(canonicalRuleKey) && eachDefinedUtility.includeAnimations) {
+        if (eachDefinedUtility.keys?.includes(canonicalRuleKey) && utilityMayReferenceAnimations(eachDefinedUtility)) {
             css.animations.forEach((_, animationName) => {
-                const isNative = eachDefinedUtility.type !== undefined && NATIVE_UTILITY_TYPES.has(eachDefinedUtility.type)
+                const isNative = isPureNativePropertyUtility(eachDefinedUtility)
                 completionItems.push({
                     label: animationName,
                     kind: CompletionItemKind.Value,

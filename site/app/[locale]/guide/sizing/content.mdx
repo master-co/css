@@ -10,7 +10,7 @@ Master CSS keeps those decisions close to the element that owns them. Use `w:*` 
         <div className="grid-cols:1 grid-cols:2@container(2xs) gap:md w:full">
             <section className="min-w:0 bg:surface r:lg p:lg b:1|subtle">
                 <DemoLabel>Fluid wrapper</DemoLabel>
-                <div className="w:full max-w:64x mx:auto">
+                <div className="w:full max-w:64x mi:auto">
                     <div className="h:10x bg:primary/.15 b:1|primary/.25 r:lg"></div>
                     <div className="mt:sm h:4x w:3/4 bg:primary/.1 r:sm"></div>
                 </div>
@@ -30,8 +30,8 @@ Master CSS keeps those decisions close to the element that owns them. Use `w:*` 
 </Demo>
 
 ```html
-<!-- @MARK w:full --><!-- @MARK max-w:64x --><!-- @MARK mx:auto -->
-<section class="w:full max-w:64x mx:auto">...</section>
+<!-- @MARK w:full --><!-- @MARK max-w:64x --><!-- @MARK mi:auto -->
+<section class="w:full max-w:64x mi:auto">...</section>
 
 <!-- @MARK size:12x --><!-- @MARK min-w:0 -->
 <article class="flex gap:md">
@@ -43,7 +43,7 @@ Master CSS keeps those decisions close to the element that owns them. Use `w:*` 
 <details>
     <summary>Generated CSS</summary>
     <Class2CSS>
-        {['w:full', 'max-w:64x', 'mx:auto', 'size:12x', 'min-w:0']}
+        {['w:full', 'max-w:64x', 'mi:auto', 'size:12x', 'min-w:0']}
     </Class2CSS>
 </details>
 
@@ -62,7 +62,7 @@ A sizing class should have one clear job. It can set the preferred size, keep th
 
 ```html
 <!-- @MARK w:full --><!-- @MARK max-w:7xl --><!-- @MARK min-h:100dvh -->
-<main class="w:full max-w:7xl min-h:100dvh mx:auto">
+<main class="w:full max-w:7xl min-h:100dvh mi:auto">
     ...
 </main>
 ```
@@ -70,7 +70,7 @@ A sizing class should have one clear job. It can set the preferred size, keep th
 <details>
     <summary>Generated CSS</summary>
     <Class2CSS>
-        {['w:full', 'max-w:7xl', 'min-h:100dvh', 'mx:auto']}
+        {['w:full', 'max-w:7xl', 'min-h:100dvh', 'mi:auto']}
     </Class2CSS>
 </details>
 
@@ -82,8 +82,8 @@ Use one-axis rules when the element is rectangular by role. Use `size:*`, `min:*
 Most layout should start flexible and then add constraints. A wrapper that fills available space and stops at a cap behaves better than one fixed width that only fits one viewport.
 
 ```html
-<!-- @MARK w:full --><!-- @MARK max-w:7xl --><!-- @MARK px:md --><!-- @MARK px:xl@md -->
-<main class="w:full max-w:7xl mx:auto px:md px:xl@md">
+<!-- @MARK w:full --><!-- @MARK max-w:7xl --><!-- @MARK pi:md --><!-- @MARK pi:xl@md -->
+<main class="w:full max-w:7xl mi:auto pi:md pi:xl@md">
     ...
 </main>
 
@@ -96,7 +96,7 @@ Most layout should start flexible and then add constraints. A wrapper that fills
 <details>
     <summary>Generated CSS</summary>
     <Class2CSS>
-        {['w:full', 'max-w:7xl', 'mx:auto', 'px:md', 'px:xl@md', 'max-w:72ch']}
+        {['w:full', 'max-w:7xl', 'mi:auto', 'pi:md', 'pi:xl@md', 'max-w:72ch']}
     </Class2CSS>
 </details>
 
@@ -119,7 +119,7 @@ Sizing utilities read the container namespace contextually. `max-w:5xl`, `w:md`,
 
 ```html
 <!-- @MARK w:full --><!-- @MARK max-w:5xl -->
-<main class="w:full max-w:5xl mx:auto">
+<main class="w:full max-w:5xl mi:auto">
     ...
 </main>
 
@@ -130,7 +130,7 @@ Sizing utilities read the container namespace contextually. `max-w:5xl`, `w:md`,
 <details>
     <summary>Generated CSS</summary>
     <Class2CSS>
-        {['w:full', 'max-w:5xl', 'mx:auto', 'w:md', 'max-w:full']}
+        {['w:full', 'max-w:5xl', 'mi:auto', 'w:md', 'max-w:full']}
     </Class2CSS>
 </details>
 
@@ -208,7 +208,7 @@ When an element should keep a non-square ratio, use [aspect ratio](/reference/as
 Min and max rules are often more stable than fixed widths. They let content, containers, and responsive variants negotiate space without overflow.
 
 <Demo>
-    <div className="w:full max-w:96x mx:auto bg:surface r:lg b:1|subtle p:lg">
+    <div className="w:full max-w:96x mi:auto bg:surface r:lg b:1|subtle p:lg">
         <DemoLabel>min-w:0 max-w:96x</DemoLabel>
         <div className="flex gap:md">
             <div className="size:10x flex:0 bg:primary/.15 r:lg"></div>
@@ -283,7 +283,7 @@ When a dimension becomes part of the product language, add a named container var
 <section class="w:panel">...</section>
 ```
 
-Use descriptive names such as `sidebar`, `measure`, `panel`, or `media` instead of numeric keys. Numeric keys are easy to confuse with raw values such as `w:1` or `w:2`.
+Use descriptive names such as `sidebar`, `measure`, `panel`, or `media` instead of numeric keys. Numeric keys are easy to confuse with raw values such as `w:1px` or `w:2px`.
 
 ---
 
@@ -297,7 +297,7 @@ Use descriptive names such as `sidebar`, `measure`, `panel`, or `media` instead 
 (o) The wrapper fills available space and stops at a shared cap.
 
 ```html
-<main class="w:full max-w:7xl mx:auto">...</main>
+<main class="w:full max-w:7xl mi:auto">...</main>
 ```
 
 (x) A square component repeats separate width and height values that can drift.
@@ -331,7 +331,7 @@ Use descriptive names such as `sidebar`, `measure`, `panel`, or `media` instead 
 ---
 
 ## Common patterns
-* Page wrapper: `w:full max-w:7xl mx:auto`
+* Page wrapper: `w:full max-w:7xl mi:auto`
 * Reading measure: `w:full max-w:72ch`
 * Square avatar: `size:10x round object-cover`
 * Icon button: `size:9x grid place-content:center`

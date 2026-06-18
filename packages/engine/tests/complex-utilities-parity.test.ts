@@ -7,13 +7,13 @@ describe.concurrent('migrated complex utility parity', () => {
         const css = createDefaultCSS()
 
         expect(css.create('{color:black!;bb:2|solid}')?.text)
-            .toBe('.\\{color\\:black\\!\\;bb\\:2\\|solid\\}{color:oklch(0% 0 none)!important;border-bottom:0.125rem solid}')
+            .toBe('.\\{color\\:black\\!\\;bb\\:2\\|solid\\}{color:oklch(0% 0 none)!important;border-bottom:2 solid}')
         expect(css.create('{pt:calc(2.5em+60);mt:-60}_:where(h1,h2,h3,h4,h5,h6)')?.text)
-            .toBe('.\\{pt\\:calc\\(2\\.5em\\+60\\)\\;mt\\:-60\\}_\\:where\\(h1\\,h2\\,h3\\,h4\\,h5\\,h6\\) :where(h1,h2,h3,h4,h5,h6){padding-top:calc(2.5em + 3.75rem);margin-top:-3.75rem}')
+            .toBe('.\\{pt\\:calc\\(2\\.5em\\+60\\)\\;mt\\:-60\\}_\\:where\\(h1\\,h2\\,h3\\,h4\\,h5\\,h6\\) :where(h1,h2,h3,h4,h5,h6){padding-top:calc(2.5em + 60);margin-top:-60}')
         expect(css.create('{line-height:calc(32-16);font-size:calc(32-16)}')?.text)
-            .toBe('.\\{line-height\\:calc\\(32-16\\)\\;font-size\\:calc\\(32-16\\)\\}{line-height:calc(32 - 16);font-size:calc(2rem - 1rem)}')
+            .toBe('.\\{line-height\\:calc\\(32-16\\)\\;font-size\\:calc\\(32-16\\)\\}{line-height:calc(32 - 16);font-size:calc(32 - 16)}')
         expect(css.create('{m:32;leading:1.5}')?.text)
-            .toBe('.\\{m\\:32\\;leading\\:1\\.5\\}{margin:2rem;line-height:1.5}')
+            .toBe('.\\{m\\:32\\;leading\\:1\\.5\\}{margin:32;line-height:1.5}')
         expect(css.create('{form}')?.text).toBe('')
         expect(css.create('{form;block}')?.text).toBe('.\\{form\\;block\\}{display:block}')
     })
@@ -26,7 +26,7 @@ describe.concurrent('migrated complex utility parity', () => {
         }
 
         expect(createCSS(plan).create('{color:black!;bb:2|solid}')?.text)
-            .toBe('.\\{color\\:black\\!\\;bb\\:2\\|solid\\}{color:oklch(0% 0 none)!important;border-bottom:0.125rem solid!important}')
+            .toBe('.\\{color\\:black\\!\\;bb\\:2\\|solid\\}{color:oklch(0% 0 none)!important;border-bottom:2 solid!important}')
     })
 
     test('keeps grouped gradient values with custom variables and quoted separators', () => {
@@ -39,7 +39,7 @@ describe.concurrent('migrated complex utility parity', () => {
 
         expect(rule?.text).toContain('content:\'\'')
         expect(rule?.text).toContain('position:absolute')
-        expect(rule?.text).toContain('inset:0rem')
+        expect(rule?.text).toContain('inset:0')
         expect(rule?.text).toContain('background-image:linear-gradient(90deg,color-mix(in oklab,var(--G-10) 10%,transparent) 10%')
         expect(rule?.text).toContain('color-mix(in oklab,var(--G-20) 20%,transparent) 20%')
         expect(rule?.text).toContain('color-mix(in oklab,var(--G-30) 30%,transparent) 60%')
@@ -58,16 +58,16 @@ describe.concurrent('migrated complex utility parity', () => {
     test('keeps inset utilities values and priority order', () => {
         const css = createDefaultCSS()
 
-        expect(css.create('top:20')?.text).toBe('.top\\:20{top:1.25rem}')
-        expect(css.create('bottom:10')?.text).toBe('.bottom\\:10{bottom:0.625rem}')
-        expect(css.create('inset:16')?.text).toBe('.inset\\:16{inset:1rem}')
-        expect(css.create('left:30')?.text).toBe('.left\\:30{left:1.875rem}')
+        expect(css.create('top:20')?.text).toBe('.top\\:20{top:20}')
+        expect(css.create('bottom:10')?.text).toBe('.bottom\\:10{bottom:10}')
+        expect(css.create('inset:16')?.text).toBe('.inset\\:16{inset:16}')
+        expect(css.create('left:30')?.text).toBe('.left\\:30{left:30}')
         expect(css.create('right:max(0,calc(50%-725))')?.text)
-            .toBe('.right\\:max\\(0\\,calc\\(50\\%-725\\)\\){right:max(0rem,calc(50% - 45.3125rem))}')
-        expect(css.create('top:0')?.text).toBe('.top\\:0{top:0rem}')
-        expect(css.create('left:0')?.text).toBe('.left\\:0{left:0rem}')
-        expect(css.create('right:0')?.text).toBe('.right\\:0{right:0rem}')
-        expect(css.create('bottom:0')?.text).toBe('.bottom\\:0{bottom:0rem}')
+            .toBe('.right\\:max\\(0\\,calc\\(50\\%-725\\)\\){right:max(0,calc(50% - 725))}')
+        expect(css.create('top:0')?.text).toBe('.top\\:0{top:0}')
+        expect(css.create('left:0')?.text).toBe('.left\\:0{left:0}')
+        expect(css.create('right:0')?.text).toBe('.right\\:0{right:0}')
+        expect(css.create('bottom:0')?.text).toBe('.bottom\\:0{bottom:0}')
 
         const ordered = createDefaultCSS()
         ordered.add('top:0', 'left:0', 'inset:0', 'right:0', 'bottom:0')
@@ -84,26 +84,26 @@ describe.concurrent('migrated complex utility parity', () => {
         const css = createDefaultCSS()
 
         expect(css.create('size:4x')?.declarations).toStrictEqual({ width: '1rem', height: '1rem' })
-        expect(css.create('size:16|32')?.declarations).toStrictEqual({ width: '1rem', height: '2rem' })
+        expect(css.create('size:16|32')?.declarations).toStrictEqual({ width: '16', height: '32' })
         expect(css.create('size:$(w)|$(h)')?.declarations).toStrictEqual({ width: 'var(--w)', height: 'var(--h)' })
         expect(css.create('size:md')?.declarations).toStrictEqual({
             width: 'var(--container-md)',
             height: 'var(--container-md)'
         })
         expect(css.create('size:16|calc(min(30,50)-25)')?.declarations)
-            .toStrictEqual({ width: '1rem', height: 'calc(min(30, 50) / 16 * 1rem - 1.5625rem)' })
+            .toStrictEqual({ width: '16', height: 'calc(min(30, 50) - 25)' })
         expect(css.create('size:min(10,calc(25-10))|10')?.declarations)
-            .toStrictEqual({ width: 'min(0.625rem,calc(1.5625rem - 0.625rem))', height: '0.625rem' })
+            .toStrictEqual({ width: 'min(10,calc(25 - 10))', height: '10' })
         expect(css.create('size:min(10,calc(25-10))|calc(min(30,50)-25)')?.declarations)
             .toStrictEqual({
-                width: 'min(0.625rem,calc(1.5625rem - 0.625rem))',
-                height: 'calc(min(30, 50) / 16 * 1rem - 1.5625rem)'
+                width: 'min(10,calc(25 - 10))',
+                height: 'calc(min(30, 50) - 25)'
             })
         expect(css.create('max:4x')?.declarations).toStrictEqual({ 'max-width': '1rem', 'max-height': '1rem' })
-        expect(css.create('max:16|32')?.declarations).toStrictEqual({ 'max-width': '1rem', 'max-height': '2rem' })
+        expect(css.create('max:16|32')?.declarations).toStrictEqual({ 'max-width': '16', 'max-height': '32' })
         expect(css.create('max:$(w)|$(h)')?.declarations).toStrictEqual({ 'max-width': 'var(--w)', 'max-height': 'var(--h)' })
         expect(css.create('min:4x')?.declarations).toStrictEqual({ 'min-width': '1rem', 'min-height': '1rem' })
-        expect(css.create('min:16|32')?.declarations).toStrictEqual({ 'min-width': '1rem', 'min-height': '2rem' })
+        expect(css.create('min:16|32')?.declarations).toStrictEqual({ 'min-width': '16', 'min-height': '32' })
         expect(css.create('min:$(w)|$(h)')?.declarations).toStrictEqual({ 'min-width': 'var(--w)', 'min-height': 'var(--h)' })
 
         const numeric = createCSSWithVariables([
@@ -111,11 +111,11 @@ describe.concurrent('migrated complex utility parity', () => {
             { name: 'h', key: 'h', type: 'number', value: 16 }
         ])
         expect(numeric.create('size:$(w)|$(h)')?.declarations)
-            .toStrictEqual({ width: 'calc(var(--w) / 16 * 1rem)', height: 'calc(var(--h) / 16 * 1rem)' })
+            .toStrictEqual({ width: 'var(--w)', height: 'var(--h)' })
         expect(numeric.create('max:$(w)|$(h)')?.declarations)
-            .toStrictEqual({ 'max-width': 'calc(var(--w) / 16 * 1rem)', 'max-height': 'calc(var(--h) / 16 * 1rem)' })
+            .toStrictEqual({ 'max-width': 'var(--w)', 'max-height': 'var(--h)' })
         expect(numeric.create('min:$(w)|$(h)')?.declarations)
-            .toStrictEqual({ 'min-width': 'calc(var(--w) / 16 * 1rem)', 'min-height': 'calc(var(--h) / 16 * 1rem)' })
+            .toStrictEqual({ 'min-width': 'var(--w)', 'min-height': 'var(--h)' })
     })
 
     test('keeps transition multi-value syntax and rejects removed shorthand prefix', () => {

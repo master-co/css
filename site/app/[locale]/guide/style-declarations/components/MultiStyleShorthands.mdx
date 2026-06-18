@@ -3,12 +3,12 @@ export const code1 = `
     <p class="padding-top:1rem padding-bottom:1rem padding-left:2rem padding-right:2rem border-width:.0625rem border-color:red border-style:solid">
 `
 export const code2 = `
-    <!-- @MARK padding:16|32 --><!-- @MARK border:1|red -->
-    <p class="padding:16|32 border:1|red">
+    <!-- @MARK padding:4x|8x --><!-- @MARK border:1|red -->
+    <p class="padding:4x|8x border:1|red">
 `
 export const code3 = `
-    <!-- @MARK p:16|32 --><!-- @MARK b:1|red -->
-    <p class="p:16|32 b:1|red">
+    <!-- @MARK p:4x|8x --><!-- @MARK b:1|red -->
+    <p class="p:4x|8x b:1|red">
 `
 
 Syntax: <code><span className="token value mcss language-mcss"><span className="token mcss"><span className="token Mkey">property</span><span className="token Mvalueroot"><span className="token Mcolon">:</span><span className="token Mvalue"><span className="token Mnumber_unit"><span className="token Mnumber">value</span></span><span className="token Mspace">|</span><span className="token Mnumber_unit"><span className="token Mnumber">value</span></span><span className="token Mspace">|</span><span className="token Mnumber_unit"><span className="token Mnumber">value</span></span><span className="token Mspace">…</span></span></span></span></span></code>
@@ -18,7 +18,7 @@ Use the same value order as native CSS shorthands, but replace spaces with `|` s
     {code1}
 </Code>
 
-(o) Use the CSS shorthand and rely on smart unit conversions. <Dropped p1={code1} p2={code2} target="class" />
+(o) Use the CSS shorthand with explicit or multiplier units. <Dropped p1={code1} p2={code2} target="class" />
 <Code lang="html">
     {code2}
 </Code>
@@ -32,12 +32,12 @@ Class attributes use whitespace to separate class names, so a value like `10 20 
 
 (o) Use `|` delimiters instead of whitespaces between CSS parameter values.
 ```html
-<div class="m:10|20|30|40"></div>
+<div class="m:1rem|2rem|3rem|4rem"></div>
 ```
 Review native CSS:
 ```css
 div {
-    margin: 0.625rem 1.25rem 1.875rem 2.5rem
+    margin: 1rem 2rem 3rem 4rem
 }
 ```
 The delimiter does not change the CSS shorthand rules. Keep the same top, right, bottom, and left order you would use in CSS.

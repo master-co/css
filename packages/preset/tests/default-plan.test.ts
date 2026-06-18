@@ -45,8 +45,6 @@ const retainedMatcherAliases = new Set([
     'bl',
     'br',
     'bt',
-    'bx',
-    'by',
     'font',
     'grid-col',
     'grid-col-end',
@@ -122,10 +120,10 @@ describe('@master/css-preset defaultPlan', () => {
         const plan = createDefaultPlanFromSourceFile(resolve(__dirname, '../src/index.css'))
         const utilities = plan.utilities || []
 
-        expect(sourceUtilities).toHaveLength(145)
+        expect(sourceUtilities).toHaveLength(128)
         expect(sourceUtilities.some((utility) => Number(utility.type) === UtilityType.Static)).toBe(false)
         expect(Object.keys(functions)).toHaveLength(49)
-        expect(utilities).toHaveLength(335)
+        expect(utilities).toHaveLength(323)
         expect(utilities[0]?.order).toBe(utilities.length - 1)
         expect(utilities[utilities.length - 1]?.order).toBe(0)
         expect(utilities.some((utility) => utility.matchers.some((matcher) => (matcher as { type: string }).type === 'function-prefix'))).toBe(false)
@@ -156,7 +154,7 @@ describe('@master/css-preset defaultPlan', () => {
         expect(text).toContain('display:inline-flex')
         expect(text).toContain('background-image:linear-gradient(#000,#fff)')
         expect(text).toContain('background-color:var(--color-accent)')
-        expect(text).toContain('grid-template-columns:repeat(3,minmax(0,1fr))')
+        expect(text).toContain('grid-template-columns:repeat(3, minmax(0, 1fr))')
         expect(text).toContain('-webkit-line-clamp:3')
         expect(text).not.toContain('null')
         expect(css.create('gradient(#000,#fff)')).toBeUndefined()
@@ -177,6 +175,8 @@ describe('@master/css-preset defaultPlan', () => {
         expect(css.create('b-groove')?.text).toBe('.b-groove{border-style:groove}')
         expect(css.create('bl-solid')?.text).toBe('.bl-solid{border-left-style:solid}')
         expect(css.create('bl-outset')?.text).toBe('.bl-outset{border-left-style:outset}')
+        expect(css.create('bx-solid')?.text).toBe('.bx-solid{border-inline-style:solid}')
+        expect(css.create('by-ridge')?.text).toBe('.by-ridge{border-block-style:ridge}')
         expect(css.create('font-sm')).toBeUndefined()
         expect(css.create('m-md')).toBeUndefined()
         expect(css.create('sr-only')?.text).toContain('position:absolute')
@@ -203,9 +203,9 @@ describe('@master/css-preset defaultPlan', () => {
         expect(css.create('border-solid')).toBeUndefined()
         expect(css.create('border-l-solid')).toBeUndefined()
         expect(css.create('bg:#fff')?.text).toBe('.bg\\:\\#fff{background-color:#fff}')
-        expect(css.create('b:1')?.text).toBe('.b\\:1{border-width:0.0625rem}')
+        expect(css.create('b:1')?.text).toBe('.b\\:1{border-width:1}')
         expect(css.create('font:sm')?.text).toBe('.font\\:sm{font-size:var(--font-size-sm)}')
-        expect(css.create('font:16')?.text).toBe('.font\\:16{font-size:1rem}')
+        expect(css.create('font:16')?.text).toBe('.font\\:16{font-size:16}')
         expect(css.create('m:sm|md')?.text).toBe('.m\\:sm\\|md{margin:var(--spacing-sm) var(--spacing-md)}')
         expect(css.create('m:sm|-md')?.text).toBe('.m\\:sm\\|-md{margin:var(--spacing-sm) calc(var(--spacing-md) * -1)}')
         expect(css.create('text:2xl')?.text).toContain('font-size:var(--font-size-2xl)')
@@ -235,7 +235,7 @@ describe('@master/css-preset defaultPlan', () => {
         expect(css.create('d:block')).toBeUndefined()
         expect(css.create('view-transition-name:hero')).toBeUndefined()
         expect(css.create('vt-name:hero')).toBeUndefined()
-        expect(nativeCSS.create('perspective-origin:100%|0')?.text).toBe('.perspective-origin\\:100\\%\\|0{perspective-origin:100% 0px}')
+        expect(nativeCSS.create('perspective-origin:100%|0')?.text).toBe('.perspective-origin\\:100\\%\\|0{perspective-origin:100% 0}')
         expect(nativeCSS.create('scroll-ms:1px')?.text).toBe('.scroll-ms\\:1px{scroll-margin-inline-start:1px}')
         expect(nativeCSS.create('scroll-pbe:1px')?.text).toBe('.scroll-pbe\\:1px{scroll-padding-block-end:1px}')
     })

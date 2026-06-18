@@ -1603,31 +1603,46 @@ function parseThemeRule(rule: any, parsed: ParsedDirectives) {
     }
 }
 
-function parseManagedEnumPatternName(source: string) {
-    const pattern = source.trim()
-    if (!pattern) {
-        throw new Error('Managed enum pattern requires a name')
-    }
+const MANAGED_DYNAMIC_SOURCE_KINDS = new Set(['number', 'color', 'image'])
 
+type ParsedManagedPatternName =
+    | ReturnType<typeof parseManagedEnumPatternName>
+    | ReturnType<typeof parseManagedDynamicPatternName>
+
+function parseManagedPatternSegments(pattern: string) {
     const segments = [...pattern.matchAll(/<([^<>]*)>/g)]
     if (segments.length !== 1) {
-        throw new Error('Managed enum pattern must contain exactly one <...> segment')
+        throw new Error('Managed pattern must contain exactly one <...> segment')
     }
 
     const [segment] = segments
     const segmentStart = segment.index
     const segmentEnd = segmentStart + segment[0].length
     if (pattern.slice(0, segmentStart).includes('<') || pattern.slice(segmentEnd).includes('>')) {
-        throw new Error('Managed enum pattern must contain exactly one <...> segment')
+        throw new Error('Managed pattern must contain exactly one <...> segment')
     }
 
-    const prefix = pattern.slice(0, segmentStart)
-    const suffix = pattern.slice(segmentEnd)
+    return {
+        segment,
+        segmentStart,
+        segmentEnd,
+        prefix: pattern.slice(0, segmentStart),
+        suffix: pattern.slice(segmentEnd),
+        rawValues: segment[1].trim()
+    }
+}
+
+function parseManagedEnumPatternName(source: string) {
+    const pattern = source.trim()
+    if (!pattern) {
+        throw new Error('Managed enum pattern requires a name')
+    }
+
+    const { prefix, suffix, rawValues } = parseManagedPatternSegments(pattern)
     if (!prefix || suffix) {
         throw new Error('Managed enum pattern must use a prefix before <...> and no suffix')
     }
 
-    const rawValues = segment[1].trim()
     if (!rawValues) {
         throw new Error('Managed enum pattern cannot be empty')
     }
@@ -1646,6 +1661,7 @@ function parseManagedEnumPatternName(source: string) {
     }
 
     return {
+        kind: 'pattern' as const,
         name: pattern,
         pattern: {
             prefix,
@@ -1654,9 +1670,73 @@ function parseManagedEnumPatternName(source: string) {
     }
 }
 
-function parseManagedEnumPatternNameIfNeeded(source: string) {
+function parseManagedDynamicPatternName(source: string) {
+    const pattern = source.trim()
+    if (!pattern) {
+        throw new Error('Managed dynamic utility requires a name')
+    }
+
+    const { prefix, suffix, rawValues } = parseManagedPatternSegments(pattern)
+    if (!prefix.endsWith(':') || prefix === ':' || suffix) {
+        throw new Error('Managed dynamic utilities must use key:<...> syntax')
+    }
+
+    const key = prefix.slice(0, -1)
+    if (!/^-?[_a-zA-Z][-_a-zA-Z0-9]*$/.test(key)) {
+        throw new Error(`Invalid managed dynamic utility key: ${key}`)
+    }
+    if (!rawValues) {
+        throw new Error('Managed dynamic utility source list cannot be empty')
+    }
+
+    const values = rawValues.split(',').map((value) => value.trim())
+    if (values.some((value) => !value)) {
+        throw new Error('Managed dynamic utility source list cannot contain empty entries')
+    }
+
+    const variableAliasRefs: string[] = []
+    let kind: 'number' | 'color' | 'image' | undefined
+    for (const value of values) {
+        if (value[0] === '~' || value[0] === '=') {
+            const namespace = value.slice(1)
+            if (!/^[_a-zA-Z][-_a-zA-Z0-9]*$/.test(namespace)) {
+                throw new Error(`Invalid managed dynamic utility namespace: ${value}`)
+            }
+            if (!variableAliasRefs.includes(value)) variableAliasRefs.push(value)
+            continue
+        }
+        if (MANAGED_DYNAMIC_SOURCE_KINDS.has(value)) {
+            if (kind && kind !== value) {
+                throw new Error('Managed dynamic utilities only support one raw value kind per entry')
+            }
+            kind = value as 'number' | 'color' | 'image'
+            continue
+        }
+        throw new Error(`Unsupported managed dynamic utility source: ${value}`)
+    }
+
+    return {
+        kind: 'dynamic' as const,
+        name: pattern,
+        dynamic: {
+            key,
+            ...(variableAliasRefs.length ? { variableAliasRefs } : {}),
+            ...(kind ? { kind } : {})
+        }
+    }
+}
+
+function parseManagedPatternName(source: string) {
+    const pattern = source.trim()
+    const { prefix } = parseManagedPatternSegments(pattern)
+    return prefix.endsWith(':')
+        ? parseManagedDynamicPatternName(pattern)
+        : parseManagedEnumPatternName(pattern)
+}
+
+function parseManagedPatternNameIfNeeded(source: string) {
     return source.includes('<') || source.includes('>')
-        ? parseManagedEnumPatternName(source)
+        ? parseManagedPatternName(source)
         : undefined
 }
 
@@ -1711,7 +1791,7 @@ function parseManagedPatternStyleDefinitionBody(
         }
 
         if (item.type === 'compose') {
-            throw new CSSDirectiveError('compose-placement', `@compose is not supported inside managed enum pattern definitions`, item.directiveSource)
+            throw new CSSDirectiveError('compose-placement', `@compose is not supported inside managed pattern definitions`, item.directiveSource)
         }
 
         parseManagedPatternChildRule(item.rule, parsed, definition, directiveName, selectors, atRules)
@@ -1776,27 +1856,29 @@ function parseManagedPatternChildRule(
 
     const compose = parseComposeRule(child, parsed)
     if (compose) {
-        throw new CSSDirectiveError('compose-placement', `@compose is not supported inside managed enum pattern definitions`, compose.directiveSource)
+        throw new CSSDirectiveError('compose-placement', `@compose is not supported inside managed pattern definitions`, compose.directiveSource)
     }
     if (child.type === 'keyframes') {
         throw new Error(`@keyframes is not allowed inside @${directiveName}. Move managed animation definitions to top-level @theme.`)
     }
-    throw new Error(`Managed enum pattern definitions only accept declarations, nested selectors, and nested at-rules`)
+    throw new Error(`Managed pattern definitions only accept declarations, nested selectors, and nested at-rules`)
 }
 
 function parseManagedPatternDefinitionRule(
     child: any,
     parsed: ParsedDirectives,
-    parsedPattern: ReturnType<typeof parseManagedEnumPatternName>,
+    parsedPattern: ParsedManagedPatternName,
     atRules: string[],
     layer: CSSDirectiveLayerName,
     directiveName: ManagedDefinitionDirectiveName
 ) {
     const definition: CSSDirectiveUtilityDefinition = {
         name: parsedPattern.name,
-        type: 'pattern',
+        type: parsedPattern.kind === 'pattern' ? 'pattern' : 'dynamic',
         layer,
-        pattern: parsedPattern.pattern
+        ...(parsedPattern.kind === 'pattern'
+            ? { pattern: parsedPattern.pattern }
+            : { dynamic: parsedPattern.dynamic })
     }
     parseManagedPatternStyleDefinitionBody(
         parsed,
@@ -1876,7 +1958,7 @@ function parseManagedDefinitionDirectiveChildRule(
         const selectorText = selectorSource && parsed.source
             ? parsed.source.slice(selectorSource.range.start, selectorSource.range.end).trim()
             : ''
-        const parsedPattern = parseManagedEnumPatternNameIfNeeded(selectorText)
+        const parsedPattern = parseManagedPatternNameIfNeeded(selectorText)
         const selectorDefinition = parseManagedDefinitionNameSelector(child.value.selectors)
         if (!selectorDefinition) {
             throw createManagedDefinitionNameError(child)
@@ -1973,7 +2055,7 @@ function collectManagedPatternEntryNameMasks(
                 end: statementEnd.delimiterRange.start
             })
             const entryName = source.slice(entryNameRange.start, entryNameRange.end)
-            if (parseManagedEnumPatternNameIfNeeded(entryName)) {
+            if (parseManagedPatternNameIfNeeded(entryName)) {
                 replacements.push({
                     ...entryNameRange,
                     replacement: createManagedPatternNameMask(entryNameRange.end - entryNameRange.start)

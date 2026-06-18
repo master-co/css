@@ -78,7 +78,7 @@
     <script src="https://cdn.master.co/css-runtime@rc"></script>
 </head>
 <body>
-    <h1 class="italic m:12x fg:strong font:40 font:heavy">Hello World</h1>
+    <h1 class="italic m:12x fg:strong font:40px font:heavy">Hello World</h1>
 </body>
 </html>
 ```

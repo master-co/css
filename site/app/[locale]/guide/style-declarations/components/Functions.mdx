@@ -3,8 +3,8 @@ export const code1 = `
     <div class="w:calc(100%-1rem) h:var(--size-sm) bg:rgba(0,0,0,.5)">
 `
 export const code2 = `
-    <!-- @MARK calc(100%-16) --><!-- @MARK $size-sm --><!-- @MARK black/.5 -->
-    <div class="w:calc(100%-16) h:$size-sm bg:black/.5">
+    <!-- @MARK calc(100%-4x) --><!-- @MARK $size-sm --><!-- @MARK black/.5 -->
+    <div class="w:calc(100%-4x) h:$size-sm bg:black/.5">
 `
 
 Write native CSS functions directly when that is the clearest expression of the value.
@@ -12,9 +12,9 @@ Write native CSS functions directly when that is the clearest expression of the 
     {code1}
 </Code>
 
-(o) Combine functions with unit conversion, token shortcuts, and [variable syntax](/reference/variable). <Dropped p1={code1} p2={code2} target="class" />
+(o) Combine functions with multiplier units, token shortcuts, and [variable syntax](/reference/variable). <Dropped p1={code1} p2={code2} target="class" />
 <Code lang="html">
     {code2}
 </Code>
 
-Inside functions, Master CSS still resolves the parts it understands. For example, unitless size values can convert, `$size-sm` references a CSS variable, and color opacity syntax like `black/.5` stays compact.
+Inside functions, Master CSS still resolves the parts it understands. For example, `4x` follows the project base-unit scale, `$size-sm` references a CSS variable, and color opacity syntax like `black/.5` stays compact.

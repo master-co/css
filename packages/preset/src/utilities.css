@@ -685,6 +685,27 @@
 }
 
 @utilities {
+    font:<~font-size,number> {
+        font-size: --value();
+    }
+
+    font:<~font-family> {
+        font-family: --value();
+    }
+
+    font:<~font-weight> {
+        font-weight: --value();
+    }
+
+    bg:<~color,color> {
+        background-color: --value();
+    }
+
+    grid-cols:<number> {
+        display: grid;
+        grid-template-columns: repeat(--value(), minmax(0, 1fr));
+    }
+
     bg-<auto,contain,cover> {
         background-size: --value();
     }
@@ -722,13 +743,11 @@
     }
 
     bx-<solid,dashed,dotted,double,groove,ridge,inset,outset,none,hidden> {
-        border-left-style: --value();
-        border-right-style: --value();
+        border-inline-style: --value();
     }
 
     by-<solid,dashed,dotted,double,groove,ridge,inset,outset,none,hidden> {
-        border-top-style: --value();
-        border-bottom-style: --value();
+        border-block-style: --value();
     }
 
     decoration-<solid,double,dotted,dashed,wavy> {

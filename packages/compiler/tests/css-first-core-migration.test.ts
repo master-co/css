@@ -90,7 +90,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
         expect(css.componentsLayer.text).toContain('.btn:disabled>span{display:block}')
         expect(css.componentsLayer.text).toContain('.btn\\:interactive:is(:hover,:focus-visible){display:inline-flex;color:var(--color-primary)}')
         expect(css.utilitiesLayer.text).toContain('.content-auto{content-visibility:auto}')
-        expect(css.utilitiesLayer.text).toContain('.m\\:card{margin:calc(var(--spacing-card) / 16 * 1rem)}')
+        expect(css.utilitiesLayer.text).toContain('.m\\:card{margin:var(--spacing-card)}')
     })
 
     test('lowers managed enum patterns without replacing static utility precedence', () => {
@@ -135,6 +135,59 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
         expect(css.create('badge-success')?.layerName).toBe('components')
     })
 
+    test('lowers managed dynamic colon entries without restoring fixed keyword aliases', () => {
+        const { plan } = compileCSSPlan(`
+            @theme {
+                --font-size-sm: .875rem;
+                --font-family-sans: ui-sans-serif;
+                --font-weight-bold: 700;
+                --color-red: red;
+            }
+
+            @utilities {
+                font:<~font-size,number> {
+                    font-size: --value();
+                }
+
+                font:<~font-family> {
+                    font-family: --value();
+                }
+
+                font:<~font-weight> {
+                    font-weight: --value();
+                }
+
+                bg:<~color,color> {
+                    background-color: --value();
+                }
+
+                grid-cols:<number> {
+                    display: grid;
+                    grid-template-columns: repeat(--value(), minmax(0, 1fr));
+                }
+            }
+        `)
+
+        expect(plan.utilities?.find((utility) => utility.id === 'font:<~font-size,number>')).toMatchObject({
+            kind: 'number',
+            variableAliasRefs: ['~font-size'],
+            matchers: expect.arrayContaining([
+                { type: 'variable', keys: ['font'] },
+                { type: 'value', keys: ['font'] }
+            ])
+        })
+
+        const css = createCSS(plan)
+        expect(css.create('font:sm')?.text).toBe('.font\\:sm{font-size:var(--font-size-sm)}')
+        expect(css.create('font:sans')?.text).toBe('.font\\:sans{font-family:var(--font-family-sans)}')
+        expect(css.create('font:bold')?.text).toBe('.font\\:bold{font-weight:var(--font-weight-bold)}')
+        expect(css.create('font:16')?.text).toBe('.font\\:16{font-size:16}')
+        expect(css.create('bg:red')?.text).toBe('.bg\\:red{background-color:var(--color-red)}')
+        expect(css.create('bg:#fff')?.text).toBe('.bg\\:\\#fff{background-color:#fff}')
+        expect(css.create('grid-cols:3')?.text).toBe('.grid-cols\\:3{display:grid;grid-template-columns:repeat(3, minmax(0, 1fr))}')
+        expect(css.create('bg:cover')).toBeUndefined()
+    })
+
     test('rejects unsupported managed enum pattern syntax', () => {
         expect(() => compileCSSPlan(`
             @utilities {
@@ -158,7 +211,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
                     color: --value();
                 }
             }
-        `, { basePlan: defaultPlan })).toThrow('Managed enum pattern must contain exactly one <...> segment')
+        `, { basePlan: defaultPlan })).toThrow('Managed pattern must contain exactly one <...> segment')
 
         expect(() => compileCSSPlan(`
             @utilities {
@@ -182,7 +235,49 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
                     text-align: --value();
                 }
             }
-        `, { basePlan: defaultPlan })).toThrow('--value() is only supported inside managed enum pattern declarations')
+        `, { basePlan: defaultPlan })).toThrow('--value() is only supported inside managed pattern declarations')
+    })
+
+    test('rejects unsupported managed dynamic colon syntax', () => {
+        expect(() => compileCSSPlan(`
+            @utilities {
+                x:<> {
+                    color: --value();
+                }
+            }
+        `, { basePlan: defaultPlan })).toThrow('Managed dynamic utility source list cannot be empty')
+
+        expect(() => compileCSSPlan(`
+            @utilities {
+                x:<~> {
+                    color: --value();
+                }
+            }
+        `, { basePlan: defaultPlan })).toThrow('Invalid managed dynamic utility namespace')
+
+        expect(() => compileCSSPlan(`
+            @utilities {
+                x:<raw> {
+                    color: --value();
+                }
+            }
+        `, { basePlan: defaultPlan })).toThrow('Unsupported managed dynamic utility source')
+
+        expect(() => compileCSSPlan(`
+            @utilities {
+                x:<number,color> {
+                    color: --value();
+                }
+            }
+        `, { basePlan: defaultPlan })).toThrow('Managed dynamic utilities only support one raw value kind per entry')
+
+        expect(() => compileCSSPlan(`
+            @utilities {
+                :<number> {
+                    color: --value();
+                }
+            }
+        `, { basePlan: defaultPlan })).toThrow('Managed dynamic utilities must use key:<...> syntax')
     })
 
     test('does not consume @utility as a Master CSS directive', () => {
@@ -486,9 +581,9 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
         const css = createCSS(plan)
         expect(css.create('background:stripe')?.text).toBe('.background\\:stripe{background:var(--background-stripe)}')
         expect(css.create('shadow:panel')?.text).toBe('.shadow\\:panel{box-shadow:var(--box-shadow-panel)}')
-        expect(css.create('p:card')?.text).toBe('.p\\:card{padding:calc(var(--spacing-card) / 16 * 1rem)}')
-        expect(css.create('gap:card')?.text).toBe('.gap\\:card{gap:calc(var(--spacing-card) / 16 * 1rem)}')
-        expect(css.create('m:card')?.text).toBe('.m\\:card{margin:calc(var(--spacing-card) / 16 * 1rem)}')
+        expect(css.create('p:card')?.text).toBe('.p\\:card{padding:var(--spacing-card)}')
+        expect(css.create('gap:card')?.text).toBe('.gap\\:card{gap:var(--spacing-card)}')
+        expect(css.create('m:card')?.text).toBe('.m\\:card{margin:var(--spacing-card)}')
         expect(css.create('leading:body')?.text).toBe('.leading\\:body{line-height:var(--leading-body)}')
         expect(css.create('line-height:body')?.text).toBe('.line-height\\:body{line-height:var(--leading-body)}')
         expect(css.create('b:brand')?.text).toBe('.b\\:brand{border-color:var(--color-line-brand)}')
@@ -543,7 +638,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
         expect(css.text).toContain('display:inline-flex')
         expect(css.text).toContain('background-color:color-mix(in oklab,var(--color-primary) 90%,transparent)')
         expect(css.text).toContain('opacity:0.7')
-        expect(css.text).toContain('transform:translateY(-0.3125rem)')
+        expect(css.text).toContain('transform:translateY(-5)')
         expect(result.css).toContain('.list>li{text-align:center}')
     })
 
@@ -588,11 +683,11 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
         `, { basePlan: defaultPlan })
         const css = createCSS(plan)
 
-        expect(css.create('m:x1')?.text).toBe('.m\\:x1{margin:calc(var(--spacing-x1) / 16 * 1rem)}')
-        expect(css.create('m:$(spacing-x1)')?.text).toBe('.m\\:\\$\\(spacing-x1\\){margin:calc(var(--spacing-x1) / 16 * 1rem)}')
+        expect(css.create('m:x1')?.text).toBe('.m\\:x1{margin:var(--spacing-x1)}')
+        expect(css.create('m:$(spacing-x1)')?.text).toBe('.m\\:\\$\\(spacing-x1\\){margin:var(--spacing-x1)}')
         expect(css.create('line-height:x1')?.text).toBe('.line-height\\:x1{line-height:var(--leading-x1)}')
-        expect(css.create('w:-11x')?.text).toBe('.w\\:-11x{width:calc(var(--width-11x) / 16 * -1rem)}')
-        expect(css.create('w:calc(-2+$(spacing-x1))')?.text).toBe('.w\\:calc\\(-2\\+\\$\\(spacing-x1\\)\\){width:calc(-0.125rem + var(--spacing-x1) / 16 * 1rem)}')
+        expect(css.create('w:-11x')?.text).toBe('.w\\:-11x{width:calc(var(--width-11x) * -1)}')
+        expect(css.create('w:calc(-2+$(spacing-x1))')?.text).toBe('.w\\:calc\\(-2\\+\\$\\(spacing-x1\\)\\){width:calc(-2 + var(--spacing-x1))}')
 
         css.add('m:x1', 'm:-x1', 'line-height:x1')
         expect(css.themeLayer.text).toContain(':root{')
@@ -657,7 +752,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
         css.add('bg:primary', 'fg:brand', 'm:card', 'fg:inline-regular')
         expect(css.utilitiesLayer.text).toContain('.bg\\:primary{background-color:#123}')
         expect(css.utilitiesLayer.text).toContain('.fg\\:brand{color:#123}')
-        expect(css.utilitiesLayer.text).toContain('.m\\:card{margin:1rem}')
+        expect(css.utilitiesLayer.text).toContain('.m\\:card{margin:16}')
         expect(css.utilitiesLayer.text).toContain('.fg\\:inline-regular{color:var(--color-inline-regular)}')
         expect(css.themeLayer.text).toContain(':root{--color-inline-regular:var(--color-regular);--color-regular:#456}')
         expect(css.themeLayer.text).not.toContain('--color-primary:#123')

@@ -6,12 +6,12 @@ const syntaxes = [
     ['scroll-pr:`size`'],
     ['scroll-px:`size`'],
     ['scroll-py:`size`'],
-    ['scroll-padding-inline:`size`'],
-    ['scroll-padding-block:`size`'],
     ['scroll-ps:`size`'],
     ['scroll-pe:`size`'],
     ['scroll-pbs:`size`'],
     ['scroll-pbe:`size`'],
+    ['scroll-padding-inline:`size`'],
+    ['scroll-padding-block:`size`'],
 ]
 
 export default syntaxes

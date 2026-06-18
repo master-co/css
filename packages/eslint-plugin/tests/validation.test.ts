@@ -6,7 +6,7 @@ import { createPresetPlan } from './helpers/create-preset-plan'
 jsxTester.run('invalid', rule, {
     valid: [
         {
-            code: `<div class="bg:black fg:white font:24 m:8 p:8">Simple, basic</div>`,
+            code: `<div class="bg:black fg:white font:24px m:8 p:8">Simple, basic</div>`,
         },
         {
             code: `<div class={\`f:\${ fontSize }px\`}>TemplateLiteral</div>`,
@@ -65,7 +65,7 @@ createTester({
                 utilities: [
                     {
                         name: 'btn',
-                        type: -4,
+                        type: -2,
                         layer: 'components',
                         rules: [
                             { selector: '&', declarations: { display: 'block' } }

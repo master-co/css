@@ -1,13 +1,13 @@
 export default function Home() {
     return (
         <main className="min-h:100vh p:10x bg:surface fg:strong font:sans">
-            <section className="max-w:720 mx:auto">
-                <p className="text:14 fg:primary mb:2x">Next.js Adapter API</p>
-                <h1 className="font:48 font:heavy tracking:-1">Master CSS pre-rendered by Next build</h1>
-                <p className="font:20 line-height:1.5 mt:4x fg:slate">
+            <section className="max-w:720px mi:auto">
+                <p className="text:14px fg:primary mb:2x">Next.js Adapter API</p>
+                <h1 className="font:48px font:heavy tracking:-1">Master CSS pre-rendered by Next build</h1>
+                <p className="font:20px line-height:1.5 mt:4x fg:slate">
                     This page is statically rendered by Next.js, then processed by the Master CSS adapter.
                 </p>
-                <a className="inline-flex align-items:center h:44 px:5x mt:6x bg:black fg:white r:6 text:14 font:semibold" href="https://css.master.co">
+                <a className="inline-flex align-items:center h:44px pi:5x mt:6x bg:black fg:white r:6px text:14px font:semibold" href="https://css.master.co">
                     Open Master CSS
                 </a>
             </section>

@@ -77,6 +77,7 @@ describe.concurrent('compiled selector parser parity', () => {
         [':first:focus:disabled', '&:first-child:focus:disabled'],
         [':not(:last)', '&:not(:last-child)'],
         [':has(:first)', '&:has(:first-child)'],
+        [':before', '&::before'],
         ['::first-letter', '&::first-letter'],
         ['>.title', '&>.title'],
         ['*', '&*'],

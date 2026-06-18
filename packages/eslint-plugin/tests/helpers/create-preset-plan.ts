@@ -29,11 +29,11 @@ function normalizeUtility(utility: PlanUtilityDraft, order: number): NonNullable
         return utility as NonNullable<MasterCSSPlan['utilities']>[number]
     }
     const name = utility.name || utility.id?.replace(/^\./, '') || ''
-    const id = utility.id || (utility.type === -4 || utility.layer === 'components' ? `.${name}` : name)
+    const id = utility.id || (utility.type === -2 || utility.layer === 'components' ? `.${name}` : name)
     return {
         id,
         name,
-        type: utility.type ?? -4,
+        type: utility.type ?? -2,
         order: utility.order ?? order,
         layer: utility.layer,
         emit: {

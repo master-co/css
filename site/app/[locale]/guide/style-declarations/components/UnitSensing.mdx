@@ -3,20 +3,20 @@ export const code1 =`
     <p class="rotate:30deg animation-duration:200ms">
 `
 export const code2 =`
-    <!-- @MARK 30 --><!-- @MARK 200 -->
-    <p class="rotate:30 animation-duration:200">
+    <!-- @MARK 30deg --><!-- @MARK .2s -->
+    <p class="rotate:30deg animation-duration:.2s">
 `
 
-Some properties have an obvious default unit. Master CSS can infer that unit from the property instead of requiring you to type it every time.
+Master CSS does not guess property-specific units for bare numbers. Write the unit when the CSS value needs one.
 <Code lang="html">
     {code1}
 </Code>
 
-(o) Omit the unit when the property can infer it clearly. <Dropped p1={code1} p2={code2} target="class" />
+(o) Keep angle and time units explicit. <Dropped p1={code1} p2={code2} target="class" />
 <Code lang="html">
     {code2}
 </Code>
 
-When a rotation value is written without a unit, it is interpreted as `deg` instead of invalid `px`.
+`rotate:30` emits `rotate: 30`, which is not a valid angle in normal CSS. Use `rotate:30deg`.
 
-Similarly, time properties without units are interpreted as `ms`. You can still write explicit values such as `.2s` when seconds read better.
+Likewise, timing values should include `ms` or `s`, such as `animation-duration:200ms` or `animation-duration:.2s`.

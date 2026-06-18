@@ -4,8 +4,8 @@ const syntaxes = [
     ['bb:`size`'],
     ['bl:`size`'],
     ['br:`size`'],
-    ['bx:`size`'],
-    ['by:`size`'],
+    ['border-inline-width:`size`'],
+    ['border-block-width:`size`'],
 ]
 
 export default syntaxes

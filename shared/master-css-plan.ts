@@ -115,7 +115,6 @@ export interface MasterCSSPlanVariant {
 export type MasterCSSPlanVariants = MasterCSSPlanVariant[]
 
 export interface MasterCSSPlanFunction {
-    unit?: string
     op?: MasterCSSPlanFunctionOp
     options?: unknown
 }
@@ -126,7 +125,6 @@ export type MasterCSSPlanKeyAliases = Record<string, string>
 export interface MasterCSSPlanNativeValueNamespace {
     properties: string[]
     variableAliasRefs: string[]
-    unit?: string
 }
 
 export type MasterCSSPlanNativeValueNamespaces = MasterCSSPlanNativeValueNamespace[]
@@ -180,8 +178,6 @@ export interface MasterCSSPlanUtility {
     namespaces?: string[]
     implicitNamespace?: boolean
     separators?: string[]
-    unit?: string
-    includeAnimations?: boolean
     atRules?: string[]
     transform?: MasterCSSPlanTransformOp
     variableAliases?: MasterCSSPlanVariableAliasSet

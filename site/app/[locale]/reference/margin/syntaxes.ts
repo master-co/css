@@ -4,8 +4,9 @@ const syntaxes = [
     ['ml:`size`'],
     ['mr:`size`'],
     ['m:`size`'],
-    ['mx:`size`'],
+    ['mi:`size`'],
     ['my:`size`'],
+    ['margin-block:`size`'],
 ]
 
 export default syntaxes

@@ -10,7 +10,7 @@ import {
 
 class MemoryKV {
     values = new Map<string, string>()
-    puts: Array<{ key: string, value: string, options?: { expirationTtl?: number } }> = []
+    puts: { key: string, value: string, options?: { expirationTtl?: number } }[] = []
 
     async get(key: string) {
         return this.values.get(key) || null

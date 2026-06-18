@@ -81,11 +81,10 @@ describe.concurrent('MasterCSSPlan execution', () => {
                 {
                     id: 'margin',
                     name: 'margin',
-                    type: UtilityType.NativeShorthand,
+                    type: UtilityType.Shorthand,
                     order: 0,
                     key: 'm',
                     keys: ['m'],
-                    unit: 'rem',
                     emit: { type: 'property', property: 'margin' },
                     matchers: [
                         { type: 'variable', keys: ['m'] },
@@ -101,7 +100,7 @@ describe.concurrent('MasterCSSPlan execution', () => {
         }
 
         expect(createCSS(plan).create('m:card')?.text)
-            .toBe('.m\\:card{margin:calc(var(--spacing-card) / 16 * 1rem)}')
+            .toBe('.m\\:card{margin:var(--spacing-card)}')
     })
 
     it('resolves variable alias refs during plan loading without serialized namespaces', () => {
@@ -122,11 +121,10 @@ describe.concurrent('MasterCSSPlan execution', () => {
                 {
                     id: 'margin',
                     name: 'margin',
-                    type: UtilityType.NativeShorthand,
+                    type: UtilityType.Shorthand,
                     order: 0,
                     key: 'm',
                     keys: ['m'],
-                    unit: 'rem',
                     variableAliasRefs: ['~spacing'],
                     emit: { type: 'property', property: 'margin' },
                     matchers: [{ type: 'variable', keys: ['m'] }]
@@ -134,7 +132,7 @@ describe.concurrent('MasterCSSPlan execution', () => {
                 {
                     id: 'color',
                     name: 'color',
-                    type: UtilityType.Native,
+                    type: UtilityType.Normal,
                     order: 1,
                     key: 'fg',
                     keys: ['fg'],
@@ -145,7 +143,7 @@ describe.concurrent('MasterCSSPlan execution', () => {
                 {
                     id: 'border-color',
                     name: 'border-color',
-                    type: UtilityType.Native,
+                    type: UtilityType.Normal,
                     order: 2,
                     key: 'border',
                     keys: ['border'],
@@ -156,11 +154,10 @@ describe.concurrent('MasterCSSPlan execution', () => {
                 {
                     id: 'border-radius',
                     name: 'border-radius',
-                    type: UtilityType.Native,
+                    type: UtilityType.Normal,
                     order: 3,
                     key: 'r',
                     keys: ['r'],
-                    unit: 'rem',
                     variableAliasRefs: ['~radius'],
                     emit: { type: 'property', property: 'border-radius' },
                     matchers: [{ type: 'variable', keys: ['r'] }]
@@ -173,13 +170,13 @@ describe.concurrent('MasterCSSPlan execution', () => {
         const css = createCSS(plan)
 
         expect(css.create('m:card')?.text)
-            .toBe('.m\\:card{margin:calc(var(--spacing-card) / 16 * 1rem)}')
+            .toBe('.m\\:card{margin:var(--spacing-card)}')
         expect(css.create('fg:muted')?.text)
             .toBe('.fg\\:muted{color:var(--color-text-muted)}')
         expect(css.create('border:muted')?.text)
             .toBe('.border\\:muted{border-color:var(--color-line-muted)}')
         expect(css.create('r:card')?.text)
-            .toBe('.r\\:card{border-radius:calc(var(--radius-card) / 16 * 1rem)}')
+            .toBe('.r\\:card{border-radius:var(--radius-card)}')
     })
 
     it('rejects v1 plans instead of compatibility-loading them', () => {
@@ -208,11 +205,10 @@ describe.concurrent('MasterCSSPlan execution', () => {
                 {
                     id: 'margin',
                     name: 'margin',
-                    type: UtilityType.NativeShorthand,
+                    type: UtilityType.Shorthand,
                     order: 0,
                     key: 'm',
                     keys: ['m'],
-                    unit: 'rem',
                     emit: { type: 'property', property: 'margin' },
                     matchers: [{ type: 'key', keys: ['m'] }]
                 }
@@ -223,7 +219,7 @@ describe.concurrent('MasterCSSPlan execution', () => {
         }
 
         expect(createCSS(plan).create('m:16@card')?.text)
-            .toBe('@media (width>=48rem){.m\\:16\\@card{margin:1rem}}')
+            .toBe('@media (width>=48rem){.m\\:16\\@card{margin:16}}')
     })
 
     it('serializes generated runtime manifest rules in layer order', () => {
@@ -266,7 +262,7 @@ describe.concurrent('MasterCSSPlan execution', () => {
                 {
                     id: 'color',
                     name: 'color',
-                    type: UtilityType.Native,
+                    type: UtilityType.Normal,
                     order: 1,
                     key: 'fg',
                     keys: ['fg'],
@@ -277,11 +273,10 @@ describe.concurrent('MasterCSSPlan execution', () => {
                 {
                     id: 'animation',
                     name: 'animation',
-                    type: UtilityType.Native,
+                    type: UtilityType.Normal,
                     order: 2,
                     key: 'animation',
                     keys: ['animation'],
-                    includeAnimations: true,
                     emit: { type: 'property', property: 'animation' },
                     matchers: [{ type: 'key', keys: ['animation'] }]
                 },

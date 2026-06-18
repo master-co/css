@@ -19,7 +19,7 @@ it('render css text into <head>', async () => {
                 <style></style>
             </head>
             <body>
-                <h1 class="text-center ml:0>:is(a,button):first font:32">Hello World</h1>
+                <h1 class="text-center ml:0>:is(a,button):first font:32px">Hello World</h1>
             </body>
         </html>
     `)
@@ -29,9 +29,9 @@ it('render css text into <head>', async () => {
             <head>
                 <link rel="styleSheet">
                 <style></style>
-            <style id="master">@layer utilities{.font\\:32{font-size:2rem}.text-center{text-align:center}.ml\\:0\\>\\:is\\(a\\,button\\)\\:first>:is(a,button):first-child{margin-left:0rem}}</style></head>
+            <style id="master">@layer utilities{.font\\:32px{font-size:32px}.text-center{text-align:center}.ml\\:0\\>\\:is\\(a\\,button\\)\\:first>:is(a,button):first-child{margin-left:0}}</style></head>
             <body>
-                <h1 class="text-center ml:0>:is(a,button):first font:32">Hello World</h1>
+                <h1 class="text-center ml:0>:is(a,button):first font:32px">Hello World</h1>
             </body>
         </html>
     `)
@@ -48,7 +48,7 @@ it('render css text into head and create <style id="master">', async () => {
                 <style id="master"></style>
             </head>
             <body>
-                <h1 class="top:10 font:48">Hello World</h1>
+                <h1 class="top:10px font:48px">Hello World</h1>
             </body>
         </html>
     `)
@@ -58,10 +58,10 @@ it('render css text into head and create <style id="master">', async () => {
             <head>
                 <link rel="styleSheet">
                 <style></style>
-                <style id="master">@layer utilities{.font\\:48{font-size:3rem}.top\\:10{top:0.625rem}}</style>
+                <style id="master">@layer utilities{.font\\:48px{font-size:48px}.top\\:10px{top:10px}}</style>
             </head>
             <body>
-                <h1 class="top:10 font:48">Hello World</h1>
+                <h1 class="top:10px font:48px">Hello World</h1>
             </body>
         </html>
     `)

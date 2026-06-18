@@ -13,7 +13,7 @@ it('basic extract', async () => {
     const cwd = fs.mkdtempSync(join(os.tmpdir(), 'master-css-cli-extract-'))
     try {
         fs.writeFileSync(join(cwd, 'a.html'), '<h1 class="bg:primary fg:primary">Hello World</h1>', { flag: 'w' })
-        fs.writeFileSync(join(cwd, 'b.html'), '<h1 class="m:12x text-center font:sans font:heavy font:48">Hello World</h1>', { flag: 'w' })
+        fs.writeFileSync(join(cwd, 'b.html'), '<h1 class="m:12x text-center font:sans font:heavy font:48px">Hello World</h1>', { flag: 'w' })
         fs.writeFileSync(join(cwd, 'main.css'), `
             @import "@master/css";
             @theme {
@@ -21,7 +21,7 @@ it('basic extract', async () => {
             }
         `, { flag: 'w' })
         execFileSync(process.execPath, ['--import', tsxLoaderURL, cliFilepath, 'extract'], { cwd })
-        expect(readFileSync(join(cwd, 'master.css')).toString()).toMatch(/(fg\\:primary|m\\:12x|text\\:center|font\\:sans|font\\:heavy|font\\:48)/)
+        expect(readFileSync(join(cwd, 'master.css')).toString()).toMatch(/(fg\\:primary|m\\:12x|text-center|font\\:sans|font\\:heavy|font\\:48px)/)
     } finally {
         fs.rmSync(cwd, { recursive: true, force: true })
     }

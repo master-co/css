@@ -1,102 +1,38 @@
 import type { MasterCSSPlanFunctions } from 'shared/master-css-plan'
 
 const functions = {
-    "translate": {
-        "unit": "rem"
-    },
-    "translateX": {
-        "unit": "rem"
-    },
-    "translateY": {
-        "unit": "rem"
-    },
-    "translateZ": {
-        "unit": "rem"
-    },
-    "translate3d": {
-        "unit": "rem"
-    },
-    "perspective": {
-        "unit": "rem"
-    },
-    "skew": {
-        "unit": "deg"
-    },
-    "skewX": {
-        "unit": "deg"
-    },
-    "skewY": {
-        "unit": "deg"
-    },
-    "skewZ": {
-        "unit": "deg"
-    },
-    "skew3d": {
-        "unit": "deg"
-    },
-    "rotate": {
-        "unit": "deg"
-    },
-    "rotateX": {
-        "unit": "deg"
-    },
-    "rotateY": {
-        "unit": "deg"
-    },
-    "rotateZ": {
-        "unit": "deg"
-    },
-    "rotate3d": {
-        "unit": "deg"
-    },
-    "blur": {
-        "unit": "rem"
-    },
-    "drop-shadow": {
-        "unit": "rem"
-    },
-    "hue-rotate": {
-        "unit": "deg"
-    },
-    "rgb": {
-        "unit": ""
-    },
-    "rgba": {
-        "unit": ""
-    },
-    "hsl": {
-        "unit": ""
-    },
-    "hsla": {
-        "unit": ""
-    },
-    "color": {
-        "unit": ""
-    },
-    "color-contrast": {
-        "unit": ""
-    },
-    "color-mix": {
-        "unit": ""
-    },
-    "hwb": {
-        "unit": ""
-    },
-    "lab": {
-        "unit": ""
-    },
-    "lch": {
-        "unit": ""
-    },
-    "oklab": {
-        "unit": ""
-    },
-    "oklch": {
-        "unit": ""
-    },
-    "light-dark": {
-        "unit": ""
-    },
+    "translate": {},
+    "translateX": {},
+    "translateY": {},
+    "translateZ": {},
+    "translate3d": {},
+    "perspective": {},
+    "skew": {},
+    "skewX": {},
+    "skewY": {},
+    "skewZ": {},
+    "skew3d": {},
+    "rotate": {},
+    "rotateX": {},
+    "rotateY": {},
+    "rotateZ": {},
+    "rotate3d": {},
+    "blur": {},
+    "drop-shadow": {},
+    "hue-rotate": {},
+    "rgb": {},
+    "rgba": {},
+    "hsl": {},
+    "hsla": {},
+    "color": {},
+    "color-contrast": {},
+    "color-mix": {},
+    "hwb": {},
+    "lab": {},
+    "lch": {},
+    "oklab": {},
+    "oklch": {},
+    "light-dark": {},
     "clamp": {
         "op": "core.math",
         "options": {
@@ -104,36 +40,20 @@ const functions = {
             "wrapArguments": true
         }
     },
-    "repeat": {
-        "unit": ""
-    },
+    "repeat": {},
     "linear-gradient": {},
     "radial-gradient": {},
     "conic-gradient": {},
     "repeating-linear-gradient": {},
     "repeating-radial-gradient": {},
     "repeating-conic-gradient": {},
-    "matrix": {
-        "unit": ""
-    },
-    "matrix3d": {
-        "unit": ""
-    },
-    "scale": {
-        "unit": ""
-    },
-    "scale3d": {
-        "unit": ""
-    },
-    "scaleX": {
-        "unit": ""
-    },
-    "scaleY": {
-        "unit": ""
-    },
-    "scaleZ": {
-        "unit": ""
-    },
+    "matrix": {},
+    "matrix3d": {},
+    "scale": {},
+    "scale3d": {},
+    "scaleX": {},
+    "scaleY": {},
+    "scaleZ": {},
     "$": {
         "op": "core.variable"
     },

@@ -21,7 +21,7 @@ const originHTMLText = dedent`
         <meta name="viewport" content="width=device-width, initial-scale=1">
     </head>
     <body>
-        <h1 class="font:heavy font:48 btn hmr-test">Hello World</h1>
+        <h1 class="font:heavy font:48px btn hmr-test">Hello World</h1>
         <button class="bg:primary">Submit</button>
     </body>
     </html>
@@ -96,12 +96,12 @@ it('start watch process', async () => {
     ])
     const fileCSSText = await waitForCSSContent((css) => [
         'font:heavy',
-        'font:48',
+        'font:48px',
         'bg:primary',
         'btn'
     ].every((eachClass) => css.includes(cssEscape(eachClass))))
     expect(fileCSSText).toContain(cssEscape('font:heavy'))
-    expect(fileCSSText).toContain(cssEscape('font:48'))
+    expect(fileCSSText).toContain(cssEscape('font:48px'))
     expect(fileCSSText).toContain(cssEscape('bg:primary'))
     expect(fileCSSText).toContain(cssEscape('btn'))
 }, 120000)

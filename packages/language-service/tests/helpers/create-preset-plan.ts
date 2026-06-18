@@ -1,5 +1,6 @@
 import type { MasterCSSPlan } from '@master/css'
 import defaultPlanJSON from '@master/css-preset/default-plan.json' with { type: 'json' }
+import UtilityType from 'shared/utility-type'
 
 const defaultPlan = defaultPlanJSON as unknown as MasterCSSPlan
 
@@ -28,11 +29,11 @@ function normalizeUtility(utility: PlanUtilityDraft, order: number): NonNullable
         return utility as NonNullable<MasterCSSPlan['utilities']>[number]
     }
     const name = utility.name || utility.id?.replace(/^\./, '') || ''
-    const id = utility.id || (utility.type === -4 || utility.layer === 'components' ? `.${name}` : name)
+    const id = utility.id || (utility.type === UtilityType.Static || utility.layer === 'components' ? `.${name}` : name)
     return {
         id,
         name,
-        type: utility.type ?? -4,
+        type: utility.type ?? UtilityType.Static,
         order: utility.order ?? order,
         layer: utility.layer,
         emit: {

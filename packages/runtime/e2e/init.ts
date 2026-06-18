@@ -127,11 +127,11 @@ function createRuntimeVariables(defaultVariables: RuntimePlanVariable[], inputVa
 function normalizeUtility(utility: RuntimePlanUtilityInput, order: number): NonNullable<MasterCSSPlan['utilities']>[number] {
     if (utility.emit && utility.matchers) return utility as NonNullable<MasterCSSPlan['utilities']>[number]
     const name = utility.name || utility.id || ''
-    const isStatic = utility.type === -4 || utility.type === undefined
+    const isStatic = utility.type === -2 || utility.type === undefined
     return {
         id: utility.id || (isStatic ? `.${name}` : name),
         name,
-        type: utility.type ?? -4,
+        type: utility.type ?? -2,
         order: utility.order ?? order,
         layer: utility.layer,
         emit: {

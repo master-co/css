@@ -1,1 +1,1 @@
-@layer utilities{.font\:24{font-size:1.5rem}@media (width>=80rem){.font\:48\@desktop{font-size:3rem}}}
+@layer utilities{.font\:24px{font-size:24px}@media (width>=80rem){.font\:48px\@desktop{font-size:48px}}}

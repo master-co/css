@@ -6,6 +6,8 @@ const syntaxes = [
     ['br:`style`'],
     ['bx:`style`'],
     ['by:`style`'],
+    ['border-inline-style:`style`'],
+    ['border-block-style:`style`'],
     'b-none',
     'b-hidden',
     'b-dotted',
@@ -16,6 +18,8 @@ const syntaxes = [
     'b-ridge',
     'b-inset',
     'b-outset',
+    'bx-solid',
+    'by-solid',
 ]
 
 export default syntaxes

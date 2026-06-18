@@ -7,7 +7,7 @@ export default {
     utilities: [
         {
             name: 'btn',
-            type: -4,
+            type: -2,
             layer: 'components',
             rules: [
                 { selector: '&', declarations: { display: 'inline-flex' } },

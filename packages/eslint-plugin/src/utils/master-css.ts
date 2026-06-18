@@ -1,6 +1,7 @@
 import { compareRulePriority, type MasterCSS, type MasterCSSPlan } from '@master/css'
 import { createCSSWithNativeDeclarations as createCSS } from '@master/css-validator'
 import { createRequire } from 'node:module'
+import UtilityType from 'shared/utility-type'
 
 export type { MasterCSS, MasterCSSPlan }
 const require = createRequire(import.meta.url)
@@ -12,8 +13,6 @@ export const CLASS_DECLARATIONS: string[] = []
 export const CLASS_FUNCTIONS = ['clsx', 'cva', 'ctl', 'cv', 'class', 'classnames', 'classVariant', 'styled(?:\\s+)?(?:\\.\\w+)?', 'classList(?:\\s+)?\\.(?:add|remove|toggle|replace)']
 
 const LAYER_ORDER = ['theme', 'base', 'defaults', 'components', 'utilities']
-const STATIC_UTILITY_TYPE = -4
-
 function stable(value: unknown): string {
     if (!value || typeof value !== 'object') return JSON.stringify(value)
     if (Array.isArray(value)) return `[${value.map(stable).join(',')}]`
@@ -55,7 +54,7 @@ function getReadableGroupOrder(rule: { atRules?: unknown, mode?: unknown, select
 
 function getReadableTypeOrder(rule: { fixedClass?: string, type?: number }) {
     if (rule.fixedClass) return 0
-    if (rule.type === STATIC_UTILITY_TYPE) return 1
+    if (rule.type === UtilityType.Static) return 1
     return 2
 }
 

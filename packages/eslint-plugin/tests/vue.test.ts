@@ -3,7 +3,7 @@ import { jsxTester } from './testers'
 
 jsxTester.run('vue class order', rule, {
     valid: [
-        { code: `<div class="m:8 p:8 bg:black fg:white font:24">Simple, basic</div>` },
+        { code: `<div class="bg:black fg:white font:24 m:8 p:8">Simple, basic</div>` },
         {
             code: `<template><div :class="[condition && 'm:8 p:8', , null, false]">Sparse array</div></template>`,
             filename: 'test.vue',
@@ -15,7 +15,7 @@ jsxTester.run('vue class order', rule, {
     invalid: [
         {
             code: `<template><div class="m:8 bg:black p:8 fg:white font:24">Enhancing readability</div></template>`,
-            output: `<template><div class="m:8 p:8 bg:black fg:white font:24">Enhancing readability</div></template>`,
+            output: `<template><div class="bg:black fg:white font:24 m:8 p:8">Enhancing readability</div></template>`,
             errors: [{ messageId: 'invalidClassOrder' }],
             filename: 'test.vue',
             languageOptions: {
@@ -24,7 +24,7 @@ jsxTester.run('vue class order', rule, {
         },
         {
             code: `<template><div class="m:8 bg:black p:8 fg:white font:24">Classnames will be ordered</div></template>`,
-            output: `<template><div class="m:8 p:8 bg:black fg:white font:24">Classnames will be ordered</div></template>`,
+            output: `<template><div class="bg:black fg:white font:24 m:8 p:8">Classnames will be ordered</div></template>`,
             errors: [{ messageId: 'invalidClassOrder' }],
             filename: 'test.vue',
             languageOptions: {
@@ -33,7 +33,7 @@ jsxTester.run('vue class order', rule, {
         },
         {
             code: `<template><div :class="['m:8 bg:black p:8 fg:white font:24']">Enhancing readability 2</div></template>`,
-            output: `<template><div :class="['m:8 p:8 bg:black fg:white font:24']">Enhancing readability 2</div></template>`,
+            output: `<template><div :class="['bg:black fg:white font:24 m:8 p:8']">Enhancing readability 2</div></template>`,
             errors: [{ messageId: 'invalidClassOrder' }],
             filename: 'test.vue',
             languageOptions: {
@@ -42,7 +42,7 @@ jsxTester.run('vue class order', rule, {
         },
         {
             code: `<template><div v-bind:class="{'m:8 bg:black p:8 fg:white font:24': true}">:)...</div></template>`,
-            output: `<template><div v-bind:class="{'m:8 p:8 bg:black fg:white font:24': true}">:)...</div></template>`,
+            output: `<template><div v-bind:class="{'bg:black fg:white font:24 m:8 p:8': true}">:)...</div></template>`,
             errors: [{ messageId: 'invalidClassOrder' }],
             filename: 'test.vue',
             languageOptions: {
@@ -51,7 +51,7 @@ jsxTester.run('vue class order', rule, {
         },
         {
             code: `<template><div :class="ctl(\`m:8 bg:black p:8 fg:white font:24\`)" /></template>`,
-            output: `<template><div :class="ctl(\`m:8 p:8 bg:black fg:white font:24\`)" /></template>`,
+            output: `<template><div :class="ctl(\`bg:black fg:white font:24 m:8 p:8\`)" /></template>`,
             errors: [{ messageId: 'invalidClassOrder' }],
             filename: 'test.vue',
             languageOptions: {
@@ -73,7 +73,7 @@ jsxTester.run('vue class order', rule, {
             output: `
                     <template>
                         <div v-bind="data" :class="[
-                        'py:1.5 font:medium transition',
+                        'font:medium py:1.5 transition',
                         {
                             'fg:white': variant === 'white',
                             'b:blue-50 fg:blue-50 fg:blue-40:hover': variant === 'primary',
@@ -125,7 +125,7 @@ jsxTester.run('vue class order', rule, {
             output: `<template>
                         <input   type="password"
                             placeholder="..."
-                            class="m:8 p:8 bg:black fg:white font:24"
+                            class="bg:black fg:white font:24 m:8 p:8"
                             @blur.prevent="" />
                         </template>`,
             errors: [

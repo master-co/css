@@ -162,6 +162,13 @@ function cloneUtility(definition: InputUtilityDefinition): CSSDirectiveUtilityDe
         ...definition,
         type: definition.type || 'static',
         ...(definition.pattern ? { pattern: { prefix: definition.pattern.prefix, values: [...definition.pattern.values] } } : {}),
+        ...(definition.dynamic ? {
+            dynamic: {
+                key: definition.dynamic.key,
+                ...(definition.dynamic.variableAliasRefs?.length ? { variableAliasRefs: [...definition.dynamic.variableAliasRefs] } : {}),
+                ...(definition.dynamic.kind ? { kind: definition.dynamic.kind } : {})
+            }
+        } : {}),
         ...(definition.declarations ? { declarations: { ...definition.declarations } } : {}),
         ...(definition.atRules?.length ? { atRules: [...definition.atRules] } : {}),
         ...(definition.rules?.length ? { rules: definition.rules.map(cloneUtilityRule) } : {})

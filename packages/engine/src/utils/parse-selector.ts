@@ -24,6 +24,7 @@ export declare type SelectorCombinatorNode = {
 export declare type SelectorNode = SelectorLiteralNode | SelectorCombinatorNode | SelectorSeparatorNode
 
 const SELECTOR_REGEX = new RegExp(`(?:[a-zA-Z0-9-]+)|([${SELECTOR_COMBINATORS.join('')}#.:,*])|(a-zA-Z0-9-)`, 'g')
+const LEGACY_PSEUDO_ELEMENTS = new Set(['before', 'after', 'first-letter', 'first-line'])
 
 export default function parseSelector(token: string, css: MasterCSS, isRaw = true) {
     const resolve = (eachToken: string): SelectorNode[] => {
@@ -68,7 +69,7 @@ export default function parseSelector(token: string, css: MasterCSS, isRaw = tru
             } else if (raw === '*') {
                 type = 'universal'
             } else if (currentPrefix === ':') {
-                type = 'pseudo-class'
+                type = LEGACY_PSEUDO_ELEMENTS.has(raw) ? 'pseudo-element' : 'pseudo-class'
             } else if (currentPrefix === '::') {
                 type = 'pseudo-element'
             } else if (currentPrefix === '.') {

@@ -2,9 +2,9 @@ export default function Componennt() {
     return (
         <div className={`
             block
-            text:center
+            text-center
             fg:blue
-            font:16
+            font:16px
         `}></div>
     )
 }

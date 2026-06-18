@@ -104,8 +104,7 @@ const radiusProperties = [
 const nativeValueNamespaces = [
     {
         properties: spacingProperties,
-        variableAliasRefs: ['~spacing'],
-        unit: 'rem'
+        variableAliasRefs: ['~spacing']
     },
     {
         properties: spacingUnitlessProperties,
@@ -113,13 +112,11 @@ const nativeValueNamespaces = [
     },
     {
         properties: containerProperties,
-        variableAliasRefs: ['~container'],
-        unit: 'rem'
+        variableAliasRefs: ['~container']
     },
     {
         properties: radiusProperties,
-        variableAliasRefs: ['~radius'],
-        unit: 'rem'
+        variableAliasRefs: ['~radius']
     },
     {
         properties: ['accent-color', 'fill', 'filter'],
@@ -135,18 +132,15 @@ const nativeValueNamespaces = [
     },
     {
         properties: ['text-shadow'],
-        variableAliasRefs: ['~color'],
-        unit: 'rem'
+        variableAliasRefs: ['~color']
     },
     {
         properties: ['box-shadow'],
-        variableAliasRefs: ['~shadow', '~color'],
-        unit: 'rem'
+        variableAliasRefs: ['~shadow', '~color']
     },
     {
         properties: ['animation-duration', 'transition-duration'],
-        variableAliasRefs: ['~duration'],
-        unit: 'ms'
+        variableAliasRefs: ['~duration']
     },
     {
         properties: ['animation-timing-function', 'transition-timing-function'],
@@ -162,8 +156,7 @@ const nativeValueNamespaces = [
     },
     {
         properties: ['letter-spacing'],
-        variableAliasRefs: ['~tracking'],
-        unit: 'em'
+        variableAliasRefs: ['~tracking']
     },
     {
         properties: ['line-height'],
@@ -175,23 +168,19 @@ const nativeValueNamespaces = [
     },
     {
         properties: ['mask-position'],
-        variableAliasRefs: ['=mask-position'],
-        unit: 'px'
+        variableAliasRefs: ['=mask-position']
     },
     {
         properties: ['mask-size'],
-        variableAliasRefs: ['~container', '=mask-size'],
-        unit: 'rem'
+        variableAliasRefs: ['~container', '=mask-size']
     },
     {
         properties: ['perspective'],
-        variableAliasRefs: ['=perspective'],
-        unit: 'rem'
+        variableAliasRefs: ['=perspective']
     },
     {
         properties: ['perspective-origin'],
-        variableAliasRefs: ['=perspective-origin'],
-        unit: 'px'
+        variableAliasRefs: ['=perspective-origin']
     }
 ] satisfies MasterCSSPlanNativeValueNamespaces
 

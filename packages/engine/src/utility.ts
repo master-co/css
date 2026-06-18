@@ -5,7 +5,7 @@ import UtilityType, { type UtilityType as UtilityTypeValue } from 'shared/utilit
 import { type PropertiesHyphen } from 'csstype'
 import { VALUE_DELIMITERS, BASE_UNIT_REGEX, AT_IDENTIFIERS } from './common'
 import Layer from './layer'
-import type { NumberValueComponent, ValueComponent, VariableValueComponent, Variable, StringValueComponent } from 'shared/css-syntax'
+import type { ValueComponent, VariableValueComponent, Variable, StringValueComponent } from 'shared/css-syntax'
 import { AtRule, AtRuleNode, AtRuleStringNode, AtRuleValueNode, } from './utils/parse-at'
 import parseValue from './utils/parse-value'
 import parseAt from './utils/parse-at'
@@ -66,6 +66,33 @@ function getUtilityPatternMatch(className: string, utility: CompiledUtility) {
         const match = getPatternUtilityMatch(className, matcher)
         if (match) return match
     }
+}
+
+const ANIMATION_REFERENCE_PROPERTIES = new Set(['animation', 'animation-name'])
+
+function utilityMayReferenceAnimations(utility: CompiledUtility) {
+    const emit = utility.emit
+    switch (emit.type) {
+        case 'declarations':
+            return emit.declarations.some((property) => ANIMATION_REFERENCE_PROPERTIES.has(property))
+        case 'property':
+            return ANIMATION_REFERENCE_PROPERTIES.has(emit.property)
+        case 'pair':
+            return emit.properties.some((property) => ANIMATION_REFERENCE_PROPERTIES.has(property))
+        case 'template':
+            return Object.keys(emit.declarations).some((property) => ANIMATION_REFERENCE_PROPERTIES.has(property))
+        case 'static':
+            return emit.rules.some((rule) =>
+                Object.keys(rule.declarations).some((property) => ANIMATION_REFERENCE_PROPERTIES.has(property))
+            )
+        default:
+            return false
+    }
+}
+
+function formatMasterBaseUnitValue(value: number, baseUnit: number, rootSize: number) {
+    const resolved = value * baseUnit / rootSize
+    return String(Object.is(resolved, -0) ? 0 : resolved).replace(/^(-?)0\./, '$1.') + 'rem'
 }
 
 function composeSelectorTemplate(current: string | undefined, next: string | undefined) {
@@ -245,7 +272,7 @@ export class Utility {
             ...runtimeUtility
         } = registeredUtility
         Object.assign(this, runtimeUtility)
-        const { id, type, unit } = registeredUtility
+        const { id, type } = registeredUtility
         this.type = type!
 
         // 1. value / selectorToken
@@ -270,8 +297,8 @@ export class Utility {
                 valueToken = name.slice(indexOfColon + 1)
             }
             this.valueComponents = []
-            const parsedValueIndex = this.parseValues(this.valueComponents, 0, valueToken, unit || '', '', undefined, false,
-                registeredUtility.includeAnimations ? Array.from(this.css.animations.keys()) : []
+            const parsedValueIndex = this.parseValues(this.valueComponents, 0, valueToken, '', '', undefined, false,
+                utilityMayReferenceAnimations(registeredUtility) ? Array.from(this.css.animations.keys()) : []
             )
             this.valueToken = valueToken.slice(0, parsedValueIndex)
             if (!patternMatch) {
@@ -342,7 +369,7 @@ export class Utility {
         let newValue: string
         if (this.valueComponents) {
             this.valueComponents = this.applyTransform(this.valueComponents)
-            newValue = this.resolveValue(this.valueComponents, unit || '', [], false)
+            newValue = this.resolveValue(this.valueComponents, '', [], false)
             const dynamicDeclarationRules = this.emitDynamicDeclarationRules(newValue)
             if (dynamicDeclarationRules) {
                 this.declarations = dynamicDeclarationRules[0]?.declarations
@@ -902,15 +929,15 @@ export class Utility {
                     if (functionOp && !eachValueComponent.bypassTransform) {
                         const resolvedValue = functionOp === 'core.math'
                             ? this.stringifyValueComponents(eachValueComponent.children)
-                            : this.resolveValue(eachValueComponent.children, functionDefinition.unit ?? unit, bypassVariableNames, bypassParsing || eachValueComponent.name === 'calc')
+                            : this.resolveValue(eachValueComponent.children, unit, bypassVariableNames, bypassParsing || eachValueComponent.name === 'calc')
                         const result = this.applyFunctionOp(functionOp, resolvedValue, bypassVariableNames, functionDefinition.options)
                         currentValue += eachValueComponent.token = eachValueComponent.text = typeof result === 'string'
                             ? result
-                            : this.resolveValue(result, functionDefinition?.unit ?? unit, bypassVariableNames, bypassParsing)
+                            : this.resolveValue(result, unit, bypassVariableNames, bypassParsing)
                     } else {
                         currentValue += eachValueComponent.token = eachValueComponent.text = eachValueComponent.name
                             + eachValueComponent.symbol
-                            + this.resolveValue(eachValueComponent.children, functionDefinition?.unit ?? unit, bypassVariableNames, bypassParsing)
+                            + this.resolveValue(eachValueComponent.children, unit, bypassVariableNames, bypassParsing)
                             + VALUE_DELIMITERS[eachValueComponent.symbol as keyof typeof VALUE_DELIMITERS]
                     }
                     break
@@ -1019,9 +1046,10 @@ export class Utility {
         const functionName = data?.name ?? 'calc'
         const valueComponents: ValueComponent[] = []
         let i = 0
+        const utilityUnit = String()
         const createUnitValueComponents = (): ValueComponent[] => {
             const unitValueComponents: ValueComponent[] = []
-            if (this.registeredUtility.unit === 'rem' || this.registeredUtility.unit === 'em') {
+            if (utilityUnit === 'rem' || utilityUnit === 'em') {
                 unitValueComponents.push(
                     { type: 'separator', value: '/', text: ' / ', token: '/' },
                     { type: 'number', value: this.css.settings.rootSize as number, token: String(this.css.settings.rootSize) }
@@ -1029,7 +1057,7 @@ export class Utility {
             }
             unitValueComponents.push(
                 { type: 'separator', value: '*', text: ' * ', token: '*' },
-                { type: 'number', value: 1, unit: this.registeredUtility.unit, token: this.registeredUtility.unit || '' }
+                { type: 'number', value: 1, unit: utilityUnit, token: utilityUnit }
             )
             return unitValueComponents
         }
@@ -1051,7 +1079,7 @@ export class Utility {
                 if (!variableName) continue
                 const variable = this.resolveVariableAlias(variableName)?.variable
                 if (variable?.type !== 'number' || hasNumericVariableUnit(variable)) continue
-                if (!this.registeredUtility.unit) continue
+                if (!utilityUnit) continue
 
                 const previousSeparator = getSeparatorValue(components[index - 1])
                 const nextSeparator = getSeparatorValue(components[index + 1])
@@ -1059,7 +1087,7 @@ export class Utility {
                 if (nextSeparator === '/' && components[index + 2]?.type === 'number') continue
 
                 components.splice(index + 1, 0, ...createUnitValueComponents())
-                index += this.registeredUtility.unit === 'rem' || this.registeredUtility.unit === 'em' ? 4 : 2
+                index += utilityUnit === 'rem' || utilityUnit === 'em' ? 4 : 2
             }
         }
 
@@ -1079,7 +1107,7 @@ export class Utility {
             let childHasUnit: boolean | undefined = undefined
             let current = ''
             const clear = (separator: string, prefix = '', suffix = '') => {
-                if (childHasUnit === false && separator !== ' ' && this.registeredUtility.unit) {
+                if (childHasUnit === false && separator !== ' ' && utilityUnit) {
                     childHasUnit = undefined
                     if (!unitChecking) {
                         pushUnitValueComponents()
@@ -1090,7 +1118,11 @@ export class Utility {
                     if (!isVarFunction) {
                         const result = BASE_UNIT_REGEX.exec(current)
                         if (result) {
-                            current = (+result[1] * (this.css.settings.baseUnit ?? 1)).toString()
+                            current = formatMasterBaseUnitValue(
+                                +result[1],
+                                this.css.settings.baseUnit ?? 1,
+                                this.css.settings.rootSize
+                            )
                         }
                     }
 
@@ -1151,7 +1183,7 @@ export class Utility {
                 bypassParsing = false
             }
             const pushUnitValueComponents = () => {
-                if (this.registeredUtility.unit === 'rem' || this.registeredUtility.unit === 'em') {
+                if (utilityUnit === 'rem' || utilityUnit === 'em') {
                     currentValueComponents.push(
                         { type: 'separator', value: '/', text: ' / ', token: '/' },
                         { type: 'number', value: this.css.settings.rootSize as number, token: String(this.css.settings.rootSize) }
@@ -1159,7 +1191,7 @@ export class Utility {
                 }
                 currentValueComponents.push(
                     { type: 'separator', value: '*', text: ' * ', token: '*' },
-                    { type: 'number', value: 1, unit: this.registeredUtility.unit, token: this.registeredUtility.unit || '' }
+                    { type: 'number', value: 1, unit: utilityUnit, token: utilityUnit }
                 )
             }
             const handleUnitChecking = () => {
@@ -1240,13 +1272,13 @@ export class Utility {
                             }
                             break
                         case '*':
-                            if (this.registeredUtility.unit) {
+                            if (utilityUnit) {
                                 unitChecking = true
                             }
                             clear(char, ' ', ' ')
                             break
                         case '/':
-                            if (this.registeredUtility.unit) {
+                            if (utilityUnit) {
                                 unitChecking = true
                             }
                             clear(char, ' ', ' ')
@@ -1264,7 +1296,7 @@ export class Utility {
         anaylzeDeeply(valueComponents, false, false, false, false)
         appendUnitConversionAfterNumericVariables(valueComponents)
 
-        let resolvedValue = this.resolveValue(valueComponents, this.registeredUtility.unit || '', bypassVariableNames, true)
+        let resolvedValue = this.resolveValue(valueComponents, utilityUnit, bypassVariableNames, true)
         if (data?.wrapArguments) {
             resolvedValue = wrapCalcArguments(resolvedValue)
         }
@@ -1335,7 +1367,11 @@ export class Utility {
                     if (!isVarFunction) {
                         const result = BASE_UNIT_REGEX.exec(currentValue)
                         if (result) {
-                            currentValue = String(+result[1] * (this.css.settings.baseUnit ?? 1))
+                            currentValue = formatMasterBaseUnitValue(
+                                +result[1],
+                                this.css.settings.baseUnit ?? 1,
+                                this.css.settings.rootSize
+                            )
                         }
                     }
                     if (bypassParsing) {
@@ -1382,7 +1418,7 @@ export class Utility {
                     newValueComponent.children,
                     ++i,
                     value,
-                    functionDefinition?.unit ?? unit,
+                    unit,
                     VALUE_DELIMITERS[val as keyof typeof VALUE_DELIMITERS],
                     functionName || parentFunctionName || '',
                     bypassParsing || functionName === 'calc'
@@ -1425,21 +1461,8 @@ export class Utility {
         return i
     }
 
-    parseValue(token: string | number, unit = this.registeredUtility.unit) {
+    parseValue(token: string | number, unit = '') {
         const parsed = parseValue(token, unit, this.css.settings.rootSize)
-        // exclude like `aspect:1/2` from being parsed as 50%
-        if (this.registeredUtility.unit && parsed.type === 'string') {
-            // 1/2 → 50%
-            if (/^\d+\/\d+$/.test(parsed.value)) {
-                const [numerator, denominator] = parsed.value.split('/').map(Number)
-                return {
-                    token,
-                    value: (numerator / denominator) * 100,
-                    unit: '%',
-                    type: 'number',
-                } as NumberValueComponent
-            }
-        }
         return parsed
     }
 

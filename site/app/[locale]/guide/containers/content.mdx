@@ -30,8 +30,8 @@ Container scale tables read from plan metadata, so the displayed size and genera
 Sizing utilities that read from the container namespace use contextual shorthand. Write `max-w:md`; do not repeat the namespace inside the value.
 
 ```html
-<!-- @MARK w:full --><!-- @MARK max-w:5xl --><!-- @MARK mx:auto -->
-<main class="w:full max-w:5xl mx:auto">
+<!-- @MARK w:full --><!-- @MARK max-w:5xl --><!-- @MARK mi:auto -->
+<main class="w:full max-w:5xl mi:auto">
     ...
 </main>
 
@@ -42,7 +42,7 @@ Sizing utilities that read from the container namespace use contextual shorthand
 <details>
     <summary>Generated CSS</summary>
     <Class2CSS>
-        {['w:full', 'max-w:5xl', 'mx:auto', 'flex-basis:md']}
+        {['w:full', 'max-w:5xl', 'mi:auto', 'flex-basis:md']}
     </Class2CSS>
 </details>
 
@@ -130,7 +130,7 @@ Container size values and container queries are related, but they solve differen
 
 | Need | Use | Example |
 | --- | --- | --- |
-| Cap a page wrapper | Container value | `w:full max-w:7xl mx:auto` |
+| Cap a page wrapper | Container value | `w:full max-w:7xl mi:auto` |
 | Cap a content measure | Local or container value | `max-w:72ch` or `max-w:5xl` |
 | Adapt a reusable component | Container query | `grid-cols:2@container(md)` |
 | Coordinate nested responsive regions | Named container | `grid-cols:2@card(3xs)` |

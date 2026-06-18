@@ -205,8 +205,8 @@ describe.concurrent('migrated cascade and layer parity', () => {
         expectLayerText(createDefaultCSS(), 'block@utility', 'utilitiesLayer', '.block\\@utility{display:block}')
         expectLayerText(createDefaultCSS(), 'block@base@sm', 'baseLayer', '@media (width>=52.125rem){.block\\@base\\@sm{display:block}}')
         expectLayerText(createDefaultCSS(), 'block@default@sm', 'defaultsLayer', '@media (width>=52.125rem){.block\\@default\\@sm{display:block}}')
-        expectLayerText(createDefaultCSS(), 'font:12_:is(code,pre)@base', 'baseLayer', '.font\\:12_\\:is\\(code\\,pre\\)\\@base :is(code,pre){font-size:0.75rem}')
-        expectLayerText(createDefaultCSS(), 'font:12_:is(code,pre)@default', 'defaultsLayer', '.font\\:12_\\:is\\(code\\,pre\\)\\@default :is(code,pre){font-size:0.75rem}')
+        expectLayerText(createDefaultCSS(), 'font:12_:is(code,pre)@base', 'baseLayer', '.font\\:12_\\:is\\(code\\,pre\\)\\@base :is(code,pre){font-size:12}')
+        expectLayerText(createDefaultCSS(), 'font:12_:is(code,pre)@default', 'defaultsLayer', '.font\\:12_\\:is\\(code\\,pre\\)\\@default :is(code,pre){font-size:12}')
 
         const conflicted = createDefaultCSS().add('block@base@default')
         expect(conflicted.text).not.toContain('block\\@base\\@default')
@@ -229,18 +229,18 @@ describe.concurrent('migrated cascade and layer parity', () => {
     test('keeps deterministic rule order independent of insertion order', () => {
         const inputs = [
             [
-                'px:0', 'pl:0', 'pr:0', 'p:0', 'pt:0', 'pb:0', 'py:0',
-                'mx:0', 'ml:0', 'mr:0', 'm:0', 'mt:0', 'mb:0', 'my:0',
+                'pi:0', 'pl:0', 'pr:0', 'p:0', 'pt:0', 'pb:0', 'padding-block:0',
+                'mi:0', 'ml:0', 'mr:0', 'm:0', 'mt:0', 'mb:0', 'margin-block:0',
                 'font:12', 'font:medium', 'text-center', 'fixed', 'block', 'round', 'b:0'
             ],
             [
                 'b:0', 'round', 'block', 'fixed', 'text-center', 'font:medium', 'font:12',
-                'my:0', 'mb:0', 'mt:0', 'm:0', 'mr:0', 'ml:0', 'mx:0',
-                'py:0', 'pb:0', 'pt:0', 'p:0', 'pr:0', 'pl:0', 'px:0'
+                'margin-block:0', 'mb:0', 'mt:0', 'm:0', 'mr:0', 'ml:0', 'mi:0',
+                'padding-block:0', 'pb:0', 'pt:0', 'p:0', 'pr:0', 'pl:0', 'pi:0'
             ]
         ]
         const expected = [
-            'block', 'fixed', 'round', 'b:0', 'm:0', 'p:0', 'mx:0', 'my:0', 'px:0', 'py:0',
+            'block', 'fixed', 'round', 'b:0', 'm:0', 'margin-block:0', 'mi:0', 'p:0', 'padding-block:0', 'pi:0',
             'font:12', 'font:medium', 'mb:0', 'ml:0', 'mr:0', 'mt:0', 'pb:0', 'pl:0', 'pr:0', 'pt:0',
             'text-center'
         ]
@@ -254,12 +254,12 @@ describe.concurrent('migrated cascade and layer parity', () => {
 
     test('keeps declaration and media priority order', () => {
         const css = createDefaultCSS()
-        css.add('font:12', 'font:32@md', 'font:24@sm', 'm:32', 'block', 'px:16', 'bg:blue-60:hover', 'round', 'mb:48')
+        css.add('font:12', 'font:32@md', 'font:24@sm', 'm:32', 'block', 'pi:16', 'bg:blue-60:hover', 'round', 'mb:48')
         expect(css.utilitiesLayer.rules.map(({ name }) => name)).toEqual([
             'block',
             'round',
             'm:32',
-            'px:16',
+            'pi:16',
             'font:12',
             'mb:48',
             'bg:blue-60:hover',

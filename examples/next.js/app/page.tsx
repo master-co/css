@@ -61,7 +61,7 @@ export default function Home() {
                     priority
                     hidden
                 />
-                <div className={styles.thirteen + ' font:40 font:bold ' + inter.className}>
+                <div className={styles.thirteen + ' font:40px font:bold ' + inter.className}>
                     2
                 </div>
             </div>

@@ -1,7 +1,7 @@
 import { CompletionItemKind, type CompletionItem } from 'vscode-languageserver-protocol'
 import getPseudoClassCompletionItems from './get-pseudo-class-completion-items'
 import getPseudoElementCompletionItems from './get-pseudo-element-completion-items'
-import { AT_SIGN, MasterCSS, createDefaultCSS, QUERY_COMPARISON_OPERATORS, QUERY_LOGICAL_OPERATORS, SELECTOR_SIGNS, generateCSS } from '../master-css'
+import { AT_SIGN, MasterCSS, UtilityType, createDefaultCSS, QUERY_COMPARISON_OPERATORS, QUERY_LOGICAL_OPERATORS, SELECTOR_SIGNS, generateCSS } from '../master-css'
 import { GROUP_TRIGGER_CHARACTER, SELECTOR_TRIGGER_CHARACTERS } from '../common'
 import getClassCompletionItems from './get-class-completion-items'
 import getValueCompletionItems from './get-value-completion-items'
@@ -36,10 +36,10 @@ export default function querySyntaxCompletions(q = '', css: MasterCSS = createDe
     const selectorInvokedRegex = new RegExp(`[${SELECTOR_SIGNS.join('')}](?=(?:[^'"]|'[^']*'|"[^"]*")*$)`)
     const key = keyMatch ? keyMatch[0].slice(0, firstColonIndex) : undefined
     const componentNames = css.definedUtilities
-        .filter(({ type, layer }) => type === -4 && layer === 'components')
+        .filter(({ type, layer }) => type === UtilityType.Static && layer === 'components')
         .map(({ id }) => id.startsWith('.') ? id.slice(1) : id)
     const utilityNames = css.definedUtilities
-        .filter(({ type }) => type === -4)
+        .filter(({ type }) => type === UtilityType.Static)
         .map(({ id }) => id.startsWith('.') ? id.slice(1) : id)
     for (const utility of css.definedUtilities) {
         for (const matcher of utility.matchers) {

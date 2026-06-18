@@ -166,14 +166,13 @@ function deriveUtilityMetadata(utility: CompiledUtility) {
 function isPureNativeDeclarationUtilityDefinition(
     utility: CompiledUtility
 ): utility is CompiledUtility & { emit: { type: 'property', property: string } } {
-    return (utility.type === UtilityType.Native || utility.type === UtilityType.NativeShorthand)
-        && utility.emit.type === 'property'
-        && !utility.unit
+    return utility.emit.type === 'property'
+        && utility.id === utility.emit.property
+        && utility.name === utility.emit.property
         && !utility.variableAliasRefs?.length
         && !utility.variableAliases?.length
         && !utility.transform
         && !utility.kind
-        && !utility.includeAnimations
         && !utility.atRules?.length
 }
 
@@ -540,16 +539,15 @@ export default class MasterCSS {
 
     private createNativeValueNamespaceUtility(
         property: string,
-        namespace: Pick<MasterCSSPlanNativeValueNamespace, 'unit' | 'variableAliasRefs'>
+        namespace: Pick<MasterCSSPlanNativeValueNamespace, 'variableAliasRefs'>
     ): MasterCSSPlanUtility {
         return {
             id: property,
             name: property,
             type: isNativeCSSShorthandProperty(property)
-                ? UtilityType.NativeShorthand
-                : UtilityType.Native,
+                ? UtilityType.Shorthand
+                : UtilityType.Normal,
             order: 0,
-            ...(namespace.unit ? { unit: namespace.unit } : {}),
             variableAliasRefs: [...namespace.variableAliasRefs],
             emit: {
                 type: 'property',
@@ -593,7 +591,7 @@ export default class MasterCSS {
         return this.variants.get(token)
     }
 
-    parseValue(token: string | number, unit = 'rem') {
+    parseValue(token: string | number, unit = '') {
         return parseValue(token, unit, this.settings.rootSize)
     }
 
@@ -777,8 +775,8 @@ export default class MasterCSS {
             id: property,
             name: property,
             type: isNativeCSSShorthandProperty(property)
-                ? UtilityType.NativeShorthand
-                : UtilityType.Native,
+                ? UtilityType.Shorthand
+                : UtilityType.Normal,
             order: 0,
             emit: {
                 type: 'property',

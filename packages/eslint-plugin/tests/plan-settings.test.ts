@@ -36,7 +36,7 @@ test('uses explicit Master CSS plan objects from ESLint settings', async () => {
                                 utilities: [
                                     {
                                         name: 'fixture-card',
-                                        type: -4,
+                                        type: -2,
                                         layer: 'components',
                                         rules: [
                                             { selector: '&', declarations: { display: 'block' } }
@@ -44,7 +44,7 @@ test('uses explicit Master CSS plan objects from ESLint settings', async () => {
                                     },
                                     {
                                         name: 'fixture-button',
-                                        type: -4,
+                                        type: -2,
                                         layer: 'components',
                                         rules: [
                                             { selector: '&', declarations: { display: 'inline-flex' } }

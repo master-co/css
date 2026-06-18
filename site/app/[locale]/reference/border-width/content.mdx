@@ -19,10 +19,10 @@ Use `b:*` with a size value to set `border-width`.
 </details>
 
 ### Set one side or axis
-Use `bt:*`, `br:*`, `bb:*`, and `bl:*` for physical sides. Use `bx:*` and `by:*` for horizontal or vertical sides.
+Use `bt:*`, `br:*`, `bb:*`, and `bl:*` for physical sides. Use `border-inline-width:*` and `border-block-width:*` for logical axes.
 ```html
-<!-- @MARK bt:2 --><!-- @MARK by:1 -->
-<div class="bt:2 by:1">...</div>
+<!-- @MARK bt:2px --><!-- @MARK border-block-width:1 -->
+<div class="bt:2px border-block-width:1">...</div>
 ```
 
 Use [border](/reference/border) when width, style, and color should be declared together.

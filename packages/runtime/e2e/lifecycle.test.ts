@@ -35,7 +35,7 @@ test('prevent attach layer twice', async ({ page }) => {
         utilities: [
             {
                 name: 'app-wrapper',
-                type: -4,
+                type: -2,
                 layer: 'components',
                 rules: [
                     { selector: '&', declarations: { 'margin-left': 'auto', 'margin-right': 'auto' } },
@@ -63,7 +63,7 @@ test('insert static utility with multiple native rules into existing layer', asy
         utilities: [
             {
                 name: 'multi-rule',
-                type: -4,
+                type: -2,
                 rules: [
                     { selector: '&', declarations: { display: 'flex' } },
                     { selector: '&:hover', declarations: { color: 'red' } },

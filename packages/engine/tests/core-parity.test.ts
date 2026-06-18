@@ -44,39 +44,39 @@ describe.concurrent('default plan utility parity', () => {
 
     test('preserves margin aliases and priority order', () => {
         const css = createDefaultCSS()
-        expectClassText(css, 'ml:16', 'margin-left:1rem')
+        expectClassText(css, 'ml:16', 'margin-left:16')
         expectClassText(css, 'ml:4x', 'margin-left:1rem')
-        expectClassText(css, 'mr:16', 'margin-right:1rem')
-        expectClassText(css, 'mt:16', 'margin-top:1rem')
-        expectClassText(css, 'mb:16', 'margin-bottom:1rem')
-        expectClassText(css, 'm:16', 'margin:1rem')
-        expectClassText(css, 'mx:16', 'margin-left:1rem;margin-right:1rem')
-        expectClassText(css, 'my:16', 'margin-top:1rem;margin-bottom:1rem')
+        expectClassText(css, 'mr:16', 'margin-right:16')
+        expectClassText(css, 'mt:16', 'margin-top:16')
+        expectClassText(css, 'mb:16', 'margin-bottom:16')
+        expectClassText(css, 'm:16', 'margin:16')
+        expectClassText(css, 'mi:16', 'margin-inline:16')
+        expectClassText(css, 'margin-block:16', 'margin-block:16')
 
-        css.add('mx:0', 'ml:0', 'mr:0', 'm:0', 'mt:0', 'mb:0', 'my:0')
+        css.add('mi:0', 'ml:0', 'mr:0', 'm:0', 'mt:0', 'mb:0', 'margin-block:0')
         expect(css.utilitiesLayer.rules.map(({ name }) => name))
-            .toEqual(['m:0', 'mx:0', 'my:0', 'mb:0', 'ml:0', 'mr:0', 'mt:0'])
+            .toEqual(['m:0', 'margin-block:0', 'mi:0', 'mb:0', 'ml:0', 'mr:0', 'mt:0'])
     })
 
     test('resolves native value namespaces with aliases tokens and validation', () => {
         const css = createCSS(defaultPlan, undefined, {
             nativeDeclarationMatcher: ({ property, value }) =>
-                property === 'width' && (value === '1rem' || value === 'var(--container-sm)')
-                || property === 'margin' && value === '1rem'
-                || property === 'margin-top' && value === '1rem'
-                || property === 'padding' && value === '1rem'
-                || property === 'gap' && value === '1rem'
+                property === 'width' && (value === '16' || value === 'var(--container-sm)')
+                || property === 'margin' && value === '16'
+                || property === 'margin-top' && value === '16'
+                || property === 'padding' && value === '16'
+                || property === 'gap' && value === '16'
                 || property === 'border-radius' && value === 'var(--radius-md)'
         })
 
-        expect(css.create('width:16')?.text).toBe('.width\\:16{width:1rem}')
-        expect(css.create('w:16')?.text).toBe('.w\\:16{width:1rem}')
+        expect(css.create('width:16')?.text).toBe('.width\\:16{width:16}')
+        expect(css.create('w:16')?.text).toBe('.w\\:16{width:16}')
         expect(css.create('width:sm')?.text).toBe('.width\\:sm{width:var(--container-sm)}')
         expect(css.create('w:sm')?.text).toBe('.w\\:sm{width:var(--container-sm)}')
-        expect(css.create('margin:16')?.text).toBe('.margin\\:16{margin:1rem}')
-        expect(css.create('mt:16')?.text).toBe('.mt\\:16{margin-top:1rem}')
-        expect(css.create('padding:16')?.text).toBe('.padding\\:16{padding:1rem}')
-        expect(css.create('gap:16')?.text).toBe('.gap\\:16{gap:1rem}')
+        expect(css.create('margin:16')?.text).toBe('.margin\\:16{margin:16}')
+        expect(css.create('mt:16')?.text).toBe('.mt\\:16{margin-top:16}')
+        expect(css.create('padding:16')?.text).toBe('.padding\\:16{padding:16}')
+        expect(css.create('gap:16')?.text).toBe('.gap\\:16{gap:16}')
         expect(css.create('r:md')?.text).toBe('.r\\:md{border-radius:var(--radius-md)}')
         expect(css.create('width:block')).toBeUndefined()
     })
@@ -85,13 +85,13 @@ describe.concurrent('default plan utility parity', () => {
         const css = createDefaultCSS()
 
         expect(css.create('rt:16')?.text)
-            .toBe('.rt\\:16{border-top-left-radius:1rem;border-top-right-radius:1rem}')
+            .toBe('.rt\\:16{border-top-left-radius:16;border-top-right-radius:16}')
         expect(css.create('rb:16')?.text)
-            .toBe('.rb\\:16{border-bottom-left-radius:1rem;border-bottom-right-radius:1rem}')
+            .toBe('.rb\\:16{border-bottom-left-radius:16;border-bottom-right-radius:16}')
         expect(css.create('rl:16')?.text)
-            .toBe('.rl\\:16{border-top-left-radius:1rem;border-bottom-left-radius:1rem}')
+            .toBe('.rl\\:16{border-top-left-radius:16;border-bottom-left-radius:16}')
         expect(css.create('rr:16')?.text)
-            .toBe('.rr\\:16{border-top-right-radius:1rem;border-bottom-right-radius:1rem}')
+            .toBe('.rr\\:16{border-top-right-radius:16;border-bottom-right-radius:16}')
         expect(css.create('rtl:md')?.text)
             .toBe('.rtl\\:md{border-top-left-radius:var(--radius-md)}')
         expect(css.create('rtr:md')?.text)
@@ -105,35 +105,68 @@ describe.concurrent('default plan utility parity', () => {
     test('preserves border shorthand matching across value separators', () => {
         const css = createDefaultCSS()
 
-        expectClassText(css, 'bl:muted|1', 'border-left:var(--color-line-muted) 0.0625rem solid')
-        expectClassText(css, 'border-left:muted|1', 'border-left:var(--color-line-muted) 0.0625rem solid')
-        expectClassText(css, 'b:muted|1', 'border:var(--color-line-muted) 0.0625rem solid')
-        expectClassText(css, 'bt:muted|1', 'border-top:var(--color-line-muted) 0.0625rem solid')
-        expectClassText(css, 'br:muted|1', 'border-right:var(--color-line-muted) 0.0625rem solid')
-        expectClassText(css, 'bb:muted|1', 'border-bottom:var(--color-line-muted) 0.0625rem solid')
-        expectClassText(css, 'bx:muted|1', 'border-left:var(--color-line-muted) 0.0625rem solid;border-right:var(--color-line-muted) 0.0625rem solid')
-        expectClassText(css, 'by:muted|1', 'border-top:var(--color-line-muted) 0.0625rem solid;border-bottom:var(--color-line-muted) 0.0625rem solid')
-        expectClassText(css, 'bl:1|solid|muted', 'border-left:0.0625rem solid var(--color-line-muted)')
+        expectClassText(css, 'bl:muted|1', 'border-left:var(--color-line-muted) 1 solid')
+        expectClassText(css, 'border-left:muted|1', 'border-left:var(--color-line-muted) 1 solid')
+        expectClassText(css, 'b:muted|1', 'border:var(--color-line-muted) 1 solid')
+        expectClassText(css, 'bt:muted|1', 'border-top:var(--color-line-muted) 1 solid')
+        expectClassText(css, 'br:muted|1', 'border-right:var(--color-line-muted) 1 solid')
+        expectClassText(css, 'bb:muted|1', 'border-bottom:var(--color-line-muted) 1 solid')
+        expectClassText(css, 'border-inline:muted|1', 'border-inline:var(--color-line-muted) 1')
+        expectClassText(css, 'border-block:muted|1', 'border-block:var(--color-line-muted) 1')
+        expectClassText(css, 'bl:1|solid|muted', 'border-left:1 solid var(--color-line-muted)')
     })
 
     test('keeps border single-value aliases on color and width utilities with static style utilities', () => {
         const css = createDefaultCSS()
 
         expectClassText(css, 'bl:muted', 'border-left-color:var(--color-line-muted)')
-        expectClassText(css, 'bl:1', 'border-left-width:0.0625rem')
+        expectClassText(css, 'bl:1', 'border-left-width:1')
         expectClassText(css, 'bl-solid', 'border-left-style:solid')
+    })
+
+    test('supports native axis shorthand aliases alongside logical replacements', () => {
+        const css = createDefaultCSS()
+
+        expectClassText(css, 'mx:16', 'margin-inline:16')
+        expectClassText(css, 'mi:16', 'margin-inline:16')
+        expectClassText(css, 'my:16', 'margin-block:16')
+        expectClassText(css, 'margin-block:16', 'margin-block:16')
+        expectClassText(css, 'px:16', 'padding-inline:16')
+        expectClassText(css, 'pi:16', 'padding-inline:16')
+        expectClassText(css, 'py:16', 'padding-block:16')
+        expectClassText(css, 'padding-block:16', 'padding-block:16')
+        expectClassText(css, 'bx:16', 'border-inline:16')
+        expectClassText(css, 'border-inline:16', 'border-inline:16')
+        expectClassText(css, 'by:16', 'border-block:16')
+        expectClassText(css, 'border-block:16', 'border-block:16')
+        expectClassText(css, 'gap-x:16', 'column-gap:16')
+        expectClassText(css, 'column-gap:16', 'column-gap:16')
+        expectClassText(css, 'gap-y:16', 'row-gap:16')
+        expectClassText(css, 'row-gap:16', 'row-gap:16')
+        expectClassText(css, 'scroll-mx:16', 'scroll-margin-inline:16')
+        expectClassText(css, 'scroll-margin-inline:16', 'scroll-margin-inline:16')
+        expectClassText(css, 'scroll-my:16', 'scroll-margin-block:16')
+        expectClassText(css, 'scroll-margin-block:16', 'scroll-margin-block:16')
+        expectClassText(css, 'scroll-px:16', 'scroll-padding-inline:16')
+        expectClassText(css, 'scroll-padding-inline:16', 'scroll-padding-inline:16')
+        expectClassText(css, 'scroll-py:16', 'scroll-padding-block:16')
+        expectClassText(css, 'scroll-padding-block:16', 'scroll-padding-block:16')
+        expectClassText(css, 'bx-solid', 'border-inline-style:solid')
+        expectClassText(css, 'border-inline-style:solid', 'border-inline-style:solid')
+        expectClassText(css, 'by-solid', 'border-block-style:solid')
+        expectClassText(css, 'border-block-style:solid', 'border-block-style:solid')
     })
 
     test('executes compiled value functions and complex utilities', () => {
         const css = createDefaultCSS()
 
         expectClassText(css, 'w:calc(var(--h)|/|var(--w)*100%)', 'width:calc(var(--h) / var(--w) * 100%)')
-        expectClassText(css, 'w:calc(-2+$(spacing-md))', 'width:calc(-0.125rem + var(--spacing-md))')
-        expectClassText(css, 'w:calc(-$(spacing-md)-2)', 'width:calc(-var(--spacing-md) - 0.125rem)')
-        expectClassText(css, 'w:calc(-1*($(spacing-md)*2)*3-2)', 'width:calc(-1 * (var(--spacing-md) * 2) * 3 - 0.125rem)')
+        expectClassText(css, 'w:calc(-2+$(spacing-md))', 'width:calc(-2 + var(--spacing-md))')
+        expectClassText(css, 'w:calc(-$(spacing-md)-2)', 'width:calc(-var(--spacing-md) - 2)')
+        expectClassText(css, 'w:calc(-1*($(spacing-md)*2)*3-2)', 'width:calc(-1 * (var(--spacing-md) * 2) * 3 - 2)')
         expectClassText(css, 'font-weight:$(font-weight-thin)', 'font-weight:var(--font-weight-thin)')
         expectClassText(css, 'fg:$color-white/.5', 'color:color-mix(in oklab,oklch(100% 0 none) 50%,transparent)')
-        expectClassText(css, 'grid-cols:3', 'grid-template-columns:repeat(3,minmax(0,1fr))')
+        expectClassText(css, 'grid-cols:3', 'grid-template-columns:repeat(3, minmax(0, 1fr))')
         expectClassText(css, 'lines:3', '-webkit-line-clamp:3')
         expectClassText(css, 'text:2xl', 'font-size:var(--font-size-2xl)')
     })
@@ -158,7 +191,7 @@ describe.concurrent('default plan utility parity', () => {
         expectClassText(css, 'm:card', 'margin:var(--spacing-card)')
         expectClassText(css, 'm:-card', 'margin:calc(var(--spacing-card) * -1)')
         expectClassText(css, 'w:card', 'width:var(--container-card)')
-        expectClassText(css, 'w:calc($(spacing-card)+2)', 'width:calc(var(--spacing-card) + 0.125rem)')
+        expectClassText(css, 'w:calc($(spacing-card)+2)', 'width:calc(var(--spacing-card) + 2)')
         expect(css.create('m:card')?.variableNames).toEqual(new Set(['spacing-card']))
     })
 
@@ -189,16 +222,16 @@ describe.concurrent('default plan utility parity', () => {
             .toBe('@media (width>=52.125rem){.flex\\@sm{display:flex}}')
         expectClassText(css, 'grid-col-span:2', 'grid-column:span 2/span 2')
         expectClassText(css, 'grid-column-span:2', 'grid-column:span 2/span 2')
-        expectClassText(css, 'top:20', 'top:1.25rem')
-        expectClassText(css, 'bottom:10', 'bottom:0.625rem')
-        expectClassText(css, 'right:max(0,calc(50%-725))', 'right:max(0rem,calc(50% - 45.3125rem))')
+        expectClassText(css, 'top:20', 'top:20')
+        expectClassText(css, 'bottom:10', 'bottom:10')
+        expectClassText(css, 'right:max(0,calc(50%-725))', 'right:max(0,calc(50% - 725))')
         expectClassText(css, 'max-w:3xs', 'max-width:var(--container-3xs)')
         expectClassText(css, 'max-w:16px', 'max-width:16px')
-        expect(css.create('size:16|32')?.declarations).toStrictEqual({ width: '1rem', height: '2rem' })
-        expect(css.create('max:16|32')?.declarations).toStrictEqual({ 'max-width': '1rem', 'max-height': '2rem' })
-        expect(css.create('min:16|32')?.declarations).toStrictEqual({ 'min-width': '1rem', 'min-height': '2rem' })
+        expect(css.create('size:16|32')?.declarations).toStrictEqual({ width: '16', height: '32' })
+        expect(css.create('max:16|32')?.declarations).toStrictEqual({ 'max-width': '16', 'max-height': '32' })
+        expect(css.create('min:16|32')?.declarations).toStrictEqual({ 'min-width': '16', 'min-height': '32' })
         expect(css.create('size:min(10,calc(25-10))|10')?.declarations)
-            .toStrictEqual({ width: 'min(0.625rem,calc(1.5625rem - 0.625rem))', height: '0.625rem' })
+            .toStrictEqual({ width: 'min(10,calc(25 - 10))', height: '10' })
     })
 
     test('keeps pair utilities using variable functions without and with known number variables', () => {
@@ -215,20 +248,20 @@ describe.concurrent('default plan utility parity', () => {
         ]
         const numericCSS = createCSS(plan)
         expect(numericCSS.create('size:$(w)|$(h)')?.declarations)
-            .toStrictEqual({ width: 'calc(var(--w) / 16 * 1rem)', height: 'calc(var(--h) / 16 * 1rem)' })
+            .toStrictEqual({ width: 'var(--w)', height: 'var(--h)' })
     })
 
     test('keeps grouped declaration parsing and nested generated utilities', () => {
         const css = createDefaultCSS()
 
         expect(css.create('{color:black!;bb:2|solid}')?.declarations)
-            .toStrictEqual({ color: 'oklch(0% 0 none)!important', 'border-bottom': '0.125rem solid' })
+            .toStrictEqual({ color: 'oklch(0% 0 none)!important', 'border-bottom': '2 solid' })
         expect(css.create('{pt:calc(2.5em+60);mt:-60}_:where(h1,h2,h3,h4,h5,h6)')?.declarations)
-            .toStrictEqual({ 'padding-top': 'calc(2.5em + 3.75rem)', 'margin-top': '-3.75rem' })
+            .toStrictEqual({ 'padding-top': 'calc(2.5em + 60)', 'margin-top': '-60' })
         expect(css.create('{line-height:calc(32-16);font-size:calc(32-16)}')?.declarations)
-            .toStrictEqual({ 'line-height': 'calc(32 - 16)', 'font-size': 'calc(2rem - 1rem)' })
+            .toStrictEqual({ 'line-height': 'calc(32 - 16)', 'font-size': 'calc(32 - 16)' })
         expect(css.create('{m:32;leading:1.5}')?.declarations)
-            .toStrictEqual({ margin: '2rem', 'line-height': '1.5' })
+            .toStrictEqual({ margin: '32', 'line-height': '1.5' })
         expect(css.create('{form}')?.text).toBe('')
         expect(css.create('{form;block}')?.declarations).toStrictEqual({ display: 'block' })
     })
@@ -241,9 +274,9 @@ describe.concurrent('default plan utility parity', () => {
         }
 
         expect(createCSS(plan).create('{color:black!;bb:2|solid}')?.declarations)
-            .toStrictEqual({ color: 'oklch(0% 0 none)!important', 'border-bottom': '0.125rem solid!important' })
+            .toStrictEqual({ color: 'oklch(0% 0 none)!important', 'border-bottom': '2 solid!important' })
         expect(createCSS(plan).create('{color:black!;bb:2|solid}')?.text)
-            .toContain('border-bottom:0.125rem solid!important')
+            .toContain('border-bottom:2 solid!important')
     })
 
     test('keeps migrated issue regressions for modern utility syntax', () => {
@@ -257,12 +290,12 @@ describe.concurrent('default plan utility parity', () => {
             .toContain('::view-transition-old(hero)')
         expect(css.create('opacity:1::vt-new(hero)')?.text)
             .toContain('::view-transition-new(hero)')
-        expectClassText(css, 'translate:16|24', 'translate:1rem 1.5rem')
+        expectClassText(css, 'translate:16|24', 'translate:16 24')
         expectClassText(css, 'scale:1.5|2', 'scale:1.5 2')
         expectClassText(css, 'rotate:45deg', 'rotate:45deg')
-        expectClassText(css, 'transform:translate(16,16)', 'transform:translate(1rem,1rem)')
-        expectClassText(css, 'border-inline-start-width:2', 'border-inline-start-width:0.125rem')
-        expectClassText(css, 'border-start-start-radius:8', 'border-start-start-radius:0.5rem')
+        expectClassText(css, 'transform:translate(16,16)', 'transform:translate(16,16)')
+        expectClassText(css, 'border-inline-start-width:2', 'border-inline-start-width:2')
+        expectClassText(css, 'border-start-start-radius:8', 'border-start-start-radius:8')
         expect(css.create('font-size:clamp(1.5rem,2vw+1rem,2.25rem)')?.text)
             .toMatch(/font-size:clamp\(1\.5rem,\s*calc\(2vw \+ 1rem\),\s*2\.25rem\)/)
         expect(css.create('{paint-order:stroke|fill|markers}')?.text)
@@ -285,9 +318,9 @@ describe.concurrent('default plan utility parity', () => {
 
         expectClassText(css, 'transform:scale(1.1)', 'transform:scale(1.1)')
         expectClassText(css, 'transform:rotate(45deg)', 'transform:rotate(45deg)')
-        expectClassText(css, 'transform:translate(16,16)', 'transform:translate(1rem,1rem)')
-        expectClassText(css, 'filter:blur(4)', 'filter:blur(0.25rem)')
-        expectClassText(css, 'filter:drop-shadow(0|2|4|black/.2)', 'filter:drop-shadow(0rem 0.125rem 0.25rem color-mix(in oklab,oklch(0% 0 none) 20%,transparent))')
+        expectClassText(css, 'transform:translate(16,16)', 'transform:translate(16,16)')
+        expectClassText(css, 'filter:blur(4)', 'filter:blur(4)')
+        expectClassText(css, 'filter:drop-shadow(0|2|4|black/.2)', 'filter:drop-shadow(0 2 4 color-mix(in oklab,oklch(0% 0 none) 20%,transparent))')
         expectClassText(css, 'bg:linear-gradient(45deg,#f3ec78,#af4261)', 'background-image:linear-gradient(45deg,#f3ec78,#af4261)')
     })
 
@@ -335,11 +368,11 @@ describe.concurrent('default plan utility parity', () => {
         expect(css.create('display:block')?.text).toBe('.display\\:block{display:block}')
         expect(css.generate('view-transition-name:hero')[0]?.text).toBe('.view-transition-name\\:hero{view-transition-name:hero}')
         expect(css.create('z:10')?.text).toBe('.z\\:10{z-index:10}')
-        expect(css.create('margin:16')?.text).toBe('.margin\\:16{margin:1rem}')
-        expect(css.create('m:16')?.text).toBe('.m\\:16{margin:1rem}')
-        expect(css.create('mt:16')?.text).toBe('.mt\\:16{margin-top:1rem}')
-        expect(css.create('scroll-mbs:4')?.text).toBe('.scroll-mbs\\:4{scroll-margin-block-start:0.25rem}')
-        expect(css.create('font:16')?.text).toBe('.font\\:16{font-size:1rem}')
+        expect(css.create('margin:16')?.text).toBe('.margin\\:16{margin:16}')
+        expect(css.create('m:16')?.text).toBe('.m\\:16{margin:16}')
+        expect(css.create('mt:16')?.text).toBe('.mt\\:16{margin-top:16}')
+        expect(css.create('scroll-mbs:4')?.text).toBe('.scroll-mbs\\:4{scroll-margin-block-start:4}')
+        expect(css.create('font:16')?.text).toBe('.font\\:16{font-size:16}')
         expect(css.create('fg:red-60')?.text).toBe('.fg\\:red-60{color:var(--color-red-60)}')
         expect(css.create('bg:red-60')?.text).toBe('.bg\\:red-60{background-color:var(--color-red-60)}')
 
@@ -349,24 +382,25 @@ describe.concurrent('default plan utility parity', () => {
             'display:block',
             'view-transition-name:hero',
             'z-index:10',
-            'margin:1rem',
-            'margin-top:1rem',
-            'scroll-margin-block-start:0.25rem',
+            'margin:16',
+            'margin-top:16',
+            'scroll-margin-block-start:4',
             'color:var(--color-red-60)'
         ])
     })
 
     test('classifies native shorthand declarations for priority sorting', () => {
         const css = createCSS(defaultPlan, undefined, {
-            nativeDeclarationMatcher: ({ property }) => property === 'margin' || property === 'margin-left'
+            nativeDeclarationMatcher: ({ property }) =>
+                property === 'margin' || property === 'margin-left' || property === 'margin-inline'
         })
 
-        expect(css.create('margin:1rem')?.type).toBe(UtilityType.NativeShorthand)
-        expect(css.create('margin-left:2rem')?.type).toBe(UtilityType.Native)
+        expect(css.create('margin:1rem')?.type).toBe(UtilityType.Shorthand)
+        expect(css.create('margin-left:2rem')?.type).toBe(UtilityType.Normal)
 
-        css.add('mx:32', 'margin:1rem')
+        css.add('mi:2rem', 'margin:1rem')
         expect(css.utilitiesLayer.rules.map(({ name }) => name))
-            .toEqual(['margin:1rem', 'mx:32'])
+            .toEqual(['margin:1rem', 'mi:2rem'])
     })
 })
 
@@ -463,14 +497,14 @@ describe.concurrent('plan-driven layer and lifecycle parity', () => {
         expectLayerText(createDefaultCSS(), 'block@default', 'defaultsLayer', '.block\\@default{display:block}')
         expectLayerText(createDefaultCSS(), 'block@component', 'componentsLayer', '.block\\@component{display:block}')
         expectLayerText(createDefaultCSS(), 'block@utility', 'utilitiesLayer', '.block\\@utility{display:block}')
-        expectLayerText(createDefaultCSS(), 'font:12_:is(code,pre)@base', 'baseLayer', '.font\\:12_\\:is\\(code\\,pre\\)\\@base :is(code,pre){font-size:0.75rem}')
+        expectLayerText(createDefaultCSS(), 'font:12_:is(code,pre)@base', 'baseLayer', '.font\\:12_\\:is\\(code\\,pre\\)\\@base :is(code,pre){font-size:12}')
     })
 
     test('keeps deterministic rule ordering independent of insertion order', () => {
         const css = createDefaultCSS()
         css.add(
-            'px:0', 'pl:0', 'pr:0', 'p:0', 'pt:0', 'pb:0', 'py:0',
-            'mx:0', 'ml:0', 'mr:0', 'm:0', 'mt:0', 'mb:0', 'my:0',
+            'pi:0', 'pl:0', 'pr:0', 'p:0', 'pt:0', 'pb:0', 'padding-block:0',
+            'mi:0', 'ml:0', 'mr:0', 'm:0', 'mt:0', 'mb:0', 'margin-block:0',
             'font:12', 'font:medium', 'text-center', 'fixed', 'block', 'round', 'b:0'
         )
 
@@ -480,11 +514,11 @@ describe.concurrent('plan-driven layer and lifecycle parity', () => {
             'round',
             'b:0',
             'm:0',
+            'margin-block:0',
+            'mi:0',
             'p:0',
-            'mx:0',
-            'my:0',
-            'px:0',
-            'py:0',
+            'padding-block:0',
+            'pi:0',
             'font:12',
             'font:medium',
             'mb:0',

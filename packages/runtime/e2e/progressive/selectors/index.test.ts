@@ -8,7 +8,7 @@ import { dirname, resolve } from 'path'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 
-test('selectors', async ({ page, browserName }) => {
+test('selectors', async ({ page }) => {
     const generatedCSS = readFileSync(resolve(__dirname, 'generated.css'), 'utf-8')
     const prerenderHTML = readFileSync(resolve(__dirname, 'prerender.html'), 'utf-8')
     await page.evaluate((html) => document.body.innerHTML = html, prerenderHTML)

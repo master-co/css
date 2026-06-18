@@ -773,13 +773,13 @@ export default function Play({ shareId }: PlayProps = {}) {
                             {sharing && <span className="ml:10">{$('Sharing ...')}</span>}
                         </button>}
                     <span className='hidden'>{shareError}</span>
-                    {(shareable || copied) && <div className='mx:4x bg:line h:1em w:1 hidden@<md'></div>}
+                    {(shareable || copied) && <div className='mi:4x bg:line h:1em w:1px hidden@<md'></div>}
                     <button className="app-header-icon hidden@<md" onClick={() => pushShallowURL('layout', layout ? '' : '2')}>
                         <svg className={clsx({ 'stroke:accent': !layout || layout === '2' })} xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" strokeWidth="1.2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
                             <path className={clsx(
                                 'transition:transform|.2s',
                                 (!layout || layout === '2') ? 'fill:accent/.15' : 'fill:text-disabled/.2',
-                                { 'transform:translate(12,4)': !layout }
+                                { 'transform:translate(12px,4px)': !layout }
                             )} stroke="none" d="M1,0H8A0,0,0,0,1,8,0V16a0,0,0,0,1,0,0H0a0,0,0,0,1,0,0V1A1,1,0,0,1,1,0Z" transform='translate(4 4)' />
                             <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
                             <path d="M4 4m0 2a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2z"></path>
@@ -791,7 +791,7 @@ export default function Play({ shareId }: PlayProps = {}) {
                             <path className={clsx(
                                 'transition:transform|.2s',
                                 (layout === '3' || layout === '4') ? 'fill:accent/.15' : 'fill:text-disabled/.2',
-                                { 'transform:translate(12,4)': layout === '3' }
+                                { 'transform:translate(12px,4px)': layout === '3' }
                             )} stroke="none" d="M1,0H8A0,0,0,0,1,8,0V16a0,0,0,0,1,0,0H0a0,0,0,0,1,0,0V1A1,1,0,0,1,1,0Z" transform='translate(4 4)' />
                             <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
                             <path d="M4 4m0 2a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2z"></path>
@@ -807,7 +807,7 @@ export default function Play({ shareId }: PlayProps = {}) {
                         </svg>
                     </button>
                     <span className='hidden'>{layout}</span>
-                    <div className='mx:4x bg:line h:1em w:1 hidden@<md'></div>
+                    <div className='mi:4x bg:line h:1em w:1px hidden@<md'></div>
                     <button className="app-header-icon hidden@<md" onClick={() => pushShallowURL('preview', '')}>
                         <IconDeviceDesktop width="22" height="22" className={clsx(
                             'stroke:1.3',
@@ -827,7 +827,7 @@ export default function Play({ shareId }: PlayProps = {}) {
                         )} />
                     </button>
                     <span className='hidden'>{preview}</span>
-                    <div className='mx:4x bg:line h:1em w:1 hidden@<md'></div>
+                    <div className='mi:4x bg:line h:1em w:1px hidden@<md'></div>
                     <LanguageButton className="app-header-icon hidden@<md" />
                     <ThemeButton className="app-header-icon mr:-12 hidden@<md"
                         onChange={(theme: string) => {
@@ -861,17 +861,17 @@ export default function Play({ shareId }: PlayProps = {}) {
                         layout === '5' && 'hidden!@md',
                         {
                             'full!@<md': tab !== 'Preview',
-                            'br:1|muted': !layout,
-                            'bl:1|muted': layout === '2',
-                            'bb:1|muted': layout === '3',
-                            'bt:1|muted': layout === '4'
+                            'br:1px|muted': !layout,
+                            'bl:1px|muted': layout === '2',
+                            'bb:1px|muted': layout === '3',
+                            'bt:1px|muted': layout === '4'
                         }
                     )}
                     width={tab === 'Preview' ? '' : width}
                     height={tab === 'Preview' ? '' : height}
                     showHeight={true}
                 >
-                    <Tabs className="flex:0|0|auto" contentClassName="px:5x px:10x@sm">
+                    <Tabs className="flex:0|0|auto" contentClassName="pi:5x pi:10x@sm">
                         {files.map((file, index) => (
                             <Tab onClick={() => pushShallowURL('tab', index === 0 ? '' : file.title)} size="sm" key={file.id} active={tab === file.title}>
                                 {file.title || ''}
@@ -925,8 +925,8 @@ export default function Play({ shareId }: PlayProps = {}) {
                         overlay={false}
                         originX={'center'}
                         showHandler={responsive ? [false, true, true] : false}
-                        className={clsx('full outline:1|line.resizing', {
-                            'outline:1|line-muted max-h:100% max-w:100%': responsive
+                        className={clsx('full outline:1px|line.resizing', {
+                            'outline:1px|line-muted max-h:100% max-w:100%': responsive
                         })}
                         showHeight={true}
                     >
@@ -940,7 +940,7 @@ export default function Play({ shareId }: PlayProps = {}) {
                             onLoad={() => postPreviewUpdate(getFileContent(filesRef.current, 'HTML'), compiledCSSRef.current)}
                         />
                         <div className={clsx('flex flex-col h:full', { 'hidden!': preview !== 'css' })}>
-                            <div className='flex bb:1|subtle flex:0|0|auto px:5x align-items:center font:12 h:48 justify-content:space-between px:10x@sm'>
+                            <div className='flex bb:1px|subtle flex:0|0|auto pi:5x align-items:center font:12px h:48px justify-content:space-between pi:10x@sm'>
                                 <div>{compiling ? 'Compiling CSS' : 'Generated CSS'}</div>
                                 <div className="fg:muted">{compileWarnings.length ? `${compileWarnings.length} warnings` : generatedCSSSize}</div>
                             </div>
@@ -960,11 +960,11 @@ export default function Play({ shareId }: PlayProps = {}) {
                         </div>
                         {previewErrorEvent &&
                             <div className="abs full inset:0 p:12x fg:danger bg:red-5@light bg:red-95@dark">
-                                <h2 className="font:20">Error at line {previewErrorEvent.lineno === 1 ? 1 : previewErrorEvent.lineno - 1}</h2>
-                                <div className="p:15|20 r:5 my:20 font:14 font:medium white-space:pre-wrap bg:black/.2@dark bg:red-90@light">
+                                <h2 className="font:20px">Error at line {previewErrorEvent.lineno === 1 ? 1 : previewErrorEvent.lineno - 1}</h2>
+                                <div className="p:15|20 r:5px margin-block:20 font:14px font:medium white-space:pre-wrap bg:black/.2@dark bg:red-90@light">
                                     {previewErrorEvent.message}
                                 </div>
-                                <div className="font:12">{previewErrorEvent.datetime.toLocaleTimeString()} {previewErrorEvent.datetime.toDateString()}, {previewErrorEvent.filename}</div>
+                                <div className="font:12px">{previewErrorEvent.datetime.toLocaleTimeString()} {previewErrorEvent.datetime.toDateString()}, {previewErrorEvent.filename}</div>
                             </div>
                         }
                     </Resizable>

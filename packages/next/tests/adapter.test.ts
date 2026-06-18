@@ -95,7 +95,7 @@ describe('renderNextBuildOutputs', () => {
         const distDir = join(projectDir, '.next')
         const htmlFile = join(distDir, 'server/app/index.html')
         mkdirSync(join(distDir, 'server/app'), { recursive: true })
-        writeFileSync(htmlFile, '<!doctype html><html><head></head><body><h1 class="font:40 fg:red">Hello</h1></body></html>')
+        writeFileSync(htmlFile, '<!doctype html><html><head></head><body><h1 class="font:40px fg:red">Hello</h1></body></html>')
 
         const outputs = await renderNextBuildOutputs(
             createBuildContext(projectDir, htmlFile),
@@ -104,14 +104,14 @@ describe('renderNextBuildOutputs', () => {
         const html = readFileSync(htmlFile, 'utf-8')
 
         expect(outputs).toHaveLength(1)
-        expect(outputs[0].classes).toEqual(['font:40', 'fg:red'])
+        expect(outputs[0].classes).toEqual(['font:40px', 'fg:red'])
         expect(outputs[0].rendered).toBe(true)
         expect(html).toContain('<style id="master">')
         expect(html).toContain(`id="${MASTER_CSS_RUNTIME_MANIFEST_SCRIPT_ID}"`)
-        expect(html).toContain('"className":"font:40"')
+        expect(html).toContain('"className":"font:40px"')
         expect(html).toContain('"className":"fg:red"')
         expect(countManifestScripts(html)).toBe(1)
-        expect(html).toContain('.font\\:40')
+        expect(html).toContain('.font\\:40px')
         expect(html).toContain('.fg\\:red')
         expect(existsSync(join(distDir, 'master-css-manifest.json'))).toBe(true)
     })

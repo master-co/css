@@ -1,10 +1,10 @@
 export const code1 = `
-    <!-- @MARK text-align:center --><!-- @MARK font-size:1rem --><!-- @MARK font-weight:bold --><!-- @MARK border-style:solid -->
-    <p class="text-align:center font-size:1rem font-weight:bold border-style:solid">
+    <!-- @MARK text-align:center --><!-- @MARK font-size:16px --><!-- @MARK font-weight:bold --><!-- @MARK border-style:solid -->
+    <p class="text-align:center font-size:16px font-weight:bold border-style:solid">
 `
 export const code2 = `
-    <!-- @MARK text-center --><!-- @MARK font:16 --><!-- @MARK font:bold --><!-- @MARK b-solid -->
-    <p class="text-center font:16 font:bold b-solid">
+    <!-- @MARK text-center --><!-- @MARK font:16px --><!-- @MARK font:bold --><!-- @MARK b-solid -->
+    <p class="text-center font:16px font:bold b-solid">
 `
 
 Syntax: <code><span className="token value mcss language-mcss"><span className="token mcss"><span className="token Mkey">property-name</span><span className="token Mvalueroot"><span className="token Mcolon">:</span><span className="token Mvalue"><span className="token Mnumber_unit"><span className="token Mnumber">value</span></span></span></span></span></span></code> -> <code><span className="token value mcss language-mcss"><span className="token mcss"><span className="token Mkey">property</span><span className="token Mvalueroot"><span className="token Mcolon">:</span><span className="token Mvalue"><span className="token Mnumber_unit"><span className="token Mnumber">value</span></span></span></span></span></span></code>
@@ -14,7 +14,7 @@ Native CSS shorthands usually combine several longhand properties. Master CSS al
     {code1}
 </Code>
 
-(o) Use context-aware shorthands and rely on smart unit conversions. <Dropped p1={code1} p2={code2} target="class" />
+(o) Use context-aware shorthands and semantic static utilities. <Dropped p1={code1} p2={code2} target="class" />
 <Code lang="html">
     {code2}
 </Code>
@@ -22,10 +22,10 @@ Native CSS shorthands usually combine several longhand properties. Master CSS al
 From the example above:
 
 - `mcss text-center` is the semantic utility for `mcss text-align:center`.
-- `mcss font:16` resolves to `mcss font-size:1rem` because numeric font values are treated as font sizes.
+- `mcss font:16px` resolves to `mcss font-size:16px` because numeric font values are treated as font sizes.
 - `mcss font:bold` resolves to `mcss font-weight:bold` because `bold` is a font weight value.
 - `mcss b-solid` is the semantic utility for `mcss border-style:solid`.
 
 This keeps classes short while still generating explicit CSS properties. It also avoids accidental resets from native shorthand behavior, where omitted subproperties can be reset to their initial values.
 
-For example, `font:16` is not translated to the native `font` shorthand. It generates `font-size`, which is usually what the class author intended.
+For example, `font:16px` is not translated to the native `font` shorthand. It generates `font-size`, which is usually what the class author intended.

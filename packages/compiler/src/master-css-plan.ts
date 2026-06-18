@@ -2,6 +2,7 @@ import UtilityType from 'shared/utility-type'
 import type {
     CSSDirectivePlanInput as SharedCSSDirectivePlanInput,
     CSSDirectiveUtilityDefinition,
+    CSSDirectiveUtilityDynamicDefinition,
     CSSDirectiveUtilityPatternDefinition,
     CSSDirectiveUtilityRuleDefinition,
     CSSDirectiveVariableDefinition
@@ -34,6 +35,7 @@ import {
     parseAt,
     parseSelector
 } from '@master/css-engine/compiler'
+import { isNativeCSSShorthandProperty } from 'shared/native-css-shorthand'
 
 export type CSSDirectivePlanInput = SharedCSSDirectivePlanInput
 
@@ -94,7 +96,7 @@ function addUtilityVariableNamespaces(namespaces: Set<string>, utilities: (Parti
         }
         if (
             (utility as Partial<MasterCSSPlanUtility>).implicitNamespace !== false
-            && (utility.type === UtilityType.Native || utility.type === UtilityType.NativeShorthand)
+            && (utility as Partial<MasterCSSPlanUtility>).emit?.type === 'property'
         ) {
             addImplicitUtilityNamespace(namespaces, (utility as Partial<MasterCSSPlanUtility>).id)
             addImplicitUtilityNamespace(namespaces, utility.name)
@@ -422,7 +424,7 @@ function cloneDeclarations<T extends MasterCSSPlanCSSDeclarations>(declarations:
 function assertNoValuePlaceholder(declarations: CSSDirectiveUtilityRuleDefinition['declarations']) {
     for (const property in declarations) {
         if (declarations[property].includes('--value')) {
-            throw new Error('--value() is only supported inside managed enum pattern declarations')
+            throw new Error('--value() is only supported inside managed pattern declarations')
         }
     }
 }
@@ -480,12 +482,40 @@ function compilePatternUtilityRule(rule: CSSDirectiveUtilityRuleDefinition): Mas
     }
 }
 
+function utilityTypeFromRules(rules: MasterCSSPlanUtilityRule[]) {
+    return rules.some(({ declarations }) =>
+        Object.keys(declarations).some((property) => isNativeCSSShorthandProperty(property))
+    )
+        ? UtilityType.Shorthand
+        : UtilityType.Normal
+}
+
 function getPatternMatcher(pattern: CSSDirectiveUtilityPatternDefinition): MasterCSSPlanUtilityMatcher {
     return {
         type: 'pattern',
         prefix: pattern.prefix,
         values: [...pattern.values]
     }
+}
+
+function getDynamicMatchers(dynamic: CSSDirectiveUtilityDynamicDefinition): MasterCSSPlanUtilityMatcher[] {
+    const matchers: MasterCSSPlanUtilityMatcher[] = []
+    if (dynamic.variableAliasRefs?.length) {
+        matchers.push({
+            type: 'variable',
+            keys: [dynamic.key]
+        })
+    }
+    if (dynamic.kind) {
+        matchers.push({
+            type: 'value',
+            keys: [dynamic.key]
+        })
+    }
+    if (!matchers.length) {
+        throw new Error('Managed dynamic utility definition must include at least one value source')
+    }
+    return matchers
 }
 
 function compileUtility(definition: CSSDirectiveUtilityDefinition, order: number): MasterCSSPlanUtility {
@@ -506,7 +536,7 @@ function compileUtility(definition: CSSDirectiveUtilityDefinition, order: number
         return {
             id: definition.name,
             name: definition.name,
-            type: UtilityType.Normal,
+            type: utilityTypeFromRules(rules),
             order,
             layer: definition.layer || 'utilities',
             emit: {
@@ -514,6 +544,38 @@ function compileUtility(definition: CSSDirectiveUtilityDefinition, order: number
                 rules
             },
             matchers: [getPatternMatcher(definition.pattern)]
+        }
+    }
+
+    if (definition.type === 'dynamic') {
+        if (!definition.dynamic) {
+            throw new Error('Managed dynamic utility definition is missing a dynamic source')
+        }
+        const rules: MasterCSSPlanUtilityRule[] = []
+        if (definition.declarations) {
+            rules.push({
+                declarations: compilePatternDeclarations(definition.declarations),
+                ...(definition.atRules?.length ? { atRules: [...definition.atRules] } : {})
+            })
+        }
+        if (definition.rules?.length) {
+            rules.push(...definition.rules.map(compilePatternUtilityRule))
+        }
+        return {
+            id: definition.name,
+            name: definition.name,
+            type: utilityTypeFromRules(rules),
+            order,
+            layer: definition.layer || 'utilities',
+            ...(definition.dynamic.kind ? { kind: definition.dynamic.kind } : {}),
+            ...(definition.dynamic.variableAliasRefs?.length ? {
+                variableAliasRefs: [...definition.dynamic.variableAliasRefs]
+            } : {}),
+            emit: {
+                type: 'static',
+                rules
+            },
+            matchers: getDynamicMatchers(definition.dynamic)
         }
     }
 
@@ -614,9 +676,8 @@ function mergeRecords<T>(base: Record<string, T> | undefined, next: Record<strin
         : undefined
 }
 
-function getNativeValueNamespaceKey(namespace: Pick<MasterCSSPlanNativeValueNamespace, 'unit' | 'variableAliasRefs'>) {
+function getNativeValueNamespaceKey(namespace: Pick<MasterCSSPlanNativeValueNamespace, 'variableAliasRefs'>) {
     return JSON.stringify({
-        ...(namespace.unit ? { unit: namespace.unit } : {}),
         variableAliasRefs: namespace.variableAliasRefs || []
     })
 }
@@ -627,11 +688,10 @@ function mergeNativeValueNamespaces(
 ): MasterCSSPlanNativeValueNamespaces | undefined {
     if (!base?.length && !next?.length) return
 
-    const byProperty = new Map<string, Pick<MasterCSSPlanNativeValueNamespace, 'unit' | 'variableAliasRefs'>>()
+    const byProperty = new Map<string, Pick<MasterCSSPlanNativeValueNamespace, 'variableAliasRefs'>>()
     for (const namespace of [...(base || []), ...(next || [])]) {
         for (const property of namespace.properties || []) {
             byProperty.set(property, {
-                ...(namespace.unit ? { unit: namespace.unit } : {}),
                 variableAliasRefs: [...(namespace.variableAliasRefs || [])]
             })
         }
@@ -646,8 +706,7 @@ function mergeNativeValueNamespaces(
         } else {
             groups.set(key, {
                 properties: [property],
-                variableAliasRefs: [...namespace.variableAliasRefs],
-                ...(namespace.unit ? { unit: namespace.unit } : {})
+                variableAliasRefs: [...namespace.variableAliasRefs]
             })
         }
     }
@@ -697,7 +756,6 @@ function addNativeValueNamespaceAliasRef(
     }
 
     const key = getNativeValueNamespaceKey({
-        ...(namespace.unit ? { unit: namespace.unit } : {}),
         variableAliasRefs
     })
     const group = groups.get(key)
@@ -706,8 +764,7 @@ function addNativeValueNamespaceAliasRef(
     } else {
         groups.set(key, {
             properties: [property],
-            variableAliasRefs,
-            ...(namespace.unit ? { unit: namespace.unit } : {})
+            variableAliasRefs
         })
     }
 }

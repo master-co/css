@@ -5,7 +5,7 @@ export default function Welcome() {
     return (
         <>
             <Head title="Welcome"></Head>
-            <h1 className='font:48 fg:primary'>Hello World</h1>
+            <h1 className='font:48px fg:primary'>Hello World</h1>
         </>
     );
 }

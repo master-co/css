@@ -10,7 +10,7 @@ createTester({
                 utilities: [
                     {
                         name: 'zDialog',
-                        type: -4,
+                        type: -2,
                         layer: 'components',
                         rules: [
                             { selector: '&', declarations: { 'z-index': 10000 } }
@@ -22,8 +22,8 @@ createTester({
     },
 }).run('class order', rule, {
     valid: [
-        { code: `<div class="m:8 p:8 bg:black fg:white font:24">Simple, basic</div>` },
-        { code: `<div class="mt:20 card">Traditional class + syntax</div>` },
+        { code: `<div class="bg:black fg:white font:24 m:8 p:8">Simple, basic</div>` },
+        { code: `<div class="card mt:20">Traditional class + syntax</div>` },
         {
             code: '<div className={ctl(`${live && \'bg:blue-10 bg:purple-40@dark r:5@sm\'} p:10 w:full`)}>ctl + exp</div>',
         },
@@ -33,19 +33,19 @@ createTester({
         {
             code: '<div className={ctl(`${live && \'bg: black@dark white\'} p:10 w:full`)}>Space trim issue</div>',
         },
-        { code: `<div class='m:8 p:8 bg:black fg:white font:24'>Simple quotes</div>` },
+        { code: `<div class='bg:black fg:white font:24 m:8 p:8'>Simple quotes</div>` },
         { code: `<div class="p:8 ">Extra space at the end</div>` },
-        { code: `<div class="p:5 px:6 px:3@sm py:2@md p:4@lg">'p', then 'py' then 'px'</div>` },
+        { code: `<div class="p:4@lg p:5 px:3@sm px:6 py:2@md">'p', then 'px' then 'py'</div>` },
         {
             code: `ctl(\`
                 container
                 flex
                 w:12
-                w:6@sm
                 w:4@lg
+                w:6@sm
             \`)`,
         },
-        { code: `<div class="w:12 w:500px@lg">Allowed arbitrary value</div>` },
+        { code: `<div class="w:500px@lg w:12">Allowed arbitrary value</div>` },
         {
             code: `<div class="bg:black:focus:hover@dark bg:gray-40:disabled:focus:hover@md@dark">Stackable variants</div>`,
         },
@@ -85,29 +85,29 @@ createTester({
             code: `<div class="h:full w:full flex-col:hover_:where(.promotions)@md hidden:hover_:where(.hidden-on-hover)@md hidden!:not(:hover)_:where(.visible-on-hover)@md hidden!_:where(.visible-on-hover)@<md {abs;z:10;h:auto}:hover@md">Issue #377 hover visibility chain</div>`,
         },
         {
-            code: `<button class="flex items-center gap:8 px:0 w:full fg:#2B88FD:not(:disabled) fg:#999:disabled">Issue #377 disabled colors</button>`,
+            code: `<button class="flex items-center pi:0 w:full fg:#2B88FD:not(:disabled) fg:#999:disabled gap:8">Issue #377 disabled colors</button>`,
         },
         { code: `<div class="font:error mt:0 mt:0@sm a c d hello:world">Error class</div>` },
     ],
     invalid: [
         {
             code: `<div class="font:24 fg:white m:8 p:8 bg:black">Classnames will be ordered</div>`,
-            output: `<div class="m:8 p:8 bg:black fg:white font:24">Classnames will be ordered</div>`,
+            output: `<div class="bg:black fg:white font:24 m:8 p:8">Classnames will be ordered</div>`,
             errors: [{ messageId: 'invalidClassOrder' }],
         },
         {
             code: `<div class="flex uppercase m:0 m:0>li text-decoration:none>li>a px:4>li align-items:baseline fg:gray-30>li>a gap-x:28 font:12 font:medium pb:6>li pt:20 pt:10>li {bb:3|solid|black}>li:has(>.router-link-active) {fg:black}>li:has(>.router-link-active)>a fg:gray-10>li>a:hover box-shadow:none>li>a:focus">Group</div>`,
-            output: `<div class="flex uppercase m:0 align-items:baseline font:12 font:medium gap-x:28 pt:20 m:0>li text-decoration:none>li>a {bb:3|solid|black}>li:has(>.router-link-active) {fg:black}>li:has(>.router-link-active)>a px:4>li fg:gray-30>li>a pb:6>li pt:10>li fg:gray-10>li>a:hover box-shadow:none>li>a:focus">Group</div>`,
+            output: `<div class="flex uppercase m:0 align-items:baseline font:12 font:medium {bb:3|solid|black}>li:has(>.router-link-active) {fg:black}>li:has(>.router-link-active)>a m:0>li text-decoration:none>li>a fg:gray-30>li>a fg:gray-10>li>a:hover box-shadow:none>li>a:focus gap-x:28 pb:6>li pt:10>li pt:20 px:4>li">Group</div>`,
             errors: [{ messageId: 'invalidClassOrder' }],
         },
         {
             code: `<div test="p:4 px:7@sm p:8@lg py:5@sm">Enhancing readability with 'test' prop</div>`,
-            output: `<div test="p:4 px:7@sm py:5@sm p:8@lg">Enhancing readability with 'test' prop</div>`,
+            output: `<div test="p:4 p:8@lg px:7@sm py:5@sm">Enhancing readability with 'test' prop</div>`,
             errors: [{ messageId: 'invalidClassOrder' }],
         },
         {
             code: `<div class="grid grid-cols:1 grid-cols:2@sm px:8@sm py:12@sm gap:8 py:16@md">:)...</div>`,
-            output: `<div class="grid gap:8 grid-cols:1 grid-cols:2@sm px:8@sm py:12@sm py:16@md">:)...</div>`,
+            output: `<div class="grid grid-cols:1 grid-cols:2@sm gap:8 px:8@sm py:12@sm py:16@md">:)...</div>`,
             errors: [{ messageId: 'invalidClassOrder' }],
         },
         {
@@ -162,8 +162,8 @@ createTester({
                     flex
                     hidden
                     w:12
-                    w:6@sm
                     w:4@lg
+                    w:6@sm
                 \`);
             `,
             errors: [{ messageId: 'invalidClassOrder' }],
@@ -183,10 +183,10 @@ createTester({
                 ctl(\`
                     container
                     flex
-                    w:12
-                    w:6@sm
-                    w:4@lg
                     invalid
+                    w:12
+                    w:4@lg
+                    w:6@sm
                 \`);
             `,
             errors: [{ messageId: 'invalidClassOrder' }],
@@ -229,12 +229,12 @@ createTester({
                     \${
                             isDisabled &&
                             \`
-                            mx:0
+                            mi:0
                             b:0
                             \`
                     }
                     flex
-                    px:2
+                    pi:2
                 \`)
             `,
             output: `
@@ -251,11 +251,11 @@ createTester({
                             isDisabled &&
                             \`
                             b:0
-                            mx:0
+                            mi:0
                             \`
                     }
                     flex
-                    px:2
+                    pi:2
                 \`)
             `,
             errors: [
@@ -264,31 +264,31 @@ createTester({
             ],
         },
         {
-            code: `<div className="px:2 flex">...</div>`,
-            output: `<div className="flex px:2">...</div>`,
+            code: `<div className="pi:2 flex">...</div>`,
+            output: `<div className="flex pi:2">...</div>`,
             errors: [{ messageId: 'invalidClassOrder' }],
         },
         {
-            code: `ctl(\`\${enabled && "px:2 flex"}\`)`,
-            output: `ctl(\`\${enabled && "flex px:2"}\`)`,
+            code: `ctl(\`\${enabled && "pi:2 flex"}\`)`,
+            output: `ctl(\`\${enabled && "flex pi:2"}\`)`,
             errors: [{ messageId: 'invalidClassOrder' }],
         },
         {
-            code: `ctl(\`px:2 flex\`)`,
-            output: `ctl(\`flex px:2\`)`,
+            code: `ctl(\`pi:2 flex\`)`,
+            output: `ctl(\`flex pi:2\`)`,
             errors: [{ messageId: 'invalidClassOrder' }],
         },
         {
             code: `
                 ctl(\`
-                    px:2
+                    pi:2
                     flex
                 \`)
             `,
             output: `
                 ctl(\`
                     flex
-                    px:2
+                    pi:2
                 \`)
             `,
             errors: [{ messageId: 'invalidClassOrder' }],
@@ -307,7 +307,7 @@ createTester({
             output: `
                 <div
                     className={clsx(
-                        "rounded h:10 w:full",
+                        "rounded w:full h:10",
                         name === "white"
                             ? "flex m:10"
                             : undefined
@@ -322,12 +322,12 @@ createTester({
         {
             code: `
                 classnames([
-                    'invalid w:4@lg w:6@sm',
+                    'invalid w:4px@lg w:6px@sm',
                     ['w:12 flex'],
                 ])`,
             output: `
                 classnames([
-                    'w:6@sm w:4@lg invalid',
+                    'w:6px@sm w:4px@lg invalid',
                     ['flex w:12'],
                 ])`,
             errors: [
@@ -340,19 +340,19 @@ createTester({
                 classnames({
                     invalid,
                     flex: myFlag,
-                    'w:4@lg w:6@sm': resize
+                    'w:4px@lg w:6px@sm': resize
                 })`,
             output: `
                 classnames({
                     invalid,
                     flex: myFlag,
-                    'w:6@sm w:4@lg': resize
+                    'w:6px@sm w:4px@lg': resize
                 })`,
             errors: [{ messageId: 'invalidClassOrder' }],
         },
         {
             code: `ctl(\`p:3 b:3|solid|gray m:4 h:24 p:4@lg flex b:2 m:4@lg\`)`,
-            output: `ctl(\`flex b:2 b:3|solid|gray m:4 p:3 h:24 m:4@lg p:4@lg\`)`,
+            output: `ctl(\`flex b:2 b:3|solid|gray h:24 m:4 m:4@lg p:3 p:4@lg\`)`,
             errors: [{ messageId: 'invalidClassOrder' }],
         },
         {
@@ -362,7 +362,7 @@ createTester({
         },
         {
             code: `<div className="gap:15 grid-cols:2 grid-cols:3@2xs grid-cols:4@sm grid-cols:5@md p:40">order</div>`,
-            output: `<div className="gap:15 p:40 grid-cols:2 grid-cols:3@2xs grid-cols:4@sm grid-cols:5@md">order</div>`,
+            output: `<div className="grid-cols:2 grid-cols:3@2xs grid-cols:4@sm grid-cols:5@md gap:15 p:40">order</div>`,
             errors: [
                 {
                     messageId: 'invalidClassOrder',

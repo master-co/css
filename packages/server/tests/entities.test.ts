@@ -20,7 +20,7 @@ test('>', () => {
         `<div class="mt:0&gt;div"></div>`,
         defaultPlan
     ).html).toEqual([
-        '<style id="master">@layer utilities{.mt\\:0\\>div>div{margin-top:0rem}}</style>',
+        '<style id="master">@layer utilities{.mt\\:0\\>div>div{margin-top:0}}</style>',
         `<div class="mt:0&gt;div"></div>`
     ].join(''))
 })

@@ -11,7 +11,7 @@ withFixture('plan', async (context) => {
             utilities: expect.arrayContaining([
                 expect.objectContaining({
                     name: 'fixture-card',
-                    type: -4,
+                    type: -2,
                     layer: 'components',
                     emit: expect.objectContaining({
                         type: 'static',
@@ -24,7 +24,7 @@ withFixture('plan', async (context) => {
                 }),
                 expect.objectContaining({
                     name: 'fixture-button',
-                    type: -4,
+                    type: -2,
                     layer: 'components',
                     emit: expect.objectContaining({
                         type: 'static',

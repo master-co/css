@@ -103,6 +103,7 @@ const nativeFallbackProperties = new Set([
     'position',
     'quotes',
     'resize',
+    'rotate',
     'rx',
     'ry',
     'scale',

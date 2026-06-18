@@ -9,7 +9,6 @@ const settings: Settings = {
         utilities: [
             {
                 name: 'btn',
-                type: -4,
                 layer: 'components',
                 rules: [
                     { selector: '&', declarations: { display: 'inline-block' } }

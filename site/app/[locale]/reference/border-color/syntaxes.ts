@@ -5,15 +5,15 @@ const syntaxes = [
     'bb:current',
     'bl:current',
     'br:current',
-    'bx:current',
-    'by:current',
+    'border-inline-color:current',
+    'border-block-color:current',
     'b:transparent',
     'bt:transparent',
     'bb:transparent',
     'bl:transparent',
     'br:transparent',
-    'bx:transparent',
-    'by:transparent',
+    'border-inline-color:transparent',
+    'border-block-color:transparent',
 ]
 
 export default syntaxes

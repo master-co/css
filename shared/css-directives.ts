@@ -1,6 +1,7 @@
 import type {
     MasterCSSPlanDefaultMode,
     MasterCSSPlanKeyAliases,
+    MasterCSSPlanUtilityKind,
     MasterCSSPlanModeTrigger,
     MasterCSSPlanNativeValueNamespaces,
     MasterCSSPlanUtilityLayerName,
@@ -123,11 +124,18 @@ export interface CSSDirectiveUtilityPatternDefinition {
     values: string[]
 }
 
+export interface CSSDirectiveUtilityDynamicDefinition {
+    key: string
+    variableAliasRefs?: string[]
+    kind?: MasterCSSPlanUtilityKind
+}
+
 export interface CSSDirectiveUtilityDefinition {
     name: string
-    type?: 'static' | 'pattern'
+    type?: 'static' | 'pattern' | 'dynamic'
     layer?: CSSDirectiveLayerName
     pattern?: CSSDirectiveUtilityPatternDefinition
+    dynamic?: CSSDirectiveUtilityDynamicDefinition
     declarations?: CSSDirectiveDeclarations
     atRules?: string[]
     rules?: CSSDirectiveUtilityRuleDefinition[]

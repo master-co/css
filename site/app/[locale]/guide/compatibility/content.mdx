@@ -110,8 +110,8 @@ Native fallback is intentionally lower priority than Master CSS semantics. Curat
 
 This preserves the expected syntax model:
 
-- `mt:16` uses a curated alias and emits `margin-top:1rem`.
-- `margin:16` keeps Master CSS unit conversion on the native property and emits `margin:1rem`.
+- `mt:16` uses a curated alias and emits `margin-top:16`.
+- `margin:16` writes the native property value as-is and emits `margin:16`.
 - `bg:red-60` resolves the theme token and emits `background-color:var(--color-red-60)`.
 - Rare native properties without Master CSS token behavior should use valid CSS values directly, such as `float:left` or `view-transition-name:card`.
 - `display:banana` and `float:banana` are rejected instead of emitted as raw CSS.
@@ -138,13 +138,13 @@ Selector suffixes can use native CSS selector syntax as long as the browser supp
 
 ```html
 <!-- @MARK :has(:checked) -->
-<form class="outline:2|red:has(:checked)">…</form>
+<form class="outline:2px|red:has(:checked)">…</form>
 ```
 
 <details>
     <summary>Generated CSS</summary>
     <Class2CSS>
-        {['outline:2|red:has(:checked)']}
+        {['outline:2px|red:has(:checked)']}
     </Class2CSS>
 </details>
 
@@ -213,7 +213,7 @@ Use native CSS variables from your theme when module-scoped or component-scoped 
 Use Master CSS classes in markup for styling that should be generated, validated, ordered, and highlighted by Master CSS tooling:
 
 ```html
-<button class="bg:primary r:md px:md h:40">Save</button>
+<button class="bg:primary r:md pi:md h:40px">Save</button>
 ```
 
 When a CSS file imports `@master/css`, it becomes a Master-managed stylesheet. Keep vendor, CMS, or externally injected classes outside managed roots unless the class usage is visible to extraction or protected with [`@preserve native`](/guide/native-css-pruning#default-pruning).

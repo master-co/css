@@ -77,7 +77,7 @@ Referenced stylesheets can define `@settings`, `@theme`, `@custom-variant`, `@de
 
 @components {
     btn {
-        @compose inline-flex align-items:center px:md h:10x r:lg;
+        @compose inline-flex align-items:center pi:md h:10x r:lg;
     }
 }
 ```
@@ -237,6 +237,23 @@ Defines managed utility classes in the `utilities` layer. Utilities still win ov
     bg-<cover,contain,auto> {
         background-size: --value();
     }
+
+    font:<~font-size,number> {
+        font-size: --value();
+    }
+
+    font:<~font-family> {
+        font-family: --value();
+    }
+
+    bg:<~color,color> {
+        background-color: --value();
+    }
+
+    grid-cols:<number> {
+        display: grid;
+        grid-template-columns: repeat(--value(), minmax(0, 1fr));
+    }
 }
 ```
 
@@ -246,13 +263,29 @@ Enum patterns require exactly one `<...>` segment with at least two comma-separa
 
 ```txt
 font:sm
-font:16
+font:16px
 m:sm|md
 m:sm|-md
 bg:#fff
 ```
 
-`--value()` accepts no arguments and is only valid inside managed enum pattern declarations.
+Dynamic colon entries use `key:<source-list>` and keep the class syntax as `key:value`. Source entries can be theme namespaces with `~` or `=`, or one raw value kind: `number`, `color`, or `image`.
+
+```css
+@utilities {
+    font:<~font-size,number> {
+        font-size: --value();
+    }
+
+    bg:<~color,color> {
+        background-color: --value();
+    }
+}
+```
+
+`<~font-size,number>` supports `font:sm` through `--font-size-sm` and `font:16px` as a raw number. It does not create dash token classes such as `font-sm`. Bare numbers are emitted as written; use `4x` when you want Master CSS base-unit conversion to `rem`.
+
+`--value()` accepts no arguments and is only valid inside managed enum pattern or dynamic colon entry declarations.
 
 For abstraction guidance, see [Reusing styles](/guide/reusing-styles).
 

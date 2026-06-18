@@ -17,11 +17,11 @@ jsxTester.run('class order', rule, {
                     </div>`,
             output: `
                     <div class="
-                        m:8
-                        p:8
                         bg:black
                         fg:white
                         font:24
+                        m:8
+                        p:8
                     ">
                         :)
                     </div>`,
