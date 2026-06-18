@@ -20,6 +20,7 @@ const SOURCE_MODIFIERS = new Set(['not', 'required'])
 const PRESERVE_PARAMETERS = new Set(['native'])
 const THEME_MODIFIERS = new Set(['inline', 'static'])
 const MANAGED_DEFINITION_DIRECTIVES = new Set(['defaults', 'components', 'utilities'])
+const MANAGED_BODY_DIRECTIVES = new Set(['compose', 'variant', 'dark', 'light'])
 
 interface ScanOptions {
     positionOffset?: number
@@ -273,7 +274,21 @@ function tokenizeVariantPrelude(source: string, start: number, end: number, toke
     tokens.push(...tokenizeState(token, 0, cursor))
 }
 
-function tokenizeManagedPatternName(source: string, start: number, end: number, tokens: HighlightTokenItem[]) {
+function isManagedPatternValueChar(char: string | undefined) {
+    return Boolean(char && /[-_a-zA-Z0-9]/.test(char))
+}
+
+function readManagedPatternValue(source: string, index: number) {
+    const start = index
+    while (isManagedPatternValueChar(source[index])) index++
+    return {
+        start,
+        end: index,
+        value: source.slice(start, index)
+    }
+}
+
+function tokenizeManagedEnumPatternName(source: string, start: number, end: number, tokens: HighlightTokenItem[]) {
     const pattern = source.slice(start, end)
     const open = pattern.indexOf('<')
     const close = pattern.lastIndexOf('>')
@@ -290,20 +305,149 @@ function tokenizeManagedPatternName(source: string, start: number, end: number, 
     for (let cursor = openOffset + 1; cursor < start + close;) {
         cursor = skipCSSWhitespace(source, cursor)
         const char = source[cursor]
-        if (char === ',') {
+        if (char === '|') {
             pushHighlightToken(tokens, cursor, 1, 'operator', 'selector.punctuation', ['selector'])
             cursor++
             continue
         }
-        const ident = readCSSIdent(source, cursor)
-        if (ident.value) {
-            pushHighlightToken(tokens, ident.start, ident.value.length, 'enumMember', 'selector.class', ['selector'])
-            cursor = ident.end
+        const value = readManagedPatternValue(source, cursor)
+        if (value.value) {
+            pushHighlightToken(tokens, value.start, value.value.length, 'enumMember', 'selector.class', ['selector'])
+            cursor = value.end
             continue
         }
         cursor++
     }
     pushHighlightToken(tokens, start + close, 1, 'operator', 'selector.punctuation', ['selector'])
+}
+
+function tokenizeManagedDynamicPatternName(source: string, start: number, end: number, tokens: HighlightTokenItem[]) {
+    const pattern = source.slice(start, end)
+    const open = pattern.indexOf('<')
+    const close = pattern.lastIndexOf('>')
+    if (open === -1 || close === -1 || close < open) {
+        tokenizeSelectorPrelude(source, start, end, tokens)
+        return
+    }
+
+    const keyStart = skipCSSWhitespace(source, start)
+    const openOffset = start + open
+    const closeOffset = start + close
+    const colonOffset = source.lastIndexOf(':', openOffset)
+    if (colonOffset <= keyStart) {
+        tokenizeManagedEnumPatternName(source, start, end, tokens)
+        return
+    }
+
+    pushHighlightToken(tokens, keyStart, colonOffset - keyStart, 'property', 'declaration.property')
+    pushHighlightToken(tokens, colonOffset, 1, 'operator', 'declaration.separator')
+    pushHighlightToken(tokens, openOffset, 1, 'operator', 'directive.parameter', ['directive'])
+
+    for (let cursor = openOffset + 1; cursor < closeOffset;) {
+        cursor = skipCSSWhitespace(source, cursor)
+        const char = source[cursor]
+        if (char === '|' || char === '~' || char === '=') {
+            pushHighlightToken(tokens, cursor, 1, 'operator', 'directive.parameter', ['directive'])
+            cursor++
+            if (char === '~' || char === '=') {
+                const namespace = readManagedPatternValue(source, cursor)
+                if (namespace.value) {
+                    pushHighlightToken(tokens, namespace.start, namespace.value.length, 'variable', 'directive.parameter', ['directive'])
+                    cursor = namespace.end
+                }
+            }
+            continue
+        }
+        const value = readManagedPatternValue(source, cursor)
+        if (value.value) {
+            pushHighlightToken(tokens, value.start, value.value.length, 'enumMember', 'directive.parameter', ['directive'])
+            cursor = value.end
+            continue
+        }
+        cursor++
+    }
+
+    pushHighlightToken(tokens, closeOffset, 1, 'operator', 'directive.parameter', ['directive'])
+}
+
+function tokenizeManagedEntryName(source: string, start: number, end: number, tokens: HighlightTokenItem[]) {
+    const name = source.slice(start, end)
+    if (name.includes('<') || name.includes('>')) {
+        if (name.slice(0, name.indexOf('<')).includes(':')) {
+            tokenizeManagedDynamicPatternName(source, start, end, tokens)
+        } else {
+            tokenizeManagedEnumPatternName(source, start, end, tokens)
+        }
+        return
+    }
+
+    const nameStart = skipCSSWhitespace(source, start)
+    if (end > nameStart) {
+        pushHighlightToken(tokens, nameStart, end - nameStart, 'class', 'selector.class', ['selector'])
+    }
+}
+
+function tokenizeManagedEntryBody(source: string, start: number, end: number, tokens: HighlightTokenItem[]) {
+    for (let index = start; index < end; index++) {
+        const char = source[index]
+        const next = source[index + 1]
+        if (/\s/.test(char)) continue
+        if (char === '/' && next === '*') {
+            const close = source.indexOf('*/', index + 2)
+            index = close === -1 ? end : close + 1
+            continue
+        }
+        if (char === '"' || char === '\'') {
+            index = findCSSClosingQuote(source, index, char, end)
+            continue
+        }
+
+        const statementEnd = findCSSStatementEnd(source, index)
+        if (statementEnd.end > end) break
+
+        if (char === '@') {
+            const atName = readCSSIdent(source, index + 1)
+            if (statementEnd.reason === 'block' && statementEnd.delimiterRange) {
+                const blockStart = statementEnd.delimiterRange.start
+                const blockEnd = findCSSBlockEnd(source, blockStart)
+                const contentEnd = blockEnd === -1 ? end : Math.min(blockEnd, end)
+                const isManagedDirective = MANAGED_BODY_DIRECTIVES.has(atName.value)
+                if (!isManagedDirective) {
+                    tokens.push(...tokenizeAtQuery(source.slice(index, blockStart), index))
+                    pushHighlightToken(tokens, blockStart, 1, 'operator', 'block.brace')
+                }
+                tokenizeManagedEntryBody(source, blockStart + 1, contentEnd, tokens)
+                if (!isManagedDirective && blockEnd !== -1 && blockEnd < end) {
+                    pushHighlightToken(tokens, blockEnd, 1, 'operator', 'block.brace')
+                }
+                index = blockEnd === -1 ? end : blockEnd
+                continue
+            }
+            if (!MANAGED_BODY_DIRECTIVES.has(atName.value)) {
+                const preludeEnd = Math.min(statementEnd.reason === 'semicolon' ? statementEnd.end - 1 : statementEnd.end, end)
+                tokens.push(...tokenizeAtQuery(source.slice(index, preludeEnd), index))
+            }
+            index = Math.max(index, Math.min(statementEnd.end, end) - 1)
+            continue
+        }
+
+        if (statementEnd.reason === 'block' && statementEnd.delimiterRange) {
+            const blockStart = statementEnd.delimiterRange.start
+            const blockEnd = findCSSBlockEnd(source, blockStart)
+            const contentEnd = blockEnd === -1 ? end : Math.min(blockEnd, end)
+            tokenizeSelectorPrelude(source, index, blockStart, tokens)
+            pushHighlightToken(tokens, blockStart, 1, 'operator', 'block.brace')
+            tokenizeManagedEntryBody(source, blockStart + 1, contentEnd, tokens)
+            if (blockEnd !== -1 && blockEnd < end) {
+                pushHighlightToken(tokens, blockEnd, 1, 'operator', 'block.brace')
+            }
+            index = blockEnd === -1 ? end : blockEnd
+            continue
+        }
+
+        tokenizeDeclarations(source, index, Math.min(statementEnd.end, end), tokens)
+        index = Math.max(index, Math.min(statementEnd.end, end) - 1)
+    }
 }
 
 function tokenizeManagedDefinitionBlock(source: string, start: number, end: number, tokens: HighlightTokenItem[]) {
@@ -343,20 +487,17 @@ function tokenizeManagedDefinitionBlock(source: string, start: number, end: numb
             if (blockStart !== undefined && blockStart !== -1) {
                 let nameEnd = blockStart
                 while (nameEnd > ident.start && /\s/.test(source[nameEnd - 1] || '')) nameEnd--
-                const name = source.slice(ident.start, nameEnd)
-                if (name.includes('<') || name.includes('>')) {
-                    tokenizeManagedPatternName(source, ident.start, nameEnd, tokens)
-                } else {
-                    pushHighlightToken(tokens, ident.start, ident.value.length, 'class', 'selector.class', ['selector'])
-                }
+                tokenizeManagedEntryName(source, ident.start, nameEnd, tokens)
                 const blockEnd = findCSSBlockEnd(source, blockStart)
+                tokenizeManagedEntryBody(source, blockStart + 1, blockEnd === -1 ? end : Math.min(blockEnd, end), tokens)
                 index = blockEnd === -1 ? end : blockEnd
                 continue
             }
             const blockStartAfterIdent = skipCSSWhitespace(source, ident.end)
             if (source[blockStartAfterIdent] === '{') {
-                pushHighlightToken(tokens, ident.start, ident.value.length, 'class', 'selector.class', ['selector'])
+                tokenizeManagedEntryName(source, ident.start, ident.end, tokens)
                 const blockEnd = findCSSBlockEnd(source, blockStartAfterIdent)
+                tokenizeManagedEntryBody(source, blockStartAfterIdent + 1, blockEnd === -1 ? end : Math.min(blockEnd, end), tokens)
                 index = blockEnd === -1 ? end : blockEnd
                 continue
             }

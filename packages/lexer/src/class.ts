@@ -93,6 +93,7 @@ export interface MasterCSSValueTokenizeOptions {
 }
 
 const IDENTIFIER_RE = /^[A-Za-z_][\w-]*/
+const CSS_CUSTOM_FUNCTION_RE = /^--[A-Za-z_][\w-]*/
 const HASH_RE = /^#[\w-]+/
 const VARIABLE_RE = /^\$[A-Za-z0-9-]+(?:\/[+-]?(?:\d+\.\d+|\.\d+|\d+|[A-Za-z0-9_.%-]+))?/
 const NUMERIC_RE = /^([+-]?(?:\d+\.\d+|\.\d+|\d+))([A-Za-z%]+)?/
@@ -308,6 +309,20 @@ export function tokenizeMasterCSSValue(
                 pushMasterCSSLexicalToken(tokens, valueStart + i, match[0].length, 'enumMember', 'value.color')
                 i += match[0].length
                 continue
+            }
+        }
+
+        if (char === '-' && valueText[i + 1] === '-') {
+            const customFunction = valueText.slice(i).match(CSS_CUSTOM_FUNCTION_RE)
+            if (customFunction) {
+                const word = customFunction[0]
+                const wordEnd = i + word.length
+                if (word === '--value' && valueText[wordEnd] === '(') {
+                    pushMasterCSSLexicalToken(tokens, valueStart + i, word.length, 'function', 'value.function.name')
+                    pushMasterCSSLexicalToken(tokens, valueStart + wordEnd, 1, 'operator', 'value.function.punctuation')
+                    i = wordEnd + 1
+                    continue
+                }
             }
         }
 

@@ -150,6 +150,91 @@ test.concurrent('creates Shiki decorations from Master CSS semantic tokens', () 
     expect(tokens.filter(({ text, type, modifiers }) => text === 'btn' && type === 'class' && modifiers.includes('declaration') && modifiers.includes('component'))).toHaveLength(3)
 })
 
+test.concurrent('creates Shiki decorations for managed definition syntax', () => {
+    const code = [
+        '@utilities {',
+        '    text-<left|center|right> {',
+        '        text-align: --value();',
+        '    }',
+        '',
+        '    font:<~font-size|number> {',
+        '        font-size: --value();',
+        '    }',
+        '',
+        '    grid-cols:<number> {',
+        '        grid-template-columns: repeat(--value(), minmax(0, 1fr));',
+        '    }',
+        '}'
+    ].join('\n')
+    const decorations = createMasterCSSShikiSemanticTokenDecorations(code, {
+        lang: 'css',
+        plan
+    })
+    const tokens = decorations.map((decoration) => ({
+        text: code.slice(decoration.start, decoration.end),
+        type: decoration.type,
+        modifiers: decoration.modifiers,
+        classNames: decoration.properties?.class
+    }))
+
+    expect(tokens).toEqual(expect.arrayContaining([
+        expect.objectContaining({
+            text: 'text-',
+            type: 'class',
+            modifiers: ['selector'],
+            classNames: expect.arrayContaining(['mcss-semantic-role-selector-class'])
+        }),
+        expect.objectContaining({
+            text: '|',
+            type: 'operator',
+            modifiers: ['selector'],
+            classNames: expect.arrayContaining(['mcss-semantic-role-selector-punctuation'])
+        }),
+        expect.objectContaining({
+            text: 'left',
+            type: 'enumMember',
+            modifiers: ['selector'],
+            classNames: expect.arrayContaining(['mcss-semantic-role-selector-class'])
+        }),
+        expect.objectContaining({
+            text: 'font',
+            type: 'property',
+            modifiers: [],
+            classNames: expect.arrayContaining(['mcss-semantic-role-declaration-property'])
+        }),
+        expect.objectContaining({
+            text: '~',
+            type: 'operator',
+            modifiers: ['directive'],
+            classNames: expect.arrayContaining(['mcss-semantic-role-directive-parameter'])
+        }),
+        expect.objectContaining({
+            text: 'font-size',
+            type: 'variable',
+            modifiers: ['directive'],
+            classNames: expect.arrayContaining(['mcss-semantic-role-directive-parameter'])
+        }),
+        expect.objectContaining({
+            text: 'number',
+            type: 'enumMember',
+            modifiers: ['directive'],
+            classNames: expect.arrayContaining(['mcss-semantic-role-directive-parameter'])
+        }),
+        expect.objectContaining({
+            text: 'grid-template-columns',
+            type: 'property',
+            modifiers: [],
+            classNames: expect.arrayContaining(['mcss-semantic-role-declaration-property'])
+        }),
+        expect.objectContaining({
+            text: '--value',
+            type: 'function',
+            modifiers: [],
+            classNames: expect.arrayContaining(['mcss-semantic-role-value-function-name'])
+        })
+    ]))
+})
+
 test.concurrent('creates Shiki decorations for raw Master CSS class lists', () => {
     const code = 'fg:brand:hover@sm {bg:blue;fg:white}'
     const decorations = createMasterCSSShikiSemanticTokenDecorations(code, {

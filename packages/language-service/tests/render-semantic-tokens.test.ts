@@ -247,6 +247,26 @@ test.concurrent('renders semantic tokens for CSS directives', () => {
             text-<left|center|right> {
                 text-align: --value();
             }
+
+            font:<~font-size|number> {
+                font-size: --value();
+            }
+
+            bg:<~color|color> {
+                background-color: --value();
+            }
+
+            grid-cols:<number> {
+                grid-template-columns: repeat(--value(), minmax(0, 1fr));
+
+                @variant @<sm {
+                    font-size: --value();
+                }
+
+                &:hover {
+                    text-align: --value();
+                }
+            }
         }
     `, 'css')
 
@@ -294,9 +314,25 @@ test.concurrent('renders semantic tokens for CSS directives', () => {
     expectToken(tokens, '@utilities', 'keyword', ['directive'])
     expectToken(tokens, 'content-auto', 'class', ['selector'])
     expectToken(tokens, 'text-', 'class', ['selector'])
+    expectToken(tokens, '|', 'operator', ['selector'])
     expectToken(tokens, 'left', 'enumMember', ['selector'])
     expectToken(tokens, 'center', 'enumMember', ['selector'])
     expectToken(tokens, 'right', 'enumMember', ['selector'])
+    expectToken(tokens, 'text-align', 'property')
+    expectToken(tokens, '--value', 'function')
+    expectToken(tokens, 'font', 'property')
+    expectToken(tokens, ':', 'operator')
+    expectToken(tokens, '<', 'operator', ['directive'])
+    expectToken(tokens, '~', 'operator', ['directive'])
+    expectToken(tokens, '|', 'operator', ['directive'])
+    expectToken(tokens, 'font-size', 'variable', ['directive'])
+    expectToken(tokens, 'number', 'enumMember', ['directive'])
+    expectToken(tokens, 'color', 'enumMember', ['directive'])
+    expectToken(tokens, 'background-color', 'property')
+    expectToken(tokens, 'grid-template-columns', 'property')
+    expectToken(tokens, 'repeat', 'function')
+    expectToken(tokens, 'minmax', 'function')
+    expectToken(tokens, '&', 'operator', ['selector'])
 })
 
 test.concurrent('renders CSS directive ranges with quoted semicolons', () => {

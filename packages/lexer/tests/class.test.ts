@@ -35,6 +35,24 @@ test.concurrent('tokenizes values without depending on core utilities', () => {
     ])
 })
 
+test.concurrent('tokenizes managed value placeholders as CSS functions', () => {
+    const source = '--value() calc(--value() * -1)'
+    expect(texts(source, tokenizeMasterCSSValue(source, 0))).toEqual([
+        { text: '--value', type: 'function', role: 'value.function.name', modifiers: undefined },
+        { text: '(', type: 'operator', role: 'value.function.punctuation', modifiers: undefined },
+        { text: ')', type: 'operator', role: 'value.function.punctuation', modifiers: undefined },
+        { text: 'calc', type: 'function', role: 'value.function.name', modifiers: undefined },
+        { text: '(', type: 'operator', role: 'value.function.punctuation', modifiers: undefined },
+        { text: '--value', type: 'function', role: 'value.function.name', modifiers: undefined },
+        { text: '(', type: 'operator', role: 'value.function.punctuation', modifiers: undefined },
+        { text: ')', type: 'operator', role: 'value.function.punctuation', modifiers: undefined },
+        { text: '*', type: 'operator', role: 'value.operator', modifiers: undefined },
+        { text: '-', type: 'operator', role: 'value.operator', modifiers: undefined },
+        { text: '1', type: 'number', role: 'value.number', modifiers: undefined },
+        { text: ')', type: 'operator', role: 'value.function.punctuation', modifiers: undefined }
+    ])
+})
+
 test.concurrent('tokenizes at queries and selector state', () => {
     const source = '@sm>=640:hover>.item'
     expect(texts(source, [
