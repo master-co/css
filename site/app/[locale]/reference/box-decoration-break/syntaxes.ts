@@ -1,7 +1,7 @@
 const syntaxes = [
     ['box-decoration-break:`type`'],
-    'box-decoration:slice',
-    'box-decoration:clone'
+    'box-decoration-break:slice',
+    'box-decoration-break:clone'
 ]
 
 export default syntaxes

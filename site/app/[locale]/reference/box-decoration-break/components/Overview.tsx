@@ -4,7 +4,7 @@ import SyntaxTr from '~/site/components/SyntaxTr'
 import SyntaxPreview from './SyntaxPreview'
 
 export default () => {
-    const previewSyntax = 'box-decoration:slice'
+    const previewSyntax = 'box-decoration-break:slice'
     return (
         <>
             <SyntaxTable>
