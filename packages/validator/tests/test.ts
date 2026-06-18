@@ -41,7 +41,9 @@ it('validates native CSS declarations through css-tree fallback', () => {
         .toBe('.view-transition-name\\:hero{view-transition-name:hero}')
     expect(generateValidRules('color:oklch(63.7%|0.237|25.331)')[0]?.text)
         .toBe('.color\\:oklch\\(63\\.7\\%\\|0\\.237\\|25\\.331\\){color:oklch(63.7% 0.237 25.331)}')
+    expect(generateValidRules('--foo:123')[0]?.text).toContain('{--foo:123}')
 
+    expect(generateValidRules('$foo:123')).toHaveLength(0)
     expect(generateValidRules('made-up:left')).toHaveLength(0)
     expect(generateValidRules('float:banana')).toHaveLength(0)
     expect(generateValidRules('display:banana')).toHaveLength(0)

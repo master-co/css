@@ -66,7 +66,7 @@ it('extract latent classes from html', () => {
             'size:43x',
             'Master',
             'font:sans',
-            'tracking:-.25em',
+            'tracking:tight',
             'fg:white@dark',
             'font:heavy',
             'gradient-text',

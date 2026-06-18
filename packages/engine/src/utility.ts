@@ -587,10 +587,6 @@ export class Utility {
                     [y]: length === 1 ? this.valueComponents[0].text : this.valueComponents[2].text
                 } as PropertiesHyphen
             }
-            case 'css-variable-assignment':
-                return {
-                    ['--' + this.keyToken.slice(1, -1)]: newValue
-                } as PropertiesHyphen
             case 'group':
                 return this.emitGroupDeclarations(newValue)
             case 'property':

@@ -56,7 +56,7 @@ const GROUP_BODY = /{(.*)}/
 
 // "Keep this token" patterns OR'd into one — cheaper than four separate
 // `.match()` calls.
-const KEEP_TOKEN = /(?:\S*\{\S*\})|(?:^[\w\-()]+:\S+)|(?:^\$[\w-]+:\S+)|(?:^[\w-]+\(\S+\))|(?:^[\w-]+)/
+const KEEP_TOKEN = /(?:\S*\{\S*\})|(?:^[\w\-()]+:\S+)|(?:^[\w-]+\(\S+\))|(?:^[\w-]+)/
 
 // CSS unit suffix used by the `WxH` shorthand recognizer.
 const KEEP_WXH = new RegExp(`^(?:calc\\(.*\\)|\\d+(?:${MASTER_CSS_VALUE_UNIT_PATTERN})?)x(?:calc\\(.*\\)|\\d+(?:${MASTER_CSS_VALUE_UNIT_PATTERN})?)$`)

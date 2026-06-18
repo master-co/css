@@ -90,16 +90,6 @@ function matchesStaticUtility(className: string, name: string) {
         || next === '~' || next === ':' || next === '[' || next === '@' || next === '_' || next === '.'
 }
 
-function matchesCSSVariableAssignment(className: string) {
-    if (className[0] !== '$') return false
-    const colonIndex = className.indexOf(':')
-    if (colonIndex <= 1) return false
-    for (let index = 1; index < colonIndex; index++) {
-        if (!/[\w-]/.test(className[index])) return false
-    }
-    return true
-}
-
 function matchesKnownFunction(value: string, names: string[]) {
     return names.some((name) => value.startsWith(name + '('))
 }
@@ -644,8 +634,6 @@ export default class MasterCSS {
                 return matcher.values.some((value) => matchesStaticUtility(className, matcher.prefix + value))
             case 'group':
                 return className[0] === '{' && className.includes('}')
-            case 'css-variable-assignment':
-                return matchesCSSVariableAssignment(className)
         }
     }
 

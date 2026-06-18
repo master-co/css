@@ -3,10 +3,10 @@
 
 ## Examples
 ### Set a CSS custom property
-Use `$name:*` to assign a CSS custom property from the class string.
+Use `--name:*` to assign a CSS custom property from the class string.
 ```html
-<!-- @MARK $button-bg:danger -->
-<button class="$button-bg:danger bg:$(button-bg)">
+<!-- @MARK --button-bg:danger -->
+<button class="--button-bg:danger bg:$(button-bg)">
     Custom property
 </button>
 ```
@@ -14,7 +14,7 @@ Use `$name:*` to assign a CSS custom property from the class string.
 <details>
     <summary>Generated CSS</summary>
     <Class2CSS>
-        {['$button-bg:danger']}
+        {['--button-bg:danger']}
     </Class2CSS>
 </details>
 
@@ -38,7 +38,7 @@ and the element contains an encapsulated style like this:
 ```
 Elements in the shadow DOM cannot be selected via descendant selectors, but you can:
 ```html
-<test-element class="$button-bg:danger $button-bg:pink@sm">
+<test-element class="--button-bg:danger --button-bg:pink@sm">
     #shadow-root (open)
         <button part="button"></button>
 </test-element>
@@ -47,8 +47,8 @@ Elements in the shadow DOM cannot be selected via descendant selectors, but you 
 ### Set measurement variables
 Use variables for values that are consumed by custom component CSS.
 ```html
-<!-- @MARK $size:2.5rem -->
-<div class="$size:2.5rem">
+<!-- @MARK --size:2.5rem -->
+<div class="--size:2.5rem">
     Component reads var(--size)
 </div>
 ```
@@ -56,5 +56,5 @@ Use variables for values that are consumed by custom component CSS.
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="$size:2.5rem:hover $size:3rem@sm $size:0@print">...</div>
+<div class="--size:2.5rem:hover --size:3rem@sm --size:0@print">...</div>
 ```

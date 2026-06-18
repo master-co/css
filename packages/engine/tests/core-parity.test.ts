@@ -324,6 +324,23 @@ describe.concurrent('default plan utility parity', () => {
         expectClassText(css, 'bg:linear-gradient(45deg,#f3ec78,#af4261)', 'background-image:linear-gradient(45deg,#f3ec78,#af4261)')
     })
 
+    test('removes legacy css variable assignment shorthand while keeping native custom property fallback opt-in', () => {
+        const css = createCSS(defaultPlan)
+
+        expect(css.create('$foo:123')).toBeUndefined()
+        expect(css.create('$foo:123:hover')).toBeUndefined()
+        expect(css.create('$foo:123@sm')).toBeUndefined()
+        expect(css.create('--foo:123')).toBeUndefined()
+
+        const nativeCSS = createCSS(defaultPlan, undefined, {
+            nativeDeclarationMatcher: () => false
+        })
+
+        expect(nativeCSS.create('$foo:123')).toBeUndefined()
+        expect(nativeCSS.create('--foo:123')?.text).toContain('{--foo:123}')
+        expect(nativeCSS.create('--foo:123:hover')?.text).toContain(':hover{--foo:123}')
+    })
+
     test('uses injected native declaration matcher after plan misses and rejects removed aliases', () => {
         const css = createCSS(defaultPlan, undefined, {
             nativeDeclarationMatcher: ({ property, value }) =>

@@ -136,7 +136,6 @@ export type MasterCSSPlanUtilityMatcher =
     | { type: 'variable'; keys: string[]; segments?: MasterCSSPlanUtilityMatcherValueSegments }
     | { type: 'value'; keys: string[]; segments?: MasterCSSPlanUtilityMatcherValueSegments }
     | { type: 'group' }
-    | { type: 'css-variable-assignment' }
 
 export interface MasterCSSPlanUtilityBuckets {
     variable?: number[]
@@ -155,7 +154,6 @@ export type MasterCSSPlanUtilityEmit =
     | { type: 'property'; property: string }
     | { type: 'pair'; properties: [string, string] }
     | { type: 'group' }
-    | { type: 'css-variable-assignment' }
     | { type: 'static'; rules: MasterCSSPlanUtilityRule[] }
 
 export interface MasterCSSPlanUtilityRule<TDeclarations = MasterCSSPlanCSSDeclarations> {

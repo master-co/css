@@ -115,18 +115,28 @@ function collectMatcherKeys(plan: MasterCSSPlan) {
     return keys
 }
 
+function hasCSSVariableAssignmentUtility(plan: MasterCSSPlan) {
+    return (plan.utilities || []).some((utility) =>
+        ((utility.emit as { type: string }).type === 'css-variable-assignment')
+        || utility.matchers.some((matcher) => (matcher as { type: string }).type === 'css-variable-assignment')
+    )
+}
+
 describe('@master/css-preset defaultPlan', () => {
     it('matches the readable preset sources', () => {
         const plan = createDefaultPlanFromSourceFile(resolve(__dirname, '../src/index.css'))
         const utilities = plan.utilities || []
 
-        expect(sourceUtilities).toHaveLength(128)
+        expect(sourceUtilities).toHaveLength(127)
         expect(sourceUtilities.some((utility) => Number(utility.type) === UtilityType.Static)).toBe(false)
+        expect(sourceUtilities.some((utility) => utility.id === 'variable')).toBe(false)
         expect(Object.keys(functions)).toHaveLength(49)
-        expect(utilities).toHaveLength(323)
+        expect(utilities).toHaveLength(322)
         expect(utilities[0]?.order).toBe(utilities.length - 1)
         expect(utilities[utilities.length - 1]?.order).toBe(0)
         expect(utilities.some((utility) => utility.matchers.some((matcher) => (matcher as { type: string }).type === 'function-prefix'))).toBe(false)
+        expect(hasCSSVariableAssignmentUtility(plan)).toBe(false)
+        expect(hasCSSVariableAssignmentUtility(defaultPlan)).toBe(false)
         expect(plan).toEqual(defaultPlan)
     }, 20000)
 

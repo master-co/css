@@ -899,19 +899,6 @@ const utilities = [
             ]
         },
     {
-            "id": "variable",
-            "name": "variable",
-            "type": UtilityType.Shorthand,
-            "emit": {
-                "type": "css-variable-assignment"
-            },
-            "matchers": [
-                {
-                    "type": "css-variable-assignment"
-                }
-            ]
-        },
-    {
             "id": "text-size",
             "name": "text-size",
             "type": UtilityType.Shorthand,

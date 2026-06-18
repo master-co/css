@@ -27,3 +27,9 @@ test.concurrent('keeps grouped class candidates before downstream validation', (
         '${id}'
     ])
 })
+
+test.concurrent('keeps native custom property declarations without legacy dollar assignments', () => {
+    expect(extractLatentClasses('<div class="--token:1rem $token:1rem"></div>')).toEqual([
+        '--token:1rem'
+    ])
+})
