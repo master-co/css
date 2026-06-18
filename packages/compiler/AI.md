@@ -37,7 +37,7 @@
 - `@components { btn { @compose inline-flex; display: inline-flex; } }`
 - `@components { btn { @dark { @compose bg:neutral-90; } } }`
 - `@utilities { content-auto { content-visibility: auto; } }`
-- `@utilities { text-<left,center,right> { text-align: --value(); } }`
+- `@utilities { text-<left|center|right> { text-align: --value(); } }`
 - `@utilities { print-hidden { @variant @print { display: none; } } }`
 - `.card { @compose block; @dark { @compose fg:primary; } }`
 - Managed definition directives use first-level bare names, not selectors. Put selector states and descendants in nested selectors inside the named block.

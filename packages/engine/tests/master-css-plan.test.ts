@@ -13,8 +13,8 @@ describe.concurrent('MasterCSSPlan execution', () => {
             },
             utilities: [
                 {
-                    id: 'text-<left,center>',
-                    name: 'text-<left,center>',
+                    id: 'text-<left|center>',
+                    name: 'text-<left|center>',
                     type: UtilityType.Normal,
                     order: 0,
                     emit: {

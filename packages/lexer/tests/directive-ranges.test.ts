@@ -75,7 +75,7 @@ test.concurrent('collects managed definition directive ranges', () => {
 })
 
 test.concurrent('does not collect @utility as a Master CSS directive', () => {
-    const source = '@utility text-<left,center,right> { text-align: --value(); }'
+    const source = '@utility text-<left|center|right> { text-align: --value(); }'
     const ranges = collectCSSDirectiveRanges(source)
 
     expect(ranges).toEqual([])

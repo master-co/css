@@ -230,15 +230,15 @@ Defines managed utility classes in the `utilities` layer. Utilities still win ov
         content-visibility: auto;
     }
 
-    text-<left,center,right,start,end,justify> {
+    text-<left|center|right|start|end|justify> {
         text-align: --value();
     }
 
-    bg-<cover,contain,auto> {
+    bg-<cover|contain|auto> {
         background-size: --value();
     }
 
-    font:<~font-size,number> {
+    font:<~font-size|number> {
         font-size: --value();
     }
 
@@ -246,7 +246,7 @@ Defines managed utility classes in the `utilities` layer. Utilities still win ov
         font-family: --value();
     }
 
-    bg:<~color,color> {
+    bg:<~color|color> {
         background-color: --value();
     }
 
@@ -257,9 +257,9 @@ Defines managed utility classes in the `utilities` layer. Utilities still win ov
 }
 ```
 
-Managed definitions accept native declarations, `@compose`, nested selectors, native nested at-rules, and `@variant` condition blocks. Entry names can be static bare identifiers like `content-auto` or enum patterns like `text-<left,center,right>`.
+Managed definitions accept native declarations, `@compose`, nested selectors, native nested at-rules, and `@variant` condition blocks. Entry names can be static bare identifiers like `content-auto` or enum patterns like `text-<left|center|right>`.
 
-Enum patterns require exactly one `<...>` segment with at least two comma-separated values. They do not define theme namespace patterns, so token and shorthand classes keep using the colon value pipeline:
+Enum patterns require exactly one `<...>` segment with at least two pipe-separated values. They do not define theme namespace patterns, so token and shorthand classes keep using the colon value pipeline:
 
 ```txt
 font:sm
@@ -273,17 +273,17 @@ Dynamic colon entries use `key:<source-list>` and keep the class syntax as `key:
 
 ```css
 @utilities {
-    font:<~font-size,number> {
+    font:<~font-size|number> {
         font-size: --value();
     }
 
-    bg:<~color,color> {
+    bg:<~color|color> {
         background-color: --value();
     }
 }
 ```
 
-`<~font-size,number>` supports `font:sm` through `--font-size-sm` and `font:16px` as a raw number. It does not create dash token classes such as `font-sm`. Bare numbers are emitted as written; use `4x` when you want Master CSS base-unit conversion to `rem`.
+`<~font-size|number>` supports `font:sm` through `--font-size-sm` and `font:16px` as a raw number. It does not create dash token classes such as `font-sm`. Bare numbers are emitted as written; use `4x` when you want Master CSS base-unit conversion to `rem`.
 
 `--value()` accepts no arguments and is only valid inside managed enum pattern or dynamic colon entry declarations.
 

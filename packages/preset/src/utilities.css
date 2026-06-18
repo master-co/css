@@ -558,7 +558,7 @@
         padding: 0;
         margin: -1px;
         overflow: hidden;
-        clip: rect(0,0,0,0);
+        clip: rect(0, 0, 0, 0);
         white-space: nowrap;
         border-width: 0;
     }
@@ -682,10 +682,8 @@
     wrap-normal {
         overflow-wrap: normal;
     }
-}
 
-@utilities {
-    font:<~font-size,number> {
+    font:<~font-size|number> {
         font-size: --value();
     }
 
@@ -697,7 +695,7 @@
         font-weight: --value();
     }
 
-    bg:<~color,color> {
+    bg:<~color|color> {
         background-color: --value();
     }
 
@@ -706,99 +704,99 @@
         grid-template-columns: repeat(--value(), minmax(0, 1fr));
     }
 
-    bg-<auto,contain,cover> {
+    bg-<auto|contain|cover> {
         background-size: --value();
     }
 
-    bg-<bottom,center,left,right,top> {
+    bg-<bottom|center|left|right|top> {
         background-position: --value();
     }
 
-    bg-<fixed,local,scroll> {
+    bg-<fixed|local|scroll> {
         background-attachment: --value();
     }
 
-    bg-<repeat,no-repeat,repeat-x,repeat-y> {
+    bg-<repeat|no-repeat|repeat-x|repeat-y> {
         background-repeat: --value();
     }
 
-    b-<solid,dashed,dotted,double,groove,ridge,inset,outset,none,hidden> {
+    b-<solid|dashed|dotted|double|groove|ridge|inset|outset|none|hidden> {
         border-style: --value();
     }
 
-    bt-<solid,dashed,dotted,double,groove,ridge,inset,outset,none,hidden> {
+    bt-<solid|dashed|dotted|double|groove|ridge|inset|outset|none|hidden> {
         border-top-style: --value();
     }
 
-    br-<solid,dashed,dotted,double,groove,ridge,inset,outset,none,hidden> {
+    br-<solid|dashed|dotted|double|groove|ridge|inset|outset|none|hidden> {
         border-right-style: --value();
     }
 
-    bb-<solid,dashed,dotted,double,groove,ridge,inset,outset,none,hidden> {
+    bb-<solid|dashed|dotted|double|groove|ridge|inset|outset|none|hidden> {
         border-bottom-style: --value();
     }
 
-    bl-<solid,dashed,dotted,double,groove,ridge,inset,outset,none,hidden> {
+    bl-<solid|dashed|dotted|double|groove|ridge|inset|outset|none|hidden> {
         border-left-style: --value();
     }
 
-    bx-<solid,dashed,dotted,double,groove,ridge,inset,outset,none,hidden> {
+    bx-<solid|dashed|dotted|double|groove|ridge|inset|outset|none|hidden> {
         border-inline-style: --value();
     }
 
-    by-<solid,dashed,dotted,double,groove,ridge,inset,outset,none,hidden> {
+    by-<solid|dashed|dotted|double|groove|ridge|inset|outset|none|hidden> {
         border-block-style: --value();
     }
 
-    decoration-<solid,double,dotted,dashed,wavy> {
+    decoration-<solid|double|dotted|dashed|wavy> {
         text-decoration-style: --value();
     }
 
-    flex-<wrap,nowrap,wrap-reverse> {
+    flex-<wrap|nowrap|wrap-reverse> {
         flex-wrap: --value();
     }
 
-    list-<disc,decimal> {
+    list-<disc|decimal> {
         list-style-type: --value();
     }
 
-    list-<inside,outside> {
+    list-<inside|outside> {
         list-style-position: --value();
     }
 
-    object-<cover,contain,fill,scale-down> {
+    object-<cover|contain|fill|scale-down> {
         object-fit: --value();
     }
 
-    object-<center,top,bottom,left,right> {
+    object-<center|top|bottom|left|right> {
         object-position: --value();
     }
 
-    origin-<center,top,bottom,left,right> {
+    origin-<center|top|bottom|left|right> {
         transform-origin: --value();
     }
 
-    snap-<x,y,both,block,inline> {
+    snap-<x|y|both|block|inline> {
         scroll-snap-type: --value();
     }
 
-    snap-<start,end,center> {
+    snap-<start|end|center> {
         scroll-snap-align: --value();
     }
 
-    snap-<normal,always> {
+    snap-<normal|always> {
         scroll-snap-stop: --value();
     }
 
-    text-<left,center,right,start,end,justify> {
+    text-<left|center|right|start|end|justify> {
         text-align: --value();
     }
 
-    text-<wrap,nowrap,balance,pretty> {
+    text-<wrap|nowrap|balance|pretty> {
         text-wrap: --value();
     }
 
-    text-<ellipsis,clip> {
+    text-<ellipsis|clip> {
         text-overflow: --value();
     }
 }

@@ -97,11 +97,11 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
     test('lowers managed enum patterns without replacing static utility precedence', () => {
         const { plan } = compileCSSPlan(`
             @utilities {
-                text-<left,right,center> {
+                text-<left|right|center> {
                     text-align: --value();
                 }
 
-                n-<1,2> {
+                n-<1|2> {
                     margin: calc(--value() * 1px);
                 }
 
@@ -111,7 +111,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
             }
 
             @components {
-                badge-<success,danger> {
+                badge-<success|danger> {
                     color: --value();
                 }
             }
@@ -120,7 +120,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
         })
 
         expect(plan.utilityBuckets?.pattern?.length).toBeGreaterThan(0)
-        expect(plan.utilities?.find((utility) => utility.id === 'text-<left,right,center>')).toMatchObject({
+        expect(plan.utilities?.find((utility) => utility.id === 'text-<left|right|center>')).toMatchObject({
             matchers: [{
                 type: 'pattern',
                 prefix: 'text-',
@@ -146,7 +146,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
             }
 
             @utilities {
-                font:<~font-size,number> {
+                font:<~font-size|number> {
                     font-size: --value();
                 }
 
@@ -158,7 +158,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
                     font-weight: --value();
                 }
 
-                bg:<~color,color> {
+                bg:<~color|color> {
                     background-color: --value();
                 }
 
@@ -169,7 +169,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
             }
         `)
 
-        expect(plan.utilities?.find((utility) => utility.id === 'font:<~font-size,number>')).toMatchObject({
+        expect(plan.utilities?.find((utility) => utility.id === 'font:<~font-size|number>')).toMatchObject({
             kind: 'number',
             variableAliasRefs: ['~font-size'],
             matchers: expect.arrayContaining([
@@ -204,7 +204,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
                     color: --value();
                 }
             }
-        `, { basePlan: defaultPlan })).toThrow('Managed definitions only support enum patterns like text-<left,right>')
+        `, { basePlan: defaultPlan })).toThrow('Managed enum pattern requires at least two values separated by "|"')
 
         expect(() => compileCSSPlan(`
             @utilities {
@@ -220,11 +220,19 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
                     font-size: --value();
                 }
             }
-        `, { basePlan: defaultPlan })).toThrow('Managed definitions only support enum patterns like text-<left,right>')
+        `, { basePlan: defaultPlan })).toThrow('Managed enum pattern requires at least two values separated by "|"')
 
         expect(() => compileCSSPlan(`
             @utilities {
                 x-<a,b> {
+                    color: --value();
+                }
+            }
+        `, { basePlan: defaultPlan })).toThrow('Managed enum pattern values must use "|" separators')
+
+        expect(() => compileCSSPlan(`
+            @utilities {
+                x-<a|b> {
                     color: --value(rem);
                 }
             }
@@ -270,6 +278,14 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
                     color: --value();
                 }
             }
+        `, { basePlan: defaultPlan })).toThrow('Managed dynamic utility source lists must use "|" separators')
+
+        expect(() => compileCSSPlan(`
+            @utilities {
+                x:<number|color> {
+                    color: --value();
+                }
+            }
         `, { basePlan: defaultPlan })).toThrow('Managed dynamic utilities only support one raw value kind per entry')
 
         expect(() => compileCSSPlan(`
@@ -283,7 +299,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
 
     test('does not consume @utility as a Master CSS directive', () => {
         const result = compileCSS(`
-            @utility text-<left,right> {
+            @utility text-<left|right> {
                 text-align: --value();
             }
         `, {

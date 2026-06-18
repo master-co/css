@@ -244,7 +244,7 @@ test.concurrent('renders semantic tokens for CSS directives', () => {
                 @compose block;
             }
 
-            text-<left,center,right> {
+            text-<left|center|right> {
                 text-align: --value();
             }
         }

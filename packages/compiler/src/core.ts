@@ -1646,13 +1646,13 @@ function parseManagedEnumPatternName(source: string) {
     if (!rawValues) {
         throw new Error('Managed enum pattern cannot be empty')
     }
-    if (!rawValues.includes(',')) {
-        throw new Error('Managed definitions only support enum patterns like text-<left,right>')
+    if (rawValues.includes(',')) {
+        throw new Error('Managed enum pattern values must use "|" separators like text-<left|right>')
     }
 
-    const values = rawValues.split(',').map((value) => value.trim())
+    const values = rawValues.split('|').map((value) => value.trim())
     if (values.length < 2 || values.some((value) => !value)) {
-        throw new Error('Managed enum pattern requires at least two values')
+        throw new Error('Managed enum pattern requires at least two values separated by "|"')
     }
     for (const value of values) {
         if (!/^-?[_a-zA-Z0-9][-_a-zA-Z0-9]*$/.test(value)) {
@@ -1662,7 +1662,7 @@ function parseManagedEnumPatternName(source: string) {
 
     return {
         kind: 'pattern' as const,
-        name: pattern,
+        name: `${prefix}<${values.join('|')}>`,
         pattern: {
             prefix,
             values
@@ -1688,8 +1688,11 @@ function parseManagedDynamicPatternName(source: string) {
     if (!rawValues) {
         throw new Error('Managed dynamic utility source list cannot be empty')
     }
+    if (rawValues.includes(',')) {
+        throw new Error('Managed dynamic utility source lists must use "|" separators like font:<~font-size|number>')
+    }
 
-    const values = rawValues.split(',').map((value) => value.trim())
+    const values = rawValues.split('|').map((value) => value.trim())
     if (values.some((value) => !value)) {
         throw new Error('Managed dynamic utility source list cannot contain empty entries')
     }
@@ -1717,7 +1720,7 @@ function parseManagedDynamicPatternName(source: string) {
 
     return {
         kind: 'dynamic' as const,
-        name: pattern,
+        name: `${key}:<${values.join('|')}>`,
         dynamic: {
             key,
             ...(variableAliasRefs.length ? { variableAliasRefs } : {}),

@@ -180,11 +180,11 @@ describe('@master/css-preset defaultPlan', () => {
         expect(css.create('font-sm')).toBeUndefined()
         expect(css.create('m-md')).toBeUndefined()
         expect(css.create('sr-only')?.text).toContain('position:absolute')
-        expect(css.create('sr-only')?.text).toContain('clip:rect(0,0,0,0)')
+        expect(css.create('sr-only')?.text).toContain('clip:rect(0, 0, 0, 0)')
 
         expect(defaultPlan.utilityBuckets?.pattern?.length).toBeGreaterThan(0)
         expect(defaultPlan.utilities?.some((utility) => utility.id === '.text-center')).toBe(false)
-        expect(defaultPlan.utilities?.find((utility) => utility.id === 'text-<left,center,right,start,end,justify>'))
+        expect(defaultPlan.utilities?.find((utility) => utility.id === 'text-<left|center|right|start|end|justify>'))
             .toMatchObject({
                 matchers: [{
                     type: 'pattern',
