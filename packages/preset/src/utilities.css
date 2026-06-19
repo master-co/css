@@ -736,6 +736,10 @@
         grid-template-columns: repeat(--value(), minmax(0, 1fr));
     }
 
+    stroke:<number> {
+        stroke-width: --value();
+    }
+
     text:<~color-text|~color|color> {
         -webkit-text-fill-color: --value();
     }
@@ -750,6 +754,10 @@
 
     text-decoration-thickness:<number> {
         text-decoration-thickness: --value();
+    }
+
+    text-underline:<~spacing> {
+        text-underline-offset: --value();
     }
 
     text-stroke:<number> {

@@ -81,6 +81,16 @@ describe.concurrent('default plan utility parity', () => {
         expect(css.create('width:block')).toBeUndefined()
     })
 
+    test('prefers raw managed dynamic utilities before native and static fallbacks', () => {
+        const css = createDefaultCSS()
+
+        expectClassText(css, 'stroke:.75', 'stroke-width:0.75')
+        expectClassText(css, 'stroke:red', 'stroke:var(--color-line-red)')
+        expectClassText(css, 'shape-margin:px', 'shape-margin:1px')
+        expectClassText(css, 'text-underline:sm', 'text-underline-offset:var(--spacing-sm)')
+        expectClassText(css, 'text-center:hover', 'text-align:center')
+    })
+
     test('preserves radius corner aliases through key aliases', () => {
         const css = createDefaultCSS()
 

@@ -667,6 +667,16 @@ export default class MasterCSS {
         return utility.matchers.some((matcher) => matcher.type === 'static')
     }
 
+    private hasClassKey(className: string) {
+        if (className[0] === '{') return false
+
+        const indexOfColon = className.indexOf(':')
+        if (indexOfColon <= 0) return false
+
+        const key = className.slice(0, indexOfColon)
+        return !key.startsWith('--')
+    }
+
     private getClassKeyAlias(className: string) {
         if (className[0] === '{') return
 
@@ -718,9 +728,23 @@ export default class MasterCSS {
         }
     }
 
+    private matchRawManagedClassName(className: string): CompiledUtility | undefined {
+        for (const eachUtility of this.variableMatcherUtilities) {
+            if (this.matchesUtility(className, eachUtility, 'variable')) return eachUtility
+        }
+
+        for (const eachUtility of this.valueMatcherUtilities) {
+            if (this.matchesUtility(className, eachUtility, 'value')) return eachUtility
+        }
+
+        for (const eachUtility of this.keyMatcherUtilities) {
+            if (this.matchesUtility(className, eachUtility, 'key')) return eachUtility
+        }
+    }
+
     match(className: string): CompiledUtility | undefined {
-        if (this.getClassKeyAlias(className)) {
-            const rawRegisteredUtility = this.matchResolvedClassName(className)
+        if (this.hasClassKey(className)) {
+            const rawRegisteredUtility = this.matchRawManagedClassName(className)
             if (rawRegisteredUtility) return rawRegisteredUtility
         }
         return this.matchResolvedClassName(this.canonicalizeClassName(className).className)
@@ -776,9 +800,25 @@ export default class MasterCSS {
         return []
     }
 
+    private matchAllRawManagedClassName(className: string): CompiledUtility[] {
+        for (const eachUtility of this.variableMatcherUtilities) {
+            if (this.matchesUtility(className, eachUtility, 'variable')) return [eachUtility]
+        }
+
+        for (const eachUtility of this.valueMatcherUtilities) {
+            if (this.matchesUtility(className, eachUtility, 'value')) return [eachUtility]
+        }
+
+        for (const eachUtility of this.keyMatcherUtilities) {
+            if (this.matchesUtility(className, eachUtility, 'key')) return [eachUtility]
+        }
+
+        return []
+    }
+
     matchAll(className: string): CompiledUtility[] {
-        if (this.getClassKeyAlias(className)) {
-            const rawRegisteredUtilities = this.matchAllResolvedClassName(className)
+        if (this.hasClassKey(className)) {
+            const rawRegisteredUtilities = this.matchAllRawManagedClassName(className)
             if (rawRegisteredUtilities.length) return rawRegisteredUtilities
         }
         return this.matchAllResolvedClassName(this.canonicalizeClassName(className).className)
@@ -917,8 +957,8 @@ export default class MasterCSS {
      */
     create(className: string, fixedClass?: string, mode?: string): Utility | undefined {
         const sourceClassName = className
-        if (this.getClassKeyAlias(className)) {
-            const rawRegisteredUtility = this.matchResolvedClassName(className)
+        if (this.hasClassKey(className)) {
+            const rawRegisteredUtility = this.matchRawManagedClassName(className)
             if (rawRegisteredUtility) {
                 const utility = this.createWithDefinition(sourceClassName, rawRegisteredUtility, fixedClass, mode)
                 if (utility?.valid) return utility
@@ -951,8 +991,8 @@ export default class MasterCSS {
 
     createAll(className: string, fixedClass?: string, mode?: string): Utility[] {
         const sourceClassName = className
-        if (this.getClassKeyAlias(className)) {
-            const rawRegisteredUtilities = this.matchAllResolvedClassName(className)
+        if (this.hasClassKey(className)) {
+            const rawRegisteredUtilities = this.matchAllRawManagedClassName(className)
             const rawUtilities: Utility[] = []
             for (const registeredUtility of rawRegisteredUtilities) {
                 const utility = this.createWithDefinition(sourceClassName, registeredUtility, fixedClass, mode)

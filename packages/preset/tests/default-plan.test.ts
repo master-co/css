@@ -96,13 +96,26 @@ const removedAliases = [
 const competitiveNativeValueUtilities = [
     'container',
     'font',
-    'stroke',
     'transform'
 ]
 
 const nativeValueNamespaceMatcherKeys = new Set([
-    'outline'
+    'outline',
+    'stroke'
 ])
+
+const migratedNativeValueUtilityIds = [
+    'background-color',
+    'font-family',
+    'font-size',
+    'font-weight',
+    'outline-width',
+    'shape-margin',
+    'stroke',
+    'stroke-width',
+    'text-underline-offset',
+    'word-spacing'
+]
 
 function collectMatcherKeys(plan: MasterCSSPlan) {
     const keys = new Set<string>()
@@ -128,10 +141,10 @@ describe('@master/css-preset defaultPlan', () => {
         const plan = createDefaultPlanFromSourceFile(resolve(__dirname, '../src/index.css'))
         const utilities = plan.utilities || []
 
-        expect(sourceUtilities).toHaveLength(79)
+        expect(sourceUtilities).toHaveLength(69)
         expect(sourceUtilities.some((utility) => Number(utility.type) === UtilityType.Static)).toBe(false)
         expect(sourceUtilities.some((utility) => utility.id === 'variable')).toBe(false)
-        expect(utilities).toHaveLength(288)
+        expect(utilities).toHaveLength(280)
         expect(utilities[0]?.order).toBe(utilities.length - 1)
         expect(utilities[utilities.length - 1]?.order).toBe(0)
         expect(utilities.some((utility) => utility.matchers.some((matcher) => (matcher as { type: string }).type === 'function-prefix'))).toBe(false)
@@ -216,6 +229,28 @@ describe('@master/css-preset defaultPlan', () => {
         expect(defaultPlan.utilities?.some((utility) => utility.id === 'text-decoration-color:<~color-text|~color|color>')).toBe(false)
         expect(defaultPlan.utilities?.some((utility) => utility.id === 'text-stroke-color:<~color|color>')).toBe(false)
         expect(defaultPlan.utilities?.some((utility) => utility.id === 'text-stroke-width:<number>')).toBe(false)
+        expect(defaultPlan.utilities?.find((utility) => utility.id === 'stroke:<number>')).toMatchObject({
+            kind: 'number',
+            emit: {
+                type: 'static',
+                rules: [{
+                    declarations: {
+                        'stroke-width': null
+                    }
+                }]
+            }
+        })
+        expect(defaultPlan.utilities?.find((utility) => utility.id === 'text-underline:<~spacing>')).toMatchObject({
+            variableAliasRefs: ['~spacing'],
+            emit: {
+                type: 'static',
+                rules: [{
+                    declarations: {
+                        'text-underline-offset': null
+                    }
+                }]
+            }
+        })
     })
 
     it('removes fixed keyword value aliases while preserving raw ambiguous matches', () => {
@@ -248,6 +283,25 @@ describe('@master/css-preset defaultPlan', () => {
         expect(css.create('text-decoration:red')?.text).toBe('.text-decoration\\:red{text-decoration-color:var(--color-text-red)}')
         expect(css.create('text-stroke:red')?.text).toBe('.text-stroke\\:red{-webkit-text-stroke-color:var(--color-red)}')
         expect(css.create('text-decoration-thickness:px')).toBeUndefined()
+        expect(css.create('background-color:red')?.text).toBe('.background-color\\:red{background-color:var(--color-red)}')
+        expect(css.create('background-color:#fff')?.text).toBe('.background-color\\:\\#fff{background-color:#fff}')
+        expect(css.create('font-size:sm')?.text).toBe('.font-size\\:sm{font-size:var(--font-size-sm)}')
+        expect(css.create('font-size:1rem')?.text).toBe('.font-size\\:1rem{font-size:1rem}')
+        expect(css.create('font-family:sans')?.text).toBe('.font-family\\:sans{font-family:var(--font-family-sans)}')
+        expect(css.create('font-weight:bold')?.text).toBe('.font-weight\\:bold{font-weight:var(--font-weight-bold)}')
+        expect(css.create('outline-width:px')?.text).toBe('.outline-width\\:px{outline-width:1px}')
+        expect(css.create('outline-width:2px')?.text).toBe('.outline-width\\:2px{outline-width:2px}')
+        expect(css.create('shape-margin:px')?.text).toBe('.shape-margin\\:px{shape-margin:1px}')
+        expect(css.create('shape-margin:2x')?.text).toBe('.shape-margin\\:2x{shape-margin:0.5rem}')
+        expect(css.create('word-spacing:px')?.text).toBe('.word-spacing\\:px{word-spacing:1px}')
+        expect(css.create('word-spacing:2x')?.text).toBe('.word-spacing\\:2x{word-spacing:0.5rem}')
+        expect(css.create('stroke:red')?.text).toBe('.stroke\\:red{stroke:var(--color-line-red)}')
+        expect(css.create('stroke:.75')?.text).toBe('.stroke\\:\\.75{stroke-width:0.75}')
+        expect(css.create('stroke-width:px')?.text).toBe('.stroke-width\\:px{stroke-width:1px}')
+        expect(css.create('text-underline:sm')?.text).toBe('.text-underline\\:sm{text-underline-offset:var(--spacing-sm)}')
+        expect(css.create('text-underline-offset:2x')?.text).toBe('.text-underline-offset\\:2x{text-underline-offset:0.5rem}')
+        expect(css.create('animation-delay:fast')?.text).toBe('.animation-delay\\:fast{animation-delay:fast}')
+        expect(css.create('transition-delay:fast')?.text).toBe('.transition-delay\\:fast{transition-delay:fast}')
         expect(css.create('m:px')?.text).toBe('.m\\:px{margin:1px}')
         expect(css.create('outline:px|solid')?.text).toBe('.outline\\:px\\|solid{outline:1px solid}')
         expect(css.create('m:sm|md')?.text).toBe('.m\\:sm\\|md{margin:var(--spacing-sm) var(--spacing-md)}')
@@ -292,7 +346,7 @@ describe('@master/css-preset defaultPlan', () => {
 
         expect(defaultPlan.nativeValueNamespaces).toEqual(nativeValueNamespaces)
         expect(new Set(nativeValueNamespaceProperties).size).toBe(nativeValueNamespaceProperties.length)
-        expect(nativeValueNamespaceProperties).toHaveLength(158)
+        expect(nativeValueNamespaceProperties).toHaveLength(168)
         for (const property of nativeValueNamespaceProperties) {
             expect(utilityIds.has(property), property).toBe(false)
             if (!nativeValueNamespaceMatcherKeys.has(property)) {
@@ -302,6 +356,9 @@ describe('@master/css-preset defaultPlan', () => {
         for (const utility of competitiveNativeValueUtilities) {
             expect(utilityIds.has(utility), utility).toBe(true)
             expect(matcherKeys.has(utility), utility).toBe(true)
+        }
+        for (const utility of migratedNativeValueUtilityIds) {
+            expect(utilityIds.has(utility), utility).toBe(false)
         }
     })
 

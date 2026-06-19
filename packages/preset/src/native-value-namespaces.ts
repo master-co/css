@@ -60,8 +60,11 @@ const spacingProperties = [
     'scroll-padding-left',
     'scroll-padding-right',
     'scroll-padding-top',
+    'shape-margin',
+    'text-underline-offset',
     'top',
-    'translate'
+    'translate',
+    'word-spacing'
 ]
 
 const spacingUnitlessProperties = [
@@ -137,7 +140,9 @@ const borderWidthProperties = [
     'border-inline-start-width',
     'border-inline-width',
     'border-left-width',
+    'outline-width',
     'border-right-width',
+    'stroke-width',
     'border-top-width',
     'border-width'
 ]
@@ -186,12 +191,16 @@ const nativeValueNamespaces = [
         variableAliasRefs: ['=border-style']
     },
     {
-        properties: ['accent-color', 'fill', 'filter'],
+        properties: ['accent-color', 'background-color', 'fill', 'filter'],
         variableAliasRefs: ['~color']
     },
     {
         properties: ['caret-color'],
         variableAliasRefs: ['~color-text', '~color']
+    },
+    {
+        properties: ['stroke'],
+        variableAliasRefs: ['~color-line', '~color']
     },
     {
         properties: ['color'],
@@ -228,6 +237,18 @@ const nativeValueNamespaces = [
     {
         properties: ['font-feature-settings'],
         variableAliasRefs: ['=font-feature']
+    },
+    {
+        properties: ['font-family'],
+        variableAliasRefs: ['=font-family']
+    },
+    {
+        properties: ['font-size'],
+        variableAliasRefs: ['=font-size']
+    },
+    {
+        properties: ['font-weight'],
+        variableAliasRefs: ['=font-weight']
     },
     {
         properties: ['letter-spacing'],

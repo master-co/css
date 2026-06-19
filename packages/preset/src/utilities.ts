@@ -1020,27 +1020,6 @@ const utilities = [
         ]
     },
     {
-        "id": "stroke",
-        "name": "stroke",
-        "type": UtilityType.Normal,
-        "variableAliasRefs": [
-            "~color-line",
-            "~color"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "stroke"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "stroke"
-                ]
-            }
-        ]
-    },
-    {
         "id": "text-align",
         "name": "text-align",
         "type": UtilityType.Normal,
@@ -1238,32 +1217,6 @@ const utilities = [
         ]
     },
     {
-        "id": "text-underline-offset",
-        "name": "text-underline-offset",
-        "type": UtilityType.Normal,
-        "variableAliasRefs": [
-            "~spacing"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "text-underline-offset"
-        },
-        "matchers": [
-            {
-                "type": "variable",
-                "keys": [
-                    "text-underline"
-                ]
-            },
-            {
-                "type": "key",
-                "keys": [
-                    "text-underline-offset"
-                ]
-            }
-        ]
-    },
-    {
         "id": "text-underline-position",
         "name": "text-underline-position",
         "type": UtilityType.Normal,
@@ -1382,23 +1335,6 @@ const utilities = [
                 "type": "key",
                 "keys": [
                     "user-select"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "word-spacing",
-        "name": "word-spacing",
-        "type": UtilityType.Normal,
-        "emit": {
-            "type": "property",
-            "property": "word-spacing"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "word-spacing"
                 ]
             }
         ]
@@ -1580,75 +1516,6 @@ const utilities = [
             }
         ]
     },
-                        {
-        "id": "outline-width",
-        "name": "outline-width",
-        "type": UtilityType.Normal,
-        "kind": "number",
-        "emit": {
-            "type": "property",
-            "property": "outline-width"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "outline-width"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "shape-margin",
-        "name": "shape-margin",
-        "type": UtilityType.Normal,
-        "kind": "number",
-        "variableAliasRefs": [
-            "~spacing"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "shape-margin"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "shape-margin"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "stroke-width",
-        "name": "stroke-width",
-        "type": UtilityType.Normal,
-        "kind": "number",
-        "emit": {
-            "type": "property",
-            "property": "stroke-width"
-        },
-        "matchers": [
-            {
-                "type": "variable",
-                "keys": [
-                    "stroke"
-                ]
-            },
-            {
-                "type": "value",
-                "keys": [
-                    "stroke"
-                ]
-            },
-            {
-                "type": "key",
-                "keys": [
-                    "stroke-width"
-                ]
-            }
-        ]
-    },
     {
         "id": "text-stroke-width",
         "name": "text-stroke-width",
@@ -1694,86 +1561,6 @@ const utilities = [
                 "type": "key",
                 "keys": [
                     "transform-origin"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "font-family",
-        "name": "font-family",
-        "type": UtilityType.Normal,
-        "variableAliasRefs": [
-            "=font-family"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "font-family"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "font-family"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "font-weight",
-        "name": "font-weight",
-        "type": UtilityType.Normal,
-        "variableAliasRefs": [
-            "=font-weight"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "font-weight"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "font-weight"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "font-size",
-        "name": "font-size",
-        "type": UtilityType.Normal,
-        "variableAliasRefs": [
-            "=font-size"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "font-size"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "font-size"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "background-color",
-        "name": "background-color",
-        "type": UtilityType.Normal,
-        "variableAliasRefs": [
-            "~color"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "background-color"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "background-color"
                 ]
             }
         ]
