@@ -1,6 +1,5 @@
 import { pushHighlightToken, type HighlightTokenItem } from '../highlight'
-import { collectClassListHighlightTokenItems, tokenizeAtQuery, tokenizeState } from '../tokenize-class'
-import { tokenizeSelectorPrelude } from './selector'
+import { collectClassListHighlightTokenItems, tokenizeState } from '../tokenize-class'
 import type { MasterCSS } from '../../master-css'
 import {
     collectCSSQuotedStringRanges,
@@ -76,29 +75,29 @@ export function tokenizeThemePrelude(source: string, start: number, end: number,
 
 export function tokenizeCustomVariantPrelude(source: string, start: number, end: number, tokens: HighlightTokenItem[]) {
     let cursor = skipCSSWhitespace(source, start)
+    if (cursor >= end) return
+
+    if (source[cursor] === '@') {
+        const token = readCSSIdent(source, cursor + 1)
+        if (token.value) {
+            pushHighlightToken(tokens, cursor, token.end - cursor, 'keyword', 'query.keyword', ['query'])
+        }
+        return
+    }
+
     if (source[cursor] === ':') {
         const colonLength = source[cursor + 1] === ':' ? 2 : 1
         pushHighlightToken(tokens, cursor, colonLength, 'operator', 'directive.parameter', ['directive', 'query'])
         const token = readCSSIdent(source, cursor + colonLength)
         if (token.value) {
             pushHighlightToken(tokens, token.start, token.value.length, 'variable', 'directive.parameter', ['directive', 'query'])
-            cursor = token.end
         }
+        return
     } else {
         const token = readCSSIdent(source, cursor)
         if (token.value) {
             pushHighlightToken(tokens, token.start, token.value.length, 'variable', 'directive.parameter', ['directive', 'query'])
-            cursor = token.end
         }
-    }
-    const at = source.indexOf('@', cursor)
-    if (at !== -1 && at < end) {
-        tokens.push(...tokenizeAtQuery(source.slice(at, end).replace(/;$/, ''), at))
-        return
-    }
-    const selectorStart = source.indexOf('(', cursor)
-    if (selectorStart !== -1 && selectorStart < end) {
-        tokenizeSelectorPrelude(source, selectorStart, end, tokens)
     }
 }
 

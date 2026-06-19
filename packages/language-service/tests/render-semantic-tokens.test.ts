@@ -334,7 +334,7 @@ test.concurrent('renders semantic tokens for CSS directives', () => {
     expect(tokens).not.toContainEqual({ text: 'repeat', type: 'function', modifiers: [] })
 })
 
-test.concurrent('renders parser-backed native CSS inside theme directives', () => {
+test.concurrent('renders Master-only declaration tokens inside theme directives', () => {
     const { tokens } = renderTokens(`
         @theme {
             --font-family-serif: var(--font-serif, ui-serif), Georgia, Cambria, "Times New Roman", Times, serif;
@@ -343,10 +343,11 @@ test.concurrent('renders parser-backed native CSS inside theme directives', () =
             @keyframes zoom {
                 0% {
                     transform: scale(0);
+                    color: $color-red-50;
                 }
 
                 to {
-                    transform: none;
+                    transform: --value();
                 }
             }
 
@@ -370,11 +371,13 @@ test.concurrent('renders parser-backed native CSS inside theme directives', () =
     expect(tokens).not.toContainEqual({ text: 'var', type: 'function', modifiers: [] })
     expect(tokens).not.toContainEqual({ text: '@keyframes', type: 'keyword', modifiers: [] })
     expect(tokens).not.toContainEqual({ text: 'oklch', type: 'function', modifiers: [] })
+    expect(tokens).not.toContainEqual({ text: '$color-red-50', type: 'variable', modifiers: [] })
+    expect(tokens).not.toContainEqual({ text: '--value', type: 'function', modifiers: [] })
     expectToken(tokens, '$color-gray-100', 'variable')
     expectToken(tokens, '--full', 'variable')
 })
 
-test.concurrent('renders parser-backed native CSS inside managed definition directives', () => {
+test.concurrent('renders Master-only tokens inside managed definition directives', () => {
     const { tokens } = renderTokens(`
         @defaults {
             reset {
@@ -395,6 +398,10 @@ test.concurrent('renders parser-backed native CSS inside managed definition dire
                         transform: scale(1);
                     }
                 }
+            }
+
+            btn:hover {
+                @compose block;
             }
         }
 
@@ -417,6 +424,7 @@ test.concurrent('renders parser-backed native CSS inside managed definition dire
     expectToken(tokens, '@light', 'keyword', ['directive'])
     expectToken(tokens, '@components', 'keyword', ['directive'])
     expectToken(tokens, 'btn', 'class', ['selector'])
+    expectToken(tokens, 'btn:hover', 'class', ['selector'])
     expectToken(tokens, '@compose', 'keyword', ['directive'])
     expectToken(tokens, 'inline-flex', 'class')
     expectToken(tokens, '@dark', 'keyword', ['directive'])
@@ -429,6 +437,8 @@ test.concurrent('renders parser-backed native CSS inside managed definition dire
     expectToken(tokens, 'left', 'enumMember', ['selector'])
     expectToken(tokens, 'right', 'enumMember', ['selector'])
     expect(tokens).not.toContainEqual({ text: '@media', type: 'keyword', modifiers: [] })
+    expect(tokens).not.toContainEqual({ text: 'label', type: 'class', modifiers: ['selector'] })
+    expect(tokens).not.toContainEqual({ text: 'hover', type: 'modifier', modifiers: ['pseudoClass'] })
     expect(tokens).not.toContainEqual({ text: 'font-size', type: 'property', modifiers: [] })
     expect(tokens).not.toContainEqual({ text: 'var', type: 'function', modifiers: [] })
 })

@@ -1,6 +1,5 @@
 import { pushHighlightToken, type HighlightTokenItem } from '../highlight'
 import { tokenizeDeclarations } from './native'
-import { tokenizeSelectorPrelude } from './selector'
 import {
     findCSSBlockEnd,
     findCSSClosingQuote,
@@ -26,12 +25,25 @@ function readManagedPatternValue(source: string, index: number) {
     }
 }
 
+function tokenizeManagedPlainEntryName(source: string, start: number, end: number, tokens: HighlightTokenItem[]) {
+    const nameStart = skipCSSWhitespace(source, start)
+    const nameEnd = trimEnd(source, nameStart, end)
+    if (nameEnd > nameStart) {
+        pushHighlightToken(tokens, nameStart, nameEnd - nameStart, 'class', 'selector.class', ['selector'])
+    }
+}
+
+function trimEnd(source: string, start: number, end: number) {
+    while (end > start && /\s/.test(source[end - 1] || '')) end--
+    return end
+}
+
 function tokenizeManagedEnumPatternName(source: string, start: number, end: number, tokens: HighlightTokenItem[]) {
     const pattern = source.slice(start, end)
     const open = pattern.indexOf('<')
     const close = pattern.lastIndexOf('>')
     if (open === -1 || close === -1 || close < open) {
-        tokenizeSelectorPrelude(source, start, end, tokens)
+        tokenizeManagedPlainEntryName(source, start, end, tokens)
         return
     }
     const prefixStart = skipCSSWhitespace(source, start)
@@ -64,7 +76,7 @@ function tokenizeManagedDynamicPatternName(source: string, start: number, end: n
     const open = pattern.indexOf('<')
     const close = pattern.lastIndexOf('>')
     if (open === -1 || close === -1 || close < open) {
-        tokenizeSelectorPrelude(source, start, end, tokens)
+        tokenizeManagedPlainEntryName(source, start, end, tokens)
         return
     }
 
@@ -119,10 +131,7 @@ function tokenizeManagedEntryName(source: string, start: number, end: number, to
         return
     }
 
-    const nameStart = skipCSSWhitespace(source, start)
-    if (end > nameStart) {
-        pushHighlightToken(tokens, nameStart, end - nameStart, 'class', 'selector.class', ['selector'])
-    }
+    tokenizeManagedPlainEntryName(source, start, end, tokens)
 }
 
 function tokenizeManagedEntryBody(source: string, start: number, end: number, tokens: HighlightTokenItem[]) {
