@@ -1,20 +1,21 @@
 import { CompletionItemKind, type CompletionItem } from 'vscode-languageserver-protocol'
 import getPseudoClassCompletionItems from './get-pseudo-class-completion-items'
 import getPseudoElementCompletionItems from './get-pseudo-element-completion-items'
-import { AT_SIGN, MasterCSS, UtilityType, createDefaultCSS, QUERY_COMPARISON_OPERATORS, QUERY_LOGICAL_OPERATORS, SELECTOR_SIGNS, generateCSS } from '../master-css'
+import { AT_SIGN, MasterCSS, createDefaultCSS, QUERY_COMPARISON_OPERATORS, QUERY_LOGICAL_OPERATORS, SELECTOR_SIGNS, generateCSS } from '../master-css'
 import { GROUP_TRIGGER_CHARACTER, SELECTOR_TRIGGER_CHARACTERS } from '../common'
 import getClassCompletionItems from './get-class-completion-items'
 import getValueCompletionItems from './get-value-completion-items'
 import getQueryCompletionItems from './get-query-completion-items'
 import createCSSMarkdownDocumentation from './create-css-markdown-documentation'
+import { createCompletionIndex, matchesIndexedName, type CompletionIndex } from './completion-index'
 
-export default function querySyntaxCompletions(q = '', css: MasterCSS = createDefaultCSS()) {
+export default function querySyntaxCompletions(q = '', css: MasterCSS = createDefaultCSS(), completionIndex: CompletionIndex = createCompletionIndex(css)) {
     const fields = q.split(' ')
     let field = fields[fields.length - 1]
     const triggerCharacter = q.charAt(q.length - 1)
     const invoked = triggerCharacter === ' ' || field.length === 0
     if (invoked || field === GROUP_TRIGGER_CHARACTER || triggerCharacter === ';') {
-        return getClassCompletionItems(css)
+        return getClassCompletionItems(css, completionIndex)
     }
     const isGroup = field.startsWith(GROUP_TRIGGER_CHARACTER)
     if (isGroup) {
@@ -35,36 +36,17 @@ export default function querySyntaxCompletions(q = '', css: MasterCSS = createDe
     const firstColonIndex = keyMatch ? keyMatch[0].length - 1 : -1
     const selectorInvokedRegex = new RegExp(`[${SELECTOR_SIGNS.join('')}](?=(?:[^'"]|'[^']*'|"[^"]*")*$)`)
     const key = keyMatch ? keyMatch[0].slice(0, firstColonIndex) : undefined
-    const componentNames: string[] = []
-    const utilityNames: string[] = []
-    for (const utility of css.definedUtilities) {
-        const names = utility.type === UtilityType.Semantic ? utilityNames : undefined
-        for (const matcher of utility.matchers) {
-            if (matcher.type === 'static') {
-                names?.push(matcher.name)
-                if (utility.type === UtilityType.Semantic && utility.layer === 'components') {
-                    componentNames.push(matcher.name)
-                }
-            } else if (matcher.type === 'pattern') {
-                const patternNames = matcher.values.map((value) => matcher.prefix + value)
-                utilityNames.push(...patternNames)
-                if (utility.type === UtilityType.Semantic && utility.layer === 'components') {
-                    componentNames.push(...patternNames)
-                }
-            }
-        }
-    }
-    const isStyle = !!componentNames.find((eachStyleName) => new RegExp(`^${eachStyleName}(?:\\b|_)`).test(field))
-    const isUtility = !!utilityNames.find((eachUtilityName) => new RegExp(`^${eachUtilityName}(?:\\b|_)`).test(field))
+    const isStyle = completionIndex.componentNames.some((eachStyleName) => matchesIndexedName(field, eachStyleName))
+    const isUtility = completionIndex.utilityNames.some((eachUtilityName) => matchesIndexedName(field, eachUtilityName))
     // check by utilities and components
     if (!isStyle && !isUtility) {
         if (key === undefined && !valueSeparatorMatch) {
-            return getClassCompletionItems(css)
+            return getClassCompletionItems(css, completionIndex)
         }
 
         if (!atInvoked && !selectorInvokedRegex.test(field.slice(firstColonIndex + 1))) {
             if (key && firstColonIndex !== -1) {
-                return getValueCompletionItems(css, key, field.slice(firstColonIndex + 1))
+                return getValueCompletionItems(css, key, field.slice(firstColonIndex + 1), completionIndex)
             }
         }
     }
@@ -75,11 +57,11 @@ export default function querySyntaxCompletions(q = '', css: MasterCSS = createDe
     if (isStyle || isGroup) return
 
     if (atInvoked && [AT_SIGN, ...QUERY_COMPARISON_OPERATORS, ...QUERY_LOGICAL_OPERATORS].includes(triggerCharacter)) {
-        return getQueryCompletionItems(css, triggerCharacter, field)
+        return getQueryCompletionItems(css, triggerCharacter, field, completionIndex)
     }
 
     if (!atInvoked && SELECTOR_TRIGGER_CHARACTERS.includes(triggerCharacter)) {
-        const pseudoElementCompletionItems = getPseudoElementCompletionItems(css, field)
+        const pseudoElementCompletionItems = getPseudoElementCompletionItems(css, field, completionIndex)
         if (field.endsWith('::')) {
             /**
              * Consider trigger characters and fix insertText.
@@ -89,7 +71,7 @@ export default function querySyntaxCompletions(q = '', css: MasterCSS = createDe
             pseudoElementCompletionItems.forEach((completionItem) => completionItem.insertText = completionItem.label.slice(2))
             return pseudoElementCompletionItems
         } else {
-            const completionItems: CompletionItem[] = getPseudoClassCompletionItems(css, field)
+            const completionItems: CompletionItem[] = getPseudoClassCompletionItems(css, field, completionIndex)
             completionItems.push(...pseudoElementCompletionItems)
             /**
              * Consider trigger characters and fix insertText.

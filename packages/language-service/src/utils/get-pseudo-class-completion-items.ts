@@ -2,7 +2,7 @@ import { MasterCSS, createDefaultCSS, generateCSS } from '../master-css'
 import { type CompletionItem, CompletionItemKind } from 'vscode-languageserver-protocol'
 import sortCompletionItems from './sort-completion-items'
 import createCSSMarkdownDocumentation from './create-css-markdown-documentation'
-import { getMdnPseudoClassNames } from './mdn-css-data'
+import { createCompletionIndex, type CompletionIndex } from './completion-index'
 
 const kind = CompletionItemKind.Function
 const functionalPseudoClassNames = new Set([
@@ -33,9 +33,8 @@ function normalizeFunctionalPseudoClass(name: string): string {
     return functionalPseudoClassNames.has(name) ? name + '()' : name
 }
 
-export default function getPseudoClassCompletionItems(css: MasterCSS = createDefaultCSS(), syntax: string): CompletionItem[] {
-    const pseudoClassNames = getMdnPseudoClassNames()
-    const completionItems = pseudoClassNames
+export default function getPseudoClassCompletionItems(css: MasterCSS = createDefaultCSS(), syntax: string, completionIndex: CompletionIndex = createCompletionIndex(css)): CompletionItem[] {
+    const completionItems = completionIndex.pseudoClassNames
         .map((pseudoClassName) => {
             const name = normalizeFunctionalPseudoClass(pseudoClassName)
             let sortText = name.startsWith(':-')
@@ -50,19 +49,9 @@ export default function getPseudoClassCompletionItems(css: MasterCSS = createDef
             } as CompletionItem
         })
 
-    const selectors: Record<string, string> = {
-        ':of': ':of',
-    }
-    for (const variant of css.plan.variants || []) {
-        const selector = variant.branches.find((branch) => branch.selector)?.selector
-        if (selector && variant.token.startsWith(':') && !variant.token.startsWith('::')) {
-            selectors[variant.token] = selector
-        }
-    }
-
-    for (const name in selectors) {
+    for (const { token: name, selector } of completionIndex.pseudoClassSelectors) {
         if (name.startsWith('::')) continue
-        const value = selectors[name].replace(/&/g, '')
+        const value = selector.replace(/&/g, '')
         const label = normalizeFunctionalPseudoClass(name)
         let sortText = label.startsWith(':-')
             ? 'yyyy' + label.slice(2)

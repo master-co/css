@@ -2,13 +2,12 @@ import { MasterCSS, createDefaultCSS, generateCSS } from '../master-css'
 import { type CompletionItem, CompletionItemKind } from 'vscode-languageserver-protocol'
 import sortCompletionItems from './sort-completion-items'
 import createCSSMarkdownDocumentation from './create-css-markdown-documentation'
-import { getMdnPseudoElementNames } from './mdn-css-data'
+import { createCompletionIndex, type CompletionIndex } from './completion-index'
 
 const kind = CompletionItemKind.Function
 
-export default function getPseudoElementCompletionItems(css: MasterCSS = createDefaultCSS(), syntax: string): CompletionItem[] {
-    const pseudoElementNames = getMdnPseudoElementNames()
-    const completionItems = pseudoElementNames
+export default function getPseudoElementCompletionItems(css: MasterCSS = createDefaultCSS(), syntax: string, completionIndex: CompletionIndex = createCompletionIndex(css)): CompletionItem[] {
+    const completionItems = completionIndex.pseudoElementNames
         .map((pseudoElementName) => {
             const name = /::(?:part|slotted)/.test(pseudoElementName) ? pseudoElementName + '()' : pseudoElementName
             let sortText = name.startsWith('::-')
@@ -23,10 +22,7 @@ export default function getPseudoElementCompletionItems(css: MasterCSS = createD
             } as CompletionItem
         })
 
-    const selectorVariants = (css.plan.variants || [])
-        .map((variant) => ({ token: variant.token, selector: variant.branches.find((branch) => branch.selector)?.selector }))
-        .filter((variant): variant is { token: `::${string}`, selector: string } => Boolean(variant.selector) && variant.token.startsWith('::'))
-    for (const variant of selectorVariants) {
+    for (const variant of completionIndex.pseudoElementSelectors) {
         const selectorName = variant.token
         const selectorValue = variant.selector.replace(/&/g, '')
         const name = selectorName.endsWith('(') ? selectorName + ')' : selectorName

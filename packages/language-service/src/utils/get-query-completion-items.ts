@@ -2,8 +2,9 @@ import { AT_SIGN, MasterCSS, createDefaultCSS, QUERY_COMPARISON_OPERATORS, QUERY
 import { CompletionItem, CompletionItemKind } from 'vscode-languageserver-protocol'
 import sortCompletionItems from './sort-completion-items'
 import createCSSMarkdownDocumentation from './create-css-markdown-documentation'
+import { createCompletionIndex, type CompletionIndex } from './completion-index'
 
-export default function getQueryCompletionItems(css: MasterCSS = createDefaultCSS(), triggerCharacter = AT_SIGN, syntax: string): CompletionItem[] {
+export default function getQueryCompletionItems(css: MasterCSS = createDefaultCSS(), triggerCharacter = AT_SIGN, syntax: string, completionIndex: CompletionIndex = createCompletionIndex(css)): CompletionItem[] {
     const completionItems: CompletionItem[] = []
     if (!QUERY_COMPARISON_OPERATORS.includes(triggerCharacter)) {
         ['media', 'container', 'supports']
@@ -41,14 +42,14 @@ export default function getQueryCompletionItems(css: MasterCSS = createDefaultCS
         }
     }
 
-    css.atRules.forEach((atRule, token) => {
+    for (const [token, atRule] of completionIndex.atRules) {
         const completionItem: Omit<CompletionItem, 'label'> = {
             filterText: token,
             insertText: token,
             documentation: createCSSMarkdownDocumentation(generateCSS([syntax + token], css))
         }
         if ([AT_SIGN, ...QUERY_LOGICAL_OPERATORS].includes(triggerCharacter)) {
-            if (handleNumberNodes(atRule, token)) return
+            if (handleNumberNodes(atRule, token)) continue
             const text = generateAt(parseAt(triggerCharacter + token, css))
             completionItems.push(
                 {
@@ -63,6 +64,6 @@ export default function getQueryCompletionItems(css: MasterCSS = createDefaultCS
         } else if (QUERY_COMPARISON_OPERATORS.includes(triggerCharacter)) {
             handleNumberNodes(atRule, token)
         }
-    })
+    }
     return sortCompletionItems(completionItems)
 }

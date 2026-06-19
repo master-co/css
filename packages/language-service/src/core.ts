@@ -11,6 +11,7 @@ import renderSemanticTokens, { renderSemanticTokensAtPosition } from './features
 import suggestSyntax from './features/suggest-syntax'
 import { TextDocument } from 'vscode-languageserver-textdocument'
 import getClassPositions, { ClassPositionCache } from './utils/get-class-positions'
+import { createCompletionIndex, type CompletionIndex } from './utils/completion-index'
 
 export interface ClassPosition {
     range: { start: number, end: number }
@@ -22,6 +23,7 @@ export interface ClassPosition {
 export default class CSSLanguageService extends EventEmitter {
     css: MasterCSS
     settings: Settings
+    private completionIndex?: CompletionIndex
     private classPositionCache = new ClassPositionCache()
 
     constructor(
@@ -32,6 +34,11 @@ export default class CSSLanguageService extends EventEmitter {
         this.css = createCSS(this.settings.plan || defaultPlan, undefined, {
             nativeDeclarationMatcher: matchesLanguageServiceNativeDeclaration
         })
+    }
+
+    private getCompletionIndex() {
+        this.completionIndex ??= createCompletionIndex(this.css)
+        return this.completionIndex
     }
 
     inspectSyntax(...params: Parameters<typeof inspectSyntax>) {
@@ -59,9 +66,13 @@ export default class CSSLanguageService extends EventEmitter {
             return renderSemanticTokensAtPosition?.call(this, ...params)
     }
 
-    suggestSyntax(...params: Parameters<typeof suggestSyntax>) {
-        if (this.settings.suggestSyntax && this.isDocumentAccepted(params[0]))
-            return suggestSyntax?.call(this, ...params)
+    suggestSyntax(
+        document: Parameters<typeof suggestSyntax>[0],
+        position: Parameters<typeof suggestSyntax>[1],
+        context: Parameters<typeof suggestSyntax>[2]
+    ) {
+        if (this.settings.suggestSyntax && this.isDocumentAccepted(document))
+            return suggestSyntax?.call(this, document, position, context, this.getCompletionIndex())
     }
 
     getClassPositions(textDocument: TextDocument): ClassPosition[] {

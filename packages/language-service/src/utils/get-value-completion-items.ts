@@ -1,9 +1,10 @@
 import { type CompletionItem, CompletionItemKind } from 'vscode-languageserver-protocol'
 import { MasterCSS, createDefaultCSS, type Variable, generateCSS } from '../master-css'
-import { builtinKeyAliases, builtinNativeValueNamespaces } from '@master/css-engine'
+import { builtinKeyAliases } from '@master/css-engine'
 import createCSSMarkdownDocumentation from './create-css-markdown-documentation'
 import sortCompletionItems from './sort-completion-items'
 import { getMdnPropertySyntax, getMdnPropertyValueNames } from './mdn-css-data'
+import { createCompletionIndex, type CompletionIndex } from './completion-index'
 
 const SCOPED_VARIABLE_PRIORITY = 'aaaa'
 const NATIVE_PRIORITY = 'ccccc'
@@ -39,39 +40,17 @@ function getVariableKeyByNamespace(variableName: string, namespace: string) {
     return negative ? '-' + key : key
 }
 
-function utilityMayReferenceAnimations(utility: MasterCSS['definedUtilities'][number]) {
-    const emit = utility.emit
-    switch (emit.type) {
-        case 'declarations':
-            return emit.declarations.some((property) => ANIMATION_REFERENCE_PROPERTIES.has(property))
-        case 'property':
-            return ANIMATION_REFERENCE_PROPERTIES.has(emit.property)
-        case 'template':
-            return Object.keys(emit.declarations).some((property) => ANIMATION_REFERENCE_PROPERTIES.has(property))
-        case 'static':
-            return emit.rules.some((rule) =>
-                Object.keys(rule.declarations).some((property) => ANIMATION_REFERENCE_PROPERTIES.has(property))
-            )
-        default:
-            return false
-    }
-}
-
-function isPureNativePropertyUtility(utility: MasterCSS['definedUtilities'][number]) {
-    return utility.emit.type === 'property'
-        && utility.id === utility.emit.property
-        && utility.name === utility.emit.property
-}
-
-export default function getValueCompletionItems(css: MasterCSS = createDefaultCSS(), ruleKey: string, valuePrefix = ''): CompletionItem[] {
+export default function getValueCompletionItems(css: MasterCSS = createDefaultCSS(), ruleKey: string, valuePrefix = '', completionIndex: CompletionIndex = createCompletionIndex(css)): CompletionItem[] {
     const completionItems: CompletionItem[] = []
+    const addedLabels = new Set<string>()
     const canonicalRuleKey = builtinKeyAliases[ruleKey] || ruleKey
-    const nativeUtility = css.definedUtilities.find(({ keys }) => keys?.includes(canonicalRuleKey))
-    const nativeUtilityKey = nativeUtility?.emit.type === 'property'
-        ? nativeUtility.emit.property
-        : nativeUtility?.id
+    const nativeUtilityKey = completionIndex.nativeUtilityKeys.get(canonicalRuleKey)
     const nativeKey = nativeUtilityKey || (getMdnPropertySyntax(canonicalRuleKey) ? canonicalRuleKey : undefined)
     const nativePropertyValues = getMdnPropertyValueNames(nativeKey)
+    const pushCompletionItem = (completionItem: CompletionItem) => {
+        completionItems.push(completionItem)
+        addedLabels.add(completionItem.label)
+    }
     const generateVariableCompletionItem = (variable: Variable, {
         appliedValue,
         label,
@@ -79,15 +58,16 @@ export default function getValueCompletionItems(css: MasterCSS = createDefaultCS
         scoped
     }: GenerateVariableCompletionItemOptions = {}): CompletionItem | undefined => {
         const nativePropertySyntax = getMdnPropertySyntax(variable.namespace) || getMdnPropertySyntax(nativeKey)
+        if (variable.type === 'number' && variable.name.startsWith('-') && nativePropertySyntax?.includes('absolute')) return
         const valueToken = appliedValue ?? (scoped ? variable.key : variable.name)
         const documentation = createCSSMarkdownDocumentation(generateCSS([ruleKey + ':' + valueToken], css))
+        const completionItemLabel = label ?? variable.name
+        const conflicted = addedLabels.has(completionItemLabel)
         const completionItem: CompletionItem = {
-            label: label ?? variable.name,
+            label: conflicted ? 'var(--' + completionItemLabel + ')' : completionItemLabel,
             kind: CompletionItemKind.Value
         }
-        const conflicted = completionItems.find(({ label }) => label === completionItem.label)
         if (conflicted) {
-            completionItem.label = 'var(--' + completionItem.label + ')'
             completionItem.documentation = createCSSMarkdownDocumentation(generateCSS([ruleKey + ':' + completionItem.label], css))
         } else {
             completionItem.documentation = createCSSMarkdownDocumentation(generateCSS([ruleKey + ':' + valueToken], css))
@@ -112,7 +92,6 @@ export default function getValueCompletionItems(css: MasterCSS = createDefaultCS
                     prefix + num.padStart(10, '0'))
             }
         } else if (variable.type === 'number') {
-            if (variable.name.startsWith('-') && nativePropertySyntax?.includes('absolute')) return
             completionItem.detail = String(variable.name)
             const value = getNumericSortValue(variable, css.settings.rootSize)
             const sortValue = negative ? -Math.abs(value) : value
@@ -125,20 +104,20 @@ export default function getValueCompletionItems(css: MasterCSS = createDefaultCS
         return completionItem
     }
     const addScopedVariableCompletionItem = (variable: Variable, variableName: string) => {
-        if (completionItems.find(({ label }) => label === variableName)) return
+        if (addedLabels.has(variableName)) return
         const completionItem = generateVariableCompletionItem(variable, { scoped: true })
         if (completionItem) {
             completionItem.label = variableName
             completionItem.sortText = SCOPED_VARIABLE_PRIORITY + (completionItem.sortText || variableName)
             completionItem.detail = '(scope) ' + completionItem.detail
-            completionItems.push(completionItem)
+            pushCompletionItem(completionItem)
         }
         const negativeVariableName = '-' + variableName
         if (
             valuePrefix.startsWith('-')
             && variableName[0] !== '-'
             && variable.type === 'number'
-            && !completionItems.find(({ label }) => label === negativeVariableName)
+            && !addedLabels.has(negativeVariableName)
         ) {
             const negativeCompletionItem = generateVariableCompletionItem(variable, {
                 appliedValue: negativeVariableName,
@@ -149,61 +128,47 @@ export default function getValueCompletionItems(css: MasterCSS = createDefaultCS
             if (negativeCompletionItem) {
                 negativeCompletionItem.sortText = SCOPED_VARIABLE_PRIORITY + (negativeCompletionItem.sortText || negativeVariableName)
                 negativeCompletionItem.detail = '(scope) ' + negativeCompletionItem.detail
-                completionItems.push(negativeCompletionItem)
+                pushCompletionItem(negativeCompletionItem)
             }
         }
     }
 
-    for (const eachDefinedUtility of css.definedUtilities) {
-        /**
-         * Scoped variables
-         * @example box: + content -> box-sizing:content
-         */
-        if (
-            eachDefinedUtility.key === canonicalRuleKey
-            || eachDefinedUtility.subkey === canonicalRuleKey
-            || eachDefinedUtility.keys?.includes(canonicalRuleKey)
-            || eachDefinedUtility.aliasGroups?.includes(canonicalRuleKey)
-        ) {
-            eachDefinedUtility.variables?.forEach((variable, variableName) => {
-                addScopedVariableCompletionItem(variable, variableName)
+    /**
+     * Scoped variables
+     * @example box: + content -> box-sizing:content
+     */
+    for (const { name, variable } of completionIndex.scopedVariablesByKey.get(canonicalRuleKey) || []) {
+        addScopedVariableCompletionItem(variable, name)
+    }
+
+    for (const { value } of completionIndex.patternValuesByKey.get(canonicalRuleKey) || []) {
+        if (addedLabels.has(value)) continue
+        pushCompletionItem({
+            label: value,
+            kind: CompletionItemKind.Value,
+            documentation: createCSSMarkdownDocumentation(generateCSS([ruleKey + ':' + value], css)),
+            detail: canonicalRuleKey + ': ' + value
+        })
+    }
+
+    /**
+     * @example animation:fade|fast animate:fade animation-name:fade
+     */
+    for (const animationUtility of completionIndex.animationUtilitiesByKey.get(canonicalRuleKey) || []) {
+        css.animations.forEach((_, animationName) => {
+            pushCompletionItem({
+                label: animationName,
+                kind: CompletionItemKind.Value,
+                documentation: createCSSMarkdownDocumentation(generateCSS([ruleKey + ':' + animationName], css)),
+                detail: animationUtility.detailPrefix ? animationUtility.detailPrefix + ': ' + animationName : animationName
             })
-        }
-
-        for (const matcher of eachDefinedUtility.matchers) {
-            if (matcher.type !== 'pattern' || matcher.prefix !== canonicalRuleKey + ':') continue
-            for (const value of matcher.values) {
-                if (completionItems.find((item) => item.label === value)) continue
-                completionItems.push({
-                    label: value,
-                    kind: CompletionItemKind.Value,
-                    documentation: createCSSMarkdownDocumentation(generateCSS([ruleKey + ':' + value], css)),
-                    detail: canonicalRuleKey + ': ' + value
-                })
-            }
-        }
-
-        /**
-         * @example animation:fade|fast animate:fade animation-name:fade
-         */
-        if (eachDefinedUtility.keys?.includes(canonicalRuleKey) && utilityMayReferenceAnimations(eachDefinedUtility)) {
-            css.animations.forEach((_, animationName) => {
-                const isNative = isPureNativePropertyUtility(eachDefinedUtility)
-                completionItems.push({
-                    label: animationName,
-                    kind: CompletionItemKind.Value,
-                    documentation: createCSSMarkdownDocumentation(generateCSS([ruleKey + ':' + animationName], css)),
-                    detail: isNative ? eachDefinedUtility.id + ': ' + animationName : animationName
-                })
-            })
-        }
-
+        })
     }
 
     if (ANIMATION_REFERENCE_PROPERTIES.has(canonicalRuleKey)) {
         css.animations.forEach((_, animationName) => {
-            if (completionItems.find((item) => item.label === animationName)) return
-            completionItems.push({
+            if (addedLabels.has(animationName)) return
+            pushCompletionItem({
                 label: animationName,
                 kind: CompletionItemKind.Value,
                 documentation: createCSSMarkdownDocumentation(generateCSS([ruleKey + ':' + animationName], css)),
@@ -212,18 +177,13 @@ export default function getValueCompletionItems(css: MasterCSS = createDefaultCS
         })
     }
 
-    for (const namespace of builtinNativeValueNamespaces) {
-        if (!namespace.properties.includes(canonicalRuleKey)) continue
-        const usedKeys = new Set<string>()
-        for (const ref of namespace.variableAliasRefs || []) {
-            const variableNamespace = ref[0] === '=' || ref[0] === '~' ? ref.slice(1) : ''
-            if (!variableNamespace) continue
-            css.variables.forEach((variable) => {
-                const variableName = getVariableKeyByNamespace(variable.name, variableNamespace)
-                if (variableName === undefined || usedKeys.has(variableName)) return
-                usedKeys.add(variableName)
-                addScopedVariableCompletionItem(variable, variableName)
-            })
+    const usedKeys = new Set<string>()
+    for (const variableNamespace of completionIndex.nativeVariableNamespacesByProperty.get(canonicalRuleKey) || []) {
+        for (const variable of completionIndex.variables) {
+            const variableName = getVariableKeyByNamespace(variable.name, variableNamespace)
+            if (variableName === undefined || usedKeys.has(variableName)) continue
+            usedKeys.add(variableName)
+            addScopedVariableCompletionItem(variable, variableName)
         }
     }
 
@@ -233,13 +193,13 @@ export default function getValueCompletionItems(css: MasterCSS = createDefaultCS
     if (nativeKey) {
         nativePropertyValues
             .forEach(value => {
-                if (completionItems.find(x => x.label === value)
+                if (addedLabels.has(value)
                     // should ignore 100, 200 ... 900
                     || nativeKey === 'font' && typeof +value === 'number'
                     // should ignore blanks
                     || value.includes(' ')
                 ) return
-                completionItems.push({
+                pushCompletionItem({
                     label: value,
                     kind: CompletionItemKind.Value,
                     sortText: NATIVE_PRIORITY + (value.startsWith('-')
@@ -252,12 +212,12 @@ export default function getValueCompletionItems(css: MasterCSS = createDefaultCS
     }
 
     // global variables
-    css.variables.forEach((variable) => {
+    completionIndex.variables.forEach((variable) => {
         const completionItem = generateVariableCompletionItem(variable)
         if (completionItem) {
             completionItem.sortText = GLOBAL_VARIABLE_PRIORITY + (completionItem.sortText || completionItem.label)
             completionItem.detail = '(global) ' + completionItem.detail
-            completionItems.push(completionItem)
+            pushCompletionItem(completionItem)
         }
     })
 

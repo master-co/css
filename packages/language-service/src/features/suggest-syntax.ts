@@ -2,11 +2,13 @@ import type { CompletionItem, CompletionParams } from 'vscode-languageserver-pro
 import type { TextDocument } from 'vscode-languageserver-textdocument'
 import CSSLanguageService from '../core'
 import querySyntaxCompletions from '../utils/query-syntax-completions'
+import type { CompletionIndex } from '../utils/completion-index'
 
 export default function suggestSyntax(this: CSSLanguageService,
     document: TextDocument,
     position: CompletionParams['position'],
-    context: CompletionParams['context']
+    context: CompletionParams['context'],
+    completionIndex?: CompletionIndex
 ): CompletionItem[] | undefined {
     const classPosition = this.getClassPosition(document, position)
     if (classPosition !== undefined) {
@@ -27,7 +29,7 @@ export default function suggestSyntax(this: CSSLanguageService,
                 start: document.positionAt(classPosition.range.start),
                 end: position
             })
-        return querySyntaxCompletions(q, this.css)
+        return querySyntaxCompletions(q, this.css, completionIndex)
     }
     // todo
     // else if (isInstance === true && checkConfigColorsBlock(document, position) === true) {
