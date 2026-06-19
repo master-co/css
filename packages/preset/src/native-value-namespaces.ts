@@ -79,6 +79,7 @@ const containerProperties = [
     'block-size',
     'contain-intrinsic-block-size',
     'contain-intrinsic-inline-size',
+    'flex-basis',
     'height',
     'inline-size',
     'max-block-size',
@@ -143,6 +144,7 @@ const borderWidthProperties = [
     'outline-width',
     'border-right-width',
     'stroke-width',
+    '-webkit-text-stroke-width',
     'border-top-width',
     'border-width'
 ]

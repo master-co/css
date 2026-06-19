@@ -28,46 +28,6 @@ const utilities = [
         ]
     },
     {
-        "id": "background",
-        "name": "background",
-        "type": UtilityType.Shorthand,
-        "variableAliasRefs": [
-            "~color"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "background"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "background"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "container",
-        "name": "container",
-        "type": UtilityType.Shorthand,
-        "variableAliasRefs": [
-            "=container"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "container"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "container"
-                ]
-            }
-        ]
-    },
-    {
         "id": "font",
         "name": "font",
         "type": UtilityType.Shorthand,
@@ -100,12 +60,6 @@ const utilities = [
         },
         "matchers": [
             {
-                "type": "variable",
-                "keys": [
-                    "font"
-                ]
-            },
-            {
                 "type": "key",
                 "keys": [
                     "font-variant"
@@ -131,7 +85,7 @@ const utilities = [
             }
         ]
     },
-        {
+    {
         "id": "text-decoration",
         "name": "text-decoration",
         "type": UtilityType.Shorthand,
@@ -164,12 +118,6 @@ const utilities = [
             "property": "text-wrap"
         },
         "matchers": [
-            {
-                "type": "variable",
-                "keys": [
-                    "text"
-                ]
-            },
             {
                 "type": "key",
                 "keys": [
@@ -474,12 +422,6 @@ const utilities = [
         },
         "matchers": [
             {
-                "type": "variable",
-                "keys": [
-                    "bg"
-                ]
-            },
-            {
                 "type": "key",
                 "keys": [
                     "background-attachment"
@@ -497,12 +439,6 @@ const utilities = [
         },
         "matchers": [
             {
-                "type": "variable",
-                "keys": [
-                    "bg"
-                ]
-            },
-            {
                 "type": "key",
                 "keys": [
                     "background-position"
@@ -519,12 +455,6 @@ const utilities = [
             "property": "background-repeat"
         },
         "matchers": [
-            {
-                "type": "variable",
-                "keys": [
-                    "bg"
-                ]
-            },
             {
                 "type": "key",
                 "keys": [
@@ -559,12 +489,6 @@ const utilities = [
             "property": "border-image-repeat"
         },
         "matchers": [
-            {
-                "type": "variable",
-                "keys": [
-                    "border-image"
-                ]
-            },
             {
                 "type": "key",
                 "keys": [
@@ -603,12 +527,6 @@ const utilities = [
         },
         "matchers": [
             {
-                "type": "variable",
-                "keys": [
-                    "container"
-                ]
-            },
-            {
                 "type": "key",
                 "keys": [
                     "container-type"
@@ -616,32 +534,7 @@ const utilities = [
             }
         ]
     },
-    {
-        "id": "flex-basis",
-        "name": "flex-basis",
-        "type": UtilityType.Normal,
-        "variableAliasRefs": [
-            "~container"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "flex-basis"
-        },
-        "matchers": [
-            {
-                "type": "variable",
-                "keys": [
-                    "flex"
-                ]
-            },
-            {
-                "type": "key",
-                "keys": [
-                    "flex-basis"
-                ]
-            }
-        ]
-    },
+
     {
         "id": "flex-direction",
         "name": "flex-direction",
@@ -651,12 +544,6 @@ const utilities = [
             "property": "flex-direction"
         },
         "matchers": [
-            {
-                "type": "variable",
-                "keys": [
-                    "flex"
-                ]
-            },
             {
                 "type": "key",
                 "keys": [
@@ -675,12 +562,6 @@ const utilities = [
         },
         "matchers": [
             {
-                "type": "variable",
-                "keys": [
-                    "flex"
-                ]
-            },
-            {
                 "type": "key",
                 "keys": [
                     "flex-wrap"
@@ -698,12 +579,6 @@ const utilities = [
         },
         "matchers": [
             {
-                "type": "variable",
-                "keys": [
-                    "font"
-                ]
-            },
-            {
                 "type": "key",
                 "keys": [
                     "font-style"
@@ -720,12 +595,6 @@ const utilities = [
             "property": "font-variant-numeric"
         },
         "matchers": [
-            {
-                "type": "variable",
-                "keys": [
-                    "font"
-                ]
-            },
             {
                 "type": "key",
                 "keys": [
@@ -814,12 +683,6 @@ const utilities = [
         },
         "matchers": [
             {
-                "type": "variable",
-                "keys": [
-                    "list-style"
-                ]
-            },
-            {
                 "type": "key",
                 "keys": [
                     "list-style-position"
@@ -836,12 +699,6 @@ const utilities = [
             "property": "list-style-type"
         },
         "matchers": [
-            {
-                "type": "variable",
-                "keys": [
-                    "list-style"
-                ]
-            },
             {
                 "type": "key",
                 "keys": [
@@ -880,12 +737,6 @@ const utilities = [
         },
         "matchers": [
             {
-                "type": "variable",
-                "keys": [
-                    "object"
-                ]
-            },
-            {
                 "type": "key",
                 "keys": [
                     "object-fit"
@@ -902,12 +753,6 @@ const utilities = [
             "property": "object-position"
         },
         "matchers": [
-            {
-                "type": "variable",
-                "keys": [
-                    "object"
-                ]
-            },
             {
                 "type": "key",
                 "keys": [
@@ -960,12 +805,6 @@ const utilities = [
         },
         "matchers": [
             {
-                "type": "variable",
-                "keys": [
-                    "scroll-snap"
-                ]
-            },
-            {
                 "type": "key",
                 "keys": [
                     "scroll-snap-align"
@@ -982,12 +821,6 @@ const utilities = [
             "property": "scroll-snap-stop"
         },
         "matchers": [
-            {
-                "type": "variable",
-                "keys": [
-                    "scroll-snap"
-                ]
-            },
             {
                 "type": "key",
                 "keys": [
@@ -1006,12 +839,6 @@ const utilities = [
         },
         "matchers": [
             {
-                "type": "variable",
-                "keys": [
-                    "scroll-snap"
-                ]
-            },
-            {
                 "type": "key",
                 "keys": [
                     "scroll-snap-type"
@@ -1028,12 +855,6 @@ const utilities = [
             "property": "text-align"
         },
         "matchers": [
-            {
-                "type": "variable",
-                "keys": [
-                    "text"
-                ]
-            },
             {
                 "type": "key",
                 "keys": [
@@ -1052,12 +873,6 @@ const utilities = [
         },
         "matchers": [
             {
-                "type": "variable",
-                "keys": [
-                    "text-decoration"
-                ]
-            },
-            {
                 "type": "key",
                 "keys": [
                     "text-decoration-line"
@@ -1074,12 +889,6 @@ const utilities = [
             "property": "text-decoration-style"
         },
         "matchers": [
-            {
-                "type": "variable",
-                "keys": [
-                    "text-decoration"
-                ]
-            },
             {
                 "type": "key",
                 "keys": [
@@ -1115,12 +924,6 @@ const utilities = [
         },
         "matchers": [
             {
-                "type": "variable",
-                "keys": [
-                    "text"
-                ]
-            },
-            {
                 "type": "key",
                 "keys": [
                     "text-orientation"
@@ -1138,12 +941,6 @@ const utilities = [
         },
         "matchers": [
             {
-                "type": "variable",
-                "keys": [
-                    "text"
-                ]
-            },
-            {
                 "type": "key",
                 "keys": [
                     "text-overflow"
@@ -1160,12 +957,6 @@ const utilities = [
             "property": "text-rendering"
         },
         "matchers": [
-            {
-                "type": "variable",
-                "keys": [
-                    "text"
-                ]
-            },
             {
                 "type": "key",
                 "keys": [
@@ -1203,12 +994,6 @@ const utilities = [
         },
         "matchers": [
             {
-                "type": "variable",
-                "keys": [
-                    "text"
-                ]
-            },
-            {
                 "type": "key",
                 "keys": [
                     "text-transform"
@@ -1225,12 +1010,6 @@ const utilities = [
             "property": "text-underline-position"
         },
         "matchers": [
-            {
-                "type": "variable",
-                "keys": [
-                    "text-underline"
-                ]
-            },
             {
                 "type": "key",
                 "keys": [
@@ -1268,12 +1047,6 @@ const utilities = [
             "property": "transform-style"
         },
         "matchers": [
-            {
-                "type": "variable",
-                "keys": [
-                    "transform"
-                ]
-            },
             {
                 "type": "key",
                 "keys": [
@@ -1377,12 +1150,6 @@ const utilities = [
         },
         "matchers": [
             {
-                "type": "variable",
-                "keys": [
-                    "border-image"
-                ]
-            },
-            {
                 "type": "value",
                 "keys": [
                     "border-image"
@@ -1406,12 +1173,6 @@ const utilities = [
             "property": "list-style-image"
         },
         "matchers": [
-            {
-                "type": "variable",
-                "keys": [
-                    "list-style"
-                ]
-            },
             {
                 "type": "value",
                 "keys": [
@@ -1437,12 +1198,6 @@ const utilities = [
         },
         "matchers": [
             {
-                "type": "variable",
-                "keys": [
-                    "bg"
-                ]
-            },
-            {
                 "type": "value",
                 "keys": [
                     "bg"
@@ -1466,12 +1221,6 @@ const utilities = [
             "property": "border-image-outset"
         },
         "matchers": [
-            {
-                "type": "variable",
-                "keys": [
-                    "border-image"
-                ]
-            },
             {
                 "type": "value",
                 "keys": [
@@ -1497,12 +1246,6 @@ const utilities = [
         },
         "matchers": [
             {
-                "type": "variable",
-                "keys": [
-                    "border-image"
-                ]
-            },
-            {
                 "type": "value",
                 "keys": [
                     "border-image"
@@ -1516,25 +1259,7 @@ const utilities = [
             }
         ]
     },
-    {
-        "id": "text-stroke-width",
-        "name": "text-stroke-width",
-        "type": UtilityType.Normal,
-        "emit": {
-            "type": "declarations",
-            "declarations": [
-                "-webkit-text-stroke-width"
-            ]
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "text-stroke-width"
-                ]
-            }
-        ]
-    },
+
     {
         "id": "transform-origin",
         "name": "transform-origin",
@@ -1545,12 +1270,6 @@ const utilities = [
             "property": "transform-origin"
         },
         "matchers": [
-            {
-                "type": "variable",
-                "keys": [
-                    "transform"
-                ]
-            },
             {
                 "type": "value",
                 "keys": [

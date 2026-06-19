@@ -66,6 +66,7 @@ describe.concurrent('default plan utility parity', () => {
                 || property === 'margin-top' && value === '1rem'
                 || property === 'padding' && value === '1rem'
                 || property === 'gap' && value === '1rem'
+                || property === 'flex-basis' && (value === '0.5rem' || value === 'var(--container-sm)')
                 || property === 'border-radius' && value === 'var(--radius-md)'
         })
 
@@ -77,6 +78,8 @@ describe.concurrent('default plan utility parity', () => {
         expect(css.create('mt:4x')?.text).toBe('.mt\\:4x{margin-top:1rem}')
         expect(css.create('padding:4x')?.text).toBe('.padding\\:4x{padding:1rem}')
         expect(css.create('gap:4x')?.text).toBe('.gap\\:4x{gap:1rem}')
+        expect(css.create('flex-basis:2x')?.text).toBe('.flex-basis\\:2x{flex-basis:0.5rem}')
+        expect(css.create('flex-basis:sm')?.text).toBe('.flex-basis\\:sm{flex-basis:var(--container-sm)}')
         expect(css.create('r:md')?.text).toBe('.r\\:md{border-radius:var(--radius-md)}')
         expect(css.create('width:block')).toBeUndefined()
     })
@@ -88,7 +91,27 @@ describe.concurrent('default plan utility parity', () => {
         expectClassText(css, 'stroke:red', 'stroke:var(--color-line-red)')
         expectClassText(css, 'shape-margin:px', 'shape-margin:1px')
         expectClassText(css, 'text-underline:sm', 'text-underline-offset:var(--spacing-sm)')
+        expectClassText(css, 'text-stroke-width:px', '-webkit-text-stroke-width:1px')
         expectClassText(css, 'text-center:hover', 'text-align:center')
+    })
+
+    test('drops colliding shorthand token aliases', () => {
+        const css = createCSS(defaultPlan)
+        const nativeCSS = createCSS(defaultPlan, undefined, {
+            nativeDeclarationMatcher: ({ property }) =>
+                property === 'background'
+                || property === 'container'
+                || property === 'flex'
+        })
+
+        expect(css.create('background:red')).toBeUndefined()
+        expect(css.create('background:sm')).toBeUndefined()
+        expect(css.create('container:sm')?.text).not.toContain('var(--container-sm)')
+        expect(css.create('flex:sm')?.text).not.toContain('flex-basis')
+        expect(css.create('flex:md')?.text).not.toContain('flex-basis')
+        expect(nativeCSS.create('background:red')?.text).toBe('.background\\:red{background:red}')
+        expect(nativeCSS.create('container:inline-size')?.text).toBe('.container\\:inline-size{container:inline-size}')
+        expect(nativeCSS.create('flex:0|0|auto')?.text).toBe('.flex\\:0\\|0\\|auto{flex:0 0 auto}')
     })
 
     test('preserves radius corner aliases through key aliases', () => {

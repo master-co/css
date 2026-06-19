@@ -85,6 +85,7 @@ const keyAliases = {
     'shadow': 'box-shadow',
     'text-fill-color': '-webkit-text-fill-color',
     'text-stroke-color': '-webkit-text-stroke-color',
+    'text-stroke-width': '-webkit-text-stroke-width',
     'tracking': 'letter-spacing',
     'w': 'width',
     'z': 'z-index'
