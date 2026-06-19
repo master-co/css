@@ -1,3 +1,4 @@
+/* Static utilities for positioning, clipping, and content. */
 @utilities {
     abs {
         position: absolute;
@@ -101,7 +102,10 @@
     contents {
         display: contents;
     }
+}
 
+/* Static utilities for display, font rendering, and alignment. */
+@utilities {
     decoration-from-font {
         text-decoration-thickness: from-font;
     }
@@ -218,7 +222,10 @@
     justify-<center|end|flex-end|flex-start|left|normal|right|start|stretch> {
         justify-content: --value();
     }
+}
 
+/* Static utilities for text variants, viewport bounds, and shapes. */
+@utilities {
     left {
         left: 0;
     }
@@ -354,7 +361,10 @@
         white-space: nowrap;
         border-width: 0;
     }
+}
 
+/* Static utilities for positioning, tables, transforms, and wrapping. */
+@utilities {
     static {
         position: static;
     }
@@ -450,7 +460,10 @@
     wrap-<anywhere|break-word|normal> {
         overflow-wrap: --value();
     }
+}
 
+/* Token and size shorthands. */
+@utilities {
     animate:<~animate> {
         animation: --value();
     }
@@ -489,7 +502,10 @@
         max-width: --value();
         max-height: --value();
     }
+}
 
+/* Border and outline shorthands. */
+@utilities {
     b:<number> {
         border-width: --value();
     }
@@ -561,7 +577,10 @@
     outline-<auto|dashed|dotted|double|hidden|none|solid> {
         outline-style: --value();
     }
+}
 
+/* Grid, stroke, and text shorthands. */
+@utilities {
     grid-cols:<number> {
         display: grid;
         grid-template-columns: repeat(--value(), minmax(0, 1fr));
@@ -636,7 +655,10 @@
     text-stroke:<~color|*> {
         -webkit-text-stroke: --value();
     }
+}
 
+/* Vendor-prefixed shorthands. */
+@utilities {
     backdrop-filter:<~color|*> {
         -webkit-backdrop-filter: --value();
         backdrop-filter: --value();
@@ -661,7 +683,10 @@
         -webkit-user-select: --value();
         user-select: --value();
     }
+}
 
+/* Enum utility shortcuts. */
+@utilities {
     bg-<auto|contain|cover> {
         background-size: --value();
     }
