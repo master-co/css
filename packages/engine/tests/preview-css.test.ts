@@ -90,6 +90,41 @@ function createCSSWithStaticResources() {
     return createCSS(plan)
 }
 
+function createCSSWithPreviewReferences(preloadedAnimations = false) {
+    const plan = createPlanWithVariables([
+        {
+            name: 'color-native',
+            key: 'native',
+            namespace: 'color',
+            type: 'string',
+            value: 'var(--color-native-base)',
+            dependencies: ['color-native-base']
+        },
+        {
+            name: 'color-native-base',
+            key: 'native-base',
+            namespace: 'color',
+            type: 'string',
+            value: '#456'
+        }
+    ])
+    plan.animations = {
+        ...(plan.animations || {}),
+        'native-fade': {
+            to: {
+                color: 'var(--color-native-base)'
+            }
+        }
+    }
+    return createCSS(plan, preloadedAnimations
+        ? {
+            animations: {
+                'native-fade': 1
+            }
+        }
+        : undefined)
+}
+
 describe.concurrent('previewCSS', () => {
     test.each([
         [['text-center', 'block', 'm:4x', 'font:bold', 'bg:black:hover@md&landscape']],
@@ -192,6 +227,36 @@ describe.concurrent('previewCSS', () => {
         expectPreviewParity([], create)
     })
 
+    test('emits option variable references and dependencies', () => {
+        const css = createCSSWithPreviewReferences()
+        const output = previewCSS(css, [], {
+            variableNames: ['color-native']
+        })
+
+        expect(output).toContain('--color-native:var(--color-native-base)')
+        expect(output).toContain('--color-native-base:#456')
+        expect(css.text).toBe('')
+    })
+
+    test('emits option animation references and dependencies', () => {
+        const css = createCSSWithPreviewReferences()
+        const output = previewCSS(css, [], {
+            animationNames: ['native-fade']
+        })
+
+        expect(output).toContain('--color-native-base:#456')
+        expect(output).toContain('@keyframes native-fade{to{color:var(--color-native-base)}}')
+        expect(css.text).toBe('')
+    })
+
+    test('does not duplicate preloaded option animations', () => {
+        const css = createCSSWithPreviewReferences(true)
+
+        expect(previewCSS(css, [], {
+            animationNames: ['native-fade']
+        })).toBe('')
+    })
+
     test('does not mutate the source CSS instance', () => {
         const css = createDefaultCSS()
         css.add('block', 'font:bold', 'animate:fade')
@@ -202,7 +267,10 @@ describe.concurrent('previewCSS', () => {
             'fg:blue-60',
             'animate:fade',
             '{content:\'\';block}::after@light'
-        ])
+        ], {
+            variableNames: ['color-red-60'],
+            animationNames: ['zoom']
+        })
 
         expect(output).toContain('@layer utilities')
         expect(snapshotCSS(css)).toEqual(before)

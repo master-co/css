@@ -33,3 +33,24 @@ test('keeps native CSS while generating Play classes', async () => {
     assert.match(result.css, /\.card\{/)
     assert.match(result.css, /--color-card/)
 })
+
+test('includes generated keyframes referenced by native CSS', async () => {
+    const sourceCSS = '.native { animation: fade 1s; }'
+    const result = await compilePlayCSS(sourceCSS, [])
+
+    assert.match(result.css, /\.native\s*\{\s*animation:\s*(?:fade 1s|1s fade);\s*\}/)
+    assert.match(result.css, /@keyframes fade/)
+})
+
+test('does not duplicate generated keyframes when native CSS defines them', async () => {
+    const sourceCSS = [
+        '@keyframes fade { to { opacity: .5; } }',
+        '.native { animation-name: fade; animation-duration: 1s; }'
+    ].join('\n')
+    const result = await compilePlayCSS(sourceCSS, [])
+    const matches = result.css.match(/@keyframes fade/g) || []
+
+    assert.equal(matches.length, 1)
+    assert.match(result.css, /@keyframes\s+fade/)
+    assert.match(result.css, /\.native\s*\{\s*animation-name:\s*fade;\s*animation-duration:\s*1s;\s*\}/)
+})

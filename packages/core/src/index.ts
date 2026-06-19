@@ -28,5 +28,6 @@ export type {
     MasterCSSPreloaded,
     MasterCSSRuntimeManifest,
     NativeCSSDeclaration,
-    NativeCSSDeclarationMatcher
+    NativeCSSDeclarationMatcher,
+    PreviewCSSOptions
 } from '@master/css-engine'

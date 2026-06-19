@@ -9,6 +9,11 @@ import type { MasterCSSPlanUtilityLayerName } from 'shared/master-css-plan'
 
 type PreviewUtilityRule = Utility | Rule
 
+export interface PreviewCSSOptions {
+    variableNames?: Iterable<string>
+    animationNames?: Iterable<string>
+}
+
 interface PreviewState {
     variableRules: VariableRule[]
     variables: Map<string, VariableRule>
@@ -62,6 +67,13 @@ function insertVariables(css: MasterCSS, state: PreviewState, rule: PreviewUtili
     rule.variableNames?.forEach((variableName) => insertVariable(css, state, variableName))
 }
 
+function insertVariableReferences(css: MasterCSS, state: PreviewState, names?: Iterable<string>) {
+    if (!names) return
+    for (const name of names) {
+        insertVariable(css, state, name)
+    }
+}
+
 function insertAnimation(css: MasterCSS, state: PreviewState, name: string, staticReference = false) {
     let rule = state.animations.get(name)
     if (!rule) {
@@ -82,6 +94,13 @@ function insertAnimation(css: MasterCSS, state: PreviewState, name: string, stat
 function insertAnimations(css: MasterCSS, state: PreviewState, rule: PreviewUtilityRule) {
     if (!('animationNames' in rule)) return
     rule.animationNames?.forEach((animationName) => insertAnimation(css, state, animationName))
+}
+
+function insertAnimationReferences(css: MasterCSS, state: PreviewState, names?: Iterable<string>) {
+    if (!names) return
+    for (const name of names) {
+        insertAnimation(css, state, name)
+    }
 }
 
 function insertStaticResources(css: MasterCSS, state: PreviewState) {
@@ -123,7 +142,7 @@ function renderPreviewCSS(state: PreviewState) {
     ].join('')
 }
 
-export default function previewCSS(css: MasterCSS, classNames: readonly string[]) {
+export default function previewCSS(css: MasterCSS, classNames: readonly string[], options: PreviewCSSOptions = {}) {
     const state = createPreviewState()
     insertStaticResources(css, state)
 
@@ -135,6 +154,8 @@ export default function previewCSS(css: MasterCSS, classNames: readonly string[]
             rules.forEach((rule) => insertUtilityRule(css, state, rule))
         }
     }
+    insertVariableReferences(css, state, options.variableNames)
+    insertAnimationReferences(css, state, options.animationNames)
 
     return renderPreviewCSS(state)
 }
