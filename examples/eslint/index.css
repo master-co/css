@@ -7,3 +7,65 @@
         padding-right: 1rem;
     }
 }
+
+:root {
+    --font-sans: 'Inter';
+    --font-family-serif: var(--font-serif, ui-serif), Georgia, Cambria, 'Times New Roman', Times, serif;
+    --tracking-tightest: -0.072em;
+    --shadow-sm: 0 1px 2px -1px oklch(0% 0 none / .06), 0 3px 6px -2px oklch(0% 0 none / .08);
+    --full: 100%;
+    --fit: fit-content;
+    --order-first: -999999;
+    --color-black: oklch(0% 0 none);
+    --color-current: currentColor;
+}
+
+@keyframes zoom {
+    0% {
+        transform: scale(0);
+    }
+
+    to {
+        transform: none;
+    }
+}
+
+@theme {
+    --font-sans: 'Inter';
+    --font-family-serif: var(--font-serif, ui-serif), Georgia, Cambria, 'Times New Roman', Times, serif;
+    --tracking-tightest: -0.072em;
+
+    @keyframes zoom {
+        0% {
+            transform: scale(0);
+        }
+
+        to {
+            transform: none;
+        }
+    }
+
+    /* Color palettes */
+    --color-stone-0: oklch(99% 0.0033 72);
+}
+
+/* Light mode colors */
+@theme light {
+    --shadow-xs: 0 1px 2px -1px oklch(0% 0 none / .08);
+    --shadow-sm: 0 1px 2px -1px oklch(0% 0 none / .06), 0 3px 6px -2px oklch(0% 0 none / .08);
+}
+
+/* Dark mode colors */
+@theme dark {
+    --shadow-xs: 0 0 0 1px oklch(100% 0 none / .05), 0 1px 2px -1px oklch(0% 0 none / .30);
+    --color-canvas: $color-gray-100;
+}
+
+/* Inline aliases */
+@theme inline {
+    --full: 100%;
+    --fit: fit-content;
+    --order-first: -999999;
+    --color-black: oklch(0% 0 none);
+    --color-current: currentColor;
+}

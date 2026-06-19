@@ -4,7 +4,7 @@ import { createRequire } from 'node:module'
 import { tmpdir } from 'node:os'
 import { cp, mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
 import { existsSync, statSync } from 'node:fs'
-import { dirname, join, resolve } from 'node:path'
+import { dirname, join, relative, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const scriptDir = dirname(fileURLToPath(import.meta.url))
@@ -68,6 +68,7 @@ const TARGET_NATIVE_PACKAGES = {
 const STATIC_EXTENSION_PATHS = [
     'dist',
     'data',
+    'custom-data',
     'LICENSE',
     'README.md',
     'icon.png'
@@ -77,7 +78,9 @@ const BASE_RUNTIME_PACKAGES = [
     'lightningcss',
     'detect-libc',
     'oxc-parser',
-    '@oxc-project/types'
+    '@oxc-project/types',
+    '@master/css-preset',
+    'mdn-data'
 ]
 
 function toPosixPath(path) {
@@ -185,7 +188,11 @@ async function copyPath(source, destination) {
     await cp(source, destination, {
         recursive: true,
         dereference: true,
-        force: true
+        force: true,
+        filter: (sourcePath) => {
+            const relativeSourcePath = relative(source, sourcePath)
+            return !relativeSourcePath.split(/[\\/]/).includes('node_modules')
+        }
     })
 }
 
@@ -221,6 +228,7 @@ export async function createStagedExtension(target = getCurrentTarget(), options
     manifest.files = [
         'dist',
         'data',
+        'custom-data',
         'LICENSE',
         'icon.png',
         ...runtimeFiles

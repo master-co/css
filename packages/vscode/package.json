@@ -39,6 +39,7 @@
     "files": [
         "dist",
         "data",
+        "custom-data",
         "LICENSE",
         "icon.png"
     ],
@@ -356,7 +357,12 @@
                     ]
                 }
             }
-        ]
+        ],
+        "css": {
+            "customData": [
+                "./custom-data/master.css-data.json"
+            ]
+        }
     },
     "publishConfig": {
         "access": "public",

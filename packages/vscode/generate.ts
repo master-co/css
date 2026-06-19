@@ -8,9 +8,18 @@ import { fileURLToPath } from 'node:url'
 
 const pkg = editJsonFile(fileURLToPath(new URL('./package.json', import.meta.url)), { stringify_width: 4 })
 const require = createRequire(import.meta.url)
+const MASTER_CSS_CUSTOM_DATA_PATH = './custom-data/master.css-data.json'
 
 pkg.unset('contributes.languages')
 pkg.unset('contributes.grammars')
+pkg.set('contributes.css.customData', [MASTER_CSS_CUSTOM_DATA_PATH])
+pkg.set('files', [
+    'dist',
+    'data',
+    'custom-data',
+    'LICENSE',
+    'icon.png'
+])
 
 pkg.set('contributes.semanticTokenModifiers', SEMANTIC_TOKEN_MODIFIERS
     .filter((modifier) => modifier !== 'declaration' && modifier !== 'defaultLibrary')

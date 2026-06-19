@@ -188,7 +188,7 @@ test('server bundle keeps expected native runtime imports external', () => {
     expect(nativeRuntimeImports.sort()).toEqual(['lightningcss', 'oxc-parser'])
 })
 
-test('staged extension includes native runtime packages for the current target', async () => {
+test('staged extension includes runtime packages for the current target', async () => {
     await withStagedExtension(({ stagingDir, files }) => {
         const runtimePackages = getRuntimePackagesForTarget(getCurrentTarget())
 
@@ -203,6 +203,7 @@ test('staged extension includes native runtime packages for the current target',
 test('manifest contributes semantic token scopes without TextMate grammars', () => {
     expect(packageJSON.contributes.languages).toBeUndefined()
     expect(packageJSON.contributes.grammars).toBeUndefined()
+    expect(packageJSON.contributes.css?.customData).toEqual(['./custom-data/master.css-data.json'])
     expect(packageJSON.contributes.semanticTokenScopes?.[0]?.scopes).toMatchObject({
         property: ['support.type.property-name.css'],
         enumMember: ['support.constant.property-value.css'],
@@ -213,6 +214,41 @@ test('manifest contributes semantic token scopes without TextMate grammars', () 
         'scss',
         'less'
     ]))
+})
+
+test('custom CSS data declares Master CSS at-directives', () => {
+    const customData = JSON.parse(readFileSync(resolve(packageDir, 'custom-data', 'master.css-data.json'), 'utf8'))
+    const atDirectiveNames = customData.atDirectives.map((directive) => directive.name)
+
+    expect(customData.version).toBe(1.1)
+    expect(atDirectiveNames).toEqual(expect.arrayContaining([
+        '@master',
+        '@settings',
+        '@source',
+        '@safelist',
+        '@blocklist',
+        '@preserve',
+        '@reference',
+        '@theme',
+        '@defaults',
+        '@components',
+        '@utilities',
+        '@custom-variant',
+        '@compose',
+        '@variant',
+        '@slot',
+        '@dark',
+        '@light'
+    ]))
+})
+
+test('staged extension includes Master CSS custom data', async () => {
+    await withStagedExtension(({ stagingDir, files }) => {
+        const customDataPath = join(stagingDir, 'custom-data', 'master.css-data.json')
+
+        expect(statSync(customDataPath).isFile()).toBe(true)
+        expect(files).toContain('custom-data')
+    })
 })
 
 test('staged language server loads a CSS workspace entry', async () => {
