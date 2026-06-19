@@ -72,6 +72,7 @@ const nativeFallbackProperties = new Set([
     'field-sizing',
     'flex',
     'float',
+    'font',
     'font-smooth',
     'font-stretch',
     'forced-color-adjust',

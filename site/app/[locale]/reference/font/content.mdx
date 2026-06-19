@@ -3,10 +3,10 @@
 
 ## Examples
 ### Set the complete font shorthand
-Use `font:*` when you need the native CSS `font` shorthand. The value can include style, variant, weight, size, line height, and family in one declaration.
+Use the native CSS `font` shorthand when an environment provides native property fallback. The value can include style, variant, weight, size, line height, and family in one declaration.
 ```html
-<!-- @MARK font:italic|small-caps|bold|16/1.5|serif -->
-<p class="font:italic|small-caps|bold|16/1.5|serif">
+<!-- @MARK font:italic|small-caps|bold|1rem/1.5|serif -->
+<p class="font:italic|small-caps|bold|1rem/1.5|serif">
     Sphinx of black quartz, judge my vow.
 </p>
 ```
@@ -14,7 +14,7 @@ Use `font:*` when you need the native CSS `font` shorthand. The value can includ
 <details>
     <summary>Generated CSS</summary>
     <Class2CSS>
-        {['font:italic|small-caps|bold|16/1.5|serif']}
+        {['font:italic|small-caps|bold|1rem/1.5|serif']}
     </Class2CSS>
 </details>
 

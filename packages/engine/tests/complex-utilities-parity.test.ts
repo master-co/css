@@ -109,13 +109,14 @@ describe.concurrent('migrated complex utility parity', () => {
             .toBe('.transition\\:transform\\|\\.1s\\|ease-out\\,width\\|\\.1s\\|ease-out{transition:transform 0.1s ease-out,width 0.1s ease-out}')
     })
 
-    test('keeps font family feature weight and shorthand utilities', () => {
+    test('keeps font family feature weight utilities and leaves font shorthand to native fallback', () => {
         const css = createCSSWithVariables([
             { name: 'font-feature-tabular', namespace: 'font-feature', key: 'tabular', type: 'string', value: '\'tnum\'' }
         ])
 
-        expect(css.create('font:italic|1.2rem|sans')?.text)
-            .toBe('.font\\:italic\\|1\\.2rem\\|sans{font:italic 1.2rem var(--font-family-sans)}')
+        expect(css.create('font:italic|1.2rem|sans')).toBeUndefined()
+        expect(createDefaultCSS().create('font:italic|small-caps|bold|1rem/1.5|serif')?.text)
+            .toBe('.font\\:italic\\|small-caps\\|bold\\|1rem\\/1\\.5\\|serif{font:italic small-caps bold 1rem/1.5 serif}')
         expect(css.create('font:sans')?.text).toBe('.font\\:sans{font-family:var(--font-family-sans)}')
         expect(css.create('font-bolder')?.text).toBe('.font-bolder{font-weight:bolder}')
         expect(css.create('font:thin')?.text).toBe('.font\\:thin{font-weight:var(--font-weight-thin)}')

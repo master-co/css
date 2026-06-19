@@ -655,10 +655,6 @@
         font-weight: --value();
     }
 
-    font:<~font-family|=font|~font-weight|~font-size|*> {
-        font: --value();
-    }
-
     bg:<~color|color> {
         background-color: --value();
     }

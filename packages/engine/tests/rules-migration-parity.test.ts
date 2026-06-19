@@ -163,7 +163,6 @@ const migratedRuleExpectations = [
             ["font:1rem", "font-size:1rem"],
             ["font:.5rem", "font-size:0.5rem"],
             ["font:min(.625rem,calc(1.5625rem-.625rem))", "font-size:min(0.625rem,calc(1.5625rem - 0.625rem))"],
-            ["font:1.2rem|\"Fira Sans\",sans-serif", "font:1.2rem \"Fira Sans\",sans-serif"],
         ]
     },
     {
