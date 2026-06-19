@@ -1,9 +1,7 @@
 const syntaxes = [
-    ['size:`size`', 'size:`N/N`'],
+    ['size:`size`'],
     'full',
-    'fit',
-    'size:min',
-    'size:max'
+    'fit'
 ]
 
 export default syntaxes

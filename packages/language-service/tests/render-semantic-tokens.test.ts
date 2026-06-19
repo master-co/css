@@ -171,7 +171,7 @@ test.concurrent('renders semantic tokens for container queries and slash-separat
 
 test.concurrent('renders semantic tokens for grouped declarations, strings, units, and important marks', () => {
     const { tokens } = renderTokens(
-        '<div class="{fg:red;bg:blue} transform:translate(10x|20px) content:\'a|b\' size:10x|20px fg:red!"></div>',
+        '<div class="{fg:red;bg:blue} transform:translate(10x|20px) content:\'a|b\' size:10x fg:red!"></div>',
         'html'
     )
 

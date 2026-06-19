@@ -46,8 +46,6 @@ function utilityMayReferenceAnimations(utility: MasterCSS['definedUtilities'][nu
             return emit.declarations.some((property) => ANIMATION_REFERENCE_PROPERTIES.has(property))
         case 'property':
             return ANIMATION_REFERENCE_PROPERTIES.has(emit.property)
-        case 'pair':
-            return emit.properties.some((property) => ANIMATION_REFERENCE_PROPERTIES.has(property))
         case 'template':
             return Object.keys(emit.declarations).some((property) => ANIMATION_REFERENCE_PROPERTIES.has(property))
         case 'static':

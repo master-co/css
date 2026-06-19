@@ -1,5 +1,5 @@
 const syntaxes = [
-    ['min:`size`', 'min:`N/N`']
+    ['min:`size`']
 ]
 
 export default syntaxes

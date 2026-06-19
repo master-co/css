@@ -76,8 +76,6 @@ function utilityMayReferenceAnimations(utility: CompiledUtility) {
             return emit.declarations.some((property) => ANIMATION_REFERENCE_PROPERTIES.has(property))
         case 'property':
             return ANIMATION_REFERENCE_PROPERTIES.has(emit.property)
-        case 'pair':
-            return emit.properties.some((property) => ANIMATION_REFERENCE_PROPERTIES.has(property))
         case 'template':
             return Object.keys(emit.declarations).some((property) => ANIMATION_REFERENCE_PROPERTIES.has(property))
         case 'static':
@@ -560,14 +558,6 @@ export class Utility {
                             : propertyValue
                 }
                 return declarations as PropertiesHyphen
-            }
-            case 'pair': {
-                const [x, y] = emit.properties
-                const length = this.valueComponents.length
-                return {
-                    [x]: length === 1 ? this.valueComponents[0].text : this.valueComponents[0].text,
-                    [y]: length === 1 ? this.valueComponents[0].text : this.valueComponents[2].text
-                } as PropertiesHyphen
             }
             case 'group':
                 return this.emitGroupDeclarations(newValue)

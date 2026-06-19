@@ -7,11 +7,11 @@ export default () => (
         <div className="transition:transform|.2s transform:scale(1.1):hover">
             <Image
                 src={mobileImage}
-                className="untouchable max:480px|319px"
+                className="untouchable max-h:319px max-w:480px"
                 priority={true}
                 alt="hello world"
             />
-            <div className="abs animation:flash|3s|infinite inset:0 m:auto mix-blend-mode:overlay height:fit">
+            <div className="abs animation:flash|3s|infinite inset:0 m:auto height:fit mix-blend-mode:overlay">
                 <h1 className="m:0 fg:white font:7vw font:heavy text-center font:40px@xs">
                     Hello, World!
                 </h1>

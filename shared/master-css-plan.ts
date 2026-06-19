@@ -136,7 +136,6 @@ export type MasterCSSPlanUtilityEmit =
     | { type: 'declarations'; declarations: string[] }
     | { type: 'template'; declarations: MasterCSSPlanCSSDeclarations }
     | { type: 'property'; property: string }
-    | { type: 'pair'; properties: [string, string] }
     | { type: 'group' }
     | { type: 'static'; rules: MasterCSSPlanUtilityRule[] }
 

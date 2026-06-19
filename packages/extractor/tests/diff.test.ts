@@ -15,7 +15,7 @@ describe('extractLatentClasses contract fixtures', () => {
         ['comments are excluded', `// const a = 'bg:white'`, []],
         ['style blocks are excluded', `<style>.foo { background: red }</style><div class="bg:white">x</div>`, ['bg:white']],
         ['group syntax', '<div class="{bg:white;fg:black}">x</div>', ['{bg:white;fg:black}']],
-        ['width-height shorthand', '<div class="min:10x|20x calc(100vw-3.75rem)x20rem">x</div>', ['min:10x|20x', 'calc(100vw-3.75rem)x20rem']],
+        ['width-height shorthand', '<div class="min:10x calc(100vw-3.75rem)x20rem">x</div>', ['min:10x', 'calc(100vw-3.75rem)x20rem']],
         ['conditional at and mode suffixes', '<div class="bg:black@xl bg:white@dark">x</div>', ['bg:black@xl', 'bg:white@dark']],
         ['arbitrary bracket values are excluded', '<div class="font-size:[clamp(1rem,2vw,3rem)]">x</div>', []],
         ['data and class attributes are both scanned', '<div data-class="bg:white" class="real fg:black">x</div>', ['bg:white', 'real', 'fg:black']],

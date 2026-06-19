@@ -262,28 +262,17 @@ describe.concurrent('default plan utility parity', () => {
         expectClassText(css, 'right:max(0px,calc(50%-45.3125rem))', 'right:max(0px,calc(50% - 45.3125rem))')
         expectClassText(css, 'max-w:3xs', 'max-width:var(--container-3xs)')
         expectClassText(css, 'max-w:16px', 'max-width:16px')
-        expect(css.create('size:4x|8x')?.declarations).toStrictEqual({ width: '1rem', height: '2rem' })
-        expect(css.create('max:4x|8x')?.declarations).toStrictEqual({ 'max-width': '1rem', 'max-height': '2rem' })
-        expect(css.create('min:4x|8x')?.declarations).toStrictEqual({ 'min-width': '1rem', 'min-height': '2rem' })
-        expect(css.create('size:min(2.5x,calc(6.25x-2.5x))|2.5x')?.declarations)
-            .toStrictEqual({ width: 'min(0.625rem,calc(1.5625rem - 0.625rem))', height: '0.625rem' })
-    })
-
-    test('keeps pair utilities using native variable references without and with known number variables', () => {
-        const css = createDefaultCSS()
-        expect(css.create('size:var(--w)|var(--h)')?.declarations).toStrictEqual({ width: 'var(--w)', height: 'var(--h)' })
-        expect(css.create('max:var(--w)|var(--h)')?.declarations).toStrictEqual({ 'max-width': 'var(--w)', 'max-height': 'var(--h)' })
-        expect(css.create('min:var(--w)|var(--h)')?.declarations).toStrictEqual({ 'min-width': 'var(--w)', 'min-height': 'var(--h)' })
-
-        const plan = clonePlan()
-        plan.variables = [
-            ...(plan.variables || []),
-            { name: 'w', key: 'w', type: 'number', value: 16 },
-            { name: 'h', key: 'h', type: 'number', value: 16 }
-        ]
-        const numericCSS = createCSS(plan)
-        expect(numericCSS.create('size:var(--w)|var(--h)')?.declarations)
-            .toStrictEqual({ width: 'var(--w)', height: 'var(--h)' })
+        expect(css.create('size:4x')?.declarations).toStrictEqual({ width: '1rem', height: '1rem' })
+        expect(css.create('size:md')?.declarations).toStrictEqual({
+            width: 'var(--container-md)',
+            height: 'var(--container-md)'
+        })
+        expect(css.create('max:4x')?.declarations).toStrictEqual({ 'max-width': '1rem', 'max-height': '1rem' })
+        expect(css.create('min:4x')?.declarations).toStrictEqual({ 'min-width': '1rem', 'min-height': '1rem' })
+        expect(css.create('size:4x|8x')).toBeUndefined()
+        expect(css.create('max:4x|8x')).toBeUndefined()
+        expect(css.create('min:4x|8x')).toBeUndefined()
+        expect(css.create('size:var(--w)|var(--h)')).toBeUndefined()
     })
 
     test('rejects variable function syntax', () => {

@@ -1,5 +1,5 @@
 const syntaxes = [
-    ['max:`size`', 'max:`N/N`']
+    ['max:`size`']
 ]
 
 export default syntaxes

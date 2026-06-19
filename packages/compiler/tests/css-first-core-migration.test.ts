@@ -3,6 +3,7 @@ import { createCSS } from '@master/css-engine'
 import { compileCSS, compileCSSPlan } from '../src'
 import defaultPlanJSON from '@master/css-preset/default-plan.json' with { type: 'json' }
 import type { MasterCSSPlan } from 'shared/master-css-plan'
+import UtilityType from 'shared/utility-type'
 
 const defaultPlan = defaultPlanJSON as unknown as MasterCSSPlan
 
@@ -166,6 +167,11 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
                     display: grid;
                     grid-template-columns: repeat(--value(), minmax(0, 1fr));
                 }
+
+                size:<~container|number> {
+                    width: --value();
+                    height: --value();
+                }
             }
         `)
 
@@ -177,6 +183,8 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
                 { type: 'value', keys: ['font'] }
             ])
         })
+        expect(plan.utilities?.find((utility) => utility.id === 'grid-cols:<number>')?.type).toBe(UtilityType.Normal)
+        expect(plan.utilities?.find((utility) => utility.id === 'size:<~container|number>')?.type).toBe(UtilityType.Shorthand)
 
         const css = createCSS(plan)
         expect(css.create('font:sm')?.text).toBe('.font\\:sm{font-size:var(--font-size-sm)}')
@@ -186,6 +194,8 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
         expect(css.create('bg:red')?.text).toBe('.bg\\:red{background-color:var(--color-red)}')
         expect(css.create('bg:#fff')?.text).toBe('.bg\\:\\#fff{background-color:#fff}')
         expect(css.create('grid-cols:3')?.text).toBe('.grid-cols\\:3{display:grid;grid-template-columns:repeat(3, minmax(0, 1fr))}')
+        expect(css.create('size:4x')?.text).toBe('.size\\:4x{width:1rem;height:1rem}')
+        expect(css.create('size:4x|8x')).toBeUndefined()
         expect(css.create('bg:cover')).toBeUndefined()
     })
 

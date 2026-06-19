@@ -467,10 +467,25 @@ function compilePatternUtilityRule(rule: CSSDirectiveUtilityRuleDefinition): Mas
     }
 }
 
+function declarationValueUsesPlaceholder(value: MasterCSSPlanCSSDeclarationPrimitive | MasterCSSPlanCSSDeclarationPrimitive[]) {
+    return value === null || (Array.isArray(value) && value.includes(null))
+}
+
+function countValuePlaceholderProperties(declarations: MasterCSSPlanCSSDeclarations) {
+    let count = 0
+    const declarationMap = declarations as Record<string, MasterCSSPlanCSSDeclarationPrimitive | MasterCSSPlanCSSDeclarationPrimitive[]>
+    for (const property in declarationMap) {
+        if (declarationValueUsesPlaceholder(declarationMap[property])) count++
+    }
+    return count
+}
+
 function utilityTypeFromRules(rules: MasterCSSPlanUtilityRule[]) {
-    return rules.some(({ declarations }) =>
-        Object.keys(declarations).some((property) => isNativeCSSShorthandProperty(property))
-    )
+    return rules.some(({ declarations }) => {
+        const properties = Object.keys(declarations)
+        return properties.some((property) => isNativeCSSShorthandProperty(property))
+            || countValuePlaceholderProperties(declarations) > 1
+    })
         ? UtilityType.Shorthand
         : UtilityType.Normal
 }

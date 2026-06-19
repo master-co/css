@@ -659,6 +659,21 @@
         background-color: --value();
     }
 
+    size:<~container|number> {
+        width: --value();
+        height: --value();
+    }
+
+    min-size:<~container|number> {
+        min-width: --value();
+        min-height: --value();
+    }
+
+    max-size:<~container|number> {
+        max-width: --value();
+        max-height: --value();
+    }
+
     b:<number> {
         border-width: --value();
     }
