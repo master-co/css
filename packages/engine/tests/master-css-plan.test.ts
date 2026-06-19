@@ -248,6 +248,74 @@ describe.concurrent('MasterCSSPlan execution', () => {
             .toBe('.r\\:card{border-radius:var(--radius-card)}')
     })
 
+    it('reuses compiled plan data without sharing mutable instance state', () => {
+        const plan: MasterCSSPlan = {
+            version: 3,
+            settings: {
+                rootSize: 16,
+                modes: []
+            },
+            variables: [
+                { name: 'spacing-card', key: 'card', namespace: 'spacing', type: 'number', value: 16 }
+            ],
+            utilities: [
+                {
+                    id: 'margin',
+                    name: 'margin',
+                    type: UtilityType.Shorthand,
+                    order: 0,
+                    key: 'm',
+                    keys: ['m'],
+                    variableAliasRefs: ['~spacing'],
+                    emit: { type: 'property', property: 'margin' },
+                    matchers: [{ type: 'variable', keys: ['m'] }]
+                }
+            ],
+            utilityBuckets: {
+                variable: [0]
+            }
+        }
+        const preloadedCSS = createCSS(plan, {
+            variables: {
+                'spacing-card': 1
+            }
+        })
+        const css = createCSS(plan)
+
+        preloadedCSS.add('m:card')
+        expect(preloadedCSS.text).toBe('@layer utilities{.m\\:card{margin:var(--spacing-card)}}')
+        expect(Object.fromEntries(preloadedCSS.themeLayer.tokenCounts)).toEqual({
+            'spacing-card': 2
+        })
+        expect(css.text).toBe('')
+        expect(Object.fromEntries(css.themeLayer.tokenCounts)).toEqual({})
+
+        css.add('m:card')
+        expect(css.text).toBe('@layer theme{:root{--spacing-card:16}}@layer utilities{.m\\:card{margin:var(--spacing-card)}}')
+        expect(Object.fromEntries(css.themeLayer.tokenCounts)).toEqual({
+            'spacing-card': 1
+        })
+    })
+
+    it('keeps native declaration matcher behavior instance-local for cached plans', () => {
+        const plan: MasterCSSPlan = {
+            version: 3,
+            settings: {
+                modes: []
+            }
+        }
+        const acceptingCSS = createCSS(plan, undefined, {
+            nativeDeclarationMatcher: ({ property }) => property === 'test-property'
+        })
+        const rejectingCSS = createCSS(plan, undefined, {
+            nativeDeclarationMatcher: () => false
+        })
+
+        expect(acceptingCSS.create('test-property:value')?.text)
+            .toBe('.test-property\\:value{test-property:value}')
+        expect(rejectingCSS.create('test-property:value')).toBeUndefined()
+    })
+
     it('ignores plan-carried registry fields', () => {
         const plan = {
             version: 3,

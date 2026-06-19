@@ -21,7 +21,6 @@ import type {
     MasterCSSPlanAnimations,
     MasterCSSPlanSettings,
     MasterCSSPlanUtility,
-    MasterCSSPlanUtilityBuckets,
     MasterCSSPlanUtilityLayerName,
     MasterCSSPlanUtilityMatcher,
     MasterCSSPlanVariableAliasSet,
@@ -206,14 +205,331 @@ function getVariableKeyByNamespace(variableName: string, namespace: string) {
     return negative ? '-' + key : key
 }
 
+interface CompiledPlan {
+    plan: MasterCSSPlan
+    settings: EngineSettings
+    definedUtilities: CompiledUtility[]
+    variableMatcherUtilities: CompiledUtility[]
+    valueMatcherUtilities: CompiledUtility[]
+    keyMatcherUtilities: CompiledUtility[]
+    patternMatcherUtilities: CompiledUtility[]
+    arbitraryMatcherUtilities: CompiledUtility[]
+    selectors: Map<string, SelectorNode[]>
+    variables: Map<string, Variable>
+    modes: string[]
+    atRules: Map<string, AtRule>
+    variants: Map<MasterCSSPlanVariantToken, MasterCSSPlanVariantBranch[]>
+    breakpointAtRules: Map<string, AtRule>
+    containerAtRules: Map<string, AtRule>
+    animations: Map<string, MasterCSSPlanAnimations[string]>
+    nativeDeclarationFastPathBlockedProperties: Set<string>
+    nativeValueNamespaceUtilities: Map<string, CompiledUtility>
+    keyAliases: Map<string, string>
+}
+
+// Plans are compiled by object identity. Mutating a plan after first use is unsupported.
+const compiledPlanCache = new WeakMap<MasterCSSPlan, CompiledPlan>()
+
+function getCompiledPlan(plan: MasterCSSPlan) {
+    const cached = compiledPlanCache.get(plan)
+    if (cached) return cached
+    const compiledPlan = compilePlan(plan)
+    compiledPlanCache.set(plan, compiledPlan)
+    return compiledPlan
+}
+
+function createCompiledSettings(plan: MasterCSSPlan): EngineSettings {
+    return {
+        ...DEFAULT_SETTINGS,
+        ...(plan.settings || {}),
+        modes: plan.settings?.modes ? [...plan.settings.modes] : [...DEFAULT_SETTINGS.modes]
+    }
+}
+
+function cloneCompiledSettings(settings: EngineSettings): EngineSettings {
+    return {
+        ...settings,
+        modes: [...settings.modes]
+    }
+}
+
+function compileKeyAliases() {
+    const keyAliases = new Map<string, string>()
+    for (const [key, property] of Object.entries(builtinKeyAliases)) {
+        if (key && property && key !== property) {
+            keyAliases.set(key, property)
+        }
+    }
+    return keyAliases
+}
+
+function compileVariables(plan: MasterCSSPlan) {
+    const variables = new Map<string, Variable>()
+    for (const definition of plan.variables || []) {
+        if (!definition.name || !definition.type || definition.value === false) continue
+        variables.set(definition.name, {
+            name: definition.name,
+            key: definition.key,
+            type: definition.type,
+            ...(definition.namespace ? { namespace: definition.namespace } : {}),
+            ...(definition.value !== undefined ? {
+                value: Array.isArray(definition.value) ? definition.value.join(',') : definition.value
+            } : {}),
+            ...(definition.numeric ? { numeric: { ...definition.numeric } } : {}),
+            ...(definition.modes ? { modes: { ...definition.modes } } : {}),
+            ...(definition.dependencies?.length ? { dependencies: new Set(definition.dependencies) } : {}),
+            ...(definition.inline ? { inline: true } : {}),
+            ...(definition.static ? { static: true } : {})
+        } as Variable)
+    }
+    return variables
+}
+
+function compileAnimations(plan: MasterCSSPlan) {
+    const animations = new Map<string, MasterCSSPlanAnimations[string]>()
+    if (!plan.animations) return animations
+    for (const animationName in plan.animations) {
+        const eachAnimation: MasterCSSPlanAnimations[string] = {}
+        animations.set(animationName, eachAnimation)
+        const eachKeyframes = plan.animations[animationName]
+        for (const eachKeyframeValue in eachKeyframes) {
+            const newValueByPropertyName: any = eachAnimation[eachKeyframeValue] = {}
+            const eachKeyframeDeclarations = eachKeyframes[eachKeyframeValue as 'from' | 'to' | `${number}%`]
+            for (const propertyName in eachKeyframeDeclarations) {
+                newValueByPropertyName[propertyName] = eachKeyframeDeclarations[propertyName as keyof PropertiesHyphen]
+            }
+        }
+    }
+    return animations
+}
+
+function compileAtRuleMap(atRules: MasterCSSPlanAtRules | undefined) {
+    const target = new Map<string, AtRule>()
+    if (!atRules) return target
+    for (const [name, atRule] of Object.entries(atRules)) {
+        target.set(name, {
+            id: atRule.id,
+            nodes: atRule.nodes
+        } as AtRule)
+    }
+    return target
+}
+
+function compileVariantAliases(plan: MasterCSSPlan) {
+    const selectors = new Map<string, SelectorNode[]>()
+    if (plan.selectors) {
+        for (const [name, nodes] of Object.entries(plan.selectors)) {
+            selectors.set(name, nodes as SelectorNode[])
+        }
+    }
+
+    const variants = new Map<MasterCSSPlanVariantToken, MasterCSSPlanVariantBranch[]>()
+    for (const variant of plan.variants || []) {
+        variants.set(variant.token, variant.branches.map((branch) => ({
+            ...branch,
+            ...(branch.selectorNodes?.length ? { selectorNodes: branch.selectorNodes as SelectorNode[] } : {}),
+            ...(branch.atRules?.length ? { atRules: [...branch.atRules] } : {}),
+            ...(branch.atRuleNodes?.length ? { atRuleNodes: branch.atRuleNodes.map((atRule) => ({
+                id: atRule.id,
+                nodes: atRule.nodes
+            } as AtRule)) } : {})
+        })))
+    }
+
+    return { selectors, variants }
+}
+
+function createVariableAliasRefResolver(variables: Map<string, Variable>) {
+    const aliasRefCache = new Map<string, MasterCSSPlanVariableAliasSet>()
+    return (ref: string): MasterCSSPlanVariableAliasSet => {
+        const cached = aliasRefCache.get(ref)
+        if (cached) return cached
+
+        const namespace = ref[0] === '=' || ref[0] === '~' ? ref.slice(1) : ''
+        const aliases: MasterCSSPlanVariableAliasSet = []
+        const usedKeys = new Set<string>()
+        if (namespace) {
+            for (const variable of variables.values()) {
+                const key = getVariableKeyByNamespace(variable.name, namespace)
+                if (key === undefined || usedKeys.has(key)) continue
+                usedKeys.add(key)
+                aliases.push([key, variable.name])
+            }
+        }
+        aliasRefCache.set(ref, aliases)
+        return aliases
+    }
+}
+
+function compileUtilityDefinition(
+    utility: MasterCSSPlanUtility,
+    variables: Map<string, Variable>,
+    resolveAliasRef: (ref: string) => MasterCSSPlanVariableAliasSet
+): CompiledUtility {
+    const definedUtility = {
+        ...utility,
+        matchers: utility.matchers.map((matcher) => ({ ...matcher }))
+    } as CompiledUtility
+
+    const variableAliases = [
+        ...(utility.variableAliases || []),
+        ...(utility.variableAliasRefs || []).flatMap(resolveAliasRef)
+    ]
+    if (variableAliases.length) {
+        definedUtility.variables = new Map()
+        for (const [variableKey, variableName] of variableAliases) {
+            if (definedUtility.variables.has(variableKey)) continue
+            const variable = variables.get(variableName)
+            if (variable) definedUtility.variables.set(variableKey, variable)
+        }
+    }
+
+    deriveUtilityMetadata(definedUtility)
+    return definedUtility
+}
+
+function createNativeValueNamespaceUtility(
+    property: string,
+    namespace: Pick<MasterCSSBuiltinNativeValueNamespace, 'variableAliasRefs'>
+): MasterCSSPlanUtility {
+    return {
+        id: property,
+        name: property,
+        type: isNativeCSSShorthandProperty(property)
+            ? UtilityType.Shorthand
+            : UtilityType.Normal,
+        order: 0,
+        variableAliasRefs: [...namespace.variableAliasRefs],
+        emit: {
+            type: 'property',
+            property
+        },
+        matchers: [{
+            type: 'key',
+            keys: [property]
+        }]
+    }
+}
+
+function compileNativeValueNamespaces(
+    variables: Map<string, Variable>,
+    resolveAliasRef: (ref: string) => MasterCSSPlanVariableAliasSet
+) {
+    const nativeValueNamespaceUtilities = new Map<string, CompiledUtility>()
+    for (const namespace of builtinNativeValueNamespaces) {
+        if (!namespace.properties?.length || !namespace.variableAliasRefs?.length) continue
+        for (const property of namespace.properties) {
+            if (!property || nativeValueNamespaceUtilities.has(property)) continue
+            const utility = compileUtilityDefinition(
+                createNativeValueNamespaceUtility(property, namespace),
+                variables,
+                resolveAliasRef
+            )
+            nativeValueNamespaceUtilities.set(property, utility)
+        }
+    }
+    return nativeValueNamespaceUtilities
+}
+
+function registerNativeDeclarationFastPathPolicy(
+    target: Set<string>,
+    utility: CompiledUtility
+) {
+    const isPureNativeDeclaration = isPureNativeDeclarationUtilityDefinition(utility)
+    for (const matcher of utility.matchers) {
+        if (matcher.type !== 'key' && matcher.type !== 'value' && matcher.type !== 'variable') continue
+        for (const key of matcher.keys) {
+            if (isPureNativeDeclaration && key === utility.emit.property) continue
+            target.add(key)
+        }
+    }
+}
+
+function loadBucket(target: CompiledUtility[], definedUtilities: CompiledUtility[], indexes: number[] | undefined) {
+    if (!indexes) return
+    for (const index of indexes) {
+        const utility = definedUtilities[index]
+        if (utility) target.push(utility)
+    }
+}
+
+function compileUtilities(
+    plan: MasterCSSPlan,
+    variables: Map<string, Variable>,
+    resolveAliasRef: (ref: string) => MasterCSSPlanVariableAliasSet
+) {
+    const definedUtilities: CompiledUtility[] = []
+    const variableMatcherUtilities: CompiledUtility[] = []
+    const valueMatcherUtilities: CompiledUtility[] = []
+    const keyMatcherUtilities: CompiledUtility[] = []
+    const patternMatcherUtilities: CompiledUtility[] = []
+    const arbitraryMatcherUtilities: CompiledUtility[] = []
+    const nativeDeclarationFastPathBlockedProperties = new Set<string>()
+
+    for (const utility of plan.utilities || []) {
+        const definedUtility = compileUtilityDefinition(utility, variables, resolveAliasRef)
+        registerNativeDeclarationFastPathPolicy(nativeDeclarationFastPathBlockedProperties, definedUtility)
+        definedUtilities.push(definedUtility)
+    }
+
+    loadBucket(variableMatcherUtilities, definedUtilities, plan.utilityBuckets?.variable)
+    loadBucket(valueMatcherUtilities, definedUtilities, plan.utilityBuckets?.value)
+    loadBucket(keyMatcherUtilities, definedUtilities, plan.utilityBuckets?.key)
+    loadBucket(patternMatcherUtilities, definedUtilities, plan.utilityBuckets?.pattern)
+    loadBucket(arbitraryMatcherUtilities, definedUtilities, plan.utilityBuckets?.arbitrary)
+
+    return {
+        definedUtilities,
+        variableMatcherUtilities,
+        valueMatcherUtilities,
+        keyMatcherUtilities,
+        patternMatcherUtilities,
+        arbitraryMatcherUtilities,
+        nativeDeclarationFastPathBlockedProperties
+    }
+}
+
+function compilePlan(plan: MasterCSSPlan): CompiledPlan {
+    assertMasterCSSPlan(plan)
+    const settings = createCompiledSettings(plan)
+    const variables = compileVariables(plan)
+    const animations = compileAnimations(plan)
+    const { selectors, variants } = compileVariantAliases(plan)
+    const resolveAliasRef = createVariableAliasRefResolver(variables)
+    const nativeValueNamespaceUtilities = compileNativeValueNamespaces(variables, resolveAliasRef)
+    const utilities = compileUtilities(plan, variables, resolveAliasRef)
+
+    return {
+        plan,
+        settings,
+        definedUtilities: utilities.definedUtilities,
+        variableMatcherUtilities: utilities.variableMatcherUtilities,
+        valueMatcherUtilities: utilities.valueMatcherUtilities,
+        keyMatcherUtilities: utilities.keyMatcherUtilities,
+        patternMatcherUtilities: utilities.patternMatcherUtilities,
+        arbitraryMatcherUtilities: utilities.arbitraryMatcherUtilities,
+        selectors,
+        variables,
+        modes: [...settings.modes],
+        atRules: compileAtRuleMap(plan.atRules),
+        variants,
+        breakpointAtRules: compileAtRuleMap(plan.breakpointAtRules),
+        containerAtRules: compileAtRuleMap(plan.containerAtRules),
+        animations,
+        nativeDeclarationFastPathBlockedProperties: utilities.nativeDeclarationFastPathBlockedProperties,
+        nativeValueNamespaceUtilities,
+        keyAliases: compileKeyAliases()
+    }
+}
+
 export default class MasterCSS {
-    readonly definedUtilities: CompiledUtility[] = []
-    protected readonly variableMatcherUtilities: CompiledUtility[] = []
-    protected readonly valueMatcherUtilities: CompiledUtility[] = []
-    protected readonly keyMatcherUtilities: CompiledUtility[] = []
-    protected readonly patternMatcherUtilities: CompiledUtility[] = []
-    protected readonly arbitraryMatcherUtilities: CompiledUtility[] = []
-    readonly settings!: EngineSettings
+    definedUtilities: CompiledUtility[] = []
+    protected variableMatcherUtilities: CompiledUtility[] = []
+    protected valueMatcherUtilities: CompiledUtility[] = []
+    protected keyMatcherUtilities: CompiledUtility[] = []
+    protected patternMatcherUtilities: CompiledUtility[] = []
+    protected arbitraryMatcherUtilities: CompiledUtility[] = []
+    settings!: EngineSettings
     readonly rules: (Layer | Rule)[] = []
     readonly classUtilities = new Map<string, Utility[]>()
     readonly animationsNonLayer = new NonLayer(this)
@@ -222,27 +538,27 @@ export default class MasterCSS {
     readonly defaultsLayer = new UtilityLayer('defaults', this)
     readonly componentsLayer = new UtilityLayer('components', this)
     readonly utilitiesLayer = new UtilityLayer('utilities', this)
-    readonly selectors = new Map<string, SelectorNode[]>()
-    readonly variables = new Map<string, Variable>()
-    readonly modes: string[] = []
-    readonly atRules = new Map<string, AtRule>()
-    readonly variants = new Map<MasterCSSPlanVariantToken, MasterCSSPlanVariantBranch[]>()
-    readonly breakpointAtRules = new Map<string, AtRule>()
-    readonly containerAtRules = new Map<string, AtRule>()
-    readonly animations = new Map<string, MasterCSSPlanAnimations[string]>()
+    selectors = new Map<string, SelectorNode[]>()
+    variables = new Map<string, Variable>()
+    modes: string[] = []
+    atRules = new Map<string, AtRule>()
+    variants = new Map<MasterCSSPlanVariantToken, MasterCSSPlanVariantBranch[]>()
+    breakpointAtRules = new Map<string, AtRule>()
+    containerAtRules = new Map<string, AtRule>()
+    animations = new Map<string, MasterCSSPlanAnimations[string]>()
     protected readonly staticVariableTokens = new Set<string>()
     protected readonly staticAnimationTokens = new Set<string>()
     readonly preloaded: Required<MasterCSSPreloaded> = {
         variables: {},
         animations: {}
     }
-    protected readonly nativeDeclarationFastPathBlockedProperties = new Set<string>()
+    protected nativeDeclarationFastPathBlockedProperties = new Set<string>()
     protected readonly nativeDeclarationMatches = new Map<string, boolean>()
     protected readonly nativeDeclarationUtilities = new Map<string, CompiledUtility>()
-    protected readonly nativeValueNamespaceUtilities = new Map<string, CompiledUtility>()
-    protected readonly keyAliases = new Map<string, string>()
+    protected nativeValueNamespaceUtilities = new Map<string, CompiledUtility>()
+    protected keyAliases = new Map<string, string>()
 
-    readonly plan!: MasterCSSPlan
+    plan!: MasterCSSPlan
 
     constructor(
         plan: MasterCSSPlan,
@@ -287,35 +603,26 @@ export default class MasterCSS {
     }
 
     loadPlan(plan: MasterCSSPlan) {
-        assertMasterCSSPlan(plan)
-        // @ts-expect-error read-only
-        this.plan = plan
-        this.loadResolvedPlan()
-    }
-
-    private loadResolvedPlan() {
-        // @ts-expect-error read-only
-        this.settings = {
-            ...DEFAULT_SETTINGS,
-            ...(this.plan.settings || {}),
-            modes: this.plan.settings?.modes ? [...this.plan.settings.modes] : [...DEFAULT_SETTINGS.modes]
-        }
-        this.loadKeyAliases()
-        this.loadVariables()
-        this.loadAnimations()
-        this.loadAtRuleAliases()
-        this.loadVariantAliases()
-        const resolveAliasRef = this.createVariableAliasRefResolver()
-        this.loadNativeValueNamespaces(resolveAliasRef)
-        this.loadUtilities(resolveAliasRef)
-    }
-
-    private loadKeyAliases() {
-        for (const [key, property] of Object.entries(builtinKeyAliases)) {
-            if (key && property && key !== property) {
-                this.keyAliases.set(key, property)
-            }
-        }
+        const compiledPlan = getCompiledPlan(plan)
+        this.plan = compiledPlan.plan
+        this.settings = cloneCompiledSettings(compiledPlan.settings)
+        this.definedUtilities = compiledPlan.definedUtilities
+        this.variableMatcherUtilities = compiledPlan.variableMatcherUtilities
+        this.valueMatcherUtilities = compiledPlan.valueMatcherUtilities
+        this.keyMatcherUtilities = compiledPlan.keyMatcherUtilities
+        this.patternMatcherUtilities = compiledPlan.patternMatcherUtilities
+        this.arbitraryMatcherUtilities = compiledPlan.arbitraryMatcherUtilities
+        this.selectors = compiledPlan.selectors
+        this.variables = compiledPlan.variables
+        this.modes = [...compiledPlan.modes]
+        this.atRules = compiledPlan.atRules
+        this.variants = compiledPlan.variants
+        this.breakpointAtRules = compiledPlan.breakpointAtRules
+        this.containerAtRules = compiledPlan.containerAtRules
+        this.animations = compiledPlan.animations
+        this.nativeDeclarationFastPathBlockedProperties = compiledPlan.nativeDeclarationFastPathBlockedProperties
+        this.nativeValueNamespaceUtilities = compiledPlan.nativeValueNamespaceUtilities
+        this.keyAliases = compiledPlan.keyAliases
     }
 
     protected applyPreloadedCounts(preloaded: MasterCSSPreloaded) {
@@ -399,212 +706,6 @@ export default class MasterCSS {
             if (this.plan.animationOptions?.[name]?.static) this.insertStaticAnimation(name)
         }
         return this
-    }
-
-    private loadAnimations() {
-        const { animations } = this.plan
-        if (animations) {
-            for (const animationName in animations) {
-                const eachAnimation: MasterCSSPlanAnimations[string] = {}
-                this.animations.set(animationName, eachAnimation)
-                const eachKeyframes = animations[animationName]
-                for (const eachKeyframeValue in eachKeyframes) {
-                    const newValueByPropertyName: any = eachAnimation[eachKeyframeValue] = {}
-                    const eachKeyframeDeclarations = eachKeyframes[eachKeyframeValue as 'from' | 'to' | `${number}%`]
-                    for (const propertyName in eachKeyframeDeclarations) {
-                        newValueByPropertyName[propertyName] = eachKeyframeDeclarations[propertyName as keyof PropertiesHyphen]
-                    }
-                }
-            }
-        }
-
-    }
-
-    private loadVariables() {
-        const { variables = [] } = this.plan
-        const { modes = [] } = this.settings
-        this.modes.push(...modes)
-        for (const definition of variables) {
-            if (!definition.name || !definition.type || definition.value === false) continue
-            this.variables.set(definition.name, {
-                name: definition.name,
-                key: definition.key,
-                type: definition.type,
-                ...(definition.namespace ? { namespace: definition.namespace } : {}),
-                ...(definition.value !== undefined ? {
-                    value: Array.isArray(definition.value) ? definition.value.join(',') : definition.value
-                } : {}),
-                ...(definition.numeric ? { numeric: { ...definition.numeric } } : {}),
-                ...(definition.modes ? { modes: { ...definition.modes } } : {}),
-                ...(definition.dependencies?.length ? { dependencies: new Set(definition.dependencies) } : {}),
-                ...(definition.inline ? { inline: true } : {}),
-                ...(definition.static ? { static: true } : {})
-            } as Variable)
-        }
-    }
-
-    private loadAtRuleMap(target: Map<string, AtRule>, atRules: MasterCSSPlanAtRules | undefined) {
-        if (!atRules) return
-        for (const [name, atRule] of Object.entries(atRules)) {
-            target.set(name, {
-                id: atRule.id,
-                nodes: atRule.nodes
-            } as AtRule)
-        }
-    }
-
-    private loadAtRuleAliases() {
-        this.loadAtRuleMap(this.atRules, this.plan.atRules)
-        this.loadAtRuleMap(this.breakpointAtRules, this.plan.breakpointAtRules)
-        this.loadAtRuleMap(this.containerAtRules, this.plan.containerAtRules)
-    }
-
-    private loadVariantAliases() {
-        if (this.plan.selectors) {
-            for (const [name, nodes] of Object.entries(this.plan.selectors)) {
-                this.selectors.set(name, nodes as SelectorNode[])
-            }
-        }
-
-        const { variants } = this.plan
-        if (!variants) return
-
-        for (const variant of variants) {
-            this.variants.set(variant.token, variant.branches.map((branch) => ({
-                ...branch,
-                ...(branch.selectorNodes?.length ? { selectorNodes: branch.selectorNodes as SelectorNode[] } : {}),
-                ...(branch.atRules?.length ? { atRules: [...branch.atRules] } : {}),
-                ...(branch.atRuleNodes?.length ? { atRuleNodes: branch.atRuleNodes.map((atRule) => ({
-                    id: atRule.id,
-                    nodes: atRule.nodes
-                } as AtRule)) } : {})
-            })))
-        }
-    }
-
-    private loadBucket(target: CompiledUtility[], indexes: number[] | undefined) {
-        if (!indexes) return
-        for (const index of indexes) {
-            const utility = this.definedUtilities[index]
-            if (utility) target.push(utility)
-        }
-    }
-
-    private loadUtilityBuckets(buckets: MasterCSSPlanUtilityBuckets | undefined) {
-        this.loadBucket(this.variableMatcherUtilities, buckets?.variable)
-        this.loadBucket(this.valueMatcherUtilities, buckets?.value)
-        this.loadBucket(this.keyMatcherUtilities, buckets?.key)
-        this.loadBucket(this.patternMatcherUtilities, buckets?.pattern)
-        this.loadBucket(this.arbitraryMatcherUtilities, buckets?.arbitrary)
-    }
-
-    private registerNativeDeclarationFastPathPolicy(utility: CompiledUtility) {
-        const isPureNativeDeclaration = isPureNativeDeclarationUtilityDefinition(utility)
-        for (const matcher of utility.matchers) {
-            if (matcher.type !== 'key' && matcher.type !== 'value' && matcher.type !== 'variable') continue
-            for (const key of matcher.keys) {
-                if (isPureNativeDeclaration && key === utility.emit.property) continue
-                this.nativeDeclarationFastPathBlockedProperties.add(key)
-            }
-        }
-    }
-
-    private createVariableAliasRefResolver() {
-        const aliasRefCache = new Map<string, MasterCSSPlanVariableAliasSet>()
-        return (ref: string): MasterCSSPlanVariableAliasSet => {
-            const cached = aliasRefCache.get(ref)
-            if (cached) return cached
-
-            const namespace = ref[0] === '=' || ref[0] === '~' ? ref.slice(1) : ''
-            const aliases: MasterCSSPlanVariableAliasSet = []
-            const usedKeys = new Set<string>()
-            if (namespace) {
-                for (const variable of this.variables.values()) {
-                    const key = getVariableKeyByNamespace(variable.name, namespace)
-                    if (key === undefined || usedKeys.has(key)) continue
-                    usedKeys.add(key)
-                    aliases.push([key, variable.name])
-                }
-            }
-            aliasRefCache.set(ref, aliases)
-            return aliases
-        }
-    }
-
-    private compileUtilityDefinition(
-        utility: MasterCSSPlanUtility,
-        resolveAliasRef: (ref: string) => MasterCSSPlanVariableAliasSet
-    ): CompiledUtility {
-        const definedUtility = {
-            ...utility,
-            matchers: utility.matchers.map((matcher) => ({ ...matcher }))
-        } as CompiledUtility
-
-        const variableAliases = [
-            ...(utility.variableAliases || []),
-            ...(utility.variableAliasRefs || []).flatMap(resolveAliasRef)
-        ]
-        if (variableAliases.length) {
-            definedUtility.variables = new Map()
-            for (const [variableKey, variableName] of variableAliases) {
-                if (definedUtility.variables.has(variableKey)) continue
-                const variable = this.variables.get(variableName)
-                if (variable) definedUtility.variables.set(variableKey, variable)
-            }
-        }
-
-        deriveUtilityMetadata(definedUtility)
-        return definedUtility
-    }
-
-    private createNativeValueNamespaceUtility(
-        property: string,
-        namespace: Pick<MasterCSSBuiltinNativeValueNamespace, 'variableAliasRefs'>
-    ): MasterCSSPlanUtility {
-        return {
-            id: property,
-            name: property,
-            type: isNativeCSSShorthandProperty(property)
-                ? UtilityType.Shorthand
-                : UtilityType.Normal,
-            order: 0,
-            variableAliasRefs: [...namespace.variableAliasRefs],
-            emit: {
-                type: 'property',
-                property
-            },
-            matchers: [{
-                type: 'key',
-                keys: [property]
-            }]
-        }
-    }
-
-    private loadNativeValueNamespaces(resolveAliasRef: (ref: string) => MasterCSSPlanVariableAliasSet) {
-        for (const namespace of builtinNativeValueNamespaces) {
-            if (!namespace.properties?.length || !namespace.variableAliasRefs?.length) continue
-            for (const property of namespace.properties) {
-                if (!property || this.nativeValueNamespaceUtilities.has(property)) continue
-                const utility = this.compileUtilityDefinition(
-                    this.createNativeValueNamespaceUtility(property, namespace),
-                    resolveAliasRef
-                )
-                this.nativeValueNamespaceUtilities.set(property, utility)
-            }
-        }
-    }
-
-    private loadUtilities(resolveAliasRef: (ref: string) => MasterCSSPlanVariableAliasSet) {
-        const { utilities } = this.plan
-
-        if (!utilities) return
-
-        for (const utility of utilities) {
-            const definedUtility = this.compileUtilityDefinition(utility, resolveAliasRef)
-            this.registerNativeDeclarationFastPathPolicy(definedUtility)
-            this.definedUtilities.push(definedUtility)
-        }
-        this.loadUtilityBuckets(this.plan.utilityBuckets)
     }
 
     resolveVariant(token: MasterCSSPlanVariantToken) {
@@ -1155,34 +1256,9 @@ export default class MasterCSS {
     }
 
     reset() {
-        // @ts-ignore
-        this.animations = new Map()
-        // @ts-ignore
-        this.variables = new Map()
-        // @ts-ignore
-        this.atRules = new Map()
-        // @ts-ignore
-        this.variants = new Map()
-        // @ts-ignore
-        this.breakpointAtRules = new Map()
-        // @ts-ignore
-        this.containerAtRules = new Map()
-        // @ts-ignore
-        this.selectors = new Map()
-        // @ts-ignore
-        this.classUtilities = new Map()
-        this.modes.length = 0
-        this.definedUtilities.length = 0
-        this.variableMatcherUtilities.length = 0
-        this.valueMatcherUtilities.length = 0
-        this.keyMatcherUtilities.length = 0
-        this.patternMatcherUtilities.length = 0
-        this.arbitraryMatcherUtilities.length = 0
+        this.classUtilities.clear()
         this.staticVariableTokens.clear()
         this.staticAnimationTokens.clear()
-        this.keyAliases.clear()
-        this.nativeValueNamespaceUtilities.clear()
-        this.nativeDeclarationFastPathBlockedProperties.clear()
         this.baseLayer.reset()
         this.themeLayer.reset()
         this.defaultsLayer.reset()
