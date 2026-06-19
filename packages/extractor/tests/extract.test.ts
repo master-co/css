@@ -265,7 +265,7 @@ test('home path', () => {
     ])
 })
 
-test('$', () => {
+test('ignores variable function prefix', () => {
     expect(extractLatentClasses(`$(size):calc(100%-20px)`)).toEqual([])
 })
 

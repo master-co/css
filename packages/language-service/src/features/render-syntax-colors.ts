@@ -11,8 +11,8 @@ function resolveVariableColorValue(variable: Variable | undefined, variables: Ma
         const value = current?.value
         if (value === undefined) return
         const text = String(value)
-        const alias = /^\$\((.*?)\)(?: ?\/ ?.+?)?$|^\$([a-zA-Z0-9-]+)(?: ?\/ ?.+?)?$|^var\(--([_a-zA-Z0-9-]+)\)$/.exec(text)
-        const aliasName = alias?.[1] ?? alias?.[2] ?? alias?.[3]
+        const alias = /^\$([a-zA-Z0-9-]+)(?: ?\/ ?.+?)?$|^var\(--([_a-zA-Z0-9-]+)\)$/.exec(text)
+        const aliasName = alias?.[1] ?? alias?.[2]
         if (!aliasName) return text
         current = variables.get(aliasName)
     }

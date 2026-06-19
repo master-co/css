@@ -816,7 +816,6 @@ function mergePlan(basePlan: MasterCSSPlan | undefined, fragment: MasterCSSPlan)
         containerAtRules: mergeRecords(basePlan.containerAtRules, fragment.containerAtRules),
         selectors: mergeRecords(basePlan.selectors, fragment.selectors),
         utilities: mergeBy(basePlan.utilities, fragment.utilities, (utility) => `${utility.id}\0${utility.layer || ''}`),
-        functions: mergeRecords(basePlan.functions, fragment.functions),
         keyAliases: mergeRecords(basePlan.keyAliases, fragment.keyAliases),
         nativeValueNamespaces: mergeNativeValueNamespaces(basePlan.nativeValueNamespaces, fragment.nativeValueNamespaces),
         debug: mergeRecords(basePlan.debug, fragment.debug)

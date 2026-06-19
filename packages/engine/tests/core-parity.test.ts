@@ -161,10 +161,10 @@ describe.concurrent('default plan utility parity', () => {
         const css = createDefaultCSS()
 
         expectClassText(css, 'w:calc(var(--h)|/|var(--w)*100%)', 'width:calc(var(--h) / var(--w) * 100%)')
-        expectClassText(css, 'w:calc(-2px+$(spacing-md))', 'width:calc(-2px + var(--spacing-md))')
-        expectClassText(css, 'w:calc(-$(spacing-md)-2px)', 'width:calc(-var(--spacing-md) - 2px)')
-        expectClassText(css, 'w:calc(-1*($(spacing-md)*2)*3-2px)', 'width:calc(-1 * (var(--spacing-md) * 2) * 3 - 2px)')
-        expectClassText(css, 'font-weight:$(font-weight-thin)', 'font-weight:var(--font-weight-thin)')
+        expectClassText(css, 'w:calc(-2px+var(--spacing-md))', 'width:calc(-2px + var(--spacing-md))')
+        expectClassText(css, 'w:calc(-var(--spacing-md)-2px)', 'width:calc(-var(--spacing-md) - 2px)')
+        expectClassText(css, 'w:calc(-1*(var(--spacing-md)*2)*3-2px)', 'width:calc(-1 * (var(--spacing-md) * 2) * 3 - 2px)')
+        expectClassText(css, 'font-weight:var(--font-weight-thin)', 'font-weight:var(--font-weight-thin)')
         expectClassText(css, 'fg:$color-white/.5', 'color:color-mix(in oklab,oklch(100% 0 none) 50%,transparent)')
         expectClassText(css, 'grid-cols:3', 'grid-template-columns:repeat(3, minmax(0, 1fr))')
         expectClassText(css, 'lines:3', '-webkit-line-clamp:3')
@@ -191,7 +191,7 @@ describe.concurrent('default plan utility parity', () => {
         expectClassText(css, 'm:card', 'margin:var(--spacing-card)')
         expectClassText(css, 'm:-card', 'margin:calc(var(--spacing-card) * -1)')
         expectClassText(css, 'w:card', 'width:var(--container-card)')
-        expectClassText(css, 'w:calc($(spacing-card)+2px)', 'width:calc(var(--spacing-card) + 2px)')
+        expectClassText(css, 'w:calc(var(--spacing-card)+2px)', 'width:calc(var(--spacing-card) + 2px)')
         expect(css.create('m:card')?.variableNames).toEqual(new Set(['spacing-card']))
     })
 
@@ -234,11 +234,11 @@ describe.concurrent('default plan utility parity', () => {
             .toStrictEqual({ width: 'min(0.625rem,calc(1.5625rem - 0.625rem))', height: '0.625rem' })
     })
 
-    test('keeps pair utilities using variable functions without and with known number variables', () => {
+    test('keeps pair utilities using native variable references without and with known number variables', () => {
         const css = createDefaultCSS()
-        expect(css.create('size:$(w)|$(h)')?.declarations).toStrictEqual({ width: 'var(--w)', height: 'var(--h)' })
-        expect(css.create('max:$(w)|$(h)')?.declarations).toStrictEqual({ 'max-width': 'var(--w)', 'max-height': 'var(--h)' })
-        expect(css.create('min:$(w)|$(h)')?.declarations).toStrictEqual({ 'min-width': 'var(--w)', 'min-height': 'var(--h)' })
+        expect(css.create('size:var(--w)|var(--h)')?.declarations).toStrictEqual({ width: 'var(--w)', height: 'var(--h)' })
+        expect(css.create('max:var(--w)|var(--h)')?.declarations).toStrictEqual({ 'max-width': 'var(--w)', 'max-height': 'var(--h)' })
+        expect(css.create('min:var(--w)|var(--h)')?.declarations).toStrictEqual({ 'min-width': 'var(--w)', 'min-height': 'var(--h)' })
 
         const plan = clonePlan()
         plan.variables = [
@@ -247,8 +247,16 @@ describe.concurrent('default plan utility parity', () => {
             { name: 'h', key: 'h', type: 'number', value: 16 }
         ]
         const numericCSS = createCSS(plan)
-        expect(numericCSS.create('size:$(w)|$(h)')?.declarations)
+        expect(numericCSS.create('size:var(--w)|var(--h)')?.declarations)
             .toStrictEqual({ width: 'var(--w)', height: 'var(--h)' })
+    })
+
+    test('rejects variable function syntax', () => {
+        const css = createDefaultCSS()
+
+        expect(css.create('w:$(spacing-md)')).toBeUndefined()
+        expect(css.create('w:$(spacing-md,1rem)')).toBeUndefined()
+        expect(css.create('w:calc($(spacing-md)+2px)')).toBeUndefined()
     })
 
     test('keeps grouped declaration parsing and nested generated utilities', () => {

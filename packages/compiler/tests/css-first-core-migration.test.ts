@@ -675,7 +675,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
         expectComposeError('.card { @compose {text-center;block}>li; }', 'compose-group-syntax')
     })
 
-    test('executes CSS-first number variables and value functions through engine semantics', () => {
+    test('executes CSS-first number variables and native value functions through engine semantics', () => {
         const { plan } = compileCSSPlan(`
             @settings {
                 mode-trigger: class;
@@ -701,10 +701,12 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
         const css = createCSS(plan)
 
         expect(css.create('m:x1')?.text).toBe('.m\\:x1{margin:var(--spacing-x1)}')
-        expect(css.create('m:$(spacing-x1)')?.text).toBe('.m\\:\\$\\(spacing-x1\\){margin:var(--spacing-x1)}')
+        expect(css.create('m:var(--spacing-x1)')?.text).toBe('.m\\:var\\(--spacing-x1\\){margin:var(--spacing-x1)}')
+        expect(css.create('m:$(spacing-x1)')).toBeUndefined()
         expect(css.create('line-height:x1')?.text).toBe('.line-height\\:x1{line-height:var(--leading-x1)}')
         expect(css.create('w:-custom')?.text).toBe('.w\\:-custom{width:calc(var(--container-custom) * -1)}')
-        expect(css.create('w:calc(-2px+$(spacing-x1))')?.text).toBe('.w\\:calc\\(-2px\\+\\$\\(spacing-x1\\)\\){width:calc(-2px + var(--spacing-x1))}')
+        expect(css.create('w:calc(-2px+var(--spacing-x1))')?.text).toBe('.w\\:calc\\(-2px\\+var\\(--spacing-x1\\)\\){width:calc(-2px + var(--spacing-x1))}')
+        expect(css.create('w:calc(-2px+$(spacing-x1))')).toBeUndefined()
 
         css.add('m:x1', 'm:-x1', 'line-height:x1')
         expect(css.themeLayer.text).toContain(':root{')

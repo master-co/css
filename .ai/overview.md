@@ -10,7 +10,7 @@ Example:
 </h1>
 ```
 
-The same syntax can express declarations, selectors, states, media queries, container queries, modes, variables, functions, animations, and reusable components.
+The same syntax can express declarations, selectors, states, media queries, container queries, modes, variables, animations, and reusable components.
 
 ## Positioning
 
@@ -37,7 +37,7 @@ Compared with Tailwind:
 - Syntax is closer to CSS declarations, such as `font:1.5rem`, `fg:red`, `bg:blue:hover@sm`.
 - Selectors and at-rules are first-class syntax suffixes.
 - Runtime and progressive rendering are supported in addition to static rendering.
-- CSS-first plan entries define utilities, variables, variants, functions, modes, and animations. Reusable component classes are static utilities in the `components` layer.
+- CSS-first plan entries define utilities, variables, variants, modes, and animations. Reusable component classes are static utilities in the `components` layer.
 
 Compared with CSS-in-JS:
 

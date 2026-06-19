@@ -30,7 +30,7 @@ const originHTMLText = dedent`
 const originConfigText = `@master;
 
 @theme {
-    --color-primary: $(color-blue);
+    --color-primary: var(--color-blue);
 }
 
 @components {

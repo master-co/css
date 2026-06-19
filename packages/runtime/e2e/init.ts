@@ -48,8 +48,7 @@ function normalizeVariableValue(value: RuntimePlanVariable['value'] | undefined)
     const dependencies = new Set<string>()
     const normalized = value
         .replace(/\|/g, ' ')
-        .replace(/\$\(([-_a-zA-Z0-9]+)\)|\$([-_a-zA-Z0-9]+)/g, (_text, wrapped: string | undefined, plain: string | undefined) => {
-            const name = wrapped || plain
+        .replace(/\$([-_a-zA-Z0-9]+)/g, (_text, name: string) => {
             dependencies.add(name)
             return `var(--${name})`
         })

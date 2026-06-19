@@ -17,7 +17,7 @@ import generateSelector from './utils/generate-selector'
 import { calcRulePriority, RulePriority } from './utils/compare-rule-priority'
 import collectVariableNames from './utils/collect-variable-names'
 import wrapAtRules from './utils/wrap-at-rules'
-import { createAlphaColorValue, createCSSVariableReference, createNegativeNumberVariableReference, createNumberVariableReference, hasNumericVariableUnit, normalizeVariableValue, replaceCSSVariableReferences } from './utils/css-variables'
+import { createAlphaColorValue, createCSSVariableReference, createNegativeNumberVariableReference, createNumberVariableReference, normalizeVariableValue, replaceCSSVariableReferences } from './utils/css-variables'
 import collectAnimationNames from './utils/collect-animation-names'
 import { BORDER_STYLE_VALUES } from './common'
 
@@ -253,6 +253,7 @@ export class Utility {
     readonly branchCount: number = 1
     readonly selectorTemplate?: string
     variantBranchKey?: string
+    private invalidValueSyntax = false
     constructor(
         public readonly name: string,
         public css: MasterCSS,
@@ -300,6 +301,10 @@ export class Utility {
             const parsedValueIndex = this.parseValues(this.valueComponents, 0, valueToken, '', '', undefined, false,
                 utilityMayReferenceAnimations(registeredUtility) ? Array.from(this.css.animations.keys()) : []
             )
+            if (this.invalidValueSyntax) {
+                this.valid = false
+                return
+            }
             this.valueToken = valueToken.slice(0, parsedValueIndex)
             if (!patternMatch) {
                 stateToken = valueToken.slice(parsedValueIndex)
@@ -370,6 +375,10 @@ export class Utility {
         if (this.valueComponents) {
             this.valueComponents = this.applyTransform(this.valueComponents)
             newValue = this.resolveValue(this.valueComponents, '', [], false)
+            if (this.invalidValueSyntax) {
+                this.valid = false
+                return
+            }
             const dynamicDeclarationRules = this.emitDynamicDeclarationRules(newValue)
             if (dynamicDeclarationRules) {
                 this.declarations = dynamicDeclarationRules[0]?.declarations
@@ -877,8 +886,6 @@ export class Utility {
     }
 
     resolveValue = (valueComponents: ValueComponent[], unit: string, bypassVariableNames: string[], bypassParsing: boolean) => {
-        const { functions } = this.css.settings
-
         let currentValue = ''
         const addVariableName = (variableName: string) => {
             if (this.variableNames) {
@@ -919,17 +926,22 @@ export class Utility {
         const negateResolvedValue = (value: string) => `calc(${value} * -1)`
         for (const eachValueComponent of valueComponents) {
             switch (eachValueComponent.type) {
-                case 'function':
-                    const functionDefinition = functions && functions[eachValueComponent.name]
-                    const functionOp = functionDefinition?.op
-                    if (functionOp && !eachValueComponent.bypassTransform) {
-                        const resolvedValue = functionOp === 'core.math'
-                            ? this.stringifyValueComponents(eachValueComponent.children)
-                            : this.resolveValue(eachValueComponent.children, unit, bypassVariableNames, bypassParsing || eachValueComponent.name === 'calc')
-                        const result = this.applyFunctionOp(functionOp, resolvedValue, bypassVariableNames, functionDefinition.options)
-                        currentValue += eachValueComponent.token = eachValueComponent.text = typeof result === 'string'
-                            ? result
-                            : this.resolveValue(result, unit, bypassVariableNames, bypassParsing)
+                case 'function': {
+                    if (eachValueComponent.name === '$') {
+                        this.invalidValueSyntax = true
+                        break
+                    }
+                    if (!eachValueComponent.bypassTransform && eachValueComponent.name === 'calc') {
+                        currentValue += eachValueComponent.token = eachValueComponent.text = this.resolveMathFunction(
+                            this.stringifyValueComponents(eachValueComponent.children),
+                            bypassVariableNames
+                        )
+                    } else if (!eachValueComponent.bypassTransform && eachValueComponent.name === 'clamp') {
+                        currentValue += eachValueComponent.token = eachValueComponent.text = this.resolveMathFunction(
+                            this.stringifyValueComponents(eachValueComponent.children),
+                            bypassVariableNames,
+                            { name: 'clamp', wrapArguments: true }
+                        )
                     } else {
                         currentValue += eachValueComponent.token = eachValueComponent.text = eachValueComponent.name
                             + eachValueComponent.symbol
@@ -937,6 +949,7 @@ export class Utility {
                             + VALUE_DELIMITERS[eachValueComponent.symbol as keyof typeof VALUE_DELIMITERS]
                     }
                     break
+                }
                 case 'variable':
                     const resolvedVariableAlias = this.resolveVariableAlias(eachValueComponent.name)
                     const variable = resolvedVariableAlias?.variable
@@ -1014,30 +1027,6 @@ export class Utility {
         return text
     }
 
-    applyFunctionOp(op: string, value: string, bypassVariableNames: string[], options?: unknown) {
-        switch (op) {
-            case 'core.variable':
-                return this.resolveVariableFunction(value)
-            case 'core.math':
-                return this.resolveMathFunction(value, bypassVariableNames, options as CoreMathData | undefined)
-            default:
-                return value
-        }
-    }
-
-    resolveVariableFunction(value: string): ValueComponent[] {
-        let name: string
-        let fallback!: string
-        const firstCommaIndex = value.indexOf(',')
-        if (firstCommaIndex !== -1) {
-            name = value.slice(0, firstCommaIndex)
-            fallback = value.slice(firstCommaIndex + 1)
-        } else {
-            name = value
-        }
-        return [{ type: 'variable', name, fallback, token: value }]
-    }
-
     resolveMathFunction(value: string, bypassVariableNames: string[], data?: CoreMathData) {
         const functionName = data?.name ?? 'calc'
         const valueComponents: ValueComponent[] = []
@@ -1059,33 +1048,6 @@ export class Utility {
         }
         const getSeparatorValue = (component: ValueComponent | undefined) =>
             component?.type === 'separator' ? component.value : undefined
-        const getVariableFunctionName = (component: ValueComponent) => {
-            if (component.type !== 'function' || component.name !== '$') return
-            const value = this.stringifyValueComponents(component.children)
-            const commaIndex = value.indexOf(',')
-            return commaIndex === -1 ? value : value.slice(0, commaIndex)
-        }
-        const appendUnitConversionAfterNumericVariables = (components: ValueComponent[]) => {
-            for (let index = 0; index < components.length; index++) {
-                const component = components[index]
-                if (component.type === 'function') {
-                    appendUnitConversionAfterNumericVariables(component.children)
-                }
-                const variableName = getVariableFunctionName(component)
-                if (!variableName) continue
-                const variable = this.resolveVariableAlias(variableName)?.variable
-                if (variable?.type !== 'number' || hasNumericVariableUnit(variable)) continue
-                if (!utilityUnit) continue
-
-                const previousSeparator = getSeparatorValue(components[index - 1])
-                const nextSeparator = getSeparatorValue(components[index + 1])
-                if (previousSeparator === '*' || previousSeparator === '/' || nextSeparator === '*' || nextSeparator === '/') continue
-                if (nextSeparator === '/' && components[index + 2]?.type === 'number') continue
-
-                components.splice(index + 1, 0, ...createUnitValueComponents())
-                index += utilityUnit === 'rem' || utilityUnit === 'em' ? 4 : 2
-            }
-        }
 
         const anaylzeDeeply = (
             currentValueComponents: ValueComponent[],
@@ -1217,23 +1179,17 @@ export class Utility {
                     currentValueComponents.push(newValueComponent)
                     current = ''
                     i++
-                    const nestedIsVarFunction = nestedFunctionName === '$' || nestedFunctionName === 'var'
+                    if (nestedFunctionName === '$') {
+                        this.invalidValueSyntax = true
+                    }
+                    const nestedIsVarFunction = nestedFunctionName === 'var'
                     childHasUnit = anaylzeDeeply(
                         newValueComponent.children,
-                        nestedFunctionName !== ''
-                        && nestedFunctionName !== 'calc'
-                        && (
-                            nestedIsVarFunction
-                            || Object.prototype.hasOwnProperty.call(this.css.settings.functions || {}, nestedFunctionName)
-                        ),
+                        nestedIsVarFunction,
                         bypassParsing || nestedIsVarFunction || unitChecking && currentHasUnit,
                         unitChecking,
                         nestedIsVarFunction
                     ) || nestedFunctionName === 'var'
-                    if (!childHasUnit && nestedFunctionName === '$') {
-                        const variable = this.resolveVariableAlias((newValueComponent.children[0] as StringValueComponent).value)?.variable
-                        childHasUnit = !variable || variable.type === 'string' || hasNumericVariableUnit(variable)
-                    }
                     if (childHasUnit) {
                         hasUnit = true
                         currentHasUnit = true
@@ -1290,7 +1246,6 @@ export class Utility {
             handleUnitChecking()
         }
         anaylzeDeeply(valueComponents, false, false, false, false)
-        appendUnitConversionAfterNumericVariables(valueComponents)
 
         let resolvedValue = this.resolveValue(valueComponents, utilityUnit, bypassVariableNames, true)
         if (data?.wrapArguments) {
@@ -1311,10 +1266,7 @@ export class Utility {
     ) => {
         const root = parentFunctionName === undefined
         const isVarFunction = !root
-            && (
-                parentFunctionName.endsWith('$')
-                || parentFunctionName.endsWith('var')
-            )
+            && parentFunctionName.endsWith('var')
         const checkIsString = (value: string) => value === '\'' || value === '"'
         const isString = checkIsString(endSymbol)
         const separators = [',']
@@ -1406,10 +1358,13 @@ export class Utility {
                 return i
             } else if (!isString && val in VALUE_DELIMITERS) {
                 const functionName = currentValue
+                if (val === '(' && functionName === '$') {
+                    this.invalidValueSyntax = true
+                    return value.length
+                }
                 const newValueComponent: ValueComponent[][0] = { type: 'function', name: functionName, symbol: val, children: [], token: '' }
                 currentValueComponents.push(newValueComponent)
                 currentValue = ''
-                const functionDefinition = val === '(' ? this.css.settings.functions?.[functionName] : undefined
                 i = this.parseValues(
                     newValueComponent.children,
                     ++i,

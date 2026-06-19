@@ -35,7 +35,7 @@ Plan IR behavior findings:
 
 - Fixed: variable/value matchers now preserve the old single-value matcher boundary and do not consume top-level `|` segments. This restores shorthand behavior such as `bl:lighter|px` -> `border-left`.
 - Fixed: functional pseudo-class selector arguments are no longer expanded by the variant scanner before selector parsing. This restores valid CSSOM insertion for classes such as `pb:8x:not(:last)`.
-- Fixed: `calc()` math lowering now keeps Master CSS `$()` number variables visible to the value VM while preserving explicit units, e.g. `w:calc(-2px+$(spacing-md))`.
+- Fixed: `calc()` math lowering preserves native CSS variable references while handling explicit units, e.g. `w:calc(-2px+var(--spacing-md))`.
 - Fixed: CSS-first variable namespace lowering adds namespace alias refs to matching built-in utilities, so authored variables such as `--container-custom` are addressable by `w:-custom` through Plan IR instead of browser-side namespace guessing.
 - Fixed: ESLint readable class sorting restores the old pre-priority grouping of unqualified, selector, mode, and at-rule utilities, then static-vs-dynamic utilities, so issue #377 hover visibility chains no longer autofix into a different order.
 - Fixed: preset `font` native shorthand variable aliases prefer `font-family-*` over legacy `font-*` aliases for family keys, and `font-feature-settings` now restores `font-feature-*` variable aliases through Plan IR.
@@ -49,7 +49,7 @@ Plan IR behavior findings:
 | `packages/core/tests/__snapshots__/components.test.ts.snap` | compiler/engine | rewritten-css-first | Old component snapshot intent is covered by CSS-first component lowering and engine execution assertions in `packages/compiler/tests/css-first-core-migration.test.ts`; the snapshot file itself is not restored because `@master/css` is now a facade. |
 | `packages/core/tests/at-rules/media.test.ts` | engine | covered-representative | Class-to-rule semantics belong to plan-driven engine tests; representative coverage restored now, full case migration remains tracked. |
 | `packages/core/tests/breakpoints.test.ts` | engine | covered-representative | Class-to-rule semantics belong to plan-driven engine tests; representative coverage restored now, full case migration remains tracked. |
-| `packages/core/tests/calc.test.ts` | engine | covered-representative | Class-to-rule semantics belong to plan-driven engine tests; representative calc coverage includes native `var()`, Master `$()` number variables, unary negative variables, and multiplication chains in `packages/engine/tests/core-parity.test.ts`. |
+| `packages/core/tests/calc.test.ts` | engine | covered-representative | Class-to-rule semantics belong to plan-driven engine tests; representative calc coverage includes native `var()`, unary negative variables, and multiplication chains in `packages/engine/tests/core-parity.test.ts`. |
 | `packages/core/tests/components.test.ts` | engine/compiler | covered-representative | Execution belongs to engine, CSS-first component lowering belongs to compiler; representative coverage restored in both. |
 | `packages/core/tests/config.ts` | engine/compiler | helper-replaced | Old `CSSTester(Config)` infrastructure is replaced by Plan-based engine helpers and CSS-first compiler fixtures. |
 | `packages/core/tests/config/at/layer.test.ts` | compiler | rewritten-css-first | Layer/at-rule authoring now lowers through CSS directives and compiled variant/at-rule records; covered by compiler migration tests and engine parser parity. |
@@ -64,8 +64,8 @@ Plan IR behavior findings:
 | `packages/core/tests/config/extend-config/master-2.css.js` | compiler/plan | dropped-removed-api | JS Config compatibility path is removed; replace intent with CSS-first import/basePlan tests. |
 | `packages/core/tests/config/extend-config/master-css.js` | compiler/plan | dropped-removed-api | JS Config compatibility path is removed; replace intent with CSS-first import/basePlan tests. |
 | `packages/core/tests/config/extend-config/test.ts` | engine | helper-replaced | Old Config helper replaced by plan-based engine helpers. |
-| `packages/core/tests/config/functions/$.test.ts` | engine/compiler | rewritten-css-first | Master `$()` function behavior is covered through CSS-first number variable tests and engine value VM parity. |
-| `packages/core/tests/config/functions/calc.test.ts` | engine/compiler | rewritten-css-first | `calc()` behavior is covered by engine value VM parity and CSS-first compiler migration tests, including number variable unit conversion. |
+| `packages/core/tests/config/functions/$.test.ts` | engine/compiler | dropped-removed-api | Plan function registry is absent; native `var(--*)` and `$token` shorthand cover variable references. |
+| `packages/core/tests/config/functions/calc.test.ts` | engine/compiler | rewritten-css-first | `calc()` behavior is covered by engine value VM parity and CSS-first compiler migration tests. |
 | `packages/core/tests/config/functions/test.ts` | engine | helper-replaced | Old Config helper replaced by plan-based engine helpers. |
 | `packages/core/tests/config/modes.test.ts` | compiler | rewritten-css-first | Mode declaration and emitted selector behavior are covered by CSS-first settings/theme tests. |
 | `packages/core/tests/config/test.ts` | engine | helper-replaced | Old Config helper replaced by plan-based engine helpers. |

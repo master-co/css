@@ -3,12 +3,19 @@ import getVariableCollections from './getVariableCollections'
 import notify from '../utils/notify'
 import type { VariableData } from '../types/variable-data'
 
-const COLOR_VALUE_REGEX = /(?:#|(?:color|color-contrast|color-mix|hwb|lab|lch|oklab|oklch|rgb|rgba|hsl|hsla|light-dark)\(.*\)|(?:\$colors)(?![a-zA-Z0-9-]))/
-
 export interface SetCollectionVariablesOptions {
     varCollId?: string
     newVarCollName: string
     variableData: VariableData
+}
+
+function isColorValue(value: string) {
+    try {
+        parseColorValue(value)
+        return true
+    } catch {
+        return false
+    }
 }
 
 export default async function setCollectionVariables(options: SetCollectionVariablesOptions) {
@@ -60,7 +67,7 @@ export default async function setCollectionVariables(options: SetCollectionVaria
                 if (typeof value === 'number') {
                     valueType = 'FLOAT'
                 } else if (typeof value === 'string') {
-                    if (COLOR_VALUE_REGEX.test(value)) {
+                    if (isColorValue(value)) {
                         valueType = 'COLOR'
                     }
                 }

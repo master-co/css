@@ -8,7 +8,6 @@ export type MasterCSSPlanModeTrigger = 'class' | 'media' | 'host'
 export type MasterCSSPlanVariantToken = `:${string}` | `::${string}` | `@${string}`
 export type MasterCSSPlanUtilityKind = 'number' | 'color' | 'image'
 export type MasterCSSPlanTransformOp = 'auto-fill-solid' | 'animation-token'
-export type MasterCSSPlanFunctionOp = 'core.math' | 'core.variable'
 /** Defaults to single for variable/value matchers; multiple is an explicit opt-in. */
 export type MasterCSSPlanUtilityMatcherValueSegments = 'single' | 'multiple'
 
@@ -114,12 +113,6 @@ export interface MasterCSSPlanVariant {
 
 export type MasterCSSPlanVariants = MasterCSSPlanVariant[]
 
-export interface MasterCSSPlanFunction {
-    op?: MasterCSSPlanFunctionOp
-    options?: unknown
-}
-
-export type MasterCSSPlanFunctions = Record<string, MasterCSSPlanFunction>
 export type MasterCSSPlanKeyAliases = Record<string, string>
 
 export interface MasterCSSPlanNativeValueNamespace {
@@ -205,7 +198,6 @@ export interface MasterCSSPlan {
     selectors?: MasterCSSPlanSelectors
     utilities?: MasterCSSPlanUtilities
     utilityBuckets?: MasterCSSPlanUtilityBuckets
-    functions?: MasterCSSPlanFunctions
     keyAliases?: MasterCSSPlanKeyAliases
     nativeValueNamespaces?: MasterCSSPlanNativeValueNamespaces
     debug?: Record<string, unknown>

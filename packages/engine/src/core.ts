@@ -19,7 +19,6 @@ import type {
     MasterCSSPlan,
     MasterCSSPlanAtRules,
     MasterCSSPlanAnimations,
-    MasterCSSPlanFunctions,
     MasterCSSPlanKeyAliases,
     MasterCSSPlanNativeValueNamespace,
     MasterCSSPlanSettings,
@@ -53,7 +52,6 @@ type EngineSettings = MasterCSSPlanSettings & {
     defaultMode: NonNullable<MasterCSSPlanSettings['defaultMode']>
     modeTrigger: NonNullable<MasterCSSPlanSettings['modeTrigger']>
     modes: string[]
-    functions?: MasterCSSPlanFunctions
 }
 
 const DEFAULT_SETTINGS: EngineSettings = {
@@ -90,8 +88,31 @@ function matchesStaticUtility(className: string, name: string) {
         || next === '~' || next === ':' || next === '[' || next === '@' || next === '_' || next === '.'
 }
 
-function matchesKnownFunction(value: string, names: string[]) {
-    return names.some((name) => value.startsWith(name + '('))
+function getFunctionValueName(value: string) {
+    return /^-{0,2}([_a-zA-Z][-_a-zA-Z0-9]*)\(/.exec(value)?.[1]
+}
+
+function matchesNumericFunctionValue(value: string) {
+    const name = getFunctionValueName(value)
+    return name === 'calc' || name === 'clamp' || name === 'min' || name === 'max'
+}
+
+function matchesImageFunctionValue(value: string) {
+    const name = getFunctionValueName(value)
+    if (!name) return false
+    return name === 'url'
+        || name === 'element'
+        || name === 'paint'
+        || name === 'cross-fade'
+        || name.endsWith('-gradient')
+        || name.includes('image')
+}
+
+function matchesColorFunctionValue(value: string) {
+    const name = getFunctionValueName(value)
+    return Boolean(name)
+        && !matchesNumericFunctionValue(value)
+        && !matchesImageFunctionValue(value)
 }
 
 function hasTopLevelValueSeparator(value: string) {
@@ -266,8 +287,7 @@ export default class MasterCSS {
         this.settings = {
             ...DEFAULT_SETTINGS,
             ...(this.plan.settings || {}),
-            modes: this.plan.settings?.modes ? [...this.plan.settings.modes] : [...DEFAULT_SETTINGS.modes],
-            ...(this.plan.functions ? { functions: this.plan.functions } : {})
+            modes: this.plan.settings?.modes ? [...this.plan.settings.modes] : [...DEFAULT_SETTINGS.modes]
         }
         this.loadKeyAliases(this.plan.keyAliases)
         this.loadVariables()
@@ -380,7 +400,7 @@ export default class MasterCSS {
                 const eachKeyframes = animations[animationName]
                 for (const eachKeyframeValue in eachKeyframes) {
                     const newValueByPropertyName: any = eachAnimation[eachKeyframeValue] = {}
-                    const eachKeyframeDeclarations = eachKeyframes[eachKeyframeValue as 'from' | 'to' | `$(number)%`]
+                    const eachKeyframeDeclarations = eachKeyframes[eachKeyframeValue as 'from' | 'to' | `${number}%`]
                     for (const propertyName in eachKeyframeDeclarations) {
                         newValueByPropertyName[propertyName] = eachKeyframeDeclarations[propertyName as keyof PropertiesHyphen]
                     }
@@ -619,13 +639,13 @@ export default class MasterCSS {
                 switch (utility.kind) {
                     case 'color':
                         return value[0] === '#'
-                            || matchesKnownFunction(value, ['color', 'color-contrast', 'color-mix', 'hwb', 'lab', 'lch', 'oklab', 'oklch', 'rgb', 'rgba', 'hsl', 'hsla', 'light-dark'])
+                            || matchesColorFunctionValue(value)
                             || (value.startsWith('currentColor') && isNameBoundary(value[12]))
                             || (value.startsWith('transparent') && isNameBoundary(value[11]))
                     case 'number':
-                        return /[\d.]/.test(value[0]) || matchesKnownFunction(value, ['max', 'min', 'calc', 'clamp'])
+                        return /[\d.]/.test(value[0]) || matchesNumericFunctionValue(value)
                     case 'image':
-                        return matchesKnownFunction(value, ['url', 'linear-gradient', 'radial-gradient', 'repeating-linear-gradient', 'repeating-radial-gradient', 'conic-gradient'])
+                        return matchesImageFunctionValue(value)
                     default:
                         return false
                 }

@@ -85,7 +85,7 @@ describe.concurrent('migrated complex utility parity', () => {
 
         expect(css.create('size:4x')?.declarations).toStrictEqual({ width: '1rem', height: '1rem' })
         expect(css.create('size:4x|8x')?.declarations).toStrictEqual({ width: '1rem', height: '2rem' })
-        expect(css.create('size:$(w)|$(h)')?.declarations).toStrictEqual({ width: 'var(--w)', height: 'var(--h)' })
+        expect(css.create('size:var(--w)|var(--h)')?.declarations).toStrictEqual({ width: 'var(--w)', height: 'var(--h)' })
         expect(css.create('size:md')?.declarations).toStrictEqual({
             width: 'var(--container-md)',
             height: 'var(--container-md)'
@@ -101,20 +101,20 @@ describe.concurrent('migrated complex utility parity', () => {
             })
         expect(css.create('max:4x')?.declarations).toStrictEqual({ 'max-width': '1rem', 'max-height': '1rem' })
         expect(css.create('max:4x|8x')?.declarations).toStrictEqual({ 'max-width': '1rem', 'max-height': '2rem' })
-        expect(css.create('max:$(w)|$(h)')?.declarations).toStrictEqual({ 'max-width': 'var(--w)', 'max-height': 'var(--h)' })
+        expect(css.create('max:var(--w)|var(--h)')?.declarations).toStrictEqual({ 'max-width': 'var(--w)', 'max-height': 'var(--h)' })
         expect(css.create('min:4x')?.declarations).toStrictEqual({ 'min-width': '1rem', 'min-height': '1rem' })
         expect(css.create('min:4x|8x')?.declarations).toStrictEqual({ 'min-width': '1rem', 'min-height': '2rem' })
-        expect(css.create('min:$(w)|$(h)')?.declarations).toStrictEqual({ 'min-width': 'var(--w)', 'min-height': 'var(--h)' })
+        expect(css.create('min:var(--w)|var(--h)')?.declarations).toStrictEqual({ 'min-width': 'var(--w)', 'min-height': 'var(--h)' })
 
         const numeric = createCSSWithVariables([
             { name: 'w', key: 'w', type: 'number', value: 16 },
             { name: 'h', key: 'h', type: 'number', value: 16 }
         ])
-        expect(numeric.create('size:$(w)|$(h)')?.declarations)
+        expect(numeric.create('size:var(--w)|var(--h)')?.declarations)
             .toStrictEqual({ width: 'var(--w)', height: 'var(--h)' })
-        expect(numeric.create('max:$(w)|$(h)')?.declarations)
+        expect(numeric.create('max:var(--w)|var(--h)')?.declarations)
             .toStrictEqual({ 'max-width': 'var(--w)', 'max-height': 'var(--h)' })
-        expect(numeric.create('min:$(w)|$(h)')?.declarations)
+        expect(numeric.create('min:var(--w)|var(--h)')?.declarations)
             .toStrictEqual({ 'min-width': 'var(--w)', 'min-height': 'var(--h)' })
     })
 

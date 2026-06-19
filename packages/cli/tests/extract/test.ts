@@ -17,7 +17,7 @@ it('basic extract', async () => {
         fs.writeFileSync(join(cwd, 'main.css'), `
             @import "@master/css";
             @theme {
-                --color-primary: $(blue);
+                --color-primary: var(--blue);
             }
         `, { flag: 'w' })
         execFileSync(process.execPath, ['--import', tsxLoaderURL, cliFilepath, 'extract'], { cwd })

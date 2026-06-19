@@ -85,7 +85,7 @@ export default function getValueCompletionItems(css: MasterCSS = createDefaultCS
         }
         const conflicted = completionItems.find(({ label }) => label === completionItem.label)
         if (conflicted) {
-            completionItem.label = '$(' + completionItem.label + ')'
+            completionItem.label = 'var(--' + completionItem.label + ')'
             completionItem.documentation = createCSSMarkdownDocumentation(generateCSS([ruleKey + ':' + completionItem.label], css))
         } else {
             completionItem.documentation = createCSSMarkdownDocumentation(generateCSS([ruleKey + ':' + valueToken], css))

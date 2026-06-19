@@ -6,7 +6,6 @@ import UtilityType from 'shared/utility-type'
 import { createDefaultPlanFromSourceFile } from '../scripts/generate-default-plan'
 import defaultPlanJSON from '../src/default-plan.json' with { type: 'json' }
 import type { MasterCSSPlan } from 'shared/master-css-plan'
-import functions from '../src/functions'
 import keyAliases from '../src/key-aliases'
 import nativeValueNamespaces from '../src/native-value-namespaces'
 import sourceUtilities from '../src/utilities'
@@ -130,11 +129,12 @@ describe('@master/css-preset defaultPlan', () => {
         expect(sourceUtilities).toHaveLength(127)
         expect(sourceUtilities.some((utility) => Number(utility.type) === UtilityType.Static)).toBe(false)
         expect(sourceUtilities.some((utility) => utility.id === 'variable')).toBe(false)
-        expect(Object.keys(functions)).toHaveLength(49)
         expect(utilities).toHaveLength(322)
         expect(utilities[0]?.order).toBe(utilities.length - 1)
         expect(utilities[utilities.length - 1]?.order).toBe(0)
         expect(utilities.some((utility) => utility.matchers.some((matcher) => (matcher as { type: string }).type === 'function-prefix'))).toBe(false)
+        expect('functions' in plan).toBe(false)
+        expect('functions' in defaultPlan).toBe(false)
         expect(hasCSSVariableAssignmentUtility(plan)).toBe(false)
         expect(hasCSSVariableAssignmentUtility(defaultPlan)).toBe(false)
         expect(plan).toEqual(defaultPlan)

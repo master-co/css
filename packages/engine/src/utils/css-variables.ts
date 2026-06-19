@@ -13,10 +13,6 @@ export function createAlphaColorValue(value: string, alpha: number) {
     return `color-mix(in oklab,${value} ${Number(alpha) * 100}%,transparent)`
 }
 
-export function hasNumericVariableUnit(variable: Variable | undefined) {
-    return variable?.type === 'number' && Boolean(variable.numeric?.unit)
-}
-
 export function createNumberVariableReference(variable: Variable, unit: string, rootSize = 16) {
     void unit
     void rootSize

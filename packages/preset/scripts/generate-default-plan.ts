@@ -3,14 +3,12 @@ import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { stringifyMasterCSSPlanJSON } from 'shared/master-css-plan-json'
 import UtilityType from 'shared/utility-type'
-import functions from '../src/functions'
 import keyAliases from '../src/key-aliases'
 import nativeValueNamespaces from '../src/native-value-namespaces'
 import { settings } from '../src/settings'
 import sourceUtilities from '../src/utilities'
 import type {
     MasterCSSPlan,
-    MasterCSSPlanFunctions,
     MasterCSSPlanUtility,
     MasterCSSPlanUtilityBuckets
 } from 'shared/master-css-plan'
@@ -95,7 +93,6 @@ export function createDefaultPlan(cssPlan: MasterCSSPlan): MasterCSSPlan {
         selectors: cssPlan.selectors,
         utilities,
         utilityBuckets: createUtilityBuckets(utilities),
-        functions: clone(functions) as MasterCSSPlanFunctions,
         keyAliases: clone(keyAliases),
         nativeValueNamespaces: clone(nativeValueNamespaces)
     }

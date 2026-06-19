@@ -6,7 +6,7 @@ import path from 'path'
 fs.writeFileSync(path.join(__dirname, 'manual-source.ts'), `
 export default {
     variables: [
-        { key: 'primary', value: '$(blue)' }
+        { key: 'primary', value: 'var(--blue)' }
     ]
 }
 `, { flag: 'w' })
