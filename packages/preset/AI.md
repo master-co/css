@@ -16,6 +16,14 @@
 - Regenerate `src/default-plan.json` only when the source preset intentionally changes.
 - The layer statement lives in `src/base.css` and must stay `@layer theme, base, defaults, components, utilities;`.
 
+## Utility Definition Ladder
+
+- Prefer `nativeValueNamespaces` for full native or vendor property classes; use `keyAliases` when the public key differs from the emitted property.
+- Prefer `keyAliases` for short aliases that map directly to native logical, physical, full, or vendor CSS properties.
+- Use `@utilities` for semantic subproperty aliases that direct property fallback cannot represent.
+- Keep `src/utilities.ts` only for multi-declaration behavior, special transforms, raw ambiguous matching, or compiler-inexpressible behavior.
+- When adding a utility, document why `keyAliases` plus `nativeValueNamespaces` cannot satisfy it.
+
 ## Required Tests
 
 ```sh

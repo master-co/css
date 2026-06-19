@@ -198,6 +198,14 @@ const nativeValueNamespaces = [
         variableAliasRefs: ['=color', '~color-text', '~color']
     },
     {
+        properties: ['-webkit-text-fill-color', 'text-decoration-color'],
+        variableAliasRefs: ['~color-text', '~color']
+    },
+    {
+        properties: ['-webkit-text-stroke-color'],
+        variableAliasRefs: ['~color']
+    },
+    {
         properties: ['text-shadow'],
         variableAliasRefs: ['~color']
     },

@@ -31,6 +31,17 @@ Generated rules are emitted into `theme`, `base`, `defaults`, `components`, and 
 
 Do not start by inventing a new abstraction. This repo already has established helpers for parsing, plan loading, rule matching, validation, and insertion.
 
+## Utility Definition Strategy
+
+Before adding or changing a default preset utility, prove the simpler plan mechanisms cannot already model it:
+
+1. Full native or vendor property classes should use `nativeValueNamespaces`; add a `keyAliases` entry only when the public class key differs from the emitted CSS property.
+2. Short property aliases should use `keyAliases` to point at native logical, physical, full, or vendor CSS properties.
+3. Semantic subproperty aliases that cannot be represented as a direct property fallback should be authored in `@utilities`.
+4. Keep definitions in `packages/preset/src/utilities.ts` only for multi-declaration behavior, special transforms, raw ambiguous matching, or behavior the CSS directive compiler cannot express.
+
+When a change adds a utility, include the reason `keyAliases` plus `nativeValueNamespaces` was insufficient.
+
 ## Refactor Compatibility Policy
 
 Master CSS refactors optimize for a clean, correct design over backward compatibility. When a task asks for a refactor, rewrite, cleanup, migration, or re-architecture, do not preserve legacy APIs, legacy config shapes, old behavior, aliases, adapters, fixtures, or compatibility shims solely for compatibility unless the user or issue explicitly says compatibility is required.

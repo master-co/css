@@ -131,7 +131,7 @@ describe('@master/css-preset defaultPlan', () => {
         expect(sourceUtilities).toHaveLength(79)
         expect(sourceUtilities.some((utility) => Number(utility.type) === UtilityType.Static)).toBe(false)
         expect(sourceUtilities.some((utility) => utility.id === 'variable')).toBe(false)
-        expect(utilities).toHaveLength(292)
+        expect(utilities).toHaveLength(288)
         expect(utilities[0]?.order).toBe(utilities.length - 1)
         expect(utilities[utilities.length - 1]?.order).toBe(0)
         expect(utilities.some((utility) => utility.matchers.some((matcher) => (matcher as { type: string }).type === 'function-prefix'))).toBe(false)
@@ -193,6 +193,8 @@ describe('@master/css-preset defaultPlan', () => {
         expect(css.create('outline-thick')?.text).toBe('.outline-thick{outline-width:thick}')
         expect(css.create('outline-thin')?.text).toBe('.outline-thin{outline-width:thin}')
         expect(css.create('text-fill-color:red')?.text).toBe('.text-fill-color\\:red{-webkit-text-fill-color:var(--color-text-red)}')
+        expect(css.create('text-decoration-color:red')?.text).toBe('.text-decoration-color\\:red{text-decoration-color:var(--color-text-red)}')
+        expect(css.create('text-stroke-color:red')?.text).toBe('.text-stroke-color\\:red{-webkit-text-stroke-color:var(--color-red)}')
         expect(css.create('text-stroke-width:2px')?.text).toBe('.text-stroke-width\\:2px{-webkit-text-stroke-width:2px}')
         expect(css.create('text-decoration-thickness:2px')?.text).toBe('.text-decoration-thickness\\:2px{text-decoration-thickness:2px}')
         expect(css.create('font-sm')).toBeUndefined()
@@ -210,6 +212,10 @@ describe('@master/css-preset defaultPlan', () => {
                     values: ['left', 'center', 'right', 'start', 'end', 'justify']
                 }]
             })
+        expect(defaultPlan.utilities?.some((utility) => utility.id === 'text-fill-color:<~color-text|~color|color>')).toBe(false)
+        expect(defaultPlan.utilities?.some((utility) => utility.id === 'text-decoration-color:<~color-text|~color|color>')).toBe(false)
+        expect(defaultPlan.utilities?.some((utility) => utility.id === 'text-stroke-color:<~color|color>')).toBe(false)
+        expect(defaultPlan.utilities?.some((utility) => utility.id === 'text-stroke-width:<number>')).toBe(false)
     })
 
     it('removes fixed keyword value aliases while preserving raw ambiguous matches', () => {
@@ -239,6 +245,9 @@ describe('@master/css-preset defaultPlan', () => {
         expect(css.create('font:sm')?.text).toBe('.font\\:sm{font-size:var(--font-size-sm)}')
         expect(css.create('font:1rem')?.text).toBe('.font\\:1rem{font-size:1rem}')
         expect(css.create('text:red')?.text).toBe('.text\\:red{-webkit-text-fill-color:var(--color-text-red)}')
+        expect(css.create('text-decoration:red')?.text).toBe('.text-decoration\\:red{text-decoration-color:var(--color-text-red)}')
+        expect(css.create('text-stroke:red')?.text).toBe('.text-stroke\\:red{-webkit-text-stroke-color:var(--color-red)}')
+        expect(css.create('text-decoration-thickness:px')).toBeUndefined()
         expect(css.create('m:px')?.text).toBe('.m\\:px{margin:1px}')
         expect(css.create('outline:px|solid')?.text).toBe('.outline\\:px\\|solid{outline:1px solid}')
         expect(css.create('m:sm|md')?.text).toBe('.m\\:sm\\|md{margin:var(--spacing-sm) var(--spacing-md)}')
@@ -283,7 +292,7 @@ describe('@master/css-preset defaultPlan', () => {
 
         expect(defaultPlan.nativeValueNamespaces).toEqual(nativeValueNamespaces)
         expect(new Set(nativeValueNamespaceProperties).size).toBe(nativeValueNamespaceProperties.length)
-        expect(nativeValueNamespaceProperties).toHaveLength(155)
+        expect(nativeValueNamespaceProperties).toHaveLength(158)
         for (const property of nativeValueNamespaceProperties) {
             expect(utilityIds.has(property), property).toBe(false)
             if (!nativeValueNamespaceMatcherKeys.has(property)) {

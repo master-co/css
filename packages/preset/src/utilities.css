@@ -740,19 +740,11 @@
         -webkit-text-fill-color: --value();
     }
 
-    text-fill-color:<~color-text|~color|color> {
-        -webkit-text-fill-color: --value();
-    }
-
     text-decoration:<number> {
         text-decoration-thickness: --value();
     }
 
     text-decoration:<~color-text|~color|color> {
-        text-decoration-color: --value();
-    }
-
-    text-decoration-color:<~color-text|~color|color> {
         text-decoration-color: --value();
     }
 
@@ -766,14 +758,6 @@
 
     text-stroke:<~color|color> {
         -webkit-text-stroke-color: --value();
-    }
-
-    text-stroke-color:<~color|color> {
-        -webkit-text-stroke-color: --value();
-    }
-
-    text-stroke-width:<number> {
-        -webkit-text-stroke-width: --value();
     }
 
     bg-<auto|contain|cover> {

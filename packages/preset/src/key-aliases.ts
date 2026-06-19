@@ -83,6 +83,8 @@ const keyAliases = {
     'scroll-px': 'scroll-padding-inline',
     'scroll-py': 'scroll-padding-block',
     'shadow': 'box-shadow',
+    'text-fill-color': '-webkit-text-fill-color',
+    'text-stroke-color': '-webkit-text-stroke-color',
     'tracking': 'letter-spacing',
     'w': 'width',
     'z': 'z-index'
