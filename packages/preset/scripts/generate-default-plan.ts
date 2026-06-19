@@ -2,9 +2,7 @@ import { writeFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { stringifyMasterCSSPlanJSON } from 'shared/master-css-plan-json'
-import UtilityType from 'shared/utility-type'
 import { settings } from '../src/settings'
-import sourceUtilities from '../src/utilities'
 import type {
     MasterCSSPlan,
     MasterCSSPlanUtility,
@@ -18,21 +16,6 @@ const outputFile = resolve(packageRoot, 'src/default-plan.json')
 const { compileCSSPlanFile } = await import(new URL('../../compiler/src/index.ts', import.meta.url).href) as typeof import('@master/css-compiler')
 function clone<T>(value: T): T {
     return JSON.parse(JSON.stringify(value)) as T
-}
-
-function createSourceUtilities(): MasterCSSPlanUtility[] {
-    return sourceUtilities
-        .map((utility, order) => {
-            const { id, name, type, ...rest } = clone(utility)
-            return {
-                id,
-                name,
-                type,
-                order,
-                ...rest
-            } as MasterCSSPlanUtility
-        })
-        .reverse()
 }
 
 function normalizeUtilityOrders(utilities: MasterCSSPlanUtility[] = []): MasterCSSPlanUtility[] {
@@ -78,7 +61,7 @@ function createUtilityBuckets(utilities: MasterCSSPlanUtility[] | undefined): Ma
 }
 
 export function createDefaultPlan(cssPlan: MasterCSSPlan): MasterCSSPlan {
-    const utilities = normalizeUtilityOrders(cssPlan.utilities || createSourceUtilities())
+    const utilities = normalizeUtilityOrders(cssPlan.utilities || [])
     return {
         version: 3,
         settings: { ...settings, ...cssPlan.settings },
@@ -95,14 +78,7 @@ export function createDefaultPlan(cssPlan: MasterCSSPlan): MasterCSSPlan {
 }
 
 export function createDefaultPlanFromSourceFile(file = sourceFile) {
-    const utilities = createSourceUtilities()
-    return createDefaultPlan(compileCSSPlanFile(file, {
-        basePlan: {
-            version: 3,
-            utilities,
-            utilityBuckets: createUtilityBuckets(utilities)
-        }
-    }).plan)
+    return createDefaultPlan(compileCSSPlanFile(file).plan)
 }
 
 export function createDefaultPlanJSON(plan: MasterCSSPlan) {

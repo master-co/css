@@ -3,6 +3,11 @@ import { createCSS } from '../src'
 import { clonePlan, createCSSWithVariables, createDefaultCSS } from './helpers/css-tester'
 
 describe.concurrent('migrated complex utility parity', () => {
+    test('keeps group syntax independent from preset utilities', () => {
+        expect(createCSS({ version: 3 }).create('{display:block}')?.text)
+            .toBe('.\\{display\\:block\\}{display:block}')
+    })
+
     test('keeps grouped declarations generated utilities and invalid group recovery', () => {
         const css = createDefaultCSS()
 

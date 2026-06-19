@@ -118,7 +118,6 @@ export type MasterCSSPlanUtilityMatcher =
     | { type: 'key'; keys: string[] }
     | { type: 'variable'; keys: string[]; segments?: MasterCSSPlanUtilityMatcherValueSegments }
     | { type: 'value'; keys: string[]; segments?: MasterCSSPlanUtilityMatcherValueSegments }
-    | { type: 'group' }
 
 export interface MasterCSSPlanUtilityBuckets {
     variable?: number[]
@@ -135,7 +134,6 @@ export type MasterCSSPlanUtilityEmit =
     | { type: 'declarations'; declarations: string[] }
     | { type: 'template'; declarations: MasterCSSPlanCSSDeclarations }
     | { type: 'property'; property: string }
-    | { type: 'group' }
     | { type: 'static'; rules: MasterCSSPlanUtilityRule[] }
 
 export interface MasterCSSPlanUtilityRule<TDeclarations = MasterCSSPlanCSSDeclarations> {

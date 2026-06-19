@@ -11,7 +11,6 @@ import UtilityType from 'shared/utility-type'
 import { createDefaultPlanFromSourceFile } from '../scripts/generate-default-plan'
 import defaultPlanJSON from '../src/default-plan.json' with { type: 'json' }
 import type { MasterCSSPlan } from 'shared/master-css-plan'
-import sourceUtilities from '../src/utilities'
 
 const defaultPlan = defaultPlanJSON as unknown as MasterCSSPlan
 const __dirname = dirname(fileURLToPath(import.meta.url))
@@ -182,12 +181,12 @@ describe('@master/css-preset defaultPlan', () => {
         const plan = createDefaultPlanFromSourceFile(resolve(__dirname, '../src/index.css'))
         const utilities = plan.utilities || []
 
-        expect(sourceUtilities).toHaveLength(1)
-        expect(sourceUtilities.some((utility) => Number(utility.type) === UtilityType.Semantic)).toBe(false)
-        expect(sourceUtilities.some((utility) => utility.id === 'variable')).toBe(false)
-        expect(utilities).toHaveLength(181)
+        expect(utilities).toHaveLength(180)
         expect(utilities[0]?.order).toBe(utilities.length - 1)
         expect(utilities[utilities.length - 1]?.order).toBe(0)
+        expect(utilities.some((utility) => utility.id === 'group')).toBe(false)
+        expect(utilities.some((utility) => (utility.emit as { type: string }).type === 'group')).toBe(false)
+        expect(utilities.some((utility) => utility.matchers.some((matcher) => (matcher as { type: string }).type === 'group'))).toBe(false)
         expect(utilities.some((utility) => utility.id === 'animation')).toBe(false)
         expect(utilities.some((utility) => utility.id === 'animate:<~animate>')).toBe(true)
         expect(utilities.some((utility) => utility.id === 'font:<~font-family|=font|~font-weight|~font-size|*>')).toBe(false)

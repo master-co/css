@@ -31,7 +31,8 @@ import type {
 import builtinKeyAliases from './key-aliases'
 import builtinNativeValueNamespaces, { type MasterCSSBuiltinNativeValueNamespace } from './native-value-namespaces'
 
-export type CompiledUtility = MasterCSSPlanUtility & {
+export type CompiledUtility = Omit<MasterCSSPlanUtility, 'emit'> & {
+    emit: MasterCSSPlanUtility['emit'] | { type: 'group' }
     variables?: Map<string, Variable>
 }
 
@@ -61,6 +62,17 @@ const DEFAULT_SETTINGS: EngineSettings = {
     modeTrigger: 'media',
     modes: ['light', 'dark']
 }
+
+const builtinGroupUtility = {
+    id: 'group',
+    name: 'group',
+    type: UtilityType.Shorthand,
+    order: 0,
+    emit: {
+        type: 'group'
+    },
+    matchers: []
+} satisfies CompiledUtility
 
 function assertMasterCSSPlan(plan: MasterCSSPlan): asserts plan is MasterCSSPlan {
     if (!plan || plan.version !== 3) {
@@ -650,8 +662,6 @@ export default class MasterCSS {
             }
             case 'pattern':
                 return matcher.values.some((value) => matchesStaticUtility(className, matcher.prefix + value))
-            case 'group':
-                return className[0] === '{' && className.includes('}')
         }
     }
 
@@ -675,6 +685,10 @@ export default class MasterCSS {
 
         const key = className.slice(0, indexOfColon)
         return !key.startsWith('--')
+    }
+
+    private isGroupClassName(className: string) {
+        return className[0] === '{' && className.includes('}')
     }
 
     private getClassKeyAlias(className: string) {
@@ -728,6 +742,22 @@ export default class MasterCSS {
         }
     }
 
+    private createGroupUtility(className: string, fixedClass?: string, mode?: string, branchIndex = 0): Utility | undefined {
+        if (!this.isGroupClassName(className)) return
+        return this.createWithDefinition(className, builtinGroupUtility, fixedClass, mode, branchIndex)
+    }
+
+    private createAllGroupUtilities(className: string, fixedClass?: string, mode?: string): Utility[] {
+        const utility = this.createGroupUtility(className, fixedClass, mode)
+        if (!utility?.valid) return []
+        const utilities = [utility]
+        for (let branchIndex = 1; branchIndex < utility.branchCount; branchIndex++) {
+            const branchUtility = this.createGroupUtility(className, fixedClass, mode, branchIndex)
+            if (branchUtility?.valid) utilities.push(branchUtility)
+        }
+        return utilities
+    }
+
     private matchRawManagedClassName(className: string): CompiledUtility | undefined {
         for (const eachUtility of this.variableMatcherUtilities) {
             if (this.matchesUtility(className, eachUtility, 'variable')) return eachUtility
@@ -747,6 +777,7 @@ export default class MasterCSS {
     }
 
     match(className: string): CompiledUtility | undefined {
+        if (this.isGroupClassName(className)) return builtinGroupUtility
         if (this.hasClassKey(className)) {
             const rawRegisteredUtility = this.matchRawManagedClassName(className)
             if (rawRegisteredUtility) return rawRegisteredUtility
@@ -825,6 +856,7 @@ export default class MasterCSS {
     }
 
     matchAll(className: string): CompiledUtility[] {
+        if (this.isGroupClassName(className)) return [builtinGroupUtility]
         if (this.hasClassKey(className)) {
             const rawRegisteredUtilities = this.matchAllRawManagedClassName(className)
             if (rawRegisteredUtilities.length) return rawRegisteredUtilities
@@ -964,6 +996,9 @@ export default class MasterCSS {
      * @returns Utility
      */
     create(className: string, fixedClass?: string, mode?: string): Utility | undefined {
+        const groupUtility = this.createGroupUtility(className, fixedClass, mode)
+        if (groupUtility) return groupUtility
+
         const sourceClassName = className
         if (this.hasClassKey(className)) {
             const rawRegisteredUtility = this.matchRawManagedClassName(className)
@@ -998,6 +1033,9 @@ export default class MasterCSS {
     }
 
     createAll(className: string, fixedClass?: string, mode?: string): Utility[] {
+        const groupUtilities = this.createAllGroupUtilities(className, fixedClass, mode)
+        if (groupUtilities.length) return groupUtilities
+
         const sourceClassName = className
         if (this.hasClassKey(className)) {
             const rawRegisteredUtilities = this.matchAllRawManagedClassName(className)
