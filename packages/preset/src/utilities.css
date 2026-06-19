@@ -736,6 +736,46 @@
         grid-template-columns: repeat(--value(), minmax(0, 1fr));
     }
 
+    text:<~color-text|~color|color> {
+        -webkit-text-fill-color: --value();
+    }
+
+    text-fill-color:<~color-text|~color|color> {
+        -webkit-text-fill-color: --value();
+    }
+
+    text-decoration:<number> {
+        text-decoration-thickness: --value();
+    }
+
+    text-decoration:<~color-text|~color|color> {
+        text-decoration-color: --value();
+    }
+
+    text-decoration-color:<~color-text|~color|color> {
+        text-decoration-color: --value();
+    }
+
+    text-decoration-thickness:<number> {
+        text-decoration-thickness: --value();
+    }
+
+    text-stroke:<number> {
+        -webkit-text-stroke-width: --value();
+    }
+
+    text-stroke:<~color|color> {
+        -webkit-text-stroke-color: --value();
+    }
+
+    text-stroke-color:<~color|color> {
+        -webkit-text-stroke-color: --value();
+    }
+
+    text-stroke-width:<number> {
+        -webkit-text-stroke-width: --value();
+    }
+
     bg-<auto|contain|cover> {
         background-size: --value();
     }

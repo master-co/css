@@ -14,12 +14,8 @@ const defaultPlan = defaultPlanJSON as unknown as MasterCSSPlan
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
 const retainedRadiusKeyAliases = {
-    rb: 'border-bottom-radius',
     rbl: 'border-bottom-left-radius',
     rbr: 'border-bottom-right-radius',
-    rl: 'border-left-radius',
-    rr: 'border-right-radius',
-    rt: 'border-top-radius',
     rtl: 'border-top-left-radius',
     rtr: 'border-top-right-radius'
 }
@@ -132,10 +128,10 @@ describe('@master/css-preset defaultPlan', () => {
         const plan = createDefaultPlanFromSourceFile(resolve(__dirname, '../src/index.css'))
         const utilities = plan.utilities || []
 
-        expect(sourceUtilities).toHaveLength(87)
+        expect(sourceUtilities).toHaveLength(79)
         expect(sourceUtilities.some((utility) => Number(utility.type) === UtilityType.Static)).toBe(false)
         expect(sourceUtilities.some((utility) => utility.id === 'variable')).toBe(false)
-        expect(utilities).toHaveLength(290)
+        expect(utilities).toHaveLength(292)
         expect(utilities[0]?.order).toBe(utilities.length - 1)
         expect(utilities[utilities.length - 1]?.order).toBe(0)
         expect(utilities.some((utility) => utility.matchers.some((matcher) => (matcher as { type: string }).type === 'function-prefix'))).toBe(false)
@@ -196,6 +192,9 @@ describe('@master/css-preset defaultPlan', () => {
         expect(css.create('outline-medium')?.text).toBe('.outline-medium{outline-width:medium}')
         expect(css.create('outline-thick')?.text).toBe('.outline-thick{outline-width:thick}')
         expect(css.create('outline-thin')?.text).toBe('.outline-thin{outline-width:thin}')
+        expect(css.create('text-fill-color:red')?.text).toBe('.text-fill-color\\:red{-webkit-text-fill-color:var(--color-text-red)}')
+        expect(css.create('text-stroke-width:2px')?.text).toBe('.text-stroke-width\\:2px{-webkit-text-stroke-width:2px}')
+        expect(css.create('text-decoration-thickness:2px')?.text).toBe('.text-decoration-thickness\\:2px{text-decoration-thickness:2px}')
         expect(css.create('font-sm')).toBeUndefined()
         expect(css.create('m-md')).toBeUndefined()
         expect(css.create('sr-only')?.text).toContain('position:absolute')
@@ -217,10 +216,13 @@ describe('@master/css-preset defaultPlan', () => {
         const css = createCSS(defaultPlan)
 
         expect(css.create('text:center')).toBeUndefined()
+        expect(css.create('text:underline')).toBeUndefined()
         expect(css.create('bg:cover')).toBeUndefined()
         expect(css.create('object:cover')).toBeUndefined()
         expect(css.create('border-solid')).toBeUndefined()
         expect(css.create('border-l-solid')).toBeUndefined()
+        expect(css.create('rt:4x')).toBeUndefined()
+        expect(css.create('border-top-radius:4x')).toBeUndefined()
         expect(css.create('bg:#fff')?.text).toBe('.bg\\:\\#fff{background-color:#fff}')
         expect(css.create('b:1px')?.text).toBe('.b\\:1px{border-width:1px}')
         expect(css.create('b:line')?.text).toBe('.b\\:line{border-color:var(--color-line)}')
@@ -236,6 +238,7 @@ describe('@master/css-preset defaultPlan', () => {
         expect(css.create('outline:medium')?.text).toBe('.outline\\:medium{outline:medium}')
         expect(css.create('font:sm')?.text).toBe('.font\\:sm{font-size:var(--font-size-sm)}')
         expect(css.create('font:1rem')?.text).toBe('.font\\:1rem{font-size:1rem}')
+        expect(css.create('text:red')?.text).toBe('.text\\:red{-webkit-text-fill-color:var(--color-text-red)}')
         expect(css.create('m:px')?.text).toBe('.m\\:px{margin:1px}')
         expect(css.create('outline:px|solid')?.text).toBe('.outline\\:px\\|solid{outline:1px solid}')
         expect(css.create('m:sm|md')?.text).toBe('.m\\:sm\\|md{margin:var(--spacing-sm) var(--spacing-md)}')

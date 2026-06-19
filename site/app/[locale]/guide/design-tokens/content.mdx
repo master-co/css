@@ -126,7 +126,7 @@ Property shorthand keeps frequently used declarations compact:
 | `bg:surface` | `background-color:surface` | Background color |
 | `p:md`, `pi:lg`, `m:0` | `padding:md`, `padding-inline:lg`, `margin:0` | Spacing |
 | `w:full`, `h:100dvh` | `width:full`, `height:100dvh` | Sizing |
-| `r:lg`, `border-top-radius:md` | `border-radius:lg`, `border-top-radius:md` | Corner radius |
+| `r:lg`, `rtl:md` | `border-radius:lg`, `border-top-left-radius:md` | Corner radius |
 | <code>b:px&#124;subtle</code>, <code>bt:px&#124;line</code> | <code>border:px&#124;subtle</code>, <code>border-top:px&#124;line</code> | Border width, style, and color |
 | `shadow:card` | `box-shadow:card` | Elevation |
 | <code>transition:opacity&#124;normal&#124;standard</code> | <code>transition-property:opacity transition-duration:normal transition-timing-function:standard</code> | Transitions |
@@ -142,7 +142,7 @@ Contextual token shorthand removes redundant namespace prefixes from values. The
 | <code>b:px&#124;subtle</code> | <code>b:px&#124;line-subtle</code> | Border shorthands resolve line color tokens. |
 | <code>outline:px&#124;subtle</code> | <code>outline:px&#124;line-subtle</code> | Outline shorthands resolve line color tokens. |
 | `p:md`, `gap:lg` | `p:spacing-md`, `gap:spacing-lg` | Spacing utilities resolve spacing tokens. |
-| `r:lg`, `border-top-radius:md` | `r:radius-lg`, `border-top-radius:radius-md` | Radius utilities resolve corner radius tokens. |
+| `r:lg`, `rtl:md` | `r:radius-lg`, `rtl:radius-md` | Radius utilities resolve corner radius tokens. |
 | `shadow:card` | `shadow:shadow-card` | Shadow utilities resolve elevation tokens. |
 | `leading:md` | `leading:leading-md` | Line-height utilities resolve leading tokens. |
 | `tracking:tight` | `tracking:tracking-tight` | Letter-spacing utilities resolve tracking tokens. |

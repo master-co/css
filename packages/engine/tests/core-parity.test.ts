@@ -81,17 +81,13 @@ describe.concurrent('default plan utility parity', () => {
         expect(css.create('width:block')).toBeUndefined()
     })
 
-    test('preserves radius side and corner aliases through key aliases', () => {
+    test('preserves radius corner aliases through key aliases', () => {
         const css = createDefaultCSS()
 
-        expect(css.create('rt:4x')?.text)
-            .toBe('.rt\\:4x{border-top-left-radius:1rem;border-top-right-radius:1rem}')
-        expect(css.create('rb:4x')?.text)
-            .toBe('.rb\\:4x{border-bottom-left-radius:1rem;border-bottom-right-radius:1rem}')
-        expect(css.create('rl:4x')?.text)
-            .toBe('.rl\\:4x{border-top-left-radius:1rem;border-bottom-left-radius:1rem}')
-        expect(css.create('rr:4x')?.text)
-            .toBe('.rr\\:4x{border-top-right-radius:1rem;border-bottom-right-radius:1rem}')
+        expect(css.create('rt:4x')).toBeUndefined()
+        expect(css.create('rb:4x')).toBeUndefined()
+        expect(css.create('rl:4x')).toBeUndefined()
+        expect(css.create('rr:4x')).toBeUndefined()
         expect(css.create('rtl:md')?.text)
             .toBe('.rtl\\:md{border-top-left-radius:var(--radius-md)}')
         expect(css.create('rtr:md')?.text)

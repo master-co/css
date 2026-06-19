@@ -50,14 +50,14 @@ Use the same token for surfaces that should feel related. For example, a card, i
 ---
 
 ## Namespace for corner radius
-Corner radius tokens are defined with the `radius-*` namespace. Radius utilities search this namespace, so `r:lg`, `border-top-radius:lg`, and `border-radius:lg` all resolve `radius-lg` without requiring the `radius-` prefix in markup.
+Corner radius tokens are defined with the `radius-*` namespace. Radius utilities search this namespace, so `r:lg`, `border-top-left-radius:lg`, and `border-radius:lg` all resolve `radius-lg` without requiring the `radius-` prefix in markup.
 
 The following rules share the same namespace:
 
 * `border-radius` for all corners
 * `border-top-left-radius` and `border-top-right-radius`
 * `border-bottom-left-radius` and `border-bottom-right-radius`
-* axis and corner shorthands such as `border-top-radius:*`, `border-bottom-radius:*`, `border-left-radius:*`, and `border-right-radius:*`
+* corner shorthands such as `rtl:*`, `rtr:*`, `rbl:*`, and `rbr:*`
 
 ```css name=index.css
 @theme {

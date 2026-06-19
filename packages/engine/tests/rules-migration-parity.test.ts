@@ -53,10 +53,6 @@ const migratedRuleExpectations = [
             ["border-top-right-radius:4x", "border-top-right-radius:1rem"],
             ["border-bottom-left-radius:4x", "border-bottom-left-radius:1rem"],
             ["border-bottom-right-radius:4x", "border-bottom-right-radius:1rem"],
-            ["border-top-radius:4x", "border-top-left-radius:1rem;border-top-right-radius:1rem"],
-            ["border-bottom-radius:4x", "border-bottom-left-radius:1rem;border-bottom-right-radius:1rem"],
-            ["border-left-radius:4x", "border-top-left-radius:1rem;border-bottom-left-radius:1rem"],
-            ["border-right-radius:4x", "border-top-right-radius:1rem;border-bottom-right-radius:1rem"],
         ]
     },
     {

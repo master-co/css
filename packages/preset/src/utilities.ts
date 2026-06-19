@@ -148,12 +148,6 @@ const utilities = [
         },
         "matchers": [
             {
-                "type": "variable",
-                "keys": [
-                    "text"
-                ]
-            },
-            {
                 "type": "key",
                 "keys": [
                     "text-decoration"
@@ -180,98 +174,6 @@ const utilities = [
                 "type": "key",
                 "keys": [
                     "text-wrap"
-                ]
-            }
-        ]
-    },
-                            {
-        "id": "border-bottom-radius",
-        "name": "border-bottom-radius",
-        "type": UtilityType.Shorthand,
-        "variableAliasRefs": [
-            "~radius"
-        ],
-        "emit": {
-            "type": "declarations",
-            "declarations": [
-                "border-bottom-left-radius",
-                "border-bottom-right-radius"
-            ]
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "border-bottom-radius"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "border-left-radius",
-        "name": "border-left-radius",
-        "type": UtilityType.Shorthand,
-        "variableAliasRefs": [
-            "~radius"
-        ],
-        "emit": {
-            "type": "declarations",
-            "declarations": [
-                "border-top-left-radius",
-                "border-bottom-left-radius"
-            ]
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "border-left-radius"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "border-right-radius",
-        "name": "border-right-radius",
-        "type": UtilityType.Shorthand,
-        "variableAliasRefs": [
-            "~radius"
-        ],
-        "emit": {
-            "type": "declarations",
-            "declarations": [
-                "border-top-right-radius",
-                "border-bottom-right-radius"
-            ]
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "border-right-radius"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "border-top-radius",
-        "name": "border-top-radius",
-        "type": UtilityType.Shorthand,
-        "variableAliasRefs": [
-            "~radius"
-        ],
-        "emit": {
-            "type": "declarations",
-            "declarations": [
-                "border-top-left-radius",
-                "border-top-right-radius"
-            ]
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "border-top-radius"
                 ]
             }
         ]
@@ -1748,40 +1650,9 @@ const utilities = [
         ]
     },
     {
-        "id": "text-decoration-thickness",
-        "name": "text-decoration-thickness",
-        "type": UtilityType.Normal,
-        "kind": "number",
-        "emit": {
-            "type": "property",
-            "property": "text-decoration-thickness"
-        },
-        "matchers": [
-            {
-                "type": "variable",
-                "keys": [
-                    "text-decoration"
-                ]
-            },
-            {
-                "type": "value",
-                "keys": [
-                    "text-decoration"
-                ]
-            },
-            {
-                "type": "key",
-                "keys": [
-                    "text-decoration-thickness"
-                ]
-            }
-        ]
-    },
-    {
         "id": "text-stroke-width",
         "name": "text-stroke-width",
         "type": UtilityType.Normal,
-        "kind": "number",
         "emit": {
             "type": "declarations",
             "declarations": [
@@ -1789,18 +1660,6 @@ const utilities = [
             ]
         },
         "matchers": [
-            {
-                "type": "variable",
-                "keys": [
-                    "text-stroke"
-                ]
-            },
-            {
-                "type": "value",
-                "keys": [
-                    "text-stroke"
-                ]
-            },
             {
                 "type": "key",
                 "keys": [
@@ -1835,111 +1694,6 @@ const utilities = [
                 "type": "key",
                 "keys": [
                     "transform-origin"
-                ]
-            }
-        ]
-    },
-                                        {
-        "id": "text-decoration-color",
-        "name": "text-decoration-color",
-        "type": UtilityType.Normal,
-        "kind": "color",
-        "variableAliasRefs": [
-            "~color-text",
-            "~color"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "text-decoration-color"
-        },
-        "matchers": [
-            {
-                "type": "variable",
-                "keys": [
-                    "text-decoration"
-                ]
-            },
-            {
-                "type": "value",
-                "keys": [
-                    "text-decoration"
-                ]
-            },
-            {
-                "type": "key",
-                "keys": [
-                    "text-decoration-color"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "text-fill-color",
-        "name": "text-fill-color",
-        "type": UtilityType.Normal,
-        "kind": "color",
-        "variableAliasRefs": [
-            "~color-text",
-            "~color"
-        ],
-        "emit": {
-            "type": "declarations",
-            "declarations": [
-                "-webkit-text-fill-color"
-            ]
-        },
-        "matchers": [
-            {
-                "type": "variable",
-                "keys": [
-                    "text"
-                ]
-            },
-            {
-                "type": "value",
-                "keys": [
-                    "text"
-                ]
-            },
-            {
-                "type": "key",
-                "keys": [
-                    "text-fill-color"
-                ]
-            }
-        ]
-    },
-    {
-        "id": "text-stroke-color",
-        "name": "text-stroke-color",
-        "type": UtilityType.Normal,
-        "kind": "color",
-        "variableAliasRefs": [
-            "~color"
-        ],
-        "emit": {
-            "type": "declarations",
-            "declarations": [
-                "-webkit-text-stroke-color"
-            ]
-        },
-        "matchers": [
-            {
-                "type": "variable",
-                "keys": [
-                    "text-stroke"
-                ]
-            },
-            {
-                "type": "value",
-                "keys": [
-                    "text-stroke"
-                ]
-            },
-            {
-                "type": "key",
-                "keys": [
-                    "text-stroke-color"
                 ]
             }
         ]
