@@ -195,6 +195,8 @@ describe('@master/css-preset defaultPlan', () => {
         expect(utilities.some((utility) => utility.matchers.some((matcher) => (matcher as { type: string }).type === 'function-prefix'))).toBe(false)
         expect('functions' in plan).toBe(false)
         expect('functions' in defaultPlan).toBe(false)
+        expect('settings' in plan).toBe(false)
+        expect('settings' in defaultPlan).toBe(false)
         expect(hasCSSVariableAssignmentUtility(plan)).toBe(false)
         expect(hasCSSVariableAssignmentUtility(defaultPlan)).toBe(false)
         expect(plan).toEqual(defaultPlan)
@@ -210,6 +212,19 @@ describe('@master/css-preset defaultPlan', () => {
         expect(compiledPlan.containerAtRules).toEqual(defaultPlan.containerAtRules)
         expect(compiledPlan.selectors).toEqual(defaultPlan.selectors)
     }, 20000)
+
+    it('uses engine default settings when the preset plan omits settings', () => {
+        const css = createCSS(defaultPlan)
+
+        expect(defaultPlan.settings).toBeUndefined()
+        expect(css.settings).toEqual({
+            rootSize: 16,
+            baseUnit: 4,
+            defaultMode: 'light',
+            modeTrigger: 'media',
+            modes: ['light', 'dark']
+        })
+    })
 
     it('keeps preset variable alias refs inside registered namespaces', () => {
         const variableNamespaces = new Set((defaultPlan.variables || [])

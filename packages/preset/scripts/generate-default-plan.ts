@@ -1,8 +1,8 @@
 import { writeFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { createCSS } from '@master/css-engine'
 import { stringifyMasterCSSPlanJSON } from 'shared/master-css-plan-json'
-import { settings } from '../src/settings'
 import type {
     MasterCSSPlan,
     MasterCSSPlanUtility,
@@ -13,9 +13,26 @@ const __dirname = dirname(fileURLToPath(import.meta.url))
 const packageRoot = resolve(__dirname, '..')
 const sourceFile = resolve(packageRoot, 'src/index.css')
 const outputFile = resolve(packageRoot, 'src/default-plan.json')
+const defaultEngineSettings = createCSS({ version: 3 }).settings
 const { compileCSSPlanFile } = await import(new URL('../../compiler/src/index.ts', import.meta.url).href) as typeof import('@master/css-compiler')
 function clone<T>(value: T): T {
     return JSON.parse(JSON.stringify(value)) as T
+}
+
+function isDefaultSettingValue(value: unknown, defaultValue: unknown) {
+    if (Array.isArray(value) && Array.isArray(defaultValue)) {
+        return value.length === defaultValue.length
+            && value.every((item, index) => item === defaultValue[index])
+    }
+    return value === defaultValue
+}
+
+function createDefaultPlanSettings(settings: MasterCSSPlan['settings']): MasterCSSPlan['settings'] {
+    if (!settings) return
+    const entries = Object.entries(settings).filter(([key, value]) =>
+        !isDefaultSettingValue(value, defaultEngineSettings[key as keyof typeof defaultEngineSettings])
+    )
+    return entries.length ? Object.fromEntries(entries) as MasterCSSPlan['settings'] : undefined
 }
 
 function normalizeUtilityOrders(utilities: MasterCSSPlanUtility[] = []): MasterCSSPlanUtility[] {
@@ -62,9 +79,10 @@ function createUtilityBuckets(utilities: MasterCSSPlanUtility[] | undefined): Ma
 
 export function createDefaultPlan(cssPlan: MasterCSSPlan): MasterCSSPlan {
     const utilities = normalizeUtilityOrders(cssPlan.utilities || [])
+    const settings = createDefaultPlanSettings(cssPlan.settings)
     return {
         version: 3,
-        settings: { ...settings, ...cssPlan.settings },
+        ...(settings ? { settings } : {}),
         variables: cssPlan.variables,
         animations: cssPlan.animations,
         variants: cssPlan.variants,
