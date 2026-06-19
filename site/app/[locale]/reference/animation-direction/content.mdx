@@ -28,13 +28,13 @@ The animation **reverses direction each cycle** and **the first iteration plays 
 <Basic className="animation-direction:alternate-reverse"/>
 
 ### Fade out
-Reverse the [`animation:fade`](/reference/animation) animation so that you don't need to define a new keyframe for `fade-out`.
+Reverse the [`animate:fade`](/reference/animation) animation so that you don't need to define a new keyframe for `fade-out`.
 <Demo>
-    <IconCircle className="app-icon-primary stroke:.5 animation:fade|1s|reverse|infinite" width="48" height="48" />
+    <IconCircle className="app-icon-primary stroke:.5 animate:fade animation-duration:1s animation-direction:reverse animation-iteration-count:infinite" width="48" height="48" />
 </Demo>
 ```html
-<!-- @MARK animation:fade|1s|reverse|infinite -->
-<svg class="animation:fade|1s|reverse|infinite">…</svg>
+<!-- @MARK animate:fade --><!-- @MARK animation-direction:reverse -->
+<svg class="animate:fade animation-duration:1s animation-direction:reverse animation-iteration-count:infinite">…</svg>
 ```
 For one-shot animations, remove `infinite`.
 

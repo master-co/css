@@ -143,16 +143,16 @@
     --easing-exit: $easing-accelerate;
     --easing-emphasized: $easing-crisp;
 
-    --animation-fade: fade 1s infinite;
-    --animation-flash: flash 1s infinite;
-    --animation-float: float 3s ease-in-out infinite;
-    --animation-heart: heart 1s infinite;
-    --animation-jump: jump 1s infinite;
-    --animation-ping: ping 1s infinite;
-    --animation-pulse: pulse 1s infinite;
-    --animation-rotate: rotate 1s linear infinite;
-    --animation-shake: shake 1s infinite;
-    --animation-zoom: zoom 1s infinite;
+    --animate-fade: fade 1s infinite;
+    --animate-flash: flash 1s infinite;
+    --animate-float: float 3s ease-in-out infinite;
+    --animate-heart: heart 1s infinite;
+    --animate-jump: jump 1s infinite;
+    --animate-ping: ping 1s infinite;
+    --animate-pulse: pulse 1s infinite;
+    --animate-rotate: rotate 1s linear infinite;
+    --animate-shake: shake 1s infinite;
+    --animate-zoom: zoom 1s infinite;
 
     @keyframes fade {
         0% {

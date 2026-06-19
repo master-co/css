@@ -5,29 +5,6 @@ export type PresetUtilitySource = Omit<MasterCSSPlanUtility, 'order'>
 
 const utilities = [
     {
-        "id": "animation",
-        "name": "animation",
-        "type": UtilityType.Shorthand,
-        "transform": "animation-token",
-        "variableAliasRefs": [
-            "=animation",
-            "~duration",
-            "~easing"
-        ],
-        "emit": {
-            "type": "property",
-            "property": "animation"
-        },
-        "matchers": [
-            {
-                "type": "key",
-                "keys": [
-                    "animation"
-                ]
-            }
-        ]
-    },
-    {
         "id": "group",
         "name": "group",
         "type": UtilityType.Shorthand,

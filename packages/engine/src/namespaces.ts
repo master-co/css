@@ -1,5 +1,5 @@
 export const builtinNamespaces = Object.freeze([
-    'animation',
+    'animate',
     'breakpoint',
     'color',
     'color-line',

@@ -643,6 +643,10 @@
         overflow-wrap: normal;
     }
 
+    animate:<~animate> {
+        animation: --value();
+    }
+
     font:<~font-size|number> {
         font-size: --value();
     }

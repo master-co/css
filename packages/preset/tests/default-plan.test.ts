@@ -93,9 +93,7 @@ const removedAliases = [
     'writing'
 ]
 
-const competitiveNativeValueUtilities = [
-    'animation'
-]
+const competitiveNativeValueUtilities: string[] = []
 
 const nativeValueNamespaceMatcherKeys = new Set([
     'outline',
@@ -184,13 +182,16 @@ describe('@master/css-preset defaultPlan', () => {
         const plan = createDefaultPlanFromSourceFile(resolve(__dirname, '../src/index.css'))
         const utilities = plan.utilities || []
 
-        expect(sourceUtilities).toHaveLength(2)
+        expect(sourceUtilities).toHaveLength(1)
         expect(sourceUtilities.some((utility) => Number(utility.type) === UtilityType.Static)).toBe(false)
         expect(sourceUtilities.some((utility) => utility.id === 'variable')).toBe(false)
         expect(utilities).toHaveLength(229)
         expect(utilities[0]?.order).toBe(utilities.length - 1)
         expect(utilities[utilities.length - 1]?.order).toBe(0)
+        expect(utilities.some((utility) => utility.id === 'animation')).toBe(false)
+        expect(utilities.some((utility) => utility.id === 'animate:<~animate>')).toBe(true)
         expect(utilities.some((utility) => utility.id === 'font:<~font-family|=font|~font-weight|~font-size|*>')).toBe(false)
+        expect(utilities.some((utility) => 'transform' in utility)).toBe(false)
         expect(utilities.some((utility) => (utility.emit as { type: string }).type === 'pair')).toBe(false)
         expect(utilities.some((utility) => utility.matchers.some((matcher) => (matcher as { type: string }).type === 'function-prefix'))).toBe(false)
         expect('functions' in plan).toBe(false)
@@ -407,6 +408,9 @@ describe('@master/css-preset defaultPlan', () => {
         expect(css.create('background:sm')).toBeUndefined()
         expect(css.create('bg:2x')).toBeUndefined()
         expect(css.create('transform:2x')).toBeUndefined()
+        expect(css.create('animate:fade')?.text).toBe('.animate\\:fade{animation:var(--animate-fade)}')
+        expect(css.create('animation:fade')?.text).toBe('.animation\\:fade{animation:fade}')
+        expect(css.create('animation:fade')?.text).not.toContain('var(--animate-fade)')
         expect(css.create('animation-name:fade')).toBeUndefined()
         expect(css.create('container:sm')?.text).not.toContain('var(--container-sm)')
         expect(css.create('flex:sm')?.text).not.toContain('flex-basis')
@@ -427,7 +431,7 @@ describe('@master/css-preset defaultPlan', () => {
 
         for (const utility of defaultPlan.utilities || []) {
             expect('values' in utility, utility.id).toBe(false)
-            expect(utility.transform, utility.id).not.toBe('auto-fill-solid')
+            expect('transform' in utility, utility.id).toBe(false)
         }
         for (const index of defaultPlan.utilityBuckets?.value || []) {
             expect(defaultPlan.utilities?.[index]?.kind, defaultPlan.utilities?.[index]?.id).toBeDefined()
@@ -441,6 +445,8 @@ describe('@master/css-preset defaultPlan', () => {
                 || property === 'scroll-margin-inline-start'
                 || property === 'scroll-padding-block-end'
                 || property === 'background'
+                || property === 'animation'
+                || property === 'animation-name'
                 || property === 'container'
                 || property === 'flex'
                 || property === 'border-image-source'
@@ -461,6 +467,8 @@ describe('@master/css-preset defaultPlan', () => {
         expect(nativeCSS.create('scroll-ms:1px')?.text).toBe('.scroll-ms\\:1px{scroll-margin-inline-start:1px}')
         expect(nativeCSS.create('scroll-pbe:1px')?.text).toBe('.scroll-pbe\\:1px{scroll-padding-block-end:1px}')
         expect(nativeCSS.create('background:red')?.text).toBe('.background\\:red{background:red}')
+        expect(nativeCSS.create('animation:fade|fast|smooth')?.text).toBe('.animation\\:fade\\|fast\\|smooth{animation:fade var(--duration-fast) var(--easing-smooth)}')
+        expect(nativeCSS.create('animation-name:fade')?.text).toBe('.animation-name\\:fade{animation-name:fade}')
         expect(nativeCSS.create('container:inline-size')?.text).toBe('.container\\:inline-size{container:inline-size}')
         expect(nativeCSS.create('flex:0|0|auto')?.text).toBe('.flex\\:0\\|0\\|auto{flex:0 0 auto}')
         expect(nativeCSS.create('border-image-source:url(/border.png)')?.text).toBe('.border-image-source\\:url\\(\\/border\\.png\\){border-image-source:url(/border.png)}')
@@ -475,7 +483,7 @@ describe('@master/css-preset defaultPlan', () => {
 
         expect('nativeValueNamespaces' in defaultPlan).toBe(false)
         expect(new Set(nativeValueNamespaceProperties).size).toBe(nativeValueNamespaceProperties.length)
-        expect(nativeValueNamespaceProperties).toHaveLength(153)
+        expect(nativeValueNamespaceProperties).toHaveLength(154)
         for (const property of nativeValueNamespaceProperties) {
             expect(utilityIds.has(property), property).toBe(false)
             if (!nativeValueNamespaceMatcherKeys.has(property)) {

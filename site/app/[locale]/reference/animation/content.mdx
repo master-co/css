@@ -2,6 +2,8 @@
 <Overview />
 
 ## Basic usage
+Use `animate:*` to apply a named animation token from the `animate` namespace. Use the native `animation:*` shorthand when you want to write the keyframe name, duration, easing, fill mode, and other animation parts together.
+
 ### Ping indicator
 Use the `ping` animation to indicate that the shop is open.
 <Demo $py={0}>
@@ -9,7 +11,7 @@ Use the `ping` animation to indicate that the shop is open.
         <Image src="/images/vegetable-salad-in-bowls.jpg" width="400" height="250" className="aspect-ratio:400/250 untouchable" alt="vegetable salad in bowls" />
         <div className="fg:strong abs bottom:0 w:full p:12x|2.188rem|1.875rem|2.188rem bg:linear-gradient(0deg,canvas|0%,canvas/0|100%)">
             <svg className="inline-block fill:green-40 size:2x overflow:visible" viewBox="0 0 8 8" xmlns="http://www.w3.org/2000/svg">
-                <circle className="animation:ping transform:center" cx="4" cy="4" r="4" />
+                <circle className="animate:ping transform:center" cx="4" cy="4" r="4" />
                 <circle cx="4" cy="4" r="4" />
             </svg>
             <span className="ml:0.625rem font:12px font:medium">Open</span>
@@ -19,8 +21,8 @@ Use the `ping` animation to indicate that the shop is open.
 </Demo>
 ```html
 <svg class="inline-block fill:green-40 size:2x overflow:visible" viewBox="0 0 8 8" xmlns="http://www.w3.org/2000/svg">
-    <!-- @MARK animation:ping -->
-    <circle class="animation:ping transform:center" cx="4" cy="4" r="4" />
+    <!-- @MARK animate:ping -->
+    <circle class="animate:ping transform:center" cx="4" cy="4" r="4" />
     <circle cx="4" cy="4" r="4" />
 </svg>
 ```
@@ -29,7 +31,7 @@ Use the `ping` animation to indicate that the shop is open.
 Use the counterclockwise `rotate` animation to indicate that data is being restored.
 <Demo>
     <div className="app-float">
-        <svg className="animation:rotate animation-direction:reverse" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg" >
+        <svg className="animate:rotate animation-direction:reverse" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg" >
             <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
             <path d="M15 4.55a8 8 0 0 0 -6 14.9m0 -4.45v5h-5"></path>
             <path d="M18.37 7.16l0 .01"></path>
@@ -42,8 +44,8 @@ Use the counterclockwise `rotate` animation to indicate that data is being resto
     </div>
 </Demo>
 ```html
-<!-- @MARK animation:rotate -->
-<svg class="animation:rotate animation-direction:reverse" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+<!-- @MARK animate:rotate -->
+<svg class="animate:rotate animation-direction:reverse" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
     <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
     <path d="M15 4.55a8 8 0 0 0 -6 14.9m0 -4.45v5h-5"></path>
     <path d="M18.37 7.16l0 .01"></path>
@@ -62,14 +64,14 @@ Use the `fade` animation on SVG paths with regular delays to create a loading sp
 <Demo>
     <div className="app-float">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
-            <path className="animation:fade animation-delay:-.875s" d="M7.75 7.75l-2.15 -2.15"></path>
-            <path className="animation:fade animation-delay:-.75s" d="M12 6l0 -3"></path>
-            <path className="animation:fade animation-delay:-.625s" d="M16.25 7.75l2.15 -2.15"></path>
-            <path className="animation:fade animation-delay:-.5s" d="M18 12l3 0"></path>
-            <path className="animation:fade animation-delay:-.375s" d="M16.25 16.25l2.15 2.15"></path>
-            <path className="animation:fade animation-delay:-.25s" d="M12 18l0 3"></path>
-            <path className="animation:fade animation-delay:-.125s" d="M7.75 16.25l-2.15 2.15"></path>
-            <path className="animation:fade" d="M6 12l-3 0"></path>
+            <path className="animate:fade animation-delay:-.875s" d="M7.75 7.75l-2.15 -2.15"></path>
+            <path className="animate:fade animation-delay:-.75s" d="M12 6l0 -3"></path>
+            <path className="animate:fade animation-delay:-.625s" d="M16.25 7.75l2.15 -2.15"></path>
+            <path className="animate:fade animation-delay:-.5s" d="M18 12l3 0"></path>
+            <path className="animate:fade animation-delay:-.375s" d="M16.25 16.25l2.15 2.15"></path>
+            <path className="animate:fade animation-delay:-.25s" d="M12 18l0 3"></path>
+            <path className="animate:fade animation-delay:-.125s" d="M7.75 16.25l-2.15 2.15"></path>
+            <path className="animate:fade" d="M6 12l-3 0"></path>
         </svg>
         <div className="ml:0.625rem font:14px font:medium fg:strong">Loading ...</div>
     </div>
@@ -77,21 +79,21 @@ Use the `fade` animation on SVG paths with regular delays to create a loading sp
 ```html
 <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
     <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-    <path className="animation:fade animation-delay:-.875s" d="M7.75 7.75l-2.15 -2.15"></path>
-    <path className="animation:fade animation-delay:-.75s" d="M12 6l0 -3"></path>
-    <path className="animation:fade animation-delay:-.625s" d="M16.25 7.75l2.15 -2.15"></path>
-    <path className="animation:fade animation-delay:-.5s" d="M18 12l3 0"></path>
-    <path className="animation:fade animation-delay:-.375s" d="M16.25 16.25l2.15 2.15"></path>
-    <path className="animation:fade animation-delay:-.25s" d="M12 18l0 3"></path>
-    <path className="animation:fade animation-delay:-.125s" d="M7.75 16.25l-2.15 2.15"></path>
-    <path className="animation:fade" d="M6 12l-3 0"></path>
+    <path className="animate:fade animation-delay:-.875s" d="M7.75 7.75l-2.15 -2.15"></path>
+    <path className="animate:fade animation-delay:-.75s" d="M12 6l0 -3"></path>
+    <path className="animate:fade animation-delay:-.625s" d="M16.25 7.75l2.15 -2.15"></path>
+    <path className="animate:fade animation-delay:-.5s" d="M18 12l3 0"></path>
+    <path className="animate:fade animation-delay:-.375s" d="M16.25 16.25l2.15 2.15"></path>
+    <path className="animate:fade animation-delay:-.25s" d="M12 18l0 3"></path>
+    <path className="animate:fade animation-delay:-.125s" d="M7.75 16.25l-2.15 2.15"></path>
+    <path className="animate:fade" d="M6 12l-3 0"></path>
 </svg>
 ```
 
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="animation:fade|1s:hover animation:fade|1s@sm animation:fade|1s@dark animation:fade|1s@print">…</div>
+<div class="animate:fade:hover animate:fade@sm animate:fade@dark animate:fade@print">…</div>
 ```
 
 ---

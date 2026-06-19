@@ -370,7 +370,6 @@ export class Utility {
         // 7. value
         let newValue: string
         if (this.valueComponents) {
-            this.valueComponents = this.applyTransform(this.valueComponents)
             newValue = this.resolveValue(this.valueComponents, '', [], false)
             if (this.invalidValueSyntax) {
                 this.valid = false
@@ -465,48 +464,6 @@ export class Utility {
             variable: positiveVariable,
             negative: true
         }
-    }
-
-    applyTransform(valueComponents: ValueComponent[]) {
-        switch (this.registeredUtility.transform) {
-            case 'animation-token':
-                return this.transformAnimationToken(valueComponents)
-            default:
-                return valueComponents
-        }
-    }
-
-    transformAnimationToken(valueComponents: ValueComponent[]) {
-        if (valueComponents.length !== 1) {
-            return valueComponents.map((valueComponent) => {
-                if (
-                    valueComponent.type === 'variable'
-                    && valueComponent.variable?.namespace === 'animation'
-                    && valueComponent.token[0] !== '$'
-                ) {
-                    return {
-                        type: 'string',
-                        value: valueComponent.variable.key,
-                        token: valueComponent.token
-                    } satisfies ValueComponent
-                }
-                return valueComponent
-            })
-        }
-
-        const [valueComponent] = valueComponents
-        if (valueComponent.type !== 'string') return valueComponents
-
-        const variableName = 'animation-' + valueComponent.value
-        const variable = this.css.variables.get(variableName)
-        if (!variable) return valueComponents
-
-        return [{
-            type: 'variable',
-            name: variableName,
-            variable,
-            token: valueComponent.token
-        } satisfies VariableValueComponent]
     }
 
     resolveDynamicDeclarationValue(value: string | number | null | (string | number | null)[], newValue: string) {

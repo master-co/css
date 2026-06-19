@@ -1,7 +1,7 @@
 ## Using animations [sr-only]
-[CSS animations](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_animations) interpolate styles over time with [`@keyframes`](https://developer.mozilla.org/en-US/docs/Web/CSS/@keyframes) and animation properties. Master CSS keeps motion close to the element with `animation:` syntax, managed `@theme` keyframes, shared duration tokens, shared easing tokens, and conditional queries such as `@motion`.
+[CSS animations](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_animations) interpolate styles over time with [`@keyframes`](https://developer.mozilla.org/en-US/docs/Web/CSS/@keyframes) and animation properties. Master CSS keeps motion close to the element with `animate:` tokens, native `animation:` shorthand syntax, managed `@theme` keyframes, shared duration tokens, shared easing tokens, and conditional queries such as `@motion`.
 
-Master CSS ships common keyframes and emits them only when an animation references them.
+Master CSS ships common keyframes and emits them only when an `animate:*`, `animation:*`, or `animation-name:*` class references them.
 <AnimationTokens />
 
 ```html

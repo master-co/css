@@ -182,7 +182,6 @@ function isPureNativeDeclarationUtilityDefinition(
         && utility.name === utility.emit.property
         && !utility.variableAliasRefs?.length
         && !utility.variableAliases?.length
-        && !utility.transform
         && !utility.kind
         && !utility.atRules?.length
 }

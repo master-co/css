@@ -152,11 +152,12 @@ describe.concurrent('@master/css-preset design token parity', () => {
             value: '24rem',
             numeric: { value: 24, unit: 'rem' }
         })
-        expect(findVariable('animation-fade')).toMatchObject({
-            namespace: 'animation',
+        expect(findVariable('animate-fade')).toMatchObject({
+            namespace: 'animate',
             key: 'fade',
             type: 'string'
         })
+        expect(findVariable('animation-fade')).toBeUndefined()
     })
 
     test('publishes palette aliases and product role tokens without legacy names', () => {
@@ -341,7 +342,7 @@ describe.concurrent('@master/css-preset design token parity', () => {
         expect(css.create('b:blue')?.text).toContain('border-color:var(--color-line-blue)')
         expect(css.create('shadow:card')?.text).toContain('box-shadow:var(--shadow-card)')
         expect(css.create('w:sm')?.text).toContain('width:var(--container-sm)')
-        expect(css.create('animation:fade')?.text).toContain('animation:var(--animation-fade)')
+        expect(css.create('animate:fade')?.text).toContain('animation:var(--animate-fade)')
         expect(css.text).not.toContain('null')
     })
 })

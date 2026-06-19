@@ -8,7 +8,7 @@ import { getMdnPropertySyntax, getMdnPropertyValueNames } from './mdn-css-data'
 const SCOPED_VARIABLE_PRIORITY = 'aaaa'
 const NATIVE_PRIORITY = 'ccccc'
 const GLOBAL_VARIABLE_PRIORITY = 'zzzz'
-const ANIMATION_REFERENCE_PROPERTIES = new Set(['animation'])
+const ANIMATION_REFERENCE_PROPERTIES = new Set(['animation', 'animation-name'])
 
 interface GenerateVariableCompletionItemOptions {
     appliedValue?: string
@@ -184,7 +184,7 @@ export default function getValueCompletionItems(css: MasterCSS = createDefaultCS
         }
 
         /**
-         * @example animation:fade
+         * @example animation:fade|fast animate:fade animation-name:fade
          */
         if (eachDefinedUtility.keys?.includes(canonicalRuleKey) && utilityMayReferenceAnimations(eachDefinedUtility)) {
             css.animations.forEach((_, animationName) => {
@@ -198,6 +198,18 @@ export default function getValueCompletionItems(css: MasterCSS = createDefaultCS
             })
         }
 
+    }
+
+    if (ANIMATION_REFERENCE_PROPERTIES.has(canonicalRuleKey)) {
+        css.animations.forEach((_, animationName) => {
+            if (completionItems.find((item) => item.label === animationName)) return
+            completionItems.push({
+                label: animationName,
+                kind: CompletionItemKind.Value,
+                documentation: createCSSMarkdownDocumentation(generateCSS([ruleKey + ':' + animationName], css)),
+                detail: canonicalRuleKey + ': ' + animationName
+            })
+        })
     }
 
     for (const namespace of builtinNativeValueNamespaces) {

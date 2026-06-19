@@ -15,6 +15,7 @@ const nativeFallbackProperties = new Set([
     'animation-direction',
     'animation-fill-mode',
     'animation-iteration-count',
+    'animation-name',
     'animation-play-state',
     'accent-color',
     'appearance',

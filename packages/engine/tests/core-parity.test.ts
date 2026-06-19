@@ -498,13 +498,13 @@ describe.concurrent('plan-driven layer and lifecycle parity', () => {
             }
         })
 
-        css.add('animation:fade|.3s')
-        expect(css.text).toBe('@layer utilities{.animation\\:fade\\|\\.3s{animation:fade 0.3s}}')
+        css.add('animate:fade')
+        expect(css.text).toBe('@layer theme{:root{--animate-fade:fade 1s infinite}}@layer utilities{.animate\\:fade{animation:var(--animate-fade)}}')
         expect(Object.fromEntries(css.animationsNonLayer.tokenCounts)).toEqual({
             fade: 2
         })
 
-        css.remove('animation:fade|.3s')
+        css.remove('animate:fade')
         expect(css.text).toBe('')
         expect(Object.fromEntries(css.animationsNonLayer.tokenCounts)).toEqual({
             fade: 1

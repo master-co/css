@@ -7,7 +7,6 @@ export type MasterCSSPlanDefaultMode = 'light' | 'dark' | 'none' | string
 export type MasterCSSPlanModeTrigger = 'class' | 'media' | 'host'
 export type MasterCSSPlanVariantToken = `:${string}` | `::${string}` | `@${string}`
 export type MasterCSSPlanUtilityKind = 'number' | 'color' | 'image'
-export type MasterCSSPlanTransformOp = 'animation-token'
 /** Defaults to single for variable/value matchers; multiple is an explicit opt-in. */
 export type MasterCSSPlanUtilityMatcherValueSegments = 'single' | 'multiple'
 
@@ -160,7 +159,6 @@ export interface MasterCSSPlanUtility {
     implicitNamespace?: boolean
     separators?: string[]
     atRules?: string[]
-    transform?: MasterCSSPlanTransformOp
     variableAliases?: MasterCSSPlanVariableAliasSet
     variableAliasRefs?: string[]
     emit: MasterCSSPlanUtilityEmit

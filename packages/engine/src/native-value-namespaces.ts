@@ -216,7 +216,7 @@ const nativeValueNamespaces: MasterCSSBuiltinNativeValueNamespaces = Object.free
         variableAliasRefs: [builtinNamespaceRef('easing')]
     }),
     freezeNamespace({
-        properties: Object.freeze(['transition'] as const),
+        properties: Object.freeze(['animation', 'transition'] as const),
         variableAliasRefs: [builtinNamespaceRef('duration'), builtinNamespaceRef('easing')]
     }),
     freezeNamespace({

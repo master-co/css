@@ -65,12 +65,12 @@ describe.concurrent('migrated cascade and layer parity', () => {
                 fade: 1
             }
         })
-        preloadedAnimationCSS.add('animation:fade|.3s')
-        expect(preloadedAnimationCSS.text).toBe('@layer utilities{.animation\\:fade\\|\\.3s{animation:fade 0.3s}}')
+        preloadedAnimationCSS.add('animate:fade')
+        expect(preloadedAnimationCSS.text).toBe('@layer theme{:root{--animate-fade:fade 1s infinite}}@layer utilities{.animate\\:fade{animation:var(--animate-fade)}}')
         expect(Object.fromEntries(preloadedAnimationCSS.animationsNonLayer.tokenCounts)).toEqual({
             fade: 2
         })
-        preloadedAnimationCSS.remove('animation:fade|.3s')
+        preloadedAnimationCSS.remove('animate:fade')
         expect(preloadedAnimationCSS.text).toBe('')
         expect(Object.fromEntries(preloadedAnimationCSS.animationsNonLayer.tokenCounts)).toEqual({
             fade: 1
@@ -191,9 +191,10 @@ describe.concurrent('migrated cascade and layer parity', () => {
     test('emits referenced keyframes outside cascade layers', () => {
         const css = createDefaultCSS()
 
-        css.add('animation:fade|.3s')
+        css.add('animate:fade')
         expect(css.text).toBe([
-            '@layer utilities{.animation\\:fade\\|\\.3s{animation:fade 0.3s}}',
+            '@layer theme{:root{--animate-fade:fade 1s infinite}}',
+            '@layer utilities{.animate\\:fade{animation:var(--animate-fade)}}',
             '@keyframes fade{0%{opacity:0}to{opacity:1}}'
         ].join(''))
     })
