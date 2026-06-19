@@ -1,6 +1,7 @@
 import { pushHighlightToken, toSemanticTokenItems, type HighlightTokenItem } from './highlight'
 import { collectClassListHighlightTokenItems, tokenizeAtQuery, tokenizeState, tokenizeUtilityValue } from './tokenize-class'
 import type { MasterCSS } from '../master-css'
+import { parse, walk, type CssLocation, type CssNode } from 'css-tree'
 import {
     collectCSSDeclarationRanges,
     collectCSSDirectiveRanges,
@@ -26,15 +27,270 @@ interface ScanOptions {
     positionOffset?: number
 }
 
+interface NativeCSSTokenizeOptions {
+    requireCleanParse?: boolean
+    rawFallbackDepth?: number
+}
+
 function containsPosition(range: SourceRange, options: ScanOptions) {
     return options.positionOffset === undefined || (range.start <= options.positionOffset && options.positionOffset <= range.end)
 }
 
-function tokenizeDeclarations(source: string, start: number, end: number, tokens: HighlightTokenItem[], directiveName?: CSSDirectiveRuleRange['name']) {
+function getNodeRange(node: { loc?: CssLocation }, offset: number, start: number, end: number): SourceRange | undefined {
+    if (!node.loc) return
+    const range = {
+        start: offset + node.loc.start.offset,
+        end: offset + node.loc.end.offset
+    }
+    if (range.start < start || range.end > end || range.end <= range.start) return
+    return range
+}
+
+function pushTerminatorAfter(source: string, start: number, end: number, tokens: HighlightTokenItem[]) {
+    let cursor = skipCSSWhitespace(source, start)
+    if (cursor < end && source[cursor] === ';') {
+        pushHighlightToken(tokens, cursor, 1, 'operator', 'declaration.terminator')
+    }
+}
+
+function pushNativeCSSDeclaration(source: string, range: SourceRange, tokens: HighlightTokenItem[]) {
+    const propertyStart = skipCSSWhitespace(source, range.start)
+    const separator = source.indexOf(':', propertyStart)
+    if (separator === -1 || separator >= range.end) return
+
+    let propertyEnd = separator
+    while (propertyEnd > propertyStart && /\s/.test(source[propertyEnd - 1] || '')) propertyEnd--
+    const rawProperty = source.slice(propertyStart, propertyEnd)
+    if (rawProperty) {
+        if (rawProperty.startsWith('--')) {
+            pushHighlightToken(tokens, propertyStart, rawProperty.length, 'variable', 'theme.variable')
+        } else {
+            pushHighlightToken(tokens, propertyStart, rawProperty.length, 'property', 'declaration.property')
+        }
+    }
+    pushHighlightToken(tokens, separator, 1, 'operator', 'declaration.separator')
+}
+
+function pushNativeCSSFunction(source: string, range: SourceRange, name: string, tokens: HighlightTokenItem[]) {
+    const nameStart = range.start
+    const nameEnd = nameStart + name.length
+    pushHighlightToken(tokens, nameStart, name.length, 'function', 'value.function.name')
+    if (source[nameEnd] === '(') {
+        pushHighlightToken(tokens, nameEnd, 1, 'operator', 'value.function.punctuation')
+    }
+    if (source[range.end - 1] === ')') {
+        pushHighlightToken(tokens, range.end - 1, 1, 'operator', 'value.function.punctuation')
+    }
+}
+
+function pushNativeCSSDimension(source: string, range: SourceRange, value: string, unit: string, tokens: HighlightTokenItem[]) {
+    const valueStart = range.start
+    const valueEnd = valueStart + value.length
+    pushHighlightToken(tokens, valueStart, value.length, 'number', 'value.number')
+    if (unit && valueEnd < range.end) {
+        pushHighlightToken(tokens, valueEnd, range.end - valueEnd, 'enumMember', 'value.unit', ['unit'])
+    }
+}
+
+function pushNativeCSSPercentage(range: SourceRange, value: string, tokens: HighlightTokenItem[]) {
+    pushHighlightToken(tokens, range.start, value.length, 'number', 'value.number')
+    if (range.end > range.start + value.length) {
+        pushHighlightToken(tokens, range.start + value.length, range.end - range.start - value.length, 'enumMember', 'value.unit', ['unit'])
+    }
+}
+
+function isNativeCSSQueryFeature(source: string, range: SourceRange) {
+    const cursor = skipCSSWhitespace(source, range.end)
+    return source[cursor] === ':'
+        || source.startsWith('>=', cursor)
+        || source.startsWith('<=', cursor)
+        || source[cursor] === '>'
+        || source[cursor] === '<'
+        || source[cursor] === '='
+}
+
+function pushNativeCSSSelectorName(source: string, range: SourceRange, name: string, prefix: '.' | '#', tokens: HighlightTokenItem[]) {
+    if (source[range.start] === prefix) {
+        pushHighlightToken(tokens, range.start, 1, 'operator', prefix === '.' ? 'selector.class' : 'selector.id', ['selector'])
+        const nameStart = range.start + 1
+        if (range.end > nameStart) {
+            pushHighlightToken(tokens, nameStart, range.end - nameStart, prefix === '.' ? 'class' : 'variable', prefix === '.' ? 'selector.class' : 'selector.id', ['selector'])
+        }
+        return
+    }
+    pushHighlightToken(tokens, range.start, name.length, prefix === '.' ? 'class' : 'variable', prefix === '.' ? 'selector.class' : 'selector.id', ['selector'])
+}
+
+function pushNativeCSSPseudoSelector(source: string, range: SourceRange, name: string, type: 'pseudoClass' | 'pseudoElement', tokens: HighlightTokenItem[]) {
+    const delimiterLength = type === 'pseudoElement' && source[range.start + 1] === ':' ? 2 : 1
+    pushHighlightToken(tokens, range.start, delimiterLength, 'operator', type === 'pseudoElement' ? 'selector.pseudoElement.delimiter' : 'selector.pseudoClass.delimiter', ['selector', type])
+    const nameStart = range.start + delimiterLength
+    pushHighlightToken(tokens, nameStart, name.length, 'modifier', type === 'pseudoElement' ? 'selector.pseudoElement.name' : 'selector.pseudoClass.name', [type])
+    const open = nameStart + name.length
+    if (source[open] === '(') {
+        pushHighlightToken(tokens, open, 1, 'operator', 'selector.punctuation', ['selector'])
+    }
+    if (source[range.end - 1] === ')') {
+        pushHighlightToken(tokens, range.end - 1, 1, 'operator', 'selector.punctuation', ['selector'])
+    }
+}
+
+function tokenizeRawNativeCSSOrValue(source: string, start: number, end: number, tokens: HighlightTokenItem[], options: NativeCSSTokenizeOptions) {
+    const rawStart = skipCSSWhitespace(source, start)
+    let rawEnd = end
+    while (rawEnd > rawStart && /\s/.test(source[rawEnd - 1] || '')) rawEnd--
+    if (rawEnd <= rawStart) return
+
+    if (!options.rawFallbackDepth) {
+        if (tokenizeNativeCSSRange(source, rawStart, rawEnd, tokens, 'stylesheet', {
+            ...options,
+            requireCleanParse: true,
+            rawFallbackDepth: 1
+        })) return
+        if (tokenizeNativeCSSRange(source, rawStart, rawEnd, tokens, 'declarationList', {
+            ...options,
+            requireCleanParse: true,
+            rawFallbackDepth: 1
+        })) return
+    }
+
+    tokens.push(...tokenizeUtilityValue(source.slice(rawStart, rawEnd), rawStart))
+}
+
+function tokenizeNativeCSSAst(source: string, ast: CssNode, offset: number, start: number, end: number, tokens: HighlightTokenItem[], options: NativeCSSTokenizeOptions) {
+    walk(ast, function (node) {
+        const range = getNodeRange(node, offset, start, end)
+        if (!range) return
+
+        switch (node.type) {
+            case 'Atrule': {
+                const name = (node as CssNode & { name: string }).name
+                if (source[range.start] === '@') {
+                    pushHighlightToken(tokens, range.start, name.length + 1, 'keyword', 'directive.keyword')
+                }
+                break
+            }
+            case 'Block':
+                if (source[range.start] === '{') pushHighlightToken(tokens, range.start, 1, 'operator', 'block.brace')
+                if (source[range.end - 1] === '}') pushHighlightToken(tokens, range.end - 1, 1, 'operator', 'block.brace')
+                break
+            case 'Declaration':
+                pushNativeCSSDeclaration(source, range, tokens)
+                pushTerminatorAfter(source, range.end, end, tokens)
+                break
+            case 'Function': {
+                const name = (node as CssNode & { name: string }).name
+                pushNativeCSSFunction(source, range, name, tokens)
+                break
+            }
+            case 'Raw':
+                tokenizeRawNativeCSSOrValue(source, range.start, range.end, tokens, options)
+                break
+            case 'Identifier': {
+                const name = (node as CssNode & { name: string }).name
+                if (source.slice(range.start, range.end).startsWith('--') || name.startsWith('$')) {
+                    pushHighlightToken(tokens, range.start, range.end - range.start, 'variable', 'value.variable')
+                } else if (isNativeCSSQueryFeature(source, range)) {
+                    pushHighlightToken(tokens, range.start, range.end - range.start, 'property', 'query.feature', ['query'])
+                } else {
+                    pushHighlightToken(tokens, range.start, range.end - range.start, 'enumMember', 'value.keyword')
+                }
+                break
+            }
+            case 'Hash':
+                pushHighlightToken(tokens, range.start, range.end - range.start, 'enumMember', 'value.color')
+                break
+            case 'String':
+                pushQuotedString(tokens, range.start, range.end)
+                break
+            case 'Number': {
+                const value = (node as CssNode & { value: string }).value
+                pushHighlightToken(tokens, range.start, value.length, 'number', 'value.number')
+                break
+            }
+            case 'Dimension': {
+                const { value, unit } = node as CssNode & { value: string, unit: string }
+                pushNativeCSSDimension(source, range, value, unit, tokens)
+                break
+            }
+            case 'Percentage': {
+                const value = (node as CssNode & { value: string }).value
+                pushNativeCSSPercentage(range, value, tokens)
+                break
+            }
+            case 'Operator':
+                pushHighlightToken(tokens, range.start, range.end - range.start, 'operator', 'value.separator')
+                break
+            case 'ClassSelector': {
+                const name = (node as CssNode & { name: string }).name
+                pushNativeCSSSelectorName(source, range, name, '.', tokens)
+                break
+            }
+            case 'IdSelector': {
+                const name = (node as CssNode & { name: string }).name
+                pushNativeCSSSelectorName(source, range, name, '#', tokens)
+                break
+            }
+            case 'TypeSelector':
+                pushHighlightToken(tokens, range.start, range.end - range.start, 'type', 'selector.type', ['selector'])
+                break
+            case 'NestingSelector':
+                pushHighlightToken(tokens, range.start, range.end - range.start, 'operator', 'selector.punctuation', ['selector'])
+                break
+            case 'Combinator':
+                pushHighlightToken(tokens, range.start, range.end - range.start, 'operator', 'selector.combinator', ['selector'])
+                break
+            case 'PseudoClassSelector': {
+                const name = (node as CssNode & { name: string }).name
+                pushNativeCSSPseudoSelector(source, range, name, 'pseudoClass', tokens)
+                break
+            }
+            case 'PseudoElementSelector': {
+                const name = (node as CssNode & { name: string }).name
+                pushNativeCSSPseudoSelector(source, range, name, 'pseudoElement', tokens)
+                break
+            }
+        }
+    })
+}
+
+function tokenizeNativeCSSRange(
+    source: string,
+    start: number,
+    end: number,
+    tokens: HighlightTokenItem[],
+    context: 'stylesheet' | 'declarationList',
+    options: NativeCSSTokenizeOptions = {}
+) {
+    let hasParseError = false
+    let ast: CssNode
+    try {
+        ast = parse(source.slice(start, end), {
+            context,
+            positions: true,
+            parseAtrulePrelude: true,
+            parseRulePrelude: true,
+            parseValue: true,
+            parseCustomProperty: true,
+            onParseError() {
+                hasParseError = true
+            }
+        })
+    } catch {
+        return false
+    }
+    if (options.requireCleanParse && hasParseError) return false
+    tokenizeNativeCSSAst(source, ast, start, start, end, tokens, options)
+    return true
+}
+
+function tokenizeDeclarations(source: string, start: number, end: number, tokens: HighlightTokenItem[]) {
+    if (tokenizeNativeCSSRange(source, start, end, tokens, 'declarationList')) return
+
     for (const declaration of collectCSSDeclarationRanges(source, start, end)) {
         const rawProperty = source.slice(declaration.propertyRange.start, declaration.propertyRange.end)
         const propertyOffset = declaration.propertyRange.start
-        if (directiveName === 'theme' || rawProperty.startsWith('--')) {
+        if (rawProperty.startsWith('--')) {
             pushHighlightToken(tokens, propertyOffset, rawProperty.length, 'variable', 'theme.variable')
         } else {
             pushHighlightToken(tokens, propertyOffset, rawProperty.length, 'property', 'declaration.property')
@@ -413,19 +669,29 @@ function tokenizeManagedEntryBody(source: string, start: number, end: number, to
                 const contentEnd = blockEnd === -1 ? end : Math.min(blockEnd, end)
                 const isManagedDirective = MANAGED_BODY_DIRECTIVES.has(atName.value)
                 if (!isManagedDirective) {
+                    const rangeEnd = blockEnd === -1 ? contentEnd : Math.min(blockEnd + 1, end)
+                    if (tokenizeNativeCSSRange(source, index, rangeEnd, tokens, 'declarationList')) {
+                        index = blockEnd === -1 ? end : blockEnd
+                        continue
+                    }
                     tokens.push(...tokenizeAtQuery(source.slice(index, blockStart), index))
                     pushHighlightToken(tokens, blockStart, 1, 'operator', 'block.brace')
+                    tokenizeManagedEntryBody(source, blockStart + 1, contentEnd, tokens)
+                    if (blockEnd !== -1 && blockEnd < end) {
+                        pushHighlightToken(tokens, blockEnd, 1, 'operator', 'block.brace')
+                    }
+                    index = blockEnd === -1 ? end : blockEnd
+                    continue
                 }
                 tokenizeManagedEntryBody(source, blockStart + 1, contentEnd, tokens)
-                if (!isManagedDirective && blockEnd !== -1 && blockEnd < end) {
-                    pushHighlightToken(tokens, blockEnd, 1, 'operator', 'block.brace')
-                }
                 index = blockEnd === -1 ? end : blockEnd
                 continue
             }
             if (!MANAGED_BODY_DIRECTIVES.has(atName.value)) {
                 const preludeEnd = Math.min(statementEnd.reason === 'semicolon' ? statementEnd.end - 1 : statementEnd.end, end)
-                tokens.push(...tokenizeAtQuery(source.slice(index, preludeEnd), index))
+                if (!tokenizeNativeCSSRange(source, index, Math.min(statementEnd.end, end), tokens, 'declarationList')) {
+                    tokens.push(...tokenizeAtQuery(source.slice(index, preludeEnd), index))
+                }
             }
             index = Math.max(index, Math.min(statementEnd.end, end) - 1)
             continue
@@ -435,11 +701,14 @@ function tokenizeManagedEntryBody(source: string, start: number, end: number, to
             const blockStart = statementEnd.delimiterRange.start
             const blockEnd = findCSSBlockEnd(source, blockStart)
             const contentEnd = blockEnd === -1 ? end : Math.min(blockEnd, end)
-            tokenizeSelectorPrelude(source, index, blockStart, tokens)
-            pushHighlightToken(tokens, blockStart, 1, 'operator', 'block.brace')
-            tokenizeManagedEntryBody(source, blockStart + 1, contentEnd, tokens)
-            if (blockEnd !== -1 && blockEnd < end) {
-                pushHighlightToken(tokens, blockEnd, 1, 'operator', 'block.brace')
+            const rangeEnd = blockEnd === -1 ? contentEnd : Math.min(blockEnd + 1, end)
+            if (!tokenizeNativeCSSRange(source, index, rangeEnd, tokens, 'declarationList')) {
+                tokenizeSelectorPrelude(source, index, blockStart, tokens)
+                pushHighlightToken(tokens, blockStart, 1, 'operator', 'block.brace')
+                tokenizeManagedEntryBody(source, blockStart + 1, contentEnd, tokens)
+                if (blockEnd !== -1 && blockEnd < end) {
+                    pushHighlightToken(tokens, blockEnd, 1, 'operator', 'block.brace')
+                }
             }
             index = blockEnd === -1 ? end : blockEnd
             continue
@@ -545,7 +814,7 @@ function tokenizeDirectiveRule(source: string, directive: CSSDirectiveRuleRange,
     if (directive.blockRange && directive.blockContentRange) {
         pushHighlightToken(tokens, directive.blockRange.start, 1, 'operator', 'block.brace', ['directive'])
         if (directive.name === 'settings' || directive.name === 'theme') {
-            tokenizeDeclarations(source, directive.blockContentRange.start, directive.blockContentRange.end, tokens, directive.name)
+            tokenizeDeclarations(source, directive.blockContentRange.start, directive.blockContentRange.end, tokens)
         } else if (directive.name === 'custom-variant') {
             tokenizeCustomVariantBlock(source, directive.blockContentRange.start, directive.blockContentRange.end, tokens)
         } else if (MANAGED_DEFINITION_DIRECTIVES.has(directive.name)) {

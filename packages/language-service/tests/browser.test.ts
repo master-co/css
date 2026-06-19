@@ -44,12 +44,21 @@ test.concurrent('collects browser semantic tokens for HTML class attributes', ()
 test.concurrent('collects browser semantic tokens for CSS directives', () => {
     const source = `
         @theme {
-            --color-brand: #123;
+            --color-brand: var(--brand, #123);
+
+            @keyframes fade {
+                to {
+                    opacity: 1;
+                }
+            }
         }
 
         @components {
             btn {
                 @compose block;
+                &:hover {
+                    color: var(--brand, red);
+                }
             }
         }
     `
@@ -63,9 +72,17 @@ test.concurrent('collects browser semantic tokens for CSS directives', () => {
     expect(mapped).toEqual(expect.arrayContaining([
         { text: '@theme', type: 'keyword', modifiers: ['directive'] },
         { text: '--color-brand', type: 'variable', modifiers: [] },
+        { text: 'var', type: 'function', modifiers: [] },
+        { text: '--brand', type: 'variable', modifiers: [] },
+        { text: '@keyframes', type: 'keyword', modifiers: [] },
+        { text: 'to', type: 'type', modifiers: ['selector'] },
+        { text: 'opacity', type: 'property', modifiers: [] },
         { text: '@components', type: 'keyword', modifiers: ['directive'] },
         { text: '@compose', type: 'keyword', modifiers: ['directive'] },
-        { text: 'block', type: 'class', modifiers: [] }
+        { text: 'block', type: 'class', modifiers: [] },
+        { text: '&', type: 'operator', modifiers: ['selector'] },
+        { text: 'hover', type: 'modifier', modifiers: ['pseudoClass'] },
+        { text: 'color', type: 'property', modifiers: [] }
     ]))
 })
 
