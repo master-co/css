@@ -512,6 +512,19 @@ function getDynamicMatchers(dynamic: CSSDirectiveUtilityDynamicDefinition): Mast
             keys: [dynamic.key]
         })
     }
+    if (dynamic.arbitrary) {
+        matchers.push({
+            type: 'key',
+            keys: [dynamic.key]
+        })
+    }
+    if (dynamic.values?.length) {
+        matchers.push({
+            type: 'pattern',
+            prefix: dynamic.key + ':',
+            values: [...dynamic.values]
+        })
+    }
     if (!matchers.length) {
         throw new Error('Managed dynamic utility definition must include at least one value source')
     }

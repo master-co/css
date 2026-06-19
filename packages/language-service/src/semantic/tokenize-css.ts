@@ -346,7 +346,7 @@ function tokenizeManagedDynamicPatternName(source: string, start: number, end: n
     for (let cursor = openOffset + 1; cursor < closeOffset;) {
         cursor = skipCSSWhitespace(source, cursor)
         const char = source[cursor]
-        if (char === '|' || char === '~' || char === '=') {
+        if (char === '|' || char === '~' || char === '=' || char === '*') {
             pushHighlightToken(tokens, cursor, 1, 'operator', 'directive.parameter', ['directive'])
             cursor++
             if (char === '~' || char === '=') {

@@ -172,6 +172,20 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
                     width: --value();
                     height: --value();
                 }
+
+                user-select:<auto|none|text|all> {
+                    -webkit-user-select: --value();
+                    user-select: --value();
+                }
+
+                line-clamp:<number|none> {
+                    -webkit-line-clamp: --value();
+                }
+
+                text-decoration:<~color|*> {
+                    -webkit-text-decoration: --value();
+                    text-decoration: --value();
+                }
             }
         `)
 
@@ -185,6 +199,31 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
         })
         expect(plan.utilities?.find((utility) => utility.id === 'grid-cols:<number>')?.type).toBe(UtilityType.Normal)
         expect(plan.utilities?.find((utility) => utility.id === 'size:<~container|number>')?.type).toBe(UtilityType.Shorthand)
+        expect(plan.utilities?.find((utility) => utility.id === 'user-select:<auto|none|text|all>')).toMatchObject({
+            matchers: [{
+                type: 'pattern',
+                prefix: 'user-select:',
+                values: ['auto', 'none', 'text', 'all']
+            }]
+        })
+        expect(plan.utilities?.find((utility) => utility.id === 'line-clamp:<number|none>')).toMatchObject({
+            kind: 'number',
+            matchers: expect.arrayContaining([
+                { type: 'value', keys: ['line-clamp'] },
+                {
+                    type: 'pattern',
+                    prefix: 'line-clamp:',
+                    values: ['none']
+                }
+            ])
+        })
+        expect(plan.utilities?.find((utility) => utility.id === 'text-decoration:<~color|*>')).toMatchObject({
+            variableAliasRefs: ['~color'],
+            matchers: expect.arrayContaining([
+                { type: 'variable', keys: ['text-decoration'] },
+                { type: 'key', keys: ['text-decoration'] }
+            ])
+        })
 
         const css = createCSS(plan)
         expect(css.create('font:sm')?.text).toBe('.font\\:sm{font-size:var(--font-size-sm)}')
@@ -196,6 +235,11 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
         expect(css.create('grid-cols:3')?.text).toBe('.grid-cols\\:3{display:grid;grid-template-columns:repeat(3, minmax(0, 1fr))}')
         expect(css.create('size:4x')?.text).toBe('.size\\:4x{width:1rem;height:1rem}')
         expect(css.create('size:4x|8x')).toBeUndefined()
+        expect(css.create('user-select:none')?.text).toBe('.user-select\\:none{-webkit-user-select:none;user-select:none}')
+        expect(css.create('line-clamp:3')?.text).toBe('.line-clamp\\:3{-webkit-line-clamp:3}')
+        expect(css.create('line-clamp:none')?.text).toBe('.line-clamp\\:none{-webkit-line-clamp:none}')
+        expect(css.create('text-decoration:underline|red')?.text)
+            .toBe('.text-decoration\\:underline\\|red{-webkit-text-decoration:underline var(--color-red);text-decoration:underline var(--color-red)}')
         expect(css.create('bg:cover')).toBeUndefined()
     })
 
@@ -280,7 +324,31 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
                     color: --value();
                 }
             }
-        `, { basePlan: defaultPlan })).toThrow('Unsupported managed dynamic utility source')
+        `, { basePlan: defaultPlan })).toThrow('Managed dynamic utility enum source requires at least two values separated by "|"')
+
+        expect(() => compileCSSPlan(`
+            @utilities {
+                x:<~color|none> {
+                    color: --value();
+                }
+            }
+        `, { basePlan: defaultPlan })).toThrow('Managed dynamic utility enum values cannot be combined with namespaces')
+
+        expect(() => compileCSSPlan(`
+            @utilities {
+                x:<*|none> {
+                    color: --value();
+                }
+            }
+        `, { basePlan: defaultPlan })).toThrow('Managed dynamic utility wildcard cannot be combined with enum or raw value kinds')
+
+        expect(() => compileCSSPlan(`
+            @utilities {
+                x:<*|number> {
+                    color: --value();
+                }
+            }
+        `, { basePlan: defaultPlan })).toThrow('Managed dynamic utility wildcard cannot be combined with enum or raw value kinds')
 
         expect(() => compileCSSPlan(`
             @utilities {

@@ -250,6 +250,20 @@ Defines managed utility classes in the `utilities` layer. Utilities still win ov
         background-color: --value();
     }
 
+    user-select:<auto|none|text|all> {
+        -webkit-user-select: --value();
+        user-select: --value();
+    }
+
+    line-clamp:<number|none> {
+        -webkit-line-clamp: --value();
+    }
+
+    text-decoration:<~color-text|~color|*> {
+        -webkit-text-decoration: --value();
+        text-decoration: --value();
+    }
+
     grid-cols:<number> {
         display: grid;
         grid-template-columns: repeat(--value(), minmax(0, 1fr));
@@ -269,7 +283,7 @@ m:sm|-md
 bg:#fff
 ```
 
-Dynamic colon entries use `key:<source-list>` and keep the class syntax as `key:value`. Source entries can be theme namespaces with `~` or `=`, or one raw value kind: `number`, `color`, or `image`.
+Dynamic colon entries use `key:<source-list>` and keep the class syntax as `key:value`. Source entries can be theme namespaces with `~` or `=`, one raw value kind (`number`, `color`, or `image`), literal enum values, or `*` for raw-any values.
 
 ```css
 @utilities {
@@ -280,10 +294,22 @@ Dynamic colon entries use `key:<source-list>` and keep the class syntax as `key:
     bg:<~color|color> {
         background-color: --value();
     }
+
+    line-clamp:<number|none> {
+        -webkit-line-clamp: --value();
+    }
+
+    text-decoration:<~color-text|~color|*> {
+        text-decoration: --value();
+    }
 }
 ```
 
 `<~font-size|number>` supports `font:sm` through `--font-size-sm` and `font:16px` as a raw number. It does not create dash token classes such as `font-sm`. Bare numbers are emitted as written; use `4x` when you want Master CSS base-unit conversion to `rem`.
+
+Literal enum values can stand alone when at least two values are provided, such as `user-select:<auto|none|text|all>`, or combine with one raw kind, such as `line-clamp:<number|none>`. Enum values cannot be mixed with namespaces.
+
+`*` is for raw-any full-value wrappers, such as paired vendor declarations. It may be used alone or with namespace refs, as in `text-decoration:<~color-text|~color|*>`, but it cannot be mixed with enum values or raw kinds.
 
 `--value()` accepts no arguments and is only valid inside managed enum pattern or dynamic colon entry declarations.
 

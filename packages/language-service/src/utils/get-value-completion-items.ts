@@ -170,6 +170,19 @@ export default function getValueCompletionItems(css: MasterCSS = createDefaultCS
             })
         }
 
+        for (const matcher of eachDefinedUtility.matchers) {
+            if (matcher.type !== 'pattern' || matcher.prefix !== canonicalRuleKey + ':') continue
+            for (const value of matcher.values) {
+                if (completionItems.find((item) => item.label === value)) continue
+                completionItems.push({
+                    label: value,
+                    kind: CompletionItemKind.Value,
+                    documentation: createCSSMarkdownDocumentation(generateCSS([ruleKey + ':' + value], css)),
+                    detail: canonicalRuleKey + ': ' + value
+                })
+            }
+        }
+
         /**
          * @example animation:fade
          */

@@ -739,6 +739,10 @@ export default class MasterCSS {
         for (const eachUtility of this.keyMatcherUtilities) {
             if (this.matchesUtility(className, eachUtility, 'key')) return eachUtility
         }
+
+        for (const eachUtility of this.patternMatcherUtilities) {
+            if (this.matchesUtility(className, eachUtility, 'pattern')) return eachUtility
+        }
     }
 
     match(className: string): CompiledUtility | undefined {
@@ -810,6 +814,10 @@ export default class MasterCSS {
 
         for (const eachUtility of this.keyMatcherUtilities) {
             if (this.matchesUtility(className, eachUtility, 'key')) return [eachUtility]
+        }
+
+        for (const eachUtility of this.patternMatcherUtilities) {
+            if (this.matchesUtility(className, eachUtility, 'pattern')) return [eachUtility]
         }
 
         return []

@@ -166,7 +166,9 @@ function cloneUtility(definition: InputUtilityDefinition): CSSDirectiveUtilityDe
             dynamic: {
                 key: definition.dynamic.key,
                 ...(definition.dynamic.variableAliasRefs?.length ? { variableAliasRefs: [...definition.dynamic.variableAliasRefs] } : {}),
-                ...(definition.dynamic.kind ? { kind: definition.dynamic.kind } : {})
+                ...(definition.dynamic.kind ? { kind: definition.dynamic.kind } : {}),
+                ...(definition.dynamic.values?.length ? { values: [...definition.dynamic.values] } : {}),
+                ...(definition.dynamic.arbitrary ? { arbitrary: true } : {})
             }
         } : {}),
         ...(definition.declarations ? { declarations: { ...definition.declarations } } : {}),

@@ -33,6 +33,10 @@ export const hint = (target: string, settings: Settings = {}) => {
 
 it.concurrent('types " should hint completions', () => expect(hint('')?.length).toBeGreaterThan(0))
 it.concurrent('types   should hint completions', () => expect(hint('text-center ')?.length).toBeGreaterThan(0))
+it.concurrent('types dynamic enum key should hint enum values', () => {
+    expect(hint('user-select:')?.some(({ label }) => label === 'none')).toBe(true)
+    expect(hint('line-clamp:')?.some(({ label }) => label === 'none')).toBe(true)
+})
 
 test.todo('types any trigger character in "" should not hint')
 test.todo(`types any trigger character in '' should not hint`)

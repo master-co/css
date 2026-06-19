@@ -1,10 +1,10 @@
 const syntaxes = [
-    ['list-style:url(`…`)'],
-    ['list-style:linear-gradient(`…`)'],
-    ['list-style:radial-gradient(`…`)'],
-    ['list-style:repeating-linear-gradient(`…`)'],
-    ['list-style:repeating-radial-gradient(`…`)'],
-    ['list-style:conic-gradient(`…`)'],
+    ['list-style-image:url(`…`)'],
+    ['list-style-image:linear-gradient(`…`)'],
+    ['list-style-image:radial-gradient(`…`)'],
+    ['list-style-image:repeating-linear-gradient(`…`)'],
+    ['list-style-image:repeating-radial-gradient(`…`)'],
+    ['list-style-image:conic-gradient(`…`)'],
 ]
 
 export default syntaxes

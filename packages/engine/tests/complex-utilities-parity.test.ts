@@ -48,11 +48,11 @@ describe.concurrent('migrated complex utility parity', () => {
             .toBe('@media (prefers-color-scheme:light){.\\{content\\:\\\'\\\'\\;block\\}\\:\\:after\\@light::after{content:\'\';display:block}}')
     })
 
-    test('keeps grid-column aliases', () => {
+    test('keeps grid-col span shorthand and removes long alias', () => {
         const css = createDefaultCSS()
 
         expect(css.create('grid-col-span:2')?.text).toBe('.grid-col-span\\:2{grid-column:span 2/span 2}')
-        expect(css.create('grid-column-span:2')?.text).toBe('.grid-column-span\\:2{grid-column:span 2/span 2}')
+        expect(css.create('grid-column-span:2')).toBeUndefined()
     })
 
     test('keeps inset utilities values and priority order', () => {

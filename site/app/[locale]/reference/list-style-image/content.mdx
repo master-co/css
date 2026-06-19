@@ -3,10 +3,10 @@
 
 ## Examples
 ### Use an image marker
-Use `list-style:url(*)` when each list item should use an image marker.
+Use `list-style-image:url(*)` when each list item should use an image marker.
 ```html
-<!-- @MARK list-style:url(/marker.svg) -->
-<ul class="list-style:url(/marker.svg)">
+<!-- @MARK list-style-image:url(/marker.svg) -->
+<ul class="list-style-image:url(/marker.svg)">
     <li>Custom marker</li>
 </ul>
 ```
@@ -14,15 +14,15 @@ Use `list-style:url(*)` when each list item should use an image marker.
 <details>
     <summary>Generated CSS</summary>
     <Class2CSS>
-        {['list-style:url(/marker.svg)']}
+        {['list-style-image:url(/marker.svg)']}
     </Class2CSS>
 </details>
 
 ### Use a gradient marker
 Gradient functions can also be used when a generated marker is more appropriate than an asset.
 ```html
-<!-- @MARK list-style:linear-gradient(primary|primary) -->
-<ul class="list-style:linear-gradient(primary|primary)">
+<!-- @MARK list-style-image:linear-gradient(primary|primary) -->
+<ul class="list-style-image:linear-gradient(primary|primary)">
     <li>Gradient marker</li>
 </ul>
 ```
@@ -30,7 +30,7 @@ Gradient functions can also be used when a generated marker is more appropriate 
 ### Fall back to type markers
 Use `list-style:disc` or another type utility when image markers are not desired in a condition.
 ```html
-<ul class="list-style:url(/marker.svg) list-style:disc@print">
+<ul class="list-style-image:url(/marker.svg) list-style:disc@print">
     <li>Printable marker</li>
 </ul>
 ```
@@ -38,5 +38,5 @@ Use `list-style:disc` or another type utility when image markers are not desired
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<ul class="list-style:url(/marker.svg):hover list-style:disc@sm list-style:disc@print">...</ul>
+<ul class="list-style-image:url(/marker.svg):hover list-style:disc@sm list-style:disc@print">...</ul>
 ```

@@ -126,6 +126,8 @@ export interface CSSDirectiveUtilityDynamicDefinition {
     key: string
     variableAliasRefs?: string[]
     kind?: MasterCSSPlanUtilityKind
+    values?: string[]
+    arbitrary?: boolean
 }
 
 export interface CSSDirectiveUtilityDefinition {

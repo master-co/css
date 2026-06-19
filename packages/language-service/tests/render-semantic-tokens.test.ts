@@ -256,6 +256,14 @@ test.concurrent('renders semantic tokens for CSS directives', () => {
                 background-color: --value();
             }
 
+            text-decoration:<~color|*> {
+                text-decoration: --value();
+            }
+
+            user-select:<auto|none|text|all> {
+                user-select: --value();
+            }
+
             grid-cols:<number> {
                 grid-template-columns: repeat(--value(), minmax(0, 1fr));
 
@@ -328,7 +336,12 @@ test.concurrent('renders semantic tokens for CSS directives', () => {
     expectToken(tokens, 'font-size', 'variable', ['directive'])
     expectToken(tokens, 'number', 'enumMember', ['directive'])
     expectToken(tokens, 'color', 'enumMember', ['directive'])
+    expectToken(tokens, '*', 'operator', ['directive'])
+    expectToken(tokens, 'auto', 'enumMember', ['directive'])
+    expectToken(tokens, 'none', 'enumMember', ['directive'])
     expectToken(tokens, 'background-color', 'property')
+    expectToken(tokens, 'text-decoration', 'property')
+    expectToken(tokens, 'user-select', 'property')
     expectToken(tokens, 'grid-template-columns', 'property')
     expectToken(tokens, 'repeat', 'function')
     expectToken(tokens, 'minmax', 'function')

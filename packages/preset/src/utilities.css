@@ -655,8 +655,16 @@
         font-weight: --value();
     }
 
+    font:<~font-family|=font|~font-weight|~font-size|*> {
+        font: --value();
+    }
+
     bg:<~color|color> {
         background-color: --value();
+    }
+
+    bg:<~color|image> {
+        background-image: --value();
     }
 
     size:<~container|number> {
@@ -751,6 +759,29 @@
         grid-template-columns: repeat(--value(), minmax(0, 1fr));
     }
 
+    grid-rows:<number> {
+        display: grid;
+        grid-auto-flow: column;
+        grid-template-rows: repeat(--value(), minmax(0, 1fr));
+    }
+
+    grid-col-span:<number> {
+        grid-column: span --value()/span --value();
+    }
+
+    grid-row-span:<number> {
+        grid-row: span --value()/span --value();
+    }
+
+    line-clamp:<number|none> {
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: --value();
+        overflow: hidden;
+        overflow-wrap: break-word;
+        text-overflow: ellipsis;
+    }
+
     stroke:<number> {
         stroke-width: --value();
     }
@@ -773,6 +804,11 @@
         text-decoration-color: --value();
     }
 
+    text-decoration:<~color-text|~color|*> {
+        -webkit-text-decoration: --value();
+        text-decoration: --value();
+    }
+
     text-decoration-thickness:<number> {
         text-decoration-thickness: --value();
     }
@@ -787,6 +823,35 @@
 
     text-stroke:<~color|color> {
         -webkit-text-stroke-color: --value();
+    }
+
+    text-stroke:<~color|*> {
+        -webkit-text-stroke: --value();
+    }
+
+    backdrop-filter:<~color|*> {
+        -webkit-backdrop-filter: --value();
+        backdrop-filter: --value();
+    }
+
+    box-decoration-break:<clone|slice> {
+        -webkit-box-decoration-break: --value();
+        box-decoration-break: --value();
+    }
+
+    mask-image:<*> {
+        -webkit-mask-image: --value();
+        mask-image: --value();
+    }
+
+    user-drag:<auto|element|none> {
+        -webkit-user-drag: --value();
+        user-drag: --value();
+    }
+
+    user-select:<auto|none|text|all> {
+        -webkit-user-select: --value();
+        user-select: --value();
     }
 
     bg-<auto|contain|cover> {

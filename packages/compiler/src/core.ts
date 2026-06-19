@@ -802,6 +802,82 @@ function collectDeclarations(block: DeclarationBlock<Declaration>) {
     return declarations
 }
 
+const WEBKIT_PAIRED_DECLARATIONS: Record<string, string> = {
+    '-webkit-backdrop-filter': 'backdrop-filter',
+    '-webkit-box-decoration-break': 'box-decoration-break',
+    '-webkit-mask-image': 'mask-image',
+    '-webkit-text-decoration': 'text-decoration',
+    '-webkit-user-select': 'user-select'
+}
+
+const WEBKIT_ONLY_DECLARATIONS: Record<string, string> = {
+    '-webkit-box-orient': 'box-orient'
+}
+
+function escapeRegExp(value: string) {
+    return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+}
+
+function rawBlockContainsDeclaration(rawBlock: string, property: string) {
+    return new RegExp(`(?:^|[;{])\\s*${escapeRegExp(property)}\\s*:`).test(rawBlock)
+}
+
+function restoreRawWebkitPairedDeclarations(
+    rule: any,
+    parsed: ParsedDirectives,
+    declarations: Record<string, string>
+) {
+    const source = parsed.source
+    const loc = rule.value?.loc
+    const resolveLocation = parsed.sourceLocationResolver
+    if (!source || !loc || !resolveLocation) return declarations
+
+    const start = resolveLocation({
+        line: loc.line,
+        column: loc.column
+    })
+    if (start === -1) return declarations
+    const statementEnd = findCSSStatementEnd(source, start)
+    if (statementEnd.reason !== 'block' || !statementEnd.delimiterRange) return declarations
+    const blockEnd = findCSSBlockEnd(source, statementEnd.delimiterRange.start)
+    if (blockEnd === -1) return declarations
+
+    const rawBlock = source.slice(statementEnd.delimiterRange.start + 1, blockEnd)
+    const restoredBefore = new Map<string, [string, string][]>()
+    const skippedProperties = new Set<string>()
+    for (const prefixedProperty in WEBKIT_ONLY_DECLARATIONS) {
+        if (declarations[prefixedProperty] !== undefined) continue
+        const property = WEBKIT_ONLY_DECLARATIONS[prefixedProperty]
+        const value = declarations[property]
+        if (value === undefined) continue
+        if (!rawBlockContainsDeclaration(rawBlock, prefixedProperty)) continue
+        if (rawBlockContainsDeclaration(rawBlock, property)) continue
+        restoredBefore.set(property, [[prefixedProperty, value]])
+        skippedProperties.add(property)
+    }
+    for (const prefixedProperty in WEBKIT_PAIRED_DECLARATIONS) {
+        if (declarations[prefixedProperty] !== undefined) continue
+        const property = WEBKIT_PAIRED_DECLARATIONS[prefixedProperty]
+        const value = declarations[property]
+        if (value === undefined) continue
+        if (!rawBlockContainsDeclaration(rawBlock, prefixedProperty)) continue
+        const restored = restoredBefore.get(property) || []
+        restored.push([prefixedProperty, value])
+        restoredBefore.set(property, restored)
+    }
+    if (!restoredBefore.size) return declarations
+
+    const restoredDeclarations: Record<string, string> = {}
+    for (const property in declarations) {
+        for (const [prefixedProperty, value] of restoredBefore.get(property) || []) {
+            restoredDeclarations[prefixedProperty] = value
+        }
+        if (skippedProperties.has(property)) continue
+        restoredDeclarations[property] = declarations[property]
+    }
+    return restoredDeclarations
+}
+
 function parseSettingsDeclarations(block: DeclarationBlock<Declaration>, planInput: CSSDirectivePlanInput) {
     for (const declaration of (block.declarations || []) as Declaration[]) {
         const property = getDeclarationName(declaration)
@@ -1164,12 +1240,22 @@ type StyleRuleBodyItem =
     }
 
 function collectDirectiveStyleRule(rule: any, parsed: ParsedDirectives) {
-    return collectDirectiveStyleRuleBody(rule.value.declarations, rule.value.rules, parsed)
+    return collectDirectiveStyleRuleBody(
+        rule.value.declarations,
+        rule.value.rules,
+        parsed,
+        (declarations) => restoreRawWebkitPairedDeclarations(rule, parsed, declarations)
+    )
 }
 
-function collectDirectiveStyleRuleBody(block: DeclarationBlock<Declaration>, rules: Rule[], parsed: ParsedDirectives) {
+function collectDirectiveStyleRuleBody(
+    block: DeclarationBlock<Declaration>,
+    rules: Rule[],
+    parsed: ParsedDirectives,
+    transformDeclarations: (declarations: Record<string, string>) => Record<string, string> = declarations => declarations
+) {
     const items: StyleRuleBodyItem[] = []
-    const declarations = collectDeclarations(block)
+    const declarations = transformDeclarations(collectDeclarations(block))
     if (Object.keys(declarations).length) {
         items.push({
             type: 'declarations',
@@ -1604,6 +1690,7 @@ function parseThemeRule(rule: any, parsed: ParsedDirectives) {
 }
 
 const MANAGED_DYNAMIC_SOURCE_KINDS = new Set(['number', 'color', 'image'])
+const MANAGED_DYNAMIC_RAW_ANY_SOURCE = '*'
 
 type ParsedManagedPatternName =
     | ReturnType<typeof parseManagedEnumPatternName>
@@ -1698,7 +1785,9 @@ function parseManagedDynamicPatternName(source: string) {
     }
 
     const variableAliasRefs: string[] = []
+    const literalValues: string[] = []
     let kind: 'number' | 'color' | 'image' | undefined
+    let arbitrary = false
     for (const value of values) {
         if (value[0] === '~' || value[0] === '=') {
             const namespace = value.slice(1)
@@ -1715,7 +1804,26 @@ function parseManagedDynamicPatternName(source: string) {
             kind = value as 'number' | 'color' | 'image'
             continue
         }
+        if (value === MANAGED_DYNAMIC_RAW_ANY_SOURCE) {
+            arbitrary = true
+            continue
+        }
+        if (/^-?[_a-zA-Z0-9][-_a-zA-Z0-9]*$/.test(value)) {
+            if (!literalValues.includes(value)) literalValues.push(value)
+            continue
+        }
         throw new Error(`Unsupported managed dynamic utility source: ${value}`)
+    }
+    if (arbitrary && (kind || literalValues.length)) {
+        throw new Error('Managed dynamic utility wildcard cannot be combined with enum or raw value kinds')
+    }
+    if (literalValues.length) {
+        if (variableAliasRefs.length) {
+            throw new Error('Managed dynamic utility enum values cannot be combined with namespaces')
+        }
+        if (!kind && literalValues.length < 2) {
+            throw new Error('Managed dynamic utility enum source requires at least two values separated by "|"')
+        }
     }
 
     return {
@@ -1724,7 +1832,9 @@ function parseManagedDynamicPatternName(source: string) {
         dynamic: {
             key,
             ...(variableAliasRefs.length ? { variableAliasRefs } : {}),
-            ...(kind ? { kind } : {})
+            ...(kind ? { kind } : {}),
+            ...(literalValues.length ? { values: literalValues } : {}),
+            ...(arbitrary ? { arbitrary } : {})
         }
     }
 }

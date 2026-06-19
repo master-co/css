@@ -92,6 +92,8 @@ describe.concurrent('default plan utility parity', () => {
         expectClassText(css, 'shape-margin:px', 'shape-margin:1px')
         expectClassText(css, 'text-underline:sm', 'text-underline-offset:var(--spacing-sm)')
         expectClassText(css, 'text-stroke-width:px', '-webkit-text-stroke-width:1px')
+        expectClassText(css, 'user-select:none', '-webkit-user-select:none')
+        expectClassText(css, 'line-clamp:none', '-webkit-line-clamp:none')
         expectClassText(css, 'text-center:hover', 'text-align:center')
     })
 
@@ -202,7 +204,7 @@ describe.concurrent('default plan utility parity', () => {
         expectClassText(css, 'font-weight:var(--font-weight-thin)', 'font-weight:var(--font-weight-thin)')
         expectClassText(css, 'fg:$color-white/.5', 'color:color-mix(in oklab,oklch(100% 0 none) 50%,transparent)')
         expectClassText(css, 'grid-cols:3', 'grid-template-columns:repeat(3, minmax(0, 1fr))')
-        expectClassText(css, 'lines:3', '-webkit-line-clamp:3')
+        expectClassText(css, 'line-clamp:3', '-webkit-line-clamp:3')
         expectClassText(css, 'text:2xl', 'font-size:var(--font-size-2xl)')
     })
 
@@ -256,7 +258,7 @@ describe.concurrent('default plan utility parity', () => {
         expect(css.create('flex@sm')?.text)
             .toBe('@media (width>=52.125rem){.flex\\@sm{display:flex}}')
         expectClassText(css, 'grid-col-span:2', 'grid-column:span 2/span 2')
-        expectClassText(css, 'grid-column-span:2', 'grid-column:span 2/span 2')
+        expect(css.create('grid-column-span:2')).toBeUndefined()
         expectClassText(css, 'top:5x', 'top:1.25rem')
         expectClassText(css, 'bottom:2.5x', 'bottom:0.625rem')
         expectClassText(css, 'right:max(0px,calc(50%-45.3125rem))', 'right:max(0px,calc(50% - 45.3125rem))')

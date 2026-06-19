@@ -48,7 +48,7 @@ const retainedMatcherAliases = new Set([
     'font',
     'grid-col-span',
     'grid-cols',
-    'lines',
+    'line-clamp',
     'text'
 ])
 
@@ -94,8 +94,7 @@ const removedAliases = [
 ]
 
 const competitiveNativeValueUtilities = [
-    'animation',
-    'font'
+    'animation'
 ]
 
 const nativeValueNamespaceMatcherKeys = new Set([
@@ -185,10 +184,10 @@ describe('@master/css-preset defaultPlan', () => {
         const plan = createDefaultPlanFromSourceFile(resolve(__dirname, '../src/index.css'))
         const utilities = plan.utilities || []
 
-        expect(sourceUtilities).toHaveLength(19)
+        expect(sourceUtilities).toHaveLength(2)
         expect(sourceUtilities.some((utility) => Number(utility.type) === UtilityType.Static)).toBe(false)
         expect(sourceUtilities.some((utility) => utility.id === 'variable')).toBe(false)
-        expect(utilities).toHaveLength(234)
+        expect(utilities).toHaveLength(230)
         expect(utilities[0]?.order).toBe(utilities.length - 1)
         expect(utilities[utilities.length - 1]?.order).toBe(0)
         expect(utilities.some((utility) => (utility.emit as { type: string }).type === 'pair')).toBe(false)
@@ -236,7 +235,7 @@ describe('@master/css-preset defaultPlan', () => {
             css.create('bg:linear-gradient(#000,#fff)')?.text,
             css.create('bg:accent')?.text,
             css.create('grid-cols:3')?.text,
-            css.create('lines:3')?.text,
+            css.create('line-clamp:3')?.text,
             css.create('text:2xl')?.text
         ].join('')
         expect(text).toContain('display:inline-flex')
@@ -273,6 +272,10 @@ describe('@master/css-preset defaultPlan', () => {
         expect(css.create('text-stroke-color:red')?.text).toBe('.text-stroke-color\\:red{-webkit-text-stroke-color:var(--color-red)}')
         expect(css.create('text-stroke:px')?.text).toBe('.text-stroke\\:px{-webkit-text-stroke:1px}')
         expect(css.create('text-decoration-thickness:2px')?.text).toBe('.text-decoration-thickness\\:2px{text-decoration-thickness:2px}')
+        expect(css.create('user-select:none')?.text).toBe('.user-select\\:none{-webkit-user-select:none;user-select:none}')
+        expect(css.create('user-drag:none')?.text).toBe('.user-drag\\:none{-webkit-user-drag:none;user-drag:none}')
+        expect(css.create('box-decoration-break:clone')?.text).toBe('.box-decoration-break\\:clone{-webkit-box-decoration-break:clone;box-decoration-break:clone}')
+        expect(css.create('line-clamp:none')?.text).toContain('-webkit-line-clamp:none')
         expect(css.create('font-feature-settings:tabular')?.text).toBe('.font-feature-settings\\:tabular{font-feature-settings:var(--font-feature-tabular)}')
         expect(css.create('content:empty')?.text).toBe('.content\\:empty{content:var(--content-empty)}')
         expect(css.create('font-sm')).toBeUndefined()
@@ -294,6 +297,10 @@ describe('@master/css-preset defaultPlan', () => {
         expect(defaultPlan.utilities?.some((utility) => utility.id === 'text-decoration-color:<~color-text|~color|color>')).toBe(false)
         expect(defaultPlan.utilities?.some((utility) => utility.id === 'text-stroke-color:<~color|color>')).toBe(false)
         expect(defaultPlan.utilities?.some((utility) => utility.id === 'text-stroke-width:<number>')).toBe(false)
+        expect(defaultPlan.utilities?.some((utility) => utility.id === 'grid-column-span')).toBe(false)
+        expect(defaultPlan.utilities?.some((utility) => utility.id === 'text-truncate')).toBe(false)
+        expect(defaultPlan.utilities?.some((utility) => utility.id === 'border-image-source')).toBe(false)
+        expect(defaultPlan.utilities?.some((utility) => utility.id === 'list-style-image')).toBe(false)
         expect(defaultPlan.utilities?.find((utility) => utility.id === 'stroke:<number>')).toMatchObject({
             kind: 'number',
             emit: {
@@ -410,6 +417,12 @@ describe('@master/css-preset defaultPlan', () => {
         expect(css.create('text:2xl')?.text).toContain('font-size:var(--font-size-2xl)')
         expect(css.create('text-size:2xl')).toBeUndefined()
         expect(css.create('text-size:1rem')).toBeUndefined()
+        expect(css.create('grid-col-span:2')?.text).toBe('.grid-col-span\\:2{grid-column:span 2/span 2}')
+        expect(css.create('grid-column-span:2')).toBeUndefined()
+        expect(css.create('lines:2')).toBeUndefined()
+        expect(css.create('text-truncate:2')).toBeUndefined()
+        expect(css.create('border-image:linear-gradient(red,blue)')).toBeUndefined()
+        expect(css.create('list-style:url(/marker.svg)')).toBeUndefined()
 
         for (const utility of defaultPlan.utilities || []) {
             expect('values' in utility, utility.id).toBe(false)
@@ -429,6 +442,9 @@ describe('@master/css-preset defaultPlan', () => {
                 || property === 'background'
                 || property === 'container'
                 || property === 'flex'
+                || property === 'border-image-source'
+                || property === 'border-image-width'
+                || property === 'list-style-image'
         })
 
         expect(css.create('float:left')).toBeUndefined()
@@ -446,6 +462,9 @@ describe('@master/css-preset defaultPlan', () => {
         expect(nativeCSS.create('background:red')?.text).toBe('.background\\:red{background:red}')
         expect(nativeCSS.create('container:inline-size')?.text).toBe('.container\\:inline-size{container:inline-size}')
         expect(nativeCSS.create('flex:0|0|auto')?.text).toBe('.flex\\:0\\|0\\|auto{flex:0 0 auto}')
+        expect(nativeCSS.create('border-image-source:url(/border.png)')?.text).toBe('.border-image-source\\:url\\(\\/border\\.png\\){border-image-source:url(/border.png)}')
+        expect(nativeCSS.create('border-image-width:2px')?.text).toBe('.border-image-width\\:2px{border-image-width:2px}')
+        expect(nativeCSS.create('list-style-image:url(/marker.svg)')?.text).toBe('.list-style-image\\:url\\(\\/marker\\.svg\\){list-style-image:url(/marker.svg)}')
     })
 
     it('moves native value namespace utilities out of matcher definitions', () => {
