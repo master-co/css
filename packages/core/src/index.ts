@@ -2,6 +2,7 @@ export {
     default,
     MasterCSS,
     createCSS,
+    previewCSS,
     Layer,
     ThemeLayer,
     UtilityLayer,

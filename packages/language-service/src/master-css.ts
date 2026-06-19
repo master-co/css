@@ -1,4 +1,4 @@
-import { createCSS, type CompiledUtility, type MasterCSS } from '@master/css'
+import { createCSS, previewCSS, type CompiledUtility, type MasterCSS } from '@master/css'
 import defaultPlanJSON from '@master/css-preset/default-plan.json' with { type: 'json' }
 import UtilityType from 'shared/utility-type'
 import type { ValueComponent, Variable } from 'shared/css-syntax'
@@ -35,13 +35,7 @@ export function createDefaultCSS() {
 }
 
 export function generateCSS(classNames: string[], css: MasterCSS = createDefaultCSS()) {
-    const previewCSS = createCSS(css.plan, undefined, {
-        nativeDeclarationMatcher: matchesLanguageServiceNativeDeclaration
-    })
-    for (const className of classNames) {
-        previewCSS.add(className)
-    }
-    return previewCSS.text
+    return previewCSS(css, classNames)
 }
 
 export function isCoreRule(id: string) {

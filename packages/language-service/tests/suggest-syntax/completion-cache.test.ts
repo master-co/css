@@ -2,6 +2,7 @@ import { expect, test } from 'vitest'
 import { Position } from 'vscode-languageserver-textdocument'
 import CSSLanguageService from '../../src/core'
 import createDoc from '../../src/utils/create-doc'
+import { generateCSS } from '../../src/master-css'
 
 function suggest(languageService: CSSLanguageService, target: string) {
     const contents = [`<div class="`, target, `"></div>`]
@@ -29,4 +30,33 @@ test.concurrent('does not leak selector insertText mutations between requests', 
     expect(suggest(languageService, 'text-center:')?.find(({ label }) => label === '::after')).toMatchObject({ insertText: ':after' })
     expect(suggest(languageService, 'text-center::')?.find(({ label }) => label === '::after')).toMatchObject({ insertText: 'after' })
     expect(suggest(languageService, 'text-center:')?.find(({ label }) => label === '::after')).toMatchObject({ insertText: ':after' })
+})
+
+function getMapEntries(map: Map<string, number>) {
+    return Array.from(map.entries())
+}
+
+function snapshotLanguageCSS(languageService: CSSLanguageService) {
+    const { css } = languageService
+    return {
+        text: css.text,
+        classUtilities: Array.from(css.classUtilities.keys()),
+        themeRules: css.themeLayer.rules.map((rule) => rule.key),
+        themeTokenCounts: getMapEntries(css.themeLayer.tokenCounts),
+        utilityRules: css.utilitiesLayer.rules.map((rule) => rule.key),
+        animationRules: css.animationsNonLayer.rules.map((rule) => rule.key),
+        animationTokenCounts: getMapEntries(css.animationsNonLayer.tokenCounts)
+    }
+}
+
+test.concurrent('documentation CSS generation does not mutate language service state', () => {
+    const languageService = new CSSLanguageService()
+    const before = snapshotLanguageCSS(languageService)
+
+    expect(generateCSS(['font:bold'], languageService.css)).toContain('.font\\:bold')
+    expect(generateCSS(['animate:fade'], languageService.css)).toContain('@keyframes fade')
+    expect(suggest(languageService, '')?.find(({ label }) => label === 'block')?.documentation).toBeTruthy()
+    expect(suggest(languageService, 'text-center:')?.find(({ label }) => label === ':hover')?.documentation).toBeTruthy()
+
+    expect(snapshotLanguageCSS(languageService)).toEqual(before)
 })

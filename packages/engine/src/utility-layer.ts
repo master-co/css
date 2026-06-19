@@ -6,7 +6,7 @@ import { Utility } from './utility'
 import compareRulePriority from './utils/compare-rule-priority'
 import VariableRule from './variable-rule'
 
-function findUtilityInsertIndex(rules: (Utility | Rule)[], utility: Utility) {
+export function findUtilityInsertIndex(rules: (Utility | Rule)[], utility: Utility) {
     let low = 0
     let high = rules.length
 
