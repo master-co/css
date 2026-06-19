@@ -96,13 +96,13 @@ For product surfaces, prefer named spacing tokens such as `sm`, `md`, and `lg`. 
 ---
 
 ## Exact pixel values
-Use `0` for resets, the `px` alias for 1px hairlines, and explicit `px` units when a value needs exact pixel geometry. Bare numbers are emitted as written, so `p:1` becomes `padding: 1` and is not a valid CSS length.
+Use `0` for resets, explicit `1px` for hairlines, and other `px` units when a value needs exact pixel geometry. Bare numbers are emitted as written, so `p:1` becomes `padding: 1` and is not a valid CSS length.
 
 ```html
 <!-- @MARK m:0 -->
 <div class="m:0">0px, margin: 0rem</div>
-<!-- @MARK p:px -->
-<div class="p:px">1px, padding: 1px</div>
+<!-- @MARK p:1px -->
+<div class="p:1px">1px, padding: 1px</div>
 <!-- @MARK w:2px -->
 <div class="w:2px">2px, width: 0.125rem</div>
 ```
@@ -122,7 +122,7 @@ Use `0` for resets, the `px` alias for 1px hairlines, and explicit `px` units wh
 }
 ```
 
-Numeric keys are easy to confuse with low-level CSS values. Prefer semantic token keys like `sm` or `card`, then use `p:px` for a 1px value or `p:1x` for the default 4px base unit.
+Numeric keys are easy to confuse with low-level CSS values. Prefer semantic token keys like `sm` or `card`, then use `p:1px` for a 1px value or `p:1x` for the default 4px base unit.
 
 (o) Use descriptive scale or role keys.
 
@@ -142,5 +142,5 @@ Master CSS provides a unified system for defining spacing:
 
 * Use named spacing tokens for shared rhythm.
 * Use `x` multipliers for measured local geometry.
-* Use `0`, `px`, or explicit pixel units for resets and exact pixel adjustments.
+* Use `0`, `1px`, or explicit pixel units for resets and exact pixel adjustments.
 * Avoid numeric token keys so markup stays clear.

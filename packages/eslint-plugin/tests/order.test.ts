@@ -59,7 +59,7 @@ createTester({
             `,
         },
         { code: `<div class>No errors while typing</div>` },
-        { code: `<div class="block flex\u3000my:px">Do not treat full width space as class separator</div>` },
+        { code: `<div class="block flex\u3000my:1px">Do not treat full width space as class separator</div>` },
         { code: `<div class="m:0.625rem m:5x m:1.875rem:hover m:10x@dark">Collision class</div>` },
         {
             code: `

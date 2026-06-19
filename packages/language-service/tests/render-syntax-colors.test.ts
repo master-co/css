@@ -25,7 +25,7 @@ test.concurrent('hex', async () => {
 
 test.concurrent('shorthand', async () => {
     const target = 'black'
-    const content = `export default () => <div className='b:px|solid|${target}'></div>`
+    const content = `export default () => <div className='b:1px|solid|${target}'></div>`
     const doc = createDoc('tsx', content)
     const languageService = createLanguageService()
     expect(await languageService.renderSyntaxColors(doc)).toStrictEqual([{
@@ -91,7 +91,7 @@ test.concurrent('should ignore number', async () => {
 test.concurrent('box-shadow', async () => {
     const target1 = 'black'
     const target2 = 'white'
-    const content = `export default () => <div className='shadow:px|px|2px|${target1},2px|2px|3px|${target2}'></div>`
+    const content = `export default () => <div className='shadow:1px|1px|2px|${target1},2px|2px|3px|${target2}'></div>`
     const doc = createDoc('tsx', content)
     const languageService = createLanguageService()
     expect(await languageService.renderSyntaxColors(doc)).toStrictEqual([

@@ -7,8 +7,8 @@ import { createPresetPlan } from '../helpers/create-preset-plan'
 test.todo('convert any color spaces to RGB and hint correctly')
 
 it('should ignore values containing blanks', () => expect(hint('font-family:')?.map(({ label }) => label)).not.toContain('Arial, Helvetica, sans-serif'))
-it('types | delimiter', () => expect(hint('b:px|')?.map(({ label }) => label)).toContain('solid'))
-it('types , separator', () => expect(hint('shadow:px|px|2px|black,')?.map(({ label }) => label)).toContain('inset'))
+it('types | delimiter', () => expect(hint('b:1px|')?.map(({ label }) => label)).toContain('solid'))
+it('types , separator', () => expect(hint('shadow:1px|1px|2px|black,')?.map(({ label }) => label)).toContain('inset'))
 it('ends with @ and not to hint values', () => expect(hint('text-center@')?.map(({ label }) => label)).not.toContain('center'))
 it('ends with : and not to hint values', () => expect(hint('text-center:')?.map(({ label }) => label)).not.toContain('center'))
 
