@@ -68,6 +68,7 @@ const TARGET_NATIVE_PACKAGES = {
 const STATIC_EXTENSION_PATHS = [
     'dist',
     'data',
+    'syntaxes',
     'LICENSE',
     'README.md',
     'icon.png'
@@ -227,6 +228,7 @@ export async function createStagedExtension(target = getCurrentTarget(), options
     manifest.files = [
         'dist',
         'data',
+        'syntaxes',
         'LICENSE',
         'icon.png',
         ...runtimeFiles

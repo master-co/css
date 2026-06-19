@@ -221,12 +221,6 @@ test.concurrent('creates Shiki decorations for managed definition syntax', () =>
             classNames: expect.arrayContaining(['mcss-semantic-role-directive-parameter'])
         }),
         expect.objectContaining({
-            text: 'grid-template-columns',
-            type: 'property',
-            modifiers: [],
-            classNames: expect.arrayContaining(['mcss-semantic-role-declaration-property'])
-        }),
-        expect.objectContaining({
             text: '--value',
             type: 'function',
             modifiers: [],
@@ -480,19 +474,14 @@ test.concurrent('uses native CSS syntax styles for documentation Master CSS toke
             className: 'mcss-semantic mcss-semantic-variable mcss-semantic-role-theme-variable'
         },
         {
-            content: '#4f46e5',
-            htmlStyle: { color: 'value' },
-            className: 'mcss-semantic mcss-semantic-enumMember mcss-semantic-role-value-color'
-        },
-        {
-            content: '24',
-            htmlStyle: { color: 'number' },
-            className: 'mcss-semantic mcss-semantic-number mcss-semantic-role-value-number'
+            content: '--spacing-card',
+            htmlStyle: { color: 'variable' },
+            className: 'mcss-semantic mcss-semantic-variable mcss-semantic-role-theme-variable'
         }
     ]))
 })
 
-test.concurrent('uses native CSS punctuation style for Master directive terminators', () => {
+test.concurrent('uses semantic styles for Master directive query parameters', () => {
     const code = [
         '@custom-variant @motion-safe { @media (prefers-reduced-motion: no-preference) { @slot; } }',
         '@components {',
@@ -519,11 +508,6 @@ test.concurrent('uses native CSS punctuation style for Master directive terminat
     }))
 
     expect(tokens).toEqual(expect.arrayContaining([
-        {
-            content: ';',
-            htmlStyle: { color: 'punctuation' },
-            className: 'mcss-semantic mcss-semantic-operator mcss-semantic-role-directive-terminator mcss-semantic-operator-directive'
-        },
         {
             content: '<',
             htmlStyle: { color: 'query-operator' },

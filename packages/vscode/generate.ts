@@ -8,16 +8,35 @@ import { fileURLToPath } from 'node:url'
 
 const pkg = editJsonFile(fileURLToPath(new URL('./package.json', import.meta.url)), { stringify_width: 4 })
 const require = createRequire(import.meta.url)
+const MASTER_CSS_GRAMMAR_PATH = './syntaxes/master-css.tmLanguage.json'
+const MASTER_CSS_GRAMMAR_SCOPE = 'master-css.directive.injection'
 
 pkg.unset('contributes.languages')
-pkg.unset('contributes.grammars')
 pkg.unset('contributes.css')
 pkg.set('files', [
     'dist',
     'data',
+    'syntaxes',
     'LICENSE',
     'icon.png'
 ])
+pkg.set('contributes.grammars', [
+    {
+        scopeName: MASTER_CSS_GRAMMAR_SCOPE,
+        path: MASTER_CSS_GRAMMAR_PATH,
+        injectTo: [
+            'source.css',
+            'source.css.scss',
+            'source.css.less',
+            'source.css.postcss'
+        ]
+    }
+])
+pkg.set('contributes.configurationDefaults', {
+    'css.lint.unknownAtRules': 'ignore',
+    'scss.lint.unknownAtRules': 'ignore',
+    'less.lint.unknownAtRules': 'ignore'
+})
 
 pkg.set('contributes.semanticTokenModifiers', SEMANTIC_TOKEN_MODIFIERS
     .filter((modifier) => modifier !== 'declaration' && modifier !== 'defaultLibrary')

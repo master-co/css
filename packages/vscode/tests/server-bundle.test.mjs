@@ -200,10 +200,26 @@ test('staged extension includes runtime packages for the current target', async 
     })
 })
 
-test('manifest contributes semantic token scopes without TextMate grammars', () => {
+test('manifest contributes TextMate grammar, semantic token scopes, and CSS diagnostic defaults', () => {
     expect(packageJSON.contributes.languages).toBeUndefined()
-    expect(packageJSON.contributes.grammars).toBeUndefined()
     expect(packageJSON.contributes.css).toBeUndefined()
+    expect(packageJSON.contributes.grammars).toEqual([
+        {
+            scopeName: 'master-css.directive.injection',
+            path: './syntaxes/master-css.tmLanguage.json',
+            injectTo: [
+                'source.css',
+                'source.css.scss',
+                'source.css.less',
+                'source.css.postcss'
+            ]
+        }
+    ])
+    expect(packageJSON.contributes.configurationDefaults).toEqual({
+        'css.lint.unknownAtRules': 'ignore',
+        'scss.lint.unknownAtRules': 'ignore',
+        'less.lint.unknownAtRules': 'ignore'
+    })
     expect(packageJSON.contributes.semanticTokenScopes?.[0]?.scopes).toMatchObject({
         property: ['support.type.property-name.css'],
         enumMember: ['support.constant.property-value.css'],
@@ -214,6 +230,15 @@ test('manifest contributes semantic token scopes without TextMate grammars', () 
         'scss',
         'less'
     ]))
+})
+
+test('staged extension includes TextMate syntaxes', async () => {
+    await withStagedExtension(({ stagingDir, files }) => {
+        const syntaxPath = join(stagingDir, 'syntaxes', 'master-css.tmLanguage.json')
+
+        expect(statSync(syntaxPath).isFile()).toBe(true)
+        expect(files).toContain('syntaxes')
+    })
 })
 
 test('staged language server loads a CSS workspace entry', async () => {

@@ -39,6 +39,7 @@
     "files": [
         "dist",
         "data",
+        "syntaxes",
         "LICENSE",
         "icon.png"
     ],
@@ -356,7 +357,24 @@
                     ]
                 }
             }
-        ]
+        ],
+        "grammars": [
+            {
+                "scopeName": "master-css.directive.injection",
+                "path": "./syntaxes/master-css.tmLanguage.json",
+                "injectTo": [
+                    "source.css",
+                    "source.css.scss",
+                    "source.css.less",
+                    "source.css.postcss"
+                ]
+            }
+        ],
+        "configurationDefaults": {
+            "css.lint.unknownAtRules": "ignore",
+            "scss.lint.unknownAtRules": "ignore",
+            "less.lint.unknownAtRules": "ignore"
+        }
     },
     "publishConfig": {
         "access": "public",
@@ -368,7 +386,9 @@
         "@types/vscode": "^1.120.0",
         "@vscode/vsce": "^3.9.2",
         "shared": "workspace:^",
-        "vscode-languageclient": "^10.0.0"
+        "vscode-languageclient": "^10.0.0",
+        "vscode-oniguruma": "^2.0.1",
+        "vscode-textmate": "^9.3.2"
     },
     "peerDependencies": {
         "lightningcss": "^1.32.0",
