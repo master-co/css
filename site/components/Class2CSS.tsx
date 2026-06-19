@@ -1,7 +1,6 @@
 import { useMemo } from 'react'
-import { previewCSS } from '@master/css'
 import Code from '~/internal/components/Code'
-import presetCSS from '../common/preset-css'
+import { createPresetCSS } from '../common/preset-css'
 
 function normalizeClasses(classes: unknown) {
     const input = Array.isArray(classes) ? classes : [classes]
@@ -11,7 +10,9 @@ function normalizeClasses(classes: unknown) {
 const Class2CSS = (props: any) => {
     const { children: classes } = props
     const generatedCSS = useMemo(() => {
-        return previewCSS(presetCSS, normalizeClasses(classes))
+        const css = createPresetCSS()
+        normalizeClasses(classes).forEach((className) => css.add(className))
+        return css.text
     }, [classes])
     return (
         <Code {...props} lang="css" beautify>{generatedCSS}</Code>

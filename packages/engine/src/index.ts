@@ -1,8 +1,6 @@
 export { default as createCSS } from './create'
 export { default as MasterCSS, default } from './core'
 export type { CompiledUtility, MasterCSSOptions, NativeCSSDeclaration, NativeCSSDeclarationMatcher } from './core'
-export { default as previewCSS } from './preview-css'
-export type { PreviewCSSOptions } from './preview-css'
 export { Rule } from './rule'
 export { default as Layer } from './layer'
 export { default as ThemeLayer } from './theme-layer'

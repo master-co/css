@@ -2,7 +2,6 @@ export {
     default,
     MasterCSS,
     createCSS,
-    previewCSS,
     Layer,
     ThemeLayer,
     UtilityLayer,
@@ -28,6 +27,5 @@ export type {
     MasterCSSPreloaded,
     MasterCSSRuntimeManifest,
     NativeCSSDeclaration,
-    NativeCSSDeclarationMatcher,
-    PreviewCSSOptions
+    NativeCSSDeclarationMatcher
 } from '@master/css-engine'

@@ -1,4 +1,4 @@
-import { createCSS, previewCSS, type MasterCSSPlan } from '@master/css'
+import { AnimationRule, VariableRule, createCSS, type MasterCSSPlan } from '@master/css'
 import defaultPlanJSON from '@master/css-preset/default-plan.json' with { type: 'json' }
 import { compileCSSPlan, type CompileCSSPlanResult } from '@master/css-compiler/browser'
 import { collectAnimationNamesFromDeclaration } from '@master/css-engine'
@@ -28,6 +28,21 @@ function collectCSSKeyframeNames(source: string) {
     return names
 }
 
+function insertVariableReferences(css: ReturnType<typeof createCSS>, references: Set<string>) {
+    const insert = (name: string, visited = new Set<string>()) => {
+        if (visited.has(name)) return
+        visited.add(name)
+        const variable = css.variables.get(name)
+        if (!variable || variable.inline) return
+        css.themeLayer.insert(new VariableRule(name, variable, css))
+        variable.dependencies?.forEach((dependency) => insert(dependency, visited))
+    }
+    const visited = new Set<string>()
+    for (const name of references) {
+        insert(name, visited)
+    }
+}
+
 function collectCSSAnimationReferences(source: string, css: ReturnType<typeof createCSS>, ignoredAnimationNames = new Set<string>()) {
     const references = new Set<string>()
     const animationNames = Array.from(css.animations.keys())
@@ -45,20 +60,30 @@ function collectCSSAnimationReferences(source: string, css: ReturnType<typeof cr
     return references
 }
 
+function insertAnimationReferences(css: ReturnType<typeof createCSS>, references: Set<string>) {
+    for (const name of references) {
+        const keyframes = css.animations.get(name)
+        if (!keyframes) continue
+        const rule = new AnimationRule(name, keyframes, css)
+        css.animationsNonLayer.insert(rule)
+        insertVariableReferences(css, rule.variableNames ?? new Set())
+    }
+}
+
 function renderClassCSS(plan: MasterCSSPlan, classes: string[], nativeCSS: string) {
+    const css = createCSS(plan)
     const nativeAnimationNames = collectCSSKeyframeNames(nativeCSS)
-    const css = createCSS(
-        plan,
-        nativeAnimationNames.size
-            ? {
-                animations: Object.fromEntries([...nativeAnimationNames].map((name) => [name, 1]))
-            }
-            : undefined
-    )
-    return previewCSS(css, classes, {
-        variableNames: collectCSSVariableReferences(nativeCSS),
-        animationNames: collectCSSAnimationReferences(nativeCSS, css, nativeAnimationNames)
-    })
+    if (nativeAnimationNames.size) {
+        css.registerPreloaded({
+            animations: Object.fromEntries([...nativeAnimationNames].map((name) => [name, 1]))
+        })
+    }
+    for (const className of classes) {
+        css.add(className)
+    }
+    insertVariableReferences(css, collectCSSVariableReferences(nativeCSS))
+    insertAnimationReferences(css, collectCSSAnimationReferences(nativeCSS, css, nativeAnimationNames))
+    return css.text
 }
 
 export async function compilePlayCSS(sourceCSS: string, classes: string[]): Promise<CompilePlayCSSResult> {

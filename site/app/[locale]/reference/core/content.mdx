@@ -27,7 +27,7 @@ Use `@import '@master/css/base.css';` when a runtime-only page only needs the ba
 ### `MasterCSS`
 The main body of this package is the class `MasterCSS`, which encapsulates the core business of Master CSS.
 ```js
-import { MasterCSS, createCSS, previewCSS } from '@master/css'
+import { MasterCSS, createCSS } from '@master/css'
 
 const css = createCSS(plan)
 const customCSS = new MasterCSS(plan)
@@ -49,23 +49,6 @@ The `css.settings` property is the resolved settings section from the active pla
 ### `css.text`
 This `css.text` getter returns the result of joining the text of all CSS rules.
 <DocProp defaultValue="''" types={['string']} />
-
-### `previewCSS()`
-Generate CSS for class names without mutating a `MasterCSS` instance. Use `variableNames` and `animationNames` when previewing native CSS that references generated theme variables or keyframes.
-<DocFn>
-    {[
-        { name: 'css', type: 'MasterCSS' },
-        { name: 'classNames', type: 'readonly string[]' },
-        { name: 'options?', type: 'PreviewCSSOptions' },
-        { name: 'return', type: 'string' }
-    ]}
-</DocFn>
-```ts
-const text = previewCSS(css, ['text-center'], {
-    variableNames: ['color-card'],
-    animationNames: ['fade']
-})
-```
 
 ### `css.add()`
 Add a new syntax class.

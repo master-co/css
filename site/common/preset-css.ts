@@ -5,4 +5,8 @@ import defaultPlanJSON from '@master/css-preset/default-plan.json' with { type: 
 const defaultPlan = defaultPlanJSON as unknown as MasterCSSPlan
 const presetCSS = createCSSWithNativeDeclarations(defaultPlan)
 
+export const createPresetCSS = () => {
+    return createCSSWithNativeDeclarations(defaultPlan)
+}
+
 export default presetCSS
