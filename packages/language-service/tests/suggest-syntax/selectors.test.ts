@@ -1,6 +1,6 @@
 import { test, it, expect, describe } from 'vitest'
 import dedent from 'ts-dedent'
-import { hint } from './test'
+import { hint } from './helper'
 
 describe.concurrent('pseudo-class', () => {
     test.concurrent(':', () => expect(hint('text-center:')?.map(({ label }) => label)).toContain(':active'))

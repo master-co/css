@@ -1,7 +1,8 @@
 import { defineConfig } from 'vitest/config'
+import { withCIConcurrency } from '../../shared/vitest-ci-config'
 
 export default defineConfig({
-    test: {
+    test: withCIConcurrency({
         include: [
             'tests/**/*.{test,spec}.?(c|m)[jt]s?(x)',
             'tests/**/test.?(c|m)[jt]s?(x)'
@@ -19,7 +20,7 @@ export default defineConfig({
             '**/*.input.*',
             '**/fixtures/**/*'
         ]
-    },
+    }),
     resolve: {
         tsconfigPaths: true
     }

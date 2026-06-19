@@ -1,5 +1,5 @@
 import { test, it, expect, describe } from 'vitest'
-import { hint } from './test'
+import { hint } from './helper'
 
 test.concurrent('one declaration', () => expect(hint('{text-align:')?.find(({ label }) => label === 'center')).toMatchObject({ label: 'center' }))
 test.concurrent('two declarations', () => expect(hint('{block;text-align:')?.find(({ label }) => label === 'center')).toMatchObject({ label: 'center' }))

@@ -1,5 +1,5 @@
 import { test, it, expect, describe } from 'vitest'
-import { hint } from './test'
+import { hint } from './helper'
 import type { Settings } from '../../src'
 import { createPresetPlan } from '../helpers/create-preset-plan'
 

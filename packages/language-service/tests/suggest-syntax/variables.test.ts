@@ -1,5 +1,5 @@
 import { test, expect, describe } from 'vitest'
-import { hint } from './test'
+import { hint } from './helper'
 
 describe.concurrent('sorting', () => {
     test.concurrent('positive container', () => {

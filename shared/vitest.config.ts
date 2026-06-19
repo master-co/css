@@ -1,5 +1,6 @@
 import type { ViteUserConfig } from 'vitest/config'
 import { createMasterCSSPlanLoaderPlugin } from '../packages/integration/src/plan-loader-plugin'
+import { withCIConcurrency } from './vitest-ci-config'
 
 const config: ViteUserConfig = {
     plugins: [
@@ -10,7 +11,7 @@ const config: ViteUserConfig = {
             }
         })
     ],
-    test: {
+    test: withCIConcurrency({
         include: [
             'tests/**/*.{test,spec}.?(c|m)[jt]s?(x)',
             'tests/**/test.?(c|m)[jt]s?(x)'
@@ -28,7 +29,7 @@ const config: ViteUserConfig = {
             '**/*.input.*',
             '**/fixtures/**/*'
         ]
-    },
+    }),
     resolve: {
         tsconfigPaths: true
     }

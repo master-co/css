@@ -1,6 +1,6 @@
 import { test, it, expect, describe } from 'vitest'
 import dedent from 'ts-dedent'
-import { hint } from './test'
+import { hint } from './helper'
 
 it.concurrent('types a', () => expect(hint('a')?.find(({ label }) => label === 'abs')).toMatchObject({ label: 'abs' }))
 it.concurrent('hints semantic utilities', () => {

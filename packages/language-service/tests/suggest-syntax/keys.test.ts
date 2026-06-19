@@ -1,5 +1,5 @@
 import { test, it, expect, describe } from 'vitest'
-import { hint } from './test'
+import { hint } from './helper'
 
 it.concurrent('should not hint selectors', () => expect(hint('text:')?.[0]).not.toMatchObject({ insertText: 'active' }))
 test.concurrent('animation delay on invoked', () => expect(hint('')?.find(({ label }) => label === 'animation-delay:')).toMatchObject({ label: 'animation-delay:' }))

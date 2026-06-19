@@ -1,5 +1,5 @@
 import { test, it, expect, describe } from 'vitest'
-import { hint } from './test'
+import { hint } from './helper'
 
 test.concurrent('breakpoint', () => expect(hint('hidden@')?.map(({ label }) => label)).toContain('@sm'))
 test.concurrent('&', () => expect(hint('hidden@sm&')?.map(({ label }) => label)).toContain('&sm'))

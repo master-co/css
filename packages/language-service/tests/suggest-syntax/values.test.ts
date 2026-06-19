@@ -1,6 +1,6 @@
 import { test, it, expect, describe } from 'vitest'
 import dedent from 'ts-dedent'
-import { hint } from './test'
+import { hint } from './helper'
 import { CompletionItemKind } from 'vscode-languageserver-protocol'
 import { createPresetPlan } from '../helpers/create-preset-plan'
 
