@@ -187,54 +187,6 @@ const utilities = [
         ]
     },
     {
-        "id": "text-size",
-        "name": "text-size",
-        "type": UtilityType.Shorthand,
-        "kind": "number",
-        "variableAliasRefs": [
-            "~font-size"
-        ],
-        "emit": {
-            "type": "template",
-            "declarations": {
-                "font-size": null,
-                "line-height": [
-                    "max(1.8em - max(0rem, ",
-                    null,
-                    " - 1rem) * 1.12",
-                    ", ",
-                    null,
-                    ")"
-                ],
-                "letter-spacing": [
-                    "clamp(-0.072em, calc((",
-                    null,
-                    " - 1rem) * -0.048), 0em)"
-                ]
-            }
-        },
-        "matchers": [
-            {
-                "type": "variable",
-                "keys": [
-                    "text"
-                ]
-            },
-            {
-                "type": "value",
-                "keys": [
-                    "text"
-                ]
-            },
-            {
-                "type": "key",
-                "keys": [
-                    "text-size"
-                ]
-            }
-        ]
-    },
-    {
         "id": "backdrop-filter",
         "name": "backdrop-filter",
         "type": UtilityType.Normal,

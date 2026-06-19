@@ -755,6 +755,12 @@
         stroke-width: --value();
     }
 
+    text:<~font-size|number> {
+        font-size: --value();
+        line-height: max(1.8em - max(0rem, --value() - 1rem) * 1.12, --value());
+        letter-spacing: clamp(-0.072em, calc((--value() - 1rem) * -0.048), 0em);
+    }
+
     text:<~color-text|~color|color> {
         -webkit-text-fill-color: --value();
     }

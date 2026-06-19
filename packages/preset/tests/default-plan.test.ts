@@ -185,7 +185,7 @@ describe('@master/css-preset defaultPlan', () => {
         const plan = createDefaultPlanFromSourceFile(resolve(__dirname, '../src/index.css'))
         const utilities = plan.utilities || []
 
-        expect(sourceUtilities).toHaveLength(20)
+        expect(sourceUtilities).toHaveLength(19)
         expect(sourceUtilities.some((utility) => Number(utility.type) === UtilityType.Static)).toBe(false)
         expect(sourceUtilities.some((utility) => utility.id === 'variable')).toBe(false)
         expect(utilities).toHaveLength(234)
@@ -408,6 +408,8 @@ describe('@master/css-preset defaultPlan', () => {
         expect(css.create('m:sm|md')?.text).toBe('.m\\:sm\\|md{margin:var(--spacing-sm) var(--spacing-md)}')
         expect(css.create('m:sm|-md')?.text).toBe('.m\\:sm\\|-md{margin:var(--spacing-sm) calc(var(--spacing-md) * -1)}')
         expect(css.create('text:2xl')?.text).toContain('font-size:var(--font-size-2xl)')
+        expect(css.create('text-size:2xl')).toBeUndefined()
+        expect(css.create('text-size:1rem')).toBeUndefined()
 
         for (const utility of defaultPlan.utilities || []) {
             expect('values' in utility, utility.id).toBe(false)
