@@ -3,8 +3,6 @@ import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { stringifyMasterCSSPlanJSON } from 'shared/master-css-plan-json'
 import UtilityType from 'shared/utility-type'
-import keyAliases from '../src/key-aliases'
-import nativeValueNamespaces from '../src/native-value-namespaces'
 import { settings } from '../src/settings'
 import sourceUtilities from '../src/utilities'
 import type {
@@ -82,7 +80,7 @@ function createUtilityBuckets(utilities: MasterCSSPlanUtility[] | undefined): Ma
 export function createDefaultPlan(cssPlan: MasterCSSPlan): MasterCSSPlan {
     const utilities = normalizeUtilityOrders(cssPlan.utilities || createSourceUtilities())
     return {
-        version: 2,
+        version: 3,
         settings: { ...settings, ...cssPlan.settings },
         variables: cssPlan.variables,
         animations: cssPlan.animations,
@@ -92,9 +90,7 @@ export function createDefaultPlan(cssPlan: MasterCSSPlan): MasterCSSPlan {
         containerAtRules: cssPlan.containerAtRules,
         selectors: cssPlan.selectors,
         utilities,
-        utilityBuckets: createUtilityBuckets(utilities),
-        keyAliases: clone(keyAliases),
-        nativeValueNamespaces: clone(nativeValueNamespaces)
+        utilityBuckets: createUtilityBuckets(utilities)
     }
 }
 
@@ -102,10 +98,9 @@ export function createDefaultPlanFromSourceFile(file = sourceFile) {
     const utilities = createSourceUtilities()
     return createDefaultPlan(compileCSSPlanFile(file, {
         basePlan: {
-            version: 2,
+            version: 3,
             utilities,
-            utilityBuckets: createUtilityBuckets(utilities),
-            nativeValueNamespaces: clone(nativeValueNamespaces)
+            utilityBuckets: createUtilityBuckets(utilities)
         }
     }).plan)
 }

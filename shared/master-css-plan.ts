@@ -113,15 +113,6 @@ export interface MasterCSSPlanVariant {
 
 export type MasterCSSPlanVariants = MasterCSSPlanVariant[]
 
-export type MasterCSSPlanKeyAliases = Record<string, string>
-
-export interface MasterCSSPlanNativeValueNamespace {
-    properties: string[]
-    variableAliasRefs: string[]
-}
-
-export type MasterCSSPlanNativeValueNamespaces = MasterCSSPlanNativeValueNamespace[]
-
 export type MasterCSSPlanUtilityMatcher =
     | { type: 'static'; name: string }
     | { type: 'pattern'; prefix: string; values: string[] }
@@ -186,7 +177,7 @@ export interface MasterCSSPlan {
      * This is not a legacy Config compatibility marker; engines must reject
      * unsupported plan versions instead of migrating authoring APIs at runtime.
      */
-    version: 2
+    version: 3
     settings?: MasterCSSPlanSettings
     variables?: MasterCSSPlanVariables
     animations?: MasterCSSPlanAnimations
@@ -198,7 +189,5 @@ export interface MasterCSSPlan {
     selectors?: MasterCSSPlanSelectors
     utilities?: MasterCSSPlanUtilities
     utilityBuckets?: MasterCSSPlanUtilityBuckets
-    keyAliases?: MasterCSSPlanKeyAliases
-    nativeValueNamespaces?: MasterCSSPlanNativeValueNamespaces
     debug?: Record<string, unknown>
 }

@@ -11,6 +11,22 @@ export { default as AnimationRule } from './animation-rule'
 export { default as compareRulePriority } from './utils/compare-rule-priority'
 export { default as createRuntimeManifest } from './runtime-manifest'
 export { collectAnimationNamesFromDeclaration } from './utils/collect-animation-names'
+export { builtinKeyAliases } from './key-aliases'
+export type { MasterCSSBuiltinKeyAliases } from './key-aliases'
+export {
+    builtinNamespaces,
+    builtinNamespaceRef,
+    builtinNamespaceSet
+} from './namespaces'
+export type {
+    MasterCSSBuiltinNamespace,
+    MasterCSSBuiltinNamespaceRef
+} from './namespaces'
+export { builtinNativeValueNamespaces } from './native-value-namespaces'
+export type {
+    MasterCSSBuiltinNativeValueNamespace,
+    MasterCSSBuiltinNativeValueNamespaces
+} from './native-value-namespaces'
 export * from 'shared/master-css-plan'
 export type * from './preloaded'
 export type { Utility as GeneratedRule } from './utility'

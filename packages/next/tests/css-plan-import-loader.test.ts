@@ -77,7 +77,7 @@ describe('css plan import loader', () => {
         expect(dependencies).toEqual([planPath])
         expect(readVirtualPlanModule(projectDir)).toContain('new URL("./')
         expect(readVirtualPlanModule(projectDir)).not.toContain('#123')
-        expect(readVirtualPlanSource(projectDir)).toContain('"version":2')
+        expect(readVirtualPlanSource(projectDir)).toContain('"version":3')
         expect(readVirtualPlanSource(projectDir)).toContain('primary')
         expect(readVirtualPlanSource(projectDir)).toContain('#123')
     })

@@ -200,7 +200,7 @@ function createRuntimePlan(plan: RuntimePlanInput) {
     return {
         ...defaultPlan,
         ...rest,
-        version: 2,
+        version: 3,
         settings: {
             ...defaultPlan.settings,
             ...rest.settings,

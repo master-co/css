@@ -7,7 +7,7 @@ import type {
     MasterCSSPlanUtilityLayerName,
     MasterCSSPlanUtilityRule
 } from 'shared/master-css-plan'
-import { createCSS, type MasterCSS } from '../../src'
+import { builtinNativeValueNamespaces, createCSS, type MasterCSS } from '../../src'
 import defaultPlanJSON from '@master/css-preset/default-plan.json' with { type: 'json' }
 
 const defaultPlan = defaultPlanJSON as unknown as MasterCSSPlan
@@ -150,7 +150,7 @@ const nativeFallbackProperties = new Set([
     'zoom',
     '-webkit-text-stroke-width'
 ])
-for (const namespace of defaultPlan.nativeValueNamespaces || []) {
+for (const namespace of builtinNativeValueNamespaces) {
     for (const property of namespace.properties) {
         nativeFallbackProperties.add(property)
     }

@@ -61,7 +61,7 @@ describe('@master/css-integration/client', () => {
             writeFileSync(
                 path.join(enginePackageDir, 'index.d.ts'),
                 [
-                    'export interface MasterCSSPlan { version: 2 }',
+                    'export interface MasterCSSPlan { version: 3 }',
                     'export interface MasterCSSPreloaded { variables?: Record<string, number>; animations?: Record<string, number> }',
                     ''
                 ].join('\n')

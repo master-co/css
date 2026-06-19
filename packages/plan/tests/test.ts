@@ -55,7 +55,7 @@ test('loads CSS plan resources', async () => {
             css: '',
             generatedCSS: ''
         })
-        expect(result.plan.version).toBe(2)
+        expect(result.plan.version).toBe(3)
         expect(result.plan.variables).toContainEqual(expect.objectContaining({
             name: 'color-primary',
             namespace: 'color',
@@ -83,7 +83,7 @@ test('loads CSS plan resources synchronously', () => {
                 tokens
             ]
         })
-        expect(result.plan.version).toBe(2)
+        expect(result.plan.version).toBe(3)
         expect(result.plan.variables).toContainEqual(expect.objectContaining({
             name: 'color-primary',
             namespace: 'color',
@@ -203,8 +203,8 @@ test('turns CSS plan results into JSON sources', async () => {
         const result = await loadPlanJSON(entry)
         const syncResult = loadPlanJSONSync(entry + MASTER_CSS_PLAN_QUERY)
 
-        expect(result.json).toContain('"version":2')
-        expect(JSON.parse(result.json).version).toBe(2)
+        expect(result.json).toContain('"version":3')
+        expect(JSON.parse(result.json).version).toBe(3)
         expect(syncResult.json).toBe(result.json)
     } finally {
         rmSync(cwd, { recursive: true, force: true })

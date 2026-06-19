@@ -550,11 +550,12 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
         expect(css.utilitiesLayer.text).toContain('.bg\\:alias{background-color:var(--color-alias)}')
     })
 
-    test('resolves utility-owned theme namespaces before lowering composed definitions', () => {
+    test('resolves built-in and utility-owned theme namespaces before lowering composed definitions', () => {
         const { plan } = compileCSSPlan(`
             @theme {
                 --content-stripe: 'stripe';
                 --box-shadow-panel: 0 1px 2px #000;
+                --shadow-panel: 0 1px 2px #000;
                 --spacing-card: 1.5rem;
                 --leading-body: 1.7;
                 --color-line-brand: #abcdef;
@@ -576,7 +577,15 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
         }))
         expect(plan.variables).toContainEqual(expect.objectContaining({
             name: 'box-shadow-panel',
-            namespace: 'box-shadow',
+            key: 'box-shadow-panel'
+        }))
+        expect(plan.variables).not.toContainEqual(expect.objectContaining({
+            name: 'box-shadow-panel',
+            namespace: 'box-shadow'
+        }))
+        expect(plan.variables).toContainEqual(expect.objectContaining({
+            name: 'shadow-panel',
+            namespace: 'shadow',
             key: 'panel'
         }))
         expect(plan.variables).toContainEqual(expect.objectContaining({
@@ -597,7 +606,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
 
         const css = createCSS(plan)
         expect(css.create('content:stripe')?.text).toBe('.content\\:stripe{content:var(--content-stripe)}')
-        expect(css.create('shadow:panel')?.text).toBe('.shadow\\:panel{box-shadow:var(--box-shadow-panel)}')
+        expect(css.create('shadow:panel')?.text).toBe('.shadow\\:panel{box-shadow:var(--shadow-panel)}')
         expect(css.create('p:card')?.text).toBe('.p\\:card{padding:var(--spacing-card)}')
         expect(css.create('gap:card')?.text).toBe('.gap\\:card{gap:var(--spacing-card)}')
         expect(css.create('m:card')?.text).toBe('.m\\:card{margin:var(--spacing-card)}')

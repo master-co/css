@@ -1,5 +1,6 @@
 import InlineCode from '~/internal/components/InlineCode'
 import defaultPlan from '@master/css-preset/default-plan.json' with { type: 'json' }
+import { builtinNativeValueNamespaces } from '@master/css-engine'
 import { getUtilityVariableNamespaces, planUtilities } from '~/site/utils/plan-utilities'
 
 const utilities = planUtilities
@@ -12,7 +13,7 @@ const namespaceEntries = (() => {
             addNamespaceSource(entries, variable.namespace, 'theme tokens')
         }
     }
-    for (const namespace of defaultPlan.nativeValueNamespaces || []) {
+    for (const namespace of builtinNativeValueNamespaces) {
         for (const ref of namespace.variableAliasRefs || []) {
             const variableNamespace = ref.replace(/^[=~]/, '')
             for (const property of namespace.properties) {

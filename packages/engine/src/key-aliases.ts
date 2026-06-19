@@ -1,6 +1,6 @@
-import type { MasterCSSPlanKeyAliases } from 'shared/master-css-plan'
+export type MasterCSSBuiltinKeyAliases = Readonly<Record<string, string>>
 
-const keyAliases = {
+const keyAliases: MasterCSSBuiltinKeyAliases = Object.freeze({
     'fg': 'color',
     'gap-x': 'column-gap',
     'gap-y': 'row-gap',
@@ -92,6 +92,7 @@ const keyAliases = {
     'tracking': 'letter-spacing',
     'w': 'width',
     'z': 'z-index'
-} satisfies MasterCSSPlanKeyAliases
+})
 
 export default keyAliases
+export { keyAliases as builtinKeyAliases }

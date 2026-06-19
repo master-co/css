@@ -7,7 +7,7 @@
 
     let containerRef = $state<HTMLDivElement>();
     let plan = $state<MasterCSSPlan>({
-        version: 2,
+        version: 3,
         utilities: [
             {
                 id: "btn",

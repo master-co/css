@@ -18,6 +18,7 @@
     },
     "dependencies": {
         "@master/css": "workspace:^",
+        "@master/css-engine": "workspace:^",
         "@master/css-lexer": "workspace:^",
         "@master/css-preset": "workspace:^",
         "@techor/extend": "^3.2.5",

@@ -1,9 +1,7 @@
 import type {
     MasterCSSPlanDefaultMode,
-    MasterCSSPlanKeyAliases,
     MasterCSSPlanUtilityKind,
     MasterCSSPlanModeTrigger,
-    MasterCSSPlanNativeValueNamespaces,
     MasterCSSPlanUtilityLayerName,
     MasterCSSPlanVariant
 } from './master-css-plan.js'
@@ -154,8 +152,6 @@ export interface CSSDirectivePlanInput {
     animationOptions?: CSSDirectiveAnimationOptions
     modes?: string[]
     modeTrigger?: CSSDirectiveModeTrigger
-    keyAliases?: MasterCSSPlanKeyAliases
-    nativeValueNamespaces?: MasterCSSPlanNativeValueNamespaces
 }
 
 export interface CSSDirectiveExtractionPolicy {

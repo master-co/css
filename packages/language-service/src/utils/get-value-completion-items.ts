@@ -1,5 +1,6 @@
 import { type CompletionItem, CompletionItemKind } from 'vscode-languageserver-protocol'
 import { MasterCSS, createDefaultCSS, type Variable, generateCSS } from '../master-css'
+import { builtinKeyAliases, builtinNativeValueNamespaces } from '@master/css-engine'
 import createCSSMarkdownDocumentation from './create-css-markdown-documentation'
 import sortCompletionItems from './sort-completion-items'
 import { getMdnPropertySyntax, getMdnPropertyValueNames } from './mdn-css-data'
@@ -66,7 +67,7 @@ function isPureNativePropertyUtility(utility: MasterCSS['definedUtilities'][numb
 
 export default function getValueCompletionItems(css: MasterCSS = createDefaultCSS(), ruleKey: string, valuePrefix = ''): CompletionItem[] {
     const completionItems: CompletionItem[] = []
-    const canonicalRuleKey = css.plan.keyAliases?.[ruleKey] || ruleKey
+    const canonicalRuleKey = builtinKeyAliases[ruleKey] || ruleKey
     const nativeUtility = css.definedUtilities.find(({ keys }) => keys?.includes(canonicalRuleKey))
     const nativeUtilityKey = nativeUtility?.emit.type === 'property'
         ? nativeUtility.emit.property
@@ -188,7 +189,7 @@ export default function getValueCompletionItems(css: MasterCSS = createDefaultCS
 
     }
 
-    for (const namespace of css.plan.nativeValueNamespaces || []) {
+    for (const namespace of builtinNativeValueNamespaces) {
         if (!namespace.properties.includes(canonicalRuleKey)) continue
         const usedKeys = new Set<string>()
         for (const ref of namespace.variableAliasRefs || []) {

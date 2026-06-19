@@ -2,7 +2,7 @@ import { cssRuntime } from '../src'
 import type { CSSRuntime } from '../src'
 import type { MasterCSSPlan } from 'shared/master-css-plan'
 
-const plan = { version: 2 } satisfies MasterCSSPlan
+const plan = { version: 3 } satisfies MasterCSSPlan
 
 class RuntimeElement extends HTMLElement {
     cssRuntime?: CSSRuntime

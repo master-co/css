@@ -1,14 +1,16 @@
 import { fileURLToPath } from 'node:url'
 import { dirname, resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
-import { createCSS } from '@master/css-engine'
+import {
+    builtinKeyAliases,
+    builtinNamespaceSet,
+    builtinNativeValueNamespaces,
+    createCSS
+} from '@master/css-engine'
 import UtilityType from 'shared/utility-type'
 import { createDefaultPlanFromSourceFile } from '../scripts/generate-default-plan'
 import defaultPlanJSON from '../src/default-plan.json' with { type: 'json' }
 import type { MasterCSSPlan } from 'shared/master-css-plan'
-import keyAliases from '../src/key-aliases'
-import { namespaceSet } from '../src/namespaces'
-import nativeValueNamespaces from '../src/native-value-namespaces'
 import sourceUtilities from '../src/utilities'
 
 const defaultPlan = defaultPlanJSON as unknown as MasterCSSPlan
@@ -213,16 +215,16 @@ describe('@master/css-preset defaultPlan', () => {
             .map((variable) => variable.namespace)
             .filter((namespace): namespace is string => Boolean(namespace)))
         const variableAliasRefs = [
-            ...(defaultPlan.nativeValueNamespaces || []).flatMap((namespace) => namespace.variableAliasRefs || []),
+            ...builtinNativeValueNamespaces.flatMap((namespace) => namespace.variableAliasRefs),
             ...(defaultPlan.utilities || []).flatMap((utility) => utility.variableAliasRefs || [])
         ]
 
         for (const namespace of variableNamespaces) {
-            expect(namespaceSet.has(namespace), namespace).toBe(true)
+            expect(builtinNamespaceSet.has(namespace), namespace).toBe(true)
         }
         for (const ref of variableAliasRefs) {
             expect(ref[0] === '~' || ref[0] === '=', ref).toBe(true)
-            expect(namespaceSet.has(ref.slice(1)), ref).toBe(true)
+            expect(builtinNamespaceSet.has(ref.slice(1)), ref).toBe(true)
         }
     })
 
@@ -434,9 +436,9 @@ describe('@master/css-preset defaultPlan', () => {
     it('moves native value namespace utilities out of matcher definitions', () => {
         const matcherKeys = collectMatcherKeys(defaultPlan)
         const utilityIds = new Set((defaultPlan.utilities || []).map((utility) => utility.id))
-        const nativeValueNamespaceProperties = nativeValueNamespaces.flatMap(({ properties }) => properties)
+        const nativeValueNamespaceProperties = builtinNativeValueNamespaces.flatMap(({ properties }) => properties)
 
-        expect(defaultPlan.nativeValueNamespaces).toEqual(nativeValueNamespaces)
+        expect('nativeValueNamespaces' in defaultPlan).toBe(false)
         expect(new Set(nativeValueNamespaceProperties).size).toBe(nativeValueNamespaceProperties.length)
         expect(nativeValueNamespaceProperties).toHaveLength(153)
         for (const property of nativeValueNamespaceProperties) {
@@ -461,9 +463,9 @@ describe('@master/css-preset defaultPlan', () => {
     it('keeps curated key aliases out of utility matcher keys', () => {
         const matcherKeys = collectMatcherKeys(defaultPlan)
 
-        expect(defaultPlan.keyAliases).toEqual(keyAliases)
-        expect(defaultPlan.keyAliases).toMatchObject(retainedRadiusKeyAliases)
-        for (const alias of Object.keys(keyAliases)) {
+        expect('keyAliases' in defaultPlan).toBe(false)
+        expect(builtinKeyAliases).toMatchObject(retainedRadiusKeyAliases)
+        for (const alias of Object.keys(builtinKeyAliases)) {
             if (retainedMatcherAliases.has(alias)) continue
             expect(matcherKeys.has(alias), alias).toBe(false)
         }
@@ -471,7 +473,7 @@ describe('@master/css-preset defaultPlan', () => {
             expect(matcherKeys.has(alias), alias).toBe(true)
         }
         for (const alias of removedAliases) {
-            expect(defaultPlan.keyAliases?.[alias], alias).toBeUndefined()
+            expect(builtinKeyAliases[alias], alias).toBeUndefined()
             expect(matcherKeys.has(alias), alias).toBe(false)
         }
     })

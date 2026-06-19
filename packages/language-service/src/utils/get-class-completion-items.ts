@@ -1,5 +1,6 @@
 import { type CompletionItem, CompletionItemKind } from 'vscode-languageserver-protocol'
 import { UtilityType, MasterCSS, createDefaultCSS, generateCSS } from '../master-css'
+import { builtinKeyAliases, builtinNativeValueNamespaces } from '@master/css-engine'
 import createCSSMarkdownDocumentation from './create-css-markdown-documentation'
 import sortCompletionItems from './sort-completion-items'
 import getUtilityInfo from './get-utility-info'
@@ -66,11 +67,11 @@ export default function getClassCompletionItems(css: MasterCSS = createDefaultCS
         }
     }
 
-    for (const [key, canonicalKey] of Object.entries(css.plan.keyAliases || {})) {
+    for (const [key, canonicalKey] of Object.entries(builtinKeyAliases)) {
         addPropertyCompletionItem(key, canonicalKey)
     }
 
-    for (const namespace of css.plan.nativeValueNamespaces || []) {
+    for (const namespace of builtinNativeValueNamespaces) {
         for (const property of namespace.properties) {
             addPropertyCompletionItem(property)
         }

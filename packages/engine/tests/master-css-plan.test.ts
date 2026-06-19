@@ -7,7 +7,7 @@ import createRuntimeManifest from '../src/runtime-manifest'
 describe.concurrent('MasterCSSPlan execution', () => {
     it('executes enum pattern utilities after exact static utilities', () => {
         const plan: MasterCSSPlan = {
-            version: 2,
+            version: 3,
             settings: {
                 modes: []
             },
@@ -63,20 +63,13 @@ describe.concurrent('MasterCSSPlan execution', () => {
 
     it('tries raw managed utilities before key alias fallback', () => {
         const plan: MasterCSSPlan = {
-            version: 2,
+            version: 3,
             settings: {
                 modes: []
             },
             variables: [
                 { name: 'color-line', key: 'line', namespace: 'color', type: 'string', value: '#cccccc' }
             ],
-            keyAliases: {
-                b: 'border'
-            },
-            nativeValueNamespaces: [{
-                properties: ['border'],
-                variableAliasRefs: ['~color-line', '~color']
-            }],
             utilities: [
                 {
                     id: 'b:<number>',
@@ -138,7 +131,7 @@ describe.concurrent('MasterCSSPlan execution', () => {
 
     it('executes pre-bucketed utility and variable aliases without config-style resolution', () => {
         const plan: MasterCSSPlan = {
-            version: 2,
+            version: 3,
             settings: {
                 rootSize: 16,
                 modes: []
@@ -180,7 +173,7 @@ describe.concurrent('MasterCSSPlan execution', () => {
 
     it('resolves variable alias refs during plan loading without serialized namespaces', () => {
         const plan: MasterCSSPlan = {
-            version: 2,
+            version: 3,
             settings: {
                 rootSize: 16,
                 modes: []
@@ -254,9 +247,34 @@ describe.concurrent('MasterCSSPlan execution', () => {
             .toBe('.r\\:card{border-radius:var(--radius-card)}')
     })
 
-    it('rejects v1 plans instead of compatibility-loading them', () => {
-        expect(() => createCSS({ version: 1 } as unknown as MasterCSSPlan))
-            .toThrow('Unsupported MasterCSSPlan version. Expected version 2.')
+    it('ignores plan-carried registry fields', () => {
+        const plan = {
+            version: 3,
+            settings: {
+                rootSize: 16,
+                modes: []
+            },
+            variables: [
+                { name: 'spacing-card', key: 'card', namespace: 'spacing', type: 'number', value: 16 }
+            ],
+            keyAliases: {
+                fakeAlias: 'color'
+            },
+            nativeValueNamespaces: [{
+                properties: ['fake-property'],
+                variableAliasRefs: ['~spacing']
+            }]
+        } as unknown as MasterCSSPlan
+        const css = createCSS(plan)
+
+        expect(css.create('fakeAlias:#fff')).toBeUndefined()
+        expect(css.create('fake-property:card')).toBeUndefined()
+        expect(css.create('m:card')?.text).toBe('.m\\:card{margin:var(--spacing-card)}')
+    })
+
+    it('rejects v2 plans instead of compatibility-loading them', () => {
+        expect(() => createCSS({ version: 2 } as unknown as MasterCSSPlan))
+            .toThrow('Unsupported MasterCSSPlan version. Expected version 3.')
     })
 
     it('uses compiled at-rule aliases from the plan', () => {
@@ -265,7 +283,7 @@ describe.concurrent('MasterCSSPlan execution', () => {
             nodes: [{ type: 'number', name: 'width', operator: '>=', value: 48, unit: 'rem' }]
         } satisfies NonNullable<MasterCSSPlan['atRules']>[string]
         const plan: MasterCSSPlan = {
-            version: 2,
+            version: 3,
             settings: {
                 rootSize: 16,
                 modes: []
@@ -299,7 +317,7 @@ describe.concurrent('MasterCSSPlan execution', () => {
 
     it('serializes generated runtime manifest rules in layer order', () => {
         const plan: MasterCSSPlan = {
-            version: 2,
+            version: 3,
             settings: {
                 rootSize: 16,
                 modes: []

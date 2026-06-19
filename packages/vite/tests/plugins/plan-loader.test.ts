@@ -54,7 +54,7 @@ describe('PlanLoaderPlugin', () => {
         expect(resolvedId).toBe(toResolvedMasterCSSPlanId(path.join(FIXTURE_DIR, 'theme.css')))
         expect(addWatchFile).toHaveBeenCalledWith(path.join(FIXTURE_DIR, 'theme.css'))
         expect(addWatchFile).toHaveBeenCalledWith(themeComponentsPath)
-        expect(code).toContain('"version":2')
+        expect(code).toContain('"version":3')
         expect(code).toContain('accent')
         expect(code).toContain('#456')
         expect(code).toContain('badge')

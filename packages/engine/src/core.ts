@@ -19,8 +19,6 @@ import type {
     MasterCSSPlan,
     MasterCSSPlanAtRules,
     MasterCSSPlanAnimations,
-    MasterCSSPlanKeyAliases,
-    MasterCSSPlanNativeValueNamespace,
     MasterCSSPlanSettings,
     MasterCSSPlanUtility,
     MasterCSSPlanUtilityBuckets,
@@ -30,6 +28,8 @@ import type {
     MasterCSSPlanVariantBranch,
     MasterCSSPlanVariantToken
 } from 'shared/master-css-plan'
+import builtinKeyAliases from './key-aliases'
+import builtinNativeValueNamespaces, { type MasterCSSBuiltinNativeValueNamespace } from './native-value-namespaces'
 
 export type CompiledUtility = MasterCSSPlanUtility & {
     variables?: Map<string, Variable>
@@ -63,8 +63,8 @@ const DEFAULT_SETTINGS: EngineSettings = {
 }
 
 function assertMasterCSSPlan(plan: MasterCSSPlan): asserts plan is MasterCSSPlan {
-    if (!plan || plan.version !== 2) {
-        throw new TypeError('Unsupported MasterCSSPlan version. Expected version 2.')
+    if (!plan || plan.version !== 3) {
+        throw new TypeError('Unsupported MasterCSSPlan version. Expected version 3.')
     }
 }
 
@@ -289,7 +289,7 @@ export default class MasterCSS {
             ...(this.plan.settings || {}),
             modes: this.plan.settings?.modes ? [...this.plan.settings.modes] : [...DEFAULT_SETTINGS.modes]
         }
-        this.loadKeyAliases(this.plan.keyAliases)
+        this.loadKeyAliases()
         this.loadVariables()
         this.loadAnimations()
         this.loadAtRuleAliases()
@@ -299,9 +299,8 @@ export default class MasterCSS {
         this.loadUtilities(resolveAliasRef)
     }
 
-    private loadKeyAliases(aliases: MasterCSSPlanKeyAliases | undefined) {
-        if (!aliases) return
-        for (const [key, property] of Object.entries(aliases)) {
+    private loadKeyAliases() {
+        for (const [key, property] of Object.entries(builtinKeyAliases)) {
             if (key && property && key !== property) {
                 this.keyAliases.set(key, property)
             }
@@ -549,7 +548,7 @@ export default class MasterCSS {
 
     private createNativeValueNamespaceUtility(
         property: string,
-        namespace: Pick<MasterCSSPlanNativeValueNamespace, 'variableAliasRefs'>
+        namespace: Pick<MasterCSSBuiltinNativeValueNamespace, 'variableAliasRefs'>
     ): MasterCSSPlanUtility {
         return {
             id: property,
@@ -571,7 +570,7 @@ export default class MasterCSS {
     }
 
     private loadNativeValueNamespaces(resolveAliasRef: (ref: string) => MasterCSSPlanVariableAliasSet) {
-        for (const namespace of this.plan.nativeValueNamespaces || []) {
+        for (const namespace of builtinNativeValueNamespaces) {
             if (!namespace.properties?.length || !namespace.variableAliasRefs?.length) continue
             for (const property of namespace.properties) {
                 if (!property || this.nativeValueNamespaceUtilities.has(property)) continue

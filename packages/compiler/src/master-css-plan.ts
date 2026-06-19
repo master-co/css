@@ -15,8 +15,6 @@ import type {
     MasterCSSPlanAtRules,
     MasterCSSPlanCSSDeclarationPrimitive,
     MasterCSSPlanCSSDeclarations,
-    MasterCSSPlanNativeValueNamespace,
-    MasterCSSPlanNativeValueNamespaces,
     MasterCSSPlanSelectorNode,
     MasterCSSPlanSelectors,
     MasterCSSPlanUtility,
@@ -35,6 +33,7 @@ import {
     parseAt,
     parseSelector
 } from '@master/css-engine/compiler'
+import { builtinNamespaces } from '@master/css-engine'
 import { isNativeCSSShorthandProperty } from 'shared/native-css-shorthand'
 
 export type CSSDirectivePlanInput = SharedCSSDirectivePlanInput
@@ -43,7 +42,6 @@ export interface CreateMasterCSSPlanOptions {
     basePlan?: MasterCSSPlan
 }
 
-const CONDITION_VARIABLE_NAMESPACES = ['breakpoint', 'container']
 const NUMERIC_THEME_NAMESPACES = new Set(['font-size', 'radius', 'spacing', 'breakpoint', 'container'])
 const UNITFUL_NUMERIC_TOKEN = /^([+-]?(?:\d+(?:\.\d+)?|\.\d+))(px|rem)?$/
 
@@ -104,19 +102,8 @@ function addUtilityVariableNamespaces(namespaces: Set<string>, utilities: (Parti
     }
 }
 
-function addNativeValueNamespaceVariableNamespaces(namespaces: Set<string>, nativeValueNamespaces: MasterCSSPlanNativeValueNamespaces | undefined) {
-    for (const namespace of nativeValueNamespaces || []) {
-        for (const ref of namespace.variableAliasRefs || []) {
-            addVariableAliasRefNamespace(namespaces, ref)
-        }
-        for (const property of namespace.properties || []) {
-            addImplicitUtilityNamespace(namespaces, property)
-        }
-    }
-}
-
 function collectVariableNamespaces(input: CSSDirectivePlanInput = {}, options: CreateMasterCSSPlanOptions = {}) {
-    const namespaces = new Set<string>(CONDITION_VARIABLE_NAMESPACES)
+    const namespaces = new Set<string>(builtinNamespaces)
     for (const variable of options.basePlan?.variables || []) {
         addVariableNamespace(namespaces, variable.namespace)
     }
@@ -125,8 +112,6 @@ function collectVariableNamespaces(input: CSSDirectivePlanInput = {}, options: C
     }
     addUtilityVariableNamespaces(namespaces, options.basePlan?.utilities)
     addUtilityVariableNamespaces(namespaces, input.utilities)
-    addNativeValueNamespaceVariableNamespaces(namespaces, options.basePlan?.nativeValueNamespaces)
-    addNativeValueNamespaceVariableNamespaces(namespaces, input.nativeValueNamespaces)
     return [...namespaces].sort((a, b) => b.length - a.length || a.localeCompare(b))
 }
 
@@ -676,43 +661,6 @@ function mergeRecords<T>(base: Record<string, T> | undefined, next: Record<strin
         : undefined
 }
 
-function getNativeValueNamespaceKey(namespace: Pick<MasterCSSPlanNativeValueNamespace, 'variableAliasRefs'>) {
-    return JSON.stringify({
-        variableAliasRefs: namespace.variableAliasRefs || []
-    })
-}
-
-function mergeNativeValueNamespaces(
-    base: MasterCSSPlanNativeValueNamespaces | undefined,
-    next: MasterCSSPlanNativeValueNamespaces | undefined
-): MasterCSSPlanNativeValueNamespaces | undefined {
-    if (!base?.length && !next?.length) return
-
-    const byProperty = new Map<string, Pick<MasterCSSPlanNativeValueNamespace, 'variableAliasRefs'>>()
-    for (const namespace of [...(base || []), ...(next || [])]) {
-        for (const property of namespace.properties || []) {
-            byProperty.set(property, {
-                variableAliasRefs: [...(namespace.variableAliasRefs || [])]
-            })
-        }
-    }
-
-    const groups = new Map<string, MasterCSSPlanNativeValueNamespace>()
-    for (const [property, namespace] of byProperty) {
-        const key = getNativeValueNamespaceKey(namespace)
-        const group = groups.get(key)
-        if (group) {
-            group.properties.push(property)
-        } else {
-            groups.set(key, {
-                properties: [property],
-                variableAliasRefs: [...namespace.variableAliasRefs]
-            })
-        }
-    }
-    return groups.size ? [...groups.values()] : undefined
-}
-
 function mergeAnimationOptions(
     base: MasterCSSPlan['animationOptions'],
     next: MasterCSSPlan['animationOptions'],
@@ -728,84 +676,15 @@ function mergeAnimationOptions(
     return Object.keys(merged).length ? merged : undefined
 }
 
-function utilityKeys(utility: MasterCSSPlanUtility) {
-    const keys = new Set([utility.id, utility.name].filter(Boolean))
-    for (const matcher of utility.matchers || []) {
-        if (matcher.type === 'key') {
-            matcher.keys.forEach((key) => keys.add(key))
-        }
-    }
-    return keys
-}
-
-function addVariableAliasRef(utility: MasterCSSPlanUtility, ref: string) {
-    utility.variableAliasRefs ??= []
-    if (!utility.variableAliasRefs.includes(ref)) utility.variableAliasRefs.push(ref)
-}
-
-function addNativeValueNamespaceAliasRef(
-    namespace: MasterCSSPlanNativeValueNamespace,
-    property: string,
-    groups: Map<string, MasterCSSPlanNativeValueNamespace>,
-    namespaces: Set<string>
-) {
-    const variableAliasRefs = [...(namespace.variableAliasRefs || [])]
-    const ref = '=' + property
-    if (namespaces.has(property) && !variableAliasRefs.includes(ref)) {
-        variableAliasRefs.push(ref)
-    }
-
-    const key = getNativeValueNamespaceKey({
-        variableAliasRefs
-    })
-    const group = groups.get(key)
-    if (group) {
-        group.properties.push(property)
-    } else {
-        groups.set(key, {
-            properties: [property],
-            variableAliasRefs
-        })
-    }
-}
-
-function addNativeValueNamespaceOwnVariableRefs(plan: MasterCSSPlan, namespaces: Set<string>) {
-    if (!plan.nativeValueNamespaces?.length) return
-    const groups = new Map<string, MasterCSSPlanNativeValueNamespace>()
-    for (const namespace of plan.nativeValueNamespaces) {
-        for (const property of namespace.properties || []) {
-            addNativeValueNamespaceAliasRef(namespace, property, groups, namespaces)
-        }
-    }
-    plan.nativeValueNamespaces = groups.size ? [...groups.values()] : undefined
-}
-
-function addOwnNamespaceVariableRefs(plan: MasterCSSPlan) {
-    const namespaces = new Set<string>()
-    for (const variable of plan.variables || []) {
-        if (variable.namespace) namespaces.add(variable.namespace)
-    }
-    if (!namespaces.size) return
-
-    for (const utility of plan.utilities || []) {
-        const keys = utilityKeys(utility)
-        for (const namespace of namespaces) {
-            if (keys.has(namespace)) addVariableAliasRef(utility, '=' + namespace)
-        }
-    }
-    addNativeValueNamespaceOwnVariableRefs(plan, namespaces)
-}
-
 function mergePlan(basePlan: MasterCSSPlan | undefined, fragment: MasterCSSPlan): MasterCSSPlan {
     if (!basePlan) {
         const plan = clone(fragment)
-        addOwnNamespaceVariableRefs(plan)
         plan.utilityBuckets = compileUtilityBuckets(plan.utilities)
         return plan
     }
 
     const plan: MasterCSSPlan = {
-        version: 2,
+        version: 3,
         settings: { ...(basePlan.settings || {}), ...(fragment.settings || {}) },
         variables: mergeBy(basePlan.variables, fragment.variables, (variable) => variable.name),
         animations: mergeRecords(basePlan.animations, fragment.animations),
@@ -816,11 +695,8 @@ function mergePlan(basePlan: MasterCSSPlan | undefined, fragment: MasterCSSPlan)
         containerAtRules: mergeRecords(basePlan.containerAtRules, fragment.containerAtRules),
         selectors: mergeRecords(basePlan.selectors, fragment.selectors),
         utilities: mergeBy(basePlan.utilities, fragment.utilities, (utility) => `${utility.id}\0${utility.layer || ''}`),
-        keyAliases: mergeRecords(basePlan.keyAliases, fragment.keyAliases),
-        nativeValueNamespaces: mergeNativeValueNamespaces(basePlan.nativeValueNamespaces, fragment.nativeValueNamespaces),
         debug: mergeRecords(basePlan.debug, fragment.debug)
     }
-    addOwnNamespaceVariableRefs(plan)
     plan.utilityBuckets = compileUtilityBuckets(plan.utilities)
     return Object.fromEntries(Object.entries(plan).filter(([, value]) =>
         value !== undefined
@@ -844,7 +720,7 @@ export function createMasterCSSPlan(input: CSSDirectivePlanInput = {}, options: 
         ...(input.modes?.length ? { modes: [...input.modes] } : {})
     }
     const variantBasePlan = mergePlan(options.basePlan, {
-        version: 2,
+        version: 3,
         ...(Object.keys(settings).length ? { settings } : {}),
         ...(variables?.length ? { variables } : {}),
         ...(atRules ? { atRules } : {}),
@@ -856,7 +732,7 @@ export function createMasterCSSPlan(input: CSSDirectivePlanInput = {}, options: 
     const animations = compileAnimations(input.animations)
     const animationOptions = compileAnimationOptions(input.animationOptions)
     const fragment: MasterCSSPlan = {
-        version: 2,
+        version: 3,
         ...(Object.keys(settings).length ? { settings } : {}),
         ...(variables?.length ? { variables } : {}),
         ...(animations ? { animations } : {}),
@@ -866,9 +742,7 @@ export function createMasterCSSPlan(input: CSSDirectivePlanInput = {}, options: 
         ...(breakpointAtRules ? { breakpointAtRules } : {}),
         ...(containerAtRules ? { containerAtRules } : {}),
         ...(selectors ? { selectors } : {}),
-        ...(utilities?.length ? { utilities } : {}),
-        ...(input.keyAliases ? { keyAliases: input.keyAliases } : {}),
-        ...(input.nativeValueNamespaces?.length ? { nativeValueNamespaces: input.nativeValueNamespaces } : {})
+        ...(utilities?.length ? { utilities } : {})
     }
     return mergePlan(options.basePlan, fragment)
 }

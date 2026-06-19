@@ -75,27 +75,26 @@ describe.concurrent('createMasterCSSPlan', () => {
         expect(plan.animationOptions?.fade).toEqual({ static: true })
     })
 
-    it('merges key aliases with fragment values taking precedence', () => {
+    it('does not serialize plan registry input', () => {
         const plan = createMasterCSSPlan({
-            keyAliases: {
-                w: 'inline-size',
-                z: 'z-index'
-            }
-        }, {
+            keyAliases: { w: 'inline-size' },
+            nativeValueNamespaces: [{
+                properties: ['width'],
+                variableAliasRefs: ['~spacing']
+            }]
+        } as any, {
             basePlan: {
-                version: 2,
-                keyAliases: {
-                    w: 'width',
-                    h: 'height'
-                }
-            }
+                version: 3,
+                keyAliases: { h: 'height' },
+                nativeValueNamespaces: [{
+                    properties: ['height'],
+                    variableAliasRefs: ['~spacing']
+                }]
+            } as any
         })
 
-        expect(plan.keyAliases).toEqual({
-            h: 'height',
-            w: 'inline-size',
-            z: 'z-index'
-        })
+        expect('keyAliases' in plan).toBe(false)
+        expect('nativeValueNamespaces' in plan).toBe(false)
     })
 
     it('lowers breakpoint and container aliases into at-rule node maps', () => {

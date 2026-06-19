@@ -24,6 +24,7 @@
     "dependencies": {
         "@master/css": "workspace:^",
         "@master/css-compiler": "workspace:^",
+        "@master/css-engine": "workspace:^",
         "@master/css-preset": "workspace:^",
         "@master/css-validator": "workspace:^",
         "@monaco-editor/react": "^4.7.0",

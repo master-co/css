@@ -32,9 +32,9 @@ describe('@master/css-integration module helpers', () => {
     })
 
     it('serializes plan and preloaded modules', () => {
-        expect(EMPTY_PLAN_JSON).toBe('{"version":2}')
+        expect(EMPTY_PLAN_JSON).toBe('{"version":3}')
         expect(EMPTY_PRELOADED_MODULE).toBe('export default { variables: {}, animations: {} };')
-        expect(toPlanJSON({ version: 2 })).toBe('{"version":2}')
+        expect(toPlanJSON({ version: 3 })).toBe('{"version":3}')
         expect(toPreloadedModule({ variables: { color: 1 } })).toBe('export default {"variables":{"color":1},"animations":{}};')
         expect(normalizePreloaded()).toEqual({ variables: {}, animations: {} })
     })

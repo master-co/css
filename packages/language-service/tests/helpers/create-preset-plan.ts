@@ -94,7 +94,7 @@ function addUtilityBucketIndexes(
 }
 
 export function createPresetPlan(plan: PresetPlanInput = {}): MasterCSSPlan {
-    if (plan.version === 2) return plan as MasterCSSPlan
+    if (plan.version === 3) return plan as MasterCSSPlan
     const defaultUtilities = defaultPlan.utilities || []
     const utilities = (plan.utilities || []).map((utility, index) => normalizeUtility(utility as PlanUtilityDraft, defaultUtilities.length + index))
     const utilityBuckets = cloneUtilityBuckets()
