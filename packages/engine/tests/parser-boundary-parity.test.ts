@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest'
 import { createCSS } from '../src'
-import { clonePlan, createDefaultCSS, createPlanWithStaticUtilities } from './helpers/css-tester'
+import { clonePlan, createDefaultCSS, createPlanWithSemanticUtilities } from './helpers/css-tester'
 
 describe.concurrent('migrated parser boundary parity', () => {
     test('parses primitive values with the old public parse-value expectations', () => {
@@ -76,7 +76,7 @@ describe.concurrent('migrated parser boundary parity', () => {
             modeTrigger: 'class',
             modes: ['light', 'dark']
         }
-        const componentPlan = createPlanWithStaticUtilities([
+        const componentPlan = createPlanWithSemanticUtilities([
             {
                 name: 'light',
                 rules: [
@@ -103,7 +103,7 @@ describe.concurrent('migrated parser boundary parity', () => {
             ...(groupedPlan.variants || []),
             { token: '::both', branches: [{ selector: '&::before,&::after' }] }
         ]
-        const groupedCSS = createCSS(createPlanWithStaticUtilities([
+        const groupedCSS = createCSS(createPlanWithSemanticUtilities([
             {
                 name: 'btn',
                 rules: [{ selector: '&::before,&::after', declarations: { display: 'block' } }]

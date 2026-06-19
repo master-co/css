@@ -3,18 +3,18 @@ import { jsxTester } from './testers'
 
 jsxTester.run('class matching main utilities', rule, {
     valid: [
-        { code: 'export default { utilities: [{ name: "btn", type: -2, layer: "components", rules: [{ selector: "&", declarations: { display: "block" } }] }] }' },
-        { code: 'export default { utilities: [{ name: "btn", type: -2, layer: "components", rules: [{ selector: "&", declarations: { fontSize: "0.75rem", height: "1.5rem", paddingLeft: "0.5rem", paddingRight: "0.5rem", borderRadius: "0.5rem" } }, { selector: "&", declarations: { display: "inline-flex" } }] }] }' },
-        { code: 'export default { utilities: [{ name: "btn", type: -2, layer: "components", rules: [{ selector: "&", declarations: { color: "text-align:cente" } }] }] }' }
+        { code: 'import UtilityType from "shared/utility-type"; export default { utilities: [{ name: "btn", type: UtilityType.Semantic, layer: "components", rules: [{ selector: "&", declarations: { display: "block" } }] }] }' },
+        { code: 'import UtilityType from "shared/utility-type"; export default { utilities: [{ name: "btn", type: UtilityType.Semantic, layer: "components", rules: [{ selector: "&", declarations: { fontSize: "0.75rem", height: "1.5rem", paddingLeft: "0.5rem", paddingRight: "0.5rem", borderRadius: "0.5rem" } }, { selector: "&", declarations: { display: "inline-flex" } }] }] }' },
+        { code: 'import UtilityType from "shared/utility-type"; export default { utilities: [{ name: "btn", type: UtilityType.Semantic, layer: "components", rules: [{ selector: "&", declarations: { color: "red" } }] }] }' }
     ],
     invalid: [
         {
-            code: 'const classes = "text-align:cente"',
+            code: 'const classes = "text-decoration:bad()"',
             settings: { '@master/css': { classDeclarations: ['classes'] } },
             errors: [{ messageId: 'invalidClass' }]
         },
         {
-            code: 'const classes = { btn: ["text-align:cente"] }',
+            code: 'const classes = { btn: ["text-decoration:bad()"] }',
             settings: { '@master/css': { classDeclarations: ['classes'] } },
             errors: [{ messageId: 'invalidClass' }]
         },

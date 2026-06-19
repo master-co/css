@@ -1,11 +1,11 @@
 import { describe, expect, test } from 'vitest'
 import { createCSS } from '../src'
 import {
-    createCSSWithStaticUtilities,
+    createCSSWithSemanticUtilities,
     createCSSWithVariables,
     createDefaultCSS,
     clonePlan,
-    createPlanWithStaticUtilities,
+    createPlanWithSemanticUtilities,
     expectClassText,
     expectLayerText
 } from './helpers/css-tester'
@@ -84,7 +84,7 @@ describe.concurrent('default plan utility parity', () => {
         expect(css.create('width:block')).toBeUndefined()
     })
 
-    test('prefers raw managed dynamic utilities before native and static fallbacks', () => {
+    test('prefers raw managed dynamic utilities before native and semantic fallbacks', () => {
         const css = createDefaultCSS()
 
         expectClassText(css, 'stroke:.75', 'stroke-width:0.75')
@@ -511,8 +511,8 @@ describe.concurrent('plan-driven layer and lifecycle parity', () => {
         })
     })
 
-    test('executes static component utilities from plan records', () => {
-        const css = createCSSWithStaticUtilities([
+    test('executes semantic component utilities from plan records', () => {
+        const css = createCSSWithSemanticUtilities([
             {
                 name: 'btn',
                 rules: [
@@ -525,8 +525,8 @@ describe.concurrent('plan-driven layer and lifecycle parity', () => {
         expectLayerText(css, 'btn', 'componentsLayer', '.btn{display:inline-flex}.btn{height:2.5rem}')
     })
 
-    test('keeps static utility declarations in their configured layer', () => {
-        const css = createCSS(createPlanWithStaticUtilities([
+    test('keeps semantic utility declarations in their configured layer', () => {
+        const css = createCSS(createPlanWithSemanticUtilities([
             {
                 name: 'prose',
                 layer: 'defaults',
@@ -563,6 +563,7 @@ describe.concurrent('plan-driven layer and lifecycle parity', () => {
             'block',
             'fixed',
             'round',
+            'text-center',
             'b:0',
             'm:0',
             'margin-block:0',
@@ -579,8 +580,7 @@ describe.concurrent('plan-driven layer and lifecycle parity', () => {
             'pb:0',
             'pl:0',
             'pr:0',
-            'pt:0',
-            'text-center'
+            'pt:0'
         ])
     })
 

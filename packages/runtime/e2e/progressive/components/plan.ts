@@ -1,8 +1,10 @@
+import UtilityType from 'shared/utility-type'
+
 export default {
     utilities: [
         {
             name: 'btn',
-            type: -2,
+            type: UtilityType.Semantic,
             layer: 'components',
             rules: [
                 { selector: '&', declarations: { 'background-color': 'var(--color-foo)' } }

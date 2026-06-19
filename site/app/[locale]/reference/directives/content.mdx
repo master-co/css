@@ -271,7 +271,9 @@ Defines managed utility classes in the `utilities` layer. Utilities still win ov
 }
 ```
 
-Managed definitions accept native declarations, `@compose`, nested selectors, native nested at-rules, and `@variant` condition blocks. Entry names can be static bare identifiers like `content-auto` or enum patterns like `text-<left|center|right>`.
+Managed definitions accept native declarations, `@compose`, nested selectors, native nested at-rules, and `@variant` condition blocks. Entry names can be bare identifiers like `content-auto` or enum patterns like `text-<left|center|right>`.
+
+Bare entries without `:` are semantic utilities, including enum patterns. Semantic enum patterns stay on the semantic priority tier and still substitute `--value()` for the matched value. Entries containing `:` are dynamic colon entries and keep shorthand or normal priority inference from their declarations.
 
 Enum patterns require exactly one `<...>` segment with at least two pipe-separated values. They do not define theme namespace patterns, so token and shorthand classes keep using the colon value pipeline:
 

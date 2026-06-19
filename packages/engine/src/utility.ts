@@ -67,6 +67,16 @@ function getUtilityPatternMatch(className: string, utility: CompiledUtility) {
     }
 }
 
+function getExactUtilityDefinitionMatch(className: string, utility: CompiledUtility) {
+    for (const matcher of utility.matchers) {
+        if (matcher.type === 'static' && matchesPatternUtilityName(className, matcher.name)) {
+            return {
+                length: matcher.name.length
+            }
+        }
+    }
+}
+
 const ANIMATION_REFERENCE_PROPERTIES = new Set(['animation', 'animation-name'])
 
 function utilityMayReferenceAnimations(utility: CompiledUtility) {
@@ -276,8 +286,9 @@ export class Utility {
         // 1. value / selectorToken
         let stateToken = ''
 
-        if (this.type === UtilityType.Static) {
-            stateToken = name.slice(id.length - 1)
+        const exactUtilityMatch = getExactUtilityDefinitionMatch(name, registeredUtility)
+        if (exactUtilityMatch) {
+            stateToken = name.slice(exactUtilityMatch.length)
         } else {
             let valueToken: string | undefined
             const patternMatch = getUtilityPatternMatch(name, registeredUtility)

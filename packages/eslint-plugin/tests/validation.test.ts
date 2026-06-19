@@ -2,6 +2,7 @@ import rule from '../src/rules/class-validation'
 import { RuleTester } from '@typescript-eslint/rule-tester'
 import { createTester, jsxTester } from './testers'
 import { createPresetPlan } from './helpers/create-preset-plan'
+import UtilityType from 'shared/utility-type'
 
 jsxTester.run('invalid', rule, {
     valid: [
@@ -17,7 +18,7 @@ jsxTester.run('invalid', rule, {
     ],
     invalid: [
         {
-            code: `<div class="bg:black text-align:cente rrr">Simple, basic</div>`,
+            code: `<div class="bg:black text-decoration:bad() rrr">Simple, basic</div>`,
             errors: [
                 { messageId: 'invalidClass' },
                 { messageId: 'disallowUnknownClass' }
@@ -29,13 +30,13 @@ jsxTester.run('invalid', rule, {
             ] as any
         },
         {
-            code: `<div class="bg:black text-align:cente rrr">Simple, basic</div>`,
+            code: `<div class="bg:black text-decoration:bad() rrr">Simple, basic</div>`,
             errors: [
                 { messageId: 'invalidClass' },
             ]
         },
         {
-            code: `<div class="a c d hello:world font:error mt:0 mt:0@sm">Error class</div>`,
+            code: `<div class="a c d hello:world text-decoration:bad() mt:0 mt:0@sm">Error class</div>`,
             errors: [
                 { messageId: 'disallowUnknownClass' },
                 { messageId: 'disallowUnknownClass' },
@@ -50,7 +51,7 @@ jsxTester.run('invalid', rule, {
             ] as any
         },
         {
-            code: `<div class="a c d hello:world font:error mt:0 mt:0@sm">Error class</div>`,
+            code: `<div class="a c d hello:world text-decoration:bad() mt:0 mt:0@sm">Error class</div>`,
             errors: [
                 { messageId: 'invalidClass' }
             ]
@@ -65,7 +66,7 @@ createTester({
                 utilities: [
                     {
                         name: 'btn',
-                        type: -2,
+                        type: UtilityType.Semantic,
                         layer: 'components',
                         rules: [
                             { selector: '&', declarations: { display: 'block' } }
@@ -79,7 +80,7 @@ createTester({
     valid: [],
     invalid: [
         {
-            code: `<div class="btn rrr bg:black text-align:cente">Simple, basic</div>`,
+            code: `<div class="btn rrr bg:black text-decoration:bad()">Simple, basic</div>`,
             errors: [
                 { messageId: 'disallowUnknownClass' },
                 { messageId: 'invalidClass' }
@@ -91,7 +92,7 @@ createTester({
             ] as any
         },
         {
-            code: `<div class="btn a c d hello:world font:error mt:0 mt:0@sm">Error class</div>`,
+            code: `<div class="btn a c d hello:world text-decoration:bad() mt:0 mt:0@sm">Error class</div>`,
             errors: [
                 { messageId: 'disallowUnknownClass' },
                 { messageId: 'disallowUnknownClass' },

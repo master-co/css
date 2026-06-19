@@ -27,7 +27,7 @@ export default function getClassCompletionItems(css: MasterCSS = createDefaultCS
             sortText: key
         })
     }
-    const addStaticLikeCompletionItem = (label: string, detail?: string) => {
+    const addSemanticCompletionItem = (label: string, detail?: string) => {
         if (addedCompletionLabels.has(label)) return
         addedCompletionLabels.add(label)
         completionItems.push({
@@ -39,16 +39,23 @@ export default function getClassCompletionItems(css: MasterCSS = createDefaultCS
     }
 
     for (const eachDefinedUtility of css.definedUtilities) {
-        if (eachDefinedUtility.type === UtilityType.Static) {
+        if (eachDefinedUtility.type === UtilityType.Semantic) {
             const isComponent = eachDefinedUtility.layer === 'components'
             const { detail } = getUtilityInfo(eachDefinedUtility)
-            const utilityName = eachDefinedUtility.id.slice(1)
-            addStaticLikeCompletionItem(utilityName, isComponent ? 'component' : detail)
+            for (const matcher of eachDefinedUtility.matchers) {
+                if (matcher.type === 'static') {
+                    addSemanticCompletionItem(matcher.name, isComponent ? 'component' : detail)
+                } else if (matcher.type === 'pattern') {
+                    for (const value of matcher.values) {
+                        addSemanticCompletionItem(matcher.prefix + value, isComponent ? 'component' : undefined)
+                    }
+                }
+            }
         } else {
             for (const matcher of eachDefinedUtility.matchers) {
                 if (matcher.type !== 'pattern') continue
                 for (const value of matcher.values) {
-                    addStaticLikeCompletionItem(matcher.prefix + value)
+                    addSemanticCompletionItem(matcher.prefix + value)
                 }
             }
             eachDefinedUtility.keys?.forEach(key => {

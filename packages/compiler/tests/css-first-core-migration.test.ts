@@ -8,7 +8,7 @@ import UtilityType from 'shared/utility-type'
 const defaultPlan = defaultPlanJSON as unknown as MasterCSSPlan
 
 describe.concurrent('CSS-first lowering for migrated core tests', () => {
-    test('lowers theme variables, modes, static components, utilities, and variants into one plan', () => {
+    test('lowers theme variables, modes, semantic components, utilities, and variants into one plan', () => {
         const { plan, warnings } = compileCSSPlan(`
             @settings {
                 mode-trigger: class;
@@ -95,7 +95,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
         expect(css.utilitiesLayer.text).toContain('.m\\:card{margin:var(--spacing-card)}')
     })
 
-    test('lowers managed enum patterns without replacing static utility precedence', () => {
+    test('lowers managed enum patterns as semantic utilities without replacing exact utility precedence', () => {
         const { plan } = compileCSSPlan(`
             @utilities {
                 text-<left|right|center> {
@@ -122,6 +122,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
 
         expect(plan.utilityBuckets?.pattern?.length).toBeGreaterThan(0)
         expect(plan.utilities?.find((utility) => utility.id === 'text-<left|right|center>')).toMatchObject({
+            type: UtilityType.Semantic,
             matchers: [{
                 type: 'pattern',
                 prefix: 'text-',
@@ -134,6 +135,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
         expect(css.create('n-2')?.text).toBe('.n-2{margin:calc(2 * 1px)}')
         expect(css.create('text-center')?.text).toBe('.text-center{text-align:start}')
         expect(css.create('badge-success')?.text).toBe('.badge-success{color:success}')
+        expect(css.create('badge-success')?.type).toBe(UtilityType.Semantic)
         expect(css.create('badge-success')?.layerName).toBe('components')
     })
 

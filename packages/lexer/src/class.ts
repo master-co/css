@@ -54,7 +54,7 @@ export type MasterCSSLexicalTokenRole =
     | 'selector.type'
     | 'theme.variable'
     | 'utility.component'
-    | 'utility.static'
+    | 'utility.semantic'
     | 'value.color'
     | 'value.function.name'
     | 'value.function.punctuation'

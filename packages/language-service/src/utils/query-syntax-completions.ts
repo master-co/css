@@ -35,16 +35,23 @@ export default function querySyntaxCompletions(q = '', css: MasterCSS = createDe
     const firstColonIndex = keyMatch ? keyMatch[0].length - 1 : -1
     const selectorInvokedRegex = new RegExp(`[${SELECTOR_SIGNS.join('')}](?=(?:[^'"]|'[^']*'|"[^"]*")*$)`)
     const key = keyMatch ? keyMatch[0].slice(0, firstColonIndex) : undefined
-    const componentNames = css.definedUtilities
-        .filter(({ type, layer }) => type === UtilityType.Static && layer === 'components')
-        .map(({ id }) => id.startsWith('.') ? id.slice(1) : id)
-    const utilityNames = css.definedUtilities
-        .filter(({ type }) => type === UtilityType.Static)
-        .map(({ id }) => id.startsWith('.') ? id.slice(1) : id)
+    const componentNames: string[] = []
+    const utilityNames: string[] = []
     for (const utility of css.definedUtilities) {
+        const names = utility.type === UtilityType.Semantic ? utilityNames : undefined
         for (const matcher of utility.matchers) {
-            if (matcher.type !== 'pattern') continue
-            utilityNames.push(...matcher.values.map((value) => matcher.prefix + value))
+            if (matcher.type === 'static') {
+                names?.push(matcher.name)
+                if (utility.type === UtilityType.Semantic && utility.layer === 'components') {
+                    componentNames.push(matcher.name)
+                }
+            } else if (matcher.type === 'pattern') {
+                const patternNames = matcher.values.map((value) => matcher.prefix + value)
+                utilityNames.push(...patternNames)
+                if (utility.type === UtilityType.Semantic && utility.layer === 'components') {
+                    componentNames.push(...patternNames)
+                }
+            }
         }
     }
     const isStyle = !!componentNames.find((eachStyleName) => new RegExp(`^${eachStyleName}(?:\\b|_)`).test(field))

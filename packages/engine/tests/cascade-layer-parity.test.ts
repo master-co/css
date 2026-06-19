@@ -4,9 +4,9 @@ import defaultPlanJSON from '@master/css-preset/default-plan.json' with { type: 
 import type { MasterCSSPlan } from 'shared/master-css-plan'
 import {
     clonePlan,
-    createCSSWithStaticUtilities,
+    createCSSWithSemanticUtilities,
     createDefaultCSS,
-    createPlanWithStaticUtilities,
+    createPlanWithSemanticUtilities,
     createPlanWithVariables,
     expectLayerText
 } from './helpers/css-tester'
@@ -14,7 +14,7 @@ import {
 const defaultPlan = defaultPlanJSON as unknown as MasterCSSPlan
 
 describe.concurrent('migrated cascade and layer parity', () => {
-    test('keeps on-demand insertion lifecycle for utilities variables and static components', () => {
+    test('keeps on-demand insertion lifecycle for utilities variables and semantic components', () => {
         const css = createDefaultCSS()
 
         expect(css.text).toBe('')
@@ -23,7 +23,7 @@ describe.concurrent('migrated cascade and layer parity', () => {
         css.remove('text-center')
         expect(css.text).toBe('')
 
-        const componentCSS = createCSSWithStaticUtilities([
+        const componentCSS = createCSSWithSemanticUtilities([
             {
                 name: 'btn',
                 rules: [{ declarations: { display: 'block' } }]
@@ -32,7 +32,7 @@ describe.concurrent('migrated cascade and layer parity', () => {
 
         componentCSS.add('text-center', 'font:bold')
         expect(componentCSS.text).toContain('@layer theme{:root{--font-weight-bold:700}}')
-        expect(componentCSS.text).toContain('@layer utilities{.font\\:bold{font-weight:var(--font-weight-bold)}.text-center{text-align:center}}')
+        expect(componentCSS.text).toContain('@layer utilities{.text-center{text-align:center}.font\\:bold{font-weight:var(--font-weight-bold)}}')
         componentCSS.add('btn')
         expect(componentCSS.text).toContain('@layer components{.btn{display:block}}')
         componentCSS.remove('text-center', 'font:bold', 'btn')
@@ -213,8 +213,8 @@ describe.concurrent('migrated cascade and layer parity', () => {
         expect(conflicted.text).not.toContain('block\\@base\\@default')
     })
 
-    test('keeps at-rules authored on static component rules within the component layer', () => {
-        const css = createCSS(createPlanWithStaticUtilities([
+    test('keeps at-rules authored on semantic component rules within the component layer', () => {
+        const css = createCSS(createPlanWithSemanticUtilities([
             {
                 name: 'btn',
                 rules: [
@@ -241,9 +241,9 @@ describe.concurrent('migrated cascade and layer parity', () => {
             ]
         ]
         const expected = [
-            'block', 'fixed', 'round', 'b:0', 'm:0', 'margin-block:0', 'mi:0', 'p:0', 'padding-block:0', 'pi:0',
-            'font:.75rem', 'font:medium', 'mb:0', 'ml:0', 'mr:0', 'mt:0', 'pb:0', 'pl:0', 'pr:0', 'pt:0',
-            'text-center'
+            'block', 'fixed', 'round', 'text-center', 'b:0', 'm:0', 'margin-block:0', 'mi:0', 'p:0',
+            'padding-block:0', 'pi:0', 'font:.75rem', 'font:medium', 'mb:0', 'ml:0', 'mr:0', 'mt:0',
+            'pb:0', 'pl:0', 'pr:0', 'pt:0'
         ]
 
         for (const input of inputs) {
@@ -286,8 +286,8 @@ describe.concurrent('migrated cascade and layer parity', () => {
         ])
     })
 
-    test('keeps static component utility priority stable', () => {
-        const css = createCSSWithStaticUtilities([
+    test('keeps semantic component utility priority stable', () => {
+        const css = createCSSWithSemanticUtilities([
             {
                 name: 'btn-primary',
                 rules: [

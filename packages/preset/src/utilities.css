@@ -19,16 +19,8 @@
         background-clip: text;
     }
 
-    bg-origin-border {
-        background-origin: border-box;
-    }
-
-    bg-origin-content {
-        background-origin: content-box;
-    }
-
-    bg-origin-padding {
-        background-origin: padding-box;
+    bg-origin-<border|content|padding> {
+        background-origin: --value()-box;
     }
 
     block {
@@ -39,12 +31,8 @@
         bottom: 0;
     }
 
-    box-border {
-        box-sizing: border-box;
-    }
-
-    box-content {
-        box-sizing: content-box;
+    box-<border|content> {
+        box-sizing: --value()-box;
     }
 
     break-spaces {
@@ -102,48 +90,12 @@
         container-type: inline-size;
     }
 
-    content-around {
-        align-content: space-around;
+    content-<around|between|evenly> {
+        align-content: space---value();
     }
 
-    content-baseline {
-        align-content: baseline;
-    }
-
-    content-between {
-        align-content: space-between;
-    }
-
-    content-center {
-        align-content: center;
-    }
-
-    content-end {
-        align-content: end;
-    }
-
-    content-evenly {
-        align-content: space-evenly;
-    }
-
-    content-flex-end {
-        align-content: flex-end;
-    }
-
-    content-flex-start {
-        align-content: flex-start;
-    }
-
-    content-normal {
-        align-content: normal;
-    }
-
-    content-start {
-        align-content: start;
-    }
-
-    content-stretch {
-        align-content: stretch;
+    content-<baseline|center|end|flex-end|flex-start|normal|start|stretch> {
+        align-content: --value();
     }
 
     contents {
@@ -255,92 +207,16 @@
         font-style: italic;
     }
 
-    items-baseline {
-        align-items: baseline;
+    items-<baseline|center|end|flex-end|flex-start|normal|self-end|self-start|start|stretch> {
+        align-items: --value();
     }
 
-    items-center {
-        align-items: center;
+    justify-<around|between|evenly> {
+        justify-content: space---value();
     }
 
-    items-end {
-        align-items: end;
-    }
-
-    items-flex-end {
-        align-items: flex-end;
-    }
-
-    items-flex-start {
-        align-items: flex-start;
-    }
-
-    items-normal {
-        align-items: normal;
-    }
-
-    items-self-end {
-        align-items: self-end;
-    }
-
-    items-self-start {
-        align-items: self-start;
-    }
-
-    items-start {
-        align-items: start;
-    }
-
-    items-stretch {
-        align-items: stretch;
-    }
-
-    justify-around {
-        justify-content: space-around;
-    }
-
-    justify-between {
-        justify-content: space-between;
-    }
-
-    justify-center {
-        justify-content: center;
-    }
-
-    justify-end {
-        justify-content: end;
-    }
-
-    justify-evenly {
-        justify-content: space-evenly;
-    }
-
-    justify-flex-end {
-        justify-content: flex-end;
-    }
-
-    justify-flex-start {
-        justify-content: flex-start;
-    }
-
-    justify-left {
-        justify-content: left;
-    }
-
-    justify-normal {
-        justify-content: normal;
-    }
-
-    justify-right {
-        justify-content: right;
-    }
-
-    justify-start {
-        justify-content: start;
-    }
-
-    justify-stretch {
-        justify-content: stretch;
+    justify-<center|end|flex-end|flex-start|left|normal|right|start|stretch> {
+        justify-content: --value();
     }
 
     left {
@@ -431,52 +307,8 @@
         border-radius: 1e9em;
     }
 
-    self-anchor-center {
-        align-self: anchor-center;
-    }
-
-    self-auto {
-        align-self: auto;
-    }
-
-    self-baseline {
-        align-self: baseline;
-    }
-
-    self-center {
-        align-self: center;
-    }
-
-    self-end {
-        align-self: end;
-    }
-
-    self-flex-end {
-        align-self: flex-end;
-    }
-
-    self-flex-start {
-        align-self: flex-start;
-    }
-
-    self-normal {
-        align-self: normal;
-    }
-
-    self-self-end {
-        align-self: self-end;
-    }
-
-    self-self-start {
-        align-self: self-start;
-    }
-
-    self-start {
-        align-self: start;
-    }
-
-    self-stretch {
-        align-self: stretch;
+    self-<anchor-center|auto|baseline|center|end|flex-end|flex-start|normal|self-end|self-start|start|stretch> {
+        align-self: --value();
     }
 
     shape-border {
@@ -575,24 +407,8 @@
         top: 0;
     }
 
-    transform-border {
-        transform-box: border-box;
-    }
-
-    transform-content {
-        transform-box: content-box;
-    }
-
-    transform-fill {
-        transform-box: fill-box;
-    }
-
-    transform-stroke {
-        transform-box: stroke-box;
-    }
-
-    transform-view {
-        transform-box: view-box;
+    transform-<border|content|fill|stroke|view> {
+        transform-box: --value()-box;
     }
 
     transform-3d {
@@ -631,16 +447,8 @@
         width: 100vw;
     }
 
-    wrap-anywhere {
-        overflow-wrap: anywhere;
-    }
-
-    wrap-break-word {
-        overflow-wrap: break-word;
-    }
-
-    wrap-normal {
-        overflow-wrap: normal;
+    wrap-<anywhere|break-word|normal> {
+        overflow-wrap: --value();
     }
 
     animate:<~animate> {

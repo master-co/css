@@ -1,9 +1,9 @@
 export const UtilityType = {
     /**
-     * static utility classes
+     * semantic utility classes
      * @example block, inline
      */
-    Static: -2,
+    Semantic: -2,
     /**
      * shorthand
      * @example border, padding, margin

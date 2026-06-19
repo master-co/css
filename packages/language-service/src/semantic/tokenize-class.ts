@@ -55,7 +55,7 @@ export function tokenizeClassToken(css: MasterCSS, token: string, offset: number
 
     const tokens: HighlightTokenItem[] = []
     const rules = css.generate(token)
-    const component = rules.find((rule) => rule.type === UtilityType.Static && rule.layerName === 'components')
+    const component = rules.find((rule) => rule.type === UtilityType.Semantic && rule.layerName === 'components')
     if (component) {
         const stateStart = token.length - (component.stateToken?.length ?? 0)
         pushHighlightToken(tokens, offset, stateStart, 'class', 'utility.component', ['declaration', 'component'])
@@ -66,16 +66,16 @@ export function tokenizeClassToken(css: MasterCSS, token: string, offset: number
     const rule = rules[0]
     if (!rule) return tokens
 
-    if (rule.type === UtilityType.Static) {
+    if (rule.type === UtilityType.Semantic) {
         const stateStart = token.length - (rule.stateToken?.length ?? 0)
-        pushHighlightToken(tokens, offset, stateStart, 'class', 'utility.static')
+        pushHighlightToken(tokens, offset, stateStart, 'class', 'utility.semantic')
         tokens.push(...tokenizeState(token, stateStart, offset))
         return tokens
     }
 
     if (rule.registeredUtility.matchers.some((matcher) => matcher.type === 'pattern')) {
         const stateStart = token.length - (rule.stateToken?.length ?? 0)
-        pushHighlightToken(tokens, offset, stateStart, 'class', 'utility.static')
+        pushHighlightToken(tokens, offset, stateStart, 'class', 'utility.semantic')
         tokens.push(...tokenizeState(token, stateStart, offset))
         return tokens
     }

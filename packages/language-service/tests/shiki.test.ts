@@ -120,7 +120,7 @@ test.concurrent('creates Shiki decorations from Master CSS semantic tokens', () 
             text: 'block',
             type: 'class',
             modifiers: [],
-            classNames: expect.arrayContaining(['mcss-semantic', 'mcss-semantic-class', 'mcss-semantic-role-utility-static'])
+            classNames: expect.arrayContaining(['mcss-semantic', 'mcss-semantic-class', 'mcss-semantic-role-utility-semantic'])
         }),
         expect.objectContaining({
             text: 'btn',
@@ -365,7 +365,7 @@ test.concurrent('uses native CSS syntax styles for selector semantic tokens', ()
         {
             content: 'block',
             htmlStyle: { color: 'value' },
-            className: 'mcss-semantic mcss-semantic-class mcss-semantic-role-utility-static'
+            className: 'mcss-semantic mcss-semantic-class mcss-semantic-role-utility-semantic'
         },
         {
             content: '>',
@@ -450,7 +450,7 @@ test.concurrent('uses native CSS syntax styles for documentation Master CSS toke
         {
             content: 'block',
             htmlStyle: { color: 'value' },
-            className: 'mcss-semantic mcss-semantic-class mcss-semantic-role-utility-static'
+            className: 'mcss-semantic mcss-semantic-class mcss-semantic-role-utility-semantic'
         },
         {
             content: '2',

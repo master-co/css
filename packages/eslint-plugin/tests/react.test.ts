@@ -6,13 +6,13 @@ jsxTester.run('class matching react', rule, {
         { code: '<h1 className={"bg:black"}>Welcome {name}</h1>' }
     ],
     invalid: [
-        { code: '<h1 className={"text-align:cente"}>Welcome {name}</h1>', errors: [{ messageId: 'invalidClass' }] },
+        { code: '<h1 className={"text-decoration:bad()"}>Welcome {name}</h1>', errors: [{ messageId: 'invalidClass' }] },
         {
             code: `
                 import React from 'react'
                 import styled from '@master/styled.react'
 
-                const H1 = styled.h1\`text-align:cente\`
+                const H1 = styled.h1\`text-decoration:bad()\`
 
                 export default () => (
                     <H1>Hello World</H1>
@@ -25,7 +25,7 @@ jsxTester.run('class matching react', rule, {
                 import React from 'react'
                 import styled from '@master/styled.react'
 
-                const H1 = styled.h1('text-align:cente')
+                const H1 = styled.h1('text-decoration:bad()')
 
                 export default () => (
                     <H1>Hello World</H1>

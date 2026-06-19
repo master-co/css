@@ -158,12 +158,12 @@ for (const namespace of builtinNativeValueNamespaces) {
     }
 }
 
-export type StaticRuleInput = MasterCSSPlanUtilityRule<MasterCSSPlanCSSDeclarations>
+export type SemanticRuleInput = MasterCSSPlanUtilityRule<MasterCSSPlanCSSDeclarations>
 
-export interface StaticUtilityInput {
+export interface SemanticUtilityInput {
     name: string
     layer?: MasterCSSPlanUtilityLayerName
-    rules: StaticRuleInput[]
+    rules: SemanticRuleInput[]
 }
 
 export function clonePlan(plan: MasterCSSPlan = defaultPlan): MasterCSSPlan {
@@ -190,7 +190,7 @@ export function createCSSWithVariables(variables: MasterCSSPlanVariable[], baseP
     return createCSS(createPlanWithVariables(variables, basePlan))
 }
 
-export function createPlanWithStaticUtilities(utilities: StaticUtilityInput[], basePlan = defaultPlan): MasterCSSPlan {
+export function createPlanWithSemanticUtilities(utilities: SemanticUtilityInput[], basePlan = defaultPlan): MasterCSSPlan {
     const plan = clonePlan(basePlan)
     plan.utilities ??= []
     plan.utilityBuckets ??= {}
@@ -202,7 +202,7 @@ export function createPlanWithStaticUtilities(utilities: StaticUtilityInput[], b
         plan.utilities.push({
             id: '.' + name,
             name,
-            type: UtilityType.Static,
+            type: UtilityType.Semantic,
             order: index,
             layer: utility.layer || 'components',
             emit: {
@@ -220,8 +220,8 @@ export function createPlanWithStaticUtilities(utilities: StaticUtilityInput[], b
     return plan
 }
 
-export function createCSSWithStaticUtilities(utilities: StaticUtilityInput[]) {
-    return createCSS(createPlanWithStaticUtilities(utilities))
+export function createCSSWithSemanticUtilities(utilities: SemanticUtilityInput[]) {
+    return createCSS(createPlanWithSemanticUtilities(utilities))
 }
 
 export function expectClassText(css: MasterCSS, className: string, expected: string) {

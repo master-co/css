@@ -84,14 +84,14 @@ test.concurrent('tokenizes named query ranges with matching endpoint values', ()
 test.concurrent('tokenizes grouped class shell without parsing class semantics', () => {
     const source = '{fg:red;bg:blue}'
     const tokens = tokenizeMasterCSSGroupedClassToken(source, 0, (token, offset) => [
-        { start: offset, end: offset + token.length, type: 'class', role: 'utility.static' }
+        { start: offset, end: offset + token.length, type: 'class', role: 'utility.semantic' }
     ])
 
     expect(texts(source, tokens ?? [])).toEqual([
         { text: '{', type: 'operator', role: 'block.brace', modifiers: undefined },
-        { text: 'fg:red', type: 'class', role: 'utility.static', modifiers: undefined },
+        { text: 'fg:red', type: 'class', role: 'utility.semantic', modifiers: undefined },
         { text: ';', type: 'operator', role: 'declaration.terminator', modifiers: undefined },
-        { text: 'bg:blue', type: 'class', role: 'utility.static', modifiers: undefined },
+        { text: 'bg:blue', type: 'class', role: 'utility.semantic', modifiers: undefined },
         { text: '}', type: 'operator', role: 'block.brace', modifiers: undefined }
     ])
 })

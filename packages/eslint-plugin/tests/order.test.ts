@@ -1,6 +1,7 @@
 import rule from '../src/rules/class-order'
 import { createTester } from './testers'
 import { createPresetPlan } from './helpers/create-preset-plan'
+import UtilityType from 'shared/utility-type'
 
 createTester({
     settings: {
@@ -10,7 +11,7 @@ createTester({
                 utilities: [
                     {
                         name: 'zDialog',
-                        type: -2,
+                        type: UtilityType.Semantic,
                         layer: 'components',
                         rules: [
                             { selector: '&', declarations: { 'z-index': 10000 } }
@@ -73,7 +74,7 @@ createTester({
                                 priority={true}
                                 alt="hello world"
                             />
-                            <h1 className="abs animation:flash|3s|infinite inset:0 m:auto fg:white font:7vw font:heavy height:fit text-center font:2.5rem@xs blend:overlay">
+                            <h1 className="abs text-center animation:flash|3s|infinite inset:0 m:auto fg:white font:7vw font:heavy height:fit font:2.5rem@xs blend:overlay">
                                 Hello, World!
                             </h1>
                         </div>
@@ -87,7 +88,7 @@ createTester({
         {
             code: `<button class="flex items-center gap:2x pi:0 w:full fg:#2B88FD:not(:disabled) fg:#999:disabled">Issue #377 disabled colors</button>`,
         },
-        { code: `<div class="font:error mt:0 mt:0@sm a c d hello:world">Error class</div>` },
+        { code: `<div class="mt:0 mt:0@sm a c d font:error hello:world">Error class</div>` },
     ],
     invalid: [
         {
@@ -357,7 +358,7 @@ createTester({
         },
         {
             code: `<div class="a mt:0 mt:0@sm c d hello:world font:error">Error class</div>`,
-            output: `<div class="font:error mt:0 mt:0@sm a c d hello:world">Error class</div>`,
+            output: `<div class="mt:0 mt:0@sm a c d font:error hello:world">Error class</div>`,
             errors: [{ messageId: 'invalidClassOrder' }],
         },
         {

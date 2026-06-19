@@ -5,7 +5,7 @@ import createCSS from '../src/create'
 import createRuntimeManifest from '../src/runtime-manifest'
 
 describe.concurrent('MasterCSSPlan execution', () => {
-    it('executes enum pattern utilities after exact static utilities', () => {
+    it('executes semantic enum pattern utilities after exact semantic utilities', () => {
         const plan: MasterCSSPlan = {
             version: 3,
             settings: {
@@ -15,7 +15,7 @@ describe.concurrent('MasterCSSPlan execution', () => {
                 {
                     id: 'text-<left|center>',
                     name: 'text-<left|center>',
-                    type: UtilityType.Normal,
+                    type: UtilityType.Semantic,
                     order: 0,
                     emit: {
                         type: 'static',
@@ -34,7 +34,7 @@ describe.concurrent('MasterCSSPlan execution', () => {
                 {
                     id: '.text-center',
                     name: 'text-center',
-                    type: UtilityType.Static,
+                    type: UtilityType.Semantic,
                     order: 1,
                     emit: {
                         type: 'static',
@@ -58,6 +58,7 @@ describe.concurrent('MasterCSSPlan execution', () => {
         const css = createCSS(plan)
 
         expect(css.create('text-left')?.text).toBe('.text-left{text-align:left}')
+        expect(css.create('text-left')?.type).toBe(UtilityType.Semantic)
         expect(css.create('text-center')?.text).toBe('.text-center{text-align:start}')
     })
 
@@ -347,7 +348,7 @@ describe.concurrent('MasterCSSPlan execution', () => {
                 {
                     id: '.block',
                     name: 'block',
-                    type: UtilityType.Static,
+                    type: UtilityType.Semantic,
                     order: 0,
                     emit: { type: 'static', rules: [{ declarations: { display: 'block' } }] },
                     matchers: [{ type: 'static', name: 'block' }]
@@ -376,7 +377,7 @@ describe.concurrent('MasterCSSPlan execution', () => {
                 {
                     id: '.multi',
                     name: 'multi',
-                    type: UtilityType.Static,
+                    type: UtilityType.Semantic,
                     order: 3,
                     emit: {
                         type: 'static',

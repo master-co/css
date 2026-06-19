@@ -549,7 +549,7 @@ function compileUtility(definition: CSSDirectiveUtilityDefinition, order: number
         return {
             id: definition.name,
             name: definition.name,
-            type: utilityTypeFromRules(rules),
+            type: UtilityType.Semantic,
             order,
             layer: definition.layer || 'utilities',
             emit: {
@@ -607,7 +607,7 @@ function compileUtility(definition: CSSDirectiveUtilityDefinition, order: number
     return {
         id: '.' + name,
         name,
-        type: UtilityType.Static,
+        type: UtilityType.Semantic,
         order,
         layer: definition.layer || 'utilities',
         emit: {

@@ -183,9 +183,9 @@ describe('@master/css-preset defaultPlan', () => {
         const utilities = plan.utilities || []
 
         expect(sourceUtilities).toHaveLength(1)
-        expect(sourceUtilities.some((utility) => Number(utility.type) === UtilityType.Static)).toBe(false)
+        expect(sourceUtilities.some((utility) => Number(utility.type) === UtilityType.Semantic)).toBe(false)
         expect(sourceUtilities.some((utility) => utility.id === 'variable')).toBe(false)
-        expect(utilities).toHaveLength(229)
+        expect(utilities).toHaveLength(181)
         expect(utilities[0]?.order).toBe(utilities.length - 1)
         expect(utilities[utilities.length - 1]?.order).toBe(0)
         expect(utilities.some((utility) => utility.id === 'animation')).toBe(false)
@@ -249,7 +249,7 @@ describe('@master/css-preset defaultPlan', () => {
         expect(css.create('gradient(#000,#fff)')).toBeUndefined()
     })
 
-    it('executes CSS-authored static and enum pattern utilities', () => {
+    it('executes CSS-authored semantic and enum pattern utilities', () => {
         const css = createCSS(defaultPlan)
 
         expect(css.create('block')?.text).toBe('.block{display:block}')
@@ -258,6 +258,11 @@ describe('@master/css-preset defaultPlan', () => {
         expect(css.create('rounded')?.text).toBe('.rounded{border-radius:1e9em}')
         expect(css.create('font-antialiased')?.text).toBe('.font-antialiased{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}')
         expect(css.create('text-center')?.text).toBe('.text-center{text-align:center}')
+        expect(css.create('items-center')?.text).toBe('.items-center{align-items:center}')
+        expect(css.create('justify-between')?.text).toBe('.justify-between{justify-content:space-between}')
+        expect(css.create('self-start')?.text).toBe('.self-start{align-self:start}')
+        expect(css.create('box-border')?.text).toBe('.box-border{box-sizing:border-box}')
+        expect(css.create('wrap-break-word')?.text).toBe('.wrap-break-word{overflow-wrap:break-word}')
         expect(css.create('bg-cover')?.text).toBe('.bg-cover{background-size:cover}')
         expect(css.create('object-cover')?.text).toBe('.object-cover{object-fit:cover}')
         expect(css.create('b-solid')?.text).toBe('.b-solid{border-style:solid}')
@@ -285,14 +290,25 @@ describe('@master/css-preset defaultPlan', () => {
         expect(css.create('sr-only')?.text).toContain('position:absolute')
         expect(css.create('sr-only')?.text).toContain('clip:rect(0, 0, 0, 0)')
 
-        expect(defaultPlan.utilityBuckets?.pattern?.length).toBeGreaterThan(0)
+        expect(defaultPlan.utilityBuckets?.pattern).toHaveLength(40)
         expect(defaultPlan.utilities?.some((utility) => utility.id === '.text-center')).toBe(false)
         expect(defaultPlan.utilities?.find((utility) => utility.id === 'text-<left|center|right|start|end|justify>'))
             .toMatchObject({
+                type: UtilityType.Semantic,
                 matchers: [{
                     type: 'pattern',
                     prefix: 'text-',
                     values: ['left', 'center', 'right', 'start', 'end', 'justify']
+                }]
+            })
+        expect(defaultPlan.utilities?.some((utility) => utility.id === '.items-center')).toBe(false)
+        expect(defaultPlan.utilities?.find((utility) => utility.id === 'items-<baseline|center|end|flex-end|flex-start|normal|self-end|self-start|start|stretch>'))
+            .toMatchObject({
+                type: UtilityType.Semantic,
+                matchers: [{
+                    type: 'pattern',
+                    prefix: 'items-',
+                    values: ['baseline', 'center', 'end', 'flex-end', 'flex-start', 'normal', 'self-end', 'self-start', 'start', 'stretch']
                 }]
             })
         expect(defaultPlan.utilities?.some((utility) => utility.id === 'text-fill-color:<~color-text|~color|color>')).toBe(false)
@@ -325,6 +341,20 @@ describe('@master/css-preset defaultPlan', () => {
                 }]
             }
         })
+
+        const orderedCSS = createCSS(defaultPlan)
+        orderedCSS.add('items-center', 'items-start', 'justify-between', 'justify-center')
+        expect(orderedCSS.utilitiesLayer.text)
+            .toBe('@layer utilities{.items-center{align-items:center}.items-start{align-items:start}.justify-between{justify-content:space-between}.justify-center{justify-content:center}}')
+
+        const nativeFallbackCSS = createCSS(defaultPlan, undefined, {
+            nativeDeclarationMatcher: ({ property, value }) => property === 'align-items' && value === 'center'
+        })
+        const semanticItemsCenter = nativeFallbackCSS.create('items-center')
+        const nativeAlignItemsCenter = nativeFallbackCSS.create('align-items:center')
+        expect(semanticItemsCenter?.type).toBe(UtilityType.Semantic)
+        expect(nativeAlignItemsCenter?.type).toBe(UtilityType.Normal)
+        expect(nativeAlignItemsCenter?.type).toBeGreaterThan(semanticItemsCenter?.type ?? 0)
     })
 
     it('removes fixed keyword value aliases while preserving raw ambiguous matches', () => {

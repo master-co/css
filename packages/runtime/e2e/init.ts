@@ -5,6 +5,7 @@ import {
     MASTER_CSS_RUNTIME_MANIFEST_SCRIPT_ID,
     type MasterCSSRuntimeManifest
 } from 'shared/master-css-runtime-manifest'
+import UtilityType from 'shared/utility-type'
 import { dirname, resolve } from 'path'
 import { fileURLToPath } from 'url'
 import { readFileSync } from 'node:fs'
@@ -126,11 +127,11 @@ function createRuntimeVariables(defaultVariables: RuntimePlanVariable[], inputVa
 function normalizeUtility(utility: RuntimePlanUtilityInput, order: number): NonNullable<MasterCSSPlan['utilities']>[number] {
     if (utility.emit && utility.matchers) return utility as NonNullable<MasterCSSPlan['utilities']>[number]
     const name = utility.name || utility.id || ''
-    const isStatic = utility.type === -2 || utility.type === undefined
+    const isSemantic = utility.type === UtilityType.Semantic || utility.type === undefined
     return {
-        id: utility.id || (isStatic ? `.${name}` : name),
+        id: utility.id || (isSemantic ? `.${name}` : name),
         name,
-        type: utility.type ?? -2,
+        type: utility.type ?? UtilityType.Semantic,
         order: utility.order ?? order,
         layer: utility.layer,
         emit: {

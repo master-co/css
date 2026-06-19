@@ -407,7 +407,7 @@ function createCSSSyntaxStyleResolver(
             'selector.type': typeStyle,
             'theme.variable': variableStyle,
             'utility.component': classStyle,
-            'utility.static': valueStyle,
+            'utility.semantic': valueStyle,
             'value.color': valueStyle,
             'value.function.name': functionStyle,
             'value.function.punctuation': functionPunctuationStyle,

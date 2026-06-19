@@ -1,3 +1,5 @@
+import UtilityType from 'shared/utility-type'
+
 export default {
     variables: [
         { key: 'primary', value: '#000000', mode: 'light' },
@@ -7,7 +9,7 @@ export default {
     utilities: [
         {
             name: 'btn',
-            type: -2,
+            type: UtilityType.Semantic,
             layer: 'components',
             rules: [
                 { selector: '&', declarations: { display: 'inline-flex' } },

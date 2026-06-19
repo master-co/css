@@ -13,7 +13,7 @@ export default function inspectSyntax(this: CSSLanguageService, document: TextDo
         end: document.positionAt(classPosition.range.end)
     }
     const utilities = this.css.generate(token)
-    const component = utilities.find((utility) => utility.type === UtilityType.Static && utility.layerName === 'components')
+    const component = utilities.find((utility) => utility.type === UtilityType.Semantic && utility.layerName === 'components')
     if (component) {
         const documentation = createCSSMarkdownDocumentation(generateCSS([token], this.css))
         if (documentation) {
@@ -27,7 +27,7 @@ export default function inspectSyntax(this: CSSLanguageService, document: TextDo
     } else {
         const utility = utilities[0]
         if (utility) {
-            if (utility.type === UtilityType.Static) {
+            if (utility.type === UtilityType.Semantic) {
                 const documentation = createCSSMarkdownDocumentation(generateCSS([token], this.css))
                 if (documentation) {
                     return {

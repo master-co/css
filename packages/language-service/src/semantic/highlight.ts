@@ -28,7 +28,7 @@ export type HighlightTokenRole =
     | 'selector.type'
     | 'theme.variable'
     | 'utility.component'
-    | 'utility.static'
+    | 'utility.semantic'
     | 'value.color'
     | 'value.function.name'
     | 'value.function.punctuation'

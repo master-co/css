@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test'
 import defaultPlanJSON from '@master/css-preset/default-plan.json' with { type: 'json' }
 import type { MasterCSSPlan } from 'shared/master-css-plan'
+import UtilityType from 'shared/utility-type'
 import initCSSRuntime from '../src/init'
 import init from './init'
 
@@ -35,7 +36,7 @@ test('prevent attach layer twice', async ({ page }) => {
         utilities: [
             {
                 name: 'app-wrapper',
-                type: -2,
+                type: UtilityType.Semantic,
                 layer: 'components',
                 rules: [
                     { selector: '&', declarations: { 'margin-left': 'auto', 'margin-right': 'auto' } },
@@ -51,7 +52,7 @@ test('prevent attach layer twice', async ({ page }) => {
     expect(await page.evaluate(() => globalThis.cssRuntime.componentsLayer.native?.cssRules?.length)).toBe(3)
 })
 
-test('insert static utility with multiple native rules into existing layer', async ({ page }) => {
+test('insert semantic utility with multiple native rules into existing layer', async ({ page }) => {
     const consoleErrors: string[] = []
     page.on('console', (message) => {
         if (message.type() === 'error') consoleErrors.push(message.text())
@@ -63,7 +64,6 @@ test('insert static utility with multiple native rules into existing layer', asy
         utilities: [
             {
                 name: 'multi-rule',
-                type: -2,
                 rules: [
                     { selector: '&', declarations: { display: 'flex' } },
                     { selector: '&:hover', declarations: { color: 'red' } },

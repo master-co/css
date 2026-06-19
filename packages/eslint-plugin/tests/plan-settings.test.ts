@@ -5,6 +5,7 @@ import { join } from 'node:path'
 import { expect, test } from 'vitest'
 import plugin from '../src'
 import { createPresetPlan } from './helpers/create-preset-plan'
+import UtilityType from 'shared/utility-type'
 
 test('uses explicit Master CSS plan objects from ESLint settings', async () => {
     const cwd = mkdtempSync(join(tmpdir(), 'master-css-eslint-'))
@@ -36,7 +37,7 @@ test('uses explicit Master CSS plan objects from ESLint settings', async () => {
                                 utilities: [
                                     {
                                         name: 'fixture-card',
-                                        type: -2,
+                                        type: UtilityType.Semantic,
                                         layer: 'components',
                                         rules: [
                                             { selector: '&', declarations: { display: 'block' } }
@@ -44,7 +45,7 @@ test('uses explicit Master CSS plan objects from ESLint settings', async () => {
                                     },
                                     {
                                         name: 'fixture-button',
-                                        type: -2,
+                                        type: UtilityType.Semantic,
                                         layer: 'components',
                                         rules: [
                                             { selector: '&', declarations: { display: 'inline-flex' } }

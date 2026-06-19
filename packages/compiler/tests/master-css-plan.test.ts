@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { createMasterCSSPlan } from '../src/master-css-plan'
+import UtilityType from 'shared/utility-type'
 
 describe.concurrent('createMasterCSSPlan', () => {
     it('lowers variables into resolved records with modes and dependencies without synthetic negative aliases', () => {
@@ -182,7 +183,7 @@ describe.concurrent('createMasterCSSPlan', () => {
             ])
     })
 
-    it('lowers CSS-defined static utilities and matcher buckets', () => {
+    it('lowers CSS-defined semantic utilities and matcher buckets', () => {
         const plan = createMasterCSSPlan({
             utilities: [
                 {
@@ -200,6 +201,7 @@ describe.concurrent('createMasterCSSPlan', () => {
 
         expect(index).toBeGreaterThanOrEqual(0)
         expect(utility?.layer).toBe('components')
+        expect(utility?.type).toBe(UtilityType.Semantic)
         expect(utility?.emit).toEqual({
             type: 'static',
             rules: [{

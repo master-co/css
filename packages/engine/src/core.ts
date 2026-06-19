@@ -661,8 +661,10 @@ export default class MasterCSS {
         )
     }
 
-    private matchesStaticUtilityDefinition(utility: CompiledUtility) {
-        return utility.matchers.some((matcher) => matcher.type === 'static')
+    private matchesExactUtilityDefinition(className: string, utility: CompiledUtility) {
+        return utility.matchers.some((matcher) =>
+            matcher.type === 'static' && matchesStaticUtility(className, matcher.name)
+        )
     }
 
     private hasClassKey(className: string) {
@@ -981,7 +983,7 @@ export default class MasterCSS {
         if (fastPathNativeUtilities.length) return fastPathNativeUtilities[0]
 
         const registeredUtility = this.matchResolvedClassName(className)
-        if (registeredUtility && this.matchesStaticUtilityDefinition(registeredUtility)) {
+        if (registeredUtility && this.matchesExactUtilityDefinition(className, registeredUtility)) {
             const nativeValueNamespaceUtilities = this.createNativeValueNamespaceFallback(className, fixedClass, mode, sourceClassName)
             if (nativeValueNamespaceUtilities.length) return nativeValueNamespaceUtilities[0]
 
@@ -1023,7 +1025,7 @@ export default class MasterCSS {
         if (fastPathNativeUtilities.length) return fastPathNativeUtilities
 
         const registeredUtilities = this.matchAllResolvedClassName(className)
-        if (registeredUtilities.length && registeredUtilities.every((utility) => this.matchesStaticUtilityDefinition(utility))) {
+        if (registeredUtilities.length && registeredUtilities.every((utility) => this.matchesExactUtilityDefinition(className, utility))) {
             const nativeValueNamespaceUtilities = this.createNativeValueNamespaceFallback(className, fixedClass, mode, sourceClassName)
             if (nativeValueNamespaceUtilities.length) return nativeValueNamespaceUtilities
 

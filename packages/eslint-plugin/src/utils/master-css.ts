@@ -54,7 +54,7 @@ function getReadableGroupOrder(rule: { atRules?: unknown, mode?: unknown, select
 
 function getReadableTypeOrder(rule: { fixedClass?: string, type?: number }) {
     if (rule.fixedClass) return 0
-    if (rule.type === UtilityType.Static) return 1
+    if (rule.type === UtilityType.Semantic) return 1
     return 2
 }
 
