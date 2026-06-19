@@ -147,12 +147,12 @@ Contextual token shorthand removes redundant namespace prefixes from values. The
 | `leading:md` | `leading:leading-md` | Line-height utilities resolve leading tokens. |
 | `tracking:tight` | `tracking:tracking-tight` | Letter-spacing utilities resolve tracking tokens. |
 | `animation-duration:normal` | `animation-duration:duration-normal` | Animation duration resolves duration tokens. |
-| `transition-delay:short` | `transition-delay:delay-short` | Transition and animation delay utilities resolve delay tokens. |
+| `transition-delay:fast` | `transition-delay:duration-fast` | Transition and animation delay properties resolve duration tokens. |
 | `video` | `aspect-ratio:16/9` | Static shortcut for common media frames. |
 | `font-feature-settings:tabular` | `font-feature-settings:font-feature-tabular` | Font feature settings resolve font-feature tokens. |
 | <code>transition:opacity&#124;normal&#124;standard</code> | <code>transition:opacity&#124;duration-normal&#124;easing-standard</code> | Transition shorthand resolves duration and easing tokens. |
 
-The namespace can come from an explicit utility namespace, such as `spacing` for padding and gap utilities, or from the utility name itself when the property name is already the clearest token namespace. For example, `transition-delay:short` resolves `delay-short`, while `tab-size:4` can resolve `tab-size-code`. See [How namespaces are resolved](/guide/theme#how-namespaces-are-resolved) for the resolution rules and current default namespace sources.
+The namespace comes from explicit preset registry references, such as `spacing` for padding and gap utilities or `duration` for animation and transition timing properties. It is not inferred from arbitrary property names. See [How namespaces are resolved](/guide/theme#how-namespaces-are-resolved) for the resolution rules and current default namespace sources.
 
 Use the longer form only when it improves clarity in a syntax lesson, or when you are intentionally showing how variable namespaces map to generated CSS.
 

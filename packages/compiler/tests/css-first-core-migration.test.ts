@@ -553,7 +553,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
     test('resolves utility-owned theme namespaces before lowering composed definitions', () => {
         const { plan } = compileCSSPlan(`
             @theme {
-                --background-stripe: 0 / 7.5px 7.5px linear-gradient(red, blue);
+                --content-stripe: 'stripe';
                 --box-shadow-panel: 0 1px 2px #000;
                 --spacing-card: 1.5rem;
                 --leading-body: 1.7;
@@ -564,14 +564,14 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
 
             @defaults {
                 demo {
-                    @compose background:stripe;
+                    @compose content:stripe;
                 }
             }
         `, { basePlan: defaultPlan })
 
         expect(plan.variables).toContainEqual(expect.objectContaining({
-            name: 'background-stripe',
-            namespace: 'background',
+            name: 'content-stripe',
+            namespace: 'content',
             key: 'stripe'
         }))
         expect(plan.variables).toContainEqual(expect.objectContaining({
@@ -596,7 +596,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
         }))
 
         const css = createCSS(plan)
-        expect(css.create('background:stripe')?.text).toBe('.background\\:stripe{background:var(--background-stripe)}')
+        expect(css.create('content:stripe')?.text).toBe('.content\\:stripe{content:var(--content-stripe)}')
         expect(css.create('shadow:panel')?.text).toBe('.shadow\\:panel{box-shadow:var(--box-shadow-panel)}')
         expect(css.create('p:card')?.text).toBe('.p\\:card{padding:var(--spacing-card)}')
         expect(css.create('gap:card')?.text).toBe('.gap\\:card{gap:var(--spacing-card)}')
@@ -609,8 +609,8 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
         expect(css.create('shadow:sm')?.text).toBe('.shadow\\:sm{box-shadow:var(--shadow-sm)}')
 
         css.add('demo')
-        expect(css.defaultsLayer.text).toContain('.demo{background:var(--background-stripe)}')
-        expect(css.themeLayer.text).toContain('--background-stripe:0 / 7.5px 7.5px linear-gradient(red, blue)')
+        expect(css.defaultsLayer.text).toContain('.demo{content:var(--content-stripe)}')
+        expect(css.themeLayer.text).toContain('--content-stripe:"stripe"')
     })
 
     test('lowers unquoted compose class lists from raw source', () => {
@@ -621,7 +621,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
 
             @components {
                 card {
-                    @compose inline-flex bg:primary/.9 opacity:.7 transform:translateY(-5);
+                    @compose inline-flex bg:primary/.9 opacity:.7 translate:-5px;
                 }
             }
 
@@ -640,7 +640,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
             }),
             expect.objectContaining({
                 type: 'compose',
-                className: 'transform:translateY(-5)'
+                className: 'translate:-5px'
             }),
             expect.objectContaining({
                 type: 'compose',
@@ -655,7 +655,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
         expect(css.text).toContain('display:inline-flex')
         expect(css.text).toContain('background-color:color-mix(in oklab,var(--color-primary) 90%,transparent)')
         expect(css.text).toContain('opacity:0.7')
-        expect(css.text).toContain('transform:translateY(-5)')
+        expect(css.text).toContain('translate:-5px')
         expect(result.css).toContain('.list>li{text-align:center}')
     })
 

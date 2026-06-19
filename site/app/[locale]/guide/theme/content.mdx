@@ -89,29 +89,28 @@ A theme token name has the shape `<namespace>-<key>`. Master CSS resolves the na
 Namespaces come from these sources:
 
 * `breakpoint` is built in because viewport query suffixes such as `@md` need to resolve `breakpoint-md`.
-* Utilities can declare shared namespaces. For example, border and outline color utilities search `color-line` before `color`, while spacing utilities search `spacing`.
-* Some non-static, non-function utility names are also namespaces when the property name is already the clearest token namespace. This is why `tab-size-code` can be used as `tab-size:4`.
-* Semantic utilities can opt out of the utility-name namespace when a clearer foundation namespace owns the token contract. Animation and transition durations use `duration-*`, delays use `delay-*`, aspect ratios use `aspect-*`, font feature settings use `font-feature-*`, and shadows use `shadow-*`.
+* The preset declares a fixed default namespace registry. Utilities and native value namespaces can only reference those registry entries.
+* Utilities can share a registry namespace. For example, border and outline color utilities search `color-line` before `color`, while spacing utilities search `spacing`.
+* Full property names do not become token namespaces automatically. A token namespace is available only when the preset explicitly registers and references it.
+* Semantic utilities can use a clearer foundation namespace than their property name. Animation and transition durations use `duration-*`, font feature settings use `font-feature-*`, generated content uses `content-*`, and shadows use `shadow-*`.
 
-Function utilities do not become namespaces by name. Tokens such as `blur-sm`, `drop-shadow-soft`, and `perspective-near` are ordinary theme tokens unless a utility explicitly owns that namespace.
+Function utilities do not become namespaces by name. Tokens such as `blur-sm`, `drop-shadow-soft`, and `perspective-near` are ordinary theme tokens unless the preset registry includes and references that namespace.
 
 ```css name=index.css
 @theme {
     --duration-fast: 120ms;
-    --delay-short: 80ms;
-    --aspect-video: 16/9;
     --font-feature-tabular: "tnum";
+    --content-empty: "";
     --leading-body: 1.6;
-    --tab-size-code: 4;
 }
 ```
 
 ```html
-<pre class="animation-duration:fast transition-delay:short video font-feature-settings:tabular leading:body tab-size:4">...</pre>
+<pre class="animation-duration:fast transition-delay:fast font-feature-settings:tabular leading:body content:empty">...</pre>
 ```
 
 ### Default namespace sources
-The default theme vocabulary is utility-owned. This table lists the built-in condition namespace and the namespaces currently declared by default utilities. Utility-name namespaces follow the utility list only when that utility keeps its own property name as a token namespace.
+The default theme vocabulary is registry-backed. This table lists the built-in condition namespace and the namespaces currently referenced by default utilities or native value namespaces.
 
 <VariableNamespaceSources />
 
@@ -374,7 +373,7 @@ Motion belongs in the theme when timing, easing, and keyframes are shared by mor
 @theme {
     --duration-fast: 150ms;
     --duration-slow: 300ms;
-    --delay-short: 80ms;
+    --duration-short: 80ms;
     --easing-smooth: cubic-bezier(.4, 0, .2, 1);
 
     @keyframes fade-in {

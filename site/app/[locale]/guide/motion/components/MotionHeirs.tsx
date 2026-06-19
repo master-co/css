@@ -1,6 +1,6 @@
 import { planUtilities, getUtilityVariableNamespaces } from '~/site/utils/plan-utilities'
 
-const namespaces = ['duration', 'easing', 'delay']
+const namespaces = ['duration', 'easing']
 const utilities = planUtilities
 
 export default () =>

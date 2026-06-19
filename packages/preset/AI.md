@@ -18,6 +18,7 @@
 
 ## Utility Definition Ladder
 
+- Default token namespaces must be declared in `src/namespaces.ts`. Do not introduce `variableAliasRefs` that point to namespaces outside that registry.
 - Prefer `nativeValueNamespaces` for full native or vendor property classes; use `keyAliases` when the public key differs from the emitted property.
 - Prefer `keyAliases` for short aliases that map directly to native logical, physical, full, or vendor CSS properties.
 - Use `@utilities` for semantic subproperty aliases that direct property fallback cannot represent.

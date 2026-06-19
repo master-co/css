@@ -1,6 +1,8 @@
 import type { MasterCSSPlanNativeValueNamespaces } from 'shared/master-css-plan'
+import { namespaceRef } from './namespaces'
 
 const spacingProperties = [
+    'background-position',
     'bottom',
     'border-spacing',
     'column-gap',
@@ -24,6 +26,8 @@ const spacingProperties = [
     'margin-left',
     'margin-right',
     'margin-top',
+    'mask-position',
+    'object-position',
     'outline-offset',
     'padding',
     'padding-block',
@@ -36,6 +40,8 @@ const spacingProperties = [
     'padding-left',
     'padding-right',
     'padding-top',
+    'perspective',
+    'perspective-origin',
     'right',
     'row-gap',
     'scroll-margin',
@@ -61,9 +67,11 @@ const spacingProperties = [
     'scroll-padding-right',
     'scroll-padding-top',
     'shape-margin',
+    'text-indent',
     'text-underline-offset',
     'top',
     'translate',
+    'transform-origin',
     'word-spacing'
 ]
 
@@ -76,6 +84,7 @@ const spacingUnitlessProperties = [
 ]
 
 const containerProperties = [
+    'background-size',
     'block-size',
     'contain-intrinsic-block-size',
     'contain-intrinsic-inline-size',
@@ -90,6 +99,7 @@ const containerProperties = [
     'min-height',
     'min-inline-size',
     'min-width',
+    'mask-size',
     'width'
 ]
 
@@ -132,153 +142,102 @@ const borderColorProperties = [
     'outline-color'
 ]
 
-const borderWidthProperties = [
-    'border-block-end-width',
-    'border-block-start-width',
-    'border-block-width',
-    'border-bottom-width',
-    'border-inline-end-width',
-    'border-inline-start-width',
-    'border-inline-width',
-    'border-left-width',
-    'outline-width',
-    'border-right-width',
-    'stroke-width',
-    '-webkit-text-stroke-width',
-    'border-top-width',
-    'border-width'
-]
-
-const borderStyleProperties = [
-    'border-block-end-style',
-    'border-block-start-style',
-    'border-block-style',
-    'border-bottom-style',
-    'border-inline-end-style',
-    'border-inline-start-style',
-    'border-inline-style',
-    'border-left-style',
-    'border-right-style',
-    'border-style',
-    'border-top-style'
-]
-
 const nativeValueNamespaces = [
     {
         properties: spacingProperties,
-        variableAliasRefs: ['~spacing']
+        variableAliasRefs: [namespaceRef('spacing')]
     },
     {
         properties: spacingUnitlessProperties,
-        variableAliasRefs: ['~spacing']
+        variableAliasRefs: [namespaceRef('spacing')]
     },
     {
         properties: containerProperties,
-        variableAliasRefs: ['~container']
+        variableAliasRefs: [namespaceRef('container')]
     },
     {
         properties: radiusProperties,
-        variableAliasRefs: ['~radius']
+        variableAliasRefs: [namespaceRef('radius')]
     },
     {
         properties: borderColorProperties,
-        variableAliasRefs: ['~color-line', '~color']
-    },
-    {
-        properties: borderWidthProperties,
-        variableAliasRefs: ['=border-width']
-    },
-    {
-        properties: borderStyleProperties,
-        variableAliasRefs: ['=border-style']
+        variableAliasRefs: [namespaceRef('color-line'), namespaceRef('color')]
     },
     {
         properties: ['accent-color', 'background-color', 'fill', 'filter'],
-        variableAliasRefs: ['~color']
+        variableAliasRefs: [namespaceRef('color')]
     },
     {
         properties: ['caret-color'],
-        variableAliasRefs: ['~color-text', '~color']
+        variableAliasRefs: [namespaceRef('color-text'), namespaceRef('color')]
     },
     {
         properties: ['stroke'],
-        variableAliasRefs: ['~color-line', '~color']
+        variableAliasRefs: [namespaceRef('color-line'), namespaceRef('color')]
     },
     {
         properties: ['color'],
-        variableAliasRefs: ['=color', '~color-text', '~color']
+        variableAliasRefs: [namespaceRef('color', true), namespaceRef('color-text'), namespaceRef('color')]
     },
     {
         properties: ['-webkit-text-fill-color', 'text-decoration-color'],
-        variableAliasRefs: ['~color-text', '~color']
+        variableAliasRefs: [namespaceRef('color-text'), namespaceRef('color')]
     },
     {
         properties: ['-webkit-text-stroke-color'],
-        variableAliasRefs: ['~color']
+        variableAliasRefs: [namespaceRef('color')]
     },
     {
         properties: ['text-shadow'],
-        variableAliasRefs: ['~color']
+        variableAliasRefs: [namespaceRef('color')]
     },
     {
         properties: ['box-shadow'],
-        variableAliasRefs: ['~shadow', '~color']
+        variableAliasRefs: [namespaceRef('shadow'), namespaceRef('color')]
     },
     {
-        properties: ['animation-duration', 'transition-duration'],
-        variableAliasRefs: ['~duration']
+        properties: ['animation-delay', 'animation-duration', 'transition-delay', 'transition-duration'],
+        variableAliasRefs: [namespaceRef('duration')]
     },
     {
         properties: ['animation-timing-function', 'transition-timing-function'],
-        variableAliasRefs: ['~easing']
+        variableAliasRefs: [namespaceRef('easing')]
     },
     {
         properties: ['transition'],
-        variableAliasRefs: ['~duration', '~easing']
+        variableAliasRefs: [namespaceRef('duration'), namespaceRef('easing')]
+    },
+    {
+        properties: ['content'],
+        variableAliasRefs: [namespaceRef('content', true)]
     },
     {
         properties: ['font-feature-settings'],
-        variableAliasRefs: ['=font-feature']
+        variableAliasRefs: [namespaceRef('font-feature', true)]
     },
     {
         properties: ['font-family'],
-        variableAliasRefs: ['=font-family']
+        variableAliasRefs: [namespaceRef('font-family', true)]
     },
     {
         properties: ['font-size'],
-        variableAliasRefs: ['=font-size']
+        variableAliasRefs: [namespaceRef('font-size', true)]
     },
     {
         properties: ['font-weight'],
-        variableAliasRefs: ['=font-weight']
+        variableAliasRefs: [namespaceRef('font-weight', true)]
     },
     {
         properties: ['letter-spacing'],
-        variableAliasRefs: ['~tracking']
+        variableAliasRefs: [namespaceRef('tracking')]
     },
     {
         properties: ['line-height'],
-        variableAliasRefs: ['~leading']
+        variableAliasRefs: [namespaceRef('leading')]
     },
     {
         properties: ['order'],
-        variableAliasRefs: ['=order']
-    },
-    {
-        properties: ['mask-position'],
-        variableAliasRefs: ['=mask-position']
-    },
-    {
-        properties: ['mask-size'],
-        variableAliasRefs: ['~container', '=mask-size']
-    },
-    {
-        properties: ['perspective'],
-        variableAliasRefs: ['=perspective']
-    },
-    {
-        properties: ['perspective-origin'],
-        variableAliasRefs: ['=perspective-origin']
+        variableAliasRefs: [namespaceRef('order', true)]
     }
 ] satisfies MasterCSSPlanNativeValueNamespaces
 

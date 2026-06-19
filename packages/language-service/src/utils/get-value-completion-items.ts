@@ -7,7 +7,7 @@ import { getMdnPropertySyntax, getMdnPropertyValueNames } from './mdn-css-data'
 const SCOPED_VARIABLE_PRIORITY = 'aaaa'
 const NATIVE_PRIORITY = 'ccccc'
 const GLOBAL_VARIABLE_PRIORITY = 'zzzz'
-const ANIMATION_REFERENCE_PROPERTIES = new Set(['animation', 'animation-name'])
+const ANIMATION_REFERENCE_PROPERTIES = new Set(['animation'])
 
 interface GenerateVariableCompletionItemOptions {
     appliedValue?: string

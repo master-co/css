@@ -1,22 +1,32 @@
 import InlineCode from '~/internal/components/InlineCode'
+import defaultPlan from '@master/css-preset/default-plan.json' with { type: 'json' }
 import { getUtilityVariableNamespaces, planUtilities } from '~/site/utils/plan-utilities'
 
 const utilities = planUtilities
 const MAX_VISIBLE_UTILITIES = 8
 
-const namespaceEntries = Array
-    .from(utilities.reduce((entries, utility) => {
-        for (const namespace of getUtilityVariableNamespaces(utility)) {
-            const utilityNames = entries.get(namespace)
-            if (utilityNames) {
-                utilityNames.push(utility.name)
-            } else {
-                entries.set(namespace, [utility.name])
+const namespaceEntries = (() => {
+    const entries = new Map<string, string[]>()
+    for (const variable of defaultPlan.variables || []) {
+        if (variable.namespace) {
+            addNamespaceSource(entries, variable.namespace, 'theme tokens')
+        }
+    }
+    for (const namespace of defaultPlan.nativeValueNamespaces || []) {
+        for (const ref of namespace.variableAliasRefs || []) {
+            const variableNamespace = ref.replace(/^[=~]/, '')
+            for (const property of namespace.properties) {
+                addNamespaceSource(entries, variableNamespace, property)
             }
         }
-        return entries
-    }, new Map<string, string[]>()))
-    .sort(([a], [b]) => a.localeCompare(b))
+    }
+    for (const utility of utilities) {
+        for (const namespace of getUtilityVariableNamespaces(utility)) {
+            addNamespaceSource(entries, namespace, utility.name)
+        }
+    }
+    return Array.from(entries).sort(([a], [b]) => a.localeCompare(b))
+})()
 
 export default function VariableNamespaceSources() {
     return (
@@ -46,7 +56,7 @@ export default function VariableNamespaceSources() {
                             namespaceEntries.map(([namespace, utilityNames]) => (
                                 <tr key={namespace}>
                                     <th><InlineCode>{`${namespace}-*`}</InlineCode></th>
-                                    <td>Utility-defined namespace</td>
+                                    <td>Default registry namespace</td>
                                     <td>{renderUtilityNames(utilityNames)}</td>
                                 </tr>
                             ))
@@ -56,6 +66,16 @@ export default function VariableNamespaceSources() {
             </div>
         </figure>
     )
+}
+
+function addNamespaceSource(entries: Map<string, string[]>, namespace: string, source: string) {
+    if (namespace === 'breakpoint') return
+    const sources = entries.get(namespace)
+    if (sources) {
+        if (!sources.includes(source)) sources.push(source)
+    } else {
+        entries.set(namespace, [source])
+    }
 }
 
 function renderUtilityNames(utilityNames: string[]) {

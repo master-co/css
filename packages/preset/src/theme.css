@@ -51,6 +51,10 @@
     --font-size-9xl: 6rem;
     --font-size-10xl: 8rem;
 
+    --font-feature-tabular: 'tnum';
+
+    --content-empty: '';
+
     /* Radii */
     --radius-xs: 0.125rem;
     --radius-sm: 0.25rem;

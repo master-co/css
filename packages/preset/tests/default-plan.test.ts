@@ -7,6 +7,7 @@ import { createDefaultPlanFromSourceFile } from '../scripts/generate-default-pla
 import defaultPlanJSON from '../src/default-plan.json' with { type: 'json' }
 import type { MasterCSSPlan } from 'shared/master-css-plan'
 import keyAliases from '../src/key-aliases'
+import { namespaceSet } from '../src/namespaces'
 import nativeValueNamespaces from '../src/native-value-namespaces'
 import sourceUtilities from '../src/utilities'
 
@@ -43,10 +44,7 @@ const retainedMatcherAliases = new Set([
     'bx',
     'by',
     'font',
-    'grid-col',
-    'grid-col-end',
     'grid-col-span',
-    'grid-col-start',
     'grid-cols',
     'lines',
     'text'
@@ -94,8 +92,8 @@ const removedAliases = [
 ]
 
 const competitiveNativeValueUtilities = [
-    'font',
-    'transform'
+    'animation',
+    'font'
 ]
 
 const nativeValueNamespaceMatcherKeys = new Set([
@@ -104,19 +102,60 @@ const nativeValueNamespaceMatcherKeys = new Set([
 ])
 
 const removedSourceUtilityIds = [
+    'animation-delay',
+    'animation-name',
     'background',
     'background-color',
+    'background-attachment',
+    'background-position',
+    'background-repeat',
+    'background-size',
+    'border-collapse',
+    'border-image-repeat',
     'container',
+    'container-type',
+    'flex-direction',
     'flex-basis',
+    'flex-wrap',
+    'font-variant',
     'font-family',
     'font-size',
+    'font-style',
     'font-weight',
+    'font-variant-numeric',
+    'grid-column',
+    'grid-column-end',
+    'grid-column-start',
+    'grid-template-columns',
+    'grid-template-rows',
+    'list-style-position',
+    'list-style-type',
+    'object-fit',
+    'object-position',
+    'outline-style',
     'outline-width',
+    'rotate',
+    'scroll-snap-align',
+    'scroll-snap-stop',
+    'scroll-snap-type',
     'shape-margin',
     'stroke',
     'stroke-width',
+    'text-align',
+    'text-decoration-line',
+    'text-decoration-style',
+    'text-indent',
+    'text-orientation',
+    'text-overflow',
+    'text-rendering',
     'text-stroke-width',
+    'text-transform',
     'text-underline-offset',
+    'text-underline-position',
+    'transform',
+    'transform-origin',
+    'transform-style',
+    'transition-delay',
     'word-spacing'
 ]
 
@@ -144,10 +183,10 @@ describe('@master/css-preset defaultPlan', () => {
         const plan = createDefaultPlanFromSourceFile(resolve(__dirname, '../src/index.css'))
         const utilities = plan.utilities || []
 
-        expect(sourceUtilities).toHaveLength(65)
+        expect(sourceUtilities).toHaveLength(23)
         expect(sourceUtilities.some((utility) => Number(utility.type) === UtilityType.Static)).toBe(false)
         expect(sourceUtilities.some((utility) => utility.id === 'variable')).toBe(false)
-        expect(utilities).toHaveLength(276)
+        expect(utilities).toHaveLength(234)
         expect(utilities[0]?.order).toBe(utilities.length - 1)
         expect(utilities[utilities.length - 1]?.order).toBe(0)
         expect(utilities.some((utility) => utility.matchers.some((matcher) => (matcher as { type: string }).type === 'function-prefix'))).toBe(false)
@@ -168,6 +207,24 @@ describe('@master/css-preset defaultPlan', () => {
         expect(compiledPlan.containerAtRules).toEqual(defaultPlan.containerAtRules)
         expect(compiledPlan.selectors).toEqual(defaultPlan.selectors)
     }, 20000)
+
+    it('keeps preset variable alias refs inside registered namespaces', () => {
+        const variableNamespaces = new Set((defaultPlan.variables || [])
+            .map((variable) => variable.namespace)
+            .filter((namespace): namespace is string => Boolean(namespace)))
+        const variableAliasRefs = [
+            ...(defaultPlan.nativeValueNamespaces || []).flatMap((namespace) => namespace.variableAliasRefs || []),
+            ...(defaultPlan.utilities || []).flatMap((utility) => utility.variableAliasRefs || [])
+        ]
+
+        for (const namespace of variableNamespaces) {
+            expect(namespaceSet.has(namespace), namespace).toBe(true)
+        }
+        for (const ref of variableAliasRefs) {
+            expect(ref[0] === '~' || ref[0] === '=', ref).toBe(true)
+            expect(namespaceSet.has(ref.slice(1)), ref).toBe(true)
+        }
+    })
 
     it('preserves the compiled default registry', () => {
         const css = createCSS(defaultPlan)
@@ -211,8 +268,10 @@ describe('@master/css-preset defaultPlan', () => {
         expect(css.create('text-fill-color:red')?.text).toBe('.text-fill-color\\:red{-webkit-text-fill-color:var(--color-text-red)}')
         expect(css.create('text-decoration-color:red')?.text).toBe('.text-decoration-color\\:red{text-decoration-color:var(--color-text-red)}')
         expect(css.create('text-stroke-color:red')?.text).toBe('.text-stroke-color\\:red{-webkit-text-stroke-color:var(--color-red)}')
-        expect(css.create('text-stroke-width:2px')?.text).toBe('.text-stroke-width\\:2px{-webkit-text-stroke-width:2px}')
+        expect(css.create('text-stroke:px')?.text).toBe('.text-stroke\\:px{-webkit-text-stroke:1px}')
         expect(css.create('text-decoration-thickness:2px')?.text).toBe('.text-decoration-thickness\\:2px{text-decoration-thickness:2px}')
+        expect(css.create('font-feature-settings:tabular')?.text).toBe('.font-feature-settings\\:tabular{font-feature-settings:var(--font-feature-tabular)}')
+        expect(css.create('content:empty')?.text).toBe('.content\\:empty{content:var(--content-empty)}')
         expect(css.create('font-sm')).toBeUndefined()
         expect(css.create('m-md')).toBeUndefined()
         expect(css.create('sr-only')?.text).toContain('position:absolute')
@@ -294,23 +353,38 @@ describe('@master/css-preset defaultPlan', () => {
         expect(css.create('font-weight:bold')?.text).toBe('.font-weight\\:bold{font-weight:var(--font-weight-bold)}')
         expect(css.create('flex-basis:sm')?.text).toBe('.flex-basis\\:sm{flex-basis:var(--container-sm)}')
         expect(css.create('flex-basis:2x')?.text).toBe('.flex-basis\\:2x{flex-basis:0.5rem}')
-        expect(css.create('outline-width:px')?.text).toBe('.outline-width\\:px{outline-width:1px}')
-        expect(css.create('outline-width:2px')?.text).toBe('.outline-width\\:2px{outline-width:2px}')
+        expect(css.create('outline-width:px')).toBeUndefined()
+        expect(css.create('outline-width:2px')).toBeUndefined()
         expect(css.create('shape-margin:px')?.text).toBe('.shape-margin\\:px{shape-margin:1px}')
         expect(css.create('shape-margin:2x')?.text).toBe('.shape-margin\\:2x{shape-margin:0.5rem}')
         expect(css.create('word-spacing:px')?.text).toBe('.word-spacing\\:px{word-spacing:1px}')
         expect(css.create('word-spacing:2x')?.text).toBe('.word-spacing\\:2x{word-spacing:0.5rem}')
         expect(css.create('stroke:red')?.text).toBe('.stroke\\:red{stroke:var(--color-line-red)}')
         expect(css.create('stroke:.75')?.text).toBe('.stroke\\:\\.75{stroke-width:0.75}')
-        expect(css.create('stroke-width:px')?.text).toBe('.stroke-width\\:px{stroke-width:1px}')
+        expect(css.create('stroke-width:px')).toBeUndefined()
         expect(css.create('text-underline:sm')?.text).toBe('.text-underline\\:sm{text-underline-offset:var(--spacing-sm)}')
         expect(css.create('text-underline-offset:2x')?.text).toBe('.text-underline-offset\\:2x{text-underline-offset:0.5rem}')
-        expect(css.create('text-stroke-width:px')?.text).toBe('.text-stroke-width\\:px{-webkit-text-stroke-width:1px}')
-        expect(css.create('text-stroke-width:thin')?.text).toBe('.text-stroke-width\\:thin{-webkit-text-stroke-width:thin}')
-        expect(css.create('animation-delay:fast')?.text).toBe('.animation-delay\\:fast{animation-delay:fast}')
-        expect(css.create('transition-delay:fast')?.text).toBe('.transition-delay\\:fast{transition-delay:fast}')
+        expect(css.create('text-indent:sm')?.text).toBe('.text-indent\\:sm{text-indent:var(--spacing-sm)}')
+        expect(css.create('background-size:sm')?.text).toBe('.background-size\\:sm{background-size:var(--container-sm)}')
+        expect(css.create('background-position:2x|center')?.text).toBe('.background-position\\:2x\\|center{background-position:0.5rem center}')
+        expect(css.create('mask-position:2x|center')?.text).toBe('.mask-position\\:2x\\|center{mask-position:0.5rem center}')
+        expect(css.create('mask-size:sm')?.text).toBe('.mask-size\\:sm{mask-size:var(--container-sm)}')
+        expect(css.create('perspective:4x')?.text).toBe('.perspective\\:4x{perspective:1rem}')
+        expect(css.create('perspective-origin:2x|center')?.text).toBe('.perspective-origin\\:2x\\|center{perspective-origin:0.5rem center}')
+        expect(css.create('transform-origin:2x|center')?.text).toBe('.transform-origin\\:2x\\|center{transform-origin:0.5rem center}')
+        expect(css.create('text-stroke-width:px')).toBeUndefined()
+        expect(css.create('text-stroke-width:thin')).toBeUndefined()
+        expect(css.create('animation-delay:fast')?.text).toBe('.animation-delay\\:fast{animation-delay:var(--duration-fast)}')
+        expect(css.create('transition-delay:fast')?.text).toBe('.transition-delay\\:fast{transition-delay:var(--duration-fast)}')
+        expect(css.create('font-feature-settings:tabular')?.text).toBe('.font-feature-settings\\:tabular{font-feature-settings:var(--font-feature-tabular)}')
+        expect(css.create('content:empty')?.text).toBe('.content\\:empty{content:var(--content-empty)}')
+        expect(css.create("content:'x'")?.text).toBe(".content\\:\\'x\\'{content:'x'}")
+        expect(css.create('border-width:px')).toBeUndefined()
         expect(css.create('background:red')).toBeUndefined()
         expect(css.create('background:sm')).toBeUndefined()
+        expect(css.create('bg:2x')).toBeUndefined()
+        expect(css.create('transform:2x')).toBeUndefined()
+        expect(css.create('animation-name:fade')).toBeUndefined()
         expect(css.create('container:sm')?.text).not.toContain('var(--container-sm)')
         expect(css.create('flex:sm')?.text).not.toContain('flex-basis')
         expect(css.create('flex:md')?.text).not.toContain('flex-basis')
@@ -364,7 +438,7 @@ describe('@master/css-preset defaultPlan', () => {
 
         expect(defaultPlan.nativeValueNamespaces).toEqual(nativeValueNamespaces)
         expect(new Set(nativeValueNamespaceProperties).size).toBe(nativeValueNamespaceProperties.length)
-        expect(nativeValueNamespaceProperties).toHaveLength(170)
+        expect(nativeValueNamespaceProperties).toHaveLength(153)
         for (const property of nativeValueNamespaceProperties) {
             expect(utilityIds.has(property), property).toBe(false)
             if (!nativeValueNamespaceMatcherKeys.has(property)) {
