@@ -49,8 +49,6 @@ const keyAliases = {
     'px': 'padding-inline',
     'py': 'padding-block',
     'r': 'border-radius',
-    'bx': 'border-inline',
-    'by': 'border-block',
     'rb': 'border-bottom-radius',
     'rbl': 'border-bottom-left-radius',
     'rbr': 'border-bottom-right-radius',

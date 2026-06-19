@@ -67,7 +67,10 @@ function isPureNativePropertyUtility(utility: MasterCSS['definedUtilities'][numb
 export default function getValueCompletionItems(css: MasterCSS = createDefaultCSS(), ruleKey: string, valuePrefix = ''): CompletionItem[] {
     const completionItems: CompletionItem[] = []
     const canonicalRuleKey = css.plan.keyAliases?.[ruleKey] || ruleKey
-    const nativeUtilityKey = css.definedUtilities.find(({ keys }) => keys?.includes(canonicalRuleKey))?.id
+    const nativeUtility = css.definedUtilities.find(({ keys }) => keys?.includes(canonicalRuleKey))
+    const nativeUtilityKey = nativeUtility?.emit.type === 'property'
+        ? nativeUtility.emit.property
+        : nativeUtility?.id
     const nativeKey = nativeUtilityKey || (getMdnPropertySyntax(canonicalRuleKey) ? canonicalRuleKey : undefined)
     const nativePropertyValues = getMdnPropertyValueNames(nativeKey)
     const generateVariableCompletionItem = (variable: Variable, {

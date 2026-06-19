@@ -26,7 +26,7 @@ function AuthorAvatarStack({ children }: { children: any[] }) {
                 return (
                     <Image
                         key={author.name}
-                        className={clsx('round object-cover outline:2px|canvas', {
+                        className={clsx('round object-cover outline:2px|solid|canvas', {
                             'ml:-1x': index > 0
                         })}
                         src={author.image}
@@ -50,7 +50,7 @@ export default async function Page(props: any) {
     return <>
         <main className='pi:5x pt:12x pt:15x@sm'>
             <div className="mi:auto margin-block:18x max-w:5xl prose margin-block:30x@sm">
-                <div className='bl:1px|muted bt:1px|muted grid-cols:1 grid-cols:2@sm grid-cols:3@md'>
+                <div className='bl:1px|solid|muted bt:1px|solid|muted grid-cols:1 grid-cols:2@sm grid-cols:3@md'>
                     {pages
                         .map((page: any, index: number) => {
                             const formattedDate = dayjs(page.date).format('ddd, MMMM D')

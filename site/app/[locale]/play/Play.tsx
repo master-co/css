@@ -861,10 +861,10 @@ export default function Play({ shareId }: PlayProps = {}) {
                         layout === '5' && 'hidden!@md',
                         {
                             'full!@<md': tab !== 'Preview',
-                            'br:1px|muted': !layout,
-                            'bl:1px|muted': layout === '2',
-                            'bb:1px|muted': layout === '3',
-                            'bt:1px|muted': layout === '4'
+                            'br:1px|solid|muted': !layout,
+                            'bl:1px|solid|muted': layout === '2',
+                            'bb:1px|solid|muted': layout === '3',
+                            'bt:1px|solid|muted': layout === '4'
                         }
                     )}
                     width={tab === 'Preview' ? '' : width}
@@ -925,8 +925,8 @@ export default function Play({ shareId }: PlayProps = {}) {
                         overlay={false}
                         originX={'center'}
                         showHandler={responsive ? [false, true, true] : false}
-                        className={clsx('full outline:1px|line.resizing', {
-                            'outline:1px|line-muted max-h:100% max-w:100%': responsive
+                        className={clsx('full outline:1px|solid|line.resizing', {
+                            'outline:1px|solid|line-muted max-h:100% max-w:100%': responsive
                         })}
                         showHeight={true}
                     >
@@ -940,7 +940,7 @@ export default function Play({ shareId }: PlayProps = {}) {
                             onLoad={() => postPreviewUpdate(getFileContent(filesRef.current, 'HTML'), compiledCSSRef.current)}
                         />
                         <div className={clsx('flex flex-col h:full', { 'hidden!': preview !== 'css' })}>
-                            <div className='flex bb:1px|subtle flex:0|0|auto pi:5x align-items:center font:12px h:48px justify-content:space-between pi:10x@sm'>
+                            <div className='flex bb:1px|solid|subtle flex:0|0|auto pi:5x align-items:center font:12px h:48px justify-content:space-between pi:10x@sm'>
                                 <div>{compiling ? 'Compiling CSS' : 'Generated CSS'}</div>
                                 <div className="fg:muted">{compileWarnings.length ? `${compileWarnings.length} warnings` : generatedCSSSize}</div>
                             </div>

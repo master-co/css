@@ -19,7 +19,6 @@ import collectVariableNames from './utils/collect-variable-names'
 import wrapAtRules from './utils/wrap-at-rules'
 import { createAlphaColorValue, createCSSVariableReference, createNegativeNumberVariableReference, createNumberVariableReference, normalizeVariableValue, replaceCSSVariableReferences } from './utils/css-variables'
 import collectAnimationNames from './utils/collect-animation-names'
-import { BORDER_STYLE_VALUES } from './common'
 
 type UtilityStateBranch = {
     selectorTemplate?: string
@@ -472,37 +471,11 @@ export class Utility {
 
     applyTransform(valueComponents: ValueComponent[]) {
         switch (this.registeredUtility.transform) {
-            case 'auto-fill-solid':
-                return this.transformAutoFillSolid(valueComponents)
             case 'animation-token':
                 return this.transformAnimationToken(valueComponents)
             default:
                 return valueComponents
         }
-    }
-
-    transformAutoFillSolid(valueComponents: ValueComponent[]) {
-        if (valueComponents.length < 2) return valueComponents
-        let styleIncluded = false
-        let varIncluded = false
-        for (const valueComponent of valueComponents) {
-            if (
-                valueComponent.type === 'string' && BORDER_STYLE_VALUES.includes(valueComponent.value)
-                || valueComponent.type === 'variable' && BORDER_STYLE_VALUES.includes(String(valueComponent.variable?.value))
-            ) {
-                styleIncluded = true
-            }
-            if (valueComponent.type === 'function' && valueComponent.name === 'var') {
-                varIncluded = true
-            }
-        }
-        if (!styleIncluded && !varIncluded) {
-            valueComponents.push(
-                { type: 'separator', value: ' ', token: '|' },
-                { type: 'string', value: 'solid', token: 'solid' }
-            )
-        }
-        return valueComponents
     }
 
     transformAnimationToken(valueComponents: ValueComponent[]) {

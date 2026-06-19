@@ -101,6 +101,61 @@ const radiusProperties = [
     'border-top-right-radius'
 ]
 
+const borderColorProperties = [
+    'border',
+    'border-block',
+    'border-block-color',
+    'border-block-end',
+    'border-block-end-color',
+    'border-block-start',
+    'border-block-start-color',
+    'border-bottom',
+    'border-bottom-color',
+    'border-color',
+    'border-inline',
+    'border-inline-color',
+    'border-inline-end',
+    'border-inline-end-color',
+    'border-inline-start',
+    'border-inline-start-color',
+    'border-left',
+    'border-left-color',
+    'border-right',
+    'border-right-color',
+    'border-top',
+    'border-top-color',
+    'outline',
+    'outline-color'
+]
+
+const borderWidthProperties = [
+    'border-block-end-width',
+    'border-block-start-width',
+    'border-block-width',
+    'border-bottom-width',
+    'border-inline-end-width',
+    'border-inline-start-width',
+    'border-inline-width',
+    'border-left-width',
+    'border-right-width',
+    'border-top-width',
+    'border-width'
+]
+
+const borderStyleProperties = [
+    'border-block-end-style',
+    'border-block-start-style',
+    'border-block-style',
+    'border-bottom-style',
+    'border-inline-end-style',
+    'border-inline-start-style',
+    'border-inline-style',
+    'border-left-style',
+    'border-right-style',
+    'border-style',
+    'border-top-style'
+]
+
 const nativeValueNamespaces = [
     {
         properties: spacingProperties,
@@ -117,6 +172,18 @@ const nativeValueNamespaces = [
     {
         properties: radiusProperties,
         variableAliasRefs: ['~radius']
+    },
+    {
+        properties: borderColorProperties,
+        variableAliasRefs: ['~color-line', '~color']
+    },
+    {
+        properties: borderWidthProperties,
+        variableAliasRefs: ['=border-width']
+    },
+    {
+        properties: borderStyleProperties,
+        variableAliasRefs: ['=border-style']
     },
     {
         properties: ['accent-color', 'fill', 'filter'],

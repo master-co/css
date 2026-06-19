@@ -89,7 +89,7 @@ const migratedRuleExpectations = [
     {
         source: "packages/core/tests/rules/border.test.ts",
         cases: [
-            ["border:transparent", "border-color:transparent"],
+            ["border:transparent", "border:transparent"],
             ["border:px|solid", "border:1px solid"],
             ["b-solid", "border-style:solid"],
             ["border:1rem|solid", "border:1rem solid"],
@@ -100,6 +100,13 @@ const migratedRuleExpectations = [
             ["border:revert", "border:revert"],
             ["border:revert-layer", "border:revert-layer"],
             ["border:calc(100%-1.25rem)|solid", "border:calc(100% - 1.25rem) solid"],
+            ["b:1px", "border-width:1px"],
+            ["bt:1px", "border-top-width:1px"],
+            ["bx:1px", "border-inline-width:1px"],
+            ["by:1px", "border-block-width:1px"],
+            ["b:line", "border-color:var(--color-line)"],
+            ["bx:line", "border-inline-color:var(--color-line)"],
+            ["by:line", "border-block-color:var(--color-line)"],
             ["b:px|solid", "border:1px solid"],
             ["border:px|solid", "border:1px solid"],
             ["bt:px|solid", "border-top:1px solid"],

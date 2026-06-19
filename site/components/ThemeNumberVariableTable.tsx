@@ -52,7 +52,7 @@ export default function ThemeNumberVariableTable(props: ThemeNumberVariableTable
 
 function renderSpacingRepresentation(value: string, index: number, count: number) {
     return (
-        <div className="inline-flex bg:stripe-pink outline:1px|muted outline-offset:-1px v:middle w:fit" style={{ gap: value }}>
+        <div className="inline-flex bg:stripe-pink outline:1px|solid|muted outline-offset:-1px v:middle w:fit" style={{ gap: value }}>
             {Array.from({ length: count + 2 - index }, (_, index) => <div key={index} className="inline-block size:1.5em bg:surface"></div>)}
         </div>
     )

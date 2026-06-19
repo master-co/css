@@ -102,6 +102,10 @@ const competitiveNativeValueUtilities = [
     'transform'
 ]
 
+const nativeValueNamespaceMatcherKeys = new Set([
+    'outline'
+])
+
 function collectMatcherKeys(plan: MasterCSSPlan) {
     const keys = new Set<string>()
     for (const utility of plan.utilities || []) {
@@ -126,10 +130,10 @@ describe('@master/css-preset defaultPlan', () => {
         const plan = createDefaultPlanFromSourceFile(resolve(__dirname, '../src/index.css'))
         const utilities = plan.utilities || []
 
-        expect(sourceUtilities).toHaveLength(127)
+        expect(sourceUtilities).toHaveLength(94)
         expect(sourceUtilities.some((utility) => Number(utility.type) === UtilityType.Static)).toBe(false)
         expect(sourceUtilities.some((utility) => utility.id === 'variable')).toBe(false)
-        expect(utilities).toHaveLength(322)
+        expect(utilities).toHaveLength(305)
         expect(utilities[0]?.order).toBe(utilities.length - 1)
         expect(utilities[utilities.length - 1]?.order).toBe(0)
         expect(utilities.some((utility) => utility.matchers.some((matcher) => (matcher as { type: string }).type === 'function-prefix'))).toBe(false)
@@ -213,7 +217,12 @@ describe('@master/css-preset defaultPlan', () => {
         expect(css.create('border-solid')).toBeUndefined()
         expect(css.create('border-l-solid')).toBeUndefined()
         expect(css.create('bg:#fff')?.text).toBe('.bg\\:\\#fff{background-color:#fff}')
+        expect(css.create('b:1px')?.text).toBe('.b\\:1px{border-width:1px}')
+        expect(css.create('b:line')?.text).toBe('.b\\:line{border-color:var(--color-line)}')
+        expect(css.create('bx:1px')?.text).toBe('.bx\\:1px{border-inline-width:1px}')
+        expect(css.create('by:line')?.text).toBe('.by\\:line{border-block-color:var(--color-line)}')
         expect(css.create('b:px|solid')?.text).toBe('.b\\:px\\|solid{border:1px solid}')
+        expect(css.create('border:transparent')?.text).toBe('.border\\:transparent{border:transparent}')
         expect(css.create('font:sm')?.text).toBe('.font\\:sm{font-size:var(--font-size-sm)}')
         expect(css.create('font:1rem')?.text).toBe('.font\\:1rem{font-size:1rem}')
         expect(css.create('m:px')?.text).toBe('.m\\:px{margin:1px}')
@@ -224,6 +233,7 @@ describe('@master/css-preset defaultPlan', () => {
 
         for (const utility of defaultPlan.utilities || []) {
             expect('values' in utility, utility.id).toBe(false)
+            expect(utility.transform, utility.id).not.toBe('auto-fill-solid')
         }
         for (const index of defaultPlan.utilityBuckets?.value || []) {
             expect(defaultPlan.utilities?.[index]?.kind, defaultPlan.utilities?.[index]?.id).toBeDefined()
@@ -259,10 +269,12 @@ describe('@master/css-preset defaultPlan', () => {
 
         expect(defaultPlan.nativeValueNamespaces).toEqual(nativeValueNamespaces)
         expect(new Set(nativeValueNamespaceProperties).size).toBe(nativeValueNamespaceProperties.length)
-        expect(nativeValueNamespaceProperties).toHaveLength(109)
+        expect(nativeValueNamespaceProperties).toHaveLength(155)
         for (const property of nativeValueNamespaceProperties) {
             expect(utilityIds.has(property), property).toBe(false)
-            expect(matcherKeys.has(property), property).toBe(false)
+            if (!nativeValueNamespaceMatcherKeys.has(property)) {
+                expect(matcherKeys.has(property), property).toBe(false)
+            }
         }
         for (const utility of competitiveNativeValueUtilities) {
             expect(utilityIds.has(utility), utility).toBe(true)

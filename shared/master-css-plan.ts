@@ -7,7 +7,7 @@ export type MasterCSSPlanDefaultMode = 'light' | 'dark' | 'none' | string
 export type MasterCSSPlanModeTrigger = 'class' | 'media' | 'host'
 export type MasterCSSPlanVariantToken = `:${string}` | `::${string}` | `@${string}`
 export type MasterCSSPlanUtilityKind = 'number' | 'color' | 'image'
-export type MasterCSSPlanTransformOp = 'auto-fill-solid' | 'animation-token'
+export type MasterCSSPlanTransformOp = 'animation-token'
 /** Defaults to single for variable/value matchers; multiple is an explicit opt-in. */
 export type MasterCSSPlanUtilityMatcherValueSegments = 'single' | 'multiple'
 
