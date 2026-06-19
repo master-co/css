@@ -44,6 +44,8 @@ const retainedMatcherAliases = new Set([
     'bl',
     'br',
     'bt',
+    'bx',
+    'by',
     'font',
     'grid-col',
     'grid-col-end',
@@ -130,10 +132,10 @@ describe('@master/css-preset defaultPlan', () => {
         const plan = createDefaultPlanFromSourceFile(resolve(__dirname, '../src/index.css'))
         const utilities = plan.utilities || []
 
-        expect(sourceUtilities).toHaveLength(94)
+        expect(sourceUtilities).toHaveLength(87)
         expect(sourceUtilities.some((utility) => Number(utility.type) === UtilityType.Static)).toBe(false)
         expect(sourceUtilities.some((utility) => utility.id === 'variable')).toBe(false)
-        expect(utilities).toHaveLength(305)
+        expect(utilities).toHaveLength(290)
         expect(utilities[0]?.order).toBe(utilities.length - 1)
         expect(utilities[utilities.length - 1]?.order).toBe(0)
         expect(utilities.some((utility) => utility.matchers.some((matcher) => (matcher as { type: string }).type === 'function-prefix'))).toBe(false)
@@ -191,6 +193,9 @@ describe('@master/css-preset defaultPlan', () => {
         expect(css.create('bl-outset')?.text).toBe('.bl-outset{border-left-style:outset}')
         expect(css.create('bx-solid')?.text).toBe('.bx-solid{border-inline-style:solid}')
         expect(css.create('by-ridge')?.text).toBe('.by-ridge{border-block-style:ridge}')
+        expect(css.create('outline-medium')?.text).toBe('.outline-medium{outline-width:medium}')
+        expect(css.create('outline-thick')?.text).toBe('.outline-thick{outline-width:thick}')
+        expect(css.create('outline-thin')?.text).toBe('.outline-thin{outline-width:thin}')
         expect(css.create('font-sm')).toBeUndefined()
         expect(css.create('m-md')).toBeUndefined()
         expect(css.create('sr-only')?.text).toContain('position:absolute')
@@ -219,10 +224,16 @@ describe('@master/css-preset defaultPlan', () => {
         expect(css.create('bg:#fff')?.text).toBe('.bg\\:\\#fff{background-color:#fff}')
         expect(css.create('b:1px')?.text).toBe('.b\\:1px{border-width:1px}')
         expect(css.create('b:line')?.text).toBe('.b\\:line{border-color:var(--color-line)}')
+        expect(css.create('bt:1px')?.text).toBe('.bt\\:1px{border-top-width:1px}')
+        expect(css.create('bl:line')?.text).toBe('.bl\\:line{border-left-color:var(--color-line)}')
         expect(css.create('bx:1px')?.text).toBe('.bx\\:1px{border-inline-width:1px}')
         expect(css.create('by:line')?.text).toBe('.by\\:line{border-block-color:var(--color-line)}')
+        expect(css.create('b:1px|solid|line')?.text).toBe('.b\\:1px\\|solid\\|line{border:1px solid var(--color-line)}')
+        expect(css.create('bt:1px|solid|line')?.text).toBe('.bt\\:1px\\|solid\\|line{border-top:1px solid var(--color-line)}')
+        expect(css.create('b:1px|line')?.text).toBe('.b\\:1px\\|line{border:1px var(--color-line)}')
         expect(css.create('b:px|solid')?.text).toBe('.b\\:px\\|solid{border:1px solid}')
         expect(css.create('border:transparent')?.text).toBe('.border\\:transparent{border:transparent}')
+        expect(css.create('outline:medium')?.text).toBe('.outline\\:medium{outline:medium}')
         expect(css.create('font:sm')?.text).toBe('.font\\:sm{font-size:var(--font-size-sm)}')
         expect(css.create('font:1rem')?.text).toBe('.font\\:1rem{font-size:1rem}')
         expect(css.create('m:px')?.text).toBe('.m\\:px{margin:1px}')
@@ -288,6 +299,7 @@ describe('@master/css-preset defaultPlan', () => {
         expect(defaultPlan.keyAliases).toEqual(keyAliases)
         expect(defaultPlan.keyAliases).toMatchObject(retainedRadiusKeyAliases)
         for (const alias of Object.keys(keyAliases)) {
+            if (retainedMatcherAliases.has(alias)) continue
             expect(matcherKeys.has(alias), alias).toBe(false)
         }
         for (const alias of retainedMatcherAliases) {

@@ -715,12 +715,16 @@
         border-block-color: --value();
     }
 
-    outline:<number|medium|thick|thin> {
+    outline:<number> {
         outline-width: --value();
     }
 
     outline:<~color-line|~color|color> {
         outline-color: --value();
+    }
+
+    outline-<medium|thick|thin> {
+        outline-width: --value();
     }
 
     outline-<auto|dashed|dotted|double|hidden|none|solid> {

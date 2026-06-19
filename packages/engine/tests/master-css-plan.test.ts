@@ -61,6 +61,81 @@ describe.concurrent('MasterCSSPlan execution', () => {
         expect(css.create('text-center')?.text).toBe('.text-center{text-align:start}')
     })
 
+    it('tries raw managed utilities before key alias fallback', () => {
+        const plan: MasterCSSPlan = {
+            version: 2,
+            settings: {
+                modes: []
+            },
+            variables: [
+                { name: 'color-line', key: 'line', namespace: 'color', type: 'string', value: '#cccccc' }
+            ],
+            keyAliases: {
+                b: 'border'
+            },
+            nativeValueNamespaces: [{
+                properties: ['border'],
+                variableAliasRefs: ['~color-line', '~color']
+            }],
+            utilities: [
+                {
+                    id: 'b:<number>',
+                    name: 'b:<number>',
+                    type: UtilityType.Shorthand,
+                    order: 1,
+                    kind: 'number',
+                    emit: {
+                        type: 'static',
+                        rules: [{
+                            declarations: {
+                                'border-width': null
+                            }
+                        }]
+                    },
+                    matchers: [{
+                        type: 'value',
+                        keys: ['b']
+                    }]
+                },
+                {
+                    id: 'b:<~color-line|~color|color>',
+                    name: 'b:<~color-line|~color|color>',
+                    type: UtilityType.Shorthand,
+                    order: 0,
+                    kind: 'color',
+                    variableAliasRefs: ['~color-line', '~color'],
+                    emit: {
+                        type: 'static',
+                        rules: [{
+                            declarations: {
+                                'border-color': null
+                            }
+                        }]
+                    },
+                    matchers: [
+                        {
+                            type: 'variable',
+                            keys: ['b']
+                        },
+                        {
+                            type: 'value',
+                            keys: ['b']
+                        }
+                    ]
+                }
+            ],
+            utilityBuckets: {
+                variable: [1],
+                value: [0, 1]
+            }
+        }
+        const css = createCSS(plan)
+
+        expect(css.create('b:1px')?.text).toBe('.b\\:1px{border-width:1px}')
+        expect(css.create('b:line')?.text).toBe('.b\\:line{border-color:var(--color-line)}')
+        expect(css.create('b:1px|solid|line')?.text).toBe('.b\\:1px\\|solid\\|line{border:1px solid var(--color-line)}')
+    })
+
     it('executes pre-bucketed utility and variable aliases without config-style resolution', () => {
         const plan: MasterCSSPlan = {
             version: 2,

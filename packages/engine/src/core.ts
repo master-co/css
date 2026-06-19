@@ -667,20 +667,31 @@ export default class MasterCSS {
         return utility.matchers.some((matcher) => matcher.type === 'static')
     }
 
-    private canonicalizeClassName(className: string, fixedClass?: string) {
-        if (className[0] === '{') return { className, fixedClass }
+    private getClassKeyAlias(className: string) {
+        if (className[0] === '{') return
 
         const indexOfColon = className.indexOf(':')
-        if (indexOfColon <= 0) return { className, fixedClass }
+        if (indexOfColon <= 0) return
 
         const key = className.slice(0, indexOfColon)
-        if (key.startsWith('--')) return { className, fixedClass }
+        if (key.startsWith('--')) return
 
         const canonicalKey = this.keyAliases.get(key)
-        if (!canonicalKey) return { className, fixedClass }
+        if (!canonicalKey) return
 
         return {
-            className: canonicalKey + className.slice(indexOfColon),
+            canonicalKey,
+            indexOfColon,
+            key
+        }
+    }
+
+    private canonicalizeClassName(className: string, fixedClass?: string) {
+        const keyAlias = this.getClassKeyAlias(className)
+        if (!keyAlias) return { className, fixedClass }
+
+        return {
+            className: keyAlias.canonicalKey + className.slice(keyAlias.indexOfColon),
             fixedClass
         }
     }
@@ -708,6 +719,10 @@ export default class MasterCSS {
     }
 
     match(className: string): CompiledUtility | undefined {
+        if (this.getClassKeyAlias(className)) {
+            const rawRegisteredUtility = this.matchResolvedClassName(className)
+            if (rawRegisteredUtility) return rawRegisteredUtility
+        }
         return this.matchResolvedClassName(this.canonicalizeClassName(className).className)
     }
 
@@ -762,6 +777,10 @@ export default class MasterCSS {
     }
 
     matchAll(className: string): CompiledUtility[] {
+        if (this.getClassKeyAlias(className)) {
+            const rawRegisteredUtilities = this.matchAllResolvedClassName(className)
+            if (rawRegisteredUtilities.length) return rawRegisteredUtilities
+        }
         return this.matchAllResolvedClassName(this.canonicalizeClassName(className).className)
     }
 
@@ -898,6 +917,14 @@ export default class MasterCSS {
      */
     create(className: string, fixedClass?: string, mode?: string): Utility | undefined {
         const sourceClassName = className
+        if (this.getClassKeyAlias(className)) {
+            const rawRegisteredUtility = this.matchResolvedClassName(className)
+            if (rawRegisteredUtility) {
+                const utility = this.createWithDefinition(sourceClassName, rawRegisteredUtility, fixedClass, mode)
+                if (utility?.valid) return utility
+            }
+        }
+
         const canonicalClass = this.canonicalizeClassName(className, fixedClass)
         className = canonicalClass.className
         fixedClass = canonicalClass.fixedClass
@@ -924,6 +951,22 @@ export default class MasterCSS {
 
     createAll(className: string, fixedClass?: string, mode?: string): Utility[] {
         const sourceClassName = className
+        if (this.getClassKeyAlias(className)) {
+            const rawRegisteredUtilities = this.matchAllResolvedClassName(className)
+            const rawUtilities: Utility[] = []
+            for (const registeredUtility of rawRegisteredUtilities) {
+                const utility = this.createWithDefinition(sourceClassName, registeredUtility, fixedClass, mode)
+                if (utility && utility.valid) {
+                    rawUtilities.push(utility)
+                    for (let branchIndex = 1; branchIndex < utility.branchCount; branchIndex++) {
+                        const branchUtility = this.createWithDefinition(sourceClassName, registeredUtility, fixedClass, mode, branchIndex)
+                        if (branchUtility?.valid) rawUtilities.push(branchUtility)
+                    }
+                }
+            }
+            if (rawUtilities.length) return rawUtilities
+        }
+
         const canonicalClass = this.canonicalizeClassName(className, fixedClass)
         className = canonicalClass.className
         fixedClass = canonicalClass.fixedClass
