@@ -162,7 +162,7 @@
         height: 100%;
     }
 
-    gradient-text {
+    text-gradient {
         -webkit-text-fill-color: transparent;
         background-clip: text;
     }

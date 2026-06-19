@@ -26,7 +26,7 @@ it('extract latent classes from html', () => {
                     </div>
                     <h1
                         class="font:sans tracking:tight fg:white@dark font:heavy">
-                        <span class="gradient-text bg:linear-gradient(120deg,#bd34fe|30%,#41d1ff)">Vite</span>
+                        <span class="text-gradient bg:linear-gradient(120deg,#bd34fe|30%,#41d1ff)">Vite</span>
                         <span class="fg:slate-70 mi:0.625rem font:medium">+</span>
                         <span>Master CSS</span>
                     </h1>
@@ -69,7 +69,7 @@ it('extract latent classes from html', () => {
             'tracking:tight',
             'fg:white@dark',
             'font:heavy',
-            'gradient-text',
+            'text-gradient',
             'bg:linear-gradient(120deg,#bd34fe|30%,#41d1ff)',
             'fg:slate-70',
             'mi:0.625rem',
