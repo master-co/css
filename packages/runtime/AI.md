@@ -52,6 +52,7 @@
 
 ```sh
 pnpm --filter @master/css-runtime e2e
+pnpm --filter @master/css-runtime lint
 pnpm --filter @master/css-runtime type-check
 pnpm --filter @master/css-runtime build
 ```
@@ -73,3 +74,11 @@ Use or extend:
 - Deleting rules by guessed indexes.
 - Rehydrating without comparing generated CSS text.
 - Removing class count tracking.
+
+## Benchmark Guidance
+
+Run `pnpm --filter @master/css-runtime bench` when changing DOM observation, class tracking, lifecycle behavior, hydration, runtime layer insertion/deletion, CSSOM mutation, or the global browser bundle. Keep benchmark runs separate from general e2e unless a targeted browser benchmark is needed for the change.
+
+Do not fold runtime timing assertions into `pnpm --filter @master/css-runtime e2e`; e2e is for browser correctness. Do not replace the browser benchmark with Vitest unless the measured code path is DOM-independent and does not use CSSOM, MutationObserver, hydration, or browser module loading.
+
+For benchmark-relevant runtime changes, report whether the benchmark ran, whether `dist/global.min.js` raw/gzip/brotli size is affected, and any memory, cold-start, runtime CPU, or CSSOM insertion/deletion tradeoff. Also state whether generated CSS output, progressive hydration, or fallback hydration behavior changed.

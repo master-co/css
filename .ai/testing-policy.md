@@ -6,6 +6,27 @@ Run the smallest meaningful package-scoped validation first. Broaden to root tes
 
 Package lint is mandatory for every changed workspace package that defines a package-local `lint` script. For multi-package changes, run lint once per affected package with `pnpm --filter <package> lint`; if an affected package has no package-local lint script, report that explicitly.
 
+## Performance Benchmarks
+
+Benchmarks are advisory guardrails, not exact CI pass/fail gates. Run correctness validation first, then run the relevant benchmark when a change touches an engine or runtime hot path unless the change is documentation-only or purely type-only.
+
+Engine hot paths include `packages/engine/src/core.ts`, `packages/engine/src/utility.ts`, matcher/index behavior, value parsing, selector parsing/generation, at-rule parsing/generation, priority sorting, layer insertion, and plan compilation/cache behavior.
+
+Runtime hot paths include `packages/runtime/src/core.ts`, `packages/runtime/src/class-tracker.ts`, `packages/runtime/src/layer.ts`, `packages/runtime/src/utility-layer.ts`, DOM hydration, class mutation tracking, CSSOM insertion/deletion, and the global browser bundle.
+
+For performance-sensitive engine or runtime work, the final response must report:
+
+- Whether the relevant benchmark ran; if not, why not.
+- Whether bundle size is likely affected, including raw/gzip/brotli checks when browser or engine bundles changed.
+- Memory, cold-start, and runtime CPU tradeoffs when meaningful.
+- CSS output, cascade order, or hydration behavior changes.
+
+Compare before/after when feasible using a temporary worktree or a documented baseline. Do not present benchmark numbers without stating the environment and limitations. If a benchmark is noisy or blocked, report the attempted command, blocker, and closest validated proxy.
+
+Benchmark history must not be committed to the repository. The benchmark workflow stores package benchmark reports as GitHub Actions artifacts for `main`, `alpha`, `beta`, `rc`, and `canary`, compares against the latest matching artifacts, and ignores artifacts beyond the latest 50 per branch and package.
+
+Do not chase benchmark wins by changing CSS output, cascade order, hydration checks, or public behavior unless the behavior change is intentional and tested. Do not serialize compiled indexes or caches into `MasterCSSPlan` unless the plan explicitly justifies the browser payload impact.
+
 ## Change-Type Matrix
 
 | Change | Required Validation |

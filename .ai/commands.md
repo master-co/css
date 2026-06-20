@@ -42,6 +42,31 @@ pnpm --filter @master/css-validator test
 pnpm --filter @master/css-cli test
 ```
 
+## Benchmark Commands
+
+```sh
+pnpm --filter @master/css-engine bench
+pnpm --filter @master/css-runtime bench
+```
+
+Use `pnpm --filter @master/css-engine bench` for engine matching, generation, parsing, priority, layer insertion, and plan compilation/cache work.
+
+Use `pnpm --filter @master/css-runtime bench` for browser runtime CPU, DOM scan, mutation tracking, hydration, CSSOM insertion/deletion, or global bundle work. Run `pnpm --filter @master/css-runtime e2e` as the browser correctness check for runtime and hydration changes; add a targeted browser benchmark when CPU or CSSOM behavior is part of the change.
+
+The `Benchmark` GitHub Actions workflow runs on `main`, `alpha`, `beta`, `rc`, and `canary`, plus manual `workflow_dispatch`. It uploads package-scoped benchmark artifacts and compares against the latest 50 matching artifacts per branch and package. Do not commit benchmark history files to the repo.
+
+For bundle reports, build first and measure the changed artifacts on the same machine:
+
+```sh
+pnpm --filter @master/css-engine build
+pnpm --filter @master/css-runtime build
+wc -c packages/engine/dist/core.mjs packages/runtime/dist/global.min.js
+gzip -c packages/engine/dist/core.mjs | wc -c
+brotli -c packages/engine/dist/core.mjs | wc -c
+gzip -c packages/runtime/dist/global.min.js | wc -c
+brotli -c packages/runtime/dist/global.min.js | wc -c
+```
+
 ## CI Equivalents
 
 - Test workflow: `pnpm run build` then `pnpm test`
@@ -49,4 +74,3 @@ pnpm --filter @master/css-cli test
 - Type-check workflow: `pnpm run build` then `pnpm run type-check`
 - E2E workflow: Playwright install, `pnpm run build`, then `pnpm e2e`
 - Example check: `pnpm build`, reinstall, then `pnpm build:examples`
-

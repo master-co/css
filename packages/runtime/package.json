@@ -3,6 +3,7 @@
     "type": "module",
     "scripts": {
         "build": "techor build \"src/index.ts\" \"src/index.development.ts\" --formats esm && node scripts/build-global-module.mjs && node scripts/copy-default-plan-json.mjs",
+        "bench": "node scripts/benchmark-runtime.mjs",
         "dev": "pnpm build --watch",
         "e2e": "playwright test",
         "e2e:watch": "nodemon -e js,mjs,ts,html,css --watch dist --watch e2e --watch tests --exec playwright test",

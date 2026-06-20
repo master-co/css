@@ -1,0 +1,79 @@
+name: Benchmark
+on:
+    push:
+        branches:
+            - main
+            - alpha
+            - beta
+            - rc
+            - canary
+    workflow_dispatch:
+
+permissions:
+    contents: read
+    actions: read
+
+jobs:
+    benchmark:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v6
+            - uses: pnpm/action-setup@v4
+              with:
+                  version: 10.33.2
+            - uses: actions/setup-node@v6
+              with:
+                  node-version: 24
+                  cache: 'pnpm'
+            - run: pnpm submodules
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+            - run: pnpm install
+            - run: pnpm exec playwright install --with-deps
+            - run: pnpm run build
+            - name: Prepare benchmark output
+              shell: bash
+              run: |
+                  set -euo pipefail
+                  branch_slug="$(printf '%s' "$GITHUB_REF_NAME" | tr '/:@ ' '----' | tr -cd 'A-Za-z0-9._-')"
+                  output_dir="$RUNNER_TEMP/master-css-benchmark"
+                  mkdir -p "$output_dir"
+                  {
+                      echo "BENCHMARK_BRANCH_SLUG=$branch_slug"
+                      echo "BENCHMARK_OUTPUT_DIR=$output_dir"
+                      echo "ENGINE_BENCHMARK_ARTIFACT=master-css-benchmark-$branch_slug-engine-$GITHUB_SHA"
+                      echo "RUNTIME_BENCHMARK_ARTIFACT=master-css-benchmark-$branch_slug-runtime-$GITHUB_SHA"
+                  } >> "$GITHUB_ENV"
+            - name: Run engine benchmark
+              run: pnpm --filter @master/css-engine bench --outputJson "$BENCHMARK_OUTPUT_DIR/engine-vitest.json"
+            - name: Run runtime browser benchmark
+              run: pnpm --filter @master/css-runtime bench --output "$BENCHMARK_OUTPUT_DIR/runtime.json"
+            - name: Write benchmark reports
+              run: node benchmarks/ci/write-benchmark-report.mjs --output "$BENCHMARK_OUTPUT_DIR" --engine "$BENCHMARK_OUTPUT_DIR/engine-vitest.json" --runtime "$BENCHMARK_OUTPUT_DIR/runtime.json"
+            - name: Compare engine history
+              run: node benchmarks/ci/compare-benchmark-history.mjs --current "$BENCHMARK_OUTPUT_DIR/engine/benchmark-results.json" --output "$BENCHMARK_OUTPUT_DIR/engine/history.md" --limit 50
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            - name: Compare runtime history
+              run: node benchmarks/ci/compare-benchmark-history.mjs --current "$BENCHMARK_OUTPUT_DIR/runtime/benchmark-results.json" --output "$BENCHMARK_OUTPUT_DIR/runtime/history.md" --limit 50
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            - name: Append benchmark summary
+              shell: bash
+              run: |
+                  {
+                      cat "$BENCHMARK_OUTPUT_DIR/engine/benchmark-results.md"
+                      cat "$BENCHMARK_OUTPUT_DIR/engine/history.md"
+                      cat "$BENCHMARK_OUTPUT_DIR/runtime/benchmark-results.md"
+                      cat "$BENCHMARK_OUTPUT_DIR/runtime/history.md"
+                  } >> "$GITHUB_STEP_SUMMARY"
+            - uses: actions/upload-artifact@v4
+              with:
+                  name: ${{ env.ENGINE_BENCHMARK_ARTIFACT }}
+                  path: ${{ env.BENCHMARK_OUTPUT_DIR }}/engine
+                  retention-days: 90
+            - uses: actions/upload-artifact@v4
+              with:
+                  name: ${{ env.RUNTIME_BENCHMARK_ARTIFACT }}
+                  path: ${{ env.BENCHMARK_OUTPUT_DIR }}/runtime
+                  retention-days: 90
