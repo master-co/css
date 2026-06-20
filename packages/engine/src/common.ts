@@ -21,6 +21,7 @@ export const UNIT_REGEX = new RegExp(`^([+-.]?\\d+(?:\\.?\\d+)?)(${MASTER_CSS_VA
 export const CLASS_ATTRIBUTES = ['class', 'className']
 export const CLASS_DECLARATIONS = []
 export const CLASS_FUNCTIONS = ['clsx', 'cva', 'ctl', 'cv', 'class', 'classnames', 'classVariant', 'styled(?:\\s+)?(?:\\.\\w+)?', 'classList(?:\\s+)?\\.(?:add|remove|toggle|replace)']
+export const MATCH_NAME_BOUNDARY = new Set(['!', '*', '>', '+', '~', ':', '[', '@', '_', '.'])
 export const AT_COMPARISON_OPERATORS = ['>=', '<=', '>', '<', '=']
 export const AT_LOGICAL_OPERATORS = {
     '&': 'and',
