@@ -12,7 +12,7 @@ Master CSS keeps those decisions close to the element that owns them. Use `w:*` 
                 <DemoLabel>Fluid wrapper</DemoLabel>
                 <div className="w:full max-w:64x mi:auto">
                     <div className="h:10x bg:primary/.15 b:1px|solid|primary/.25 r:lg"></div>
-                    <div className="mt:sm h:4x w:3/4 bg:primary/.1 r:sm"></div>
+                    <div className="mt:sm h:4x w:75% bg:primary/.1 r:sm"></div>
                 </div>
             </section>
             <section className="min-w:0 bg:surface r:lg p:lg b:1px|solid|subtle">
@@ -21,7 +21,7 @@ Master CSS keeps those decisions close to the element that owns them. Use `w:*` 
                     <div className="size:12x round bg:primary/.15 b:1px|solid|primary/.25"></div>
                     <div className="min-w:0 flex:1">
                         <div className="h:4x w:full max-w:28x bg:primary/.16 r:sm"></div>
-                        <div className="mt:xs h:3x w:2/3 bg:primary/.1 r:sm"></div>
+                        <div className="mt:xs h:3x w:calc(100%/3*2) bg:primary/.1 r:sm"></div>
                     </div>
                 </div>
             </section>
@@ -54,7 +54,7 @@ A sizing class should have one clear job. It can set the preferred size, keep th
 
 | Job | Use | Example |
 | --- | --- | --- |
-| Set the preferred inline size | `w:*` | `w:full`, `w:72ch`, `w:1/2` |
+| Set the preferred inline size | `w:*` | `w:full`, `w:72ch`, `w:50%` |
 | Set the preferred block size | `h:*` | `h:12x`, `h:100dvh`, `h:fit` |
 | Keep both axes equal | `size:*` | `size:10x`, `size:md` |
 | Set a lower bound | `min-w:*`, `min-h:*`, `min:*` | `min-w:0`, `min-h:100dvh` |
@@ -100,17 +100,17 @@ Most layout should start flexible and then add constraints. A wrapper that fills
     </Class2CSS>
 </details>
 
-Use `w:full` when the element should follow its parent, fractions such as `w:1/2` for proportional regions, `max-w:*` for caps, and native CSS functions such as `clamp()` when the bound itself should be fluid.
+Use `w:full` when the element should follow its parent, percentages such as `w:50%` for proportional regions, `max-w:*` for caps, and native CSS functions such as `clamp()` when the bound itself should be fluid.
 
 ```html
-<!-- @MARK w:full --><!-- @MARK w:1/2@sm -->
-<aside class="w:full w:1/2@sm">...</aside>
+<!-- @MARK w:full --><!-- @MARK w:50%@sm -->
+<aside class="w:full w:50%@sm">...</aside>
 
 <!-- @MARK w:clamp(18rem,50vw,42rem) -->
 <section class="w:clamp(18rem,50vw,42rem)">...</section>
 ```
 
-Fractions become percentages. Height percentages still follow native CSS behavior: the parent needs a definite height before `h:full` or `h:1/2` can resolve predictably.
+Percentage widths and heights follow native CSS behavior: the parent needs a definite height before `h:full` or `h:50%` can resolve predictably.
 
 ---
 
@@ -160,7 +160,7 @@ The `x` suffix multiplies the [base unit](/guide/theme#project-settings) theme s
     </Class2CSS>
 </details>
 
-Use measured sizes for icons, avatars, handles, checkboxes, skeleton blocks, media slots, and other pieces with deliberate geometry. For page structure, reach for `w:full`, fractions, container values, viewport units, text units, or `clamp()` first.
+Use measured sizes for icons, avatars, handles, checkboxes, skeleton blocks, media slots, and other pieces with deliberate geometry. For page structure, reach for `w:full`, percentages, container values, viewport units, text units, or `clamp()` first.
 
 ---
 
@@ -245,8 +245,8 @@ Use `min-h:*` for baseline regions that may grow, such as app shells, empty stat
 Sizing classes can use the same [breakpoints](/guide/breakpoints), [containers](/guide/containers), selectors, and media queries as other utilities. Choose the boundary that owns the decision.
 
 ```html
-<!-- @MARK w:full --><!-- @MARK w:1/2@sm --><!-- @MARK max-w:7xl@lg -->
-<section class="w:full w:1/2@sm max-w:7xl@lg">...</section>
+<!-- @MARK w:full --><!-- @MARK w:50%@sm --><!-- @MARK max-w:7xl@lg -->
+<section class="w:full w:50%@sm max-w:7xl@lg">...</section>
 
 <!-- @MARK container --><!-- @MARK size:10x@container(md) -->
 <article class="container">
@@ -257,7 +257,7 @@ Sizing classes can use the same [breakpoints](/guide/breakpoints), [containers](
 <details>
     <summary>Generated CSS</summary>
     <Class2CSS>
-        {['w:full', 'w:1/2@sm', 'max-w:7xl@lg', 'container', 'size:8x', 'size:10x@container(md)']}
+        {['w:full', 'w:50%@sm', 'max-w:7xl@lg', 'container', 'size:8x', 'size:10x@container(md)']}
     </Class2CSS>
 </details>
 

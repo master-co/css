@@ -37,7 +37,7 @@ Use the most meaningful token available for the design decision you are making.
 1. Prefer role tokens when your project or UI layer defines product meaning, such as `bg:canvas`, `bg:surface`, `fg:strong`, `fg:muted`, `b:subtle`, `bg:accent`, or `fg:danger`.
 2. Prefer scale tokens when the value belongs to a foundation scale, such as `p:md`, `gap:lg`, `font:2xl` for font-size-only, `text:2xl` for a complete type treatment, `r:xl`, `shadow:md`, `animation-duration:normal`, or `animation-timing-function:smooth`.
 3. Prefer contextual shorthand when a utility already knows the token namespace, such as `b:1px|solid|subtle` instead of `b:1px|solid|line-subtle`.
-4. Use structural values when the value describes layout behavior rather than visual styling, such as `w:full`, `w:1/2`, `max-w:5xl`, `h:100dvh`, `@md`, or `@container(md)`.
+4. Use structural values when the value describes layout behavior rather than visual styling, such as `w:full`, `w:50%`, `max-w:5xl`, `h:100dvh`, `@md`, or `@container(md)`.
 5. Use low-level values only when no token represents the decision, when the value is local and measured, or when the guide is teaching the syntax itself.
 6. If the same low-level value appears in more than one product surface, promote it to a named token instead of repeating it.
 
@@ -182,7 +182,7 @@ The `x` suffix is still useful for measured dimensions, especially icons, avatar
 <aside class="w:80x max-w:md">...</aside>
 ```
 
-For page layout, prefer fluid and constrained values first: `w:full`, fractions, `max-w:*`, container queries, and CSS functions when a fluid bound is the design requirement.
+For page layout, prefer fluid and constrained values first: `w:full`, percentages, `max-w:*`, container queries, and CSS functions when a fluid bound is the design requirement.
 
 ---
 
@@ -239,7 +239,7 @@ Low-level values are not forbidden. They need a clear reason.
 | Syntax teaching | `p:2x`, `w:clamp(16rem,50vw,40rem)`, `bg:#ceb195` | The guide is explaining the value syntax itself. |
 | No token exists | `m:0`, `m:1px`, `z:1`, `opacity:.64` | The value is a precise primitive or a native CSS control, not a reusable design decision. |
 | Local measured geometry | `size:10x`, `w:80x`, `aspect-ratio:16/9` | The value belongs to one asset, icon, component, or media frame. |
-| Fluid layout requirement | `w:1/2`, `h:100dvh`, `max-w:72ch`, `w:clamp(...)` | The value describes layout behavior that a token scale should not hide. |
+| Fluid layout requirement | `w:50%`, `h:100dvh`, `max-w:72ch`, `w:clamp(...)` | The value describes layout behavior that a token scale should not hide. |
 | One-off content value | `content:"New"`, `grid-cols:3`, `order:first` | The value is semantic content or structural behavior. |
 | Custom system extension | `--spacing-card: 1.5rem`, `--shadow-popover: ...` in light and dark modes | The value is being promoted into the design system. |
 

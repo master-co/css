@@ -327,7 +327,7 @@ const migratedRuleExpectations = [
         source: "packages/core/tests/rules/width.test.ts",
         cases: [
             ["w:sm", "width:var(--container-sm)"],
-            ["w:1/4", "width:1/4"],
+            ["w:25%", "width:25%"],
             ["w:3xs", "width:var(--container-3xs)"],
             ["w:2xs", "width:var(--container-2xs)"],
             ["w:xs", "width:var(--container-xs)"],
