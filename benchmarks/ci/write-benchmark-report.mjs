@@ -1,5 +1,6 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { readFileSync } from 'node:fs'
+import { createHash } from 'node:crypto'
 import { brotliCompressSync, gzipSync } from 'node:zlib'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -37,7 +38,8 @@ await writeJSON(resolve(outputRoot, 'benchmark-summary.json'), {
         package: report.package,
         packageSlug: report.packageSlug,
         benchmarkCount: report.benchmarks.length,
-        bundle: report.bundle
+        bundle: report.bundle,
+        assets: report.assets
     }))
 })
 
@@ -64,6 +66,10 @@ function normalizeEngineReport(raw, baseMetadata) {
         }
     }
 
+    const assets = [
+        measureAsset('packages/engine/dist/core.mjs')
+    ]
+
     return {
         ...baseMetadata,
         package: '@master/css-engine',
@@ -73,11 +79,17 @@ function normalizeEngineReport(raw, baseMetadata) {
             source: 'packages/engine/tests/core.bench.ts'
         },
         benchmarks,
-        bundle: measureBundle('packages/engine/dist/core.mjs')
+        bundle: assets[0],
+        assets
     }
 }
 
 function normalizeRuntimeReport(raw, baseMetadata) {
+    const assets = [
+        measureAsset('packages/runtime/dist/global.min.js'),
+        measureAsset('packages/runtime/dist/default-plan.json')
+    ]
+
     return {
         ...baseMetadata,
         package: '@master/css-runtime',
@@ -95,7 +107,8 @@ function normalizeRuntimeReport(raw, baseMetadata) {
             median: benchmark.median,
             sampleCount: benchmark.samples?.length
         })),
-        bundle: measureBundle('packages/runtime/dist/global.min.js')
+        bundle: assets[0],
+        assets
     }
 }
 
@@ -121,14 +134,15 @@ function createMetadata() {
     }
 }
 
-function measureBundle(file) {
+function measureAsset(file) {
     const absolute = resolve(root, file)
     const content = readFileSync(absolute)
     return {
         file,
         rawBytes: content.length,
         gzipBytes: gzipSync(content).length,
-        brotliBytes: brotliCompressSync(content).length
+        brotliBytes: brotliCompressSync(content).length,
+        sha256: createHash('sha256').update(content).digest('hex')
     }
 }
 
@@ -147,8 +161,17 @@ function renderMarkdown(report) {
         lines.push(`- Browser: ${report.browser.name} ${report.browser.version}`)
     }
 
+    lines.push('', '## Assets', '')
+    lines.push('| File | Raw | Gzip | Brotli | SHA-256 |')
+    lines.push('|---|---:|---:|---:|---|')
+
+    for (const asset of report.assets) {
+        lines.push(`| ${asset.file} | ${formatBytes(asset.rawBytes)} | ${formatBytes(asset.gzipBytes)} | ${formatBytes(asset.brotliBytes)} | \`${asset.sha256.slice(0, 12)}\` |`)
+    }
+
     lines.push(
-        `- Bundle: ${report.bundle.file} raw ${formatBytes(report.bundle.rawBytes)}, gzip ${formatBytes(report.bundle.gzipBytes)}, brotli ${formatBytes(report.bundle.brotliBytes)}`,
+        '',
+        '## Benchmarks',
         '',
         '| Benchmark | Median | Mean | Min | Max | Samples |',
         '|---|---:|---:|---:|---:|---:|'

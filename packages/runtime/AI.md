@@ -81,4 +81,4 @@ Run `pnpm --filter @master/css-runtime bench` when changing DOM observation, cla
 
 Do not fold runtime timing assertions into `pnpm --filter @master/css-runtime e2e`; e2e is for browser correctness. Do not replace the browser benchmark with Vitest unless the measured code path is DOM-independent and does not use CSSOM, MutationObserver, hydration, or browser module loading.
 
-For benchmark-relevant runtime changes, report whether the benchmark ran, whether `dist/global.min.js` raw/gzip/brotli size is affected, and any memory, cold-start, runtime CPU, or CSSOM insertion/deletion tradeoff. Also state whether generated CSS output, progressive hydration, or fallback hydration behavior changed.
+For benchmark-relevant runtime changes, report whether the benchmark ran, whether browser payload files such as `dist/global.min.js` and `dist/default-plan.json` changed in raw/gzip/brotli size, and any memory, cold-start, runtime CPU, or CSSOM insertion/deletion tradeoff. Also state whether generated CSS output, progressive hydration, or fallback hydration behavior changed.

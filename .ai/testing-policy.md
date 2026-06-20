@@ -17,7 +17,7 @@ Runtime hot paths include `packages/runtime/src/core.ts`, `packages/runtime/src/
 For performance-sensitive engine or runtime work, the final response must report:
 
 - Whether the relevant benchmark ran; if not, why not.
-- Whether bundle size is likely affected, including raw/gzip/brotli checks when browser or engine bundles changed.
+- Whether bundle size or runtime payload is likely affected, including raw/gzip/brotli checks when browser bundles, engine bundles, or runtime default plan JSON changed.
 - Memory, cold-start, and runtime CPU tradeoffs when meaningful.
 - CSS output, cascade order, or hydration behavior changes.
 

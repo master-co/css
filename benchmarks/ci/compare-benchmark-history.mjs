@@ -134,11 +134,24 @@ function renderHistoryMarkdown(history, totalMatchingArtifacts) {
         ].join(' | ').replace(/^/, '| ').replace(/$/, ' |'))
     }
 
-    lines.push('', '| Bundle | Current | Latest | Latest delta |')
-    lines.push('|---|---:|---:|---:|')
+    lines.push('', '| Asset | Current raw | Latest raw | Raw delta | Current gzip | Latest gzip | Gzip delta | Current brotli | Latest brotli | Brotli delta | Hash |')
+    lines.push('|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---|')
 
-    for (const key of ['rawBytes', 'gzipBytes', 'brotliBytes']) {
-        lines.push(`| ${key} | ${formatBytes(current.bundle[key])} | ${formatBytes(latest.bundle?.[key])} | ${formatDelta(current.bundle[key], latest.bundle?.[key])} |`)
+    for (const asset of getReportAssets(current)) {
+        const latestAsset = findAsset(latest, asset.file)
+        lines.push([
+            asset.file,
+            formatBytes(asset.rawBytes),
+            formatBytes(latestAsset?.rawBytes),
+            formatDelta(asset.rawBytes, latestAsset?.rawBytes),
+            formatBytes(asset.gzipBytes),
+            formatBytes(latestAsset?.gzipBytes),
+            formatDelta(asset.gzipBytes, latestAsset?.gzipBytes),
+            formatBytes(asset.brotliBytes),
+            formatBytes(latestAsset?.brotliBytes),
+            formatDelta(asset.brotliBytes, latestAsset?.brotliBytes),
+            formatHashStatus(asset.sha256, latestAsset?.sha256)
+        ].join(' | ').replace(/^/, '| ').replace(/$/, ' |'))
     }
 
     lines.push('', 'Positive deltas mean the current run is slower or larger. This comparison is advisory only.', '')
@@ -165,6 +178,15 @@ function findBenchmark(report, name) {
     return report?.benchmarks?.find((benchmark) => benchmark.name === name)
 }
 
+function getReportAssets(report) {
+    if (Array.isArray(report?.assets) && report.assets.length) return report.assets
+    return report?.bundle ? [report.bundle] : []
+}
+
+function findAsset(report, file) {
+    return getReportAssets(report).find((asset) => asset.file === file)
+}
+
 function median(values) {
     if (!values.length) return undefined
     const sorted = [...values].sort((left, right) => left - right)
@@ -186,6 +208,11 @@ function formatDelta(currentValue, baselineValue) {
     if (!Number.isFinite(currentValue) || !Number.isFinite(baselineValue) || baselineValue === 0) return ''
     const delta = ((currentValue - baselineValue) / baselineValue) * 100
     return `${delta >= 0 ? '+' : ''}${delta.toFixed(2)}%`
+}
+
+function formatHashStatus(currentHash, baselineHash) {
+    if (!currentHash || !baselineHash) return ''
+    return currentHash === baselineHash ? 'unchanged' : 'changed'
 }
 
 function parseArgs(values) {

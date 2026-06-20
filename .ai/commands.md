@@ -61,10 +61,14 @@ For bundle reports, build first and measure the changed artifacts on the same ma
 pnpm --filter @master/css-engine build
 pnpm --filter @master/css-runtime build
 wc -c packages/engine/dist/core.mjs packages/runtime/dist/global.min.js
+wc -c packages/runtime/dist/default-plan.json
 gzip -c packages/engine/dist/core.mjs | wc -c
 brotli -c packages/engine/dist/core.mjs | wc -c
 gzip -c packages/runtime/dist/global.min.js | wc -c
 brotli -c packages/runtime/dist/global.min.js | wc -c
+gzip -c packages/runtime/dist/default-plan.json | wc -c
+brotli -c packages/runtime/dist/default-plan.json | wc -c
+shasum -a 256 packages/engine/dist/core.mjs packages/runtime/dist/global.min.js packages/runtime/dist/default-plan.json
 ```
 
 ## CI Equivalents
