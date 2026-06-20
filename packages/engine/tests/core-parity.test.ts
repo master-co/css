@@ -88,7 +88,7 @@ describe.concurrent('default plan utility parity', () => {
         const css = createDefaultCSS()
 
         expectClassText(css, 'stroke:.75', 'stroke-width:0.75')
-        expectClassText(css, 'stroke:red', 'stroke:var(--color-line-red)')
+        expectClassText(css, 'stroke:red', 'stroke:var(--color-red)')
         expectClassText(css, 'shape-margin:1px', 'shape-margin:1px')
         expectClassText(css, 'text-underline:sm', 'text-underline-offset:var(--spacing-sm)')
         expectClassText(css, 'text-stroke-width:1px', '-webkit-text-stroke-width:1px')

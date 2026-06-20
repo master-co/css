@@ -113,8 +113,8 @@ The scale should describe the relationship between surfaces, not the visual dram
 Elevation only works when the surface has a clear ground. Pair shadows with background, border, and radius tokens so low elevations remain visible in both light and dark themes. Dark-mode shadows often need a subtle light edge in addition to darker depth layers, so do not judge a token from only one mode.
 
 ```html
-<!-- @MARK bg:surface --><!-- @MARK b:1px|solid|subtle --><!-- @MARK r:lg --><!-- @MARK shadow:sm -->
-<article class="bg:surface b:1px|solid|subtle r:lg shadow:sm p:lg">
+<!-- @MARK bg:white --><!-- @MARK b:1px|solid|subtle --><!-- @MARK r:lg --><!-- @MARK shadow:sm -->
+<article class="bg:white b:1px|solid|subtle r:lg shadow:sm p:lg">
     ...
 </article>
 ```
@@ -122,7 +122,7 @@ Elevation only works when the surface has a clear ground. Pair shadows with back
 <details>
     <summary>Generated CSS</summary>
     <Class2CSS>
-        {['bg:surface', 'b:1px|solid|subtle', 'r:lg', 'shadow:sm', 'p:lg']}
+        {['bg:white', 'b:1px|solid|subtle', 'r:lg', 'shadow:sm', 'p:lg']}
     </Class2CSS>
 </details>
 

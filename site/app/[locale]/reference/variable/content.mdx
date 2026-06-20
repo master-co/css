@@ -5,8 +5,8 @@
 ### Set a CSS custom property
 Use `--name:*` to assign a CSS custom property from the class string.
 ```html
-<!-- @MARK --button-bg:danger -->
-<button class="--button-bg:danger bg:var(--button-bg)">
+<!-- @MARK --button-bg:red-60 -->
+<button class="--button-bg:red-60 bg:var(--button-bg)">
     Custom property
 </button>
 ```
@@ -14,7 +14,7 @@ Use `--name:*` to assign a CSS custom property from the class string.
 <details>
     <summary>Generated CSS</summary>
     <Class2CSS>
-        {['--button-bg:danger']}
+        {['--button-bg:red-60']}
     </Class2CSS>
 </details>
 
@@ -38,7 +38,7 @@ and the element contains an encapsulated style like this:
 ```
 Elements in the shadow DOM cannot be selected via descendant selectors, but you can:
 ```html
-<test-element class="--button-bg:danger --button-bg:pink@sm">
+<test-element class="--button-bg:red-60 --button-bg:pink-60@sm">
     #shadow-root (open)
         <button part="button"></button>
 </test-element>

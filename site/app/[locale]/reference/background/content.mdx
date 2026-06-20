@@ -21,8 +21,8 @@ Use `bg:*` with pipe separators when several background longhands should be set 
 ### Prefer focused utilities for simple changes
 Use [background-color](/reference/background-color), [background-image](/reference/background-image), [background-position](/reference/background-position), [background-size](/reference/background-size), and [background-repeat](/reference/background-repeat) when only one background part should change.
 ```html
-<!-- @MARK bg:surface --><!-- @MARK bg-center --><!-- @MARK bg-cover -->
-<article class="bg:surface bg-center bg-cover">
+<!-- @MARK bg:white --><!-- @MARK bg-center --><!-- @MARK bg-cover -->
+<article class="bg:white bg-center bg-cover">
     ...
 </article>
 ```
@@ -32,7 +32,7 @@ The native `background` shorthand resets several background longhands. Use it in
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="bg:surface bg:url(/hero.jpg)|center/cover|no-repeat@sm bg:surface@print">...</div>
+<div class="bg:white bg:url(/hero.jpg)|center/cover|no-repeat@sm bg:white@print">...</div>
 ```
 
 Use layered backgrounds with comma-separated values only when the visual needs multiple images or gradients.

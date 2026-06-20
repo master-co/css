@@ -34,8 +34,8 @@ Master CSS includes a set of preset foundation tokens, and each project can exte
 ## Token-first policy
 Use the most meaningful token available for the design decision you are making.
 
-1. Prefer role tokens when the value carries product meaning, such as `bg:canvas`, `bg:surface`, `fg:strong`, `fg:muted`, `b:subtle`, `bg:accent`, or `fg:danger`.
-2. Prefer scale tokens when the value belongs to a foundation scale, such as `p:md`, `gap:lg`, `font:2xl` for font-size-only, `text:2xl` for a complete type treatment, `r:xl`, `shadow:md`, `animation-duration:normal`, or `animation-timing-function:standard`.
+1. Prefer role tokens when your project or UI layer defines product meaning, such as `bg:canvas`, `bg:surface`, `fg:strong`, `fg:muted`, `b:subtle`, `bg:accent`, or `fg:danger`.
+2. Prefer scale tokens when the value belongs to a foundation scale, such as `p:md`, `gap:lg`, `font:2xl` for font-size-only, `text:2xl` for a complete type treatment, `r:xl`, `shadow:md`, `animation-duration:normal`, or `animation-timing-function:smooth`.
 3. Prefer contextual shorthand when a utility already knows the token namespace, such as `b:1px|solid|subtle` instead of `b:1px|solid|line-subtle`.
 4. Use structural values when the value describes layout behavior rather than visual styling, such as `w:full`, `w:1/2`, `max-w:5xl`, `h:100dvh`, `@md`, or `@container(md)`.
 5. Use low-level values only when no token represents the decision, when the value is local and measured, or when the guide is teaching the syntax itself.
@@ -66,12 +66,12 @@ Foundation tokens are the shared vocabulary for the most common UI decisions.
 
 | Foundation | Prefer | Avoid for normal UI |
 | --- | --- | --- |
-| Color | `bg:canvas`, `bg:surface`, `fg:strong`, `fg:muted`, <code>b:1px&#124;subtle</code>, `bg:blue-5` | `bg:#fff`, `fg:oklch(...)`, one-off palette values where a role token fits |
+| Color | `fg:strong`, `fg:muted`, <code>b:1px&#124;subtle</code>, `bg:blue-5`, project roles such as `bg:surface` | `bg:#fff`, `fg:oklch(...)`, one-off palette values where a role token fits |
 | Spacing | `p:sm`, `gap:md`, `mt:lg`, `pi:xl` | `p:3x`, `gap:1rem`, `mt:12px` |
 | Typography | `font:lg`, `text:lg`, `font:medium`, `leading:md`, `tracking:tight` | `font:18px`, `leading:1.4`, `tracking:-0.02em` when a token exists |
 | Corner radius | `r:md`, `r:lg`, `r:2xl`, `rounded`, `round` | `r:2x`, `r:8px` for standard cards and controls |
-| Elevation | `shadow:card`, `shadow:raised`, `shadow:popover`, `shadow:modal` with light and dark mode values | Raw multi-part `box-shadow` values in markup |
-| Motion | `animation-duration:normal`, `transition-duration:quick`, `animation-timing-function:standard`, `transition-timing-function:emphasized` | Repeated `150ms`, `300ms`, or custom cubic-bezier values |
+| Elevation | `shadow:xs`, `shadow:sm`, `shadow:md`, `shadow:lg`, or project aliases such as `shadow:card` | Raw multi-part `box-shadow` values in markup |
+| Motion | `animation-duration:normal`, `transition-duration:fast`, `animation-timing-function:smooth`, `transition-timing-function:crisp` | Repeated `150ms`, `300ms`, or custom cubic-bezier values |
 | Breakpoints | `@md`, `@lg` | Repeated viewport queries such as `@media(768px)` |
 | Container sizes | `max-w:md`, `@container(md)` | Repeated component or wrapper widths such as `@container(448px)` |
 | Sizing | `w:full`, `w:fit`, `max-w:7xl`, `size:*` for measured elements | Fixed widths in page layout when a fluid or container token fits |
@@ -111,7 +111,7 @@ Role tokens describe why a value exists. Scale tokens describe where a value sit
 <div class="bg:blue-5 fg:blue-60">Blue swatch</div>
 ```
 
-Use palette scale tokens such as `blue-60`, `green-70`, or `amber-40` when the page is teaching colors, showing a swatch, or intentionally choosing a brand color. For product surfaces, start from roles such as `canvas`, `surface`, `accent`, `strong`, `muted`, `subtle`, and status roles such as `success`, `warning`, `danger`, or `info`.
+Use palette scale tokens such as `blue-60`, `green-70`, or `amber-40` when the page is teaching colors, showing a swatch, or intentionally choosing a brand color. For product surfaces, define roles such as `canvas`, `surface`, `accent`, `strong`, `muted`, `subtle`, and status roles such as `success`, `warning`, `danger`, or `info` in your project theme or UI layer.
 
 ---
 
@@ -128,9 +128,9 @@ Property shorthand keeps frequently used declarations compact:
 | `w:full`, `h:100dvh` | `width:full`, `height:100dvh` | Sizing |
 | `r:lg`, `rtl:md` | `border-radius:lg`, `border-top-left-radius:md` | Corner radius |
 | <code>b:1px&#124;subtle</code>, <code>bt:1px&#124;line</code> | <code>border:1px&#124;subtle</code>, <code>border-top:1px&#124;line</code> | Border width, style, and color |
-| `shadow:card` | `box-shadow:card` | Elevation |
-| <code>transition:opacity&#124;normal&#124;standard</code> | <code>transition-property:opacity transition-duration:normal transition-timing-function:standard</code> | Transitions |
-| `animation-duration:normal`, `animation-timing-function:standard` | `animation-duration:200ms`, `animation-timing-function:cubic-bezier(...)` | Animation timing |
+| `shadow:md` | `box-shadow:md` | Elevation |
+| <code>transition:opacity&#124;normal&#124;smooth</code> | <code>transition-property:opacity transition-duration:normal transition-timing-function:smooth</code> | Transitions |
+| `animation-duration:normal`, `animation-timing-function:smooth` | `animation-duration:200ms`, `animation-timing-function:cubic-bezier(...)` | Animation timing |
 
 Contextual token shorthand removes redundant namespace prefixes from values. The utility already knows which namespace to search.
 
@@ -143,14 +143,14 @@ Contextual token shorthand removes redundant namespace prefixes from values. The
 | <code>outline:1px&#124;subtle</code> | <code>outline:1px&#124;line-subtle</code> | Outline shorthands resolve line color tokens. |
 | `p:md`, `gap:lg` | `p:spacing-md`, `gap:spacing-lg` | Spacing utilities resolve spacing tokens. |
 | `r:lg`, `rtl:md` | `r:radius-lg`, `rtl:radius-md` | Radius utilities resolve corner radius tokens. |
-| `shadow:card` | `shadow:shadow-card` | Shadow utilities resolve elevation tokens. |
+| `shadow:md` | `shadow:shadow-md` | Shadow utilities resolve elevation tokens. |
 | `leading:md` | `leading:leading-md` | Line-height utilities resolve leading tokens. |
 | `tracking:tight` | `tracking:tracking-tight` | Letter-spacing utilities resolve tracking tokens. |
 | `animation-duration:normal` | `animation-duration:duration-normal` | Animation duration resolves duration tokens. |
 | `transition-delay:fast` | `transition-delay:duration-fast` | Transition and animation delay properties resolve duration tokens. |
 | `video` | `aspect-ratio:16/9` | Static shortcut for common media frames. |
 | `font-feature-settings:tabular` | `font-feature-settings:font-feature-tabular` | Font feature settings resolve font-feature tokens. |
-| <code>transition:opacity&#124;normal&#124;standard</code> | <code>transition:opacity&#124;duration-normal&#124;easing-standard</code> | Transition shorthand resolves duration and easing tokens. |
+| <code>transition:opacity&#124;normal&#124;smooth</code> | <code>transition:opacity&#124;duration-normal&#124;easing-smooth</code> | Transition shorthand resolves duration and easing tokens. |
 
 The namespace comes from explicit preset registry references, such as `spacing` for padding and gap utilities or `duration` for animation and transition timing properties. It is not inferred from arbitrary property names. See [How namespaces are resolved](/guide/theme#how-namespaces-are-resolved) for the resolution rules and current default namespace sources.
 
@@ -224,7 +224,7 @@ Motion tokens keep timing and easing consistent across transitions and animation
 (o) Timing and easing use shared motion tokens.
 
 ```html
-<button class="transition:opacity|normal|standard">...</button>
+<button class="transition:opacity|normal|smooth">...</button>
 ```
 
 Native CSS values such as `linear`, `ease-in-out`, `steps()`, and `cubic-bezier()` are valid when the exact timing function is part of the lesson or when no easing theme token expresses the interaction. For ordinary UI transitions, prefer `transition-duration:*` and `transition-timing-function:*`.

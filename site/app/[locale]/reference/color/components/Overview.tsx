@@ -5,7 +5,7 @@ import SyntaxPreview from './SyntaxPreview'
 import Aa from 'internal/components/Aa'
 
 export default () => {
-    const previewSyntax = 'fg:accent'
+    const previewSyntax = 'fg:blue-60'
     return (
         <>
             <SyntaxTable>

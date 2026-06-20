@@ -253,14 +253,14 @@ describe('@master/css-preset defaultPlan', () => {
         const text = [
             css.create('inline-flex')?.text,
             css.create('bg:linear-gradient(#000,#fff)')?.text,
-            css.create('bg:accent')?.text,
+            css.create('bg:blue')?.text,
             css.create('grid-cols:3')?.text,
             css.create('line-clamp:3')?.text,
             css.create('text:2xl')?.text
         ].join('')
         expect(text).toContain('display:inline-flex')
         expect(text).toContain('background-image:linear-gradient(#000,#fff)')
-        expect(text).toContain('background-color:var(--color-accent)')
+        expect(text).toContain('background-color:var(--color-blue)')
         expect(text).toContain('grid-template-columns:repeat(3, minmax(0, 1fr))')
         expect(text).toContain('-webkit-line-clamp:3')
         expect(text).not.toContain('null')
@@ -292,8 +292,8 @@ describe('@master/css-preset defaultPlan', () => {
         expect(css.create('outline-medium')?.text).toBe('.outline-medium{outline-width:medium}')
         expect(css.create('outline-thick')?.text).toBe('.outline-thick{outline-width:thick}')
         expect(css.create('outline-thin')?.text).toBe('.outline-thin{outline-width:thin}')
-        expect(css.create('text-fill-color:red')?.text).toBe('.text-fill-color\\:red{-webkit-text-fill-color:var(--color-text-red)}')
-        expect(css.create('text-decoration-color:red')?.text).toBe('.text-decoration-color\\:red{text-decoration-color:var(--color-text-red)}')
+        expect(css.create('text-fill-color:red')?.text).toBe('.text-fill-color\\:red{-webkit-text-fill-color:var(--color-red)}')
+        expect(css.create('text-decoration-color:red')?.text).toBe('.text-decoration-color\\:red{text-decoration-color:var(--color-red)}')
         expect(css.create('text-stroke-color:red')?.text).toBe('.text-stroke-color\\:red{-webkit-text-stroke-color:var(--color-red)}')
         expect(css.create('text-stroke:1px')?.text).toBe('.text-stroke\\:1px{-webkit-text-stroke-width:1px}')
         expect(css.create('text-decoration-thickness:2px')?.text).toBe('.text-decoration-thickness\\:2px{text-decoration-thickness:2px}')
@@ -401,8 +401,8 @@ describe('@master/css-preset defaultPlan', () => {
         expect(css.create('outline:medium')?.text).toBe('.outline\\:medium{outline:medium}')
         expect(css.create('font:sm')?.text).toBe('.font\\:sm{font-size:var(--font-size-sm)}')
         expect(css.create('font:1rem')?.text).toBe('.font\\:1rem{font-size:1rem}')
-        expect(css.create('text:red')?.text).toBe('.text\\:red{-webkit-text-fill-color:var(--color-text-red)}')
-        expect(css.create('text-decoration:red')?.text).toBe('.text-decoration\\:red{text-decoration-color:var(--color-text-red)}')
+        expect(css.create('text:red')?.text).toBe('.text\\:red{-webkit-text-fill-color:var(--color-red)}')
+        expect(css.create('text-decoration:red')?.text).toBe('.text-decoration\\:red{text-decoration-color:var(--color-red)}')
         expect(css.create('text-stroke:red')?.text).toBe('.text-stroke\\:red{-webkit-text-stroke-color:var(--color-red)}')
         expect(css.create('text-decoration-thickness:px')).toBeUndefined()
         expect(css.create('background-color:red')?.text).toBe('.background-color\\:red{background-color:var(--color-red)}')
@@ -431,7 +431,7 @@ describe('@master/css-preset defaultPlan', () => {
         expect(css.create('shape-margin:2x')?.text).toBe('.shape-margin\\:2x{shape-margin:0.5rem}')
         expect(css.create('word-spacing:1px')?.text).toBe('.word-spacing\\:1px{word-spacing:1px}')
         expect(css.create('word-spacing:2x')?.text).toBe('.word-spacing\\:2x{word-spacing:0.5rem}')
-        expect(css.create('stroke:red')?.text).toBe('.stroke\\:red{stroke:var(--color-line-red)}')
+        expect(css.create('stroke:red')?.text).toBe('.stroke\\:red{stroke:var(--color-red)}')
         expect(css.create('stroke:.75')?.text).toBe('.stroke\\:\\.75{stroke-width:0.75}')
         expect(css.create('stroke-width:1px')).toBeUndefined()
         expect(css.create('text-underline:sm')?.text).toBe('.text-underline\\:sm{text-underline-offset:var(--spacing-sm)}')

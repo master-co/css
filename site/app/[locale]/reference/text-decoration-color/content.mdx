@@ -5,8 +5,8 @@
 ### Set decoration color
 Use `text-decoration-color:*` when only the decoration color should change.
 ```html
-<!-- @MARK text-decoration-color:primary -->
-<a class="text:underline text-decoration-color:primary">
+<!-- @MARK text-decoration-color:blue-60 -->
+<a class="text:underline text-decoration-color:blue-60">
     Colored underline
 </a>
 ```
@@ -14,7 +14,7 @@ Use `text-decoration-color:*` when only the decoration color should change.
 <details>
     <summary>Generated CSS</summary>
     <Class2CSS>
-        {['text-decoration-color:primary']}
+        {['text-decoration-color:blue-60']}
     </Class2CSS>
 </details>
 
@@ -22,7 +22,7 @@ Use `text-decoration-color:*` when only the decoration color should change.
 Use `text-decoration:currentColor` when the decoration should track the foreground color.
 ```html
 <!-- @MARK text-decoration:currentColor -->
-<a class="fg:primary text:underline text-decoration:currentColor">
+<a class="fg:blue-60 text:underline text-decoration:currentColor">
     Current color underline
 </a>
 ```
@@ -39,5 +39,5 @@ Use `text-decoration:transparent` when spacing or thickness should remain but th
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<a class="text-decoration-color:primary:hover text-decoration:currentColor@sm text-decoration:transparent@print">...</a>
+<a class="text-decoration-color:blue-60:hover text-decoration:currentColor@sm text-decoration:transparent@print">...</a>
 ```

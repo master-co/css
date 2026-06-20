@@ -5,7 +5,7 @@ import animals from 'internal/data/animals'
 
 ```html
 <!-- @MARK :hover -->
-<div class="fg:accent:hover"></div>
+<div class="fg:blue-60:hover"></div>
 <!-- @MARK :invalid -->
 <input class="border:red:invalid" />
 <!-- @MARK [open] -->
@@ -32,7 +32,7 @@ If you also need a breakpoint, mode, or other condition, put the [conditional qu
 
 ```html
 <!-- @MARK :hover@md -->
-<button class="bg:accent:hover@md">Save</button>
+<button class="bg:blue-60:hover@md">Save</button>
 ```
 
 For readability, Master CSS can use [selector variants](/guide/theme#selector-variants) to name selectors that appear often.
@@ -69,7 +69,7 @@ Master CSS accepts native selector syntax. The selector is relative to the eleme
 Use `*` as a wildcard. In `>*`, every direct child matches.
 ```html
 <!-- @MARK * -->
-<div class="bg:accent>*">
+<div class="bg:blue-60>*">
     <div>hit</div>
     <div>hit</div>
     ...
@@ -80,42 +80,42 @@ Use `*` as a wildcard. In `>*`, every direct child matches.
 Use a type selector to target elements by tag name.
 ```html
 <!-- @MARK span -->
-<div class="bg:accent>span">
+<div class="bg:blue-60>span">
     <span>hit</span>
 </div>
 ```
 (i) If a raw type selector is hard to read or conflicts with nearby syntax, wrap it with `:is()` or `:where()`.
 ```html
 <!-- @MARK :is(span) -->
-<span class="bg:accent:is(span)"></span>
+<span class="bg:blue-60:is(span)"></span>
 ```
 
 ### `.class`
 Use a class selector for custom application state, such as `.active`, `.selected`, or `.expanded`.
 ```html
 <!-- @MARK .active -->
-<div class="bg:accent.active active">...</div>
+<div class="bg:blue-60.active active">...</div>
 ```
 
 ### `#id`
 Use an ID selector when the state is tied to a unique element.
 ```html
 <!-- @MARK #nav -->
-<nav id="nav" class="bg:accent#nav">...</nav>
+<nav id="nav" class="bg:blue-60#nav">...</nav>
 ```
 
 ### `[attribute]`
 Use attribute selectors for DOM state that already lives in markup, such as `[disabled]`, `[open]`, `aria-*`, and `data-*`.
 ```html
 <!-- @MARK [disabled] -->
-<button class="bg:accent[disabled]" disabled>Submit</button>
+<button class="bg:blue-60[disabled]" disabled>Submit</button>
 ```
 
 ### `:pseudo-class`
 Use pseudo-classes for browser-managed states.
 ```html
 <!-- @MARK :hover -->
-<button class="bg:accent:hover">Submit</button>
+<button class="bg:blue-60:hover">Submit</button>
 ```
 
 ### `::pseudo-element`
@@ -141,7 +141,7 @@ Combinators target elements by their relationship to the element that owns the c
 Use `_` as the descendant combinator. It stands in for the CSS space, because spaces split class names in HTML.
 ```html
 <!-- @MARK _ -->
-<div class="bg:accent_div">
+<div class="bg:blue-60_div">
     <div>hit</div>
     <div>hit
         <div>hit
@@ -155,7 +155,7 @@ Use `_` as the descendant combinator. It stands in for the CSS space, because sp
 Use `>` when only direct children should match.
 ```html
 <!-- @MARK >div -->
-<div class="bg:accent>div">
+<div class="bg:blue-60>div">
     <div>hit</div>
 </div>
 ```
@@ -164,7 +164,7 @@ Use `>` when only direct children should match.
 Use `+` to style the next sibling when it appears immediately after the current element.
 ```html
 <!-- @MARK +div -->
-<div class="bg:accent+div"></div>
+<div class="bg:blue-60+div"></div>
 <div>hit</div>
 ```
 
@@ -172,7 +172,7 @@ Use `+` to style the next sibling when it appears immediately after the current 
 Use `~` to style later siblings that share the same parent.
 ```html
 <!-- @MARK ~div -->
-<div class="bg:accent~div"></div>
+<div class="bg:blue-60~div"></div>
 <div>hit</div>
 <div>hit</div>
 <div>hit</div>
@@ -212,11 +212,11 @@ Use interaction pseudo-classes to give controls feedback as people hover, press,
 
 (click) Try clicking the button to see states change
 <Demo>
-    <button className="bg:accent bg:accent-hover:hover bg:accent-pressed:active pi:md h:10x font:sm font:medium fg:on-accent r:sm inline-flex align-items:center">Submit</button>
+    <button className="bg:blue-60 bg:blue-70:hover bg:blue-80:active pi:md h:10x font:sm font:medium fg:white r:sm inline-flex align-items:center">Submit</button>
 </Demo>
 ```html
 <!-- @MARK :hover --><!-- @MARK :active -->
-<button class="bg:accent fg:on-accent bg:accent-hover:hover bg:accent-pressed:active">Submit</button>
+<button class="bg:blue-60 fg:white bg:blue-70:hover bg:blue-80:active">Submit</button>
 ```
 
 Use `:focus-visible` for keyboard focus rings when you want to avoid showing the focus style after every pointer click.
@@ -273,11 +273,11 @@ Use `:disabled` for controls that cannot be interacted with.
 ### `:checked`, `:indeterminate`
 Use `:checked` and `:indeterminate` for checkboxes, radio buttons, switches, and custom controls backed by native inputs.
 <Demo>
-    <input type="checkbox" className="appearance:none bg:accent:checked b:1px|solid|line r:sm size:5x" defaultChecked />
+    <input type="checkbox" className="appearance:none bg:blue-60:checked b:1px|solid|line r:sm size:5x" defaultChecked />
 </Demo>
 ```html
 <!-- @MARK :checked -->
-<input class="bg:accent:checked …" type="checkbox" checked />
+<input class="bg:blue-60:checked …" type="checkbox" checked />
 ```
 
 ### `:rtl`, `:ltr`
@@ -291,7 +291,7 @@ Use `:rtl` and `:ltr` to react to text direction. They map to `:dir(rtl)` and `:
 Use `:has()` when the current element should change because it contains a matching child or descendant.
 ```html
 <!-- @MARK :has(.active) -->
-<div class="bg:accent:has(.active)">
+<div class="bg:blue-60:has(.active)">
     <div>Item 1</div>
     <div class="active">Item 2</div>
     <div>Item 3</div>
@@ -302,7 +302,7 @@ Use `:has()` when the current element should change because it contains a matchi
 Use `:not()` to exclude a selector from the match.
 ```html
 <!-- @MARK :not(.active) -->
-<div class="fg:success:not(.active) active">...</div>
+<div class="fg:green-60:not(.active) active">...</div>
 ```
 
 ### `:of()`
@@ -400,14 +400,14 @@ Use `[open]` to style a `<details>` element while it is expanded.
 Use [ARIA](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA) attributes when accessible state is already present in the DOM.
 ```html
 <!-- @MARK [aria-checked] -->
-<div class="bg:accent[aria-checked=true]" aria-checked="true">...</div>
+<div class="bg:blue-60[aria-checked=true]" aria-checked="true">...</div>
 ```
 
 ### `[data-<key>=<value>]`
 Use `data-*` attributes for component state that is not covered by native attributes or ARIA.
 ```html
 <!-- @MARK [data-active] -->
-<div class="bg:accent[data-active]" data-active>...</div>
+<div class="bg:blue-60[data-active]" data-active>...</div>
 ```
 
 ### `[<attr>=<value>]`
@@ -443,19 +443,19 @@ Match values that end with a specific string.
 Match values that contain a specific string.
 ```html
 <!-- @MARK [title*=master] -->
-<div class="bg:accent[title*=master]" title="mastercss">...</div>
+<div class="bg:blue-60[title*=master]" title="mastercss">...</div>
 ```
 
 ### `[<attr>|=<value>]`
 Match a value exactly or followed by a hyphen, which is common for language codes.
 ```html
 <!-- @MARK [lang|=en] -->
-<div class="bg:accent[lang|=en]" lang="en-US">...</div>
+<div class="bg:blue-60[lang|=en]" lang="en-US">...</div>
 ```
 
 ### `[<attr>~=<value>]`
 Match one word inside a whitespace-separated attribute value.
 ```html
 <!-- @MARK [title~=css] -->
-<div class="bg:accent[title~=css]" title="master css">...</div>
+<div class="bg:blue-60[title~=css]" title="master css">...</div>
 ```

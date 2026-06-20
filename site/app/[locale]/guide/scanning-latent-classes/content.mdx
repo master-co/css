@@ -11,13 +11,13 @@ source text
 The scanner does not run your app. It reads files as text, collects strings that may be classes, and lets the Master CSS engine decide which candidates can produce CSS.
 
 ```html name=src/index.html
-<!-- @MARK card p:md bg:surface shadow:md -->
-<article class="card p:md bg:surface shadow:md">
+<!-- @MARK card p:md bg:white shadow:md -->
+<article class="card p:md bg:white shadow:md">
     <h2 class="font:lg font:semibold">Release notes</h2>
 </article>
 ```
 
-The source contains `card`, `p:md`, `bg:surface`, `shadow:md`, `font:lg`, and `font:semibold`. Those candidates are validated against the active plan. Valid classes generate CSS; invalid candidates are cached and ignored.
+The source contains `card`, `p:md`, `bg:white`, `shadow:md`, `font:lg`, and `font:semibold`. Those candidates are validated against the active plan. Valid classes generate CSS; invalid candidates are cached and ignored.
 
 ```css name=generated.css
 @layer utilities {
@@ -65,8 +65,8 @@ Scanning is intentionally broad. The scanner looks through markup, JSX, strings,
 
 ```tsx name=src/Button.tsx
 const toneClasses = {
-    neutral: 'bg:surface fg:body',
-    danger: 'bg:danger fg:white'
+    neutral: 'bg:white fg:text',
+    danger: 'bg:red-60 fg:white'
 }
 
 export function Button({ danger }: { danger?: boolean }) {
@@ -81,9 +81,9 @@ export function Button({ danger }: { danger?: boolean }) {
 The scanner can see all complete class strings in this file:
 
 ```txt
-bg:surface
-fg:body
-bg:danger
+bg:white
+fg:text
+bg:red-60
 fg:white
 btn
 r:md
@@ -105,7 +105,7 @@ Words such as `function`, `return`, `No`, `invoices`, and `found` may be discove
 ## Validation
 After candidate scanning, Master CSS validates each class against the active plan. A candidate can be accepted in three common ways:
 
-- It is a built-in utility, such as `block`, `fg:danger`, or `grid-cols:3`.
+- It is a built-in utility, such as `block`, `fg:red-60`, or `grid-cols:3`.
 - It is defined by your project CSS entry and compiled into the plan.
 - It matches a native class collected from a stylesheet that imports [`@master/css`](/guide/native-css-pruning).
 
@@ -126,13 +126,13 @@ export function Hero() {
     return (
         <section className="grid gap:xl">
             <h1 className="hero-title">Master CSS</h1>
-            <a className="btn bg:primary fg:white" href="/docs">Read docs</a>
+            <a className="btn bg:blue-60 fg:white" href="/docs">Read docs</a>
         </section>
     )
 }
 ```
 
-`hero-title` and `btn` are valid because the project CSS entry defines them. `grid`, `gap:xl`, `bg:primary`, and `fg:white` are validated through the utility engine.
+`hero-title` and `btn` are valid because the project CSS entry defines them. `grid`, `gap:xl`, `bg:blue-60`, and `fg:white` are validated through the utility engine.
 
 Configured classes are still on-demand. Defining `.btn` in the project CSS entry does not emit it by itself; `.btn` must appear in scanned source or be included through `@safelist`.
 
@@ -144,15 +144,15 @@ Static rendering works when the complete class string exists in source. It canno
 (x) Do not build class names from fragments.
 
 ```tsx
-const className = 'bg:' + (error ? 'red' : 'green')
+const className = 'bg:' + (error ? 'red-60' : 'green-60')
 ```
 
-The complete strings `bg:danger` and `bg:success` do not exist in source, so static rendering cannot reliably generate either rule.
+The complete strings `bg:red-60` and `bg:green-60` do not exist in source, so static rendering cannot reliably generate either rule.
 
 (o) Write complete class names.
 
 ```tsx
-const className = error ? 'bg:danger' : 'bg:success'
+const className = error ? 'bg:red-60' : 'bg:green-60'
 ```
 
 For component variants, map dynamic inputs to complete class lists.
@@ -169,8 +169,8 @@ function Badge({ tone }: { tone: 'red' | 'green' | 'gray' }) {
 
 ```tsx
 const toneClasses = {
-    danger: 'bg:danger fg:white',
-    success: 'bg:success fg:white',
+    danger: 'bg:red-60 fg:white',
+    success: 'bg:green-60 fg:white',
     neutral: 'bg:gray-10 fg:gray-90'
 }
 
@@ -206,9 +206,9 @@ Use the same pattern for data-driven sizes, positions, and progress values.
 ```tsx
 function Progress({ value }: { value: number }) {
     return (
-        <div className="h:4x bg:surface r:full overflow:hidden">
+        <div className="h:4x bg:gray-10 r:full overflow:hidden">
             <div
-                className="h:full w:$progress bg:primary transition:width|fast|smooth"
+                className="h:full w:$progress bg:blue-60 transition:width|fast|smooth"
                 style={{ '--progress': `${value}%` } as React.CSSProperties}
             />
         </div>
@@ -225,7 +225,7 @@ Use `@safelist` for bounded classes that do not exist in scanned source. Common 
 
 ```css name=index.css
 @master;
-@safelist 'dialog-open transform:translateY(-5):hover bg:primary@dark';
+@safelist 'dialog-open transform:translateY(-5):hover bg:blue-60@dark';
 ```
 
 `@safelist` does not bypass validation. The class still needs to be a valid Master CSS class, a project-defined class from the compiled plan, or a known native class from a pruned stylesheet.

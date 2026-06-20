@@ -180,18 +180,18 @@ Then define your application overrides in the `components` layer or use utilitie
     }
 
     swiper-wrapper {
-        @compose bg:danger;
+        @compose bg:red-60;
     }
 
     swiper-slide {
-        @compose bg:accent;
+        @compose bg:blue-60;
     }
 }
 ```
 
 ```html
-<!-- @MARK bg:accent -->
-<div class="swiper-slide bg:accent">Slide 1</div>
+<!-- @MARK bg:blue-60 -->
+<div class="swiper-slide bg:blue-60">Slide 1</div>
 ```
 
 This keeps vendor defaults below product components and utilities, reducing the need for forceful overrides.

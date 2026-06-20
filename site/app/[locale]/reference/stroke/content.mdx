@@ -21,8 +21,8 @@ Use `stroke:*` to set the stroke paint for SVG shapes.
 ### Use theme colors
 Use color tokens when icon strokes should follow the interface palette.
 ```html
-<!-- @MARK stroke:primary -->
-<svg class="stroke:primary" aria-hidden="true"></svg>
+<!-- @MARK stroke:blue-60 -->
+<svg class="stroke:blue-60" aria-hidden="true"></svg>
 ```
 
 Use [stroke-width](/reference/stroke-width) for line thickness.
@@ -30,5 +30,5 @@ Use [stroke-width](/reference/stroke-width) for line thickness.
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<svg class="stroke:current stroke:primary:hover stroke:current@print">...</svg>
+<svg class="stroke:current stroke:blue-60:hover stroke:current@print">...</svg>
 ```

@@ -502,7 +502,7 @@ test.concurrent('uses native CSS syntax styles for selector semantic tokens', ()
 })
 
 test.concurrent('uses native CSS syntax styles for documentation Master CSS tokens', () => {
-    const htmlCode = '<section class="bg:surface block grid-cols:2@md fg:primary:hover"></section>'
+    const htmlCode = '<section class="bg:blue block grid-cols:2@md fg:primary:hover"></section>'
     const htmlOptions = {
         lang: 'html'
     }
@@ -554,7 +554,7 @@ test.concurrent('uses native CSS syntax styles for documentation Master CSS toke
             className: 'mcss-semantic mcss-semantic-operator mcss-semantic-role-declaration-separator'
         },
         {
-            content: 'surface',
+            content: 'blue',
             htmlStyle: { color: 'value' },
             className: 'mcss-semantic mcss-semantic-enumMember mcss-semantic-role-value-keyword'
         },

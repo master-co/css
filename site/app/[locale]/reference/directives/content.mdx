@@ -21,7 +21,7 @@ Directives do not behave like normal CSS rules. Consumed directives are removed 
 
 @reference "./theme.css";
 
-@safelist "dialog-open bg:primary@dark";
+@safelist "dialog-open bg:blue-60@dark";
 @blocklist "debug-*";
 
 @preserve native;
@@ -356,7 +356,7 @@ Use `@safelist` and `@blocklist` for direct class candidate policy.
 `@safelist` adds bounded class candidates that do not exist in scanned source. Safelisted candidates are still validated before CSS is generated.
 
 ```css
-@safelist "dialog-open transform:translateY(-5):hover bg:primary@dark";
+@safelist "dialog-open transform:translateY(-5):hover bg:blue-60@dark";
 ```
 
 ### `@blocklist`
@@ -386,7 +386,7 @@ Use `@compose` inside a style rule to lower an unquoted Master CSS class list in
         @compose inline-flex align-items:center justify-content:center px:md py:xs r:lg;
 
         &:hover {
-            @compose bg:primary/.9;
+            @compose bg:blue-60/.9;
         }
     }
 }
@@ -433,7 +433,7 @@ Use `@variant` inside managed definitions or native style rules to share the cur
     @compose p:md r:lg;
 
     @dark {
-        @compose bg:surface fg:strong;
+        @compose bg:gray-90 fg:strong;
     }
 
     @variant @<sm {

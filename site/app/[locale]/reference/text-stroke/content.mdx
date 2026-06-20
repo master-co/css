@@ -5,8 +5,8 @@
 ### Set stroke width and color together
 Use `text-stroke:*|*` when the width and color should be declared as one text stroke value.
 ```html
-<!-- @MARK text-stroke:1px|primary -->
-<h2 class="text-stroke:1px|primary">
+<!-- @MARK text-stroke:1px|blue-60 -->
+<h2 class="text-stroke:1px|blue-60">
     Outlined title
 </h2>
 ```
@@ -14,7 +14,7 @@ Use `text-stroke:*|*` when the width and color should be declared as one text st
 <details>
     <summary>Generated CSS</summary>
     <Class2CSS>
-        {['text-stroke:1px|primary']}
+        {['text-stroke:1px|blue-60']}
     </Class2CSS>
 </details>
 
@@ -30,7 +30,7 @@ Use transparent fill when the outline should be the primary visible shape.
 ### Split width and color when states differ
 Use the dedicated width or color utilities when only one part changes across a state.
 ```html
-<h2 class="text-stroke:1px text-stroke:primary text-stroke:transparent:hover">
+<h2 class="text-stroke:1px text-stroke:blue-60 text-stroke:transparent:hover">
     Interactive outline
 </h2>
 ```
@@ -38,5 +38,5 @@ Use the dedicated width or color utilities when only one part changes across a s
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<h2 class="text-stroke:1px|primary:hover text-stroke:2px|primary@sm text-stroke:0@print">...</h2>
+<h2 class="text-stroke:1px|blue-60:hover text-stroke:2px|blue-60@sm text-stroke:0@print">...</h2>
 ```

@@ -115,7 +115,7 @@ The default theme vocabulary is registry-backed. This table lists the built-in c
 <VariableNamespaceSources />
 
 ### Use contextual tokens
-The same short token can resolve differently by context. `accent` is a color in `bg:accent`, `card` is spacing in `p:card`, radius in `r:card`, and shadow in `shadow:card`. If the shadow token is mode-specific, the same `shadow:card` class follows the active light or dark mode.
+After your project defines UI tokens, the same short token can resolve differently by context. `accent` is a color in `bg:accent`, `card` is spacing in `p:card`, radius in `r:card`, and shadow in `shadow:card`. If the shadow token is mode-specific, the same `shadow:card` class follows the active light or dark mode.
 
 ```html
 <!-- @MARK bg:surface --><!-- @MARK p:card --><!-- @MARK r:card --><!-- @MARK font:sans -->
@@ -455,7 +455,7 @@ Use [Reusing Styles](/guide/reusing-styles) for abstraction strategy, [component
 ## Default source
 Master CSS ships its complete default CSS entry as `@master/css/index.css`. Read it as source, not as a required project template: copy only the tokens or settings you intentionally want to override.
 
-The default entry imports focused public files. Use `@master/css/theme.css` for theme tokens and managed keyframes, `@master/css/variants.css` for preset variants, and `@master/css/utilities.css` for preset static utilities when you need a smaller entry.
+The default entry imports focused public files. Use `@master/css/theme.css` for preset theme tokens, `@master/css/variants.css` for preset variants, and `@master/css/utilities.css` for preset static utilities when you need a smaller entry.
 
 ### `theme.css`
 

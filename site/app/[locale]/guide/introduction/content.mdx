@@ -7,25 +7,25 @@ Master CSS is a markup-driven CSS language and framework. It lets you write CSS 
 
 Think of each class as a small CSS statement:
 
-- Start with the declaration you want, such as `fg:accent`, `font:3xl`, or `text-center`.
+- Start with the declaration you want, such as `fg:blue-60`, `font:3xl`, or `text-center`.
 - Add a selector state when the style should react, such as `:hover`.
 - Add a conditional query when the style should be scoped, such as `@sm` or `@dark`.
 
 ```html
-<!-- @MARK fg:accent --><!-- @MARK :hover --><!-- @MARK @sm -->
-<h1 class="fg:accent fg:danger:hover font:3xl font:5xl@sm font:heavy m:2xl text-center">
+<!-- @MARK fg:blue-60 --><!-- @MARK :hover --><!-- @MARK @sm -->
+<h1 class="fg:blue-60 fg:red-60:hover font:3xl font:5xl@sm font:heavy m:2xl text-center">
     Hello World
 </h1>
 ```
 
 <Demo $py={0}>
-    <h1 className="fg:accent fg:danger:hover font:3xl font:5xl@sm font:heavy m:2xl text-center">Hello World</h1>
+    <h1 className="fg:blue-60 fg:red-60:hover font:3xl font:5xl@sm font:heavy m:2xl text-center">Hello World</h1>
 </Demo>
 
 <details>
     <summary>Generated CSS</summary>
     <Class2CSS>
-        {'fg:accent fg:danger:hover font:3xl font:5xl@sm font:heavy m:2xl text-center'}
+        {'fg:blue-60 fg:red-60:hover font:3xl font:5xl@sm font:heavy m:2xl text-center'}
     </Class2CSS>
 </details>
 
@@ -69,19 +69,19 @@ It can attach [state selectors](/guide/state-selectors) and [selector variants](
 
 ```html
 <!-- Set a pink background on hover -->
-<div class="bg:accent-hover:hover">
+<div class="bg:blue-70:hover">
 
 <!-- Set a pink background for all subsequent siblings -->
-<div class="bg:accent~*">
+<div class="bg:blue-60~*">
 
 <!-- Set a pink background for all subsequent div siblings -->
-<div class="bg:accent+div">
+<div class="bg:blue-60+div">
 
 <!-- Set a pink background for descendant p elements -->
-<div class="bg:accent_:where(p)">
+<div class="bg:blue-60_:where(p)">
 
 <!-- Use :first instead of :nth-child(...) -->
-<div class="bg:accent:first">
+<div class="bg:blue-60:first">
 ```
 
 It can also attach [responsive](/guide/responsive-design) and [conditional](/guide/conditional-queries) rules:

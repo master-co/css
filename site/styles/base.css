@@ -1,8 +1,14 @@
 @theme light {
+    --color-yellow: $color-yellow-40;
+    --color-yellow-hover: $color-yellow-50;
+    --color-on-yellow: $color-yellow-95;
     --color-yellow-line: $color-black/.1;
 }
 
 @theme dark {
+    --color-yellow: $color-yellow-50;
+    --color-yellow-hover: $color-yellow-40;
+    --color-on-yellow: $color-yellow-95;
     --color-yellow-line: $color-white/.3;
 }
 

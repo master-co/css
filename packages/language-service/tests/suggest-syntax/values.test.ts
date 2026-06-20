@@ -33,8 +33,7 @@ describe.concurrent('detail and documentation', () => {
                     \`\`\`css
                     @layer theme {
                       :root {
-                        --font-family-sans: var(--font-sans, ui-sans-serif), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-                        --font-sans: "Inter"
+                        --font-family-sans: var(--font-sans, ui-sans-serif), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"
                       }
                     }
                     @layer utilities {
@@ -112,25 +111,25 @@ describe.concurrent('sorting', () => {
             'yellow-90',
             'yellow-95',
             'yellow-100',
-            'yellow',
-            'yellow-focus',
-            'yellow-hover',
-            'yellow-line',
-            'yellow-pressed',
-            'yellow-selection',
-            'yellow-surface'
+            'yellow'
         ])
     })
 
-    test.concurrent('color roles', () => {
-        expect(hint('fg:')?.map(({ label }) => label)).toEqual(expect.arrayContaining([
-            'accent',
-            'danger',
+    test.concurrent('color roles and base hue aliases', () => {
+        const labels = hint('fg:')?.map(({ label }) => label)
+
+        expect(labels).toEqual(expect.arrayContaining([
+            'blue',
             'link',
             'muted',
+            'pink',
             'strong',
             'text'
         ]))
+        expect(labels).not.toContain('accent')
+        expect(labels).not.toContain('danger')
+        expect(labels).not.toContain('on-blue')
+        expect(labels).not.toContain('text-blue')
     })
 
     test.concurrent('unitful numeric variables', () => {

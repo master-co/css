@@ -21,8 +21,8 @@ Use `fill:*` to set the fill paint for SVG shapes.
 ### Use theme colors
 Use color tokens when SVG paint should match the design system.
 ```html
-<!-- @MARK fill:primary -->
-<svg class="fill:primary" aria-hidden="true"></svg>
+<!-- @MARK fill:blue-60 -->
+<svg class="fill:blue-60" aria-hidden="true"></svg>
 ```
 
 Use `fill:transparent` for shapes that should only show their stroke.
@@ -30,7 +30,7 @@ Use `fill:transparent` for shapes that should only show their stroke.
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<svg class="fill:current fill:primary:hover fill:current@print">...</svg>
+<svg class="fill:current fill:blue-60:hover fill:current@print">...</svg>
 ```
 
 Use [stroke](/reference/stroke) for outline paint.

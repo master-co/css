@@ -22,7 +22,7 @@ Use `animation-delay:*` to wait before the first animation cycle begins.
 Negative delays start an animation partway through its cycle. This is useful for spinner segments that should not all begin at the same frame.
 ```html
 <!-- @MARK animation-delay:-120ms -->
-<svg class="animate:fade animation-delay:-120ms">
+<svg class="animation-name:fade animation-duration:1s animation-delay:-120ms">
     ...
 </svg>
 ```
@@ -36,7 +36,7 @@ Apply increasing delays to siblings when each item should enter after the previo
 ```
 
 ### Use duration tokens
-Define `duration-*` tokens when the same delay appears across several animation patterns.
+Define `duration-*` tokens when the same delay appears across several animation patterns. This example assumes your project defines a `fade` keyframe.
 
 ```css name=index.css
 @theme {

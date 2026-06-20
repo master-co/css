@@ -9,95 +9,75 @@ function findVariable(name: string) {
     return defaultPlan.variables?.find((variable) => variable.name === name)
 }
 
-const modeInvariantAliases = [
-    ['shadow-card', 'shadow', '$shadow-sm', ['shadow-sm']],
-    ['shadow-raised', 'shadow', '$shadow-md', ['shadow-md']],
-    ['shadow-popover', 'shadow', '$shadow-lg', ['shadow-lg']],
-    ['shadow-modal', 'shadow', '$shadow-xl', ['shadow-xl']],
-    ['shadow-overlay', 'shadow', '$shadow-2xl', ['shadow-2xl']],
-    ['color-accent', 'color', '$color-blue', ['color-blue']],
-    ['color-accent-hover', 'color', '$color-blue-hover', ['color-blue-hover']],
-    ['color-accent-pressed', 'color', '$color-blue-pressed', ['color-blue-pressed']],
-    ['color-on-accent', 'color', '$color-on-blue', ['color-on-blue']],
-    ['color-accent-surface', 'color', '$color-blue-surface', ['color-blue-surface']],
-    ['color-accent-line', 'color', '$color-blue-line', ['color-blue-line']],
-    ['color-text-accent', 'color-text', '$color-text-blue', ['color-text-blue']],
-    ['color-focus', 'color', '$color-blue-focus', ['color-blue-focus']],
-    ['color-selection', 'color', '$color-blue-selection', ['color-blue-selection']],
-    ['color-on-selection', 'color', '$color-on-blue-selection', ['color-on-blue-selection']],
-    ['color-success', 'color', '$color-green', ['color-green']],
-    ['color-success-hover', 'color', '$color-green-hover', ['color-green-hover']],
-    ['color-success-pressed', 'color', '$color-green-pressed', ['color-green-pressed']],
-    ['color-on-success', 'color', '$color-on-green', ['color-on-green']],
-    ['color-text-success', 'color-text', '$color-text-green', ['color-text-green']],
-    ['color-success-surface', 'color', '$color-green-surface', ['color-green-surface']],
-    ['color-success-line', 'color', '$color-green-line', ['color-green-line']],
-    ['color-line-success', 'color-line', '$color-line-green', ['color-line-green']],
-    ['color-warning', 'color', '$color-amber', ['color-amber']],
-    ['color-warning-hover', 'color', '$color-amber-hover', ['color-amber-hover']],
-    ['color-warning-pressed', 'color', '$color-amber-pressed', ['color-amber-pressed']],
-    ['color-on-warning', 'color', '$color-on-amber', ['color-on-amber']],
-    ['color-text-warning', 'color-text', '$color-text-amber', ['color-text-amber']],
-    ['color-warning-surface', 'color', '$color-amber-surface', ['color-amber-surface']],
-    ['color-warning-line', 'color', '$color-amber-line', ['color-amber-line']],
-    ['color-line-warning', 'color-line', '$color-line-amber', ['color-line-amber']],
-    ['color-danger', 'color', '$color-red', ['color-red']],
-    ['color-danger-hover', 'color', '$color-red-hover', ['color-red-hover']],
-    ['color-danger-pressed', 'color', '$color-red-pressed', ['color-red-pressed']],
-    ['color-on-danger', 'color', '$color-on-red', ['color-on-red']],
-    ['color-text-danger', 'color-text', '$color-text-red', ['color-text-red']],
-    ['color-danger-surface', 'color', '$color-red-surface', ['color-red-surface']],
-    ['color-danger-line', 'color', '$color-red-line', ['color-red-line']],
-    ['color-line-danger', 'color-line', '$color-line-red', ['color-line-red']],
-    ['color-info', 'color', '$color-cyan', ['color-cyan']],
-    ['color-info-hover', 'color', '$color-cyan-hover', ['color-cyan-hover']],
-    ['color-info-pressed', 'color', '$color-cyan-pressed', ['color-cyan-pressed']],
-    ['color-on-info', 'color', '$color-on-cyan', ['color-on-cyan']],
-    ['color-text-info', 'color-text', '$color-text-cyan', ['color-text-cyan']],
-    ['color-info-surface', 'color', '$color-cyan-surface', ['color-cyan-surface']],
-    ['color-info-line', 'color', '$color-cyan-line', ['color-cyan-line']],
-    ['color-line-info', 'color-line', '$color-line-cyan', ['color-line-cyan']]
-] as const
-
-const hueAliases = [
-    'stone',
-    'gray',
-    'neutral',
-    'slate',
-    'brown',
-    'orange',
-    'amber',
-    'yellow',
-    'lime',
-    'green',
-    'beryl',
-    'teal',
-    'cyan',
-    'sky',
-    'blue',
-    'indigo',
-    'violet',
-    'purple',
-    'fuchsia',
-    'pink',
-    'crimson',
-    'red'
-] as const
-
-const primaryOnColorAliases = [
-    'color-on-sky',
+const removedVariableNames = [
+    'font-sans',
+    'spacing-field',
+    'spacing-control',
+    'spacing-card',
+    'spacing-panel',
+    'spacing-section',
+    'spacing-page',
+    'radius-control',
+    'radius-card',
+    'radius-panel',
+    'duration-instant',
+    'duration-quick',
+    'easing-standard',
+    'easing-enter',
+    'easing-exit',
+    'easing-emphasized',
+    'shadow-card',
+    'shadow-popover',
+    'color-canvas',
+    'color-surface',
+    'color-surface-overlay',
+    'color-backdrop',
+    'color-blue-hover',
     'color-on-blue',
-    'color-on-indigo',
-    'color-on-violet',
-    'color-on-purple',
-    'color-on-fuchsia',
-    'color-on-pink',
-    'color-on-crimson',
-    'color-on-red'
+    'color-text-blue',
+    'color-blue-surface',
+    'color-blue-line',
+    'color-line-blue',
+    'color-blue-focus',
+    'color-blue-selection',
+    'color-accent',
+    'color-focus',
+    'color-selection',
+    'color-success',
+    'color-text-success',
+    'color-line-success',
+    'color-warning',
+    'color-danger',
+    'color-info'
+] as const
+
+const baseHueAliases = [
+    ['stone', '$color-stone-30', '$color-stone-40'],
+    ['gray', '$color-gray-30', '$color-gray-40'],
+    ['neutral', '$color-neutral-30', '$color-neutral-40'],
+    ['slate', '$color-slate-30', '$color-slate-40'],
+    ['brown', '$color-brown-40', '$color-brown-50'],
+    ['orange', '$color-orange-40', '$color-orange-50'],
+    ['amber', '$color-amber-40', '$color-amber-50'],
+    ['yellow', '$color-yellow-40', '$color-yellow-50'],
+    ['lime', '$color-lime-40', '$color-lime-50'],
+    ['green', '$color-green-40', '$color-green-50'],
+    ['beryl', '$color-beryl-40', '$color-beryl-50'],
+    ['teal', '$color-teal-40', '$color-teal-50'],
+    ['cyan', '$color-cyan-40', '$color-cyan-50'],
+    ['sky', '$color-sky-60', '$color-sky-50'],
+    ['blue', '$color-blue-60', '$color-blue-50'],
+    ['indigo', '$color-indigo-60', '$color-indigo-50'],
+    ['violet', '$color-violet-60', '$color-violet-50'],
+    ['purple', '$color-purple-60', '$color-purple-50'],
+    ['fuchsia', '$color-fuchsia-60', '$color-fuchsia-50'],
+    ['pink', '$color-pink-60', '$color-pink-50'],
+    ['crimson', '$color-crimson-60', '$color-crimson-50'],
+    ['red', '$color-red-60', '$color-red-50']
 ] as const
 
 describe.concurrent('@master/css-preset design token parity', () => {
-    test('keeps core font, spacing, breakpoint, container, and animation tokens in defaultPlan', () => {
+    test('keeps primitive font, spacing, radius, breakpoint, container, color, shadow, and motion tokens', () => {
         expect(findVariable('font-family-sans')).toMatchObject({
             namespace: 'font-family',
             key: 'sans',
@@ -124,20 +104,6 @@ describe.concurrent('@master/css-preset design token parity', () => {
             value: '1rem',
             numeric: { value: 1, unit: 'rem' }
         })
-        expect(findVariable('spacing-card')).toMatchObject({
-            namespace: 'spacing',
-            key: 'card',
-            type: 'number',
-            value: '1.5rem',
-            numeric: { value: 1.5, unit: 'rem' }
-        })
-        expect(findVariable('radius-card')).toMatchObject({
-            namespace: 'radius',
-            key: 'card',
-            type: 'number',
-            value: '.75rem',
-            numeric: { value: 0.75, unit: 'rem' }
-        })
         expect(findVariable('breakpoint-sm')).toMatchObject({
             namespace: 'breakpoint',
             key: 'sm',
@@ -152,153 +118,84 @@ describe.concurrent('@master/css-preset design token parity', () => {
             value: '24rem',
             numeric: { value: 24, unit: 'rem' }
         })
+        expect(findVariable('duration-fast')).toMatchObject({
+            namespace: 'duration',
+            key: 'fast'
+        })
+        expect(findVariable('easing-smooth')).toMatchObject({
+            namespace: 'easing',
+            key: 'smooth',
+            type: 'string'
+        })
         expect(findVariable('animate-fade')).toMatchObject({
             namespace: 'animate',
             key: 'fade',
-            type: 'string'
+            type: 'string',
+            value: 'fade 1s infinite'
         })
-        expect(findVariable('animation-fade')).toBeUndefined()
-    })
-
-    test('publishes palette aliases and product role tokens without legacy names', () => {
-        expect(findVariable('color-canvas')).toMatchObject({
-            namespace: 'color',
-            key: 'canvas',
-            modes: expect.objectContaining({
-                light: expect.objectContaining({ value: '$color-neutral-0' }),
-                dark: expect.objectContaining({ value: '$color-gray-100' })
+        expect(defaultPlan.animations).toMatchObject({
+            fade: expect.objectContaining({
+                '0%': expect.objectContaining({ opacity: '0' }),
+                to: expect.objectContaining({ opacity: '1' })
             })
         })
-        expect(findVariable('color-blue')).toMatchObject({
+        expect(findVariable('color-blue-60')).toMatchObject({
             namespace: 'color',
-            key: 'blue'
+            key: 'blue-60'
         })
-        expect(findVariable('color-blue-hover')).toMatchObject({
+        expect(findVariable('shadow-sm')).toMatchObject({
+            namespace: 'shadow',
+            key: 'sm',
+            type: 'string',
+            modes: expect.objectContaining({
+                light: expect.objectContaining({ type: 'string' }),
+                dark: expect.objectContaining({ type: 'string' })
+            })
+        })
+    })
+
+    test('removes UI, product, and expanded hue role tokens from the default preset', () => {
+        for (const name of removedVariableNames) {
+            expect(findVariable(name), name).toBeUndefined()
+        }
+    })
+
+    test('keeps base hue aliases mode-specific without expanded hue aliases', () => {
+        for (const [hue, lightValue, darkValue] of baseHueAliases) {
+            expect(findVariable(`color-${hue}`), hue).toMatchObject({
+                namespace: 'color',
+                key: hue,
+                type: 'string',
+                modes: {
+                    light: { type: 'string', value: lightValue },
+                    dark: { type: 'string', value: darkValue }
+                },
+                dependencies: [lightValue.slice(1), darkValue.slice(1)]
+            })
+        }
+    })
+
+    test('keeps only minimal text and line role tokens', () => {
+        expect(findVariable('color-text')).toMatchObject({
             namespace: 'color',
-            key: 'blue-hover'
-        })
-        expect(findVariable('color-blue-pressed')).toMatchObject({
-            namespace: 'color',
-            key: 'blue-pressed'
-        })
-        expect(findVariable('color-on-blue')).toMatchObject({
-            namespace: 'color',
-            key: 'on-blue'
-        })
-        expect(findVariable('color-text-blue')).toMatchObject({
-            namespace: 'color-text',
-            key: 'blue'
+            key: 'text',
+            modes: expect.objectContaining({
+                light: expect.objectContaining({ value: '$color-neutral-70' }),
+                dark: expect.objectContaining({ value: '$color-gray-30' })
+            })
         })
         expect(findVariable('color-text-muted')).toMatchObject({
             namespace: 'color-text',
             key: 'muted'
         })
+        expect(findVariable('color-line')).toMatchObject({
+            namespace: 'color',
+            key: 'line'
+        })
         expect(findVariable('color-line-subtle')).toMatchObject({
             namespace: 'color-line',
             key: 'subtle'
         })
-        expect(findVariable('color-accent')).toMatchObject({
-            namespace: 'color',
-            key: 'accent'
-        })
-        expect(findVariable('color-success-surface')).toMatchObject({
-            namespace: 'color',
-            key: 'success-surface'
-        })
-        expect(findVariable('shadow-card')).toMatchObject({
-            namespace: 'shadow',
-            key: 'card'
-        })
-
-        expect(findVariable('color-blue-active')).toBeUndefined()
-        expect(findVariable('color-blue-text')).toBeUndefined()
-        expect(findVariable('color-text-lightest')).toBeUndefined()
-        expect(findVariable('color-line-lightest')).toBeUndefined()
-        expect(findVariable('color-grey-50')).toBeUndefined()
-        expect(findVariable('color-neutral-50')).toBeDefined()
-    })
-
-    test('publishes mode-invariant aliases as base token dependencies', () => {
-        for (const [name, namespace, value, dependencies] of modeInvariantAliases) {
-            const variable = findVariable(name)
-            expect(variable).toMatchObject({
-                namespace,
-                key: name.slice(namespace.length + 1),
-                type: 'string',
-                value,
-                dependencies
-            })
-            expect(variable).not.toHaveProperty('modes')
-        }
-    })
-
-    test('keeps primary on-color aliases mode-specific', () => {
-        for (const name of primaryOnColorAliases) {
-            const variable = findVariable(name)
-            expect(variable).toMatchObject({
-                namespace: 'color',
-                key: name.slice('color-'.length),
-                type: 'string',
-                modes: {
-                    light: { type: 'string', value: '$color-white' },
-                    dark: { type: 'string', value: '$color-white' }
-                },
-                dependencies: ['color-white']
-            })
-            expect(variable).not.toHaveProperty('value')
-        }
-    })
-
-    test('publishes hue surface, line, focus, and selection aliases as mode-specific', () => {
-        for (const hue of hueAliases) {
-            const hueRoleAliases: [string, string, string, string, string[]][] = [
-                [`color-${hue}-surface`, 'color', `$color-${hue}-5`, `$color-${hue}-95`, [`color-${hue}-5`, `color-${hue}-95`]],
-                [`color-${hue}-line`, 'color', `$color-${hue}-30`, `$color-${hue}-80`, [`color-${hue}-30`, `color-${hue}-80`]],
-                [`color-line-${hue}`, 'color-line', `$color-${hue}-30`, `$color-${hue}-80`, [`color-${hue}-30`, `color-${hue}-80`]],
-                [`color-${hue}-focus`, 'color', `$color-${hue}-60`, `$color-${hue}-40`, [`color-${hue}-60`, `color-${hue}-40`]],
-                [`color-${hue}-selection`, 'color', `$color-${hue}-10`, `$color-${hue}-90`, [`color-${hue}-10`, `color-${hue}-90`]],
-                [`color-on-${hue}-selection`, 'color', `$color-${hue}-90`, `$color-${hue}-10`, [`color-${hue}-90`, `color-${hue}-10`]]
-            ]
-
-            for (const [name, namespace, lightValue, darkValue, dependencies] of hueRoleAliases) {
-                const variable = findVariable(name)
-                expect(variable).toMatchObject({
-                    namespace,
-                    key: name.slice(namespace.length + 1),
-                    type: 'string',
-                    modes: {
-                        light: { type: 'string', value: lightValue },
-                        dark: { type: 'string', value: darkValue }
-                    },
-                    dependencies
-                })
-                expect(variable).not.toHaveProperty('value')
-            }
-        }
-    })
-
-    test('publishes interactive and status semantic roles as base hue dependencies', () => {
-        for (const [name, namespace, value, dependencies] of modeInvariantAliases.filter(([name]) => (
-            name.startsWith('color-accent')
-            || name === 'color-text-accent'
-            || name === 'color-focus'
-            || name === 'color-selection'
-            || name === 'color-on-selection'
-            || name.includes('success')
-            || name.includes('warning')
-            || name.includes('danger')
-            || name.includes('info')
-        ))) {
-            const variable = findVariable(name)
-            expect(variable).toMatchObject({
-                namespace,
-                key: name.slice(namespace.length + 1),
-                type: 'string',
-                value,
-                dependencies
-            })
-            expect(variable).not.toHaveProperty('modes')
-        }
     })
 
     test('precomputes default breakpoint and container at-rule aliases', () => {
@@ -318,31 +215,29 @@ describe.concurrent('@master/css-preset design token parity', () => {
         expect(Object.hasOwn(defaultPlan, 'variableAliasSets')).toBe(false)
     })
 
-    test('executes built-in registry records without authoring config', () => {
+    test('executes built-in registry records without UI role tokens', () => {
         const css = createCSS(defaultPlan)
 
         expect(css.create('font:sans')?.text).toContain('font-family:var(--font-family-sans)')
         expect(css.create('text:2xl')?.text).toContain('font-size:var(--font-size-2xl)')
         expect(css.create('m:md')?.text).toContain('margin:var(--spacing-md)')
-        expect(css.create('p:card')?.text).toContain('padding:var(--spacing-card)')
         expect(css.create('r:lg')?.text).toContain('border-radius:var(--radius-lg)')
-        expect(css.create('r:card')?.text).toContain('border-radius:var(--radius-card)')
         expect(css.create('fg:muted')?.text).toContain('color:var(--color-text-muted)')
-        expect(css.create('fg:on-blue')?.text).toContain('color:var(--color-on-blue)')
-        expect(css.create('fg:on-warning')?.text).toContain('color:var(--color-on-warning)')
-        expect(css.create('bg:blue-hover')?.text).toContain('background-color:var(--color-blue-hover)')
-        expect(css.create('bg:accent')?.text).toContain('background-color:var(--color-accent)')
-        expect(css.create('bg:accent-surface')?.text).toContain('background-color:var(--color-accent-surface)')
-        expect(css.create('outline:focus')?.text).toContain('outline-color:var(--color-focus)')
-        expect(css.create('bg:selection')?.text).toContain('background-color:var(--color-selection)')
-        expect(css.create('fg:on-selection')?.text).toContain('color:var(--color-on-selection)')
-        expect(css.create('bg:success-surface')?.text).toContain('background-color:var(--color-success-surface)')
         expect(css.create('b:subtle')?.text).toContain('border-color:var(--color-line-subtle)')
-        expect(css.create('b:success')?.text).toContain('border-color:var(--color-line-success)')
-        expect(css.create('b:blue')?.text).toContain('border-color:var(--color-line-blue)')
-        expect(css.create('shadow:card')?.text).toContain('box-shadow:var(--shadow-card)')
+        expect(css.create('bg:blue-60')?.text).toContain('background-color:var(--color-blue-60)')
+        expect(css.create('shadow:sm')?.text).toContain('box-shadow:var(--shadow-sm)')
         expect(css.create('w:sm')?.text).toContain('width:var(--container-sm)')
+        expect(css.create('transition-duration:fast')?.text).toContain('transition-duration:var(--duration-fast)')
+        expect(css.create('transition-timing-function:smooth')?.text).toContain('transition-timing-function:var(--easing-smooth)')
+        expect(css.create('bg:blue')?.text).toContain('background-color:var(--color-blue)')
+        expect(css.create('bg:pink')?.text).toContain('background-color:var(--color-pink)')
+        expect(css.create('fg:red')?.text).toBe('.fg\\:red{color:var(--color-red)}')
         expect(css.create('animate:fade')?.text).toContain('animation:var(--animate-fade)')
+        expect(css.create('bg:accent')).toBeUndefined()
+        expect(css.create('fg:on-blue')?.text).not.toContain('var(--color-on-blue)')
+        expect(css.create('fg:text-blue')?.text).not.toContain('var(--color-text-blue)')
+        expect(css.create('b:line-blue')?.text).not.toContain('var(--color-line-blue)')
+        expect(css.create('bg:blue-surface')).toBeUndefined()
         expect(css.text).not.toContain('null')
     })
 })

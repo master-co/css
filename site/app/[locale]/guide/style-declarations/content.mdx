@@ -106,16 +106,16 @@ Change the text color of an element using color functions like `rgb()`, `hsl()`,
 After the declaration itself is clear, you can attach selectors and conditions without changing the declaration syntax.
 
 ```html
-<!-- @MARK bg:accent --><!-- @MARK bg:accent-hover:hover@md --><!-- @MARK transition:background-color|.2s -->
-<button class="bg:accent bg:accent-hover:hover@md transition:background-color|.2s">
+<!-- @MARK bg:blue-60 --><!-- @MARK bg:blue-70:hover@md --><!-- @MARK transition:background-color|.2s -->
+<button class="bg:blue-60 bg:blue-70:hover@md transition:background-color|.2s">
     Save
 </button>
 ```
 
 This means:
 
-- `bg:accent` applies by default.
-- `bg:accent-hover:hover@md` applies only when the button is hovered and the viewport matches `@md`.
+- `bg:blue-60` applies by default.
+- `bg:blue-70:hover@md` applies only when the button is hovered and the viewport matches `@md`.
 - `transition:background-color|.2s` adds a `background-color` transition.
 
 The rest of the syntax tutorial builds on this model: declarations first, then selectors, then queries.

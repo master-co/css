@@ -3,8 +3,8 @@
 }
 
 @theme {
-    --color-accent: $color-yellow;
-    --color-on-accent: $color-on-yellow;
+    --color-accent: $color-yellow-40;
+    --color-on-accent: $color-yellow-95;
 }
 
 @theme light {
