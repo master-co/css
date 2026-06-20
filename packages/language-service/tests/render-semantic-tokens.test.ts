@@ -557,7 +557,75 @@ test.concurrent('does not render non-entry @master at-rules as CSS directives', 
 
 test.concurrent('does not render semantic tokens for native CSS-only documents', () => {
     const { tokens } = renderTokens(`
+        @charset "utf-8";
+        @import url("base.css") layer(theme) supports(display: grid);
+        @namespace svg url("http://www.w3.org/2000/svg");
         /* @theme should remain a native comment */
+
+        @font-face {
+            font-family: "Inter";
+            src: url("/fonts/inter.woff2") format("woff2");
+            font-display: swap;
+        }
+
+        @property --angle {
+            syntax: "<angle>";
+            inherits: false;
+            initial-value: 0deg;
+        }
+
+        @counter-style bullets {
+            system: cyclic;
+            symbols: "*" "\\2022";
+            suffix: " ";
+        }
+
+        @font-feature-values Inter {
+            @styleset {
+                nice: 1;
+            }
+        }
+
+        @font-palette-values --brand {
+            font-family: "Bixa";
+            base-palette: 1;
+            override-colors: 0 #0f172a;
+        }
+
+        @page :first {
+            margin: 1cm;
+            @top-left {
+                content: "Chapter";
+            }
+        }
+
+        @position-try --bottom {
+            inset-area: bottom;
+            margin: 1rem;
+        }
+
+        @view-transition {
+            navigation: auto;
+        }
+
+        @scope (.card) to (.content) {
+            :scope {
+                color: red;
+            }
+        }
+
+        @starting-style {
+            .card {
+                opacity: 0;
+            }
+        }
+
+        @document url("https://example.com/") {
+            body {
+                color: red;
+            }
+        }
+
         @keyframes fade {
             from {
                 opacity: 0;
@@ -570,11 +638,23 @@ test.concurrent('does not render semantic tokens for native CSS-only documents',
             }
         }
 
+        @layer reset, theme, components;
+
         @media (width >= 48rem) {
             .card:hover::before {
                 --distance: calc(100% - 1rem);
                 color: red;
                 content: "@utilities";
+            }
+        }
+
+        @supports (container-type: inline-size) {
+            @container card (width > 30rem) {
+                @layer components {
+                    .card:is(.active, #featured) {
+                        animation: fade 1s ease-in-out;
+                    }
+                }
             }
         }
     `, 'css')
@@ -584,9 +664,21 @@ test.concurrent('does not render semantic tokens for native CSS-only documents',
 
 test.concurrent('renders CSS document semantic tokens only inside Master directive ranges', () => {
     const nativeBefore = [
+        '@font-face {',
+        '    font-family: "Inter";',
+        '    src: url("/fonts/inter.woff2") format("woff2");',
+        '}',
+        '@property --angle {',
+        '    syntax: "<angle>";',
+        '    inherits: false;',
+        '    initial-value: 0deg;',
+        '}',
         '@keyframes fade {',
         '    from { opacity: 0; transform: translateX(0); }',
         '    to { opacity: 1; transform: translateX(var(--distance)); }',
+        '}',
+        '@scope (.card) to (.content) {',
+        '    :scope { color: red; }',
         '}',
         '.card:hover::before { color: red; }'
     ].join('\n')
@@ -596,8 +688,16 @@ test.concurrent('renders CSS document semantic tokens only inside Master directi
         '}'
     ].join('\n')
     const nativeBetween = [
+        '@layer reset, theme, components;',
         '@media (width >= 48rem) {',
         '    .panel { color: red; }',
+        '}',
+        '@supports (container-type: inline-size) {',
+        '    @container card (width > 30rem) {',
+        '        @layer components {',
+        '            .panel:is(.active, #featured) { animation: fade 1s ease-in-out; }',
+        '        }',
+        '    }',
         '}'
     ].join('\n')
     const utilitiesDirective = [
