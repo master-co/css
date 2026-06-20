@@ -480,7 +480,7 @@
         font-weight: --value();
     }
 
-    bg:<~color|color> {
+    bg:<color> {
         background-color: --value();
     }
 
@@ -510,7 +510,7 @@
         border-width: --value();
     }
 
-    b:<~color-line|~color|color> {
+    b:<~color-line|color> {
         border-color: --value();
     }
 
@@ -518,7 +518,7 @@
         border-top-width: --value();
     }
 
-    bt:<~color-line|~color|color> {
+    bt:<~color-line|color> {
         border-top-color: --value();
     }
 
@@ -526,7 +526,7 @@
         border-right-width: --value();
     }
 
-    br:<~color-line|~color|color> {
+    br:<~color-line|color> {
         border-right-color: --value();
     }
 
@@ -534,7 +534,7 @@
         border-bottom-width: --value();
     }
 
-    bb:<~color-line|~color|color> {
+    bb:<~color-line|color> {
         border-bottom-color: --value();
     }
 
@@ -542,7 +542,7 @@
         border-left-width: --value();
     }
 
-    bl:<~color-line|~color|color> {
+    bl:<~color-line|color> {
         border-left-color: --value();
     }
 
@@ -550,7 +550,7 @@
         border-inline-width: --value();
     }
 
-    bx:<~color-line|~color|color> {
+    bx:<~color-line|color> {
         border-inline-color: --value();
     }
 
@@ -558,7 +558,7 @@
         border-block-width: --value();
     }
 
-    by:<~color-line|~color|color> {
+    by:<~color-line|color> {
         border-block-color: --value();
     }
 
@@ -566,7 +566,7 @@
         outline-width: --value();
     }
 
-    outline:<~color-line|~color|color> {
+    outline:<~color-line|color> {
         outline-color: --value();
     }
 
@@ -619,7 +619,7 @@
         letter-spacing: clamp(-0.072em, calc((--value() - 1rem) * -0.048), 0em);
     }
 
-    text:<~color-text|~color|color> {
+    text:<~color-text|color> {
         -webkit-text-fill-color: --value();
     }
 
@@ -627,7 +627,7 @@
         text-decoration-thickness: --value();
     }
 
-    text-decoration:<~color-text|~color|color> {
+    text-decoration:<~color-text|color> {
         text-decoration-color: --value();
     }
 
@@ -648,7 +648,7 @@
         -webkit-text-stroke-width: --value();
     }
 
-    text-stroke:<~color|color> {
+    text-stroke:<color> {
         -webkit-text-stroke-color: --value();
     }
 

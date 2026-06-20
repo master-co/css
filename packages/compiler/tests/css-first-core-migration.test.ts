@@ -146,6 +146,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
                 --font-family-sans: ui-sans-serif;
                 --font-weight-bold: 700;
                 --color-red: red;
+                --color-text-red: #900;
             }
 
             @utilities {
@@ -161,8 +162,12 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
                     font-weight: --value();
                 }
 
-                bg:<~color|color> {
+                bg:<color> {
                     background-color: --value();
+                }
+
+                fg:<~color-text|color> {
+                    color: --value();
                 }
 
                 grid-cols:<number> {
@@ -201,6 +206,17 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
         })
         expect(plan.utilities?.find((utility) => utility.id === 'grid-cols:<number>')?.type).toBe(UtilityType.Normal)
         expect(plan.utilities?.find((utility) => utility.id === 'size:<~container|number>')?.type).toBe(UtilityType.Shorthand)
+        expect(plan.utilities?.find((utility) => utility.id === 'bg:<~color|color>')).toMatchObject({
+            kind: 'color',
+            variableAliasRefs: ['~color'],
+            matchers: expect.arrayContaining([
+                { type: 'variable', keys: ['bg'] },
+                { type: 'value', keys: ['bg'] }
+            ])
+        })
+        expect(plan.utilities?.find((utility) => utility.id === 'fg:<~color-text|~color|color>')).toMatchObject({
+            variableAliasRefs: ['~color-text', '~color']
+        })
         expect(plan.utilities?.find((utility) => utility.id === 'user-select:<auto|none|text|all>')).toMatchObject({
             matchers: [{
                 type: 'pattern',
@@ -234,6 +250,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
         expect(css.create('font:1rem')?.text).toBe('.font\\:1rem{font-size:1rem}')
         expect(css.create('bg:red')?.text).toBe('.bg\\:red{background-color:var(--color-red)}')
         expect(css.create('bg:#fff')?.text).toBe('.bg\\:\\#fff{background-color:#fff}')
+        expect(css.create('fg:red')?.text).toBe('.fg\\:red{color:var(--color-text-red)}')
         expect(css.create('grid-cols:3')?.text).toBe('.grid-cols\\:3{display:grid;grid-template-columns:repeat(3, minmax(0, 1fr))}')
         expect(css.create('size:4x')?.text).toBe('.size\\:4x{width:1rem;height:1rem}')
         expect(css.create('size:4x|8x')).toBeUndefined()
@@ -338,7 +355,23 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
 
         expect(() => compileCSSPlan(`
             @utilities {
+                x:<color|none> {
+                    color: --value();
+                }
+            }
+        `, { basePlan: defaultPlan })).toThrow('Managed dynamic utility enum values cannot be combined with namespaces')
+
+        expect(() => compileCSSPlan(`
+            @utilities {
                 x:<*|none> {
+                    color: --value();
+                }
+            }
+        `, { basePlan: defaultPlan })).toThrow('Managed dynamic utility wildcard cannot be combined with enum or raw value kinds')
+
+        expect(() => compileCSSPlan(`
+            @utilities {
+                x:<color|*> {
                     color: --value();
                 }
             }

@@ -1785,16 +1785,24 @@ function parseManagedDynamicPatternName(source: string) {
     }
 
     const variableAliasRefs: string[] = []
+    const canonicalValues: string[] = []
     const literalValues: string[] = []
     let kind: 'number' | 'color' | 'image' | undefined
     let arbitrary = false
+    const addCanonicalValue = (value: string, unique = false) => {
+        if (!unique || !canonicalValues.includes(value)) canonicalValues.push(value)
+    }
+    const addVariableAliasRef = (value: string) => {
+        if (!variableAliasRefs.includes(value)) variableAliasRefs.push(value)
+        addCanonicalValue(value, true)
+    }
     for (const value of values) {
         if (value[0] === '~' || value[0] === '=') {
             const namespace = value.slice(1)
             if (!/^[_a-zA-Z][-_a-zA-Z0-9]*$/.test(namespace)) {
                 throw new Error(`Invalid managed dynamic utility namespace: ${value}`)
             }
-            if (!variableAliasRefs.includes(value)) variableAliasRefs.push(value)
+            addVariableAliasRef(value)
             continue
         }
         if (MANAGED_DYNAMIC_SOURCE_KINDS.has(value)) {
@@ -1802,14 +1810,18 @@ function parseManagedDynamicPatternName(source: string) {
                 throw new Error('Managed dynamic utilities only support one raw value kind per entry')
             }
             kind = value as 'number' | 'color' | 'image'
+            if (kind === 'color') addVariableAliasRef('~color')
+            addCanonicalValue(value)
             continue
         }
         if (value === MANAGED_DYNAMIC_RAW_ANY_SOURCE) {
             arbitrary = true
+            addCanonicalValue(value)
             continue
         }
         if (/^-?[_a-zA-Z0-9][-_a-zA-Z0-9]*$/.test(value)) {
             if (!literalValues.includes(value)) literalValues.push(value)
+            addCanonicalValue(value)
             continue
         }
         throw new Error(`Unsupported managed dynamic utility source: ${value}`)
@@ -1828,7 +1840,7 @@ function parseManagedDynamicPatternName(source: string) {
 
     return {
         kind: 'dynamic' as const,
-        name: `${key}:<${values.join('|')}>`,
+        name: `${key}:<${canonicalValues.join('|')}>`,
         dynamic: {
             key,
             ...(variableAliasRefs.length ? { variableAliasRefs } : {}),

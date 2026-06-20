@@ -246,7 +246,7 @@ Defines managed utility classes in the `utilities` layer. Utilities still win ov
         font-family: --value();
     }
 
-    bg:<~color|color> {
+    bg:<color> {
         background-color: --value();
     }
 
@@ -293,7 +293,7 @@ Dynamic colon entries use `key:<source-list>` and keep the class syntax as `key:
         font-size: --value();
     }
 
-    bg:<~color|color> {
+    bg:<color> {
         background-color: --value();
     }
 
@@ -309,9 +309,11 @@ Dynamic colon entries use `key:<source-list>` and keep the class syntax as `key:
 
 `<~font-size|number>` supports `font:sm` through `--font-size-sm` and `font:16px` as a raw number. It does not create dash token classes such as `font-sm`. Bare numbers are emitted as written; use `4x` when you want Master CSS base-unit conversion to `rem`.
 
+`<color>` supports both the `~color` theme namespace and raw CSS color values. For example, `bg:<color>` behaves like `bg:<~color|color>`, so `bg:primary` can resolve `--color-primary` while `bg:#fff` remains a raw color. Put more specific color namespaces before `color` when needed, such as `text:<~color-text|color>`.
+
 Literal enum values can stand alone when at least two values are provided, such as `user-select:<auto|none|text|all>`, or combine with one raw kind, such as `line-clamp:<number|none>`. Enum values cannot be mixed with namespaces.
 
-`*` is for raw-any full-value wrappers, such as paired vendor declarations. It may be used alone or with namespace refs, as in `text-decoration:<~color-text|~color|*>`, but it cannot be mixed with enum values or raw kinds.
+`*` is for raw-any full-value wrappers, such as paired vendor declarations. It may be used alone or with namespace refs, as in `text-decoration:<~color-text|~color|*>`, but it cannot be mixed with enum values or raw kinds. The `<color>` shorthand does not apply to `*` wrappers; list `~color` explicitly when raw-any values should also resolve color tokens.
 
 `--value()` accepts no arguments and is only valid inside managed enum pattern or dynamic colon entry declarations.
 
