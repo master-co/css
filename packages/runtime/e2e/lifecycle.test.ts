@@ -89,8 +89,8 @@ test('inserts functional pseudo-class selector variants into native CSSOM', asyn
     expect(await page.evaluate(() => Array.from(globalThis.cssRuntime.utilitiesLayer.native?.cssRules || [])
         .map((cssRule) => cssRule.cssText)
     )).toEqual([
-        '.pb\\:8x\\:not\\(\\:last\\):not(:last-child) { padding-bottom: 2rem; }',
-        '.text-center_td\\:not\\(\\:first\\) td:not(:first-child) { text-align: center; }'
+        '.text-center_td\\:not\\(\\:first\\) td:not(:first-child) { text-align: center; }',
+        '.pb\\:8x\\:not\\(\\:last\\):not(:last-child) { padding-bottom: 2rem; }'
     ])
     expect(consoleErrors.find((message) => message.includes('insertRule'))).toBeUndefined()
 })
