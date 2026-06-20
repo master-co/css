@@ -62,6 +62,79 @@ describe.concurrent('MasterCSSPlan execution', () => {
         expect(css.create('text-center')?.text).toBe('.text-center{text-align:start}')
     })
 
+    it('keeps all matching exact semantic utilities when arbitrary utilities are indexed', () => {
+        const plan: MasterCSSPlan = {
+            version: 3,
+            settings: {
+                modes: []
+            },
+            utilities: [
+                {
+                    id: '.btn-display',
+                    name: 'btn',
+                    type: UtilityType.Semantic,
+                    order: 0,
+                    emit: {
+                        type: 'static',
+                        rules: [{ declarations: { display: 'inline-flex' } }]
+                    },
+                    matchers: [{ type: 'static', name: 'btn' }]
+                },
+                {
+                    id: '.btn-gap',
+                    name: 'btn',
+                    type: UtilityType.Semantic,
+                    order: 1,
+                    emit: {
+                        type: 'static',
+                        rules: [{ declarations: { gap: '0.5rem' } }]
+                    },
+                    matchers: [{ type: 'static', name: 'btn' }]
+                }
+            ],
+            utilityBuckets: {
+                arbitrary: [0, 1]
+            }
+        }
+
+        expect(createCSS(plan).createAll('btn').map(({ text }) => text)).toEqual([
+            '.btn{display:inline-flex}',
+            '.btn{gap:0.5rem}'
+        ])
+    })
+
+    it('falls back to pattern scanning when pattern names cannot be safely indexed', () => {
+        const plan: MasterCSSPlan = {
+            version: 3,
+            settings: {
+                modes: []
+            },
+            utilities: [
+                {
+                    id: 'icon_<left|right>',
+                    name: 'icon_<left|right>',
+                    type: UtilityType.Semantic,
+                    order: 0,
+                    emit: {
+                        type: 'static',
+                        rules: [{ declarations: { 'grid-area': null } }]
+                    },
+                    matchers: [{
+                        type: 'pattern',
+                        prefix: 'icon_',
+                        values: ['left', 'right']
+                    }]
+                }
+            ],
+            utilityBuckets: {
+                pattern: [0]
+            }
+        }
+
+        expect(createCSS(plan).create('icon_left')?.text)
+            .toBe('.icon_left{grid-area:left}')
+    })
+
     it('tries raw managed utilities before key alias fallback', () => {
         const plan: MasterCSSPlan = {
             version: 3,

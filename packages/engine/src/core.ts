@@ -62,6 +62,8 @@ const DEFAULT_SETTINGS: EngineSettings = {
     modes: ['light', 'dark']
 }
 
+const MATCH_NAME_BOUNDARY = new Set(['!', '*', '>', '+', '~', ':', '[', '@', '_', '.'])
+
 const builtinGroupUtility = {
     id: 'group',
     name: 'group',
@@ -214,6 +216,11 @@ interface CompiledPlan {
     keyMatcherUtilities: CompiledUtility[]
     patternMatcherUtilities: CompiledUtility[]
     arbitraryMatcherUtilities: CompiledUtility[]
+    variableMatcherIndex: Map<string, CompiledUtility[]>
+    valueMatcherIndex: Map<string, CompiledUtility[]>
+    keyMatcherIndex: Map<string, CompiledUtility[]>
+    patternMatcherIndex?: Map<string, CompiledUtility[]>
+    arbitraryStaticMatcherIndex?: Map<string, CompiledUtility[]>
     selectors: Map<string, SelectorNode[]>
     variables: Map<string, Variable>
     modes: string[]
@@ -236,6 +243,100 @@ function getCompiledPlan(plan: MasterCSSPlan) {
     const compiledPlan = compilePlan(plan)
     compiledPlanCache.set(plan, compiledPlan)
     return compiledPlan
+}
+
+function getClassKey(className: string) {
+    if (className[0] === '{') return
+
+    const indexOfColon = className.indexOf(':')
+    if (indexOfColon <= 0) return
+
+    return className.slice(0, indexOfColon)
+}
+
+function getMatchName(className: string) {
+    for (let index = 0; index < className.length; index++) {
+        if (MATCH_NAME_BOUNDARY.has(className[index])) {
+            return index ? className.slice(0, index) : className
+        }
+    }
+    return className
+}
+
+function isIndexableMatchName(name: string) {
+    for (let index = 0; index < name.length; index++) {
+        if (MATCH_NAME_BOUNDARY.has(name[index])) return false
+    }
+    return true
+}
+
+function pushIndexedUtility(index: Map<string, CompiledUtility[]>, key: string, utility: CompiledUtility) {
+    const utilities = index.get(key)
+    if (utilities) {
+        if (!utilities.includes(utility)) utilities.push(utility)
+    } else {
+        index.set(key, [utility])
+    }
+}
+
+function createKeyedMatcherIndex(
+    utilities: CompiledUtility[],
+    matcherType: 'variable' | 'value' | 'key'
+) {
+    const index = new Map<string, CompiledUtility[]>()
+    for (const utility of utilities) {
+        for (const matcher of utility.matchers) {
+            if (matcher.type !== matcherType) continue
+            for (const key of matcher.keys) {
+                pushIndexedUtility(index, key, utility)
+            }
+        }
+    }
+    return index
+}
+
+function createPatternMatcherIndex(utilities: CompiledUtility[]) {
+    const index = new Map<string, CompiledUtility[]>()
+    for (const utility of utilities) {
+        for (const matcher of utility.matchers) {
+            if (matcher.type !== 'pattern') continue
+            for (const value of matcher.values) {
+                const name = matcher.prefix + value
+                if (isIndexableMatchName(name)) {
+                    pushIndexedUtility(index, name, utility)
+                }
+            }
+        }
+    }
+    return index
+}
+
+function canIndexPatternUtilities(utilities: CompiledUtility[]) {
+    return utilities.every((utility) =>
+        utility.matchers.every((matcher) =>
+            matcher.type !== 'pattern'
+            || matcher.values.every((value) => isIndexableMatchName(matcher.prefix + value))
+        )
+    )
+}
+
+function createStaticMatcherIndex(utilities: CompiledUtility[]) {
+    const index = new Map<string, CompiledUtility[]>()
+    for (const utility of utilities) {
+        for (const matcher of utility.matchers) {
+            if (matcher.type === 'static' && isIndexableMatchName(matcher.name)) {
+                pushIndexedUtility(index, matcher.name, utility)
+            }
+        }
+    }
+    return index
+}
+
+function canIndexStaticOnlyUtilities(utilities: CompiledUtility[]) {
+    return utilities.every((utility) =>
+        utility.matchers.length
+        && utility.matchers.every((matcher) => matcher.type === 'static' && isIndexableMatchName(matcher.name))
+    )
 }
 
 function createCompiledSettings(plan: MasterCSSPlan): EngineSettings {
@@ -485,6 +586,15 @@ function compileUtilities(
         keyMatcherUtilities,
         patternMatcherUtilities,
         arbitraryMatcherUtilities,
+        variableMatcherIndex: createKeyedMatcherIndex(variableMatcherUtilities, 'variable'),
+        valueMatcherIndex: createKeyedMatcherIndex(valueMatcherUtilities, 'value'),
+        keyMatcherIndex: createKeyedMatcherIndex(keyMatcherUtilities, 'key'),
+        patternMatcherIndex: canIndexPatternUtilities(patternMatcherUtilities)
+            ? createPatternMatcherIndex(patternMatcherUtilities)
+            : undefined,
+        arbitraryStaticMatcherIndex: canIndexStaticOnlyUtilities(arbitraryMatcherUtilities)
+            ? createStaticMatcherIndex(arbitraryMatcherUtilities)
+            : undefined,
         nativeDeclarationFastPathBlockedProperties
     }
 }
@@ -508,6 +618,11 @@ function compilePlan(plan: MasterCSSPlan): CompiledPlan {
         keyMatcherUtilities: utilities.keyMatcherUtilities,
         patternMatcherUtilities: utilities.patternMatcherUtilities,
         arbitraryMatcherUtilities: utilities.arbitraryMatcherUtilities,
+        variableMatcherIndex: utilities.variableMatcherIndex,
+        valueMatcherIndex: utilities.valueMatcherIndex,
+        keyMatcherIndex: utilities.keyMatcherIndex,
+        patternMatcherIndex: utilities.patternMatcherIndex,
+        arbitraryStaticMatcherIndex: utilities.arbitraryStaticMatcherIndex,
         selectors,
         variables,
         modes: [...settings.modes],
@@ -529,6 +644,11 @@ export default class MasterCSS {
     protected keyMatcherUtilities: CompiledUtility[] = []
     protected patternMatcherUtilities: CompiledUtility[] = []
     protected arbitraryMatcherUtilities: CompiledUtility[] = []
+    protected variableMatcherIndex = new Map<string, CompiledUtility[]>()
+    protected valueMatcherIndex = new Map<string, CompiledUtility[]>()
+    protected keyMatcherIndex = new Map<string, CompiledUtility[]>()
+    protected patternMatcherIndex?: Map<string, CompiledUtility[]>
+    protected arbitraryStaticMatcherIndex?: Map<string, CompiledUtility[]>
     settings!: EngineSettings
     readonly rules: (Layer | Rule)[] = []
     readonly classUtilities = new Map<string, Utility[]>()
@@ -612,6 +732,11 @@ export default class MasterCSS {
         this.keyMatcherUtilities = compiledPlan.keyMatcherUtilities
         this.patternMatcherUtilities = compiledPlan.patternMatcherUtilities
         this.arbitraryMatcherUtilities = compiledPlan.arbitraryMatcherUtilities
+        this.variableMatcherIndex = compiledPlan.variableMatcherIndex
+        this.valueMatcherIndex = compiledPlan.valueMatcherIndex
+        this.keyMatcherIndex = compiledPlan.keyMatcherIndex
+        this.patternMatcherIndex = compiledPlan.patternMatcherIndex
+        this.arbitraryStaticMatcherIndex = compiledPlan.arbitraryStaticMatcherIndex
         this.selectors = compiledPlan.selectors
         this.variables = compiledPlan.variables
         this.modes = [...compiledPlan.modes]
@@ -779,13 +904,8 @@ export default class MasterCSS {
     }
 
     private hasClassKey(className: string) {
-        if (className[0] === '{') return false
-
-        const indexOfColon = className.indexOf(':')
-        if (indexOfColon <= 0) return false
-
-        const key = className.slice(0, indexOfColon)
-        return !key.startsWith('--')
+        const key = getClassKey(className)
+        return Boolean(key && !key.startsWith('--'))
     }
 
     private isGroupClassName(className: string) {
@@ -793,12 +913,8 @@ export default class MasterCSS {
     }
 
     private getClassKeyAlias(className: string) {
-        if (className[0] === '{') return
-
-        const indexOfColon = className.indexOf(':')
-        if (indexOfColon <= 0) return
-
-        const key = className.slice(0, indexOfColon)
+        const key = getClassKey(className)
+        if (!key) return
         if (key.startsWith('--')) return
 
         const canonicalKey = this.keyAliases.get(key)
@@ -806,7 +922,7 @@ export default class MasterCSS {
 
         return {
             canonicalKey,
-            indexOfColon,
+            indexOfColon: key.length,
             key
         }
     }
@@ -822,24 +938,38 @@ export default class MasterCSS {
     }
 
     private matchResolvedClassName(className: string): CompiledUtility | undefined {
-        for (const eachUtility of this.variableMatcherUtilities) {
+        const classKey = getClassKey(className)
+
+        for (const eachUtility of classKey ? this.variableMatcherIndex.get(classKey) || [] : []) {
             if (this.matchesUtility(className, eachUtility, 'variable')) return eachUtility
         }
 
-        for (const eachUtility of this.valueMatcherUtilities) {
+        for (const eachUtility of classKey ? this.valueMatcherIndex.get(classKey) || [] : []) {
             if (this.matchesUtility(className, eachUtility, 'value')) return eachUtility
         }
 
-        for (const eachUtility of this.keyMatcherUtilities) {
+        for (const eachUtility of classKey ? this.keyMatcherIndex.get(classKey) || [] : []) {
             if (this.matchesUtility(className, eachUtility, 'key')) return eachUtility
         }
 
-        for (const eachUtility of this.arbitraryMatcherUtilities) {
-            if (this.matchesUtility(className, eachUtility)) return eachUtility
+        if (this.arbitraryStaticMatcherIndex) {
+            for (const eachUtility of this.arbitraryStaticMatcherIndex.get(getMatchName(className)) || []) {
+                if (this.matchesUtility(className, eachUtility)) return eachUtility
+            }
+        } else {
+            for (const eachUtility of this.arbitraryMatcherUtilities) {
+                if (this.matchesUtility(className, eachUtility)) return eachUtility
+            }
         }
 
-        for (const eachUtility of this.patternMatcherUtilities) {
-            if (this.matchesUtility(className, eachUtility, 'pattern')) return eachUtility
+        if (this.patternMatcherIndex) {
+            for (const eachUtility of this.patternMatcherIndex.get(getMatchName(className)) || []) {
+                if (this.matchesUtility(className, eachUtility, 'pattern')) return eachUtility
+            }
+        } else {
+            for (const eachUtility of this.patternMatcherUtilities) {
+                if (this.matchesUtility(className, eachUtility, 'pattern')) return eachUtility
+            }
         }
     }
 
@@ -860,20 +990,29 @@ export default class MasterCSS {
     }
 
     private matchRawManagedClassName(className: string): CompiledUtility | undefined {
-        for (const eachUtility of this.variableMatcherUtilities) {
+        const classKey = getClassKey(className)
+        if (!classKey) return
+
+        for (const eachUtility of this.variableMatcherIndex.get(classKey) || []) {
             if (this.matchesUtility(className, eachUtility, 'variable')) return eachUtility
         }
 
-        for (const eachUtility of this.valueMatcherUtilities) {
+        for (const eachUtility of this.valueMatcherIndex.get(classKey) || []) {
             if (this.matchesUtility(className, eachUtility, 'value')) return eachUtility
         }
 
-        for (const eachUtility of this.keyMatcherUtilities) {
+        for (const eachUtility of this.keyMatcherIndex.get(classKey) || []) {
             if (this.matchesUtility(className, eachUtility, 'key')) return eachUtility
         }
 
-        for (const eachUtility of this.patternMatcherUtilities) {
-            if (this.matchesUtility(className, eachUtility, 'pattern')) return eachUtility
+        if (this.patternMatcherIndex) {
+            for (const eachUtility of this.patternMatcherIndex.get(getMatchName(className)) || []) {
+                if (this.matchesUtility(className, eachUtility, 'pattern')) return eachUtility
+            }
+        } else {
+            for (const eachUtility of this.patternMatcherUtilities) {
+                if (this.matchesUtility(className, eachUtility, 'pattern')) return eachUtility
+            }
         }
     }
 
@@ -887,11 +1026,13 @@ export default class MasterCSS {
     }
 
     private matchAllResolvedClassName(className: string): CompiledUtility[] {
+        const classKey = getClassKey(className)
+
         /**
          * 1. variable
          * @example fg:primary bg:blue
          */
-        for (const eachUtility of this.variableMatcherUtilities) {
+        for (const eachUtility of classKey ? this.variableMatcherIndex.get(classKey) || [] : []) {
             if (this.matchesUtility(className, eachUtility, 'variable')) return [eachUtility]
         }
 
@@ -899,7 +1040,7 @@ export default class MasterCSS {
          * 2. value (ambiguous key with raw color/number/image)
          * @example bg:#fff font:.75rem
          */
-        for (const eachUtility of this.valueMatcherUtilities) {
+        for (const eachUtility of classKey ? this.valueMatcherIndex.get(classKey) || [] : []) {
             if (this.matchesUtility(className, eachUtility, 'value')) return [eachUtility]
         }
 
@@ -907,7 +1048,7 @@ export default class MasterCSS {
          * 3. full key
          * @example text-align:center color:blue-40
          */
-        for (const eachUtility of this.keyMatcherUtilities) {
+        for (const eachUtility of classKey ? this.keyMatcherIndex.get(classKey) || [] : []) {
             if (this.matchesUtility(className, eachUtility, 'key')) return [eachUtility]
         }
 
@@ -916,13 +1057,19 @@ export default class MasterCSS {
          * @example custom RegExp, utility
          */
         const staticUtilities: CompiledUtility[] = []
-        for (const eachUtility of this.arbitraryMatcherUtilities) {
-            if (!this.matchesUtility(className, eachUtility)) continue
-            if (eachUtility.matchers.some((matcher) => matcher.type === 'static')) {
-                staticUtilities.push(eachUtility)
-                continue
+        if (this.arbitraryStaticMatcherIndex) {
+            for (const eachUtility of this.arbitraryStaticMatcherIndex.get(getMatchName(className)) || []) {
+                if (this.matchesUtility(className, eachUtility)) staticUtilities.push(eachUtility)
             }
-            return [eachUtility]
+        } else {
+            for (const eachUtility of this.arbitraryMatcherUtilities) {
+                if (!this.matchesUtility(className, eachUtility)) continue
+                if (eachUtility.matchers.some((matcher) => matcher.type === 'static')) {
+                    staticUtilities.push(eachUtility)
+                    continue
+                }
+                return [eachUtility]
+            }
         }
         if (staticUtilities.length) return staticUtilities
 
@@ -930,27 +1077,42 @@ export default class MasterCSS {
          * 5. enum pattern
          * @example text-center bg-cover
          */
-        for (const eachUtility of this.patternMatcherUtilities) {
-            if (this.matchesUtility(className, eachUtility, 'pattern')) return [eachUtility]
+        if (this.patternMatcherIndex) {
+            for (const eachUtility of this.patternMatcherIndex.get(getMatchName(className)) || []) {
+                if (this.matchesUtility(className, eachUtility, 'pattern')) return [eachUtility]
+            }
+        } else {
+            for (const eachUtility of this.patternMatcherUtilities) {
+                if (this.matchesUtility(className, eachUtility, 'pattern')) return [eachUtility]
+            }
         }
         return []
     }
 
     private matchAllRawManagedClassName(className: string): CompiledUtility[] {
-        for (const eachUtility of this.variableMatcherUtilities) {
+        const classKey = getClassKey(className)
+        if (!classKey) return []
+
+        for (const eachUtility of this.variableMatcherIndex.get(classKey) || []) {
             if (this.matchesUtility(className, eachUtility, 'variable')) return [eachUtility]
         }
 
-        for (const eachUtility of this.valueMatcherUtilities) {
+        for (const eachUtility of this.valueMatcherIndex.get(classKey) || []) {
             if (this.matchesUtility(className, eachUtility, 'value')) return [eachUtility]
         }
 
-        for (const eachUtility of this.keyMatcherUtilities) {
+        for (const eachUtility of this.keyMatcherIndex.get(classKey) || []) {
             if (this.matchesUtility(className, eachUtility, 'key')) return [eachUtility]
         }
 
-        for (const eachUtility of this.patternMatcherUtilities) {
-            if (this.matchesUtility(className, eachUtility, 'pattern')) return [eachUtility]
+        if (this.patternMatcherIndex) {
+            for (const eachUtility of this.patternMatcherIndex.get(getMatchName(className)) || []) {
+                if (this.matchesUtility(className, eachUtility, 'pattern')) return [eachUtility]
+            }
+        } else {
+            for (const eachUtility of this.patternMatcherUtilities) {
+                if (this.matchesUtility(className, eachUtility, 'pattern')) return [eachUtility]
+            }
         }
 
         return []
