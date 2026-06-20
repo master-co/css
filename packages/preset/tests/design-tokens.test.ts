@@ -34,7 +34,6 @@ const removedVariableNames = [
     'color-backdrop',
     'color-blue-hover',
     'color-on-blue',
-    'color-text-blue',
     'color-blue-surface',
     'color-blue-line',
     'color-line-blue',
@@ -74,6 +73,31 @@ const baseHueAliases = [
     ['pink', '$color-pink-60', '$color-pink-50'],
     ['crimson', '$color-crimson-60', '$color-crimson-50'],
     ['red', '$color-red-60', '$color-red-50']
+] as const
+
+const textHueAliases = [
+    ['stone', '$color-stone-60', '$color-stone-30'],
+    ['gray', '$color-gray-60', '$color-gray-30'],
+    ['neutral', '$color-neutral-60', '$color-neutral-30'],
+    ['slate', '$color-slate-60', '$color-slate-30'],
+    ['brown', '$color-brown-60', '$color-brown-30'],
+    ['orange', '$color-orange-60', '$color-orange-30'],
+    ['amber', '$color-amber-60', '$color-amber-40'],
+    ['yellow', '$color-yellow-70', '$color-yellow-40'],
+    ['lime', '$color-lime-70', '$color-lime-40'],
+    ['green', '$color-green-70', '$color-green-40'],
+    ['beryl', '$color-beryl-70', '$color-beryl-40'],
+    ['teal', '$color-teal-70', '$color-teal-40'],
+    ['cyan', '$color-cyan-70', '$color-cyan-40'],
+    ['sky', '$color-sky-70', '$color-sky-30'],
+    ['blue', '$color-blue-60', '$color-blue-30'],
+    ['indigo', '$color-indigo-60', '$color-indigo-30'],
+    ['violet', '$color-violet-60', '$color-violet-30'],
+    ['purple', '$color-purple-60', '$color-purple-30'],
+    ['fuchsia', '$color-fuchsia-60', '$color-fuchsia-30'],
+    ['pink', '$color-pink-60', '$color-pink-30'],
+    ['crimson', '$color-crimson-60', '$color-crimson-30'],
+    ['red', '$color-red-60', '$color-red-30']
 ] as const
 
 describe.concurrent('@master/css-preset design token parity', () => {
@@ -173,6 +197,19 @@ describe.concurrent('@master/css-preset design token parity', () => {
                 dependencies: [lightValue.slice(1), darkValue.slice(1)]
             })
         }
+
+        for (const [hue, lightValue, darkValue] of textHueAliases) {
+            expect(findVariable(`color-text-${hue}`), hue).toMatchObject({
+                namespace: 'color-text',
+                key: hue,
+                type: 'string',
+                modes: {
+                    light: { type: 'string', value: lightValue },
+                    dark: { type: 'string', value: darkValue }
+                },
+                dependencies: [lightValue.slice(1), darkValue.slice(1)]
+            })
+        }
     })
 
     test('keeps only minimal text and line role tokens', () => {
@@ -232,10 +269,11 @@ describe.concurrent('@master/css-preset design token parity', () => {
         expect(css.create('bg:blue')?.text).toContain('background-color:var(--color-blue)')
         expect(css.create('bg:pink')?.text).toContain('background-color:var(--color-pink)')
         expect(css.create('fg:red')?.text).toBe('.fg\\:red{color:var(--color-red)}')
+        expect(css.create('fg:text-blue')?.text).toBe('.fg\\:text-blue{color:var(--color-text-blue)}')
+        expect(css.create('text-fill-color:text-pink')?.text).toBe('.text-fill-color\\:text-pink{-webkit-text-fill-color:var(--color-text-pink)}')
         expect(css.create('animate:fade')?.text).toContain('animation:var(--animate-fade)')
         expect(css.create('bg:accent')).toBeUndefined()
         expect(css.create('fg:on-blue')?.text).not.toContain('var(--color-on-blue)')
-        expect(css.create('fg:text-blue')?.text).not.toContain('var(--color-text-blue)')
         expect(css.create('b:line-blue')?.text).not.toContain('var(--color-line-blue)')
         expect(css.create('bg:blue-surface')).toBeUndefined()
         expect(css.text).not.toContain('null')

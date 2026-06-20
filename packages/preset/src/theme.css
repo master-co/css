@@ -577,7 +577,6 @@
     --color-red-90: oklch(44.45% 0.1824 29.23);
     --color-red-95: oklch(32.59% 0.1337 29.23);
     --color-red-100: oklch(28.54% 0.1171 29.23);
-
 }
 
 /* Light mode colors */
@@ -613,6 +612,29 @@
     --color-pink: $color-pink-60;
     --color-crimson: $color-crimson-60;
     --color-red: $color-red-60;
+
+    --color-text-stone: $color-stone-60;
+    --color-text-gray: $color-gray-60;
+    --color-text-neutral: $color-neutral-60;
+    --color-text-slate: $color-slate-60;
+    --color-text-brown: $color-brown-60;
+    --color-text-orange: $color-orange-60;
+    --color-text-amber: $color-amber-60;
+    --color-text-yellow: $color-yellow-70;
+    --color-text-lime: $color-lime-70;
+    --color-text-green: $color-green-70;
+    --color-text-beryl: $color-beryl-70;
+    --color-text-teal: $color-teal-70;
+    --color-text-cyan: $color-cyan-70;
+    --color-text-sky: $color-sky-70;
+    --color-text-blue: $color-blue-60;
+    --color-text-indigo: $color-indigo-60;
+    --color-text-violet: $color-violet-60;
+    --color-text-purple: $color-purple-60;
+    --color-text-fuchsia: $color-fuchsia-60;
+    --color-text-pink: $color-pink-60;
+    --color-text-crimson: $color-crimson-60;
+    --color-text-red: $color-red-60;
 
     /* Text */
     --color-text: $color-neutral-70;
@@ -665,6 +687,29 @@
     --color-pink: $color-pink-50;
     --color-crimson: $color-crimson-50;
     --color-red: $color-red-50;
+
+    --color-text-stone: $color-stone-30;
+    --color-text-gray: $color-gray-30;
+    --color-text-neutral: $color-neutral-30;
+    --color-text-slate: $color-slate-30;
+    --color-text-brown: $color-brown-30;
+    --color-text-orange: $color-orange-30;
+    --color-text-amber: $color-amber-40;
+    --color-text-yellow: $color-yellow-40;
+    --color-text-lime: $color-lime-40;
+    --color-text-green: $color-green-40;
+    --color-text-beryl: $color-beryl-40;
+    --color-text-teal: $color-teal-40;
+    --color-text-cyan: $color-cyan-40;
+    --color-text-sky: $color-sky-30;
+    --color-text-blue: $color-blue-30;
+    --color-text-indigo: $color-indigo-30;
+    --color-text-violet: $color-violet-30;
+    --color-text-purple: $color-purple-30;
+    --color-text-fuchsia: $color-fuchsia-30;
+    --color-text-pink: $color-pink-30;
+    --color-text-crimson: $color-crimson-30;
+    --color-text-red: $color-red-30;
 
     /* Text */
     --color-text: $color-gray-30;

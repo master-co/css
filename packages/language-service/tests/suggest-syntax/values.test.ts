@@ -124,12 +124,15 @@ describe.concurrent('sorting', () => {
             'muted',
             'pink',
             'strong',
-            'text'
+            'text',
+            'text-blue',
+            'text-pink'
         ]))
         expect(labels).not.toContain('accent')
         expect(labels).not.toContain('danger')
         expect(labels).not.toContain('on-blue')
-        expect(labels).not.toContain('text-blue')
+        expect(labels).not.toContain('line-blue')
+        expect(labels).not.toContain('blue-surface')
     })
 
     test.concurrent('unitful numeric variables', () => {
