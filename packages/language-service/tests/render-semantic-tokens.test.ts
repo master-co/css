@@ -769,6 +769,89 @@ test.concurrent('renders CSS directives in SCSS-like sources', () => {
     expectToken(tokens, 'block', 'class')
 })
 
+test.concurrent('renders detailed CSS directive semantic tokens for Master syntax only', () => {
+    const { tokens } = renderTokens(`
+        @source not required "src/**/*.{ts,tsx}";
+        @reference "./tokens.css";
+        @blocklist "debug-*";
+        @safelist "block fg:red:hover@md";
+
+        @theme static brand {
+            --color-primary: $color-blue-60/.8;
+            --radius-card: 1rem;
+        }
+
+        @custom-variant :headings { &:is(h1, h2, h3, h4, h5, h6) { @slot; } }
+
+        @components {
+            btn {
+                @compose inline-flex align-items:center fg:primary:hover@md;
+
+                @variant @h>=sm&h<lg {
+                    @compose block;
+                }
+
+                @variant ::scrollbar-thumb:hover@dark {
+                    @compose fg:primary;
+                }
+            }
+        }
+
+        @utilities {
+            text-decoration:<~color|*> {
+                text-decoration: --value();
+            }
+        }
+    `, 'css')
+
+    expectToken(tokens, '@source', 'keyword', ['directive'])
+    expectToken(tokens, 'not', 'modifier', ['directive'])
+    expectToken(tokens, 'required', 'modifier', ['directive'])
+    expectToken(tokens, '@reference', 'keyword', ['directive'])
+    expectToken(tokens, '@blocklist', 'keyword', ['directive'])
+    expectToken(tokens, '@safelist', 'keyword', ['directive'])
+    expectToken(tokens, 'block', 'class')
+    expectToken(tokens, 'fg', 'property')
+    expectToken(tokens, 'red', 'enumMember')
+    expectToken(tokens, 'hover', 'modifier', ['pseudoClass'])
+    expectToken(tokens, '@md', 'keyword', ['query'])
+    expectToken(tokens, '@theme', 'keyword', ['directive'])
+    expectToken(tokens, 'static', 'modifier', ['directive'])
+    expectToken(tokens, 'brand', 'enumMember', ['directive'])
+    expectToken(tokens, '--color-primary', 'variable')
+    expectToken(tokens, '--radius-card', 'variable')
+    expectToken(tokens, '$color-blue-60', 'variable')
+    expectToken(tokens, '@custom-variant', 'keyword', ['directive'])
+    expectToken(tokens, 'headings', 'variable', ['directive', 'query'])
+    expectToken(tokens, '@slot', 'keyword', ['directive'])
+    expectToken(tokens, '@components', 'keyword', ['directive'])
+    expectToken(tokens, 'btn', 'class', ['selector'])
+    expectToken(tokens, '@compose', 'keyword', ['directive'])
+    expectToken(tokens, 'inline-flex', 'class')
+    expectToken(tokens, 'align-items', 'property')
+    expectToken(tokens, 'center', 'enumMember')
+    expectToken(tokens, 'primary', 'enumMember')
+    expectToken(tokens, '@variant', 'keyword', ['directive'])
+    expectToken(tokens, '@h', 'keyword', ['query'])
+    expectToken(tokens, '>=', 'operator', ['query'])
+    expectToken(tokens, 'sm', 'enumMember', ['query'])
+    expectToken(tokens, '&', 'operator', ['query'])
+    expectToken(tokens, 'h', 'property', ['query'])
+    expectToken(tokens, '<', 'operator', ['query'])
+    expectToken(tokens, 'lg', 'enumMember', ['query'])
+    expectToken(tokens, 'scrollbar-thumb', 'modifier', ['pseudoElement'])
+    expectToken(tokens, '@dark', 'keyword', ['query'])
+    expectToken(tokens, '@utilities', 'keyword', ['directive'])
+    expectToken(tokens, 'text-decoration', 'property')
+    expectToken(tokens, 'color', 'variable', ['directive'])
+    expectToken(tokens, '*', 'operator', ['directive'])
+    expectToken(tokens, '--value', 'function')
+    expect(tokens.some(({ text }) => text.includes('src/**/*'))).toBe(false)
+    expect(tokens.some(({ text }) => text.includes('tokens.css'))).toBe(false)
+    expect(tokens.some(({ text }) => text.includes('debug-'))).toBe(false)
+    expect(tokens).not.toContainEqual({ text: 'h1', type: 'type', modifiers: ['selector'] })
+})
+
 test.concurrent('renders CSS directives in LESS-like sources', () => {
     const { tokens } = renderTokens(`
         @color: red;

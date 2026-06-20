@@ -83,6 +83,10 @@ function expectSomeScope(tokens, text, scope) {
     expect(tokens.some((token) => token.text.includes(text) && token.scopes.includes(scope))).toBe(true)
 }
 
+function expectNoSomeScope(tokens, text, scope) {
+    expect(tokens.some((token) => token.text.includes(text) && token.scopes.includes(scope))).toBe(false)
+}
+
 function expectNoScope(tokens, text, scope) {
     expect(tokens.some((token) => token.text === text && token.scopes.includes(scope))).toBe(false)
 }
@@ -269,10 +273,16 @@ test('highlights directive preludes, strings, class lists, and dynamic patterns'
     expectSomeScope(tokens, 'src', 'string.quoted.double.master-css')
     expectSomeScope(tokens, 'tokens', 'string.quoted.single.master-css')
     expectSomeScope(tokens, 'debug-', 'string.quoted.double.master-css')
+    expectNoSomeScope(tokens, 'src', 'entity.other.attribute-name.class.master-css')
+    expectNoSomeScope(tokens, 'tokens', 'entity.other.attribute-name.class.master-css')
+    expectNoSomeScope(tokens, 'debug-', 'entity.other.attribute-name.class.master-css')
     expectScope(tokens, 'inline', 'storage.modifier.master-css')
+    expectScope(tokens, 'dark', 'support.constant.property-value.master-css')
     expectScope(tokens, 'native', 'support.constant.property-value.master-css')
     expectScope(tokens, 'block', 'entity.other.attribute-name.class.master-css')
+    expectScope(tokens, 'inline-flex', 'entity.other.attribute-name.class.master-css')
     expectScope(tokens, 'fg', 'support.type.property-name.master-css')
+    expectScope(tokens, 'primary', 'support.constant.property-value.master-css')
     expectScope(tokens, 'hover', 'entity.other.attribute-name.pseudo-class.master-css')
     expectScope(tokens, 'md', 'keyword.control.at-rule.master-css.query')
     expectScope(tokens, 'font', 'support.type.property-name.master-css')
@@ -308,6 +318,72 @@ test('highlights custom variants, nested selectors, queries, and values', () => 
     expectScope(tokens, '$color-gray-100', 'variable.other.master-css')
     expectNoScope(tokens, 'oklch', 'support.function.misc.master-css')
     expectNoScope(tokens, '99% 0.0033 72', 'constant.numeric.master-css')
+})
+
+test('highlights detailed Master directive syntax without misclassifying native pieces', () => {
+    const tokens = tokenize(`
+        @theme static brand {
+            --color-primary: $color-blue-60/.8;
+            --radius-card: 1rem;
+        }
+
+        @source not required "src/**/*.{ts,tsx}";
+        @reference "./tokens.css";
+        @blocklist "debug-*";
+        @safelist "dialog-open bg:primary@dark {fg:red;bg:blue}";
+
+        @custom-variant :headings { &:is(h1, h2, h3, h4, h5, h6) { @slot; } }
+
+        @components {
+            btn:hover {
+                @compose static native inline-flex align-items:center fg:primary:hover@md;
+                @variant @h>=sm&h<lg {
+                    @compose block;
+                }
+                @variant ::scrollbar-thumb:hover@dark {
+                    @compose fg:primary;
+                }
+            }
+        }
+
+        @utilities {
+            content-auto {
+                content-visibility: auto;
+            }
+
+            text-decoration:<~color|*> {
+                text-decoration: --value();
+            }
+        }
+    `)
+
+    expectScope(tokens, 'static', 'storage.modifier.master-css')
+    expectScope(tokens, 'brand', 'support.constant.property-value.master-css')
+    expectScope(tokens, '--color-primary', 'variable.css.custom-property.master-css')
+    expectScope(tokens, '$color-blue-60', 'variable.other.master-css')
+    expectScope(tokens, 'dialog-open', 'entity.other.attribute-name.class.master-css')
+    expectScope(tokens, 'bg', 'support.type.property-name.master-css')
+    expectScope(tokens, 'primary', 'support.constant.property-value.master-css')
+    expectScope(tokens, 'dark', 'keyword.control.at-rule.master-css.query')
+    expectScope(tokens, 'headings', 'entity.other.attribute-name.pseudo-class.master-css')
+    expectScope(tokens, 'h1', 'entity.name.tag.master-css')
+    expectScope(tokens, 'btn', 'entity.other.attribute-name.class.master-css')
+    expectScope(tokens, 'static', 'entity.other.attribute-name.class.master-css')
+    expectScope(tokens, 'native', 'entity.other.attribute-name.class.master-css')
+    expectScope(tokens, 'inline-flex', 'entity.other.attribute-name.class.master-css')
+    expectScope(tokens, 'align-items', 'support.type.property-name.master-css')
+    expectScope(tokens, 'center', 'support.constant.property-value.master-css')
+    expectScope(tokens, 'h', 'keyword.control.at-rule.master-css.query')
+    expectScope(tokens, 'sm', 'support.constant.property-value.master-css.query')
+    expectScope(tokens, 'lg', 'support.constant.property-value.master-css.query')
+    expectScope(tokens, 'scrollbar-thumb', 'entity.other.attribute-name.pseudo-class.master-css')
+    expectScope(tokens, 'text-decoration', 'support.type.property-name.master-css')
+    expectScope(tokens, 'color', 'variable.parameter.master-css')
+    expectScope(tokens, '*', 'keyword.operator.master-css')
+    expectScope(tokens, '--value', 'support.function.misc.master-css')
+    expectNoSomeScope(tokens, 'src', 'entity.other.attribute-name.class.master-css')
+    expectNoSomeScope(tokens, 'tokens', 'entity.other.attribute-name.class.master-css')
+    expectNoSomeScope(tokens, 'debug-', 'entity.other.attribute-name.class.master-css')
 })
 
 test('does not highlight directives inside comments or quoted strings', () => {
