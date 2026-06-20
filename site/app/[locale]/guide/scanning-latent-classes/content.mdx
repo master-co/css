@@ -65,8 +65,8 @@ Scanning is intentionally broad. The scanner looks through markup, JSX, strings,
 
 ```tsx name=src/Button.tsx
 const toneClasses = {
-    neutral: 'bg:white fg:text',
-    danger: 'bg:red-60 fg:white'
+    neutral: 'bg:white text:text',
+    danger: 'bg:red-60 text:white'
 }
 
 export function Button({ danger }: { danger?: boolean }) {
@@ -82,9 +82,9 @@ The scanner can see all complete class strings in this file:
 
 ```txt
 bg:white
-fg:text
+text:text
 bg:red-60
-fg:white
+text:white
 btn
 r:md
 pi:md
@@ -94,7 +94,7 @@ It will also see unrelated words from source text. That is expected. Candidates 
 
 ```tsx name=src/EmptyState.tsx
 export function EmptyState() {
-    return <p className="fg:muted">No invoices found.</p>
+    return <p className="text:muted">No invoices found.</p>
 }
 ```
 
@@ -105,7 +105,7 @@ Words such as `function`, `return`, `No`, `invoices`, and `found` may be discove
 ## Validation
 After candidate scanning, Master CSS validates each class against the active plan. A candidate can be accepted in three common ways:
 
-- It is a built-in utility, such as `block`, `fg:red-60`, or `grid-cols:3`.
+- It is a built-in utility, such as `block`, `text:red-60`, or `grid-cols:3`.
 - It is defined by your project CSS entry and compiled into the plan.
 - It matches a native class collected from a stylesheet that imports [`@master/css`](/guide/native-css-pruning).
 
@@ -116,7 +116,7 @@ After candidate scanning, Master CSS validates each class against the active pla
     }
 
     hero-title {
-        @compose m:0 font:5xl font:heavy fg:strong;
+        @compose m:0 font:5xl font:heavy text:strong;
     }
 }
 ```
@@ -126,13 +126,13 @@ export function Hero() {
     return (
         <section className="grid gap:xl">
             <h1 className="hero-title">Master CSS</h1>
-            <a className="btn bg:blue-60 fg:white" href="/docs">Read docs</a>
+            <a className="btn bg:blue-60 text:white" href="/docs">Read docs</a>
         </section>
     )
 }
 ```
 
-`hero-title` and `btn` are valid because the project CSS entry defines them. `grid`, `gap:xl`, `bg:blue-60`, and `fg:white` are validated through the utility engine.
+`hero-title` and `btn` are valid because the project CSS entry defines them. `grid`, `gap:xl`, `bg:blue-60`, and `text:white` are validated through the utility engine.
 
 Configured classes are still on-demand. Defining `.btn` in the project CSS entry does not emit it by itself; `.btn` must appear in scanned source or be included through `@safelist`.
 
@@ -161,7 +161,7 @@ For component variants, map dynamic inputs to complete class lists.
 
 ```tsx
 function Badge({ tone }: { tone: 'red' | 'green' | 'gray' }) {
-    return <span className={`bg:${tone} fg:white r:full pi:xs`}>Status</span>
+    return <span className={`bg:${tone} text:white r:full pi:xs`}>Status</span>
 }
 ```
 
@@ -169,9 +169,9 @@ function Badge({ tone }: { tone: 'red' | 'green' | 'gray' }) {
 
 ```tsx
 const toneClasses = {
-    danger: 'bg:red-60 fg:white',
-    success: 'bg:green-60 fg:white',
-    neutral: 'bg:gray-10 fg:gray-90'
+    danger: 'bg:red-60 text:white',
+    success: 'bg:green-60 text:white',
+    neutral: 'bg:gray-10 text:gray-90'
 }
 
 function Badge({ tone }: { tone: keyof typeof toneClasses }) {

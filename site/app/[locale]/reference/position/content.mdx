@@ -58,7 +58,7 @@ Use `abs` to remove an element from the normal document flow and position it rel
 Use `fixed` to remove an element from the normal document flow and position it relative to the viewport.
 <Demo>
     <div className="box align-items:initial! justify-content:initial! p:2x|5x_li p:0.625rem|0! r:10px w:full max-w:340px@sm max-h:250px overflow:auto">
-        <input className="fixed z:1 bg:gray-23 bg:gray-18:focus fg:gray-40::placeholder outline:0 font:14px w:300px mi:0.625rem p:3x leading:1 r:5px" placeholder="Search for chats and messages" type="search" />
+        <input className="fixed z:1 bg:gray-23 bg:gray-18:focus text:gray-40::placeholder outline:0 font:14px w:300px mi:0.625rem p:3x leading:1 r:5px" placeholder="Search for chats and messages" type="search" />
         <ul className="list-style:none mt:0.625rem pl:0 w:full">
             {users.map((user, index) =>
                 <li className="bg:gray-28:hover bg:gray-32:active flex gap:3x cursor:pointer" key={index}>
@@ -68,8 +68,8 @@ Use `fixed` to remove an element from the normal document flow and position it r
                     </div>
                     <div>
                         <div className="flex align-items:center">
-                            <div className="text:14px font:medium fg:gray-88@dark capitalize">{user.name}</div>
-                            <div className="font:12px fg:slate-54 fg:gray-44@dark ml:2x">{user.time}</div>
+                            <div className="text:14px font:medium text:gray-88@dark capitalize">{user.name}</div>
+                            <div className="font:12px text:slate-54 text:gray-44@dark ml:2x">{user.time}</div>
                         </div>
                         <p className="text:13px m:0 text-left">{user.message}</p>
                     </div>
@@ -113,8 +113,8 @@ Use `sticky` to position an element based on scroll position. It behaves like a 
                     </div>
                     <div>
                         <div className="flex align-items:center">
-                            <div className="text:14px font:medium fg:gray-88@dark capitalize">{user.name}</div>
-                            <div className="font:12px fg:slate-54 fg:gray-44@dark ml:2x">{user.time}</div>
+                            <div className="text:14px font:medium text:gray-88@dark capitalize">{user.name}</div>
+                            <div className="font:12px text:slate-54 text:gray-44@dark ml:2x">{user.time}</div>
                         </div>
                         <p className="text:13px m:0 text-left">{user.message}</p>
                     </div>

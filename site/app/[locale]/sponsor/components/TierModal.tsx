@@ -9,11 +9,11 @@ export default function TierModal({ tierState }: { tierState: [any, Dispatch<any
         <div className="flex gap:5x p:1.563rem r:5px flex-col@<lg">
             <div className="font:48px">{selectedTier.icon}</div>
             <div className='flex:1'>
-                <div className="text:16px fg:strong font:medium uppercase::first-letter">{selectedTier.name}</div>
+                <div className="text:16px text:strong font:medium uppercase::first-letter">{selectedTier.name}</div>
                 {selectedTier.amount && (
-                    <div className="text:14px fg:strong font:bold">
+                    <div className="text:14px text:strong font:bold">
                         {selectedTier.amount}
-                            <span className="text:12px fg:text font:regular ml:0.313rem">
+                            <span className="text:12px text:text font:regular ml:0.313rem">
                             / {selectedTier.one ? 'one-time' : 'month'}
                         </span>
                     </div>

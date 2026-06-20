@@ -16,7 +16,7 @@ export default () => <CodeTabs>{[
             <script type="module" src="https://cdn.master.co/css-runtime@rc"></script>
         </head>
         <body>
-            <h1 class="italic m:2xl fg:strong font:5xl font:heavy">Hello World</h1>
+            <h1 class="italic m:2xl text:strong font:5xl font:heavy">Hello World</h1>
         </body>
         </html>
     `
@@ -40,7 +40,7 @@ export default () => <CodeTabs>{[
             </script>
         </head>
         <body>
-            <h1 class="italic m:2xl fg:strong font:5xl font:heavy">Hello World</h1>
+            <h1 class="italic m:2xl text:strong font:5xl font:heavy">Hello World</h1>
         </body>
         </html>
     `},
@@ -63,7 +63,7 @@ export default () => <CodeTabs>{[
             </script>
         </head>
         <body>
-            <h1 class="italic m:2xl fg:strong font:5xl font:heavy">Hello World</h1>
+            <h1 class="italic m:2xl text:strong font:5xl font:heavy">Hello World</h1>
         </body>
         </html>
         `

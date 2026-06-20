@@ -4,12 +4,12 @@
 ## Examples
 ### With opacity
 Add the suffix `/alpha` to change the opacity of any color.
-<Basic className="fg:blue-60/.15" />
+<Basic className="text:blue-60/.15" />
 
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="fg:slate-10:hover fg:slate-10@sm fg:slate-10@dark fg:slate-10@print">...</div>
+<div class="text:slate-10:hover text:slate-10@sm text:slate-10@dark text:slate-10@print">...</div>
 ```
 
 ---
@@ -24,21 +24,21 @@ Add a color to the text variable namespace.
 ```
 Apply the custom color:
 ```html
-<!-- @MARK fg:primary -->
-<p class="fg:primary"></p>
+<!-- @MARK text:primary -->
+<p class="text:primary"></p>
 ```
 Apply the defined `text-*` variables using the inherited rules <TextHeirs />.
 ```html
-<!-- @MARK fg:text -->
+<!-- @MARK text:text -->
 <html class="light">
-    <body class="fg:text"></body> <!-- [!code highlight] -->
-    <body class="fg:text">equals</body>
-    <body class="fg:$text">equals</body>
+    <body class="text:text"></body> <!-- [!code highlight] -->
+    <body class="text:text">equals</body>
+    <body class="text:$text">equals</body>
 </html>
 ```
-(x) We set the [foreground color](/reference/color) of elements using `fg:color` rather than the [text-specific](/reference/text-fill-color) `text:color`.
+(x) Use `text:color` for foreground color. Use [text fill color](/reference/text-fill-color) only when you need the WebKit text fill property.
 ```html
-<p class="text:pink">text-fill-color property</p>
+<p class="text-fill-color:pink">text fill property</p>
 ```
 Besides inheriting the above rules, you can use `text-*` to access global text color variables in other syntax.
 ```html
@@ -47,6 +47,6 @@ Besides inheriting the above rules, you can use `text-*` to access global text c
 ```
 To escape inherited text colors, use `$color-blue` to apply the base hue token instead of a text color token.
 ```html
-<!-- @MARK fg:$color-blue -->
-<p class="fg:$color-blue">...</p>
+<!-- @MARK text:$color-blue -->
+<p class="text:$color-blue">...</p>
 ```

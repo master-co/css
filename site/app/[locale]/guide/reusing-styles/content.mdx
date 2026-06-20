@@ -10,7 +10,7 @@ Writing `.btn` at the top level of a stylesheet creates a normal CSS rule. Writi
 Use utility classes when the style belongs to one element, one state, or one local layout decision. This keeps the relationship between markup and style explicit while the pattern is still changing.
 
 ```html
-<button class="inline-flex align-items:center justify-content:center gap:xs px:md py:xs r:lg font:sm font:medium bg:primary fg:white">
+<button class="inline-flex align-items:center justify-content:center gap:xs px:md py:xs r:lg font:sm font:medium bg:primary text:white">
     Save changes
 </button>
 ```
@@ -31,7 +31,7 @@ When the repeated part is a value, make it a token instead of a class. Tokens ke
 ```
 
 ```html
-<button class="pi:control-x r:control bg:yellow fg:on-yellow">
+<button class="pi:control-x r:control bg:yellow text:on-yellow">
     Submit
 </button>
 ```
@@ -156,7 +156,7 @@ Equivalent markup stays short:
 
 (click) Try clicking the button to see the outline effect
 <Demo>
-    <button className="justify-center items-center inline-flex bg:surface-inverse fg:inverse font:sm font:medium h:10x pi:md r:lg outline:2px|solid|focus:focus outline-offset:0.125rem:focus">Submit</button>
+    <button className="justify-center items-center inline-flex bg:surface-inverse text:inverse font:sm font:medium h:10x pi:md r:lg outline:2px|solid|focus:focus outline-offset:0.125rem:focus">Submit</button>
 </Demo>
 
 ---

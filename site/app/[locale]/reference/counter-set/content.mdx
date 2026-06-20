@@ -10,7 +10,7 @@ Use `counter-set` to set an existing counter to a specific value on selected ele
             <li className="counter-increment:step content:counter(step)::before flex align-items:center p:10x r:8px bg:gray-5 bg:gray-90@dark inline-flex::before w:7x::before h:7x::before r:full::before bg:gray-20::before bg:gray-80::before@dark font:0.813rem::before font-weight:700::before align-items:center::before justify-content:center::before mr:4x::before flex-shrink:0::before">
                 <span>Install dependencies</span>
             </li>
-            <li className="counter-increment:step counter-set:step|9 content:counter(step)::before flex align-items:center p:10x r:8px bg:blue-5 bg:blue-95@dark border:1px|solid|blue-20 border-color:blue-80@dark inline-flex::before w:7x::before h:7x::before r:full::before bg:blue-60::before fg:white::before font:0.813rem::before font-weight:700::before align-items:center::before justify-content:center::before mr:4x::before flex-shrink:0::before">
+            <li className="counter-increment:step counter-set:step|9 content:counter(step)::before flex align-items:center p:10x r:8px bg:blue-5 bg:blue-95@dark border:1px|solid|blue-20 border-color:blue-80@dark inline-flex::before w:7x::before h:7x::before r:full::before bg:blue-60::before text:white::before font:0.813rem::before font-weight:700::before align-items:center::before justify-content:center::before mr:4x::before flex-shrink:0::before">
                 <span>Jump to the deployment checklist</span>
             </li>
             <li className="counter-increment:step content:counter(step)::before flex align-items:center p:10x r:8px bg:gray-5 bg:gray-90@dark inline-flex::before w:7x::before h:7x::before r:full::before bg:gray-20::before bg:gray-80::before@dark font:0.813rem::before font-weight:700::before align-items:center::before justify-content:center::before mr:4x::before flex-shrink:0::before">
@@ -36,8 +36,8 @@ Separate counter names and values with `|` to set more than one counter in the s
 <Demo $py={0}>
     <DemoPanel>
         <div className="counter-set:chapter|2|section|4 p:16x r:8px bg:gray-5 bg:gray-90@dark">
-            <div className="fg:muted font:13px mb:4x">Current position</div>
-            <div className="content:'Chapter\00a0'counter(chapter)',\00a0section\00a0'counter(section)::before fg:strong font:22px font-weight:560 fg:blue-60::before font:1.375rem::before font-weight:700::before"></div>
+            <div className="text:muted font:13px mb:4x">Current position</div>
+            <div className="content:'Chapter\00a0'counter(chapter)',\00a0section\00a0'counter(section)::before text:strong font:22px font-weight:560 text:blue-60::before font:1.375rem::before font-weight:700::before"></div>
         </div>
     </DemoPanel>
 </Demo>

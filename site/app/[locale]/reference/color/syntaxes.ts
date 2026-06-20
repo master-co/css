@@ -2,9 +2,9 @@ import colors from 'internal/data/colors'
 import textColors from 'internal/data/text-colors'
 
 const syntaxes = [
-    ['fg:`color`'],
-    ...textColors.map(color => `fg:${color}`),
-    ...colors.map(color => `fg:${color}`),
+    ['text:`color`'],
+    ...textColors.map(color => `text:${color}`),
+    ...colors.map(color => `text:${color}`),
 ]
 
 export default syntaxes

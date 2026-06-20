@@ -176,7 +176,7 @@ Emits the token or managed keyframes as initial CSS resources instead of waiting
 ```
 
 ### `@custom-variant`
-Defines reusable condition variants and selector variants. Use condition variants as `@` suffixes, such as `animation:fade-in@motion-safe`, and selector variants as selector suffixes, such as `fg:primary:interactive`.
+Defines reusable condition variants and selector variants. Use condition variants as `@` suffixes, such as `animation:fade-in@motion-safe`, and selector variants as selector suffixes, such as `text:primary:interactive`.
 
 ```css
 @custom-variant @motion-safe {
@@ -205,7 +205,7 @@ Defines managed classes in the `defaults` layer.
 ```css
 @defaults {
     prose {
-        @compose fg:text leading:lg;
+        @compose text:text leading:lg;
     }
 }
 ```
@@ -309,7 +309,7 @@ Dynamic colon entries use `key:<source-list>` and keep the class syntax as `key:
 
 `<~font-size|number>` supports `font:sm` through `--font-size-sm` and `font:16px` as a raw number. It does not create dash token classes such as `font-sm`. Bare numbers are emitted as written; use `4x` when you want Master CSS base-unit conversion to `rem`.
 
-`<color>` supports both the `~color` theme namespace and raw CSS color values. For example, `bg:<color>` behaves like `bg:<~color|color>`, so `bg:primary` can resolve `--color-primary` while `bg:#fff` remains a raw color. Put more specific color namespaces before `color` when needed, such as `text:<~color-text|color>`.
+`<color>` supports both the `~color` theme namespace and raw CSS color values. For example, `bg:<color>` behaves like `bg:<~color|color>`, so `bg:primary` can resolve `--color-primary` while `bg:#fff` remains a raw color. Put more specific color namespaces before `color` when needed, such as `text:<~color-text|~color|color>`.
 
 Literal enum values can stand alone when at least two values are provided, such as `user-select:<auto|none|text|all>`, or combine with one raw kind, such as `line-clamp:<number|none>`. Enum values cannot be mixed with namespaces.
 
@@ -435,7 +435,7 @@ Use `@variant` inside managed definitions or native style rules to share the cur
     @compose p:md r:lg;
 
     @dark {
-        @compose bg:gray-90 fg:strong;
+        @compose bg:gray-90 text:strong;
     }
 
     @variant @<sm {

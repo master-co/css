@@ -942,7 +942,7 @@ export default function Play({ shareId }: PlayProps = {}) {
                         <div className={clsx('flex flex-col h:full', { 'hidden!': preview !== 'css' })}>
                             <div className='flex bb:1px|solid|subtle flex:0|0|auto pi:5x align-items:center font:12px h:48px justify-content:space-between pi:10x@sm'>
                                 <div>{compiling ? 'Compiling CSS' : 'Generated CSS'}</div>
-                                <div className="fg:muted">{compileWarnings.length ? `${compileWarnings.length} warnings` : generatedCSSSize}</div>
+                                <div className="text:muted">{compileWarnings.length ? `${compileWarnings.length} warnings` : generatedCSSSize}</div>
                             </div>
                             <Editor
                                 height="100%"
@@ -959,7 +959,7 @@ export default function Play({ shareId }: PlayProps = {}) {
                             />
                         </div>
                         {previewErrorEvent &&
-                            <div className="abs full inset:0 p:12x fg:danger bg:red-5@light bg:red-95@dark">
+                            <div className="abs full inset:0 p:12x text:danger bg:red-5@light bg:red-95@dark">
                                 <h2 className="font:20px">Error at line {previewErrorEvent.lineno === 1 ? 1 : previewErrorEvent.lineno - 1}</h2>
                                 <div className="p:0.938rem|5x r:5px margin-block:5x font:14px font:medium white-space:pre-wrap bg:black/.2@dark bg:red-90@light">
                                     {previewErrorEvent.message}

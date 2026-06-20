@@ -8,16 +8,16 @@ Use `grid-area` to place a grid item by `row-start / column-start / row-end / co
     <DemoPanel>
         <div className="grid grid-cols:3 grid-template-rows:64|88|88 gap:2x">
             <div className="grid-area:1/1/2/4 min-w:0 p:3x r:8px bg:blue-5 bg:blue-95@dark border:1px|solid|blue-20 border-color:blue-80@dark overflow:hidden">
-                <div className="fg:blue-60 font:11px font-weight:700 mb:1x text-ellipsis overflow:hidden white-space:nowrap">grid-area:1/1/2/4</div>
-                <div className="fg:strong font:16px font-weight:560 text-ellipsis overflow:hidden white-space:nowrap">Header</div>
+                <div className="text:blue-60 font:11px font-weight:700 mb:1x text-ellipsis overflow:hidden white-space:nowrap">grid-area:1/1/2/4</div>
+                <div className="text:strong font:16px font-weight:560 text-ellipsis overflow:hidden white-space:nowrap">Header</div>
             </div>
             <div className="grid-area:2/1/4/2 min-w:0 p:3x r:8px bg:gray-5 bg:gray-90@dark overflow:hidden">
-                <div className="fg:muted font:11px font-weight:700 mb:1x text-ellipsis overflow:hidden white-space:nowrap">2/1/4/2</div>
-                <div className="fg:strong font:14px font-weight:560 text-ellipsis overflow:hidden white-space:nowrap">Nav</div>
+                <div className="text:muted font:11px font-weight:700 mb:1x text-ellipsis overflow:hidden white-space:nowrap">2/1/4/2</div>
+                <div className="text:strong font:14px font-weight:560 text-ellipsis overflow:hidden white-space:nowrap">Nav</div>
             </div>
             <div className="grid-area:2/2/4/4 min-w:0 p:3x r:8px bg:gray-5 bg:gray-90@dark overflow:hidden">
-                <div className="fg:muted font:11px font-weight:700 mb:1x text-ellipsis overflow:hidden white-space:nowrap">2/2/4/4</div>
-                <div className="fg:strong font:14px font-weight:560 text-ellipsis overflow:hidden white-space:nowrap">Content</div>
+                <div className="text:muted font:11px font-weight:700 mb:1x text-ellipsis overflow:hidden white-space:nowrap">2/2/4/4</div>
+                <div className="text:strong font:14px font-weight:560 text-ellipsis overflow:hidden white-space:nowrap">Content</div>
             </div>
         </div>
     </DemoPanel>
@@ -41,12 +41,12 @@ Use `span` values when the item should cover a number of rows or columns from it
     <DemoPanel>
         <div className="grid grid-cols:4 grid-template-rows:64|64|64 gap:2x">
             <div className="grid-area:2/2/span|2/span|2 min-w:0 p:3x r:8px bg:blue-5 bg:blue-95@dark border:1px|solid|blue-20 border-color:blue-80@dark overflow:hidden">
-                <div className="fg:blue-60 font:11px font-weight:700 mb:1x text-ellipsis overflow:hidden white-space:nowrap">2/2/span 2/span 2</div>
-                <div className="fg:strong font:14px font-weight:560 text-ellipsis overflow:hidden white-space:nowrap">Featured</div>
+                <div className="text:blue-60 font:11px font-weight:700 mb:1x text-ellipsis overflow:hidden white-space:nowrap">2/2/span 2/span 2</div>
+                <div className="text:strong font:14px font-weight:560 text-ellipsis overflow:hidden white-space:nowrap">Featured</div>
             </div>
-            <div className="grid-area:1/1/2/5 min-w:0 p:3x r:8px bg:gray-5 bg:gray-90@dark fg:muted font:13px text-ellipsis overflow:hidden white-space:nowrap">Toolbar</div>
-            <div className="grid-area:2/1/4/2 min-w:0 p:3x r:8px bg:gray-5 bg:gray-90@dark fg:muted font:13px text-ellipsis overflow:hidden white-space:nowrap">Aside</div>
-            <div className="grid-area:2/4/4/5 min-w:0 p:3x r:8px bg:gray-5 bg:gray-90@dark fg:muted font:13px text-ellipsis overflow:hidden white-space:nowrap">Notes</div>
+            <div className="grid-area:1/1/2/5 min-w:0 p:3x r:8px bg:gray-5 bg:gray-90@dark text:muted font:13px text-ellipsis overflow:hidden white-space:nowrap">Toolbar</div>
+            <div className="grid-area:2/1/4/2 min-w:0 p:3x r:8px bg:gray-5 bg:gray-90@dark text:muted font:13px text-ellipsis overflow:hidden white-space:nowrap">Aside</div>
+            <div className="grid-area:2/4/4/5 min-w:0 p:3x r:8px bg:gray-5 bg:gray-90@dark text:muted font:13px text-ellipsis overflow:hidden white-space:nowrap">Notes</div>
         </div>
     </DemoPanel>
 </Demo>

@@ -42,7 +42,7 @@ export default async function SyntaxTr({ value, children }: any) {
                     const newValue = restore(child.value)
                     if (child.value !== newValue) {
                         child.value = newValue
-                        element.properties.class = 'fg:muted italic mr:0.125rem:not(:last)'
+                        element.properties.class = 'text:muted italic mr:0.125rem:not(:last)'
                     }
                 }
             })
@@ -51,7 +51,7 @@ export default async function SyntaxTr({ value, children }: any) {
     const hast = await highlightCode(text, {
         lang: 'css',
         inline: true,
-        className: 'fg:text white-space:pre',
+        className: 'text:text white-space:pre',
         transformers: [transformerRestore]
     })
     const codeElement = (hast.children[0] as any)

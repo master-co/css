@@ -1,5 +1,5 @@
 ## Using colors [sr-only]
-Master CSS provides a P3-compatible raw palette, mode-aware base hue aliases, text hue aliases, and a small set of text and line roles. Use palette tokens such as `bg:blue-60` for direct swatches, hue aliases such as `bg:blue` for common color choices, `fg:text-blue` for readable hue text, and retained roles such as `fg:text` or `b:1px|solid|subtle` for basic foreground and separator color.
+Master CSS provides a P3-compatible raw palette, mode-aware base hue aliases, text hue aliases, and a small set of text and line roles. Use palette tokens such as `bg:blue-60` for direct swatches, hue aliases such as `bg:blue` for common color choices, `text:blue` for readable hue text, and retained roles such as `text:text` or `b:1px|solid|subtle` for basic foreground and separator color.
 
 Product roles such as `surface`, `accent`, `success`, `warning`, and `danger`, plus expanded hue roles such as `blue-hover`, `blue-surface`, or `on-blue`, belong in your project theme or in a UI layer such as Master UI. Define them with `@theme` when the name represents a product decision.
 
@@ -8,8 +8,8 @@ Product roles such as `surface`, `accent`, `success`, `warning`, and `danger`, p
 Each preset color family ranges from `0`, `5`, `10`, and then by tens through `100`. Choose a palette step directly for swatches, illustrations, and intentional brand or status accents.
 
 ```html
-<!-- @MARK bg:blue-5 --><!-- @MARK fg:blue-60 -->
-<div class="bg:blue-5 fg:blue-60">…</div>
+<!-- @MARK bg:blue-5 --><!-- @MARK text:blue-60 -->
+<div class="bg:blue-5 text:blue-60">…</div>
 ```
 
 ### Adapting default colors
@@ -23,8 +23,8 @@ You can adapt the default color palette to your brand color by defining color va
 ```
 Apply them using the color-related syntax:
 ```html
-<!-- @MARK bg:brand-10 --><!-- @MARK fg:brand-60 -->
-<div class="bg:brand-10 fg:brand-60">…</div>
+<!-- @MARK bg:brand-10 --><!-- @MARK text:brand-60 -->
+<div class="bg:brand-10 text:brand-60">…</div>
 ```
 See [theme color tokens](/guide/theme#theme-tokens) for more details on how to add custom colors.
 
@@ -34,13 +34,13 @@ Use [variable modes](/guide/theme#modes) to define color roles for light and dar
 (x) Markup owns the light and dark color choice.
 
 ```html
-<div class="fg:white@dark fg:black@light">...</div>
+<div class="text:white@dark text:black@light">...</div>
 ```
 
 (o) The theme owns the mode-specific role.
 
 ```html
-<div class="fg:text">...</div>
+<div class="text:text">...</div>
 ```
 
 Use conditional color classes when a one-off interaction genuinely differs by mode. For shared text, surface, line, brand, and status color, prefer a named token that can resolve differently per mode.
@@ -51,47 +51,47 @@ Use conditional color classes when a one-off interaction genuinely differs by mo
 <ExpandContent>
 | Family | Subtle | Base | Strong text |
 |--------|--------|------|-------------|
-| `stone` | <Bg className="bg:stone-5" />`stone-5` | <Bg className="bg:stone-60" />`stone-60` | <Aa className="fg:stone-90" />`stone-90` |
-| `gray` | <Bg className="bg:gray-5" />`gray-5` | <Bg className="bg:gray-60" />`gray-60` | <Aa className="fg:gray-90" />`gray-90` |
-| `neutral` | <Bg className="bg:neutral-5" />`neutral-5` | <Bg className="bg:neutral-60" />`neutral-60` | <Aa className="fg:neutral-90" />`neutral-90` |
-| `slate` | <Bg className="bg:slate-5" />`slate-5` | <Bg className="bg:slate-60" />`slate-60` | <Aa className="fg:slate-90" />`slate-90` |
-| `brown` | <Bg className="bg:brown-5" />`brown-5` | <Bg className="bg:brown-60" />`brown-60` | <Aa className="fg:brown-90" />`brown-90` |
-| `orange` | <Bg className="bg:orange-5" />`orange-5` | <Bg className="bg:orange-60" />`orange-60` | <Aa className="fg:orange-90" />`orange-90` |
-| `amber` | <Bg className="bg:amber-5" />`amber-5` | <Bg className="bg:amber-60" />`amber-60` | <Aa className="fg:amber-90" />`amber-90` |
-| `yellow` | <Bg className="bg:yellow-5" />`yellow-5` | <Bg className="bg:yellow-60" />`yellow-60` | <Aa className="fg:yellow-90" />`yellow-90` |
-| `lime` | <Bg className="bg:lime-5" />`lime-5` | <Bg className="bg:lime-60" />`lime-60` | <Aa className="fg:lime-90" />`lime-90` |
-| `green` | <Bg className="bg:green-5" />`green-5` | <Bg className="bg:green-60" />`green-60` | <Aa className="fg:green-90" />`green-90` |
-| `beryl` | <Bg className="bg:beryl-5" />`beryl-5` | <Bg className="bg:beryl-60" />`beryl-60` | <Aa className="fg:beryl-90" />`beryl-90` |
-| `teal` | <Bg className="bg:teal-5" />`teal-5` | <Bg className="bg:teal-60" />`teal-60` | <Aa className="fg:teal-90" />`teal-90` |
-| `cyan` | <Bg className="bg:cyan-5" />`cyan-5` | <Bg className="bg:cyan-60" />`cyan-60` | <Aa className="fg:cyan-90" />`cyan-90` |
-| `sky` | <Bg className="bg:sky-5" />`sky-5` | <Bg className="bg:sky-60" />`sky-60` | <Aa className="fg:sky-90" />`sky-90` |
-| `blue` | <Bg className="bg:blue-5" />`blue-5` | <Bg className="bg:blue-60" />`blue-60` | <Aa className="fg:blue-90" />`blue-90` |
-| `indigo` | <Bg className="bg:indigo-5" />`indigo-5` | <Bg className="bg:indigo-60" />`indigo-60` | <Aa className="fg:indigo-90" />`indigo-90` |
-| `violet` | <Bg className="bg:violet-5" />`violet-5` | <Bg className="bg:violet-60" />`violet-60` | <Aa className="fg:violet-90" />`violet-90` |
-| `purple` | <Bg className="bg:purple-5" />`purple-5` | <Bg className="bg:purple-60" />`purple-60` | <Aa className="fg:purple-90" />`purple-90` |
-| `fuchsia` | <Bg className="bg:fuchsia-5" />`fuchsia-5` | <Bg className="bg:fuchsia-60" />`fuchsia-60` | <Aa className="fg:fuchsia-90" />`fuchsia-90` |
-| `pink` | <Bg className="bg:pink-5" />`pink-5` | <Bg className="bg:pink-60" />`pink-60` | <Aa className="fg:pink-90" />`pink-90` |
-| `crimson` | <Bg className="bg:crimson-5" />`crimson-5` | <Bg className="bg:crimson-60" />`crimson-60` | <Aa className="fg:crimson-90" />`crimson-90` |
-| `red` | <Bg className="bg:red-5" />`red-5` | <Bg className="bg:red-60" />`red-60` | <Aa className="fg:red-90" />`red-90` |
+| `stone` | <Bg className="bg:stone-5" />`stone-5` | <Bg className="bg:stone-60" />`stone-60` | <Aa className="text:stone-90" />`stone-90` |
+| `gray` | <Bg className="bg:gray-5" />`gray-5` | <Bg className="bg:gray-60" />`gray-60` | <Aa className="text:gray-90" />`gray-90` |
+| `neutral` | <Bg className="bg:neutral-5" />`neutral-5` | <Bg className="bg:neutral-60" />`neutral-60` | <Aa className="text:neutral-90" />`neutral-90` |
+| `slate` | <Bg className="bg:slate-5" />`slate-5` | <Bg className="bg:slate-60" />`slate-60` | <Aa className="text:slate-90" />`slate-90` |
+| `brown` | <Bg className="bg:brown-5" />`brown-5` | <Bg className="bg:brown-60" />`brown-60` | <Aa className="text:brown-90" />`brown-90` |
+| `orange` | <Bg className="bg:orange-5" />`orange-5` | <Bg className="bg:orange-60" />`orange-60` | <Aa className="text:orange-90" />`orange-90` |
+| `amber` | <Bg className="bg:amber-5" />`amber-5` | <Bg className="bg:amber-60" />`amber-60` | <Aa className="text:amber-90" />`amber-90` |
+| `yellow` | <Bg className="bg:yellow-5" />`yellow-5` | <Bg className="bg:yellow-60" />`yellow-60` | <Aa className="text:yellow-90" />`yellow-90` |
+| `lime` | <Bg className="bg:lime-5" />`lime-5` | <Bg className="bg:lime-60" />`lime-60` | <Aa className="text:lime-90" />`lime-90` |
+| `green` | <Bg className="bg:green-5" />`green-5` | <Bg className="bg:green-60" />`green-60` | <Aa className="text:green-90" />`green-90` |
+| `beryl` | <Bg className="bg:beryl-5" />`beryl-5` | <Bg className="bg:beryl-60" />`beryl-60` | <Aa className="text:beryl-90" />`beryl-90` |
+| `teal` | <Bg className="bg:teal-5" />`teal-5` | <Bg className="bg:teal-60" />`teal-60` | <Aa className="text:teal-90" />`teal-90` |
+| `cyan` | <Bg className="bg:cyan-5" />`cyan-5` | <Bg className="bg:cyan-60" />`cyan-60` | <Aa className="text:cyan-90" />`cyan-90` |
+| `sky` | <Bg className="bg:sky-5" />`sky-5` | <Bg className="bg:sky-60" />`sky-60` | <Aa className="text:sky-90" />`sky-90` |
+| `blue` | <Bg className="bg:blue-5" />`blue-5` | <Bg className="bg:blue-60" />`blue-60` | <Aa className="text:blue-90" />`blue-90` |
+| `indigo` | <Bg className="bg:indigo-5" />`indigo-5` | <Bg className="bg:indigo-60" />`indigo-60` | <Aa className="text:indigo-90" />`indigo-90` |
+| `violet` | <Bg className="bg:violet-5" />`violet-5` | <Bg className="bg:violet-60" />`violet-60` | <Aa className="text:violet-90" />`violet-90` |
+| `purple` | <Bg className="bg:purple-5" />`purple-5` | <Bg className="bg:purple-60" />`purple-60` | <Aa className="text:purple-90" />`purple-90` |
+| `fuchsia` | <Bg className="bg:fuchsia-5" />`fuchsia-5` | <Bg className="bg:fuchsia-60" />`fuchsia-60` | <Aa className="text:fuchsia-90" />`fuchsia-90` |
+| `pink` | <Bg className="bg:pink-5" />`pink-5` | <Bg className="bg:pink-60" />`pink-60` | <Aa className="text:pink-90" />`pink-90` |
+| `crimson` | <Bg className="bg:crimson-5" />`crimson-5` | <Bg className="bg:crimson-60" />`crimson-60` | <Aa className="text:crimson-90" />`crimson-90` |
+| `red` | <Bg className="bg:red-5" />`red-5` | <Bg className="bg:red-60" />`red-60` | <Aa className="text:red-90" />`red-90` |
 </ExpandContent>
 
 Palette step tokens are primitive values. They do not change between light and dark modes unless your project overrides them. Base hue aliases such as `blue`, `pink`, and `yellow` are mode-aware shortcuts to default palette steps.
 <Demo $py={0} $px={0}>
     <DemoLight>
-        <div className="bg:yellow fg:yellow-95 aspect-ratio:2/1 w:full h:12x r:sm grid place-content:center font:heavy">Aa</div>
+        <div className="bg:yellow text:yellow-95 aspect-ratio:2/1 w:full h:12x r:sm grid place-content:center font:heavy">Aa</div>
     </DemoLight>
     <DemoDark>
-        <div className="bg:yellow fg:yellow-95 aspect-ratio:2/1 w:full h:12x r:sm grid place-content:center font:heavy">Aa</div>
+        <div className="bg:yellow text:yellow-95 aspect-ratio:2/1 w:full h:12x r:sm grid place-content:center font:heavy">Aa</div>
     </DemoDark>
 </Demo>
 ```html
 <div class="light">
-    <!-- @MARK bg:yellow --><!-- @MARK fg:yellow-95 -->
-    <div class="bg:yellow fg:yellow-95"></div>
+    <!-- @MARK bg:yellow --><!-- @MARK text:yellow-95 -->
+    <div class="bg:yellow text:yellow-95"></div>
 </div>
 <div class="dark">
-    <!-- @MARK bg:yellow --><!-- @MARK fg:yellow-95 -->
-    <div class="bg:yellow fg:yellow-95"></div>
+    <!-- @MARK bg:yellow --><!-- @MARK text:yellow-95 -->
+    <div class="bg:yellow text:yellow-95"></div>
 </div>
 ```
 
@@ -107,8 +107,8 @@ Add expanded project hue aliases when your product has interactive, surface, or 
 ```
 Apply the custom color:
 ```html
-<!-- @MARK bg:brand --><!-- @MARK fg:on-brand -->
-<button class="bg:brand fg:on-brand"></button>
+<!-- @MARK bg:brand --><!-- @MARK text:on-brand -->
+<button class="bg:brand text:on-brand"></button>
 ```
 
 ---
@@ -154,33 +154,33 @@ Semantic roles are useful for product UI when the color represents a role instea
 <ExpandContent>
 | Token                                             | Descriptions                                                              |
 |---------------------------------------------------|---------------------------------------------------------------------------|
-| <Aa className="fg:strong" />`strong` | Titles, headings, and emphasized fields |
-| <Aa className="fg:text" />`text` | Body text and default content |
-| <Aa className="fg:muted" />`muted` | Secondary labels, descriptions, and icons |
-| <Aa className="fg:subtle" />`subtle` | Tertiary text and low-emphasis metadata |
-| <Aa className="fg:disabled" />`disabled` | Disabled text and unavailable controls |
-| <Aa className="fg:placeholder" />`placeholder` | Input placeholders |
-| <Aa className="fg:inverse" />`inverse` | Text on inverse surfaces |
-| <Aa className="fg:link" />`link` | Links |
+| <Aa className="text:strong" />`strong` | Titles, headings, and emphasized fields |
+| <Aa className="text:text" />`text` | Body text and default content |
+| <Aa className="text:muted" />`muted` | Secondary labels, descriptions, and icons |
+| <Aa className="text:subtle" />`subtle` | Tertiary text and low-emphasis metadata |
+| <Aa className="text:disabled" />`disabled` | Disabled text and unavailable controls |
+| <Aa className="text:placeholder" />`placeholder` | Input placeholders |
+| <Aa className="text:inverse" />`inverse` | Text on inverse surfaces |
+| <Aa className="text:link" />`link` | Links |
 </ExpandContent>
 
 By default, theme modes [drive](/guide/theme#modes) text variables for light and dark foreground contrast.
 <Demo $py={0} $px={0}>
     <DemoLight>
-        <div className="fg:text-yellow font:heavy font:9xl">M</div>
+        <div className="text:yellow font:heavy font:9xl">M</div>
     </DemoLight>
     <DemoDark>
-        <div className="fg:text-yellow font:heavy font:9xl">M</div>
+        <div className="text:yellow font:heavy font:9xl">M</div>
     </DemoDark>
 </Demo>
 ```html
 <div class="light">
-    <!-- @MARK fg:text-yellow -->
-    <span class="fg:text-yellow">M</span>
+    <!-- @MARK text:yellow -->
+    <span class="text:yellow">M</span>
 </div>
 <div class="dark">
-    <!-- @MARK fg:text-yellow -->
-    <span class="fg:text-yellow">M</span>
+    <!-- @MARK text:yellow -->
+    <span class="text:yellow">M</span>
 </div>
 ```
 

@@ -619,8 +619,8 @@
         letter-spacing: clamp(-0.072em, calc((--value() - 1rem) * -0.048), 0em);
     }
 
-    text:<~color-text|color> {
-        -webkit-text-fill-color: --value();
+    text:<~color-text|~color|color> {
+        color: --value();
     }
 
     text-decoration:<number> {

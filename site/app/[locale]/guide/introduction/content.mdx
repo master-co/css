@@ -7,25 +7,25 @@ Master CSS is a markup-driven CSS language and framework. It lets you write CSS 
 
 Think of each class as a small CSS statement:
 
-- Start with the declaration you want, such as `fg:blue-60`, `font:3xl`, or `text-center`.
+- Start with the declaration you want, such as `text:blue-60`, `font:3xl`, or `text-center`.
 - Add a selector state when the style should react, such as `:hover`.
 - Add a conditional query when the style should be scoped, such as `@sm` or `@dark`.
 
 ```html
-<!-- @MARK fg:blue-60 --><!-- @MARK :hover --><!-- @MARK @sm -->
-<h1 class="fg:blue-60 fg:red-60:hover font:3xl font:5xl@sm font:heavy m:2xl text-center">
+<!-- @MARK text:blue-60 --><!-- @MARK :hover --><!-- @MARK @sm -->
+<h1 class="text:blue-60 text:red-60:hover font:3xl font:5xl@sm font:heavy m:2xl text-center">
     Hello World
 </h1>
 ```
 
 <Demo $py={0}>
-    <h1 className="fg:blue-60 fg:red-60:hover font:3xl font:5xl@sm font:heavy m:2xl text-center">Hello World</h1>
+    <h1 className="text:blue-60 text:red-60:hover font:3xl font:5xl@sm font:heavy m:2xl text-center">Hello World</h1>
 </Demo>
 
 <details>
     <summary>Generated CSS</summary>
     <Class2CSS>
-        {'fg:blue-60 fg:red-60:hover font:3xl font:5xl@sm font:heavy m:2xl text-center'}
+        {'text:blue-60 text:red-60:hover font:3xl font:5xl@sm font:heavy m:2xl text-center'}
     </Class2CSS>
 </details>
 
@@ -136,9 +136,9 @@ mt-9 rounded-lg flex text-slate-700 hover:bg-slate-200 sm:bg-slate-300
 
 (o) With Master CSS highlighting, each class keeps its CSS shape.
 ```text
-mt:9x r:lg flex fg:slate-70 bg:slate-20:hover bg:slate-30@sm
-mt:9x r:lg flex fg:slate-70 bg:slate-20:hover bg:slate-30@sm
-mt:9x r:lg flex fg:slate-70 bg:slate-20:hover bg:slate-30@sm
+mt:9x r:lg flex text:slate-70 bg:slate-20:hover bg:slate-30@sm
+mt:9x r:lg flex text:slate-70 bg:slate-20:hover bg:slate-30@sm
+mt:9x r:lg flex text:slate-70 bg:slate-20:hover bg:slate-30@sm
 ```
 
 ### Predictable authoring
@@ -421,7 +421,7 @@ This keeps markup close to design measurements while still producing practical C
 ## Separation of concerns
 Master CSS does not treat "HTML in one file, CSS in another file" as the only way to separate concerns. For UI work, structure and style often describe the same component responsibility.
 
-The concern to separate is usually business responsibility: page layout, product component, reusable primitive, form control, data display, theme token, and so on. A class such as `fg:primary:hover@sm` is not business logic; it is the styling decision for an element in a particular UI state.
+The concern to separate is usually business responsibility: page layout, product component, reusable primitive, form control, data display, theme token, and so on. A class such as `text:primary:hover@sm` is not business logic; it is the styling decision for an element in a particular UI state.
 
 > Separate responsibilities, not files by default.
 
@@ -445,7 +445,7 @@ Inline styles look similar at first, but they cannot express the CSS features mo
 
 (o) It also keeps the interface aligned with design tokens.
 ```html
-<h1 class="font:lg fg:primary">Hello World</h1>
+<h1 class="font:lg text:primary">Hello World</h1>
 ```
 
 ---

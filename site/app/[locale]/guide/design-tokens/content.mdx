@@ -8,16 +8,16 @@ Master CSS includes a set of preset foundation tokens, and each project can exte
         <div className="grid-cols:1 gap:md w:full">
             <div className="bg:surface r:lg p:md b:1px|solid|subtle shadow:xs min-w:0">
                 <DemoLabel>Token-first surface</DemoLabel>
-                <div className="text:lg font:semibold fg:strong">Account overview</div>
-                <p className="m:0 mt:xs fg:text text:sm">Shared spacing, type, color, radius, and elevation tokens keep this card aligned with the system.</p>
+                <div className="text:lg font:semibold text:strong">Account overview</div>
+                <p className="m:0 mt:xs text:text text:sm">Shared spacing, type, color, radius, and elevation tokens keep this card aligned with the system.</p>
             </div>
         </div>
     </div>
 </Demo>
 
 ```html
-<!-- @MARK p:md --><!-- @MARK r:lg --><!-- @MARK fg:text --><!-- @MARK shadow:sm -->
-<article class="p:md r:lg fg:text shadow:sm">
+<!-- @MARK p:md --><!-- @MARK r:lg --><!-- @MARK text:text --><!-- @MARK shadow:sm -->
+<article class="p:md r:lg text:text shadow:sm">
     ...
 </article>
 ```
@@ -25,7 +25,7 @@ Master CSS includes a set of preset foundation tokens, and each project can exte
 <details>
     <summary>Generated CSS</summary>
     <Class2CSS>
-        {['p:md', 'r:lg', 'fg:text', 'shadow:sm']}
+        {['p:md', 'r:lg', 'text:text', 'shadow:sm']}
     </Class2CSS>
 </details>
 
@@ -34,7 +34,7 @@ Master CSS includes a set of preset foundation tokens, and each project can exte
 ## Token-first policy
 Use the most meaningful token available for the design decision you are making.
 
-1. Prefer role tokens when your project or UI layer defines product meaning, such as `bg:canvas`, `bg:surface`, `fg:strong`, `fg:muted`, `b:subtle`, `bg:accent`, or `fg:danger`.
+1. Prefer role tokens when your project or UI layer defines product meaning, such as `bg:canvas`, `bg:surface`, `text:strong`, `text:muted`, `b:subtle`, `bg:accent`, or `text:danger`.
 2. Prefer scale tokens when the value belongs to a foundation scale, such as `p:md`, `gap:lg`, `font:2xl` for font-size-only, `text:2xl` for a complete type treatment, `r:xl`, `shadow:md`, `animation-duration:normal`, or `animation-timing-function:smooth`.
 3. Prefer contextual shorthand when a utility already knows the token namespace, such as `b:1px|solid|subtle` instead of `b:1px|solid|line-subtle`.
 4. Use structural values when the value describes layout behavior rather than visual styling, such as `w:full`, `w:50%`, `max-w:5xl`, `h:100dvh`, `@md`, or `@container(md)`.
@@ -66,7 +66,7 @@ Foundation tokens are the shared vocabulary for the most common UI decisions.
 
 | Foundation | Prefer | Avoid for normal UI |
 | --- | --- | --- |
-| Color | `fg:strong`, `fg:muted`, <code>b:1px&#124;subtle</code>, `bg:blue-5`, project roles such as `bg:surface` | `bg:#fff`, `fg:oklch(...)`, one-off palette values where a role token fits |
+| Color | `text:strong`, `text:muted`, <code>b:1px&#124;subtle</code>, `bg:blue-5`, project roles such as `bg:surface` | `bg:#fff`, `text:oklch(...)`, one-off palette values where a role token fits |
 | Spacing | `p:sm`, `gap:md`, `mt:lg`, `pi:xl` | `p:3x`, `gap:1rem`, `mt:12px` |
 | Typography | `font:lg`, `text:lg`, `font:medium`, `leading:md`, `tracking:tight` | `font:18px`, `leading:1.4`, `tracking:-0.02em` when a token exists |
 | Corner radius | `r:md`, `r:lg`, `r:2xl`, `rounded`, `round` | `r:2x`, `r:8px` for standard cards and controls |
@@ -96,7 +96,7 @@ Role tokens describe why a value exists. Scale tokens describe where a value sit
 (o) The text role is clear and can adapt across modes.
 
 ```html
-<p class="fg:text text:md">Supporting copy</p>
+<p class="text:text text:md">Supporting copy</p>
 ```
 
 (o) The surface role is clear and can adapt across modes.
@@ -108,7 +108,7 @@ Role tokens describe why a value exists. Scale tokens describe where a value sit
 (o) The palette token is appropriate when demonstrating the palette.
 
 ```html
-<div class="bg:blue-5 fg:blue-60">Blue swatch</div>
+<div class="bg:blue-5 text:blue-60">Blue swatch</div>
 ```
 
 Use palette scale tokens such as `blue-60`, `green-70`, or `amber-40` when the page is teaching colors, showing a swatch, or intentionally choosing a brand color. For product surfaces, define roles such as `canvas`, `surface`, `accent`, `strong`, `muted`, `subtle`, and status roles such as `success`, `warning`, `danger`, or `info` in your project theme or UI layer.
@@ -122,7 +122,7 @@ Property shorthand keeps frequently used declarations compact:
 
 | Prefer | Instead of | Use for |
 | --- | --- | --- |
-| `fg:text` | `color:text` | Foreground color |
+| `text:text` | `color:text` | Foreground color |
 | `bg:surface` | `background-color:surface` | Background color |
 | `p:md`, `pi:lg`, `m:0` | `padding:md`, `padding-inline:lg`, `margin:0` | Spacing |
 | `w:full`, `h:100dvh` | `width:full`, `height:100dvh` | Sizing |
@@ -136,9 +136,9 @@ Contextual token shorthand removes redundant namespace prefixes from values. The
 
 | Prefer | Avoid | Why |
 | --- | --- | --- |
-| `fg:muted` | `fg:text-muted` | `fg` resolves text color tokens. |
+| `text:muted` | `text:text-muted` | `text` resolves text color tokens. |
 | `caret-color:placeholder` | `caret-color:text-placeholder` | `caret` resolves text color tokens before general colors. |
-| `text:accent` | `text:text-accent` | Text fill color resolves text color tokens. |
+| `text:accent` | `text:text-accent` | Text color resolves text color tokens. |
 | <code>b:1px&#124;subtle</code> | <code>b:1px&#124;line-subtle</code> | Border shorthands resolve line color tokens. |
 | <code>outline:1px&#124;subtle</code> | <code>outline:1px&#124;line-subtle</code> | Outline shorthands resolve line color tokens. |
 | `p:md`, `gap:lg` | `p:spacing-md`, `gap:spacing-lg` | Spacing utilities resolve spacing tokens. |
@@ -270,7 +270,7 @@ Create a project token when a value is reused, named in design specs, shared acr
 Use the new tokens from markup:
 
 ```html
-<article class="p:card r:card bg:accent fg:on-accent shadow:popover">
+<article class="p:card r:card bg:accent text:on-accent shadow:popover">
     ...
 </article>
 ```

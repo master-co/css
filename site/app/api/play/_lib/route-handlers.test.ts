@@ -79,7 +79,7 @@ test('creates and reads a Play share from KV', async () => {
                 title: 'HTML',
                 name: 'index.html',
                 language: 'html',
-                content: '<h1 class="fg:danger">Hello</h1>'
+                content: '<h1 class="text:danger">Hello</h1>'
             }
         ]
     }), env)
@@ -96,7 +96,7 @@ test('creates and reads a Play share from KV', async () => {
     const body = await getResponse.json()
     assert.equal(body.version, 1)
     assert.equal(body.files[0].title, 'HTML')
-    assert.equal(body.files[0].content, '<h1 class="fg:danger">Hello</h1>')
+    assert.equal(body.files[0].content, '<h1 class="text:danger">Hello</h1>')
 })
 
 test('uses the default Play share TTL when the env var is unset', async () => {

@@ -5,7 +5,7 @@ import animals from 'internal/data/animals'
 
 ```html
 <!-- @MARK :hover -->
-<div class="fg:blue-60:hover"></div>
+<div class="text:blue-60:hover"></div>
 <!-- @MARK :invalid -->
 <input class="border:red:invalid" />
 <!-- @MARK [open] -->
@@ -212,11 +212,11 @@ Use interaction pseudo-classes to give controls feedback as people hover, press,
 
 (click) Try clicking the button to see states change
 <Demo>
-    <button className="bg:blue-60 bg:blue-70:hover bg:blue-80:active pi:md h:10x font:sm font:medium fg:white r:sm inline-flex align-items:center">Submit</button>
+    <button className="bg:blue-60 bg:blue-70:hover bg:blue-80:active pi:md h:10x font:sm font:medium text:white r:sm inline-flex align-items:center">Submit</button>
 </Demo>
 ```html
 <!-- @MARK :hover --><!-- @MARK :active -->
-<button class="bg:blue-60 fg:white bg:blue-70:hover bg:blue-80:active">Submit</button>
+<button class="bg:blue-60 text:white bg:blue-70:hover bg:blue-80:active">Submit</button>
 ```
 
 Use `:focus-visible` for keyboard focus rings when you want to avoid showing the focus style after every pointer click.
@@ -235,9 +235,9 @@ Use structural shorthands such as `:first`, `:last`, `:odd`, `:even`, and `:nth(
                     <img className="round object-cover" src={furniture.url} width="56" height="56" alt="avatar" quality={'0'} />
                     <div className="flex flex-col flex:1 py:xs">
                         <div className="flex align-items:center">
-                            <div className="text:sm capitalize fg:strong">{furniture.name}</div>
+                            <div className="text:sm capitalize text:strong">{furniture.name}</div>
                         </div>
-                        <div className="text:xs m:0 fg:text">{furniture.intro}</div>
+                        <div className="text:xs m:0 text:text">{furniture.intro}</div>
                     </div>
                 </li>
             )}
@@ -302,7 +302,7 @@ Use `:has()` when the current element should change because it contains a matchi
 Use `:not()` to exclude a selector from the match.
 ```html
 <!-- @MARK :not(.active) -->
-<div class="fg:green-60:not(.active) active">...</div>
+<div class="text:green-60:not(.active) active">...</div>
 ```
 
 ### `:of()`
@@ -353,7 +353,7 @@ Use `:not()` to exclude a selector from the match.
 Use `::before` and `::after` to style generated content attached to the element.
 <Demo $py={0}>
     <DemoPanel>
-        <q className="italic fg:strong font:lg font:medium">Be the change you wish to see in the world.</q>
+        <q className="italic text:strong font:lg font:medium">Be the change you wish to see in the world.</q>
     </DemoPanel>
 </Demo>
 ```html

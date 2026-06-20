@@ -32,8 +32,8 @@ In Master CSS, that vocabulary usually lives in the project CSS entry: `@theme` 
 ```
 
 ```html
-<section class="bg:surface fg:strong p:card r:card shadow:card grid-cols:2@md">
-    <button class="bg:accent fg:on-accent px:md py:xs r:md bg:accent-hover:interactive">Save</button>
+<section class="bg:surface text:strong p:card r:card shadow:card grid-cols:2@md">
+    <button class="bg:accent text:on-accent px:md py:xs r:md bg:accent-hover:interactive">Save</button>
 </section>
 ```
 
@@ -119,9 +119,9 @@ After your project defines UI tokens, the same short token can resolve different
 
 ```html
 <!-- @MARK bg:surface --><!-- @MARK p:card --><!-- @MARK r:card --><!-- @MARK font:sans -->
-<article class="bg:surface fg:strong p:card r:card shadow:card font:sans">
+<article class="bg:surface text:strong p:card r:card shadow:card font:sans">
     <h2 class="font:sans">Dashboard</h2>
-    <a class="fg:link" href="/settings">Settings</a>
+    <a class="text:link" href="/settings">Settings</a>
 </article>
 ```
 
@@ -228,8 +228,8 @@ Mode-specific `@theme` blocks keep markup semantic while values change by mode.
 ```
 
 ```html
-<section class="bg:surface fg:strong">
-    <button class="bg:accent fg:on-accent">Save</button>
+<section class="bg:surface text:strong">
+    <button class="bg:accent text:on-accent">Save</button>
 </section>
 ```
 
@@ -260,7 +260,7 @@ Use `mode-trigger: class` when your app switches modes manually. Put the active 
 <!-- @MARK dark -->
 <html class="dark">
     <body>
-        <div class="bg:surface fg:strong">...</div>
+        <div class="bg:surface text:strong">...</div>
     </body>
 </html>
 ```
@@ -337,7 +337,7 @@ Use selector variants anywhere Master CSS accepts a selector suffix:
 ```html
 <!-- @MARK :headings --><!-- @MARK :interactive --><!-- @MARK ::scrollbar -->
 <article class="font:semibold_:headings">
-    <button class="fg:link:interactive">Save</button>
+    <button class="text:link:interactive">Save</button>
     <div class="w:.5rem::scrollbar">...</div>
 </article>
 ```
@@ -353,7 +353,7 @@ Inside CSS-defined style rules, use `@variant` to apply selector variants instea
         @compose inline-flex align-items:center justify-content:center;
 
         @variant :interactive {
-            @compose fg:link;
+            @compose text:link;
         }
     }
 }

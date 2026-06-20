@@ -19,10 +19,10 @@ Use `text-fill-color:*` to set the WebKit text fill color directly.
 </details>
 
 ### Make text fill transparent
-Use `text:transparent` when the visible text should come from a background clip, stroke, or layered effect.
+Use `text-fill-color:transparent` when the visible text should come from a background clip, stroke, or layered effect.
 ```html
-<!-- @MARK text:transparent -->
-<h2 class="text:transparent background-clip:text">
+<!-- @MARK text-fill-color:transparent -->
+<h2 class="text-fill-color:transparent background-clip:text">
     Gradient title
 </h2>
 ```
@@ -31,7 +31,7 @@ Use `text:transparent` when the visible text should come from a background clip,
 Use `text-fill-color:currentColor` when the fill should follow `color`.
 ```html
 <!-- @MARK text-fill-color:currentColor -->
-<span class="fg:blue-60 text-fill-color:currentColor">Current color</span>
+<span class="text:blue-60 text-fill-color:currentColor">Current color</span>
 ```
 
 ### Apply conditionally

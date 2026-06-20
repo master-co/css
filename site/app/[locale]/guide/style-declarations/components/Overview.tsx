@@ -12,7 +12,7 @@ export default () => (
                 alt="hello world"
             />
             <div className="abs animation:flash|3s|infinite inset:0 m:auto height:fit mix-blend-mode:overlay">
-                <h1 className="m:0 fg:white font:7vw font:heavy text-center font:40px@xs">
+                <h1 className="m:0 text:white font:7vw font:heavy text-center font:40px@xs">
                     Hello, World!
                 </h1>
             </div>

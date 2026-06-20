@@ -88,7 +88,7 @@ export default function ViewTransitionDemo() {
                             >
                                 <span className={clsx('inline-block size:2x r:full mr:xs', view.accent)} />
                                 <span className="font:medium text:sm">{view.title}</span>
-                                <span className="block fg:text mt:2xs text:xs">{view.eyebrow}</span>
+                                <span className="block text:text mt:2xs text:xs">{view.eyebrow}</span>
                             </button>
                         )
                     })}
@@ -98,12 +98,12 @@ export default function ViewTransitionDemo() {
                     'flex flex-col view-transition-name:panel',
                     active.tint
                 )}>
-                    <p className="text:xs font:medium fg:text m:0">{active.eyebrow}</p>
+                    <p className="text:xs font:medium text:text m:0">{active.eyebrow}</p>
                     <h3 className="text:2xl text:3xl@container(3xs) font:semibold m:0 mt:sm view-transition-name:title">
                         {active.title}
                     </h3>
                     <div className={clsx('h:1x w:2em rounded mt:md opacity:.8', active.accent)} />
-                    <p className="fg:text text:sm m:0 mt:md max-w:full">
+                    <p className="text:text text:sm m:0 mt:md max-w:full">
                         {active.body}
                     </p>
                 </section>
