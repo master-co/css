@@ -50,7 +50,27 @@ withFixture('basic', async (context) => {
         expect(semanticTokens.data.length).toBeGreaterThan(0)
         expect(hasTokenType(semanticTokens.data, 'keyword')).toBe(true)
         expect(hasTokenType(semanticTokens.data, 'variable')).toBe(true)
-        expect(hasTokenType(semanticTokens.data, 'class')).toBe(true)
+        expect(hasTokenType(semanticTokens.data, 'enumMember')).toBe(true)
+        expect(hasTokenType(semanticTokens.data, 'class')).toBe(false)
+        await context.server.onDidClose({ document: textDocument })
+    })
+
+    test('returns no document semantic tokens for native CSS-only documents', async ({ expect }) => {
+        const textDocument = context.createDocument([
+            '@keyframes fade {',
+            '    from { opacity: 0; }',
+            '    to { opacity: 1; }',
+            '}',
+            '.btn:hover { color: red; }'
+        ].join('\n'), { lang: 'css' })
+        await context.server.onDidOpen({ document: textDocument })
+        const semanticTokens = await context.clientConnection.sendRequest<{ data: number[] }>(DOCUMENT_SEMANTIC_TOKENS_REQUEST, {
+            textDocument: {
+                uri: textDocument.uri
+            }
+        })
+
+        expect(semanticTokens.data).toEqual([])
         await context.server.onDidClose({ document: textDocument })
     })
 })
@@ -111,7 +131,8 @@ withFixture('basic', async (context) => {
         expect(semanticTokens.data.length).toBeGreaterThan(0)
         expect(hasTokenType(semanticTokens.data, 'keyword')).toBe(true)
         expect(hasTokenType(semanticTokens.data, 'variable')).toBe(true)
-        expect(hasTokenType(semanticTokens.data, 'class')).toBe(true)
+        expect(hasTokenType(semanticTokens.data, 'enumMember')).toBe(true)
+        expect(hasTokenType(semanticTokens.data, 'class')).toBe(false)
         await context.server.onDidClose({ document: textDocument })
     })
 }, {

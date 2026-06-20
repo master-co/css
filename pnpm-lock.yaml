@@ -1947,6 +1947,9 @@ importers:
       '@master/css-language-service':
         specifier: workspace:^
         version: link:../language-service
+      '@shikijs/langs':
+        specifier: 4.0.2
+        version: 4.0.2
       '@types/vscode':
         specifier: ^1.120.0
         version: 1.120.0

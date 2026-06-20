@@ -383,6 +383,7 @@
     "devDependencies": {
         "@master/css-language-server": "workspace:^",
         "@master/css-language-service": "workspace:^",
+        "@shikijs/langs": "4.0.2",
         "@types/vscode": "^1.120.0",
         "@vscode/vsce": "^3.9.2",
         "shared": "workspace:^",

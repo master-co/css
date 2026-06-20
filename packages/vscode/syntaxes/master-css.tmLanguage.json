@@ -4,25 +4,7 @@
     "injectionSelector": "L:source.css -comment -string, L:source.css.scss -comment -string, L:source.css.less -comment -string, L:source.css.postcss -comment -string",
     "patterns": [
         {
-            "include": "#comment"
-        },
-        {
-            "include": "#master-string"
-        },
-        {
             "include": "#master-directive"
-        },
-        {
-            "include": "#master-managed-pattern"
-        },
-        {
-            "include": "#master-query"
-        },
-        {
-            "include": "#master-selector"
-        },
-        {
-            "include": "#master-value"
         }
     ],
     "repository": {
@@ -47,8 +29,16 @@
                             "name": "keyword.control.at-rule.master-css"
                         }
                     },
-                    "end": "(?=;|\\{|\\})|$",
+                    "end": "(;)|(?<=\\})|$",
+                    "endCaptures": {
+                        "1": {
+                            "name": "punctuation.section.master-css"
+                        }
+                    },
                     "patterns": [
+                        {
+                            "include": "#master-block"
+                        },
                         {
                             "include": "#master-prelude"
                         }
@@ -140,6 +130,50 @@
                         {
                             "match": "[_a-zA-Z-][_a-zA-Z0-9-]*",
                             "name": "support.constant.property-value.master-css"
+                        }
+                    ]
+                }
+            ]
+        },
+        "master-block": {
+            "patterns": [
+                {
+                    "begin": "\\{",
+                    "beginCaptures": {
+                        "0": {
+                            "name": "punctuation.section.master-css"
+                        }
+                    },
+                    "end": "\\}",
+                    "endCaptures": {
+                        "0": {
+                            "name": "punctuation.section.master-css"
+                        }
+                    },
+                    "patterns": [
+                        {
+                            "include": "#master-string"
+                        },
+                        {
+                            "include": "#master-directive"
+                        },
+                        {
+                            "include": "#master-managed-pattern"
+                        },
+                        {
+                            "include": "#master-query"
+                        },
+                        {
+                            "include": "#master-selector"
+                        },
+                        {
+                            "include": "#master-value"
+                        },
+                        {
+                            "include": "#master-class-fragment"
+                        },
+                        {
+                            "include": "#master-block"
                         }
                     ]
                 }

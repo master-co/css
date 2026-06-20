@@ -5,8 +5,8 @@ import createDoc from '../src/utils/create-doc'
 import { SEMANTIC_TOKEN_MODIFIERS, SEMANTIC_TOKEN_TYPES } from '../src'
 import { createPresetPlan } from './helpers/create-preset-plan'
 
-function decodeSemanticTokens(doc: ReturnType<typeof createDoc>, data: number[]) {
-    const tokens: { text: string, type: string, modifiers: string[] }[] = []
+function decodeSemanticTokenRanges(doc: ReturnType<typeof createDoc>, data: number[]) {
+    const tokens: { text: string, start: number, end: number, type: string, modifiers: string[] }[] = []
     let line = 0
     let character = 0
     for (let i = 0; i < data.length; i += 5) {
@@ -21,11 +21,17 @@ function decodeSemanticTokens(doc: ReturnType<typeof createDoc>, data: number[])
         const end = doc.offsetAt({ line, character: character + length })
         tokens.push({
             text: doc.getText().slice(start, end),
+            start,
+            end,
             type,
             modifiers: SEMANTIC_TOKEN_MODIFIERS.filter((_, index) => modifierBits & (1 << index))
         })
     }
     return tokens
+}
+
+function decodeSemanticTokens(doc: ReturnType<typeof createDoc>, data: number[]) {
+    return decodeSemanticTokenRanges(doc, data).map(({ text, type, modifiers }) => ({ text, type, modifiers }))
 }
 
 function renderTokens(content: string, ext: Parameters<typeof createDoc>[0] = 'tsx', settings?: ConstructorParameters<typeof CSSLanguageService>[0]) {
@@ -547,6 +553,101 @@ test.concurrent('does not render non-entry @master at-rules as CSS directives', 
     `, 'css')
 
     expect(tokens).not.toContainEqual({ text: '@master', type: 'keyword', modifiers: ['directive'] })
+})
+
+test.concurrent('does not render semantic tokens for native CSS-only documents', () => {
+    const { tokens } = renderTokens(`
+        /* @theme should remain a native comment */
+        @keyframes fade {
+            from {
+                opacity: 0;
+                transform: translateX(0);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(var(--distance));
+            }
+        }
+
+        @media (width >= 48rem) {
+            .card:hover::before {
+                --distance: calc(100% - 1rem);
+                color: red;
+                content: "@utilities";
+            }
+        }
+    `, 'css')
+
+    expect(tokens).toEqual([])
+})
+
+test.concurrent('renders CSS document semantic tokens only inside Master directive ranges', () => {
+    const nativeBefore = [
+        '@keyframes fade {',
+        '    from { opacity: 0; transform: translateX(0); }',
+        '    to { opacity: 1; transform: translateX(var(--distance)); }',
+        '}',
+        '.card:hover::before { color: red; }'
+    ].join('\n')
+    const themeDirective = [
+        '@theme {',
+        '    --color-primary: $color-blue-60/.8;',
+        '}'
+    ].join('\n')
+    const nativeBetween = [
+        '@media (width >= 48rem) {',
+        '    .panel { color: red; }',
+        '}'
+    ].join('\n')
+    const utilitiesDirective = [
+        '@utilities {',
+        '    text-<left|right> {',
+        '        text-align: --value();',
+        '    }',
+        '}'
+    ].join('\n')
+    const content = [
+        nativeBefore,
+        themeDirective,
+        nativeBetween,
+        utilitiesDirective
+    ].join('\n\n')
+    const doc = createDoc('css', content)
+    const languageService = new CSSLanguageService()
+    const semanticTokens = languageService.renderSemanticTokens(doc)
+    const tokens = decodeSemanticTokenRanges(doc, semanticTokens?.data ?? [])
+    const masterRanges = [themeDirective, utilitiesDirective].map((directive) => {
+        const start = content.indexOf(directive)
+        return { start, end: start + directive.length }
+    })
+    const isInsideMasterRange = ({ start, end }: { start: number, end: number }) =>
+        masterRanges.some((range) => range.start <= start && end <= range.end)
+    const expectNoTokenOverlaps = (text: string, from = 0) => {
+        const start = content.indexOf(text, from)
+        expect(start).toBeGreaterThanOrEqual(0)
+        const end = start + text.length
+        expect(tokens.some((token) => token.start < end && token.end > start)).toBe(false)
+    }
+
+    expect(tokens.length).toBeGreaterThan(0)
+    expect(tokens.every(isInsideMasterRange)).toBe(true)
+    expect(tokens.map(({ text }) => text)).toEqual(expect.arrayContaining([
+        '@theme',
+        '--color-primary',
+        '$color-blue-60',
+        '@utilities',
+        'text-',
+        '--value'
+    ]))
+    expectNoTokenOverlaps('@keyframes')
+    expectNoTokenOverlaps('fade')
+    expectNoTokenOverlaps('from')
+    expectNoTokenOverlaps('to')
+    expectNoTokenOverlaps('.card')
+    expectNoTokenOverlaps('opacity')
+    expectNoTokenOverlaps('translateX')
+    expectNoTokenOverlaps('red')
 })
 
 test.concurrent('renders CSS directives in SCSS-like sources', () => {
