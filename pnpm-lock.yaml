@@ -1562,6 +1562,9 @@ importers:
       '@types/vscode':
         specifier: ^1.118.0
         version: 1.118.0
+      shiki:
+        specifier: ^4.0.2
+        version: 4.0.2
       vscode-languageserver:
         specifier: ^9.0.1
         version: 9.0.1

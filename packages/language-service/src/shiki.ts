@@ -5,6 +5,14 @@ import type { Settings } from './settings'
 import { collectHighlightTokenItems } from './features/render-semantic-tokens'
 import type { HighlightTokenItem, HighlightTokenRole } from './semantic/highlight'
 import { collectClassListHighlightTokenItems } from './semantic/tokenize-class'
+export {
+    MASTER_CSS_SHIKI_INJECT_TO,
+    MASTER_CSS_SHIKI_SCOPE_NAME,
+    MASTER_CSS_TEXTMATE_GRAMMAR,
+    createMasterCSSShikiLanguageRegistration,
+    masterCSSShikiLanguage,
+    type MasterCSSTextMateGrammar
+} from './shiki/textmate'
 
 type SemanticTokenType = HighlightTokenItem['type']
 type SemanticTokenModifier = typeof SEMANTIC_TOKEN_MODIFIERS[number]
@@ -26,7 +34,7 @@ interface ShikiPosition {
     character: number
 }
 
-export interface MasterCSSShikiDecoration {
+interface ShikiDecoration {
     start: number | ShikiPosition
     end: number | ShikiPosition
     tagName?: string
@@ -35,29 +43,29 @@ export interface MasterCSSShikiDecoration {
     transform?: (element: unknown, type: 'wrapper' | 'line' | 'token') => unknown | undefined
 }
 
-export interface MasterCSSShikiCodeToHastOptions {
+interface ShikiCodeToHastOptions {
     lang?: string
-    decorations?: MasterCSSShikiDecoration[]
+    decorations?: ShikiDecoration[]
     [key: string]: unknown
 }
 
-export interface MasterCSSShikiCodeToTokensResult {
+interface ShikiCodeToTokensResult {
     tokens: ShikiToken[][]
 }
 
-export interface MasterCSSShikiTransformerContext {
+interface ShikiTransformerContext {
     source: string
-    options: MasterCSSShikiCodeToHastOptions
-    codeToTokens?: (code: string, options: MasterCSSShikiCodeToHastOptions) => MasterCSSShikiCodeToTokensResult
+    options: ShikiCodeToHastOptions
+    codeToTokens?: (code: string, options: ShikiCodeToHastOptions) => ShikiCodeToTokensResult
 }
 
-export interface MasterCSSShikiTransformer {
+interface ShikiTransformer {
     name: string
     enforce: 'post'
-    tokens(this: MasterCSSShikiTransformerContext, tokens: ShikiToken[][]): ShikiToken[][] | undefined
+    tokens(this: ShikiTransformerContext, tokens: ShikiToken[][]): ShikiToken[][] | undefined
 }
 
-export interface MasterCSSShikiSemanticDecoration extends Omit<MasterCSSShikiDecoration, 'start' | 'end'> {
+export interface MasterCSSShikiDecoration extends Omit<ShikiDecoration, 'start' | 'end'> {
     start: number
     end: number
     type: SemanticTokenType
@@ -65,7 +73,7 @@ export interface MasterCSSShikiSemanticDecoration extends Omit<MasterCSSShikiDec
     modifiers: SemanticTokenModifier[]
 }
 
-export interface MasterCSSShikiSemanticTokensOptions {
+export interface MasterCSSShikiOptions {
     /**
      * Reuse an existing language service when the caller already owns a
      * configured instance.
@@ -131,6 +139,28 @@ export interface MasterCSSShikiSemanticTokensOptions {
 
 const shikiLanguageIds: Record<string, string> = {
     html: 'html',
+    'angular-html': 'angular-html',
+    js: 'javascript',
+    javascript: 'javascript',
+    jsx: 'jsx',
+    javascriptreact: 'jsx',
+    ts: 'typescript',
+    typescript: 'typescript',
+    tsx: 'tsx',
+    typescriptreact: 'tsx',
+    css: 'css',
+    scss: 'scss',
+    less: 'less',
+    postcss: 'postcss',
+    vue: 'vue',
+    svelte: 'svelte',
+    astro: 'astro',
+    md: 'markdown',
+    markdown: 'markdown',
+    mdx: 'mdx'
+}
+const languageServiceLanguageIds: Record<string, string> = {
+    html: 'html',
     'angular-html': 'html',
     js: 'javascript',
     javascript: 'javascript',
@@ -143,6 +173,7 @@ const shikiLanguageIds: Record<string, string> = {
     css: 'css',
     scss: 'scss',
     less: 'less',
+    postcss: 'postcss',
     vue: 'vue',
     svelte: 'svelte',
     astro: 'astro',
@@ -150,20 +181,34 @@ const shikiLanguageIds: Record<string, string> = {
     markdown: 'markdown',
     mdx: 'mdx'
 }
+const masterCSSClassListLanguageIds = new Set(['mcss', 'master-css'])
+const masterCSSShikiSupportedLanguageIds = new Set([
+    ...Object.keys(shikiLanguageIds),
+    ...Object.values(shikiLanguageIds)
+])
 
-function resolveLanguageId(lang?: string) {
+export function isMasterCSSClassListLanguage(lang?: string) {
+    return Boolean(lang && masterCSSClassListLanguageIds.has(lang))
+}
+
+export function getMasterCSSShikiLanguageId(lang?: string) {
     if (!lang) return
     return shikiLanguageIds[lang] ?? lang
 }
 
+export function isMasterCSSShikiSupportedLanguage(lang?: string) {
+    const languageId = getMasterCSSShikiLanguageId(lang)
+    return Boolean(languageId && masterCSSShikiSupportedLanguageIds.has(languageId))
+}
+
 function createShikiDocument(code: string, lang?: string) {
-    const languageId = resolveLanguageId(lang)
+    const languageId = lang ? languageServiceLanguageIds[lang] ?? lang : undefined
     if (!languageId) return
     const uriLang = lang?.replace(/[^\w.-]/g, '-') || 'txt'
     return TextDocument.create(`file:///master-css-shiki.${uriLang}`, languageId, 0, code)
 }
 
-function createLanguageService(options: MasterCSSShikiSemanticTokensOptions) {
+function createLanguageService(options: MasterCSSShikiOptions) {
     if (options.languageService) return options.languageService
     return new CSSLanguageService({
         ...options.settings,
@@ -194,7 +239,7 @@ function resolveSemanticTokenStyle(
 
 function resolveHighlightTokenStyle(
     item: Pick<HighlightTokenItem, 'role' | 'type' | 'modifiers'>,
-    options: MasterCSSShikiSemanticTokensOptions
+    options: MasterCSSShikiOptions
 ) {
     const roleStyle = options.highlightRoleStyles?.[item.role]
     if (roleStyle) return stringifyStyle(roleStyle)
@@ -266,8 +311,8 @@ function mergeClassProperty(current: unknown, next: unknown) {
 
 function applySemanticDecorationToToken(
     token: ShikiToken,
-    decorations: MasterCSSShikiSemanticDecoration[],
-    resolveSyntaxStyle?: (token: ShikiToken, decoration: MasterCSSShikiSemanticDecoration, decorations: MasterCSSShikiSemanticDecoration[]) => Record<string, string> | undefined
+    decorations: MasterCSSShikiDecoration[],
+    resolveSyntaxStyle?: (token: ShikiToken, decoration: MasterCSSShikiDecoration, decorations: MasterCSSShikiDecoration[]) => Record<string, string> | undefined
 ) {
     const tokenStart = token.offset
     const tokenEnd = token.offset + token.content.length
@@ -344,8 +389,8 @@ function findTokenStyleAfter(tokens: ShikiToken[], previousContent: string, cont
 }
 
 function createCSSSyntaxStyleResolver(
-    context: MasterCSSShikiTransformerContext,
-    options: MasterCSSShikiSemanticTokensOptions
+    context: ShikiTransformerContext,
+    options: MasterCSSShikiOptions
 ) {
     if (options.matchCSSSyntaxStyles === false || typeof context.codeToTokens !== 'function') return
     try {
@@ -422,7 +467,7 @@ function createCSSSyntaxStyleResolver(
             'value.variable': variableStyle
         }
 
-        return (_token: ShikiToken, decoration: MasterCSSShikiSemanticDecoration) => {
+        return (_token: ShikiToken, decoration: MasterCSSShikiDecoration) => {
             return roleStyles[decoration.role]
         }
     } catch {
@@ -432,8 +477,8 @@ function createCSSSyntaxStyleResolver(
 
 function createSemanticTokenDecorations(
     tokens: HighlightTokenItem[],
-    options: MasterCSSShikiSemanticTokensOptions
-): MasterCSSShikiSemanticDecoration[] {
+    options: MasterCSSShikiOptions
+): MasterCSSShikiDecoration[] {
     const classPrefix = options.classPrefix ?? 'mcss-semantic'
     const includeDataAttributes = options.dataAttributes ?? true
     return tokens.map(({ start, end, type, role, modifiers = [] }) => {
@@ -466,34 +511,42 @@ function createSemanticTokenDecorations(
     })
 }
 
-export function createMasterCSSShikiSemanticTokenDecorations(
+export function createMasterCSSShikiDecorations(
     code: string,
-    options: MasterCSSShikiSemanticTokensOptions = {}
-): MasterCSSShikiSemanticDecoration[] {
-    const document = createShikiDocument(code, options.classList ? 'plaintext' : options.lang)
+    options: MasterCSSShikiOptions = {}
+): MasterCSSShikiDecoration[] {
+    const classList = options.classList ?? isMasterCSSClassListLanguage(options.lang)
+    const document = createShikiDocument(code, classList ? 'plaintext' : options.lang)
     if (!document) return []
     const languageService = createLanguageService(options)
-    const highlightTokens = options.classList
+    const highlightTokens = classList
         ? collectClassListHighlightTokenItems(languageService.css, code)
         : collectHighlightTokenItems.call(languageService, document)
     if (!highlightTokens.length) return []
     return createSemanticTokenDecorations(highlightTokens, options)
 }
 
-export function transformerMasterCSSSemanticTokens(
-    options: MasterCSSShikiSemanticTokensOptions = {}
-): MasterCSSShikiTransformer {
+export function transformerMasterCSS(
+    options: MasterCSSShikiOptions = {}
+): ShikiTransformer {
     return {
-        name: 'master-css:semantic-tokens',
+        name: 'master-css',
         enforce: 'post',
-        tokens(this: MasterCSSShikiTransformerContext, tokens) {
-            const decorations = createMasterCSSShikiSemanticTokenDecorations(this.source, {
+        tokens(this: ShikiTransformerContext, tokens) {
+            const lang = options.lang ?? this.options.lang
+            const classList = options.classList ?? isMasterCSSClassListLanguage(lang)
+            const decorations = createMasterCSSShikiDecorations(this.source, {
                 ...options,
-                lang: options.lang ?? this.options.lang
+                lang,
+                classList
             })
             if (!decorations.length) return
             const tokensSplitAtSemanticBoundaries = splitTokensAtOffsets(tokens, decorations.flatMap(({ start, end }) => [start, end]))
-            const resolveSyntaxStyle = createCSSSyntaxStyleResolver(this, options)
+            const resolveSyntaxStyle = createCSSSyntaxStyleResolver(this, {
+                ...options,
+                lang,
+                classList
+            })
             return tokensSplitAtSemanticBoundaries.map((line) => line.map((token) => applySemanticDecorationToToken(token, decorations, resolveSyntaxStyle)))
         }
     }

@@ -43,6 +43,7 @@
         "@types/culori": "^4.0.1",
         "@types/lodash.escaperegexp": "^4.1.9",
         "@types/vscode": "^1.118.0",
+        "shiki": "^4.0.2",
         "vscode-languageserver": "^9.0.1"
     },
     "sideEffects": false,

@@ -2,6 +2,12 @@ import editJsonFile from 'edit-json-file'
 import copyOrSymlink from '~/internal/utils/copy-or-symlink'
 import settings from '../language-server/src/settings'
 import { SEMANTIC_TOKEN_MODIFIERS } from '../language-service/src/common'
+import {
+    MASTER_CSS_SHIKI_INJECT_TO,
+    MASTER_CSS_SHIKI_SCOPE_NAME,
+    MASTER_CSS_TEXTMATE_GRAMMAR
+} from '../language-service/src/shiki/textmate'
+import { writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { createRequire } from 'node:module'
 import { fileURLToPath } from 'node:url'
@@ -9,7 +15,6 @@ import { fileURLToPath } from 'node:url'
 const pkg = editJsonFile(fileURLToPath(new URL('./package.json', import.meta.url)), { stringify_width: 4 })
 const require = createRequire(import.meta.url)
 const MASTER_CSS_GRAMMAR_PATH = './syntaxes/master-css.tmLanguage.json'
-const MASTER_CSS_GRAMMAR_SCOPE = 'master-css.directive.injection'
 
 pkg.unset('contributes.languages')
 pkg.unset('contributes.css')
@@ -22,14 +27,9 @@ pkg.set('files', [
 ])
 pkg.set('contributes.grammars', [
     {
-        scopeName: MASTER_CSS_GRAMMAR_SCOPE,
+        scopeName: MASTER_CSS_SHIKI_SCOPE_NAME,
         path: MASTER_CSS_GRAMMAR_PATH,
-        injectTo: [
-            'source.css',
-            'source.css.scss',
-            'source.css.less',
-            'source.css.postcss'
-        ]
+        injectTo: [...MASTER_CSS_SHIKI_INJECT_TO]
     }
 ])
 pkg.set('contributes.configurationDefaults', {
@@ -162,4 +162,8 @@ pkg.set('contributes.configuration', {
 
 pkg.save()
 
+writeFileSync(
+    fileURLToPath(new URL(MASTER_CSS_GRAMMAR_PATH, import.meta.url)),
+    `${JSON.stringify(MASTER_CSS_TEXTMATE_GRAMMAR, undefined, 4)}\n`
+)
 copyOrSymlink(join(dirname(require.resolve('css-tree/package.json')), 'data'), fileURLToPath(new URL('./data', import.meta.url)))
