@@ -1,9 +1,14 @@
 import type { Config } from 'techor'
 
-const presetDefaultPlanJSON = {
-    name: 'preset-default-plan-json',
+function isBundledJSONModule(id: string) {
+    return id.endsWith('/packages/preset/src/default-plan.json')
+        || /\/mdn-data\/css\/(?:properties|selectors|syntaxes)\.json$/.test(id)
+}
+
+const bundledJSONModules = {
+    name: 'bundled-json-modules',
     transform(code: string, id: string) {
-        if (!id.endsWith('/packages/preset/src/default-plan.json')) return
+        if (!isBundledJSONModule(id)) return
         return {
             code: `export default ${code};`,
             map: null
@@ -45,7 +50,7 @@ const config: Config = {
         esmShim: false,
         input: {
             plugins: [
-                presetDefaultPlanJSON,
+                bundledJSONModules,
                 externalNativePackages
             ]
         },
