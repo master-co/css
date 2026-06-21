@@ -22,7 +22,7 @@ Use `border-color:*` when only the border color should change.
 Use side aliases when only one edge should change.
 ```html
 <!-- @MARK bt:transparent -->
-<div class="b:1px|solid|line bt:transparent">
+<div class="b:1px|solid|gray-20 bt:transparent">
     No top border color
 </div>
 ```
@@ -46,17 +46,17 @@ Apply styles based on different states using [selectors](/guide/state-selectors)
 
 ## Customization
 ### Customize line colors
-Override a preset line color token when separators need a different mode-aware value.
+Define a project line color token when separators need a semantic, mode-aware value.
 ```css name=index.css
 @theme light {
-    --color-line-subtle: $color-slate-60/.2; /* [!code highlight] */
+    --color-line-divider: $color-slate-60/.2; /* [!code highlight] */
 }
 
 @theme dark {
-    --color-line-subtle: $color-gray-30/.2; /* [!code highlight] */
+    --color-line-divider: $color-gray-30/.2; /* [!code highlight] */
 }
 ```
 Apply the token to a border color.
 ```html
-<div class="b:1px|solid border-color:subtle"></div>
+<div class="b:1px|solid border-color:divider"></div>
 ```

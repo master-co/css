@@ -1,5 +1,5 @@
 ## Using colors [sr-only]
-Master CSS provides a P3-compatible raw palette, mode-aware base hue aliases, text hue aliases, and a small set of text and line roles. Use palette tokens such as `bg:blue-60` for direct swatches, hue aliases such as `bg:blue` for common color choices, `text:blue` for readable hue text, and roles such as `text:text` or `b:1px|solid|subtle` for basic foreground and separator color.
+Master CSS provides a P3-compatible raw palette, mode-aware base hue aliases, text hue aliases, and the `inverse` text role. Use palette tokens such as `bg:blue-60` for direct swatches, hue aliases such as `bg:blue` for common color choices, and text aliases such as `text:blue` or `text:neutral` for readable foreground color. Define project role tokens when foreground or separator color needs a semantic name.
 
 ### Default color palette [sr-only]
 <ColorPalette />
@@ -37,8 +37,20 @@ Use [variable modes](/guide/theme#modes) to define color roles for light and dar
 
 (o) The theme owns the mode-specific role.
 
+```css name=index.css
+@theme light {
+    --color-text-body: $color-neutral-70;
+    --color-line-divider: oklch(0% 0 none / 0.12);
+}
+
+@theme dark {
+    --color-text-body: $color-gray-30;
+    --color-line-divider: oklch(100% 0 none / 0.12);
+}
+```
+
 ```html
-<div class="text:text">...</div>
+<div class="text:body b:1px|solid|divider">...</div>
 ```
 
 Use conditional color classes when a one-off interaction genuinely differs by mode. For shared foreground or separator color, prefer a named token that can resolve differently per mode.
@@ -97,17 +109,13 @@ Palette step tokens are primitive values. They do not change between light and d
 <ExpandContent>
 | Token                                             | Descriptions                                                              |
 |---------------------------------------------------|---------------------------------------------------------------------------|
-| <Aa className="text:strong" />`strong` | Titles, headings, and emphasized fields |
-| <Aa className="text:text" />`text` | Body text and default content |
-| <Aa className="text:muted" />`muted` | Secondary labels, descriptions, and icons |
-| <Aa className="text:subtle" />`subtle` | Tertiary text and low-emphasis metadata |
-| <Aa className="text:disabled" />`disabled` | Disabled text and unavailable controls |
-| <Aa className="text:placeholder" />`placeholder` | Input placeholders |
+| <Aa className="text:neutral" />`neutral` | Mode-aware neutral foreground alias |
+| <Aa className="text:blue" />`blue` | Mode-aware hue foreground alias |
+| <Aa className="text:slate-70" />`slate-70` | Direct palette step |
 | <Aa className="text:inverse" />`inverse` | Text on inverse surfaces |
-| <Aa className="text:link" />`link` | Links |
 </ExpandContent>
 
-By default, theme modes [drive](/guide/theme#modes) text variables for light and dark foreground contrast.
+By default, theme modes [drive](/guide/theme#modes) text hue aliases for light and dark foreground contrast.
 <Demo $py={0} $px={0}>
     <DemoLight>
         <div className="text:yellow font:heavy font:9xl">M</div>
@@ -131,32 +139,41 @@ See the [color](/reference/color#use-custom-text-colors) reference for more deta
 
 ---
 
-## Line colors
-| Token                                                   | Descriptions                                                              |
-|---------------------------------------------------------|---------------------------------------------------------------------------|
-| <Bg className="outline:line" />`line` | Default borders and separators |
-| <Bg className="outline:strong" />`strong` | High-contrast borders |
-| <Bg className="outline:muted" />`muted` | Quiet borders inside dense UI |
-| <Bg className="outline:subtle" />`subtle` | Dividers, layout chrome, and soft outlines |
+## Border and line colors
+Preset border and outline colors resolve palette and color tokens by default. Define project `color-line-*` tokens when separators need semantic, mode-aware names.
 
-By default, theme modes [drive](/guide/theme#modes) line variables for light and dark separators.
+```css name=index.css
+@theme light {
+    --color-line-divider: oklch(0% 0 none / 0.12);
+}
+
+@theme dark {
+    --color-line-divider: oklch(100% 0 none / 0.12);
+}
+```
+
+```html
+<div class="b:1px|solid|divider">...</div>
+```
+
+Palette border colors are available without adding custom line tokens.
 
 <Demo $py={0} $px={0}>
     <DemoLight>
-        <div className="b:3x|solid|line size:24x"></div>
+        <div className="b:3x|solid|gray-20 size:24x"></div>
     </DemoLight>
     <DemoDark>
-        <div className="b:3x|solid|line size:24x"></div>
+        <div className="b:3x|solid|gray-20 size:24x"></div>
     </DemoDark>
 </Demo>
 ```html
 <div class="light">
-    <!-- @MARK b:3x|solid|line -->
-    <div class="b:3x|solid|line size:24x"></div>
+    <!-- @MARK b:3x|solid|gray-20 -->
+    <div class="b:3x|solid|gray-20 size:24x"></div>
 </div>
 <div class="dark">
-    <!-- @MARK b:3x|solid|line -->
-    <div class="b:3x|solid|line size:24x"></div>
+    <!-- @MARK b:3x|solid|gray-20 -->
+    <div class="b:3x|solid|gray-20 size:24x"></div>
 </div>
 ```
 

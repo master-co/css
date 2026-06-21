@@ -29,7 +29,7 @@ In Master CSS, that vocabulary usually lives in the project CSS entry: `@theme` 
 ```
 
 ```html
-<section class="bg:white text:strong p:lg r:lg shadow:sm grid-cols:2@md">
+<section class="bg:white text:neutral p:lg r:lg shadow:sm grid-cols:2@md">
     <button class="bg:blue text:white px:md py:xs r:md bg:blue/.85:interactive">Save</button>
 </section>
 ```
@@ -61,7 +61,7 @@ Theme tokens are CSS custom property declarations inside `@theme` blocks. Write 
 @theme {
     --content-hash: " #";
     --color-blue: #4f46e5;
-    --color-text-strong: #111827;
+    --color-text-body: #111827;
     --spacing-lg: 1.5rem;
     --font-family-sans: Inter, ui-sans-serif, system-ui, sans-serif;
     --radius-lg: 1rem;
@@ -79,7 +79,7 @@ Theme tokens are CSS custom property declarations inside `@theme` blocks. Write 
 ```
 
 ### How namespaces are resolved
-A theme token name has the shape `<namespace>-<key>`. Master CSS resolves the namespace by longest prefix, so `color-line-subtle` belongs to `color-line`, not `color`.
+A theme token name has the shape `<namespace>-<key>`. Master CSS resolves the namespace by longest prefix, so `color-line-divider` belongs to `color-line`, not `color`.
 
 Namespaces come from these sources:
 
@@ -114,9 +114,9 @@ Utilities resolve token values from the namespace they use. The same short key c
 
 ```html
 <!-- @MARK bg:white --><!-- @MARK p:md --><!-- @MARK r:lg --><!-- @MARK font:sans -->
-<article class="bg:white text:strong p:md r:lg shadow:sm font:sans">
+<article class="bg:white text:neutral p:md r:lg shadow:sm font:sans">
     <h2 class="font:sans">Dashboard</h2>
-    <a class="text:link" href="/settings">Settings</a>
+    <a class="text:blue" href="/settings">Settings</a>
 </article>
 ```
 
@@ -126,7 +126,7 @@ Use `$` when a token should reference another token.
 ```css name=index.css
 @theme {
     --color-brand: #4f46e5;
-    --color-text-link: $color-brand;
+    --color-text-action: $color-brand;
 }
 ```
 
@@ -201,13 +201,13 @@ Mode-specific `@theme` blocks keep markup semantic while values change by mode.
 
 ```css name=index.css
 @theme light {
-    --color-text-strong: #111827;
+    --color-text-body: #111827;
     --color-blue: #4f46e5;
     --shadow-sm: 0 16px 40px rgb(15 23 42 / .12);
 }
 
 @theme dark {
-    --color-text-strong: #f9fafb;
+    --color-text-body: #f9fafb;
     --color-blue: #818cf8;
     --shadow-sm: 0 0 0 1px rgb(255 255 255 / .08), 0 16px 40px rgb(0 0 0 / .36);
 }
@@ -218,7 +218,7 @@ Mode-specific `@theme` blocks keep markup semantic while values change by mode.
 ```
 
 ```html
-<section class="bg:white text:strong shadow:sm">
+<section class="bg:white text:body shadow:sm">
     <button class="bg:blue text:white">Save</button>
 </section>
 ```
@@ -250,7 +250,7 @@ Use `mode-trigger: class` when your app switches modes manually. Put the active 
 <!-- @MARK dark -->
 <html class="dark">
     <body>
-        <div class="bg:white text:strong">...</div>
+        <div class="bg:white text:body">...</div>
     </body>
 </html>
 ```
@@ -327,7 +327,7 @@ Use selector variants anywhere Master CSS accepts a selector suffix:
 ```html
 <!-- @MARK :headings --><!-- @MARK :interactive --><!-- @MARK ::scrollbar -->
 <article class="font:semibold_:headings">
-    <button class="text:link:interactive">Save</button>
+    <button class="text:blue:interactive">Save</button>
     <div class="w:.5rem::scrollbar">...</div>
 </article>
 ```
@@ -343,7 +343,7 @@ Inside CSS-defined style rules, use `@variant` to apply selector variants instea
         @compose inline-flex align-items:center justify-content:center;
 
         @variant :interactive {
-            @compose text:link;
+            @compose text:blue;
         }
     }
 }

@@ -42,6 +42,18 @@ const removedVariableNames = [
     'color-accent',
     'color-focus',
     'color-selection',
+    'color-text',
+    'color-text-strong',
+    'color-text-muted',
+    'color-text-subtle',
+    'color-text-disabled',
+    'color-text-placeholder',
+    'color-text-link',
+    'color-text-link-hover',
+    'color-line',
+    'color-line-strong',
+    'color-line-muted',
+    'color-line-subtle',
     'color-success',
     'color-text-success',
     'color-line-success',
@@ -212,26 +224,14 @@ describe.concurrent('@master/css-preset design token parity', () => {
         }
     })
 
-    test('keeps only minimal text and line role tokens', () => {
-        expect(findVariable('color-text')).toMatchObject({
-            namespace: 'color',
-            key: 'text',
-            modes: expect.objectContaining({
-                light: expect.objectContaining({ value: '$color-neutral-70' }),
-                dark: expect.objectContaining({ value: '$color-gray-30' })
-            })
-        })
-        expect(findVariable('color-text-muted')).toMatchObject({
+    test('keeps only the inverse text role token', () => {
+        expect(findVariable('color-text-inverse')).toMatchObject({
             namespace: 'color-text',
-            key: 'muted'
-        })
-        expect(findVariable('color-line')).toMatchObject({
-            namespace: 'color',
-            key: 'line'
-        })
-        expect(findVariable('color-line-subtle')).toMatchObject({
-            namespace: 'color-line',
-            key: 'subtle'
+            key: 'inverse',
+            modes: expect.objectContaining({
+                light: expect.objectContaining({ value: '$color-white' }),
+                dark: expect.objectContaining({ value: '$color-black' })
+            })
         })
     })
 
@@ -259,8 +259,11 @@ describe.concurrent('@master/css-preset design token parity', () => {
         expect(css.create('text:2xl')?.text).toContain('font-size:var(--font-size-2xl)')
         expect(css.create('m:md')?.text).toContain('margin:var(--spacing-md)')
         expect(css.create('r:lg')?.text).toContain('border-radius:var(--radius-lg)')
-        expect(css.create('fg:muted')?.text).toContain('color:var(--color-text-muted)')
-        expect(css.create('b:subtle')?.text).toContain('border-color:var(--color-line-subtle)')
+        expect(css.create('text:inverse')?.text).toContain('color:var(--color-text-inverse)')
+        expect(css.create('text:muted')).toBeUndefined()
+        expect(css.create('bg:line')).toBeUndefined()
+        expect(css.create('fg:muted')?.text).not.toContain('var(--color-text-muted)')
+        expect(css.create('b:subtle')?.text).not.toContain('var(--color-line-subtle)')
         expect(css.create('bg:blue-60')?.text).toContain('background-color:var(--color-blue-60)')
         expect(css.create('shadow:sm')?.text).toContain('box-shadow:var(--shadow-sm)')
         expect(css.create('w:sm')?.text).toContain('width:var(--container-sm)')
@@ -278,5 +281,33 @@ describe.concurrent('@master/css-preset design token parity', () => {
         expect(css.create('b:line-blue')?.text).not.toContain('var(--color-line-blue)')
         expect(css.create('bg:blue-surface')).toBeUndefined()
         expect(css.text).not.toContain('null')
+    })
+
+    test('keeps project text and line role namespaces available', () => {
+        const manifest = JSON.parse(JSON.stringify(defaultManifest)) as MasterCSSManifest
+        manifest.variables = [
+            ...(manifest.variables || []),
+            {
+                name: 'color-text-body',
+                key: 'body',
+                namespace: 'color-text',
+                type: 'string',
+                value: '#111'
+            },
+            {
+                name: 'color-line-divider',
+                key: 'divider',
+                namespace: 'color-line',
+                type: 'string',
+                value: '#ddd'
+            }
+        ]
+
+        const css = createCSS(manifest)
+
+        expect(css.create('text:body')?.text).toBe('.text\\:body{color:var(--color-text-body)}')
+        expect(css.create('border-color:divider')?.text).toBe('.border-color\\:divider{border-color:var(--color-line-divider)}')
+        expect(css.create('b:1px|solid|divider')?.text).toBe('.b\\:1px\\|solid\\|divider{border:1px solid var(--color-line-divider)}')
+        expect(css.create('outline:1px|solid|divider')?.text).toBe('.outline\\:1px\\|solid\\|divider{outline:1px solid var(--color-line-divider)}')
     })
 })

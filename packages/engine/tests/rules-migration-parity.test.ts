@@ -25,7 +25,7 @@ const migratedRuleExpectations = [
             ["bg:light-dark(#000,#fff)", "background-color:light-dark(#000,#fff)"],
             ["bg:#fff", "background-color:#fff"],
             ["bg:transparent", "background-color:transparent"],
-            ["bg:line", "background-color:var(--color-line)"],
+            ["bg:blue", "background-color:var(--color-blue)"],
             ["bg-clip-border", "background-clip:border-box"],
             ["bg:url('#test')", "background-image:url('#test')"],
             ["bg:linear-gradient(45deg,#f3ec78,#af4261)", "background-image:linear-gradient(45deg,#f3ec78,#af4261)"],
@@ -34,12 +34,11 @@ const migratedRuleExpectations = [
     {
         source: "packages/core/tests/rules/border-color.test.ts",
         cases: [
-            ["b:subtle", "border-color:var(--color-line-subtle)"],
             ["b:blue-50", "border-color:var(--color-blue-50)"],
             ["b:rgb(0,0,0,0.75)", "border-color:rgb(0,0,0,0.75)"],
             ["bb:rgb(0,0,0,0.75)", "border-bottom-color:rgb(0,0,0,0.75)"],
             ["bt:rgb(0,0,0,0.75)", "border-top-color:rgb(0,0,0,0.75)"],
-            ["bl:line-muted", "border-left-color:var(--color-line-muted)"],
+            ["bl:blue-50", "border-left-color:var(--color-blue-50)"],
             ["bl:rgb(0,0,0,0.75)", "border-left-color:rgb(0,0,0,0.75)"],
             ["br:rgb(0,0,0,0.75)", "border-right-color:rgb(0,0,0,0.75)"],
         ]
@@ -100,9 +99,9 @@ const migratedRuleExpectations = [
             ["bt:1px", "border-top-width:1px"],
             ["bx:1px", "border-inline-width:1px"],
             ["by:1px", "border-block-width:1px"],
-            ["b:line", "border-color:var(--color-line)"],
-            ["bx:line", "border-inline-color:var(--color-line)"],
-            ["by:line", "border-block-color:var(--color-line)"],
+            ["b:gray-20", "border-color:var(--color-gray-20)"],
+            ["bx:gray-20", "border-inline-color:var(--color-gray-20)"],
+            ["by:gray-20", "border-block-color:var(--color-gray-20)"],
             ["b:1px|solid", "border:1px solid"],
             ["border:1px|solid", "border:1px solid"],
             ["bt:1px|solid", "border-top:1px solid"],
@@ -140,7 +139,6 @@ const migratedRuleExpectations = [
         cases: [
             ["color:rgb(255,255,255)", "color:rgb(255,255,255)"],
             ["fg:#fff", "color:#fff"],
-            ["fg:strong", "color:var(--color-text-strong)"],
             ["fg:blue-50", "color:var(--color-blue-50)"],
             ["fg:transparent", "color:transparent"],
             ["fg:inherit", "color:inherit"],
@@ -208,8 +206,7 @@ const migratedRuleExpectations = [
         source: "packages/core/tests/rules/outline.test.ts",
         cases: [
             ["outline:transparent", "outline-color:transparent"],
-            ["outline:line", "outline-color:var(--color-line)"],
-            ["outline:$line", "outline-color:var(--color-line)"],
+            ["outline:gray-20", "outline-color:var(--color-gray-20)"],
             ["outline:1px|solid", "outline:1px solid"],
             ["outline-solid", "outline-style:solid"],
             ["outline-medium", "outline-width:medium"],

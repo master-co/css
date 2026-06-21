@@ -29,11 +29,11 @@ Apply the custom color:
 ```
 Apply the defined `text-*` variables using the inherited rules <TextHeirs />.
 ```html
-<!-- @MARK text:text -->
+<!-- @MARK text:primary -->
 <html class="light">
-    <body class="text:text"></body> <!-- [!code highlight] -->
-    <body class="text:text">equals</body>
-    <body class="text:$text">equals</body>
+    <body class="text:primary"></body> <!-- [!code highlight] -->
+    <body class="text:primary">equals</body>
+    <body class="text:$text-primary">equals</body>
 </html>
 ```
 (x) Use `text:color` for foreground color. Use [text fill color](/reference/text-fill-color) only when you need the WebKit text fill property.
@@ -42,8 +42,8 @@ Apply the defined `text-*` variables using the inherited rules <TextHeirs />.
 ```
 Besides inheriting the above rules, you can use `text-*` to access global text color variables in other syntax.
 ```html
-<!-- @MARK stroke:text-muted -->
-<svg class="stroke:text-muted"></svg>
+<!-- @MARK stroke:text-primary -->
+<svg class="stroke:text-primary"></svg>
 ```
 To escape inherited text colors, use `$color-blue` to apply the base hue token instead of a text color token.
 ```html

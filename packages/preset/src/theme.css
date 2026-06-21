@@ -636,22 +636,7 @@
     --color-text-crimson: $color-crimson-60;
     --color-text-red: $color-red-60;
 
-    /* Text */
-    --color-text: $color-neutral-70;
-    --color-text-strong: $color-neutral-100;
-    --color-text-muted: $color-neutral-60;
-    --color-text-subtle: $color-neutral-50;
-    --color-text-disabled: $color-neutral-40;
-    --color-text-placeholder: $color-neutral-40;
     --color-text-inverse: $color-white;
-    --color-text-link: $color-blue-60;
-    --color-text-link-hover: $color-blue-70;
-
-    /* Lines */
-    --color-line: oklch(0% 0 none / 0.12);
-    --color-line-strong: oklch(0% 0 none / 0.18);
-    --color-line-muted: oklch(0% 0 none / 0.09);
-    --color-line-subtle: oklch(0% 0 none / 0.06);
 }
 
 /* Dark mode colors */
@@ -711,22 +696,7 @@
     --color-text-crimson: $color-crimson-30;
     --color-text-red: $color-red-30;
 
-    /* Text */
-    --color-text: $color-gray-30;
-    --color-text-strong: $color-white;
-    --color-text-muted: $color-gray-40;
-    --color-text-subtle: $color-gray-50;
-    --color-text-disabled: $color-gray-60;
-    --color-text-placeholder: $color-gray-60;
     --color-text-inverse: $color-black;
-    --color-text-link: $color-blue-30;
-    --color-text-link-hover: $color-blue-20;
-
-    /* Lines */
-    --color-line: oklch(100% 0 none / 0.12);
-    --color-line-strong: oklch(100% 0 none / 0.18);
-    --color-line-muted: oklch(100% 0 none / 0.09);
-    --color-line-subtle: oklch(100% 0 none / 0.06);
 }
 
 /* Inline aliases */
