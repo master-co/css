@@ -365,8 +365,10 @@ test('highlights custom variants, nested selectors, queries, and values', () => 
 test('highlights detailed Master directive syntax without misclassifying native pieces', () => {
     const tokens = tokenize(`
         @theme static brand {
+            /* Font families */
             --color-primary: $color-blue-60/.8;
             --radius-card: 1rem;
+            --tracking-tightest: -0.072em;
         }
 
         @source not required "src/**/*.{ts,tsx}";
@@ -401,8 +403,11 @@ test('highlights detailed Master directive syntax without misclassifying native 
 
     expectScope(tokens, 'static', 'storage.modifier.master-css')
     expectScope(tokens, 'brand', 'support.constant.property-value.master-css')
+    expectSomeScope(tokens, 'Font families', 'comment.block.css')
     expectScope(tokens, '--color-primary', 'variable.css.custom-property.master-css')
     expectScope(tokens, '$color-blue-60', 'variable.other.master-css')
+    expectScope(tokens, '-0.072', 'constant.numeric.css')
+    expectScope(tokens, 'em', 'keyword.other.unit.em.css')
     expectScope(tokens, 'dialog-open', 'entity.other.attribute-name.class.master-css')
     expectScope(tokens, 'bg', 'support.type.property-name.master-css')
     expectScope(tokens, 'primary', 'support.constant.property-value.master-css')

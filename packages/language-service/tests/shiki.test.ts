@@ -100,6 +100,18 @@ const shikiProbeTheme = {
             }
         },
         {
+            scope: 'constant.numeric.css',
+            settings: {
+                foreground: '#ffaa00'
+            }
+        },
+        {
+            scope: 'keyword.other.unit',
+            settings: {
+                foreground: '#00ffaa'
+            }
+        },
+        {
             scope: 'entity.other.attribute-name.class.master-css',
             settings: {
                 foreground: '#ff00ff'
@@ -178,7 +190,8 @@ test.concurrent('keeps guide theme snippets correct with TextMate only', async (
     expect(tokenColor('theme')).toBe('#ff0000')
     expect(tokenColor('light')).toBe('#0000ff')
     expect(tokenColor('/* Font families */')).toBe('#6272a4')
-    expect(tokenColor('-0.072em')).toBe('#111111')
+    expect(tokenColor('-0.072')).toBe('#ffaa00')
+    expect(tokenColor('em')).toBe('#00ffaa')
 })
 
 test.concurrent('attaches guide theme semantic metadata without changing styles when scope matching is disabled', () => {
@@ -209,23 +222,10 @@ test.concurrent('attaches guide theme semantic metadata without changing styles 
             content: '--tracking-tightest',
             htmlStyle: { color: 'host' },
             className: 'mcss-semantic mcss-semantic-variable mcss-semantic-role-theme-variable'
-        }),
-        expect.objectContaining({
-            content: '-',
-            htmlStyle: { color: 'host' },
-            className: 'mcss-semantic mcss-semantic-operator mcss-semantic-role-value-operator'
-        }),
-        expect.objectContaining({
-            content: '0.072',
-            htmlStyle: { color: 'host' },
-            className: 'mcss-semantic mcss-semantic-number mcss-semantic-role-value-number'
-        }),
-        expect.objectContaining({
-            content: 'em',
-            htmlStyle: { color: 'host' },
-            className: 'mcss-semantic mcss-semantic-enumMember mcss-semantic-role-value-unit mcss-semantic-enumMember-unit'
         })
     ]))
+    expect(tokens?.some((token) => typeof token.className === 'string' && token.className.includes('mcss-semantic-role-value-number'))).toBe(false)
+    expect(tokens?.some((token) => typeof token.className === 'string' && token.className.includes('mcss-semantic-role-value-unit'))).toBe(false)
     expect(tokens?.some((token) => token.content.includes('Font families') && token.className)).toBe(false)
 })
 
@@ -259,23 +259,10 @@ test.concurrent('resolves guide theme semantic metadata through shared scope sty
             content: '--tracking-tightest',
             htmlStyle: { color: 'variable' },
             className: 'mcss-semantic mcss-semantic-variable mcss-semantic-role-theme-variable'
-        }),
-        expect.objectContaining({
-            content: '-',
-            htmlStyle: { color: 'operator' },
-            className: 'mcss-semantic mcss-semantic-operator mcss-semantic-role-value-operator'
-        }),
-        expect.objectContaining({
-            content: '0.072',
-            htmlStyle: { color: 'number' },
-            className: 'mcss-semantic mcss-semantic-number mcss-semantic-role-value-number'
-        }),
-        expect.objectContaining({
-            content: 'em',
-            htmlStyle: { color: 'unit' },
-            className: 'mcss-semantic mcss-semantic-enumMember mcss-semantic-role-value-unit mcss-semantic-enumMember-unit'
         })
     ]))
+    expect(tokens?.some((token) => typeof token.className === 'string' && token.className.includes('mcss-semantic-role-value-number'))).toBe(false)
+    expect(tokens?.some((token) => typeof token.className === 'string' && token.className.includes('mcss-semantic-role-value-unit'))).toBe(false)
 })
 
 test.concurrent('does not create Master Shiki decorations for native-only CSS', () => {

@@ -124,7 +124,7 @@ export const MASTER_CSS_TEXTMATE_GRAMMAR: MasterCSSTextMateGrammar = {
                     },
                     "patterns": [
                         {
-                            "include": "#master-block"
+                            "include": "#master-theme-block"
                         },
                         {
                             "include": "#master-theme-prelude"
@@ -209,6 +209,48 @@ export const MASTER_CSS_TEXTMATE_GRAMMAR: MasterCSSTextMateGrammar = {
                 }
             ]
         },
+        "master-theme-value": {
+            "patterns": [
+                {
+                    "match": "--value(?=\\()",
+                    "name": "support.function.misc.master-css"
+                },
+                {
+                    "match": "\\$[_a-zA-Z-][_a-zA-Z0-9-]*",
+                    "name": "variable.other.master-css"
+                }
+            ]
+        },
+        "master-theme-declaration": {
+            "patterns": [
+                {
+                    "begin": "(--[_a-zA-Z-][_a-zA-Z0-9-]*)(\\s*)(:)",
+                    "beginCaptures": {
+                        "1": {
+                            "name": "variable.css.custom-property.master-css"
+                        },
+                        "3": {
+                            "name": "punctuation.separator.key-value.css"
+                        }
+                    },
+                    "contentName": "meta.property-value.css",
+                    "end": "\\s*(;)|\\s*(?=\\})",
+                    "endCaptures": {
+                        "1": {
+                            "name": "punctuation.terminator.rule.css"
+                        }
+                    },
+                    "patterns": [
+                        {
+                            "include": "#master-theme-value"
+                        },
+                        {
+                            "include": "source.css#property-values"
+                        }
+                    ]
+                }
+            ]
+        },
         "master-preserve-prelude": {
             "patterns": [
                 {
@@ -277,6 +319,38 @@ export const MASTER_CSS_TEXTMATE_GRAMMAR: MasterCSSTextMateGrammar = {
                         {
                             "match": "[_a-zA-Z-][_a-zA-Z0-9-]*",
                             "name": "support.constant.property-value.master-css"
+                        }
+                    ]
+                }
+            ]
+        },
+        "master-theme-block": {
+            "patterns": [
+                {
+                    "begin": "\\{",
+                    "beginCaptures": {
+                        "0": {
+                            "name": "punctuation.section.master-css"
+                        }
+                    },
+                    "end": "\\}",
+                    "endCaptures": {
+                        "0": {
+                            "name": "punctuation.section.master-css"
+                        }
+                    },
+                    "patterns": [
+                        {
+                            "include": "source.css#comment-block"
+                        },
+                        {
+                            "include": "#master-theme-declaration"
+                        },
+                        {
+                            "include": "#master-directive"
+                        },
+                        {
+                            "include": "#master-block"
                         }
                     ]
                 }
