@@ -35,6 +35,7 @@ pnpm --filter @master/css-runtime e2e
 pnpm --filter @master/css-server test
 pnpm --filter @master/css-extractor test
 pnpm --filter @master/css.vite test
+pnpm --filter @master/css-language test
 pnpm --filter @master/css-language-service test
 pnpm --filter @master/css-language-server test
 pnpm --filter @master/eslint-plugin-css test

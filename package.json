@@ -63,6 +63,7 @@
         "@master/css-plan": "workspace:^",
         "@master/css-extractor": "workspace:^",
         "@master/css-integration": "workspace:^",
+        "@master/css-language": "workspace:^",
         "@master/css-language-server": "workspace:^",
         "@master/css-language-service": "workspace:^",
         "@master/css-lexer": "workspace:^",

@@ -19,6 +19,7 @@
     "dependencies": {
         "@master/css": "workspace:^",
         "@master/css-compiler": "workspace:^",
+        "@master/css-language": "workspace:^",
         "@master/css-plan": "workspace:^",
         "@master/css-language-service": "workspace:^",
         "@techor/extend": "^3.2.5",

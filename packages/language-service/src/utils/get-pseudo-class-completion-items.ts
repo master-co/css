@@ -1,4 +1,4 @@
-import { MasterCSS, createDefaultCSS, generateCSS } from '../master-css'
+import { MasterCSS, createDefaultCSS, generateCSS } from '@master/css-language'
 import { type CompletionItem, CompletionItemKind } from 'vscode-languageserver-protocol'
 import sortCompletionItems from './sort-completion-items'
 import createCSSMarkdownDocumentation from './create-css-markdown-documentation'

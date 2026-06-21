@@ -4,10 +4,10 @@ import { beforeAll, expect, test } from 'vitest'
 import { INITIAL, Registry, parseRawGrammar } from 'vscode-textmate'
 import { createOnigScanner, createOnigString, loadWASM } from 'vscode-oniguruma'
 import cssGrammars from '@shikijs/langs/css'
-import { MASTER_CSS_TEXTMATE_GRAMMAR } from '../../language-service/src/shiki/textmate'
+import { MASTER_CSS_TEXTMATE_GRAMMAR } from '../../language/src/shiki/textmate'
 
 const require = createRequire(import.meta.url)
-const grammarPath = require.resolve('@master/css-language-service/syntaxes/master-css.tmLanguage.json')
+const grammarPath = require.resolve('@master/css-language/syntaxes/master-css.tmLanguage.json')
 const grammarScope = 'master-css.directive.injection'
 const cssGrammarScope = 'source.css'
 const grammarSource = readFileSync(grammarPath, 'utf8')
@@ -50,7 +50,7 @@ beforeAll(async () => {
     injectedCSSGrammar = await injectedCSSRegistry.loadGrammar(cssGrammarScope)
 })
 
-test('keeps shared grammar asset in sync with the language-service Shiki registration', () => {
+test('keeps shared grammar asset in sync with the language Shiki registration', () => {
     expect(sharedGrammar).toEqual(MASTER_CSS_TEXTMATE_GRAMMAR)
 })
 

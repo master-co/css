@@ -1,11 +1,23 @@
 import type { TextDocument } from 'vscode-languageserver-textdocument'
 import type { Position } from 'vscode-languageserver-protocol'
-import type { Settings } from '../settings'
 import findMatchingPairs from './find-matching-brackets'
 import escapeRegexp from 'lodash.escaperegexp'
-import type { ClassPosition } from '../core'
 import { parseSync, visitorKeys } from 'oxc-parser'
 import { collectCSSDirectiveRanges } from '@master/css-lexer'
+
+export interface ClassPosition {
+    range: { start: number, end: number }
+    contextRange: { start: number, end: number }
+    raw: string
+    token: string
+}
+
+export interface ClassPositionSettings {
+    classAttributes?: string[]
+    classFunctions?: string[]
+    classDeclarations?: string[]
+    classAttributeBindings?: Record<string, [string, string] | false>
+}
 
 export interface GetClassPositionsOptions {
     position?: Position
@@ -280,7 +292,7 @@ function getOxcSource(textDocument: TextDocument) {
     return textDocument.uri.split(/[?#]/)[0] || 'document.js'
 }
 
-function hasClassPositionLookaround(text: string, settings: Settings) {
+function hasClassPositionLookaround(text: string, settings: ClassPositionSettings) {
     for (const eachClassAttribute of settings.classAttributes ?? []) {
         if (new RegExp(`${escapeRegexp(eachClassAttribute)}\\s*=`).test(text)) return true
     }
@@ -491,7 +503,7 @@ function collectOxcClassStrings(
 
 function createOxcClassPositions(
     textDocument: TextDocument,
-    settings: Settings
+    settings: ClassPositionSettings
 ): CachedOxcClassPositions {
     const source = textDocument.getText()
     let parseResult: ReturnType<typeof parseSync>
@@ -589,7 +601,7 @@ function createOxcClassPositions(
 
 function getOxcClassPositions(
     textDocument: TextDocument,
-    settings: Settings,
+    settings: ClassPositionSettings,
     options: GetClassPositionsOptions,
     lookaroundText: string,
     accept?: ClassPositionAccept
@@ -620,7 +632,7 @@ function getOxcClassPositions(
 
 export default function getClassPositions(
     textDocument: TextDocument,
-    settings: Settings,
+    settings: ClassPositionSettings,
     options: GetClassPositionsOptions = {}
 ): ClassPosition[] {
     const sourceText = textDocument.getText()

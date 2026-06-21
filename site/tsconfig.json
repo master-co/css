@@ -37,6 +37,8 @@
             "@master/css-compiler/*": [ "../node_modules/@master/css-compiler/src/*" ],
             "@master/css-integration": [ "../node_modules/@master/css-integration/src" ],
             "@master/css-integration/*": [ "../node_modules/@master/css-integration/src/*" ],
+            "@master/css-language": [ "../node_modules/@master/css-language/src" ],
+            "@master/css-language/*": [ "../node_modules/@master/css-language/src/*" ],
             "@master/css-language-service": [ "../node_modules/@master/css-language-service/src" ],
             "@master/css-language-service/*": [ "../node_modules/@master/css-language-service/src/*" ],
             "@master/css.next": [ "../node_modules/@master/css.next/src" ],

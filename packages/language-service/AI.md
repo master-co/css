@@ -2,12 +2,12 @@
 
 ## Responsibility
 
-`@master/css-language-service` provides editor intelligence using plan-driven Master CSS knowledge. It finds class positions, returns completions, hover/generated CSS previews, color information, color presentations, and semantic token classifications.
+`@master/css-language-service` provides the stateful service wrapper for editor intelligence using plan-driven Master CSS knowledge. It owns service settings, feature gating, completion, hover/generated CSS previews, color information, color presentations, and `TextDocument` methods that delegate class-position scanning and semantic token classification to `@master/css-language`.
 
 ## Inputs And Outputs
 
 - Input: `TextDocument`, cursor positions, LSP request context, language service settings, optional MasterCSSPlan.
-- Output: completion items, hover docs, color info, color presentations, semantic tokens.
+- Output: completion items, hover docs, color info, color presentations, semantic token responses.
 
 ## Public APIs
 
@@ -26,24 +26,25 @@
 - `src/utils/get-query-completion-items.ts`
 - `src/utils/regex.ts`
 
-CSS directive lexical highlighting is TextMate-first. Language-service semantic tokens should only classify Master CSS class-list spans, including host class attributes/functions and CSS directive class-list spans such as bare `@compose` preludes or quoted `@safelist` strings. Master class strings consume lexer lexical tokens first, then language-service adds engine-backed semantic meaning through `css.generate()`. Do not route CSS directive highlighting through the full compiler pipeline.
+CSS directive lexical highlighting is TextMate-first and is implemented in `@master/css-language`. Language-service semantic token methods should remain thin wrappers around `@master/css-language` primitives. Do not route CSS directive highlighting through the full compiler pipeline.
 
-The canonical Master CSS TextMate grammar asset lives at `syntaxes/master-css.tmLanguage.json` in this package. Shiki imports this JSON directly, and VS Code contributes/copies the same package asset; do not reintroduce a generated VS Code-local grammar copy.
+The canonical Master CSS TextMate grammar asset lives in `@master/css-language/syntaxes/master-css.tmLanguage.json`. Do not reintroduce a language-service-local or VS Code-local grammar copy.
 
 ## Allowed Changes
 
-- Focused completion, hover, color, semantic token, or class-position fixes.
+- Focused completion, hover, color, or wrapper-level semantic token fixes.
 - Adding tests for new syntax support.
 
 ## Forbidden Without Explicit Request
 
 - Changing engine syntax behavior here.
 - Adding diagnostics here without coordinating language-server capabilities.
+- Reintroducing browser, Shiki, grammar, semantic tokenizer, or class-position scanner ownership here.
 - Broad regex rewrites without framework-specific tests.
 
 ## Risk Areas
 
-- `getClassPosition()` across JSX, Vue, Svelte, Astro, strings, and function calls.
+- `getClassPosition()` delegation across JSX, Vue, Svelte, Astro, strings, and function calls.
 - Completion trigger behavior.
 - Variable and color completion sorting.
 - Generated CSS in hover docs.

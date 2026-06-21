@@ -2,7 +2,7 @@ import { expect, test } from 'vitest'
 
 import CSSLanguageService from '../src/core'
 import createDoc from '../src/utils/create-doc'
-import { SEMANTIC_TOKEN_MODIFIERS, SEMANTIC_TOKEN_TYPES } from '../src'
+import { SEMANTIC_TOKEN_MODIFIERS, SEMANTIC_TOKEN_TYPES } from '@master/css-language'
 import { createPresetPlan } from './helpers/create-preset-plan'
 
 function decodeSemanticTokenRanges(doc: ReturnType<typeof createDoc>, data: number[]) {

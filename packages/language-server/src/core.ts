@@ -1,4 +1,4 @@
-import { createConnection, TextDocuments, InitializeParams, InitializeResult, WorkspaceFolder, Disposable, Connection, ClientCapabilities, TextDocumentChangeEvent, DidChangeConfigurationParams, HoverParams, CompletionParams, DocumentColorParams, ColorPresentationParams, RemoteConsole, SemanticTokensParams, TextDocumentPositionParams, DiagnosticSeverity, type Diagnostic, type DiagnosticRelatedInformation, type Range } from 'vscode-languageserver/node.js'
+import { createConnection, TextDocuments, InitializeParams, InitializeResult, WorkspaceFolder, Disposable, Connection, ClientCapabilities, TextDocumentChangeEvent, DidChangeConfigurationParams, HoverParams, CompletionParams, DocumentColorParams, ColorPresentationParams, RemoteConsole, SemanticTokensParams, TextDocumentPositionParams, DiagnosticSeverity, TextDocumentSyncKind, type Diagnostic, type DiagnosticRelatedInformation, type Range, type ServerCapabilities } from 'vscode-languageserver/node.js'
 import { TextDocument } from 'vscode-languageserver-textdocument'
 import path from 'node:path'
 import CSSLanguageService, { Settings as CSSLanguageServiceSettings } from '@master/css-language-service'
@@ -12,7 +12,16 @@ import { loadProjectPlan } from '@master/css-plan/load'
 import extend from '@techor/extend'
 import settings from './settings'
 import type { MasterCSSPlan } from '@master/css'
-import { SERVER_CAPABILITIES } from '@master/css-language-service'
+import {
+    AT_TRIGGER_CHARACTER,
+    DECLARATION_SEPARATOR_TRIGGER_CHARACTER,
+    GROUP_TRIGGER_CHARACTER,
+    INVOKED_TRIGGER_CHARACTERS,
+    QUERY_TRIGGER_CHARACTERS,
+    SELECTOR_TRIGGER_CHARACTERS,
+    VALUE_TRIGGER_CHARACTERS
+} from '@master/css-language-service/common'
+import { SEMANTIC_TOKENS_LEGEND } from '@master/css-language'
 import glob from 'fast-glob'
 import { URI } from 'vscode-uri'
 import { CSSDirectiveError, type CSSDirectiveSourceReference } from 'shared/css-directives'
@@ -27,6 +36,36 @@ export declare interface Workspace {
 
 export const ACTIVE_SEMANTIC_TOKENS_REQUEST = 'masterCSS/renderActiveSemanticTokens'
 export const DOCUMENT_SEMANTIC_TOKENS_REQUEST = 'masterCSS/renderDocumentSemanticTokens'
+
+const SERVER_CAPABILITIES: ServerCapabilities = {
+    textDocumentSync: TextDocumentSyncKind.Incremental,
+    completionProvider: {
+        resolveProvider: false,
+        workDoneProgress: false,
+        triggerCharacters: [
+            ...new Set([
+                ...INVOKED_TRIGGER_CHARACTERS,
+                ...VALUE_TRIGGER_CHARACTERS,
+                ...SELECTOR_TRIGGER_CHARACTERS,
+                ...QUERY_TRIGGER_CHARACTERS,
+                DECLARATION_SEPARATOR_TRIGGER_CHARACTER,
+                AT_TRIGGER_CHARACTER,
+                GROUP_TRIGGER_CHARACTER,
+            ])
+        ]
+    },
+    colorProvider: true,
+    hoverProvider: true,
+    semanticTokensProvider: {
+        legend: SEMANTIC_TOKENS_LEGEND,
+        full: true
+    },
+    workspace: {
+        workspaceFolders: {
+            supported: true,
+        },
+    }
+}
 
 const CSS_DIAGNOSTIC_LANGUAGE_IDS = new Set(['css', 'scss', 'less'])
 const SFC_DIAGNOSTIC_LANGUAGE_IDS = new Set(['vue', 'svelte', 'astro'])

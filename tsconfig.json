@@ -20,6 +20,8 @@
             "@master/css-integration/*": [ "./node_modules/@master/css-integration/src/*" ],
             "@master/css.vite": [ "./node_modules/@master/css.vite/src" ],
             "@master/css.webpack": [ "./node_modules/@master/css.webpack/src" ],
+            "@master/css-language": [ "./node_modules/@master/css-language/src" ],
+            "@master/css-language/*": [ "./node_modules/@master/css-language/src/*" ],
             "@master/css-language-server": [ "./node_modules/@master/css-language-server/src" ],
             "@master/css-language-service": [ "./node_modules/@master/css-language-service/src" ],
             "@master/css-language-service/*": [ "./node_modules/@master/css-language-service/src/*" ],

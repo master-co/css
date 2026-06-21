@@ -34,6 +34,12 @@ export function createDefaultCSS() {
     })
 }
 
+export function createLanguageCSS(plan: MasterCSSPlan = defaultPlan) {
+    return createCSS(plan, undefined, {
+        nativeDeclarationMatcher: matchesLanguageServiceNativeDeclaration
+    })
+}
+
 export function generateCSS(classNames: string[], css: MasterCSS = createDefaultCSS()) {
     const generatedCSS = createCSS(css.plan, undefined, {
         nativeDeclarationMatcher: matchesLanguageServiceNativeDeclaration

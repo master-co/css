@@ -1,9 +1,9 @@
 import { type CompletionItem, CompletionItemKind } from 'vscode-languageserver-protocol'
-import { MasterCSS, createDefaultCSS, type Variable, generateCSS } from '../master-css'
+import { MasterCSS, createDefaultCSS, type Variable, generateCSS } from '@master/css-language'
 import { builtinKeyAliases } from '@master/css-engine'
 import createCSSMarkdownDocumentation from './create-css-markdown-documentation'
 import sortCompletionItems from './sort-completion-items'
-import { getMdnPropertySyntax, getMdnPropertyValueNames } from './mdn-css-data'
+import { getMdnPropertySyntax, getMdnPropertyValueNames } from '@master/css-language'
 import { createCompletionIndex, type CompletionIndex } from './completion-index'
 
 const SCOPED_VARIABLE_PRIORITY = 'aaaa'

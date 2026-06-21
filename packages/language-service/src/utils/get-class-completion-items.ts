@@ -1,5 +1,5 @@
 import { type CompletionItem } from 'vscode-languageserver-protocol'
-import { MasterCSS, createDefaultCSS, generateCSS } from '../master-css'
+import { MasterCSS, createDefaultCSS, generateCSS } from '@master/css-language'
 import createCSSMarkdownDocumentation from './create-css-markdown-documentation'
 import { createCompletionIndex, type ClassCompletionEntry, type CompletionIndex } from './completion-index'
 

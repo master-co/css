@@ -22,7 +22,7 @@
 - Consume dependency-free source range helpers from `@master/css-lexer`; compiler-specific semantic directive parsing stays package-local.
 - Emit shared directive contracts from `shared/css-directives` for low-level consumers, and expose plan APIs for plan loading.
 - Do not reintroduce PostCSS in this package.
-- If CSS plan directive syntax is expanded or changed incompatibly, update any language-service semantic token classification that is affected in the same change when practical.
+- If CSS plan directive syntax is expanded or changed incompatibly, update any `@master/css-language` semantic token classification that is affected in the same change when practical.
 
 ## Directive MVP
 

@@ -3,7 +3,7 @@ import { instancePattern } from '../utils/regex'
 import CSSLanguageService from '../core'
 import type { TextDocument } from 'vscode-languageserver-textdocument'
 import Color from 'colorjs.io'
-import { UtilityType, type ValueComponent, type Variable } from '../master-css'
+import { UtilityType, type ValueComponent, type Variable } from '@master/css-language'
 
 function resolveVariableColorValue(variable: Variable | undefined, variables: Map<string, Variable>): string | undefined {
     let current = variable

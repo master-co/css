@@ -11,10 +11,10 @@ import {
     masterCSSShikiLanguage,
     transformerMasterCSS
 } from '../src/shiki'
-import type { Settings } from '../src/settings'
+import type { MasterCSSShikiOptions } from '../src/shiki'
 import { createPresetPlan } from './helpers/create-preset-plan'
 
-const plan: Settings['plan'] = createPresetPlan({
+const plan: MasterCSSShikiOptions['plan'] = createPresetPlan({
     variables: [{ key: 'brand', value: '#123456' }],
     utilities: [
         {

@@ -11,7 +11,7 @@
 
 ## Dependency Boundary
 
-This package must remain below `@master/css`, `@master/css-compiler`, `@master/css-extractor`, `@master/css-language-service`, integrations, and editor packages. Do not import those packages here. Keep runtime dependencies empty unless a focused parser dependency is explicitly chosen for this package.
+This package must remain below `@master/css`, `@master/css-compiler`, `@master/css-extractor`, `@master/css-language`, `@master/css-language-service`, integrations, and editor packages. Do not import those packages here. Keep runtime dependencies empty unless a focused parser dependency is explicitly chosen for this package.
 
 ## Public APIs
 

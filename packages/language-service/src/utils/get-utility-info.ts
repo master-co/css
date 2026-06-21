@@ -1,4 +1,4 @@
-import { type CompiledUtility, getStaticUtilityDeclarations } from '../master-css'
+import { type CompiledUtility, getStaticUtilityDeclarations } from '@master/css-language'
 
 export default function getUtilityInfo(utility: CompiledUtility) {
     const declarations = getStaticUtilityDeclarations(utility)

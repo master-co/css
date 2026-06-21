@@ -2,7 +2,7 @@
     "name": "@master/css-language-service",
     "type": "module",
     "scripts": {
-        "build": "techor build \"src/**/*.ts\" --formats esm && node scripts/restore-json-import-attributes.mjs",
+        "build": "techor build \"src/**/*.ts\" --formats esm",
         "dev": "pnpm build --watch",
         "type-check": "tsc --noEmit",
         "lint": "eslint",
@@ -19,31 +19,16 @@
     "dependencies": {
         "@master/css": "workspace:^",
         "@master/css-engine": "workspace:^",
-        "@master/css-lexer": "workspace:^",
-        "@master/css-preset": "workspace:^",
+        "@master/css-language": "workspace:^",
         "@techor/extend": "^3.2.5",
-        "color-convert": "^3.1.3",
-        "color-rgba": "^3.0.0",
-        "color-space": "^2.3.2",
         "colorjs.io": "^0.6.1",
         "js-beautify": "^1.15.4",
-        "lodash.escaperegexp": "^4.1.2",
-        "mdn-data": "^2.28.1",
         "minimatch": "^10.2.5",
-        "oxc-parser": "^0.129.0",
-        "pex-color": "^2.3.0",
-        "shared": "workspace:^",
         "vscode-languageserver-protocol": "^3.17.5",
         "vscode-languageserver-textdocument": "^1.0.12"
     },
     "devDependencies": {
-        "@types/chroma-js": "^3.1.2",
-        "@types/color-convert": "^3.0.1",
-        "@types/color-rgba": "^2.1.3",
-        "@types/culori": "^4.0.1",
-        "@types/lodash.escaperegexp": "^4.1.9",
         "@types/vscode": "^1.118.0",
-        "shiki": "^4.0.2",
         "vscode-languageserver": "^9.0.1"
     },
     "sideEffects": false,
@@ -58,21 +43,14 @@
             "import": "./dist/index.mjs",
             "default": "./dist/index.mjs"
         },
-        "./shiki": {
-            "types": "./dist/shiki.d.ts",
-            "import": "./dist/shiki.mjs",
-            "default": "./dist/shiki.mjs"
-        },
-        "./browser": {
-            "types": "./dist/browser.d.ts",
-            "import": "./dist/browser.mjs",
-            "default": "./dist/browser.mjs"
-        },
-        "./syntaxes/master-css.tmLanguage.json": "./syntaxes/master-css.tmLanguage.json"
+        "./common": {
+            "types": "./dist/common.d.ts",
+            "import": "./dist/common.mjs",
+            "default": "./dist/common.mjs"
+        }
     },
     "files": [
-        "dist",
-        "syntaxes"
+        "dist"
     ],
     "publishConfig": {
         "access": "public",

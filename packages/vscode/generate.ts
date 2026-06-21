@@ -1,19 +1,19 @@
 import editJsonFile from 'edit-json-file'
 import copyOrSymlink from '~/internal/utils/copy-or-symlink'
 import settings from '../language-server/src/settings'
-import { SEMANTIC_TOKEN_MODIFIERS } from '../language-service/src/common'
-import { MASTER_CSS_SEMANTIC_TOKEN_SCOPE_MAP } from '../language-service/src/semantic/scopes'
+import { SEMANTIC_TOKEN_MODIFIERS } from '../language/src/common'
+import { MASTER_CSS_SEMANTIC_TOKEN_SCOPE_MAP } from '../language/src/semantic/scopes'
 import {
     MASTER_CSS_SHIKI_INJECT_TO,
     MASTER_CSS_SHIKI_SCOPE_NAME
-} from '../language-service/src/shiki/textmate'
+} from '../language/src/shiki/textmate'
 import { dirname, join } from 'node:path'
 import { createRequire } from 'node:module'
 import { fileURLToPath } from 'node:url'
 
 const pkg = editJsonFile(fileURLToPath(new URL('./package.json', import.meta.url)), { stringify_width: 4 })
 const require = createRequire(import.meta.url)
-const MASTER_CSS_GRAMMAR_PATH = './node_modules/@master/css-language-service/syntaxes/master-css.tmLanguage.json'
+const MASTER_CSS_GRAMMAR_PATH = './node_modules/@master/css-language/syntaxes/master-css.tmLanguage.json'
 
 pkg.unset('contributes.languages')
 pkg.unset('contributes.css')

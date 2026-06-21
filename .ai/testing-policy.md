@@ -42,6 +42,7 @@ Do not chase benchmark wins by changing CSS output, cascade order, hydration che
 | Static extraction | `pnpm --filter @master/css-extractor test`; add extraction false positive/negative cases |
 | Runtime/hydration | `pnpm --filter @master/css-runtime e2e` |
 | Vite plugin | `pnpm --filter @master/css.vite test`; run affected example build if integration-level |
+| Language primitives | `pnpm --filter @master/css-language test` |
 | Language service | `pnpm --filter @master/css-language-service test` |
 | Language server | `pnpm --filter @master/css-language-server test` |
 | ESLint plugin | `pnpm --filter @master/eslint-plugin-css test` |
@@ -68,7 +69,8 @@ Prefer tests that cover the smallest behavior:
 - Server output: `packages/server/tests/fixtures`
 - Runtime hydration: `packages/runtime/e2e/progressive`
 - Extractor source scanning: `packages/extractor/tests`
-- Language features: `packages/language-service/tests`
+- Language primitives: `packages/language/tests`
+- Language service features: `packages/language-service/tests`
 - ESLint parser/autofix behavior: `packages/eslint-plugin/tests`
 
 Issue regressions should use `tests/issues/<issue-number>.test.ts` inside the affected package. Keep fixture files under `tests/fixtures/**`; keep browser suites in package-local `e2e/**` unless the test is specifically an issue regression.

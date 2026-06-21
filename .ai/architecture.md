@@ -18,6 +18,7 @@ shared / external data
 @master/css-server
 @master/css-extractor
 @master/css-runtime
+@master/css-language
 @master/css-language-service
   ↓
 @master/css.vite
@@ -97,7 +98,9 @@ Framework packages wrap those lower layers for Astro, Nuxt, React, Vue, and Svel
 
 ## Tooling Packages
 
-`packages/language-service` uses plan-driven engine utilities for completion, hover, color features, and semantic token classification. It consumes `@master/css-lexer` for CSS directive ranges and Master class lexical display tokens, then layers engine-backed semantic meaning on top.
+`packages/language` owns editor-neutral language primitives: class-position scanning, semantic token classification, browser helpers, Shiki helpers, and the shared TextMate grammar.
+
+`packages/language-service` uses plan-driven engine utilities for completion, hover, and color features, and delegates class-position scanning and semantic token classification to `@master/css-language`.
 
 `packages/language-server` exposes the language service through LSP, manages workspace plans, and serves active/full semantic token requests.
 

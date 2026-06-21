@@ -2,7 +2,7 @@ import type { Hover, HoverParams, Range } from 'vscode-languageserver-protocol'
 import type CSSLanguageService from '../core'
 import type { TextDocument } from 'vscode-languageserver-textdocument'
 import createCSSMarkdownDocumentation from '../utils/create-css-markdown-documentation'
-import { UtilityType, generateCSS } from '../master-css'
+import { UtilityType, generateCSS } from '@master/css-language'
 
 export default function inspectSyntax(this: CSSLanguageService, document: TextDocument, position: HoverParams['position']): Hover | undefined {
     const classPosition = this.getClassPosition(document, position)

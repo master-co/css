@@ -1,10 +1,11 @@
-import CSSLanguageService from './core'
 import { SEMANTIC_TOKEN_MODIFIERS } from './common'
 import { TextDocument } from 'vscode-languageserver-textdocument'
-import type { Settings } from './settings'
-import { collectHighlightTokenItems } from './features/render-semantic-tokens'
+import languageSettings, { type LanguageSettings } from './settings'
+import { collectHighlightTokenItems } from './render-semantic-tokens'
 import type { HighlightTokenItem, HighlightTokenRole } from './semantic/highlight'
 import { collectClassListHighlightTokenItems } from './semantic/tokenize-class'
+import getClassPositions from './utils/get-class-positions'
+import { createLanguageCSS, defaultPlan, type MasterCSS } from './master-css'
 import {
     MASTER_CSS_SEMANTIC_TOKEN_SCOPE_MAP,
     getMasterCSSSemanticTokenScopeKeys
@@ -86,19 +87,18 @@ export interface MasterCSSShikiDecoration extends Omit<ShikiDecoration, 'start' 
 
 export interface MasterCSSShikiOptions {
     /**
-     * Reuse an existing language service when the caller already owns a
-     * configured instance.
+     * Reuse an existing Master CSS instance when the caller already owns a
+     * configured language engine.
      */
-    languageService?: CSSLanguageService
+    css?: MasterCSS
     /**
-     * Settings used to create an internal language service when
-     * `languageService` is not provided.
+     * Class-position and plan settings used when collecting embedded utilities.
      */
-    settings?: Settings
+    settings?: LanguageSettings
     /**
      * Convenience shortcut for `settings.plan`.
      */
-    plan?: Settings['plan']
+    plan?: LanguageSettings['plan']
     /**
      * Shiki language id. Defaults to the `lang` passed to Shiki.
      */
@@ -220,12 +220,16 @@ function createShikiDocument(code: string, lang?: string) {
     return TextDocument.create(`file:///master-css-shiki.${uriLang}`, languageId, 0, code)
 }
 
-function createLanguageService(options: MasterCSSShikiOptions) {
-    if (options.languageService) return options.languageService
-    return new CSSLanguageService({
+function createShikiCSS(options: MasterCSSShikiOptions) {
+    return options.css || createLanguageCSS(options.plan ?? options.settings?.plan ?? defaultPlan)
+}
+
+function createShikiSettings(options: MasterCSSShikiOptions): LanguageSettings {
+    return {
+        ...languageSettings,
         ...options.settings,
         plan: options.plan ?? options.settings?.plan
-    })
+    }
 }
 
 function stringifyStyle(style: MasterCSSShikiSemanticTokenStyle) {
@@ -545,10 +549,10 @@ export function createMasterCSSShikiDecorations(
     const classList = options.classList ?? isMasterCSSClassListLanguage(options.lang)
     const document = createShikiDocument(code, classList ? 'plaintext' : options.lang)
     if (!document) return []
-    const languageService = createLanguageService(options)
+    const css = createShikiCSS(options)
     const highlightTokens = classList
-        ? collectClassListHighlightTokenItems(languageService.css, code)
-        : collectHighlightTokenItems.call(languageService, document)
+        ? collectClassListHighlightTokenItems(css, code)
+        : collectHighlightTokenItems(css, document, getClassPositions(document, createShikiSettings(options)))
     if (!highlightTokens.length) return []
     return createSemanticTokenDecorations(highlightTokens, options)
 }

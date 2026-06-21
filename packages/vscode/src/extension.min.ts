@@ -2,7 +2,7 @@ import path from 'path'
 import { LanguageClient, LanguageClientOptions, ServerOptions, TransportKind } from 'vscode-languageclient/node'
 import { commands, Disposable, EventEmitter, ExtensionContext, languages, Position, ProgressLocation, SemanticTokens, SemanticTokensLegend, TextDocument, window, workspace } from 'vscode'
 import { ACTIVE_SEMANTIC_TOKENS_REQUEST, DOCUMENT_SEMANTIC_TOKENS_REQUEST, settings, type Settings } from '@master/css-language-server'
-import { SEMANTIC_TOKENS_LEGEND } from '@master/css-language-service'
+import { SEMANTIC_TOKENS_LEGEND } from '@master/css-language'
 import type { SemanticTokens as LSPSemanticTokens } from 'vscode-languageserver-protocol'
 
 let client: LanguageClient

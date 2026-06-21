@@ -124,11 +124,12 @@ Risks:
 - Native CSSRule order must match engine layer priority.
 - Class count bugs can leak or remove active rules.
 
-## Language Service
+## Language Tooling
 
 ```txt
 TextDocument + cursor
-  -> CSSLanguageService.getClassPosition()
+  -> @master/css-language class-position scanner / semantic tokenizer
+  -> CSSLanguageService wrapper
   -> suggestSyntax / inspectSyntax / renderSyntaxColors / editSyntaxColors
   -> query engine utilities, variables, selectors, at-rules, generated CSS
   -> LSP response through language-server
@@ -136,6 +137,8 @@ TextDocument + cursor
 
 Main files:
 
+- `packages/language/src/utils/get-class-positions.ts`
+- `packages/language/src/render-semantic-tokens.ts`
 - `packages/language-service/src/core.ts`
 - `packages/language-service/src/features/*`
 - `packages/language-service/src/utils/query-syntax-completions.ts`

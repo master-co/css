@@ -1,4 +1,4 @@
-import { CLASS_ATTRIBUTES, CLASS_FUNCTIONS, CLASS_DECLARATIONS } from './master-css'
+import { languageSettings, type LanguageSettings } from '@master/css-language'
 import type { MasterCSSPlan } from '@master/css'
 
 /**
@@ -28,32 +28,23 @@ const settings: Settings = {
      * @example <div class="a b">
      * @example <div className="a b">
      */
-    classAttributes: CLASS_ATTRIBUTES,
+    classAttributes: languageSettings.classAttributes,
     /**
      * @example <div class={active ? 'a' : 'b'}>
      * @example <div className={active ? 'a' : 'b'}>
      */
-    classAttributeBindings: {
-        "className": ["{", "}"],
-        "class": ["{", "}"],
-        "class:list": ["{", "}"],
-        ":class": ["\"", "\""],
-        "v-bind:class": ["\"", "\""],
-        "[class]": ["\"", "\""],
-        "[className]": ["\"", "\""],
-        "[ngClass]": ["\"", "\""]
-    },
+    classAttributeBindings: languageSettings.classAttributeBindings,
     /**
      * @example const classes = 'a b'
      * @example { classes: { btn: 'a b' } }
      */
-    classDeclarations: CLASS_DECLARATIONS,
+    classDeclarations: languageSettings.classDeclarations,
     /**
      * @example clsx('a b')
      * @example styled`a b`
      * @example .classList.add('a')
      */
-    classFunctions: CLASS_FUNCTIONS,
+    classFunctions: languageSettings.classFunctions,
     exclude: ["**/.git/**", "**/node_modules/**", "**/.hg/**"],
     suggestSyntax: true,
     inspectSyntax: true,
@@ -64,12 +55,8 @@ const settings: Settings = {
 
 export default settings
 
-export declare interface Settings {
+export declare interface Settings extends LanguageSettings {
     includedLanguages?: string[]
-    classAttributes?: string[]
-    classFunctions?: string[]
-    classDeclarations?: string[]
-    classAttributeBindings?: Record<string, [string, string] | false>
     exclude?: string[]
     plan?: MasterCSSPlan
     // features
@@ -77,5 +64,4 @@ export declare interface Settings {
     inspectSyntax?: boolean
     renderSyntaxColors?: boolean
     editSyntaxColors?: boolean
-    embeddedSyntaxHighlighting?: 'active' | 'always' | 'off'
 }

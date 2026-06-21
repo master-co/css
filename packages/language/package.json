@@ -1,0 +1,66 @@
+{
+    "name": "@master/css-language",
+    "type": "module",
+    "scripts": {
+        "build": "techor build \"src/**/*.ts\" --formats esm && node scripts/restore-json-import-attributes.mjs",
+        "dev": "pnpm build --watch",
+        "type-check": "tsc --noEmit",
+        "lint": "eslint",
+        "test": "vitest"
+    },
+    "description": "Master CSS language primitives",
+    "author": "Aoyue Design LLC.",
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/master-co/css.git",
+        "directory": "packages/language"
+    },
+    "dependencies": {
+        "@master/css": "workspace:^",
+        "@master/css-lexer": "workspace:^",
+        "@master/css-preset": "workspace:^",
+        "lodash.escaperegexp": "^4.1.2",
+        "mdn-data": "^2.28.1",
+        "oxc-parser": "^0.129.0",
+        "shared": "workspace:^",
+        "vscode-languageserver-protocol": "^3.17.5",
+        "vscode-languageserver-textdocument": "^1.0.12"
+    },
+    "devDependencies": {
+        "@types/lodash.escaperegexp": "^4.1.9",
+        "shiki": "^4.0.2"
+    },
+    "sideEffects": false,
+    "main": "./dist/index.mjs",
+    "module": "./dist/index.mjs",
+    "jsnext:main": "./dist/index.mjs",
+    "esnext": "./dist/index.mjs",
+    "types": "./dist/index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.mjs",
+            "default": "./dist/index.mjs"
+        },
+        "./browser": {
+            "types": "./dist/browser.d.ts",
+            "import": "./dist/browser.mjs",
+            "default": "./dist/browser.mjs"
+        },
+        "./shiki": {
+            "types": "./dist/shiki.d.ts",
+            "import": "./dist/shiki.mjs",
+            "default": "./dist/shiki.mjs"
+        },
+        "./syntaxes/master-css.tmLanguage.json": "./syntaxes/master-css.tmLanguage.json"
+    },
+    "files": [
+        "dist",
+        "syntaxes"
+    ],
+    "publishConfig": {
+        "access": "public",
+        "provenance": true
+    }
+}

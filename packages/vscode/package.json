@@ -465,7 +465,7 @@
         "grammars": [
             {
                 "scopeName": "master-css.directive.injection",
-                "path": "./node_modules/@master/css-language-service/syntaxes/master-css.tmLanguage.json",
+                "path": "./node_modules/@master/css-language/syntaxes/master-css.tmLanguage.json",
                 "injectTo": [
                     "source.css",
                     "source.css.scss",
@@ -485,6 +485,7 @@
         "provenance": true
     },
     "devDependencies": {
+        "@master/css-language": "workspace:^",
         "@master/css-language-server": "workspace:^",
         "@master/css-language-service": "workspace:^",
         "@shikijs/langs": "4.0.2",

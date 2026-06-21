@@ -1,4 +1,4 @@
-import { MasterCSS, createCSS, defaultPlan, matchesLanguageServiceNativeDeclaration } from './master-css'
+import { createCSS, defaultPlan, getClassPositions, matchesLanguageServiceNativeDeclaration, type ClassPosition, type MasterCSS, ClassPositionCache } from '@master/css-language'
 import extend from '@techor/extend'
 import EventEmitter from 'node:events'
 import type { Position } from 'vscode-languageserver-protocol'
@@ -10,15 +10,9 @@ import editSyntaxColors from './features/edit-syntax-colors'
 import renderSemanticTokens, { renderSemanticTokensAtPosition } from './features/render-semantic-tokens'
 import suggestSyntax from './features/suggest-syntax'
 import { TextDocument } from 'vscode-languageserver-textdocument'
-import getClassPositions, { ClassPositionCache } from './utils/get-class-positions'
 import { createCompletionIndex, type CompletionIndex } from './utils/completion-index'
 
-export interface ClassPosition {
-    range: { start: number, end: number }
-    contextRange: { start: number, end: number }
-    raw: string
-    token: string
-}
+export type { ClassPosition }
 
 export default class CSSLanguageService extends EventEmitter {
     css: MasterCSS

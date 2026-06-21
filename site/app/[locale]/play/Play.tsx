@@ -29,7 +29,7 @@ import { useApp } from 'internal/contexts/app'
 import { shikiToMonaco, textmateThemeToMonacoTheme } from '@shikijs/monaco'
 import type { MasterCSSPlan } from '@master/css'
 import defaultPlanJSON from '@master/css-preset/default-plan.json' with { type: 'json' }
-import { renderBrowserSemanticTokens, SEMANTIC_TOKENS_LEGEND } from '@master/css-language-service/browser'
+import { renderBrowserSemanticTokens, SEMANTIC_TOKENS_LEGEND } from '@master/css-language/browser'
 
 const defaultPlan = defaultPlanJSON as unknown as MasterCSSPlan
 

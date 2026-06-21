@@ -2,7 +2,7 @@ import { expect, test } from 'vitest'
 import { Position } from 'vscode-languageserver-textdocument'
 import CSSLanguageService from '../../src/core'
 import createDoc from '../../src/utils/create-doc'
-import { generateCSS } from '../../src/master-css'
+import { generateCSS } from '@master/css-language'
 
 function suggest(languageService: CSSLanguageService, target: string) {
     const contents = [`<div class="`, target, `"></div>`]

@@ -2,12 +2,12 @@
 
 ## Responsibility
 
-`@master/css-language-server` wraps the language service in LSP. It initializes workspace folders, loads plan entry files, manages language service lifecycles, and handles completion, hover, document color, color presentation, and semantic token requests. CSS directive lexical highlighting is provided by the VS Code/TextMate grammar; server semantic tokens cover Master CSS class-list spans and plan-aware classifications.
+`@master/css-language-server` wraps the language service in LSP. It initializes workspace folders, loads plan entry files, manages language service lifecycles, and handles completion, hover, document color, color presentation, and semantic token requests. CSS directive lexical highlighting is provided by the `@master/css-language` TextMate grammar; server semantic tokens cover Master CSS class-list spans and plan-aware classifications.
 
 ## Inputs And Outputs
 
 - Input: LSP connection, workspace folders, settings, text documents.
-- Output: LSP capabilities, request responses, and active/full semantic token responses.
+- Output: LSP capabilities assembled from service trigger constants and the `@master/css-language` semantic token legend, request responses, and active/full semantic token responses.
 
 ## Public APIs
 

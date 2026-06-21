@@ -1,8 +1,8 @@
 import { type CompletionItem, CompletionItemKind } from 'vscode-languageserver-protocol'
 import { builtinKeyAliases, builtinNativeValueNamespaces } from '@master/css-engine'
-import { type AtRule, type MasterCSS, UtilityType, createDefaultCSS } from '../master-css'
-import type { Variable } from '../master-css'
-import { getMdnPseudoClassNames, getMdnPseudoElementNames } from './mdn-css-data'
+import { type AtRule, type MasterCSS, UtilityType, createDefaultCSS } from '@master/css-language'
+import type { Variable } from '@master/css-language'
+import { getMdnPseudoClassNames, getMdnPseudoElementNames } from '@master/css-language'
 import getUtilityInfo from './get-utility-info'
 import sortCompletionItems from './sort-completion-items'
 

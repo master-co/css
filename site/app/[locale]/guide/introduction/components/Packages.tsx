@@ -30,6 +30,7 @@ const integrationPackages = [
 const developerToolPackages = [
     await import('~/packages/eslint-config/package.json'),
     await import('~/packages/eslint-plugin/package.json'),
+    await import('~/packages/language/package.json'),
     await import('~/packages/language-server/package.json'),
     await import('~/packages/language-service/package.json'),
     await import('~/packages/vscode/package.json'),

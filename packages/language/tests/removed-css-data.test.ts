@@ -13,7 +13,7 @@ function readSources(directory: string): string[] {
     })
 }
 
-test('does not depend on CSS language-service documentation data', () => {
+test('does not depend on CSS language documentation data', () => {
     const source = [
         readFileSync(join(packageDir, 'package.json'), 'utf8'),
         ...readSources(join(packageDir, 'src'))

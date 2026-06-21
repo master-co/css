@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
 import { pathToFileURL, fileURLToPath } from 'node:url'
 import { expect, test } from 'vitest'
-import { MASTER_CSS_SEMANTIC_TOKEN_SCOPE_MAP } from '../../language-service/src/semantic/scopes.ts'
+import { MASTER_CSS_SEMANTIC_TOKEN_SCOPE_MAP } from '../../language/src/semantic/scopes.ts'
 import { createStagedExtension, getCurrentTarget, getRuntimePackagesForTarget } from '../scripts/package-targets.mjs'
 
 const here = dirname(fileURLToPath(import.meta.url))
@@ -15,8 +15,8 @@ const serverPath = resolve(distDir, 'server.min.mjs')
 const extensionPath = resolve(distDir, 'extension.min.mjs')
 const workspaceDir = resolve(here, 'fixtures', 'bundled-config')
 const packageJSON = JSON.parse(readFileSync(resolve(packageDir, 'package.json'), 'utf8'))
-const sourceGrammarPath = './node_modules/@master/css-language-service/syntaxes/master-css.tmLanguage.json'
-const stagedGrammarPath = './dist/node_modules/@master/css-language-service/syntaxes/master-css.tmLanguage.json'
+const sourceGrammarPath = './node_modules/@master/css-language/syntaxes/master-css.tmLanguage.json'
+const stagedGrammarPath = './dist/node_modules/@master/css-language/syntaxes/master-css.tmLanguage.json'
 
 function encode(message) {
     const body = Buffer.from(JSON.stringify(message))

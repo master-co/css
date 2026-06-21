@@ -1,8 +1,4 @@
-import type { MasterCSSPlan } from '@master/css'
-import defaultPlanJSON from '@master/css-preset/default-plan.json' with { type: 'json' }
-import UtilityType from 'shared/utility-type'
-
-const defaultPlan = defaultPlanJSON as unknown as MasterCSSPlan
+import { defaultPlan, UtilityType, type MasterCSSPlan } from '@master/css-language'
 
 type PlanVariableDraft = NonNullable<MasterCSSPlan['variables']>[number]
 type PlanUtilityDraft = Partial<NonNullable<MasterCSSPlan['utilities']>[number]> & {

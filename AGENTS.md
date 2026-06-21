@@ -11,7 +11,7 @@ Master CSS is a markup-driven CSS language and framework. Class strings such as 
 - Server-side HTML rendering in `packages/server`
 - Static rendering source scanning in `packages/extractor`
 - Build integrations such as `packages/vite` and `packages/webpack`
-- Editor and lint tooling in `packages/language-service`, `packages/language-server`, `packages/vscode`, and `packages/eslint-plugin`
+- Editor and lint tooling in `packages/language`, `packages/language-service`, `packages/language-server`, `packages/vscode`, and `packages/eslint-plugin`
 
 The layer order is intentionally stable and declared by `packages/preset/src/base.css`, then exposed through `@master/css/base.css`:
 
@@ -65,7 +65,7 @@ shared / external data
   -> @master/css-lexer source scanning
   -> @master/css-engine / @master/css-preset / @master/css-integration
   -> @master/css-compiler directive parsing / @master/css-plan loading
-  -> validator / server / extractor / runtime / language-service
+  -> validator / server / extractor / runtime / language / language-service
   -> build plugins / CLI / ESLint / language-server
   -> framework integrations / VS Code / examples / site
 ```
@@ -90,6 +90,8 @@ Modify these only with focused tests and a clear reason:
 - `packages/runtime/src/core.ts`
 - `packages/runtime/src/layer.ts`
 - `packages/lexer/src/extract-latent-classes.ts`
+- `packages/language/src/utils/get-class-positions.ts`
+- `packages/language/src/render-semantic-tokens.ts`
 - `packages/language-service/src/core.ts`
 - package `exports`, build scripts, release config, CI workflows, and lockfiles
 
@@ -153,6 +155,7 @@ pnpm --filter @master/css-runtime e2e
 pnpm --filter @master/css-server test
 pnpm --filter @master/css-extractor test
 pnpm --filter @master/css.vite test
+pnpm --filter @master/css-language test
 pnpm --filter @master/css-language-service test
 pnpm --filter @master/css-language-server test
 pnpm --filter @master/eslint-plugin-css test
@@ -160,7 +163,7 @@ pnpm --filter @master/css-validator test
 pnpm --filter @master/css-cli test
 ```
 
-Core parser, compiler, renderer, runtime, extractor, language-service, and ESLint changes require tests. Snapshot or fixture updates are acceptable only when the behavior change is intentional and explained.
+Core parser, compiler, renderer, runtime, extractor, language tooling, and ESLint changes require tests. Snapshot or fixture updates are acceptable only when the behavior change is intentional and explained.
 
 ## Documentation System
 

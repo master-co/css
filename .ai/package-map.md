@@ -20,7 +20,8 @@
 | `@master/css.react` | `.`, `./runtime-provider` | React runtime registry, provider, and hooks |
 | `@master/css.vue` | `.`, `./runtime-provider`, `./adapter`, `./vite` | Vue runtime registry, provider, and Vue SFC extraction adapter |
 | `@master/css.svelte` | `.`, `./runtime-provider`, `./adapter`, `./vite`, `./hooks.server` | Svelte runtime registry, provider, SvelteKit hook, Vite wrapper, and Svelte source adapter |
-| `@master/css-language-service` | `.`, `./shiki` | Completion, hover, colors, semantic token classification, and Shiki semantic token decoration helpers |
+| `@master/css-language` | `.`, `./browser`, `./shiki`, `./syntaxes/master-css.tmLanguage.json` | Editor-neutral language primitives, class-position scanning, semantic tokens, browser helpers, Shiki helpers, and shared TextMate grammar |
+| `@master/css-language-service` | `.` | Stateful language service wrapper for completion, hover, colors, semantic token methods, and `TextDocument` feature gating |
 | `@master/css-language-server` | `.` | LSP wrapper and active/full semantic token request handling |
 | `master-css-vscode` | `.`, `./server` | VS Code extension |
 | `@master/css-validator` | `.` | CSS validation for generated rules |
@@ -34,7 +35,7 @@
 
 ## Dependency Direction
 
-Do not introduce reverse dependencies from engine to compiler, integration contracts, runtime, server, extractor, language service, ESLint, examples, or site. `@master/css-lexer` must stay dependency-free from engine/compiler/extractor/language-service and should be consumed upward for raw source scanning. `@master/css-integration` may depend on shared plan types and must remain below compiler/plan/build integrations. The compiler may depend on the plan-driven engine for class semantics and must not recreate a public Config contract.
+Do not introduce reverse dependencies from engine to compiler, integration contracts, runtime, server, extractor, language packages, ESLint, examples, or site. `@master/css-lexer` must stay dependency-free from engine/compiler/extractor/language packages and should be consumed upward for raw source scanning. `@master/css-language` must not depend on `@master/css-language-service`, `@master/css-language-server`, or editor extensions. `@master/css-integration` may depend on shared plan types and must remain below compiler/plan/build integrations. The compiler may depend on the plan-driven engine for class semantics and must not recreate a public Config contract.
 
 ## Package Tests
 
