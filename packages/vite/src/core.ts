@@ -1,6 +1,6 @@
 import type CSSExtractor from '@master/css-extractor'
 import type { MasterCSSPreloaded } from '@master/css'
-import type { StyleCSSSources } from '@master/css-extractor/style'
+import type { StyleCSSSources } from '@master/css-stylesheet'
 import type { Plugin, ResolvedConfig } from 'vite'
 import PlanLoaderPlugin from './plugins/plan-loader'
 import PlanVirtualModulePlugin from './plugins/plan-virtual-module'

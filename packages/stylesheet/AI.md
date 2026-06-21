@@ -1,0 +1,36 @@
+# AI Notes For `@master/css-stylesheet`
+
+## Responsibility
+
+`@master/css-stylesheet` owns the stylesheet entry pipeline for static rendering. It detects Master CSS stylesheet entries, resolves stylesheet import graphs, compiles CSS-first directives, registers stylesheet sources, prunes native CSS using extraction state, and composes final CSS plus runtime preloaded variable/keyframe counts.
+
+## Inputs And Outputs
+
+- Input: stylesheet ids/source text, project root, optional compile options, `StyleCSSSources`, and structural extractor state from packages such as `@master/css-extractor`.
+- Output: transformed local CSS, stylesheet source records, stylesheet-local plans, final CSS text, preloaded manifest data, and stylesheet dependencies.
+
+## Public APIs
+
+- Style request and entry helpers such as `isStyleCSSRequest`, `resolveMasterStyleSource`, and `createStyleCSSHostSource`.
+- Local CSS directive lowering helpers such as `transformLocalStyleCSS`.
+- Static rendering helpers such as `registerStyleCSSSource`, `createStyleCSSPlan`, `createExtractedCSSResult`, and `createExtractedCSS`.
+- Extraction directive helpers from `./directives`.
+
+## Boundaries
+
+- Do not depend on `@master/css-extractor`; accept structural state instead.
+- Do not scan source files directly except when resolving stylesheet `@source` directives through supplied include/required/exclude options.
+- Do not own raw source adapters; use `@master/css-source` consumers before this package.
+- Do not own project CSS plan discovery; callers should use `@master/css-plan`.
+- Do not change engine CSS output here without focused tests and an explicit CSS output explanation.
+
+## Required Tests
+
+```sh
+pnpm --filter @master/css-stylesheet test
+pnpm --filter @master/css-stylesheet type-check
+pnpm --filter @master/css-stylesheet build
+pnpm --filter @master/css-stylesheet lint
+```
+
+Add focused tests for stylesheet entry detection, import graph handling, local `@compose`/`@reference` lowering, extraction directives, native CSS pruning, generated CSS composition, and preloaded manifest output.

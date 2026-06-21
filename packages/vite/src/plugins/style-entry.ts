@@ -9,7 +9,7 @@ import {
     isStyleCSSRequest,
     removeMasterStyleDirectives,
     resolveMasterStyleSource
-} from '@master/css-extractor/style'
+} from '@master/css-stylesheet'
 import { registerStyleCSSSource } from '../utils/register-style-source'
 import { getExtractor } from '../utils/extractor-context'
 

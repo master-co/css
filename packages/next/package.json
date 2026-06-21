@@ -68,6 +68,7 @@
         "@master/css-plan": "workspace:^",
         "@master/css-extractor": "workspace:^",
         "@master/css-integration": "workspace:^",
+        "@master/css-stylesheet": "workspace:^",
         "@master/css-server": "workspace:^"
     },
     "devDependencies": {

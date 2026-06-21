@@ -3,7 +3,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import CSSExtractor from '@master/css-extractor'
-import { registerStyleCSSSource } from '@master/css-extractor/style'
+import { registerStyleCSSSource } from '@master/css-stylesheet'
 import PreloadedVirtualModulePlugin from '../../src/plugins/preloaded-virtual-module'
 import { RESOLVED_VIRTUAL_PRELOADED_ID, VIRTUAL_PRELOADED_ID } from '../../src/common'
 

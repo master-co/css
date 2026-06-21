@@ -1,15 +1,15 @@
 {
-    "name": "@master/css.vite",
+    "name": "@master/css-stylesheet",
     "type": "module",
     "scripts": {
         "build": "techor build \"src/**/*.ts\" --formats esm",
         "dev": "pnpm build --watch",
-        "type-check": "tsc --noEmit",
         "lint": "eslint",
+        "type-check": "tsc --noEmit",
         "test": "vitest"
     },
     "license": "MIT",
-    "description": "Integrate Master CSS in Vite way",
+    "description": "Stylesheet entry pipeline for Master CSS static rendering",
     "author": "Aoyue Design LLC.",
     "funding": "https://rc.css.master.co/sponsor",
     "homepage": "https://css.master.co",
@@ -19,20 +19,14 @@
     "repository": {
         "type": "git",
         "url": "https://github.com/master-co/css.git",
-        "directory": "packages/vite"
+        "directory": "packages/stylesheet"
     },
     "keywords": [
-        "plugin",
-        "integration",
-        "vite",
-        "build tools",
-        "static rendering",
+        "stylesheet",
         "static",
-        "runtime",
-        "css runtime",
+        "build tools",
         "css",
-        "mastercss",
-        "vite-plugin"
+        "mastercss"
     ],
     "sideEffects": false,
     "main": "./dist/index.mjs",
@@ -45,6 +39,21 @@
             "types": "./dist/index.d.ts",
             "import": "./dist/index.mjs",
             "default": "./dist/index.mjs"
+        },
+        "./directives": {
+            "types": "./dist/directives.d.ts",
+            "import": "./dist/directives.mjs",
+            "default": "./dist/directives.mjs"
+        }
+    },
+    "typesVersions": {
+        "*": {
+            ".": [
+                "./dist/index.d.ts"
+            ],
+            "./directives": [
+                "./dist/directives.d.ts"
+            ]
         }
     },
     "files": [
@@ -54,20 +63,17 @@
         "access": "public",
         "provenance": true
     },
-    "peerDependencies": {
-        "vite": ">=6"
-    },
     "dependencies": {
         "@master/css": "workspace:^",
-        "@master/css-plan": "workspace:^",
-        "@master/css-extractor": "workspace:^",
+        "@master/css-compiler": "workspace:^",
+        "@master/css-engine": "workspace:^",
         "@master/css-integration": "workspace:^",
-        "@master/css-runtime": "workspace:^",
-        "@master/css-server": "workspace:^",
-        "@master/css-stylesheet": "workspace:^",
-        "magic-string": "^0.30.21"
+        "@master/css-lexer": "workspace:^",
+        "@master/css-validator": "workspace:^",
+        "@techor/glob": "^3.2.5"
     },
     "devDependencies": {
+        "@master/css-extractor": "workspace:^",
         "@master/css-preset": "workspace:^",
         "shared": "workspace:^"
     }

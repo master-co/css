@@ -7,7 +7,7 @@ import {
     removeMasterStyleDirectives,
     resolveMasterStyleSource,
     transformLocalStyleCSS
-} from '@master/css-extractor/style'
+} from '@master/css-stylesheet'
 import { VIRTUAL_CSS_ID } from '@master/css-integration/style-module'
 import { loadProjectPlan } from '@master/css-plan/load'
 

@@ -13,10 +13,10 @@ import {
     cleanStyleRequest,
     createExtractedCSSResult,
     isStyleCSSRequest,
-    registerStyleCSSSource as registerExtractorStyleCSSSource,
+    registerStyleCSSSource as registerStylesheetCSSSource,
     resolveMasterStyleSource,
     type StyleCSSSources
-} from '@master/css-extractor/style'
+} from '@master/css-stylesheet'
 import { toVirtualCSSModulePath } from '@master/css-integration/style-module'
 import {
     toPreloadedModule,
@@ -197,7 +197,7 @@ export class MasterCSSPlugin {
 
     private async createExtractedCSSResult(options: { includeNativeCSS?: boolean, includeMasterBaseCSS?: boolean } = {}) {
         const result = await createExtractedCSSResult({
-            extractor: this.extractor,
+            state: this.extractor,
             styleCSSSources: this.styleCSSSources,
             classes: this.getExtractorClasses(),
             projectDir: this.cwd,
@@ -221,7 +221,7 @@ export class MasterCSSPlugin {
     }
 
     private async registerStyleCSSSource(modulePath: string, source: string) {
-        await registerExtractorStyleCSSSource(this.extractor, this.styleCSSSources, modulePath, source, {
+        await registerStylesheetCSSSource(this.extractor, this.styleCSSSources, modulePath, source, {
             projectDir: this.cwd
         })
     }

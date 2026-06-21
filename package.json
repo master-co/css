@@ -71,6 +71,7 @@
         "@master/css-runtime": "workspace:^",
         "@master/css-server": "workspace:^",
         "@master/css-source": "workspace:^",
+        "@master/css-stylesheet": "workspace:^",
         "@master/css-validator": "workspace:^",
         "@master/css.figma": "workspace:^",
         "@master/css.next": "workspace:^",

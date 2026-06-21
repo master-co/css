@@ -71,21 +71,21 @@ Risks:
 ```txt
 source globs / Vite modules / Webpack modules
   -> CSSExtractor.init()
-  -> build tool / CLI registers managed CSS entries discovered by @master/css-plan
-  -> extractLatentClasses()
-  -> compile managed CSS through @master/css-compiler
-  -> combine style plan returned by compiler with explicit plan options
+  -> @master/css-source adapters / extractLatentClasses()
   -> generateValidRules()
   -> insert valid rules into layers
-  -> export css.text / virtual CSS module
+  -> build tool / CLI registers managed CSS entries discovered by @master/css-plan with @master/css-stylesheet
+  -> @master/css-stylesheet compiles stylesheet CSS through @master/css-compiler
+  -> combine stylesheet plan returned by compiler with explicit plan options
+  -> export css.text / virtual CSS module through @master/css-stylesheet
   -> export preloaded counts for generated variables and keyframes
 ```
 
 Main files:
 
 - `packages/extractor/src/core.ts`
-- `packages/extractor/src/style.ts`
-- `packages/extractor/src/functions/extract-latent-classes.ts`
+- `packages/source/src/adapters/*`
+- `packages/stylesheet/src/index.ts`
 - `packages/validator/src/generate-valid-rules.ts`
 - `packages/vite/src/modes/static.ts`
 - `packages/vite/src/plugins/virtual-css-module.ts`

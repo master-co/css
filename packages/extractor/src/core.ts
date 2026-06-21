@@ -22,7 +22,6 @@ import { explorePathsSync } from '@techor/glob'
 import path from 'path'
 import { Stats } from 'node:fs'
 import bytes from 'bytes'
-import { createExtractorDirectives, type ExtractorDirectives } from './directives'
 import {
     createClassExclusionMatcher,
     isClassExcludedByMatcher,
@@ -78,7 +77,6 @@ export default class CSSExtractor extends EventEmitter {
     initialized = false
     initializing?: Promise<this>
     planDependencies: string[] = []
-    extractorDirectives: ExtractorDirectives = createExtractorDirectives()
 
     /**
      * Per-source content-hash cache. When the same `source` arrives with the
@@ -136,7 +134,6 @@ export default class CSSExtractor extends EventEmitter {
             log.tree(this.options)
             log``
         }
-        this.extractorDirectives = createExtractorDirectives()
         this.planDependencies = []
         this.sourceMatchers = undefined
         this.sourceMatcherOptions = undefined
@@ -162,7 +159,6 @@ export default class CSSExtractor extends EventEmitter {
         this.contentHashes.clear()
         this.validRulesCache.clear()
         this.planDependencies = []
-        this.extractorDirectives = createExtractorDirectives()
         this.cachedFixedSourcePaths = undefined
         this.cachedAllowedSourcePaths = undefined
         this.sourceMatchers = undefined
@@ -189,7 +185,6 @@ export default class CSSExtractor extends EventEmitter {
         this.contentHashes.clear()
         this.validRulesCache.clear()
         this.planDependencies = []
-        this.extractorDirectives = createExtractorDirectives()
         this.cachedFixedSourcePaths = undefined
         this.cachedAllowedSourcePaths = undefined
         this.sourceMatchers = undefined
@@ -522,5 +517,4 @@ export default class CSSExtractor extends EventEmitter {
 export default interface CSSExtractor {
     css: MasterCSS
     options: Options
-    extractorDirectives: ExtractorDirectives
 }

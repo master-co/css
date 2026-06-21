@@ -5,7 +5,7 @@ import {
     createExtractedCSS,
     registerStyleCSSSource,
     type StyleCSSSources
-} from '@master/css-extractor/style'
+} from '@master/css-stylesheet'
 import { findCSSPlanEntryFiles } from '@master/css-plan/css'
 import log from '@techor/log'
 import bytes from 'bytes'
@@ -73,7 +73,7 @@ export default (program: Command) => program
         const styleCSSSources: StyleCSSSources = new Map()
         const writeOutput = async () => {
             const css = await createExtractedCSS({
-                extractor,
+                state: extractor,
                 styleCSSSources,
                 projectDir: extractor.cwd
             })

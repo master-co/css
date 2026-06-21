@@ -7,7 +7,7 @@ import {
     removeMasterStyleDirectives,
     resolveMasterStyleSource,
     transformLocalStyleCSS
-} from '@master/css-extractor/style'
+} from '@master/css-stylesheet'
 import { loadProjectPlan } from '@master/css-plan/load'
 
 interface LoaderContext {

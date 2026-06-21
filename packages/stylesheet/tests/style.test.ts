@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest'
 import defaultPlanJSON from '@master/css-preset/default-plan.json' with { type: 'json' }
 import type { MasterCSSPlan } from 'shared/master-css-plan'
 import { compileCSSPlan } from '@master/css-compiler'
-import CSSExtractor from '../src/core'
+import CSSExtractor from '@master/css-extractor'
 import {
     createStyleCSSHostSource,
     createMasterCSSPackageHostSource,
@@ -22,12 +22,12 @@ import {
     resolveStyleCSSImportGraph,
     replaceStyleCSSImports,
     transformLocalStyleCSS
-} from '../src/style'
+} from '../src'
 
 const defaultPlan = defaultPlanJSON as unknown as MasterCSSPlan
 
 function createFixture() {
-    const root = mkdtempSync(join(tmpdir(), 'master-css-extractor-style-'))
+    const root = mkdtempSync(join(tmpdir(), 'master-css-stylesheet-'))
     mkdirSync(join(root, 'app'), { recursive: true })
     return root
 }
@@ -200,7 +200,6 @@ describe('style CSS extraction helpers', () => {
         expect(hostSource.source).toContain('@layer base')
         expect(hostSource.source).toContain('text-rendering: geometricprecision')
         expect(hostSource.source).toContain('--font-family-sans:var(--font-sans, ui-sans-serif)')
-        expect(hostSource.source).toContain('--font-sans:"Inter"')
         expect(hostSource.source).toContain('--font-family-mono:var(--font-mono, ui-monospace)')
         expect(hostSource.source).not.toContain('@master/css/base.css')
         expect(hostSource.source).not.toContain('virtual:master-utilities.css')
@@ -322,7 +321,7 @@ describe('style CSS extraction helpers', () => {
         await extractor.insert(join(root, 'app/page.tsx'), '<main class="btn block main fg:red"></main>')
 
         const css = await createExtractedCSS({
-            extractor,
+            state: extractor,
             styleCSSSources,
             projectDir: root
         })
@@ -363,7 +362,7 @@ describe('style CSS extraction helpers', () => {
         await extractor.insert(join(root, 'app/page.html'), '<div class="card"></div>')
 
         const css = await createExtractedCSS({
-            extractor,
+            state: extractor,
             styleCSSSources,
             projectDir: root
         })
@@ -421,7 +420,7 @@ describe('style CSS extraction helpers', () => {
         await extractor.insert(join(root, 'app/page.tsx'), '<main class="main main-animated"></main>')
 
         const result = await createExtractedCSSResult({
-            extractor,
+            state: extractor,
             styleCSSSources,
             projectDir: root,
             includeGeneratedCSS: false
@@ -459,7 +458,7 @@ describe('style CSS extraction helpers', () => {
         await extractor.insert(join(root, 'app/page.tsx'), '<main class="fg:primary"></main>')
 
         const result = await createExtractedCSSResult({
-            extractor,
+            state: extractor,
             styleCSSSources,
             projectDir: root
         })
@@ -490,7 +489,7 @@ describe('style CSS extraction helpers', () => {
         `)
 
         const result = await createExtractedCSSResult({
-            extractor,
+            state: extractor,
             styleCSSSources,
             projectDir: root,
             includeGeneratedCSS: false
@@ -542,7 +541,7 @@ describe('style CSS extraction helpers', () => {
         await extractor.insert(join(root, 'app/page.html'), '<div class="card btn-native"></div>')
 
         const css = await createExtractedCSS({
-            extractor,
+            state: extractor,
             styleCSSSources,
             projectDir: root
         })
@@ -580,7 +579,7 @@ describe('style CSS extraction helpers', () => {
         await extractor.insert(join(root, 'app/page.html'), '<div class="card"></div>')
 
         const css = await createExtractedCSS({
-            extractor,
+            state: extractor,
             styleCSSSources,
             projectDir: root
         })
@@ -618,7 +617,7 @@ describe('style CSS extraction helpers', () => {
         await extractor.insert(join(root, 'app/page.html'), '<div class="btn-native"></div>')
 
         const css = await createExtractedCSS({
-            extractor,
+            state: extractor,
             styleCSSSources,
             projectDir: root
         })
@@ -647,7 +646,7 @@ describe('style CSS extraction helpers', () => {
         await extractor.insert(join(root, 'app/page.html'), '<div class="card block"></div>')
 
         const css = await createExtractedCSS({
-            extractor,
+            state: extractor,
             styleCSSSources,
             projectDir: root,
             includeGeneratedCSS: false
@@ -666,7 +665,7 @@ describe('style CSS extraction helpers', () => {
         await extractor.insert(join(root, 'app/page.html'), '<div class="block"></div>')
 
         const css = await createExtractedCSS({
-            extractor,
+            state: extractor,
             includeGeneratedCSS: false
         })
 

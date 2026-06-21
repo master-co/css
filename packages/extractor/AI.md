@@ -2,24 +2,22 @@
 
 ## Responsibility
 
-`@master/css-extractor` statically scans source files, validates possible Master CSS classes, inserts valid rules through the plan-driven engine layers, exports CSS, and provides extraction-specific stylesheet helpers for build integrations. Source-format-aware class adapters belong to `@master/css-source`; raw latent class candidate scanning belongs to `@master/css-lexer`. CSS parsing and CSS plan compilation should be delegated to `@master/css-compiler`.
+`@master/css-extractor` statically scans source files, validates possible Master CSS classes, inserts valid rules through the plan-driven engine layers, exports CSS, and maintains extraction state for build integrations. Source-format-aware class adapters belong to `@master/css-source`; raw latent class candidate scanning belongs to `@master/css-lexer`. Stylesheet entry handling, CSS-first stylesheet compilation, native CSS pruning, extraction directives, generated CSS composition, and preloaded manifest output belong to `@master/css-stylesheet`.
 
 ## Inputs And Outputs
 
-- Input: extractor options, source globs, source text, source adapters, resolved Master CSS plan, stylesheet sources that import the Master CSS virtual module, and compiler-produced CSS metadata.
-- Output: `css.text`, exported CSS file, valid/invalid/latent class caches, compiled native CSS, stylesheet-local Master CSS plan, watch events.
+- Input: extractor options, source globs, source text, source adapters, and resolved Master CSS plan.
+- Output: `css.text`, exported CSS file, valid/invalid/latent class caches, native class usage state, and watch events.
 
 ## Public APIs
 
 - `CSSExtractor`
 - `options`
-- `style`
 - option types
 
 ## Core Files
 
 - `src/core.ts`
-- `src/style.ts`
 - `src/options/index.ts`
 
 ## Allowed Changes
@@ -27,7 +25,7 @@
 - Focused extraction heuristic fixes.
 - Watch/plan reset fixes.
 - Option handling fixes with tests.
-- Shared stylesheet extraction behavior used by Vite, Webpack, and Next integrations.
+- Focused extraction state behavior used by Vite, Webpack, Next, stylesheet, and CLI integrations.
 
 ## Forbidden Without Explicit Request
 
@@ -43,7 +41,7 @@
 - Watch reset loops.
 - Source allow/exclude matching.
 - Vite/Webpack/Next virtual-module consumers.
-- Stylesheet native CSS merging, pruning/source directives, and generated CSS ordering.
+- Stylesheet native CSS merging, pruning/source directives, and generated CSS ordering belong in `@master/css-stylesheet`.
 - Do not add project plan discovery, workspace detection, or plan loading here; use `@master/css-plan` in the calling CLI/build/tooling package.
 - Do not add independent CSS import graph parsing here; use compiler results and keep extraction-specific decisions local.
 
@@ -58,7 +56,6 @@ pnpm --filter @master/css-extractor build
 Use or extend:
 
 - `tests/extract.test.ts`
-- `tests/style.test.ts`
 - `tests/syntax.test.ts`
 - `tests/source`
 

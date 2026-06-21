@@ -10,22 +10,29 @@ import {
     type StandaloneCSSDirectiveStatement
 } from '@master/css-compiler'
 import type { CSSDirectiveExtractionPolicy } from 'shared/css-directives'
-import type { Options } from './options'
 
-export type ExtractorDirectives = CSSDirectiveExtractionPolicy
+export type StylesheetDirectives = CSSDirectiveExtractionPolicy
 
-export type ExtractorDirectiveStatement = StandaloneCSSDirectiveStatement
+export type StylesheetDirectiveStatement = StandaloneCSSDirectiveStatement
 
-export interface CollectedExtractorDirectives {
-    directives: ExtractorDirectives
+export interface StylesheetSourceOptions {
+    required?: string[]
+    include?: string[]
+    exclude?: string[]
+    safelist?: string[]
+    blocklist?: (string | RegExp)[]
+}
+
+export interface CollectedStylesheetDirectives {
+    directives: StylesheetDirectives
     dependencies: string[]
 }
 
-export function createExtractorDirectives(): ExtractorDirectives {
+export function createStylesheetDirectives(): StylesheetDirectives {
     return createCSSDirectiveExtractionPolicy()
 }
 
-export function hasExtractorDirectives(directives?: ExtractorDirectives) {
+export function hasStylesheetDirectives(directives?: StylesheetDirectives) {
     return Boolean(directives && (
         directives.include.length ||
         directives.exclude.length ||
@@ -36,7 +43,7 @@ export function hasExtractorDirectives(directives?: ExtractorDirectives) {
     ))
 }
 
-export function hasExtractorSourceDirectives(directives?: ExtractorDirectives) {
+export function hasStylesheetSourceDirectives(directives?: StylesheetDirectives) {
     return Boolean(directives && (
         directives.include.length ||
         directives.exclude.length ||
@@ -59,11 +66,11 @@ function normalizeSourcePattern(pattern: string, file?: string, cwd = process.cw
     return normalizePath(pattern)
 }
 
-export function mergeExtractorDirectives(...directives: (Partial<ExtractorDirectives> | undefined)[]) {
+export function mergeStylesheetDirectives(...directives: (Partial<StylesheetDirectives> | undefined)[]) {
     return mergeCSSDirectiveExtractionPolicy(...directives)
 }
 
-export function mergeExtractorOptions(options: Options, directives?: ExtractorDirectives): Options {
+export function mergeStylesheetSourceOptions<T extends StylesheetSourceOptions>(options: T, directives?: StylesheetDirectives): T {
     if (!directives) return options
     return {
         ...options,
@@ -72,14 +79,14 @@ export function mergeExtractorOptions(options: Options, directives?: ExtractorDi
         required: [...new Set([...(options.required || []), ...directives.required])],
         safelist: [...new Set([...(options.safelist || []), ...directives.safelist])],
         blocklist: [...(options.blocklist || []), ...directives.blocklist]
-    }
+    } as T
 }
 
-export function findExtractorDirectiveStatements(source: string): ExtractorDirectiveStatement[] {
+export function findStylesheetDirectiveStatements(source: string): StylesheetDirectiveStatement[] {
     return findStandaloneCSSDirectiveStatements(source)
 }
 
-export function removeExtractorDirectiveStatements(source: string) {
+export function removeStylesheetDirectiveStatements(source: string) {
     const code = removeStandaloneCSSDirectives(source)
     return {
         code,
@@ -87,7 +94,7 @@ export function removeExtractorDirectiveStatements(source: string) {
     }
 }
 
-export function collectExtractorDirectives(source: string, file?: string, cwd = process.cwd()) {
+export function collectStylesheetDirectives(source: string, file?: string, cwd = process.cwd()) {
     const directives = collectStandaloneCSSDirectiveExtractionPolicy(source)
     directives.include = directives.include.map((arg) => normalizeSourcePattern(arg, file, cwd))
     directives.exclude = directives.exclude.map((arg) => normalizeSourcePattern(arg, file, cwd))
@@ -209,7 +216,7 @@ function collectCSSGraphDirectivesFile(
     dependencies: string[],
     dependencySet: Set<string>,
     stack: string[]
-): ExtractorDirectives {
+): StylesheetDirectives {
     const absoluteFile = resolve(file)
     if (stack.includes(absoluteFile)) {
         throw new Error(`Circular CSS import: ${[...stack, absoluteFile].join(' -> ')}`)
@@ -219,7 +226,7 @@ function collectCSSGraphDirectivesFile(
         dependencies.push(absoluteFile)
     }
 
-    let directives = collectExtractorDirectives(source, absoluteFile, cwd)
+    let directives = collectStylesheetDirectives(source, absoluteFile, cwd)
     for (const importStatement of findImportStatements(source)) {
         const importSource = parseImportSource(importStatement.statement)
         if (!importSource || !isExpandableStyleImportSource(importSource)) continue
@@ -227,7 +234,7 @@ function collectCSSGraphDirectivesFile(
         if (!existsSync(importedFile)) {
             throw new Error(`CSS file not found: ${importedFile}`)
         }
-        directives = mergeExtractorDirectives(
+        directives = mergeStylesheetDirectives(
             directives,
             collectCSSGraphDirectivesFile(
                 importedFile,
@@ -242,7 +249,7 @@ function collectCSSGraphDirectivesFile(
     return directives
 }
 
-export function collectExtractorDirectivesFromCSSGraph(file: string, source?: string, cwd = process.cwd()): CollectedExtractorDirectives {
+export function collectStylesheetDirectivesFromCSSGraph(file: string, source?: string, cwd = process.cwd()): CollectedStylesheetDirectives {
     const dependencies: string[] = []
     const filename = resolve(file)
     return {
@@ -258,7 +265,7 @@ export function collectExtractorDirectivesFromCSSGraph(file: string, source?: st
     }
 }
 
-export function resolveExtractorSourcePaths(options: Options, cwd = process.cwd()) {
+export function resolveStylesheetSourcePaths(options: StylesheetSourceOptions, cwd = process.cwd()) {
     const paths = new Set<string>()
     if (options.include?.length) {
         for (const sourcePath of explorePathsSync(options.include, { cwd, ignore: options.exclude })) {

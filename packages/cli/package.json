@@ -41,6 +41,7 @@
         "@master/css": "workspace:^",
         "@master/css-plan": "workspace:^",
         "@master/css-extractor": "workspace:^",
+        "@master/css-stylesheet": "workspace:^",
         "@master/css-server": "workspace:^",
         "@techor/extend": "^3.2.5",
         "@techor/fs": "^3.2.5",

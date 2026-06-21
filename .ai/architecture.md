@@ -21,6 +21,7 @@ shared / external data
 @master/css-runtime
 @master/css-language
 @master/css-language-service
+@master/css-stylesheet
   ↓
 @master/css.vite
 @master/css.webpack
@@ -42,7 +43,7 @@ The engine package must remain independent from integrations and tooling package
 
 When a feature creates a package cycle or self-build cycle, extract dependency-free contracts, IR, or lexical source scanners into the lowest owning package first. Use `shared` for type/data contracts and `@master/css-lexer` for raw source/range/token scanning. Keep engine independent; packages above engine may depend on engine for plan-driven semantic interpretation.
 
-`shared` owns MasterCSSPlan contracts, plan JSON normalization helpers, and CSS directive result contracts. `@master/css-lexer` owns dependency-free source scanners: generic ranges, CSS directive ranges, Master CSS plan entrypoint statements, Master class lexical display tokens, and latent class candidates. `@master/css-source` owns source-format-aware class extraction adapters such as HTML and OXC-based JavaScript/TypeScript scanning, and depends on `@master/css-lexer` rather than duplicating raw class tokenization. `@master/css-integration` owns adapter-neutral integration contracts such as `?master-css-plan`, `virtual:master-css-plan.json`, `virtual:master-css-preloaded`, `virtual:master-utilities.css`, generated JSON/preloaded source helpers, and dependency-light loader/plugin contracts. None of these packages should own CSS semantic parsing, import graph expansion, or Master CSS package resolution.
+`shared` owns MasterCSSPlan contracts, plan JSON normalization helpers, and CSS directive result contracts. `@master/css-lexer` owns dependency-free source scanners: generic ranges, CSS directive ranges, Master CSS plan entrypoint statements, Master class lexical display tokens, and latent class candidates. `@master/css-source` owns source-format-aware class extraction adapters such as HTML and OXC-based JavaScript/TypeScript scanning, and depends on `@master/css-lexer` rather than duplicating raw class tokenization. `@master/css-integration` owns adapter-neutral integration contracts such as `?master-css-plan`, `virtual:master-css-plan.json`, `virtual:master-css-preloaded`, `virtual:master-utilities.css`, generated JSON/preloaded source helpers, and dependency-light loader/plugin contracts. `@master/css-stylesheet` composes compiler, integration protocol, validator/native CSS helpers, and structural extraction state for stylesheet entry output. None of these lower packages should own framework lifecycle behavior.
 
 ## Engine, Preset, And Facade Packages
 
@@ -85,7 +86,9 @@ Important files:
 
 `packages/integration` defines the virtual module and query protocol shared by build and framework integrations. It must stay adapter-neutral: no Vite, Next, Webpack, Runtime, Server, Extractor, Compiler, or Plan dependencies. Node filesystem helpers are isolated under its `./node` subpath.
 
-`packages/extractor` scans source files, validates latent classes, and emits CSS for static output. It consumes `@master/css-source` for source adapters and `@master/css-lexer` for lower-level CSS/source scanners used by stylesheet helpers. It owns extraction-specific stylesheet helpers such as native CSS merging, native CSS pruning/source directives, and generated CSS composition. Project plan discovery and plan loading belong in `@master/css-plan` or the calling integration.
+`packages/extractor` scans source files, validates latent classes, and maintains generated CSS extraction state. It consumes `@master/css-source` for source adapters. Stylesheet entry detection, native CSS pruning/source directives, generated CSS composition, and preloaded manifest output belong in `@master/css-stylesheet`. Project plan discovery and plan loading belong in `@master/css-plan` or the calling integration.
+
+`packages/stylesheet` owns the stylesheet pipeline used by Vite, Webpack, Next, and the CLI. It detects Master CSS stylesheet entries, resolves stylesheet import graphs, compiles CSS-first directives, registers stylesheet sources, scopes extraction directives, and composes native CSS with generated CSS. It accepts structural extractor state and must not depend on `@master/css-extractor`.
 
 ## Integration Packages
 

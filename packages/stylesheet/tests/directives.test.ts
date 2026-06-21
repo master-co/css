@@ -2,24 +2,24 @@ import { mkdirSync, mkdtempSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
-import CSSExtractor from '../src/core'
-import { collectExtractorDirectives, removeExtractorDirectiveStatements } from '../src/directives'
+import CSSExtractor from '@master/css-extractor'
+import { collectStylesheetDirectives, removeStylesheetDirectiveStatements } from '../src/directives'
 import {
     createExtractedCSS,
     registerStyleCSSSource
-} from '../src/style'
+} from '../src'
 
 function createFixture() {
-    const root = mkdtempSync(join(tmpdir(), 'master-css-extractor-directives-'))
+    const root = mkdtempSync(join(tmpdir(), 'master-css-stylesheet-directives-'))
     mkdirSync(join(root, 'app/a'), { recursive: true })
     mkdirSync(join(root, 'app/b'), { recursive: true })
     return root
 }
 
-describe('extractor CSS directives', () => {
+describe('stylesheet CSS directives', () => {
     it('reads directive modifiers outside quoted strings', () => {
         const root = createFixture()
-        const directives = collectExtractorDirectives(`
+        const directives = collectStylesheetDirectives(`
             @source './exclude/**/*.tsx';
             @source not './src/**/*.test.tsx';
             @source required './src/force-exclude.tsx';
@@ -46,8 +46,8 @@ describe('extractor CSS directives', () => {
             @master class exclude 'legacy-*';
             @master no-shake;
         `
-        const directives = collectExtractorDirectives(source)
-        const result = removeExtractorDirectiveStatements(source)
+        const directives = collectStylesheetDirectives(source)
+        const result = removeStylesheetDirectiveStatements(source)
 
         expect(directives).toEqual({
             include: [],
@@ -83,7 +83,7 @@ describe('extractor CSS directives', () => {
             @blocklist 'legacy-*';
         `)
         const css = await createExtractedCSS({
-            extractor,
+            state: extractor,
             styleCSSSources,
             projectDir: root
         })
@@ -119,7 +119,7 @@ describe('extractor CSS directives', () => {
         `)
 
         const css = await createExtractedCSS({
-            extractor,
+            state: extractor,
             styleCSSSources,
             includeGeneratedCSS: false,
             projectDir: root
@@ -156,7 +156,7 @@ describe('extractor CSS directives', () => {
         `)
 
         const css = await createExtractedCSS({
-            extractor,
+            state: extractor,
             styleCSSSources,
             includeGeneratedCSS: false,
             projectDir: root

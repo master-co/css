@@ -26,8 +26,7 @@ export default function ExtractorPlugin(options: PluginOptions, context: PluginC
                 && Array.isArray(options.extractor.include)
                 ? options.extractor.include
                 : null
-            const cssInclude = extractor.extractorDirectives?.include
-            if ((!userInclude || userInclude.length === 0) && (!cssInclude || cssInclude.length === 0)) {
+            if (!userInclude || userInclude.length === 0) {
                 extractor.options.include = []
             }
         },

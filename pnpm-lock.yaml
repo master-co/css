@@ -150,6 +150,9 @@ importers:
       '@master/css-source':
         specifier: workspace:^
         version: link:packages/source
+      '@master/css-stylesheet':
+        specifier: workspace:^
+        version: link:packages/stylesheet
       '@master/css-validator':
         specifier: workspace:^
         version: link:packages/validator
@@ -1159,6 +1162,9 @@ importers:
       '@master/css-server':
         specifier: workspace:^
         version: link:../server
+      '@master/css-stylesheet':
+        specifier: workspace:^
+        version: link:../stylesheet
       '@techor/extend':
         specifier: ^3.2.5
         version: 3.2.5
@@ -1339,15 +1345,6 @@ importers:
       '@master/css':
         specifier: workspace:^
         version: link:../core
-      '@master/css-compiler':
-        specifier: workspace:^
-        version: link:../compiler
-      '@master/css-integration':
-        specifier: workspace:^
-        version: link:../integration
-      '@master/css-lexer':
-        specifier: workspace:^
-        version: link:../lexer
       '@master/css-preset':
         specifier: workspace:^
         version: link:../preset
@@ -1586,6 +1583,9 @@ importers:
       '@master/css-server':
         specifier: workspace:^
         version: link:../server
+      '@master/css-stylesheet':
+        specifier: workspace:^
+        version: link:../stylesheet
     devDependencies:
       next:
         specifier: ^16.2.4
@@ -1817,6 +1817,40 @@ importers:
         specifier: workspace:^
         version: link:../../shared
 
+  packages/stylesheet:
+    dependencies:
+      '@master/css':
+        specifier: workspace:^
+        version: link:../core
+      '@master/css-compiler':
+        specifier: workspace:^
+        version: link:../compiler
+      '@master/css-engine':
+        specifier: workspace:^
+        version: link:../engine
+      '@master/css-integration':
+        specifier: workspace:^
+        version: link:../integration
+      '@master/css-lexer':
+        specifier: workspace:^
+        version: link:../lexer
+      '@master/css-validator':
+        specifier: workspace:^
+        version: link:../validator
+      '@techor/glob':
+        specifier: ^3.2.5
+        version: 3.2.5
+    devDependencies:
+      '@master/css-extractor':
+        specifier: workspace:^
+        version: link:../extractor
+      '@master/css-preset':
+        specifier: workspace:^
+        version: link:../preset
+      shared:
+        specifier: workspace:^
+        version: link:../../shared
+
   packages/svelte:
     dependencies:
       '@master/css':
@@ -1929,6 +1963,9 @@ importers:
       '@master/css-server':
         specifier: workspace:^
         version: link:../server
+      '@master/css-stylesheet':
+        specifier: workspace:^
+        version: link:../stylesheet
       magic-string:
         specifier: ^0.30.21
         version: 0.30.21
@@ -2067,6 +2104,9 @@ importers:
       '@master/css-plan':
         specifier: workspace:^
         version: link:../plan
+      '@master/css-stylesheet':
+        specifier: workspace:^
+        version: link:../stylesheet
       '@techor/log':
         specifier: ^3.2.5
         version: 3.2.5

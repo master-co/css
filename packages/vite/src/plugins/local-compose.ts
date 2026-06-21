@@ -5,7 +5,7 @@ import {
     isStyleCSSRequest,
     resolveMasterStyleSource,
     transformLocalStyleCSS
-} from '@master/css-extractor/style'
+} from '@master/css-stylesheet'
 import type { PluginContext } from '../core'
 import type { PluginOptions } from '../options'
 

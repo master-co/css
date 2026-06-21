@@ -2,14 +2,14 @@ import CSSExtractor, { type Options as ExtractorOptions } from '@master/css-extr
 import defaultExtractorOptions from '@master/css-extractor/options'
 import {
     createStyleCSSHostSource,
-    createExtractedCSS as createExtractorStaticCSS,
+    createExtractedCSS as createStylesheetStaticCSS,
     isMasterCSSPackageStyleFile,
     isStyleCSSRequest,
     removeMasterStyleDirectives,
     resolveMasterStyleSource,
     registerStyleCSSSource,
     type StyleCSSSources
-} from '@master/css-extractor/style'
+} from '@master/css-stylesheet'
 import { findCSSPlanEntryFiles } from '@master/css-plan/css'
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { existsSync, readFileSync } from 'node:fs'
@@ -96,8 +96,8 @@ export async function transformStaticStyleSource(statePath: string, resourcePath
 }
 
 async function createStaticCSS(projectDir: string, session: StaticSession) {
-    return createExtractorStaticCSS({
-        extractor: session.extractor,
+    return createStylesheetStaticCSS({
+        state: session.extractor,
         styleCSSSources: session.styleCSSSources,
         projectDir
     })

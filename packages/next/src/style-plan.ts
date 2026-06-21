@@ -5,7 +5,7 @@ import {
     createExtractedCSS,
     registerStyleCSSSource,
     type StyleCSSSources
-} from '@master/css-extractor/style'
+} from '@master/css-stylesheet'
 import type { MasterCSSPlan } from '@master/css'
 import { readFile } from 'node:fs/promises'
 
@@ -39,7 +39,7 @@ export async function createMasterCSSBuildPlanResolver(projectDir: string): Prom
         async resolve(classes?: string[]) {
             const nativeCSS = classes?.length
                 ? await createExtractedCSS({
-                    extractor,
+                    state: extractor,
                     styleCSSSources,
                     basePlan: result.plan,
                     plan: result.plan,
