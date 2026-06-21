@@ -207,6 +207,37 @@ test('does not change native CSS TextMate scopes when injected', () => {
     expect(injectedTokens).toEqual(nativeTokens)
 })
 
+test('highlights keyframes nested inside theme directives with native CSS scopes', () => {
+    const tokens = tokenizeWith(injectedCSSGrammar, [
+        '@theme {',
+        '    --font-sans: "Inter";',
+        '',
+        '    @keyframes zoom {',
+        '        0% {',
+        '            transform: scale(0);',
+        '        }',
+        '',
+        '        to {',
+        '            transform: none;',
+        '        }',
+        '    }',
+        '',
+        '    --color-stone-0: oklch(99% 0.0033 72);',
+        '}'
+    ].join('\n'))
+
+    expectScope(tokens, '@', 'punctuation.definition.keyword.css')
+    expectScope(tokens, 'keyframes', 'keyword.control.at-rule.keyframes.css')
+    expectScope(tokens, 'zoom', 'variable.parameter.keyframe-list.css')
+    expectScope(tokens, '0%', 'entity.other.keyframe-offset.percentage.css')
+    expectScope(tokens, 'to', 'entity.other.keyframe-offset.css')
+    expectNoScope(tokens, 'to', 'entity.other.attribute-name.class.master-css')
+    expectScope(tokens, 'transform', 'support.type.property-name.css')
+    expectScope(tokens, 'scale', 'support.function.transform.css')
+    expectScope(tokens, 'none', 'support.constant.property-value.css')
+    expectScope(tokens, '--color-stone-0', 'variable.css.custom-property.master-css')
+})
+
 test('documents native CSS punctuation scopes used by semantic token mappings', () => {
     const nativeCSS = [
         'main > .card:hover::before, button[aria-expanded="true"] {',

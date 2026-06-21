@@ -481,6 +481,87 @@
                 }
             ]
         },
+        "master-keyframes": {
+            "patterns": [
+                {
+                    "begin": "(?i)(?=@(?:-(?:webkit|moz|o|ms)-)?keyframes([\"';{\\s]|/\\*|$))",
+                    "end": "(?<=})(?!\\G)",
+                    "patterns": [
+                        {
+                            "begin": "(?i)\\G(@)(?:-(?:webkit|moz|o|ms)-)?keyframes",
+                            "beginCaptures": {
+                                "0": {
+                                    "name": "keyword.control.at-rule.keyframes.css"
+                                },
+                                "1": {
+                                    "name": "punctuation.definition.keyword.css"
+                                }
+                            },
+                            "end": "(?=\\s*\\{)",
+                            "name": "meta.at-rule.keyframes.header.css",
+                            "patterns": [
+                                {
+                                    "include": "source.css#comment-block"
+                                },
+                                {
+                                    "include": "source.css#escapes"
+                                },
+                                {
+                                    "captures": {
+                                        "0": {
+                                            "patterns": [
+                                                {
+                                                    "include": "source.css#escapes"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "match": "[-A-Z_a-z[^\\x00-\\x7F]](?:[-0-9A-Z_a-z[^\\x00-\\x7F]]|\\\\(?:\\h{1,6}|.))*",
+                                    "name": "variable.parameter.keyframe-list.css"
+                                }
+                            ]
+                        },
+                        {
+                            "begin": "\\{",
+                            "beginCaptures": {
+                                "0": {
+                                    "name": "punctuation.section.keyframes.begin.bracket.curly.css"
+                                }
+                            },
+                            "end": "\\}",
+                            "endCaptures": {
+                                "0": {
+                                    "name": "punctuation.section.keyframes.end.bracket.curly.css"
+                                }
+                            },
+                            "name": "meta.at-rule.keyframes.body.css",
+                            "patterns": [
+                                {
+                                    "include": "source.css#comment-block"
+                                },
+                                {
+                                    "include": "source.css#escapes"
+                                },
+                                {
+                                    "captures": {
+                                        "1": {
+                                            "name": "entity.other.keyframe-offset.css"
+                                        },
+                                        "2": {
+                                            "name": "entity.other.keyframe-offset.percentage.css"
+                                        }
+                                    },
+                                    "match": "(?i)(?<![-\\w])(from|to)(?![-\\w])|([-+]?(?:\\d+(?:\\.\\d+)?|\\.\\d+)%)"
+                                },
+                                {
+                                    "include": "source.css#rule-list"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
         "master-preserve-prelude": {
             "patterns": [
                 {
@@ -575,6 +656,9 @@
                         },
                         {
                             "include": "#master-theme-declaration"
+                        },
+                        {
+                            "include": "#master-keyframes"
                         },
                         {
                             "include": "#master-directive"
