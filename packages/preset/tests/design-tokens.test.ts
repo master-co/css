@@ -50,6 +50,7 @@ const removedVariableNames = [
     'color-text-placeholder',
     'color-text-link',
     'color-text-link-hover',
+    'color-text-inverse',
     'color-line',
     'color-line-strong',
     'color-line-muted',
@@ -190,7 +191,7 @@ describe.concurrent('@master/css-preset design token parity', () => {
         })
     })
 
-    test('removes UI, product, and expanded hue role tokens from the default preset', () => {
+    test('removes UI, product, text role, and expanded hue role tokens from the default preset', () => {
         for (const name of removedVariableNames) {
             expect(findVariable(name), name).toBeUndefined()
         }
@@ -224,17 +225,6 @@ describe.concurrent('@master/css-preset design token parity', () => {
         }
     })
 
-    test('keeps only the inverse text role token', () => {
-        expect(findVariable('color-text-inverse')).toMatchObject({
-            namespace: 'color-text',
-            key: 'inverse',
-            modes: expect.objectContaining({
-                light: expect.objectContaining({ value: '$color-white' }),
-                dark: expect.objectContaining({ value: '$color-black' })
-            })
-        })
-    })
-
     test('precomputes default breakpoint and container at-rule aliases', () => {
         expect(defaultManifest.breakpointAtRules?.sm).toMatchObject({
             id: 'media',
@@ -259,7 +249,7 @@ describe.concurrent('@master/css-preset design token parity', () => {
         expect(css.create('text:2xl')?.text).toContain('font-size:var(--font-size-2xl)')
         expect(css.create('m:md')?.text).toContain('margin:var(--spacing-md)')
         expect(css.create('r:lg')?.text).toContain('border-radius:var(--radius-lg)')
-        expect(css.create('text:inverse')?.text).toContain('color:var(--color-text-inverse)')
+        expect(css.create('text:inverse')).toBeUndefined()
         expect(css.create('text:muted')).toBeUndefined()
         expect(css.create('bg:line')).toBeUndefined()
         expect(css.create('fg:muted')?.text).not.toContain('var(--color-text-muted)')

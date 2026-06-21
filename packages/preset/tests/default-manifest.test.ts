@@ -410,7 +410,7 @@ describe('@master/css-preset defaultManifest', () => {
         expect(css.create('text:red')?.text).toBe('.text\\:red{color:var(--color-text-red)}')
         expect(css.create('text:blue')?.text).toBe('.text\\:blue{color:var(--color-text-blue)}')
         expect(css.create('text:blue-60')?.text).toBe('.text\\:blue-60{color:var(--color-blue-60)}')
-        expect(css.create('text:inverse')?.text).toBe('.text\\:inverse{color:var(--color-text-inverse)}')
+        expect(css.create('text:inverse')).toBeUndefined()
         expect(css.create('text:muted')).toBeUndefined()
         expect(css.create('text-decoration:red')?.text).toBe('.text-decoration\\:red{text-decoration-color:var(--color-text-red)}')
         expect(css.create('text-stroke:red')?.text).toBe('.text-stroke\\:red{-webkit-text-stroke-color:var(--color-red)}')

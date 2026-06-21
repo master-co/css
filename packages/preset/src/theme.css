@@ -644,8 +644,6 @@
     --color-text-pink: $color-pink-60;
     --color-text-crimson: $color-crimson-60;
     --color-text-red: $color-red-60;
-
-    --color-text-inverse: $color-white;
 }
 
 /* Dark mode tokens */
@@ -705,8 +703,6 @@
     --color-text-pink: $color-pink-30;
     --color-text-crimson: $color-crimson-30;
     --color-text-red: $color-red-30;
-
-    --color-text-inverse: $color-black;
 }
 
 /* Inline aliases */
