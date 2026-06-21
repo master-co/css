@@ -19,16 +19,18 @@ const languageService = new CSSLanguageService(customSettings)
 Check out the [source code](https://github.com/master-co/css/blob/rc/packages/language-service/src/core.ts) for arguments and properties.
 
 ### Render semantic tokens
-`renderSemanticTokens()` returns [LSP semantic tokens](https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#textDocument_semanticTokens) for Master CSS class spans and CSS directives discovered in a text document.
+`renderSemanticTokens()` returns [LSP semantic tokens](https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#textDocument_semanticTokens) for Master CSS class spans discovered in a text document.
 ```ts
 const semanticTokens = languageService.renderSemanticTokens(textDocument)
 ```
 
 Semantic tokens are generated with the project plan and Master CSS engine, so custom variables, components, utilities, modes, and other plan-dependent tokens can be classified after the project plan is loaded by the caller.
 
-The token types stay within the exported LSP legend and use CSS-native categories where possible: declaration keys use `property`, values and semantic utility names use `enumMember`, selector class names and component utilities use `class`. CSS-like punctuation and operators also carry role-derived modifiers such as `declarationTerminator`, `declarationSeparator`, `blockBrace`, `selectorCombinator`, and `functionPunctuation` so editors can map them to native CSS scopes.
+The token types stay within the exported LSP legend and use CSS-native categories where possible: declaration keys use `property`, values and semantic utility names use `enumMember`, selector class names and component utilities use `class`. CSS-like punctuation and operators inside class spans also carry role-derived modifiers such as `declarationTerminator`, `declarationSeparator`, `blockBrace`, `selectorCombinator`, and `functionPunctuation` so editors can map them to native CSS scopes.
 
-Use `renderSemanticTokensAtPosition()` when a client wants active-only highlighting for the embedded class context or CSS directive at the current editor position.
+CSS directive syntax in CSS-family documents is highlighted by the shared TextMate grammar. Semantic tokens are only added for directive class-list spans such as bare `@compose` preludes and quoted `@safelist` strings.
+
+Use `renderSemanticTokensAtPosition()` when a client wants active-only highlighting for the embedded class context or CSS directive class-list span at the current editor position.
 ```ts
 const semanticTokens = languageService.renderSemanticTokensAtPosition(textDocument, position)
 ```
@@ -50,7 +52,7 @@ import {
 const semanticTokens = renderBrowserSemanticTokens(source, 'html', { plan })
 ```
 
-The browser helper supports CSS documents and quoted `class` or `className` attributes in HTML. It returns encoded semantic token data that can be passed to editors such as Monaco together with `SEMANTIC_TOKENS_LEGEND`.
+The browser helper supports CSS directive class-list spans in CSS documents and quoted `class` or `className` attributes in HTML. It returns encoded semantic token data that can be passed to editors such as Monaco together with `SEMANTIC_TOKENS_LEGEND`.
 
 ---
 
@@ -173,7 +175,7 @@ Enable syntax color rendering.
 Control embedded semantic token highlighting mode.
 <DocProp defaultValue={JSON.stringify(settings.embeddedSyntaxHighlighting)} types={['"active" | "always" | "off"']} />
 
-`active` highlights the embedded class context at the active editor position, `always` highlights all discovered embedded utility classes, and `off` disables embedded utility highlighting. Master CSS syntax inside CSS documents is always highlighted. Semantic tokens classify Master CSS spans as `class`, `enumMember`, `property`, `variable`, `function`, `number`, `string`, `keyword`, `modifier`, `operator`, or `type`. Components defined in the project plan are emitted as `class` tokens with the `declaration` and `component` modifiers; CSS directives, queries, selectors, pseudo states, units, quoted strings, and important markers use dedicated semantic token modifiers.
+`active` highlights the embedded class context at the active editor position, `always` highlights all discovered embedded utility classes, and `off` disables embedded utility highlighting. Master CSS directive syntax inside CSS documents is highlighted by TextMate grammar. Semantic tokens classify Master CSS class spans as `class`, `enumMember`, `property`, `variable`, `function`, `number`, `string`, `keyword`, `modifier`, `operator`, or `type`. Components defined in the project plan are emitted as `class` tokens with the `declaration` and `component` modifiers; queries, selectors, pseudo states, units, quoted strings, and important markers inside class spans use dedicated semantic token modifiers.
 
 ### `settings.editSyntaxColors`
 Enable syntax color editing.

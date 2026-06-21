@@ -115,7 +115,85 @@
                     ]
                 },
                 {
-                    "begin": "(@)(master|settings|safelist|defaults|components|utilities|custom-variant|compose|variant|slot|dark|light)\\b",
+                    "begin": "(@)(settings)\\b",
+                    "beginCaptures": {
+                        "1": {
+                            "name": "punctuation.definition.keyword.master-css"
+                        },
+                        "2": {
+                            "name": "keyword.control.at-rule.master-css"
+                        }
+                    },
+                    "end": "(;)|(?<=\\})|$",
+                    "endCaptures": {
+                        "1": {
+                            "name": "punctuation.section.master-css"
+                        }
+                    },
+                    "patterns": [
+                        {
+                            "include": "#master-settings-block"
+                        },
+                        {
+                            "match": "[;{}]",
+                            "name": "punctuation.section.master-css"
+                        }
+                    ]
+                },
+                {
+                    "begin": "(@)(safelist)\\b",
+                    "beginCaptures": {
+                        "1": {
+                            "name": "punctuation.definition.keyword.master-css"
+                        },
+                        "2": {
+                            "name": "keyword.control.at-rule.master-css"
+                        }
+                    },
+                    "end": "(;)|$",
+                    "endCaptures": {
+                        "1": {
+                            "name": "punctuation.section.master-css"
+                        }
+                    },
+                    "patterns": [
+                        {
+                            "include": "#master-string"
+                        },
+                        {
+                            "match": "[;{}]",
+                            "name": "punctuation.section.master-css"
+                        }
+                    ]
+                },
+                {
+                    "begin": "(@)(defaults|components|utilities)\\b",
+                    "beginCaptures": {
+                        "1": {
+                            "name": "punctuation.definition.keyword.master-css"
+                        },
+                        "2": {
+                            "name": "keyword.control.at-rule.master-css"
+                        }
+                    },
+                    "end": "(;)|(?<=\\})|$",
+                    "endCaptures": {
+                        "1": {
+                            "name": "punctuation.section.master-css"
+                        }
+                    },
+                    "patterns": [
+                        {
+                            "include": "#master-managed-block"
+                        },
+                        {
+                            "match": "[;{}]",
+                            "name": "punctuation.section.master-css"
+                        }
+                    ]
+                },
+                {
+                    "begin": "(@)(custom-variant)\\b",
                     "beginCaptures": {
                         "1": {
                             "name": "punctuation.definition.keyword.master-css"
@@ -135,9 +213,148 @@
                             "include": "#master-block"
                         },
                         {
-                            "include": "#master-prelude"
+                            "include": "#master-custom-variant-prelude"
                         }
                     ]
+                },
+                {
+                    "begin": "(@)(compose)\\b",
+                    "beginCaptures": {
+                        "1": {
+                            "name": "punctuation.definition.keyword.master-css"
+                        },
+                        "2": {
+                            "name": "keyword.control.at-rule.master-css"
+                        }
+                    },
+                    "end": "(;)|$",
+                    "endCaptures": {
+                        "1": {
+                            "name": "punctuation.section.master-css"
+                        }
+                    },
+                    "patterns": [
+                        {
+                            "include": "#master-compose-prelude"
+                        }
+                    ]
+                },
+                {
+                    "begin": "(@)(variant|dark|light)\\b",
+                    "beginCaptures": {
+                        "1": {
+                            "name": "punctuation.definition.keyword.master-css"
+                        },
+                        "2": {
+                            "name": "keyword.control.at-rule.master-css"
+                        }
+                    },
+                    "end": "(;)|(?<=\\})|$",
+                    "endCaptures": {
+                        "1": {
+                            "name": "punctuation.section.master-css"
+                        }
+                    },
+                    "patterns": [
+                        {
+                            "include": "#master-block"
+                        },
+                        {
+                            "include": "#master-variant-prelude"
+                        }
+                    ]
+                },
+                {
+                    "begin": "(@)(master|slot)\\b",
+                    "beginCaptures": {
+                        "1": {
+                            "name": "punctuation.definition.keyword.master-css"
+                        },
+                        "2": {
+                            "name": "keyword.control.at-rule.master-css"
+                        }
+                    },
+                    "end": "(;)|(?<=\\})|$",
+                    "endCaptures": {
+                        "1": {
+                            "name": "punctuation.section.master-css"
+                        }
+                    },
+                    "patterns": [
+                        {
+                            "include": "#master-block"
+                        },
+                        {
+                            "match": "[;{}]",
+                            "name": "punctuation.section.master-css"
+                        }
+                    ]
+                }
+            ]
+        },
+        "master-compose-prelude": {
+            "patterns": [
+                {
+                    "include": "#master-string"
+                },
+                {
+                    "include": "#master-query"
+                },
+                {
+                    "include": "#master-selector"
+                },
+                {
+                    "include": "#master-class-fragment"
+                },
+                {
+                    "match": "[;{}]",
+                    "name": "punctuation.section.master-css"
+                }
+            ]
+        },
+        "master-custom-variant-prelude": {
+            "patterns": [
+                {
+                    "include": "#master-query"
+                },
+                {
+                    "include": "#master-selector"
+                },
+                {
+                    "match": "(:{1,2})([_a-zA-Z-][_a-zA-Z0-9-]*)",
+                    "captures": {
+                        "1": {
+                            "name": "punctuation.definition.entity.master-css"
+                        },
+                        "2": {
+                            "name": "entity.other.attribute-name.pseudo-class.master-css"
+                        }
+                    }
+                },
+                {
+                    "match": "(?<![:@._a-zA-Z0-9-])[_a-zA-Z-][_a-zA-Z0-9-]*(?![-_a-zA-Z0-9])",
+                    "name": "variable.parameter.master-css"
+                },
+                {
+                    "match": "[;{}]",
+                    "name": "punctuation.section.master-css"
+                }
+            ]
+        },
+        "master-variant-prelude": {
+            "patterns": [
+                {
+                    "include": "#master-query"
+                },
+                {
+                    "include": "#master-selector"
+                },
+                {
+                    "include": "#master-class-fragment"
+                },
+                {
+                    "match": "[;{}]",
+                    "name": "punctuation.section.master-css"
                 }
             ]
         },
@@ -158,6 +375,36 @@
                 {
                     "match": "[;{}]",
                     "name": "punctuation.section.master-css"
+                }
+            ]
+        },
+        "master-native-declaration": {
+            "patterns": [
+                {
+                    "begin": "(^|(?<=[{;]))(\\s*)([_a-zA-Z-][_a-zA-Z0-9-]*)(\\s*)(:)",
+                    "beginCaptures": {
+                        "3": {
+                            "name": "support.type.property-name.master-css"
+                        },
+                        "5": {
+                            "name": "punctuation.separator.key-value.css"
+                        }
+                    },
+                    "contentName": "meta.property-value.css",
+                    "end": "\\s*(;)|\\s*(?=\\})",
+                    "endCaptures": {
+                        "1": {
+                            "name": "punctuation.terminator.rule.css"
+                        }
+                    },
+                    "patterns": [
+                        {
+                            "include": "#master-value"
+                        },
+                        {
+                            "include": "source.css#property-values"
+                        }
+                    ]
                 }
             ]
         },
@@ -249,15 +496,15 @@
         "master-managed-pattern": {
             "patterns": [
                 {
-                    "begin": "\\b([_a-zA-Z-][_a-zA-Z0-9-]*)(:)(<)",
+                    "begin": "(^|(?<=[{;]))(\\s*)([_a-zA-Z-][_a-zA-Z0-9-]*)(:)(<)",
                     "beginCaptures": {
-                        "1": {
+                        "3": {
                             "name": "support.type.property-name.master-css"
                         },
-                        "2": {
+                        "4": {
                             "name": "keyword.operator.master-css"
                         },
-                        "3": {
+                        "5": {
                             "name": "punctuation.definition.generic.begin.master-css"
                         }
                     },
@@ -279,12 +526,12 @@
                     ]
                 },
                 {
-                    "begin": "\\b([_a-zA-Z-][_a-zA-Z0-9-]*)(<)",
+                    "begin": "(^|(?<=[{;]))(\\s*)([_a-zA-Z-][_a-zA-Z0-9-]*)(<)",
                     "beginCaptures": {
-                        "1": {
+                        "3": {
                             "name": "entity.other.attribute-name.class.master-css"
                         },
-                        "2": {
+                        "4": {
                             "name": "punctuation.definition.generic.begin.master-css"
                         }
                     },
@@ -339,11 +586,97 @@
                 }
             ]
         },
+        "master-settings-block": {
+            "patterns": [
+                {
+                    "begin": "\\{",
+                    "beginCaptures": {
+                        "0": {
+                            "name": "punctuation.section.master-css"
+                        }
+                    },
+                    "end": "\\}",
+                    "endCaptures": {
+                        "0": {
+                            "name": "punctuation.section.master-css"
+                        }
+                    },
+                    "patterns": [
+                        {
+                            "include": "source.css#comment-block"
+                        },
+                        {
+                            "include": "#master-native-declaration"
+                        },
+                        {
+                            "include": "#master-directive"
+                        },
+                        {
+                            "include": "#master-block"
+                        }
+                    ]
+                }
+            ]
+        },
+        "master-managed-block": {
+            "patterns": [
+                {
+                    "begin": "\\{",
+                    "beginCaptures": {
+                        "0": {
+                            "name": "punctuation.section.master-css"
+                        }
+                    },
+                    "end": "\\}",
+                    "endCaptures": {
+                        "0": {
+                            "name": "punctuation.section.master-css"
+                        }
+                    },
+                    "patterns": [
+                        {
+                            "include": "#comment"
+                        },
+                        {
+                            "include": "#master-string"
+                        },
+                        {
+                            "include": "#master-directive"
+                        },
+                        {
+                            "include": "#master-managed-pattern"
+                        },
+                        {
+                            "include": "#master-managed-entry-selector"
+                        },
+                        {
+                            "include": "#master-native-declaration"
+                        },
+                        {
+                            "include": "#master-query"
+                        },
+                        {
+                            "include": "#master-selector"
+                        },
+                        {
+                            "include": "#master-value"
+                        },
+                        {
+                            "include": "#master-managed-block"
+                        }
+                    ]
+                }
+            ]
+        },
         "master-managed-entry-selector": {
             "patterns": [
                 {
-                    "match": "(?<![:@._a-zA-Z0-9-])([_a-zA-Z-][_a-zA-Z0-9-]*)(?=:{1,2}[_a-zA-Z-][_a-zA-Z0-9-]*\\s*\\{)",
-                    "name": "entity.other.attribute-name.class.master-css"
+                    "match": "(^|(?<=[{;]))(\\s*)([_a-zA-Z-][_a-zA-Z0-9-]*)(?=:{1,2}[_a-zA-Z-][_a-zA-Z0-9-]*\\s*\\{)",
+                    "captures": {
+                        "3": {
+                            "name": "entity.other.attribute-name.class.master-css"
+                        }
+                    }
                 },
                 {
                     "match": "(:{1,2})([_a-zA-Z-][_a-zA-Z0-9-]*)(?=\\s*\\{)",
@@ -353,6 +686,14 @@
                         },
                         "2": {
                             "name": "entity.other.attribute-name.pseudo-class.master-css"
+                        }
+                    }
+                },
+                {
+                    "match": "(^|(?<=[{;]))(\\s*)([_a-zA-Z-][_a-zA-Z0-9-]*)(?=\\s*\\{)",
+                    "captures": {
+                        "3": {
+                            "name": "entity.other.attribute-name.class.master-css"
                         }
                     }
                 }
@@ -388,6 +729,9 @@
                         },
                         {
                             "include": "#master-managed-entry-selector"
+                        },
+                        {
+                            "include": "#master-native-declaration"
                         },
                         {
                             "include": "#master-query"

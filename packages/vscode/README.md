@@ -8,7 +8,7 @@
 
 </div>
 
-Master CSS for Visual Studio Code provides plan-aware language features for Master CSS classes, CSS directives, and project-specific tokens. The extension starts the bundled Master CSS language server, loads the nearest project plan, and brings completion, hover, semantic highlighting, color tools, and directive diagnostics into supported files.
+Master CSS for Visual Studio Code provides plan-aware language features for Master CSS classes, CSS directives, and project-specific tokens. The extension starts the bundled Master CSS language server, loads the nearest project plan, and brings completion, hover, TextMate directive highlighting, semantic class-list highlighting, color tools, and directive diagnostics into supported files.
 
 ## Quick Start
 
@@ -42,7 +42,7 @@ For project-aware tokens, create a CSS entry that contains `@master;` or `@impor
 
 - **Syntax suggestions**: Completes Master CSS utilities, values, selectors, queries, groups, and directive syntax in configured languages.
 - **Hover inspection**: Shows generated CSS previews for Master CSS syntax at the cursor.
-- **Semantic highlighting**: Highlights utility syntax, CSS directives, variables, components, selectors, pseudo states, queries, units, important markers, and quoted strings using VS Code semantic tokens.
+- **Syntax highlighting**: Highlights CSS directive syntax with the bundled TextMate grammar, then uses semantic tokens for embedded class lists, plan-aware variables, components, selectors, pseudo states, queries, units, important markers, and quoted strings.
 - **Embedded highlighting modes**: Highlights the active class context by default, can highlight every discovered embedded utility, or can disable embedded utility highlighting.
 - **Color support**: Shows VS Code color decorators for supported Master CSS color syntax and lets the VS Code color picker edit those values.
 - **Directive diagnostics**: Reports Master CSS directive errors in CSS, SCSS, LESS, and style blocks inside Vue, Svelte, and Astro files.
@@ -94,7 +94,7 @@ Set options in `.vscode/settings.json` or VS Code user settings with the `master
 | `masterCSS.suggestSyntax` | `boolean`, default `true` | Enables Master CSS completion items. |
 | `masterCSS.inspectSyntax` | `boolean`, default `true` | Enables hover inspection and generated CSS previews. |
 | `masterCSS.renderSyntaxColors` | `boolean`, default `true` | Enables color information for Master CSS syntax. |
-| `masterCSS.embeddedSyntaxHighlighting` | `"active"`, `"always"`, or `"off"`; default `"active"` | Controls semantic highlighting for embedded utilities in markup and scripts. CSS documents are still highlighted by the extension. |
+| `masterCSS.embeddedSyntaxHighlighting` | `"active"`, `"always"`, or `"off"`; default `"active"` | Controls semantic highlighting for embedded utilities in markup and scripts. CSS directive syntax is still highlighted by the TextMate grammar. |
 | `masterCSS.workspaces` | `"auto"` or `string[]`, default `"auto"` | Configures Master CSS workspaces. Auto mode detects CSS entries and Master CSS package dependencies. |
 
 Default class binding and function detection:
@@ -202,7 +202,7 @@ Use this after changing dependencies, workspace layout, or project plan files if
 - Requires VS Code `1.120.0` or newer.
 - Requires a trusted local workspace because the language server loads configuration and code from the workspace.
 - Does not support VS Code virtual workspaces or untrusted workspaces.
-- Uses semantic tokens for highlighting and does not contribute a Master CSS TextMate grammar or a custom `.mcss` language.
+- Uses a TextMate injection grammar for CSS directive syntax and semantic tokens for Master CSS class-list spans. It does not contribute a custom `.mcss` language.
 
 ## Troubleshooting
 

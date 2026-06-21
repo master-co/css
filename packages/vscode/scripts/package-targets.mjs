@@ -68,11 +68,12 @@ const TARGET_NATIVE_PACKAGES = {
 const STATIC_EXTENSION_PATHS = [
     'dist',
     'data',
-    'syntaxes',
     'LICENSE',
     'README.md',
     'icon.png'
 ]
+const MASTER_CSS_SOURCE_GRAMMAR_PATH = './node_modules/@master/css-language-service/syntaxes/master-css.tmLanguage.json'
+const MASTER_CSS_STAGED_GRAMMAR_PATH = './dist/node_modules/@master/css-language-service/syntaxes/master-css.tmLanguage.json'
 
 const BASE_RUNTIME_PACKAGES = [
     'lightningcss',
@@ -204,6 +205,14 @@ async function copyRuntimePackage(stagingDir, packageName) {
     return toNodeModulesPath(packageName)
 }
 
+async function copyTextMateGrammar(stagingDir) {
+    const sourcePath = packageRequire.resolve('@master/css-language-service/syntaxes/master-css.tmLanguage.json')
+    const destinationPath = join(stagingDir, MASTER_CSS_STAGED_GRAMMAR_PATH)
+    await mkdir(dirname(destinationPath), { recursive: true })
+    await cp(sourcePath, destinationPath, { force: true })
+    return MASTER_CSS_STAGED_GRAMMAR_PATH.slice(2)
+}
+
 export async function createStagedExtension(target = getCurrentTarget(), options = {}) {
     getTargetNativePackages(target)
 
@@ -220,17 +229,24 @@ export async function createStagedExtension(target = getCurrentTarget(), options
 
     const manifest = JSON.parse(await readFile(resolve(packageDir, 'package.json'), 'utf8'))
     const runtimeFiles = []
+    const textMateGrammarFile = await copyTextMateGrammar(stagingDir)
     for (const runtimePackage of runtimePackages) {
         await copyRuntimePackage(stagingDir, runtimePackage)
         runtimeFiles.push(toPackageFilesPattern(runtimePackage))
     }
 
+    for (const grammar of manifest.contributes?.grammars ?? []) {
+        if (grammar.path === MASTER_CSS_SOURCE_GRAMMAR_PATH) {
+            grammar.path = MASTER_CSS_STAGED_GRAMMAR_PATH
+        }
+    }
+
     manifest.files = [
         'dist',
         'data',
-        'syntaxes',
         'LICENSE',
         'icon.png',
+        textMateGrammarFile,
         ...runtimeFiles
     ]
 

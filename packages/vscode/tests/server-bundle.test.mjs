@@ -15,6 +15,8 @@ const serverPath = resolve(distDir, 'server.min.mjs')
 const extensionPath = resolve(distDir, 'extension.min.mjs')
 const workspaceDir = resolve(here, 'fixtures', 'bundled-config')
 const packageJSON = JSON.parse(readFileSync(resolve(packageDir, 'package.json'), 'utf8'))
+const sourceGrammarPath = './node_modules/@master/css-language-service/syntaxes/master-css.tmLanguage.json'
+const stagedGrammarPath = './dist/node_modules/@master/css-language-service/syntaxes/master-css.tmLanguage.json'
 
 function encode(message) {
     const body = Buffer.from(JSON.stringify(message))
@@ -207,7 +209,7 @@ test('manifest contributes TextMate grammar, semantic token scopes, and CSS diag
     expect(packageJSON.contributes.grammars).toEqual([
         {
             scopeName: 'master-css.directive.injection',
-            path: './syntaxes/master-css.tmLanguage.json',
+            path: sourceGrammarPath,
             injectTo: [
                 'source.css',
                 'source.css.scss',
@@ -244,12 +246,14 @@ test('manifest contributes TextMate grammar, semantic token scopes, and CSS diag
     ]))
 })
 
-test('staged extension includes TextMate syntaxes', async () => {
+test('staged extension includes shared TextMate grammar asset', async () => {
     await withStagedExtension(({ stagingDir, files }) => {
-        const syntaxPath = join(stagingDir, 'syntaxes', 'master-css.tmLanguage.json')
+        const syntaxPath = join(stagingDir, ...stagedGrammarPath.slice(2).split('/'))
+        const stagedPackageJSON = JSON.parse(readFileSync(join(stagingDir, 'package.json'), 'utf8'))
 
         expect(statSync(syntaxPath).isFile()).toBe(true)
-        expect(files).toContain('syntaxes')
+        expect(files).toContain(stagedGrammarPath.slice(2))
+        expect(stagedPackageJSON.contributes.grammars[0].path).toBe(stagedGrammarPath)
     })
 })
 

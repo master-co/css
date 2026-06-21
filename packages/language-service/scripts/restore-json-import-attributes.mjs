@@ -2,8 +2,9 @@ import { readdir, readFile, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
 
 const distDir = 'dist'
-const jsonImportRE = /from\s+(['"])(@master\/css-preset\/default-plan\.json|mdn-data\/css\/(?:properties|selectors|syntaxes)\.json)\1(?!\s+with\s*\{)/g
-const jsonSideEffectImportRE = /import\s+(['"])(@master\/css-preset\/default-plan\.json|mdn-data\/css\/(?:properties|selectors|syntaxes)\.json)\1(?!\s+with\s*\{)/g
+const jsonModuleRE = /(@master\/css-preset\/default-plan\.json|mdn-data\/css\/(?:properties|selectors|syntaxes)\.json|\.\.\/\.\.\/syntaxes\/master-css\.tmLanguage\.json)/
+const jsonImportRE = new RegExp(`from\\s+(['"])${jsonModuleRE.source}\\1(?!\\s+with\\s*\\{)`, 'g')
+const jsonSideEffectImportRE = new RegExp(`import\\s+(['"])${jsonModuleRE.source}\\1(?!\\s+with\\s*\\{)`, 'g')
 
 async function* walk(dir) {
     for (const entry of await readdir(dir, { withFileTypes: true })) {

@@ -39,7 +39,6 @@
     "files": [
         "dist",
         "data",
-        "syntaxes",
         "LICENSE",
         "icon.png"
     ],
@@ -466,7 +465,7 @@
         "grammars": [
             {
                 "scopeName": "master-css.directive.injection",
-                "path": "./syntaxes/master-css.tmLanguage.json",
+                "path": "./node_modules/@master/css-language-service/syntaxes/master-css.tmLanguage.json",
                 "injectTo": [
                     "source.css",
                     "source.css.scss",

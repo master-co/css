@@ -29,6 +29,10 @@ export function collectCSSDocumentHighlightTokenItems(this: CSSLanguageService, 
 }
 
 export function collectHighlightTokenItems(this: CSSLanguageService, document: TextDocument, classPositions = this.getClassPositions(document)): HighlightTokenItem[] {
+    if (isCSSSemanticTokenDocument(document.languageId)) {
+        return collectCSSDocumentHighlightTokenItems.call(this, document)
+    }
+
     return [
         ...collectEmbeddedHighlightTokenItems.call(this, document, classPositions),
         ...collectCSSDocumentHighlightTokenItems.call(this, document)

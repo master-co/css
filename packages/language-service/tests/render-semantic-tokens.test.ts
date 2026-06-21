@@ -228,10 +228,11 @@ test.concurrent('renders native-aligned semantic tokens for grouped classes with
     expect(tokens.some(({ text }) => text.includes('block}>li:hover@sm'))).toBe(false)
 })
 
-test.concurrent('renders semantic tokens for CSS directives', () => {
+test.concurrent('renders semantic tokens only for CSS directive class-list spans', () => {
     const { tokens } = renderTokens(`
         @master;
         @reference "./tokens.css";
+        @safelist "block fg:red:hover@md";
 
         @settings {
             root-size: 16;
@@ -312,64 +313,41 @@ test.concurrent('renders semantic tokens for CSS directives', () => {
         }
     `, 'css')
 
-    expectToken(tokens, '@master', 'keyword', ['directive'])
-    expectToken(tokens, ';', 'operator', ['directive', 'directiveTerminator'])
-    expectToken(tokens, '@reference', 'keyword', ['directive'])
-    expectToken(tokens, '@settings', 'keyword', ['directive'])
-    expectToken(tokens, 'root-size', 'property')
-    expectToken(tokens, '@theme', 'keyword', ['directive'])
-    expectToken(tokens, 'dark', 'enumMember', ['directive'])
-    expectToken(tokens, '--color-primary', 'variable')
-    expectToken(tokens, '$color-blue-60', 'variable')
-    expectToken(tokens, '@custom-variant', 'keyword', ['directive'])
-    expectToken(tokens, '@motion-safe', 'keyword', ['query'])
-    expectToken(tokens, '@slot', 'keyword', ['directive'])
-    expectToken(tokens, 'interactive', 'variable', ['directive', 'query'])
-    expect(tokens).not.toContainEqual({ text: '@' + 'animations', type: 'keyword', modifiers: ['directive'] })
-    expect(tokens).not.toContainEqual({ text: 'opacity', type: 'variable', modifiers: [] })
-    expect(tokens).not.toContainEqual({ text: '@media', type: 'keyword', modifiers: ['query'] })
-    expectToken(tokens, '@defaults', 'keyword', ['directive'])
-    expectToken(tokens, 'reset', 'class', ['selector'])
-    expectToken(tokens, '@components', 'keyword', ['directive'])
-    expectToken(tokens, 'btn', 'class', ['selector'])
-    expectToken(tokens, '@compose', 'keyword', ['directive'])
+    expectToken(tokens, 'block', 'enumMember')
     expectToken(tokens, 'fg', 'property')
+    expectToken(tokens, 'red', 'enumMember')
     expectToken(tokens, 'primary', 'enumMember')
     expectToken(tokens, 'hover', 'modifier', ['pseudoClass'])
     expectToken(tokens, '@md', 'keyword', ['query'])
-    expectToken(tokens, '@dark', 'keyword', ['directive'])
-    expectToken(tokens, '@variant', 'keyword', ['directive'])
+    expectToken(tokens, 'inline-flex', 'enumMember')
     expectToken(tokens, 'blue', 'enumMember')
-    expectToken(tokens, '<', 'operator', ['query', 'queryOperator'])
-    expectToken(tokens, 'sm', 'enumMember', ['query'])
-    expectToken(tokens, 'block', 'enumMember')
-    expectToken(tokens, 'scrollbar-thumb', 'modifier', ['pseudoElement'])
-    expectToken(tokens, 'hover', 'modifier', ['pseudoClass'])
-    expectToken(tokens, '@dark', 'keyword', ['query'])
-    expectToken(tokens, '@utilities', 'keyword', ['directive'])
-    expectToken(tokens, 'content-auto', 'class', ['selector'])
-    expectToken(tokens, 'text-', 'class', ['selector'])
-    expectToken(tokens, '|', 'operator', ['selector', 'selectorPunctuation'])
-    expectToken(tokens, 'left', 'enumMember', ['selector'])
-    expectToken(tokens, 'center', 'enumMember', ['selector'])
-    expectToken(tokens, 'right', 'enumMember', ['selector'])
-    expectToken(tokens, '--value', 'function')
-    expectToken(tokens, 'font', 'property')
-    expectToken(tokens, ':', 'operator', ['declarationSeparator'])
-    expectToken(tokens, '<', 'operator', ['directive'])
-    expectToken(tokens, '~', 'operator', ['directive'])
-    expectToken(tokens, '|', 'operator', ['directive'])
-    expectToken(tokens, 'font-size', 'variable', ['directive'])
-    expectToken(tokens, 'number', 'enumMember', ['directive'])
-    expectToken(tokens, 'color', 'enumMember', ['directive'])
-    expectToken(tokens, '*', 'operator', ['directive'])
-    expectToken(tokens, 'auto', 'enumMember', ['directive'])
-    expectToken(tokens, 'none', 'enumMember', ['directive'])
+
+    expect(tokens).not.toContainEqual({ text: '@master', type: 'keyword', modifiers: ['directive'] })
+    expect(tokens).not.toContainEqual({ text: '@reference', type: 'keyword', modifiers: ['directive'] })
+    expect(tokens).not.toContainEqual({ text: '@settings', type: 'keyword', modifiers: ['directive'] })
+    expect(tokens).not.toContainEqual({ text: 'root-size', type: 'property', modifiers: [] })
+    expect(tokens).not.toContainEqual({ text: '@theme', type: 'keyword', modifiers: ['directive'] })
+    expect(tokens).not.toContainEqual({ text: 'dark', type: 'enumMember', modifiers: ['directive'] })
+    expect(tokens).not.toContainEqual({ text: '--color-primary', type: 'variable', modifiers: [] })
+    expect(tokens).not.toContainEqual({ text: '$color-blue-60', type: 'variable', modifiers: [] })
+    expect(tokens).not.toContainEqual({ text: '@custom-variant', type: 'keyword', modifiers: ['directive'] })
+    expect(tokens).not.toContainEqual({ text: '@motion-safe', type: 'keyword', modifiers: ['query'] })
+    expect(tokens).not.toContainEqual({ text: '@slot', type: 'keyword', modifiers: ['directive'] })
+    expect(tokens).not.toContainEqual({ text: '@defaults', type: 'keyword', modifiers: ['directive'] })
+    expect(tokens).not.toContainEqual({ text: 'reset', type: 'class', modifiers: ['selector'] })
+    expect(tokens).not.toContainEqual({ text: '@components', type: 'keyword', modifiers: ['directive'] })
+    expect(tokens).not.toContainEqual({ text: 'btn', type: 'class', modifiers: ['selector'] })
+    expect(tokens).not.toContainEqual({ text: '@compose', type: 'keyword', modifiers: ['directive'] })
+    expect(tokens).not.toContainEqual({ text: '<', type: 'operator', modifiers: ['query', 'queryOperator'] })
+    expect(tokens).not.toContainEqual({ text: 'sm', type: 'enumMember', modifiers: ['query'] })
+    expect(tokens).not.toContainEqual({ text: '@utilities', type: 'keyword', modifiers: ['directive'] })
+    expect(tokens).not.toContainEqual({ text: 'text-', type: 'class', modifiers: ['selector'] })
+    expect(tokens).not.toContainEqual({ text: '--value', type: 'function', modifiers: [] })
     expect(tokens).not.toContainEqual({ text: 'text-align', type: 'property', modifiers: [] })
     expect(tokens).not.toContainEqual({ text: 'repeat', type: 'function', modifiers: [] })
 })
 
-test.concurrent('renders Master-only declaration tokens inside theme directives', () => {
+test.concurrent('does not render semantic tokens for theme directive declarations', () => {
     const { tokens } = renderTokens(`
         @theme {
             --font-family-serif: var(--font-serif, ui-serif), Georgia, Cambria, "Times New Roman", Times, serif;
@@ -398,29 +376,10 @@ test.concurrent('renders Master-only declaration tokens inside theme directives'
         }
     `, 'css')
 
-    expectToken(tokens, '@theme', 'keyword', ['directive'])
-    expectToken(tokens, 'dark', 'enumMember', ['directive'])
-    expectToken(tokens, 'inline', 'modifier', ['directive'])
-    expectToken(tokens, '--font-family-serif', 'variable')
-    expectToken(tokens, '--tracking-tightest', 'variable')
-    expectToken(tokens, ':', 'operator', ['declarationSeparator'])
-    expectToken(tokens, ';', 'operator', ['declarationTerminator'])
-    expect(tokens).not.toContainEqual({ text: 'font-serif', type: 'enumMember', modifiers: [] })
-    expect(tokens).not.toContainEqual({ text: 'var', type: 'function', modifiers: [] })
-    expect(tokens).not.toContainEqual({ text: '-', type: 'operator', modifiers: ['valueOperator'] })
-    expect(tokens).not.toContainEqual({ text: '0.072', type: 'number', modifiers: [] })
-    expect(tokens).not.toContainEqual({ text: 'em', type: 'enumMember', modifiers: ['unit'] })
-    expect(tokens).not.toContainEqual({ text: '@keyframes', type: 'keyword', modifiers: [] })
-    expect(tokens).not.toContainEqual({ text: 'oklch', type: 'function', modifiers: [] })
-    expect(tokens).not.toContainEqual({ text: '$color-red-50', type: 'variable', modifiers: [] })
-    expect(tokens).not.toContainEqual({ text: '--value', type: 'function', modifiers: [] })
-    expectToken(tokens, '$color-gray-100', 'variable')
-    expectToken(tokens, '--full', 'variable')
-    expect(tokens).not.toContainEqual({ text: '100', type: 'number', modifiers: [] })
-    expect(tokens).not.toContainEqual({ text: '%', type: 'enumMember', modifiers: ['unit'] })
+    expect(tokens).toEqual([])
 })
 
-test.concurrent('renders Master-only tokens inside managed definition directives', () => {
+test.concurrent('renders semantic tokens only for compose class lists inside managed definition directives', () => {
     const { tokens } = renderTokens(`
         @defaults {
             reset {
@@ -462,23 +421,20 @@ test.concurrent('renders Master-only tokens inside managed definition directives
         }
     `, 'css')
 
-    expectToken(tokens, '@defaults', 'keyword', ['directive'])
-    expectToken(tokens, 'reset', 'class', ['selector'])
-    expectToken(tokens, '@light', 'keyword', ['directive'])
-    expectToken(tokens, '@components', 'keyword', ['directive'])
-    expectToken(tokens, 'btn', 'class', ['selector'])
-    expectToken(tokens, 'btn:hover', 'class', ['selector'])
-    expectToken(tokens, '@compose', 'keyword', ['directive'])
     expectToken(tokens, 'inline-flex', 'enumMember')
-    expectToken(tokens, '@dark', 'keyword', ['directive'])
-    expectToken(tokens, '@utilities', 'keyword', ['directive'])
-    expectToken(tokens, 'font', 'property')
-    expectToken(tokens, 'font-size', 'variable', ['directive'])
-    expectToken(tokens, 'number', 'enumMember', ['directive'])
-    expectToken(tokens, '--value', 'function')
-    expectToken(tokens, 'text-', 'class', ['selector'])
-    expectToken(tokens, 'left', 'enumMember', ['selector'])
-    expectToken(tokens, 'right', 'enumMember', ['selector'])
+    expectToken(tokens, 'block', 'enumMember')
+    expect(tokens).not.toContainEqual({ text: '@defaults', type: 'keyword', modifiers: ['directive'] })
+    expect(tokens).not.toContainEqual({ text: 'reset', type: 'class', modifiers: ['selector'] })
+    expect(tokens).not.toContainEqual({ text: '@light', type: 'keyword', modifiers: ['directive'] })
+    expect(tokens).not.toContainEqual({ text: '@components', type: 'keyword', modifiers: ['directive'] })
+    expect(tokens).not.toContainEqual({ text: 'btn', type: 'class', modifiers: ['selector'] })
+    expect(tokens).not.toContainEqual({ text: '@compose', type: 'keyword', modifiers: ['directive'] })
+    expect(tokens).not.toContainEqual({ text: '@dark', type: 'keyword', modifiers: ['directive'] })
+    expect(tokens).not.toContainEqual({ text: '@utilities', type: 'keyword', modifiers: ['directive'] })
+    expect(tokens).not.toContainEqual({ text: 'font', type: 'property', modifiers: [] })
+    expect(tokens).not.toContainEqual({ text: 'font-size', type: 'variable', modifiers: ['directive'] })
+    expect(tokens).not.toContainEqual({ text: '--value', type: 'function', modifiers: [] })
+    expect(tokens).not.toContainEqual({ text: 'text-', type: 'class', modifiers: ['selector'] })
     expect(tokens).not.toContainEqual({ text: '@media', type: 'keyword', modifiers: [] })
     expect(tokens).not.toContainEqual({ text: 'label', type: 'class', modifiers: ['selector'] })
     expect(tokens).not.toContainEqual({ text: 'hover', type: 'modifier', modifiers: ['pseudoClass'] })
@@ -502,33 +458,31 @@ test.concurrent('renders CSS directive ranges with quoted semicolons', () => {
         @custom-variant @quoted { @media (x: "a;b") { @slot; } }
     `, 'css')
 
-    expectToken(tokens, '@source', 'keyword', ['directive'])
-    expectToken(tokens, 'not', 'modifier', ['directive'])
-    expectToken(tokens, 'required', 'modifier', ['directive'])
-    expectToken(tokens, ';', 'operator', ['directive', 'directiveTerminator'])
-    expectToken(tokens, '@safelist', 'keyword', ['directive'])
     expectToken(tokens, 'block', 'enumMember')
-    expectToken(tokens, '@blocklist', 'keyword', ['directive'])
-    expectToken(tokens, '@preserve', 'keyword', ['directive'])
-    expectToken(tokens, 'native', 'enumMember', ['directive'])
-    expectToken(tokens, '@compose', 'keyword', ['directive'])
     expectToken(tokens, 'fg', 'property')
     expectToken(tokens, 'red', 'enumMember')
-    expectToken(tokens, '@custom-variant', 'keyword', ['directive'])
-    expectToken(tokens, '@quoted', 'keyword', ['query'])
-    expectToken(tokens, '@slot', 'keyword', ['directive'])
+    expect(tokens).not.toContainEqual({ text: '@source', type: 'keyword', modifiers: ['directive'] })
+    expect(tokens).not.toContainEqual({ text: 'not', type: 'modifier', modifiers: ['directive'] })
+    expect(tokens).not.toContainEqual({ text: 'required', type: 'modifier', modifiers: ['directive'] })
+    expect(tokens).not.toContainEqual({ text: ';', type: 'operator', modifiers: ['directive', 'directiveTerminator'] })
+    expect(tokens).not.toContainEqual({ text: '@safelist', type: 'keyword', modifiers: ['directive'] })
+    expect(tokens).not.toContainEqual({ text: '@blocklist', type: 'keyword', modifiers: ['directive'] })
+    expect(tokens).not.toContainEqual({ text: '@preserve', type: 'keyword', modifiers: ['directive'] })
+    expect(tokens).not.toContainEqual({ text: 'native', type: 'enumMember', modifiers: ['directive'] })
+    expect(tokens).not.toContainEqual({ text: '@compose', type: 'keyword', modifiers: ['directive'] })
+    expect(tokens).not.toContainEqual({ text: '@custom-variant', type: 'keyword', modifiers: ['directive'] })
+    expect(tokens).not.toContainEqual({ text: '@quoted', type: 'keyword', modifiers: ['query'] })
+    expect(tokens).not.toContainEqual({ text: '@slot', type: 'keyword', modifiers: ['directive'] })
     expect(tokens).not.toContainEqual({ text: 'debug-*', type: 'string', modifiers: ['quoted'] })
 })
 
 test.concurrent('does not tokenize quoted compose preludes as class lists', () => {
     const { tokens } = renderTokens('.btn { @compose "block fg:red"; }', 'css')
 
-    expectToken(tokens, '@compose', 'keyword', ['directive'])
-    expect(tokens).not.toContainEqual({ text: 'block', type: 'enumMember', modifiers: [] })
-    expect(tokens).not.toContainEqual({ text: 'fg', type: 'property', modifiers: [] })
+    expect(tokens).toEqual([])
 })
 
-test.concurrent('renders custom variant block semantic tokens for nested at-rules and selectors', () => {
+test.concurrent('does not render semantic tokens for custom variant directive syntax', () => {
     const { tokens } = renderTokens(`
         @custom-variant @supports-backdrop {
             @supports (backdrop-filter: blur(0)) {
@@ -557,31 +511,19 @@ test.concurrent('renders custom variant block semantic tokens for nested at-rule
         }
     `, 'css')
 
-    expectToken(tokens, '@custom-variant', 'keyword', ['directive'])
-    expectToken(tokens, '@supports-backdrop', 'keyword', ['query'])
-    expectToken(tokens, '@card-wide', 'keyword', ['query'])
-    expectToken(tokens, '@component', 'keyword', ['query'])
-    expectToken(tokens, '@start', 'keyword', ['query'])
-    expectToken(tokens, '@slot', 'keyword', ['directive'])
-    expectToken(tokens, 'scrollbar', 'variable', ['directive', 'query'])
-    expect(tokens).not.toContainEqual({ text: '@supports', type: 'keyword', modifiers: ['query'] })
-    expect(tokens).not.toContainEqual({ text: 'active', type: 'class', modifiers: ['selector'] })
+    expect(tokens).toEqual([])
 })
 
-test.concurrent('renders inline theme modifier semantic tokens', () => {
+test.concurrent('does not render inline theme modifier semantic tokens', () => {
     const { tokens } = renderTokens('@theme inline { --color-primary: #123; }', 'css')
 
-    expectToken(tokens, '@theme', 'keyword', ['directive'])
-    expectToken(tokens, 'inline', 'modifier', ['directive'])
-    expectToken(tokens, '--color-primary', 'variable')
+    expect(tokens).toEqual([])
 })
 
-test.concurrent('renders static theme modifier semantic tokens', () => {
+test.concurrent('does not render static theme modifier semantic tokens', () => {
     const { tokens } = renderTokens('@theme static { --color-primary: #123; }', 'css')
 
-    expectToken(tokens, '@theme', 'keyword', ['directive'])
-    expectToken(tokens, 'static', 'modifier', ['directive'])
-    expectToken(tokens, '--color-primary', 'variable')
+    expect(tokens).toEqual([])
 })
 
 test.concurrent('does not render non-entry @master at-rules as CSS directives', () => {
@@ -700,7 +642,7 @@ test.concurrent('does not render semantic tokens for native CSS-only documents',
     expect(tokens).toEqual([])
 })
 
-test.concurrent('renders CSS document semantic tokens only inside Master directive ranges', () => {
+test.concurrent('renders CSS document semantic tokens only inside directive class-list ranges', () => {
     const nativeBefore = [
         '@font-face {',
         '    font-family: "Inter";',
@@ -741,13 +683,16 @@ test.concurrent('renders CSS document semantic tokens only inside Master directi
     const utilitiesDirective = [
         '@utilities {',
         '    text-<left|right> {',
+        '        @compose block fg:red;',
         '        text-align: --value();',
         '    }',
         '}'
     ].join('\n')
+    const safelistDirective = '@safelist "hidden fg:blue";'
     const content = [
         nativeBefore,
         themeDirective,
+        safelistDirective,
         nativeBetween,
         utilitiesDirective
     ].join('\n\n')
@@ -755,7 +700,13 @@ test.concurrent('renders CSS document semantic tokens only inside Master directi
     const languageService = new CSSLanguageService()
     const semanticTokens = languageService.renderSemanticTokens(doc)
     const tokens = decodeSemanticTokenRanges(doc, semanticTokens?.data ?? [])
-    const masterRanges = [themeDirective, utilitiesDirective].map((directive) => {
+    const classListRanges = ['hidden fg:blue', 'block fg:red'].map((classList) => {
+        const start = content.indexOf(classList)
+        return { start, end: start + classList.length }
+    })
+    const themeStart = content.indexOf(themeDirective)
+    const themeEnd = themeStart + themeDirective.length
+    const masterRanges = [safelistDirective, utilitiesDirective].map((directive) => {
         const start = content.indexOf(directive)
         return { start, end: start + directive.length }
     })
@@ -770,14 +721,15 @@ test.concurrent('renders CSS document semantic tokens only inside Master directi
 
     expect(tokens.length).toBeGreaterThan(0)
     expect(tokens.every(isInsideMasterRange)).toBe(true)
+    expect(tokens.every((token) => classListRanges.some((range) => range.start <= token.start && token.end <= range.end))).toBe(true)
     expect(tokens.map(({ text }) => text)).toEqual(expect.arrayContaining([
-        '@theme',
-        '--color-primary',
-        '$color-blue-60',
-        '@utilities',
-        'text-',
-        '--value'
+        'hidden',
+        'fg',
+        'blue',
+        'block',
+        'red'
     ]))
+    expect(tokens.some((token) => token.start < themeEnd && token.end > themeStart)).toBe(false)
     expectNoTokenOverlaps('@keyframes')
     expectNoTokenOverlaps('fade')
     expectNoTokenOverlaps('from')
@@ -801,13 +753,13 @@ test.concurrent('renders CSS directives in SCSS-like sources', () => {
         }
     `, 'scss')
 
-    expectToken(tokens, '@theme', 'keyword', ['directive'])
-    expectToken(tokens, '--color-primary', 'variable')
-    expectToken(tokens, '@compose', 'keyword', ['directive'])
     expectToken(tokens, 'block', 'enumMember')
+    expect(tokens).not.toContainEqual({ text: '@theme', type: 'keyword', modifiers: ['directive'] })
+    expect(tokens).not.toContainEqual({ text: '--color-primary', type: 'variable', modifiers: [] })
+    expect(tokens).not.toContainEqual({ text: '@compose', type: 'keyword', modifiers: ['directive'] })
 })
 
-test.concurrent('renders detailed CSS directive semantic tokens for Master syntax only', () => {
+test.concurrent('renders detailed CSS directive semantic tokens only for class-list syntax', () => {
     const { tokens } = renderTokens(`
         @source not required "src/**/*.{ts,tsx}";
         @reference "./tokens.css";
@@ -842,48 +794,41 @@ test.concurrent('renders detailed CSS directive semantic tokens for Master synta
         }
     `, 'css')
 
-    expectToken(tokens, '@source', 'keyword', ['directive'])
-    expectToken(tokens, 'not', 'modifier', ['directive'])
-    expectToken(tokens, 'required', 'modifier', ['directive'])
-    expectToken(tokens, '@reference', 'keyword', ['directive'])
-    expectToken(tokens, '@blocklist', 'keyword', ['directive'])
-    expectToken(tokens, '@safelist', 'keyword', ['directive'])
     expectToken(tokens, 'block', 'enumMember')
     expectToken(tokens, 'fg', 'property')
     expectToken(tokens, 'red', 'enumMember')
     expectToken(tokens, 'hover', 'modifier', ['pseudoClass'])
     expectToken(tokens, '@md', 'keyword', ['query'])
-    expectToken(tokens, '@theme', 'keyword', ['directive'])
-    expectToken(tokens, 'static', 'modifier', ['directive'])
-    expectToken(tokens, 'brand', 'enumMember', ['directive'])
-    expectToken(tokens, '--color-primary', 'variable')
-    expectToken(tokens, '--radius-card', 'variable')
-    expectToken(tokens, '$color-blue-60', 'variable')
-    expectToken(tokens, '@custom-variant', 'keyword', ['directive'])
-    expectToken(tokens, 'headings', 'variable', ['directive', 'query'])
-    expectToken(tokens, '@slot', 'keyword', ['directive'])
-    expectToken(tokens, '@components', 'keyword', ['directive'])
-    expectToken(tokens, 'btn', 'class', ['selector'])
-    expectToken(tokens, '@compose', 'keyword', ['directive'])
     expectToken(tokens, 'inline-flex', 'enumMember')
     expectToken(tokens, 'align-items', 'property')
     expectToken(tokens, 'center', 'enumMember')
     expectToken(tokens, 'primary', 'enumMember')
-    expectToken(tokens, '@variant', 'keyword', ['directive'])
-    expectToken(tokens, '@h', 'keyword', ['query'])
-    expectToken(tokens, '>=', 'operator', ['query', 'queryOperator'])
-    expectToken(tokens, 'sm', 'enumMember', ['query'])
-    expectToken(tokens, '&', 'operator', ['query', 'queryOperator'])
-    expectToken(tokens, 'h', 'property', ['query'])
-    expectToken(tokens, '<', 'operator', ['query', 'queryOperator'])
-    expectToken(tokens, 'lg', 'enumMember', ['query'])
-    expectToken(tokens, 'scrollbar-thumb', 'modifier', ['pseudoElement'])
-    expectToken(tokens, '@dark', 'keyword', ['query'])
-    expectToken(tokens, '@utilities', 'keyword', ['directive'])
-    expectToken(tokens, 'text-decoration', 'property')
-    expectToken(tokens, 'color', 'variable', ['directive'])
-    expectToken(tokens, '*', 'operator', ['directive'])
-    expectToken(tokens, '--value', 'function')
+    expect(tokens).not.toContainEqual({ text: '@source', type: 'keyword', modifiers: ['directive'] })
+    expect(tokens).not.toContainEqual({ text: 'not', type: 'modifier', modifiers: ['directive'] })
+    expect(tokens).not.toContainEqual({ text: 'required', type: 'modifier', modifiers: ['directive'] })
+    expect(tokens).not.toContainEqual({ text: '@reference', type: 'keyword', modifiers: ['directive'] })
+    expect(tokens).not.toContainEqual({ text: '@blocklist', type: 'keyword', modifiers: ['directive'] })
+    expect(tokens).not.toContainEqual({ text: '@safelist', type: 'keyword', modifiers: ['directive'] })
+    expect(tokens).not.toContainEqual({ text: '@theme', type: 'keyword', modifiers: ['directive'] })
+    expect(tokens).not.toContainEqual({ text: 'static', type: 'modifier', modifiers: ['directive'] })
+    expect(tokens).not.toContainEqual({ text: 'brand', type: 'enumMember', modifiers: ['directive'] })
+    expect(tokens).not.toContainEqual({ text: '--color-primary', type: 'variable', modifiers: [] })
+    expect(tokens).not.toContainEqual({ text: '$color-blue-60', type: 'variable', modifiers: [] })
+    expect(tokens).not.toContainEqual({ text: '@custom-variant', type: 'keyword', modifiers: ['directive'] })
+    expect(tokens).not.toContainEqual({ text: 'headings', type: 'variable', modifiers: ['directive', 'query'] })
+    expect(tokens).not.toContainEqual({ text: '@slot', type: 'keyword', modifiers: ['directive'] })
+    expect(tokens).not.toContainEqual({ text: '@components', type: 'keyword', modifiers: ['directive'] })
+    expect(tokens).not.toContainEqual({ text: 'btn', type: 'class', modifiers: ['selector'] })
+    expect(tokens).not.toContainEqual({ text: '@compose', type: 'keyword', modifiers: ['directive'] })
+    expect(tokens).not.toContainEqual({ text: '@variant', type: 'keyword', modifiers: ['directive'] })
+    expect(tokens).not.toContainEqual({ text: '@h', type: 'keyword', modifiers: ['query'] })
+    expect(tokens).not.toContainEqual({ text: '>=', type: 'operator', modifiers: ['query', 'queryOperator'] })
+    expect(tokens).not.toContainEqual({ text: 'lg', type: 'enumMember', modifiers: ['query'] })
+    expect(tokens).not.toContainEqual({ text: 'scrollbar-thumb', type: 'modifier', modifiers: ['pseudoElement'] })
+    expect(tokens).not.toContainEqual({ text: '@utilities', type: 'keyword', modifiers: ['directive'] })
+    expect(tokens).not.toContainEqual({ text: 'text-decoration', type: 'property', modifiers: [] })
+    expect(tokens).not.toContainEqual({ text: 'color', type: 'variable', modifiers: ['directive'] })
+    expect(tokens).not.toContainEqual({ text: '--value', type: 'function', modifiers: [] })
     expect(tokens.some(({ text }) => text.includes('src/**/*'))).toBe(false)
     expect(tokens.some(({ text }) => text.includes('tokens.css'))).toBe(false)
     expect(tokens.some(({ text }) => text.includes('debug-'))).toBe(false)
@@ -909,25 +854,13 @@ test.concurrent('renders CSS directives in LESS-like sources', () => {
         }
     `, 'less')
 
-    expectToken(tokens, '@theme', 'keyword', ['directive'])
-    expectToken(tokens, '--color-primary', 'variable')
-    expectToken(tokens, '@utilities', 'keyword', ['directive'])
-    expectToken(tokens, 'font', 'property')
-    expectToken(tokens, 'font-size', 'variable', ['directive'])
-    expectToken(tokens, 'number', 'enumMember', ['directive'])
-    expectToken(tokens, '--value', 'function')
-    expectToken(tokens, '@light', 'keyword', ['directive'])
-    expect(tokens).not.toContainEqual({ text: 'oklch', type: 'function', modifiers: [] })
-    expect(tokens).not.toContainEqual({ text: 'var', type: 'function', modifiers: [] })
+    expect(tokens).toEqual([])
 })
 
 test.concurrent('does not synthesize a closing directive brace for incomplete CSS blocks', () => {
     const { tokens } = renderTokens('@theme { --color-primary: red;', 'css')
 
-    expectToken(tokens, '@theme', 'keyword', ['directive'])
-    expectToken(tokens, '--color-primary', 'variable')
-    expectToken(tokens, ';', 'operator', ['declarationTerminator'])
-    expect(tokens).not.toContainEqual({ text: ';', type: 'operator', modifiers: ['directive', 'directiveTerminator'] })
+    expect(tokens).toEqual([])
 })
 
 test.concurrent('shares class position detection with semantic token spans', () => {
@@ -989,21 +922,33 @@ test.concurrent('skips full embedded semantic tokens in active mode', () => {
     expect(languageService.renderSemanticTokens(doc)).toBeUndefined()
 })
 
-test.concurrent('renders active semantic tokens for the CSS directive at a position', () => {
+test.concurrent('does not render active semantic tokens for CSS directive syntax at a position', () => {
     const content = '@theme dark { --color-primary: $color-blue-60/.8; }\n.btn { color: red; }'
     const doc = createDoc('css', content)
     const languageService = new CSSLanguageService()
     const semanticTokens = languageService.renderSemanticTokensAtPosition(doc, doc.positionAt(content.indexOf('dark') + 1))
     const tokens = decodeSemanticTokens(doc, semanticTokens?.data ?? [])
 
-    expectToken(tokens, '@theme', 'keyword', ['directive'])
-    expectToken(tokens, 'dark', 'enumMember', ['directive'])
-    expectToken(tokens, '--color-primary', 'variable')
-    expectToken(tokens, '$color-blue-60', 'variable')
-    expect(tokens.some(({ text }) => text === 'btn')).toBe(false)
+    expect(tokens).toEqual([])
 })
 
-test.concurrent('renders active semantic tokens for custom variant blocks', () => {
+test.concurrent('renders active semantic tokens for CSS directive class-list spans', () => {
+    const content = '@components { btn { @compose fg:red block:hover; } }'
+    const doc = createDoc('css', content)
+    const languageService = new CSSLanguageService()
+    const semanticTokens = languageService.renderSemanticTokensAtPosition(doc, doc.positionAt(content.indexOf('block') + 1))
+    const tokens = decodeSemanticTokens(doc, semanticTokens?.data ?? [])
+
+    expectToken(tokens, 'fg', 'property')
+    expectToken(tokens, 'red', 'enumMember')
+    expectToken(tokens, 'block', 'enumMember')
+    expectToken(tokens, 'hover', 'modifier', ['pseudoClass'])
+    expect(tokens).not.toContainEqual({ text: '@components', type: 'keyword', modifiers: ['directive'] })
+    expect(tokens).not.toContainEqual({ text: 'btn', type: 'class', modifiers: ['selector'] })
+    expect(tokens).not.toContainEqual({ text: '@compose', type: 'keyword', modifiers: ['directive'] })
+})
+
+test.concurrent('does not render active semantic tokens for custom variant blocks', () => {
     const content = [
         '@custom-variant @motion-safe {',
         '    @media (prefers-reduced-motion: no-preference) {',
@@ -1021,10 +966,7 @@ test.concurrent('renders active semantic tokens for custom variant blocks', () =
     const semanticTokens = languageService.renderSemanticTokensAtPosition(doc, doc.positionAt(content.indexOf('prefers-reduced-motion') + 1))
     const tokens = decodeSemanticTokens(doc, semanticTokens?.data ?? [])
 
-    expectToken(tokens, '@custom-variant', 'keyword', ['directive'])
-    expectToken(tokens, '@motion-safe', 'keyword', ['query'])
-    expectToken(tokens, '@slot', 'keyword', ['directive'])
-    expect(tokens.some(({ text }) => text === 'interactive')).toBe(false)
+    expect(tokens).toEqual([])
 })
 
 test.concurrent('skips embedded semantic tokens when syntax highlighting is off', () => {
@@ -1036,16 +978,19 @@ test.concurrent('skips embedded semantic tokens when syntax highlighting is off'
     expect(languageService.renderSemanticTokensAtPosition(doc, doc.positionAt(content.indexOf('block') + 1))).toBeUndefined()
 })
 
-test.concurrent('renders CSS document semantic tokens when syntax highlighting is off', () => {
-    const content = '@theme dark { --color-primary: $color-blue-60/.8; }\n.btn { color: red; }'
+test.concurrent('renders CSS directive class-list semantic tokens when embedded highlighting is off', () => {
+    const content = '@theme dark { --color-primary: $color-blue-60/.8; }\n@components { btn { @compose block; } }'
     const doc = createDoc('css', content)
     const languageService = new CSSLanguageService({ embeddedSyntaxHighlighting: 'off' })
     const semanticTokens = languageService.renderSemanticTokens(doc)
     const tokens = decodeSemanticTokens(doc, semanticTokens?.data ?? [])
 
-    expectToken(tokens, '@theme', 'keyword', ['directive'])
-    expectToken(tokens, 'dark', 'enumMember', ['directive'])
-    expectToken(tokens, '--color-primary', 'variable')
-    expectToken(tokens, '$color-blue-60', 'variable')
-    expect(tokens.some(({ text }) => text === 'btn')).toBe(false)
+    expectToken(tokens, 'block', 'enumMember')
+    expect(tokens).not.toContainEqual({ text: '@theme', type: 'keyword', modifiers: ['directive'] })
+    expect(tokens).not.toContainEqual({ text: 'dark', type: 'enumMember', modifiers: ['directive'] })
+    expect(tokens).not.toContainEqual({ text: '--color-primary', type: 'variable', modifiers: [] })
+    expect(tokens).not.toContainEqual({ text: '$color-blue-60', type: 'variable', modifiers: [] })
+    expect(tokens).not.toContainEqual({ text: '@components', type: 'keyword', modifiers: ['directive'] })
+    expect(tokens).not.toContainEqual({ text: 'btn', type: 'class', modifiers: ['selector'] })
+    expect(tokens).not.toContainEqual({ text: '@compose', type: 'keyword', modifiers: ['directive'] })
 })

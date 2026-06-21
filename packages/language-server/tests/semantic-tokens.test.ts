@@ -45,8 +45,8 @@ withFixture('basic', async (context) => {
         await context.server.onDidClose({ document: textDocument })
     })
 
-    test('returns full CSS document semantic tokens in active mode', async ({ expect }) => {
-        const textDocument = context.createDocument('@theme dark { --color-primary: $color-blue-60/.8; }\n.btn { color: red; }', { lang: 'css' })
+    test('returns CSS directive class-list semantic tokens in active mode', async ({ expect }) => {
+        const textDocument = context.createDocument('@theme dark { --color-primary: $color-blue-60/.8; }\n@components { btn { @compose fg:red block; } }', { lang: 'css' })
         await context.server.onDidOpen({ document: textDocument })
         const semanticTokens = await context.clientConnection.sendRequest<{ data: number[] }>(DOCUMENT_SEMANTIC_TOKENS_REQUEST, {
             textDocument: {
@@ -55,9 +55,10 @@ withFixture('basic', async (context) => {
         })
 
         expect(semanticTokens.data.length).toBeGreaterThan(0)
-        expect(hasTokenType(semanticTokens.data, 'keyword')).toBe(true)
-        expect(hasTokenType(semanticTokens.data, 'variable')).toBe(true)
+        expect(hasTokenType(semanticTokens.data, 'property')).toBe(true)
         expect(hasTokenType(semanticTokens.data, 'enumMember')).toBe(true)
+        expect(hasTokenType(semanticTokens.data, 'keyword')).toBe(false)
+        expect(hasTokenType(semanticTokens.data, 'variable')).toBe(false)
         expect(hasTokenType(semanticTokens.data, 'class')).toBe(false)
         await context.server.onDidClose({ document: textDocument })
     })
@@ -182,8 +183,8 @@ withFixture('basic', async (context) => {
         } as any).capabilities.semanticTokensProvider).toBeUndefined()
     })
 
-    test('returns CSS document semantic tokens when highlighting is off', async ({ expect }) => {
-        const textDocument = context.createDocument('@theme dark { --color-primary: $color-blue-60/.8; }\n.btn { color: red; }', { lang: 'css' })
+    test('returns CSS directive class-list semantic tokens when highlighting is off', async ({ expect }) => {
+        const textDocument = context.createDocument('@theme dark { --color-primary: $color-blue-60/.8; }\n@components { btn { @compose block; } }', { lang: 'css' })
         await context.server.onDidOpen({ document: textDocument })
         const semanticTokens = await context.clientConnection.sendRequest<{ data: number[] }>(DOCUMENT_SEMANTIC_TOKENS_REQUEST, {
             textDocument: {
@@ -192,9 +193,9 @@ withFixture('basic', async (context) => {
         })
 
         expect(semanticTokens.data.length).toBeGreaterThan(0)
-        expect(hasTokenType(semanticTokens.data, 'keyword')).toBe(true)
-        expect(hasTokenType(semanticTokens.data, 'variable')).toBe(true)
         expect(hasTokenType(semanticTokens.data, 'enumMember')).toBe(true)
+        expect(hasTokenType(semanticTokens.data, 'keyword')).toBe(false)
+        expect(hasTokenType(semanticTokens.data, 'variable')).toBe(false)
         expect(hasTokenType(semanticTokens.data, 'class')).toBe(false)
         await context.server.onDidClose({ document: textDocument })
     })

@@ -26,7 +26,9 @@
 - `src/utils/get-query-completion-items.ts`
 - `src/utils/regex.ts`
 
-CSS directive highlighting consumes dependency-free source ranges from `@master/css-lexer`, then layers language-service semantic token classification on top. Master class strings consume lexer lexical tokens first, then language-service adds engine-backed semantic meaning through `css.generate()`. Do not route CSS directive highlighting through the full compiler pipeline.
+CSS directive lexical highlighting is TextMate-first. Language-service semantic tokens should only classify Master CSS class-list spans, including host class attributes/functions and CSS directive class-list spans such as bare `@compose` preludes or quoted `@safelist` strings. Master class strings consume lexer lexical tokens first, then language-service adds engine-backed semantic meaning through `css.generate()`. Do not route CSS directive highlighting through the full compiler pipeline.
+
+The canonical Master CSS TextMate grammar asset lives at `syntaxes/master-css.tmLanguage.json` in this package. Shiki imports this JSON directly, and VS Code contributes/copies the same package asset; do not reintroduce a generated VS Code-local grammar copy.
 
 ## Allowed Changes
 

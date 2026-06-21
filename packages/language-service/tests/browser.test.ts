@@ -81,8 +81,10 @@ test.concurrent('encodes browser role-derived semantic token modifiers', () => {
     expect(selectorCombinatorIndex).toBeGreaterThan(SEMANTIC_TOKEN_MODIFIERS.indexOf('unit'))
 })
 
-test.concurrent('collects browser semantic tokens for CSS directives', () => {
+test.concurrent('collects browser semantic tokens only for CSS directive class-list spans', () => {
     const source = `
+        @safelist "hidden fg:red";
+
         @theme {
             --color-brand: var(--brand, #123);
 
@@ -95,7 +97,7 @@ test.concurrent('collects browser semantic tokens for CSS directives', () => {
 
         @components {
             btn {
-                @compose block;
+                @compose block fg:brand;
                 &:hover {
                     color: var(--brand, red);
                 }
@@ -110,18 +112,22 @@ test.concurrent('collects browser semantic tokens for CSS directives', () => {
     }))
 
     expect(mapped).toEqual(expect.arrayContaining([
-        { text: '@theme', type: 'keyword', modifiers: ['directive'] },
-        { text: '--color-brand', type: 'variable', modifiers: [] },
-        { text: '@components', type: 'keyword', modifiers: ['directive'] },
-        { text: 'btn', type: 'class', modifiers: ['selector'] },
-        { text: '@compose', type: 'keyword', modifiers: ['directive'] },
-        { text: 'block', type: 'enumMember', modifiers: [] }
+        { text: 'hidden', type: 'enumMember', modifiers: [] },
+        { text: 'fg', type: 'property', modifiers: [] },
+        { text: 'red', type: 'enumMember', modifiers: [] },
+        { text: 'block', type: 'enumMember', modifiers: [] },
+        { text: 'brand', type: 'variable', modifiers: [] }
     ]))
+    expect(mapped).not.toContainEqual({ text: '@theme', type: 'keyword', modifiers: ['directive'] })
+    expect(mapped).not.toContainEqual({ text: '--color-brand', type: 'variable', modifiers: [] })
+    expect(mapped).not.toContainEqual({ text: '@components', type: 'keyword', modifiers: ['directive'] })
+    expect(mapped).not.toContainEqual({ text: 'btn', type: 'class', modifiers: ['selector'] })
+    expect(mapped).not.toContainEqual({ text: '@compose', type: 'keyword', modifiers: ['directive'] })
     expect(mapped).not.toContainEqual({ text: 'var', type: 'function', modifiers: [] })
     expect(mapped).not.toContainEqual({ text: '@keyframes', type: 'keyword', modifiers: [] })
 })
 
-test.concurrent('collects browser semantic tokens for managed directives and custom variants', () => {
+test.concurrent('does not collect browser semantic tokens for managed syntax without class-list spans', () => {
     const source = `
         @custom-variant @motion-safe {
             @media (prefers-reduced-motion: no-preference) {
@@ -140,25 +146,8 @@ test.concurrent('collects browser semantic tokens for managed directives and cus
         }
     `
     const tokens = collectBrowserSemanticTokenItems(source, 'css', { plan })
-    const mapped = tokens.map((token) => ({
-        text: tokenText(source, token),
-        type: token.type,
-        modifiers: token.modifiers || []
-    }))
 
-    expect(mapped).toEqual(expect.arrayContaining([
-        { text: '@custom-variant', type: 'keyword', modifiers: ['directive'] },
-        { text: '@motion-safe', type: 'keyword', modifiers: ['query'] },
-        { text: '@slot', type: 'keyword', modifiers: ['directive'] },
-        { text: '@utilities', type: 'keyword', modifiers: ['directive'] },
-        { text: 'font', type: 'property', modifiers: [] },
-        { text: 'font-size', type: 'variable', modifiers: ['directive'] },
-        { text: 'number', type: 'enumMember', modifiers: ['directive'] },
-        { text: '--value', type: 'function', modifiers: [] },
-        { text: '@light', type: 'keyword', modifiers: ['directive'] }
-    ]))
-    expect(mapped).not.toContainEqual({ text: '@media', type: 'keyword', modifiers: ['query'] })
-    expect(mapped).not.toContainEqual({ text: 'font-size', type: 'property', modifiers: [] })
+    expect(tokens).toEqual([])
 })
 
 test.concurrent('encodes browser semantic tokens', () => {

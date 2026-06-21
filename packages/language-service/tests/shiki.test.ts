@@ -1,7 +1,9 @@
 import { expect, test } from 'vitest'
 import { createHighlighter } from 'shiki'
+import sharedTextMateGrammar from '../syntaxes/master-css.tmLanguage.json' with { type: 'json' }
 
 import {
+    MASTER_CSS_TEXTMATE_GRAMMAR,
     createMasterCSSShikiDecorations,
     getMasterCSSShikiLanguageId,
     isMasterCSSClassListLanguage,
@@ -151,6 +153,8 @@ test.concurrent('registers a real Shiki TextMate injection grammar for CSS direc
     }).tokens.flat()
     const tokenColor = (text: string) => (tokens.find((token) => token.content === text) ?? tokens.find((token) => token.content.includes(text)))?.color?.toLowerCase()
 
+    expect(MASTER_CSS_TEXTMATE_GRAMMAR).toBe(sharedTextMateGrammar)
+    expect(masterCSSShikiLanguage.scopeName).toBe(sharedTextMateGrammar.scopeName)
     expect(masterCSSShikiLanguage.injectTo).toEqual([
         'source.css',
         'source.css.scss',
@@ -194,7 +198,7 @@ test.concurrent('keeps guide theme snippets correct with TextMate only', async (
     expect(tokenColor('em')).toBe('#00ffaa')
 })
 
-test.concurrent('attaches guide theme semantic metadata without changing styles when scope matching is disabled', () => {
+test.concurrent('does not attach semantic metadata to guide theme CSS directive syntax', () => {
     const code = [
         '@theme light {',
         '    /* Font families */',
@@ -206,36 +210,18 @@ test.concurrent('attaches guide theme semantic metadata without changing styles 
         source: code,
         options: { lang: 'css' }
     }, [[{ content: code, offset: 0, htmlStyle: { color: 'host' } }]])
-    const tokens = transformedTokens?.flat().map((token) => ({
-        content: token.content,
-        htmlStyle: token.htmlStyle,
-        className: token.htmlAttrs?.class
-    }))
 
-    expect(tokens).toEqual(expect.arrayContaining([
-        expect.objectContaining({
-            content: 'light',
-            htmlStyle: { color: 'host' },
-            className: 'mcss-semantic mcss-semantic-enumMember mcss-semantic-role-directive-parameter mcss-semantic-enumMember-directive'
-        }),
-        expect.objectContaining({
-            content: '--tracking-tightest',
-            htmlStyle: { color: 'host' },
-            className: 'mcss-semantic mcss-semantic-variable mcss-semantic-role-theme-variable'
-        })
-    ]))
-    expect(tokens?.some((token) => typeof token.className === 'string' && token.className.includes('mcss-semantic-role-value-number'))).toBe(false)
-    expect(tokens?.some((token) => typeof token.className === 'string' && token.className.includes('mcss-semantic-role-value-unit'))).toBe(false)
-    expect(tokens?.some((token) => token.content.includes('Font families') && token.className)).toBe(false)
+    expect(transformedTokens).toBeUndefined()
+    expect(createMasterCSSShikiDecorations(code, { lang: 'css' })).toEqual([])
 })
 
-test.concurrent('resolves guide theme semantic metadata through shared scope styles', () => {
+test.concurrent('does not resolve guide theme CSS directive syntax through semantic scope styles', () => {
     const code = [
         '@theme light {',
         '    --tracking-tightest: -0.072em;',
         '}'
     ].join('\n')
-    const transformer = transformerMasterCSS()
+    const transformer = transformerMasterCSS({ plan })
     const transformedTokens = transformer.tokens.call({
         source: code,
         options: { lang: 'css' },
@@ -243,26 +229,8 @@ test.concurrent('resolves guide theme semantic metadata through shared scope sty
             tokens: [semanticScopeStyleTokens()]
         })
     }, [[{ content: code, offset: 0, htmlStyle: { color: 'host' } }]])
-    const tokens = transformedTokens?.flat().map((token) => ({
-        content: token.content,
-        htmlStyle: token.htmlStyle,
-        className: token.htmlAttrs?.class
-    }))
 
-    expect(tokens).toEqual(expect.arrayContaining([
-        expect.objectContaining({
-            content: 'light',
-            htmlStyle: { color: 'value' },
-            className: 'mcss-semantic mcss-semantic-enumMember mcss-semantic-role-directive-parameter mcss-semantic-enumMember-directive'
-        }),
-        expect.objectContaining({
-            content: '--tracking-tightest',
-            htmlStyle: { color: 'variable' },
-            className: 'mcss-semantic mcss-semantic-variable mcss-semantic-role-theme-variable'
-        })
-    ]))
-    expect(tokens?.some((token) => typeof token.className === 'string' && token.className.includes('mcss-semantic-role-value-number'))).toBe(false)
-    expect(tokens?.some((token) => typeof token.className === 'string' && token.className.includes('mcss-semantic-role-value-unit'))).toBe(false)
+    expect(transformedTokens).toBeUndefined()
 })
 
 test.concurrent('does not create Master Shiki decorations for native-only CSS', () => {
@@ -352,8 +320,9 @@ test.concurrent('creates Shiki decorations from Master CSS semantic tokens', () 
     expect(tokens.filter(({ text, type, modifiers }) => text === 'btn' && type === 'class' && modifiers.includes('declaration') && modifiers.includes('component'))).toHaveLength(3)
 })
 
-test.concurrent('creates Shiki decorations for managed definition syntax', () => {
+test.concurrent('creates Shiki decorations for CSS directive class-list spans', () => {
     const code = [
+        '@safelist "block fg:red";',
         '@utilities {',
         '    text-<left|center|right> {',
         '        text-align: --value();',
@@ -365,6 +334,11 @@ test.concurrent('creates Shiki decorations for managed definition syntax', () =>
         '',
         '    grid-cols:<number> {',
         '        grid-template-columns: repeat(--value(), minmax(0, 1fr));',
+        '    }',
+        '}',
+        '@components {',
+        '    btn {',
+        '        @compose inline-flex fg:brand:hover@sm;',
         '    }',
         '}'
     ].join('\n')
@@ -381,53 +355,53 @@ test.concurrent('creates Shiki decorations for managed definition syntax', () =>
 
     expect(tokens).toEqual(expect.arrayContaining([
         expect.objectContaining({
-            text: 'text-',
-            type: 'class',
-            modifiers: ['selector'],
-            classNames: expect.arrayContaining(['mcss-semantic-role-selector-class'])
-        }),
-        expect.objectContaining({
-            text: '|',
-            type: 'operator',
-            modifiers: ['selector'],
-            classNames: expect.arrayContaining(['mcss-semantic-role-selector-punctuation'])
-        }),
-        expect.objectContaining({
-            text: 'left',
+            text: 'block',
             type: 'enumMember',
-            modifiers: ['selector'],
-            classNames: expect.arrayContaining(['mcss-semantic-role-selector-class'])
+            modifiers: [],
+            classNames: expect.arrayContaining(['mcss-semantic-role-utility-semantic'])
         }),
         expect.objectContaining({
-            text: 'font',
+            text: 'fg',
             type: 'property',
             modifiers: [],
             classNames: expect.arrayContaining(['mcss-semantic-role-declaration-property'])
         }),
         expect.objectContaining({
-            text: '~',
-            type: 'operator',
-            modifiers: ['directive'],
-            classNames: expect.arrayContaining(['mcss-semantic-role-directive-parameter'])
-        }),
-        expect.objectContaining({
-            text: 'font-size',
-            type: 'variable',
-            modifiers: ['directive'],
-            classNames: expect.arrayContaining(['mcss-semantic-role-directive-parameter'])
-        }),
-        expect.objectContaining({
-            text: 'number',
+            text: 'red',
             type: 'enumMember',
-            modifiers: ['directive'],
-            classNames: expect.arrayContaining(['mcss-semantic-role-directive-parameter'])
+            modifiers: [],
+            classNames: expect.arrayContaining(['mcss-semantic-role-value-keyword'])
         }),
         expect.objectContaining({
-            text: '--value',
-            type: 'function',
+            text: 'inline-flex',
+            type: 'enumMember',
             modifiers: [],
-            classNames: expect.arrayContaining(['mcss-semantic-role-value-function-name'])
+            classNames: expect.arrayContaining(['mcss-semantic-role-utility-semantic'])
+        }),
+        expect.objectContaining({
+            text: 'brand',
+            type: 'variable',
+            modifiers: [],
+            classNames: expect.arrayContaining(['mcss-semantic-role-value-variable'])
+        }),
+        expect.objectContaining({
+            text: 'hover',
+            type: 'modifier',
+            modifiers: ['pseudoClass'],
+            classNames: expect.arrayContaining(['mcss-semantic-role-selector-pseudoClass-name'])
+        }),
+        expect.objectContaining({
+            text: '@sm',
+            type: 'keyword',
+            modifiers: ['query'],
+            classNames: expect.arrayContaining(['mcss-semantic-role-query-keyword'])
         })
+    ]))
+    expect(tokens).not.toEqual(expect.arrayContaining([
+        expect.objectContaining({ text: 'text-' }),
+        expect.objectContaining({ text: 'left' }),
+        expect.objectContaining({ text: 'font' }),
+        expect.objectContaining({ text: '--value' })
     ]))
 })
 
@@ -548,7 +522,7 @@ test.concurrent('uses semantic token scope styles for selector semantic tokens',
     const options = {
         lang: 'html'
     }
-    const transformer = transformerMasterCSS()
+    const transformer = transformerMasterCSS({ plan })
     const transformedTokens = transformer.tokens.call({
         source: code,
         options,
@@ -600,12 +574,15 @@ test.concurrent('uses semantic token scope styles for documentation Master CSS t
         '@theme {',
         '  --color-primary: #4f46e5;',
         '  --spacing-card: 24;',
+        '}',
+        '@components {',
+        '  card { @compose bg:blue fg:brand:hover; }',
         '}'
     ].join('\n')
     const cssOptions = {
         lang: 'css'
     }
-    const transformer = transformerMasterCSS()
+    const transformer = transformerMasterCSS({ plan })
     const syntaxTokens = semanticScopeStyleTokens()
     const htmlTransformedTokens = transformer.tokens.call({
         source: htmlCode,
@@ -671,24 +648,31 @@ test.concurrent('uses semantic token scope styles for documentation Master CSS t
     ]))
     expect(cssTokens).toEqual(expect.arrayContaining([
         {
-            content: '@theme',
-            htmlStyle: { color: 'keyword' },
-            className: 'mcss-semantic mcss-semantic-keyword mcss-semantic-role-directive-keyword mcss-semantic-keyword-directive'
+            content: 'bg',
+            htmlStyle: { color: 'property' },
+            className: 'mcss-semantic mcss-semantic-property mcss-semantic-role-declaration-property'
         },
         {
-            content: '--color-primary',
-            htmlStyle: { color: 'variable' },
-            className: 'mcss-semantic mcss-semantic-variable mcss-semantic-role-theme-variable'
+            content: 'blue',
+            htmlStyle: { color: 'value' },
+            className: 'mcss-semantic mcss-semantic-enumMember mcss-semantic-role-value-keyword'
         },
         {
-            content: '--spacing-card',
+            content: 'brand',
             htmlStyle: { color: 'variable' },
-            className: 'mcss-semantic mcss-semantic-variable mcss-semantic-role-theme-variable'
+            className: 'mcss-semantic mcss-semantic-variable mcss-semantic-role-value-variable'
+        },
+        {
+            content: 'hover',
+            htmlStyle: { color: 'modifier' },
+            className: 'mcss-semantic mcss-semantic-modifier mcss-semantic-role-selector-pseudoClass-name mcss-semantic-modifier-pseudoClass'
         }
     ]))
+    expect(cssTokens?.some((token) => token.content === '@theme' && token.className)).toBe(false)
+    expect(cssTokens?.some((token) => token.content === '--color-primary' && token.className)).toBe(false)
 })
 
-test.concurrent('uses semantic token scope styles for Master directive query parameters', () => {
+test.concurrent('uses semantic token scope styles for CSS directive class-list tokens', () => {
     const code = [
         '@custom-variant @motion-safe { @media (prefers-reduced-motion: no-preference) { @slot; } }',
         '@components {',
@@ -716,14 +700,31 @@ test.concurrent('uses semantic token scope styles for Master directive query par
 
     expect(tokens).toEqual(expect.arrayContaining([
         {
-            content: '<',
-            htmlStyle: { color: 'operator' },
-            className: 'mcss-semantic mcss-semantic-operator mcss-semantic-role-query-operator mcss-semantic-operator-query'
+            content: 'p',
+            htmlStyle: { color: 'property' },
+            className: 'mcss-semantic mcss-semantic-property mcss-semantic-role-declaration-property'
         },
         {
-            content: 'sm',
+            content: 'md',
             htmlStyle: { color: 'value' },
-            className: 'mcss-semantic mcss-semantic-enumMember mcss-semantic-role-query-value mcss-semantic-enumMember-query'
+            className: 'mcss-semantic mcss-semantic-enumMember mcss-semantic-role-value-keyword'
+        },
+        {
+            content: 'r',
+            htmlStyle: { color: 'property' },
+            className: 'mcss-semantic mcss-semantic-property mcss-semantic-role-declaration-property'
+        },
+        {
+            content: 'xl',
+            htmlStyle: { color: 'value' },
+            className: 'mcss-semantic mcss-semantic-enumMember mcss-semantic-role-value-keyword'
+        },
+        {
+            content: 'block',
+            htmlStyle: { color: 'value' },
+            className: 'mcss-semantic mcss-semantic-enumMember mcss-semantic-role-utility-semantic'
         }
     ]))
+    expect(tokens?.some((token) => token.content === '<' && token.className)).toBe(false)
+    expect(tokens?.some((token) => token.content === 'sm' && token.className)).toBe(false)
 })

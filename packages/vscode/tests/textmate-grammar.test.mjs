@@ -1,7 +1,5 @@
 import { createRequire } from 'node:module'
 import { readFileSync } from 'node:fs'
-import { dirname, resolve } from 'node:path'
-import { fileURLToPath } from 'node:url'
 import { beforeAll, expect, test } from 'vitest'
 import { INITIAL, Registry, parseRawGrammar } from 'vscode-textmate'
 import { createOnigScanner, createOnigString, loadWASM } from 'vscode-oniguruma'
@@ -9,13 +7,11 @@ import cssGrammars from '@shikijs/langs/css'
 import { MASTER_CSS_TEXTMATE_GRAMMAR } from '../../language-service/src/shiki/textmate'
 
 const require = createRequire(import.meta.url)
-const here = dirname(fileURLToPath(import.meta.url))
-const packageDir = resolve(here, '..')
-const grammarPath = resolve(packageDir, 'syntaxes', 'master-css.tmLanguage.json')
+const grammarPath = require.resolve('@master/css-language-service/syntaxes/master-css.tmLanguage.json')
 const grammarScope = 'master-css.directive.injection'
 const cssGrammarScope = 'source.css'
 const grammarSource = readFileSync(grammarPath, 'utf8')
-const packagedGrammar = JSON.parse(grammarSource)
+const sharedGrammar = JSON.parse(grammarSource)
 const cssGrammar = cssGrammars[cssGrammars.length - 1]
 
 let grammar
@@ -54,8 +50,8 @@ beforeAll(async () => {
     injectedCSSGrammar = await injectedCSSRegistry.loadGrammar(cssGrammarScope)
 })
 
-test('keeps packaged grammar in sync with the language-service Shiki grammar source', () => {
-    expect(packagedGrammar).toEqual(MASTER_CSS_TEXTMATE_GRAMMAR)
+test('keeps shared grammar asset in sync with the language-service Shiki registration', () => {
+    expect(sharedGrammar).toEqual(MASTER_CSS_TEXTMATE_GRAMMAR)
 })
 
 function tokenizeWith(targetGrammar, source) {
