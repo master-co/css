@@ -1,5 +1,5 @@
 import { test, expect, it } from 'vitest'
-import { extractLatentClasses } from '@master/css-source'
+import { extractClassCandidates } from '@master/css-source'
 
 it('extract latent classes from html', () => {
     const content = `
@@ -44,7 +44,7 @@ it('extract latent classes from html', () => {
         </html>
     `
     expect(
-        extractLatentClasses(content))
+        extractClassCandidates(content))
         .toEqual([
             'html>',
             'en',

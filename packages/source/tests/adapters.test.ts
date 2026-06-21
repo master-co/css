@@ -1,15 +1,15 @@
 import { describe, expect, test } from 'vitest'
 import {
     extractHTMLClasses,
-    extractLatentClasses,
+    extractClassCandidates,
     extractOxcClasses,
     matchesSourceAdapter,
     type SourceAdapter
 } from '../src'
 
 describe('source adapters', () => {
-    test('re-exports latent class extraction from the lexer', () => {
-        expect(extractLatentClasses('<div class="block mi:auto"></div>')).toEqual(['block', 'mi:auto'])
+    test('exports class candidate extraction', () => {
+        expect(extractClassCandidates('<div class="block mi:auto"></div>')).toEqual(['block', 'mi:auto'])
     })
 
     test('extracts static classes from JavaScript and TypeScript syntax with Oxc', () => {

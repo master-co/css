@@ -62,7 +62,8 @@ Preserve dependency direction:
 
 ```txt
 shared / external data
-  -> @master/css-lexer source scanning
+  -> @master/css-lexer lexical scanning
+  -> @master/css-source source candidate extraction
   -> @master/css-engine / @master/css-preset / @master/css-integration
   -> @master/css-compiler directive parsing / @master/css-plan loading
   -> validator / server / extractor / runtime / language / language-service
@@ -72,7 +73,7 @@ shared / external data
 
 Do not make engine depend on compiler, integrations, runtime, server, extractor, language service, ESLint, or examples. `@master/css` is a facade over engine and preset exports; keep behavior in the owning lower package.
 
-When package cycles or self-build cycles appear, prefer extracting dependency-free contracts, IR, and type-only schemas into `shared`, or dependency-free lexical scanners into `@master/css-lexer`, then adapt at the owning package boundary. Keep engine-specific behavior in `@master/css-engine` and re-export shared contracts from the `@master/css` facade only when they are part of the public boundary.
+When package cycles or self-build cycles appear, prefer extracting dependency-free contracts, IR, and type-only schemas into `shared`, dependency-free lexical scanners into `@master/css-lexer`, or source class candidate extraction into `@master/css-source`, then adapt at the owning package boundary. Keep engine-specific behavior in `@master/css-engine` and re-export shared contracts from the `@master/css` facade only when they are part of the public boundary.
 
 ## High-Risk Areas
 
@@ -89,7 +90,7 @@ Modify these only with focused tests and a clear reason:
 - `packages/compiler/src/master-css-plan.ts`
 - `packages/runtime/src/core.ts`
 - `packages/runtime/src/layer.ts`
-- `packages/lexer/src/extract-latent-classes.ts`
+- `packages/source/src/extract-class-candidates.ts`
 - `packages/language/src/utils/get-class-positions.ts`
 - `packages/language/src/render-semantic-tokens.ts`
 - `packages/language-service/src/core.ts`

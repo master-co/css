@@ -1,5 +1,5 @@
 import { test, expect, it } from 'vitest'
-import { extractLatentClasses } from '@master/css-source'
+import { extractClassCandidates } from '@master/css-source'
 
 it('extract latent classes from js raw', () => {
     const content = `
@@ -12,7 +12,7 @@ it('extract latent classes from js raw', () => {
         setupCounter(counterElement!)
     `
     expect(
-        extractLatentClasses(content))
+        extractClassCandidates(content))
         .toEqual([
             'const',
             'counterElement',
@@ -25,7 +25,7 @@ it('extract latent classes from js raw', () => {
 })
 
 test('basic js object', () => {
-    expect(extractLatentClasses(`
+    expect(extractClassCandidates(`
     const test = {
         'font:1.5rem': true
     }
@@ -38,15 +38,15 @@ test('basic js object', () => {
 })
 
 test('basic html', () => {
-    expect(extractLatentClasses(`<div class="font:1rem filter:blur(2px) animation:shake|1s|infinite>li"></div>`)).toEqual(['font:1rem', 'filter:blur(2px)', 'animation:shake|1s|infinite>li'])
+    expect(extractClassCandidates(`<div class="font:1rem filter:blur(2px) animation:shake|1s|infinite>li"></div>`)).toEqual(['font:1rem', 'filter:blur(2px)', 'animation:shake|1s|infinite>li'])
 })
 
 test('utility sign and symbol key syntax is not extracted', () => {
-    expect(extractLatentClasses('@fade|1s ~opacity|.2s @duration:fast @direction:normal ~duration:fast ~property:opacity animation-duration:fast transition-duration:fast')).toEqual(['animation-duration:fast', 'transition-duration:fast'])
+    expect(extractClassCandidates('@fade|1s ~opacity|.2s @duration:fast @direction:normal ~duration:fast ~property:opacity animation-duration:fast transition-duration:fast')).toEqual(['animation-duration:fast', 'transition-duration:fast'])
 })
 
 test('content', () => {
-    expect(extractLatentClasses(`<div class="content:'I\\'m_string' content:'I\\'m_string2'"></div>`))
+    expect(extractClassCandidates(`<div class="content:'I\\'m_string' content:'I\\'m_string2'"></div>`))
         .toEqual([
             'content:\'I\\\'m_string\'',
             'I',
@@ -57,11 +57,11 @@ test('content', () => {
 })
 
 test('url', () => {
-    expect(extractLatentClasses(`<div class="bg:url('https://master.co/test_logo.png')"></div>`)).toEqual(['bg:url(\'https://master.co/test_logo.png\')'])
+    expect(extractClassCandidates(`<div class="bg:url('https://master.co/test_logo.png')"></div>`)).toEqual(['bg:url(\'https://master.co/test_logo.png\')'])
 })
 
 test('comment', () => {
-    expect(extractLatentClasses(`<!-- comment -->
+    expect(extractClassCandidates(`<!-- comment -->
     /* bg:black */
     /*
         font:1rem
@@ -70,7 +70,7 @@ test('comment', () => {
 })
 
 test('=', () => {
-    expect(extractLatentClasses(`
+    expect(extractClassCandidates(`
     this={components[0]}
     data={data_0}>
     content:'='
@@ -84,7 +84,7 @@ test('=', () => {
 })
 
 test('media', () => {
-    expect(extractLatentClasses(`
+    expect(extractClassCandidates(`
     bg:black@xl
     font:1.5rem@media(min-width:1024px)
     font:1rem@<789
@@ -102,7 +102,7 @@ test('media', () => {
 })
 
 test('wxh', () => {
-    expect(extractLatentClasses(`
+    expect(extractClassCandidates(`
         min:10x
         calc(100vw-3.75rem)x20rem
         15pxxcalc(100vh-100px)
@@ -118,7 +118,7 @@ test('wxh', () => {
 })
 
 test('group', () => {
-    expect(extractLatentClasses(`
+    expect(extractClassCandidates(`
     {form}
     {:else}
     {data_0}
@@ -136,7 +136,7 @@ test('group', () => {
 })
 
 test('import', () => {
-    expect(extractLatentClasses(`
+    expect(extractClassCandidates(`
         import * as fs from 'fs'
         import css from '@master/css'
         require('fs')
@@ -146,7 +146,7 @@ test('import', () => {
 })
 
 test('style tag', () => {
-    expect(extractLatentClasses(`<style data-sveltekit>.app.s-7IPF32Wcq3s8.s-7IPF32Wcq3s8{display:flex;flex-direction:column;min-height:100vh}main.s-7IPF32Wcq3s8.s-7IPF32Wcq3s8{flex:1;display:flex;flex-direction:column;padding:1rem;width:100%;max-width:64rem;margin:0 auto;box-sizing:border-box}footer.s-7IPF32Wcq3s8.s-7IPF32Wcq3s8{display:flex;flex-direction:column;justify-content:center;align-items:center;padding:12px}footer.s-7IPF32Wcq3s8 a.s-7IPF32Wcq3s8{font-weight:bold}@media (min-width: 480px){footer.s-7IPF32Wcq3s8.s-7IPF32Wcq3s8{padding:12px 0}}.s-7IPF32Wcq3s8.s-7IPF32Wcq3s8{}
+    expect(extractClassCandidates(`<style data-sveltekit>.app.s-7IPF32Wcq3s8.s-7IPF32Wcq3s8{display:flex;flex-direction:column;min-height:100vh}main.s-7IPF32Wcq3s8.s-7IPF32Wcq3s8{flex:1;display:flex;flex-direction:column;padding:1rem;width:100%;max-width:64rem;margin:0 auto;box-sizing:border-box}footer.s-7IPF32Wcq3s8.s-7IPF32Wcq3s8{display:flex;flex-direction:column;justify-content:center;align-items:center;padding:12px}footer.s-7IPF32Wcq3s8 a.s-7IPF32Wcq3s8{font-weight:bold}@media (min-width: 480px){footer.s-7IPF32Wcq3s8.s-7IPF32Wcq3s8{padding:12px 0}}.s-7IPF32Wcq3s8.s-7IPF32Wcq3s8{}
 /* fira-mono-cyrillic-ext-400-normal*/
 @font-face {
   font-family: 'Fira Mono';
@@ -223,7 +223,7 @@ test('style tag', () => {
 
 test('@', () => {
     expect(
-        extractLatentClasses(`
+        extractClassCandidates(`
         // @ts-ignore
         @font-face
         {
@@ -248,7 +248,7 @@ test('@', () => {
 })
 
 test('home path', () => {
-    expect(extractLatentClasses(`
+    expect(extractClassCandidates(`
         ~/site/assets/master.svg
         ~/site/master.svg
         transition:padding|300ms|ease-in
@@ -264,11 +264,11 @@ test('home path', () => {
 })
 
 test('ignores variable function prefix', () => {
-    expect(extractLatentClasses(`$(size):calc(100%-20px)`)).toEqual([])
+    expect(extractClassCandidates(`$(size):calc(100%-20px)`)).toEqual([])
 })
 
 test('comment2', () => {
-    expect(extractLatentClasses(`
+    expect(extractClassCandidates(`
         // @todo
     `)).toEqual([])
 })

@@ -1,10 +1,10 @@
 import { describe, test, expect } from 'vitest'
-import { extractLatentClasses } from '@master/css-source'
+import { extractClassCandidates } from '@master/css-source'
 import fs from 'node:fs'
 import path from 'node:path'
 import { glob } from 'fast-glob'
 
-describe('extractLatentClasses contract fixtures', () => {
+describe('extractClassCandidates contract fixtures', () => {
     const fixtures: [string, string, string[]][] = [
         ['empty', '', []],
         ['whitespace', '   \n\t   ', []],
@@ -22,7 +22,7 @@ describe('extractLatentClasses contract fixtures', () => {
     ]
 
     test.each(fixtures)('%s', (_label, input, expected) => {
-        expect(extractLatentClasses(input)).toEqual(expected)
+        expect(extractClassCandidates(input)).toEqual(expected)
     })
 })
 
@@ -55,7 +55,7 @@ describe('workspace real files smoke', () => {
     } else {
         test.each(realFiles)('%s', (file) => {
             const content = fs.readFileSync(file, 'utf8')
-            const output = extractLatentClasses(content)
+            const output = extractClassCandidates(content)
             expect(output.every((eachClass) => typeof eachClass === 'string')).toBe(true)
             expect(output.some((eachClass) => eachClass.startsWith('COMPLETE-STRING--'))).toBe(false)
         })

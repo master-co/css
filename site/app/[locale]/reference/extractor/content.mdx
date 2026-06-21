@@ -105,16 +105,16 @@ Prune native CSS class selector rules from a stylesheet by importing `@master/cs
 
 Local relative `.css` imports are expanded, the Master import is replaced by generated CSS, and native class rules are kept only when their class names are found by the extractor. Add `@preserve native;` to preserve native CSS in a Master-managed root. See [Native CSS pruning](/guide/native-css-pruning) for the full model.
 
-### `extractLatentClasses()`
-Extract latent classes from string content.
+### `extractClassCandidates()`
+Extract unvalidated class candidates from source content.
 <DocFn>
     {[
         { name: 'content', type: 'string', defaultValue: 'undefined' },
-        { name: 'return', type: 'string' },
+        { name: 'return', type: 'string[]' },
     ]}
 </DocFn>
 ```ts
-import { extractLatentClasses } from '@master/css-extractor'
+import { extractClassCandidates } from '@master/css-source'
 
 const content: string = `
     import { setupCounter } from './counter'
@@ -125,7 +125,7 @@ const content: string = `
 
     setupCounter(counterElement!)
 `
-const result = extractLatentClasses(content)
+const result = extractClassCandidates(content)
 ```
 Result:
 ```js

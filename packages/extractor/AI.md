@@ -2,7 +2,7 @@
 
 ## Responsibility
 
-`@master/css-extractor` statically scans source files, validates possible Master CSS classes, inserts valid rules through the plan-driven engine layers, exports CSS, and maintains extraction state for build integrations. Source-format-aware class adapters belong to `@master/css-source`; raw latent class candidate scanning belongs to `@master/css-lexer`. Stylesheet entry handling, CSS-first stylesheet compilation, native CSS pruning, extraction directives, generated CSS composition, and preloaded manifest output belong to `@master/css-stylesheet`.
+`@master/css-extractor` statically scans source files, validates possible Master CSS classes, inserts valid rules through the plan-driven engine layers, exports CSS, and maintains extraction state for build integrations. Source-format-aware class adapters and raw class candidate extraction belong to `@master/css-source`. Stylesheet entry handling, CSS-first stylesheet compilation, native CSS pruning, extraction directives, generated CSS composition, and preloaded manifest output belong to `@master/css-stylesheet`.
 
 ## Inputs And Outputs
 
@@ -36,7 +36,7 @@
 ## Risk Areas
 
 - Built-in source adapter behavior from `@master/css-source`.
-- `extractLatentClasses()` false positives and false negatives in `@master/css-lexer`.
+- `extractClassCandidates()` false positives and false negatives in `@master/css-source`.
 - `invalidClasses` and `validClasses` cache behavior.
 - Watch reset loops.
 - Source allow/exclude matching.

@@ -3,7 +3,7 @@ import { MasterCSS } from '@master/css'
 import type { MasterCSSPlan } from 'shared/master-css-plan'
 import { createRequire } from 'node:module'
 import {
-    extractLatentClasses,
+    extractClassCandidates,
     htmlAdapter,
     matchesSourceAdapter,
     oxcAdapter,
@@ -228,7 +228,7 @@ export default class CSSExtractor extends EventEmitter {
         const adapter = this.resolveSourceAdapter(source)
         const extractedClasses = adapter
             ? adapter.extract({ source, content })
-            : extractLatentClasses(content)
+            : extractClassCandidates(content)
         const latentClasses: string[] = []
         for (const eachLatentClasses of extractedClasses) {
             if (this.latentClasses.has(eachLatentClasses)) {

@@ -19,9 +19,9 @@ import {
     hasMasterCSSPlanEntrypoint,
     isMasterCSSModuleId as isMasterCSSPlanModuleId,
     normalizeMasterCSSModuleIds,
-    parseCSSImportSource,
-    extractLatentClasses
+    parseCSSImportSource
 } from '@master/css-lexer'
+import { extractClassCandidates } from '@master/css-source'
 import { VIRTUAL_CSS_ID } from '@master/css-integration/style-module'
 import escapeRegExp from 'shared/utils/escape-reg-exp'
 import { createRequire } from 'node:module'
@@ -533,7 +533,7 @@ function getStylesheetOptionClasses(options: StylesheetSourceOptions, projectDir
     for (const sourcePath of resolveStylesheetSourcePaths(options, projectDir)) {
         const absolutePath = resolve(projectDir, sourcePath)
         if (!existsSync(absolutePath)) continue
-        for (const className of extractLatentClasses(readFileSync(absolutePath, 'utf-8'))) {
+        for (const className of extractClassCandidates(readFileSync(absolutePath, 'utf-8'))) {
             classes.add(className)
         }
     }

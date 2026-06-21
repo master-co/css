@@ -1,4 +1,4 @@
-import { extractLatentClasses, extractOxcClasses, type SourceAdapter, type SourceAdapterInput } from '@master/css-source'
+import { extractClassCandidates, extractOxcClasses, type SourceAdapter, type SourceAdapterInput } from '@master/css-source'
 
 const SCRIPT_BLOCK = /<script\b[^>]*>([\s\S]*?)<\/script>/gi
 const STYLE_BLOCK = /<style\b[^>]*>[\s\S]*?<\/style>/gi
@@ -35,7 +35,7 @@ export function extractAstroClasses(source: string, content: string): string[] {
         return ''
     })
     template = template.replace(STYLE_BLOCK, '')
-    add(classes, extractLatentClasses(template))
+    add(classes, extractClassCandidates(template))
 
     return [...classes]
 }

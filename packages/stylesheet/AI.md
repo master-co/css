@@ -20,7 +20,7 @@
 
 - Do not depend on `@master/css-extractor`; accept structural state instead.
 - Do not scan source files directly except when resolving stylesheet `@source` directives through supplied include/required/exclude options.
-- Do not own raw source adapters; use `@master/css-source` consumers before this package.
+- Do not own source adapters or source candidate extraction; use `@master/css-source` when stylesheet source directives need source file candidates.
 - Do not own project CSS plan discovery; callers should use `@master/css-plan`.
 - Do not change engine CSS output here without focused tests and an explicit CSS output explanation.
 

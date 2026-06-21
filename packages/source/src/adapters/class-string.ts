@@ -1,4 +1,4 @@
-import { extractLatentClasses } from '@master/css-lexer'
+import { extractClassCandidates } from '../extract-class-candidates'
 
 export function addClassString(
     classes: Set<string>,
@@ -8,7 +8,7 @@ export function addClassString(
     if (!value) return
     let classNames = cache?.get(value)
     if (!classNames) {
-        classNames = extractLatentClasses(value)
+        classNames = extractClassCandidates(value)
         cache?.set(value, classNames)
     }
     for (const className of classNames) {

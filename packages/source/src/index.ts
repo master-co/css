@@ -1,4 +1,4 @@
-export { extractLatentClasses } from '@master/css-lexer'
+export { extractClassCandidates } from './extract-class-candidates'
 export { addClassString } from './adapters/class-string'
 export type { SourceAdapter, SourceAdapterInput } from './adapters/types'
 export { matchesSourceAdapter } from './adapters/types'

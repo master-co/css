@@ -1,4 +1,4 @@
-import { extractLatentClasses, extractOxcClasses, type SourceAdapter, type SourceAdapterInput } from '@master/css-source'
+import { extractClassCandidates, extractOxcClasses, type SourceAdapter, type SourceAdapterInput } from '@master/css-source'
 import { parse } from 'svelte/compiler'
 
 interface SvelteRange {
@@ -30,7 +30,7 @@ function isSvelteSource(source: string) {
 
 function addClassString(classes: Set<string>, value: string | undefined) {
     if (!value) return
-    for (const className of extractLatentClasses(value)) {
+    for (const className of extractClassCandidates(value)) {
         if (className) classes.add(className)
     }
 }

@@ -1,6 +1,6 @@
 import { parseSync, visitorKeys } from 'oxc-parser'
 import { addClassString } from './class-string'
-import { extractLatentClasses } from '@master/css-lexer'
+import { extractClassCandidates } from '../extract-class-candidates'
 import type { SourceAdapter } from './types'
 
 export const OXC_SOURCE_EXT = /\.(?:(?:[cm]?[jt]s)|(?:[jt]sx))(?:\?|$)/
@@ -71,10 +71,10 @@ export function extractOxcClasses(source: string, content: string): string[] {
             sourceType: 'unambiguous'
         })
     } catch {
-        return extractLatentClasses(content)
+        return extractClassCandidates(content)
     }
     if (parseResult.errors.length) {
-        return extractLatentClasses(content)
+        return extractClassCandidates(content)
     }
 
     const classes = new Set<string>()

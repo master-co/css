@@ -71,7 +71,7 @@ Risks:
 ```txt
 source globs / Vite modules / Webpack modules
   -> CSSExtractor.init()
-  -> @master/css-source adapters / extractLatentClasses()
+  -> @master/css-source adapters / extractClassCandidates()
   -> generateValidRules()
   -> insert valid rules into layers
   -> build tool / CLI registers managed CSS entries discovered by @master/css-plan with @master/css-stylesheet

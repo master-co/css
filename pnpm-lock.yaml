@@ -1834,6 +1834,9 @@ importers:
       '@master/css-lexer':
         specifier: workspace:^
         version: link:../lexer
+      '@master/css-source':
+        specifier: workspace:^
+        version: link:../source
       '@master/css-validator':
         specifier: workspace:^
         version: link:../validator

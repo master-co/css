@@ -1,4 +1,4 @@
-import { extractLatentClasses, extractOxcClasses, type SourceAdapter, type SourceAdapterInput } from '@master/css-source'
+import { extractClassCandidates, extractOxcClasses, type SourceAdapter, type SourceAdapterInput } from '@master/css-source'
 import { parse } from 'vue/compiler-sfc'
 
 function isVueSource(source: string) {
@@ -16,7 +16,7 @@ export function extractVueClasses(source: string, content: string): string[] {
     }
 
     if (descriptor.template?.content) {
-        add(extractLatentClasses(descriptor.template.content))
+        add(extractClassCandidates(descriptor.template.content))
     }
     if (descriptor.script?.content) {
         add(extractOxcClasses(`${source}.${descriptor.script.lang || 'js'}`, descriptor.script.content))

@@ -7,8 +7,8 @@
 | `@master/css` | `.`, `./index.css`, `./base.css`, `./theme.css`, `./variants.css`, `./utilities.css` | Public facade over engine API, plan types, default preset plan, and preset stylesheet entries |
 | `@master/css-engine` | `.`, `./compiler` | Browser-safe MasterCSSPlan executor, class semantics, rule generation, layers, variable and animation lifecycle |
 | `@master/css-preset` | `.`, `./index.css`, `./base.css`, `./theme.css`, `./variants.css`, `./utilities.css` | Default preset CSS source and generated default plan |
-| `@master/css-lexer` | `.` | Dependency-free source ranges, directive/import scanners, Master class lexical tokens, and latent class candidates |
-| `@master/css-source` | `.`, `./adapters` | Source-format-aware class extraction adapters built on the lexer, including HTML and OXC JavaScript/TypeScript scanners |
+| `@master/css-lexer` | `.` | Dependency-free source ranges, directive/import scanners, Master class lexical tokens, and CSS unit constants |
+| `@master/css-source` | `.`, `./adapters` | Source-level class candidate extraction and source-format-aware adapters, including HTML and OXC JavaScript/TypeScript scanners |
 | `@master/css-compiler` | `.` | Compile Master CSS stylesheet entries into MasterCSSPlan values, directive metadata, and native CSS |
 | `@master/css-runtime` | `.` | Browser runtime, DOM observation, hydration |
 | `@master/css-server` | `.` | HTML render and CSS injection |
@@ -37,7 +37,7 @@
 
 ## Dependency Direction
 
-Do not introduce reverse dependencies from engine to compiler, integration contracts, runtime, server, extractor, language packages, ESLint, examples, or site. `@master/css-lexer` must stay dependency-free from engine/compiler/extractor/language packages and should be consumed upward for raw source scanning. `@master/css-source` may depend on `@master/css-lexer`, HTML parsing, and JavaScript/TypeScript source parsing, but must not depend on extractor, engine, compiler, runtime, server, language service, ESLint, or framework integrations. `@master/css-stylesheet` may compose compiler, integration protocol, validator/native CSS helpers, and structural extractor state, but must not depend on `@master/css-extractor`. `@master/css-language` must not depend on `@master/css-language-service`, `@master/css-language-server`, or editor extensions. `@master/css-integration` may depend on shared plan types and must remain below compiler/plan/build integrations. The compiler may depend on the plan-driven engine for class semantics and must not recreate a public Config contract.
+Do not introduce reverse dependencies from engine to compiler, integration contracts, runtime, server, extractor, language packages, ESLint, examples, or site. `@master/css-lexer` must stay dependency-free from engine/compiler/extractor/language packages and should be consumed upward for lexical source ranges, scanners, tokens, and unit constants. `@master/css-source` may depend on `@master/css-lexer`, HTML parsing, and JavaScript/TypeScript source parsing, but must not depend on extractor, engine, compiler, runtime, server, language service, ESLint, or framework integrations. `@master/css-stylesheet` may compose compiler, integration protocol, validator/native CSS helpers, and structural extractor state, but must not depend on `@master/css-extractor`. `@master/css-language` must not depend on `@master/css-language-service`, `@master/css-language-server`, or editor extensions. `@master/css-integration` may depend on shared plan types and must remain below compiler/plan/build integrations. The compiler may depend on the plan-driven engine for class semantics and must not recreate a public Config contract.
 
 ## Package Tests
 

@@ -1,9 +1,9 @@
-import { MASTER_CSS_VALUE_UNIT_PATTERN } from './units'
+import { MASTER_CSS_VALUE_UNIT_PATTERN } from '@master/css-lexer'
 
 /**
- * Extract latent classes from arbitrary source content (HTML, JSX, TS, Vue,
- * Svelte, MDX). Returns an array of candidate class strings; downstream
- * caller validates each.
+ * Extract class-like candidates from arbitrary source content (HTML, JSX, TS,
+ * Vue, Svelte, MDX). Returns unvalidated candidate class strings; downstream
+ * callers validate each candidate.
  *
  * Pipeline:
  *   1. preExclude — strip JS/HTML comments, <style> blocks, import/require
@@ -243,26 +243,26 @@ function hasUnclosedBrackets(content: string): boolean {
 
 // ─── Public API ──────────────────────────────────────────────────────────────
 
-export default function extractLatentClasses(content: string): string[] {
+export function extractClassCandidates(content: string): string[] {
     content = preExclude(content)
     const blocks = content.match(NON_WHITESPACE_RUN) ?? []
-    const latentClasses = new Set<string>()
+    const classCandidates = new Set<string>()
     for (const block of blocks) {
         for (const splitResult of splitStringByQuotation(block)) {
-            latentClasses.add(trimString(splitResult))
+            classCandidates.add(trimString(splitResult))
         }
         const peeled = peelCompleteString(block)
         if (peeled.size) {
             for (const peelResult of peeled) {
                 for (const splitResult of splitStringByQuotation(peelResult)) {
-                    latentClasses.add(trimString(splitResult))
+                    classCandidates.add(trimString(splitResult))
                 }
             }
         }
     }
     const out: string[] = []
-    for (const cls of latentClasses) {
-        if (cls && !checkToExclude(cls)) out.push(cls)
+    for (const classCandidate of classCandidates) {
+        if (classCandidate && !checkToExclude(classCandidate)) out.push(classCandidate)
     }
     return out
 }
