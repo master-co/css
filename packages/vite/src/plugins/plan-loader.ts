@@ -1,6 +1,6 @@
 import type { ModuleNode, Plugin, ViteDevServer } from 'vite'
 import type { PluginContext } from '../core'
-import { toResolvedMasterCSSPlanId } from '@master/css-integration/plan-module'
+import { toResolvedMasterCSSPlanId } from '@master/css-integration/node'
 import { loadPlanJSON } from '@master/css-plan/load'
 import { isCSSPlanRequest } from '@master/css-plan/css'
 import { createMasterCSSPlanLoaderPlugin } from '@master/css-integration/plan-loader-plugin'

@@ -2,7 +2,8 @@ import { describe, expect, it, vi } from 'vitest'
 import path from 'node:path'
 import CSSExtractor from '@master/css-extractor'
 import PlanLoaderPlugin from '../../src/plugins/plan-loader'
-import { MASTER_CSS_PLAN_QUERY, fromResolvedMasterCSSPlanId, toResolvedMasterCSSPlanId } from '@master/css-integration/plan-module'
+import { MASTER_CSS_PLAN_QUERY } from '@master/css-integration/plan-module'
+import { fromResolvedMasterCSSPlanId, toResolvedMasterCSSPlanId } from '@master/css-integration/node'
 
 const FIXTURE_DIR = path.resolve(__dirname, '../fixtures/plan-virtual-module')
 

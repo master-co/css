@@ -5,10 +5,12 @@ import { isCSSPlanRequest } from '@master/css-plan/css'
 import { loadPlanJSONSync } from '@master/css-plan/load-sync'
 import {
     isMasterCSSPlanRequest,
-    stripMasterCSSPlanQuery,
+    stripMasterCSSPlanQuery
+} from '@master/css-integration/plan-module'
+import {
     toVirtualCSSPlanAssetPath,
     toVirtualCSSPlanModulePath
-} from '@master/css-integration/plan-module'
+} from '@master/css-integration/node'
 import { toUniversalPlanFacadeModule } from '@master/css-integration/plan-facade'
 
 const MASTER_CSS_PLAN_IMPORT_PATTERN = /(\bimport\s+(?:[^'"]*?\s+from\s*)?|\bexport\s+[^'"]*?\s+from\s*|\bimport\s*\(\s*)(['"])([^'"]+)\2/g

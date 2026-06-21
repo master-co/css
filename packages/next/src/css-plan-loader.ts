@@ -4,8 +4,8 @@ import { loadPlanJSONSync } from '@master/css-plan/load-sync'
 import { loadProjectPlanJSON } from '@master/css-plan/load'
 import { isCSSPlanRequest } from '@master/css-plan/css'
 import { stripResourceQuery } from '@master/css-integration/plan-module'
+import { toHashedPlanAssetFileName } from '@master/css-integration/node'
 import {
-    toHashedPlanAssetFileName,
     toInlinePlanModule,
     toUniversalPlanFacadeModule
 } from '@master/css-integration/plan-facade'

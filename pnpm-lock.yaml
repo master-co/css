@@ -1437,9 +1437,6 @@ importers:
 
   packages/integration:
     dependencies:
-      '@master/css':
-        specifier: workspace:^
-        version: link:../core
       '@master/css-engine':
         specifier: workspace:^
         version: link:../engine

@@ -1,13 +1,13 @@
 import { CSSExtractor, type Options } from '@master/css-extractor'
 import type { MasterCSSPreloaded } from '@master/css'
+import { toPlanJSON } from '@master/css-integration/plan-module'
+import { toBrowserPlanFacadeModule } from '@master/css-integration/plan-facade'
 import {
-    toPlanJSON,
-    toVirtualDefaultPlanModulePath
-} from '@master/css-integration/plan-module'
-import {
-    toBrowserPlanFacadeModule,
-    toHashedPlanAssetFileName
-} from '@master/css-integration/plan-facade'
+    toHashedPlanAssetFileName,
+    toVirtualCSSModulePath,
+    toVirtualDefaultPlanModulePath,
+    toVirtualPreloadedModulePath
+} from '@master/css-integration/node'
 import { loadProjectPlan } from '@master/css-plan/load'
 import {
     cleanStyleRequest,
@@ -17,11 +17,7 @@ import {
     resolveMasterStyleSource,
     type StyleCSSSources
 } from '@master/css-stylesheet'
-import { toVirtualCSSModulePath } from '@master/css-integration/style-module'
-import {
-    toPreloadedModule,
-    toVirtualPreloadedModulePath,
-} from '@master/css-integration/preloaded-module'
+import { toPreloadedModule } from '@master/css-integration/preloaded-module'
 import type { Compiler } from 'webpack'
 import type VirtualModulesPlugin from 'webpack-virtual-modules'
 import { readFileSync } from 'node:fs'

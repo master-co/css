@@ -1,12 +1,5 @@
-import { createHash } from 'node:crypto'
-
 export const PLAN_MODULE_FILE = 'master-css-plan.js'
 export const PLAN_ASSET_FILE = 'master-css-plan.json'
-
-export function toHashedPlanAssetFileName(json: string, basename = 'master-css-plan') {
-    const hash = createHash('sha256').update(json).digest('hex').slice(0, 8)
-    return `${basename}.${hash}.json`
-}
 
 export function toInlinePlanModule(json: string) {
     return `export default ${json};`

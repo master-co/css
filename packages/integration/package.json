@@ -9,7 +9,7 @@
         "test": "vitest"
     },
     "license": "MIT",
-    "description": "Shared Master CSS integration contracts and virtual module helpers.",
+    "description": "Shared Master CSS integration contracts, virtual module protocols, and build helpers.",
     "author": "Aoyue Design LLC.",
     "funding": "https://rc.css.master.co/sponsor",
     "homepage": "https://css.master.co",
@@ -92,7 +92,6 @@
         "provenance": true
     },
     "dependencies": {
-        "@master/css": "workspace:^",
         "@master/css-engine": "workspace:^"
     },
     "devDependencies": {

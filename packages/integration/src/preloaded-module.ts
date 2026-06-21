@@ -1,6 +1,4 @@
-import path from 'node:path'
 import type { MasterCSSPreloaded } from '@master/css-engine'
-import { VIRTUAL_MODULE_DIR } from './plan-module'
 
 export type { MasterCSSPreloaded }
 
@@ -17,8 +15,4 @@ export function normalizePreloaded(preloaded: MasterCSSPreloaded = {}): Required
 
 export function toPreloadedModule(preloaded: MasterCSSPreloaded) {
     return `export default ${JSON.stringify(normalizePreloaded(preloaded))};`
-}
-
-export function toVirtualPreloadedModulePath(context: string) {
-    return path.join(context, VIRTUAL_MODULE_DIR, VIRTUAL_PRELOADED_FILE)
 }

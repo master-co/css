@@ -1,12 +1,12 @@
 import {
     MASTER_CSS_PLAN_QUERY,
-    stripMasterCSSPlanQuery,
-    toVirtualCSSPlanModulePath
+    stripMasterCSSPlanQuery
 } from '@master/css-integration/plan-module'
+import { toBrowserPlanFacadeModule } from '@master/css-integration/plan-facade'
 import {
-    toBrowserPlanFacadeModule,
-    toHashedPlanAssetFileName
-} from '@master/css-integration/plan-facade'
+    toHashedPlanAssetFileName,
+    toVirtualCSSPlanModulePath
+} from '@master/css-integration/node'
 import { loadPlanJSON } from '@master/css-plan/load'
 import type { Compiler } from 'webpack'
 import type { MasterCSSWebpackContext, WebpackSubPlugin } from '../plugin'

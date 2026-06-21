@@ -1,14 +1,68 @@
+import { createHash } from 'node:crypto'
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
-import { dirname } from 'node:path'
+import { dirname, join } from 'node:path'
 import {
     EMPTY_PLAN_JSON,
-    toVirtualDefaultPlanModulePath
+    VIRTUAL_PLAN_FILE
 } from './plan-module'
 import { toInlinePlanModule } from './plan-facade'
 import {
     EMPTY_PRELOADED_MODULE,
-    toVirtualPreloadedModulePath
+    VIRTUAL_PRELOADED_FILE
 } from './preloaded-module'
+
+export const RESOLVED_MASTER_CSS_PLAN_QUERY_PREFIX = '\0master-css-plan:'
+export const VIRTUAL_MODULE_DIR = 'node_modules/.master-css'
+
+export function toHashedPlanAssetFileName(json: string, basename = 'master-css-plan') {
+    const hash = createHash('sha256').update(json).digest('hex').slice(0, 8)
+    return `${basename}.${hash}.json`
+}
+
+export function toResolvedMasterCSSPlanId(file: string) {
+    return RESOLVED_MASTER_CSS_PLAN_QUERY_PREFIX + Buffer.from(file).toString('base64url')
+}
+
+export function fromResolvedMasterCSSPlanId(id: string) {
+    return id.startsWith(RESOLVED_MASTER_CSS_PLAN_QUERY_PREFIX)
+        ? Buffer.from(id.slice(RESOLVED_MASTER_CSS_PLAN_QUERY_PREFIX.length), 'base64url').toString()
+        : undefined
+}
+
+export function toVirtualDefaultPlanModulePath(context: string) {
+    return join(context, VIRTUAL_MODULE_DIR, VIRTUAL_PLAN_FILE)
+}
+
+function encodeVirtualFilename(id: string) {
+    return Buffer.from(id).toString('base64url')
+}
+
+export function toVirtualCSSPlanModulePath(context: string, file: string) {
+    return join(context, VIRTUAL_MODULE_DIR, `${encodeVirtualFilename(file)}.plan.js`)
+}
+
+export function toVirtualCSSPlanAssetPath(context: string, file: string) {
+    return join(context, VIRTUAL_MODULE_DIR, `${encodeVirtualFilename(file)}.plan.json`)
+}
+
+export function toVirtualCSSModulePath(context: string) {
+    return join(context, VIRTUAL_MODULE_DIR, 'master-utilities.css')
+}
+
+export function toVirtualPreloadedModulePath(context: string) {
+    return join(context, VIRTUAL_MODULE_DIR, VIRTUAL_PRELOADED_FILE)
+}
+
+function escapeRegExp(source: string) {
+    return source.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+}
+
+export function createVirtualDefaultPlanModulePathPattern() {
+    const source = [...VIRTUAL_MODULE_DIR.split('/'), VIRTUAL_PLAN_FILE]
+        .map(escapeRegExp)
+        .join(String.raw`[/\\]`)
+    return new RegExp(String.raw`(?:^|[/\\])${source}$`)
+}
 
 export function ensureVirtualModuleFile(file: string, source: string) {
     mkdirSync(dirname(file), { recursive: true })

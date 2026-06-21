@@ -5,14 +5,12 @@ import type { NextConfig } from 'next'
 import { createMasterCSSPlanEntryPattern } from '@master/css-plan/css'
 import {
     MASTER_CSS_PLAN_QUERY,
-    VIRTUAL_PLAN_ID,
-    createVirtualDefaultPlanModulePathPattern,
+    VIRTUAL_PLAN_ID
 } from '@master/css-integration/plan-module'
 import { VIRTUAL_CSS_ID } from '@master/css-integration/style-module'
+import { VIRTUAL_PRELOADED_ID } from '@master/css-integration/preloaded-module'
 import {
-    VIRTUAL_PRELOADED_ID,
-} from '@master/css-integration/preloaded-module'
-import {
+    createVirtualDefaultPlanModulePathPattern,
     ensureVirtualPlanModulePath,
     ensureVirtualPreloadedModulePath
 } from '@master/css-integration/node'

@@ -1,13 +1,15 @@
 import { dirname, isAbsolute, resolve } from 'node:path'
 import {
-    fromResolvedMasterCSSPlanId,
     isMasterCSSPlanRequest,
     stripMasterCSSPlanQuery,
     stripResourceQuery,
-    toResolvedMasterCSSPlanId,
     type CSSPlanJSONResult
 } from './plan-module'
 import { toInlinePlanModule } from './plan-facade'
+import {
+    fromResolvedMasterCSSPlanId,
+    toResolvedMasterCSSPlanId
+} from './node'
 
 type MaybePromise<T> = T | Promise<T>
 

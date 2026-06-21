@@ -1,8 +1,8 @@
 import {
     MASTER_CSS_PLAN_QUERY as MASTER_CSS_PLAN_REQUEST_QUERY,
-    RESOLVED_MASTER_CSS_PLAN_QUERY_PREFIX as RESOLVED_MASTER_CSS_PLAN_REQUEST_QUERY_PREFIX,
     VIRTUAL_PLAN_ID as MASTER_CSS_VIRTUAL_PLAN_ID
 } from '@master/css-integration/plan-module'
+import { RESOLVED_MASTER_CSS_PLAN_QUERY_PREFIX as RESOLVED_MASTER_CSS_PLAN_REQUEST_QUERY_PREFIX } from '@master/css-integration/node'
 import { VIRTUAL_PRELOADED_ID as MASTER_CSS_VIRTUAL_PRELOADED_ID } from '@master/css-integration/preloaded-module'
 import { CSS_RUNTIME_INJECTION } from '@master/css-integration/runtime'
 

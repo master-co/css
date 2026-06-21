@@ -1,5 +1,4 @@
 import { describe, expect, it } from 'vitest'
-import path from 'node:path'
 import {
     CSS_RUNTIME_INJECTION,
     EMPTY_PLAN_JSON,
@@ -8,19 +7,12 @@ import {
     VIRTUAL_CSS_ID,
     VIRTUAL_PRELOADED_ID,
     VIRTUAL_PLAN_ID,
-    createVirtualDefaultPlanModulePathPattern,
-    fromResolvedMasterCSSPlanId,
     normalizePreloaded,
     stripMasterCSSPlanQuery,
     stripResourceQuery,
     toPlanJSON,
     toPreloadedModule,
-    toResolvedMasterCSSPlanId,
-    toUniversalPlanFacadeModule,
-    toVirtualCSSPlanModulePath,
-    toVirtualCSSModulePath,
-    toVirtualDefaultPlanModulePath,
-    toVirtualPreloadedModulePath
+    toUniversalPlanFacadeModule
 } from '../src/module'
 
 describe('@master/css-integration module helpers', () => {
@@ -39,19 +31,9 @@ describe('@master/css-integration module helpers', () => {
         expect(normalizePreloaded()).toEqual({ variables: {}, animations: {} })
     })
 
-    it('encodes resolved and filesystem virtual module paths', () => {
-        const root = path.resolve('/project')
-        const file = path.join(root, 'src/theme.css')
-        const id = toResolvedMasterCSSPlanId(file)
-
-        expect(fromResolvedMasterCSSPlanId(id)).toBe(file)
+    it('matches and strips CSS plan resource queries', () => {
         expect(stripMasterCSSPlanQuery('./theme.css?master-css-plan')).toBe('./theme.css')
         expect(stripResourceQuery('./theme.css?master-css-plan')).toBe('./theme.css')
-        expect(toVirtualDefaultPlanModulePath(root)).toBe(path.join(root, 'node_modules/.master-css/master-css-plan.js'))
-        expect(toVirtualCSSPlanModulePath(root, file)).toMatch(/node_modules[/\\]\.master-css[/\\].+\.plan\.js$/)
-        expect(toVirtualCSSModulePath(root)).toBe(path.join(root, 'node_modules/.master-css/master-utilities.css'))
-        expect(toVirtualPreloadedModulePath(root)).toBe(path.join(root, 'node_modules/.master-css/master-css-preloaded.js'))
-        expect(createVirtualDefaultPlanModulePathPattern().test(toVirtualDefaultPlanModulePath(root))).toBe(true)
     })
 
     it('builds shared runtime injection source', () => {
