@@ -4,7 +4,7 @@
     --font-family-mono: var(--font-mono, ui-monospace), SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
     --font-family-serif: var(--font-serif, ui-serif), Georgia, Cambria, 'Times New Roman', Times, serif;
 
-    /* Typography */
+    /* Letter spacing */
     --tracking-tightest: -0.072em;
     --tracking-tighter: -0.04em;
     --tracking-tight: -0.02em;
@@ -13,12 +13,14 @@
     --tracking-wider: 0.04em;
     --tracking-widest: 0.12em;
 
+    /* Line heights */
     --leading-xs: 1.2;
     --leading-sm: 1.4;
     --leading-md: 1.6;
     --leading-lg: 1.8;
     --leading-xl: 2;
 
+    /* Font weights */
     --font-weight-thin: 100;
     --font-weight-extralight: 200;
     --font-weight-light: 300;
@@ -29,6 +31,7 @@
     --font-weight-extrabold: 800;
     --font-weight-heavy: 900;
 
+    /* Font sizes */
     --font-size-3xs: 0.5rem;
     --font-size-2xs: 0.625rem;
     --font-size-xs: 0.75rem;
@@ -46,8 +49,10 @@
     --font-size-9xl: 6rem;
     --font-size-10xl: 8rem;
 
+    /* Font features */
     --font-feature-tabular: 'tnum';
 
+    /* Content */
     --content-empty: '';
 
     /* Radii */
@@ -104,7 +109,7 @@
     --container-7xl: 80rem;
     --container-8xl: 90rem;
 
-    /* Motion */
+    /* Durations */
     --duration-fastest: 75ms;
     --duration-faster: 100ms;
     --duration-fast: 150ms;
@@ -113,6 +118,7 @@
     --duration-slower: 500ms;
     --duration-slowest: 800ms;
 
+    /* Easings */
     --easing-smooth: cubic-bezier(.4, 0, .2, 1);
     --easing-soft: cubic-bezier(.33, 1, .68, 1);
     --easing-crisp: cubic-bezier(.16, 1, .3, 1);
@@ -123,6 +129,7 @@
     --easing-rewind: cubic-bezier(.36, 0, .66, -.56);
     --easing-spring: cubic-bezier(.68, -.6, .32, 1.6);
 
+    /* Animations */
     --animate-fade: fade 1s infinite;
     --animate-flash: flash 1s infinite;
     --animate-float: float 3s ease-in-out infinite;
@@ -133,141 +140,6 @@
     --animate-rotate: rotate 1s linear infinite;
     --animate-shake: shake 1s infinite;
     --animate-zoom: zoom 1s infinite;
-
-    @keyframes fade {
-        0% {
-            opacity: 0;
-        }
-
-        to {
-            opacity: 1;
-        }
-    }
-
-    @keyframes flash {
-        0%, 50%, to {
-            opacity: 1;
-        }
-
-        25%, 75% {
-            opacity: 0;
-        }
-    }
-
-    @keyframes float {
-        0% {
-            transform: none;
-        }
-
-        50% {
-            transform: translateY(-1.25rem);
-        }
-
-        to {
-            transform: none;
-        }
-    }
-
-    @keyframes heart {
-        0% {
-            transform: scale(1);
-        }
-
-        14% {
-            transform: scale(1.3);
-        }
-
-        28% {
-            transform: scale(1);
-        }
-
-        42% {
-            transform: scale(1.3);
-        }
-
-        70% {
-            transform: scale(1);
-        }
-    }
-
-    @keyframes jump {
-        0%, to {
-            transform: translateY(-25%);
-            animation-timing-function: cubic-bezier(.8, 0, 1, 1);
-        }
-
-        50% {
-            transform: translateY(0);
-            animation-timing-function: cubic-bezier(0, 0, .2, 1);
-        }
-    }
-
-    @keyframes ping {
-        75%, to {
-            transform: scale(2);
-            opacity: 0;
-        }
-    }
-
-    @keyframes pulse {
-        0% {
-            transform: none;
-        }
-
-        50% {
-            transform: scale(1.05);
-        }
-
-        to {
-            transform: none;
-        }
-    }
-
-    @keyframes rotate {
-        0% {
-            transform: rotate(-360deg);
-        }
-
-        to {
-            transform: none;
-        }
-    }
-
-    @keyframes shake {
-        0% {
-            transform: none;
-        }
-
-        6.5% {
-            transform: translateX(-6px) rotateY(-9deg);
-        }
-
-        18.5% {
-            transform: translateX(5px) rotateY(7deg);
-        }
-
-        31.5% {
-            transform: translateX(-3px) rotateY(-5deg);
-        }
-
-        43.5% {
-            transform: translateX(2px) rotateY(3deg);
-        }
-
-        50% {
-            transform: none;
-        }
-    }
-
-    @keyframes zoom {
-        0% {
-            transform: scale(0);
-        }
-
-        to {
-            transform: none;
-        }
-    }
 
     /* Color palettes */
     --color-stone-0: oklch(99% 0.0033 72);
@@ -577,9 +449,145 @@
     --color-red-90: oklch(44.45% 0.1824 29.23);
     --color-red-95: oklch(32.59% 0.1337 29.23);
     --color-red-100: oklch(28.54% 0.1171 29.23);
+
+    /* Keyframes */
+    @keyframes fade {
+        0% {
+            opacity: 0;
+        }
+
+        to {
+            opacity: 1;
+        }
+    }
+
+    @keyframes flash {
+        0%, 50%, to {
+            opacity: 1;
+        }
+
+        25%, 75% {
+            opacity: 0;
+        }
+    }
+
+    @keyframes float {
+        0% {
+            transform: none;
+        }
+
+        50% {
+            transform: translateY(-1.25rem);
+        }
+
+        to {
+            transform: none;
+        }
+    }
+
+    @keyframes heart {
+        0% {
+            transform: scale(1);
+        }
+
+        14% {
+            transform: scale(1.3);
+        }
+
+        28% {
+            transform: scale(1);
+        }
+
+        42% {
+            transform: scale(1.3);
+        }
+
+        70% {
+            transform: scale(1);
+        }
+    }
+
+    @keyframes jump {
+        0%, to {
+            transform: translateY(-25%);
+            animation-timing-function: cubic-bezier(.8, 0, 1, 1);
+        }
+
+        50% {
+            transform: translateY(0);
+            animation-timing-function: cubic-bezier(0, 0, .2, 1);
+        }
+    }
+
+    @keyframes ping {
+        75%, to {
+            transform: scale(2);
+            opacity: 0;
+        }
+    }
+
+    @keyframes pulse {
+        0% {
+            transform: none;
+        }
+
+        50% {
+            transform: scale(1.05);
+        }
+
+        to {
+            transform: none;
+        }
+    }
+
+    @keyframes rotate {
+        0% {
+            transform: rotate(-360deg);
+        }
+
+        to {
+            transform: none;
+        }
+    }
+
+    @keyframes shake {
+        0% {
+            transform: none;
+        }
+
+        6.5% {
+            transform: translateX(-6px) rotateY(-9deg);
+        }
+
+        18.5% {
+            transform: translateX(5px) rotateY(7deg);
+        }
+
+        31.5% {
+            transform: translateX(-3px) rotateY(-5deg);
+        }
+
+        43.5% {
+            transform: translateX(2px) rotateY(3deg);
+        }
+
+        50% {
+            transform: none;
+        }
+    }
+
+    @keyframes zoom {
+        0% {
+            transform: scale(0);
+        }
+
+        to {
+            transform: none;
+        }
+    }
 }
 
-/* Light mode colors */
+/* Light mode tokens */
 @theme light {
     /* Shadows */
     --shadow-xs: 0 1px 2px -1px oklch(0% 0 none / .08);
@@ -589,7 +597,7 @@
     --shadow-xl: 0 8px 16px -6px oklch(0% 0 none / .10), 0 24px 48px -12px oklch(0% 0 none / .14);
     --shadow-2xl: 0 12px 24px -8px oklch(0% 0 none / .12), 0 32px 64px -16px oklch(0% 0 none / .18);
 
-    /* Hue aliases */
+    /* Color aliases */
     --color-stone: $color-stone-30;
     --color-gray: $color-gray-30;
     --color-neutral: $color-neutral-30;
@@ -613,6 +621,7 @@
     --color-crimson: $color-crimson-60;
     --color-red: $color-red-60;
 
+    /* Text color aliases */
     --color-text-stone: $color-stone-60;
     --color-text-gray: $color-gray-60;
     --color-text-neutral: $color-neutral-60;
@@ -639,7 +648,7 @@
     --color-text-inverse: $color-white;
 }
 
-/* Dark mode colors */
+/* Dark mode tokens */
 @theme dark {
     /* Shadows */
     --shadow-xs: 0 0 0 1px oklch(100% 0 none / .05), 0 1px 2px -1px oklch(0% 0 none / .30);
@@ -649,7 +658,7 @@
     --shadow-xl: 0 0 0 1px oklch(100% 0 none / .09), 0 8px 16px -6px oklch(0% 0 none / .46), 0 24px 48px -12px oklch(0% 0 none / .38);
     --shadow-2xl: 0 0 0 1px oklch(100% 0 none / .10), 0 12px 24px -8px oklch(0% 0 none / .50), 0 32px 64px -16px oklch(0% 0 none / .44);
 
-    /* Hue aliases */
+    /* Color aliases */
     --color-stone: $color-stone-40;
     --color-gray: $color-gray-40;
     --color-neutral: $color-neutral-40;
@@ -673,6 +682,7 @@
     --color-crimson: $color-crimson-50;
     --color-red: $color-red-50;
 
+    /* Text color aliases */
     --color-text-stone: $color-stone-30;
     --color-text-gray: $color-gray-30;
     --color-text-neutral: $color-neutral-30;
