@@ -467,7 +467,12 @@ export function tokenizeMasterCSSAtQuery(queryText: string, queryStart: number):
             i++
             continue
         }
-        if (char === '&' || char === ',' || char === '!' || char === '>' || char === '<' || char === '=' || char === ':') {
+        if (char === ',' || char === ':') {
+            pushMasterCSSLexicalToken(tokens, queryStart + i, 1, 'operator', 'query.punctuation', ['query'])
+            i++
+            continue
+        }
+        if (char === '&' || char === '!' || char === '>' || char === '<' || char === '=') {
             pushMasterCSSLexicalToken(tokens, queryStart + i, 1, 'operator', 'query.operator', ['query'])
             i++
             continue
@@ -507,7 +512,7 @@ export function tokenizeMasterCSSState(token: string, stateStart: number, offset
             }
         } else if (char === '.' || char === '#') {
             const role = char === '.' ? 'selector.class' : 'selector.id'
-            pushMasterCSSLexicalToken(tokens, offset + i, 1, 'operator', role, ['selector'])
+            pushMasterCSSLexicalToken(tokens, offset + i, 1, 'operator', 'selector.punctuation', ['selector'])
             const nameStart = i + 1
             const match = token.slice(nameStart).match(/^[\w-]+/)
             if (match) {
@@ -517,7 +522,7 @@ export function tokenizeMasterCSSState(token: string, stateStart: number, offset
                 i = nameStart
             }
         } else if (char === '(' || char === ',') {
-            pushMasterCSSLexicalToken(tokens, offset + i, 1, 'operator', char === ',' ? 'selector.combinator' : 'selector.punctuation', ['selector'])
+            pushMasterCSSLexicalToken(tokens, offset + i, 1, 'operator', 'selector.punctuation', ['selector'])
             i++
             const match = token.slice(i).match(/^\*?[A-Za-z][\w-]*/)
             if (match) {

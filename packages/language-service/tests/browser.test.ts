@@ -24,6 +24,25 @@ function tokenText(source: string, token: { start: number, end: number }) {
     return source.slice(token.start, token.end)
 }
 
+function decodeSingleLineBrowserSemanticTokens(source: string, data: ArrayLike<number>) {
+    const tokens: { text: string, type: string, modifiers: string[], modifierBits: number }[] = []
+    let character = 0
+    for (let i = 0; i < data.length; i += 5) {
+        expect(data[i]).toBe(0)
+        character += data[i + 1]
+        const length = data[i + 2]
+        const modifierBits = data[i + 4]
+        const start = character
+        tokens.push({
+            text: source.slice(start, start + length),
+            type: SEMANTIC_TOKEN_TYPES[data[i + 3]],
+            modifiers: SEMANTIC_TOKEN_MODIFIERS.filter((_, index) => modifierBits & (1 << index)),
+            modifierBits
+        })
+    }
+    return tokens
+}
+
 test.concurrent('collects browser semantic tokens for HTML class attributes', () => {
     const source = '<div class="text-align:center fg:brand block btn"></div>'
     const tokens = collectBrowserSemanticTokenItems(source, 'html', { plan })
@@ -41,6 +60,25 @@ test.concurrent('collects browser semantic tokens for HTML class attributes', ()
         { text: 'block', type: 'enumMember', modifiers: [] },
         { text: 'btn', type: 'class', modifiers: ['declaration', 'component'] }
     ]))
+})
+
+test.concurrent('encodes browser role-derived semantic token modifiers', () => {
+    const source = '<div class="{fg:red;block}>li:hover@sm"></div>'
+    const semanticTokens = renderBrowserSemanticTokens(source, 'html', { plan })
+    const tokens = decodeSingleLineBrowserSemanticTokens(source, semanticTokens?.data || [])
+    const declarationTerminatorIndex = SEMANTIC_TOKEN_MODIFIERS.indexOf('declarationTerminator')
+    const selectorCombinatorIndex = SEMANTIC_TOKEN_MODIFIERS.indexOf('selectorCombinator')
+
+    expect(tokens).toEqual(expect.arrayContaining([
+        { text: '{', type: 'operator', modifiers: ['blockBrace'], modifierBits: 1 << SEMANTIC_TOKEN_MODIFIERS.indexOf('blockBrace') },
+        { text: ':', type: 'operator', modifiers: ['declarationSeparator'], modifierBits: 1 << SEMANTIC_TOKEN_MODIFIERS.indexOf('declarationSeparator') },
+        { text: ';', type: 'operator', modifiers: ['declarationTerminator'], modifierBits: 1 << declarationTerminatorIndex },
+        { text: '}', type: 'operator', modifiers: ['blockBrace'], modifierBits: 1 << SEMANTIC_TOKEN_MODIFIERS.indexOf('blockBrace') },
+        { text: '>', type: 'operator', modifiers: ['selector', 'selectorCombinator'], modifierBits: (1 << SEMANTIC_TOKEN_MODIFIERS.indexOf('selector')) | (1 << selectorCombinatorIndex) },
+        { text: ':', type: 'operator', modifiers: ['pseudoClass', 'selector', 'pseudoClassDelimiter'], modifierBits: (1 << SEMANTIC_TOKEN_MODIFIERS.indexOf('pseudoClass')) | (1 << SEMANTIC_TOKEN_MODIFIERS.indexOf('selector')) | (1 << SEMANTIC_TOKEN_MODIFIERS.indexOf('pseudoClassDelimiter')) }
+    ]))
+    expect(declarationTerminatorIndex).toBeGreaterThan(SEMANTIC_TOKEN_MODIFIERS.indexOf('unit'))
+    expect(selectorCombinatorIndex).toBeGreaterThan(SEMANTIC_TOKEN_MODIFIERS.indexOf('unit'))
 })
 
 test.concurrent('collects browser semantic tokens for CSS directives', () => {

@@ -211,6 +211,42 @@ test('does not change native CSS TextMate scopes when injected', () => {
     expect(injectedTokens).toEqual(nativeTokens)
 })
 
+test('documents native CSS punctuation scopes used by semantic token mappings', () => {
+    const nativeCSS = [
+        'main > .card:hover::before, button[aria-expanded="true"] {',
+        '    color: red !important;',
+        '    transform: translate(10px, 20px);',
+        '    content: "a|b";',
+        '    --token: var(--brand);',
+        '}',
+        '@media (pointer: coarse) and (width >= 48rem) {',
+        '    .card { margin: 1rem; }',
+        '}'
+    ].join('\n')
+    const tokens = tokenizeWith(nativeCSSGrammar, nativeCSS)
+
+    expectScope(tokens, '{', 'punctuation.section.property-list.begin.bracket.curly.css')
+    expectScope(tokens, '}', 'punctuation.section.property-list.end.bracket.curly.css')
+    expectScope(tokens, ':', 'punctuation.separator.key-value.css')
+    expectScope(tokens, ';', 'punctuation.terminator.rule.css')
+    expectScope(tokens, '>', 'keyword.operator.combinator.css')
+    expectScope(tokens, '.', 'punctuation.definition.entity.css')
+    expectScope(tokens, ':', 'punctuation.definition.entity.css')
+    expectScope(tokens, '::', 'punctuation.definition.entity.css')
+    expectScope(tokens, ',', 'punctuation.separator.list.comma.css')
+    expectScope(tokens, '[', 'punctuation.definition.entity.begin.bracket.square.css')
+    expectScope(tokens, ']', 'punctuation.definition.entity.end.bracket.square.css')
+    expectScope(tokens, '(', 'punctuation.section.function.begin.bracket.round.css')
+    expectScope(tokens, ')', 'punctuation.section.function.end.bracket.round.css')
+    expectScope(tokens, '(', 'punctuation.definition.parameters.begin.bracket.round.css')
+    expectScope(tokens, ')', 'punctuation.definition.parameters.end.bracket.round.css')
+    expectScope(tokens, '>=', 'keyword.operator.comparison.css')
+    expectScope(tokens, '!important', 'keyword.other.important.css')
+    expectScope(tokens, '"', 'punctuation.definition.string.begin.css')
+    expectScope(tokens, '"', 'punctuation.definition.string.end.css')
+    expectScope(tokens, '--token', 'variable.css')
+})
+
 test('highlights every Master CSS directive keyword', () => {
     const tokens = tokenize(`
         @master;

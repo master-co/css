@@ -29,12 +29,45 @@ export const MASTER_CSS_SEMANTIC_TOKEN_SCOPE_MAP = {
     'modifier.pseudoElement': ['entity.other.attribute-name.pseudo-element.css'],
     operator: ['keyword.operator.css'],
     'operator.directive': ['punctuation.section.property-list.begin.bracket.curly.css'],
-    'operator.important': ['keyword.operator.important.css'],
+    'operator.blockBrace': [
+        'punctuation.section.property-list.begin.bracket.curly.css',
+        'punctuation.section.property-list.end.bracket.curly.css'
+    ],
+    'operator.declarationSeparator': ['punctuation.separator.key-value.css'],
+    'operator.declarationTerminator': ['punctuation.terminator.rule.css'],
+    'operator.directiveTerminator': ['punctuation.terminator.rule.css'],
+    'operator.functionPunctuation': [
+        'punctuation.section.function.begin.bracket.round.css',
+        'punctuation.section.function.end.bracket.round.css'
+    ],
+    'operator.important': ['keyword.other.important.css', 'keyword.operator.important.css'],
     'operator.pseudoClass': ['entity.other.attribute-name.pseudo-class.css'],
+    'operator.pseudoClassDelimiter': ['punctuation.definition.entity.css'],
     'operator.pseudoElement': ['entity.other.attribute-name.pseudo-element.css'],
+    'operator.pseudoElementDelimiter': ['punctuation.definition.entity.css'],
     'operator.query': ['keyword.operator.css'],
-    'operator.selector': ['keyword.operator.combinator'],
+    'operator.queryOperator': ['keyword.operator.comparison.css', 'keyword.operator.css'],
+    'operator.queryPunctuation': [
+        'punctuation.separator.list.comma.css',
+        'punctuation.separator.key-value.css',
+        'punctuation.definition.parameters.begin.bracket.round.css',
+        'punctuation.definition.parameters.end.bracket.round.css',
+        'punctuation.section.function.begin.bracket.round.css',
+        'punctuation.section.function.end.bracket.round.css'
+    ],
+    'operator.selector': ['keyword.operator.combinator.css'],
+    'operator.selectorCombinator': ['keyword.operator.combinator.css'],
+    'operator.selectorPunctuation': [
+        'punctuation.separator.list.comma.css',
+        'punctuation.definition.entity.css',
+        'punctuation.section.function.begin.bracket.round.css',
+        'punctuation.section.function.end.bracket.round.css',
+        'punctuation.definition.entity.begin.bracket.square.css',
+        'punctuation.definition.entity.end.bracket.square.css'
+    ],
     'operator.unit': ['keyword.operator.css'],
+    'operator.valueOperator': ['keyword.operator.css'],
+    'operator.valueSeparator': ['punctuation.separator.list.comma.css'],
     type: ['entity.name.tag.css'],
     'type.selector': ['entity.name.tag.css']
 } as const satisfies Record<string, string[]>

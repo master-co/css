@@ -72,6 +72,10 @@ function tokenizeDirectiveRule(source: string, directive: CSSDirectiveRuleRange,
     if (directive.blockRange && directive.blockContentRange) {
         tokenizeDirectiveBody(source, directive, tokens)
     }
+
+    if (directive.semicolonRange) {
+        pushHighlightToken(tokens, directive.semicolonRange.start, directive.semicolonRange.end - directive.semicolonRange.start, 'operator', 'directive.terminator', ['directive'])
+    }
 }
 
 export function isCSSSemanticTokenDocument(languageId: string) {

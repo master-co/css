@@ -116,6 +116,10 @@ function tokenizeMasterCSSValueSyntax(source: string, start: number, end: number
 export function tokenizeDeclarations(source: string, start: number, end: number, tokens: HighlightTokenItem[], options: NativeCSSTokenizeOptions = {}) {
     for (const declaration of collectCSSDeclarationRanges(source, start, end)) {
         pushDeclarationProperty(source, declaration.propertyRange.start, declaration.propertyRange.end, tokens, options.declarationProperties)
+        pushHighlightToken(tokens, declaration.separatorRange.start, declaration.separatorRange.end - declaration.separatorRange.start, 'operator', 'declaration.separator')
         tokenizeMasterCSSValueSyntax(source, declaration.valueRange.start, declaration.valueRange.end, tokens)
+        if (declaration.terminatorRange) {
+            pushHighlightToken(tokens, declaration.terminatorRange.start, declaration.terminatorRange.end - declaration.terminatorRange.start, 'operator', 'declaration.terminator')
+        }
     }
 }

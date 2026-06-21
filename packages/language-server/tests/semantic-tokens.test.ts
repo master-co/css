@@ -1,11 +1,18 @@
 import { test } from 'vitest'
 import { withFixture } from './setup'
 import { ACTIVE_SEMANTIC_TOKENS_REQUEST, DOCUMENT_SEMANTIC_TOKENS_REQUEST } from '../src'
-import { SEMANTIC_TOKEN_TYPES } from '@master/css-language-service'
+import { SEMANTIC_TOKEN_MODIFIERS, SEMANTIC_TOKEN_TYPES } from '@master/css-language-service'
 
 function hasTokenType(data: number[], type: string) {
     return data.some((_, index) =>
         index % 5 === 3 && SEMANTIC_TOKEN_TYPES[data[index]] === type
+    )
+}
+
+function hasTokenModifier(data: number[], modifier: typeof SEMANTIC_TOKEN_MODIFIERS[number]) {
+    const modifierIndex = SEMANTIC_TOKEN_MODIFIERS.indexOf(modifier)
+    return modifierIndex >= 0 && data.some((_, index) =>
+        index % 5 === 4 && Boolean(data[index] & (1 << modifierIndex))
     )
 }
 
@@ -138,13 +145,13 @@ withFixture('basic', async (context) => {
             full: true,
             legend: {
                 tokenTypes: expect.arrayContaining(['class', 'property', 'variable']),
-                tokenModifiers: expect.arrayContaining(['declaration'])
+                tokenModifiers: expect.arrayContaining(['declaration', 'declarationTerminator', 'selectorCombinator'])
             }
         })
     })
 
     test('returns full semantic tokens for opened documents', async ({ expect }) => {
-        const textDocument = context.createDocument('<div class="fg:red block"></div>')
+        const textDocument = context.createDocument('<div class="{fg:red;block}>li:hover@sm"></div>')
         await context.server.onDidOpen({ document: textDocument })
         const semanticTokens = await context.server.onSemanticTokens({
             textDocument: {
@@ -159,6 +166,8 @@ withFixture('basic', async (context) => {
         expect(semanticTokens.data.some((_, index) =>
             index % 5 === 3 && SEMANTIC_TOKEN_TYPES[semanticTokens.data[index]] === 'enumMember'
         )).toBe(true)
+        expect(hasTokenModifier(semanticTokens.data, 'declarationTerminator')).toBe(true)
+        expect(hasTokenModifier(semanticTokens.data, 'selectorCombinator')).toBe(true)
         await context.server.onDidClose({ document: textDocument })
     })
 }, {

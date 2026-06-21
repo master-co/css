@@ -239,6 +239,58 @@
             {
                 "id": "unit",
                 "description": "Master CSS unit semantic token modifier."
+            },
+            {
+                "id": "blockBrace",
+                "description": "Master CSS blockBrace semantic token modifier."
+            },
+            {
+                "id": "declarationSeparator",
+                "description": "Master CSS declarationSeparator semantic token modifier."
+            },
+            {
+                "id": "declarationTerminator",
+                "description": "Master CSS declarationTerminator semantic token modifier."
+            },
+            {
+                "id": "directiveTerminator",
+                "description": "Master CSS directiveTerminator semantic token modifier."
+            },
+            {
+                "id": "functionPunctuation",
+                "description": "Master CSS functionPunctuation semantic token modifier."
+            },
+            {
+                "id": "valueSeparator",
+                "description": "Master CSS valueSeparator semantic token modifier."
+            },
+            {
+                "id": "valueOperator",
+                "description": "Master CSS valueOperator semantic token modifier."
+            },
+            {
+                "id": "queryOperator",
+                "description": "Master CSS queryOperator semantic token modifier."
+            },
+            {
+                "id": "queryPunctuation",
+                "description": "Master CSS queryPunctuation semantic token modifier."
+            },
+            {
+                "id": "selectorCombinator",
+                "description": "Master CSS selectorCombinator semantic token modifier."
+            },
+            {
+                "id": "selectorPunctuation",
+                "description": "Master CSS selectorPunctuation semantic token modifier."
+            },
+            {
+                "id": "pseudoClassDelimiter",
+                "description": "Master CSS pseudoClassDelimiter semantic token modifier."
+            },
+            {
+                "id": "pseudoElementDelimiter",
+                "description": "Master CSS pseudoElementDelimiter semantic token modifier."
             }
         ],
         "semanticTokenScopes": [
@@ -331,23 +383,76 @@
                     "operator.directive": [
                         "punctuation.section.property-list.begin.bracket.curly.css"
                     ],
+                    "operator.blockBrace": [
+                        "punctuation.section.property-list.begin.bracket.curly.css",
+                        "punctuation.section.property-list.end.bracket.curly.css"
+                    ],
+                    "operator.declarationSeparator": [
+                        "punctuation.separator.key-value.css"
+                    ],
+                    "operator.declarationTerminator": [
+                        "punctuation.terminator.rule.css"
+                    ],
+                    "operator.directiveTerminator": [
+                        "punctuation.terminator.rule.css"
+                    ],
+                    "operator.functionPunctuation": [
+                        "punctuation.section.function.begin.bracket.round.css",
+                        "punctuation.section.function.end.bracket.round.css"
+                    ],
                     "operator.important": [
+                        "keyword.other.important.css",
                         "keyword.operator.important.css"
                     ],
                     "operator.pseudoClass": [
                         "entity.other.attribute-name.pseudo-class.css"
                     ],
+                    "operator.pseudoClassDelimiter": [
+                        "punctuation.definition.entity.css"
+                    ],
                     "operator.pseudoElement": [
                         "entity.other.attribute-name.pseudo-element.css"
+                    ],
+                    "operator.pseudoElementDelimiter": [
+                        "punctuation.definition.entity.css"
                     ],
                     "operator.query": [
                         "keyword.operator.css"
                     ],
+                    "operator.queryOperator": [
+                        "keyword.operator.comparison.css",
+                        "keyword.operator.css"
+                    ],
+                    "operator.queryPunctuation": [
+                        "punctuation.separator.list.comma.css",
+                        "punctuation.separator.key-value.css",
+                        "punctuation.definition.parameters.begin.bracket.round.css",
+                        "punctuation.definition.parameters.end.bracket.round.css",
+                        "punctuation.section.function.begin.bracket.round.css",
+                        "punctuation.section.function.end.bracket.round.css"
+                    ],
                     "operator.selector": [
-                        "keyword.operator.combinator"
+                        "keyword.operator.combinator.css"
+                    ],
+                    "operator.selectorCombinator": [
+                        "keyword.operator.combinator.css"
+                    ],
+                    "operator.selectorPunctuation": [
+                        "punctuation.separator.list.comma.css",
+                        "punctuation.definition.entity.css",
+                        "punctuation.section.function.begin.bracket.round.css",
+                        "punctuation.section.function.end.bracket.round.css",
+                        "punctuation.definition.entity.begin.bracket.square.css",
+                        "punctuation.definition.entity.end.bracket.square.css"
                     ],
                     "operator.unit": [
                         "keyword.operator.css"
+                    ],
+                    "operator.valueOperator": [
+                        "keyword.operator.css"
+                    ],
+                    "operator.valueSeparator": [
+                        "punctuation.separator.list.comma.css"
                     ],
                     "type": [
                         "entity.name.tag.css"

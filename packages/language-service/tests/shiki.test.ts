@@ -58,7 +58,7 @@ function semanticScopeStyleTokens() {
         ...scopeToken('entity.other.attribute-name.pseudo-element.css', 'pseudo-element'),
         ...scopeToken('keyword.operator.css', 'operator'),
         ...scopeToken('keyword.operator.combinator', 'selector-operator'),
-        ...scopeToken('keyword.operator.important.css', 'important'),
+        ...scopeToken('keyword.other.important.css', 'important'),
         ...scopeToken('keyword.other.unit.rem.css', 'unit'),
         ...scopeToken('constant.numeric.css', 'number'),
         ...scopeToken('support.function.misc.css', 'function'),

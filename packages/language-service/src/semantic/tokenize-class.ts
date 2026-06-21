@@ -40,7 +40,7 @@ function tokenizeGroupedClassToken(css: MasterCSS, token: string, offset: number
     const tokens = tokenizeMasterCSSGroupedClassToken(
         token,
         offset,
-        (partText, partOffset) => tokenizeClassToken(css, partText, partOffset)
+        (partText, partOffset) => tokenizeClassToken(css, partText, partOffset) as MasterCSSLexicalTokenItem[]
     )
     return tokens && toHighlightTokenItems(tokens)
 }

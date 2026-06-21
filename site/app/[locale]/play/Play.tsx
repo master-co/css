@@ -113,6 +113,17 @@ function createMasterCSSSemanticTokenRules(theme: editor.IStandaloneThemeData): 
     const fn = getThemeRuleForeground(theme, ['support.function', 'entity.name.function', 'entity.other.attribute-name'], variable)
     const selector = getThemeRuleForeground(theme, ['entity.name.class', 'entity.other.attribute-name', 'entity.name.type.class'], fn)
     const operator = getThemeRuleForeground(theme, ['keyword.operator', 'punctuation.separator'], fallback)
+    const punctuation = getThemeRuleForeground(theme, ['punctuation'], operator)
+    const blockBrace = getThemeRuleForeground(theme, ['punctuation.section.property-list', 'punctuation.section'], punctuation)
+    const declarationSeparator = getThemeRuleForeground(theme, ['punctuation.separator.key-value', 'punctuation.separator'], punctuation)
+    const declarationTerminator = getThemeRuleForeground(theme, ['punctuation.terminator.rule', 'punctuation.terminator'], punctuation)
+    const functionPunctuation = getThemeRuleForeground(theme, ['punctuation.section.function', 'punctuation.section'], punctuation)
+    const listSeparator = getThemeRuleForeground(theme, ['punctuation.separator.list', 'punctuation.separator'], punctuation)
+    const queryOperator = getThemeRuleForeground(theme, ['keyword.operator.comparison', 'keyword.operator'], operator)
+    const queryPunctuation = getThemeRuleForeground(theme, ['punctuation.separator.key-value', 'punctuation.definition.parameters', 'punctuation.section'], punctuation)
+    const selectorCombinator = getThemeRuleForeground(theme, ['keyword.operator.combinator'], operator)
+    const selectorDelimiter = getThemeRuleForeground(theme, ['punctuation.definition.entity'], selector)
+    const important = getThemeRuleForeground(theme, ['keyword.other.important', 'keyword.operator.important', 'keyword'], keyword)
     const normal = 'normal'
 
     return [
@@ -133,10 +144,23 @@ function createMasterCSSSemanticTokenRules(theme: editor.IStandaloneThemeData): 
         { token: 'number', foreground: property, fontStyle: normal },
         { token: 'number.unit', foreground: property, fontStyle: normal },
         { token: 'operator', foreground: operator, fontStyle: normal },
+        { token: 'operator.blockBrace', foreground: blockBrace, fontStyle: normal },
+        { token: 'operator.declarationSeparator', foreground: declarationSeparator, fontStyle: normal },
+        { token: 'operator.declarationTerminator', foreground: declarationTerminator, fontStyle: normal },
         { token: 'operator.directive', foreground: operator, fontStyle: normal },
-        { token: 'operator.important', foreground: keyword, fontStyle: normal },
+        { token: 'operator.directiveTerminator', foreground: declarationTerminator, fontStyle: normal },
+        { token: 'operator.functionPunctuation', foreground: functionPunctuation, fontStyle: normal },
+        { token: 'operator.important', foreground: important, fontStyle: normal },
         { token: 'operator.query', foreground: operator, fontStyle: normal },
-        { token: 'operator.selector', foreground: operator, fontStyle: normal },
+        { token: 'operator.queryOperator', foreground: queryOperator, fontStyle: normal },
+        { token: 'operator.queryPunctuation', foreground: queryPunctuation, fontStyle: normal },
+        { token: 'operator.selector', foreground: selectorCombinator, fontStyle: normal },
+        { token: 'operator.selectorCombinator', foreground: selectorCombinator, fontStyle: normal },
+        { token: 'operator.selectorPunctuation', foreground: listSeparator, fontStyle: normal },
+        { token: 'operator.pseudoClassDelimiter', foreground: selectorDelimiter, fontStyle: normal },
+        { token: 'operator.pseudoElementDelimiter', foreground: selectorDelimiter, fontStyle: normal },
+        { token: 'operator.valueOperator', foreground: operator, fontStyle: normal },
+        { token: 'operator.valueSeparator', foreground: listSeparator, fontStyle: normal },
         { token: 'property', foreground: property, fontStyle: normal },
         { token: 'string', foreground: string, fontStyle: normal },
         { token: 'string.quoted', foreground: string, fontStyle: normal },

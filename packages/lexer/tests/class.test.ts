@@ -65,8 +65,38 @@ test.concurrent('tokenizes at queries and selector state', () => {
         { text: ':', type: 'operator', role: 'selector.pseudoClass.delimiter', modifiers: ['selector', 'pseudoClass'] },
         { text: 'hover', type: 'modifier', role: 'selector.pseudoClass.name', modifiers: ['pseudoClass'] },
         { text: '>', type: 'operator', role: 'selector.combinator', modifiers: ['selector'] },
-        { text: '.', type: 'operator', role: 'selector.class', modifiers: ['selector'] },
+        { text: '.', type: 'operator', role: 'selector.punctuation', modifiers: ['selector'] },
         { text: 'item', type: 'class', role: 'selector.class', modifiers: ['selector'] }
+    ])
+})
+
+test.concurrent('tokenizes native-like query and selector punctuation roles', () => {
+    const source = '@media(pointer:coarse),screen_:is(.active,#target,button)'
+    const stateStart = source.indexOf('_')
+    expect(texts(source, [
+        ...tokenizeMasterCSSAtQuery(source.slice(0, stateStart), 0),
+        ...tokenizeMasterCSSState(source, stateStart, 0)
+    ])).toEqual([
+        { text: '@media', type: 'keyword', role: 'query.keyword', modifiers: ['query'] },
+        { text: '(', type: 'operator', role: 'query.punctuation', modifiers: ['query'] },
+        { text: 'pointer', type: 'property', role: 'query.feature', modifiers: ['query'] },
+        { text: ':', type: 'operator', role: 'query.punctuation', modifiers: ['query'] },
+        { text: 'coarse', type: 'enumMember', role: 'query.value', modifiers: ['query'] },
+        { text: ')', type: 'operator', role: 'query.punctuation', modifiers: ['query'] },
+        { text: ',', type: 'operator', role: 'query.punctuation', modifiers: ['query'] },
+        { text: 'screen', type: 'enumMember', role: 'query.value', modifiers: ['query'] },
+        { text: '_', type: 'operator', role: 'selector.combinator', modifiers: ['selector'] },
+        { text: ':', type: 'operator', role: 'selector.pseudoClass.delimiter', modifiers: ['selector', 'pseudoClass'] },
+        { text: 'is', type: 'modifier', role: 'selector.pseudoClass.name', modifiers: ['pseudoClass'] },
+        { text: '(', type: 'operator', role: 'selector.punctuation', modifiers: ['selector'] },
+        { text: '.', type: 'operator', role: 'selector.punctuation', modifiers: ['selector'] },
+        { text: 'active', type: 'class', role: 'selector.class', modifiers: ['selector'] },
+        { text: ',', type: 'operator', role: 'selector.punctuation', modifiers: ['selector'] },
+        { text: '#', type: 'operator', role: 'selector.punctuation', modifiers: ['selector'] },
+        { text: 'target', type: 'variable', role: 'selector.id', modifiers: ['selector'] },
+        { text: ',', type: 'operator', role: 'selector.punctuation', modifiers: ['selector'] },
+        { text: 'button', type: 'type', role: 'selector.type', modifiers: ['selector'] },
+        { text: ')', type: 'operator', role: 'selector.punctuation', modifiers: ['selector'] }
     ])
 })
 

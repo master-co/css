@@ -32,7 +32,20 @@ export const SEMANTIC_TOKEN_MODIFIERS = [
     'query',
     'quoted',
     'selector',
-    'unit'
+    'unit',
+    'blockBrace',
+    'declarationSeparator',
+    'declarationTerminator',
+    'directiveTerminator',
+    'functionPunctuation',
+    'valueSeparator',
+    'valueOperator',
+    'queryOperator',
+    'queryPunctuation',
+    'selectorCombinator',
+    'selectorPunctuation',
+    'pseudoClassDelimiter',
+    'pseudoElementDelimiter'
 ] as const
 export const SEMANTIC_TOKENS_LEGEND = {
     tokenTypes: [...SEMANTIC_TOKEN_TYPES],

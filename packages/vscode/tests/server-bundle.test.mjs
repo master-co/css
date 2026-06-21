@@ -226,6 +226,17 @@ test('manifest contributes TextMate grammar, semantic token scopes, and CSS diag
             scopes: MASTER_CSS_SEMANTIC_TOKEN_SCOPE_MAP
         }
     ])
+    expect(packageJSON.contributes.semanticTokenModifiers).toEqual(expect.arrayContaining([
+        expect.objectContaining({ id: 'blockBrace' }),
+        expect.objectContaining({ id: 'declarationSeparator' }),
+        expect.objectContaining({ id: 'declarationTerminator' }),
+        expect.objectContaining({ id: 'selectorCombinator' }),
+        expect.objectContaining({ id: 'pseudoClassDelimiter' })
+    ]))
+    expect(MASTER_CSS_SEMANTIC_TOKEN_SCOPE_MAP['operator.declarationTerminator']).toContain('punctuation.terminator.rule.css')
+    expect(MASTER_CSS_SEMANTIC_TOKEN_SCOPE_MAP['operator.declarationSeparator']).toContain('punctuation.separator.key-value.css')
+    expect(MASTER_CSS_SEMANTIC_TOKEN_SCOPE_MAP['operator.selectorCombinator']).toContain('keyword.operator.combinator.css')
+    expect(MASTER_CSS_SEMANTIC_TOKEN_SCOPE_MAP['operator.functionPunctuation']).toContain('punctuation.section.function.begin.bracket.round.css')
     expect(packageJSON.contributes.configuration.properties['masterCSS.includedLanguages'].default).toEqual(expect.arrayContaining([
         'css',
         'scss',

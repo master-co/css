@@ -46,6 +46,29 @@ export interface HighlightTokenItem extends SemanticTokenItem {
     role: HighlightTokenRole
 }
 
+const ROLE_TOKEN_MODIFIERS: Partial<Record<HighlightTokenRole, SemanticTokenModifier>> = {
+    'block.brace': 'blockBrace',
+    'declaration.separator': 'declarationSeparator',
+    'declaration.terminator': 'declarationTerminator',
+    'directive.terminator': 'directiveTerminator',
+    'query.operator': 'queryOperator',
+    'query.punctuation': 'queryPunctuation',
+    'selector.combinator': 'selectorCombinator',
+    'selector.punctuation': 'selectorPunctuation',
+    'selector.pseudoClass.delimiter': 'pseudoClassDelimiter',
+    'selector.pseudoElement.delimiter': 'pseudoElementDelimiter',
+    'value.function.punctuation': 'functionPunctuation',
+    'value.operator': 'valueOperator',
+    'value.separator': 'valueSeparator'
+}
+
+function withRoleModifier(role: HighlightTokenRole, modifiers: SemanticTokenModifier[] = []) {
+    const roleModifier = ROLE_TOKEN_MODIFIERS[role]
+    return roleModifier && !modifiers.includes(roleModifier)
+        ? [...modifiers, roleModifier]
+        : modifiers
+}
+
 export function pushHighlightToken(
     tokens: HighlightTokenItem[],
     start: number,
@@ -59,10 +82,10 @@ export function pushHighlightToken(
 }
 
 export function toSemanticTokenItems(tokens: HighlightTokenItem[]): SemanticTokenItem[] {
-    return tokens.map(({ start, end, type, modifiers }) => ({
+    return tokens.map(({ start, end, type, role, modifiers }) => ({
         start,
         end,
         type,
-        modifiers
+        modifiers: withRoleModifier(role, modifiers)
     }))
 }
