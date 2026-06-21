@@ -4,8 +4,8 @@ import masterLogo from './assets/master.svg'
 import litLogo from './assets/lit.svg'
 import { cssRuntime } from '@master/css-runtime'
 import type { CSSRuntime } from '@master/css-runtime'
-import plan from 'virtual:master-css-plan'
-import preloaded from 'virtual:master-css-preloaded'
+import manifest from 'virtual:master-css-manifest'
+import emittedGlobals from 'virtual:master-css-emitted-globals'
 
 /**
  * An example element.
@@ -14,7 +14,7 @@ import preloaded from 'virtual:master-css-preloaded'
  * @csspart button - The button
  */
 @customElement('my-element')
-@cssRuntime({ plan, preloaded })
+@cssRuntime({ manifest, emittedGlobals })
 export class MyElement extends LitElement {
 
     cssRuntime?: CSSRuntime

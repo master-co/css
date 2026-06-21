@@ -1,11 +1,11 @@
-import type { MasterCSSPreloaded } from './preloaded'
+import type { MasterCSSEmittedGlobals } from './emitted-globals'
 import MasterCSS, { type MasterCSSOptions } from './core'
-import type { MasterCSSPlan } from 'shared/master-css-plan'
+import type { MasterCSSManifest } from 'shared/master-css-manifest'
 
 export default function createCSS(
-    plan: MasterCSSPlan,
-    preloaded?: MasterCSSPreloaded,
+    manifest: MasterCSSManifest,
+    emittedGlobals?: MasterCSSEmittedGlobals,
     options?: MasterCSSOptions
 ) {
-    return new MasterCSS(plan, preloaded, options)
+    return new MasterCSS(manifest, emittedGlobals, options)
 }

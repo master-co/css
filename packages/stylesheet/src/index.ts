@@ -1,6 +1,6 @@
 import {
     compileCSS,
-    createPlanFromCSSResult,
+    createManifestFromCSSResult,
     type CompileCSSOptions,
     type CompileCSSResult
 } from '@master/css-compiler'
@@ -8,16 +8,16 @@ import {
     isMasterCSSPackageStyleFile as isMasterCSSCompilerPackageStyleFile,
     resolveMasterCSSPackageImportGraph
 } from '@master/css-compiler'
-import { AnimationRule, VariableRule, type MasterCSSPreloaded } from '@master/css'
+import { AnimationRule, VariableRule, type MasterCSSEmittedGlobals } from '@master/css'
 import { collectAnimationNamesFromDeclaration } from '@master/css-engine'
 import { createCSSWithNativeDeclarations } from '@master/css-validator'
-import type { MasterCSSPlan } from 'shared/master-css-plan'
+import type { MasterCSSManifest } from 'shared/master-css-manifest'
 import {
     findCSSImportStatements,
     collectCSSDirectiveRanges,
     hasMasterCSSImport,
-    hasMasterCSSPlanEntrypoint,
-    isMasterCSSModuleId as isMasterCSSPlanModuleId,
+    hasMasterCSSManifestEntrypoint,
+    isMasterCSSModuleId as isMasterCSSManifestModuleId,
     normalizeMasterCSSModuleIds,
     parseCSSImportSource
 } from '@master/css-lexer'
@@ -58,7 +58,7 @@ export interface SassModule {
 }
 
 export interface CompileStyleCSSOptions extends CompileCSSOptions {
-    basePlan?: MasterCSSPlan
+    baseManifest?: MasterCSSManifest
     projectDir?: string
     loadSass?: (projectDir?: string) => SassModule
 }
@@ -75,7 +75,7 @@ export type RegisterStyleCSSSourceOptions = CompileStyleCSSOptions
 export interface CreateExtractedCSSOptions extends CompileStyleCSSOptions {
     state: StylesheetState
     styleCSSSources?: StyleCSSSources
-    plan?: MasterCSSPlan
+    manifest?: MasterCSSManifest
     includeGeneratedCSS?: boolean
     includeNativeCSS?: boolean
     includeMasterBaseCSS?: boolean
@@ -83,7 +83,7 @@ export interface CreateExtractedCSSOptions extends CompileStyleCSSOptions {
 
 export interface CreateExtractedCSSResult {
     css: string
-    preloaded: Required<MasterCSSPreloaded>
+    emittedGlobals: Required<MasterCSSEmittedGlobals>
 }
 
 export type StylesheetCSS = ReturnType<typeof createCSSWithNativeDeclarations>
@@ -92,7 +92,7 @@ export interface StylesheetState {
     cwd: string
     options: StylesheetSourceOptions
     customOptions?: {
-        plan?: MasterCSSPlan
+        manifest?: MasterCSSManifest
     }
     css: StylesheetCSS
     latentClasses: Set<string>
@@ -228,7 +228,7 @@ function resolveStyleCSSImportGraphFile(
     for (const importStatement of imports) {
         output += source.slice(index, importStatement.start)
         const importSource = parseCSSImportSource(importStatement.statement)
-        const packageGraph = options.expandMasterCSSPackage !== false && importSource && isMasterCSSPlanModuleId(importSource)
+        const packageGraph = options.expandMasterCSSPackage !== false && importSource && isMasterCSSManifestModuleId(importSource)
             ? resolveMasterCSSPackageImportGraph(projectDir)
             : undefined
         if (packageGraph) {
@@ -305,7 +305,7 @@ export function hasDefaultStyleCSSImport(source: string) {
 }
 
 export function hasMasterStyleEntrypoint(source: string) {
-    return hasMasterCSSPlanEntrypoint(source)
+    return hasMasterCSSManifestEntrypoint(source)
 }
 
 export function resolveMasterStyleSource(
@@ -329,7 +329,7 @@ export function resolveMasterStyleSource(
 }
 
 export function isMasterCSSModuleId(id: string) {
-    return isMasterCSSPlanModuleId(id)
+    return isMasterCSSManifestModuleId(id)
 }
 
 export function isMasterCSSPackageStyleFile(id: string, projectDir?: string) {
@@ -400,11 +400,11 @@ export async function createMasterCSSPackageHostSource(
         preserveNativeCSS: true
     })
     const nativeCSS = getNativeCSS(result)
-    const finalizedResult = createPlanFromCSSResult(result, options)
-    const css = createCSSWithNativeDeclarations(finalizedResult.plan)
+    const finalizedResult = createManifestFromCSSResult(result, options)
+    const css = createCSSWithNativeDeclarations(finalizedResult.manifest)
     const nativeAnimationNames = collectStyleCSSKeyframeNames([nativeCSS])
     if (nativeAnimationNames.size) {
-        css.registerPreloaded({
+        css.registerEmittedGlobals({
             animations: Object.fromEntries([...nativeAnimationNames].map((name) => [name, 1]))
         })
     }
@@ -451,16 +451,16 @@ export async function compileStyleCSS(
     source: string,
     options: CompileStyleCSSOptions = {}
 ): Promise<CompileCSSResult> {
-    const { projectDir, loadSass: _loadSass, basePlan, ...compileOptions } = options
+    const { projectDir, loadSass: _loadSass, baseManifest, ...compileOptions } = options
     const filename = cleanStyleRequest(id)
     const css = await preprocessStyleCSS(source, id, options)
     const result = compileCSS(css, {
         ...compileOptions,
         from: filename
     })
-    const finalizedResult = createPlanFromCSSResult(result, {
+    const finalizedResult = createManifestFromCSSResult(result, {
         ...compileOptions,
-        basePlan,
+        baseManifest,
         root: projectDir,
         from: filename
     })
@@ -515,8 +515,8 @@ export function getNativeCSS(result: { css?: string, generatedCSS?: string, nati
     return css
 }
 
-function hasCompiledStylePlanInput(result: CompileCSSResult) {
-    return Boolean(Object.keys(result.planInput || {}).length || result.styleDefinitions?.length)
+function hasCompiledStyleManifestInput(result: CompileCSSResult) {
+    return Boolean(Object.keys(result.manifestInput || {}).length || result.styleDefinitions?.length)
 }
 
 export function getStylesheetClasses(state: StylesheetState) {
@@ -623,7 +623,7 @@ export async function registerStyleCSSSource(
     return result
 }
 
-export interface CreateStyleCSSPlanOptions extends CompileStyleCSSOptions {
+export interface CreateStyleCSSManifestOptions extends CompileStyleCSSOptions {
     styleCSSSources?: StyleCSSSources
 }
 
@@ -640,7 +640,7 @@ async function compileMasterCSSPackage(projectDir: string | undefined, options: 
     }
 }
 
-export async function createStyleCSSPlan(options: CreateStyleCSSPlanOptions = {}) {
+export async function createStyleCSSManifest(options: CreateStyleCSSManifestOptions = {}) {
     const {
         styleCSSSources,
         ...compileOptions
@@ -657,19 +657,19 @@ export async function createStyleCSSPlan(options: CreateStyleCSSPlanOptions = {}
         ...entries.flatMap(([, styleSource]) => styleSource.dependencies),
         ...styleResults.flatMap((result) => result.dependencies || [])
     ]
-    let plan: MasterCSSPlan | undefined = compileOptions.basePlan
-    let hasStylePlan = false
+    let manifest: MasterCSSManifest | undefined = compileOptions.baseManifest
+    let hasStyleManifest = false
     for (const result of styleResults) {
-        if (!hasCompiledStylePlanInput(result)) continue
-        const finalizedResult = createPlanFromCSSResult(result, {
+        if (!hasCompiledStyleManifestInput(result)) continue
+        const finalizedResult = createManifestFromCSSResult(result, {
             ...compileOptions,
-            basePlan: plan
+            baseManifest: manifest
         })
-        plan = finalizedResult.plan
-        hasStylePlan = true
+        manifest = finalizedResult.manifest
+        hasStyleManifest = true
     }
     return {
-        plan: hasStylePlan ? plan : undefined,
+        manifest: hasStyleManifest ? manifest : undefined,
         dependencies: [...new Set(dependencies)]
     }
 }
@@ -765,36 +765,36 @@ function insertAnimationReferences(css: ReturnType<typeof createCSSWithNativeDec
 function createEmptyExtractedCSSResult(css = ''): CreateExtractedCSSResult {
     return {
         css,
-        preloaded: {
+        emittedGlobals: {
             variables: {},
             animations: {}
         }
     }
 }
 
-function createPreloaded(css: ReturnType<typeof createCSSWithNativeDeclarations>): Required<MasterCSSPreloaded> {
-    const preloaded: Required<MasterCSSPreloaded> = {
-        variables: { ...css.preloaded.variables },
-        animations: { ...css.preloaded.animations }
+function createEmittedGlobals(css: ReturnType<typeof createCSSWithNativeDeclarations>): Required<MasterCSSEmittedGlobals> {
+    const emittedGlobals: Required<MasterCSSEmittedGlobals> = {
+        variables: { ...css.emittedGlobals.variables },
+        animations: { ...css.emittedGlobals.animations }
     }
     for (const rule of css.themeLayer.rules) {
         if (rule instanceof VariableRule) {
-            preloaded.variables[rule.name] = 1
+            emittedGlobals.variables[rule.name] = 1
         }
     }
     for (const rule of css.animationsNonLayer.rules) {
         if (rule instanceof AnimationRule) {
-            preloaded.animations[rule.name] = 1
+            emittedGlobals.animations[rule.name] = 1
         }
     }
-    return preloaded
+    return emittedGlobals
 }
 
 export async function createExtractedCSSResult(options: CreateExtractedCSSOptions): Promise<CreateExtractedCSSResult> {
     const {
         state,
         styleCSSSources,
-        plan: planOption,
+        manifest: planOption,
         includeGeneratedCSS = true,
         includeNativeCSS = true,
         includeMasterBaseCSS = true,
@@ -823,16 +823,16 @@ export async function createExtractedCSSResult(options: CreateExtractedCSSOption
         ...(masterCSSResult ? [masterCSSResult] : []),
         ...entryStyleResults
     ]
-    const explicitPlan = planOption ?? state.customOptions?.plan
-    let mergedPlan = compileOptions.basePlan ?? explicitPlan ?? state.css.plan
-    const finalizedStyleResults = new Map<CompileCSSResult, ReturnType<typeof createPlanFromCSSResult>>()
+    const explicitPlan = planOption ?? state.customOptions?.manifest
+    let mergedPlan = compileOptions.baseManifest ?? explicitPlan ?? state.css.manifest
+    const finalizedStyleResults = new Map<CompileCSSResult, ReturnType<typeof createManifestFromCSSResult>>()
     for (const result of styleResults) {
-        if (!hasCompiledStylePlanInput(result)) continue
-        const finalizedResult = createPlanFromCSSResult(result, {
+        if (!hasCompiledStyleManifestInput(result)) continue
+        const finalizedResult = createManifestFromCSSResult(result, {
             ...compileOptions,
-            basePlan: mergedPlan
+            baseManifest: mergedPlan
         })
-        mergedPlan = finalizedResult.plan
+        mergedPlan = finalizedResult.manifest
         finalizedStyleResults.set(result, finalizedResult)
     }
     const nativeCSS = [
@@ -848,7 +848,7 @@ export async function createExtractedCSSResult(options: CreateExtractedCSSOption
     const nativeAnimationNames = collectStyleCSSKeyframeNames(nativeCSS)
     const css = createCSSWithNativeDeclarations(mergedPlan)
     if (nativeAnimationNames.size) {
-        css.registerPreloaded({
+        css.registerEmittedGlobals({
             animations: Object.fromEntries([...nativeAnimationNames].map((name) => [name, 1]))
         })
     }
@@ -875,7 +875,7 @@ export async function createExtractedCSSResult(options: CreateExtractedCSSOption
     ].filter(Boolean).join('\n\n')
     return {
         css: cssText,
-        preloaded: shouldIncludeMasterCSS || nativeAnimationNames.size ? createPreloaded(css) : createEmptyExtractedCSSResult().preloaded
+        emittedGlobals: shouldIncludeMasterCSS || nativeAnimationNames.size ? createEmittedGlobals(css) : createEmptyExtractedCSSResult().emittedGlobals
     }
 }
 

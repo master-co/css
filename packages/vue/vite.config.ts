@@ -1,8 +1,8 @@
 import { defineConfig } from 'vite'
 import { resolve } from 'path'
 import vue from '@vitejs/plugin-vue'
-import { VIRTUAL_PLAN_ID } from '@master/css-integration/plan-module'
-import { VIRTUAL_PRELOADED_ID } from '@master/css-integration/preloaded-module'
+import { VIRTUAL_MANIFEST_ID } from '@master/css-integration/manifest-module'
+import { VIRTUAL_EMITTED_GLOBALS_ID } from '@master/css-integration/emitted-globals-module'
 import pkg from './package.json'
 
 // https://vitejs.dev/config/
@@ -19,8 +19,8 @@ export default defineConfig({
             formats: ['es']
         },
         rollupOptions: {
-            external: (id) => id === VIRTUAL_PLAN_ID ||
-                id === VIRTUAL_PRELOADED_ID ||
+            external: (id) => id === VIRTUAL_MANIFEST_ID ||
+                id === VIRTUAL_EMITTED_GLOBALS_ID ||
                 id === 'vue' ||
                 id.startsWith('vue/') ||
                 Object.keys(pkg.dependencies).some((dependency) =>

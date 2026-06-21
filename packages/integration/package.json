@@ -47,30 +47,30 @@
             "import": "./dist/module.mjs",
             "default": "./dist/module.mjs"
         },
-        "./plan-module": {
-            "types": "./dist/plan-module.d.ts",
-            "import": "./dist/plan-module.mjs",
-            "default": "./dist/plan-module.mjs"
+        "./manifest-module": {
+            "types": "./dist/manifest-module.d.ts",
+            "import": "./dist/manifest-module.mjs",
+            "default": "./dist/manifest-module.mjs"
         },
-        "./plan-facade": {
-            "types": "./dist/plan-facade.d.ts",
-            "import": "./dist/plan-facade.mjs",
-            "default": "./dist/plan-facade.mjs"
+        "./manifest-facade": {
+            "types": "./dist/manifest-facade.d.ts",
+            "import": "./dist/manifest-facade.mjs",
+            "default": "./dist/manifest-facade.mjs"
         },
         "./style-module": {
             "types": "./dist/style-module.d.ts",
             "import": "./dist/style-module.mjs",
             "default": "./dist/style-module.mjs"
         },
-        "./preloaded-module": {
-            "types": "./dist/preloaded-module.d.ts",
-            "import": "./dist/preloaded-module.mjs",
-            "default": "./dist/preloaded-module.mjs"
+        "./emitted-globals-module": {
+            "types": "./dist/emitted-globals-module.d.ts",
+            "import": "./dist/emitted-globals-module.mjs",
+            "default": "./dist/emitted-globals-module.mjs"
         },
-        "./plan-loader-plugin": {
-            "types": "./dist/plan-loader-plugin.d.ts",
-            "import": "./dist/plan-loader-plugin.mjs",
-            "default": "./dist/plan-loader-plugin.mjs"
+        "./manifest-loader-plugin": {
+            "types": "./dist/manifest-loader-plugin.d.ts",
+            "import": "./dist/manifest-loader-plugin.mjs",
+            "default": "./dist/manifest-loader-plugin.mjs"
         },
         "./runtime": {
             "types": "./dist/runtime.d.ts",

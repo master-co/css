@@ -1,4 +1,4 @@
-import defaultPlan from './default-plan'
+import defaultManifest from './default-manifest'
 import validateCSS from './validate-css'
 import { createCSSWithNativeDeclarations } from './native-declaration'
 
@@ -8,7 +8,7 @@ import { createCSSWithNativeDeclarations } from './native-declaration'
  */
 export default function generateValidRules(
     syntax: string,
-    css = createCSSWithNativeDeclarations(defaultPlan)
+    css = createCSSWithNativeDeclarations(defaultManifest)
 ) {
     const rules = css.generate(syntax)
     if (rules.length) {

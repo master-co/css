@@ -1,18 +1,19 @@
 import { CSSRuntimeProvider } from '../src/runtime-provider'
 import { useState, useEffect, useRef } from 'react'
-import type { MasterCSSPlan } from '@master/css-runtime'
-import defaultPlanJSON from '@master/css-preset/default-plan.json' with { type: 'json' }
+import type { MasterCSSManifest } from '@master/css-runtime'
+import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
+import UtilityType from 'shared/utility-type'
 
-const defaultPlan = defaultPlanJSON as unknown as MasterCSSPlan
+const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 
 export default function Runtime() {
-    const [plan, setPlan] = useState<MasterCSSPlan>({
-        version: 3,
+    const [manifest, setPlan] = useState<MasterCSSManifest>({
+        version: 1,
         utilities: [
             {
                 id: '.btn',
                 name: 'btn',
-                type: -4,
+                type: UtilityType.Semantic,
                 order: 0,
                 layer: 'components',
                 emit: {
@@ -44,8 +45,8 @@ export default function Runtime() {
         }
     }, [containerRef])
 
-    return <CSSRuntimeProvider root={root} plan={plan}>
-        <button id="config-btn" className="btn" onClick={() => setPlan(defaultPlan)}></button>
+    return <CSSRuntimeProvider root={root} manifest={manifest}>
+        <button id="config-btn" className="btn" onClick={() => setPlan(defaultManifest)}></button>
         <button id="root-btn" onClick={() => setRoot(shadowRoot)}></button>
         <div id="container" ref={containerRef}></div>
     </CSSRuntimeProvider>

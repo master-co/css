@@ -1,7 +1,7 @@
 import { VIRTUAL_MODULE_DIR } from '@master/css-integration/node'
 import path from 'node:path'
 
-export function isVirtualPlanModulePath(modulePath: string) {
+export function isVirtualManifestModulePath(modulePath: string) {
     return modulePath.replace(/\\/g, '/').includes(`${VIRTUAL_MODULE_DIR}/`)
 }
 

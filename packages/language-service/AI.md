@@ -2,11 +2,11 @@
 
 ## Responsibility
 
-`@master/css-language-service` provides the stateful service wrapper for editor intelligence using plan-driven Master CSS knowledge. It owns service settings, feature gating, completion, hover/generated CSS previews, color information, color presentations, and `TextDocument` methods that delegate class-position scanning and semantic token classification to `@master/css-language`.
+`@master/css-language-service` provides the stateful service wrapper for editor intelligence using manifest-driven Master CSS knowledge. It owns service settings, feature gating, completion, hover/generated CSS previews, color information, color presentations, and `TextDocument` methods that delegate class-position scanning and semantic token classification to `@master/css-language`.
 
 ## Inputs And Outputs
 
-- Input: `TextDocument`, cursor positions, LSP request context, language service settings, optional MasterCSSPlan.
+- Input: `TextDocument`, cursor positions, LSP request context, language service settings, optional MasterCSSManifest.
 - Output: completion items, hover docs, color info, color presentations, semantic token responses.
 
 ## Public APIs

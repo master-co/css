@@ -2,17 +2,17 @@ import { fileURLToPath, pathToFileURL } from 'node:url'
 import { dirname, relative, resolve } from 'node:path'
 import { mkdirSync, writeFileSync } from 'node:fs'
 import type { NextConfig } from 'next'
-import { createMasterCSSPlanEntryPattern } from '@master/css-plan/css'
+import { createMasterCSSManifestEntryPattern } from '@master/css-manifest/css'
 import {
-    MASTER_CSS_PLAN_QUERY,
-    VIRTUAL_PLAN_ID
-} from '@master/css-integration/plan-module'
+    MASTER_CSS_MANIFEST_QUERY,
+    VIRTUAL_MANIFEST_ID
+} from '@master/css-integration/manifest-module'
 import { VIRTUAL_CSS_ID } from '@master/css-integration/style-module'
-import { VIRTUAL_PRELOADED_ID } from '@master/css-integration/preloaded-module'
+import { VIRTUAL_EMITTED_GLOBALS_ID } from '@master/css-integration/emitted-globals-module'
 import {
-    createVirtualDefaultPlanModulePathPattern,
-    ensureVirtualPlanModulePath,
-    ensureVirtualPreloadedModulePath
+    createVirtualDefaultManifestModulePathPattern,
+    ensureVirtualManifestModulePath,
+    ensureVirtualEmittedGlobalsModulePath
 } from '@master/css-integration/node'
 import {
     prepareNextStatic,
@@ -26,10 +26,10 @@ type WebpackConfig = Parameters<NonNullable<NextConfig['webpack']>>[0]
 type WebpackContext = Parameters<NonNullable<NextConfig['webpack']>>[1]
 type TurbopackRules = NonNullable<NonNullable<NextConfig['turbopack']>['rules']>
 type TurbopackRuleConfigCollection = TurbopackRules[string]
-const MASTER_CSS_PLAN_RESOURCE_QUERY = new RegExp(MASTER_CSS_PLAN_QUERY.slice(1))
-const MASTER_CSS_PLAN_IMPORT_CONTENT_PATTERN = new RegExp(`\\${MASTER_CSS_PLAN_QUERY}`)
-const MASTER_CSS_VIRTUAL_PLAN_PATH_PATTERN = createVirtualDefaultPlanModulePathPattern()
-const MASTER_CSS_STYLE_CONTENT_PATTERN = new RegExp(`${createMasterCSSPlanEntryPattern().source}|@(compose|at)\\b`)
+const MASTER_CSS_MANIFEST_RESOURCE_QUERY = new RegExp(MASTER_CSS_MANIFEST_QUERY.slice(1))
+const MASTER_CSS_MANIFEST_IMPORT_CONTENT_PATTERN = new RegExp(`\\${MASTER_CSS_MANIFEST_QUERY}`)
+const MASTER_CSS_VIRTUAL_MANIFEST_PATH_PATTERN = createVirtualDefaultManifestModulePathPattern()
+const MASTER_CSS_STYLE_CONTENT_PATTERN = new RegExp(`${createMasterCSSManifestEntryPattern().source}|@(compose|at)\\b`)
 const MASTER_CSS_REACT_PACKAGE_NAME = '@master/css.react'
 const COMPOSED_ADAPTER_FILE = 'master-css-next-adapter.mjs'
 
@@ -41,12 +41,12 @@ function resolveComposedAdapterPath(projectDir = process.cwd()) {
     return resolve(projectDir, 'node_modules/.master-css', COMPOSED_ADAPTER_FILE)
 }
 
-function resolveCSSPlanLoaderPath() {
-    return fileURLToPath(new URL('./css-plan-loader.mjs', import.meta.url))
+function resolveCSSManifestLoaderPath() {
+    return fileURLToPath(new URL('./css-manifest-loader.mjs', import.meta.url))
 }
 
-function resolveCSSPlanImportLoaderPath() {
-    return fileURLToPath(new URL('./css-plan-import-loader.mjs', import.meta.url))
+function resolveCSSManifestImportLoaderPath() {
+    return fileURLToPath(new URL('./css-manifest-import-loader.mjs', import.meta.url))
 }
 
 function resolveStyleCSSLoaderPath() {
@@ -95,12 +95,12 @@ function ensureComposedAdapterPath(projectDir: string, masterAdapterPath: string
     return composedAdapterPath
 }
 
-function ensureVirtualPlanPath(projectDir = process.cwd()) {
-    return ensureVirtualPlanModulePath(projectDir)
+function ensureVirtualManifestPath(projectDir = process.cwd()) {
+    return ensureVirtualManifestModulePath(projectDir)
 }
 
-function ensureVirtualPreloadedPath(projectDir = process.cwd()) {
-    return ensureVirtualPreloadedModulePath(projectDir)
+function ensureVirtualEmittedGlobalsPath(projectDir = process.cwd()) {
+    return ensureVirtualEmittedGlobalsModulePath(projectDir)
 }
 
 function toTurbopackProjectPath(file: string, projectDir = process.cwd()) {
@@ -126,19 +126,19 @@ function withTranspilePackage<T extends NextConfig>(nextConfig: T, packageName: 
 
 function applyMasterCSSWebpackConfig(
     config: WebpackConfig,
-    cssPlanLoaderPath: string,
+    cssManifestLoaderPath: string,
     styleCSSLoaderPath: string,
     virtualCSSPath: string,
-    virtualPlanPath: string,
-    virtualPreloadedPath: string
+    virtualManifestPath: string,
+    virtualEmittedGlobalsPath: string
 ) {
     config.module ??= {}
     config.module.rules ??= []
     config.module.rules.push({
-        test: MASTER_CSS_VIRTUAL_PLAN_PATH_PATTERN,
+        test: MASTER_CSS_VIRTUAL_MANIFEST_PATH_PATTERN,
         use: [
             {
-                loader: cssPlanLoaderPath,
+                loader: cssManifestLoaderPath,
                 options: {
                     virtual: true,
                     module: true,
@@ -148,10 +148,10 @@ function applyMasterCSSWebpackConfig(
         ]
     })
     config.module.rules.push({
-        resourceQuery: MASTER_CSS_PLAN_RESOURCE_QUERY,
+        resourceQuery: MASTER_CSS_MANIFEST_RESOURCE_QUERY,
         use: [
             {
-                loader: cssPlanLoaderPath,
+                loader: cssManifestLoaderPath,
                 options: {
                     module: true,
                     external: true
@@ -163,7 +163,7 @@ function applyMasterCSSWebpackConfig(
         test: /\.(css|scss|sass)$/,
         resourceQuery: {
             not: [
-                MASTER_CSS_PLAN_RESOURCE_QUERY
+                MASTER_CSS_MANIFEST_RESOURCE_QUERY
             ]
         },
         use: [
@@ -176,33 +176,33 @@ function applyMasterCSSWebpackConfig(
     config.resolve.alias = {
         ...(config.resolve.alias || {}),
         [VIRTUAL_CSS_ID]: virtualCSSPath,
-        [VIRTUAL_PLAN_ID]: virtualPlanPath,
-        [VIRTUAL_PRELOADED_ID]: virtualPreloadedPath
+        [VIRTUAL_MANIFEST_ID]: virtualManifestPath,
+        [VIRTUAL_EMITTED_GLOBALS_ID]: virtualEmittedGlobalsPath
     }
     return config
 }
 
 function applyMasterCSSTurbopackConfig(
     nextConfig: NextConfig,
-    cssPlanLoaderPath: string,
-    cssPlanImportLoaderPath: string,
+    cssManifestLoaderPath: string,
+    cssManifestImportLoaderPath: string,
     styleCSSLoaderPath: string,
     virtualCSSPath: string,
-    virtualPlanPath: string,
-    virtualPreloadedPath: string,
+    virtualManifestPath: string,
+    virtualEmittedGlobalsPath: string,
     projectDir: string,
     includeStyleRule = true
 ) {
     const rules = nextConfig.turbopack?.rules || {}
     const configRules = rules['*']
-    const configImportSourceRules = createCSSPlanImportSourceRules(cssPlanImportLoaderPath, projectDir)
-    const masterCSSVirtualPlanRule = {
+    const configImportSourceRules = createCSSManifestImportSourceRules(cssManifestImportLoaderPath, projectDir)
+    const masterCSSVirtualManifestRule = {
         condition: {
-            path: MASTER_CSS_VIRTUAL_PLAN_PATH_PATTERN
+            path: MASTER_CSS_VIRTUAL_MANIFEST_PATH_PATTERN
         },
         loaders: [
             {
-                loader: cssPlanLoaderPath,
+                loader: cssManifestLoaderPath,
                 options: {
                     virtual: true,
                     module: true,
@@ -212,16 +212,16 @@ function applyMasterCSSTurbopackConfig(
         ],
         type: 'ecmascript' as const
     }
-    const masterCSSPlanRule = {
+    const masterCSSManifestRule = {
         condition: {
             all: [
                 { path: /\.css$/ },
-                { query: MASTER_CSS_PLAN_RESOURCE_QUERY }
+                { query: MASTER_CSS_MANIFEST_RESOURCE_QUERY }
             ]
         },
         loaders: [
             {
-                loader: cssPlanLoaderPath,
+                loader: cssManifestLoaderPath,
                 options: {
                     module: true,
                     external: true
@@ -236,7 +236,7 @@ function applyMasterCSSTurbopackConfig(
             all: [
                 { path: /\.(css|scss|sass)$/ },
                 { content: MASTER_CSS_STYLE_CONTENT_PATTERN },
-                { not: { query: MASTER_CSS_PLAN_RESOURCE_QUERY } }
+                { not: { query: MASTER_CSS_MANIFEST_RESOURCE_QUERY } }
             ]
         },
         loaders: [styleCSSLoaderPath],
@@ -248,8 +248,8 @@ function applyMasterCSSTurbopackConfig(
         resolveAlias: {
             ...nextConfig.turbopack?.resolveAlias,
             [VIRTUAL_CSS_ID]: virtualCSSPath,
-            [VIRTUAL_PLAN_ID]: virtualPlanPath,
-            [VIRTUAL_PRELOADED_ID]: virtualPreloadedPath
+            [VIRTUAL_MANIFEST_ID]: virtualManifestPath,
+            [VIRTUAL_EMITTED_GLOBALS_ID]: virtualEmittedGlobalsPath
         },
         rules: {
             ...rules,
@@ -261,8 +261,8 @@ function applyMasterCSSTurbopackConfig(
                 ]
             ])),
             '*': [
-                masterCSSVirtualPlanRule,
-                masterCSSPlanRule,
+                masterCSSVirtualManifestRule,
+                masterCSSManifestRule,
                 ...(includeStyleRule ? [masterCSSStyleRule] : []),
                 ...toRuleArray(configRules)
             ]
@@ -283,9 +283,9 @@ function createStaticSourceRule(path: RegExp, as: string, type: 'typescript' | '
     }
 }
 
-function createCSSPlanImportSourceRules(cssPlanImportLoaderPath: string, projectDir: string) {
+function createCSSManifestImportSourceRules(cssManifestImportLoaderPath: string, projectDir: string) {
     const loader = {
-        loader: cssPlanImportLoaderPath,
+        loader: cssManifestImportLoaderPath,
         options: {
             projectDir
         }
@@ -300,7 +300,7 @@ function createCSSPlanImportSourceRules(cssPlanImportLoaderPath: string, project
         condition: {
             all: [
                 { not: 'foreign' as const },
-                { content: MASTER_CSS_PLAN_IMPORT_CONTENT_PATTERN }
+                { content: MASTER_CSS_MANIFEST_IMPORT_CONTENT_PATTERN }
             ]
         },
         type,
@@ -310,18 +310,18 @@ function createCSSPlanImportSourceRules(cssPlanImportLoaderPath: string, project
 
 function applyMasterCSSStaticTurbopackConfig(
     nextConfig: NextConfig,
-    cssPlanLoaderPath: string,
-    cssPlanImportLoaderPath: string,
+    cssManifestLoaderPath: string,
+    cssManifestImportLoaderPath: string,
     styleCSSLoaderPath: string,
     staticLoaderPath: string,
     staticCSSLoaderPath: string,
     virtualCSSPath: string,
-    virtualPlanPath: string,
-    virtualPreloadedPath: string,
+    virtualManifestPath: string,
+    virtualEmittedGlobalsPath: string,
     projectDir: string,
     statePath: string
 ) {
-    const turbopackConfig = applyMasterCSSTurbopackConfig(nextConfig, cssPlanLoaderPath, cssPlanImportLoaderPath, styleCSSLoaderPath, virtualCSSPath, virtualPlanPath, virtualPreloadedPath, projectDir, false)
+    const turbopackConfig = applyMasterCSSTurbopackConfig(nextConfig, cssManifestLoaderPath, cssManifestImportLoaderPath, styleCSSLoaderPath, virtualCSSPath, virtualManifestPath, virtualEmittedGlobalsPath, projectDir, false)
     const rules = turbopackConfig.rules || {}
     const starRules = toRuleArray(rules['*'])
     const staticLoader = {
@@ -348,8 +348,8 @@ function applyMasterCSSStaticTurbopackConfig(
             all: [
                 { not: 'foreign' as const },
                 { path: /\.(css|scss|sass)$/ },
-                { content: createMasterCSSPlanEntryPattern() },
-                { not: { query: MASTER_CSS_PLAN_RESOURCE_QUERY } }
+                { content: createMasterCSSManifestEntryPattern() },
+                { not: { query: MASTER_CSS_MANIFEST_RESOURCE_QUERY } }
             ]
         },
         loaders: [
@@ -377,25 +377,25 @@ function applyMasterCSSStaticTurbopackConfig(
     }
 }
 
-function createNextConfigWithCSSPlanLoader<T extends NextConfig>(
+function createNextConfigWithCSSManifestLoader<T extends NextConfig>(
     nextConfig: T,
-    cssPlanLoaderPath: string,
-    cssPlanImportLoaderPath: string,
+    cssManifestLoaderPath: string,
+    cssManifestImportLoaderPath: string,
     styleCSSLoaderPath: string,
     virtualCSSPath: string,
-    webpackVirtualPlanPath: string,
-    turbopackVirtualPlanPath: string,
-    webpackVirtualPreloadedPath: string,
-    turbopackVirtualPreloadedPath: string,
+    webpackVirtualManifestPath: string,
+    turbopackVirtualManifestPath: string,
+    webpackVirtualEmittedGlobalsPath: string,
+    turbopackVirtualEmittedGlobalsPath: string,
     projectDir: string
 ) {
     const userWebpack = nextConfig.webpack
     return {
         ...nextConfig,
-        turbopack: applyMasterCSSTurbopackConfig(nextConfig, cssPlanLoaderPath, cssPlanImportLoaderPath, styleCSSLoaderPath, virtualCSSPath, turbopackVirtualPlanPath, turbopackVirtualPreloadedPath, projectDir),
+        turbopack: applyMasterCSSTurbopackConfig(nextConfig, cssManifestLoaderPath, cssManifestImportLoaderPath, styleCSSLoaderPath, virtualCSSPath, turbopackVirtualManifestPath, turbopackVirtualEmittedGlobalsPath, projectDir),
         webpack(config: WebpackConfig, context: WebpackContext) {
             const resolvedConfig = userWebpack ? userWebpack(config, context) || config : config
-            return applyMasterCSSWebpackConfig(resolvedConfig, cssPlanLoaderPath, styleCSSLoaderPath, virtualCSSPath, webpackVirtualPlanPath, webpackVirtualPreloadedPath)
+            return applyMasterCSSWebpackConfig(resolvedConfig, cssManifestLoaderPath, styleCSSLoaderPath, virtualCSSPath, webpackVirtualManifestPath, webpackVirtualEmittedGlobalsPath)
         }
     } as T
 }
@@ -407,13 +407,13 @@ export function withMasterCSS<T extends NextConfig>(nextConfig: T = {} as T, opt
     const projectDir = process.cwd()
     nextConfig = withTranspilePackage(nextConfig, MASTER_CSS_REACT_PACKAGE_NAME)
     const resolvedOptions = resolveOptions(options)
-    const cssPlanLoaderPath = resolveCSSPlanLoaderPath()
-    const cssPlanImportLoaderPath = resolveCSSPlanImportLoaderPath()
+    const cssManifestLoaderPath = resolveCSSManifestLoaderPath()
+    const cssManifestImportLoaderPath = resolveCSSManifestImportLoaderPath()
     const styleCSSLoaderPath = resolveStyleCSSLoaderPath()
-    const virtualPlanPath = ensureVirtualPlanPath(projectDir)
-    const virtualPreloadedPath = ensureVirtualPreloadedPath(projectDir)
-    const turbopackVirtualPlanPath = toTurbopackProjectPath(virtualPlanPath, projectDir)
-    const turbopackVirtualPreloadedPath = toTurbopackProjectPath(virtualPreloadedPath, projectDir)
+    const virtualManifestPath = ensureVirtualManifestPath(projectDir)
+    const virtualEmittedGlobalsPath = ensureVirtualEmittedGlobalsPath(projectDir)
+    const turbopackVirtualManifestPath = toTurbopackProjectPath(virtualManifestPath, projectDir)
+    const turbopackVirtualEmittedGlobalsPath = toTurbopackProjectPath(virtualEmittedGlobalsPath, projectDir)
     registerOptions(options)
 
     if (resolvedOptions.mode === 'static') {
@@ -428,14 +428,14 @@ export function withMasterCSS<T extends NextConfig>(nextConfig: T = {} as T, opt
                 ...nextConfig,
                 turbopack: applyMasterCSSStaticTurbopackConfig(
                     nextConfig,
-                    cssPlanLoaderPath,
-                    cssPlanImportLoaderPath,
+                    cssManifestLoaderPath,
+                    cssManifestImportLoaderPath,
                     styleCSSLoaderPath,
                     resolveStaticLoaderPath(),
                     resolveStaticCSSLoaderPath(),
                     turbopackVirtualCSSPath,
-                    turbopackVirtualPlanPath,
-                    turbopackVirtualPreloadedPath,
+                    turbopackVirtualManifestPath,
+                    turbopackVirtualEmittedGlobalsPath,
                     setup.projectDir,
                     statePath
                 )
@@ -443,20 +443,20 @@ export function withMasterCSS<T extends NextConfig>(nextConfig: T = {} as T, opt
         })
     }
 
-    const nextConfigWithCSSPlanLoader = createNextConfigWithCSSPlanLoader(
+    const nextConfigWithCSSManifestLoader = createNextConfigWithCSSManifestLoader(
         nextConfig,
-        cssPlanLoaderPath,
-        cssPlanImportLoaderPath,
+        cssManifestLoaderPath,
+        cssManifestImportLoaderPath,
         styleCSSLoaderPath,
         resolveEmptyCSSPath(),
-        virtualPlanPath,
-        turbopackVirtualPlanPath,
-        virtualPreloadedPath,
-        turbopackVirtualPreloadedPath,
+        virtualManifestPath,
+        turbopackVirtualManifestPath,
+        virtualEmittedGlobalsPath,
+        turbopackVirtualEmittedGlobalsPath,
         projectDir
     )
 
-    if (options.mode === null) return nextConfigWithCSSPlanLoader
+    if (options.mode === null) return nextConfigWithCSSManifestLoader
 
     const adapterPath = resolveAdapterPath()
     const composedAdapterPath = resolveComposedAdapterPath(projectDir)
@@ -473,7 +473,7 @@ export function withMasterCSS<T extends NextConfig>(nextConfig: T = {} as T, opt
             : adapterPath
 
     return {
-        ...nextConfigWithCSSPlanLoader,
+        ...nextConfigWithCSSManifestLoader,
         adapterPath: nextAdapterPath
     } as WithAdapterPath<T>
 }

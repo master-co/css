@@ -9,14 +9,14 @@ import {
     transformLocalStyleCSS
 } from '@master/css-stylesheet'
 import { VIRTUAL_CSS_ID } from '@master/css-integration/style-module'
-import { loadProjectPlan } from '@master/css-plan/load'
+import { loadProjectManifest } from '@master/css-manifest/load'
 
 interface TransformStyleSourceOptions {
     projectDir?: string
     masterImport?: string
 }
 
-function hasMasterStylePlanDirective(source: string) {
+function hasMasterStyleManifestDirective(source: string) {
     return source.includes('@settings') || source.includes('@theme') || source.includes('@master')
 }
 
@@ -32,7 +32,7 @@ export async function transformStyleSource(
     }
     if (isMasterCSSPackageStyleFile(resourcePath, projectDir)) {
         const cleanSource = removeMasterStyleDirectives(source).code
-        if (!hasMasterStylePlanDirective(cleanSource)) {
+        if (!hasMasterStyleManifestDirective(cleanSource)) {
             return {
                 code: cleanSource,
                 dependencies
@@ -51,15 +51,15 @@ export async function transformStyleSource(
     const resolvedSource = resolveMasterStyleSource(resourcePath, source, projectDir)
     if (!resolvedSource) {
         if (hasLocalStyleDirectives(source)) {
-            const projectPlan = await loadProjectPlan(projectDir)
+            const projectManifest = await loadProjectManifest(projectDir)
             const result = await transformLocalStyleCSS(resourcePath, source, {
-                basePlan: projectPlan.plan,
+                baseManifest: projectManifest.manifest,
                 projectDir
             })
             return {
                 code: result.code,
                 dependencies: [...new Set([
-                    ...projectPlan.dependencies,
+                    ...projectManifest.dependencies,
                     ...result.dependencies
                 ])]
             }

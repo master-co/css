@@ -20,7 +20,7 @@ Breakpoint variables belong in your project CSS entry. Keep them product-wide an
 }
 ```
 
-Use CSS length values for breakpoint tokens; `rem` keeps thresholds aligned with the root font size. Unitless numbers are still accepted and interpreted on the 16px scale for existing projects. The scale tables show px/rem pairs for readability, while generated queries use the normalized rem value from the plan.
+Use CSS length values for breakpoint tokens; `rem` keeps thresholds aligned with the root font size. Unitless numbers are still accepted and interpreted on the 16px scale for existing projects. The scale tables show px/rem pairs for readability, while generated queries use the normalized rem value from the manifest.
 
 ---
 
@@ -52,7 +52,7 @@ The exact values can differ by product. The important part is that the tokens st
 
 ---
 
-## Plan changes around decisions
+## Manifest changes around decisions
 A breakpoint should exist because something meaningful changes. Avoid adding thresholds only because a popular device width exists.
 
 | Decision | Good breakpoint use | Better handled elsewhere |

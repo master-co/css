@@ -8,7 +8,7 @@ import {
     resolveMasterStyleSource,
     transformLocalStyleCSS
 } from '@master/css-stylesheet'
-import { loadProjectPlan } from '@master/css-plan/load'
+import { loadProjectManifest } from '@master/css-manifest/load'
 
 interface LoaderContext {
     resourcePath: string
@@ -17,7 +17,7 @@ interface LoaderContext {
     addDependency?: (file: string) => void
 }
 
-function hasMasterStylePlanDirective(source: string) {
+function hasMasterStyleDirective(source: string) {
     return source.includes('@settings') || source.includes('@theme') || source.includes('@master')
 }
 
@@ -35,7 +35,7 @@ async function transformStyleSource(resourcePath: string, source: string, projec
 
     if (isMasterCSSPackageStyleFile(resourcePath, projectDir)) {
         code = removeMasterStyleDirectives(code).code
-        if (!hasMasterStylePlanDirective(code)) {
+        if (!hasMasterStyleDirective(code)) {
             return { code, dependencies }
         }
         const result = await compileStyleCSS(resourcePath, code, {
@@ -51,12 +51,12 @@ async function transformStyleSource(resourcePath: string, source: string, projec
 
     if (!resolvedSource) {
         if (hasLocalStyleDirectives(source)) {
-            const projectPlan = await loadProjectPlan(projectDir)
+            const projectManifest = await loadProjectManifest(projectDir)
             const result = await transformLocalStyleCSS(resourcePath, source, {
-                basePlan: projectPlan.plan,
+                baseManifest: projectManifest.manifest,
                 projectDir
             })
-            dependencies.push(...projectPlan.dependencies, ...(result.dependencies || []))
+            dependencies.push(...projectManifest.dependencies, ...(result.dependencies || []))
             return {
                 code: result.code,
                 dependencies

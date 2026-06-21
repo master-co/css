@@ -3,12 +3,12 @@ import {
     SEMANTIC_TOKEN_TYPES,
     SEMANTIC_TOKENS_LEGEND
 } from './common'
-import { createCSS, defaultPlan, matchesLanguageServiceNativeDeclaration, type MasterCSS } from './master-css'
+import { createCSS, defaultManifest, matchesLanguageServiceNativeDeclaration, type MasterCSS } from './master-css'
 import { collectClassListHighlightTokenItems } from './semantic/tokenize-class'
 import { collectCSSHighlightTokenItems, isCSSSemanticTokenDocument } from './semantic/tokenize-css'
 import { toSemanticTokenItems, type HighlightTokenItem } from './semantic/highlight'
 import type { SemanticTokenItem, SemanticTokenModifier } from './semantic/types'
-import type { MasterCSSPlan } from 'shared/master-css-plan'
+import type { MasterCSSManifest } from 'shared/master-css-manifest'
 
 export {
     SEMANTIC_TOKEN_MODIFIERS,
@@ -19,7 +19,7 @@ export type { HighlightTokenItem, SemanticTokenItem }
 
 export interface BrowserSemanticTokenOptions {
     css?: MasterCSS
-    plan?: MasterCSSPlan
+    manifest?: MasterCSSManifest
     classAttributes?: string[]
 }
 
@@ -41,7 +41,7 @@ const tokenTypeIndex = new Map(SEMANTIC_TOKEN_TYPES.map((type, index) => [type, 
 const tokenModifierIndex = new Map(SEMANTIC_TOKEN_MODIFIERS.map((modifier, index) => [modifier, index]))
 
 function createBrowserCSS(options: BrowserSemanticTokenOptions = {}) {
-    return options.css || createCSS(options.plan || defaultPlan, undefined, {
+    return options.css || createCSS(options.manifest || defaultManifest, undefined, {
         nativeDeclarationMatcher: matchesLanguageServiceNativeDeclaration
     })
 }

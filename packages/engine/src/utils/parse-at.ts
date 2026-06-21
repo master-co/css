@@ -1,13 +1,13 @@
 import { AT_COMPARABLE_FEATURES, AT_COMPARISON_OPERATORS, AT_FEATURE_ALIASES, AT_IDENTIFIERS, AT_LOGICAL_OPERATORS } from '../common'
 import type MasterCSS from '../core'
-import type { MasterCSSPlanAtIdentifier } from 'shared/master-css-plan'
+import type { MasterCSSManifestAtIdentifier } from 'shared/master-css-manifest'
 import parsePair from './parse-pair'
 import parseValue from './parse-value'
 import replaceCharOutsideQuotes from './replace-char-outside-quotes'
 import splitCharOutsideQuotes from './split-char-outside-quotes'
 
 export type AtRule = {
-    id: MasterCSSPlanAtIdentifier
+    id: MasterCSSManifestAtIdentifier
     nodes: AtRuleNode[]
 }
 export declare type AtRuleBooleanNode = { raw?: string, name: string, type: 'boolean' }
@@ -28,12 +28,12 @@ function isAtFeatureName(value: string) {
     return AT_COMPARABLE_FEATURES.includes(resolveAtFeatureName(value))
 }
 
-function isAtIdentifier(value: string): value is MasterCSSPlanAtIdentifier {
+function isAtIdentifier(value: string): value is MasterCSSManifestAtIdentifier {
     return (AT_IDENTIFIERS as string[]).includes(value)
 }
 
 export default function parseAt(token: string, css: MasterCSS, isRaw = true) {
-    let id: MasterCSSPlanAtIdentifier | undefined
+    let id: MasterCSSManifestAtIdentifier | undefined
     let firstToken: string | undefined
     const resolve = (token: string) => {
         const regex = /([a-zA-Z0-9-:%|]+|[&|!|,|>|<|=][=]?)/g

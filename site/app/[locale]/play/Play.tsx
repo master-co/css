@@ -27,11 +27,11 @@ import HeaderContent from 'internal/components/HeaderContent'
 import createHighlighter, { themes } from 'internal/utils/create-highlighter'
 import { useApp } from 'internal/contexts/app'
 import { shikiToMonaco, textmateThemeToMonacoTheme } from '@shikijs/monaco'
-import type { MasterCSSPlan } from '@master/css'
-import defaultPlanJSON from '@master/css-preset/default-plan.json' with { type: 'json' }
+import type { MasterCSSManifest } from '@master/css'
+import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
 import { renderBrowserSemanticTokens, SEMANTIC_TOKENS_LEGEND } from '@master/css-language/browser'
 
-const defaultPlan = defaultPlanJSON as unknown as MasterCSSPlan
+const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 
 if (typeof window !== 'undefined') {
     loader.config({
@@ -430,7 +430,7 @@ export default function Play({ shareId }: PlayProps = {}) {
     const previewIframeRef = useRef<HTMLIFrameElement>(null)
     const filesRef = useRef<PlayFile[]>(template.files)
     const compiledCSSRef = useRef('')
-    const compiledPlanRef = useRef<MasterCSSPlan>(defaultPlan)
+    const compiledManifestRef = useRef<MasterCSSManifest>(defaultManifest)
     const compileTicketRef = useRef(0)
     const skipNextShareLoadRef = useRef('')
     const copiedTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -545,7 +545,7 @@ export default function Play({ shareId }: PlayProps = {}) {
 
             const cssText = result.css
             compiledCSSRef.current = cssText
-            compiledPlanRef.current = result.plan
+            compiledManifestRef.current = result.manifest
             setGeneratedCSSText(cssText ? beautifyCSS(cssText) : '')
             setGeneratedCSSSize(formatCSSSize(cssText))
             setCompileWarnings(result.warnings)
@@ -679,7 +679,7 @@ export default function Play({ shareId }: PlayProps = {}) {
             },
             provideDocumentSemanticTokens(model: editor.ITextModel) {
                 return renderBrowserSemanticTokens(model.getValue(), model.getLanguageId(), {
-                    plan: compiledPlanRef.current
+                    manifest: compiledManifestRef.current
                 }) || { data: new Uint32Array() }
             },
             releaseDocumentSemanticTokens() {

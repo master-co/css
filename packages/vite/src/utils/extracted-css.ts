@@ -9,7 +9,7 @@ export async function getExtractedCSSResult(context: PluginContext) {
         projectDir: context.config?.root,
         includeGeneratedCSS: context.includeGeneratedCSS
     })
-    context.preloaded = result.preloaded
+    context.emittedGlobals = result.emittedGlobals
     return result
 }
 

@@ -1,17 +1,17 @@
 import { describe, expect, test } from 'vitest'
 import { createCSS } from '../src'
-import defaultPlanJSON from '@master/css-preset/default-plan.json' with { type: 'json' }
-import type { MasterCSSPlan } from 'shared/master-css-plan'
+import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
+import type { MasterCSSManifest } from 'shared/master-css-manifest'
 import {
-    clonePlan,
+    cloneManifest,
     createCSSWithSemanticUtilities,
     createDefaultCSS,
-    createPlanWithSemanticUtilities,
-    createPlanWithVariables,
+    createManifestWithSemanticUtilities,
+    createManifestWithVariables,
     expectLayerText
 } from './helpers/css-tester'
 
-const defaultPlan = defaultPlanJSON as unknown as MasterCSSPlan
+const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 
 describe.concurrent('migrated cascade and layer parity', () => {
     test('keeps on-demand insertion lifecycle for utilities variables and semantic components', () => {
@@ -39,46 +39,46 @@ describe.concurrent('migrated cascade and layer parity', () => {
         expect(componentCSS.text).toBe('')
     })
 
-    test('prevents duplicate insertion and preserves preloaded variable and animation counts', () => {
+    test('prevents duplicate insertion and preserves emittedGlobals variable and animation counts', () => {
         const css = createDefaultCSS()
         css.add('text-center', 'text-center')
         expect(css.utilitiesLayer.rules).toHaveLength(1)
 
-        const preloadedVariableCSS = createCSS(defaultPlan, {
+        const emittedGlobalsVariableCSS = createCSS(defaultManifest, {
             variables: {
                 'color-red-60': 1
             }
         })
-        preloadedVariableCSS.add('bg:red-60')
-        expect(preloadedVariableCSS.text).toBe('@layer utilities{.bg\\:red-60{background-color:var(--color-red-60)}}')
-        expect(Object.fromEntries(preloadedVariableCSS.themeLayer.tokenCounts)).toMatchObject({
+        emittedGlobalsVariableCSS.add('bg:red-60')
+        expect(emittedGlobalsVariableCSS.text).toBe('@layer utilities{.bg\\:red-60{background-color:var(--color-red-60)}}')
+        expect(Object.fromEntries(emittedGlobalsVariableCSS.themeLayer.tokenCounts)).toMatchObject({
             'color-red-60': 2
         })
-        preloadedVariableCSS.remove('bg:red-60')
-        expect(preloadedVariableCSS.text).toBe('')
-        expect(Object.fromEntries(preloadedVariableCSS.themeLayer.tokenCounts)).toMatchObject({
+        emittedGlobalsVariableCSS.remove('bg:red-60')
+        expect(emittedGlobalsVariableCSS.text).toBe('')
+        expect(Object.fromEntries(emittedGlobalsVariableCSS.themeLayer.tokenCounts)).toMatchObject({
             'color-red-60': 1
         })
 
-        const preloadedAnimationCSS = createCSS(defaultPlan, {
+        const emittedGlobalsAnimationCSS = createCSS(defaultManifest, {
             animations: {
                 fade: 1
             }
         })
-        preloadedAnimationCSS.add('animate:fade')
-        expect(preloadedAnimationCSS.text).toBe('@layer theme{:root{--animate-fade:fade 1s infinite}}@layer utilities{.animate\\:fade{animation:var(--animate-fade)}}')
-        expect(Object.fromEntries(preloadedAnimationCSS.animationsNonLayer.tokenCounts)).toEqual({
+        emittedGlobalsAnimationCSS.add('animate:fade')
+        expect(emittedGlobalsAnimationCSS.text).toBe('@layer theme{:root{--animate-fade:fade 1s infinite}}@layer utilities{.animate\\:fade{animation:var(--animate-fade)}}')
+        expect(Object.fromEntries(emittedGlobalsAnimationCSS.animationsNonLayer.tokenCounts)).toEqual({
             fade: 2
         })
-        preloadedAnimationCSS.remove('animate:fade')
-        expect(preloadedAnimationCSS.text).toBe('')
-        expect(Object.fromEntries(preloadedAnimationCSS.animationsNonLayer.tokenCounts)).toEqual({
+        emittedGlobalsAnimationCSS.remove('animate:fade')
+        expect(emittedGlobalsAnimationCSS.text).toBe('')
+        expect(Object.fromEntries(emittedGlobalsAnimationCSS.animationsNonLayer.tokenCounts)).toEqual({
             fade: 1
         })
     })
 
     test('emits static variables, dependencies, aliases, and keyframes without class references', () => {
-        const plan = createPlanWithVariables([
+        const manifest = createManifestWithVariables([
             {
                 name: 'color-static-alias',
                 key: 'static-alias',
@@ -112,20 +112,20 @@ describe.concurrent('migrated cascade and layer parity', () => {
                 static: true
             }
         ])
-        plan.animations = {
-            ...(plan.animations || {}),
+        manifest.animations = {
+            ...(manifest.animations || {}),
             'static-fade': {
                 to: {
                     color: 'var(--color-static-base)'
                 }
             }
         }
-        plan.animationOptions = {
+        manifest.animationOptions = {
             'static-fade': {
                 static: true
             }
         }
-        const css = createCSS(plan)
+        const css = createCSS(manifest)
 
         expect(css.text).toContain('@layer theme{')
         expect(css.text).toContain('--color-static-alias:var(--color-static-base)')
@@ -148,8 +148,8 @@ describe.concurrent('migrated cascade and layer parity', () => {
         })
     })
 
-    test('does not duplicate preloaded static variables and keyframes', () => {
-        const plan = createPlanWithVariables([
+    test('does not duplicate emittedGlobals static variables and keyframes', () => {
+        const manifest = createManifestWithVariables([
             {
                 name: 'color-static-simple',
                 key: 'static-simple',
@@ -159,20 +159,20 @@ describe.concurrent('migrated cascade and layer parity', () => {
                 static: true
             }
         ])
-        plan.animations = {
-            ...(plan.animations || {}),
+        manifest.animations = {
+            ...(manifest.animations || {}),
             'static-spin': {
                 to: {
                     opacity: '1'
                 }
             }
         }
-        plan.animationOptions = {
+        manifest.animationOptions = {
             'static-spin': {
                 static: true
             }
         }
-        const css = createCSS(plan, {
+        const css = createCSS(manifest, {
             variables: {
                 'color-static-simple': 1
             },
@@ -214,7 +214,7 @@ describe.concurrent('migrated cascade and layer parity', () => {
     })
 
     test('keeps at-rules authored on semantic component rules within the component layer', () => {
-        const css = createCSS(createPlanWithSemanticUtilities([
+        const css = createCSS(createManifestWithSemanticUtilities([
             {
                 name: 'btn',
                 rules: [
@@ -270,10 +270,10 @@ describe.concurrent('migrated cascade and layer parity', () => {
 
         const tabletAtRule = { id: 'media' as const, nodes: [{ type: 'number' as const, value: 391 / 16, unit: 'rem' }] }
         const desktopAtRule = { id: 'media' as const, nodes: [{ type: 'number' as const, value: 1025 / 16, unit: 'rem' }] }
-        const plan = clonePlan()
-        plan.atRules = { ...(plan.atRules || {}), tablet: tabletAtRule, desktop: desktopAtRule }
-        plan.breakpointAtRules = { ...(plan.breakpointAtRules || {}), tablet: tabletAtRule, desktop: desktopAtRule }
-        const mediaCSS = createCSS(plan, undefined, {
+        const manifest = cloneManifest()
+        manifest.atRules = { ...(manifest.atRules || {}), tablet: tabletAtRule, desktop: desktopAtRule }
+        manifest.breakpointAtRules = { ...(manifest.breakpointAtRules || {}), tablet: tabletAtRule, desktop: desktopAtRule }
+        const mediaCSS = createCSS(manifest, undefined, {
             nativeDeclarationMatcher: ({ property }) => property === 'justify-content' || property === 'min-width'
         })
         mediaCSS.add('min-w:12.875rem', '{flex-row}@xs', 'justify-content:flex-end@xs', 'hidden@tablet&<desktop', '{flex-row}@2xs&<xs')

@@ -9,7 +9,7 @@ export { default as NonLayer } from './non-layer'
 export { default as VariableRule } from './variable-rule'
 export { default as AnimationRule } from './animation-rule'
 export { default as compareRulePriority } from './utils/compare-rule-priority'
-export { default as createRuntimeManifest } from './runtime-manifest'
+export { default as createHydrationManifest } from './hydration-manifest'
 export { collectAnimationNamesFromDeclaration } from './utils/collect-animation-names'
 export { builtinKeyAliases } from './key-aliases'
 export type { MasterCSSBuiltinKeyAliases } from './key-aliases'
@@ -27,10 +27,10 @@ export type {
     MasterCSSBuiltinNativeValueNamespace,
     MasterCSSBuiltinNativeValueNamespaces
 } from './native-value-namespaces'
-export * from 'shared/master-css-plan'
-export type * from './preloaded'
+export * from 'shared/master-css-manifest'
+export type * from './emitted-globals'
 export type { Utility as GeneratedRule } from './utility'
 export type {
     MasterCSSGeneratedRuleIR,
-    MasterCSSRuntimeManifest
-} from 'shared/master-css-runtime-manifest'
+    MasterCSSHydrationManifest
+} from 'shared/master-css-hydration-manifest'

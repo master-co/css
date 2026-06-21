@@ -1,14 +1,14 @@
 import { CSSExtractor, type Options } from '@master/css-extractor'
-import type { MasterCSSPreloaded } from '@master/css'
-import { toPlanJSON } from '@master/css-integration/plan-module'
-import { toBrowserPlanFacadeModule } from '@master/css-integration/plan-facade'
+import type { MasterCSSEmittedGlobals } from '@master/css'
+import { toManifestJSON } from '@master/css-integration/manifest-module'
+import { toBrowserManifestFacadeModule } from '@master/css-integration/manifest-facade'
 import {
-    toHashedPlanAssetFileName,
+    toHashedManifestAssetFileName,
     toVirtualCSSModulePath,
-    toVirtualDefaultPlanModulePath,
-    toVirtualPreloadedModulePath
+    toVirtualDefaultManifestModulePath,
+    toVirtualEmittedGlobalsModulePath
 } from '@master/css-integration/node'
-import { loadProjectPlan } from '@master/css-plan/load'
+import { loadProjectManifest } from '@master/css-manifest/load'
 import {
     cleanStyleRequest,
     createExtractedCSSResult,
@@ -17,17 +17,17 @@ import {
     resolveMasterStyleSource,
     type StyleCSSSources
 } from '@master/css-stylesheet'
-import { toPreloadedModule } from '@master/css-integration/preloaded-module'
+import { toEmittedGlobalsModule } from '@master/css-integration/emitted-globals-module'
 import type { Compiler } from 'webpack'
 import type VirtualModulesPlugin from 'webpack-virtual-modules'
 import { readFileSync } from 'node:fs'
 import { normalizePath } from './utils/path'
 import ExtractorLifecyclePlugin from './plugins/extractor-lifecycle'
 import VirtualModuleRegistryPlugin from './plugins/virtual-modules'
-import PlanVirtualModulePlugin from './plugins/plan-virtual-module'
-import PlanJSONAssetsPlugin from './plugins/plan-json-assets'
+import ManifestVirtualModulePlugin from './plugins/manifest-virtual-module'
+import ManifestJSONAssetsPlugin from './plugins/manifest-json-assets'
 import VirtualCSSImportPlugin from './plugins/virtual-css-import'
-import PlanLoaderPlugin from './plugins/plan-loader'
+import ManifestLoaderPlugin from './plugins/manifest-loader'
 import UsageGraphPlugin from './plugins/usage-graph'
 import StyleEntryPlugin from './plugins/style-entry'
 
@@ -42,8 +42,8 @@ export interface MasterCSSWebpackContext {
     cwd: string
     compilerContext: string
     virtualCSSImportModuleId: string
-    virtualPlanModuleId: string
-    virtualPreloadedModuleId: string
+    virtualManifestModuleId: string
+    virtualEmittedGlobalsModuleId: string
     virtualModule?: VirtualModulesPlugin
     on(...args: Parameters<CSSExtractor['on']>): unknown
     init(customOptions?: Options): Promise<unknown>
@@ -53,19 +53,19 @@ export interface MasterCSSWebpackContext {
     getOptions(): Options
     getPluginInitialized(): boolean
     setPluginInitialized(pluginInitialized: boolean): void
-    getDefaultPlanDependencyPaths(): string[]
+    getDefaultManifestDependencyPaths(): string[]
     setModuleContent(modulePath: string, moduleContent: unknown): void
-    setPlanJSONAsset(assetFileName: string, json: string): void
-    getPlanJSONAssets(): [string, string][]
-    createDefaultPlanModule(): Promise<string>
-    createPreloadedModule(): Promise<string>
+    setManifestJSONAsset(assetFileName: string, json: string): void
+    getManifestJSONAssets(): [string, string][]
+    createDefaultManifestModule(): Promise<string>
+    createEmittedGlobalsModule(): Promise<string>
     processModuleContents(
         entries: [string, string][],
         isGeneratedCSSModulePath: (modulePath: string) => boolean
     ): Promise<void>
     writeGeneratedCSSModule(): Promise<void>
-    writeDefaultPlanModule(): Promise<void>
-    writePreloadedModule(): Promise<void>
+    writeDefaultManifestModule(): Promise<void>
+    writeEmittedGlobalsModule(): Promise<void>
     replayModuleContents(): Promise<void>
     queueResetReplay(): Promise<unknown>
     waitForResetReplay(): Promise<unknown>
@@ -77,9 +77,9 @@ export class MasterCSSPlugin {
     readonly extractor: CSSExtractor
     pluginInitialized = false
     moduleContentByPath: Record<string, unknown> = {}
-    planJSONAssets = new Map<string, string>()
-    defaultPlanDependencies: string[] = []
-    preloaded: MasterCSSPreloaded = {}
+    manifestJSONAssets = new Map<string, string>()
+    defaultManifestDependencies: string[] = []
+    emittedGlobals: MasterCSSEmittedGlobals = {}
     resetReplayChain: Promise<unknown> = Promise.resolve()
     styleCSSSources: StyleCSSSources = new Map()
 
@@ -106,8 +106,8 @@ export class MasterCSSPlugin {
         return this.extractor.css
     }
 
-    get plan() {
-        return this.extractor.plan
+    get manifest() {
+        return this.extractor.manifest
     }
 
     get slotCSSRule() {
@@ -165,21 +165,21 @@ export class MasterCSSPlugin {
         return this.extractor.insert(source, content)
     }
 
-    private async createDefaultPlanModule() {
-        const result = await loadProjectPlan(this.cwd)
+    private async createDefaultManifestModule() {
+        const result = await loadProjectManifest(this.cwd)
         this.extractor.customOptions = {
             ...this.extractor.customOptions,
-            plan: result.plan
+            manifest: result.manifest
         }
-        this.defaultPlanDependencies = result.dependencies
-        const json = toPlanJSON(result.plan)
-        const assetFileName = toHashedPlanAssetFileName(json)
-        this.planJSONAssets.set(assetFileName, json)
-        return toBrowserPlanFacadeModule(`__webpack_public_path__ + ${JSON.stringify(assetFileName)}`)
+        this.defaultManifestDependencies = result.dependencies
+        const json = toManifestJSON(result.manifest)
+        const assetFileName = toHashedManifestAssetFileName(json)
+        this.manifestJSONAssets.set(assetFileName, json)
+        return toBrowserManifestFacadeModule(`__webpack_public_path__ + ${JSON.stringify(assetFileName)}`)
     }
 
-    private getDefaultPlanDependencyPaths() {
-        return this.defaultPlanDependencies
+    private getDefaultManifestDependencyPaths() {
+        return this.defaultManifestDependencies
     }
 
     private getExtractorClasses() {
@@ -200,16 +200,16 @@ export class MasterCSSPlugin {
             includeNativeCSS: options.includeNativeCSS,
             includeMasterBaseCSS: options.includeMasterBaseCSS
         })
-        this.preloaded = result.preloaded
+        this.emittedGlobals = result.emittedGlobals
         return result
     }
 
-    private async createPreloadedModule() {
+    private async createEmittedGlobalsModule() {
         if (!this.extractor.initialized) {
             await this.init()
         }
         await this.createExtractedCSSResult()
-        return toPreloadedModule(this.preloaded)
+        return toEmittedGlobalsModule(this.emittedGlobals)
     }
 
     private async createExtractedCSS(options: { includeNativeCSS?: boolean, includeMasterBaseCSS?: boolean } = {}) {
@@ -264,8 +264,8 @@ export class MasterCSSPlugin {
             cwd: this.cwd,
             compilerContext,
             virtualCSSImportModuleId: toVirtualCSSModulePath(compilerContext),
-            virtualPlanModuleId: toVirtualDefaultPlanModulePath(compilerContext),
-            virtualPreloadedModuleId: toVirtualPreloadedModulePath(compilerContext),
+            virtualManifestModuleId: toVirtualDefaultManifestModulePath(compilerContext),
+            virtualEmittedGlobalsModuleId: toVirtualEmittedGlobalsModulePath(compilerContext),
             on: (...args) => this.on(...args),
             init: (customOptions = this.customOptions) => this.init(customOptions),
             reset: (customOptions = this.customOptions) => this.reset(customOptions),
@@ -276,16 +276,16 @@ export class MasterCSSPlugin {
             setPluginInitialized: (pluginInitialized) => {
                 this.pluginInitialized = pluginInitialized
             },
-            getDefaultPlanDependencyPaths: () => this.getDefaultPlanDependencyPaths(),
+            getDefaultManifestDependencyPaths: () => this.getDefaultManifestDependencyPaths(),
             setModuleContent: (modulePath, moduleContent) => {
                 this.moduleContentByPath[modulePath] = moduleContent
             },
-            setPlanJSONAsset: (assetFileName, json) => {
-                this.planJSONAssets.set(assetFileName, json)
+            setManifestJSONAsset: (assetFileName, json) => {
+                this.manifestJSONAssets.set(assetFileName, json)
             },
-            getPlanJSONAssets: () => [...this.planJSONAssets],
-            createDefaultPlanModule: () => this.createDefaultPlanModule(),
-            createPreloadedModule: () => this.createPreloadedModule(),
+            getManifestJSONAssets: () => [...this.manifestJSONAssets],
+            createDefaultManifestModule: () => this.createDefaultManifestModule(),
+            createEmittedGlobalsModule: () => this.createEmittedGlobalsModule(),
             processModuleContents: (entries, isGeneratedCSSModulePath) => this.processModuleContents(entries, isGeneratedCSSModulePath),
             writeGeneratedCSSModule: async () => {
                 if (!context.virtualModule || !context.virtualCSSImportModuleId) return
@@ -294,15 +294,15 @@ export class MasterCSSPlugin {
                     includeMasterBaseCSS: false
                 })
                 context.virtualModule.writeModule(context.virtualCSSImportModuleId, result.css)
-                await context.writePreloadedModule()
+                await context.writeEmittedGlobalsModule()
             },
-            writeDefaultPlanModule: async () => {
-                if (!context.virtualModule || !context.virtualPlanModuleId) return
-                context.virtualModule.writeModule(context.virtualPlanModuleId, await this.createDefaultPlanModule())
+            writeDefaultManifestModule: async () => {
+                if (!context.virtualModule || !context.virtualManifestModuleId) return
+                context.virtualModule.writeModule(context.virtualManifestModuleId, await this.createDefaultManifestModule())
             },
-            writePreloadedModule: async () => {
-                if (!context.virtualModule || !context.virtualPreloadedModuleId) return
-                context.virtualModule.writeModule(context.virtualPreloadedModuleId, toPreloadedModule(this.preloaded))
+            writeEmittedGlobalsModule: async () => {
+                if (!context.virtualModule || !context.virtualEmittedGlobalsModuleId) return
+                context.virtualModule.writeModule(context.virtualEmittedGlobalsModuleId, toEmittedGlobalsModule(this.emittedGlobals))
             },
             replayModuleContents: async () => {
                 const entries = Object.entries(this.moduleContentByPath)
@@ -333,10 +333,10 @@ export class MasterCSSPlugin {
         return [
             ExtractorLifecyclePlugin(context),
             VirtualModuleRegistryPlugin(context),
-            PlanVirtualModulePlugin(context),
-            PlanJSONAssetsPlugin(context),
+            ManifestVirtualModulePlugin(context),
+            ManifestJSONAssetsPlugin(context),
             VirtualCSSImportPlugin(context),
-            PlanLoaderPlugin(context),
+            ManifestLoaderPlugin(context),
             StyleEntryPlugin(context),
             UsageGraphPlugin(context)
         ]

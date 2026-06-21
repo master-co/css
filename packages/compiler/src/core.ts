@@ -3,7 +3,7 @@ import {
     createCSSDirectiveVariantReference,
     CSSDirectiveError,
     type CSSDirectiveAnimationDefinitions,
-    type CSSDirectivePlanInput,
+    type CSSDirectiveManifestInput,
     type CSSDirectiveDeclarations,
     type CSSDirectiveLayerName,
     type CSSDirectiveReference,
@@ -82,7 +82,7 @@ export interface ResolvedCSSImportGraph {
 
 type ParsedStyleDefinition = CSSDirectiveStyleDefinition
 
-export interface ParsedDirectives extends Pick<CompileCSSResult, 'planInput' | 'extractionPolicy' | 'classNames' | 'nativeClassNames' | 'warnings'> {
+export interface ParsedDirectives extends Pick<CompileCSSResult, 'manifestInput' | 'extractionPolicy' | 'classNames' | 'nativeClassNames' | 'warnings'> {
     styleDefinitions?: ParsedStyleDefinition[]
     styleOrder?: number
     source?: string
@@ -240,7 +240,7 @@ function parseOnOff(value: string) {
     if (value === 'off') return false
 }
 
-function parseDefaultMode(value: string): CSSDirectivePlanInput['defaultMode'] {
+function parseDefaultMode(value: string): CSSDirectiveManifestInput['defaultMode'] {
     if (value === 'false') throw new Error('default-mode must be a mode name or none')
     return value
 }
@@ -260,9 +260,9 @@ function parseVariableValue(value: string): CSSDirectiveVariableValue {
     return numberValue === undefined ? trimmed : numberValue
 }
 
-function addThemeMode(planInput: CSSDirectivePlanInput, mode: string) {
-    planInput.modes ??= []
-    if (!planInput.modes.includes(mode)) planInput.modes.push(mode)
+function addThemeMode(manifestInput: CSSDirectiveManifestInput, mode: string) {
+    manifestInput.modes ??= []
+    if (!manifestInput.modes.includes(mode)) manifestInput.modes.push(mode)
 }
 
 function normalizeThemeTokenName(property: string) {
@@ -276,13 +276,13 @@ function normalizeThemeTokenName(property: string) {
     return name
 }
 
-function defineThemeVariable(planInput: CSSDirectivePlanInput, property: string, rawValue: string, mode?: string, inline?: boolean, isStatic?: boolean) {
+function defineThemeVariable(manifestInput: CSSDirectiveManifestInput, property: string, rawValue: string, mode?: string, inline?: boolean, isStatic?: boolean) {
     const name = normalizeThemeTokenName(property)
     const value = parseVariableValue(rawValue)
     if (mode) {
-        addThemeMode(planInput, mode)
+        addThemeMode(manifestInput, mode)
     }
-    planInput.variables ??= []
+    manifestInput.variables ??= []
     const definition = {
         name,
         value,
@@ -290,52 +290,52 @@ function defineThemeVariable(planInput: CSSDirectivePlanInput, property: string,
         ...(inline ? { inline: true } : {}),
         ...(isStatic ? { static: true } : {})
     }
-    const foundIndex = planInput.variables.findIndex((existing) =>
+    const foundIndex = manifestInput.variables.findIndex((existing) =>
         existing.name === definition.name
         && existing.mode === definition.mode
     )
     if (foundIndex !== -1) {
-        planInput.variables.splice(foundIndex, 1)
+        manifestInput.variables.splice(foundIndex, 1)
     }
-    planInput.variables.push(definition)
+    manifestInput.variables.push(definition)
 }
 
-function parseMasterOption(planInput: CSSDirectivePlanInput, property: string, value: string) {
+function parseMasterOption(manifestInput: CSSDirectiveManifestInput, property: string, value: string) {
     switch (property) {
         case 'root-size': {
             const rootSize = parseNumber(value)
             if (rootSize === undefined) throw new Error('root-size must be a number')
-            planInput.rootSize = rootSize
+            manifestInput.rootSize = rootSize
             return true
         }
         case 'base-unit': {
             const baseUnit = parseNumber(value)
             if (baseUnit === undefined) throw new Error('base-unit must be a number')
-            planInput.baseUnit = baseUnit
+            manifestInput.baseUnit = baseUnit
             return true
         }
         case 'default-mode':
-            planInput.defaultMode = parseDefaultMode(value)
+            manifestInput.defaultMode = parseDefaultMode(value)
             return true
         case 'mode-trigger':
             if (value !== 'class' && value !== 'media' && value !== 'host') {
                 throw new Error('mode-trigger must be class, media, or host')
             }
-            planInput.modeTrigger = value
+            manifestInput.modeTrigger = value
             return true
         case 'important': {
             const important = parseOnOff(value)
             if (important === undefined) throw new Error('important must be on or off')
-            planInput.important = important
+            manifestInput.important = important
             return true
         }
         case 'modes':
             for (const mode of parseList(value)) {
-                addThemeMode(planInput, mode)
+                addThemeMode(manifestInput, mode)
             }
             return true
         case 'scope':
-            planInput.scope = value
+            manifestInput.scope = value
             return true
         default:
             return false
@@ -878,11 +878,11 @@ function restoreRawWebkitPairedDeclarations(
     return restoredDeclarations
 }
 
-function parseSettingsDeclarations(block: DeclarationBlock<Declaration>, planInput: CSSDirectivePlanInput) {
+function parseSettingsDeclarations(block: DeclarationBlock<Declaration>, manifestInput: CSSDirectiveManifestInput) {
     for (const declaration of (block.declarations || []) as Declaration[]) {
         const property = getDeclarationName(declaration)
         const value = formatDeclarationValue(declaration)
-        if (!parseMasterOption(planInput, property, value)) {
+        if (!parseMasterOption(manifestInput, property, value)) {
             throw new Error(`Unsupported @settings option: ${property}`)
         }
     }
@@ -892,11 +892,11 @@ function parseSettingsDeclarations(block: DeclarationBlock<Declaration>, planInp
     }
 }
 
-function parseThemeDeclarations(block: DeclarationBlock<Declaration>, planInput: CSSDirectivePlanInput, mode?: string, inline?: boolean, isStatic?: boolean) {
+function parseThemeDeclarations(block: DeclarationBlock<Declaration>, manifestInput: CSSDirectiveManifestInput, mode?: string, inline?: boolean, isStatic?: boolean) {
     for (const declaration of (block.declarations || []) as Declaration[]) {
         const property = getDeclarationName(declaration)
         const value = formatDeclarationValue(declaration)
-        defineThemeVariable(planInput, property, value, mode, inline, isStatic)
+        defineThemeVariable(manifestInput, property, value, mode, inline, isStatic)
     }
     for (const declaration of (block.importantDeclarations || []) as Declaration[]) {
         const property = normalizeThemeTokenName(getDeclarationName(declaration))
@@ -909,15 +909,15 @@ function parseCustomVariantPrelude(prelude: string) {
     const tokenMatch = /^(:{1,2}[-_a-zA-Z][-_a-zA-Z0-9]*|@[-_a-zA-Z][-_a-zA-Z0-9]*)$/.exec(trimmed)
     if (!tokenMatch) return
     return {
-        token: tokenMatch[1] as NonNullable<CSSDirectivePlanInput['variants']>[number]['token']
+        token: tokenMatch[1] as NonNullable<CSSDirectiveManifestInput['variants']>[number]['token']
     }
 }
 
-function defineVariant(planInput: CSSDirectivePlanInput, variant: NonNullable<CSSDirectivePlanInput['variants']>[number]) {
-    planInput.variants ??= []
-    const foundIndex = planInput.variants.findIndex((existing) => existing.token === variant.token)
-    if (foundIndex !== -1) planInput.variants.splice(foundIndex, 1)
-    planInput.variants.push(variant)
+function defineVariant(manifestInput: CSSDirectiveManifestInput, variant: NonNullable<CSSDirectiveManifestInput['variants']>[number]) {
+    manifestInput.variants ??= []
+    const foundIndex = manifestInput.variants.findIndex((existing) => existing.token === variant.token)
+    if (foundIndex !== -1) manifestInput.variants.splice(foundIndex, 1)
+    manifestInput.variants.push(variant)
 }
 
 function isSlotRule(rule: Rule) {
@@ -954,8 +954,8 @@ function collectVariantTemplateBranches(
     rules: Rule[],
     token: string,
     path: { selectors: string[], atRules: string[], layer?: CSSDirectiveLayerName } = { selectors: [], atRules: [] }
-): NonNullable<CSSDirectivePlanInput['variants']>[number]['branches'] {
-    const branches: NonNullable<CSSDirectivePlanInput['variants']>[number]['branches'] = []
+): NonNullable<CSSDirectiveManifestInput['variants']>[number]['branches'] {
+    const branches: NonNullable<CSSDirectiveManifestInput['variants']>[number]['branches'] = []
     for (const child of rules) {
         if (isSlotRule(child)) {
             branches.push(createVariantTemplateBranch(path))
@@ -1037,7 +1037,7 @@ function parseVariantDefinition(rule: any, parsed: ParsedDirectives) {
         if (!branches.length) {
             throw new Error(`@custom-variant ${token} requires @slot`)
         }
-        defineVariant(parsed.planInput, { token, branches })
+        defineVariant(parsed.manifestInput, { token, branches })
         return
     }
 
@@ -1548,7 +1548,7 @@ function formatKeyframeSelector(selector: KeyframeSelector) {
     }
 }
 
-function parseKeyframes(rule: any, planInput: CSSDirectivePlanInput, isStatic?: boolean) {
+function parseKeyframes(rule: any, manifestInput: CSSDirectiveManifestInput, isStatic?: boolean) {
     const name = rule.value.name.value
     if (!name) {
         throw new Error('@keyframes requires a name')
@@ -1560,11 +1560,11 @@ function parseKeyframes(rule: any, planInput: CSSDirectivePlanInput, isStatic?: 
             keyframes[selector] = declarations
         }
     }
-    planInput.animations ??= {}
-    planInput.animations[name] = keyframes
+    manifestInput.animations ??= {}
+    manifestInput.animations[name] = keyframes
     if (isStatic) {
-        planInput.animationOptions ??= {}
-        planInput.animationOptions[name] = { static: true }
+        manifestInput.animationOptions ??= {}
+        manifestInput.animationOptions[name] = { static: true }
     }
 }
 
@@ -1642,7 +1642,7 @@ function parseSettingsChildRule(child: Rule, parsed: ParsedDirectives, section: 
     }
 
     if (child.type === 'nested-declarations') {
-        parseSettingsDeclarations(child.value.declarations, parsed.planInput)
+        parseSettingsDeclarations(child.value.declarations, parsed.manifestInput)
         return
     }
     if (child.type === 'keyframes') {
@@ -1672,17 +1672,17 @@ function parseThemeRule(rule: any, parsed: ParsedDirectives) {
     if (!Array.isArray(body?.value)) {
         throw new Error('@theme requires a style block')
     }
-    if (mode) addThemeMode(parsed.planInput, mode)
+    if (mode) addThemeMode(parsed.manifestInput, mode)
     for (const child of body.value as Rule[]) {
         if (child.type === 'nested-declarations') {
-            parseThemeDeclarations(child.value.declarations, parsed.planInput, mode, inline, isStatic)
+            parseThemeDeclarations(child.value.declarations, parsed.manifestInput, mode, inline, isStatic)
             continue
         }
         if (child.type === 'keyframes') {
             if (mode || inline) {
                 throw new Error('@theme keyframes cannot be mode-specific or inline')
             }
-            parseKeyframes(child, parsed.planInput, isStatic)
+            parseKeyframes(child, parsed.manifestInput, isStatic)
             continue
         }
         throw new Error('@theme only accepts theme token declarations and @keyframes definitions')
@@ -2013,8 +2013,8 @@ function parseManagedPatternDefinitionRule(
         ['&'],
         atRules
     )
-    parsed.planInput.utilities ??= []
-    parsed.planInput.utilities.push(definition)
+    parsed.manifestInput.utilities ??= []
+    parsed.manifestInput.utilities.push(definition)
 }
 
 function containsNativeStyleDirective(rule: Rule): boolean {
@@ -2215,7 +2215,7 @@ export function compileCSS(source: string, options: CompileCSSOptions = {}): Com
     const references = findCSSReferenceStatements(source, filename)
     const sourceWithoutReferences = removeSourceRanges(source, references)
     const parsed: ParsedDirectives = {
-        planInput: {},
+        manifestInput: {},
         extractionPolicy: createCSSDirectiveExtractionPolicy(),
         classNames: [],
         nativeClassNames: [],
@@ -2314,7 +2314,7 @@ export function compileCSS(source: string, options: CompileCSSOptions = {}): Com
     }
 
     return {
-        planInput: parsed.planInput,
+        manifestInput: parsed.manifestInput,
         extractionPolicy: parsed.extractionPolicy,
         classNames: parsed.classNames,
         nativeClassNames: parsed.nativeClassNames,
@@ -2329,9 +2329,9 @@ export function compileCSS(source: string, options: CompileCSSOptions = {}): Com
 }
 
 export function parseDirectives(source: string, options: CompileCSSOptions = {}) {
-    const { planInput, extractionPolicy, classNames, nativeClassNames, warnings, styleDefinitions } = compileCSS(source, options)
+    const { manifestInput, extractionPolicy, classNames, nativeClassNames, warnings, styleDefinitions } = compileCSS(source, options)
     return {
-        planInput,
+        manifestInput,
         extractionPolicy,
         classNames,
         nativeClassNames,

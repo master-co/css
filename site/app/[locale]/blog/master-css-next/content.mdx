@@ -41,16 +41,16 @@ Progressive Rendering moves that first CSS pass into the build:
 1. Next.js renders static and pre-rendered HTML during `next build`.
 2. `@master/css.next` receives those build outputs through the Adapter API.
 3. The adapter runs the Master CSS server renderer against each HTML document.
-4. The generated CSS is injected as `<style id="master">`, and a runtime manifest is injected as `<script type="application/json" id="master-css-runtime-manifest">`.
+4. The generated CSS is injected as `<style id="master">`, and a hydration manifest is injected as `<script type="application/json" id="master-css-hydration-manifest">`.
 5. The runtime reads that manifest during hydration and attaches the existing CSS rules to runtime-managed rule objects instead of regenerating them.
 
-The result is a page that can arrive from the server already carrying the CSS needed for its first render, while still keeping the runtime behavior that makes Master CSS practical in interactive applications. If the runtime manifest is missing, invalid, or no longer matches `style#master`, the runtime safely rebuilds its stylesheet from the connected DOM classes.
+The result is a page that can arrive from the server already carrying the CSS needed for its first render, while still keeping the runtime behavior that makes Master CSS practical in interactive applications. If the hydration manifest is missing, invalid, or no longer matches `style#master`, the runtime safely rebuilds its stylesheet from the connected DOM classes.
 
-### Runtime manifest hydration
+### Hydration manifest hydration
 
 Progressive Rendering is not only a critical CSS optimization. It is also a resumable runtime handoff.
 
-`style#master` gives the browser the CSS it needs to paint immediately. `script#master-css-runtime-manifest` gives the Master CSS runtime a compact JSON rule IR, currently `version: 1`, that describes the generated rules inside that style block. Each manifest rule can include the class name, layer, priority, selector text, generated CSS text, and any referenced variables or animations.
+`style#master` gives the browser the CSS it needs to paint immediately. `script#master-css-hydration-manifest` gives the Master CSS runtime a compact JSON rule IR, currently `version: 1`, that describes the generated rules inside that style block. Each manifest rule can include the class name, layer, priority, selector text, generated CSS text, and any referenced variables or animations.
 
 That distinction matters because the runtime needs to keep managing the page after hydration. A client component may mount later, a class may change in response to state, or a route transition may reveal UI that did not exist in the first HTML document. The manifest lets the runtime adopt the already-rendered rules as its starting point, then continue from there without duplicating the CSS that the build already wrote.
 
@@ -69,7 +69,7 @@ Progressive Rendering produces HTML shaped like this:
 <html>
 <head>
     <style id="master">@layer utilities{.font\:48px{font-size:48px}}</style>
-    <script type="application/json" id="master-css-runtime-manifest">{"version":1,"rules":[{"className":"font:48px","key":"font:48px","layer":"utilities","type":0,"sortTier":0,"priority":{"selector":0},"text":".font\\:48px{font-size:48px}","selectorText":".font\\:48px"}]}</script>
+    <script type="application/json" id="master-css-hydration-manifest">{"version":1,"rules":[{"className":"font:48px","key":"font:48px","layer":"utilities","type":0,"sortTier":0,"priority":{"selector":0},"text":".font\\:48px{font-size:48px}","selectorText":".font\\:48px"}]}</script>
 </head>
 <body>
     <h1 class="font:48px">Hello</h1>
@@ -157,7 +157,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 }
 ```
 
-`CSSRuntimeRegistry` loads the canonical project-level MasterCSSPlan compiled by the Next.js adapter.
+`CSSRuntimeRegistry` loads the canonical project-level MasterCSSManifest compiled by the Next.js adapter.
 
 Then register the adapter:
 
@@ -216,7 +216,7 @@ export default nextConfig
 
 Under the hood, static mode scans the configured source files with `@master/css-extractor` and writes a generated CSS file under `.master/`. A Turbopack CSS loader replaces `@import "@master/css"` with that generated CSS, and stylesheets that import `@master/css` are treated as native CSS pruning roots by default.
 
-Ordinary class selectors in those roots are pruned against detected classes. References to `var(--*)` or plan animation names can pull matching variables and keyframes from the project CSS entry graph. During Turbopack builds, a scanner loader also reads JavaScript and TypeScript modules that pass through the module graph, so imported files can incrementally feed additional class names into the scanner.
+Ordinary class selectors in those roots are pruned against detected classes. References to `var(--*)` or manifest animation names can pull matching variables and keyframes from the project CSS entry graph. During Turbopack builds, a scanner loader also reads JavaScript and TypeScript modules that pass through the module graph, so imported files can incrementally feed additional class names into the scanner.
 
 This mode is intentionally source-scanned. It works best when complete class strings are visible in source files, and source-glob scanning remains the production correctness baseline.
 

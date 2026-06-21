@@ -2,19 +2,19 @@
 
 ## Responsibility
 
-`@master/css-preset` owns the default Master CSS stylesheet source and generated `default-plan.json`. The public `@master/css` package re-exports preset CSS entries, but not the preset plan data. The key alias, builtin namespace, and native value namespace registry is owned by `@master/css-engine`, not by the preset plan.
+`@master/css-preset` owns the default Master CSS stylesheet source and generated `default-manifest.json`. The public `@master/css` package re-exports preset CSS entries, but not the preset manifest data. The key alias, builtin namespace, and native value namespace registry is owned by `@master/css-engine`, not by the preset manifest.
 
 ## Inputs And Outputs
 
-- Input: preset CSS source files, source utility definitions, default settings, engine built-in registry data, and generated-plan script inputs.
-- Output: `default-plan.json`, `index.css`, `base.css`, `theme.css`, `variants.css`, and `utilities.css`.
+- Input: preset CSS source files, source utility definitions, default settings, engine built-in registry data, and generated-manifest script inputs.
+- Output: `default-manifest.json`, `index.css`, `base.css`, `theme.css`, `variants.css`, and `utilities.css`.
 
 ## Boundaries
 
 - Keep default token, utility, managed keyframe, variant, and layer-statement source here.
-- Do not add `keyAliases`, `nativeValueNamespaces`, or namespace registry data to `default-plan.json`.
-- Do not put engine execution behavior, project plan discovery, or build integration behavior here.
-- Regenerate `src/default-plan.json` only when the source preset intentionally changes.
+- Do not add `keyAliases`, `nativeValueNamespaces`, or namespace registry data to `default-manifest.json`.
+- Do not put engine execution behavior, project manifest discovery, or build integration behavior here.
+- Regenerate `src/default-manifest.json` only when the source preset intentionally changes.
 - The layer statement lives in `src/base.css` and must stay `@layer theme, base, defaults, components, utilities;`.
 
 ## Utility Definition Ladder
@@ -34,4 +34,4 @@ pnpm --filter @master/css-preset type-check
 pnpm --filter @master/css-preset build
 ```
 
-Generated default-plan changes must be intentional and covered by preset or compiler tests.
+Generated default-manifest changes must be intentional and covered by preset or compiler tests.

@@ -1,11 +1,11 @@
 import { test, expect } from '@playwright/test'
-import defaultPlanJSON from '@master/css-preset/default-plan.json' with { type: 'json' }
-import type { MasterCSSPlan } from 'shared/master-css-plan'
+import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
+import type { MasterCSSManifest } from 'shared/master-css-manifest'
 import UtilityType from 'shared/utility-type'
 import initCSSRuntime from '../src/init'
 import init from './init'
 
-const defaultPlan = defaultPlanJSON as unknown as MasterCSSPlan
+const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 
 test('destroy on progressive', async ({ page }) => {
     await init(page, '@layer utilities{}')
@@ -225,14 +225,14 @@ test('hydrates progressive static theme variables and keyframes', async ({ page 
     expect(await page.evaluate(() => globalThis.cssRuntime.animationsNonLayer.rules.map((rule) => rule.name))).toEqual(['static-fade'])
 })
 
-test('registers preloaded counts on an existing runtime', () => {
+test('registers emittedGlobals counts on an existing runtime', () => {
     const root = { host: {} } as unknown as ShadowRoot
-    const cssRuntime = initCSSRuntime({ plan: defaultPlan, root, autoObserve: false })
+    const cssRuntime = initCSSRuntime({ manifest: defaultManifest, root, autoObserve: false })
     const returnedCSSRuntime = initCSSRuntime({
-        plan: defaultPlan,
+        manifest: defaultManifest,
         root,
         autoObserve: false,
-        preloaded: {
+        emittedGlobals: {
             variables: {
                 'color-primary': 1
             },
@@ -243,8 +243,8 @@ test('registers preloaded counts on an existing runtime', () => {
     })
 
     expect(returnedCSSRuntime).toBe(cssRuntime)
-    expect(cssRuntime.preloaded.variables).toMatchObject({ 'color-primary': 1 })
-    expect(cssRuntime.preloaded.animations).toMatchObject({ fade: 1 })
+    expect(cssRuntime.emittedGlobals.variables).toMatchObject({ 'color-primary': 1 })
+    expect(cssRuntime.emittedGlobals.animations).toMatchObject({ fade: 1 })
     expect(Object.fromEntries(cssRuntime.themeLayer.tokenCounts)).toMatchObject({ 'color-primary': 1 })
     expect(Object.fromEntries(cssRuntime.animationsNonLayer.tokenCounts)).toMatchObject({ fade: 1 })
 

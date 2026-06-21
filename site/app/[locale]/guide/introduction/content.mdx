@@ -166,8 +166,8 @@ Master CSS is also a standalone CSS framework. It includes the core rule engine,
     </div>
 </details>
 
-### CSS-first plan authoring
-The project CSS entry is the primary plan source. Theme tokens live in `@theme`, reusable selector and conditional variants use `@custom-variant`, low-level custom utilities live in `@utilities`, semantic component classes live in `@components`, and native CSS rules can use `@compose` when they should lower to ordinary stylesheet output.
+### CSS-first manifest authoring
+The project CSS entry is the primary manifest source. Theme tokens live in `@theme`, reusable selector and conditional variants use `@custom-variant`, low-level custom utilities live in `@utilities`, semantic component classes live in `@components`, and native CSS rules can use `@compose` when they should lower to ordinary stylesheet output.
 
 ```css name=index.css
 @theme {
@@ -198,7 +198,7 @@ The project CSS entry is the primary plan source. Theme tokens live in `@theme`,
 }
 ```
 
-The `@theme`, `@settings`, top-level custom directives, and managed definition directives are plan inputs, not regular stylesheet output. Master CSS compiles them into a `MasterCSSPlan`, then generates only the classes used in markup, discovered by source scanners, or composed by another CSS-defined style. Native rules such as `.notice` lower to CSS for the stylesheet that contains them.
+The `@theme`, `@settings`, top-level custom directives, and managed definition directives are manifest inputs, not regular stylesheet output. Master CSS compiles them into a `MasterCSSManifest`, then generates only the classes used in markup, discovered by source scanners, or composed by another CSS-defined style. Native rules such as `.notice` lower to CSS for the stylesheet that contains them.
 
 ### Rendering for different delivery models
 Master CSS provides three main [rendering modes](/guide/rendering-modes):

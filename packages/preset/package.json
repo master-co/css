@@ -4,13 +4,13 @@
     "scripts": {
         "build": "pnpm generate && techor build \"src/**/!(*.d).ts\" --formats esm",
         "dev": "pnpm build --watch",
-        "generate": "tsx scripts/generate-default-plan.ts",
+        "generate": "tsx scripts/generate-default-manifest.ts",
         "lint": "eslint",
         "type-check": "tsc --noEmit",
         "test": "vitest"
     },
     "license": "MIT",
-    "description": "The default Master CSS preset source and compiled plan.",
+    "description": "The default Master CSS preset source and compiled manifest.",
     "author": "Aoyue Design LLC.",
     "funding": "https://rc.css.master.co/sponsor",
     "homepage": "https://css.master.co",
@@ -43,10 +43,10 @@
             "import": "./dist/index.mjs",
             "default": "./dist/index.mjs"
         },
-        "./default-plan.json": {
-            "types": "./src/default-plan.json.d.ts",
-            "import": "./src/default-plan.json",
-            "default": "./src/default-plan.json"
+        "./default-manifest.json": {
+            "types": "./src/default-manifest.json.d.ts",
+            "import": "./src/default-manifest.json",
+            "default": "./src/default-manifest.json"
         },
         "./index.css": "./src/index.css",
         "./base.css": "./src/base.css",
@@ -57,8 +57,8 @@
     "files": [
         "dist",
         "src/*.css",
-        "src/default-plan.json",
-        "src/default-plan.json.d.ts"
+        "src/default-manifest.json",
+        "src/default-manifest.json.d.ts"
     ],
     "publishConfig": {
         "access": "public",

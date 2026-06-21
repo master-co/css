@@ -1,22 +1,22 @@
 import CSSLanguageService from '../../src/core'
 import createDoc from '../../src/utils/create-doc'
 import { Settings } from '../../src/settings'
-import { createPresetPlan } from '../helpers/create-preset-plan'
+import { createPresetManifest } from '../helpers/create-preset-manifest'
 
-const defaultPresetPlan = createPresetPlan()
-const defaultLanguageService = new CSSLanguageService({ plan: defaultPresetPlan })
-const presetPlanByInput = new WeakMap<object, ReturnType<typeof createPresetPlan>>()
+const defaultPresetManifest = createPresetManifest()
+const defaultLanguageService = new CSSLanguageService({ manifest: defaultPresetManifest })
+const presetManifestByInput = new WeakMap<object, ReturnType<typeof createPresetManifest>>()
 const languageServiceBySettings = new WeakMap<object, CSSLanguageService>()
 const defaultHintCache = new Map<string, ReturnType<CSSLanguageService['suggestSyntax']>>()
 const hintCacheBySettings = new WeakMap<object, Map<string, ReturnType<CSSLanguageService['suggestSyntax']>>>()
 
-function getPresetPlan(plan: Settings['plan']) {
-    if (!plan) return defaultPresetPlan
-    const cachedPlan = presetPlanByInput.get(plan)
+function getPresetManifest(manifest: Settings['manifest']) {
+    if (!manifest) return defaultPresetManifest
+    const cachedPlan = presetManifestByInput.get(manifest)
     if (cachedPlan) return cachedPlan
-    const presetPlan = createPresetPlan(plan)
-    presetPlanByInput.set(plan, presetPlan)
-    return presetPlan
+    const presetManifest = createPresetManifest(manifest)
+    presetManifestByInput.set(manifest, presetManifest)
+    return presetManifest
 }
 
 function getLanguageService(settings: Settings) {
@@ -25,7 +25,7 @@ function getLanguageService(settings: Settings) {
     if (cachedLanguageService) return cachedLanguageService
     const languageService = new CSSLanguageService({
         ...settings,
-        plan: getPresetPlan(settings.plan)
+        manifest: getPresetManifest(settings.manifest)
     })
     languageServiceBySettings.set(settings, languageService)
     return languageService

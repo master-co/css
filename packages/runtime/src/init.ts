@@ -1,36 +1,36 @@
 import CSSRuntime from './core'
-import type { MasterCSSPlan } from 'shared/master-css-plan'
-import type { MasterCSSPreloaded } from '@master/css-engine'
+import type { MasterCSSManifest } from 'shared/master-css-manifest'
+import type { MasterCSSEmittedGlobals } from '@master/css-engine'
 import {
-    MASTER_CSS_RUNTIME_MANIFEST_SCRIPT_ID,
-    type MasterCSSRuntimeManifest
-} from 'shared/master-css-runtime-manifest'
+    MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID,
+    type MasterCSSHydrationManifest
+} from 'shared/master-css-hydration-manifest'
 
 export interface CSSRuntimeInitOptions {
-    plan: MasterCSSPlan
+    manifest: MasterCSSManifest
     root?: Document | ShadowRoot
     autoObserve?: boolean
-    preloaded?: MasterCSSPreloaded
-    manifest?: MasterCSSRuntimeManifest
+    emittedGlobals?: MasterCSSEmittedGlobals
+    hydrationManifest?: MasterCSSHydrationManifest
 }
 
-function readRuntimeManifest(root: Document | ShadowRoot): MasterCSSRuntimeManifest | undefined {
+function readHydrationManifest(root: Document | ShadowRoot): MasterCSSHydrationManifest | undefined {
     const DocumentConstructor = globalThis.Document
     const element = DocumentConstructor && root instanceof DocumentConstructor
-        ? root.getElementById(MASTER_CSS_RUNTIME_MANIFEST_SCRIPT_ID)
+        ? root.getElementById(MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID)
         : 'querySelector' in root
-            ? root.querySelector(`#${MASTER_CSS_RUNTIME_MANIFEST_SCRIPT_ID}`)
+            ? root.querySelector(`#${MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID}`)
             : undefined
     const source = element?.textContent?.trim()
     if (!source) return
     try {
-        const manifest = JSON.parse(source) as MasterCSSRuntimeManifest
-        return manifest?.version === 1 && Array.isArray(manifest.rules)
-            ? manifest
+        const hydrationManifest = JSON.parse(source) as MasterCSSHydrationManifest
+        return hydrationManifest?.version === 1 && Array.isArray(hydrationManifest.rules)
+            ? hydrationManifest
             : undefined
     } catch (error) {
         if (process.env.NODE_ENV === 'development') {
-            console.debug('Cannot parse Master CSS runtime manifest.', error)
+            console.debug('Cannot parse Master CSS hydration manifest.', error)
         }
     }
 }
@@ -42,19 +42,19 @@ function readRuntimeManifest(root: Document | ShadowRoot): MasterCSSRuntimeManif
  */
 export default function initCSSRuntime(options: CSSRuntimeInitOptions): CSSRuntime {
     const {
-        plan,
+        manifest,
         root = document,
         autoObserve = true,
-        preloaded,
-        manifest
+        emittedGlobals,
+        hydrationManifest
     } = options
     let cssRuntime = globalThis.CSSRuntime.instances.get(root)
     if (cssRuntime) {
-        cssRuntime.registerPreloaded(preloaded)
-        if (manifest) cssRuntime.manifest = manifest
+        cssRuntime.registerEmittedGlobals(emittedGlobals)
+        if (hydrationManifest) cssRuntime.hydrationManifest = hydrationManifest
         return cssRuntime
     }
-    cssRuntime = new CSSRuntime(root, plan, preloaded, manifest || readRuntimeManifest(root))
+    cssRuntime = new CSSRuntime(root, manifest, emittedGlobals, hydrationManifest || readHydrationManifest(root))
     if (autoObserve) cssRuntime.observe()
     return cssRuntime
 }

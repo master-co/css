@@ -1,23 +1,23 @@
-declare module '*?master-css-plan' {
-    import type { MasterCSSPlan } from '@master/css-engine'
+declare module '*?master-css-manifest' {
+    import type { MasterCSSManifest } from '@master/css-engine'
 
-    const plan: MasterCSSPlan
-    export default plan
+    const manifest: MasterCSSManifest
+    export default manifest
 }
 
 declare module 'virtual:master-utilities.css' {
 }
 
-declare module 'virtual:master-css-plan' {
-    import type { MasterCSSPlan } from '@master/css-engine'
+declare module 'virtual:master-css-manifest' {
+    import type { MasterCSSManifest } from '@master/css-engine'
 
-    const plan: MasterCSSPlan
-    export default plan
+    const manifest: MasterCSSManifest
+    export default manifest
 }
 
-declare module 'virtual:master-css-preloaded' {
-    import type { MasterCSSPreloaded } from '@master/css-engine'
+declare module 'virtual:master-css-emitted-globals' {
+    import type { MasterCSSEmittedGlobals } from '@master/css-engine'
 
-    const preloaded: MasterCSSPreloaded
-    export default preloaded
+    const emittedGlobals: MasterCSSEmittedGlobals
+    export default emittedGlobals
 }

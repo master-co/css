@@ -1,5 +1,5 @@
 import { createCSS } from '@master/css'
-import type { MasterCSSOptions, MasterCSSPlan, MasterCSSPreloaded, NativeCSSDeclarationMatcher } from '@master/css'
+import type { MasterCSSOptions, MasterCSSManifest, MasterCSSEmittedGlobals, NativeCSSDeclarationMatcher } from '@master/css'
 import { lexer, parse, property as propertyName } from 'css-tree'
 import { isTargetError } from './validate-css'
 
@@ -28,11 +28,11 @@ export const cssTreeNativeDeclarationMatcher: NativeCSSDeclarationMatcher = ({ p
 }
 
 export function createCSSWithNativeDeclarations(
-    plan: MasterCSSPlan,
-    preloaded?: MasterCSSPreloaded,
+    manifest: MasterCSSManifest,
+    emittedGlobals?: MasterCSSEmittedGlobals,
     options: MasterCSSOptions = {}
 ) {
-    return createCSS(plan, preloaded, {
+    return createCSS(manifest, emittedGlobals, {
         ...options,
         nativeDeclarationMatcher: options.nativeDeclarationMatcher || cssTreeNativeDeclarationMatcher
     })

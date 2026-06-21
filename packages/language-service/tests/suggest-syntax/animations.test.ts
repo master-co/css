@@ -1,10 +1,10 @@
 import { test, it, expect, describe } from 'vitest'
 import { hint } from './helper'
 import type { Settings } from '../../src'
-import { createPresetPlan } from '../helpers/create-preset-plan'
+import { createPresetManifest } from '../helpers/create-preset-manifest'
 
 const settings = {
-    plan: createPresetPlan({
+    manifest: createPresetManifest({
         variables: [{ namespace: 'breakpoint', key: 'sm', value: 768 }],
         animations: {
             fade: {

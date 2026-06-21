@@ -1,20 +1,20 @@
-import { MasterCSS, createRuntimeManifest } from '@master/css'
-import type { MasterCSSPlan } from 'shared/master-css-plan'
+import { MasterCSS, createHydrationManifest } from '@master/css'
+import type { MasterCSSManifest } from 'shared/master-css-manifest'
 import {
-    MASTER_CSS_RUNTIME_MANIFEST_SCRIPT_ID,
-    serializeMasterCSSRuntimeManifest,
-    type MasterCSSRuntimeManifest
-} from 'shared/master-css-runtime-manifest'
+    MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID,
+    serializeMasterCSSHydrationManifest,
+    type MasterCSSHydrationManifest
+} from 'shared/master-css-hydration-manifest'
 import parseHTML from './parse-html'
-import getDefaultPlan from './default-plan'
+import getDefaultManifest from './default-manifest'
 import createServerCSS from './create-server-css'
 import { Element, Text, ChildNode } from 'domhandler'
 import serialize from 'dom-serializer'
 
-export type RenderRuntimeManifestOption = 'return' | 'inject' | false
+export type RenderHydrationManifestOption = 'return' | 'inject' | false
 
 export interface RenderOptions {
-    runtimeManifest?: RenderRuntimeManifestOption
+    hydrationManifest?: RenderHydrationManifestOption
 }
 
 export interface RenderResult {
@@ -25,43 +25,43 @@ export interface RenderResult {
     htmlElement: Element | null,
     headElement: Element | null,
     styleElement: Element | null,
-    manifest?: MasterCSSRuntimeManifest
+    hydrationManifest?: MasterCSSHydrationManifest
 }
 
-function createRuntimeManifestScript(manifest: MasterCSSRuntimeManifest) {
+function createHydrationManifestScript(hydrationManifest: MasterCSSHydrationManifest) {
     return new Element(
         'script',
         {
             type: 'application/json',
-            id: MASTER_CSS_RUNTIME_MANIFEST_SCRIPT_ID
+            id: MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID
         },
-        [new Text(serializeMasterCSSRuntimeManifest(manifest))]
+        [new Text(serializeMasterCSSHydrationManifest(hydrationManifest))]
     )
 }
 
-function isRuntimeManifestScript(node: ChildNode): node is Element {
+function isHydrationManifestScript(node: ChildNode): node is Element {
     return node.type === 'script'
         && node.name === 'script'
-        && node.attribs.id === MASTER_CSS_RUNTIME_MANIFEST_SCRIPT_ID
+        && node.attribs.id === MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID
 }
 
-function setRuntimeManifestScript(element: Element, manifest: MasterCSSRuntimeManifest) {
+function setHydrationManifestScript(element: Element, hydrationManifest: MasterCSSHydrationManifest) {
     element.attribs.type = 'application/json'
-    element.attribs.id = MASTER_CSS_RUNTIME_MANIFEST_SCRIPT_ID
-    element.childNodes = [new Text(serializeMasterCSSRuntimeManifest(manifest))]
+    element.attribs.id = MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID
+    element.childNodes = [new Text(serializeMasterCSSHydrationManifest(hydrationManifest))]
 }
 
-function findRuntimeManifestScripts(
+function findHydrationManifestScripts(
     childNodes: ChildNode[],
     matches: { element: Element, childNodes: ChildNode[], index: number }[] = []
 ) {
     for (let index = 0; index < childNodes.length; index++) {
         const node = childNodes[index]
-        if (isRuntimeManifestScript(node)) {
+        if (isHydrationManifestScript(node)) {
             matches.push({ element: node, childNodes, index })
         }
         if ('childNodes' in node) {
-            findRuntimeManifestScripts(node.childNodes, matches)
+            findHydrationManifestScripts(node.childNodes, matches)
         }
     }
     return matches
@@ -81,17 +81,17 @@ function removeNode(nodes: ChildNode[], target: ChildNode) {
     return false
 }
 
-function injectRuntimeManifest(
+function injectHydrationManifest(
     nodes: ChildNode[],
     htmlElement: Element | null,
     headElement: Element | null,
     styleElement: Element | null,
-    manifest: MasterCSSRuntimeManifest
+    hydrationManifest: MasterCSSHydrationManifest
 ) {
-    const existingScripts = findRuntimeManifestScripts(nodes)
+    const existingScripts = findHydrationManifestScripts(nodes)
     if (existingScripts.length) {
         const [firstScript, ...duplicateScripts] = existingScripts
-        setRuntimeManifestScript(firstScript.element, manifest)
+        setHydrationManifestScript(firstScript.element, hydrationManifest)
         for (let index = duplicateScripts.length - 1; index >= 0; index--) {
             const script = duplicateScripts[index]
             script.childNodes.splice(script.index, 1)
@@ -99,7 +99,7 @@ function injectRuntimeManifest(
         return
     }
 
-    const scriptElement = createRuntimeManifestScript(manifest)
+    const scriptElement = createHydrationManifestScript(hydrationManifest)
     if (headElement) {
         headElement.childNodes.push(scriptElement)
     } else if (htmlElement) {
@@ -118,11 +118,11 @@ function injectRuntimeManifest(
 /**
  * Renders the page-required and sorted CSS text from HTML and injected it back into HTML
  * @param html
- * @param plan
+ * @param manifest
  */
 export default function render(
     html: string,
-    plan?: MasterCSSPlan,
+    manifest?: MasterCSSManifest,
     options: RenderOptions = {}
 ): RenderResult {
     const context = parseHTML(html)
@@ -136,13 +136,13 @@ export default function render(
         headElement,
         styleElement
     }
-    const css = createServerCSS(plan || getDefaultPlan())
+    const css = createServerCSS(manifest || getDefaultManifest())
     classes.forEach(eachClass => css.add(eachClass))
-    const manifest = options.runtimeManifest === false
+    const hydrationManifest = options.hydrationManifest === false
         ? undefined
-        : createRuntimeManifest(css)
+        : createHydrationManifest(css)
     if (!css.text) {
-        if (options.runtimeManifest === 'inject' && styleElement) {
+        if (options.hydrationManifest === 'inject' && styleElement) {
             removeNode(nodes, styleElement)
             styleElement = null
         }
@@ -153,7 +153,7 @@ export default function render(
             }),
             css,
             classes,
-            manifest,
+            hydrationManifest,
             nodes,
             htmlElement,
             headElement,
@@ -175,8 +175,8 @@ export default function render(
             }
         }
     }
-    if (options.runtimeManifest === 'inject' && manifest?.rules.length) {
-        injectRuntimeManifest(nodes, htmlElement, headElement, styleElement, manifest)
+    if (options.hydrationManifest === 'inject' && hydrationManifest?.rules.length) {
+        injectHydrationManifest(nodes, htmlElement, headElement, styleElement, hydrationManifest)
     }
     return {
         html: serialize(nodes, {
@@ -185,7 +185,7 @@ export default function render(
         }),
         css,
         classes,
-        manifest,
+        hydrationManifest,
         nodes,
         htmlElement,
         headElement,

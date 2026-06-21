@@ -29,22 +29,22 @@ The main body of this package is the class `MasterCSS`, which encapsulates the c
 ```js
 import { MasterCSS, createCSS } from '@master/css'
 
-const css = createCSS(plan)
-const customCSS = new MasterCSS(plan)
+const css = createCSS(manifest)
+const customCSS = new MasterCSS(manifest)
 ```
 <DocFn>
     {[
-        { name: 'plan', type: 'MasterCSSPlan' },
+        { name: 'manifest', type: 'MasterCSSManifest' },
     ]}
 </DocFn>
 
-### `css.plan`
-The `css.plan` property is the compiled MasterCSSPlan executed by the engine. `new MasterCSS(plan)` and `createCSS(plan)` require a complete plan.
-<DocProp types={['MasterCSSPlan']} />
+### `css.manifest`
+The `css.manifest` property is the compiled MasterCSSManifest executed by the engine. `new MasterCSS(manifest)` and `createCSS(manifest)` require a complete manifest.
+<DocProp types={['MasterCSSManifest']} />
 
 ### `css.settings`
-The `css.settings` property is the resolved settings section from the active plan.
-<DocProp types={['MasterCSSPlanSettings']} />
+The `css.settings` property is the resolved settings section from the active manifest.
+<DocProp types={['MasterCSSManifestSettings']} />
 
 ### `css.text`
 This `css.text` getter returns the result of joining the text of all CSS rules.
@@ -75,15 +75,15 @@ css.delete('text-center', ...)
 ```
 
 ### `css.refresh()`
-Refresh the Master CSS with a compiled plan.
+Refresh the Master CSS with a compiled manifest.
 <DocFn>
     {[
-        { name: 'plan?', type: 'MasterCSSPlan', defaultValue: 'this.plan' },
+        { name: 'manifest?', type: 'MasterCSSManifest', defaultValue: 'this.manifest' },
         { name: 'return', type: 'this' },
     ]}
 </DocFn>
 ```ts
-css.refresh(plan)
+css.refresh(manifest)
 ```
 
 ### `css.reset()`

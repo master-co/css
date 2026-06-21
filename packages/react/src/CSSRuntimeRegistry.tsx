@@ -1,7 +1,7 @@
 'use client'
 
-import plan from 'virtual:master-css-plan'
-import preloaded from 'virtual:master-css-preloaded'
+import manifest from 'virtual:master-css-manifest'
+import emittedGlobals from 'virtual:master-css-emitted-globals'
 import { CSSRuntimeProvider } from './CSSRuntimeProvider'
 // fix: ReferenceError: React is not defined
 import React from 'react'
@@ -12,7 +12,7 @@ export interface CSSRuntimeRegistryProps {
 
 export function CSSRuntimeRegistry(props: CSSRuntimeRegistryProps) {
     return (
-        <CSSRuntimeProvider plan={plan} preloaded={preloaded}>
+        <CSSRuntimeProvider manifest={manifest} emittedGlobals={emittedGlobals}>
             {props.children}
         </CSSRuntimeProvider>
     )

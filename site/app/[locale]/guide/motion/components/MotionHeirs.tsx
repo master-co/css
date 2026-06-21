@@ -1,7 +1,7 @@
-import { planUtilities, getUtilityVariableNamespaces } from '~/site/utils/plan-utilities'
+import { manifestUtilities, getUtilityVariableNamespaces } from '~/site/utils/manifest-utilities'
 
 const namespaces = ['duration', 'easing']
-const utilities = planUtilities
+const utilities = manifestUtilities
 
 export default () =>
     <figure>

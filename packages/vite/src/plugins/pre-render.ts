@@ -1,13 +1,13 @@
 import type { Plugin } from 'vite'
 import { PluginContext } from '../core'
 import { render } from '@master/css-server'
-import type { MasterCSSPlan } from '@master/css'
-import { loadProjectPlan } from '@master/css-plan/load'
+import type { MasterCSSManifest } from '@master/css'
+import { loadProjectManifest } from '@master/css-manifest/load'
 import { PluginOptions } from '../options'
 
 export default function PreRenderPlugin(options: PluginOptions, context: PluginContext): Plugin {
-    let cssPlan: MasterCSSPlan | undefined = undefined
-    let cssPlanDependencies: string[] = []
+    let cssManifest: MasterCSSManifest | undefined = undefined
+    let cssManifestDependencies: string[] = []
     let enabled = true
     const addServerAllow = (paths: string[]) => {
         const allow = context.config?.server.fs.allow
@@ -16,12 +16,12 @@ export default function PreRenderPlugin(options: PluginOptions, context: PluginC
             if (!allow.includes(path)) allow.push(path)
         }
     }
-    const loadCSSPlan = async (pluginContext?: { addWatchFile?: (id: string) => void }) => {
-        const result = await loadProjectPlan(context.config?.root)
-        cssPlan = result.plan
-        cssPlanDependencies = result.dependencies
-        addServerAllow(cssPlanDependencies)
-        for (const dependency of cssPlanDependencies) {
+    const loadCSSManifest = async (pluginContext?: { addWatchFile?: (id: string) => void }) => {
+        const result = await loadProjectManifest(context.config?.root)
+        cssManifest = result.manifest
+        cssManifestDependencies = result.dependencies
+        addServerAllow(cssManifestDependencies)
+        for (const dependency of cssManifestDependencies) {
             pluginContext?.addWatchFile?.(dependency)
         }
     }
@@ -37,20 +37,20 @@ export default function PreRenderPlugin(options: PluginOptions, context: PluginC
                 }
                 return
             }
-            await loadCSSPlan()
+            await loadCSSManifest()
         },
         async buildStart() {
             if (!enabled) return
-            await loadCSSPlan(this)
+            await loadCSSManifest(this)
         },
         async handleHotUpdate({ file }) {
-            if (!enabled || !cssPlanDependencies.includes(file)) return
-            await loadCSSPlan()
+            if (!enabled || !cssManifestDependencies.includes(file)) return
+            await loadCSSManifest()
         },
         transformIndexHtml(html) {
             if (!enabled) return
-            if (!cssPlan) return
-            const rendered = render(html, cssPlan, { runtimeManifest: 'inject' })
+            if (!cssManifest) return
+            const rendered = render(html, cssManifest, { hydrationManifest: 'inject' })
             return {
                 html: rendered.html,
                 tags: [],
@@ -59,8 +59,8 @@ export default function PreRenderPlugin(options: PluginOptions, context: PluginC
         transform(code, id) {
             if (!enabled) return
             if (id.endsWith('.html')) {
-                if (!cssPlan) return null
-                const rendered = render(code, cssPlan, { runtimeManifest: 'inject' })
+                if (!cssManifest) return null
+                const rendered = render(code, cssManifest, { hydrationManifest: 'inject' })
                 return {
                     code: rendered.html,
                     map: null,

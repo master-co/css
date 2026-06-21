@@ -3,14 +3,13 @@ export { default as cssRuntime } from './css-runtime'
 export { default as initCSSRuntime } from './init'
 export type { CSSRuntimeInitOptions } from './init'
 export { default as RuntimeUtilityLayer } from './utility-layer'
-export { resolveRuntimePlan } from './plan'
 
 export type * from './types'
 export type { CSSRuntimeDecoratorOptions, CSSRuntimeOptions } from './css-runtime'
-export type { MasterCSSPreloaded } from '@master/css-engine'
-export type { MasterCSSPlan } from 'shared/master-css-plan'
+export type { MasterCSSEmittedGlobals } from '@master/css-engine'
+export type { MasterCSSManifest } from 'shared/master-css-manifest'
 export type {
     MasterCSSGeneratedRuleIR,
-    MasterCSSRuntimeManifest
-} from 'shared/master-css-runtime-manifest'
+    MasterCSSHydrationManifest
+} from 'shared/master-css-hydration-manifest'
 export * from './utility-layer'

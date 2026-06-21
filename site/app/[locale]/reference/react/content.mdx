@@ -15,7 +15,7 @@ Use `@master/css.react/runtime-provider` when you only need the provider API wit
 
 ## API Reference
 ### `<CSSRuntimeRegistry>`
-The `CSSRuntimeRegistry` initializes a `CSSRuntime` instance with the project-level plan provided by the active Master CSS integration.
+The `CSSRuntimeRegistry` initializes a `CSSRuntime` instance with the project-level manifest provided by the active Master CSS integration.
 ```tsx
 import { CSSRuntimeRegistry } from '@master/css.react'
 
@@ -28,26 +28,26 @@ export default function App({ children }) {
 }
 ```
 
-The registry loads `virtual:master-css-plan` and `virtual:master-css-preloaded` internally, so use it when the official integration should load the project-level plan discovered from the CSS entry and the matching preloaded global CSS state.
+The registry loads `virtual:master-css-manifest` and `virtual:master-css-emitted-globals` internally, so use it when the official integration should load the project-level manifest discovered from the CSS entry and the matching emittedGlobals global CSS state.
 
 ### `<CSSRuntimeProvider>`
-The `CSSRuntimeProvider` initializes a `CSSRuntime` instance and manages it according to changes in plan or root element.
+The `CSSRuntimeProvider` initializes a `CSSRuntime` instance and manages it according to changes in manifest or root element.
 ```tsx
 import { CSSRuntimeProvider } from '@master/css.react/runtime-provider'
-import plan from './theme.css?master-css-plan'
+import manifest from './theme.css?master-css-manifest'
 
 export default function App({ children }) {
     return (
-        <CSSRuntimeProvider plan={plan}>
+        <CSSRuntimeProvider manifest={manifest}>
             {children}
         </CSSRuntimeProvider>
     )
 }
 ```
 
-The provider calls `initCSSRuntime({ plan, root, preloaded })` on mount, refreshes the runtime with `resolveRuntimePlan(plan)` when `plan` changes, and recreates the runtime when `root` changes. It destroys the runtime on unmount.
+The provider calls `initCSSRuntime({ manifest, root, emittedGlobals })` on mount, refreshes the runtime with the latest `manifest` when the prop changes, and recreates the runtime when `root` changes. It destroys the runtime on unmount.
 
-Use the provider subpath when you need a custom `?master-css-plan` resource, custom `preloaded` data, a custom `root`, or an environment that does not resolve the default virtual modules.
+Use the provider subpath when you need a custom `?master-css-manifest` resource, custom `emittedGlobals` data, a custom `root`, or an environment that does not resolve the default virtual modules.
 
 ### `CSSRuntimeProviderProps`
 <Code lang="ts">{require('../../../../../packages/react/src/types/provider-props.ts?raw')}</Code>

@@ -8,7 +8,7 @@ import { firefox } from '@playwright/test'
 const packageRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const distRoot = resolve(packageRoot, 'dist')
 const globalBundleFile = resolve(distRoot, 'global.min.js')
-const defaultPlanFile = resolve(distRoot, 'default-plan.json')
+const defaultManifestFile = resolve(distRoot, 'default-manifest.json')
 const args = parseArgs(process.argv.slice(2))
 const rounds = Number(process.env.MASTER_CSS_BENCH_ROUNDS || 5)
 const warmupRounds = Number(process.env.MASTER_CSS_BENCH_WARMUP_ROUNDS || 1)
@@ -30,14 +30,14 @@ const nativeProperties = [
     'left'
 ]
 
-if (!existsSync(globalBundleFile) || !existsSync(defaultPlanFile)) {
+if (!existsSync(globalBundleFile) || !existsSync(defaultManifestFile)) {
     console.error('Runtime benchmark requires built runtime artifacts.')
     console.error('Run `pnpm --filter @master/css-runtime build` first.')
     process.exit(1)
 }
 
-const { createCSS, createRuntimeManifest } = await import('@master/css-engine')
-const defaultPlan = (await import('@master/css-preset/default-plan.json', { with: { type: 'json' } })).default
+const { createCSS, createHydrationManifest } = await import('@master/css-engine')
+const defaultManifest = (await import('@master/css-preset/default-manifest.json', { with: { type: 'json' } })).default
 
 function createClassNames(count) {
     return Array.from({ length: count }, (_, index) => {
@@ -71,13 +71,13 @@ function parseArgs(values) {
 }
 
 function createHydrationFixture(classNames) {
-    const css = createCSS(defaultPlan, undefined, {
+    const css = createCSS(defaultManifest, undefined, {
         nativeDeclarationMatcher: () => true
     })
     css.add(...classNames)
     return {
         bodyMarkup: createClassMarkup(classNames),
-        manifest: createRuntimeManifest(css),
+        hydrationManifest: createHydrationManifest(css),
         styleText: css.text
     }
 }
@@ -105,12 +105,12 @@ function startServer() {
                 return
             }
 
-            if (path === '/default-plan.json') {
+            if (path === '/default-manifest.json') {
                 response.writeHead(200, {
                     'content-type': 'application/json; charset=utf-8',
                     'cache-control': 'no-store'
                 })
-                response.end(await readFile(defaultPlanFile))
+                response.end(await readFile(defaultManifestFile))
                 return
             }
 
@@ -172,7 +172,7 @@ async function createObservedPage(browser, baseURL, scriptURL, bodyMarkup = '') 
 
 async function createProgressivePage(browser, baseURL, fixture, includeManifest) {
     const page = await createPage(browser, baseURL)
-    await page.evaluate(({ bodyMarkup, manifest, styleText, withManifest }) => {
+    await page.evaluate(({ bodyMarkup, hydrationManifest, styleText, withManifest }) => {
         const style = document.createElement('style')
         style.id = 'master'
         style.setAttribute('blocking', 'render')
@@ -180,17 +180,17 @@ async function createProgressivePage(browser, baseURL, fixture, includeManifest)
         document.head.append(style)
 
         if (withManifest) {
-            const manifestScript = document.createElement('script')
-            manifestScript.id = 'master-css-runtime-manifest'
-            manifestScript.type = 'application/json'
-            manifestScript.textContent = JSON.stringify(manifest)
-            document.head.append(manifestScript)
+            const hydrationManifestScript = document.createElement('script')
+            hydrationManifestScript.id = 'master-css-hydration-manifest'
+            hydrationManifestScript.type = 'application/json'
+            hydrationManifestScript.textContent = JSON.stringify(hydrationManifest)
+            document.head.append(hydrationManifestScript)
         }
 
         document.body.innerHTML = bodyMarkup
     }, {
         bodyMarkup: fixture.bodyMarkup,
-        manifest: fixture.manifest,
+        hydrationManifest: fixture.hydrationManifest,
         styleText: fixture.styleText,
         withManifest: includeManifest
     })

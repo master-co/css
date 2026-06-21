@@ -1,5 +1,5 @@
 import { render } from '@master/css-server'
-import type { MasterCSSPlan } from '@master/css'
+import type { MasterCSSManifest } from '@master/css'
 import type { MiddlewareHandler } from 'astro'
 
 const BODYLESS_STATUSES = new Set([204, 205, 304])
@@ -18,15 +18,15 @@ export function createResponse(response: Response, body: BodyInit | null) {
     })
 }
 
-export async function renderResponse(response: Response, plan: MasterCSSPlan) {
+export async function renderResponse(response: Response, manifest: MasterCSSManifest) {
     if (BODYLESS_STATUSES.has(response.status) || !isHTMLResponse(response)) {
         return response
     }
-    return createResponse(response, render(await response.text(), plan, { runtimeManifest: 'inject' }).html)
+    return createResponse(response, render(await response.text(), manifest, { hydrationManifest: 'inject' }).html)
 }
 
-export function createMasterCSSMiddleware(plan: MasterCSSPlan): MiddlewareHandler {
+export function createMasterCSSMiddleware(manifest: MasterCSSManifest): MiddlewareHandler {
     return async (_context, next) => {
-        return await renderResponse(await next(), plan)
+        return await renderResponse(await next(), manifest)
     }
 }

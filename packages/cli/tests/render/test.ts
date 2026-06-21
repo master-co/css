@@ -29,7 +29,7 @@ it('render css text into <head>', async () => {
             <head>
                 <link rel="styleSheet">
                 <style></style>
-            <style id="master">@layer utilities{.font\\:32px{font-size:32px}.text-center{text-align:center}.ml\\:0\\>\\:is\\(a\\,button\\)\\:first>:is(a,button):first-child{margin-left:0}}</style></head>
+            <style id="master">@layer utilities{.text-center{text-align:center}.font\\:32px{font-size:32px}.ml\\:0\\>\\:is\\(a\\,button\\)\\:first>:is(a,button):first-child{margin-left:0}}</style></head>
             <body>
                 <h1 class="text-center ml:0>:is(a,button):first font:32px">Hello World</h1>
             </body>

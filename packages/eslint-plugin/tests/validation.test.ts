@@ -1,7 +1,7 @@
 import rule from '../src/rules/class-validation'
 import { RuleTester } from '@typescript-eslint/rule-tester'
 import { createTester, jsxTester } from './testers'
-import { createPresetPlan } from './helpers/create-preset-plan'
+import { createPresetManifest } from './helpers/create-preset-manifest'
 import UtilityType from 'shared/utility-type'
 
 jsxTester.run('invalid', rule, {
@@ -62,7 +62,7 @@ jsxTester.run('invalid', rule, {
 createTester({
     settings: {
         '@master/css': {
-            plan: createPresetPlan({
+            manifest: createPresetManifest({
                 utilities: [
                     {
                         name: 'btn',

@@ -2,7 +2,7 @@ import { test, it, expect, describe } from 'vitest'
 import dedent from 'ts-dedent'
 import { hint } from './helper'
 import { CompletionItemKind } from 'vscode-languageserver-protocol'
-import { createPresetPlan } from '../helpers/create-preset-plan'
+import { createPresetManifest } from '../helpers/create-preset-manifest'
 
 test.todo('convert any color spaces to RGB and hint correctly')
 
@@ -139,7 +139,7 @@ describe.concurrent('sorting', () => {
         const labels = new Set(['test-tiny', 'test-small', 'test-medium'])
         expect(
             hint('w:', {
-                plan: createPresetPlan({
+                manifest: createPresetManifest({
                     variables: [
                         {
                             name: 'container-test-medium',

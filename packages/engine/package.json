@@ -10,7 +10,7 @@
         "lint": "eslint"
     },
     "license": "MIT",
-    "description": "The plan-driven Master CSS engine",
+    "description": "The manifest-driven Master CSS engine",
     "author": "Aoyue Design LLC.",
     "funding": "https://rc.css.master.co/sponsor",
     "homepage": "https://css.master.co",

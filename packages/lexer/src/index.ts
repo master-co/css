@@ -1,5 +1,5 @@
 export * from './class'
-export * from './css-plan-entry'
+export * from './css-manifest-entry'
 export * from './directive-ranges'
 export * from './source'
 export * from './units'

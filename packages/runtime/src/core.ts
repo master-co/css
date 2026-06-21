@@ -1,7 +1,7 @@
 import { MasterCSS, VariableRule, AnimationRule } from '@master/css-engine'
-import type { MasterCSSPlan, MasterCSSPlanUtilityLayerName } from 'shared/master-css-plan'
-import type { MasterCSSPreloaded } from '@master/css-engine'
-import type { MasterCSSGeneratedRuleIR, MasterCSSRuntimeManifest } from 'shared/master-css-runtime-manifest'
+import type { MasterCSSManifest, MasterCSSManifestUtilityLayerName } from 'shared/master-css-manifest'
+import type { MasterCSSEmittedGlobals } from '@master/css-engine'
+import type { MasterCSSGeneratedRuleIR, MasterCSSHydrationManifest } from 'shared/master-css-hydration-manifest'
 import registerGlobal from './register-global'
 import { HydrateResult } from './types'
 import RuntimeUtilityLayer, { RuntimeUtilityLayerInstance } from './utility-layer'
@@ -28,11 +28,11 @@ export default class CSSRuntime extends MasterCSS {
 
     constructor(
         public root: Document | ShadowRoot = document,
-        plan: MasterCSSPlan,
-        preloaded?: MasterCSSPreloaded,
-        public manifest?: MasterCSSRuntimeManifest
+        manifest: MasterCSSManifest,
+        emittedGlobals?: MasterCSSEmittedGlobals,
+        public hydrationManifest?: MasterCSSHydrationManifest
     ) {
-        super(plan, preloaded, {
+        super(manifest, emittedGlobals, {
             nativeDeclarationMatcher: browserNativeDeclarationMatcher
         })
         // Do not use instanceof here, because it will not work
@@ -46,7 +46,7 @@ export default class CSSRuntime extends MasterCSS {
             this.host = (this.root as ShadowRoot).host
         }
         globalThis.CSSRuntime.instances.set(this.root, this)
-        this.applyPreloadedCounts(this.preloaded)
+        this.applyEmittedGlobalsCounts(this.emittedGlobals)
         __MASTER_CSS_DEVTOOLS_HOOK__?.emit('runtime:created', { cssRuntime: this })
     }
 
@@ -59,7 +59,7 @@ export default class CSSRuntime extends MasterCSS {
     }
 
     private warnHydrationFallback(reason: string) {
-        console.warn(`Master CSS progressive hydration requires a matching runtime manifest. ${reason} Rebuilding style#master with the runtime.`)
+        console.warn(`Master CSS progressive hydration requires a matching hydration manifest. ${reason} Rebuilding style#master with the runtime.`)
     }
 
     private useRuntimeStyle(connectedNames: Set<string>, reason?: string) {
@@ -162,10 +162,10 @@ export default class CSSRuntime extends MasterCSS {
         return undefined
     }
 
-    private getManifestLayerRules() {
-        const layers = new Map<MasterCSSPlanUtilityLayerName, MasterCSSGeneratedRuleIR[]>()
-        if (!this.manifest?.rules?.length) return layers
-        for (const rule of this.manifest.rules) {
+    private getHydrationManifestLayerRules() {
+        const layers = new Map<MasterCSSManifestUtilityLayerName, MasterCSSGeneratedRuleIR[]>()
+        if (!this.hydrationManifest?.rules?.length) return layers
+        for (const rule of this.hydrationManifest.rules) {
             const layerRules = layers.get(rule.layer)
             if (layerRules) {
                 layerRules.push(rule)
@@ -199,7 +199,7 @@ export default class CSSRuntime extends MasterCSS {
         }
     }
 
-    private collectManifestVariableNames() {
+    private collectHydrationManifestVariableNames() {
         const variableNames = new Set<string>()
         const collectVariableReferences = (text: string) => {
             for (const match of text.matchAll(/var\(\s*--([_a-zA-Z0-9-]+)/g)) {
@@ -214,7 +214,7 @@ export default class CSSRuntime extends MasterCSS {
             variableNames.add(variableName)
             variable.dependencies?.forEach((dependency) => collectVariable(dependency, visited))
         }
-        for (const rule of this.manifest?.rules || []) {
+        for (const rule of this.hydrationManifest?.rules || []) {
             rule.variableNames?.forEach((variableName) => collectVariable(variableName))
             collectVariableReferences(rule.text)
             rule.nodes?.forEach((node) => collectVariableReferences(node.text))
@@ -231,18 +231,18 @@ export default class CSSRuntime extends MasterCSS {
         return variableNames
     }
 
-    private collectManifestAnimationNames() {
+    private collectHydrationManifestAnimationNames() {
         const animationNames = new Set<string>()
-        for (const rule of this.manifest?.rules || []) {
+        for (const rule of this.hydrationManifest?.rules || []) {
             rule.animationNames?.forEach((animationName) => animationNames.add(animationName))
         }
         for (const animationName of this.animations.keys()) {
-            if (this.plan.animationOptions?.[animationName]?.static) animationNames.add(animationName)
+            if (this.manifest.animationOptions?.[animationName]?.static) animationNames.add(animationName)
         }
         return animationNames
     }
 
-    private nativeThemeLayerHasOnlyPreloadedVariables(nativeThemeLayer: CSSLayerBlockRule | undefined) {
+    private nativeThemeLayerHasOnlyEmittedGlobalsVariables(nativeThemeLayer: CSSLayerBlockRule | undefined) {
         if (!nativeThemeLayer) return false
         let found = false
         for (const nativeRule of nativeThemeLayer.cssRules) {
@@ -252,7 +252,7 @@ export default class CSSRuntime extends MasterCSS {
                 const propertyName = styleRule.style.item(index)
                 if (!propertyName.startsWith('--')) return false
                 found = true
-                if (!this.isPreloadedVariable(propertyName.slice(2))) return false
+                if (!this.isEmittedGlobalsVariable(propertyName.slice(2))) return false
             }
         }
         return found
@@ -294,9 +294,9 @@ export default class CSSRuntime extends MasterCSS {
         }
     }
 
-    private hydrateManifestVariables(nativeThemeLayer: CSSLayerBlockRule | undefined) {
-        const variableRules = [...this.collectManifestVariableNames()]
-            .filter((variableName) => !this.isPreloadedVariable(variableName))
+    private hydrateHydrationManifestVariables(nativeThemeLayer: CSSLayerBlockRule | undefined) {
+        const variableRules = [...this.collectHydrationManifestVariableNames()]
+            .filter((variableName) => !this.isEmittedGlobalsVariable(variableName))
             .map((variableName) => {
                 const variable = this.variables.get(variableName)
                 return variable && !variable.inline
@@ -307,7 +307,7 @@ export default class CSSRuntime extends MasterCSS {
         const expectedBuckets = this.getVariableRuleBuckets(variableRules)
         const nativeRuleCount = nativeThemeLayer?.cssRules.length || 0
         if (expectedBuckets.length !== nativeRuleCount) {
-            return !variableRules.length && this.nativeThemeLayerHasOnlyPreloadedVariables(nativeThemeLayer)
+            return !variableRules.length && this.nativeThemeLayerHasOnlyEmittedGlobalsVariables(nativeThemeLayer)
         }
         if (!variableRules.length) return true
         if (!nativeThemeLayer) return false
@@ -334,11 +334,11 @@ export default class CSSRuntime extends MasterCSS {
         return true
     }
 
-    private hydrateManifestAnimations(nativeKeyframesRules: Map<string, CSSKeyframesRule>) {
-        const animationNames = this.collectManifestAnimationNames()
+    private hydrateHydrationManifestAnimations(nativeKeyframesRules: Map<string, CSSKeyframesRule>) {
+        const animationNames = this.collectHydrationManifestAnimationNames()
         const hydratedAnimationNames = new Set<string>()
         for (const animationName of animationNames) {
-            if (this.isPreloadedAnimation(animationName)) {
+            if (this.isEmittedGlobalsAnimation(animationName)) {
                 if (nativeKeyframesRules.has(animationName)) hydratedAnimationNames.add(animationName)
                 continue
             }
@@ -358,7 +358,7 @@ export default class CSSRuntime extends MasterCSS {
         return true
     }
 
-    private hydrateManifestLayer(
+    private hydrateHydrationManifestLayer(
         layer: RuntimeUtilityLayerInstance,
         nativeLayerRule: CSSLayerBlockRule,
         manifestRules: MasterCSSGeneratedRuleIR[],
@@ -395,18 +395,18 @@ export default class CSSRuntime extends MasterCSS {
 
     hydrate(nativeLayerRules: CSSRuleList) {
         this.hydrationFailureReason = undefined
-        if (this.manifest?.version !== 1 || !Array.isArray(this.manifest.rules)) {
-            return this.failHydration('Missing or invalid runtime manifest.')
+        if (this.hydrationManifest?.version !== 1 || !Array.isArray(this.hydrationManifest.rules)) {
+            return this.failHydration('Missing or invalid hydration manifest.')
         }
-        if (!this.manifest.rules.length) {
-            return this.failHydration('Runtime manifest has no generated rules for style#master.')
+        if (!this.hydrationManifest.rules.length) {
+            return this.failHydration('Hydration manifest has no generated rules for style#master.')
         }
 
         const result: HydrateResult = {
             allUtilities: []
         }
-        const manifestLayerRules = this.getManifestLayerRules()
-        const nativeUtilityLayerRules = new Map<MasterCSSPlanUtilityLayerName, CSSLayerBlockRule>()
+        const manifestLayerRules = this.getHydrationManifestLayerRules()
+        const nativeUtilityLayerRules = new Map<MasterCSSManifestUtilityLayerName, CSSLayerBlockRule>()
         const nativeKeyframesRules = new Map<string, CSSKeyframesRule>()
         let nativeThemeLayer: CSSLayerBlockRule | undefined
 
@@ -421,10 +421,10 @@ export default class CSSRuntime extends MasterCSS {
                 }
                 const layer = this.getUtilityLayerByName(eachCSSLayerRule.name)
                 if (!layer) return this.failHydration(`Unknown layer \`${eachCSSLayerRule.name}\` in style#master.`)
-                if (nativeUtilityLayerRules.has(layer.name as MasterCSSPlanUtilityLayerName)) {
+                if (nativeUtilityLayerRules.has(layer.name as MasterCSSManifestUtilityLayerName)) {
                     return this.failHydration(`Duplicate layer \`${eachCSSLayerRule.name}\` in style#master.`)
                 }
-                nativeUtilityLayerRules.set(layer.name as MasterCSSPlanUtilityLayerName, eachCSSLayerRule)
+                nativeUtilityLayerRules.set(layer.name as MasterCSSManifestUtilityLayerName, eachCSSLayerRule)
             } else if (eachNativeCSSRule.constructor.name === 'CSSKeyframesRule') {
                 const nativeKeyframesRule = eachNativeCSSRule as CSSKeyframesRule
                 nativeKeyframesRules.set(nativeKeyframesRule.name, nativeKeyframesRule)
@@ -438,28 +438,28 @@ export default class CSSRuntime extends MasterCSS {
             if (!nativeLayerRule) return this.failHydration(`Missing layer \`${layerName}\` in style#master.`)
             const expectedRuleCount = manifestRules.reduce((count, rule) => count + (rule.nodes?.length || 1), 0)
             if (expectedRuleCount !== nativeLayerRule.cssRules.length) {
-                return this.failHydration(`Layer \`${layerName}\` does not match the runtime manifest.`)
+                return this.failHydration(`Layer \`${layerName}\` does not match the hydration manifest.`)
             }
         }
 
         for (const [layerName, nativeLayerRule] of nativeUtilityLayerRules) {
             if (!manifestLayerRules.has(layerName) && nativeLayerRule.cssRules.length) {
-                return this.failHydration(`Layer \`${layerName}\` has no runtime manifest rules.`)
+                return this.failHydration(`Layer \`${layerName}\` has no hydration manifest rules.`)
             }
         }
 
-        if (!this.hydrateManifestVariables(nativeThemeLayer)) {
-            return this.failHydration('Theme layer does not match the runtime manifest.')
+        if (!this.hydrateHydrationManifestVariables(nativeThemeLayer)) {
+            return this.failHydration('Theme layer does not match the hydration manifest.')
         }
-        if (!this.hydrateManifestAnimations(nativeKeyframesRules)) {
-            return this.failHydration('Keyframes do not match the runtime manifest.')
+        if (!this.hydrateHydrationManifestAnimations(nativeKeyframesRules)) {
+            return this.failHydration('Keyframes do not match the hydration manifest.')
         }
 
         for (const [layerName, nativeLayerRule] of nativeUtilityLayerRules) {
             const manifestRules = manifestLayerRules.get(layerName)
             if (!manifestRules?.length) continue
             const layer = this.getUtilityLayerByName(layerName)!
-            this.hydrateManifestLayer(layer, nativeLayerRule, manifestRules, result)
+            this.hydrateHydrationManifestLayer(layer, nativeLayerRule, manifestRules, result)
         }
 
         globalThis.__MASTER_CSS_DEVTOOLS_HOOK__?.emit('runtime:hydrated', { cssRuntime: this, result })
@@ -475,7 +475,7 @@ export default class CSSRuntime extends MasterCSS {
         // @ts-ignore
         this.observing = false
         this.reset()
-        this.loadPlan(this.plan)
+        this.loadManifest(this.manifest)
         this.classCounts.clear()
         this.classTracker.reset()
         if (!this.progressive) {
@@ -486,21 +486,21 @@ export default class CSSRuntime extends MasterCSS {
         return this
     }
 
-    refresh(plan: MasterCSSPlan = this.plan) {
+    refresh(manifest: MasterCSSManifest = this.manifest) {
         if (!this.observing || !this.style!.sheet) return this
         const cssRules = this.style!.sheet.cssRules
         for (let i = cssRules.length - 1; i >= 0; i--) {
             this.style!.sheet.deleteRule(i)
         }
-        super.refresh(plan)
+        super.refresh(manifest)
         /**
-         * Recreate rules from the current class names against the latest plan.
+         * Recreate rules from the current class names against the latest manifest.
          * 所以 refresh 過後 rules 可能會變多也可能會變少
          */
         this.classCounts.forEach((_, className) => {
             this.add(className)
         })
-        globalThis.__MASTER_CSS_DEVTOOLS_HOOK__?.emit('runtime:refreshed', { cssRuntime: this, plan })
+        globalThis.__MASTER_CSS_DEVTOOLS_HOOK__?.emit('runtime:refreshed', { cssRuntime: this, manifest })
         return this
     }
 

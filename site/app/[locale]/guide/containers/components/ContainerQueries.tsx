@@ -1,7 +1,7 @@
 import css from '~/site/common/preset-css'
 import InlineCode from '~/internal/components/InlineCode'
 import { getThemeNumericVariableEntries, type ThemeNumericVariableEntry } from '~/site/utils/theme-variables'
-import generatePlanAt from '~/site/utils/generate-plan-at'
+import generateManifestAt from '~/site/utils/generate-manifest-at'
 
 const containerVariableEntries = getThemeNumericVariableEntries('container')
 const formatLength = (value: number, unit: string) => `${Number(value.toFixed(4))}${unit}`
@@ -24,7 +24,7 @@ export default () => {
                             <tr key={entry.key}>
                                 <th className="white-space:nowrap"><InlineCode>{`@container(${entry.key})`}</InlineCode></th>
                                 <td className="white-space:nowrap"><InlineCode>{formatValue(entry)}</InlineCode></td>
-                                <td><InlineCode lang="css">{generatePlanAt(css.containerAtRules.get(entry.key))}</InlineCode></td>
+                                <td><InlineCode lang="css">{generateManifestAt(css.containerAtRules.get(entry.key))}</InlineCode></td>
                             </tr>
                         ))
                     }

@@ -4,10 +4,10 @@ import { dirname, resolve as resolvePath } from 'node:path'
 import { pathToFileURL } from 'node:url'
 import { name } from '../package.json'
 import masterCSS from '@master/css.vue/vite'
-import { VIRTUAL_PLAN_ID } from '@master/css-integration/plan-module'
-import { toNodePlanFacadeModule } from '@master/css-integration/plan-facade'
-import { toHashedPlanAssetFileName } from '@master/css-integration/node'
-import { loadProjectPlanJSON } from '@master/css-plan/load'
+import { VIRTUAL_MANIFEST_ID } from '@master/css-integration/manifest-module'
+import { toNodeManifestFacadeModule } from '@master/css-integration/manifest-facade'
+import { toHashedManifestAssetFileName } from '@master/css-integration/node'
+import { loadProjectManifestJSON } from '@master/css-manifest/load'
 import type { Plugin } from 'vite'
 import defaultOptions, { type ModuleOptions } from './options'
 
@@ -32,17 +32,17 @@ export default defineNuxtModule<ModuleOptions>({
         if (!nuxt.options.ssr || nuxt.options._prepare) return
         const { resolve } = createResolver(import.meta.url)
         nuxt.hook('nitro:config', async (config) => {
-            const result = await loadProjectPlanJSON(nuxt.options.rootDir)
+            const result = await loadProjectManifestJSON(nuxt.options.rootDir)
             addNitroWatchDependencies(config, result.dependencies)
             const planAssetPath = resolvePath(
                 nuxt.options.rootDir,
                 'node_modules/.master-css',
-                toHashedPlanAssetFileName(result.json)
+                toHashedManifestAssetFileName(result.json)
             )
             mkdirSync(dirname(planAssetPath), { recursive: true })
             writeFileSync(planAssetPath, result.json)
             config.virtual ??= {}
-            config.virtual[VIRTUAL_PLAN_ID] = toNodePlanFacadeModule(
+            config.virtual[VIRTUAL_MANIFEST_ID] = toNodeManifestFacadeModule(
                 `new URL(${JSON.stringify(pathToFileURL(planAssetPath).href)})`
             )
         })
@@ -72,7 +72,7 @@ export default defineNuxtModule<ModuleOptions>({
         switch (options.mode) {
             case 'pre-render':
             case 'progressive':
-                // Fix: Package import specifier "virtual:master-css-plan" is not defined in package
+                // Fix: Package import specifier "virtual:master-css-manifest" is not defined in package
                 nuxt.options.build.transpile.push(resolve('./runtime/css-server'))
                 addServerPlugin(resolve('./runtime/css-server'))
                 break

@@ -1,27 +1,27 @@
-import type { MasterCSSPlan } from 'shared/master-css-plan'
-import type { MasterCSSPreloaded } from '@master/css-engine'
-import type { MasterCSSRuntimeManifest } from 'shared/master-css-runtime-manifest'
+import type { MasterCSSManifest } from 'shared/master-css-manifest'
+import type { MasterCSSEmittedGlobals } from '@master/css-engine'
+import type { MasterCSSHydrationManifest } from 'shared/master-css-hydration-manifest'
 import CSSRuntime from './core'
 import initCSSRuntime from './init'
 
 type CSSRuntimeHostConstructor = new (...args: any[]) => HTMLElement
-type CSSRuntimePlan = MasterCSSPlan | ((host: HTMLElement) => MasterCSSPlan)
+type CSSRuntimeManifest = MasterCSSManifest | ((host: HTMLElement) => MasterCSSManifest)
 type CSSRuntimeRoot = ShadowRoot | ((host: HTMLElement) => ShadowRoot | null | undefined)
-type CSSRuntimePreloaded = MasterCSSPreloaded | ((host: HTMLElement) => MasterCSSPreloaded | undefined)
-type CSSRuntimeManifest = MasterCSSRuntimeManifest | ((host: HTMLElement) => MasterCSSRuntimeManifest | undefined)
+type CSSRuntimeEmittedGlobals = MasterCSSEmittedGlobals | ((host: HTMLElement) => MasterCSSEmittedGlobals | undefined)
+type CSSHydrationManifest = MasterCSSHydrationManifest | ((host: HTMLElement) => MasterCSSHydrationManifest | undefined)
 
 export interface CSSRuntimeOptions {
-    plan: CSSRuntimePlan
+    manifest: CSSRuntimeManifest
     root?: CSSRuntimeRoot
     autoObserve?: boolean
-    preloaded?: CSSRuntimePreloaded
-    manifest?: CSSRuntimeManifest
+    emittedGlobals?: CSSRuntimeEmittedGlobals
+    hydrationManifest?: CSSHydrationManifest
 }
 
 export type CSSRuntimeDecoratorOptions = CSSRuntimeOptions
 
-function resolvePlan(host: HTMLElement, plan: CSSRuntimePlan): MasterCSSPlan {
-    return typeof plan === 'function' ? plan(host) : plan
+function resolveManifest(host: HTMLElement, manifest: CSSRuntimeManifest): MasterCSSManifest {
+    return typeof manifest === 'function' ? manifest(host) : manifest
 }
 
 function resolveRoot(host: HTMLElement, root: CSSRuntimeRoot | undefined): ShadowRoot | null | undefined {
@@ -30,12 +30,12 @@ function resolveRoot(host: HTMLElement, root: CSSRuntimeRoot | undefined): Shado
         : root || host.shadowRoot
 }
 
-function resolvePreloaded(host: HTMLElement, preloaded: CSSRuntimePreloaded | undefined): MasterCSSPreloaded | undefined {
-    return typeof preloaded === 'function' ? preloaded(host) : preloaded
+function resolveEmittedGlobals(host: HTMLElement, emittedGlobals: CSSRuntimeEmittedGlobals | undefined): MasterCSSEmittedGlobals | undefined {
+    return typeof emittedGlobals === 'function' ? emittedGlobals(host) : emittedGlobals
 }
 
-function resolveManifest(host: HTMLElement, manifest: CSSRuntimeManifest | undefined): MasterCSSRuntimeManifest | undefined {
-    return typeof manifest === 'function' ? manifest(host) : manifest
+function resolveHydrationManifest(host: HTMLElement, hydrationManifest: CSSHydrationManifest | undefined): MasterCSSHydrationManifest | undefined {
+    return typeof hydrationManifest === 'function' ? hydrationManifest(host) : hydrationManifest
 }
 
 export default function cssRuntime(options: CSSRuntimeOptions): <T extends CSSRuntimeHostConstructor>(target: T) => T {
@@ -53,11 +53,11 @@ export default function cssRuntime(options: CSSRuntimeOptions): <T extends CSSRu
                     throw new Error('`@cssRuntime()` requires a shadow root. Provide `options.root` or create a shadow root before `connectedCallback()` finishes.')
                 }
                 this.cssRuntime = initCSSRuntime({
-                    plan: resolvePlan(this, options.plan),
+                    manifest: resolveManifest(this, options.manifest),
                     root,
                     autoObserve: options.autoObserve,
-                    preloaded: resolvePreloaded(this, options.preloaded),
-                    manifest: resolveManifest(this, options.manifest)
+                    emittedGlobals: resolveEmittedGlobals(this, options.emittedGlobals),
+                    hydrationManifest: resolveHydrationManifest(this, options.hydrationManifest)
                 })
             }
 

@@ -2,10 +2,10 @@ import { test, it, expect, describe } from 'vitest'
 import dedent from 'ts-dedent'
 import { hint } from './helper'
 import { Settings } from '../../src'
-import { createPresetPlan } from '../helpers/create-preset-plan'
+import { createPresetManifest } from '../helpers/create-preset-manifest'
 
 const settings: Settings = {
-    plan: createPresetPlan({
+    manifest: createPresetManifest({
         utilities: [
             {
                 name: 'btn',

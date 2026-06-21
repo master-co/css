@@ -5,7 +5,7 @@
         "build": "techor build \"src/**/*.ts\" --formats esm",
         "dev": "pnpm build --watch",
         "dev:build": "pnpm --dir playground build",
-        "e2e": "vitest run tests/css-plan-query-e2e.test.ts",
+        "e2e": "vitest run tests/css-manifest-query-e2e.test.ts",
         "lint": "eslint",
         "type-check": "tsc --noEmit",
         "test": "vitest"
@@ -65,7 +65,7 @@
     },
     "dependencies": {
         "@master/css": "workspace:^",
-        "@master/css-plan": "workspace:^",
+        "@master/css-manifest": "workspace:^",
         "@master/css-extractor": "workspace:^",
         "@master/css-integration": "workspace:^",
         "@master/css-stylesheet": "workspace:^",

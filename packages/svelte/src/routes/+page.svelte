@@ -1,18 +1,19 @@
 <script lang="ts">
-    import type { MasterCSSPlan } from "@master/css-runtime";
-    import defaultPlanJSON from "@master/css-preset/default-plan.json" with { type: "json" };
+    import type { MasterCSSManifest } from "@master/css-runtime";
+    import defaultManifestJSON from "@master/css-preset/default-manifest.json" with { type: "json" };
     import { CSSRuntimeProvider } from "../lib/runtime-provider.js";
+    import UtilityType from "shared/utility-type";
 
-    const defaultPlan = defaultPlanJSON as unknown as MasterCSSPlan;
+    const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest;
 
     let containerRef = $state<HTMLDivElement>();
-    let plan = $state<MasterCSSPlan>({
-        version: 3,
+    let manifest = $state<MasterCSSManifest>({
+        version: 1,
         utilities: [
             {
                 id: "btn",
                 name: "btn",
-                type: -4,
+                type: UtilityType.Semantic,
                 order: 0,
                 layer: "components",
                 emit: {
@@ -51,12 +52,12 @@
 {/if}
 
 {#if !destroy}
-    <CSSRuntimeProvider {plan} {root}>
+    <CSSRuntimeProvider {manifest} {root}>
         <button onclick={() => (destroy = true)}>DESTROY</button>
         <button
             id="config-btn"
             class="btn bg:blue-50"
-            onclick={() => (plan = defaultPlan)}>CONFIG</button
+            onclick={() => (manifest = defaultManifest)}>CONFIG</button
         >
         <button
             id="root-btn"

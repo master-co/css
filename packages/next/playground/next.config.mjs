@@ -4,7 +4,7 @@ import { withMasterCSS } from '../dist/index.mjs'
 const nextConfig = withMasterCSS({
     reactStrictMode: true
 }, {
-    manifest: true,
+    buildReport: true,
     debug: true
 })
 

@@ -1,24 +1,24 @@
 import { cssRuntime } from '../src'
 import type { CSSRuntime } from '../src'
-import type { MasterCSSPlan } from 'shared/master-css-plan'
+import type { MasterCSSManifest } from 'shared/master-css-manifest'
 
-const plan = { version: 3 } satisfies MasterCSSPlan
+const manifest = { version: 1 } satisfies MasterCSSManifest
 
 class RuntimeElement extends HTMLElement {
     cssRuntime?: CSSRuntime
 
     connectedCallback() {
         const runtime: CSSRuntime | undefined = this.cssRuntime
-        runtime?.refresh(plan)
+        runtime?.refresh(manifest)
     }
 }
 
-cssRuntime({ plan })(RuntimeElement)
+cssRuntime({ manifest })(RuntimeElement)
 cssRuntime({
-    plan,
+    manifest,
     root: (host) => host.shadowRoot,
     autoObserve: false,
-    preloaded: {
+    emittedGlobals: {
         variables: {
             primary: 1
         }

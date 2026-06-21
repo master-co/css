@@ -1,13 +1,13 @@
 import { createCSS, type CompiledUtility, type MasterCSS } from '@master/css'
-import defaultPlanJSON from '@master/css-preset/default-plan.json' with { type: 'json' }
+import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
 import UtilityType from 'shared/utility-type'
 import type { ValueComponent, Variable } from 'shared/css-syntax'
-import type { MasterCSSPlan, MasterCSSPlanAtRuleNode } from 'shared/master-css-plan'
+import type { MasterCSSManifest, MasterCSSManifestAtRuleNode } from 'shared/master-css-manifest'
 import { getMdnPropertySyntax } from './utils/mdn-css-data'
 
 export type { CompiledUtility, MasterCSS, ValueComponent, Variable }
-const defaultPlan = defaultPlanJSON as unknown as MasterCSSPlan
-export { createCSS, defaultPlan, UtilityType }
+const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
+export { createCSS, defaultManifest, UtilityType }
 
 export function matchesLanguageServiceNativeDeclaration({ property }: { property: string }) {
     return property.startsWith('--') || Boolean(getMdnPropertySyntax(property))
@@ -25,23 +25,23 @@ export const CLASS_FUNCTIONS = ['clsx', 'cva', 'ctl', 'cv', 'class', 'classnames
 
 export interface AtRule {
     id: string
-    nodes: MasterCSSPlanAtRuleNode[]
+    nodes: MasterCSSManifestAtRuleNode[]
 }
 
 export function createDefaultCSS() {
-    return createCSS(defaultPlan, undefined, {
+    return createCSS(defaultManifest, undefined, {
         nativeDeclarationMatcher: matchesLanguageServiceNativeDeclaration
     })
 }
 
-export function createLanguageCSS(plan: MasterCSSPlan = defaultPlan) {
-    return createCSS(plan, undefined, {
+export function createLanguageCSS(manifest: MasterCSSManifest = defaultManifest) {
+    return createCSS(manifest, undefined, {
         nativeDeclarationMatcher: matchesLanguageServiceNativeDeclaration
     })
 }
 
 export function generateCSS(classNames: string[], css: MasterCSS = createDefaultCSS()) {
-    const generatedCSS = createCSS(css.plan, undefined, {
+    const generatedCSS = createCSS(css.manifest, undefined, {
         nativeDeclarationMatcher: matchesLanguageServiceNativeDeclaration
     })
     for (const className of classNames) {
@@ -64,7 +64,7 @@ export function getStaticUtilityDeclarations(utility: CompiledUtility) {
     }
 }
 
-function findNumberNode(nodes: MasterCSSPlanAtRuleNode[]): Extract<MasterCSSPlanAtRuleNode, { type: 'number' }> | undefined {
+function findNumberNode(nodes: MasterCSSManifestAtRuleNode[]): Extract<MasterCSSManifestAtRuleNode, { type: 'number' }> | undefined {
     for (const node of nodes) {
         if (node.type === 'number') return node
         if ('children' in node) {
@@ -74,7 +74,7 @@ function findNumberNode(nodes: MasterCSSPlanAtRuleNode[]): Extract<MasterCSSPlan
     }
 }
 
-export function getSingleAtNumberRuleNode(nodes: MasterCSSPlanAtRuleNode[]) {
+export function getSingleAtNumberRuleNode(nodes: MasterCSSManifestAtRuleNode[]) {
     return findNumberNode(nodes)
 }
 

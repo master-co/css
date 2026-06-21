@@ -34,9 +34,9 @@ export default () => <CodeTabs>{[
             <link rel="modulepreload" href="https://cdn.master.co/css-runtime@rc/+esm">
             <link rel="stylesheet" href="https://cdn.master.co/css@rc/base.css">
             <script type="module">
-                import defaultPlan from 'https://cdn.master.co/css-preset@rc/default-plan.json' with { type: 'json' }
+                import defaultManifest from 'https://cdn.master.co/css-preset@rc/default-manifest.json' with { type: 'json' }
                 import { initCSSRuntime } from 'https://cdn.master.co/css-runtime@rc/+esm'
-                initCSSRuntime({ plan: defaultPlan })
+                initCSSRuntime({ manifest: defaultManifest })
             </script>
         </head>
         <body>
@@ -57,9 +57,9 @@ export default () => <CodeTabs>{[
             <link rel="modulepreload" href="https://esm.sh/@master/css-runtime@rc">
             <link rel="stylesheet" href="https://esm.sh/@master/css@rc/base.css?css">
             <script type="module">
-                import defaultPlan from 'https://esm.sh/@master/css-preset@rc/default-plan.json' with { type: 'json' }
+                import defaultManifest from 'https://esm.sh/@master/css-preset@rc/default-manifest.json' with { type: 'json' }
                 import { initCSSRuntime } from 'https://esm.sh/@master/css-runtime@rc'
-                initCSSRuntime({ plan: defaultPlan })
+                initCSSRuntime({ manifest: defaultManifest })
             </script>
         </head>
         <body>

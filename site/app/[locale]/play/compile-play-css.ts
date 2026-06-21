@@ -1,15 +1,15 @@
-import { AnimationRule, VariableRule, createCSS, type MasterCSSPlan } from '@master/css'
-import defaultPlanJSON from '@master/css-preset/default-plan.json' with { type: 'json' }
-import { compileCSSPlan, type CompileCSSPlanResult } from '@master/css-compiler/browser'
+import { AnimationRule, VariableRule, createCSS, type MasterCSSManifest } from '@master/css'
+import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
+import { compileCSSManifest, type CompileCSSManifestResult } from '@master/css-compiler/browser'
 import { collectAnimationNamesFromDeclaration } from '@master/css-engine'
 
-const defaultPlan = defaultPlanJSON as unknown as MasterCSSPlan
+const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 
 export interface CompilePlayCSSResult {
     css: string
-    plan: MasterCSSPlan
+    manifest: MasterCSSManifest
     warnings: string[]
-    result: CompileCSSPlanResult
+    result: CompileCSSManifestResult
 }
 
 function collectCSSVariableReferences(source: string) {
@@ -70,11 +70,11 @@ function insertAnimationReferences(css: ReturnType<typeof createCSS>, references
     }
 }
 
-function renderClassCSS(plan: MasterCSSPlan, classes: string[], nativeCSS: string) {
-    const css = createCSS(plan)
+function renderClassCSS(manifest: MasterCSSManifest, classes: string[], nativeCSS: string) {
+    const css = createCSS(manifest)
     const nativeAnimationNames = collectCSSKeyframeNames(nativeCSS)
     if (nativeAnimationNames.size) {
-        css.registerPreloaded({
+        css.registerEmittedGlobals({
             animations: Object.fromEntries([...nativeAnimationNames].map((name) => [name, 1]))
         })
     }
@@ -87,19 +87,19 @@ function renderClassCSS(plan: MasterCSSPlan, classes: string[], nativeCSS: strin
 }
 
 export async function compilePlayCSS(sourceCSS: string, classes: string[]): Promise<CompilePlayCSSResult> {
-    const result = await compileCSSPlan(sourceCSS, {
-        basePlan: defaultPlan,
+    const result = await compileCSSManifest(sourceCSS, {
+        baseManifest: defaultManifest,
         from: 'playground.css'
     })
     const nativeCSS = result.css || ''
-    const generatedCSS = renderClassCSS(result.plan, classes, nativeCSS)
+    const generatedCSS = renderClassCSS(result.manifest, classes, nativeCSS)
     const css = [
         nativeCSS,
         generatedCSS
     ].filter(Boolean).join('\n\n')
     return {
         css,
-        plan: result.plan,
+        manifest: result.manifest,
         warnings: result.warnings,
         result
     }

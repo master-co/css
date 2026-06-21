@@ -63,7 +63,7 @@ export default {
 ```
 
 ## Client types
-Add the client type reference when TypeScript source files import `virtual:master-utilities.css`, `virtual:master-css-plan`, `virtual:master-css-preloaded`, or `?master-css-plan` modules:
+Add the client type reference when TypeScript source files import `virtual:master-utilities.css`, `virtual:master-css-manifest`, `virtual:master-css-emitted-globals`, or `?master-css-manifest` modules:
 
 ```ts
 /// <reference types="@master/css-integration/client" />

@@ -8,10 +8,10 @@ An integration started without finding a project CSS entry in the current projec
 Create /path/to/project/index.css and mark it as the project entry, for example:
   @master;
   @import "./src/globals.css";
-Master CSS uses this entry graph for integrations, language service, and VS Code. Imported CSS plan directives participate in the graph.
+Master CSS uses this entry graph for integrations, language service, and VS Code. Imported CSS manifest directives participate in the graph.
 ```
 
-Master CSS can still generate utility CSS without a project entry, but integrations and editor tooling use the project CSS entry to compile the shared MasterCSSPlan for tokens, component definitions, animations, and workspace behavior.
+Master CSS can still generate utility CSS without a project entry, but integrations and editor tooling use the project CSS entry to compile the shared MasterCSSManifest for tokens, component definitions, animations, and workspace behavior.
 
 `@theme`, `@master`, `@custom-variant`, and `@custom-variant` directives do not have to be written directly in the entry file. They can live in ordinary CSS files such as `src/globals.css` or `app/globals.css`, as long as the entry imports those files with a relative CSS import. The entry itself is recognized by `@master;` or `@import '@master/css'`.
 
@@ -27,7 +27,7 @@ Create `index.css` at the project root and import your stylesheet entry.
 @import './src/globals.css';
 ```
 
-Then keep tokens, component rules, animations, or other Master CSS plan directives in that imported stylesheet or in files imported by it.
+Then keep tokens, component rules, animations, or other Master CSS manifest directives in that imported stylesheet or in files imported by it.
 
 ```css name=src/globals.css
 @theme {
@@ -43,18 +43,18 @@ Then keep tokens, component rules, animations, or other Master CSS plan directiv
 
 Ordinary CSS outside Master CSS directives stays native CSS and follows the integration's stylesheet behavior.
 
-### Import an explicit plan resource
+### Import an explicit manifest resource
 
-If runtime code should intentionally use one CSS resource instead of the discovered project-level entry, import that resource with `?master-css-plan`.
+If runtime code should intentionally use one CSS resource instead of the discovered project-level entry, import that resource with `?master-css-manifest`.
 
 ```ts name=src/main.ts
 import { initCSSRuntime } from '@master/css-runtime'
-import plan from './theme.css?master-css-plan'
+import manifest from './theme.css?master-css-manifest'
 
-initCSSRuntime({ plan })
+initCSSRuntime({ manifest })
 ```
 
-For lower-level APIs that accept a compiled plan directly, pass a `MasterCSSPlan` through their `plan` option.
+For lower-level APIs that accept a compiled manifest directly, pass a `MasterCSSManifest` through their `manifest` option.
 
 ### Ignore the warning
 

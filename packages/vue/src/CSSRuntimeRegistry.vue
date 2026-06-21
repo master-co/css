@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import plan from 'virtual:master-css-plan'
-import preloaded from 'virtual:master-css-preloaded'
+import manifest from 'virtual:master-css-manifest'
+import emittedGlobals from 'virtual:master-css-emitted-globals'
 import CSSRuntimeProvider from './CSSRuntimeProvider.vue'
 
 defineOptions({
@@ -9,7 +9,7 @@ defineOptions({
 </script>
 
 <template>
-    <CSSRuntimeProvider :plan="plan" :preloaded="preloaded">
+    <CSSRuntimeProvider :manifest="manifest" :emittedGlobals="emittedGlobals">
         <slot />
     </CSSRuntimeProvider>
 </template>

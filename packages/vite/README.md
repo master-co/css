@@ -72,7 +72,7 @@ Import the default stylesheet from the CSS entry your app already loads:
 ```
 
 ## Client types
-Add the client type reference when TypeScript source files import Master CSS virtual plan, preloaded, or generated CSS modules:
+Add the client type reference when TypeScript source files import Master CSS virtual manifest, emittedGlobals, or generated CSS modules:
 
 ```ts
 /// <reference types="vite/client" />

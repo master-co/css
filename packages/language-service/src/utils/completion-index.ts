@@ -178,7 +178,7 @@ function collectClassEntries(css: MasterCSS) {
 
 function createPseudoClassSelectors(css: MasterCSS) {
     const selectors = new Map<string, string>([[':of', ':of']])
-    for (const variant of css.plan.variants || []) {
+    for (const variant of css.manifest.variants || []) {
         const selector = variant.branches.find((branch) => branch.selector)?.selector
         if (selector && variant.token.startsWith(':') && !variant.token.startsWith('::')) {
             selectors.set(variant.token, selector)
@@ -189,7 +189,7 @@ function createPseudoClassSelectors(css: MasterCSS) {
 
 function createPseudoElementSelectors(css: MasterCSS) {
     const selectors: SelectorVariantCandidate[] = []
-    for (const variant of css.plan.variants || []) {
+    for (const variant of css.manifest.variants || []) {
         const selector = variant.branches.find((branch) => branch.selector)?.selector
         if (selector && variant.token.startsWith('::')) {
             selectors.push({ token: variant.token, selector })

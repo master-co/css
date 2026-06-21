@@ -1,14 +1,14 @@
 import initCSSRuntime from './init'
-import type { MasterCSSPlan } from 'shared/master-css-plan'
+import type { MasterCSSManifest } from 'shared/master-css-manifest'
 
-async function loadDefaultPlan(): Promise<MasterCSSPlan> {
-    const defaultPlanURL = new URL('./default-plan.json', import.meta.url)
-    const defaultPlanModule = await import(defaultPlanURL.href, { with: { type: 'json' } }) as { default: MasterCSSPlan }
-    return defaultPlanModule.default
+async function loadDefaultManifest(): Promise<MasterCSSManifest> {
+    const defaultManifestURL = new URL('./default-manifest.json', import.meta.url)
+    const defaultManifestModule = await import(defaultManifestURL.href, { with: { type: 'json' } }) as { default: MasterCSSManifest }
+    return defaultManifestModule.default
 }
 
-if (globalThis.masterCSSPlan) {
-    initCSSRuntime({ plan: globalThis.masterCSSPlan })
+if (globalThis.masterCSSManifest) {
+    initCSSRuntime({ manifest: globalThis.masterCSSManifest })
 } else {
-    void loadDefaultPlan().then((plan) => initCSSRuntime({ plan }))
+    void loadDefaultManifest().then((manifest) => initCSSRuntime({ manifest }))
 }

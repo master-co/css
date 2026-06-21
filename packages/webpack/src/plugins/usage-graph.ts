@@ -1,6 +1,6 @@
 import type { Compiler } from 'webpack'
 import type { MasterCSSWebpackContext, WebpackSubPlugin } from '../plugin'
-import { isVirtualPlanModulePath } from '../utils/path'
+import { isVirtualManifestModulePath } from '../utils/path'
 
 interface WebpackSourceModule {
     resourceResolveData?: {
@@ -16,7 +16,7 @@ export default function UsageGraphPlugin(context: MasterCSSWebpackContext): Webp
     return {
         apply(compiler: Compiler) {
             compiler.hooks.thisCompilation.tap(context.name, (compilation) => {
-                for (const dependency of context.getDefaultPlanDependencyPaths()) {
+                for (const dependency of context.getDefaultManifestDependencyPaths()) {
                     compilation.fileDependencies.add(dependency)
                 }
 
@@ -27,7 +27,7 @@ export default function UsageGraphPlugin(context: MasterCSSWebpackContext): Webp
                     const sourceModule = module as WebpackSourceModule
                     const modulePath = sourceModule.resourceResolveData?.path || sourceModule.resource
                     if (!modulePath) return
-                    if (isVirtualPlanModulePath(modulePath)) return
+                    if (isVirtualManifestModulePath(modulePath)) return
                     if (context.isGeneratedCSSModulePath(modulePath)) return
                     const moduleContent = sourceModule._source?.source?.()
                     if (moduleContent === undefined || moduleContent === null) return

@@ -3,7 +3,7 @@ import { dirname, extname, join, resolve } from 'node:path'
 import { render } from '@master/css-server'
 import type { NextAdapter } from 'next'
 import { getRegisteredOptions, resolveOptions, type AdapterOrder, type Options } from './options'
-import { createMasterCSSBuildPlanResolver } from './style-plan'
+import { createMasterCSSBuildStateResolver } from './build-state'
 
 type BuildCompleteContext = Parameters<NonNullable<NextAdapter['onBuildComplete']>>[0]
 type BuildOutputs = BuildCompleteContext['outputs']
@@ -31,7 +31,7 @@ export interface RenderedOutput {
     rendered: boolean
 }
 
-export interface RenderManifest {
+export interface BuildReport {
     version: 1
     nextVersion: string
     buildId: string
@@ -80,19 +80,19 @@ function collectHTMLBuildOutputs(outputs: BuildOutputs): HTMLBuildOutput[] {
     return htmlOutputs
 }
 
-async function writeManifest(ctx: BuildCompleteContext, files: RenderedOutput[], manifest: boolean | string) {
-    if (!manifest) return
-    const manifestPath = typeof manifest === 'string'
-        ? resolve(ctx.distDir, manifest)
-        : join(ctx.distDir, 'master-css-manifest.json')
-    const data: RenderManifest = {
+async function writeBuildReport(ctx: BuildCompleteContext, files: RenderedOutput[], buildReport: boolean | string) {
+    if (!buildReport) return
+    const buildReportPath = typeof buildReport === 'string'
+        ? resolve(ctx.distDir, buildReport)
+        : join(ctx.distDir, 'master-css-build-report.json')
+    const data: BuildReport = {
         version: 1,
         nextVersion: ctx.nextVersion,
         buildId: ctx.buildId,
         files
     }
-    await mkdir(dirname(manifestPath), { recursive: true })
-    await writeFile(manifestPath, JSON.stringify(data, null, 2))
+    await mkdir(dirname(buildReportPath), { recursive: true })
+    await writeFile(buildReportPath, JSON.stringify(data, null, 2))
 }
 
 function createMasterStyleText(cssText: string) {
@@ -118,15 +118,15 @@ export async function renderNextBuildOutputs(ctx: BuildCompleteContext, rawOptio
     const options = resolveOptions(rawOptions)
     if (options.mode === null) return []
 
-    const buildPlanResolver = await createMasterCSSBuildPlanResolver(ctx.projectDir)
-    const baseBuildPlan = await buildPlanResolver.resolve()
+    const buildStateResolver = await createMasterCSSBuildStateResolver(ctx.projectDir)
+    const baseBuildState = await buildStateResolver.resolve()
     const htmlOutputs = collectHTMLBuildOutputs(ctx.outputs)
     const renderedHTMLOutputs: RenderedHTMLBuildOutput[] = []
     const renderedOutputs: RenderedOutput[] = []
 
     for (const output of htmlOutputs) {
         const sourceHTML = await readFile(output.filePath, 'utf-8')
-        const rendered = render(sourceHTML, baseBuildPlan.plan, { runtimeManifest: 'inject' })
+        const rendered = render(sourceHTML, baseBuildState.manifest, { hydrationManifest: 'inject' })
         renderedHTMLOutputs.push({ output, sourceHTML, rendered })
     }
 
@@ -151,7 +151,7 @@ export async function renderNextBuildOutputs(ctx: BuildCompleteContext, rawOptio
         })
     }
 
-    await writeManifest(ctx, renderedOutputs, options.manifest)
+    await writeBuildReport(ctx, renderedOutputs, options.buildReport)
 
     if (options.debug) {
         const renderedCount = renderedOutputs.filter((output) => output.rendered).length

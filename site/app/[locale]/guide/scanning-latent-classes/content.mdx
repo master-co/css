@@ -17,7 +17,7 @@ The scanner does not run your app. It reads files as text, collects strings that
 </article>
 ```
 
-The source contains `card`, `p:md`, `bg:white`, `shadow:md`, `font:lg`, and `font:semibold`. Those candidates are validated against the active plan. Valid classes generate CSS; invalid candidates are cached and ignored.
+The source contains `card`, `p:md`, `bg:white`, `shadow:md`, `font:lg`, and `font:semibold`. Those candidates are validated against the active manifest. Valid classes generate CSS; invalid candidates are cached and ignored.
 
 ```css name=generated.css
 @layer utilities {
@@ -103,10 +103,10 @@ Words such as `function`, `return`, `No`, `invoices`, and `found` may be discove
 ---
 
 ## Validation
-After candidate scanning, Master CSS validates each class against the active plan. A candidate can be accepted in three common ways:
+After candidate scanning, Master CSS validates each class against the active manifest. A candidate can be accepted in three common ways:
 
 - It is a built-in utility, such as `block`, `text:red-60`, or `grid-cols:3`.
-- It is defined by your project CSS entry and compiled into the plan.
+- It is defined by your project CSS entry and compiled into the manifest.
 - It matches a native class collected from a stylesheet that imports [`@master/css`](/guide/native-css-pruning).
 
 ```css name=index.css
@@ -228,7 +228,7 @@ Use `@safelist` for bounded classes that do not exist in scanned source. Common 
 @safelist 'dialog-open transform:translateY(-5):hover bg:blue-60@dark';
 ```
 
-`@safelist` does not bypass validation. The class still needs to be a valid Master CSS class, a project-defined class from the compiled plan, or a known native class from a pruned stylesheet.
+`@safelist` does not bypass validation. The class still needs to be a valid Master CSS class, a project-defined class from the compiled manifest, or a known native class from a pruned stylesheet.
 
 Use `@blocklist` when broad scanning finds tokens that look like valid classes but should not generate CSS.
 

@@ -1,8 +1,8 @@
 import './style.css'
 import { setupCounter } from './counter'
-// import plan from 'virtual:master-css-plan'
+// import manifest from 'virtual:master-css-manifest'
 
-// console.log('plan', plan)
+// console.log('manifest', manifest)
 
 const counterElement = document.querySelector<HTMLButtonElement>('#counter')
 counterElement?.classList.add('transition:transform|.3s', 'scale(1.1):hover')

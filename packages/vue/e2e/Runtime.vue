@@ -1,19 +1,20 @@
 <script setup lang="ts">
     import { CSSRuntimeProvider } from '../src/runtime-provider'
     import { ref, onMounted } from 'vue'
-    import type { MasterCSSPlan } from '@master/css-runtime'
-    import defaultPlanJSON from '@master/css-preset/default-plan.json' with { type: 'json' }
+    import type { MasterCSSManifest } from '@master/css-runtime'
+    import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
+    import UtilityType from 'shared/utility-type'
     import RuntimeConsumer from './RuntimeConsumer.vue'
 
-    const defaultPlan = defaultPlanJSON as unknown as MasterCSSPlan
+    const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 
-    const plan = ref<MasterCSSPlan>({
+    const manifest = ref<MasterCSSManifest>({
         version: 1,
         utilities: [
             {
                 id: '.btn',
                 name: 'btn',
-                type: -4,
+                type: UtilityType.Semantic,
                 order: 0,
                 layer: 'components',
                 emit: {
@@ -43,9 +44,9 @@
 </script>
 
 <template>
-    <CSSRuntimeProvider :root="root" :plan="plan">
+    <CSSRuntimeProvider :root="root" :manifest="manifest">
         <RuntimeConsumer />
-        <button id="config-btn" class="btn" @click="plan = defaultPlan"></button>
+        <button id="config-btn" class="btn" @click="manifest = defaultManifest"></button>
         <button id="root-btn" @click="root = shadowRoot"></button>
         <div id="container" :ref="el => containerRef = el"></div>
     </CSSRuntimeProvider>

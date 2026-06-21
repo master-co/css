@@ -2,17 +2,17 @@
 
 ## Responsibility
 
-`@master/css-runtime` runs Master CSS in the browser. It observes DOM class changes, creates or hydrates `style#master`, tracks class usage counts, registers preloaded global CSS counts, and inserts/removes native CSS rules.
+`@master/css-runtime` runs Master CSS in the browser. It observes DOM class changes, creates or hydrates `style#master`, tracks class usage counts, registers emittedGlobals global CSS counts, and inserts/removes native CSS rules.
 
 ## Inputs And Outputs
 
-- Input: `Document` or `ShadowRoot`, required `MasterCSSPlan`, optional preloaded variable/keyframe counts, connected DOM classes, mutation records, pre-rendered CSS rules.
+- Input: `Document` or `ShadowRoot`, required `MasterCSSManifest`, optional emittedGlobals variable/keyframe counts, connected DOM classes, mutation records, pre-rendered CSS rules.
 - Output: live `style#master` stylesheet, runtime layer state, hydrated virtual rules, devtools events.
 
 ## Public APIs
 
 - `CSSRuntime`
-- `initCSSRuntime({ plan, root, autoObserve, preloaded })`
+- `initCSSRuntime({ manifest, root, autoObserve, emittedGlobals })`
 - `RuntimeUtilityLayer`
 - runtime types
 
@@ -42,7 +42,7 @@
 
 - `MutationObserver` diff logic.
 - `classCounts` increment/decrement behavior.
-- Preloaded variable/keyframe counts must prevent duplicate runtime insertion without suppressing utility insertion.
+- EmittedGlobals variable/keyframe counts must prevent duplicate runtime insertion without suppressing utility insertion.
 - Hydrating CSSLayerBlockRule and CSSKeyframesRule.
 - Matching generated rule text to native CSSRule text.
 - ShadowRoot vs Document behavior.
@@ -81,4 +81,4 @@ Run `pnpm --filter @master/css-runtime bench` when changing DOM observation, cla
 
 Do not fold runtime timing assertions into `pnpm --filter @master/css-runtime e2e`; e2e is for browser correctness. Do not replace the browser benchmark with Vitest unless the measured code path is DOM-independent and does not use CSSOM, MutationObserver, hydration, or browser module loading.
 
-For benchmark-relevant runtime changes, report whether the benchmark ran, whether browser payload files such as `dist/global.min.js` and `dist/default-plan.json` changed in raw/gzip/brotli size, and any memory, cold-start, runtime CPU, or CSSOM insertion/deletion tradeoff. Also state whether generated CSS output, progressive hydration, or fallback hydration behavior changed.
+For benchmark-relevant runtime changes, report whether the benchmark ran, whether browser payload files such as `dist/global.min.js` and `dist/default-manifest.json` changed in raw/gzip/brotli size, and any memory, cold-start, runtime CPU, or CSSOM insertion/deletion tradeoff. Also state whether generated CSS output, progressive hydration, or fallback hydration behavior changed.

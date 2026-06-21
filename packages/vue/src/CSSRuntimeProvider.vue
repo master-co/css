@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { shallowRef, provide, onMounted, onUnmounted, watch } from 'vue'
-import { initCSSRuntime, resolveRuntimePlan } from '@master/css-runtime'
+import { initCSSRuntime } from '@master/css-runtime'
 import type { CSSRuntime } from '@master/css-runtime'
 import { CSS_RUNTIME_INJECTION_KEY } from './use-css-runtime'
 import type { CSSRuntimeProviderProps } from './types/provider-props'
@@ -15,10 +15,10 @@ function getRoot() {
 
 function initRuntime() {
     cssRuntime.value = initCSSRuntime({
-        plan: props.plan,
+        manifest: props.manifest,
         root: getRoot(),
-        preloaded: props.preloaded,
-        manifest: props.manifest
+        emittedGlobals: props.emittedGlobals,
+        hydrationManifest: props.hydrationManifest
     })
 }
 
@@ -33,9 +33,9 @@ onMounted(() => {
 
 onUnmounted(destroyRuntime)
 
-watch(() => props.plan, () => {
+watch(() => props.manifest, () => {
     if (cssRuntime.value) {
-        cssRuntime.value.refresh(resolveRuntimePlan(props.plan))
+        cssRuntime.value.refresh(props.manifest)
     }
 })
 

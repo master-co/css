@@ -25,16 +25,16 @@
     <Step $row>
         <StepL>
             ### <StepNum />Set up CSS runtime engine
-            Initialize the runtime engine in the browser entry. This manual setup uses the bundled preset plan; use an official build integration when application code needs to import the compiled project plan.
+            Initialize the runtime engine in the browser entry. This manual setup uses the bundled preset manifest; use an official build integration when application code needs to import the compiled project manifest.
         </StepL>
         <StepR>
             ```ts name=src/main.ts
             import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
             import { AppModule } from './app/app.module';
-            import defaultPlan from '@master/css-preset/default-plan.json' with { type: 'json' }; // [!code ++]
+            import defaultManifest from '@master/css-preset/default-manifest.json' with { type: 'json' }; // [!code ++]
             import { initCSSRuntime } from '@master/css-runtime'; // [!code ++]
 
-            initCSSRuntime({ plan: defaultPlan }); // [!code ++]
+            initCSSRuntime({ manifest: defaultManifest }); // [!code ++]
 
             platformBrowserDynamic().bootstrapModule(AppModule)
                 .catch(err => console.error(err));
@@ -66,11 +66,11 @@
     <Step $row>
         <StepL>
             ### <StepNum />Set up CSS pre-rendering
-            All CSS rules are pre-rendered and injected into HTML on the server side or at build time. This manual example renders with the default preset plan.
+            All CSS rules are pre-rendered and injected into HTML on the server side or at build time. This manual example renders with the default preset manifest.
         </StepL>
         <StepR>
             ```ts name=server.ts
-            import defaultPlan from '@master/css-preset/default-plan.json' with { type: 'json' }; // [!code ++]
+            import defaultManifest from '@master/css-preset/default-manifest.json' with { type: 'json' }; // [!code ++]
             import { render } from '@master/css-server'; // [!code ++]
             …
             export function app() {
@@ -82,7 +82,7 @@
                         (error: Error, html: string) => { // [!code ++]
                             error // [!code ++]
                                 ? console.error(error) // [!code ++]
-                                : res.send(render(html, defaultPlan).html) // [!code ++]
+                                : res.send(render(html, defaultManifest).html) // [!code ++]
                         } // [!code ++]
                     ) // [!code ++]
                 }); // [!code ++]

@@ -18,7 +18,7 @@ Create an instance of the Master CSS extractor:
 const extractor = new CSSExtractor(options, cwd)
 ```
 
-`cwd` is used to resolve project CSS plan entries and source patterns such as [`.include`](#include), [`.exclude`](#exclude), and [`.required`](#required).
+`cwd` is used to resolve project CSS manifest entries and source patterns such as [`.include`](#include), [`.exclude`](#exclude), and [`.required`](#required).
 
 `CSSExtractor` is the source-scanning engine behind Master CSS Static Rendering, which is usually used by build tools or third-party package authors.
 
@@ -40,9 +40,9 @@ import { options } from '@master/css-extractor'
 import options from '@master/css-extractor/options'
 ```
 
-### `options.plan`
-Pass an explicit compiled MasterCSSPlan. When omitted, integrations and CLI flows load the project CSS entry plan from `cwd`.
-<DocProp defaultValue={options.plan} types={['MasterCSSPlan']} />
+### `options.manifest`
+Pass an explicit compiled MasterCSSManifest. When omitted, integrations and CLI flows load the project CSS entry manifest from `cwd`.
+<DocProp defaultValue={options.manifest} types={['MasterCSSManifest']} />
 
 ### `options.include`
 Broadly specify source files/directories to be scanned by Master CSS.

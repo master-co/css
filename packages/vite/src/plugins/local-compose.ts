@@ -1,5 +1,5 @@
 import type { ModuleNode, Plugin, ViteDevServer } from 'vite'
-import { loadProjectPlan } from '@master/css-plan/load'
+import { loadProjectManifest } from '@master/css-manifest/load'
 import {
     hasLocalStyleDirectives,
     isStyleCSSRequest,
@@ -16,8 +16,8 @@ function invalidateModule(module: ModuleNode | undefined, server: ViteDevServer)
 }
 
 export default function LocalComposePlugin(options: PluginOptions, context: PluginContext): Plugin {
-    let projectPlan: Awaited<ReturnType<typeof loadProjectPlan>> | undefined
-    let projectPlanDependencies: string[] = []
+    let projectManifest: Awaited<ReturnType<typeof loadProjectManifest>> | undefined
+    let projectManifestDependencies: string[] = []
     const localComposeModules = new Set<string>()
 
     const addServerAllow = (paths: string[]) => {
@@ -29,22 +29,22 @@ export default function LocalComposePlugin(options: PluginOptions, context: Plug
     }
 
     const loadComposeContext = async (pluginContext: { addWatchFile?: (id: string) => void }) => {
-        if (projectPlan) return projectPlan
-        projectPlan = await loadProjectPlan(context.config?.root)
-        projectPlanDependencies = projectPlan.dependencies
-        addServerAllow(projectPlan.dependencies)
-        for (const dependency of projectPlan.dependencies) {
+        if (projectManifest) return projectManifest
+        projectManifest = await loadProjectManifest(context.config?.root)
+        projectManifestDependencies = projectManifest.dependencies
+        addServerAllow(projectManifest.dependencies)
+        for (const dependency of projectManifest.dependencies) {
             pluginContext.addWatchFile?.(dependency)
         }
-        return projectPlan
+        return projectManifest
     }
 
     return {
         name: 'master-css:local-compose',
         enforce: 'pre',
         async buildStart() {
-            projectPlan = undefined
-            projectPlanDependencies = []
+            projectManifest = undefined
+            projectManifestDependencies = []
         },
         async transform(code, id) {
             if (id.startsWith('\0')) return
@@ -52,9 +52,9 @@ export default function LocalComposePlugin(options: PluginOptions, context: Plug
             if (!hasLocalStyleDirectives(code)) return
             if (resolveMasterStyleSource(id, code, context.config?.root)) return
 
-            const planResult = await loadComposeContext(this)
+            const manifestResult = await loadComposeContext(this)
             const result = await transformLocalStyleCSS(id, code, {
-                basePlan: planResult.plan,
+                baseManifest: manifestResult.manifest,
                 projectDir: context.config?.root
             })
             if (!result.transformed) return
@@ -68,9 +68,9 @@ export default function LocalComposePlugin(options: PluginOptions, context: Plug
             }
         },
         async handleHotUpdate({ file, server }) {
-            if (!projectPlanDependencies.includes(file)) return
-            projectPlan = undefined
-            projectPlanDependencies = []
+            if (!projectManifestDependencies.includes(file)) return
+            projectManifest = undefined
+            projectManifestDependencies = []
             let handled = false
             let needsFullReload = false
             for (const moduleId of localComposeModules) {

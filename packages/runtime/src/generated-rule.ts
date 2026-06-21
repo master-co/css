@@ -1,5 +1,5 @@
 import type RuntimeUtilityLayer from './utility-layer'
-import type { MasterCSSGeneratedRuleIR } from 'shared/master-css-runtime-manifest'
+import type { MasterCSSGeneratedRuleIR } from 'shared/master-css-hydration-manifest'
 
 function collectVariableNames(text: string) {
     const variableNames = new Set<string>()

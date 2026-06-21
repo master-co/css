@@ -1,13 +1,13 @@
 import { expect, test } from 'vitest'
 import { createCSS } from '@master/css-engine'
-import defaultPlanJSON from '@master/css-preset/default-plan.json' with { type: 'json' }
-import { compileCSSPlan } from '../src/browser'
-import type { MasterCSSPlan } from 'shared/master-css-plan'
+import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
+import { compileCSSManifest } from '../src/browser'
+import type { MasterCSSManifest } from 'shared/master-css-manifest'
 
-const defaultPlan = defaultPlanJSON as unknown as MasterCSSPlan
+const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 
-test.concurrent('browser compileCSSPlan lowers directives with a base plan', async () => {
-    const result = await compileCSSPlan(`
+test.concurrent('browser compileCSSManifest lowers directives with a base manifest', async () => {
+    const result = await compileCSSManifest(`
         @components {
             btn {
                 @compose flex;
@@ -15,21 +15,21 @@ test.concurrent('browser compileCSSPlan lowers directives with a base plan', asy
             }
         }
     `, {
-        basePlan: defaultPlan
+        baseManifest: defaultManifest
     })
-    const css = createCSS(result.plan)
+    const css = createCSS(result.manifest)
 
     css.add('btn')
 
     expect(result.warnings).toEqual([])
-    expect(result.plan.utilities?.some((utility) => utility.name === 'btn' && utility.layer === 'components')).toBe(true)
+    expect(result.manifest.utilities?.some((utility) => utility.name === 'btn' && utility.layer === 'components')).toBe(true)
     expect(css.text).toContain('.btn')
     expect(css.text).toContain('display:flex')
     expect(css.text).toContain('color:red')
 })
 
-test.concurrent('browser compileCSSPlan rejects @reference directives', async () => {
-    await expect(compileCSSPlan('@reference "./tokens.css";')).rejects.toThrow(
-        'Browser compileCSSPlan cannot resolve @reference directives'
+test.concurrent('browser compileCSSManifest rejects @reference directives', async () => {
+    await expect(compileCSSManifest('@reference "./tokens.css";')).rejects.toThrow(
+        'Browser compileCSSManifest cannot resolve @reference directives'
     )
 })

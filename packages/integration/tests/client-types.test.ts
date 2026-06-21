@@ -32,19 +32,19 @@ describe('@master/css-integration/client', () => {
                         '.': {
                             types: './index.d.ts'
                         },
-                        './preloaded': {
-                            types: './preloaded.d.ts'
+                        './emitted-globals': {
+                            types: './emitted-globals.d.ts'
                         }
                     }
                 })
             )
             writeFileSync(
                 path.join(cssPackageDir, 'index.d.ts'),
-                'export type * from \'./preloaded\'\n'
+                'export type * from \'./emitted-globals\'\n'
             )
             writeFileSync(
-                path.join(cssPackageDir, 'preloaded.d.ts'),
-                'export interface MasterCSSPreloaded { variables?: Record<string, number>; animations?: Record<string, number> }\n'
+                path.join(cssPackageDir, 'emitted-globals.d.ts'),
+                'export interface MasterCSSEmittedGlobals { variables?: Record<string, number>; animations?: Record<string, number> }\n'
             )
             writeFileSync(
                 path.join(enginePackageDir, 'package.json'),
@@ -61,8 +61,8 @@ describe('@master/css-integration/client', () => {
             writeFileSync(
                 path.join(enginePackageDir, 'index.d.ts'),
                 [
-                    'export interface MasterCSSPlan { version: 3 }',
-                    'export interface MasterCSSPreloaded { variables?: Record<string, number>; animations?: Record<string, number> }',
+                    'export interface MasterCSSManifest { version: 1 }',
+                    'export interface MasterCSSEmittedGlobals { variables?: Record<string, number>; animations?: Record<string, number> }',
                     ''
                 ].join('\n')
             )
@@ -87,13 +87,13 @@ describe('@master/css-integration/client', () => {
 /// <reference types="@master/css-integration/client" />
 
 import 'virtual:master-utilities.css'
-import virtualPlan from 'virtual:master-css-plan'
-import virtualPreloaded from 'virtual:master-css-preloaded'
-import localPlan from './app.css?master-css-plan'
+import virtualManifest from 'virtual:master-css-manifest'
+import virtualEmittedGlobals from 'virtual:master-css-emitted-globals'
+import localManifest from './app.css?master-css-manifest'
 
-virtualPlan satisfies import('@master/css-engine').MasterCSSPlan
-virtualPreloaded satisfies import('@master/css/preloaded').MasterCSSPreloaded
-localPlan satisfies import('@master/css-engine').MasterCSSPlan
+virtualManifest satisfies import('@master/css-engine').MasterCSSManifest
+virtualEmittedGlobals satisfies import('@master/css/emitted-globals').MasterCSSEmittedGlobals
+localManifest satisfies import('@master/css-engine').MasterCSSManifest
 `.trimStart()
             )
             writeFileSync(

@@ -10,22 +10,22 @@ export {
     VariableRule,
     AnimationRule,
     compareRulePriority,
-    createRuntimeManifest
+    createHydrationManifest
 } from '@master/css-engine'
 export type {
     CompiledUtility,
     GeneratedRule,
     MasterCSSGeneratedRuleIR,
     MasterCSSOptions,
-    MasterCSSPlan,
-    MasterCSSPlanSettings,
-    MasterCSSPlanUtility,
-    MasterCSSPlanUtilityLayerName,
-    MasterCSSPlanVariant,
-    MasterCSSPlanVariable,
-    MasterCSSPlanVariableNumericValue,
-    MasterCSSPreloaded,
-    MasterCSSRuntimeManifest,
+    MasterCSSManifest,
+    MasterCSSManifestSettings,
+    MasterCSSManifestUtility,
+    MasterCSSManifestUtilityLayerName,
+    MasterCSSManifestVariant,
+    MasterCSSManifestVariable,
+    MasterCSSManifestVariableNumericValue,
+    MasterCSSEmittedGlobals,
+    MasterCSSHydrationManifest,
     NativeCSSDeclaration,
     NativeCSSDeclarationMatcher
 } from '@master/css-engine'

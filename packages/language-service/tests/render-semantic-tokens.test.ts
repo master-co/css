@@ -3,7 +3,7 @@ import { expect, test } from 'vitest'
 import CSSLanguageService from '../src/core'
 import createDoc from '../src/utils/create-doc'
 import { SEMANTIC_TOKEN_MODIFIERS, SEMANTIC_TOKEN_TYPES } from '@master/css-language'
-import { createPresetPlan } from './helpers/create-preset-plan'
+import { createPresetManifest } from './helpers/create-preset-manifest'
 
 function decodeSemanticTokenRanges(doc: ReturnType<typeof createDoc>, data: number[]) {
     const tokens: { text: string, start: number, end: number, type: string, modifiers: string[] }[] = []
@@ -53,7 +53,7 @@ test.concurrent('renders semantic tokens for class attributes', () => {
         '<div className="fg:brand:hover@sm block block:hover block:state-name hidden_div::before:of(.active) m:4x bg:rgb(0|0|0) w:0.625rem::scrollbar btn btn:hover@sm btn_div::before"></div>',
         'tsx',
         {
-            plan: createPresetPlan({
+            manifest: createPresetManifest({
                 variables: [{ key: 'brand', value: '#123456' }],
                 utilities: [
                     {
@@ -97,7 +97,7 @@ test.concurrent('renders semantic tokens for CSS-like values', () => {
         '<div className="h:$size-sm fg:$color-blue-50/.5 content:x::before bg:rgb(0|0|0) fg:red_:where(a:hover) font:mono_:is(code,pre)@base font:semibold_:headings font:semibold_:is(h1,h2,h3,h4,h5,h6)"></div>',
         'tsx',
         {
-            plan: createPresetPlan({
+            manifest: createPresetManifest({
                 variables: [
                     { key: 'size-sm', value: 16 },
                     { namespace: 'color', key: 'blue-50', value: 'oklch(60% 0.2 250)' }

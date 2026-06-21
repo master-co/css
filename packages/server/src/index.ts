@@ -1,5 +1,5 @@
 export { default as render } from './render'
-export type { RenderOptions, RenderResult, RenderRuntimeManifestOption } from './render'
+export type { RenderOptions, RenderResult, RenderHydrationManifestOption } from './render'
 export { default as renderCSS } from './render-css'
 export { default as parseHTML } from './parse-html'
 export { default as createServerCSS } from './create-server-css'

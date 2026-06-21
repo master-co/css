@@ -1,6 +1,6 @@
 import { default as defaultOptions, Options } from './options'
 import { MasterCSS } from '@master/css'
-import type { MasterCSSPlan } from 'shared/master-css-plan'
+import type { MasterCSSManifest } from 'shared/master-css-manifest'
 import { createRequire } from 'node:module'
 import {
     extractClassCandidates,
@@ -35,7 +35,7 @@ const builtInAdapters = [
 
 const sourceMatchOptions = { dot: true }
 const require = createRequire(import.meta.url)
-const defaultPlan = require('@master/css-preset/default-plan.json') as MasterCSSPlan
+const defaultManifest = require('@master/css-preset/default-manifest.json') as MasterCSSManifest
 
 interface SourceMatchers {
     required: Minimatch[]
@@ -142,8 +142,8 @@ export default class CSSExtractor extends EventEmitter {
         this.classExclusionMatcher = undefined
         this.classExclusionOptions = undefined
         this.nativeClassNames = new Set()
-        this.css = createCSSWithNativeDeclarations(this.options.plan || defaultPlan)
-        this.emit('init', this.options, this.plan)
+        this.css = createCSSWithNativeDeclarations(this.options.manifest || defaultManifest)
+        this.emit('init', this.options, this.manifest)
         this.initialized = true
         return this
     }
@@ -502,10 +502,10 @@ export default class CSSExtractor extends EventEmitter {
     }
 
     /**
-     * computed from `options.plan`
+     * computed from `options.manifest`
      */
-    get plan(): MasterCSSPlan {
-        return this.css.plan
+    get manifest(): MasterCSSManifest {
+        return this.css.manifest
     }
 
     get slotCSSRule(): string {

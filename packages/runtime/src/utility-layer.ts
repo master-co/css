@@ -96,7 +96,7 @@ export default class RuntimeUtilityLayer extends RuntimeLayer {
             visited.add(eachVariableName)
             const variable = this.css.variables.get(eachVariableName)
             if (!variable || variable.inline) return
-            if (this.css.themeLayer.rules.find(({ name }) => name === eachVariableName) || this.css.isPreloadedVariable(eachVariableName)) {
+            if (this.css.themeLayer.rules.find(({ name }) => name === eachVariableName) || this.css.isEmittedGlobalsVariable(eachVariableName)) {
                 const count = this.css.themeLayer.tokenCounts.get(eachVariableName) || 0
                 this.css.themeLayer.tokenCounts.set(eachVariableName, count + 1)
             } else {
@@ -113,7 +113,7 @@ export default class RuntimeUtilityLayer extends RuntimeLayer {
         if (!('animationNames' in utility)) return
         utility.animationNames?.forEach((eachAnimationName) => {
             const animationRule = this.css.animationsNonLayer.rules.find(({ name }) => name === eachAnimationName)
-            if (animationRule || this.css.isPreloadedAnimation(eachAnimationName)) {
+            if (animationRule || this.css.isEmittedGlobalsAnimation(eachAnimationName)) {
                 const count = this.css.animationsNonLayer.tokenCounts.get(eachAnimationName) || 0
                 this.css.animationsNonLayer.tokenCounts.set(eachAnimationName, count + 1)
                 if (animationRule) this.insertVariables(animationRule)

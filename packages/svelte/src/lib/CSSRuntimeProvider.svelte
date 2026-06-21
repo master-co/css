@@ -1,14 +1,14 @@
 <script lang="ts">
     import { onMount, setContext } from 'svelte';
     import { writable, get } from 'svelte/store';
-    import { initCSSRuntime, resolveRuntimePlan } from '@master/css-runtime';
+    import { initCSSRuntime } from '@master/css-runtime';
     import type { CSSRuntime } from '@master/css-runtime';
     import { CSS_RUNTIME_CONTEXT_KEY } from './get-css-runtime.js';
     import type { CSSRuntimeProviderProps } from './types/provider-props.js';
 
-    export let plan: CSSRuntimeProviderProps['plan'];
-    export let preloaded: CSSRuntimeProviderProps['preloaded'] = undefined;
-    export let manifest: CSSRuntimeProviderProps['manifest'] = undefined;
+    export let manifest: CSSRuntimeProviderProps['manifest'];
+    export let emittedGlobals: CSSRuntimeProviderProps['emittedGlobals'] = undefined;
+    export let hydrationManifest: CSSRuntimeProviderProps['hydrationManifest'] = undefined;
     export let root: CSSRuntimeProviderProps['root'] = undefined;
 
     const cssRuntime = writable<CSSRuntime | undefined>(undefined);
@@ -18,7 +18,7 @@
 
     onMount(() => {
         mounted = true;
-        cssRuntime.set(initCSSRuntime({ plan, root: getRoot(), preloaded, manifest }));
+        cssRuntime.set(initCSSRuntime({ manifest, root: getRoot(), emittedGlobals, hydrationManifest }));
         return () => {
             mounted = false;
             const currentCSSRuntime = get(cssRuntime);
@@ -30,7 +30,7 @@
     $: {
         const currentCSSRuntime = get(cssRuntime);
         if (currentCSSRuntime) {
-            currentCSSRuntime.refresh(resolveRuntimePlan(plan));
+            currentCSSRuntime.refresh(manifest);
         }
     }
 
@@ -39,7 +39,7 @@
         const nextRoot = getRoot();
         if (currentCSSRuntime && currentCSSRuntime.root !== nextRoot) {
             currentCSSRuntime.destroy();
-            cssRuntime.set(initCSSRuntime({ plan, root: nextRoot, preloaded, manifest }));
+            cssRuntime.set(initCSSRuntime({ manifest, root: nextRoot, emittedGlobals, hydrationManifest }));
         }
     }
 

@@ -37,7 +37,7 @@ export function app(): express.Express {
         publicPath: browserDistFolder,
         providers: [{ provide: APP_BASE_HREF, useValue: baseUrl }],
       })
-      .then((html: string) => res.send(render(html, undefined, { runtimeManifest: 'inject' }).html))
+      .then((html: string) => res.send(render(html, undefined, { hydrationManifest: 'inject' }).html))
       .catch((err: unknown) => next(err));
   });
 

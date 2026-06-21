@@ -1,11 +1,11 @@
-import { CLASS_ATTRIBUTES, CLASS_DECLARATIONS, CLASS_FUNCTIONS, type MasterCSSPlan } from './utils/master-css'
+import { CLASS_ATTRIBUTES, CLASS_DECLARATIONS, CLASS_FUNCTIONS, type MasterCSSManifest } from './utils/master-css'
 
 const settings = {
     classAttributes: CLASS_ATTRIBUTES,
     classFunctions: CLASS_FUNCTIONS,
     classDeclarations: CLASS_DECLARATIONS,
     ignoredKeys: ['compoundVariants', 'defaultVariants'],
-    plan: undefined
+    manifest: undefined
 }
 
 export default settings
@@ -15,5 +15,5 @@ export interface Settings {
     classFunctions?: string[]
     classDeclarations?: string[]
     ignoredKeys: string[]
-    plan?: MasterCSSPlan
+    manifest?: MasterCSSManifest
 }

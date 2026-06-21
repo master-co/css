@@ -6,7 +6,7 @@ import {
     registerStyleCSSSource,
     type StyleCSSSources
 } from '@master/css-stylesheet'
-import { findCSSPlanEntryFiles } from '@master/css-plan/css'
+import { findCSSManifestEntryFiles } from '@master/css-manifest/css'
 import log from '@techor/log'
 import bytes from 'bytes'
 import chokidar, { type FSWatcher } from 'chokidar'
@@ -15,7 +15,7 @@ import path from 'node:path'
 
 async function registerManagedCSSEntries(extractor: CSSExtractor, styleCSSSources: StyleCSSSources) {
     styleCSSSources.clear()
-    for (const entry of await findCSSPlanEntryFiles(extractor.cwd)) {
+    for (const entry of await findCSSManifestEntryFiles(extractor.cwd)) {
         await registerStyleCSSSource(extractor, styleCSSSources, entry, fs.readFileSync(entry, 'utf8'), {
             projectDir: extractor.cwd
         })

@@ -12,9 +12,9 @@ import masterCSSShikiLanguages, {
     transformerMasterCSS
 } from '../src/shiki'
 import type { MasterCSSShikiOptions } from '../src/shiki'
-import { createPresetPlan } from './helpers/create-preset-plan'
+import { createPresetManifest } from './helpers/create-preset-manifest'
 
-const plan: MasterCSSShikiOptions['plan'] = createPresetPlan({
+const manifest: MasterCSSShikiOptions['manifest'] = createPresetManifest({
     variables: [{ key: 'brand', value: '#123456' }],
     utilities: [
         {
@@ -241,7 +241,7 @@ test.concurrent('does not resolve guide theme CSS directive syntax through seman
         '    --tracking-tightest: -0.072em;',
         '}'
     ].join('\n')
-    const transformer = transformerMasterCSS({ plan })
+    const transformer = transformerMasterCSS({ manifest })
     const transformedTokens = transformer.tokens.call({
         source: code,
         options: { lang: 'css' },
@@ -284,7 +284,7 @@ test.concurrent('creates Shiki decorations from Master CSS semantic tokens', () 
     const code = '<div className="fg:brand:hover@sm block btn btn:hover@sm btn_div::before"></div>'
     const decorations = createMasterCSSShikiDecorations(code, {
         lang: 'tsx',
-        plan
+        manifest
     })
     const tokens = decorations.map((decoration) => ({
         text: code.slice(decoration.start, decoration.end),
@@ -364,7 +364,7 @@ test.concurrent('creates Shiki decorations for CSS directive class-list spans', 
     ].join('\n')
     const decorations = createMasterCSSShikiDecorations(code, {
         lang: 'css',
-        plan
+        manifest
     })
     const tokens = decorations.map((decoration) => ({
         text: code.slice(decoration.start, decoration.end),
@@ -430,7 +430,7 @@ test.concurrent('creates Shiki decorations for raw Master CSS class lists', () =
     const decorations = createMasterCSSShikiDecorations(code, {
         lang: 'mcss',
         classList: true,
-        plan
+        manifest
     })
     const tokens = decorations.map((decoration) => ({
         text: code.slice(decoration.start, decoration.end),
@@ -464,7 +464,7 @@ test.concurrent('applies semantic token styles by type and modifier', () => {
     const code = '<div class="block block:hover btn:hover"></div>'
     const decorations = createMasterCSSShikiDecorations(code, {
         lang: 'html',
-        plan,
+        manifest,
         semanticTokenStyles: {
             enumMember: {
                 color: 'var(--mcss-semantic-value)',
@@ -502,7 +502,7 @@ test.concurrent('applies semantic decorations in the Shiki tokens hook', () => {
         ]
     }
     const transformer = transformerMasterCSS({
-        plan,
+        manifest,
         classPrefix: 'master-css-token',
         dataAttributes: false,
         semanticTokenStyles: {
@@ -542,7 +542,7 @@ test.concurrent('uses semantic token scope styles for selector semantic tokens',
     const options = {
         lang: 'html'
     }
-    const transformer = transformerMasterCSS({ plan })
+    const transformer = transformerMasterCSS({ manifest })
     const transformedTokens = transformer.tokens.call({
         source: code,
         options,
@@ -602,7 +602,7 @@ test.concurrent('uses semantic token scope styles for documentation Master CSS t
     const cssOptions = {
         lang: 'css'
     }
-    const transformer = transformerMasterCSS({ plan })
+    const transformer = transformerMasterCSS({ manifest })
     const syntaxTokens = semanticScopeStyleTokens()
     const htmlTransformedTokens = transformer.tokens.call({
         source: htmlCode,

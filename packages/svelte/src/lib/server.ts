@@ -1,21 +1,21 @@
-import { createRuntimeManifest, type MasterCSS, type MasterCSSPlan } from '@master/css'
+import { createHydrationManifest, type MasterCSS, type MasterCSSManifest } from '@master/css'
 import { createServerCSS, parseHTML } from '@master/css-server'
 import {
-    createMasterCSSRuntimeManifestScript,
-    MASTER_CSS_RUNTIME_MANIFEST_SCRIPT_ID
-} from 'shared/master-css-runtime-manifest'
+    createMasterCSSHydrationManifestScript,
+    MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID
+} from 'shared/master-css-hydration-manifest'
 import type { Handle } from '@sveltejs/kit'
 
 const HEAD_CLOSE_TAG = '</head>'
 const HEAD_CLOSE_TAIL_LENGTH = HEAD_CLOSE_TAG.length - 1
 const MASTER_STYLE_PATTERN = /<style\b(?=[^>]*\bid=(["'])master\1)[^>]*>[\s\S]*?<\/style>/i
 const MASTER_RUNTIME_MANIFEST_PATTERN = new RegExp(
-    `<script\\b(?=[^>]*\\bid=(["'])${MASTER_CSS_RUNTIME_MANIFEST_SCRIPT_ID}\\1)[^>]*>[\\s\\S]*?<\\/script>`,
+    `<script\\b(?=[^>]*\\bid=(["'])${MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID}\\1)[^>]*>[\\s\\S]*?<\\/script>`,
     'i'
 )
 
 export interface MasterCSSSvelteHandleOptions {
-    plan: MasterCSSPlan
+    manifest: MasterCSSManifest
 }
 
 export interface MasterCSSChunkRenderer {
@@ -31,9 +31,9 @@ function createMasterStyle(cssText: string) {
     return `<style id="master">${cssText}</style>`
 }
 
-function createMasterRuntimeManifest(css: MasterCSS) {
-    const manifest = createRuntimeManifest(css)
-    return manifest.rules.length ? createMasterCSSRuntimeManifestScript(manifest) : ''
+function createMasterHydrationManifest(css: MasterCSS) {
+    const hydrationManifest = createHydrationManifest(css)
+    return hydrationManifest.rules.length ? createMasterCSSHydrationManifestScript(hydrationManifest) : ''
 }
 
 export function collectMasterCSSClasses(css: MasterCSS, html: string) {
@@ -42,7 +42,7 @@ export function collectMasterCSSClasses(css: MasterCSS, html: string) {
     }
 }
 
-function injectMasterRuntimeManifest(html: string, scriptText: string) {
+function injectMasterHydrationManifest(html: string, scriptText: string) {
     if (!scriptText) return html
     if (MASTER_RUNTIME_MANIFEST_PATTERN.test(html)) {
         return html.replace(MASTER_RUNTIME_MANIFEST_PATTERN, () => scriptText)
@@ -63,11 +63,11 @@ export function injectMasterStyle(html: string, cssText: string, manifestScriptT
         if (headCloseIndex === -1) return html
         nextHTML = html.slice(0, headCloseIndex) + style + html.slice(headCloseIndex)
     }
-    return injectMasterRuntimeManifest(nextHTML, manifestScriptText)
+    return injectMasterHydrationManifest(nextHTML, manifestScriptText)
 }
 
-export function createMasterCSSChunkRenderer(plan: MasterCSSPlan): MasterCSSChunkRenderer {
-    const css = createServerCSS(plan)
+export function createMasterCSSChunkRenderer(manifest: MasterCSSManifest): MasterCSSChunkRenderer {
+    const css = createServerCSS(manifest)
     let injected = false
     let carry = ''
 
@@ -81,7 +81,7 @@ export function createMasterCSSChunkRenderer(plan: MasterCSSPlan): MasterCSSChun
 
             collectMasterCSSClasses(css, nextHTML)
 
-            const transformedHTML = injectMasterStyle(nextHTML, css.text, createMasterRuntimeManifest(css))
+            const transformedHTML = injectMasterStyle(nextHTML, css.text, createMasterHydrationManifest(css))
             const hasHeadClose = findHeadCloseIndex(nextHTML) !== -1
             if (transformedHTML !== nextHTML || hasHeadClose) {
                 injected = true
@@ -100,7 +100,7 @@ export function createMasterCSSChunkRenderer(plan: MasterCSSPlan): MasterCSSChun
 
 export function createMasterCSSHandle(options: MasterCSSSvelteHandleOptions): Handle {
     return async ({ event, resolve }) => {
-        const renderer = createMasterCSSChunkRenderer(options.plan)
+        const renderer = createMasterCSSChunkRenderer(options.manifest)
         return await resolve(event, {
             transformPageChunk: ({ html, done }) => renderer.transform(html, done)
         })

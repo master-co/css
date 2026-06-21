@@ -1,14 +1,14 @@
 import InlineCode from '~/internal/components/InlineCode'
-import defaultPlan from '@master/css-preset/default-plan.json' with { type: 'json' }
+import defaultManifest from '@master/css-preset/default-manifest.json' with { type: 'json' }
 import { builtinNativeValueNamespaces } from '@master/css-engine'
-import { getUtilityVariableNamespaces, planUtilities } from '~/site/utils/plan-utilities'
+import { getUtilityVariableNamespaces, manifestUtilities } from '~/site/utils/manifest-utilities'
 
-const utilities = planUtilities
+const utilities = manifestUtilities
 const MAX_VISIBLE_UTILITIES = 8
 
 const namespaceEntries = (() => {
     const entries = new Map<string, string[]>()
-    for (const variable of defaultPlan.variables || []) {
+    for (const variable of defaultManifest.variables || []) {
         if (variable.namespace) {
             addNamespaceSource(entries, variable.namespace, 'theme tokens')
         }

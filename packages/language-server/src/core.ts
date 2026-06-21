@@ -2,16 +2,16 @@ import { createConnection, TextDocuments, InitializeParams, InitializeResult, Wo
 import { TextDocument } from 'vscode-languageserver-textdocument'
 import path from 'node:path'
 import CSSLanguageService, { Settings as CSSLanguageServiceSettings } from '@master/css-language-service'
-import { compileCSSPlan } from '@master/css-compiler'
+import { compileCSSManifest } from '@master/css-compiler'
 import { Settings } from './settings'
 import {
-    findCSSPlanEntryFiles,
+    findCSSManifestEntryFiles,
     findMasterCSSWorkspaceDirectories
-} from '@master/css-plan/css'
-import { loadProjectPlan } from '@master/css-plan/load'
+} from '@master/css-manifest/css'
+import { loadProjectManifest } from '@master/css-manifest/load'
 import extend from '@techor/extend'
 import settings from './settings'
-import type { MasterCSSPlan } from '@master/css'
+import type { MasterCSSManifest } from '@master/css'
 import {
     AT_TRIGGER_CHARACTER,
     DECLARATION_SEPARATOR_TRIGGER_CHARACTER,
@@ -367,33 +367,33 @@ export default class CSSLanguageServer {
                 uri: workspaceURI,
                 openedTextDocuments: [],
                 languageServiceSettings,
-                planEntries: await findCSSPlanEntryFiles(workspaceDir)
+                planEntries: await findCSSManifestEntryFiles(workspaceDir)
             })
         }
     }
 
     async initWorkspaceLanguageService(workspace: Workspace) {
-        let workspacePlan: MasterCSSPlan | undefined
+        let workspacePlan: MasterCSSManifest | undefined
         if (workspace !== this.globalWorkspace) {
             try {
                 workspacePlan = await this.loadWorkspacePlan(workspace)
             } catch (e: any) {
-                this.console.info(`Failed to load plan from ${workspace.uri}`)
+                this.console.info(`Failed to load manifest from ${workspace.uri}`)
                 this.console.error(e instanceof Error ? e.stack : e.toString())
             }
             if (workspacePlan) {
-                this.console.info(`Initialized workspace ${workspace.planEntries?.length ? '(with plan entry)' : '(with plan)'} ${workspace.uri}`)
+                this.console.info(`Initialized workspace ${workspace.planEntries?.length ? '(with manifest entry)' : '(with manifest)'} ${workspace.uri}`)
             } else {
                 this.console.info(`Initialized workspace ${workspace.uri}`)
             }
         }
-        workspace.languageService = new CSSLanguageService({ ...workspace.languageServiceSettings, plan: workspacePlan })
+        workspace.languageService = new CSSLanguageService({ ...workspace.languageServiceSettings, manifest: workspacePlan })
     }
 
     private async loadWorkspacePlan(workspace: Workspace) {
         const cwd = workspace.uri ? URI.parse(workspace.uri).fsPath : process.cwd()
-        const result = await loadProjectPlan(cwd)
-        return result.entries.length ? result.plan : workspace.languageServiceSettings.plan
+        const result = await loadProjectManifest(cwd)
+        return result.entries.length ? result.manifest : workspace.languageServiceSettings.manifest
     }
 
     destroyLanguageService(workspace: Workspace) {
@@ -420,7 +420,7 @@ export default class CSSLanguageServer {
         const documentFile = path.resolve(URI.parse(textDocument.uri).fsPath)
         for (const { source, offset } of getCSSDiagnosticSources(textDocument)) {
             try {
-                compileCSSPlan(source, {
+                compileCSSManifest(source, {
                     from: documentFile
                 })
             } catch (error) {

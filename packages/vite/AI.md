@@ -2,20 +2,20 @@
 
 ## Responsibility
 
-`@master/css.vite` integrates Master CSS into Vite. It supports `runtime`, `static`, `pre-render`, and `progressive` modes, handles plan and preloaded virtual modules, maintains the shared extractor usage graph, manages stylesheet entries, injects runtime/virtual CSS imports, avoids FOUC, and pre-renders HTML.
+`@master/css.vite` integrates Master CSS into Vite. It supports `runtime`, `static`, `pre-render`, and `progressive` modes, handles manifest and emittedGlobals virtual modules, maintains the shared extractor usage graph, manages stylesheet entries, injects runtime/virtual CSS imports, avoids FOUC, and pre-renders HTML.
 
 ## Inputs And Outputs
 
 - Input: Vite config, plugin options, entry modules, HTML, source transforms.
-- Output: Vite plugins, transformed entry code, virtual modules, generated CSS assets, preloaded variable/keyframe counts, pre-rendered HTML.
+- Output: Vite plugins, transformed entry code, virtual modules, generated CSS assets, emittedGlobals variable/keyframe counts, pre-rendered HTML.
 
 ## Architecture Notes
 
 - The extractor lifecycle is shared by every mode. It collects class usage and supports native CSS pruning regardless of whether the mode emits generated utilities.
 - `static` mode differs by setting `includeGeneratedCSS`; the style entry pipeline is not static-only.
-- `virtual:master-css-plan` is the project-level MasterCSSPlan API. It must not manage stylesheet output or extractor usage.
-- `virtual:master-css-preloaded` is derived from the managed CSS entry output and must only describe generated variables/keyframes that runtime should treat as already present.
-- The style entry plugin only handles CSS files that Vite imports. Do not scan the workspace here to discover unimported CSS plan entries.
+- `virtual:master-css-manifest` is the project-level MasterCSSManifest API. It must not manage stylesheet output or extractor usage.
+- `virtual:master-css-emitted-globals` is derived from the managed CSS entry output and must only describe generated variables/keyframes that runtime should treat as already present.
+- The style entry plugin only handles CSS files that Vite imports. Do not scan the workspace here to discover unimported CSS manifest entries.
 - Each file in `src/plugins` should define one plugin and default-export it.
 
 ## Public APIs

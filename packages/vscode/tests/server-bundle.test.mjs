@@ -300,12 +300,12 @@ test('staged language server loads a CSS workspace entry', async () => {
 
             await server.waitForNotification((message) =>
                 message.method === 'window/logMessage'
-                && message.params?.message?.includes('Initialized workspace (with plan entry)')
+                && message.params?.message?.includes('Initialized workspace (with manifest entry)')
             )
 
             expect(server.stderr()).not.toContain('Cannot find module')
             expect(server.stderr()).not.toContain('Cannot find package')
-            expect(JSON.stringify(server.notifications())).not.toContain('Failed to load plan')
+            expect(JSON.stringify(server.notifications())).not.toContain('Failed to load manifest')
         } finally {
             await server.dispose()
         }

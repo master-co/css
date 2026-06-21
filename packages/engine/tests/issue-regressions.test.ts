@@ -2,8 +2,8 @@ import { describe, expect, test } from 'vitest'
 import { createCSSWithVariables, createDefaultCSS } from './helpers/css-tester'
 
 describe.concurrent('migrated issue regressions', () => {
-    describe('issue #147: native color function values in Plan variables', () => {
-        test('preserves hsl strings in engine-owned Plan records', () => {
+    describe('issue #147: native color function values in Manifest variables', () => {
+        test('preserves hsl strings in engine-owned Manifest records', () => {
             const css = createCSSWithVariables([
                 { name: 'color-primary', namespace: 'color', key: 'primary', type: 'string', value: 'hsl(210 100% 50%)' },
                 { name: 'color-primary-alpha', namespace: 'color', key: 'primary-alpha', type: 'string', value: 'hsl(210 100% 50% / 0.5)' },
@@ -129,8 +129,8 @@ describe.concurrent('migrated issue regressions', () => {
         }
     })
 
-    describe('issue #346: CSS color functions in Plan variables', () => {
-        test('preserves native CSS color function values in engine-owned Plan records', () => {
+    describe('issue #346: CSS color functions in Manifest variables', () => {
+        test('preserves native CSS color function values in engine-owned Manifest records', () => {
             const cases = [
                 ['rgb', 'rgb(0 128 255)'],
                 ['hsl', 'hsl(210 100% 50%)'],

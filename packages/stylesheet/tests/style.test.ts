@@ -2,9 +2,9 @@ import { mkdirSync, mkdtempSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
-import defaultPlanJSON from '@master/css-preset/default-plan.json' with { type: 'json' }
-import type { MasterCSSPlan } from 'shared/master-css-plan'
-import { compileCSSPlan } from '@master/css-compiler'
+import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
+import type { MasterCSSManifest } from 'shared/master-css-manifest'
+import { compileCSSManifest } from '@master/css-compiler'
 import CSSExtractor from '@master/css-extractor'
 import {
     createStyleCSSHostSource,
@@ -24,7 +24,7 @@ import {
     transformLocalStyleCSS
 } from '../src'
 
-const defaultPlan = defaultPlanJSON as unknown as MasterCSSPlan
+const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 
 function createFixture() {
     const root = mkdtempSync(join(tmpdir(), 'master-css-stylesheet-'))
@@ -85,8 +85,8 @@ describe('style CSS extraction helpers', () => {
     })
 
     it('locally lowers @compose using the provided project context', async () => {
-        const { plan } = compileCSSPlan('@utilities { brand { color: #fff; } }', {
-            basePlan: defaultPlan
+        const { manifest } = compileCSSManifest('@utilities { brand { color: #fff; } }', {
+            baseManifest: defaultManifest
         })
         const result = await transformLocalStyleCSS('/project/src/Button.module.css', `
             .button {
@@ -94,7 +94,7 @@ describe('style CSS extraction helpers', () => {
                 color: white;
             }
         `, {
-            basePlan: plan
+            baseManifest: manifest
         })
 
         expect(result.transformed).toBe(true)
@@ -372,7 +372,7 @@ describe('style CSS extraction helpers', () => {
         expect(css).not.toContain('@master/css')
     })
 
-    it('reports preloaded variables and animations emitted by the Master CSS entry', async () => {
+    it('reports emittedGlobals variables and animations emitted by the Master CSS entry', async () => {
         const root = createFixture()
         const extractor = new CSSExtractor({
             include: []
@@ -429,7 +429,7 @@ describe('style CSS extraction helpers', () => {
         expect(result.css).toContain('.main')
         expect(result.css).toContain('--color-primary:red')
         expect(result.css).toContain('@keyframes fade')
-        expect(result.preloaded).toEqual({
+        expect(result.emittedGlobals).toEqual({
             variables: {
                 'animation-main': 1,
                 'color-primary': 1
@@ -465,7 +465,7 @@ describe('style CSS extraction helpers', () => {
 
         expect(result.css).toContain('.fg\\:primary{color:red}')
         expect(result.css).not.toContain('--color-primary')
-        expect(result.preloaded.variables).toEqual({})
+        expect(result.emittedGlobals.variables).toEqual({})
     })
 
     it('emits static theme tokens and keyframes without class references', async () => {
@@ -498,7 +498,7 @@ describe('style CSS extraction helpers', () => {
         expect(result.css).toContain('@layer theme')
         expect(result.css).toContain('--color-primary:red')
         expect(result.css).toContain('@keyframes static-fade')
-        expect(result.preloaded).toEqual({
+        expect(result.emittedGlobals).toEqual({
             variables: {
                 'color-primary': 1
             },

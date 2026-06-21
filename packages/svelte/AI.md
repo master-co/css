@@ -21,8 +21,8 @@ This package provides a Svelte runtime provider, a helper for accessing runtime 
 - Svelte package output behavior.
 - Server hook streaming behavior and early CSS injection.
 - Runtime cleanup on unmount.
-- `CSSRuntimeRegistry` depends on `virtual:master-css-plan` and should remain the quick-start integration entry.
-- `src/lib/runtime-provider.ts` must remain free of `virtual:master-css-plan` imports for users that provide a plan manually.
+- `CSSRuntimeRegistry` depends on `virtual:master-css-manifest` and should remain the quick-start integration entry.
+- `src/lib/runtime-provider.ts` must remain free of `virtual:master-css-manifest` imports for users that provide a manifest manually.
 
 ## Rules
 

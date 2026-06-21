@@ -6,7 +6,7 @@ export type AdapterOrder = 'master-first' | 'external-first'
 export interface Options {
     /**
      * Next.js integration mode.
-     * Set to `null` to skip rendering modes while keeping the CSS plan loaders.
+     * Set to `null` to skip rendering modes while keeping the CSS manifest loaders.
      */
     mode?: Mode
     /**
@@ -14,10 +14,10 @@ export interface Options {
      */
     extractorOptions?: ExtractorOptions
     /**
-     * Write a build manifest with rendered files.
-     * `true` writes `.next/master-css-manifest.json`; a string is resolved from `distDir`.
+     * Write a build report with rendered files.
+     * `true` writes `.next/master-css-build-report.json`; a string is resolved from `distDir`.
      */
-    manifest?: boolean | string
+    buildReport?: boolean | string
     /**
      * Log rendered output details during `next build`.
      */
@@ -31,7 +31,7 @@ export interface Options {
 export interface ResolvedOptions {
     mode: Mode
     extractorOptions: ExtractorOptions
-    manifest: boolean | string
+    buildReport: boolean | string
     debug: boolean
     adapterOrder: AdapterOrder
 }
@@ -44,7 +44,7 @@ export function resolveOptions(options: Options = {}): ResolvedOptions {
     return {
         mode: options.mode ?? 'pre-render',
         extractorOptions: options.extractorOptions ?? {},
-        manifest: options.manifest ?? false,
+        buildReport: options.buildReport ?? false,
         debug: options.debug ?? false,
         adapterOrder: options.adapterOrder ?? 'master-first'
     }

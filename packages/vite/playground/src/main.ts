@@ -1,4 +1,4 @@
 import './style.css'
-// import masterCSSPlan from 'virtual:master-css-plan'
+// import masterCSSManifest from 'virtual:master-css-manifest'
 
-// console.log('Master CSS Vite playground ready', masterCSSPlan)
+// console.log('Master CSS Vite playground ready', masterCSSManifest)

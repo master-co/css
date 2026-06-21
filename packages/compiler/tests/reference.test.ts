@@ -2,7 +2,7 @@ import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { describe, expect, test } from 'vitest'
-import { compileCSSPlanFile, compileProjectPlan } from '../src'
+import { compileCSSManifestFile, compileProjectManifest } from '../src'
 
 function createFixture() {
     const root = mkdtempSync(join(tmpdir(), 'master-css-reference-'))
@@ -49,13 +49,13 @@ describe('CSS @reference', () => {
                 }
             `)
 
-            const result = compileCSSPlanFile(entryPath)
+            const result = compileCSSManifestFile(entryPath)
 
             expect(result.css).toContain('.button{color:var(--color-brand)}')
             expect(result.css).toContain('@media (width>=640px)')
             expect(result.css).not.toContain('referenced-native')
             expect(result.css).not.toContain('@reference')
-            expect(result.plan.utilities?.some((utility) => utility.name === 'brand') ?? false).toBe(false)
+            expect(result.manifest.utilities?.some((utility) => utility.name === 'brand') ?? false).toBe(false)
             expect(result.dependencies).toContain(entryPath)
             expect(result.dependencies).toContain(tokensPath)
         } finally {
@@ -83,7 +83,7 @@ describe('CSS @reference', () => {
                 }
             `)
 
-            const result = compileCSSPlanFile(entryPath)
+            const result = compileCSSManifestFile(entryPath)
 
             expect(result.css).toContain('.button{color:#00f}')
             expect(result.css).not.toContain('color:red')
@@ -92,7 +92,7 @@ describe('CSS @reference', () => {
         }
     })
 
-    test('reports references from project plan entries and rejects circular references', () => {
+    test('reports references from project manifest entries and rejects circular references', () => {
         const root = createFixture()
         try {
             const aPath = join(root, 'a.css')
@@ -104,13 +104,13 @@ describe('CSS @reference', () => {
             ].join('\n'))
             writeFileSync(bPath, '@components { b { display: block; } }')
 
-            const result = compileProjectPlan([aPath])
+            const result = compileProjectManifest([aPath])
             expect(result.css).toContain('.a{display:block}')
             expect(result.dependencies).toContain(aPath)
             expect(result.dependencies).toContain(bPath)
 
             writeFileSync(bPath, '@reference "./a.css";')
-            expect(() => compileProjectPlan([aPath])).toThrow('Circular CSS reference')
+            expect(() => compileProjectManifest([aPath])).toThrow('Circular CSS reference')
         } finally {
             rmSync(root, { recursive: true, force: true })
         }
@@ -129,11 +129,11 @@ describe('CSS @reference', () => {
                 '}'
             ].join('\n'))
 
-            const result = compileProjectPlan([entryPath])
+            const result = compileProjectManifest([entryPath])
 
             expect(result.dependencies).toContain(entryPath)
             expect(result.css).not.toContain('@import "fake-font/index.css"')
-            expect(result.plan.variables).toEqual(expect.arrayContaining([
+            expect(result.manifest.variables).toEqual(expect.arrayContaining([
                 expect.objectContaining({
                     name: 'color-primary',
                     value: '#123456'

@@ -1,10 +1,10 @@
 import { Page } from '@playwright/test'
-import { createCSS, createRuntimeManifest, type MasterCSSPlan } from '@master/css'
-import defaultPlanJSON from '@master/css-preset/default-plan.json' with { type: 'json' }
+import { createCSS, createHydrationManifest, type MasterCSSManifest } from '@master/css'
+import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
 import {
-    MASTER_CSS_RUNTIME_MANIFEST_SCRIPT_ID,
-    type MasterCSSRuntimeManifest
-} from 'shared/master-css-runtime-manifest'
+    MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID,
+    type MasterCSSHydrationManifest
+} from 'shared/master-css-hydration-manifest'
 import UtilityType from 'shared/utility-type'
 import { dirname, resolve } from 'path'
 import { fileURLToPath } from 'url'
@@ -13,24 +13,24 @@ import { readFileSync } from 'node:fs'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 const RUNTIME_ASSET_BASE_URL = 'http://master-css-runtime.test'
-const defaultPlan = defaultPlanJSON as unknown as MasterCSSPlan
+const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 
-type RuntimePlanUtilityInput = Partial<NonNullable<MasterCSSPlan['utilities']>[number]> & {
+type RuntimeProjectManifestUtilityInput = Partial<NonNullable<MasterCSSManifest['utilities']>[number]> & {
     declarations?: Record<string, string | number>
     rules?: { selector?: string, declarations: Record<string, string | number> }[]
 }
 
-type RuntimePlanVariableInput = NonNullable<MasterCSSPlan['variables']>[number]
-type RuntimePlanVariable = NonNullable<MasterCSSPlan['variables']>[number]
+type RuntimeManifestVariableInput = NonNullable<MasterCSSManifest['variables']>[number]
+type RuntimeManifestVariable = NonNullable<MasterCSSManifest['variables']>[number]
 
-type RuntimePlanInput = Partial<Omit<MasterCSSPlan, 'utilities'>> & {
+type RuntimeProjectManifestInput = Partial<Omit<MasterCSSManifest, 'utilities'>> & {
     rootSize?: number
     baseUnit?: number
     defaultMode?: string
-    modeTrigger?: NonNullable<MasterCSSPlan['settings']>['modeTrigger']
+    modeTrigger?: NonNullable<MasterCSSManifest['settings']>['modeTrigger']
     modes?: string[]
-    variables?: RuntimePlanVariableInput[]
-    utilities?: RuntimePlanUtilityInput[]
+    variables?: RuntimeManifestVariableInput[]
+    utilities?: RuntimeProjectManifestUtilityInput[]
 }
 
 function getDefaultVariableName(key: string, namespace?: string) {
@@ -42,7 +42,7 @@ function getDefaultVariableName(key: string, namespace?: string) {
     return negative ? '-' + name : name
 }
 
-function normalizeVariableValue(value: RuntimePlanVariable['value'] | undefined) {
+function normalizeVariableValue(value: RuntimeManifestVariable['value'] | undefined) {
     if (typeof value !== 'string') {
         return { value, dependencies: undefined }
     }
@@ -59,13 +59,13 @@ function normalizeVariableValue(value: RuntimePlanVariable['value'] | undefined)
     }
 }
 
-function inferVariableType(value: RuntimePlanVariable['value'] | undefined, modes?: RuntimePlanVariable['modes']) {
+function inferVariableType(value: RuntimeManifestVariable['value'] | undefined, modes?: RuntimeManifestVariable['modes']) {
     if (typeof value === 'number') return 'number'
     const firstMode = modes && Object.values(modes)[0]
     return firstMode?.type || 'string'
 }
 
-function normalizeVariable(variable: RuntimePlanVariableInput): RuntimePlanVariable {
+function normalizeVariable(variable: RuntimeManifestVariableInput): RuntimeManifestVariable {
     const value = variable.value
     const name = variable.name || getDefaultVariableName(variable.key, variable.namespace)
     const normalizedValue = normalizeVariableValue(value)
@@ -80,8 +80,8 @@ function normalizeVariable(variable: RuntimePlanVariableInput): RuntimePlanVaria
     }
 }
 
-function createRuntimeVariables(defaultVariables: RuntimePlanVariable[], inputVariables: RuntimePlanVariableInput[] | undefined) {
-    const variables = new Map<string, RuntimePlanVariable>()
+function createRuntimeVariables(defaultVariables: RuntimeManifestVariable[], inputVariables: RuntimeManifestVariableInput[] | undefined) {
+    const variables = new Map<string, RuntimeManifestVariable>()
     for (const variable of defaultVariables) {
         if (!variable.name) continue
         variables.set(variable.name, {
@@ -124,8 +124,8 @@ function createRuntimeVariables(defaultVariables: RuntimePlanVariable[], inputVa
     return [...variables.values()]
 }
 
-function normalizeUtility(utility: RuntimePlanUtilityInput, order: number): NonNullable<MasterCSSPlan['utilities']>[number] {
-    if (utility.emit && utility.matchers) return utility as NonNullable<MasterCSSPlan['utilities']>[number]
+function normalizeUtility(utility: RuntimeProjectManifestUtilityInput, order: number): NonNullable<MasterCSSManifest['utilities']>[number] {
+    if (utility.emit && utility.matchers) return utility as NonNullable<MasterCSSManifest['utilities']>[number]
     const name = utility.name || utility.id || ''
     const isSemantic = utility.type === UtilityType.Semantic || utility.type === undefined
     return {
@@ -155,11 +155,11 @@ function addBucketIndex(bucket: number[] | undefined, index: number) {
 }
 
 function createRuntimeUtilityBuckets(
-    defaultBuckets: MasterCSSPlan['utilityBuckets'],
-    utilities: NonNullable<MasterCSSPlan['utilities']>,
+    defaultBuckets: MasterCSSManifest['utilityBuckets'],
+    utilities: NonNullable<MasterCSSManifest['utilities']>,
     startIndex: number
 ) {
-    const utilityBuckets: NonNullable<MasterCSSPlan['utilityBuckets']> = {
+    const utilityBuckets: NonNullable<MasterCSSManifest['utilityBuckets']> = {
         ...(defaultBuckets?.variable?.length ? { variable: [...defaultBuckets.variable] } : {}),
         ...(defaultBuckets?.value?.length ? { value: [...defaultBuckets.value] } : {}),
         ...(defaultBuckets?.key?.length ? { key: [...defaultBuckets.key] } : {}),
@@ -193,17 +193,17 @@ function createRuntimeUtilityBuckets(
     return Object.keys(utilityBuckets).length ? utilityBuckets : undefined
 }
 
-function createRuntimePlan(plan: RuntimePlanInput) {
-    const defaultUtilities = defaultPlan.utilities || []
-    const { rootSize, baseUnit, defaultMode, modeTrigger, modes, ...rest } = plan
-    const variables = createRuntimeVariables(defaultPlan.variables || [], rest.variables)
+function createRuntimeProjectManifest(manifest: RuntimeProjectManifestInput) {
+    const defaultUtilities = defaultManifest.utilities || []
+    const { rootSize, baseUnit, defaultMode, modeTrigger, modes, ...rest } = manifest
+    const variables = createRuntimeVariables(defaultManifest.variables || [], rest.variables)
     const customUtilities = (rest.utilities || []).map((utility, index) => normalizeUtility(utility, defaultUtilities.length + index))
     return {
-        ...defaultPlan,
+        ...defaultManifest,
         ...rest,
-        version: 3,
+        version: 1,
         settings: {
-            ...defaultPlan.settings,
+            ...defaultManifest.settings,
             ...rest.settings,
             ...(rootSize !== undefined ? { rootSize } : {}),
             ...(baseUnit !== undefined ? { baseUnit } : {}),
@@ -213,22 +213,22 @@ function createRuntimePlan(plan: RuntimePlanInput) {
         },
         variables,
         animations: {
-            ...(defaultPlan.animations || {}),
+            ...(defaultManifest.animations || {}),
             ...(rest.animations || {})
         },
         variants: [
-            ...(defaultPlan.variants || []),
+            ...(defaultManifest.variants || []),
             ...(rest.variants || [])
         ],
         utilities: [
             ...defaultUtilities,
             ...customUtilities
         ],
-        utilityBuckets: createRuntimeUtilityBuckets(defaultPlan.utilityBuckets, customUtilities, defaultUtilities.length)
-    } satisfies MasterCSSPlan
+        utilityBuckets: createRuntimeUtilityBuckets(defaultManifest.utilityBuckets, customUtilities, defaultUtilities.length)
+    } satisfies MasterCSSManifest
 }
 
-async function createRuntimeManifestForPage(page: Page, plan: MasterCSSPlan) {
+async function createHydrationManifestForPage(page: Page, manifest: MasterCSSManifest) {
     const classNames = await page.evaluate(() => {
         const classNames = new Set<string>()
         for (const element of document.querySelectorAll('[class]')) {
@@ -236,9 +236,9 @@ async function createRuntimeManifestForPage(page: Page, plan: MasterCSSPlan) {
         }
         return [...classNames]
     })
-    const css = createCSS(plan)
+    const css = createCSS(manifest)
     css.add(...classNames)
-    return createRuntimeManifest(css)
+    return createHydrationManifest(css)
 }
 
 async function routeRuntimeAssets(page: Page) {
@@ -248,10 +248,10 @@ async function routeRuntimeAssets(page: Page) {
             body: readFileSync(resolve(__dirname, '../dist/global.min.js'), 'utf8')
         })
     })
-    await page.route(`${RUNTIME_ASSET_BASE_URL}/default-plan.json`, (route) => {
+    await page.route(`${RUNTIME_ASSET_BASE_URL}/default-manifest.json`, (route) => {
         route.fulfill({
             contentType: 'application/json',
-            body: readFileSync(resolve(__dirname, '../dist/default-plan.json'), 'utf8')
+            body: readFileSync(resolve(__dirname, '../dist/default-manifest.json'), 'utf8')
         })
     })
 }
@@ -259,29 +259,29 @@ async function routeRuntimeAssets(page: Page) {
 export default async function init(
     page: Page,
     text?: string,
-    planInput?: RuntimePlanInput,
-    manifest?: MasterCSSRuntimeManifest | 'auto'
+    manifestInput?: RuntimeProjectManifestInput,
+    hydrationManifestInput?: MasterCSSHydrationManifest | 'auto'
 ) {
-    const plan = planInput ? createRuntimePlan(planInput) : undefined
-    const runtimeManifest = manifest === 'auto'
-        ? await createRuntimeManifestForPage(page, plan || defaultPlan)
-        : manifest
-    await page.evaluate(({ manifest, plan, text, manifestScriptId }) => {
-        if (plan) window.masterCSSPlan = plan
+    const manifest = manifestInput ? createRuntimeProjectManifest(manifestInput) : undefined
+    const hydrationManifest = hydrationManifestInput === 'auto'
+        ? await createHydrationManifestForPage(page, manifest || defaultManifest)
+        : hydrationManifestInput
+    await page.evaluate(({ manifest, hydrationManifest, text, manifestScriptId }) => {
+        if (manifest) window.masterCSSManifest = manifest
         if (text) {
             const style = document.createElement('style')
             style.id = 'master'
             style.textContent = text
             document.head.appendChild(style)
         }
-        if (manifest) {
+        if (hydrationManifest) {
             const script = document.createElement('script')
             script.type = 'application/json'
             script.id = manifestScriptId
-            script.textContent = JSON.stringify(manifest)
+            script.textContent = JSON.stringify(hydrationManifest)
             document.head.appendChild(script)
         }
-    }, { manifest: runtimeManifest, plan, text, manifestScriptId: MASTER_CSS_RUNTIME_MANIFEST_SCRIPT_ID })
+    }, { hydrationManifest, manifest, text, manifestScriptId: MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID })
     await routeRuntimeAssets(page)
     await page.addScriptTag({ type: 'module', url: `${RUNTIME_ASSET_BASE_URL}/global.min.js` })
     await page.waitForFunction(() => !!globalThis.cssRuntime)

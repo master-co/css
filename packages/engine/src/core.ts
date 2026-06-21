@@ -12,26 +12,26 @@ import UtilityType from 'shared/utility-type'
 import type { AtRule } from './utils/parse-at'
 import parseValue from './utils/parse-value'
 import type { SelectorNode } from './utils/parse-selector'
-import type { MasterCSSPreloaded } from './preloaded'
+import type { MasterCSSEmittedGlobals } from './emitted-globals'
 import { isNativeCSSShorthandProperty } from 'shared/native-css-shorthand'
 import type {
-    MasterCSSPlan,
-    MasterCSSPlanAnimations,
-    MasterCSSPlanUtilityLayerName,
-    MasterCSSPlanUtilityMatcher,
-    MasterCSSPlanVariantBranch,
-    MasterCSSPlanVariantToken
-} from 'shared/master-css-plan'
+    MasterCSSManifest,
+    MasterCSSManifestAnimations,
+    MasterCSSManifestUtilityLayerName,
+    MasterCSSManifestUtilityMatcher,
+    MasterCSSManifestVariantBranch,
+    MasterCSSManifestVariantToken
+} from 'shared/master-css-manifest'
 import {
     cloneCompiledSettings,
-    getCompiledPlan,
+    getCompiledManifest,
     isPureNativeDeclarationUtilityDefinition,
     type CompiledUtility,
     type EngineSettings
-} from './compile-plan'
+} from './compile-manifest'
 import { MATCH_NAME_BOUNDARY } from './common'
 
-export type { CompiledUtility } from './compile-plan'
+export type { CompiledUtility } from './compile-manifest'
 
 export interface NativeCSSDeclaration {
     property: string
@@ -132,7 +132,7 @@ function hasTopLevelValueSeparator(value: string) {
     return false
 }
 
-function matchesValueSegmentPolicy(value: string, matcher: MasterCSSPlanUtilityMatcher) {
+function matchesValueSegmentPolicy(value: string, matcher: MasterCSSManifestUtilityMatcher) {
     return (matcher.type !== 'variable' && matcher.type !== 'value')
         || matcher.segments === 'multiple'
         || !hasTopLevelValueSeparator(value)
@@ -181,13 +181,13 @@ export default class MasterCSS {
     variables = new Map<string, Variable>()
     modes: string[] = []
     atRules = new Map<string, AtRule>()
-    variants = new Map<MasterCSSPlanVariantToken, MasterCSSPlanVariantBranch[]>()
+    variants = new Map<MasterCSSManifestVariantToken, MasterCSSManifestVariantBranch[]>()
     breakpointAtRules = new Map<string, AtRule>()
     containerAtRules = new Map<string, AtRule>()
-    animations = new Map<string, MasterCSSPlanAnimations[string]>()
+    animations = new Map<string, MasterCSSManifestAnimations[string]>()
     protected readonly staticVariableTokens = new Set<string>()
     protected readonly staticAnimationTokens = new Set<string>()
-    readonly preloaded: Required<MasterCSSPreloaded> = {
+    readonly emittedGlobals: Required<MasterCSSEmittedGlobals> = {
         variables: {},
         animations: {}
     }
@@ -197,15 +197,15 @@ export default class MasterCSS {
     protected nativeValueNamespaceUtilities = new Map<string, CompiledUtility>()
     protected keyAliases = new Map<string, string>()
 
-    plan!: MasterCSSPlan
+    manifest!: MasterCSSManifest
 
     constructor(
-        plan: MasterCSSPlan,
-        preloaded?: MasterCSSPreloaded,
+        manifest: MasterCSSManifest,
+        emittedGlobals?: MasterCSSEmittedGlobals,
         protected readonly options: MasterCSSOptions = {}
     ) {
-        this.loadPlan(plan)
-        this.registerPreloaded(preloaded)
+        this.loadManifest(manifest)
+        this.registerEmittedGlobals(emittedGlobals)
         if (new.target === MasterCSS) {
             this.insertStaticResources()
         }
@@ -222,7 +222,7 @@ export default class MasterCSS {
             .map(({ text }) => text).join('')
     }
 
-    getUtilityLayer(layerName: MasterCSSPlanUtilityLayerName = 'utilities') {
+    getUtilityLayer(layerName: MasterCSSManifestUtilityLayerName = 'utilities') {
         switch (layerName) {
             case 'base':
                 return this.baseLayer
@@ -241,64 +241,64 @@ export default class MasterCSS {
         return [this.baseLayer, this.defaultsLayer, this.componentsLayer, this.utilitiesLayer]
     }
 
-    loadPlan(plan: MasterCSSPlan) {
-        const compiledPlan = getCompiledPlan(plan)
-        this.plan = compiledPlan.plan
-        this.settings = cloneCompiledSettings(compiledPlan.settings)
-        this.definedUtilities = compiledPlan.definedUtilities
-        this.variableMatcherUtilities = compiledPlan.variableMatcherUtilities
-        this.valueMatcherUtilities = compiledPlan.valueMatcherUtilities
-        this.keyMatcherUtilities = compiledPlan.keyMatcherUtilities
-        this.patternMatcherUtilities = compiledPlan.patternMatcherUtilities
-        this.arbitraryMatcherUtilities = compiledPlan.arbitraryMatcherUtilities
-        this.variableMatcherIndex = compiledPlan.variableMatcherIndex
-        this.valueMatcherIndex = compiledPlan.valueMatcherIndex
-        this.keyMatcherIndex = compiledPlan.keyMatcherIndex
-        this.patternMatcherIndex = compiledPlan.patternMatcherIndex
-        this.arbitraryStaticMatcherIndex = compiledPlan.arbitraryStaticMatcherIndex
-        this.selectors = compiledPlan.selectors
-        this.variables = compiledPlan.variables
-        this.modes = [...compiledPlan.modes]
-        this.atRules = compiledPlan.atRules
-        this.variants = compiledPlan.variants
-        this.breakpointAtRules = compiledPlan.breakpointAtRules
-        this.containerAtRules = compiledPlan.containerAtRules
-        this.animations = compiledPlan.animations
-        this.nativeDeclarationFastPathBlockedProperties = compiledPlan.nativeDeclarationFastPathBlockedProperties
-        this.nativeValueNamespaceUtilities = compiledPlan.nativeValueNamespaceUtilities
-        this.keyAliases = compiledPlan.keyAliases
+    loadManifest(manifest: MasterCSSManifest) {
+        const compiledManifest = getCompiledManifest(manifest)
+        this.manifest = compiledManifest.manifest
+        this.settings = cloneCompiledSettings(compiledManifest.settings)
+        this.definedUtilities = compiledManifest.definedUtilities
+        this.variableMatcherUtilities = compiledManifest.variableMatcherUtilities
+        this.valueMatcherUtilities = compiledManifest.valueMatcherUtilities
+        this.keyMatcherUtilities = compiledManifest.keyMatcherUtilities
+        this.patternMatcherUtilities = compiledManifest.patternMatcherUtilities
+        this.arbitraryMatcherUtilities = compiledManifest.arbitraryMatcherUtilities
+        this.variableMatcherIndex = compiledManifest.variableMatcherIndex
+        this.valueMatcherIndex = compiledManifest.valueMatcherIndex
+        this.keyMatcherIndex = compiledManifest.keyMatcherIndex
+        this.patternMatcherIndex = compiledManifest.patternMatcherIndex
+        this.arbitraryStaticMatcherIndex = compiledManifest.arbitraryStaticMatcherIndex
+        this.selectors = compiledManifest.selectors
+        this.variables = compiledManifest.variables
+        this.modes = [...compiledManifest.modes]
+        this.atRules = compiledManifest.atRules
+        this.variants = compiledManifest.variants
+        this.breakpointAtRules = compiledManifest.breakpointAtRules
+        this.containerAtRules = compiledManifest.containerAtRules
+        this.animations = compiledManifest.animations
+        this.nativeDeclarationFastPathBlockedProperties = compiledManifest.nativeDeclarationFastPathBlockedProperties
+        this.nativeValueNamespaceUtilities = compiledManifest.nativeValueNamespaceUtilities
+        this.keyAliases = compiledManifest.keyAliases
     }
 
-    protected applyPreloadedCounts(preloaded: MasterCSSPreloaded) {
-        for (const [name, count] of Object.entries(preloaded.variables || {})) {
+    protected applyEmittedGlobalsCounts(emittedGlobals: MasterCSSEmittedGlobals) {
+        for (const [name, count] of Object.entries(emittedGlobals.variables || {})) {
             if (!count) continue
             this.themeLayer.tokenCounts.set(name, (this.themeLayer.tokenCounts.get(name) || 0) + count)
         }
-        for (const [name, count] of Object.entries(preloaded.animations || {})) {
+        for (const [name, count] of Object.entries(emittedGlobals.animations || {})) {
             if (!count) continue
             this.animationsNonLayer.tokenCounts.set(name, (this.animationsNonLayer.tokenCounts.get(name) || 0) + count)
         }
     }
 
-    registerPreloaded(preloaded?: MasterCSSPreloaded) {
-        if (!preloaded) return
-        for (const [name, count] of Object.entries(preloaded.variables || {})) {
+    registerEmittedGlobals(emittedGlobals?: MasterCSSEmittedGlobals) {
+        if (!emittedGlobals) return
+        for (const [name, count] of Object.entries(emittedGlobals.variables || {})) {
             if (!count) continue
-            this.preloaded.variables[name] = (this.preloaded.variables[name] || 0) + count
+            this.emittedGlobals.variables[name] = (this.emittedGlobals.variables[name] || 0) + count
         }
-        for (const [name, count] of Object.entries(preloaded.animations || {})) {
+        for (const [name, count] of Object.entries(emittedGlobals.animations || {})) {
             if (!count) continue
-            this.preloaded.animations[name] = (this.preloaded.animations[name] || 0) + count
+            this.emittedGlobals.animations[name] = (this.emittedGlobals.animations[name] || 0) + count
         }
-        this.applyPreloadedCounts(preloaded)
+        this.applyEmittedGlobalsCounts(emittedGlobals)
     }
 
-    isPreloadedVariable(name: string) {
-        return Boolean(this.preloaded.variables[name])
+    isEmittedGlobalsVariable(name: string) {
+        return Boolean(this.emittedGlobals.variables[name])
     }
 
-    isPreloadedAnimation(name: string) {
-        return Boolean(this.preloaded.animations[name])
+    isEmittedGlobalsAnimation(name: string) {
+        return Boolean(this.emittedGlobals.animations[name])
     }
 
     protected insertStaticVariable(name: string, visited = new Set<string>()) {
@@ -308,7 +308,7 @@ export default class MasterCSS {
         if (!variable || variable.inline) return
 
         if (!this.staticVariableTokens.has(name)) {
-            if (!this.isPreloadedVariable(name)) {
+            if (!this.isEmittedGlobalsVariable(name)) {
                 if (!this.themeLayer.get(name)) {
                     this.themeLayer.insert(new VariableRule(name, variable, this))
                 }
@@ -327,7 +327,7 @@ export default class MasterCSS {
         if (!keyframes) return
 
         let rule = this.animationsNonLayer.rules.find((eachRule) => eachRule.name === name) as AnimationRule | undefined
-        if (!this.isPreloadedAnimation(name)) {
+        if (!this.isEmittedGlobalsAnimation(name)) {
             if (!rule) {
                 rule = new AnimationRule(name, keyframes, this)
                 this.animationsNonLayer.insert(rule)
@@ -347,12 +347,12 @@ export default class MasterCSS {
             if (variable.static) this.insertStaticVariable(name)
         }
         for (const name of this.animations.keys()) {
-            if (this.plan.animationOptions?.[name]?.static) this.insertStaticAnimation(name)
+            if (this.manifest.animationOptions?.[name]?.static) this.insertStaticAnimation(name)
         }
         return this
     }
 
-    resolveVariant(token: MasterCSSPlanVariantToken) {
+    resolveVariant(token: MasterCSSManifestVariantToken) {
         return this.variants.get(token)
     }
 
@@ -365,7 +365,7 @@ export default class MasterCSS {
      * @param className
      * @returns css text
      */
-    private matchesMatcher(className: string, utility: CompiledUtility, matcher: MasterCSSPlanUtilityMatcher) {
+    private matchesMatcher(className: string, utility: CompiledUtility, matcher: MasterCSSManifestUtilityMatcher) {
         switch (matcher.type) {
             case 'static':
                 return matchesStaticUtility(className, matcher.name)
@@ -410,7 +410,7 @@ export default class MasterCSS {
         }
     }
 
-    private matchesUtility(className: string, utility: CompiledUtility, matcherType?: MasterCSSPlanUtilityMatcher['type']) {
+    private matchesUtility(className: string, utility: CompiledUtility, matcherType?: MasterCSSManifestUtilityMatcher['type']) {
         return utility.matchers.some((matcher) =>
             (!matcherType || matcher.type === matcherType) && this.matchesMatcher(className, utility, matcher)
         )
@@ -892,7 +892,7 @@ export default class MasterCSS {
      * Create utility from given selector text
      * @param selectorText
      */
-    createFromSelectorText(selectorText: string, layerName?: MasterCSSPlanUtilityLayerName) {
+    createFromSelectorText(selectorText: string, layerName?: MasterCSSManifestUtilityLayerName) {
         const selectorTextSplits = selectorText.split(' ')
         const stopChars = /[.#\[!\*>+~:,\s]/
         for (let i = 0; i < selectorTextSplits.length; i++) {
@@ -928,10 +928,10 @@ export default class MasterCSS {
     /**
      * 根據蒐集到的所有 DOM class 重新 create
      */
-    refresh(plan: MasterCSSPlan = this.plan) {
+    refresh(manifest: MasterCSSManifest = this.manifest) {
         this.reset()
-        this.loadPlan(plan)
-        this.applyPreloadedCounts(this.preloaded)
+        this.loadManifest(manifest)
+        this.applyEmittedGlobalsCounts(this.emittedGlobals)
         this.insertStaticResources()
         return this
     }

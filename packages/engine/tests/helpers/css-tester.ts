@@ -1,16 +1,16 @@
 import { expect } from 'vitest'
 import UtilityType from 'shared/utility-type'
 import type {
-    MasterCSSPlan,
-    MasterCSSPlanCSSDeclarations,
-    MasterCSSPlanVariable,
-    MasterCSSPlanUtilityLayerName,
-    MasterCSSPlanUtilityRule
-} from 'shared/master-css-plan'
+    MasterCSSManifest,
+    MasterCSSManifestCSSDeclarations,
+    MasterCSSManifestVariable,
+    MasterCSSManifestUtilityLayerName,
+    MasterCSSManifestUtilityRule
+} from 'shared/master-css-manifest'
 import { builtinNativeValueNamespaces, createCSS, type MasterCSS } from '../../src'
-import defaultPlanJSON from '@master/css-preset/default-plan.json' with { type: 'json' }
+import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
 
-const defaultPlan = defaultPlanJSON as unknown as MasterCSSPlan
+const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 const nativeFallbackProperties = new Set([
     'animation-direction',
     'animation-fill-mode',
@@ -158,48 +158,48 @@ for (const namespace of builtinNativeValueNamespaces) {
     }
 }
 
-export type SemanticRuleInput = MasterCSSPlanUtilityRule<MasterCSSPlanCSSDeclarations>
+export type SemanticRuleInput = MasterCSSManifestUtilityRule<MasterCSSManifestCSSDeclarations>
 
 export interface SemanticUtilityInput {
     name: string
-    layer?: MasterCSSPlanUtilityLayerName
+    layer?: MasterCSSManifestUtilityLayerName
     rules: SemanticRuleInput[]
 }
 
-export function clonePlan(plan: MasterCSSPlan = defaultPlan): MasterCSSPlan {
-    return JSON.parse(JSON.stringify(plan)) as MasterCSSPlan
+export function cloneManifest(manifest: MasterCSSManifest = defaultManifest): MasterCSSManifest {
+    return JSON.parse(JSON.stringify(manifest)) as MasterCSSManifest
 }
 
 export function createDefaultCSS() {
-    return createCSS(defaultPlan, undefined, {
+    return createCSS(defaultManifest, undefined, {
         nativeDeclarationMatcher: ({ property }) => nativeFallbackProperties.has(property)
     })
 }
 
-export function createPlanWithVariables(variables: MasterCSSPlanVariable[], basePlan = defaultPlan): MasterCSSPlan {
-    const plan = clonePlan(basePlan)
-    plan.variables = [
-        ...(plan.variables || []),
+export function createManifestWithVariables(variables: MasterCSSManifestVariable[], baseManifest = defaultManifest): MasterCSSManifest {
+    const manifest = cloneManifest(baseManifest)
+    manifest.variables = [
+        ...(manifest.variables || []),
         ...variables
     ]
 
-    return plan
+    return manifest
 }
 
-export function createCSSWithVariables(variables: MasterCSSPlanVariable[], basePlan = defaultPlan) {
-    return createCSS(createPlanWithVariables(variables, basePlan))
+export function createCSSWithVariables(variables: MasterCSSManifestVariable[], baseManifest = defaultManifest) {
+    return createCSS(createManifestWithVariables(variables, baseManifest))
 }
 
-export function createPlanWithSemanticUtilities(utilities: SemanticUtilityInput[], basePlan = defaultPlan): MasterCSSPlan {
-    const plan = clonePlan(basePlan)
-    plan.utilities ??= []
-    plan.utilityBuckets ??= {}
-    plan.utilityBuckets.arbitrary ??= []
+export function createManifestWithSemanticUtilities(utilities: SemanticUtilityInput[], baseManifest = defaultManifest): MasterCSSManifest {
+    const manifest = cloneManifest(baseManifest)
+    manifest.utilities ??= []
+    manifest.utilityBuckets ??= {}
+    manifest.utilityBuckets.arbitrary ??= []
 
     for (const utility of utilities) {
-        const index = plan.utilities.length
+        const index = manifest.utilities.length
         const name = utility.name.startsWith('.') ? utility.name.slice(1) : utility.name
-        plan.utilities.push({
+        manifest.utilities.push({
             id: '.' + name,
             name,
             type: UtilityType.Semantic,
@@ -214,14 +214,14 @@ export function createPlanWithSemanticUtilities(utilities: SemanticUtilityInput[
                 name
             }]
         })
-        plan.utilityBuckets.arbitrary.push(index)
+        manifest.utilityBuckets.arbitrary.push(index)
     }
 
-    return plan
+    return manifest
 }
 
 export function createCSSWithSemanticUtilities(utilities: SemanticUtilityInput[]) {
-    return createCSS(createPlanWithSemanticUtilities(utilities))
+    return createCSS(createManifestWithSemanticUtilities(utilities))
 }
 
 export function expectClassText(css: MasterCSS, className: string, expected: string) {

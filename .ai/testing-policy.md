@@ -10,14 +10,14 @@ Package lint is mandatory for every changed workspace package that defines a pac
 
 Benchmarks are advisory guardrails, not exact CI pass/fail gates. Run correctness validation first, then run the relevant benchmark when a change touches an engine or runtime hot path unless the change is documentation-only or purely type-only.
 
-Engine hot paths include `packages/engine/src/core.ts`, `packages/engine/src/utility.ts`, matcher/index behavior, value parsing, selector parsing/generation, at-rule parsing/generation, priority sorting, layer insertion, and plan compilation/cache behavior.
+Engine hot paths include `packages/engine/src/core.ts`, `packages/engine/src/utility.ts`, matcher/index behavior, value parsing, selector parsing/generation, at-rule parsing/generation, priority sorting, layer insertion, and manifest compilation/cache behavior.
 
 Runtime hot paths include `packages/runtime/src/core.ts`, `packages/runtime/src/class-tracker.ts`, `packages/runtime/src/layer.ts`, `packages/runtime/src/utility-layer.ts`, DOM hydration, class mutation tracking, CSSOM insertion/deletion, and the global browser bundle.
 
 For performance-sensitive engine or runtime work, the final response must report:
 
 - Whether the relevant benchmark ran; if not, why not.
-- Whether bundle size or runtime payload is likely affected, including raw/gzip/brotli checks when browser bundles, engine bundles, or runtime default plan JSON changed.
+- Whether bundle size or runtime payload is likely affected, including raw/gzip/brotli checks when browser bundles, engine bundles, or runtime default manifest JSON changed.
 - Memory, cold-start, and runtime CPU tradeoffs when meaningful.
 - CSS output, cascade order, or hydration behavior changes.
 
@@ -25,7 +25,7 @@ Compare before/after when feasible using a temporary worktree or a documented ba
 
 Benchmark history must not be committed to the repository. The benchmark workflow stores package benchmark reports as GitHub Actions artifacts for `main`, `alpha`, `beta`, `rc`, and `canary`, compares against the latest matching artifacts, and ignores artifacts beyond the latest 50 per branch and package.
 
-Do not chase benchmark wins by changing CSS output, cascade order, hydration checks, or public behavior unless the behavior change is intentional and tested. Do not serialize compiled indexes or caches into `MasterCSSPlan` unless the plan explicitly justifies the browser payload impact.
+Do not chase benchmark wins by changing CSS output, cascade order, hydration checks, or public behavior unless the behavior change is intentional and tested. Do not serialize compiled indexes or caches into `MasterCSSManifest` unless the manifest explicitly justifies the browser payload impact.
 
 ## Change-Type Matrix
 
@@ -36,8 +36,8 @@ Do not chase benchmark wins by changing CSS output, cascade order, hydration che
 | At-rule parsing/generation | Engine at-rule tests; ordering tests if priority changes |
 | Syntax rule definitions | Engine rule test for emitted declarations and text |
 | Rule priority/cascade | Engine priority/layer tests and fixture review |
-| Variables/tokens/modes | Compiler plan lowering and engine variable tests; server/runtime fixtures if output or hydration changes |
-| Plan lowering/execution | Compiler plan lowering tests and engine parity tests |
+| Variables/tokens/modes | Compiler manifest lowering and engine variable tests; server/runtime fixtures if output or hydration changes |
+| Manifest lowering/execution | Compiler manifest lowering tests and engine parity tests |
 | Server rendering | `pnpm --filter @master/css-server test` |
 | Static extraction | `pnpm --filter @master/css-extractor test`; add extraction false positive/negative cases |
 | Runtime/hydration | `pnpm --filter @master/css-runtime e2e` |
@@ -65,7 +65,7 @@ Prefer tests that cover the smallest behavior:
 
 - Engine syntax output: `packages/engine/tests`
 - Parser utility behavior: `packages/engine/tests`
-- Plan lowering behavior: `packages/compiler/tests` or `packages/preset/tests`
+- Manifest lowering behavior: `packages/compiler/tests` or `packages/preset/tests`
 - Server output: `packages/server/tests/fixtures`
 - Runtime hydration: `packages/runtime/e2e/progressive`
 - Extractor source scanning: `packages/extractor/tests`

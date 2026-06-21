@@ -8,7 +8,7 @@ class string
   -> generate()
   -> match compiled utilities, including components-layer project styles
   -> create()
-  -> match() against variable, value, key, arbitrary plan matchers
+  -> match() against variable, value, key, arbitrary manifest matchers
   -> new Utility()
   -> parse values, functions, variables, selectors, modes, at-rules
   -> declaration/value opcodes
@@ -34,25 +34,25 @@ Risks:
 - Priority changes can alter cascade outcomes without changing declarations.
 - Selector/at-rule parsing changes affect runtime, server, extractor, language service, and ESLint.
 
-## CSS Authoring To Plan
+## CSS Authoring To Manifest
 
 ```txt
 project CSS files containing @master; or @import "@master/css"
-  -> @master/css-plan discovers project entry files only
+  -> @master/css-manifest discovers project entry files only
   -> @master/css-compiler resolves CSS imports and package style imports
   -> compiler parses @theme token/mode/keyframe directives, @settings root options, top-level @custom-variant definitions, and @defaults/@components/@utilities managed definition directives
-  -> compiler lowers directive result into MasterCSSPlan
-  -> build tools / ESLint / language-server receive the same semantic project plan
-  -> MasterCSS executes plan variables, animations, selectors, at-rules, utilities
+  -> compiler lowers directive result into MasterCSSManifest
+  -> build tools / ESLint / language-server receive the same semantic project manifest
+  -> MasterCSS executes manifest variables, animations, selectors, at-rules, utilities
 ```
 
 Main files:
 
-- `packages/plan/src/css.ts`
-- `packages/plan/src/load.ts`
-- `packages/integration/src/plan-module.ts`
+- `packages/manifest/src/css.ts`
+- `packages/manifest/src/load.ts`
+- `packages/integration/src/manifest-module.ts`
 - `packages/compiler/src/index.ts`
-- `packages/compiler/src/master-css-plan.ts`
+- `packages/compiler/src/master-css-manifest.ts`
 - `packages/compiler/src/lower-css-directives.ts`
 - `packages/engine/src/core.ts`
 
@@ -60,11 +60,11 @@ Risks:
 
 - Entry detection must only use project-level markers: `@master;` and `@import "@master/css"`.
 - Package CSS such as `@master/css/index.css` must not contain or imply a project entry marker.
-- `@master/css-plan` must not implement CSS import graph or CSS plan directive parsing.
-- Plan lowering order affects all plan consumers.
+- `@master/css-manifest` must not implement CSS import graph or CSS manifest directive parsing.
+- Manifest lowering order affects all manifest consumers.
 - Variable aliases and modes affect inlining vs CSS custom property output.
 - Static utility layer assignment affects semantic class output and cascade behavior.
-- `?master-css-plan` query ids, virtual module ids, and generated JavaScript module source helpers are integration protocol and belong in `@master/css-integration`, not `@master/css-plan`.
+- `?master-css-manifest` query ids, virtual module ids, and generated JavaScript module source helpers are integration protocol and belong in `@master/css-integration`, not `@master/css-manifest`.
 
 ## Build-Time Extraction
 
@@ -74,11 +74,11 @@ source globs / Vite modules / Webpack modules
   -> @master/css-source adapters / extractClassCandidates()
   -> generateValidRules()
   -> insert valid rules into layers
-  -> build tool / CLI registers managed CSS entries discovered by @master/css-plan with @master/css-stylesheet
+  -> build tool / CLI registers managed CSS entries discovered by @master/css-manifest with @master/css-stylesheet
   -> @master/css-stylesheet compiles stylesheet CSS through @master/css-compiler
-  -> combine stylesheet plan returned by compiler with explicit plan options
+  -> combine stylesheet manifest returned by compiler with explicit manifest options
   -> export css.text / virtual CSS module through @master/css-stylesheet
-  -> export preloaded counts for generated variables and keyframes
+  -> export emittedGlobals counts for generated variables and keyframes
 ```
 
 Main files:
@@ -101,9 +101,9 @@ Risks:
 
 ```txt
 document or shadow root
-  -> initCSSRuntime({ plan, preloaded, root, autoObserve })
+  -> initCSSRuntime({ manifest, emittedGlobals, root, autoObserve })
   -> CSSRuntime.observe()
-  -> register preloaded variable/keyframe counts
+  -> register emittedGlobals variable/keyframe counts
   -> find or create style#master
   -> hydrate pre-rendered layers or add connected classes
   -> MutationObserver detects class and child changes

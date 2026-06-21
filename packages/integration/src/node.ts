@@ -2,63 +2,63 @@ import { createHash } from 'node:crypto'
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import {
-    EMPTY_PLAN_JSON,
-    VIRTUAL_PLAN_FILE
-} from './plan-module'
-import { toInlinePlanModule } from './plan-facade'
+    EMPTY_MANIFEST_JSON,
+    VIRTUAL_MANIFEST_FILE
+} from './manifest-module'
+import { toInlineManifestModule } from './manifest-facade'
 import {
-    EMPTY_PRELOADED_MODULE,
-    VIRTUAL_PRELOADED_FILE
-} from './preloaded-module'
+    EMPTY_EMITTED_GLOBALS_MODULE,
+    VIRTUAL_EMITTED_GLOBALS_FILE
+} from './emitted-globals-module'
 
-export const RESOLVED_MASTER_CSS_PLAN_QUERY_PREFIX = '\0master-css-plan:'
+export const RESOLVED_MASTER_CSS_MANIFEST_QUERY_PREFIX = '\0master-css-manifest:'
 export const VIRTUAL_MODULE_DIR = 'node_modules/.master-css'
 
-export function toHashedPlanAssetFileName(json: string, basename = 'master-css-plan') {
+export function toHashedManifestAssetFileName(json: string, basename = 'master-css-manifest') {
     const hash = createHash('sha256').update(json).digest('hex').slice(0, 8)
     return `${basename}.${hash}.json`
 }
 
-export function toResolvedMasterCSSPlanId(file: string) {
-    return RESOLVED_MASTER_CSS_PLAN_QUERY_PREFIX + Buffer.from(file).toString('base64url')
+export function toResolvedMasterCSSManifestId(file: string) {
+    return RESOLVED_MASTER_CSS_MANIFEST_QUERY_PREFIX + Buffer.from(file).toString('base64url')
 }
 
-export function fromResolvedMasterCSSPlanId(id: string) {
-    return id.startsWith(RESOLVED_MASTER_CSS_PLAN_QUERY_PREFIX)
-        ? Buffer.from(id.slice(RESOLVED_MASTER_CSS_PLAN_QUERY_PREFIX.length), 'base64url').toString()
+export function fromResolvedMasterCSSManifestId(id: string) {
+    return id.startsWith(RESOLVED_MASTER_CSS_MANIFEST_QUERY_PREFIX)
+        ? Buffer.from(id.slice(RESOLVED_MASTER_CSS_MANIFEST_QUERY_PREFIX.length), 'base64url').toString()
         : undefined
 }
 
-export function toVirtualDefaultPlanModulePath(context: string) {
-    return join(context, VIRTUAL_MODULE_DIR, VIRTUAL_PLAN_FILE)
+export function toVirtualDefaultManifestModulePath(context: string) {
+    return join(context, VIRTUAL_MODULE_DIR, VIRTUAL_MANIFEST_FILE)
 }
 
 function encodeVirtualFilename(id: string) {
     return Buffer.from(id).toString('base64url')
 }
 
-export function toVirtualCSSPlanModulePath(context: string, file: string) {
-    return join(context, VIRTUAL_MODULE_DIR, `${encodeVirtualFilename(file)}.plan.js`)
+export function toVirtualCSSManifestModulePath(context: string, file: string) {
+    return join(context, VIRTUAL_MODULE_DIR, `${encodeVirtualFilename(file)}.manifest.js`)
 }
 
-export function toVirtualCSSPlanAssetPath(context: string, file: string) {
-    return join(context, VIRTUAL_MODULE_DIR, `${encodeVirtualFilename(file)}.plan.json`)
+export function toVirtualCSSManifestAssetPath(context: string, file: string) {
+    return join(context, VIRTUAL_MODULE_DIR, `${encodeVirtualFilename(file)}.manifest.json`)
 }
 
 export function toVirtualCSSModulePath(context: string) {
     return join(context, VIRTUAL_MODULE_DIR, 'master-utilities.css')
 }
 
-export function toVirtualPreloadedModulePath(context: string) {
-    return join(context, VIRTUAL_MODULE_DIR, VIRTUAL_PRELOADED_FILE)
+export function toVirtualEmittedGlobalsModulePath(context: string) {
+    return join(context, VIRTUAL_MODULE_DIR, VIRTUAL_EMITTED_GLOBALS_FILE)
 }
 
 function escapeRegExp(source: string) {
     return source.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 }
 
-export function createVirtualDefaultPlanModulePathPattern() {
-    const source = [...VIRTUAL_MODULE_DIR.split('/'), VIRTUAL_PLAN_FILE]
+export function createVirtualDefaultManifestModulePathPattern() {
+    const source = [...VIRTUAL_MODULE_DIR.split('/'), VIRTUAL_MANIFEST_FILE]
         .map(escapeRegExp)
         .join(String.raw`[/\\]`)
     return new RegExp(String.raw`(?:^|[/\\])${source}$`)
@@ -75,10 +75,10 @@ export function ensureVirtualModuleFile(file: string, source: string) {
     return file
 }
 
-export function ensureVirtualPlanModulePath(projectDir = process.cwd()) {
-    return ensureVirtualModuleFile(toVirtualDefaultPlanModulePath(projectDir), toInlinePlanModule(EMPTY_PLAN_JSON))
+export function ensureVirtualManifestModulePath(projectDir = process.cwd()) {
+    return ensureVirtualModuleFile(toVirtualDefaultManifestModulePath(projectDir), toInlineManifestModule(EMPTY_MANIFEST_JSON))
 }
 
-export function ensureVirtualPreloadedModulePath(projectDir = process.cwd()) {
-    return ensureVirtualModuleFile(toVirtualPreloadedModulePath(projectDir), EMPTY_PRELOADED_MODULE)
+export function ensureVirtualEmittedGlobalsModulePath(projectDir = process.cwd()) {
+    return ensureVirtualModuleFile(toVirtualEmittedGlobalsModulePath(projectDir), EMPTY_EMITTED_GLOBALS_MODULE)
 }

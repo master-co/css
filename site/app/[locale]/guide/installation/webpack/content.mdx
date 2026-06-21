@@ -27,7 +27,7 @@
     <Step $row>
         <StepL>
             ### <StepNum />Add client types
-            If your source files are type-checked, add the Master CSS integration client types before importing Master CSS virtual plan, preloaded, or generated CSS modules.
+            If your source files are type-checked, add the Master CSS integration client types before importing Master CSS virtual manifest, emittedGlobals, or generated CSS modules.
         </StepL>
         <StepR>
             ```ts name=src/master-css-env.d.ts
@@ -116,10 +116,10 @@
     </Step>
     <Step $row>
         <StepL>
-            ### <StepNum />Author app CSS and plan directives
+            ### <StepNum />Author app CSS and manifest directives
             Source stylesheets can contain ordinary CSS, `@settings`, `@theme` tokens and keyframes, top-level custom conditions/selectors, and managed definition directives together. Ordinary class selectors are kept only when they appear in scanned source. Add `@preserve native;` only when native CSS must be preserved as written.
 
-            (i) A stylesheet that imports `@master/css` is also a project CSS entry, so its Master CSS plan directives participate in the project plan graph.
+            (i) A stylesheet that imports `@master/css` is also a project CSS entry, so its Master CSS manifest directives participate in the project manifest graph.
         </StepL>
         <StepR>
             ```css name=src/style.css

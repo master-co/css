@@ -9,7 +9,7 @@ export * from './semantic/scopes'
 export * from './semantic/tokenize-class'
 export * from './semantic/tokenize-css'
 export * from './semantic/types'
-export type { MasterCSSPlan } from 'shared/master-css-plan'
+export type { MasterCSSManifest } from 'shared/master-css-manifest'
 export {
     default as getClassPositions,
     ClassPositionCache,

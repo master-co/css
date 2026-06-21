@@ -1,7 +1,7 @@
 import type { Config } from 'techor'
 
 function isBundledJSONModule(id: string) {
-    return id.endsWith('/packages/preset/src/default-plan.json')
+    return id.endsWith('/packages/preset/src/default-manifest.json')
         || /\/mdn-data\/css\/(?:properties|selectors|syntaxes)\.json$/.test(id)
 }
 

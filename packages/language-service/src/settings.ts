@@ -1,5 +1,5 @@
 import { languageSettings, type LanguageSettings } from '@master/css-language'
-import type { MasterCSSPlan } from '@master/css'
+import type { MasterCSSManifest } from '@master/css'
 
 /**
  * @example styles https://regex101.com/r/HLPdsw/1
@@ -58,7 +58,7 @@ export default settings
 export declare interface Settings extends LanguageSettings {
     includedLanguages?: string[]
     exclude?: string[]
-    plan?: MasterCSSPlan
+    manifest?: MasterCSSManifest
     // features
     suggestSyntax?: boolean
     inspectSyntax?: boolean

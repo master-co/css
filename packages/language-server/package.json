@@ -20,7 +20,7 @@
         "@master/css": "workspace:^",
         "@master/css-compiler": "workspace:^",
         "@master/css-language": "workspace:^",
-        "@master/css-plan": "workspace:^",
+        "@master/css-manifest": "workspace:^",
         "@master/css-language-service": "workspace:^",
         "@techor/extend": "^3.2.5",
         "fast-glob": "^3.3.3",

@@ -1,1 +1,1 @@
-export type { MasterCSSPlan } from 'shared/master-css-plan'
+export type { MasterCSSManifest } from 'shared/master-css-manifest'

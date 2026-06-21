@@ -1,9 +1,9 @@
 import { expect, it } from 'vitest'
 import { createCSS } from '../src'
 
-it('@master/css re-exports the plan-driven engine facade', () => {
-    const plan = { version: 3 } as const
-    const css = createCSS(plan)
-    expect(css.plan).toBe(plan)
+it('@master/css re-exports the manifest-driven engine facade', () => {
+    const manifest = { version: 1 } as const
+    const css = createCSS(manifest)
+    expect(css.manifest).toBe(manifest)
     expect(css.text).toBe('')
 })

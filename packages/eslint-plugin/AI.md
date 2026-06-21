@@ -6,7 +6,7 @@
 
 ## Inputs And Outputs
 
-- Input: ESLint AST nodes, settings, optional MasterCSSPlan.
+- Input: ESLint AST nodes, settings, optional MasterCSSManifest.
 - Output: ESLint reports and autofixes.
 
 ## Public APIs
@@ -46,7 +46,7 @@
 - AST shape differences across React, Vue, Svelte, Angular, MDX.
 - Raw vs cooked string range mapping.
 - Autofix whitespace preservation.
-- Plan cache behavior.
+- Manifest cache behavior.
 - Collision detection depending on generated declarations and variants.
 
 ## Required Tests
@@ -68,4 +68,4 @@ Use or extend tests in `tests/*.test.ts` and issue fixtures.
 
 - Recursing into arbitrary expressions as if they are static classes.
 - Removing collision classes without preserving user spacing/quotes.
-- Reusing a stale plan across unrelated cwd/settings.
+- Reusing a stale manifest across unrelated cwd/settings.

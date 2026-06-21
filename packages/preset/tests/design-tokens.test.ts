@@ -1,12 +1,12 @@
 import { describe, expect, test } from 'vitest'
 import { createCSS } from '@master/css-engine'
-import defaultPlanJSON from '../src/default-plan.json' with { type: 'json' }
-import type { MasterCSSPlan } from 'shared/master-css-plan'
+import defaultManifestJSON from '../src/default-manifest.json' with { type: 'json' }
+import type { MasterCSSManifest } from 'shared/master-css-manifest'
 
-const defaultPlan = defaultPlanJSON as unknown as MasterCSSPlan
+const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 
 function findVariable(name: string) {
-    return defaultPlan.variables?.find((variable) => variable.name === name)
+    return defaultManifest.variables?.find((variable) => variable.name === name)
 }
 
 const removedVariableNames = [
@@ -157,7 +157,7 @@ describe.concurrent('@master/css-preset design token parity', () => {
             type: 'string',
             value: 'fade 1s infinite'
         })
-        expect(defaultPlan.animations).toMatchObject({
+        expect(defaultManifest.animations).toMatchObject({
             fade: expect.objectContaining({
                 '0%': expect.objectContaining({ opacity: '0' }),
                 to: expect.objectContaining({ opacity: '1' })
@@ -236,24 +236,24 @@ describe.concurrent('@master/css-preset design token parity', () => {
     })
 
     test('precomputes default breakpoint and container at-rule aliases', () => {
-        expect(defaultPlan.breakpointAtRules?.sm).toMatchObject({
+        expect(defaultManifest.breakpointAtRules?.sm).toMatchObject({
             id: 'media',
             nodes: [expect.objectContaining({ type: 'number', value: 52.125, unit: 'rem' })]
         })
-        expect(defaultPlan.containerAtRules?.sm).toMatchObject({
+        expect(defaultManifest.containerAtRules?.sm).toMatchObject({
             id: 'container',
             nodes: [expect.objectContaining({ type: 'number', value: 24, unit: 'rem' })]
         })
     })
 
     test('does not publish synthetic negative number tokens', () => {
-        expect(defaultPlan.variables?.filter((variable) => variable.type === 'number' && variable.name?.startsWith('-'))).toEqual([])
-        expect(Object.hasOwn(defaultPlan, 'variableNamespaces')).toBe(false)
-        expect(Object.hasOwn(defaultPlan, 'variableAliasSets')).toBe(false)
+        expect(defaultManifest.variables?.filter((variable) => variable.type === 'number' && variable.name?.startsWith('-'))).toEqual([])
+        expect(Object.hasOwn(defaultManifest, 'variableNamespaces')).toBe(false)
+        expect(Object.hasOwn(defaultManifest, 'variableAliasSets')).toBe(false)
     })
 
     test('executes built-in registry records without UI role tokens', () => {
-        const css = createCSS(defaultPlan)
+        const css = createCSS(defaultManifest)
 
         expect(css.create('font:sans')?.text).toContain('font-family:var(--font-family-sans)')
         expect(css.create('text:2xl')?.text).toContain('font-size:var(--font-size-2xl)')

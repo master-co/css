@@ -3,21 +3,21 @@ import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { afterEach, describe, expect, it } from 'vitest'
 import {
-    createVirtualDefaultPlanModulePathPattern,
-    ensureVirtualPlanModulePath,
-    ensureVirtualPreloadedModulePath,
-    fromResolvedMasterCSSPlanId,
-    toHashedPlanAssetFileName,
-    toResolvedMasterCSSPlanId,
+    createVirtualDefaultManifestModulePathPattern,
+    ensureVirtualManifestModulePath,
+    ensureVirtualEmittedGlobalsModulePath,
+    fromResolvedMasterCSSManifestId,
+    toHashedManifestAssetFileName,
+    toResolvedMasterCSSManifestId,
     toVirtualCSSModulePath,
-    toVirtualCSSPlanAssetPath,
-    toVirtualCSSPlanModulePath,
-    toVirtualDefaultPlanModulePath,
-    toVirtualPreloadedModulePath
+    toVirtualCSSManifestAssetPath,
+    toVirtualCSSManifestModulePath,
+    toVirtualDefaultManifestModulePath,
+    toVirtualEmittedGlobalsModulePath
 } from '../src/node'
-import { EMPTY_PLAN_JSON } from '../src/plan-module'
-import { toInlinePlanModule } from '../src/plan-facade'
-import { EMPTY_PRELOADED_MODULE } from '../src/preloaded-module'
+import { EMPTY_MANIFEST_JSON } from '../src/manifest-module'
+import { toInlineManifestModule } from '../src/manifest-facade'
+import { EMPTY_EMITTED_GLOBALS_MODULE } from '../src/emitted-globals-module'
 
 let fixtureDir: string | undefined
 
@@ -37,36 +37,36 @@ describe('@master/css-integration/node', () => {
     it('encodes resolved and filesystem virtual module paths', () => {
         const root = path.resolve('/project')
         const file = path.join(root, 'src/theme.css')
-        const id = toResolvedMasterCSSPlanId(file)
+        const id = toResolvedMasterCSSManifestId(file)
 
         expect(id).not.toContain('.css')
         expect(id).not.toContain('%2Ecss')
-        expect(fromResolvedMasterCSSPlanId(id)).toBe(file)
-        expect(toVirtualDefaultPlanModulePath(root)).toBe(path.join(root, 'node_modules/.master-css/master-css-plan.js'))
-        expect(toVirtualCSSPlanModulePath(root, file)).toMatch(/node_modules[/\\]\.master-css[/\\].+\.plan\.js$/)
-        expect(toVirtualCSSPlanAssetPath(root, file)).toMatch(/node_modules[/\\]\.master-css[/\\].+\.plan\.json$/)
+        expect(fromResolvedMasterCSSManifestId(id)).toBe(file)
+        expect(toVirtualDefaultManifestModulePath(root)).toBe(path.join(root, 'node_modules/.master-css/master-css-manifest.js'))
+        expect(toVirtualCSSManifestModulePath(root, file)).toMatch(/node_modules[/\\]\.master-css[/\\].+\.manifest\.js$/)
+        expect(toVirtualCSSManifestAssetPath(root, file)).toMatch(/node_modules[/\\]\.master-css[/\\].+\.manifest\.json$/)
         expect(toVirtualCSSModulePath(root)).toBe(path.join(root, 'node_modules/.master-css/master-utilities.css'))
-        expect(toVirtualPreloadedModulePath(root)).toBe(path.join(root, 'node_modules/.master-css/master-css-preloaded.js'))
-        expect(createVirtualDefaultPlanModulePathPattern().test(toVirtualDefaultPlanModulePath(root))).toBe(true)
+        expect(toVirtualEmittedGlobalsModulePath(root)).toBe(path.join(root, 'node_modules/.master-css/master-css-emitted-globals.js'))
+        expect(createVirtualDefaultManifestModulePathPattern().test(toVirtualDefaultManifestModulePath(root))).toBe(true)
     })
 
-    it('hashes plan asset file names', () => {
-        expect(toHashedPlanAssetFileName('{"version":3}')).toMatch(/^master-css-plan\.[a-f0-9]{8}\.json$/)
-        expect(toHashedPlanAssetFileName('{"version":3}', 'plan')).toMatch(/^plan\.[a-f0-9]{8}\.json$/)
+    it('hashes manifest asset file names', () => {
+        expect(toHashedManifestAssetFileName('{"version":1}')).toMatch(/^master-css-manifest\.[a-f0-9]{8}\.json$/)
+        expect(toHashedManifestAssetFileName('{"version":1}', 'manifest')).toMatch(/^manifest\.[a-f0-9]{8}\.json$/)
     })
 
     it('updates stale virtual module placeholders', () => {
         const projectDir = createFixtureDir()
-        const planPath = toVirtualDefaultPlanModulePath(projectDir)
-        const preloadedPath = toVirtualPreloadedModulePath(projectDir)
+        const manifestPath = toVirtualDefaultManifestModulePath(projectDir)
+        const emittedGlobalsPath = toVirtualEmittedGlobalsModulePath(projectDir)
 
-        mkdirSync(path.dirname(planPath), { recursive: true })
-        writeFileSync(planPath, 'export default { version: 1 };')
-        writeFileSync(preloadedPath, 'export default {};')
+        mkdirSync(path.dirname(manifestPath), { recursive: true })
+        writeFileSync(manifestPath, 'export default { version: 1 };')
+        writeFileSync(emittedGlobalsPath, 'export default {};')
 
-        expect(ensureVirtualPlanModulePath(projectDir)).toBe(planPath)
-        expect(ensureVirtualPreloadedModulePath(projectDir)).toBe(preloadedPath)
-        expect(readFileSync(planPath, 'utf8')).toBe(toInlinePlanModule(EMPTY_PLAN_JSON))
-        expect(readFileSync(preloadedPath, 'utf8')).toBe(EMPTY_PRELOADED_MODULE)
+        expect(ensureVirtualManifestModulePath(projectDir)).toBe(manifestPath)
+        expect(ensureVirtualEmittedGlobalsModulePath(projectDir)).toBe(emittedGlobalsPath)
+        expect(readFileSync(manifestPath, 'utf8')).toBe(toInlineManifestModule(EMPTY_MANIFEST_JSON))
+        expect(readFileSync(emittedGlobalsPath, 'utf8')).toBe(EMPTY_EMITTED_GLOBALS_MODULE)
     })
 })

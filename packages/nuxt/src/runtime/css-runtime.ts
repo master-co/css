@@ -1,10 +1,10 @@
 import { defineNuxtPlugin } from '#imports'
 import { initCSSRuntime } from '@master/css-runtime'
 // @ts-expect-error virtual module
-import plan from 'virtual:master-css-plan'
+import manifest from 'virtual:master-css-manifest'
 // @ts-expect-error virtual module
-import preloaded from 'virtual:master-css-preloaded'
+import emittedGlobals from 'virtual:master-css-emitted-globals'
 
 export default defineNuxtPlugin(() => {
-    initCSSRuntime({ plan, preloaded })
+    initCSSRuntime({ manifest, emittedGlobals })
 })

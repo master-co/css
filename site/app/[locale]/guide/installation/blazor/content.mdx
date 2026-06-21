@@ -73,15 +73,15 @@
     <Step $row>
         <StepL>
             ### <StepNum />Set up CSS runtime engine
-            Create a new file `npm_packages/src/index.js` and initialize the runtime engine. This manual setup uses the bundled preset plan; use an official build integration when application code needs to import the compiled project plan.
+            Create a new file `npm_packages/src/index.js` and initialize the runtime engine. This manual setup uses the bundled preset manifest; use an official build integration when application code needs to import the compiled project manifest.
         </StepL>
         <StepR>
             ```js name=npm_packages/src/index.js
             …
-            import defaultPlan from '@master/css-preset/default-plan.json' with { type: 'json' }; // [!code highlight]
+            import defaultManifest from '@master/css-preset/default-manifest.json' with { type: 'json' }; // [!code highlight]
             import { initCSSRuntime } from '@master/css-runtime'; // [!code highlight]
 
-            initCSSRuntime({ plan: defaultPlan }) // [!code highlight]
+            initCSSRuntime({ manifest: defaultManifest }) // [!code highlight]
             ```
         </StepR>
     </Step>

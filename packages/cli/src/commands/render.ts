@@ -3,13 +3,13 @@ import log from '@techor/log'
 import type { Pattern } from 'fast-glob'
 import prettyHartime from 'pretty-hrtime'
 import { explorePathsSync } from '@techor/glob'
-import { loadProjectPlan } from '@master/css-plan/load'
+import { loadProjectManifest } from '@master/css-manifest/load'
 import { readFile, writeFileSync } from 'fs'
 import { brotliCompressSync } from 'zlib'
 import bytes from 'bytes'
 
 async function loadManagedCSSEntryPlan(cwd = process.cwd()) {
-    return (await loadProjectPlan(cwd)).plan
+    return (await loadProjectManifest(cwd)).manifest
 }
 
 export default (program: Command) => program
@@ -34,14 +34,14 @@ export default (program: Command) => program
                 20
             )
             const col2Width = 8
-            const plan = await loadManagedCSSEntryPlan()
+            const manifest = await loadManagedCSSEntryPlan()
             log``
             log`${'  Source Files'.padEnd(col1Width)}${'CSS Size'.padStart(col2Width)}`
             await Promise.all(sourcePaths
                 .map(async (filename) => new Promise<void>((resolve, reject) => {
                     readFile(filename, { encoding: 'utf-8' }, (err, content) => {
                         if (err) reject(err)
-                        const { html, css } = render(content, plan)
+                        const { html, css } = render(content, manifest)
                         const renderedCSSText = css?.text
                         const renderedCSSSize = renderedCSSText
                             ? (options.analyze

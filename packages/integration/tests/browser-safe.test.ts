@@ -5,10 +5,10 @@ import { describe, expect, it } from 'vitest'
 const BROWSER_SAFE_SOURCES = [
     'index.ts',
     'module.ts',
-    'plan-module.ts',
-    'plan-facade.ts',
+    'manifest-module.ts',
+    'manifest-facade.ts',
     'style-module.ts',
-    'preloaded-module.ts',
+    'emitted-globals-module.ts',
     'runtime.ts'
 ]
 

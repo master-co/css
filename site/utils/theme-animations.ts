@@ -1,3 +1,3 @@
-import presetPlan from './preset-plan'
+import presetManifest from './preset-manifest'
 
-export const themeAnimations = presetPlan.animations || {}
+export const themeAnimations = presetManifest.animations || {}

@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest'
 import { createCSS } from '../src'
-import { clonePlan, createDefaultCSS, createPlanWithSemanticUtilities } from './helpers/css-tester'
+import { cloneManifest, createDefaultCSS, createManifestWithSemanticUtilities } from './helpers/css-tester'
 
 describe.concurrent('migrated parser boundary parity', () => {
     test('parses primitive values with the old public parse-value expectations', () => {
@@ -12,9 +12,9 @@ describe.concurrent('migrated parser boundary parity', () => {
     })
 
     test('keeps selector variant aliases, pseudos, shorthands, and descendants intact', () => {
-        const plan = clonePlan()
-        plan.variants = [
-            ...(plan.variants || []),
+        const manifest = cloneManifest()
+        manifest.variants = [
+            ...(manifest.variants || []),
             { token: ':custom', branches: [{ selector: '&div>:first-child+button' }] },
             { token: ':custom-1', branches: [{ selector: '&div' }] },
             { token: '::slider-thumb', branches: [{ selector: '&::-webkit-slider-thumb' }] },
@@ -26,7 +26,7 @@ describe.concurrent('migrated parser boundary parity', () => {
                 ]
             }
         ]
-        const css = createCSS(plan)
+        const css = createCSS(manifest)
 
         expect(css.create('hidden:hover')?.text).toBe('.hidden\\:hover:hover{display:none}')
         expect(css.create('hidden>:custom')?.text).toBe('.hidden\\>\\:custom>div>:first-child+button{display:none}')
@@ -49,15 +49,15 @@ describe.concurrent('migrated parser boundary parity', () => {
     })
 
     test('recovers generated utilities from selector text across modes scope and grouped selectors', () => {
-        const modePlan = clonePlan()
-        modePlan.settings = {
-            ...(modePlan.settings || {}),
+        const modeManifest = cloneManifest()
+        modeManifest.settings = {
+            ...(modeManifest.settings || {}),
             scope: '#app',
             modeTrigger: 'class',
             modes: ['light', 'dark']
         }
 
-        const css = createCSS(modePlan)
+        const css = createCSS(modeManifest)
         expect(css.createFromSelectorText('.font\\:heavy')?.[0]).toMatchObject({ name: 'font:heavy' })
         expect(css.createFromSelectorText('.hidden\\_button\\[disabled\\] button[disabled]')?.[0])
             .toMatchObject({ name: 'hidden_button[disabled]' })
@@ -70,13 +70,13 @@ describe.concurrent('migrated parser boundary parity', () => {
         expect(css.createFromSelectorText('.dark #app .active .hidden\\:within\\(\\.active\\)\\@dark')?.[0])
             .toMatchObject({ name: 'hidden:within(.active)@dark' })
 
-        const classModePlan = clonePlan()
+        const classModePlan = cloneManifest()
         classModePlan.settings = {
             ...(classModePlan.settings || {}),
             modeTrigger: 'class',
             modes: ['light', 'dark']
         }
-        const componentPlan = createPlanWithSemanticUtilities([
+        const componentManifest = createManifestWithSemanticUtilities([
             {
                 name: 'light',
                 rules: [
@@ -89,7 +89,7 @@ describe.concurrent('migrated parser boundary parity', () => {
                 rules: [{ selector: '&:disabled>span', declarations: { display: 'block' } }]
             }
         ], classModePlan)
-        const componentCSS = createCSS(componentPlan)
+        const componentCSS = createCSS(componentManifest)
         const lightRules = componentCSS.createFromSelectorText('.light .light\\@light')
         expect(lightRules?.[0]).toMatchObject({ name: 'light' })
         expect(lightRules?.[0]?.text).toBe('.light{display:block}.light{font-weight:700}')
@@ -98,12 +98,12 @@ describe.concurrent('migrated parser boundary parity', () => {
         expect(btnRules?.[0]).toMatchObject({ name: 'btn:hover' })
         expect(btnRules?.[0]?.text).toBe('.btn\\:hover:hover:disabled>span{display:block}')
 
-        const groupedPlan = clonePlan()
+        const groupedPlan = cloneManifest()
         groupedPlan.variants = [
             ...(groupedPlan.variants || []),
             { token: '::both', branches: [{ selector: '&::before,&::after' }] }
         ]
-        const groupedCSS = createCSS(createPlanWithSemanticUtilities([
+        const groupedCSS = createCSS(createManifestWithSemanticUtilities([
             {
                 name: 'btn',
                 rules: [{ selector: '&::before,&::after', declarations: { display: 'block' } }]

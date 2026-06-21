@@ -1,4 +1,4 @@
-import type { MasterCSSPlan } from 'shared/master-css-plan'
+import type { MasterCSSManifest } from 'shared/master-css-manifest'
 import type { Pattern as FastGlobPattern } from 'fast-glob'
 import type { SourceAdapter } from '@master/css-source'
 
@@ -7,8 +7,8 @@ const options: Options = {
     verbose: 1,
     // specify output file path
     output: 'master.css',
-    // specify a compiled Master CSS plan override
-    plan: undefined,
+    // specify a compiled Master CSS manifest override
+    manifest: undefined,
     // forcibly specify required sources for scanning, not excluded by `options.exclude`
     required: [],
     // specify sources for scanning
@@ -53,7 +53,7 @@ const options: Options = {
 
 export interface Options {
     verbose?: number
-    plan?: MasterCSSPlan,
+    manifest?: MasterCSSManifest,
     output?: string,
     path?: string,
     required?: FastGlobPattern[]

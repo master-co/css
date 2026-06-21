@@ -19,16 +19,16 @@ importers:
         version: 1.9.1(@swc/core@1.15.33(@swc/helpers@0.5.21))(@swc/types@0.1.26)(typescript@6.0.3)
       '@techor/fs':
         specifier: ^3.2.5
-        version: 3.2.5
+        version: 1.2.5
       '@techor/glob':
         specifier: ^3.2.5
-        version: 3.2.5
+        version: 1.2.5
       '@techor/jest-dom':
         specifier: ^3.2.5
-        version: 3.2.5(@swc/helpers@0.5.21)(jest@30.3.0(@types/node@25.7.0)(ts-node@10.9.2(@swc/core@1.15.33(@swc/helpers@0.5.21))(@swc/wasm@1.15.33)(@types/node@25.7.0)(typescript@6.0.3)))(ts-jest@29.4.9(@babel/core@7.29.7)(@jest/transform@30.3.0)(@jest/types@30.4.1)(babel-jest@30.3.0(@babel/core@7.29.7))(esbuild@0.28.1)(jest-util@30.3.0)(jest@30.3.0(@types/node@25.7.0)(ts-node@10.9.2(@swc/core@1.15.33(@swc/helpers@0.5.21))(@swc/wasm@1.15.33)(@types/node@25.7.0)(typescript@6.0.3)))(typescript@6.0.3))(ts-node@10.9.2(@swc/core@1.15.33(@swc/helpers@0.5.21))(@swc/wasm@1.15.33)(@types/node@25.7.0)(typescript@6.0.3))
+        version: 1.2.5(@swc/helpers@0.5.21)(jest@30.3.0(@types/node@25.7.0)(ts-node@10.9.2(@swc/core@1.15.33(@swc/helpers@0.5.21))(@swc/wasm@1.15.33)(@types/node@25.7.0)(typescript@6.0.3)))(ts-jest@29.4.9(@babel/core@7.29.7)(@jest/transform@30.3.0)(@jest/types@30.4.1)(babel-jest@30.3.0(@babel/core@7.29.7))(esbuild@0.28.1)(jest-util@30.3.0)(jest@30.3.0(@types/node@25.7.0)(ts-node@10.9.2(@swc/core@1.15.33(@swc/helpers@0.5.21))(@swc/wasm@1.15.33)(@types/node@25.7.0)(typescript@6.0.3)))(typescript@6.0.3))(ts-node@10.9.2(@swc/core@1.15.33(@swc/helpers@0.5.21))(@swc/wasm@1.15.33)(@types/node@25.7.0)(typescript@6.0.3))
       '@techor/repo':
         specifier: ^3.2.5
-        version: 3.2.5(@swc/helpers@0.5.21)(@types/node@25.7.0)(@typescript-eslint/parser@8.59.3(eslint@10.3.0(jiti@2.7.0))(typescript@6.0.3))(conventional-commits-parser@6.4.0)(eslint-plugin-react-hooks@7.1.1(eslint@10.3.0(jiti@2.7.0)))(eslint-plugin-react-refresh@0.5.2(eslint@10.3.0(jiti@2.7.0)))(eslint-plugin-react@7.37.5(eslint@10.3.0(jiti@2.7.0)))(eslint@10.3.0(jiti@2.7.0))(jest@30.3.0(@types/node@25.7.0)(ts-node@10.9.2(@swc/core@1.15.33(@swc/helpers@0.5.21))(@swc/wasm@1.15.33)(@types/node@25.7.0)(typescript@6.0.3)))(ts-jest@29.4.9(@babel/core@7.29.7)(@jest/transform@30.3.0)(@jest/types@30.4.1)(babel-jest@30.3.0(@babel/core@7.29.7))(esbuild@0.28.1)(jest-util@30.3.0)(jest@30.3.0(@types/node@25.7.0)(ts-node@10.9.2(@swc/core@1.15.33(@swc/helpers@0.5.21))(@swc/wasm@1.15.33)(@types/node@25.7.0)(typescript@6.0.3)))(typescript@6.0.3))(ts-node@10.9.2(@swc/core@1.15.33(@swc/helpers@0.5.21))(@swc/wasm@1.15.33)(@types/node@25.7.0)(typescript@6.0.3))(typescript@6.0.3)
+        version: 1.2.5(@swc/helpers@0.5.21)(@types/node@25.7.0)(@typescript-eslint/parser@8.59.3(eslint@10.3.0(jiti@2.7.0))(typescript@6.0.3))(conventional-commits-parser@6.4.0)(eslint-plugin-react-hooks@7.1.1(eslint@10.3.0(jiti@2.7.0)))(eslint-plugin-react-refresh@0.5.2(eslint@10.3.0(jiti@2.7.0)))(eslint-plugin-react@7.37.5(eslint@10.3.0(jiti@2.7.0)))(eslint@10.3.0(jiti@2.7.0))(jest@30.3.0(@types/node@25.7.0)(ts-node@10.9.2(@swc/core@1.15.33(@swc/helpers@0.5.21))(@swc/wasm@1.15.33)(@types/node@25.7.0)(typescript@6.0.3)))(ts-jest@29.4.9(@babel/core@7.29.7)(@jest/transform@30.3.0)(@jest/types@30.4.1)(babel-jest@30.3.0(@babel/core@7.29.7))(esbuild@0.28.1)(jest-util@30.3.0)(jest@30.3.0(@types/node@25.7.0)(ts-node@10.9.2(@swc/core@1.15.33(@swc/helpers@0.5.21))(@swc/wasm@1.15.33)(@types/node@25.7.0)(typescript@6.0.3)))(typescript@6.0.3))(ts-node@10.9.2(@swc/core@1.15.33(@swc/helpers@0.5.21))(@swc/wasm@1.15.33)(@types/node@25.7.0)(typescript@6.0.3))(typescript@6.0.3)
       '@types/node':
         specifier: ^25.7.0
         version: 25.7.0
@@ -55,7 +55,7 @@ importers:
         version: 9.6.1
       fast-glob:
         specifier: ^3.3.3
-        version: 3.3.3
+        version: 1.3.3
       get-tsconfig:
         specifier: ^4.14.0
         version: 4.14.0
@@ -73,7 +73,7 @@ importers:
         version: 5.1.11
       nodemon:
         specifier: ^3.1.14
-        version: 3.1.14
+        version: 1.1.14
       shuffle-array:
         specifier: ^1.0.1
         version: 1.0.1
@@ -82,7 +82,7 @@ importers:
         version: 7.2.0
       techor:
         specifier: ^3.2.5
-        version: 3.2.5(@swc/helpers@0.5.21)
+        version: 1.2.5(@swc/helpers@0.5.21)
       tinybench:
         specifier: ^6.0.1
         version: 6.0.1
@@ -135,9 +135,9 @@ importers:
       '@master/css-lexer':
         specifier: workspace:^
         version: link:packages/lexer
-      '@master/css-plan':
+      '@master/css-manifest':
         specifier: workspace:^
-        version: link:packages/plan
+        version: link:packages/manifest
       '@master/css-preset':
         specifier: workspace:^
         version: link:packages/preset
@@ -282,7 +282,7 @@ importers:
         version: 6.4.4
       karma-chrome-launcher:
         specifier: ~3.2.0
-        version: 3.2.0
+        version: 1.2.0
       karma-coverage:
         specifier: ~2.2.1
         version: 2.2.1
@@ -300,7 +300,7 @@ importers:
     dependencies:
       '@astrojs/sitemap':
         specifier: ^3.7.2
-        version: 3.7.2
+        version: 1.7.2
       '@master/css':
         specifier: workspace:^
         version: link:../../packages/core
@@ -355,7 +355,7 @@ importers:
         version: 10.3.0(jiti@2.7.0)
       eslint-plugin-mdx:
         specifier: ^3.7.0
-        version: 3.7.0(eslint@10.3.0(jiti@2.7.0))
+        version: 1.7.0(eslint@10.3.0(jiti@2.7.0))
 
   examples/eslint-legacy:
     devDependencies:
@@ -376,7 +376,7 @@ importers:
         version: 2.2.10(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
       '@inertiajs/react':
         specifier: ^3.0.3
-        version: 3.0.3(axios@1.16.0)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
+        version: 1.0.3(axios@1.16.0)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
       '@master/css':
         specifier: workspace:^
         version: link:../../packages/core
@@ -448,7 +448,7 @@ importers:
         version: 17.6.0
       laravel-vite-plugin:
         specifier: ^3.1.0
-        version: 3.1.0(vite@8.0.10)
+        version: 1.1.0(vite@8.0.10)
       lucide-react:
         specifier: ^1.14.0
         version: 1.14.0(react@19.2.5)
@@ -460,7 +460,7 @@ importers:
         version: 19.2.5(react@19.2.5)
       tailwind-merge:
         specifier: ^3.5.0
-        version: 3.5.0
+        version: 1.5.0
       tailwindcss:
         specifier: ^4.2.4
         version: 4.2.4
@@ -494,7 +494,7 @@ importers:
         version: 7.1.1(eslint@10.3.0(jiti@2.7.0))
       prettier:
         specifier: ^3.8.3
-        version: 3.8.3
+        version: 1.8.3
       prettier-plugin-organize-imports:
         specifier: ^4.3.0
         version: 4.3.0(prettier@3.8.3)(typescript@6.0.3)(vue-tsc@3.2.7(typescript@6.0.3))
@@ -525,7 +525,7 @@ importers:
         version: link:../../packages/runtime
       lit:
         specifier: ^3.3.2
-        version: 3.3.2
+        version: 1.3.2
     devDependencies:
       '@master/css-integration':
         specifier: workspace:^
@@ -600,7 +600,7 @@ importers:
         version: 4.4.4(@azure/identity@4.13.1)(@babel/core@7.29.7)(@babel/plugin-proposal-decorators@7.29.0(@babel/core@7.29.7))(@babel/plugin-syntax-jsx@7.29.7(@babel/core@7.29.7))(@parcel/watcher@2.5.6)(@types/node@25.6.0)(@vitejs/devtools@0.1.18)(@vue/compiler-sfc@3.5.33)(aws4fetch@1.0.20)(cac@6.7.14)(db0@0.3.4)(eslint@10.5.0(jiti@2.6.1))(ioredis@5.10.1)(less@4.4.2)(lightningcss@1.32.0)(magicast@0.5.2)(meow@13.2.0)(optionator@0.9.4)(rolldown@1.0.0)(rollup-plugin-visualizer@7.0.1(rolldown@1.0.0)(rollup@4.60.2))(rollup@4.60.2)(sass@1.99.0)(srvx@0.11.15)(terser@5.46.2)(tsx@4.22.4)(typescript@6.0.3)(vite@8.0.12)(vue-tsc@3.2.7(typescript@6.0.3))(yaml@2.9.0)
       vue:
         specifier: ^3.5.33
-        version: 3.5.33(typescript@6.0.3)
+        version: 1.5.33(typescript@6.0.3)
       vue-router:
         specifier: ^5.0.6
         version: 5.0.6(@vue/compiler-sfc@3.5.33)(vue@3.5.33(typescript@6.0.3))
@@ -695,7 +695,7 @@ importers:
         version: 10.3.0(jiti@2.7.0)
       eslint-plugin-svelte:
         specifier: ^3.17.1
-        version: 3.17.1(eslint@10.3.0(jiti@2.7.0))(svelte@5.55.5(@typescript-eslint/types@8.59.3))(ts-node@10.9.2(@swc/core@1.15.33(@swc/helpers@0.5.21))(@swc/wasm@1.15.33)(@types/node@25.9.3)(typescript@6.0.3))
+        version: 1.17.1(eslint@10.3.0(jiti@2.7.0))(svelte@5.55.5(@typescript-eslint/types@8.59.3))(ts-node@10.9.2(@swc/core@1.15.33(@swc/helpers@0.5.21))(@swc/wasm@1.15.33)(@types/node@25.9.3)(typescript@6.0.3))
       globals:
         specifier: ^17.5.0
         version: 17.6.0
@@ -741,7 +741,7 @@ importers:
         version: link:../../packages/vue
       vue:
         specifier: ^3.5.33
-        version: 3.5.33(typescript@6.0.3)
+        version: 1.5.33(typescript@6.0.3)
     devDependencies:
       '@tsconfig/node24':
         specifier: ^24.0.4
@@ -778,7 +778,7 @@ importers:
         version: 8.1.1(@nuxt/kit@4.4.4(magicast@0.5.2))(vite@8.0.10)(vue@3.5.33(typescript@6.0.3))
       vue-tsc:
         specifier: ^3.2.7
-        version: 3.2.7(typescript@6.0.3)
+        version: 1.2.7(typescript@6.0.3)
 
   examples/webpack:
     devDependencies:
@@ -841,10 +841,10 @@ importers:
         version: 1.1.1(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
       '@mdx-js/loader':
         specifier: ^3.1.1
-        version: 3.1.1(webpack@5.106.2(@swc/core@1.15.33(@swc/helpers@0.5.21))(esbuild@0.28.1))
+        version: 1.1.1(webpack@5.106.2(@swc/core@1.15.33(@swc/helpers@0.5.21))(esbuild@0.28.1))
       '@mdx-js/react':
         specifier: ^3.1.1
-        version: 3.1.1(@types/react@19.2.14)(react@19.2.5)
+        version: 1.1.1(@types/react@19.2.14)(react@19.2.5)
       '@next/bundle-analyzer':
         specifier: 16.2.4
         version: 16.2.4
@@ -865,13 +865,13 @@ importers:
         version: 8.1.0(typescript@6.0.3)
       '@tabler/icons-react':
         specifier: ^3.41.1
-        version: 3.41.1(react@19.2.5)
+        version: 1.41.1(react@19.2.5)
       '@techor/extend':
         specifier: ^3.2.5
-        version: 3.2.5
+        version: 1.2.5
       '@techor/log':
         specifier: ^3.2.5
-        version: 3.2.5
+        version: 1.2.5
       '@types/canvas-confetti':
         specifier: ^1.9.0
         version: 1.9.0
@@ -889,7 +889,7 @@ importers:
         version: 2.0.13
       '@types/mime-types':
         specifier: ^3.0.1
-        version: 3.0.1
+        version: 1.0.1
       '@types/negotiator':
         specifier: ^0.6.4
         version: 0.6.4
@@ -931,7 +931,7 @@ importers:
         version: 14.0.0(webpack@5.106.2(@swc/core@1.15.33(@swc/helpers@0.5.21))(esbuild@0.28.1))
       crawlee:
         specifier: ^3.16.0
-        version: 3.16.0(@types/node@25.6.0)(playwright@1.61.0)
+        version: 1.16.0(@types/node@25.6.0)(playwright@1.61.0)
       cross-env:
         specifier: ^10.1.0
         version: 10.1.0
@@ -949,7 +949,7 @@ importers:
         version: 10.3.0(jiti@2.7.0)
       eslint-mdx:
         specifier: ^3.7.0
-        version: 3.7.0(eslint@10.3.0(jiti@2.7.0))
+        version: 1.7.0(eslint@10.3.0(jiti@2.7.0))
       eslint-plugin-import:
         specifier: ^2.32.0
         version: 2.32.0(@typescript-eslint/parser@8.59.1(eslint@10.3.0(jiti@2.7.0))(typescript@6.0.3))(eslint@10.3.0(jiti@2.7.0))
@@ -964,7 +964,7 @@ importers:
         version: 7.1.1(eslint@10.3.0(jiti@2.7.0))
       fast-glob:
         specifier: ^3.3.3
-        version: 3.3.3
+        version: 1.3.3
       file-loader:
         specifier: ^6.2.0
         version: 6.2.0(webpack@5.106.2(@swc/core@1.15.33(@swc/helpers@0.5.21))(esbuild@0.28.1))
@@ -985,7 +985,7 @@ importers:
         version: 7.3.0
       get-contrast:
         specifier: ^3.0.0
-        version: 3.0.0
+        version: 1.0.0
       git-branch:
         specifier: ^2.0.1
         version: 2.0.1
@@ -1012,7 +1012,7 @@ importers:
         version: 2.0.2
       mime-types:
         specifier: ^3.0.2
-        version: 3.0.2
+        version: 1.0.2
       mini-css-extract-plugin:
         specifier: ^2.10.2
         version: 2.10.2(webpack@5.106.2(@swc/core@1.15.33(@swc/helpers@0.5.21))(esbuild@0.28.1))
@@ -1030,7 +1030,7 @@ importers:
         version: 1.6.0
       parent-module:
         specifier: ^3.2.0
-        version: 3.2.0
+        version: 1.2.0
       raw-loader:
         specifier: ^4.0.2
         version: 4.0.2(webpack@5.106.2(@swc/core@1.15.33(@swc/helpers@0.5.21))(esbuild@0.28.1))
@@ -1090,7 +1090,7 @@ importers:
         version: 5.0.2
       timeago-react:
         specifier: ^3.0.7
-        version: 3.0.7(react@19.2.5)
+        version: 1.0.7(react@19.2.5)
       ts-dedent:
         specifier: ^2.2.0
         version: 2.2.0
@@ -1102,13 +1102,13 @@ importers:
         version: 5.1.0
       upath:
         specifier: ^3.0.7
-        version: 3.0.7
+        version: 1.0.7
       url-loader:
         specifier: ^4.1.1
         version: 4.1.1(file-loader@6.2.0(webpack@5.106.2(@swc/core@1.15.33(@swc/helpers@0.5.21))(esbuild@0.28.1)))(webpack@5.106.2(@swc/core@1.15.33(@swc/helpers@0.5.21))(esbuild@0.28.1))
       usehooks-ts:
         specifier: ^3.1.1
-        version: 3.1.1(react@19.2.5)
+        version: 1.1.1(react@19.2.5)
       webpack-import-glob-loader:
         specifier: ^1.6.3
         version: 1.6.3
@@ -1156,9 +1156,9 @@ importers:
       '@master/css-extractor':
         specifier: workspace:^
         version: link:../extractor
-      '@master/css-plan':
+      '@master/css-manifest':
         specifier: workspace:^
-        version: link:../plan
+        version: link:../manifest
       '@master/css-server':
         specifier: workspace:^
         version: link:../server
@@ -1167,19 +1167,19 @@ importers:
         version: link:../stylesheet
       '@techor/extend':
         specifier: ^3.2.5
-        version: 3.2.5
+        version: 1.2.5
       '@techor/fs':
         specifier: ^3.2.5
-        version: 3.2.5
+        version: 1.2.5
       '@techor/glob':
         specifier: ^3.2.5
-        version: 3.2.5
+        version: 1.2.5
       '@techor/log':
         specifier: ^3.2.5
-        version: 3.2.5
+        version: 1.2.5
       bytes:
         specifier: ^3.1.2
-        version: 3.1.2
+        version: 1.1.2
       chokidar:
         specifier: ^5.0.0
         version: 5.0.0
@@ -1198,7 +1198,7 @@ importers:
         version: 1.0.3
       fast-glob:
         specifier: ^3.3.3
-        version: 3.3.3
+        version: 1.3.3
       shared:
         specifier: workspace:^
         version: link:../../shared
@@ -1213,10 +1213,10 @@ importers:
         version: link:../lexer
       css-tree:
         specifier: ^3.2.1
-        version: 3.2.1
+        version: 1.2.1
       csstype:
         specifier: ^3.2.3
-        version: 3.2.3
+        version: 1.2.3
       lightningcss:
         specifier: ^1.32.0
         version: 1.32.0
@@ -1263,7 +1263,7 @@ importers:
         version: link:../lexer
       csstype:
         specifier: ^3.2.3
-        version: 3.2.3
+        version: 1.2.3
     devDependencies:
       '@master/css-preset':
         specifier: workspace:^
@@ -1293,9 +1293,9 @@ importers:
       '@master/css':
         specifier: workspace:^
         version: link:../core
-      '@master/css-plan':
+      '@master/css-manifest':
         specifier: workspace:^
-        version: link:../plan
+        version: link:../manifest
       '@master/css-preset':
         specifier: workspace:^
         version: link:../preset
@@ -1326,7 +1326,7 @@ importers:
         version: 5.1.0(eslint@10.3.0(jiti@2.7.0))
       eslint-plugin-mdx:
         specifier: ^3.7.0
-        version: 3.7.0(eslint@10.3.0(jiti@2.7.0))
+        version: 1.7.0(eslint@10.3.0(jiti@2.7.0))
       shared:
         specifier: workspace:^
         version: link:../../shared
@@ -1356,16 +1356,16 @@ importers:
         version: link:../validator
       '@techor/extend':
         specifier: ^3.2.5
-        version: 3.2.5
+        version: 1.2.5
       '@techor/glob':
         specifier: ^3.2.5
-        version: 3.2.5
+        version: 1.2.5
       '@techor/log':
         specifier: ^3.2.5
-        version: 3.2.5
+        version: 1.2.5
       bytes:
         specifier: ^3.1.2
-        version: 3.1.2
+        version: 1.1.2
       chokidar:
         specifier: ^5.0.0
         version: 5.0.0
@@ -1375,7 +1375,7 @@ importers:
     devDependencies:
       '@types/bytes':
         specifier: ^3.1.5
-        version: 3.1.5
+        version: 1.1.5
       shared:
         specifier: workspace:^
         version: link:../../shared
@@ -1470,7 +1470,7 @@ importers:
         version: link:../../shared
       vscode-languageserver-protocol:
         specifier: ^3.17.5
-        version: 3.18.0
+        version: 1.18.0
       vscode-languageserver-textdocument:
         specifier: ^1.0.12
         version: 1.0.12
@@ -1496,15 +1496,15 @@ importers:
       '@master/css-language-service':
         specifier: workspace:^
         version: link:../language-service
-      '@master/css-plan':
+      '@master/css-manifest':
         specifier: workspace:^
-        version: link:../plan
+        version: link:../manifest
       '@techor/extend':
         specifier: ^3.2.5
-        version: 3.2.5
+        version: 1.2.5
       fast-glob:
         specifier: ^3.3.3
-        version: 3.3.3
+        version: 1.3.3
       js-beautify:
         specifier: ^1.15.4
         version: 1.15.4
@@ -1522,7 +1522,7 @@ importers:
         version: 1.0.12
       vscode-uri:
         specifier: ^3.1.0
-        version: 3.1.0
+        version: 1.1.0
 
   packages/language-service:
     dependencies:
@@ -1537,7 +1537,7 @@ importers:
         version: link:../language
       '@techor/extend':
         specifier: ^3.2.5
-        version: 3.2.5
+        version: 1.2.5
       colorjs.io:
         specifier: ^0.6.1
         version: 0.6.1
@@ -1549,7 +1549,7 @@ importers:
         version: 10.2.5
       vscode-languageserver-protocol:
         specifier: ^3.17.5
-        version: 3.17.5
+        version: 1.17.5
       vscode-languageserver-textdocument:
         specifier: ^1.0.12
         version: 1.0.12
@@ -1574,9 +1574,9 @@ importers:
       '@master/css-integration':
         specifier: workspace:^
         version: link:../integration
-      '@master/css-plan':
+      '@master/css-manifest':
         specifier: workspace:^
-        version: link:../plan
+        version: link:../manifest
       '@master/css-server':
         specifier: workspace:^
         version: link:../server
@@ -1596,9 +1596,9 @@ importers:
       '@master/css-integration':
         specifier: workspace:^
         version: link:../integration
-      '@master/css-plan':
+      '@master/css-manifest':
         specifier: workspace:^
-        version: link:../plan
+        version: link:../manifest
       '@master/css-server':
         specifier: workspace:^
         version: link:../server
@@ -1665,9 +1665,9 @@ importers:
         version: 4.1.5(@opentelemetry/api@1.9.1)(@types/node@25.9.3)(happy-dom@20.9.0)(jsdom@26.1.0)(vite@8.0.10)
       vue:
         specifier: ^3.5.33
-        version: 3.5.33(typescript@6.0.3)
+        version: 1.5.33(typescript@6.0.3)
 
-  packages/plan:
+  packages/manifest:
     dependencies:
       '@master/css-compiler':
         specifier: workspace:^
@@ -1783,7 +1783,7 @@ importers:
         version: link:../validator
       dom-serializer:
         specifier: ^3.0.0
-        version: 3.1.1
+        version: 1.1.1
       domhandler:
         specifier: ^6.0.1
         version: 6.0.1
@@ -1839,7 +1839,7 @@ importers:
         version: link:../validator
       '@techor/glob':
         specifier: ^3.2.5
-        version: 3.2.5
+        version: 1.2.5
     devDependencies:
       '@master/css-extractor':
         specifier: workspace:^
@@ -1931,7 +1931,7 @@ importers:
         version: link:../preset
       css-tree:
         specifier: ^3.2.1
-        version: 3.2.1
+        version: 1.2.1
     devDependencies:
       '@types/css-tree':
         specifier: ^2.3.11
@@ -1954,9 +1954,9 @@ importers:
       '@master/css-integration':
         specifier: workspace:^
         version: link:../integration
-      '@master/css-plan':
+      '@master/css-manifest':
         specifier: workspace:^
-        version: link:../plan
+        version: link:../manifest
       '@master/css-runtime':
         specifier: workspace:^
         version: link:../runtime
@@ -2012,7 +2012,7 @@ importers:
         version: 1.120.0
       '@vscode/vsce':
         specifier: ^3.9.2
-        version: 3.9.2
+        version: 1.9.2
       shared:
         specifier: workspace:^
         version: link:../../shared
@@ -2045,10 +2045,10 @@ importers:
         version: link:../vite
       '@techor/extend':
         specifier: ^3.2.5
-        version: 3.2.5
+        version: 1.2.5
       vue:
         specifier: '>= 3.0.0'
-        version: 3.5.33(typescript@6.0.3)
+        version: 1.5.33(typescript@6.0.3)
     devDependencies:
       '@master/css-preset':
         specifier: workspace:^
@@ -2067,7 +2067,7 @@ importers:
         version: 14.7.0(eslint-plugin-vue@10.9.0(@stylistic/eslint-plugin@5.10.0(eslint@10.5.0(jiti@2.7.0)))(@typescript-eslint/parser@8.59.3(eslint@10.5.0(jiti@2.7.0))(typescript@6.0.3))(eslint@10.5.0(jiti@2.7.0))(vue-eslint-parser@10.4.0(eslint@10.5.0(jiti@2.7.0))))(eslint@10.5.0(jiti@2.7.0))(typescript@6.0.3)
       '@vue/server-renderer':
         specifier: ^3.5.33
-        version: 3.5.33(vue@3.5.33(typescript@6.0.3))
+        version: 1.5.33(vue@3.5.33(typescript@6.0.3))
       '@vue/test-utils':
         specifier: ^2.4.10
         version: 2.4.10(@vue/compiler-dom@3.5.33)(@vue/server-renderer@3.5.33(vue@3.5.33(typescript@6.0.3)))(vue@3.5.33(typescript@6.0.3))
@@ -2088,7 +2088,7 @@ importers:
         version: 8.0.10(@types/node@25.9.3)(@vitejs/devtools@0.1.18)(esbuild@0.28.1)(jiti@2.7.0)(less@4.4.2)(sass@1.99.0)(terser@5.46.2)(tsx@4.22.4)(yaml@2.9.0)
       vue-tsc:
         specifier: ^3.2.7
-        version: 3.2.7(typescript@6.0.3)
+        version: 1.2.7(typescript@6.0.3)
 
   packages/webpack:
     dependencies:
@@ -2101,15 +2101,15 @@ importers:
       '@master/css-integration':
         specifier: workspace:^
         version: link:../integration
-      '@master/css-plan':
+      '@master/css-manifest':
         specifier: workspace:^
-        version: link:../plan
+        version: link:../manifest
       '@master/css-stylesheet':
         specifier: workspace:^
         version: link:../stylesheet
       '@techor/log':
         specifier: ^3.2.5
-        version: 3.2.5
+        version: 1.2.5
       webpack-virtual-modules:
         specifier: ^0.6.2
         version: 0.6.2

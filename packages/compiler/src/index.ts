@@ -2,10 +2,10 @@ import { existsSync, readFileSync, realpathSync } from 'node:fs'
 import { createRequire } from 'node:module'
 import { dirname, extname, isAbsolute, resolve } from 'node:path'
 import { transform } from 'lightningcss'
-import type { MasterCSSPlan } from 'shared/master-css-plan'
-import { stringifyMasterCSSPlanJSON } from 'shared/master-css-plan-json'
+import type { MasterCSSManifest } from 'shared/master-css-manifest'
+import { stringifyMasterCSSManifestJSON } from 'shared/master-css-manifest-json'
 import type { CSSDirectiveReference } from 'shared/css-directives'
-import { createMasterCSSPlan } from './master-css-plan'
+import { createMasterCSSManifest } from './master-css-manifest'
 import lowerCSSDirectives from './lower-css-directives'
 import {
     compileCSS,
@@ -54,28 +54,28 @@ export interface ResolveCSSImportGraphOptions {
     onReference?: (reference: CSSReferenceStatement, fromFile: string) => void
 }
 
-export type CompileCSSPlanOptions = CompileCSSFileOptions & {
-    basePlan?: MasterCSSPlan
+export type CompileCSSManifestOptions = CompileCSSFileOptions & {
+    baseManifest?: MasterCSSManifest
 }
-export type CompileCSSPlanSourceOptions = CompileCSSOptions & {
-    basePlan?: MasterCSSPlan
+export type CompileCSSManifestSourceOptions = CompileCSSOptions & {
+    baseManifest?: MasterCSSManifest
     root?: string
 }
 
-type CompileCSSPlanInternalOptions = CompileCSSPlanSourceOptions & {
+type CompileCSSManifestInternalOptions = CompileCSSManifestSourceOptions & {
     referenceStack?: string[]
 }
 
-export interface CompileCSSPlanResult extends Omit<CompileCSSResult, 'planInput'> {
-    plan: MasterCSSPlan
+export interface CompileCSSManifestResult extends Omit<CompileCSSResult, 'manifestInput'> {
+    manifest: MasterCSSManifest
     directives: CompileCSSResult
 }
 
-export interface CompileProjectPlanResult extends CompileCSSPlanResult {
+export interface CompileProjectManifestResult extends CompileCSSManifestResult {
     entries: string[]
 }
 
-export type CompileCSSPlanJSONResult = CompileCSSPlanResult & {
+export type CompileCSSManifestJSONResult = CompileCSSManifestResult & {
     json: string
     directives: CompileCSSResult
 }
@@ -168,7 +168,7 @@ function resolveCSSImportGraphFile(
         throw new Error(`Circular CSS import: ${[...stack, absoluteFile].join(' -> ')}`)
     }
     if (!existsSync(absoluteFile)) {
-        throw new Error(`CSS plan entry file not found: ${absoluteFile}`)
+        throw new Error(`CSS manifest entry file not found: ${absoluteFile}`)
     }
     if (!dependencySet.has(absoluteFile)) {
         dependencySet.add(absoluteFile)
@@ -286,7 +286,7 @@ function addUnique<T>(target: T[], values: Iterable<T> | undefined) {
     }
 }
 
-function resolveCSSReferenceFile(reference: CSSDirectiveReference, options: CompileCSSPlanSourceOptions = {}) {
+function resolveCSSReferenceFile(reference: CSSDirectiveReference, options: CompileCSSManifestSourceOptions = {}) {
     const fromFile = reference.file
         ? isAbsolute(reference.file)
             ? reference.file
@@ -304,11 +304,11 @@ function normalizeReferenceStack(stack: string[] | undefined) {
 
 function resolveCSSReferenceContext(
     references: CSSDirectiveReference[] | undefined,
-    options: CompileCSSPlanInternalOptions = {}
+    options: CompileCSSManifestInternalOptions = {}
 ) {
     const dependencies: string[] = []
     const warnings: string[] = []
-    let plan = options.basePlan
+    let manifest = options.baseManifest
     let hasReferences = false
 
     for (const reference of references || []) {
@@ -318,14 +318,14 @@ function resolveCSSReferenceContext(
         if (stack.includes(comparableReferenceFile)) {
             throw new Error(`Circular CSS reference: ${[...(options.referenceStack || []), referenceFile].join(' -> ')}`)
         }
-        const result = compileCSSPlanFileInternal(referenceFile, {
+        const result = compileCSSManifestFileInternal(referenceFile, {
             ...options,
-            basePlan: plan,
+            baseManifest: manifest,
             preserveNativeCSS: false,
             referenceStack: options.referenceStack
         })
         hasReferences = true
-        plan = result.plan
+        manifest = result.manifest
         addUnique(dependencies, result.dependencies)
         addUnique(warnings, result.warnings)
     }
@@ -333,19 +333,19 @@ function resolveCSSReferenceContext(
     return {
         dependencies,
         warnings,
-        ...(hasReferences ? { plan } : {})
+        ...(hasReferences ? { manifest } : {})
     }
 }
 
-function toCompileCSSPlanResult(
+function toCompileCSSManifestResult(
     result: CompileCSSResult,
-    options: CompileCSSPlanInternalOptions = {}
-): CompileCSSPlanResult {
-    const { planInput: _directivePlanInput, ...directiveData } = result
+    options: CompileCSSManifestInternalOptions = {}
+): CompileCSSManifestResult {
+    const { manifestInput: _directiveManifestInput, ...directiveData } = result
     const referenceContext = resolveCSSReferenceContext(result.references, options)
     const lowerResult = lowerCSSDirectives(result, {
-        basePlan: options.basePlan,
-        resolutionPlan: referenceContext.plan,
+        baseManifest: options.baseManifest,
+        resolutionManifest: referenceContext.manifest,
         onWarning: options.onWarning
     })
     const dependencies: string[] = []
@@ -362,7 +362,7 @@ function toCompileCSSPlanResult(
     return {
         ...directiveData,
         dependencies,
-        plan: lowerResult.plan,
+        manifest: lowerResult.manifest,
         warnings,
         generatedCSS,
         css,
@@ -370,49 +370,49 @@ function toCompileCSSPlanResult(
     }
 }
 
-export function createPlanFromCSSResult(
+export function createManifestFromCSSResult(
     result: CompileCSSResult,
-    options: CompileCSSPlanSourceOptions = {}
+    options: CompileCSSManifestSourceOptions = {}
 ) {
-    return toCompileCSSPlanResult(result, options)
+    return toCompileCSSManifestResult(result, options)
 }
 
-export function compileCSSPlan(source: string, options: CompileCSSPlanSourceOptions = {}): CompileCSSPlanResult {
+export function compileCSSManifest(source: string, options: CompileCSSManifestSourceOptions = {}): CompileCSSManifestResult {
     const from = options.from ? stripRequest(options.from) : undefined
     const fromFile = from ? isAbsolute(from) ? from : resolve(options.root || '', from) : undefined
     const result = compileCSS(source, {
         ...options,
         ...(fromFile ? { from: fromFile } : {})
     })
-    return toCompileCSSPlanResult(result, {
+    return toCompileCSSManifestResult(result, {
         ...options,
         ...(fromFile
             ? {
                 from: fromFile,
-                referenceStack: [...((options as CompileCSSPlanInternalOptions).referenceStack || []), fromFile]
+                referenceStack: [...((options as CompileCSSManifestInternalOptions).referenceStack || []), fromFile]
             }
             : {})
     })
 }
 
-function compileCSSPlanFileInternal(file: string, options: CompileCSSPlanInternalOptions = {}): CompileCSSPlanResult {
+function compileCSSManifestFileInternal(file: string, options: CompileCSSManifestInternalOptions = {}): CompileCSSManifestResult {
     const absoluteFile = isAbsolute(file) ? file : resolve(options.root || '', file)
     const result = compileCSSFile(file, {
         ...options,
         preserveNativeCSS: options.preserveNativeCSS ?? false
     })
-    return toCompileCSSPlanResult(result, {
+    return toCompileCSSManifestResult(result, {
         ...options,
         from: absoluteFile,
         referenceStack: [...(options.referenceStack || []), absoluteFile]
     })
 }
 
-export function compileCSSPlanFile(file: string, options: CompileCSSPlanOptions = {}): CompileCSSPlanResult {
-    return compileCSSPlanFileInternal(file, options)
+export function compileCSSManifestFile(file: string, options: CompileCSSManifestOptions = {}): CompileCSSManifestResult {
+    return compileCSSManifestFileInternal(file, options)
 }
 
-export function compileProjectPlan(entries: string[], options: CompileCSSPlanOptions = {}): CompileProjectPlanResult {
+export function compileProjectManifest(entries: string[], options: CompileCSSManifestOptions = {}): CompileProjectManifestResult {
     const dependencies: string[] = []
     let extractionPolicy = createCSSDirectiveExtractionPolicy()
     const classNames: string[] = []
@@ -422,7 +422,7 @@ export function compileProjectPlan(entries: string[], options: CompileCSSPlanOpt
     const generatedCSS: string[] = []
     const warnings: string[] = []
     let directives: CompileCSSResult = {
-        planInput: {},
+        manifestInput: {},
         extractionPolicy: createCSSDirectiveExtractionPolicy(),
         classNames: [],
         nativeClassNames: [],
@@ -432,7 +432,7 @@ export function compileProjectPlan(entries: string[], options: CompileCSSPlanOpt
         warnings: [],
         dependencies: []
     }
-    let plan: MasterCSSPlan | undefined = options.basePlan
+    let manifest: MasterCSSManifest | undefined = options.baseManifest
     for (const entry of entries) {
         const result = compileCSSFile(entry, {
             ...options,
@@ -444,23 +444,23 @@ export function compileProjectPlan(entries: string[], options: CompileCSSPlanOpt
         addUnique(classNames, result.classNames)
         addUnique(nativeClassNames, result.nativeClassNames)
         addUnique(warnings, result.warnings)
-        const planResult = toCompileCSSPlanResult(result, {
+        const manifestResult = toCompileCSSManifestResult(result, {
             ...options,
-            basePlan: plan,
+            baseManifest: manifest,
             from: entry,
             referenceStack: [isAbsolute(entry) ? entry : resolve(options.root || '', entry)]
         })
-        plan = planResult.plan
-        addUnique(dependencies, planResult.dependencies)
-        addUnique(warnings, planResult.warnings)
-        const entryGeneratedCSS = planResult.generatedCSS || ''
+        manifest = manifestResult.manifest
+        addUnique(dependencies, manifestResult.dependencies)
+        addUnique(warnings, manifestResult.warnings)
+        const entryGeneratedCSS = manifestResult.generatedCSS || ''
         if (result.nativeCSS) nativeCSS.push(result.nativeCSS)
         if (entryGeneratedCSS) generatedCSS.push(entryGeneratedCSS)
-        if (planResult.css) css.push(planResult.css)
+        if (manifestResult.css) css.push(manifestResult.css)
     }
     return {
         entries,
-        plan: plan || createMasterCSSPlan(),
+        manifest: manifest || createMasterCSSManifest(),
         dependencies,
         extractionPolicy,
         classNames,
@@ -473,17 +473,17 @@ export function compileProjectPlan(entries: string[], options: CompileCSSPlanOpt
     }
 }
 
-function toPlanJSONResult<T extends { plan: MasterCSSPlan }>(result: T): T & { json: string } {
+function toManifestJSONResult<T extends { manifest: MasterCSSManifest }>(result: T): T & { json: string } {
     return {
         ...result,
-        json: stringifyMasterCSSPlanJSON(result.plan)
+        json: stringifyMasterCSSManifestJSON(result.manifest)
     }
 }
 
-export function compileCSSPlanJSON(file: string, options: CompileCSSPlanOptions = {}): CompileCSSPlanJSONResult {
-    return toPlanJSONResult(compileCSSPlanFile(file, options))
+export function compileCSSManifestJSON(file: string, options: CompileCSSManifestOptions = {}): CompileCSSManifestJSONResult {
+    return toManifestJSONResult(compileCSSManifestFile(file, options))
 }
 
-export function compileProjectPlanJSON(entries: string[], options: CompileCSSPlanOptions = {}) {
-    return toPlanJSONResult(compileProjectPlan(entries, options))
+export function compileProjectManifestJSON(entries: string[], options: CompileCSSManifestOptions = {}) {
+    return toManifestJSONResult(compileProjectManifest(entries, options))
 }

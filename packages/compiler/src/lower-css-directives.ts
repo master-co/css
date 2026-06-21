@@ -1,7 +1,7 @@
 import {
     CSSDirectiveError,
     readCSSDirectiveVariantReference,
-    type CSSDirectivePlanInput,
+    type CSSDirectiveManifestInput,
     type CSSDirectiveLayerName,
     type CSSDirectiveResult,
     type CSSDirectiveStyleDefinition,
@@ -20,26 +20,26 @@ import {
     type GeneratedRule,
     type MasterCSS
 } from '@master/css-engine/compiler'
-import type { MasterCSSPlan, MasterCSSPlanUtilityLayerName } from 'shared/master-css-plan'
-import { createMasterCSSPlan, createVariableNameResolver, type CSSDirectiveVariableNameResolver } from './master-css-plan'
+import type { MasterCSSManifest, MasterCSSManifestUtilityLayerName } from 'shared/master-css-manifest'
+import { createMasterCSSManifest, createVariableNameResolver, type CSSDirectiveVariableNameResolver } from './master-css-manifest'
 import { combineStyleSelectors } from './utils/selectors'
 import wrapAtRules from './utils/wrap-at-rules'
 import { cssTreeNativeDeclarationMatcher } from './native-declaration'
 
 export interface LowerCSSDirectivesOptions {
-    basePlan?: MasterCSSPlan
-    resolutionPlan?: MasterCSSPlan
+    baseManifest?: MasterCSSManifest
+    resolutionManifest?: MasterCSSManifest
     onWarning?: (warning: string) => void
 }
 
 export interface LowerCSSDirectivesResult {
-    input: CSSDirectivePlanInput
-    plan: MasterCSSPlan
+    input: CSSDirectiveManifestInput
+    manifest: MasterCSSManifest
     warnings: string[]
     generatedCSS: string
 }
 
-type CSSDirectivePlanInputSource = CSSDirectiveResult | CSSDirectivePlanInput
+type CSSDirectiveManifestInputSource = CSSDirectiveResult | CSSDirectiveManifestInput
 type InputUtilityDefinition = CSSDirectiveUtilityDefinition
 type InputVariableDefinition = CSSDirectiveVariableDefinition
 
@@ -47,7 +47,7 @@ interface MergedStyleDefinition {
     selector: string
     declarations: PropertiesHyphen
     atRules?: string[]
-    layer?: MasterCSSPlanUtilityLayerName
+    layer?: MasterCSSManifestUtilityLayerName
 }
 
 interface ComposedStyleDefinition extends MergedStyleDefinition {
@@ -70,7 +70,7 @@ type StyleMergeEvent =
 interface StyleMergeBucket {
     selector: string
     atRules?: string[]
-    layer?: MasterCSSPlanUtilityLayerName
+    layer?: MasterCSSManifestUtilityLayerName
     order: number
     events: StyleMergeEvent[]
 }
@@ -82,20 +82,20 @@ const MEDIA_MODE_NAMES = new Set(['light', 'dark'])
 const DEFAULT_MODE_NONE = 'none'
 const CONDITION_VARIABLE_NAMESPACES = new Set(['breakpoint', 'container'])
 
-function isCSSDirectiveResult(input: CSSDirectivePlanInputSource): input is CSSDirectiveResult {
-    return 'planInput' in input
+function isCSSDirectiveResult(input: CSSDirectiveManifestInputSource): input is CSSDirectiveResult {
+    return 'manifestInput' in input
 }
 
-function getDirectiveInput(input: CSSDirectivePlanInputSource) {
-    return isCSSDirectiveResult(input) ? input.planInput : input
+function getDirectiveInput(input: CSSDirectiveManifestInputSource) {
+    return isCSSDirectiveResult(input) ? input.manifestInput : input
 }
 
-function getStyleDefinitions(input: CSSDirectivePlanInputSource) {
+function getStyleDefinitions(input: CSSDirectiveManifestInputSource) {
     return isCSSDirectiveResult(input) ? input.styleDefinitions : undefined
 }
 
-function getResolutionPlan(options: LowerCSSDirectivesOptions) {
-    return options.resolutionPlan || options.basePlan
+function getResolutionManifest(options: LowerCSSDirectivesOptions) {
+    return options.resolutionManifest || options.baseManifest
 }
 
 function warn(warnings: string[], options: LowerCSSDirectivesOptions, message: string) {
@@ -103,7 +103,7 @@ function warn(warnings: string[], options: LowerCSSDirectivesOptions, message: s
     options.onWarning?.(message)
 }
 
-function isNamedDefaultMode(defaultMode: CSSDirectivePlanInput['defaultMode']): defaultMode is string {
+function isNamedDefaultMode(defaultMode: CSSDirectiveManifestInput['defaultMode']): defaultMode is string {
     return typeof defaultMode === 'string' && defaultMode !== DEFAULT_MODE_NONE
 }
 
@@ -137,7 +137,7 @@ function variableSlot(variable: CSSDirectiveVariableDefinition) {
     ].join('\0')
 }
 
-function addVariable(input: CSSDirectivePlanInput, variable: InputVariableDefinition, resolveVariableName: CSSDirectiveVariableNameResolver) {
+function addVariable(input: CSSDirectiveManifestInput, variable: InputVariableDefinition, resolveVariableName: CSSDirectiveVariableNameResolver) {
     const definition = normalizeVariable(variable, resolveVariableName)
     if (definition.mode) {
         input.modes ??= []
@@ -177,10 +177,10 @@ function cloneUtility(definition: InputUtilityDefinition): CSSDirectiveUtilityDe
     }
 }
 
-function normalizeDirectiveInput(input: CSSDirectivePlanInputSource = {}, options: LowerCSSDirectivesOptions = {}): CSSDirectivePlanInput {
+function normalizeDirectiveInput(input: CSSDirectiveManifestInputSource = {}, options: LowerCSSDirectivesOptions = {}): CSSDirectiveManifestInput {
     const source = getDirectiveInput(input)
-    const resolveVariableName = createVariableNameResolver(source, { basePlan: getResolutionPlan(options) })
-    const normalized: CSSDirectivePlanInput = {}
+    const resolveVariableName = createVariableNameResolver(source, { baseManifest: getResolutionManifest(options) })
+    const normalized: CSSDirectiveManifestInput = {}
     if (source.rootSize !== undefined) normalized.rootSize = source.rootSize
     if (source.baseUnit !== undefined) normalized.baseUnit = source.baseUnit
     if (source.defaultMode !== undefined) normalized.defaultMode = source.defaultMode
@@ -208,13 +208,13 @@ function normalizeDirectiveInput(input: CSSDirectivePlanInputSource = {}, option
     return normalized
 }
 
-function collectModeNames(input: CSSDirectivePlanInput) {
+function collectModeNames(input: CSSDirectiveManifestInput) {
     const modes = new Set(input.modes || [])
     if (isNamedDefaultMode(input.defaultMode)) modes.add(input.defaultMode)
     return modes
 }
 
-function collectVariablesByNamespace(input: CSSDirectivePlanInput, namespace: string, resolveVariableName: CSSDirectiveVariableNameResolver) {
+function collectVariablesByNamespace(input: CSSDirectiveManifestInput, namespace: string, resolveVariableName: CSSDirectiveVariableNameResolver) {
     return new Set((input.variables || [])
         .map(resolveVariableName)
         .filter((variable) => variable.namespace === namespace)
@@ -223,7 +223,7 @@ function collectVariablesByNamespace(input: CSSDirectivePlanInput, namespace: st
     )
 }
 
-function validateTokenConflicts(input: CSSDirectivePlanInput, resolveVariableName: CSSDirectiveVariableNameResolver) {
+function validateTokenConflicts(input: CSSDirectiveManifestInput, resolveVariableName: CSSDirectiveVariableNameResolver) {
     const modes = collectModeNames(input)
     const breakpoints = collectVariablesByNamespace(input, 'breakpoint', resolveVariableName)
     const containers = collectVariablesByNamespace(input, 'container', resolveVariableName)
@@ -256,7 +256,7 @@ function validateTokenConflicts(input: CSSDirectivePlanInput, resolveVariableNam
     }
 }
 
-function warnUnsupportedMediaModes(input: CSSDirectivePlanInput, options: LowerCSSDirectivesOptions, warnings: string[]) {
+function warnUnsupportedMediaModes(input: CSSDirectiveManifestInput, options: LowerCSSDirectivesOptions, warnings: string[]) {
     if (input.modeTrigger !== 'media') return
 
     const customModes = new Set((input.modes || []).filter((mode) => !MEDIA_MODE_NAMES.has(mode)))
@@ -270,9 +270,9 @@ function warnUnsupportedMediaModes(input: CSSDirectivePlanInput, options: LowerC
     warn(warnings, options, `Custom ${subject} ${modeList} will not work with mode-trigger: media. Browsers only support light and dark prefers-color-scheme values; use mode-trigger: class or host for custom modes.`)
 }
 
-function createCSS(input: CSSDirectivePlanInput, options: LowerCSSDirectivesOptions) {
-    return createCompilerCSS(createMasterCSSPlan(input, {
-        basePlan: getResolutionPlan(options)
+function createCSS(input: CSSDirectiveManifestInput, options: LowerCSSDirectivesOptions) {
+    return createCompilerCSS(createMasterCSSManifest(input, {
+        baseManifest: getResolutionManifest(options)
     }), undefined, {
         nativeDeclarationMatcher: cssTreeNativeDeclarationMatcher
     })
@@ -352,13 +352,13 @@ function combineSelectorWrapper(selector: string, wrapper: string) {
 interface ResolvedStyleBranch {
     selector: string
     atRules?: string[]
-    layer?: MasterCSSPlanUtilityLayerName
+    layer?: MasterCSSManifestUtilityLayerName
 }
 
 interface ResolvedVariantReferenceBranch {
     selector?: string
     atRules?: string[]
-    layer?: MasterCSSPlanUtilityLayerName
+    layer?: MasterCSSManifestUtilityLayerName
 }
 
 function mergeResolvedVariantReferenceBranch(
@@ -517,7 +517,7 @@ function resolveMasterVariantReference(token: string, css: MasterCSS): ResolvedV
     return branches
 }
 
-function resolveConfiguredBranches(atRules: string[] | undefined, css: MasterCSS, selector = '&', layer?: MasterCSSPlanUtilityLayerName): ResolvedStyleBranch[] {
+function resolveConfiguredBranches(atRules: string[] | undefined, css: MasterCSS, selector = '&', layer?: MasterCSSManifestUtilityLayerName): ResolvedStyleBranch[] {
     let branches: ResolvedStyleBranch[] = [{ selector, ...(layer ? { layer } : {}) }]
     if (!atRules?.length) return branches
 
@@ -569,7 +569,7 @@ function ensureUtilityRules(definition: CSSDirectiveUtilityDefinition) {
     })
 }
 
-function finalizeUtilityDefinitions(input: CSSDirectivePlanInput, css: MasterCSS) {
+function finalizeUtilityDefinitions(input: CSSDirectiveManifestInput, css: MasterCSS) {
     const utilities = input.utilities
     if (!utilities?.length) return
 
@@ -602,7 +602,7 @@ function finalizeUtilityDefinitions(input: CSSDirectivePlanInput, css: MasterCSS
     }
 }
 
-function getStyleMergeBucketKey(selector: string, atRules: string[] | undefined, layer: MasterCSSPlanUtilityLayerName | undefined) {
+function getStyleMergeBucketKey(selector: string, atRules: string[] | undefined, layer: MasterCSSManifestUtilityLayerName | undefined) {
     return JSON.stringify([layer || '', selector, atRules || []])
 }
 
@@ -610,7 +610,7 @@ function pushStyleMergeEvent(
     buckets: Map<string, StyleMergeBucket>,
     selector: string,
     atRules: string[] | undefined,
-    layer: MasterCSSPlanUtilityLayerName | undefined,
+    layer: MasterCSSManifestUtilityLayerName | undefined,
     event: StyleMergeEvent
 ) {
     const key = getStyleMergeBucketKey(selector, atRules, layer)
@@ -753,7 +753,7 @@ function compareStyleMergeBuckets(a: StyleMergeBucket, b: StyleMergeBucket, root
     return a.order - b.order
 }
 
-function createMergedStyleDefinitions(definitions: CSSDirectiveStyleDefinition[], css: MasterCSS, targetLayer?: MasterCSSPlanUtilityLayerName) {
+function createMergedStyleDefinitions(definitions: CSSDirectiveStyleDefinition[], css: MasterCSS, targetLayer?: MasterCSSManifestUtilityLayerName) {
     const buckets = new Map<string, StyleMergeBucket>()
     for (const definition of definitions) {
         if (definition.type === 'compose') {
@@ -802,7 +802,7 @@ function isManagedStyleDefinition(definition: CSSDirectiveStyleDefinition): defi
     return Boolean(definition.name)
 }
 
-function getManagedStyleDefinitionLayer(definition: ManagedStyleDefinition): MasterCSSPlanUtilityLayerName {
+function getManagedStyleDefinitionLayer(definition: ManagedStyleDefinition): MasterCSSManifestUtilityLayerName {
     return definition.layer || 'components'
 }
 
@@ -814,7 +814,7 @@ function splitManagedStyleDefinitionKey(key: string) {
     const [name, layer] = key.split('\0')
     return {
         name,
-        layer: layer as MasterCSSPlanUtilityLayerName
+        layer: layer as MasterCSSManifestUtilityLayerName
     }
 }
 
@@ -906,7 +906,7 @@ function renderStyleDefinitions(definitions: MergedStyleDefinition[]) {
     }).join('')
 }
 
-function getStaticUtilityDefinition(input: CSSDirectivePlanInput, name: string, layer: CSSDirectiveLayerName) {
+function getStaticUtilityDefinition(input: CSSDirectiveManifestInput, name: string, layer: CSSDirectiveLayerName) {
     input.utilities ??= []
     const existing = input.utilities.find((utility) =>
         utility.name === name
@@ -942,7 +942,7 @@ function pushStaticUtilityStyleRule(definition: CSSDirectiveUtilityDefinition, s
 }
 
 function finalizeStyleDefinitions(
-    input: CSSDirectivePlanInput,
+    input: CSSDirectiveManifestInput,
     styleDefinitions: CSSDirectiveStyleDefinition[] | undefined,
     css: MasterCSS,
     options: LowerCSSDirectivesOptions
@@ -982,16 +982,16 @@ function finalizeStyleDefinitions(
             const utilityDefinition = getStaticUtilityDefinition(input, name, layer)
             pushStaticUtilityStyleRule(utilityDefinition, definition)
         }
-        css.refresh(createMasterCSSPlan(input, { basePlan: getResolutionPlan(options) }))
+        css.refresh(createMasterCSSManifest(input, { baseManifest: getResolutionManifest(options) }))
     }
 
     if (!nativeDefinitions.length) return ''
     return renderStyleDefinitions(createMergedStyleDefinitions(nativeDefinitions, css))
 }
 
-export default function lowerCSSDirectives(input: CSSDirectivePlanInputSource, options: LowerCSSDirectivesOptions = {}): LowerCSSDirectivesResult {
+export default function lowerCSSDirectives(input: CSSDirectiveManifestInputSource, options: LowerCSSDirectivesOptions = {}): LowerCSSDirectivesResult {
     const directiveInput = normalizeDirectiveInput(input, options)
-    const resolveVariableName = createVariableNameResolver(directiveInput, { basePlan: getResolutionPlan(options) })
+    const resolveVariableName = createVariableNameResolver(directiveInput, { baseManifest: getResolutionManifest(options) })
     const warnings = isCSSDirectiveResult(input) ? [...input.warnings] : []
 
     validateTokenConflicts(directiveInput, resolveVariableName)
@@ -999,13 +999,13 @@ export default function lowerCSSDirectives(input: CSSDirectivePlanInputSource, o
 
     const css = createCSS(directiveInput, options)
     finalizeUtilityDefinitions(directiveInput, css)
-    css.refresh(createMasterCSSPlan(directiveInput, { basePlan: getResolutionPlan(options) }))
+    css.refresh(createMasterCSSManifest(directiveInput, { baseManifest: getResolutionManifest(options) }))
     const generatedCSS = finalizeStyleDefinitions(directiveInput, getStyleDefinitions(input), css, options)
-    const plan = createMasterCSSPlan(directiveInput, { basePlan: options.basePlan })
+    const manifest = createMasterCSSManifest(directiveInput, { baseManifest: options.baseManifest })
 
     return {
         input: directiveInput,
-        plan,
+        manifest,
         warnings,
         generatedCSS
     }

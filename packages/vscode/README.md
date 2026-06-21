@@ -8,7 +8,7 @@
 
 </div>
 
-Master CSS for Visual Studio Code provides plan-aware language features for Master CSS classes, CSS directives, and project-specific tokens. The extension starts the bundled Master CSS language server, loads the nearest project plan, and brings completion, hover, TextMate directive highlighting, semantic class-list highlighting, color tools, and directive diagnostics into supported files.
+Master CSS for Visual Studio Code provides manifest-aware language features for Master CSS classes, CSS directives, and project-specific tokens. The extension starts the bundled Master CSS language server, loads the nearest project manifest, and brings completion, hover, TextMate directive highlighting, semantic class-list highlighting, color tools, and directive diagnostics into supported files.
 
 ## Quick Start
 
@@ -42,12 +42,12 @@ For project-aware tokens, create a CSS entry that contains `@master;` or `@impor
 
 - **Syntax suggestions**: Completes Master CSS utilities, values, selectors, queries, groups, and directive syntax in configured languages.
 - **Hover inspection**: Shows generated CSS previews for Master CSS syntax at the cursor.
-- **Syntax highlighting**: Highlights CSS directive syntax with the bundled TextMate grammar, then uses semantic tokens for embedded class lists, plan-aware variables, components, selectors, pseudo states, queries, units, important markers, and quoted strings.
+- **Syntax highlighting**: Highlights CSS directive syntax with the bundled TextMate grammar, then uses semantic tokens for embedded class lists, manifest-aware variables, components, selectors, pseudo states, queries, units, important markers, and quoted strings.
 - **Embedded highlighting modes**: Highlights the active class context by default, can highlight every discovered embedded utility, or can disable embedded utility highlighting.
 - **Color support**: Shows VS Code color decorators for supported Master CSS color syntax and lets the VS Code color picker edit those values.
 - **Directive diagnostics**: Reports Master CSS directive errors in CSS, SCSS, LESS, and style blocks inside Vue, Svelte, and Astro files.
-- **Workspace-aware plans**: Loads project plans from the closest detected Master CSS workspace so completions and tokens reflect custom variables, components, utilities, and modes.
-- **Restart command**: Provides `Master CSS: Restart Language Server` for reloading the language server after dependency, plan, or workspace changes.
+- **Workspace-aware manifests**: Loads project manifests from the closest detected Master CSS workspace so completions and tokens reflect custom variables, components, utilities, and modes.
+- **Restart command**: Provides `Master CSS: Restart Language Server` for reloading the language server after dependency, manifest, or workspace changes.
 
 The default language list covers HTML, PHP, JavaScript, TypeScript, JSX, TSX, CSS, SCSS, LESS, Vue, Svelte, Rust, Astro, Markdown, and MDX.
 
@@ -58,7 +58,7 @@ The default language list covers HTML, PHP, JavaScript, TypeScript, JSX, TSX, CS
 - CSS files containing `@master;` or `@import "@master/css";`
 - `package.json` files that declare Master CSS package dependencies such as `@master/css`, `@master/css-runtime`, or official integration packages matching `@master/css*`
 
-Each detected workspace gets its own language service and project plan. In monorepos, this lets each package use its nearest Master CSS plan while still keeping the root workspace available.
+Each detected workspace gets its own language service and project manifest. In monorepos, this lets each package use its nearest Master CSS manifest while still keeping the root workspace available.
 
 Use explicit workspace globs when auto detection is not the intended project shape:
 
@@ -195,7 +195,7 @@ Open the Command Palette and run:
 Master CSS: Restart Language Server
 ```
 
-Use this after changing dependencies, workspace layout, or project plan files if VS Code has not reloaded the language server automatically. The extension also restarts the Master CSS language server when `masterCSS.*` settings change.
+Use this after changing dependencies, workspace layout, or project manifest files if VS Code has not reloaded the language server automatically. The extension also restarts the Master CSS language server when `masterCSS.*` settings change.
 
 ## Requirements and Limitations
 
@@ -207,7 +207,7 @@ Use this after changing dependencies, workspace layout, or project plan files if
 ## Troubleshooting
 
 - **Completions do not show inside strings**: Enable `editor.quickSuggestions.strings` as shown in [Quick Start](#quick-start).
-- **Plan-specific variables or components are missing**: Ensure the project has a detected CSS entry or Master CSS package dependency, then run `Master CSS: Restart Language Server`.
+- **Manifest-specific variables or components are missing**: Ensure the project has a detected CSS entry or Master CSS package dependency, then run `Master CSS: Restart Language Server`.
 - **The wrong monorepo package is used**: Set `masterCSS.workspaces` to explicit workspace directories.
 - **Embedded markup highlighting is too noisy or too quiet**: Change `masterCSS.embeddedSyntaxHighlighting` to `active`, `always`, or `off`.
 - **Semantic colors do not appear**: Confirm VS Code semantic highlighting is enabled for the active theme.

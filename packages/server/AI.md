@@ -6,7 +6,7 @@
 
 ## Inputs And Outputs
 
-- Input: HTML string and optional MasterCSSPlan.
+- Input: HTML string and optional MasterCSSManifest.
 - Output: rendered HTML, optional `MasterCSS` instance, extracted classes, parsed DOM nodes, style/head/html elements.
 
 ## Public APIs

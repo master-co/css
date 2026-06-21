@@ -1,22 +1,22 @@
 import type {
-    MasterCSSPlanDefaultMode,
-    MasterCSSPlanUtilityKind,
-    MasterCSSPlanModeTrigger,
-    MasterCSSPlanUtilityLayerName,
-    MasterCSSPlanVariant
-} from './master-css-plan.js'
+    MasterCSSManifestDefaultMode,
+    MasterCSSManifestUtilityKind,
+    MasterCSSManifestModeTrigger,
+    MasterCSSManifestUtilityLayerName,
+    MasterCSSManifestVariant
+} from './master-css-manifest.js'
 
 export type CSSDirectiveVariableValue = number | string | false | (number | string)[]
 
 export type CSSDirectiveDeclarations = Record<string, string>
 
-export type CSSDirectiveLayerName = MasterCSSPlanUtilityLayerName
+export type CSSDirectiveLayerName = MasterCSSManifestUtilityLayerName
 
-export type CSSDirectiveModeTrigger = MasterCSSPlanModeTrigger
+export type CSSDirectiveModeTrigger = MasterCSSManifestModeTrigger
 
-export type CSSDirectiveDefaultMode = MasterCSSPlanDefaultMode
+export type CSSDirectiveDefaultMode = MasterCSSManifestDefaultMode
 
-export type CSSDirectiveVariantDefinitions = Pick<MasterCSSPlanVariant, 'token' | 'branches'>[]
+export type CSSDirectiveVariantDefinitions = Pick<MasterCSSManifestVariant, 'token' | 'branches'>[]
 
 export interface CSSDirectiveSourceRange {
     start: number
@@ -125,7 +125,7 @@ export interface CSSDirectiveUtilityPatternDefinition {
 export interface CSSDirectiveUtilityDynamicDefinition {
     key: string
     variableAliasRefs?: string[]
-    kind?: MasterCSSPlanUtilityKind
+    kind?: MasterCSSManifestUtilityKind
     values?: string[]
     arbitrary?: boolean
 }
@@ -141,7 +141,7 @@ export interface CSSDirectiveUtilityDefinition {
     rules?: CSSDirectiveUtilityRuleDefinition[]
 }
 
-export interface CSSDirectivePlanInput {
+export interface CSSDirectiveManifestInput {
     variants?: CSSDirectiveVariantDefinitions
     variables?: CSSDirectiveVariableDefinition[]
     utilities?: CSSDirectiveUtilityDefinition[]
@@ -200,7 +200,7 @@ export type CSSDirectiveStyleDefinition =
     | CSSDirectiveStyleNativeDefinition
 
 export interface CSSDirectiveResult {
-    planInput: CSSDirectivePlanInput
+    manifestInput: CSSDirectiveManifestInput
     extractionPolicy: CSSDirectiveExtractionPolicy
     classNames: string[]
     nativeClassNames: string[]

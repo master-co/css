@@ -1,10 +1,10 @@
 import type CSSExtractor from '@master/css-extractor'
-import type { MasterCSSPreloaded } from '@master/css'
+import type { MasterCSSEmittedGlobals } from '@master/css'
 import type { StyleCSSSources } from '@master/css-stylesheet'
 import type { Plugin, ResolvedConfig } from 'vite'
-import PlanLoaderPlugin from './plugins/plan-loader'
-import PlanVirtualModulePlugin from './plugins/plan-virtual-module'
-import PreloadedVirtualModulePlugin from './plugins/preloaded-virtual-module'
+import ManifestLoaderPlugin from './plugins/manifest-loader'
+import ManifestVirtualModulePlugin from './plugins/manifest-virtual-module'
+import EmittedGlobalsVirtualModulePlugin from './plugins/emitted-globals-virtual-module'
 import StaticMode from './modes/static'
 import RuntimeMode from './modes/runtime'
 import ProgressiveMode from './modes/progressive'
@@ -25,7 +25,7 @@ export interface PluginContext {
     virtualCSSPlaceholderEmitted?: boolean
     styleCSSSources?: StyleCSSSources
     includeGeneratedCSS?: boolean
-    preloaded?: MasterCSSPreloaded
+    emittedGlobals?: MasterCSSEmittedGlobals
 }
 
 export default function masterCSS(options?: PluginOptions): Plugin[] {
@@ -35,9 +35,9 @@ export default function masterCSS(options?: PluginOptions): Plugin[] {
     } as PluginContext
     const plugins: Plugin[] = [
         ContextPlugin(options, context),
-        PlanVirtualModulePlugin(options, context),
-        PreloadedVirtualModulePlugin(context),
-        PlanLoaderPlugin(context),
+        ManifestVirtualModulePlugin(options, context),
+        EmittedGlobalsVirtualModulePlugin(context),
+        ManifestLoaderPlugin(context),
         ExtractorPlugin(options, context),
         UsageGraphPlugin(options, context),
         LocalComposePlugin(options, context),

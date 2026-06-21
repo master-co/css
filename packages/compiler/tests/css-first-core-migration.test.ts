@@ -1,15 +1,15 @@
 import { describe, expect, test } from 'vitest'
 import { createCSS } from '@master/css-engine'
-import { compileCSS, compileCSSPlan } from '../src'
-import defaultPlanJSON from '@master/css-preset/default-plan.json' with { type: 'json' }
-import type { MasterCSSPlan } from 'shared/master-css-plan'
+import { compileCSS, compileCSSManifest } from '../src'
+import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
+import type { MasterCSSManifest } from 'shared/master-css-manifest'
 import UtilityType from 'shared/utility-type'
 
-const defaultPlan = defaultPlanJSON as unknown as MasterCSSPlan
+const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 
 describe.concurrent('CSS-first lowering for migrated core tests', () => {
-    test('lowers theme variables, modes, semantic components, utilities, and variants into one plan', () => {
-        const { plan, warnings } = compileCSSPlan(`
+    test('lowers theme variables, modes, semantic components, utilities, and variants into one manifest', () => {
+        const { manifest, warnings } = compileCSSManifest(`
             @settings {
                 mode-trigger: class;
                 modes: light dark;
@@ -57,33 +57,33 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
                 }
             }
         `, {
-            basePlan: defaultPlan
+            baseManifest: defaultManifest
         })
 
         expect(warnings).toEqual([])
-        expect(plan.settings).toMatchObject({
+        expect(manifest.settings).toMatchObject({
             modeTrigger: 'class',
             modes: ['light', 'dark']
         })
-        expect(plan.variables).toContainEqual(expect.objectContaining({
+        expect(manifest.variables).toContainEqual(expect.objectContaining({
             name: 'spacing-card',
             namespace: 'spacing',
             type: 'number',
             value: '1rem',
             numeric: { value: 1, unit: 'rem' }
         }))
-        expect(plan.variants?.find((variant) => variant.token === ':interactive')?.branches[0].selectorNodes)
+        expect(manifest.variants?.find((variant) => variant.token === ':interactive')?.branches[0].selectorNodes)
             .toEqual(expect.arrayContaining([
                 expect.objectContaining({ type: 'pseudo-class', value: 'is' })
             ]))
-        expect(plan.atRules?.print).toMatchObject({
+        expect(manifest.atRules?.print).toMatchObject({
             id: 'media',
             nodes: [expect.objectContaining({ type: 'string', value: 'print' })]
         })
-        expect(plan.utilities?.some((utility) => utility.name === 'btn' && utility.layer === 'components')).toBe(true)
-        expect(plan.utilities?.some((utility) => utility.name === 'content-auto' && utility.layer === 'utilities')).toBe(true)
+        expect(manifest.utilities?.some((utility) => utility.name === 'btn' && utility.layer === 'components')).toBe(true)
+        expect(manifest.utilities?.some((utility) => utility.name === 'content-auto' && utility.layer === 'utilities')).toBe(true)
 
-        const css = createCSS(plan)
+        const css = createCSS(manifest)
         css.add('btn', 'btn:interactive', 'content-auto', 'm:card')
         expect(css.themeLayer.text).toContain(':root{--color-primary:#000;--spacing-card:1rem}')
         expect(css.themeLayer.text).toContain('.dark{--color-primary:#fff}')
@@ -96,7 +96,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
     })
 
     test('lowers managed enum patterns as semantic utilities without replacing exact utility precedence', () => {
-        const { plan } = compileCSSPlan(`
+        const { manifest } = compileCSSManifest(`
             @utilities {
                 text-<left|right|center> {
                     text-align: --value();
@@ -117,11 +117,11 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
                 }
             }
         `, {
-            basePlan: defaultPlan
+            baseManifest: defaultManifest
         })
 
-        expect(plan.utilityBuckets?.pattern?.length).toBeGreaterThan(0)
-        expect(plan.utilities?.find((utility) => utility.id === 'text-<left|right|center>')).toMatchObject({
+        expect(manifest.utilityBuckets?.pattern?.length).toBeGreaterThan(0)
+        expect(manifest.utilities?.find((utility) => utility.id === 'text-<left|right|center>')).toMatchObject({
             type: UtilityType.Semantic,
             matchers: [{
                 type: 'pattern',
@@ -130,7 +130,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
             }]
         })
 
-        const css = createCSS(plan)
+        const css = createCSS(manifest)
         expect(css.create('text-left')?.text).toBe('.text-left{text-align:left}')
         expect(css.create('n-2')?.text).toBe('.n-2{margin:calc(2 * 1px)}')
         expect(css.create('text-center')?.text).toBe('.text-center{text-align:start}')
@@ -140,7 +140,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
     })
 
     test('lowers managed dynamic colon entries without restoring fixed keyword aliases', () => {
-        const { plan } = compileCSSPlan(`
+        const { manifest } = compileCSSManifest(`
             @theme {
                 --font-size-sm: .875rem;
                 --font-family-sans: ui-sans-serif;
@@ -196,7 +196,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
             }
         `)
 
-        expect(plan.utilities?.find((utility) => utility.id === 'font:<~font-size|number>')).toMatchObject({
+        expect(manifest.utilities?.find((utility) => utility.id === 'font:<~font-size|number>')).toMatchObject({
             kind: 'number',
             variableAliasRefs: ['~font-size'],
             matchers: expect.arrayContaining([
@@ -204,9 +204,9 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
                 { type: 'value', keys: ['font'] }
             ])
         })
-        expect(plan.utilities?.find((utility) => utility.id === 'grid-cols:<number>')?.type).toBe(UtilityType.Normal)
-        expect(plan.utilities?.find((utility) => utility.id === 'size:<~container|number>')?.type).toBe(UtilityType.Shorthand)
-        expect(plan.utilities?.find((utility) => utility.id === 'bg:<~color|color>')).toMatchObject({
+        expect(manifest.utilities?.find((utility) => utility.id === 'grid-cols:<number>')?.type).toBe(UtilityType.Normal)
+        expect(manifest.utilities?.find((utility) => utility.id === 'size:<~container|number>')?.type).toBe(UtilityType.Shorthand)
+        expect(manifest.utilities?.find((utility) => utility.id === 'bg:<~color|color>')).toMatchObject({
             kind: 'color',
             variableAliasRefs: ['~color'],
             matchers: expect.arrayContaining([
@@ -214,17 +214,17 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
                 { type: 'value', keys: ['bg'] }
             ])
         })
-        expect(plan.utilities?.find((utility) => utility.id === 'fg:<~color-text|~color|color>')).toMatchObject({
+        expect(manifest.utilities?.find((utility) => utility.id === 'fg:<~color-text|~color|color>')).toMatchObject({
             variableAliasRefs: ['~color-text', '~color']
         })
-        expect(plan.utilities?.find((utility) => utility.id === 'user-select:<auto|none|text|all>')).toMatchObject({
+        expect(manifest.utilities?.find((utility) => utility.id === 'user-select:<auto|none|text|all>')).toMatchObject({
             matchers: [{
                 type: 'pattern',
                 prefix: 'user-select:',
                 values: ['auto', 'none', 'text', 'all']
             }]
         })
-        expect(plan.utilities?.find((utility) => utility.id === 'line-clamp:<number|none>')).toMatchObject({
+        expect(manifest.utilities?.find((utility) => utility.id === 'line-clamp:<number|none>')).toMatchObject({
             kind: 'number',
             matchers: expect.arrayContaining([
                 { type: 'value', keys: ['line-clamp'] },
@@ -235,7 +235,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
                 }
             ])
         })
-        expect(plan.utilities?.find((utility) => utility.id === 'text-decoration:<~color|*>')).toMatchObject({
+        expect(manifest.utilities?.find((utility) => utility.id === 'text-decoration:<~color|*>')).toMatchObject({
             variableAliasRefs: ['~color'],
             matchers: expect.arrayContaining([
                 { type: 'variable', keys: ['text-decoration'] },
@@ -243,7 +243,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
             ])
         })
 
-        const css = createCSS(plan)
+        const css = createCSS(manifest)
         expect(css.create('font:sm')?.text).toBe('.font\\:sm{font-size:var(--font-size-sm)}')
         expect(css.create('font:sans')?.text).toBe('.font\\:sans{font-family:var(--font-family-sans)}')
         expect(css.create('font:bold')?.text).toBe('.font\\:bold{font-weight:var(--font-weight-bold)}')
@@ -263,151 +263,151 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
     })
 
     test('rejects unsupported managed enum pattern syntax', () => {
-        expect(() => compileCSSPlan(`
+        expect(() => compileCSSManifest(`
             @utilities {
                 x-<> {
                     color: --value();
                 }
             }
-        `, { basePlan: defaultPlan })).toThrow('Managed enum pattern cannot be empty')
+        `, { baseManifest: defaultManifest })).toThrow('Managed enum pattern cannot be empty')
 
-        expect(() => compileCSSPlan(`
+        expect(() => compileCSSManifest(`
             @utilities {
                 x-<a> {
                     color: --value();
                 }
             }
-        `, { basePlan: defaultPlan })).toThrow('Managed enum pattern requires at least two values separated by "|"')
+        `, { baseManifest: defaultManifest })).toThrow('Managed enum pattern requires at least two values separated by "|"')
 
-        expect(() => compileCSSPlan(`
+        expect(() => compileCSSManifest(`
             @utilities {
                 x-<a><b> {
                     color: --value();
                 }
             }
-        `, { basePlan: defaultPlan })).toThrow('Managed pattern must contain exactly one <...> segment')
+        `, { baseManifest: defaultManifest })).toThrow('Managed pattern must contain exactly one <...> segment')
 
-        expect(() => compileCSSPlan(`
+        expect(() => compileCSSManifest(`
             @utilities {
                 font-<font-size> {
                     font-size: --value();
                 }
             }
-        `, { basePlan: defaultPlan })).toThrow('Managed enum pattern requires at least two values separated by "|"')
+        `, { baseManifest: defaultManifest })).toThrow('Managed enum pattern requires at least two values separated by "|"')
 
-        expect(() => compileCSSPlan(`
+        expect(() => compileCSSManifest(`
             @utilities {
                 x-<a,b> {
                     color: --value();
                 }
             }
-        `, { basePlan: defaultPlan })).toThrow('Managed enum pattern values must use "|" separators')
+        `, { baseManifest: defaultManifest })).toThrow('Managed enum pattern values must use "|" separators')
 
-        expect(() => compileCSSPlan(`
+        expect(() => compileCSSManifest(`
             @utilities {
                 x-<a|b> {
                     color: --value(rem);
                 }
             }
-        `, { basePlan: defaultPlan })).toThrow('--value() does not accept arguments')
+        `, { baseManifest: defaultManifest })).toThrow('--value() does not accept arguments')
 
-        expect(() => compileCSSPlan(`
+        expect(() => compileCSSManifest(`
             @utilities {
                 text-center {
                     text-align: --value();
                 }
             }
-        `, { basePlan: defaultPlan })).toThrow('--value() is only supported inside managed pattern declarations')
+        `, { baseManifest: defaultManifest })).toThrow('--value() is only supported inside managed pattern declarations')
     })
 
     test('rejects unsupported managed dynamic colon syntax', () => {
-        expect(() => compileCSSPlan(`
+        expect(() => compileCSSManifest(`
             @utilities {
                 x:<> {
                     color: --value();
                 }
             }
-        `, { basePlan: defaultPlan })).toThrow('Managed dynamic utility source list cannot be empty')
+        `, { baseManifest: defaultManifest })).toThrow('Managed dynamic utility source list cannot be empty')
 
-        expect(() => compileCSSPlan(`
+        expect(() => compileCSSManifest(`
             @utilities {
                 x:<~> {
                     color: --value();
                 }
             }
-        `, { basePlan: defaultPlan })).toThrow('Invalid managed dynamic utility namespace')
+        `, { baseManifest: defaultManifest })).toThrow('Invalid managed dynamic utility namespace')
 
-        expect(() => compileCSSPlan(`
+        expect(() => compileCSSManifest(`
             @utilities {
                 x:<raw> {
                     color: --value();
                 }
             }
-        `, { basePlan: defaultPlan })).toThrow('Managed dynamic utility enum source requires at least two values separated by "|"')
+        `, { baseManifest: defaultManifest })).toThrow('Managed dynamic utility enum source requires at least two values separated by "|"')
 
-        expect(() => compileCSSPlan(`
+        expect(() => compileCSSManifest(`
             @utilities {
                 x:<~color|none> {
                     color: --value();
                 }
             }
-        `, { basePlan: defaultPlan })).toThrow('Managed dynamic utility enum values cannot be combined with namespaces')
+        `, { baseManifest: defaultManifest })).toThrow('Managed dynamic utility enum values cannot be combined with namespaces')
 
-        expect(() => compileCSSPlan(`
+        expect(() => compileCSSManifest(`
             @utilities {
                 x:<color|none> {
                     color: --value();
                 }
             }
-        `, { basePlan: defaultPlan })).toThrow('Managed dynamic utility enum values cannot be combined with namespaces')
+        `, { baseManifest: defaultManifest })).toThrow('Managed dynamic utility enum values cannot be combined with namespaces')
 
-        expect(() => compileCSSPlan(`
+        expect(() => compileCSSManifest(`
             @utilities {
                 x:<*|none> {
                     color: --value();
                 }
             }
-        `, { basePlan: defaultPlan })).toThrow('Managed dynamic utility wildcard cannot be combined with enum or raw value kinds')
+        `, { baseManifest: defaultManifest })).toThrow('Managed dynamic utility wildcard cannot be combined with enum or raw value kinds')
 
-        expect(() => compileCSSPlan(`
+        expect(() => compileCSSManifest(`
             @utilities {
                 x:<color|*> {
                     color: --value();
                 }
             }
-        `, { basePlan: defaultPlan })).toThrow('Managed dynamic utility wildcard cannot be combined with enum or raw value kinds')
+        `, { baseManifest: defaultManifest })).toThrow('Managed dynamic utility wildcard cannot be combined with enum or raw value kinds')
 
-        expect(() => compileCSSPlan(`
+        expect(() => compileCSSManifest(`
             @utilities {
                 x:<*|number> {
                     color: --value();
                 }
             }
-        `, { basePlan: defaultPlan })).toThrow('Managed dynamic utility wildcard cannot be combined with enum or raw value kinds')
+        `, { baseManifest: defaultManifest })).toThrow('Managed dynamic utility wildcard cannot be combined with enum or raw value kinds')
 
-        expect(() => compileCSSPlan(`
+        expect(() => compileCSSManifest(`
             @utilities {
                 x:<number,color> {
                     color: --value();
                 }
             }
-        `, { basePlan: defaultPlan })).toThrow('Managed dynamic utility source lists must use "|" separators')
+        `, { baseManifest: defaultManifest })).toThrow('Managed dynamic utility source lists must use "|" separators')
 
-        expect(() => compileCSSPlan(`
+        expect(() => compileCSSManifest(`
             @utilities {
                 x:<number|color> {
                     color: --value();
                 }
             }
-        `, { basePlan: defaultPlan })).toThrow('Managed dynamic utilities only support one raw value kind per entry')
+        `, { baseManifest: defaultManifest })).toThrow('Managed dynamic utilities only support one raw value kind per entry')
 
-        expect(() => compileCSSPlan(`
+        expect(() => compileCSSManifest(`
             @utilities {
                 :<number> {
                     color: --value();
                 }
             }
-        `, { basePlan: defaultPlan })).toThrow('Managed dynamic utilities must use key:<...> syntax')
+        `, { baseManifest: defaultManifest })).toThrow('Managed dynamic utilities must use key:<...> syntax')
     })
 
     test('does not consume @utility as a Master CSS directive', () => {
@@ -419,7 +419,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
             preserveNativeCSS: false
         })
 
-        expect(result.planInput.utilities).toBeUndefined()
+        expect(result.manifestInput.utilities).toBeUndefined()
     })
 
     test('lowers dark and light shorthand variant blocks like explicit variant blocks', () => {
@@ -429,7 +429,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
                 modes: light dark chrisma;
             }
         `
-        const explicit = compileCSSPlan(`
+        const explicit = compileCSSManifest(`
             ${settings}
 
             @components {
@@ -456,8 +456,8 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
                     @compose hidden;
                 }
             }
-        `, { basePlan: defaultPlan })
-        const shorthand = compileCSSPlan(`
+        `, { baseManifest: defaultManifest })
+        const shorthand = compileCSSManifest(`
             ${settings}
 
             @components {
@@ -484,10 +484,10 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
                     @compose hidden;
                 }
             }
-        `, { basePlan: defaultPlan })
+        `, { baseManifest: defaultManifest })
 
-        const explicitCSS = createCSS(explicit.plan).add('panel')
-        const shorthandCSS = createCSS(shorthand.plan).add('panel')
+        const explicitCSS = createCSS(explicit.manifest).add('panel')
+        const shorthandCSS = createCSS(shorthand.manifest).add('panel')
 
         expect(shorthand.css).toBe(explicit.css)
         expect(shorthandCSS.componentsLayer.text).toBe(explicitCSS.componentsLayer.text)
@@ -498,7 +498,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
     })
 
     test('keeps custom modes explicit behind @variant', () => {
-        const customMode = compileCSSPlan(`
+        const customMode = compileCSSManifest(`
             @settings {
                 mode-trigger: class;
                 modes: light dark chrisma;
@@ -509,10 +509,10 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
                     color: green;
                 }
             }
-        `, { basePlan: defaultPlan })
+        `, { baseManifest: defaultManifest })
 
         expect(customMode.css).toContain('.chrisma .card{color:green}')
-        const bareAtRule = compileCSSPlan(`
+        const bareAtRule = compileCSSManifest(`
             @settings {
                 mode-trigger: class;
                 modes: light dark chrisma;
@@ -523,30 +523,30 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
                     color: green;
                 }
             }
-        `, { basePlan: defaultPlan })
+        `, { baseManifest: defaultManifest })
 
         expect(bareAtRule.css).toContain('@chrisma')
         expect(bareAtRule.css).not.toContain('.chrisma .card')
     })
 
-    test('replaces old JS merging intent with ordered CSS imports through basePlan lowering', () => {
-        const first = compileCSSPlan(`
+    test('replaces old JS merging intent with ordered CSS imports through baseManifest lowering', () => {
+        const first = compileCSSManifest(`
             @components {
                 a { order: 1; }
                 b { order: 2; }
             }
         `, {
-            basePlan: defaultPlan
+            baseManifest: defaultManifest
         })
-        const second = compileCSSPlan(`
+        const second = compileCSSManifest(`
             @components {
                 b { order: 22; }
                 c { order: 3; }
             }
         `, {
-            basePlan: first.plan
+            baseManifest: first.manifest
         })
-        const css = createCSS(second.plan)
+        const css = createCSS(second.manifest)
 
         css.add('a', 'b', 'c')
         expect(css.componentsLayer.text).toContain('.a{order:1}')
@@ -556,7 +556,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
     })
 
     test('lowers managed animations and removes them when no class references remain', () => {
-        const { plan } = compileCSSPlan(`
+        const { manifest } = compileCSSManifest(`
             @theme {
                 --color-primary: #ff0;
 
@@ -573,11 +573,11 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
                 }
             }
         `, {
-            basePlan: defaultPlan
+            baseManifest: defaultManifest
         })
-        const css = createCSS(plan)
+        const css = createCSS(manifest)
 
-        expect(plan.animations?.fade).toEqual({
+        expect(manifest.animations?.fade).toEqual({
             to: {
                 background: 'var(--color-primary)'
             }
@@ -606,29 +606,29 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
             }
         `
 
-        const lightDefault = createCSS(compileCSSPlan(`
+        const lightDefault = createCSS(compileCSSManifest(`
             @settings {
                 default-mode: light;
             }
 
             ${base}
-        `, { basePlan: defaultPlan }).plan).add('bg:emphasis')
+        `, { baseManifest: defaultManifest }).manifest).add('bg:emphasis')
         expect(lightDefault.themeLayer.text).toContain('.light,:root{--color-emphasis:#000}')
         expect(lightDefault.themeLayer.text).toContain('.dark{--color-emphasis:#fff}')
 
-        const noDefault = createCSS(compileCSSPlan(`
+        const noDefault = createCSS(compileCSSManifest(`
             @settings {
                 default-mode: none;
             }
 
             ${base}
-        `, { basePlan: defaultPlan }).plan).add('bg:emphasis')
+        `, { baseManifest: defaultManifest }).manifest).add('bg:emphasis')
         expect(noDefault.themeLayer.text).toContain('.light{--color-emphasis:#000}')
         expect(noDefault.themeLayer.text).not.toContain('.light,:root{--color-emphasis')
     })
 
     test('lowers color variables, mode values, aliases, and alpha references', () => {
-        const { plan } = compileCSSPlan(`
+        const { manifest } = compileCSSManifest(`
             @settings {
                 mode-trigger: class;
                 modes: light dark chrisma;
@@ -651,8 +651,8 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
             @theme chrisma {
                 --color-primary: $color-black/.5;
             }
-        `, { basePlan: defaultPlan })
-        const css = createCSS(plan).add('bg:primary', 'bg:primary/.5', 'bg:alias')
+        `, { baseManifest: defaultManifest })
+        const css = createCSS(manifest).add('bg:primary', 'bg:primary/.5', 'bg:alias')
 
         expect(css.themeLayer.text).toContain(':root{--color-primary:#000;--color-black:#000;--color-alias:var(--color-primary)}')
         expect(css.themeLayer.text).toContain('.light{--color-primary:#969696}')
@@ -664,7 +664,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
     })
 
     test('resolves built-in and utility-owned theme namespaces before lowering composed definitions', () => {
-        const { plan } = compileCSSPlan(`
+        const { manifest } = compileCSSManifest(`
             @theme {
                 --content-stripe: 'stripe';
                 --box-shadow-panel: 0 1px 2px #000;
@@ -681,43 +681,43 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
                     @compose content:stripe;
                 }
             }
-        `, { basePlan: defaultPlan })
+        `, { baseManifest: defaultManifest })
 
-        expect(plan.variables).toContainEqual(expect.objectContaining({
+        expect(manifest.variables).toContainEqual(expect.objectContaining({
             name: 'content-stripe',
             namespace: 'content',
             key: 'stripe'
         }))
-        expect(plan.variables).toContainEqual(expect.objectContaining({
+        expect(manifest.variables).toContainEqual(expect.objectContaining({
             name: 'box-shadow-panel',
             key: 'box-shadow-panel'
         }))
-        expect(plan.variables).not.toContainEqual(expect.objectContaining({
+        expect(manifest.variables).not.toContainEqual(expect.objectContaining({
             name: 'box-shadow-panel',
             namespace: 'box-shadow'
         }))
-        expect(plan.variables).toContainEqual(expect.objectContaining({
+        expect(manifest.variables).toContainEqual(expect.objectContaining({
             name: 'shadow-panel',
             namespace: 'shadow',
             key: 'panel'
         }))
-        expect(plan.variables).toContainEqual(expect.objectContaining({
+        expect(manifest.variables).toContainEqual(expect.objectContaining({
             name: 'spacing-card',
             namespace: 'spacing',
             key: 'card'
         }))
-        expect(plan.variables).toContainEqual(expect.objectContaining({
+        expect(manifest.variables).toContainEqual(expect.objectContaining({
             name: 'leading-body',
             namespace: 'leading',
             key: 'body'
         }))
-        expect(plan.variables).toContainEqual(expect.objectContaining({
+        expect(manifest.variables).toContainEqual(expect.objectContaining({
             name: 'color-line-brand',
             namespace: 'color-line',
             key: 'brand'
         }))
 
-        const css = createCSS(plan)
+        const css = createCSS(manifest)
         expect(css.create('content:stripe')?.text).toBe('.content\\:stripe{content:var(--content-stripe)}')
         expect(css.create('shadow:panel')?.text).toBe('.shadow\\:panel{box-shadow:var(--shadow-panel)}')
         expect(css.create('p:card')?.text).toBe('.p\\:card{padding:var(--spacing-card)}')
@@ -736,7 +736,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
     })
 
     test('lowers unquoted compose class lists from raw source', () => {
-        const result = compileCSSPlan(`
+        const result = compileCSSManifest(`
             @theme {
                 --color-primary: #123456;
             }
@@ -750,8 +750,8 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
             .list {
                 @compose text-center>li;
             }
-        `, { basePlan: defaultPlan })
-        const css = createCSS(result.plan)
+        `, { baseManifest: defaultManifest })
+        const css = createCSS(result.manifest)
 
         css.add('card')
 
@@ -785,7 +785,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
         const expectComposeError = (source: string, code: string) => {
             let error: unknown
             try {
-                compileCSSPlan(source, { basePlan: defaultPlan })
+                compileCSSManifest(source, { baseManifest: defaultManifest })
             } catch (caught) {
                 error = caught
             }
@@ -798,7 +798,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
     })
 
     test('executes CSS-first number variables and native value functions through engine semantics', () => {
-        const { plan } = compileCSSPlan(`
+        const { manifest } = compileCSSManifest(`
             @settings {
                 mode-trigger: class;
                 modes: light dark;
@@ -819,8 +819,8 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
                 --spacing-x1: 2rem;
                 --leading-x1: 2;
             }
-        `, { basePlan: defaultPlan })
-        const css = createCSS(plan)
+        `, { baseManifest: defaultManifest })
+        const css = createCSS(manifest)
 
         expect(css.create('m:x1')?.text).toBe('.m\\:x1{margin:var(--spacing-x1)}')
         expect(css.create('m:var(--spacing-x1)')?.text).toBe('.m\\:var\\(--spacing-x1\\){margin:var(--spacing-x1)}')
@@ -840,7 +840,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
     })
 
     test('executes CSS-first unitful numeric variables without double conversion', () => {
-        const { plan } = compileCSSPlan(`
+        const { manifest } = compileCSSManifest(`
             @theme {
                 --spacing-card: 1.5rem;
                 --radius-card: 8px;
@@ -848,24 +848,24 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
                 --container-panel: 512px;
                 --shadow-card: 1rem;
             }
-        `, { basePlan: defaultPlan })
-        const css = createCSS(plan)
+        `, { baseManifest: defaultManifest })
+        const css = createCSS(manifest)
 
-        expect(plan.variables).toContainEqual(expect.objectContaining({
+        expect(manifest.variables).toContainEqual(expect.objectContaining({
             name: 'spacing-card',
             type: 'number',
             value: '1.5rem',
             numeric: { value: 1.5, unit: 'rem' }
         }))
-        expect(plan.variables?.find((variable) => variable.name === 'shadow-card')).toMatchObject({
+        expect(manifest.variables?.find((variable) => variable.name === 'shadow-card')).toMatchObject({
             type: 'string',
             value: '1rem'
         })
-        expect(plan.breakpointAtRules?.card).toMatchObject({
+        expect(manifest.breakpointAtRules?.card).toMatchObject({
             id: 'media',
             nodes: [expect.objectContaining({ value: 48, unit: 'rem' })]
         })
-        expect(plan.containerAtRules?.panel).toMatchObject({
+        expect(manifest.containerAtRules?.panel).toMatchObject({
             id: 'container',
             nodes: [expect.objectContaining({ value: 32, unit: 'rem' })]
         })
@@ -876,7 +876,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
     })
 
     test('lowers inline theme variables without emitting their own theme rules', () => {
-        const { plan } = compileCSSPlan(`
+        const { manifest } = compileCSSManifest(`
             @theme inline {
                 --color-primary: #123;
                 --spacing-card: 1rem;
@@ -887,8 +887,8 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
                 --color-regular: #456;
                 --color-inline-regular: $color-regular;
             }
-        `, { basePlan: defaultPlan })
-        const css = createCSS(plan)
+        `, { baseManifest: defaultManifest })
+        const css = createCSS(manifest)
 
         css.add('bg:primary', 'fg:brand', 'm:card', 'fg:inline-regular')
         expect(css.utilitiesLayer.text).toContain('.bg\\:primary{background-color:#123}')
@@ -901,7 +901,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
     })
 
     test('lowers static theme variables and keyframes into initial resources', () => {
-        const { plan } = compileCSSPlan(`
+        const { manifest } = compileCSSManifest(`
             @settings {
                 mode-trigger: class;
                 modes: light dark;
@@ -924,10 +924,10 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
             @theme static light {
                 --color-secondary: #789;
             }
-        `, { basePlan: defaultPlan })
-        const css = createCSS(plan)
+        `, { baseManifest: defaultManifest })
+        const css = createCSS(manifest)
 
-        expect(plan.variables).toContainEqual(expect.objectContaining({
+        expect(manifest.variables).toContainEqual(expect.objectContaining({
             name: 'color-primary',
             static: true,
             value: '#123',
@@ -938,7 +938,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
                 }
             }
         }))
-        expect(plan.variables).toContainEqual(expect.objectContaining({
+        expect(manifest.variables).toContainEqual(expect.objectContaining({
             name: 'color-secondary',
             static: true,
             modes: {
@@ -948,7 +948,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
                 }
             }
         }))
-        expect(plan.animationOptions?.fade).toEqual({ static: true })
+        expect(manifest.animationOptions?.fade).toEqual({ static: true })
         expect(css.text).toContain('@layer theme{')
         expect(css.text).toContain(':root{--color-primary:#123}')
         expect(css.text).toContain('.dark{--color-primary:#456}')
@@ -957,31 +957,31 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
     })
 
     test('rejects invalid static theme modifier combinations', () => {
-        expect(() => compileCSSPlan(`
+        expect(() => compileCSSManifest(`
             @theme inline static {
                 --color-primary: #123;
             }
-        `, { basePlan: defaultPlan })).toThrow('@theme inline and static cannot be combined')
+        `, { baseManifest: defaultManifest })).toThrow('@theme inline and static cannot be combined')
 
-        expect(() => compileCSSPlan(`
+        expect(() => compileCSSManifest(`
             @theme static inline {
                 --color-primary: #123;
             }
-        `, { basePlan: defaultPlan })).toThrow('@theme inline and static cannot be combined')
+        `, { baseManifest: defaultManifest })).toThrow('@theme inline and static cannot be combined')
 
-        expect(() => compileCSSPlan(`
+        expect(() => compileCSSManifest(`
             @theme static static {
                 --color-primary: #123;
             }
-        `, { basePlan: defaultPlan })).toThrow('@theme static modifier cannot be repeated')
+        `, { baseManifest: defaultManifest })).toThrow('@theme static modifier cannot be repeated')
 
-        expect(() => compileCSSPlan(`
+        expect(() => compileCSSManifest(`
             @theme dark light static {
                 --color-primary: #123;
             }
-        `, { basePlan: defaultPlan })).toThrow('@theme mode must be a single token')
+        `, { baseManifest: defaultManifest })).toThrow('@theme mode must be a single token')
 
-        expect(() => compileCSSPlan(`
+        expect(() => compileCSSManifest(`
             @theme static dark {
                 @keyframes fade {
                     to {
@@ -989,25 +989,25 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
                     }
                 }
             }
-        `, { basePlan: defaultPlan })).toThrow('@theme keyframes cannot be mode-specific or inline')
+        `, { baseManifest: defaultManifest })).toThrow('@theme keyframes cannot be mode-specific or inline')
     })
 
     test('rejects mode-specific inline theme variables in CSS source', () => {
-        expect(() => compileCSSPlan(`
+        expect(() => compileCSSManifest(`
             @theme dark inline {
                 --color-primary: #123;
             }
-        `, { basePlan: defaultPlan })).toThrow('@theme inline cannot be mode-specific')
+        `, { baseManifest: defaultManifest })).toThrow('@theme inline cannot be mode-specific')
 
-        expect(() => compileCSSPlan(`
+        expect(() => compileCSSManifest(`
             @theme inline dark {
                 --color-primary: #123;
             }
-        `, { basePlan: defaultPlan })).toThrow('@theme inline cannot be mode-specific')
+        `, { baseManifest: defaultManifest })).toThrow('@theme inline cannot be mode-specific')
     })
 
     test('rejects mode-specific and inline managed keyframes in theme blocks', () => {
-        expect(() => compileCSSPlan(`
+        expect(() => compileCSSManifest(`
             @theme dark {
                 @keyframes fade {
                     to {
@@ -1015,9 +1015,9 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
                     }
                 }
             }
-        `, { basePlan: defaultPlan })).toThrow('@theme keyframes cannot be mode-specific or inline')
+        `, { baseManifest: defaultManifest })).toThrow('@theme keyframes cannot be mode-specific or inline')
 
-        expect(() => compileCSSPlan(`
+        expect(() => compileCSSManifest(`
             @theme inline {
                 @keyframes fade {
                     to {
@@ -1025,11 +1025,11 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
                     }
                 }
             }
-        `, { basePlan: defaultPlan })).toThrow('@theme keyframes cannot be mode-specific or inline')
+        `, { baseManifest: defaultManifest })).toThrow('@theme keyframes cannot be mode-specific or inline')
     })
 
     test('normalizes CSS color functions and preserves alpha alias dependencies through CSS-first lowering', () => {
-        const { plan } = compileCSSPlan(`
+        const { manifest } = compileCSSManifest(`
             @theme {
                 --color-rgb: rgb(0 128 255);
                 --color-hsl-modern: hsl(210 100% 50%);
@@ -1045,8 +1045,8 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
                 --color-soft: $color-oklch-primary/.3;
                 --color-mix-demo: color-mix(in oklch, red, blue);
             }
-        `, { basePlan: defaultPlan })
-        const css = createCSS(plan)
+        `, { baseManifest: defaultManifest })
+        const css = createCSS(manifest)
 
         css.add(
             'bg:rgb',

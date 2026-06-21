@@ -4,25 +4,25 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import withMasterCSS from '../src'
 import { getRegisteredOptions } from '../src/options'
-import { VIRTUAL_PLAN_ID } from '@master/css-integration/plan-module'
+import { VIRTUAL_MANIFEST_ID } from '@master/css-integration/manifest-module'
 import { VIRTUAL_CSS_ID } from '@master/css-integration/style-module'
-import { VIRTUAL_PRELOADED_ID } from '@master/css-integration/preloaded-module'
+import { VIRTUAL_EMITTED_GLOBALS_ID } from '@master/css-integration/emitted-globals-module'
 
 const toPosixPath = (value: string) => value.replace(/\\/g, '/')
-const virtualPlanProjectPath = 'node_modules/.master-css/master-css-plan.js'
-const virtualPreloadedProjectPath = 'node_modules/.master-css/master-css-preloaded.js'
+const virtualManifestProjectPath = 'node_modules/.master-css/master-css-manifest.js'
+const virtualEmittedGlobalsProjectPath = 'node_modules/.master-css/master-css-emitted-globals.js'
 const composedAdapterProjectPath = 'node_modules/.master-css/master-css-next-adapter.mjs'
 
 describe('withMasterCSS', () => {
     it('sets the Next adapter path and registers options', () => {
-        const nextConfig = withMasterCSS({ reactStrictMode: true }, { manifest: 'master-css.json' })
+        const nextConfig = withMasterCSS({ reactStrictMode: true }, { buildReport: 'master-css.json' })
 
         expect(nextConfig.reactStrictMode).toBe(true)
         expect(nextConfig.adapterPath).toContain('adapter.mjs')
-        expect(getRegisteredOptions()).toEqual({ manifest: 'master-css.json' })
+        expect(getRegisteredOptions()).toEqual({ buildReport: 'master-css.json' })
     })
 
-    it('adds a CSS plan webpack loader', () => {
+    it('adds a CSS manifest webpack loader', () => {
         const nextConfig = withMasterCSS({}) as any
         const webpackConfig = { module: { rules: [] } }
         const resolvedConfig = nextConfig.webpack(webpackConfig as any, {} as any)
@@ -41,7 +41,7 @@ describe('withMasterCSS', () => {
                 ]
             }),
             expect.objectContaining({
-                resourceQuery: /master-css-plan/,
+                resourceQuery: /master-css-manifest/,
                 use: [
                     expect.objectContaining({
                         options: {
@@ -54,17 +54,17 @@ describe('withMasterCSS', () => {
             expect.objectContaining({
                 test: /\.(css|scss|sass)$/,
                 resourceQuery: {
-                    not: [/master-css-plan/]
+                    not: [/master-css-manifest/]
                 }
             })
         ]))
-        expect(resolvedConfig.resolve.alias[VIRTUAL_PLAN_ID]).toContain(join('node_modules', '.master-css', 'master-css-plan.js'))
-        expect(resolvedConfig.resolve.alias[VIRTUAL_PRELOADED_ID]).toContain(join('node_modules', '.master-css', 'master-css-preloaded.js'))
+        expect(resolvedConfig.resolve.alias[VIRTUAL_MANIFEST_ID]).toContain(join('node_modules', '.master-css', 'master-css-manifest.js'))
+        expect(resolvedConfig.resolve.alias[VIRTUAL_EMITTED_GLOBALS_ID]).toContain(join('node_modules', '.master-css', 'master-css-emitted-globals.js'))
         expect(resolvedConfig.resolve.alias['@master/css.react']).toBeUndefined()
         expect(resolvedConfig.resolve.alias['@master/css.react$']).toBeUndefined()
     })
 
-    it('adds a CSS plan Turbopack loader', () => {
+    it('adds a CSS manifest Turbopack loader', () => {
         const nextConfig = withMasterCSS({
             turbopack: {
                 rules: {
@@ -96,7 +96,7 @@ describe('withMasterCSS', () => {
                     condition: {
                         all: [
                             { path: /\.css$/ },
-                            { query: /master-css-plan/ }
+                            { query: /master-css-manifest/ }
                         ]
                     },
                     loaders: [
@@ -115,7 +115,7 @@ describe('withMasterCSS', () => {
                         all: [
                             { path: /\.(css|scss|sass)$/ },
                             { content: expect.any(RegExp) },
-                            { not: { query: /master-css-plan/ } }
+                            { not: { query: /master-css-manifest/ } }
                         ]
                     },
                     type: 'css',
@@ -170,13 +170,13 @@ describe('withMasterCSS', () => {
                 type: 'asset'
             }
         })
-        expect((nextConfig as any).turbopack.resolveAlias[VIRTUAL_PLAN_ID]).toContain(virtualPlanProjectPath)
-        expect((nextConfig as any).turbopack.resolveAlias[VIRTUAL_PRELOADED_ID]).toContain(virtualPreloadedProjectPath)
+        expect((nextConfig as any).turbopack.resolveAlias[VIRTUAL_MANIFEST_ID]).toContain(virtualManifestProjectPath)
+        expect((nextConfig as any).turbopack.resolveAlias[VIRTUAL_EMITTED_GLOBALS_ID]).toContain(virtualEmittedGlobalsProjectPath)
         expect((nextConfig as any).turbopack.resolveAlias['@master/css.react']).toBeUndefined()
         expect((nextConfig as any).transpilePackages).toContain('@master/css.react')
     })
 
-    it('adds CSS plan loaders without the adapter when mode is null', () => {
+    it('adds CSS manifest loaders without the adapter when mode is null', () => {
         const nextConfig = { reactStrictMode: true }
         const resolvedConfig = withMasterCSS(nextConfig, { mode: null }) as any
 
@@ -194,7 +194,7 @@ describe('withMasterCSS', () => {
                     condition: {
                         all: [
                             { path: /\.css$/ },
-                            { query: /master-css-plan/ }
+                            { query: /master-css-manifest/ }
                         ]
                     },
                     type: 'ecmascript',
@@ -205,7 +205,7 @@ describe('withMasterCSS', () => {
                         all: [
                             { path: /\.(css|scss|sass)$/ },
                             { content: expect.any(RegExp) },
-                            { not: { query: /master-css-plan/ } }
+                            { not: { query: /master-css-manifest/ } }
                         ]
                     },
                     type: 'css',
@@ -262,7 +262,7 @@ describe('withMasterCSS', () => {
                 test: expect.any(RegExp)
             }),
             expect.objectContaining({
-                resourceQuery: /master-css-plan/
+                resourceQuery: /master-css-manifest/
             }),
             expect.objectContaining({
                 test: /\.(css|scss|sass)$/
@@ -328,8 +328,8 @@ describe('withMasterCSS', () => {
 
             expect(nextConfig.webpack).toBeUndefined()
             expect(nextConfig.turbopack.resolveAlias[VIRTUAL_CSS_ID]).toBe('./.master/next.css')
-            expect(nextConfig.turbopack.resolveAlias[VIRTUAL_PLAN_ID]).toContain(virtualPlanProjectPath)
-            expect(nextConfig.turbopack.resolveAlias[VIRTUAL_PRELOADED_ID]).toContain(virtualPreloadedProjectPath)
+            expect(nextConfig.turbopack.resolveAlias[VIRTUAL_MANIFEST_ID]).toContain(virtualManifestProjectPath)
+            expect(nextConfig.turbopack.resolveAlias[VIRTUAL_EMITTED_GLOBALS_ID]).toContain(virtualEmittedGlobalsProjectPath)
             expect(nextConfig.turbopack.rules['*']).toEqual(expect.arrayContaining([
                 expect.objectContaining({
                     condition: {
@@ -350,7 +350,7 @@ describe('withMasterCSS', () => {
                     condition: {
                         all: [
                             { path: /\.css$/ },
-                            { query: /master-css-plan/ }
+                            { query: /master-css-manifest/ }
                         ]
                     }
                 }),
@@ -359,7 +359,7 @@ describe('withMasterCSS', () => {
                         all: expect.arrayContaining([
                             { path: expect.any(RegExp) },
                             { content: expect.any(RegExp) },
-                            { not: { query: /master-css-plan/ } }
+                            { not: { query: /master-css-manifest/ } }
                         ])
                     }),
                     type: 'css',

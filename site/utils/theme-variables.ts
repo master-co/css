@@ -1,8 +1,8 @@
-import presetPlan from './preset-plan'
-import type { MasterCSSPlanVariable } from '@master/css'
+import presetManifest from './preset-manifest'
+import type { MasterCSSManifestVariable } from '@master/css'
 
-const presetVariables = presetPlan.variables || []
-const rootSize = presetPlan.settings?.rootSize || 16
+const presetVariables = presetManifest.variables || []
+const rootSize = presetManifest.settings?.rootSize || 16
 
 export interface ThemeNumericVariableEntry {
     key: string
@@ -12,11 +12,11 @@ export interface ThemeNumericVariableEntry {
     rem: number
 }
 
-export function getThemeVariables(namespace: string): MasterCSSPlanVariable[] {
+export function getThemeVariables(namespace: string): MasterCSSManifestVariable[] {
     return presetVariables.filter((variable) => variable.namespace === namespace && variable.value !== undefined)
 }
 
-export function getThemeModeVariables(namespace: string, mode: string): MasterCSSPlanVariable[] {
+export function getThemeModeVariables(namespace: string, mode: string): MasterCSSManifestVariable[] {
     return presetVariables.flatMap((variable) => {
         const modeVariable = variable.namespace === namespace && variable.modes?.[mode]
         return modeVariable
@@ -34,7 +34,7 @@ export function getThemeNumberVariableEntries(namespace: string) {
     return getThemeNumericVariableEntries(namespace).map(({ key, px }) => [key, px] as const)
 }
 
-function getNumericRemValue(variable: MasterCSSPlanVariable) {
+function getNumericRemValue(variable: MasterCSSManifestVariable) {
     if (!variable.numeric && typeof variable.value !== 'number') return
     const numeric = variable.numeric || { value: variable.value as number }
     switch (numeric.unit) {
@@ -49,7 +49,7 @@ function getNumericRemValue(variable: MasterCSSPlanVariable) {
     }
 }
 
-function getNumericUnit(variable: MasterCSSPlanVariable) {
+function getNumericUnit(variable: MasterCSSManifestVariable) {
     return variable.numeric?.unit
 }
 

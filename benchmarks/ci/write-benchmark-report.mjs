@@ -87,7 +87,7 @@ function normalizeEngineReport(raw, baseMetadata) {
 function normalizeRuntimeReport(raw, baseMetadata) {
     const assets = [
         measureAsset('packages/runtime/dist/global.min.js'),
-        measureAsset('packages/runtime/dist/default-plan.json')
+        measureAsset('packages/runtime/dist/default-manifest.json')
     ]
 
     return {

@@ -1,8 +1,8 @@
-import type { MasterCSSPlan, MasterCSSPreloaded, MasterCSSRuntimeManifest } from '@master/css-runtime'
+import type { MasterCSSManifest, MasterCSSEmittedGlobals, MasterCSSHydrationManifest } from '@master/css-runtime'
 
 export interface CSSRuntimeProviderProps {
-    plan: MasterCSSPlan
-    preloaded?: MasterCSSPreloaded
-    manifest?: MasterCSSRuntimeManifest
+    manifest: MasterCSSManifest
+    emittedGlobals?: MasterCSSEmittedGlobals
+    hydrationManifest?: MasterCSSHydrationManifest
     root?: Document | ShadowRoot | null
 }

@@ -2,7 +2,7 @@ import { readdirSync, readFileSync, statSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vitest'
-import { MASTER_CSS_RUNTIME_MANIFEST_SCRIPT_ID } from 'shared/master-css-runtime-manifest'
+import { MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID } from 'shared/master-css-hydration-manifest'
 import execPnpmSync from './helpers/pnpm-command'
 
 const packageDir = dirname(fileURLToPath(new URL('../package.json', import.meta.url)))
@@ -54,14 +54,14 @@ describe('playground', () => {
         const htmlPath = join(nextDir, 'server/app/index.html')
         const html = readFileSync(htmlPath, 'utf-8')
         const clientSource = readJavaScriptFiles(join(nextDir, 'static/chunks'))
-        const planJSONSource = readJSONFiles(join(nextDir, 'static/media'))
+        const manifestJSONSource = readJSONFiles(join(nextDir, 'static/media'))
 
         expect(html).toContain('.fg\\:primary{color:var(--color-primary)}')
-        expect(html).toContain(`id="${MASTER_CSS_RUNTIME_MANIFEST_SCRIPT_ID}"`)
-        expect(html.match(new RegExp(`id="${MASTER_CSS_RUNTIME_MANIFEST_SCRIPT_ID}"`, 'g'))?.length).toBe(1)
+        expect(html).toContain(`id="${MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID}"`)
+        expect(html.match(new RegExp(`id="${MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID}"`, 'g'))?.length).toBe(1)
         expect(clientSource).not.toContain('font-weight-bold')
         expect(clientSource).not.toContain('#0070f3')
-        expect(planJSONSource).toContain('font-weight-bold')
-        expect(planJSONSource).toContain('#0070f3')
+        expect(manifestJSONSource).toContain('font-weight-bold')
+        expect(manifestJSONSource).toContain('#0070f3')
     }, 120000)
 })

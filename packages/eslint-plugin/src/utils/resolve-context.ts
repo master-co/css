@@ -1,14 +1,14 @@
 import type { RuleContext } from '@typescript-eslint/utils/ts-eslint'
 import settings, { Settings } from '../settings'
-import { MasterCSS, MasterCSSPlan, createCSS, defaultPlan } from './master-css'
-import { findMasterCSSWorkspaceDirectoriesSync } from '@master/css-plan/css'
-import { loadProjectPlanSync } from '@master/css-plan/load-sync'
+import { MasterCSS, MasterCSSManifest, createCSS, defaultManifest } from './master-css'
+import { findMasterCSSWorkspaceDirectoriesSync } from '@master/css-manifest/css'
+import { loadProjectManifestSync } from '@master/css-manifest/load-sync'
 import path from 'node:path'
 import { existsSync } from 'node:fs'
 
 declare interface CSSCache {
     cwd: string
-    plan?: MasterCSSPlan,
+    manifest?: MasterCSSManifest,
     css: MasterCSS,
 }
 
@@ -62,24 +62,24 @@ function resolveWorkspaceDirectory(context: RuleContext<any, any[]>, filename: s
     return closestDirectory || cwd
 }
 
-function resolvePlan(workspaceDir: string, plan?: MasterCSSPlan) {
-    const result = loadProjectPlanSync(workspaceDir)
-    return result.entries.length ? result.plan : plan
+function resolvePlan(workspaceDir: string, manifest?: MasterCSSManifest) {
+    const result = loadProjectManifestSync(workspaceDir)
+    return result.entries.length ? result.manifest : manifest
 }
 
 export default function resolveContext(context: RuleContext<any, any[]>) {
     const resolvedSettings = Object.assign({}, settings, context.settings?.['@master/css'])
     const filename = getContextFilename(context)
     const workspaceDir = filename ? resolveWorkspaceDirectory(context, filename) : context.cwd || process.cwd()
-    let css = cssCaches.find(cache => cache.plan === resolvedSettings.plan &&
+    let css = cssCaches.find(cache => cache.manifest === resolvedSettings.manifest &&
         cache.cwd === workspaceDir)?.css
 
     if (!css) {
-        const plan = filename
-            ? resolvePlan(workspaceDir, resolvedSettings.plan)
-            : resolvedSettings.plan
-        css = createCSS(plan || defaultPlan)
-        cssCaches.push({ cwd: workspaceDir, plan: resolvedSettings.plan, css })
+        const manifest = filename
+            ? resolvePlan(workspaceDir, resolvedSettings.manifest)
+            : resolvedSettings.manifest
+        css = createCSS(manifest || defaultManifest)
+        cssCaches.push({ cwd: workspaceDir, manifest: resolvedSettings.manifest, css })
     }
 
     return {

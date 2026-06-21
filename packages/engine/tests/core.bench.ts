@@ -1,11 +1,11 @@
 import { bench, describe } from 'vitest'
-import defaultPlanJSON from '@master/css-preset/default-plan.json' with { type: 'json' }
-import type { MasterCSSPlan } from 'shared/master-css-plan'
+import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
+import type { MasterCSSManifest } from 'shared/master-css-manifest'
 import UtilityType from 'shared/utility-type'
 import { createCSS } from '../src'
-import { compilePlan } from '../src/compile-plan'
+import { compileManifest } from '../src/compile-manifest'
 
-const defaultPlan = defaultPlanJSON as unknown as MasterCSSPlan
+const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 const options = {
     nativeDeclarationMatcher: () => true
 }
@@ -40,7 +40,7 @@ const benchOptions = {
 
 let sink = 0
 
-function createPatternBenchmarkPlan(separator: '-' | '_'): MasterCSSPlan {
+function createPatternBenchmarkManifest(separator: '-' | '_'): MasterCSSManifest {
     const utilities = Array.from({ length: 100 }, (_, index) => ({
         id: `icon-${index}<left|right>`,
         name: `icon-${index}<left|right>`,
@@ -62,7 +62,7 @@ function createPatternBenchmarkPlan(separator: '-' | '_'): MasterCSSPlan {
     }))
 
     return {
-        version: 3,
+        version: 1,
         settings: {
             modes: []
         },
@@ -73,15 +73,15 @@ function createPatternBenchmarkPlan(separator: '-' | '_'): MasterCSSPlan {
     }
 }
 
-const indexedPatternPlan = createPatternBenchmarkPlan('-')
-const fallbackPatternPlan = createPatternBenchmarkPlan('_')
+const indexedPatternManifest = createPatternBenchmarkManifest('-')
+const fallbackPatternManifest = createPatternBenchmarkManifest('_')
 const indexedPatternClassNames = Array.from({ length: 100 }, (_, index) => `icon-${index}-left`)
 const fallbackPatternClassNames = Array.from({ length: 100 }, (_, index) => `icon-${index}_left`)
 
 describe('MasterCSS engine hot paths', () => {
-    const hotCSS = createCSS(defaultPlan, undefined, options)
-    const indexedPatternCSS = createCSS(indexedPatternPlan, undefined, options)
-    const fallbackPatternCSS = createCSS(fallbackPatternPlan, undefined, options)
+    const hotCSS = createCSS(defaultManifest, undefined, options)
+    const indexedPatternCSS = createCSS(indexedPatternManifest, undefined, options)
+    const fallbackPatternCSS = createCSS(fallbackPatternManifest, undefined, options)
 
     for (let index = 0; index < 10_000; index++) {
         hotCSS.create(runtimeClassNames[index % runtimeClassNames.length])
@@ -104,15 +104,15 @@ describe('MasterCSS engine hot paths', () => {
         sink = total
     }, benchOptions)
 
-    bench('compile default plan indexes', () => {
-        const compiled = compilePlan(defaultPlan)
+    bench('compile default manifest indexes', () => {
+        const compiled = compileManifest(defaultManifest)
         sink = compiled.definedUtilities.length
     }, benchOptions)
 
-    bench('create css with cached default plan', () => {
+    bench('create css with cached default manifest', () => {
         let total = 0
         for (let index = 0; index < 1_000; index++) {
-            total += createCSS(defaultPlan, undefined, options).definedUtilities.length
+            total += createCSS(defaultManifest, undefined, options).definedUtilities.length
         }
         sink = total
     }, benchOptions)
@@ -138,7 +138,7 @@ describe('MasterCSS engine hot paths', () => {
     bench('create fresh css and add representative runtime classes', () => {
         let total = 0
         for (let index = 0; index < 100; index++) {
-            const css = createCSS(defaultPlan, undefined, options)
+            const css = createCSS(defaultManifest, undefined, options)
             css.add(...runtimeClassNames)
             total += css.text.length
         }

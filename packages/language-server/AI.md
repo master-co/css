@@ -2,7 +2,7 @@
 
 ## Responsibility
 
-`@master/css-language-server` wraps the language service in LSP. It initializes workspace folders, loads plan entry files, manages language service lifecycles, and handles completion, hover, document color, color presentation, and semantic token requests. CSS directive lexical highlighting is provided by the `@master/css-language` TextMate grammar; server semantic tokens cover Master CSS class-list spans and plan-aware classifications.
+`@master/css-language-server` wraps the language service in LSP. It initializes workspace folders, loads manifest entry files, manages language service lifecycles, and handles completion, hover, document color, color presentation, and semantic token requests. CSS directive lexical highlighting is provided by the `@master/css-language` TextMate grammar; server semantic tokens cover Master CSS class-list spans and manifest-aware classifications.
 
 ## Inputs And Outputs
 
@@ -24,21 +24,21 @@
 ## Allowed Changes
 
 - Workspace detection fixes.
-- Plan reload/restart fixes.
+- Manifest reload/restart fixes.
 - Request handler and semantic token mode fixes with tests.
 
 ## Forbidden Without Explicit Request
 
 - Advertising new LSP capabilities without implementing and testing them.
-- Changing plan-loading semantics casually.
+- Changing manifest-loading semantics casually.
 - Creating server-side dependencies on editor-specific extension code.
 
 ## Risk Areas
 
-- `workspaces: 'auto'` discovery from plan entry files and package dependencies.
+- `workspaces: 'auto'` discovery from manifest entry files and package dependencies.
 - Closest workspace selection.
-- Plan loading with `@master/css-plan`.
-- Restart behavior after plan/settings saves.
+- Manifest loading with `@master/css-manifest`.
+- Restart behavior after manifest/settings saves.
 
 ## Required Tests
 
@@ -56,11 +56,11 @@ Use or extend:
 
 ## Good Changes
 
-- Add a monorepo fixture for plan-entry or package-dependency workspace resolution.
-- Fix plan reload and test restart behavior.
+- Add a monorepo fixture for manifest-entry or package-dependency workspace resolution.
+- Fix manifest reload and test restart behavior.
 
 ## Dangerous Changes
 
 - Treating external documents as belonging to the wrong workspace.
-- Loading a plan from an unintended directory.
+- Loading a manifest from an unintended directory.
 - Adding diagnostics without client/server capability updates.

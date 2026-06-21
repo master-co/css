@@ -4,18 +4,18 @@ import {
     createCSSWithSemanticUtilities,
     createCSSWithVariables,
     createDefaultCSS,
-    clonePlan,
-    createPlanWithSemanticUtilities,
+    cloneManifest,
+    createManifestWithSemanticUtilities,
     expectClassText,
     expectLayerText
 } from './helpers/css-tester'
-import defaultPlanJSON from '@master/css-preset/default-plan.json' with { type: 'json' }
-import type { MasterCSSPlan } from 'shared/master-css-plan'
+import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
+import type { MasterCSSManifest } from 'shared/master-css-manifest'
 import UtilityType from 'shared/utility-type'
 
-const defaultPlan = defaultPlanJSON as unknown as MasterCSSPlan
+const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 
-describe.concurrent('default plan utility parity', () => {
+describe.concurrent('default manifest utility parity', () => {
     test('generates representative background utilities', () => {
         const css = createDefaultCSS()
 
@@ -59,7 +59,7 @@ describe.concurrent('default plan utility parity', () => {
     })
 
     test('resolves native value namespaces with aliases tokens and validation', () => {
-        const css = createCSS(defaultPlan, undefined, {
+        const css = createCSS(defaultManifest, undefined, {
             nativeDeclarationMatcher: ({ property, value }) =>
                 property === 'width' && (value === '1rem' || value === 'var(--container-sm)')
                 || property === 'margin' && value === '1rem'
@@ -98,8 +98,8 @@ describe.concurrent('default plan utility parity', () => {
     })
 
     test('drops colliding shorthand token aliases', () => {
-        const css = createCSS(defaultPlan)
-        const nativeCSS = createCSS(defaultPlan, undefined, {
+        const css = createCSS(defaultManifest)
+        const nativeCSS = createCSS(defaultManifest, undefined, {
             nativeDeclarationMatcher: ({ property }) =>
                 property === 'background'
                 || property === 'container'
@@ -232,7 +232,7 @@ describe.concurrent('default plan utility parity', () => {
         expect(css.create('m:card')?.variableNames).toEqual(new Set(['spacing-card']))
     })
 
-    test('uses compiled breakpoint aliases from the default plan', () => {
+    test('uses compiled breakpoint aliases from the default manifest', () => {
         expect(createDefaultCSS().create('block@sm&<md')?.text)
             .toContain('@media (width>=52.125rem) and (width<64rem)')
         expect(createDefaultCSS().create('block@<md')?.text)
@@ -301,15 +301,15 @@ describe.concurrent('default plan utility parity', () => {
     })
 
     test('keeps grouped declarations important when configured globally', () => {
-        const plan = clonePlan()
-        plan.settings = {
-            ...(plan.settings || {}),
+        const manifest = cloneManifest()
+        manifest.settings = {
+            ...(manifest.settings || {}),
             important: true
         }
 
-        expect(createCSS(plan).create('{color:black!;bb:2px|solid}')?.declarations)
+        expect(createCSS(manifest).create('{color:black!;bb:2px|solid}')?.declarations)
             .toStrictEqual({ color: 'oklch(0% 0 none)!important', 'border-bottom': '2px solid!important' })
-        expect(createCSS(plan).create('{color:black!;bb:2px|solid}')?.text)
+        expect(createCSS(manifest).create('{color:black!;bb:2px|solid}')?.text)
             .toContain('border-bottom:2px solid!important')
     })
 
@@ -359,14 +359,14 @@ describe.concurrent('default plan utility parity', () => {
     })
 
     test('removes legacy css variable assignment shorthand while keeping native custom property fallback opt-in', () => {
-        const css = createCSS(defaultPlan)
+        const css = createCSS(defaultManifest)
 
         expect(css.create('$foo:123')).toBeUndefined()
         expect(css.create('$foo:123:hover')).toBeUndefined()
         expect(css.create('$foo:123@sm')).toBeUndefined()
         expect(css.create('--foo:123')).toBeUndefined()
 
-        const nativeCSS = createCSS(defaultPlan, undefined, {
+        const nativeCSS = createCSS(defaultManifest, undefined, {
             nativeDeclarationMatcher: () => false
         })
 
@@ -375,8 +375,8 @@ describe.concurrent('default plan utility parity', () => {
         expect(nativeCSS.create('--foo:123:hover')?.text).toContain(':hover{--foo:123}')
     })
 
-    test('uses injected native declaration matcher after plan misses and rejects removed aliases', () => {
-        const css = createCSS(defaultPlan, undefined, {
+    test('uses injected native declaration matcher after manifest misses and rejects removed aliases', () => {
+        const css = createCSS(defaultManifest, undefined, {
             nativeDeclarationMatcher: ({ property, value }) =>
                 property === 'float' && value === 'left'
                 || property === 'display' && value === 'block'
@@ -407,7 +407,7 @@ describe.concurrent('default plan utility parity', () => {
 
     test('uses native declaration fast path without bypassing aliases and smart utilities', () => {
         const calls: string[] = []
-        const css = createCSS(defaultPlan, undefined, {
+        const css = createCSS(defaultManifest, undefined, {
             nativeDeclarationMatcher: ({ property, value }) => {
                 calls.push(property + ':' + value)
                 return true
@@ -441,7 +441,7 @@ describe.concurrent('default plan utility parity', () => {
     })
 
     test('classifies native shorthand declarations for priority sorting', () => {
-        const css = createCSS(defaultPlan, undefined, {
+        const css = createCSS(defaultManifest, undefined, {
             nativeDeclarationMatcher: ({ property }) =>
                 property === 'margin' || property === 'margin-left' || property === 'margin-inline'
         })
@@ -455,7 +455,7 @@ describe.concurrent('default plan utility parity', () => {
     })
 })
 
-describe.concurrent('plan-driven layer and lifecycle parity', () => {
+describe.concurrent('manifest-driven layer and lifecycle parity', () => {
     test('starts empty and inserts on demand', () => {
         const css = createDefaultCSS()
 
@@ -471,8 +471,8 @@ describe.concurrent('plan-driven layer and lifecycle parity', () => {
         expect(css.utilitiesLayer.rules).toHaveLength(1)
     })
 
-    test('does not duplicate preloaded variables', () => {
-        const css = createCSS(defaultPlan, {
+    test('does not duplicate emittedGlobals variables', () => {
+        const css = createCSS(defaultManifest, {
             variables: {
                 'color-red-60': 1
             }
@@ -491,8 +491,8 @@ describe.concurrent('plan-driven layer and lifecycle parity', () => {
         })
     })
 
-    test('does not duplicate preloaded animations', () => {
-        const css = createCSS(defaultPlan, {
+    test('does not duplicate emittedGlobals animations', () => {
+        const css = createCSS(defaultManifest, {
             animations: {
                 fade: 1
             }
@@ -511,7 +511,7 @@ describe.concurrent('plan-driven layer and lifecycle parity', () => {
         })
     })
 
-    test('executes semantic component utilities from plan records', () => {
+    test('executes semantic component utilities from manifest records', () => {
         const css = createCSSWithSemanticUtilities([
             {
                 name: 'btn',
@@ -526,7 +526,7 @@ describe.concurrent('plan-driven layer and lifecycle parity', () => {
     })
 
     test('keeps semantic utility declarations in their configured layer', () => {
-        const css = createCSS(createPlanWithSemanticUtilities([
+        const css = createCSS(createManifestWithSemanticUtilities([
             {
                 name: 'prose',
                 layer: 'defaults',
@@ -597,14 +597,14 @@ describe.concurrent('plan-driven layer and lifecycle parity', () => {
         expect(css.createFromSelectorText('.dark .active .hidden\\:within\\(\\.active\\)\\@dark')?.[0])
             .toMatchObject({ name: 'hidden:within(.active)@dark' })
 
-        const scopedPlan = clonePlan()
-        scopedPlan.settings = {
-            ...(scopedPlan.settings || {}),
+        const scopedManifest = cloneManifest()
+        scopedManifest.settings = {
+            ...(scopedManifest.settings || {}),
             scope: '#app',
             modeTrigger: 'class',
             modes: ['dark']
         }
-        const scopedCSS = createCSS(scopedPlan)
+        const scopedCSS = createCSS(scopedManifest)
         const rule = scopedCSS.create('block:hover@dark')
         expect(rule?.selectorText).toBe('.dark #app .block\\:hover\\@dark:hover')
         expect(scopedCSS.createFromSelectorText(rule!.selectorText)?.[0]).toMatchObject({

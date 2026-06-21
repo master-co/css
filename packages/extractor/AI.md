@@ -2,11 +2,11 @@
 
 ## Responsibility
 
-`@master/css-extractor` statically scans source files, validates possible Master CSS classes, inserts valid rules through the plan-driven engine layers, exports CSS, and maintains extraction state for build integrations. Source-format-aware class adapters and raw class candidate extraction belong to `@master/css-source`. Stylesheet entry handling, CSS-first stylesheet compilation, native CSS pruning, extraction directives, generated CSS composition, and preloaded manifest output belong to `@master/css-stylesheet`.
+`@master/css-extractor` statically scans source files, validates possible Master CSS classes, inserts valid rules through the manifest-driven engine layers, exports CSS, and maintains extraction state for build integrations. Source-format-aware class adapters and raw class candidate extraction belong to `@master/css-source`. Stylesheet entry handling, CSS-first stylesheet compilation, native CSS pruning, extraction directives, generated CSS composition, and emittedGlobals manifest output belong to `@master/css-stylesheet`.
 
 ## Inputs And Outputs
 
-- Input: extractor options, source globs, source text, source adapters, and resolved Master CSS plan.
+- Input: extractor options, source globs, source text, source adapters, and resolved Master CSS manifest.
 - Output: `css.text`, exported CSS file, valid/invalid/latent class caches, native class usage state, and watch events.
 
 ## Public APIs
@@ -23,7 +23,7 @@
 ## Allowed Changes
 
 - Focused extraction heuristic fixes.
-- Watch/plan reset fixes.
+- Watch/manifest reset fixes.
 - Option handling fixes with tests.
 - Focused extraction state behavior used by Vite, Webpack, Next, stylesheet, and CLI integrations.
 
@@ -42,7 +42,7 @@
 - Source allow/exclude matching.
 - Vite/Webpack/Next virtual-module consumers.
 - Stylesheet native CSS merging, pruning/source directives, and generated CSS ordering belong in `@master/css-stylesheet`.
-- Do not add project plan discovery, workspace detection, or plan loading here; use `@master/css-plan` in the calling CLI/build/tooling package.
+- Do not add project manifest discovery, workspace detection, or manifest loading here; use `@master/css-manifest` in the calling CLI/build/tooling package.
 - Do not add independent CSS import graph parsing here; use compiler results and keep extraction-specific decisions local.
 
 ## Required Tests

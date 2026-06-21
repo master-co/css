@@ -1,8 +1,8 @@
 import { RuleTester, RuleTesterConfig } from '@typescript-eslint/rule-tester'
 import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
-import { createPresetPlan } from './helpers/create-preset-plan'
-import type { MasterCSSPlan } from '@master/css'
+import { createPresetManifest } from './helpers/create-preset-manifest'
+import type { MasterCSSManifest } from '@master/css'
 
 const configs = {
     jsx: {
@@ -18,26 +18,26 @@ const configs = {
     }
 } satisfies Record<string, RuleTesterConfig>
 
-function withPresetPlan(config: RuleTesterConfig): RuleTesterConfig {
+function withPresetManifest(config: RuleTesterConfig): RuleTesterConfig {
     const settings = config.settings as Record<string, any> | undefined
     const masterCSSSettings = settings?.['@master/css'] || {}
-    const planOption = masterCSSSettings.plan as Partial<MasterCSSPlan> | undefined
+    const planOption = masterCSSSettings.manifest as Partial<MasterCSSManifest> | undefined
     return {
         ...config,
         settings: {
             ...settings,
             '@master/css': {
                 ...masterCSSSettings,
-                plan: createPresetPlan(planOption)
+                manifest: createPresetManifest(planOption)
             }
         }
     }
 }
 
-export const jsxTester = new RuleTester(withPresetPlan(configs.jsx))
+export const jsxTester = new RuleTester(withPresetManifest(configs.jsx))
 
 export const createTester = (config: RuleTesterConfig, lang: keyof typeof configs = 'jsx') => {
-    return new RuleTester(withPresetPlan({
+    return new RuleTester(withPresetManifest({
         ...configs[lang],
         ...config
     }))

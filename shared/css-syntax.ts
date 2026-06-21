@@ -1,4 +1,4 @@
-import type { MasterCSSPlanUtility, MasterCSSPlanUtilityLayerName, MasterCSSPlanVariableNumericValue } from './master-css-plan.js'
+import type { MasterCSSManifestUtility, MasterCSSManifestUtilityLayerName, MasterCSSManifestVariableNumericValue } from './master-css-manifest.js'
 
 export type ValueComponent = StringValueComponent | NumberValueComponent | FunctionValueComponent | VariableValueComponent | SeparatorValueComponent
 
@@ -20,10 +20,10 @@ export interface DefinedUtility {
     }
     variables?: Map<string, Variable>
     order: number
-    definition: MasterCSSPlanUtility
+    definition: MasterCSSManifestUtility
 }
 
-export type ExplicitUtilityLayerName = MasterCSSPlanUtilityLayerName
+export type ExplicitUtilityLayerName = MasterCSSManifestUtilityLayerName
 
 export type MediaFeatureComponent = {
     type: string
@@ -50,11 +50,11 @@ type VariableCommon = {
 }
 
 export type StringVariable = { type: 'string', value: string | number }
-export type NumberVariable = { type: 'number', value: number | string, numeric?: MasterCSSPlanVariableNumericValue }
+export type NumberVariable = { type: 'number', value: number | string, numeric?: MasterCSSManifestVariableNumericValue }
 export type ResolvedVariableValue = StringVariable | NumberVariable
 
 export type Variable = VariableCommon & {
     type: ResolvedVariableValue['type']
     value?: ResolvedVariableValue['value']
-    numeric?: MasterCSSPlanVariableNumericValue
+    numeric?: MasterCSSManifestVariableNumericValue
 }

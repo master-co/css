@@ -8,11 +8,11 @@ Officially integrated packages or extensions automatically read the project CSS 
 ---
 
 ## One project, one workspace
-Inside one `package.json` project, Master CSS supports one workspace instance. That workspace has one project plan graph, one source-scanning context, and one set of tool integrations for the current project boundary.
+Inside one `package.json` project, Master CSS supports one workspace instance. That workspace has one project manifest graph, one source-scanning context, and one set of tool integrations for the current project boundary.
 
 Master CSS does not split a single package project into separate utility workspaces from multiple static rendering outputs. For example, do not model one package as independent `admin.css` and `shop.css` scanning areas and expect the language service, ESLint, and build integrations to treat them as separate Master CSS workspaces.
 
-When different applications need cleanly separated static rendering, plan loading, linting, and editor behavior, create separate projects in the monorepo. A typical structure is `projects/admin` and `projects/shop`, with each project owning its own `package.json`, CSS entry, and integration settings.
+When different applications need cleanly separated static rendering, manifest loading, linting, and editor behavior, create separate projects in the monorepo. A typical structure is `projects/admin` and `projects/shop`, with each project owning its own `package.json`, CSS entry, and integration settings.
 
 (i) This creates separate project boundaries for `projects/admin` and `projects/shop`.
 <ExplorerView>
@@ -36,7 +36,7 @@ When different applications need cleanly separated static rendering, plan loadin
 
 This keeps each application's generated CSS, source scanning, diagnostics, and editor state aligned with the same project root. Shared design tokens can still live at the repository root and be imported by each project workspace.
 
-### Share the project plan source
+### Share the project manifest source
 In each workspace, import shared project CSS files and add workspace-specific definitions after them.
 ```css name=projects/admin/index.css
 @master;

@@ -22,9 +22,9 @@ The language server supports both full-document and active-position semantic tok
 
 When `settings.embeddedSyntaxHighlighting` is `always`, the server advertises `semanticTokensProvider` and handles `textDocument/semanticTokens/full` requests for open documents. When the mode is `active`, VS Code uses the `masterCSS/renderActiveSemanticTokens` request to highlight the embedded class context at the active editor position. The `off` mode disables embedded utility highlighting. Master CSS directive syntax inside CSS documents is highlighted by the VS Code TextMate grammar; `masterCSS/renderDocumentSemanticTokens` only adds semantic tokens for CSS directive class-list spans such as `@compose` and `@safelist`.
 
-Semantic tokens are resolved from the nearest workspace language service. This lets the server highlight plan-dependent Master CSS class-list tokens such as custom variables and components after loading the project CSS entry, while the directive shell itself remains TextMate-highlighted.
+Semantic tokens are resolved from the nearest workspace language service. This lets the server highlight manifest-dependent Master CSS class-list tokens such as custom variables and components after loading the project CSS entry, while the directive shell itself remains TextMate-highlighted.
 
-When the project plan or Master CSS settings change in `always` mode, the server requests a semantic token refresh from clients that support `workspace/semanticTokens/refresh`.
+When the project manifest or Master CSS settings change in `always` mode, the server requests a semantic token refresh from clients that support `workspace/semanticTokens/refresh`.
 
 ---
 

@@ -1,7 +1,7 @@
 import { createMasterCSSHandle } from './lib/server.js'
-import defaultPlanJSON from '@master/css-preset/default-plan.json' with { type: 'json' }
-import type { MasterCSSPlan } from '@master/css-runtime'
+import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
+import type { MasterCSSManifest } from '@master/css-runtime'
 
-const defaultPlan = defaultPlanJSON as unknown as MasterCSSPlan
+const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 
-export const handle = createMasterCSSHandle({ plan: defaultPlan })
+export const handle = createMasterCSSHandle({ manifest: defaultManifest })

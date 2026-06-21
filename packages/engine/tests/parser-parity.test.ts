@@ -1,7 +1,7 @@
 import { describe, expect, test } from 'vitest'
 import { createCSS } from '../src'
 import { generateAt, generateSelector, parseAt, parseSelector } from '../src/compiler'
-import { clonePlan, createDefaultCSS } from './helpers/css-tester'
+import { cloneManifest, createDefaultCSS } from './helpers/css-tester'
 
 describe.concurrent('compiled at-rule parser parity', () => {
     const cases = [
@@ -38,10 +38,10 @@ describe.concurrent('compiled at-rule parser parity', () => {
         expect(generateAt(atRule)).toBe(expected)
     })
 
-    test('resolves custom at-rule and condition aliases from the compiled plan', () => {
-        const plan = clonePlan()
-        plan.atRules = {
-            ...(plan.atRules || {}),
+    test('resolves custom at-rule and condition aliases from the compiled manifest', () => {
+        const manifest = cloneManifest()
+        manifest.atRules = {
+            ...(manifest.atRules || {}),
             'supports-backdrop': {
                 id: 'supports',
                 nodes: [{
@@ -50,7 +50,7 @@ describe.concurrent('compiled at-rule parser parity', () => {
                 }]
             }
         }
-        const css = createCSS(plan)
+        const css = createCSS(manifest)
 
         expect(generateAt(parseAt('supports-backdrop', css))).toBe('@supports (backdrop-filter:blur(0px))')
         expect(generateAt(parseAt('container(sm)', css))).toBe('@container (width>=24rem)')

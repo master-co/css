@@ -6,7 +6,7 @@ This is the canonical instruction file for AI agents working in this repository.
 
 Master CSS is a markup-driven CSS language and framework. Class strings such as `fg:red:hover@sm` are parsed into real CSS rules, sorted into cascade layers, and emitted through one of several workflows:
 
-- Plan-driven rule generation in `packages/engine`, re-exported by the public `packages/core` facade
+- Manifest-driven rule generation in `packages/engine`, re-exported by the public `packages/core` facade
 - Browser runtime rendering and hydration in `packages/runtime`
 - Server-side HTML rendering in `packages/server`
 - Static rendering source scanning in `packages/extractor`
@@ -26,14 +26,14 @@ Generated rules are emitted into `theme`, `base`, `defaults`, `components`, and 
 1. Identify the affected package and read its `package.json`.
 2. Read the package-local `AI.md` if one exists.
 3. Read existing source and tests before designing a change.
-4. Trace whether the change affects CSS output, public APIs, plan loading or compilation, runtime behavior, extraction, linting, or language tooling.
+4. Trace whether the change affects CSS output, public APIs, manifest loading or compilation, runtime behavior, extraction, linting, or language tooling.
 5. Prefer the smallest focused change that matches existing patterns.
 
-Do not start by inventing a new abstraction. This repo already has established helpers for parsing, plan loading, rule matching, validation, and insertion.
+Do not start by inventing a new abstraction. This repo already has established helpers for parsing, manifest loading, rule matching, validation, and insertion.
 
 ## Utility Definition Strategy
 
-Before adding or changing a default preset utility, prove the simpler plan mechanisms cannot already model it:
+Before adding or changing a default preset utility, prove the simpler manifest mechanisms cannot already model it:
 
 1. Full native or vendor property classes should use `nativeValueNamespaces`; add a `keyAliases` entry only when the public class key differs from the emitted CSS property.
 2. Short property aliases should use `keyAliases` to point at native logical, physical, full, or vendor CSS properties.
@@ -65,7 +65,7 @@ shared / external data
   -> @master/css-lexer lexical scanning
   -> @master/css-source source candidate extraction
   -> @master/css-engine / @master/css-preset / @master/css-integration
-  -> @master/css-compiler directive parsing / @master/css-plan loading
+  -> @master/css-compiler directive parsing / @master/css-manifest loading
   -> validator / server / extractor / runtime / language / language-service
   -> build plugins / CLI / ESLint / language-server
   -> framework integrations / VS Code / examples / site
@@ -87,7 +87,7 @@ Modify these only with focused tests and a clear reason:
 - `packages/engine/src/utils/parse-selector.ts`
 - `packages/engine/src/utils/generate-selector.ts`
 - `packages/compiler/src/lower-css-directives.ts`
-- `packages/compiler/src/master-css-plan.ts`
+- `packages/compiler/src/master-css-manifest.ts`
 - `packages/runtime/src/core.ts`
 - `packages/runtime/src/layer.ts`
 - `packages/source/src/extract-class-candidates.ts`
@@ -125,7 +125,7 @@ Type(Target): Summary
 
 Any CSS output change must be reviewed as a behavior change. Explain:
 
-- Which classes/plans changed output
+- Which classes/manifests changed output
 - Why the old output was wrong or incomplete
 - Which tests or fixtures prove the new output
 - Whether runtime hydration, static rendering, language service, ESLint, docs, or examples are affected
@@ -192,7 +192,7 @@ When reviewing a PR, prioritize findings first:
 - CSS output changes
 - Public API changes
 - Missing tests
-- Priority/cascade/variable/plan/runtime/extraction risks
+- Priority/cascade/variable/manifest/runtime/extraction risks
 - Unrelated files
 
 If no issues are found, say so and mention any remaining test gaps or residual risk.

@@ -1,14 +1,14 @@
 import { it, test, expect } from 'vitest'
 import { render } from '../src'
-import defaultPlanJSON from '@master/css-preset/default-plan.json' with { type: 'json' }
-import type { MasterCSSPlan } from 'shared/master-css-plan'
+import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
+import type { MasterCSSManifest } from 'shared/master-css-manifest'
 
-const defaultPlan = defaultPlanJSON as unknown as MasterCSSPlan
+const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 
 it('should not encode entities', () => {
     expect(render(
         '<span class="token punctuation">&lt;</span>div<span class="token punctuation">&gt;</span>',
-        defaultPlan
+        defaultManifest
     ).html
     ).toContain(
         '<span class="token punctuation">&lt;</span>div<span class="token punctuation">&gt;</span>'
@@ -18,7 +18,7 @@ it('should not encode entities', () => {
 test('>', () => {
     expect(render(
         `<div class="mt:0&gt;div"></div>`,
-        defaultPlan
+        defaultManifest
     ).html).toEqual([
         '<style id="master">@layer utilities{.mt\\:0\\>div>div{margin-top:0}}</style>',
         `<div class="mt:0&gt;div"></div>`
@@ -28,7 +28,7 @@ test('>', () => {
 test('\'', () => {
     expect(render(
         `<div class="font-feature-settings:'salt'"></div>`,
-        defaultPlan
+        defaultManifest
     ).html).toEqual([
         `<style id="master">@layer utilities{.font-feature-settings\\:\\'salt\\'{font-feature-settings:'salt'}}</style>`,
         `<div class="font-feature-settings:'salt'"></div>`

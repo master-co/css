@@ -6,7 +6,7 @@ import { collectHighlightTokenItems } from './render-semantic-tokens'
 import type { HighlightTokenItem, HighlightTokenRole } from './semantic/highlight'
 import { collectClassListHighlightTokenItems } from './semantic/tokenize-class'
 import getClassPositions from './utils/get-class-positions'
-import { createLanguageCSS, defaultPlan, type MasterCSS } from './master-css'
+import { createLanguageCSS, defaultManifest, type MasterCSS } from './master-css'
 import {
     MASTER_CSS_SEMANTIC_TOKEN_SCOPE_MAP,
     getMasterCSSSemanticTokenScopeKeys
@@ -113,13 +113,13 @@ export interface MasterCSSShikiOptions {
      */
     css?: MasterCSS
     /**
-     * Class-position and plan settings used when collecting embedded utilities.
+     * Class-position and manifest settings used when collecting embedded utilities.
      */
     settings?: LanguageSettings
     /**
-     * Convenience shortcut for `settings.plan`.
+     * Convenience shortcut for `settings.manifest`.
      */
-    plan?: LanguageSettings['plan']
+    manifest?: LanguageSettings['manifest']
     /**
      * Shiki language id. Defaults to the `lang` passed to Shiki.
      */
@@ -242,14 +242,14 @@ function createShikiDocument(code: string, lang?: string) {
 }
 
 function createShikiCSS(options: MasterCSSShikiOptions) {
-    return options.css || createLanguageCSS(options.plan ?? options.settings?.plan ?? defaultPlan)
+    return options.css || createLanguageCSS(options.manifest ?? options.settings?.manifest ?? defaultManifest)
 }
 
 function createShikiSettings(options: MasterCSSShikiOptions): LanguageSettings {
     return {
         ...languageSettings,
         ...options.settings,
-        plan: options.plan ?? options.settings?.plan
+        manifest: options.manifest ?? options.settings?.manifest
     }
 }
 

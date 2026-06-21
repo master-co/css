@@ -62,7 +62,7 @@ Use `@utilities` when your design system needs a reusable primitive that is stil
 <section class="flow content-auto print-hidden">...</section>
 ```
 
-Custom utility definitions are compiled into the project plan and generated only when the class appears in markup, is scanned from source, or is composed by another CSS-defined style. Use custom utilities for reusable primitives such as layout helpers, rendering hints, or print behavior. Use component classes when the name describes a product UI role such as `.btn`, `.card`, or `.field`.
+Custom utility definitions are compiled into the project manifest and generated only when the class appears in markup, is scanned from source, or is composed by another CSS-defined style. Use custom utilities for reusable primitives such as layout helpers, rendering hints, or print behavior. Use component classes when the name describes a product UI role such as `.btn`, `.card`, or `.field`.
 
 ---
 
@@ -105,7 +105,7 @@ The generated CSS is emitted in the `components` layer:
 }
 ```
 
-Component definitions are plan inputs, not immediate CSS output. Defining `.btn` does not generate CSS until `btn` appears in scanned classes or is composed by another CSS-defined style.
+Component definitions are manifest inputs, not immediate CSS output. Defining `.btn` does not generate CSS until `btn` appears in scanned classes or is composed by another CSS-defined style.
 
 You can still apply component classes alongside conditional utility classes when a variation belongs to one usage site:
 
@@ -348,7 +348,7 @@ SFC style blocks use the same model:
 </style>
 ```
 
-Local composed stylesheets share the project CSS entry and plugin-provided plan context, so theme tokens, custom variants, and managed component classes remain available. Local files do not define the global project plan, do not insert generated Master CSS, and do not participate as native CSS pruning roots.
+Local composed stylesheets share the project CSS entry and plugin-provided manifest context, so theme tokens, custom variants, and managed component classes remain available. Local files do not define the global project manifest, do not insert generated Master CSS, and do not participate as native CSS pruning roots.
 
 ---
 

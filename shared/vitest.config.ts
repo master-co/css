@@ -1,13 +1,13 @@
 import type { ViteUserConfig } from 'vitest/config'
-import { createMasterCSSPlanLoaderPlugin } from '../packages/integration/src/plan-loader-plugin'
+import { createMasterCSSManifestLoaderPlugin } from '../packages/integration/src/manifest-loader-plugin'
 import { withCIConcurrency } from './vitest-ci-config'
 
 const config: ViteUserConfig = {
     plugins: [
-        createMasterCSSPlanLoaderPlugin({
-            async loadPlanJSON(...args) {
-                const { compileCSSPlanJSON } = await import('../packages/compiler/src')
-                return compileCSSPlanJSON(...args)
+        createMasterCSSManifestLoaderPlugin({
+            async loadManifestJSON(...args) {
+                const { compileCSSManifestJSON } = await import('../packages/compiler/src')
+                return compileCSSManifestJSON(...args)
             }
         })
     ],

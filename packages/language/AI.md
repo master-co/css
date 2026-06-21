@@ -6,7 +6,7 @@
 
 ## Inputs And Outputs
 
-- Input: source text, `TextDocument`, language ids, class-position settings, optional `MasterCSSPlan`, optional `MasterCSS` instance.
+- Input: source text, `TextDocument`, language ids, class-position settings, optional `MasterCSSManifest`, optional `MasterCSS` instance.
 - Output: class positions, highlight token items, semantic token items, encoded semantic tokens, Shiki decorations, TextMate grammar registration data.
 
 ## Public APIs
@@ -16,7 +16,7 @@
 - Class-list and CSS directive tokenizers.
 - Browser semantic token helpers.
 - Shiki helpers and `syntaxes/master-css.tmLanguage.json`.
-- Master CSS language helpers such as `createLanguageCSS`, `defaultPlan`, and `matchesLanguageServiceNativeDeclaration`.
+- Master CSS language helpers such as `createLanguageCSS`, `defaultManifest`, and `matchesLanguageServiceNativeDeclaration`.
 
 ## Rules
 

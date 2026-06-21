@@ -1,19 +1,19 @@
 import { describe, expect, test } from 'vitest'
 import { createCSS } from '../src'
-import { clonePlan } from './helpers/css-tester'
+import { cloneManifest } from './helpers/css-tester'
 
 describe.concurrent('ThemeLayer', () => {
     test('keeps default variable buckets before mode buckets when defaults are inserted later', () => {
-        const plan = clonePlan()
-        plan.settings = {
-            ...plan.settings,
+        const manifest = cloneManifest()
+        manifest.settings = {
+            ...manifest.settings,
             defaultMode: 'light',
             modeTrigger: 'class',
             modes: ['light', 'dark']
         }
         const overriddenVariables = new Set(['color-blue', 'color-accent', 'color-amber-10'])
-        plan.variables = [
-            ...(plan.variables || []).filter((variable) => !variable.name || !overriddenVariables.has(variable.name)),
+        manifest.variables = [
+            ...(manifest.variables || []).filter((variable) => !variable.name || !overriddenVariables.has(variable.name)),
             {
                 name: 'color-blue',
                 key: 'blue',
@@ -44,7 +44,7 @@ describe.concurrent('ThemeLayer', () => {
             }
         ]
 
-        const css = createCSS(plan)
+        const css = createCSS(manifest)
         css.add('fg:blue')
         css.add('fg:accent')
 

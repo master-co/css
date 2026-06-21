@@ -5,9 +5,9 @@ import {
     renderBrowserSemanticTokens
 } from '../src/browser'
 import { SEMANTIC_TOKEN_MODIFIERS, SEMANTIC_TOKEN_TYPES } from '../src/common'
-import { createPresetPlan } from './helpers/create-preset-plan'
+import { createPresetManifest } from './helpers/create-preset-manifest'
 
-const plan = createPresetPlan({
+const manifest = createPresetManifest({
     variables: [{ key: 'brand', value: '#123456' }],
     utilities: [
         {
@@ -45,7 +45,7 @@ function decodeSingleLineBrowserSemanticTokens(source: string, data: ArrayLike<n
 
 test.concurrent('collects browser semantic tokens for HTML class attributes', () => {
     const source = '<div class="text-align:center fg:brand block btn"></div>'
-    const tokens = collectBrowserSemanticTokenItems(source, 'html', { plan })
+    const tokens = collectBrowserSemanticTokenItems(source, 'html', { manifest })
     const mapped = tokens.map((token) => ({
         text: tokenText(source, token),
         type: token.type,
@@ -64,7 +64,7 @@ test.concurrent('collects browser semantic tokens for HTML class attributes', ()
 
 test.concurrent('encodes browser role-derived semantic token modifiers', () => {
     const source = '<div class="{fg:red;block}>li:hover@sm"></div>'
-    const semanticTokens = renderBrowserSemanticTokens(source, 'html', { plan })
+    const semanticTokens = renderBrowserSemanticTokens(source, 'html', { manifest })
     const tokens = decodeSingleLineBrowserSemanticTokens(source, semanticTokens?.data || [])
     const declarationTerminatorIndex = SEMANTIC_TOKEN_MODIFIERS.indexOf('declarationTerminator')
     const selectorCombinatorIndex = SEMANTIC_TOKEN_MODIFIERS.indexOf('selectorCombinator')
@@ -104,7 +104,7 @@ test.concurrent('collects browser semantic tokens only for CSS directive class-l
             }
         }
     `
-    const tokens = collectBrowserSemanticTokenItems(source, 'css', { plan })
+    const tokens = collectBrowserSemanticTokenItems(source, 'css', { manifest })
     const mapped = tokens.map((token) => ({
         text: tokenText(source, token),
         type: token.type,
@@ -145,14 +145,14 @@ test.concurrent('does not collect browser semantic tokens for managed syntax wit
             }
         }
     `
-    const tokens = collectBrowserSemanticTokenItems(source, 'css', { plan })
+    const tokens = collectBrowserSemanticTokenItems(source, 'css', { manifest })
 
     expect(tokens).toEqual([])
 })
 
 test.concurrent('encodes browser semantic tokens', () => {
     const source = '<div class="btn"></div>'
-    const semanticTokens = renderBrowserSemanticTokens(source, 'html', { plan })
+    const semanticTokens = renderBrowserSemanticTokens(source, 'html', { manifest })
     const data = [...(semanticTokens?.data || [])]
     const typeIndex = SEMANTIC_TOKEN_TYPES.indexOf('class')
     const declarationIndex = SEMANTIC_TOKEN_MODIFIERS.indexOf('declaration')

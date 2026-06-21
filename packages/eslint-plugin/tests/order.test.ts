@@ -1,13 +1,13 @@
 import rule from '../src/rules/class-order'
 import { createTester } from './testers'
-import { createPresetPlan } from './helpers/create-preset-plan'
+import { createPresetManifest } from './helpers/create-preset-manifest'
 import UtilityType from 'shared/utility-type'
 
 createTester({
     settings: {
         '@master/css': {
             classAttributes: ['test', 'className', 'class'],
-            plan: createPresetPlan({
+            manifest: createPresetManifest({
                 utilities: [
                     {
                         name: 'zDialog',

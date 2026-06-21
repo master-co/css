@@ -1,5 +1,5 @@
 import init, { transform } from 'lightningcss-wasm'
-import type { MasterCSSPlan } from 'shared/master-css-plan'
+import type { MasterCSSManifest } from 'shared/master-css-manifest'
 import {
     compileCSS as compileCSSCore,
     parseDirectives as parseDirectivesCore,
@@ -11,12 +11,12 @@ import lowerCSSDirectives from './lower-css-directives'
 
 export type * from './core'
 
-export type CompileCSSPlanSourceOptions = CompileCSSOptions & {
-    basePlan?: MasterCSSPlan
+export type CompileCSSManifestSourceOptions = CompileCSSOptions & {
+    baseManifest?: MasterCSSManifest
 }
 
-export interface CompileCSSPlanResult extends Omit<CompileCSSResult, 'planInput'> {
-    plan: MasterCSSPlan
+export interface CompileCSSManifestResult extends Omit<CompileCSSResult, 'manifestInput'> {
+    manifest: MasterCSSManifest
     directives: CompileCSSResult
 }
 
@@ -34,15 +34,15 @@ export async function compileCSS(source: string, options: CompileCSSOptions = {}
     return compileCSSCore(source, options)
 }
 
-export async function compileCSSPlan(source: string, options: CompileCSSPlanSourceOptions = {}): Promise<CompileCSSPlanResult> {
+export async function compileCSSManifest(source: string, options: CompileCSSManifestSourceOptions = {}): Promise<CompileCSSManifestResult> {
     const result = await compileCSS(source, options)
     if (result.references?.length) {
-        throw new Error('Browser compileCSSPlan cannot resolve @reference directives. Inline referenced CSS or compile the stylesheet in a Node environment.')
+        throw new Error('Browser compileCSSManifest cannot resolve @reference directives. Inline referenced CSS or compile the stylesheet in a Node environment.')
     }
 
-    const { planInput: _planInput, ...directiveData } = result
+    const { manifestInput: _manifestInput, ...directiveData } = result
     const lowerResult = lowerCSSDirectives(result, {
-        basePlan: options.basePlan,
+        baseManifest: options.baseManifest,
         onWarning: options.onWarning
     })
     const generatedCSS = lowerResult.generatedCSS || ''
@@ -54,7 +54,7 @@ export async function compileCSSPlan(source: string, options: CompileCSSPlanSour
     return {
         ...directiveData,
         dependencies: [],
-        plan: lowerResult.plan,
+        manifest: lowerResult.manifest,
         warnings: lowerResult.warnings,
         generatedCSS,
         css,

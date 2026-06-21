@@ -1,10 +1,10 @@
 import { describe, expect, test } from 'vitest'
 import { createCSS } from '../src'
-import { clonePlan, createCSSWithVariables, createDefaultCSS } from './helpers/css-tester'
+import { cloneManifest, createCSSWithVariables, createDefaultCSS } from './helpers/css-tester'
 
 describe.concurrent('migrated complex utility parity', () => {
     test('keeps group syntax independent from preset utilities', () => {
-        expect(createCSS({ version: 3 }).create('{display:block}')?.text)
+        expect(createCSS({ version: 1 }).create('{display:block}')?.text)
             .toBe('.\\{display\\:block\\}{display:block}')
     })
 
@@ -24,13 +24,13 @@ describe.concurrent('migrated complex utility parity', () => {
     })
 
     test('keeps grouped declaration important propagation', () => {
-        const plan = clonePlan()
-        plan.settings = {
-            ...(plan.settings || {}),
+        const manifest = cloneManifest()
+        manifest.settings = {
+            ...(manifest.settings || {}),
             important: true
         }
 
-        expect(createCSS(plan).create('{color:black!;bb:2px|solid}')?.text)
+        expect(createCSS(manifest).create('{color:black!;bb:2px|solid}')?.text)
             .toBe('.\\{color\\:black\\!\\;bb\\:2px\\|solid\\}{color:oklch(0% 0 none)!important;border-bottom:2px solid!important}')
     })
 

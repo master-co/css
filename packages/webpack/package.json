@@ -52,7 +52,7 @@
     },
     "dependencies": {
         "@master/css": "workspace:^",
-        "@master/css-plan": "workspace:^",
+        "@master/css-manifest": "workspace:^",
         "@master/css-extractor": "workspace:^",
         "@master/css-integration": "workspace:^",
         "@master/css-stylesheet": "workspace:^",

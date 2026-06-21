@@ -50,7 +50,7 @@ pnpm --filter @master/css-engine bench
 pnpm --filter @master/css-runtime bench
 ```
 
-Use `pnpm --filter @master/css-engine bench` for engine matching, generation, parsing, priority, layer insertion, and plan compilation/cache work.
+Use `pnpm --filter @master/css-engine bench` for engine matching, generation, parsing, priority, layer insertion, and manifest compilation/cache work.
 
 Use `pnpm --filter @master/css-runtime bench` for browser runtime CPU, DOM scan, mutation tracking, hydration, CSSOM insertion/deletion, or global bundle work. Run `pnpm --filter @master/css-runtime e2e` as the browser correctness check for runtime and hydration changes; add a targeted browser benchmark when CPU or CSSOM behavior is part of the change.
 
@@ -62,14 +62,14 @@ For bundle reports, build first and measure the changed artifacts on the same ma
 pnpm --filter @master/css-engine build
 pnpm --filter @master/css-runtime build
 wc -c packages/engine/dist/core.mjs packages/runtime/dist/global.min.js
-wc -c packages/runtime/dist/default-plan.json
+wc -c packages/runtime/dist/default-manifest.json
 gzip -c packages/engine/dist/core.mjs | wc -c
 brotli -c packages/engine/dist/core.mjs | wc -c
 gzip -c packages/runtime/dist/global.min.js | wc -c
 brotli -c packages/runtime/dist/global.min.js | wc -c
-gzip -c packages/runtime/dist/default-plan.json | wc -c
-brotli -c packages/runtime/dist/default-plan.json | wc -c
-shasum -a 256 packages/engine/dist/core.mjs packages/runtime/dist/global.min.js packages/runtime/dist/default-plan.json
+gzip -c packages/runtime/dist/default-manifest.json | wc -c
+brotli -c packages/runtime/dist/default-manifest.json | wc -c
+shasum -a 256 packages/engine/dist/core.mjs packages/runtime/dist/global.min.js packages/runtime/dist/default-manifest.json
 ```
 
 ## CI Equivalents

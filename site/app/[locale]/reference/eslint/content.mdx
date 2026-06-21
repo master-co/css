@@ -156,28 +156,28 @@ Specifies object keys to ignore checking.
 `}
 </Code>
 
-### `settings.plan`
-Specify an explicit compiled MasterCSSPlan. By default, ESLint loads the project CSS entry discovered from the current working directory.
+### `settings.manifest`
+Specify an explicit compiled MasterCSSManifest. By default, ESLint loads the project CSS entry discovered from the current working directory.
 <Code lang="js" name="eslint.config.js">
 {`
     export default [
         {
             settings: {
                 "@master/css": {
-                    plan: ${JSON.stringify(settings.plan, null, 4)}
+                    manifest: ${JSON.stringify(settings.manifest, null, 4)}
                 }
             }
         }
     ]
 `}
 </Code>
-If the discovered project CSS entry is not the plan you want for this ESLint run, pass an explicit compiled plan:
+If the discovered project CSS entry is not the manifest you want for this ESLint run, pass an explicit compiled manifest:
 ```js name=eslint.config.js
 export default [
     {
         settings: {
             "@master/css": {
-                plan
+                manifest
             }
         }
     }

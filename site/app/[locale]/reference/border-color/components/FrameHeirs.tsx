@@ -1,7 +1,7 @@
 import { Fragment } from 'react'
-import { planUtilities, utilityUsesVariableNamespace } from '~/site/utils/plan-utilities'
+import { manifestUtilities, utilityUsesVariableNamespace } from '~/site/utils/manifest-utilities'
 
-const utilities = planUtilities
+const utilities = manifestUtilities
 
 export default () => <>
     {

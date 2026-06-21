@@ -1,12 +1,12 @@
 import { describe, expect, test } from 'vitest'
 import StyleEntryPlugin from '../../src/plugins/style-entry'
 import { VIRTUAL_CSS_ID } from '@master/css-integration/style-module'
-import defaultPlanJSON from '@master/css-preset/default-plan.json' with { type: 'json' }
-import type { MasterCSSPlan } from 'shared/master-css-plan'
+import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
+import type { MasterCSSManifest } from 'shared/master-css-manifest'
 
 const SLOT = '#master-css-slot{--slot:0}'
 const RESOLVED_VIRTUAL_CSS_ID = '\0' + VIRTUAL_CSS_ID
-const defaultPlan = defaultPlanJSON as unknown as MasterCSSPlan
+const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 
 function makeContext(command: 'serve' | 'build', css = '.fg\\:red{color:red}', includeGeneratedCSS = true) {
     return {
@@ -15,7 +15,7 @@ function makeContext(command: 'serve' | 'build', css = '.fg\\:red{color:red}', i
         extractor: {
             options: { safelist: [] },
             slotCSSRule: SLOT,
-            css: { text: css, plan: defaultPlan },
+            css: { text: css, manifest: defaultManifest },
             config: {},
             latentClasses: new Set(['fg:red']),
             validClasses: new Set(),

@@ -60,7 +60,7 @@
             ### <StepNum />Define local CSS
             Source stylesheets can contain ordinary CSS, `@settings`, `@theme` tokens and keyframes, top-level custom conditions/selectors, and managed definition directives together. Ordinary class selectors are kept only when they appear in scanned source. Add `@preserve native;` only when native CSS must be preserved as written.
 
-            (i) A stylesheet that imports `@master/css` is also a project CSS entry, so its Master CSS plan directives participate in the project plan graph.
+            (i) A stylesheet that imports `@master/css` is also a project CSS entry, so its Master CSS manifest directives participate in the project manifest graph.
         </StepL>
         <StepR>
             ```css name=src/style.css
@@ -86,7 +86,7 @@
     <Step $row>
         <StepL>
             ### <StepNum />Add client types
-            If TypeScript source files import Master CSS virtual plan, preloaded, or generated CSS modules, add the Vite client types and Master CSS integration client types to your environment file.
+            If TypeScript source files import Master CSS virtual manifest, emittedGlobals, or generated CSS modules, add the Vite client types and Master CSS integration client types to your environment file.
         </StepL>
         <StepR>
             ```ts name=src/vite-env.d.ts

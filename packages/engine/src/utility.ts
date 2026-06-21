@@ -9,7 +9,7 @@ import type { ValueComponent, VariableValueComponent, Variable, StringValueCompo
 import { AtRule, AtRuleNode, AtRuleStringNode, AtRuleValueNode, } from './utils/parse-at'
 import parseValue from './utils/parse-value'
 import parseAt from './utils/parse-at'
-import type { MasterCSSPlanAtIdentifier, MasterCSSPlanUtilityLayerName, MasterCSSPlanUtilityMatcher, MasterCSSPlanVariantBranch, MasterCSSPlanVariantToken } from 'shared/master-css-plan'
+import type { MasterCSSManifestAtIdentifier, MasterCSSManifestUtilityLayerName, MasterCSSManifestUtilityMatcher, MasterCSSManifestVariantBranch, MasterCSSManifestVariantToken } from 'shared/master-css-manifest'
 import type { CompiledUtility } from './core'
 import generateAt from './utils/generate-at'
 import parseSelector, { SelectorNode } from './utils/parse-selector'
@@ -23,8 +23,8 @@ import collectAnimationNames from './utils/collect-animation-names'
 type UtilityStateBranch = {
     selectorTemplate?: string
     selectorNodes?: SelectorNode[]
-    atRules?: Partial<Record<MasterCSSPlanAtIdentifier, AtRuleNode[]>>
-    layer?: MasterCSSPlanUtilityLayerName
+    atRules?: Partial<Record<MasterCSSManifestAtIdentifier, AtRuleNode[]>>
+    layer?: MasterCSSManifestUtilityLayerName
     mode?: string
     key: string
     valid?: boolean
@@ -36,7 +36,7 @@ type ResolvedVariableAlias = {
     negative?: boolean
 }
 
-function isVariantToken(value: string): value is MasterCSSPlanVariantToken {
+function isVariantToken(value: string): value is MasterCSSManifestVariantToken {
     return /^:{1,2}[-_a-zA-Z][-_a-zA-Z0-9]*$/.test(value) || /^@[-_a-zA-Z][-_a-zA-Z0-9]*$/.test(value)
 }
 
@@ -47,7 +47,7 @@ function matchesPatternUtilityName(className: string, name: string) {
         || next === '~' || next === ':' || next === '[' || next === '@' || next === '_' || next === '.'
 }
 
-function getPatternUtilityMatch(className: string, matcher: MasterCSSPlanUtilityMatcher) {
+function getPatternUtilityMatch(className: string, matcher: MasterCSSManifestUtilityMatcher) {
     if (matcher.type !== 'pattern') return
     for (const value of matcher.values) {
         const name = matcher.prefix + value
@@ -107,9 +107,9 @@ function composeSelectorTemplate(current: string | undefined, next: string | und
     return next.replace(/&/g, current || '&')
 }
 
-function cloneAtRules(atRules?: Partial<Record<MasterCSSPlanAtIdentifier, AtRuleNode[]>>) {
+function cloneAtRules(atRules?: Partial<Record<MasterCSSManifestAtIdentifier, AtRuleNode[]>>) {
     if (!atRules) return
-    const cloned: Partial<Record<MasterCSSPlanAtIdentifier, AtRuleNode[]>> = {}
+    const cloned: Partial<Record<MasterCSSManifestAtIdentifier, AtRuleNode[]>> = {}
     for (const id of AT_IDENTIFIERS) {
         const nodes = atRules[id]
         if (nodes?.length) cloned[id] = [...nodes]
@@ -118,15 +118,15 @@ function cloneAtRules(atRules?: Partial<Record<MasterCSSPlanAtIdentifier, AtRule
 }
 
 function mergeAtRuleNodeMap(
-    current: Partial<Record<MasterCSSPlanAtIdentifier, AtRuleNode[]>> | undefined,
-    atRule: { id: MasterCSSPlanAtIdentifier, nodes: AtRuleNode[] }
+    current: Partial<Record<MasterCSSManifestAtIdentifier, AtRuleNode[]>> | undefined,
+    atRule: { id: MasterCSSManifestAtIdentifier, nodes: AtRuleNode[] }
 ) {
     const merged = cloneAtRules(current) || {}
     merged[atRule.id] = [...(merged[atRule.id] || []), ...atRule.nodes]
     return merged
 }
 
-function mergeBranch(base: UtilityStateBranch, branch: MasterCSSPlanVariantBranch, css: MasterCSS, key: string): UtilityStateBranch {
+function mergeBranch(base: UtilityStateBranch, branch: MasterCSSManifestVariantBranch, css: MasterCSS, key: string): UtilityStateBranch {
     let atRules = cloneAtRules(base.atRules)
     for (const atRule of branch.atRuleNodes || []) {
         atRules = mergeAtRuleNodeMap(atRules, atRule as AtRule)
@@ -134,7 +134,7 @@ function mergeBranch(base: UtilityStateBranch, branch: MasterCSSPlanVariantBranc
     if (!branch.atRuleNodes?.length) {
         for (const atRule of branch.atRules || []) {
             const parsed = parseAt(atRule, css)
-            atRules = mergeAtRuleNodeMap(atRules, parsed as { id: MasterCSSPlanAtIdentifier, nodes: AtRuleNode[] })
+            atRules = mergeAtRuleNodeMap(atRules, parsed as { id: MasterCSSManifestAtIdentifier, nodes: AtRuleNode[] })
         }
     }
     if (branch.selectorNodes?.length && !branch.selector) {
@@ -245,14 +245,14 @@ function wrapCalcArguments(value: string) {
 export class Utility {
     native?: CSSRule
     nodes?: UtilityRuleNode[]
-    readonly atRules?: Partial<Record<MasterCSSPlanAtIdentifier, AtRuleNode[]>>
+    readonly atRules?: Partial<Record<MasterCSSManifestAtIdentifier, AtRuleNode[]>>
     readonly priority!: RulePriority
     readonly type: UtilityTypeValue = UtilityType.Normal
     readonly declarations?: PropertiesHyphen
     readonly declarationRules?: { declarations: PropertiesHyphen, atRules?: string[], selector?: string }[]
     readonly layer!: Layer
-    readonly layerName: MasterCSSPlanUtilityLayerName
-    explicitLayerName?: MasterCSSPlanUtilityLayerName
+    readonly layerName: MasterCSSManifestUtilityLayerName
+    explicitLayerName?: MasterCSSManifestUtilityLayerName
     readonly valid: boolean = true
     animationNames?: Set<string>
     variableNames?: Set<string>
@@ -656,7 +656,7 @@ export class Utility {
             }
 
             this.atToken = (this.atToken || '') + '@' + conditionToken
-            const variantToken = `@${conditionToken}` as MasterCSSPlanVariantToken
+            const variantToken = `@${conditionToken}` as MasterCSSManifestVariantToken
             const variantBranches = this.css.resolveVariant(variantToken)
             if (variantBranches) {
                 branches = branches.flatMap((branch) =>
@@ -671,7 +671,7 @@ export class Utility {
             branches = branches.map((branch) => ({
                 ...branch,
                 key: branch.key + '@' + conditionToken,
-                atRules: mergeAtRuleNodeMap(branch.atRules, atRule as { id: MasterCSSPlanAtIdentifier, nodes: AtRuleNode[] })
+                atRules: mergeAtRuleNodeMap(branch.atRules, atRule as { id: MasterCSSManifestAtIdentifier, nodes: AtRuleNode[] })
             }))
         }
 

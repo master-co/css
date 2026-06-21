@@ -60,7 +60,7 @@ const articles = [
         id: 'grid',
         title: 'Responsive motion in compact layouts',
         date: 'April 28, 2026',
-        description: 'Plan transitions around the real content container so they still work on phones.',
+        description: 'Manifest transitions around the real content container so they still work on phones.',
         image: articleGridImage,
         imageAlt: 'City skyline at sunset',
         imageTransition: 'view-transition-name:article-grid-image',

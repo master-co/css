@@ -39,10 +39,10 @@
             ```ts name=src/main.ts
                import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
                import { AppModule } from './app/app.module';
-               import defaultPlan from '@master/css-preset/default-plan.json' with { type: 'json' }; // [!code ++]
+               import defaultManifest from '@master/css-preset/default-manifest.json' with { type: 'json' }; // [!code ++]
                import { initCSSRuntime } from '@master/css-runtime'; // [!code ++]
 
-               initCSSRuntime({ plan: defaultPlan }); // [!code ++]
+               initCSSRuntime({ manifest: defaultManifest }); // [!code ++]
 
                platformBrowserDynamic().bootstrapModule(AppModule)
                    .catch(err => console.error(err));

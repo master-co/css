@@ -6,20 +6,20 @@ import parseSelector from './utils/parse-selector'
 import generateSelector from './utils/generate-selector'
 import compareRulePriority from './utils/compare-rule-priority'
 import type { Utility } from './utility'
-import type { MasterCSSPlan } from 'shared/master-css-plan'
-import type { MasterCSSPreloaded } from './preloaded'
+import type { MasterCSSManifest } from 'shared/master-css-manifest'
+import type { MasterCSSEmittedGlobals } from './emitted-globals'
 import type { MasterCSSOptions } from './core'
 
 export { MasterCSS, createCSS, compareRulePriority, generateAt, generateSelector, parseAt, parseSelector }
 export type { Utility as GeneratedRule }
-export type * from 'shared/master-css-plan'
+export type * from 'shared/master-css-manifest'
 
-export function createCompilerCSS(plan: MasterCSSPlan, preloaded?: MasterCSSPreloaded, options?: MasterCSSOptions) {
-    return createCSS(plan, preloaded, options)
+export function createCompilerCSS(manifest: MasterCSSManifest, emittedGlobals?: MasterCSSEmittedGlobals, options?: MasterCSSOptions) {
+    return createCSS(manifest, emittedGlobals, options)
 }
 
-export function expandClassName(plan: MasterCSSPlan, className: string, mode?: string) {
-    return createCompilerCSS(plan).createAll(className, undefined, mode)
+export function expandClassName(manifest: MasterCSSManifest, className: string, mode?: string) {
+    return createCompilerCSS(manifest).createAll(className, undefined, mode)
 }
 
 export function inspectGeneratedRule(rule: Utility) {

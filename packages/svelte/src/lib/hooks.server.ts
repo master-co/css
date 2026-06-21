@@ -1,6 +1,6 @@
 /// <reference types="@master/css-integration/client" />
 
-import plan from 'virtual:master-css-plan'
+import manifest from 'virtual:master-css-manifest'
 import { createMasterCSSHandle } from './server.js'
 
 export {
@@ -10,7 +10,7 @@ export {
     injectMasterStyle
 } from './server.js'
 
-const handle = createMasterCSSHandle({ plan })
+const handle = createMasterCSSHandle({ manifest })
 
 export { handle }
 export default handle

@@ -2,7 +2,7 @@
 
 ## Responsibility
 
-`@master/css-lexer` owns dependency-free lexical scanning and source range contracts shared by Master CSS tooling. It may identify source ranges, directive boundaries, quoted strings, class lexical tokens, CSS unit patterns, and plan entrypoint statements. It must not validate classes, generate CSS rules, resolve plans, compile directives, extract source-level class candidates, or depend on language-service rendering behavior.
+`@master/css-lexer` owns dependency-free lexical scanning and source range contracts shared by Master CSS tooling. It may identify source ranges, directive boundaries, quoted strings, class lexical tokens, CSS unit patterns, and manifest entrypoint statements. It must not validate classes, generate CSS rules, resolve manifests, compile directives, extract source-level class candidates, or depend on language-service rendering behavior.
 
 ## Inputs And Outputs
 
@@ -17,7 +17,7 @@ This package must remain below `@master/css`, `@master/css-compiler`, `@master/c
 
 - Source primitives from `src/source.ts`
 - CSS directive ranges from `src/directive-ranges.ts`
-- CSS plan entry scanners from `src/css-plan-entry.ts`
+- CSS manifest entry scanners from `src/css-manifest-entry.ts`
 - Master CSS lexical unit constants from `src/units.ts`
 - Master class lexical tokenizers from `src/class.ts`
 
