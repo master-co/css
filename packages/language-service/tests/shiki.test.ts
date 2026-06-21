@@ -235,9 +235,9 @@ test.concurrent('creates Shiki decorations from Master CSS semantic tokens', () 
         }),
         expect.objectContaining({
             text: 'block',
-            type: 'class',
+            type: 'enumMember',
             modifiers: [],
-            classNames: expect.arrayContaining(['mcss-semantic', 'mcss-semantic-class', 'mcss-semantic-role-utility-semantic'])
+            classNames: expect.arrayContaining(['mcss-semantic', 'mcss-semantic-enumMember', 'mcss-semantic-role-utility-semantic'])
         }),
         expect.objectContaining({
             text: 'btn',
@@ -387,6 +387,10 @@ test.concurrent('applies semantic token styles by type and modifier', () => {
         lang: 'html',
         plan,
         semanticTokenStyles: {
+            enumMember: {
+                color: 'var(--mcss-semantic-value)',
+                '--shiki-dark': 'var(--mcss-semantic-value-dark)'
+            },
             class: {
                 color: 'var(--mcss-semantic-class)',
                 '--shiki-dark': 'var(--mcss-semantic-class-dark)'
@@ -396,15 +400,16 @@ test.concurrent('applies semantic token styles by type and modifier', () => {
             }
         }
     })
+    const enumMemberDecorations = decorations.filter((decoration) => decoration.type === 'enumMember')
     const classDecorations = decorations.filter((decoration) => decoration.type === 'class')
-    const blockStyles = classDecorations
+    const blockStyles = enumMemberDecorations
         .filter((decoration) => code.slice(decoration.start, decoration.end) === 'block')
         .map((decoration) => decoration.properties?.style)
     const btnStyle = classDecorations.find((decoration) => code.slice(decoration.start, decoration.end) === 'btn')?.properties?.style
 
     expect(blockStyles).toEqual([
-        'color:var(--mcss-semantic-class);--shiki-dark:var(--mcss-semantic-class-dark)',
-        'color:var(--mcss-semantic-class);--shiki-dark:var(--mcss-semantic-class-dark)'
+        'color:var(--mcss-semantic-value);--shiki-dark:var(--mcss-semantic-value-dark)',
+        'color:var(--mcss-semantic-value);--shiki-dark:var(--mcss-semantic-value-dark)'
     ])
     expect(btnStyle).toBe('color:var(--mcss-semantic-class);--shiki-dark:var(--mcss-semantic-class-dark);font-weight:600')
 })
@@ -476,7 +481,7 @@ test.concurrent('uses native CSS syntax styles for selector semantic tokens', ()
         {
             content: 'block',
             htmlStyle: { color: 'value' },
-            className: 'mcss-semantic mcss-semantic-class mcss-semantic-role-utility-semantic'
+            className: 'mcss-semantic mcss-semantic-enumMember mcss-semantic-role-utility-semantic'
         },
         {
             content: '>',
@@ -561,7 +566,7 @@ test.concurrent('uses native CSS syntax styles for documentation Master CSS toke
         {
             content: 'block',
             htmlStyle: { color: 'value' },
-            className: 'mcss-semantic mcss-semantic-class mcss-semantic-role-utility-semantic'
+            className: 'mcss-semantic mcss-semantic-enumMember mcss-semantic-role-utility-semantic'
         },
         {
             content: '2',

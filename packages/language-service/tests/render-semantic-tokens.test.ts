@@ -74,9 +74,9 @@ test.concurrent('renders semantic tokens for class attributes', () => {
     expectToken(tokens, 'brand', 'variable')
     expectToken(tokens, 'hover', 'modifier', ['pseudoClass'])
     expectToken(tokens, '@sm', 'keyword', ['query'])
-    expectToken(tokens, 'block', 'class')
+    expectToken(tokens, 'block', 'enumMember')
     expectToken(tokens, 'state-name', 'modifier', ['pseudoClass'])
-    expectToken(tokens, 'hidden', 'class')
+    expectToken(tokens, 'hidden', 'enumMember')
     expectToken(tokens, '_', 'operator', ['selector'])
     expectToken(tokens, 'div', 'type', ['selector'])
     expectToken(tokens, '::', 'operator', ['pseudoElement', 'selector'])
@@ -141,7 +141,7 @@ test.concurrent('renders semantic tokens for container queries and slash-separat
         'html'
     )
 
-    expectToken(tokens, 'hidden', 'class')
+    expectToken(tokens, 'hidden', 'enumMember')
     expectToken(tokens, '@container', 'keyword', ['query'])
     expectToken(tokens, '(', 'operator', ['query'])
     expectToken(tokens, 'sm', 'enumMember', ['query'])
@@ -158,8 +158,8 @@ test.concurrent('renders semantic tokens for container queries and slash-separat
     expectToken(tokens, '@card', 'keyword', ['query'])
     expectToken(tokens, '3', 'number', ['query'])
     expectToken(tokens, 'xs', 'enumMember', ['query', 'unit'])
-    expectToken(tokens, 'bg-center', 'class')
-    expectToken(tokens, 'bg-cover', 'class')
+    expectToken(tokens, 'bg-center', 'enumMember')
+    expectToken(tokens, 'bg-cover', 'enumMember')
     expectToken(tokens, 'bg', 'property')
     expectToken(tokens, 'url', 'function')
     expectToken(tokens, '/hero.jpg', 'string')
@@ -198,6 +198,26 @@ test.concurrent('renders semantic tokens for grouped declarations, strings, unit
     expectToken(tokens, 'a|b', 'string', ['quoted'])
     expectToken(tokens, 'x', 'enumMember', ['unit'])
     expectToken(tokens, '!', 'operator', ['important'])
+})
+
+test.concurrent('renders native-aligned semantic tokens for grouped classes with selector suffixes', () => {
+    const { tokens } = renderTokens(
+        '<div class="{text-align:center;block}>li:hover@sm"></div>',
+        'html'
+    )
+
+    expectToken(tokens, '{', 'operator')
+    expectToken(tokens, 'text-align', 'property')
+    expectToken(tokens, ':', 'operator')
+    expectToken(tokens, 'center', 'enumMember')
+    expectToken(tokens, ';', 'operator')
+    expectToken(tokens, 'block', 'enumMember')
+    expectToken(tokens, '}', 'operator')
+    expectToken(tokens, '>', 'operator', ['selector'])
+    expectToken(tokens, 'li', 'type', ['selector'])
+    expectToken(tokens, 'hover', 'modifier', ['pseudoClass'])
+    expectToken(tokens, '@sm', 'keyword', ['query'])
+    expect(tokens.some(({ text }) => text.includes('block}>li:hover@sm'))).toBe(false)
 })
 
 test.concurrent('renders semantic tokens for CSS directives', () => {
@@ -313,7 +333,7 @@ test.concurrent('renders semantic tokens for CSS directives', () => {
     expectToken(tokens, 'blue', 'enumMember')
     expectToken(tokens, '<', 'operator', ['query'])
     expectToken(tokens, 'sm', 'enumMember', ['query'])
-    expectToken(tokens, 'block', 'class')
+    expectToken(tokens, 'block', 'enumMember')
     expectToken(tokens, 'scrollbar-thumb', 'modifier', ['pseudoElement'])
     expectToken(tokens, 'hover', 'modifier', ['pseudoClass'])
     expectToken(tokens, '@dark', 'keyword', ['query'])
@@ -432,7 +452,7 @@ test.concurrent('renders Master-only tokens inside managed definition directives
     expectToken(tokens, 'btn', 'class', ['selector'])
     expectToken(tokens, 'btn:hover', 'class', ['selector'])
     expectToken(tokens, '@compose', 'keyword', ['directive'])
-    expectToken(tokens, 'inline-flex', 'class')
+    expectToken(tokens, 'inline-flex', 'enumMember')
     expectToken(tokens, '@dark', 'keyword', ['directive'])
     expectToken(tokens, '@utilities', 'keyword', ['directive'])
     expectToken(tokens, 'font', 'property')
@@ -469,7 +489,7 @@ test.concurrent('renders CSS directive ranges with quoted semicolons', () => {
     expectToken(tokens, 'not', 'modifier', ['directive'])
     expectToken(tokens, 'required', 'modifier', ['directive'])
     expectToken(tokens, '@safelist', 'keyword', ['directive'])
-    expectToken(tokens, 'block', 'class')
+    expectToken(tokens, 'block', 'enumMember')
     expectToken(tokens, '@blocklist', 'keyword', ['directive'])
     expectToken(tokens, '@preserve', 'keyword', ['directive'])
     expectToken(tokens, 'native', 'enumMember', ['directive'])
@@ -486,7 +506,7 @@ test.concurrent('does not tokenize quoted compose preludes as class lists', () =
     const { tokens } = renderTokens('.btn { @compose "block fg:red"; }', 'css')
 
     expectToken(tokens, '@compose', 'keyword', ['directive'])
-    expect(tokens).not.toContainEqual({ text: 'block', type: 'class', modifiers: [] })
+    expect(tokens).not.toContainEqual({ text: 'block', type: 'enumMember', modifiers: [] })
     expect(tokens).not.toContainEqual({ text: 'fg', type: 'property', modifiers: [] })
 })
 
@@ -766,7 +786,7 @@ test.concurrent('renders CSS directives in SCSS-like sources', () => {
     expectToken(tokens, '@theme', 'keyword', ['directive'])
     expectToken(tokens, '--color-primary', 'variable')
     expectToken(tokens, '@compose', 'keyword', ['directive'])
-    expectToken(tokens, 'block', 'class')
+    expectToken(tokens, 'block', 'enumMember')
 })
 
 test.concurrent('renders detailed CSS directive semantic tokens for Master syntax only', () => {
@@ -810,7 +830,7 @@ test.concurrent('renders detailed CSS directive semantic tokens for Master synta
     expectToken(tokens, '@reference', 'keyword', ['directive'])
     expectToken(tokens, '@blocklist', 'keyword', ['directive'])
     expectToken(tokens, '@safelist', 'keyword', ['directive'])
-    expectToken(tokens, 'block', 'class')
+    expectToken(tokens, 'block', 'enumMember')
     expectToken(tokens, 'fg', 'property')
     expectToken(tokens, 'red', 'enumMember')
     expectToken(tokens, 'hover', 'modifier', ['pseudoClass'])
@@ -827,7 +847,7 @@ test.concurrent('renders detailed CSS directive semantic tokens for Master synta
     expectToken(tokens, '@components', 'keyword', ['directive'])
     expectToken(tokens, 'btn', 'class', ['selector'])
     expectToken(tokens, '@compose', 'keyword', ['directive'])
-    expectToken(tokens, 'inline-flex', 'class')
+    expectToken(tokens, 'inline-flex', 'enumMember')
     expectToken(tokens, 'align-items', 'property')
     expectToken(tokens, 'center', 'enumMember')
     expectToken(tokens, 'primary', 'enumMember')
@@ -910,7 +930,7 @@ test.concurrent('renders active semantic tokens for the class context at a posit
 
     expectToken(tokens, 'fg', 'property')
     expectToken(tokens, 'red', 'enumMember')
-    expectToken(tokens, 'block', 'class')
+    expectToken(tokens, 'block', 'enumMember')
     expectToken(tokens, 'hover', 'modifier', ['pseudoClass'])
 })
 
@@ -923,7 +943,7 @@ test.concurrent('renders active semantic tokens for a class context when the cur
 
     expectToken(tokens, 'fg', 'property')
     expectToken(tokens, 'red', 'enumMember')
-    expectToken(tokens, 'block', 'class')
+    expectToken(tokens, 'block', 'enumMember')
     expectToken(tokens, 'hover', 'modifier', ['pseudoClass'])
     expectToken(tokens, 'p', 'property')
     expectToken(tokens, 'md', 'enumMember')
@@ -938,7 +958,7 @@ test.concurrent('renders active semantic tokens only for the current class strin
 
     expectToken(tokens, 'p', 'property')
     expectToken(tokens, 'md', 'enumMember')
-    expectToken(tokens, 'flex', 'class')
+    expectToken(tokens, 'flex', 'enumMember')
     expect(tokens.some(({ text }) => text === 'fg' || text === 'red' || text === 'block')).toBe(false)
 })
 

@@ -3,7 +3,7 @@ import {
     SEMANTIC_TOKEN_TYPES,
     SEMANTIC_TOKENS_LEGEND
 } from './common'
-import { createCSS, defaultPlan, type MasterCSS } from './master-css'
+import { createCSS, defaultPlan, matchesLanguageServiceNativeDeclaration, type MasterCSS } from './master-css'
 import { collectClassListHighlightTokenItems } from './semantic/tokenize-class'
 import { collectCSSHighlightTokenItems, isCSSSemanticTokenDocument } from './semantic/tokenize-css'
 import { toSemanticTokenItems, type HighlightTokenItem } from './semantic/highlight'
@@ -41,7 +41,9 @@ const tokenTypeIndex = new Map(SEMANTIC_TOKEN_TYPES.map((type, index) => [type, 
 const tokenModifierIndex = new Map(SEMANTIC_TOKEN_MODIFIERS.map((modifier, index) => [modifier, index]))
 
 function createBrowserCSS(options: BrowserSemanticTokenOptions = {}) {
-    return options.css || createCSS(options.plan || defaultPlan)
+    return options.css || createCSS(options.plan || defaultPlan, undefined, {
+        nativeDeclarationMatcher: matchesLanguageServiceNativeDeclaration
+    })
 }
 
 function escapeRegExp(value: string) {

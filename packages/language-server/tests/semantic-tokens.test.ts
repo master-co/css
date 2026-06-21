@@ -30,7 +30,7 @@ withFixture('basic', async (context) => {
 
         expect(semanticTokens.data.length).toBeGreaterThan(0)
         expect(semanticTokens.data.some((_: number, index: number) =>
-            index % 5 === 3 && SEMANTIC_TOKEN_TYPES[semanticTokens.data[index]] === 'class'
+            index % 5 === 3 && SEMANTIC_TOKEN_TYPES[semanticTokens.data[index]] === 'enumMember'
         )).toBe(true)
         expect(semanticTokens.data.some((_: number, index: number) =>
             index % 5 === 3 && SEMANTIC_TOKEN_TYPES[semanticTokens.data[index]] === 'property'
@@ -157,7 +157,7 @@ withFixture('basic', async (context) => {
             index % 5 === 3 && SEMANTIC_TOKEN_TYPES[semanticTokens.data[index]] === 'property'
         )).toBe(true)
         expect(semanticTokens.data.some((_, index) =>
-            index % 5 === 3 && SEMANTIC_TOKEN_TYPES[semanticTokens.data[index]] === 'class'
+            index % 5 === 3 && SEMANTIC_TOKEN_TYPES[semanticTokens.data[index]] === 'enumMember'
         )).toBe(true)
         await context.server.onDidClose({ document: textDocument })
     })

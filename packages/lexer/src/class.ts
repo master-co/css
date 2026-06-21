@@ -553,15 +553,44 @@ export function tokenizeMasterCSSState(token: string, stateStart: number, offset
     return tokens
 }
 
+function findMasterCSSGroupedClassClose(token: string) {
+    let quote = ''
+    let depth = 0
+    for (let i = 1; i < token.length; i++) {
+        const char = token[i]
+        if (quote) {
+            if (char === '\\') i++
+            else if (char === quote) quote = ''
+            continue
+        }
+        if (char === '"' || char === '\'') {
+            quote = char
+            continue
+        }
+        if (char === '(' || char === '[' || char === '{') {
+            depth++
+            continue
+        }
+        if (char === ')' || char === ']') {
+            depth = Math.max(0, depth - 1)
+            continue
+        }
+        if (char === '}') {
+            if (depth === 0) return i
+            depth--
+        }
+    }
+}
+
 export function tokenizeMasterCSSGroupedClassToken(
     token: string,
     offset: number,
     tokenizeClassToken: (token: string, offset: number) => MasterCSSLexicalTokenItem[]
 ): MasterCSSLexicalTokenItem[] | undefined {
     const startsWithGroup = token.startsWith('{')
-    const endsWithGroup = token.endsWith('}')
+    const groupClose = startsWithGroup ? findMasterCSSGroupedClassClose(token) : undefined
     const bodyStart = startsWithGroup ? 1 : 0
-    const bodyEnd = endsWithGroup ? token.length - 1 : token.length
+    const bodyEnd = groupClose ?? token.length
     const body = token.slice(bodyStart, bodyEnd)
     if (!startsWithGroup && !body.includes(';')) return
 
@@ -577,6 +606,9 @@ export function tokenizeMasterCSSGroupedClassToken(
             pushMasterCSSLexicalToken(tokens, offset + bodyStart + part.separatorStart, 1, 'operator', 'declaration.terminator')
         }
     }
-    if (endsWithGroup) pushMasterCSSLexicalToken(tokens, offset + token.length - 1, 1, 'operator', 'block.brace')
+    if (groupClose !== undefined) {
+        pushMasterCSSLexicalToken(tokens, offset + groupClose, 1, 'operator', 'block.brace')
+        tokens.push(...tokenizeMasterCSSState(token, groupClose + 1, offset))
+    }
     return tokens
 }

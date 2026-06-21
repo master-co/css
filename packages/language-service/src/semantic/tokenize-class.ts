@@ -68,14 +68,14 @@ export function tokenizeClassToken(css: MasterCSS, token: string, offset: number
 
     if (rule.type === UtilityType.Semantic) {
         const stateStart = token.length - (rule.stateToken?.length ?? 0)
-        pushHighlightToken(tokens, offset, stateStart, 'class', 'utility.semantic')
+        pushHighlightToken(tokens, offset, stateStart, 'enumMember', 'utility.semantic')
         tokens.push(...tokenizeState(token, stateStart, offset))
         return tokens
     }
 
     if (rule.registeredUtility.matchers.some((matcher) => matcher.type === 'pattern')) {
         const stateStart = token.length - (rule.stateToken?.length ?? 0)
-        pushHighlightToken(tokens, offset, stateStart, 'class', 'utility.semantic')
+        pushHighlightToken(tokens, offset, stateStart, 'enumMember', 'utility.semantic')
         tokens.push(...tokenizeState(token, stateStart, offset))
         return tokens
     }

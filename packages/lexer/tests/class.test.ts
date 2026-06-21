@@ -95,3 +95,64 @@ test.concurrent('tokenizes grouped class shell without parsing class semantics',
         { text: '}', type: 'operator', role: 'block.brace', modifiers: undefined }
     ])
 })
+
+test.concurrent('tokenizes grouped class suffix as selector and query state', () => {
+    const source = '{fg:red;block}>li:hover@sm'
+    const tokens = tokenizeMasterCSSGroupedClassToken(source, 0, (token, offset) => [
+        { start: offset, end: offset + token.length, type: 'class', role: 'utility.semantic' }
+    ])
+
+    expect(texts(source, tokens ?? [])).toEqual([
+        { text: '{', type: 'operator', role: 'block.brace', modifiers: undefined },
+        { text: 'fg:red', type: 'class', role: 'utility.semantic', modifiers: undefined },
+        { text: ';', type: 'operator', role: 'declaration.terminator', modifiers: undefined },
+        { text: 'block', type: 'class', role: 'utility.semantic', modifiers: undefined },
+        { text: '}', type: 'operator', role: 'block.brace', modifiers: undefined },
+        { text: '>', type: 'operator', role: 'selector.combinator', modifiers: ['selector'] },
+        { text: 'li', type: 'type', role: 'selector.type', modifiers: ['selector'] },
+        { text: ':', type: 'operator', role: 'selector.pseudoClass.delimiter', modifiers: ['selector', 'pseudoClass'] },
+        { text: 'hover', type: 'modifier', role: 'selector.pseudoClass.name', modifiers: ['pseudoClass'] },
+        { text: '@sm', type: 'keyword', role: 'query.keyword', modifiers: ['query'] }
+    ])
+})
+
+test.concurrent('tokenizes grouped class query suffix', () => {
+    const source = '{block}@sm'
+    const tokens = tokenizeMasterCSSGroupedClassToken(source, 0, (token, offset) => [
+        { start: offset, end: offset + token.length, type: 'class', role: 'utility.semantic' }
+    ])
+
+    expect(texts(source, tokens ?? [])).toEqual([
+        { text: '{', type: 'operator', role: 'block.brace', modifiers: undefined },
+        { text: 'block', type: 'class', role: 'utility.semantic', modifiers: undefined },
+        { text: '}', type: 'operator', role: 'block.brace', modifiers: undefined },
+        { text: '@sm', type: 'keyword', role: 'query.keyword', modifiers: ['query'] }
+    ])
+})
+
+test.concurrent('preserves grouped class recovery without closing braces', () => {
+    const source = '{fg:red;bg:blue'
+    const tokens = tokenizeMasterCSSGroupedClassToken(source, 0, (token, offset) => [
+        { start: offset, end: offset + token.length, type: 'class', role: 'utility.semantic' }
+    ])
+
+    expect(texts(source, tokens ?? [])).toEqual([
+        { text: '{', type: 'operator', role: 'block.brace', modifiers: undefined },
+        { text: 'fg:red', type: 'class', role: 'utility.semantic', modifiers: undefined },
+        { text: ';', type: 'operator', role: 'declaration.terminator', modifiers: undefined },
+        { text: 'bg:blue', type: 'class', role: 'utility.semantic', modifiers: undefined }
+    ])
+})
+
+test.concurrent('preserves brace-less grouped declarations', () => {
+    const source = 'fg:red;bg:blue'
+    const tokens = tokenizeMasterCSSGroupedClassToken(source, 0, (token, offset) => [
+        { start: offset, end: offset + token.length, type: 'class', role: 'utility.semantic' }
+    ])
+
+    expect(texts(source, tokens ?? [])).toEqual([
+        { text: 'fg:red', type: 'class', role: 'utility.semantic', modifiers: undefined },
+        { text: ';', type: 'operator', role: 'declaration.terminator', modifiers: undefined },
+        { text: 'bg:blue', type: 'class', role: 'utility.semantic', modifiers: undefined }
+    ])
+})

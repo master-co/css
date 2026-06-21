@@ -26,6 +26,8 @@ const semanticTokens = languageService.renderSemanticTokens(textDocument)
 
 Semantic tokens are generated with the project plan and Master CSS engine, so custom variables, components, utilities, modes, and other plan-dependent tokens can be classified after the project plan is loaded by the caller.
 
+The token types stay within the exported LSP legend and use CSS-native categories where possible: declaration keys use `property`, values and semantic utility names use `enumMember`, selector class names and component utilities use `class`.
+
 Use `renderSemanticTokensAtPosition()` when a client wants active-only highlighting for the embedded class context or CSS directive at the current editor position.
 ```ts
 const semanticTokens = languageService.renderSemanticTokensAtPosition(textDocument, position)

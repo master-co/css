@@ -25,7 +25,7 @@ function tokenText(source: string, token: { start: number, end: number }) {
 }
 
 test.concurrent('collects browser semantic tokens for HTML class attributes', () => {
-    const source = '<div class="fg:brand block btn"></div>'
+    const source = '<div class="text-align:center fg:brand block btn"></div>'
     const tokens = collectBrowserSemanticTokenItems(source, 'html', { plan })
     const mapped = tokens.map((token) => ({
         text: tokenText(source, token),
@@ -34,9 +34,11 @@ test.concurrent('collects browser semantic tokens for HTML class attributes', ()
     }))
 
     expect(mapped).toEqual(expect.arrayContaining([
+        { text: 'text-align', type: 'property', modifiers: [] },
+        { text: 'center', type: 'enumMember', modifiers: [] },
         { text: 'fg', type: 'property', modifiers: [] },
         { text: 'brand', type: 'variable', modifiers: [] },
-        { text: 'block', type: 'class', modifiers: [] },
+        { text: 'block', type: 'enumMember', modifiers: [] },
         { text: 'btn', type: 'class', modifiers: ['declaration', 'component'] }
     ]))
 })
@@ -75,7 +77,7 @@ test.concurrent('collects browser semantic tokens for CSS directives', () => {
         { text: '@components', type: 'keyword', modifiers: ['directive'] },
         { text: 'btn', type: 'class', modifiers: ['selector'] },
         { text: '@compose', type: 'keyword', modifiers: ['directive'] },
-        { text: 'block', type: 'class', modifiers: [] }
+        { text: 'block', type: 'enumMember', modifiers: [] }
     ]))
     expect(mapped).not.toContainEqual({ text: 'var', type: 'function', modifiers: [] })
     expect(mapped).not.toContainEqual({ text: '@keyframes', type: 'keyword', modifiers: [] })

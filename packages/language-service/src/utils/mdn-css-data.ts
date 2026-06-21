@@ -1,4 +1,6 @@
-import { createRequire } from 'node:module'
+import propertiesJSON from 'mdn-data/css/properties.json' with { type: 'json' }
+import selectorsJSON from 'mdn-data/css/selectors.json' with { type: 'json' }
+import syntaxesJSON from 'mdn-data/css/syntaxes.json' with { type: 'json' }
 
 interface MDNCSSSyntaxData {
     syntax?: string
@@ -10,8 +12,11 @@ interface MDNCSSData {
     syntaxes: Record<string, MDNCSSSyntaxData>
 }
 
-const require = createRequire(import.meta.url)
-const mdnCSSData = require('mdn-data/css') as MDNCSSData
+const mdnCSSData: MDNCSSData = {
+    properties: propertiesJSON as Record<string, MDNCSSSyntaxData>,
+    selectors: selectorsJSON as Record<string, MDNCSSSyntaxData>,
+    syntaxes: syntaxesJSON as Record<string, MDNCSSSyntaxData>
+}
 
 const PAGE_PSEUDO_CLASS_NAMES = new Set([':first', ':left', ':right', ':blank'])
 const LOCAL_PSEUDO_CLASS_NAMES = [':nth']
