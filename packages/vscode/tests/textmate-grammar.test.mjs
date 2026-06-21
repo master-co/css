@@ -4,7 +4,7 @@ import { beforeAll, expect, test } from 'vitest'
 import { INITIAL, Registry, parseRawGrammar } from 'vscode-textmate'
 import { createOnigScanner, createOnigString, loadWASM } from 'vscode-oniguruma'
 import cssGrammars from '@shikijs/langs/css'
-import { MASTER_CSS_TEXTMATE_GRAMMAR } from '../../language/src/shiki/textmate'
+import { MASTER_CSS_TEXTMATE_GRAMMAR } from '../../language/src/shiki'
 
 const require = createRequire(import.meta.url)
 const grammarPath = require.resolve('@master/css-language/syntaxes/master-css.tmLanguage.json')

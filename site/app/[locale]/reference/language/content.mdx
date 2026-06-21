@@ -35,6 +35,11 @@ import {
     masterCSSShikiLanguage,
     transformerMasterCSS
 } from '@master/css-language/shiki'
+
+const highlighter = await createHighlighter({
+    themes: ['github-dark'],
+    langs: ['css', import('@master/css-language/shiki')]
+})
 ```
 
 ### Class positions

@@ -2,7 +2,7 @@ import { expect, test } from 'vitest'
 import { createHighlighter } from 'shiki'
 import sharedTextMateGrammar from '../syntaxes/master-css.tmLanguage.json' with { type: 'json' }
 
-import {
+import masterCSSShikiLanguages, {
     MASTER_CSS_TEXTMATE_GRAMMAR,
     createMasterCSSShikiDecorations,
     getMasterCSSShikiLanguageId,
@@ -127,6 +127,26 @@ const shikiProbeTheme = {
         }
     ]
 } as const
+
+test.concurrent('exports Shiki language registrations as a default array', async () => {
+    expect(masterCSSShikiLanguages).toEqual([masterCSSShikiLanguage])
+    expect((await import('../src/shiki')).default).toBe(masterCSSShikiLanguages)
+})
+
+test.concurrent('supports Shiki dynamic language imports', async () => {
+    const highlighter = await createHighlighter({
+        themes: [shikiProbeTheme as any],
+        langs: ['css', import('../src/shiki')]
+    })
+    const tokens = highlighter.codeToTokens('@theme { --color-primary: $value; }', {
+        lang: 'css',
+        theme: 'master-css-probe'
+    }).tokens.flat()
+    const tokenColor = (text: string) => (tokens.find((token) => token.content === text) ?? tokens.find((token) => token.content.includes(text)))?.color?.toLowerCase()
+
+    expect(tokenColor('theme')).toBe('#ff0000')
+    expect(tokenColor('$value')).toBe('#00ffff')
+})
 
 test.concurrent('registers a real Shiki TextMate injection grammar for CSS directives', async () => {
     const highlighter = await createHighlighter({

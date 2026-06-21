@@ -6,7 +6,7 @@ import { MASTER_CSS_SEMANTIC_TOKEN_SCOPE_MAP } from '../language/src/semantic/sc
 import {
     MASTER_CSS_SHIKI_INJECT_TO,
     MASTER_CSS_SHIKI_SCOPE_NAME
-} from '../language/src/shiki/textmate'
+} from '../language/src/shiki'
 import { dirname, join } from 'node:path'
 import { createRequire } from 'node:module'
 import { fileURLToPath } from 'node:url'

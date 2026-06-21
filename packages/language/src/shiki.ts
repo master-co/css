@@ -1,4 +1,5 @@
 import { SEMANTIC_TOKEN_MODIFIERS } from './common'
+import masterCSSTextMateGrammar from '../syntaxes/master-css.tmLanguage.json' with { type: 'json' }
 import { TextDocument } from 'vscode-languageserver-textdocument'
 import languageSettings, { type LanguageSettings } from './settings'
 import { collectHighlightTokenItems } from './render-semantic-tokens'
@@ -10,14 +11,34 @@ import {
     MASTER_CSS_SEMANTIC_TOKEN_SCOPE_MAP,
     getMasterCSSSemanticTokenScopeKeys
 } from './semantic/scopes'
-export {
-    MASTER_CSS_SHIKI_INJECT_TO,
-    MASTER_CSS_SHIKI_SCOPE_NAME,
-    MASTER_CSS_TEXTMATE_GRAMMAR,
-    createMasterCSSShikiLanguageRegistration,
-    masterCSSShikiLanguage,
-    type MasterCSSTextMateGrammar
-} from './shiki/textmate'
+
+export const MASTER_CSS_SHIKI_SCOPE_NAME = 'master-css.directive.injection'
+export const MASTER_CSS_SHIKI_INJECT_TO = [
+    'source.css',
+    'source.css.scss',
+    'source.css.less',
+    'source.css.postcss'
+] as const
+
+export interface MasterCSSTextMateGrammar {
+    name: string
+    scopeName: string
+    injectionSelector: string
+    patterns: any[]
+    repository: Record<string, any>
+    [key: string]: any
+}
+
+export const MASTER_CSS_TEXTMATE_GRAMMAR = masterCSSTextMateGrammar as MasterCSSTextMateGrammar
+
+export function createMasterCSSShikiLanguageRegistration(): MasterCSSTextMateGrammar & { injectTo: string[] } {
+    return {
+        ...MASTER_CSS_TEXTMATE_GRAMMAR,
+        injectTo: [...MASTER_CSS_SHIKI_INJECT_TO]
+    }
+}
+
+export const masterCSSShikiLanguage = createMasterCSSShikiLanguageRegistration()
 
 type SemanticTokenType = HighlightTokenItem['type']
 type SemanticTokenModifier = typeof SEMANTIC_TOKEN_MODIFIERS[number]
@@ -582,3 +603,5 @@ export function transformerMasterCSS(
         }
     }
 }
+
+export default [masterCSSShikiLanguage]
