@@ -1,7 +1,5 @@
 ## Using colors [sr-only]
-Master CSS provides a P3-compatible raw palette, mode-aware base hue aliases, text hue aliases, and a small set of text and line roles. Use palette tokens such as `bg:blue-60` for direct swatches, hue aliases such as `bg:blue` for common color choices, `text:blue` for readable hue text, and retained roles such as `text:text` or `b:1px|solid|subtle` for basic foreground and separator color.
-
-Product roles such as `surface`, `accent`, `success`, `warning`, and `danger`, plus expanded hue roles such as `blue-hover`, `blue-surface`, or `on-blue`, belong in your project theme or in a UI layer such as Master UI. Define them with `@theme` when the name represents a product decision.
+Master CSS provides a P3-compatible raw palette, mode-aware base hue aliases, text hue aliases, and a small set of text and line roles. Use palette tokens such as `bg:blue-60` for direct swatches, hue aliases such as `bg:blue` for common color choices, `text:blue` for readable hue text, and roles such as `text:text` or `b:1px|solid|subtle` for basic foreground and separator color.
 
 ### Default color palette [sr-only]
 <ColorPalette />
@@ -43,7 +41,7 @@ Use [variable modes](/guide/theme#modes) to define color roles for light and dar
 <div class="text:text">...</div>
 ```
 
-Use conditional color classes when a one-off interaction genuinely differs by mode. For shared text, surface, line, brand, and status color, prefer a named token that can resolve differently per mode.
+Use conditional color classes when a one-off interaction genuinely differs by mode. For shared foreground or separator color, prefer a named token that can resolve differently per mode.
 
 ---
 
@@ -95,61 +93,6 @@ Palette step tokens are primitive values. They do not change between light and d
 </div>
 ```
 
-Add expanded project hue aliases when your product has interactive, surface, or on-color decisions.
-```css name=index.css
-@theme {
-    --color-brand: #4f46e5; /* [!code ++] */
-    --color-brand-hover: #4338ca; /* [!code ++] */
-    --color-brand-pressed: #3730a3; /* [!code ++] */
-    --color-brand-surface: #eef2ff; /* [!code ++] */
-    --color-on-brand: #ffffff; /* [!code ++] */
-}
-```
-Apply the custom color:
-```html
-<!-- @MARK bg:brand --><!-- @MARK text:on-brand -->
-<button class="bg:brand text:on-brand"></button>
-```
-
----
-
-## Product color roles
-Surface, accent, and status roles are product tokens. Define them in your project CSS entry, or consume them from a UI package that owns those decisions.
-
-```css name=index.css
-@theme light {
-    --color-canvas: $color-white;
-    --color-surface: $color-white;
-    --color-surface-muted: $color-neutral-5;
-    --color-accent: $color-blue-60;
-    --color-on-accent: $color-white;
-    --color-danger: $color-red-60;
-    --color-on-danger: $color-white;
-}
-
-@theme dark {
-    --color-canvas: $color-gray-95;
-    --color-surface: $color-gray-90;
-    --color-surface-muted: $color-gray-95;
-    --color-accent: $color-blue-40;
-    --color-on-accent: $color-blue-95;
-    --color-danger: $color-red-40;
-    --color-on-danger: $color-red-95;
-}
-```
-
-| Role | Example | Use |
-|------|---------|-----|
-| `canvas` | <Bg className="bg:canvas" /> | Page and application background |
-| `surface` | <Bg className="bg:surface" /> | Cards, panels, controls, and plain containers |
-| `surface-muted` | <Bg className="bg:surface-muted" /> | Recessed or secondary surfaces |
-| `accent` | <Bg className="bg:accent" /> | Primary product action or brand emphasis |
-| `danger` | <Bg className="bg:danger" /> | Destructive actions and errors |
-
-Semantic roles are useful for product UI when the color represents a role instead of a specific hue. They are not part of the cleaned default preset.
-
----
-
 ## Text colors
 <ExpandContent>
 | Token                                             | Descriptions                                                              |
@@ -184,17 +127,6 @@ By default, theme modes [drive](/guide/theme#modes) text variables for light and
 </div>
 ```
 
-Define status text roles in project CSS when they are shared by alerts, forms, and validation states.
-
-```css name=index.css
-@theme {
-    --color-text-success: $color-green-70;
-    --color-text-warning: $color-amber-60;
-    --color-text-danger: $color-red-60;
-    --color-text-info: $color-cyan-70;
-}
-```
-
 See the [color](/reference/color#use-custom-text-colors) reference for more details on how to add custom text colors.
 
 ---
@@ -226,15 +158,6 @@ By default, theme modes [drive](/guide/theme#modes) line variables for light and
     <!-- @MARK b:3x|solid|line -->
     <div class="b:3x|solid|line size:24x"></div>
 </div>
-```
-
-Define product line roles such as `line-accent` or `line-danger` in project CSS when they are shared across components.
-
-```css name=index.css
-@theme {
-    --color-line-accent: $color-blue-30;
-    --color-line-danger: $color-red-30;
-}
 ```
 
 See the [border color](/reference/border-color#use-custom-border-colors) reference for more details on how to add custom border colors.

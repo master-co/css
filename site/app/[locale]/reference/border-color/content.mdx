@@ -45,18 +45,18 @@ Apply styles based on different states using [selectors](/guide/state-selectors)
 ---
 
 ## Customization
-### Use custom border colors
-Add a color to the theme color namespace.
+### Customize line colors
+Override a preset line color token when separators need a different mode-aware value.
 ```css name=index.css
 @theme light {
-    --color-line-accent: $color-slate-60/.2; /* [!code highlight] */
+    --color-line-subtle: $color-slate-60/.2; /* [!code highlight] */
 }
 
 @theme dark {
-    --color-line-accent: $color-gray-30/.2; /* [!code highlight] */
+    --color-line-subtle: $color-gray-30/.2; /* [!code highlight] */
 }
 ```
-Apply the defined token to a border color.
+Apply the token to a border color.
 ```html
-<div class="b:1px|solid border-color:line-accent"></div>
+<div class="b:1px|solid border-color:subtle"></div>
 ```

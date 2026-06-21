@@ -16,7 +16,7 @@ That means Master CSS works best in projects that target browsers with cascade l
 ## Browser support
 The Master CSS engine does not polyfill every CSS feature. It generates CSS from the classes you use, so browser support is usually determined by the final CSS property, value, selector, at-rule, or platform feature in that output.
 
-For example, `bg:danger` depends on normal `background-color` support, while `backdrop-filter:blur(16)` depends on `backdrop-filter` support. Modern features should be checked in [Can I use](https://caniuse.com/) or MDN before relying on them in production.
+For example, `bg:red` depends on normal `background-color` support, while `backdrop-filter:blur(16)` depends on `backdrop-filter` support. Modern features should be checked in [Can I use](https://caniuse.com/) or MDN before relying on them in production.
 
 Property-like classes can also fall back to native CSS declarations. In the browser runtime, Master CSS validates those declarations with `CSS.supports(property, value)`. Static, server, extraction, compiler, validator, and linting workflows use a CSS syntax matcher so invalid declarations such as `display:banana` do not emit CSS. High-frequency native properties such as spacing, sizing, radius, color, and timing still keep curated Master CSS token and unit behavior before this native validation step.
 

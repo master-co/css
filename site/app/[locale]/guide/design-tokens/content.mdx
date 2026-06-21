@@ -6,7 +6,7 @@ Master CSS includes a set of preset foundation tokens, and each project can exte
 <Demo>
     <div className="container w:full">
         <div className="grid-cols:1 gap:md w:full">
-            <div className="bg:surface r:lg p:md b:1px|solid|subtle shadow:xs min-w:0">
+            <div className="bg:white r:lg p:md b:1px|solid|subtle shadow:xs min-w:0">
                 <DemoLabel>Token-first surface</DemoLabel>
                 <div className="text:lg font:semibold text:strong">Account overview</div>
                 <p className="m:0 mt:xs text:text text:sm">Shared spacing, type, color, radius, and elevation tokens keep this card aligned with the system.</p>
@@ -34,7 +34,7 @@ Master CSS includes a set of preset foundation tokens, and each project can exte
 ## Token-first policy
 Use the most meaningful token available for the design decision you are making.
 
-1. Prefer role tokens when your project or UI layer defines product meaning, such as `bg:canvas`, `bg:surface`, `text:strong`, `text:muted`, `b:subtle`, `bg:accent`, or `text:danger`.
+1. Prefer preset roles and aliases when they fit, such as `text:strong`, `text:muted`, `text:blue`, `b:subtle`, `bg:blue`, or `bg:blue-5`.
 2. Prefer scale tokens when the value belongs to a foundation scale, such as `p:md`, `gap:lg`, `font:2xl` for font-size-only, `text:2xl` for a complete type treatment, `r:xl`, `shadow:md`, `animation-duration:normal`, or `animation-timing-function:smooth`.
 3. Prefer contextual shorthand when a utility already knows the token namespace, such as `b:1px|solid|subtle` instead of `b:1px|solid|line-subtle`.
 4. Use structural values when the value describes layout behavior rather than visual styling, such as `w:full`, `w:50%`, `max-w:5xl`, `h:100dvh`, `@md`, or `@container(md)`.
@@ -52,7 +52,7 @@ Use the most meaningful token available for the design decision you are making.
 (o) Visual decisions use theme tokens.
 
 ```html
-<article class="p:lg r:lg bg:surface shadow:sm font:md">
+<article class="p:lg r:lg bg:white shadow:sm font:md">
     ...
 </article>
 ```
@@ -66,11 +66,11 @@ Foundation tokens are the shared vocabulary for the most common UI decisions.
 
 | Foundation | Prefer | Avoid for normal UI |
 | --- | --- | --- |
-| Color | `text:strong`, `text:muted`, <code>b:1px&#124;subtle</code>, `bg:blue-5`, project roles such as `bg:surface` | `bg:#fff`, `text:oklch(...)`, one-off palette values where a role token fits |
+| Color | `text:strong`, `text:muted`, `text:blue`, <code>b:1px&#124;subtle</code>, `bg:blue-5` | `bg:#fff`, `text:oklch(...)`, one-off palette values where a token fits |
 | Spacing | `p:sm`, `gap:md`, `mt:lg`, `pi:xl` | `p:3x`, `gap:1rem`, `mt:12px` |
 | Typography | `font:lg`, `text:lg`, `font:medium`, `leading:md`, `tracking:tight` | `font:18px`, `leading:1.4`, `tracking:-0.02em` when a token exists |
 | Corner radius | `r:md`, `r:lg`, `r:2xl`, `rounded`, `round` | `r:2x`, `r:8px` for standard cards and controls |
-| Elevation | `shadow:xs`, `shadow:sm`, `shadow:md`, `shadow:lg`, or project aliases such as `shadow:card` | Raw multi-part `box-shadow` values in markup |
+| Elevation | `shadow:xs`, `shadow:sm`, `shadow:md`, `shadow:lg` | Raw multi-part `box-shadow` values in markup |
 | Motion | `animation-duration:normal`, `transition-duration:fast`, `animation-timing-function:smooth`, `transition-timing-function:crisp` | Repeated `150ms`, `300ms`, or custom cubic-bezier values |
 | Breakpoints | `@md`, `@lg` | Repeated viewport queries such as `@media(768px)` |
 | Container sizes | `max-w:md`, `@container(md)` | Repeated component or wrapper widths such as `@container(448px)` |
@@ -99,19 +99,13 @@ Role tokens describe why a value exists. Scale tokens describe where a value sit
 <p class="text:text text:md">Supporting copy</p>
 ```
 
-(o) The surface role is clear and can adapt across modes.
-
-```html
-<section class="bg:surface b:1px|solid|subtle">...</section>
-```
-
 (o) The palette token is appropriate when demonstrating the palette.
 
 ```html
 <div class="bg:blue-5 text:blue-60">Blue swatch</div>
 ```
 
-Use palette scale tokens such as `blue-60`, `green-70`, or `amber-40` when the page is teaching colors, showing a swatch, or intentionally choosing a brand color. For product surfaces, define roles such as `canvas`, `surface`, `accent`, `strong`, `muted`, `subtle`, and status roles such as `success`, `warning`, `danger`, or `info` in your project theme or UI layer.
+Use palette scale tokens such as `blue-60`, `green-70`, or `amber-40` when the page is teaching colors, showing a swatch, or intentionally choosing a brand color. Use text and line roles such as `text`, `strong`, `muted`, `subtle`, and `line` when they match the foreground or separator decision.
 
 ---
 
@@ -123,7 +117,7 @@ Property shorthand keeps frequently used declarations compact:
 | Prefer | Instead of | Use for |
 | --- | --- | --- |
 | `text:text` | `color:text` | Foreground color |
-| `bg:surface` | `background-color:surface` | Background color |
+| `bg:blue` | `background-color:blue` | Background color |
 | `p:md`, `pi:lg`, `m:0` | `padding:md`, `padding-inline:lg`, `margin:0` | Spacing |
 | `w:full`, `h:100dvh` | `width:full`, `height:100dvh` | Sizing |
 | `r:lg`, `rtl:md` | `border-radius:lg`, `border-top-left-radius:md` | Corner radius |
@@ -138,7 +132,7 @@ Contextual token shorthand removes redundant namespace prefixes from values. The
 | --- | --- | --- |
 | `text:muted` | `text:text-muted` | `text` resolves text color tokens. |
 | `caret-color:placeholder` | `caret-color:text-placeholder` | `caret` resolves text color tokens before general colors. |
-| `text:accent` | `text:text-accent` | Text color resolves text color tokens. |
+| `text:blue` | `text:text-blue` | Text color resolves text color tokens. |
 | <code>b:1px&#124;subtle</code> | <code>b:1px&#124;line-subtle</code> | Border shorthands resolve line color tokens. |
 | <code>outline:1px&#124;subtle</code> | <code>outline:1px&#124;line-subtle</code> | Outline shorthands resolve line color tokens. |
 | `p:md`, `gap:lg` | `p:spacing-md`, `gap:spacing-lg` | Spacing utilities resolve spacing tokens. |
@@ -241,36 +235,34 @@ Low-level values are not forbidden. They need a clear reason.
 | Local measured geometry | `size:10x`, `w:80x`, `aspect-ratio:16/9` | The value belongs to one asset, icon, component, or media frame. |
 | Fluid layout requirement | `w:50%`, `h:100dvh`, `max-w:72ch`, `w:clamp(...)` | The value describes layout behavior that a token scale should not hide. |
 | One-off content value | `content:"New"`, `grid-cols:3`, `order:first` | The value is semantic content or structural behavior. |
-| Custom system extension | `--spacing-card: 1.5rem`, `--shadow-popover: ...` in light and dark modes | The value is being promoted into the design system. |
+| Preset override | `--spacing-lg: 1.75rem`, `--shadow-sm: ...` in light and dark modes | The preset key needs a different project value. |
 
 When the reason is not obvious, prefer a token or add a small note in the surrounding docs that explains why the low-level value is intentional.
 
 ---
 
-## Add project tokens
-Create a project token when a value is reused, named in design specs, shared across components, or expected to change by theme or mode.
+## Extend the system
+Create a project token only when a value is reused, named in design specs, shared across components, or expected to change by theme or mode.
 
 ```css name=index.css
 @theme {
-    --spacing-card: 1.5rem;
-    --radius-card: 0.75rem;
-    --color-accent: $color-blue-60;
-    --color-on-accent: $color-white;
+    --color-brand: $color-blue-60;
+    --spacing-feature: 1.5rem;
 }
 
 @theme light {
-    --shadow-popover: 0 4px 8px -2px oklch(0% 0 none / .08), 0 12px 24px -4px oklch(0% 0 none / .10);
+    --shadow-feature: 0 4px 8px -2px oklch(0% 0 none / .08), 0 12px 24px -4px oklch(0% 0 none / .10);
 }
 
 @theme dark {
-    --shadow-popover: 0 0 0 1px oklch(100% 0 none / .08), 0 8px 18px -8px oklch(0% 0 none / .44), 0 18px 40px -12px oklch(0% 0 none / .36);
+    --shadow-feature: 0 0 0 1px oklch(100% 0 none / .08), 0 8px 18px -8px oklch(0% 0 none / .44), 0 18px 40px -12px oklch(0% 0 none / .36);
 }
 ```
 
 Use the new tokens from markup:
 
 ```html
-<article class="p:card r:card bg:accent text:on-accent shadow:popover">
+<article class="p:feature r:lg bg:brand text:white shadow:feature">
     ...
 </article>
 ```
@@ -282,7 +274,7 @@ Choose descriptive keys. Avoid numeric token names such as `spacing-1` or `radiu
 ## Review checklist
 Before publishing a page, component, or demo, review the class names against this checklist:
 
-* Can a role token express this color, text color, surface, or line?
+* Can a preset color, text, or line token express this visual decision?
 * Can a spacing token replace this margin, padding, gap, or inset?
 * Can `text:<size>` replace separate font size, line height, and letter spacing classes?
 * Can a radius or mode-aware shadow token replace this raw radius or shadow?

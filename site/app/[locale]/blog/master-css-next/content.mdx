@@ -25,7 +25,7 @@ Master CSS is markup-driven. The class string is the styling source of truth:
 ```tsx
 export default function Page() {
     return (
-        <main className="min-h:100vh p:10x bg:surface text:strong">
+        <main className="min-h:100vh p:10x bg:white text:strong">
             <h1 className="font:48px font:heavy tracking:tight">
                 Master CSS pre-rendered by Next.js
             </h1>
@@ -236,7 +236,7 @@ For source scanning, a dynamic class still needs to resolve to complete class st
 
 ```tsx
 export function Badge({ tone }: {
-    tone: 'accent' | 'neutral'
+    tone: 'blue' | 'neutral'
 }) {
     return (
         <span className={`r:4px px:2x py:1x text:${tone} bg:${tone}/.1`}>
@@ -249,7 +249,7 @@ export function Badge({ tone }: {
 If a pre-rendered route outputs this HTML:
 
 ```html
-<span class="r:4px px:2x py:1x text:accent bg:accent/.1">New</span>
+<span class="r:4px px:2x py:1x text:blue bg:blue/.1">New</span>
 ```
 
 `@master/css.next` reads that final class list from the generated document and injects the matching CSS for the first response. The runtime can then continue covering client-only and dynamic UI after hydration.

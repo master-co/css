@@ -8,32 +8,32 @@ Master CSS maps elevation to the `shadow` namespace. Use tokens such as `shadow:
 <Demo>
     <div className="container w:full">
         <div className="grid-cols:1 grid-cols:2@container(2xs) grid-cols:3@container(md) gap:lg w:full">
-            <div className="bg:surface b:1px|solid|subtle r:lg p:md shadow:xs">
+            <div className="bg:white b:1px|solid|subtle r:lg p:md shadow:xs">
                 <DemoLabel>shadow:xs</DemoLabel>
                 <div className="font:medium">Separated</div>
                 <p className="text:muted m:0 mt:xs text:sm">Rows, compact controls</p>
             </div>
-            <div className="bg:surface b:1px|solid|subtle r:lg p:md shadow:sm">
+            <div className="bg:white b:1px|solid|subtle r:lg p:md shadow:sm">
                 <DemoLabel>shadow:sm</DemoLabel>
                 <div className="font:medium">Raised</div>
                 <p className="text:muted m:0 mt:xs text:sm">Cards, quiet panels</p>
             </div>
-            <div className="bg:surface b:1px|solid|subtle r:lg p:md shadow:md">
+            <div className="bg:white b:1px|solid|subtle r:lg p:md shadow:md">
                 <DemoLabel>shadow:md</DemoLabel>
                 <div className="font:medium">Floating</div>
                 <p className="text:muted m:0 mt:xs text:sm">Hover lift, toolbars</p>
             </div>
-            <div className="bg:surface b:1px|solid|subtle r:lg p:md shadow:lg">
+            <div className="bg:white b:1px|solid|subtle r:lg p:md shadow:lg">
                 <DemoLabel>shadow:lg</DemoLabel>
                 <div className="font:medium">Overlay</div>
                 <p className="text:muted m:0 mt:xs text:sm">Dropdowns, popovers</p>
             </div>
-            <div className="bg:surface b:1px|solid|subtle r:lg p:md shadow:xl">
+            <div className="bg:white b:1px|solid|subtle r:lg p:md shadow:xl">
                 <DemoLabel>shadow:xl</DemoLabel>
                 <div className="font:medium">Interrupting</div>
                 <p className="text:muted m:0 mt:xs text:sm">Drawers, dialogs</p>
             </div>
-            <div className="bg:surface b:1px|solid|subtle r:lg p:md shadow:2xl">
+            <div className="bg:white b:1px|solid|subtle r:lg p:md shadow:2xl">
                 <DemoLabel>shadow:2xl</DemoLabel>
                 <div className="font:medium">Blocking</div>
                 <p className="text:muted m:0 mt:xs text:sm">Modals, spotlight surfaces</p>
@@ -63,7 +63,7 @@ Use the same token names across modes:
 }
 ```
 
-Keep token names size-based and mode-neutral. A token such as `shadow:popover` can be useful for a product-specific role, but avoid names like `shadow:dark-lg`; define the same key in `@theme light` and `@theme dark` so existing markup remains semantic.
+Keep token names size-based and mode-neutral. Avoid names like `shadow:dark-lg`; define the same key in `@theme light` and `@theme dark` so existing markup remains stable.
 
 ---
 
@@ -72,12 +72,12 @@ Use `shadow:<token>` for the common elevation levels. The utility resolves value
 
 ```html
 <!-- @MARK shadow:sm -->
-<article class="bg:surface r:lg b:1px|solid|subtle shadow:sm">
+<article class="bg:white r:lg b:1px|solid|subtle shadow:sm">
     ...
 </article>
 
 <!-- @MARK shadow:lg -->
-<div class="bg:surface r:lg b:1px|solid|subtle shadow:lg">
+<div class="bg:white r:lg b:1px|solid|subtle shadow:lg">
     ...
 </div>
 ```
@@ -184,9 +184,9 @@ Promote repeated raw values into the scale. Keep one-off art direction in local 
 (o) Only the surfaces that need separation are elevated.
 
 ```html
-<main class="bg:surface">
-    <section class="bg:surface b:1px|solid|subtle">
-        <article class="bg:surface b:1px|solid|subtle shadow:sm">...</article>
+<main class="bg:white">
+    <section class="bg:white b:1px|solid|subtle">
+        <article class="bg:white b:1px|solid|subtle shadow:sm">...</article>
     </section>
 </main>
 ```
@@ -198,18 +198,18 @@ Promote repeated raw values into the scale. Keep one-off art direction in local 
 <aside class="shadow:0|4px|12px|black/.12">...</aside>
 ```
 
-(o) Repeated decisions become shadow tokens.
+(o) Repeated decisions override a shadow scale token.
 
 ```css name=index.css
 @theme light {
-    --shadow-popover: 0 4px 8px -2px oklch(0% 0 none / .08), 0 12px 24px -4px oklch(0% 0 none / .10);
+    --shadow-sm: 0 4px 8px -2px oklch(0% 0 none / .08), 0 12px 24px -4px oklch(0% 0 none / .10);
 }
 
 @theme dark {
-    --shadow-popover: 0 0 0 1px oklch(100% 0 none / .08), 0 8px 18px -8px oklch(0% 0 none / .44), 0 18px 40px -12px oklch(0% 0 none / .36);
+    --shadow-sm: 0 0 0 1px oklch(100% 0 none / .08), 0 8px 18px -8px oklch(0% 0 none / .44), 0 18px 40px -12px oklch(0% 0 none / .36);
 }
 ```
 
 ```html
-<aside class="shadow:popover">...</aside>
+<aside class="shadow:sm">...</aside>
 ```

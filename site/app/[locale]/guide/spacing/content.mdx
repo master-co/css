@@ -14,7 +14,7 @@ Use the scale by relationship:
 * `2xl` to `5xl` for layout gutters, section spacing, and large editorial rhythm.
 
 <Demo>
-    <div className="grid-cols:2 grid-cols:5@sm gap:md bg:accent-surface r:md p:md w:full">
+    <div className="grid-cols:2 grid-cols:5@sm gap:md bg:blue-5 r:md p:md w:full">
         <div className='app-box'>1</div>
         <div className='app-box'>2</div>
         <div className='app-box'>3</div>
@@ -58,15 +58,15 @@ This lets spacing-related utilities use `md`, `lg`, or project token names witho
     --spacing-sm: 0.75rem;
     --spacing-md: 1rem;
     --spacing-lg: 1.5rem;
-    --spacing-section: 6rem;
+    --spacing-wide: 6rem;
 }
 ```
 
 Apply the custom spacing tokens in your markup:
 
 ```html
-<!-- @MARK mt:md --><!-- @MARK p:sm --><!-- @MARK gap:lg --><!-- @MARK py:section -->
-<section class="py:section">
+<!-- @MARK mt:md --><!-- @MARK p:sm --><!-- @MARK gap:lg --><!-- @MARK py:wide -->
+<section class="py:wide">
     <div class="mt:md p:sm gap:lg">...</div>
 </section>
 ```
@@ -129,8 +129,8 @@ Numeric keys are easy to confuse with low-level CSS values. Prefer semantic toke
 ```css name=index.css
 @theme {
     --spacing-sm: 0.75rem;
-    --spacing-card: 1.25rem;
-    --spacing-section: 6rem;
+    --spacing-compact: 1.25rem;
+    --spacing-relaxed: 6rem;
 }
 ```
 

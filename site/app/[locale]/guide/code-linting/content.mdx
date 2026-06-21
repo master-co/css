@@ -11,7 +11,7 @@ In practice, you pay less attention to the order of classes, and as the number o
 (i) With the [class order rule](/reference/eslint#class-order), you can enforce a consistent and fixed order for classes.
 <Image className="aspect-ratio:2/1 r:lg max-w:3xl w:full" src={require('~/site/public/consistent-class-order.webp').default} alt="Consistent class order" unoptimized />
 
-(!) <span className="text:warning">No consistent class order followed.</span>
+(!) <span className="text:amber">No consistent class order followed.</span>
 ```html
 <div class="font:xs font:2xl@sm m:xl block font:3xl@md mb:2xl">…</div>
 ```
@@ -67,7 +67,7 @@ The class you added may collide with existing classes due to human error or havi
 (i) With the [class collision rule](/reference/eslint#class-collision), you'll no longer collide with existing classes.
 <Image className="aspect-ratio:2/1 r:lg max-w:3xl w:full" src={require('~/site/public/class-collision-detection.webp').default} alt="Class collision detection" unoptimized />
 
-(!) <span className="text:warning">"m:0.625rem" applies the same CSS declarations as "m:5x".</span><br/><span className="text:warning">"m:5x" applies the same CSS declarations as "m:0.625rem".</span>
+(!) <span className="text:amber">"m:0.625rem" applies the same CSS declarations as "m:5x".</span><br/><span className="text:amber">"m:5x" applies the same CSS declarations as "m:0.625rem".</span>
 ```html
 <!-- @MARK m:0.625rem m:5x -->
 <div class="m:0.625rem m:5x">…</div>
@@ -78,7 +78,7 @@ The class you added may collide with existing classes due to human error or havi
 ```
 It can also detect whether declarations with the same selector and media query state collide!
 
-(!) <span className="text:warning">"m:10x@sm" applies the same CSS declarations as "m:3.125rem@sm".</span><br/><span className="text:warning">"m:3.125rem@sm" applies the same CSS declarations as "m:10x@sm".</span>
+(!) <span className="text:amber">"m:10x@sm" applies the same CSS declarations as "m:3.125rem@sm".</span><br/><span className="text:amber">"m:3.125rem@sm" applies the same CSS declarations as "m:10x@sm".</span>
 ```html
 <!-- @MARK m:10x@sm m:3.125rem@sm -->
 <div class="m:10x@sm m:3.125rem@sm">…</div>

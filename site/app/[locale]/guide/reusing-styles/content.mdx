@@ -10,7 +10,7 @@ Writing `.btn` at the top level of a stylesheet creates a normal CSS rule. Writi
 Use utility classes when the style belongs to one element, one state, or one local layout decision. This keeps the relationship between markup and style explicit while the pattern is still changing.
 
 ```html
-<button class="inline-flex align-items:center justify-content:center gap:xs px:md py:xs r:lg font:sm font:medium bg:primary text:white">
+<button class="inline-flex align-items:center justify-content:center gap:xs px:md py:xs r:lg font:sm font:medium bg:blue text:white">
     Save changes
 </button>
 ```
@@ -22,16 +22,13 @@ When the repeated part is a value, make it a token instead of a class. Tokens ke
 
 ```css name=index.css
 @theme {
-    --color-yellow: $color-yellow-40;
-    --color-on-yellow: $color-yellow-95;
-    --color-yellow-line: $color-black/.1;
-    --radius-control: 0.5rem;
-    --spacing-control-x: 1rem;
+    --color-brand: $color-blue-60;
+    --spacing-action-x: 1rem;
 }
 ```
 
 ```html
-<button class="pi:control-x r:control bg:yellow text:on-yellow">
+<button class="pi:action-x r:lg bg:brand text:white">
     Submit
 </button>
 ```
@@ -77,8 +74,7 @@ Use a component class when a repeated class list becomes a reusable UI pattern. 
 @components {
     btn {
         @compose inline-flex align-items:center justify-content:center gap:xs px:md py:xs r:lg font:sm font:medium;
-        background: var(--color-primary);
-        color: white;
+        @compose bg:blue text:white;
     }
 }
 ```
@@ -103,7 +99,7 @@ The generated CSS is emitted in the `components` layer:
         font-size: 0.875rem;
         font-weight: 500;
         justify-content: center;
-        background: var(--color-primary);
+        background-color: var(--color-blue);
         color: #fff;
     }
 }
@@ -134,11 +130,11 @@ Put selector states in nested selectors and conditional variants in `@variant` b
         transition: background-color .15s ease, box-shadow .15s ease;
 
         &:hover {
-            @compose bg:primary/.9;
+            @compose bg:blue/.9;
         }
 
         &:focus-visible {
-            @compose outline:2px|solid|primary outline-offset:0.125rem;
+            @compose outline:2px|solid|blue outline-offset:0.125rem;
         }
 
         @variant @<sm {
@@ -156,7 +152,7 @@ Equivalent markup stays short:
 
 (click) Try clicking the button to see the outline effect
 <Demo>
-    <button className="justify-center items-center inline-flex bg:surface-inverse text:inverse font:sm font:medium h:10x pi:md r:lg outline:2px|solid|focus:focus outline-offset:0.125rem:focus">Submit</button>
+    <button className="justify-center items-center inline-flex bg:black text:white font:sm font:medium h:10x pi:md r:lg outline:2px|solid|blue:focus outline-offset:0.125rem:focus">Submit</button>
 </Demo>
 
 ---
@@ -296,8 +292,7 @@ In this example, `size:12x` is generated for `.empty-state::before`, not for `.e
 }
 
 .marketing-card {
-    @compose flow p:lg r:xl shadow:md;
-    background: var(--color-surface);
+    @compose flow p:lg r:xl shadow:md bg:white;
 
     @dark {
         @compose shadow:none;
@@ -315,12 +310,11 @@ CSS Modules and SFC `<style>` blocks can use `@compose` directly. They do not ne
 ```css name=Button.module.css
 .button {
     @compose inline-flex align-items:center justify-content:center gap:xs pi:md h:10x r:lg;
-    background: var(--color-primary);
-    color: white;
+    @compose bg:blue text:white;
 }
 
 .button:hover {
-    @compose bg:primary/.9;
+    @compose bg:blue/.9;
 }
 ```
 
@@ -378,30 +372,14 @@ Split component definitions only when it helps ownership. Local CSS imports from
 ```
 
 ```css name=styles/base.css
-@theme light {
-    --color-yellow: $color-yellow-40;
-    --color-yellow-hover: $color-yellow-50;
-    --color-on-yellow: $color-yellow-95;
-    --color-yellow-line: $color-black/.1;
-}
-
-@theme dark {
-    --color-yellow: $color-yellow-50;
-    --color-yellow-hover: $color-yellow-40;
-    --color-on-yellow: $color-yellow-95;
-    --color-yellow-line: $color-white/.3;
-}
-
 @components {
     yellow {
-        outline: 0.0625rem var(--color-yellow-line) solid;
-        background-color: var(--color-yellow);
-        color: var(--color-on-yellow);
+        @compose b:1px|solid|yellow-70 bg:yellow text:yellow-95;
     }
 
     touch-yellow {
         &:hover {
-            background-color: var(--color-yellow-hover);
+            @compose bg:yellow-50;
         }
     }
 }

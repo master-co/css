@@ -66,12 +66,12 @@ Scanning is intentionally broad. The scanner looks through markup, JSX, strings,
 ```tsx name=src/Button.tsx
 const toneClasses = {
     neutral: 'bg:white text:text',
-    danger: 'bg:red-60 text:white'
+    destructive: 'bg:red-60 text:white'
 }
 
-export function Button({ danger }: { danger?: boolean }) {
+export function Button({ destructive }: { destructive?: boolean }) {
     return (
-        <button className={`btn r:md pi:md ${danger ? toneClasses.danger : toneClasses.neutral}`}>
+        <button className={`btn r:md pi:md ${destructive ? toneClasses.destructive : toneClasses.neutral}`}>
             Delete
         </button>
     )
@@ -169,8 +169,8 @@ function Badge({ tone }: { tone: 'red' | 'green' | 'gray' }) {
 
 ```tsx
 const toneClasses = {
-    danger: 'bg:red-60 text:white',
-    success: 'bg:green-60 text:white',
+    destructive: 'bg:red-60 text:white',
+    confirmed: 'bg:green-60 text:white',
     neutral: 'bg:gray-10 text:gray-90'
 }
 

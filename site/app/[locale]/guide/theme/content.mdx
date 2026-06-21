@@ -1,7 +1,7 @@
 import VariableNamespaceSources from './components/VariableNamespaceSources'
 
 ## Overview [sr-only]
-Your theme is the shared design vocabulary for a Master CSS project. It defines the values your markup reaches for every day: color roles, spacing, type, radius, shadows, motion, breakpoints, container sizes, mode-specific values, named conditions, and shared selector aliases.
+Your theme is the shared design vocabulary for a Master CSS project. It defines the values your markup reaches for every day: colors, spacing, type, radius, shadows, motion, breakpoints, container sizes, mode-specific values, named conditions, and shared selector aliases.
 
 In Master CSS, that vocabulary usually lives in the project CSS entry: `@theme` for tokens and modes, `@settings` for project settings, and `@custom-variant` for reusable condition and selector variants. The file still feels like CSS, while markup keeps using short semantic classes.
 
@@ -9,22 +9,19 @@ In Master CSS, that vocabulary usually lives in the project CSS entry: `@theme` 
 @import '@master/css';
 
 @theme {
-    --color-accent: #4f46e5;
-    --color-on-accent: #ffffff;
-    --spacing-card: 1.5rem;
-    --radius-card: 1rem;
+    --color-blue: #4f46e5;
+    --spacing-lg: 1.5rem;
+    --radius-lg: 1rem;
     --breakpoint-md: 48rem;
     --container-md: 28rem;
 }
 
 @theme light {
-    --color-surface: #ffffff;
-    --shadow-card: 0 16px 40px rgb(15 23 42 / .12);
+    --shadow-sm: 0 16px 40px rgb(15 23 42 / .12);
 }
 
 @theme dark {
-    --color-surface: #111827;
-    --shadow-card: 0 0 0 1px rgb(255 255 255 / .08), 0 16px 40px rgb(0 0 0 / .36);
+    --shadow-sm: 0 0 0 1px rgb(255 255 255 / .08), 0 16px 40px rgb(0 0 0 / .36);
 }
 
 @custom-variant @motion-safe { @media (prefers-reduced-motion: no-preference) { @slot; } }
@@ -32,8 +29,8 @@ In Master CSS, that vocabulary usually lives in the project CSS entry: `@theme` 
 ```
 
 ```html
-<section class="bg:surface text:strong p:card r:card shadow:card grid-cols:2@md">
-    <button class="bg:accent text:on-accent px:md py:xs r:md bg:accent-hover:interactive">Save</button>
+<section class="bg:white text:strong p:lg r:lg shadow:sm grid-cols:2@md">
+    <button class="bg:blue text:white px:md py:xs r:md bg:blue/.85:interactive">Save</button>
 </section>
 ```
 
@@ -48,7 +45,7 @@ A project only needs a CSS entry that marks the Master CSS graph. Put theme dire
 @import '@master/css';
 
 @theme {
-    --color-accent: #4f46e5;
+    --color-brand: #4f46e5;
 }
 ```
 
@@ -63,23 +60,21 @@ Theme tokens are CSS custom property declarations inside `@theme` blocks. Write 
 ```css name=index.css
 @theme {
     --content-hash: " #";
-    --color-accent: #4f46e5;
-    --color-accent-surface: rgb(79 70 229 / .16);
-    --color-surface: #ffffff;
+    --color-blue: #4f46e5;
     --color-text-strong: #111827;
-    --spacing-card: 1.5rem;
+    --spacing-lg: 1.5rem;
     --font-family-sans: Inter, ui-sans-serif, system-ui, sans-serif;
-    --radius-card: 1rem;
+    --radius-lg: 1rem;
     --breakpoint-md: 48rem;
     --container-md: 28rem;
 }
 
 @theme light {
-    --shadow-card: 0 16px 40px rgb(15 23 42 / .12);
+    --shadow-sm: 0 16px 40px rgb(15 23 42 / .12);
 }
 
 @theme dark {
-    --shadow-card: 0 0 0 1px rgb(255 255 255 / .08), 0 16px 40px rgb(0 0 0 / .36);
+    --shadow-sm: 0 0 0 1px rgb(255 255 255 / .08), 0 16px 40px rgb(0 0 0 / .36);
 }
 ```
 
@@ -115,11 +110,11 @@ The default theme vocabulary is registry-backed. This table lists the built-in c
 <VariableNamespaceSources />
 
 ### Use contextual tokens
-After your project defines UI tokens, the same short token can resolve differently by context. `accent` is a color in `bg:accent`, `card` is spacing in `p:card`, radius in `r:card`, and shadow in `shadow:card`. If the shadow token is mode-specific, the same `shadow:card` class follows the active light or dark mode.
+Utilities resolve token values from the namespace they use. The same short key can mean spacing in `p:md`, radius in `r:md`, a container width in `max-w:md`, or a breakpoint in `@md`.
 
 ```html
-<!-- @MARK bg:surface --><!-- @MARK p:card --><!-- @MARK r:card --><!-- @MARK font:sans -->
-<article class="bg:surface text:strong p:card r:card shadow:card font:sans">
+<!-- @MARK bg:white --><!-- @MARK p:md --><!-- @MARK r:lg --><!-- @MARK font:sans -->
+<article class="bg:white text:strong p:md r:lg shadow:sm font:sans">
     <h2 class="font:sans">Dashboard</h2>
     <a class="text:link" href="/settings">Settings</a>
 </article>
@@ -131,8 +126,7 @@ Use `$` when a token should reference another token.
 ```css name=index.css
 @theme {
     --color-brand: #4f46e5;
-    --color-accent: $color-brand;
-    --color-accent-surface: $color-brand/.16;
+    --color-text-link: $color-brand;
 }
 ```
 
@@ -140,7 +134,7 @@ Define the same token key as a preset token when you want to override it. Later 
 
 ```css name=index.css
 @theme {
-    --color-accent: #4589ff;
+    --color-blue: #4589ff;
 }
 ```
 
@@ -150,17 +144,17 @@ Use `@theme inline` when a token is only a utility shorthand and should not emit
 ```css name=index.css
 @theme inline {
     --color-brand: #4f46e5;
-    --spacing-card: 1.5rem;
+    --spacing-feature: 1.5rem;
 }
 ```
 
 ```html
-<article class="bg:brand p:card">...</article>
+<article class="bg:brand p:feature">...</article>
 ```
 
 ```css
 .bg\:brand { background-color: #4f46e5; }
-.p\:card { padding: 1.5rem; }
+.p\:feature { padding: 1.5rem; }
 ```
 
 Inline tokens can reference other inline tokens. If an inline token references a regular theme token, Master CSS keeps the regular `var(--*)` reference and emits that regular token when needed. Inline tokens cannot be mode-specific; use normal `@theme light` and `@theme dark` blocks when a value must change by mode.
@@ -207,29 +201,25 @@ Mode-specific `@theme` blocks keep markup semantic while values change by mode.
 
 ```css name=index.css
 @theme light {
-    --color-surface: #ffffff;
     --color-text-strong: #111827;
-    --color-accent: #4f46e5;
-    --color-on-accent: #ffffff;
-    --shadow-card: 0 16px 40px rgb(15 23 42 / .12);
+    --color-blue: #4f46e5;
+    --shadow-sm: 0 16px 40px rgb(15 23 42 / .12);
 }
 
 @theme dark {
-    --color-surface: #111827;
     --color-text-strong: #f9fafb;
-    --color-accent: #818cf8;
-    --color-on-accent: #111827;
-    --shadow-card: 0 0 0 1px rgb(255 255 255 / .08), 0 16px 40px rgb(0 0 0 / .36);
+    --color-blue: #818cf8;
+    --shadow-sm: 0 0 0 1px rgb(255 255 255 / .08), 0 16px 40px rgb(0 0 0 / .36);
 }
 
 @theme brand {
-    --color-accent: #ff0;
+    --color-blue: #ff0;
 }
 ```
 
 ```html
-<section class="bg:surface text:strong">
-    <button class="bg:accent text:on-accent">Save</button>
+<section class="bg:white text:strong shadow:sm">
+    <button class="bg:blue text:white">Save</button>
 </section>
 ```
 
@@ -260,7 +250,7 @@ Use `mode-trigger: class` when your app switches modes manually. Put the active 
 <!-- @MARK dark -->
 <html class="dark">
     <body>
-        <div class="bg:surface text:strong">...</div>
+        <div class="bg:white text:strong">...</div>
     </body>
 </html>
 ```
@@ -434,8 +424,7 @@ The theme should describe shared values and named conditions. Reusable UI patter
 @components {
     btn {
         @compose inline-flex align-items:center justify-content:center gap:xs px:md py:xs r:md font:sm font:medium;
-        background: var(--color-accent);
-        color: var(--color-on-accent);
+        @compose bg:blue text:white;
 
         &:disabled {
             @compose opacity:.55 pointer-events:none;

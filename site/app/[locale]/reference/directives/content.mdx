@@ -61,7 +61,7 @@ Use `@reference` to load another Master CSS stylesheet as compile-time context w
     @compose btn;
 
     @dark {
-        @compose bg:surface;
+        @compose bg:blue-60;
     }
 }
 ```
@@ -70,10 +70,6 @@ Referenced stylesheets can define `@settings`, `@theme`, `@custom-variant`, `@de
 
 ```css name=app.css
 @master;
-
-@theme {
-    --color-surface: #111827;
-}
 
 @components {
     btn {
@@ -133,7 +129,7 @@ Defines theme tokens and managed keyframes. Token names keep their leading `--`;
 ```css
 @theme {
     --color-primary: #4f46e5;
-    --spacing-card: 1.5rem;
+    --spacing-feature: 1.5rem;
 
     @keyframes fade-in {
         from { opacity: 0; }
@@ -147,8 +143,8 @@ Defines mode-specific token values. Mode blocks can override regular theme token
 
 ```css
 @theme dark {
-    --color-surface: #111827;
-    --shadow-card: 0 16px 40px rgb(0 0 0 / .36);
+    --color-panel: #111827;
+    --shadow-feature: 0 16px 40px rgb(0 0 0 / .36);
 }
 ```
 
@@ -158,7 +154,7 @@ Defines utility shorthands that are written directly into generated declarations
 ```css
 @theme inline {
     --color-brand: #4f46e5;
-    --spacing-card: 1.5rem;
+    --spacing-feature: 1.5rem;
 }
 ```
 
@@ -379,8 +375,7 @@ Use `@compose` inside a style rule to lower an unquoted Master CSS class list in
 
 ```css
 .card {
-    @compose grid gap:md p:lg r:xl shadow:md;
-    background: var(--color-surface);
+    @compose grid gap:md p:lg r:xl shadow:md bg:white;
 }
 
 @components {
