@@ -1,6 +1,6 @@
 import type { MasterCSSPlan } from 'shared/master-css-plan'
 import type { Pattern as FastGlobPattern } from 'fast-glob'
-import type { SourceAdapter } from '../adapters'
+import type { SourceAdapter } from '@master/css-source'
 
 const options: Options = {
     // enable verbose Logs

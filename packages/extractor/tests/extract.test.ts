@@ -1,5 +1,5 @@
 import { test, expect, it } from 'vitest'
-import { extractLatentClasses } from '../src'
+import { extractLatentClasses } from '@master/css-source'
 
 it('extract latent classes from js raw', () => {
     const content = `

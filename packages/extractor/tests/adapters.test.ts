@@ -1,64 +1,9 @@
 import { describe, expect, test } from 'vitest'
-import CSSExtractor, {
-    extractHTMLClasses,
-    extractOxcClasses,
-    matchesSourceAdapter,
-    type SourceAdapter
-} from '../src'
+import CSSExtractor from '../src'
 
-describe('built-in source adapters', () => {
-    test('extracts static classes from JavaScript and TypeScript syntax with Oxc', () => {
-        expect(extractOxcClasses('component.tsx', `
-            const classes = 'block mi:auto'
-            const active = clsx('fg:red', { 'p:4x': ok })
-            element.classList.add('flex')
-            export function App() {
-                return <div className="hidden m:2x" />
-            }
-        `)).toEqual([
-            'block',
-            'mi:auto',
-            'fg:red',
-            'p:4x',
-            'flex',
-            'hidden',
-            'm:2x'
-        ])
-    })
-
-    test('ignores module specifiers, require calls, dynamic imports, and common directives with Oxc', () => {
-        expect(extractOxcClasses('component.tsx', `
-            'use client'
-            import React from 'react'
-            export { helper } from 'pkg'
-            await import('lazy-module')
-            const fs = require('fs')
-            const classes = 'block fg:red'
-        `)).toEqual([
-            'block',
-            'fg:red'
-        ])
-    })
-
-    test('extracts class attributes and script strings from HTML', () => {
-        expect(extractHTMLClasses('index.html', `
-            <div class="block mi:auto"></div>
-            <script>
-                element.classList.add('fg:red', 'p:4x')
-                const classes = 'flex hidden'
-            </script>
-        `)).toEqual([
-            'block',
-            'mi:auto',
-            'fg:red',
-            'p:4x',
-            'flex',
-            'hidden'
-        ])
-    })
-
-    test('uses the first matching adapter instead of the raw extractor', async () => {
-        const adapter: SourceAdapter = {
+describe('extractor source adapters', () => {
+    test('uses custom adapters before built-in source adapters', async () => {
+        const adapter = {
             name: 'test',
             test: /\.txt$/,
             extract: () => ['block']
@@ -71,14 +16,21 @@ describe('built-in source adapters', () => {
         expect(extractor.extract('fixture.txt', 'hidden')).toEqual(['block'])
     })
 
-    test('matches adapters with global regular expressions consistently', () => {
-        const adapter: SourceAdapter = {
-            name: 'global-regexp',
-            test: /\.txt$/g,
-            extract: () => []
-        }
+    test('uses built-in HTML and OXC adapters from @master/css-source by default', async () => {
+        const extractor = await new CSSExtractor({
+            include: []
+        }).init()
 
-        expect(matchesSourceAdapter(adapter, 'a.txt')).toBe(true)
-        expect(matchesSourceAdapter(adapter, 'b.txt')).toBe(true)
+        expect(extractor.extract('index.html', `
+            <div class="block mi:auto"></div>
+            <script>const classes = 'fg:red'</script>
+        `)).toEqual(['block', 'mi:auto', 'fg:red'])
+
+        expect(extractor.extract('component.tsx', `
+            const classes = 'inline-flex'
+            export function App() {
+                return <div className="hidden" />
+            }
+        `)).toEqual(['inline-flex', 'hidden'])
     })
 })

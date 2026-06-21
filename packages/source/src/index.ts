@@ -1,0 +1,6 @@
+export { extractLatentClasses } from '@master/css-lexer'
+export { addClassString } from './adapters/class-string'
+export type { SourceAdapter, SourceAdapterInput } from './adapters/types'
+export { matchesSourceAdapter } from './adapters/types'
+export { HTML_SOURCE_EXT, extractHTMLClasses, htmlAdapter } from './adapters/html'
+export { OXC_SOURCE_EXT, extractOxcClasses, oxcAdapter } from './adapters/oxc'

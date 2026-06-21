@@ -1,11 +1,5 @@
 export * from './options'
 export * from './core'
-export * from './adapters'
-export type { SourceAdapter, SourceAdapterInput } from './adapters/types'
-export { matchesSourceAdapter } from './adapters/types'
-export { HTML_SOURCE_EXT, extractHTMLClasses, htmlAdapter } from './adapters/html'
-export { OXC_SOURCE_EXT, extractOxcClasses, oxcAdapter } from './adapters/oxc'
 
 export { default as options } from './options'
-export { extractLatentClasses } from '@master/css-lexer'
 export { default, default as CSSExtractor } from './core'

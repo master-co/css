@@ -1,4 +1,4 @@
-import { extractLatentClasses, extractOxcClasses, type SourceAdapter, type SourceAdapterInput } from '@master/css-extractor'
+import { extractLatentClasses, extractOxcClasses, type SourceAdapter, type SourceAdapterInput } from '@master/css-source'
 import { parse } from 'svelte/compiler'
 
 interface SvelteRange {

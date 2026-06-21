@@ -1,4 +1,4 @@
-import { extractLatentClasses, extractOxcClasses, type SourceAdapter, type SourceAdapterInput } from '@master/css-extractor'
+import { extractLatentClasses, extractOxcClasses, type SourceAdapter, type SourceAdapterInput } from '@master/css-source'
 
 const SCRIPT_BLOCK = /<script\b[^>]*>([\s\S]*?)<\/script>/gi
 const STYLE_BLOCK = /<style\b[^>]*>[\s\S]*?<\/style>/gi

@@ -2,7 +2,13 @@ import { default as defaultOptions, Options } from './options'
 import { MasterCSS } from '@master/css'
 import type { MasterCSSPlan } from 'shared/master-css-plan'
 import { createRequire } from 'node:module'
-import { extractLatentClasses } from '@master/css-lexer'
+import {
+    extractLatentClasses,
+    htmlAdapter,
+    matchesSourceAdapter,
+    oxcAdapter,
+    type SourceAdapter
+} from '@master/css-source'
 import fs from 'fs'
 import { Minimatch } from 'minimatch'
 import log from '@techor/log'
@@ -17,12 +23,6 @@ import path from 'path'
 import { Stats } from 'node:fs'
 import bytes from 'bytes'
 import { createExtractorDirectives, type ExtractorDirectives } from './directives'
-import {
-    htmlAdapter,
-    matchesSourceAdapter,
-    oxcAdapter,
-    type SourceAdapter
-} from './adapters'
 import {
     createClassExclusionMatcher,
     isClassExcludedByMatcher,

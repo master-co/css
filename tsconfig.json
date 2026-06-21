@@ -27,6 +27,8 @@
             "@master/css-language-service/*": [ "./node_modules/@master/css-language-service/src/*" ],
             "@master/css-lexer": [ "./node_modules/@master/css-lexer/src" ],
             "@master/css-lexer/*": [ "./node_modules/@master/css-lexer/src/*" ],
+            "@master/css-source": [ "./node_modules/@master/css-source/src" ],
+            "@master/css-source/*": [ "./node_modules/@master/css-source/src/*" ],
             "@master/css-devtools-hook": [ "./node_modules/@master/css-devtools-hook/src" ],
             "@master/css-plan/*": [ "./node_modules/@master/css-plan/src/*" ],
             "@master/css.nuxt": [ "./node_modules/@master/css.nuxt/src/module.ts" ],

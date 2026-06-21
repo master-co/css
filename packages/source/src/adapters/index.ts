@@ -1,3 +1,4 @@
+export { addClassString } from './class-string'
 export type { SourceAdapter, SourceAdapterInput } from './types'
 export { matchesSourceAdapter } from './types'
 export { HTML_SOURCE_EXT, extractHTMLClasses, htmlAdapter } from './html'

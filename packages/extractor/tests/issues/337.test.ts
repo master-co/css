@@ -1,5 +1,5 @@
 import { test, expect } from 'vitest'
-import { extractLatentClasses } from '../../src'
+import { extractLatentClasses } from '@master/css-source'
 
 test('issue #337: extracts --name:var(--custom-var) class from source', () => {
     const content = `<div class="--test:var(--test-color) bg:white">x</div>`

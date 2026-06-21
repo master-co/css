@@ -1,0 +1,75 @@
+import { describe, expect, test } from 'vitest'
+import {
+    extractHTMLClasses,
+    extractLatentClasses,
+    extractOxcClasses,
+    matchesSourceAdapter,
+    type SourceAdapter
+} from '../src'
+
+describe('source adapters', () => {
+    test('re-exports latent class extraction from the lexer', () => {
+        expect(extractLatentClasses('<div class="block mi:auto"></div>')).toEqual(['block', 'mi:auto'])
+    })
+
+    test('extracts static classes from JavaScript and TypeScript syntax with Oxc', () => {
+        expect(extractOxcClasses('component.tsx', `
+            const classes = 'block mi:auto'
+            const active = clsx('fg:red', { 'p:4x': ok })
+            element.classList.add('flex')
+            export function App() {
+                return <div className="hidden m:2x" />
+            }
+        `)).toEqual([
+            'block',
+            'mi:auto',
+            'fg:red',
+            'p:4x',
+            'flex',
+            'hidden',
+            'm:2x'
+        ])
+    })
+
+    test('ignores module specifiers, require calls, dynamic imports, and common directives with Oxc', () => {
+        expect(extractOxcClasses('component.tsx', `
+            'use client'
+            import React from 'react'
+            export { helper } from 'pkg'
+            await import('lazy-module')
+            const fs = require('fs')
+            const classes = 'block fg:red'
+        `)).toEqual([
+            'block',
+            'fg:red'
+        ])
+    })
+
+    test('extracts class attributes and script strings from HTML', () => {
+        expect(extractHTMLClasses('index.html', `
+            <div class="block mi:auto"></div>
+            <script>
+                element.classList.add('fg:red', 'p:4x')
+                const classes = 'flex hidden'
+            </script>
+        `)).toEqual([
+            'block',
+            'mi:auto',
+            'fg:red',
+            'p:4x',
+            'flex',
+            'hidden'
+        ])
+    })
+
+    test('matches adapters with global regular expressions consistently', () => {
+        const adapter: SourceAdapter = {
+            name: 'global-regexp',
+            test: /\.txt$/g,
+            extract: () => []
+        }
+
+        expect(matchesSourceAdapter(adapter, 'a.txt')).toBe(true)
+        expect(matchesSourceAdapter(adapter, 'b.txt')).toBe(true)
+    })
+})

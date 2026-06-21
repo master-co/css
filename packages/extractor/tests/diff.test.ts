@@ -1,5 +1,5 @@
 import { describe, test, expect } from 'vitest'
-import { extractLatentClasses } from '../src'
+import { extractLatentClasses } from '@master/css-source'
 import fs from 'node:fs'
 import path from 'node:path'
 import { glob } from 'fast-glob'

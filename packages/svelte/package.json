@@ -73,11 +73,11 @@
     },
     "dependencies": {
         "@master/css": "workspace:^",
-        "@master/css-extractor": "workspace:^",
         "@master/css-integration": "workspace:^",
         "@master/css-preset": "workspace:^",
         "@master/css-runtime": "workspace:^",
         "@master/css-server": "workspace:^",
+        "@master/css-source": "workspace:^",
         "@master/css.vite": "workspace:^"
     },
     "devDependencies": {
