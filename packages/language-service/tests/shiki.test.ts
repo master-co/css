@@ -25,72 +25,44 @@ const plan: Settings['plan'] = createPresetPlan({
     ]
 })
 
-function syntaxToken(content: string, color: string) {
-    return {
-        content,
-        offset: 0,
-        htmlStyle: { color }
-    }
+function scopeToken(scopeName: string, color: string) {
+    return [
+        {
+            content: scopeName,
+            offset: 0,
+            color,
+            explanation: [
+                {
+                    scopes: [
+                        { scopeName }
+                    ]
+                }
+            ]
+        }
+    ]
 }
 
-function nativeCSSSyntaxTokens() {
+function semanticScopeStyleTokens() {
     return [
-        syntaxToken('.x', 'class'),
-        syntaxToken(',', 'selector-operator'),
-        syntaxToken('div', 'type'),
-        syntaxToken('>', 'selector-operator'),
-        syntaxToken('li', 'type'),
-        syntaxToken(':', 'pseudo-operator'),
-        syntaxToken('hover', 'modifier'),
-        syntaxToken(':', 'pseudo-element-operator'),
-        syntaxToken('before', 'pseudo-element'),
-        syntaxToken('{', 'punctuation'),
-        syntaxToken('color', 'property'),
-        syntaxToken(':', 'declaration-operator'),
-        syntaxToken('red', 'value'),
-        syntaxToken('!important', 'important'),
-        syntaxToken(';', 'punctuation'),
-        syntaxToken('width', 'property'),
-        syntaxToken(':', 'declaration-operator'),
-        syntaxToken('1.5', 'number'),
-        syntaxToken('rem', 'unit'),
-        syntaxToken(';', 'punctuation'),
-        syntaxToken('background', 'property'),
-        syntaxToken(':', 'declaration-operator'),
-        syntaxToken('rgb', 'function'),
-        syntaxToken('(', 'punctuation'),
-        syntaxToken('0', 'number'),
-        syntaxToken('/', 'separator'),
-        syntaxToken('.5', 'number'),
-        syntaxToken(')', 'punctuation'),
-        syntaxToken(';', 'punctuation'),
-        syntaxToken('content', 'property'),
-        syntaxToken(':', 'declaration-operator'),
-        syntaxToken('"', 'string-quote'),
-        syntaxToken('x', 'string'),
-        syntaxToken('"', 'string-quote'),
-        syntaxToken(';', 'punctuation'),
-        syntaxToken('transform', 'property'),
-        syntaxToken(':', 'declaration-operator'),
-        syntaxToken('translate', 'function'),
-        syntaxToken('(', 'punctuation'),
-        syntaxToken('10', 'number'),
-        syntaxToken('px', 'unit'),
-        syntaxToken(',', 'separator'),
-        syntaxToken('20', 'number'),
-        syntaxToken('px', 'unit'),
-        syntaxToken(')', 'punctuation'),
-        syntaxToken('}', 'punctuation'),
-        syntaxToken('@media', 'keyword'),
-        syntaxToken('(', 'punctuation'),
-        syntaxToken('width', 'property'),
-        syntaxToken('>=', 'query-operator'),
-        syntaxToken('1', 'number'),
-        syntaxToken('px', 'unit'),
-        syntaxToken(')', 'punctuation'),
-        syntaxToken('{', 'punctuation'),
-        syntaxToken('.y', 'class'),
-        syntaxToken('--token', 'variable')
+        ...scopeToken('keyword.control.at-rule.master-css', 'keyword'),
+        ...scopeToken('support.type.property-name.master-css', 'property'),
+        ...scopeToken('support.constant.property-value.master-css', 'value'),
+        ...scopeToken('entity.other.attribute-name.class.master-css', 'class'),
+        ...scopeToken('storage.modifier.master-css', 'modifier'),
+        ...scopeToken('variable.other.master-css', 'variable'),
+        ...scopeToken('variable.css', 'variable'),
+        ...scopeToken('entity.name.tag.css', 'type'),
+        ...scopeToken('entity.other.attribute-name.class.css', 'class'),
+        ...scopeToken('entity.other.attribute-name.id.css', 'id'),
+        ...scopeToken('entity.other.attribute-name.pseudo-class.css', 'modifier'),
+        ...scopeToken('entity.other.attribute-name.pseudo-element.css', 'pseudo-element'),
+        ...scopeToken('keyword.operator.css', 'operator'),
+        ...scopeToken('keyword.operator.combinator', 'selector-operator'),
+        ...scopeToken('keyword.operator.important.css', 'important'),
+        ...scopeToken('keyword.other.unit.rem.css', 'unit'),
+        ...scopeToken('constant.numeric.css', 'number'),
+        ...scopeToken('support.function.misc.css', 'function'),
+        ...scopeToken('string.quoted.css', 'string')
     ]
 }
 
@@ -101,6 +73,12 @@ const shikiProbeTheme = {
         {
             settings: {
                 foreground: '#111111'
+            }
+        },
+        {
+            scope: 'comment.block.css',
+            settings: {
+                foreground: '#6272a4'
             }
         },
         {
@@ -178,6 +156,126 @@ test.concurrent('registers a real Shiki TextMate injection grammar for CSS direc
     expect(tokenColor('fade')).toBe('#111111')
     expect(tokenColor('from')).toBe('#111111')
     expect(tokenColor('to')).toBe('#111111')
+})
+
+test.concurrent('keeps guide theme snippets correct with TextMate only', async () => {
+    const highlighter = await createHighlighter({
+        themes: [shikiProbeTheme as any],
+        langs: ['css', masterCSSShikiLanguage]
+    })
+    const code = [
+        '@theme light {',
+        '    /* Font families */',
+        '    --tracking-tightest: -0.072em;',
+        '}'
+    ].join('\n')
+    const tokens = highlighter.codeToTokens(code, {
+        lang: 'css',
+        theme: 'master-css-probe'
+    }).tokens.flat()
+    const tokenColor = (text: string) => (tokens.find((token) => token.content === text) ?? tokens.find((token) => token.content.includes(text)))?.color?.toLowerCase()
+
+    expect(tokenColor('theme')).toBe('#ff0000')
+    expect(tokenColor('light')).toBe('#0000ff')
+    expect(tokenColor('/* Font families */')).toBe('#6272a4')
+    expect(tokenColor('-0.072em')).toBe('#111111')
+})
+
+test.concurrent('attaches guide theme semantic metadata without changing styles when scope matching is disabled', () => {
+    const code = [
+        '@theme light {',
+        '    /* Font families */',
+        '    --tracking-tightest: -0.072em;',
+        '}'
+    ].join('\n')
+    const transformer = transformerMasterCSS({ matchCSSSyntaxStyles: false })
+    const transformedTokens = transformer.tokens.call({
+        source: code,
+        options: { lang: 'css' }
+    }, [[{ content: code, offset: 0, htmlStyle: { color: 'host' } }]])
+    const tokens = transformedTokens?.flat().map((token) => ({
+        content: token.content,
+        htmlStyle: token.htmlStyle,
+        className: token.htmlAttrs?.class
+    }))
+
+    expect(tokens).toEqual(expect.arrayContaining([
+        expect.objectContaining({
+            content: 'light',
+            htmlStyle: { color: 'host' },
+            className: 'mcss-semantic mcss-semantic-enumMember mcss-semantic-role-directive-parameter mcss-semantic-enumMember-directive'
+        }),
+        expect.objectContaining({
+            content: '--tracking-tightest',
+            htmlStyle: { color: 'host' },
+            className: 'mcss-semantic mcss-semantic-variable mcss-semantic-role-theme-variable'
+        }),
+        expect.objectContaining({
+            content: '-',
+            htmlStyle: { color: 'host' },
+            className: 'mcss-semantic mcss-semantic-operator mcss-semantic-role-value-operator'
+        }),
+        expect.objectContaining({
+            content: '0.072',
+            htmlStyle: { color: 'host' },
+            className: 'mcss-semantic mcss-semantic-number mcss-semantic-role-value-number'
+        }),
+        expect.objectContaining({
+            content: 'em',
+            htmlStyle: { color: 'host' },
+            className: 'mcss-semantic mcss-semantic-enumMember mcss-semantic-role-value-unit mcss-semantic-enumMember-unit'
+        })
+    ]))
+    expect(tokens?.some((token) => token.content.includes('Font families') && token.className)).toBe(false)
+})
+
+test.concurrent('resolves guide theme semantic metadata through shared scope styles', () => {
+    const code = [
+        '@theme light {',
+        '    --tracking-tightest: -0.072em;',
+        '}'
+    ].join('\n')
+    const transformer = transformerMasterCSS()
+    const transformedTokens = transformer.tokens.call({
+        source: code,
+        options: { lang: 'css' },
+        codeToTokens: () => ({
+            tokens: [semanticScopeStyleTokens()]
+        })
+    }, [[{ content: code, offset: 0, htmlStyle: { color: 'host' } }]])
+    const tokens = transformedTokens?.flat().map((token) => ({
+        content: token.content,
+        htmlStyle: token.htmlStyle,
+        className: token.htmlAttrs?.class
+    }))
+
+    expect(tokens).toEqual(expect.arrayContaining([
+        expect.objectContaining({
+            content: 'light',
+            htmlStyle: { color: 'value' },
+            className: 'mcss-semantic mcss-semantic-enumMember mcss-semantic-role-directive-parameter mcss-semantic-enumMember-directive'
+        }),
+        expect.objectContaining({
+            content: '--tracking-tightest',
+            htmlStyle: { color: 'variable' },
+            className: 'mcss-semantic mcss-semantic-variable mcss-semantic-role-theme-variable'
+        }),
+        expect.objectContaining({
+            content: '-',
+            htmlStyle: { color: 'operator' },
+            className: 'mcss-semantic mcss-semantic-operator mcss-semantic-role-value-operator'
+        }),
+        expect.objectContaining({
+            content: '0.072',
+            htmlStyle: { color: 'number' },
+            className: 'mcss-semantic mcss-semantic-number mcss-semantic-role-value-number'
+        }),
+        expect.objectContaining({
+            content: 'em',
+            htmlStyle: { color: 'unit' },
+            className: 'mcss-semantic mcss-semantic-enumMember mcss-semantic-role-value-unit mcss-semantic-enumMember-unit'
+        })
+    ]))
 })
 
 test.concurrent('does not create Master Shiki decorations for native-only CSS', () => {
@@ -458,7 +556,7 @@ test.concurrent('applies semantic decorations in the Shiki tokens hook', () => {
     ]))
 })
 
-test.concurrent('uses native CSS syntax styles for selector semantic tokens', () => {
+test.concurrent('uses semantic token scope styles for selector semantic tokens', () => {
     const code = '<div class="block>li:hover@md"></div>'
     const options = {
         lang: 'html'
@@ -468,7 +566,7 @@ test.concurrent('uses native CSS syntax styles for selector semantic tokens', ()
         source: code,
         options,
         codeToTokens: () => ({
-            tokens: [nativeCSSSyntaxTokens()]
+            tokens: [semanticScopeStyleTokens()]
         })
     }, [[{ content: code, offset: 0, htmlStyle: { color: 'key' } }]])
     const tokens = transformedTokens?.flat().map((token) => ({
@@ -495,7 +593,7 @@ test.concurrent('uses native CSS syntax styles for selector semantic tokens', ()
         },
         {
             content: ':',
-            htmlStyle: { color: 'pseudo-operator' },
+            htmlStyle: { color: 'modifier' },
             className: 'mcss-semantic mcss-semantic-operator mcss-semantic-role-selector-pseudoClass-delimiter mcss-semantic-operator-selector mcss-semantic-operator-pseudoClass'
         },
         {
@@ -506,7 +604,7 @@ test.concurrent('uses native CSS syntax styles for selector semantic tokens', ()
     ]))
 })
 
-test.concurrent('uses native CSS syntax styles for documentation Master CSS tokens', () => {
+test.concurrent('uses semantic token scope styles for documentation Master CSS tokens', () => {
     const htmlCode = '<section class="bg:blue block grid-cols:2@md fg:primary:hover"></section>'
     const htmlOptions = {
         lang: 'html'
@@ -521,7 +619,7 @@ test.concurrent('uses native CSS syntax styles for documentation Master CSS toke
         lang: 'css'
     }
     const transformer = transformerMasterCSS()
-    const syntaxTokens = nativeCSSSyntaxTokens()
+    const syntaxTokens = semanticScopeStyleTokens()
     const htmlTransformedTokens = transformer.tokens.call({
         source: htmlCode,
         options: htmlOptions,
@@ -555,7 +653,7 @@ test.concurrent('uses native CSS syntax styles for documentation Master CSS toke
         },
         {
             content: ':',
-            htmlStyle: { color: 'declaration-operator' },
+            htmlStyle: { color: 'operator' },
             className: 'mcss-semantic mcss-semantic-operator mcss-semantic-role-declaration-separator'
         },
         {
@@ -603,7 +701,7 @@ test.concurrent('uses native CSS syntax styles for documentation Master CSS toke
     ]))
 })
 
-test.concurrent('uses semantic styles for Master directive query parameters', () => {
+test.concurrent('uses semantic token scope styles for Master directive query parameters', () => {
     const code = [
         '@custom-variant @motion-safe { @media (prefers-reduced-motion: no-preference) { @slot; } }',
         '@components {',
@@ -620,7 +718,7 @@ test.concurrent('uses semantic styles for Master directive query parameters', ()
         source: code,
         options: { lang: 'css' },
         codeToTokens: () => ({
-            tokens: [nativeCSSSyntaxTokens()]
+            tokens: [semanticScopeStyleTokens()]
         })
     }, [[{ content: code, offset: 0, htmlStyle: { color: 'host' } }]])
     const tokens = transformedTokens?.flat().map((token) => ({
@@ -632,7 +730,7 @@ test.concurrent('uses semantic styles for Master directive query parameters', ()
     expect(tokens).toEqual(expect.arrayContaining([
         {
             content: '<',
-            htmlStyle: { color: 'query-operator' },
+            htmlStyle: { color: 'operator' },
             className: 'mcss-semantic mcss-semantic-operator mcss-semantic-role-query-operator mcss-semantic-operator-query'
         },
         {

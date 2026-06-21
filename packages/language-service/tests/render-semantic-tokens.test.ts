@@ -393,6 +393,10 @@ test.concurrent('renders Master-only declaration tokens inside theme directives'
     expectToken(tokens, 'dark', 'enumMember', ['directive'])
     expectToken(tokens, 'inline', 'modifier', ['directive'])
     expectToken(tokens, '--font-family-serif', 'variable')
+    expectToken(tokens, '--tracking-tightest', 'variable')
+    expectToken(tokens, '-', 'operator')
+    expectToken(tokens, '0.072', 'number')
+    expectToken(tokens, 'em', 'enumMember', ['unit'])
     expect(tokens).not.toContainEqual({ text: 'font-serif', type: 'enumMember', modifiers: [] })
     expect(tokens).not.toContainEqual({ text: 'var', type: 'function', modifiers: [] })
     expect(tokens).not.toContainEqual({ text: '@keyframes', type: 'keyword', modifiers: [] })
@@ -401,6 +405,8 @@ test.concurrent('renders Master-only declaration tokens inside theme directives'
     expect(tokens).not.toContainEqual({ text: '--value', type: 'function', modifiers: [] })
     expectToken(tokens, '$color-gray-100', 'variable')
     expectToken(tokens, '--full', 'variable')
+    expectToken(tokens, '100', 'number')
+    expectToken(tokens, '%', 'enumMember', ['unit'])
 })
 
 test.concurrent('renders Master-only tokens inside managed definition directives', () => {

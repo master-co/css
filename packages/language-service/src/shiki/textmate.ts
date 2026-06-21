@@ -282,6 +282,25 @@ export const MASTER_CSS_TEXTMATE_GRAMMAR: MasterCSSTextMateGrammar = {
                 }
             ]
         },
+        "master-managed-entry-selector": {
+            "patterns": [
+                {
+                    "match": "(?<![:@._a-zA-Z0-9-])([_a-zA-Z-][_a-zA-Z0-9-]*)(?=:{1,2}[_a-zA-Z-][_a-zA-Z0-9-]*\\s*\\{)",
+                    "name": "entity.other.attribute-name.class.master-css"
+                },
+                {
+                    "match": "(:{1,2})([_a-zA-Z-][_a-zA-Z0-9-]*)(?=\\s*\\{)",
+                    "captures": {
+                        "1": {
+                            "name": "punctuation.definition.entity.master-css"
+                        },
+                        "2": {
+                            "name": "entity.other.attribute-name.pseudo-class.master-css"
+                        }
+                    }
+                }
+            ]
+        },
         "master-block": {
             "patterns": [
                 {
@@ -299,6 +318,9 @@ export const MASTER_CSS_TEXTMATE_GRAMMAR: MasterCSSTextMateGrammar = {
                     },
                     "patterns": [
                         {
+                            "include": "#comment"
+                        },
+                        {
                             "include": "#master-string"
                         },
                         {
@@ -308,6 +330,9 @@ export const MASTER_CSS_TEXTMATE_GRAMMAR: MasterCSSTextMateGrammar = {
                             "include": "#master-managed-pattern"
                         },
                         {
+                            "include": "#master-managed-entry-selector"
+                        },
+                        {
                             "include": "#master-query"
                         },
                         {
@@ -315,9 +340,6 @@ export const MASTER_CSS_TEXTMATE_GRAMMAR: MasterCSSTextMateGrammar = {
                         },
                         {
                             "include": "#master-value"
-                        },
-                        {
-                            "include": "#master-class-fragment"
                         },
                         {
                             "include": "#master-block"

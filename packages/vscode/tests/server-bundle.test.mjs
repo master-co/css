@@ -5,6 +5,7 @@ import { tmpdir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
 import { pathToFileURL, fileURLToPath } from 'node:url'
 import { expect, test } from 'vitest'
+import { MASTER_CSS_SEMANTIC_TOKEN_SCOPE_MAP } from '../../language-service/src/semantic/scopes.ts'
 import { createStagedExtension, getCurrentTarget, getRuntimePackagesForTarget } from '../scripts/package-targets.mjs'
 
 const here = dirname(fileURLToPath(import.meta.url))
@@ -220,11 +221,11 @@ test('manifest contributes TextMate grammar, semantic token scopes, and CSS diag
         'scss.lint.unknownAtRules': 'ignore',
         'less.lint.unknownAtRules': 'ignore'
     })
-    expect(packageJSON.contributes.semanticTokenScopes?.[0]?.scopes).toMatchObject({
-        property: ['support.type.property-name.css'],
-        enumMember: ['support.constant.property-value.css'],
-        'keyword.directive': ['keyword.control.at-rule.master-css.css']
-    })
+    expect(packageJSON.contributes.semanticTokenScopes).toEqual([
+        {
+            scopes: MASTER_CSS_SEMANTIC_TOKEN_SCOPE_MAP
+        }
+    ])
     expect(packageJSON.contributes.configuration.properties['masterCSS.includedLanguages'].default).toEqual(expect.arrayContaining([
         'css',
         'scss',

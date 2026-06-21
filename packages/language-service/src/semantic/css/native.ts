@@ -1,7 +1,8 @@
 import { pushHighlightToken, type HighlightTokenItem } from '../highlight'
 import {
     collectCSSDeclarationRanges,
-    findCSSClosingQuote
+    findCSSClosingQuote,
+    MASTER_CSS_VALUE_UNITS
 } from '@master/css-lexer'
 
 type DeclarationPropertyMode = 'none' | 'settings' | 'theme'
@@ -32,6 +33,9 @@ function pushDeclarationProperty(source: string, start: number, end: number, tok
     pushHighlightToken(tokens, propertyRange.start, property.length, 'property', 'declaration.property')
 }
 
+const CSS_NUMERIC_RE = /^(?:\d+\.\d+|\.\d+|\d+)/
+const CSS_VALUE_UNIT_SET = new Set<string>(MASTER_CSS_VALUE_UNITS)
+
 function isMasterVariableStart(source: string, index: number) {
     return source[index] === '$' && /[_a-zA-Z-]/.test(source[index + 1] || '')
 }
@@ -40,6 +44,35 @@ function readMasterVariable(source: string, index: number) {
     let end = index + 2
     while (/[_a-zA-Z0-9-]/.test(source[end] || '')) end++
     return end
+}
+
+function readCSSValueUnit(source: string, index: number, end: number) {
+    if (source[index] === '%') return index + 1
+    let unitEnd = index
+    while (unitEnd < end && /[a-zA-Z]/.test(source[unitEnd] || '')) unitEnd++
+    if (unitEnd === index) return index
+    return CSS_VALUE_UNIT_SET.has(source.slice(index, unitEnd).toLowerCase()) ? unitEnd : index
+}
+
+function tokenizeCSSNumericValue(source: string, cursor: number, end: number, tokens: HighlightTokenItem[]) {
+    let numberStart = cursor
+    if ((source[cursor] === '-' || source[cursor] === '+') && CSS_NUMERIC_RE.test(source.slice(cursor + 1, end))) {
+        pushHighlightToken(tokens, cursor, 1, 'operator', 'value.operator')
+        numberStart++
+    }
+    const numberMatch = source.slice(numberStart, end).match(CSS_NUMERIC_RE)
+    if (!numberMatch) return
+
+    const number = numberMatch[0]
+    const numberEnd = numberStart + number.length
+    pushHighlightToken(tokens, numberStart, number.length, 'number', 'value.number')
+
+    const unitEnd = readCSSValueUnit(source, numberEnd, end)
+    if (unitEnd > numberEnd) {
+        pushHighlightToken(tokens, numberEnd, unitEnd - numberEnd, 'enumMember', 'value.unit', ['unit'])
+    }
+
+    return unitEnd > numberEnd ? unitEnd : numberEnd
 }
 
 function tokenizeMasterCSSValueSyntax(source: string, start: number, end: number, tokens: HighlightTokenItem[]) {
@@ -56,6 +89,14 @@ function tokenizeMasterCSSValueSyntax(source: string, start: number, end: number
         if (char === '"' || char === '\'') {
             cursor = findCSSClosingQuote(source, cursor, char, end)
             continue
+        }
+
+        if (CSS_NUMERIC_RE.test(source.slice(cursor, end)) || ((char === '-' || char === '+') && CSS_NUMERIC_RE.test(source.slice(cursor + 1, end)))) {
+            const valueEnd = tokenizeCSSNumericValue(source, cursor, end, tokens)
+            if (valueEnd) {
+                cursor = valueEnd - 1
+                continue
+            }
         }
 
         if (isMasterVariableStart(source, cursor)) {

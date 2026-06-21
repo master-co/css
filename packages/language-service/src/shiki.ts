@@ -5,6 +5,10 @@ import type { Settings } from './settings'
 import { collectHighlightTokenItems } from './features/render-semantic-tokens'
 import type { HighlightTokenItem, HighlightTokenRole } from './semantic/highlight'
 import { collectClassListHighlightTokenItems } from './semantic/tokenize-class'
+import {
+    MASTER_CSS_SEMANTIC_TOKEN_SCOPE_MAP,
+    getMasterCSSSemanticTokenScopeKeys
+} from './semantic/scopes'
 export {
     MASTER_CSS_SHIKI_INJECT_TO,
     MASTER_CSS_SHIKI_SCOPE_NAME,
@@ -24,8 +28,14 @@ export type MasterCSSShikiHighlightRoleStyles = Partial<Record<MasterCSSShikiHig
 interface ShikiToken {
     content: string
     offset: number
+    color?: string
     htmlStyle?: Record<string, string>
     htmlAttrs?: Record<string, unknown>
+    explanation?: {
+        scopes?: {
+            scopeName: string
+        }[]
+    }[]
     [key: string]: unknown
 }
 
@@ -46,6 +56,7 @@ interface ShikiDecoration {
 interface ShikiCodeToHastOptions {
     lang?: string
     decorations?: ShikiDecoration[]
+    includeExplanation?: 'scopeName' | boolean
     [key: string]: unknown
 }
 
@@ -128,9 +139,10 @@ export interface MasterCSSShikiOptions {
      */
     highlightRoleStyles?: MasterCSSShikiHighlightRoleStyles
     /**
-     * Reuse Shiki's native CSS grammar styles for Master CSS highlight roles
-     * when possible, so markup utilities and directives stay aligned with
-     * CSS/SASS without hardcoded theme colors.
+     * Resolve Master CSS semantic token scopes through the active Shiki
+     * theme when possible. When disabled, the transformer only splits tokens
+     * and attaches semantic metadata/classes unless explicit semantic styles
+     * are provided.
      *
      * @default true
      */
@@ -362,113 +374,128 @@ function cloneStyle(style: unknown) {
         : undefined
 }
 
-function findTokenStyle(tokens: ShikiToken[], content: string, offset = 0) {
-    let seen = 0
+function getTokenStyleObject(token: ShikiToken) {
+    const htmlStyle = cloneStyle(token.htmlStyle)
+    if (htmlStyle) return htmlStyle
+    return typeof token.color === 'string' ? { color: token.color } : undefined
+}
+
+interface ScopeStyleEntry {
+    scope: string
+    normalizedScope: string
+    style: Record<string, string>
+}
+
+const SEMANTIC_SCOPE_STYLE_PROBE = [
+    '@theme light inline {',
+    '  --token: $value;',
+    '}',
+    '@components {',
+    '  btn { @compose block fg:red:hover@md; }',
+    '}',
+    '.x, div > li:hover::before {',
+    '  color: red !important;',
+    '  width: 1.5rem;',
+    '  background: rgb(0 0 0 / .5);',
+    '  content: "x";',
+    '  --token: red;',
+    '}',
+    '@media (width >= 1px) { .y { color: var(--token); } }'
+].join('\n')
+
+function normalizeScope(scope: string) {
+    let normalizedScope = scope
+    while (normalizedScope.endsWith('.css') || normalizedScope.endsWith('.master-css')) {
+        normalizedScope = normalizedScope
+            .replace(/\.css$/, '')
+            .replace(/\.master-css$/, '')
+    }
+    return normalizedScope
+}
+
+function getScopeCandidates(scope: string) {
+    return [...new Set([
+        scope,
+        scope.replace(/\.css$/, ''),
+        scope.replace(/\.master-css$/, ''),
+        normalizeScope(scope)
+    ])]
+}
+
+function getScopePrefixes(scope: string) {
+    const prefixes: string[] = []
+    const bases = [
+        scope,
+        scope.replace(/\.css$/, ''),
+        scope.replace(/\.master-css$/, ''),
+        normalizeScope(scope)
+    ]
+    for (const base of bases) {
+        const segments = base.split('.')
+        for (let length = segments.length; length >= 2; length--) {
+            prefixes.push(segments.slice(0, length).join('.'))
+        }
+    }
+    return [...new Set(prefixes)]
+}
+
+function collectScopeStyleEntries(tokens: ShikiToken[]): ScopeStyleEntry[] {
+    const entries: ScopeStyleEntry[] = []
+    const seenScopes = new Set<string>()
     for (const token of tokens) {
-        if (token.content !== content) continue
-        if (seen++ < offset) continue
-        return cloneStyle(token.htmlStyle)
+        const style = getTokenStyleObject(token)
+        if (!style) continue
+        for (const explanation of token.explanation ?? []) {
+            for (const { scopeName } of explanation.scopes ?? []) {
+                if (seenScopes.has(scopeName)) continue
+                seenScopes.add(scopeName)
+                entries.push({
+                    scope: scopeName,
+                    normalizedScope: normalizeScope(scopeName),
+                    style
+                })
+            }
+        }
+    }
+    return entries
+}
+
+function findStyleByScope(entries: ScopeStyleEntry[], scope: string) {
+    for (const candidate of getScopeCandidates(scope)) {
+        const exact = entries.find((entry) => entry.scope === candidate || entry.normalizedScope === candidate)
+        if (exact) return exact.style
+    }
+    for (const prefix of getScopePrefixes(scope)) {
+        const prefixed = entries.find((entry) => (
+            entry.scope === prefix
+            || entry.normalizedScope === prefix
+            || entry.scope.startsWith(`${prefix}.`)
+            || entry.normalizedScope.startsWith(`${prefix}.`)
+        ))
+        if (prefixed) return prefixed.style
     }
 }
 
-function findTokenStyleContaining(tokens: ShikiToken[], content: string, offset = 0) {
-    let seen = 0
-    for (const token of tokens) {
-        if (!token.content.includes(content)) continue
-        if (seen++ < offset) continue
-        return cloneStyle(token.htmlStyle)
-    }
-}
-
-function findTokenStyleAfter(tokens: ShikiToken[], previousContent: string, content: string) {
-    const previousIndex = tokens.findIndex((token) => token.content === previousContent)
-    if (previousIndex === -1) return findTokenStyle(tokens, content)
-    for (const token of tokens.slice(previousIndex + 1)) {
-        if (token.content === content || token.content.includes(content)) return cloneStyle(token.htmlStyle)
-    }
-}
-
-function createCSSSyntaxStyleResolver(
+function createSemanticScopeStyleResolver(
     context: ShikiTransformerContext,
     options: MasterCSSShikiOptions
 ) {
     if (options.matchCSSSyntaxStyles === false || typeof context.codeToTokens !== 'function') return
     try {
         const { lang: _lang, decorations: _decorations, transformers: _transformers, ...tokenOptions } = context.options
-        const cssTokens = context.codeToTokens('.x,div>li:hover::before{color:red!important;width:1.5rem;background:rgb(0 0 0 / .5);content:"x";transform:translate(10px,20px)}@media(width>=1px){.y{color:var(--token)}}', {
+        const scopeStyleEntries = collectScopeStyleEntries(context.codeToTokens(SEMANTIC_SCOPE_STYLE_PROBE, {
             ...tokenOptions,
-            lang: 'css'
-        }).tokens.flat()
-        const neutralStyle = findTokenStyle(cssTokens, ';') ?? findTokenStyleContaining(cssTokens, '{') ?? findTokenStyleContaining(cssTokens, '}')
-        const atKeywordStyle = findTokenStyle(cssTokens, '@media')
-        const propertyStyle = findTokenStyle(cssTokens, 'color') ?? findTokenStyle(cssTokens, 'width')
-        const declarationSeparatorStyle = findTokenStyleAfter(cssTokens, 'color', ':')
-        const valueStyle = findTokenStyle(cssTokens, 'red') ?? findTokenStyle(cssTokens, 'block')
-        const importantStyle = findTokenStyleContaining(cssTokens, '!important') ?? atKeywordStyle
-        const numberStyle = findTokenStyle(cssTokens, '1.5') ?? findTokenStyle(cssTokens, '.5') ?? findTokenStyle(cssTokens, '1')
-        const unitStyle = findTokenStyle(cssTokens, 'rem') ?? findTokenStyle(cssTokens, 'px')
-        const functionStyle = findTokenStyle(cssTokens, 'rgb') ?? findTokenStyle(cssTokens, 'translate')
-        const functionPunctuationStyle = findTokenStyleAfter(cssTokens, 'rgb', '(') ?? neutralStyle
-        const valueSeparatorStyle = findTokenStyle(cssTokens, '/') ?? findTokenStyleContaining(cssTokens, ' / ') ?? findTokenStyle(cssTokens, ',') ?? neutralStyle
-        const stringStyle = findTokenStyle(cssTokens, 'x')
-        const stringQuoteStyle = findTokenStyle(cssTokens, '"')
-        const typeStyle = findTokenStyle(cssTokens, 'li') ?? findTokenStyle(cssTokens, 'div')
-        const classStyle = findTokenStyle(cssTokens, '.x') ?? findTokenStyle(cssTokens, '.y') ?? typeStyle
-        const selectorCombinatorStyle = findTokenStyle(cssTokens, '>') ?? findTokenStyle(cssTokens, ',') ?? neutralStyle
-        const pseudoDelimiterStyle = findTokenStyleAfter(cssTokens, '.x', ':') ?? findTokenStyle(cssTokens, ':')
-        const pseudoNameStyle = findTokenStyle(cssTokens, 'hover')
-        const pseudoElementNameStyle = findTokenStyle(cssTokens, 'before') ?? pseudoNameStyle
-        const queryFeatureStyle = findTokenStyle(cssTokens, 'width') ?? propertyStyle
-        const queryOperatorStyle = findTokenStyle(cssTokens, '>=')
-        const queryNumberStyle = findTokenStyle(cssTokens, '1') ?? numberStyle
-        const queryUnitStyle = findTokenStyle(cssTokens, 'px') ?? unitStyle
-        const variableStyle = findTokenStyleContaining(cssTokens, '--token') ?? propertyStyle
-
-        const roleStyles: Partial<Record<HighlightTokenRole, Record<string, string> | undefined>> = {
-            'block.brace': neutralStyle,
-            'declaration.property': propertyStyle,
-            'declaration.separator': declarationSeparatorStyle,
-            'declaration.terminator': neutralStyle,
-            'directive.keyword': atKeywordStyle,
-            'directive.modifier': importantStyle,
-            'directive.parameter': variableStyle,
-            'directive.terminator': neutralStyle,
-            'query.keyword': atKeywordStyle,
-            'query.feature': queryFeatureStyle,
-            'query.operator': queryOperatorStyle,
-            'query.punctuation': neutralStyle,
-            'query.value': valueStyle,
-            'query.number': queryNumberStyle,
-            'query.unit': queryUnitStyle,
-            'selector.attribute': typeStyle,
-            'selector.class': classStyle,
-            'selector.combinator': selectorCombinatorStyle,
-            'selector.id': classStyle,
-            'selector.pseudoClass.delimiter': pseudoDelimiterStyle,
-            'selector.pseudoClass.name': pseudoNameStyle,
-            'selector.pseudoElement.delimiter': pseudoDelimiterStyle,
-            'selector.pseudoElement.name': pseudoElementNameStyle,
-            'selector.punctuation': neutralStyle,
-            'selector.type': typeStyle,
-            'theme.variable': variableStyle,
-            'utility.component': classStyle,
-            'utility.semantic': valueStyle,
-            'value.color': valueStyle,
-            'value.function.name': functionStyle,
-            'value.function.punctuation': functionPunctuationStyle,
-            'value.important': importantStyle,
-            'value.keyword': valueStyle,
-            'value.number': numberStyle,
-            'value.operator': declarationSeparatorStyle,
-            'value.separator': valueSeparatorStyle,
-            'value.string': stringStyle,
-            'value.string.quote': stringQuoteStyle,
-            'value.unit': unitStyle,
-            'value.variable': variableStyle
-        }
+            lang: 'css',
+            includeExplanation: 'scopeName'
+        }).tokens.flat())
 
         return (_token: ShikiToken, decoration: MasterCSSShikiDecoration) => {
-            return roleStyles[decoration.role]
+            for (const key of getMasterCSSSemanticTokenScopeKeys(decoration.type, decoration.modifiers)) {
+                for (const scope of MASTER_CSS_SEMANTIC_TOKEN_SCOPE_MAP[key]) {
+                    const style = findStyleByScope(scopeStyleEntries, scope)
+                    if (style) return style
+                }
+            }
         }
     } catch {
         return
@@ -542,7 +569,7 @@ export function transformerMasterCSS(
             })
             if (!decorations.length) return
             const tokensSplitAtSemanticBoundaries = splitTokensAtOffsets(tokens, decorations.flatMap(({ start, end }) => [start, end]))
-            const resolveSyntaxStyle = createCSSSyntaxStyleResolver(this, {
+            const resolveSyntaxStyle = createSemanticScopeStyleResolver(this, {
                 ...options,
                 lang,
                 classList
