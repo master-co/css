@@ -8,12 +8,13 @@ import {
 import UtilityType from 'shared/utility-type'
 import { dirname, resolve } from 'path'
 import { fileURLToPath } from 'url'
-import { readFileSync } from 'node:fs'
+import { createServer, type ViteDevServer } from 'vite'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
-const RUNTIME_ASSET_BASE_URL = 'http://master-css-runtime.test'
+const packageRoot = resolve(__dirname, '..')
 const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
+let runtimeServerPromise: Promise<ViteDevServer> | undefined
 
 type RuntimeProjectManifestUtilityInput = Partial<NonNullable<MasterCSSManifest['utilities']>[number]> & {
     declarations?: Record<string, string | number>
@@ -241,19 +242,29 @@ async function createHydrationManifestForPage(page: Page, manifest: MasterCSSMan
     return createHydrationManifest(css)
 }
 
-async function routeRuntimeAssets(page: Page) {
-    await page.route(`${RUNTIME_ASSET_BASE_URL}/global.min.js`, (route) => {
-        route.fulfill({
-            contentType: 'text/javascript',
-            body: readFileSync(resolve(__dirname, '../dist/global.min.js'), 'utf8')
+async function getRuntimeLoaderURL() {
+    runtimeServerPromise ??= (async () => {
+        const server = await createServer({
+            appType: 'custom',
+            configFile: false,
+            define: {
+                'process.env.NODE_ENV': JSON.stringify('production')
+            },
+            logLevel: 'error',
+            root: packageRoot,
+            server: {
+                cors: true,
+                host: '127.0.0.1',
+                port: 0
+            }
         })
-    })
-    await page.route(`${RUNTIME_ASSET_BASE_URL}/default-manifest.json`, (route) => {
-        route.fulfill({
-            contentType: 'application/json',
-            body: readFileSync(resolve(__dirname, '../dist/default-manifest.json'), 'utf8')
-        })
-    })
+        await server.listen()
+        return server
+    })()
+    const server = await runtimeServerPromise
+    const localURL = server.resolvedUrls?.local[0]
+    if (!localURL) throw new Error('Cannot resolve runtime e2e Vite server URL.')
+    return new URL('/e2e/runtime-loader.ts', localURL).href
 }
 
 export default async function init(
@@ -266,8 +277,7 @@ export default async function init(
     const hydrationManifest = hydrationManifestInput === 'auto'
         ? await createHydrationManifestForPage(page, manifest || defaultManifest)
         : hydrationManifestInput
-    await page.evaluate(({ manifest, hydrationManifest, text, manifestScriptId }) => {
-        if (manifest) window.masterCSSManifest = manifest
+    await page.evaluate(({ hydrationManifest, text, manifestScriptId }) => {
         if (text) {
             const style = document.createElement('style')
             style.id = 'master'
@@ -281,8 +291,10 @@ export default async function init(
             script.textContent = JSON.stringify(hydrationManifest)
             document.head.appendChild(script)
         }
-    }, { hydrationManifest, manifest, text, manifestScriptId: MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID })
-    await routeRuntimeAssets(page)
-    await page.addScriptTag({ type: 'module', url: `${RUNTIME_ASSET_BASE_URL}/global.min.js` })
-    await page.waitForFunction(() => !!globalThis.cssRuntime)
+    }, { hydrationManifest, text, manifestScriptId: MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID })
+    await page.evaluate(async ({ loaderURL, manifest }) => {
+        const { startCSSRuntime } = await import(loaderURL)
+        startCSSRuntime({ manifest })
+    }, { loaderURL: await getRuntimeLoaderURL(), manifest })
+    await page.waitForFunction(() => !!globalThis.masterCSSRuntime)
 }

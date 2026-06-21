@@ -10,15 +10,15 @@ test('383', async ({ page }) => {
         `
     })
     await init(page)
-    expect(await page.evaluate(() => globalThis.cssRuntime.utilitiesLayer?.native?.parentStyleSheet)).toBeDefined()
+    expect(await page.evaluate(() => globalThis.masterCSSRuntime.utilitiesLayer?.native?.parentStyleSheet)).toBeDefined()
     await page.evaluate(() => {
         document.body.innerHTML = ``
     })
-    expect(await page.evaluate(() => globalThis.cssRuntime.utilitiesLayer?.native?.parentStyleSheet)).toBeNull()
+    expect(await page.evaluate(() => globalThis.masterCSSRuntime.utilitiesLayer?.native?.parentStyleSheet)).toBeNull()
     await page.evaluate(() => {
         document.body.innerHTML = `
             <div class="font:bold fg:red"></div>
         `
     })
-    expect(await page.evaluate(() => globalThis.cssRuntime.utilitiesLayer?.native?.parentStyleSheet)).toBeDefined()
+    expect(await page.evaluate(() => globalThis.masterCSSRuntime.utilitiesLayer?.native?.parentStyleSheet)).toBeDefined()
 })

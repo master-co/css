@@ -13,6 +13,19 @@ initCSSRuntime({ manifest, emittedGlobals })
 
 ---
 
+## CDN IIFE
+Use the CDN runtime when a page only needs the default preset and zero configuration:
+```html
+<link rel="preload" as="style" href="https://cdn.master.co/css@rc/base.css">
+<link rel="preload" as="fetch" type="application/json" crossorigin href="https://cdn.master.co/css-runtime@rc/default-manifest.json">
+<link rel="stylesheet" href="https://cdn.master.co/css@rc/base.css">
+<script src="https://cdn.master.co/css-runtime@rc"></script>
+```
+
+The IIFE fetches `default-manifest.json` next to the runtime script, starts automatically, and registers the document runtime as `globalThis.masterCSSRuntime`. It does not read global options or custom manifests. Use an official integration or the ESM `initCSSRuntime({ manifest, emittedGlobals })` API when the page needs custom theme tokens, utilities, modes, emitted globals, or hydration inputs.
+
+---
+
 ## API Reference
 ### `CSSRuntime`
 The `Runtime` extends the [`MasterCSS`](/reference/core#mastercss) and only works in the browser environment.
@@ -77,11 +90,11 @@ Destroy and remove the current instance from `CSSRuntime.instances`.
     {[ { name: 'return', type: 'this' } ]}
 </DocFn>
 
-### `globalThis.cssRuntime`
+### `globalThis.masterCSSRuntime`
 Record the registered root `document` Runtime CSS instance; the field will be recorded only after executing `js css.observe()`.
 <DocProp types={['CSSRuntime']} />
 
-### `globalThis.CSSRuntime`
+### `globalThis.MasterCSSRuntime`
 <DocProp defaultValue="CSSRuntime" types={['typeof CSSRuntime']} />
 
 ### `initCSSRuntime()`

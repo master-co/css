@@ -11,14 +11,14 @@ It may experience defers in downloading and initializing until the first content
 <!DOCTYPE html>
 <html lang="en" hidden>
 <head>
-    <link rel="preload" as="script" href="https://cdn.master.co/css-runtime@rc"> <!-- [!code highlight] -->
     <link rel="preload" as="style" href="https://cdn.master.co/css@rc/base.css">
+    <link rel="preload" as="fetch" type="application/json" crossorigin href="https://cdn.master.co/css-runtime@rc/default-manifest.json"> <!-- [!code highlight] -->
     <link rel="stylesheet" href="https://cdn.master.co/css@rc/base.css">
     <script src="https://cdn.master.co/css-runtime@rc"></script>
 </head>
 </html>
 ```
-<small>For build tools, it requires implementing code splitting and preloading the JavaScript module with the runtime engine.</small>
+<small>The CDN runtime fetches its split default manifest before starting; preload it with `as="fetch"` and `crossorigin` so the runtime can reuse the response.</small>
 
 Now the runtime engine is emittedGlobals, so the download happens in parallel with the stylesheet:
 <Image src={require('~/site/public/images/preload-network.png').default} placeholder="blur" alt="Screenshot of Chrome DevTools Network panel" width="841" height="69" />
@@ -34,7 +34,7 @@ You are telling the browser that you would like to fetch it sooner than the brow
 <html lang="en">
 <head>
     <!-- @MARK defer -->
-    <script src="https://cdn.master.co/css-runtime@rc" defer></script>
+    <script type="module" src="/main.js"></script>
 </head>
 </html>
 ```
@@ -44,7 +44,7 @@ You are telling the browser that you would like to fetch it sooner than the brow
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="preload" as="script" href="https://cdn.master.co/css-runtime@rc"> <!-- [!code --] -->
+    <link rel="modulepreload" href="/main.js"> <!-- [!code --] -->
 </head>
 </html>
 ```

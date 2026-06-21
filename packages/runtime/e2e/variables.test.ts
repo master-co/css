@@ -37,7 +37,7 @@ test('expects the variable output', async ({ page }) => {
             p.classList.add('bg:first')
             document.body.append(p)
             await new Promise(resolve => setTimeout(resolve, 0))
-            return globalThis.cssRuntime.text
+            return globalThis.masterCSSRuntime.text
         }),
         {
             theme: ':root{--color-first:#111111}.light{--color-first:#333333}.dark{--color-first:#222222}',
@@ -55,7 +55,7 @@ test('expects the variable output', async ({ page }) => {
             'accent-color:sixth'
         )
         await new Promise(resolve => setTimeout(resolve, 0))
-        return globalThis.cssRuntime.text
+        return globalThis.masterCSSRuntime.text
     })
     expect(text).toMatch(/\.dark\{[^}]*--color-second:#444444[^}]*\}/)
     expect(text).toMatch(/\.light,:root\{[^}]*--color-second:#555555[^}]*\}/)
@@ -75,7 +75,7 @@ test('expects the variable output', async ({ page }) => {
     text = await page.evaluate(async () => {
         document.getElementById('mp')?.classList.remove('bg:second')
         await new Promise(resolve => setTimeout(resolve, 0))
-        return globalThis.cssRuntime.text
+        return globalThis.masterCSSRuntime.text
     })
     expect(text).toMatch(/\.dark\{[^}]*--color-second:#444444[^}]*\}/)
     expect(text).toMatch(/\.light,:root\{[^}]*--color-second:#555555[^}]*\}/)
@@ -83,7 +83,7 @@ test('expects the variable output', async ({ page }) => {
     text = await page.evaluate(async () => {
         document.getElementById('mp')?.classList.remove('b:third')
         await new Promise(resolve => setTimeout(resolve, 0))
-        return globalThis.cssRuntime.text
+        return globalThis.masterCSSRuntime.text
     })
     expect(text).not.toMatch(/:root\{[^}]*--color-third:#666666[^}]*\}/)
     expect(text).not.toMatch(/\.light\{[^}]*--color-third:#777777[^}]*\}/)
@@ -91,7 +91,7 @@ test('expects the variable output', async ({ page }) => {
     text = await page.evaluate(async () => {
         document.getElementById('mp')?.classList.remove('{outline:fourth;accent-color:fifth}')
         await new Promise(resolve => setTimeout(resolve, 0))
-        return globalThis.cssRuntime.text
+        return globalThis.masterCSSRuntime.text
     })
     expect(text).not.toMatch(/:root\{[^}]*--color-fourth:#888888[^}]*\}/)
     expect(text).not.toMatch(/\.dark\{[^}]*--color-fourth:#999999[^}]*\}/)
@@ -102,7 +102,7 @@ test('expects the variable output', async ({ page }) => {
     text = await page.evaluate(async () => {
         document.getElementById('mp')?.classList.remove('fg:second')
         await new Promise(resolve => setTimeout(resolve, 0))
-        return globalThis.cssRuntime.text
+        return globalThis.masterCSSRuntime.text
     })
     expect(text).not.toMatch(/\.dark\{[^}]*--color-second:#444444[^}]*\}/)
     expect(text).not.toMatch(/\.light,:root\{[^}]*--color-second:#555555[^}]*\}/)
@@ -110,7 +110,7 @@ test('expects the variable output', async ({ page }) => {
     text = await page.evaluate(async () => {
         document.getElementById('mp')?.classList.remove('bg:first')
         await new Promise(resolve => setTimeout(resolve, 0))
-        return globalThis.cssRuntime.text
+        return globalThis.masterCSSRuntime.text
     })
     expect(text).not.toMatch(/:root\{[^}]*--color-first:#111111[^}]*\}/)
     expect(text).not.toMatch(/\.dark\{[^}]*--color-first:#222222[^}]*\}/)
@@ -119,7 +119,7 @@ test('expects the variable output', async ({ page }) => {
     text = await page.evaluate(async () => {
         document.getElementById('mp')?.classList.remove('accent-color:sixth')
         await new Promise(resolve => setTimeout(resolve, 0))
-        return globalThis.cssRuntime.text
+        return globalThis.masterCSSRuntime.text
     })
     expectLayers(text, {})
 })

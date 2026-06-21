@@ -38,14 +38,14 @@ export default class CSSRuntime extends MasterCSS {
         // Do not use instanceof here, because it will not work
         const rootConstructorName = root?.constructor.name
         if (rootConstructorName === 'HTMLDocument' || rootConstructorName === 'Document') {
-            (this.root as Document).defaultView!.globalThis.cssRuntime = this
+            (this.root as Document).defaultView!.globalThis.masterCSSRuntime = this
             this.container = (this.root as Document).head
             this.host = (this.root as Document).documentElement
         } else {
             this.container = this.root as CSSRuntime['container']
             this.host = (this.root as ShadowRoot).host
         }
-        globalThis.CSSRuntime.instances.set(this.root, this)
+        globalThis.MasterCSSRuntime.instances.set(this.root, this)
         this.applyEmittedGlobalsCounts(this.emittedGlobals)
         __MASTER_CSS_DEVTOOLS_HOOK__?.emit('runtime:created', { cssRuntime: this })
     }
@@ -506,7 +506,7 @@ export default class CSSRuntime extends MasterCSS {
 
     destroy() {
         this.disconnect()
-        globalThis.CSSRuntime.instances.delete(this.root)
+        globalThis.MasterCSSRuntime.instances.delete(this.root)
         globalThis.__MASTER_CSS_DEVTOOLS_HOOK__?.emit('runtime:destroyed', { cssRuntime: this })
         return this
     }

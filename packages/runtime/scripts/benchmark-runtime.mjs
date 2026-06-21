@@ -31,7 +31,7 @@ const nativeProperties = [
 ]
 
 if (!existsSync(globalBundleFile) || !existsSync(defaultManifestFile)) {
-    console.error('Runtime benchmark requires built runtime artifacts.')
+    console.error('Runtime benchmark requires built runtime global artifacts.')
     console.error('Run `pnpm --filter @master/css-runtime build` first.')
     process.exit(1)
 }
@@ -84,15 +84,21 @@ function createHydrationFixture(classNames) {
 
 function startServer() {
     const server = createServer(async (request, response) => {
-        const path = new URL(request.url || '/', 'http://127.0.0.1').pathname
+        const url = new URL(request.url || '/', 'http://127.0.0.1')
+        const path = url.pathname
 
         try {
             if (path === '/') {
+                const manifestPreload = url.searchParams.get('preloadManifest') === 'true'
                 response.writeHead(200, {
                     'content-type': 'text/html; charset=utf-8',
                     'cache-control': 'no-store'
                 })
-                response.end('<!doctype html><html hidden><head><meta charset="utf-8"></head><body></body></html>')
+                response.end([
+                    '<!doctype html><html hidden><head><meta charset="utf-8">',
+                    manifestPreload ? '<link rel="preload" as="fetch" type="application/json" crossorigin href="/default-manifest.json">' : '',
+                    '</head><body></body></html>'
+                ].join(''))
                 return
             }
 
@@ -138,13 +144,12 @@ async function loadRuntime(page, scriptURL) {
     return page.evaluate(async (url) => {
         const startedAt = performance.now()
         const script = document.createElement('script')
-        script.type = 'module'
         script.src = url
         document.head.append(script)
 
-        while (!globalThis.cssRuntime?.observing) {
+        while (!globalThis.masterCSSRuntime?.observing) {
             if (performance.now() - startedAt > 10_000) {
-                throw new Error('Timed out waiting for cssRuntime to observe the document.')
+                throw new Error('Timed out waiting for masterCSSRuntime to observe the document.')
             }
             await new Promise((resolveFrame) => requestAnimationFrame(resolveFrame))
         }
@@ -153,9 +158,11 @@ async function loadRuntime(page, scriptURL) {
     }, scriptURL)
 }
 
-async function createPage(browser, baseURL, bodyMarkup = '') {
+async function createPage(browser, baseURL, bodyMarkup = '', options = {}) {
     const page = await browser.newPage()
-    await page.goto(baseURL)
+    const url = new URL(baseURL)
+    if (options.preloadManifest) url.searchParams.set('preloadManifest', 'true')
+    await page.goto(url.href)
     if (bodyMarkup) {
         await page.evaluate((html) => {
             document.body.innerHTML = html
@@ -164,14 +171,14 @@ async function createPage(browser, baseURL, bodyMarkup = '') {
     return page
 }
 
-async function createObservedPage(browser, baseURL, scriptURL, bodyMarkup = '') {
-    const page = await createPage(browser, baseURL, bodyMarkup)
+async function createObservedPage(browser, baseURL, scriptURL, bodyMarkup = '', options = {}) {
+    const page = await createPage(browser, baseURL, bodyMarkup, options)
     await loadRuntime(page, scriptURL)
     return page
 }
 
-async function createProgressivePage(browser, baseURL, fixture, includeManifest) {
-    const page = await createPage(browser, baseURL)
+async function createProgressivePage(browser, baseURL, fixture, includeManifest, options = {}) {
+    const page = await createPage(browser, baseURL, '', options)
     await page.evaluate(({ bodyMarkup, hydrationManifest, styleText, withManifest }) => {
         const style = document.createElement('style')
         style.id = 'master'
@@ -297,11 +304,25 @@ try {
     const hydrationFixture = createHydrationFixture(hydrationClasses)
     const results = []
 
-    results.push(await runBenchmark('initial DOM scan + unique class add', async () => {
+    results.push(await runBenchmark('initial DOM scan + unique class add (no preload)', async () => {
         const page = await createPage(browser, server.url, scanMarkup)
         try {
             const elapsed = await loadRuntime(page, scriptURL)
-            const generatedCount = await page.evaluate(() => globalThis.cssRuntime.classUtilities.size)
+            const generatedCount = await page.evaluate(() => globalThis.masterCSSRuntime.classUtilities.size)
+            if (generatedCount !== scanClasses.length) {
+                throw new Error(`Expected ${scanClasses.length} generated classes, got ${generatedCount}.`)
+            }
+            return elapsed
+        } finally {
+            await page.close()
+        }
+    }))
+
+    results.push(await runBenchmark('initial DOM scan + unique class add (preload)', async () => {
+        const page = await createPage(browser, server.url, scanMarkup, { preloadManifest: true })
+        try {
+            const elapsed = await loadRuntime(page, scriptURL)
+            const generatedCount = await page.evaluate(() => globalThis.masterCSSRuntime.classUtilities.size)
             if (generatedCount !== scanClasses.length) {
                 throw new Error(`Expected ${scanClasses.length} generated classes, got ${generatedCount}.`)
             }
@@ -312,7 +333,7 @@ try {
     }))
 
     results.push(await runBenchmark('mutation add/remove classes', async () => {
-        const page = await createObservedPage(browser, server.url, scriptURL)
+        const page = await createObservedPage(browser, server.url, scriptURL, '', { preloadManifest: true })
         try {
             const elapsed = await page.evaluate(async ({ html }) => {
                 const container = document.createElement('section')
@@ -325,8 +346,8 @@ try {
                 return performance.now() - startedAt
             }, { html: mutationMarkup })
             const state = await page.evaluate(() => ({
-                classes: globalThis.cssRuntime.classCounts.size,
-                utilities: globalThis.cssRuntime.classUtilities.size
+                classes: globalThis.masterCSSRuntime.classCounts.size,
+                utilities: globalThis.masterCSSRuntime.classUtilities.size
             }))
             if (state.classes || state.utilities) {
                 throw new Error(`Expected mutation cleanup to empty runtime state, got ${JSON.stringify(state)}.`)
@@ -338,15 +359,15 @@ try {
     }))
 
     results.push(await runBenchmark('direct CSSOM add/remove generated rules', async () => {
-        const page = await createObservedPage(browser, server.url, scriptURL)
+        const page = await createObservedPage(browser, server.url, scriptURL, '', { preloadManifest: true })
         try {
             const elapsed = await page.evaluate((classes) => {
                 const startedAt = performance.now()
-                globalThis.cssRuntime.add(...classes)
-                globalThis.cssRuntime.remove(...classes)
+                globalThis.masterCSSRuntime.add(...classes)
+                globalThis.masterCSSRuntime.remove(...classes)
                 return performance.now() - startedAt
             }, mutationClasses)
-            const generatedCount = await page.evaluate(() => globalThis.cssRuntime.classUtilities.size)
+            const generatedCount = await page.evaluate(() => globalThis.masterCSSRuntime.classUtilities.size)
             if (generatedCount) {
                 throw new Error(`Expected direct add/remove cleanup to empty classUtilities, got ${generatedCount}.`)
             }
@@ -357,13 +378,13 @@ try {
     }))
 
     results.push(await runBenchmark('progressive hydration success path', async () => {
-        const page = await createProgressivePage(browser, server.url, hydrationFixture, true)
+        const page = await createProgressivePage(browser, server.url, hydrationFixture, true, { preloadManifest: true })
         try {
             const elapsed = await loadRuntime(page, scriptURL)
             const state = await page.evaluate(() => ({
-                failure: globalThis.cssRuntime.hydrationFailureReason,
-                progressive: globalThis.cssRuntime.progressive,
-                utilities: globalThis.cssRuntime.classUtilities.size
+                failure: globalThis.masterCSSRuntime.hydrationFailureReason,
+                progressive: globalThis.masterCSSRuntime.progressive,
+                utilities: globalThis.masterCSSRuntime.classUtilities.size
             }))
             if (!state.progressive || state.failure || state.utilities !== hydrationClasses.length) {
                 throw new Error(`Expected successful hydration, got ${JSON.stringify(state)}.`)
@@ -375,13 +396,13 @@ try {
     }))
 
     results.push(await runBenchmark('progressive hydration fallback path', async () => {
-        const page = await createProgressivePage(browser, server.url, hydrationFixture, false)
+        const page = await createProgressivePage(browser, server.url, hydrationFixture, false, { preloadManifest: true })
         try {
             const elapsed = await loadRuntime(page, scriptURL)
             const state = await page.evaluate(() => ({
-                failure: globalThis.cssRuntime.hydrationFailureReason,
-                progressive: globalThis.cssRuntime.progressive,
-                utilities: globalThis.cssRuntime.classUtilities.size
+                failure: globalThis.masterCSSRuntime.hydrationFailureReason,
+                progressive: globalThis.masterCSSRuntime.progressive,
+                utilities: globalThis.masterCSSRuntime.classUtilities.size
             }))
             if (state.progressive || state.utilities !== hydrationClasses.length) {
                 throw new Error(`Expected fallback hydration, got ${JSON.stringify(state)}.`)

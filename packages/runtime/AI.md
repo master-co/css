@@ -22,8 +22,8 @@
 - `src/layer.ts`
 - `src/utility-layer.ts`
 - `src/init.ts`
-- `src/register-global.ts`
 - `src/global.min.ts`
+- `src/register-global.ts`
 
 ## Allowed Changes
 
@@ -34,7 +34,8 @@
 ## Forbidden Without Explicit Request
 
 - Changing core parser behavior here.
-- Changing global names (`CSSRuntime`, `cssRuntime`) casually.
+- Changing global names (`MasterCSSRuntime`, `masterCSSRuntime`) casually.
+- Adding public global options to the CDN IIFE; custom manifests belong in `initCSSRuntime()` or integrations.
 - Removing hydration error checks.
 - Changing FOUC behavior without integration validation.
 
@@ -81,4 +82,4 @@ Run `pnpm --filter @master/css-runtime bench` when changing DOM observation, cla
 
 Do not fold runtime timing assertions into `pnpm --filter @master/css-runtime e2e`; e2e is for browser correctness. Do not replace the browser benchmark with Vitest unless the measured code path is DOM-independent and does not use CSSOM, MutationObserver, hydration, or browser module loading.
 
-For benchmark-relevant runtime changes, report whether the benchmark ran, whether browser payload files such as `dist/global.min.js` and `dist/default-manifest.json` changed in raw/gzip/brotli size, and any memory, cold-start, runtime CPU, or CSSOM insertion/deletion tradeoff. Also state whether generated CSS output, progressive hydration, or fallback hydration behavior changed.
+For benchmark-relevant runtime changes, report whether the benchmark ran, any global runtime assets, memory, cold-start, runtime CPU, or CSSOM insertion/deletion tradeoff. Also state whether generated CSS output, progressive hydration, or fallback hydration behavior changed.

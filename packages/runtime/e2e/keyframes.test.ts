@@ -9,7 +9,7 @@ function expectAnimation(cssText: string, name: string, declarations: string[]) 
 }
 
 async function expectNoAnimation(page: Page, name: string) {
-    expect(await page.evaluate(() => globalThis.cssRuntime.text)).not.toContain(`@keyframes ${name}{`)
+    expect(await page.evaluate(() => globalThis.masterCSSRuntime.text)).not.toContain(`@keyframes ${name}{`)
 }
 
 test('expects the animate token output', async ({ page }) => {
@@ -21,7 +21,7 @@ test('expects the animate token output', async ({ page }) => {
         document.body.append(p)
     })
 
-    const cssText = await page.evaluate(() => globalThis.cssRuntime.text)
+    const cssText = await page.evaluate(() => globalThis.masterCSSRuntime.text)
     expect(cssText).toContain('--animate-fade:fade 1s infinite')
     expect(cssText).toContain('.animate\\:fade{animation:var(--animate-fade)}')
     expectAnimation(cssText, 'fade', ['opacity:0', 'opacity:1'])
@@ -40,7 +40,7 @@ test('expects the animation output', async ({ page }) => {
         p.classList.add('animation:fade|1s')
         document.body.append(p)
     })
-    expect(await page.evaluate(() => globalThis.cssRuntime.text)).toContain('.animation\\:fade\\|1s{animation:fade 1s}')
+    expect(await page.evaluate(() => globalThis.masterCSSRuntime.text)).toContain('.animation\\:fade\\|1s{animation:fade 1s}')
     await page.evaluate(() => {
         const p = document.getElementById('mp')
         p?.classList.add(
@@ -56,7 +56,7 @@ test('expects the animation output', async ({ page }) => {
             '{animation:zoom|1s;f:16}'
         )
     })
-    expect(await page.evaluate(() => Object.fromEntries(globalThis.cssRuntime.animationsNonLayer.tokenCounts))).toMatchObject({
+    expect(await page.evaluate(() => Object.fromEntries(globalThis.masterCSSRuntime.animationsNonLayer.tokenCounts))).toMatchObject({
         fade: 1,
         flash: 1,
         float: 1,
@@ -67,10 +67,10 @@ test('expects the animation output', async ({ page }) => {
         rotate: 1,
         shake: 1,
     })
-    expect(await page.evaluate(() => Object.fromEntries(globalThis.cssRuntime.animationsNonLayer.tokenCounts))).toMatchObject({
+    expect(await page.evaluate(() => Object.fromEntries(globalThis.masterCSSRuntime.animationsNonLayer.tokenCounts))).toMatchObject({
         zoom: 2,
     })
-    const cssText = await page.evaluate(() => globalThis.cssRuntime.text)
+    const cssText = await page.evaluate(() => globalThis.masterCSSRuntime.text)
     expectAnimation(cssText, 'fade', ['opacity:0', 'opacity:1'])
     expectAnimation(cssText, 'flash', ['opacity:1', 'opacity:0'])
     expectAnimation(cssText, 'float', ['transform:none', 'transform:translateY(-1.25rem)'])
@@ -136,13 +136,13 @@ test('expects the animation output', async ({ page }) => {
         const p = document.getElementById('mp')
         p?.classList.remove('animation:zoom|1s')
     })
-    expect(await page.evaluate(() => Object.fromEntries(globalThis.cssRuntime.animationsNonLayer.tokenCounts))).toEqual({ zoom: 1 })
-    expectAnimation(await page.evaluate(() => globalThis.cssRuntime.text), 'zoom', ['transform:scale(0)', 'transform:none'])
+    expect(await page.evaluate(() => Object.fromEntries(globalThis.masterCSSRuntime.animationsNonLayer.tokenCounts))).toEqual({ zoom: 1 })
+    expectAnimation(await page.evaluate(() => globalThis.masterCSSRuntime.text), 'zoom', ['transform:scale(0)', 'transform:none'])
     await page.evaluate(() => {
         const p = document.getElementById('mp')
         p?.classList.remove('{animation:zoom|1s;f:16}')
     })
 
-    expect(await page.evaluate(() => Object.fromEntries(globalThis.cssRuntime.animationsNonLayer.tokenCounts))).toEqual({})
+    expect(await page.evaluate(() => Object.fromEntries(globalThis.masterCSSRuntime.animationsNonLayer.tokenCounts))).toEqual({})
     await expectNoAnimation(page, 'zoom')
 })

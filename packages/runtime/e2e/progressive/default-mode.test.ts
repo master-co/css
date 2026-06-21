@@ -15,5 +15,5 @@ test('prerender', async ({ page }) => {
         ],
         modes: ['light', 'dark']
     }, 'auto')
-    expect(await page.evaluate(() => globalThis.cssRuntime.text)).toEqual(text)
+    expect(await page.evaluate(() => globalThis.masterCSSRuntime.text)).toEqual(text)
 })

@@ -72,8 +72,8 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="preload" as="script" href="https://cdn.master.co/css-runtime@rc">
     <link rel="preload" as="style" href="https://cdn.master.co/css@rc/index.css">
+    <link rel="preload" as="fetch" type="application/json" crossorigin href="https://cdn.master.co/css-runtime@rc/default-manifest.json">
     <link rel="stylesheet" href="https://cdn.master.co/css@rc/index.css">
     <script src="https://cdn.master.co/css-runtime@rc"></script>
 </head>

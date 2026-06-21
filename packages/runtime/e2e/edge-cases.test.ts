@@ -12,16 +12,16 @@ test('disconnect clears counts and observe rescans the current DOM', async ({ pa
         document.body.innerHTML = '<div class="block"></div>'
         await new Promise(resolve => setTimeout(resolve, 0))
     })
-    expect(await page.evaluate(() => Object.fromEntries(globalThis.cssRuntime.classCounts))).toEqual({
+    expect(await page.evaluate(() => Object.fromEntries(globalThis.masterCSSRuntime.classCounts))).toEqual({
         block: 1
     })
 
     const disconnected = await page.evaluate(async () => {
-        globalThis.cssRuntime.disconnect()
+        globalThis.masterCSSRuntime.disconnect()
         document.body.innerHTML = '<div class="font:bold"></div>'
         await new Promise(resolve => setTimeout(resolve, 0))
         return {
-            counts: Object.fromEntries(globalThis.cssRuntime.classCounts),
+            counts: Object.fromEntries(globalThis.masterCSSRuntime.classCounts),
             hasStyle: !!document.head.querySelector('style#master')
         }
     })
@@ -31,11 +31,11 @@ test('disconnect clears counts and observe rescans the current DOM', async ({ pa
     })
 
     const reconnected = await page.evaluate(async () => {
-        globalThis.cssRuntime.observe()
+        globalThis.masterCSSRuntime.observe()
         await new Promise(resolve => setTimeout(resolve, 0))
         return {
-            counts: Object.fromEntries(globalThis.cssRuntime.classCounts),
-            text: globalThis.cssRuntime.text
+            counts: Object.fromEntries(globalThis.masterCSSRuntime.classCounts),
+            text: globalThis.masterCSSRuntime.text
         }
     })
     expect(reconnected.counts).toEqual({
@@ -55,15 +55,15 @@ test('shadow roots maintain isolated runtime state and style nodes', async ({ pa
         shadow.innerHTML = '<p class="block"></p>'
         document.body.append(host)
 
-        const shadowRuntime = new globalThis.CSSRuntime(shadow, globalThis.cssRuntime.manifest).observe()
+        const shadowRuntime = new globalThis.MasterCSSRuntime(shadow, globalThis.masterCSSRuntime.manifest).observe()
 
         return {
-            documentCounts: Object.fromEntries(globalThis.cssRuntime.classCounts),
-            documentHasBlockRule: globalThis.cssRuntime.text.includes('.block{display:block}'),
+            documentCounts: Object.fromEntries(globalThis.masterCSSRuntime.classCounts),
+            documentHasBlockRule: globalThis.masterCSSRuntime.text.includes('.block{display:block}'),
             shadowCounts: Object.fromEntries(shadowRuntime.classCounts),
             shadowHasStyle: !!shadow.querySelector('style#master'),
             shadowText: shadowRuntime.text,
-            instanceRegistered: globalThis.CSSRuntime.instances.get(shadow) === shadowRuntime
+            instanceRegistered: globalThis.MasterCSSRuntime.instances.get(shadow) === shadowRuntime
         }
     })
 
@@ -89,10 +89,10 @@ test('progressive hydration without a manifest rebuilds with runtime CSS', async
     await init(page, '@layer utilities{.unknown{color:red}}')
 
     const result = await page.evaluate(() => ({
-        progressive: globalThis.cssRuntime.progressive,
-        ruleNames: globalThis.cssRuntime.utilitiesLayer.rules.map(({ name }) => name),
-        nativeRules: Array.from(globalThis.cssRuntime.utilitiesLayer.native?.cssRules || []).map((rule) => rule.cssText),
-        text: globalThis.cssRuntime.text
+        progressive: globalThis.masterCSSRuntime.progressive,
+        ruleNames: globalThis.masterCSSRuntime.utilitiesLayer.rules.map(({ name }) => name),
+        nativeRules: Array.from(globalThis.masterCSSRuntime.utilitiesLayer.native?.cssRules || []).map((rule) => rule.cssText),
+        text: globalThis.masterCSSRuntime.text
     }))
 
     expect(consoleWarnings.some((message) => message.includes('hydration manifest'))).toBe(true)
@@ -120,9 +120,9 @@ test('progressive hydration with a mismatched manifest rebuilds with runtime CSS
     await init(page, prerenderedCSS.text, undefined, hydrationManifest)
 
     const result = await page.evaluate(() => ({
-        progressive: globalThis.cssRuntime.progressive,
-        text: globalThis.cssRuntime.text,
-        utilityRules: globalThis.cssRuntime.utilitiesLayer.rules.map(({ name }) => name)
+        progressive: globalThis.masterCSSRuntime.progressive,
+        text: globalThis.masterCSSRuntime.text,
+        utilityRules: globalThis.masterCSSRuntime.utilitiesLayer.rules.map(({ name }) => name)
     }))
 
     expect(consoleWarnings.some((message) => message.includes('hydration manifest'))).toBe(true)
@@ -143,12 +143,12 @@ test('progressive hydration uses hydration manifest and removes hydrated classes
     await init(page, css.text, undefined, hydrationManifest)
 
     const hydrated = await page.evaluate(() => {
-        const rule = globalThis.cssRuntime.utilitiesLayer.rules.find((eachRule) => eachRule.name === 'fg:red-60') as any
+        const rule = globalThis.masterCSSRuntime.utilitiesLayer.rules.find((eachRule) => eachRule.name === 'fg:red-60') as any
         return {
-            hasClassUtility: globalThis.cssRuntime.classUtilities.has('fg:red-60'),
+            hasClassUtility: globalThis.masterCSSRuntime.classUtilities.has('fg:red-60'),
             hasRegisteredUtility: Boolean(rule?.registeredUtility),
-            counts: Object.fromEntries(globalThis.cssRuntime.themeLayer.tokenCounts),
-            utilityRules: globalThis.cssRuntime.utilitiesLayer.rules.map(({ name }) => name)
+            counts: Object.fromEntries(globalThis.masterCSSRuntime.themeLayer.tokenCounts),
+            utilityRules: globalThis.masterCSSRuntime.utilitiesLayer.rules.map(({ name }) => name)
         }
     })
     expect(hydrated).toEqual({
@@ -164,9 +164,9 @@ test('progressive hydration uses hydration manifest and removes hydrated classes
         document.getElementById('target')?.classList.remove('fg:red-60')
         await new Promise(resolve => setTimeout(resolve, 0))
         return {
-            text: globalThis.cssRuntime.text,
-            counts: Object.fromEntries(globalThis.cssRuntime.themeLayer.tokenCounts),
-            utilityRules: globalThis.cssRuntime.utilitiesLayer.rules.map(({ name }) => name)
+            text: globalThis.masterCSSRuntime.text,
+            counts: Object.fromEntries(globalThis.masterCSSRuntime.themeLayer.tokenCounts),
+            utilityRules: globalThis.masterCSSRuntime.utilitiesLayer.rules.map(({ name }) => name)
         }
     })
     expect(removed).toEqual({
@@ -191,10 +191,10 @@ test('progressive hydration matches bucketed theme variables', async ({ page }) 
     await init(page, css.text, undefined, hydrationManifest)
 
     const result = await page.evaluate(() => ({
-        progressive: globalThis.cssRuntime.progressive,
-        counts: Object.fromEntries(globalThis.cssRuntime.themeLayer.tokenCounts),
-        nativeThemeRuleCount: globalThis.cssRuntime.themeLayer.native?.cssRules.length,
-        text: globalThis.cssRuntime.text
+        progressive: globalThis.masterCSSRuntime.progressive,
+        counts: Object.fromEntries(globalThis.masterCSSRuntime.themeLayer.tokenCounts),
+        nativeThemeRuleCount: globalThis.masterCSSRuntime.themeLayer.native?.cssRules.length,
+        text: globalThis.masterCSSRuntime.text
     }))
 
     expect(consoleWarnings.some((message) => message.includes('hydration manifest'))).toBe(false)
@@ -232,10 +232,10 @@ test('progressive hydration matches theme variable buckets by key', async ({ pag
     )
 
     const result = await page.evaluate(() => ({
-        progressive: globalThis.cssRuntime.progressive,
-        counts: Object.fromEntries(globalThis.cssRuntime.themeLayer.tokenCounts),
-        nativeThemeRuleCount: globalThis.cssRuntime.themeLayer.native?.cssRules.length,
-        text: globalThis.cssRuntime.text
+        progressive: globalThis.masterCSSRuntime.progressive,
+        counts: Object.fromEntries(globalThis.masterCSSRuntime.themeLayer.tokenCounts),
+        nativeThemeRuleCount: globalThis.masterCSSRuntime.themeLayer.native?.cssRules.length,
+        text: globalThis.masterCSSRuntime.text
     }))
 
     expect(consoleWarnings.some((message) => message.includes('hydration manifest'))).toBe(false)
@@ -262,8 +262,8 @@ test('removes shared alias variable dependencies when classes disappear', async 
         document.body.append(el)
         await new Promise(resolve => setTimeout(resolve, 0))
         return {
-            text: globalThis.cssRuntime.themeLayer.text,
-            counts: Object.fromEntries(globalThis.cssRuntime.themeLayer.tokenCounts)
+            text: globalThis.masterCSSRuntime.themeLayer.text,
+            counts: Object.fromEntries(globalThis.masterCSSRuntime.themeLayer.tokenCounts)
         }
     })
     expect(initial).toEqual({
@@ -278,8 +278,8 @@ test('removes shared alias variable dependencies when classes disappear', async 
         document.querySelector('p')?.classList.remove('fg:brand')
         await new Promise(resolve => setTimeout(resolve, 0))
         return {
-            text: globalThis.cssRuntime.themeLayer.text,
-            counts: Object.fromEntries(globalThis.cssRuntime.themeLayer.tokenCounts)
+            text: globalThis.masterCSSRuntime.themeLayer.text,
+            counts: Object.fromEntries(globalThis.masterCSSRuntime.themeLayer.tokenCounts)
         }
     })
     expect(afterOneRemoval).toEqual({
@@ -294,9 +294,9 @@ test('removes shared alias variable dependencies when classes disappear', async 
         document.querySelector('p')?.classList.remove('color:brand')
         await new Promise(resolve => setTimeout(resolve, 0))
         return {
-            text: globalThis.cssRuntime.themeLayer.text,
-            counts: Object.fromEntries(globalThis.cssRuntime.themeLayer.tokenCounts),
-            nativeAttached: !!globalThis.cssRuntime.themeLayer.native?.parentStyleSheet
+            text: globalThis.masterCSSRuntime.themeLayer.text,
+            counts: Object.fromEntries(globalThis.masterCSSRuntime.themeLayer.tokenCounts),
+            nativeAttached: !!globalThis.masterCSSRuntime.themeLayer.native?.parentStyleSheet
         }
     })
     expect(afterAllRemoved).toEqual({
@@ -317,8 +317,8 @@ test('inlines variables without runtime theme counts', async ({ page }) => {
         document.body.innerHTML = '<p class="fg:brand"></p>'
         await new Promise(resolve => setTimeout(resolve, 0))
         return {
-            text: globalThis.cssRuntime.text,
-            counts: Object.fromEntries(globalThis.cssRuntime.themeLayer.tokenCounts)
+            text: globalThis.masterCSSRuntime.text,
+            counts: Object.fromEntries(globalThis.masterCSSRuntime.themeLayer.tokenCounts)
         }
     })
 

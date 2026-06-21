@@ -48,7 +48,7 @@ export default function initCSSRuntime(options: CSSRuntimeInitOptions): CSSRunti
         emittedGlobals,
         hydrationManifest
     } = options
-    let cssRuntime = globalThis.CSSRuntime.instances.get(root)
+    let cssRuntime = globalThis.MasterCSSRuntime.instances.get(root)
     if (cssRuntime) {
         cssRuntime.registerEmittedGlobals(emittedGlobals)
         if (hydrationManifest) cssRuntime.hydrationManifest = hydrationManifest

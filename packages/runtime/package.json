@@ -2,7 +2,7 @@
     "name": "@master/css-runtime",
     "type": "module",
     "scripts": {
-        "build": "techor build \"src/index.ts\" \"src/index.development.ts\" --formats esm && node scripts/build-global-module.mjs && node scripts/copy-default-manifest-json.mjs",
+        "build": "techor build && node scripts/copy-default-manifest-json.mjs",
         "bench": "node scripts/benchmark-runtime.mjs",
         "dev": "pnpm build --watch",
         "e2e": "playwright test",

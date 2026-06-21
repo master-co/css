@@ -1,15 +1,47 @@
-import { test, expect } from '@playwright/test'
-import init from './init'
+import { test, expect, type Page } from '@playwright/test'
+import { readFileSync } from 'node:fs'
+import { dirname, resolve } from 'node:path'
+import { fileURLToPath } from 'node:url'
 
-test('uses bundled preset manifest when no global manifest is provided', async ({ page }) => {
-    await init(page)
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = dirname(__filename)
+const RUNTIME_ASSET_BASE_URL = 'http://master-css-runtime.test'
+const RUNTIME_SCRIPT_URL = `${RUNTIME_ASSET_BASE_URL}/css-runtime@rc`
+const DEFAULT_MANIFEST_URL = `${RUNTIME_ASSET_BASE_URL}/css-runtime@rc/default-manifest.json`
 
-    expect(await page.evaluate(() => globalThis.cssRuntime.variables.get('font-weight-bold'))).toBeDefined()
-    expect(await page.evaluate(() => globalThis.cssRuntime.variables.get('color-white'))).toBeDefined()
-    expect(await page.evaluate(() => globalThis.cssRuntime.manifest.version)).toBe(1)
+async function routeRuntimeAssets(page: Page) {
+    await page.route(RUNTIME_SCRIPT_URL, (route) => {
+        route.fulfill({
+            contentType: 'text/javascript',
+            body: readFileSync(resolve(__dirname, '../dist/global.min.js'), 'utf8')
+        })
+    })
+    await page.route(DEFAULT_MANIFEST_URL, (route) => {
+        route.fulfill({
+            contentType: 'application/json',
+            headers: {
+                'access-control-allow-origin': '*'
+            },
+            body: readFileSync(resolve(__dirname, '../dist/default-manifest.json'), 'utf8')
+        })
+    })
+}
+
+async function startGlobalRuntime(page: Page) {
+    await routeRuntimeAssets(page)
+    await page.addScriptTag({ url: RUNTIME_SCRIPT_URL })
+    await page.waitForFunction(() => !!globalThis.masterCSSRuntime?.observing)
+}
+
+test('uses split bundled preset manifest', async ({ page }) => {
+    await startGlobalRuntime(page)
+
+    expect(await page.evaluate(() => globalThis.masterCSSRuntime.variables.get('font-weight-bold'))).toBeDefined()
+    expect(await page.evaluate(() => globalThis.masterCSSRuntime.variables.get('color-white'))).toBeDefined()
+    expect(await page.evaluate(() => globalThis.masterCSSRuntime.manifest.version)).toBe(1)
 })
 
-test('uses the single global manifest as a complete override', async ({ page }) => {
+test('ignores global manifest override', async ({ page }) => {
     const manifest = {
         version: 1,
         variables: [
@@ -17,11 +49,11 @@ test('uses the single global manifest as a complete override', async ({ page }) 
         ]
     } as const
     await page.evaluate(({ manifest }) => {
-        globalThis.masterCSSManifest = manifest
+        (globalThis as typeof globalThis & { masterCSSManifest?: unknown }).masterCSSManifest = manifest
     }, { manifest })
-    await init(page)
+    await startGlobalRuntime(page)
 
-    expect(await page.evaluate(() => globalThis.cssRuntime.variables.get('primary'))).toBeDefined()
-    expect(await page.evaluate(() => globalThis.cssRuntime.variables.get('font-weight-bold'))).toBeUndefined()
-    expect(await page.evaluate(() => globalThis.cssRuntime.manifest.version)).toBe(1)
+    expect(await page.evaluate(() => globalThis.masterCSSRuntime.variables.get('primary'))).toBeUndefined()
+    expect(await page.evaluate(() => globalThis.masterCSSRuntime.variables.get('font-weight-bold'))).toBeDefined()
+    expect(await page.evaluate(() => globalThis.masterCSSRuntime.manifest.version)).toBe(1)
 })

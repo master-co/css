@@ -1,14 +1,35 @@
 import initCSSRuntime from './init'
 import type { MasterCSSManifest } from 'shared/master-css-manifest'
 
-async function loadDefaultManifest(): Promise<MasterCSSManifest> {
-    const defaultManifestURL = new URL('./default-manifest.json', import.meta.url)
-    const defaultManifestModule = await import(defaultManifestURL.href, { with: { type: 'json' } }) as { default: MasterCSSManifest }
-    return defaultManifestModule.default
+function resolveDefaultManifestURL(scriptURL: string) {
+    const defaultManifestURL = new URL(scriptURL)
+    defaultManifestURL.search = ''
+    defaultManifestURL.hash = ''
+    if (defaultManifestURL.pathname.endsWith('/')) {
+        defaultManifestURL.pathname += 'default-manifest.json'
+    } else if (defaultManifestURL.pathname.endsWith('.js')) {
+        defaultManifestURL.pathname = defaultManifestURL.pathname.replace(/\/[^/]*$/, '/default-manifest.json')
+    } else {
+        defaultManifestURL.pathname += '/default-manifest.json'
+    }
+    return defaultManifestURL
 }
 
-if (globalThis.masterCSSManifest) {
-    initCSSRuntime({ manifest: globalThis.masterCSSManifest })
+async function loadDefaultManifest(scriptURL: string): Promise<MasterCSSManifest> {
+    const defaultManifestURL = resolveDefaultManifestURL(scriptURL)
+    const response = await fetch(defaultManifestURL, { credentials: 'same-origin' })
+    if (!response.ok) {
+        throw new Error(`Cannot load Master CSS default manifest from ${defaultManifestURL.href}.`)
+    }
+    return await response.json() as MasterCSSManifest
+}
+
+const currentScript = document.currentScript as HTMLScriptElement | null
+
+if (currentScript?.src) {
+    void loadDefaultManifest(currentScript.src)
+        .then((manifest) => initCSSRuntime({ manifest }))
+        .catch((error) => console.error(error))
 } else {
-    void loadDefaultManifest().then((manifest) => initCSSRuntime({ manifest }))
+    console.error('Cannot resolve the Master CSS runtime script URL.')
 }

@@ -27,10 +27,12 @@ The runtime engine uses the standard [Web APIs - Mutation Observer](https://deve
 It is packaged as [`@master/css-runtime`](/reference/runtime), so it can be imported by integrations or initialized directly in the browser.
 ```html
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" hidden>
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="preload" as="style" href="https://cdn.master.co/css@rc/base.css">
+    <link rel="preload" as="fetch" type="application/json" crossorigin href="https://cdn.master.co/css-runtime@rc/default-manifest.json"> <!-- [!code highlight] -->
     <link rel="stylesheet" href="https://cdn.master.co/css@rc/base.css">
     <script src="https://cdn.master.co/css-runtime@rc"></script> <!-- [!code highlight] -->
     …
@@ -133,7 +135,7 @@ Where are the generated CSS rules inserted? The runtime engine appends `html <st
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://cdn.master.co/css@rc/base.css">
-    <script src="https://cdn.master.co/css-runtime@rc"></script>
+    <script type="module" src="/main.js"></script>
     <style id="master"></style> <!-- [!code highlight] -->
 </head>
 ```
@@ -178,7 +180,7 @@ For example, the following HTML:
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <script src="https://cdn.master.co/css-runtime@rc"></script>
+    <script type="module" src="/main.js"></script>
 </head>
 <body>
     <h1 class="font:5xl font:heavy">Hello World</h1>
@@ -201,7 +203,7 @@ The server renderer parses the HTML and generates the internal style sheet plus 
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <script src="https://cdn.master.co/css-runtime@rc"></script>
+    <script type="module" src="/main.js"></script>
     <style id="master"> /* [!code ++] */
         .font\:5xl { /* [!code ++] */
             font-size: 2.5rem /* [!code ++] */
