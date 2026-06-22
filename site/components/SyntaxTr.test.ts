@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import css from '../common/preset-css'
+import { generateSyntaxTrDeclarations } from './syntax-tr-declarations'
 import { createSyntaxTrPlaceholderContext, type SyntaxTrHastNode } from './syntax-tr-placeholders'
 
 test('proxies size with a px value and restores the placeholder in generated declarations', () => {
@@ -61,6 +62,21 @@ test('restores generic placeholders split across text nodes', () => {
     ])
     assert.match(restored, /scroll-snap-align: <value>;/)
     assert.doesNotMatch(restored, /--mcss-syntax-value|var\(--mcss-syntax-value\)/)
+})
+
+test('uses the current syntax declarations before falling back to preview syntax', () => {
+    assert.equal(
+        generateSyntaxTrDeclarations('bg:red', 'bg:blue-60')?.['background-color'],
+        'var(--color-red)'
+    )
+    assert.equal(
+        generateSyntaxTrDeclarations('bg:#12345678', 'bg:blue-60')?.['background-color'],
+        '#12345678'
+    )
+    assert.equal(
+        generateSyntaxTrDeclarations('unknown:`value`', 'bg:blue-60')?.['background-color'],
+        'var(--color-blue-60)'
+    )
 })
 
 function generateDeclarations(className: string) {

@@ -3,15 +3,14 @@ import { toJsxRuntime } from 'hast-util-to-jsx-runtime'
 import { Fragment, jsxs, jsx } from 'react/jsx-runtime'
 import dedent from 'ts-dedent'
 import { ShikiTransformer } from 'shiki'
-import css from '../common/preset-css'
+import { generateSyntaxTrDeclarations } from './syntax-tr-declarations'
 import { createSyntaxTrPlaceholderContext } from './syntax-tr-placeholders'
 
 export default async function SyntaxTr({ value, children, previewSyntax }: any) {
     value = (Array.isArray(value) ? value[0] : value) as string
     const placeholders = createSyntaxTrPlaceholderContext()
     const proxyCode = placeholders.proxy(value)
-    const rule = css.generate(previewSyntax || proxyCode)[0]
-    const declarations = rule?.declarations as Record<string, any> | undefined
+    const declarations = generateSyntaxTrDeclarations(proxyCode, previewSyntax)
     const text = dedent`
         __TMP__ {
         ${declarations ? convertDeclarationsToCSS(declarations) : ''}}`
