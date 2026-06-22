@@ -29,6 +29,8 @@
 
             This example uses static rendering. Use `masterCSS()` without options when you want runtime rendering instead.
 
+            (i) In production `runtime` mode, Vite emits the project manifest as a JSON asset and preloads it when the plugin also injects the runtime. `injectRuntime: false` disables both automatic runtime injection and that preload. See [Preload runtime project manifests](/guide/preload-critical-resources#preload-runtime-project-manifests).
+
             (i) In `progressive` and `pre-render` modes, Vite pre-renders page CSS into `style#master-css` and externalizes the page hydration manifest. During dev, the manifest JSON is served from `/_master-css/hydration/…`; during build, it is emitted under the configured Vite asset path.
         </StepL>
         <StepR>

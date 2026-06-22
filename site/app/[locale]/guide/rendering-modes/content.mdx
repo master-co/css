@@ -7,7 +7,7 @@ Master CSS integrations choose how generated rules reach the browser. The same p
 
 | Mode                      | Description                                                                                                                                           |
 |---------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `'runtime'`               | Starts `CSSRuntime` in the browser, observes connected elements, and generates rules as class names appear. Vite can inject the runtime and default manifest module automatically. |
+| `'runtime'`               | Starts `CSSRuntime` in the browser, observes connected elements, and generates rules as class names appear. Official integrations can inject the runtime and preload the emitted project manifest JSON automatically. |
 | `'static'`                | Scans source files, replaces `@import '@master/css'` in managed CSS entries, prunes native CSS, and generates CSS from the project CSS entry graph. |
 | `'pre-render'`            | Renders HTML output and injects the critical CSS required by the rendered class names. This mode is usually owned by SSR/SSG integrations. |
 | `'progressive'`           | Combines pre-rendered first-page CSS with client-side runtime hydration for classes that appear after the initial HTML. |
@@ -160,6 +160,17 @@ initCSSRuntime({ manifest, emittedGlobals })
 
 The manifest tells the runtime how to interpret project-specific tokens, modes, components, utilities, and variants. The `emittedGlobals` object is narrower: it only records variables and keyframes that the build already emitted from the CSS entry output. Dynamic classes can still be generated later, but shared global CSS is not duplicated when those classes reference an already-loaded variable or animation.
 
+### Project manifest delivery
+`virtual:master-css-manifest` is the project-level runtime input. It represents the compiled CSS entry graph, so it can include project tokens, modes, component definitions, utility definitions, variants, and managed keyframes.
+
+During development, integrations can serve that manifest as an inline virtual module. In production runtime builds, official integrations may emit it as a hashed JSON asset and make the virtual module fetch that asset before the runtime starts. Runtime-only pages need this JSON before they can interpret classes, so integrations that inject the runtime can also add:
+
+```html
+<link rel="preload" as="fetch" type="application/json" crossorigin href="/assets/master-css-manifest.<hash>.json">
+```
+
+This does not change generated CSS or cascade order. It only moves discovery of the project manifest earlier so the runtime's later fetch can reuse the browser's preloaded response.
+
 ---
 
 ## Progressive Rendering
@@ -178,6 +189,8 @@ Static and pre-rendered outputs use an external page hydration manifest by defau
 This keeps the first-render CSS in the HTML while moving the runtime handoff data into a cacheable route-level JSON file. The browser can paint from `style#master-css` without waiting for the manifest request. When the runtime starts, it loads the manifest, adopts the existing native CSS rules, and continues observing dynamic classes. If the manifest is missing, invalid, fails to load, or no longer matches `style#master-css`, the runtime safely rebuilds the stylesheet from connected DOM classes.
 
 Inline `script#master-css-hydration-manifest` is still supported for compatibility and for dynamic SSR responses that cannot write a stable public JSON asset. Pages with no generated rules do not need a hydration manifest pointer.
+
+Do not preload the page hydration manifest. It is different from the runtime project manifest: the browser already has the CSS needed for first paint in `style#master-css`, and the hydration manifest only tells the runtime how to adopt those existing rules.
 
 ### Pre-rendering — SSG, SSR
 
@@ -407,7 +420,8 @@ These CSS-first directives are manifest inputs. The compiler lowers tokens, mana
 | --- | --- | --- | --- |
 | CSS entry graph | Project stylesheets with `@master;` or `@import '@master/css'` | Compiler, integrations, static renderer | Authoring source for tokens, settings, variants, managed styles, source directives, and native CSS roots. |
 | `MasterCSSManifest` | `@master/css-compiler` and `@master/css-manifest` | Engine, runtime, server renderer, extractor, linting, language tooling | Shared IR that describes how class names become sorted CSS rules. |
-| `virtual:master-css-manifest` | Official build integrations | Application runtime code and framework providers | ESM module for the canonical project-level manifest discovered from the CSS entry graph. |
+| `virtual:master-css-manifest` | Official build integrations | Application runtime code and framework providers | ESM module for the canonical project-level manifest discovered from the CSS entry graph. In production runtime builds, this module may fetch an emitted project manifest JSON asset. |
+| Project manifest JSON asset | Official runtime integrations | `virtual:master-css-manifest` facade and the runtime | Cacheable JSON form of the project manifest. Pure runtime pages can preload it because the runtime needs it before interpreting project classes. |
 | `virtual:master-css-emitted-globals` | Static and build integrations | Runtime code | Counts variables and keyframes already emitted by the CSS entry output, so runtime rendering does not insert duplicate global CSS. |
 | Hydration manifest | Server rendering and progressive integrations | Runtime hydration | JSON rule IR with `version: 1`, used to map `style#master-css` back into runtime-managed rule objects. |
 | Next build manifest | `@master/css.next` when `manifest` is enabled | Build analysis and reporting | Route/output report for rendered files; it is separate from the runtime hydration manifest. |

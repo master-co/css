@@ -30,6 +30,7 @@
             - By default, `options.mode` is set to `progressive`.
             - Progressive mode pre-renders initial CSS with Astro middleware, then hydrates the runtime in the browser.
             - Static build output externalizes page hydration manifests under `dist/_master-css/hydration/…`; middleware SSR keeps the inline manifest for the current response.
+            - In `mode: 'runtime'`, static build output preloads the emitted project manifest JSON when runtime injection is enabled. SSR-only output does not add this preload because the final client asset URL is not available through a stable build-time head hook. See [Preload runtime project manifests](/guide/preload-critical-resources#preload-runtime-project-manifests).
         </StepL>
         <StepR>
             ```js name=astro.config.js

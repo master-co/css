@@ -30,6 +30,7 @@
             - By default, `options.mode` is set to `progressive`.
             - Nitro prerendered HTML externalizes page hydration manifests to `/_master-css/hydration/…`.
             - Ordinary dynamic SSR responses keep the inline hydration manifest for the current request.
+            - In `mode: 'runtime'`, Nuxt publishes `/_master-css/manifest/master-css-manifest.<hash>.json` and preloads it from the document head when client runtime injection is enabled. Progressive mode does not preload page hydration manifests. See [Preload runtime project manifests](/guide/preload-critical-resources#preload-runtime-project-manifests).
         </StepL>
         <StepR>
             ```ts name=nuxt.config.ts

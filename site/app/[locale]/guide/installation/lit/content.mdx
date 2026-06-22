@@ -26,6 +26,8 @@
         <StepL>
             ### <StepNum />Set up Vite config
             Register the Master CSS Vite plugin. The default runtime integration initializes the document root; the Lit decorator below initializes each component shadow root.
+
+            (i) Production runtime builds follow the [Vite project manifest preload](/guide/preload-critical-resources#preload-runtime-project-manifests) behavior.
         </StepL>
         <StepR>
             ```ts name=vite.config.ts
