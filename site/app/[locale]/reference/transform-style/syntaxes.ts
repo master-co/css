@@ -1,7 +1,7 @@
 const syntaxes = [
     ['transform-style:`value`'],
-    'transform:flat',
-    'transform:preserve-3d'
+    'transform-style:flat',
+    'transform-style:3d'
 ]
 
 export default syntaxes

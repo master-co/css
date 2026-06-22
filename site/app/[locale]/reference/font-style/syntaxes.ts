@@ -2,7 +2,7 @@ const syntaxes = [
     ['font-style:`style`'],
     'italic',
     'oblique',
-    'font:normal'
+    'font-style:normal'
 ]
 
 export default syntaxes

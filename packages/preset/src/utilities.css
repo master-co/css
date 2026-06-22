@@ -269,10 +269,6 @@
         min-width: 100vw;
     }
 
-    not-italic {
-        font-style: normal;
-    }
-
     oblique {
         font-style: oblique;
     }
@@ -419,14 +415,6 @@
 
     transform-<border|content|fill|stroke|view> {
         transform-box: --value()-box;
-    }
-
-    transform-3d {
-        transform-style: preserve-3d;
-    }
-
-    transform-flat {
-        transform-style: flat;
     }
 
     untouchable {
@@ -753,10 +741,6 @@
 
     object-<center|top|bottom|left|right> {
         object-position: --value();
-    }
-
-    origin-<center|top|bottom|left|right> {
-        transform-origin: --value();
     }
 
     snap-<x|y|both|block|inline> {

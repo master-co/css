@@ -1,6 +1,5 @@
 const syntaxes = [
     ['resize:`value`'],
-    'resize:auto',
     'resize:none',
     'resize:both',
     'resize:horizontal',

@@ -1,12 +1,12 @@
 const syntaxes = [
     ['transform-origin:`value`'],
-    ['transform:`offset-x`|`offset-y`'],
-    ['transform:`offset-x`|`offset-y`|`offset-z`'],
-    'transform:top',
-    'transform:bottom',
-    'transform:right',
-    'transform:left',
-    'transform:center',
+    ['transform-origin:`offset-x`|`offset-y`'],
+    ['transform-origin:`offset-x`|`offset-y`|`offset-z`'],
+    'transform-origin:top',
+    'transform-origin:bottom',
+    'transform-origin:right',
+    'transform-origin:left',
+    'transform-origin:center',
 ]
 
 export default syntaxes

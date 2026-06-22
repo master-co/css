@@ -1,7 +1,12 @@
 const SIZE_PROXY = '100000000px'
 const LENGTH_PROXY = '123456789'
 const INTEGER_PROXY = '987654321'
+const NUMBER_PROXY = '246813579'
+const PERCENTAGE_PROXY = '88%'
 const COLOR_PROXY = '#12345678'
+const HEX_PROXY = '123456'
+const ANGLE_PROXY = '45deg'
+const TIME_PROXY = '1s'
 
 export type SyntaxTrHastNode = {
     type?: string
@@ -17,21 +22,41 @@ type SyntaxTrTextNode = SyntaxTrHastNode & {
 
 export function createSyntaxTrPlaceholderContext() {
     const valueProxyMap = new Map<string, string>()
-    const createPlaceholderProxy = (placeholder: string) => {
+    const trackProxy = (proxyValue: string, placeholder: string) => {
+        valueProxyMap.set(proxyValue, `<${placeholder}>`)
+        return proxyValue
+    }
+    const createPlaceholderProxy = (placeholder: string, value: string, offset: number) => {
+        const prefix = value.slice(0, offset)
+        if (prefix.endsWith('animate:') && placeholder === 'name') {
+            valueProxyMap.set('fade', '<name>')
+            valueProxyMap.set('var(--animate-fade)', '<name>')
+            return 'fade'
+        }
+        if (prefix.endsWith('user-drag:')) {
+            return trackProxy('auto', placeholder)
+        }
+        if (/url\($/.test(prefix)) {
+            return trackProxy(placeholder === 'svg' ? '#mcss-syntax-svg' : '/mcss-syntax-rest.svg', placeholder)
+        }
+        if (prefix.endsWith('#') && placeholder === 'hex') return HEX_PROXY
         if (placeholder === 'size') return SIZE_PROXY
         if (placeholder === 'length') return LENGTH_PROXY
         if (placeholder === 'integer') return INTEGER_PROXY
+        if (placeholder === 'number') return trackProxy(NUMBER_PROXY, placeholder)
+        if (placeholder === 'percentage') return trackProxy(PERCENTAGE_PROXY, placeholder)
         if (placeholder === 'color') return COLOR_PROXY
+        if (placeholder === 'angle' || placeholder === 'degree') return trackProxy(ANGLE_PROXY, placeholder)
+        if (placeholder === 'time' || placeholder === 'duration' || placeholder === 'milliSeconds') return trackProxy(TIME_PROXY, placeholder)
         const name = placeholder === '…'
             ? 'rest'
             : placeholder.replace(/[^\w-]+/g, '-').replace(/^-|-$/g, '') || 'value'
         const proxyValue = `var(--mcss-syntax-${name})`
-        valueProxyMap.set(proxyValue, `<${placeholder}>`)
-        return proxyValue
+        return trackProxy(proxyValue, placeholder)
     }
     const proxy = (value: string) => {
         return value
-            .replace(/`([^`]+)`/g, (_, placeholder) => createPlaceholderProxy(placeholder))
+            .replace(/`([^`]+)`/g, (match, placeholder, offset) => createPlaceholderProxy(placeholder, value, offset))
     }
     const restoreTextNodes = (root: SyntaxTrHastNode) => {
         const entries: { node: SyntaxTrTextNode, parent?: SyntaxTrHastNode, start: number, end: number }[] = []
@@ -70,16 +95,21 @@ export function createSyntaxTrPlaceholderContext() {
         addReplacements(new RegExp(escapeRegExp(LENGTH_PROXY), 'g'), '<length>')
         addReplacements(new RegExp(escapeRegExp(INTEGER_PROXY), 'g'), '<integer>')
         addReplacements(new RegExp(escapeRegExp(COLOR_PROXY), 'g'), '<color>')
+        addReplacements(new RegExp(escapeRegExp(HEX_PROXY), 'g'), '<hex>')
 
         if (!replacements.length) return
 
-        replacements.sort((a, b) => a.start - b.start)
+        replacements.sort((a, b) => a.start - b.start || b.end - b.start - (a.end - a.start))
         for (const entry of entries) {
             let value = ''
             let cursor = entry.start
             for (const replacement of replacements) {
                 if (replacement.end <= entry.start) continue
                 if (replacement.start >= entry.end) break
+                if (replacement.start < cursor) {
+                    cursor = Math.max(cursor, Math.min(replacement.end, entry.end))
+                    continue
+                }
 
                 if (replacement.start >= cursor) {
                     value += text.slice(cursor, replacement.start)

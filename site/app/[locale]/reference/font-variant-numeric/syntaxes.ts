@@ -1,14 +1,14 @@
 const syntaxes = [
     ['font-variant-numeric:`value`'],
-    'font:normal',
-    'font:ordinal',
-    'font:slashed-zero',
-    'font:lining-nums',
-    'font:oldstyle-nums',
-    'font:proportional-nums',
-    'font:tabular-nums',
-    'font:diagonal-fractions',
-    'font:stacked-fractions',
+    'font-variant-numeric:normal',
+    'ordinal',
+    'slashed-zero',
+    'lining-nums',
+    'oldstyle-nums',
+    'proportional-nums',
+    'tabular-nums',
+    'diagonal-fractions',
+    'stacked-fractions',
 ]
 
 export default syntaxes

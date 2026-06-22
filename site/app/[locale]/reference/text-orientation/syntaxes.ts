@@ -1,10 +1,8 @@
 const syntaxes = [
     ['text-orientation:`value`'],
-    'text:mixed',
-    'text:sideways',
-    'text:sideways-right',
-    'text:upright',
-    'text:use-glyph-orientation',
+    'text-orientation:mixed',
+    'text-orientation:sideways',
+    'text-orientation:upright',
 ]
 
 export default syntaxes

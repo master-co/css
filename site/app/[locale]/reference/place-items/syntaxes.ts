@@ -1,6 +1,5 @@
 const syntaxes = [
     ['place-items:`align-items`|`justify-items`'],
-    'place-items:auto',
     'place-items:normal',
     'place-items:baseline',
     'place-items:center',

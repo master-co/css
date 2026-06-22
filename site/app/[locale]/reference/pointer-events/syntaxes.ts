@@ -10,7 +10,6 @@ const syntaxes = [
     'pointer-events:fill',
     'pointer-events:stroke',
     'pointer-events:all',
-    'pointer-events:bounding-box',
 ]
 
 export default syntaxes

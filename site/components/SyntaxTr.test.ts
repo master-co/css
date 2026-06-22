@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict'
+import { access, readdir } from 'node:fs/promises'
 import { test } from 'node:test'
 import css from '../common/preset-css'
 import { generateSyntaxTrDeclarations } from './syntax-tr-declarations'
@@ -44,6 +45,63 @@ test('proxies integer without a unit and restores the placeholder in generated d
     assert.doesNotMatch(restored, /987654321/)
 })
 
+test('proxies number without a unit and restores the placeholder in generated declarations', () => {
+    const placeholders = createSyntaxTrPlaceholderContext()
+    const proxy = placeholders.proxy('border-image-slice:`number`')
+    assert.equal(proxy, 'border-image-slice:246813579')
+
+    const declarations = generateDeclarations(proxy)
+    assert.equal(declarations['border-image-slice'], '246813579')
+
+    const restored = restoreText(placeholders, [convertDeclarationsToCSS(declarations)])
+    assert.match(restored, /border-image-slice: <number>;/)
+    assert.doesNotMatch(restored, /246813579/)
+})
+
+test('proxies hex placeholders inside color literals', () => {
+    const placeholders = createSyntaxTrPlaceholderContext()
+    const proxy = placeholders.proxy('fill:#`hex`')
+    assert.equal(proxy, 'fill:#123456')
+
+    const declarations = generateDeclarations(proxy)
+    assert.equal(declarations.fill, '#123456')
+
+    const restored = restoreText(placeholders, [convertDeclarationsToCSS(declarations)])
+    assert.match(restored, /fill: #<hex>;/)
+    assert.doesNotMatch(restored, /123456/)
+})
+
+test('proxies URL placeholders with valid URL values', () => {
+    const placeholders = createSyntaxTrPlaceholderContext()
+    const proxy = placeholders.proxy('filter:url(`svg`)')
+    assert.equal(proxy, 'filter:url(#mcss-syntax-svg)')
+
+    const declarations = generateDeclarations(proxy)
+    assert.equal(declarations.filter, 'url(#mcss-syntax-svg)')
+
+    const restored = restoreText(placeholders, [convertDeclarationsToCSS(declarations)])
+    assert.match(restored, /filter: url\(<svg>\);/)
+    assert.doesNotMatch(restored, /mcss-syntax-svg/)
+})
+
+test('proxies preset namespace placeholders and restores declaration values', () => {
+    const placeholders = createSyntaxTrPlaceholderContext()
+    const proxy = placeholders.proxy('animate:`name`')
+    assert.equal(proxy, 'animate:fade')
+
+    const declarations = generateDeclarations(proxy)
+    assert.equal(declarations.animation, 'var(--animate-fade)')
+
+    const restored = restoreText(placeholders, [
+        proxy,
+        '\n',
+        convertDeclarationsToCSS(declarations)
+    ])
+    assert.match(restored, /animate:<name>/)
+    assert.match(restored, /animation: <name>;/)
+    assert.doesNotMatch(restored, /fade|--animate/)
+})
+
 test('restores generic placeholders split across text nodes', () => {
     const placeholders = createSyntaxTrPlaceholderContext()
     const proxy = placeholders.proxy('scroll-snap-align:`value`')
@@ -84,6 +142,42 @@ test('throws when syntax and preview fallback generate empty declarations', () =
         () => generateSyntaxTrDeclarations('appearance:push-button'),
         /SyntaxTr generated empty CSS declarations for `appearance:push-button`\./
     )
+})
+
+test('all reference syntaxes generate declarations without preview fallback', async () => {
+    const referenceRootURL = new URL('../app/[locale]/reference/', import.meta.url)
+    const entries = await readdir(referenceRootURL, { withFileTypes: true })
+    const failures: string[] = []
+
+    for (const entry of entries) {
+        if (!entry.isDirectory()) continue
+
+        const syntaxURL = new URL(`${entry.name}/syntaxes.ts`, referenceRootURL)
+        try {
+            await access(syntaxURL)
+        } catch {
+            continue
+        }
+
+        const syntaxModule = await import(syntaxURL.href)
+        for (const syntax of syntaxModule.default ?? []) {
+            const value = Array.isArray(syntax) ? syntax[0] : syntax
+            if (typeof value !== 'string') {
+                failures.push(`${entry.name}: invalid syntax value ${String(value)}`)
+                continue
+            }
+
+            const placeholders = createSyntaxTrPlaceholderContext()
+            const proxy = placeholders.proxy(value)
+            try {
+                generateSyntaxTrDeclarations(proxy)
+            } catch (error) {
+                failures.push(`${entry.name}: ${value} -> ${proxy}: ${(error as Error).message}`)
+            }
+        }
+    }
+
+    assert.deepEqual(failures, [])
 })
 
 function generateDeclarations(className: string) {
