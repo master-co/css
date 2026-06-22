@@ -101,7 +101,7 @@ export default async function SyntaxTr({ value, children, previewSyntax }: any) 
     const hast = await highlightCode(text, {
         lang: 'css',
         inline: true,
-        className: 'text:text white-space:pre',
+        className: 'text:text white-space:pre b:0 p:0 r:0 bg:transparent',
         transformers: [transformerRestore]
     })
     const codeElement = (hast.children[0] as any)
