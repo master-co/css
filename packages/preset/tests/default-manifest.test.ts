@@ -350,7 +350,6 @@ describe('@master/css-preset defaultManifest', () => {
         expect(css.create('user-select:none')?.text).toBe('.user-select\\:none{-webkit-user-select:none;user-select:none}')
         expect(css.create('user-drag:none')?.text).toBe('.user-drag\\:none{-webkit-user-drag:none;user-drag:none}')
         expect(css.create('box-decoration-break:clone')?.text).toBe('.box-decoration-break\\:clone{-webkit-box-decoration-break:clone;box-decoration-break:clone}')
-        expect(css.create('line-clamp:none')?.text).toContain('-webkit-line-clamp:none')
         expect(css.create('font-feature-settings:tabular')?.text).toBe('.font-feature-settings\\:tabular{font-feature-settings:var(--font-feature-tabular)}')
         expect(css.create('content:empty')?.text).toBe('.content\\:empty{content:var(--content-empty)}')
         expect(css.create('font-sm')).toBeUndefined()
@@ -358,7 +357,7 @@ describe('@master/css-preset defaultManifest', () => {
         expect(css.create('sr-only')?.text).toContain('position:absolute')
         expect(css.create('sr-only')?.text).toContain('clip:rect(0, 0, 0, 0)')
 
-        expect(defaultManifest.utilityBuckets?.pattern).toHaveLength(39)
+        expect(defaultManifest.utilityBuckets?.pattern).toHaveLength(38)
         expect(defaultManifest.utilities?.some((utility) => utility.id === '.text-center')).toBe(false)
         expect(defaultManifest.utilities?.find((utility) => utility.id === 'text-<left|center|right|start|end|justify>'))
             .toMatchObject({
@@ -563,6 +562,7 @@ describe('@master/css-preset defaultManifest', () => {
                 || property === 'background'
                 || property === 'animation'
                 || property === 'animation-name'
+                || property === '-webkit-line-clamp'
                 || property === 'container'
                 || property === 'flex'
                 || property === 'border-image-source'
@@ -577,6 +577,7 @@ describe('@master/css-preset defaultManifest', () => {
         expect(css.create('transition-behavior:allow-discrete')).toBeUndefined()
         expect(css.create('display:block')).toBeUndefined()
         expect(css.create('d:block')).toBeUndefined()
+        expect(css.create('line-clamp:none')).toBeUndefined()
         expect(css.create('view-transition-name:hero')).toBeUndefined()
         expect(css.create('vt-name:hero')).toBeUndefined()
         expect(nativeCSS.create('perspective-origin:100%|0')?.text).toBe('.perspective-origin\\:100\\%\\|0{perspective-origin:100% 0}')
@@ -585,6 +586,7 @@ describe('@master/css-preset defaultManifest', () => {
         expect(nativeCSS.create('background:red')?.text).toBe('.background\\:red{background:red}')
         expect(nativeCSS.create('animation:fade|fast|smooth')?.text).toBe('.animation\\:fade\\|fast\\|smooth{animation:fade var(--duration-fast) var(--easing-smooth)}')
         expect(nativeCSS.create('animation-name:fade')?.text).toBe('.animation-name\\:fade{animation-name:fade}')
+        expect(nativeCSS.create('line-clamp:none')?.text).toBe('.line-clamp\\:none{-webkit-line-clamp:none}')
         expect(nativeCSS.create('container:inline-size')?.text).toBe('.container\\:inline-size{container:inline-size}')
         expect(nativeCSS.create('flex:0|0|auto')?.text).toBe('.flex\\:0\\|0\\|auto{flex:0 0 auto}')
         expect(nativeCSS.create('border-image-source:url(/border.png)')?.text).toBe('.border-image-source\\:url\\(\\/border\\.png\\){border-image-source:url(/border.png)}')
