@@ -18,3 +18,5 @@ supportedArchitectures:
   libc:
     - glibc
     - musl
+
+verifyDepsBeforeRun: false

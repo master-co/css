@@ -3,7 +3,7 @@
     "type": "module",
     "scripts": {
         "build": "techor build && pnpm generate",
-        "generate": "tsx generate",
+        "generate": "node --import tsx generate",
         "dev": "techor build --watch",
         "test": "pnpm build && vitest",
         "type-check": "tsc --noEmit",

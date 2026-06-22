@@ -4,7 +4,7 @@
     "scripts": {
         "build": "pnpm generate && techor build \"src/**/!(*.d).ts\" --formats esm",
         "dev": "pnpm build --watch",
-        "generate": "tsx scripts/generate-default-manifest.ts",
+        "generate": "node --import tsx scripts/generate-default-manifest.ts",
         "lint": "eslint",
         "type-check": "tsc --noEmit",
         "test": "vitest"

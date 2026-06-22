@@ -2,6 +2,13 @@
     "private": true,
     "type": "module",
     "packageManager": "pnpm@10.33.2",
+    "devEngines": {
+        "packageManager": {
+            "name": "pnpm",
+            "version": "10.33.2",
+            "onFail": "ignore"
+        }
+    },
     "scripts": {
         "submodules": "pnpm dlx tsx submodules",
         "postinstall": "pnpm dlx husky install",

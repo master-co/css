@@ -10,13 +10,12 @@ import { toHashedManifestAssetFileName } from '@master/css-integration/node'
 import { loadProjectManifestJSON } from '@master/css-manifest/load'
 import type { Plugin } from 'vite'
 import defaultOptions, { type ModuleOptions } from './options'
-import { MASTER_CSS_RUNTIME_STYLE_ID } from 'shared/master-css-runtime-style'
-import {
-    MASTER_CSS_HYDRATION_MANIFEST_ASSET_BASE,
-    MASTER_CSS_HYDRATION_MANIFEST_ATTR,
-    MASTER_CSS_HYDRATION_MANIFEST_FILE_BASENAME,
-    MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID
-} from 'shared/master-css-hydration-manifest'
+
+const MASTER_CSS_RUNTIME_STYLE_ID = 'master-css'
+const MASTER_CSS_HYDRATION_MANIFEST_ASSET_BASE = '/_master-css/hydration/'
+const MASTER_CSS_HYDRATION_MANIFEST_ATTR = 'data-master-css-hydration-manifest'
+const MASTER_CSS_HYDRATION_MANIFEST_FILE_BASENAME = 'master-css-hydration'
+const MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID = 'master-css-hydration-manifest'
 
 interface NitroPrerenderRoute {
     contents?: string
