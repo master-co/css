@@ -150,6 +150,7 @@ const nativeFallbackProperties = new Set([
     'writing-mode',
     'z-index',
     'zoom',
+    '-webkit-line-clamp',
     '-webkit-text-stroke-width'
 ])
 for (const namespace of builtinNativeValueNamespaces) {
