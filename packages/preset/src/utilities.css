@@ -588,7 +588,7 @@
         grid-row: span --value()/span --value();
     }
 
-    line-clamp:<number|none> {
+    line-clamp:<number> {
         display: -webkit-box;
         -webkit-box-orient: vertical;
         -webkit-line-clamp: --value();

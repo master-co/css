@@ -1,3 +1,6 @@
-const syntaxes = [['line-clamp:`value`']]
+const syntaxes = [
+    'line-clamp:none',
+    ['line-clamp:`integer`']
+]
 
 export default syntaxes
