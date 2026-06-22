@@ -71,7 +71,7 @@ export default defineConfig({
 })
 ```
 
-`masterCSS()` uses `progressive` mode by default. It registers Astro middleware to pre-render initial CSS into `<style id="master">` and injects the runtime script for browser hydration.
+`masterCSS()` uses `progressive` mode by default. It registers Astro middleware to pre-render initial CSS into `<style id="master-css">` and injects the runtime script for browser hydration.
 
 ```css
 @import '@master/css';

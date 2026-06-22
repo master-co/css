@@ -79,7 +79,7 @@ Important files:
 
 `packages/runtime` extends the manifest-driven engine for browser DOM observation, native CSSStyleSheet insertion, and hydration.
 
-`packages/server` parses HTML, extracts classes, generates CSS, and injects `style#master`.
+`packages/server` parses HTML, extracts classes, generates CSS, and injects `style#master-css`.
 
 `packages/compiler` is the canonical CSS source compiler. It parses CSS-authored Master manifest directives and native CSS, resolves CSS import graphs, detects project CSS entry markers (`@master;` and `@import "@master/css"`), parses standalone extraction directives, and lowers directive results into `MasterCSSManifest` values. `@master;` and `@import "@master/css"` are user project entry markers; package CSS files such as `@master/css/index.css` must not contain `@master;`.
 

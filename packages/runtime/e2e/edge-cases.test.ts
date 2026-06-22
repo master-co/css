@@ -22,7 +22,7 @@ test('disconnect clears counts and observe rescans the current DOM', async ({ pa
         await new Promise(resolve => setTimeout(resolve, 0))
         return {
             counts: Object.fromEntries(globalThis.masterCSSRuntime.classCounts),
-            hasStyle: !!document.head.querySelector('style#master')
+            hasStyle: !!document.head.querySelector('style#master-css')
         }
     })
     expect(disconnected).toEqual({
@@ -61,7 +61,7 @@ test('shadow roots maintain isolated runtime state and style nodes', async ({ pa
             documentCounts: Object.fromEntries(globalThis.masterCSSRuntime.classCounts),
             documentHasBlockRule: globalThis.masterCSSRuntime.text.includes('.block{display:block}'),
             shadowCounts: Object.fromEntries(shadowRuntime.classCounts),
-            shadowHasStyle: !!shadow.querySelector('style#master'),
+            shadowHasStyle: !!shadow.querySelector('style#master-css'),
             shadowText: shadowRuntime.text,
             instanceRegistered: globalThis.MasterCSSRuntime.instances.get(shadow) === shadowRuntime
         }

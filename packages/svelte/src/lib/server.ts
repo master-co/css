@@ -4,11 +4,16 @@ import {
     createMasterCSSHydrationManifestScript,
     MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID
 } from 'shared/master-css-hydration-manifest'
+import { MASTER_CSS_RUNTIME_STYLE_ID } from 'shared/master-css-runtime-style'
+import escapeRegExp from 'shared/utils/escape-reg-exp'
 import type { Handle } from '@sveltejs/kit'
 
 const HEAD_CLOSE_TAG = '</head>'
 const HEAD_CLOSE_TAIL_LENGTH = HEAD_CLOSE_TAG.length - 1
-const MASTER_STYLE_PATTERN = /<style\b(?=[^>]*\bid=(["'])master\1)[^>]*>[\s\S]*?<\/style>/i
+const MASTER_STYLE_PATTERN = new RegExp(
+    `<style\\b(?=[^>]*\\bid=(["'])${escapeRegExp(MASTER_CSS_RUNTIME_STYLE_ID)}\\1)[^>]*>[\\s\\S]*?<\\/style>`,
+    'i'
+)
 const MASTER_RUNTIME_MANIFEST_PATTERN = new RegExp(
     `<script\\b(?=[^>]*\\bid=(["'])${MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID}\\1)[^>]*>[\\s\\S]*?<\\/script>`,
     'i'
@@ -28,7 +33,7 @@ function findHeadCloseIndex(html: string) {
 }
 
 function createMasterStyle(cssText: string) {
-    return `<style id="master">${cssText}</style>`
+    return `<style id="${MASTER_CSS_RUNTIME_STYLE_ID}">${cssText}</style>`
 }
 
 function createMasterHydrationManifest(css: MasterCSS) {

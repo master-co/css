@@ -2,7 +2,7 @@
 
 ## Responsibility
 
-`@master/css-server` renders required CSS from HTML. It parses HTML, extracts class names, creates a `MasterCSS` instance, adds classes, and injects or updates `<style id="master">`.
+`@master/css-server` renders required CSS from HTML. It parses HTML, extracts class names, creates a `MasterCSS` instance, adds classes, and injects or updates `<style id="master-css">`.
 
 ## Inputs And Outputs
 
@@ -31,13 +31,13 @@
 ## Forbidden Without Explicit Request
 
 - Changing engine CSS generation behavior here.
-- Changing `style#master` identity casually.
+- Changing `style#master-css` identity casually.
 - Replacing parser/serializer without a clear reason.
 
 ## Risk Areas
 
 - HTML entity decoding in class names.
-- Existing `style#master` replacement.
+- Existing `style#master-css` replacement.
 - Injecting into documents without `<head>` or `<html>`.
 - Serialization preserving source expectations.
 
@@ -60,5 +60,5 @@ End-to-end rendering cases live in package-local `e2e/**`.
 ## Dangerous Changes
 
 - Emitting unsorted CSS.
-- Injecting duplicate `style#master` tags.
+- Injecting duplicate `style#master-css` tags.
 - Treating `className` as HTML class in server HTML parsing without a clear requirement.

@@ -2,6 +2,7 @@ import { MasterCSS, VariableRule, AnimationRule } from '@master/css-engine'
 import type { MasterCSSManifest, MasterCSSManifestUtilityLayerName } from 'shared/master-css-manifest'
 import type { MasterCSSEmittedGlobals } from '@master/css-engine'
 import type { MasterCSSGeneratedRuleIR, MasterCSSHydrationManifest } from 'shared/master-css-hydration-manifest'
+import { MASTER_CSS_RUNTIME_STYLE_ID } from 'shared/master-css-runtime-style'
 import registerGlobal from './register-global'
 import { HydrateResult } from './types'
 import RuntimeUtilityLayer, { RuntimeUtilityLayerInstance } from './utility-layer'
@@ -9,6 +10,8 @@ import RuntimeThemeLayer from './theme-layer'
 import RuntimeClassTracker from './class-tracker'
 import HydratedGeneratedRule from './generated-rule'
 import { browserNativeDeclarationMatcher } from './native-declaration'
+
+const MASTER_CSS_RUNTIME_STYLE_SELECTOR = `style#${MASTER_CSS_RUNTIME_STYLE_ID}`
 
 export default class CSSRuntime extends MasterCSS {
     static instances = new WeakMap<Document | ShadowRoot, CSSRuntime>()
@@ -53,13 +56,13 @@ export default class CSSRuntime extends MasterCSS {
     private createRuntimeStyle() {
         const ownerDocument = 'createElement' in this.root ? this.root : this.root.ownerDocument
         this.style = ownerDocument.createElement('style')
-        this.style.id = 'master'
+        this.style.id = MASTER_CSS_RUNTIME_STYLE_ID
         this.style.setAttribute('blocking', 'render')
         this.container.append(this.style)
     }
 
     private warnHydrationFallback(reason: string) {
-        console.warn(`Master CSS progressive hydration requires a matching hydration manifest. ${reason} Rebuilding style#master with the runtime.`)
+        console.warn(`Master CSS progressive hydration requires a matching hydration manifest. ${reason} Rebuilding ${MASTER_CSS_RUNTIME_STYLE_SELECTOR} with the runtime.`)
     }
 
     private useRuntimeStyle(connectedNames: Set<string>, reason?: string) {
@@ -84,7 +87,7 @@ export default class CSSRuntime extends MasterCSS {
         if (this.root.styleSheets) {
             for (const sheet of this.root.styleSheets) {
                 const { ownerNode } = sheet
-                if (ownerNode instanceof HTMLStyleElement && ownerNode.id === 'master') {
+                if (ownerNode instanceof HTMLStyleElement && ownerNode.id === MASTER_CSS_RUNTIME_STYLE_ID) {
                     this.style = ownerNode
                     this.progressive = true
                     break
@@ -109,7 +112,7 @@ export default class CSSRuntime extends MasterCSS {
                     }
                 }
             } else {
-                this.useRuntimeStyle(connectedNames, this.hydrationFailureReason || 'Cannot read style#master CSS rules.')
+                this.useRuntimeStyle(connectedNames, this.hydrationFailureReason || `Cannot read ${MASTER_CSS_RUNTIME_STYLE_SELECTOR} CSS rules.`)
             }
         } else {
             this.createRuntimeStyle()
@@ -399,7 +402,7 @@ export default class CSSRuntime extends MasterCSS {
             return this.failHydration('Missing or invalid hydration manifest.')
         }
         if (!this.hydrationManifest.rules.length) {
-            return this.failHydration('Hydration manifest has no generated rules for style#master.')
+            return this.failHydration(`Hydration manifest has no generated rules for ${MASTER_CSS_RUNTIME_STYLE_SELECTOR}.`)
         }
 
         const result: HydrateResult = {
@@ -415,27 +418,27 @@ export default class CSSRuntime extends MasterCSS {
             if (eachNativeCSSRule.constructor.name === 'CSSLayerBlockRule') {
                 const eachCSSLayerRule = eachNativeCSSRule as CSSLayerBlockRule
                 if (eachCSSLayerRule.name === 'theme') {
-                    if (nativeThemeLayer) return this.failHydration('Duplicate theme layer in style#master.')
+                    if (nativeThemeLayer) return this.failHydration(`Duplicate theme layer in ${MASTER_CSS_RUNTIME_STYLE_SELECTOR}.`)
                     nativeThemeLayer = eachCSSLayerRule
                     continue
                 }
                 const layer = this.getUtilityLayerByName(eachCSSLayerRule.name)
-                if (!layer) return this.failHydration(`Unknown layer \`${eachCSSLayerRule.name}\` in style#master.`)
+                if (!layer) return this.failHydration(`Unknown layer \`${eachCSSLayerRule.name}\` in ${MASTER_CSS_RUNTIME_STYLE_SELECTOR}.`)
                 if (nativeUtilityLayerRules.has(layer.name as MasterCSSManifestUtilityLayerName)) {
-                    return this.failHydration(`Duplicate layer \`${eachCSSLayerRule.name}\` in style#master.`)
+                    return this.failHydration(`Duplicate layer \`${eachCSSLayerRule.name}\` in ${MASTER_CSS_RUNTIME_STYLE_SELECTOR}.`)
                 }
                 nativeUtilityLayerRules.set(layer.name as MasterCSSManifestUtilityLayerName, eachCSSLayerRule)
             } else if (eachNativeCSSRule.constructor.name === 'CSSKeyframesRule') {
                 const nativeKeyframesRule = eachNativeCSSRule as CSSKeyframesRule
                 nativeKeyframesRules.set(nativeKeyframesRule.name, nativeKeyframesRule)
             } else {
-                return this.failHydration(`Unknown top-level rule \`${eachNativeCSSRule.cssText}\` in style#master.`)
+                return this.failHydration(`Unknown top-level rule \`${eachNativeCSSRule.cssText}\` in ${MASTER_CSS_RUNTIME_STYLE_SELECTOR}.`)
             }
         }
 
         for (const [layerName, manifestRules] of manifestLayerRules) {
             const nativeLayerRule = nativeUtilityLayerRules.get(layerName)
-            if (!nativeLayerRule) return this.failHydration(`Missing layer \`${layerName}\` in style#master.`)
+            if (!nativeLayerRule) return this.failHydration(`Missing layer \`${layerName}\` in ${MASTER_CSS_RUNTIME_STYLE_SELECTOR}.`)
             const expectedRuleCount = manifestRules.reduce((count, rule) => count + (rule.nodes?.length || 1), 0)
             if (expectedRuleCount !== nativeLayerRule.cssRules.length) {
                 return this.failHydration(`Layer \`${layerName}\` does not match the hydration manifest.`)

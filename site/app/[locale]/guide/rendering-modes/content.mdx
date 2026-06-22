@@ -129,22 +129,22 @@ The following continuous DOM manipulation takes you to understand the behavior o
 Due to its runtime execution nature, you can modify the class name directly in the browser by inspecting the element and seeing its changes.
 
 ### Running style sheet
-Where are the generated CSS rules inserted? The runtime engine appends `html <style id="master">` in `html <head>` during initialization:
+Where are the generated CSS rules inserted? The runtime engine appends `html <style id="master-css">` in `html <head>` during initialization:
 ```html
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://cdn.master.co/css@rc/base.css">
     <script type="module" src="/main.js"></script>
-    <style id="master"></style> <!-- [!code highlight] -->
+    <style id="master-css"></style> <!-- [!code highlight] -->
 </head>
 ```
 
-It uses the `.insertRule()` and `.deleteRule()` of [Web APIs - CSSStyleSheet](https://developer.mozilla.org/en-US/docs/Web/API/CSSStyleSheet) to manipulate memory locally CSS rules, so any changes made to the CSS text of `style#master` cannot be observed by it's text content.
+It uses the `.insertRule()` and `.deleteRule()` of [Web APIs - CSSStyleSheet](https://developer.mozilla.org/en-US/docs/Web/API/CSSStyleSheet) to manipulate memory locally CSS rules, so any changes made to the CSS text of `style#master-css` cannot be observed by it's text content.
 
 Still, you can detect the CSS rules in the current style sheet like this:
 ```js
-const sheet = document.querySelector('style[id="master"]').sheet
+const sheet = document.querySelector('style[id="master-css"]').sheet
 console.log(sheet.cssRules)
 ```
 
@@ -164,12 +164,12 @@ The manifest tells the runtime how to interpret project-specific tokens, modes, 
 
 ## Progressive Rendering
 Master CSS Progressive Rendering works by pre-rendering critical CSS on the server and injecting them into the page HTML.
-On the client, the [CSS runtime](#runtime-rendering) hydrates these rules into a virtual stylesheet, initializing a lifecycle-aware system that can respond to class name changes in real-time. Progressive hydration depends on two pieces of HTML: `style#master` contains the pre-rendered CSS, and `script#master-css-hydration-manifest` describes the generated rules that style block contains.
+On the client, the [CSS runtime](#runtime-rendering) hydrates these rules into a virtual stylesheet, initializing a lifecycle-aware system that can respond to class name changes in real-time. Progressive hydration depends on two pieces of HTML: `style#master-css` contains the pre-rendered CSS, and `script#master-css-hydration-manifest` describes the generated rules that style block contains.
 <figure>
     <ModeImg src="/master-css-progressive-rendering.svg" alt='Master CSS Progressive Rendering' />
     <figcaption>Server-side pre-rendering and client-side hydration process</figcaption>
 </figure>
-This enables fast page loads, minimal CSS output, and dynamic style injection/removal with full consistency. If the hydration manifest is missing, invalid, or no longer matches `style#master`, the runtime discards the pre-rendered runtime state and rebuilds the stylesheet from the connected DOM classes.
+This enables fast page loads, minimal CSS output, and dynamic style injection/removal with full consistency. If the hydration manifest is missing, invalid, or no longer matches `style#master-css`, the runtime discards the pre-rendered runtime state and rebuilds the stylesheet from the connected DOM classes.
 
 ### Pre-rendering — SSG, SSR
 
@@ -204,7 +204,7 @@ The server renderer parses the HTML and generates the internal style sheet plus 
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script type="module" src="/main.js"></script>
-    <style id="master"> /* [!code ++] */
+    <style id="master-css"> /* [!code ++] */
         .font\:5xl { /* [!code ++] */
             font-size: 2.5rem /* [!code ++] */
         } /* [!code ++] */
@@ -226,7 +226,7 @@ Master CSS Hydration is the process that restores the server-side (or build time
     <ModeImg src="/master-css-hydration.svg" alt='Master CSS Hydration' />
     <figcaption>Master CSS Hydration — Creates virtual rules from DOM style sheet</figcaption>
 </figure>
-The runtime reads `script#master-css-hydration-manifest` when `initCSSRuntime()` starts. Each manifest rule stores the class name, layer, priority, selector text, generated CSS text, and any referenced variables or animations. During hydration, the runtime compares that IR with the native rules already present in `style#master`. When they match, it attaches those native CSS rules to runtime-managed rule objects instead of regenerating them.
+The runtime reads `script#master-css-hydration-manifest` when `initCSSRuntime()` starts. Each manifest rule stores the class name, layer, priority, selector text, generated CSS text, and any referenced variables or animations. During hydration, the runtime compares that IR with the native rules already present in `style#master-css`. When they match, it attaches those native CSS rules to runtime-managed rule objects instead of regenerating them.
 
 Once hydrated, Master CSS can efficiently detect new or removed class names and update styles accordingly, without needing to reparse or regenerate previously defined rules. Classes that were not present in the initial HTML are still generated at runtime, and classes removed after hydration can be removed from the managed stylesheet when their usage count reaches zero.
 
@@ -393,7 +393,7 @@ These CSS-first directives are manifest inputs. The compiler lowers tokens, mana
 | `MasterCSSManifest` | `@master/css-compiler` and `@master/css-manifest` | Engine, runtime, server renderer, extractor, linting, language tooling | Shared IR that describes how class names become sorted CSS rules. |
 | `virtual:master-css-manifest` | Official build integrations | Application runtime code and framework providers | ESM module for the canonical project-level manifest discovered from the CSS entry graph. |
 | `virtual:master-css-emitted-globals` | Static and build integrations | Runtime code | Counts variables and keyframes already emitted by the CSS entry output, so runtime rendering does not insert duplicate global CSS. |
-| Hydration manifest | Server rendering and progressive integrations | Runtime hydration | JSON rule IR with `version: 1`, used to map `style#master` back into runtime-managed rule objects. |
+| Hydration manifest | Server rendering and progressive integrations | Runtime hydration | JSON rule IR with `version: 1`, used to map `style#master-css` back into runtime-managed rule objects. |
 | Next build manifest | `@master/css.next` when `manifest` is enabled | Build analysis and reporting | Route/output report for rendered files; it is separate from the runtime hydration manifest. |
 
 ---

@@ -1,5 +1,6 @@
 import { DomHandler, Parser } from 'htmlparser2'
 import type { ChildNode, Element } from 'domhandler'
+import { MASTER_CSS_RUNTIME_STYLE_ID } from 'shared/master-css-runtime-style'
 import decodeHTML from './decode-html'
 
 /**
@@ -31,7 +32,7 @@ export default function parseHTML(html: string): {
                     break
             }
         } else if (element.type === 'style') {
-            if (element.attribs.id === 'master')
+            if (element.attribs.id === MASTER_CSS_RUNTIME_STYLE_ID)
                 styleElement = element
         }
 

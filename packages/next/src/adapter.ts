@@ -2,6 +2,8 @@ import { readFile, writeFile, mkdir } from 'node:fs/promises'
 import { dirname, extname, join, resolve } from 'node:path'
 import { render } from '@master/css-server'
 import type { NextAdapter } from 'next'
+import { MASTER_CSS_RUNTIME_STYLE_ID } from 'shared/master-css-runtime-style'
+import escapeRegExp from 'shared/utils/escape-reg-exp'
 import { getRegisteredOptions, resolveOptions, type AdapterOrder, type Options } from './options'
 import { createMasterCSSBuildStateResolver } from './build-state'
 
@@ -96,11 +98,11 @@ async function writeBuildReport(ctx: BuildCompleteContext, files: RenderedOutput
 }
 
 function createMasterStyleText(cssText: string) {
-    return `<style id="master">${cssText}</style>`
+    return `<style id="${MASTER_CSS_RUNTIME_STYLE_ID}">${cssText}</style>`
 }
 
 function upsertMasterStyleText(html: string, cssText: string) {
-    const stylePattern = /(<style\b(?=[^>]*\bid=(["'])master\2)[^>]*>)([\s\S]*?)(<\/style>)/
+    const stylePattern = new RegExp(`(<style\\b(?=[^>]*\\bid=(["'])${escapeRegExp(MASTER_CSS_RUNTIME_STYLE_ID)}\\2)[^>]*>)([\\s\\S]*?)(<\\/style>)`)
     if (stylePattern.test(html)) {
         return html.replace(
             stylePattern,

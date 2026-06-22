@@ -4,7 +4,7 @@ This example uses `@master/css.astro` with its default `progressive` mode.
 
 The integration:
 
-- pre-renders initial page CSS into `<style id="master">`
+- pre-renders initial page CSS into `<style id="master-css">`
 - injects the Master CSS runtime
 - hydrates the pre-rendered stylesheet in the browser
 - generates CSS for class names that appear after the initial HTML

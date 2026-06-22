@@ -58,7 +58,7 @@
 npm install @master/css-server
 ```
 
-`@master/css-server` renders required Master CSS from HTML. It parses HTML, extracts class names, creates a `MasterCSS` instance, and injects or updates `<style id="master">`.
+`@master/css-server` renders required Master CSS from HTML. It parses HTML, extracts class names, creates a `MasterCSS` instance, and injects or updates `<style id="master-css">`.
 
 ## API
 

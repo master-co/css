@@ -8,6 +8,6 @@ test('progressive', async ({ page }) => {
     })
     expect(await page.evaluate(() => {
         globalThis.masterCSSRuntime.destroy()
-        return document.getElementById('master')
+        return document.getElementById('master-css')
     })).toBeDefined()
 })

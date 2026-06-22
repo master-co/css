@@ -104,7 +104,7 @@ document or shadow root
   -> initCSSRuntime({ manifest, emittedGlobals, root, autoObserve })
   -> CSSRuntime.observe()
   -> register emittedGlobals variable/keyframe counts
-  -> find or create style#master
+  -> find or create style#master-css
   -> hydrate pre-rendered layers or add connected classes
   -> MutationObserver detects class and child changes
   -> classCounts increments/decrements

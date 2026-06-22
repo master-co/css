@@ -106,7 +106,7 @@ const cssRuntime = new CSSRuntime(document, manifest)
 | `CSSRuntime.instances` | `WeakMap<Document \| ShadowRoot, CSSRuntime>` | Runtime instances keyed by root. |
 | `cssRuntime.root` | `Document \| ShadowRoot` | Observed root. |
 | `cssRuntime.host` | `Element` | Root host, usually `root.host` or `document.documentElement`. |
-| `cssRuntime.container` | `HTMLElement \| ShadowRoot` | Container for `style#master`. |
+| `cssRuntime.container` | `HTMLElement \| ShadowRoot` | Container for `style#master-css`. |
 | `cssRuntime.observing` | `boolean` | `true` after `observe()`, `false` after `disconnect()`. |
 | `observe()` | `this` | Observes class attribute changes. |
 | `disconnect()` | `this \| undefined` | Cancels observation. |

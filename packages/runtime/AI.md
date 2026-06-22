@@ -2,12 +2,12 @@
 
 ## Responsibility
 
-`@master/css-runtime` runs Master CSS in the browser. It observes DOM class changes, creates or hydrates `style#master`, tracks class usage counts, registers emittedGlobals global CSS counts, and inserts/removes native CSS rules.
+`@master/css-runtime` runs Master CSS in the browser. It observes DOM class changes, creates or hydrates `style#master-css`, tracks class usage counts, registers emittedGlobals global CSS counts, and inserts/removes native CSS rules.
 
 ## Inputs And Outputs
 
 - Input: `Document` or `ShadowRoot`, required `MasterCSSManifest`, optional emittedGlobals variable/keyframe counts, connected DOM classes, mutation records, pre-rendered CSS rules.
-- Output: live `style#master` stylesheet, runtime layer state, hydrated virtual rules, devtools events.
+- Output: live `style#master-css` stylesheet, runtime layer state, hydrated virtual rules, devtools events.
 
 ## Public APIs
 

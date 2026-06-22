@@ -5,6 +5,7 @@ import {
     serializeMasterCSSHydrationManifest,
     type MasterCSSHydrationManifest
 } from 'shared/master-css-hydration-manifest'
+import { MASTER_CSS_RUNTIME_STYLE_ID } from 'shared/master-css-runtime-style'
 import parseHTML from './parse-html'
 import getDefaultManifest from './default-manifest'
 import createServerCSS from './create-server-css'
@@ -163,7 +164,7 @@ export default function render(
     if (styleElement) {
         styleElement.childNodes = [new Text(css.text)]
     } else {
-        styleElement = new Element('style', { id: 'master' }, [new Text(css.text)])
+        styleElement = new Element('style', { id: MASTER_CSS_RUNTIME_STYLE_ID }, [new Text(css.text)])
         if (headElement) {
             headElement.childNodes.push(styleElement)
         } else {

@@ -5,6 +5,7 @@ import {
     MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID,
     type MasterCSSHydrationManifest
 } from 'shared/master-css-hydration-manifest'
+import { MASTER_CSS_RUNTIME_STYLE_ID } from 'shared/master-css-runtime-style'
 import UtilityType from 'shared/utility-type'
 import { dirname, resolve } from 'path'
 import { fileURLToPath } from 'url'
@@ -277,10 +278,10 @@ export default async function init(
     const hydrationManifest = hydrationManifestInput === 'auto'
         ? await createHydrationManifestForPage(page, manifest || defaultManifest)
         : hydrationManifestInput
-    await page.evaluate(({ hydrationManifest, text, manifestScriptId }) => {
+    await page.evaluate(({ hydrationManifest, text, manifestScriptId, runtimeStyleId }) => {
         if (text) {
             const style = document.createElement('style')
-            style.id = 'master'
+            style.id = runtimeStyleId
             style.textContent = text
             document.head.appendChild(style)
         }
@@ -291,7 +292,12 @@ export default async function init(
             script.textContent = JSON.stringify(hydrationManifest)
             document.head.appendChild(script)
         }
-    }, { hydrationManifest, text, manifestScriptId: MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID })
+    }, {
+        hydrationManifest,
+        text,
+        manifestScriptId: MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID,
+        runtimeStyleId: MASTER_CSS_RUNTIME_STYLE_ID
+    })
     await page.evaluate(async ({ loaderURL, manifest }) => {
         const { startCSSRuntime } = await import(loaderURL)
         startCSSRuntime({ manifest })

@@ -11,9 +11,9 @@ const rootDir = resolve(__dirname, './fixtures/runtime/')
 
 setupNuxtTest({ rootDir })
 
-it('does not pre-render style#master in runtime mode', async () => {
+it('does not pre-render style#master-css in runtime mode', async () => {
     const html = await $fetch('/') as string
     expect(html).toContain('class="box"')
-    expect(html).not.toContain('style id="master"')
+    expect(html).not.toContain('style id="master-css"')
     expect(html).not.toContain(MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID)
 })

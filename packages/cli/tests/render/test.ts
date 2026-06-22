@@ -29,7 +29,7 @@ it('render css text into <head>', async () => {
             <head>
                 <link rel="styleSheet">
                 <style></style>
-            <style id="master">@layer utilities{.text-center{text-align:center}.font\\:32px{font-size:32px}.ml\\:0\\>\\:is\\(a\\,button\\)\\:first>:is(a,button):first-child{margin-left:0}}</style></head>
+            <style id="master-css">@layer utilities{.text-center{text-align:center}.font\\:32px{font-size:32px}.ml\\:0\\>\\:is\\(a\\,button\\)\\:first>:is(a,button):first-child{margin-left:0}}</style></head>
             <body>
                 <h1 class="text-center ml:0>:is(a,button):first font:32px">Hello World</h1>
             </body>
@@ -37,7 +37,7 @@ it('render css text into <head>', async () => {
     `)
 }, 60_000)
 
-it('render css text into head and create <style id="master">', async () => {
+it('render css text into head and create <style id="master-css">', async () => {
     const filePath = join(__dirname, './b.test.html')
     fs.rmSync(filePath, { force: true })
     fs.writeFileSync(filePath, dedent`
@@ -45,7 +45,7 @@ it('render css text into head and create <style id="master">', async () => {
             <head>
                 <link rel="styleSheet">
                 <style></style>
-                <style id="master"></style>
+                <style id="master-css"></style>
             </head>
             <body>
                 <h1 class="top:10px font:48px">Hello World</h1>
@@ -58,7 +58,7 @@ it('render css text into head and create <style id="master">', async () => {
             <head>
                 <link rel="styleSheet">
                 <style></style>
-                <style id="master">@layer utilities{.font\\:48px{font-size:48px}.top\\:10px{top:10px}}</style>
+                <style id="master-css">@layer utilities{.font\\:48px{font-size:48px}.top\\:10px{top:10px}}</style>
             </head>
             <body>
                 <h1 class="top:10px font:48px">Hello World</h1>

@@ -22,7 +22,7 @@ describe('Svelte server hook renderer', () => {
             renderer.transform('</head><body><div class="fg:red"></div>', true)
         ].join('')
 
-        expect(html).toContain('<style id="master">')
+        expect(html).toContain('<style id="master-css">')
         expect(html).toContain(`id="${MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID}"`)
         expect(html).toContain('"className":"block"')
         expect(html).toContain('"className":"fg:red"')
@@ -46,13 +46,13 @@ describe('Svelte server hook renderer', () => {
     })
 
     test('replaces an existing master style in the current chunk', () => {
-        expect(injectMasterStyle('<head><style id="master"></style></head>', '.block{}'))
-            .toBe('<head><style id="master">.block{}</style></head>')
+        expect(injectMasterStyle('<head><style id="master-css"></style></head>', '.block{}'))
+            .toBe('<head><style id="master-css">.block{}</style></head>')
     })
 
     test('replaces an existing hydration manifest in the current chunk', () => {
         const html = injectMasterStyle(
-            `<head><style id="master"></style><script type="application/json" id="${MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID}">{"version":1,"rules":[]}</script></head>`,
+            `<head><style id="master-css"></style><script type="application/json" id="${MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID}">{"version":1,"rules":[]}</script></head>`,
             '.block{}',
             `<script type="application/json" id="${MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID}">{"version":1,"rules":[{"className":"block"}]}</script>`
         )

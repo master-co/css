@@ -41,7 +41,7 @@ describe('PreRenderPlugin', () => {
         const html = typeof result === 'string' ? result : result.html
 
         expect(viteConfig.server.fs.allow).toContain(path.join(FIXTURE_DIR, 'app.css'))
-        expect(html).toContain('<style id="master">')
+        expect(html).toContain('<style id="master-css">')
         expect(html).toContain('@layer components{.card{background-color:var(--color-brand);border-color:#456}')
         expect(html).toContain('@media (width>=48rem){.card{font-size:1.125rem}}')
         expect(html).toContain('@layer utilities{.p\\:0\\.125rem{padding:0.125rem}}')

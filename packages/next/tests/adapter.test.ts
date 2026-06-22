@@ -79,7 +79,7 @@ function countHydrationManifestScripts(html: string) {
 }
 
 function readMasterStyle(html: string) {
-    return html.match(/<style id="master">([\s\S]*?)<\/style>/)?.[1] ?? ''
+    return html.match(/<style id="master-css">([\s\S]*?)<\/style>/)?.[1] ?? ''
 }
 
 afterEach(() => {
@@ -106,7 +106,7 @@ describe('renderNextBuildOutputs', () => {
         expect(outputs).toHaveLength(1)
         expect(outputs[0].classes).toEqual(['font:40px', 'fg:red'])
         expect(outputs[0].rendered).toBe(true)
-        expect(html).toContain('<style id="master">')
+        expect(html).toContain('<style id="master-css">')
         expect(html).toContain(`id="${MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID}"`)
         expect(html).toContain('"className":"font:40px"')
         expect(html).toContain('"className":"fg:red"')
@@ -183,12 +183,12 @@ describe('renderNextBuildOutputs', () => {
         expect(outputs[0].rendered).toBe(false)
         expect(outputs[0].cssBytes).toBe(0)
         expect(html).toBe(sourceHTML)
-        expect(html).not.toContain('<style id="master">')
+        expect(html).not.toContain('<style id="master-css">')
         expect(html).not.toContain('data-master-css')
         expect(html).not.toContain(MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID)
     })
 
-    it('keeps only generated CSS in style#master when native CSS is also present', async () => {
+    it('keeps only generated CSS in style#master-css when native CSS is also present', async () => {
         const projectDir = createFixtureDir()
         const distDir = join(projectDir, '.next')
         const htmlFile = join(distDir, 'server/app/index.html')

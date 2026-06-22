@@ -16,6 +16,7 @@ const scanClassCount = Number(process.env.MASTER_CSS_BENCH_SCAN_CLASSES || 1000)
 const mutationClassCount = Number(process.env.MASTER_CSS_BENCH_MUTATION_CLASSES || 1000)
 const hydrationClassCount = Number(process.env.MASTER_CSS_BENCH_HYDRATION_CLASSES || 250)
 const outputFile = args.get('output') || process.env.MASTER_CSS_BENCH_OUTPUT || process.env.MASTER_CSS_BENCH_JSON
+const MASTER_CSS_RUNTIME_STYLE_ID = 'master-css'
 
 const nativeProperties = [
     'width',
@@ -179,9 +180,9 @@ async function createObservedPage(browser, baseURL, scriptURL, bodyMarkup = '', 
 
 async function createProgressivePage(browser, baseURL, fixture, includeManifest, options = {}) {
     const page = await createPage(browser, baseURL, '', options)
-    await page.evaluate(({ bodyMarkup, hydrationManifest, styleText, withManifest }) => {
+    await page.evaluate(({ bodyMarkup, hydrationManifest, runtimeStyleId, styleText, withManifest }) => {
         const style = document.createElement('style')
-        style.id = 'master'
+        style.id = runtimeStyleId
         style.setAttribute('blocking', 'render')
         style.textContent = styleText
         document.head.append(style)
@@ -198,6 +199,7 @@ async function createProgressivePage(browser, baseURL, fixture, includeManifest,
     }, {
         bodyMarkup: fixture.bodyMarkup,
         hydrationManifest: fixture.hydrationManifest,
+        runtimeStyleId: MASTER_CSS_RUNTIME_STYLE_ID,
         styleText: fixture.styleText,
         withManifest: includeManifest
     })

@@ -24,7 +24,7 @@ describe('Astro server middleware', () => {
         const html = await response.text()
 
         expect(response.headers.get('content-length')).toBeNull()
-        expect(html).toContain('<style id="master">')
+        expect(html).toContain('<style id="master-css">')
         expect(html).toContain(`id="${MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID}"`)
         expect(html.match(new RegExp(`id="${MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID}"`, 'g'))?.length).toBe(1)
         expect(html).toContain('.block{display:block}')
