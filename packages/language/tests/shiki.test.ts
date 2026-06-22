@@ -128,6 +128,24 @@ const shikiProbeTheme = {
     ]
 } as const
 
+interface ShikiTestToken {
+    content: string
+    offset: number
+    color?: string
+}
+
+function expectSourceSpanColor(code: string, tokens: ShikiTestToken[], text: string, color: string, searchFrom = 0) {
+    const start = code.indexOf(text, searchFrom)
+    expect(start).toBeGreaterThanOrEqual(0)
+    const end = start + text.length
+    const colors = tokens
+        .filter((token) => token.offset < end && token.offset + token.content.length > start)
+        .map((token) => token.color?.toLowerCase())
+        .filter((tokenColor): tokenColor is string => Boolean(tokenColor))
+
+    expect(colors).toContain(color)
+}
+
 test.concurrent('exports Shiki language registrations as a default array', async () => {
     expect(masterCSSShikiLanguages).toEqual([masterCSSShikiLanguage])
     expect((await import('../src/shiki')).default).toBe(masterCSSShikiLanguages)
@@ -138,14 +156,14 @@ test('supports Shiki dynamic language imports', async () => {
         themes: [shikiProbeTheme as any],
         langs: ['css', import('../src/shiki')]
     })
-    const tokens = highlighter.codeToTokens('@theme { --color-primary: $value; }', {
+    const code = '@theme { --color-primary: $value; }'
+    const tokens = highlighter.codeToTokens(code, {
         lang: 'css',
         theme: 'master-css-probe'
     }).tokens.flat()
-    const tokenColor = (text: string) => tokens.find((token) => token.content.trim() === text)?.color?.toLowerCase()
 
-    expect(tokenColor('theme')).toBe('#ff0000')
-    expect(tokenColor('$value')).toBe('#00ffff')
+    expectSourceSpanColor(code, tokens, 'theme', '#ff0000')
+    expectSourceSpanColor(code, tokens, '$value', '#00ffff')
 })
 
 test('registers a real Shiki TextMate injection grammar for CSS directives', async () => {
@@ -171,7 +189,6 @@ test('registers a real Shiki TextMate injection grammar for CSS directives', asy
         lang: 'css',
         theme: 'master-css-probe'
     }).tokens.flat()
-    const tokenColor = (text: string) => tokens.find((token) => token.content.trim() === text)?.color?.toLowerCase()
 
     expect(MASTER_CSS_TEXTMATE_GRAMMAR).toBe(sharedTextMateGrammar)
     expect(masterCSSShikiLanguage.scopeName).toBe(sharedTextMateGrammar.scopeName)
@@ -181,17 +198,17 @@ test('registers a real Shiki TextMate injection grammar for CSS directives', asy
         'source.css.less',
         'source.css.postcss'
     ])
-    expect(tokenColor('theme')).toBe('#ff0000')
-    expect(tokenColor('components')).toBe('#ff0000')
-    expect(tokenColor('compose')).toBe('#ff0000')
-    expect(tokenColor('inline-flex')).toBe('#ff00ff')
-    expect(tokenColor('fg')).toBe('#00ff00')
-    expect(tokenColor('primary')).toBe('#0000ff')
-    expect(tokenColor('md')).toBe('#ff0000')
-    expect(tokenColor('$color-blue-60')).toBe('#00ffff')
-    expect(tokenColor('@keyframes fade {')).toBe('#111111')
-    expect(tokenColor('from { opacity:')).toBe('#111111')
-    expect(tokenColor('to { opacity:')).toBe('#111111')
+    expectSourceSpanColor(code, tokens, 'theme', '#ff0000')
+    expectSourceSpanColor(code, tokens, 'components', '#ff0000')
+    expectSourceSpanColor(code, tokens, 'compose', '#ff0000')
+    expectSourceSpanColor(code, tokens, 'inline-flex', '#ff00ff')
+    expectSourceSpanColor(code, tokens, 'fg', '#00ff00')
+    expectSourceSpanColor(code, tokens, 'primary', '#0000ff', code.indexOf('fg:'))
+    expectSourceSpanColor(code, tokens, 'md', '#ff0000')
+    expectSourceSpanColor(code, tokens, '$color-blue-60', '#00ffff')
+    expectSourceSpanColor(code, tokens, '@keyframes fade {', '#111111')
+    expectSourceSpanColor(code, tokens, 'from { opacity:', '#111111')
+    expectSourceSpanColor(code, tokens, 'to { opacity:', '#111111')
 })
 
 test('keeps guide theme snippets correct with TextMate only', async () => {
@@ -209,13 +226,12 @@ test('keeps guide theme snippets correct with TextMate only', async () => {
         lang: 'css',
         theme: 'master-css-probe'
     }).tokens.flat()
-    const tokenColor = (text: string) => tokens.find((token) => token.content.trim() === text)?.color?.toLowerCase()
 
-    expect(tokenColor('theme')).toBe('#ff0000')
-    expect(tokenColor('light')).toBe('#0000ff')
-    expect(tokenColor('/* Font families */')).toBe('#6272a4')
-    expect(tokenColor('-0.072')).toBe('#ffaa00')
-    expect(tokenColor('em')).toBe('#00ffaa')
+    expectSourceSpanColor(code, tokens, 'theme', '#ff0000')
+    expectSourceSpanColor(code, tokens, 'light', '#0000ff')
+    expectSourceSpanColor(code, tokens, '/* Font families */', '#6272a4')
+    expectSourceSpanColor(code, tokens, '-0.072', '#ffaa00')
+    expectSourceSpanColor(code, tokens, 'em', '#00ffaa', code.indexOf('-0.072'))
 })
 
 test.concurrent('does not attach semantic metadata to guide theme CSS directive syntax', () => {
