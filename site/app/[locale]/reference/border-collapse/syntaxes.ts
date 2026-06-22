@@ -1,7 +1,7 @@
 const syntaxes = [
     ['border-collapse:`value`'],
-    'border:collapse',
-    'border:separate'
+    'border-collapse:collapse',
+    'border-collapse:separate'
 ]
 
 export default syntaxes
