@@ -1,6 +1,5 @@
 const syntaxes = [
     ['w:`size`'],
-    ['w:`n/d`'],
     'w:full',
     'w:fit',
     'w:min',
