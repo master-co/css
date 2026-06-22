@@ -27,23 +27,23 @@
     },
     "devDependencies": {
         "@figma/eslint-plugin-figma-plugins": "^1.0.0",
-        "@figma/plugin-typings": "^1.125.0",
+        "@figma/plugin-typings": "^1.129.0",
         "@master/css": "workspace:^",
-        "@types/react": "^19.2.14",
+        "@types/react": "^19.2.17",
         "@types/react-dom": "^19.2.3",
-        "@vitejs/plugin-react": "^6.0.1",
+        "@vitejs/plugin-react": "^6.0.2",
         "colorjs.io": "^0.6.1",
         "dot-prop": "^10.1.0",
         "eslint-plugin-react-hooks": "^7.1.1",
-        "eslint-plugin-react-refresh": "^0.5.2",
+        "eslint-plugin-react-refresh": "^0.5.3",
         "typescript": "^6.0.3",
         "vite-plugin-singlefile": "^2.3.3"
     },
     "dependencies": {
         "copy-to-clipboard": "^4.0.2",
         "petite-vue": "^0.4.1",
-        "preact": "^10.29.1",
-        "react": "^19.2.5",
-        "react-dom": "^19.2.5"
+        "preact": "^10.29.2",
+        "react": "^19.2.7",
+        "react-dom": "^19.2.7"
     }
 }

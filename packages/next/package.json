@@ -65,14 +65,14 @@
     },
     "dependencies": {
         "@master/css": "workspace:^",
-        "@master/css-manifest": "workspace:^",
         "@master/css-extractor": "workspace:^",
         "@master/css-integration": "workspace:^",
-        "@master/css-stylesheet": "workspace:^",
-        "@master/css-server": "workspace:^"
+        "@master/css-manifest": "workspace:^",
+        "@master/css-server": "workspace:^",
+        "@master/css-stylesheet": "workspace:^"
     },
     "devDependencies": {
-        "next": "^16.2.4",
+        "next": "^16.2.9",
         "shared": "workspace:^"
     }
 }

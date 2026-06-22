@@ -11,18 +11,18 @@
     "dependencies": {
         "@master/css": "workspace:^",
         "@master/css.react": "workspace:^",
-        "next": "^16.2.4",
-        "react": "^19.2.5",
-        "react-dom": "^19.2.5"
+        "next": "^16.2.9",
+        "react": "^19.2.7",
+        "react-dom": "^19.2.7"
     },
     "devDependencies": {
         "@master/css-cli": "workspace:^",
         "@master/css.next": "workspace:^",
-        "@types/node": "^25.6.0",
-        "@types/react": "^19.2.14",
+        "@types/node": "^25.9.4",
+        "@types/react": "^19.2.17",
         "@types/react-dom": "^19.2.3",
-        "eslint": "^10.2.1",
-        "eslint-config-next": "^16.2.4",
+        "eslint": "^10.5.0",
+        "eslint-config-next": "^16.2.9",
         "typescript": "^6.0.3"
     }
 }

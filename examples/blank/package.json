@@ -12,7 +12,7 @@
         "@master/css-integration": "workspace:^",
         "@master/css.vite": "workspace:^",
         "typescript": "^6.0.3",
-        "vite": "^8.0.10"
+        "vite": "^8.0.16"
     },
     "dependencies": {
         "@master/css": "workspace:^"

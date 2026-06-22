@@ -56,6 +56,6 @@
     "devDependencies": {
         "@types/css-tree": "^2.3.11",
         "shared": "workspace:^",
-        "ts-jest": "^29.4.9"
+        "ts-jest": "^29.4.11"
     }
 }

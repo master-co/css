@@ -22,14 +22,14 @@
         "@master/css-preset": "workspace:^",
         "lodash.escaperegexp": "^4.1.2",
         "mdn-data": "^2.28.1",
-        "oxc-parser": "^0.129.0",
+        "oxc-parser": "^0.137.0",
         "shared": "workspace:^",
-        "vscode-languageserver-protocol": "^3.17.5",
+        "vscode-languageserver-protocol": "^3.18.0",
         "vscode-languageserver-textdocument": "^1.0.12"
     },
     "devDependencies": {
         "@types/lodash.escaperegexp": "^4.1.9",
-        "shiki": "^4.0.2"
+        "shiki": "^4.2.0"
     },
     "sideEffects": false,
     "main": "./dist/index.mjs",

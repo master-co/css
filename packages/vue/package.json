@@ -76,24 +76,24 @@
     "dependencies": {
         "@master/css": "workspace:^",
         "@master/css-integration": "workspace:^",
+        "@master/css-runtime": "workspace:^",
         "@master/css-source": "workspace:^",
         "@master/css.vite": "workspace:^",
-        "@master/css-runtime": "workspace:^",
         "@techor/extend": "^3.2.5"
     },
     "devDependencies": {
         "@master/css-preset": "workspace:^",
         "@playwright/experimental-ct-vue": "1.61.0",
         "@playwright/test": "1.61.0",
-        "@vitejs/plugin-vue": "^6.0.6",
-        "@vue/eslint-config-typescript": "^14.7.0",
-        "@vue/server-renderer": "^3.5.33",
-        "@vue/test-utils": "^2.4.10",
+        "@vitejs/plugin-vue": "^6.0.7",
+        "@vue/eslint-config-typescript": "^14.9.0",
+        "@vue/server-renderer": "^3.5.38",
+        "@vue/test-utils": "^2.4.11",
         "@vue/tsconfig": "^0.9.1",
-        "eslint-plugin-vue": "^10.9.0",
+        "eslint-plugin-vue": "^10.9.2",
         "shared": "workspace:^",
         "typescript": "6.0.3",
-        "vite": "^8.0.10",
-        "vue-tsc": "^3.2.7"
+        "vite": "^8.0.16",
+        "vue-tsc": "^3.3.5"
     }
 }

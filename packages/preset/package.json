@@ -69,7 +69,7 @@
     },
     "devDependencies": {
         "@master/css-compiler": "workspace:^",
-        "tsx": "^4.21.0",
-        "shared": "workspace:^"
+        "shared": "workspace:^",
+        "tsx": "^4.22.4"
     }
 }

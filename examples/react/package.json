@@ -12,23 +12,23 @@
     "dependencies": {
         "@master/css": "workspace:^",
         "@master/css.vite": "workspace:^",
-        "react": "^19.2.5",
-        "react-dom": "^19.2.5"
+        "react": "^19.2.7",
+        "react-dom": "^19.2.7"
     },
     "devDependencies": {
-        "@eslint/compat": "^2.0.5",
-        "@types/react": "^19.2.14",
+        "@eslint/compat": "^2.1.0",
+        "@types/react": "^19.2.17",
         "@types/react-dom": "^19.2.3",
-        "@typescript-eslint/eslint-plugin": "^8.59.1",
-        "@typescript-eslint/parser": "^8.59.1",
-        "@vitejs/plugin-react": "^6.0.1",
-        "eslint": "^10.2.1",
+        "@typescript-eslint/eslint-plugin": "^8.61.1",
+        "@typescript-eslint/parser": "^8.61.1",
+        "@vitejs/plugin-react": "^6.0.2",
+        "eslint": "^10.5.0",
         "eslint-plugin-react": "^7.37.5",
         "eslint-plugin-react-hooks": "^7.1.1",
-        "eslint-plugin-react-refresh": "^0.5.2",
-        "globals": "^17.5.0",
+        "eslint-plugin-react-refresh": "^0.5.3",
+        "globals": "^17.6.0",
         "typescript": "^6.0.3",
-        "typescript-eslint": "^8.59.1",
-        "vite": "^8.0.10"
+        "typescript-eslint": "^8.61.1",
+        "vite": "^8.0.16"
     }
 }
