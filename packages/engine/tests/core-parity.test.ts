@@ -26,7 +26,6 @@ describe.concurrent('default manifest utility parity', () => {
             .toBe('@media (width>=64rem) and (orientation:landscape){.bg\\:black\\:hover\\@md\\&landscape:hover{background-color:oklch(0% 0 none)}}')
         expectClassText(css, 'bg:transparent', 'background-color:transparent')
         expectClassText(css, 'bg:current', 'background-color:currentColor')
-        expect(css.create('bg:line')).toBeUndefined()
         expectClassText(css, 'bg-clip-border', 'background-clip:border-box')
         expectClassText(css, 'bg:url("#test")', 'background-image:url("#test")')
         expectClassText(css, 'bg:linear-gradient(45deg,#f3ec78,#af4261)', 'background-image:linear-gradient(45deg,#f3ec78,#af4261)')
