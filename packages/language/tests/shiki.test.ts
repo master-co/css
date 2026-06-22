@@ -133,7 +133,7 @@ test.concurrent('exports Shiki language registrations as a default array', async
     expect((await import('../src/shiki')).default).toBe(masterCSSShikiLanguages)
 })
 
-test.concurrent('supports Shiki dynamic language imports', async () => {
+test('supports Shiki dynamic language imports', async () => {
     const highlighter = await createHighlighter({
         themes: [shikiProbeTheme as any],
         langs: ['css', import('../src/shiki')]
@@ -142,13 +142,13 @@ test.concurrent('supports Shiki dynamic language imports', async () => {
         lang: 'css',
         theme: 'master-css-probe'
     }).tokens.flat()
-    const tokenColor = (text: string) => (tokens.find((token) => token.content === text) ?? tokens.find((token) => token.content.includes(text)))?.color?.toLowerCase()
+    const tokenColor = (text: string) => tokens.find((token) => token.content.trim() === text)?.color?.toLowerCase()
 
     expect(tokenColor('theme')).toBe('#ff0000')
     expect(tokenColor('$value')).toBe('#00ffff')
 })
 
-test.concurrent('registers a real Shiki TextMate injection grammar for CSS directives', async () => {
+test('registers a real Shiki TextMate injection grammar for CSS directives', async () => {
     const highlighter = await createHighlighter({
         themes: [shikiProbeTheme as any],
         langs: ['css', masterCSSShikiLanguage]
@@ -171,7 +171,7 @@ test.concurrent('registers a real Shiki TextMate injection grammar for CSS direc
         lang: 'css',
         theme: 'master-css-probe'
     }).tokens.flat()
-    const tokenColor = (text: string) => (tokens.find((token) => token.content === text) ?? tokens.find((token) => token.content.includes(text)))?.color?.toLowerCase()
+    const tokenColor = (text: string) => tokens.find((token) => token.content.trim() === text)?.color?.toLowerCase()
 
     expect(MASTER_CSS_TEXTMATE_GRAMMAR).toBe(sharedTextMateGrammar)
     expect(masterCSSShikiLanguage.scopeName).toBe(sharedTextMateGrammar.scopeName)
@@ -189,12 +189,12 @@ test.concurrent('registers a real Shiki TextMate injection grammar for CSS direc
     expect(tokenColor('primary')).toBe('#0000ff')
     expect(tokenColor('md')).toBe('#ff0000')
     expect(tokenColor('$color-blue-60')).toBe('#00ffff')
-    expect(tokenColor('fade')).toBe('#111111')
-    expect(tokenColor('from')).toBe('#111111')
-    expect(tokenColor('to')).toBe('#111111')
+    expect(tokenColor('@keyframes fade {')).toBe('#111111')
+    expect(tokenColor('from { opacity:')).toBe('#111111')
+    expect(tokenColor('to { opacity:')).toBe('#111111')
 })
 
-test.concurrent('keeps guide theme snippets correct with TextMate only', async () => {
+test('keeps guide theme snippets correct with TextMate only', async () => {
     const highlighter = await createHighlighter({
         themes: [shikiProbeTheme as any],
         langs: ['css', masterCSSShikiLanguage]
@@ -209,7 +209,7 @@ test.concurrent('keeps guide theme snippets correct with TextMate only', async (
         lang: 'css',
         theme: 'master-css-probe'
     }).tokens.flat()
-    const tokenColor = (text: string) => (tokens.find((token) => token.content === text) ?? tokens.find((token) => token.content.includes(text)))?.color?.toLowerCase()
+    const tokenColor = (text: string) => tokens.find((token) => token.content.trim() === text)?.color?.toLowerCase()
 
     expect(tokenColor('theme')).toBe('#ff0000')
     expect(tokenColor('light')).toBe('#0000ff')

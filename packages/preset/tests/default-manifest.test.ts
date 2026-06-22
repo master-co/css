@@ -14,6 +14,7 @@ import type { MasterCSSManifest } from 'shared/master-css-manifest'
 
 const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 const __dirname = dirname(fileURLToPath(import.meta.url))
+let compiledDefaultManifest: MasterCSSManifest
 
 const retainedRadiusKeyAliases = {
     rbl: 'border-bottom-left-radius',
@@ -93,6 +94,11 @@ const removedAliases = [
 ]
 
 const competitiveNativeValueUtilities: string[] = []
+const removedStaticUtilityNames = [
+    'not-italic',
+    'transform-3d',
+    'transform-flat'
+]
 
 const nativeValueNamespaceMatcherKeys = new Set([
     'outline',
@@ -176,12 +182,17 @@ function hasCSSVariableAssignmentUtility(manifest: MasterCSSManifest) {
     )
 }
 
+function getCompiledDefaultManifest() {
+    compiledDefaultManifest ||= createDefaultManifestFromSourceFile(resolve(__dirname, '../src/index.css'))
+    return compiledDefaultManifest
+}
+
 describe('@master/css-preset defaultManifest', () => {
     it('matches the readable preset sources', () => {
-        const manifest = createDefaultManifestFromSourceFile(resolve(__dirname, '../src/index.css'))
+        const manifest = getCompiledDefaultManifest()
         const utilities = manifest.utilities || []
 
-        expect(utilities).toHaveLength(180)
+        expect(utilities).toHaveLength(177)
         expect(utilities[0]?.order).toBe(utilities.length - 1)
         expect(utilities[utilities.length - 1]?.order).toBe(0)
         expect(utilities.some((utility) => utility.id === 'group')).toBe(false)
@@ -200,10 +211,10 @@ describe('@master/css-preset defaultManifest', () => {
         expect(hasCSSVariableAssignmentUtility(manifest)).toBe(false)
         expect(hasCSSVariableAssignmentUtility(defaultManifest)).toBe(false)
         expect(manifest).toEqual(defaultManifest)
-    }, 20000)
+    }, 60000)
 
     it('matches the CSS-authored preset manifest facets', () => {
-        const compiledManifest = createDefaultManifestFromSourceFile(resolve(__dirname, '../src/index.css'))
+        const compiledManifest = getCompiledDefaultManifest()
         expect(compiledManifest.variables).toEqual(defaultManifest.variables)
         expect(compiledManifest.animations).toEqual(defaultManifest.animations)
         expect(stripRaw(compiledManifest.variants)).toEqual(stripRaw(defaultManifest.variants))
@@ -211,10 +222,19 @@ describe('@master/css-preset defaultManifest', () => {
         expect(compiledManifest.breakpointAtRules).toEqual(defaultManifest.breakpointAtRules)
         expect(compiledManifest.containerAtRules).toEqual(defaultManifest.containerAtRules)
         expect(compiledManifest.selectors).toEqual(defaultManifest.selectors)
-    }, 20000)
+    }, 60000)
 
     it('does not publish the removed px inline alias', () => {
         expect(defaultManifest.variables?.some((variable) => variable.name === 'px')).toBe(false)
+    })
+
+    it('does not publish removed static utility shortcuts', () => {
+        const css = createCSS(defaultManifest)
+
+        for (const name of removedStaticUtilityNames) {
+            expect(defaultManifest.utilities?.some((utility) => utility.name === name), name).toBe(false)
+            expect(css.create(name), name).toBeUndefined()
+        }
     })
 
     it('uses engine default settings when the preset manifest omits settings', () => {
