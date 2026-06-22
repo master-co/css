@@ -79,6 +79,13 @@ test('uses the current syntax declarations before falling back to preview syntax
     )
 })
 
+test('throws when syntax and preview fallback generate empty declarations', () => {
+    assert.throws(
+        () => generateSyntaxTrDeclarations('appearance:push-button'),
+        /SyntaxTr generated empty CSS declarations for `appearance:push-button`\./
+    )
+})
+
 function generateDeclarations(className: string) {
     const rule = css.generate(className)[0]
     assert.ok(rule)

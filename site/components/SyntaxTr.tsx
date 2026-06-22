@@ -13,7 +13,7 @@ export default async function SyntaxTr({ value, children, previewSyntax }: any) 
     const declarations = generateSyntaxTrDeclarations(proxyCode, previewSyntax)
     const text = dedent`
         __TMP__ {
-        ${declarations ? convertDeclarationsToCSS(declarations) : ''}}`
+        ${convertDeclarationsToCSS(declarations)}}`
     const transformerRestore: ShikiTransformer = {
         root(root) {
             placeholders.restoreTextNodes(root)
