@@ -15,6 +15,7 @@ export function withCIConcurrency(test: NonNullable<ViteUserConfig['test']> = {}
         ...test,
         ...(isCI
             ? {
+                fileParallelism: false,
                 maxConcurrency: 1,
                 testTimeout: maxCITimeout(test.testTimeout),
                 hookTimeout: maxCITimeout(test.hookTimeout),

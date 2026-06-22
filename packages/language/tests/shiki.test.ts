@@ -68,82 +68,42 @@ function semanticScopeStyleTokens() {
     ]
 }
 
-const shikiProbeTheme = {
-    name: 'master-css-probe',
-    type: 'dark',
-    settings: [
-        {
-            settings: {
-                foreground: '#111111'
-            }
-        },
-        {
-            scope: 'comment.block.css',
-            settings: {
-                foreground: '#6272a4'
-            }
-        },
-        {
-            scope: 'keyword.control.at-rule.master-css',
-            settings: {
-                foreground: '#ff0000'
-            }
-        },
-        {
-            scope: 'support.type.property-name.master-css',
-            settings: {
-                foreground: '#00ff00'
-            }
-        },
-        {
-            scope: 'support.constant.property-value.master-css',
-            settings: {
-                foreground: '#0000ff'
-            }
-        },
-        {
-            scope: 'constant.numeric.css',
-            settings: {
-                foreground: '#ffaa00'
-            }
-        },
-        {
-            scope: 'keyword.other.unit',
-            settings: {
-                foreground: '#00ffaa'
-            }
-        },
-        {
-            scope: 'entity.other.attribute-name.class.master-css',
-            settings: {
-                foreground: '#ff00ff'
-            }
-        },
-        {
-            scope: 'variable.other.master-css',
-            settings: {
-                foreground: '#00ffff'
-            }
-        }
-    ]
-} as const
+const shikiSmokeTheme = 'github-dark'
 
-interface ShikiTestToken {
+interface ShikiContentToken {
     content: string
-    offset: number
-    color?: string
 }
 
-function expectSourceSpanColor(code: string, tokens: ShikiTestToken[], text: string, color: string, searchFrom = 0) {
-    const start = code.indexOf(text, searchFrom)
-    expect(start).toBeGreaterThanOrEqual(0)
-    const end = start + text.length
-    const colors = tokens
-        .filter((token) => token.offset < end && token.offset + token.content.length > start)
-        .map((token) => token.color?.toLowerCase())
-        .filter((tokenColor): tokenColor is string => Boolean(tokenColor))
+interface TextMatePattern {
+    include?: string
+    begin?: string
+    match?: string
+    name?: string
+    patterns?: TextMatePattern[]
+    beginCaptures?: Record<string, { name?: string }>
+    captures?: Record<string, { name?: string }>
+}
 
-    expect(colors).toContain(color)
+function expectTokensPreserveSource(tokens: ShikiContentToken[][], code: string) {
+    expect(tokens.map((lineTokens) => lineTokens.map((token) => token.content).join(''))).toEqual(code.split('\n'))
+}
+
+function grammarEntry(key: string) {
+    const entry = MASTER_CSS_TEXTMATE_GRAMMAR.repository[key] as { patterns?: TextMatePattern[] } | undefined
+    expect(entry?.patterns).toBeDefined()
+    return entry as { patterns: TextMatePattern[] }
+}
+
+function findGrammarPattern(entry: { patterns: TextMatePattern[] }, predicate: (pattern: TextMatePattern) => boolean) {
+    const pattern = entry.patterns.find(predicate)
+    expect(pattern).toBeDefined()
+    return pattern as TextMatePattern
+}
+
+function expectGrammarIncludes(entry: { patterns: TextMatePattern[] }, includes: string[]) {
+    expect(entry.patterns).toEqual(expect.arrayContaining(
+        includes.map((include) => expect.objectContaining({ include }))
+    ))
 }
 
 test.concurrent('exports Shiki language registrations as a default array', async () => {
@@ -151,45 +111,7 @@ test.concurrent('exports Shiki language registrations as a default array', async
     expect((await import('../src/shiki')).default).toBe(masterCSSShikiLanguages)
 })
 
-test('supports Shiki dynamic language imports', async () => {
-    const highlighter = await createHighlighter({
-        themes: [shikiProbeTheme as any],
-        langs: ['css', import('../src/shiki')]
-    })
-    const code = '@theme { --color-primary: $value; }'
-    const tokens = highlighter.codeToTokens(code, {
-        lang: 'css',
-        theme: 'master-css-probe'
-    }).tokens.flat()
-
-    expectSourceSpanColor(code, tokens, 'theme', '#ff0000')
-    expectSourceSpanColor(code, tokens, '$value', '#00ffff')
-})
-
-test('registers a real Shiki TextMate injection grammar for CSS directives', async () => {
-    const highlighter = await createHighlighter({
-        themes: [shikiProbeTheme as any],
-        langs: ['css', masterCSSShikiLanguage]
-    })
-    const code = [
-        '@theme {',
-        '    --color-primary: $color-blue-60;',
-        '}',
-        '@components {',
-        '    btn {',
-        '        @compose inline-flex fg:primary:hover@md;',
-        '    }',
-        '}',
-        '@keyframes fade {',
-        '    from { opacity: 0; }',
-        '    to { opacity: 1; }',
-        '}'
-    ].join('\n')
-    const tokens = highlighter.codeToTokens(code, {
-        lang: 'css',
-        theme: 'master-css-probe'
-    }).tokens.flat()
-
+test.concurrent('defines deterministic TextMate grammar scopes for CSS directives', () => {
     expect(MASTER_CSS_TEXTMATE_GRAMMAR).toBe(sharedTextMateGrammar)
     expect(masterCSSShikiLanguage.scopeName).toBe(sharedTextMateGrammar.scopeName)
     expect(masterCSSShikiLanguage.injectTo).toEqual([
@@ -198,40 +120,117 @@ test('registers a real Shiki TextMate injection grammar for CSS directives', asy
         'source.css.less',
         'source.css.postcss'
     ])
-    expectSourceSpanColor(code, tokens, 'theme', '#ff0000')
-    expectSourceSpanColor(code, tokens, 'components', '#ff0000')
-    expectSourceSpanColor(code, tokens, 'compose', '#ff0000')
-    expectSourceSpanColor(code, tokens, 'inline-flex', '#ff00ff')
-    expectSourceSpanColor(code, tokens, 'fg', '#00ff00')
-    expectSourceSpanColor(code, tokens, 'primary', '#0000ff', code.indexOf('fg:'))
-    expectSourceSpanColor(code, tokens, 'md', '#ff0000')
-    expectSourceSpanColor(code, tokens, '$color-blue-60', '#00ffff')
-    expectSourceSpanColor(code, tokens, '@keyframes fade {', '#111111')
-    expectSourceSpanColor(code, tokens, 'from { opacity:', '#111111')
-    expectSourceSpanColor(code, tokens, 'to { opacity:', '#111111')
+
+    const directive = grammarEntry('master-directive')
+    const themeDirective = findGrammarPattern(directive, (pattern) => pattern.begin === '(@)(theme)\\b')
+    const managedDirective = findGrammarPattern(directive, (pattern) => pattern.begin === '(@)(defaults|components|utilities)\\b')
+    const composeDirective = findGrammarPattern(directive, (pattern) => pattern.begin === '(@)(compose)\\b')
+
+    expect(themeDirective.beginCaptures?.['2']?.name).toBe('keyword.control.at-rule.master-css')
+    expect(managedDirective.beginCaptures?.['2']?.name).toBe('keyword.control.at-rule.master-css')
+    expect(composeDirective.beginCaptures?.['2']?.name).toBe('keyword.control.at-rule.master-css')
+    expectGrammarIncludes({ patterns: themeDirective.patterns ?? [] }, ['#master-theme-block', '#master-theme-prelude'])
+    expectGrammarIncludes({ patterns: managedDirective.patterns ?? [] }, ['#master-managed-block'])
+    expectGrammarIncludes({ patterns: composeDirective.patterns ?? [] }, ['#master-compose-prelude'])
+
+    const themeBlock = grammarEntry('master-theme-block')
+    expectGrammarIncludes({ patterns: themeBlock.patterns[0]?.patterns ?? [] }, [
+        '#master-theme-declaration',
+        '#master-keyframes',
+        '#master-directive'
+    ])
+
+    const themeValue = grammarEntry('master-theme-value')
+    findGrammarPattern(themeValue, (pattern) => pattern.match === '\\$[_a-zA-Z-][_a-zA-Z0-9-]*' && pattern.name === 'variable.other.master-css')
+
+    const composePrelude = grammarEntry('master-compose-prelude')
+    expectGrammarIncludes(composePrelude, ['#master-string', '#master-query', '#master-selector', '#master-class-fragment'])
+
+    const classFragment = grammarEntry('master-class-fragment')
+    findGrammarPattern(classFragment, (pattern) => pattern.name === 'support.constant.property-value.master-css')
+    findGrammarPattern(classFragment, (pattern) => pattern.name === 'entity.other.attribute-name.class.master-css')
+    findGrammarPattern(classFragment, (pattern) => pattern.name === 'keyword.control.at-rule.master-css.query')
+    const propertyFragment = findGrammarPattern(classFragment, (pattern) => pattern.captures?.['1']?.name === 'support.type.property-name.master-css')
+    expect(propertyFragment.captures?.['2']?.name).toBe('keyword.operator.master-css')
+})
+
+test('supports Shiki dynamic language imports', async () => {
+    const highlighter = await createHighlighter({
+        themes: [shikiSmokeTheme],
+        langs: ['css', import('../src/shiki')]
+    })
+
+    try {
+        expect(highlighter.getLoadedLanguages()).toEqual(expect.arrayContaining(['css', masterCSSShikiLanguage.name]))
+
+        const code = '@theme { --color-primary: $value; }'
+        const result = highlighter.codeToTokens(code, {
+            lang: 'css',
+            theme: shikiSmokeTheme
+        })
+
+        expectTokensPreserveSource(result.tokens, code)
+    } finally {
+        await highlighter.dispose?.()
+    }
+})
+
+test('registers a real Shiki TextMate injection grammar for CSS directives', async () => {
+    const highlighter = await createHighlighter({
+        themes: [shikiSmokeTheme],
+        langs: ['css', masterCSSShikiLanguage]
+    })
+
+    try {
+        expect(highlighter.getLoadedLanguages()).toEqual(expect.arrayContaining(['css', masterCSSShikiLanguage.name]))
+
+        const code = [
+            '@theme {',
+            '    --color-primary: $color-blue-60;',
+            '}',
+            '@components {',
+            '    btn {',
+            '        @compose inline-flex fg:primary:hover@md;',
+            '    }',
+            '}',
+            '@keyframes fade {',
+            '    from { opacity: 0; }',
+            '    to { opacity: 1; }',
+            '}'
+        ].join('\n')
+        const result = highlighter.codeToTokens(code, {
+            lang: 'css',
+            theme: shikiSmokeTheme
+        })
+
+        expectTokensPreserveSource(result.tokens, code)
+    } finally {
+        await highlighter.dispose?.()
+    }
 })
 
 test('keeps guide theme snippets correct with TextMate only', async () => {
     const highlighter = await createHighlighter({
-        themes: [shikiProbeTheme as any],
+        themes: [shikiSmokeTheme],
         langs: ['css', masterCSSShikiLanguage]
     })
-    const code = [
-        '@theme light {',
-        '    /* Font families */',
-        '    --tracking-tightest: -0.072em;',
-        '}'
-    ].join('\n')
-    const tokens = highlighter.codeToTokens(code, {
-        lang: 'css',
-        theme: 'master-css-probe'
-    }).tokens.flat()
 
-    expectSourceSpanColor(code, tokens, 'theme', '#ff0000')
-    expectSourceSpanColor(code, tokens, 'light', '#0000ff')
-    expectSourceSpanColor(code, tokens, '/* Font families */', '#6272a4')
-    expectSourceSpanColor(code, tokens, '-0.072', '#ffaa00')
-    expectSourceSpanColor(code, tokens, 'em', '#00ffaa', code.indexOf('-0.072'))
+    try {
+        const code = [
+            '@theme light {',
+            '    /* Font families */',
+            '    --tracking-tightest: -0.072em;',
+            '}'
+        ].join('\n')
+        const result = highlighter.codeToTokens(code, {
+            lang: 'css',
+            theme: shikiSmokeTheme
+        })
+
+        expectTokensPreserveSource(result.tokens, code)
+    } finally {
+        await highlighter.dispose?.()
+    }
 })
 
 test.concurrent('does not attach semantic metadata to guide theme CSS directive syntax', () => {

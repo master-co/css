@@ -55,7 +55,7 @@ jobs:
                   GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
             - run: pnpm install
             - run: pnpm run build
-            - run: pnpm test
+            - run: pnpm run test:ci
 
     type-check:
         runs-on: ubuntu-latest
