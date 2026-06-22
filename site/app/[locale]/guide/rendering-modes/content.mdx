@@ -151,11 +151,11 @@ console.log(sheet.cssRules)
 When runtime code needs project tokens, modes, or component definitions, load the compiled runtime inputs from the integration. `virtual:master-css-manifest` resolves the canonical project-level manifest discovered from the CSS entry, and `virtual:master-css-emitted-globals` records variables and keyframes that the entry already emitted.
 
 ```js
-import { initCSSRuntime } from '@master/css-runtime'
+import { CSSRuntime } from '@master/css-runtime'
 import manifest from 'virtual:master-css-manifest'
 import emittedGlobals from 'virtual:master-css-emitted-globals'
 
-initCSSRuntime({ manifest, emittedGlobals })
+CSSRuntime.create({ manifest, emittedGlobals }).observe()
 ```
 
 The manifest tells the runtime how to interpret project-specific tokens, modes, components, utilities, and variants. The `emittedGlobals` object is narrower: it only records variables and keyframes that the build already emitted from the CSS entry output. Dynamic classes can still be generated later, but shared global CSS is not duplicated when those classes reference an already-loaded variable or animation.
@@ -251,7 +251,7 @@ Master CSS hydration is the process that restores the server-side or build-time 
     <ModeImg src="/master-css-hydration.svg" alt='Master CSS Hydration' />
     <figcaption>Master CSS Hydration — Creates virtual rules from DOM style sheet</figcaption>
 </figure>
-The runtime reads explicit `hydrationManifest` options first. Without an explicit option, `initCSSRuntimeAsync()` discovers hydration data from the document: it reads inline `script#master-css-hydration-manifest` for compatibility, then fetches the URL from `style#master-css[data-master-css-hydration-manifest]`.
+The runtime reads explicit `hydrationManifest` options first. Without an explicit option, `CSSRuntime.create()` reads inline `script#master-css-hydration-manifest` for compatibility. When `runtime.needsHydrationManifest()` is true, call `await runtime.loadHydrationManifest()` before `runtime.observe()` to fetch the URL from `style#master-css[data-master-css-hydration-manifest]`.
 
 Each manifest rule stores the class name, layer, priority, selector text, generated CSS text, and any referenced variables or animations. During hydration, the runtime compares that IR with the native rules already present in `style#master-css`. When they match, it attaches those native CSS rules to runtime-managed rule objects instead of regenerating them.
 

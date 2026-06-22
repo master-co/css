@@ -12,7 +12,9 @@
 ## Public APIs
 
 - `CSSRuntime`
-- `initCSSRuntime({ manifest, root, autoObserve, emittedGlobals })`
+- `CSSRuntime.create({ manifest, root, emittedGlobals, hydrationManifest })`
+- `CSSRuntime#loadHydrationManifest()`
+- `CSSRuntime#observe()`
 - `RuntimeUtilityLayer`
 - runtime types
 
@@ -35,7 +37,7 @@
 
 - Changing core parser behavior here.
 - Changing global names (`MasterCSSRuntime`, `masterCSSRuntime`) casually.
-- Adding public global options to the CDN IIFE; custom manifests belong in `initCSSRuntime()` or integrations.
+- Adding public global options to the CDN IIFE; custom manifests belong in `CSSRuntime.create()` or integrations.
 - Removing hydration error checks.
 - Changing FOUC behavior without integration validation.
 

@@ -1,7 +1,12 @@
 import { MasterCSS, VariableRule, AnimationRule } from '@master/css-engine'
 import type { MasterCSSManifest, MasterCSSManifestUtilityLayerName } from 'shared/master-css-manifest'
 import type { MasterCSSEmittedGlobals } from '@master/css-engine'
-import type { MasterCSSGeneratedRuleIR, MasterCSSHydrationManifest } from 'shared/master-css-hydration-manifest'
+import {
+    MASTER_CSS_HYDRATION_MANIFEST_ATTR,
+    MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID,
+    type MasterCSSGeneratedRuleIR,
+    type MasterCSSHydrationManifest
+} from 'shared/master-css-hydration-manifest'
 import { MASTER_CSS_RUNTIME_STYLE_ID } from 'shared/master-css-runtime-style'
 import registerGlobal from './register-global'
 import { HydrateResult } from './types'
@@ -12,6 +17,54 @@ import HydratedGeneratedRule from './generated-rule'
 import { browserNativeDeclarationMatcher } from './native-declaration'
 
 const MASTER_CSS_RUNTIME_STYLE_SELECTOR = `style#${MASTER_CSS_RUNTIME_STYLE_ID}`
+
+export interface CSSRuntimeCreateOptions {
+    manifest: MasterCSSManifest
+    root?: Document | ShadowRoot
+    emittedGlobals?: MasterCSSEmittedGlobals
+    hydrationManifest?: MasterCSSHydrationManifest
+}
+
+function isDocumentRoot(root: Document | ShadowRoot): root is Document {
+    const rootConstructorName = root?.constructor.name
+    return rootConstructorName === 'HTMLDocument' || rootConstructorName === 'Document'
+}
+
+function findElementById(root: Document | ShadowRoot, id: string) {
+    return isDocumentRoot(root)
+        ? root.getElementById(id)
+        : 'querySelector' in root
+            ? root.querySelector(`#${id}`)
+            : undefined
+}
+
+function parseHydrationManifest(source: string): MasterCSSHydrationManifest | undefined {
+    try {
+        const hydrationManifest = JSON.parse(source) as MasterCSSHydrationManifest
+        return hydrationManifest?.version === 1 && Array.isArray(hydrationManifest.rules)
+            ? hydrationManifest
+            : undefined
+    } catch (error) {
+        if (process.env.NODE_ENV === 'development') {
+            console.debug('Cannot parse Master CSS hydration manifest.', error)
+        }
+    }
+}
+
+function readInlineHydrationManifest(root: Document | ShadowRoot): MasterCSSHydrationManifest | undefined {
+    const element = findElementById(root, MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID)
+    const source = element?.textContent?.trim()
+    if (!source) return
+    return parseHydrationManifest(source)
+}
+
+function readExternalHydrationManifestSource(root: Document | ShadowRoot) {
+    const styleElement = findElementById(root, MASTER_CSS_RUNTIME_STYLE_ID)
+    const HTMLStyleElementConstructor = globalThis.HTMLStyleElement
+    return HTMLStyleElementConstructor && styleElement instanceof HTMLStyleElementConstructor
+        ? styleElement.getAttribute(MASTER_CSS_HYDRATION_MANIFEST_ATTR)
+        : undefined
+}
 
 export default class CSSRuntime extends MasterCSS {
     static instances = new WeakMap<Document | ShadowRoot, CSSRuntime>()
@@ -29,6 +82,25 @@ export default class CSSRuntime extends MasterCSS {
     progressive = false
     observing = false
 
+    static create(options: CSSRuntimeCreateOptions): CSSRuntime {
+        const {
+            manifest,
+            root = document,
+            emittedGlobals,
+            hydrationManifest
+        } = options
+        const resolvedHydrationManifest = hydrationManifest === undefined
+            ? readInlineHydrationManifest(root)
+            : hydrationManifest
+        const current = globalThis.MasterCSSRuntime.instances.get(root)
+        if (current) {
+            current.registerEmittedGlobals(emittedGlobals)
+            if (resolvedHydrationManifest !== undefined) current.setHydrationManifest(resolvedHydrationManifest)
+            return current
+        }
+        return new CSSRuntime(root, manifest, emittedGlobals, resolvedHydrationManifest).register()
+    }
+
     constructor(
         public root: Document | ShadowRoot = document,
         manifest: MasterCSSManifest,
@@ -38,19 +110,66 @@ export default class CSSRuntime extends MasterCSS {
         super(manifest, emittedGlobals, {
             nativeDeclarationMatcher: browserNativeDeclarationMatcher
         })
-        // Do not use instanceof here, because it will not work
-        const rootConstructorName = root?.constructor.name
-        if (rootConstructorName === 'HTMLDocument' || rootConstructorName === 'Document') {
-            (this.root as Document).defaultView!.globalThis.masterCSSRuntime = this
-            this.container = (this.root as Document).head
-            this.host = (this.root as Document).documentElement
+        if (isDocumentRoot(root)) {
+            this.container = root.head
+            this.host = root.documentElement
         } else {
             this.container = this.root as CSSRuntime['container']
             this.host = (this.root as ShadowRoot).host
         }
+    }
+
+    register(): this {
+        const registered = globalThis.MasterCSSRuntime.instances.get(this.root) === this
         globalThis.MasterCSSRuntime.instances.set(this.root, this)
-        this.applyEmittedGlobalsCounts(this.emittedGlobals)
-        __MASTER_CSS_DEVTOOLS_HOOK__?.emit('runtime:created', { cssRuntime: this })
+        if (isDocumentRoot(this.root)) {
+            this.root.defaultView!.globalThis.masterCSSRuntime = this
+        }
+        if (!registered) {
+            this.applyEmittedGlobalsCounts(this.emittedGlobals)
+            __MASTER_CSS_DEVTOOLS_HOOK__?.emit('runtime:created', { cssRuntime: this })
+        }
+        return this
+    }
+
+    unregister(): this {
+        globalThis.MasterCSSRuntime.instances.delete(this.root)
+        if (isDocumentRoot(this.root) && this.root.defaultView!.globalThis.masterCSSRuntime === this) {
+            this.root.defaultView!.globalThis.masterCSSRuntime = undefined as unknown as CSSRuntime
+        }
+        return this
+    }
+
+    setHydrationManifest(hydrationManifest?: MasterCSSHydrationManifest): this {
+        this.hydrationManifest = hydrationManifest
+        return this
+    }
+
+    needsHydrationManifest(): boolean {
+        return this.hydrationManifest === undefined && Boolean(readExternalHydrationManifestSource(this.root))
+    }
+
+    async loadHydrationManifest(): Promise<this> {
+        const inlineHydrationManifest = readInlineHydrationManifest(this.root)
+        if (inlineHydrationManifest) {
+            this.setHydrationManifest(inlineHydrationManifest)
+            return this
+        }
+
+        const source = readExternalHydrationManifestSource(this.root)
+        if (!source) return this
+
+        try {
+            const response = await fetch(source, { credentials: 'same-origin' })
+            if (!response.ok) return this
+            this.setHydrationManifest(parseHydrationManifest(await response.text()))
+        } catch (error) {
+            if (process.env.NODE_ENV === 'development') {
+                console.debug('Cannot load Master CSS hydration manifest.', error)
+            }
+        }
+
+        return this
     }
 
     private createRuntimeStyle() {
@@ -75,15 +194,7 @@ export default class CSSRuntime extends MasterCSS {
         connectedNames.forEach(cls => this.add(cls))
     }
 
-    /**
-     * Observe the DOM for changes and update the running stylesheet. (browser only)
-     * @param options mutation observer options
-     * @returns this
-     */
-    observe(): this {
-        if (this.observing) return this
-
-        // Detect prerendered stylesheet
+    private detectRuntimeStyle() {
         if (this.root.styleSheets) {
             for (const sheet of this.root.styleSheets) {
                 const { ownerNode } = sheet
@@ -94,58 +205,64 @@ export default class CSSRuntime extends MasterCSS {
                 }
             }
         }
+    }
 
-        // Initial scan and populate counts + snapshot
-        const connectedNames = this.classTracker.collectConnected(this.root, this.classCounts)
+    private collectConnectedClasses() {
+        return this.classTracker.collectConnected(this.root, this.classCounts)
+    }
 
-        // Hydration or style creation
-        if (this.progressive) {
-            const hydrateResult = this.style?.sheet && this.hydrate(this.style.sheet.cssRules)
-            if (hydrateResult) {
-                const hydratedClassNames = new Set(hydrateResult.allUtilities.map(({ fixedClass, name }) => fixedClass || name))
-                for (const cls of connectedNames) {
-                    if (!hydratedClassNames.has(cls)) {
-                        this.add(cls)
-                        if (process.env.NODE_ENV === 'development') {
-                            console.debug(`Missing prerendered rule for class \`${cls}\``)
-                        }
+    private hydrateRuntimeStyle(connectedNames: Set<string>) {
+        const hydrateResult = this.style?.sheet && this.hydrate(this.style.sheet.cssRules)
+        if (hydrateResult) {
+            const hydratedClassNames = new Set(hydrateResult.allUtilities.map(({ fixedClass, name }) => fixedClass || name))
+            for (const cls of connectedNames) {
+                if (!hydratedClassNames.has(cls)) {
+                    this.add(cls)
+                    if (process.env.NODE_ENV === 'development') {
+                        console.debug(`Missing prerendered rule for class \`${cls}\``)
                     }
                 }
-            } else {
-                this.useRuntimeStyle(connectedNames, this.hydrationFailureReason || `Cannot read ${MASTER_CSS_RUNTIME_STYLE_SELECTOR} CSS rules.`)
             }
         } else {
-            this.createRuntimeStyle()
-            this.insertStaticResources()
-            connectedNames.forEach(cls => this.add(cls))
+            this.useRuntimeStyle(connectedNames, this.hydrationFailureReason || `Cannot read ${MASTER_CSS_RUNTIME_STYLE_SELECTOR} CSS rules.`)
+        }
+    }
+
+    private renderRuntimeStyle(connectedNames: Set<string>) {
+        this.createRuntimeStyle()
+        this.insertStaticResources()
+        connectedNames.forEach(cls => this.add(cls))
+    }
+
+    private handleMutationRecords(records: MutationRecord[]) {
+        const deltaCounts = this.classTracker.collectMutations(records)
+        const addedClassNames: string[] = []
+        const removedClassNames: string[] = []
+
+        for (const [cls, change] of deltaCounts) {
+            const current = this.classCounts.get(cls) || 0
+            const next = current + change
+            if (next > 0) {
+                this.classCounts.set(cls, next)
+                if (current === 0) addedClassNames.push(cls)
+            } else {
+                this.classCounts.delete(cls)
+                removedClassNames.push(cls)
+            }
         }
 
-        this.observer = new MutationObserver(records => {
-            const deltaCounts = this.classTracker.collectMutations(records)
-            const addedClassNames: string[] = []
-            const removedClassNames: string[] = []
+        if (addedClassNames.length) this.add(...addedClassNames)
+        if (removedClassNames.length) this.remove(...removedClassNames)
 
-            for (const [cls, change] of deltaCounts) {
-                const current = this.classCounts.get(cls) || 0
-                const next = current + change
-                if (next > 0) {
-                    this.classCounts.set(cls, next)
-                    if (current === 0) addedClassNames.push(cls)
-                } else {
-                    this.classCounts.delete(cls)
-                    removedClassNames.push(cls)
-                }
-            }
-
-            if (addedClassNames.length) this.add(...addedClassNames)
-            if (removedClassNames.length) this.remove(...removedClassNames)
-
-            globalThis.__MASTER_CSS_DEVTOOLS_HOOK__?.emit('runtime:mutated', {
-                records,
-                classCounts: deltaCounts,
-                cssRuntime: this
-            })
+        globalThis.__MASTER_CSS_DEVTOOLS_HOOK__?.emit('runtime:mutated', {
+            records,
+            classCounts: deltaCounts,
+            cssRuntime: this
         })
+    }
+
+    private startMutationObserver() {
+        this.observer = new MutationObserver(records => this.handleMutationRecords(records))
 
         this.observer.observe(this.root, {
             childList: true,
@@ -153,8 +270,31 @@ export default class CSSRuntime extends MasterCSS {
             attributeFilter: ['class'],
             subtree: true,
         })
+    }
 
+    private revealHostIfNeeded() {
         if (!this.progressive) this.host.removeAttribute('hidden')
+    }
+
+    /**
+     * Observe the DOM for changes and update the running stylesheet. (browser only)
+     * @param options mutation observer options
+     * @returns this
+     */
+    observe(): this {
+        if (this.observing) return this
+
+        this.detectRuntimeStyle()
+        const connectedNames = this.collectConnectedClasses()
+
+        if (this.progressive) {
+            this.hydrateRuntimeStyle(connectedNames)
+        } else {
+            this.renderRuntimeStyle(connectedNames)
+        }
+
+        this.startMutationObserver()
+        this.revealHostIfNeeded()
         this.observing = true
         globalThis.__MASTER_CSS_DEVTOOLS_HOOK__?.emit('runtime:observed', { cssRuntime: this })
         return this
@@ -509,7 +649,7 @@ export default class CSSRuntime extends MasterCSS {
 
     destroy() {
         this.disconnect()
-        globalThis.MasterCSSRuntime.instances.delete(this.root)
+        this.unregister()
         globalThis.__MASTER_CSS_DEVTOOLS_HOOK__?.emit('runtime:destroyed', { cssRuntime: this })
         return this
     }

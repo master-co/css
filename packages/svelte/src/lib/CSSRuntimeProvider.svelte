@@ -1,8 +1,7 @@
 <script lang="ts">
     import { onMount, setContext } from 'svelte';
     import { writable, get } from 'svelte/store';
-    import * as MasterCSSRuntime from '@master/css-runtime';
-    import type { CSSRuntime } from '@master/css-runtime';
+    import { CSSRuntime } from '@master/css-runtime';
     import { CSS_RUNTIME_CONTEXT_KEY } from './get-css-runtime.js';
     import type { CSSRuntimeProviderProps } from './types/provider-props.js';
 
@@ -12,9 +11,6 @@
     export let root: CSSRuntimeProviderProps['root'] = undefined;
 
     const cssRuntime = writable<CSSRuntime | undefined>(undefined);
-    const cssRuntimeModule = MasterCSSRuntime as typeof MasterCSSRuntime & {
-        initCSSRuntimeAsync?: typeof MasterCSSRuntime.initCSSRuntime;
-    };
     let mounted = false;
     let runtimeVersion = 0;
     let activeRoot: Document | ShadowRoot | undefined = undefined;
@@ -22,10 +18,11 @@
     const getRoot = () => root ?? document;
 
     async function createRuntime(nextRoot: Document | ShadowRoot) {
-        const options = { manifest, root: nextRoot, emittedGlobals, hydrationManifest };
-        return hydrationManifest === undefined
-            ? await (cssRuntimeModule.initCSSRuntimeAsync || cssRuntimeModule.initCSSRuntime)(options)
-            : cssRuntimeModule.initCSSRuntime(options);
+        const nextCSSRuntime = CSSRuntime.create({ manifest, root: nextRoot, emittedGlobals, hydrationManifest });
+        if (nextCSSRuntime.needsHydrationManifest()) {
+            await nextCSSRuntime.loadHydrationManifest();
+        }
+        return nextCSSRuntime.observe();
     }
 
     function startRuntime(nextRoot: Document | ShadowRoot) {

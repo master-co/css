@@ -2,7 +2,6 @@ import type { MasterCSSManifest } from 'shared/master-css-manifest'
 import type { MasterCSSEmittedGlobals } from '@master/css-engine'
 import type { MasterCSSHydrationManifest } from 'shared/master-css-hydration-manifest'
 import CSSRuntime from './core'
-import initCSSRuntime from './init'
 
 type CSSRuntimeHostConstructor = new (...args: any[]) => HTMLElement
 type CSSRuntimeManifest = MasterCSSManifest | ((host: HTMLElement) => MasterCSSManifest)
@@ -13,7 +12,6 @@ type CSSHydrationManifest = MasterCSSHydrationManifest | ((host: HTMLElement) =>
 export interface CSSRuntimeOptions {
     manifest: CSSRuntimeManifest
     root?: CSSRuntimeRoot
-    autoObserve?: boolean
     emittedGlobals?: CSSRuntimeEmittedGlobals
     hydrationManifest?: CSSHydrationManifest
 }
@@ -52,13 +50,20 @@ export default function cssRuntime(options: CSSRuntimeOptions): <T extends CSSRu
                 if (!root) {
                     throw new Error('`@cssRuntime()` requires a shadow root. Provide `options.root` or create a shadow root before `connectedCallback()` finishes.')
                 }
-                this.cssRuntime = initCSSRuntime({
+                const cssRuntime = CSSRuntime.create({
                     manifest: resolveManifest(this, options.manifest),
                     root,
-                    autoObserve: options.autoObserve,
                     emittedGlobals: resolveEmittedGlobals(this, options.emittedGlobals),
                     hydrationManifest: resolveHydrationManifest(this, options.hydrationManifest)
                 })
+                this.cssRuntime = cssRuntime
+                if (cssRuntime.needsHydrationManifest()) {
+                    void cssRuntime.loadHydrationManifest().then(() => {
+                        if (this.cssRuntime === cssRuntime) cssRuntime.observe()
+                    })
+                } else {
+                    cssRuntime.observe()
+                }
             }
 
             disconnectedCallback() {

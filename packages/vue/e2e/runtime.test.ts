@@ -5,6 +5,7 @@ import { } from '@master/css-runtime'
 test('Runtime - class changed', async ({ page, mount }) => {
     const runtimeComponentInstance = await mount(RuntimeComponent)
     await runtimeComponentInstance.waitFor({ state: 'visible' })
+    await page.waitForFunction(() => globalThis.masterCSSRuntime?.observing)
 
     const $button = page.locator('#config-btn')
     await $button?.evaluateHandle(($button) => $button.classList.add('f:10'))
@@ -14,12 +15,13 @@ test('Runtime - class changed', async ({ page, mount }) => {
     })
 
     await runtimeComponentInstance.unmount()
-    expect(await page.evaluate(() => globalThis.masterCSSRuntime.style)).toBeNull()
+    expect(await page.evaluate(() => globalThis.masterCSSRuntime === undefined)).toBe(true)
     expect(await page.evaluate(() => globalThis.MasterCSSRuntime.instances.has(document))).toBeFalsy()
 })
 
 test('Runtime - config changed', async ({ page, mount }) => {
     await mount(RuntimeComponent)
+    await page.waitForFunction(() => globalThis.masterCSSRuntime?.observing)
     expect(await page.evaluate(() => globalThis.masterCSSRuntime.text)).toContain('.btn{border:0.125rem var(--color-red) solid}')
 
     const $button = page.locator('#config-btn')
@@ -34,6 +36,7 @@ test('Runtime - context injected', async ({ page, mount }) => {
 
 test('Runtime - root changed', async ({ page, mount }) => {
     await mount(RuntimeComponent)
+    await page.waitForFunction(() => globalThis.masterCSSRuntime?.observing)
     const $button = page.locator('#root-btn')
     await $button?.click()
     expect(await page.evaluate(() => {

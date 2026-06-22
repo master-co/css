@@ -3,10 +3,11 @@ import { useState, useEffect, useRef } from 'react'
 import type { MasterCSSManifest } from '@master/css-runtime'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
 import UtilityType from 'shared/utility-type'
+import { externalManifest } from './external-hydration-fixture'
 
 const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 
-export default function Runtime() {
+export function Runtime(props: { externalHydration?: boolean }) {
     const [manifest, setPlan] = useState<MasterCSSManifest>({
         version: 1,
         utilities: [
@@ -34,6 +35,7 @@ export default function Runtime() {
     const [shadowRoot, setShadowRoot] = useState<ShadowRoot>()
 
     useEffect(() => {
+        if (props.externalHydration) return
         if (containerRef.current) {
             const newShadowRoot = containerRef.current.attachShadow({ mode: 'open' })
 
@@ -43,7 +45,15 @@ export default function Runtime() {
 
             setShadowRoot(newShadowRoot)
         }
-    }, [containerRef])
+    }, [containerRef, props.externalHydration])
+
+    if (props.externalHydration) {
+        return (
+            <CSSRuntimeProvider manifest={externalManifest}>
+                <button id="external-btn" className="btn"></button>
+            </CSSRuntimeProvider>
+        )
+    }
 
     return <CSSRuntimeProvider root={root} manifest={manifest}>
         <button id="config-btn" className="btn" onClick={() => setPlan(defaultManifest)}></button>
@@ -51,3 +61,5 @@ export default function Runtime() {
         <div id="container" ref={containerRef}></div>
     </CSSRuntimeProvider>
 }
+
+export default Runtime

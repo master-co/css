@@ -1,7 +1,12 @@
-import CSSRuntime, { initCSSRuntime } from '../../src'
+import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
+import CSSRuntime, { type MasterCSSManifest } from '../../src'
 
-// initCSSRuntime({
-//     utilities: [
+const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
+
+// CSSRuntime.create({
+//     manifest: {
+//         version: 1,
+//         utilities: [
 //         {
 //             name: 'btn',
 //             type: -4,
@@ -10,8 +15,9 @@ import CSSRuntime, { initCSSRuntime } from '../../src'
 //                 { selector: '&', declarations: { 'background-color': 'black' } }
 //             ]
 //         }
-//     ]
-// })
+//         ]
+//     }
+// }).observe()
 
 // const createElement = (name: string) => {
 //     const el = document.createElement('div')
@@ -39,6 +45,8 @@ import CSSRuntime, { initCSSRuntime } from '../../src'
 /* iframe test */
 const iframe = document.querySelector('iframe')
 if (iframe?.contentDocument) {
-    new CSSRuntime(iframe.contentDocument)
-        .observe()
+    CSSRuntime.create({
+        root: iframe.contentDocument,
+        manifest: defaultManifest
+    }).observe()
 }

@@ -1,4 +1,4 @@
-import initCSSRuntime from './init'
+import CSSRuntime from './core'
 import type { MasterCSSManifest } from 'shared/master-css-manifest'
 
 function resolveDefaultManifestURL(scriptURL: string) {
@@ -28,7 +28,13 @@ const currentScript = document.currentScript as HTMLScriptElement | null
 
 if (currentScript?.src) {
     void loadDefaultManifest(currentScript.src)
-        .then((manifest) => initCSSRuntime({ manifest }))
+        .then((manifest) => {
+            const cssRuntime = CSSRuntime.create({ manifest })
+            if (cssRuntime.needsHydrationManifest()) {
+                return cssRuntime.loadHydrationManifest().then(() => cssRuntime.observe())
+            }
+            cssRuntime.observe()
+        })
         .catch((error) => console.error(error))
 } else {
     console.error('Cannot resolve the Master CSS runtime script URL.')

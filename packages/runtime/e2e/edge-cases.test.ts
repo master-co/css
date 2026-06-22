@@ -72,7 +72,10 @@ test('shadow roots maintain isolated runtime state and style nodes', async ({ pa
         shadow.innerHTML = '<p class="block"></p>'
         document.body.append(host)
 
-        const shadowRuntime = new globalThis.MasterCSSRuntime(shadow, globalThis.masterCSSRuntime.manifest).observe()
+        const shadowRuntime = globalThis.MasterCSSRuntime.create({
+            root: shadow,
+            manifest: globalThis.masterCSSRuntime.manifest
+        }).observe()
 
         return {
             documentCounts: Object.fromEntries(globalThis.masterCSSRuntime.classCounts),
@@ -147,6 +150,31 @@ test('progressive hydration with a mismatched manifest rebuilds with runtime CSS
     expect(result.utilityRules).toEqual(['fg:red-60'])
     expect(result.text).toContain('.fg\\:red-60')
     expect(result.text).not.toContain('.bg\\:red-60')
+})
+
+test('progressive hydration with an empty manifest rebuilds with runtime CSS', async ({ page }) => {
+    const consoleWarnings: string[] = []
+    page.on('console', (message) => {
+        if (message.type() === 'warning') consoleWarnings.push(message.text())
+    })
+
+    await page.evaluate(() => {
+        document.body.innerHTML = '<p class="block"></p>'
+    })
+    await init(page, '@layer utilities{.block{display:block}}', undefined, { version: 1, rules: [] })
+
+    const result = await page.evaluate(() => ({
+        progressive: globalThis.masterCSSRuntime.progressive,
+        utilityRules: globalThis.masterCSSRuntime.utilitiesLayer.rules.map(({ name }) => name),
+        text: globalThis.masterCSSRuntime.text
+    }))
+
+    expect(consoleWarnings.some((message) => message.includes('Hydration manifest has no generated rules'))).toBe(true)
+    expect(result).toEqual({
+        progressive: false,
+        utilityRules: ['block'],
+        text: '@layer utilities{.block{display:block}}'
+    })
 })
 
 test('progressive hydration uses hydration manifest and removes hydrated classes', async ({ page }) => {
@@ -229,6 +257,38 @@ test('progressive hydration fetches an external style hydration manifest', async
     expect(result.progressive).toBe(true)
     expect(result.utilityRules).toEqual(['fg:red-60'])
     expect(result.text).toContain('.fg\\:red-60')
+})
+
+test('runtime start does not fetch a hydration manifest without a runtime style source', async ({ page }) => {
+    let requests = 0
+    const loaderURL = await getRuntimeLoaderURL()
+    const source = new URL('/_master-css/hydration/unreferenced.json', loaderURL).href
+
+    await page.route(source, route => {
+        requests++
+        return route.fulfill({
+            status: 200,
+            contentType: 'application/json',
+            body: '{"version":1,"rules":[]}'
+        })
+    })
+    await page.evaluate(() => {
+        document.body.innerHTML = '<p class="block"></p>'
+    })
+    await startCSSRuntimeAsync(page, undefined, loaderURL)
+
+    const result = await page.evaluate(() => ({
+        progressive: globalThis.masterCSSRuntime.progressive,
+        observing: globalThis.masterCSSRuntime.observing,
+        text: globalThis.masterCSSRuntime.text
+    }))
+
+    expect(requests).toBe(0)
+    expect(result).toEqual({
+        progressive: false,
+        observing: true,
+        text: '@layer utilities{.block{display:block}}'
+    })
 })
 
 test('progressive hydration falls back when an external style hydration manifest fetch fails', async ({ page }) => {

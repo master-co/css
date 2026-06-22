@@ -9,8 +9,8 @@
     <link rel="modulepreload" href="https://esm.sh/@master/css-runtime@rc/+esm">
     <script type="module">
         import defaultManifest from 'https://esm.sh/@master/css-preset@rc/default-manifest.json' with { type: 'json' }
-        import { initCSSRuntime } from 'https://esm.sh/@master/css-runtime@rc/+esm'
-        initCSSRuntime({ manifest: defaultManifest })
+        import { CSSRuntime } from 'https://esm.sh/@master/css-runtime@rc/+esm'
+        CSSRuntime.create({ manifest: defaultManifest }).observe()
     </script>
 </head>
 

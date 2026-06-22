@@ -105,7 +105,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 }
 ```
 
-The provider calls `initCSSRuntime({ manifest, root, emittedGlobals })` on mount, refreshes the runtime when `manifest` changes, recreates it when `root` changes, and destroys it on unmount.
+The provider calls `CSSRuntime.create({ manifest, root, emittedGlobals })`, loads an external hydration manifest when needed, observes on mount, refreshes the runtime when `manifest` changes, recreates it when `root` changes, and destroys it on unmount.
 
 ### `CSSRuntimeProviderProps`
 

@@ -1,7 +1,6 @@
 export { default as CSSRuntime, default } from './core'
+export type { CSSRuntimeCreateOptions } from './core'
 export { default as cssRuntime } from './css-runtime'
-export { default as initCSSRuntime, initCSSRuntimeAsync, loadCSSRuntimeHydrationManifest } from './init'
-export type { CSSRuntimeInitOptions } from './init'
 export { default as RuntimeUtilityLayer } from './utility-layer'
 
 export type * from './types'

@@ -68,11 +68,11 @@ npm install @master/css-runtime
 Initialize the runtime with the project manifest and emitted global CSS state provided by an official integration:
 
 ```js
-import { initCSSRuntime } from '@master/css-runtime'
+import { CSSRuntime } from '@master/css-runtime'
 import manifest from 'virtual:master-css-manifest'
 import emittedGlobals from 'virtual:master-css-emitted-globals'
 
-initCSSRuntime({ manifest, emittedGlobals })
+CSSRuntime.create({ manifest, emittedGlobals }).observe()
 ```
 
 ## CDN IIFE
@@ -86,7 +86,7 @@ Use the CDN runtime when a page only needs the default preset and zero configura
 <script src="https://cdn.master.co/css-runtime@rc"></script>
 ```
 
-The IIFE fetches `default-manifest.json` next to the runtime script, starts automatically, and registers the document runtime as `globalThis.masterCSSRuntime`. It does not read global options or custom manifests. Use ESM `initCSSRuntime({ manifest, emittedGlobals })` for custom theme tokens, utilities, modes, emitted globals, or hydration inputs.
+The IIFE fetches `default-manifest.json` next to the runtime script, starts automatically, and registers the document runtime as `globalThis.masterCSSRuntime`. It does not read global options or custom manifests. Use ESM `CSSRuntime.create({ manifest, emittedGlobals }).observe()` for custom theme tokens, utilities, modes, emitted globals, or hydration inputs.
 
 ## API
 
@@ -96,40 +96,47 @@ The IIFE fetches `default-manifest.json` next to the runtime script, starts auto
 import CSSRuntime from '@master/css-runtime'
 import manifest from 'virtual:master-css-manifest'
 
-const cssRuntime = new CSSRuntime(document, manifest)
+const cssRuntime = CSSRuntime.create({ manifest })
+cssRuntime.observe()
 ```
 
-`CSSRuntime` runs in the browser and extends the manifest-driven `MasterCSS` engine. Use `initCSSRuntime({ manifest })` when the runtime should reuse an existing runtime for the same root.
+`CSSRuntime` runs in the browser and extends the manifest-driven `MasterCSS` engine. Use `CSSRuntime.create({ manifest })` when the runtime should reuse an existing runtime for the same root.
 
 | API | Type | Description |
 | --- | --- | --- |
 | `CSSRuntime.instances` | `WeakMap<Document \| ShadowRoot, CSSRuntime>` | Runtime instances keyed by root. |
+| `CSSRuntime.create(options)` | `CSSRuntime` | Creates or reuses a registered runtime for `options.root`. |
 | `cssRuntime.root` | `Document \| ShadowRoot` | Observed root. |
 | `cssRuntime.host` | `Element` | Root host, usually `root.host` or `document.documentElement`. |
 | `cssRuntime.container` | `HTMLElement \| ShadowRoot` | Container for `style#master-css`. |
 | `cssRuntime.observing` | `boolean` | `true` after `observe()`, `false` after `disconnect()`. |
+| `register()` | `this` | Registers this runtime in `CSSRuntime.instances`. |
+| `unregister()` | `this` | Removes this runtime from `CSSRuntime.instances`. |
+| `needsHydrationManifest()` | `boolean` | Returns `true` when an external hydration manifest should be loaded before observation. |
+| `loadHydrationManifest()` | `Promise<this>` | Reads inline hydration data or fetches the external hydration manifest URL from `style#master-css`. |
+| `setHydrationManifest(manifest?)` | `this` | Sets the hydration manifest used by progressive hydration. |
 | `observe()` | `this` | Observes class attribute changes. |
 | `disconnect()` | `this \| undefined` | Cancels observation. |
 | `refresh(manifest?)` | `this` | Refreshes with a complete `MasterCSSManifest`. |
 | `reset()` | `this` | Clears rules and styles. |
 | `destroy()` | `this` | Removes this runtime from `CSSRuntime.instances`. |
 
-### `initCSSRuntime()`
+### Progressive Hydration
 
 ```ts
-import { initCSSRuntime } from '@master/css-runtime'
+import { CSSRuntime } from '@master/css-runtime'
 import manifest from 'virtual:master-css-manifest'
 import emittedGlobals from 'virtual:master-css-emitted-globals'
 
-const css = initCSSRuntime({
+const cssRuntime = CSSRuntime.create({
     manifest,
     emittedGlobals,
-    root: document,
-    autoObserve: true
 })
+if (cssRuntime.needsHydrationManifest()) {
+    await cssRuntime.loadHydrationManifest()
+}
+cssRuntime.observe()
 ```
-
-If a runtime already exists for the same root, `initCSSRuntime()` returns that instance instead of creating a second observer.
 
 `emittedGlobals` tells the runtime which variables and keyframes were already emitted by the project CSS entry, so future dynamic classes can reuse them without inserting duplicate global CSS.
 

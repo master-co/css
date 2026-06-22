@@ -17,7 +17,6 @@ cssRuntime({ manifest })(RuntimeElement)
 cssRuntime({
     manifest,
     root: (host) => host.shadowRoot,
-    autoObserve: false,
     emittedGlobals: {
         variables: {
             primary: 1

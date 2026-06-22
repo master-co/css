@@ -79,9 +79,9 @@
             ```js name=npm_packages/src/index.js
             …
             import defaultManifest from '@master/css-preset/default-manifest.json' with { type: 'json' }; // [!code highlight]
-            import { initCSSRuntime } from '@master/css-runtime'; // [!code highlight]
+            import { CSSRuntime } from '@master/css-runtime'; // [!code highlight]
 
-            initCSSRuntime({ manifest: defaultManifest }) // [!code highlight]
+            CSSRuntime.create({ manifest: defaultManifest }).observe() // [!code highlight]
             ```
         </StepR>
     </Step>

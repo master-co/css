@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
 import type { MasterCSSManifest } from 'shared/master-css-manifest'
 import UtilityType from 'shared/utility-type'
-import initCSSRuntime from '../src/init'
+import { CSSRuntime } from '../src'
 import init from './init'
 
 const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
@@ -19,12 +19,15 @@ test('destroy on progressive', async ({ page }) => {
     )).toBe(1)
     expect(await page.evaluate(() => Array.from(globalThis.masterCSSRuntime.style?.sheet?.cssRules || []).length)).toBe(1)
     await page.evaluate(() => {
-        globalThis.masterCSSRuntime.destroy()
+        const runtime = globalThis.masterCSSRuntime
+        runtime.destroy()
+        ;(globalThis as any).destroyedRuntime = runtime
     })
-    expect(await page.evaluate(() => globalThis.masterCSSRuntime.utilitiesLayer.rules.length)).toBe(0)
-    expect(await page.evaluate(() => Array.from(globalThis.masterCSSRuntime.style?.sheet?.cssRules || []).length)).toBe(0)
+    expect(await page.evaluate(() => (globalThis as any).destroyedRuntime.utilitiesLayer.rules.length)).toBe(0)
+    expect(await page.evaluate(() => Array.from((globalThis as any).destroyedRuntime.style?.sheet?.cssRules || []).length)).toBe(0)
     await page.evaluate(() => {
-        globalThis.masterCSSRuntime.observe()
+        const runtime = (globalThis as any).destroyedRuntime as typeof globalThis.masterCSSRuntime
+        runtime.register().observe()
         document.body.classList.add('block')
         document.body.classList.add('font:bold')
     })
@@ -227,11 +230,10 @@ test('hydrates progressive static theme variables and keyframes', async ({ page 
 
 test('registers emittedGlobals counts on an existing runtime', () => {
     const root = { host: {} } as unknown as ShadowRoot
-    const cssRuntime = initCSSRuntime({ manifest: defaultManifest, root, autoObserve: false })
-    const returnedCSSRuntime = initCSSRuntime({
+    const cssRuntime = CSSRuntime.create({ manifest: defaultManifest, root })
+    const returnedCSSRuntime = CSSRuntime.create({
         manifest: defaultManifest,
         root,
-        autoObserve: false,
         emittedGlobals: {
             variables: {
                 'color-primary': 1

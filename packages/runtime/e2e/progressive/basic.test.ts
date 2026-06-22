@@ -3,11 +3,16 @@ import init from '../init'
 
 test('progressive', async ({ page }) => {
     await init(page)
-    await page.evaluate(() => {
-        globalThis.masterCSSRuntime.destroy()
-    })
     expect(await page.evaluate(() => {
-        globalThis.masterCSSRuntime.destroy()
-        return document.getElementById('master-css')
-    })).toBeDefined()
+        const runtime = globalThis.masterCSSRuntime
+        runtime.destroy()
+        runtime.destroy()
+        return {
+            globalCleared: globalThis.masterCSSRuntime === undefined,
+            styleRemoved: !document.getElementById('master-css')
+        }
+    })).toEqual({
+        globalCleared: true,
+        styleRemoved: true
+    })
 })
