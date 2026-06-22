@@ -22,9 +22,9 @@ describe('extractor source adapters', () => {
         }).init()
 
         expect(extractor.extract('index.html', `
-            <div class="block mi:auto"></div>
+            <div class="block mx:auto"></div>
             <script>const classes = 'fg:red'</script>
-        `)).toEqual(['block', 'mi:auto', 'fg:red'])
+        `)).toEqual(['block', 'mx:auto', 'fg:red'])
 
         expect(extractor.extract('component.tsx', `
             const classes = 'inline-flex'

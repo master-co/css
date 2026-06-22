@@ -797,7 +797,7 @@ export default function Play({ shareId }: PlayProps = {}) {
                             {sharing && <span className="ml:0.625rem">{$('Sharing ...')}</span>}
                         </button>}
                     <span className='hidden'>{shareError}</span>
-                    {(shareable || copied) && <div className='mi:4x bg:line h:1em w:1px hidden@<md'></div>}
+                    {(shareable || copied) && <div className='mx:4x bg:line h:1em w:1px hidden@<md'></div>}
                     <button className="app-header-icon hidden@<md" onClick={() => pushShallowURL('layout', layout ? '' : '2')}>
                         <svg className={clsx({ 'stroke:accent': !layout || layout === '2' })} xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" strokeWidth="1.2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
                             <path className={clsx(
@@ -831,7 +831,7 @@ export default function Play({ shareId }: PlayProps = {}) {
                         </svg>
                     </button>
                     <span className='hidden'>{layout}</span>
-                    <div className='mi:4x bg:line h:1em w:1px hidden@<md'></div>
+                    <div className='mx:4x bg:line h:1em w:1px hidden@<md'></div>
                     <button className="app-header-icon hidden@<md" onClick={() => pushShallowURL('preview', '')}>
                         <IconDeviceDesktop width="22" height="22" className={clsx(
                             'stroke:1.3',
@@ -851,7 +851,7 @@ export default function Play({ shareId }: PlayProps = {}) {
                         )} />
                     </button>
                     <span className='hidden'>{preview}</span>
-                    <div className='mi:4x bg:line h:1em w:1px hidden@<md'></div>
+                    <div className='mx:4x bg:line h:1em w:1px hidden@<md'></div>
                     <LanguageButton className="app-header-icon hidden@<md" />
                     <ThemeButton className="app-header-icon mr:-3x hidden@<md"
                         onChange={(theme: string) => {
@@ -895,7 +895,7 @@ export default function Play({ shareId }: PlayProps = {}) {
                     height={tab === 'Preview' ? '' : height}
                     showHeight={true}
                 >
-                    <Tabs className="flex:0|0|auto" contentClassName="pi:5x pi:10x@sm">
+                    <Tabs className="flex:0|0|auto" contentClassName="px:5x px:10x@sm">
                         {files.map((file, index) => (
                             <Tab onClick={() => pushShallowURL('tab', index === 0 ? '' : file.title)} size="sm" key={file.id} active={tab === file.title}>
                                 {file.title || ''}
@@ -964,7 +964,7 @@ export default function Play({ shareId }: PlayProps = {}) {
                             onLoad={() => postPreviewUpdate(getFileContent(filesRef.current, 'HTML'), compiledCSSRef.current)}
                         />
                         <div className={clsx('flex flex-col h:full', { 'hidden!': preview !== 'css' })}>
-                            <div className='flex bb:1px|solid|subtle flex:0|0|auto pi:5x align-items:center font:12px h:48px justify-content:space-between pi:10x@sm'>
+                            <div className='flex bb:1px|solid|subtle flex:0|0|auto px:5x align-items:center font:12px h:48px justify-content:space-between px:10x@sm'>
                                 <div>{compiling ? 'Compiling CSS' : 'Generated CSS'}</div>
                                 <div className="text:muted">{compileWarnings.length ? `${compileWarnings.length} warnings` : generatedCSSSize}</div>
                             </div>
@@ -985,7 +985,7 @@ export default function Play({ shareId }: PlayProps = {}) {
                         {previewErrorEvent &&
                             <div className="abs full inset:0 p:12x text:danger bg:red-5@light bg:red-95@dark">
                                 <h2 className="font:20px">Error at line {previewErrorEvent.lineno === 1 ? 1 : previewErrorEvent.lineno - 1}</h2>
-                                <div className="p:0.938rem|5x r:5px margin-block:5x font:14px font:medium white-space:pre-wrap bg:black/.2@dark bg:red-90@light">
+                                <div className="p:0.938rem|5x r:5px my:5x font:14px font:medium white-space:pre-wrap bg:black/.2@dark bg:red-90@light">
                                     {previewErrorEvent.message}
                                 </div>
                                 <div className="font:12px">{previewErrorEvent.datetime.toLocaleTimeString()} {previewErrorEvent.datetime.toDateString()}, {previewErrorEvent.filename}</div>

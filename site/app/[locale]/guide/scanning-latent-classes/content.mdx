@@ -71,7 +71,7 @@ const toneClasses = {
 
 export function Button({ destructive }: { destructive?: boolean }) {
     return (
-        <button className={`btn r:md pi:md ${destructive ? toneClasses.destructive : toneClasses.neutral}`}>
+        <button className={`btn r:md px:md ${destructive ? toneClasses.destructive : toneClasses.neutral}`}>
             Delete
         </button>
     )
@@ -87,7 +87,7 @@ bg:red-60
 text:white
 btn
 r:md
-pi:md
+px:md
 ```
 
 It will also see unrelated words from source text. That is expected. Candidates only matter after validation.
@@ -112,7 +112,7 @@ After candidate scanning, Master CSS validates each class against the active man
 ```css name=index.css
 @components {
     btn {
-        @compose inline-flex align-items:center pi:md h:40px r:md;
+        @compose inline-flex align-items:center px:md h:40px r:md;
     }
 
     hero-title {
@@ -161,7 +161,7 @@ For component variants, map dynamic inputs to complete class lists.
 
 ```tsx
 function Badge({ tone }: { tone: 'red' | 'green' | 'gray' }) {
-    return <span className={`bg:${tone} text:white r:full pi:xs`}>Status</span>
+    return <span className={`bg:${tone} text:white r:full px:xs`}>Status</span>
 }
 ```
 
@@ -175,7 +175,7 @@ const toneClasses = {
 }
 
 function Badge({ tone }: { tone: keyof typeof toneClasses }) {
-    return <span className={`r:full pi:xs ${toneClasses[tone]}`}>Status</span>
+    return <span className={`r:full px:xs ${toneClasses[tone]}`}>Status</span>
 }
 ```
 

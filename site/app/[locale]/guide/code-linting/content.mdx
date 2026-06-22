@@ -46,13 +46,13 @@ You can also restrict teams to using [theme](/guide/theme) and [component classe
 ```
 (o) Fix this @master/css/class-validation problem using the Master CSS syntax.
 ```html
-<button class="inline-flex pi:md">…</button>
+<button class="inline-flex px:md">…</button>
 ```
 (o) Or create the custom style `btn` using [component classes](/guide/reusing-styles#component-classes) in the project CSS entry.
 ```css name=index.css
 @components {
     btn {
-        @compose inline-flex pi:md; /* [!code highlight] */
+        @compose inline-flex px:md; /* [!code highlight] */
     }
 }
 ```

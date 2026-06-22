@@ -6,7 +6,7 @@ const count = ref<number>(0)
 
 <template>
     <div>
-        <div class='grid-cols:2 mi:auto w:fit'>
+        <div class='grid-cols:2 mx:auto w:fit'>
             <a href="https://rc.css.master.co" target="_blank">
                 <img src="../assets/master.svg" class="logo scale(2) size:24x" alt="Master logo" />
             </a>

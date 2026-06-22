@@ -50,12 +50,12 @@ describe.concurrent('default manifest utility parity', () => {
         expectClassText(css, 'mb:4x', 'margin-bottom:1rem')
         expectClassText(css, 'm:4x', 'margin:1rem')
         expectClassText(css, 'm:1px', 'margin:1px')
-        expectClassText(css, 'mi:4x', 'margin-inline:1rem')
-        expectClassText(css, 'margin-block:4x', 'margin-block:1rem')
+        expectClassText(css, 'mx:4x', 'margin-inline:1rem')
+        expectClassText(css, 'my:4x', 'margin-block:1rem')
 
-        css.add('mi:0', 'ml:0', 'mr:0', 'm:0', 'mt:0', 'mb:0', 'margin-block:0')
+        css.add('mx:0', 'ml:0', 'mr:0', 'm:0', 'mt:0', 'mb:0', 'my:0')
         expect(css.utilitiesLayer.rules.map(({ name }) => name))
-            .toEqual(['m:0', 'margin-block:0', 'mi:0', 'mb:0', 'ml:0', 'mr:0', 'mt:0'])
+            .toEqual(['m:0', 'mx:0', 'my:0', 'mb:0', 'ml:0', 'mr:0', 'mt:0'])
     })
 
     test('resolves native value namespaces with aliases tokens and validation', () => {
@@ -159,13 +159,31 @@ describe.concurrent('default manifest utility parity', () => {
         const css = createDefaultCSS()
 
         expectClassText(css, 'mx:4x', 'margin-inline:1rem')
-        expectClassText(css, 'mi:4x', 'margin-inline:1rem')
+        expectClassText(css, 'mxs:4x', 'margin-inline-start:1rem')
+        expectClassText(css, 'mxe:4x', 'margin-inline-end:1rem')
         expectClassText(css, 'my:4x', 'margin-block:1rem')
+        expectClassText(css, 'mys:4x', 'margin-block-start:1rem')
+        expectClassText(css, 'mye:4x', 'margin-block-end:1rem')
         expectClassText(css, 'margin-block:4x', 'margin-block:1rem')
         expectClassText(css, 'px:4x', 'padding-inline:1rem')
-        expectClassText(css, 'pi:4x', 'padding-inline:1rem')
+        expectClassText(css, 'pxs:4x', 'padding-inline-start:1rem')
+        expectClassText(css, 'pxe:4x', 'padding-inline-end:1rem')
         expectClassText(css, 'py:4x', 'padding-block:1rem')
+        expectClassText(css, 'pys:4x', 'padding-block-start:1rem')
+        expectClassText(css, 'pye:4x', 'padding-block-end:1rem')
         expectClassText(css, 'padding-block:4x', 'padding-block:1rem')
+        expectClassText(css, 'ix:4x', 'inset-inline:1rem')
+        expectClassText(css, 'ixs:4x', 'inset-inline-start:1rem')
+        expectClassText(css, 'ixe:4x', 'inset-inline-end:1rem')
+        expectClassText(css, 'iy:4x', 'inset-block:1rem')
+        expectClassText(css, 'iys:4x', 'inset-block-start:1rem')
+        expectClassText(css, 'iye:4x', 'inset-block-end:1rem')
+        expectClassText(css, 'size-x:md', 'inline-size:var(--container-md)')
+        expectClassText(css, 'size-y:md', 'block-size:var(--container-md)')
+        expectClassText(css, 'min-size-x:4x', 'min-inline-size:1rem')
+        expectClassText(css, 'min-size-y:4x', 'min-block-size:1rem')
+        expectClassText(css, 'max-size-x:4x', 'max-inline-size:1rem')
+        expectClassText(css, 'max-size-y:4x', 'max-block-size:1rem')
         expectClassText(css, 'bx:1px|solid', 'border-inline:1px solid')
         expectClassText(css, 'border-inline:1px|solid', 'border-inline:1px solid')
         expectClassText(css, 'by:1px|solid', 'border-block:1px solid')
@@ -184,17 +202,36 @@ describe.concurrent('default manifest utility parity', () => {
         expectClassText(css, 'gap-y:4x', 'row-gap:1rem')
         expectClassText(css, 'row-gap:4x', 'row-gap:1rem')
         expectClassText(css, 'scroll-mx:4x', 'scroll-margin-inline:1rem')
+        expectClassText(css, 'scroll-mxs:4x', 'scroll-margin-inline-start:1rem')
+        expectClassText(css, 'scroll-mxe:4x', 'scroll-margin-inline-end:1rem')
         expectClassText(css, 'scroll-margin-inline:4x', 'scroll-margin-inline:1rem')
         expectClassText(css, 'scroll-my:4x', 'scroll-margin-block:1rem')
+        expectClassText(css, 'scroll-mys:4x', 'scroll-margin-block-start:1rem')
+        expectClassText(css, 'scroll-mye:4x', 'scroll-margin-block-end:1rem')
         expectClassText(css, 'scroll-margin-block:4x', 'scroll-margin-block:1rem')
         expectClassText(css, 'scroll-px:4x', 'scroll-padding-inline:1rem')
+        expectClassText(css, 'scroll-pxs:4x', 'scroll-padding-inline-start:1rem')
+        expectClassText(css, 'scroll-pxe:4x', 'scroll-padding-inline-end:1rem')
         expectClassText(css, 'scroll-padding-inline:4x', 'scroll-padding-inline:1rem')
         expectClassText(css, 'scroll-py:4x', 'scroll-padding-block:1rem')
+        expectClassText(css, 'scroll-pys:4x', 'scroll-padding-block-start:1rem')
+        expectClassText(css, 'scroll-pye:4x', 'scroll-padding-block-end:1rem')
         expectClassText(css, 'scroll-padding-block:4x', 'scroll-padding-block:1rem')
         expectClassText(css, 'bx-solid', 'border-inline-style:solid')
         expectClassText(css, 'border-inline-style:solid', 'border-inline-style:solid')
         expectClassText(css, 'by-solid', 'border-block-style:solid')
         expectClassText(css, 'border-block-style:solid', 'border-block-style:solid')
+
+        for (const legacyAliasClass of [
+            'mi:4x', 'mis:4x', 'mie:4x', 'mbs:4x', 'mbe:4x',
+            'pi:4x', 'pis:4x', 'pie:4x', 'pbs:4x', 'pbe:4x',
+            'ii:4x', 'iis:4x', 'iie:4x', 'ib:4x', 'ibs:4x', 'ibe:4x',
+            'is:md', 'bs:md', 'min-is:4x', 'min-bs:4x', 'max-is:4x', 'max-bs:4x',
+            'scroll-ms:4x', 'scroll-me:4x', 'scroll-mbs:4x', 'scroll-mbe:4x',
+            'scroll-ps:4x', 'scroll-pe:4x', 'scroll-pbs:4x', 'scroll-pbe:4x'
+        ]) {
+            expect(css.create(legacyAliasClass), legacyAliasClass).toBeUndefined()
+        }
     })
 
     test('executes compiled value functions and complex utilities', () => {
@@ -425,7 +462,7 @@ describe.concurrent('default manifest utility parity', () => {
         expect(css.create('margin:4x')?.text).toBe('.margin\\:4x{margin:1rem}')
         expect(css.create('m:4x')?.text).toBe('.m\\:4x{margin:1rem}')
         expect(css.create('mt:4x')?.text).toBe('.mt\\:4x{margin-top:1rem}')
-        expect(css.create('scroll-mbs:1x')?.text).toBe('.scroll-mbs\\:1x{scroll-margin-block-start:0.25rem}')
+        expect(css.create('scroll-mys:1x')?.text).toBe('.scroll-mys\\:1x{scroll-margin-block-start:0.25rem}')
         expect(css.create('font:1rem')?.text).toBe('.font\\:1rem{font-size:1rem}')
         expect(css.create('fg:red-60')?.text).toBe('.fg\\:red-60{color:var(--color-red-60)}')
         expect(css.create('bg:red-60')?.text).toBe('.bg\\:red-60{background-color:var(--color-red-60)}')
@@ -452,9 +489,9 @@ describe.concurrent('default manifest utility parity', () => {
         expect(css.create('margin:1rem')?.type).toBe(UtilityType.Shorthand)
         expect(css.create('margin-left:2rem')?.type).toBe(UtilityType.Normal)
 
-        css.add('mi:2rem', 'margin:1rem')
+        css.add('mx:2rem', 'margin:1rem')
         expect(css.utilitiesLayer.rules.map(({ name }) => name))
-            .toEqual(['margin:1rem', 'mi:2rem'])
+            .toEqual(['margin:1rem', 'mx:2rem'])
     })
 })
 
@@ -557,8 +594,8 @@ describe.concurrent('manifest-driven layer and lifecycle parity', () => {
     test('keeps deterministic rule ordering independent of insertion order', () => {
         const css = createDefaultCSS()
         css.add(
-            'pi:0', 'pl:0', 'pr:0', 'p:0', 'pt:0', 'pb:0', 'padding-block:0',
-            'mi:0', 'ml:0', 'mr:0', 'm:0', 'mt:0', 'mb:0', 'margin-block:0',
+            'px:0', 'pl:0', 'pr:0', 'p:0', 'pt:0', 'pb:0', 'py:0',
+            'mx:0', 'ml:0', 'mr:0', 'm:0', 'mt:0', 'mb:0', 'my:0',
             'font:.75rem', 'font:medium', 'text-center', 'fixed', 'block', 'round', 'b:0'
         )
 
@@ -569,11 +606,11 @@ describe.concurrent('manifest-driven layer and lifecycle parity', () => {
             'text-center',
             'b:0',
             'm:0',
-            'margin-block:0',
-            'mi:0',
+            'mx:0',
+            'my:0',
             'p:0',
-            'padding-block:0',
-            'pi:0',
+            'px:0',
+            'py:0',
             'font:.75rem',
             'font:medium',
             'mb:0',

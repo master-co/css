@@ -213,7 +213,7 @@ Use native CSS variables from your theme when module-scoped or component-scoped 
 Use Master CSS classes in markup for styling that should be generated, validated, ordered, and highlighted by Master CSS tooling:
 
 ```html
-<button class="bg:primary r:md pi:md h:40px">Save</button>
+<button class="bg:primary r:md px:md h:40px">Save</button>
 ```
 
 When a CSS file imports `@master/css`, it becomes a Master-managed stylesheet. Keep vendor, CMS, or externally injected classes outside managed roots unless the class usage is visible to extraction or protected with [`@preserve native`](/guide/native-css-pruning#default-pruning).

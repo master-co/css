@@ -19,7 +19,7 @@ export const revalidate = false
 export default async function Page() {
     return (
         <main className="min-h:100dvh bg:surface p:md">
-            <section className="w:full max-w:3xl mi:auto grid-cols:4 grid-cols:8@2xs gap:sm">
+            <section className="w:full max-w:3xl mx:auto grid-cols:4 grid-cols:8@2xs gap:sm">
                 <header className="grid-col-span:4 grid-col-span:8@2xs flex flex-col flex-row@4xs items-start items-center@4xs justify-between gap:sm bg:surface b:1px|solid|subtle shadow:xs r:lg p:sm">
                     <div className="min-w:0">
                         <div className="font:semibold text:strong">Workspace layout</div>

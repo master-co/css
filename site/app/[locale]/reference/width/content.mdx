@@ -33,8 +33,8 @@ Percentages follow native CSS behavior: the percentage is based on the containin
 ### Use intrinsic width keywords
 Use `w:fit`, `w:min`, and `w:max` when the element should size itself from its content.
 ```html
-<!-- @MARK w:fit --><!-- @MARK pi:sm -->
-<button class="w:fit pi:sm">
+<!-- @MARK w:fit --><!-- @MARK px:sm -->
+<button class="w:fit px:sm">
     Compact action
 </button>
 ```
@@ -42,8 +42,8 @@ Use `w:fit`, `w:min`, and `w:max` when the element should size itself from its c
 ### Use container widths for wrappers
 `w:*` uses container size theme tokens. In page layout, it is usually paired with `max-w:*` or `w:full` so the wrapper can shrink on smaller containers.
 ```html
-<!-- @MARK w:full --><!-- @MARK max-w:7xl --><!-- @MARK mi:auto -->
-<main class="w:full max-w:7xl mi:auto">
+<!-- @MARK w:full --><!-- @MARK max-w:7xl --><!-- @MARK mx:auto -->
+<main class="w:full max-w:7xl mx:auto">
     ...
 </main>
 ```

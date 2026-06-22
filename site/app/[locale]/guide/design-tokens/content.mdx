@@ -67,7 +67,7 @@ Foundation tokens are the shared vocabulary for the most common UI decisions.
 | Foundation | Prefer | Avoid for normal UI |
 | --- | --- | --- |
 | Color | `text:neutral`, `text:blue`, <code>b:1px&#124;solid&#124;gray-20</code>, `bg:blue-5`, custom `text:body` | `bg:#fff`, `text:oklch(...)`, one-off palette values where a token fits |
-| Spacing | `p:sm`, `gap:md`, `mt:lg`, `pi:xl` | `p:3x`, `gap:1rem`, `mt:12px` |
+| Spacing | `p:sm`, `gap:md`, `mt:lg`, `px:xl` | `p:3x`, `gap:1rem`, `mt:12px` |
 | Typography | `font:lg`, `text:lg`, `font:medium`, `leading:md`, `tracking:tight` | `font:18px`, `leading:1.4`, `tracking:-0.02em` when a token exists |
 | Corner radius | `r:md`, `r:lg`, `r:2xl`, `rounded`, `round` | `r:2x`, `r:8px` for standard cards and controls |
 | Elevation | `shadow:xs`, `shadow:sm`, `shadow:md`, `shadow:lg` | Raw multi-part `box-shadow` values in markup |
@@ -128,7 +128,7 @@ Property shorthand keeps frequently used declarations compact:
 | --- | --- | --- |
 | `text:blue-60` | `color:blue-60` | Foreground color |
 | `bg:blue` | `background-color:blue` | Background color |
-| `p:md`, `pi:lg`, `m:0` | `padding:md`, `padding-inline:lg`, `margin:0` | Spacing |
+| `p:md`, `px:lg`, `m:0` | `padding:md`, `padding-inline:lg`, `margin:0` | Spacing |
 | `w:full`, `h:100dvh` | `width:full`, `height:100dvh` | Sizing |
 | `r:lg`, `rtl:md` | `border-radius:lg`, `border-top-left-radius:md` | Corner radius |
 | <code>b:1px&#124;solid&#124;gray-20</code>, <code>bt:1px&#124;solid&#124;gray-20</code> | <code>border:1px&#124;solid&#124;gray-20</code>, <code>border-top:1px&#124;solid&#124;gray-20</code> | Border width, style, and color |

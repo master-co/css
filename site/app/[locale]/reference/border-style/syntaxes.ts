@@ -18,8 +18,6 @@ const syntaxes = [
     ['br:`style`'],
     ['bx:`style`'],
     ['by:`style`'],
-    ['border-inline-style:`style`'],
-    ['border-block-style:`style`'],
 ]
 
 export default syntaxes

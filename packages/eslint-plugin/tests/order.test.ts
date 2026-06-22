@@ -86,7 +86,7 @@ createTester({
             code: `<div class="h:full w:full flex-col:hover_:where(.promotions)@md hidden:hover_:where(.hidden-on-hover)@md hidden!:not(:hover)_:where(.visible-on-hover)@md hidden!_:where(.visible-on-hover)@<md {abs;z:10;h:auto}:hover@md">Issue #377 hover visibility chain</div>`,
         },
         {
-            code: `<button class="flex items-center gap:2x pi:0 w:full fg:#2B88FD:not(:disabled) fg:#999:disabled">Issue #377 disabled colors</button>`,
+            code: `<button class="flex items-center gap:2x px:0 w:full fg:#2B88FD:not(:disabled) fg:#999:disabled">Issue #377 disabled colors</button>`,
         },
         { code: `<div class="mt:0 mt:0@sm a c d font:error hello:world">Error class</div>` },
     ],
@@ -230,12 +230,12 @@ createTester({
                     \${
                             isDisabled &&
                             \`
-                            mi:0
+                            mx:0
                             b:0
                             \`
                     }
                     flex
-                    pi:0.125rem
+                    px:0.125rem
                 \`)
             `,
             output: `
@@ -252,11 +252,11 @@ createTester({
                             isDisabled &&
                             \`
                             b:0
-                            mi:0
+                            mx:0
                             \`
                     }
                     flex
-                    pi:0.125rem
+                    px:0.125rem
                 \`)
             `,
             errors: [
@@ -265,31 +265,31 @@ createTester({
             ],
         },
         {
-            code: `<div className="pi:0.125rem flex">...</div>`,
-            output: `<div className="flex pi:0.125rem">...</div>`,
+            code: `<div className="px:0.125rem flex">...</div>`,
+            output: `<div className="flex px:0.125rem">...</div>`,
             errors: [{ messageId: 'invalidClassOrder' }],
         },
         {
-            code: `ctl(\`\${enabled && "pi:0.125rem flex"}\`)`,
-            output: `ctl(\`\${enabled && "flex pi:0.125rem"}\`)`,
+            code: `ctl(\`\${enabled && "px:0.125rem flex"}\`)`,
+            output: `ctl(\`\${enabled && "flex px:0.125rem"}\`)`,
             errors: [{ messageId: 'invalidClassOrder' }],
         },
         {
-            code: `ctl(\`pi:0.125rem flex\`)`,
-            output: `ctl(\`flex pi:0.125rem\`)`,
+            code: `ctl(\`px:0.125rem flex\`)`,
+            output: `ctl(\`flex px:0.125rem\`)`,
             errors: [{ messageId: 'invalidClassOrder' }],
         },
         {
             code: `
                 ctl(\`
-                    pi:0.125rem
+                    px:0.125rem
                     flex
                 \`)
             `,
             output: `
                 ctl(\`
                     flex
-                    pi:0.125rem
+                    px:0.125rem
                 \`)
             `,
             errors: [{ messageId: 'invalidClassOrder' }],

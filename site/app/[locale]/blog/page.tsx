@@ -19,7 +19,7 @@ export async function generateMetadata(props: any, parent: any) {
 
 function AuthorAvatarStack({ children }: { children: any[] }) {
     return (
-        <div className="flex align-items:center margin-block:1x pl:1x">
+        <div className="flex align-items:center my:1x pl:1x">
             {children.map((eachAuthor: any, index: number) => {
                 const author = authors.find((x: any) => x.name === eachAuthor.name)
                 if (!author) return null
@@ -48,8 +48,8 @@ export default async function Page(props: any) {
         .sort((a: any, b: any) => Date.parse(b.date) - Date.parse(a.date))
 
     return <>
-        <main className='pi:5x pt:12x pt:15x@sm'>
-            <div className="mi:auto margin-block:18x max-w:5xl prose margin-block:30x@sm">
+        <main className='px:5x pt:12x pt:15x@sm'>
+            <div className="mx:auto my:18x max-w:5xl prose my:30x@sm">
                 <div className='bl:1px|solid|muted bt:1px|solid|muted grid-cols:1 grid-cols:2@sm grid-cols:3@md'>
                     {pages
                         .map((page: any, index: number) => {
@@ -61,7 +61,7 @@ export default async function Page(props: any) {
                                             <div className='text:12px text:accent'>{formattedDate}</div>
                                             <div className='text:12px text:muted'> <TimeAgo timestamp={page.date} /></div>
                                         </div>
-                                        <div className='text-pretty margin-block:-1x font:20px leading:1.4'>{page.title}</div>
+                                        <div className='text-pretty my:-1x font:20px leading:1.4'>{page.title}</div>
                                         {/* <Image src="/images/gold-pattern.jpg"  className="r:5px aspect-ratio:16/9 h:auto" width={480} height={270} alt={page.title} /> */}
                                         <div className='text-pretty text:12px text:text mt:auto'>{page.description}</div>
                                         <AuthorAvatarStack>{page.authors}</AuthorAvatarStack>

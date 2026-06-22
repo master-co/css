@@ -4,7 +4,7 @@
 ## Basic usage
 ### Set column count
 Use `mcss columns:value` to set the number of columns when creating a multi-column layout. The column width will automatically adjust to the column count.
-<Demo className="padding-block:0!">
+<Demo className="py:0!">
     <div className="gap:8x columns:3@sm columns:1 w:full break-inside:avoid_:where(div)">
         <div className="bg:stripe-pink pt:8x">
             <Image src="/images/mountain4.jpg" width={300} height={200} alt="mountain" className="aspect-ratio:3/2 r:1x object-cover" />
@@ -46,7 +46,7 @@ Use `mcss columns:value` to set the number of columns when creating a multi-colu
 
 ### Flexible multi-column layout
 Use `mcss columns:count|width` to set the minimum width of each column to `width` and the maximum number of columns to `count` columns when creating a flexible multi-column layout.
-<Demo className="padding-block:0!">
+<Demo className="py:0!">
     <div className="gap:8x columns:4|100px@sm columns:1 w:full break-inside:avoid_:where(div)">
         <div className="bg:stripe-pink pt:8x">
             <Image src="/images/mountain20.jpg" width={300} height={200} alt="mountain" className="aspect-ratio:3/2 r:1x object-cover" />

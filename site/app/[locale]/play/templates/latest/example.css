@@ -27,7 +27,7 @@
     }
 
     card {
-        @compose text:text m:auto max-w:md mt:lg_:where(p,ul) margin-block:sm_:where(li) outline:1px|solid|subtle r:lg shadow:lg text:sm_:where(p,li);
+        @compose text:text m:auto max-w:md mt:lg_:where(p,ul) my:sm_:where(li) outline:1px|solid|subtle r:lg shadow:lg text:sm_:where(p,li);
         background-color: var(--color-card);
     }
 
@@ -40,7 +40,7 @@
     }
 
     card-logotype {
-        @compose mt:md mb:xl mi:auto;
+        @compose mt:md mb:xl mx:auto;
     }
 
     feature-list {
@@ -56,7 +56,7 @@
     }
 
     btn {
-        @compose inline-flex items-center justify-center rel b:1px|solid|line bg:accent text:on-accent font:sm font:medium h:48px mt:md pi:lg r:sm text-center w:full;
+        @compose inline-flex items-center justify-center rel b:1px|solid|line bg:accent text:on-accent font:sm font:medium h:48px mt:md px:lg r:sm text-center w:full;
 
         &:hover .btn-arrow-line {
             @compose transform:scale(1);

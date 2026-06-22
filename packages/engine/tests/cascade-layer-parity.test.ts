@@ -230,19 +230,19 @@ describe.concurrent('migrated cascade and layer parity', () => {
     test('keeps deterministic rule order independent of insertion order', () => {
         const inputs = [
             [
-                'pi:0', 'pl:0', 'pr:0', 'p:0', 'pt:0', 'pb:0', 'padding-block:0',
-                'mi:0', 'ml:0', 'mr:0', 'm:0', 'mt:0', 'mb:0', 'margin-block:0',
+                'px:0', 'pl:0', 'pr:0', 'p:0', 'pt:0', 'pb:0', 'py:0',
+                'mx:0', 'ml:0', 'mr:0', 'm:0', 'mt:0', 'mb:0', 'my:0',
                 'font:.75rem', 'font:medium', 'text-center', 'fixed', 'block', 'round', 'b:0'
             ],
             [
                 'b:0', 'round', 'block', 'fixed', 'text-center', 'font:medium', 'font:.75rem',
-                'margin-block:0', 'mb:0', 'mt:0', 'm:0', 'mr:0', 'ml:0', 'mi:0',
-                'padding-block:0', 'pb:0', 'pt:0', 'p:0', 'pr:0', 'pl:0', 'pi:0'
+                'my:0', 'mb:0', 'mt:0', 'm:0', 'mr:0', 'ml:0', 'mx:0',
+                'py:0', 'pb:0', 'pt:0', 'p:0', 'pr:0', 'pl:0', 'px:0'
             ]
         ]
         const expected = [
-            'block', 'fixed', 'round', 'text-center', 'b:0', 'm:0', 'margin-block:0', 'mi:0', 'p:0',
-            'padding-block:0', 'pi:0', 'font:.75rem', 'font:medium', 'mb:0', 'ml:0', 'mr:0', 'mt:0',
+            'block', 'fixed', 'round', 'text-center', 'b:0', 'm:0', 'mx:0', 'my:0', 'p:0',
+            'px:0', 'py:0', 'font:.75rem', 'font:medium', 'mb:0', 'ml:0', 'mr:0', 'mt:0',
             'pb:0', 'pl:0', 'pr:0', 'pt:0'
         ]
 
@@ -255,12 +255,12 @@ describe.concurrent('migrated cascade and layer parity', () => {
 
     test('keeps declaration and media priority order', () => {
         const css = createDefaultCSS()
-        css.add('font:.75rem', 'font:2rem@md', 'font:1.5rem@sm', 'm:8x', 'block', 'pi:4x', 'bg:blue-60:hover', 'round', 'mb:12x')
+        css.add('font:.75rem', 'font:2rem@md', 'font:1.5rem@sm', 'm:8x', 'block', 'px:4x', 'bg:blue-60:hover', 'round', 'mb:12x')
         expect(css.utilitiesLayer.rules.map(({ name }) => name)).toEqual([
             'block',
             'round',
             'm:8x',
-            'pi:4x',
+            'px:4x',
             'font:.75rem',
             'mb:12x',
             'bg:blue-60:hover',

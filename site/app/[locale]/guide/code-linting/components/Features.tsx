@@ -4,7 +4,7 @@ import { IconStatusChange, IconSettingsExclamation, IconArrowMerge, IconShieldCh
 import Link from 'internal/components/Link'
 
 export default () => (
-    <Features className="margin-block:3xl grid-cols:3@sm">
+    <Features className="my:3xl grid-cols:3@sm">
         <Feature>
             <IconStatusChange className="app-icon-primary" />
             <div>

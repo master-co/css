@@ -17,7 +17,7 @@ In Master CSS, those decisions stay close to the markup and share the same found
 
 ```html
 <!-- @MARK max-w:3xl --><!-- @MARK grid-cols:4 --><!-- @MARK grid-cols:8@2xs --><!-- @MARK gap:md@2xs -->
-<main class="w:full max-w:3xl mi:auto p:md">
+<main class="w:full max-w:3xl mx:auto p:md">
     <section class="grid-cols:4 grid-cols:8@2xs gap:sm gap:md@2xs">
         <header class="grid-col-span:4 grid-col-span:8@2xs">...</header>
         <article class="grid-col-span:4 grid-col-span:4@2xs">...</article>
@@ -30,7 +30,7 @@ In Master CSS, those decisions stay close to the markup and share the same found
 <details>
     <summary>Generated CSS</summary>
     <Class2CSS>
-        {['w:full', 'max-w:3xl', 'mi:auto', 'p:md', 'grid-cols:4', 'grid-cols:8@2xs', 'gap:sm', 'gap:md@2xs', 'grid-col-span:4', 'grid-col-span:8@2xs', 'grid-col-span:4@2xs', 'grid-col-span:5@2xs', 'grid-col-span:3@2xs']}
+        {['w:full', 'max-w:3xl', 'mx:auto', 'p:md', 'grid-cols:4', 'grid-cols:8@2xs', 'gap:sm', 'gap:md@2xs', 'grid-col-span:4', 'grid-col-span:8@2xs', 'grid-col-span:4@2xs', 'grid-col-span:5@2xs', 'grid-col-span:3@2xs']}
     </Class2CSS>
 </details>
 
@@ -266,8 +266,8 @@ Use explicit tracks for app shells, data views, split panes, and content that ha
 ## Common patterns
 ### Page shell
 ```html
-<!-- @MARK max-w:7xl --><!-- @MARK pi:lg --><!-- @MARK pi:2xl@lg -->
-<main class="w:full max-w:7xl mi:auto pi:lg pi:2xl@lg">
+<!-- @MARK max-w:7xl --><!-- @MARK px:lg --><!-- @MARK px:2xl@lg -->
+<main class="w:full max-w:7xl mx:auto px:lg px:2xl@lg">
     ...
 </main>
 ```

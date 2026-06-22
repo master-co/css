@@ -74,14 +74,44 @@ const removedAliases = [
     'grid-auto-cols',
     'grid-flow',
     'grid-template-cols',
+    'bs',
+    'ib',
+    'ibe',
+    'ibs',
+    'ii',
+    'iie',
+    'iis',
+    'is',
     'jc',
     'ji',
     'js',
     'line-h',
     'ls',
+    'max-bs',
+    'max-is',
+    'mbe',
+    'mbs',
+    'mi',
+    'mie',
+    'mis',
+    'min-bs',
+    'min-is',
     'o',
     'obj',
+    'pbe',
+    'pbs',
+    'pi',
+    'pie',
+    'pis',
     's',
+    'scroll-mbe',
+    'scroll-mbs',
+    'scroll-me',
+    'scroll-ms',
+    'scroll-pbe',
+    'scroll-pbs',
+    'scroll-pe',
+    'scroll-ps',
     'shape',
     'tab',
     't',
@@ -192,7 +222,7 @@ describe('@master/css-preset defaultManifest', () => {
         const manifest = getCompiledDefaultManifest()
         const utilities = manifest.utilities || []
 
-        expect(utilities).toHaveLength(177)
+        expect(utilities).toHaveLength(176)
         expect(utilities[0]?.order).toBe(utilities.length - 1)
         expect(utilities[utilities.length - 1]?.order).toBe(0)
         expect(utilities.some((utility) => utility.id === 'group')).toBe(false)
@@ -328,7 +358,7 @@ describe('@master/css-preset defaultManifest', () => {
         expect(css.create('sr-only')?.text).toContain('position:absolute')
         expect(css.create('sr-only')?.text).toContain('clip:rect(0, 0, 0, 0)')
 
-        expect(defaultManifest.utilityBuckets?.pattern).toHaveLength(40)
+        expect(defaultManifest.utilityBuckets?.pattern).toHaveLength(39)
         expect(defaultManifest.utilities?.some((utility) => utility.id === '.text-center')).toBe(false)
         expect(defaultManifest.utilities?.find((utility) => utility.id === 'text-<left|center|right|start|end|justify>'))
             .toMatchObject({
@@ -427,6 +457,14 @@ describe('@master/css-preset defaultManifest', () => {
         expect(css.create('outline:medium')?.text).toBe('.outline\\:medium{outline:medium}')
         expect(css.create('font:sm')?.text).toBe('.font\\:sm{font-size:var(--font-size-sm)}')
         expect(css.create('font:1rem')?.text).toBe('.font\\:1rem{font-size:1rem}')
+        expect(css.create('mxs:4x')?.text).toBe('.mxs\\:4x{margin-inline-start:1rem}')
+        expect(css.create('pye:4x')?.text).toBe('.pye\\:4x{padding-block-end:1rem}')
+        expect(css.create('ixs:4x')?.text).toBe('.ixs\\:4x{inset-inline-start:1rem}')
+        expect(css.create('size-x:md')?.text).toBe('.size-x\\:md{inline-size:var(--container-md)}')
+        expect(css.create('mi:4x')).toBeUndefined()
+        expect(css.create('pbe:4x')).toBeUndefined()
+        expect(css.create('iis:4x')).toBeUndefined()
+        expect(css.create('bs:md')).toBeUndefined()
         expect(css.create('text:red')?.text).toBe('.text\\:red{color:var(--color-text-red)}')
         expect(css.create('text:blue')?.text).toBe('.text\\:blue{color:var(--color-text-blue)}')
         expect(css.create('text:blue-60')?.text).toBe('.text\\:blue-60{color:var(--color-blue-60)}')
@@ -542,8 +580,8 @@ describe('@master/css-preset defaultManifest', () => {
         expect(css.create('view-transition-name:hero')).toBeUndefined()
         expect(css.create('vt-name:hero')).toBeUndefined()
         expect(nativeCSS.create('perspective-origin:100%|0')?.text).toBe('.perspective-origin\\:100\\%\\|0{perspective-origin:100% 0}')
-        expect(nativeCSS.create('scroll-ms:1px')?.text).toBe('.scroll-ms\\:1px{scroll-margin-inline-start:1px}')
-        expect(nativeCSS.create('scroll-pbe:1px')?.text).toBe('.scroll-pbe\\:1px{scroll-padding-block-end:1px}')
+        expect(nativeCSS.create('scroll-mxs:1px')?.text).toBe('.scroll-mxs\\:1px{scroll-margin-inline-start:1px}')
+        expect(nativeCSS.create('scroll-pye:1px')?.text).toBe('.scroll-pye\\:1px{scroll-padding-block-end:1px}')
         expect(nativeCSS.create('background:red')?.text).toBe('.background\\:red{background:red}')
         expect(nativeCSS.create('animation:fade|fast|smooth')?.text).toBe('.animation\\:fade\\|fast\\|smooth{animation:fade var(--duration-fast) var(--easing-smooth)}')
         expect(nativeCSS.create('animation-name:fade')?.text).toBe('.animation-name\\:fade{animation-name:fade}')

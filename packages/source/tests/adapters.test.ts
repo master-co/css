@@ -9,12 +9,12 @@ import {
 
 describe('source adapters', () => {
     test('exports class candidate extraction', () => {
-        expect(extractClassCandidates('<div class="block mi:auto"></div>')).toEqual(['block', 'mi:auto'])
+        expect(extractClassCandidates('<div class="block mx:auto"></div>')).toEqual(['block', 'mx:auto'])
     })
 
     test('extracts static classes from JavaScript and TypeScript syntax with Oxc', () => {
         expect(extractOxcClasses('component.tsx', `
-            const classes = 'block mi:auto'
+            const classes = 'block mx:auto'
             const active = clsx('fg:red', { 'p:4x': ok })
             element.classList.add('flex')
             export function App() {
@@ -22,7 +22,7 @@ describe('source adapters', () => {
             }
         `)).toEqual([
             'block',
-            'mi:auto',
+            'mx:auto',
             'fg:red',
             'p:4x',
             'flex',
@@ -47,14 +47,14 @@ describe('source adapters', () => {
 
     test('extracts class attributes and script strings from HTML', () => {
         expect(extractHTMLClasses('index.html', `
-            <div class="block mi:auto"></div>
+            <div class="block mx:auto"></div>
             <script>
                 element.classList.add('fg:red', 'p:4x')
                 const classes = 'flex hidden'
             </script>
         `)).toEqual([
             'block',
-            'mi:auto',
+            'mx:auto',
             'fg:red',
             'p:4x',
             'flex',

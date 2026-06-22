@@ -6,12 +6,10 @@ const syntaxes = [
     ['scroll-mr:`size`'],
     ['scroll-mx:`size`'],
     ['scroll-my:`size`'],
-    ['scroll-ms:`size`'],
-    ['scroll-me:`size`'],
-    ['scroll-mbs:`size`'],
-    ['scroll-mbe:`size`'],
-    ['scroll-margin-inline:`size`'],
-    ['scroll-margin-block:`size`'],
+    ['scroll-mxs:`size`'],
+    ['scroll-mxe:`size`'],
+    ['scroll-mys:`size`'],
+    ['scroll-mye:`size`'],
 ]
 
 export default syntaxes

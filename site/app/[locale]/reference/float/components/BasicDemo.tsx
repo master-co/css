@@ -11,7 +11,7 @@ export default function BasicDemo({ className }: any) {
                     'mr:1.875rem': className === 'float:left',
                     'ml:1.875rem': className === 'float:right'
                 })} src="/images/blur.png" width={160} height={90} alt="Float Image" />
-                <p className="margin-block:0 text-align:justify">
+                <p className="my:0 text-align:justify">
                     Text wraps around the floated image and continues in the remaining inline space. Reset the float when the image should return to normal document flow.
                 </p>
             </DemoPanel>

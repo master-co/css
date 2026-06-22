@@ -1,1 +1,1 @@
-@layer theme{:root{--container-desktop:1280px}}@layer utilities{.mi\:auto{margin-inline:auto}.max-w\:desktop{max-width:var(--container-desktop)}}
+@layer theme{:root{--container-desktop:1280px}}@layer utilities{.mx\:auto{margin-inline:auto}.max-w\:desktop{max-width:var(--container-desktop)}}

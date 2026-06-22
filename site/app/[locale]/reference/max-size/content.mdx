@@ -23,6 +23,13 @@ Use `max:*` with `size:*` or `full` when media should fill available space but s
 <img class="full max:40x object-cover" src="..." alt="" />
 ```
 
+### Cap one logical axis
+Use `max-size-x:*` for `max-inline-size` and `max-size-y:*` for `max-block-size`.
+```html
+<!-- @MARK max-size-x:7xl --><!-- @MARK max-size-y:80dvh -->
+<main class="max-size-x:7xl max-size-y:80dvh">...</main>
+```
+
 ### Use one-axis caps for layout
 Most page layout constraints only need one axis. Use [max-width](/reference/max-width) for wrappers and [max-height](/reference/max-height) for scroll regions.
 ```html

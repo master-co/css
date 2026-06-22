@@ -28,7 +28,7 @@ When the repeated part is a value, make it a token instead of a class. Tokens ke
 ```
 
 ```html
-<button class="pi:action-x r:lg bg:brand text:white">
+<button class="px:action-x r:lg bg:brand text:white">
     Submit
 </button>
 ```
@@ -152,7 +152,7 @@ Equivalent markup stays short:
 
 (click) Try clicking the button to see the outline effect
 <Demo>
-    <button className="justify-center items-center inline-flex bg:black text:white font:sm font:medium h:10x pi:md r:lg outline:2px|solid|blue:focus outline-offset:0.125rem:focus">Submit</button>
+    <button className="justify-center items-center inline-flex bg:black text:white font:sm font:medium h:10x px:md r:lg outline:2px|solid|blue:focus outline-offset:0.125rem:focus">Submit</button>
 </Demo>
 
 ---
@@ -169,23 +169,23 @@ Avoid hiding every option behind a new component. Give each component class one 
     }
 
     btn-xs {
-        @compose r:sm pi:xs font:xs h:6x;
+        @compose r:sm px:xs font:xs h:6x;
     }
 
     btn-sm {
-        @compose r:md pi:sm font:xs h:8x;
+        @compose r:md px:sm font:xs h:8x;
     }
 
     btn-md {
-        @compose r:md pi:md font:sm h:10x;
+        @compose r:md px:md font:sm h:10x;
     }
 
     btn-lg {
-        @compose r:lg pi:lg font:md h:12x;
+        @compose r:lg px:lg font:md h:12x;
     }
 
     btn-xl {
-        @compose r:xl pi:lg font:md h:14x;
+        @compose r:xl px:lg font:md h:14x;
     }
 }
 ```
@@ -309,7 +309,7 @@ CSS Modules and SFC `<style>` blocks can use `@compose` directly. They do not ne
 
 ```css name=Button.module.css
 .button {
-    @compose inline-flex align-items:center justify-content:center gap:xs pi:md h:10x r:lg;
+    @compose inline-flex align-items:center justify-content:center gap:xs px:md h:10x r:lg;
     @compose bg:blue text:white;
 }
 

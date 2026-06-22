@@ -14,6 +14,7 @@
 
 - Use structured parsing helpers instead of ad hoc string manipulation when available.
 - For CSS syntax, import graphs, transforms, and syntax-aware rewrites, prefer established parser/transformer libraries or existing compiler APIs such as Lightning CSS, PostCSS, or `@master/css-compiler` before adding custom string scanners. If a small hand-written scanner is still used, keep it centralized, dependency-free where possible, and covered by tests so it can be replaced later.
+- For logical-axis utility aliases, keep short aliases aligned to physical axes: `x` maps to inline and `y` maps to block. Prefer `mx`, `my`, `px`, `py`, `ix`, `iy`, `size-x`, and `size-y` families over `i`/`b` axis abbreviations; full native properties such as `margin-inline:*` may still be used when documenting native CSS directly.
 - Preserve existing matcher, parser, transformer, declarer, and layer patterns.
 - Keep package-local code local unless a shared abstraction is already established.
 - Avoid cross-package refactors unless the task explicitly requires them.

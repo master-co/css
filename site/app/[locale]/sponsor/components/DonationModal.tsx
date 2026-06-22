@@ -86,8 +86,8 @@ export default function DonationModal() {
     }, [searchParams])
 
     return donationOrder && <Modal backdropClick={() => setDonationOrder(null)} contentClass="max-w:320px p:20x|1.875rem|1.875rem|1.875rem">
-        <div className="abs round inset:0 mi:auto bg:surface h:128px transform:translateY(-50%) w:128px">
-            <Image className="rel round mi:auto object-contain top:2px" width="124" height="124" src={donationOrder.avatar} alt="sponsor" />
+        <div className="abs round inset:0 mx:auto bg:surface h:128px transform:translateY(-50%) w:128px">
+            <Image className="rel round mx:auto object-contain top:2px" width="124" height="124" src={donationOrder.avatar} alt="sponsor" />
         </div>
         <div className="font:24px font:bold text-center">{donationOrder.name || 'Unknown'}</div>
         <p className="text-center">Thanks for your donation 🥳</p>
