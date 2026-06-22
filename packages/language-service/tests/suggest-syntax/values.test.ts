@@ -115,21 +115,21 @@ describe.concurrent('sorting', () => {
         ])
     })
 
-    test.concurrent('color roles and base hue aliases', () => {
+    test.concurrent('base hue and text color aliases', () => {
         const labels = hint('fg:')?.map(({ label }) => label)
 
         expect(labels).toEqual(expect.arrayContaining([
             'blue',
-            'link',
-            'muted',
             'pink',
-            'strong',
-            'text',
             'text-blue',
             'text-pink'
         ]))
         expect(labels).not.toContain('accent')
         expect(labels).not.toContain('danger')
+        expect(labels).not.toContain('link')
+        expect(labels).not.toContain('muted')
+        expect(labels).not.toContain('strong')
+        expect(labels).not.toContain('text')
         expect(labels).not.toContain('on-blue')
         expect(labels).not.toContain('line-blue')
         expect(labels).not.toContain('blue-surface')
