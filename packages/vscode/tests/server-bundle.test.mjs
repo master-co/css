@@ -7,7 +7,6 @@ import { pathToFileURL, fileURLToPath } from 'node:url'
 import { expect, test } from 'vitest'
 import { MASTER_CSS_SEMANTIC_TOKEN_SCOPE_MAP } from '../../language/src/semantic/scopes.ts'
 import { createStagedExtension, getCurrentTarget, getRuntimePackagesForTarget } from '../scripts/package-targets.mjs'
-import techorConfig from '../techor.config.ts'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const packageDir = resolve(here, '..')
@@ -174,22 +173,13 @@ test('build emits the server bundle', () => {
     expect(statSync(serverPath).isFile()).toBe(true)
 })
 
-test('extension bundle does not default-import vscode', () => {
+test('extension bundle keeps vscode external without default import interop', () => {
     const source = readFileSync(extensionPath, 'utf8')
 
     expect(statSync(extensionPath).isFile()).toBe(true)
+    expect(source).toMatch(/\bfrom\s*["']vscode["']/)
     expect(source).not.toMatch(/import\s+[A-Za-z_$][\w$]*\s*,\s*\{[^}]*\}\s*from\s*["']vscode["']/)
     expect(source).not.toMatch(/import\s+[A-Za-z_$][\w$]*\s*from\s*["']vscode["']/)
-})
-
-test('techor build externalizes the vscode host module', () => {
-    const plugin = techorConfig.build.input.plugins.find((plugin) => plugin.name === 'external-vscode-host-module')
-
-    expect(plugin?.resolveId.handler('vscode')).toEqual({
-        id: 'vscode',
-        external: true
-    })
-    expect(plugin?.resolveId.handler('not-vscode')).toBeUndefined()
 })
 
 test('server bundle keeps expected native runtime imports external', () => {
