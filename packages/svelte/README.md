@@ -52,12 +52,19 @@
 
 </div>
 
-## Documentation
-Check out the official [documentation](https://rc.css.master.co/guide/installation/svelte).
+## Installation
+
+```bash
+npm install @master/css.svelte
+```
+
+`@master/css.svelte` provides the SvelteKit integration, server hook, and runtime provider for Svelte apps. It combines static or progressive CSS generation with `@master/css-runtime` hydration.
 
 ## Usage
 
-```ts name=vite.config.ts
+### Vite plugin
+
+```ts
 import { sveltekit } from '@sveltejs/kit/vite'
 import { defineConfig } from 'vite'
 import masterCSS from '@master/css.svelte/vite'
@@ -70,15 +77,34 @@ export default defineConfig({
 })
 ```
 
-```ts name=src/hooks.server.ts
+### Server hook
+
+Export the server handle to inject streamed CSS before `</head>`.
+
+```ts
 export { default as handle } from '@master/css.svelte/hooks.server'
 ```
 
-```css name=src/routes/styles.css
+If the project already has a server `handle`, compose it with SvelteKit's `sequence()`.
+
+### Stylesheet
+
+```css
 @import '@master/css';
 ```
 
-## Runtime Provider
+## Runtime provider
+
+The root entry is intended for projects using an official Master CSS integration:
+
+```ts
+import { CSSRuntimeRegistry, CSSRuntimeProvider } from '@master/css.svelte'
+```
+
+Use `@master/css.svelte/runtime-provider` when you only need the provider API without the registry's default virtual module dependencies.
+
+### `<CSSRuntimeRegistry>`
+
 ```svelte
 <script lang="ts">
     import { CSSRuntimeRegistry } from '@master/css.svelte'
@@ -88,6 +114,10 @@ export { default as handle } from '@master/css.svelte/hooks.server'
     <slot />
 </CSSRuntimeRegistry>
 ```
+
+The registry loads `virtual:master-css-manifest` and `virtual:master-css-emitted-globals` internally, so use it when the official integration should load the project-level manifest discovered from the CSS entry and the matching emittedGlobals global CSS state.
+
+### `<CSSRuntimeProvider>`
 
 Use the provider subpath when you need to pass a custom manifest or root:
 
@@ -101,3 +131,32 @@ Use the provider subpath when you need to pass a custom manifest or root:
     <slot />
 </CSSRuntimeProvider>
 ```
+
+Provider props:
+
+```ts
+interface CSSRuntimeProviderProps {
+    manifest: MasterCSSManifest
+    emittedGlobals?: MasterCSSEmittedGlobals
+    hydrationManifest?: MasterCSSHydrationManifest
+    root?: Document | ShadowRoot | null
+}
+```
+
+`root` defaults to `document`. Pass a `ShadowRoot` when Svelte renders into a shadow tree and the runtime should observe only that tree.
+
+### `getCSSRuntime()`
+
+Access the runtime store provided by `CSSRuntimeProvider`.
+
+```svelte
+<script lang="ts">
+    import { getCSSRuntime } from '@master/css.svelte/runtime-provider'
+
+    const cssRuntime = getCSSRuntime()
+</script>
+```
+
+The returned value is a `Writable<CSSRuntime | undefined>`. It is available to descendants of `CSSRuntimeProvider`.
+
+See the [Svelte installation guide](https://rc.css.master.co/guide/installation/svelte) for a full project setup.

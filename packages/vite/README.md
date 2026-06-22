@@ -52,6 +52,14 @@
 
 </div>
 
+## Installation
+
+```bash
+npm install @master/css.vite
+```
+
+## Usage
+
 ```js
 import masterCSS from '@master/css.vite'
 
@@ -79,5 +87,36 @@ Add the client type reference when TypeScript source files import Master CSS vir
 /// <reference types="@master/css-integration/client" />
 ```
 
-## Documentation
-Check out the official [documentation](https://rc.css.master.co/guide/installation/vite).
+## Master CSS imports
+
+In static mode, import the generated stylesheet from a source stylesheet.
+
+```css
+@import '@master/css';
+```
+
+Source stylesheets that import `@master/css` are treated as native CSS pruning roots by default. Ordinary CSS outside Master CSS directives is pruned against detected classes, and the import inserts generated Master CSS. Add `@preserve native;` when native CSS must be preserved.
+
+## Runtime input imports
+
+The plugin exposes canonical project-level runtime input modules:
+
+```ts
+import manifest from 'virtual:master-css-manifest'
+import emittedGlobals from 'virtual:master-css-emitted-globals'
+```
+
+Use these virtual modules when application code should receive the same manifest graph and emittedGlobals global CSS state that the plugin discovered from the project CSS entry.
+
+## Options
+
+The `options` object is passed to `masterCSS(options)`.
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `mode` | `'runtime' \| 'static' \| 'progressive' \| 'pre-render' \| null` | `'runtime'` | Integration mode. Use `null` to disable automatic integration. |
+| `extractor` | `ExtractorOptions` | `undefined` | Class usage scanning options. |
+| `injectRuntime` | `boolean` | `true` | Includes the runtime through Vite's HTML transform. |
+| `avoidFOUC` | `boolean` | `true` | Prevents flash of unstyled content during runtime rendering. |
+
+See the [Vite installation guide](https://rc.css.master.co/guide/installation/vite) for a full project setup.

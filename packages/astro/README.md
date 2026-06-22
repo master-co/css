@@ -52,16 +52,20 @@
 
 </div>
 
+## Installation
+
+```bash
+npm install @master/css.astro
+```
+
+## Usage
+
 ```js
 import { defineConfig } from 'astro/config'
 import masterCSS from '@master/css.astro'
-import sitemap from '@astrojs/sitemap'
 
 export default defineConfig({
-    compressHTML: true,
-    trailingSlash: 'never',
     integrations: [
-        sitemap(),
         masterCSS()
     ]
 })
@@ -73,5 +77,32 @@ export default defineConfig({
 @import '@master/css';
 ```
 
-## Documentation
-Check out the official [documentation](https://rc.css.master.co/guide/installation/astro).
+## Options
+
+The `options` object extends `@master/css.vite` plugin options and is passed to the Astro integration.
+
+```js
+import { defineConfig } from 'astro/config'
+import masterCSS from '@master/css.astro'
+
+export default defineConfig({
+    integrations: [
+        masterCSS({
+            mode: 'static'
+        })
+    ]
+})
+```
+
+For `pre-render` and `progressive` modes, Astro owns the HTML rendering step through `@master/css.astro/middleware`, so you do not need to add `@master/css-server` manually.
+
+Default options:
+
+| Option | Default | Description |
+| --- | --- | --- |
+| `mode` | `'progressive'` | Astro defaults to progressive rendering. |
+| `extractor` | `undefined` | Extractor options passed through to the shared Vite pipeline. |
+| `injectRuntime` | `true` | Injects the browser runtime when the selected mode needs it. |
+| `avoidFOUC` | `true` | Adds runtime-mode FOUC protection. |
+
+See the [Astro installation guide](https://rc.css.master.co/guide/installation/astro) for a full project setup.

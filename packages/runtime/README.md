@@ -59,6 +59,81 @@
 
 </div>
 
-## Documentation
-- [General Installation](https://rc.css.master.co/guide/installation/general)
+## Installation
+
+```bash
+npm install @master/css-runtime
+```
+
+Initialize the runtime with the project manifest and emitted global CSS state provided by an official integration:
+
+```js
+import { initCSSRuntime } from '@master/css-runtime'
+import manifest from 'virtual:master-css-manifest'
+import emittedGlobals from 'virtual:master-css-emitted-globals'
+
+initCSSRuntime({ manifest, emittedGlobals })
+```
+
+## CDN IIFE
+
+Use the CDN runtime when a page only needs the default preset and zero configuration:
+
+```html
+<link rel="preload" as="style" href="https://cdn.master.co/css@rc/base.css">
+<link rel="preload" as="fetch" type="application/json" crossorigin href="https://cdn.master.co/css-runtime@rc/default-manifest.json">
+<link rel="stylesheet" href="https://cdn.master.co/css@rc/base.css">
+<script src="https://cdn.master.co/css-runtime@rc"></script>
+```
+
+The IIFE fetches `default-manifest.json` next to the runtime script, starts automatically, and registers the document runtime as `globalThis.masterCSSRuntime`. It does not read global options or custom manifests. Use ESM `initCSSRuntime({ manifest, emittedGlobals })` for custom theme tokens, utilities, modes, emitted globals, or hydration inputs.
+
+## API
+
+### `CSSRuntime`
+
+```ts
+import CSSRuntime from '@master/css-runtime'
+import manifest from 'virtual:master-css-manifest'
+
+const cssRuntime = new CSSRuntime(document, manifest)
+```
+
+`CSSRuntime` runs in the browser and extends the manifest-driven `MasterCSS` engine. Use `initCSSRuntime({ manifest })` when the runtime should reuse an existing runtime for the same root.
+
+| API | Type | Description |
+| --- | --- | --- |
+| `CSSRuntime.instances` | `WeakMap<Document \| ShadowRoot, CSSRuntime>` | Runtime instances keyed by root. |
+| `cssRuntime.root` | `Document \| ShadowRoot` | Observed root. |
+| `cssRuntime.host` | `Element` | Root host, usually `root.host` or `document.documentElement`. |
+| `cssRuntime.container` | `HTMLElement \| ShadowRoot` | Container for `style#master`. |
+| `cssRuntime.observing` | `boolean` | `true` after `observe()`, `false` after `disconnect()`. |
+| `observe()` | `this` | Observes class attribute changes. |
+| `disconnect()` | `this \| undefined` | Cancels observation. |
+| `refresh(manifest?)` | `this` | Refreshes with a complete `MasterCSSManifest`. |
+| `reset()` | `this` | Clears rules and styles. |
+| `destroy()` | `this` | Removes this runtime from `CSSRuntime.instances`. |
+
+### `initCSSRuntime()`
+
+```ts
+import { initCSSRuntime } from '@master/css-runtime'
+import manifest from 'virtual:master-css-manifest'
+import emittedGlobals from 'virtual:master-css-emitted-globals'
+
+const css = initCSSRuntime({
+    manifest,
+    emittedGlobals,
+    root: document,
+    autoObserve: true
+})
+```
+
+If a runtime already exists for the same root, `initCSSRuntime()` returns that instance instead of creating a second observer.
+
+`emittedGlobals` tells the runtime which variables and keyframes were already emitted by the project CSS entry, so future dynamic classes can reuse them without inserting duplicate global CSS.
+
+## Related docs
+
+- [General installation](https://rc.css.master.co/guide/installation)
 - [Using CDNs](https://rc.css.master.co/guide/installation/cdn)

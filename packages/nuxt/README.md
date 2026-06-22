@@ -52,11 +52,53 @@
 
 </div>
 
-## Documentation
-Check out the official [documentation](https://rc.css.master.co/guide/installation/nuxtjs).
+## Installation
 
-```vue name=app.vue
+```bash
+npm install @master/css.nuxt
+```
+
+## Usage
+
+```ts
+export default defineNuxtConfig({
+    modules: [
+        '@master/css.nuxt'
+    ]
+})
+```
+
+Import the default stylesheet from a global Vue style block:
+
+```vue
 <style>
 @import '@master/css';
 </style>
 ```
+
+The default `progressive` mode integrates Nuxt SSR, SSG, ISR, and Hybrid rendering strategies through Nitro, automatically loading custom configuration.
+
+## Options
+
+The module options extend `@master/css.vue/vite` options.
+
+```ts
+export default defineNuxtConfig({
+    modules: [
+        ['@master/css.nuxt', {
+            mode: 'progressive'
+        }]
+    ]
+})
+```
+
+Default options:
+
+| Option | Default | Description |
+| --- | --- | --- |
+| `mode` | `'progressive'` | Nuxt defaults to progressive rendering. |
+| `extractor` | `undefined` | Extractor options passed through to the shared Vite pipeline. |
+| `injectRuntime` | `true` | Injects the browser runtime when the selected mode needs it. |
+| `avoidFOUC` | `true` | Adds runtime-mode FOUC protection. |
+
+See the [Nuxt installation guide](https://rc.css.master.co/guide/installation/nuxtjs) for a full project setup.

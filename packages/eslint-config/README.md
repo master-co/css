@@ -52,5 +52,43 @@
 
 </div>
 
-## Documentation
-Check out the official [documentation](https://rc.css.master.co/guide/code-linting).
+## Installation
+
+```bash
+npm install -D @master/eslint-config-css
+```
+
+## Usage
+
+Use the flat config in `eslint.config.js`:
+
+```js
+import css from '@master/eslint-config-css'
+
+/** @type {import('eslint').Linter.Config[]} */
+export default [
+    css
+]
+```
+
+This package re-exports the recommended config from `@master/eslint-plugin-css`.
+
+For custom rules and settings, configure the plugin rules in the same flat config:
+
+```js
+export default [
+    css,
+    {
+        rules: {
+            '@master/css/class-validation': ['error', {
+                disallowUnknownClass: true
+            }]
+        }
+    }
+]
+```
+
+## Related docs
+
+- [Code linting guide](https://rc.css.master.co/guide/code-linting)
+- [ESLint plugin package](../eslint-plugin)

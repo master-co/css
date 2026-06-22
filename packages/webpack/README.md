@@ -52,6 +52,14 @@
 
 </div>
 
+## Installation
+
+```bash
+npm install @master/css.webpack
+```
+
+## Usage
+
 ```js
 import MasterCSSPlugin from '@master/css.webpack'
 
@@ -69,5 +77,14 @@ Add the client type reference when TypeScript source files import `virtual:maste
 /// <reference types="@master/css-integration/client" />
 ```
 
-## Documentation
-Check out the official [documentation](https://rc.css.master.co/guide/installation/webpack).
+## Stylesheet entry
+
+Import the default stylesheet from your application CSS so the plugin can replace it with generated Master CSS:
+
+```css
+@import '@master/css';
+```
+
+The Webpack plugin uses `@master/css-extractor` for source scanning and writes generated CSS through virtual modules.
+
+See the [Webpack installation guide](https://rc.css.master.co/guide/installation/webpack) for a complete project setup.

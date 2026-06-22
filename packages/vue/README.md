@@ -52,10 +52,26 @@
 
 </div>
 
-## Documentation
-Check out the official [documentation](https://rc.css.master.co/guide/installation/vuejs).
+## Installation
+
+```bash
+npm install @master/css.vue
+```
+
+`@master/css.vue` provides Vue runtime helpers around `@master/css-runtime`. Use it when a Vue app or a Vue-managed shadow root needs an explicit runtime provider and injectable runtime instance.
 
 ## Usage
+
+The root entry is intended for projects using an official Master CSS integration:
+
+```ts
+import { CSSRuntimeRegistry, CSSRuntimeProvider } from '@master/css.vue'
+```
+
+Use `@master/css.vue/runtime-provider` when you only need the provider API without the registry's default virtual module dependencies.
+
+### `<CSSRuntimeRegistry>`
+
 ```vue
 <script setup lang="ts">
 import { CSSRuntimeRegistry } from '@master/css.vue'
@@ -67,6 +83,10 @@ import { CSSRuntimeRegistry } from '@master/css.vue'
     </CSSRuntimeRegistry>
 </template>
 ```
+
+The registry loads `virtual:master-css-manifest` and `virtual:master-css-emitted-globals` internally, so use it when the official integration should load the project-level manifest discovered from the CSS entry and the matching emittedGlobals global CSS state.
+
+### `<CSSRuntimeProvider>`
 
 Use the provider subpath when you need to pass a custom manifest or root:
 
@@ -82,3 +102,32 @@ import manifest from './app.css?master-css-manifest'
     </CSSRuntimeProvider>
 </template>
 ```
+
+Provider props:
+
+```ts
+interface CSSRuntimeProviderProps {
+    manifest: MasterCSSManifest
+    emittedGlobals?: MasterCSSEmittedGlobals
+    hydrationManifest?: MasterCSSHydrationManifest
+    root?: Document | ShadowRoot | null
+}
+```
+
+`root` defaults to `document`. Pass a `ShadowRoot` when Vue renders into a shadow tree and the runtime should observe only that tree.
+
+### `useCSSRuntime()`
+
+Access the runtime ref provided by `CSSRuntimeProvider`.
+
+```vue
+<script setup lang="ts">
+import { useCSSRuntime } from '@master/css.vue/runtime-provider'
+
+const cssRuntime = useCSSRuntime()
+</script>
+```
+
+The returned value is a `ShallowRef<CSSRuntime | undefined> | undefined`. It is `undefined` outside the provider, and its `.value` is set after the provider mounts.
+
+See the [Vue installation guide](https://rc.css.master.co/guide/installation/vuejs) for Vite setup, or the [Nuxt installation guide](https://rc.css.master.co/guide/installation/nuxtjs) for Nuxt projects.

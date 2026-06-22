@@ -52,10 +52,26 @@
 
 </div>
 
-## Documentation
-Check out the official [documentation](https://rc.css.master.co/guide/installation/react).
+## Installation
+
+```bash
+npm install @master/css.react
+```
+
+`@master/css.react` provides React runtime helpers around `@master/css-runtime`.
 
 ## Usage
+
+The root entry is intended for projects using an official Master CSS integration:
+
+```tsx
+import { CSSRuntimeRegistry, CSSRuntimeProvider } from '@master/css.react'
+```
+
+Use `@master/css.react/runtime-provider` when you only need the provider API without the registry's default virtual module dependencies.
+
+### `<CSSRuntimeRegistry>`
+
 Use the registry with an official Master CSS integration:
 
 ```tsx
@@ -69,6 +85,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     )
 }
 ```
+
+The registry loads `virtual:master-css-manifest` and `virtual:master-css-emitted-globals` internally, so use it when the official integration should load the project-level manifest discovered from the CSS entry and the matching emittedGlobals global CSS state.
+
+### `<CSSRuntimeProvider>`
 
 Use the provider subpath when you need to pass a custom manifest or root:
 
@@ -84,3 +104,31 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     )
 }
 ```
+
+The provider calls `initCSSRuntime({ manifest, root, emittedGlobals })` on mount, refreshes the runtime when `manifest` changes, recreates it when `root` changes, and destroys it on unmount.
+
+### `CSSRuntimeProviderProps`
+
+```ts
+interface CSSRuntimeProviderProps {
+    children?: ReactNode
+    manifest: MasterCSSManifest
+    emittedGlobals?: MasterCSSEmittedGlobals
+    hydrationManifest?: MasterCSSHydrationManifest
+    root?: Document | ShadowRoot | null
+}
+```
+
+### `useCSSRuntime()`
+
+Access the runtime instance from components rendered inside `CSSRuntimeProvider`.
+
+```tsx
+import { useCSSRuntime } from '@master/css.react/runtime-provider'
+
+export function Component() {
+    const cssRuntime = useCSSRuntime()
+}
+```
+
+See the [React installation guide](https://rc.css.master.co/guide/installation/react) for a full project setup.

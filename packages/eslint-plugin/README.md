@@ -52,8 +52,137 @@
 
 </div>
 
-## Documentation
-Check out the official [documentation](https://rc.css.master.co/guide/code-linting).
+## Installation
+
+```bash
+npm install -D @master/eslint-plugin-css
+```
+
+The recommended config is also available through `@master/eslint-config-css`.
+
+## Usage
+
+Use ESLint flat configuration:
+
+```js
+import css from '@master/eslint-config-css'
+import htmlParser from '@angular-eslint/template-parser'
+import tsParser from '@typescript-eslint/parser'
+
+/** @type {import('eslint').Linter.Config[]} */
+export default [
+    {
+        files: ['**/*.html'],
+        languageOptions: {
+            parser: htmlParser
+        }
+    },
+    {
+        files: ['**/*.{ts,tsx}'],
+        languageOptions: {
+            parser: tsParser
+        }
+    },
+    css,
+    {
+        rules: {
+            '@master/css/class-validation': ['error', {
+                disallowUnknownClass: true
+            }]
+        }
+    }
+]
+```
+
+## Rules
+
+### `@master/css/class-order`
+
+Enforces a consistent and logical order of classes.
+
+```js
+export default [
+    {
+        rules: {
+            '@master/css/class-order': 'warn'
+        }
+    }
+]
+```
+
+### `@master/css/class-validation`
+
+Detects Master CSS syntax errors.
+
+```js
+export default [
+    {
+        rules: {
+            '@master/css/class-validation': 'error'
+        }
+    }
+]
+```
+
+Set `disallowUnknownClass: true` to reject classes that do not match the active manifest:
+
+```js
+export default [
+    {
+        rules: {
+            '@master/css/class-validation': ['error', {
+                disallowUnknownClass: true
+            }]
+        }
+    }
+]
+```
+
+### `@master/css/class-collision`
+
+Detects classes that emit the same CSS declaration.
+
+```js
+export default [
+    {
+        rules: {
+            '@master/css/class-collision': 'warn'
+        }
+    }
+]
+```
+
+## Settings
+
+Settings live under the `@master/css` settings key:
+
+```js
+export default [
+    {
+        settings: {
+            '@master/css': {
+                classAttributes: ['class', 'className'],
+                classFunctions: ['clsx', 'classList.add'],
+                classDeclarations: ['classes'],
+                ignoredKeys: ['compoundVariants', 'defaultVariants'],
+                manifest
+            }
+        }
+    }
+]
+```
+
+| Setting | Type | Description |
+| --- | --- | --- |
+| `classAttributes` | `string[]` | Element attributes containing class strings. |
+| `classFunctions` | `string[]` | Function names whose arguments should be checked. |
+| `classDeclarations` | `string[]` | Variable/member names whose declarations should be checked. |
+| `ignoredKeys` | `string[]` | Object keys ignored during checking. Defaults include variant metadata keys. |
+| `manifest` | `MasterCSSManifest` | Explicit compiled manifest. By default, ESLint loads the project CSS entry discovered from the current working directory. |
+
+## Related docs
+
+See the [code linting guide](https://rc.css.master.co/guide/code-linting) for setup guides across frameworks and editors.
 
 ## Credits
 This plugin is heavily inspired by the awesome [eslint-plugin-tailwindcss](https://github.com/francoismassart/eslint-plugin-tailwindcss). We want to thank for their initial work, which served as the foundation for this project. While significant modifications have been made, the core ideas and concepts from A Plugin have been instrumental in developing this plugin.

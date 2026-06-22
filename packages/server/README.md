@@ -52,5 +52,47 @@
 
 </div>
 
-## Documentation
-Check out the official [documentation](https://rc.css.master.co/reference/server).
+## Installation
+
+```bash
+npm install @master/css-server
+```
+
+`@master/css-server` renders required Master CSS from HTML. It parses HTML, extracts class names, creates a `MasterCSS` instance, and injects or updates `<style id="master">`.
+
+## API
+
+### `render()`
+
+Render HTML and inject generated CSS.
+
+```ts
+import { render } from '@master/css-server'
+
+const result = render('<div class="text:center"></div>', manifest)
+
+console.log(result.html)
+console.log(result.css.text)
+```
+
+### `renderCSS()`
+
+Render only the CSS needed by an HTML string.
+
+```ts
+import { renderCSS } from '@master/css-server'
+
+const css = renderCSS('<div class="text:center"></div>', manifest)
+```
+
+### `parseHTML()`
+
+Parse HTML into the lightweight DOM representation used by the server renderer.
+
+```ts
+import { parseHTML } from '@master/css-server'
+
+const document = parseHTML('<html><head></head><body></body></html>')
+```
+
+Use official framework integrations when possible; they compose this package with manifest loading, source scanning, and runtime hydration.

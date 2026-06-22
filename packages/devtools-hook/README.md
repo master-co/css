@@ -59,5 +59,58 @@
 
 </div>
 
-## Documentation
-Check out the official [documentation](https://rc.css.master.co/reference/devtools-hook).
+## Installation
+
+```bash
+npm install @master/css-devtools-hook
+```
+
+`@master/css-devtools-hook` provides a global event hook for monitoring runtime style changes. It is useful for browser extensions, devtools panels, and debugging runtime mutations in development.
+
+## Usage
+
+Expose the hook globally so devtools or browser extensions can interact with it:
+
+```ts
+import devToolsHook, { type DevToolsHook } from '@master/css-devtools-hook'
+
+declare global {
+    var __MASTER_CSS_DEVTOOLS_HOOK__: DevToolsHook
+}
+
+if (!globalThis.__MASTER_CSS_DEVTOOLS_HOOK__) {
+    globalThis.__MASTER_CSS_DEVTOOLS_HOOK__ = devToolsHook
+}
+```
+
+`@master/css-runtime` automatically detects and attaches to this hook when present.
+
+Listen to runtime changes:
+
+```ts
+const hook = globalThis.__MASTER_CSS_DEVTOOLS_HOOK__
+const onMutated = (context) => {
+    console.log('CSS mutations:', context.records)
+    console.log('Class counts:', context.classCounts)
+    console.log('CSSRuntime instance:', context.cssRuntime)
+}
+
+hook.on('runtime:mutated', onMutated)
+
+// later
+hook.off('runtime:mutated', onMutated)
+```
+
+## API
+
+| API | Description |
+| --- | --- |
+| `hook.on(event, callback)` | Register a listener for a specific event. |
+| `hook.off(event, callback)` | Remove a previously registered listener. |
+| `hook.emit(event, context)` | Trigger an event. This is usually used internally. |
+
+Best practices:
+
+- Clean up listeners when they are no longer needed.
+- Use the hook only in development builds or behind feature flags.
+- Keep event handlers lightweight because runtime mutation events can be frequent.

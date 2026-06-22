@@ -52,5 +52,72 @@
 
 </div>
 
-## Documentation
-Check out the official [documentation](https://rc.css.master.co/reference/validator).
+## Installation
+
+```bash
+npm install @master/css-validator
+```
+
+`@master/css-validator` validates CSS rules generated from Master CSS classes, including at-rules, selectors, and declarations. It is a Node.js package used by extraction and linting workflows.
+
+## API
+
+### `isClassValid()`
+
+Validates whether a string is a valid Master CSS class.
+
+```ts
+import { isClassValid } from '@master/css-validator'
+
+isClassValid('text-center')
+// => true
+
+isClassValid('love:css')
+// => false
+```
+
+Signature:
+
+```ts
+isClassValid(syntax: string, css?: MasterCSS): boolean
+```
+
+### `generateValidRules()`
+
+Validates a class and returns generated rules.
+
+```ts
+import { generateValidRules } from '@master/css-validator'
+
+generateValidRules('text-center')
+// => [{...}]
+
+generateValidRules('love:css')
+// => []
+```
+
+Signature:
+
+```ts
+generateValidRules(syntax: string, css?: MasterCSS): Rule[]
+```
+
+### `validate()`
+
+Validates a class and returns syntax errors.
+
+```ts
+import { validate } from '@master/css-validator'
+
+validate('text-center')
+// => []
+
+validate('love:css')
+// => [SyntaxError]
+```
+
+Signature:
+
+```ts
+validate(syntax: string, css?: MasterCSS): SyntaxError[]
+```

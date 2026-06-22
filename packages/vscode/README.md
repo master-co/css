@@ -214,7 +214,7 @@ Use this after changing dependencies, workspace layout, or project manifest file
 
 ## Documentation
 
-See the [language service guide](https://rc.css.master.co/guide/language-service), [language service reference](https://rc.css.master.co/reference/language-service), and [language server reference](https://rc.css.master.co/reference/language-server) for deeper details.
+See the [language service guide](https://rc.css.master.co/guide/language-service), the [`@master/css-language-service`](../language-service) README, and the [`@master/css-language-server`](../language-server) README for deeper details.
 
 ## Community
 

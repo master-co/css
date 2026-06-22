@@ -14,5 +14,54 @@
 
 </div>
 
-## Documentation
-Check out the official [documentation](https://rc.css.master.co/reference/language).
+## Installation
+
+```bash
+npm install @master/css-language
+```
+
+## Usage
+
+`@master/css-language` provides editor-neutral Master CSS language primitives such as semantic token legends, class-list tokenizers, class-position scanning, browser semantic tokens, Shiki integration, and the shared TextMate grammar.
+
+### Semantic token legend
+
+```js
+import { SEMANTIC_TOKENS_LEGEND } from '@master/css-language'
+```
+
+### Browser semantic tokens
+
+Use the browser subpath when a web editor needs Master CSS semantic tokens without the stateful language service class.
+
+```ts
+import {
+    SEMANTIC_TOKENS_LEGEND,
+    renderBrowserSemanticTokens
+} from '@master/css-language/browser'
+
+const semanticTokens = renderBrowserSemanticTokens(source, 'html', { manifest })
+```
+
+The browser helper supports CSS directive class-list spans in CSS documents and quoted `class` or `className` attributes in HTML.
+
+### Shiki
+
+Use the Shiki subpath to register the shared TextMate injection grammar and decorate Master CSS semantic ranges.
+
+```ts
+import {
+    masterCSSShikiLanguage,
+    transformerMasterCSS
+} from '@master/css-language/shiki'
+```
+
+### Class positions
+
+Use `getClassPositions()` when a tool needs raw class spans without LSP service lifecycle.
+
+```ts
+import { getClassPositions, languageSettings } from '@master/css-language'
+
+const positions = getClassPositions(textDocument, languageSettings)
+```

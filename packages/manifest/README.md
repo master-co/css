@@ -53,23 +53,83 @@
 </div>
 
 ## Installation
+
 ```bash
 npm install @master/css-manifest
 ```
 
-## Usage
-CSS manifest resources are compiled through the Master CSS compiler. Local CSS imports are reported as dependencies.
+`@master/css-manifest` is the shared project manifest boundary for CLI commands, ESLint, language tooling, and build integrations such as Vite, Next.js, Webpack, and Nuxt.
+
+It discovers project CSS entries and Master CSS workspace roots, then delegates CSS parsing, import graph resolution, and manifest compilation to `@master/css-compiler`. JavaScript and TypeScript config files are intentionally unsupported.
+
+Project entry discovery only treats CSS files with top-level `@master;` or `@import '@master/css'` as entries. Imported `@settings`, `@theme`, and `@custom-variant` directives participate in the entry graph, but they are not independent project entries.
+
+## Load project manifest
+
+Use `loadProjectManifest()` when a tool should load the canonical project-level manifest for a directory.
+
+```ts
+import { loadProjectManifest, loadProjectManifestJSON } from '@master/css-manifest/load'
+
+const result = await loadProjectManifest('/project')
+const jsonResult = await loadProjectManifestJSON('/project')
+```
+
+`loadProjectManifest()` discovers project CSS entries unless explicit `entries` are passed. It returns the compiled manifest and dependency list. `loadProjectManifestJSON()` returns JSON source for virtual JSON modules and loader output.
+
+```ts
+import { loadProjectManifestSync, loadProjectManifestJSONSync } from '@master/css-manifest/load-sync'
+
+const result = loadProjectManifestSync('/project')
+const jsonResult = loadProjectManifestJSONSync('/project')
+```
+
+## Load explicit CSS resources
+
+Use `loadManifest()` when the CSS resource path is already known and should be compiled directly.
 
 ```ts
 import { loadManifest, loadManifestJSON } from '@master/css-manifest/load'
-import { loadManifestSync, loadManifestJSONSync } from '@master/css-manifest/load-sync'
-import { MASTER_CSS_MANIFEST_QUERY } from '@master/css-integration/manifest-module'
 
-const result = await loadManifest('./src/index.css')
-const manifest = result.manifest
+const result = await loadManifest('/project/src/index.css')
+const jsonResult = await loadManifestJSON('/project/src/index.css')
 ```
+
+`loadManifest()` and `loadManifestJSON()` only accept CSS resources. They do not search the workspace and do not load JavaScript or TypeScript config files.
 
 ```ts
-const jsonResult = await loadManifestJSON('./src/index.css' + MASTER_CSS_MANIFEST_QUERY)
-const source = jsonResult.json
+import { loadManifestSync, loadManifestJSONSync } from '@master/css-manifest/load-sync'
+
+const result = loadManifestSync('/project/src/index.css')
+const jsonResult = loadManifestJSONSync('/project/src/index.css')
 ```
+
+## Discover entries and workspaces
+
+Use `@master/css-manifest/css` when tooling needs the same project entry and workspace discovery rules without loading a manifest.
+
+```ts
+import {
+    findCSSManifestEntryFiles,
+    findMasterCSSWorkspaceDirectories,
+    hasMasterCSSManifestEntrypoint,
+} from '@master/css-manifest/css'
+```
+
+`findCSSManifestEntryFiles(projectDir)` searches CSS files for entry markers. `findMasterCSSWorkspaceDirectories(rootDir)` creates workspace roots from discovered CSS entries and `package.json` files that declare Master CSS package dependencies.
+
+## Manifest modules
+
+The module utilities define the manifest import contract used by official integrations. They live in `@master/css-integration`; `@master/css-manifest` owns loading and discovery.
+
+| API | Purpose |
+| --- | --- |
+| `VIRTUAL_MANIFEST_ID` | Default manifest JS facade module id, `virtual:master-css-manifest`. |
+| `VIRTUAL_EMITTED_GLOBALS_ID` | Default emittedGlobals module id, `virtual:master-css-emitted-globals`. |
+| `MASTER_CSS_MANIFEST_QUERY` | Query suffix, `?master-css-manifest`, used to compile one explicit CSS resource. |
+| `toManifestJSON(manifest)` | Serializes a manifest object into normalized JSON source. |
+| `toEmittedGlobalsModule(emittedGlobals)` | Serializes emittedGlobals variable and animation counts into an ESM default export. |
+| `toVirtualDefaultManifestModulePath(context)` | Creates the virtual path for the default manifest module. |
+| `toVirtualCSSManifestModulePath(context, file)` | Creates a virtual path for one explicit queried CSS resource. |
+
+Use `virtual:master-css-manifest` and `virtual:master-css-emitted-globals` when application code should receive an integration's canonical project-level runtime inputs. Use `./index.css?master-css-manifest` only when the code intentionally compiles one explicit CSS resource through the active integration.

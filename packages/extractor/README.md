@@ -52,5 +52,86 @@
 
 </div>
 
-## Documentation
-Check out the official [documentation](https://rc.css.master.co/reference/extractor).
+## Installation
+
+```bash
+npm install @master/css-extractor
+```
+
+`@master/css-extractor` is the Node.js source-scanning engine behind Master CSS static rendering. It scans source files, validates possible classes, inserts generated rules, and maintains extraction state for build integrations.
+
+## Usage
+
+```js
+import { CSSExtractor } from '@master/css-extractor'
+
+const extractor = new CSSExtractor(options, cwd)
+```
+
+`cwd` resolves project CSS manifest entries and source patterns such as `include`, `exclude`, and `required`.
+
+## Options
+
+Default options are exported from the root package and the side-effect-free `./options` subpath:
+
+```js
+import { options } from '@master/css-extractor'
+import defaultOptions from '@master/css-extractor/options'
+```
+
+| Option | Type | Description |
+| --- | --- | --- |
+| `manifest` | `MasterCSSManifest` | Explicit compiled manifest. When omitted, integrations and CLI flows load the project CSS entry manifest from `cwd`. |
+| `include` | `FastGlobPattern[]` | Source files and directories to scan. |
+| `exclude` | `FastGlobPattern[]` | Source files and directories to exclude. |
+| `required` | `FastGlobPattern[]` | Mandatory sources scanned even when they match `exclude`. |
+| `safelist` | `string[]` | Classes generated regardless of source detection. |
+| `blocklist` | `(string \| RegExp)[]` | Classes excluded from accidental scanner matches. |
+
+Use `safelist` for classes from asynchronous data, irregular classes, or classes that are not visible in source. Use `blocklist` for false positives.
+
+## CSS directives
+
+Extractor options can also be declared in CSS. For the full stylesheet syntax, see [CSS directives](https://rc.css.master.co/reference/directives).
+
+```css
+@source 'src/**/*.{html,js,jsx,ts,tsx,vue,svelte,astro,md,mdx}';
+@source not 'src/**/*.test.tsx';
+@source required 'src/generated.tsx';
+
+@safelist 'dialog-open bg:blue-60@dark';
+@blocklist 'debug-*';
+```
+
+`@source` maps to `include`, `@source not` maps to `exclude`, `@source required` maps to `required`, `@safelist` maps to `safelist`, and `@blocklist` maps to `blocklist`.
+
+Bare source globs are resolved from `cwd`. Globs that start with `./` or `../` are resolved relative to the CSS file that declares the directive. `@blocklist` accepts exact strings and `*` / `?` wildcard patterns.
+
+## Native CSS pruning
+
+Prune native CSS class selector rules from a stylesheet by importing `@master/css` in that stylesheet:
+
+```css
+@import "@master/css";
+@import "./styles/btn.css";
+
+.card {
+    color: red;
+}
+
+.unused {
+    color: blue;
+}
+```
+
+Local relative `.css` imports are expanded, the Master import is replaced by generated CSS, and native class rules are kept only when their class names are found by the extractor. Add `@preserve native;` to preserve native CSS in a Master-managed root. See [Native CSS pruning](https://rc.css.master.co/guide/native-css-pruning) for the full model.
+
+## Class candidate extraction
+
+Use `@master/css-source` when a tool only needs unvalidated class-like candidates from source content:
+
+```ts
+import { extractClassCandidates } from '@master/css-source'
+
+const result = extractClassCandidates(source)
+```
