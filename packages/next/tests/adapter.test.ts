@@ -89,6 +89,10 @@ function readHydrationManifestSource(html: string) {
     return html.match(new RegExp(`${MASTER_CSS_HYDRATION_MANIFEST_ATTR}="([^"]+)"`))?.[1]
 }
 
+function toPosixPath(path: string) {
+    return path.replaceAll('\\', '/')
+}
+
 afterEach(() => {
     if (fixtureDir) {
         rmSync(fixtureDir, { recursive: true, force: true })
@@ -114,7 +118,9 @@ describe('renderNextBuildOutputs', () => {
         expect(outputs[0].classes).toEqual(['font:40px', 'fg:red'])
         expect(outputs[0].rendered).toBe(true)
         expect(outputs[0].hydrationManifestBytes).toBeGreaterThan(0)
-        expect(outputs[0].hydrationManifestFile).toMatch(/\.next\/static\/master-css\/hydration\/master-css-hydration\.[0-9a-f]{8}\.json$/)
+        const hydrationManifestFile = outputs[0].hydrationManifestFile
+        if (!hydrationManifestFile) throw new Error('Expected a Next hydration manifest file.')
+        expect(toPosixPath(hydrationManifestFile)).toMatch(/\.next\/static\/master-css\/hydration\/master-css-hydration\.[0-9a-f]{8}\.json$/)
         expect(html).toContain('<style id="master-css"')
         expect(readHydrationManifestSource(html)).toMatch(/^\/_next\/static\/master-css\/hydration\/master-css-hydration\.[0-9a-f]{8}\.json$/)
         expect(html).not.toContain(`id="${MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID}"`)
@@ -122,8 +128,6 @@ describe('renderNextBuildOutputs', () => {
         expect(html).toContain('.font\\:40px')
         expect(html).toContain('.fg\\:red')
         expect(existsSync(join(distDir, 'master-css-build-report.json'))).toBe(true)
-        const hydrationManifestFile = outputs[0].hydrationManifestFile
-        if (!hydrationManifestFile) throw new Error('Expected a Next hydration manifest file.')
         expect(existsSync(hydrationManifestFile)).toBe(true)
         const hydrationManifest = JSON.parse(readFileSync(hydrationManifestFile, 'utf-8'))
         expect(hydrationManifest.rules.map((rule: { className: string }) => rule.className)).toEqual(expect.arrayContaining(['font:40px', 'fg:red']))
