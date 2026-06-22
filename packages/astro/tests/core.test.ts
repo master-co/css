@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import masterCSS, { ASTRO_MIDDLEWARE_ENTRYPOINT } from '../src/core'
@@ -75,6 +75,61 @@ describe('@master/css.astro integration', () => {
 
         expect(result.addMiddleware).toHaveBeenCalled()
         expect(result.injectScript).not.toHaveBeenCalled()
+    })
+
+    it('preloads the runtime manifest JSON in runtime static builds', async () => {
+        const dir = mkdtempSync(join(tmpdir(), 'master-css-astro-runtime-'))
+        const assetsDir = join(dir, '_astro')
+        const htmlFile = join(dir, 'index.html')
+        try {
+            mkdirSync(assetsDir, { recursive: true })
+            writeFileSync(join(assetsDir, 'master-css-manifest.CzuVhIZV.json'), '{"version":1}')
+            writeFileSync(join(assetsDir, 'page.C2zmEykZ.js'), 'const manifestURL = new URL("master-css-manifest.CzuVhIZV.json", import.meta.url).href;')
+            writeFileSync(htmlFile, '<html><head></head><body></body></html>')
+            const integration = masterCSS({ mode: 'runtime' })
+
+            await integration.hooks['astro:config:done']?.({
+                config: { base: '/docs' },
+                buildOutput: 'static'
+            } as never)
+            await integration.hooks['astro:build:done']?.({ dir } as never)
+
+            expect(readFileSync(htmlFile, 'utf-8')).toContain(
+                '<link rel="preload" as="fetch" type="application/json" crossorigin href="/docs/_astro/master-css-manifest.CzuVhIZV.json">'
+            )
+        } finally {
+            rmSync(dir, { recursive: true, force: true })
+        }
+    })
+
+    it('does not preload the runtime manifest outside runtime injection static builds', async () => {
+        for (const scenario of [
+            { integrationOptions: { mode: 'runtime', injectRuntime: false }, buildOutput: 'static' },
+            { integrationOptions: { mode: 'progressive' }, buildOutput: 'static' },
+            { integrationOptions: { mode: 'pre-render' }, buildOutput: 'static' },
+            { integrationOptions: { mode: 'runtime' }, buildOutput: 'server' }
+        ] as const) {
+            const dir = mkdtempSync(join(tmpdir(), 'master-css-astro-no-runtime-'))
+            const assetsDir = join(dir, '_astro')
+            const htmlFile = join(dir, 'index.html')
+            try {
+                mkdirSync(assetsDir, { recursive: true })
+                writeFileSync(join(assetsDir, 'master-css-manifest.CzuVhIZV.json'), '{"version":1}')
+                writeFileSync(join(assetsDir, 'page.C2zmEykZ.js'), 'const manifestURL = new URL("master-css-manifest.CzuVhIZV.json", import.meta.url).href;')
+                writeFileSync(htmlFile, '<html><head></head><body></body></html>')
+                const integration = masterCSS(scenario.integrationOptions)
+
+                await integration.hooks['astro:config:done']?.({
+                    config: { base: '/' },
+                    buildOutput: scenario.buildOutput
+                } as never)
+                await integration.hooks['astro:build:done']?.({ dir } as never)
+
+                expect(readFileSync(htmlFile, 'utf-8')).not.toContain('rel="preload" as="fetch"')
+            } finally {
+                rmSync(dir, { recursive: true, force: true })
+            }
+        }
     })
 
     it('externalizes static build hydration manifests', async () => {

@@ -11,6 +11,8 @@ import {
     stripMasterCSSManifestQuery,
     stripResourceQuery,
     toManifestJSON,
+    toManifestPreloadLinkAttrs,
+    toManifestPreloadLinkTag,
     toEmittedGlobalsModule,
     toUniversalManifestFacadeModule
 } from '../src/module'
@@ -34,6 +36,19 @@ describe('@master/css-integration module helpers', () => {
     it('matches and strips CSS manifest resource queries', () => {
         expect(stripMasterCSSManifestQuery('./theme.css?master-css-manifest')).toBe('./theme.css')
         expect(stripResourceQuery('./theme.css?master-css-manifest')).toBe('./theme.css')
+    })
+
+    it('builds manifest JSON preload link attributes and HTML', () => {
+        expect(toManifestPreloadLinkAttrs('/assets/master-css-manifest.json')).toEqual({
+            rel: 'preload',
+            as: 'fetch',
+            type: 'application/json',
+            crossorigin: '',
+            href: '/assets/master-css-manifest.json'
+        })
+        expect(toManifestPreloadLinkTag('/assets/master-css-manifest.json?x=1&name="main"')).toBe(
+            '<link rel="preload" as="fetch" type="application/json" crossorigin href="/assets/master-css-manifest.json?x=1&amp;name=&quot;main&quot;">'
+        )
     })
 
     it('builds shared runtime injection source', () => {

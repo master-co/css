@@ -4,6 +4,7 @@ import { CSS_RUNTIME_INJECTION } from '@master/css-integration/runtime'
 import defaultOptions, { type IntegrationOptions } from './options'
 import { astroAdapter } from './adapter'
 import { externalizeAstroHydrationManifests } from './external-hydration-manifest'
+import { preloadAstroRuntimeManifest } from './runtime-manifest-preload'
 
 export const ASTRO_MIDDLEWARE_ENTRYPOINT = '@master/css.astro/middleware'
 
@@ -41,6 +42,8 @@ function getViteOptions(options: IntegrationOptions): IntegrationOptions {
 
 export default function masterCSS(options?: IntegrationOptions): AstroIntegration {
     options = { ...defaultOptions, ...options }
+    let astroBase: string | undefined
+    let buildOutput: 'static' | 'server' | undefined
     return {
         name: '@master/css.astro',
         hooks: {
@@ -64,7 +67,14 @@ export default function masterCSS(options?: IntegrationOptions): AstroIntegratio
                 }
                 updateConfig({ vite: { plugins: [vitePlugin(getViteOptions(options)) as never] } })
             },
+            'astro:config:done': async ({ config, buildOutput: output }) => {
+                astroBase = config.base
+                buildOutput = output
+            },
             'astro:build:done': async ({ dir }) => {
+                if (options.mode === 'runtime' && options.injectRuntime && buildOutput !== 'server') {
+                    await preloadAstroRuntimeManifest(dir, astroBase)
+                }
                 switch (options.mode) {
                     case 'pre-render':
                     case 'progressive':

@@ -1,8 +1,47 @@
 export const MANIFEST_MODULE_FILE = 'master-css-manifest.js'
 export const MANIFEST_ASSET_FILE = 'master-css-manifest.json'
+export const MASTER_CSS_MANIFEST_PRELOAD_REL = 'preload'
+export const MASTER_CSS_MANIFEST_PRELOAD_AS = 'fetch'
+export const MASTER_CSS_MANIFEST_PRELOAD_TYPE = 'application/json'
+
+export interface ManifestPreloadLinkAttrs {
+    rel: typeof MASTER_CSS_MANIFEST_PRELOAD_REL
+    as: typeof MASTER_CSS_MANIFEST_PRELOAD_AS
+    type: typeof MASTER_CSS_MANIFEST_PRELOAD_TYPE
+    crossorigin: ''
+    href: string
+}
+
+function escapeAttributeValue(value: string) {
+    return value
+        .replace(/&/g, '&amp;')
+        .replace(/"/g, '&quot;')
+}
 
 export function toInlineManifestModule(json: string) {
     return `export default ${json};`
+}
+
+export function toManifestPreloadLinkAttrs(href: string): ManifestPreloadLinkAttrs {
+    return {
+        rel: MASTER_CSS_MANIFEST_PRELOAD_REL,
+        as: MASTER_CSS_MANIFEST_PRELOAD_AS,
+        type: MASTER_CSS_MANIFEST_PRELOAD_TYPE,
+        crossorigin: '',
+        href
+    }
+}
+
+export function toManifestPreloadLinkTag(href: string) {
+    const attrs = toManifestPreloadLinkAttrs(href)
+    return [
+        '<link',
+        `rel="${attrs.rel}"`,
+        `as="${attrs.as}"`,
+        `type="${attrs.type}"`,
+        'crossorigin',
+        `href="${escapeAttributeValue(attrs.href)}">`
+    ].join(' ')
 }
 
 export function toBrowserManifestFacadeModule(urlExpression: string) {

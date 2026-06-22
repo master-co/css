@@ -73,6 +73,8 @@ export default defineConfig({
 
 `masterCSS()` uses `progressive` mode by default. It registers Astro middleware to pre-render initial CSS into `<style id="master-css">` and injects the runtime script for browser hydration.
 
+In static builds with `mode: 'runtime'`, the integration preloads the emitted manifest JSON when it also injects the runtime script. `injectRuntime: false` disables both automatic runtime injection and the manifest JSON preload. SSR-only Astro output does not receive this preload because the integration cannot reliably resolve the final client manifest asset URL at build time.
+
 ```css
 @import '@master/css';
 ```

@@ -63,6 +63,8 @@ describe('ManifestVirtualModulePlugin', () => {
         expect(code).toContain('const masterCSSManifestURL = import.meta.ROLLUP_FILE_URL_master_css_manifest_ref;')
         expect(code).toContain('await fetch(masterCSSManifestURL)')
         expect(code).not.toContain('font-weight-bold')
+        expect(context.defaultManifestAssetReferenceId).toBe('master_css_manifest_ref')
+        expect(context.defaultManifestAssetSource).toContain('"version":1')
     })
 
     it('emits the default manifest through a universal facade in SSR production build', async () => {
@@ -79,6 +81,8 @@ describe('ManifestVirtualModulePlugin', () => {
         expect(code).toContain('loadMasterCSSManifestFromFile')
         expect(code).not.toContain(`import { readFile } from 'node:fs/promises';`)
         expect(code).not.toContain('font-weight-bold')
+        expect(context.defaultManifestAssetReferenceId).toBeUndefined()
+        expect(context.defaultManifestAssetSource).toBeUndefined()
     })
 
     it('handles unimported CSS manifest changes through CSS HMR only', async () => {

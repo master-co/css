@@ -23,6 +23,7 @@ it('matches generated CSS snapshot', async () => {
     if (!href) throw new Error('Expected Nuxt progressive stylesheet link to include an href.')
     expect(html).toContain(`id="${MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID}"`)
     expect(html).not.toContain(MASTER_CSS_HYDRATION_MANIFEST_ATTR)
+    expect(html).not.toMatch(/<link\b(?=[^>]*\brel="preload")(?=[^>]*\bas="fetch")(?=[^>]*master-css-manifest)/i)
     const css = await $fetch(href) as string
     expect(css).toContain('.box')
     expect(css).toMatch(/\.box\s*{[^}]*display:\s*flex/)

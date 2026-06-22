@@ -1,11 +1,14 @@
-import { defineNuxtModule, addServerPlugin, createResolver, addPlugin } from '@nuxt/kit'
+import { defineNuxtModule, addServerPlugin, createResolver, addPlugin, setGlobalHead } from '@nuxt/kit'
 import { mkdirSync, writeFileSync } from 'node:fs'
 import { dirname, resolve as resolvePath } from 'node:path'
 import { pathToFileURL } from 'node:url'
 import { name } from '../package.json'
 import masterCSS from '@master/css.vue/vite'
 import { VIRTUAL_MANIFEST_ID } from '@master/css-integration/manifest-module'
-import { toNodeManifestFacadeModule } from '@master/css-integration/manifest-facade'
+import {
+    toBrowserManifestFacadeModule,
+    toNodeManifestFacadeModule
+} from '@master/css-integration/manifest-facade'
 import { toHashedManifestAssetFileName } from '@master/css-integration/node'
 import { loadProjectManifestJSON } from '@master/css-manifest/load'
 import type { Plugin } from 'vite'
@@ -16,6 +19,7 @@ const MASTER_CSS_HYDRATION_MANIFEST_ASSET_BASE = '/_master-css/hydration/'
 const MASTER_CSS_HYDRATION_MANIFEST_ATTR = 'data-master-css-hydration-manifest'
 const MASTER_CSS_HYDRATION_MANIFEST_FILE_BASENAME = 'master-css-hydration'
 const MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID = 'master-css-hydration-manifest'
+const MASTER_CSS_MANIFEST_ASSET_BASE = '/_master-css/manifest/'
 
 interface NitroPrerenderRoute {
     contents?: string
@@ -41,6 +45,12 @@ function addNitroWatchDependencies(config: { devServer?: { watch?: string[] } },
             config.devServer.watch.push(dependency)
         }
     }
+}
+
+function addNitroPublicAsset(config: { publicAssets?: { dir: string, baseURL: string }[] }, dir: string, baseURL: string) {
+    config.publicAssets ??= []
+    if (config.publicAssets.some((asset) => asset.dir === dir && asset.baseURL === baseURL)) return
+    config.publicAssets.push({ dir, baseURL })
 }
 
 function isHTMLPrerenderRoute(route: NitroPrerenderRoute) {
@@ -89,8 +99,42 @@ function toPublicAssetBase(baseURL = '/') {
     return `${baseURL.replace(/\/?$/, '/')}_master-css/hydration/`
 }
 
+function toManifestPublicAssetBase(baseURL = '/') {
+    return `${baseURL.replace(/\/?$/, '/')}_master-css/manifest/`
+}
+
 function toHydrationManifestAssetURL(fileName: string, base = MASTER_CSS_HYDRATION_MANIFEST_ASSET_BASE) {
     return `${base.replace(/\/?$/, '/')}${fileName}`
+}
+
+function toManifestAssetURL(fileName: string, base = MASTER_CSS_MANIFEST_ASSET_BASE) {
+    return `${base.replace(/\/?$/, '/')}${fileName}`
+}
+
+function toManifestPreloadHeadLink(href: string) {
+    return {
+        rel: 'preload',
+        as: 'fetch',
+        type: 'application/json',
+        crossorigin: '',
+        href
+    }
+}
+
+function RuntimeManifestVirtualModulePlugin(publicManifestHref: string): Plugin {
+    const resolvedManifestId = `\0${VIRTUAL_MANIFEST_ID}`
+    return {
+        name: 'master-css:nuxt-runtime-manifest',
+        enforce: 'pre',
+        resolveId(id) {
+            if (id === VIRTUAL_MANIFEST_ID) return resolvedManifestId
+        },
+        load(id) {
+            if (id === resolvedManifestId) {
+                return toBrowserManifestFacadeModule(JSON.stringify(publicManifestHref))
+            }
+        }
+    }
 }
 
 export function externalizeNitroPrerenderHydrationManifest(route: NitroPrerenderRoute, nitro: NitroPrerenderContext) {
@@ -117,28 +161,47 @@ export default defineNuxtModule<ModuleOptions>({
         name,
         configKey: 'mastercss'
     },
-    setup(options: ModuleOptions, nuxt) {
+    async setup(options: ModuleOptions, nuxt) {
         options = { ...defaultOptions, ...options }
         if (!nuxt.options.ssr || nuxt.options._prepare) return
         const { resolve } = createResolver(import.meta.url)
+        const manifestResult = await loadProjectManifestJSON(nuxt.options.rootDir)
+        const manifestFileName = toHashedManifestAssetFileName(manifestResult.json)
+        const manifestDir = resolvePath(nuxt.options.rootDir, 'node_modules/.master-css/manifest')
+        const manifestAssetPath = resolvePath(manifestDir, manifestFileName)
+        const publicManifestHref = toManifestAssetURL(
+            manifestFileName,
+            toManifestPublicAssetBase(nuxt.options.app.baseURL)
+        )
+        const ensureManifestAsset = () => {
+            mkdirSync(dirname(manifestAssetPath), { recursive: true })
+            writeFileSync(manifestAssetPath, manifestResult.json)
+        }
+        ensureManifestAsset()
+        if (options.mode === 'runtime' && options.injectRuntime) {
+            setGlobalHead({
+                link: [
+                    toManifestPreloadHeadLink(publicManifestHref)
+                ]
+            })
+        }
         nuxt.hook('nitro:config', async (config) => {
-            const result = await loadProjectManifestJSON(nuxt.options.rootDir)
-            addNitroWatchDependencies(config, result.dependencies)
-            const planAssetPath = resolvePath(
-                nuxt.options.rootDir,
-                'node_modules/.master-css',
-                toHashedManifestAssetFileName(result.json)
-            )
-            mkdirSync(dirname(planAssetPath), { recursive: true })
-            writeFileSync(planAssetPath, result.json)
+            addNitroWatchDependencies(config, manifestResult.dependencies)
+            ensureManifestAsset()
             config.virtual ??= {}
             config.virtual[VIRTUAL_MANIFEST_ID] = toNodeManifestFacadeModule(
-                `new URL(${JSON.stringify(pathToFileURL(planAssetPath).href)})`
+                `new URL(${JSON.stringify(pathToFileURL(manifestAssetPath).href)})`
             )
+            if (options.mode === 'runtime' && options.injectRuntime) {
+                addNitroPublicAsset(config, manifestDir, MASTER_CSS_MANIFEST_ASSET_BASE)
+            }
         })
         const addCSSVitePlugin = (mode = options.mode) => {
             nuxt.hook('vite:extendConfig', (viteConfig) => {
                 viteConfig.plugins = viteConfig.plugins || []
+                if (options.mode === 'runtime' && options.injectRuntime && mode === null) {
+                    viteConfig.plugins.push(RuntimeManifestVirtualModulePlugin(publicManifestHref))
+                }
                 viteConfig.plugins.push(masterCSS({ ...options, mode }) as unknown as Plugin)
             })
         }
@@ -146,10 +209,12 @@ export default defineNuxtModule<ModuleOptions>({
             case 'progressive':
             case 'runtime':
                 addCSSVitePlugin(null)
-                addPlugin({
-                    mode: 'client',
-                    src: resolve('./runtime/css-runtime')
-                })
+                if (options.injectRuntime) {
+                    addPlugin({
+                        mode: 'client',
+                        src: resolve('./runtime/css-runtime')
+                    })
+                }
                 break
             case 'static':
                 // Fix: [plugin ssr-styles] Cannot inline generated static CSS during SSR.

@@ -26,6 +26,8 @@ export interface PluginContext {
     styleCSSSources?: StyleCSSSources
     includeGeneratedCSS?: boolean
     emittedGlobals?: MasterCSSEmittedGlobals
+    defaultManifestAssetReferenceId?: string
+    defaultManifestAssetSource?: string
 }
 
 export default function masterCSS(options?: PluginOptions): Plugin[] {

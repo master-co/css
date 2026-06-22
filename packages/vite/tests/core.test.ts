@@ -2,13 +2,13 @@ import { describe, expect, test } from 'vitest'
 import masterCSS from '../src/core'
 import type { PluginOptions } from '../src/options'
 
-function pluginNames(mode?: PluginOptions['mode']) {
-    return masterCSS({ mode }).map((plugin) => plugin.name)
+function pluginNames(options: PluginOptions = {}) {
+    return masterCSS(options).map((plugin) => plugin.name)
 }
 
 describe('masterCSS plugin composition', () => {
     test.each(['runtime', 'static', 'pre-render', 'progressive', null] as const)('%s mode registers the shared extractor and style entry pipeline', (mode) => {
-        const names = pluginNames(mode)
+        const names = pluginNames({ mode })
 
         expect(names.filter((name) => name === 'master-css:extractor')).toHaveLength(1)
         expect(names.filter((name) => name === 'master-css:usage-graph')).toHaveLength(1)
@@ -22,5 +22,14 @@ describe('masterCSS plugin composition', () => {
             'master-css:style-entry:hmr',
             'master-css:style-entry:build'
         ]))
+    })
+
+    test('runtime mode registers manifest preload only with runtime injection', () => {
+        expect(pluginNames({ mode: 'runtime' })).toContain('master-css:manifest-preload')
+        expect(pluginNames({ mode: 'runtime', injectRuntime: false })).not.toContain('master-css:manifest-preload')
+        expect(pluginNames({ mode: 'progressive' })).not.toContain('master-css:manifest-preload')
+        expect(pluginNames({ mode: 'static' })).not.toContain('master-css:manifest-preload')
+        expect(pluginNames({ mode: 'pre-render' })).not.toContain('master-css:manifest-preload')
+        expect(pluginNames({ mode: null })).not.toContain('master-css:manifest-preload')
     })
 })
