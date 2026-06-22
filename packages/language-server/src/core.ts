@@ -1,4 +1,4 @@
-import { createConnection, TextDocuments, InitializeParams, InitializeResult, WorkspaceFolder, Disposable, Connection, ClientCapabilities, TextDocumentChangeEvent, DidChangeConfigurationParams, HoverParams, CompletionParams, DocumentColorParams, ColorPresentationParams, RemoteConsole, SemanticTokensParams, TextDocumentPositionParams, DiagnosticSeverity, TextDocumentSyncKind, type Diagnostic, type DiagnosticRelatedInformation, type Range, type ServerCapabilities } from 'vscode-languageserver/node.js'
+import { createConnection, TextDocuments, InitializeParams, InitializeResult, WorkspaceFolder, Disposable, Connection, ClientCapabilities, TextDocumentChangeEvent, DidChangeConfigurationParams, HoverParams, CompletionParams, DocumentColorParams, ColorPresentationParams, RemoteConsole, SemanticTokensParams, TextDocumentPositionParams, DiagnosticSeverity, TextDocumentSyncKind, type Diagnostic, type DiagnosticRelatedInformation, type Range, type ServerCapabilities } from 'vscode-languageserver/node'
 import { TextDocument } from 'vscode-languageserver-textdocument'
 import path from 'node:path'
 import CSSLanguageService, { Settings as CSSLanguageServiceSettings } from '@master/css-language-service'
@@ -226,8 +226,9 @@ export default class CSSLanguageServer {
         const workspace = this.findClosestWorkspace(params.textDocument.uri)
         if (workspace?.languageService) {
             const document = this.documents.get(params.textDocument.uri)
-            if (document) return workspace.languageService.renderSyntaxColors(document)
+            if (document) return (await workspace.languageService.renderSyntaxColors(document)) ?? []
         }
+        return []
     }
 
     async onColorPresentation(params: ColorPresentationParams) {
@@ -235,8 +236,9 @@ export default class CSSLanguageServer {
         const workspace = this.findClosestWorkspace(params.textDocument.uri)
         if (workspace?.languageService) {
             const document = this.documents.get(params.textDocument.uri)
-            if (document) return workspace.languageService.editSyntaxColors(document, params.color, params.range)
+            if (document) return workspace.languageService.editSyntaxColors(document, params.color, params.range) ?? []
         }
+        return []
     }
 
     async onSemanticTokens(params: SemanticTokensParams) {
