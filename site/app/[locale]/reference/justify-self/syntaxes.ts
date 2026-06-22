@@ -1,5 +1,4 @@
 const syntaxes = [
-    ['justify-self:`value`'],
     'justify-self:auto',
     'justify-self:normal',
     'justify-self:baseline',
@@ -13,6 +12,7 @@ const syntaxes = [
     'justify-self:flex-end',
     'justify-self:self-start',
     'justify-self:self-end',
+    ['justify-self:`value`'],
 ]
 
 export default syntaxes

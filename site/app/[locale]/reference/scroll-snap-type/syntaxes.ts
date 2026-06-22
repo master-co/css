@@ -1,5 +1,4 @@
 const syntaxes = [
-    ['scroll-snap-type:`value`'],
     'snap-x',
     'snap-y',
     'snap-both',
@@ -9,6 +8,7 @@ const syntaxes = [
     'scroll-snap-type:y|proximity',
     'scroll-snap-type:both|mandatory',
     'scroll-snap-type:none',
+    ['scroll-snap-type:`value`'],
 ]
 
 export default syntaxes

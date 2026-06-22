@@ -1,5 +1,4 @@
 const syntaxes = [
-    ['writing-mode:`mode`'],
     'writing-mode:horizontal-tb',
     'writing-mode:vertical-rl',
     'writing-mode:vertical-lr',
@@ -9,6 +8,7 @@ const syntaxes = [
     'writing-mode:rl-tb',
     'writing-mode:tb',
     'writing-mode:tb-rl',
+    ['writing-mode:`mode`'],
 ]
 
 export default syntaxes

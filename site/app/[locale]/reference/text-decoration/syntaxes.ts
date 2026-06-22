@@ -1,9 +1,9 @@
 const syntaxes = [
-    ['text-decoration:`line`|`color`|`style`|`thickness`'],
     'text-decoration:none',
     'underline',
     'line-through',
-    'overline'
+    'overline',
+    ['text-decoration:`line`|`color`|`style`|`thickness`'],
 ]
 
 export default syntaxes

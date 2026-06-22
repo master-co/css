@@ -1,8 +1,8 @@
 const syntaxes = [
-    ['order:`value`'],
     'order:0',
     'order:first',
-    'order:last'
+    'order:last',
+    ['order:`value`'],
 ]
 
 export default syntaxes

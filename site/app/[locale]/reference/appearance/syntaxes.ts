@@ -1,5 +1,4 @@
 const syntaxes = [
-    ['appearance:`value`'],
     'appearance:none',
     'appearance:auto',
     'appearance:menulist-button',
@@ -11,7 +10,8 @@ const syntaxes = [
     'appearance:menulist',
     'appearance:listbox',
     'appearance:meter',
-    'appearance:progress-bar'
+    'appearance:progress-bar',
+    ['appearance:`value`'],
 ]
 
 export default syntaxes

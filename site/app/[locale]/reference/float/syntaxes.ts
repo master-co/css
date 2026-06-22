@@ -1,8 +1,8 @@
 const syntaxes = [
-    ['float:`direction`'],
     'float:left',
     'float:right',
-    'float:none'
+    'float:none',
+    ['float:`direction`'],
 ]
 
 export default syntaxes

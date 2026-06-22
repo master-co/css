@@ -1,8 +1,8 @@
 const syntaxes = [
-    ['visibility:`value`'],
     'visible',
     'invisible',
-    'visibility:collapse'
+    'visibility:collapse',
+    ['visibility:`value`'],
 ]
 
 export default syntaxes

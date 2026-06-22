@@ -1,7 +1,7 @@
 const syntaxes = [
-    ['scroll-behavior:`value`'],
     'scroll-behavior:auto',
-    'scroll-behavior:smooth'
+    'scroll-behavior:smooth',
+    ['scroll-behavior:`value`'],
 ]
 
 export default syntaxes

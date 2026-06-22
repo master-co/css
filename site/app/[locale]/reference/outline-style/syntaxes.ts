@@ -1,5 +1,4 @@
 const syntaxes = [
-    ['outline-style:`style`'],
     'outline:none',
     'outline:dotted',
     'outline:dashed',
@@ -9,6 +8,7 @@ const syntaxes = [
     'outline:ridge',
     'outline:inset',
     'outline:outset',
+    ['outline-style:`style`'],
 ]
 
 export default syntaxes

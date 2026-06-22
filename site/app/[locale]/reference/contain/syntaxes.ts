@@ -1,5 +1,4 @@
 const syntaxes = [
-    ['contain:`type`'],
     'contain:none',
     'contain:strict',
     'contain:content',
@@ -7,6 +6,7 @@ const syntaxes = [
     'contain:layout',
     'contain:style',
     'contain:paint',
+    ['contain:`type`'],
 ]
 
 export default syntaxes

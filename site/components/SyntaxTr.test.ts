@@ -180,6 +180,35 @@ test('all reference syntaxes generate declarations without preview fallback', as
     assert.deepEqual(failures, [])
 })
 
+test('all reference syntaxes place nested rows after plain rows', async () => {
+    const referenceRootURL = new URL('../app/[locale]/reference/', import.meta.url)
+    const entries = await readdir(referenceRootURL, { withFileTypes: true })
+    const failures: string[] = []
+
+    for (const entry of entries) {
+        if (!entry.isDirectory()) continue
+
+        const syntaxURL = new URL(`${entry.name}/syntaxes.ts`, referenceRootURL)
+        try {
+            await access(syntaxURL)
+        } catch {
+            continue
+        }
+
+        const syntaxModule = await import(syntaxURL.href)
+        let nestedRowSeen = false
+        for (const syntax of syntaxModule.default ?? []) {
+            if (Array.isArray(syntax)) {
+                nestedRowSeen = true
+            } else if (nestedRowSeen) {
+                failures.push(`${entry.name}: ${String(syntax)}`)
+            }
+        }
+    }
+
+    assert.deepEqual(failures, [])
+})
+
 function generateDeclarations(className: string) {
     const rule = css.generate(className)[0]
     assert.ok(rule)

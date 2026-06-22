@@ -1,5 +1,4 @@
 const syntaxes = [
-    ['animation-timing-function:`function`,`…`'],
     'animation-timing-function:smooth',
     'animation-timing-function:soft',
     'animation-timing-function:crisp',
@@ -15,6 +14,7 @@ const syntaxes = [
     'animation-timing-function:linear',
     'animation-timing-function:step-start',
     'animation-timing-function:step-end',
+    ['animation-timing-function:`function`,`…`'],
 ]
 
 export default syntaxes

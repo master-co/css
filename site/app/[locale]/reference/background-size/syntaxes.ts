@@ -1,8 +1,8 @@
 const syntaxes = [
-    ['background-size:`size`,`…`'],
     'bg-auto',
     'bg-cover',
     'bg-contain',
+    ['background-size:`size`,`…`'],
 ]
 
 export default syntaxes

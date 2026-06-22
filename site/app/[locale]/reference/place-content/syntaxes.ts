@@ -1,5 +1,4 @@
 const syntaxes = [
-    ['place-content:`align-content`|`justify-content`'],
     'place-content:normal',
     'place-content:baseline',
     'place-content:center',
@@ -11,6 +10,7 @@ const syntaxes = [
     'place-content:space-around',
     'place-content:space-between',
     'place-content:space-evenly',
+    ['place-content:`align-content`|`justify-content`'],
 ]
 
 export default syntaxes

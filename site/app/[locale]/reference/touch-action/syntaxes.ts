@@ -1,5 +1,4 @@
 const syntaxes = [
-    ['touch-action:`value`'],
     'touch-action:auto',
     'touch-action:none',
     'touch-action:pan-x',
@@ -10,6 +9,7 @@ const syntaxes = [
     'touch-action:pan-down',
     'touch-action:pinch-zoom',
     'touch-action:manipulation',
+    ['touch-action:`value`'],
 ]
 
 export default syntaxes

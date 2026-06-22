@@ -1,7 +1,7 @@
 const syntaxes = [
-    ['scroll-snap-stop:`value`'],
     'snap-always',
-    'snap-normal'
+    'snap-normal',
+    ['scroll-snap-stop:`value`'],
 ]
 
 export default syntaxes

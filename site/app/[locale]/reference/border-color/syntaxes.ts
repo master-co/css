@@ -1,5 +1,4 @@
 const syntaxes = [
-    ['b:`color`'],
     'b:current',
     'bt:current',
     'bb:current',
@@ -14,6 +13,7 @@ const syntaxes = [
     'br:transparent',
     'border-inline-color:transparent',
     'border-block-color:transparent',
+    ['b:`color`'],
 ]
 
 export default syntaxes

@@ -1,7 +1,7 @@
 const syntaxes = [
-    ['box-sizing:`value`'],
     'box-content',
-    'box-border'
+    'box-border',
+    ['box-sizing:`value`'],
 ]
 
 export default syntaxes

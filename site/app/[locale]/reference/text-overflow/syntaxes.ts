@@ -1,7 +1,7 @@
 const syntaxes = [
-    ['text-overflow:`value`'],
     'text-clip',
-    'text-ellipsis'
+    'text-ellipsis',
+    ['text-overflow:`value`'],
 ]
 
 export default syntaxes

@@ -1,5 +1,4 @@
 const syntaxes = [
-    ['justify-content:`justify`'],
     'justify-normal',
     'justify-left',
     'justify-center',
@@ -11,7 +10,8 @@ const syntaxes = [
     'justify-flex-end',
     'justify-around',
     'justify-between',
-    'justify-evenly'
+    'justify-evenly',
+    ['justify-content:`justify`'],
 ]
 
 export default syntaxes

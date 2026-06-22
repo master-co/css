@@ -1,5 +1,4 @@
 const syntaxes = [
-    ['max-h:`size`'],
     'max-vh',
     'max-h:full',
     'max-h:fit',
@@ -18,6 +17,7 @@ const syntaxes = [
     'max-h:5xl',
     'max-h:6xl',
     'max-h:7xl',
+    ['max-h:`size`'],
 ]
 
 export default syntaxes

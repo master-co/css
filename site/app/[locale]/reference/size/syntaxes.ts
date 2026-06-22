@@ -1,7 +1,7 @@
 const syntaxes = [
-    ['size:`size`'],
     'full',
-    'fit'
+    'fit',
+    ['size:`size`'],
 ]
 
 export default syntaxes

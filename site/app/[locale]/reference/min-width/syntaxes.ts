@@ -1,5 +1,4 @@
 const syntaxes = [
-    ['min-w:`size`'],
     'min-vh',
     'min-w:full',
     'min-w:fit',
@@ -18,6 +17,7 @@ const syntaxes = [
     'min-w:5xl',
     'min-w:6xl',
     'min-w:7xl',
+    ['min-w:`size`'],
 ]
 
 export default syntaxes

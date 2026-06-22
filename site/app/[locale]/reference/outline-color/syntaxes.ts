@@ -1,7 +1,7 @@
 const syntaxes = [
-    ['outline:`color`'],
     'outline:current',
-    'outline:transparent'
+    'outline:transparent',
+    ['outline:`color`'],
 ]
 
 export default syntaxes

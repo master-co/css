@@ -1,7 +1,4 @@
 const syntaxes = [
-    ['overscroll-behavior:`value`'],
-    ['overscroll-behavior-x:`value`'],
-    ['overscroll-behavior-y:`value`'],
     'overscroll-behavior:auto',
     'overscroll-behavior:contain',
     'overscroll-behavior:none',
@@ -11,6 +8,9 @@ const syntaxes = [
     'overscroll-behavior-y:contain',
     'overscroll-behavior-x:none',
     'overscroll-behavior-y:none',
+    ['overscroll-behavior:`value`'],
+    ['overscroll-behavior-x:`value`'],
+    ['overscroll-behavior-y:`value`'],
 ]
 
 export default syntaxes

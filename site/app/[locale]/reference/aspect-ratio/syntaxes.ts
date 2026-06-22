@@ -1,7 +1,7 @@
 const syntaxes = [
-    ['aspect-ratio:`ratio`,`aspect`'],
     'square',
-    'video'
+    'video',
+    ['aspect-ratio:`ratio`,`aspect`'],
 ]
 
 export default syntaxes

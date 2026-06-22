@@ -1,9 +1,9 @@
 const syntaxes = [
-    ['clear:`type`'],
     'clear:both',
     'clear:left',
     'clear:none',
-    'clear:right'
+    'clear:right',
+    ['clear:`type`'],
 ]
 
 export default syntaxes

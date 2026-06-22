@@ -1,5 +1,4 @@
 const syntaxes = [
-    ['clip-path:`value`'],
     'clip-none',
     'clip-margin',
     'clip-border',
@@ -8,6 +7,7 @@ const syntaxes = [
     'clip-fill',
     'clip-stroke',
     'clip-view',
+    ['clip-path:`value`'],
     ['clip-path:inset(`…`)'],
     ['clip-path:circle(`…`)'],
     ['clip-path:ellipse(`…`)'],

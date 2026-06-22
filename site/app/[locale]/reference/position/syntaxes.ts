@@ -1,10 +1,10 @@
 const syntaxes = [
-    ['position:`type`'],
     'rel',
     'abs',
     'static',
     'fixed',
-    'sticky'
+    'sticky',
+    ['position:`type`'],
 ]
 
 export default syntaxes

@@ -1,5 +1,4 @@
 const syntaxes = [
-    ['vertical-align:`value`'],
     'vertical-align:baseline',
     'vertical-align:bottom',
     'vertical-align:middle',
@@ -8,6 +7,7 @@ const syntaxes = [
     'vertical-align:text-bottom',
     'vertical-align:text-top',
     'vertical-align:top',
+    ['vertical-align:`value`'],
 ]
 
 export default syntaxes

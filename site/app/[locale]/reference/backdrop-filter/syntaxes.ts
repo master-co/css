@@ -1,4 +1,5 @@
 const syntaxes = [
+    'backdrop-filter:none',
     ['backdrop-filter:`value`|`…`'],
     ['backdrop-filter:url(`svg`)'],
     ['backdrop-filter:blur(`value`)'],
@@ -11,7 +12,6 @@ const syntaxes = [
     ['backdrop-filter:saturate(`value`)'],
     ['backdrop-filter:opacity(`value`)'],
     ['backdrop-filter:drop-shadow(`offset-x`|`offset-y`|`blur-radius`|`color`)'],
-    'backdrop-filter:none'
 ]
 
 export default syntaxes

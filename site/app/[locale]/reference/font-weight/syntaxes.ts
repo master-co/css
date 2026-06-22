@@ -1,5 +1,4 @@
 const syntaxes = [
-    ['font-weight:`weight`'],
     'font-weight:normal',
     'font-bolder',
     'font:thin',
@@ -11,6 +10,7 @@ const syntaxes = [
     'font:bold',
     'font:extrabold',
     'font:heavy',
+    ['font-weight:`weight`'],
 ]
 
 export default syntaxes

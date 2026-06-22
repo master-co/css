@@ -1,5 +1,4 @@
 const syntaxes = [
-    ['cursor:`value`'],
     'cursor:none',
     'cursor:auto',
     'cursor:default',
@@ -35,6 +34,7 @@ const syntaxes = [
     'cursor:wait',
     'cursor:zoom-in',
     'cursor:zoom-out',
+    ['cursor:`value`'],
 ]
 
 export default syntaxes

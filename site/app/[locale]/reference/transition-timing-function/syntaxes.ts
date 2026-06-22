@@ -1,5 +1,4 @@
 const syntaxes = [
-    ['transition-timing-function:`function`,`…`'],
     'transition-timing-function:smooth',
     'transition-timing-function:soft',
     'transition-timing-function:crisp',
@@ -15,6 +14,7 @@ const syntaxes = [
     'transition-timing-function:linear',
     'transition-timing-function:step-start',
     'transition-timing-function:step-end',
+    ['transition-timing-function:`function`,`…`'],
     ['transition-timing-function:steps(`stop`,`direction`)'],
     ['transition-timing-function:frames(`value`)'],
     ['transition-timing-function:cubic-bezier(`value`,`value`,`value`,`value`)'],

@@ -1,5 +1,4 @@
 const syntaxes = [
-    ['break-after:`value`'],
     'break-after:auto',
     'break-after:avoid',
     'break-after:avoid-column',
@@ -11,6 +10,7 @@ const syntaxes = [
     'break-after:revert',
     'break-after:right',
     'break-after:verso',
+    ['break-after:`value`'],
 ]
 
 export default syntaxes

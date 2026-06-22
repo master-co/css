@@ -1,8 +1,8 @@
 const syntaxes = [
-    ['user-drag:`value`'],
     'user-drag:auto',
     'user-drag:element',
-    'user-drag:none'
+    'user-drag:none',
+    ['user-drag:`value`'],
 ]
 
 export default syntaxes

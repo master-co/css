@@ -1,5 +1,4 @@
 const syntaxes = [
-    ['display:`type`'],
     'hidden',
     'flex',
     'grid',
@@ -21,6 +20,7 @@ const syntaxes = [
     'table-column-group',
     'table-header-group',
     'table-footer-group',
+    ['display:`type`'],
 ]
 
 export default syntaxes

@@ -1,6 +1,4 @@
 const syntaxes = [
-    ['animate:`name`'],
-    ['animation:`name`|`duration`|`…`'],
     'animate:fade',
     'animate:ping',
     'animate:flash',
@@ -11,6 +9,8 @@ const syntaxes = [
     'animate:shake',
     'animate:zoom',
     'animate:float',
+    ['animate:`name`'],
+    ['animation:`name`|`duration`|`…`'],
 ]
 
 export default syntaxes

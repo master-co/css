@@ -1,13 +1,4 @@
 const syntaxes = [
-    ['b:`style`'],
-    ['bt:`style`'],
-    ['bb:`style`'],
-    ['bl:`style`'],
-    ['br:`style`'],
-    ['bx:`style`'],
-    ['by:`style`'],
-    ['border-inline-style:`style`'],
-    ['border-block-style:`style`'],
     'b-none',
     'b-hidden',
     'b-dotted',
@@ -20,6 +11,15 @@ const syntaxes = [
     'b-outset',
     'bx-solid',
     'by-solid',
+    ['b:`style`'],
+    ['bt:`style`'],
+    ['bb:`style`'],
+    ['bl:`style`'],
+    ['br:`style`'],
+    ['bx:`style`'],
+    ['by:`style`'],
+    ['border-inline-style:`style`'],
+    ['border-block-style:`style`'],
 ]
 
 export default syntaxes

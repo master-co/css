@@ -1,5 +1,4 @@
 const syntaxes = [
-    ['flex-basis:`basis`'],
     'flex-basis:full',
     'flex-basis:fit',
     'flex-basis:max',
@@ -17,6 +16,7 @@ const syntaxes = [
     'flex-basis:5xl',
     'flex-basis:6xl',
     'flex-basis:7xl',
+    ['flex-basis:`basis`'],
 ]
 
 export default syntaxes

@@ -1,5 +1,4 @@
 const syntaxes = [
-    ['h:`size`', 'h:`N/N`'],
     'h:full',
     'h:fit',
     'h:min',
@@ -17,6 +16,7 @@ const syntaxes = [
     'h:5xl',
     'h:6xl',
     'h:7xl',
+    ['h:`size`', 'h:`N/N`'],
 ]
 
 export default syntaxes

@@ -1,7 +1,7 @@
 const syntaxes = [
-    ['list-style-position:`position`'],
     'list-style:inside',
-    'list-style:outside'
+    'list-style:outside',
+    ['list-style-position:`position`'],
 ]
 
 export default syntaxes

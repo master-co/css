@@ -1,5 +1,4 @@
 const syntaxes = [
-    ['background-blend-mode:`mode`'],
     'background-blend-mode:normal',
     'background-blend-mode:multiply',
     'background-blend-mode:screen',
@@ -16,6 +15,7 @@ const syntaxes = [
     'background-blend-mode:saturation',
     'background-blend-mode:color',
     'background-blend-mode:luminosity',
+    ['background-blend-mode:`mode`'],
 ]
 
 export default syntaxes

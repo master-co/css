@@ -1,5 +1,4 @@
 const syntaxes = [
-    ['align-content:`value`'],
     'content-normal',
     'content-baseline',
     'content-center',
@@ -11,6 +10,7 @@ const syntaxes = [
     'content-around',
     'content-between',
     'content-evenly',
+    ['align-content:`value`'],
 ]
 
 export default syntaxes
