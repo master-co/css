@@ -5,8 +5,6 @@ import { tmpdir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
 import { pathToFileURL, fileURLToPath } from 'node:url'
 import { expect, test } from 'vitest'
-import { MASTER_CSS_SEMANTIC_TOKEN_SCOPE_MAP } from '../../language/src/semantic/scopes.ts'
-import { createStagedExtension, getCurrentTarget, getRuntimePackagesForTarget } from '../scripts/package-targets.mjs'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const packageDir = resolve(here, '..')
@@ -14,9 +12,12 @@ const distDir = resolve(packageDir, 'dist')
 const serverPath = resolve(distDir, 'server.min.mjs')
 const extensionPath = resolve(distDir, 'extension.min.mjs')
 const workspaceDir = resolve(here, 'fixtures', 'bundled-config')
-const packageJSON = JSON.parse(readFileSync(resolve(packageDir, 'package.json'), 'utf8'))
 const sourceGrammarPath = './node_modules/@master/css-language/syntaxes/master-css.tmLanguage.json'
 const stagedGrammarPath = './dist/node_modules/@master/css-language/syntaxes/master-css.tmLanguage.json'
+
+function readPackageJSON(path = resolve(packageDir, 'package.json')) {
+    return JSON.parse(readFileSync(path, 'utf8'))
+}
 
 function encode(message) {
     const body = Buffer.from(JSON.stringify(message))
@@ -161,9 +162,13 @@ function createLanguageServer(options = {}) {
 }
 
 async function withStagedExtension(callback) {
+    const packageTargets = await import('../scripts/package-targets.mjs')
     const stagingRoot = await mkdtemp(join(tmpdir(), 'master-css-vscode-test-'))
     try {
-        return await callback(await createStagedExtension(getCurrentTarget(), { stagingRoot }))
+        return await callback(
+            await packageTargets.createStagedExtension(packageTargets.getCurrentTarget(), { stagingRoot }),
+            packageTargets
+        )
     } finally {
         await rm(stagingRoot, { recursive: true, force: true })
     }
@@ -193,7 +198,7 @@ test('server bundle keeps expected native runtime imports external', () => {
 })
 
 test('staged extension includes runtime packages for the current target', async () => {
-    await withStagedExtension(({ stagingDir, files }) => {
+    await withStagedExtension(({ stagingDir, files }, { getCurrentTarget, getRuntimePackagesForTarget }) => {
         const runtimePackages = getRuntimePackagesForTarget(getCurrentTarget())
 
         for (const runtimePackage of runtimePackages) {
@@ -205,6 +210,8 @@ test('staged extension includes runtime packages for the current target', async 
 })
 
 test('manifest contributes TextMate grammar, semantic token scopes, and CSS diagnostic defaults', () => {
+    const packageJSON = readPackageJSON()
+
     expect(packageJSON.contributes.languages).toBeUndefined()
     expect(packageJSON.contributes.css).toBeUndefined()
     expect(packageJSON.contributes.grammars).toEqual([
@@ -226,7 +233,13 @@ test('manifest contributes TextMate grammar, semantic token scopes, and CSS diag
     })
     expect(packageJSON.contributes.semanticTokenScopes).toEqual([
         {
-            scopes: MASTER_CSS_SEMANTIC_TOKEN_SCOPE_MAP
+            scopes: expect.objectContaining({
+                class: expect.arrayContaining(['entity.other.attribute-name.class.css']),
+                'operator.declarationTerminator': expect.arrayContaining(['punctuation.terminator.rule.css']),
+                'operator.declarationSeparator': expect.arrayContaining(['punctuation.separator.key-value.css']),
+                'operator.selectorCombinator': expect.arrayContaining(['keyword.operator.combinator.css']),
+                'operator.functionPunctuation': expect.arrayContaining(['punctuation.section.function.begin.bracket.round.css'])
+            })
         }
     ])
     expect(packageJSON.contributes.semanticTokenModifiers).toEqual(expect.arrayContaining([
@@ -236,10 +249,6 @@ test('manifest contributes TextMate grammar, semantic token scopes, and CSS diag
         expect.objectContaining({ id: 'selectorCombinator' }),
         expect.objectContaining({ id: 'pseudoClassDelimiter' })
     ]))
-    expect(MASTER_CSS_SEMANTIC_TOKEN_SCOPE_MAP['operator.declarationTerminator']).toContain('punctuation.terminator.rule.css')
-    expect(MASTER_CSS_SEMANTIC_TOKEN_SCOPE_MAP['operator.declarationSeparator']).toContain('punctuation.separator.key-value.css')
-    expect(MASTER_CSS_SEMANTIC_TOKEN_SCOPE_MAP['operator.selectorCombinator']).toContain('keyword.operator.combinator.css')
-    expect(MASTER_CSS_SEMANTIC_TOKEN_SCOPE_MAP['operator.functionPunctuation']).toContain('punctuation.section.function.begin.bracket.round.css')
     expect(packageJSON.contributes.configuration.properties['masterCSS.includedLanguages'].default).toEqual(expect.arrayContaining([
         'css',
         'scss',
@@ -250,7 +259,7 @@ test('manifest contributes TextMate grammar, semantic token scopes, and CSS diag
 test('staged extension includes shared TextMate grammar asset', async () => {
     await withStagedExtension(({ stagingDir, files }) => {
         const syntaxPath = join(stagingDir, ...stagedGrammarPath.slice(2).split('/'))
-        const stagedPackageJSON = JSON.parse(readFileSync(join(stagingDir, 'package.json'), 'utf8'))
+        const stagedPackageJSON = readPackageJSON(join(stagingDir, 'package.json'))
 
         expect(statSync(syntaxPath).isFile()).toBe(true)
         expect(files).toContain(stagedGrammarPath.slice(2))
