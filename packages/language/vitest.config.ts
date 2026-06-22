@@ -1,10 +1,11 @@
 import { defineConfig } from 'vitest/config'
 import config from '../../shared/vitest.config'
+import { defaultVitestTestTimeout, withCIConcurrency } from '../../shared/vitest-ci-config'
 
 export default defineConfig({
     ...config,
-    test: {
+    test: withCIConcurrency({
         ...config.test,
-        testTimeout: 60_000
-    }
+        testTimeout: defaultVitestTestTimeout
+    })
 })

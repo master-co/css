@@ -1,5 +1,5 @@
 import type { ViteUserConfig } from 'vitest/config'
-import { withCIConcurrency } from '../../shared/vitest-ci-config'
+import { defaultVitestTestTimeout, withCIConcurrency } from '../../shared/vitest-ci-config'
 
 const config: ViteUserConfig = {
     test: withCIConcurrency({
@@ -10,7 +10,7 @@ const config: ViteUserConfig = {
         exclude: [
             '**/tmp/**'
         ],
-        testTimeout: 60_000
+        testTimeout: defaultVitestTestTimeout
     }),
     resolve: {
         tsconfigPaths: true

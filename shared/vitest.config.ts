@@ -1,6 +1,6 @@
 import type { ViteUserConfig } from 'vitest/config'
 import { createMasterCSSManifestLoaderPlugin } from '../packages/integration/src/manifest-loader-plugin'
-import { withCIConcurrency } from './vitest-ci-config'
+import { defaultVitestTestTimeout, withCIConcurrency } from './vitest-ci-config'
 
 const config: ViteUserConfig = {
     plugins: [
@@ -19,7 +19,7 @@ const config: ViteUserConfig = {
         exclude: [
             '**/tmp/**'
         ],
-        testTimeout: 60_000,
+        testTimeout: defaultVitestTestTimeout,
         forceRerunTriggers: [
             'vitest.config.*',
             'vite.config.*',

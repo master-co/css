@@ -1,5 +1,5 @@
 import { defineConfig } from 'vitest/config'
-import { withCIConcurrency } from '../../shared/vitest-ci-config'
+import { defaultVitestTestTimeout, withCIConcurrency } from '../../shared/vitest-ci-config'
 
 export default defineConfig({
     test: withCIConcurrency({
@@ -10,7 +10,7 @@ export default defineConfig({
         exclude: [
             '**/tmp/**'
         ],
-        testTimeout: 60_000,
+        testTimeout: defaultVitestTestTimeout,
         forceRerunTriggers: [
             'vitest.config.*',
             'vite.config.*',
