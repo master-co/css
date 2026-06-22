@@ -4,7 +4,7 @@
 ## Preload runtime engine
 (!|) The browser loads the runtime engine only after downloading and parsing the stylesheet.
 <Image src={require('~/site/public/images/no-preload-network.png').default} placeholder="blur" alt="Screenshot of Chrome DevTools Network panel" width="841" height="69" />
-It may experience defers in downloading and initializing until the first contentful paint if the [runtime engine](/guide/rendering-modes#runtime-rendering) hasn't been emittedGlobals.
+It may experience delays in downloading and initializing until the first contentful paint if the [runtime engine](/guide/rendering-modes#runtime-rendering) is discovered late.
 
 (o) Use `html <link rel="preload">` to preload the critical resources.
 ```html
@@ -20,7 +20,7 @@ It may experience defers in downloading and initializing until the first content
 ```
 <small>The CDN runtime fetches its split default manifest before starting; preload it with `as="fetch"` and `crossorigin` so the runtime can reuse the response.</small>
 
-Now the runtime engine is emittedGlobals, so the download happens in parallel with the stylesheet:
+Now the runtime engine is discovered early, so the download happens in parallel with the stylesheet:
 <Image src={require('~/site/public/images/preload-network.png').default} placeholder="blur" alt="Screenshot of Chrome DevTools Network panel" width="841" height="69" />
 
 You are telling the browser that you would like to fetch it sooner than the browser would otherwise discover it.
@@ -51,11 +51,26 @@ You are telling the browser that you would like to fetch it sooner than the brow
 
 ---
 
+## Do not preload page hydration manifests
+Progressive rendering can externalize the page hydration manifest:
+
+```html
+<style id="master-css" data-master-css-hydration-manifest="/_master-css/hydration/master-css-hydration.<hash>.json">...</style>
+```
+
+(x) Do not add a preload hint for this JSON file.
+
+The page hydration manifest is runtime handoff data. It lets the runtime adopt the rules that already exist in `style#master-css`, but it is not required for the browser to paint the first screen. Let the runtime fetch it when hydration starts. If that request fails or the data is invalid, the runtime rebuilds from connected DOM classes.
+
+This is different from the CDN runtime default manifest in the first example. The CDN default manifest is needed before a runtime-only page can interpret classes. A page hydration manifest only describes rules that were already rendered into one HTML response.
+
+---
+
 ## Benefits
 Preloading critical assets can improve the following metrics:
 
 1. **First Contentful Paint (FCP)**: Preloading critical assets helps accelerate the loading of essential scripts, such as JavaScript, resulting in faster FCP. This means that the main content of the webpage can be displayed more quickly in the user's browser, enhancing their perception and experience.
 2. **First Meaningful Paint (FMP)**: By preloading critical scripts, the browser can start parsing and rendering the script earlier, leading to faster FMP. This allows users to see meaningful content more rapidly, improving the visual presentation of the page.
-3. **Time to Interactive (TTI)**: Preloading critical scripts reduces waiting time for users, resulting in a faster Time to Interactive. When the critical script has been emittedGlobals and is ready, users can interact with the webpage more quickly, providing a better user experience.
+3. **Time to Interactive (TTI)**: Preloading critical scripts reduces waiting time for users, resulting in a faster Time to Interactive. When the critical script has been downloaded and is ready, users can interact with the webpage more quickly, providing a better user experience.
 
 Preloading critical scripts enhances the download and execution speed of the scripts, thereby improving metrics such as First Contentful Paint, First Meaningful Paint, and Time to Interactive.

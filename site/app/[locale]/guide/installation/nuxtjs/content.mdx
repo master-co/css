@@ -28,6 +28,8 @@
             Add a [`@master/css.nuxt`](https://www.npmjs.com/package/@master/css.nuxt) module in `nuxt.config.ts`.
 
             - By default, `options.mode` is set to `progressive`.
+            - Nitro prerendered HTML externalizes page hydration manifests to `/_master-css/hydration/…`.
+            - Ordinary dynamic SSR responses keep the inline hydration manifest for the current request.
         </StepL>
         <StepR>
             ```ts name=nuxt.config.ts

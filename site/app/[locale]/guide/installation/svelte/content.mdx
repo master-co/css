@@ -65,6 +65,8 @@
             ### <StepNum />Set up Master CSS renderer
             Create a `src/hooks.server.ts` and export the Master CSS handle. It injects early streamed CSS before `</head>`, while the client runtime hydrates classes discovered after the head is flushed.
 
+            The packaged server hook keeps the hydration manifest inline because SvelteKit dynamic SSR does not provide one portable public output path. Static or prerender adapters can externalize it when they provide a writer for the hashed JSON asset.
+
             If the project already has a server `handle`, compose it with SvelteKit's `sequence()`.
         </StepL>
         <StepR>

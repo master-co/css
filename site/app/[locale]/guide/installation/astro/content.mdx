@@ -29,6 +29,7 @@
 
             - By default, `options.mode` is set to `progressive`.
             - Progressive mode pre-renders initial CSS with Astro middleware, then hydrates the runtime in the browser.
+            - Static build output externalizes page hydration manifests under `dist/_master-css/hydration/…`; middleware SSR keeps the inline manifest for the current response.
         </StepL>
         <StepR>
             ```js name=astro.config.js
@@ -61,7 +62,7 @@
             ### <StepNum />Verify progressive output
             Run a production build to verify that Astro writes pre-rendered CSS into the generated HTML.
 
-            The output should include `html <style id="master-css">` for initial classes and a module script for runtime hydration.
+            Static output should include `html <style id="master-css" data-master-css-hydration-manifest="…">` for initial classes and a module script for runtime hydration.
         </StepL>
         <StepR>
             ```bash name=Terminal

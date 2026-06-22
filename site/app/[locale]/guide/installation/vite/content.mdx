@@ -28,6 +28,8 @@
             Add a `masterCSS` vite plugin in `vite.config.js`.
 
             This example uses static rendering. Use `masterCSS()` without options when you want runtime rendering instead.
+
+            (i) In `progressive` and `pre-render` modes, Vite pre-renders page CSS into `style#master-css` and externalizes the page hydration manifest. During dev, the manifest JSON is served from `/_master-css/hydration/…`; during build, it is emitted under the configured Vite asset path.
         </StepL>
         <StepR>
             ```js name=vite.config.js

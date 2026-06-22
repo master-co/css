@@ -163,13 +163,21 @@ The manifest tells the runtime how to interpret project-specific tokens, modes, 
 ---
 
 ## Progressive Rendering
-Master CSS Progressive Rendering works by pre-rendering critical CSS on the server and injecting them into the page HTML.
-On the client, the [CSS runtime](#runtime-rendering) hydrates these rules into a virtual stylesheet, initializing a lifecycle-aware system that can respond to class name changes in real-time. Progressive hydration depends on two pieces of HTML: `style#master-css` contains the pre-rendered CSS, and `script#master-css-hydration-manifest` describes the generated rules that style block contains.
+Master CSS Progressive Rendering works by pre-rendering critical CSS on the server or during a static build and injecting it into the page HTML.
+On the client, the [CSS runtime](#runtime-rendering) hydrates these rules into a virtual stylesheet, initializing a lifecycle-aware system that can respond to class name changes in real time. Progressive hydration depends on two pieces of data: `style#master-css` contains the pre-rendered CSS that can paint the first screen, and the page hydration manifest describes the generated rules that style block contains.
 <figure>
     <ModeImg src="/master-css-progressive-rendering.svg" alt='Master CSS Progressive Rendering' />
     <figcaption>Server-side pre-rendering and client-side hydration process</figcaption>
 </figure>
-This enables fast page loads, minimal CSS output, and dynamic style injection/removal with full consistency. If the hydration manifest is missing, invalid, or no longer matches `style#master-css`, the runtime discards the pre-rendered runtime state and rebuilds the stylesheet from the connected DOM classes.
+Static and pre-rendered outputs use an external page hydration manifest by default:
+
+```html
+<style id="master-css" data-master-css-hydration-manifest="/_master-css/hydration/master-css-hydration.<hash>.json">...</style>
+```
+
+This keeps the first-render CSS in the HTML while moving the runtime handoff data into a cacheable route-level JSON file. The browser can paint from `style#master-css` without waiting for the manifest request. When the runtime starts, it loads the manifest, adopts the existing native CSS rules, and continues observing dynamic classes. If the manifest is missing, invalid, fails to load, or no longer matches `style#master-css`, the runtime safely rebuilds the stylesheet from connected DOM classes.
+
+Inline `script#master-css-hydration-manifest` is still supported for compatibility and for dynamic SSR responses that cannot write a stable public JSON asset. Pages with no generated rules do not need a hydration manifest pointer.
 
 ### Pre-rendering — SSG, SSR
 
@@ -194,9 +202,14 @@ import manifest from 'virtual:master-css-manifest'
 
 const indexHTML = readFileSync('./index.html', 'utf-8')
 
-const { html } = render(indexHTML, manifest, { hydrationManifest: 'inject' })
+const { html, hydrationManifest } = render(indexHTML, manifest, {
+    hydrationManifest: {
+        type: 'external',
+        src: '/_master-css/hydration/master-css-hydration.<hash>.json'
+    }
+})
 ```
-The server renderer parses the HTML and generates the internal style sheet plus a hydration manifest:
+The server renderer parses the HTML and generates the internal style sheet plus a page hydration manifest. Official static and pre-render integrations write `hydrationManifest` to a hashed JSON asset and attach the URL to `style#master-css`:
 ```html
 <!DOCTYPE html>
 <html lang="en">
@@ -204,33 +217,36 @@ The server renderer parses the HTML and generates the internal style sheet plus 
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script type="module" src="/main.js"></script>
-    <style id="master-css"> /* [!code ++] */
+    <style id="master-css" data-master-css-hydration-manifest="/_master-css/hydration/master-css-hydration.<hash>.json"> /* [!code ++] */
         .font\:5xl { /* [!code ++] */
             font-size: 2.5rem /* [!code ++] */
         } /* [!code ++] */
     </style> <!-- [!code ++] -->
-    <script type="application/json" id="master-css-hydration-manifest">...</script> <!-- [!code ++] -->
 </head>
 <body>
     <!-- @MARK font:5xl -->
     <h1 class="font:5xl">Hello World</h1>
 </body>
 ```
-What benifits does this bring? The server renderer generates the critical CSS (**5kB**) based on the class names used in the HTML, instead of the entire application source code (**500kB**).
+What benefits does this bring? The server renderer generates the critical CSS (**5kB**) based on the class names used in the HTML, instead of the entire application source code (**500kB**).
 
-This approach allows for a **minimal, deterministic CSS text** that is injected into the HTML, enabling fast page loads and minimal CSS output.
+This approach allows for a **minimal, deterministic CSS text** that is injected into the HTML, enabling fast page loads and minimal CSS output. Externalizing the hydration manifest does not make first paint faster by itself; the first paint still comes from the inline `style#master-css`. It reduces HTML transfer and parse pressure as the number of generated rules grows, and lets the route-level handoff data be cached separately.
 
-### CSS Hydration
-Master CSS Hydration is the process that restores the server-side (or build time) rendered CSS on the client. This includes things like reusing the pre-rendered CSS structures, persisting the application CSS state, reconstructing the style sheet into its virtual memory.
+### CSS hydration
+Master CSS hydration is the process that restores the server-side or build-time rendered CSS on the client. This includes reusing the pre-rendered CSS structures, persisting the application CSS state, and reconstructing the style sheet into virtual memory.
 <figure>
     <ModeImg src="/master-css-hydration.svg" alt='Master CSS Hydration' />
     <figcaption>Master CSS Hydration — Creates virtual rules from DOM style sheet</figcaption>
 </figure>
-The runtime reads `script#master-css-hydration-manifest` when `initCSSRuntime()` starts. Each manifest rule stores the class name, layer, priority, selector text, generated CSS text, and any referenced variables or animations. During hydration, the runtime compares that IR with the native rules already present in `style#master-css`. When they match, it attaches those native CSS rules to runtime-managed rule objects instead of regenerating them.
+The runtime reads explicit `hydrationManifest` options first. Without an explicit option, `initCSSRuntimeAsync()` discovers hydration data from the document: it reads inline `script#master-css-hydration-manifest` for compatibility, then fetches the URL from `style#master-css[data-master-css-hydration-manifest]`.
+
+Each manifest rule stores the class name, layer, priority, selector text, generated CSS text, and any referenced variables or animations. During hydration, the runtime compares that IR with the native rules already present in `style#master-css`. When they match, it attaches those native CSS rules to runtime-managed rule objects instead of regenerating them.
 
 Once hydrated, Master CSS can efficiently detect new or removed class names and update styles accordingly, without needing to reparse or regenerate previously defined rules. Classes that were not present in the initial HTML are still generated at runtime, and classes removed after hydration can be removed from the managed stylesheet when their usage count reaches zero.
 
 The [CSS runtime](#runtime-rendering) then takes over to detect any changes in dynamic class names.
+
+This page hydration manifest is different from the project manifest and `emittedGlobals`. The project manifest tells the runtime how to interpret tokens, modes, components, utilities, and variants. `emittedGlobals` records variables and keyframes that the CSS entry already emitted. The page hydration manifest only describes the CSS rules that were generated into one rendered page.
 
 ---
 

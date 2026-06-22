@@ -92,6 +92,8 @@ export default defineConfig({
 
 Use pre-render mode when Vite emits HTML that can be styled before the browser runs JavaScript. The plugin renders the matching CSS and injects it into the document.
 
+For rendered pages, the critical CSS stays inline in `style#master-css`. The page hydration manifest is externalized as a hashed JSON asset and referenced from `data-master-css-hydration-manifest`, so the HTML does not grow with the runtime handoff data.
+
 ```js name=vite.config.js
 import { defineConfig } from 'vite'
 import masterCSS from '@master/css.vite'
@@ -120,6 +122,8 @@ export default defineConfig({
 
 This is the mode that best represents the Master CSS rendering model: render what can be known early, keep the runtime for what becomes known later.
 
+In progressive mode, the runtime fetches the page hydration manifest when it starts. Do not add a preload hint for that JSON file: the browser can already paint from `style#master-css`, and the manifest is only needed for the runtime to adopt those rules instead of rebuilding them.
+
 ---
 
 ## What the plugin handles
@@ -132,6 +136,7 @@ This is the mode that best represents the Master CSS rendering model: render wha
 - injects the runtime where runtime behavior is enabled;
 - handles static rendering output;
 - pre-renders HTML when the selected mode requires it;
+- externalizes page hydration manifests for pre-rendered and progressive HTML;
 - applies FOUC avoidance for runtime-first rendering.
 
 That is the difference between "Master CSS works in a Vite app" and "Master CSS feels like a Vite-native tool."
@@ -162,7 +167,7 @@ import masterCSS from '@master/css.astro'
 
 export default defineConfig({
     integrations: [
-        masterCSS() // 'runtime' [!code highlight]
+        masterCSS() // 'progressive' [!code highlight]
         // masterCSS({ mode: 'static' })
     ]
 })
