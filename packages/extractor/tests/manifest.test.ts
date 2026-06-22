@@ -38,7 +38,7 @@ test('uses explicit compiled manifests', async () => {
             <button className="test btn">
         `)
     ).toEqual(['rel', 'blue-btn', 'test', 'btn'])
-    expect(extractor.css.create('blue-btn')?.text).toContain('background-color:oklch')
+    expect(extractor.css.createRule('blue-btn')?.text).toContain('background-color:oklch')
 })
 
 test('ignores native CSS classes from unmanaged CSS files', async () => {

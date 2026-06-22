@@ -252,3 +252,26 @@ test('registers emittedGlobals counts on an existing runtime', () => {
 
     cssRuntime.destroy()
 })
+
+test('registers emittedGlobals counts once on a new runtime', () => {
+    const root = { host: {} } as unknown as ShadowRoot
+    const cssRuntime = CSSRuntime.create({
+        manifest: defaultManifest,
+        root,
+        emittedGlobals: {
+            variables: {
+                'color-primary': 1
+            },
+            animations: {
+                fade: 1
+            }
+        }
+    })
+
+    expect(cssRuntime.emittedGlobals.variables).toMatchObject({ 'color-primary': 1 })
+    expect(cssRuntime.emittedGlobals.animations).toMatchObject({ fade: 1 })
+    expect(Object.fromEntries(cssRuntime.themeLayer.tokenCounts)).toMatchObject({ 'color-primary': 1 })
+    expect(Object.fromEntries(cssRuntime.animationsNonLayer.tokenCounts)).toMatchObject({ fade: 1 })
+
+    cssRuntime.destroy()
+})

@@ -117,6 +117,9 @@ export default class CSSRuntime extends MasterCSS {
             this.container = this.root as CSSRuntime['container']
             this.host = (this.root as ShadowRoot).host
         }
+        this.applyEmittedGlobalsCounts({
+            variables: this.emittedGlobals.variables
+        })
     }
 
     register(): this {
@@ -126,7 +129,6 @@ export default class CSSRuntime extends MasterCSS {
             this.root.defaultView!.globalThis.masterCSSRuntime = this
         }
         if (!registered) {
-            this.applyEmittedGlobalsCounts(this.emittedGlobals)
             __MASTER_CSS_DEVTOOLS_HOOK__?.emit('runtime:created', { cssRuntime: this })
         }
         return this

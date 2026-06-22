@@ -270,7 +270,7 @@ function warnUnsupportedMediaModes(input: CSSDirectiveManifestInput, options: Lo
     warn(warnings, options, `Custom ${subject} ${modeList} will not work with mode-trigger: media. Browsers only support light and dark prefers-color-scheme values; use mode-trigger: class or host for custom modes.`)
 }
 
-function createCSS(input: CSSDirectiveManifestInput, options: LowerCSSDirectivesOptions) {
+function createDirectiveCSS(input: CSSDirectiveManifestInput, options: LowerCSSDirectivesOptions) {
     return createCompilerCSS(createMasterCSSManifest(input, {
         baseManifest: getResolutionManifest(options)
     }), undefined, {
@@ -320,7 +320,7 @@ function cloneDeclarations(declarations: PropertiesHyphen, important?: boolean) 
 }
 
 function createStyleDefinitionsFromCompose(definition: Extract<CSSDirectiveStyleDefinition, { type: 'compose' }>, css: MasterCSS): ComposedStyleDefinition[] {
-    const utilities = css.createAll(definition.className)
+    const utilities = css.createRules(definition.className)
     if (!utilities.length) {
         throw new CSSDirectiveError(
             'invalid-compose-class',
@@ -997,7 +997,7 @@ export default function lowerCSSDirectives(input: CSSDirectiveManifestInputSourc
     validateTokenConflicts(directiveInput, resolveVariableName)
     warnUnsupportedMediaModes(directiveInput, options, warnings)
 
-    const css = createCSS(directiveInput, options)
+    const css = createDirectiveCSS(directiveInput, options)
     finalizeUtilityDefinitions(directiveInput, css)
     css.refresh(createMasterCSSManifest(directiveInput, { baseManifest: getResolutionManifest(options) }))
     const generatedCSS = finalizeStyleDefinitions(directiveInput, getStyleDefinitions(input), css, options)

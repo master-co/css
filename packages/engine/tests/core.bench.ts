@@ -2,7 +2,7 @@ import { bench, describe } from 'vitest'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
 import type { MasterCSSManifest } from 'shared/master-css-manifest'
 import UtilityType from 'shared/utility-type'
-import { createCSS } from '../src'
+import { MasterCSS } from '../src'
 import { compileManifest } from '../src/compile-manifest'
 
 const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
@@ -79,18 +79,18 @@ const indexedPatternClassNames = Array.from({ length: 100 }, (_, index) => `icon
 const fallbackPatternClassNames = Array.from({ length: 100 }, (_, index) => `icon-${index}_left`)
 
 describe('MasterCSS engine hot paths', () => {
-    const hotCSS = createCSS(defaultManifest, undefined, options)
-    const indexedPatternCSS = createCSS(indexedPatternManifest, undefined, options)
-    const fallbackPatternCSS = createCSS(fallbackPatternManifest, undefined, options)
+    const hotCSS = MasterCSS.create({ manifest: defaultManifest, ...options })
+    const indexedPatternCSS = MasterCSS.create({ manifest: indexedPatternManifest, ...options })
+    const fallbackPatternCSS = MasterCSS.create({ manifest: fallbackPatternManifest, ...options })
 
     for (let index = 0; index < 10_000; index++) {
-        hotCSS.create(runtimeClassNames[index % runtimeClassNames.length])
+        hotCSS.createRule(runtimeClassNames[index % runtimeClassNames.length])
     }
 
     bench('create representative runtime classes', () => {
         let total = 0
         for (let index = 0; index < 10_000; index++) {
-            const rule = hotCSS.create(runtimeClassNames[index % runtimeClassNames.length])
+            const rule = hotCSS.createRule(runtimeClassNames[index % runtimeClassNames.length])
             if (rule) total += rule.text.length
         }
         sink = total
@@ -112,7 +112,7 @@ describe('MasterCSS engine hot paths', () => {
     bench('create css with cached default manifest', () => {
         let total = 0
         for (let index = 0; index < 1_000; index++) {
-            total += createCSS(defaultManifest, undefined, options).definedUtilities.length
+            total += MasterCSS.create({ manifest: defaultManifest, ...options }).definedUtilities.length
         }
         sink = total
     }, benchOptions)
@@ -138,7 +138,7 @@ describe('MasterCSS engine hot paths', () => {
     bench('create fresh css and add representative runtime classes', () => {
         let total = 0
         for (let index = 0; index < 100; index++) {
-            const css = createCSS(defaultManifest, undefined, options)
+            const css = MasterCSS.create({ manifest: defaultManifest, ...options })
             css.add(...runtimeClassNames)
             total += css.text.length
         }

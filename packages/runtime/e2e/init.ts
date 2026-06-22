@@ -1,5 +1,5 @@
 import { Page } from '@playwright/test'
-import { createCSS, createHydrationManifest, type MasterCSSManifest } from '@master/css'
+import { MasterCSS, createHydrationManifest, type MasterCSSManifest } from '@master/css'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
 import {
     MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID,
@@ -238,7 +238,7 @@ async function createHydrationManifestForPage(page: Page, manifest: MasterCSSMan
         }
         return [...classNames]
     })
-    const css = createCSS(manifest)
+    const css = MasterCSS.create({ manifest })
     css.add(...classNames)
     return createHydrationManifest(css)
 }

@@ -37,7 +37,7 @@ if (!existsSync(globalBundleFile) || !existsSync(defaultManifestFile)) {
     process.exit(1)
 }
 
-const { createCSS, createHydrationManifest } = await import('@master/css-engine')
+const { MasterCSS, createHydrationManifest } = await import('@master/css-engine')
 const defaultManifest = (await import('@master/css-preset/default-manifest.json', { with: { type: 'json' } })).default
 
 function createClassNames(count) {
@@ -72,7 +72,8 @@ function parseArgs(values) {
 }
 
 function createHydrationFixture(classNames) {
-    const css = createCSS(defaultManifest, undefined, {
+    const css = MasterCSS.create({
+        manifest: defaultManifest,
         nativeDeclarationMatcher: () => true
     })
     css.add(...classNames)

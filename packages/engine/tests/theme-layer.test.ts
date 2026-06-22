@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest'
-import { createCSS } from '../src'
+import { MasterCSS } from '../src'
 import { cloneManifest } from './helpers/css-tester'
 
 describe.concurrent('ThemeLayer', () => {
@@ -44,7 +44,7 @@ describe.concurrent('ThemeLayer', () => {
             }
         ]
 
-        const css = createCSS(manifest)
+        const css = MasterCSS.create({ manifest: manifest })
         css.add('fg:blue')
         css.add('fg:accent')
 

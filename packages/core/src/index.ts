@@ -1,7 +1,6 @@
 export {
     default,
     MasterCSS,
-    createCSS,
     Layer,
     ThemeLayer,
     UtilityLayer,
@@ -16,6 +15,7 @@ export type {
     CompiledUtility,
     GeneratedRule,
     MasterCSSGeneratedRuleIR,
+    MasterCSSCreateOptions,
     MasterCSSOptions,
     MasterCSSManifest,
     MasterCSSManifestSettings,

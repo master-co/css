@@ -52,23 +52,23 @@ describe.concurrent('migrated issue regressions', () => {
         ] as const
 
         for (const [className, expected] of cases) {
-            expect(css.create(className)?.text).toContain(expected)
+            expect(css.createRule(className)?.text).toContain(expected)
         }
-        expect(css.create('touch:none')).toBeUndefined()
+        expect(css.createRule('touch:none')).toBeUndefined()
     })
 
     test('issue #265: View Transitions API declarations and pseudo-elements', () => {
         const css = createDefaultCSS()
 
-        expect(css.create('view-transition-name:hero')?.text).toContain('view-transition-name:hero')
-        expect(css.create('view-transition-class:product-card')?.text).toContain('view-transition-class:product-card')
-        expect(css.create('vt-name:hero')).toBeUndefined()
-        expect(css.create('vt-class:product-card')).toBeUndefined()
-        expect(css.create('view-transition-name:none')?.text).toContain('view-transition-name:none')
-        expect(css.create('opacity:0::view-transition')?.text).toContain('::view-transition{opacity:0}')
-        expect(css.create('opacity:0.5::view-transition-old(hero)')?.text).toContain('::view-transition-old(hero)')
-        expect(css.create('opacity:0.5::view-transition-old(hero)')?.text).not.toMatch(/[^:]:view-transition-old\(/)
-        expect(css.create('opacity:1::view-transition-new(hero)')?.text).toContain('::view-transition-new(hero)')
+        expect(css.createRule('view-transition-name:hero')?.text).toContain('view-transition-name:hero')
+        expect(css.createRule('view-transition-class:product-card')?.text).toContain('view-transition-class:product-card')
+        expect(css.createRule('vt-name:hero')).toBeUndefined()
+        expect(css.createRule('vt-class:product-card')).toBeUndefined()
+        expect(css.createRule('view-transition-name:none')?.text).toContain('view-transition-name:none')
+        expect(css.createRule('opacity:0::view-transition')?.text).toContain('::view-transition{opacity:0}')
+        expect(css.createRule('opacity:0.5::view-transition-old(hero)')?.text).toContain('::view-transition-old(hero)')
+        expect(css.createRule('opacity:0.5::view-transition-old(hero)')?.text).not.toMatch(/[^:]:view-transition-old\(/)
+        expect(css.createRule('opacity:1::view-transition-new(hero)')?.text).toContain('::view-transition-new(hero)')
 
         const selectorCases = [
             ['::vt', '::view-transition'],
@@ -78,23 +78,23 @@ describe.concurrent('migrated issue regressions', () => {
             ['::vt-new(hero)', '::view-transition-new(hero)']
         ] as const
         for (const [selector, expectedSelector] of selectorCases) {
-            expect(css.create('opacity:0' + selector)?.text).toContain(expectedSelector + '{opacity:0}')
+            expect(css.createRule('opacity:0' + selector)?.text).toContain(expectedSelector + '{opacity:0}')
         }
     })
 
     test('issue #321: individual transforms replace legacy transform function utilities', () => {
         const css = createDefaultCSS()
 
-        expect(css.create('translate:16px')?.text).toContain('translate:16px')
-        expect(css.create('translate:16px|24px')?.text).toContain('translate:16px 24px')
-        expect(css.create('scale:1.5')?.text).toContain('scale:1.5')
-        expect(css.create('scale:1.5|2')?.text).toContain('scale:1.5 2')
-        expect(css.create('rotate:45deg')?.text).toContain('rotate:45deg')
-        expect(css.create('transform:translate(16px,16px)')?.text).toContain('transform:translate(16px,16px)')
-        expect(css.create('transform:rotate(45deg)')?.text).toContain('transform:rotate(45deg)')
-        expect(css.create('translate(16px,16px)')).toBeUndefined()
-        expect(css.create('rotate(45deg)')).toBeUndefined()
-        expect(css.create('scale(1.5)')).toBeUndefined()
+        expect(css.createRule('translate:16px')?.text).toContain('translate:16px')
+        expect(css.createRule('translate:16px|24px')?.text).toContain('translate:16px 24px')
+        expect(css.createRule('scale:1.5')?.text).toContain('scale:1.5')
+        expect(css.createRule('scale:1.5|2')?.text).toContain('scale:1.5 2')
+        expect(css.createRule('rotate:45deg')?.text).toContain('rotate:45deg')
+        expect(css.createRule('transform:translate(16px,16px)')?.text).toContain('transform:translate(16px,16px)')
+        expect(css.createRule('transform:rotate(45deg)')?.text).toContain('transform:rotate(45deg)')
+        expect(css.createRule('translate(16px,16px)')).toBeUndefined()
+        expect(css.createRule('rotate(45deg)')).toBeUndefined()
+        expect(css.createRule('scale(1.5)')).toBeUndefined()
     })
 
     test('issue #332: logical borders and logical corner radii', () => {
@@ -125,7 +125,7 @@ describe.concurrent('migrated issue regressions', () => {
         ] as const
 
         for (const [className, expected] of cases) {
-            expect(css.create(className)?.text).toContain(expected)
+            expect(css.createRule(className)?.text).toContain(expected)
         }
     })
 
@@ -176,27 +176,27 @@ describe.concurrent('migrated issue regressions', () => {
     test('issue #358: clamp arithmetic is wrapped and normalized without double wrapping', () => {
         const css = createDefaultCSS()
 
-        expect(css.create('font-size:clamp(1.5rem,2vw+1rem,2.25rem)')?.text)
+        expect(css.createRule('font-size:clamp(1.5rem,2vw+1rem,2.25rem)')?.text)
             .toMatch(/font-size:clamp\(1\.5rem,\s*calc\(2vw \+ 1rem\),\s*2\.25rem\)/)
-        expect(css.create('font-size:clamp(1rem, 2vw + 1rem, 3rem)')?.text)
+        expect(css.createRule('font-size:clamp(1rem, 2vw + 1rem, 3rem)')?.text)
             .toMatch(/clamp\(\s*1rem\s*,\s*calc\(2vw\s*\+\s*1rem\)\s*,\s*3rem\s*\)/)
-        expect(css.create('font-size:clamp(1rem,calc(2vw+1rem),3rem)')?.text)
+        expect(css.createRule('font-size:clamp(1rem,calc(2vw+1rem),3rem)')?.text)
             .toMatch(/clamp\(1rem,\s*calc\(2vw\s*\+\s*1rem\),\s*3rem\)/)
-        expect(css.create('font-size:clamp(1rem,calc(2vw+1rem),3rem)')?.text).not.toContain('calc(calc(')
-        expect(css.create('font-size:clamp(-1rem,2vw,3rem)')?.text).toContain('clamp(-1rem, 2vw, 3rem)')
-        expect(css.create('font-size:clamp(1.5rem,calc(2vw+1rem),2.25rem)')?.text).toContain('clamp(')
-        expect(css.create('font-size:clamp(1rem,2vw,3rem)')?.text).toContain('clamp(1rem, 2vw, 3rem)')
+        expect(css.createRule('font-size:clamp(1rem,calc(2vw+1rem),3rem)')?.text).not.toContain('calc(calc(')
+        expect(css.createRule('font-size:clamp(-1rem,2vw,3rem)')?.text).toContain('clamp(-1rem, 2vw, 3rem)')
+        expect(css.createRule('font-size:clamp(1.5rem,calc(2vw+1rem),2.25rem)')?.text).toContain('clamp(')
+        expect(css.createRule('font-size:clamp(1rem,2vw,3rem)')?.text).toContain('clamp(1rem, 2vw, 3rem)')
     })
 
     test('issue #363: pipe separators inside groups lower to declaration spaces', () => {
         const css = createDefaultCSS()
 
-        expect(css.create('{paint-order:stroke|fill}')?.text).toContain('paint-order:stroke fill')
-        expect(css.create('{paint-order:stroke|fill}')?.text).not.toContain('paint-order:stroke|fill')
-        expect(css.create('{paint-order:stroke}')?.text).toContain('paint-order:stroke')
-        expect(css.create('{paint-order:stroke|fill|markers}')?.text).toContain('paint-order:stroke fill markers')
+        expect(css.createRule('{paint-order:stroke|fill}')?.text).toContain('paint-order:stroke fill')
+        expect(css.createRule('{paint-order:stroke|fill}')?.text).not.toContain('paint-order:stroke|fill')
+        expect(css.createRule('{paint-order:stroke}')?.text).toContain('paint-order:stroke')
+        expect(css.createRule('{paint-order:stroke|fill|markers}')?.text).toContain('paint-order:stroke fill markers')
 
-        const rule = css.create('background:white|red')
+        const rule = css.createRule('background:white|red')
         expect(rule?.text).toBeTruthy()
         const declarationStart = rule!.text.indexOf('{')
         expect(rule!.text.slice(declarationStart)).not.toContain('|')

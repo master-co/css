@@ -1,7 +1,7 @@
 import { writeFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { createCSS } from '@master/css-engine'
+import { MasterCSS } from '@master/css-engine'
 import { stringifyMasterCSSManifestJSON } from 'shared/master-css-manifest-json'
 import type {
     MasterCSSManifest,
@@ -13,7 +13,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url))
 const packageRoot = resolve(__dirname, '..')
 const sourceFile = resolve(packageRoot, 'src/index.css')
 const outputFile = resolve(packageRoot, 'src/default-manifest.json')
-const defaultEngineSettings = createCSS({ version: 1 }).settings
+const defaultEngineSettings = MasterCSS.create({ manifest: { version: 1 } }).settings
 const { compileCSSManifestFile } = await import(new URL('../../compiler/src/index.ts', import.meta.url).href) as typeof import('@master/css-compiler')
 function clone<T>(value: T): T {
     return JSON.parse(JSON.stringify(value)) as T

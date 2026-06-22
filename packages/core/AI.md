@@ -14,7 +14,7 @@
 The root export should stay narrow:
 
 - `MasterCSS`
-- `createCSS(manifest, emittedGlobals?)`
+- `MasterCSS.create({ manifest, emittedGlobals })`
 - `MasterCSSManifest` and runtime-safe engine types
 
 Do not re-export `Config`, `UtilityDefinition`, `extendConfig`, old utility classes as public API, or `@master/css/config` / `@master/css/utils` subpaths.

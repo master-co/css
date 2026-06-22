@@ -1,5 +1,5 @@
 import { test, expect, type Page } from '@playwright/test'
-import { createCSS, createHydrationManifest } from '@master/css'
+import { MasterCSS, createHydrationManifest } from '@master/css'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
 import type { MasterCSSManifest } from 'shared/master-css-manifest'
 import {
@@ -124,10 +124,10 @@ test('progressive hydration without a manifest rebuilds with runtime CSS', async
 })
 
 test('progressive hydration with a mismatched manifest rebuilds with runtime CSS', async ({ page }) => {
-    const css = createCSS(defaultManifest)
+    const css = MasterCSS.create({ manifest: defaultManifest })
     css.add('fg:red-60', 'bg:red-60')
     const hydrationManifest = createHydrationManifest(css)
-    const prerenderedCSS = createCSS(defaultManifest)
+    const prerenderedCSS = MasterCSS.create({ manifest: defaultManifest })
     prerenderedCSS.add('fg:red-60')
     const consoleWarnings: string[] = []
     page.on('console', (message) => {
@@ -178,7 +178,7 @@ test('progressive hydration with an empty manifest rebuilds with runtime CSS', a
 })
 
 test('progressive hydration uses hydration manifest and removes hydrated classes', async ({ page }) => {
-    const css = createCSS(defaultManifest)
+    const css = MasterCSS.create({ manifest: defaultManifest })
     css.add('fg:red-60')
     const hydrationManifest = createHydrationManifest(css)
 
@@ -222,7 +222,7 @@ test('progressive hydration uses hydration manifest and removes hydrated classes
 })
 
 test('progressive hydration fetches an external style hydration manifest', async ({ page }) => {
-    const css = createCSS(defaultManifest)
+    const css = MasterCSS.create({ manifest: defaultManifest })
     css.add('fg:red-60')
     const hydrationManifest = createHydrationManifest(css)
     const loaderURL = await getRuntimeLoaderURL()
@@ -325,7 +325,7 @@ test('progressive hydration falls back when an external style hydration manifest
 })
 
 test('explicit hydration manifest wins over external DOM discovery', async ({ page }) => {
-    const css = createCSS(defaultManifest)
+    const css = MasterCSS.create({ manifest: defaultManifest })
     css.add('fg:red-60')
     const hydrationManifest = createHydrationManifest(css)
     let requests = 0
@@ -366,7 +366,7 @@ test('explicit hydration manifest wins over external DOM discovery', async ({ pa
 })
 
 test('progressive hydration matches bucketed theme variables', async ({ page }) => {
-    const css = createCSS(defaultManifest)
+    const css = MasterCSS.create({ manifest: defaultManifest })
     css.add('fg:red-60', 'bg:blue-60')
     const hydrationManifest = createHydrationManifest(css)
     const consoleWarnings: string[] = []

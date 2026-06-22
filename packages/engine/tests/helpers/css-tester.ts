@@ -7,7 +7,7 @@ import type {
     MasterCSSManifestUtilityLayerName,
     MasterCSSManifestUtilityRule
 } from 'shared/master-css-manifest'
-import { builtinNativeValueNamespaces, createCSS, type MasterCSS } from '../../src'
+import { builtinNativeValueNamespaces, MasterCSS } from '../../src'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
 
 const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
@@ -172,7 +172,8 @@ export function cloneManifest(manifest: MasterCSSManifest = defaultManifest): Ma
 }
 
 export function createDefaultCSS() {
-    return createCSS(defaultManifest, undefined, {
+    return MasterCSS.create({
+        manifest: defaultManifest,
         nativeDeclarationMatcher: ({ property }) => nativeFallbackProperties.has(property)
     })
 }
@@ -188,7 +189,7 @@ export function createManifestWithVariables(variables: MasterCSSManifestVariable
 }
 
 export function createCSSWithVariables(variables: MasterCSSManifestVariable[], baseManifest = defaultManifest) {
-    return createCSS(createManifestWithVariables(variables, baseManifest))
+    return MasterCSS.create({ manifest: createManifestWithVariables(variables, baseManifest) })
 }
 
 export function createManifestWithSemanticUtilities(utilities: SemanticUtilityInput[], baseManifest = defaultManifest): MasterCSSManifest {
@@ -222,11 +223,11 @@ export function createManifestWithSemanticUtilities(utilities: SemanticUtilityIn
 }
 
 export function createCSSWithSemanticUtilities(utilities: SemanticUtilityInput[]) {
-    return createCSS(createManifestWithSemanticUtilities(utilities))
+    return MasterCSS.create({ manifest: createManifestWithSemanticUtilities(utilities) })
 }
 
 export function expectClassText(css: MasterCSS, className: string, expected: string) {
-    expect(css.create(className)?.text).toContain(expected)
+    expect(css.createRule(className)?.text).toContain(expected)
 }
 
 export function expectLayerText(css: MasterCSS, classNames: string | string[], layer: keyof Pick<MasterCSS, 'themeLayer' | 'baseLayer' | 'defaultsLayer' | 'componentsLayer' | 'utilitiesLayer' | 'animationsNonLayer'>, expected: string) {

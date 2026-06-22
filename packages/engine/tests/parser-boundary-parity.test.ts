@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest'
-import { createCSS } from '../src'
+import { MasterCSS } from '../src'
 import { cloneManifest, createDefaultCSS, createManifestWithSemanticUtilities } from './helpers/css-tester'
 
 describe.concurrent('migrated parser boundary parity', () => {
@@ -26,21 +26,21 @@ describe.concurrent('migrated parser boundary parity', () => {
                 ]
             }
         ]
-        const css = createCSS(manifest)
+        const css = MasterCSS.create({ manifest: manifest })
 
-        expect(css.create('hidden:hover')?.text).toBe('.hidden\\:hover:hover{display:none}')
-        expect(css.create('hidden>:custom')?.text).toBe('.hidden\\>\\:custom>div>:first-child+button{display:none}')
-        expect(css.create('hidden~:custom-1')?.text).toBe('.hidden\\~\\:custom-1~div{display:none}')
-        expect(css.create('hidden::slider-thumb')?.text).toBe('.hidden\\:\\:slider-thumb::-webkit-slider-thumb{display:none}')
-        expect(css.create('bg:#000:hover_.feature__tab-title')?.text)
+        expect(css.createRule('hidden:hover')?.text).toBe('.hidden\\:hover:hover{display:none}')
+        expect(css.createRule('hidden>:custom')?.text).toBe('.hidden\\>\\:custom>div>:first-child+button{display:none}')
+        expect(css.createRule('hidden~:custom-1')?.text).toBe('.hidden\\~\\:custom-1~div{display:none}')
+        expect(css.createRule('hidden::slider-thumb')?.text).toBe('.hidden\\:\\:slider-thumb::-webkit-slider-thumb{display:none}')
+        expect(css.createRule('bg:#000:hover_.feature__tab-title')?.text)
             .toBe('.bg\\:\\#000\\:hover_\\.feature__tab-title:hover .feature__tab-title{background-color:#000}')
-        expect(css.create('hidden:first')?.text).toBe('.hidden\\:first:first-child{display:none}')
-        expect(css.create('hidden:last')?.text).toBe('.hidden\\:last:last-child{display:none}')
-        expect(css.create('hidden:even')?.text).toBe('.hidden\\:even:nth-child(2n){display:none}')
-        expect(css.create('hidden:odd')?.text).toBe('.hidden\\:odd:nth-child(odd){display:none}')
-        expect(css.create('hidden:nth(2)')?.text).toBe('.hidden\\:nth\\(2\\):nth-child(2){display:none}')
-        expect(css.create('hidden:first:focus')?.text).toBe('.hidden\\:first\\:focus:first-child:focus{display:none}')
-        expect(css.create('uppercase::first-letter')?.text)
+        expect(css.createRule('hidden:first')?.text).toBe('.hidden\\:first:first-child{display:none}')
+        expect(css.createRule('hidden:last')?.text).toBe('.hidden\\:last:last-child{display:none}')
+        expect(css.createRule('hidden:even')?.text).toBe('.hidden\\:even:nth-child(2n){display:none}')
+        expect(css.createRule('hidden:odd')?.text).toBe('.hidden\\:odd:nth-child(odd){display:none}')
+        expect(css.createRule('hidden:nth(2)')?.text).toBe('.hidden\\:nth\\(2\\):nth-child(2){display:none}')
+        expect(css.createRule('hidden:first:focus')?.text).toBe('.hidden\\:first\\:focus:first-child:focus{display:none}')
+        expect(css.createRule('uppercase::first-letter')?.text)
             .toBe('.uppercase\\:\\:first-letter::first-letter{text-transform:uppercase}')
 
         css.add('hidden:hocus')
@@ -57,17 +57,17 @@ describe.concurrent('migrated parser boundary parity', () => {
             modes: ['light', 'dark']
         }
 
-        const css = createCSS(modeManifest)
-        expect(css.createFromSelectorText('.font\\:heavy')?.[0]).toMatchObject({ name: 'font:heavy' })
-        expect(css.createFromSelectorText('.hidden\\_button\\[disabled\\] button[disabled]')?.[0])
+        const css = MasterCSS.create({ manifest: modeManifest })
+        expect(css.createRulesFromSelectorText('.font\\:heavy')?.[0]).toMatchObject({ name: 'font:heavy' })
+        expect(css.createRulesFromSelectorText('.hidden\\_button\\[disabled\\] button[disabled]')?.[0])
             .toMatchObject({ name: 'hidden_button[disabled]' })
-        expect(css.createFromSelectorText('.ml\\:-50px\\_\\:where\\(\\.code\\,\\.codeTabs\\,\\.demo\\)\\@\\<md')?.[0])
+        expect(css.createRulesFromSelectorText('.ml\\:-50px\\_\\:where\\(\\.code\\,\\.codeTabs\\,\\.demo\\)\\@\\<md')?.[0])
             .toMatchObject({ name: 'ml:-50px_:where(.code,.codeTabs,.demo)@<md' })
-        expect(css.createFromSelectorText('.light .hidden\\@light')?.[0]).toMatchObject({ name: 'hidden@light' })
-        expect(css.createFromSelectorText('.light #app .hidden\\@light')?.[0]).toMatchObject({ name: 'hidden@light' })
-        expect(css.createFromSelectorText('.active .hidden\\:within\\(\\.active\\)')?.[0])
+        expect(css.createRulesFromSelectorText('.light .hidden\\@light')?.[0]).toMatchObject({ name: 'hidden@light' })
+        expect(css.createRulesFromSelectorText('.light #app .hidden\\@light')?.[0]).toMatchObject({ name: 'hidden@light' })
+        expect(css.createRulesFromSelectorText('.active .hidden\\:within\\(\\.active\\)')?.[0])
             .toMatchObject({ name: 'hidden:within(.active)' })
-        expect(css.createFromSelectorText('.dark #app .active .hidden\\:within\\(\\.active\\)\\@dark')?.[0])
+        expect(css.createRulesFromSelectorText('.dark #app .active .hidden\\:within\\(\\.active\\)\\@dark')?.[0])
             .toMatchObject({ name: 'hidden:within(.active)@dark' })
 
         const classModePlan = cloneManifest()
@@ -89,12 +89,12 @@ describe.concurrent('migrated parser boundary parity', () => {
                 rules: [{ selector: '&:disabled>span', declarations: { display: 'block' } }]
             }
         ], classModePlan)
-        const componentCSS = createCSS(componentManifest)
-        const lightRules = componentCSS.createFromSelectorText('.light .light\\@light')
+        const componentCSS = MasterCSS.create({ manifest: componentManifest })
+        const lightRules = componentCSS.createRulesFromSelectorText('.light .light\\@light')
         expect(lightRules?.[0]).toMatchObject({ name: 'light' })
         expect(lightRules?.[0]?.text).toBe('.light{display:block}.light{font-weight:700}')
 
-        const btnRules = componentCSS.createFromSelectorText('.btn\\:hover:hover:disabled>span')
+        const btnRules = componentCSS.createRulesFromSelectorText('.btn\\:hover:hover:disabled>span')
         expect(btnRules?.[0]).toMatchObject({ name: 'btn:hover' })
         expect(btnRules?.[0]?.text).toBe('.btn\\:hover:hover:disabled>span{display:block}')
 
@@ -103,17 +103,19 @@ describe.concurrent('migrated parser boundary parity', () => {
             ...(groupedPlan.variants || []),
             { token: '::both', branches: [{ selector: '&::before,&::after' }] }
         ]
-        const groupedCSS = createCSS(createManifestWithSemanticUtilities([
+        const groupedCSS = MasterCSS.create({
+            manifest: createManifestWithSemanticUtilities([
             {
                 name: 'btn',
                 rules: [{ selector: '&::before,&::after', declarations: { display: 'block' } }]
             }
-        ], groupedPlan))
+        ], groupedPlan)
+        })
 
-        expect(groupedCSS.createFromSelectorText('.block\\:\\:both::before, .block\\:\\:both::after')?.[0])
+        expect(groupedCSS.createRulesFromSelectorText('.block\\:\\:both::before, .block\\:\\:both::after')?.[0])
             .toMatchObject({ name: 'block::both' })
-        expect(groupedCSS.createFromSelectorText('.btn::before,.btn::after')?.[0]).toMatchObject({ name: 'btn' })
-        expect(groupedCSS.createFromSelectorText('.btn::before,.btn::after')?.[0]?.text)
+        expect(groupedCSS.createRulesFromSelectorText('.btn::before,.btn::after')?.[0]).toMatchObject({ name: 'btn' })
+        expect(groupedCSS.createRulesFromSelectorText('.btn::before,.btn::after')?.[0]?.text)
             .toBe('.btn::before,.btn::after{display:block}')
     })
 })

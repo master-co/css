@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest'
-import { createCSS } from '../src'
+import { MasterCSS } from '../src'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
 import type { MasterCSSManifest } from 'shared/master-css-manifest'
 import {
@@ -44,9 +44,12 @@ describe.concurrent('migrated cascade and layer parity', () => {
         css.add('text-center', 'text-center')
         expect(css.utilitiesLayer.rules).toHaveLength(1)
 
-        const emittedGlobalsVariableCSS = createCSS(defaultManifest, {
-            variables: {
-                'color-red-60': 1
+        const emittedGlobalsVariableCSS = MasterCSS.create({
+            manifest: defaultManifest,
+            emittedGlobals: {
+                variables: {
+                    'color-red-60': 1
+                }
             }
         })
         emittedGlobalsVariableCSS.add('bg:red-60')
@@ -60,9 +63,12 @@ describe.concurrent('migrated cascade and layer parity', () => {
             'color-red-60': 1
         })
 
-        const emittedGlobalsAnimationCSS = createCSS(defaultManifest, {
-            animations: {
-                fade: 1
+        const emittedGlobalsAnimationCSS = MasterCSS.create({
+            manifest: defaultManifest,
+            emittedGlobals: {
+                animations: {
+                    fade: 1
+                }
             }
         })
         emittedGlobalsAnimationCSS.add('animate:fade')
@@ -125,7 +131,7 @@ describe.concurrent('migrated cascade and layer parity', () => {
                 static: true
             }
         }
-        const css = createCSS(manifest)
+        const css = MasterCSS.create({ manifest: manifest })
 
         expect(css.text).toContain('@layer theme{')
         expect(css.text).toContain('--color-static-alias:var(--color-static-base)')
@@ -172,12 +178,15 @@ describe.concurrent('migrated cascade and layer parity', () => {
                 static: true
             }
         }
-        const css = createCSS(manifest, {
-            variables: {
-                'color-static-simple': 1
-            },
-            animations: {
-                'static-spin': 1
+        const css = MasterCSS.create({
+            manifest,
+            emittedGlobals: {
+                variables: {
+                    'color-static-simple': 1
+                },
+                animations: {
+                    'static-spin': 1
+                }
             }
         })
 
@@ -214,14 +223,16 @@ describe.concurrent('migrated cascade and layer parity', () => {
     })
 
     test('keeps at-rules authored on semantic component rules within the component layer', () => {
-        const css = createCSS(createManifestWithSemanticUtilities([
+        const css = MasterCSS.create({
+            manifest: createManifestWithSemanticUtilities([
             {
                 name: 'btn',
                 rules: [
                     { selector: '&', atRules: ['@layer base'], declarations: { display: 'block' } }
                 ]
             }
-        ]))
+        ])
+        })
 
         css.add('btn')
         expect(css.componentsLayer.text).toContain('@layer base{.btn{display:block}}')
@@ -273,7 +284,8 @@ describe.concurrent('migrated cascade and layer parity', () => {
         const manifest = cloneManifest()
         manifest.atRules = { ...(manifest.atRules || {}), tablet: tabletAtRule, desktop: desktopAtRule }
         manifest.breakpointAtRules = { ...(manifest.breakpointAtRules || {}), tablet: tabletAtRule, desktop: desktopAtRule }
-        const mediaCSS = createCSS(manifest, undefined, {
+        const mediaCSS = MasterCSS.create({
+            manifest,
             nativeDeclarationMatcher: ({ property }) => property === 'justify-content' || property === 'min-width'
         })
         mediaCSS.add('min-w:12.875rem', '{flex-row}@xs', 'justify-content:flex-end@xs', 'hidden@tablet&<desktop', '{flex-row}@2xs&<xs')

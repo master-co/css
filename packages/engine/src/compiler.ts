@@ -1,5 +1,4 @@
 import MasterCSS from './core'
-import createCSS from './create'
 import parseAt from './utils/parse-at'
 import generateAt from './utils/generate-at'
 import parseSelector from './utils/parse-selector'
@@ -10,16 +9,20 @@ import type { MasterCSSManifest } from 'shared/master-css-manifest'
 import type { MasterCSSEmittedGlobals } from './emitted-globals'
 import type { MasterCSSOptions } from './core'
 
-export { MasterCSS, createCSS, compareRulePriority, generateAt, generateSelector, parseAt, parseSelector }
+export { MasterCSS, compareRulePriority, generateAt, generateSelector, parseAt, parseSelector }
 export type { Utility as GeneratedRule }
 export type * from 'shared/master-css-manifest'
 
 export function createCompilerCSS(manifest: MasterCSSManifest, emittedGlobals?: MasterCSSEmittedGlobals, options?: MasterCSSOptions) {
-    return createCSS(manifest, emittedGlobals, options)
+    return MasterCSS.create({
+        manifest,
+        emittedGlobals,
+        ...options
+    })
 }
 
 export function expandClassName(manifest: MasterCSSManifest, className: string, mode?: string) {
-    return createCompilerCSS(manifest).createAll(className, undefined, mode)
+    return createCompilerCSS(manifest).createRules(className, undefined, mode)
 }
 
 export function inspectGeneratedRule(rule: Utility) {

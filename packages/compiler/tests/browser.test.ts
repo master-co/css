@@ -1,10 +1,14 @@
 import { expect, test } from 'vitest'
-import { createCSS } from '@master/css-engine'
+import { MasterCSS } from '@master/css-engine'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
 import { compileCSSManifest } from '../src/browser'
 import type { MasterCSSManifest } from 'shared/master-css-manifest'
 
 const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
+
+function createTestCSS(manifest: MasterCSSManifest) {
+    return MasterCSS.create({ manifest })
+}
 
 test.concurrent('browser compileCSSManifest lowers directives with a base manifest', async () => {
     const result = await compileCSSManifest(`
@@ -17,7 +21,7 @@ test.concurrent('browser compileCSSManifest lowers directives with a base manife
     `, {
         baseManifest: defaultManifest
     })
-    const css = createCSS(result.manifest)
+    const css = createTestCSS(result.manifest)
 
     css.add('btn')
 

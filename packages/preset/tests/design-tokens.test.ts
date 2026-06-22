@@ -1,9 +1,13 @@
 import { describe, expect, test } from 'vitest'
-import { createCSS } from '@master/css-engine'
+import { MasterCSS } from '@master/css-engine'
 import defaultManifestJSON from '../src/default-manifest.json' with { type: 'json' }
 import type { MasterCSSManifest } from 'shared/master-css-manifest'
 
 const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
+
+function createTestCSS(manifest: MasterCSSManifest) {
+    return MasterCSS.create({ manifest })
+}
 
 function findVariable(name: string) {
     return defaultManifest.variables?.find((variable) => variable.name === name)
@@ -243,33 +247,33 @@ describe.concurrent('@master/css-preset design token parity', () => {
     })
 
     test('executes built-in registry records without UI role tokens', () => {
-        const css = createCSS(defaultManifest)
+        const css = createTestCSS(defaultManifest)
 
-        expect(css.create('font:sans')?.text).toContain('font-family:var(--font-family-sans)')
-        expect(css.create('text:2xl')?.text).toContain('font-size:var(--font-size-2xl)')
-        expect(css.create('m:md')?.text).toContain('margin:var(--spacing-md)')
-        expect(css.create('r:lg')?.text).toContain('border-radius:var(--radius-lg)')
-        expect(css.create('text:inverse')).toBeUndefined()
-        expect(css.create('text:muted')).toBeUndefined()
-        expect(css.create('bg:line')).toBeUndefined()
-        expect(css.create('fg:muted')?.text).not.toContain('var(--color-text-muted)')
-        expect(css.create('b:subtle')?.text).not.toContain('var(--color-line-subtle)')
-        expect(css.create('bg:blue-60')?.text).toContain('background-color:var(--color-blue-60)')
-        expect(css.create('shadow:sm')?.text).toContain('box-shadow:var(--shadow-sm)')
-        expect(css.create('w:sm')?.text).toContain('width:var(--container-sm)')
-        expect(css.create('transition-duration:fast')?.text).toContain('transition-duration:var(--duration-fast)')
-        expect(css.create('transition-timing-function:smooth')?.text).toContain('transition-timing-function:var(--easing-smooth)')
-        expect(css.create('bg:blue')?.text).toContain('background-color:var(--color-blue)')
-        expect(css.create('bg:pink')?.text).toContain('background-color:var(--color-pink)')
-        expect(css.create('fg:red')?.text).toBe('.fg\\:red{color:var(--color-red)}')
-        expect(css.create('text:blue')?.text).toBe('.text\\:blue{color:var(--color-text-blue)}')
-        expect(css.create('text:blue-60')?.text).toBe('.text\\:blue-60{color:var(--color-blue-60)}')
-        expect(css.create('text-fill-color:text-pink')?.text).toBe('.text-fill-color\\:text-pink{-webkit-text-fill-color:var(--color-text-pink)}')
-        expect(css.create('animate:fade')?.text).toContain('animation:var(--animate-fade)')
-        expect(css.create('bg:accent')).toBeUndefined()
-        expect(css.create('fg:on-blue')?.text).not.toContain('var(--color-on-blue)')
-        expect(css.create('b:line-blue')?.text).not.toContain('var(--color-line-blue)')
-        expect(css.create('bg:blue-surface')).toBeUndefined()
+        expect(css.createRule('font:sans')?.text).toContain('font-family:var(--font-family-sans)')
+        expect(css.createRule('text:2xl')?.text).toContain('font-size:var(--font-size-2xl)')
+        expect(css.createRule('m:md')?.text).toContain('margin:var(--spacing-md)')
+        expect(css.createRule('r:lg')?.text).toContain('border-radius:var(--radius-lg)')
+        expect(css.createRule('text:inverse')).toBeUndefined()
+        expect(css.createRule('text:muted')).toBeUndefined()
+        expect(css.createRule('bg:line')).toBeUndefined()
+        expect(css.createRule('fg:muted')?.text).not.toContain('var(--color-text-muted)')
+        expect(css.createRule('b:subtle')?.text).not.toContain('var(--color-line-subtle)')
+        expect(css.createRule('bg:blue-60')?.text).toContain('background-color:var(--color-blue-60)')
+        expect(css.createRule('shadow:sm')?.text).toContain('box-shadow:var(--shadow-sm)')
+        expect(css.createRule('w:sm')?.text).toContain('width:var(--container-sm)')
+        expect(css.createRule('transition-duration:fast')?.text).toContain('transition-duration:var(--duration-fast)')
+        expect(css.createRule('transition-timing-function:smooth')?.text).toContain('transition-timing-function:var(--easing-smooth)')
+        expect(css.createRule('bg:blue')?.text).toContain('background-color:var(--color-blue)')
+        expect(css.createRule('bg:pink')?.text).toContain('background-color:var(--color-pink)')
+        expect(css.createRule('fg:red')?.text).toBe('.fg\\:red{color:var(--color-red)}')
+        expect(css.createRule('text:blue')?.text).toBe('.text\\:blue{color:var(--color-text-blue)}')
+        expect(css.createRule('text:blue-60')?.text).toBe('.text\\:blue-60{color:var(--color-blue-60)}')
+        expect(css.createRule('text-fill-color:text-pink')?.text).toBe('.text-fill-color\\:text-pink{-webkit-text-fill-color:var(--color-text-pink)}')
+        expect(css.createRule('animate:fade')?.text).toContain('animation:var(--animate-fade)')
+        expect(css.createRule('bg:accent')).toBeUndefined()
+        expect(css.createRule('fg:on-blue')?.text).not.toContain('var(--color-on-blue)')
+        expect(css.createRule('b:line-blue')?.text).not.toContain('var(--color-line-blue)')
+        expect(css.createRule('bg:blue-surface')).toBeUndefined()
         expect(css.text).not.toContain('null')
     })
 
@@ -293,11 +297,11 @@ describe.concurrent('@master/css-preset design token parity', () => {
             }
         ]
 
-        const css = createCSS(manifest)
+        const css = createTestCSS(manifest)
 
-        expect(css.create('text:body')?.text).toBe('.text\\:body{color:var(--color-text-body)}')
-        expect(css.create('border-color:divider')?.text).toBe('.border-color\\:divider{border-color:var(--color-line-divider)}')
-        expect(css.create('b:1px|solid|divider')?.text).toBe('.b\\:1px\\|solid\\|divider{border:1px solid var(--color-line-divider)}')
-        expect(css.create('outline:1px|solid|divider')?.text).toBe('.outline\\:1px\\|solid\\|divider{outline:1px solid var(--color-line-divider)}')
+        expect(css.createRule('text:body')?.text).toBe('.text\\:body{color:var(--color-text-body)}')
+        expect(css.createRule('border-color:divider')?.text).toBe('.border-color\\:divider{border-color:var(--color-line-divider)}')
+        expect(css.createRule('b:1px|solid|divider')?.text).toBe('.b\\:1px\\|solid\\|divider{border:1px solid var(--color-line-divider)}')
+        expect(css.createRule('outline:1px|solid|divider')?.text).toBe('.outline\\:1px\\|solid\\|divider{outline:1px solid var(--color-line-divider)}')
     })
 })

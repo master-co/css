@@ -1,13 +1,13 @@
-import { createCSS, type CompiledUtility, type MasterCSS } from '@master/css'
+import { MasterCSS, type CompiledUtility } from '@master/css'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
 import UtilityType from 'shared/utility-type'
 import type { ValueComponent, Variable } from 'shared/css-syntax'
 import type { MasterCSSManifest, MasterCSSManifestAtRuleNode } from 'shared/master-css-manifest'
 import { getMdnPropertySyntax } from './utils/mdn-css-data'
 
-export type { CompiledUtility, MasterCSS, ValueComponent, Variable }
+export type { CompiledUtility, ValueComponent, Variable }
 const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
-export { createCSS, defaultManifest, UtilityType }
+export { defaultManifest, MasterCSS, UtilityType }
 
 export function matchesLanguageServiceNativeDeclaration({ property }: { property: string }) {
     return property.startsWith('--') || Boolean(getMdnPropertySyntax(property))
@@ -29,19 +29,22 @@ export interface AtRule {
 }
 
 export function createDefaultCSS() {
-    return createCSS(defaultManifest, undefined, {
+    return MasterCSS.create({
+        manifest: defaultManifest,
         nativeDeclarationMatcher: matchesLanguageServiceNativeDeclaration
     })
 }
 
 export function createLanguageCSS(manifest: MasterCSSManifest = defaultManifest) {
-    return createCSS(manifest, undefined, {
+    return MasterCSS.create({
+        manifest,
         nativeDeclarationMatcher: matchesLanguageServiceNativeDeclaration
     })
 }
 
 export function generateCSS(classNames: string[], css: MasterCSS = createDefaultCSS()) {
-    const generatedCSS = createCSS(css.manifest, undefined, {
+    const generatedCSS = MasterCSS.create({
+        manifest: css.manifest,
         nativeDeclarationMatcher: matchesLanguageServiceNativeDeclaration
     })
     for (const className of classNames) {

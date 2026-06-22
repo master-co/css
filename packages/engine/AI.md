@@ -13,7 +13,7 @@
 ## Public APIs
 
 - `MasterCSS`
-- `createCSS(manifest, emittedGlobals?)`
+- `MasterCSS.create({ manifest, emittedGlobals })`
 - `compareRulePriority`
 - `createHydrationManifest`
 - Built-in registry exports for compiler, language tooling, docs, and tests

@@ -89,13 +89,12 @@ Use `@import '@master/css/base.css';` when a runtime-only page only needs the ba
 ### `MasterCSS`
 
 ```js
-import { MasterCSS, createCSS } from '@master/css'
+import { MasterCSS } from '@master/css'
 
-const css = createCSS(manifest)
-const customCSS = new MasterCSS(manifest)
+const css = MasterCSS.create({ manifest })
 ```
 
-`new MasterCSS(manifest)` and `createCSS(manifest)` require a complete `MasterCSSManifest`.
+`MasterCSS.create({ manifest })` requires a complete `MasterCSSManifest`.
 
 | API | Type | Description |
 | --- | --- | --- |
@@ -103,7 +102,9 @@ const customCSS = new MasterCSS(manifest)
 | `css.settings` | `MasterCSSManifestSettings` | Resolved settings from the active manifest. |
 | `css.text` | `string` | Joined text of all generated CSS rules. |
 | `css.add(...classNames)` | `boolean` | Adds classes and generated rules. |
-| `css.delete(...classNames)` | `boolean` | Removes classes and unused rules. |
+| `css.remove(...classNames)` | `boolean` | Removes classes and unused rules. |
+| `css.createRule(className)` | `GeneratedRule \| undefined` | Creates one generated rule without inserting it. |
+| `css.createRules(className)` | `GeneratedRule[]` | Creates all generated rule branches without inserting them. |
 | `css.refresh(manifest?)` | `this` | Refreshes with a compiled manifest. |
 | `css.reset()` | `this` | Clears all rules and resets the instance. |
 | `css.destroy()` | `this` | Destroys and removes the current instance. |

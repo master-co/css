@@ -1,4 +1,4 @@
-import { createCSS } from '@master/css'
+import { MasterCSS } from '@master/css'
 import type { MasterCSSOptions, MasterCSSManifest, MasterCSSEmittedGlobals, NativeCSSDeclarationMatcher } from '@master/css'
 import { lexer, parse, property as propertyName } from 'css-tree'
 import { isTargetError } from './validate-css'
@@ -32,7 +32,9 @@ export function createCSSWithNativeDeclarations(
     emittedGlobals?: MasterCSSEmittedGlobals,
     options: MasterCSSOptions = {}
 ) {
-    return createCSS(manifest, emittedGlobals, {
+    return MasterCSS.create({
+        manifest,
+        emittedGlobals,
         ...options,
         nativeDeclarationMatcher: options.nativeDeclarationMatcher || cssTreeNativeDeclarationMatcher
     })

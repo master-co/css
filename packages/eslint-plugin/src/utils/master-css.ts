@@ -1,12 +1,12 @@
 import { compareRulePriority, type MasterCSS, type MasterCSSManifest } from '@master/css'
-import { createCSSWithNativeDeclarations as createCSS } from '@master/css-validator'
+import { createCSSWithNativeDeclarations } from '@master/css-validator'
 import { createRequire } from 'node:module'
 import UtilityType from 'shared/utility-type'
 
 export type { MasterCSS, MasterCSSManifest }
 const require = createRequire(import.meta.url)
 const defaultManifest = require('@master/css-preset/default-manifest.json') as MasterCSSManifest
-export { createCSS, defaultManifest }
+export { createCSSWithNativeDeclarations, defaultManifest }
 
 export const CLASS_ATTRIBUTES = ['class', 'className']
 export const CLASS_DECLARATIONS: string[] = []

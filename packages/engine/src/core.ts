@@ -44,6 +44,11 @@ export interface MasterCSSOptions {
     nativeDeclarationMatcher?: NativeCSSDeclarationMatcher
 }
 
+export interface MasterCSSCreateOptions extends MasterCSSOptions {
+    manifest: MasterCSSManifest
+    emittedGlobals?: MasterCSSEmittedGlobals
+}
+
 const builtinGroupUtility = {
     id: 'group',
     name: 'group',
@@ -199,7 +204,12 @@ export default class MasterCSS {
 
     manifest!: MasterCSSManifest
 
-    constructor(
+    static create(options: MasterCSSCreateOptions) {
+        const { manifest, emittedGlobals, ...engineOptions } = options
+        return new this(manifest, emittedGlobals, engineOptions)
+    }
+
+    protected constructor(
         manifest: MasterCSSManifest,
         emittedGlobals?: MasterCSSEmittedGlobals,
         protected readonly options: MasterCSSOptions = {}
@@ -494,7 +504,7 @@ export default class MasterCSS {
 
     private createGroupUtility(className: string, fixedClass?: string, mode?: string, branchIndex = 0): Utility | undefined {
         if (!this.isGroupClassName(className)) return
-        return this.createWithDefinition(className, builtinGroupUtility, fixedClass, mode, branchIndex)
+        return this.createRuleWithDefinition(className, builtinGroupUtility, fixedClass, mode, branchIndex)
     }
 
     private createAllGroupUtilities(className: string, fixedClass?: string, mode?: string): Utility[] {
@@ -715,12 +725,12 @@ export default class MasterCSS {
         if (!property) return []
 
         const registeredUtility = this.getNativeDeclarationUtility(property)
-        const utility = this.createWithDefinition(sourceClassName, registeredUtility, fixedClass, mode)
+        const utility = this.createRuleWithDefinition(sourceClassName, registeredUtility, fixedClass, mode)
         if (!utility?.valid || !this.isNativeDeclarationUtility(utility)) return []
 
         const utilities = [utility]
         for (let branchIndex = 1; branchIndex < utility.branchCount; branchIndex++) {
-            const branchUtility = this.createWithDefinition(sourceClassName, registeredUtility, fixedClass, mode, branchIndex)
+            const branchUtility = this.createRuleWithDefinition(sourceClassName, registeredUtility, fixedClass, mode, branchIndex)
             if (branchUtility?.valid && this.isNativeDeclarationUtility(branchUtility)) utilities.push(branchUtility)
         }
         return utilities
@@ -733,12 +743,12 @@ export default class MasterCSS {
         const registeredUtility = this.nativeValueNamespaceUtilities.get(property)
         if (!registeredUtility) return []
 
-        const utility = this.createWithDefinition(sourceClassName, registeredUtility, fixedClass, mode)
+        const utility = this.createRuleWithDefinition(sourceClassName, registeredUtility, fixedClass, mode)
         if (!utility?.valid || this.options.nativeDeclarationMatcher && !this.isNativeDeclarationUtility(utility)) return []
 
         const utilities = [utility]
         for (let branchIndex = 1; branchIndex < utility.branchCount; branchIndex++) {
-            const branchUtility = this.createWithDefinition(sourceClassName, registeredUtility, fixedClass, mode, branchIndex)
+            const branchUtility = this.createRuleWithDefinition(sourceClassName, registeredUtility, fixedClass, mode, branchIndex)
             if (
                 branchUtility?.valid
                 && (!this.options.nativeDeclarationMatcher || this.isNativeDeclarationUtility(branchUtility))
@@ -769,7 +779,7 @@ export default class MasterCSS {
      * @returns Utility[]
      */
     generate(className: string, mode?: string): Utility[] {
-        return this.createAll(className, undefined, mode)
+        return this.createRules(className, undefined, mode)
     }
 
     /**
@@ -777,7 +787,7 @@ export default class MasterCSS {
      * @param className
      * @returns Utility
      */
-    create(className: string, fixedClass?: string, mode?: string): Utility | undefined {
+    createRule(className: string, fixedClass?: string, mode?: string): Utility | undefined {
         const groupUtility = this.createGroupUtility(className, fixedClass, mode)
         if (groupUtility) return groupUtility
 
@@ -785,7 +795,7 @@ export default class MasterCSS {
         if (this.hasClassKey(className)) {
             const rawRegisteredUtility = this.matchRawManagedClassName(className)
             if (rawRegisteredUtility) {
-                const utility = this.createWithDefinition(sourceClassName, rawRegisteredUtility, fixedClass, mode)
+                const utility = this.createRuleWithDefinition(sourceClassName, rawRegisteredUtility, fixedClass, mode)
                 if (utility?.valid) return utility
             }
         }
@@ -807,14 +817,14 @@ export default class MasterCSS {
             const nativeUtilities = this.createNativeDeclarationFallback(className, fixedClass, mode, sourceClassName)
             if (nativeUtilities.length) return nativeUtilities[0]
         }
-        if (registeredUtility) return this.createWithDefinition(sourceClassName, registeredUtility, fixedClass, mode)
+        if (registeredUtility) return this.createRuleWithDefinition(sourceClassName, registeredUtility, fixedClass, mode)
         return (
             this.createNativeValueNamespaceFallback(className, fixedClass, mode, sourceClassName)[0]
             || this.createNativeDeclarationFallback(className, fixedClass, mode, sourceClassName)[0]
         )
     }
 
-    createAll(className: string, fixedClass?: string, mode?: string): Utility[] {
+    createRules(className: string, fixedClass?: string, mode?: string): Utility[] {
         const groupUtilities = this.createAllGroupUtilities(className, fixedClass, mode)
         if (groupUtilities.length) return groupUtilities
 
@@ -823,11 +833,11 @@ export default class MasterCSS {
             const rawRegisteredUtilities = this.matchAllRawManagedClassName(className)
             const rawUtilities: Utility[] = []
             for (const registeredUtility of rawRegisteredUtilities) {
-                const utility = this.createWithDefinition(sourceClassName, registeredUtility, fixedClass, mode)
+                const utility = this.createRuleWithDefinition(sourceClassName, registeredUtility, fixedClass, mode)
                 if (utility && utility.valid) {
                     rawUtilities.push(utility)
                     for (let branchIndex = 1; branchIndex < utility.branchCount; branchIndex++) {
-                        const branchUtility = this.createWithDefinition(sourceClassName, registeredUtility, fixedClass, mode, branchIndex)
+                        const branchUtility = this.createRuleWithDefinition(sourceClassName, registeredUtility, fixedClass, mode, branchIndex)
                         if (branchUtility?.valid) rawUtilities.push(branchUtility)
                     }
                 }
@@ -855,11 +865,11 @@ export default class MasterCSS {
 
         const utilities: Utility[] = []
         for (const registeredUtility of registeredUtilities) {
-            const utility = this.createWithDefinition(sourceClassName, registeredUtility, fixedClass, mode)
+            const utility = this.createRuleWithDefinition(sourceClassName, registeredUtility, fixedClass, mode)
             if (utility && utility.valid) {
                 utilities.push(utility)
                 for (let branchIndex = 1; branchIndex < utility.branchCount; branchIndex++) {
-                    const branchUtility = this.createWithDefinition(sourceClassName, registeredUtility, fixedClass, mode, branchIndex)
+                    const branchUtility = this.createRuleWithDefinition(sourceClassName, registeredUtility, fixedClass, mode, branchIndex)
                     if (branchUtility?.valid) utilities.push(branchUtility)
                 }
             }
@@ -871,7 +881,7 @@ export default class MasterCSS {
             : this.createNativeDeclarationFallback(className, fixedClass, mode, sourceClassName)
     }
 
-    createWithDefinition(className: string, registeredUtility: CompiledUtility, fixedClass?: string, mode?: string, branchIndex = 0): Utility | undefined {
+    protected createRuleWithDefinition(className: string, registeredUtility: CompiledUtility, fixedClass?: string, mode?: string, branchIndex = 0): Utility | undefined {
         const candidate = new Utility(className, this, registeredUtility, fixedClass, mode, branchIndex)
         if (
             candidate.valid
@@ -892,7 +902,7 @@ export default class MasterCSS {
      * Create utility from given selector text
      * @param selectorText
      */
-    createFromSelectorText(selectorText: string, layerName?: MasterCSSManifestUtilityLayerName) {
+    createRulesFromSelectorText(selectorText: string, layerName?: MasterCSSManifestUtilityLayerName) {
         const selectorTextSplits = selectorText.split(' ')
         const stopChars = /[.#\[!\*>+~:,\s]/
         for (let i = 0; i < selectorTextSplits.length; i++) {

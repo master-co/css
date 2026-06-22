@@ -354,7 +354,7 @@ describe.concurrent('migrated core rule expectations', () => {
         test(source, () => {
             const css = createDefaultCSS()
             for (const [className, expected] of cases) {
-                expect(css.create(className)?.text, className).toContain(expected)
+                expect(css.createRule(className)?.text, className).toContain(expected)
             }
         })
     }

@@ -1,6 +1,6 @@
 import type { RuleContext } from '@typescript-eslint/utils/ts-eslint'
 import settings, { Settings } from '../settings'
-import { MasterCSS, MasterCSSManifest, createCSS, defaultManifest } from './master-css'
+import { MasterCSS, MasterCSSManifest, createCSSWithNativeDeclarations, defaultManifest } from './master-css'
 import { findMasterCSSWorkspaceDirectoriesSync } from '@master/css-manifest/css'
 import { loadProjectManifestSync } from '@master/css-manifest/load-sync'
 import path from 'node:path'
@@ -78,7 +78,7 @@ export default function resolveContext(context: RuleContext<any, any[]>) {
         const manifest = filename
             ? resolvePlan(workspaceDir, resolvedSettings.manifest)
             : resolvedSettings.manifest
-        css = createCSS(manifest || defaultManifest)
+        css = createCSSWithNativeDeclarations(manifest || defaultManifest)
         cssCaches.push({ cwd: workspaceDir, manifest: resolvedSettings.manifest, css })
     }
 

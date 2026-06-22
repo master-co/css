@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest'
-import { createCSS } from '../src'
+import { MasterCSS } from '../src'
 import { generateAt, generateSelector, parseAt, parseSelector } from '../src/compiler'
 import { cloneManifest, createDefaultCSS } from './helpers/css-tester'
 
@@ -50,7 +50,7 @@ describe.concurrent('compiled at-rule parser parity', () => {
                 }]
             }
         }
-        const css = createCSS(manifest)
+        const css = MasterCSS.create({ manifest: manifest })
 
         expect(generateAt(parseAt('supports-backdrop', css))).toBe('@supports (backdrop-filter:blur(0px))')
         expect(generateAt(parseAt('container(sm)', css))).toBe('@container (width>=24rem)')

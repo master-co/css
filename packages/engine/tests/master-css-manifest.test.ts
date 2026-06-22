@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import UtilityType from 'shared/utility-type'
 import type { MasterCSSManifest } from 'shared/master-css-manifest'
-import createCSS from '../src/create'
+import { MasterCSS } from '../src'
 import createHydrationManifest from '../src/hydration-manifest'
 
 describe.concurrent('MasterCSSManifest execution', () => {
@@ -55,11 +55,11 @@ describe.concurrent('MasterCSSManifest execution', () => {
                 arbitrary: [1]
             }
         }
-        const css = createCSS(manifest)
+        const css = MasterCSS.create({ manifest: manifest })
 
-        expect(css.create('text-left')?.text).toBe('.text-left{text-align:left}')
-        expect(css.create('text-left')?.type).toBe(UtilityType.Semantic)
-        expect(css.create('text-center')?.text).toBe('.text-center{text-align:start}')
+        expect(css.createRule('text-left')?.text).toBe('.text-left{text-align:left}')
+        expect(css.createRule('text-left')?.type).toBe(UtilityType.Semantic)
+        expect(css.createRule('text-center')?.text).toBe('.text-center{text-align:start}')
     })
 
     it('keeps all matching exact semantic utilities when arbitrary utilities are indexed', () => {
@@ -97,7 +97,7 @@ describe.concurrent('MasterCSSManifest execution', () => {
             }
         }
 
-        expect(createCSS(manifest).createAll('btn').map(({ text }) => text)).toEqual([
+        expect(MasterCSS.create({ manifest: manifest }).createRules('btn').map(({ text }) => text)).toEqual([
             '.btn{display:inline-flex}',
             '.btn{gap:0.5rem}'
         ])
@@ -131,7 +131,7 @@ describe.concurrent('MasterCSSManifest execution', () => {
             }
         }
 
-        expect(createCSS(manifest).create('icon_left')?.text)
+        expect(MasterCSS.create({ manifest: manifest }).createRule('icon_left')?.text)
             .toBe('.icon_left{grid-area:left}')
     })
 
@@ -196,11 +196,11 @@ describe.concurrent('MasterCSSManifest execution', () => {
                 value: [0, 1]
             }
         }
-        const css = createCSS(manifest)
+        const css = MasterCSS.create({ manifest: manifest })
 
-        expect(css.create('b:1px')?.text).toBe('.b\\:1px{border-width:1px}')
-        expect(css.create('b:line')?.text).toBe('.b\\:line{border-color:var(--color-line)}')
-        expect(css.create('b:1px|solid|line')?.text).toBe('.b\\:1px\\|solid\\|line{border:1px solid var(--color-line)}')
+        expect(css.createRule('b:1px')?.text).toBe('.b\\:1px{border-width:1px}')
+        expect(css.createRule('b:line')?.text).toBe('.b\\:line{border-color:var(--color-line)}')
+        expect(css.createRule('b:1px|solid|line')?.text).toBe('.b\\:1px\\|solid\\|line{border:1px solid var(--color-line)}')
     })
 
     it('executes pre-bucketed utility and variable aliases without config-style resolution', () => {
@@ -241,7 +241,7 @@ describe.concurrent('MasterCSSManifest execution', () => {
             }
         }
 
-        expect(createCSS(manifest).create('m:card')?.text)
+        expect(MasterCSS.create({ manifest: manifest }).createRule('m:card')?.text)
             .toBe('.m\\:card{margin:var(--spacing-card)}')
     })
 
@@ -309,15 +309,15 @@ describe.concurrent('MasterCSSManifest execution', () => {
                 variable: [0, 1, 2, 3]
             }
         }
-        const css = createCSS(manifest)
+        const css = MasterCSS.create({ manifest: manifest })
 
-        expect(css.create('m:card')?.text)
+        expect(css.createRule('m:card')?.text)
             .toBe('.m\\:card{margin:var(--spacing-card)}')
-        expect(css.create('fg:muted')?.text)
+        expect(css.createRule('fg:muted')?.text)
             .toBe('.fg\\:muted{color:var(--color-text-muted)}')
-        expect(css.create('border:muted')?.text)
+        expect(css.createRule('border:muted')?.text)
             .toBe('.border\\:muted{border-color:var(--color-line-muted)}')
-        expect(css.create('r:card')?.text)
+        expect(css.createRule('r:card')?.text)
             .toBe('.r\\:card{border-radius:var(--radius-card)}')
     })
 
@@ -348,12 +348,15 @@ describe.concurrent('MasterCSSManifest execution', () => {
                 variable: [0]
             }
         }
-        const emittedGlobalsCSS = createCSS(manifest, {
-            variables: {
-                'spacing-card': 1
+        const emittedGlobalsCSS = MasterCSS.create({
+            manifest,
+            emittedGlobals: {
+                variables: {
+                    'spacing-card': 1
+                }
             }
         })
-        const css = createCSS(manifest)
+        const css = MasterCSS.create({ manifest: manifest })
 
         emittedGlobalsCSS.add('m:card')
         expect(emittedGlobalsCSS.text).toBe('@layer utilities{.m\\:card{margin:var(--spacing-card)}}')
@@ -377,16 +380,18 @@ describe.concurrent('MasterCSSManifest execution', () => {
                 modes: []
             }
         }
-        const acceptingCSS = createCSS(manifest, undefined, {
+        const acceptingCSS = MasterCSS.create({
+            manifest,
             nativeDeclarationMatcher: ({ property }) => property === 'test-property'
         })
-        const rejectingCSS = createCSS(manifest, undefined, {
+        const rejectingCSS = MasterCSS.create({
+            manifest,
             nativeDeclarationMatcher: () => false
         })
 
-        expect(acceptingCSS.create('test-property:value')?.text)
+        expect(acceptingCSS.createRule('test-property:value')?.text)
             .toBe('.test-property\\:value{test-property:value}')
-        expect(rejectingCSS.create('test-property:value')).toBeUndefined()
+        expect(rejectingCSS.createRule('test-property:value')).toBeUndefined()
     })
 
     it('ignores manifest-carried registry fields', () => {
@@ -407,15 +412,15 @@ describe.concurrent('MasterCSSManifest execution', () => {
                 variableAliasRefs: ['~spacing']
             }]
         } as unknown as MasterCSSManifest
-        const css = createCSS(manifest)
+        const css = MasterCSS.create({ manifest: manifest })
 
-        expect(css.create('fakeAlias:#fff')).toBeUndefined()
-        expect(css.create('fake-property:card')).toBeUndefined()
-        expect(css.create('m:card')?.text).toBe('.m\\:card{margin:var(--spacing-card)}')
+        expect(css.createRule('fakeAlias:#fff')).toBeUndefined()
+        expect(css.createRule('fake-property:card')).toBeUndefined()
+        expect(css.createRule('m:card')?.text).toBe('.m\\:card{margin:var(--spacing-card)}')
     })
 
     it('rejects v2 manifests instead of compatibility-loading them', () => {
-        expect(() => createCSS({ version: 2 } as unknown as MasterCSSManifest))
+        expect(() => MasterCSS.create({ manifest: { version: 2 } as unknown as MasterCSSManifest }))
             .toThrow('Unsupported MasterCSSManifest version. Expected version 1.')
     })
 
@@ -453,7 +458,7 @@ describe.concurrent('MasterCSSManifest execution', () => {
             }
         }
 
-        expect(createCSS(manifest).create('m:1rem@card')?.text)
+        expect(MasterCSS.create({ manifest: manifest }).createRule('m:1rem@card')?.text)
             .toBe('@media (width>=48rem){.m\\:1rem\\@card{margin:1rem}}')
     })
 
@@ -536,7 +541,7 @@ describe.concurrent('MasterCSSManifest execution', () => {
                 key: [2]
             }
         }
-        const css = createCSS(manifest)
+        const css = MasterCSS.create({ manifest: manifest })
         css.add('block:hover@card', 'fg:brand', 'animation:fade|1s', 'multi')
 
         const hydrationManifest = createHydrationManifest(css)
