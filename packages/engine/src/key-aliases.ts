@@ -2,6 +2,7 @@ export type MasterCSSBuiltinKeyAliases = Readonly<Record<string, string>>
 
 const keyAliases: MasterCSSBuiltinKeyAliases = Object.freeze({
     'fg': 'color',
+    'bg': 'background',
     'gap-x': 'column-gap',
     'gap-y': 'row-gap',
     'grid-col': 'grid-column',

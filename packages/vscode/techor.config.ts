@@ -17,6 +17,21 @@ const bundledJSONModules = {
     }
 } as const
 
+const externalVSCodeHostModule = {
+    name: 'external-vscode-host-module',
+    resolveId: {
+        order: 'pre',
+        handler(source: string) {
+            if (source === 'vscode') {
+                return {
+                    id: source,
+                    external: true
+                }
+            }
+        }
+    }
+} as const
+
 const externalNativePackages = {
     name: 'external-native-packages',
     resolveId: {
@@ -52,6 +67,7 @@ const config: Config = {
         input: {
             plugins: [
                 bundledJSONModules,
+                externalVSCodeHostModule,
                 externalNativePackages
             ]
         },
