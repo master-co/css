@@ -4,7 +4,10 @@ import { join } from 'node:path'
 import { afterEach, describe, expect, it } from 'vitest'
 import { createComposedAdapter, renderNextBuildOutputs } from '../src/adapter'
 import type { NextAdapter } from 'next'
-import { MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID } from 'shared/master-css-hydration-manifest'
+import {
+    MASTER_CSS_HYDRATION_MANIFEST_ATTR,
+    MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID
+} from 'shared/master-css-hydration-manifest'
 
 type BuildCompleteContext = Parameters<NonNullable<NextAdapter['onBuildComplete']>>[0]
 
@@ -79,7 +82,11 @@ function countHydrationManifestScripts(html: string) {
 }
 
 function readMasterStyle(html: string) {
-    return html.match(/<style id="master-css">([\s\S]*?)<\/style>/)?.[1] ?? ''
+    return html.match(/<style\b(?=[^>]*\bid=(["'])master-css\1)[^>]*>([\s\S]*?)<\/style>/)?.[2] ?? ''
+}
+
+function readHydrationManifestSource(html: string) {
+    return html.match(new RegExp(`${MASTER_CSS_HYDRATION_MANIFEST_ATTR}="([^"]+)"`))?.[1]
 }
 
 afterEach(() => {
@@ -106,14 +113,21 @@ describe('renderNextBuildOutputs', () => {
         expect(outputs).toHaveLength(1)
         expect(outputs[0].classes).toEqual(['font:40px', 'fg:red'])
         expect(outputs[0].rendered).toBe(true)
-        expect(html).toContain('<style id="master-css">')
-        expect(html).toContain(`id="${MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID}"`)
-        expect(html).toContain('"className":"font:40px"')
-        expect(html).toContain('"className":"fg:red"')
-        expect(countHydrationManifestScripts(html)).toBe(1)
+        expect(outputs[0].hydrationManifestBytes).toBeGreaterThan(0)
+        expect(outputs[0].hydrationManifestFile).toMatch(/\.next\/static\/master-css\/hydration\/master-css-hydration\.[0-9a-f]{8}\.json$/)
+        expect(html).toContain('<style id="master-css"')
+        expect(readHydrationManifestSource(html)).toMatch(/^\/_next\/static\/master-css\/hydration\/master-css-hydration\.[0-9a-f]{8}\.json$/)
+        expect(html).not.toContain(`id="${MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID}"`)
+        expect(countHydrationManifestScripts(html)).toBe(0)
         expect(html).toContain('.font\\:40px')
         expect(html).toContain('.fg\\:red')
         expect(existsSync(join(distDir, 'master-css-build-report.json'))).toBe(true)
+        const hydrationManifestFile = outputs[0].hydrationManifestFile
+        if (!hydrationManifestFile) throw new Error('Expected a Next hydration manifest file.')
+        expect(existsSync(hydrationManifestFile)).toBe(true)
+        const hydrationManifest = JSON.parse(readFileSync(hydrationManifestFile, 'utf-8'))
+        expect(hydrationManifest.rules.map((rule: { className: string }) => rule.className)).toEqual(expect.arrayContaining(['font:40px', 'fg:red']))
+        expect(hydrationManifest.rules).toHaveLength(2)
     })
 
     it('does not write empty Master CSS for non-Master classes', async () => {
@@ -129,6 +143,8 @@ describe('renderNextBuildOutputs', () => {
 
         expect(outputs[0].classes).toEqual(['next-error-h1'])
         expect(outputs[0].cssBytes).toBe(0)
+        expect(outputs[0].hydrationManifestBytes).toBe(0)
+        expect(outputs[0].hydrationManifestFile).toBeUndefined()
         expect(outputs[0].rendered).toBe(false)
         expect(html).not.toContain(MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID)
         expect(html).toBe(sourceHTML)
@@ -209,9 +225,8 @@ describe('renderNextBuildOutputs', () => {
         expect(outputs[0].rendered).toBe(true)
         expect(masterStyle).toContain('.fg\\:red')
         expect(masterStyle).not.toContain('.root-native')
-        expect(html).not.toContain('data-master-css')
-        expect(html).toContain(`id="${MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID}"`)
-        expect(html).toContain('"className":"fg:red"')
+        expect(html).toContain(`${MASTER_CSS_HYDRATION_MANIFEST_ATTR}="/_next/static/master-css/hydration/`)
+        expect(html).not.toContain(`id="${MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID}"`)
         expect(html).not.toContain('"className":"root-native"')
     })
 })

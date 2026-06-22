@@ -1,10 +1,27 @@
-import { test, expect } from '@playwright/test'
+import { test, expect, type Page } from '@playwright/test'
 import { createCSS, createHydrationManifest } from '@master/css'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
 import type { MasterCSSManifest } from 'shared/master-css-manifest'
-import init from './init'
+import {
+    MASTER_CSS_HYDRATION_MANIFEST_ATTR,
+    serializeMasterCSSHydrationManifest
+} from 'shared/master-css-hydration-manifest'
+import { MASTER_CSS_RUNTIME_STYLE_ID } from 'shared/master-css-runtime-style'
+import init, { getRuntimeLoaderURL } from './init'
 
 const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
+
+async function startCSSRuntimeAsync(
+    page: Page,
+    hydrationManifest?: ReturnType<typeof createHydrationManifest>,
+    loaderURL?: string
+) {
+    await page.evaluate(async ({ loaderURL, hydrationManifest }) => {
+        const { startCSSRuntimeAsync } = await import(loaderURL)
+        await startCSSRuntimeAsync({ hydrationManifest })
+    }, { loaderURL: loaderURL || await getRuntimeLoaderURL(), hydrationManifest })
+    await page.waitForFunction(() => !!globalThis.masterCSSRuntime)
+}
 
 test('disconnect clears counts and observe rescans the current DOM', async ({ page }) => {
     await init(page)
@@ -174,6 +191,118 @@ test('progressive hydration uses hydration manifest and removes hydrated classes
         counts: {},
         utilityRules: []
     })
+})
+
+test('progressive hydration fetches an external style hydration manifest', async ({ page }) => {
+    const css = createCSS(defaultManifest)
+    css.add('fg:red-60')
+    const hydrationManifest = createHydrationManifest(css)
+    const loaderURL = await getRuntimeLoaderURL()
+    const source = new URL('/_master-css/hydration/external.json', loaderURL).href
+
+    await page.route(source, route => route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: serializeMasterCSSHydrationManifest(hydrationManifest)
+    }))
+    await page.evaluate(({ attr, runtimeStyleId, source, text }) => {
+        document.body.innerHTML = '<p class="fg:red-60"></p>'
+        const style = document.createElement('style')
+        style.id = runtimeStyleId
+        style.textContent = text
+        style.setAttribute(attr, source)
+        document.head.append(style)
+    }, {
+        attr: MASTER_CSS_HYDRATION_MANIFEST_ATTR,
+        runtimeStyleId: MASTER_CSS_RUNTIME_STYLE_ID,
+        source,
+        text: css.text
+    })
+    await startCSSRuntimeAsync(page, undefined, loaderURL)
+
+    const result = await page.evaluate(() => ({
+        progressive: globalThis.masterCSSRuntime.progressive,
+        utilityRules: globalThis.masterCSSRuntime.utilitiesLayer.rules.map(({ name }) => name),
+        text: globalThis.masterCSSRuntime.text
+    }))
+
+    expect(result.progressive).toBe(true)
+    expect(result.utilityRules).toEqual(['fg:red-60'])
+    expect(result.text).toContain('.fg\\:red-60')
+})
+
+test('progressive hydration falls back when an external style hydration manifest fetch fails', async ({ page }) => {
+    const loaderURL = await getRuntimeLoaderURL()
+    const source = new URL('/_master-css/hydration/missing.json', loaderURL).href
+
+    await page.route(source, route => route.fulfill({
+        status: 404,
+        body: 'not found'
+    }))
+    await page.evaluate(({ attr, runtimeStyleId, source }) => {
+        document.body.innerHTML = '<p class="block"></p>'
+        const style = document.createElement('style')
+        style.id = runtimeStyleId
+        style.textContent = '@layer utilities{.block{display:block}}'
+        style.setAttribute(attr, source)
+        document.head.append(style)
+    }, {
+        attr: MASTER_CSS_HYDRATION_MANIFEST_ATTR,
+        runtimeStyleId: MASTER_CSS_RUNTIME_STYLE_ID,
+        source
+    })
+    await startCSSRuntimeAsync(page, undefined, loaderURL)
+
+    const result = await page.evaluate(() => ({
+        progressive: globalThis.masterCSSRuntime.progressive,
+        utilityRules: globalThis.masterCSSRuntime.utilitiesLayer.rules.map(({ name }) => name),
+        text: globalThis.masterCSSRuntime.text
+    }))
+
+    expect(result.progressive).toBe(false)
+    expect(result.utilityRules).toEqual(['block'])
+    expect(result.text).toBe('@layer utilities{.block{display:block}}')
+})
+
+test('explicit hydration manifest wins over external DOM discovery', async ({ page }) => {
+    const css = createCSS(defaultManifest)
+    css.add('fg:red-60')
+    const hydrationManifest = createHydrationManifest(css)
+    let requests = 0
+    const loaderURL = await getRuntimeLoaderURL()
+    const source = new URL('/_master-css/hydration/ignored.json', loaderURL).href
+
+    await page.route(source, route => {
+        requests++
+        return route.fulfill({
+            status: 200,
+            contentType: 'application/json',
+            body: '{"version":1,"rules":[]}'
+        })
+    })
+    await page.evaluate(({ attr, runtimeStyleId, source, text }) => {
+        document.body.innerHTML = '<p class="fg:red-60"></p>'
+        const style = document.createElement('style')
+        style.id = runtimeStyleId
+        style.textContent = text
+        style.setAttribute(attr, source)
+        document.head.append(style)
+    }, {
+        attr: MASTER_CSS_HYDRATION_MANIFEST_ATTR,
+        runtimeStyleId: MASTER_CSS_RUNTIME_STYLE_ID,
+        source,
+        text: css.text
+    })
+    await startCSSRuntimeAsync(page, hydrationManifest, loaderURL)
+
+    const result = await page.evaluate(() => ({
+        progressive: globalThis.masterCSSRuntime.progressive,
+        utilityRules: globalThis.masterCSSRuntime.utilitiesLayer.rules.map(({ name }) => name),
+    }))
+
+    expect(requests).toBe(0)
+    expect(result.progressive).toBe(true)
+    expect(result.utilityRules).toEqual(['fg:red-60'])
 })
 
 test('progressive hydration matches bucketed theme variables', async ({ page }) => {

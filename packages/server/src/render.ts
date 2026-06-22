@@ -1,6 +1,7 @@
 import { MasterCSS, createHydrationManifest } from '@master/css'
 import type { MasterCSSManifest } from 'shared/master-css-manifest'
 import {
+    MASTER_CSS_HYDRATION_MANIFEST_ATTR,
     MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID,
     serializeMasterCSSHydrationManifest,
     type MasterCSSHydrationManifest
@@ -12,7 +13,16 @@ import createServerCSS from './create-server-css'
 import { Element, Text, ChildNode } from 'domhandler'
 import serialize from 'dom-serializer'
 
-export type RenderHydrationManifestOption = 'return' | 'inject' | false
+export type RenderExternalHydrationManifestSource =
+    | string
+    | ((json: string, hydrationManifest: MasterCSSHydrationManifest) => string)
+
+export interface RenderExternalHydrationManifestOption {
+    type: 'external'
+    src: RenderExternalHydrationManifestSource
+}
+
+export type RenderHydrationManifestOption = 'return' | 'inject' | false | RenderExternalHydrationManifestOption
 
 export interface RenderOptions {
     hydrationManifest?: RenderHydrationManifestOption
@@ -52,6 +62,22 @@ function setHydrationManifestScript(element: Element, hydrationManifest: MasterC
     element.childNodes = [new Text(serializeMasterCSSHydrationManifest(hydrationManifest))]
 }
 
+function isExternalHydrationManifestOption(
+    hydrationManifest: RenderHydrationManifestOption | undefined
+): hydrationManifest is RenderExternalHydrationManifestOption {
+    return typeof hydrationManifest === 'object' && hydrationManifest?.type === 'external'
+}
+
+function getExternalHydrationManifestSource(
+    option: RenderExternalHydrationManifestOption,
+    hydrationManifest: MasterCSSHydrationManifest
+) {
+    const json = serializeMasterCSSHydrationManifest(hydrationManifest)
+    return typeof option.src === 'function'
+        ? option.src(json, hydrationManifest)
+        : option.src
+}
+
 function findHydrationManifestScripts(
     childNodes: ChildNode[],
     matches: { element: Element, childNodes: ChildNode[], index: number }[] = []
@@ -82,6 +108,32 @@ function removeNode(nodes: ChildNode[], target: ChildNode) {
     return false
 }
 
+function removeHydrationManifestScripts(nodes: ChildNode[]) {
+    const existingScripts = findHydrationManifestScripts(nodes)
+    for (let index = existingScripts.length - 1; index >= 0; index--) {
+        const script = existingScripts[index]
+        script.childNodes.splice(script.index, 1)
+    }
+    return existingScripts.length > 0
+}
+
+function removeExternalHydrationManifest(styleElement: Element | null) {
+    if (styleElement) {
+        delete styleElement.attribs[MASTER_CSS_HYDRATION_MANIFEST_ATTR]
+    }
+}
+
+function injectExternalHydrationManifest(
+    nodes: ChildNode[],
+    styleElement: Element | null,
+    src: string
+) {
+    removeHydrationManifestScripts(nodes)
+    if (styleElement) {
+        styleElement.attribs[MASTER_CSS_HYDRATION_MANIFEST_ATTR] = src
+    }
+}
+
 function injectHydrationManifest(
     nodes: ChildNode[],
     htmlElement: Element | null,
@@ -89,6 +141,7 @@ function injectHydrationManifest(
     styleElement: Element | null,
     hydrationManifest: MasterCSSHydrationManifest
 ) {
+    removeExternalHydrationManifest(styleElement)
     const existingScripts = findHydrationManifestScripts(nodes)
     if (existingScripts.length) {
         const [firstScript, ...duplicateScripts] = existingScripts
@@ -129,8 +182,20 @@ export default function render(
     const context = parseHTML(html)
     const { classes, nodes, htmlElement } = context
     let { headElement, styleElement } = context
+    const externalHydrationManifestOption = isExternalHydrationManifestOption(options.hydrationManifest)
+        ? options.hydrationManifest
+        : undefined
+    if (!classes.length && externalHydrationManifestOption) {
+        removeHydrationManifestScripts(nodes)
+        removeExternalHydrationManifest(styleElement)
+    }
     if (!classes.length) return {
-        html,
+        html: externalHydrationManifestOption
+            ? serialize(nodes, {
+                decodeEntities: false,
+                encodeEntities: false
+            })
+            : html,
         classes,
         nodes,
         htmlElement,
@@ -143,9 +208,12 @@ export default function render(
         ? undefined
         : createHydrationManifest(css)
     if (!css.text) {
-        if (options.hydrationManifest === 'inject' && styleElement) {
+        if ((options.hydrationManifest === 'inject' || externalHydrationManifestOption) && styleElement) {
             removeNode(nodes, styleElement)
             styleElement = null
+        }
+        if (externalHydrationManifestOption) {
+            removeHydrationManifestScripts(nodes)
         }
         return {
             html: serialize(nodes, {
@@ -178,6 +246,14 @@ export default function render(
     }
     if (options.hydrationManifest === 'inject' && hydrationManifest?.rules.length) {
         injectHydrationManifest(nodes, htmlElement, headElement, styleElement, hydrationManifest)
+    } else if (externalHydrationManifestOption && hydrationManifest?.rules.length) {
+        injectExternalHydrationManifest(
+            nodes,
+            styleElement,
+            getExternalHydrationManifestSource(externalHydrationManifestOption, hydrationManifest)
+        )
+    } else {
+        removeExternalHydrationManifest(styleElement)
     }
     return {
         html: serialize(nodes, {

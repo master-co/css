@@ -2,6 +2,9 @@ import type { MasterCSSManifestUtilityLayerName } from './master-css-manifest.js
 import type { UtilityType } from './utility-type.js'
 
 export const MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID = 'master-css-hydration-manifest'
+export const MASTER_CSS_HYDRATION_MANIFEST_ATTR = 'data-master-css-hydration-manifest'
+export const MASTER_CSS_HYDRATION_MANIFEST_ASSET_BASE = '/_master-css/hydration/'
+export const MASTER_CSS_HYDRATION_MANIFEST_FILE_BASENAME = 'master-css-hydration'
 
 export interface MasterCSSRulePriorityIR {
     features?: [string, number, number][]

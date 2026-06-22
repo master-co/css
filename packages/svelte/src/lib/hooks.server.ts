@@ -7,7 +7,13 @@ export {
     collectMasterCSSClasses,
     createMasterCSSChunkRenderer,
     createMasterCSSHandle,
+    createMasterCSSStaticHydrationManifestWriter,
     injectMasterStyle
+} from './server.js'
+export type {
+    MasterCSSStaticHydrationManifestWriterOptions,
+    MasterCSSSvelteHandleOptions,
+    MasterCSSSvelteHydrationManifestOption
 } from './server.js'
 
 const handle = createMasterCSSHandle({ manifest })

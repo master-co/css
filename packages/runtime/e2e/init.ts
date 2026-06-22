@@ -243,7 +243,7 @@ async function createHydrationManifestForPage(page: Page, manifest: MasterCSSMan
     return createHydrationManifest(css)
 }
 
-async function getRuntimeLoaderURL() {
+export async function getRuntimeLoaderURL() {
     runtimeServerPromise ??= (async () => {
         const server = await createServer({
             appType: 'custom',

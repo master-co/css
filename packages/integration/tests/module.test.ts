@@ -37,9 +37,11 @@ describe('@master/css-integration module helpers', () => {
     })
 
     it('builds shared runtime injection source', () => {
+        expect(CSS_RUNTIME_INJECTION).toContain(`import * as masterCSSRuntime from '@master/css-runtime';`)
         expect(CSS_RUNTIME_INJECTION).toContain(`import masterCSSManifest from '${VIRTUAL_MANIFEST_ID}';`)
         expect(CSS_RUNTIME_INJECTION).toContain(`import masterCSSEmittedGlobals from '${VIRTUAL_EMITTED_GLOBALS_ID}';`)
-        expect(CSS_RUNTIME_INJECTION).toContain('initCSSRuntime({ manifest: masterCSSManifest, emittedGlobals: masterCSSEmittedGlobals });')
+        expect(CSS_RUNTIME_INJECTION).toContain('masterCSSRuntime.initCSSRuntimeAsync || masterCSSRuntime.initCSSRuntime')
+        expect(CSS_RUNTIME_INJECTION).toContain('void initCSSRuntime({ manifest: masterCSSManifest, emittedGlobals: masterCSSEmittedGlobals });')
     })
 
     it('builds a universal manifest facade that resolves Next production and dev assets', () => {

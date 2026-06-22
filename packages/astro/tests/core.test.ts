@@ -1,7 +1,15 @@
 import { describe, expect, it, vi } from 'vitest'
+import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
 import masterCSS, { ASTRO_MIDDLEWARE_ENTRYPOINT } from '../src/core'
 import defaultOptions from '../src/options'
 import { CSS_RUNTIME_INJECTION } from '@master/css-integration/runtime'
+import { externalizeAstroHydrationManifests } from '../src/external-hydration-manifest'
+import {
+    MASTER_CSS_HYDRATION_MANIFEST_ATTR,
+    MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID
+} from 'shared/master-css-hydration-manifest'
 
 async function setup(options?: Parameters<typeof masterCSS>[0]) {
     const integration = masterCSS(options)
@@ -67,5 +75,30 @@ describe('@master/css.astro integration', () => {
 
         expect(result.addMiddleware).toHaveBeenCalled()
         expect(result.injectScript).not.toHaveBeenCalled()
+    })
+
+    it('externalizes static build hydration manifests', async () => {
+        const dir = mkdtempSync(join(tmpdir(), 'master-css-astro-'))
+        const htmlFile = join(dir, 'index.html')
+        try {
+            writeFileSync(htmlFile, [
+                '<html><head>',
+                '<style id="master-css">@layer utilities{.block{display:block}}</style>',
+                `<script type="application/json" id="${MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID}">{"version":1,"rules":[{"className":"block"}]}</script>`,
+                '</head><body><div class="block"></div></body></html>'
+            ].join(''))
+
+            const files = await externalizeAstroHydrationManifests(dir)
+            const html = readFileSync(htmlFile, 'utf-8')
+
+            expect(files).toHaveLength(1)
+            expect(files[0]).toMatch(/_master-css\/hydration\/master-css-hydration\.[0-9a-f]{8}\.json$/)
+            expect(existsSync(files[0])).toBe(true)
+            expect(readFileSync(files[0], 'utf-8')).toContain('"className":"block"')
+            expect(html).toContain(`${MASTER_CSS_HYDRATION_MANIFEST_ATTR}="/_master-css/hydration/`)
+            expect(html).not.toContain(`id="${MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID}"`)
+        } finally {
+            rmSync(dir, { recursive: true, force: true })
+        }
     })
 })

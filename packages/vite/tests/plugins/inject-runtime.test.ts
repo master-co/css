@@ -16,9 +16,11 @@ describe('InjectRuntimePlugin', () => {
             injectTo: 'head-prepend'
         })
         expect(result.tags[0].children).toContain('/*__MASTER_CSS_RUNTIME_INJECTED__*/')
+        expect(result.tags[0].children).toContain(`import * as masterCSSRuntime from '@master/css-runtime';`)
         expect(result.tags[0].children).toContain(`import masterCSSManifest from 'virtual:master-css-manifest';`)
         expect(result.tags[0].children).toContain(`import masterCSSEmittedGlobals from 'virtual:master-css-emitted-globals';`)
-        expect(result.tags[0].children).toContain('initCSSRuntime({ manifest: masterCSSManifest, emittedGlobals: masterCSSEmittedGlobals });')
+        expect(result.tags[0].children).toContain('masterCSSRuntime.initCSSRuntimeAsync || masterCSSRuntime.initCSSRuntime')
+        expect(result.tags[0].children).toContain('void initCSSRuntime({ manifest: masterCSSManifest, emittedGlobals: masterCSSEmittedGlobals });')
     })
 
     it('does not inject twice when the marker is already present', () => {

@@ -1,5 +1,5 @@
 <template>
-  <div class="box">
+  <div class="box block">
     basic
   </div>
 </template>

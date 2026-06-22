@@ -10,6 +10,7 @@ import {
     EMPTY_EMITTED_GLOBALS_MODULE,
     VIRTUAL_EMITTED_GLOBALS_FILE
 } from './emitted-globals-module'
+import { MASTER_CSS_HYDRATION_MANIFEST_FILE_BASENAME } from 'shared/master-css-hydration-manifest'
 
 export const RESOLVED_MASTER_CSS_MANIFEST_QUERY_PREFIX = '\0master-css-manifest:'
 export const VIRTUAL_MODULE_DIR = 'node_modules/.master-css'
@@ -17,6 +18,10 @@ export const VIRTUAL_MODULE_DIR = 'node_modules/.master-css'
 export function toHashedManifestAssetFileName(json: string, basename = 'master-css-manifest') {
     const hash = createHash('sha256').update(json).digest('hex').slice(0, 8)
     return `${basename}.${hash}.json`
+}
+
+export function toHashedHydrationManifestAssetFileName(json: string) {
+    return toHashedManifestAssetFileName(json, MASTER_CSS_HYDRATION_MANIFEST_FILE_BASENAME)
 }
 
 export function toResolvedMasterCSSManifestId(file: string) {

@@ -1,7 +1,10 @@
 import { it, expect } from 'vitest'
 import { render } from '../src'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
-import { MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID } from 'shared/master-css-hydration-manifest'
+import {
+    MASTER_CSS_HYDRATION_MANIFEST_ATTR,
+    MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID
+} from 'shared/master-css-hydration-manifest'
 import type { MasterCSSManifest } from 'shared/master-css-manifest'
 
 const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
@@ -59,6 +62,71 @@ it('injects the hydration manifest into an existing head when requested', () => 
     expect(result.html).toContain(`<script type="application/json" id="${MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID}">`)
     expect(result.html).toContain('"className":"text-center"')
     expect(countHydrationManifestScripts(result.html)).toBe(1)
+})
+
+it('attaches an external hydration manifest source to style#master-css when requested', () => {
+    const result = render(
+        '<html><head></head><body><div class="text-center"></div></body></html>',
+        defaultManifest,
+        {
+            hydrationManifest: {
+                type: 'external',
+                src: '/_master-css/hydration/master-css-hydration.12345678.json'
+            }
+        }
+    )
+
+    expect(result.html).toContain(`<style id="master-css" ${MASTER_CSS_HYDRATION_MANIFEST_ATTR}="/_master-css/hydration/master-css-hydration.12345678.json"`)
+    expect(result.html).not.toContain(`id="${MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID}"`)
+    expect(result.hydrationManifest?.rules).toEqual([
+        expect.objectContaining({
+            className: 'text-center'
+        })
+    ])
+})
+
+it('removes stale inline hydration scripts in external hydration manifest mode', () => {
+    const result = render(
+        [
+            '<html><head>',
+            `<style id="master-css"></style>`,
+            `<script type="application/json" id="${MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID}">{"version":1,"rules":[]}</script>`,
+            '</head><body><div class="text-center"></div></body></html>'
+        ].join(''),
+        defaultManifest,
+        {
+            hydrationManifest: {
+                type: 'external',
+                src: '/_master-css/hydration/master-css-hydration.12345678.json'
+            }
+        }
+    )
+
+    expect(result.html).toContain(`${MASTER_CSS_HYDRATION_MANIFEST_ATTR}="/_master-css/hydration/master-css-hydration.12345678.json"`)
+    expect(result.html).not.toContain(`id="${MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID}"`)
+    expect(countHydrationManifestScripts(result.html)).toBe(0)
+})
+
+it('emits no external hydration manifest pointer for empty generated CSS', () => {
+    const result = render(
+        [
+            '<html><head>',
+            `<style id="master-css" ${MASTER_CSS_HYDRATION_MANIFEST_ATTR}="/stale.json"></style>`,
+            `<script type="application/json" id="${MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID}">{"version":1,"rules":[]}</script>`,
+            '</head><body><div class="unknown-native"></div></body></html>'
+        ].join(''),
+        defaultManifest,
+        {
+            hydrationManifest: {
+                type: 'external',
+                src: '/_master-css/hydration/master-css-hydration.12345678.json'
+            }
+        }
+    )
+
+    expect(result.html).not.toContain(MASTER_CSS_HYDRATION_MANIFEST_ATTR)
+    expect(result.html).not.toContain(MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID)
+    expect(result.hydrationManifest?.rules).toEqual([])
 })
 
 it('creates a head for the injected hydration manifest when missing', () => {

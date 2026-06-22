@@ -3,6 +3,7 @@ import vitePlugin from '@master/css.vite'
 import { CSS_RUNTIME_INJECTION } from '@master/css-integration/runtime'
 import defaultOptions, { type IntegrationOptions } from './options'
 import { astroAdapter } from './adapter'
+import { externalizeAstroHydrationManifests } from './external-hydration-manifest'
 
 export const ASTRO_MIDDLEWARE_ENTRYPOINT = '@master/css.astro/middleware'
 
@@ -62,6 +63,14 @@ export default function masterCSS(options?: IntegrationOptions): AstroIntegratio
                         break
                 }
                 updateConfig({ vite: { plugins: [vitePlugin(getViteOptions(options)) as never] } })
+            },
+            'astro:build:done': async ({ dir }) => {
+                switch (options.mode) {
+                    case 'pre-render':
+                    case 'progressive':
+                        await externalizeAstroHydrationManifests(dir)
+                        break
+                }
             }
         },
     }

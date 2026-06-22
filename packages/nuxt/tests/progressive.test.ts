@@ -2,7 +2,10 @@ import { it, expect } from 'vitest'
 import { fileURLToPath } from 'node:url'
 import { $fetch } from '@nuxt/test-utils'
 import { dirname, resolve } from 'node:path'
-import { MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID } from 'shared/master-css-hydration-manifest'
+import {
+    MASTER_CSS_HYDRATION_MANIFEST_ATTR,
+    MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID
+} from 'shared/master-css-hydration-manifest'
 import { setupNuxtTest } from './setup-test'
 
 const __filename = fileURLToPath(import.meta.url)
@@ -18,7 +21,8 @@ it('matches generated CSS snapshot', async () => {
     if (!match) throw new Error('Expected a stylesheet link in Nuxt progressive HTML.')
     const href = match[1]
     if (!href) throw new Error('Expected Nuxt progressive stylesheet link to include an href.')
-    expect(html).not.toContain(`id="${MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID}"`)
+    expect(html).toContain(`id="${MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID}"`)
+    expect(html).not.toContain(MASTER_CSS_HYDRATION_MANIFEST_ATTR)
     const css = await $fetch(href) as string
     expect(css).toContain('.box')
     expect(css).toMatch(/\.box\s*{[^}]*display:\s*flex/)
