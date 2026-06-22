@@ -1,6 +1,6 @@
-/* eslint-disable */
 const targetOrigin = parent.document.location.origin
 let htmlContent = ''
+const rootObservers = []
 
 const compiledStyle = document.createElement('style')
 compiledStyle.type = 'text/css'
@@ -13,15 +13,20 @@ const syncRoot = () => {
 }
 
 const observeRoot = () => {
-    const parentRoot = parent.document.documentElement
-    if (!parentRoot?.nodeType) return
+    try {
+        const parentRoot = parent.document.documentElement
+        if (!parentRoot?.nodeType) return
 
-    const ParentMutationObserver = parent.MutationObserver || MutationObserver
-    const observer = new ParentMutationObserver(syncRoot)
-    observer.observe(parentRoot, {
-        attributes: true,
-        attributeFilter: ['class', 'style']
-    })
+        const ParentMutationObserver = parentRoot.ownerDocument?.defaultView?.MutationObserver || parent.MutationObserver || MutationObserver
+        const observer = new ParentMutationObserver(syncRoot)
+        observer.observe(parentRoot, {
+            attributes: true,
+            attributeFilter: ['class', 'style']
+        })
+        rootObservers.push(observer)
+    } catch {
+        // Theme syncing is best-effort; preview updates should still boot.
+    }
 }
 
 const renderHTML = (content) => {
