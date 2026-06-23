@@ -161,16 +161,25 @@ function createLanguageServer(options = {}) {
     }
 }
 
-async function withStagedExtension(callback) {
+async function withStagedExtension(callback, options = {}) {
     const packageTargets = await import('../scripts/package-targets.mjs')
     const stagingRoot = await mkdtemp(join(tmpdir(), 'master-css-vscode-test-'))
     try {
+        const target = options.target ?? packageTargets.getCurrentTarget()
         return await callback(
-            await packageTargets.createStagedExtension(packageTargets.getCurrentTarget(), { stagingRoot }),
+            await packageTargets.createStagedExtension(target, { stagingRoot }),
             packageTargets
         )
     } finally {
         await rm(stagingRoot, { recursive: true, force: true })
+    }
+}
+
+function expectStagedRuntimePackages({ stagingDir, files }, runtimePackages) {
+    for (const runtimePackage of runtimePackages) {
+        const packagePath = join(stagingDir, 'dist', 'node_modules', ...runtimePackage.split('/'))
+        expect(statSync(packagePath).isDirectory(), runtimePackage).toBe(true)
+        expect(files).toContain(`dist/node_modules/${runtimePackage}/**`)
     }
 }
 
@@ -199,14 +208,14 @@ test('server bundle keeps expected native runtime imports external', () => {
 
 test('staged extension includes runtime packages for the current target', async () => {
     await withStagedExtension(({ stagingDir, files }, { getCurrentTarget, getRuntimePackagesForTarget }) => {
-        const runtimePackages = getRuntimePackagesForTarget(getCurrentTarget())
-
-        for (const runtimePackage of runtimePackages) {
-            const packagePath = join(stagingDir, 'dist', 'node_modules', ...runtimePackage.split('/'))
-            expect(statSync(packagePath).isDirectory(), runtimePackage).toBe(true)
-            expect(files).toContain(`dist/node_modules/${runtimePackage}/**`)
-        }
+        expectStagedRuntimePackages({ stagingDir, files }, getRuntimePackagesForTarget(getCurrentTarget()))
     })
+})
+
+test('staged extension includes runtime packages for win32-x64', async () => {
+    await withStagedExtension(({ stagingDir, files }, { getRuntimePackagesForTarget }) => {
+        expectStagedRuntimePackages({ stagingDir, files }, getRuntimePackagesForTarget('win32-x64'))
+    }, { target: 'win32-x64' })
 })
 
 test('manifest contributes TextMate grammar, semantic token scopes, and CSS diagnostic defaults', () => {

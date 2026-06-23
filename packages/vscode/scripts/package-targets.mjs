@@ -83,6 +83,21 @@ const BASE_RUNTIME_PACKAGES = [
     '@master/css-preset',
     'mdn-data'
 ]
+const RUNTIME_PACKAGE_OWNERS = [
+    {
+        owner: '@master/css-language',
+        matches: (packageName) => packageName === 'mdn-data' || packageName === '@master/css-preset'
+    },
+    {
+        owner: 'oxc-parser',
+        matches: (packageName) => packageName === '@oxc-project/types' || packageName.startsWith('@oxc-parser/')
+    },
+    {
+        owner: 'lightningcss',
+        matches: (packageName) => packageName === 'detect-libc' || packageName.startsWith('lightningcss-')
+    }
+]
+const packageResolverCache = new Map()
 
 function toPosixPath(path) {
     return path.replaceAll('\\', '/')
@@ -109,7 +124,7 @@ function findPackageDir(entry) {
     throw new Error(`Unable to find package.json for ${entry}`)
 }
 
-function resolvePackageDir(packageName, resolver) {
+function resolvePackageDir(packageName, resolver, resolverName = 'master-css-vscode') {
     try {
         return dirname(resolver.resolve(`${packageName}/package.json`))
     } catch (manifestError) {
@@ -117,7 +132,7 @@ function resolvePackageDir(packageName, resolver) {
             return findPackageDir(resolver.resolve(packageName))
         } catch (entryError) {
             throw new Error(
-                `Unable to resolve ${packageName}. Run pnpm install after updating supportedArchitectures.\n`
+                `Unable to resolve ${packageName} from ${resolverName}. Run pnpm install after updating supportedArchitectures.\n`
                 + `package.json resolution: ${manifestError.message}\n`
                 + `entry resolution: ${entryError.message}`
             )
@@ -125,19 +140,26 @@ function resolvePackageDir(packageName, resolver) {
     }
 }
 
-function createPackageResolver(packageName, resolver = packageRequire) {
-    return createRequire(join(resolvePackageDir(packageName, resolver), 'package.json'))
+function createPackageResolver(packageName, resolver = packageRequire, resolverName = 'master-css-vscode') {
+    const cacheKey = `${resolverName}\0${packageName}`
+    if (!packageResolverCache.has(cacheKey)) {
+        packageResolverCache.set(
+            cacheKey,
+            createRequire(join(resolvePackageDir(packageName, resolver, resolverName), 'package.json'))
+        )
+    }
+    return packageResolverCache.get(cacheKey)
+}
+
+function getRuntimePackageOwner(packageName) {
+    return RUNTIME_PACKAGE_OWNERS.find(({ matches }) => matches(packageName))?.owner
 }
 
 function getRuntimePackageResolver(packageName) {
     if (packageName === 'lightningcss') return packageRequire
     if (packageName === 'oxc-parser') return packageRequire
-    if (packageName === 'detect-libc' || packageName.startsWith('lightningcss-')) {
-        return createPackageResolver('lightningcss')
-    }
-    if (packageName === '@oxc-project/types' || packageName.startsWith('@oxc-parser/')) {
-        return createPackageResolver('oxc-parser')
-    }
+    const owner = getRuntimePackageOwner(packageName)
+    if (owner) return createPackageResolver(owner)
     return packageRequire
 }
 
@@ -199,7 +221,7 @@ async function copyPath(source, destination) {
 
 async function copyRuntimePackage(stagingDir, packageName) {
     const resolver = getRuntimePackageResolver(packageName)
-    const sourceDir = resolvePackageDir(packageName, resolver)
+    const sourceDir = resolvePackageDir(packageName, resolver, getRuntimePackageOwner(packageName) ?? 'master-css-vscode')
     const destinationDir = join(stagingDir, 'dist', 'node_modules', toPackagePath(packageName))
     await copyPath(sourceDir, destinationDir)
     return toNodeModulesPath(packageName)
