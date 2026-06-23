@@ -2,49 +2,70 @@
 
 ## Responsibility
 
-`@master/css.next` integrates Master CSS with Next.js. It supports build-time HTML pre-rendering through the Next.js Adapter API and static rendering through a generated CSS file plus Turbopack scanner loader.
+`@master/css.next` integrates Master CSS with Next.js.
 
-## Scope
+## Owns
 
-- This package supports `pre-render` and `static` modes.
-- It does not transform dynamic SSR responses.
-- It does not implement App Router request-time class collection.
-- Static mode must not rely on `nextConfig.webpack` or `@master/css.webpack`.
-- Static mode uses `CSSScanner` as the source of static rendering behavior; dev updates are driven by Turbopack rerunning the static loaders for graph modules and registered loader dependencies.
-- `CSSRuntimeRegistry` is imported from `@master/css.react`; do not alias it to generated App Router files.
-- Turbopack JS manifest-import rules must stay guarded by `content: /master-css-manifest/` so unrelated client modules keep their native Next client boundary handling.
+- `pre-render` mode through the Next.js Adapter API.
+- `static` mode through generated CSS and Turbopack scanner loaders.
+- Next-specific manifest import/loaders and static CSS loaders.
+- Build output rendering helpers.
 
-## Public APIs
+## Does Not Own
 
-- default `withMasterCSS()`
-- named `withMasterCSS`
-- `createAdapter`
-- `renderNextBuildOutputs`
+- Dynamic SSR response transformation.
+- App Router request-time class collection.
+- Static extraction semantics; `CSSScanner` remains the source of static behavior.
+- Webpack-specific extraction internals.
+- React runtime registry implementation.
 
-## Core Files
+## Public Surface
+
+- Default `withMasterCSS()`.
+- Named `withMasterCSS`.
+- `createAdapter`.
+- `renderNextBuildOutputs`.
+- `./adapter`.
+
+## Key Files
 
 - `src/index.ts`
 - `src/adapter.ts`
 - `src/static.ts`
 - `src/static-css-loader.ts`
 - `src/static-loader.ts`
+- `src/css-manifest-loader.ts`
+- `src/css-manifest-import-loader.ts`
 - `src/options.ts`
 
-## Risks
+## Risk Areas
 
 - Next Adapter API type changes across Next major versions.
 - Accidentally processing non-HTML assets.
-- Duplicate writes when the same fallback HTML is listed through multiple output groups.
-- Hiding request-time limitations behind a build-time adapter.
-- Turbopack loader behavior is an incremental scanner; source-glob extraction remains the correctness baseline.
-- Over-broad Turbopack JS loader rules can break Next/Turbopack client component classification for linked workspace packages.
+- Duplicate writes for fallback HTML listed through multiple output groups.
+- Turbopack loader behavior as an incremental scanner.
+- Over-broad Turbopack JS loader rules breaking Next client component classification for linked workspace packages.
+- `CSSRuntimeRegistry` must come from `@master/css.react` and not generated App Router files.
+
+## Safe Changes
+
+- Focused adapter, static loader, or manifest loader fixes with tests.
+- Turbopack loader fixes that preserve guarded `content: /master-css-manifest/` rules.
+- Playground validation for integration behavior.
+
+## Dangerous Changes
+
+- Hiding request-time limitations behind build-time behavior.
+- Making static mode rely on `nextConfig.webpack` or `@master/css.webpack`.
+- Broadening JS loader rules beyond manifest-import handling.
 
 ## Validation
 
 ```sh
 pnpm --filter @master/css.next test
+pnpm --filter @master/css.next lint
 pnpm --filter @master/css.next type-check
 pnpm --filter @master/css.next build
 ```
 
-For integration changes, build `packages/next/playground` when practical.
+Run `pnpm --filter @master/css.next e2e` and build `packages/next/playground` when integration behavior changes.

@@ -2,33 +2,66 @@
 
 ## Responsibility
 
-`@master/css-engine` executes `MasterCSSManifest` values. It owns class matching, value parsing, selector and at-rule parsing/generation, variable and animation insertion, cascade layers, rule priority sorting, hydration manifest generation, CSS text emission, and the built-in key alias / variable namespace / native value namespace registry.
+`@master/css-engine` executes `MasterCSSManifest` values. It owns class matching, value parsing, selector and at-rule parsing/generation, variable and animation insertion, cascade layers, rule priority sorting, hydration manifest generation, CSS text emission, and built-in registries.
 
-## Inputs And Outputs
+## Owns
 
-- Input: `MasterCSSManifest`, class names, optional emittedGlobals variable/keyframe counts.
-- Output: `MasterCSS` instances, generated rules, layer state, hydration manifests, and CSS text.
-- Built-ins: `builtinKeyAliases`, `builtinNamespaces`, `builtinNamespaceSet`, `builtinNamespaceRef`, and `builtinNativeValueNamespaces`.
+- `MasterCSS` execution and rule generation.
+- Layer state and generated CSS text.
+- Hydration manifest generation.
+- Built-in key aliases, variable namespaces, namespace refs, and native value namespaces.
+- Compiler-only parse/generate/inspection helpers under `./compiler`.
 
-## Public APIs
+## Does Not Own
+
+- CSS-first authoring or manifest lowering; use `@master/css-compiler`.
+- Default preset source or generated default manifest; use `@master/css-preset`.
+- Project discovery, CSS import graphs, runtime DOM behavior, server rendering, scanning, language tooling, ESLint, examples, or site docs.
+- Manifest-provided key aliases or native namespace registries; those are engine built-ins.
+
+## Public Surface
 
 - `MasterCSS`
 - `MasterCSS.create({ manifest, emittedGlobals })`
 - `compareRulePriority`
 - `createHydrationManifest`
-- Built-in registry exports for compiler, language tooling, docs, and tests
-- `./compiler` helpers for compiler-only parse/generate/inspection use
-- runtime-safe `MasterCSSManifest` and generated-rule types
+- Built-in registry exports
+- Runtime-safe manifest and generated-rule types
+- `./compiler` helpers
 
-## Boundaries
+## Key Files
 
-- Do not depend on compiler, integration contracts, runtime, server, scanner, language service, ESLint, examples, or site.
-- Do not resolve project CSS entries, CSS import graphs, package stylesheet imports, or CSS manifest directives here.
-- Keep `MasterCSSManifest` execution behavior here; keep CSS-first authoring and manifest lowering in `@master/css-compiler`.
-- Keep default preset source and generated default manifest ownership in `@master/css-preset`.
-- Do not accept key aliases, builtin namespaces, or native value namespaces through `MasterCSSManifest`; these are engine built-ins only.
+- `src/core.ts`
+- `src/utility.ts`
+- `src/compile-manifest.ts`
+- `src/layer.ts`
+- `src/utility-layer.ts`
+- `src/theme-layer.ts`
+- `src/hydration-manifest.ts`
+- `src/key-aliases.ts`
+- `src/native-value-namespaces.ts`
+- `src/namespaces.ts`
 
-## Required Tests
+## Risk Areas
+
+- Class matching and compiled utility order.
+- Value, selector, and at-rule parsing/generation.
+- Priority sorting and cascade layer insertion.
+- Variable, animation, emittedGlobals, and hydration behavior.
+- Any CSS output or cascade order difference.
+
+## Safe Changes
+
+- Focused parser, matching, priority, layer, variable, animation, or CSS output fixes with engine tests.
+- Built-in registry fixes that preserve manifest payload expectations.
+
+## Dangerous Changes
+
+- Moving compiler, runtime, scanner, language, or integration behavior into engine.
+- Serializing compiled indexes or caches into `MasterCSSManifest` without browser payload measurement.
+- Changing CSS output without explicit tests and explanation.
+
+## Validation
 
 ```sh
 pnpm --filter @master/css-engine test
@@ -37,12 +70,6 @@ pnpm --filter @master/css-engine type-check
 pnpm --filter @master/css-engine build
 ```
 
-Add focused tests for parser, selector, at-rule, value, priority, layer, variable, animation, and CSS output changes.
-
 ## Benchmark Guidance
 
-Run `pnpm --filter @master/css-engine bench` when changing class matching, rule creation, generation, value parsing, selector parsing/generation, at-rule parsing/generation, priority sorting, layer insertion, manifest loading, manifest compilation, or cache/index behavior. Correctness validation must run before benchmark reporting.
-
-For benchmark-relevant engine changes, report whether the benchmark ran, whether `dist/core.mjs` raw/gzip/brotli size is affected, and any memory, cold-start, or runtime CPU tradeoff. Also state whether CSS output or cascade order changed.
-
-Do not put compiled matcher indexes, caches, or runtime-only acceleration data into `MasterCSSManifest` unless the browser payload impact is explicitly justified and measured.
+Run `pnpm --filter @master/css-engine bench` when changing class matching, rule creation, generation, parsing, priority sorting, layer insertion, manifest loading, manifest compilation, or cache/index behavior. Correctness validation must run first. Report benchmark status, `dist/core.mjs` raw/gzip/brotli size risk, memory/cold-start/runtime CPU tradeoffs, and whether CSS output or cascade order changed.

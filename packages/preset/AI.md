@@ -2,36 +2,66 @@
 
 ## Responsibility
 
-`@master/css-preset` owns the default Master CSS stylesheet source and generated `default-manifest.json`. The public `@master/css` package re-exports preset CSS entries, but not the preset manifest data. The key alias, builtin namespace, and native value namespace registry is owned by `@master/css-engine`, not by the preset manifest.
+`@master/css-preset` owns the default Master CSS stylesheet source and generated default manifest.
 
-## Inputs And Outputs
+## Owns
 
-- Input: preset CSS source files, source utility definitions, default settings, engine built-in registry data, and generated-manifest script inputs.
-- Output: `default-manifest.json`, `index.css`, `base.css`, `theme.css`, `variants.css`, and `utilities.css`.
+- Default token, utility, managed keyframe, variant, and layer-statement source.
+- `src/default-manifest.json`.
+- Public preset CSS entries: `index.css`, `base.css`, `theme.css`, `variants.css`, and `utilities.css`.
 
-## Boundaries
+## Does Not Own
 
-- Keep default token, utility, managed keyframe, variant, and layer-statement source here.
-- Do not add `keyAliases`, `nativeValueNamespaces`, or namespace registry data to `default-manifest.json`.
-- Do not put engine execution behavior, project manifest discovery, or build integration behavior here.
-- Regenerate `src/default-manifest.json` only when the source preset intentionally changes.
-- The layer statement lives in `src/base.css` and must stay `@layer theme, base, defaults, components, utilities;`.
+- Engine built-in key aliases, namespaces, native value namespaces, or namespace refs.
+- Engine execution behavior.
+- Project manifest discovery.
+- Build integration behavior.
+- Public facade behavior in `@master/css`.
 
-## Utility Definition Ladder
+## Public Surface
 
-- Default token namespaces must be declared in `@master/css-engine` built-ins. Do not introduce `variableAliasRefs` that point to namespaces outside that registry.
-- Prefer engine `builtinNativeValueNamespaces` for full native or vendor property classes; use engine `builtinKeyAliases` when the public key differs from the emitted property.
-- Prefer engine `builtinKeyAliases` for short aliases that map directly to native logical, physical, full, or vendor CSS properties.
-- Use `@utilities` for semantic subproperty aliases that direct property fallback cannot represent.
-- Keep `src/utilities.ts` only for multi-declaration behavior, special transforms, raw ambiguous matching, or compiler-inexpressible behavior.
-- When adding a utility, document why engine `builtinKeyAliases` plus `builtinNativeValueNamespaces` cannot satisfy it.
+- Root preset package export.
+- `./default-manifest.json`.
+- CSS subpaths listed above.
 
-## Required Tests
+## Key Files
+
+- `src/theme.css`
+- `src/base.css`
+- `src/utilities.css`
+- `src/variants.css`
+- `src/index.css`
+- `src/default-manifest.json`
+- `src/index.ts`
+
+## Risk Areas
+
+- Default manifest output changes.
+- Layer statement must stay `@layer theme, base, defaults, components, utilities;`.
+- Token namespace changes must align with engine built-ins.
+- Utility additions can accidentally belong in engine aliases or CSS directives instead.
+
+## Safe Changes
+
+- Focused preset source fixes with tests.
+- Intentional generated manifest updates.
+- Token or utility additions that follow the utility definition ladder.
+
+## Dangerous Changes
+
+- Adding `keyAliases`, `nativeValueNamespaces`, or namespace registry data to `default-manifest.json`.
+- Regenerating `src/default-manifest.json` without an intentional source change.
+- Putting engine execution behavior or build integration behavior here.
+
+## Validation
 
 ```sh
 pnpm --filter @master/css-preset test
+pnpm --filter @master/css-preset lint
 pnpm --filter @master/css-preset type-check
 pnpm --filter @master/css-preset build
 ```
 
-Generated default-manifest changes must be intentional and covered by preset or compiler tests.
+## Utility Definition Notes
+
+Default token namespaces must be declared in engine built-ins. Prefer engine `builtinNativeValueNamespaces` for full native or vendor property classes, engine `builtinKeyAliases` for short direct aliases, `@utilities` for semantic subproperty aliases, and `src/utilities.ts` only for multi-declaration behavior, special transforms, raw ambiguous matching, or compiler-inexpressible behavior. Document why simpler mechanisms are insufficient when adding a utility.

@@ -2,41 +2,61 @@
 
 ## Responsibility
 
-`@master/css-source` owns source-level class candidate extraction and source adapters shared by static rendering and framework integrations. It extracts unvalidated class-like candidates from raw source text and provides source-format-aware helpers for HTML and JavaScript/TypeScript syntax.
+`@master/css-source` owns source-level class candidate extraction and source adapters shared by static rendering and framework integrations.
 
-## Inputs And Outputs
+## Owns
 
-- Input: source file id and source text.
-- Output: unvalidated Master CSS class candidates from source adapters.
+- Unvalidated class-like candidate extraction from raw source text.
+- Source-format-aware HTML helpers.
+- OXC-based JavaScript/TypeScript helpers.
+- Source adapter matching and registration primitives.
 
-## Public APIs
+## Does Not Own
+
+- Class validation, scanner state, or CSS generation.
+- Engine, compiler, runtime, server, language service, build integration, framework integration, examples, or site behavior.
+- Low-level lexical ranges, directive/import scanners, class tokenization, or CSS unit constants; use `@master/css-lexer`.
+
+## Public Surface
 
 - `SourceAdapter`
 - `SourceAdapterInput`
 - `matchesSourceAdapter`
 - `addClassString`
 - `extractClassCandidates`
-- `HTML_SOURCE_EXT`
-- `extractHTMLClasses`
-- `htmlAdapter`
-- `OXC_SOURCE_EXT`
-- `extractOxcClasses`
-- `oxcAdapter`
+- HTML and OXC source constants and helpers
 - `./adapters`
 
-## Boundaries
+## Key Files
 
-- Do not depend on engine, compiler, scanner, validator, runtime, server, language service, build integrations, framework integrations, examples, or site.
-- Keep this package limited to source text extraction. Static scanner state, class validation, and CSS generation belong in `@master/css-scanner`; file-change observation and invalidation belong in CLI/build/framework integrations.
-- Low-level lexical ranges, class tokenization, directive/import scanners, and CSS unit constants remain in `@master/css-lexer`.
+- `src/extract-class-candidates.ts`
+- `src/adapters/*`
+- `src/index.ts`
 
-## Required Tests
+## Risk Areas
+
+- False positives increasing generated CSS.
+- False negatives omitting required CSS.
+- Adapter matching by file id/source extension.
+- OXC parsing differences across JS/TS syntax.
+
+## Safe Changes
+
+- Focused adapter matching fixes.
+- HTML or OXC extraction fixes with fixtures.
+- Candidate extraction tests that do not validate or generate CSS.
+
+## Dangerous Changes
+
+- Depending on scanner, engine, compiler, validator, runtime, server, language service, integrations, examples, or site.
+- Moving validation or generated CSS insertion here.
+- Assuming dynamic string concatenation is statically knowable.
+
+## Validation
 
 ```sh
 pnpm --filter @master/css-source test
+pnpm --filter @master/css-source lint
 pnpm --filter @master/css-source type-check
 pnpm --filter @master/css-source build
-pnpm --filter @master/css-source lint
 ```
-
-Add focused tests for adapter matching, HTML extraction, OXC extraction, and class candidate extraction.

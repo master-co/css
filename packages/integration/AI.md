@@ -2,27 +2,63 @@
 
 ## Responsibility
 
-`@master/css-integration` owns the adapter-neutral contracts shared by official build and framework integrations: virtual module ids, `?master-css-manifest` request helpers, generated manifest/emittedGlobals module source helpers, runtime injection source, ambient client module declarations, and explicit Node/build helper subpaths.
+`@master/css-integration` owns adapter-neutral contracts shared by official build and framework integrations.
 
-## Boundaries
+## Owns
 
-- Keep this package dependency-light and adapter-neutral.
-- This package may depend on `@master/css-engine` for public manifest/emittedGlobals types and `shared` for manifest JSON helpers.
-- Do not depend on Vite, Next, Webpack, Nuxt, Astro, Scanner, Runtime, Server, Configer, or Compiler.
-- Do not implement project manifest discovery, CSS import graph resolution, extraction, runtime hydration, or framework lifecycle behavior here.
-- Browser-safe helpers must not import `node:*`, use `Buffer`, or read `process`.
-- Node filesystem, path, hash, and resolved-id helpers belong in `./node`; build plugins belong in explicit build-only subpaths such as `./manifest-loader-plugin`.
+- Virtual module ids and `?master-css-manifest` request helpers.
+- Generated manifest and emittedGlobals module source helpers.
+- Runtime injection source and ambient client module declarations.
+- Explicit Node/build helper subpaths.
 
-## Public APIs
+## Does Not Own
 
-- Browser-safe: `.`, `./client`, `./module`, `./manifest-module`, `./manifest-facade`, `./style-module`, `./emitted-globals-module`, `./runtime`
-- Node/build-only: `./node`, `./manifest-loader-plugin`
+- Vite, Next, Webpack, Nuxt, Astro, or framework lifecycle behavior.
+- Project manifest discovery or CSS import graph resolution.
+- Extraction, runtime hydration, server rendering, scanner state, or compiler lowering.
+- Browser-safe helpers that import `node:*`, use `Buffer`, or read `process`.
+
+## Public Surface
+
+- Browser-safe: `.`, `./client`, `./module`, `./manifest-module`, `./manifest-facade`, `./style-module`, `./emitted-globals-module`, `./runtime`.
+- Node/build-only: `./node`, `./manifest-loader-plugin`.
+
+## Key Files
+
+- `src/index.ts`
+- `src/module.ts`
+- `src/manifest-module.ts`
+- `src/manifest-facade.ts`
+- `src/style-module.ts`
+- `src/emitted-globals-module.ts`
+- `src/runtime.ts`
+- `src/node.ts`
+- `src/manifest-loader-plugin.ts`
+
+## Risk Areas
+
+- Browser-safe versus Node-only subpath boundaries.
+- Virtual id and generated import specifier compatibility.
+- Keeping the package dependency-light and adapter-neutral.
+- Shared protocol changes affecting multiple integrations.
+
+## Safe Changes
+
+- Protocol helper fixes with downstream-aware tests.
+- Node-only path/hash/resolved-id fixes isolated under `./node`.
+- Build helper fixes under explicit build-only subpaths.
+
+## Dangerous Changes
+
+- Depending on scanner, compiler, runtime, server, build adapters, or frameworks.
+- Moving project discovery or import graph behavior here.
+- Adding Node globals to browser-safe subpaths.
 
 ## Validation
 
 ```sh
 pnpm --filter @master/css-integration test
+pnpm --filter @master/css-integration lint
 pnpm --filter @master/css-integration type-check
 pnpm --filter @master/css-integration build
-pnpm --filter @master/css-integration lint
 ```

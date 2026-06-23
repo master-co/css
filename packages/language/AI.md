@@ -2,40 +2,67 @@
 
 ## Responsibility
 
-`@master/css-language` owns editor-neutral Master CSS language primitives: class-position scanning, semantic token classification, semantic token encoding, browser editor helpers, Shiki/TextMate integration, and language-specific Master CSS helpers.
+`@master/css-language` owns editor-neutral Master CSS language primitives.
 
-## Inputs And Outputs
+## Owns
 
-- Input: source text, `TextDocument`, language ids, class-position settings, optional `MasterCSSManifest`, optional `MasterCSS` instance.
-- Output: class positions, highlight token items, semantic token items, encoded semantic tokens, Shiki decorations, TextMate grammar registration data.
-
-## Public APIs
-
-- Semantic token legend, token types, token modifiers, and scope map.
 - Class-position scanning and `ClassPositionCache`.
-- Class-list and CSS directive tokenizers.
-- Browser semantic token helpers.
-- Shiki helpers and `syntaxes/master-css.tmLanguage.json`.
-- Master CSS language helpers such as `createLanguageCSS`, `defaultManifest`, and `matchesLanguageServiceNativeDeclaration`.
+- Semantic token classification and encoding.
+- CSS directive and class-list tokenizers.
+- Browser editor helpers.
+- Shiki/TextMate integration and the canonical TextMate grammar asset.
+- Language helpers such as `createLanguageCSS`, `defaultManifest`, and native declaration matching helpers.
 
-## Rules
+## Does Not Own
 
-- Do not import `@master/css-language-service`, `@master/css-language-server`, VS Code extension code, runtime, server, scanner, or ESLint packages.
-- Keep APIs editor-neutral. Stateful service behavior belongs in `@master/css-language-service`; LSP capabilities and workspace lifecycle belong in `@master/css-language-server`.
-- CSS directive lexical highlighting remains TextMate-first. Semantic tokens classify only Master CSS class-list spans and directive class-list spans.
-- Do not change engine syntax or CSS output here.
+- Stateful language service behavior.
+- LSP capabilities or workspace lifecycle.
+- VS Code extension code.
+- Runtime, server, scanner, or ESLint behavior.
+- Engine syntax or CSS output semantics.
 
-## Required Tests
+## Public Surface
+
+- Root language primitives.
+- `./browser`
+- `./shiki`
+- `./syntaxes/master-css.tmLanguage.json`
+
+## Key Files
+
+- `src/index.ts`
+- `src/browser.ts`
+- `src/shiki.ts`
+- `src/render-semantic-tokens.ts`
+- `src/master-css.ts`
+- `syntaxes/master-css.tmLanguage.json`
+
+## Risk Areas
+
+- Class-position scanning across JSX, Vue, Svelte, Astro, strings, and function calls.
+- Semantic token classification for Master CSS class-list spans and directive class-list spans.
+- TextMate grammar compatibility for CSS-family documents.
+- Browser and Shiki helper compatibility.
+
+## Safe Changes
+
+- Focused scanner or tokenizer fixes with fixtures.
+- TextMate grammar fixes that preserve language-service ownership boundaries.
+- Browser/Shiki helper fixes with tests.
+
+## Dangerous Changes
+
+- Importing language-service, language-server, VS Code, runtime, server, scanner, or ESLint packages.
+- Routing CSS directive highlighting through the compiler pipeline.
+- Changing engine syntax or generated CSS behavior here.
+
+## Validation
 
 ```sh
 pnpm --filter @master/css-language test
+pnpm --filter @master/css-language lint
 pnpm --filter @master/css-language type-check
 pnpm --filter @master/css-language build
 ```
 
-Use or extend:
-
-- `tests/browser.test.ts`
-- `tests/shiki.test.ts`
-- class-position scanner tests
-- semantic token tests
+Use or extend browser, Shiki, class-position scanner, and semantic token tests.

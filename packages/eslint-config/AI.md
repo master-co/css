@@ -2,26 +2,47 @@
 
 ## Responsibility
 
-This package re-exports the recommended config from `@master/eslint-plugin-css`.
+`@master/eslint-config-css` re-exports the recommended config from `@master/eslint-plugin-css`.
 
-## Main File
+## Owns
+
+- Config wrapper package entrypoint.
+- Compatibility with the plugin recommended config shape.
+
+## Does Not Own
+
+- ESLint rules.
+- Plugin settings schema.
+- Class parsing, validation, ordering, or autofix behavior.
+
+## Public Surface
+
+- Root config export.
+
+## Key Files
 
 - `src/index.ts`
 
-## Risks
+## Risk Areas
 
 - Public config compatibility.
-- Dependency on plugin config shape.
+- Drift from `@master/eslint-plugin-css` recommended config.
 
-## Rules
+## Safe Changes
 
-- Do not diverge from plugin recommended config without a clear reason.
+- Wrapper export fixes that stay aligned with the plugin.
+- Tests for config re-export behavior.
+
+## Dangerous Changes
+
+- Diverging from the plugin recommended config without a clear reason.
+- Adding rule behavior here instead of in `@master/eslint-plugin-css`.
 
 ## Validation
 
 ```sh
 pnpm --filter @master/eslint-config-css test
-pnpm --filter @master/eslint-config-css build
+pnpm --filter @master/eslint-config-css lint
 pnpm --filter @master/eslint-config-css type-check
+pnpm --filter @master/eslint-config-css build
 ```
-

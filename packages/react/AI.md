@@ -2,37 +2,60 @@
 
 ## Responsibility
 
-This package provides a React runtime registry, provider, and hook around `@master/css-runtime`.
+`@master/css.react` provides React runtime registry, provider, and hooks around `@master/css-runtime`.
 
-## Main Files
+## Owns
+
+- React provider and registry components.
+- React hooks for runtime access.
+- React browser lifecycle integration.
+
+## Does Not Own
+
+- Runtime core behavior.
+- Integration virtual manifest generation.
+- CSS generation, scanning, or server rendering.
+
+## Public Surface
+
+- Root React entrypoint.
+- `./runtime-provider` for manual manifest provider usage.
+- `CSSRuntimeRegistry` as the quick-start integration entry.
+
+## Key Files
 
 - `src/CSSRuntimeProvider.tsx`
 - `src/CSSRuntimeRegistry.tsx`
-- `src/index.tsx`
 - `src/runtime-provider.tsx`
-- `src/types/provider-props.ts`
+- `src/index.tsx`
 - `src/uses/*`
 - `e2e/*`
 
-## Risks
+## Risk Areas
 
 - Client-only runtime initialization.
-- `CSSRuntimeRegistry` depends on `virtual:master-css-manifest` and must only be exposed through integration-aware entry points.
-- `src/runtime-provider.tsx` must remain free of `virtual:master-css-manifest` imports for users that provide a manifest manually.
 - Cleanup on unmount.
 - Refreshing runtime when manifest changes.
 - Destroy/recreate behavior when root changes.
+- `CSSRuntimeRegistry` depends on `virtual:master-css-manifest` and must only be exposed through integration-aware entry points.
+- `src/runtime-provider.tsx` must remain free of `virtual:master-css-manifest` imports for manual manifest users.
 
-## Rules
+## Safe Changes
 
-- Do not change runtime core behavior here.
-- Keep provider behavior small and predictable.
-- Use e2e tests for browser lifecycle changes.
+- Focused provider or hook fixes with e2e coverage.
+- Lifecycle fixes that do not alter runtime core behavior.
+
+## Dangerous Changes
+
+- Moving runtime core behavior into React.
+- Importing virtual manifest modules from manual provider entrypoints.
+- Changing lifecycle behavior without browser coverage.
 
 ## Validation
 
 ```sh
 pnpm --filter @master/css.react e2e
-pnpm --filter @master/css.react build
+pnpm --filter @master/css.react lint
 pnpm --filter @master/css.react type-check
+pnpm --filter @master/css.react build
 ```

@@ -2,70 +2,65 @@
 
 ## Responsibility
 
-`@master/css-scanner` statically scans source files, validates possible Master CSS classes, inserts valid rules through the manifest-driven engine layers, and maintains scanner state for build integrations. Source-format-aware class adapters and raw class candidate extraction belong to `@master/css-source`. File watching, CSS file output, and build-tool lifecycle orchestration belong to CLI/framework/build integrations. Stylesheet entry handling, CSS-first stylesheet compilation, native CSS pruning, extraction directives, generated CSS composition, and emittedGlobals manifest output belong to `@master/css-stylesheet`.
+`@master/css-scanner` statically scans source files, validates possible Master CSS classes, inserts valid rules through engine layers, and maintains scanner state for build integrations.
 
-## Inputs And Outputs
+## Owns
 
-- Input: scanner options, source text, source adapters, and resolved Master CSS manifest.
-- Output: `css.text`, valid/invalid/latent class caches, native class usage state, and scanner state events.
+- `CSSScanner` state and options.
+- Valid, invalid, and latent class caches.
+- Generated CSS scanner state events.
+- Integration-facing scanner reset and insertion behavior.
 
-## Public APIs
+## Does Not Own
+
+- Source-format-aware adapters or raw candidate extraction; use `@master/css-source`.
+- File watching, output writing, and build lifecycle orchestration.
+- Stylesheet entry handling, CSS-first stylesheet compilation, native CSS pruning, extraction directives, generated CSS composition, or emittedGlobals manifest output; use `@master/css-stylesheet`.
+- Project manifest discovery, workspace detection, or manifest loading; callers should use `@master/css-project`.
+
+## Public Surface
 
 - `CSSScanner`
 - `scannerOptions`
 - `ScannerOptions`
+- `./options`
 
-## Core Files
+## Key Files
 
 - `src/core.ts`
 - `src/options/index.ts`
-
-## Allowed Changes
-
-- Focused scanning heuristic fixes.
-- Manifest reset fixes.
-- Option handling fixes with tests.
-- Focused scanner state behavior used by Vite, Webpack, Next, stylesheet, and CLI integrations.
-
-## Forbidden Without Explicit Request
-
-- Assuming dynamically concatenated classes are statically knowable.
-- Broadly loosening extraction filters without false-positive tests.
-- Changing default exclude patterns casually.
+- `src/index.ts`
 
 ## Risk Areas
 
 - Built-in source adapter behavior from `@master/css-source`.
 - `extractClassCandidates()` false positives and false negatives in `@master/css-source`.
 - `invalidClasses` and `validClasses` cache behavior.
-- Reset loops triggered by integration-managed dependencies.
+- Reset loops from integration-managed dependencies.
 - Module exclude matching.
 - Vite/Webpack/Next virtual-module consumers.
-- Stylesheet native CSS merging, pruning/source directives, and generated CSS ordering belong in `@master/css-stylesheet`.
-- Do not add project manifest discovery, workspace detection, or manifest loading here; use `@master/css-project` in the calling CLI/build/tooling package.
-- Do not add independent CSS import graph parsing here; use compiler results and keep extraction-specific decisions local.
 
-## Required Tests
+## Safe Changes
+
+- Focused scanning heuristic fixes.
+- Manifest reset and option handling fixes with tests.
+- Scanner state behavior fixes used by Vite, Webpack, Next, stylesheet, and CLI integrations.
+
+## Dangerous Changes
+
+- Assuming dynamically concatenated classes are statically knowable.
+- Broadly loosening extraction filters without false-positive tests.
+- Scanning CSS files by default.
+- Treating every quoted string as a valid class without validator filtering.
+- Adding independent CSS import graph parsing here.
+
+## Validation
 
 ```sh
 pnpm --filter @master/css-scanner test
+pnpm --filter @master/css-scanner lint
 pnpm --filter @master/css-scanner type-check
 pnpm --filter @master/css-scanner build
 ```
 
-Use or extend:
-
-- `tests/extract.test.ts`
-- `tests/syntax.test.ts`
-- `tests/source`
-
-## Good Changes
-
-- Add a failing source snippet and assert extracted latent classes.
-- Fix an exclusion case without reducing valid class detection.
-
-## Dangerous Changes
-
-- Scanning CSS files by default.
-- Treating every quoted string as a valid class without validator filtering.
-- Removing validation before insertion.
+Use or extend `tests/extract.test.ts`, `tests/syntax.test.ts`, and `tests/source`.

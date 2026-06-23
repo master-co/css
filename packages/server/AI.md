@@ -2,37 +2,35 @@
 
 ## Responsibility
 
-`@master/css-server` renders required CSS from HTML. It parses HTML, extracts class names, creates a `MasterCSS` instance, adds classes, and injects or updates `<style id="master-css">`.
+`@master/css-server` renders required CSS from HTML.
 
-## Inputs And Outputs
+## Owns
 
-- Input: HTML string and optional MasterCSSManifest.
-- Output: rendered HTML, optional `MasterCSS` instance, extracted classes, parsed DOM nodes, style/head/html elements.
+- HTML parsing for server rendering.
+- Class extraction from HTML strings.
+- Server-side `MasterCSS` rendering orchestration.
+- Injection or update of `<style id="master-css">`.
 
-## Public APIs
+## Does Not Own
+
+- Engine CSS generation semantics.
+- Runtime hydration or DOM observation.
+- Static source scanning.
+- Framework adapter lifecycle.
+
+## Public Surface
 
 - `render`
 - `renderCSS`
 - `parseHTML`
 
-## Core Files
+## Key Files
 
 - `src/render.ts`
 - `src/render-css.ts`
 - `src/parse-html.ts`
 - `src/decode-html.ts`
-
-## Allowed Changes
-
-- HTML parsing fixes.
-- Entity decoding fixes.
-- Style injection behavior fixes with fixtures.
-
-## Forbidden Without Explicit Request
-
-- Changing engine CSS generation behavior here.
-- Changing `style#master-css` identity casually.
-- Replacing parser/serializer without a clear reason.
+- `src/create-server-css.ts`
 
 ## Risk Areas
 
@@ -40,25 +38,29 @@
 - Existing `style#master-css` replacement.
 - Injecting into documents without `<head>` or `<html>`.
 - Serialization preserving source expectations.
+- Fixture `generated.css` output changes.
 
-## Required Tests
+## Safe Changes
+
+- HTML parsing fixes.
+- Entity decoding fixes.
+- Style injection fixes with fixtures.
+
+## Dangerous Changes
+
+- Changing engine CSS generation behavior here.
+- Emitting unsorted CSS.
+- Injecting duplicate `style#master-css` tags.
+- Replacing parser/serializer without a clear reason.
+- Treating `className` as HTML class without a requirement.
+
+## Validation
 
 ```sh
 pnpm --filter @master/css-server test
+pnpm --filter @master/css-server lint
 pnpm --filter @master/css-server type-check
 pnpm --filter @master/css-server build
 ```
 
-Fixture output lives in `tests/fixtures/**/generated.css`. Update only for intentional output changes.
-End-to-end rendering cases live in package-local `e2e/**`.
-
-## Good Changes
-
-- Add a fixture for an encoded class attribute.
-- Fix missing `<head>` insertion and test the HTML structure.
-
-## Dangerous Changes
-
-- Emitting unsorted CSS.
-- Injecting duplicate `style#master-css` tags.
-- Treating `className` as HTML class in server HTML parsing without a clear requirement.
+Fixture output lives in `tests/fixtures/**/generated.css`; update it only for intentional output changes.

@@ -2,30 +2,31 @@
 
 ## Responsibility
 
-`@master/css.vite` integrates Master CSS into Vite. It supports `runtime`, `static`, `pre-render`, and `progressive` modes, handles manifest and emittedGlobals virtual modules, maintains the shared scanner usage graph, manages stylesheet entries, injects runtime/virtual CSS imports, avoids FOUC, and pre-renders HTML.
+`@master/css.vite` integrates Master CSS into Vite. It supports `runtime`, `static`, `pre-render`, and `progressive` modes.
 
-## Inputs And Outputs
+## Owns
 
-- Input: Vite config, plugin options, entry modules, HTML, source transforms.
-- Output: Vite plugins, transformed entry code, virtual modules, generated CSS assets, emittedGlobals variable/keyframe counts, pre-rendered HTML.
+- Vite plugin orchestration and mode behavior.
+- Manifest and emittedGlobals virtual modules.
+- Shared scanner usage graph lifecycle.
+- Stylesheet entries, runtime/virtual CSS imports, FOUC handling, HMR, and HTML pre-rendering.
 
-## Architecture Notes
+## Does Not Own
 
-- The scanner lifecycle is shared by every mode. It collects class usage and supports native CSS pruning regardless of whether the mode emits generated utilities.
-- `static` mode differs by setting `includeGeneratedCSS`; the style entry pipeline is not static-only.
-- `virtual:master-css-manifest` is the project-level MasterCSSManifest API. It must not manage stylesheet output or scanner usage.
-- `virtual:master-css-emitted-globals` is derived from the managed CSS entry output and must only describe generated variables/keyframes that runtime should treat as already present.
-- The style entry plugin only handles CSS files that Vite imports. Do not scan the workspace here to discover unimported CSS manifest entries.
-- Each file in `src/plugins` should define one plugin and default-export it.
+- Core runtime behavior.
+- Engine CSS output semantics.
+- Project manifest discovery internals.
+- Scanner extraction semantics.
+- Framework-specific lifecycle behavior outside Vite adapters.
 
-## Public APIs
+## Public Surface
 
-- default `masterCSS()` plugin factory
+- Default `masterCSS()` plugin factory.
 - `options`
 - `PluginOptions`
 - `PluginContext`
 
-## Core Files
+## Key Files
 
 - `src/core.ts`
 - `src/options.ts`
@@ -33,43 +34,37 @@
 - `src/modes/*`
 - `src/plugins/*`
 
-## Allowed Changes
+## Risk Areas
+
+- Scanner lifecycle is shared by every mode.
+- `static` mode differs by `includeGeneratedCSS`; the style entry pipeline is not static-only.
+- `virtual:master-css-manifest` is the project-level manifest API and must not manage stylesheet output or scanner usage.
+- `virtual:master-css-emitted-globals` must only describe generated variables/keyframes that runtime should treat as already present.
+- HTML entry detection in FOUC transforms.
+- Runtime HTML injection and Vite HTML transform interactions.
+- Static rendering HMR and SvelteKit pre-render skip behavior.
+
+## Safe Changes
 
 - Focused plugin-mode fixes.
 - Entry injection fixes with snapshots.
 - Virtual CSS/HMR fixes with tests.
 
-## Forbidden Without Explicit Request
+## Dangerous Changes
 
 - Changing default mode or option defaults casually.
 - Changing injected runtime code without runtime/integration validation.
 - Changing virtual module IDs casually.
+- Scanning the workspace here to discover unimported CSS manifest entries.
+- Adding multi-plugin files under `src/plugins`; each should define one plugin and default-export it.
 
-## Risk Areas
-
-- HTML entry detection in FOUC transforms.
-- Runtime HTML injection and its interaction with Vite HTML transforms.
-- Static rendering HMR.
-- `transformIndexHtml` pre-render behavior.
-- SvelteKit pre-render skip.
-
-## Required Tests
+## Validation
 
 ```sh
 pnpm --filter @master/css.vite test
+pnpm --filter @master/css.vite lint
 pnpm --filter @master/css.vite type-check
 pnpm --filter @master/css.vite build
 ```
 
-For integration-level changes, also run affected example builds when practical.
-
-## Good Changes
-
-- Add a fixture for an entry transform edge case.
-- Fix FOUC HTML transform with a snapshot.
-
-## Dangerous Changes
-
-- Injecting duplicate imports.
-- Breaking SSR builds with browser-only code.
-- Replacing virtual CSS placeholder logic without asset tests.
+Run affected example builds for integration-level changes when practical.

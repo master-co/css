@@ -2,65 +2,63 @@
 
 ## Responsibility
 
-`@master/css-language-server` wraps the language service in LSP. It initializes workspace folders, loads manifest entry files, manages language service lifecycles, and handles completion, hover, document color, color presentation, and semantic token requests. CSS directive lexical highlighting is provided by the `@master/css-language` TextMate grammar; server semantic tokens cover Master CSS class-list spans and manifest-aware classifications.
+`@master/css-language-server` wraps the language service in LSP.
 
-## Inputs And Outputs
+## Owns
 
-- Input: LSP connection, workspace folders, settings, text documents.
-- Output: LSP capabilities assembled from service trigger constants and the `@master/css-language` semantic token legend, request responses, and active/full semantic token responses.
+- LSP server lifecycle.
+- Workspace folder initialization and closest-workspace selection.
+- Manifest entry loading and restart behavior.
+- Completion, hover, document color, color presentation, and semantic token request handlers.
 
-## Public APIs
+## Does Not Own
+
+- Editor-neutral class scanning or semantic token primitives; use `@master/css-language`.
+- Stateful feature implementation; use `@master/css-language-service`.
+- VS Code extension activation or packaging.
+- CSS directive lexical highlighting, which is TextMate-first.
+
+## Public Surface
 
 - `CSSLanguageServer`
 - `settings`
 - `Workspace` type
 
-## Core Files
+## Key Files
 
 - `src/core.ts`
 - `src/settings.ts`
 - `src/utils/create-document.ts`
-
-## Allowed Changes
-
-- Workspace detection fixes.
-- Manifest reload/restart fixes.
-- Request handler and semantic token mode fixes with tests.
-
-## Forbidden Without Explicit Request
-
-- Advertising new LSP capabilities without implementing and testing them.
-- Changing manifest-loading semantics casually.
-- Creating server-side dependencies on editor-specific extension code.
+- `tests/fixtures/**`
 
 ## Risk Areas
 
 - `workspaces: 'auto'` discovery from manifest entry files and package dependencies.
-- Closest workspace selection.
-- Manifest loading with `@master/css-project`.
-- Restart behavior after manifest/settings saves.
+- Closest workspace selection for monorepos.
+- Manifest loading through `@master/css-project`.
+- Restart behavior after manifest or settings saves.
+- Advertising LSP capabilities that are not implemented and tested.
 
-## Required Tests
+## Safe Changes
 
-```sh
-pnpm --filter @master/css-language-server test
-pnpm --filter @master/css-language-server type-check
-pnpm --filter @master/css-language-server build
-```
-
-Use or extend:
-
-- `tests/custom-workspace.test.ts`
-- `tests/monorepo.test.ts`
-- `tests/fixtures`
-
-## Good Changes
-
-- Add a monorepo fixture for manifest-entry or package-dependency workspace resolution.
-- Fix manifest reload and test restart behavior.
+- Workspace detection fixes with monorepo fixtures.
+- Manifest reload/restart fixes.
+- Request handler and semantic token mode fixes with tests.
 
 ## Dangerous Changes
 
 - Treating external documents as belonging to the wrong workspace.
 - Loading a manifest from an unintended directory.
 - Adding diagnostics without client/server capability updates.
+- Depending on editor-specific extension code.
+
+## Validation
+
+```sh
+pnpm --filter @master/css-language-server test
+pnpm --filter @master/css-language-server lint
+pnpm --filter @master/css-language-server type-check
+pnpm --filter @master/css-language-server build
+```
+
+Use or extend `tests/custom-workspace.test.ts`, `tests/monorepo.test.ts`, and `tests/fixtures`.

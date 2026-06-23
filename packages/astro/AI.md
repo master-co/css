@@ -2,33 +2,59 @@
 
 ## Responsibility
 
-This package wraps `@master/css.vite` as an Astro integration, injects runtime code for runtime/progressive modes, and registers Astro middleware for pre-render/progressive server rendering.
+`@master/css.astro` adapts Master CSS to Astro. It wraps `@master/css.vite`, injects runtime code for runtime and progressive modes, and registers Astro middleware for pre-render and progressive server rendering.
 
-## Main Files
+## Owns
+
+- Astro integration entrypoints and options.
+- Astro middleware for server-rendered HTML CSS injection.
+- Astro-specific runtime manifest preload and hydration wiring.
+
+## Does Not Own
+
+- Vite mode semantics; keep behavior aligned with `@master/css.vite`.
+- Core runtime behavior, CSS generation, scanning, or server rendering.
+- Duplicate Vite HTML pre-render behavior unless duplicate style injection is handled.
+
+## Public Surface
+
+- Default Astro integration export.
+- `./adapter` and `./middleware` subpaths.
+
+## Key Files
 
 - `src/core.ts`
 - `src/options.ts`
-- `src/server.ts`
 - `src/middleware.ts`
+- `src/server.ts`
+- `src/runtime-manifest-preload.ts`
 - `src/index.ts`
 
-## Risks
+## Risk Areas
 
 - Runtime script injection can duplicate Vite runtime injection.
-- Progressive/pre-render mode depends on Astro middleware receiving HTML responses before they are sent or written.
-- Tests are sparse.
+- Progressive and pre-render modes depend on Astro middleware seeing HTML before it is sent or written.
+- Tests are sparse, so integration behavior needs focused coverage or example validation.
 
-## Rules
+## Safe Changes
 
-- Keep mode behavior aligned with `@master/css.vite`.
-- Do not re-enable Vite's HTML pre-render plugin for Astro progressive/pre-render unless duplicate style injection is handled.
-- Validate with an Astro example when behavior changes.
+- Focused Astro option or middleware fixes.
+- Runtime/preload wiring fixes that stay aligned with Vite mode semantics.
+- Tests or example validation for Astro integration behavior.
+
+## Dangerous Changes
+
+- Re-enabling Vite HTML pre-render plugin for Astro progressive/pre-render without duplicate-style handling.
+- Changing runtime, scanner, server, or CSS generation behavior in this package.
+- Diverging mode defaults from `@master/css.vite`.
 
 ## Validation
 
 ```sh
-pnpm --filter @master/css.astro build
-pnpm --filter @master/css.astro test --run
-pnpm --filter @master/css.astro type-check
+pnpm --filter @master/css.astro test
 pnpm --filter @master/css.astro lint
+pnpm --filter @master/css.astro type-check
+pnpm --filter @master/css.astro build
 ```
+
+Validate with an Astro example when Astro rendering behavior changes.

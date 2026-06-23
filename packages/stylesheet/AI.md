@@ -2,35 +2,65 @@
 
 ## Responsibility
 
-`@master/css-stylesheet` owns the stylesheet entry pipeline for static rendering. It detects Master CSS stylesheet entries, resolves stylesheet import graphs, compiles CSS-first directives, registers stylesheet sources, prunes native CSS using scanner state, and composes final CSS plus runtime emittedGlobals variable/keyframe counts.
+`@master/css-stylesheet` owns the stylesheet entry pipeline for static rendering.
 
-## Inputs And Outputs
+## Owns
 
-- Input: stylesheet ids/source text, project root, optional compile options, `StyleCSSSources`, and structural scanner state from packages such as `@master/css-scanner`.
-- Output: transformed local CSS, stylesheet source records, stylesheet-local manifests, final CSS text, emittedGlobals data, and stylesheet dependencies.
-
-## Public APIs
-
-- Style request and entry helpers such as `isStyleCSSRequest`, `resolveMasterStyleSource`, and `createStyleCSSHostSource`.
-- Local CSS directive lowering helpers such as `transformLocalStyleCSS`.
-- Static rendering helpers such as `registerStyleCSSSource`, `createStyleCSSManifest`, `createExtractedCSSResult`, and `createExtractedCSS`.
+- Master CSS stylesheet entry detection.
+- Stylesheet import graph handling through compiler results.
+- CSS-first directive compilation for stylesheet entries.
+- Local CSS transforms, native CSS pruning, generated CSS composition, and emittedGlobals output.
 - Extraction directive helpers from `./directives`.
 
-## Boundaries
+## Does Not Own
 
-- Do not depend on `@master/css-scanner`; accept structural state instead.
-- Do not scan source files directly except when resolving stylesheet `@source` directives through supplied include/exclude options.
-- Do not own source adapters or source candidate extraction; use `@master/css-source` when stylesheet source directives need source file candidates.
-- Do not own project CSS manifest discovery; callers should use `@master/css-project`.
-- Do not change engine CSS output here without focused tests and an explicit CSS output explanation.
+- Source scanner state; accept structural scanner state instead of depending on `@master/css-scanner`.
+- Raw source adapters or class candidate extraction; use `@master/css-source` when needed.
+- Project CSS manifest discovery; callers should use `@master/css-project`.
+- Engine CSS output semantics.
 
-## Required Tests
+## Public Surface
+
+- Style request and entry helpers.
+- Local CSS directive lowering helpers.
+- Static rendering helpers such as `createExtractedCSSResult` and `createExtractedCSS`.
+- `./browser`
+- `./directives`
+
+## Key Files
+
+- `src/index.ts`
+- `src/browser.ts`
+- `src/directives.ts`
+- `src/render.ts`
+- `src/class-exclusion.ts`
+
+## Risk Areas
+
+- Native CSS pruning and source directives.
+- Generated CSS ordering and emittedGlobals counts.
+- Local `@compose` and `@reference` lowering.
+- Entry detection and import graph dependencies.
+- Cross-package consumers in Vite, Webpack, Next, and CLI.
+
+## Safe Changes
+
+- Focused stylesheet entry or transform fixes with tests.
+- Extraction directive tests.
+- Native CSS pruning and generated CSS composition fixtures.
+
+## Dangerous Changes
+
+- Depending directly on `@master/css-scanner`.
+- Scanning arbitrary source files directly outside supplied `@source` options.
+- Changing engine CSS output here without focused tests and explanation.
+- Duplicating project manifest discovery.
+
+## Validation
 
 ```sh
 pnpm --filter @master/css-stylesheet test
+pnpm --filter @master/css-stylesheet lint
 pnpm --filter @master/css-stylesheet type-check
 pnpm --filter @master/css-stylesheet build
-pnpm --filter @master/css-stylesheet lint
 ```
-
-Add focused tests for stylesheet entry detection, import graph handling, local `@compose`/`@reference` lowering, extraction directives, native CSS pruning, generated CSS composition, and emittedGlobals manifest output.

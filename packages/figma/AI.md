@@ -2,9 +2,26 @@
 
 ## Responsibility
 
-This package implements a Figma plugin for importing and exporting Master CSS variables and modes.
+`@master/css.figma` implements the Figma plugin for importing and exporting Master CSS variables and modes.
 
-## Main Files
+## Owns
+
+- Figma plugin entry and UI bundles.
+- Variable collection import/export workflows.
+- Color value parsing and conversion helpers.
+
+## Does Not Own
+
+- Core Master CSS variable semantics.
+- Site docs or runtime behavior.
+- Unsupported Figma alias behavior beyond clear warnings.
+
+## Public Surface
+
+- Figma plugin bundle.
+- Import/export UI entrypoints.
+
+## Key Files
 
 - `src/plugin.min.ts`
 - `src/features/getCollectionVariables.ts`
@@ -13,23 +30,30 @@ This package implements a Figma plugin for importing and exporting Master CSS va
 - `src/utils/to-color-value.ts`
 - `src/*variables*.tsx`
 
-## Risks
+## Risk Areas
 
 - Figma API shape and async behavior.
 - Color conversion precision and color spaces.
-- Variable alias handling is limited.
-- Import/export must preserve variable data structure.
+- Limited variable alias handling.
+- Preserving variable data structure across import/export.
 
-## Rules
+## Safe Changes
 
-- Do not silently drop variables.
-- Warn clearly for unsupported aliases.
-- Add tests for variable/color conversion changes.
+- Focused Figma API or UI fixes.
+- Variable/color conversion tests.
+- Clear unsupported-alias warnings.
+
+## Dangerous Changes
+
+- Silently dropping variables.
+- Changing color conversion without tests.
+- Treating unsupported aliases as successfully round-tripped.
 
 ## Validation
 
 ```sh
 pnpm --filter @master/css.figma test
-pnpm --filter @master/css.figma build
+pnpm --filter @master/css.figma lint
 pnpm --filter @master/css.figma type-check
+pnpm --filter @master/css.figma build
 ```

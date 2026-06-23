@@ -2,23 +2,65 @@
 
 ## Responsibility
 
-`@master/css` is the public facade. It re-exports the manifest-driven engine API and the default preset CSS entrypoints. It must not own Config resolution, utility matcher construction, declarers, transformers, preset manifest data, or runtime authoring adapters.
+`@master/css` is the public facade over the manifest-driven engine API and default preset CSS entrypoints.
 
-## Inputs And Outputs
+## Owns
 
-- Input: `MasterCSSManifest` for engine APIs, CSS files for CSS-first authoring.
-- Output: `MasterCSS` engine instances, generated rules, CSS text, and preset CSS subpaths.
+- Public facade exports.
+- CSS entrypoint re-exports: `index.css`, `base.css`, `theme.css`, `variants.css`, and `utilities.css`.
+- Facade wiring tests.
 
-## Public APIs
+## Does Not Own
 
-The root export should stay narrow:
+- Config resolution.
+- Utility matcher construction, declarers, or transformers.
+- Preset manifest data.
+- Runtime authoring adapters.
+- CSS output parity tests; those belong in engine, compiler, or preset.
+
+## Public Surface
 
 - `MasterCSS`
 - `MasterCSS.create({ manifest, emittedGlobals })`
 - `MasterCSSManifest` and runtime-safe engine types
+- CSS subpaths listed above
 
-Do not re-export `Config`, `UtilityDefinition`, `extendConfig`, old utility classes as public API, or `@master/css/config` / `@master/css/utils` subpaths.
+Do not re-export `Config`, `UtilityDefinition`, `extendConfig`, old utility classes, or `@master/css/config` / `@master/css/utils` subpaths.
 
-## Tests
+## Key Files
 
-Core tests should only verify facade wiring. CSS output parity belongs in `@master/css-engine`; CSS directive and preset lowering belongs in `@master/css-compiler` or `@master/css-preset`.
+- `src/index.ts`
+- `src/index.css`
+- `src/base.css`
+- `src/theme.css`
+- `src/variants.css`
+- `src/utilities.css`
+
+## Risk Areas
+
+- Accidentally widening the public API.
+- Moving behavior from owning lower packages into the facade.
+- Treating facade smoke tests as semantic CSS output coverage.
+
+## Safe Changes
+
+- Narrow facade export fixes.
+- CSS subpath wiring fixes.
+- Smoke tests proving facade entrypoints resolve.
+
+## Dangerous Changes
+
+- Reintroducing legacy Config APIs.
+- Adding utility or runtime implementation logic here.
+- Changing CSS output through facade-only changes.
+
+## Validation
+
+```sh
+pnpm --filter @master/css test
+pnpm --filter @master/css lint
+pnpm --filter @master/css type-check
+pnpm --filter @master/css build
+```
+
+Run downstream package checks when facade exports change.

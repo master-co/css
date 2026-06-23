@@ -2,31 +2,65 @@
 
 ## Responsibility
 
-`@master/css-lexer` owns dependency-free lexical scanning and source range contracts shared by Master CSS tooling. It may identify source ranges, directive boundaries, quoted strings, class lexical tokens, CSS unit patterns, and manifest entrypoint statements. It must not validate classes, generate CSS rules, resolve manifests, compile directives, extract source-level class candidates, or depend on language-service rendering behavior.
+`@master/css-lexer` owns dependency-free lexical scanning and source range contracts shared by Master CSS tooling.
 
-## Inputs And Outputs
+## Owns
 
-- Input: raw source strings and offsets.
-- Output: stable source ranges, lexical token items, directive/import statements, and lexical constants.
+- Stable source range primitives.
+- CSS directive range scanning.
+- CSS manifest entrypoint statement scanning.
+- Master class lexical tokenizers.
+- CSS unit constants and lexical patterns.
 
-## Dependency Boundary
+## Does Not Own
 
-This package must remain below `@master/css`, `@master/css-compiler`, `@master/css-scanner`, `@master/css-language`, `@master/css-language-service`, integrations, and editor packages. Do not import those packages here. Keep runtime dependencies empty unless a focused parser dependency is explicitly chosen for this package.
+- Class validation.
+- CSS rule generation.
+- Manifest resolution.
+- CSS directive compilation.
+- Source-level class candidate extraction.
+- Language-service rendering behavior.
 
-## Public APIs
+## Public Surface
 
-- Source primitives from `src/source.ts`
-- CSS directive ranges from `src/directive-ranges.ts`
-- CSS manifest entry scanners from `src/css-manifest-entry.ts`
-- Master CSS lexical unit constants from `src/units.ts`
-- Master class lexical tokenizers from `src/class.ts`
+- Source primitives from `src/source.ts`.
+- CSS directive ranges from `src/directive-ranges.ts`.
+- CSS manifest entry scanners from `src/css-manifest-entry.ts`.
+- Unit constants from `src/units.ts`.
+- Class lexical tokenizers from `src/class.ts`.
 
-## Required Tests
+## Key Files
+
+- `src/source.ts`
+- `src/directive-ranges.ts`
+- `src/css-manifest-entry.ts`
+- `src/class.ts`
+- `src/units.ts`
+- `src/index.ts`
+
+## Risk Areas
+
+- Source range recovery.
+- Class tokenization boundaries.
+- Import and directive scanning.
+- Keeping runtime dependencies empty unless explicitly justified.
+
+## Safe Changes
+
+- Focused lexical scanner fixes with tests.
+- Range recovery improvements covered by consumer tests when behavior crosses packages.
+
+## Dangerous Changes
+
+- Depending on engine, compiler, scanner, language, language-service, integrations, or editor packages.
+- Moving source candidate extraction here from `@master/css-source`.
+- Validating or generating CSS in this package.
+
+## Validation
 
 ```sh
 pnpm --filter @master/css-lexer test
+pnpm --filter @master/css-lexer lint
 pnpm --filter @master/css-lexer type-check
 pnpm --filter @master/css-lexer build
 ```
-
-Any change to source range recovery, class tokenization, or import/directive scanning needs focused tests here and consumer tests when behavior changes across packages. Source-level class candidate extraction belongs to `@master/css-source`.
