@@ -5,6 +5,11 @@ import { tmpdir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
 import { pathToFileURL, fileURLToPath } from 'node:url'
 import { expect, test } from 'vitest'
+import {
+    createStagedExtension,
+    getCurrentTarget,
+    getRuntimePackagesForTarget
+} from '../scripts/package-target-core.mjs'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const packageDir = resolve(here, '..')
@@ -162,13 +167,12 @@ function createLanguageServer(options = {}) {
 }
 
 async function withStagedExtension(callback, options = {}) {
-    const packageTargets = await import('../scripts/package-targets.mjs')
     const stagingRoot = await mkdtemp(join(tmpdir(), 'master-css-vscode-test-'))
     try {
-        const target = options.target ?? packageTargets.getCurrentTarget()
+        const target = options.target ?? getCurrentTarget()
         return await callback(
-            await packageTargets.createStagedExtension(target, { stagingRoot }),
-            packageTargets
+            await createStagedExtension(target, { stagingRoot }),
+            { getCurrentTarget, getRuntimePackagesForTarget }
         )
     } finally {
         await rm(stagingRoot, { recursive: true, force: true })
@@ -216,6 +220,12 @@ test('staged extension includes runtime packages for win32-x64', async () => {
     await withStagedExtension(({ stagingDir, files }, { getRuntimePackagesForTarget }) => {
         expectStagedRuntimePackages({ stagingDir, files }, getRuntimePackagesForTarget('win32-x64'))
     }, { target: 'win32-x64' })
+})
+
+test('staged extension rejects unsupported targets', async () => {
+    await expect(createStagedExtension('unsupported-target', { stagingRoot: tmpdir() }))
+        .rejects
+        .toThrow('Unsupported VS Code target "unsupported-target"')
 })
 
 test('manifest contributes TextMate grammar, semantic token scopes, and CSS diagnostic defaults', () => {

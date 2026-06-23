@@ -10,6 +10,7 @@ This package builds the VS Code extension. It starts the language server, contri
 - `src/server.min.ts`
 - `generate.ts`
 - `package.json`
+- `scripts/package-target-core.mjs`
 - `scripts/package-targets.mjs`
 
 ## Risks
