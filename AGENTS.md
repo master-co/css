@@ -108,6 +108,15 @@ Modify these only with focused tests and a clear reason:
 - Do not reduce correctness just to make tests pass.
 - Do not guess when modifying parser, compiler, renderer, selector, at-rule, variable, mode, priority, or cascade behavior.
 
+## Cross-Platform Path Policy
+
+- Treat filesystem paths, file URLs, public URLs, virtual module ids, and generated import specifiers as different string domains.
+- Build and compare Node filesystem paths with `node:path` helpers such as `join`, `resolve`, `relative`, `isAbsolute`, `dirname`, and `basename`. Do not build filesystem paths with embedded `/` segments such as `join(root, 'a/b')`; pass each path segment separately.
+- Convert file URLs at the boundary with `fileURLToPath()` / `pathToFileURL()` or `URI.parse(uri).fsPath` where that API is already used. Do not compare raw file URI strings to decide workspace membership.
+- For filesystem containment, use `path.relative(parent, child)` and reject `..`, `../...`, and absolute results. Do not use raw `startsWith()` path checks, even with `path.sep`, unless the value is not a filesystem path.
+- Tests must not assert filesystem paths with slash-only regexes or string literals. Prefer `path.join()`, `path.relative()`, segment arrays, or a deliberately named `toPosixPath()` only when the assertion is explicitly about a public URL, virtual module id, or generated import format.
+- Keep public URLs, HTML attributes, Vite/webpack virtual ids, and generated import specifiers slash-based. Do not pass those URL-like strings through `node:path`.
+
 ## Commit Message Policy
 
 All commits in this monorepo must follow Techor conventional commits:

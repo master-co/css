@@ -26,8 +26,8 @@ interface MasterCSSManifestLoaderOptions {
 function writeExternalManifestAssets(projectDir: string, json: string) {
     const assetFileName = toHashedManifestAssetFileName(json)
     const assetPaths = [
-        resolve(projectDir, '.next/static/media', assetFileName),
-        resolve(projectDir, '.next/dev/static/media', assetFileName)
+        resolve(projectDir, '.next', 'static', 'media', assetFileName),
+        resolve(projectDir, '.next', 'dev', 'static', 'media', assetFileName)
     ]
     for (const assetPath of assetPaths) {
         mkdirSync(dirname(assetPath), { recursive: true })

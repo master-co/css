@@ -80,7 +80,7 @@ export function toUniversalManifestFacadeModule(urlExpression: string) {
         `    const files = value.startsWith('/_next/')`,
         `        ? [`,
         `            join(process.cwd(), '.next', value.slice('/_next/'.length)),`,
-        `            join(process.cwd(), '.next/dev', value.slice('/_next/'.length))`,
+        `            join(process.cwd(), '.next', 'dev', value.slice('/_next/'.length))`,
         `        ]`,
         `        : [fileURLToPath(value)];`,
         `    let lastError;`,

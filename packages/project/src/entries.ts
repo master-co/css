@@ -1,6 +1,6 @@
 import { readFileSync, readdirSync } from 'node:fs'
 import { readFile, readdir } from 'node:fs/promises'
-import { dirname, extname, join, resolve, sep } from 'node:path'
+import { dirname, extname, isAbsolute, join, relative, resolve, sep } from 'node:path'
 import {
     inspectCSS,
     resolveMasterCSSPackageEntryFile
@@ -180,13 +180,24 @@ function collectMasterCSSPackageWorkspaceDirectoriesSync(directory: string, dire
     }
 }
 
+function isSameOrChildPath(parentPath: string, childPath: string) {
+    const relativePath = relative(parentPath, childPath)
+    return relativePath === ''
+        || (
+            !!relativePath
+            && relativePath !== '..'
+            && !relativePath.startsWith(`..${sep}`)
+            && !isAbsolute(relativePath)
+        )
+}
+
 function resolveWorkspaceDirectoryForEntry(cssFile: string, workspaceDirectories: Set<string>) {
     let closestDirectory: string | undefined
     const absoluteCSSFile = resolve(cssFile)
     for (const workspaceDir of workspaceDirectories) {
         const absoluteWorkspaceDir = resolve(workspaceDir)
         if (
-            absoluteCSSFile.startsWith(absoluteWorkspaceDir + sep)
+            isSameOrChildPath(absoluteWorkspaceDir, absoluteCSSFile)
             && (!closestDirectory || absoluteWorkspaceDir.length > closestDirectory.length)
         ) {
             closestDirectory = absoluteWorkspaceDir

@@ -149,7 +149,7 @@ export function createMasterCSSStaticHydrationManifestWriter({
 }: MasterCSSStaticHydrationManifestWriterOptions) {
     return (json: string, hash: string) => {
         const fileName = `${MASTER_CSS_HYDRATION_MANIFEST_FILE_BASENAME}.${hash}.json`
-        const dir = join(outDir, '_master-css/hydration')
+        const dir = join(outDir, '_master-css', 'hydration')
         mkdirSync(dir, { recursive: true })
         writeFileSync(join(dir, fileName), json)
         return toHydrationManifestAssetURL(fileName, base)

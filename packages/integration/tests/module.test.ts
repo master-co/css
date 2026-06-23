@@ -63,7 +63,7 @@ describe('@master/css-integration module helpers', () => {
         const source = toUniversalManifestFacadeModule('new URL("./master-css-manifest.json", import.meta.url)')
 
         expect(source).toContain(`join(process.cwd(), '.next', value.slice('/_next/'.length))`)
-        expect(source).toContain(`join(process.cwd(), '.next/dev', value.slice('/_next/'.length))`)
+        expect(source).toContain(`join(process.cwd(), '.next', 'dev', value.slice('/_next/'.length))`)
         expect(source).toContain('for (const file of files)')
     })
 })

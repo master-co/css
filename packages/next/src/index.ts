@@ -38,7 +38,7 @@ function resolveAdapterPath() {
 }
 
 function resolveComposedAdapterPath(projectDir = process.cwd()) {
-    return resolve(projectDir, 'node_modules/.master-css', COMPOSED_ADAPTER_FILE)
+    return resolve(projectDir, 'node_modules', '.master-css', COMPOSED_ADAPTER_FILE)
 }
 
 function resolveCSSManifestLoaderPath() {

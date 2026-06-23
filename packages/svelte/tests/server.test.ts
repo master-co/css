@@ -78,7 +78,7 @@ describe('Svelte server hook renderer', () => {
         try {
             const write = createMasterCSSStaticHydrationManifestWriter({ outDir: dir })
             const source = write('{"version":1,"rules":[]}', '12345678')
-            const file = join(dir, '_master-css/hydration/master-css-hydration.12345678.json')
+            const file = join(dir, '_master-css', 'hydration', 'master-css-hydration.12345678.json')
 
             expect(source).toBe('/_master-css/hydration/master-css-hydration.12345678.json')
             expect(existsSync(file)).toBe(true)

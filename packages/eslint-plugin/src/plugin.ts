@@ -8,7 +8,7 @@ import { dirname, resolve } from 'path'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
-const pkg = JSON.parse(readFileSync(resolve(__dirname, '../package.json'), 'utf-8'))
+const pkg = JSON.parse(readFileSync(resolve(__dirname, '..', 'package.json'), 'utf-8'))
 
 const plugin = {
     meta: {

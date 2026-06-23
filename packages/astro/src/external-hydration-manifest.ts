@@ -80,8 +80,9 @@ export async function externalizeAstroHydrationManifests(dir: URL | string) {
             continue
         }
         const fileName = toHashedManifestAssetFileName(json, MASTER_CSS_HYDRATION_MANIFEST_FILE_BASENAME)
-        const outputFile = join(root, '_master-css/hydration', fileName)
-        await mkdir(join(root, '_master-css/hydration'), { recursive: true })
+        const outputDir = join(root, '_master-css', 'hydration')
+        const outputFile = join(outputDir, fileName)
+        await mkdir(outputDir, { recursive: true })
         await writeFile(outputFile, json)
         await writeFile(
             htmlFile,

@@ -36,17 +36,17 @@ afterEach(() => {
 describe('@master/css-integration/node', () => {
     it('encodes resolved and filesystem virtual module paths', () => {
         const root = path.resolve('/project')
-        const file = path.join(root, 'src/theme.css')
+        const file = path.join(root, 'src', 'theme.css')
         const id = toResolvedMasterCSSManifestId(file)
 
         expect(id).not.toContain('.css')
         expect(id).not.toContain('%2Ecss')
         expect(fromResolvedMasterCSSManifestId(id)).toBe(file)
-        expect(toVirtualDefaultManifestModulePath(root)).toBe(path.join(root, 'node_modules/.master-css/master-css-manifest.js'))
+        expect(toVirtualDefaultManifestModulePath(root)).toBe(path.join(root, 'node_modules', '.master-css', 'master-css-manifest.js'))
         expect(toVirtualCSSManifestModulePath(root, file)).toMatch(/node_modules[/\\]\.master-css[/\\].+\.manifest\.js$/)
         expect(toVirtualCSSManifestAssetPath(root, file)).toMatch(/node_modules[/\\]\.master-css[/\\].+\.manifest\.json$/)
-        expect(toVirtualCSSModulePath(root)).toBe(path.join(root, 'node_modules/.master-css/master-utilities.css'))
-        expect(toVirtualEmittedGlobalsModulePath(root)).toBe(path.join(root, 'node_modules/.master-css/master-css-emitted-globals.js'))
+        expect(toVirtualCSSModulePath(root)).toBe(path.join(root, 'node_modules', '.master-css', 'master-utilities.css'))
+        expect(toVirtualEmittedGlobalsModulePath(root)).toBe(path.join(root, 'node_modules', '.master-css', 'master-css-emitted-globals.js'))
         expect(createVirtualDefaultManifestModulePathPattern().test(toVirtualDefaultManifestModulePath(root))).toBe(true)
     })
 

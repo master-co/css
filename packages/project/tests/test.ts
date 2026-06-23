@@ -9,7 +9,7 @@ import {
     resolveMasterCSSPackageEntryFile
 } from '../src/entries'
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
-import { join } from 'node:path'
+import { isAbsolute, join, relative, sep } from 'node:path'
 import { tmpdir } from 'node:os'
 import { flattenMasterCSSManifestVariables } from '@master/css-schema/manifest'
 
@@ -17,10 +17,21 @@ function createFixture() {
     return mkdtempSync(join(tmpdir(), 'master-css-manifester-'))
 }
 
+function isSameOrChildPath(parentPath: string, childPath: string) {
+    const relativePath = relative(parentPath, childPath)
+    return relativePath === ''
+        || (
+            !!relativePath
+            && relativePath !== '..'
+            && !relativePath.startsWith(`..${sep}`)
+            && !isAbsolute(relativePath)
+        )
+}
+
 function writeCSSFixture(cwd: string) {
     mkdirSync(join(cwd, 'styles'), { recursive: true })
     const entry = join(cwd, 'index.css')
-    const tokens = join(cwd, 'styles/tokens.css')
+    const tokens = join(cwd, 'styles', 'tokens.css')
     writeFileSync(tokens, `
         @theme {
             --color-primary: #123;
@@ -118,7 +129,7 @@ test('loads package entry preset manifest from CSS imports', async () => {
         if (!packageEntry) throw new Error('Expected Master CSS package entry')
         expect(result.dependencies).toContain(packageEntry)
         const packageDependencies = result.dependencies
-            .filter((dependency: string) => !dependency.startsWith(cwd))
+            .filter((dependency: string) => !isSameOrChildPath(cwd, dependency))
         expect(packageDependencies.length).toBeGreaterThan(1)
         expect(flattenMasterCSSManifestVariables(result.manifest.variables)).toContainEqual(expect.objectContaining({
             name: 'breakpoint-sm',
@@ -177,20 +188,42 @@ test('loads project-level CSS manifest entries', async () => {
 test('finds Master CSS workspace directories from package and CSS entries', async () => {
     const cwd = createFixture()
     try {
-        mkdirSync(join(cwd, 'packages/app'), { recursive: true })
-        mkdirSync(join(cwd, 'docs/styles'), { recursive: true })
-        writeFileSync(join(cwd, 'packages/app/package.json'), JSON.stringify({
+        mkdirSync(join(cwd, 'packages', 'app'), { recursive: true })
+        mkdirSync(join(cwd, 'docs', 'styles'), { recursive: true })
+        writeFileSync(join(cwd, 'packages', 'app', 'package.json'), JSON.stringify({
             dependencies: {
                 '@master/css': 'workspace:*'
             }
         }))
-        writeFileSync(join(cwd, 'packages/app/index.css'), '@master;')
-        writeFileSync(join(cwd, 'docs/styles/global.css'), '@import "@master/css";')
+        writeFileSync(join(cwd, 'packages', 'app', 'index.css'), '@master;')
+        writeFileSync(join(cwd, 'docs', 'styles', 'global.css'), '@import "@master/css";')
 
         await expect(findMasterCSSWorkspaceDirectories(cwd)).resolves.toStrictEqual([
             cwd,
-            join(cwd, 'docs/styles'),
-            join(cwd, 'packages/app')
+            join(cwd, 'docs', 'styles'),
+            join(cwd, 'packages', 'app')
+        ])
+    } finally {
+        rmSync(cwd, { recursive: true, force: true })
+    }
+})
+
+test('does not match sibling workspace path prefixes', async () => {
+    const cwd = createFixture()
+    try {
+        mkdirSync(join(cwd, 'packages', 'app'), { recursive: true })
+        mkdirSync(join(cwd, 'packages', 'app-kit'), { recursive: true })
+        writeFileSync(join(cwd, 'packages', 'app', 'package.json'), JSON.stringify({
+            dependencies: {
+                '@master/css': 'workspace:*'
+            }
+        }))
+        writeFileSync(join(cwd, 'packages', 'app-kit', 'index.css'), '@master;')
+
+        await expect(findMasterCSSWorkspaceDirectories(cwd)).resolves.toStrictEqual([
+            cwd,
+            join(cwd, 'packages', 'app'),
+            join(cwd, 'packages', 'app-kit')
         ])
     } finally {
         rmSync(cwd, { recursive: true, force: true })

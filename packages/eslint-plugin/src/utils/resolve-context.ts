@@ -5,6 +5,7 @@ import { findMasterCSSWorkspaceDirectoriesSync } from '@master/css-project/entri
 import { loadProjectManifestSync } from '@master/css-project/manifest-sync'
 import path from 'node:path'
 import { existsSync } from 'node:fs'
+import isSameOrChildPath from './is-same-or-child-path'
 
 declare interface CSSCache {
     cwd: string
@@ -44,7 +45,7 @@ function findNearestPackageDirectory(filename: string) {
 function resolveSearchDirectory(context: RuleContext<any, any[]>, filename: string) {
     const cwd = path.resolve(context.cwd || process.cwd())
     const root = path.parse(cwd).root
-    if (cwd !== root && (filename === cwd || filename.startsWith(cwd + path.sep))) return cwd
+    if (cwd !== root && isSameOrChildPath(cwd, filename)) return cwd
     return findNearestPackageDirectory(filename)
 }
 
@@ -53,7 +54,7 @@ function resolveWorkspaceDirectory(context: RuleContext<any, any[]>, filename: s
     let closestDirectory: string | undefined
     for (const directory of getWorkspaceDirectories(cwd)) {
         if (
-            (filename === directory || filename.startsWith(directory + path.sep))
+            isSameOrChildPath(directory, filename)
             && (!closestDirectory || directory.length > closestDirectory.length)
         ) {
             closestDirectory = directory

@@ -20,6 +20,15 @@
 - Avoid cross-package refactors unless the task explicitly requires them.
 - Avoid broad formatting edits.
 
+## Cross-Platform Node Paths
+
+- Keep filesystem paths, file URLs, public URLs, virtual module ids, and generated import specifiers separate.
+- Use `node:path` for filesystem paths. Build paths with separate segments such as `join(root, 'dir', 'file.css')`, not embedded path strings such as `join(root, 'dir/file.css')`.
+- Convert file URLs at the boundary with `fileURLToPath()` / `pathToFileURL()` or the local URI helper already used by the package. Do not compare raw file URI strings for filesystem relationships.
+- Use `path.relative(parent, child)` for filesystem containment and reject `..`, `../...`, and absolute relative results. Avoid raw `startsWith()` path checks.
+- In tests, compare filesystem paths with `path.join()`, `path.relative()`, or segment arrays. Slash-only regexes are acceptable only for public URLs, virtual module ids, generated import specifiers, or explicitly normalized `toPosixPath()` output.
+- Keep URL-like strings slash-based. HTML hrefs, hydration manifest sources, Vite ids, and import specifiers should not go through `node:path`.
+
 ## Refactor Strategy
 
 For refactor, rewrite, cleanup, migration, or re-architecture tasks, prefer a clean and internally consistent design over preserving old compatibility paths. Do not add adapters, aliases, overloads, deprecated options, or fallback branches only to keep legacy behavior alive unless the user or issue explicitly requires compatibility.

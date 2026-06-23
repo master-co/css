@@ -6,6 +6,7 @@ import { expect, test } from 'vitest'
 import plugin from '../src'
 import { createPresetManifest } from './helpers/create-preset-manifest'
 import UtilityType from '@master/css-schema/utility-type'
+import isSameOrChildPath from '../src/utils/is-same-or-child-path'
 
 test('uses explicit Master CSS manifest objects from ESLint settings', async () => {
     const cwd = mkdtempSync(join(tmpdir(), 'master-css-eslint-'))
@@ -127,6 +128,19 @@ test('uses project-level CSS manifest entries from the ESLint workspace', async 
         expect(result.messages.map((message) => message.message)).toStrictEqual([
             '"zzz" is not a valid or known class.'
         ])
+    } finally {
+        rmSync(cwd, { force: true, recursive: true })
+    }
+})
+
+test('does not match sibling workspace path prefixes', () => {
+    const cwd = mkdtempSync(join(tmpdir(), 'master-css-eslint-'))
+
+    try {
+        const workspaceDir = join(cwd, 'packages', 'app')
+
+        expect(isSameOrChildPath(workspaceDir, join(workspaceDir, 'index.jsx'))).toBe(true)
+        expect(isSameOrChildPath(workspaceDir, join(cwd, 'packages', 'app-kit', 'index.jsx'))).toBe(false)
     } finally {
         rmSync(cwd, { force: true, recursive: true })
     }

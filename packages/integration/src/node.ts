@@ -14,6 +14,7 @@ import { MASTER_CSS_HYDRATION_MANIFEST_FILE_BASENAME } from '@master/css-schema/
 
 export const RESOLVED_MASTER_CSS_MANIFEST_QUERY_PREFIX = '\0master-css-manifest:'
 export const VIRTUAL_MODULE_DIR = 'node_modules/.master-css'
+const VIRTUAL_MODULE_DIR_SEGMENTS = ['node_modules', '.master-css'] as const
 
 export function toHashedManifestAssetFileName(json: string, basename = 'master-css-manifest') {
     const hash = createHash('sha256').update(json).digest('hex').slice(0, 8)
@@ -35,7 +36,7 @@ export function fromResolvedMasterCSSManifestId(id: string) {
 }
 
 export function toVirtualDefaultManifestModulePath(context: string) {
-    return join(context, VIRTUAL_MODULE_DIR, VIRTUAL_MANIFEST_FILE)
+    return join(context, ...VIRTUAL_MODULE_DIR_SEGMENTS, VIRTUAL_MANIFEST_FILE)
 }
 
 function encodeVirtualFilename(id: string) {
@@ -43,19 +44,19 @@ function encodeVirtualFilename(id: string) {
 }
 
 export function toVirtualCSSManifestModulePath(context: string, file: string) {
-    return join(context, VIRTUAL_MODULE_DIR, `${encodeVirtualFilename(file)}.manifest.js`)
+    return join(context, ...VIRTUAL_MODULE_DIR_SEGMENTS, `${encodeVirtualFilename(file)}.manifest.js`)
 }
 
 export function toVirtualCSSManifestAssetPath(context: string, file: string) {
-    return join(context, VIRTUAL_MODULE_DIR, `${encodeVirtualFilename(file)}.manifest.json`)
+    return join(context, ...VIRTUAL_MODULE_DIR_SEGMENTS, `${encodeVirtualFilename(file)}.manifest.json`)
 }
 
 export function toVirtualCSSModulePath(context: string) {
-    return join(context, VIRTUAL_MODULE_DIR, 'master-utilities.css')
+    return join(context, ...VIRTUAL_MODULE_DIR_SEGMENTS, 'master-utilities.css')
 }
 
 export function toVirtualEmittedGlobalsModulePath(context: string) {
-    return join(context, VIRTUAL_MODULE_DIR, VIRTUAL_EMITTED_GLOBALS_FILE)
+    return join(context, ...VIRTUAL_MODULE_DIR_SEGMENTS, VIRTUAL_EMITTED_GLOBALS_FILE)
 }
 
 function escapeRegExp(source: string) {
@@ -63,7 +64,7 @@ function escapeRegExp(source: string) {
 }
 
 export function createVirtualDefaultManifestModulePathPattern() {
-    const source = [...VIRTUAL_MODULE_DIR.split('/'), VIRTUAL_MANIFEST_FILE]
+    const source = [...VIRTUAL_MODULE_DIR_SEGMENTS, VIRTUAL_MANIFEST_FILE]
         .map(escapeRegExp)
         .join(String.raw`[/\\]`)
     return new RegExp(String.raw`(?:^|[/\\])${source}$`)

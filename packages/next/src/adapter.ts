@@ -153,7 +153,7 @@ function toNextHydrationManifestPublicURL(ctx: BuildCompleteContext, fileName: s
 }
 
 function toNextHydrationManifestFilePath(ctx: BuildCompleteContext, fileName: string) {
-    return join(ctx.distDir, 'static/master-css/hydration', fileName)
+    return join(ctx.distDir, 'static', 'master-css', 'hydration', fileName)
 }
 
 function upsertMasterStyleText(html: string, cssText: string) {

@@ -13,9 +13,9 @@ describe('@master/css-integration/client', () => {
         const root = mkdtempSync(path.join(tmpdir(), 'master-css-integration-client-'))
 
         try {
-            const cssPackageDir = path.join(root, 'node_modules/@master/css')
-            const enginePackageDir = path.join(root, 'node_modules/@master/css-engine')
-            const integrationPackageDir = path.join(root, 'node_modules/@master/css-integration')
+            const cssPackageDir = path.join(root, 'node_modules', '@master', 'css')
+            const enginePackageDir = path.join(root, 'node_modules', '@master', 'css-engine')
+            const integrationPackageDir = path.join(root, 'node_modules', '@master', 'css-integration')
             const sourceDir = path.join(root, 'src')
 
             mkdirSync(cssPackageDir, { recursive: true })
