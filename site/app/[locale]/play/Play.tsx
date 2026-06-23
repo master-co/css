@@ -419,7 +419,7 @@ function formatCSSSize(cssText: string) {
 }
 
 function createPreviewHTML() {
-    return dedent`<html>
+    return dedent`<html hidden>
         <head>
             <style>${require('../../../../packages/preset/src/base.css?raw')}</style>
             <style>
@@ -558,7 +558,7 @@ export default function Play({ shareId }: PlayProps = {}) {
     const pathShareId = useMemo(() => getShareIdFromPathname(pathname), [pathname])
     const previewIframeRef = useRef<HTMLIFrameElement>(null)
     const filesRef = useRef<PlayFile[]>(template.files)
-    const compiledCSSRef = useRef('')
+    const compiledPreviewRef = useRef<PlayPreviewContent | null>(null)
     const compiledManifestRef = useRef<MasterCSSManifest>(defaultManifest)
     const compileTicketRef = useRef(0)
     const skipNextShareLoadRef = useRef('')
@@ -655,6 +655,12 @@ export default function Play({ shareId }: PlayProps = {}) {
         }, window.location.origin)
     }, [])
 
+    const postReadyPreviewUpdate = useCallback(() => {
+        const compiledPreview = compiledPreviewRef.current
+        if (!compiledPreview) return
+        postPreviewUpdate(compiledPreview.html, compiledPreview.css)
+    }, [postPreviewUpdate])
+
     const emitSemanticTokenChange = useCallback(() => {
         semanticTokenListenersRef.current.forEach((listener) => listener())
     }, [])
@@ -665,6 +671,7 @@ export default function Play({ shareId }: PlayProps = {}) {
         const sourceCSS = getFileContent(nextFiles, 'CSS')
         const classes = extractClassNamesFromHTML(html)
 
+        compiledPreviewRef.current = null
         setCompiling(true)
 
         try {
@@ -673,14 +680,15 @@ export default function Play({ shareId }: PlayProps = {}) {
             if (ticket !== compileTicketRef.current) return
 
             const cssText = result.css
-            compiledCSSRef.current = cssText
+            const compiledPreview = { html, css: cssText }
+            compiledPreviewRef.current = compiledPreview
             compiledManifestRef.current = result.manifest
             setGeneratedCSSText(cssText ? beautifyCSS(cssText) : '')
             setGeneratedCSSSize(formatCSSSize(cssText))
             setCompileWarnings(result.warnings)
             setPreviewErrorEvent(null)
             emitSemanticTokenChange()
-            postPreviewUpdate(html, cssText)
+            postPreviewUpdate(compiledPreview.html, compiledPreview.css)
         } catch (error) {
             if (ticket !== compileTicketRef.current) return
             setPreviewErrorEvent({
@@ -747,7 +755,7 @@ export default function Play({ shareId }: PlayProps = {}) {
             }
             switch (event.data?.type) {
                 case 'previewReady':
-                    postPreviewUpdate(getFileContent(filesRef.current, 'HTML'), compiledCSSRef.current)
+                    postReadyPreviewUpdate()
                     break
                 case 'error':
                     setPreviewErrorEvent(event.data)
@@ -763,7 +771,7 @@ export default function Play({ shareId }: PlayProps = {}) {
         return () => {
             window.removeEventListener('message', onMessage)
         }
-    }, [postPreviewUpdate])
+    }, [postReadyPreviewUpdate])
 
     useEffect(() => {
         const semanticTokenListeners = semanticTokenListenersRef.current
@@ -1090,7 +1098,7 @@ export default function Play({ shareId }: PlayProps = {}) {
                             style={{ width: '100%', height: '100%', borderRadius: 0, margin: 0, padding: 0, border: 0 }}
                             sandbox="allow-popups-to-escape-sandbox allow-scripts allow-popups allow-forms allow-same-origin allow-pointer-lock allow-top-navigation allow-modals"
                             srcDoc={previewHTML}
-                            onLoad={() => postPreviewUpdate(getFileContent(filesRef.current, 'HTML'), compiledCSSRef.current)}
+                            onLoad={postReadyPreviewUpdate}
                         />
                         <div className={clsx('flex flex-col h:full', { 'hidden!': preview !== 'css' })}>
                             <div className='flex bb:1px|solid|subtle flex:0|0|auto px:5x align-items:center font:12px h:48px justify-content:space-between px:10x@sm'>
@@ -1138,6 +1146,11 @@ export interface PlayFile {
 
 interface PlayProps {
     shareId?: string
+}
+
+interface PlayPreviewContent {
+    html: string
+    css: string
 }
 
 interface PlayErrorEvent {
