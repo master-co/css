@@ -21,8 +21,8 @@ Use `list-style-image:url(*)` when each list item should use an image marker.
 ### Use a gradient marker
 Gradient functions can also be used when a generated marker is more appropriate than an asset.
 ```html
-<!-- @MARK list-style-image:linear-gradient(blue-60|blue-40) -->
-<ul class="list-style-image:linear-gradient(blue-60|blue-40)">
+<!-- @MARK list-style-image:linear-gradient(var(--color-blue-60)|var(--color-blue-40)) -->
+<ul class="list-style-image:linear-gradient(var(--color-blue-60)|var(--color-blue-40))">
     <li>Gradient marker</li>
 </ul>
 ```

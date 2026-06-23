@@ -10,7 +10,7 @@
 @theme light {
     --color-card: #ffffff;
     --color-text: $color-neutral-70;
-    --color-strong: $color-neutral-95;
+    --color-text-strong: $color-neutral-95;
     --color-line: $color-neutral-20;
     --color-subtle: $color-neutral-10;
 }
@@ -18,7 +18,7 @@
 @theme dark {
     --color-card: $color-gray-80;
     --color-text: $color-gray-30;
-    --color-strong: $color-gray-0;
+    --color-text-strong: $color-gray-0;
     --color-line: $color-white/.14;
     --color-subtle: $color-white/.2;
 }

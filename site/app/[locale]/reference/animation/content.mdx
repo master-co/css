@@ -9,9 +9,9 @@ Use the `ping` animation to indicate that the shop is open.
 <Demo $py={0}>
     <div className="app-panel rel">
         <Image src="/images/vegetable-salad-in-bowls.jpg" width="400" height="250" className="aspect-ratio:400/250 untouchable" alt="vegetable salad in bowls" />
-        <div className="text:strong abs bottom:0 w:full p:12x|2.188rem|1.875rem|2.188rem bg:linear-gradient(0deg,white|0%,white/0|100%)">
+        <div className="text:neutral abs bottom:0 w:full p:12x|2.188rem|1.875rem|2.188rem bg:linear-gradient(0deg,white|0%,white/0|100%)">
             <svg className="inline-block fill:green-40 size:2x overflow:visible" viewBox="0 0 8 8" xmlns="http://www.w3.org/2000/svg">
-                <circle className="animate:ping transform:center" cx="4" cy="4" r="4" />
+                <circle className="animate:ping transform-origin:center" cx="4" cy="4" r="4" />
                 <circle cx="4" cy="4" r="4" />
             </svg>
             <span className="ml:0.625rem font:12px font:medium">Open</span>
@@ -22,7 +22,7 @@ Use the `ping` animation to indicate that the shop is open.
 ```html
 <svg class="inline-block fill:green-40 size:2x overflow:visible" viewBox="0 0 8 8" xmlns="http://www.w3.org/2000/svg">
     <!-- @MARK animate:ping -->
-    <circle class="animate:ping transform:center" cx="4" cy="4" r="4" />
+    <circle class="animate:ping transform-origin:center" cx="4" cy="4" r="4" />
     <circle cx="4" cy="4" r="4" />
 </svg>
 ```
@@ -40,7 +40,7 @@ Use the counterclockwise `rotate` animation to indicate that data is being resto
             <path d="M19.37 15.1l0 .01"></path>
             <path d="M19.94 11l0 .01"></path>
         </svg>
-        <div className="ml:0.625rem font:14px font:medium text:strong">Restoring ...</div>
+        <div className="ml:0.625rem font:14px font:medium text:neutral">Restoring ...</div>
     </div>
 </Demo>
 ```html
@@ -73,7 +73,7 @@ Use the `fade` animation on SVG paths with regular delays to create a loading sp
             <path className="animate:fade animation-delay:-.125s" d="M7.75 16.25l-2.15 2.15"></path>
             <path className="animate:fade" d="M6 12l-3 0"></path>
         </svg>
-        <div className="ml:0.625rem font:14px font:medium text:strong">Loading ...</div>
+        <div className="ml:0.625rem font:14px font:medium text:neutral">Loading ...</div>
     </div>
 </Demo>
 ```html

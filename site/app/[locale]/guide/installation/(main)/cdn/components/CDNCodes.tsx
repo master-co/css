@@ -16,7 +16,7 @@ export default () => <CodeTabs>{[
             <script src="https://cdn.master.co/css-runtime@rc"></script>
         </head>
         <body>
-            <h1 class="italic m:2xl text:strong font:5xl font:heavy">Hello World</h1>
+            <h1 class="italic m:2xl text:neutral font:5xl font:heavy">Hello World</h1>
         </body>
         </html>
     `}

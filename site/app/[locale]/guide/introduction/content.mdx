@@ -184,7 +184,7 @@ The project CSS entry is the primary manifest source. Theme tokens live in `@the
         background: var(--color-primary);
 
         @variant :interactive {
-            @compose outline:2px|solid|primary outline-offset:0.125rem;
+            @compose outline:2px|solid|blue-60 outline-offset:0.125rem;
         }
     }
 }
@@ -299,7 +299,7 @@ Assuming the card has become reusable, define it as a [component class](/guide/r
         @compose flex transition:transform|fast|smooth overflow:hidden bg:white r:xl;
 
         &:hover {
-            @compose transform:translateY(-5);
+            @compose transform:translateY(-5px);
         }
     }
 
@@ -444,7 +444,7 @@ Inline styles look similar at first, but they cannot express the CSS features mo
 
 (o) It also keeps the interface aligned with design tokens.
 ```html
-<h1 class="font:lg text:primary">Hello World</h1>
+<h1 class="font:lg text:blue-60">Hello World</h1>
 ```
 
 ---

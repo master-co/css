@@ -174,23 +174,23 @@ Use Grid when the parent owns the columns, rows, or area placement. Use Flexbox 
 | Two-axis alignment | One-axis distribution |
 
 <Demo>
-    <article className="container w:full flex flex-col flex-row@container(2xs) gap:md bg:surface b:1px|solid|subtle shadow:xs r:lg p:md">
-        <div className="grid place-content:center w:full w:36x@container(2xs) aspect-ratio:4/3 flex:0@container(2xs) bg:primary/.12 r:md">
+    <article className="container w:full flex flex-col flex-row@container(2xs) gap:md bg:white b:1px|solid|gray-20 shadow:xs r:lg p:md">
+        <div className="grid place-content:center w:full w:36x@container(2xs) aspect-ratio:4/3 flex:0@container(2xs) bg:blue-60/.12 r:md">
             <div className="grid-cols:3 gap:2xs w:20x">
-                <div className="h:5x bg:primary/.25 r:sm"></div>
-                <div className="h:5x bg:primary/.35 r:sm"></div>
-                <div className="h:5x bg:primary/.2 r:sm"></div>
-                <div className="h:5x bg:primary/.2 r:sm"></div>
-                <div className="h:5x bg:primary/.45 r:sm"></div>
-                <div className="h:5x bg:primary/.3 r:sm"></div>
+                <div className="h:5x bg:blue-60/.25 r:sm"></div>
+                <div className="h:5x bg:blue-60/.35 r:sm"></div>
+                <div className="h:5x bg:blue-60/.2 r:sm"></div>
+                <div className="h:5x bg:blue-60/.2 r:sm"></div>
+                <div className="h:5x bg:blue-60/.45 r:sm"></div>
+                <div className="h:5x bg:blue-60/.3 r:sm"></div>
             </div>
         </div>
         <div className="min-w:0 flex:1">
             <DemoLabel>Flex media object</DemoLabel>
-            <div className="font:semibold text:strong">Quarterly planning</div>
-            <p className="m:0 mt:xs text:sm text:text">The image keeps a measured basis while the content expands, shrinks, and wraps around the available inline space.</p>
+            <div className="font:semibold text:neutral">Quarterly planning</div>
+            <p className="m:0 mt:xs text:sm text:gray">The image keeps a measured basis while the content expands, shrinks, and wraps around the available inline space.</p>
             <div className="flex flex-wrap gap:xs mt:md">
-                <span className="px:xs py:2xs r:sm bg:primary/.12 text:primary text:xs">Roadmap</span>
+                <span className="px:xs py:2xs r:sm bg:blue-60/.12 text:blue-60 text:xs">Roadmap</span>
                 <span className="px:xs py:2xs r:sm bg:green/.12 text:green text:xs">Ready</span>
             </div>
         </div>

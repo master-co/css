@@ -45,8 +45,8 @@ Besides inheriting the above rules, you can use `text-*` to access global text c
 <!-- @MARK stroke:text-primary -->
 <svg class="stroke:text-primary"></svg>
 ```
-To escape inherited text colors, use `$color-blue` to apply the base hue token instead of a text color token.
+To escape inherited text colors, use `var(--color-blue)` to apply the base hue token instead of a text color token.
 ```html
-<!-- @MARK text:$color-blue -->
-<p class="text:$color-blue">...</p>
+<!-- @MARK text:var(--color-blue) -->
+<p class="text:var(--color-blue)">...</p>
 ```

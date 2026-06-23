@@ -8,35 +8,35 @@ Master CSS maps elevation to the `shadow` namespace. Use tokens such as `shadow:
 <Demo>
     <div className="container w:full">
         <div className="grid-cols:1 grid-cols:2@container(2xs) grid-cols:3@container(md) gap:lg w:full">
-            <div className="bg:surface-raised b:1px|solid|subtle r:lg p:md shadow:xs">
+            <div className="bg:white b:1px|solid|gray-20 r:lg p:md shadow:xs">
                 <DemoLabel>shadow:xs</DemoLabel>
                 <div className="font:medium">Separated</div>
-                <p className="text:muted m:0 mt:xs text:sm">Rows, compact controls</p>
+                <p className="text:gray m:0 mt:xs text:sm">Rows, compact controls</p>
             </div>
-            <div className="bg:surface-raised b:1px|solid|subtle r:lg p:md shadow:sm">
+            <div className="bg:white b:1px|solid|gray-20 r:lg p:md shadow:sm">
                 <DemoLabel>shadow:sm</DemoLabel>
                 <div className="font:medium">Raised</div>
-                <p className="text:muted m:0 mt:xs text:sm">Cards, quiet panels</p>
+                <p className="text:gray m:0 mt:xs text:sm">Cards, quiet panels</p>
             </div>
-            <div className="bg:surface-raised b:1px|solid|subtle r:lg p:md shadow:md">
+            <div className="bg:white b:1px|solid|gray-20 r:lg p:md shadow:md">
                 <DemoLabel>shadow:md</DemoLabel>
                 <div className="font:medium">Floating</div>
-                <p className="text:muted m:0 mt:xs text:sm">Hover lift, toolbars</p>
+                <p className="text:gray m:0 mt:xs text:sm">Hover lift, toolbars</p>
             </div>
-            <div className="bg:surface-raised b:1px|solid|subtle r:lg p:md shadow:lg">
+            <div className="bg:white b:1px|solid|gray-20 r:lg p:md shadow:lg">
                 <DemoLabel>shadow:lg</DemoLabel>
                 <div className="font:medium">Overlay</div>
-                <p className="text:muted m:0 mt:xs text:sm">Dropdowns, popovers</p>
+                <p className="text:gray m:0 mt:xs text:sm">Dropdowns, popovers</p>
             </div>
-            <div className="bg:surface-raised b:1px|solid|subtle r:lg p:md shadow:xl">
+            <div className="bg:white b:1px|solid|gray-20 r:lg p:md shadow:xl">
                 <DemoLabel>shadow:xl</DemoLabel>
                 <div className="font:medium">Interrupting</div>
-                <p className="text:muted m:0 mt:xs text:sm">Drawers, dialogs</p>
+                <p className="text:gray m:0 mt:xs text:sm">Drawers, dialogs</p>
             </div>
-            <div className="bg:surface-raised b:1px|solid|subtle r:lg p:md shadow:2xl">
+            <div className="bg:white b:1px|solid|gray-20 r:lg p:md shadow:2xl">
                 <DemoLabel>shadow:2xl</DemoLabel>
                 <div className="font:medium">Blocking</div>
-                <p className="text:muted m:0 mt:xs text:sm">Modals, spotlight surfaces</p>
+                <p className="text:gray m:0 mt:xs text:sm">Modals, spotlight surfaces</p>
             </div>
         </div>
     </div>
@@ -72,12 +72,12 @@ Use `shadow:<token>` for the common elevation levels. The utility resolves value
 
 ```html
 <!-- @MARK shadow:sm -->
-<article class="bg:white r:lg b:1px|solid|subtle shadow:sm">
+<article class="bg:white r:lg b:1px|solid|gray-20 shadow:sm">
     ...
 </article>
 
 <!-- @MARK shadow:lg -->
-<div class="bg:white r:lg b:1px|solid|subtle shadow:lg">
+<div class="bg:white r:lg b:1px|solid|gray-20 shadow:lg">
     ...
 </div>
 ```
@@ -113,8 +113,8 @@ The scale should describe the relationship between surfaces, not the visual dram
 Elevation only works when the surface has a clear ground. Pair shadows with background, border, and radius tokens so low elevations remain visible in both light and dark themes. Dark-mode shadows often need a subtle light edge in addition to darker depth layers, so do not judge a token from only one mode.
 
 ```html
-<!-- @MARK bg:white --><!-- @MARK b:1px|solid|subtle --><!-- @MARK r:lg --><!-- @MARK shadow:sm -->
-<article class="bg:white b:1px|solid|subtle r:lg shadow:sm p:lg">
+<!-- @MARK bg:white --><!-- @MARK b:1px|solid|gray-20 --><!-- @MARK r:lg --><!-- @MARK shadow:sm -->
+<article class="bg:white b:1px|solid|gray-20 r:lg shadow:sm p:lg">
     ...
 </article>
 ```
@@ -122,7 +122,7 @@ Elevation only works when the surface has a clear ground. Pair shadows with back
 <details>
     <summary>Generated CSS</summary>
     <Class2CSS>
-        {['bg:white', 'b:1px|solid|subtle', 'r:lg', 'shadow:sm', 'p:lg']}
+        {['bg:white', 'b:1px|solid|gray-20', 'r:lg', 'shadow:sm', 'p:lg']}
     </Class2CSS>
 </details>
 
@@ -185,8 +185,8 @@ Promote repeated raw values into the scale. Keep one-off art direction in local 
 
 ```html
 <main class="bg:white">
-    <section class="bg:white b:1px|solid|subtle">
-        <article class="bg:white b:1px|solid|subtle shadow:sm">...</article>
+    <section class="bg:white b:1px|solid|gray-20">
+        <article class="bg:white b:1px|solid|gray-20 shadow:sm">...</article>
     </section>
 </main>
 ```

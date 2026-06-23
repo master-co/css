@@ -2272,6 +2272,9 @@ importers:
       '@master/css-integration':
         specifier: workspace:^
         version: link:../packages/integration
+      '@master/css-source':
+        specifier: workspace:^
+        version: link:../packages/source
       '@master/css.next':
         specifier: workspace:^
         version: link:../packages/next

@@ -19,10 +19,10 @@ Use `text-decoration:*|*|*|*` when line, color, style, and thickness should be d
 </details>
 
 ### Use line aliases
-Use `text:underline`, `text:line-through`, or `text:overline` for common line-only decoration.
+Use `underline`, `line-through`, or `overline` for common line-only decoration.
 ```html
-<!-- @MARK text:underline -->
-<a class="text:underline">Underlined link</a>
+<!-- @MARK underline -->
+<a class="underline">Underlined link</a>
 ```
 
 ### Remove decoration
@@ -35,5 +35,5 @@ Use `text-decoration:none` when inherited link decoration should be removed deli
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<a class="text:underline:hover text-decoration:none@sm text-decoration:none@print">...</a>
+<a class="underline:hover text-decoration:none@sm text-decoration:none@print">...</a>
 ```

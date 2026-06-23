@@ -8,20 +8,20 @@ Master CSS keeps those decisions close to the element that owns them. Use `w:*` 
 <Demo>
     <div className="container w:full">
         <div className="grid-cols:1 grid-cols:2@container(2xs) gap:md w:full">
-            <section className="min-w:0 bg:surface r:lg p:lg b:1px|solid|subtle">
+            <section className="min-w:0 bg:white r:lg p:lg b:1px|solid|gray-20">
                 <DemoLabel>Fluid wrapper</DemoLabel>
                 <div className="w:full max-w:64x mx:auto">
-                    <div className="h:10x bg:primary/.15 b:1px|solid|primary/.25 r:lg"></div>
-                    <div className="mt:sm h:4x w:75% bg:primary/.1 r:sm"></div>
+                    <div className="h:10x bg:blue-60/.15 b:1px|solid|blue-60/.25 r:lg"></div>
+                    <div className="mt:sm h:4x w:75% bg:blue-60/.1 r:sm"></div>
                 </div>
             </section>
-            <section className="min-w:0 bg:surface r:lg p:lg b:1px|solid|subtle">
+            <section className="min-w:0 bg:white r:lg p:lg b:1px|solid|gray-20">
                 <DemoLabel>Measured object</DemoLabel>
-                <div className="flex items:center gap:md">
-                    <div className="size:12x round bg:primary/.15 b:1px|solid|primary/.25"></div>
+                <div className="flex items-center gap:md">
+                    <div className="size:12x round bg:blue-60/.15 b:1px|solid|blue-60/.25"></div>
                     <div className="min-w:0 flex:1">
-                        <div className="h:4x w:full max-w:28x bg:primary/.16 r:sm"></div>
-                        <div className="mt:xs h:3x w:calc(100%/3*2) bg:primary/.1 r:sm"></div>
+                        <div className="h:4x w:full max-w:28x bg:blue-60/.16 r:sm"></div>
+                        <div className="mt:xs h:3x w:calc(100%/3*2) bg:blue-60/.1 r:sm"></div>
                     </div>
                 </div>
             </section>
@@ -168,14 +168,14 @@ Use measured sizes for icons, avatars, handles, checkboxes, skeleton blocks, med
 `size:*` is not a shorter way to avoid thinking about dimensions. It is the right tool when an element is square by design.
 
 <Demo>
-    <div className="flex gap:lg items:center w:full">
+    <div className="flex gap:lg items-center w:full">
         <div className="flex:0">
             <DemoLabel>size:14x</DemoLabel>
-            <div className="size:14x grid place-content:center bg:primary/.15 b:1px|solid|primary/.25 r:lg font:medium">A</div>
+            <div className="size:14x grid place-content:center bg:blue-60/.15 b:1px|solid|blue-60/.25 r:lg font:medium">A</div>
         </div>
         <div className="flex:1 min-w:0">
             <DemoLabel>w:full h:14x</DemoLabel>
-            <div className="w:full h:14x grid place-content:center bg:primary/.15 b:1px|solid|primary/.25 r:lg font:medium">Banner</div>
+            <div className="w:full h:14x grid place-content:center bg:blue-60/.15 b:1px|solid|blue-60/.25 r:lg font:medium">Banner</div>
         </div>
     </div>
 </Demo>
@@ -208,13 +208,13 @@ When an element should keep a non-square ratio, use [aspect ratio](/reference/as
 Min and max rules are often more stable than fixed widths. They let content, containers, and responsive variants negotiate space without overflow.
 
 <Demo>
-    <div className="w:full max-w:96x mx:auto bg:surface r:lg b:1px|solid|subtle p:lg">
+    <div className="w:full max-w:96x mx:auto bg:white r:lg b:1px|solid|gray-20 p:lg">
         <DemoLabel>min-w:0 max-w:96x</DemoLabel>
         <div className="flex gap:md">
-            <div className="size:10x flex:0 bg:primary/.15 r:lg"></div>
+            <div className="size:10x flex:0 bg:blue-60/.15 r:lg"></div>
             <div className="min-w:0 flex:1">
-                <div className="font:medium text:strong">Shrinkable content</div>
-                <div className="text:muted text:sm white-space:nowrap overflow:hidden text-overflow:ellipsis">Long text can shrink inside the row without forcing the wrapper wider.</div>
+                <div className="font:medium text:neutral">Shrinkable content</div>
+                <div className="text:gray text:sm white-space:nowrap overflow:hidden text-overflow:ellipsis">Long text can shrink inside the row without forcing the wrapper wider.</div>
             </div>
         </div>
     </div>

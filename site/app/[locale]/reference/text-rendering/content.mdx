@@ -3,10 +3,10 @@
 
 ## Examples
 ### Optimize legibility
-Use `text:optimizeLegibility` for headings or short text where ligatures and kerning quality matter more than rendering speed.
+Use `text-rendering:optimizeLegibility` for headings or short text where ligatures and kerning quality matter more than rendering speed.
 ```html
-<!-- @MARK text:optimizeLegibility -->
-<h2 class="text:optimizeLegibility">
+<!-- @MARK text-rendering:optimizeLegibility -->
+<h2 class="text-rendering:optimizeLegibility">
     Product analytics
 </h2>
 ```
@@ -14,15 +14,15 @@ Use `text:optimizeLegibility` for headings or short text where ligatures and ker
 <details>
     <summary>Generated CSS</summary>
     <Class2CSS>
-        {['text:optimizeLegibility']}
+        {['text-rendering:optimizeLegibility']}
     </Class2CSS>
 </details>
 
 ### Prefer speed for dense updates
-Use `text:optimizeSpeed` in fast-updating or very dense surfaces when rendering performance matters.
+Use `text-rendering:optimizeSpeed` in fast-updating or very dense surfaces when rendering performance matters.
 ```html
-<!-- @MARK text:optimizeSpeed -->
-<div class="text:optimizeSpeed">
+<!-- @MARK text-rendering:optimizeSpeed -->
+<div class="text-rendering:optimizeSpeed">
     Streaming log output
 </div>
 ```
@@ -37,5 +37,5 @@ Use `text-rendering:auto` when the browser should choose the rendering strategy.
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<p class="text:optimizeLegibility:hover text-rendering:auto@sm text-rendering:auto@print">...</p>
+<p class="text-rendering:optimizeLegibility:hover text-rendering:auto@sm text-rendering:auto@print">...</p>
 ```

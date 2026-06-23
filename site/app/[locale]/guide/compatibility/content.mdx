@@ -16,7 +16,7 @@ That means Master CSS works best in projects that target browsers with cascade l
 ## Browser support
 The Master CSS engine does not polyfill every CSS feature. It generates CSS from the classes you use, so browser support is usually determined by the final CSS property, value, selector, at-rule, or platform feature in that output.
 
-For example, `bg:red` depends on normal `background-color` support, while `backdrop-filter:blur(16)` depends on `backdrop-filter` support. Modern features should be checked in [Can I use](https://caniuse.com/) or MDN before relying on them in production.
+For example, `bg:red` depends on normal `background-color` support, while `backdrop-filter:blur(16px)` depends on `backdrop-filter` support. Modern features should be checked in [Can I use](https://caniuse.com/) or MDN before relying on them in production.
 
 Property-like classes can also fall back to native CSS declarations. In the browser runtime, Master CSS validates those declarations with `CSS.supports(property, value)`. Static, server, extraction, compiler, validator, and linting workflows use a CSS syntax matcher so invalid declarations such as `display:banana` do not emit CSS. High-frequency native properties such as spacing, sizing, radius, color, and timing still keep curated Master CSS token and unit behavior before this native validation step.
 
@@ -35,13 +35,13 @@ Master CSS includes built-in vendor prefixes for common CSS properties and selec
 Write the unprefixed class:
 
 ```html
-<div class="backdrop-filter:blur(16)">…</div>
+<div class="backdrop-filter:blur(16px)">…</div>
 ```
 
 <details open>
     <summary>Generated CSS</summary>
     <Class2CSS>
-        {['backdrop-filter:blur(16)']}
+        {['backdrop-filter:blur(16px)']}
     </Class2CSS>
 </details>
 
@@ -213,7 +213,7 @@ Use native CSS variables from your theme when module-scoped or component-scoped 
 Use Master CSS classes in markup for styling that should be generated, validated, ordered, and highlighted by Master CSS tooling:
 
 ```html
-<button class="bg:primary r:md px:md h:40px">Save</button>
+<button class="bg:blue r:md px:md h:40px">Save</button>
 ```
 
 When a CSS file imports `@master/css`, it becomes a Master-managed stylesheet. Keep vendor, CMS, or externally injected classes outside managed roots unless the class usage is visible to extraction or protected with [`@preserve native`](/guide/native-css-pruning#default-pruning).

@@ -5,14 +5,14 @@
 ### Clip to a circle
 Use `clip-path:circle(*)` to apply a circular clip path.
 ```html
-<!-- @MARK clip-path:circle(50%) -->
-<img class="clip-path:circle(50%)" src="/images/avatar.jpg" alt="Avatar">
+<!-- @MARK clip-path:circle(40px) -->
+<img class="clip-path:circle(40px)" src="/images/avatar.jpg" alt="Avatar">
 ```
 
 <details>
     <summary>Generated CSS</summary>
     <Class2CSS>
-        {['clip-path:circle(50%)']}
+        {['clip-path:circle(40px)']}
     </Class2CSS>
 </details>
 
@@ -29,11 +29,11 @@ Use `clip-path:inset(*)` with `|` between values when the inset has multiple sid
 Use `clip-none` when a responsive or state variant should restore the full element.
 ```html
 <!-- @MARK clip-none -->
-<img class="clip-path:circle(50%) clip-none@sm" src="/images/avatar.jpg" alt="Avatar">
+<img class="clip-path:circle(40px) clip-none@sm" src="/images/avatar.jpg" alt="Avatar">
 ```
 
 ### Apply conditionally
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
-<div class="clip-path:inset(0|20px):hover clip-path:circle(50%)@sm clip-none@print">...</div>
+<div class="clip-path:inset(0|20px):hover clip-path:circle(40px)@sm clip-none@print">...</div>
 ```

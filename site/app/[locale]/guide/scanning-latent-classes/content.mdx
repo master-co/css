@@ -64,7 +64,7 @@ Scanning is intentionally broad. The scanner looks through markup, JSX, strings,
 
 ```tsx name=src/Button.tsx
 const toneClasses = {
-    neutral: 'bg:white text:text',
+    neutral: 'bg:white text:neutral',
     destructive: 'bg:red-60 text:white'
 }
 
@@ -81,7 +81,7 @@ The scanner can see all complete class strings in this file:
 
 ```txt
 bg:white
-text:text
+text:neutral
 bg:red-60
 text:white
 btn
@@ -93,7 +93,7 @@ It will also see unrelated words from source text. That is expected. Candidates 
 
 ```tsx name=src/EmptyState.tsx
 export function EmptyState() {
-    return <p className="text:muted">No invoices found.</p>
+    return <p className="text:gray">No invoices found.</p>
 }
 ```
 
@@ -115,7 +115,7 @@ After candidate scanning, Master CSS validates each class against the active man
     }
 
     hero-title {
-        @compose m:0 font:5xl font:heavy text:strong;
+        @compose m:0 font:5xl font:heavy text:neutral;
     }
 }
 ```
@@ -224,7 +224,7 @@ Use `@safelist` for bounded classes that do not exist in scanned source. Common 
 
 ```css name=index.css
 @master;
-@safelist 'dialog-open transform:translateY(-5):hover bg:blue-60@dark';
+@safelist 'opacity:1 transform:translateY(-5px):hover bg:blue-60@dark';
 ```
 
 `@safelist` does not bypass validation. The class still needs to be a valid Master CSS class, a project-defined class from the compiled manifest, or a known native class from a pruned stylesheet.
