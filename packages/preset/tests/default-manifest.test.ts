@@ -11,12 +11,15 @@ import {
 import UtilityType from 'shared/utility-type'
 import { createDefaultManifestFromSourceFile } from '../scripts/generate-default-manifest'
 import defaultManifestJSON from '../src/default-manifest.json' with { type: 'json' }
-import type { MasterCSSManifest } from 'shared/master-css-manifest'
+import { flattenMasterCSSManifestVariables, type MasterCSSManifest } from 'shared/master-css-manifest'
 
 const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 
 function createTestCSS(manifest: MasterCSSManifest, options: Omit<MasterCSSCreateOptions, 'manifest'> = {}) {
     return MasterCSS.create({ manifest, ...options })
+}
+function variablesOf(manifest: MasterCSSManifest) {
+    return flattenMasterCSSManifestVariables(manifest.variables)
 }
 const __dirname = dirname(fileURLToPath(import.meta.url))
 let compiledDefaultManifest: MasterCSSManifest
@@ -226,10 +229,14 @@ describe('@master/css-preset defaultManifest', () => {
     it('matches the readable preset sources', () => {
         const manifest = getCompiledDefaultManifest()
         const utilities = manifest.utilities || []
+        const compiledUtilities = createTestCSS(manifest).definedUtilities
 
         expect(utilities).toHaveLength(176)
-        expect(utilities[0]?.order).toBe(utilities.length - 1)
-        expect(utilities[utilities.length - 1]?.order).toBe(0)
+        expect(utilities.some((utility) => 'order' in utility)).toBe(false)
+        expect(utilities.some((utility) => utility.layer === 'utilities')).toBe(false)
+        expect(utilities.some((utility) => utility.name === utility.id)).toBe(false)
+        expect(compiledUtilities[0]?.order).toBe(utilities.length - 1)
+        expect(compiledUtilities[compiledUtilities.length - 1]?.order).toBe(0)
         expect(utilities.some((utility) => utility.id === 'group')).toBe(false)
         expect(utilities.some((utility) => (utility.emit as { type: string }).type === 'group')).toBe(false)
         expect(utilities.some((utility) => utility.matchers.some((matcher) => (matcher as { type: string }).type === 'group'))).toBe(false)
@@ -250,7 +257,7 @@ describe('@master/css-preset defaultManifest', () => {
 
     it('matches the CSS-authored preset manifest facets', () => {
         const compiledManifest = getCompiledDefaultManifest()
-        expect(compiledManifest.variables).toEqual(defaultManifest.variables)
+        expect(variablesOf(compiledManifest)).toEqual(variablesOf(defaultManifest))
         expect(compiledManifest.animations).toEqual(defaultManifest.animations)
         expect(stripRaw(compiledManifest.variants)).toEqual(stripRaw(defaultManifest.variants))
         expect(compiledManifest.atRules).toEqual(defaultManifest.atRules)
@@ -260,7 +267,7 @@ describe('@master/css-preset defaultManifest', () => {
     }, 60000)
 
     it('does not publish the removed px inline alias', () => {
-        expect(defaultManifest.variables?.some((variable) => variable.name === 'px')).toBe(false)
+        expect(variablesOf(defaultManifest).some((variable) => variable.name === 'px')).toBe(false)
     })
 
     it('does not publish removed static utility shortcuts', () => {
@@ -286,7 +293,7 @@ describe('@master/css-preset defaultManifest', () => {
     })
 
     it('keeps preset variable alias refs inside registered namespaces', () => {
-        const variableNamespaces = new Set((defaultManifest.variables || [])
+        const variableNamespaces = new Set(variablesOf(defaultManifest)
             .map((variable) => variable.namespace)
             .filter((namespace): namespace is string => Boolean(namespace)))
         const variableAliasRefs = [
@@ -362,7 +369,10 @@ describe('@master/css-preset defaultManifest', () => {
         expect(css.createRule('sr-only')?.text).toContain('position:absolute')
         expect(css.createRule('sr-only')?.text).toContain('clip:rect(0, 0, 0, 0)')
 
-        expect(defaultManifest.utilityBuckets?.pattern).toHaveLength(38)
+        expect('utilityBuckets' in defaultManifest).toBe(false)
+        expect((defaultManifest.utilities || [])
+            .filter((utility) => utility.matchers.some((matcher) => matcher.type === 'pattern')))
+            .toHaveLength(38)
         expect(defaultManifest.utilities?.some((utility) => utility.id === '.text-center')).toBe(false)
         expect(defaultManifest.utilities?.find((utility) => utility.id === 'text-<left|center|right|start|end|justify>'))
             .toMatchObject({
@@ -553,8 +563,10 @@ describe('@master/css-preset defaultManifest', () => {
             expect('values' in utility, utility.id).toBe(false)
             expect('transform' in utility, utility.id).toBe(false)
         }
-        for (const index of defaultManifest.utilityBuckets?.value || []) {
-            expect(defaultManifest.utilities?.[index]?.kind, defaultManifest.utilities?.[index]?.id).toBeDefined()
+        for (const utility of defaultManifest.utilities || []) {
+            if (utility.matchers.some((matcher) => matcher.type === 'value')) {
+                expect(utility.kind, utility.id).toBeDefined()
+            }
         }
     })
 
@@ -649,17 +661,12 @@ describe('@master/css-preset defaultManifest', () => {
         const ids = new Map<string, number[]>()
         for (const [index, utility] of utilities.entries()) {
             expect(utility.matchers?.length).toBeGreaterThan(0)
-            const id = utility.id || utility.name
+            const id = utility.id
             ids.set(id, [...(ids.get(id) || []), index])
         }
 
         expect([...ids].filter(([, indexes]) => indexes.length > 1)).toEqual([])
-
-        for (const [bucketName, indexes] of Object.entries(defaultManifest.utilityBuckets || {})) {
-            const bucketIndexes = indexes as number[]
-            expect(bucketIndexes.length, bucketName).toBeGreaterThan(0)
-            expect(new Set(bucketIndexes).size, bucketName).toBe(bucketIndexes.length)
-            expect(bucketIndexes.every((index) => index >= 0 && index < utilities.length), bucketName).toBe(true)
-        }
+        expect('utilityBuckets' in defaultManifest).toBe(false)
+        expect(createTestCSS(defaultManifest).definedUtilities).toHaveLength(utilities.length)
     })
 })

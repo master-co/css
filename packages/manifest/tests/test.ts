@@ -11,6 +11,7 @@ import {
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { tmpdir } from 'node:os'
+import { flattenMasterCSSManifestVariables } from 'shared/master-css-manifest'
 
 function createFixture() {
     return mkdtempSync(join(tmpdir(), 'master-css-manifester-'))
@@ -56,7 +57,7 @@ test('loads CSS manifest resources', async () => {
             generatedCSS: ''
         })
         expect(result.manifest.version).toBe(1)
-        expect(result.manifest.variables).toContainEqual(expect.objectContaining({
+        expect(flattenMasterCSSManifestVariables(result.manifest.variables)).toContainEqual(expect.objectContaining({
             name: 'color-primary',
             namespace: 'color',
             key: 'primary',
@@ -84,7 +85,7 @@ test('loads CSS manifest resources synchronously', () => {
             ]
         })
         expect(result.manifest.version).toBe(1)
-        expect(result.manifest.variables).toContainEqual(expect.objectContaining({
+        expect(flattenMasterCSSManifestVariables(result.manifest.variables)).toContainEqual(expect.objectContaining({
             name: 'color-primary',
             namespace: 'color',
             key: 'primary',
@@ -119,7 +120,7 @@ test('loads package entry preset manifest from CSS imports', async () => {
         const packageDependencies = result.dependencies
             .filter((dependency) => !dependency.startsWith(cwd))
         expect(packageDependencies.length).toBeGreaterThan(1)
-        expect(result.manifest.variables).toContainEqual(expect.objectContaining({
+        expect(flattenMasterCSSManifestVariables(result.manifest.variables)).toContainEqual(expect.objectContaining({
             name: 'breakpoint-sm',
             namespace: 'breakpoint',
             key: 'sm',

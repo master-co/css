@@ -1,6 +1,7 @@
 import { describe, expect, test } from 'vitest'
 import { MasterCSS } from '../src'
 import { cloneManifest } from './helpers/css-tester'
+import { flattenMasterCSSManifestVariables, groupMasterCSSManifestVariables } from 'shared/master-css-manifest'
 
 describe.concurrent('ThemeLayer', () => {
     test('keeps default variable buckets before mode buckets when defaults are inserted later', () => {
@@ -12,8 +13,9 @@ describe.concurrent('ThemeLayer', () => {
             modes: ['light', 'dark']
         }
         const overriddenVariables = new Set(['color-blue', 'color-accent', 'color-amber-10'])
-        manifest.variables = [
-            ...(manifest.variables || []).filter((variable) => !variable.name || !overriddenVariables.has(variable.name)),
+        manifest.variables = groupMasterCSSManifestVariables([
+            ...flattenMasterCSSManifestVariables(manifest.variables)
+                .filter((variable) => !variable.name || !overriddenVariables.has(variable.name)),
             {
                 name: 'color-blue',
                 key: 'blue',
@@ -42,7 +44,7 @@ describe.concurrent('ThemeLayer', () => {
                 type: 'string',
                 value: '#fed'
             }
-        ]
+        ])
 
         const css = MasterCSS.create({ manifest: manifest })
         css.add('fg:blue')

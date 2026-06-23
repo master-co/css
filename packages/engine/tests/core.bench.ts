@@ -66,10 +66,7 @@ function createPatternBenchmarkManifest(separator: '-' | '_'): MasterCSSManifest
         settings: {
             modes: []
         },
-        utilities,
-        utilityBuckets: {
-            pattern: utilities.map((_, index) => index)
-        }
+        utilities
     }
 }
 

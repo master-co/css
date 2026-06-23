@@ -178,10 +178,10 @@ function collectClassEntries(css: MasterCSS) {
 
 function createPseudoClassSelectors(css: MasterCSS) {
     const selectors = new Map<string, string>([[':of', ':of']])
-    for (const variant of css.manifest.variants || []) {
-        const selector = variant.branches.find((branch) => branch.selector)?.selector
-        if (selector && variant.token.startsWith(':') && !variant.token.startsWith('::')) {
-            selectors.set(variant.token, selector)
+    for (const [token, branches] of css.variants) {
+        const selector = branches.find((branch) => branch.selector)?.selector
+        if (selector && token.startsWith(':') && !token.startsWith('::')) {
+            selectors.set(token, selector)
         }
     }
     return Array.from(selectors, ([token, selector]) => ({ token, selector }))
@@ -189,10 +189,10 @@ function createPseudoClassSelectors(css: MasterCSS) {
 
 function createPseudoElementSelectors(css: MasterCSS) {
     const selectors: SelectorVariantCandidate[] = []
-    for (const variant of css.manifest.variants || []) {
-        const selector = variant.branches.find((branch) => branch.selector)?.selector
-        if (selector && variant.token.startsWith('::')) {
-            selectors.push({ token: variant.token, selector })
+    for (const [token, branches] of css.variants) {
+        const selector = branches.find((branch) => branch.selector)?.selector
+        if (selector && token.startsWith('::')) {
+            selectors.push({ token, selector })
         }
     }
     return selectors

@@ -9,7 +9,6 @@ export const externalManifest = {
             id: '.btn',
             name: 'btn',
             type: UtilityType.Semantic,
-            order: 0,
             layer: 'components',
             emit: {
                 type: 'static',
@@ -19,10 +18,7 @@ export const externalManifest = {
             },
             matchers: [{ type: 'static', name: 'btn' }]
         }
-    ],
-    utilityBuckets: {
-        arbitrary: [0]
-    }
+    ]
 } as unknown as MasterCSSManifest
 
 export const externalHydrationManifest = {

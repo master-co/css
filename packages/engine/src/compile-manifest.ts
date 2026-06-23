@@ -12,6 +12,7 @@ import type {
     MasterCSSManifestVariantBranch,
     MasterCSSManifestVariantToken
 } from 'shared/master-css-manifest'
+import { flattenMasterCSSManifestVariables } from 'shared/master-css-manifest'
 import UtilityType from 'shared/utility-type'
 import { MATCH_NAME_BOUNDARY } from './common'
 import builtinKeyAliases from './key-aliases'
@@ -19,7 +20,9 @@ import builtinNativeValueNamespaces, { type MasterCSSBuiltinNativeValueNamespace
 import type { AtRule } from './utils/parse-at'
 import type { SelectorNode } from './utils/parse-selector'
 
-export type CompiledUtility = Omit<MasterCSSManifestUtility, 'emit'> & {
+export type CompiledUtility = Omit<MasterCSSManifestUtility, 'emit' | 'name' | 'order'> & {
+    name: string
+    order: number
     emit: MasterCSSManifestUtility['emit'] | { type: 'group' }
     variables?: Map<string, Variable>
 }
@@ -73,6 +76,12 @@ const compiledManifestCache = new WeakMap<MasterCSSManifest, CompiledManifest>()
 function assertMasterCSSManifest(manifest: MasterCSSManifest): asserts manifest is MasterCSSManifest {
     if (!manifest || manifest.version !== 1) {
         throw new TypeError('Unsupported MasterCSSManifest version. Expected version 1.')
+    }
+    if (Array.isArray((manifest as { variables?: unknown }).variables)) {
+        throw new TypeError('Unsupported MasterCSSManifest variables format. Expected namespace-grouped variables.')
+    }
+    if ('utilityBuckets' in manifest) {
+        throw new TypeError('Unsupported MasterCSSManifest utilityBuckets field. Matcher indexes are engine-derived.')
     }
 }
 
@@ -222,7 +231,7 @@ function compileKeyAliases() {
 
 function compileVariables(manifest: MasterCSSManifest) {
     const variables = new Map<string, Variable>()
-    for (const definition of manifest.variables || []) {
+    for (const definition of flattenMasterCSSManifestVariables(manifest.variables)) {
         if (!definition.name || !definition.type || definition.value === false) continue
         variables.set(definition.name, {
             name: definition.name,
@@ -321,10 +330,15 @@ function createVariableAliasRefResolver(variables: Map<string, Variable>) {
 function compileUtilityDefinition(
     utility: MasterCSSManifestUtility,
     variables: Map<string, Variable>,
-    resolveAliasRef: (ref: string) => MasterCSSManifestVariableAliasSet
+    resolveAliasRef: (ref: string) => MasterCSSManifestVariableAliasSet,
+    index = 0,
+    count = 1
 ): CompiledUtility {
     const definedUtility = {
         ...utility,
+        name: utility.name || utility.id,
+        order: utility.order ?? count - index - 1,
+        layer: utility.layer || 'utilities',
         matchers: utility.matchers.map((matcher: MasterCSSManifestUtilityMatcher) => ({ ...matcher }))
     } as CompiledUtility
 
@@ -402,11 +416,40 @@ function registerNativeDeclarationFastPathPolicy(
     }
 }
 
-function loadBucket(target: CompiledUtility[], definedUtilities: CompiledUtility[], indexes: number[] | undefined) {
-    if (!indexes) return
-    for (const index of indexes) {
-        const utility = definedUtilities[index]
-        if (utility) target.push(utility)
+function pushBucketUtility(target: CompiledUtility[], utility: CompiledUtility) {
+    if (!target.includes(utility)) target.push(utility)
+}
+
+function registerUtilityMatcherBuckets(
+    utility: CompiledUtility,
+    buckets: {
+        variableMatcherUtilities: CompiledUtility[]
+        valueMatcherUtilities: CompiledUtility[]
+        keyMatcherUtilities: CompiledUtility[]
+        patternMatcherUtilities: CompiledUtility[]
+        arbitraryMatcherUtilities: CompiledUtility[]
+    }
+) {
+    for (const matcher of utility.matchers) {
+        switch (matcher.type) {
+            case 'variable':
+                if (utility.variableAliases?.length || utility.variableAliasRefs?.length) {
+                    pushBucketUtility(buckets.variableMatcherUtilities, utility)
+                }
+                break
+            case 'value':
+                if (utility.kind) pushBucketUtility(buckets.valueMatcherUtilities, utility)
+                break
+            case 'key':
+                pushBucketUtility(buckets.keyMatcherUtilities, utility)
+                break
+            case 'pattern':
+                pushBucketUtility(buckets.patternMatcherUtilities, utility)
+                break
+            default:
+                pushBucketUtility(buckets.arbitraryMatcherUtilities, utility)
+                break
+        }
     }
 }
 
@@ -423,17 +466,20 @@ function compileUtilities(
     const arbitraryMatcherUtilities: CompiledUtility[] = []
     const nativeDeclarationFastPathBlockedProperties = new Set<string>()
 
-    for (const utility of manifest.utilities || []) {
-        const definedUtility = compileUtilityDefinition(utility, variables, resolveAliasRef)
+    const manifestUtilities = manifest.utilities || []
+    for (let index = 0; index < manifestUtilities.length; index++) {
+        const utility = manifestUtilities[index]
+        const definedUtility = compileUtilityDefinition(utility, variables, resolveAliasRef, index, manifestUtilities.length)
         registerNativeDeclarationFastPathPolicy(nativeDeclarationFastPathBlockedProperties, definedUtility)
         definedUtilities.push(definedUtility)
+        registerUtilityMatcherBuckets(definedUtility, {
+            variableMatcherUtilities,
+            valueMatcherUtilities,
+            keyMatcherUtilities,
+            patternMatcherUtilities,
+            arbitraryMatcherUtilities
+        })
     }
-
-    loadBucket(variableMatcherUtilities, definedUtilities, manifest.utilityBuckets?.variable)
-    loadBucket(valueMatcherUtilities, definedUtilities, manifest.utilityBuckets?.value)
-    loadBucket(keyMatcherUtilities, definedUtilities, manifest.utilityBuckets?.key)
-    loadBucket(patternMatcherUtilities, definedUtilities, manifest.utilityBuckets?.pattern)
-    loadBucket(arbitraryMatcherUtilities, definedUtilities, manifest.utilityBuckets?.arbitrary)
 
     return {
         definedUtilities,

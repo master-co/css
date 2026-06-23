@@ -1,7 +1,11 @@
 import { describe, expect, test } from 'vitest'
 import { MasterCSS } from '@master/css-engine'
 import defaultManifestJSON from '../src/default-manifest.json' with { type: 'json' }
-import type { MasterCSSManifest } from 'shared/master-css-manifest'
+import {
+    flattenMasterCSSManifestVariables,
+    groupMasterCSSManifestVariables,
+    type MasterCSSManifest
+} from 'shared/master-css-manifest'
 
 const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 
@@ -10,7 +14,7 @@ function createTestCSS(manifest: MasterCSSManifest) {
 }
 
 function findVariable(name: string) {
-    return defaultManifest.variables?.find((variable) => variable.name === name)
+    return flattenMasterCSSManifestVariables(defaultManifest.variables).find((variable) => variable.name === name)
 }
 
 const removedVariableNames = [
@@ -241,7 +245,8 @@ describe.concurrent('@master/css-preset design token parity', () => {
     })
 
     test('does not publish synthetic negative number tokens', () => {
-        expect(defaultManifest.variables?.filter((variable) => variable.type === 'number' && variable.name?.startsWith('-'))).toEqual([])
+        expect(flattenMasterCSSManifestVariables(defaultManifest.variables)
+            .filter((variable) => variable.type === 'number' && variable.name?.startsWith('-'))).toEqual([])
         expect(Object.hasOwn(defaultManifest, 'variableNamespaces')).toBe(false)
         expect(Object.hasOwn(defaultManifest, 'variableAliasSets')).toBe(false)
     })
@@ -279,8 +284,8 @@ describe.concurrent('@master/css-preset design token parity', () => {
 
     test('keeps project text and line role namespaces available', () => {
         const manifest = JSON.parse(JSON.stringify(defaultManifest)) as MasterCSSManifest
-        manifest.variables = [
-            ...(manifest.variables || []),
+        manifest.variables = groupMasterCSSManifestVariables([
+            ...flattenMasterCSSManifestVariables(manifest.variables),
             {
                 name: 'color-text-body',
                 key: 'body',
@@ -295,7 +300,7 @@ describe.concurrent('@master/css-preset design token parity', () => {
                 type: 'string',
                 value: '#ddd'
             }
-        ]
+        ])
 
         const css = createTestCSS(manifest)
 

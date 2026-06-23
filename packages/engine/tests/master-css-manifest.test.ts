@@ -1,8 +1,11 @@
 import { describe, expect, it } from 'vitest'
 import UtilityType from 'shared/utility-type'
 import type { MasterCSSManifest } from 'shared/master-css-manifest'
+import { groupMasterCSSManifestVariables } from 'shared/master-css-manifest'
 import { MasterCSS } from '../src'
 import createHydrationManifest from '../src/hydration-manifest'
+
+const variables = groupMasterCSSManifestVariables
 
 describe.concurrent('MasterCSSManifest execution', () => {
     it('executes semantic enum pattern utilities after exact semantic utilities', () => {
@@ -49,11 +52,7 @@ describe.concurrent('MasterCSSManifest execution', () => {
                         name: 'text-center'
                     }]
                 }
-            ],
-            utilityBuckets: {
-                pattern: [0],
-                arbitrary: [1]
-            }
+            ]
         }
         const css = MasterCSS.create({ manifest: manifest })
 
@@ -91,10 +90,7 @@ describe.concurrent('MasterCSSManifest execution', () => {
                     },
                     matchers: [{ type: 'static', name: 'btn' }]
                 }
-            ],
-            utilityBuckets: {
-                arbitrary: [0, 1]
-            }
+            ]
         }
 
         expect(MasterCSS.create({ manifest: manifest }).createRules('btn').map(({ text }) => text)).toEqual([
@@ -125,10 +121,7 @@ describe.concurrent('MasterCSSManifest execution', () => {
                         values: ['left', 'right']
                     }]
                 }
-            ],
-            utilityBuckets: {
-                pattern: [0]
-            }
+            ]
         }
 
         expect(MasterCSS.create({ manifest: manifest }).createRule('icon_left')?.text)
@@ -141,9 +134,9 @@ describe.concurrent('MasterCSSManifest execution', () => {
             settings: {
                 modes: []
             },
-            variables: [
+            variables: variables([
                 { name: 'color-line', key: 'line', namespace: 'color', type: 'string', value: '#cccccc' }
-            ],
+            ]),
             utilities: [
                 {
                     id: 'b:<number>',
@@ -190,11 +183,7 @@ describe.concurrent('MasterCSSManifest execution', () => {
                         }
                     ]
                 }
-            ],
-            utilityBuckets: {
-                variable: [1],
-                value: [0, 1]
-            }
+            ]
         }
         const css = MasterCSS.create({ manifest: manifest })
 
@@ -210,7 +199,7 @@ describe.concurrent('MasterCSSManifest execution', () => {
                 rootSize: 16,
                 modes: []
             },
-            variables: [
+            variables: variables([
                 {
                     name: 'spacing-card',
                     key: 'card',
@@ -218,7 +207,7 @@ describe.concurrent('MasterCSSManifest execution', () => {
                     type: 'number',
                     value: 16
                 }
-            ],
+            ]),
             utilities: [
                 {
                     id: 'margin',
@@ -234,11 +223,7 @@ describe.concurrent('MasterCSSManifest execution', () => {
                     ],
                     variableAliases: [['card', 'spacing-card']]
                 }
-            ],
-            utilityBuckets: {
-                variable: [0],
-                key: [0]
-            }
+            ]
         }
 
         expect(MasterCSS.create({ manifest: manifest }).createRule('m:card')?.text)
@@ -252,13 +237,13 @@ describe.concurrent('MasterCSSManifest execution', () => {
                 rootSize: 16,
                 modes: []
             },
-            variables: [
+            variables: variables([
                 { name: 'spacing-card', key: 'card', namespace: 'spacing', type: 'number', value: 16 },
                 { name: 'color-muted', key: 'muted', namespace: 'color', type: 'string', value: '#888888' },
                 { name: 'color-text-muted', key: 'muted', namespace: 'color-text', type: 'string', value: '#777777' },
                 { name: 'color-line-muted', key: 'muted', namespace: 'color-line', type: 'string', value: '#666666' },
                 { name: 'radius-card', key: 'card', namespace: 'radius', type: 'number', value: 12 }
-            ],
+            ]),
             utilities: [
                 {
                     id: 'margin',
@@ -304,10 +289,7 @@ describe.concurrent('MasterCSSManifest execution', () => {
                     emit: { type: 'property', property: 'border-radius' },
                     matchers: [{ type: 'variable', keys: ['r'] }]
                 }
-            ],
-            utilityBuckets: {
-                variable: [0, 1, 2, 3]
-            }
+            ]
         }
         const css = MasterCSS.create({ manifest: manifest })
 
@@ -328,9 +310,9 @@ describe.concurrent('MasterCSSManifest execution', () => {
                 rootSize: 16,
                 modes: []
             },
-            variables: [
+            variables: variables([
                 { name: 'spacing-card', key: 'card', namespace: 'spacing', type: 'number', value: 16 }
-            ],
+            ]),
             utilities: [
                 {
                     id: 'margin',
@@ -343,10 +325,7 @@ describe.concurrent('MasterCSSManifest execution', () => {
                     emit: { type: 'property', property: 'margin' },
                     matchers: [{ type: 'variable', keys: ['m'] }]
                 }
-            ],
-            utilityBuckets: {
-                variable: [0]
-            }
+            ]
         }
         const emittedGlobalsCSS = MasterCSS.create({
             manifest,
@@ -401,9 +380,9 @@ describe.concurrent('MasterCSSManifest execution', () => {
                 rootSize: 16,
                 modes: []
             },
-            variables: [
+            variables: variables([
                 { name: 'spacing-card', key: 'card', namespace: 'spacing', type: 'number', value: 16 }
-            ],
+            ]),
             keyAliases: {
                 fakeAlias: 'color'
             },
@@ -422,6 +401,26 @@ describe.concurrent('MasterCSSManifest execution', () => {
     it('rejects v2 manifests instead of compatibility-loading them', () => {
         expect(() => MasterCSS.create({ manifest: { version: 2 } as unknown as MasterCSSManifest }))
             .toThrow('Unsupported MasterCSSManifest version. Expected version 1.')
+    })
+
+    it('rejects stale flat v1 variable manifests instead of compatibility-loading them', () => {
+        expect(() => MasterCSS.create({
+            manifest: {
+                version: 1,
+                variables: [
+                    { name: 'spacing-card', key: 'card', namespace: 'spacing', type: 'number', value: 16 }
+                ]
+            } as unknown as MasterCSSManifest
+        })).toThrow('Unsupported MasterCSSManifest variables format. Expected namespace-grouped variables.')
+    })
+
+    it('rejects stale v1 utility bucket manifests instead of compatibility-loading them', () => {
+        expect(() => MasterCSS.create({
+            manifest: {
+                version: 1,
+                utilityBuckets: {}
+            } as unknown as MasterCSSManifest
+        })).toThrow('Unsupported MasterCSSManifest utilityBuckets field. Matcher indexes are engine-derived.')
     })
 
     it('uses compiled at-rule aliases from the manifest', () => {
@@ -452,10 +451,7 @@ describe.concurrent('MasterCSSManifest execution', () => {
                     emit: { type: 'property', property: 'margin' },
                     matchers: [{ type: 'key', keys: ['m'] }]
                 }
-            ],
-            utilityBuckets: {
-                key: [0]
-            }
+            ]
         }
 
         expect(MasterCSS.create({ manifest: manifest }).createRule('m:1rem@card')?.text)
@@ -469,7 +465,7 @@ describe.concurrent('MasterCSSManifest execution', () => {
                 rootSize: 16,
                 modes: []
             },
-            variables: [
+            variables: variables([
                 {
                     name: 'color-brand',
                     key: 'brand',
@@ -477,7 +473,7 @@ describe.concurrent('MasterCSSManifest execution', () => {
                     type: 'string',
                     value: '#123456'
                 }
-            ],
+            ]),
             animations: {
                 fade: {
                     from: { opacity: 0 },
@@ -534,12 +530,7 @@ describe.concurrent('MasterCSSManifest execution', () => {
                     },
                     matchers: [{ type: 'static', name: 'multi' }]
                 }
-            ],
-            utilityBuckets: {
-                arbitrary: [0, 3],
-                variable: [1],
-                key: [2]
-            }
+            ]
         }
         const css = MasterCSS.create({ manifest: manifest })
         css.add('block:hover@card', 'fg:brand', 'animation:fade|1s', 'multi')

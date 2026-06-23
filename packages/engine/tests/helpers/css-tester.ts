@@ -7,6 +7,7 @@ import type {
     MasterCSSManifestUtilityLayerName,
     MasterCSSManifestUtilityRule
 } from 'shared/master-css-manifest'
+import { flattenMasterCSSManifestVariables, groupMasterCSSManifestVariables } from 'shared/master-css-manifest'
 import { builtinNativeValueNamespaces, MasterCSS } from '../../src'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
 
@@ -180,10 +181,10 @@ export function createDefaultCSS() {
 
 export function createManifestWithVariables(variables: MasterCSSManifestVariable[], baseManifest = defaultManifest): MasterCSSManifest {
     const manifest = cloneManifest(baseManifest)
-    manifest.variables = [
-        ...(manifest.variables || []),
+    manifest.variables = groupMasterCSSManifestVariables([
+        ...flattenMasterCSSManifestVariables(manifest.variables),
         ...variables
-    ]
+    ])
 
     return manifest
 }
@@ -195,8 +196,6 @@ export function createCSSWithVariables(variables: MasterCSSManifestVariable[], b
 export function createManifestWithSemanticUtilities(utilities: SemanticUtilityInput[], baseManifest = defaultManifest): MasterCSSManifest {
     const manifest = cloneManifest(baseManifest)
     manifest.utilities ??= []
-    manifest.utilityBuckets ??= {}
-    manifest.utilityBuckets.arbitrary ??= []
 
     for (const utility of utilities) {
         const index = manifest.utilities.length
@@ -216,7 +215,6 @@ export function createManifestWithSemanticUtilities(utilities: SemanticUtilityIn
                 name
             }]
         })
-        manifest.utilityBuckets.arbitrary.push(index)
     }
 
     return manifest

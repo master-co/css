@@ -1,6 +1,11 @@
 import { defaultManifest, UtilityType, type MasterCSSManifest } from '../../src'
+import {
+    flattenMasterCSSManifestVariables,
+    groupMasterCSSManifestVariables,
+    type MasterCSSManifestVariable
+} from 'shared/master-css-manifest'
 
-type PlanVariableDraft = NonNullable<MasterCSSManifest['variables']>[number]
+type PlanVariableDraft = MasterCSSManifestVariable
 type ManifestUtilityDraft = Partial<NonNullable<MasterCSSManifest['utilities']>[number]> & {
     declarations?: Record<string, string | number>
     rules?: { selector?: string, declarations: Record<string, string | number> }[]
@@ -50,51 +55,10 @@ function normalizeUtility(utility: ManifestUtilityDraft, order: number): NonNull
     }
 }
 
-function cloneUtilityBuckets(): NonNullable<MasterCSSManifest['utilityBuckets']> {
-    return Object.fromEntries(
-        Object.entries(defaultManifest.utilityBuckets || {}).map(([name, indexes]) => [name, [...indexes]])
-    )
-}
-
-function addUtilityBucketIndexes(
-    buckets: NonNullable<MasterCSSManifest['utilityBuckets']>,
-    utilities: NonNullable<MasterCSSManifest['utilities']>,
-    startIndex: number
-) {
-    utilities.forEach((utility, index) => {
-        const utilityIndex = startIndex + index
-        for (const matcher of utility.matchers) {
-            switch (matcher.type) {
-                case 'variable':
-                    buckets.variable ??= []
-                    if (!buckets.variable.includes(utilityIndex)) buckets.variable.push(utilityIndex)
-                    break
-                case 'value':
-                    buckets.value ??= []
-                    if (!buckets.value.includes(utilityIndex)) buckets.value.push(utilityIndex)
-                    break
-                case 'key':
-                    buckets.key ??= []
-                    if (!buckets.key.includes(utilityIndex)) buckets.key.push(utilityIndex)
-                    break
-                case 'pattern':
-                    buckets.pattern ??= []
-                    if (!buckets.pattern.includes(utilityIndex)) buckets.pattern.push(utilityIndex)
-                    break
-                default:
-                    buckets.arbitrary ??= []
-                    if (!buckets.arbitrary.includes(utilityIndex)) buckets.arbitrary.push(utilityIndex)
-            }
-        }
-    })
-}
-
 export function createPresetManifest(manifest: PresetManifestInput = {}): MasterCSSManifest {
     if (manifest.version === 1) return manifest as MasterCSSManifest
     const defaultUtilities = defaultManifest.utilities || []
     const utilities = (manifest.utilities || []).map((utility, index) => normalizeUtility(utility as ManifestUtilityDraft, defaultUtilities.length + index))
-    const utilityBuckets = cloneUtilityBuckets()
-    addUtilityBucketIndexes(utilityBuckets, utilities, defaultUtilities.length)
     const variables = (manifest.variables || []).map(normalizeVariable)
     return {
         ...defaultManifest,
@@ -103,10 +67,10 @@ export function createPresetManifest(manifest: PresetManifestInput = {}): Master
             ...defaultManifest.settings,
             ...manifest.settings
         },
-        variables: [
-            ...(defaultManifest.variables || []),
+        variables: groupMasterCSSManifestVariables([
+            ...flattenMasterCSSManifestVariables(defaultManifest.variables),
             ...variables
-        ],
+        ]),
         animations: {
             ...(defaultManifest.animations || {}),
             ...(manifest.animations || {})
@@ -118,7 +82,6 @@ export function createPresetManifest(manifest: PresetManifestInput = {}): Master
         utilities: [
             ...defaultUtilities,
             ...utilities
-        ],
-        utilityBuckets
+        ]
     }
 }

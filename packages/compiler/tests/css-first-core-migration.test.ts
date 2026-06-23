@@ -2,10 +2,14 @@ import { describe, expect, test } from 'vitest'
 import { MasterCSS } from '@master/css-engine'
 import { compileCSS, compileCSSManifest } from '../src'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
-import type { MasterCSSManifest } from 'shared/master-css-manifest'
+import { flattenMasterCSSManifestVariables, type MasterCSSManifest } from 'shared/master-css-manifest'
 import UtilityType from 'shared/utility-type'
 
 const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
+
+function variablesOf(manifest: MasterCSSManifest) {
+    return flattenMasterCSSManifestVariables(manifest.variables)
+}
 
 function createTestCSS(manifest: MasterCSSManifest) {
     return MasterCSS.create({ manifest })
@@ -69,7 +73,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
             modeTrigger: 'class',
             modes: ['light', 'dark']
         })
-        expect(manifest.variables).toContainEqual(expect.objectContaining({
+        expect(variablesOf(manifest)).toContainEqual(expect.objectContaining({
             name: 'spacing-card',
             namespace: 'spacing',
             type: 'number',
@@ -124,7 +128,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
             baseManifest: defaultManifest
         })
 
-        expect(manifest.utilityBuckets?.pattern?.length).toBeGreaterThan(0)
+        expect(manifest.utilities?.some((utility) => utility.matchers.some((matcher) => matcher.type === 'pattern'))).toBe(true)
         expect(manifest.utilities?.find((utility) => utility.id === 'text-<left|right|center>')).toMatchObject({
             type: UtilityType.Semantic,
             matchers: [{
@@ -687,35 +691,35 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
             }
         `, { baseManifest: defaultManifest })
 
-        expect(manifest.variables).toContainEqual(expect.objectContaining({
+        expect(variablesOf(manifest)).toContainEqual(expect.objectContaining({
             name: 'content-stripe',
             namespace: 'content',
             key: 'stripe'
         }))
-        expect(manifest.variables).toContainEqual(expect.objectContaining({
+        expect(variablesOf(manifest)).toContainEqual(expect.objectContaining({
             name: 'box-shadow-panel',
             key: 'box-shadow-panel'
         }))
-        expect(manifest.variables).not.toContainEqual(expect.objectContaining({
+        expect(variablesOf(manifest)).not.toContainEqual(expect.objectContaining({
             name: 'box-shadow-panel',
             namespace: 'box-shadow'
         }))
-        expect(manifest.variables).toContainEqual(expect.objectContaining({
+        expect(variablesOf(manifest)).toContainEqual(expect.objectContaining({
             name: 'shadow-panel',
             namespace: 'shadow',
             key: 'panel'
         }))
-        expect(manifest.variables).toContainEqual(expect.objectContaining({
+        expect(variablesOf(manifest)).toContainEqual(expect.objectContaining({
             name: 'spacing-card',
             namespace: 'spacing',
             key: 'card'
         }))
-        expect(manifest.variables).toContainEqual(expect.objectContaining({
+        expect(variablesOf(manifest)).toContainEqual(expect.objectContaining({
             name: 'leading-body',
             namespace: 'leading',
             key: 'body'
         }))
-        expect(manifest.variables).toContainEqual(expect.objectContaining({
+        expect(variablesOf(manifest)).toContainEqual(expect.objectContaining({
             name: 'color-line-brand',
             namespace: 'color-line',
             key: 'brand'
@@ -855,13 +859,13 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
         `, { baseManifest: defaultManifest })
         const css = createTestCSS(manifest)
 
-        expect(manifest.variables).toContainEqual(expect.objectContaining({
+        expect(variablesOf(manifest)).toContainEqual(expect.objectContaining({
             name: 'spacing-card',
             type: 'number',
             value: '1.5rem',
             numeric: { value: 1.5, unit: 'rem' }
         }))
-        expect(manifest.variables?.find((variable) => variable.name === 'shadow-card')).toMatchObject({
+        expect(variablesOf(manifest).find((variable) => variable.name === 'shadow-card')).toMatchObject({
             type: 'string',
             value: '1rem'
         })
@@ -931,7 +935,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
         `, { baseManifest: defaultManifest })
         const css = createTestCSS(manifest)
 
-        expect(manifest.variables).toContainEqual(expect.objectContaining({
+        expect(variablesOf(manifest)).toContainEqual(expect.objectContaining({
             name: 'color-primary',
             static: true,
             value: '#123',
@@ -942,7 +946,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
                 }
             }
         }))
-        expect(manifest.variables).toContainEqual(expect.objectContaining({
+        expect(variablesOf(manifest)).toContainEqual(expect.objectContaining({
             name: 'color-secondary',
             static: true,
             modes: {

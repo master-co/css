@@ -6,6 +6,11 @@ import {
     type MasterCSSHydrationManifest
 } from 'shared/master-css-hydration-manifest'
 import { MASTER_CSS_RUNTIME_STYLE_ID } from 'shared/master-css-runtime-style'
+import {
+    flattenMasterCSSManifestVariables,
+    groupMasterCSSManifestVariables,
+    type MasterCSSManifestVariable
+} from 'shared/master-css-manifest'
 import UtilityType from 'shared/utility-type'
 import { dirname, resolve } from 'path'
 import { fileURLToPath } from 'url'
@@ -22,8 +27,8 @@ type RuntimeProjectManifestUtilityInput = Partial<NonNullable<MasterCSSManifest[
     rules?: { selector?: string, declarations: Record<string, string | number> }[]
 }
 
-type RuntimeManifestVariableInput = NonNullable<MasterCSSManifest['variables']>[number]
-type RuntimeManifestVariable = NonNullable<MasterCSSManifest['variables']>[number]
+type RuntimeManifestVariableInput = MasterCSSManifestVariable
+type RuntimeManifestVariable = MasterCSSManifestVariable
 
 type RuntimeProjectManifestInput = Partial<Omit<MasterCSSManifest, 'utilities'>> & {
     rootSize?: number
@@ -123,7 +128,7 @@ function createRuntimeVariables(defaultVariables: RuntimeManifestVariable[], inp
         variables.set(normalized.name!, current)
     }
 
-    return [...variables.values()]
+    return groupMasterCSSManifestVariables([...variables.values()])
 }
 
 function normalizeUtility(utility: RuntimeProjectManifestUtilityInput, order: number): NonNullable<MasterCSSManifest['utilities']>[number] {
@@ -149,56 +154,10 @@ function normalizeUtility(utility: RuntimeProjectManifestUtilityInput, order: nu
     }
 }
 
-function addBucketIndex(bucket: number[] | undefined, index: number) {
-    if (bucket?.includes(index)) return bucket
-    const nextBucket = bucket || []
-    nextBucket.push(index)
-    return nextBucket
-}
-
-function createRuntimeUtilityBuckets(
-    defaultBuckets: MasterCSSManifest['utilityBuckets'],
-    utilities: NonNullable<MasterCSSManifest['utilities']>,
-    startIndex: number
-) {
-    const utilityBuckets: NonNullable<MasterCSSManifest['utilityBuckets']> = {
-        ...(defaultBuckets?.variable?.length ? { variable: [...defaultBuckets.variable] } : {}),
-        ...(defaultBuckets?.value?.length ? { value: [...defaultBuckets.value] } : {}),
-        ...(defaultBuckets?.key?.length ? { key: [...defaultBuckets.key] } : {}),
-        ...(defaultBuckets?.pattern?.length ? { pattern: [...defaultBuckets.pattern] } : {}),
-        ...(defaultBuckets?.arbitrary?.length ? { arbitrary: [...defaultBuckets.arbitrary] } : {})
-    }
-    utilities.forEach((utility, relativeIndex) => {
-        const index = startIndex + relativeIndex
-        for (const matcher of utility.matchers) {
-            switch (matcher.type) {
-                case 'variable':
-                    if (utility.variableAliases?.length || utility.variableAliasRefs?.length) {
-                        utilityBuckets.variable = addBucketIndex(utilityBuckets.variable, index)
-                    }
-                    break
-                case 'value':
-                    if (utility.kind) utilityBuckets.value = addBucketIndex(utilityBuckets.value, index)
-                    break
-                case 'key':
-                    utilityBuckets.key = addBucketIndex(utilityBuckets.key, index)
-                    break
-                case 'pattern':
-                    utilityBuckets.pattern = addBucketIndex(utilityBuckets.pattern, index)
-                    break
-                default:
-                    utilityBuckets.arbitrary = addBucketIndex(utilityBuckets.arbitrary, index)
-                    break
-            }
-        }
-    })
-    return Object.keys(utilityBuckets).length ? utilityBuckets : undefined
-}
-
 function createRuntimeProjectManifest(manifest: RuntimeProjectManifestInput) {
     const defaultUtilities = defaultManifest.utilities || []
     const { rootSize, baseUnit, defaultMode, modeTrigger, modes, ...rest } = manifest
-    const variables = createRuntimeVariables(defaultManifest.variables || [], rest.variables)
+    const variables = createRuntimeVariables(flattenMasterCSSManifestVariables(defaultManifest.variables), rest.variables)
     const customUtilities = (rest.utilities || []).map((utility, index) => normalizeUtility(utility, defaultUtilities.length + index))
     return {
         ...defaultManifest,
@@ -225,8 +184,7 @@ function createRuntimeProjectManifest(manifest: RuntimeProjectManifestInput) {
         utilities: [
             ...defaultUtilities,
             ...customUtilities
-        ],
-        utilityBuckets: createRuntimeUtilityBuckets(defaultManifest.utilityBuckets, customUtilities, defaultUtilities.length)
+        ]
     } satisfies MasterCSSManifest
 }
 

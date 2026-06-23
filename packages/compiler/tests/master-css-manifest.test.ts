@@ -1,6 +1,12 @@
 import { describe, expect, it } from 'vitest'
 import { createMasterCSSManifest } from '../src/master-css-manifest'
 import UtilityType from 'shared/utility-type'
+import { flattenMasterCSSManifestVariables, type MasterCSSManifest } from 'shared/master-css-manifest'
+import { MasterCSS } from '@master/css-engine'
+
+function variablesOf(manifest: MasterCSSManifest) {
+    return flattenMasterCSSManifestVariables(manifest.variables)
+}
 
 describe.concurrent('createMasterCSSManifest', () => {
     it('lowers variables into resolved records with modes and dependencies without synthetic negative aliases', () => {
@@ -12,7 +18,7 @@ describe.concurrent('createMasterCSSManifest', () => {
             ]
         })
 
-        expect(manifest.variables).toContainEqual(expect.objectContaining({
+        expect(variablesOf(manifest)).toContainEqual(expect.objectContaining({
             name: 'spacing-card',
             key: 'card',
             namespace: 'spacing',
@@ -20,8 +26,8 @@ describe.concurrent('createMasterCSSManifest', () => {
             value: 12,
             static: true
         }))
-        expect(manifest.variables?.some((variable) => variable.name === '-spacing-card')).toBe(false)
-        expect(manifest.variables).toContainEqual(expect.objectContaining({
+        expect(variablesOf(manifest).some((variable) => variable.name === '-spacing-card')).toBe(false)
+        expect(variablesOf(manifest)).toContainEqual(expect.objectContaining({
             name: 'color-brand',
             key: 'brand',
             namespace: 'color',
@@ -45,7 +51,7 @@ describe.concurrent('createMasterCSSManifest', () => {
             ]
         })
 
-        expect(manifest.variables).toEqual([
+        expect(variablesOf(manifest)).toEqual([
             expect.objectContaining({
                 name: 'spacing--card',
                 key: '-card',
@@ -131,19 +137,19 @@ describe.concurrent('createMasterCSSManifest', () => {
             ]
         })
 
-        expect(manifest.variables).toContainEqual(expect.objectContaining({
+        expect(variablesOf(manifest)).toContainEqual(expect.objectContaining({
             name: 'spacing-card',
             type: 'number',
             value: '1.5rem',
             numeric: { value: 1.5, unit: 'rem' }
         }))
-        expect(manifest.variables).toContainEqual(expect.objectContaining({
+        expect(variablesOf(manifest)).toContainEqual(expect.objectContaining({
             name: 'radius-card',
             type: 'number',
             value: '8px',
             numeric: { value: 8, unit: 'px' }
         }))
-        expect(manifest.variables?.find((variable) => variable.name === 'shadow-card')).toMatchObject({
+        expect(variablesOf(manifest).find((variable) => variable.name === 'shadow-card')).toMatchObject({
             type: 'string',
             value: '1rem'
         })
@@ -212,6 +218,6 @@ describe.concurrent('createMasterCSSManifest', () => {
             }]
         })
         expect(utility?.matchers).toContainEqual({ type: 'static', name: 'card' })
-        expect(manifest.utilityBuckets?.arbitrary).toContain(index)
+        expect(MasterCSS.create({ manifest }).createRule('card')?.text).toBe('.card{display:grid;color:var(--color-primary)}')
     })
 })

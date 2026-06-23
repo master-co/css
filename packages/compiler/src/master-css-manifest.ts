@@ -18,7 +18,6 @@ import type {
     MasterCSSManifestSelectorNode,
     MasterCSSManifestSelectors,
     MasterCSSManifestUtility,
-    MasterCSSManifestUtilityBuckets,
     MasterCSSManifestUtilityRule,
     MasterCSSManifestUtilityMatcher,
     MasterCSSManifestVariableNumericValue,
@@ -28,6 +27,7 @@ import type {
     MasterCSSManifestVariantBranch,
     MasterCSSManifestVariants
 } from 'shared/master-css-manifest'
+import { flattenMasterCSSManifestVariables, groupMasterCSSManifestVariables } from 'shared/master-css-manifest'
 import {
     createCompilerCSS,
     parseAt,
@@ -52,6 +52,7 @@ export interface ResolvedCSSDirectiveVariableName {
 }
 
 export type CSSDirectiveVariableNameResolver = (variable: CSSDirectiveVariableDefinition) => ResolvedCSSDirectiveVariableName
+type MasterCSSManifestVariableDraft = MasterCSSManifestVariable & { namespace?: string }
 
 function clone<T>(value: T): T {
     if (Array.isArray(value)) return value.map((item) => clone(item)) as T
@@ -104,7 +105,7 @@ function addUtilityVariableNamespaces(namespaces: Set<string>, utilities: (Parti
 
 function collectVariableNamespaces(input: CSSDirectiveManifestInput = {}, options: CreateMasterCSSManifestOptions = {}) {
     const namespaces = new Set<string>(builtinNamespaces)
-    for (const variable of options.baseManifest?.variables || []) {
+    for (const variable of flattenMasterCSSManifestVariables(options.baseManifest?.variables)) {
         addVariableNamespace(namespaces, variable.namespace)
     }
     for (const variable of input.variables || []) {
@@ -183,7 +184,7 @@ function variableSlot(variable: Pick<MasterCSSManifestVariable, 'name' | 'namesp
     return variable.name || `${variable.namespace || ''}\0${variable.key}`
 }
 
-function pushVariable(target: MasterCSSManifestVariables, variable: MasterCSSManifestVariable) {
+function pushVariable(target: MasterCSSManifestVariableDraft[], variable: MasterCSSManifestVariableDraft) {
     const slot = variableSlot(variable)
     const existing = target.find((eachVariable) => variableSlot(eachVariable) === slot)
     if (existing) {
@@ -196,10 +197,10 @@ function pushVariable(target: MasterCSSManifestVariables, variable: MasterCSSMan
 function compileVariables(
     input: CSSDirectiveVariableDefinition[] | undefined,
     resolveVariableName: CSSDirectiveVariableNameResolver
-): MasterCSSManifestVariables | undefined {
+): MasterCSSManifestVariableDraft[] | undefined {
     if (!input?.length) return
-    const variables: MasterCSSManifestVariables = []
-    const byName = new Map<string, MasterCSSManifestVariable>()
+    const variables: MasterCSSManifestVariableDraft[] = []
+    const byName = new Map<string, MasterCSSManifestVariableDraft>()
 
     for (const definition of input) {
         const resolved = resolveVariableName(definition)
@@ -237,7 +238,7 @@ function compileVariables(
             continue
         }
 
-        const variable: MasterCSSManifestVariable = {
+        const variable: MasterCSSManifestVariableDraft = {
             name: resolved.name,
             key: resolved.key,
             ...(resolved.namespace ? { namespace: resolved.namespace } : {}),
@@ -284,7 +285,7 @@ function createVariableAtRule(variable: MasterCSSManifestVariable, id: 'media' |
     }
 }
 
-function compileAtRules(variables: MasterCSSManifestVariables | undefined, rootSize: number) {
+function compileAtRules(variables: MasterCSSManifestVariableDraft[] | undefined, rootSize: number) {
     const atRules: MasterCSSManifestAtRules = {}
     const breakpointAtRules: MasterCSSManifestAtRules = {}
     const containerAtRules: MasterCSSManifestAtRules = {}
@@ -626,41 +627,6 @@ function compileUtilities(input: CSSDirectiveUtilityDefinition[] | undefined): M
     return input.map((definition, index) => compileUtility(definition, index))
 }
 
-function addBucketIndex(bucket: number[] | undefined, index: number) {
-    if (bucket?.includes(index)) return bucket
-    const nextBucket = bucket || []
-    nextBucket.push(index)
-    return nextBucket
-}
-
-function compileUtilityBuckets(utilities: MasterCSSManifestUtility[] | undefined): MasterCSSManifestUtilityBuckets | undefined {
-    const buckets: MasterCSSManifestUtilityBuckets = {}
-    utilities?.forEach((utility, index) => {
-        for (const matcher of utility.matchers) {
-            switch (matcher.type) {
-                case 'variable':
-                    if (utility.variableAliases?.length || utility.variableAliasRefs?.length) {
-                        buckets.variable = addBucketIndex(buckets.variable, index)
-                    }
-                    break
-                case 'value':
-                    if (utility.kind) buckets.value = addBucketIndex(buckets.value, index)
-                    break
-                case 'key':
-                    buckets.key = addBucketIndex(buckets.key, index)
-                    break
-                case 'pattern':
-                    buckets.pattern = addBucketIndex(buckets.pattern, index)
-                    break
-                default:
-                    buckets.arbitrary = addBucketIndex(buckets.arbitrary, index)
-                    break
-            }
-        }
-    })
-    return Object.keys(buckets).length ? buckets : undefined
-}
-
 function compileAnimations(input: CSSDirectiveManifestInput['animations']): MasterCSSManifestAnimations | undefined {
     return input ? clone(input) as MasterCSSManifestAnimations : undefined
 }
@@ -681,6 +647,18 @@ function mergeBy<T>(base: T[] | undefined, next: T[] | undefined, getKey: (value
         }
     }
     return merged.length ? merged : undefined
+}
+
+function mergeVariables(
+    base: MasterCSSManifestVariables | undefined,
+    next: MasterCSSManifestVariables | undefined
+) {
+    const merged = mergeBy(
+        flattenMasterCSSManifestVariables(base),
+        flattenMasterCSSManifestVariables(next),
+        (variable) => variable.name
+    )
+    return groupMasterCSSManifestVariables(merged)
 }
 
 function mergeRecords<T>(base: Record<string, T> | undefined, next: Record<string, T> | undefined) {
@@ -706,15 +684,13 @@ function mergeAnimationOptions(
 
 function mergeManifest(baseManifest: MasterCSSManifest | undefined, fragment: MasterCSSManifest): MasterCSSManifest {
     if (!baseManifest) {
-        const manifest = clone(fragment)
-        manifest.utilityBuckets = compileUtilityBuckets(manifest.utilities)
-        return manifest
+        return clone(fragment)
     }
 
     const manifest: MasterCSSManifest = {
         version: 1,
         settings: { ...(baseManifest.settings || {}), ...(fragment.settings || {}) },
-        variables: mergeBy(baseManifest.variables, fragment.variables, (variable) => variable.name),
+        variables: mergeVariables(baseManifest.variables, fragment.variables),
         animations: mergeRecords(baseManifest.animations, fragment.animations),
         animationOptions: mergeAnimationOptions(baseManifest.animationOptions, fragment.animationOptions, fragment.animations),
         variants: mergeBy(baseManifest.variants, fragment.variants, (variant) => variant.token),
@@ -725,7 +701,6 @@ function mergeManifest(baseManifest: MasterCSSManifest | undefined, fragment: Ma
         utilities: mergeBy(baseManifest.utilities, fragment.utilities, (utility) => `${utility.id}\0${utility.layer || ''}`),
         debug: mergeRecords(baseManifest.debug, fragment.debug)
     }
-    manifest.utilityBuckets = compileUtilityBuckets(manifest.utilities)
     return Object.fromEntries(Object.entries(manifest).filter(([, value]) =>
         value !== undefined
         && (!Array.isArray(value) || value.length)
@@ -736,8 +711,9 @@ function mergeManifest(baseManifest: MasterCSSManifest | undefined, fragment: Ma
 export function createMasterCSSManifest(input: CSSDirectiveManifestInput = {}, options: CreateMasterCSSManifestOptions = {}): MasterCSSManifest {
     const rootSize = input.rootSize ?? options.baseManifest?.settings?.rootSize ?? 16
     const resolveVariableName = createVariableNameResolver(input, options)
-    const variables = compileVariables(input.variables, resolveVariableName)
-    const { atRules, breakpointAtRules, containerAtRules } = compileAtRules(variables, rootSize)
+    const variableDefinitions = compileVariables(input.variables, resolveVariableName)
+    const variables = groupMasterCSSManifestVariables(variableDefinitions)
+    const { atRules, breakpointAtRules, containerAtRules } = compileAtRules(variableDefinitions, rootSize)
     const settings = {
         ...(input.rootSize !== undefined ? { rootSize: input.rootSize } : {}),
         ...(input.baseUnit !== undefined ? { baseUnit: input.baseUnit } : {}),
@@ -750,7 +726,7 @@ export function createMasterCSSManifest(input: CSSDirectiveManifestInput = {}, o
     const variantBaseManifest = mergeManifest(options.baseManifest, {
         version: 1,
         ...(Object.keys(settings).length ? { settings } : {}),
-        ...(variables?.length ? { variables } : {}),
+        ...(variables ? { variables } : {}),
         ...(atRules ? { atRules } : {}),
         ...(breakpointAtRules ? { breakpointAtRules } : {}),
         ...(containerAtRules ? { containerAtRules } : {})
@@ -762,7 +738,7 @@ export function createMasterCSSManifest(input: CSSDirectiveManifestInput = {}, o
     const fragment: MasterCSSManifest = {
         version: 1,
         ...(Object.keys(settings).length ? { settings } : {}),
-        ...(variables?.length ? { variables } : {}),
+        ...(variables ? { variables } : {}),
         ...(animations ? { animations } : {}),
         ...(animationOptions ? { animationOptions } : {}),
         ...(variants?.length ? { variants } : {}),

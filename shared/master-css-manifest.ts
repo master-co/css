@@ -91,7 +91,12 @@ export interface MasterCSSManifestVariable {
     static?: boolean
 }
 
-export type MasterCSSManifestVariables = MasterCSSManifestVariable[]
+export type MasterCSSManifestVariables = Record<string, MasterCSSManifestVariable[]>
+export type MasterCSSManifestVariableEntry = MasterCSSManifestVariable & {
+    name: string
+    namespace?: string
+    type: MasterCSSManifestVariableType
+}
 
 export type MasterCSSManifestKeyframes<TDeclarations = MasterCSSManifestCSSDeclarations> = Record<'from' | 'to' | string, TDeclarations>
 export type MasterCSSManifestAnimations<TDeclarations = MasterCSSManifestCSSDeclarations> = Record<string, MasterCSSManifestKeyframes<TDeclarations>>
@@ -119,14 +124,6 @@ export type MasterCSSManifestUtilityMatcher =
     | { type: 'variable'; keys: string[]; segments?: MasterCSSManifestUtilityMatcherValueSegments }
     | { type: 'value'; keys: string[]; segments?: MasterCSSManifestUtilityMatcherValueSegments }
 
-export interface MasterCSSManifestUtilityBuckets {
-    variable?: number[]
-    value?: number[]
-    key?: number[]
-    pattern?: number[]
-    arbitrary?: number[]
-}
-
 export type MasterCSSManifestVariableAlias = [key: string, name: string]
 export type MasterCSSManifestVariableAliasSet = MasterCSSManifestVariableAlias[]
 
@@ -144,9 +141,9 @@ export interface MasterCSSManifestUtilityRule<TDeclarations = MasterCSSManifestC
 
 export interface MasterCSSManifestUtility {
     id: string
-    name: string
+    name?: string
     type: UtilityType
-    order: number
+    order?: number
     layer?: MasterCSSManifestUtilityLayerName
     key?: string
     subkey?: string
@@ -183,6 +180,41 @@ export interface MasterCSSManifest {
     containerAtRules?: MasterCSSManifestAtRules
     selectors?: MasterCSSManifestSelectors
     utilities?: MasterCSSManifestUtilities
-    utilityBuckets?: MasterCSSManifestUtilityBuckets
     debug?: Record<string, unknown>
+}
+
+export function getMasterCSSManifestVariableName(namespace: string, variable: Pick<MasterCSSManifestVariable, 'key' | 'name'>) {
+    return variable.name || (namespace ? `${namespace}${variable.key ? '-' + variable.key : ''}` : variable.key)
+}
+
+export function flattenMasterCSSManifestVariables(
+    variables: MasterCSSManifestVariables | undefined
+): MasterCSSManifestVariableEntry[] {
+    const flattened: MasterCSSManifestVariableEntry[] = []
+    for (const [namespace, definitions] of Object.entries(variables || {})) {
+        for (const definition of definitions) {
+            const type = definition.type || (typeof definition.value === 'number' ? 'number' : 'string')
+            flattened.push({
+                ...definition,
+                name: getMasterCSSManifestVariableName(namespace, definition),
+                ...(namespace ? { namespace } : {}),
+                type
+            })
+        }
+    }
+    return flattened
+}
+
+export function groupMasterCSSManifestVariables(
+    variables: readonly MasterCSSManifestVariable[] | undefined
+): MasterCSSManifestVariables | undefined {
+    if (!variables?.length) return
+    const grouped: MasterCSSManifestVariables = {}
+    for (const variable of variables) {
+        const namespace = variable.namespace || ''
+        const group = grouped[namespace] ||= []
+        const { namespace: _namespace, ...definition } = variable
+        group.push(definition)
+    }
+    return Object.keys(grouped).length ? grouped : undefined
 }
